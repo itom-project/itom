@@ -1,0 +1,302 @@
+e83e7173 Generator for parsing the SQL help database for some Python packages removed, since not used any more.
+e60382cd :lipstick:
+ea0bf16e update changelog
+4275d28f The CMake macro ``itom_configure_plugin_documentation`` can now get a 3rd optional argument, which is the name of the plugin in the case that the target_name differs from the plugin name, used to initialize a plugin. Some more scripts to render the documentation of plugins improved (style fixes etc.)
+cd2ec042 Fixes issue #121: The dialog, displaying the content of a variable in the workspace, will now be displayed as non-modal dialog on top of the workspace widget.
+b21e72cc AddInManager: linux fix: explicit template instantiation in cpp file (instead of h)
+dd8b6fba initAddIn in addInManager is now able to properly catch exceptions from constructors of plugins. initAddIn of actuators and dataIO merged into one common templated method.
+00bec990 AbstractCodeEditorWidget::formatPythonCodePart: do not trim a one-line entry
+5d481fa3 reforce CMake run
+a4bccc74 disable the logger of flake8.checker to not show any unwanted warnings in the command line of itom
+058b12e2 bugfix in shape.createPoint, unittest added to verify this bug. fixes issue #120
+66c48d9c :lipstick:
+2caab3b1 further improvement of the previous commit
+d7cf9e87 improved error message, containing all allowed enumeration values and keys, if one tries to set an enumeration or flag-based property (e.g. of a plot or another widget)
+61098aad add a default editor style, that is based on the default style, but uses the consolas font for all style types.
+613adc49 linux bugfixes
+03db9cd1 update the properties / signals / slots of the plot documentations
+8d3485ec COPYING, about and contributors list updated
+04d746b5 fixes in python auto indent to provide a better indentation after line breaks based on the pep8 indentation rules
+b476614a removed unused include: #include "opencv/cv.h" from plugin templates.
+42d1645c improvements in auto indentation after a line break key press (fix the indentation, add a backslash to the previous line if necessary etc.)
+d0fade74 Merged in moreCodeCheckers (pull request #40)
+afc4c300 Merge branch 'master' into moreCodeCheckers
+8495745e demo script to start the roughness evaluator app (in itom-packages) added. roughness-evaluator fixed to correct a future change in the bool-operator of itom.dataObject
+db03f1ca conf.py of user documentation changed to year 2020 copyright and python 3.8 references
+48fb4345 some python unittests adapted
+aa6d9cc9 fixes issue #115: Shortcuts to open an existing or new script, as well as shortcuts to debug any script are now globally available.
+2710b78a adaptions to support changes in Python package jedi 0.17.0. closes issue #118
+e8bb1189 fix another ui-file with respect to issue 89 (https://bitbucket.org/itom/itom/issues/89/qt-designer-crash)
+95323e30 Merge branch 'master' into moreCodeCheckers
+572da2c9 bugfix: show info of items in plugin toolbox did not work any more. This is fixed now.
+db690beb Merge branch 'master' into moreCodeCheckers
+96924b5b bugfix in pythonWorkspace when parsing a class that has a __slots__ attribute. __slots__ can return either a list or tuple.
+ea537345 Merge branch 'master' into moreCodeCheckers
+1df05b36 ito::ParamBase::inOutCheck documented and clarified for a better readability
+47ad11f2 Merged in remove_loadbyfilename (pull request #39)
+f1e34b05 docs improved
+f564522d Merge branch 'master' into moreCodeCheckers
+bb971bf7 ScriptDockWidget::open will guess now the case-sensitive name of the file to open
+002f0681 auto mode for codeCheckers added
+c32cc113 Merge branch 'master' into moreCodeCheckers
+0f6b72ee more improvements in itomJediLib
+9c2c5c01 Merge branch 'master' into moreCodeCheckers
+8a03f264 itomJediLib.py improved for calltips of methods with very long lines. These lines are split into several lines.
+1d41cf4f plot windows (ito::FigureWidget) are now resized to a default size, that is given by the new ito::FigureWidget::defaultSize getter function.
+b5c40795 :lipstick:
+5913f85b removed filenamesearch for pluginLoaded.
+f81a33dc modified inoutcheck
+b58cafdc Merged itom/itom into master
+038ce66e documentation improved
+09dd5dec documentation adapted for new code checkers
+54c2985c more improvements for itomSyntaxCheck.py module
+4b0e50ab many improvements for the two different code checkers: pyflakes or flake8
+450250ea Merge branch 'master' into moreCodeCheckers
+9ddcea98 more improvements in code checkers
+57b5d2c2 fix in helpTreeDockWidget that prevents a dead-lock if the help model is updated twice at the same time.
+ba960f14 reference counter of ito::ByteArray is now incremented or decremented atomically. This leads to a revision version change of the addInInterface version.
+70b81f97 Merged itom/itom into master
+2e88c5bc Merged in cmake_buildmacros (pull request #35)
+904956d6 more work on code checkers (pyflakes, flake8)
+3b96d628 further work on improved code checker feature
+7c08b012 removed the bytearray mods again
+cce1f2a3 typo
+a908cf81 property editor adapted and extended by new syntax and style checker options
+feb9d62a hopefully refixed all the exchanged macros/functions in ItomBuildMacros, fixxed possible bug in allocating memory for bytearray
+08db1f43 added _DEBUG flag for all Debug builds
+ffc6bbe2 CMAKE_DEBUG_POSTFIX
+1768f51a CMae Konstrukt fixes
+95eedc58 cmake build macros
+b041ff3e Merged itom/itom into master
+c7ca4b32 SemVerVersion: deprecated methods major, minor and patch (name conflict in linux) and added new replacements svMajor(), svMinor() and svPatch().
+039f7712 fix in CMakeLists.txt of Qitom: translation qm files have been copied to the wrong directory as post-build step
+72a7100d upper/lower case error in variable in CMakeLists.txt of Qitom
+952f2eb3 :lipstick:
+23393a46 Merge branch 'master' into moreCodeCheckers
+46a375a8 Merged in removeScriptReferenceDatabase (pull request #36)
+41018283 Merged itom/itom into master
+c3471f08 new icons for syntax / style check / linter warnings of info messages
+cc42b867 first demo version of flake8 checker
+2487e304 first commit to rework the syntax checking of scripts with the goal to support pyflakes and / or flake8
+9e391501 Merge branch 'master' into removeScriptReferenceDatabase
+81eb866f :lipstick:
+9c101ec5 fixes and improvements due to deepcode.ai analysis
+c35a16c0 script editor tabs: it is now possible to configure how long filenames are shortened if there are many scripts opened (see property dialog >> editor >> script editors)
+6b1cb852 improved parsing of classes and methods for navigation combo boxes on top of script editors. Can now handle async defs and multiline definitions.
+5eee6872 the helper class fileDownloader is not needed any more, due to removed online database resources for help viewer
+2928b7fb adapted the documentation for the modified plugin help viewer. Since OpenSSL is not needed any more (no downloads required), all related files, entries in the setup files etc. are removed, too.
+f29ea526 Merge branch 'master' into removeScriptReferenceDatabase
+f1e3f0b0 the script reference window (help viewer) of itom is now renamed to "plugin help viewer" and only shows information about plugins. The former script reference, based on offline database, hosted at sourceforge.net/p/itom, has been removed since the live script reference (using the python package jedi) fully replaces this technique. OpenSSL is no more needed now.
+2e14bc66 improved error message if string representation of any python object cannot be obtained (e.g. since an exception is raised during call of repr(obj). Clear any exception if PyObject_Repr failed.
+1cd4ec66 fixes issue #114: SystemError when converting an empty np.ndarray to an itom.dataObject (python unittest added to reproduce this error)
+6fb7de50 code editor: further improvement in indentation correction of copy&pasted code snippets
+774c7eba script editor: class and method navigation combobox can now handle multiline method signatures
+dd7465e8 :lipstick:
+87ba0db9 Merged itom/itom into master
+b7cbe66d :lipstick:
+b8bc2d11 docs improvement
+999d2ded first draft of a documentation about translating itom or its plugins in the contributing section of itom's documentation.
+272134d9 :lipstick:
+e7f04b83 Merged in CMAKE_fixes_itomwidget (pull request #34)
+7453e3f4 compilation fixes
+04c6bf9e refactoring of AbstractCodeEditorWidget::formatPythonCodePart to provide a better indentation formatting for copy-pasted code
+b29f7b4a bugfix in demoMaskEditor.py, since the gui variable has to be kept global
+b0c43e29 Merged itom/itom into master
+0a9a8f35 removed doxygen xml parser errors by removing all special characters in .h/.cpp files. Copyright changed to year 2020, replaced special characters in copyright by replacement characters.
+eedd6183 user doc extension package 'breathe' (doxygen in sphinx docs) updated to latest version
+58b69501 Python stream to std::cout/std::cerr: default encoding is latin1, if failed try to convert it to utf8 (character errors might occur) before raising an error
+b0c29076 script editor: The user can now select the keyboard modifiers that are used to start a "goto definition" operation upon moving the mouse cursor over a word in the "goto assignment" property page. Default: Ctrl+Shift.
+f5a917a4 removed unused #pragma comment(lib... from pythonPCL.cpp
+b4bbe697 Merged in remove_qt4 (pull request #31)
+bd0dc7f3 Merged master into remove_qt4
+f2a6802c fixes issue #113 (mouse right click in script editor or console loses current selection)
+d3e26ff1 Merge remote-tracking branch 'remotes/origin/master' into remove_qt4
+bdcdeada docu updates
+6c548d37 bugfix in CMakeLists.txt with ui and rcc files
+76e9ac33 lupdate fix in ItomBuildMacros.cmake
+656ceba0 Merge branch 'master' into remove_qt4
+7ffddec5 bugfix in node base structure of plots: input parameter 'dataObject' was wrongly added as output parameter to AbstractDObjPCLFigure
+c5b9d01c CMake: The default value of ITOM_SDK_DIR is NOTFOUND instead of an empty string
+bda58a75 linux bugfixes in CMake files
+6c4b07a4 goto definition / assignment adapted to changes in Jedi 0.16. Source and destination point of jumps are also added to goto navigation list. Improvements in selection dialog in case that more than one assignment has been found. GoTo / Infer avoids python stubs (pyi files) and if goto_definition leads to an empty result, goto_assignment is automatically used.
+450c78ba Merge branch 'master' of https://bitbucket.org/itom/itom
+eb8e47dd update :book: about the setup batch file
+0d058971 typo fix
+62da6390 CMAKE_MODULE_PATH adapted
+1c814356 :lipstick:
+234816b7 :lipstick:
+a868a5f9 :lipstick:
+18d09194 :lipstick:
+3a78998e further work on CMake. Now the CMakeLists.txt of the pluginTemplates are up-to-date again.
+a17e8060 fix of some invalid .ts files, since a _de.ts file cannot contain a language tag de_DE (lupdate will refuse).
+677e5980 ItomBuildMacros: major rework and modification of translation processes (macro itom_library_translation). The current implementation was not very robust, now existing ts-files are pre-checked before lupdate, since this might fail, else.
+a65f6243 added some commonly used linker flags for MSVC
+1b147b1a further improvements for itom CMake to support an easy start configuration for a new build folder
+d23c606f further adaptions and rework of CMake
+63e8de04 Merged in ollis_cmake_zeug (pull request #32)
+16590927 updated actuator template
+a7fd25cd CMake macro itom_fetch_git_commit_hash exports the short and long version of the current commit hash.
+c11a51fc minor changes to CMakeLists
+8d1d3846 Merged itom/itom/remove_qt4 into remove_qt4
+4b217b2d macro 'itom_fetch_git_commit_hash' added to ItomBuildMacros.cmake to get the current Git commit hash and store it in a gitVersion.h file in the file gitVersion.h in the project's output folder (can be changed). This behaviour can be toggled by the BUILD_GIT_TAG flag in CMake. This can only be done if the Git package can be found by CMake.
+970aba08 removed SET_PROPERTY(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug;Release") from itom CMakeLists.txt, since it raises an error if CMAKE_BUILD_TYPE is not defined yet. An improved solution will be given in the removeQt4 branch (soon).
+14c1c4b8 improved handling of setting a CMAKE_BUILD_TYPE to a reasonable default value if not yet set. This also checks for the existence of CMAKE_CONFIGURATION_TYPES. CMAKE_CONFIGURATION_TYPES is set to reasonable values, too, if not yet defined.
+2db41da5 FindITOM_SDK.cmake adapted: BUILD_TARGET64 will now be forced to the value, set in itom_sdk.cmake of itom's SDK. Additionally, all possibly relevant pathes to 3rd party libraries, that are known to the itom project (including its subdirectories) will be read from the itom CMakeCache by the plugins and designerplugins. If the corresponding CMake variables are not yet set and the read values from the cache are valid and the pathes exist on the file system, they are copied to the current plugin or designerplugin repository (during the find_package(ITOM_SDK) step).
+9e267cc6 CMake cleanup: removed more unused lines in the CMakeLists.txt file (e.g. due to the Qt4 removal or improvements of the OpenCV include for CMake >= 3.0). More improvements in ItomBuildMacros. FindITOM_SDK adapted to new SDK structure.
+48025482 *.cmake files moved to cmake subfolder and will also be added to cmake subfolder of SDK * MSVC only: compile_debug/release.bat files moved to msvc folder and simplified by configure_file in CMake generation * itom will always be built in UNICODE now (CMake option removed) * all itom libraries will always be built as SHARED libraries (CMake option removed) * cleanup in many CMake files of itom core solution
+27643311 removed Preprocessor CMAKE from all CMakeLists.txt files (since unused since a long time). Removed unused file Qitom/0.h.
+990a4d9d Merge branch 'master' into remove_qt4
+16da119a fix to show hidden itom.ui instance of type itom.ui.TYPECENTRALWIDGET again using the itom.ui.show() command.
+24f64871 Merged itom/itom into master
+34c250a1 added Python binding 'itom.dataIO.stop()' for ito::AddInDataIO::stop()
+958aba54 replace deprecated classes QStyleOptionViewItemV3 and QStyleOptionViewItemV2 by QStyleOptionViewItem (was a simple typedef until now)
+96bfb6c8 itom_unittest: OpenCV 4 adaptations
+3181d7a7 CMake files: constant STRING must be capital letters only
+49cd8d12 :lipstick:
+397c727e Merge branch 'master' into remove_qt4
+aa8716f6 bugfix in itomCommonPlotLib to secure some getter methods of properties of designer widgets, since the QtDesigner reads every property at startup and some of these properties are not in a properly initialized state within QtDesigner.
+c5c824d9 Qt4 support removal (part 1): Qt4 support removed from CMake files and CMake macros
+1d756227 plotLegends is not used any more (since a long time) because it is integrated in itomWidgets. Therefore plotLegends is removed and also deleted from the SDK folder.
+3d49de2e :lipstick:
+f9381752 CMakeLists.txt and *.cmake files adapted to (new) cmake style guide of itom (see documentation/13_contributing/cmake_style_guide.rst). General settings of itom libraries as well as plugin and designer plugin libraries are now added in the INIT_ITOM_LIBRARY() macro of ItomBuildMacros.cmake.
+e5f16b80 Merged itom/itom into master
+2fd07800 Remove Qt4 support and compiler switches within CMake scripts and source code
+38fbdc91 Qt4 support removal (part 1): Qt4 support removed from CMake files and CMake macros
+b00a2684 linux bugfix
+cbf359a1 linux bugfix
+3ea31571 Merged in algorithmInterrupt (pull request #26)
+7ae1dda6 Merge branch 'master' into algorithmInterrupt
+47089cba fixes and improvements of code editor, especially if tabs are used instead of spaces
+5d1ec569 Merge branch 'master' into algorithmInterrupt
+13c458ca source code documentation for bookmarkDockWidget added
+dda1f783 documentation added for navigation markers in scripts and new global bookmark management including the bookmark toolbox
+70cd4e92 fixes issue #112: bookmarks are now managed by a central bookmark model. All bookmark backward / forward buttons are now deliverd by this model, as well as the delete action. Additionally, there is now a bookmark toolbox, similar to the breakpoint toolbox, that allows jumping to different bookmarks and navigating through the list of bookmarks.
+2c136b25 Merge branch 'master' into algorithmInterrupt
+a06ed7d3 bugfix in script editor navigation buttons. new feature: goto definition action can now be triggered by F12 shortcut.
+15770fa2 New feature in script editors: forward and backward navigation buttons are now available. Their behaviour is similar than in Visual Studio (see https://blogs.msdn.microsoft.com/zainnab/2010/03/01/navigate-backward-and-navigate-forward/)
+87797638 documentation about callstack toolbox adapted to new features
+1caae080 some refactoring in scriptDockWidget and scriptEditorWidget
+54b71e1d callstack does not show debugger-internal callstack lines. Double-click an entry in the callstack will jump to the code line and mark it with an green, dashed arrow. Only the top line of the callstack will always be marked with the known yellow arrow.
+e56e57fe improved icon browser dialog: icons can be filtered by a text box. The load is put into a concurrent run task to improve the startup. name of selected item is displayed in textbox below the tree widget.
+78c1bb20 build instructions for debian slightly modified
+afb88b3c callstack dock widget does not show <script> level and below (itoDebugger.py, bdb.py)
+e83baf6f Merge branch 'master' into algorithmInterrupt
+8b4b45b2 script editor now have the option to adapt the indentation level of pasted code to the current indentation of the current line. This can be configured via the general script editor properties. Additionally, it is possible to configure that cut/copy selects the current line if no selection is currently active.
+9f4f2da5 fixes issue #110 (wrong scope decoration if document ended with a scope with level > 0)
+f11e3dc5 empty translation file added for shapes
+878a0ec1 file system dock widget: list of recent folders, loaded at startup from settings, will only contain pathes that exist at startup.
+d5f24f04 Merge branch 'master' into algorithmInterrupt
+00d42415 fixes issue #109. Commands, added to the recent list of commands, are only considered as duplicates if their command string is equal to any older command in a case-sensitive way.
+bc953ee2 Merge branch 'master' into algorithmInterrupt
+828af35b major refactoring of itomCommonPlotLib library: classes Channel, AbstractNode, AbstractFigure refactored and commented, parameter propagation through node tree improved, private classes added to enable easier updates with kept binary compatibility. These changes require adaptions in figure classes / plugins since the handling of channels and input / output parameters is clearer covered and handled in the itomCommonPlotLib only.
+b92dd865 Merged itom/itom into master
+2247c4fb Merged in demos_pytest (pull request #30)
+345cec10 removed output from tests again...
+303633d8 wrapped demos in demo_ or userdemo_ depending on userinteractio nrequired...
+a8a7c48f new documentation page added (to be extended) for changes in the header file of designer plugins / plot plugins to provide information about the version of the interface classes
+5989cb13 documentation about new cancellable algorithm filters added. Improved the documentation about the load mechanism of plugins in itom including the version number of the interface. general improvements of the itom user documentation.
+4ddbf8a7 Merged itom/itom into master
+ed225d7f The keyword '_observer' is not allowed in any algorithm plugin filters, since it is a reserved keyword for passing an progress observer to a filter. Filters having such a keyword will be rejected by itom.
+5e782d72 c++ user documentation adapted for writing algorithm plugins with the new progress observer and cancellation feature
+5fe8b89d preparation for better support of AD/DA converter plugins with continuous acquisition. ito::AddInDataIO::stop(...) added as optional slot in the interface.
+f61789f9 first working version of calling a filter with the ability to show its status and being cancelled from Python. A button has been configured via Python that will interrupt the execution of this filter and the status is displayed in a progress bar / label. See example demo/ui/algoCancelAndProgressWidget.py
+497fc553 :lipstick:
+3b87732f itom designer plugins have now mandatory meta info, that allow verifying the compatibility of the plugin during startup. It is necessary to modify the designer plugin header file to support this meta data information.
+eaca6d6e Merge branch 'master' into algorithmInterrupt
+69eae0e3 another fix in Qitom/CMakeLists.txt: also removed to find_package(PythonLibs...) to avoid that both capital and small letter PYTHON... variables are required in CMake
+d4936df8 intermediate commit towards semver version numbers of plugins and designer plugins, new filterDefExt added to helpTreeDockWidget... This commit does not compile! Do not merge or use this.
+c5cc1360 Merged in raspi_fixes2_rerebaseraspi_fixes2_rerebase (pull request #29)
+adcf27b3 reset CMakeLists.txt/itom->Qitom
+38bd20e1 typo fixXx
+6b359ac6 hopefully last change to r/w pyObjects...
+b777ed4c docu: removed some sphinx compiler warnings
+7cf5bef8 Merged in update_doc_buildinstall (pull request #25)
+8eb71337 bugfix in uiOrganizer (QMetaType 43 exception due to exception of invoked method) in several methods if ui window or dialog have already been deleted before.
+d8ccc354 fixed tempfilenaming/made it up to qt/system to create some file
+cc7192f2 nachtrag
+8846657e Merged itom/itom into master
+438ac810 readily changed char* as far as possible and some hints from marc
+0bcd773c minor type fixes and refactoring in AddInManager library
+c5e3e687 changed nullptr to NULL to stay compatible with old compilers
+7b6c107a replace unknown NULL macro by nullptr if the compiler is configured to C++11 e.g. via CMake: set(CMAKE_CXX_STANDARD 11) set(CMAKE_CXX_STANDARD_REQUIRED ON)
+643ba3f4 bugfix for commit https://bitbucket.org/itom/itom/commits/d052b57a41747bc122c550e0b674d0edc45e5928: correct QMap key-value assignment.
+86a52a45 fixes issue #106: drag&drop from/to command line: - it is not allowed to drop something in protected lines of the command line - dragging from protected lines of the command line must always be a copy operation
+d052b57a Qt5.6 fix: no support for list initialization
+f809507a minor changes to CMAkeLsits
+5d776a47 added  a note about python-opencv
+1321c4d6 some changes to PCL way of using tempfiles
+bff31921 added some compilation info to doc 4 Linux
+f8523860 bugfix: memory leak for itom.dataObject(copy : np.ndarray)
+8269d56d Merge branch 'master' into algorithmInterrupt
+91b90a6e fixes issue #104: corrected ascending or descending sorting of elements in the workspaceWidget if values in variable name column are numbers, represented as texts. Therefore "10" should follow "2" instead of the text-based comparison.
+ee6652aa new python class itom.progressObserver added to provide a wrapper around a progressBar and / or label, that can be connected to a progressObserver of a ito::FilterDefExt method (new). More work is necessary.
+da9e7c26 added hint for "pointCloud.fromXYZI": deleteNaN values are used from X, Y, Z data objects.
+c5e7246e rebase auf den itommaster
+5780a6bc Merged itom/itom into master
+eaf97ac5 some preparation work for fix of designer plugin issue 29: https://bitbucket.org/itom/designerplugins/issues/29/delete-linecut. ItomPlotHandle accepts None as argument. Adapted the demo embedded2DwLinePlot.py to show possibility to draw line cuts, volume cuts or z-stack cuts into given plots.
+3c99a39a added minimal example of OpenCV face detection to itom demo files
+7e4bc997 removed a wrong "container=1" line in the ui-files for itom designer plugins. This line will let the QtDesigner crash if another widget is drag&dropped over a widget of the affected designer plugin class. For more information, see issue https://bitbucket.org/itom/itom/issues/89/qt-designer-crash
+24ded160 first draft of FunctionCancellationAndObserver class, including an additional ito::AddInAlgo::FilterDefExt class, derived from ito::AddInAlgo::FilterDef. See the demoAlgorithm plugin for a first example (filter, as well as widget).
+b7c2244d :lipstick:
+bbc261ba set minimum size of helpDockWidget to 300x200 (@96dpi screen)
+851235e1 fixes issue #98: camera can be disconnected from plot by assigning None to the camera property:
+13df6aae fixes issue #100. Bugfix when obtaining the variable name from a selected sub-item in the workspace tree.
+50eba4c3 cleanup of constructor of itom.dataObject. Added further dataObject related unittests in python_unittests to show the desired behaviour of all kind of constructors / copy-constructors of itom.dataObject. The copy constructor now considers an optional dtype or continuous argument. All arguments can now be keyword based.
+e89d54d2 some changes to itom doc in install/build section
+7c5f3324 Merged itom/itom into master
+6cd572c0 Merged in external_python_helpviewer (pull request #24)
+937b31d9 added "sizez" parameter for cameras returning an image stack instead of a single frame
+7936940f added 3rdpartyhelpviewer to doc, did some linebreaks ...
+49a64092 Merged itom/itom into master
+85bd4224 docstring fix in demo/demoDataObject.py
+fb34c6cb added external python 3rdparty help viewer
+5ec32c17 Merged itom/itom into master
+720b5144 fixes issue #97: removed uint32 from docstrings in itom.dataObject (since not supported)
+1858ced3 uiItem.getChild(widgetName) added as alternative for uiItem.widgetName, since the first method can also be used if the widgetName is a variable of type str.
+f535b0b5 widget wrapper 'setItemText' for QListWidget added. gui.listWidget.call("setItemText", 0, "new text") changes the text of the first item in the given list widget.
+6725767d Merged itom/itom into master
+b8d3e68a uiItem.info(verbose : int) --> display better information about different verbose levels
+9f8c503e fixes issue #96 (bookmark icons are directly removed if 'clear all bookmarks' is clicked)
+88d24df2 startup arguments for qitom application documented in user docs (section getting-started)
+dfdd5c59 selection from auto completion list is only confirmed with the Return key in a script. In the console, only the Tab-Key is feasible.
+557bfe21 modifications of the license information of itom, add of the new licenses folder in the itom sources with all major 3rd party projects that are used in the core as well as commonly used plugins/designer plugins of itom.
+e2c902d2 :bug: fixed in UserOrganizer
+9c885f24 bugfixes and code refinement of UserOrganizer, UserModel If the startup argument name=<userID> is passed, this user is loaded without further dialog (only if password is required). New startup argument run=<path_to_script> is added (can be stacked) to indicate scripts that should be executed at startup
+8bd4a503 Merged itom/itom into master
+419a3ab7 fixes #94 to correctly show the methods in the comboBox of the code editor
+16c99a0b fixes issue #95 to correctly color private methods in scripts that contain numbers in the function name
+b00602ce itom.ui: new window type ui.TYPECENTRALWIDGET added. Use this type to permanently include this widget or QMainWindow to the central area of itom, on top of the command line. Use itom.setCentralWidgetsSizes to control the desired sizes of the user defined central widgets as well as of the command line (no absolute change of the height or width of the central area of itom)
+ca0d5413 Qt version fix in demoMotorAxisController.py for Qt >= 5.10.x
+7f33d6b4 :lipstick:
+0b28d5ce Merged itom/itom into master
+24bb9081 increase the standard size of the "new plugin instance" dialog a little bit.
+70f1f1e0 new property page for actuators: It can be chosen if an interrupt flag should be send to all active actuator instances if a python script execution is interrupted (default: false). Calling itom.setPosAbs, itom.setPosRel, itom.calib or itom.setOrigin will now reset the interrupt flag before execution (as well as calling these methods from the motorAxisController.
+cfa853d4 adapted matplotlib 3.x backend to support the "required" position information for the enterEvent (see also https://bitbucket.org/itom/designerplugins/issues/28/matplotlib-3x-update-backend-to-modified)
+dce93194 bugfix in itomWidgets: ledStatus reported wrong header file, which made it hard to insert it into an ui file
+b351e8fe long line break in std::cerr outputs is not split into lines based on word-boundaries
+683e3107 Plugins toolbox: The action 'show/hide plugin toolbox' in the context menu of a plugin instance gets a default title even if it is disabled
+a34b7e59 dataIO.getParamListInfo(), actuator.getParamListInfo() inserts line breaks at description if the automatic line wrap for long lines is enabled in the command line
+566fec71 added a demo script about setting the color of geometric shapes in 1d and 2d plot
+091f8236 :lipstick: typo fixes
+fb90b4b4 Merge branch 'master' of https://bitbucket.org/itom/itom
+9f2b7284 :lipstick: in :books:
+4f05c503 fix in jedi interface to support jedi 0.15.x, where full_name of jedi.api.classes.BaseDefinition can also be None.
+1ec32317 typo fix
+bb5ffd1a removed code editor test project
+7ed0de83 official name of python class itom.pythonStream renamed to 'itom.pythonStream' (was pythonStream.PythonStream before)
+cb9f65dc AddInManager: fix when closing plugin instances, opened via GUI, in destructor of AddInManager: instances should only be directly closed by AddInManager if they are not only referenced any more by any other plugin instance(s). In this case closing the owning instance will also close the referenced instance.
+250e3d70 :rose: sorry, changed the general timeout to 5s, increased the init timeout to 15 :ok_hand:
+4d40eafe python syntax highlighting: added 'async' and 'await' as further keywords
+cb003812 - increased general timeout - set askBeforeClose default true
+ff37af49 inno setup configuration files for setup adapted to new qwt and itomqwtplotbase library in designer folder
+a4b057cb improvements in itomJediLib to better parse default arguments of methods of itom module
+c8c1d8f8 turned some itom.dataObject methods into keyword-based methods
+b44dd522 editor: redo button is now working properly
+980bdcf6 workaround in font selection of WidgetPropEditorStyles:
+8b0c9aea fix in matplotlib backend for matplotlib 3.1
+24b58590 closes #88: allow password for standard user. Optimized behavior when removing the password for a user.
+5a3fb383 unittest added to avoid any kind of construction or conversion into uint32 dataObjects
+9c04227e :lipstick:
+7682bef7 fixes #87: multiple files can now be opened by droping on script editor
+8ad5e6e0 Merge branch 'master' of https://bitbucket.org/itom/itom
+e24dd179 incremented itom version number

@@ -640,3 +640,19 @@ bool MenuComboBox::eventFilter(QObject* target, QEvent* event)
     }
     return this->Superclass::eventFilter(target, event);
 }
+
+/// this slot only returns the argument list for unittest purposes.
+    /* This slot has no further functionality and can be used
+    to test the proper marshalling between Python, C++ and Qt.
+    */
+QVariantList MenuComboBox::__unittestVariantList(const QVariantList &list)
+{
+    return list;
+}
+
+int MenuComboBox::__unittestInt(int value) { return value; }
+qint64 MenuComboBox::__unittestInt64(qint64 value) { return value; }
+quint64 MenuComboBox::__unittestUInt64(quint64 value) { return value; }
+float MenuComboBox::__unittestFloat(float value) { return value; }
+double MenuComboBox::__unittestDouble(double value) { return value; }
+short MenuComboBox::__unittestShort(short value) { return value; }

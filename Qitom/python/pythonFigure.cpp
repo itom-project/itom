@@ -334,7 +334,7 @@ PyObject* PythonFigure::PyFigure_plot(PyFigure *self, PyObject *args, PyObject *
 
     if (!ok)
     {
-        dataCont = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(data, false, ok, &retval2));
+        dataCont = PythonQtConversion::PyObjGetSharedDataObject(data, false, ok, &retval2);
     }
 
     if (!ok)
@@ -492,10 +492,10 @@ PyObject* PythonFigure::PyFigure_plot1(PyFigure *self, PyObject *args, PyObject 
     ito::UiDataContainer xDataCont;
     if (!ok)
     {
-        dataCont = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(data, false, ok));
+        dataCont = PythonQtConversion::PyObjGetSharedDataObject(data, false, ok);
         if (ok && xData)
         {
-            xDataCont = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(xData, false, ok));
+            xDataCont = PythonQtConversion::PyObjGetSharedDataObject(xData, false, ok);
 
             if (!ok)
             {
@@ -665,7 +665,7 @@ PyObject* PythonFigure::PyFigure_plot2(PyFigure *self, PyObject *args, PyObject 
     ito::UiDataContainer xDataCont;
     if (!ok)
     {
-        dataCont = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(data, false, ok));
+        dataCont = PythonQtConversion::PyObjGetSharedDataObject(data, false, ok);
 
     }
 
@@ -830,7 +830,7 @@ PyObject* PythonFigure::PyFigure_plot25(PyFigure *self, PyObject *args, PyObject
     ito::UiDataContainer xDataCont;
     if (!ok)
     {
-        dataCont = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(data, false, ok));
+        dataCont = PythonQtConversion::PyObjGetSharedDataObject(data, false, ok);
 
     }
 

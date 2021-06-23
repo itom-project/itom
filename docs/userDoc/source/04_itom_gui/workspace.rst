@@ -16,7 +16,7 @@ workspace is listed in the toolbox **Global Variables**. There is a filter, such
 by their variable name, e.g.::
     
     >>print(__name__)
-    '__main__' #answer
+    '__main__' # answer
 
 However, this is only possible if you work in the command line or a script that is not part of a separate module. In this case, you can
 access items of |itom|'s global workspace by importing the module **__main__**:
@@ -35,9 +35,22 @@ The toolbox **local variables** is only enabled if you are currently debugging a
 a certain line. Then, the current workspace (local scope) of the method, where the debugger has been stopped, is shown. If the debugger currently processes
 any code not contained in a method, no local workspace is available.
 
-Double-clicking on an item opens an small dialog where the content of the variable is printed. This is the same result as::
+Double-clicking on an item opens a dialog where the content of the variable is printed. This is the same result as::
     
     print(VARIABLENAME)
+    
+Double-clicking on an item of the type `~itom.dataObject` or **numpy.array** opens a extended dialog in which the values of the array are diplayed in a table. 
+For multidimensional items (>2) the displayed axes can be changed by two *comboBoxes*. For all other axes of the array, the index can be changed by a spinBox as shown in the example: 
+
+.. figure:: images/dialogDetailsDataObjectTable.png
+    :scale: 100%
+    :align: center
+    
+In addition, on the second tab the meta information of the :py:class:`~itom.dataObject` is displayed: 
+
+.. figure:: images/dialogDetailsDataObjectMetaTable.png
+    :scale: 100%
+    :align: center
 
 The context menu, depicted in the figure above, shows some important methods of this toolbox. Most of them are also accessible by the toolboxes
 toolbar. You can always delete |vardelete| one or multiple selected variables or you can rename |varrename| one selected variable. Additionally, there is the possibility
@@ -93,3 +106,4 @@ the following options are available:
 For :py:class:`~itom.pointCloud` or  `~itom.polygonMesh`, the available options are:
 
 * 3D cloud or mesh visualization (corresponds to the script command *plot(object, '2.5d')*)
+

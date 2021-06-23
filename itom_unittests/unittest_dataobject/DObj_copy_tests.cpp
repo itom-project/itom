@@ -22,32 +22,18 @@ template <typename _Tp> class copyTests : public ::testing::Test
   public:
     virtual void SetUp(void)
     {
-        int *temp_size1 = new int[2];
-        temp_size1[0] = 10;
-        temp_size1[1] = 10;
+        int temp_size1[] = { 10,10 };
         this->dObj1_s = ito::DataObject(0, temp_size1, ito::getDataType2<_Tp *>());
         this->dObj2_s = ito::DataObject(2, temp_size1, ito::getDataType2<_Tp *>());
         this->dObj3_s = ito::DataObject(4, 5, 5, ito::getDataType2<_Tp *>());
-        int *temp_size = new int[5];
-        temp_size[0] = 10;
-        temp_size[1] = 12;
-        temp_size[2] = 16;
-        temp_size[3] = 18;
-        temp_size[4] = 10;
+
+        int temp_size[] = { 10,12,16,18,10 };
         this->dObj4_s = ito::DataObject(5, temp_size, ito::getDataType2<_Tp *>());
-        int *temp_size3 = new int[5];
-        temp_size3[0] = 4;
-        temp_size3[1] = 5;
-        temp_size3[2] = 5;
-        temp_size3[3] = 4;
-        temp_size3[4] = 3;
+
+        int temp_size3[] = { 4,5,5,4,3 };
         this->dObj4_s2 = ito::DataObject(5, temp_size3, ito::getDataType2<_Tp *>());
-        int *temp_size2 = new int[5];
-        temp_size2[0] = 1;
-        temp_size2[1] = 1;
-        temp_size2[2] = 2;
-        temp_size2[3] = 1;
-        temp_size2[4] = 1;
+
+        int temp_size2[] = { 1,1,2,1,1 };
         this->dObj4_s1 = ito::DataObject(5, temp_size2, ito::getDataType2<_Tp *>());
 
         this->dObj1_d = ito::DataObject(0, temp_size1, ito::getDataType2<_Tp *>());

@@ -1952,7 +1952,7 @@ PyObject* PythonPCL::PyPointCloud_Reduce(PyPointCloud *self, PyObject * /*args*/
         ito::RetVal retval;
         try
         {
-            if (apiFilterCall)
+            if (apiFilterCall != nullptr)
             {
                 QVector<ito::ParamBase> paramsMand;
                 QVector<ito::ParamBase> paramsOpt;
@@ -2073,7 +2073,7 @@ PyObject* PythonPCL::PyPointCloud_SetState(PyPointCloud *self, PyObject *args)
 
         try
         {
-            if (apiFilterCall)
+            if (apiFilterCall != nullptr)
                 retval = apiFilterCall("loadPointCloud", &paramsMand, &paramsOpt, &paramsOut);
             else
                 retval = ito::RetVal(ito::retError, 0, QObject::tr("api function pointer not set").toLatin1().data());
@@ -2178,7 +2178,7 @@ pointCloud \n\
         }
         else
         {
-            XYZ = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objX, false, ok, &retval));
+            XYZ = PythonQtConversion::PyObjGetSharedDataObject(objX, false, ok, &retval);
 
             if (!ok)
             {
@@ -2248,21 +2248,21 @@ pointCloud \n\
     }
     else
     {
-        X = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objX, false, ok, &retval));
+        X = PythonQtConversion::PyObjGetSharedDataObject(objX, false, ok, &retval);
 
         if (!ok)
         {
             return PyErr_Format(PyExc_RuntimeError, "X argument could not be converted to a data object (%s)", retval.errorMessage());
         }
 
-        Y = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objY, false, ok, &retval));
+        Y = PythonQtConversion::PyObjGetSharedDataObject(objY, false, ok, &retval);
 
         if (!ok)
         {
             return PyErr_Format(PyExc_RuntimeError, "Y argument could not be converted to a data object (%s)", retval.errorMessage());
         }
 
-        Z = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objZ, false, ok, &retval));
+        Z = PythonQtConversion::PyObjGetSharedDataObject(objZ, false, ok, &retval);
 
         if (!ok)
         {
@@ -2356,7 +2356,7 @@ pointCloud \n\
         }
         else
         {
-            XYZ = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objX, false, ok, &retval));
+            XYZ = PythonQtConversion::PyObjGetSharedDataObject(objX, false, ok, &retval);
 
             if (!ok)
             {
@@ -2399,7 +2399,7 @@ pointCloud \n\
                 Z = QSharedPointer<ito::DataObject>(new ito::DataObject(XYZ->at(ranges).squeeze()));
             }
 
-            I = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objI, false, ok, &retval));
+            I = PythonQtConversion::PyObjGetSharedDataObject(objI, false, ok, &retval);
 
             if (!ok)
             {
@@ -2409,28 +2409,28 @@ pointCloud \n\
     }
     else
     {
-        X = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objX, false, ok, &retval));
+        X = PythonQtConversion::PyObjGetSharedDataObject(objX, false, ok, &retval);
 
         if (!ok)
         {
             return PyErr_Format(PyExc_RuntimeError, "X argument could not be converted to a data object (%s)", retval.errorMessage());
         }
 
-        Y = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objY, false, ok, &retval));
+        Y = PythonQtConversion::PyObjGetSharedDataObject(objY, false, ok, &retval);
 
         if (!ok)
         {
             return PyErr_Format(PyExc_RuntimeError, "Y argument could not be converted to a data object (%s)", retval.errorMessage());
         }
 
-        Z = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objZ, false, ok, &retval));
+        Z = PythonQtConversion::PyObjGetSharedDataObject(objZ, false, ok, &retval);
 
         if (!ok)
         {
             return PyErr_Format(PyExc_RuntimeError, "Z argument could not be converted to a data object (%s)", retval.errorMessage());
         }
 
-        I = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objI, false, ok, &retval));
+        I = PythonQtConversion::PyObjGetSharedDataObject(objI, false, ok, &retval);
 
         if (!ok)
         {
@@ -2520,7 +2520,7 @@ pointCloud \n\
         }
         else
         {
-            XYZ = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objX, false, ok, &retval));
+            XYZ = PythonQtConversion::PyObjGetSharedDataObject(objX, false, ok, &retval);
 
             if (!ok)
             {
@@ -2574,7 +2574,7 @@ pointCloud \n\
                 Z = QSharedPointer<ito::DataObject>(new ito::DataObject(XYZ->at(ranges).squeeze()));
             }
 
-            color = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objColor, false, ok, &retval));
+            color = PythonQtConversion::PyObjGetSharedDataObject(objColor, false, ok, &retval);
 
             if (!ok)
             {
@@ -2584,28 +2584,28 @@ pointCloud \n\
     }
     else
     {
-        X = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objX, false, ok, &retval));
+        X = PythonQtConversion::PyObjGetSharedDataObject(objX, false, ok, &retval);
 
         if (!ok)
         {
             return PyErr_Format(PyExc_RuntimeError, "X argument could not be converted to a data object (%s)", retval.errorMessage());
         }
 
-        Y = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objY, false, ok, &retval));
+        Y = PythonQtConversion::PyObjGetSharedDataObject(objY, false, ok, &retval);
 
         if (!ok)
         {
             return PyErr_Format(PyExc_RuntimeError, "Y argument could not be converted to a data object (%s)", retval.errorMessage());
         }
 
-        Z = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objZ, false, ok, &retval));
+        Z = PythonQtConversion::PyObjGetSharedDataObject(objZ, false, ok, &retval);
 
         if (!ok)
         {
             return PyErr_Format(PyExc_RuntimeError, "Z argument could not be converted to a data object (%s)", retval.errorMessage());
         }
 
-        color = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objColor, false, ok, &retval));
+        color = PythonQtConversion::PyObjGetSharedDataObject(objColor, false, ok, &retval);
 
         if (!ok)
         {
@@ -2729,7 +2729,7 @@ pointCloud \n\
         }
     }
 
-    dispMap = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objDisp, false, ok, &retval));
+    dispMap = PythonQtConversion::PyObjGetSharedDataObject(objDisp, false, ok, &retval);
     if (!ok)
     {
         return PyErr_Format(PyExc_RuntimeError, "topography map argument could not be converted to a data object (%s)", retval.errorMessage());
@@ -2737,7 +2737,7 @@ pointCloud \n\
 
     if (objI)
     {
-        IntMap = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objI, false, ok, &retval));
+        IntMap = PythonQtConversion::PyObjGetSharedDataObject(objI, false, ok, &retval);
         if (!ok)
         {
             return PyErr_Format(PyExc_RuntimeError, "topography map argument could not be converted to a data object (%s)", retval.errorMessage());
@@ -2746,7 +2746,7 @@ pointCloud \n\
     }
     else if (objColor)
     {
-        colorMap = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objColor, false, ok, &retval));
+        colorMap = PythonQtConversion::PyObjGetSharedDataObject(objColor, false, ok, &retval);
         if (!ok)
         {
             return PyErr_Format(PyExc_RuntimeError, "color map argument could not be converted to a data object (%s)", retval.errorMessage());
@@ -4337,7 +4337,7 @@ PyObject* PythonPCL::PyPolygonMesh_Reduce(PyPolygonMesh *self, PyObject * /*args
         paramsOpt.append(ito::ParamBase("type", ito::ParamBase::String, "obj"));
 
         ito::RetVal retval;
-        if (apiFilterCall)
+        if (apiFilterCall != nullptr)
             retval = apiFilterCall("savePolygonMesh", &paramsMand, &paramsOpt, &paramsOut);
         else
             retval = ito::RetVal(ito::retError, 0, QObject::tr("api function pointer not set").toLatin1().data());
@@ -4414,7 +4414,7 @@ PyObject* PythonPCL::PyPolygonMesh_SetState(PyPolygonMesh *self, PyObject *args)
         paramsOpt.append(ito::ParamBase("type", ito::ParamBase::String | ito::ParamBase::In, "obj"));
 
         ito::RetVal retval;
-        if (apiFilterCall)
+        if (apiFilterCall != nullptr)
             retval = apiFilterCall("loadPolygonMesh", &paramsMand, &paramsOpt, &paramsOut);
         else
             retval = ito::RetVal(ito::retError, 0, QObject::tr("api function pointer not set").toLatin1().data());

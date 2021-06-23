@@ -1010,13 +1010,13 @@ end:
     {
         switch(value->getType())
         {
-        case ito::ParamBase::DObjPtr & ito::paramTypeMask:
+        case ito::ParamBase::DObjPtr:
             filters = AIM->getFilterByInterface(ito::AddInAlgo::iWriteDataObject, suffix);
             break;
-        case ito::ParamBase::PointCloudPtr & ito::paramTypeMask:
+        case ito::ParamBase::PointCloudPtr:
             filters = AIM->getFilterByInterface(ito::AddInAlgo::iWritePointCloud, suffix);
             break;
-        case ito::ParamBase::PolygonMeshPtr & ito::paramTypeMask:
+        case ito::ParamBase::PolygonMeshPtr:
             filters = AIM->getFilterByInterface(ito::AddInAlgo::iWritePolygonMesh, suffix);
             break;
         default:

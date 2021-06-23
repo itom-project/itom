@@ -23,13 +23,32 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include "gtest/gtest.h"
 #include <iostream>
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
-
     ::testing::InitGoogleTest(&argc, argv); // Initializing the google test.
 
     RUN_ALL_TESTS(); // To start Test check
 
-    std::system("pause");
+    bool executedByGoogleTestAdapter = false;
+
+    for (int i = 0; i < argc; ++i)
+    {
+        const char* arg = argv[i];
+
+        if (strcmp(arg, "-googletestadapter") == 0)
+        {
+            executedByGoogleTestAdapter = true;
+            break;
+        }
+    }
+
+    if (!executedByGoogleTestAdapter)
+    {
+        // execute this only, if the unittest is directly executed.
+        // If it is executed by the VS Google Test Adapter extension,
+        // no keyboard interaction must be implemented.
+        std::system("pause");
+    }
+
     return 0;
 }

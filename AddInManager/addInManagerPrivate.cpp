@@ -106,7 +106,7 @@ void AddInManagerPrivate::incRefParamPlugins(ito::AddInBase *ai, QVector<ito::Pa
         {
             ito::ParamBase *param = &((*paramsMand)[n]);
                 
-            if (param->getType() == (ParamBase::HWRef & ito::paramTypeMask))
+            if (param->getType() == ParamBase::HWRef)
             {
                 hwRefPtr = param->getVal<void *>();
                 if (hwRefPtr)
@@ -133,7 +133,7 @@ void AddInManagerPrivate::incRefParamPlugins(ito::AddInBase *ai, QVector<ito::Pa
         for (int n = 0; n < paramsOpt->size(); n++)
         {
             ito::ParamBase *param = &((*paramsOpt)[n]);
-            if (param->getType() == (ParamBase::HWRef & ito::paramTypeMask))
+            if (param->getType() == ParamBase::HWRef)
             {
                 hwRefPtr = param->getVal<void *>();
                 if (hwRefPtr)
@@ -504,11 +504,11 @@ RetVal AddInManagerPrivate::loadAddIn(QString &filename)
         catch (std::logic_error &ex)
         {
             const char* what = ex.what();
-            retValue += ito::RetVal(ito::retError, 0, tr("Caught exception during loading of plugin: %1\nReason: %2").arg(filename).arg(what).toLatin1().data());
+            retValue += ito::RetVal(ito::retError, 0, tr("Caught an exception when loading the plugin '%1'\nReason: %2").arg(filename).arg(what).toLatin1().data());
         }
         catch (...)
         {
-            retValue += ito::RetVal(ito::retError, 0, tr("Caught exception during loading of plugin: %1").arg(filename).toLatin1().data());
+            retValue += ito::RetVal(ito::retError, 0, tr("Caught an exception when loading the plugin '%1'").arg(filename).toLatin1().data());
         }
     }
 
@@ -1305,7 +1305,7 @@ const ito::RetVal AddInManagerPrivate::loadParamVals(ito::AddInBase *plugin)
 
         QSharedPointer<ito::ParamBase> qsParam(new ito::ParamBase(param1));
 
-        //            if (!param1.isNumeric() &&  (param1.getType() != (ito::ParamBase::String & ito::paramTypeMask)) && (param1.getType() != (ito::ParamBase::String & ito::paramTypeMask)))
+        //            if (!param1.isNumeric() &&  (param1.getType() != (ito::ParamBase::String)) && (param1.getType() != (ito::ParamBase::String)))
         //            {
         //                ret += ito::RetVal(ito::retWarning, 0, "Paramtype not loadable yet");
         //                continue;

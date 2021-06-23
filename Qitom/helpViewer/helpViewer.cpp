@@ -70,6 +70,8 @@ HelpViewer::HelpViewer(QWidget *parent /*= NULL*/) :
 	m_pFindWord = new WidgetFindWord(this);
 	m_pFindWord->setVisible(false);
 	m_pFindWord->setFindBarEnabled(true, true);
+    m_pFindWord->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
+
 
 	connect(m_pView, SIGNAL(loadFinished(bool)), this, SLOT(loadFinished(bool)));
 	connect(m_pFindWord, SIGNAL(findNext(QString, bool, bool, bool, bool, bool, bool)), this, SLOT(findNextWord(QString, bool, bool, bool, bool, bool, bool)));

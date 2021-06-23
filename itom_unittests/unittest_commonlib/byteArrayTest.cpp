@@ -47,6 +47,16 @@ TEST(ByteArrayTest, CopyConstructor)
     delete ba3;
 }
 
+TEST(ByteArrayTest, RValues)
+{
+    ito::ByteArray ba;
+    ba = ito::ByteArray("yes");
+    EXPECT_STREQ(ba.data(), "yes");
+
+    ito::ByteArray ba2(ito::ByteArray("yes"));
+    EXPECT_STREQ(ba.data(), "yes");
+}
+
 TEST(ByteArrayTest, Assignment)
 {
     ito::ByteArray ba1("hello world");

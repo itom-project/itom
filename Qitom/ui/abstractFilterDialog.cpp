@@ -102,7 +102,7 @@ QTreeWidgetItem* AbstractFilterDialog::renderParam( const ito::ParamBase &p ) co
         }
         break;
 
-    case ito::ParamBase::CharArray & ito::paramTypeMask:
+    case ito::ParamBase::CharArray:
         {
             root->setData(0, Qt::DisplayRole, "Char-Array");
             l.clear();
@@ -112,7 +112,7 @@ QTreeWidgetItem* AbstractFilterDialog::renderParam( const ito::ParamBase &p ) co
         }
         break;
 
-    case ito::ParamBase::IntArray & ito::paramTypeMask:
+    case ito::ParamBase::IntArray:
         {
             root->setData(0, Qt::DisplayRole, "Int-Array");
             l.clear();
@@ -122,7 +122,7 @@ QTreeWidgetItem* AbstractFilterDialog::renderParam( const ito::ParamBase &p ) co
         }
         break;
 
-    case ito::ParamBase::DoubleArray & ito::paramTypeMask:
+    case ito::ParamBase::DoubleArray:
         {
             root->setData(0, Qt::DisplayRole, "Double-Array");
             l.clear();
@@ -132,7 +132,7 @@ QTreeWidgetItem* AbstractFilterDialog::renderParam( const ito::ParamBase &p ) co
         }
         break;
 
-    case ito::ParamBase::DObjPtr & ito::paramTypeMask:
+    case ito::ParamBase::DObjPtr:
         {
             
             static const char* types[] = { "Int8", "UInt8", "Int16", "UInt16", "Int32", "UInt32", "Float32", "Float64", "Complex64", "Complex128", "Rgba32" };
@@ -181,7 +181,7 @@ QTreeWidgetItem* AbstractFilterDialog::renderParam( const ito::ParamBase &p ) co
         break;
 
 
-    case ito::ParamBase::PointCloudPtr & ito::paramTypeMask:
+    case ito::ParamBase::PointCloudPtr:
         {
 #if ITOM_POINTCLOUDLIBRARY > 0
             ito::PCLPointCloud *pointCloud = (ito::PCLPointCloud*)(p.getVal<void*>());
@@ -197,7 +197,7 @@ QTreeWidgetItem* AbstractFilterDialog::renderParam( const ito::ParamBase &p ) co
         break;
 
 
-    case ito::ParamBase::PolygonMeshPtr & ito::paramTypeMask:
+    case ito::ParamBase::PolygonMeshPtr:
         {
             //ito::PCLPolygonMesh *polygonMesh = (ito::PCLPolygonMesh*)(p.getVal<void*>());
 #if ITOM_POINTCLOUDLIBRARY > 0

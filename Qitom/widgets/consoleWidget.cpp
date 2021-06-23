@@ -34,7 +34,7 @@
 #include <qsettings.h>
 #include <qfileinfo.h>
 #include <qregexp.h>
-#include <QClipboard>
+
 #include <qevent.h>
 #include <qdebug.h>
 #include <qtextboundaryfinder.h>
@@ -1752,26 +1752,7 @@ void ConsoleWidget::copy()
 {
     if (m_canCopy)
     {
-        CodeEditor::copy();
-
-        QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-        settings.beginGroup("CodeEditor");
-        bool formatCopyCode = settings.value("formatCopyCode", "false").toBool();
-        settings.endGroup();
-
-        if (formatCopyCode)
-        {
-            QClipboard *clipboard = QApplication::clipboard();
-
-            const QMimeData *mimeData = clipboard->mimeData();
-
-            if (mimeData && mimeData->hasText())
-            {
-                QString modifiedText = formatConsoleCodePart(mimeData->text());
-                clipboard->clear(); // mimeData is now invalid!
-                clipboard->setText(modifiedText);
-            }
-        }
+        AbstractCodeEditorWidget::copy();
     }
 }
 
@@ -1780,30 +1761,7 @@ void ConsoleWidget::paste()
 {
     moveCursorToValidRegion();
 
-    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-    settings.beginGroup("CodeEditor");
-    bool formatPasteCode = settings.value("formatPastCode", "false").toBool();
-    settings.endGroup();
-
-    QClipboard *clipboard = QApplication::clipboard();
-    QString clipboardSave = "";
-
-    if (formatPasteCode)
-    {
-        if (clipboard->mimeData()->hasText()) 
-        {
-            clipboardSave = clipboard->text();
-            int lineCount;
-            clipboard->setText(formatPythonCodePart(clipboard->text(), lineCount));
-        }
-    }
-
-    CodeEditor::paste();
-
-    if (clipboardSave != "")
-    {
-        clipboard->setText(clipboardSave);
-    }
+    AbstractCodeEditorWidget::paste();
 }
 
 //-------------------------------------------------------------------------------------
@@ -1811,7 +1769,7 @@ void ConsoleWidget::cut()
 {
     if (m_canCut)
     {
-        CodeEditor::cut();
+        AbstractCodeEditorWidget::cut();
     }
 }
 
@@ -1851,7 +1809,7 @@ void ConsoleWidget::pythonRunSelection(QString selectionText)
     if (selectionText.length() > 0)
     {
         int lineCount = 0;
-        selectionText = formatPythonCodePart(selectionText, lineCount);
+        selectionText = formatCodeBeforeInsertion(selectionText, lineCount, true, "");
 
         if (selectionText.endsWith("\n"))
         {
@@ -1952,6 +1910,17 @@ void ConsoleWidget::autoLineDelete()
 void ConsoleWidget::toggleAutoWheel(bool enable)
 {
     m_autoWheel = enable;
+}
+
+//-------------------------------------------------------------------------------------
+int ConsoleWidget::startLineOffset(int lineIdx) const
+{
+    if (lineIdx == m_startLineBeginCmd)
+    {
+        return 2;
+    }
+
+    return 0;
 }
 
 

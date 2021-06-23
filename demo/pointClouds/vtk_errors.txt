@@ -1,0 +1,4 @@
+Generic Warning: In d:\itom_all-in-one_development\itom_all-in-one_development\itom_all-in-one_development\vtk8.1.1\source\rendering\core\vtkmapper.cxx, line 186
+vtkMapper::ImmediateModeRenderingOff was deprecated for VTK 8.1 and will be removed in a future version.
+
+

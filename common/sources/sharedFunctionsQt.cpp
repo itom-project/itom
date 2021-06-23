@@ -548,18 +548,18 @@ namespace ito
                         {
                             switch (it.value().getType())
                             {
-                                case ParamBase::CharArray & paramTypeMask:
-                                case ParamBase::IntArray & paramTypeMask:
-                                case ParamBase::DoubleArray & paramTypeMask:
+                                case ParamBase::CharArray :
+                                case ParamBase::IntArray :
+                                case ParamBase::DoubleArray :
                                 {
                                     QByteArray cval;
 
-                                    if (it->getType() ==  (ParamBase::CharArray & paramTypeMask))
+                                    if (it->getType() ==  (ParamBase::CharArray))
                                     {
                                         instParam.setAttribute("ptrtype", "uint8");
                                         cval = QByteArray((char*) it->getVal<char*>(), it->getLen() * sizeof(char));
                                     }
-                                    else if (it->getType() ==  (ParamBase::IntArray & paramTypeMask))
+                                    else if (it->getType() ==  (ParamBase::IntArray))
                                     {
                                         instParam.setAttribute("ptrtype", "int32");
                                         cval = QByteArray((char*) it->getVal<int*>(), it->getLen() * sizeof(int));
@@ -567,7 +567,7 @@ namespace ito
                                     //instParam.setAttribute("ptrlength", 5);
                                     //QByteArray cval((char*) &testvar, 5 * 4);
                                     }
-                                    else if (it->getType() ==  (ParamBase::DoubleArray & paramTypeMask))
+                                    else if (it->getType() ==  (ParamBase::DoubleArray))
                                     {
                                         instParam.setAttribute("ptrtype", "float64");
                                         cval = QByteArray((char*) it->getVal<double*>(), it->getLen() * sizeof(double));
@@ -586,7 +586,7 @@ namespace ito
                                 }
                                 break;
 
-                                case ParamBase::String & paramTypeMask:
+                                case ParamBase::String :
                                 {
                                     instParam.setAttribute("type", "string");
                                     instParam.removeAttribute("ptrtype");
@@ -638,25 +638,25 @@ namespace ito
                         {
                             switch (it.value().getType())
                             {
-                                case ParamBase::CharArray & paramTypeMask:
-                                case ParamBase::IntArray & paramTypeMask:
-                                case ParamBase::DoubleArray & paramTypeMask:
+                                case ParamBase::CharArray :
+                                case ParamBase::IntArray :
+                                case ParamBase::DoubleArray :
                                 {
                                     QByteArray cval;
 
-                                    if (it->getType() ==  (ParamBase::CharArray & paramTypeMask))
+                                    if (it->getType() ==  (ParamBase::CharArray))
                                     {
                                         newParam.setAttribute("ptrtype", "uint8");
                                         cval = QByteArray((char*) it->getVal<char*>(), it->getLen() * sizeof(char));
                                     }
-                                    else if (it->getType() ==  (ParamBase::IntArray & paramTypeMask))
+                                    else if (it->getType() ==  (ParamBase::IntArray))
                                     {
                                         newParam.setAttribute("ptrtype", "int32");
                                         cval = QByteArray((char*) it->getVal<int*>(), it->getLen() * sizeof(int));
                                     //int testvar[5] = {55, 22, 1024, -10, 13};
                                     //cval = QByteArray((char*) &testvar, 5 * 4);
                                     }
-                                    else if (it->getType() ==  (ParamBase::DoubleArray & paramTypeMask))
+                                    else if (it->getType() ==  (ParamBase::DoubleArray))
                                     {
                                         newParam.setAttribute("ptrtype", "float64");
                                         cval = QByteArray((char*) it->getVal<double*>(), it->getLen() * sizeof(double));
@@ -679,7 +679,7 @@ namespace ito
                                 }
                                 break;
 
-                                case ParamBase::String & paramTypeMask:
+                                case ParamBase::String :
                                     newParam.setAttribute("type", "string");
                                     char * tbuf = it.value().getVal<char*>(); //borrowed reference
                                     QByteArray cval(tbuf);
@@ -832,10 +832,10 @@ namespace ito
                 {
                     switch(paramTemp.getType())
                     {
-                        case ParamBase::CharArray & paramTypeMask:
-                        case ParamBase::IntArray & paramTypeMask:
-                        case ParamBase::DoubleArray & paramTypeMask:
-                        case ParamBase::String & paramTypeMask:
+                        case ParamBase::CharArray :
+                        case ParamBase::IntArray :
+                        case ParamBase::DoubleArray :
+                        case ParamBase::String :
                             ret += paramIt.value().copyValueFrom(&paramTemp);
                             //paramIt.value().setVal<char *>(paramTemp.getVal<char *>());  // WARNING: param.getVal<char*>() has to be deleted via free!
                         break;

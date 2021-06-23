@@ -47,7 +47,9 @@ set(unittest_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/byteArrayTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/retValTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/paramTest.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/paramMetaTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/colorTest.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/numericTest.cpp
 )
 
 cxx_executable(${target_name} ${CMAKE_CURRENT_SOURCE_DIR} gtest ${unittest_SOURCES} ${unittest_HEADERS})
