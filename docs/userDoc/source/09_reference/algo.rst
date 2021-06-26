@@ -1,5 +1,7 @@
 .. include:: ../include/global.inc
 
+.. _algoAndWidgets:
+
 Algorithms and Widgets
 *********************************
 

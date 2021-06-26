@@ -4830,7 +4830,11 @@ filter and / or interrupting the execution. If such an observer is given, you ha
 pass it as keyword-based argument ``_observer``!. \n\
 \n\
 During the execution of the filter, the python GIL (general interpreter lock) is \n\
-released (e.g. for further asynchronous processes. \n\
+released (e.g. for further asynchronous processes). \n\
+\n\
+Instead of this generic function to call any itom algorithm from an algorithm plugin, \n\
+these algorithms are also available via the direct algorithm wrapper methods in the \n\
+submodule ``itom.algorithms`` (see :ref:`algoAndWidgets`). \n\
 \n\
 Parameters \n\
 ----------- \n\
