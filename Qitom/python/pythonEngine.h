@@ -136,7 +136,15 @@ public:
     inline PyObject *getGlobalDictionary()  const { return m_pGlobalDictionary;  }  /*!< returns reference to main dictionary (main workspace) */
     inline bool pySyntaxCheckAvailable() const { return (m_pyModCodeChecker != NULL); }
     bool tryToLoadJediIfNotYetDone(); //returns true, if Jedi is already loaded or could be loaded; else false
-    QList<int> parseAndSplitCommandInMainComponents(const char *str, QByteArray &encoding) const; //can be directly called from different thread
+
+    //!< parses a (multiline) python string and returns the line numbers of the start of every major block.
+    /* From Python 3.7 on, the AST is parsed to check for the major blocks. Then the encoding is always empty.
+    Before, PyParser_SimpleParseString is used with the old Python compiler and an optional encoidng can be detected.
+
+    This methods acquires the GIL, therefore it must directly called from a non-python thread.
+    */
+    QList<int> parseAndSplitCommandInMainComponents(const QString &str, QByteArray &encoding) const;
+
     QString getPythonExecutable() const { return m_pythonExecutable; }
     Qt::HANDLE getPythonThreadId() const { return m_pythonThreadId; }
 

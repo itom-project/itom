@@ -951,7 +951,7 @@ shape \n\
         else
         {
             Py_XDECREF(arr);
-            PyErr_SetString(PyExc_RuntimeError, "points: 2xM float64 array like object with polygon data required.");
+            PyErr_SetString(PyExc_RuntimeError, "points: 3xM float64 array like object with polygon data required.");
             return NULL;
         }
     }

@@ -28,6 +28,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 import jedi
 import sys
 import itomStubsGen
+import itomAlgorithmsStubsGen
 import warnings
 from contextlib import contextmanager
 
@@ -57,6 +58,7 @@ ICON_KEYWORD = ("quickopen", ":/classNavigator/icons/var.png")
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     itomStubsGen.parse_stubs()
+    itomAlgorithmsStubsGen.parse_stubs()
 
 
 @contextmanager
