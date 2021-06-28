@@ -20,7 +20,7 @@
    along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#include "DataObjectMetaWidget.h"
+#include "dataObjectMetaWidget.h"
 #include <qspinbox.h>
 #include <complex>
 
