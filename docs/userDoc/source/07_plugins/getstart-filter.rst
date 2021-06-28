@@ -125,6 +125,10 @@ Always pass this parameter with its name (see also the example **demo/algoCancel
 .. note::
     
     Most filters require some sort of destination dataObject. Make sure to provide suitable dimensions and datatype.
+    
+.. note:: 
+
+    See also in the demo file **demoGaussianSpotCentroidDetection.py**.
 
 Usage of widgets
 =======================
