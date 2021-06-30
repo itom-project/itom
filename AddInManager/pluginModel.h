@@ -20,8 +20,7 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef PLUGINMODEL_H
-#define PLUGINMODEL_H
+#pragma once
 
 #if !defined(Q_MOC_RUN) || defined(ADDINMGR_DLL) //only moc this file in itomCommonQtLib but not in other libraries or executables linking against this itomCommonQtLib
 
@@ -143,4 +142,4 @@ namespace ito
 
 #endif // #if !defined(Q_MOC_RUN) || defined(ADDINMGR_DLL) 
 
-#endif
+
