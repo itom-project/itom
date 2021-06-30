@@ -581,15 +581,6 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap
                 PyModule_AddObject(itomModule, "actuator", (PyObject *)&PythonPlugins::PyActuatorPluginType);
             }
 
-// pending for deletion, so for how long already!?
-/*
-            if (PyType_Ready(&PythonPlugins::PyActuatorAxisType) >= 0)
-            {
-                Py_INCREF(&PythonPlugins::PyActuatorAxisType);
-                PyModule_AddObject(itomModule, "axis", (PyObject *)&PythonPlugins::PyActuatorAxisType);
-            }
-*/
-
             if (PyType_Ready(&PythonPlugins::PyDataIOPluginType) >= 0)
             {
                 Py_INCREF(&PythonPlugins::PyDataIOPluginType);
@@ -1346,14 +1337,69 @@ ito::RetVal PythonEngine::stringEncodingChanged()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-QList<int> PythonEngine::parseAndSplitCommandInMainComponents(const char *str, QByteArray &encoding) const
+QList<int> PythonEngine::parseAndSplitCommandInMainComponents(const QString &str, QByteArray &encoding) const
 {
     PyGILState_STATE gstate = PyGILState_Ensure();
 
-    //see http://docs.python.org/devguide/compiler.html
-    _node *n = PyParser_SimpleParseString(str, Py_file_input); //todo: deprecated since Python 3.9
+    QByteArray strUtf8 = str.toUtf8();
+    QList<int> ret;
+
+#if (PY_VERSION_HEX >= 0x03070000)
+    encoding = QByteArray(); //no encoding can be detected with Py_CompileStringFlags
+
+    PyCompilerFlags flags;
+
+    // ignore cookie should interpret the input str as utf8 always
+    // (at least, this is what could be seen from the cpython source code).
+    flags.cf_flags = PyCF_ONLY_AST | PyCF_IGNORE_COOKIE; 
+
+    PyObject* ast = Py_CompileStringFlags(strUtf8.constData(), "", Py_file_input, &flags); // new ref
+
+    if (!ast)
+    {
+        // fallback: try the local8bit representation
+        strUtf8 = str.toLocal8Bit();
+        ast = Py_CompileStringFlags(strUtf8.constData(), "", Py_file_input, &flags); // new ref
+    }
+
+    if (ast)
+    {
+        PyObject* ast_body = PyObject_GetAttrString(ast, "body"); //new ref
+
+        if (ast_body && PyList_Check(ast_body))
+        {
+            int length = PyList_GET_SIZE(ast_body);
+            PyObject *item;
+            PyObject *lineno;
+
+            for (int i = 0; i < length; ++i)
+            {
+                item = PyList_GET_ITEM(ast_body, i); //borrowed
+                lineno = PyObject_GetAttrString(item, "lineno"); //new ref
+
+                if (lineno && PyLong_Check(lineno))
+                {
+                    ret.append(PyLong_AsLong(lineno));
+                }
+
+                Py_XDECREF(lineno);
+            }
+        }
+
+        Py_XDECREF(ast_body);
+        Py_DECREF(ast);
+    }
+
+    PyGILState_Release(gstate);
+    return ret;
+
+#else
+    // see http://docs.python.org/devguide/compiler.html
+    // deprecated since Python 3.9, use Py_CompileString instead
+    _node *n = PyParser_SimpleParseString(strUtf8.constData(), Py_file_input);
     _node *n2 = n;
-    if (n == NULL)
+
+    if (n == nullptr)
     {
         PyGILState_Release(gstate);
         //here: error indicator is set.
@@ -1370,23 +1416,23 @@ QList<int> PythonEngine::parseAndSplitCommandInMainComponents(const char *str, Q
         encoding = QByteArray();
     }
 
-    QList<int> ret;
     _node *temp;
+
     for (int i = 0 ; i < NCH(n2) ; i++)
     {
         temp = CHILD(n2,i);
+
         if (TYPE(temp) != 4 && TYPE(temp) != 0) //include of graminit.h leads to error if included in header-file, type 0 and 4 seems to be empty line and end of file or something else
         {
             ret.append(temp->n_lineno);
         }
- 
     }
     
     PyNode_Free(n);
-    
     PyGILState_Release(gstate);
 
     return ret;
+#endif
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

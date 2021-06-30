@@ -20,8 +20,8 @@ the method to create and return / open an user interface are called **widgets**.
 Obtaining help for filters and widgets
 ==========================================
 
-A list of **filters** and **widgets**, that are contained in one algorithm plugin, can be seen in the 
-:ref:`plugin toolbox <gui-plugins>`. Additional information about each filter and widget is gained by selecting 
+A list of **filters /algorithms** and **widgets**, that are contained in one algorithm plugin, can be seen in the 
+:ref:`plugin toolbox <gui-plugins>`. Additional information about each filter / algorithm and widget is gained by selecting 
 **Info...** from the context menu of each specific entry in the plugin toolbox or directly by opening the help viewer
 of |itom| (menu **Help** >> **Plugin Help Viewer**).
 
@@ -84,6 +84,9 @@ Usage of filters
 =======================
 
 Once you know the name of the filter you want to use, you can call it by use of the :py:meth:`itom.filter` command.
+From **itom 5.0** on, filters or algorithms can also be called like any other method: Every filter is added at runtime
+to the submodule ``algorithms`` or :py:mod:`itom`. This allow itom to show auto completion and calltips for
+every specific algorithm. This alternative (and recommended) approach is also shown in the code snippets below.
 
 If you want to call a default filter without cancellation or progress information features, pass the name of the
 filter as first argument (string), followed by the mandatory and optional parameters of the filter itself.
@@ -92,7 +95,11 @@ All arguments can be passed as positional arguments and / or keyword arguments.
 .. code-block:: python
     :linenos:
     
-    filter("filtername", *args, **kwds) #mandatory parameters must be given, optional can be given
+    import itom
+    itom.filter("filtername", *args, **kwds) # mandatory parameters must be given, optional can be given
+    
+    # alternative:
+    itom.algorithms.filtername(*args, **kwds)
 
 If the called filter has optional features, like the cancellation or progress information, an optional instance
 of the class :py:class:`itom.progressObserver` can additionally be passed as keyword-based argument **_observer**.
@@ -101,18 +108,27 @@ Always pass this parameter with its name (see also the example **demo/algoCancel
 .. code-block:: python
     :linenos:
     
-    #create an observer, that updates a progressBar (name: myProgressBar)
-    #to the current progress value of the called filter.
+    import itom
+    
+    # create an observer, that updates a progressBar (name: myProgressBar)
+    # to the current progress value of the called filter.
     observer = itom.pythonObserver(progressBar = myProgressBarHandle)
     
-    #connect the clicked() signal of a button (name: btn) to the cancellation feature of the observer
+    # connect the clicked() signal of a button (name: btn) to the cancellation feature of the observer
     btn.invokeProgressObserverCancellation("clicked()", observer)
     
-    filter("filtername", *args, **kwds, _observer = observer)
+    itom.filter("filtername", *args, **kwds, _observer = observer)
+    
+    # or alternatively:
+    itom.algorithms.filtername(*args, **kwds, _observer = observer)
 
 .. note::
     
     Most filters require some sort of destination dataObject. Make sure to provide suitable dimensions and datatype.
+    
+.. note:: 
+
+    See also in the demo file **demoGaussianSpotCentroidDetection.py**.
 
 Usage of widgets
 =======================

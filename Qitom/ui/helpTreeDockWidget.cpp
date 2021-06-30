@@ -2,6 +2,7 @@
 
 #include "../../AddInManager/addInManager.h"
 #include <AppManagement.h>
+#include <qcollator.h>
 #include <qdesktopservices.h>
 #include <qdiriterator.h>
 #include <qfile.h>
@@ -12,58 +13,54 @@
 #include <qsortfilterproxymodel.h>
 #include <qstandarditemmodel.h>
 #include <qstringlistmodel.h>
-#include <qcollator.h>
 
 #include <QtConcurrent/qtconcurrentrun.h>
 
+#include <QThread>
+#include <common/addInInterface.h>
+#include <qclipboard.h>
+#include <qsettings.h>
 #include <qtextdocument.h>
 #include <qtextstream.h>
-#include <QThread>
 #include <qtimer.h>
 #include <qtreeview.h>
 #include <stdio.h>
-#include <qclipboard.h>
-#include <qsettings.h>
-#include <common/addInInterface.h>
 
-#include "../widgets/helpDockWidget.h"
-#include "../models/leafFilterProxyModel.h"
 #include "../AppManagement.h"
+#include "../models/leafFilterProxyModel.h"
+#include "../widgets/helpDockWidget.h"
 
-namespace ito
-{
+namespace ito {
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // Constructor
-HelpTreeDockWidget::HelpTreeDockWidget(QWidget *parent, ito::AbstractDockWidget *dock, Qt::WindowFlags flags)
-    : QWidget(parent, flags),
-    m_historyIndex(-1),
-    m_pMainModel(NULL),
-    m_pParent(dock),
-    m_internalCall(false),
-    m_doingExpandAll(false),
-    m_state(stateIdle),
-    m_backgroundColorHeading("#efefef"),
-    m_textColorHeading("#0c3762"),
-    m_linkColor("#dc3c01"),
-    m_backgroundParamName("#dcb8aa"),
-    m_textColorSection("#dc3c01"),
-    m_backgroundColorSection("#eeeeee")
+HelpTreeDockWidget::HelpTreeDockWidget(
+    QWidget* parent, ito::AbstractDockWidget* dock, Qt::WindowFlags flags) :
+    QWidget(parent, flags),
+    m_historyIndex(-1), m_pMainModel(NULL), m_pParent(dock), m_internalCall(false),
+    m_doingExpandAll(false), m_state(stateIdle), m_backgroundColorHeading("#efefef"),
+    m_textColorHeading("#0c3762"), m_linkColor("#dc3c01"), m_backgroundParamName("#dcb8aa"),
+    m_textColorSection("#dc3c01"), m_backgroundColorSection("#eeeeee")
 {
     ui.setupUi(this);
 
-    connect(AppManagement::getMainApplication(), SIGNAL(propertiesChanged()), this, SLOT(propertiesChanged()));
+    connect(
+        AppManagement::getMainApplication(),
+        SIGNAL(propertiesChanged()),
+        this,
+        SLOT(propertiesChanged()));
 
     // Initialize Variables
     m_treeVisible = false;
 
-    connect(&m_loaderWatcher, SIGNAL(resultReadyAt(int)), this, SLOT(loadHelpResourcesFinished(int)));
+    connect(
+        &m_loaderWatcher, SIGNAL(resultReadyAt(int)), this, SLOT(loadHelpResourcesFinished(int)));
 
     m_pMainFilterModel = new LeafFilterProxyModel(this);
     m_pMainModel = new QStandardItemModel(this);
     m_pMainFilterModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
 
-    //Install Eventfilter
+    // Install Eventfilter
     ui.treeView->installEventFilter(this);
     ui.helpTreeContent->installEventFilter(this);
 
@@ -78,11 +75,22 @@ HelpTreeDockWidget::HelpTreeDockWidget(QWidget *parent, ito::AbstractDockWidget 
 
     QStringList iconAliasesName;
     QList<int> iconAliasesNumb;
-    iconAliasesName << "class" << "const" << "routine" << "module" << "package" << "unknown" << "link_unknown" << "link_class" << "link_const" << "link_module" << "link_package" << "link_routine";
-    iconAliasesNumb << 04      << 06      << 05        << 03       << 02        << 00        << 11             << 14           << 16           << 13            << 12             << 15;
+    iconAliasesName << "class"
+                    << "const"
+                    << "routine"
+                    << "module"
+                    << "package"
+                    << "unknown"
+                    << "link_unknown"
+                    << "link_class"
+                    << "link_const"
+                    << "link_module"
+                    << "link_package"
+                    << "link_routine";
+    iconAliasesNumb << 04 << 06 << 05 << 03 << 02 << 00 << 11 << 14 << 16 << 13 << 12 << 15;
     int i = 0;
 
-    foreach (const QString &icon, iconAliasesName)
+    foreach (const QString& icon, iconAliasesName)
     {
         m_iconGallery[iconAliasesNumb[i]] = QIcon(":/helpTreeDockWidget/" + icon);
         i++;
@@ -100,7 +108,7 @@ HelpTreeDockWidget::HelpTreeDockWidget(QWidget *parent, ito::AbstractDockWidget 
 
     restoreSettings();
 
-    //reloadHelpResources();
+    // reloadHelpResources();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -112,208 +120,229 @@ HelpTreeDockWidget::~HelpTreeDockWidget()
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Get The Filters and put them into a node of the Tree
-/*! 
+/*!
 
     \param fOrW
     \param model
     \param iconGallery
 */
-void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* model, const QMap<int,QIcon> *iconGallery)
+void HelpTreeDockWidget::createFilterWidgetNode(
+    int fOrW, QStandardItemModel* model, const QMap<int, QIcon>* iconGallery)
 {
     // Map der Plugin-Namen und Zeiger auf das Node des Plugins
-    QMap <QString, QStandardItem*> plugins;
+    QMap<QString, QStandardItem*> plugins;
 
     // AddInManager einbinden
-    ito::AddInManager *aim = static_cast<ito::AddInManager*>(AppManagement::getAddInManager());
+    ito::AddInManager* aim = static_cast<ito::AddInManager*>(AppManagement::getAddInManager());
 
-    QStandardItem *mainNode = new QStandardItem();
+    QStandardItem* mainNode = new QStandardItem();
     mainNode->setEditable(false);
-	QString mainNodeText = "";
+    QString mainNodeText = "";
 
-    switch(fOrW)
+    switch (fOrW)
     {
-    case 1: //Filter
+    case 1: // Filter
+    {
+        // build Main Node
+        mainNodeText = tr("Algorithms");
+        mainNode->setText(mainNodeText);
+        mainNode->setData(typeCategory, roleType);
+        mainNode->setData(mainNodeText, rolePath);
+        mainNode->setIcon(iconGallery->value(iconPluginAlgo));
+        if (aim)
         {
-            // build Main Node
-            mainNodeText = tr("Algorithms");
-            mainNode->setText(mainNodeText);
-            mainNode->setData(typeCategory, roleType);
-            mainNode->setData(mainNodeText, rolePath);
-            mainNode->setIcon(iconGallery->value(iconPluginAlgo));
-            if (aim)
+            const QHash<QString, ito::AddInAlgo::FilterDef*>* filterHashTable =
+                aim->getFilterList();
+            QHash<QString, ito::AddInAlgo::FilterDef*>::const_iterator i =
+                filterHashTable->constBegin();
+            while (i != filterHashTable->constEnd())
             {
-                const QHash <QString, ito::AddInAlgo::FilterDef *> *filterHashTable = aim->getFilterList();
-                QHash<QString, ito::AddInAlgo::FilterDef *>::const_iterator i = filterHashTable->constBegin();
-                while (i != filterHashTable->constEnd())
-                {
-                    if (!plugins.contains(i.value()->m_pBasePlugin->objectName()))
-                    { // Plugin existiert noch nicht, erst das Plugin-Node erstellen um dann das Filter-Node anzuhaengen
-                        QStandardItem *plugin = new QStandardItem(i.value()->m_pBasePlugin->objectName());
-                        plugin->setEditable(false);
-                        plugin->setData(typeFPlugin, roleType);
-                        plugin->setData(mainNodeText + "." + plugin->text(), rolePath);
-                        plugin->setIcon(iconGallery->value(iconPluginAlgo));
-                        plugin->setToolTip(i.value()->m_pBasePlugin->getFilename() + "; v" + QString::number(i.value()->m_pBasePlugin->getVersion()));
-                        plugins.insert(i.value()->m_pBasePlugin->objectName(), plugin);
-                        mainNode->appendRow(plugin);
-                    }
-                    // Filter-Node anhaengen
-                    QStandardItem *filter = new QStandardItem(i.value()->m_name);
-                    filter->setEditable(false);
-                    filter->setData(typeFilter, roleType);
-                    filter->setData(mainNodeText + "." + i.value()->m_pBasePlugin->objectName() + "." + filter->text(), rolePath);
-                    filter->setIcon(iconGallery->value(iconPluginFilter));
-                    filter->setToolTip(i.value()->m_pBasePlugin->getAuthor());
-                    QStandardItem *test = plugins[i.value()->m_pBasePlugin->objectName()];
-                    test->appendRow(filter);
-                    ++i;
+                if (!plugins.contains(i.value()->m_pBasePlugin->objectName()))
+                { // Plugin existiert noch nicht, erst das Plugin-Node erstellen um dann das
+                  // Filter-Node anzuhaengen
+                    QStandardItem* plugin =
+                        new QStandardItem(i.value()->m_pBasePlugin->objectName());
+                    plugin->setEditable(false);
+                    plugin->setData(typeFPlugin, roleType);
+                    plugin->setData(mainNodeText + "." + plugin->text(), rolePath);
+                    plugin->setIcon(iconGallery->value(iconPluginAlgo));
+                    plugin->setToolTip(
+                        i.value()->m_pBasePlugin->getFilename() + "; v" +
+                        QString::number(i.value()->m_pBasePlugin->getVersion()));
+                    plugins.insert(i.value()->m_pBasePlugin->objectName(), plugin);
+                    mainNode->appendRow(plugin);
                 }
+                // Filter-Node anhaengen
+                QStandardItem* filter = new QStandardItem(i.value()->m_name);
+                filter->setEditable(false);
+                filter->setData(typeFilter, roleType);
+                filter->setData(
+                    mainNodeText + "." + i.value()->m_pBasePlugin->objectName() + "." +
+                        filter->text(),
+                    rolePath);
+                filter->setIcon(iconGallery->value(iconPluginFilter));
+                filter->setToolTip(i.value()->m_pBasePlugin->getAuthor());
+                QStandardItem* test = plugins[i.value()->m_pBasePlugin->objectName()];
+                test->appendRow(filter);
+                ++i;
             }
-            break;
         }
-    case 2: //Widgets
+        break;
+    }
+    case 2: // Widgets
+    {
+        // Main Node zusammenbauen
+        mainNodeText = tr("Widgets");
+        mainNode->setText(mainNodeText);
+        mainNode->setData(typeCategory, roleType);
+        mainNode->setData(mainNodeText, rolePath);
+        mainNode->setIcon(iconGallery->value(iconWidget));
+        if (aim)
         {
-            // Main Node zusammenbauen
-            mainNodeText = tr("Widgets");
-            mainNode->setText(mainNodeText);
-            mainNode->setData(typeCategory, roleType);
-			mainNode->setData(mainNodeText, rolePath);
-            mainNode->setIcon(iconGallery->value(iconWidget));
-            if (aim)
+            const QHash<QString, ito::AddInAlgo::AlgoWidgetDef*>* widgetHashTable =
+                aim->getAlgoWidgetList();
+            QHash<QString, ito::AddInAlgo::AlgoWidgetDef*>::const_iterator i =
+                widgetHashTable->constBegin();
+            while (i != widgetHashTable->constEnd())
             {
-                const QHash <QString, ito::AddInAlgo::AlgoWidgetDef *> *widgetHashTable = aim->getAlgoWidgetList();
-                QHash<QString, ito::AddInAlgo::AlgoWidgetDef *>::const_iterator i = widgetHashTable->constBegin();
-                while (i != widgetHashTable->constEnd())
-                {
-                    if (!plugins.contains(i.value()->m_pBasePlugin->objectName()))
-                    { // Plugin existiert noch nicht, erst das Plugin-Node erstellen um dann das Filter-Node anzuhaengen
-                        QStandardItem *plugin = new QStandardItem(i.value()->m_pBasePlugin->objectName());
-                        plugin->setEditable(false);
-                        plugin->setData(typeWPlugin, roleType);
-                        plugin->setData(mainNodeText + "." + plugin->text(), rolePath);
-                        plugin->setIcon(iconGallery->value(iconPluginAlgo));
-                        plugin->setToolTip(i.value()->m_pBasePlugin->getFilename() + "; v" + QString::number(i.value()->m_pBasePlugin->getVersion()));
-                        plugins.insert(i.value()->m_pBasePlugin->objectName(), plugin);
-                        mainNode->appendRow(plugin);
-                    }
-                    // Filter-Node anhaengen
-                    QStandardItem *filter = new QStandardItem(i.value()->m_name);
-                    filter->setEditable(false);
-                    filter->setData(typeWidget, roleType);
-                    filter->setData(mainNodeText + "." + i.value()->m_pBasePlugin->objectName() + "." + filter->text(), rolePath);
-                    filter->setIcon(iconGallery->value(iconWidget));
-                    filter->setToolTip(i.value()->m_pBasePlugin->getAuthor());
-                    QStandardItem *test = plugins[i.value()->m_pBasePlugin->objectName()];
-                    test->appendRow(filter);
-                    ++i;
+                if (!plugins.contains(i.value()->m_pBasePlugin->objectName()))
+                { // Plugin existiert noch nicht, erst das Plugin-Node erstellen um dann das
+                  // Filter-Node anzuhaengen
+                    QStandardItem* plugin =
+                        new QStandardItem(i.value()->m_pBasePlugin->objectName());
+                    plugin->setEditable(false);
+                    plugin->setData(typeWPlugin, roleType);
+                    plugin->setData(mainNodeText + "." + plugin->text(), rolePath);
+                    plugin->setIcon(iconGallery->value(iconPluginAlgo));
+                    plugin->setToolTip(
+                        i.value()->m_pBasePlugin->getFilename() + "; v" +
+                        QString::number(i.value()->m_pBasePlugin->getVersion()));
+                    plugins.insert(i.value()->m_pBasePlugin->objectName(), plugin);
+                    mainNode->appendRow(plugin);
                 }
+                // Filter-Node anhaengen
+                QStandardItem* filter = new QStandardItem(i.value()->m_name);
+                filter->setEditable(false);
+                filter->setData(typeWidget, roleType);
+                filter->setData(
+                    mainNodeText + "." + i.value()->m_pBasePlugin->objectName() + "." +
+                        filter->text(),
+                    rolePath);
+                filter->setIcon(iconGallery->value(iconWidget));
+                filter->setToolTip(i.value()->m_pBasePlugin->getAuthor());
+                QStandardItem* test = plugins[i.value()->m_pBasePlugin->objectName()];
+                test->appendRow(filter);
+                ++i;
             }
-            break;
         }
-    case 3: //DataIO
+        break;
+    }
+    case 3: // DataIO
+    {
+        // Main Node zusammenbauen
+        mainNodeText = tr("DataIO");
+        mainNode->setText(mainNodeText);
+        mainNode->setData(typeCategory, roleType);
+        mainNode->setData(mainNodeText, rolePath);
+        mainNode->setIcon(iconGallery->value(iconPluginDataIO));
+
+        // Subcategory Node "Grabber"
+        QStandardItem* pluginGrabber = new QStandardItem(tr("Grabber"));
+        pluginGrabber->setEditable(false);
+        pluginGrabber->setData(typeCategory, roleType);
+        pluginGrabber->setData(mainNodeText + "." + tr("Grabber"), rolePath);
+        pluginGrabber->setIcon(iconGallery->value(iconPluginGrabber));
+
+        // Subcategory Node "ADDA"
+        QStandardItem* pluginAdda = new QStandardItem(tr("ADDA"));
+        pluginAdda->setEditable(false);
+        pluginAdda->setData(typeCategory, roleType);
+        pluginAdda->setData(mainNodeText + "." + tr("ADDA"), rolePath);
+        pluginAdda->setIcon(iconGallery->value(iconPluginAdda));
+
+        // Subcategory Node "Raw IO"
+        QStandardItem* pluginRawIO = new QStandardItem(tr("Raw IO"));
+        pluginRawIO->setEditable(false);
+        pluginRawIO->setData(typeCategory, roleType);
+        pluginRawIO->setData(mainNodeText + "." + tr("Raw IO"), rolePath);
+        pluginRawIO->setIcon(iconGallery->value(iconPluginRawIO));
+
+        if (aim)
         {
-            // Main Node zusammenbauen
-            mainNodeText = tr("DataIO");
-            mainNode->setText(mainNodeText);
-            mainNode->setData(typeCategory, roleType);
-			mainNode->setData(mainNodeText, rolePath);
-            mainNode->setIcon(iconGallery->value(iconPluginDataIO));
-
-            // Subcategory Node "Grabber"
-            QStandardItem *pluginGrabber = new QStandardItem(tr("Grabber"));
-            pluginGrabber->setEditable(false);
-            pluginGrabber->setData(typeCategory, roleType);
-            pluginGrabber->setData(mainNodeText + "." + tr("Grabber"), rolePath);
-            pluginGrabber->setIcon(iconGallery->value(iconPluginGrabber));
-            
-            // Subcategory Node "ADDA"
-            QStandardItem *pluginAdda = new QStandardItem(tr("ADDA"));
-            pluginAdda->setEditable(false);
-            pluginAdda->setData(typeCategory, roleType);
-            pluginAdda->setData(mainNodeText + "." + tr("ADDA"), rolePath);
-            pluginAdda->setIcon(iconGallery->value(iconPluginAdda));
-            
-            // Subcategory Node "Raw IO"
-            QStandardItem *pluginRawIO = new QStandardItem(tr("Raw IO"));
-            pluginRawIO->setEditable(false);
-            pluginRawIO->setData(typeCategory, roleType);
-            pluginRawIO->setData(mainNodeText + "." + tr("Raw IO"), rolePath);
-            pluginRawIO->setIcon(iconGallery->value(iconPluginRawIO));
-
-            if (aim)
+            const QList<QObject*>* dataIOList = aim->getDataIOList();
+            for (int i = 0; i < dataIOList->length(); i++)
             {
-                const QList<QObject*> *dataIOList = aim->getDataIOList();
-                for(int i = 0; i < dataIOList->length(); i++)
+                QObject* obj = dataIOList->at(i);
+                const ito::AddInInterfaceBase* aib = qobject_cast<ito::AddInInterfaceBase*>(obj);
+                if (aib != NULL)
                 {
-                    QObject *obj = dataIOList->at(i);
-                    const ito::AddInInterfaceBase *aib = qobject_cast<ito::AddInInterfaceBase*>(obj);
-                    if (aib != NULL)
+                    QStandardItem* plugin = new QStandardItem(aib->objectName());
+                    plugin->setEditable(false);
+                    plugin->setData(typeDataIO, roleType);
+                    switch (aib->getType())
                     {
-                        QStandardItem *plugin = new QStandardItem(aib->objectName());
-                        plugin->setEditable(false);
-                        plugin->setData(typeDataIO, roleType);
-                        switch (aib->getType())
-                        {
-                            case 129:
-                            {// Grabber
-                                plugin->setIcon(iconGallery->value(iconPluginGrabber));
-                                plugin->setData(pluginGrabber->data(rolePath).toString() + "."+plugin->text(), rolePath);
-                                pluginGrabber->appendRow(plugin);
-                                break;
-                            }
-                            case 257:
-                            {// ADDA
-                                plugin->setIcon(iconGallery->value(iconPluginAdda));
-                                plugin->setData(pluginAdda->data(rolePath).toString() + "."+plugin->text(), rolePath);
-                                pluginAdda->appendRow(plugin);
-                                break;
-                            }
-                            case 513:
-                            {// Raw IO
-                                plugin->setIcon(iconGallery->value(iconPluginRawIO));
-                                plugin->setData(pluginRawIO->data(rolePath).toString() + "."+plugin->text(), rolePath);
-                                pluginRawIO->appendRow(plugin);
-                                break;
-                            }
-                        }
+                    case 129: { // Grabber
+                        plugin->setIcon(iconGallery->value(iconPluginGrabber));
+                        plugin->setData(
+                            pluginGrabber->data(rolePath).toString() + "." + plugin->text(),
+                            rolePath);
+                        pluginGrabber->appendRow(plugin);
+                        break;
+                    }
+                    case 257: { // ADDA
+                        plugin->setIcon(iconGallery->value(iconPluginAdda));
+                        plugin->setData(
+                            pluginAdda->data(rolePath).toString() + "." + plugin->text(), rolePath);
+                        pluginAdda->appendRow(plugin);
+                        break;
+                    }
+                    case 513: { // Raw IO
+                        plugin->setIcon(iconGallery->value(iconPluginRawIO));
+                        plugin->setData(
+                            pluginRawIO->data(rolePath).toString() + "." + plugin->text(),
+                            rolePath);
+                        pluginRawIO->appendRow(plugin);
+                        break;
+                    }
                     }
                 }
             }
-
-            mainNode->appendRow(pluginGrabber);
-            mainNode->appendRow(pluginAdda);
-            mainNode->appendRow(pluginRawIO);
-            break;
         }
-    case 4: //Actuator
-        { 
-            // Main Node zusammenbauen
-            mainNodeText = tr("Actuator");
-            mainNode->setText(mainNodeText);
-            mainNode->setData(typeCategory, roleType);
-			mainNode->setData(mainNodeText, rolePath);
-            mainNode->setIcon(iconGallery->value(iconPluginActuator));
 
-            if (aim)
+        mainNode->appendRow(pluginGrabber);
+        mainNode->appendRow(pluginAdda);
+        mainNode->appendRow(pluginRawIO);
+        break;
+    }
+    case 4: // Actuator
+    {
+        // Main Node zusammenbauen
+        mainNodeText = tr("Actuator");
+        mainNode->setText(mainNodeText);
+        mainNode->setData(typeCategory, roleType);
+        mainNode->setData(mainNodeText, rolePath);
+        mainNode->setIcon(iconGallery->value(iconPluginActuator));
+
+        if (aim)
+        {
+            const QList<QObject*>* ActuatorList = aim->getActList();
+            for (int i = 0; i < ActuatorList->length(); i++)
             {
-                const QList<QObject*> *ActuatorList = aim->getActList();
-                for(int i = 0; i < ActuatorList->length(); i++)
+                QObject* obj = ActuatorList->at(i);
+                const ito::AddInInterfaceBase* aib = qobject_cast<ito::AddInInterfaceBase*>(obj);
+                if (aib != NULL)
                 {
-                    QObject *obj = ActuatorList->at(i);
-                    const ito::AddInInterfaceBase *aib = qobject_cast<ito::AddInInterfaceBase*>(obj);
-                    if (aib != NULL)
-                    {
-                        QStandardItem *plugin = new QStandardItem(aib->objectName());
-                        plugin->setEditable(false);
-                        plugin->setData(typeActuator, roleType);
-                        plugin->setData(mainNodeText + "." + plugin->text(), rolePath);
-                        plugin->setIcon(iconGallery->value(iconPluginActuator));
-                        mainNode->appendRow(plugin);
-                    }
+                    QStandardItem* plugin = new QStandardItem(aib->objectName());
+                    plugin->setEditable(false);
+                    plugin->setData(typeActuator, roleType);
+                    plugin->setData(mainNodeText + "." + plugin->text(), rolePath);
+                    plugin->setIcon(iconGallery->value(iconPluginActuator));
+                    mainNode->appendRow(plugin);
                 }
             }
-            break;
         }
+        break;
+    }
     }
     // MainNode an Model anhaengen
     model->insertRow(0, mainNode);
@@ -327,19 +356,21 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
     \param type the enumeration itemType is defined in the header file helpTreeDockWidget.h
     \return ito::RetVal
 */
-ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filterpath, HelpItemType type)
+ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(
+    const QString& filterpath, HelpItemType type)
 {
     ito::RetVal retval;
-    ito::AddInManager *aim = static_cast<ito::AddInManager*>(AppManagement::getAddInManager());
-    const QHash  <QString, ito::AddInAlgo::FilterDef     *> *filterHashTable = aim->getFilterList();
-    const QHash  <QString, ito::AddInAlgo::AlgoWidgetDef *> *widgetHashTable = aim->getAlgoWidgetList();
+    ito::AddInManager* aim = static_cast<ito::AddInManager*>(AppManagement::getAddInManager());
+    const QHash<QString, ito::AddInAlgo::FilterDef*>* filterHashTable = aim->getFilterList();
+    const QHash<QString, ito::AddInAlgo::AlgoWidgetDef*>* widgetHashTable =
+        aim->getAlgoWidgetList();
     ui.helpTreeContent->clear();
 
     loadAndProcessCssStyleSheet();
 
     QString docString = "";
     QString filter = filterpath.split(".").last();
-    
+
     // needed for breadcrumb and for list of children in algorithms
     QString linkNav;
 
@@ -351,7 +382,7 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
         templ.open(QIODevice::ReadOnly);
         docString = templ.readAll();
         templ.close();
-    
+
         // Breadcrumb Navigation zusammenstellen
         // -------------------------------------
         QStringList splittedLink = filterpath.split(".");
@@ -368,7 +399,11 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
             {
                 linkPath = linkPath.left(linkPath.length() - 1);
             }
-            linkNav.insert(0, ">> <a id=\"HiLink\" href=\"itom://algorithm.html#" + linkPath.toLatin1().toPercentEncoding("",".") + "\">" + splittedLink[i] + "</a>");
+            linkNav.insert(
+                0,
+                ">> <a id=\"HiLink\" href=\"itom://algorithm.html#" +
+                    linkPath.toLatin1().toPercentEncoding("", ".") + "\">" + splittedLink[i] +
+                    "</a>");
         }
         docString.replace("%BREADCRUMB%", linkNav);
 
@@ -378,99 +413,148 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
         int start = docString.indexOf("<!--%PARAMETERS_START%-->");
         int end = docString.indexOf("<!--%PARAMETERS_END%-->");
 
-        if (start == -1 && end == -1) //no returns section
+        if (start == -1 && end == -1) // no returns section
         {
             parameterSection = "";
         }
-        else if (start == -1 || end == -1) //one part is missing
+        else if (start == -1 || end == -1) // one part is missing
         {
-            retval += ito::RetVal(ito::retError, 0, tr("Template Error: Parameters section is only defined by either the start or end tag.").toLatin1().data());
+            retval += ito::RetVal(
+                ito::retError,
+                0,
+                tr("Template Error: Parameters section is only defined by either the start or end "
+                   "tag.")
+                    .toLatin1()
+                    .data());
         }
-        else if (start > end) //one part is missing
+        else if (start > end) // one part is missing
         {
-            retval += ito::RetVal(ito::retError, 0, tr("Template Error: End tag of parameters section comes before start tag.").toLatin1().data());
+            retval += ito::RetVal(
+                ito::retError,
+                0,
+                tr("Template Error: End tag of parameters section comes before start tag.")
+                    .toLatin1()
+                    .data());
         }
         else
         {
-            parameterSection = docString.mid(start, end + QString("<!--%PARAMETERS_END%-->").size() - start);
-            parameterSection.replace("<!--%PARAMETERS_CAPTION%-->", tr("Parameters")); 
+            parameterSection =
+                docString.mid(start, end + QString("<!--%PARAMETERS_END%-->").size() - start);
+            parameterSection.replace("<!--%PARAMETERS_CAPTION%-->", tr("Parameters"));
             docString.remove(start, end + QString("<!--%PARAMETERS_END%-->").size() - start);
         }
 
-        // extract ReturnSection 
+        // extract ReturnSection
         // -------------------------------------
-        //search for <!--%RETURNS_START%--> and <!--%RETURNS_END%-->
+        // search for <!--%RETURNS_START%--> and <!--%RETURNS_END%-->
         QString returnsSection;
         start = docString.indexOf("<!--%RETURNS_START%-->");
         end = docString.indexOf("<!--%RETURNS_END%-->");
 
-        if (start == -1 && end == -1) //no returns section
+        if (start == -1 && end == -1) // no returns section
         {
             returnsSection = "";
         }
-        else if (start == -1 || end == -1) //one part is missing
+        else if (start == -1 || end == -1) // one part is missing
         {
-            retval += ito::RetVal(ito::retError, 0, tr("Template Error: Returns section is only defined by either the start or end tag.").toLatin1().data());
+            retval += ito::RetVal(
+                ito::retError,
+                0,
+                tr("Template Error: Returns section is only defined by either the start or end "
+                   "tag.")
+                    .toLatin1()
+                    .data());
         }
-        else if (start > end) //one part is missing
+        else if (start > end) // one part is missing
         {
-            retval += ito::RetVal(ito::retError, 0, tr("Template Error: End tag of returns section comes before start tag.").toLatin1().data());
+            retval += ito::RetVal(
+                ito::retError,
+                0,
+                tr("Template Error: End tag of returns section comes before start tag.")
+                    .toLatin1()
+                    .data());
         }
         else
         {
-            returnsSection = docString.mid(start, end + QString("<!--%RETURNS_END%-->").size() - start);
-            returnsSection.replace("<!--%RETURNS_CAPTION%-->", tr("Returns")); 
+            returnsSection =
+                docString.mid(start, end + QString("<!--%RETURNS_END%-->").size() - start);
+            returnsSection.replace("<!--%RETURNS_CAPTION%-->", tr("Returns"));
             docString.remove(start, end + QString("<!--%RETURNS_END%-->").size() - start);
         }
-        
-        // extract ObserverSection 
+
+        // extract ObserverSection
         // -------------------------------------
-        //search for <!--%RETURNS_START%--> and <!--%RETURNS_END%-->
+        // search for <!--%RETURNS_START%--> and <!--%RETURNS_END%-->
         QString observerSection;
         start = docString.indexOf("<!--%OBSERVER_START%-->");
         end = docString.indexOf("<!--%OBSERVER_END%-->");
 
-        if (start == -1 && end == -1) //no returns section
+        if (start == -1 && end == -1) // no returns section
         {
             observerSection = "";
         }
-        else if (start == -1 || end == -1) //one part is missing
+        else if (start == -1 || end == -1) // one part is missing
         {
-            retval += ito::RetVal(ito::retError, 0, tr("Template Error: Observer section is only defined by either the start or end tag.").toLatin1().data());
+            retval += ito::RetVal(
+                ito::retError,
+                0,
+                tr("Template Error: Observer section is only defined by either the start or end "
+                   "tag.")
+                    .toLatin1()
+                    .data());
         }
-        else if (start > end) //one part is missing
+        else if (start > end) // one part is missing
         {
-            retval += ito::RetVal(ito::retError, 0, tr("Template Error: End tag of observer section comes before start tag.").toLatin1().data());
+            retval += ito::RetVal(
+                ito::retError,
+                0,
+                tr("Template Error: End tag of observer section comes before start tag.")
+                    .toLatin1()
+                    .data());
         }
         else
         {
-            observerSection = docString.mid(start, end + QString("<!--%OBSERVER_END%-->").size() - start);
-            observerSection.replace("<!--%OBSERVER_CAPTION%-->", tr("Status observation and cancellation"));
+            observerSection =
+                docString.mid(start, end + QString("<!--%OBSERVER_END%-->").size() - start);
+            observerSection.replace(
+                "<!--%OBSERVER_CAPTION%-->", tr("Status observation and cancellation"));
             docString.remove(start, end + QString("<!--%OBSERVER_END%-->").size() - start);
         }
 
-        // extract ExampleSection 
+        // extract ExampleSection
         // -------------------------------------
-        //search for <!--%EXAMPLE_START%--> and <!--%EXAMPLE_END%-->
+        // search for <!--%EXAMPLE_START%--> and <!--%EXAMPLE_END%-->
         QString exampleSection;
         start = docString.indexOf("<!--%EXAMPLE_START%-->");
         end = docString.indexOf("<!--%EXAMPLE_END%-->");
 
-        if (start == -1 && end == -1) //no returns section
+        if (start == -1 && end == -1) // no returns section
         {
             exampleSection = "";
         }
-        else if (start == -1 || end == -1) //one part is missing
+        else if (start == -1 || end == -1) // one part is missing
         {
-            retval += ito::RetVal(ito::retError, 0, tr("Template Error: Returns section is only defined by either the start or end tag.").toLatin1().data());
+            retval += ito::RetVal(
+                ito::retError,
+                0,
+                tr("Template Error: Returns section is only defined by either the start or end "
+                   "tag.")
+                    .toLatin1()
+                    .data());
         }
-        else if (start > end) //one part is missing
+        else if (start > end) // one part is missing
         {
-            retval += ito::RetVal(ito::retError, 0, tr("Template Error: End tag of returns section comes before start tag.").toLatin1().data());
+            retval += ito::RetVal(
+                ito::retError,
+                0,
+                tr("Template Error: End tag of returns section comes before start tag.")
+                    .toLatin1()
+                    .data());
         }
         else
         {
-            exampleSection = docString.mid(start, end + QString("<!--%EXAMPLE_END%-->").size() - start);
+            exampleSection =
+                docString.mid(start, end + QString("<!--%EXAMPLE_END%-->").size() - start);
             exampleSection.replace("<!--%EXAMPLE_CAPTION%-->", tr("Example"));
             exampleSection.replace("<!--%EXAMPLELINK_CAPTION%-->", tr("Copy example to clipboard"));
             docString.remove(start, end + QString("<!--%EXAMPLE_END%-->").size() - start);
@@ -480,371 +564,421 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
         // -------------------------------------
         if (!retval.containsError())
         {
-            switch(type)
+            switch (type)
             {
-                case typeFilter: // Filter
+            case typeFilter: // Filter
+            {
+                const ito::AddInAlgo::FilterDef* fd = filterHashTable->value(filter);
+                if (filterHashTable->contains(filter))
                 {
-                    const ito::AddInAlgo::FilterDef *fd = filterHashTable->value(filter);
-                    if (filterHashTable->contains(filter))
+                    const ito::FilterParams* params = aim->getHashedFilterParams(fd->m_paramFunc);
+
+                    docString.replace("%NAME%", fd->m_name);
+                    docString.replace("%INFO%", parseFilterWidgetContent(fd->m_description));
+
+                    // Observer-Section
+                    const ito::AddInAlgo::FilterDefExt* fdext =
+                        dynamic_cast<const ito::AddInAlgo::FilterDefExt*>(fd);
+
+                    QString description;
+
+                    if (fdext)
                     {
-                        const ito::FilterParams *params = aim->getHashedFilterParams(fd->m_paramFunc); 
-
-                        docString.replace("%NAME%", fd->m_name);
-                        docString.replace("%INFO%", parseFilterWidgetContent(fd->m_description));
-
-                        // Observer-Section
-                        const ito::AddInAlgo::FilterDefExt *fdext = dynamic_cast<const ito::AddInAlgo::FilterDefExt*>(fd);
-
-                        QString description;
-
-                        if (fdext)
+                        if (fdext->m_hasStatusInformation)
                         {
-                            if (fdext->m_hasStatusInformation)
-                            {
-                                description += "<li>" + tr("Filter provides status information") + "</li>\n";
-                            }
-                            else
-                            {
-                                description += "<li>" + tr("Filter does not provide status information") + "</li>\n";
-                            }
-
-                            if (fdext->m_isCancellable)
-                            {
-                                description += "<li>" + tr("Filter can be cancelled") + "</li>";
-                            }
-                            else
-                            {
-                                description += "<li>" + tr("Filter cannot be cancelled") + "</li>";
-                            }
+                            description +=
+                                "<li>" + tr("Filter provides status information") + "</li>\n";
                         }
                         else
                         {
-                            description += "<li>" + tr("No observer can be passed to this filter") + "</li>\n";
-                            description += "<li>" + tr("Filter does not provide status information") + "</li>\n";
+                            description += "<li>" +
+                                tr("Filter does not provide status information") + "</li>\n";
+                        }
+
+                        if (fdext->m_isCancellable)
+                        {
+                            description += "<li>" + tr("Filter can be cancelled") + "</li>";
+                        }
+                        else
+                        {
                             description += "<li>" + tr("Filter cannot be cancelled") + "</li>";
                         }
-
-                        observerSection.replace("%OBSERVERTEXT%", description);
-                
-                        // Parameter-Section
-                        if ((params->paramsMand.size() + params->paramsOpt.size() == 0) && parameterSection.isNull() == false)
-                        {   
-                            //remove parameters section
-                            parameterSection = "";
-                        }
-                        else if (parameterSection.isNull() == false)
-                        {
-                            parseParamVector("PARAMMAND", params->paramsMand, parameterSection);
-                            parseParamVector("PARAMOPT", params->paramsOpt, parameterSection);
-                            parameterSection.replace("<!--%PARAMOPT_CAPTION%-->", tr("optional"));
-                        }
-
-                        // Return-Section
-                        if (params->paramsOut.size() == 0 && returnsSection.isNull() == false)
-                        {   //remove returns section
-                            returnsSection = "";
-                        }
-                        else if (returnsSection.isNull() == false)
-                        {
-                            parseParamVector("OUT", params->paramsOut, returnsSection);
-                        }
-
-                        // Example-Section
-                        QStringList paramList;
-                        foreach(const ito::Param &p, params->paramsMand)
-                        {
-                            paramList.append(QLatin1String(p.getName()));
-                        }
-
-                        QString returnString;
-
-                        if (params->paramsOut.size() == 1)
-                        {
-
-                            returnString = QString(QLatin1String(params->paramsOut[0].getName())) + " = ";
-                        }
-                        else if (params->paramsOut.size() > 1)
-                        {
-                            returnString = "[";
-                            QStringList returnList;
-                            foreach(const ito::Param &p, params->paramsOut)
-                            {
-                                returnList.append(QLatin1String(p.getName()));
-                            }
-                            returnString += returnList.join(", ") + "] = ";
-                        }
-
-                        QString newLink = QString("%1filter(\"%2\", %3)").arg(returnString).arg(fd->m_name).arg( paramList.join(", ") );
-                        newLink.replace(", )",")");
-                        QByteArray a = newLink.toLatin1();
-
-                        exampleSection.replace("<!--%EXAMPLEPLAIN%-->", newLink);
-                        exampleSection.replace("<!--%EXAMPLELINK%-->", a.toPercentEncoding());
                     }
                     else
                     {
-                    retval += ito::RetVal(ito::retError, 0, tr("Unknown filter name '%1'").arg(filter).toLatin1().data());
+                        description +=
+                            "<li>" + tr("No observer can be passed to this filter") + "</li>\n";
+                        description +=
+                            "<li>" + tr("Filter does not provide status information") + "</li>\n";
+                        description += "<li>" + tr("Filter cannot be cancelled") + "</li>";
                     }
 
-                    break;
-                }
-                case typeWidget:
-                {
-                    const ito::AddInAlgo::AlgoWidgetDef *awd = widgetHashTable->value(filter);
-                    if (widgetHashTable->contains(filter))
-                    {
-                        const ito::FilterParams *params = aim->getHashedFilterParams(awd->m_paramFunc);   
-                
-                        docString.replace("%NAME%", awd->m_name);
-                        docString.replace("%INFO%",parseFilterWidgetContent(awd->m_description));
-                
-                        // Parameter-Section
-                        if ((params->paramsMand.size() + params->paramsOpt.size() == 0) && parameterSection.isNull() == false)
-                        {
-                            //remove parameters section
-                            parameterSection = "";
-                        }
-                        else if (parameterSection.isNull() == false)
-                        {
-                            parseParamVector("PARAMMAND", params->paramsMand, parameterSection);
-                            parseParamVector("PARAMOPT", params->paramsOpt, parameterSection);
-                            parameterSection.replace("<!--%PARAMOPT_CAPTION%-->", tr("optional"));
-                        }
+                    observerSection.replace("%OBSERVERTEXT%", description);
 
-                        //remove returns section (Widgets can�t return something)
+                    // Parameter-Section
+                    if ((params->paramsMand.size() + params->paramsOpt.size() == 0) &&
+                        parameterSection.isNull() == false)
+                    {
+                        // remove parameters section
+                        parameterSection = "";
+                    }
+                    else if (parameterSection.isNull() == false)
+                    {
+                        parseParamVector("PARAMMAND", params->paramsMand, parameterSection);
+                        parseParamVector("PARAMOPT", params->paramsOpt, parameterSection);
+                        parameterSection.replace("<!--%PARAMOPT_CAPTION%-->", tr("optional"));
+                    }
+
+                    // Return-Section
+                    if (params->paramsOut.size() == 0 && returnsSection.isNull() == false)
+                    { // remove returns section
                         returnsSection = "";
-
-                        // Example-Section
-                        QStringList paramList;
-                        foreach(const ito::Param &p, params->paramsMand)
-                        {
-                            paramList.append(QLatin1String(p.getName()));
-                        }
-                        QString newLink = QString("ui.createNewPluginWidget(\"%1\",%2)").arg(awd->m_name).arg( paramList.join(", ") );
-                        newLink.replace(",)", ")");
-                        QByteArray a = newLink.toLatin1();
-
-                        exampleSection.replace("<!--%EXAMPLEPLAIN%-->", newLink);
-                        exampleSection.replace("<!--%EXAMPLELINK%-->", a.toPercentEncoding());
-
-                        observerSection = "";
+                    }
+                    else if (returnsSection.isNull() == false)
+                    {
+                        parseParamVector("OUT", params->paramsOut, returnsSection);
                     }
 
-                    break;
-                }
-                case typeFPlugin:  // These two lines behave
-                case typeWPlugin:  // like an "or" statement
-                {
-                    const QList<QObject*> *algoPlugins = aim->getAlgList();
-                    const ito::AddInInterfaceBase *aib = NULL;
-
-                    foreach(const QObject *obj, *algoPlugins)
+                    // Example-Section
+                    QStringList paramList;
+                    foreach (const ito::Param& p, params->paramsMand)
                     {
-                        if (QString::compare(obj->objectName(), filter, Qt::CaseInsensitive) == 0)
+                        paramList.append(QLatin1String(p.getName()));
+                    }
+
+                    QString returnString;
+
+                    if (params->paramsOut.size() == 1)
+                    {
+                        returnString =
+                            QString(QLatin1String(params->paramsOut[0].getName())) + " = ";
+                    }
+                    else if (params->paramsOut.size() > 1)
+                    {
+                        returnString = "[";
+                        QStringList returnList;
+                        foreach (const ito::Param& p, params->paramsOut)
                         {
-                            aib = static_cast<const ito::AddInInterfaceBase*>(obj);
+                            returnList.append(QLatin1String(p.getName()));
+                        }
+                        returnString += returnList.join(", ") + "] = ";
+                    }
+
+                    // for algorithms, there are two different example strings:
+                    // 1. filter("nameOfAlgorithm", arg1, arg2...)
+                    // 2. algorithms.nameOfAlgorithm(arg1, arg2, ...)
+
+                    QString example1 = exampleSection;
+                    QString newLink = QString("%1filter(\"%2\", %3)")
+                                          .arg(returnString)
+                                          .arg(fd->m_name)
+                                          .arg(paramList.join(", "));
+                    newLink.replace(", )", ")");
+                    QByteArray a = newLink.toLatin1();
+
+                    example1.replace("<!--%EXAMPLEPLAIN%-->", newLink);
+                    example1.replace("<!--%EXAMPLELINK%-->", a.toPercentEncoding());
+
+                    QString example2 = exampleSection;
+                    newLink = QString("%1algorithms.%2(%3)")
+                                          .arg(returnString)
+                                          .arg(fd->m_name)
+                                          .arg(paramList.join(", "));
+                    newLink.replace(", )", ")");
+                    a = newLink.toLatin1();
+
+                    example2.replace("<!--%EXAMPLEPLAIN%-->", newLink);
+                    example2.replace("<!--%EXAMPLELINK%-->", a.toPercentEncoding());
+
+                    exampleSection = example1 + example2;
+                }
+                else
+                {
+                    retval += ito::RetVal(
+                        ito::retError,
+                        0,
+                        tr("Unknown filter name '%1'").arg(filter).toLatin1().data());
+                }
+
+                break;
+            }
+            case typeWidget: {
+                const ito::AddInAlgo::AlgoWidgetDef* awd = widgetHashTable->value(filter);
+                if (widgetHashTable->contains(filter))
+                {
+                    const ito::FilterParams* params = aim->getHashedFilterParams(awd->m_paramFunc);
+
+                    docString.replace("%NAME%", awd->m_name);
+                    docString.replace("%INFO%", parseFilterWidgetContent(awd->m_description));
+
+                    // Parameter-Section
+                    if ((params->paramsMand.size() + params->paramsOpt.size() == 0) &&
+                        parameterSection.isNull() == false)
+                    {
+                        // remove parameters section
+                        parameterSection = "";
+                    }
+                    else if (parameterSection.isNull() == false)
+                    {
+                        parseParamVector("PARAMMAND", params->paramsMand, parameterSection);
+                        parseParamVector("PARAMOPT", params->paramsOpt, parameterSection);
+                        parameterSection.replace("<!--%PARAMOPT_CAPTION%-->", tr("optional"));
+                    }
+
+                    // remove returns section (Widgets can�t return something)
+                    returnsSection = "";
+
+                    // Example-Section
+                    QStringList paramList;
+                    foreach (const ito::Param& p, params->paramsMand)
+                    {
+                        paramList.append(QLatin1String(p.getName()));
+                    }
+                    QString newLink = QString("ui.createNewPluginWidget(\"%1\",%2)")
+                                          .arg(awd->m_name)
+                                          .arg(paramList.join(", "));
+                    newLink.replace(",)", ")");
+                    QByteArray a = newLink.toLatin1();
+
+                    exampleSection.replace("<!--%EXAMPLEPLAIN%-->", newLink);
+                    exampleSection.replace("<!--%EXAMPLELINK%-->", a.toPercentEncoding());
+
+                    observerSection = "";
+                }
+
+                break;
+            }
+            case typeFPlugin: // These two lines behave
+            case typeWPlugin: // like an "or" statement
+            {
+                const QList<QObject*>* algoPlugins = aim->getAlgList();
+                const ito::AddInInterfaceBase* aib = NULL;
+
+                foreach (const QObject* obj, *algoPlugins)
+                {
+                    if (QString::compare(obj->objectName(), filter, Qt::CaseInsensitive) == 0)
+                    {
+                        aib = static_cast<const ito::AddInInterfaceBase*>(obj);
+                        break;
+                    }
+                }
+
+                if (aib)
+                {
+                    docString.replace("%NAME%", aib->objectName());
+
+                    QString extendedInfo;
+
+                    if (aib->getDescription() != "")
+                    {
+                        extendedInfo.insert(0, parseFilterWidgetContent(aib->getDescription()));
+                        if (aib->getDetailDescription() != "")
+                        {
+                            extendedInfo.append("<br>");
+                        }
+                    }
+                    if (aib->getDetailDescription() != "")
+                    {
+                        extendedInfo.append(parseFilterWidgetContent(aib->getDetailDescription()));
+                    }
+
+                    if (filterHashTable->size() > 0)
+                    {
+                        extendedInfo.append(
+                            "<p class=\"rubric\">" + tr("This plugin contains the following") +
+                            " " + tr("Algorithms") + ":</p>");
+
+                        QHash<QString, ito::AddInAlgo::FilterDef*>::const_iterator i =
+                            filterHashTable->constBegin();
+                        QList<QString> algoLinks;
+                        while (i != filterHashTable->constEnd())
+                        {
+                            if (aib->objectName() == i.value()->m_pBasePlugin->objectName())
+                            {
+                                QString link = "." + i.value()->m_pBasePlugin->objectName() + "." +
+                                    i.value()->m_name;
+                                algoLinks.append(
+                                    "<a id=\"HiLink\" href=\"itom://algorithm.html#Algorithms" +
+                                    link.toLatin1().toPercentEncoding("", ".") + "\">" +
+                                    i.value()->m_name.toLatin1().toPercentEncoding("", ".") +
+                                    "</a><br><br>");
+                            }
+                            ++i;
+                        }
+
+                        QCollator collator;
+                        std::sort(algoLinks.begin(), algoLinks.end(), collator);
+
+                        foreach (const QString& algo, algoLinks)
+                        {
+                            extendedInfo.append(algo);
+                        }
+                    }
+
+                    if (widgetHashTable->size() > 0)
+                    {
+                        extendedInfo.append(
+                            "<p class=\"rubric\">" + tr("This plugin contains the following") +
+                            " " + tr("Widgets") + ":</p>");
+
+                        QHash<QString, ito::AddInAlgo::AlgoWidgetDef*>::const_iterator i =
+                            widgetHashTable->constBegin();
+                        QList<QString> widgetList;
+                        while (i != widgetHashTable->constEnd())
+                        {
+                            if (aib->objectName() == i.value()->m_pBasePlugin->objectName())
+                            {
+                                QString link = "." + i.value()->m_pBasePlugin->objectName() + "." +
+                                    i.value()->m_name;
+                                widgetList.append(
+                                    "<a id=\"HiLink\" href=\"itom://algorithm.html#Widgets" +
+                                    link.toLatin1().toPercentEncoding("", ".") + "\">" +
+                                    i.value()->m_name.toLatin1().toPercentEncoding("", ".") +
+                                    "</a><br><br>");
+                            }
+                            ++i;
+                        }
+
+                        QCollator collator;
+                        std::sort(widgetList.begin(), widgetList.end(), collator);
+
+                        foreach (const QString& widget, widgetList)
+                        {
+                            extendedInfo.append(widget);
+                        }
+                    }
+
+                    docString.replace("%INFO%", extendedInfo);
+
+                    parameterSection = "";
+                    returnsSection = "";
+                    exampleSection = "";
+                    observerSection = "";
+                }
+                else
+                {
+                    retval += ito::RetVal(
+                        ito::retError,
+                        0,
+                        tr("Unknown algorithm plugin with name '%1'")
+                            .arg(filter)
+                            .toLatin1()
+                            .data());
+                }
+
+                break;
+            }
+            case typeDataIO:
+            case typeActuator: {
+                QObject* obj;
+                // Lookup the clicked name in the corresponding List
+                if (type == typeActuator)
+                {
+                    const QList<QObject*>* ActuatorList = aim->getActList();
+                    for (int i = 0; i < ActuatorList->length(); i++)
+                    {
+                        QString listFilter = ActuatorList->at(i)->objectName();
+                        if (listFilter == filter)
+                        {
+                            obj = ActuatorList->at(i);
                             break;
                         }
                     }
-
-                    if (aib)
+                }
+                else /*if (type == typeDataIO)*/
+                {
+                    const QList<QObject*>* DataIOList = aim->getDataIOList();
+                    for (int i = 0; i < DataIOList->length(); i++)
                     {
-                        docString.replace("%NAME%", aib->objectName());
-
-                        QString extendedInfo;
-                        
-                        if (aib->getDescription() != "")
+                        QString listFilter = DataIOList->at(i)->objectName();
+                        if (listFilter == filter)
                         {
-                            extendedInfo.insert(0, parseFilterWidgetContent(aib->getDescription()));
-                            if (aib->getDetailDescription() != "")
-                            {
-                                extendedInfo.append("<br>");
-                            }
+                            obj = DataIOList->at(i);
+                            break;
                         }
-                        if (aib->getDetailDescription() != "")
+                    }
+                }
+
+                if (obj != NULL)
+                {
+                    const ito::AddInInterfaceBase* aib =
+                        qobject_cast<ito::AddInInterfaceBase*>(obj);
+                    if (aib != NULL)
+                    {
+                        docString.replace(
+                            "%NAME%",
+                            aib->objectName()); // TODO: should return desc, but returns sdesc
+                        QString desc = aib->getDescription();
+                        QString detaileddesc = aib->getDetailDescription();
+                        if (detaileddesc != NULL)
                         {
-                            extendedInfo.append(parseFilterWidgetContent(aib->getDetailDescription()));
+                            desc.append("\n\n");
+                            desc.append(detaileddesc);
                         }
+                        docString.replace("%INFO%", parseFilterWidgetContent(desc));
 
-                        if (filterHashTable->size() > 0)
+                        // Parameter-Section
+                        const QVector<ito::Param>* paramsMand =
+                            (qobject_cast<ito::AddInInterfaceBase*>(obj))->getInitParamsMand();
+                        const QVector<ito::Param>* paramsOpt =
+                            (qobject_cast<ito::AddInInterfaceBase*>(obj))->getInitParamsOpt();
+                        if ((paramsMand->size() + paramsOpt->size() == 0) &&
+                            parameterSection.isNull() == false)
                         {
-                            extendedInfo.append("<p class=\"rubric\">" + tr("This plugin contains the following") + " " + tr("Algorithms") + ":</p>");
-
-                            QHash<QString, ito::AddInAlgo::FilterDef *>::const_iterator i = filterHashTable->constBegin();
-                            QList<QString> algoLinks;
-                            while (i != filterHashTable->constEnd())
-                            {
-                                if (aib->objectName() == i.value()->m_pBasePlugin->objectName())
-                                {
-                                    QString link = "." + i.value()->m_pBasePlugin->objectName() + "." + i.value()->m_name;
-                                    algoLinks.append(
-                                        "<a id=\"HiLink\" href=\"itom://algorithm.html#Algorithms" +
-                                        link.toLatin1().toPercentEncoding("", ".") + "\">" +
-                                        i.value()->m_name.toLatin1().toPercentEncoding("", ".") +
-                                        "</a><br><br>");
-                                }
-                                ++i;
-                            }
-
-                            QCollator collator;
-                            std::sort(algoLinks.begin(), algoLinks.end(), collator);
-
-                            foreach(const QString &algo, algoLinks)
-                            {
-                                extendedInfo.append(algo);
-                            }                            
-
+                            // remove parameters section
+                            parameterSection = "";
+                        }
+                        else if (parameterSection.isNull() == false)
+                        {
+                            parseParamVector("PARAMMAND", *paramsMand, parameterSection);
+                            parseParamVector("PARAMOPT", *paramsOpt, parameterSection);
+                            parameterSection.replace("<!--%PARAMOPT_CAPTION%-->", tr("optional"));
                         }
 
-                        if (widgetHashTable->size() > 0)
-                        {
-                            extendedInfo.append("<p class=\"rubric\">" + tr("This plugin contains the following") + " " + tr("Widgets") + ":</p>");
-
-                            QHash<QString, ito::AddInAlgo::AlgoWidgetDef *>::const_iterator i = widgetHashTable->constBegin();
-                            QList<QString> widgetList;
-                            while (i != widgetHashTable->constEnd())
-                            {
-                                if (aib->objectName() == i.value()->m_pBasePlugin->objectName())
-                                {
-                                    QString link = "." + i.value()->m_pBasePlugin->objectName() + "." + i.value()->m_name;
-                                    widgetList.append(
-                                        "<a id=\"HiLink\" href=\"itom://algorithm.html#Widgets" +
-                                        link.toLatin1().toPercentEncoding("", ".") + "\">" +
-                                        i.value()->m_name.toLatin1().toPercentEncoding("", ".") +
-                                        "</a><br><br>");
-                                }
-                                ++i;
-                            }
-
-                            QCollator collator;
-                            std::sort(widgetList.begin(), widgetList.end(), collator);
-
-                            foreach (const QString &widget, widgetList)
-                            {
-                                extendedInfo.append(widget);
-                            } 
-                        }
-
-                        docString.replace("%INFO%", extendedInfo);
-
-                        parameterSection = "";
+                        // remove returns and observer section (Widgets cannot return something)
                         returnsSection = "";
-                        exampleSection = "";
                         observerSection = "";
-                    }
-                    else
-                    {
-                    retval += ito::RetVal(ito::retError, 0, tr("Unknown algorithm plugin with name '%1'").arg(filter).toLatin1().data());
-                    }
 
-                    break;
+                        // Example-Section
+                        QStringList paramList;
+                        for (int i = 0; i < paramsMand->size(); i++)
+                        {
+                            const ito::Param& p = paramsMand->at(i);
+                            paramList.append(QLatin1String(p.getName()));
+                        }
+
+                        QString callName;
+
+                        if (type == typeDataIO)
+                        {
+                            callName = "dataIO"; // do not translate
+                        }
+                        else
+                        {
+                            callName = "actuator"; // do not translate
+                        }
+
+                        QString newLink = QString("%1(\"%2\", %3)")
+                                              .arg(callName)
+                                              .arg(aib->objectName())
+                                              .arg(paramList.join(", "));
+                        newLink.replace(", )", ")");
+                        QByteArray a = newLink.toLatin1();
+
+                        exampleSection.replace("<!--%EXAMPLEPLAIN%-->", newLink);
+                        exampleSection.replace("<!--%EXAMPLELINK%-->", a.toPercentEncoding());
+                    }
                 }
-                case typeDataIO:
-                case typeActuator:
+                else
                 {
-                    QObject *obj;
-                    // Lookup the clicked name in the corresponding List
-                    if (type == typeActuator)
-                    {
-                        const QList<QObject*> *ActuatorList = aim->getActList();
-                        for(int i = 0; i < ActuatorList->length(); i++)
-                        {
-                            QString listFilter = ActuatorList->at(i)->objectName();
-                            if (listFilter == filter)
-                            {
-                                obj = ActuatorList->at(i);
-                                break;
-                            }
-                        }
-                    }
-                    else /*if (type == typeDataIO)*/
-                    {
-                        const QList<QObject*> *DataIOList = aim->getDataIOList();
-                        for(int i = 0; i < DataIOList->length(); i++)
-                        {
-                            QString listFilter = DataIOList->at(i)->objectName();
-                            if (listFilter == filter)
-                            {
-                                obj = DataIOList->at(i);
-                                break;
-                            }
-                        }
-                    }
-
-                    if (obj != NULL)
-                    {
-                        const ito::AddInInterfaceBase *aib = qobject_cast<ito::AddInInterfaceBase*>(obj);
-                        if (aib != NULL)
-                        {
-                            docString.replace("%NAME%", aib->objectName());        // TODO: should return desc, but returns sdesc
-							QString desc = aib->getDescription();
-							QString detaileddesc = aib->getDetailDescription();
-							if (detaileddesc != NULL)
-							{
-								desc.append("\n\n");
-								desc.append(detaileddesc);
-							}
-                            docString.replace("%INFO%", parseFilterWidgetContent(desc));
-                
-                            // Parameter-Section
-                            const QVector<ito::Param> *paramsMand = (qobject_cast<ito::AddInInterfaceBase *>(obj))->getInitParamsMand();
-                            const QVector<ito::Param> *paramsOpt = (qobject_cast<ito::AddInInterfaceBase *>(obj))->getInitParamsOpt();
-                            if ((paramsMand->size() + paramsOpt->size() == 0) && parameterSection.isNull() == false)
-                            {
-                                //remove parameters section
-                                parameterSection = "";
-
-                            }
-                            else if (parameterSection.isNull() == false)
-                            {
-                                parseParamVector("PARAMMAND", *paramsMand, parameterSection);
-                                parseParamVector("PARAMOPT" , *paramsOpt, parameterSection);
-                                parameterSection.replace("<!--%PARAMOPT_CAPTION%-->", tr("optional"));
-                            }
-
-                            //remove returns and observer section (Widgets cannot return something)
-                            returnsSection = "";
-                            observerSection = "";
-
-                            // Example-Section
-                            QStringList paramList;
-                            for (int i = 0; i < paramsMand->size(); i++)
-                            {
-                                const ito::Param &p = paramsMand->at(i);
-                                paramList.append(QLatin1String(p.getName()));
-                            }
-
-                            QString callName;
-
-                            if (type == typeDataIO)
-                            {
-                                callName = "dataIO"; // do not translate
-                            }
-                            else
-                            {
-                                callName = "actuator"; // do not translate
-                            }
-
-                            QString newLink = QString("%1(\"%2\", %3)").arg(callName).arg(aib->objectName()).arg( paramList.join(", ") );
-                            newLink.replace(", )", ")");
-                            QByteArray a = newLink.toLatin1();
-
-                            exampleSection.replace("<!--%EXAMPLEPLAIN%-->", newLink);
-                            exampleSection.replace("<!--%EXAMPLELINK%-->", a.toPercentEncoding());
-                        }
-                    }
-                    else
-                    {
-
-                    }
-
-                    break;
                 }
-                default:
-                {
-                    retval += ito::RetVal(ito::retError, 0, tr("unknown type").toLatin1().data());
-                    break;
-                }
+
+                break;
+            }
+            default: {
+                retval += ito::RetVal(ito::retError, 0, tr("unknown type").toLatin1().data());
+                break;
+            }
             }
             docString.replace("<!--%PARAMETERS_INSERT%-->", parameterSection);
             docString.replace("<!--%RETURNS_INSERT%-->", returnsSection);
@@ -941,7 +1075,7 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
     }
 
     if (!retval.containsError())
-    {   // Create html document
+    { // Create html document
         if (m_plaintext)
         {
             ui.helpTreeContent->document()->setPlainText(docString);
@@ -957,12 +1091,12 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Reformats all help strings that come from the widgets and plugins
-/*! All newLine characters are replaced by the html tag <br> 
+/*! All newLine characters are replaced by the html tag <br>
 
     \param input The text that is supposed to be reformated
     \return QString contains the reformated text
 */
-QString HelpTreeDockWidget::parseFilterWidgetContent(const QString &input)
+QString HelpTreeDockWidget::parseFilterWidgetContent(const QString& input)
 {
     QString output = input.toHtmlEscaped();
     output.replace("\n", "<br>");
@@ -972,35 +1106,46 @@ QString HelpTreeDockWidget::parseFilterWidgetContent(const QString &input)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Creates the Parameter- and Return- sections in  html-Code
-/*! 
+/*!
 
     \param sectionname
     \param paramVector
     \param content
     \return RetVal
 */
-ito::RetVal HelpTreeDockWidget::parseParamVector(const QString &sectionname, const QVector<ito::Param> &paramVector, QString &content)
+ito::RetVal HelpTreeDockWidget::parseParamVector(
+    const QString& sectionname, const QVector<ito::Param>& paramVector, QString& content)
 {
     ito::RetVal retval;
     QString startString = QString("<!--%%1_START%-->").arg(sectionname);
     QString endString = QString("<!--%%1_END%-->").arg(sectionname);
     QString insertString = QString("<!--%%1_INSERT%-->").arg(sectionname);
 
-    //search for <!--%PARAMETERS_START%--> and <!--%PARAMETERS_END%-->
+    // search for <!--%PARAMETERS_START%--> and <!--%PARAMETERS_END%-->
     int start = content.indexOf(startString);
     int end = content.indexOf(endString);
 
-    if (start == -1 && end == -1) //no returns section
+    if (start == -1 && end == -1) // no returns section
     {
-        //pass
+        // pass
     }
-    else if (start == -1 || end == -1) //one part is missing
+    else if (start == -1 || end == -1) // one part is missing
     {
-        retval += ito::RetVal::format(ito::retError, 0, tr("Template Error: %s section is only defined by either the start or end tag.").toLatin1().data(), sectionname.toLatin1().data());
+        retval += ito::RetVal::format(
+            ito::retError,
+            0,
+            tr("Template Error: %s section is only defined by either the start or end tag.")
+                .toLatin1()
+                .data(),
+            sectionname.toLatin1().data());
     }
-    else if (start > end) //one part is missing
+    else if (start > end) // one part is missing
     {
-        retval += ito::RetVal::format(ito::retError, 0, tr("Template Error: End tag of %s section comes before start tag.").toLatin1().data(), sectionname.toLatin1().data());
+        retval += ito::RetVal::format(
+            ito::retError,
+            0,
+            tr("Template Error: End tag of %s section comes before start tag.").toLatin1().data(),
+            sectionname.toLatin1().data());
     }
     else
     {
@@ -1008,7 +1153,7 @@ ito::RetVal HelpTreeDockWidget::parseParamVector(const QString &sectionname, con
         content.remove(start, end + endString.size() - start);
         QString internalContent = "";
 
-        foreach(const ito::Param &p, paramVector)
+        foreach (const ito::Param& p, paramVector)
         {
             internalContent.append(parseParam(rowContent, p));
         }
@@ -1021,291 +1166,299 @@ ito::RetVal HelpTreeDockWidget::parseParamVector(const QString &sectionname, con
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Parses a single Parameter to html code (called by parseParamVector)
-/*! 
+/*!
 
     \param tmpl
     \param param
     \return QString
 */
-QString HelpTreeDockWidget::parseParam(const QString &tmpl, const ito::Param &param)
+QString HelpTreeDockWidget::parseParam(const QString& tmpl, const ito::Param& param)
 {
     QString output = tmpl;
     QString name = QLatin1String(param.getName());
     QString info = param.getInfo() ? QLatin1String(param.getInfo()) : QLatin1String("");
     QString meta;
-    
+
     QString type;
 
-    switch(param.getType())
+    switch (param.getType())
     {
-    case ito::ParamBase::Int:
+    case ito::ParamBase::Int: {
+        type = "integer";
+        const ito::IntMeta* pMeta = dynamic_cast<const ito::IntMeta*>(param.getMeta());
+        if (pMeta)
         {
-            type = "integer";
-            const ito::IntMeta *pMeta = dynamic_cast<const ito::IntMeta*>(param.getMeta());
-            if (pMeta)
+            if (pMeta->getStepSize() == 1)
             {
-                if (pMeta->getStepSize() == 1)
-                {
-                    meta = tr("Range: [%1,%2], Default: %3").arg(minText(pMeta->getMin())).arg(maxText(pMeta->getMax())).arg(minmaxText(param.getVal<ito::int32>()));
-                }
-                else
-                {
-                    meta = tr("Range: [%1:%2:%3], Default: %4").arg(minText(pMeta->getMin())).arg(pMeta->getStepSize()).arg(maxText(pMeta->getMax())).arg(minmaxText(param.getVal<ito::int32>()));
-                }
+                meta = tr("Range: [%1,%2], Default: %3")
+                           .arg(minText(pMeta->getMin()))
+                           .arg(maxText(pMeta->getMax()))
+                           .arg(minmaxText(param.getVal<ito::int32>()));
             }
             else
             {
-                meta = tr("Default: %1").arg(minmaxText(param.getVal<ito::int32>()));
+                meta = tr("Range: [%1:%2:%3], Default: %4")
+                           .arg(minText(pMeta->getMin()))
+                           .arg(pMeta->getStepSize())
+                           .arg(maxText(pMeta->getMax()))
+                           .arg(minmaxText(param.getVal<ito::int32>()));
             }
         }
-        break;
-    case ito::ParamBase::Char:
-        { // Never tested ... no filter holding metadata as char available
-            type = "char";
-            const ito::CharMeta *pMeta = dynamic_cast<const ito::CharMeta*>(param.getMeta());
-            if (pMeta)
+        else
+        {
+            meta = tr("Default: %1").arg(minmaxText(param.getVal<ito::int32>()));
+        }
+    }
+    break;
+    case ito::ParamBase::Char: { // Never tested ... no filter holding metadata as char available
+        type = "char";
+        const ito::CharMeta* pMeta = dynamic_cast<const ito::CharMeta*>(param.getMeta());
+        if (pMeta)
+        {
+            if (pMeta->getStepSize() == 1)
             {
-                if (pMeta->getStepSize() == 1)
-                {
-                    meta = tr("Range: [%1,%2], Default: %3").arg(minText(pMeta->getMin())).arg(maxText(pMeta->getMax())).arg(minmaxText(param.getVal<char>()));
-                }
-                else
-                {
-                    meta = tr("Range: [%1:%2:%3], Default: %4").arg(minText(pMeta->getMin())).arg(pMeta->getStepSize()).arg(maxText(pMeta->getMax())).arg(minmaxText(param.getVal<char>()));
-                }
+                meta = tr("Range: [%1,%2], Default: %3")
+                           .arg(minText(pMeta->getMin()))
+                           .arg(maxText(pMeta->getMax()))
+                           .arg(minmaxText(param.getVal<char>()));
             }
             else
             {
-                meta = tr("Default: %1").arg(minmaxText(param.getVal<char>()));
+                meta = tr("Range: [%1:%2:%3], Default: %4")
+                           .arg(minText(pMeta->getMin()))
+                           .arg(pMeta->getStepSize())
+                           .arg(maxText(pMeta->getMax()))
+                           .arg(minmaxText(param.getVal<char>()));
             }
         }
-        break;
-    case ito::ParamBase::Double:
+        else
         {
-            type = "double";
-            const ito::DoubleMeta *pMeta = dynamic_cast<const ito::DoubleMeta*>(param.getMeta());
-            if (pMeta)
+            meta = tr("Default: %1").arg(minmaxText(param.getVal<char>()));
+        }
+    }
+    break;
+    case ito::ParamBase::Double: {
+        type = "double";
+        const ito::DoubleMeta* pMeta = dynamic_cast<const ito::DoubleMeta*>(param.getMeta());
+        if (pMeta)
+        {
+            if (pMeta->getStepSize() == 0.0)
             {
-                if (pMeta->getStepSize() == 0.0)
-                {
-                    meta = tr("Range: [%1,%2], Default: %3").arg(minText(pMeta->getMin())).arg(maxText(pMeta->getMax())).arg(minmaxText(param.getVal<ito::float64>()));
-                }
-                else
-                {
-                    meta = tr("Range: [%1:%2:%3], Default: %4").arg(minText(pMeta->getMin())).arg(pMeta->getStepSize()).arg(maxText(pMeta->getMax())).arg(minmaxText(param.getVal<ito::float64>()));
-                }
+                meta = tr("Range: [%1,%2], Default: %3")
+                           .arg(minText(pMeta->getMin()))
+                           .arg(maxText(pMeta->getMax()))
+                           .arg(minmaxText(param.getVal<ito::float64>()));
             }
             else
             {
-                meta = tr("Default: %1").arg(minmaxText(param.getVal<ito::float64>()));
+                meta = tr("Range: [%1:%2:%3], Default: %4")
+                           .arg(minText(pMeta->getMin()))
+                           .arg(pMeta->getStepSize())
+                           .arg(maxText(pMeta->getMax()))
+                           .arg(minmaxText(param.getVal<ito::float64>()));
             }
         }
-        break;
-    case ito::ParamBase::Complex:
+        else
         {
-            type = "complex";
-            ito::float64 real = param.getVal<ito::complex128>().real();
-            ito::float64 imag = param.getVal<ito::complex128>().imag();
-            if (imag >= 0)
+            meta = tr("Default: %1").arg(minmaxText(param.getVal<ito::float64>()));
+        }
+    }
+    break;
+    case ito::ParamBase::Complex: {
+        type = "complex";
+        ito::float64 real = param.getVal<ito::complex128>().real();
+        ito::float64 imag = param.getVal<ito::complex128>().imag();
+        if (imag >= 0)
+        {
+            meta = tr("Default: %1+%2i").arg(real).arg(imag);
+        }
+        else
+        {
+            meta = tr("Default: %1-%2i").arg(real).arg(-imag);
+        }
+    }
+    break;
+    case ito::ParamBase::String: {
+        type = "string";
+        const ito::StringMeta* pMeta = dynamic_cast<const ito::StringMeta*>(param.getMeta());
+
+        if (pMeta)
+        {
+            switch (pMeta->getStringType())
             {
-                meta = tr("Default: %1+%2i").arg(real).arg(imag);
+            case ito::StringMeta::RegExp:
+                if (pMeta->getLen() == 1)
+                {
+                    meta = tr("RegExp: '%1'").arg(QLatin1String(pMeta->getString(0)));
+                }
+                else if (pMeta->getLen() > 1)
+                {
+                    QStringList allowed;
+                    for (int i = 0; i < pMeta->getLen(); ++i)
+                    {
+                        allowed += QString("'%1'").arg(QLatin1String(pMeta->getString(i)));
+                    }
+                    meta = tr("RegExp: [%1]").arg(allowed.join("; "));
+                }
+                else if (pMeta->getLen() == 0)
+                {
+                    meta = tr("RegExp: <no pattern given>");
+                }
+                break;
+            case ito::StringMeta::String:
+                if (pMeta->getLen() == 1)
+                {
+                    meta = tr("Match: '%1'").arg(QLatin1String(pMeta->getString(0)));
+                }
+                else if (pMeta->getLen() > 1)
+                {
+                    QStringList allowed;
+                    for (int i = 0; i < pMeta->getLen(); ++i)
+                    {
+                        allowed += QString("'%1'").arg(QLatin1String(pMeta->getString(i)));
+                    }
+                    meta = tr("Match: [%1]").arg(allowed.join("; "));
+                }
+                else if (pMeta->getLen() == 0)
+                {
+                    meta = tr("Match: <no pattern given>");
+                }
+                break;
+            case ito::StringMeta::Wildcard:
+                if (pMeta->getLen() == 1)
+                {
+                    meta = tr("Wildcard: '%1'").arg(QLatin1String(pMeta->getString(0)));
+                }
+                else if (pMeta->getLen() > 1)
+                {
+                    QStringList allowed;
+                    for (int i = 0; i < pMeta->getLen(); ++i)
+                    {
+                        allowed += QString("'%1'").arg(QLatin1String(pMeta->getString(i)));
+                    }
+                    meta = tr("Wildcard: [%1]").arg(allowed.join("; "));
+                }
+                else if (pMeta->getLen() == 0)
+                {
+                    meta = tr("Wildcard: <no pattern given>");
+                }
+
+                break;
+            }
+        }
+    }
+    break;
+    case ito::ParamBase::CharArray: {
+        type = "list of characters";
+        if (param.getMeta() && param.getMeta()->getType() == ito::ParamMeta::rttiCharArrayMeta)
+        {
+            ito::CharArrayMeta* m = (ito::CharArrayMeta*)(param.getMeta());
+        }
+    }
+
+    break;
+    case ito::ParamBase::IntArray: {
+        const ito::ParamMeta* m = param.getMeta();
+
+        if ((m && m->getType() == ito::ParamMeta::rttiIntArrayMeta) || !m)
+        {
+            type = "list of integers";
+        }
+        else if (m && m->getType() == ito::ParamMeta::rttiIntervalMeta)
+        {
+            type = "interval [first, last] (integers)";
+        }
+        else if (m && m->getType() == ito::ParamMeta::rttiRangeMeta)
+        {
+            type = "range [first, last] (integers)";
+        }
+        else if (m && m->getType() == ito::ParamMeta::rttiRectMeta)
+        {
+            type = "rectangle [left, top, width, height] (integers)";
+        }
+    }
+
+    break;
+    case ito::ParamBase::DoubleArray: {
+        const ito::ParamMeta* m = param.getMeta();
+
+        if ((m && m->getType() == ito::ParamMeta::rttiDoubleArrayMeta) || !m)
+        {
+            type = "list of float64";
+        }
+        else if (m && m->getType() == ito::ParamMeta::rttiDoubleIntervalMeta)
+        {
+            type = "interval [first, last] (float64)";
+        }
+    }
+
+    break;
+    case ito::ParamBase::ComplexArray: {
+        type = "list of complex128";
+    }
+
+    break;
+    case ito::ParamBase::DObjPtr: {
+        type = "dataObject";
+    }
+
+    break;
+    case ito::ParamBase::PointCloudPtr: {
+        type = "pointCloud";
+    }
+
+    break;
+    case ito::ParamBase::PolygonMeshPtr: {
+        type = "polygonMesh";
+    }
+
+    break;
+    case ito::ParamBase::HWRef: {
+        type = "hardware";
+        if (param.getMeta() != NULL)
+        {
+            const ito::HWMeta* pMeta = dynamic_cast<const ito::HWMeta*>(param.getMeta());
+            ito::ByteArray name = pMeta->getHWAddInName();
+            if (name.length() > 0)
+            {
+                meta = tr("Only plugin '%1' is allowed.").arg(name.data());
             }
             else
             {
-                meta = tr("Default: %1-%2i").arg(real).arg(-imag);
-            }
-        }
-        break;
-    case ito::ParamBase::String:
-        {
-            type = "string";
-            const ito::StringMeta *pMeta = dynamic_cast<const ito::StringMeta*>(param.getMeta());
+                meta = "";
 
-            if (pMeta)
-            {
-                switch (pMeta->getStringType())
+                if (pMeta->getMinType() & ito::typeActuator)
                 {
-                case ito::StringMeta::RegExp:
-                    if (pMeta->getLen() == 1)
-                    {
-                        meta = tr("RegExp: '%1'").arg(QLatin1String(pMeta->getString(0)));
-                    }
-                    else if (pMeta->getLen() > 1)
-                    {
-                        QStringList allowed;
-                        for (int i = 0; i < pMeta->getLen(); ++i)
-                        {
-                            allowed += QString("'%1'").arg(QLatin1String(pMeta->getString(i)));
-                        }
-                        meta = tr("RegExp: [%1]").arg(allowed.join("; "));
-                    }
-                    else if (pMeta->getLen() == 0)
-                    {
-                        meta = tr("RegExp: <no pattern given>");
-                    }
-                    break;
-                case ito::StringMeta::String:
-                    if (pMeta->getLen() == 1)
-                    {
-                        meta = tr("Match: '%1'").arg(QLatin1String(pMeta->getString(0)));
-                    }
-                    else if (pMeta->getLen() > 1)
-                    {
-                        QStringList allowed;
-                        for (int i = 0; i < pMeta->getLen(); ++i)
-                        {
-                            allowed += QString("'%1'").arg(QLatin1String(pMeta->getString(i)));
-                        }
-                        meta = tr("Match: [%1]").arg(allowed.join("; "));
-                    }
-                    else if (pMeta->getLen() == 0)
-                    {
-                        meta = tr("Match: <no pattern given>");
-                    }
-                    break;
-                case ito::StringMeta::Wildcard:
-                    if (pMeta->getLen() == 1)
-                    {
-                        meta = tr("Wildcard: '%1'").arg(QLatin1String(pMeta->getString(0)));
-                    }
-                    else if (pMeta->getLen() > 1)
-                    {
-                        QStringList allowed;
-                        for (int i = 0; i < pMeta->getLen(); ++i)
-                        {
-                            allowed += QString("'%1'").arg(QLatin1String(pMeta->getString(i)));
-                        }
-                        meta = tr("Wildcard: [%1]").arg(allowed.join("; "));
-                    }
-                    else if (pMeta->getLen() == 0)
-                    {
-                        meta = tr("Wildcard: <no pattern given>");
-                    }
-
-                    break;
+                    meta.append(tr("Actuator") + ", ");
                 }
-            }
-        }
-        break;
-    case ito::ParamBase::CharArray:
-        {
-            type = "list of characters";
-            if (param.getMeta() && param.getMeta()->getType() == ito::ParamMeta::rttiCharArrayMeta)
-            {
-                ito::CharArrayMeta *m = (ito::CharArrayMeta*)(param.getMeta());
-            }
-        }
-
-        break;
-    case ito::ParamBase::IntArray:
-        {
-            const ito::ParamMeta *m = param.getMeta();
-            
-            if ((m && m->getType() == ito::ParamMeta::rttiIntArrayMeta) || !m)
-            {
-                type = "list of integers";
-            }
-            else if (m && m->getType() == ito::ParamMeta::rttiIntervalMeta)
-            {
-                type = "interval [first, last] (integers)";
-            }
-            else if (m && m->getType() == ito::ParamMeta::rttiRangeMeta)
-            {
-                type = "range [first, last] (integers)";
-            }
-            else if (m && m->getType() == ito::ParamMeta::rttiRectMeta)
-            {
-                type = "rectangle [left, top, width, height] (integers)";
-            }
-        }
-
-        break;
-    case ito::ParamBase::DoubleArray:
-        {
-            const ito::ParamMeta *m = param.getMeta();
-
-            if ((m && m->getType() == ito::ParamMeta::rttiDoubleArrayMeta) || !m)
-            {
-                type = "list of float64";
-            }
-            else if (m && m->getType() == ito::ParamMeta::rttiDoubleIntervalMeta)
-            {
-                type = "interval [first, last] (float64)";
-            }
-        }
-
-        break;
-    case ito::ParamBase::ComplexArray:
-        {
-            type = "list of complex128";
-        }
-
-        break;
-    case ito::ParamBase::DObjPtr:
-        {
-            type = "dataObject";
-        }
-
-        break;
-    case ito::ParamBase::PointCloudPtr:
-        {
-            type = "pointCloud";
-        }
-
-        break;
-    case ito::ParamBase::PolygonMeshPtr:
-        {
-            type = "polygonMesh";
-        }
-
-        break;
-    case ito::ParamBase::HWRef:
-        {
-            type = "hardware";
-            if (param.getMeta() != NULL)
-            {
-                const ito::HWMeta *pMeta = dynamic_cast<const ito::HWMeta*>(param.getMeta());
-                ito::ByteArray name = pMeta->getHWAddInName();
-                if (name.length() > 0)
+                if (pMeta->getMinType() & ito::typeAlgo)
                 {
-                    meta = tr("Only plugin '%1' is allowed.").arg(name.data());
+                    meta.append(tr("Algorithms") + ", ");
                 }
-                else
+                if (pMeta->getMinType() & ito::typeGrabber)
                 {
-                    meta = "";
-                    
-                    if (pMeta->getMinType() & ito::typeActuator)
-                    {
-                        meta.append(tr("Actuator") + ", ");
-                    }
-                    if (pMeta->getMinType() & ito::typeAlgo)
-                    {
-                        meta.append(tr("Algorithms") + ", ");
-                    }
-                    if (pMeta->getMinType() & ito::typeGrabber)
-                    {
-                        meta.append(tr("DataIO") + " " + tr("Grabber") + ", ");
-                    }
-                    else if (pMeta->getMinType() & ito::typeADDA)
-                    {
-                        meta.append(tr("DataIO") + " " + tr("ADDA") + ", ");
-                    }
-                    else if (pMeta->getMinType() & ito::typeRawIO)
-                    {
-                        meta.append(tr("DataIO") + " " + tr("Raw IO") + ", ");
-                    }
-                    else if (pMeta->getMinType() & ito::typeDataIO)
-                    {
-                        meta.append(tr("DataIO") + ", ");
-                    }
-
-                    meta = meta.mid(0, meta.size() - 2);
-                    meta = tr("Plugin of type '%1' are allowed.").arg(meta);
+                    meta.append(tr("DataIO") + " " + tr("Grabber") + ", ");
                 }
+                else if (pMeta->getMinType() & ito::typeADDA)
+                {
+                    meta.append(tr("DataIO") + " " + tr("ADDA") + ", ");
+                }
+                else if (pMeta->getMinType() & ito::typeRawIO)
+                {
+                    meta.append(tr("DataIO") + " " + tr("Raw IO") + ", ");
+                }
+                else if (pMeta->getMinType() & ito::typeDataIO)
+                {
+                    meta.append(tr("DataIO") + ", ");
+                }
+
+                meta = meta.mid(0, meta.size() - 2);
+                meta = tr("Plugin of type '%1' are allowed.").arg(meta);
             }
         }
+    }
 
-        break;
+    break;
     }
 
     ito::uint32 inOut = param.getFlags();
@@ -1358,7 +1511,8 @@ QString HelpTreeDockWidget::minText(int minimum) const
 */
 QString HelpTreeDockWidget::minText(double minimum) const
 {
-    if (std::abs(minimum + std::numeric_limits<double>::max()) < std::numeric_limits<double>::epsilon())
+    if (std::abs(minimum + std::numeric_limits<double>::max()) <
+        std::numeric_limits<double>::epsilon())
     {
         return "-inf";
     }
@@ -1409,7 +1563,8 @@ QString HelpTreeDockWidget::maxText(int maximum) const
 */
 QString HelpTreeDockWidget::maxText(double maximum) const
 {
-    if (std::abs(maximum - std::numeric_limits<double>::max()) < std::numeric_limits<double>::epsilon())
+    if (std::abs(maximum - std::numeric_limits<double>::max()) <
+        std::numeric_limits<double>::epsilon())
     {
         return "inf";
     }
@@ -1435,7 +1590,8 @@ QString HelpTreeDockWidget::maxText(char maximum) const
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! This function detects if a range minimum or maximum of a variable is equal to the minimum or maximum of the type
+//! This function detects if a range minimum or maximum of a variable is equal to the minimum or
+//! maximum of the type
 /*! For example if a range is max 255 and it�s a byte, this function returns inf
 
 \param value
@@ -1456,7 +1612,8 @@ QString HelpTreeDockWidget::minmaxText(int value) const
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! This function detects if a range minimum or maximum of a variable is equal to the minimum or maximum of the type
+//! This function detects if a range minimum or maximum of a variable is equal to the minimum or
+//! maximum of the type
 /*! For example if a range is max 255 and it�s a byte, this function returns inf
 
 \param value
@@ -1464,11 +1621,14 @@ QString HelpTreeDockWidget::minmaxText(int value) const
 */
 QString HelpTreeDockWidget::minmaxText(double value) const
 {
-    if (std::abs(value - std::numeric_limits<double>::max()) < std::numeric_limits<double>::epsilon())
+    if (std::abs(value - std::numeric_limits<double>::max()) <
+        std::numeric_limits<double>::epsilon())
     {
         return "inf";
     }
-    else if (std::abs(value + std::numeric_limits<double>::max()) < std::numeric_limits<double>::epsilon())
+    else if (
+        std::abs(value + std::numeric_limits<double>::max()) <
+        std::numeric_limits<double>::epsilon())
     {
         return "-inf";
     }
@@ -1477,7 +1637,8 @@ QString HelpTreeDockWidget::minmaxText(double value) const
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! This function detects if a range minimum or maximum of a variable is equal to the minimum or maximum of the type
+//! This function detects if a range minimum or maximum of a variable is equal to the minimum or
+//! maximum of the type
 /*! For example if a range is max 255 and it�s a byte, this function returns inf
 
 \param value
@@ -1499,8 +1660,8 @@ QString HelpTreeDockWidget::minmaxText(char value) const
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Save Gui positions to Main-ini-File
-/*! 
-*/
+/*!
+ */
 void HelpTreeDockWidget::storeSettings()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
@@ -1512,8 +1673,8 @@ void HelpTreeDockWidget::storeSettings()
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Load Gui positions to Main-ini-File
-/*! 
-*/
+/*!
+ */
 void HelpTreeDockWidget::restoreSettings()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
@@ -1524,24 +1685,26 @@ void HelpTreeDockWidget::restoreSettings()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void HelpTreeDockWidget::showEvent(QShowEvent *event)
+void HelpTreeDockWidget::showEvent(QShowEvent* event)
 {
     m_state |= stateVisible;
 
     QWidget::showEvent(event);
 
-    //load properties and then load the content
+    // load properties and then load the content
     propertiesChanged();
 
     QList<int> intList;
 
     if (m_treeVisible)
     {
-        intList  <<  ui.splitter->width() * m_treeWidthVisible/100  <<  ui.splitter->width() * (100 - m_treeWidthVisible) / 100;
+        intList << ui.splitter->width() * m_treeWidthVisible / 100
+                << ui.splitter->width() * (100 - m_treeWidthVisible) / 100;
     }
     else
     {
-        intList  <<  ui.splitter->width() * m_treeWidthInvisible/100  <<  ui.splitter->width() * (100 - m_treeWidthInvisible) / 100;
+        intList << ui.splitter->width() * m_treeWidthInvisible / 100
+                << ui.splitter->width() * (100 - m_treeWidthInvisible) / 100;
     }
 
     ui.splitter->setSizes(intList);
@@ -1549,8 +1712,8 @@ void HelpTreeDockWidget::showEvent(QShowEvent *event)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! (Re)load the help resources if some properties have changed
-/*! 
-*/
+/*!
+ */
 void HelpTreeDockWidget::propertiesChanged()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
@@ -1564,11 +1727,10 @@ void HelpTreeDockWidget::propertiesChanged()
     if (plaintext != m_plaintext)
     {
         m_plaintext = plaintext;
-        m_state = m_state & (~stateContentLoaded); //invalidate the content loaded flag
+        m_state = m_state & (~stateContentLoaded); // invalidate the content loaded flag
     }
 
-    if ((m_state & stateVisible) &&
-        (m_state & stateContentLoaded) == 0)
+    if ((m_state & stateVisible) && (m_state & stateContentLoaded) == 0)
     {
         reloadHelpResources();
     }
@@ -1577,33 +1739,34 @@ void HelpTreeDockWidget::propertiesChanged()
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Reload different help resources and clear search-edit and start the new thread
 /*! This function starts a new thread that loads the help resources.
-  
+
   \sa loadHelpResourcesFinished
 */
 void HelpTreeDockWidget::reloadHelpResources()
 {
     if (m_loaderWatcher.isRunning())
     {
-        //a previous reload and QtConcurrent::run is still running, wait for it to be finished
+        // a previous reload and QtConcurrent::run is still running, wait for it to be finished
         m_loaderWatcher.waitForFinished();
     }
 
-    bool success = m_dbLoaderMutex.tryLock(1); //!< will be unlocked again if QtConcurrent run is finished.
+    bool success =
+        m_dbLoaderMutex.tryLock(1); //!< will be unlocked again if QtConcurrent run is finished.
 
     if (!success)
     {
-        //the reloadHelpResources is still active. The finished-slot of the m_loaderWatcher
-        //has to be called first to reset the renewed m_pMainModel. This slot can only be called
-        //if the main thread, from which this method has also be called, is idle. Therefore
-        //initialize a short singleShot timer to recall this method after a short time.
+        // the reloadHelpResources is still active. The finished-slot of the m_loaderWatcher
+        // has to be called first to reset the renewed m_pMainModel. This slot can only be called
+        // if the main thread, from which this method has also be called, is idle. Therefore
+        // initialize a short singleShot timer to recall this method after a short time.
         QTimer::singleShot(50, this, SLOT(reloadHelpResources()));
         return;
     }
 
-    //clear the main model which will be updated in the QtConcurrent run later on...
+    // clear the main model which will be updated in the QtConcurrent run later on...
     m_pMainModel->clear();
     ui.treeView->reset();
-    
+
     m_pMainFilterModel->setSourceModel(NULL);
     m_previewMovie->start();
     ui.lblProcessMovie->setVisible(true);
@@ -1613,15 +1776,16 @@ void HelpTreeDockWidget::reloadHelpResources()
     ui.lblProcessText->setText(tr("Help resources are loading..."));
 
     // THREAD START QtConcurrent::run
-    QFuture<ito::RetVal> f1 = QtConcurrent::run(loadHelpResources, m_pMainModel/*, m_pDBList*/, &m_iconGallery);
+    QFuture<ito::RetVal> f1 =
+        QtConcurrent::run(loadHelpResources, m_pMainModel /*, m_pDBList*/, &m_iconGallery);
     m_loaderWatcher.setFuture(f1);
-    // THREAD END  
+    // THREAD END
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! This slot is called when the loading thread is finished
 /*! When this slot is called, the database is loaded and the main model created
-  
+
   \sa reloadHelpResources, loadHelpResources
 */
 void HelpTreeDockWidget::loadHelpResourcesFinished(int /*index*/)
@@ -1632,17 +1796,25 @@ void HelpTreeDockWidget::loadHelpResourcesFinished(int /*index*/)
 
     m_pMainFilterModel->sort(0, Qt::AscendingOrder);
 
-    //disconnect earlier connections (if available)
-	if (ui.treeView->selectionModel())
-	{
-		disconnect(ui.treeView->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)), this, SLOT(selectedItemChanged(const QModelIndex &, const QModelIndex &)));
-	}
+    // disconnect earlier connections (if available)
+    if (ui.treeView->selectionModel())
+    {
+        disconnect(
+            ui.treeView->selectionModel(),
+            SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)),
+            this,
+            SLOT(selectedItemChanged(const QModelIndex&, const QModelIndex&)));
+    }
 
-    //model has been 
+    // model has been
     ui.treeView->setModel(m_pMainFilterModel);
 
-    //after setModel, the corresponding selectionModel is changed, too
-    connect(ui.treeView->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)), this, SLOT(selectedItemChanged(const QModelIndex &, const QModelIndex &)));
+    // after setModel, the corresponding selectionModel is changed, too
+    connect(
+        ui.treeView->selectionModel(),
+        SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)),
+        this,
+        SLOT(selectedItemChanged(const QModelIndex&, const QModelIndex&)));
 
     m_previewMovie->stop();
     ui.lblProcessMovie->setVisible(false);
@@ -1668,7 +1840,8 @@ void HelpTreeDockWidget::loadHelpResourcesFinished(int /*index*/)
 
   \sa reloadHelpResources, loadHelpResources, createFilterWidgetNode
 */
-/*static*/ ito::RetVal HelpTreeDockWidget::loadHelpResources(QStandardItemModel *mainModel, const QMap<int,QIcon> *iconGallery)
+/*static*/ ito::RetVal HelpTreeDockWidget::loadHelpResources(
+    QStandardItemModel* mainModel, const QMap<int, QIcon>* iconGallery)
 {
     ito::RetVal retval;
 
@@ -1682,11 +1855,17 @@ void HelpTreeDockWidget::loadHelpResourcesFinished(int /*index*/)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // Highlight (parse) the Helptext to make it nice and readable for non docutils Docstrings
-// ERROR decides whether it's already formatted by docutils (Error = 0) or it must be parsed by this function (Error != 0)
-ito::RetVal HelpTreeDockWidget::highlightContent(const QString &prefix, 
-        const QString &name, const QString &param, const QString &shortDesc,
-        const QString &helpText, const QString &error, 
-        QTextDocument *document, const QMap<QString, QImage> &images)
+// ERROR decides whether it's already formatted by docutils (Error = 0) or it must be parsed by this
+// function (Error != 0)
+ito::RetVal HelpTreeDockWidget::highlightContent(
+    const QString& prefix,
+    const QString& name,
+    const QString& param,
+    const QString& shortDesc,
+    const QString& helpText,
+    const QString& error,
+    QTextDocument* document,
+    const QMap<QString, QImage>& images)
 {
     QString errorS = error.left(error.indexOf(" ", 0));
     int errorCode = errorS.toInt();
@@ -1694,14 +1873,14 @@ ito::RetVal HelpTreeDockWidget::highlightContent(const QString &prefix,
 
     /*********************************/
     // Allgemeine HTML sachen anfuegen /
-    /*********************************/ 
+    /*********************************/
     QString rawContent = helpText;
     QRegExp bodyFinder("<body>(.*)</body>");
     if (bodyFinder.indexIn(rawContent) >= 0)
     {
         rawContent = bodyFinder.cap(1);
     }
-    
+
 
     QString html = "<html><head>"
                    "<link rel='stylesheet' type='text/css' href='itom_help_style.css'>"
@@ -1717,7 +1896,7 @@ ito::RetVal HelpTreeDockWidget::highlightContent(const QString &prefix,
 
     // Ueberschrift (Funktionsname) einfuegen
     // -------------------------------------
-    rawContent.insert(0,"<h1 id=\"FunctionName\">"+name+param+"</h1>"+"");
+    rawContent.insert(0, "<h1 id=\"FunctionName\">" + name + param + "</h1>" + "");
 
     // Prefix als Navigations-Links einfuegen
     // -------------------------------------
@@ -1730,14 +1909,17 @@ ito::RetVal HelpTreeDockWidget::highlightContent(const QString &prefix,
             linkPath.append(splittedLink.mid(0, i + 1)[j] + ".");
         if (linkPath.right(1) == ".")
             linkPath = linkPath.left(linkPath.length() - 1);
-        rawContent.insert(0, "&nbsp;&gt;&gt;&nbsp;<a id=\"HiLink\" href=\"itom://" + linkPath + "\">" + splittedLink[i] + "</a>");
+        rawContent.insert(
+            0,
+            "&nbsp;&gt;&gt;&nbsp;<a id=\"HiLink\" href=\"itom://" + linkPath + "\">" +
+                splittedLink[i] + "</a>");
     }
 
     // Insert docstring
     // -------------------------------------
     if (m_plaintext)
-    {   // Only for debug reasons! Displays the Plaintext instead of the html
-        rawContent.replace("<br/>","<br/>\n");
+    { // Only for debug reasons! Displays the Plaintext instead of the html
+        rawContent.replace("<br/>", "<br/>\n");
         document->setPlainText(html.arg(rawContent));
     }
     else
@@ -1752,24 +1934,36 @@ ito::RetVal HelpTreeDockWidget::highlightContent(const QString &prefix,
             it++;
         }
 
-        //see if prefix is a leaf or a module / package:
+        // see if prefix is a leaf or a module / package:
         QModelIndex idx = findIndexByPath(1, prefix.split("."), m_pMainModel->invisibleRootItem());
         bool leaf = (m_pMainModel->rowCount(idx) == 0);
 
-        
+
         if (leaf)
         {
-            //matches :obj:`test <sdf>` where sdf must not contain a > sign. < and > are written as &lt; or &gt; in html!
-            rawContent.replace(QRegExp(":obj:`([a-zA-Z0-9_-\\.]+) &lt;(((?!&gt;).)*)&gt;`"), "<a id=\"HiLink\" href=\"itom://" + prefix.left(prefix.lastIndexOf('.')) + ".\\1\">\\2</a>");
+            // matches :obj:`test <sdf>` where sdf must not contain a > sign. < and > are written as
+            // &lt; or &gt; in html!
+            rawContent.replace(
+                QRegExp(":obj:`([a-zA-Z0-9_-\\.]+) &lt;(((?!&gt;).)*)&gt;`"),
+                "<a id=\"HiLink\" href=\"itom://" + prefix.left(prefix.lastIndexOf('.')) +
+                    ".\\1\">\\2</a>");
 
-            rawContent.replace(QRegExp(":obj:`([a-zA-Z0-9_-\\.]+)`"), "<a id=\"HiLink\" href=\"itom://" + prefix.left(prefix.lastIndexOf('.')) + ".\\1\">\\1</a>");
+            rawContent.replace(
+                QRegExp(":obj:`([a-zA-Z0-9_-\\.]+)`"),
+                "<a id=\"HiLink\" href=\"itom://" + prefix.left(prefix.lastIndexOf('.')) +
+                    ".\\1\">\\1</a>");
         }
         else
         {
-            //matches :obj:`test <sdf>` where sdf must not contain a > sign. < and > are written as &lt; or &gt; in html!
-            rawContent.replace(QRegExp(":obj:`([a-zA-Z0-9_-\\.]+) &lt;(((?!&gt;).)*)&gt;`"), "<a id=\"HiLink\" href=\"itom://" + prefix + ".\\1\">\\2</a>");
+            // matches :obj:`test <sdf>` where sdf must not contain a > sign. < and > are written as
+            // &lt; or &gt; in html!
+            rawContent.replace(
+                QRegExp(":obj:`([a-zA-Z0-9_-\\.]+) &lt;(((?!&gt;).)*)&gt;`"),
+                "<a id=\"HiLink\" href=\"itom://" + prefix + ".\\1\">\\2</a>");
 
-            rawContent.replace(QRegExp(":obj:`([a-zA-Z0-9_-\\.]+)`"), "<a id=\"HiLink\" href=\"itom://" + prefix + ".\\1\">\\1</a>");
+            rawContent.replace(
+                QRegExp(":obj:`([a-zA-Z0-9_-\\.]+)`"),
+                "<a id=\"HiLink\" href=\"itom://" + prefix + ".\\1\">\\1</a>");
         }
 
         if (0)
@@ -1782,7 +1976,7 @@ ito::RetVal HelpTreeDockWidget::highlightContent(const QString &prefix,
             seeAlso.indexIn(rawContent);
             QString oldSec = seeAlso.capturedTexts()[0];
 
-            if (oldSec == "") //there are version, where the see-also section is an admonition
+            if (oldSec == "") // there are version, where the see-also section is an admonition
             {
                 seeAlso.setPattern("(<div class=\"admonition-see-also seealso\">).*(</div>)");
                 seeAlso.indexIn(rawContent);
@@ -1797,14 +1991,16 @@ ito::RetVal HelpTreeDockWidget::highlightContent(const QString &prefix,
             while (links.indexIn(oldSec, offset) > -1)
             {
                 texts.append(links.capturedTexts()[1]);
-                offset = links.pos()+links.matchedLength();
+                offset = links.pos() + links.matchedLength();
             }
 
             // Build the new Section with Headings, Links, etc
             QString newSection = "<p class=\"rubric\">See Also</p><p>";
             for (int i = 0; i < texts.length(); i++)
             {
-                newSection.append("\n<a id=\"HiLink\" href=\"itom://" + prefix.left(prefix.lastIndexOf('.')) + "." + texts[i] + "\">" + texts[i].remove('`') + "</a>, ");
+                newSection.append(
+                    "\n<a id=\"HiLink\" href=\"itom://" + prefix.left(prefix.lastIndexOf('.')) +
+                    "." + texts[i] + "\">" + texts[i].remove('`') + "</a>, ");
             }
             newSection = newSection.left(newSection.length() - 2);
             newSection.append("\n</p>");
@@ -1815,7 +2011,7 @@ ito::RetVal HelpTreeDockWidget::highlightContent(const QString &prefix,
         }
 
         document->setHtml(html.arg(rawContent));
-        
+
         ////dummy output (write last loaded Plaintext into html-File)
         /*QFile file2("helpOutput.html");
         file2.open(QIODevice::WriteOnly);
@@ -1827,13 +2023,13 @@ ito::RetVal HelpTreeDockWidget::highlightContent(const QString &prefix,
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! slot invoked by toolbar 
+//! slot invoked by toolbar
 /*!
     This is the Slot is called by the toolbar when the user enters a filter into the search edit.
 
     \param filterText the text that the model is filtered with.
 */
-void HelpTreeDockWidget::liveFilter(const QString &filterText)
+void HelpTreeDockWidget::liveFilter(const QString& filterText)
 {
     m_filterTextPending = filterText;
     if (m_filterTextPendingTimer >= 0)
@@ -1841,13 +2037,12 @@ void HelpTreeDockWidget::liveFilter(const QString &filterText)
         killTimer(m_filterTextPendingTimer);
     }
     m_filterTextPendingTimer = startTimer(250);
-    
 }
 
 //---------------------------------------------------------------------------------------------------------------------------------
-void HelpTreeDockWidget::timerEvent(QTimerEvent *event)
+void HelpTreeDockWidget::timerEvent(QTimerEvent* event)
 {
-//    showTreeview();
+    //    showTreeview();
     m_pMainFilterModel->setFilterRegExp(m_filterTextPending);
     expandTree();
 
@@ -1856,15 +2051,16 @@ void HelpTreeDockWidget::timerEvent(QTimerEvent *event)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// 
-// prot|||....link.....        
+//
+// prot|||....link.....
 //! Returns a list containing the protocol[0] and the real link[1]
-/*! This functions looks for different protocols in the links that can be clicked inside the textBrowser
-    
+/*! This functions looks for different protocols in the links that can be clicked inside the
+   textBrowser
+
     \param link link link that is analysed
     \return returns a list of all parts of the link
 */
-QStringList HelpTreeDockWidget::separateLink(const QUrl &link)
+QStringList HelpTreeDockWidget::separateLink(const QUrl& link)
 {
     QStringList result;
     QByteArray examplePrefix = "example:";
@@ -1875,12 +2071,12 @@ QStringList HelpTreeDockWidget::separateLink(const QUrl &link)
         if (link.host() == "widget.html")
         {
             result.append("widget");
-            result.append(QUrl::fromPercentEncoding(link.fragment().toLatin1()));     
+            result.append(QUrl::fromPercentEncoding(link.fragment().toLatin1()));
         }
         else if (link.host() == "algorithm.html")
         {
             result.append("algorithm");
-            result.append(QUrl::fromPercentEncoding(link.fragment().toLatin1()));      
+            result.append(QUrl::fromPercentEncoding(link.fragment().toLatin1()));
         }
         else
         {
@@ -1914,14 +2110,16 @@ QStringList HelpTreeDockWidget::separateLink(const QUrl &link)
 //----------------------------------------------------------------------------------------------------------------------------------
 //! slot invoked by different widgets to display a help page from extern
 /*!
-    This is the Slot that can be externally called by other widgets to display filter or widget help ... i.a. AIManagerWidget
+    This is the Slot that can be externally called by other widgets to display filter or widget help
+   ... i.a. AIManagerWidget
 
     \param name name of the function that is supposed to be displayed
-    \param type it decides wheather the help is stored in a database (1) or calls showFilterWidgetPluginHelp(...) (2-8)
-    \param modelIndex that was clicked. If it's empty, it's a call from a link or from extern
-    \param fromLink if true, a link called that slot
+    \param type it decides wheather the help is stored in a database (1) or calls
+   showFilterWidgetPluginHelp(...) (2-8) \param modelIndex that was clicked. If it's empty, it's a
+   call from a link or from extern \param fromLink if true, a link called that slot
 */
-void HelpTreeDockWidget::showPluginInfo(const QString &name, HelpItemType type, const QModelIndex &modelIndex, bool fromLink)
+void HelpTreeDockWidget::showPluginInfo(
+    const QString& name, HelpItemType type, const QModelIndex& modelIndex, bool fromLink)
 {
     bool ok = false;
 
@@ -1955,7 +2153,7 @@ void HelpTreeDockWidget::showPluginInfo(const QString &name, HelpItemType type, 
         }
     }
 
-    // Check if it is it 
+    // Check if it is it
     if (fromLink)
     {
         m_internalCall = true;
@@ -1966,7 +2164,8 @@ void HelpTreeDockWidget::showPluginInfo(const QString &name, HelpItemType type, 
         }
         else
         {
-            QModelIndex index = findIndexByPath(type == 1 ? 1 : 2, name.split("."), m_pMainModel->invisibleRootItem());
+            QModelIndex index = findIndexByPath(
+                type == 1 ? 1 : 2, name.split("."), m_pMainModel->invisibleRootItem());
             if (index.isValid() && m_pMainFilterModel->sourceModel())
             {
                 ui.treeView->setCurrentIndex(m_pMainFilterModel->mapFromSource(index));
@@ -1982,7 +2181,7 @@ void HelpTreeDockWidget::showPluginInfo(const QString &name, HelpItemType type, 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! finds a Modelindex related to MainModel (not FilterModel)belonging to an Itemname
+//! finds a model index related to MainModel (not FilterModel)belonging to an Itemname
 /*!
 
     \param type of the item (for more information see type enumeration in header file)
@@ -1990,9 +2189,10 @@ void HelpTreeDockWidget::showPluginInfo(const QString &name, HelpItemType type, 
     \param current item whose children are searched
     \return QModelIndex
 */
-QModelIndex HelpTreeDockWidget::findIndexByPath(const int type, QStringList path, const QStandardItem* current)
+QModelIndex HelpTreeDockWidget::findIndexByPath(
+    const int type, QStringList path, const QStandardItem* current)
 {
-    QStandardItem *temp;
+    QStandardItem* temp;
     int counts;
     QString tempString;
     QString firstPath;
@@ -2004,7 +2204,7 @@ QModelIndex HelpTreeDockWidget::findIndexByPath(const int type, QStringList path
 
         for (int j = 0; j < counts; ++j)
         {
-            temp = current->child(j,0);
+            temp = current->child(j, 0);
 
             if (path.length() == 0 && temp->text().toLower() == firstPath.toLower())
             {
@@ -2049,81 +2249,100 @@ void HelpTreeDockWidget::collapseTree()
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // Link inside Textbrowser is clicked
-void HelpTreeDockWidget::on_helpTreeContent_anchorClicked(const QUrl & link)
+void HelpTreeDockWidget::on_helpTreeContent_anchorClicked(const QUrl& link)
 {
     QString t = link.toString();
     QStringList parts = separateLink(link);
 
-    if (parts.size() < 2) return;
+    if (parts.size() < 2)
+        return;
 
     QString parts0 = parts[0];
     QStringList parts1 = parts[1].split(".");
-        
+
     if (parts0 == "http")
-    {//WebLink
+    { // WebLink
         QDesktopServices::openUrl(link);
     }
     else if (parts0 == "mailto")
-    {//MailTo-Link
+    { // MailTo-Link
         QDesktopServices::openUrl(parts[1]);
     }
     else if (parts0 == "example")
-    {//Copy an example to Clipboard
-        QClipboard *clip = QApplication::clipboard();
+    { // Copy an example to Clipboard
+        QClipboard* clip = QApplication::clipboard();
         clip->setText(parts[1], QClipboard::Clipboard);
     }
     else if (parts0 == "itom")
     {
-        //pass
+        // pass
     }
     else if (parts[1].split(".").length() == 1 || (parts1[0] == "DataIO" && parts1.length() == 2))
     {
-        showPluginInfo(parts[1], typeCategory, findIndexByPath(2, parts1, m_pMainModel->invisibleRootItem()), true);
+        showPluginInfo(
+            parts[1],
+            typeCategory,
+            findIndexByPath(2, parts1, m_pMainModel->invisibleRootItem()),
+            true);
     }
     else if (parts0 == "algorithm" && parts1.length() < 3)
     {
-        //Filter Plugin
-        showPluginInfo(parts[1], typeFPlugin, findIndexByPath(2, parts1, m_pMainModel->invisibleRootItem()), true);
+        // Filter Plugin
+        showPluginInfo(
+            parts[1],
+            typeFPlugin,
+            findIndexByPath(2, parts1, m_pMainModel->invisibleRootItem()),
+            true);
     }
     else if (parts0 == "algorithm" && parts1.length() >= 3)
     {
         if (parts1[0] == "Widgets")
         {
-            //Widget (This is a workaround for the Linklist. Without this else if the links wouldn�t work
-            showPluginInfo(parts[1], typeWidget, findIndexByPath(2, parts1, m_pMainModel->invisibleRootItem()), true);
+            // Widget (This is a workaround for the Linklist. Without this else if the links
+            // wouldn�t work
+            showPluginInfo(
+                parts[1],
+                typeWidget,
+                findIndexByPath(2, parts1, m_pMainModel->invisibleRootItem()),
+                true);
         }
         else
         {
-            //Filter (This is a workaround for the Linklist. Without this else if the links wouldn�t work
-            showPluginInfo(parts[1], typeFilter, findIndexByPath(2, parts1, m_pMainModel->invisibleRootItem()), true);
+            // Filter (This is a workaround for the Linklist. Without this else if the links
+            // wouldn�t work
+            showPluginInfo(
+                parts[1],
+                typeFilter,
+                findIndexByPath(2, parts1, m_pMainModel->invisibleRootItem()),
+                true);
         }
     }
     else if (parts0 == "-1")
     {
-        //ui.label->setText(tr("invalid Link"));
+        // ui.label->setText(tr("invalid Link"));
     }
     else
     {
-        //ui.label->setText(tr("unknown protocol"));
+        // ui.label->setText(tr("unknown protocol"));
         QMessageBox msgBox;
         msgBox.setText(tr("The protocol of the link is unknown. "));
         msgBox.setInformativeText(tr("Do you want to try with the external browser?"));
         msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
         msgBox.setDefaultButton(QMessageBox::Yes);
         int ret = msgBox.exec();
-        switch (ret) 
+        switch (ret)
         {
-            case QMessageBox::Yes:
-                QDesktopServices::openUrl(link);
-            case QMessageBox::No:
-                break;
+        case QMessageBox::Yes:
+            QDesktopServices::openUrl(link);
+        case QMessageBox::No:
+            break;
         }
-    }    
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // Saves the position of the splitter depending on the use of the tree or the textbox
-void HelpTreeDockWidget::on_splitter_splitterMoved (int pos, int index)
+void HelpTreeDockWidget::on_splitter_splitterMoved(int pos, int index)
 {
     double width = ui.splitter->width();
     if (m_treeVisible == true)
@@ -2143,12 +2362,17 @@ void HelpTreeDockWidget::on_splitter_splitterMoved (int pos, int index)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // Show the Help in the right Memo
-void HelpTreeDockWidget::selectedItemChanged(const QModelIndex &current, const QModelIndex &previous)
+void HelpTreeDockWidget::selectedItemChanged(
+    const QModelIndex& current, const QModelIndex& previous)
 {
     if (m_internalCall == false)
     {
         HelpItemType type = (HelpItemType)current.data(roleType).toInt();
-        showPluginInfo(current.data(rolePath).toString(), type, m_pMainFilterModel->mapToSource(current), false);
+        showPluginInfo(
+            current.data(rolePath).toString(),
+            type,
+            m_pMainFilterModel->mapToSource(current),
+            false);
     }
 }
 
@@ -2159,7 +2383,7 @@ void HelpTreeDockWidget::navigateBackwards()
     if (m_historyIndex > 0)
     {
         m_historyIndex--;
-        QModelIndex filteredIndex = m_pMainFilterModel->mapFromSource(m_history.at(m_historyIndex));    
+        QModelIndex filteredIndex = m_pMainFilterModel->mapFromSource(m_history.at(m_historyIndex));
         HelpItemType type = (HelpItemType)filteredIndex.data(roleType).toInt();
 
         showPluginInfo(filteredIndex.data(rolePath).toString(), type, QModelIndex(), true);
@@ -2170,7 +2394,7 @@ void HelpTreeDockWidget::navigateBackwards()
 // Forward-Button
 void HelpTreeDockWidget::navigateForwards()
 {
-    if (m_historyIndex < m_history.length()-1)
+    if (m_historyIndex < m_history.length() - 1)
     {
         m_historyIndex++;
         QModelIndex filteredIndex = m_pMainFilterModel->mapFromSource(m_history.at(m_historyIndex));
@@ -2182,7 +2406,7 @@ void HelpTreeDockWidget::navigateForwards()
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // Expand Tree
-void HelpTreeDockWidget::on_treeView_expanded(const QModelIndex &index)
+void HelpTreeDockWidget::on_treeView_expanded(const QModelIndex& index)
 {
     if (!m_doingExpandAll)
     {
@@ -2192,7 +2416,7 @@ void HelpTreeDockWidget::on_treeView_expanded(const QModelIndex &index)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // Collapse Tree
-void HelpTreeDockWidget::on_treeView_collapsed(const QModelIndex &index)
+void HelpTreeDockWidget::on_treeView_collapsed(const QModelIndex& index)
 {
     if (!m_doingExpandAll)
     {
@@ -2207,7 +2431,7 @@ QColor HelpTreeDockWidget::backgroundColorHeading() const
 }
 
 //-------------------------------------------------------------------------------------
-void HelpTreeDockWidget::setBackgroundColorHeading(const QColor &color)
+void HelpTreeDockWidget::setBackgroundColorHeading(const QColor& color)
 {
     if (color != m_backgroundColorHeading)
     {
@@ -2222,7 +2446,7 @@ QColor HelpTreeDockWidget::textColorHeading() const
 }
 
 //-------------------------------------------------------------------------------------
-void HelpTreeDockWidget::setTextColorHeading(const QColor &color)
+void HelpTreeDockWidget::setTextColorHeading(const QColor& color)
 {
     if (color != m_textColorHeading)
     {
@@ -2237,7 +2461,7 @@ QColor HelpTreeDockWidget::linkColor() const
 }
 
 //-------------------------------------------------------------------------------------
-void HelpTreeDockWidget::setLinkColor(const QColor &color)
+void HelpTreeDockWidget::setLinkColor(const QColor& color)
 {
     if (color != m_linkColor)
     {
@@ -2252,7 +2476,7 @@ QColor HelpTreeDockWidget::backgroundParamName() const
 }
 
 //-------------------------------------------------------------------------------------
-void HelpTreeDockWidget::setBackgroundParamName(const QColor &color)
+void HelpTreeDockWidget::setBackgroundParamName(const QColor& color)
 {
     if (color != m_backgroundParamName)
     {
@@ -2267,7 +2491,7 @@ QColor HelpTreeDockWidget::backgroundColorSection() const
 }
 
 //-------------------------------------------------------------------------------------
-void HelpTreeDockWidget::setBackgroundColorSection(const QColor &color)
+void HelpTreeDockWidget::setBackgroundColorSection(const QColor& color)
 {
     if (color != m_backgroundColorSection)
     {
@@ -2282,7 +2506,7 @@ QColor HelpTreeDockWidget::textColorSection() const
 }
 
 //-------------------------------------------------------------------------------------
-void HelpTreeDockWidget::setTextColorSection(const QColor &color)
+void HelpTreeDockWidget::setTextColorSection(const QColor& color)
 {
     if (color != m_textColorSection)
     {
@@ -2308,13 +2532,10 @@ void HelpTreeDockWidget::loadAndProcessCssStyleSheet()
         cssData.replace("$backgroundColorSection$", m_backgroundColorSection.name());
 
         ui.helpTreeContent->document()->addResource(
-            QTextDocument::StyleSheetResource, 
-            QUrl("help_style.css"), 
-            cssData
-        );
+            QTextDocument::StyleSheetResource, QUrl("help_style.css"), cssData);
 
         file.close();
     }
 }
 
-} //end namespace ito
+} // end namespace ito

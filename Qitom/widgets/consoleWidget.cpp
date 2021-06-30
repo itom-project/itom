@@ -1158,7 +1158,7 @@ RetVal ConsoleWidget::execCommand(int beginLine, int endLine)
         singleLine = buffer.join("\n");
         
         //clc command will be accepted and parsed as single command -> this leads to our desired behaviour
-        QList<int> lines = pyEng->parseAndSplitCommandInMainComponents(singleLine.toLatin1().data(), encoding); 
+        QList<int> lines = pyEng->parseAndSplitCommandInMainComponents(singleLine, encoding); 
 
         //if lines is empty, a syntax error occurred in the file and the python error indicator is set.
         //This will be checked in subsequent call of run-string or debug-string method.
