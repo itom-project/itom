@@ -122,7 +122,8 @@ namespace ito
 #else
         const QMetaObject mo = StaticQtMetaObject::get();
 #endif
-        const char* val_ = val.toLower().data();
+        const QByteArray lowerByte = val.toLower();
+        const char* val_ = lowerByte.data();
         QMetaEnum me = mo.enumerator(mo.indexOfEnumerator("PixelFormat"));
         int pixelFormat = me.keyToValue(val_, ok);
         return pixelFormat;

@@ -69,9 +69,15 @@ namespace ito
         virtual ito::RetVal sendDataToListeners(int waitMS); /*!< sends m_data to all registered listeners. */
         ito::RetVal adaptDefaultChannelParams(); /*!< adaptes the params after changing the defaultChannel param*/
         void addChannel(QString name);
-        virtual ito::RetVal synchronizeParamswithChannelParams(QString previousChannel);/*!< synchronizes m_params with the params of default channel container */
+        virtual ito::RetVal switchDefaultChannel();/*!< synchronizes m_params with the params of default channel container */
         virtual ito::RetVal applyParamsToChannelParams(QStringList keyList = QStringList());
-        void initializeDefaultConfiguration(QMap<QString, ChannelContainer> channelContainerMap);/*!< sets the channel parameters.*/
+        void initializeDefaultConfiguration(const QMap<QString, ChannelContainer>& channelContainerMap, const QMap<QString, ito::Param>& nonChannelSpecificParams = QMap<QString, ito::Param>());/*!< sets the channel parameters.*/
+        
+        template <typename T> ito::RetVal setParamVal(const QByteArray& paramName,const T& val, const QList<QByteArray>& channelList = QList<QByteArray>());
+        ito::RetVal setParamMeta(const QByteArray& paramName, ito::ParamMeta* meta, bool takeOwnerShip, const QList<QByteArray>& channelList = QList<QByteArray>());
+        ito::RetVal setParamFlags(const QByteArray& paramName, const unsigned int& flags, const QList<QByteArray>& channelList = QList<QByteArray>());
+        ito::RetVal roiChanged(const QList<QByteArray>& channelList = QList<QByteArray>());
+
 
         ////! Specific function to set the parameters in the respective plugin class
         ///*!
