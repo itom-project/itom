@@ -48,6 +48,11 @@ DialogVariableDetailDataObject::DialogVariableDetailDataObject(
     ui.txtDType->setText(dtype);
 
     ui.dataTable->setReadOnly(true);
+    connect(
+        ui.dataTable,
+        &DataObjectTable::selectionInformationChanged,
+        ui.lblSelectionInformation,
+        &QLabel::setText);
 
     ui.metaWidget->setData(m_dObj);
     ui.metaWidget->setReadOnly(true);
@@ -124,7 +129,7 @@ DialogVariableDetailDataObject::DialogVariableDetailDataObject(
         ui.comboBoxDisplayedCol->addItems(items);
         ui.comboBoxDisplayedCol->setCurrentIndex(col);
 
-        
+
         QStandardItemModel* model =
             qobject_cast<QStandardItemModel*>(ui.comboBoxDisplayedRow->model());
         QStandardItem* item =

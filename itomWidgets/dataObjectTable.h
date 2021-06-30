@@ -25,14 +25,14 @@
    which can be found in the file LGPL_EXCEPTION.txt in this package.
 *********************************************************************** */
 
-#ifndef DATAOBJECTTABLE_H
-#define DATAOBJECTTABLE_H
+#pragma once
 
 #include "DataObject/dataobj.h"
 
 #include <qtableview.h>
 #include <qsharedpointer.h>
 #include <qheaderview.h>
+#include <qitemselectionmodel.h>
 
 #include "commonWidgets.h"
 
@@ -138,6 +138,8 @@ protected:
     void keyPressEvent(QKeyEvent *e);
     void contextMenuEvent(QContextMenuEvent *event);
 
+    void selectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
+
 private:
 
 private slots:
@@ -156,6 +158,5 @@ signals:
     void doubleClicked (int row, int column);
     void entered (int row, int column);
     void pressed (int row, int column);
+    void selectionInformationChanged(const QString &selectionInformation);
 };
-
-#endif
