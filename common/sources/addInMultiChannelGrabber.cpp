@@ -467,7 +467,17 @@ namespace ito
             }
             if (list.contains("roi")) //if key is roi sizex and sizey must be adapted
             {
-                updateSizeXY();
+                if (!suffix.isEmpty())
+                {
+                    QByteArrayList channelList;
+                    channelList.append(suffix.toLatin1());
+                    roiChanged(channelList);
+                }
+                else
+                {
+                    roiChanged();
+                }
+
             }
             if (!retValue.containsError())
             {
@@ -796,7 +806,7 @@ namespace ito
             {
                 const int* roi = m_channels[channelList[i]].m_channelParam["roi"].getVal<const int*>();
                 retValue += m_channels[channelList[i]].m_channelParam["sizex"].setVal<int>(roi[2]);
-                retValue += m_channels[channelList[i]].m_channelParam["sizex"].setVal<int>(roi[3]);
+                retValue += m_channels[channelList[i]].m_channelParam["sizey"].setVal<int>(roi[3]);
 
             }
             if (channelList.contains(m_params["defaultChannel"].getVal<const char*>()))
