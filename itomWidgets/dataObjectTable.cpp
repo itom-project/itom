@@ -26,6 +26,7 @@
 *********************************************************************** */
 
 #include "dataObjectTable.h"
+#include <qactiongroup.h>
 #include <qapplication.h>
 #include <qclipboard.h>
 #include <qdebug.h>
@@ -41,10 +42,37 @@
 #include "common/typeDefs.h"
 
 
+class DataObjectTablePrivate
+{
+public:
+    DataObjectTablePrivate() :
+        m_pActNumberFormatStandard(nullptr), m_pActNumberFormatScientific(nullptr),
+        m_pActNumberFormatAuto(nullptr), m_pActCopyAll(nullptr),
+        m_pActCopySelection(nullptr), m_pActResizeColumnsToContent(nullptr)
+    {
+    }
+
+    QAction* m_pActNumberFormatStandard;
+    QAction* m_pActNumberFormatScientific;
+    QAction* m_pActNumberFormatAuto;
+
+    QAction *m_pActCopyAll;
+    QAction *m_pActCopySelection;
+    QAction *m_pActResizeColumnsToContent;
+};
+
+
+QHash<DataObjectTable*, DataObjectTablePrivate*> DataObjectTable::PrivateHash =
+    QHash<DataObjectTable*, DataObjectTablePrivate*>();
+
+
 //-------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------
 DataObjectTable::DataObjectTable(QWidget* parent /*= 0*/) : QTableView(parent)
 {
+    PrivateHash[this] = new DataObjectTablePrivate();
+    DataObjectTablePrivate *d = PrivateHash[this];
+
     m_pModel = new DataObjectModel();
     m_pDelegate = new DataObjectDelegate(this);
 
@@ -58,6 +86,58 @@ DataObjectTable::DataObjectTable(QWidget* parent /*= 0*/) : QTableView(parent)
     connect(this, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(_doubleClicked(QModelIndex)));
     connect(this, SIGNAL(entered(QModelIndex)), this, SLOT(_entered(QModelIndex)));
     connect(this, SIGNAL(pressed(QModelIndex)), this, SLOT(_pressed(QModelIndex)));
+
+    d->m_pActCopyAll =
+        new QAction(QIcon(":/files/icons/clipboard.png"), "copy all", this);
+    connect(d->m_pActCopyAll, &QAction::triggered, this, &DataObjectTable::copyAllToClipboard);
+    d->m_pActCopyAll->setStatusTip(tr("Copy the entire table to the clipboard as semicolon-separated text."));
+    addAction(d->m_pActCopyAll);
+
+    d->m_pActCopySelection = new QAction(
+        QIcon(":/files/icons/clipboard.png"), "copy selection", this);
+    connect(d->m_pActCopySelection, &QAction::triggered, this, &DataObjectTable::copySelectionToClipboard);
+    d->m_pActCopySelection->setStatusTip(tr("Copy the current selection to the clipboard as semicolon-separated text."));
+    d->m_pActCopySelection->setEnabled(false);
+    addAction(d->m_pActCopySelection);
+
+    QAction *a = new QAction(this);
+    a->setSeparator(true);
+    addAction(a);
+
+    a = new QAction(QIcon(":general/icons/decimals.png"), "decimals...", this);
+    connect(a, &QAction::triggered, this, &DataObjectTable::setDecimalsGUI);
+    a->setStatusTip(tr("Set the number of decimals."));
+    addAction(a);
+
+    d->m_pActNumberFormatStandard = new QAction(tr("Standard"), this);
+    d->m_pActNumberFormatStandard->setData(NumberFormat::Standard);
+    d->m_pActNumberFormatStandard->setCheckable(true);
+    d->m_pActNumberFormatScientific = new QAction(tr("Scientific"), this);
+    d->m_pActNumberFormatScientific->setData(NumberFormat::Scientific);
+    d->m_pActNumberFormatScientific->setCheckable(true);
+    d->m_pActNumberFormatAuto = new QAction(tr("Auto"), this);
+    d->m_pActNumberFormatAuto->setData(NumberFormat::Auto);
+    d->m_pActNumberFormatAuto->setCheckable(true);
+
+    QActionGroup* ag = new QActionGroup(this);
+    ag->addAction(d->m_pActNumberFormatStandard);
+    ag->addAction(d->m_pActNumberFormatScientific);
+    ag->addAction(d->m_pActNumberFormatAuto);
+    d->m_pActNumberFormatStandard->setChecked(true);
+    connect(ag, &QActionGroup::triggered, this, &DataObjectTable::numberFormatTriggered);
+
+    QMenu* numberFormatMenu = new QMenu(tr("number format"), this);
+    numberFormatMenu->addAction(d->m_pActNumberFormatStandard);
+    numberFormatMenu->addAction(d->m_pActNumberFormatScientific);
+    numberFormatMenu->addAction(d->m_pActNumberFormatAuto);
+
+    addAction(numberFormatMenu->menuAction());
+
+    d->m_pActResizeColumnsToContent = new QAction(
+        QIcon(":/misc/icons/color_stop_equidistant.png"), "resize columns to content", this);
+    connect(d->m_pActResizeColumnsToContent, &QAction::triggered, this, &DataObjectTable::resizeColumnsToContents);
+    d->m_pActResizeColumnsToContent->setStatusTip(tr("Resizes all columns to fit the current content."));
+    addAction(d->m_pActResizeColumnsToContent);
 
     horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
@@ -73,6 +153,9 @@ DataObjectTable::~DataObjectTable()
 {
     m_pDelegate->deleteLater();
     m_pModel->deleteLater();
+
+    delete PrivateHash[this];
+    PrivateHash.remove(this);
 }
 
 //-------------------------------------------------------------------------------------
@@ -137,6 +220,44 @@ int DataObjectTable::getDecimals() const
 void DataObjectTable::setDecimals(int value)
 {
     m_pModel->setDecimals(value);
+}
+
+//-------------------------------------------------------------------------------------
+void DataObjectTable::setNumberFormat(const NumberFormat& format)
+{
+    const char numberFormats[3] = {'f', 'e', 'g'};
+    m_pModel->setNumberFormat(numberFormats[format]);
+
+    DataObjectTablePrivate *priv = PrivateHash[this];
+
+    switch (format)
+    {
+    case Standard:
+        priv->m_pActNumberFormatStandard->setChecked(true);
+        break;
+    case Scientific:
+        priv->m_pActNumberFormatScientific->setChecked(true);
+        break;
+    default:
+        priv->m_pActNumberFormatAuto->setChecked(true);
+        break;
+    }
+}
+
+//-------------------------------------------------------------------------------------
+DataObjectTable::NumberFormat DataObjectTable::getNumberFormat() const
+{
+    char nf = m_pModel->getNumberFormat();
+
+    switch (nf)
+    {
+    case 'f':
+        return Standard;
+    case 'e':
+        return Scientific;
+    default:
+        return Auto;
+    }
 }
 
 //-------------------------------------------------------------------------------------
@@ -285,6 +406,7 @@ QSize DataObjectTable::sizeHint() const
     return QSize(w, h);
 }
 
+//-------------------------------------------------------------------------------------
 bool sortByRowAndColumn(const QModelIndex& idx1, const QModelIndex& idx2)
 {
     if (idx1.row() == idx2.row())
@@ -313,24 +435,8 @@ void DataObjectTable::keyPressEvent(QKeyEvent* e)
 void DataObjectTable::contextMenuEvent(QContextMenuEvent* event)
 {
     QMenu contextMenu(this);
-    contextMenu.addAction(
-        QIcon(":/itomDesignerPlugins/general/icons/clipboard.png"),
-        "copy selection",
-        this,
-        SLOT(copySelectionToClipboard()));
-    contextMenu.addAction(
-        QIcon(":/itomDesignerPlugins/general/icons/clipboard.png"),
-        "copy all",
-        this,
-        SLOT(copyAllToClipboard()));
-    contextMenu.addSeparator();
-    contextMenu.addAction(
-        QIcon(":/itomDesignerPlugins/general/icons/decimals.png"),
-        "decimals...",
-        this,
-        SLOT(setDecimalsGUI()));
+    contextMenu.addActions(actions());
     contextMenu.exec(event->globalPos());
-
     event->accept();
 }
 
@@ -589,9 +695,16 @@ void gatherSelectionInformation<ito::complex128>(
 void DataObjectTable::selectionChanged(
     const QItemSelection& selected, const QItemSelection& deselected)
 {
+    DataObjectTablePrivate *d = PrivateHash[this];
+
     QTableView::selectionChanged(selected, deselected);
 
     const QModelIndexList& indexes = selectedIndexes(); // selected.indexes();
+
+    if (d->m_pActCopySelection)
+    {
+        d->m_pActCopySelection->setEnabled(indexes.size() > 0);
+    }
 
     if (indexes.size() == 0)
     {
@@ -656,4 +769,10 @@ void DataObjectTable::selectionChanged(
             qDebug() << "error gathering selection information.";
         }
     }
+}
+
+//-------------------------------------------------------------------------------------
+void DataObjectTable::numberFormatTriggered(QAction* a)
+{
+    setNumberFormat((NumberFormat)a->data().toInt());
 }

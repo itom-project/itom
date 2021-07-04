@@ -28,6 +28,9 @@
 #include <qclipboard.h>
 #include <qmap.h>
 #include <qspinbox.h>
+#include <qboxlayout.h>
+#include <qmainwindow.h>
+#include <qtoolbar.h>
 
 namespace ito {
 
@@ -46,6 +49,16 @@ DialogVariableDetailDataObject::DialogVariableDetailDataObject(
     ui.txtName->setText(name);
     ui.txtType->setText(type);
     ui.txtDType->setText(dtype);
+
+    QMainWindow *tableMain = new QMainWindow(this);
+    tableMain->setWindowFlag(Qt::Widget, true);
+    QToolBar *tb = tableMain->addToolBar("myToolbar");
+
+    QVBoxLayout *tableLayout = qobject_cast<QVBoxLayout*>(ui.tabTable->layout());
+    tableLayout->insertWidget(0, tableMain);
+    tableLayout->removeWidget(ui.dataTable);
+    tableMain->setCentralWidget(ui.dataTable);
+    tb->addActions(ui.dataTable->actions());
 
     ui.dataTable->setReadOnly(true);
     connect(

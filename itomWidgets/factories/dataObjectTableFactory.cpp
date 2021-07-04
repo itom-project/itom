@@ -57,12 +57,12 @@ QString DataObjectTableFactory::name() const
 
 QString DataObjectTableFactory::group() const
 {
-    return "itom Plugins";
+    return "itom [widgets]";
 }
 
 QIcon DataObjectTableFactory::icon() const
 {
-    return QIcon(":/itomDesignerPlugins/itom/icons/q_itoM32.png");
+    return QIcon(":/icons/dataObjectTable.png");
 }
 
 QString DataObjectTableFactory::toolTip() const
@@ -72,7 +72,7 @@ QString DataObjectTableFactory::toolTip() const
 
 QString DataObjectTableFactory::whatsThis() const
 {
-    return QObject::tr("itom widget to interprete a dataObject as a table.");
+    return QObject::tr("itom widget to interpret a dataObject as a table.");
 }
 
 bool DataObjectTableFactory::isContainer() const
@@ -94,6 +94,9 @@ QString DataObjectTableFactory::domXml() const
            </property>\n \
          <property name=\"columnCount\">\n \
             <number>3</number>\n \
+           </property>\n \
+         <property name=\"alignment\">\n \
+           <set>Qt::AlignRight | Qt::AlignTrailing | Qt::AlignVCenter</set>\n \
            </property>\n \
         </widget>\n";
 }

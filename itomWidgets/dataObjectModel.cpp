@@ -34,22 +34,22 @@
 int DataObjectModel::displayRoleWithoutSuffix = Qt::UserRole + 1;
 int DataObjectModel::preciseDisplayRoleWithoutSuffix = Qt::UserRole + 2;
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 DataObjectModel::DataObjectModel() :
     m_readOnly(false), m_defaultRows(0), m_defaultCols(0), m_decimals(2), m_dummyData(true),
-    m_alignment(Qt::AlignLeft)
+    m_alignment(Qt::AlignLeft), m_numberFormat('f')
 {
     m_sharedDataObj = QSharedPointer<ito::DataObject>(new ito::DataObject());
-    //m_sharedDataObj->zeros(m_defaultRows, m_defaultCols, ito::tFloat32);
+    // m_sharedDataObj->zeros(m_defaultRows, m_defaultCols, ito::tFloat32);
     setAlignment(Qt::AlignVCenter);
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 DataObjectModel::~DataObjectModel()
 {
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 QString DataObjectModel::getDisplayNumber(const unsigned int& number, const int column) const
 {
     QString suffix;
@@ -70,7 +70,7 @@ QString DataObjectModel::getDisplayNumber(const unsigned int& number, const int 
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 QString DataObjectModel::getDisplayNumber(const int& number, const int column) const
 {
     QString suffix;
@@ -91,7 +91,7 @@ QString DataObjectModel::getDisplayNumber(const int& number, const int column) c
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 QString DataObjectModel::getDisplayNumber(
     const ito::float64& number, const int column, int decimals /*= -1*/) const
 {
@@ -121,17 +121,17 @@ QString DataObjectModel::getDisplayNumber(
         if (column >= 0)
         {
             // local style (dot might be replaced by dot...)
-            return QString("%L1%2").arg(number, 0, 'f', decimals).arg(suffix);
+            return QString("%L1%2").arg(number, 0, m_numberFormat, decimals).arg(suffix);
         }
         else
         {
             // programm style, dot remains dot... (for copy to clipboard operations)
-            return QString("%1%2").arg(number, 0, 'f', decimals).arg(suffix);
+            return QString("%1%2").arg(number, 0, m_numberFormat, decimals).arg(suffix);
         }
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 QString DataObjectModel::getDisplayNumber(
     const ito::float32& number, const int column, int decimals /*= -1*/) const
 {
@@ -161,17 +161,17 @@ QString DataObjectModel::getDisplayNumber(
         if (column >= 0)
         {
             // local style (dot might be replaced by dot...)
-            return QString("%L1%2").arg(number, 0, 'f', decimals).arg(suffix);
+            return QString("%L1%2").arg(number, 0, m_numberFormat, decimals).arg(suffix);
         }
         else
         {
             // programm style, dot remains dot... (for copy to clipboard operations)
-            return QString("%1%2").arg(number, 0, 'f', decimals).arg(suffix);
+            return QString("%1%2").arg(number, 0, m_numberFormat, decimals).arg(suffix);
         }
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 QString DataObjectModel::getDisplayNumber(
     const ito::complex64& number, const int column, int decimals /*= -1*/) const
 {
@@ -204,13 +204,13 @@ QString DataObjectModel::getDisplayNumber(
             if (number.imag() >= 0)
             {
                 return QString("%L1+%L2i%3")
-                    .arg(number.real(), 0, 'f', decimals)
-                    .arg(number.imag(), 0, 'f', decimals)
+                    .arg(number.real(), 0, m_numberFormat, decimals)
+                    .arg(number.imag(), 0, m_numberFormat, decimals)
                     .arg(suffix);
             }
             return QString("%L1-%L2i%3")
-                .arg(number.real(), 0, 'f', decimals)
-                .arg(-number.imag(), 0, 'f', decimals)
+                .arg(number.real(), 0, m_numberFormat, decimals)
+                .arg(-number.imag(), 0, m_numberFormat, decimals)
                 .arg(suffix);
         }
         else
@@ -219,19 +219,19 @@ QString DataObjectModel::getDisplayNumber(
             if (number.imag() >= 0)
             {
                 return QString("%1+%2i%3")
-                    .arg(number.real(), 0, 'f', decimals)
-                    .arg(number.imag(), 0, 'f', decimals)
+                    .arg(number.real(), 0, m_numberFormat, decimals)
+                    .arg(number.imag(), 0, m_numberFormat, decimals)
                     .arg(suffix);
             }
             return QString("%1-%2i%3")
-                .arg(number.real(), 0, 'f', decimals)
-                .arg(-number.imag(), 0, 'f', decimals)
+                .arg(number.real(), 0, m_numberFormat, decimals)
+                .arg(-number.imag(), 0, m_numberFormat, decimals)
                 .arg(suffix);
         }
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 QString DataObjectModel::getDisplayNumber(
     const ito::complex128& number, const int column, int decimals /*= -1*/) const
 {
@@ -264,13 +264,13 @@ QString DataObjectModel::getDisplayNumber(
             if (number.imag() >= 0)
             {
                 return QString("%L1+%L2i%3")
-                    .arg(number.real(), 0, 'f', decimals)
-                    .arg(number.imag(), 0, 'f', decimals)
+                    .arg(number.real(), 0, m_numberFormat, decimals)
+                    .arg(number.imag(), 0, m_numberFormat, decimals)
                     .arg(suffix);
             }
             return QString("%L1-%L2i%3")
-                .arg(number.real(), 0, 'f', decimals)
-                .arg(-number.imag(), 0, 'f', decimals)
+                .arg(number.real(), 0, m_numberFormat, decimals)
+                .arg(-number.imag(), 0, m_numberFormat, decimals)
                 .arg(suffix);
         }
         else
@@ -279,19 +279,19 @@ QString DataObjectModel::getDisplayNumber(
             if (number.imag() >= 0)
             {
                 return QString("%1+%2i%3")
-                    .arg(number.real(), 0, 'f', decimals)
-                    .arg(number.imag(), 0, 'f', decimals)
+                    .arg(number.real(), 0, m_numberFormat, decimals)
+                    .arg(number.imag(), 0, m_numberFormat, decimals)
                     .arg(suffix);
             }
             return QString("%1-%2i%3")
-                .arg(number.real(), 0, 'f', decimals)
-                .arg(-number.imag(), 0, 'f', decimals)
+                .arg(number.real(), 0, m_numberFormat, decimals)
+                .arg(-number.imag(), 0, m_numberFormat, decimals)
                 .arg(suffix);
         }
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 QVariant DataObjectModel::data(const QModelIndex& index, int role) const
 {
     if (index.row() < 0 || index.column() < 0 ||
@@ -315,9 +315,9 @@ QVariant DataObjectModel::data(const QModelIndex& index, int role) const
         switch (m_sharedDataObj->getDims())
         {
         case 0:
-            return getDisplayNumber(
-                0.0, column); // default case (for designer, adjustment can be done using the
-                              // defaultRow and defaultCol property)
+            // default case (for designer, adjustment can be done using the
+            // defaultRow and defaultCol property)
+            return getDisplayNumber(0.0, column);
         case 1:
         case 2: {
             switch (m_sharedDataObj->getType())
@@ -453,7 +453,7 @@ QVariant DataObjectModel::data(const QModelIndex& index, int role) const
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 bool DataObjectModel::setData(
     const QModelIndex& index, const QVariant& value, int role /* = Qt::EditRole */)
 {
@@ -489,7 +489,7 @@ bool DataObjectModel::setData(
     return false;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 bool DataObjectModel::setValue(const int& row, const int& column, const QVariant& value)
 {
     Q_ASSERT(row >= 0);
@@ -597,7 +597,7 @@ bool DataObjectModel::setValue(const int& row, const int& column, const QVariant
     return false;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 QModelIndex DataObjectModel::index(int row, int column, const QModelIndex& parent) const
 {
     if (parent.isValid() == false)
@@ -607,13 +607,13 @@ QModelIndex DataObjectModel::index(int row, int column, const QModelIndex& paren
     return QModelIndex();
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 QModelIndex DataObjectModel::parent(const QModelIndex& /*index*/) const
 {
     return QModelIndex();
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 int DataObjectModel::rowCount(const QModelIndex& parent) const
 {
     if (parent.isValid() == false && m_sharedDataObj->getDims() > 0)
@@ -627,7 +627,7 @@ int DataObjectModel::rowCount(const QModelIndex& parent) const
     return 0;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 int DataObjectModel::columnCount(const QModelIndex& parent) const
 {
     if (parent.isValid() == false)
@@ -645,7 +645,7 @@ int DataObjectModel::columnCount(const QModelIndex& parent) const
     return 0;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 QVariant DataObjectModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
     if (role == Qt::DisplayRole)
@@ -717,7 +717,7 @@ QVariant DataObjectModel::headerData(int section, Qt::Orientation orientation, i
     return QVariant();
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void DataObjectModel::setHeaderLabels(Qt::Orientation orientation, const QStringList& labels)
 {
     beginResetModel();
@@ -733,7 +733,7 @@ void DataObjectModel::setHeaderLabels(Qt::Orientation orientation, const QString
     emit headerDataChanged(orientation, 0, labels.count() - 1);
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 Qt::ItemFlags DataObjectModel::flags(const QModelIndex& index) const
 {
     if (m_readOnly || m_sharedDataObj->getDims() == 0)
@@ -743,7 +743,7 @@ Qt::ItemFlags DataObjectModel::flags(const QModelIndex& index) const
     return Qt::ItemIsEditable | Qt::ItemIsSelectable | Qt::ItemIsEnabled;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void DataObjectModel::setDataObject(QSharedPointer<ito::DataObject> dataObj)
 {
     m_dummyData = false;
@@ -753,7 +753,7 @@ void DataObjectModel::setDataObject(QSharedPointer<ito::DataObject> dataObj)
     endResetModel();
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void DataObjectModel::setReadOnly(bool value)
 {
     beginResetModel();
@@ -761,7 +761,7 @@ void DataObjectModel::setReadOnly(bool value)
     endResetModel();
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void DataObjectModel::setDefaultGrid(int rows, int cols)
 {
     if (m_defaultRows != rows || m_defaultCols != cols)
@@ -788,23 +788,40 @@ void DataObjectModel::setDefaultGrid(int rows, int cols)
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void DataObjectModel::setAlignment(const Qt::Alignment& alignment)
 {
-    beginResetModel();
-    m_alignment = alignment;
-    endResetModel();
+    if (alignment != m_alignment)
+    {
+        beginResetModel();
+        m_alignment = alignment;
+        endResetModel();
+    }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void DataObjectModel::setDecimals(const int decimals)
 {
-    beginResetModel();
-    m_decimals = decimals;
-    endResetModel();
+    if (m_decimals != decimals)
+    {
+        beginResetModel();
+        m_decimals = decimals;
+        endResetModel();
+    }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
+void DataObjectModel::setNumberFormat(const char& format)
+{
+    if (format != m_numberFormat)
+    {
+        beginResetModel();
+        m_numberFormat = format;
+        endResetModel();
+    }
+}
+
+//-------------------------------------------------------------------------------------
 void DataObjectModel::setSuffixes(const QStringList& suffixes)
 {
     beginResetModel();

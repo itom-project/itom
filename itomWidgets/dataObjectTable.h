@@ -33,6 +33,7 @@
 #include <qsharedpointer.h>
 #include <qheaderview.h>
 #include <qitemselectionmodel.h>
+#include <qhash.h>
 
 #include "commonWidgets.h"
 
@@ -40,6 +41,7 @@ class QKeyEvent;
 class QContextMenuEvent;
 class DataObjectModel;
 class DataObjectDelegate;
+class DataObjectTablePrivate;
 
 class ITOMWIDGETS_EXPORT DataObjectTable : public QTableView
 {
@@ -59,6 +61,7 @@ class ITOMWIDGETS_EXPORT DataObjectTable : public QTableView
     Q_PROPERTY(QHeaderView::ResizeMode horizontalResizeMode READ getHorizontalResizeMode WRITE setHorizontalResizeMode DESIGNABLE true);
     Q_PROPERTY(QHeaderView::ResizeMode verticalResizeMode READ getVerticalResizeMode WRITE setVerticalResizeMode DESIGNABLE true);
     Q_PROPERTY(Qt::Alignment alignment READ getAlignment WRITE setAlignment DESIGNABLE true);
+    Q_PROPERTY(NumberFormat numberFormat READ getNumberFormat WRITE setNumberFormat DESIGNABLE true);
     
 
     Q_CLASSINFO("prop://data", "dataObject that is displaye in the table view");
@@ -75,6 +78,7 @@ class ITOMWIDGETS_EXPORT DataObjectTable : public QTableView
     Q_CLASSINFO("prop://horizontalResizeMode", "defines the mode how the rows can be resized or are stretched over the available space (ResizeToContents, Interactive, Stretch, Fixed, Custom -> see QHeaderView::ResizeMode).");
     Q_CLASSINFO("prop://verticalResizeMode", "defines the mode how the columns can be resized or are stretched over the available space (ResizeToContents, Interactive, Stretch, Fixed, Custom -> see QHeaderView::ResizeMode).");
     Q_CLASSINFO("prop://alignment", "alignment of the text cells.");
+    Q_CLASSINFO("prop://numberFormat", "number format notation for floating point numbers, e.g. 0.002 or 2e-3. The meaning of ``decimals`` depends on this property.")
 
     Q_CLASSINFO("signal://activated", "signal emitted if a cell is activated. Arguments are (row,column) of the cell.")
     Q_CLASSINFO("signal://clicked", "signal emitted if a cell is clicked by the mouse. Arguments are (row,column) of the cell.")
@@ -83,6 +87,9 @@ class ITOMWIDGETS_EXPORT DataObjectTable : public QTableView
     Q_CLASSINFO("signal://pressed", "signal emitted if a cell if the mouse is pressed on a cell. Arguments are (row,column) of the cell.")
 
 public:
+    enum NumberFormat { Standard = 0, Scientific = 1, Auto = 2 };
+    Q_ENUM(NumberFormat)
+
     DataObjectTable(QWidget *parent = 0);
     ~DataObjectTable();
 
@@ -100,6 +107,9 @@ public:
 
     int getDecimals() const;
     void setDecimals(int value);
+
+    void setNumberFormat(const NumberFormat& format);
+    NumberFormat getNumberFormat() const;
 
     Qt::Alignment getAlignment() const;
     void setAlignment(Qt::Alignment alignment);
@@ -141,6 +151,8 @@ protected:
     void selectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
 
 private:
+    //!< todo: convert to classical private class if the addInInterface is incremented for the next time
+    static QHash<DataObjectTable*, DataObjectTablePrivate*> PrivateHash;
 
 private slots:
     inline void _activated (const QModelIndex &index) { emit activated(index.row(), index.column()); }
@@ -151,6 +163,7 @@ private slots:
     void copySelectionToClipboard();
     void copyAllToClipboard();
     void setDecimalsGUI();
+    void numberFormatTriggered(QAction *a);
 
 signals:
     void activated (int row, int column);

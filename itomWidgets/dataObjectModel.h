@@ -25,8 +25,7 @@
    which can be found in the file LGPL_EXCEPTION.txt in this package.
 *********************************************************************** */
 
-#ifndef DATAOBJECTMODEL_H
-#define DATAOBJECTMODEL_H
+#pragma once
 
 #include "DataObject/dataobj.h"
 
@@ -36,9 +35,9 @@
 
 #ifndef DATAOBJECTMODEL_TYPEDEFINED
 #define DATAOBJECTMODEL_TYPEDEFINED
-Q_DECLARE_METATYPE(ito::complex64);
-Q_DECLARE_METATYPE(ito::complex128);
-Q_DECLARE_METATYPE(ito::Rgba32);
+    Q_DECLARE_METATYPE(ito::complex64);
+    Q_DECLARE_METATYPE(ito::complex128);
+    Q_DECLARE_METATYPE(ito::Rgba32);
 #endif
 
 class DataObjectModel : public QAbstractItemModel
@@ -46,6 +45,8 @@ class DataObjectModel : public QAbstractItemModel
     Q_OBJECT
 
 public:
+    
+
     DataObjectModel();
     ~DataObjectModel();
 
@@ -115,6 +116,12 @@ public:
         return m_alignment;
     }
 
+    void setNumberFormat(const char& format);
+    inline char getNumberFormat() const
+    {
+        return m_numberFormat;
+    }
+
     static int displayRoleWithoutSuffix;
     static int preciseDisplayRoleWithoutSuffix;
 
@@ -141,8 +148,7 @@ private:
     int m_decimals;
     QStringList m_suffixes;
     Qt::Alignment m_alignment;
+    char m_numberFormat;
 
     bool m_dummyData;
 };
-
-#endif // DATAOBJECTMODEL_H
