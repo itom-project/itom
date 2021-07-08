@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>838</width>
+    <width>792</width>
     <height>698</height>
    </rect>
   </property>
@@ -260,28 +260,7 @@
         </attribute>
         <layout class="QVBoxLayout" name="verticalLayout_2">
          <item>
-          <widget class="DataObjectTable" name="dataTable">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="alternatingRowColors">
-            <bool>true</bool>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-           </property>
-           <property name="rowCount" stdset="0">
-            <number>3</number>
-           </property>
-           <property name="columnCount" stdset="0">
-            <number>3</number>
-           </property>
+          <widget class="ito::ExtendedDataObjectTable" name="dataTable">
            <attribute name="verticalHeaderMinimumSectionSize">
             <number>20</number>
            </attribute>
@@ -372,146 +351,6 @@
            <item/>
            <item/>
            <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
           </widget>
          </item>
         </layout>
@@ -544,14 +383,14 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>DataObjectTable</class>
-   <extends>QTableView</extends>
-   <header>dataObjectTable.h</header>
-  </customwidget>
-  <customwidget>
    <class>DataObjectMetaWidget</class>
    <extends>QTreeWidget</extends>
    <header>dataObjectMetaWidget.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ito::ExtendedDataObjectTable</class>
+   <extends>QTableView</extends>
+   <header>widgets/extendedDataObjectTable.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>

@@ -26,9 +26,11 @@
 *********************************************************************** */
 
 #include "dataObjectModel.h"
+#include "dataObjectTable.h"
 #include <qcolor.h>
 #include <qnumeric.h>
 
+#include "DataObject/dataObjectFuncs.h"
 #include "common/typeDefs.h"
 
 int DataObjectModel::displayRoleWithoutSuffix = Qt::UserRole + 1;
@@ -37,11 +39,14 @@ int DataObjectModel::preciseDisplayRoleWithoutSuffix = Qt::UserRole + 2;
 //-------------------------------------------------------------------------------------
 DataObjectModel::DataObjectModel() :
     m_readOnly(false), m_defaultRows(0), m_defaultCols(0), m_decimals(2), m_dummyData(true),
-    m_alignment(Qt::AlignLeft), m_numberFormat('f')
+    m_alignment(Qt::AlignLeft), m_numberFormat('f'), m_heatmapInterval(0, 0, true),
+    m_enableHeatmap(true), m_colorStopLow(122, 190, 2), m_colorStopMiddle(255, 218, 0),
+    m_colorStopHigh(254, 5, 0)
 {
     m_sharedDataObj = QSharedPointer<ito::DataObject>(new ito::DataObject());
     // m_sharedDataObj->zeros(m_defaultRows, m_defaultCols, ito::tFloat32);
     setAlignment(Qt::AlignVCenter);
+    setHeatmapType(DataObjectTable::Off);
 }
 
 //-------------------------------------------------------------------------------------
@@ -391,6 +396,78 @@ QVariant DataObjectModel::data(const QModelIndex& index, int role) const
                 return QColor(m_sharedDataObj->at<ito::Rgba32>(row, column).argb());
             }
         default:
+            return QVariant();
+        }
+    }
+    else if (role == Qt::BackgroundRole)
+    {
+        if (m_enableHeatmap)
+        {
+            double value;
+
+            switch (m_sharedDataObj->getType())
+            {
+            case ito::tInt8:
+                value = m_sharedDataObj->at<ito::int8>(row, column);
+                break;
+            case ito::tUInt8:
+                value = m_sharedDataObj->at<ito::uint8>(row, column);
+                break;
+            case ito::tInt16:
+                value = m_sharedDataObj->at<ito::int16>(row, column);
+                break;
+            case ito::tUInt16:
+                value = m_sharedDataObj->at<ito::uint16>(row, column);
+                break;
+            case ito::tInt32:
+                value = m_sharedDataObj->at<ito::int32>(row, column);
+                break;
+            case ito::tUInt32:
+                value = m_sharedDataObj->at<ito::uint32>(row, column);
+                break;
+            case ito::tFloat32:
+                value = m_sharedDataObj->at<ito::float32>(row, column);
+                break;
+            case ito::tFloat64:
+                value = m_sharedDataObj->at<ito::float64>(row, column);
+                break;
+            case ito::tRGBA32:
+            {
+                ito::Rgba32 c(m_sharedDataObj->at<ito::Rgba32>(row, column));
+
+                if (c.alpha() == 0)
+                {
+                    return QVariant();
+                }
+
+                return QColor(c.argb());
+            }
+            default:
+                return QVariant();
+            }
+
+            if (qIsFinite(value))
+            {
+                double factor = (value - m_heatmapInterval.minimum()) /
+                    (m_heatmapInterval.maximum() - m_heatmapInterval.minimum());
+                const QColor& c1 = factor < 0.5 ? m_colorStopLow : m_colorStopMiddle;
+                const QColor& c2 = factor < 0.5 ? m_colorStopMiddle : m_colorStopHigh;
+                factor = qBound(0.0, factor * 2, 1.0);
+
+                int r = c1.red() * (1.0 - factor) + c2.red() * factor;
+                int g = c1.green() * (1.0 - factor) + c2.green() * factor;
+                int b = c1.blue() * (1.0 - factor) + c2.blue() * factor;
+                int a = c1.alpha() * (1.0 - factor) + c2.alpha() * factor;
+
+                return QColor(r, g, b, a);
+            }
+            else
+            {
+                return QVariant();
+            }
+        }
+        else
+        {
             return QVariant();
         }
     }
@@ -750,6 +827,17 @@ void DataObjectModel::setDataObject(QSharedPointer<ito::DataObject> dataObj)
 
     beginResetModel();
     m_sharedDataObj = dataObj;
+
+    int type = dataObj->getType();
+
+    if (m_heatmapInterval.isAuto() && type != ito::tRGBA32 && type != ito::tComplex64 &&
+        type != ito::tComplex128)
+    {
+        ito::uint32 temp[] = {0, 0, 0};
+        ito::dObjHelper::minMaxValue(
+            dataObj.data(), m_heatmapInterval.rmin(), temp, m_heatmapInterval.rmax(), temp, true);
+    }
+
     endResetModel();
 }
 
@@ -808,6 +896,48 @@ void DataObjectModel::setDecimals(const int decimals)
         m_decimals = decimals;
         endResetModel();
     }
+}
+
+//-------------------------------------------------------------------------------------
+void DataObjectModel::setHeatmapType(int type)
+{
+    beginResetModel();
+    
+    switch ((DataObjectTable::HeatmapType)type)
+    {
+    case DataObjectTable::Off:
+        m_enableHeatmap = false;
+        break;
+    case DataObjectTable::RealColor:
+        m_enableHeatmap = true;
+        break;
+    case DataObjectTable::RedYellowGreen:
+        m_enableHeatmap = true;
+        m_colorStopLow = QColor(122, 190, 2);
+        m_colorStopMiddle = QColor(255, 218, 0);
+        m_colorStopHigh = QColor(254, 5, 0);
+        break;
+    case DataObjectTable::GreenYellowRed:
+        m_enableHeatmap = true;
+        m_colorStopHigh = QColor(122, 190, 2);
+        m_colorStopMiddle = QColor(255, 218, 0);
+        m_colorStopLow = QColor(254, 5, 0);
+        break;
+    case DataObjectTable::RedWhiteGreen:
+        m_enableHeatmap = true;
+        m_colorStopLow = QColor(122, 190, 2);
+        m_colorStopMiddle = QColor(255, 255, 255);
+        m_colorStopHigh = QColor(254, 5, 0);
+        break;
+    case DataObjectTable::GreenWhiteRed:
+        m_enableHeatmap = true;
+        m_colorStopHigh = QColor(122, 190, 2);
+        m_colorStopMiddle = QColor(255, 255, 255);
+        m_colorStopLow = QColor(254, 5, 0);
+        break;
+    }
+
+    endResetModel();
 }
 
 //-------------------------------------------------------------------------------------

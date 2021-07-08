@@ -60,7 +60,9 @@ DialogVariableDetailDataObject::DialogVariableDetailDataObject(
     tableMain->setCentralWidget(ui.dataTable);
     tb->addActions(ui.dataTable->actions());
 
+    ui.dataTable->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
     ui.dataTable->setReadOnly(true);
+
     connect(
         ui.dataTable,
         &DataObjectTable::selectionInformationChanged,

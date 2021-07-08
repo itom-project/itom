@@ -28,10 +28,12 @@
 #pragma once
 
 #include "DataObject/dataobj.h"
+#include "common/interval.h"
 
 #include <qabstractitemmodel.h>
 #include <qsharedpointer.h>
 #include <qstringlist.h>
+#include <qcolor.h>
 
 #ifndef DATAOBJECTMODEL_TYPEDEFINED
 #define DATAOBJECTMODEL_TYPEDEFINED
@@ -122,6 +124,8 @@ public:
         return m_numberFormat;
     }
 
+    void setHeatmapType(int type);
+
     static int displayRoleWithoutSuffix;
     static int preciseDisplayRoleWithoutSuffix;
 
@@ -149,6 +153,11 @@ private:
     QStringList m_suffixes;
     Qt::Alignment m_alignment;
     char m_numberFormat;
+    ito::AutoInterval m_heatmapInterval;
+    bool m_enableHeatmap;
+    QColor m_colorStopLow;
+    QColor m_colorStopMiddle;
+    QColor m_colorStopHigh;
 
     bool m_dummyData;
 };

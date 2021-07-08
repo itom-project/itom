@@ -47,8 +47,10 @@ class DataObjectTablePrivate
 public:
     DataObjectTablePrivate() :
         m_pActNumberFormatStandard(nullptr), m_pActNumberFormatScientific(nullptr),
-        m_pActNumberFormatAuto(nullptr), m_pActCopyAll(nullptr),
-        m_pActCopySelection(nullptr), m_pActResizeColumnsToContent(nullptr)
+        m_pActNumberFormatAuto(nullptr), m_pActCopyAll(nullptr), m_pActCopySelection(nullptr),
+        m_pActResizeColumnsToContent(nullptr), m_pActHeatmapOff(nullptr), m_pActHeatmapRgb(nullptr),
+        m_pActHeatmapRYG(nullptr), m_pActHeatmapGYR(nullptr), m_pActHeatmapRWG(nullptr),
+        m_pActHeatmapGWR(nullptr), m_pMenuHeatmap(nullptr)
     {
     }
 
@@ -56,9 +58,18 @@ public:
     QAction* m_pActNumberFormatScientific;
     QAction* m_pActNumberFormatAuto;
 
-    QAction *m_pActCopyAll;
-    QAction *m_pActCopySelection;
-    QAction *m_pActResizeColumnsToContent;
+    QAction* m_pActCopyAll;
+    QAction* m_pActCopySelection;
+    QAction* m_pActResizeColumnsToContent;
+
+    QAction* m_pActHeatmapOff;
+    QAction* m_pActHeatmapRgb;
+    QAction* m_pActHeatmapRYG;
+    QAction* m_pActHeatmapGYR;
+    QAction* m_pActHeatmapRWG;
+    QAction* m_pActHeatmapGWR;
+
+    QMenu* m_pMenuHeatmap;
 };
 
 
@@ -71,7 +82,6 @@ QHash<DataObjectTable*, DataObjectTablePrivate*> DataObjectTable::PrivateHash =
 DataObjectTable::DataObjectTable(QWidget* parent /*= 0*/) : QTableView(parent)
 {
     PrivateHash[this] = new DataObjectTablePrivate();
-    DataObjectTablePrivate *d = PrivateHash[this];
 
     m_pModel = new DataObjectModel();
     m_pDelegate = new DataObjectDelegate(this);
@@ -87,57 +97,7 @@ DataObjectTable::DataObjectTable(QWidget* parent /*= 0*/) : QTableView(parent)
     connect(this, SIGNAL(entered(QModelIndex)), this, SLOT(_entered(QModelIndex)));
     connect(this, SIGNAL(pressed(QModelIndex)), this, SLOT(_pressed(QModelIndex)));
 
-    d->m_pActCopyAll =
-        new QAction(QIcon(":/files/icons/clipboard.png"), "copy all", this);
-    connect(d->m_pActCopyAll, &QAction::triggered, this, &DataObjectTable::copyAllToClipboard);
-    d->m_pActCopyAll->setStatusTip(tr("Copy the entire table to the clipboard as semicolon-separated text."));
-    addAction(d->m_pActCopyAll);
-
-    d->m_pActCopySelection = new QAction(
-        QIcon(":/files/icons/clipboard.png"), "copy selection", this);
-    connect(d->m_pActCopySelection, &QAction::triggered, this, &DataObjectTable::copySelectionToClipboard);
-    d->m_pActCopySelection->setStatusTip(tr("Copy the current selection to the clipboard as semicolon-separated text."));
-    d->m_pActCopySelection->setEnabled(false);
-    addAction(d->m_pActCopySelection);
-
-    QAction *a = new QAction(this);
-    a->setSeparator(true);
-    addAction(a);
-
-    a = new QAction(QIcon(":general/icons/decimals.png"), "decimals...", this);
-    connect(a, &QAction::triggered, this, &DataObjectTable::setDecimalsGUI);
-    a->setStatusTip(tr("Set the number of decimals."));
-    addAction(a);
-
-    d->m_pActNumberFormatStandard = new QAction(tr("Standard"), this);
-    d->m_pActNumberFormatStandard->setData(NumberFormat::Standard);
-    d->m_pActNumberFormatStandard->setCheckable(true);
-    d->m_pActNumberFormatScientific = new QAction(tr("Scientific"), this);
-    d->m_pActNumberFormatScientific->setData(NumberFormat::Scientific);
-    d->m_pActNumberFormatScientific->setCheckable(true);
-    d->m_pActNumberFormatAuto = new QAction(tr("Auto"), this);
-    d->m_pActNumberFormatAuto->setData(NumberFormat::Auto);
-    d->m_pActNumberFormatAuto->setCheckable(true);
-
-    QActionGroup* ag = new QActionGroup(this);
-    ag->addAction(d->m_pActNumberFormatStandard);
-    ag->addAction(d->m_pActNumberFormatScientific);
-    ag->addAction(d->m_pActNumberFormatAuto);
-    d->m_pActNumberFormatStandard->setChecked(true);
-    connect(ag, &QActionGroup::triggered, this, &DataObjectTable::numberFormatTriggered);
-
-    QMenu* numberFormatMenu = new QMenu(tr("number format"), this);
-    numberFormatMenu->addAction(d->m_pActNumberFormatStandard);
-    numberFormatMenu->addAction(d->m_pActNumberFormatScientific);
-    numberFormatMenu->addAction(d->m_pActNumberFormatAuto);
-
-    addAction(numberFormatMenu->menuAction());
-
-    d->m_pActResizeColumnsToContent = new QAction(
-        QIcon(":/misc/icons/color_stop_equidistant.png"), "resize columns to content", this);
-    connect(d->m_pActResizeColumnsToContent, &QAction::triggered, this, &DataObjectTable::resizeColumnsToContents);
-    d->m_pActResizeColumnsToContent->setStatusTip(tr("Resizes all columns to fit the current content."));
-    addAction(d->m_pActResizeColumnsToContent);
+    createActions();
 
     horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
@@ -159,13 +119,131 @@ DataObjectTable::~DataObjectTable()
 }
 
 //-------------------------------------------------------------------------------------
+void DataObjectTable::createActions()
+{
+    DataObjectTablePrivate* d = PrivateHash[this];
+
+    d->m_pActCopyAll = new QAction(QIcon(":/files/icons/tableExport.svg"), tr("Copy All"), this);
+    connect(d->m_pActCopyAll, &QAction::triggered, this, &DataObjectTable::copyAllToClipboard);
+    d->m_pActCopyAll->setStatusTip(
+        tr("Copy the entire table to the clipboard as semicolon-separated text."));
+    addAction(d->m_pActCopyAll);
+
+    d->m_pActCopySelection =
+        new QAction(QIcon(":/files/icons/tableExportSelection.svg"), tr("Copy Selection"), this);
+    connect(
+        d->m_pActCopySelection,
+        &QAction::triggered,
+        this,
+        &DataObjectTable::copySelectionToClipboard);
+    d->m_pActCopySelection->setStatusTip(
+        tr("Copy the current selection to the clipboard as semicolon-separated text."));
+    d->m_pActCopySelection->setEnabled(false);
+    addAction(d->m_pActCopySelection);
+
+    QAction* a = new QAction(this);
+    a->setSeparator(true);
+    addAction(a);
+
+    a = new QAction(QIcon(":general/icons/decimals.png"), tr("Decimals..."), this);
+    connect(a, &QAction::triggered, this, &DataObjectTable::setDecimalsGUI);
+    a->setStatusTip(tr("Set the number of decimals."));
+    addAction(a);
+
+    d->m_pActNumberFormatStandard = new QAction(tr("Standard"), this);
+    d->m_pActNumberFormatStandard->setData(NumberFormat::Standard);
+    d->m_pActNumberFormatStandard->setCheckable(true);
+    d->m_pActNumberFormatScientific = new QAction(tr("Scientific"), this);
+    d->m_pActNumberFormatScientific->setData(NumberFormat::Scientific);
+    d->m_pActNumberFormatScientific->setCheckable(true);
+    d->m_pActNumberFormatAuto = new QAction(tr("Auto"), this);
+    d->m_pActNumberFormatAuto->setData(NumberFormat::Auto);
+    d->m_pActNumberFormatAuto->setCheckable(true);
+
+    QActionGroup* ag = new QActionGroup(this);
+    ag->addAction(d->m_pActNumberFormatStandard);
+    ag->addAction(d->m_pActNumberFormatScientific);
+    ag->addAction(d->m_pActNumberFormatAuto);
+    d->m_pActNumberFormatStandard->setChecked(true);
+    connect(ag, &QActionGroup::triggered, this, &DataObjectTable::numberFormatTriggered);
+
+    QMenu* numberFormatMenu = new QMenu(tr("Number Format"), this);
+    numberFormatMenu->addActions(ag->actions());
+
+    addAction(numberFormatMenu->menuAction());
+
+    d->m_pActResizeColumnsToContent = new QAction(
+        QIcon(":/misc/icons/resizeColumnsToContent.svg"), "Resize Columns to Content", this);
+    connect(
+        d->m_pActResizeColumnsToContent,
+        &QAction::triggered,
+        this,
+        &DataObjectTable::resizeColumnsToContents);
+    d->m_pActResizeColumnsToContent->setStatusTip(
+        tr("Resizes all columns to fit the current content."));
+    addAction(d->m_pActResizeColumnsToContent);
+
+
+    d->m_pActHeatmapOff = new QAction(tr("Off"), this);
+    d->m_pActHeatmapOff->setData(HeatmapType::Off);
+    d->m_pActHeatmapOff->setCheckable(true);
+
+    d->m_pActHeatmapRgb = new QAction(tr("Real Color"), this);
+    d->m_pActHeatmapRgb->setData(HeatmapType::RealColor);
+    d->m_pActHeatmapRgb->setCheckable(true);
+
+    d->m_pActHeatmapRYG = new QAction(tr("Red-Yellow-Green"), this);
+    d->m_pActHeatmapRYG->setData(HeatmapType::RedYellowGreen);
+    d->m_pActHeatmapRYG->setCheckable(true);
+
+    d->m_pActHeatmapGYR = new QAction(tr("Green-Yellow-Red"), this);
+    d->m_pActHeatmapGYR->setData(HeatmapType::GreenYellowRed);
+    d->m_pActHeatmapGYR->setCheckable(true);
+
+    d->m_pActHeatmapRWG = new QAction(tr("Red-White-Green"), this);
+    d->m_pActHeatmapRWG->setData(HeatmapType::RedWhiteGreen);
+    d->m_pActHeatmapRWG->setCheckable(true);
+
+    d->m_pActHeatmapGWR = new QAction(tr("Green-White-Red"), this);
+    d->m_pActHeatmapGWR->setData(HeatmapType::GreenWhiteRed);
+    d->m_pActHeatmapGWR->setCheckable(true);
+
+    QActionGroup* ag2 = new QActionGroup(this);
+    ag2->addAction(d->m_pActHeatmapOff);
+    ag2->addAction(d->m_pActHeatmapRgb);
+    ag2->addAction(d->m_pActHeatmapRYG);
+    ag2->addAction(d->m_pActHeatmapGYR);
+    ag2->addAction(d->m_pActHeatmapRWG);
+    ag2->addAction(d->m_pActHeatmapGWR);
+    d->m_pActHeatmapOff->setChecked(true);
+    connect(ag2, &QActionGroup::triggered, this, &DataObjectTable::heatmapTriggered);
+
+    d->m_pMenuHeatmap = new QMenu(tr("Heatmap"), this);
+    d->m_pMenuHeatmap->addActions(ag2->actions());
+
+    addAction(d->m_pMenuHeatmap->menuAction());
+}
+
+//-------------------------------------------------------------------------------------
 void DataObjectTable::setData(QSharedPointer<ito::DataObject> dataObj)
 {
+    DataObjectTablePrivate* d = PrivateHash[this];
+
     emit selectionInformationChanged("");
 
     m_pModel->setDataObject(dataObj);
 
+    int type = dataObj->getType();
+    d->m_pMenuHeatmap->setVisible(type != ito::tComplex64 && type != ito::tComplex128);
+    d->m_pActHeatmapRgb->setVisible(type == ito::tRGBA32);
+    d->m_pActHeatmapGWR->setVisible(type != ito::tRGBA32);
+    d->m_pActHeatmapRWG->setVisible(type != ito::tRGBA32);
+    d->m_pActHeatmapGYR->setVisible(type != ito::tRGBA32);
+    d->m_pActHeatmapRYG->setVisible(type != ito::tRGBA32);
+
     horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
+
+    selectionChanged(QItemSelection(), QItemSelection());
 }
 
 //-------------------------------------------------------------------------------------
@@ -228,7 +306,7 @@ void DataObjectTable::setNumberFormat(const NumberFormat& format)
     const char numberFormats[3] = {'f', 'e', 'g'};
     m_pModel->setNumberFormat(numberFormats[format]);
 
-    DataObjectTablePrivate *priv = PrivateHash[this];
+    DataObjectTablePrivate* priv = PrivateHash[this];
 
     switch (format)
     {
@@ -695,7 +773,7 @@ void gatherSelectionInformation<ito::complex128>(
 void DataObjectTable::selectionChanged(
     const QItemSelection& selected, const QItemSelection& deselected)
 {
-    DataObjectTablePrivate *d = PrivateHash[this];
+    DataObjectTablePrivate* d = PrivateHash[this];
 
     QTableView::selectionChanged(selected, deselected);
 
@@ -775,4 +853,11 @@ void DataObjectTable::selectionChanged(
 void DataObjectTable::numberFormatTriggered(QAction* a)
 {
     setNumberFormat((NumberFormat)a->data().toInt());
+}
+
+//-------------------------------------------------------------------------------------
+void DataObjectTable::heatmapTriggered(QAction *a)
+{
+    a->setChecked(true);
+    m_pModel->setHeatmapType(a->data().toInt());
 }

@@ -90,6 +90,9 @@ public:
     enum NumberFormat { Standard = 0, Scientific = 1, Auto = 2 };
     Q_ENUM(NumberFormat)
 
+    enum HeatmapType { Off = 0, RealColor = 1, RedYellowGreen = 2, GreenYellowRed = 3, RedWhiteGreen = 4, GreenWhiteRed = 5 };
+    Q_ENUM(HeatmapType)
+
     DataObjectTable(QWidget *parent = 0);
     ~DataObjectTable();
 
@@ -145,10 +148,12 @@ protected:
     DataObjectModel *m_pModel;
     DataObjectDelegate *m_pDelegate;
 
+    void createActions();
+
     void keyPressEvent(QKeyEvent *e);
     void contextMenuEvent(QContextMenuEvent *event);
 
-    void selectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
+    virtual void selectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
 
 private:
     //!< todo: convert to classical private class if the addInInterface is incremented for the next time
@@ -164,6 +169,7 @@ private slots:
     void copyAllToClipboard();
     void setDecimalsGUI();
     void numberFormatTriggered(QAction *a);
+    void heatmapTriggered(QAction *a);
 
 signals:
     void activated (int row, int column);
