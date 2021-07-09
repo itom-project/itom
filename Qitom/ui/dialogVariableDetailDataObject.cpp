@@ -44,6 +44,12 @@ DialogVariableDetailDataObject::DialogVariableDetailDataObject(
     QDialog(parent),
     m_pAxesRanges(nullptr), m_dObj(dObj)
 {
+    // show maximize button
+    setWindowFlags(windowFlags() | 
+        Qt::CustomizeWindowHint |
+        Qt::WindowMaximizeButtonHint |
+        Qt::WindowCloseButtonHint);
+
     ui.setupUi(this);
 
     ui.txtName->setText(name);
