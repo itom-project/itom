@@ -24,7 +24,12 @@
 
 #include "extendedDataObjectTable.h"
 
+#include "common/sharedStructuresQt.h"
+#include "../AppManagement.h"
+#include "../organizer/uiOrganizer.h"
+
 #include <qdebug.h>
+#include <qmessagebox.h>
 
 namespace ito
 {
@@ -62,9 +67,17 @@ void ExtendedDataObjectTable::selectionChanged(const QItemSelection &selected, c
 {
     DataObjectTable::selectionChanged(selected, deselected);
 
+    const QItemSelection ranges = selectionModel()->selection();
+    /*int idx = 0;
+
+    foreach(const QItemSelectionRange &range, ranges)
+    {
+        qDebug() << idx++ << range.bottom() << range.left() << range.top() << range.right();
+    }*/
+
     // check if selected is empty, contains one rectangular range with > 1 elements or
     // multiple ranges, whose top/bottoms are equal or left/right positions.
-    switch (selected.size())
+    switch (ranges.size())
     {
     case 0:
         m_pActPlot1d->setEnabled(true);
@@ -72,7 +85,7 @@ void ExtendedDataObjectTable::selectionChanged(const QItemSelection &selected, c
         break;
     case 1:
         {
-        const QItemSelectionRange &range = selected[0];
+        const QItemSelectionRange &range = ranges[0];
         int rows = 1 + range.bottom() - range.top();
         int columns = 1 + range.right() - range.left();
         m_pActPlot1d->setEnabled(rows > 1 || columns > 1);
@@ -81,14 +94,13 @@ void ExtendedDataObjectTable::selectionChanged(const QItemSelection &selected, c
         break;
     default:
         {
-            const QItemSelectionRange &range = selected[0];
+            const QItemSelectionRange &range = ranges[0];
             QList<int> rows, columns;
 
-            foreach(const QItemSelectionRange &range, selected)
+            foreach(const QItemSelectionRange &range, ranges)
             {
-                qDebug() << range.bottom() << range.left() << range.top() << range.right();
-                rows << 1 + range.bottom() - range.top();
-                columns << 1 + range.right() - range.left();
+                rows << range.height();
+                columns << range.width();
             }
 
             int r = rows[0];
@@ -116,7 +128,73 @@ void ExtendedDataObjectTable::selectionChanged(const QItemSelection &selected, c
 //-------------------------------------------------------------------------------------
 void ExtendedDataObjectTable::showPlot2d()
 {
+    const QItemSelection ranges = selectionModel()->selection();
+    ito::DataObject dObj;
+    ito::RetVal retVal;
+    QSharedPointer<ito::DataObject> src = getData();
 
+    if (src.isNull())
+    {
+        return;
+    }
+
+    switch (ranges.size())
+    {
+    case 0:
+        dObj = *src;
+        break;
+    case 1:   
+    {
+        auto rowRange = ito::Range(ranges[0].top(), ranges[0].bottom() + 1);
+        auto colRange = ito::Range(ranges[0].left(), ranges[0].right() + 1);
+        dObj = src->at(rowRange, colRange);
+    }
+        break;
+    default:
+        break;
+    }
+
+    if (dObj.getDims() > 0)
+    {
+        QVariantMap properties;
+        int areaCol = 0;
+        int areaRow = 0;
+        const ito::DataObject *obj = NULL;
+
+        QSharedPointer<unsigned int> figHandle(new unsigned int);
+        *figHandle = 0; //new figure will be requested
+
+        UiOrganizer *uiOrg = (UiOrganizer*)AppManagement::getUiOrganizer();
+        ito::UiDataContainer dataCont = ito::UiDataContainer(QSharedPointer<ito::DataObject>(new ito::DataObject(dObj)));
+        QSharedPointer<unsigned int> objectID(new unsigned int);
+        ito::UiDataContainer xAxisCont;
+
+        /*if (!dObj.existTag("title"))
+        {
+            properties["title"] = "";
+        }
+        else
+        {
+            properties.remove("title");
+        }*/
+
+        retVal += uiOrg->figurePlot(dataCont, xAxisCont, figHandle, objectID, areaRow, areaCol, "2D", properties, nullptr);
+    }
+
+    if (retVal.containsError())
+    {
+        const char *errorMsg = retVal.errorMessage();
+        QString message = QString();
+        if (errorMsg) message = errorMsg;
+        QMessageBox::critical(this, tr("Plot data"), tr("Error while plotting value(s):\n%1").arg(message));
+    }
+    else if (retVal.containsWarning())
+    {
+        const char *errorMsg = retVal.errorMessage();
+        QString message = QString();
+        if (errorMsg) message = errorMsg;
+        QMessageBox::warning(this, tr("Plot data"), tr("Warning while plotting value(s):\n%1").arg(message));
+    }
 }
 
 //-------------------------------------------------------------------------------------
