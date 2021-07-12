@@ -234,6 +234,7 @@
         <file>icons/color_stop_remove.png</file>
         <file>icons/color_stop_equidistant.png</file>
         <file>icons/resizeColumnsToContent.svg</file>
+        <file>icons/heatmap.png</file>
     </qresource>
     <qresource prefix="/measurement">
         <file>icons/itom_icons/meas.png</file>

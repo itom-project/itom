@@ -221,6 +221,7 @@ void DataObjectTable::createActions()
     connect(ag2, &QActionGroup::triggered, this, &DataObjectTable::heatmapTriggered);
 
     d->m_pMenuHeatmap = new QMenu(tr("Heatmap"), this);
+    d->m_pMenuHeatmap->setIcon(QIcon(":/misc/icons/heatmap.png"));
     d->m_pMenuHeatmap->addActions(ag2->actions());
     d->m_pMenuHeatmap->addSeparator();
 

@@ -964,5 +964,20 @@ void DataObjectModel::setHeatmapInterval(const ito::AutoInterval &interval)
 {
     beginResetModel();
     m_heatmapInterval = interval;
+
+    if (m_sharedDataObj)
+    {
+        int type = m_sharedDataObj->getType();
+
+        if (m_heatmapInterval.isAuto() && type != ito::tRGBA32 && type != ito::tComplex64 &&
+            type != ito::tComplex128)
+        {
+            ito::uint32 temp[] = { 0, 0, 0 };
+            ito::dObjHelper::minMaxValue(
+                m_sharedDataObj.data(), m_heatmapInterval.rmin(), temp, m_heatmapInterval.rmax(), temp, true);
+        }
+
+    }
+
     endResetModel();
 }
