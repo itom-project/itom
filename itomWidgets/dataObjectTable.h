@@ -168,6 +168,7 @@ private slots:
     void copySelectionToClipboard();
     void copyAllToClipboard();
     void setDecimalsGUI();
+    void configureHeatmap();
     void numberFormatTriggered(QAction *a);
     void heatmapTriggered(QAction *a);
 

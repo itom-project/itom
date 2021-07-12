@@ -126,6 +126,12 @@ public:
 
     void setHeatmapType(int type);
 
+    void setHeatmapInterval(const ito::AutoInterval &interval);
+    ito::AutoInterval getHeatmapInterval() const
+    {
+        return m_heatmapInterval;
+    }
+
     static int displayRoleWithoutSuffix;
     static int preciseDisplayRoleWithoutSuffix;
 

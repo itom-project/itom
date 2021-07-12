@@ -68,6 +68,7 @@ DialogVariableDetailDataObject::DialogVariableDetailDataObject(
 
     ui.dataTable->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
     ui.dataTable->setReadOnly(true);
+    ui.dataTable->setTableName(name);
 
     connect(
         ui.dataTable,

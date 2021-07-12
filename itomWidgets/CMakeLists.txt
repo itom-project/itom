@@ -229,6 +229,7 @@ set(itomWidgets_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/paramEditorWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dataObjectTable.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dataObjectMetaWidget.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/dialogHeatmapConfiguration.h
 )
 
 QT5_WRAP_CPP(paramPropertyBrowser_MOC ${paramPropertyBrowser_MOC_SOURCES})
@@ -339,6 +340,7 @@ set(itomWidgets_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/dataObjectModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dataObjectTable.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dataObjectMetaWidget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/dialogHeatmapConfiguration.cpp
 )
 
 #If you want to use automatical metadata for dlls under windows use the following if-case.
@@ -354,6 +356,7 @@ set(itomWidgets_UI
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/motorAxisController.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/penCreatorDialog.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/brushCreatorDialog.ui
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogHeatmapConfiguration.ui
 )
 
 QT5_WRAP_UI(itomWidgets_UI_MOC ${itomWidgets_UI})

@@ -38,6 +38,7 @@
 
 #include "dataObjectDelegate.h"
 #include "dataObjectModel.h"
+#include "dialogHeatmapConfiguration.h"
 
 #include "common/typeDefs.h"
 
@@ -50,7 +51,7 @@ public:
         m_pActNumberFormatAuto(nullptr), m_pActCopyAll(nullptr), m_pActCopySelection(nullptr),
         m_pActResizeColumnsToContent(nullptr), m_pActHeatmapOff(nullptr), m_pActHeatmapRgb(nullptr),
         m_pActHeatmapRYG(nullptr), m_pActHeatmapGYR(nullptr), m_pActHeatmapRWG(nullptr),
-        m_pActHeatmapGWR(nullptr), m_pMenuHeatmap(nullptr)
+        m_pActHeatmapGWR(nullptr), m_pMenuHeatmap(nullptr), m_pActHeatmapConfig(nullptr)
     {
     }
 
@@ -68,6 +69,7 @@ public:
     QAction* m_pActHeatmapGYR;
     QAction* m_pActHeatmapRWG;
     QAction* m_pActHeatmapGWR;
+    QAction* m_pActHeatmapConfig;
 
     QMenu* m_pMenuHeatmap;
 };
@@ -220,6 +222,12 @@ void DataObjectTable::createActions()
 
     d->m_pMenuHeatmap = new QMenu(tr("Heatmap"), this);
     d->m_pMenuHeatmap->addActions(ag2->actions());
+    d->m_pMenuHeatmap->addSeparator();
+
+    d->m_pActHeatmapConfig = new QAction(QIcon(":/application/icons/adBlockAction.png"), tr("Configure..."), this);
+    connect(d->m_pActHeatmapConfig, &QAction::triggered, this, &DataObjectTable::configureHeatmap);
+    d->m_pMenuHeatmap->addAction(d->m_pActHeatmapConfig);
+
 
     addAction(d->m_pMenuHeatmap->menuAction());
 }
@@ -234,7 +242,7 @@ void DataObjectTable::setData(QSharedPointer<ito::DataObject> dataObj)
     m_pModel->setDataObject(dataObj);
 
     int type = dataObj->getType();
-    d->m_pMenuHeatmap->setVisible(type != ito::tComplex64 && type != ito::tComplex128);
+    d->m_pMenuHeatmap->setEnabled(type != ito::tComplex64 && type != ito::tComplex128);
     d->m_pActHeatmapRgb->setVisible(type == ito::tRGBA32);
     d->m_pActHeatmapGWR->setVisible(type != ito::tRGBA32);
     d->m_pActHeatmapRWG->setVisible(type != ito::tRGBA32);
@@ -859,5 +867,20 @@ void DataObjectTable::numberFormatTriggered(QAction* a)
 void DataObjectTable::heatmapTriggered(QAction *a)
 {
     a->setChecked(true);
+
     m_pModel->setHeatmapType(a->data().toInt());
+}
+
+//-------------------------------------------------------------------------------------
+void DataObjectTable::configureHeatmap()
+{
+    ito::AutoInterval interval = m_pModel->getHeatmapInterval();
+
+    ito::DialogHeatmapConfiguration dlg(interval, this);
+
+    if (dlg.exec() == QDialog::Accepted)
+    {
+        interval = dlg.getInterval();
+        m_pModel->setHeatmapInterval(interval);
+    }
 }

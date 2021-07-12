@@ -958,3 +958,11 @@ void DataObjectModel::setSuffixes(const QStringList& suffixes)
     m_suffixes = suffixes;
     endResetModel();
 }
+
+//-------------------------------------------------------------------------------------
+void DataObjectModel::setHeatmapInterval(const ito::AutoInterval &interval)
+{
+    beginResetModel();
+    m_heatmapInterval = interval;
+    endResetModel();
+}
