@@ -170,6 +170,7 @@ void DataObjectTable::createActions()
     connect(ag, &QActionGroup::triggered, this, &DataObjectTable::numberFormatTriggered);
 
     QMenu* numberFormatMenu = new QMenu(tr("Number Format"), this);
+    numberFormatMenu->setIcon(QIcon(":general/icons/number_format.png"));
     numberFormatMenu->addActions(ag->actions());
 
     addAction(numberFormatMenu->menuAction());
@@ -186,27 +187,27 @@ void DataObjectTable::createActions()
     addAction(d->m_pActResizeColumnsToContent);
 
 
-    d->m_pActHeatmapOff = new QAction(tr("Off"), this);
+    d->m_pActHeatmapOff = new QAction(QIcon(":/misc/icons/heatmap_off.svg"), tr("Off"), this);
     d->m_pActHeatmapOff->setData(HeatmapType::Off);
     d->m_pActHeatmapOff->setCheckable(true);
 
-    d->m_pActHeatmapRgb = new QAction(tr("Real Color"), this);
+    d->m_pActHeatmapRgb = new QAction(QIcon(":/application/icons/color-icon.png"), tr("Real Color"), this);
     d->m_pActHeatmapRgb->setData(HeatmapType::RealColor);
     d->m_pActHeatmapRgb->setCheckable(true);
 
-    d->m_pActHeatmapRYG = new QAction(tr("Red-Yellow-Green"), this);
+    d->m_pActHeatmapRYG = new QAction(QIcon(":/misc/icons/heatmap_ryg.svg"), tr("Red-Yellow-Green"), this);
     d->m_pActHeatmapRYG->setData(HeatmapType::RedYellowGreen);
     d->m_pActHeatmapRYG->setCheckable(true);
 
-    d->m_pActHeatmapGYR = new QAction(tr("Green-Yellow-Red"), this);
+    d->m_pActHeatmapGYR = new QAction(QIcon(":/misc/icons/heatmap_gyr.svg"), tr("Green-Yellow-Red"), this);
     d->m_pActHeatmapGYR->setData(HeatmapType::GreenYellowRed);
     d->m_pActHeatmapGYR->setCheckable(true);
 
-    d->m_pActHeatmapRWG = new QAction(tr("Red-White-Green"), this);
+    d->m_pActHeatmapRWG = new QAction(QIcon(":/misc/icons/heatmap_rwg.svg"), tr("Red-White-Green"), this);
     d->m_pActHeatmapRWG->setData(HeatmapType::RedWhiteGreen);
     d->m_pActHeatmapRWG->setCheckable(true);
 
-    d->m_pActHeatmapGWR = new QAction(tr("Green-White-Red"), this);
+    d->m_pActHeatmapGWR = new QAction(QIcon(":/misc/icons/heatmap_gwr.svg"), tr("Green-White-Red"), this);
     d->m_pActHeatmapGWR->setData(HeatmapType::GreenWhiteRed);
     d->m_pActHeatmapGWR->setCheckable(true);
 
@@ -221,7 +222,7 @@ void DataObjectTable::createActions()
     connect(ag2, &QActionGroup::triggered, this, &DataObjectTable::heatmapTriggered);
 
     d->m_pMenuHeatmap = new QMenu(tr("Heatmap"), this);
-    d->m_pMenuHeatmap->setIcon(QIcon(":/misc/icons/heatmap.png"));
+    d->m_pMenuHeatmap->setIcon(QIcon(":/misc/icons/heatmap.svg"));
     d->m_pMenuHeatmap->addActions(ag2->actions());
     d->m_pMenuHeatmap->addSeparator();
 

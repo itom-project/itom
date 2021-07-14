@@ -452,6 +452,7 @@ QVariant DataObjectModel::data(const QModelIndex& index, int role) const
                     (m_heatmapInterval.maximum() - m_heatmapInterval.minimum());
                 const QColor& c1 = factor < 0.5 ? m_colorStopLow : m_colorStopMiddle;
                 const QColor& c2 = factor < 0.5 ? m_colorStopMiddle : m_colorStopHigh;
+                factor = factor < 0.5 ? factor : factor - 0.5;
                 factor = qBound(0.0, factor * 2, 1.0);
 
                 int r = c1.red() * (1.0 - factor) + c2.red() * factor;

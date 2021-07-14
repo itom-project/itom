@@ -141,8 +141,6 @@ set(paramPropertyBrowser_CPP_MOC_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/paramStringWidget.cpp
 )
 
-
-
 set(itomWidgets_Factory_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/itomWidgetsFactory.h
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/rangeSliderFactory.h
@@ -190,6 +188,7 @@ set(itomWidgets_Factory_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/plotInfoShapes.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pythonLogWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/paramEditorWidget.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/dialogHeatmapConfiguration.h
     ${CMAKE_CURRENT_SOURCE_DIR}/valueProxy.h
     ${CMAKE_CURRENT_SOURCE_DIR}/utils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/proxyStyle.h
@@ -229,7 +228,6 @@ set(itomWidgets_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/paramEditorWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dataObjectTable.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dataObjectMetaWidget.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/dialogHeatmapConfiguration.h
 )
 
 QT5_WRAP_CPP(paramPropertyBrowser_MOC ${paramPropertyBrowser_MOC_SOURCES})
