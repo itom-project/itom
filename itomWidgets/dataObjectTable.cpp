@@ -307,12 +307,30 @@ int DataObjectTable::getDecimals() const
 //-------------------------------------------------------------------------------------
 void DataObjectTable::setDecimals(int value)
 {
+    QModelIndexList indices = selectedIndexes();
     m_pModel->setDecimals(value);
+    restoreSelection(indices);
+}
+
+//-------------------------------------------------------------------------------------
+void DataObjectTable::restoreSelection(const QModelIndexList &indices)
+{
+    QItemSelection selection;
+    QModelIndex idxNew;
+
+    foreach(const QModelIndex &idx, indices)
+    {
+        idxNew = m_pModel->index(idx.row(), idx.column());
+        selection.append(QItemSelectionRange(idxNew));
+    }
+
+    selectionModel()->select(selection, QItemSelectionModel::Select);
 }
 
 //-------------------------------------------------------------------------------------
 void DataObjectTable::setNumberFormat(const NumberFormat& format)
 {
+    QModelIndexList indices = selectedIndexes();
     const char numberFormats[3] = {'f', 'e', 'g'};
     m_pModel->setNumberFormat(numberFormats[format]);
 
@@ -330,6 +348,8 @@ void DataObjectTable::setNumberFormat(const NumberFormat& format)
         priv->m_pActNumberFormatAuto->setChecked(true);
         break;
     }
+
+    restoreSelection(indices);
 }
 
 //-------------------------------------------------------------------------------------
@@ -870,7 +890,11 @@ void DataObjectTable::heatmapTriggered(QAction *a)
 {
     a->setChecked(true);
 
+    QModelIndexList indices = selectedIndexes();
+
     m_pModel->setHeatmapType(a->data().toInt());
+
+    restoreSelection(indices);
 }
 
 //-------------------------------------------------------------------------------------
@@ -883,6 +907,8 @@ void DataObjectTable::configureHeatmap()
     if (dlg.exec() == QDialog::Accepted)
     {
         interval = dlg.getInterval();
+        QModelIndexList indices = selectedIndexes();
         m_pModel->setHeatmapInterval(interval);
+        restoreSelection(indices);
     }
 }

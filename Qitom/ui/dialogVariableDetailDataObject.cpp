@@ -274,6 +274,7 @@ void DialogVariableDetailDataObject::changeDisplayedAxes(int isColNotRow = -1)
             col = row + 1;
             ui.comboBoxDisplayedCol->setCurrentIndex(col);
         }
+
         deleteSlicingWidgets();
         addSlicingWidgets();
     }
@@ -291,6 +292,7 @@ void DialogVariableDetailDataObject::changeDisplayedAxes(int isColNotRow = -1)
         else
         {
             int index;
+
             if (m_spinBoxToIdxMap.empty())
             {
                 index = 0;
@@ -299,6 +301,7 @@ void DialogVariableDetailDataObject::changeDisplayedAxes(int isColNotRow = -1)
             {
                 index = m_spinBoxToIdxMap.value(idx)->value();
             }
+
             m_pAxesRanges[idx] = ito::Range(index, index + 1);
         }
     }

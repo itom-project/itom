@@ -149,6 +149,7 @@ protected:
     DataObjectDelegate *m_pDelegate;
 
     void createActions();
+    void restoreSelection(const QModelIndexList &indices);
 
     void keyPressEvent(QKeyEvent *e);
     void contextMenuEvent(QContextMenuEvent *event);
