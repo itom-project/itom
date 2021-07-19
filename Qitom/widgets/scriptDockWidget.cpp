@@ -1591,14 +1591,13 @@ void ScriptDockWidget::createActions()
     m_tabCloseOthersAction = new ShortcutAction(QIcon(), tr("Close Others"), this);
     m_tabCloseOthersAction->connectTrigger(this, SLOT(mnuTabCloseOthers()));
 
-    m_tabCloseAllAction = new ShortcutAction(QIcon(), tr("Close All"), this);
+    m_tabCloseAllAction = new ShortcutAction(QIcon(":/plugins/icons/closeAll.png"), tr("Close All"), this);
     m_tabCloseAllAction->connectTrigger(this, SLOT(mnuTabCloseAll()));
 
-    m_tabDockAction = new ShortcutAction(QIcon(), tr("Dock"), this);
+    m_tabDockAction = new ShortcutAction(QIcon(":/dockWidget/icons/dockButtonGlyph.png"), tr("Dock"), this);
     m_tabDockAction->connectTrigger(this, SLOT(mnuTabDock()));
 
-    m_tabUndockAction = new ShortcutAction(QIcon(), tr("Undock"), this);
-    m_tabUndockAction = new ShortcutAction(QIcon(), tr("Undock"), this);
+    m_tabUndockAction = new ShortcutAction(QIcon(":/dockWidget/icons/undockButtonGlyph.png"), tr("Undock"), this);
     m_tabUndockAction->connectTrigger(this, SLOT(mnuTabUndock()));
 
     m_newScriptAction = new ShortcutAction(QIcon(":/files/icons/new.png"), tr("New"), 
