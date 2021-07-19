@@ -662,12 +662,31 @@ void DataObjectTable::setDecimalsGUI()
     }
 }
 
+//-------------------------------------------------------------------------------------
+template<typename _Tp>
+typename std::enable_if<std::is_floating_point<_Tp>::value, bool>::type isNaN(const _Tp &value)
+{
+    return std::isnan(value);
+}
+
+template<typename _Tp>
+typename std::enable_if<!std::is_floating_point<_Tp>::value, bool>::type isNaN(const _Tp &value)
+{
+    return false;
+}
+
 
 //-------------------------------------------------------------------------------------
 template <typename _Tp>
 void gatherSelectionInformation(
     const ito::DataObject* dObj, const QModelIndexList& indexes, QStringList& infos)
 {
+    if (indexes.size() == 0)
+    {
+        infos.clear();
+        return;
+    }
+
     bool hasStd = false;
     _Tp minimum = std::numeric_limits<_Tp>::max();
     _Tp maximum = std::numeric_limits<_Tp>::min();
@@ -692,16 +711,26 @@ void gatherSelectionInformation(
     foreach (const QModelIndex& idx, indexes)
     {
         value = dObj->at<_Tp>(idx.row(), idx.column());
-        values.push_back(value);
-        minimum = std::min(minimum, value);
-        maximum = std::max(maximum, value);
-        sum += value;
+
+        if (values.size() == 0)
+        {
+            minimum = value;
+            maximum = value;
+        }
+
+        if (!std::is_floating_point<_Tp>() || !isNaN(value))
+        {
+            minimum = std::min(minimum, value);
+            maximum = std::max(maximum, value);
+            values.push_back(value);
+            sum += value;
+        }
     }
 
-    double mean = (double)sum / indexes.size();
+    double mean = values.size() > 0 ? (double)sum / values.size() : std::numeric_limits<_Tp>::quiet_NaN();
     double std = 0.0;
 
-    if (indexes.size() > 1)
+    if (values.size() > 1)
     {
         hasStd = true;
         double cum = 0.0;
@@ -711,7 +740,7 @@ void gatherSelectionInformation(
             cum += std::pow((v - mean), 2);
         }
 
-        std = std::sqrt(cum / (indexes.size() - 1));
+        std = std::sqrt(cum / (values.size() - 1));
     }
     else
     {
