@@ -28,6 +28,9 @@
 #include <qclipboard.h>
 #include <qmap.h>
 #include <qspinbox.h>
+#include <qboxlayout.h>
+#include <qmainwindow.h>
+#include <qtoolbar.h>
 
 namespace ito {
 
@@ -41,13 +44,32 @@ DialogVariableDetailDataObject::DialogVariableDetailDataObject(
     QDialog(parent),
     m_pAxesRanges(nullptr), m_dObj(dObj)
 {
+    // show maximize button
+    setWindowFlags(windowFlags() | 
+        Qt::CustomizeWindowHint |
+        Qt::WindowMaximizeButtonHint |
+        Qt::WindowCloseButtonHint);
+
     ui.setupUi(this);
 
     ui.txtName->setText(name);
     ui.txtType->setText(type);
     ui.txtDType->setText(dtype);
 
+    QMainWindow *tableMain = new QMainWindow(this);
+    tableMain->setWindowFlag(Qt::Widget, true);
+    QToolBar *tb = tableMain->addToolBar("myToolbar");
+
+    QVBoxLayout *tableLayout = qobject_cast<QVBoxLayout*>(ui.tabTable->layout());
+    tableLayout->insertWidget(0, tableMain);
+    tableLayout->removeWidget(ui.dataTable);
+    tableMain->setCentralWidget(ui.dataTable);
+    tb->addActions(ui.dataTable->actions());
+
+    ui.dataTable->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
     ui.dataTable->setReadOnly(true);
+    ui.dataTable->setTableName(name);
+
     connect(
         ui.dataTable,
         &DataObjectTable::selectionInformationChanged,
@@ -252,6 +274,7 @@ void DialogVariableDetailDataObject::changeDisplayedAxes(int isColNotRow = -1)
             col = row + 1;
             ui.comboBoxDisplayedCol->setCurrentIndex(col);
         }
+
         deleteSlicingWidgets();
         addSlicingWidgets();
     }
@@ -269,6 +292,7 @@ void DialogVariableDetailDataObject::changeDisplayedAxes(int isColNotRow = -1)
         else
         {
             int index;
+
             if (m_spinBoxToIdxMap.empty())
             {
                 index = 0;
@@ -277,6 +301,7 @@ void DialogVariableDetailDataObject::changeDisplayedAxes(int isColNotRow = -1)
             {
                 index = m_spinBoxToIdxMap.value(idx)->value();
             }
+
             m_pAxesRanges[idx] = ito::Range(index, index + 1);
         }
     }

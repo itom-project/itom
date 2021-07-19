@@ -33,6 +33,12 @@ namespace ito
 DialogVariableDetail::DialogVariableDetail(const QString &name, const QString &type, const QString &value, QWidget *parent) :
     QDialog(parent)
 {
+    // show maximize button
+    setWindowFlags(windowFlags() |
+        Qt::CustomizeWindowHint |
+        Qt::WindowMaximizeButtonHint |
+        Qt::WindowCloseButtonHint);
+
     ui.setupUi(this);
     
     // get a default monospace font for the fields
