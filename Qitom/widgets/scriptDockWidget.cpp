@@ -1728,7 +1728,7 @@ void ScriptDockWidget::createActions()
     m_insertCodecAct = new ShortcutAction(tr("&Insert Codec..."), this);
     m_insertCodecAct->connectTrigger(this, SLOT(mnuInsertCodec()));
 
-    m_copyFilename = new ShortcutAction(QIcon(":/application/icons/adBlockAction.png"), tr("Copy Filename"), this);
+    m_copyFilename = new ShortcutAction(QIcon(":/editor/icons/editCopy.png"), tr("Copy Filename"), this);
     m_copyFilename->connectTrigger(this, SLOT(mnuCopyFilename()));
 
     m_findSymbols = new ShortcutAction(QIcon(":/classNavigator/icons/at.png"), tr("Fast symbol search..."),
