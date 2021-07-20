@@ -34,6 +34,7 @@
 #include <qheaderview.h>
 #include <qinputdialog.h>
 #include <qmenu.h>
+#include <qregion.h>
 #include <qscrollbar.h>
 
 #include "dataObjectDelegate.h"
@@ -191,23 +192,28 @@ void DataObjectTable::createActions()
     d->m_pActHeatmapOff->setData(HeatmapType::Off);
     d->m_pActHeatmapOff->setCheckable(true);
 
-    d->m_pActHeatmapRgb = new QAction(QIcon(":/application/icons/color-icon.png"), tr("Real Color"), this);
+    d->m_pActHeatmapRgb =
+        new QAction(QIcon(":/application/icons/color-icon.png"), tr("Real Color"), this);
     d->m_pActHeatmapRgb->setData(HeatmapType::RealColor);
     d->m_pActHeatmapRgb->setCheckable(true);
 
-    d->m_pActHeatmapRYG = new QAction(QIcon(":/misc/icons/heatmap_ryg.svg"), tr("Red-Yellow-Green"), this);
+    d->m_pActHeatmapRYG =
+        new QAction(QIcon(":/misc/icons/heatmap_ryg.svg"), tr("Red-Yellow-Green"), this);
     d->m_pActHeatmapRYG->setData(HeatmapType::RedYellowGreen);
     d->m_pActHeatmapRYG->setCheckable(true);
 
-    d->m_pActHeatmapGYR = new QAction(QIcon(":/misc/icons/heatmap_gyr.svg"), tr("Green-Yellow-Red"), this);
+    d->m_pActHeatmapGYR =
+        new QAction(QIcon(":/misc/icons/heatmap_gyr.svg"), tr("Green-Yellow-Red"), this);
     d->m_pActHeatmapGYR->setData(HeatmapType::GreenYellowRed);
     d->m_pActHeatmapGYR->setCheckable(true);
 
-    d->m_pActHeatmapRWG = new QAction(QIcon(":/misc/icons/heatmap_rwg.svg"), tr("Red-White-Green"), this);
+    d->m_pActHeatmapRWG =
+        new QAction(QIcon(":/misc/icons/heatmap_rwg.svg"), tr("Red-White-Green"), this);
     d->m_pActHeatmapRWG->setData(HeatmapType::RedWhiteGreen);
     d->m_pActHeatmapRWG->setCheckable(true);
 
-    d->m_pActHeatmapGWR = new QAction(QIcon(":/misc/icons/heatmap_gwr.svg"), tr("Green-White-Red"), this);
+    d->m_pActHeatmapGWR =
+        new QAction(QIcon(":/misc/icons/heatmap_gwr.svg"), tr("Green-White-Red"), this);
     d->m_pActHeatmapGWR->setData(HeatmapType::GreenWhiteRed);
     d->m_pActHeatmapGWR->setCheckable(true);
 
@@ -226,7 +232,8 @@ void DataObjectTable::createActions()
     d->m_pMenuHeatmap->addActions(ag2->actions());
     d->m_pMenuHeatmap->addSeparator();
 
-    d->m_pActHeatmapConfig = new QAction(QIcon(":/application/icons/adBlockAction.png"), tr("Configure..."), this);
+    d->m_pActHeatmapConfig =
+        new QAction(QIcon(":/application/icons/adBlockAction.png"), tr("Configure..."), this);
     connect(d->m_pActHeatmapConfig, &QAction::triggered, this, &DataObjectTable::configureHeatmap);
     d->m_pMenuHeatmap->addAction(d->m_pActHeatmapConfig);
 
@@ -313,18 +320,30 @@ void DataObjectTable::setDecimals(int value)
 }
 
 //-------------------------------------------------------------------------------------
-void DataObjectTable::restoreSelection(const QModelIndexList &indices)
+void DataObjectTable::restoreSelection(const QModelIndexList& indices)
 {
     QItemSelection selection;
-    QModelIndex idxNew;
+    QModelIndex idxTL, idxBR; // topLeft, bottomRight
 
-    foreach(const QModelIndex &idx, indices)
+    // workaround to get from single model indices to
+    // a small list of compact QItemSelectionRanges. For
+    // this workaround, methods from QRegion are used.
+    QRegion regions;
+
+    foreach (const QModelIndex& idx, indices)
     {
-        idxNew = m_pModel->index(idx.row(), idx.column());
-        selection.append(QItemSelectionRange(idxNew));
+        regions += QRect(idx.column(), idx.row(), 1, 1);
+    }
+
+    foreach (const QRect& rect, regions.rects())
+    {
+        idxTL = m_pModel->index(rect.top(), rect.left());
+        idxBR = m_pModel->index(rect.bottom(), rect.right());
+        selection.append(QItemSelectionRange(idxTL, idxBR));
     }
 
     selectionModel()->select(selection, QItemSelectionModel::Select);
+    selectionChanged(selectionModel()->selection(), QItemSelection());
 }
 
 //-------------------------------------------------------------------------------------
@@ -663,14 +682,14 @@ void DataObjectTable::setDecimalsGUI()
 }
 
 //-------------------------------------------------------------------------------------
-template<typename _Tp>
-typename std::enable_if<std::is_floating_point<_Tp>::value, bool>::type isNaN(const _Tp &value)
+template <typename _Tp>
+typename std::enable_if<std::is_floating_point<_Tp>::value, bool>::type isNaN(const _Tp& value)
 {
     return std::isnan(value);
 }
 
-template<typename _Tp>
-typename std::enable_if<!std::is_floating_point<_Tp>::value, bool>::type isNaN(const _Tp &value)
+template <typename _Tp>
+typename std::enable_if<!std::is_floating_point<_Tp>::value, bool>::type isNaN(const _Tp& value)
 {
     return false;
 }
@@ -727,7 +746,8 @@ void gatherSelectionInformation(
         }
     }
 
-    double mean = values.size() > 0 ? (double)sum / values.size() : std::numeric_limits<_Tp>::quiet_NaN();
+    double mean =
+        values.size() > 0 ? (double)sum / values.size() : std::numeric_limits<_Tp>::quiet_NaN();
     double std = 0.0;
 
     if (values.size() > 1)
@@ -915,7 +935,7 @@ void DataObjectTable::numberFormatTriggered(QAction* a)
 }
 
 //-------------------------------------------------------------------------------------
-void DataObjectTable::heatmapTriggered(QAction *a)
+void DataObjectTable::heatmapTriggered(QAction* a)
 {
     a->setChecked(true);
 

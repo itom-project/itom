@@ -154,7 +154,7 @@ protected:
     void keyPressEvent(QKeyEvent *e);
     void contextMenuEvent(QContextMenuEvent *event);
 
-    virtual void selectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
+    virtual void selectionChanged(const QItemSelection& selected, const QItemSelection& deselected);
 
 private:
     //!< todo: convert to classical private class if the addInInterface is incremented for the next time

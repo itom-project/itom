@@ -33,7 +33,7 @@
 
 namespace ito {
 
-    //-------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 ExtendedDataObjectTable::ExtendedDataObjectTable(QWidget* parent /*= nullptr*/) :
     DataObjectTable(parent), m_pActPlot2d(nullptr), m_pActPlot1d(nullptr)
 {
@@ -62,7 +62,7 @@ ExtendedDataObjectTable::~ExtendedDataObjectTable()
 }
 
 //-------------------------------------------------------------------------------------
-void ExtendedDataObjectTable::setTableName(const QString &name)
+void ExtendedDataObjectTable::setTableName(const QString& name)
 {
     m_name = name;
 }
@@ -74,12 +74,6 @@ void ExtendedDataObjectTable::selectionChanged(
     DataObjectTable::selectionChanged(selected, deselected);
 
     const QItemSelection ranges = selectionModel()->selection();
-    /*int idx = 0;
-
-    foreach(const QItemSelectionRange &range, ranges)
-    {
-        qDebug() << idx++ << range.bottom() << range.left() << range.top() << range.right();
-    }*/
 
     // check if selected is empty, contains one rectangular range with > 1 elements or
     // multiple ranges, whose top/bottoms are equal or left/right positions.
@@ -177,7 +171,7 @@ void ExtendedDataObjectTable::showPlot1d()
 //-------------------------------------------------------------------------------------
 void ExtendedDataObjectTable::showPlotGeneric(const QString& plotClass)
 {
-    const QItemSelection ranges = selectionModel()->selection();
+    QItemSelection ranges = selectionModel()->selection();
     QSharedPointer<ito::DataObject> dObj;
     ito::RetVal retVal;
     QSharedPointer<ito::DataObject> src = getData();
@@ -213,21 +207,40 @@ void ExtendedDataObjectTable::showPlotGeneric(const QString& plotClass)
 
         if (coverAllRangesTheSameRows(ranges, nrOfColumns))
         {
-            dObj = QSharedPointer<ito::DataObject>(new ito::DataObject(ranges[0].height(), nrOfColumns, src->getType()));
+            // sort ranges by column, ascending
+            std::sort(
+                ranges.begin(),
+                ranges.end(),
+                [](const QItemSelectionRange& a, const QItemSelectionRange& b) {
+                    return a.left() <= b.left();
+                });
+
+            dObj = QSharedPointer<ito::DataObject>(
+                new ito::DataObject(ranges[0].height(), nrOfColumns, src->getType()));
 
             auto rowRange = ito::Range(ranges[0].top(), ranges[0].bottom() + 1);
-            
+
             for (int i = 0; i < ranges.size(); ++i)
             {
                 auto colRangeSrc = ito::Range(ranges[i].left(), ranges[i].right() + 1);
                 auto colRangeDest = ito::Range(idx, idx + ranges[i].width());
                 idx += colRangeDest.size();
-                src->at(rowRange, colRangeSrc).deepCopyPartial(dObj->at(ito::Range::all(), colRangeDest));
+                src->at(rowRange, colRangeSrc)
+                    .deepCopyPartial(dObj->at(ito::Range::all(), colRangeDest));
             }
         }
         else if (coverAllRangesTheSameColumns(ranges, nrOfRows))
         {
-            dObj = QSharedPointer<ito::DataObject>(new ito::DataObject(nrOfRows, ranges[0].width(), src->getType()));
+            // sort ranges by row, ascending
+            std::sort(
+                ranges.begin(),
+                ranges.end(),
+                [](const QItemSelectionRange& a, const QItemSelectionRange& b) {
+                    return a.top() <= b.top();
+                });
+
+            dObj = QSharedPointer<ito::DataObject>(
+                new ito::DataObject(nrOfRows, ranges[0].width(), src->getType()));
 
             auto colRange = ito::Range(ranges[0].left(), ranges[0].right() + 1);
 
@@ -236,7 +249,8 @@ void ExtendedDataObjectTable::showPlotGeneric(const QString& plotClass)
                 auto rowRangeSrc = ito::Range(ranges[i].top(), ranges[i].bottom() + 1);
                 auto rowRangeDest = ito::Range(idx, idx + ranges[i].height());
                 idx += rowRangeDest.size();
-                src->at(rowRangeSrc, colRange).deepCopyPartial(dObj->at(rowRangeDest, ito::Range::all()));
+                src->at(rowRangeSrc, colRange)
+                    .deepCopyPartial(dObj->at(rowRangeDest, ito::Range::all()));
             }
         }
 
