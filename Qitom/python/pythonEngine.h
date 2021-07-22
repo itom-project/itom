@@ -75,7 +75,7 @@
 #include <qset.h>
 #include <qpointer.h>
 #include <qatomic.h>
-
+#include <qelapsedtimer.h>
 
 /* definition and macros */
 
@@ -198,6 +198,34 @@ private:
         DictNoAction
     };
 
+    struct PythonWorkspaceUpdateQueue
+    {
+        PythonWorkspaceUpdateQueue() :
+            actionGlobal(DictNoAction),
+            actionLocal(DictNoAction)
+        {
+        }
+
+        void reset()
+        {
+            elapsedSinceTheLastUpdate.invalidate();
+            elapsedSinceFirstAction.invalidate();
+            actionGlobal = DictNoAction;
+            actionLocal = DictNoAction;
+        }
+
+        //!< the elapsed time since the last action, different than
+        //!< DictNoAction has been added to the queue.
+        QElapsedTimer elapsedSinceTheLastUpdate;
+
+        //!< the elapsed time since the first action, different than
+        //!< DictNoAction has been added to the queue.
+        QElapsedTimer elapsedSinceFirstAction;
+
+        DictUpdateFlag actionGlobal;
+        DictUpdateFlag actionLocal;
+    };
+
     static PythonEngine *getInstanceInternal();
 
     /*!< returns reference to local dictionary (workspace of method, 
@@ -210,7 +238,7 @@ private:
     void setGlobalDictionary(PyObject* mainDict = NULL);
     void setLocalDictionary(PyObject* localDict);
 
-    void emitPythonDictionary(DictUpdateFlag globalDict, DictUpdateFlag localDict, bool lockGIL);
+    void updatePythonWorkspaces(DictUpdateFlag globalDict, DictUpdateFlag localDict, bool lockGIL, bool delayExecution = false);
 
     ito::RetVal pickleDictionary(PyObject *dict, const QString &filename);
     ito::RetVal unpickleDictionary(PyObject *destinationDict, const QString &filename, bool overwrite);
@@ -317,6 +345,8 @@ private:
 
     AutoReload m_autoReload;
 
+    PythonWorkspaceUpdateQueue m_pyWorkspaceUpdateQueue;
+
     //!< debugger functionality
     static PyMethodDef PyMethodItomDbg[];
     static PyModuleDef PyModuleItomDbg;
@@ -353,6 +383,9 @@ signals:
     void pythonAutoReloadChanged(bool enabled, bool checkFile, bool checkCmd, bool checkFct);
     void clearCommandLine();
     void startInputCommandLine(QSharedPointer<QByteArray> buffer, ItomSharedSemaphore *semaphore);
+
+private slots:
+    void processPythonWorkspaceUpdateQueue();
 
 public slots:
     void pythonExecStringFromCommandLine(QString cmd);
