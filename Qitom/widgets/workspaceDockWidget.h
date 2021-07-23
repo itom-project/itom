@@ -82,6 +82,8 @@ private:
     // special actions
     QAction* m_separatorSpecialActionsToolBar;
     QAction* m_separatorSpecialActionsContextMenu;
+    QAction* m_separatorDisplayItemDetailsActionsToolBar;
+    QAction* m_separatorDisplayItemDetailsActionsContextMenu;
     ShortcutAction* m_dObjPlot1d;
     ShortcutAction* m_dObjPlot2d;
     ShortcutAction* m_dObjPlot25d;

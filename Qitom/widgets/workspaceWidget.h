@@ -145,6 +145,7 @@ public:
     };
 
     QString getPythonReadableName(const QTreeWidgetItem* item) const;
+    QAction* m_displayItemDetails;
 
 protected:
     QStringList mimeTypes() const;
@@ -172,6 +173,7 @@ signals:
 public slots:
     void workspaceContainerUpdated(
         PyWorkspaceItem* rootItem, QString fullNameRoot, QStringList recentlyDeletedFullNames);
+    void displayItemDetails();
 
 private slots:
     void itemDoubleClicked(

@@ -52,7 +52,8 @@ namespace ito {
     \param parent parent-widget
 */
 WorkspaceWidget::WorkspaceWidget(bool globalNotLocal, QWidget* parent) :
-    QTreeWidget(parent), m_globalNotLocal(globalNotLocal), m_workspaceContainer(NULL)
+    QTreeWidget(parent), m_globalNotLocal(globalNotLocal), m_workspaceContainer(NULL),
+    m_displayItemDetails(NULL)
 {
     QStringList headers;
 
@@ -111,6 +112,10 @@ WorkspaceWidget::WorkspaceWidget(bool globalNotLocal, QWidget* parent) :
                                       // DialogVariableDetail-Dialog
     connect(
         this, SIGNAL(itemExpanded(QTreeWidgetItem*)), this, SLOT(itemExpanded(QTreeWidgetItem*)));
+
+    m_displayItemDetails =
+        new QAction(QIcon(":/misc/icons/displayDetails.svg"), tr("Display details"), this);
+    connect(m_displayItemDetails, SIGNAL(triggered()), this, SLOT(displayItemDetails()));
 
     int size = settings.beginReadArray("ColWidth");
     for (int i = 0; i < size; ++i)
@@ -436,6 +441,19 @@ void WorkspaceWidget::recursivelyDeleteHash(const QString& fullBaseName)
         }
 
         m_itemHash.erase(it);
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void WorkspaceWidget::displayItemDetails()
+{
+    QList<QTreeWidgetItem*> itemList = selectedItems();
+    foreach (QTreeWidgetItem* item, itemList)
+    {
+        if (item)
+        {
+            itemDoubleClicked(item, 0);
+        }
     }
 }
 

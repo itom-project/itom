@@ -71,8 +71,10 @@ WorkspaceDockWidget::WorkspaceDockWidget(
     m_globalNotLocal(globalNotLocal), m_pWorkspaceWidget(NULL), m_actDelete(NULL),
     m_actRename(NULL), m_actExport(NULL), m_actImport(NULL), m_dObjPlot1d(NULL), m_dObjPlot2d(NULL),
     m_dObjPlot25d(NULL), m_separatorSpecialActionsToolBar(NULL),
-    m_separatorSpecialActionsContextMenu(NULL), m_pMainToolBar(NULL), m_pContextMenu(NULL),
-    m_firstCurrentItem(NULL), m_actClearAll(NULL), m_firstCurrentItemKey(QString())
+    m_separatorSpecialActionsContextMenu(NULL), m_separatorDisplayItemDetailsActionsToolBar(NULL),
+    m_separatorDisplayItemDetailsActionsContextMenu(NULL), m_pMainToolBar(NULL),
+    m_pContextMenu(NULL), m_firstCurrentItem(NULL), m_actClearAll(NULL),
+    m_firstCurrentItemKey(QString())
 {
     m_pWorkspaceWidget = new WorkspaceWidget(m_globalNotLocal, this);
     m_pWorkspaceWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
@@ -261,6 +263,8 @@ void WorkspaceDockWidget::createToolBars()
     m_pMainToolBar->addAction(m_dObjPlot2d->action());
     m_pMainToolBar->addAction(m_dObjPlot25d->action());
     m_pMainToolBar->addAction(m_dObjPlot3d->action());
+    m_separatorDisplayItemDetailsActionsToolBar = m_pMainToolBar->addSeparator();
+    m_pMainToolBar->addAction(m_pWorkspaceWidget->m_displayItemDetails);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -278,6 +282,8 @@ void WorkspaceDockWidget::createMenus()
     m_pContextMenu->addAction(m_dObjPlot2d->action());
     m_pContextMenu->addAction(m_dObjPlot25d->action());
     m_pContextMenu->addAction(m_dObjPlot3d->action());
+    m_separatorSpecialActionsContextMenu = m_pContextMenu->addSeparator();
+    m_pContextMenu->addAction(m_pWorkspaceWidget->m_displayItemDetails);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -832,6 +838,8 @@ void WorkspaceDockWidget::updateActions()
                     m_dObjPlot2d->setVisible(true);
                     m_dObjPlot25d->setVisible(true);
                     m_dObjPlot3d->setVisible(false);
+                    m_separatorDisplayItemDetailsActionsToolBar->setVisible(true);
+                    m_pWorkspaceWidget->m_displayItemDetails->setVisible(true);
                 }
                 else if (
                     compatibleTypes == ito::ParamBase::PointCloudPtr ||
@@ -842,6 +850,8 @@ void WorkspaceDockWidget::updateActions()
                     m_dObjPlot2d->setVisible(false);
                     m_dObjPlot25d->setVisible(false);
                     m_dObjPlot3d->setVisible(true);
+                    m_separatorDisplayItemDetailsActionsToolBar->setVisible(true);
+                    m_pWorkspaceWidget->m_displayItemDetails->setVisible(true);
                 }
                 else
                 {
@@ -850,6 +860,8 @@ void WorkspaceDockWidget::updateActions()
                     m_dObjPlot2d->setVisible(false);
                     m_dObjPlot25d->setVisible(false);
                     m_dObjPlot3d->setVisible(false);
+                    m_separatorDisplayItemDetailsActionsToolBar->setVisible(true);
+                    m_pWorkspaceWidget->m_displayItemDetails->setVisible(true);
                 }
             }
         }
@@ -861,6 +873,8 @@ void WorkspaceDockWidget::updateActions()
             m_dObjPlot2d->setVisible(false);
             m_dObjPlot25d->setVisible(false);
             m_dObjPlot3d->setVisible(false);
+            m_separatorDisplayItemDetailsActionsToolBar->setVisible(false);
+            m_pWorkspaceWidget->m_displayItemDetails->setVisible(false);
         }
         m_separatorSpecialActionsContextMenu->setVisible(
             m_separatorSpecialActionsToolBar->isVisible());
