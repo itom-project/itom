@@ -5196,7 +5196,11 @@ values in the shape tuple are swapped. \n\
 Returns \n\
 -------- \n\
 dataObject \n\
-    A copy of this dataObject is returned where every plane is its transposed plane.");
+    A copy of this dataObject is returned where every plane is its transposed plane. \n\
+\n\
+See Also \n\
+--------- \n\
+T : this method is equal to the attribute :attr:`dataObject.T`.");
 PyObject* PythonDataObject::PyDataObject_trans(PyDataObject* self)
 {
     if (self->dataObject == NULL)
@@ -5227,6 +5231,26 @@ PyObject* PythonDataObject::PyDataObject_trans(PyDataObject* self)
         retObj->dataObject->addToProtocol("Created by transponation of a dataObject.");
 
     return (PyObject*)retObj;
+}
+
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(dataObjectTranspose_doc, 
+    "dataObject : Returns a copy of this dataObject where the two last dimensions are swapped. \n\
+\n\
+Return a new data object with the same data type than this object and where every \n\
+plane (data spanned by the last two dimensions) is transposed respectively \n\
+such that the last two axes are permuted. The :attr:`shape` of the returned \n\
+dataObject is then equal to the :attr:`shape` of this dataObject, but the last two \n\
+values in the shape tuple are swapped. \n\
+\n\
+This attribute was added with itom 5.0. \n\
+\n\
+See Also \n\
+--------- \n\
+trans : This method is equal to the method :meth:`dataObject.trans`.");
+PyObject* PythonDataObject::PyDataObject_transpose(PyDataObject *self, void *closure)
+{
+    return PyDataObject_trans(self);
 }
 
 //-------------------------------------------------------------------------------------
@@ -10848,6 +10872,9 @@ PyGetSetDef PythonDataObject::PyDataObject_getseters[] = {
      NULL,
      dataObjectArray_Interface_doc,
      NULL},
+
+{"T", (getter)PyDataObject_transpose, nullptr, dataObjectTranspose_doc, nullptr
+},
 
     {NULL} /* Sentinel */
 };
