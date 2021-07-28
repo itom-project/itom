@@ -307,7 +307,7 @@ class PythonDataObject
         static PyObject* PyDataObj_StaticRandN(PyObject *self, PyObject *args, PyObject *kwds);
         static PyObject* PyDataObj_StaticEye(PyObject *self, PyObject *args, PyObject *kwds);
         static PyObject* PyDataObj_StaticFromNumpyColor(PyObject *self, PyObject *args, PyObject *kwds);
-		static PyObject* PyDataObj_dstack(PyObject *self, PyObject *args);
+		static PyObject* PyDataObj_dstack(PyObject *self, PyObject *args, PyObject *kwds);
 		
 
 
