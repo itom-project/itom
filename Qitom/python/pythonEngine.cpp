@@ -333,6 +333,17 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap
     {
         if (PythonEngine::instantiated.tryLock(5000))
         {
+            PythonEngine::PythonWorkspaceUpdateQueue &pwuq = m_pyWorkspaceUpdateQueue;
+            pwuq.timerElapsedSinceFirstAction = new QTimer(this);
+            pwuq.timerElapsedSinceFirstAction->setSingleShot(true);
+            pwuq.timerElapsedSinceFirstAction->setInterval(2500);
+            connect(pwuq.timerElapsedSinceFirstAction, &QTimer::timeout, this, &PythonEngine::processPythonWorkspaceUpdateQueue);
+
+            pwuq.timerElapsedSinceLastUpdate = new QTimer(this);
+            pwuq.timerElapsedSinceLastUpdate->setSingleShot(true);
+            pwuq.timerElapsedSinceLastUpdate->setInterval(150);
+            connect(pwuq.timerElapsedSinceLastUpdate, &QTimer::timeout, this, &PythonEngine::processPythonWorkspaceUpdateQueue);
+
             //if something is changed in the following initialization process, please upgrade
             //pipManager::initPythonIfStandalone, too
             QString pythonSubDir = QCoreApplication::applicationDirPath() + QString("/python%1").arg(PY_MAJOR_VERSION);
@@ -1116,6 +1127,8 @@ ito::RetVal PythonEngine::pythonShutdown(ItomSharedSemaphore *aimWait)
     if (m_started)
     {
         m_pyWorkspaceUpdateQueue.reset();
+        m_pyWorkspaceUpdateQueue.timerElapsedSinceFirstAction->deleteLater();
+        m_pyWorkspaceUpdateQueue.timerElapsedSinceLastUpdate->deleteLater();
 
         PyGILState_STATE gstate;
         gstate = PyGILState_Ensure();
@@ -3982,11 +3995,11 @@ void PythonEngine::updatePythonWorkspaces(
                 {
                     if (pwuq.actionGlobal == DictNoAction && pwuq.actionLocal == DictNoAction)
                     {
-                        pwuq.elapsedSinceFirstAction.restart();
+                        pwuq.timerElapsedSinceFirstAction->start();
                     }
 
                     pwuq.actionGlobal = DictUpdate;
-                    pwuq.elapsedSinceTheLastUpdate.restart();
+                    pwuq.timerElapsedSinceLastUpdate->start();
                     startDelayedExecution = true;
                 }
                 else
@@ -4027,7 +4040,6 @@ void PythonEngine::updatePythonWorkspaces(
             }
             break;
         }
-
     }
 
     if (m_localWorkspaceContainer.count() > 0)
@@ -4044,11 +4056,11 @@ void PythonEngine::updatePythonWorkspaces(
             {
                 if (pwuq.actionGlobal == DictNoAction && pwuq.actionLocal == DictNoAction)
                 {
-                    pwuq.elapsedSinceFirstAction.restart();
+                    pwuq.timerElapsedSinceFirstAction->start();
                 }
 
                 pwuq.actionLocal = DictUpdate;
-                pwuq.elapsedSinceTheLastUpdate.restart();
+                pwuq.timerElapsedSinceLastUpdate->start();
                 startDelayedExecution = true;
             }
             else
@@ -4076,7 +4088,7 @@ void PythonEngine::updatePythonWorkspaces(
 
                     if (global != local)
                     {
-                        qDebug() << "reload local dict";
+                        //qDebug() << "reload local dict";
                         cont->loadDictionary(local, "");
                     }
                     else
@@ -4111,7 +4123,7 @@ void PythonEngine::updatePythonWorkspaces(
 
     if (startDelayedExecution)
     {
-        QTimer::singleShot(100, this, &PythonEngine::processPythonWorkspaceUpdateQueue);
+        //pwuq.timerElapsedSinceLastUpdate->start();
     }
 
     if (pwuq.actionGlobal == DictNoAction &&
@@ -4126,14 +4138,7 @@ void PythonEngine::processPythonWorkspaceUpdateQueue()
 {
     PythonWorkspaceUpdateQueue &pwuq = m_pyWorkspaceUpdateQueue;
 
-    if (pwuq.elapsedSinceFirstAction.isValid() &&
-        pwuq.elapsedSinceFirstAction.elapsed() > 2000)
-    {
-        updatePythonWorkspaces(pwuq.actionGlobal, pwuq.actionLocal, true, false);
-        pwuq.reset();
-    }
-    else if (pwuq.elapsedSinceTheLastUpdate.isValid() &&
-        pwuq.elapsedSinceTheLastUpdate.elapsed() > 200)
+    if (pwuq.actionGlobal != DictNoAction || pwuq.actionLocal != DictNoAction)
     {
         updatePythonWorkspaces(pwuq.actionGlobal, pwuq.actionLocal, true, false);
         pwuq.reset();
@@ -4141,7 +4146,7 @@ void PythonEngine::processPythonWorkspaceUpdateQueue()
 
     if (pwuq.actionGlobal != DictNoAction || pwuq.actionLocal != DictNoAction)
     {
-        QTimer::singleShot(200, this, &PythonEngine::processPythonWorkspaceUpdateQueue);
+        pwuq.timerElapsedSinceLastUpdate->start();
     }
 }
 

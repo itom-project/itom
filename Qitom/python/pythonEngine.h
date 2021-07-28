@@ -76,6 +76,7 @@
 #include <qpointer.h>
 #include <qatomic.h>
 #include <qelapsedtimer.h>
+#include <qtimer.h>
 
 /* definition and macros */
 
@@ -202,25 +203,27 @@ private:
     {
         PythonWorkspaceUpdateQueue() :
             actionGlobal(DictNoAction),
-            actionLocal(DictNoAction)
+            actionLocal(DictNoAction),
+            timerElapsedSinceFirstAction(nullptr),
+            timerElapsedSinceLastUpdate(nullptr)
         {
         }
 
         void reset()
         {
-            elapsedSinceTheLastUpdate.invalidate();
-            elapsedSinceFirstAction.invalidate();
             actionGlobal = DictNoAction;
             actionLocal = DictNoAction;
+            timerElapsedSinceLastUpdate->stop();
+            timerElapsedSinceFirstAction->stop();
         }
-
-        //!< the elapsed time since the last action, different than
-        //!< DictNoAction has been added to the queue.
-        QElapsedTimer elapsedSinceTheLastUpdate;
 
         //!< the elapsed time since the first action, different than
         //!< DictNoAction has been added to the queue.
-        QElapsedTimer elapsedSinceFirstAction;
+        QTimer *timerElapsedSinceFirstAction;
+
+        //!< the elapsed time since the last action, different than
+        //!< DictNoAction has been added to the queue.
+        QTimer *timerElapsedSinceLastUpdate;
 
         DictUpdateFlag actionGlobal;
         DictUpdateFlag actionLocal;
@@ -386,6 +389,7 @@ signals:
 
 private slots:
     void processPythonWorkspaceUpdateQueue();
+    void processPythonWorkspaceUpdateQueueShort();
 
 public slots:
     void pythonExecStringFromCommandLine(QString cmd);
