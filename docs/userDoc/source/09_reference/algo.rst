@@ -35,7 +35,7 @@ itom algorithm plugins can contain two different types of code:
    an user interface, call the method :py:meth:`~itom.ui.createNewPluginWidget` or 
    :py:meth:`~itom.ui.createNewPluginWidget2`. To get an online help, use :py:meth:`~itom.widgetHelp`.
 
-For more information, see also :ref:`getStartFilter`.
+For more information, see also :ref:`getStartFilter` or in the demo file **demoGaussianSpotCentroidDetection.py**.
 
 .. automodule:: itom
     :members: filter, filterHelp, widgetHelp

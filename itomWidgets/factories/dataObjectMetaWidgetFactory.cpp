@@ -57,12 +57,12 @@ QString DataObjectMetaWidgetFactory::name() const
 
 QString DataObjectMetaWidgetFactory::group() const
 {
-    return "itom Plugins";
+    return "itom [widgets]";
 }
 
 QIcon DataObjectMetaWidgetFactory::icon() const
 {
-    return QIcon(":/itomDesignerPlugins/itom/icons/q_itoM32.png");
+    return QIcon(":/icons/paramEditorWidget.png");
 }
 
 QString DataObjectMetaWidgetFactory::toolTip() const

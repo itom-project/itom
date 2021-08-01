@@ -34,6 +34,7 @@
 #include <qdrag.h>
 #include <qsettings.h>
 #include <qsharedpointer.h>
+#include <qmessagebox.h>
 
 
 namespace ito
@@ -518,13 +519,36 @@ void WorkspaceWidget::itemDoubleClicked(QTreeWidgetItem* item, int /*column*/)
             }
         }
 
-        DialogVariableDetailDataObject* dlg = new DialogVariableDetailDataObject(
-            name, item->text(2), PythonDataObject::typeNumberToName(obj->getType()), dObj, this);
-        dlg->setAttribute(Qt::WA_DeleteOnClose, true);
-        dlg->setModal(false);
-        dlg->show();
-        dlg->raise();
-        dlg->activateWindow();
+        ito::RetVal retval = locker->returnValue;
+
+        if (dObj.isNull())
+        {
+            retval += ito::RetVal(ito::retError, 0, "The object could not be transformed into a dataObject.");
+        }
+
+        if (retval.containsError())
+        {
+            extendedValue = tr("No table view possible, since the given object could not be converted to a dataObject.") + \
+                "\n\n" + extendedValue;
+
+            DialogVariableDetail* dlg =
+                new DialogVariableDetail(name, item->text(2), extendedValue, this);
+            dlg->setAttribute(Qt::WA_DeleteOnClose, true);
+            dlg->setModal(false);
+            dlg->show();
+            dlg->raise();
+            dlg->activateWindow();
+        }
+        else
+        {
+            DialogVariableDetailDataObject* dlg = new DialogVariableDetailDataObject(
+                name, item->text(2), PythonDataObject::typeNumberToName(obj->getType()), dObj, this);
+            dlg->setAttribute(Qt::WA_DeleteOnClose, true);
+            dlg->setModal(false);
+            dlg->show();
+            dlg->raise();
+            dlg->activateWindow();
+        }
     }    
     else
     {

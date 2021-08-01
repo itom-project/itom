@@ -871,22 +871,22 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
     {
         if (retValue.hasErrorMessage())
         {
-            std::cerr << "Error when starting the application: \n" << retValue.errorMessage() << std::endl;
+            std::cerr << "Error when starting the application: \n" << retValue.errorMessage() << "\n" << std::endl;
         }
         else
         {
-            std::cerr << "An unspecified error occurred when starting the application." << std::endl;
+            std::cerr << "An unspecified error occurred when starting the application.\n" << std::endl;
         }
     }
     else if (retValue.containsWarning())
     {
         if (retValue.hasErrorMessage())
         {
-            std::cout << "Warning when starting the application: \n" << retValue.errorMessage() << std::endl;
+            std::cout << "Warning when starting the application: \n" << retValue.errorMessage() << "\n" << std::endl;
         }
         else
         {
-            std::cout << "An unspecified warning occurred when starting the application." << std::endl;
+            std::cout << "An unspecified warning occurred when starting the application.\n" << std::endl;
         }
     }
 
