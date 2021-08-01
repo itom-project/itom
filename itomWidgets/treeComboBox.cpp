@@ -298,11 +298,11 @@ void TreeComboBox::resizePopup()
 
       // add the frame of the container
       int marginTop, marginBottom;
-      container->getContentsMargins(0, &marginTop, 0, &marginBottom);
+      container->contentsMargins();
       heightMargin += marginTop + marginBottom;
 
       //add the frame of the view
-      this->view()->getContentsMargins(0, &marginTop, 0, &marginBottom);
+      this->view()->contentsMargins();
       //marginTop += static_cast<QAbstractScrollAreaPrivate *>(QObjectPrivate::get(this->view()))->top;
       //marginBottom += static_cast<QAbstractScrollAreaPrivate *>(QObjectPrivate::get(this->view()))->bottom;
       heightMargin += marginTop + marginBottom;

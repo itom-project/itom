@@ -4041,7 +4041,7 @@ void PythonEngine::removeFunctionCancellationAndObserver(ito::FunctionCancellati
 
     while (it != m_activeFunctionCancellations.end())
     {
-        if (it->isNull() || it->data() == observer)
+        if (it->isNull() || it->toStrongRef().data() == observer)
         {
             it = m_activeFunctionCancellations.erase(it);
         }
@@ -4084,7 +4084,7 @@ int PythonEngine::queuedInterrupt(void* /*arg*/)
     ito::PythonEngine *pyEng = PythonEngine::getInstanceInternal();
     if (pyEng)
     {
-        return (pyEng->m_interruptCounter.load() > 0);
+        return (pyEng->m_interruptCounter.loadRelaxed() > 0);
     }
     return false;
 }
@@ -4133,7 +4133,7 @@ void PythonEngine::pythonInterruptExecutionThreadSafe(bool *interruptActuatorsAn
     {
         if (observer.isNull() == false)
         {
-            observer.data()->requestCancellation(ito::FunctionCancellationAndObserver::ReasonKeyboardInterrupt);
+            observer.toStrongRef().data()->requestCancellation(ito::FunctionCancellationAndObserver::ReasonKeyboardInterrupt);
         }
     }
 

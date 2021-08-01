@@ -58,7 +58,7 @@ QRect ScriptEditorPrinter::formatPage(QPainter &painter, bool drawing, const QRe
     painter.setPen(QColor(Qt::black)); 
 
     QString filename = this->docName();
-    QString date = QDateTime::currentDateTime().toString(Qt::LocalDate);
+    QString date = QDateTime::currentDateTime().toString(Qt::SystemLocaleShortDate);
     QString page = QObject::tr("Page %1/%2").arg(pageNumber).arg(pageCount);
     int width = area.width();
     int dateWidth = painter.fontMetrics().horizontalAdvance(date);
@@ -93,7 +93,7 @@ int ScriptEditorPrinter::printRange(CodeEditor *editor, int from, int to)
     QTextDocument *doc = editor->document();
 
     QSizeF f = doc->pageSize();
-    const QSize pageSize = pageRect().size(); // page size in pixels
+    const QSize pageSize = pageLayout().paintRectPixels(resolution()).size(); // page size in pixels
     QPainter painter(this);
 
     QTextDocument *clone = doc ? doc->clone() : NULL;
@@ -141,8 +141,8 @@ int ScriptEditorPrinter::printRange(CodeEditor *editor, int from, int to)
 // Print a range of lines to a printer.
 void ScriptEditorPrinter::paintPage(int pageNumber, int pageCount, QPainter* painter, QTextDocument* doc, const QRectF& textRect, float scale)
 {
-    const QSizeF pageSize = paperRect().size();
-    const QRect page = pageRect();
+    const QSizeF pageSize = pageLayout().paintRectPixels(resolution()).size();
+    const QRect page = pageLayout().paintRectPixels(resolution());
 
     /*const QRectF borderRect(0, 0, page.width(), page.height());
     painter->drawRect(borderRect);*/

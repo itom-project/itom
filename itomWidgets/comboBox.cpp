@@ -93,7 +93,7 @@ QSize ComboBoxPrivate::recomputeSizeHint(QSize &sh) const
         if (count == 0 || this->ForceDefault)
           {
           sh.rwidth() = this->DefaultText.isEmpty() ?
-            7 * fm.width(QLatin1Char('x')) :
+            7 * fm.horizontalAdvance(QLatin1Char('x')) :
             fm.boundingRect(this->DefaultText).width();
           if (!this->DefaultIcon.isNull())
             {
@@ -114,7 +114,7 @@ QSize ComboBoxPrivate::recomputeSizeHint(QSize &sh) const
             }
           }
         break;
-      case QComboBox::AdjustToMinimumContentsLength:
+      case QComboBox::AdjustToMinimumContentsLengthWithIcon:
         if ((count == 0 || this->ForceDefault) && !this->DefaultIcon.isNull())
           {
           hasIcon = true;
@@ -123,9 +123,6 @@ QSize ComboBoxPrivate::recomputeSizeHint(QSize &sh) const
           {
           hasIcon = !q->itemIcon(i).isNull();
           }
-        break;
-      case QComboBox::AdjustToMinimumContentsLengthWithIcon:
-        hasIcon = true;
         break;
       default:
         break;
@@ -146,7 +143,7 @@ QSize ComboBoxPrivate::recomputeSizeHint(QSize &sh) const
   if (q->minimumContentsLength() > 0)
     {
     sh.setWidth(qMax(sh.width(),
-                     q->minimumContentsLength() * fm.width(QLatin1Char('X'))
+                     q->minimumContentsLength() * fm.horizontalAdvance(QLatin1Char('X'))
                      + (hasIcon ? iconSize.width() + 4 : 0)));
     }
 

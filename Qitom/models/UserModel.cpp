@@ -347,7 +347,7 @@ UserFeatures UserModel::getUserFeatures(const QModelIndex &index) const
 	}
 	else
 	{
-		return 0;
+		return UserFeature();
 	}
 }
 

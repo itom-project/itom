@@ -59,7 +59,7 @@ ColorPickerButtonPrivate::ColorPickerButtonPrivate(ColorPickerButton& object)
   this->Color = Qt::black;
   this->ColorName = QString();
   this->DisplayColorName = true;
-  this->DialogOptions = 0;
+  this->DialogOptions = ColorPickerButton::ColorDialogOption();
 }
 
 //-----------------------------------------------------------------------------
