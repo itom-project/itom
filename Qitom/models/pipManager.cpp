@@ -1113,7 +1113,13 @@ void PipManager::finalizeTask(int exitCode /*= 0*/)
                     QStringList lines = output.split("\n");
                     for (int idx = 2; idx < lines.size(); ++idx)
                     {
-                        QStringList items = lines[idx].split(QRegExp("\\s+"), QString::SkipEmptyParts);
+
+                        #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)) 
+                            QStringList items = lines[idx].split(QRegExp("\\s+"), Qt::SkipEmptyParts);
+                        #else 
+                            QStringList items = lines[idx].split(QRegExp("\\s+"), Qstring::SkipEmptyParts);
+                        #endif
+                        
                         if (items.size() >= 4)
                         {
                             outdated[items[0]] = items[2];
