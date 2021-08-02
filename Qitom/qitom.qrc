@@ -240,6 +240,7 @@
         <file>icons/heatmap_rwg.svg</file>
         <file>icons/heatmap_gwr.svg</file>
         <file>icons/heatmap_off.svg</file>
+        <file>icons/displayDetails.svg</file>
     </qresource>
     <qresource prefix="/measurement">
         <file>icons/itom_icons/meas.png</file>

@@ -186,6 +186,8 @@ class PythonDataObject
         static PyObject* PyDataObject_getValue(PyDataObject *self, void *closure);
         static int PyDataObject_setValue(PyDataObject *self, PyObject *value, void *closure);
 
+        static PyObject* PyDataObject_transpose(PyDataObject *self, void *closure);
+
         static PyObject* PyDataObj_Array_StructGet(PyDataObject *self);
         static PyObject* PyDataObj_Array_Interface(PyDataObject *self);
         static PyObject* PyDataObj_Array_(PyDataObject *self, PyObject *args);        
@@ -305,7 +307,7 @@ class PythonDataObject
         static PyObject* PyDataObj_StaticRandN(PyObject *self, PyObject *args, PyObject *kwds);
         static PyObject* PyDataObj_StaticEye(PyObject *self, PyObject *args, PyObject *kwds);
         static PyObject* PyDataObj_StaticFromNumpyColor(PyObject *self, PyObject *args, PyObject *kwds);
-		static PyObject* PyDataObj_dstack(PyObject *self, PyObject *args);
+		static PyObject* PyDataObj_dstack(PyObject *self, PyObject *args, PyObject *kwds);
 		
 
 

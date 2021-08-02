@@ -5196,7 +5196,11 @@ values in the shape tuple are swapped. \n\
 Returns \n\
 -------- \n\
 dataObject \n\
-    A copy of this dataObject is returned where every plane is its transposed plane.");
+    A copy of this dataObject is returned where every plane is its transposed plane. \n\
+\n\
+See Also \n\
+--------- \n\
+T : this method is equal to the attribute :attr:`dataObject.T`.");
 PyObject* PythonDataObject::PyDataObject_trans(PyDataObject* self)
 {
     if (self->dataObject == NULL)
@@ -5227,6 +5231,26 @@ PyObject* PythonDataObject::PyDataObject_trans(PyDataObject* self)
         retObj->dataObject->addToProtocol("Created by transponation of a dataObject.");
 
     return (PyObject*)retObj;
+}
+
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(dataObjectTranspose_doc, 
+    "dataObject : Returns a copy of this dataObject where the two last dimensions are swapped. \n\
+\n\
+Return a new data object with the same data type than this object and where every \n\
+plane (data spanned by the last two dimensions) is transposed respectively \n\
+such that the last two axes are permuted. The :attr:`shape` of the returned \n\
+dataObject is then equal to the :attr:`shape` of this dataObject, but the last two \n\
+values in the shape tuple are swapped. \n\
+\n\
+This attribute was added with itom 5.0. \n\
+\n\
+See Also \n\
+--------- \n\
+trans : This method is equal to the method :meth:`dataObject.trans`.");
+PyObject* PythonDataObject::PyDataObject_transpose(PyDataObject *self, void *closure)
+{
+    return PyDataObject_trans(self);
 }
 
 //-------------------------------------------------------------------------------------
@@ -9688,7 +9712,7 @@ PyObject* PythonDataObject::PyDataObject_createMask(
     }
 }
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyDataObjectDstack_doc, "dstack(objects) -> dataObject \n\
+PyDoc_STRVAR(pyDataObjectDstack_doc, "dstack(objects, copyAxisInfo = False) -> dataObject \n\
 \n\
 Returns a 3D dataObject with the stacked dataObjects in the objects sequence. \n\
 \n\
@@ -9707,6 +9731,13 @@ objects : list of dataObject or tuple of dataObject \n\
     Sequence (list) of dataObjects containing planes that will be stacked together. \n\
     All dataObjects must be of the same type and have the same shape of planes \n\
     (last two dimensions).\n\
+copyAxisInfo : bool \n\
+    If ``True``, the axis information (description, unit, scale, offset) is copied \n\
+    from the first ``dataObject`` in ``objects`` to the returned object. If the first \n\
+    dataObject has less dimensions than the returned 3D object, only the axis information \n\
+    of the last two dimensions is copied. The description and unit of the first axis (``z``) \n\
+    is an empty string (default) and the scale and offset of this first axis is set to \n\
+    the default values ``1.0`` and ``0.0`` respectively. \n\
 \n\
 Returns \n\
 ------- \n\
@@ -9715,16 +9746,18 @@ stack : dataObject \n\
     Else if ``objects`` only contains one array, this array is returned. Otherwise, \n\
     all dataObjects (2D or 3D) in ``objects`` are vertically stacked along the first \n\
     axis, which is prepended to the existing axes before.");
-PyObject* PythonDataObject::PyDataObj_dstack(PyObject* self, PyObject* args)
+PyObject* PythonDataObject::PyDataObj_dstack(PyObject* self, PyObject* args, PyObject *kwds)
 {
-    PyObject* sequence = NULL;
+    PyObject* sequence = nullptr;
     unsigned int axis = 0;
+    int copyAxisInfo = 0;
 
-    // if (!PyArg_ParseTuple(args, "O|I", &sequence, &axis)) //currently not implemented in
-    // dataObject::stack
-    if (!PyArg_ParseTuple(args, "O", &sequence))
+    const char* kwlist[] = { "objects", "copyAxisInfo", NULL };
+
+    if (!PyArg_ParseTupleAndKeywords(
+        args, kwds, "O|p", const_cast<char**>(kwlist), &sequence, &copyAxisInfo))
     {
-        return NULL;
+        return nullptr;
     }
 
     if (PySequence_Check(sequence))
@@ -9743,7 +9776,9 @@ PyObject* PythonDataObject::PyDataObj_dstack(PyObject* self, PyObject* args)
                 if (!PyDataObject_Check(item))
                 {
                     Py_DECREF(item);
+                    Py_DECREF(retObj);
                     DELETE_AND_SET_NULL_ARRAY(vector);
+
                     return PyErr_Format(
                         PyExc_RuntimeError, "%i-th element of sequence is no dataObject.", i);
                 }
@@ -9764,12 +9799,20 @@ PyObject* PythonDataObject::PyDataObj_dstack(PyObject* self, PyObject* args)
                 DELETE_AND_SET_NULL_ARRAY(vector);
                 Py_DECREF(retObj);
                 PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-                return NULL;
+                return nullptr;
             }
 
             if (retObj)
             {
-                retObj->dataObject->addToProtocol("Created by stacking two dataObjects.");
+                retObj->dataObject->addToProtocol("Created by stacking multiple dataObjects.");
+
+                if (copyAxisInfo > 0)
+                {
+                    // the method copyAxisTagsTo is also able to copy from a 2d
+                    // object to a 3d object. Axes information is always copied
+                    // from the last axis towards the first one.
+                    vector[0].copyAxisTagsTo(*(retObj->dataObject));
+                }
             }
 
             DELETE_AND_SET_NULL_ARRAY(vector);
@@ -9784,7 +9827,7 @@ PyObject* PythonDataObject::PyDataObj_dstack(PyObject* self, PyObject* args)
     else
     {
         PyErr_SetString(PyExc_RuntimeError, "argument must be a sequence of dataObjects.");
-        return NULL;
+        return nullptr;
     }
 }
 //-------------------------------------------------------------------------------------
@@ -10716,7 +10759,7 @@ PyMethodDef PythonDataObject::PyDataObject_methods[] = {
      pyDataObjectCreateMask_doc},
     {"dstack",
      (PyCFunction)PythonDataObject::PyDataObj_dstack,
-     METH_VARARGS | METH_STATIC,
+     METH_KEYWORDS | METH_VARARGS | METH_STATIC,
      pyDataObjectDstack_doc},
     {"lineCut",
      (PyCFunction)PythonDataObject::PyDataObj_lineCut,
@@ -10848,6 +10891,9 @@ PyGetSetDef PythonDataObject::PyDataObject_getseters[] = {
      NULL,
      dataObjectArray_Interface_doc,
      NULL},
+
+{"T", (getter)PyDataObject_transpose, nullptr, dataObjectTranspose_doc, nullptr
+},
 
     {NULL} /* Sentinel */
 };
