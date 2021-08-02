@@ -81,6 +81,7 @@ DialogVariableDetailDataObject::DialogVariableDetailDataObject(
     {
         cornerButton->disconnect();
         connect(cornerButton, SIGNAL(clicked()), this, SLOT(tableCornerButtonClicked()));
+        cornerButton->setToolTip(tr("select/ deselect all items"));
     }
 
     ui.metaWidget->setData(m_dObj);
