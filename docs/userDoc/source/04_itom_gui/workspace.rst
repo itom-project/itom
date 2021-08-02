@@ -45,7 +45,9 @@ For multidimensional items (>2) the displayed axes can be changed by two *comboB
 .. figure:: images/dialogDetailsDataObjectTable.png
     :scale: 100%
     :align: center
-    
+
+Furthermore, the table can be changed via the symbols above. The number of decimal digits can be set and the scientific notation can be changed. A heat map can be added to the table according to the cell values. A plot can also be generated for the selected cell. 
+
 In addition, on the second tab the meta information of the :py:class:`~itom.dataObject` is displayed: 
 
 .. figure:: images/dialogDetailsDataObjectMetaTable.png

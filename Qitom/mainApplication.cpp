@@ -940,9 +940,9 @@ void MainApplication::finalizeApplication()
         waitCond->waitAndProcessEvents(-1);
 
         //call further objects, which have been marked by "deleteLater" during this finalize method (partI)
-        QCoreApplication::sendPostedEvents();
-        QCoreApplication::sendPostedEvents(nullptr, QEvent::DeferredDelete); //these events are not sent by the line above, since the event-loop already has been stopped.
-        QCoreApplication::processEvents();
+        // QCoreApplication::sendPostedEvents();
+        // QCoreApplication::sendPostedEvents(nullptr, QEvent::DeferredDelete); //these events are not sent by the line above, since the event-loop already has been stopped.
+        // QCoreApplication::processEvents();
 
         waitCond->deleteSemaphore();
         waitCond = nullptr;
@@ -967,9 +967,9 @@ void MainApplication::finalizeApplication()
     AppManagement::setProcessOrganizer(NULL);
 
     //call further objects, which have been marked by "deleteLater" during this finalize method (partII)
-    QCoreApplication::sendPostedEvents();
-    QCoreApplication::sendPostedEvents(NULL,QEvent::DeferredDelete); //these events are not sent by the line above, since the event-loop already has been stopped.
-    QCoreApplication::processEvents();
+    // QCoreApplication::sendPostedEvents();
+    // QCoreApplication::sendPostedEvents(NULL,QEvent::DeferredDelete); //these events are not sent by the line above, since the event-loop already has been stopped.
+    // QCoreApplication::processEvents();
 
     QString settingsName(AppManagement::getSettingsFile());
     QSettings *settings = new QSettings(settingsName, QSettings::IniFormat);
