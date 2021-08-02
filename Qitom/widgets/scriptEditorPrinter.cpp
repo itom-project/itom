@@ -58,7 +58,7 @@ QRect ScriptEditorPrinter::formatPage(QPainter &painter, bool drawing, const QRe
     painter.setPen(QColor(Qt::black)); 
 
     QString filename = this->docName();
-    QString date = QDateTime::currentDateTime().toString(Qt::SystemLocaleShortDate);
+    QString date = QDateTime::currentDateTime().toString(QLocale::system().dateFormat(QLocale::ShortFormat));
     QString page = QObject::tr("Page %1/%2").arg(pageNumber).arg(pageCount);
     int width = area.width();
     int dateWidth = painter.fontMetrics().horizontalAdvance(date);

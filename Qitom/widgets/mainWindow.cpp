@@ -423,12 +423,13 @@ MainWindow::MainWindow() :
         settings.endGroup();
     }
 
-
     settings.beginGroup("MainWindow");
 
     bool maximized = settings.value("maximized", false).toBool();
-    QDesktopWidget desktop;
-    QRect mainScreen = desktop.screenGeometry(desktop.primaryScreen());
+    QScreen* screen = QGuiApplication::primaryScreen();
+    QRect screenGeometry = screen->geometry();
+
+    QRect mainScreen = screen->geometry();
     mainScreen.adjust(
         mainScreen.width() / 6,
         mainScreen.height() / 6,
@@ -439,9 +440,12 @@ MainWindow::MainWindow() :
     if (geometry != mainScreen) // check if valid
     {
         // check whether top/left and bottom/right lie in any available desktop
-        QRect r1, r2;
-        r1 = desktop.availableGeometry(geometry.topLeft());
-        r2 = desktop.availableGeometry(geometry.bottomRight());
+        QRect r1;
+        QRect r2;
+
+        r1 = QGuiApplication::screenAt(geometry.topLeft())->geometry();
+        r2 = QGuiApplication::screenAt(geometry.bottomRight())->geometry();
+
         if (r1.isValid() == false || r2.isValid() == false ||
             r1.contains(geometry.topLeft()) == false ||
             r2.contains(geometry.bottomRight()) == false)
