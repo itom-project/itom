@@ -1221,7 +1221,7 @@ ito::RetVal PythonEngine::scanAndRunAutostartFolder(QString currentDirAfterScan 
     QDir folder;
 
     // scan autostart-folder of itom-packages folder an execute every py-file
-    folder = QDir::cleanPath(QCoreApplication::applicationDirPath());
+    folder.setPath(QDir::cleanPath(QCoreApplication::applicationDirPath()));
     if (folder.cd("itom-packages"))
     {
         if (folder.cd("autostart"))
