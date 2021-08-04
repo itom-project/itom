@@ -38,6 +38,7 @@
 #include <QLayout>
 #include <QModelIndex>
 #include <QMouseEvent>
+#include <QScreen>
 #include <QScrollBar>
 #include <QStack>
 #include <QTreeView>
@@ -242,8 +243,7 @@ void TreeComboBox::resizePopup()
     this->initStyleOption(&opt);
     QRect listRect(
         style->subControlRect(QStyle::CC_ComboBox, &opt, QStyle::SC_ComboBoxListBoxPopup, this));
-    QRect screen =
-        QApplication::desktop()->availableGeometry(QApplication::desktop()->screenNumber(this));
+    QRect screen = QGuiApplication::primaryScreen()->availableGeometry();
     QPoint below = this->mapToGlobal(listRect.bottomLeft());
     int belowHeight = screen.bottom() - below.y();
     QPoint above = this->mapToGlobal(listRect.topLeft());
