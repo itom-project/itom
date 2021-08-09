@@ -35,6 +35,7 @@
 
 int DataObjectModel::displayRoleWithoutSuffix = Qt::UserRole + 1;
 int DataObjectModel::preciseDisplayRoleWithoutSuffix = Qt::UserRole + 2;
+int DataObjectModel::longlongDoubleOrStringRoleWithoutSuffix = Qt::UserRole + 3;
 
 //-------------------------------------------------------------------------------------
 DataObjectModel::DataObjectModel() :
@@ -399,6 +400,50 @@ QVariant DataObjectModel::data(const QModelIndex& index, int role) const
             return QVariant();
         }
     }
+    else if (role == longlongDoubleOrStringRoleWithoutSuffix)
+    {
+        const int decimals = 8;
+
+        switch (m_sharedDataObj->getDims())
+        {
+        case 0:
+            return (qlonglong)0; // default case (for designer, adjustment can be done using the
+                                // defaultRow and defaultCol property)
+        case 1:
+        case 2:
+            switch (m_sharedDataObj->getType())
+            {
+            case ito::tInt8:
+                return (qlonglong)m_sharedDataObj->at<ito::int8>(row, column);
+            case ito::tUInt8:
+                return (qlonglong)m_sharedDataObj->at<ito::uint8>(row, column);
+            case ito::tInt16:
+                return (qlonglong)m_sharedDataObj->at<ito::int16>(row, column);
+            case ito::tUInt16:
+                return (qlonglong)m_sharedDataObj->at<ito::uint16>(row, column);
+            case ito::tInt32:
+                return (qlonglong)m_sharedDataObj->at<ito::int32>(row, column);
+            case ito::tUInt32:
+                return (qlonglong)m_sharedDataObj->at<ito::uint32>(row, column);
+            case ito::tFloat32:
+                return (double)m_sharedDataObj->at<ito::float32>(row, column);
+            case ito::tFloat64:
+                return (double)m_sharedDataObj->at<ito::float64>(row, column);
+            case ito::tComplex64:
+                return getDisplayNumber(
+                    m_sharedDataObj->at<ito::complex64>(row, column), -1, decimals);
+            case ito::tComplex128:
+                return getDisplayNumber(
+                    m_sharedDataObj->at<ito::complex128>(row, column), -1, decimals);
+            case ito::tRGBA32: {
+                ito::Rgba32 c = m_sharedDataObj->at<ito::Rgba32>(row, column);
+                return QColor::fromRgba(c.argb()).name();
+            }
+            }
+        default:
+            return QVariant();
+        }
+    }
     else if (role == Qt::BackgroundRole)
     {
         if (m_enableHeatmap)
@@ -478,9 +523,7 @@ QVariant DataObjectModel::data(const QModelIndex& index, int role) const
     }
     else if (role == displayRoleWithoutSuffix || role == preciseDisplayRoleWithoutSuffix)
     {
-        int decimals = (role == Qt::DisplayRole)
-            ? m_decimals
-            : 2 * m_decimals; // show the tooltip text more precise than the display
+        int decimals = (role == displayRoleWithoutSuffix) ? 4 : 8;
 
         switch (m_sharedDataObj->getDims())
         {

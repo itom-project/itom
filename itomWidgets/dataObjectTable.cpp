@@ -129,7 +129,7 @@ void DataObjectTable::createActions()
     d->m_pActCopyAll = new QAction(QIcon(":/files/icons/tableExport.svg"), tr("Copy All"), this);
     connect(d->m_pActCopyAll, &QAction::triggered, this, &DataObjectTable::copyAllToClipboard);
     d->m_pActCopyAll->setStatusTip(
-        tr("Copy the entire table to the clipboard as semicolon-separated text."));
+        tr("Copy the entire table (and optional heatmap background) to the clipboard."));
     addAction(d->m_pActCopyAll);
 
     d->m_pActCopySelection =
@@ -140,7 +140,7 @@ void DataObjectTable::createActions()
         this,
         &DataObjectTable::copySelectionToClipboard);
     d->m_pActCopySelection->setStatusTip(
-        tr("Copy the current selection to the clipboard as semicolon-separated text."));
+        tr("Copy the current selection (and optional heatmap background) to the clipboard."));
     d->m_pActCopySelection->setEnabled(false);
     addAction(d->m_pActCopySelection);
 
@@ -568,59 +568,138 @@ void DataObjectTable::contextMenuEvent(QContextMenuEvent* event)
 }
 
 //-------------------------------------------------------------------------------------
+struct CellItem
+{
+    QVariant number; // int, double or string allowed
+    QColor bgColor;
+};
+
+//-------------------------------------------------------------------------------------
+ito::RetVal copyToClipboardHelper(const QVector<CellItem>& items, int rows, int cols)
+{
+    // items must be sorted row by row
+    if (items.size() != rows * cols)
+    {
+        return ito::RetVal(
+            ito::retError, 0, "copy to clipboard not possible due to inconsistent data.");
+    }
+
+    if (items.size() == 0)
+    {
+        return ito::retOk;
+    }
+
+    QMimeData* mime = new QMimeData();
+
+    // 1. text format
+    QStringList rowTexts;
+    QStringList rowsHtml;
+    QStringList columnTexts;
+    QStringList columnsHtml;
+    QLocale locale;
+    QString attributes;
+
+    for (int r = 0; r < rows; ++r)
+    {
+        for (int c = 0; c < cols; ++c)
+        {
+            const CellItem& item = items[r * cols + c];
+
+            if (item.bgColor.isValid())
+            {
+                attributes = QString(" bgcolor=\"%1\"").arg(item.bgColor.name());
+            }
+            else
+            {
+                attributes = "";
+            }
+
+            if (item.number.isValid())
+            {
+                if (item.number.type() == QVariant::LongLong ||
+                    item.number.type() == QVariant::String)
+                {
+                    columnTexts.append(item.number.toString());
+                    columnsHtml.append(
+                        QString("<td%1>%2</td>").arg(attributes).arg(item.number.toString()));
+                }
+                else if (item.number.type() == QVariant::Double)
+                {
+                    columnTexts.append(locale.toString(item.number.toDouble(), 'f', 8));
+                    columnsHtml.append(
+                        QString("<td%1>%2</td>").arg(attributes).arg(columnTexts.last()));
+                }
+                else
+                {
+                    return ito::RetVal(ito::retError, 0, "invalid type in item value");
+                }
+            }
+            else
+            {
+                columnTexts.append("");
+                columnsHtml.append("<td></td>");
+            }
+        }
+
+        rowTexts.append(columnTexts.join("\t"));
+        columnTexts.clear();
+        rowsHtml.append(QString("<tr>%1</tr>").arg(columnsHtml.join("")));
+        columnsHtml.clear();
+    }
+
+    mime->setText(rowTexts.join("\n"));
+
+    QString html =
+        QString("<html><body><table cellspacing=\"0\" border=\"0\">%1</table></body></html>")
+            .arg(rowsHtml.join(""));
+    mime->setHtml(html);
+
+    QApplication::clipboard()->setMimeData(mime);
+
+    return ito::retOk;
+}
+
+//-------------------------------------------------------------------------------------
 void DataObjectTable::copySelectionToClipboard()
 {
-    QStringList items;
-    int currentRow = 0;
     QModelIndexList selected = selectedIndexes();
     qSort(selected.begin(), selected.end(), sortByRowAndColumn);
 
     if (selected.size() > 0)
     {
+        QVector<CellItem> items;
         int firstRow = selected[0].row();
         int lastRow = selected[selected.size() - 1].row();
         int firstCol = INT_MAX;
         int lastCol = 0;
+
         foreach (const QModelIndex& idx, selected)
         {
             firstCol = std::min(firstCol, idx.column());
             lastCol = std::max(lastCol, idx.column());
         }
+
         int cols = 1 + lastCol - firstCol;
         int rows = 1 + lastRow - firstRow;
-
-        items.reserve(rows * cols);
+        items.resize(cols * rows);
         int currentIdx = 0;
-        int lastIdx = 0;
 
         foreach (const QModelIndex& idx, selected)
         {
             currentIdx = cols * (idx.row() - firstRow) + (idx.column() - firstCol);
-            while (lastIdx < currentIdx)
-            {
-                items.append("");
-                lastIdx++;
-            }
-
-            items.append(m_pModel->data(idx, DataObjectModel::displayRoleWithoutSuffix).toString());
-            lastIdx++;
+            items[currentIdx].bgColor = m_pModel->data(idx, Qt::BackgroundRole).value<QColor>();
+            items[currentIdx].number =
+                m_pModel->data(idx, DataObjectModel::longlongDoubleOrStringRoleWithoutSuffix);
         }
 
-        while (items.size() < rows)
+        ito::RetVal retVal = copyToClipboardHelper(items, rows, cols);
+
+        if (retVal != ito::retOk)
         {
-            items.append("");
+            qDebug() << retVal.errorMessage();
         }
-
-        QStringList final;
-        for (int i = 0; i < rows; ++i)
-        {
-            final.append(QStringList(items.mid(i * cols, cols)).join(";"));
-        }
-
-        QApplication::clipboard()->setText(final.join("\n"));
     }
 }
-
 
 //-------------------------------------------------------------------------------------
 void DataObjectTable::copyAllToClipboard()
@@ -628,41 +707,31 @@ void DataObjectTable::copyAllToClipboard()
     int rows = m_pModel->rowCount();
     int cols = m_pModel->columnCount();
 
-    QStringList colHeaders;
-    colHeaders << ""; // for the top left corner
-    for (int i = 0; i < cols; ++i)
+    if (rows * cols > 0)
     {
-        colHeaders << QString("\"%1\"").arg(
-            m_pModel->headerData(i, Qt::Horizontal, Qt::DisplayRole).toString());
-    }
+        QVector<CellItem> items;
+        items.resize(cols * rows);
+        int currentIdx = 0;
 
-    QStringList rowHeaders;
-    for (int i = 0; i < rows; ++i)
-    {
-        rowHeaders << QString("\"%1\"").arg(
-            m_pModel->headerData(i, Qt::Vertical, Qt::DisplayRole).toString());
-    }
-
-    QStringList final;
-    final << colHeaders.join(";");
-
-    for (int r = 0; r < rows; ++r)
-    {
-        QStringList rowData;
-        rowData << rowHeaders[r];
-
-        for (int c = 0; c < cols; ++c)
+        for (int r = 0; r < rows; ++r)
         {
-            rowData << m_pModel
-                           ->data(
-                               m_pModel->index(r, c),
-                               DataObjectModel::preciseDisplayRoleWithoutSuffix)
-                           .toString();
+            for (int c = 0; c < cols; ++c)
+            {
+                currentIdx = r * cols + c;
+                QModelIndex idx = m_pModel->index(r, c);
+                items[currentIdx].bgColor = m_pModel->data(idx, Qt::BackgroundRole).value<QColor>();
+                items[currentIdx].number =
+                    m_pModel->data(idx, DataObjectModel::longlongDoubleOrStringRoleWithoutSuffix);
+            }
         }
-        final << rowData.join(";");
-    }
 
-    QApplication::clipboard()->setText(final.join("\n"));
+        ito::RetVal retVal = copyToClipboardHelper(items, rows, cols);
+
+        if (retVal != ito::retOk)
+        {
+            qDebug() << retVal.errorMessage();
+        }
+    }
 }
 
 //-------------------------------------------------------------------------------------
