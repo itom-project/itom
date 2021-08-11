@@ -247,8 +247,7 @@ void BasePopupWidgetPrivate::setupPopupPixmapWidget()
     }
   else
     {
-      QWidget* grabWidget = new QWidget(q);
-        pixmap = grabWidget->grab(QRect(QPoint(0, 0), q->geometry().size()));
+      q->grab(QRect(QPoint(0, 0), q->geometry().size()));
     }
   this->PopupPixmapWidget->setPixmap(pixmap);
   this->PopupPixmapWidget->setAttribute(
