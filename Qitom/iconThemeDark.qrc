@@ -22,5 +22,8 @@
         <file alias="icons/decimals.png">icons_dark/decimals.png</file>
         <file alias="icons/number_format.png">icons_dark/number_format.png</file>
     </qresource>
+    <qresource prefix="/table">
+        <file alias="icons/clearSelection.svg">icons_dark/clearSelection.svg</file>
+    </qresource>
 </RCC>
 
