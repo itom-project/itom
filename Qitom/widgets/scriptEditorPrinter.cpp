@@ -61,14 +61,32 @@ QRect ScriptEditorPrinter::formatPage(QPainter &painter, bool drawing, const QRe
     QString date = QDateTime::currentDateTime().toString(QLocale::system().dateFormat(QLocale::ShortFormat));
     QString page = QObject::tr("Page %1/%2").arg(pageNumber).arg(pageCount);
     int width = area.width();
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 11, 0))
+
     int dateWidth = painter.fontMetrics().horizontalAdvance(date);
+#else
+
+    int dateWidth = painter.fontMetrics().width(date);
+#endif
+    
     filename = painter.fontMetrics().elidedText(filename, Qt::ElideMiddle, 0.8 * (width - dateWidth));
 
     if (drawing)
     {
         //painter.drawText(area.right() - painter.fontMetrics().width(header), area.top() + painter.fontMetrics().ascent(), header);
         painter.drawText(area.left(), area.top() + painter.fontMetrics().ascent(), filename);
-        painter.drawText(area.right() - painter.fontMetrics().horizontalAdvance(date), area.top() + painter.fontMetrics().ascent(), date);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 11, 0))
+        painter.drawText(
+            area.right() - painter.fontMetrics().horizontalAdvance(date),
+            area.top() + painter.fontMetrics().ascent(),
+            date);
+#else
+        painter.drawText(
+            area.right() - painter.fontMetrics().width(date),
+            area.top() + painter.fontMetrics().ascent(),
+            date);
+#endif
+                
         painter.drawText((area.left() + area.right())*0.5, area.bottom() - painter.fontMetrics().ascent(), page);
     }
 
