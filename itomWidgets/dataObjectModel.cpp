@@ -71,7 +71,7 @@ QString DataObjectModel::getDisplayNumber(const unsigned int& number, const int 
     }
     else
     {
-        // programm style, dot remains dot... (for copy to clipboard operations)
+        // program style, dot remains dot... (for copy to clipboard operations)
         return QString("%1%2").arg(number).arg(suffix);
     }
 }

@@ -149,9 +149,9 @@ of the table as well via its context menu. The following features are available 
   plain text as well as html table, that can also contain the current background colors if
   a heatmap (or similar) is currently enabled. Floating point numbers are copied in the local
   representation, such that pasting this text to applications, like Microsoft Excel or Libre
-  Office Calc, can directly display the table.
-* If parts of the current table are selected, this selection can also be copied to the
-  clipboard in the same way.
+  Office Calc, can directly display the table. If parts of the table are currently selected, only
+  the selected items will be copied.
+* Clear an active selection (if available).
 * The number of visible decimal digits can be changed, as well as the representation of
   decimal numbers can be selected (Standard: -12.45769, Scientific: -1.245e1 or Auto for the
   more appropriate representation).

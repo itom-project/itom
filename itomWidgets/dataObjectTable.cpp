@@ -49,7 +49,7 @@ class DataObjectTablePrivate
 public:
     DataObjectTablePrivate() :
         m_pActNumberFormatStandard(nullptr), m_pActNumberFormatScientific(nullptr),
-        m_pActNumberFormatAuto(nullptr), m_pActCopyAll(nullptr), m_pActCopySelection(nullptr),
+        m_pActNumberFormatAuto(nullptr), m_pActCopySelection(nullptr), m_pActClearSelection(nullptr),
         m_pActResizeColumnsToContent(nullptr), m_pActHeatmapOff(nullptr), m_pActHeatmapRgb(nullptr),
         m_pActHeatmapRYG(nullptr), m_pActHeatmapGYR(nullptr), m_pActHeatmapRWG(nullptr),
         m_pActHeatmapGWR(nullptr), m_pMenuHeatmap(nullptr), m_pActHeatmapConfig(nullptr)
@@ -60,8 +60,8 @@ public:
     QAction* m_pActNumberFormatScientific;
     QAction* m_pActNumberFormatAuto;
 
-    QAction* m_pActCopyAll;
     QAction* m_pActCopySelection;
+    QAction* m_pActClearSelection;
     QAction* m_pActResizeColumnsToContent;
 
     QAction* m_pActHeatmapOff;
@@ -90,6 +90,7 @@ DataObjectTable::DataObjectTable(QWidget* parent /*= 0*/) : QTableView(parent)
     m_pDelegate = new DataObjectDelegate(this);
 
     setModel(m_pModel);
+
     setItemDelegate(m_pDelegate);
 
     setEditTriggers(QAbstractItemView::AnyKeyPressed | QAbstractItemView::DoubleClicked);
@@ -126,27 +127,25 @@ void DataObjectTable::createActions()
 {
     DataObjectTablePrivate* d = PrivateHash[this];
 
-    d->m_pActCopyAll = new QAction(QIcon(":/files/icons/tableExport.svg"), tr("Copy All"), this);
-    connect(d->m_pActCopyAll, &QAction::triggered, this, &DataObjectTable::copyAllToClipboard);
-    d->m_pActCopyAll->setStatusTip(
-        tr("Copy the entire table (and optional heatmap background) to the clipboard."));
-    addAction(d->m_pActCopyAll);
-
     d->m_pActCopySelection =
-        new QAction(QIcon(":/files/icons/tableExportSelection.svg"), tr("Copy Selection"), this);
+        new QAction(QIcon(":/files/icons/tableExportSelection.svg"), tr("Copy Selection / Table to Clipboard"), this);
     connect(
         d->m_pActCopySelection,
         &QAction::triggered,
         this,
         &DataObjectTable::copySelectionToClipboard);
     d->m_pActCopySelection->setStatusTip(
-        tr("Copy the current selection (and optional heatmap background) to the clipboard."));
-    d->m_pActCopySelection->setEnabled(false);
+        tr("Copy the entire table or the current selection (and optional heatmap background) to the clipboard."));
     addAction(d->m_pActCopySelection);
 
     QAction* a = new QAction(this);
     a->setSeparator(true);
     addAction(a);
+
+    d->m_pActClearSelection = new QAction(QIcon(":/table/icons/clearSelection.svg"), tr("Clear selection"), this);
+    d->m_pActClearSelection->setEnabled(false);
+    connect(d->m_pActClearSelection, &QAction::triggered, this, &DataObjectTable::clearSelection);
+    addAction(d->m_pActClearSelection);
 
     a = new QAction(QIcon(":general/icons/decimals.png"), tr("Decimals..."), this);
     connect(a, &QAction::triggered, this, &DataObjectTable::setDecimalsGUI);
@@ -663,10 +662,11 @@ ito::RetVal copyToClipboardHelper(const QVector<CellItem>& items, int rows, int 
 void DataObjectTable::copySelectionToClipboard()
 {
     QModelIndexList selected = selectedIndexes();
-    qSort(selected.begin(), selected.end(), sortByRowAndColumn);
 
     if (selected.size() > 0)
     {
+        qSort(selected.begin(), selected.end(), sortByRowAndColumn);
+
         QVector<CellItem> items;
         int firstRow = selected[0].row();
         int lastRow = selected[selected.size() - 1].row();
@@ -698,6 +698,10 @@ void DataObjectTable::copySelectionToClipboard()
         {
             qDebug() << retVal.errorMessage();
         }
+    }
+    else
+    {
+        copyAllToClipboard();
     }
 }
 
@@ -927,9 +931,9 @@ void DataObjectTable::selectionChanged(
 
     const QModelIndexList& indexes = selectedIndexes(); // selected.indexes();
 
-    if (d->m_pActCopySelection)
+    if (d->m_pActClearSelection)
     {
-        d->m_pActCopySelection->setEnabled(indexes.size() > 0);
+        d->m_pActClearSelection->setEnabled(indexes.size() > 0);
     }
 
     if (indexes.size() == 0)
