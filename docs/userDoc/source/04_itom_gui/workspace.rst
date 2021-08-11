@@ -145,13 +145,15 @@ the standard information. This row is only available for arrays with more than t
 Various configurations and features of the table view are available via the toolbar on top
 of the table as well via its context menu. The following features are available (among others):
 
-* Copy the entire depicted 2D slice to the clipboard. This is done as tab-separated (csv-like)
+* Copies the displayed table (or the current selection) to the clipboard. This is done as tab-separated (csv-like)
   plain text as well as html table, that can also contain the current background colors if
   a heatmap (or similar) is currently enabled. Floating point numbers are copied in the local
   representation, such that pasting this text to applications, like Microsoft Excel or Libre
   Office Calc, can directly display the table. If parts of the table are currently selected, only
   the selected items will be copied.
-* Clear an active selection (if available).
+* Exports the displayed table (or the current selection) to a CSV file. During the export,
+  many configurations for the export can be set in a configuration dialog.
+* Clears an active selection (if available).
 * The number of visible decimal digits can be changed, as well as the representation of
   decimal numbers can be selected (Standard: -12.45769, Scientific: -1.245e1 or Auto for the
   more appropriate representation).
