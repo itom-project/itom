@@ -138,7 +138,7 @@ Qt::ItemFlags PlugInModel::flags(const QModelIndex& index) const
 
     if (!index.isValid())
     {
-        return Qt::ItemFlag();
+        return Qt::NoItemFlags;
     }
 
     tItemType itemType;
@@ -146,7 +146,7 @@ Qt::ItemFlags PlugInModel::flags(const QModelIndex& index) const
 
     if (!getModelIndexInfo(index, itemType, itemInternalData))
     {
-        return Qt::ItemFlag();
+        return Qt::NoItemFlags;
     }
 
     if (itemType == itemInstance)
