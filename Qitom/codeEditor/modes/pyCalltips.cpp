@@ -271,7 +271,7 @@ void PyCalltipsMode::onJediCalltipResultAvailable(QVector<ito::JediCalltip> call
 
     // set tool tip position at the start of the bracket
     
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 11, 0))
     int char_width = editor()->fontMetrics().horizontalAdvance('A');
 #else
     int char_width = editor()->fontMetrics().width('A');

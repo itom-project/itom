@@ -296,16 +296,12 @@ void TreeComboBox::resizePopup()
       // add the spacing for the grid on the top and the bottom;
       int heightMargin = 0;//2*container->spacing();
 
-      // add the frame of the container
-      int marginTop, marginBottom;
-      container->contentsMargins();
-      heightMargin += marginTop + marginBottom;
+      // add the frame of the view
+      QMargins margins = this->view()->contentsMargins();
 
       //add the frame of the view
       this->view()->contentsMargins();
-      //marginTop += static_cast<QAbstractScrollAreaPrivate *>(QObjectPrivate::get(this->view()))->top;
-      //marginBottom += static_cast<QAbstractScrollAreaPrivate *>(QObjectPrivate::get(this->view()))->bottom;
-      heightMargin += marginTop + marginBottom;
+      heightMargin += margins.top() + margins.bottom();
 
       listRect.setHeight(listRect.height() + heightMargin);
       }
