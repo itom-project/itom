@@ -47,7 +47,7 @@ UserUiDialog::UserUiDialog(
     const StringMap& dialogButtons,
     RetVal& retValue,
     QWidget* parent,
-    QFlag f) :
+    Qt::WindowFlags f):
     QDialog(parent, f),
     m_boxLayout(NULL),
     m_dialogBtnBox(NULL),
@@ -63,7 +63,7 @@ UserUiDialog::UserUiDialog(
     const StringMap& dialogButtons,
     RetVal& retValue,
     QWidget* parent,
-    QFlag f) :
+    Qt::WindowFlags f) :
     QDialog(parent, f),
     m_boxLayout(NULL),
     m_dialogBtnBox(NULL),

@@ -59,7 +59,7 @@ public:
         int rows,
         int cols,
         QWidget* parent = 0,
-        QFlag flags = 0);
+        Qt::WindowFlags flags = Qt::WindowFlags());
     ~FigureWidget();
 
     RetVal plot(QSharedPointer<ito::DataObject> dataObj,

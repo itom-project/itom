@@ -59,7 +59,7 @@ namespace ito
 {
 
 //----------------------------------------------------------------------------------------------------------------------------------
-DialogProperties::DialogProperties(QWidget * parent, QFlag f) :
+DialogProperties::DialogProperties(QWidget* parent, Qt::WindowFlags f) :
     QDialog(parent, f)
 {
     setWindowTitle(tr("Properties"));

@@ -75,7 +75,7 @@ ScriptDockWidget::ScriptDockWidget(const QString &title, const QString &objName,
         bool docked, bool isDockAvailable, 
         const ScriptEditorActions &commonActions, 
         BookmarkModel *bookmarkModel,
-        QWidget *parent, QFlag /*flags*/) :
+        QWidget* parent, Qt::WindowFlags /*flags*/) :
     AbstractDockWidget(docked, isDockAvailable, floatingWindow, movingEnabled, title, objName, parent),
     m_tab(nullptr),
     m_pWidgetFindWord(nullptr),
