@@ -2232,12 +2232,11 @@ void QtColorEditWidget::setValue(const QColor &c)
 
 void QtColorEditWidget::buttonClicked()
 {
-    bool ok = false;
     QRgb oldRgba = m_color.rgba();
-    QColor color = QColorDialog::getColor(oldRgba, this);
-    QRgb newRgba = color.rgb();
-    if (ok && newRgba != oldRgba) {
-        setValue(QColor::fromRgba(newRgba));
+    QColor color = QColorDialog::getColor(oldRgba, this, tr("Select Color"), QColorDialog::ShowAlphaChannel);
+    if (color.isValid() && color != m_color)
+    {
+        setValue(color);
         emit valueChanged(m_color);
     }
 }
