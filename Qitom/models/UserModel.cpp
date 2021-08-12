@@ -347,7 +347,7 @@ UserFeatures UserModel::getUserFeatures(const QModelIndex &index) const
 	}
 	else
 	{
-		return UserFeature();
+        return Qt::NoItemFlags;
 	}
 }
 
@@ -360,7 +360,7 @@ QString UserModel::getUserSettingsFile(const QModelIndex &index) const
 	}
 	else
 	{
-		return 0;
+        return Qt::NoItemFlags;
 	}
 }
 
