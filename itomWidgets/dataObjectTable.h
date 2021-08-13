@@ -156,6 +156,8 @@ protected:
 
     virtual void selectionChanged(const QItemSelection& selected, const QItemSelection& deselected);
 
+
+
 private:
     //!< todo: convert to classical private class if the addInInterface is incremented for the next time
     static QHash<DataObjectTable*, DataObjectTablePrivate*> PrivateHash;
@@ -167,7 +169,7 @@ private slots:
     inline void _entered (const QModelIndex &index) { emit entered(index.row(), index.column()); }
     inline void _pressed (const QModelIndex &index) { emit pressed(index.row(), index.column()); }
     void copySelectionToClipboard();
-    void copyAllToClipboard();
+    void saveSelectionToCSV();
     void setDecimalsGUI();
     void configureHeatmap();
     void numberFormatTriggered(QAction *a);
