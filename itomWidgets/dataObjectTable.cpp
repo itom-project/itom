@@ -30,10 +30,13 @@
 #include <qapplication.h>
 #include <qclipboard.h>
 #include <qdebug.h>
+#include <qdir.h>
 #include <qevent.h>
+#include <qfiledialog.h>
 #include <qheaderview.h>
 #include <qinputdialog.h>
 #include <qmenu.h>
+#include <qmessagebox.h>
 #include <qregion.h>
 #include <qscrollbar.h>
 
@@ -49,19 +52,27 @@ class DataObjectTablePrivate
 public:
     DataObjectTablePrivate() :
         m_pActNumberFormatStandard(nullptr), m_pActNumberFormatScientific(nullptr),
-        m_pActNumberFormatAuto(nullptr), m_pActCopyAll(nullptr), m_pActCopySelection(nullptr),
+        m_pActNumberFormatAuto(nullptr), m_pActCopySelection(nullptr),
+        m_pActClearSelection(nullptr), m_pActExportCsv(nullptr),
         m_pActResizeColumnsToContent(nullptr), m_pActHeatmapOff(nullptr), m_pActHeatmapRgb(nullptr),
         m_pActHeatmapRYG(nullptr), m_pActHeatmapGYR(nullptr), m_pActHeatmapRWG(nullptr),
         m_pActHeatmapGWR(nullptr), m_pMenuHeatmap(nullptr), m_pActHeatmapConfig(nullptr)
     {
     }
 
+    struct CellItem
+    {
+        QVariant number; // int, double or string allowed
+        QColor bgColor;
+    };
+
     QAction* m_pActNumberFormatStandard;
     QAction* m_pActNumberFormatScientific;
     QAction* m_pActNumberFormatAuto;
 
-    QAction* m_pActCopyAll;
     QAction* m_pActCopySelection;
+    QAction* m_pActExportCsv;
+    QAction* m_pActClearSelection;
     QAction* m_pActResizeColumnsToContent;
 
     QAction* m_pActHeatmapOff;
@@ -73,7 +84,282 @@ public:
     QAction* m_pActHeatmapConfig;
 
     QMenu* m_pMenuHeatmap;
+
+    ito::RetVal copyToClipboard(const QVector<CellItem>& items, int rows, int cols);
+    ito::RetVal saveToCsv(
+        const QString& filename,
+        const QVector<CellItem>& items,
+        int rows,
+        int cols,
+        char format,
+        int precision,
+        QChar decimalSign,
+        const QByteArray& valueSeparator,
+        const QByteArray& rowSeparator);
+    ito::RetVal getSelectedItems(
+        DataObjectModel* model,
+        const QModelIndexList& selectedIndices,
+        QVector<CellItem>& items,
+        int& rows,
+        int& cols);
 };
+
+//------------------------------------------------------------------------------------
+
+
+//-------------------------------------------------------------------------------------
+ito::RetVal DataObjectTablePrivate::copyToClipboard(
+    const QVector<CellItem>& items, int rows, int cols)
+{
+    // items must be sorted row by row
+    if (items.size() != rows * cols)
+    {
+        return ito::RetVal(
+            ito::retError, 0, "copy to clipboard not possible due to inconsistent data.");
+    }
+
+    if (items.size() == 0)
+    {
+        return ito::retOk;
+    }
+
+    QMimeData* mime = new QMimeData();
+
+    // 1. text format
+    QStringList rowTexts;
+    QStringList rowsHtml;
+    QStringList columnTexts;
+    QStringList columnsHtml;
+    QLocale locale;
+    QString attributes;
+
+    for (int r = 0; r < rows; ++r)
+    {
+        for (int c = 0; c < cols; ++c)
+        {
+            const CellItem& item = items[r * cols + c];
+
+            if (item.bgColor.isValid())
+            {
+                attributes = QString(" bgcolor=\"%1\"").arg(item.bgColor.name());
+            }
+            else
+            {
+                attributes = "";
+            }
+
+            if (item.number.isValid())
+            {
+                if (item.number.type() == QVariant::LongLong ||
+                    item.number.type() == QVariant::String)
+                {
+                    columnTexts.append(item.number.toString());
+                    columnsHtml.append(
+                        QString("<td%1>%2</td>").arg(attributes).arg(item.number.toString()));
+                }
+                else if (item.number.type() == QVariant::Double)
+                {
+                    columnTexts.append(locale.toString(item.number.toDouble(), 'f', 8));
+                    columnsHtml.append(
+                        QString("<td%1>%2</td>").arg(attributes).arg(columnTexts.last()));
+                }
+                else
+                {
+                    return ito::RetVal(ito::retError, 0, "invalid type in item value");
+                }
+            }
+            else
+            {
+                columnTexts.append("");
+                columnsHtml.append("<td></td>");
+            }
+        }
+
+        rowTexts.append(columnTexts.join("\t"));
+        columnTexts.clear();
+        rowsHtml.append(QString("<tr>%1</tr>").arg(columnsHtml.join("")));
+        columnsHtml.clear();
+    }
+
+    mime->setText(rowTexts.join("\n"));
+
+    QString html =
+        QString("<html><body><table cellspacing=\"0\" border=\"0\">%1</table></body></html>")
+            .arg(rowsHtml.join(""));
+    mime->setHtml(html);
+
+    QApplication::clipboard()->setMimeData(mime);
+
+    return ito::retOk;
+}
+
+//-------------------------------------------------------------------------------------
+ito::RetVal DataObjectTablePrivate::saveToCsv(
+    const QString& filename,
+    const QVector<CellItem>& items,
+    int rows,
+    int cols,
+    char format,
+    int precision,
+    QChar decimalSign,
+    const QByteArray& valueSeparator,
+    const QByteArray& rowSeparator)
+{
+    // items must be sorted row by row
+    if (items.size() != rows * cols)
+    {
+        return ito::RetVal(
+            ito::retError, 0, "export to CSV not possible due to inconsistent data.");
+    }
+
+    if (items.size() == 0)
+    {
+        return ito::retOk;
+    }
+
+    QList<QByteArray> rowTexts;
+    QList<QByteArray> columnTexts;
+    QByteArray itemText;
+
+
+    for (int r = 0; r < rows; ++r)
+    {
+        for (int c = 0; c < cols; ++c)
+        {
+            const CellItem& item = items[r * cols + c];
+
+            if (item.number.isValid())
+            {
+                if (item.number.type() == QVariant::LongLong ||
+                    item.number.type() == QVariant::String)
+                {
+                    itemText = item.number.toByteArray();
+                }
+                else if (item.number.type() == QVariant::Double)
+                {
+                    itemText = QByteArray::number(item.number.toDouble(), format, precision);
+
+                    if (decimalSign != '.')
+                    {
+                        itemText = itemText.replace('.', decimalSign);
+                    }
+                }
+                else
+                {
+                    return ito::RetVal(ito::retError, 0, "invalid type in item value");
+                }
+
+                columnTexts.append(itemText);
+            }
+            else
+            {
+                columnTexts.append("");
+            }
+        }
+
+        rowTexts.append(columnTexts.join(valueSeparator));
+        columnTexts.clear();
+    }
+
+    QFile file(filename);
+
+    if (file.open(QIODevice::ReadWrite | QIODevice::Truncate))
+    {
+        file.write(rowTexts.join(rowSeparator));
+        file.close();
+    }
+    else
+    {
+        return ito::RetVal::format(
+            ito::retError,
+            0,
+            "Could not open file '%s' for writing the CSV data.",
+            filename.toLatin1().data());
+    }
+
+    return ito::retOk;
+}
+
+//-------------------------------------------------------------------------------------
+bool sortByRowAndColumn(const QModelIndex& idx1, const QModelIndex& idx2)
+{
+    if (idx1.row() == idx2.row())
+    {
+        return idx1.column() < idx2.column();
+    }
+
+    return idx1.row() < idx2.row();
+}
+
+//-------------------------------------------------------------------------------------
+ito::RetVal DataObjectTablePrivate::getSelectedItems(
+    DataObjectModel* model,
+    const QModelIndexList& selectedIndices,
+    QVector<CellItem>& items,
+    int& rows,
+    int& cols)
+{
+    items.clear();
+    rows = 0;
+    cols = 0;
+
+    QModelIndexList selected = selectedIndices;
+
+    if (selected.size() > 0)
+    {
+        qSort(selected.begin(), selected.end(), sortByRowAndColumn);
+
+        int firstRow = selected[0].row();
+        int lastRow = selected[selected.size() - 1].row();
+        int firstCol = INT_MAX;
+        int lastCol = 0;
+
+        foreach (const QModelIndex& idx, selected)
+        {
+            firstCol = std::min(firstCol, idx.column());
+            lastCol = std::max(lastCol, idx.column());
+        }
+
+        cols = 1 + lastCol - firstCol;
+        rows = 1 + lastRow - firstRow;
+        items.resize(cols * rows);
+        int currentIdx = 0;
+
+        foreach (const QModelIndex& idx, selected)
+        {
+            currentIdx = cols * (idx.row() - firstRow) + (idx.column() - firstCol);
+            items[currentIdx].bgColor = model->data(idx, Qt::BackgroundRole).value<QColor>();
+            items[currentIdx].number =
+                model->data(idx, DataObjectModel::longlongDoubleOrStringRoleWithoutSuffix);
+        }
+    }
+    else
+    {
+        rows = model->rowCount();
+        cols = model->columnCount();
+
+        if (rows * cols > 0)
+        {
+            items.resize(cols * rows);
+            int currentIdx = 0;
+
+            for (int r = 0; r < rows; ++r)
+            {
+                for (int c = 0; c < cols; ++c)
+                {
+                    currentIdx = r * cols + c;
+                    QModelIndex idx = model->index(r, c);
+                    items[currentIdx].bgColor =
+                        model->data(idx, Qt::BackgroundRole).value<QColor>();
+                    items[currentIdx].number =
+                        model->data(idx, DataObjectModel::longlongDoubleOrStringRoleWithoutSuffix);
+                }
+            }
+        }
+    }
+
+    return ito::retOk;
+}
 
 
 QHash<DataObjectTable*, DataObjectTablePrivate*> DataObjectTable::PrivateHash =
@@ -90,6 +376,7 @@ DataObjectTable::DataObjectTable(QWidget* parent /*= 0*/) : QTableView(parent)
     m_pDelegate = new DataObjectDelegate(this);
 
     setModel(m_pModel);
+
     setItemDelegate(m_pDelegate);
 
     setEditTriggers(QAbstractItemView::AnyKeyPressed | QAbstractItemView::DoubleClicked);
@@ -126,27 +413,33 @@ void DataObjectTable::createActions()
 {
     DataObjectTablePrivate* d = PrivateHash[this];
 
-    d->m_pActCopyAll = new QAction(QIcon(":/files/icons/tableExport.svg"), tr("Copy All"), this);
-    connect(d->m_pActCopyAll, &QAction::triggered, this, &DataObjectTable::copyAllToClipboard);
-    d->m_pActCopyAll->setStatusTip(
-        tr("Copy the entire table to the clipboard as semicolon-separated text."));
-    addAction(d->m_pActCopyAll);
-
-    d->m_pActCopySelection =
-        new QAction(QIcon(":/files/icons/tableExportSelection.svg"), tr("Copy Selection"), this);
+    d->m_pActCopySelection = new QAction(
+        QIcon(":/files/icons/tableExportSelection.svg"),
+        tr("Copy Table / Selection to Clipboard"),
+        this);
     connect(
         d->m_pActCopySelection,
         &QAction::triggered,
         this,
         &DataObjectTable::copySelectionToClipboard);
-    d->m_pActCopySelection->setStatusTip(
-        tr("Copy the current selection to the clipboard as semicolon-separated text."));
-    d->m_pActCopySelection->setEnabled(false);
+    d->m_pActCopySelection->setStatusTip(tr("Copy the entire table or the current selection (and "
+                                            "optional heatmap background) to the clipboard."));
     addAction(d->m_pActCopySelection);
+
+    d->m_pActExportCsv = new QAction(
+        QIcon(":/files/icons/exportToCsv.svg"), tr("Export Table / Selection to CSV File"), this);
+    connect(d->m_pActExportCsv, &QAction::triggered, this, &DataObjectTable::saveSelectionToCSV);
+    addAction(d->m_pActExportCsv);
 
     QAction* a = new QAction(this);
     a->setSeparator(true);
     addAction(a);
+
+    d->m_pActClearSelection =
+        new QAction(QIcon(":/table/icons/clearSelection.svg"), tr("Clear Selection"), this);
+    d->m_pActClearSelection->setEnabled(false);
+    connect(d->m_pActClearSelection, &QAction::triggered, this, &DataObjectTable::clearSelection);
+    addAction(d->m_pActClearSelection);
 
     a = new QAction(QIcon(":general/icons/decimals.png"), tr("Decimals..."), this);
     connect(a, &QAction::triggered, this, &DataObjectTable::setDecimalsGUI);
@@ -533,16 +826,6 @@ QSize DataObjectTable::sizeHint() const
     return QSize(w, h);
 }
 
-//-------------------------------------------------------------------------------------
-bool sortByRowAndColumn(const QModelIndex& idx1, const QModelIndex& idx2)
-{
-    if (idx1.row() == idx2.row())
-    {
-        return idx1.column() < idx2.column();
-    }
-
-    return idx1.row() < idx2.row();
-}
 
 //-------------------------------------------------------------------------------------
 void DataObjectTable::keyPressEvent(QKeyEvent* e)
@@ -567,102 +850,67 @@ void DataObjectTable::contextMenuEvent(QContextMenuEvent* event)
     event->accept();
 }
 
+
 //-------------------------------------------------------------------------------------
 void DataObjectTable::copySelectionToClipboard()
 {
-    QStringList items;
-    int currentRow = 0;
-    QModelIndexList selected = selectedIndexes();
-    qSort(selected.begin(), selected.end(), sortByRowAndColumn);
+    DataObjectTablePrivate* d = PrivateHash[this];
 
-    if (selected.size() > 0)
+    QVector<DataObjectTablePrivate::CellItem> items;
+    int rows;
+    int cols;
+    ito::RetVal retval = d->getSelectedItems(m_pModel, selectedIndexes(), items, rows, cols);
+
+    if (!retval.containsError())
     {
-        int firstRow = selected[0].row();
-        int lastRow = selected[selected.size() - 1].row();
-        int firstCol = INT_MAX;
-        int lastCol = 0;
-        foreach (const QModelIndex& idx, selected)
-        {
-            firstCol = std::min(firstCol, idx.column());
-            lastCol = std::max(lastCol, idx.column());
-        }
-        int cols = 1 + lastCol - firstCol;
-        int rows = 1 + lastRow - firstRow;
+        retval += d->copyToClipboard(items, rows, cols);
+    }
 
-        items.reserve(rows * cols);
-        int currentIdx = 0;
-        int lastIdx = 0;
-
-        foreach (const QModelIndex& idx, selected)
-        {
-            currentIdx = cols * (idx.row() - firstRow) + (idx.column() - firstCol);
-            while (lastIdx < currentIdx)
-            {
-                items.append("");
-                lastIdx++;
-            }
-
-            items.append(m_pModel->data(idx, DataObjectModel::displayRoleWithoutSuffix).toString());
-            lastIdx++;
-        }
-
-        while (items.size() < rows)
-        {
-            items.append("");
-        }
-
-        QStringList final;
-        for (int i = 0; i < rows; ++i)
-        {
-            final.append(QStringList(items.mid(i * cols, cols)).join(";"));
-        }
-
-        QApplication::clipboard()->setText(final.join("\n"));
+    if (retval.containsError())
+    {
+        QMessageBox::critical(
+            this,
+            tr("Error copying to clipboard"),
+            tr("The table could not be copied to the clipboard. Reason: %1")
+                .arg(retval.errorMessage()));
     }
 }
 
-
 //-------------------------------------------------------------------------------------
-void DataObjectTable::copyAllToClipboard()
+void DataObjectTable::saveSelectionToCSV()
 {
-    int rows = m_pModel->rowCount();
-    int cols = m_pModel->columnCount();
+    QDir current = QDir::currentPath();
 
-    QStringList colHeaders;
-    colHeaders << ""; // for the top left corner
-    for (int i = 0; i < cols; ++i)
+    QString filename = QFileDialog::getSaveFileName(
+        this, tr("CSV File"), current.filePath("export.csv"), tr("CSV Files (*.csv *.txt)"));
+
+    if (filename == "")
     {
-        colHeaders << QString("\"%1\"").arg(
-            m_pModel->headerData(i, Qt::Horizontal, Qt::DisplayRole).toString());
+        return;
     }
-
-    QStringList rowHeaders;
-    for (int i = 0; i < rows; ++i)
+    else
     {
-        rowHeaders << QString("\"%1\"").arg(
-            m_pModel->headerData(i, Qt::Vertical, Qt::DisplayRole).toString());
-    }
+        DataObjectTablePrivate* d = PrivateHash[this];
 
-    QStringList final;
-    final << colHeaders.join(";");
+        QVector<DataObjectTablePrivate::CellItem> items;
+        int rows;
+        int cols;
+        ito::RetVal retval = d->getSelectedItems(m_pModel, selectedIndexes(), items, rows, cols);
 
-    for (int r = 0; r < rows; ++r)
-    {
-        QStringList rowData;
-        rowData << rowHeaders[r];
-
-        for (int c = 0; c < cols; ++c)
+        if (!retval.containsError())
         {
-            rowData << m_pModel
-                           ->data(
-                               m_pModel->index(r, c),
-                               DataObjectModel::preciseDisplayRoleWithoutSuffix)
-                           .toString();
+            retval += d->saveToCsv(filename, items, rows, cols, 'f', 6, '.', "\t", "\n");
         }
-        final << rowData.join(";");
-    }
 
-    QApplication::clipboard()->setText(final.join("\n"));
+        if (retval.containsError())
+        {
+            QMessageBox::critical(
+                this,
+                tr("Error exporting to CSV"),
+                tr("The table could not be exported to the CSV file. Reason: %1")
+                    .arg(retval.errorMessage()));
+        }
+    }
 }
 
 //-------------------------------------------------------------------------------------
@@ -858,9 +1106,9 @@ void DataObjectTable::selectionChanged(
 
     const QModelIndexList& indexes = selectedIndexes(); // selected.indexes();
 
-    if (d->m_pActCopySelection)
+    if (d->m_pActClearSelection)
     {
-        d->m_pActCopySelection->setEnabled(indexes.size() > 0);
+        d->m_pActClearSelection->setEnabled(indexes.size() > 0);
     }
 
     if (indexes.size() == 0)

@@ -134,6 +134,7 @@ public:
 
     static int displayRoleWithoutSuffix;
     static int preciseDisplayRoleWithoutSuffix;
+    static int longlongDoubleOrStringRoleWithoutSuffix;
 
 protected:
     bool setValue(const int& row, const int& column, const QVariant& value);

@@ -3114,9 +3114,13 @@ RetVal DataObject::copyTagMapTo(DataObject& rhs) const
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
-    \detail this function makes a deepcopy of the axis and value metadata from this object to rhs
-   object. It copies \param &rhs is the matrix where the map is copied from. The old map of this
-   object is cleared first \return retOk \sa DataObjectTags
+   this function makes a deepcopy of the axis and value metadata from this object to rhs
+   object. It copies 
+   
+   \param &rhs is the matrix where the map is copied from. The old map of this
+          object is cleared first
+   \return retOk 
+   \sa DataObjectTags
 */
 RetVal DataObject::copyAxisTagsTo(DataObject& rhs) const
 {

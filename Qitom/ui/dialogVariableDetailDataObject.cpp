@@ -42,7 +42,7 @@ DialogVariableDetailDataObject::DialogVariableDetailDataObject(
     QSharedPointer<ito::DataObject> dObj,
     QWidget* parent) :
     QDialog(parent),
-    m_pAxesRanges(nullptr), m_dObj(dObj)
+    m_pAxesRanges(nullptr), m_dObj(dObj), m_selectedAll(false)
 {
     // show maximize button
     setWindowFlags(windowFlags() | 
@@ -75,6 +75,14 @@ DialogVariableDetailDataObject::DialogVariableDetailDataObject(
         &DataObjectTable::selectionInformationChanged,
         ui.lblSelectionInformation,
         &QLabel::setText);
+
+    QAbstractButton* cornerButton = ui.dataTable->findChild<QAbstractButton*>();
+    if (cornerButton)
+    {
+        cornerButton->disconnect();
+        connect(cornerButton, SIGNAL(clicked()), this, SLOT(tableCornerButtonClicked()));
+        cornerButton->setToolTip(tr("select/ deselect all items"));
+    }
 
     ui.metaWidget->setData(m_dObj);
     ui.metaWidget->setReadOnly(true);
@@ -311,6 +319,21 @@ void DialogVariableDetailDataObject::changeDisplayedAxes(int isColNotRow = -1)
 
     ui.comboBoxDisplayedCol->blockSignals(false);
     ui.comboBoxDisplayedRow->blockSignals(false);
+}
+
+//----------------------------------------------------------------------------------------------
+void DialogVariableDetailDataObject::tableCornerButtonClicked()
+{
+    if (m_selectedAll)
+    {
+        ui.dataTable->clearSelection();
+        m_selectedAll = false;
+    }
+    else
+    {
+        ui.dataTable->selectAll();
+        m_selectedAll = true;
+    }    
 }
 
 } // end namespace ito
