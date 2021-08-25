@@ -186,7 +186,7 @@ void DialogProperties::initPages()
     m_pages["00_general/03helpViewer"]  = PropertyPage(tr("Plugin Help Viewer"), tr("General - Plugin Help Viewer"), "00_general/03helpViewer" , new WidgetPropHelpDock(), QIcon(":/plugins/icons/plugin.png"));
     m_pages["00_general/04styles"] = PropertyPage(tr("Styles and Themes"), tr("General - Styles And Themes"), "00_general/04styles", new WidgetPropGeneralStyles(), QIcon(":/application/icons/color-icon.png"));
     m_pages["05_workspace"] = PropertyPage(tr("Workspace"), tr("Workspace - Please Choose Subpage"), "05_workspace", NULL, QIcon(":/workspace/icons/import-prop-icon.png"));
-    m_pages["05_workspace/01unpack"] = PropertyPage(tr("Import to workspace"), tr("Workspace - Import"), "05_workspace/01unpack", new WidgetPropWorkspaceUnpack(), QIcon(":/workspace/icons/import-prop-icon.png"));
+    m_pages["05_workspace/01unpack"] = PropertyPage(tr("Import To Workspace"), tr("Workspace - Import"), "05_workspace/01unpack", new WidgetPropWorkspaceUnpack(), QIcon(":/workspace/icons/import-prop-icon.png"));
     m_pages["06_plugins"] = PropertyPage(tr("Plugins"), tr("Plugins - Please Choose Subpage"), "06_plugins", NULL, QIcon(":/plugins/icons/plugin.png"));
     m_pages["06_plugins/02algorithms"] = PropertyPage(tr("Algorithms And Filters"), tr("Plugins - Algorithms And Filters"), "06_plugins/02algorithms", new WidgetPropPluginsAlgorithms(), QIcon(":/plugins/icons/pluginAlgo.png"));
     m_pages["06_plugins/03actuators"] = PropertyPage(tr("Actuators"), tr("Plugins - Actuators"), "06_plugins/03actuators", new WidgetPropPluginsActuators(), QIcon(":/plugins/icons/pluginActuator.png"));

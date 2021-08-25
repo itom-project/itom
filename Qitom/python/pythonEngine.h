@@ -324,7 +324,6 @@ private:
     QString m_pythonExecutable; //!< absolute path to the python executable
 
     bool m_executeInternalPythonCodeInDebugMode; //!< if true, button events, user interface connections to python methods... will be executed by debugger
-    PyMethodDef* PythonAdditionalModuleITOM;
 
     //!< decides if itom is automatically included in every source file before it is handed to the syntax checker
     bool m_includeItomImportBeforeCodeAnalysis;
@@ -356,9 +355,6 @@ private:
     static PyObject* PyInitItomDbg(void);
     static PyObject* PyDbgCommandLoop(PyObject *pSelf, PyObject *pArgs);
 
-    //helper methods
-    //static PyObject* checkForTimeoutHelper(ItomSharedSemaphore* semaphore, int timeout, PyObject *retValueOk);
-
     //other static members
     static QMutex instantiated;
     static QMutex instancePtrProtection;
@@ -389,7 +385,6 @@ signals:
 
 private slots:
     void processPythonWorkspaceUpdateQueue();
-    void processPythonWorkspaceUpdateQueueShort();
 
 public slots:
     void pythonExecStringFromCommandLine(QString cmd);

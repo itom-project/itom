@@ -336,12 +336,12 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap
             PythonEngine::PythonWorkspaceUpdateQueue &pwuq = m_pyWorkspaceUpdateQueue;
             pwuq.timerElapsedSinceFirstAction = new QTimer(this);
             pwuq.timerElapsedSinceFirstAction->setSingleShot(true);
-            pwuq.timerElapsedSinceFirstAction->setInterval(2500);
+            pwuq.timerElapsedSinceFirstAction->setInterval(2000);
             connect(pwuq.timerElapsedSinceFirstAction, &QTimer::timeout, this, &PythonEngine::processPythonWorkspaceUpdateQueue);
 
             pwuq.timerElapsedSinceLastUpdate = new QTimer(this);
             pwuq.timerElapsedSinceLastUpdate->setSingleShot(true);
-            pwuq.timerElapsedSinceLastUpdate->setInterval(150);
+            pwuq.timerElapsedSinceLastUpdate->setInterval(100);
             connect(pwuq.timerElapsedSinceLastUpdate, &QTimer::timeout, this, &PythonEngine::processPythonWorkspaceUpdateQueue);
 
             //if something is changed in the following initialization process, please upgrade
@@ -1188,8 +1188,6 @@ ito::RetVal PythonEngine::pythonShutdown(ItomSharedSemaphore *aimWait)
 
         Py_XDECREF(dictUnicode);
         Py_XDECREF(slotsUnicode);
-
-        //delete[] PythonAdditionalModuleITOM; //!< must be alive until the end of the python session!!! (http://coding.derkeiler.com/Archive/Python/comp.lang.python/2007-01/msg01036.html)
 
         mainModule = NULL;
         m_pMainDictionary = NULL;
@@ -3976,7 +3974,6 @@ void PythonEngine::updatePythonWorkspaces(
 
     PyGILState_STATE gstate;
     bool gilLocked = false;
-    bool startDelayedExecution = false;
 
     /* if localDictAction is equal to globalDictAction, the localDictAction is the 
        current global dict (currently debugging at top level) -> it is sufficient 
@@ -4000,7 +3997,6 @@ void PythonEngine::updatePythonWorkspaces(
 
                     pwuq.actionGlobal = DictUpdate;
                     pwuq.timerElapsedSinceLastUpdate->start();
-                    startDelayedExecution = true;
                 }
                 else
                 {
@@ -4022,7 +4018,6 @@ void PythonEngine::updatePythonWorkspaces(
                     foreach(ito::PyWorkspaceContainer* cont, m_mainWorkspaceContainer)
                     {
                         cont->m_accessMutex.lock();
-                        qDebug() << "reload global dict";
                         cont->loadDictionary(dict, "");
                         cont->m_accessMutex.unlock();
                     }
@@ -4061,7 +4056,6 @@ void PythonEngine::updatePythonWorkspaces(
 
                 pwuq.actionLocal = DictUpdate;
                 pwuq.timerElapsedSinceLastUpdate->start();
-                startDelayedExecution = true;
             }
             else
             {
@@ -4088,7 +4082,6 @@ void PythonEngine::updatePythonWorkspaces(
 
                     if (global != local)
                     {
-                        //qDebug() << "reload local dict";
                         cont->loadDictionary(local, "");
                     }
                     else
@@ -4119,11 +4112,6 @@ void PythonEngine::updatePythonWorkspaces(
     if (lockGIL && gilLocked)
     {
         PyGILState_Release(gstate);
-    }
-
-    if (startDelayedExecution)
-    {
-        //pwuq.timerElapsedSinceLastUpdate->start();
     }
 
     if (pwuq.actionGlobal == DictNoAction &&
