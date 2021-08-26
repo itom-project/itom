@@ -61,13 +61,6 @@ QChar PyWorkspaceContainer::delimiter = '/'; /*!< delimiter between the parent a
 //-----------------------------------------------------------------------------------------------------------
 PyWorkspaceContainer::PyWorkspaceContainer(bool globalNotLocal) : m_globalNotLocal(globalNotLocal)
 {
-    m_blackListType = QSet<QByteArray>()
-        << "builtin_function_or_method"
-        << "module"
-        << "type"
-        << "function"; // << "dict"; //blacklist of python types, which should not be displayed in
-                       // the workspace
-
     dictUnicode = PyUnicode_FromString("__dict__");
     slotsUnicode = PyUnicode_FromString("__slots__");
 }
@@ -77,6 +70,16 @@ PyWorkspaceContainer::~PyWorkspaceContainer()
 {
     Py_XDECREF(dictUnicode);
     Py_XDECREF(slotsUnicode);
+}
+
+//-----------------------------------------------------------------------------------------------------------
+bool PyWorkspaceContainer::isNotInBlacklist(PyObject *obj) const
+{
+    return !(PyFunction_Check(obj) ||
+        PyMethod_Check(obj) ||
+        PyType_Check(obj) ||
+        PyModule_Check(obj) ||
+        PyCFunction_Check(obj));
 }
 
 //-----------------------------------------------------------------------------------------------------------
@@ -186,7 +189,7 @@ void PyWorkspaceContainer::loadDictionaryRec(
             {
                 value = PySequence_GetItem(obj, i); // new reference
 
-                if (!m_blackListType.contains(value->ob_type->tp_name)) // only if not on blacklist
+                if (isNotInBlacklist(value)) // !m_blackListType.contains(value->ob_type->tp_name)) // only if not on blacklist
                 {
                     keyText = QString::number(i);
                     keyKey = "xx:" + keyText; // list + number
@@ -343,8 +346,13 @@ void PyWorkspaceContainer::loadDictionaryRec(
                     value = PyList_GET_ITEM(values, i); // borrowed
                     key = PyList_GET_ITEM(keys, i); // borrowed
 
-                    if (!m_blackListType.contains(
-                            value->ob_type->tp_name)) // only if not on blacklist
+                    if (PyType_Check(value))
+                    {
+                        int i = 1;
+                    }
+
+                    if (isNotInBlacklist(value)) //!m_blackListType.contains(
+                            //value->ob_type->tp_name)) // only if not on blacklist
                     {
                         keyUTF8String = PyUnicode_AsUTF8String(key); // new
 
