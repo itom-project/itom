@@ -224,9 +224,10 @@ void ExtendedDataObjectTable::showPlotGeneric(const QString& plotClass)
             {
                 auto colRangeSrc = ito::Range(ranges[i].left(), ranges[i].right() + 1);
                 auto colRangeDest = ito::Range(idx, idx + ranges[i].width());
+                ito::DataObject destination = dObj->at(ito::Range::all(), colRangeDest);
                 idx += colRangeDest.size();
                 src->at(rowRange, colRangeSrc)
-                    .deepCopyPartial(dObj->at(ito::Range::all(), colRangeDest));
+                    .deepCopyPartial(destination);
             }
         }
         else if (coverAllRangesTheSameColumns(ranges, nrOfRows))
@@ -248,9 +249,10 @@ void ExtendedDataObjectTable::showPlotGeneric(const QString& plotClass)
             {
                 auto rowRangeSrc = ito::Range(ranges[i].top(), ranges[i].bottom() + 1);
                 auto rowRangeDest = ito::Range(idx, idx + ranges[i].height());
+                ito::DataObject destination = dObj->at(rowRangeDest, ito::Range::all());
                 idx += rowRangeDest.size();
                 src->at(rowRangeSrc, colRange)
-                    .deepCopyPartial(dObj->at(rowRangeDest, ito::Range::all()));
+                    .deepCopyPartial(destination);
             }
         }
 
