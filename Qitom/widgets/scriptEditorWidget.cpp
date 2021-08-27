@@ -1973,7 +1973,7 @@ void ScriptEditorWidget::triggerCodeChecker()
 //----------------------------------------------------------------------------------------------------------------------------------
 //! slot invoked by timer
 /*!
-    This slot is invoked by the timer to trigger the syntax check. The intervall is set in the option dialog.
+    This slot is invoked by the timer to trigger the syntax check. The interval is set in the option dialog.
     \sa codeCheckResultsReady, triggerCodeChecker
 */
 void ScriptEditorWidget::updateSyntaxCheck()
