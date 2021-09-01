@@ -252,7 +252,7 @@ int PythonDataObject::PyDataObject_init(PyDataObject* self, PyObject* args, PyOb
 
         if (strlen(typeName) > 0)
         {
-            typeno = typeNameToNumber(typeName);
+            typeno = dObjTypeFromName(typeName);
         }
         else
         {
@@ -411,7 +411,7 @@ PythonDataObject::PyDataObjectTypes PythonDataObject::PyDataObject_types[] = {
     {"rgba32", tRGBA32}};
 
 //-------------------------------------------------------------------------------------
-int PythonDataObject::typeNameToNumber(const char* name)
+int PythonDataObject::dObjTypeFromName(const char* name)
 {
     int length = sizeof(PyDataObject_types) / sizeof(PyDataObject_types[0]);
     int i;
@@ -423,6 +423,7 @@ int PythonDataObject::typeNameToNumber(const char* name)
             return PyDataObject_types[i].typeno;
         }
     }
+
     return -1;
 }
 
@@ -474,7 +475,7 @@ int PythonDataObject::PyDataObj_CreateFromShapeTypeData(
         return -2; // Python error is set, too
     }
 
-    int typeno = typeNameToNumber(typeName);
+    int typeno = dObjTypeFromName(typeName);
 
     if (typeno < 0)
     {
@@ -679,20 +680,18 @@ return -2 if args / kwds cannot be parsed, Python error message is set, too
 int PythonDataObject::PyDataObj_CreateFromNpNdArrayAndType(
     PyDataObject* self, PyObject* args, PyObject* kwds) // helper method for PyDataObject_init
 {
-    const char* kwlist[] = {"object", "dtype", "continuous", NULL};
-    PyObject* rhsNpArray = NULL;
-    PyObject* dimList = NULL;
+    const char* kwlist[] = {"object", "dtype", "continuous", nullptr};
+    PyArrayObject* ndArrayRef = nullptr;
+    PyObject* dimList = nullptr;
     const char* typeName = "\0";
+
+    // continuous is not used in this method, but can be part of the arguments
     unsigned char continuous = 0;
 
 #if (NPY_FEATURE_VERSION < NPY_1_7_API_VERSION)
-    int C_CONTIGUOUS =
-        NPY_C_CONTIGUOUS; // now we always have an increased reference of ndArray (either reference
-                          // of old ndArray or new object with new reference)
+    int C_CONTIGUOUS = NPY_C_CONTIGUOUS;
 #else
-    int C_CONTIGUOUS =
-        NPY_ARRAY_C_CONTIGUOUS; // now we always have an increased reference of ndArray (either
-                                // reference of old ndArray or new object with new reference)
+    int C_CONTIGUOUS = NPY_ARRAY_C_CONTIGUOUS;
 #endif
 
     if (!PyArg_ParseTupleAndKeywords(
@@ -701,24 +700,24 @@ int PythonDataObject::PyDataObj_CreateFromNpNdArrayAndType(
             "O!|sb",
             const_cast<char**>(kwlist),
             &PyArray_Type,
-            &rhsNpArray,
+            &ndArrayRef,
             &typeName,
             &continuous))
     {
         return -2;
     }
 
-    PyArrayObject* ndArrayRef =
-        (PyArrayObject*)rhsNpArray; // reference (from now on, copyObject is only used once when the
-                                    // tags are copied, don't use it for further tasks)
-    PyArrayObject* ndArrayOut = NULL;
-    PyArray_Descr* descr = PyArray_DESCR(ndArrayRef);
-    int dimensions = -1;
-    int destNpArrayTypeNo = -1;
+    const PyArray_Descr* descr = PyArray_DESCR(ndArrayRef);
     int destDObjTypeNo = -1;
-    int inputNpArrayTypeNo = -1; //-1, if type of np.array has no equivalent in dataObject type
-    uchar* data = NULL;
+    int inputNpArrayTypeNo = getDObjTypeOfNpArray(descr->kind, PyArray_ITEMSIZE(ndArrayRef));
+    PyArrayObject* ndArrayNew = nullptr;
 
+    // if true, stride values must be given to the dataObject constructor.
+    // Else, a contiguous array is assumed an no stride values are required.
+    // The latter is necessary, since some contiguous np.ndarrays have also
+    // stride values of 0 (e.g. possible if its dimension is equal to 1) and
+    // this is not supported by the dataObject.
+    bool stridesRequired = false;
 
     // at first, check copyObject. there are three cases: 1. we can take it as it is, 2. it is
     // compatible but has to be converted, 3. it is incompatible
@@ -735,7 +734,7 @@ int PythonDataObject::PyDataObj_CreateFromNpNdArrayAndType(
     // now get the desired output type
     if (strlen(typeName) != 0)
     {
-        destDObjTypeNo = typeNameToNumber(typeName);
+        destDObjTypeNo = dObjTypeFromName(typeName);
 
         if (destDObjTypeNo == -1 || destDObjTypeNo == ito::tUInt32)
         {
@@ -745,49 +744,21 @@ int PythonDataObject::PyDataObj_CreateFromNpNdArrayAndType(
                 "'int32', 'float32', 'float64', 'complex64', 'complext128', 'rgba32'");
             return -1;
         }
-
-        inputNpArrayTypeNo = parseTypeNumberInverse(descr->kind, PyArray_ITEMSIZE(ndArrayRef));
-
-        if (destDObjTypeNo == inputNpArrayTypeNo)
-        {
-            ndArrayOut = PyArray_GETCONTIGUOUS(ndArrayRef); // new ref
-        }
-        else
-        {
-            int newNumpyTypeNum = getNpTypeFromDataObjectType(destDObjTypeNo);
-
-            if (newNumpyTypeNum != -1)
-            {
-                ndArrayOut = (PyArrayObject*)PyArray_FROM_OTF(
-                    (PyObject*)ndArrayRef,
-                    newNumpyTypeNum,
-                    C_CONTIGUOUS |
-                        NPY_ARRAY_FORCECAST); // now we always have an increased reference of
-                                              // ndArray (either reference of old ndArray or new
-                                              // object with new reference)
-            }
-            else
-            {
-                PyErr_Format(
-                    PyExc_TypeError,
-                    "Could not find a Numpy.dtype, compatible to the desired type '%s'",
-                    typeName);
-                return -1;
-            }
-        }
     }
-    else // guess the type from the type of the given numpy.ndarray
+    else
     {
-        // check whether type of ndarray exists for data object
-        destDObjTypeNo = parseTypeNumberInverse(descr->kind, PyArray_ITEMSIZE(ndArrayRef));
+        // guess the type from the type of the given numpy array.
 
-        if (destDObjTypeNo == -1)
+        // check whether type of ndarray exists for data object
+        destDObjTypeNo = inputNpArrayTypeNo;
+
+        if (inputNpArrayTypeNo == -1)
         {
             // check whether type is compatible
-            destNpArrayTypeNo =
-                getTypenumOfCompatibleType(descr->kind, PyArray_ITEMSIZE(ndArrayRef));
+            destDObjTypeNo =
+                getCompatibleDObjTypeOfNpArray(descr->kind, PyArray_ITEMSIZE(ndArrayRef));
 
-            if (destNpArrayTypeNo == -1) // no compatible type found
+            if (destDObjTypeNo == -1) // no compatible type found
             {
                 PyErr_SetString(
                     PyExc_ValueError,
@@ -796,30 +767,102 @@ int PythonDataObject::PyDataObj_CreateFromNpNdArrayAndType(
                     "'rgba32'");
                 return -1;
             }
-            else
-            {
-                ndArrayOut = (PyArrayObject*)PyArray_FROM_OTF(
-                    (PyObject*)ndArrayRef,
-                    destNpArrayTypeNo,
-                    C_CONTIGUOUS |
-                        NPY_ARRAY_FORCECAST); // now we always have an increased reference of
-                                              // ndArray (either reference of old ndArray or new
-                                              // object with new reference)
-            }
-        }
-        else if (destDObjTypeNo == ito::tUInt32)
-        {
-            PyErr_SetString(
-                PyExc_ValueError, "DataObject of type uint32 cannot be created. Unsupported type.");
-            return -1;
-        }
-        else
-        {
-            ndArrayOut = PyArray_GETCONTIGUOUS(ndArrayRef); // new ref
         }
     }
 
-    if (ndArrayOut == NULL)
+    if (destDObjTypeNo == inputNpArrayTypeNo)
+    {
+        // the original np.ndarray dtype and the dtype of
+        // the new dataObject are exactly the same.
+        int flags = PyArray_FLAGS(ndArrayRef);
+        int dims = PyArray_NDIM(ndArrayRef);
+        const npy_intp* strides = PyArray_STRIDES(ndArrayRef);
+        const npy_intp* sizes = PyArray_DIMS(ndArrayRef);
+        bool ok = true;
+
+        if (((flags & NPY_ARRAY_BEHAVED) != NPY_ARRAY_BEHAVED) ||
+            (dims > 0 && strides[dims - 1] != PyArray_ITEMSIZE(ndArrayRef)))
+        {
+            ok = false;
+        }
+        else
+        {
+            // check if all strides are descending.
+            npy_intp current = 0;
+
+            for (int d = dims - 1; d >= 0; --d)
+            {
+                if (strides[d] < current)
+                {
+                    ok = false;
+                    break;
+                }
+
+                current = strides[d];
+            }
+        }
+
+        if (!ok)
+        {
+            // the contiguous array is c-style, contiguous, well behaved...
+            //forces a contiguous copy, see PyArray_GETCONTIGUOUS(ndArrayRef); 
+            ndArrayNew = (PyArrayObject*)PyArray_Copy(ndArrayRef); // new ref
+            stridesRequired = false;
+        }
+        else
+        {
+            ndArrayNew = ndArrayRef;
+            Py_INCREF((PyObject*)ndArrayNew);
+            stridesRequired = true;
+        }
+    }
+    else
+    {
+        int newNumpyTypeNum = getNpTypeFromDataObjectType(destDObjTypeNo);
+
+        if (newNumpyTypeNum != -1)
+        {
+            // now we always have an increased reference of
+            // ndArray (either reference of old ndArray or new
+            // object with new reference)
+            ndArrayNew = (PyArrayObject*)PyArray_FROM_OTF(
+                (PyObject*)ndArrayRef, newNumpyTypeNum, C_CONTIGUOUS | NPY_ARRAY_FORCECAST);
+
+            // verify that the strides are descending and the last stride corresponds to item size
+            const npy_intp* npstrides = (npy_intp*)PyArray_STRIDES(ndArrayNew);
+            npy_intp currentStride = std::numeric_limits<npy_intp>::max();
+            int dims = PyArray_NDIM(ndArrayNew);
+
+            for (int i = 0; i < dims; ++i)
+            {
+                if ((npstrides[i] > currentStride) ||
+                    ((i == dims - 1) && (npstrides[i] != PyArray_ITEMSIZE(ndArrayNew))))
+                {
+                    PyErr_Format(
+                        PyExc_TypeError,
+                        "Invalid format of the converted numpy.ndarray (unsupported strides).");
+                    Py_XDECREF(ndArrayNew);
+                    return -1;
+                }
+
+                currentStride = npstrides[i];
+            }
+
+            // For the returned array, all values are continous in memory.
+            // Therefore no special strides are required.
+            stridesRequired = false;
+        }
+        else
+        {
+            PyErr_Format(
+                PyExc_TypeError,
+                "Could not find a Numpy.dtype, compatible to the desired type '%s'",
+                typeName);
+            return -1;
+        }
+    }
+
+    if (ndArrayNew == nullptr)
     {
         if (!PyErr_Occurred())
         {
@@ -830,27 +873,31 @@ int PythonDataObject::PyDataObj_CreateFromNpNdArrayAndType(
                 "An error occurred while transforming the given np.array to a c-contiguous array "
                 "with a compatible type.");
         }
+
         return -1;
     }
     else
     {
-        descr = PyArray_DESCR(ndArrayOut);
-        dimensions = PyArray_NDIM(ndArrayOut); //->nd;
+        // final check if the numpy array is really compatible.
+        descr = PyArray_DESCR(ndArrayNew);
+        destDObjTypeNo = getDObjTypeOfNpArray(descr->kind, PyArray_ITEMSIZE(ndArrayNew));
 
-        destDObjTypeNo = parseTypeNumberInverse(descr->kind, PyArray_ITEMSIZE(ndArrayOut));
-        if (destDObjTypeNo == -1)
+        if (destDObjTypeNo == -1 || destDObjTypeNo == ito::tUInt32)
         {
             PyErr_SetString(
                 PyExc_TypeError,
                 "While converting the given np.array to a compatible data type with respect to "
                 "data object, an error occurred.");
-            Py_DECREF(ndArrayOut);
+            Py_DECREF(ndArrayNew);
             return -1;
         }
     }
 
-    if (dimensions <= 0 || PyArray_SIZE(ndArrayOut) <= 0)
+    int dimensions = PyArray_NDIM(ndArrayNew);
+
+    if (dimensions <= 0 || PyArray_SIZE(ndArrayNew) <= 0)
     {
+        // create an empty dataObject
         DELETE_AND_SET_NULL(self->dataObject);
 
         if (destDObjTypeNo >= 0)
@@ -862,23 +909,35 @@ int PythonDataObject::PyDataObj_CreateFromNpNdArrayAndType(
             self->dataObject = new ito::DataObject();
         }
 
-        Py_XDECREF((PyObject*)ndArrayOut);
+        Py_XDECREF(ndArrayNew);
         return 0;
     }
     else
     {
-        data = (uchar*)PyArray_DATA(ndArrayOut);
-        npy_intp* npsizes = PyArray_DIMS(ndArrayOut);
-        npy_intp* npsteps =
-            (npy_intp*)PyArray_STRIDES(ndArrayOut); // number of bytes to jump from one element in
-                                                    // one dimension to the next one
+        const uchar* data = (uchar*)PyArray_DATA(ndArrayNew);
+        const npy_intp* npsizes = PyArray_DIMS(ndArrayNew);
+
+        // number of bytes to jump from one element in
+        // one dimension to the next one
+        const npy_intp* npstrides = (npy_intp*)PyArray_STRIDES(ndArrayNew);
 
         int* sizes = new int[dimensions];
-        int* steps = new int[dimensions];
+
         for (int n = 0; n < dimensions; n++)
         {
             sizes[n] = npsizes[n];
-            steps[n] = npsteps[n];
+        }
+
+        int* steps = nullptr;
+
+        if (stridesRequired)
+        {
+            steps = new int[dimensions];
+
+            for (int n = 0; n < dimensions; n++)
+            {
+                steps[n] = npstrides[n];
+            }
         }
 
         bool error = false;
@@ -887,67 +946,30 @@ int PythonDataObject::PyDataObj_CreateFromNpNdArrayAndType(
         // dimensions-1 elements of steps
 
         // verify that last dimension has steps size equal to itemsize
-        if (steps[dimensions - 1] == PyArray_ITEMSIZE(ndArrayOut))
+        // or the last dimension has a step size of 0, but then the size of this last dimension
+        // must be 0.
+        // if (steps[dimensions - 1] == PyArray_ITEMSIZE(ndArrayNew))
+        //{
+        DELETE_AND_SET_NULL(self->dataObject);
+
+        try
         {
-            DELETE_AND_SET_NULL(self->dataObject);
-
-            try
-            {
-                self->dataObject = new ito::DataObject(
-                    static_cast<unsigned char>(dimensions), sizes, destDObjTypeNo, data, steps);
-            }
-            catch (cv::Exception& exc)
-            {
-                PyErr_Format(
-                    PyExc_RuntimeError, "failed to create data object: %s", (exc.err).c_str());
-                self->dataObject = NULL;
-                error = true;
-            }
+            self->dataObject = new ito::DataObject(
+                static_cast<unsigned char>(dimensions), sizes, destDObjTypeNo, data, steps);
         }
-        else
+        catch (cv::Exception& exc)
         {
-            // increase dimension by one and add last dimension with size 1 in order to realize a
-            // last step size equal to itemsize
-            dimensions = dimensions + 1;
-            int* sizes_inc = new int[dimensions];
-            int* steps_inc = new int[dimensions];
-
-            for (uchar i = 0; i < dimensions - 1; i++)
-            {
-                sizes_inc[i] = sizes[i];
-                steps_inc[i] = steps[i];
-            }
-
-            sizes_inc[dimensions - 1] = 1;
-            steps_inc[dimensions - 1] = PyArray_ITEMSIZE(ndArrayOut);
-            DELETE_AND_SET_NULL(self->dataObject);
-
-            try
-            {
-                self->dataObject = new ito::DataObject(
-                    static_cast<unsigned char>(dimensions),
-                    sizes_inc,
-                    destDObjTypeNo,
-                    data,
-                    steps_inc);
-            }
-            catch (cv::Exception& exc)
-            {
-                PyErr_Format(
-                    PyExc_RuntimeError, "failed to create data object: %s", (exc.err).c_str());
-                self->dataObject = NULL;
-                error = true;
-            }
-
-            DELETE_AND_SET_NULL_ARRAY(sizes_inc);
-            DELETE_AND_SET_NULL_ARRAY(steps_inc);
+            PyErr_Format(PyExc_RuntimeError, "failed to create data object: %s", (exc.err).c_str());
+            self->dataObject = nullptr;
+            error = true;
         }
+        //}
 
         DELETE_AND_SET_NULL_ARRAY(sizes);
         DELETE_AND_SET_NULL_ARRAY(steps);
 
-        PyDataObject_SetBase(self, (PyObject*)ndArrayOut);
-        Py_XDECREF((PyObject*)ndArrayOut);
+        PyDataObject_SetBase(self, (PyObject*)ndArrayNew);
+        Py_XDECREF(ndArrayNew);
 
         return error ? -1 : 0;
     }
@@ -986,7 +1008,7 @@ RetVal PythonDataObject::PyDataObj_ParseCreateArgs(
             &type,
             &continuous))
     {
-        typeno = typeNameToNumber(type);
+        typeno = dObjTypeFromName(type);
         if (typeno >= 0)
         {
             dims = PyList_Size(dimList);
@@ -1050,7 +1072,7 @@ RetVal PythonDataObject::PyDataObj_ParseCreateArgs(
             &type,
             &continuous))
     {
-        typeno = typeNameToNumber(type);
+        typeno = dObjTypeFromName(type);
         if (typeno >= 0)
         {
             dims = PyTuple_Size(dimList);
@@ -4871,19 +4893,19 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceOr(PyObject* o1, PyObject* o2)
     case 0:
         return 0;
         break;
-    case 1:
-    {
+    case 1: {
         // currently the biggest data type of dataObject is complex128 -> 16 * 8 bit.
         // Therefore zeros is initialized with 16 * 8bit value 0 for a zero comparison.
         int elemSize = self->dataObject->elemSize();
 
         if (elemSize > 16)
         {
-            PyErr_SetString(PyExc_RuntimeError, "Datatype of dataObject is too large for bool implementation.");
+            PyErr_SetString(
+                PyExc_RuntimeError, "Datatype of dataObject is too large for bool implementation.");
             return -1;
         }
 
-        const uchar zeros[] = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
+        const uchar zeros[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
         const uchar* data = self->dataObject->getCvPlaneMat(0)->data;
         if (memcmp(zeros, data, elemSize) == 0)
         {
@@ -5234,7 +5256,8 @@ PyObject* PythonDataObject::PyDataObject_trans(PyDataObject* self)
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(dataObjectTranspose_doc, 
+PyDoc_STRVAR(
+    dataObjectTranspose_doc,
     "dataObject : Returns a copy of this dataObject where the two last dimensions are swapped. \n\
 \n\
 Return a new data object with the same data type than this object and where every \n\
@@ -5248,7 +5271,7 @@ This attribute was added with itom 5.0. \n\
 See Also \n\
 --------- \n\
 trans : This method is equal to the method :meth:`dataObject.trans`.");
-PyObject* PythonDataObject::PyDataObject_transpose(PyDataObject *self, void *closure)
+PyObject* PythonDataObject::PyDataObject_transpose(PyDataObject* self, void* closure)
 {
     return PyDataObject_trans(self);
 }
@@ -5670,7 +5693,7 @@ PyObject* PythonDataObject::PyDataObject_astype(PyDataObject* self, PyObject* ar
         return NULL;
     }
 
-    typeno = typeNameToNumber(type);
+    typeno = dObjTypeFromName(type);
 
     if (typeno == -1)
     {
@@ -5775,7 +5798,7 @@ PyObject* PythonDataObject::PyDataObject_normalize(
 
     if (type != NULL)
     {
-        typeno = typeNameToNumber(type);
+        typeno = dObjTypeFromName(type);
 
         if (typeno == -1)
         {
@@ -7738,7 +7761,7 @@ RetVal PythonDataObject::parseTypeNumber(int typeno, char& typekind, int& itemsi
 }
 
 //-------------------------------------------------------------------------------------
-int PythonDataObject::parseTypeNumberInverse(char typekind, int itemsize)
+int PythonDataObject::getDObjTypeOfNpArray(char typekind, int itemsize)
 {
     if (typekind == 'i')
     {
@@ -7789,17 +7812,20 @@ int PythonDataObject::parseTypeNumberInverse(char typekind, int itemsize)
 }
 
 //-------------------------------------------------------------------------------------
-int PythonDataObject::getTypenumOfCompatibleType(char typekind, int itemsize)
+int PythonDataObject::getCompatibleDObjTypeOfNpArray(char typekind, int itemsize)
 {
     if (typekind == 'b')
     {
+        // bool object
+
         switch (itemsize)
         {
         case 1:
-            return NPY_UBYTE; // convert bool to uint8
+            return ito::tUInt8; // convert bool to uint8
         }
     }
-    return -1;
+
+    return getDObjTypeOfNpArray(typekind, itemsize);
 }
 
 //-------------------------------------------------------------------------------------
@@ -9146,7 +9172,7 @@ TypeError \n\
 
     if (type)
     {
-        typeno = typeNameToNumber(type);
+        typeno = dObjTypeFromName(type);
     }
 
     if (typeno == -1)
@@ -9243,7 +9269,7 @@ TypeError \n\
 
     if (type)
     {
-        typeno = typeNameToNumber(type);
+        typeno = dObjTypeFromName(type);
     }
 
     if (typeno == -1)
@@ -9746,16 +9772,16 @@ stack : dataObject \n\
     Else if ``objects`` only contains one array, this array is returned. Otherwise, \n\
     all dataObjects (2D or 3D) in ``objects`` are vertically stacked along the first \n\
     axis, which is prepended to the existing axes before.");
-PyObject* PythonDataObject::PyDataObj_dstack(PyObject* self, PyObject* args, PyObject *kwds)
+PyObject* PythonDataObject::PyDataObj_dstack(PyObject* self, PyObject* args, PyObject* kwds)
 {
     PyObject* sequence = nullptr;
     unsigned int axis = 0;
     int copyAxisInfo = 0;
 
-    const char* kwlist[] = { "objects", "copyAxisInfo", NULL };
+    const char* kwlist[] = {"objects", "copyAxisInfo", NULL};
 
     if (!PyArg_ParseTupleAndKeywords(
-        args, kwds, "O|p", const_cast<char**>(kwlist), &sequence, &copyAxisInfo))
+            args, kwds, "O|p", const_cast<char**>(kwlist), &sequence, &copyAxisInfo))
     {
         return nullptr;
     }
@@ -10113,7 +10139,7 @@ zeros : method for creating a matrix filled with zeros \n\
 ones : method for creating a matrix filled with ones.");
 PyObject* PythonDataObject::PyDataObj_StaticNans(PyObject* /*self*/, PyObject* args, PyObject* kwds)
 {
-    int typeno = typeNameToNumber("float32");
+    int typeno = dObjTypeFromName("float32");
     std::vector<unsigned int> sizes;
     sizes.clear();
     unsigned char continuous = 0;
@@ -10367,7 +10393,7 @@ PyObject* PythonDataObject::PyDataObj_StaticEye(PyObject* /*self*/, PyObject* ar
         return NULL;
     }
 
-    int typeno = typeNameToNumber(type);
+    int typeno = dObjTypeFromName(type);
 
     if (typeno == ito::tUInt32)
     {
@@ -10431,19 +10457,20 @@ PyObject* PythonDataObject::PyDataObj_StaticFromNumpyColor(
     PyObject* self, PyObject* args, PyObject* kwds)
 {
     static const char* kwlist[] = {"array", NULL};
-    PyObject* obj = NULL;
+
+    // will be a borrowed reference
+    PyObject* obj = nullptr;
 
     if (!PyArg_ParseTupleAndKeywords(
-            args, kwds, "O!", const_cast<char**>(kwlist), &PyArray_Type, &obj)) // obj is a borrowed
-                                                                                // reference
+            args, kwds, "O!", const_cast<char**>(kwlist), &PyArray_Type, &obj))
     {
-        return NULL;
+        return nullptr;
     }
 
     PyArrayObject* ndArray = (PyArrayObject*)obj;
     PyArray_Descr* descr = PyArray_DESCR(ndArray);
     int typeno = -1;
-    uchar* data = NULL;
+    uchar* data = nullptr;
 
     // at first, check copyObject. there are three cases: 1. we can take it as it is, 2. it is
     // compatible but has to be converted, 3. it is incompatible
@@ -10454,38 +10481,40 @@ PyObject* PythonDataObject::PyDataObj_StaticFromNumpyColor(
             PyExc_TypeError,
             "Given numpy array has wrong byteorder (litte endian desired), which cannot be "
             "transformed to dataObject");
-        return NULL;
+        return nullptr;
     }
     else
     {
         // check whether type of ndarray exists for data object
-        typeno = parseTypeNumberInverse(descr->kind, PyArray_ITEMSIZE(ndArray));
+        typeno = getDObjTypeOfNpArray(descr->kind, PyArray_ITEMSIZE(ndArray));
 
         if (typeno != ito::tUInt8)
         {
             PyErr_SetString(
                 PyExc_TypeError,
                 "Only numpy arrays of type uint8 can be transformed to a rgba32 dataObject");
-            return NULL;
+            return nullptr;
         }
 
         // verify that ndArray is c-contiguous
-        ndArray = PyArray_GETCONTIGUOUS(
-            ndArray); // now we always have an increased reference of ndArray (either reference of
-                      // old ndArray or new object with new reference)
-        if (ndArray == NULL)
+        // now we always have an increased reference of ndArray (either reference of
+        // old ndArray or new object with new reference)
+        ndArray = PyArray_GETCONTIGUOUS(ndArray);
+
+        if (ndArray == nullptr)
         {
             PyErr_SetString(
                 PyExc_TypeError,
                 "An error occurred while transforming the given numpy array to a c-contiguous "
                 "array.");
-            return NULL;
+            return nullptr;
         }
 
         int dimensions = PyArray_NDIM(ndArray); //->nd;
         npy_intp* npsizes = PyArray_DIMS(ndArray);
-        npy_intp* npsteps = (npy_intp*)PyArray_STRIDES(
-            ndArray); // number of bytes to jump from one element in one dimension to the next one
+
+        // number of bytes to jump from one element in one dimension to the next one
+        npy_intp* npsteps = (npy_intp*)PyArray_STRIDES(ndArray);
 
         if (dimensions != 3 || (npsizes[2] != 3 && npsizes[2] != 4))
         {
@@ -10498,9 +10527,9 @@ PyObject* PythonDataObject::PyDataObj_StaticFromNumpyColor(
         }
 
         PyDataObject* pyDataObject = createEmptyPyDataObject();
-        int sizes[] = {npsizes[0], npsizes[1]};
-        int steps[] = {npsteps[0], npsteps[1], npsteps[2]};
-        int chn = npsizes[2];
+        int sizes[] = {(int)npsizes[0], (int)npsizes[1]};
+        int steps[] = {(int)npsteps[0], (int)npsteps[1], (int)npsteps[2]};
+        int chn = (int)npsizes[2];
         data = (uchar*)PyArray_DATA(ndArray);
 
         if (chn == 4 && npsteps[2] == PyArray_ITEMSIZE(ndArray))
@@ -10892,8 +10921,7 @@ PyGetSetDef PythonDataObject::PyDataObject_getseters[] = {
      dataObjectArray_Interface_doc,
      NULL},
 
-{"T", (getter)PyDataObject_transpose, nullptr, dataObjectTranspose_doc, nullptr
-},
+    {"T", (getter)PyDataObject_transpose, nullptr, dataObjectTranspose_doc, nullptr},
 
     {NULL} /* Sentinel */
 };
