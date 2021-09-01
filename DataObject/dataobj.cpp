@@ -1723,26 +1723,36 @@ void DataObject::createHeader(
             m_roi.m_p[-1] = dimensions;
         }
 
+        // if an entry in steps is zero (possible), its
+        // size and original size for this entry must be 1.
+
         for (uchar n = 0; n < dimensions; n++)
         {
             m_size.m_p[n] = sizes[n];
+            m_osize.m_p[n] = sizes[n]; // default
             m_roi.m_p[n] = 0;
 
-            if (steps == NULL || n == 0)
+            if (steps != nullptr && n > 0)
             {
-                m_osize.m_p[n] = sizes[n];
-            }
-            else if (n == dimensions - 1) // last element
-            {
-                if (elemSize == 0)
-                    cv::Exception(CV_StsAssert, "elemSize is zero", "", __FILE__, __LINE__);
-                m_osize.m_p[n] = steps[n - 1] / elemSize;
-            }
-            else /*if(n < dimensions -1)*/
-            {
-                if (steps[n] == 0)
-                    cv::Exception(CV_StsAssert, "step size is zero", "", __FILE__, __LINE__);
-                m_osize.m_p[n] = steps[n - 1] / steps[n];
+                if (n < dimensions - 1)
+                {
+                    if (steps[n] != 0 && steps[n - 1] != 0)
+                    {
+                        m_osize.m_p[n] = steps[n - 1] / steps[n];
+                    }
+                }
+                else
+                {
+                    // last dimension
+                    if (elemSize == 0)
+                    {
+                        cv::Exception(CV_StsAssert, "elemSize is zero", "", __FILE__, __LINE__);
+                    }
+                    else if (steps[n - 1] != 0)
+                    {
+                        m_osize.m_p[n] = steps[n - 1] / elemSize;
+                    }
+                }
             }
         }
     }
