@@ -348,7 +348,11 @@ ito::RetVal POINTCLOUD_EXPORT normalsAtCogFromPolygonMesh(const PCLPolygonMesh &
         {
             out = ito::PCLPointCloud(t_out);
             const pcl::Vertices *v;
+#if PCL_VERSION_COMPARE(>=,1,12,0)
+            const pcl::index_t *v_;
+#else
             const uint32_t *v_;
+#endif
             Eigen::Vector3f a, b;
             Eigen::Vector3f cog;           //center of gravity of all mesh segments that should be covered
             Eigen::Vector3f normal;    //normal vector (given in coordinate frame phi) of each center of gravity
