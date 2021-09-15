@@ -126,8 +126,8 @@ private:
     bool isNotInBlacklist(PyObject *obj) const;
 
     bool m_globalNotLocal;
-    PyObject *dictUnicode;
-    PyObject *slotsUnicode;
+    PyObject *m_dictUnicode;
+    PyObject *m_slotsUnicode;
 
 signals:
     void updateAvailable(PyWorkspaceItem *rootItem, QString fullNameRoot, QStringList recentlyDeletedFullNames);   //TODO

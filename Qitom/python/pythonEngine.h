@@ -125,7 +125,7 @@ public:
     Q_INVOKABLE ito::RetVal pythonShutdown(ItomSharedSemaphore *aimWait = NULL);            //shutdown
     Q_INVOKABLE ito::RetVal stringEncodingChanged();
 
-    inline ito::BreakPointModel *getBreakPointModel() const { return bpModel; }
+    inline ito::BreakPointModel *getBreakPointModel() const { return m_bpModel; }
     inline bool isPythonBusy() const                { return m_pythonState != ito::pyStateIdle; }
     inline bool isPythonDebugging() const           { return (m_pythonState == ito::pyStateDebuggingWaitingButBusy || m_pythonState == ito::pyStateDebugging || m_pythonState == ito::pyStateDebuggingWaiting); }
     inline bool isPythonDebuggingAndWaiting() const { return m_pythonState == ito::pyStateDebuggingWaiting; }
@@ -286,35 +286,32 @@ private:
     bool m_started;
 	CodeCheckerOptions m_codeCheckerOptions;
 
-    QMutex dbgCmdMutex;
-    QMutex pythonStateChangeMutex;
+    QMutex m_dbgCmdMutex;
+    QMutex m_pythonStateChangeMutex;
     QDesktopWidget *m_pDesktopWidget;
-    QQueue<ito::tPythonDbgCmd> debugCommandQueue;
-    ito::tPythonDbgCmd debugCommand;
+    QQueue<ito::tPythonDbgCmd> m_debugCommandQueue;
     
     ito::tPythonState m_pythonState;
     
-    ito::BreakPointModel *bpModel;
+    ito::BreakPointModel *m_bpModel;
 
-    PyObject* mainModule;          //!< main module of python (builtin) [borrowed]
+    PyObject* m_mainModule;          //!< main module of python (builtin) [borrowed]
     PyObject* m_pMainDictionary;   //!< main dictionary of python [borrowed]
     PyObject* m_pLocalDictionary;  //!< local dictionary of python [borrowed], usually NULL unless if debugger is in "interaction-mode", then m_pGlobalDictionary is equal to the local dictionary of the current frame
     PyObject* m_pGlobalDictionary; //!< global dictionary of python [borrowed], equals to m_pMainDictionary unless if debugger is in "interaction-mode", then m_pGlobalDictionary is equal to the global dictionary of the current frame
-    PyObject *itomDbgModule;       //!< debugger module
-    PyObject *itomDbgInstance;     //!< debugger instance
-    PyObject *itomModule;          //!< itom module [new ref]
-    PyObject *itomFunctions;       //!< ito functions [additional python methods] [new ref]
+    PyObject *m_itomDbgModule;       //!< debugger module
+    PyObject *m_itomDbgInstance;     //!< debugger instance
+    PyObject *m_itomModule;          //!< itom module [new ref]
+    PyObject *m_itomFunctions;       //!< ito functions [additional python methods] [new ref]
     PyObject *m_pyModGC;
     PyObject *m_pyModCodeChecker;
 	bool m_pyModCodeCheckerHasPyFlakes; //!< true if m_pyModCodeChecker could be loaded and pretends to have the syntax check feature (package: pyflakes)
 	bool m_pyModCodeCheckerHasFlake8; //!< true if m_pyModCodeChecker could be loaded and pretends to have the syntax and style check feature (package: flake8)
     
     QSharedPointer<PythonJediRunner> m_jediRunner;
-
     Qt::HANDLE m_pythonThreadId;
-
-    PyObject *dictUnicode;
-    PyObject *slotsUnicode;
+    PyObject *m_dictUnicode;
+    PyObject *m_slotsUnicode;
 
     QSet<ito::PyWorkspaceContainer*> m_mainWorkspaceContainer;
     QSet<ito::PyWorkspaceContainer*> m_localWorkspaceContainer;
@@ -356,10 +353,8 @@ private:
     static PyObject* PyDbgCommandLoop(PyObject *pSelf, PyObject *pArgs);
 
     //other static members
-    static QMutex instantiated;
     static QMutex instancePtrProtection;
     static QString fctHashPrefix;
-
     static PythonEngine* instance;
 
     QAtomicInt m_interruptCounter; //protects that a python interrupt can only be placed if there is no interrupt event queued yet.
