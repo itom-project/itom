@@ -28,8 +28,8 @@ otherwise the new entries will not be added.
 * Set **Qt5Widgets_DIR** to ${MAINDIR}/3rdParty/Qt5.12.1/5.12/msvc2017_64/lib/cmake/Qt5Widgets_DIR
 * check **BUILD_surface_on_nurbs** and **BUILD_visualization**
 * uncheck **BUILD_global_tests**, **BUILD_examples**, **BUILD_apps**, **BUILD_simulation**
+* uncheck **PCL_ENABLE_AVX** for version >1.12.0
 * Set **CMAKE_INSTALL_PREFIX** ${MAINDIR}/3rdPartyPCL/pcl1.9.1
-
 
 .. note::
     
