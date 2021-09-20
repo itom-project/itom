@@ -1004,7 +1004,7 @@ void PythonEngine::readSettings()
         int ms = settings.value("pyWorkspaceUpdateTimeoutSinceLastUpdate", 100).toInt(&ok);
         if (!ok)
         {
-            ms = 2000;
+            ms = 100;
         }
         pwuq.timerElapsedSinceLastUpdate->setInterval(ms);
     }
