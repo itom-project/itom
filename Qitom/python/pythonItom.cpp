@@ -4077,8 +4077,8 @@ debugger : itoDebugger.itoDebugger \n\
         PythonEngine::instance; // works since pythonItom is friend with pythonEngine
     if (pyEngine)
     {
-        Py_INCREF(pyEngine->itomDbgInstance);
-        return pyEngine->itomDbgInstance;
+        Py_INCREF(pyEngine->m_itomDbgInstance);
+        return pyEngine->m_itomDbgInstance;
     }
     Py_RETURN_NONE;
 }
@@ -4758,7 +4758,7 @@ PyObject* PythonItom::PyLoadMatlabMat(PyObject* /*pSelf*/, PyObject* pArgs)
                                     if (pyEngine)
                                     {
                                         PyObject* result = PyObject_CallMethodObjArgs(
-                                            pyEngine->itomFunctions,
+                                            pyEngine->m_itomFunctions,
                                             importMatlabMatAsDataObjectObj,
                                             value,
                                             NULL); // new reference

@@ -3815,13 +3815,19 @@ MAKEFUNCLIST(RandFunc);
     \detail this function allocates an random value matrix using cv::randu for uniform (randMode =
    false) or gausion noise (randMode = true). In case of an integer type, the uniform noise is from
    min(inclusiv) to max(exclusive). For floating point types, the noise is between 0(inclusiv) and
-   1(exclusiv). In case of an integer type, the gausian noise mean value is (max+min)/2.0 and the
+   1(exclusiv). In case of an integer type, the gaussian noise mean value is (max+min)/2.0 and the
    standard deviation is (max-min/)6.0 to max. For floating point types, the noise mean value is 0
-   and the standard deviation is 1.0/3.0. \param dimensions indicates the number of dimensions
-    \param *sizes is a vector with the same length than dimensions. Every element indicates the size
-   of the specific dimension \param type is the desired data-element-type \param randMode switch
-   mode between uniform distributed(false) and normal distributed noise(true) \param continuous
-   indicates wether the data should be in one continuous block (true) or not (false) \return retOk
+   and the standard deviation is 1.0/3.0. 
+
+   \param dimensions indicates the number of dimensions
+   \param *sizes is a vector with the same length than dimensions. Every element indicates the size
+   of the specific dimension 
+   \param type is the desired data-element-type 
+   \param randMode switch
+   mode between uniform distributed(false) and normal distributed noise(true) 
+   \param continuous
+   indicates whether the data should be in one continuous block (true) or not (false) 
+   \return retOk
     \sa OnesFunc
 */
 RetVal DataObject::rand(
@@ -3934,9 +3940,9 @@ RetVal DataObject::rand(
             val2 = (double)std::numeric_limits<uint32>::max();
             break;
         case ito::tInt32:
-            val1 = (double)std::numeric_limits<int32>::min();
+            val1 = (double)(-std::pow(2, 30)); // std::numeric_limits<int32>::min();
             val2 =
-                (double)std::numeric_limits<int32>::max(); // was +1 in order to make it inclusive,
+                (double)(std::pow(2, 30) - 1); // std::numeric_limits<int32>::max(); // was +1 in order to make it inclusive,
                                                            // however this leads to overflows with
                                                            // non-uniform distribution
             break;
@@ -3957,6 +3963,30 @@ RetVal DataObject::rand(
     for (int matn = 0; matn < numMats; matn++)
     {
         fListRandFunc[type](sizeY, sizeX, val1, val2, randMode, &(m_data[matn]));
+    }
+
+    // fix for uniform noise and int32 as datatype. Due to an OpenCV, the call above
+    // will only generate values in the range [-2**30, 2**30-1).
+    if (!randMode && type == ito::tInt32)
+    {
+        cv::Mat_<ito::int32>* mat;
+        ito::int32* rowPtr;
+        cv::RNG rng;
+
+        for (int matn = 0; matn < numMats; ++matn)
+        {
+            mat = (cv::Mat_<ito::int32>*)(m_data[matn]);
+
+            for (int r = 0; r < mat->rows; ++r)
+            {
+                rowPtr = mat->ptr<ito::int32>(r);
+
+                for (int c = 0; c < mat->cols; ++c)
+                {
+                    rowPtr[c] = (rowPtr[c] << 1) + (ito::int32)(rng.uniform(0, 2));
+                }
+            }
+        }
     }
 
     return retOk;
