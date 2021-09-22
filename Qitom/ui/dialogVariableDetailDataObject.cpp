@@ -52,9 +52,20 @@ DialogVariableDetailDataObject::DialogVariableDetailDataObject(
 
     ui.setupUi(this);
 
+    bool hasNPArrayTags;
+    ito::DataObjectTagType tag = dObj->getTag("_dtype", hasNPArrayTags);
+
     ui.txtName->setText(name);
     ui.txtType->setText(type);
-    ui.txtDType->setText(dtype);
+    
+    if (hasNPArrayTags) // use tags information from numpy array
+    {        
+        ui.txtDType->setText(QString::fromStdString(tag.getVal_ToString().data()));
+    }
+    else
+    {
+        ui.txtDType->setText(dtype);
+    }    
 
     QMainWindow *tableMain = new QMainWindow(this);
     tableMain->setWindowFlag(Qt::Widget, true);
@@ -84,6 +95,11 @@ DialogVariableDetailDataObject::DialogVariableDetailDataObject(
         cornerButton->setToolTip(tr("select/ deselect all items"));
     }
 
+    // do not show metaWidget for numpy.ndarray
+    if (hasNPArrayTags)
+    {
+        ui.metaWidget->setVisible(false);
+    }
     ui.metaWidget->setData(m_dObj);
     ui.metaWidget->setReadOnly(true);
 
@@ -94,21 +110,31 @@ DialogVariableDetailDataObject::DialogVariableDetailDataObject(
 
     if (dims > 0)
     {
-        dObjSize = "[";
+        ito::DataObjectTagType tag = dObj->getTag("_shape", hasNPArrayTags);
 
-        for (int dim = 0; dim < dims; dim++)
+        if (hasNPArrayTags) // use tag information from numpy.ndarray
         {
-            if (dim < dims - 1)
-            {
-                dObjSize.append(QString("%1 x ").arg(m_dObj->getSize(dim)));
-            }
-            else
-            {
-                dObjSize.append(QString("%1").arg(m_dObj->getSize(dim)));
-            }
+            dObjSize = tag.getVal_ToString().data();
         }
+        else
+        {
+            dObjSize = "[";
 
-        dObjSize.append("]");
+            for (int dim = 0; dim < dims; dim++)
+            {
+                if (dim < dims - 1)
+                {
+                    dObjSize.append(QString("%1 x ").arg(m_dObj->getSize(dim)));
+                }
+                else
+                {
+                    dObjSize.append(QString("%1").arg(m_dObj->getSize(dim)));
+                }
+            }
+
+            dObjSize.append("]");
+        }
+        
     }
     else
     {

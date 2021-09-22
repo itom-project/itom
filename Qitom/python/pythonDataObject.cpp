@@ -965,6 +965,33 @@ int PythonDataObject::PyDataObj_CreateFromNpNdArrayAndType(
         }
         //}
 
+        // add tag _dtype with original shape of numpy.ndarray
+        self->dataObject->setTag("_dtype", PythonDataObject::typeNumberToName(destDObjTypeNo));
+
+        // add tag _shape with original shape of numpy.ndarray
+        QString npArrayNewShape = "[";
+        if (dimensions == 1)
+        {
+            npArrayNewShape.append(QString::number(sizes[0]));
+        }
+        else
+        {
+            for (int n = 0; n < dimensions; n++)
+            {
+                if (n < dimensions - 1)
+                {
+                    npArrayNewShape.append(QString("%1 x ").arg(QString::number(sizes[n])));
+                }
+                else
+                {
+                    npArrayNewShape.append(QString("%1").arg(QString::number(sizes[n])));
+                }
+            }
+        }
+        npArrayNewShape.append("]");
+        
+        self->dataObject->setTag("_shape", npArrayNewShape.toStdString());
+
         DELETE_AND_SET_NULL_ARRAY(sizes);
         DELETE_AND_SET_NULL_ARRAY(steps);
 
