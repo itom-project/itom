@@ -291,10 +291,13 @@ class PythonDataObject
         static int getDObjTypeOfNpArray(char typekind, int itemsize);
         static int getCompatibleDObjTypeOfNpArray(char typekind, int itemsize);
         static int getNpTypeFromDataObjectType(int type);
+        static std::string getNpDTypeStringFromNpDTypeEnum(const int type);
 
         static ito::RetVal copyNpArrayValuesToDataObject(PyArrayObject *npNdArray, ito::DataObject *dataObject, ito::tDataType type);
         static int PyDataObj_CreateFromShapeTypeData(PyDataObject *self, PyObject *args, PyObject *kwds); //helper method for PyDataObject_init
         static int PyDataObj_CreateFromNpNdArrayAndType(PyDataObject *self, PyObject *args, PyObject *kwds); //helper method for PyDataObject_init
+
+
 
         //-------------------------------------------------------------------------------------------------
         // static type methods

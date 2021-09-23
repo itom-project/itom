@@ -805,7 +805,7 @@ int PythonDataObject::PyDataObj_CreateFromNpNdArrayAndType(
         if (!ok)
         {
             // the contiguous array is c-style, contiguous, well behaved...
-            //forces a contiguous copy, see PyArray_GETCONTIGUOUS(ndArrayRef); 
+            // forces a contiguous copy, see PyArray_GETCONTIGUOUS(ndArrayRef);
             ndArrayNew = (PyArrayObject*)PyArray_Copy(ndArrayRef); // new ref
             stridesRequired = false;
         }
@@ -966,7 +966,7 @@ int PythonDataObject::PyDataObj_CreateFromNpNdArrayAndType(
         //}
 
         // add tag _dtype with original shape of numpy.ndarray
-        self->dataObject->setTag("_dtype", PythonDataObject::typeNumberToName(destDObjTypeNo));
+        self->dataObject->setTag("_orgNpDType", getNpDTypeStringFromNpDTypeEnum(PyArray_TYPE(ndArrayRef)));
 
         // add tag _shape with original shape of numpy.ndarray
         QString npArrayNewShape = "[";
@@ -989,8 +989,8 @@ int PythonDataObject::PyDataObj_CreateFromNpNdArrayAndType(
             }
         }
         npArrayNewShape.append("]");
-        
-        self->dataObject->setTag("_shape", npArrayNewShape.toStdString());
+
+        self->dataObject->setTag("_orgNpShape", npArrayNewShape.toStdString());
 
         DELETE_AND_SET_NULL_ARRAY(sizes);
         DELETE_AND_SET_NULL_ARRAY(steps);
@@ -7853,6 +7853,104 @@ int PythonDataObject::getCompatibleDObjTypeOfNpArray(char typekind, int itemsize
     }
 
     return getDObjTypeOfNpArray(typekind, itemsize);
+}
+
+//-------------------------------------------------------------------------------------
+std::string PythonDataObject::getNpDTypeStringFromNpDTypeEnum(const int type)
+{
+    std::string typeStr;
+    switch (type)
+    {
+    case NPY_BOOL:
+        typeStr = "bool";
+        break;
+    case NPY_BYTE:
+        typeStr = "byte";
+        break;
+    case NPY_UBYTE:
+        typeStr = "ubyte";
+        break;
+    case NPY_SHORT:
+        typeStr = "short";
+        break;
+    case NPY_USHORT:
+        typeStr = "ushort";
+        break;
+    case NPY_INT:
+        typeStr = "int";
+        break;
+    case NPY_UINT:
+        typeStr = "uint";
+        break;
+    case NPY_LONG:
+        typeStr = "long";
+        break;
+    case NPY_ULONG:
+        typeStr = "ulong";
+        break;
+    case NPY_LONGLONG:
+        typeStr = "longlong";
+        break;
+    case NPY_ULONGLONG:
+        typeStr = "ulonglong";
+        break;
+    case NPY_FLOAT:
+        typeStr = "float";
+        break;
+    case NPY_DOUBLE:
+        typeStr = "double";
+        break;
+    case NPY_LONGDOUBLE:
+        typeStr = "longdouble";
+        break;
+    case NPY_CFLOAT:
+        typeStr = "cfloat";
+        break;
+    case NPY_CDOUBLE:
+        typeStr = "cfloat";
+        break;
+    case NPY_CLONGDOUBLE:
+        typeStr = "clongdouble";
+        break;
+    case NPY_OBJECT:
+        typeStr = "object";
+        break;
+    case NPY_STRING:
+        typeStr = "string";
+        break;
+    case NPY_UNICODE:
+        typeStr = "unicode";
+        break;
+    case NPY_VOID:
+        typeStr = "void";
+        break;
+    case NPY_DATETIME:
+        typeStr = "void";
+        break;
+    case NPY_TIMEDELTA:
+        typeStr = "timedelta";
+        break;
+    case NPY_HALF:
+        typeStr = "half";
+        break;
+    case NPY_NTYPES:
+        typeStr = "ntypes";
+        break;
+    case NPY_NOTYPE:
+        typeStr = "notype";
+        break;
+    case NPY_CHAR:
+        typeStr = "char";
+        break;
+    case NPY_USERDEF:
+        typeStr = "userdef";
+        break;
+    default:
+        typeStr = "NPY_TYPES";
+        break;
+    }
+
+    return typeStr;
 }
 
 //-------------------------------------------------------------------------------------
