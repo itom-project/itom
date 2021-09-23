@@ -7859,6 +7859,7 @@ int PythonDataObject::getCompatibleDObjTypeOfNpArray(char typekind, int itemsize
 std::string PythonDataObject::getNpDTypeStringFromNpDTypeEnum(const int type)
 {
     std::string typeStr;
+
     switch (type)
     {
     case NPY_BOOL:
@@ -7904,10 +7905,10 @@ std::string PythonDataObject::getNpDTypeStringFromNpDTypeEnum(const int type)
         typeStr = "longdouble";
         break;
     case NPY_CFLOAT:
-        typeStr = "float32";
+        typeStr = "complex64";
         break;
     case NPY_CDOUBLE:
-        typeStr = "float64";
+        typeStr = "complex128";
         break;
     case NPY_CLONGDOUBLE:
         typeStr = "clongdouble";
@@ -7943,7 +7944,7 @@ std::string PythonDataObject::getNpDTypeStringFromNpDTypeEnum(const int type)
         typeStr = "userdef";
         break;
     default:
-        typeStr = "NPY_TYPES";
+        typeStr = "others";
         break;
     }
 

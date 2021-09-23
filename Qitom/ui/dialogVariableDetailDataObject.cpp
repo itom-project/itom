@@ -97,9 +97,10 @@ DialogVariableDetailDataObject::DialogVariableDetailDataObject(
     // do not show metaWidget for numpy.ndarray
     if (hasNPArrayTags)
     {
-        ui.tabMeta->setEnabled(false);
+        ui.tabWidget->setTabEnabled(1, false);
         ui.metaWidget->setVisible(false);
     }
+
     ui.metaWidget->setData(m_dObj);
     ui.metaWidget->setReadOnly(true);
 
