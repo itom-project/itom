@@ -323,7 +323,7 @@ int PythonDataObject::PyDataObject_init(PyDataObject* self, PyObject* args, PyOb
     // has no impact)
     if (!done)
     {
-        int result = PyDataObj_CreateFromNpNdArrayAndType(self, args, kwds);
+        int result = PyDataObj_CreateFromNpNdArrayAndType(self, args, kwds, false);
 
         if (result == 0)
         {
@@ -678,7 +678,7 @@ return -1 in case of a general error, Python error message is set
 return -2 if args / kwds cannot be parsed, Python error message is set, too
 */
 int PythonDataObject::PyDataObj_CreateFromNpNdArrayAndType(
-    PyDataObject* self, PyObject* args, PyObject* kwds) // helper method for PyDataObject_init
+    PyDataObject* self, PyObject* args, PyObject* kwds, bool addNpOrgTags) // helper method for PyDataObject_init
 {
     const char* kwlist[] = {"object", "dtype", "continuous", nullptr};
     PyArrayObject* ndArrayRef = nullptr;
@@ -965,32 +965,32 @@ int PythonDataObject::PyDataObj_CreateFromNpNdArrayAndType(
         }
         //}
 
-        // add tag _dtype with original shape of numpy.ndarray
-        self->dataObject->setTag("_orgNpDType", getNpDTypeStringFromNpDTypeEnum(PyArray_TYPE(ndArrayRef)));
+        if (addNpOrgTags)
+        {
+            // add tag _dtype with original shape of numpy.ndarray
+            self->dataObject->setTag("_orgNpDType", getNpDTypeStringFromNpDTypeEnum(PyArray_TYPE(ndArrayRef)));
 
-        // add tag _shape with original shape of numpy.ndarray
-        QString npArrayNewShape = "[";
-        if (dimensions == 1)
-        {
-            npArrayNewShape.append(QString::number(sizes[0]));
-        }
-        else
-        {
-            for (int n = 0; n < dimensions; n++)
+            // add tag _shape with original shape of numpy.ndarray
+            QString npArrayNewShape = "[";
+
+            if (dimensions == 1)
             {
-                if (n < dimensions - 1)
+                npArrayNewShape.append(QString::number(sizes[0]));
+            }
+            else if (dimensions > 1)
+            {
+                for (int n = 0; n < dimensions - 1; ++n)
                 {
                     npArrayNewShape.append(QString("%1 x ").arg(QString::number(sizes[n])));
                 }
-                else
-                {
-                    npArrayNewShape.append(QString("%1").arg(QString::number(sizes[n])));
-                }
-            }
-        }
-        npArrayNewShape.append("]");
 
-        self->dataObject->setTag("_orgNpShape", npArrayNewShape.toStdString());
+                npArrayNewShape.append(QString::number(sizes[dimensions - 1]));
+            }
+
+            npArrayNewShape.append("]");
+
+            self->dataObject->setTag("_orgNpShape", npArrayNewShape.toStdString());
+        }
 
         DELETE_AND_SET_NULL_ARRAY(sizes);
         DELETE_AND_SET_NULL_ARRAY(steps);
@@ -7865,22 +7865,22 @@ std::string PythonDataObject::getNpDTypeStringFromNpDTypeEnum(const int type)
         typeStr = "bool";
         break;
     case NPY_BYTE:
-        typeStr = "byte";
+        typeStr = "int8";
         break;
     case NPY_UBYTE:
-        typeStr = "ubyte";
+        typeStr = "uint8";
         break;
     case NPY_SHORT:
-        typeStr = "short";
+        typeStr = "int16";
         break;
     case NPY_USHORT:
-        typeStr = "ushort";
+        typeStr = "uint16";
         break;
     case NPY_INT:
-        typeStr = "int";
+        typeStr = "int32";
         break;
     case NPY_UINT:
-        typeStr = "uint";
+        typeStr = "uint32";
         break;
     case NPY_LONG:
         typeStr = "long";
@@ -7889,25 +7889,25 @@ std::string PythonDataObject::getNpDTypeStringFromNpDTypeEnum(const int type)
         typeStr = "ulong";
         break;
     case NPY_LONGLONG:
-        typeStr = "longlong";
+        typeStr = "int64";
         break;
     case NPY_ULONGLONG:
-        typeStr = "ulonglong";
+        typeStr = "uint64";
         break;
     case NPY_FLOAT:
-        typeStr = "float";
+        typeStr = "float32";
         break;
     case NPY_DOUBLE:
-        typeStr = "double";
+        typeStr = "float64";
         break;
     case NPY_LONGDOUBLE:
         typeStr = "longdouble";
         break;
     case NPY_CFLOAT:
-        typeStr = "cfloat";
+        typeStr = "float32";
         break;
     case NPY_CDOUBLE:
-        typeStr = "cfloat";
+        typeStr = "float64";
         break;
     case NPY_CLONGDOUBLE:
         typeStr = "clongdouble";
@@ -7938,9 +7938,6 @@ std::string PythonDataObject::getNpDTypeStringFromNpDTypeEnum(const int type)
         break;
     case NPY_NOTYPE:
         typeStr = "notype";
-        break;
-    case NPY_CHAR:
-        typeStr = "char";
         break;
     case NPY_USERDEF:
         typeStr = "userdef";
