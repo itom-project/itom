@@ -77,7 +77,7 @@ class DataObjectNpConversion(unittest.TestCase):
         nptesting.assert_array_equal(y.squeeze(), np.array(dy).squeeze())
 
         x, y, z = np.ogrid[:7, :5, :6]
-        xbool = x.astype('bool')
+        xbool = x.astype("bool")
         dx = dataObject(xbool)  # shape: (7,1,1), strides: (4,0,0)
         self.assertEqual(dx.dtype, "uint8")
         nptesting.assert_array_equal(xbool.squeeze(), np.array(dx).squeeze())
@@ -107,13 +107,13 @@ class DataObjectNpConversion(unittest.TestCase):
         )
 
     def test_npArray2dataObjectReadonly(self):
-        x = np.array([[1,2],[2,3]])
+        x = np.array([[1, 2], [2, 3]])
         x.setflags(write=False)
         dx = dataObject(x)
         self.assertIsNot(x, dx.base)
         nptesting.assert_array_equal(dx, [[1, 2], [2, 3]])
 
-        x = np.array([[True, False], [False, False]], dtype='bool')
+        x = np.array([[True, False], [False, False]], dtype="bool")
         x.setflags(write=False)
         dx = dataObject(x)
         self.assertIsNot(x, dx.base)
@@ -184,6 +184,77 @@ class DataObjectNpConversion(unittest.TestCase):
             self.assertEqual(len(dobj), 0)
             self.assertEqual(dobj.dtype, dtype)
 
+    def test_convertNpArrayToDataObjectAndCheckForOriginNpTags(self):
+        npArray = np.array([True, False, True], "bool")
+        dObj = dataObject(npArray)
+        self.assertTrue("_orgNpShape" in dObj.tags)
+        self.assertTrue("_orgNpDType" in dObj.tags)
+        self.assertEqual(dObj.tags["_orgNpShape"], "[{}]".format(npArray.shape[0]))
+        self.assertEqual(dObj.tags["_orgNpDType"], "bool")
 
+        npArray = np.array([1, 2, 3, 4, 5, 6], "uint8")
+        dObj = dataObject(npArray)
+        self.assertTrue("_orgNpShape" in dObj.tags)
+        self.assertTrue("_orgNpDType" in dObj.tags)
+        self.assertEqual(dObj.tags["_orgNpShape"], "[{}]".format(npArray.shape[0]))
+        self.assertEqual(dObj.tags["_orgNpDType"], "ubyte")
+
+        npArray = np.array([1, 2, 3, 4, 5, 6], "uint16")
+        dObj = dataObject(npArray)
+        self.assertTrue("_orgNpShape" in dObj.tags)
+        self.assertTrue("_orgNpDType" in dObj.tags)
+        self.assertEqual(dObj.tags["_orgNpShape"], "[{}]".format(npArray.shape[0]))
+        self.assertEqual(dObj.tags["_orgNpDType"], "ushort")
+
+        npArray = np.array([1, 2, 3, 4, 5, 6], "int8")
+        dObj = dataObject(npArray)
+        self.assertTrue("_orgNpShape" in dObj.tags)
+        self.assertTrue("_orgNpDType" in dObj.tags)
+        self.assertEqual(dObj.tags["_orgNpShape"], "[{}]".format(npArray.shape[0]))
+        self.assertEqual(dObj.tags["_orgNpDType"], "byte")
+
+        npArray = np.array([1, 2, 3, 4, 5, 6], "int16")
+        dObj = dataObject(npArray)
+        self.assertTrue("_orgNpShape" in dObj.tags)
+        self.assertTrue("_orgNpDType" in dObj.tags)
+        self.assertEqual(dObj.tags["_orgNpShape"], "[{}]".format(npArray.shape[0]))
+        self.assertEqual(dObj.tags["_orgNpDType"], "short")
+
+        npArray = np.array([1, 2, 3, 4, 5, 6], "int32")
+        dObj = dataObject(npArray)
+        self.assertTrue("_orgNpShape" in dObj.tags)
+        self.assertTrue("_orgNpDType" in dObj.tags)
+        self.assertEqual(dObj.tags["_orgNpShape"], "[{}]".format(npArray.shape[0]))
+        self.assertEqual(dObj.tags["_orgNpDType"], "long")
+
+        npArray = np.array([1.1, 2.2, 3.3, 4.4, 5.5, 6.6], "float")
+        dObj = dataObject(npArray)
+        self.assertTrue("_orgNpShape" in dObj.tags)
+        self.assertTrue("_orgNpDType" in dObj.tags)
+        self.assertEqual(dObj.tags["_orgNpShape"], "[{}]".format(npArray.shape[0]))
+        self.assertEqual(dObj.tags["_orgNpDType"], "double")
+
+        npArray = np.array([1.1, 2.2, 3.3, 4.4, 5.5, 6.6], "float32")
+        dObj = dataObject(npArray)
+        self.assertTrue("_orgNpShape" in dObj.tags)
+        self.assertTrue("_orgNpDType" in dObj.tags)
+        self.assertEqual(dObj.tags["_orgNpShape"], "[{}]".format(npArray.shape[0]))
+        self.assertEqual(dObj.tags["_orgNpDType"], "float")
+
+        npArray = np.array([1.1, 2.2, 3.3, 4.4, 5.5, 6.6], "complex64")
+        dObj = dataObject(npArray)
+        self.assertTrue("_orgNpShape" in dObj.tags)
+        self.assertTrue("_orgNpDType" in dObj.tags)
+        self.assertEqual(dObj.tags["_orgNpShape"], "[{}]".format(npArray.shape[0]))
+        self.assertEqual(dObj.tags["_orgNpDType"], "cfloat")
+
+        npArray = np.array([1.1, 2.2, 3.3, 4.4, 5.5, 6.6], "complex128")
+        dObj = dataObject(npArray)
+        self.assertTrue("_orgNpShape" in dObj.tags)
+        self.assertTrue("_orgNpDType" in dObj.tags)
+        self.assertEqual(dObj.tags["_orgNpShape"], "[{}]".format(npArray.shape[0]))
+        self.assertEqual(dObj.tags["_orgNpDType"], "cfloat")
+
+        
 if __name__ == "__main__":
     unittest.main(module="dataobject_np_conversion", exit=False)
