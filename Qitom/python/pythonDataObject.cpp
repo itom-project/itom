@@ -965,6 +965,13 @@ int PythonDataObject::PyDataObj_CreateFromNpNdArrayAndType(
         }
         //}
 
+        // If dataObject.continuous is set to 255 in the python_unittests
+        // the tags _orgNp... are added, only for the python_unittests
+        if (continuous == 255)
+        {
+            addNpOrgTags = true;
+        }
+
         if (addNpOrgTags)
         {
             // add tag _dtype with original shape of numpy.ndarray
