@@ -279,7 +279,7 @@ class PythonDataObject
         static RetVal PyDataObj_ParseCreateArgs(PyObject *args, PyObject *kwds, int &typeno, std::vector<unsigned int> &dims, unsigned char &continuous);
 
         static PyDataObjectTypes PyDataObject_types[];
-        static int typeNameToNumber(const char *name);
+        static int dObjTypeFromName(const char *name);
         static char* typeNumberToName(int typeno);
 
         static PyDataObject* createEmptyPyDataObject();
@@ -288,13 +288,16 @@ class PythonDataObject
         static bool checkPyDataObject(int number, PyObject* o1 = NULL, PyObject* o2 = NULL, PyObject* o3 = NULL);
 
         static RetVal parseTypeNumber(int typeno, char &typekind, int &itemsize);
-        static int parseTypeNumberInverse(char typekind, int itemsize);
-        static int getTypenumOfCompatibleType(char typekind, int itemsize);
+        static int getDObjTypeOfNpArray(char typekind, int itemsize);
+        static int getCompatibleDObjTypeOfNpArray(char typekind, int itemsize);
         static int getNpTypeFromDataObjectType(int type);
+        static std::string getNpDTypeStringFromNpDTypeEnum(const int type);
 
         static ito::RetVal copyNpArrayValuesToDataObject(PyArrayObject *npNdArray, ito::DataObject *dataObject, ito::tDataType type);
         static int PyDataObj_CreateFromShapeTypeData(PyDataObject *self, PyObject *args, PyObject *kwds); //helper method for PyDataObject_init
-        static int PyDataObj_CreateFromNpNdArrayAndType(PyDataObject *self, PyObject *args, PyObject *kwds); //helper method for PyDataObject_init
+        static int PyDataObj_CreateFromNpNdArrayAndType(PyDataObject *self, PyObject *args, PyObject *kwds, bool addNpOrgTags); //helper method for PyDataObject_init
+
+
 
         //-------------------------------------------------------------------------------------------------
         // static type methods

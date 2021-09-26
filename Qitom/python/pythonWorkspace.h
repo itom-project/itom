@@ -47,8 +47,8 @@
 #include <qstring.h>
 #include <qhash.h>
 #include <qmutex.h>
-#include <qset.h>
 #include <qchar.h>
+#include <qset.h>
 #include <qstringlist.h>
 
 #define PY_LIST_TUPLE 'l'
@@ -123,11 +123,11 @@ private:
     void loadDictionaryRec(PyObject *obj, const QString &fullNameParentItem, PyWorkspaceItem *parentItem, QStringList &deletedKeys);
     void parseSinglePyObject(PyWorkspaceItem *item, PyObject *value, QString &fullName, QStringList &deletedKeys, int &m_compatibleParamBaseType);
 
-    QSet<QByteArray> m_blackListType;
-    bool m_globalNotLocal;
+    bool isNotInBlacklist(PyObject *obj) const;
 
-    PyObject *dictUnicode;
-    PyObject *slotsUnicode;
+    bool m_globalNotLocal;
+    PyObject *m_dictUnicode;
+    PyObject *m_slotsUnicode;
 
 signals:
     void updateAvailable(PyWorkspaceItem *rootItem, QString fullNameRoot, QStringList recentlyDeletedFullNames);   //TODO

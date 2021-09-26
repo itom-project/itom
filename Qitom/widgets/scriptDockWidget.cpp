@@ -2675,9 +2675,11 @@ void ScriptDockWidget::findTextExpr(QString expr, bool regExpr, bool caseSensiti
 void ScriptDockWidget::replaceTextExpr(QString expr, QString replace)
 {
     ScriptEditorWidget* sew = getCurrentEditor();
-    if (sew != NULL)
+
+    if (sew != nullptr)
     {
         sew->replace(replace);
+        sew->updateSyntaxCheck();
     }
 }
 
@@ -2689,7 +2691,8 @@ void ScriptDockWidget::replaceAllExpr(QString expr, QString replace, bool regExp
     int count = 0;
 
     ScriptEditorWidget* sew = getCurrentEditor();
-    if (sew != NULL)
+
+    if (sew != nullptr)
     {
         int tempLineFrom, tempIndexFrom, tempLineTo, tempIndexTo;
         int lastLineFrom = -1;
@@ -2745,11 +2748,13 @@ void ScriptDockWidget::replaceAllExpr(QString expr, QString replace, bool regExp
             count++;
         }
         sew->endUndoAction();
-
+        
         if (!inRange && lastLineFrom > -1)
         {
             sew->setSelection(lastLineFrom, lastIndexFrom, lastLineTo, lastIndexTo);
         }
+
+        sew->updateSyntaxCheck();
     }
 
     if (count == 1)

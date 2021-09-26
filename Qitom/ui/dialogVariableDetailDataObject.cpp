@@ -25,11 +25,11 @@
 #include <qsharedpointer.h>
 #include <qstandarditemmodel.h>
 
+#include <qboxlayout.h>
 #include <qclipboard.h>
+#include <qmainwindow.h>
 #include <qmap.h>
 #include <qspinbox.h>
-#include <qboxlayout.h>
-#include <qmainwindow.h>
 #include <qtoolbar.h>
 
 namespace ito {
@@ -45,22 +45,32 @@ DialogVariableDetailDataObject::DialogVariableDetailDataObject(
     m_pAxesRanges(nullptr), m_dObj(dObj), m_selectedAll(false)
 {
     // show maximize button
-    setWindowFlags(windowFlags() | 
-        Qt::CustomizeWindowHint |
-        Qt::WindowMaximizeButtonHint |
+    setWindowFlags(
+        windowFlags() | Qt::CustomizeWindowHint | Qt::WindowMaximizeButtonHint |
         Qt::WindowCloseButtonHint);
 
     ui.setupUi(this);
 
+    bool hasNPArrayTags;
+    ito::DataObjectTagType tag = dObj->getTag("_orgNpDType", hasNPArrayTags);
+
     ui.txtName->setText(name);
     ui.txtType->setText(type);
-    ui.txtDType->setText(dtype);
 
-    QMainWindow *tableMain = new QMainWindow(this);
+    if (hasNPArrayTags) // use tags information from numpy array
+    {
+        ui.txtDType->setText(QString::fromStdString(tag.getVal_ToString().data()));
+    }
+    else
+    {
+        ui.txtDType->setText(dtype);
+    }
+
+    QMainWindow* tableMain = new QMainWindow(this);
     tableMain->setWindowFlag(Qt::Widget, true);
-    QToolBar *tb = tableMain->addToolBar("myToolbar");
+    QToolBar* tb = tableMain->addToolBar("myToolbar");
 
-    QVBoxLayout *tableLayout = qobject_cast<QVBoxLayout*>(ui.tabTable->layout());
+    QVBoxLayout* tableLayout = qobject_cast<QVBoxLayout*>(ui.tabTable->layout());
     tableLayout->insertWidget(0, tableMain);
     tableLayout->removeWidget(ui.dataTable);
     tableMain->setCentralWidget(ui.dataTable);
@@ -84,6 +94,13 @@ DialogVariableDetailDataObject::DialogVariableDetailDataObject(
         cornerButton->setToolTip(tr("select/ deselect all items"));
     }
 
+    // do not show metaWidget for numpy.ndarray
+    if (hasNPArrayTags)
+    {
+        ui.tabWidget->setTabEnabled(1, false);
+        ui.metaWidget->setVisible(false);
+    }
+
     ui.metaWidget->setData(m_dObj);
     ui.metaWidget->setReadOnly(true);
 
@@ -94,21 +111,30 @@ DialogVariableDetailDataObject::DialogVariableDetailDataObject(
 
     if (dims > 0)
     {
-        dObjSize = "[";
+        ito::DataObjectTagType tag = dObj->getTag("_orgNpShape", hasNPArrayTags);
 
-        for (int dim = 0; dim < dims; dim++)
+        if (hasNPArrayTags) // use tag information from numpy.ndarray
         {
-            if (dim < dims - 1)
-            {
-                dObjSize.append(QString("%1 x ").arg(m_dObj->getSize(dim)));
-            }
-            else
-            {
-                dObjSize.append(QString("%1").arg(m_dObj->getSize(dim)));
-            }
+            dObjSize = tag.getVal_ToString().data();
         }
+        else
+        {
+            dObjSize = "[";
 
-        dObjSize.append("]");
+            for (int dim = 0; dim < dims; dim++)
+            {
+                if (dim < dims - 1)
+                {
+                    dObjSize.append(QString("%1 x ").arg(m_dObj->getSize(dim)));
+                }
+                else
+                {
+                    dObjSize.append(QString("%1").arg(m_dObj->getSize(dim)));
+                }
+            }
+
+            dObjSize.append("]");
+        }
     }
     else
     {
@@ -333,7 +359,7 @@ void DialogVariableDetailDataObject::tableCornerButtonClicked()
     {
         ui.dataTable->selectAll();
         m_selectedAll = true;
-    }    
+    }
 }
 
 } // end namespace ito

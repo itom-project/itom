@@ -550,7 +550,7 @@ namespace ito
         break;
     }
     case ito::ParamBase::DObjPtr: {
-        ito::DataObject *dObj = PythonQtConversion::PyObjGetDataObjectNewPtr(obj, strict, ok, &retVal2);
+        ito::DataObject *dObj = PythonQtConversion::PyObjGetDataObjectNewPtr(obj, strict, ok, &retVal2, true);
         ok &= (dObj != nullptr);
 
         if (ok)

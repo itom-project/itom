@@ -202,13 +202,15 @@ class TimerItom(TimerBase):
 
 class FigureCanvasItom(FigureCanvasBase):
 
-    # map Qt button codes to MouseEvent's ones:
+    # map itom/matplotlibWidget button codes to MPL button codes
     # left 1, middle 2, right 3, no mouse button 0
+    # todo: from MPL 3.1 on, these values can directly be mapped
+    # to MouseButton.LEFT, MouseButton.RIGHT, MouseButton.MIDDLE...
     buttond = {
         0: 0,
         1: 1,
         2: 2,
-        4: 3,
+        3: 3,
         # QtCore.Qt.XButton1: None,
         # QtCore.Qt.XButton2: None,
     }
@@ -390,6 +392,8 @@ class FigureCanvasItom(FigureCanvasBase):
     def mouseEvent(self, eventType, x, y, button):
         x, y = self.mouseEventCoords(x, y)
         button = self.buttond.get(button)
+        if button is None:
+            button = 0  # fallback solution
         if DEBUG:
             print("mouseEvent %s (%.2f,%.2f), button: %s" % (eventType, x, y, button))
         try:

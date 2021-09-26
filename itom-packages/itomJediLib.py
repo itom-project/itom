@@ -196,29 +196,33 @@ def calltips(code, line, column, path=None):
     max_calltip_line_length = 120
 
     with reduceRecursionLimit():
-        if jedi.__version__ >= "0.17.0":
-            script = jedi.Script(code=code, path=path, environment=jedienv)
-            signatures = script.get_signatures(line=line + 1, column=column)
-        elif jedi.__version__ >= "0.16.0":
-            script = jedi.Script(
-                source=code, path=path, encoding="utf-8", environment=jedienv
-            )
-            signatures = script.get_signatures(line=line + 1, column=column)
-        else:
-            if jedi.__version__ >= "0.12.0":
+        with warnings.catch_warnings():
+            # avoid UserWarnings if an imported C-Module could not be loaded yet
+            warnings.simplefilter("ignore")
+            
+            if jedi.__version__ >= "0.17.0":
+                script = jedi.Script(code=code, path=path, environment=jedienv)
+                signatures = script.get_signatures(line=line + 1, column=column)
+            elif jedi.__version__ >= "0.16.0":
                 script = jedi.Script(
-                    code,
-                    line + 1,
-                    column,
-                    path,
-                    encoding="utf-8",
-                    environment=jedienv,
+                    source=code, path=path, encoding="utf-8", environment=jedienv
                 )
+                signatures = script.get_signatures(line=line + 1, column=column)
             else:
-                script = jedi.Script(code, line + 1, column, path, encoding="utf-8")
-            signatures = script.call_signatures()
-
-        result = []
+                if jedi.__version__ >= "0.12.0":
+                    script = jedi.Script(
+                        code,
+                        line + 1,
+                        column,
+                        path,
+                        encoding="utf-8",
+                        environment=jedienv,
+                    )
+                else:
+                    script = jedi.Script(code, line + 1, column, path, encoding="utf-8")
+                signatures = script.call_signatures()
+    
+            result = []
 
         for sig in signatures:
             index = sig.index
@@ -268,27 +272,31 @@ def calltips(code, line, column, path=None):
 def completions(code, line, column, path, prefix):
     """ """
     with reduceRecursionLimit():
-        if jedi.__version__ >= "0.17.0":
-            script = jedi.Script(code=code, path=path, environment=jedienv)
-            completions = script.complete(line=line + 1, column=column)
-        elif jedi.__version__ >= "0.16.0":
-            script = jedi.Script(
-                source=code, path=path, encoding="utf-8", environment=jedienv
-            )
-            completions = script.complete(line=line + 1, column=column)
-        else:
-            if jedi.__version__ >= "0.12.0":
+        with warnings.catch_warnings():
+            # avoid UserWarnings if an imported C-Module could not be loaded yet
+            warnings.simplefilter("ignore")
+            
+            if jedi.__version__ >= "0.17.0":
+                script = jedi.Script(code=code, path=path, environment=jedienv)
+                completions = script.complete(line=line + 1, column=column)
+            elif jedi.__version__ >= "0.16.0":
                 script = jedi.Script(
-                    code,
-                    line + 1,
-                    column,
-                    path,
-                    encoding="utf-8",
-                    environment=jedienv,
+                    source=code, path=path, encoding="utf-8", environment=jedienv
                 )
+                completions = script.complete(line=line + 1, column=column)
             else:
-                script = jedi.Script(code, line + 1, column, path, encoding="utf-8")
-            completions = script.completions()
+                if jedi.__version__ >= "0.12.0":
+                    script = jedi.Script(
+                        code,
+                        line + 1,
+                        column,
+                        path,
+                        encoding="utf-8",
+                        environment=jedienv,
+                    )
+                else:
+                    script = jedi.Script(code, line + 1, column, path, encoding="utf-8")
+                completions = script.completions()
 
         result = []
 
@@ -419,58 +427,62 @@ def goto_assignments(code, line, column, path, mode=0, encoding="utf-8"):
     mode: 0: goto definition, 1: goto assignment (no follow imports), 2: goto assignment (follow imports)
     """
     with reduceRecursionLimit():
-        if jedi.__version__ >= "0.16.0":
-            if jedi.__version__ >= "0.17.0":
-                script = jedi.Script(code=code, path=path, environment=jedienv)
-            else:
-                script = jedi.Script(
-                    source=code, path=path, encoding="utf-8", environment=jedienv
-                )
-
-            try:
-                if mode == 0:
-                    assignments = script.infer(
-                        line=line + 1, column=column, prefer_stubs=False
+        with warnings.catch_warnings():
+            # avoid UserWarnings if an imported C-Module could not be loaded yet
+            warnings.simplefilter("ignore")
+            
+            if jedi.__version__ >= "0.16.0":
+                if jedi.__version__ >= "0.17.0":
+                    script = jedi.Script(code=code, path=path, environment=jedienv)
+                else:
+                    script = jedi.Script(
+                        source=code, path=path, encoding="utf-8", environment=jedienv
                     )
-                elif mode == 1:
-                    assignments = script.goto(
-                        line=line + 1,
-                        column=column,
-                        follow_imports=False,
-                        prefer_stubs=False,
+    
+                try:
+                    if mode == 0:
+                        assignments = script.infer(
+                            line=line + 1, column=column, prefer_stubs=False
+                        )
+                    elif mode == 1:
+                        assignments = script.goto(
+                            line=line + 1,
+                            column=column,
+                            follow_imports=False,
+                            prefer_stubs=False,
+                        )
+                    else:
+                        assignments = script.goto(
+                            line=line + 1,
+                            column=column,
+                            follow_imports=True,
+                            prefer_stubs=False,
+                        )
+                except Exception:
+                    assignments = []
+    
+            else:
+                if jedi.__version__ >= "0.12.0":
+                    script = jedi.Script(
+                        code,
+                        line + 1,
+                        column,
+                        path,
+                        encoding="utf-8",
+                        environment=jedienv,
                     )
                 else:
-                    assignments = script.goto(
-                        line=line + 1,
-                        column=column,
-                        follow_imports=True,
-                        prefer_stubs=False,
-                    )
-            except Exception:
-                assignments = []
-
-        else:
-            if jedi.__version__ >= "0.12.0":
-                script = jedi.Script(
-                    code,
-                    line + 1,
-                    column,
-                    path,
-                    encoding="utf-8",
-                    environment=jedienv,
-                )
-            else:
-                script = jedi.Script(code, line + 1, column, path, encoding="utf-8")
-
-            try:
-                if mode == 0:
-                    assignments = script.goto_definitions()
-                elif mode == 1:
-                    assignments = script.goto_assignments(follow_imports=False)
-                else:
-                    assignments = script.goto_assignments(follow_imports=True)
-            except Exception:
-                assignments = []
+                    script = jedi.Script(code, line + 1, column, path, encoding="utf-8")
+    
+                try:
+                    if mode == 0:
+                        assignments = script.goto_definitions()
+                    elif mode == 1:
+                        assignments = script.goto_assignments(follow_imports=False)
+                    else:
+                        assignments = script.goto_assignments(follow_imports=True)
+                except Exception:
+                    assignments = []
 
         result = []
         for assignment in assignments:
@@ -743,27 +755,31 @@ def name_tooltip_type_general(item):
 def get_help(code, line, column, path):
     """ """
     with reduceRecursionLimit():
-        if jedi.__version__ >= "0.17.0":
-            script = jedi.Script(code=code, path=path, environment=jedienv)
-            helps = script.help(line=line + 1, column=column)
-        elif jedi.__version__ >= "0.16.0":
-            script = jedi.Script(
-                source=code, path=path, encoding="utf-8", environment=jedienv
-            )
-            helps = script.help(line=line + 1, column=column)
-        else:
-            if jedi.__version__ >= "0.12.0":
+        with warnings.catch_warnings():
+            # avoid UserWarnings if an imported C-Module could not be loaded yet
+            warnings.simplefilter("ignore")
+            
+            if jedi.__version__ >= "0.17.0":
+                script = jedi.Script(code=code, path=path, environment=jedienv)
+                helps = script.help(line=line + 1, column=column)
+            elif jedi.__version__ >= "0.16.0":
                 script = jedi.Script(
-                    code,
-                    line + 1,
-                    column,
-                    path,
-                    encoding="utf-8",
-                    environment=jedienv,
+                    source=code, path=path, encoding="utf-8", environment=jedienv
                 )
+                helps = script.help(line=line + 1, column=column)
             else:
-                script = jedi.Script(code, line + 1, column, path, encoding="utf-8")
-            helps = script.help()
+                if jedi.__version__ >= "0.12.0":
+                    script = jedi.Script(
+                        code,
+                        line + 1,
+                        column,
+                        path,
+                        encoding="utf-8",
+                        environment=jedienv,
+                    )
+                else:
+                    script = jedi.Script(code, line + 1, column, path, encoding="utf-8")
+                helps = script.help()
 
         results = []
         # disable error stream to avoid import errors of jedi,

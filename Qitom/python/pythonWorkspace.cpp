@@ -61,22 +61,25 @@ QChar PyWorkspaceContainer::delimiter = '/'; /*!< delimiter between the parent a
 //-----------------------------------------------------------------------------------------------------------
 PyWorkspaceContainer::PyWorkspaceContainer(bool globalNotLocal) : m_globalNotLocal(globalNotLocal)
 {
-    m_blackListType = QSet<QByteArray>()
-        << "builtin_function_or_method"
-        << "module"
-        << "type"
-        << "function"; // << "dict"; //blacklist of python types, which should not be displayed in
-                       // the workspace
-
-    dictUnicode = PyUnicode_FromString("__dict__");
-    slotsUnicode = PyUnicode_FromString("__slots__");
+    m_dictUnicode = PyUnicode_FromString("__dict__");
+    m_slotsUnicode = PyUnicode_FromString("__slots__");
 }
 
 //-----------------------------------------------------------------------------------------------------------
 PyWorkspaceContainer::~PyWorkspaceContainer()
 {
-    Py_XDECREF(dictUnicode);
-    Py_XDECREF(slotsUnicode);
+    Py_XDECREF(m_dictUnicode);
+    Py_XDECREF(m_slotsUnicode);
+}
+
+//-----------------------------------------------------------------------------------------------------------
+bool PyWorkspaceContainer::isNotInBlacklist(PyObject *obj) const
+{
+    return !(PyFunction_Check(obj) ||
+        PyMethod_Check(obj) ||
+        PyType_Check(obj) ||
+        PyModule_Check(obj) ||
+        PyCFunction_Check(obj));
 }
 
 //-----------------------------------------------------------------------------------------------------------
@@ -186,7 +189,7 @@ void PyWorkspaceContainer::loadDictionaryRec(
             {
                 value = PySequence_GetItem(obj, i); // new reference
 
-                if (!m_blackListType.contains(value->ob_type->tp_name)) // only if not on blacklist
+                if (isNotInBlacklist(value)) // !m_blackListType.contains(value->ob_type->tp_name)) // only if not on blacklist
                 {
                     keyText = QString::number(i);
                     keyKey = "xx:" + keyText; // list + number
@@ -272,9 +275,9 @@ void PyWorkspaceContainer::loadDictionaryRec(
 
                 keyType[0] = PY_MAPPING;
             }
-            else if (PyObject_HasAttr(obj, dictUnicode))
+            else if (PyObject_HasAttr(obj, m_dictUnicode))
             {
-                PyObject* subdict = PyObject_GetAttr(obj, dictUnicode); // new ref
+                PyObject* subdict = PyObject_GetAttr(obj, m_dictUnicode); // new ref
                 keys = PyDict_Keys(subdict); // new ref (list)
                 values = PyDict_Values(subdict); // new ref (list)
                 Py_XDECREF(subdict);
@@ -286,11 +289,11 @@ void PyWorkspaceContainer::loadDictionaryRec(
 
                 keyType[0] = PY_ATTR;
             }
-            else if (PyObject_HasAttr(obj, slotsUnicode))
+            else if (PyObject_HasAttr(obj, m_slotsUnicode))
             {
                 //__slots__ can return any sequence, here list and tuple are supported.
                 PyObject* subitem = nullptr;
-                keys = PyObject_GetAttr(obj, slotsUnicode); // new ref (list)
+                keys = PyObject_GetAttr(obj, m_slotsUnicode); // new ref (list)
 
                 if (keys && (PyList_Check(keys) || PyTuple_Check(keys)))
                 {
@@ -343,8 +346,13 @@ void PyWorkspaceContainer::loadDictionaryRec(
                     value = PyList_GET_ITEM(values, i); // borrowed
                     key = PyList_GET_ITEM(keys, i); // borrowed
 
-                    if (!m_blackListType.contains(
-                            value->ob_type->tp_name)) // only if not on blacklist
+                    if (PyType_Check(value))
+                    {
+                        int i = 1;
+                    }
+
+                    if (isNotInBlacklist(value)) //!m_blackListType.contains(
+                            //value->ob_type->tp_name)) // only if not on blacklist
                     {
                         keyUTF8String = PyUnicode_AsUTF8String(key); // new
 
@@ -520,7 +528,7 @@ void PyWorkspaceContainer::parseSinglePyObject(
         item->m_extendedValue = "";
         item->m_compatibleParamBaseType = 0; // not compatible
     }
-    else if (PyObject_HasAttr(value, dictUnicode) || PyObject_HasAttr(value, slotsUnicode))
+    else if (PyObject_HasAttr(value, m_dictUnicode) || PyObject_HasAttr(value, m_slotsUnicode))
     {
         // user-defined class (has attr '__dict__' or '__slots__')
         expandableType = true;
@@ -551,17 +559,17 @@ void PyWorkspaceContainer::parseSinglePyObject(
             }
             if (encodedByteArray)
             {
-                item->m_extendedValue = item->m_value = PyBytes_AS_STRING(encodedByteArray);
+                item->m_extendedValue = item->m_value = QString::fromLatin1(PyBytes_AS_STRING(encodedByteArray));
 
-                if (item->m_value.length() > 20)
-                {
-                    item->m_value = item->m_value.replace("\n", ";");
-                }
-                else if (item->m_value.length() > 100)
+                if (item->m_value.length() > 100)
                 {
                     item->m_value = "<double-click to show value>";
                 }
-
+                else if (item->m_value.length() > 20)
+                {
+                    item->m_value = item->m_value.replace("\n", ";");
+                }
+                
                 Py_XDECREF(encodedByteArray);
             }
             else

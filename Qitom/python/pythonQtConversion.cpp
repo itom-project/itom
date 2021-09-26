@@ -1432,7 +1432,7 @@ ito::PCLPolygonMesh PythonQtConversion::PyObjGetPolygonMesh(PyObject *val, bool 
 #endif //#if ITOM_POINTCLOUDLIBRARY > 0
 
 //-------------------------------------------------------------------------------------
-/*static*/ ito::DataObject* PythonQtConversion::PyObjGetDataObjectNewPtr(PyObject *val, bool strict, bool &ok, ito::RetVal *retVal /*= nullptr*/)
+/*static*/ ito::DataObject* PythonQtConversion::PyObjGetDataObjectNewPtr(PyObject *val, bool strict, bool &ok, ito::RetVal *retVal /*= nullptr*/, bool addNumpyOrgTags /*= false*/)
 {
     if (Py_TYPE(val) == &ito::PythonDataObject::PyDataObjectType)
     {
@@ -1467,12 +1467,30 @@ ito::PCLPolygonMesh PythonQtConversion::PyObjGetPolygonMesh(PyObject *val, bool 
     {
         if (PyArray_Check(val))
         {
-            PyObject *args = Py_BuildValue("(O)", val);
-            ito::PythonDataObject::PyDataObject *result = (ito::PythonDataObject::PyDataObject*)PyObject_Call((PyObject*)&ito::PythonDataObject::PyDataObjectType, args, NULL); //new reference
-            ito::DataObject *dObj = NULL;
-            Py_DECREF(args);
+            ito::PythonDataObject::PyDataObject *result;
+            result = PyObject_New(ito::PythonDataObject::PyDataObject, &ito::PythonDataObject::PyDataObjectType);
+            
             if (result)
             {
+                result->base = nullptr;
+                result->dataObject = nullptr;
+
+                PyObject *args = Py_BuildValue("(O)", val);
+                PyObject *kwds = PyDict_New();
+                
+                if (ito::PythonDataObject::PyDataObj_CreateFromNpNdArrayAndType(result, args, kwds, addNumpyOrgTags) != 0)
+                {
+                    Py_DECREF(result);
+                    result = nullptr;
+                }
+
+                Py_DECREF(args);
+                Py_DECREF(kwds);
+            }
+
+            if (result)
+            {
+                ito::DataObject *dObj = nullptr;
                 dObj = PyObjGetDataObjectNewPtr((PyObject*)result, true, ok, retVal);
                 Py_XDECREF(result);
                 return dObj;
