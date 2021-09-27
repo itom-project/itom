@@ -252,9 +252,7 @@ void HelpViewer::setCollectionFile(const QString &collectionFile)
 void HelpViewer::search()
 {
 	QHelpSearchEngine *searchEngine = m_pHelpEngine->searchEngine();
-	QHelpSearchQueryWidget *query = searchEngine->queryWidget();
-	QList<QHelpSearchQuery> queryList = query->query();
-	searchEngine->search(queryList);
+    searchEngine->search(searchEngine->queryWidget()->searchInput());
 }
 
 //----------------------------------------------------------------------------------------
