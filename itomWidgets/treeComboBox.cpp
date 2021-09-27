@@ -30,7 +30,6 @@
 
 // Qt includes
 #include <QApplication>
-#include <QDesktopWidget>
 #include <QEvent>
 #include <QHeaderView>
 #include <QKeyEvent>
@@ -41,6 +40,8 @@
 #include <QStack>
 #include <QTreeView>
 #include <QDebug>
+#include <QScreen>
+#include <QWindow>
 
 // CTK includes
 #include "treeComboBox.h"
@@ -233,6 +234,39 @@ QTreeView* TreeComboBox::treeView()const
 {
   return qobject_cast<QTreeView*>(this->view());
 }
+
+// -------------------------------------------------------------------------
+static QWindow* windowFromWidget(const QWidget* widget)
+{
+    // https://phabricator.kde.org/D22379
+    QWindow* windowHandle = widget->windowHandle();
+    if (windowHandle)
+    {
+        return windowHandle;
+    }
+
+    const QWidget* nativeParent = widget->nativeParentWidget();
+    if (nativeParent)
+    {
+        return nativeParent->windowHandle();
+    }
+
+    return nullptr;
+}
+
+// -------------------------------------------------------------------------
+static QScreen* screenFromWidget(const QWidget* widget)
+{
+    // https://phabricator.kde.org/D22379
+    const QWindow* windowHandle = windowFromWidget(widget);
+    if (windowHandle && windowHandle->screen())
+    {
+        return windowHandle->screen();
+    }
+
+    return QGuiApplication::primaryScreen();
+}
+
 // -------------------------------------------------------------------------
 void TreeComboBox::resizePopup()
 {
@@ -246,8 +280,7 @@ void TreeComboBox::resizePopup()
   this->initStyleOption(&opt);
   QRect listRect(style->subControlRect(QStyle::CC_ComboBox, &opt,
                                        QStyle::SC_ComboBoxListBoxPopup, this));
-  QRect screen = QApplication::desktop()->availableGeometry(
-    QApplication::desktop()->screenNumber(this));
+  QRect screen = screenFromWidget(this)->geometry();
   QPoint below = this->mapToGlobal(listRect.bottomLeft());
   int belowHeight = screen.bottom() - below.y();
   QPoint above = this->mapToGlobal(listRect.topLeft());

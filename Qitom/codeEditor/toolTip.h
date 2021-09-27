@@ -52,7 +52,6 @@ public:
     void restartExpireTimer(int msecDisplayTime);
     bool tipChanged(const QPoint &pos, const QString &text, QObject *o);
     void placeTip(const QPoint &pos, QWidget *w, const QPoint &alternativeTopRightPos = QPoint());
-    static int getTipScreen(const QPoint &pos, QWidget *w);
 protected:
     void timerEvent(QTimerEvent *e) override;
     void paintEvent(QPaintEvent *e) override;

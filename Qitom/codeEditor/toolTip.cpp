@@ -33,6 +33,7 @@
 #include <qstyleoption.h>
 #include <qstylepainter.h>
 #include <qtimer.h>
+#include <qscreen.h>
 
 #include <qtextdocument.h>
 #include <qdebug.h>
@@ -104,7 +105,7 @@ void  ToolTipLabel::updateSize(const QPoint &pos)
     setWordWrap(Qt::mightBeRichText(text()));
     QSize sh = sizeHint();
     // ### When the above WinRT code is fixed, windowhandle should be used to find the screen.
-    const qreal screenWidth = QApplication::desktop()->screenGeometry(pos).width();
+    int screenWidth = qApp->primaryScreen()->geometry().width();
     if (!wordWrap() && sh.width() > screenWidth) {
         setWordWrap(true);
         sh = sizeHint();
@@ -225,14 +226,6 @@ bool ToolTipLabel::eventFilter(QObject *o, QEvent *e)
     return false;
 }
 
-int ToolTipLabel::getTipScreen(const QPoint &pos, QWidget *w)
-{
-    if (QApplication::desktop()->isVirtualDesktop())
-        return QApplication::desktop()->screenNumber(pos);
-    else
-        return QApplication::desktop()->screenNumber(w);
-}
-
 void ToolTipLabel::placeTip(const QPoint &pos, QWidget *w, const QPoint &alternativeTopRightPos /*= QPoint()*/)
 {
 #ifndef QT_NO_STYLE_STYLESHEET
@@ -253,7 +246,7 @@ void ToolTipLabel::placeTip(const QPoint &pos, QWidget *w, const QPoint &alterna
     }
 #endif //QT_NO_STYLE_STYLESHEET
 
-    QRect screen = QApplication::desktop()->screenGeometry(getTipScreen(pos, w));
+    QRect screen = QApplication::primaryScreen()->geometry();
 
     QPoint p = pos;
     p += QPoint(2,16);
@@ -355,7 +348,7 @@ void ToolTip::showText(const QPoint &pos, const QString &text, QWidget *w, const
         // raised when the tooltip will be shown
         QT_WARNING_PUSH
             QT_WARNING_DISABLE_DEPRECATED
-            new ToolTipLabel(text, pos, QApplication::desktop()->screen(ToolTipLabel::getTipScreen(pos, w)), msecDisplayTime);
+            new ToolTipLabel(text, pos, qobject_cast<QWidget*>(QGuiApplication::primaryScreen()->parent()), msecDisplayTime);
         QT_WARNING_POP
 #else
         new ToolTipLabel(text, pos, w, msecDisplayTime); // sets ToolTipLabel::instance to itself
