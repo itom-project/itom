@@ -53,7 +53,7 @@ TabSwitcherWidget::TabSwitcherWidget(
     m_stackHistory = stackHistory;
     setSelectionMode(QListWidget::SingleSelection);
 
-    connect(this, &QListWidget::itemActivated, this, &TabSwitcherWidget::isItemSelected);
+    connect(this, &QListWidget::itemActivated, this, TabSwitcherWidget::currentItem()->isSelected());
 
     float f = GuiHelper::screenDpiFactor();
     int maxWidth = loadData() * 1.1 + f * 80;  // additional for icon...
