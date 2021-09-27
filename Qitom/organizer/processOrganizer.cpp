@@ -284,7 +284,7 @@ QProcess* ProcessOrganizer::getProcess(const QString &name, bool tryToUseExistin
     connect(process, SIGNAL(error(QProcess::ProcessError)), this, SLOT(processError(QProcess::ProcessError)));
     connect(process, SIGNAL(readyReadStandardOutput()), this, SLOT(readyReadStandardOutput()));
 
-    m_processes.insertMulti(name, QPair<QProcess*, bool>(process, closeOnFinalize) );
+    m_processes.insert(name, QPair<QProcess*, bool>(process, closeOnFinalize) );
 
     return process;
 
