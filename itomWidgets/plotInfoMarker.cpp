@@ -73,7 +73,7 @@ void PlotInfoMarker::updateMarkers(const QVector<ito::Shape> elements)
             curItem->setCheckState(0, Qt::CheckState::Checked);
             curItem->setData(0, Qt::UserRole, element.index());
             addTopLevelItem(curItem);
-            setFirstItemColumnSpanned(curItem, true);
+            curItem->setFirstColumnSpanned(true);
             curItem->setExpanded(true);
         }
 
