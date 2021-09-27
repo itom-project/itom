@@ -1098,7 +1098,7 @@ ito::RetVal PythonEngine::scanAndRunAutostartFolder(QString currentDirAfterScan 
     QDir folder;
 
     //scan autostart-folder of itom-packages folder an execute every py-file
-    folder = QDir::cleanPath(QCoreApplication::applicationDirPath());
+    folder.setPath(QDir::cleanPath(QCoreApplication::applicationDirPath()));
     if (folder.cd("itom-packages"))
     {
         if (folder.cd("autostart"))
@@ -1179,7 +1179,6 @@ ito::RetVal PythonEngine::pythonShutdown(ItomSharedSemaphore *aimWait)
         Py_XDECREF(m_itomModule);
         m_itomModule = NULL;
 
-
         Py_XDECREF(m_itomFunctions);
         m_itomFunctions = NULL;
 
@@ -1203,11 +1202,8 @@ ito::RetVal PythonEngine::pythonShutdown(ItomSharedSemaphore *aimWait)
             retValue += RetVal(retError, 1, tr("Python not initialized").toLatin1().data());
         }
 
-
         Py_XDECREF(m_dictUnicode);
         Py_XDECREF(m_slotsUnicode);
-
-
 
         m_mainModule = nullptr;
         m_pMainDictionary = nullptr;
@@ -3997,7 +3993,6 @@ void PythonEngine::updatePythonWorkspaces(
        to only show the global dict and delete the local dict */
     if (m_mainWorkspaceContainer.count() > 0)
     {
-
         switch (globalDictAction)
         {
         case DictNoAction:
@@ -4025,7 +4020,6 @@ void PythonEngine::updatePythonWorkspaces(
                     }
 
 #if defined _DEBUG
-
                     if (!PyGILState_Check())
                     {
                         std::cerr << "Python GIL must be locked when calling updatePythonWorkspaces\n" << std::endl;
@@ -4033,7 +4027,6 @@ void PythonEngine::updatePythonWorkspaces(
                     }
 #endif
                     PyObject *dict = getGlobalDictionary();
-
 
                     foreach(ito::PyWorkspaceContainer* cont, m_mainWorkspaceContainer)
                     {
@@ -4050,7 +4043,6 @@ void PythonEngine::updatePythonWorkspaces(
             foreach(ito::PyWorkspaceContainer* cont, m_mainWorkspaceContainer)
             {
                 cont->m_accessMutex.lock();
-
                 cont->clear();
                 cont->m_accessMutex.unlock();
             }
