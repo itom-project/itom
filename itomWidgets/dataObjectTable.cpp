@@ -307,7 +307,7 @@ ito::RetVal DataObjectTablePrivate::getSelectedItems(
 
     if (selected.size() > 0)
     {
-        qSort(selected.begin(), selected.end(), sortByRowAndColumn);
+        std::sort(selected.begin(), selected.end(), sortByRowAndColumn);
 
         int firstRow = selected[0].row();
         int lastRow = selected[selected.size() - 1].row();
