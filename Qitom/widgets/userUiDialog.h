@@ -58,7 +58,7 @@ public:
         const StringMap& dialogButtons,
         RetVal& retValue,
         QWidget* parent = NULL,
-        Qt::WindowFlags f = NULL);
+        Qt::WindowFlags f = Qt::WindowFlags());
     UserUiDialog(
         QWidget* contentWidget,
         tButtonBarType buttonBarType,
