@@ -105,7 +105,7 @@ void  ToolTipLabel::updateSize(const QPoint &pos)
     setWordWrap(Qt::mightBeRichText(text()));
     QSize sh = sizeHint();
     // ### When the above WinRT code is fixed, windowhandle should be used to find the screen.
-    int screenWidth = qApp->primaryScreen()->geometry().width();
+    int screenWidth = QApplication::desktop()->geometry().width();
     if (!wordWrap() && sh.width() > screenWidth) {
         setWordWrap(true);
         sh = sizeHint();
@@ -246,7 +246,7 @@ void ToolTipLabel::placeTip(const QPoint &pos, QWidget *w, const QPoint &alterna
     }
 #endif //QT_NO_STYLE_STYLESHEET
 
-    QRect screen = QApplication::primaryScreen()->geometry();
+    QRect screen = QApplication::desktop()->geometry();
 
     QPoint p = pos;
     p += QPoint(2,16);
@@ -348,7 +348,7 @@ void ToolTip::showText(const QPoint &pos, const QString &text, QWidget *w, const
         // raised when the tooltip will be shown
         QT_WARNING_PUSH
             QT_WARNING_DISABLE_DEPRECATED
-            new ToolTipLabel(text, pos, qobject_cast<QWidget*>(QGuiApplication::primaryScreen()->parent()), msecDisplayTime);
+            new ToolTipLabel(text, pos, qobject_cast<QWidget*>(QApplication::desktop()->parent()), msecDisplayTime);
         QT_WARNING_POP
 #else
         new ToolTipLabel(text, pos, w, msecDisplayTime); // sets ToolTipLabel::instance to itself
