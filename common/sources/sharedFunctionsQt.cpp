@@ -248,7 +248,7 @@ namespace ito
         if (!paramFile.open(QIODevice::ReadOnly))
         {
             QString err;
-            err.sprintf("Can't open xml file: %s", paramFile.fileName().toLatin1().data());
+            err.asprintf("Can't open xml file: %s", paramFile.fileName().toLatin1().data());
             return RetVal(retWarning, 0, QObject::tr(err.toLatin1().data()).toLatin1().data());
         }
 
@@ -260,7 +260,7 @@ namespace ito
                 //    .arg(errorColumn)
                 //    .arg(errorStr));
                 QString errStr;
-                errStr.sprintf("Parse error at line %d, column %d error: %s", errorLine, errorColumn, errorStr.toLatin1().data());
+                errStr.asprintf("Parse error at line %d, column %d error: %s", errorLine, errorColumn, errorStr.toLatin1().data());
                 return ito::RetVal(ito::retWarning, 0, QObject::tr(errorStr.toLatin1().data()).toLatin1().data());
         }
 
@@ -427,7 +427,7 @@ namespace ito
                         if (asciiFailed == true)
                         {
                             QString errStr;
-                            errStr.sprintf("Decoding Error: %s could not be decoded from numericVector", instParam.nodeName().toLatin1().data());
+                            errStr.asprintf("Decoding Error: %s could not be decoded from numericVector", instParam.nodeName().toLatin1().data());
                             ret += ito::RetVal(ito::retWarning, 0, QObject::tr(errStr.toLatin1().data()).toLatin1().data());
                         }
                     }
@@ -446,7 +446,7 @@ namespace ito
         if (!idFound)
         {
             QString idStr;
-            idStr.sprintf("Id: %s not found in xml file", id.toLatin1().data());
+            idStr.asprintf("Id: %s not found in xml file", id.toLatin1().data());
             ret += ito::RetVal(ito::retWarning, 0, QObject::tr(idStr.toLatin1().data()).toLatin1().data());
         }
         return ret;
