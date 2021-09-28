@@ -626,19 +626,26 @@ Each rectangle is given by a list of (x, y, width, height).");
         return NULL;
     }
 
+#if (QT_VERSION >= QT_VERSION_CHECK(5,8,0))
+    auto it = self->r->begin();
+    auto it_end = self->r->end();
+#else
     QVector<QRect> rects = self->r->rects();
+    auto it = rects.constBegin();
+    auto it_end = rects.constEnd();
+#endif
 
-    PyObject *ret = PyList_New( rects.size() );
+    PyObject *ret = PyList_New( self->r->rectCount() );
     Py_ssize_t i = 0;
     PyObject *t;
 
-    foreach(const QRect &r, rects)
+    for (; it != it_end; ++it)
     {
         t = PyList_New(4);
-        PyList_SetItem(t,0, PyLong_FromLong(r.x()));
-        PyList_SetItem(t,1, PyLong_FromLong(r.y()));
-        PyList_SetItem(t,2, PyLong_FromLong(r.width()));
-        PyList_SetItem(t,3, PyLong_FromLong(r.height()));
+        PyList_SetItem(t,0, PyLong_FromLong(it->x()));
+        PyList_SetItem(t,1, PyLong_FromLong(it->y()));
+        PyList_SetItem(t,2, PyLong_FromLong(it->width()));
+        PyList_SetItem(t,3, PyLong_FromLong(it->height()));
         PyList_SetItem(ret, i++, t); //steals reference
     }
 
@@ -738,13 +745,20 @@ mask : dataObject");
 
     ito::uint8 *ptr = ((cv::Mat*)(d->get_mdata()[0]))->ptr(0); //continuous
 
+#if (QT_VERSION >= QT_VERSION_CHECK(5,8,0))
+    auto it = self->r->begin();
+    auto it_end = self->r->end();
+#else
     QVector<QRect> rects = self->r->rects();
+    auto it = rects.constBegin();
+    auto it_end = rects.constEnd();
+#endif
 
-    foreach(const QRect &rect, rects)
+    for(; it != it_end; ++it)
     {
-        for(int m = rect.y(); m < (rect.y() + rect.height()) ; m++)
+        for(int m = it->y(); m < (it->y() + it->height()) ; m++)
         {
-            for(int n = rect.x(); n < (rect.x() + rect.width()) ; n++)
+            for(int n = it->x(); n < (it->x() + it->width()) ; n++)
             {
                 ptr[ (n-x) + (m-y)*w ] = 255;
             }

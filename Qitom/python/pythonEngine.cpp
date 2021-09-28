@@ -4213,7 +4213,11 @@ int PythonEngine::queuedInterrupt(void* /*arg*/)
     ito::PythonEngine *pyEng = PythonEngine::getInstanceInternal();
     if (pyEng)
     {
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
         return (pyEng->m_interruptCounter.loadRelaxed() > 0);
+#else
+        return (pyEng->m_interruptCounter.load() > 0);
+#endif
     }
     return false;
 }

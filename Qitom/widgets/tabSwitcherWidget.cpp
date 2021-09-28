@@ -53,8 +53,6 @@ TabSwitcherWidget::TabSwitcherWidget(
     m_stackHistory = stackHistory;
     setSelectionMode(QListWidget::SingleSelection);
 
-    connect(this, SIGNAL(*QListWidget::itemActivated), this, SLOT(this->currentItem()->isSelected()));
-
     float f = GuiHelper::screenDpiFactor();
     int maxWidth = loadData() * 1.1 + f * 80;  // additional for icon...
     int width = qBound((int)(300 * f), maxWidth, m_tabs->geometry().width());

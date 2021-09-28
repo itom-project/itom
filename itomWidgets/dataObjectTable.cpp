@@ -628,10 +628,19 @@ void DataObjectTable::restoreSelection(const QModelIndexList& indices)
         regions += QRect(idx.column(), idx.row(), 1, 1);
     }
 
-    foreach (const QRect& rect, regions.rects())
+#if (QT_VERSION >= QT_VERSION_CHECK(5,8,0))
+    auto it = regions.begin();
+    auto it_end = regions.end();
+#else
+    QVector<QRect> rects = regions.rects();
+    auto it = rects.constBegin();
+    auto it_end = rects.constEnd();
+#endif
+
+    for (; it != it_end; ++it)
     {
-        idxTL = m_pModel->index(rect.top(), rect.left());
-        idxBR = m_pModel->index(rect.bottom(), rect.right());
+        idxTL = m_pModel->index(it->top(), it->left());
+        idxBR = m_pModel->index(it->bottom(), it->right());
         selection.append(QItemSelectionRange(idxTL, idxBR));
     }
 

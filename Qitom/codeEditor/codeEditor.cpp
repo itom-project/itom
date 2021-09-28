@@ -2250,7 +2250,8 @@ If there is a selection, *lineFrom is set to the line number in which the select
 begins and *lineTo is set to the line number in which the selection ends.
 (They could be the same.) *indexFrom is set to the index at which the selection
 begins within *lineFrom, and *indexTo is set to the index at which the selection ends within
-*lineTo. If there is no selection, *lineFrom, *indexFrom, *lineTo and *indexTo are all set to -1.
+*lineTo. If there is no selection, *lineFrom, *indexFrom, *lineTo and *indexTo are all set to
+-1.
 */
 void CodeEditor::getSelection(int* lineFrom, int* indexFrom, int* lineTo, int* indexTo)
 {
@@ -2460,8 +2461,8 @@ void CodeEditor::contextMenuEvent(QContextMenuEvent* e)
             line < selLineFrom || (line == selLineFrom && index < selIndexFrom) ||
             line > selLineTo ||
             (line == selLineTo &&
-             index > selIndexTo)) // the right mouse click happened out of the current selection,
-                                  // move the cursor to the clicked position
+             index > selIndexTo)) // the right mouse click happened out of the current
+                                  // selection, move the cursor to the clicked position
         {
             setCursorPosition(line, index);
         }
