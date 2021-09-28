@@ -3589,7 +3589,7 @@ MAKEFUNCLIST(NansFunc);
 \param dimensions indicates the number of dimensions
 \param *sizes is a vector with the same length than dimensions. Every element indicates the size of
 the specific dimension \param type is the desired data-element-type \param continuous indicates
-wether the data should be in one continuous block (true) or not (false) \return retOk \sa OnesFunc
+whether the data should be in one continuous block (true) or not (false) \return retOk \sa OnesFunc
 */
 RetVal DataObject::nans(
     const unsigned char dimensions,
