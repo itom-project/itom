@@ -375,9 +375,16 @@ void methodBoxAddItem(
         QString methArgsElide = methArgs.left(
             std::max(0, maxLength - 4 - methPre.size() - methPost.size())
         ) + "...";
+        fullSig = QString("%1(%2)").arg(methPre, methArgsElide);
+
+        if (methPost != "")
+        {
+            fullSig += " -> " + methPost;
+        }
+
         methodBox->addItem(
             icon, 
-            QString("%1(%2) -> %3").arg(methPre, methArgsElide, methPost), 
+            fullSig,
             userData
         );
 
