@@ -256,7 +256,7 @@ QSize PathLineEditPrivate::recomputeSizeHint(QSize& sh)const
     sh.rwidth() = frame + textWidth + browseWidth;
     sh.rheight() = height;
   }
-  return sh.expandedTo(QApplication::globalStrut());
+  return sh.expandedTo(this->SizeHint);
 }
 
 //-----------------------------------------------------------------------------

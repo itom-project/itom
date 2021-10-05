@@ -305,7 +305,7 @@ QSize ColorPickerButton::sizeHint()const
     opt.rect.setSize(opt.iconSize); // PM_MenuButtonIndicator depends on the height
     d->CachedSizeHint = this->style()->sizeFromContents(
       QStyle::CT_ToolButton, &opt, opt.iconSize, this).
-      expandedTo(QApplication::globalStrut());
+      expandedTo(this->parentWidget()->sizeHint());
     }
   else
     {
@@ -313,8 +313,7 @@ QSize ColorPickerButton::sizeHint()const
     pushButtonOpt.iconSize = QSize(iconSize, iconSize);
     pushButtonOpt.rect.setSize(pushButtonOpt.iconSize); // PM_MenuButtonIndicator depends on the height
     d->CachedSizeHint = (style()->sizeFromContents(
-                           QStyle::CT_PushButton, &pushButtonOpt, pushButtonOpt.iconSize, this).
-                         expandedTo(QApplication::globalStrut()));
+                           QStyle::CT_PushButton, &pushButtonOpt, pushButtonOpt.iconSize, this).expandedTo(this->parentWidget()->sizeHint()));
     }
   return d->CachedSizeHint;
 }
