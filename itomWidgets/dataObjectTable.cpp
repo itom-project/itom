@@ -241,7 +241,7 @@ ito::RetVal DataObjectTablePrivate::saveToCsv(
 
                     if (decimalSign != '.')
                     {
-                        itemText = itemText.replace('.', decimalSign);
+                        itemText = itemText.replace('.', decimalSign.toLatin1());
                     }
                 }
                 else
