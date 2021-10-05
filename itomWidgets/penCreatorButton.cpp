@@ -184,7 +184,7 @@ QSize PenCreatorButton::sizeHint() const
     opt.rect.setSize(opt.iconSize); // PM_MenuButtonIndicator depends on the height
     d->m_sizeHintCache = this->style()->sizeFromContents(
         QStyle::CT_ToolButton, &opt, opt.iconSize, this).
-        expandedTo(QApplication::globalStrut());
+        expandedTo(this->sizeHint());
     
     return d->m_sizeHintCache;
 }

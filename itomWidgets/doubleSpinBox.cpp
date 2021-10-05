@@ -1109,7 +1109,7 @@ QSize DoubleSpinBox::sizeHint() const
   opt.rect = this->rect();
   d->CachedSizeHint = this->style()->sizeFromContents(
       QStyle::CT_SpinBox, &opt, newSizeHint, this)
-      .expandedTo(QApplication::globalStrut());
+      .expandedTo(this->sizeHint());
   return d->CachedSizeHint;
 }
 
@@ -1162,7 +1162,7 @@ QSize DoubleSpinBox::minimumSizeHint() const
     opt.rect = this->rect();
     d->CachedMinimumSizeHint = this->style()->sizeFromContents(
         QStyle::CT_SpinBox, &opt, newSizeHint, this)
-        .expandedTo(QApplication::globalStrut());
+        .expandedTo(this->sizeHint());
     return d->CachedMinimumSizeHint;
 }
 
