@@ -2570,7 +2570,7 @@ void ScriptEditorWidget::print()
 
         printer.setPageSize(QPageSize(QPageSize::A4));
         printer.setPageOrientation(QPageLayout::Orientation::Portrait);
-        printer.setPageMargins(QMarginsF(20, 15, 20, 15), QPageLayout::Unit::Millimeter);
+        printer.setPageMargins(QMarginsF(20, 15, 20, 15), QPageLayout::Millimeter);
 
         if (hasNoFilename() == false)
         {
