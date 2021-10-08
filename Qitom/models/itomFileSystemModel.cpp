@@ -121,7 +121,7 @@ bool ItomFileSystemModel::dropMimeData(const QMimeData *data, Qt::DropAction act
                 }
                 else
                 {
-                    standard = QMessageBox::question(0, tr("Destination already exists."), tr("The file '%s' already exists. Should it be overwritten?").arg(toFileAbs), QMessageBox::Yes | QMessageBox::No | QMessageBox::NoToAll | QMessageBox::YesToAll, QMessageBox::No);
+                    standard = QMessageBox::question(0, tr("Destination already exists."), tr("The file '%1' already exists. Should it be overwritten?").arg(toFileAbs), QMessageBox::Yes | QMessageBox::No | QMessageBox::NoToAll | QMessageBox::YesToAll, QMessageBox::No);
 
                     if (standard & (QMessageBox::YesToAll | QMessageBox::Yes))
                     {
@@ -161,7 +161,7 @@ bool ItomFileSystemModel::dropMimeData(const QMimeData *data, Qt::DropAction act
                 }
                 else
                 {
-                    standard = QMessageBox::question(0, tr("Destination already exists."), tr("The file '%s' already exists. Should it be overwritten by the new link?"), QMessageBox::Yes | QMessageBox::No | QMessageBox::NoToAll | QMessageBox::YesToAll, QMessageBox::No);
+                    standard = QMessageBox::question(0, tr("Destination already exists."), tr("The file '%1' already exists. Should it be overwritten by the new link?").arg(toFileAbs), QMessageBox::Yes | QMessageBox::No | QMessageBox::NoToAll | QMessageBox::YesToAll, QMessageBox::No);
 
                     if (standard & (QMessageBox::YesToAll | QMessageBox::Yes))
                     {
