@@ -256,7 +256,11 @@ QSize PathLineEditPrivate::recomputeSizeHint(QSize& sh)const
     sh.rwidth() = frame + textWidth + browseWidth;
     sh.rheight() = height;
   }
-  return sh.expandedTo(this->SizeHint);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+  return sh;
+#else
+  return sh.expandedTo(QApplication::globalStrut());
+#endif
 }
 
 //-----------------------------------------------------------------------------
