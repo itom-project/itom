@@ -584,7 +584,7 @@ void DialogPipManager::exportTableToCsv()
         }
         else
         {
-            QMessageBox::warning(this, tr("Export to file"), tr("The file '%s' could not be opened").arg(fileName));
+            QMessageBox::warning(this, tr("Export to file"), tr("The file '%1' could not be opened").arg(fileName));
         }
     }
 }
