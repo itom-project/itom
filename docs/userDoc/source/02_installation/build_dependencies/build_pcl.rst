@@ -29,7 +29,15 @@ otherwise the new entries will not be added.
 * check **BUILD_surface_on_nurbs** and **BUILD_visualization**
 * uncheck **BUILD_global_tests**, **BUILD_examples**, **BUILD_apps**, **BUILD_simulation**
 * uncheck **PCL_ENABLE_AVX** for version >1.12.0
-* Set **CMAKE_INSTALL_PREFIX** ${MAINDIR}/3rdPartyPCL/pcl1.9.1
+* Set **CMAKE_INSTALL_PREFIX** ${MAINDIR}/3rdPartyPCL/pclM.M.P
+
+* Check **PCL_SHARED_LIB**
+* Delete **PCL_BUILD_WITH_BOOST_DYNAMIC_LINKING_WIN32**
+* Delete **PCL_BUILD_WITH_FLANN_DYNAMIC_LINKING_WIN32**
+* Add **BOOST_USE_STATIC**
+* Add **FLANN_USE_STATIC**
+* Add **QHULL_USE_STATIC**
+
 
 .. note::
     
