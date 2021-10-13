@@ -1017,7 +1017,7 @@ void ScriptEditorWidget::menuComment()
             lineTextTrimmed = lineTextFull.trimmed();
 
             searchIndex = lineTextFull.indexOf(lineTextTrimmed);
-            if (searchIndex >= 0)
+            if (searchIndex >= 0 && !lineTextTrimmed.isEmpty())
             {
                 QTextCursor cursor = setCursorPosition(i, searchIndex, false);
                 cursor.insertText("# ");
