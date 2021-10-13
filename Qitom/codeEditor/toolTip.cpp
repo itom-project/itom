@@ -226,6 +226,26 @@ bool ToolTipLabel::eventFilter(QObject *o, QEvent *e)
     return false;
 }
 
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+QScreen *ToolTipLabel::getTipScreen(const QPoint& pos, QWidget* w)
+{
+    QScreen* guess = w ? w->screen() : QGuiApplication::primaryScreen();
+    QScreen* exact = guess->virtualSiblingAt(pos);
+    return exact ? exact : guess;
+}
+#else
+int ToolTipLabel::getTipScreen(const QPoint& pos, QWidget* w)
+{
+    if (QApplication::desktop()->isVirtualDesktop())
+
+        return QApplication::desktop()->screenNumber(pos);
+
+    else
+
+        return QApplication::desktop()->screenNumber(w);
+}
+#endif
+
 void ToolTipLabel::placeTip(const QPoint &pos, QWidget *w, const QPoint &alternativeTopRightPos /*= QPoint()*/)
 {
 #ifndef QT_NO_STYLE_STYLESHEET
