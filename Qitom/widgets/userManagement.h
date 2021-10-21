@@ -37,7 +37,7 @@ class DialogUserManagement : public QDialog
 
     public:
 
-        DialogUserManagement(QWidget* parent = 0, QFlag f = 0);
+        DialogUserManagement(QWidget* parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
 
         ~DialogUserManagement();
         Ui::userManagement ui;

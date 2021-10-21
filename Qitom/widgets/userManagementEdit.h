@@ -39,8 +39,8 @@ class DialogUserManagementEdit : public QDialog
         DialogUserManagementEdit(
             const QString& filename,
             UserModel* userModel,
-            QWidget* parent = 0,
-            QFlag f = 0,
+            QWidget* parent = nullptr,
+            Qt::WindowFlags f = Qt::WindowFlags(),
             bool isStandardUser = false);
 
         ~DialogUserManagementEdit();

@@ -206,7 +206,7 @@ DialogUserManagementEdit::DialogUserManagementEdit(
     const QString& filename,
     UserModel* userModel,
     QWidget* parent,
-    QFlag f,
+    Qt::WindowFlags f,
     bool isStandardUser) :
     QDialog(parent, f),
     m_userModel(userModel), m_fileName(filename), m_osUser(""), m_showsStandardUser(isStandardUser)
