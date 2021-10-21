@@ -63,6 +63,7 @@ namespace ito
         ui.geometricShapePenBtn->setPen(settings.value("geometricShapePen", QPen(QBrush(Qt::red), 1, Qt::SolidLine)).value<QPen>());
         ui.shapeLabelTextColorBtn->setColor(settings.value("shapeLabelTextColor", QColor(Qt::white)).value<QColor>());
 		ui.legendLabelWidthSpin->setValue(settings.value("legendLabelWidth", 15).value<int>());
+        ui.checkAntiAliasing->setChecked(settings.value("antiAliased", false).value<bool>());
         ui.clipboardResolutionSpin->setValue(settings.value("copyClipboardResolutionDpi", 200).value<int>());
         settings.endGroup();
         settings.endGroup();
@@ -95,6 +96,7 @@ namespace ito
       settings.setValue("geometricShapePen", ui.geometricShapePenBtn->getPen());
       settings.setValue("shapeLabelTextColor", ui.shapeLabelTextColorBtn->color());
 	  settings.setValue("legendLabelWidth", ui.legendLabelWidthSpin->value());
+      settings.setValue("antiAliased", ui.checkAntiAliasing->isChecked());
       settings.setValue("copyClipboardResolutionDpi", ui.clipboardResolutionSpin->value());
 
       settings.endGroup();
@@ -123,6 +125,7 @@ namespace ito
         ui.shapeLabelFontBtn->setCurrentFont(QFont("Verdana", 10));
         ui.geometricShapePenBtn->setPen(QPen(QBrush(Qt::red), 1, Qt::SolidLine));
         ui.shapeLabelTextColorBtn->setColor(Qt::red);
+        ui.checkAntiAliasing->setChecked(false);
 		ui.legendLabelWidthSpin->setValue(15);
         this->update();
     }
