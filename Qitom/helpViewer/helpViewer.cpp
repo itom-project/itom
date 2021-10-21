@@ -254,7 +254,7 @@ void HelpViewer::search()
 	QHelpSearchEngine *searchEngine = m_pHelpEngine->searchEngine();
     QHelpSearchQueryWidget* query = searchEngine->queryWidget();
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 9, 0))
-    searchEngine->search(searchEngine->queryWidget()->searchInput());
+    searchEngine->search(query->searchInput());
 #else
     searchEngine->search(query->query());
 #endif
