@@ -31,6 +31,7 @@
 #include <qdir.h>
 #include <qsettings.h>
 #include <QProcessEnvironment>
+#include <QRegularExpression>
 
 namespace ito
 {
@@ -1115,9 +1116,9 @@ void PipManager::finalizeTask(int exitCode /*= 0*/)
                     {
 
                         #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)) 
-                            QStringList items = lines[idx].split(QRegExp("\\s+"), Qt::SkipEmptyParts);
+                            QStringList items = lines[idx].split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
                         #else 
-                            QStringList items = lines[idx].split(QRegExp("\\s+"), QString::SkipEmptyParts);
+                            QStringList items = lines[idx].split(QRegularExpression("\\s+"), QString::SkipEmptyParts);
                         #endif
                         
                         if (items.size() >= 4)
