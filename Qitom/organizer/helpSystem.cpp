@@ -562,7 +562,7 @@ RetVal HelpSystem::buildPluginHelp(quint16 checksum)
             if (info.isDir())
             {
                 qDebug() << info.absoluteFilePath();
-                thisPluginDir.setPath(info.absolutePath());
+                thisPluginDir.setPath(info.absoluteFilePath());
                 thisPluginDocsDir = thisPluginDir;
                 if (thisPluginDocsDir.cd("docs"))
                 {
