@@ -426,7 +426,7 @@ MainWindow::MainWindow() :
     settings.beginGroup("MainWindow");
 
     bool maximized = settings.value("maximized", false).toBool();
-    QScreen* screen = QApplication::primaryScreen();
+    const QScreen* screen = QApplication::primaryScreen();
     QRect screenGeometry = screen->geometry();
 
     QRect mainScreen = screen->geometry();
