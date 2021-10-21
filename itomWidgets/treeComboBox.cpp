@@ -236,7 +236,7 @@ QTreeView* TreeComboBox::treeView()const
 }
 
 // -------------------------------------------------------------------------
-static QWindow* windowFromWidget(const QWidget* widget)
+QWindow* windowFromWidget(const QWidget* widget)
 {
     // https://phabricator.kde.org/D22379
     QWindow* windowHandle = widget->windowHandle();
@@ -255,7 +255,7 @@ static QWindow* windowFromWidget(const QWidget* widget)
 }
 
 // -------------------------------------------------------------------------
-static QScreen* screenFromWidget(const QWidget* widget)
+QScreen* screenFromWidget(const QWidget* widget)
 {
     // https://phabricator.kde.org/D22379
     const QWindow* windowHandle = windowFromWidget(widget);
@@ -331,9 +331,6 @@ void TreeComboBox::resizePopup()
 
       // add the frame of the view
       QMargins margins = this->view()->contentsMargins();
-
-      //add the frame of the view
-      this->view()->contentsMargins();
       heightMargin += margins.top() + margins.bottom();
 
       listRect.setHeight(listRect.height() + heightMargin);
