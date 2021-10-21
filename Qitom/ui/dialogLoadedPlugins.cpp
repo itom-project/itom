@@ -58,7 +58,7 @@ DialogLoadedPlugins::DialogLoadedPlugins(QWidget *parent) :
     filter();
 
     ui.tree->setSortingEnabled(true);
-    ui.tree->sortByColumn(5, Qt::SortOrder::AscendingOrder);
+    ui.tree->sortByColumn(5, Qt::AscendingOrder);
     
     ui.tree->collapseAll();
 }
