@@ -288,7 +288,6 @@ private:
 
     QMutex m_dbgCmdMutex;
     QMutex m_pythonStateChangeMutex;
-    QDesktopWidget *m_pDesktopWidget;
     QQueue<ito::tPythonDbgCmd> m_debugCommandQueue;
     
     ito::tPythonState m_pythonState;
@@ -313,6 +312,7 @@ private:
     PyObject *m_dictUnicode;
     PyObject *m_slotsUnicode;
 
+
     QSet<ito::PyWorkspaceContainer*> m_mainWorkspaceContainer;
     QSet<ito::PyWorkspaceContainer*> m_localWorkspaceContainer;
     QHash<size_t, FuncWeakRef> m_pyFuncWeakRefHashes; //!< hash table containing weak reference to callable python methods or functions and as second, optional PyObject* an tuple, passed as argument to that function. These functions are for example executed by menu-clicks in the main window.
@@ -321,6 +321,7 @@ private:
     QString m_pythonExecutable; //!< absolute path to the python executable
 
     bool m_executeInternalPythonCodeInDebugMode; //!< if true, button events, user interface connections to python methods... will be executed by debugger
+
 
     //!< decides if itom is automatically included in every source file before it is handed to the syntax checker
     bool m_includeItomImportBeforeCodeAnalysis;

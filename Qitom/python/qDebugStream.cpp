@@ -22,6 +22,10 @@
 
 #include "qDebugStream.h"
 
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
+    #include <QRandomGenerator>
+#endif
+
 #include <qthread.h>
 
 namespace ito {
@@ -82,10 +86,17 @@ std::streamsize QDebugStream::xsputn(const char *p, std::streamsize n)
     emit flushStream(str, msg_type); //the c_str will be converted into QString using the codec set by QTextCodec::setCodecForCStrings(textCodec) in MainApplication
     m_string.clear();
 
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
+    if (QRandomGenerator::global()->generate() > m_randWaitThreshold)
+    {
+        QThread::usleep(1);
+    }
+#else
     if (qrand() > m_randWaitThreshold)
     {
         QThread::usleep(1);
     }
+#endif    
 
     return n;
 }
@@ -100,10 +111,22 @@ std::basic_streambuf<char>::int_type QDebugStream::overflow(int_type v)
         emit flushStream(str, msg_type);
         m_string.erase(m_string.begin(), m_string.end());
         
+        
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
+        if (QRandomGenerator::global()->generate() > m_randWaitThreshold)
+        {
+            QThread::usleep(1);
+        }
+#else
         if (qrand() > m_randWaitThreshold)
         {
             QThread::usleep(1);
         }
+#endif 
+
+
+
     }
     else
     {

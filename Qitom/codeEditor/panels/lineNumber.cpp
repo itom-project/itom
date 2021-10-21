@@ -90,8 +90,11 @@ int LineNumberPanel::lineNumberAreaWidth() const
         count /= 10;
         digits += 1;
     }
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 11, 0))
+    return 5 + editor()->fontMetrics().horizontalAdvance("9") * digits; /*space*/
+#else
     return 5 + editor()->fontMetrics().width("9") * digits; /*space*/
-
+#endif
 }
 
 //----------------------------------------------------------

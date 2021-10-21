@@ -492,7 +492,7 @@ void PyGotoAssignmentMode::performGoto(const QList<PyAssignment> &assignments)
 
         float guiFactor = GuiHelper::screenDpiFactor();
 
-        QSharedPointer<QInputDialog> dialog(new QInputDialog(editor(), 0));
+        QSharedPointer<QInputDialog> dialog(new QInputDialog(editor(), QFlag(0)));        
         dialog->setWindowTitle(tr("Choose a definition"));
         dialog->setLabelText(tr("Choose the definition you want to go to:"));
         dialog->setComboBoxItems(items);

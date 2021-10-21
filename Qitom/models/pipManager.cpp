@@ -31,6 +31,7 @@
 #include <qdir.h>
 #include <qsettings.h>
 #include <QProcessEnvironment>
+#include <QRegularExpression>
 
 namespace ito
 {
@@ -458,7 +459,7 @@ QModelIndex PipManager::index(int row, int column, const QModelIndex &parent) co
 //----------------------------------------------------------------------------------------------------------------------------------
 bool PipManager::isPipStarted() const
 {
-    return m_pipProcess.pid() != 0;
+    return m_pipProcess.processId() != 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1113,7 +1114,13 @@ void PipManager::finalizeTask(int exitCode /*= 0*/)
                     QStringList lines = output.split("\n");
                     for (int idx = 2; idx < lines.size(); ++idx)
                     {
-                        QStringList items = lines[idx].split(QRegExp("\\s+"), QString::SkipEmptyParts);
+
+                        #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)) 
+                            QStringList items = lines[idx].split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
+                        #else 
+                            QStringList items = lines[idx].split(QRegularExpression("\\s+"), QString::SkipEmptyParts);
+                        #endif
+                        
                         if (items.size() >= 4)
                         {
                             outdated[items[0]] = items[2];

@@ -241,7 +241,7 @@ ito::RetVal DataObjectTablePrivate::saveToCsv(
 
                     if (decimalSign != '.')
                     {
-                        itemText = itemText.replace('.', decimalSign);
+                        itemText = itemText.replace('.', decimalSign.toLatin1());
                     }
                 }
                 else
@@ -307,7 +307,7 @@ ito::RetVal DataObjectTablePrivate::getSelectedItems(
 
     if (selected.size() > 0)
     {
-        qSort(selected.begin(), selected.end(), sortByRowAndColumn);
+        std::sort(selected.begin(), selected.end(), sortByRowAndColumn);
 
         int firstRow = selected[0].row();
         int lastRow = selected[selected.size() - 1].row();
@@ -628,10 +628,19 @@ void DataObjectTable::restoreSelection(const QModelIndexList& indices)
         regions += QRect(idx.column(), idx.row(), 1, 1);
     }
 
-    foreach (const QRect& rect, regions.rects())
+#if (QT_VERSION >= QT_VERSION_CHECK(5,8,0))
+    auto it = regions.begin();
+    auto it_end = regions.end();
+#else
+    QVector<QRect> rects = regions.rects();
+    auto it = rects.constBegin();
+    auto it_end = rects.constEnd();
+#endif
+
+    for (; it != it_end; ++it)
     {
-        idxTL = m_pModel->index(rect.top(), rect.left());
-        idxBR = m_pModel->index(rect.bottom(), rect.right());
+        idxTL = m_pModel->index(it->top(), it->left());
+        idxBR = m_pModel->index(it->bottom(), it->right());
         selection.append(QItemSelectionRange(idxTL, idxBR));
     }
 

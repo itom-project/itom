@@ -137,7 +137,7 @@ RangeSliderPrivate::RangeSliderPrivate(RangeSlider& object)
   this->m_SubclassClickOffset = 0;
   this->m_SubclassPosition = 0;
   this->m_SubclassWidth = 0.0;
-  this->m_SelectedHandles = 0;
+  this->m_SelectedHandles = RangeSliderPrivate::Handle();
   this->m_SymmetricMoves = false;
   this->m_UseStyleSheets = false; // per default, the default OS depending styling is enabled.
   this->m_HandleBorderRadius = 0.0;
@@ -1154,7 +1154,7 @@ void RangeSlider::mouseReleaseEvent(QMouseEvent* mouseEvent)
   this->QSlider::mouseReleaseEvent(mouseEvent);
 
   setSliderDown(false);
-  d->m_SelectedHandles = 0;
+  d->m_SelectedHandles = RangeSliderPrivate::Handle();
 
   this->update();
 }

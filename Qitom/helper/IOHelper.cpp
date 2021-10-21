@@ -1315,11 +1315,22 @@ end:
 {
     QFont font;
     QFontMetrics fontm(font);
-    int width = fontm.width(path);
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 11, 0))
+        int width = fontm.horizontalAdvance(path);
+#else 
+        int width = fontm.width(path);
+#endif
+    
     if (width > pixelLength)
     {
         bool end = false;
-        while(width > pixelLength - fontm.width("...") && end == false)
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 11, 0))
+        while (width > pixelLength - fontm.horizontalAdvance("...") && end == false)
+#else
+        while (width > pixelLength - fontm.width("...") && end == false)
+#endif        
         {
             int index = path.indexOf(QDir::separator(), 0)+1;
             if (index == 0 || index == path.lastIndexOf(QDir::separator()))
@@ -1327,7 +1338,11 @@ end:
                 end = true;
             }
             path.remove(index, 1);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 11, 0))
+            width = fontm.horizontalAdvance(path);
+#else
             width = fontm.width(path);
+#endif
         }
         path.insert(path.indexOf(QDir::separator(),0)+1, "...");
     }

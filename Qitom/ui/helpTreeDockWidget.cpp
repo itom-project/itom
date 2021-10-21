@@ -34,13 +34,20 @@ namespace ito {
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // Constructor
-HelpTreeDockWidget::HelpTreeDockWidget(
-    QWidget* parent, ito::AbstractDockWidget* dock, Qt::WindowFlags flags) :
-    QWidget(parent, flags),
-    m_historyIndex(-1), m_pMainModel(NULL), m_pParent(dock), m_internalCall(false),
-    m_doingExpandAll(false), m_state(stateIdle), m_backgroundColorHeading("#efefef"),
-    m_textColorHeading("#0c3762"), m_linkColor("#dc3c01"), m_backgroundParamName("#dcb8aa"),
-    m_textColorSection("#dc3c01"), m_backgroundColorSection("#eeeeee")
+HelpTreeDockWidget::HelpTreeDockWidget(QWidget* parent, ito::AbstractDockWidget* dock, Qt::WindowFlags flags)
+    : QWidget(parent, flags),
+    m_historyIndex(-1),
+    m_pMainModel(NULL),
+    m_pParent(dock),
+    m_internalCall(false),
+    m_doingExpandAll(false),
+    m_state(stateIdle),
+    m_backgroundColorHeading("#efefef"),
+    m_textColorHeading("#0c3762"),
+    m_linkColor("#dc3c01"),
+    m_backgroundParamName("#dcb8aa"),
+    m_textColorSection("#dc3c01"),
+    m_backgroundColorSection("#eeeeee")
 {
     ui.setupUi(this);
 

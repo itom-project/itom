@@ -1884,70 +1884,79 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
     case QMetaType::Float:
     {
         float d = (float) PyObjGetDouble(val, false, ok);
-        if (ok) v =  qVariantFromValue(d);
+        if (ok) v = QVariant::fromValue(d);
     }
     break;
     
     case QMetaType::Long:
     {
         long d = static_cast<long>(PyObjGetLongLong(val, false, ok));
-        if (ok) v =  qVariantFromValue(d);
+        if (ok)
+            v = QVariant::fromValue(d);
     }
     break;
     
     case QMetaType::ULong:
     {
         unsigned long d = static_cast<unsigned long>(PyObjGetLongLong(val, false, ok));
-        if (ok) v =  qVariantFromValue(d);
+        if (ok)
+            v = QVariant::fromValue(d);
     }
     break;
     
     case QMetaType::LongLong:
     {
         qint64 d = PyObjGetLongLong(val, false, ok);
-        if (ok) v =  qVariantFromValue(d);
+        if (ok)
+            v = QVariant::fromValue(d);
     }
     break;
     
     case QMetaType::ULongLong:
     {
         quint64 d = PyObjGetULongLong(val, false, ok);
-        if (ok) v =  qVariantFromValue(d);
+        if (ok)
+            v = QVariant::fromValue(d);
     }
     break;
     
     case QMetaType::Short:
     {
         short d = cv::saturate_cast<short>(PyObjGetInt(val, false, ok));
-        if (ok) v =  qVariantFromValue(d);
+        if (ok)
+            v = QVariant::fromValue(d);
     }
     break;
     
     case QMetaType::UShort:
     {
         unsigned short d = cv::saturate_cast<unsigned short>(PyObjGetInt(val, false, ok));
-        if (ok) v =  qVariantFromValue(d);
+        if (ok)
+            v = QVariant::fromValue(d);
     }
     break;
     
     case QMetaType::Char:
     {
         char d = cv::saturate_cast<char>(PyObjGetInt(val, false, ok));
-        if (ok) v =  qVariantFromValue(d);
+        if (ok)
+            v = QVariant::fromValue(d);
     }
     break;
     
     case QMetaType::UChar:
     {
         unsigned char d = cv::saturate_cast<unsigned char>(PyObjGetInt(val, false, ok));
-        if (ok) v =  qVariantFromValue(d);
+        if (ok)
+            v = QVariant::fromValue(d);
     }
     break;
     
     case QVariant::ByteArray:
     {
         QByteArray ba = PyObjGetBytes(val, true, ok);
-        if (ok) v = qVariantFromValue(ba);
+        if (ok)
+            v = QVariant::fromValue(ba);
     }
     break;    
        
@@ -2088,12 +2097,12 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
                         ito::DataObject *copy = new ito::DataObject(*dataObj->dataObject);
                         m_pyBaseObjectStorage.insert((char*)copy, dataObj->base); //unique
                         QSharedPointer<ito::DataObject> value(copy , baseObjectDeleterDataObject);
-                        v = qVariantFromValue<QSharedPointer<ito::DataObject> >(value);
+                        v = QVariant::fromValue<QSharedPointer<ito::DataObject>>(value);
                     }
                     else
                     {
                         QSharedPointer<ito::DataObject> value(new ito::DataObject(*dataObj->dataObject));
-                        v = qVariantFromValue<QSharedPointer<ito::DataObject> >(value);
+                        v = QVariant::fromValue<QSharedPointer<ito::DataObject>>(value);
                     }
                 }
                 else
@@ -2127,12 +2136,12 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
                             ito::DataObject *copy = new ito::DataObject(*pyDataObj2->dataObject);
                             m_pyBaseObjectStorage.insert((char*)copy, pyDataObj2->base); //unique
                             QSharedPointer<ito::DataObject> value(copy , baseObjectDeleterDataObject);
-                            v = qVariantFromValue<QSharedPointer<ito::DataObject> >(value);
+                            v = QVariant::fromValue<QSharedPointer<ito::DataObject>>(value);
                         }
                         else
                         {
                             QSharedPointer<ito::DataObject> value(new ito::DataObject(*pyDataObj2->dataObject));
-                            v = qVariantFromValue<QSharedPointer<ito::DataObject> >(value);
+                            v = QVariant::fromValue<QSharedPointer<ito::DataObject>>(value);
                         }
                     }
                     else
@@ -2156,7 +2165,7 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
             ito::PCLPointCloud pcl = PyObjGetPointCloud(val, true, ok);
             if (ok)
             {
-                v = qVariantFromValue<ito::PCLPointCloud >(pcl);
+                v = QVariant::fromValue<ito::PCLPointCloud>(pcl);
             }
         }
         else if (type == QMetaType::type("QSharedPointer<ito::PCLPointCloud>"))
@@ -2173,7 +2182,7 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
                     else
                     {
                         QSharedPointer<ito::PCLPointCloud> value(new ito::PCLPointCloud(*pyPlc->data));
-                        v = qVariantFromValue<QSharedPointer<ito::PCLPointCloud> >(value);
+                        v = QVariant::fromValue<QSharedPointer<ito::PCLPointCloud>>(value);
                     }
                 }
                 else
@@ -2192,7 +2201,7 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
             ito::PCLPoint pcl = PyObjGetPoint(val, true, ok);
             if (ok)
             {
-                v = qVariantFromValue<ito::PCLPoint>(pcl);
+                v = QVariant::fromValue<ito::PCLPoint>(pcl);
             }
         }
         else if (type == QMetaType::type("ito::PCLPolygonMesh"))
@@ -2201,7 +2210,7 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
             ito::PCLPolygonMesh pcl = PyObjGetPolygonMesh(val, true, ok);
             if (ok)
             {
-                v = qVariantFromValue<ito::PCLPolygonMesh >(pcl);
+                v = QVariant::fromValue<ito::PCLPolygonMesh>(pcl);
             }
         }
 #endif //#if ITOM_POINTCLOUDLIBRARY > 0        
@@ -2210,7 +2219,8 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
             ito::PythonPlugins::PyDataIOPlugin *plugin = (ito::PythonPlugins::PyDataIOPlugin*)val;
             if (plugin)
             {
-                v = qVariantFromValue<QPointer<ito::AddInDataIO> >(QPointer<ito::AddInDataIO>(plugin->dataIOObj));
+                v = QVariant::fromValue<QPointer<ito::AddInDataIO>>(
+                    QPointer<ito::AddInDataIO>(plugin->dataIOObj));
             }
             else
             {
@@ -2222,7 +2232,8 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
             ito::PythonPlugins::PyActuatorPlugin *plugin = (ito::PythonPlugins::PyActuatorPlugin*)val;
             if (plugin)
             {
-                v = qVariantFromValue<QPointer<ito::AddInActuator> >(QPointer<ito::AddInActuator>(plugin->actuatorObj));
+                v = QVariant::fromValue<QPointer<ito::AddInActuator>>(
+                    QPointer<ito::AddInActuator>(plugin->actuatorObj));
             }
             else
             {
@@ -2234,7 +2245,7 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
             ito::PythonAutoInterval::PyAutoInterval *ai = (ito::PythonAutoInterval::PyAutoInterval*)val;
             if (ai)
             {
-                v = qVariantFromValue<ito::AutoInterval>(ai->interval);
+                v = QVariant::fromValue<ito::AutoInterval>(ai->interval);
             }
             else
             {
@@ -2249,7 +2260,7 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
                 if (plot)
                 {
                     ito::ItomPlotHandle myHandle(plot->uiItem.objName, plot->uiItem.widgetClassName, plot->uiItem.objectID);
-                    v = qVariantFromValue<ito::ItomPlotHandle>(myHandle);
+                    v = QVariant::fromValue<ito::ItomPlotHandle>(myHandle);
                 }
                 else
                 {
@@ -2262,7 +2273,7 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
                 if (ui)
                 {
                     ito::ItomPlotHandle myHandle(ui->objName, ui->widgetClassName, ui->objectID);
-                    v = qVariantFromValue<ito::ItomPlotHandle>(myHandle);
+                    v = QVariant::fromValue<ito::ItomPlotHandle>(myHandle);
                 }
                 else
                 {
@@ -2279,7 +2290,7 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
             ito::PythonShape::PyShape *shape = (ito::PythonShape::PyShape*)val;
             if (shape)
             {
-                v = qVariantFromValue<ito::Shape>(*(shape->shape));
+                v = QVariant::fromValue<ito::Shape>(*(shape->shape));
             }
             else
             {
@@ -2289,7 +2300,7 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
         else if (type == QMetaType::type("ito::PythonNone"))
         {
             ito::PythonNone none;
-            v = qVariantFromValue<ito::PythonNone>(none);
+            v = QVariant::fromValue<ito::PythonNone>(none);
         }
         else
         {

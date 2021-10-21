@@ -160,27 +160,26 @@ PythonEngine *PythonEngine::getInstanceInternal()
 
 //----------------------------------------------------------------------------------------------------------------------------------
 PythonEngine::PythonEngine() :
-    m_started(false),
-    m_pDesktopWidget(NULL),
-    m_pythonState(pyStateIdle),
+    m_started(false), 
+    m_pythonState(pyStateIdle), 
     m_bpModel(NULL),
-    m_mainModule(NULL),
-    m_pMainDictionary(NULL),
+    m_mainModule(NULL), 
+    m_pMainDictionary(NULL), 
     m_pLocalDictionary(NULL),
-    m_pGlobalDictionary(NULL),
-    m_itomDbgModule(NULL),
-    m_itomDbgInstance(NULL),
+    m_pGlobalDictionary(NULL), 
+    m_itomDbgModule(NULL), 
+    m_itomDbgInstance(NULL), 
     m_itomModule(NULL),
     m_itomFunctions(NULL),
-    m_pyFuncWeakRefAutoInc(0),
-    m_pyModGC(NULL),
+    m_pyFuncWeakRefAutoInc(0), 
+    m_pyModGC(NULL), 
     m_pyModCodeChecker(NULL),
-	m_pyModCodeCheckerHasPyFlakes(false),
-	m_pyModCodeCheckerHasFlake8(false),
-    m_executeInternalPythonCodeInDebugMode(false),
-    m_dictUnicode(NULL),
+    m_pyModCodeCheckerHasPyFlakes(false), 
+    m_pyModCodeCheckerHasFlake8(false),
+    m_executeInternalPythonCodeInDebugMode(false), 
+    m_dictUnicode(NULL), 
     m_pythonThreadId(0),
-    m_includeItomImportString(""),
+    m_includeItomImportString(""), 
     m_pUserDefinedPythonHome(NULL)
 {
     qRegisterMetaType<tPythonDbgCmd>("tPythonDbgCmd");
@@ -275,8 +274,6 @@ PythonEngine::PythonEngine() :
     m_bpModel = new ito::BreakPointModel();
     m_bpModel->restoreState(); //get breakPoints from last session
 
-    m_pDesktopWidget = new QDesktopWidget(); //must be in constructor, since the constructor is executed in main-thread
-
     QMutexLocker locker(&PythonEngine::instancePtrProtection);
     PythonEngine::instance = const_cast<PythonEngine*>(this);
     locker.unlock();
@@ -295,8 +292,6 @@ PythonEngine::~PythonEngine()
     m_bpModel->saveState(); //save current set of breakPoints to settings file
     DELETE_AND_SET_NULL(m_bpModel);
 
-    DELETE_AND_SET_NULL(m_pDesktopWidget);
-
     QMutexLocker locker(&PythonEngine::instancePtrProtection);
     PythonEngine::instance = NULL;
     locker.unlock();
@@ -311,8 +306,8 @@ PythonEngine::~PythonEngine()
 //----------------------------------------------------------------------------------------------------------------------------------
 void PythonEngine::pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap> infoMessages)
 {
-    PyObject *itomDbgClass = nullptr;
-    PyObject *itomDbgDict = nullptr;
+    PyObject* itomDbgClass = nullptr;
+    PyObject* itomDbgDict = nullptr;
 
     m_pythonThreadId = QThread::currentThreadId ();
 
@@ -1103,7 +1098,7 @@ ito::RetVal PythonEngine::scanAndRunAutostartFolder(QString currentDirAfterScan 
     QDir folder;
 
     //scan autostart-folder of itom-packages folder an execute every py-file
-    folder = QDir::cleanPath(QCoreApplication::applicationDirPath());
+    folder.setPath(QDir::cleanPath(QCoreApplication::applicationDirPath()));
     if (folder.cd("itom-packages"))
     {
         if (folder.cd("autostart"))
@@ -4175,7 +4170,7 @@ void PythonEngine::removeFunctionCancellationAndObserver(ito::FunctionCancellati
 
     while (it != m_activeFunctionCancellations.end())
     {
-        if (it->isNull() || it->data() == observer)
+        if (it->isNull() || it->toStrongRef().data() == observer)
         {
             it = m_activeFunctionCancellations.erase(it);
         }
@@ -4218,7 +4213,11 @@ int PythonEngine::queuedInterrupt(void* /*arg*/)
     ito::PythonEngine *pyEng = PythonEngine::getInstanceInternal();
     if (pyEng)
     {
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+        return (pyEng->m_interruptCounter.loadRelaxed() > 0);
+#else
         return (pyEng->m_interruptCounter.load() > 0);
+#endif
     }
     return false;
 }
@@ -4267,7 +4266,7 @@ void PythonEngine::pythonInterruptExecutionThreadSafe(bool *interruptActuatorsAn
     {
         if (observer.isNull() == false)
         {
-            observer.data()->requestCancellation(ito::FunctionCancellationAndObserver::ReasonKeyboardInterrupt);
+            observer.toStrongRef().data()->requestCancellation(ito::FunctionCancellationAndObserver::ReasonKeyboardInterrupt);
         }
     }
 

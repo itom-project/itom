@@ -414,7 +414,11 @@ void DataObjectMetaWidget::setData(QSharedPointer<ito::DataObject> dataObj)
     if (checker)
     {
         QString temp = QString::fromLocal8Bit(type.getVal_ToString().data());
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+        QStringList tempList = temp.split('\n', Qt::SkipEmptyParts);
+#else
         QStringList tempList = temp.split('\n', QString::SkipEmptyParts);
+#endif        
         for (int i = 0; i < tempList.size(); i++)
         {
             data[0] = "";

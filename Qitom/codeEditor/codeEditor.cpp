@@ -530,16 +530,28 @@ void CodeEditor::updateTabStopAndIndentationWidth()
         fm = QFontMetrics(f);
     }
 
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
+    setTabStopDistance(tabLength() * fm.horizontalAdvance(" "));
+#else
     setTabStopWidth(tabLength() * fm.width(" "));
+#endif
 
     if (useSpacesInsteadOfTabs())
     {
         QString tab_text = QString(tabLength(), ' ');
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 11, 0))
+        m_indentationBarWidth = fm.horizontalAdvance(tab_text);
+#else
         m_indentationBarWidth = fm.width(tab_text);
+#endif
     }
     else
     {
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
+        m_indentationBarWidth = tabStopDistance();
+#else
         m_indentationBarWidth = tabStopWidth();
+#endif
     }
 }
 
@@ -623,7 +635,11 @@ void CodeEditor::paintEvent(QPaintEvent* e)
         QPainter painter(viewport());
         painter.setPen(m_edgeColor);
 
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 11, 0))
+        int x = fontMetrics().horizontalAdvance(QString(m_edgeColumn, '9'));
+#else
         int x = fontMetrics().width(QString(m_edgeColumn, '9'));
+#endif
         x += xoffset;
         painter.drawLine(x, 0, x, size().height());
     }
@@ -633,7 +649,11 @@ void CodeEditor::paintEvent(QPaintEvent* e)
         painter.setBrush(m_edgeColor);
         painter.setPen(Qt::NoPen);
 
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 11, 0))
+        int x = fontMetrics().horizontalAdvance(QString(m_edgeColumn, '9'));
+#else
         int x = fontMetrics().width(QString(m_edgeColumn, '9'));
+#endif
         x += xoffset;
         painter.drawRect(x, 0, size().width() - x, size().height());
     }
@@ -2230,7 +2250,8 @@ If there is a selection, *lineFrom is set to the line number in which the select
 begins and *lineTo is set to the line number in which the selection ends.
 (They could be the same.) *indexFrom is set to the index at which the selection
 begins within *lineFrom, and *indexTo is set to the index at which the selection ends within
-*lineTo. If there is no selection, *lineFrom, *indexFrom, *lineTo and *indexTo are all set to -1.
+*lineTo. If there is no selection, *lineFrom, *indexFrom, *lineTo and *indexTo are all set to
+-1.
 */
 void CodeEditor::getSelection(int* lineFrom, int* indexFrom, int* lineTo, int* indexTo)
 {
@@ -2440,8 +2461,8 @@ void CodeEditor::contextMenuEvent(QContextMenuEvent* e)
             line < selLineFrom || (line == selLineFrom && index < selIndexFrom) ||
             line > selLineTo ||
             (line == selLineTo &&
-             index > selIndexTo)) // the right mouse click happened out of the current selection,
-                                  // move the cursor to the clicked position
+             index > selIndexTo)) // the right mouse click happened out of the current
+                                  // selection, move the cursor to the clicked position
         {
             setCursorPosition(line, index);
         }

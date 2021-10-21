@@ -10,6 +10,9 @@
 #include "gtest/gtest.h"
 #include <qcoreapplication.h>
 #include <qfileinfo.h>
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 9, 0))
+#include <qoperatingsystemversion.h>
+#endif
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
@@ -83,7 +86,11 @@ TEST(AddInManagerTest, General)
     strcat(newpath, "path=");
 
 #if WINVER > 0x0502
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 9, 0))
+    if (QOperatingSystemVersion::current() >= QOperatingSystemVersion::Windows7)
+#else
     if (QSysInfo::windowsVersion() > QSysInfo::WV_XP)
+#endif
     {
         SetDllDirectoryA(libDir.toLatin1().data());
     }

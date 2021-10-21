@@ -36,7 +36,7 @@ QWidget *PopupWidgetFactory::createWidget(QWidget *_parent)
 {
     PopupWidget* newWidget = new PopupWidget(_parent);
     // if the widget is a tooltip, it wouldn't accept children
-    newWidget->setWindowFlags(0);
+    newWidget->setWindowFlags(Qt::WindowType());
     // if the widget auto hides, it disappear from the workplace and don't allow
     // children anymore.
     newWidget->setAutoHide(false);
