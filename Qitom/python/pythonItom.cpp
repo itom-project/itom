@@ -4337,7 +4337,7 @@ PyObject* PythonItom::PyGetScreenInfo(PyObject* /*pSelf*/)
         PyObject* res = PyDict_New();
         
         QList<QScreen*> screens = QApplication::QGuiApplication::screens();
-        QScreen* primaryScreen = QApplication::primaryScreen();
+        const QScreen* primaryScreen = QApplication::primaryScreen();
         int nScreens = screens.length();
 
         PyObject* geom = PyTuple_New(nScreens);
