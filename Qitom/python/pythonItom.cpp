@@ -5323,7 +5323,8 @@ bar of the main window. \n\
 Parameters \n\
 ----------- \n\
 newPath : str \n\
-    The new path for the current working directory.\n\
+    The new path for the current working directory. If a file path is given, \n\
+    its base path is used. \n\
 \n\
 Returns \n\
 ------- \n\
@@ -5335,28 +5336,40 @@ See Also \n\
 getCurrentPath");
 PyObject* PythonItom::setCurrentPath(PyObject* /*pSelf*/, PyObject* pArgs)
 {
-    PyObject* pyObj = NULL;
+    PyObject* pyObj = nullptr;
+
     if (!PyArg_ParseTuple(pArgs, "O", &pyObj))
     {
         PyErr_SetString(PyExc_RuntimeError, "Method requires a string as argument");
-        return NULL;
+        return nullptr;
     }
 
     bool ok;
     QString path;
     path = PythonQtConversion::PyObjGetString(pyObj, true, ok);
+
     if (ok == false)
     {
         PyErr_SetString(
-            PyExc_RuntimeError, "NewPath parameter could not be interpreted as string.");
-        return NULL;
+            PyExc_RuntimeError, "Argument ``newPath`` cannot be interpreted as string.");
+        return nullptr;
     }
 
     QDir pathDir(path);
 
+    if (!pathDir.exists())
+    {
+        QFileInfo fileInfo(path);
+
+        if (fileInfo.exists())
+        {
+            pathDir = fileInfo.absoluteDir();
+        }
+    }
+
     if (pathDir.exists())
     {
-        if (!QDir::setCurrent(path))
+        if (!QDir::setCurrent(pathDir.absolutePath()))
         {
             Py_RETURN_FALSE;
         }
@@ -5368,9 +5381,7 @@ PyObject* PythonItom::setCurrentPath(PyObject* /*pSelf*/, PyObject* pArgs)
                 emit pyEngine->pythonCurrentDirChanged();
             }
 
-            if (QString::compare(
-                    QDir::current().currentPath(), pathDir.absolutePath(), Qt::CaseInsensitive) ==
-                0)
+            if (QDir::current() == pathDir)
             {
                 Py_RETURN_TRUE;
             }
@@ -5382,8 +5393,8 @@ PyObject* PythonItom::setCurrentPath(PyObject* /*pSelf*/, PyObject* pArgs)
     }
     else
     {
-        PyErr_SetString(PyExc_RuntimeError, "NewPath does not exists.");
-        return NULL;
+        PyErr_SetString(PyExc_RuntimeError, "The given path does not exist.");
+        return nullptr;
     }
 }
 
