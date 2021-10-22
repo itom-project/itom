@@ -530,7 +530,7 @@ void CodeEditor::updateTabStopAndIndentationWidth()
         fm = QFontMetrics(f);
     }
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 11, 0))
     setTabStopDistance(tabLength() * fm.horizontalAdvance(" "));
 #else
     setTabStopWidth(tabLength() * fm.width(" "));

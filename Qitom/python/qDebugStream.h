@@ -59,7 +59,14 @@ private:
     std::streambuf *m_old_buf;                  /*!<  content of stream at time when this instance starts the observation of the stream is stored here and re-given to the stream, when this instance is destroyed */
     std::string m_string;                       /*!<  buffer string, containing parts of the stream which have not been emitted yet */
     ito::tStreamMessageType msg_type;           /*!<  message type of enumeration ito::tStreamMessageType */
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
+    // QRandomGenerator produces a value random value between 0 and 2**32-1
+    uint32 m_randWaitThreshold;
+#else
+    // qRand() produces a value between 0 and RAND_MAX
     int m_randWaitThreshold;
+#endif
 };
 
 }; // namespace ito
