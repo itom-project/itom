@@ -17,8 +17,6 @@
     #undef slots
     #include "Python.h"
     #pragma pop_macro("slots")
-
-    #include "node.h"
     #include "numpy/arrayobject.h" //for numpy arrays
     #define _DEBUG
 #else
@@ -27,8 +25,6 @@
     #undef slots
     #include "Python.h"
     #pragma pop_macro("slots")
-
-    #include "node.h"
     #include "numpy/arrayobject.h"
 #endif
 

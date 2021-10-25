@@ -2254,7 +2254,7 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
         }
         else if (type == QMetaType::type("ito::ItomPlotHandle"))
         {
-            if(PyPlotItem_Check(val))
+            if (PyPlotItem_Check(val))
             {
                 ito::PythonPlotItem::PyPlotItem *plot = (ito::PythonPlotItem::PyPlotItem*)val;
                 if (plot)
@@ -2267,7 +2267,7 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
                     v = QVariant();
                 }
             }
-            else if PyUiItem_Check(val)
+            else if (PyUiItem_Check(val))
             {
                 ito::PythonUi::PyUiItem *ui = (ito::PythonUi::PyUiItem*)val;
                 if (ui)

@@ -87,16 +87,13 @@ class Signature:
 
 def parse_stubs(overwrite: bool = False):
     """entry point method."""
-    sys_version = sys.version_info
-    py_version: str = "%i.%i" % (sys_version.major, sys_version.minor)
-
     base_folder: str = os.path.abspath(itom.getAppPath())
     base_folder = os.path.join(base_folder, "itom-packages")
     base_folder = os.path.join(base_folder, "itom-stubs")
 
     stubs_file: str = os.path.join(base_folder, "__init__.pyi")
 
-    if py_version < "3.5":
+    if sys.hexversion < 0x03050000:
         # Python < 3.5 does not know the typing module.
         # do not generate any stubs.
         if os.path.exists(stubs_file):

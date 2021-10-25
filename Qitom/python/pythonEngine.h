@@ -42,12 +42,16 @@
     #if (defined _DEBUG) && (defined WIN32)
         #undef _DEBUG
         #include "pythonWrapper.h"
-        #include "node.h"
+        #if (PY_VERSION_HEX < 0x03070000)
+            #include "node.h"
+        #endif
         #include "numpy/arrayobject.h"
         #define _DEBUG
     #else
         #include "pythonWrapper.h"
-        #include "node.h"
+        #if (PY_VERSION_HEX < 0x03070000)
+            #include "node.h"
+        #endif
         #include "numpy/arrayobject.h"
     #endif
 

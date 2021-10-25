@@ -25,7 +25,9 @@
 #endif
 #include "pythonEngine.h"
 
+#if (PY_VERSION_HEX < 0x03070000)
 #include "node.h"
+#endif
 
 #include "../global.h"
 
@@ -412,6 +414,20 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap
                 Py_SetPythonHome(m_pUserDefinedPythonHome);
             }
 
+            m_dictUnicode = PyUnicode_FromString("__dict__");
+            m_slotsUnicode = PyUnicode_FromString("__slots__");
+
+            PyImport_AppendInittab("itom", &PythonItom::PyInitItom);                //!< add all static, known function calls to python-module itom
+
+            PyImport_AppendInittab("itomDbgWrapper", &PythonEngine::PyInitItomDbg);  //!< add all static, known function calls to python-module itomdbg
+
+#if ITOM_PYTHONMATLAB == 1
+            PyImport_AppendInittab("matlab", &PythonMatlab::PyInit_matlab);
+#endif
+
+            //!< must be called after any PyImport_AppendInittab-call
+            Py_Initialize();
+
             //read directory values from Python
             qDebug() << "Py_GetPythonHome:" << QString::fromWCharArray(Py_GetPythonHome());
             qDebug() << "Py_GetPath:" << QString::fromWCharArray(Py_GetPath());
@@ -428,7 +444,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap
             bool pythonPathValid = false;
             if (!pythonHomeDir.exists() && pythonHome != "")
             {
-                (*retValue) += RetVal::format(retError, 0, tr("The home directory of Python is currently set to the non-existing directory '%s'\nPython cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python \nor correct the base directory in the property dialog of itom.").toLatin1().data(), 
+                (*retValue) += RetVal::format(retError, 0, tr("The home directory of Python is currently set to the non-existing directory '%s'\nPython cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python \nor correct the base directory in the property dialog of itom.").toLatin1().data(),
                     pythonHomeDir.absolutePath().toLatin1().data());
                 return;
             }
@@ -445,28 +461,16 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap
 
             if (!pythonPathValid)
             {
-                (*retValue) += RetVal::format(retError, 0, tr("The built-in library path of Python could not be found. The current home directory is '%s'\nPython cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python \nor correct the base directory in the preferences dialog of itom.").toLatin1().data(), 
+                (*retValue) += RetVal::format(retError, 0, tr("The built-in library path of Python could not be found. The current home directory is '%s'\nPython cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python \nor correct the base directory in the preferences dialog of itom.").toLatin1().data(),
                     pythonHomeDir.absolutePath().toLatin1().data());
                 return;
             }
 
-            m_dictUnicode = PyUnicode_FromString("__dict__");
-            m_slotsUnicode = PyUnicode_FromString("__slots__");
-
-            PyImport_AppendInittab("itom", &PythonItom::PyInitItom);                //!< add all static, known function calls to python-module itom
-
-            PyImport_AppendInittab("itomDbgWrapper", &PythonEngine::PyInitItomDbg);  //!< add all static, known function calls to python-module itomdbg
-
-#if ITOM_PYTHONMATLAB == 1
-            PyImport_AppendInittab("matlab", &PythonMatlab::PyInit_matlab);
-#endif
-
-            Py_Initialize();                                                        //!< must be called after any PyImport_AppendInittab-call
-
             qDebug() << "Py_Initialize done.";
 
 #if (PY_VERSION_HEX < 0x03070000)
-            PyEval_InitThreads();                                                   //!< prepare Python multithreading
+            //!< prepare Python multithreading
+            PyEval_InitThreads();
 #endif
 
             m_itomModule = PyImport_ImportModule("itom");

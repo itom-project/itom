@@ -11,6 +11,7 @@ import hashlib
 import os
 import sys
 import math
+import warnings
 
 
 def generateAlgorithmHash():
@@ -126,10 +127,7 @@ def parse_stubs(overwrite: bool = False):
 
     stubs_file: str = os.path.join(base_folder, "algorithms.pyi")
 
-    sys_version = sys.version_info
-    py_version: str = "%i.%i" % (sys_version.major, sys_version.minor)
-
-    if py_version < "3.5":
+    if sys.hexversion < 0x03050000:
         # Python < 3.5 does not know the typing module.
         # do not generate any stubs.
         if os.path.exists(stubs_file):
