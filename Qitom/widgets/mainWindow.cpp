@@ -440,11 +440,20 @@ MainWindow::MainWindow() :
     if (geometry != mainScreen) // check if valid
     {
         // check whether top/left and bottom/right lie in any available desktop
+        const QScreen *screen1 = QGuiApplication::screenAt(geometry.topLeft());
+        const QScreen *screen2 = QGuiApplication::screenAt(geometry.bottomRight());
         QRect r1;
         QRect r2;
 
-        r1 = QGuiApplication::screenAt(geometry.topLeft())->geometry();
-        r2 = QGuiApplication::screenAt(geometry.bottomRight())->geometry();
+        if (screen1)
+        {
+            r1 = screen1->geometry();
+        }
+
+        if (screen2)
+        {
+            r2 = screen2->geometry();
+        }
 
         if (r1.isValid() == false || r2.isValid() == false ||
             r1.contains(geometry.topLeft()) == false ||
