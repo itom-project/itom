@@ -1382,6 +1382,12 @@ QList<int> PythonEngine::parseAndSplitCommandInMainComponents(const QString &str
     // ignore cookie should interpret the input str as utf8 always
     // (at least, this is what could be seen from the cpython source code).
     flags.cf_flags = PyCF_ONLY_AST | PyCF_IGNORE_COOKIE; 
+#if (PY_VERSION_HEX >= 0x03080000)
+    // Python docs:
+    // cf_feature_version is the minor Python version. It should be initialized to PY_MINOR_VERSION.
+    // The field is ignored by default, it is used if and only if PyCF_ONLY_AST flag is set in cf_flags.
+    flags.cf_feature_version = PY_MINOR_VERSION;
+#endif
 
     PyObject* ast = Py_CompileStringFlags(strUtf8.constData(), "", Py_file_input, &flags); // new ref
 
