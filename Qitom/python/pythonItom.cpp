@@ -1374,15 +1374,11 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs, PyObject* pK
     int listonly = 1;
     QString namefilter;
 
-    if (filterstring == NULL)
+    if (filterstring != nullptr)
     {
-        namefilter.fromLatin1(0);
-    }
-    else
-    {
-        namefilter.asprintf("%s", filterstring);
+        namefilter = QString::fromLatin1(filterstring);
 
-        if (namefilter.length())
+        if (namefilter.length() > 0)
         {
             listonly = 0;
         }
