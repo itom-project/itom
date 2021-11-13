@@ -43,10 +43,9 @@ signals:
     void colorChanged(QColor c);
 
 private slots:
-    void currentChanged(int index);    
+    void currentChanged(int index);
 
 private:
-    QColor    m_init;
-
+    QColor m_init;
 };
 #endif

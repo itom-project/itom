@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2021, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
@@ -10,7 +10,7 @@
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
-   
+
     In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
@@ -39,47 +39,48 @@
 #include <qmetatype.h>
 
 
+namespace ito {
+namespace itomCustomTypes {
 
-namespace ito
+//-------------------------------------------------------------------------------------
+void registerTypes()
 {
-    namespace itomCustomTypes
+    static bool registered = false;
+    if (!registered)
     {
-        void registerTypes()
-        {
-            static bool registered = false;
-            if (!registered)
-            {
-                qRegisterMetaType<ito::AutoInterval>("ito::AutoInterval");
-                qRegisterMetaType<QVector2D>("QVector2D");
-                qRegisterMetaType<QVector3D>("QVector3D");
-                qRegisterMetaType<QVector4D>("QVector4D");
-                registered = true;
-            }
-        }
-
-        Property* createCustomProperty(const QString& name, QObject* propertyObject, Property* parent)
-        {
-            int userType = propertyObject->property(qPrintable(name)).userType();
-            if (userType == QMetaType::type("ito::AutoInterval"))
-            {
-                return new AutoIntervalProperty(name, propertyObject, parent);
-            }
-            else if (userType == QMetaType::type("QVector2D"))
-            {
-                return new QVector2DProperty(name, propertyObject, parent);
-            }
-            else if (userType == QMetaType::type("QVector3D"))
-            {
-                return new QVector3DProperty(name, propertyObject, parent);
-            }
-            else if (userType == QMetaType::type("QVector4D"))
-            {
-                return new QVector4DProperty(name, propertyObject, parent);
-            }
-            else
-            {
-                return NULL;
-            }
-        }
-    } //end namespace itomCustomTypes
+        qRegisterMetaType<ito::AutoInterval>("ito::AutoInterval");
+        qRegisterMetaType<QVector2D>("QVector2D");
+        qRegisterMetaType<QVector3D>("QVector3D");
+        qRegisterMetaType<QVector4D>("QVector4D");
+        registered = true;
+    }
 }
+
+//-------------------------------------------------------------------------------------
+Property* createCustomProperty(const QString& name, QObject* propertyObject, Property* parent)
+{
+    int userType = propertyObject->property(qPrintable(name)).userType();
+    if (userType == QMetaType::type("ito::AutoInterval"))
+    {
+        return new AutoIntervalProperty(name, propertyObject, parent);
+    }
+    else if (userType == QMetaType::type("QVector2D"))
+    {
+        return new QVector2DProperty(name, propertyObject, parent);
+    }
+    else if (userType == QMetaType::type("QVector3D"))
+    {
+        return new QVector3DProperty(name, propertyObject, parent);
+    }
+    else if (userType == QMetaType::type("QVector4D"))
+    {
+        return new QVector4DProperty(name, propertyObject, parent);
+    }
+    else
+    {
+        return nullptr;
+    }
+}
+
+} // end namespace itomCustomTypes
+} // namespace ito

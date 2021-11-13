@@ -25,16 +25,16 @@
 #ifndef __ENUMPROPERTY_H__
 #define __ENUMPROPERTY_H__
 
-#include <qstringlist.h>
+#include "Property.h"
+#include <qcombobox.h>
 #include <qmetaobject.h>
 #include <qmetatype.h>
-#include <qcombobox.h>
-#include "Property.h"
+#include <qstringlist.h>
 
 /**
-    The Enum Property Class extends a Property to add enum functionality to the 
+    The Enum Property Class extends a Property to add enum functionality to the
     QPropertyEditor.
-    Enum Properties are automatically created in the QPropertyModel for objects that 
+    Enum Properties are automatically created in the QPropertyModel for objects that
     have an enum as property value.
 
     @author Roman Schmid
@@ -51,9 +51,9 @@ public:
     /** @see Property::createEditor */
     virtual QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem& option);
     /** @see Property::setEditorData */
-    virtual bool setEditorData(QWidget *editor, const QVariant& data);
+    virtual bool setEditorData(QWidget* editor, const QVariant& data);
     /** @see Property::editorData */
-    virtual QVariant editorData(QWidget *editor);
+    virtual QVariant editorData(QWidget* editor);
 
 private slots:
     /** slot that is being called by the editor widget */
