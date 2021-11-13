@@ -50,7 +50,6 @@
 #include <qlibraryinfo.h>
 #include <qresource.h>
 #include <qfileinfo.h>
-#include <qscreen.h>
 
 #if WIN32
 #include <Windows.h>
@@ -250,7 +249,7 @@ QPixmap MainApplication::getSplashScreenPixmap() const
     QString bitTextLong;
     QString revisionText = "";
     QString editionText = "";
-    QString dateTest;
+    QString dateText;
     
     // 30% of screen size
     pixmap = pixmap.scaledToWidth(
@@ -279,24 +278,25 @@ QPixmap MainApplication::getSplashScreenPixmap() const
 
     editionText = QString::fromLatin1(ITOM_ADDITIONAL_EDITION_NAME);
 
-    dateTest = QString("%1 %2").arg(__DATE__, __TIME__);
+    dateText = QString("%1 %2").arg(__DATE__, __TIME__);
 
     if (editionText != "")
     {
         if (revisionText != "")
         {
-            buildText = QString("%1\n%2, %3\n%4").arg(editionText, bitTextShort, revisionText, dateTest);
+            buildText =
+                QString("%1\n%2, %3\n%4").arg(editionText, bitTextShort, revisionText, dateText);
         }
         else
         {
-            buildText = QString("%1\n%2\n%3").arg(editionText, bitTextLong, dateTest);
+            buildText = QString("%1\n%2\n%3").arg(editionText, bitTextLong, dateText);
         } 
     }
     else
     {
         if (revisionText != "")
         {
-            buildText = QString("%1\n%2\n%3").arg(bitTextLong, revisionText, dateTest);
+            buildText = QString("%1\n%2\n%3").arg(bitTextLong, revisionText, dateText);
         }
         else
         {
