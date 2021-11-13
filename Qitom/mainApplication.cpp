@@ -50,6 +50,7 @@
 #include <qlibraryinfo.h>
 #include <qresource.h>
 #include <qfileinfo.h>
+#include <qscreen.h>
 
 #if WIN32
 #include <Windows.h>
