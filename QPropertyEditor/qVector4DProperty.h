@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2021, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
@@ -10,7 +10,7 @@
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
-   
+
     In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
@@ -28,52 +28,52 @@
 #ifndef QVECTOR4DPROPERTY_H
 #define QVECTOR4DPROPERTY_H
 
-#include <qvector4d.h>
-#include <qvariant.h>
 #include "Property.h"
+#include <qvariant.h>
+#include <qvector4d.h>
 
 class Property;
 class QObject;
 
 
-namespace ito
+namespace ito {
+class QVector4DProperty : public Property
 {
-    class QVector4DProperty : public Property
-    {
-        Q_OBJECT
-        Q_PROPERTY(float x READ x WRITE setX DESIGNABLE true USER true)
-        Q_PROPERTY(float y READ y WRITE setY DESIGNABLE true USER true)
-        Q_PROPERTY(float z READ z WRITE setZ DESIGNABLE true USER true)
-        Q_PROPERTY(float w READ w WRITE setW DESIGNABLE true USER true)
+    Q_OBJECT
+    Q_PROPERTY(float x READ x WRITE setX DESIGNABLE true USER true)
+    Q_PROPERTY(float y READ y WRITE setY DESIGNABLE true USER true)
+    Q_PROPERTY(float z READ z WRITE setZ DESIGNABLE true USER true)
+    Q_PROPERTY(float w READ w WRITE setW DESIGNABLE true USER true)
 
-    public:
-        QVector4DProperty(const QString& name = QString(), QObject* propertyObject = 0, QObject* parent = 0);
+public:
+    QVector4DProperty(
+        const QString& name = QString(), QObject* propertyObject = 0, QObject* parent = 0);
 
-        QVariant value(int role = Qt::UserRole) const;
-        virtual void setValue(const QVariant& value);
+    QVariant value(int role = Qt::UserRole) const;
+    virtual void setValue(const QVariant& value);
 
-        void setEditorHints(const QString& hints);
+    void setEditorHints(const QString& hints);
 
-        float x() const;
-        void setX(float x);
+    float x() const;
+    void setX(float x);
 
-        float y() const;
-        void setY(float y);
-        
-        float z() const;
-        void setZ(float z);
-        
-        float w() const;
-        void setW(float w);
+    float y() const;
+    void setY(float y);
 
-    private:
-        QString parseHints(const QString& hints, const QChar component);
+    float z() const;
+    void setZ(float z);
 
-        Property*    m_x;
-        Property*    m_y;
-        Property*    m_z;
-        Property*    m_w;
-    };
+    float w() const;
+    void setW(float w);
 
-}
-#endif //QVECTOR4DPROPERTY_H
+private:
+    QString parseHints(const QString& hints, const QChar component);
+
+    Property* m_x;
+    Property* m_y;
+    Property* m_z;
+    Property* m_w;
+};
+
+} // namespace ito
+#endif // QVECTOR4DPROPERTY_H

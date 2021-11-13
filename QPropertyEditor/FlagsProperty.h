@@ -25,15 +25,15 @@
 #ifndef __FLAGSPROPERTY_H__
 #define __FLAGSPROPERTY_H__
 
-#include <qstringlist.h>
+#include "Property.h"
 #include <qmetaobject.h>
 #include <qmetatype.h>
-#include "Property.h"
+#include <qstringlist.h>
 
 /**
-    The Flags Property Class extends a Property to add flag / enum functionality to the 
+    The Flags Property Class extends a Property to add flag / enum functionality to the
     QPropertyEditor.
-    Flags Properties are automatically created in the QPropertyModel for objects that 
+    Flags Properties are automatically created in the QPropertyModel for objects that
     have an enum as property value wich is a flag (or-combination of its own enumeration).
 
     @author Marc Gronle
@@ -43,16 +43,17 @@ class FlagsProperty : public Property
     Q_OBJECT
 
 public:
-    FlagsProperty(const QString& name = QString(), QObject* propertyObject = 0, QObject* parent = 0);
+    FlagsProperty(
+        const QString& name = QString(), QObject* propertyObject = 0, QObject* parent = 0);
 
     /** @see Property::value */
     virtual QVariant value(int role = Qt::UserRole) const;
     /** @see Property::createEditor */
     virtual QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem& option);
     /** @see Property::setEditorData */
-    virtual bool setEditorData(QWidget *editor, const QVariant& data);
+    virtual bool setEditorData(QWidget* editor, const QVariant& data);
     /** @see Property::editorData */
-    virtual QVariant editorData(QWidget *editor);
+    virtual QVariant editorData(QWidget* editor);
 
 private slots:
     /** slot that is being called by the editor widget */
@@ -62,7 +63,7 @@ private:
     /** QStringList with possible enum values */
     QStringList m_enum;
     QVector<int> m_enumIndices;
-    QWidget *m_comboBox;
+    QWidget* m_comboBox;
     bool m_inModification;
 };
 #endif

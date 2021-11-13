@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2021, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
@@ -10,7 +10,7 @@
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
-   
+
     In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
@@ -31,9 +31,8 @@
 #include <qlistwidget.h>
 
 ////////////////// List editor ///////////////
-StringListDialog::StringListDialog(const QStringList &stringList, QWidget *parent)
-    : QDialog(parent),
-      m_updating(false)
+StringListDialog::StringListDialog(const QStringList& stringList, QWidget* parent) :
+    QDialog(parent), m_updating(false)
 {
     ui.setupUi(this);
 
@@ -46,9 +45,9 @@ StringListDialog::StringListDialog(const QStringList &stringList, QWidget *paren
     ui.newListItemButton->setIcon(plusIcon);
     ui.deleteListItemButton->setIcon(minusIcon);
 
-    foreach(const QString &stringItem, stringList)
+    foreach (const QString& stringItem, stringList)
     {
-        QListWidgetItem *item = new QListWidgetItem(stringItem);
+        QListWidgetItem* item = new QListWidgetItem(stringItem);
         item->setFlags(item->flags() | Qt::ItemIsEditable);
         ui.listWidget->addItem(item);
     }
@@ -88,7 +87,7 @@ void StringListDialog::on_newListItemButton_clicked()
 {
     int row = ui.listWidget->currentRow() + 1;
 
-    QListWidgetItem *item = new QListWidgetItem(m_newItemText);
+    QListWidgetItem* item = new QListWidgetItem(m_newItemText);
     item->setFlags(item->flags() | Qt::ItemIsEditable);
     if (row < ui.listWidget->count())
     {
@@ -160,12 +159,14 @@ void StringListDialog::on_listWidget_currentRowChanged()
 }
 
 //-------------------------------------------------------------------------------------
-void StringListDialog::setItemData(int role, const QVariant &v)
+void StringListDialog::setItemData(int role, const QVariant& v)
 {
-    QListWidgetItem *item = ui.listWidget->currentItem();
+    QListWidgetItem* item = ui.listWidget->currentItem();
     bool reLayout = false;
-    if ((role == Qt::EditRole && (v.toString().count(QLatin1Char('\n')) != item->data(role).toString().count(QLatin1Char('\n'))))
-        || role == Qt::FontRole)
+    if ((role == Qt::EditRole &&
+         (v.toString().count(QLatin1Char('\n')) !=
+          item->data(role).toString().count(QLatin1Char('\n')))) ||
+        role == Qt::FontRole)
     {
         reLayout = true;
     }
@@ -176,7 +177,8 @@ void StringListDialog::setItemData(int role, const QVariant &v)
         QFont oldFont = ui.listWidget->font();
         QFont newFont = qvariant_cast<QFont>(newValue).resolve(oldFont);
         newValue = QVariant::fromValue(newFont);
-        item->setData(role, QVariant()); // force the right font with the current resolve mask is set (item view bug)
+        item->setData(role, QVariant()); // force the right font with the current resolve mask is
+                                         // set (item view bug)
     }
 
     item->setData(role, newValue);
@@ -200,7 +202,7 @@ void StringListDialog::updateEditor()
     bool moveRowUpEnabled = false;
     bool moveRowDownEnabled = false;
 
-    QListWidgetItem *item = ui.listWidget->currentItem();
+    QListWidgetItem* item = ui.listWidget->currentItem();
     if (item)
     {
         currentItemEnabled = true;
@@ -222,7 +224,7 @@ void StringListDialog::updateEditor()
 }
 
 //-------------------------------------------------------------------------------------
-void StringListDialog::on_listWidget_itemDoubleClicked(QListWidgetItem *item)
+void StringListDialog::on_listWidget_itemDoubleClicked(QListWidgetItem* item)
 {
     ui.listWidget->editItem(item);
 }
