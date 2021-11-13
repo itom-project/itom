@@ -178,9 +178,9 @@ int main(int argc, char *argv[])
     //in debug mode uncaught exceptions as well as uncaught
     //cv::Exceptions will be parsed and also passed to qWarning and qFatal.
     cv::redirectError(itomCvError);
+    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+
     QItomApplication itomApplication(argc, argv);
-
-
 
     //itom modifies its local environment variables like PATH such that plugin libraries, python... that are loaded later
     //benefit from necessary pathes that are then guaranteed to be found.
