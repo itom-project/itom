@@ -253,8 +253,16 @@ QPixmap MainApplication::getSplashScreenPixmap() const
     QString dateText;
     
     // 30% of screen size
-    pixmap = pixmap.scaledToWidth(
-        QGuiApplication::primaryScreen()->geometry().width() * 0.3, Qt::SmoothTransformation);
+    int pimaryScreenWidth = QGuiApplication::primaryScreen()->geometry().width();
+
+    if (pimaryScreenWidth < 1280) // HDReady screen
+    {
+        pixmap = pixmap.scaledToWidth(550, Qt::SmoothTransformation); 
+    }
+    else if (1280 <= pimaryScreenWidth <=  3840) // 30% of screen width
+    {
+        pixmap = pixmap.scaledToWidth(pimaryScreenWidth * 0.3, Qt::SmoothTransformation);
+    } 
 
     QPainter p;
     p.begin(&pixmap);
@@ -278,8 +286,13 @@ QPixmap MainApplication::getSplashScreenPixmap() const
 #endif
 
     editionText = QString::fromLatin1(ITOM_ADDITIONAL_EDITION_NAME);
-
+     
+ 
+#if ITOM_ADDITIONAL_BUILD_DATE
     dateText = QString("%1 %2").arg(__DATE__, __TIME__);
+#else
+    dateText = "";
+#endif  
 
     if (editionText != "")
     {
@@ -353,7 +366,7 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
         new QSplashScreen(pixmap);
 
     QFont messageFont = m_pSplashScreen->font();
-    messageFont.setPixelSize(pixmap.width() * 0.018);
+    messageFont.setPixelSize(pixmap.width() * 0.02);
     m_pSplashScreen->setFont(messageFont);
 
     m_pSplashScreen->show();

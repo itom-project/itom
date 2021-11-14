@@ -125,6 +125,13 @@ set(ITOM_ADDITIONAL_EDITION_NAME "" CACHE
     STRING "Optional, additional name of this itom edition (shown in splashscreen and about dialog)")
 add_definitions( "-DITOM_ADDITIONAL_EDITION_NAME=\"${ITOM_ADDITIONAL_EDITION_NAME}\"")
 
+option(ITOM_ADDITIONAL_BUILD_DATE "Optional, additional build date and time in splashscreen" OFF)
+if (ITOM_ADDITIONAL_BUILD_DATE)
+    add_definitions(-DITOM_ADDITIONAL_BUILD_DATE=1)
+else()
+    add_definitions(-DITOM_ADDITIONAL_BUILD_DATE=0)
+endif()
+
 # check files and directories from pymatlab, if flag BUILD_WITH_PYMATLAB is set
 if(BUILD_WITH_PYMATLAB)
     if(WIN32)
@@ -139,7 +146,7 @@ if(BUILD_WITH_PYMATLAB)
             "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\R2015b;MATLABROOT]"
             "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\R2016a;MATLABROOT]"
             "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\R2016b;MATLABROOT]"
-            "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\R2017a;MATLABROOT]"
+            "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\R2017a;MATLABROOT]"
             "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\R2017b;MATLABROOT]"
             "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\R2018a;MATLABROOT]"
             "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\R2018b;MATLABROOT]"

@@ -8,9 +8,9 @@
    id="svg2"
    inkscape:version="1.1.1 (3bf5ae0d25, 2021-09-20)"
    sodipodi:docname="splashScreen2.svg"
-   inkscape:export-filename="C:\itom\sources\itom\Qitom\icons\itomicon\splashScreen2Christmas.png"
-   inkscape:export-xdpi="120"
-   inkscape:export-ydpi="120"
+   inkscape:export-filename="C:\itom\sources\itom\Qitom\icons\itomicon\splashScreen2.png"
+   inkscape:export-xdpi="131.94"
+   inkscape:export-ydpi="131.94"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -37,7 +37,7 @@
      inkscape:window-x="2391"
      inkscape:window-y="-9"
      inkscape:window-maximized="1"
-     inkscape:current-layer="layer11"
+     inkscape:current-layer="layer1"
      showguides="false"
      inkscape:guide-bbox="true"
      inkscape:pagecheckerboard="0"><sodipodi:guide
@@ -3276,7 +3276,8 @@
          sodipodi:nodetypes="cszsc" /></g></g><g
      inkscape:groupmode="layer"
      id="layer11"
-     inkscape:label="Christmas"><image
+     inkscape:label="Christmas"
+     style="display:none"><image
        width="118.00505"
        height="118.00505"
        preserveAspectRatio="none"
