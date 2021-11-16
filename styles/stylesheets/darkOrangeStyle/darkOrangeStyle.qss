@@ -1976,6 +1976,7 @@ QColumnView {
   color: #F0F0F0;
   gridline-color: #37464F;
   border-radius: 0px;
+  alternate-background-color: #32414b;
 }
 
 QTreeView:disabled,

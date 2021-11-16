@@ -270,11 +270,11 @@ void QPropertyEditorWidget::setGroupByInheritance(bool enabled)
 
         if (!enabled)
         {
-            expandToDepth(0);
+            //expandToDepth(0);
         }
         else
         {
-            expandToDepth(1);
+            expandToDepth(0);
         }
 
         dataChanged();

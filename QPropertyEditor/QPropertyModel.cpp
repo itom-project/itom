@@ -184,12 +184,12 @@ QVariant QPropertyModel::data(const QModelIndex& index, int role /*= Qt::Display
             return item->objectName().replace('_', ' ');
         if (index.column() == 1)
             return item->displayValue(role);
-    case Qt::BackgroundRole:
+    /*case Qt::BackgroundRole:
         if (item->isRoot())
             return QApplication::palette("QTreeView")
                 .brush(QPalette::Normal, QPalette::Button)
                 .color();
-        break;
+        break;*/
     };
     
     return QVariant();
@@ -236,7 +236,7 @@ Qt::ItemFlags QPropertyModel::flags(const QModelIndex& index) const
     }
     else if (item->isReadOnly())
     {
-        return Qt::ItemIsDragEnabled | Qt::ItemIsSelectable | Qt::ItemIsEnabled;
+        return Qt::ItemIsDragEnabled | Qt::ItemIsSelectable;
     }
     else
     {
