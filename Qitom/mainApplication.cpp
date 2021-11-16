@@ -238,12 +238,12 @@ QString MainApplication::getSplashScreenFileName() const
 QPixmap MainApplication::getSplashScreenPixmap() const
 {
 #ifdef USEGIMMICKS
-    QString spashScreenFileName = getSplashScreenFileName(); // get the fileName of splashScreen. Different at easter and christmas time
+    QString splashScreenFileName = getSplashScreenFileName(); // get the fileName of splashScreen. Different at easter and christmas time
 #else
-    QString spashScreenFileName = ":/application/icons/itomicon/splashScreen2.png"; //only default splashScreen
+    QString splashScreenFileName = ":/application/icons/itomicon/splashScreen2.png"; //only default splashScreen
 #endif // USEUSEGIMMICKS
 
-    QPixmap pixmap(spashScreenFileName);
+    QPixmap pixmap(splashScreenFileName);
     QString versionText;
     QString buildText;
     QString bitTextShort;
@@ -259,7 +259,7 @@ QPixmap MainApplication::getSplashScreenPixmap() const
     {
         pixmap = pixmap.scaledToWidth(550, Qt::SmoothTransformation); 
     }
-    else if (1280 <= pimaryScreenWidth <=  3840) // 30% of screen width
+    else if (pimaryScreenWidth <= 3840) // 30% of screen width
     {
         pixmap = pixmap.scaledToWidth(pimaryScreenWidth * 0.3, Qt::SmoothTransformation);
     } 
