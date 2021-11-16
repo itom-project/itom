@@ -35,6 +35,7 @@
 #include "../../common/typeDefs.h"
 #include "../../common/addInInterface.h"
 #include "QPropertyEditor/QPropertyEditorWidget.h"
+#include "itomWidgets/searchBox.h"
 
 #include <qaction.h>
 #include <qtoolbar.h>
@@ -43,11 +44,80 @@
 #include <qevent.h>
 #include <qsettings.h>
 #include <qshortcut.h>
-
+#include <qmainwindow.h>
+#include <qscreen.h>
 
 
 namespace ito 
 {
+
+class PropertyEditorWindow : public QMainWindow
+{
+    Q_OBJECT
+
+public:
+    PropertyEditorWindow(QWidget *parent = nullptr);
+
+
+    QPropertyEditorWidget *propertyEditor() const;
+
+private:
+    QPropertyEditorWidget *m_pEditor;
+
+    float screenDpiFactor();
+};
+
+//-------------------------------------------------------------------------------------
+PropertyEditorWindow::PropertyEditorWindow(QWidget *parent /*= nullptr*/) : 
+    QMainWindow(parent)
+{
+    Qt::WindowFlags flags = windowFlags();
+    flags |= Qt::Widget;
+    flags &= (~Qt::Window);
+    setWindowFlags(flags);
+
+    m_pEditor = new QPropertyEditorWidget(this);
+    setCentralWidget(m_pEditor);
+
+    QToolBar *toolbar = addToolBar(tr("Options"));
+    int size = 16 * screenDpiFactor();
+    toolbar->setIconSize(QSize(size, size));
+
+    toolbar->addActions(m_pEditor->actions());
+
+    SearchBox *searchBox = new SearchBox(this);
+    searchBox->setShowSearchIcon(true);
+    searchBox->setText(m_pEditor->nameFilterPattern());
+    connect(searchBox, &SearchBox::textEdited, [=](const QString &text) {
+        m_pEditor->setNameFilterPattern(QString("*%1*").arg(text));
+    });
+    toolbar->addWidget(searchBox);
+}
+
+//-------------------------------------------------------------------------------------
+QPropertyEditorWidget* PropertyEditorWindow::propertyEditor() const
+{
+    return m_pEditor;
+}
+
+//-------------------------------------------------------------------------------------
+float PropertyEditorWindow::screenDpiFactor()
+{
+    float dpi = 0.0;
+    const QScreen *screen = QGuiApplication::screenAt(geometry().topLeft());
+
+    if (screen)
+    {
+        dpi = screen->logicalDotsPerInch();
+    }
+
+    if (dpi <= 0.0)
+    {
+        dpi = 96.0;
+    }
+
+    return qBound(1.0, dpi / 96.0, 1.e10);
+}
 
 //------------------------------------------------------------------------------------------------------------------------
 class AbstractFigurePrivate
@@ -174,8 +244,9 @@ RetVal AbstractFigure::initialize()
     d->propertyDock->setVisible(false);
     d->propertyDock->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable);
 
-    d->propertyEditorWidget = new QPropertyEditorWidget(d->propertyDock);
-    d->propertyDock->setWidget(d->propertyEditorWidget);
+    auto propEditorWindow = new PropertyEditorWindow(d->propertyDock);
+    d->propertyEditorWidget = propEditorWindow->propertyEditor();
+    d->propertyDock->setWidget(propEditorWindow);
 	addToolbox(d->propertyDock, "properties", Qt::RightDockWidgetArea);
 
     return ito::retOk;
@@ -665,3 +736,5 @@ QString AbstractFigure::getItomSettingsFile() const
 }
 
 } //end namespace ito
+
+#include "AbstractFigure.moc"

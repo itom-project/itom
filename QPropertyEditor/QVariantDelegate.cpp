@@ -29,6 +29,7 @@
 
 #include <qabstractitemview.h>
 #include <qsignalmapper.h>
+#include <qsortfilterproxymodel.h>
 
 //-------------------------------------------------------------------------------------
 QVariantDelegate::QVariantDelegate(QObject* parent) : QItemDelegate(parent)
@@ -44,11 +45,28 @@ QVariantDelegate::~QVariantDelegate()
 }
 
 //-------------------------------------------------------------------------------------
+Property* QVariantDelegate::propertyFromModel(const QModelIndex &index) const
+{
+    // if the index is based on QSortFilterProxyModel, its internalPointer
+    // is used differently. Therefore, this method is required.
+    const QSortFilterProxyModel *proxyModel = qobject_cast<const QSortFilterProxyModel*>(index.model());
+
+    if (proxyModel)
+    {
+        auto srcIndex = proxyModel->mapToSource(index);
+        return static_cast<Property*>(srcIndex.internalPointer());
+    }
+
+    return static_cast<Property*>(index.internalPointer());
+}
+
+//-------------------------------------------------------------------------------------
 QWidget* QVariantDelegate::createEditor(
     QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
     QWidget* editor = 0;
-    Property* p = static_cast<Property*>(index.internalPointer());
+    Property* p = propertyFromModel(index);
+
     switch (p->value().type())
     {
     case QVariant::Bool:
@@ -64,6 +82,7 @@ QWidget* QVariantDelegate::createEditor(
         {
             if (editor->metaObject()->indexOfSignal("editFinished()") != -1)
             {
+                //connect(editor &QWidget::edit)
                 connect(editor, SIGNAL(editFinished()), m_finishedMapper, SLOT(map()));
                 m_finishedMapper->setMapping(editor, editor);
             }
@@ -93,10 +112,12 @@ void QVariantDelegate::setEditorData(QWidget* editor, const QModelIndex& index) 
     case QMetaType::Float:
     case QVariant::UserType:
     case QVariant::Int:
-        if (static_cast<Property*>(index.internalPointer())
-                ->setEditorData(editor, data)) // if editor couldn't be recognized use default
+        if (propertyFromModel(index)->setEditorData(editor, data))
+        {
             break;
+        }
     default:
+        // if editor couldn't be recognized use default
         QItemDelegate::setEditorData(editor, index);
         break;
     }
@@ -118,7 +139,8 @@ void QVariantDelegate::setModelData(
     case QMetaType::Float:
     case QVariant::UserType:
     case QVariant::Int: {
-        QVariant data = static_cast<Property*>(index.internalPointer())->editorData(editor);
+        QVariant data = propertyFromModel(index)->editorData(editor);
+
         if (data.isValid())
         {
             model->setData(index, data, Qt::EditRole);

@@ -30,15 +30,64 @@
 #include <qaction.h>
 #include <qevent.h>
 #include <qheaderview.h>
+#include <qsortfilterproxymodel.h>
 
 #include "itomCustomTypes.h"
+
+
+class PropertyEditorSortFilterProxyModel : public QSortFilterProxyModel
+{
+public:
+    PropertyEditorSortFilterProxyModel(QWidget *parent = nullptr) :
+        QSortFilterProxyModel(parent)
+    {
+
+    }
+
+protected:
+    bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
+    {
+        const QPropertyModel* propModel = qobject_cast<QPropertyModel*>(sourceModel());
+        QModelIndex srcIndex = propModel->index(sourceRow, 0, sourceParent);
+        int lvl = 0;
+
+        while (srcIndex.parent().isValid())
+        {
+            lvl++;
+            srcIndex = propModel->parent(srcIndex);
+        }
+
+        if (propModel->groupByInheritance())
+        {
+            if (lvl == 1)
+            {
+                return QSortFilterProxyModel::filterAcceptsRow(sourceRow, sourceParent);
+            }
+        }
+        else
+        {
+            if (lvl == 0)
+            {
+                return QSortFilterProxyModel::filterAcceptsRow(sourceRow, sourceParent);
+            }
+        }
+
+        return true;
+    }
+};
 
 //-------------------------------------------------------------------------------------
 QPropertyEditorWidget::QPropertyEditorWidget(QWidget* parent /*= 0*/) : QTreeView(parent)
 {
     m_model = new QPropertyModel(this);
 
-    setModel(m_model);
+    QSortFilterProxyModel *sortModel = new PropertyEditorSortFilterProxyModel(this);
+    sortModel->setSourceModel(m_model);
+    sortModel->setFilterWildcard("*");
+    sortModel->setFilterKeyColumn(0);
+    sortModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
+
+    setModel(sortModel);
 
     setItemDelegate(new QVariantDelegate(this));
     // setEditTriggers( QAbstractItemView::SelectedClicked | QAbstractItemView::EditKeyPressed |
@@ -49,16 +98,22 @@ QPropertyEditorWidget::QPropertyEditorWidget(QWidget* parent /*= 0*/) : QTreeVie
     setSelectionBehavior(QAbstractItemView::SelectRows);
     setAlternatingRowColors(true);
 
-    QAction* action = new QAction(tr("sort entries"), this);
-    action->setCheckable(true);
-    action->setChecked(sorted());
-    addAction(action);
-    connect(action, SIGNAL(triggered(bool)), this, SLOT(sortedAction(bool)));
-
-    setContextMenuPolicy(Qt::ActionsContextMenu);
-
     ito::itomCustomTypes::registerTypes();
     registerCustomPropertyCB(ito::itomCustomTypes::createCustomProperty);
+
+    QAction* action = new QAction(QIcon(":/classNavigator/icons/sortAZAsc.png"), tr("Enable sorting"), this);
+    action->setCheckable(true);
+    action->setChecked(isSortingEnabled());
+    connect(action, &QAction::triggered, this, &QPropertyEditorWidget::sortedAction);
+    addAction(action);
+
+    action = new QAction(QIcon(":/files/icons/browser.png"), tr("Group by inheritance"), this);
+    action->setCheckable(true);
+    action->setChecked(m_model->groupByInheritance());
+    connect(action, &QAction::triggered, this, &QPropertyEditorWidget::setGroupByInheritance);
+    addAction(action);
+
+    setContextMenuPolicy(Qt::ActionsContextMenu);
 }
 
 //-------------------------------------------------------------------------------------
@@ -70,7 +125,8 @@ QPropertyEditorWidget::~QPropertyEditorWidget()
 void QPropertyEditorWidget::addObject(QObject* propertyObject)
 {
     m_model->addItem(propertyObject);
-    if (!m_model->sorted())
+
+    if (m_model->groupByInheritance())
     {
         expandToDepth(0);
     }
@@ -90,7 +146,9 @@ void QPropertyEditorWidget::setObject(QObject* propertyObject)
 void QPropertyEditorWidget::updateObject(QObject* propertyObject)
 {
     if (propertyObject)
+    {
         m_model->updateItem(propertyObject);
+    }
 }
 
 //-------------------------------------------------------------------------------------
@@ -115,11 +173,18 @@ void QPropertyEditorWidget::mousePressEvent(QMouseEvent* event)
     {
         if (/*(item != m_editorPrivate->editedItem()) && */ (event->button() == Qt::LeftButton) &&
             (header()->logicalIndexAt(event->pos().x()) == 1) &&
-            ((m_model->flags(index) & (Qt::ItemIsEditable | Qt::ItemIsEnabled)) ==
+            ((model()->flags(index) & (Qt::ItemIsEditable | Qt::ItemIsEnabled)) ==
              (Qt::ItemIsEditable | Qt::ItemIsEnabled)))
         {
             // editItem(item, 1);
-            edit(index);
+            try
+            {
+                edit(index);
+            }
+            catch (...)
+            {
+                int i = 1;
+            }
         }
         /*else if (!m_editorPrivate->hasValue(item) && m_editorPrivate->markPropertiesWithoutValue()
         && !rootIsDecorated())
@@ -144,8 +209,8 @@ void QPropertyEditorWidget::keyPressEvent(QKeyEvent* event)
 
             if (index.isValid())
             {
-                if (m_model->columnCount(index) >= 2 &&
-                    ((m_model->flags(index) & (Qt::ItemIsEditable | Qt::ItemIsEnabled)) ==
+                if (model()->columnCount(index) >= 2 &&
+                    ((model()->flags(index) & (Qt::ItemIsEditable | Qt::ItemIsEnabled)) ==
                      (Qt::ItemIsEditable | Qt::ItemIsEnabled)))
                 {
                     event->accept();
@@ -168,35 +233,82 @@ void QPropertyEditorWidget::keyPressEvent(QKeyEvent* event)
 }
 
 //-------------------------------------------------------------------------------------
-void QPropertyEditorWidget::setSorted(bool value)
+//!< todo: deprecated
+void QPropertyEditorWidget::setSorted(bool enabled)
 {
-    m_model->setSorted(value);
+}
 
-    m_sorted = value;
+//-------------------------------------------------------------------------------------
+//!< todo: deprecated
+bool QPropertyEditorWidget::sorted() const
+{
 
-    // first action corresponds to sorted
-    if (actions().size() > 0)
+    return isSortingEnabled();
+}
+
+//-------------------------------------------------------------------------------------
+void QPropertyEditorWidget::setGroupByInheritance(bool enabled)
+{
+    m_model->setGroupByInheritance(enabled);
+
+    // first action corresponds to sortingEnabled
+    QAction *action = actions()[1];
+    action->blockSignals(true);
+    action->setChecked(enabled);
+    action->blockSignals(false);
+
+    if (!enabled)
     {
-        actions()[0]->setChecked(value);
-    }
-
-    if (m_sorted)
-    {
+        expandToDepth(0);
     }
     else
     {
-        expandToDepth(0);
+        expandToDepth(1);
     }
 }
 
 //-------------------------------------------------------------------------------------
-bool QPropertyEditorWidget::sorted() const
+bool QPropertyEditorWidget::groupByInheritance() const
 {
-    return m_model->sorted();
+    return m_model->groupByInheritance();
+}
+
+//-------------------------------------------------------------------------------------
+QString QPropertyEditorWidget::nameFilterPattern() const
+{
+    const auto proxyModel = qobject_cast<QSortFilterProxyModel*>(model());
+    
+    if (proxyModel)
+    {
+        return proxyModel->filterRegularExpression().pattern();
+    }
+
+    return "";
+}
+
+//-------------------------------------------------------------------------------------
+void QPropertyEditorWidget::setNameFilterPattern(const QString &wildcardPattern)
+{
+    const auto proxyModel = qobject_cast<QSortFilterProxyModel*>(model());
+
+    if (proxyModel)
+    {
+        proxyModel->setFilterWildcard(wildcardPattern);
+    }
 }
 
 //-------------------------------------------------------------------------------------
 void QPropertyEditorWidget::sortedAction(bool checked)
 {
-    setSorted(checked);
+    setSortingEnabled(checked);
+
+    if (!checked)
+    {
+        sortByColumn(-1);
+    }
+    
+    QAction *action = actions()[0];
+    action->blockSignals(true);
+    action->setChecked(checked);
+    action->blockSignals(false);
 }

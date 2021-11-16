@@ -120,7 +120,8 @@ bool Property::isReadOnly()
 QWidget* Property::createEditor(QWidget* parent, const QStyleOptionViewItem& /*option*/)
 {
     // TODO: QMetaType::Float not in enumerated type
-    QWidget* editor = 0;
+    QWidget* editor = nullptr;
+
     switch (value().type())
     {
     case QVariant::Bool:
@@ -224,12 +225,17 @@ QVariant Property::editorData(QWidget* editor)
 Property* Property::findPropertyObject(QObject* propertyObject)
 {
     if (m_propertyObject == propertyObject)
+    {
         return this;
+    }
+
     for (int i = 0; i < children().size(); ++i)
     {
         Property* child = static_cast<Property*>(children()[i])->findPropertyObject(propertyObject);
         if (child)
+        {
             return child;
+        }
     }
     return 0;
 }

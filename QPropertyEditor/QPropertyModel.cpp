@@ -33,6 +33,7 @@
 
 #include <qapplication.h>
 #include <qbytearray.h>
+#include <qdebug.h>
 #include <qitemeditorfactory.h>
 #include <qmetaobject.h>
 
@@ -53,7 +54,8 @@ struct PropertyPair
 };
 
 //-------------------------------------------------------------------------------------
-QPropertyModel::QPropertyModel(QObject* parent /*= 0*/) : QAbstractItemModel(parent), m_sorted(true)
+QPropertyModel::QPropertyModel(QObject* parent /*= 0*/) :
+    QAbstractItemModel(parent), m_groupByInheritance(false)
 {
     m_rootItem = new Property("Root", 0, this);
 }
@@ -67,32 +69,35 @@ QPropertyModel::~QPropertyModel()
 QModelIndex QPropertyModel::index(
     int row, int column, const QModelIndex& parent /*= QModelIndex()*/) const
 {
-    Property* parentItem = m_rootItem;
-
-    if (m_sorted && parent.isValid() == false)
+    if (!m_groupByInheritance && parent.isValid() == false)
     {
         int newRow = row;
 
-        foreach (const QObject* obj, parentItem->children()) // iterate through all metaObjects
+        foreach (const QObject* obj, m_rootItem->children()) // iterate through all metaObjects
         {
             if (newRow >= 0 && newRow < obj->children().size())
             {
                 return createIndex(row, column, obj->children().at(newRow));
             }
+
             newRow -= obj->children().size();
         }
         return QModelIndex();
     }
     else
     {
+        const Property* parentItem = m_rootItem;
+
         if (parent.isValid())
         {
             parentItem = static_cast<Property*>(parent.internalPointer());
         }
+
         if (row >= parentItem->children().size() || row < 0)
         {
             return QModelIndex();
         }
+
         return createIndex(row, column, parentItem->children().at(row));
     }
 }
@@ -113,7 +118,7 @@ QModelIndex QPropertyModel::parent(const QModelIndex& index) const
         return QModelIndex();
     }
 
-    if (m_sorted && parentItem->isRoot())
+    if (!m_groupByInheritance && parentItem->isRoot())
     {
         return QModelIndex();
     }
@@ -124,12 +129,11 @@ QModelIndex QPropertyModel::parent(const QModelIndex& index) const
 //-------------------------------------------------------------------------------------
 int QPropertyModel::rowCount(const QModelIndex& parent /*= QModelIndex()*/) const
 {
-    Property* parentItem = m_rootItem;
-
-    if (m_sorted && parent.isValid() == false)
+    if (!m_groupByInheritance && parent.isValid() == false)
     {
         int rows = 0;
-        foreach (const QObject* obj, parentItem->children()) // iterate through all metaObjects
+
+        foreach (const QObject* obj, m_rootItem->children()) // iterate through all metaObjects
         {
             rows += obj->children().size();
         }
@@ -138,10 +142,13 @@ int QPropertyModel::rowCount(const QModelIndex& parent /*= QModelIndex()*/) cons
     }
     else
     {
+        const Property* parentItem = m_rootItem;
+
         if (parent.isValid())
         {
-            parentItem = static_cast<Property*>(parent.internalPointer());
+            parentItem = static_cast<const Property*>(parent.internalPointer());
         }
+
         return parentItem->children().size();
     }
 }
@@ -161,6 +168,7 @@ QVariant QPropertyModel::data(const QModelIndex& index, int role /*= Qt::Display
     }
 
     Property* item = static_cast<Property*>(index.internalPointer());
+
     switch (role)
     {
     case Qt::ToolTipRole:
@@ -183,6 +191,7 @@ QVariant QPropertyModel::data(const QModelIndex& index, int role /*= Qt::Display
                 .color();
         break;
     };
+    
     return QVariant();
 }
 
@@ -227,7 +236,7 @@ Qt::ItemFlags QPropertyModel::flags(const QModelIndex& index) const
     }
     else if (item->isReadOnly())
     {
-        return Qt::ItemIsDragEnabled | Qt::ItemIsSelectable;
+        return Qt::ItemIsDragEnabled | Qt::ItemIsSelectable | Qt::ItemIsEnabled;
     }
     else
     {
@@ -260,6 +269,7 @@ QModelIndex QPropertyModel::buddy(const QModelIndex& index) const
     {
         return createIndex(index.row(), 1, index.internalPointer());
     }
+
     return index;
 }
 
@@ -271,16 +281,20 @@ void QPropertyModel::addItem(QObject* propertyObject)
     QList<PropertyPair> propertyMap;
     QList<const QMetaObject*> classList;
     const QMetaObject* metaObject = propertyObject->metaObject();
+
     do
     {
         int count = metaObject->propertyCount();
+
         for (int i = 0; i < count; ++i)
         {
             QMetaProperty property = metaObject->property(i);
+
             if (property.isUser()) // Hide Qt specific properties
             {
                 PropertyPair pair(metaObject, property);
                 int index = propertyMap.indexOf(pair);
+
                 if (index != -1)
                 {
                     propertyMap[index] = pair;
@@ -291,14 +305,17 @@ void QPropertyModel::addItem(QObject* propertyObject)
                 }
             }
         }
+
         classList.push_front(metaObject);
     } while ((metaObject = metaObject->superClass()) != 0);
 
     QList<const QMetaObject*> finalClassList;
+
     // remove empty classes from hierarchy list
     foreach (const QMetaObject* obj, classList)
     {
         bool keep = false;
+
         foreach (PropertyPair pair, propertyMap)
         {
             if (pair.Object == obj)
@@ -307,6 +324,7 @@ void QPropertyModel::addItem(QObject* propertyObject)
                 break;
             }
         }
+
         if (keep)
         {
             finalClassList.push_back(obj);
@@ -315,25 +333,32 @@ void QPropertyModel::addItem(QObject* propertyObject)
 
     // finally insert properties for classes containing them
     int i = rowCount();
-    Property* propertyItem = 0;
-    beginInsertRows(QModelIndex(), i, i + finalClassList.count());
+    Property* propertyItem = nullptr;
+    beginResetModel();
+
     foreach (const QMetaObject* metaObject, finalClassList)
     {
         // Set default name of the hierarchy property to the class name
         QString name = metaObject->className();
         // Check if there is a special name for the class
         int index = metaObject->indexOfClassInfo(qPrintable(name));
+
         if (index != -1)
+        {
             name = metaObject->classInfo(index).value();
+        }
+
         // Create Property Item for class node
         propertyItem = new Property(name, 0, m_rootItem);
+
         foreach (PropertyPair pair, propertyMap)
         {
             // Check if the property is associated with the current class from the finalClassList
             if (pair.Object == metaObject)
             {
                 QMetaProperty property(pair.Property);
-                Property* p = 0;
+                Property* p = nullptr;
+
                 if ((property.type() == QVariant::UserType ||
                      property.type() == QVariant::Vector2D ||
                      property.type() == QVariant::Vector3D ||
@@ -342,13 +367,15 @@ void QPropertyModel::addItem(QObject* propertyObject)
                 {
                     QList<QPropertyEditorWidget::UserTypeCB>::iterator iter =
                         m_userCallbacks.begin();
-                    while (p == 0 && iter != m_userCallbacks.end())
+
+                    while (p == nullptr && iter != m_userCallbacks.end())
                     {
                         p = (*iter)(property.name(), propertyObject, propertyItem);
                         ++iter;
                     }
                 }
-                if (p == 0)
+
+                if (p == nullptr)
                 {
                     if (property.isEnumType())
                     {
@@ -365,8 +392,11 @@ void QPropertyModel::addItem(QObject* propertyObject)
                     {
                         p = new Property(property.name(), propertyObject, propertyItem);
                     }
+
                 }
+
                 int index = metaObject->indexOfClassInfo(property.name());
+
                 if (index != -1)
                 {
                     p->setEditorHints(metaObject->classInfo(index).value());
@@ -374,6 +404,7 @@ void QPropertyModel::addItem(QObject* propertyObject)
 
                 infoName = "prop://" + QByteArray(property.name());
                 index = metaObject->indexOfClassInfo(infoName);
+
                 if (index != -1)
                 {
                     p->setInfo(metaObject->classInfo(index).value());
@@ -381,7 +412,9 @@ void QPropertyModel::addItem(QObject* propertyObject)
             }
         }
     }
-    endInsertRows();
+
+    endResetModel();
+
     if (propertyItem)
     {
         addDynamicProperties(propertyItem, propertyObject);
@@ -393,14 +426,17 @@ void QPropertyModel::updateItem(
     QObject* propertyObject, const QModelIndex& parent /*= QModelIndex() */)
 {
     Property* parentItem = m_rootItem;
+
     if (parent.isValid())
     {
         parentItem = static_cast<Property*>(parent.internalPointer());
     }
+
     if (parentItem->propertyObject() != propertyObject)
     {
         parentItem = parentItem->findPropertyObject(propertyObject);
     }
+
     if (parentItem) // Indicate view that the data for the indices have changed
     {
         QModelIndex itemIndex =
@@ -410,19 +446,23 @@ void QPropertyModel::updateItem(
         QList<QByteArray> dynamicProperties = propertyObject->dynamicPropertyNames();
         QList<QObject*> childs = parentItem->parent()->children();
         int removed = 0;
+
         for (int i = 0; i < childs.count(); ++i)
         {
             QObject* obj = childs[i];
+
             if (!obj->property("__Dynamic").toBool() ||
                 dynamicProperties.contains(obj->objectName().toLocal8Bit()))
             {
                 continue;
             }
+
             beginRemoveRows(itemIndex.parent(), i - removed, i - removed);
             ++removed;
             delete obj;
             endRemoveRows();
         }
+
         addDynamicProperties(static_cast<Property*>(parentItem->parent()), propertyObject);
     }
 }
@@ -443,6 +483,7 @@ void QPropertyModel::addDynamicProperties(Property* parent, QObject* propertyObj
         }
 
         int index = dynamicProperties.indexOf(childs[i]->objectName().toLocal8Bit());
+
         if (index != -1)
         {
             dynamicProperties.removeAt(index);
@@ -454,6 +495,7 @@ void QPropertyModel::addDynamicProperties(Property* parent, QObject* propertyObj
     for (int i = 0; i < dynamicProperties.size(); ++i)
     {
         QString dynProp = dynamicProperties[i];
+
         // Skip properties starting with _ (because there may be dynamic properties from Qt with _q_
         // and we may have user defined hidden properties starting with _ too
         if (dynProp.startsWith("_") || !propertyObject->property(qPrintable(dynProp)).isValid())
@@ -471,6 +513,7 @@ void QPropertyModel::addDynamicProperties(Property* parent, QObject* propertyObj
     QModelIndex parentIndex = createIndex(parent->row(), 0, static_cast<Property*>(parent));
     int rows = rowCount(parentIndex);
     beginInsertRows(parentIndex, rows, rows + dynamicProperties.count() - 1);
+
     // Add properties left in the list
     foreach (QByteArray dynProp, dynamicProperties)
     {
@@ -480,15 +523,17 @@ void QPropertyModel::addDynamicProperties(Property* parent, QObject* propertyObj
         {
             QList<QPropertyEditorWidget::UserTypeCB>::iterator iter = m_userCallbacks.begin();
             while (p == 0 && iter != m_userCallbacks.end())
-            {
-                p = (*iter)(dynProp, propertyObject, parent);
-                ++iter;
-            }
+                while (p == 0 && iter != m_userCallbacks.end())
+                {
+                    p = (*iter)(dynProp, propertyObject, parent);
+                    ++iter;
+                }
         }
         if (p == 0)
             p = new Property(dynProp, propertyObject, parent);
         p->setProperty("__Dynamic", true);
     }
+
     endInsertRows();
 }
 
@@ -497,6 +542,7 @@ void QPropertyModel::clear()
 {
     QModelIndex parent = QModelIndex();
     int count = rowCount(parent);
+
     if (count > 0)
     {
         beginRemoveRows(parent, 0, count - 1);
@@ -524,6 +570,7 @@ void QPropertyModel::registerCustomPropertyCB(QPropertyEditorWidget::UserTypeCB 
 void QPropertyModel::unregisterCustomPropertyCB(QPropertyEditorWidget::UserTypeCB callback)
 {
     int index = m_userCallbacks.indexOf(callback);
+
     if (index != -1)
     {
         m_userCallbacks.removeAt(index);
@@ -531,12 +578,12 @@ void QPropertyModel::unregisterCustomPropertyCB(QPropertyEditorWidget::UserTypeC
 }
 
 //-------------------------------------------------------------------------------------
-void QPropertyModel::setSorted(bool value)
+void QPropertyModel::setGroupByInheritance(bool enabled)
 {
-    if (value != m_sorted)
+    if (enabled != m_groupByInheritance)
     {
         beginResetModel();
-        m_sorted = value;
+        m_groupByInheritance = enabled;
         endResetModel();
     }
 }

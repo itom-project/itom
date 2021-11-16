@@ -100,11 +100,11 @@ public:
      */
     void unregisterCustomPropertyCB(QPropertyEditorWidget::UserTypeCB callback);
 
-    void setSorted(bool value);
+    void setGroupByInheritance(bool enabled);
 
-    bool sorted() const
+    bool groupByInheritance() const
     {
-        return m_sorted;
+        return m_groupByInheritance;
     }
 
 private:
@@ -117,6 +117,6 @@ private:
     /// Custom callback
     QList<QPropertyEditorWidget::UserTypeCB> m_userCallbacks;
 
-    bool m_sorted;
+    bool m_groupByInheritance;
 };
 #endif

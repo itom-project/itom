@@ -64,6 +64,10 @@ extern "C++"
     class QPROPERTYEDITOR_EXPORT QPropertyEditorWidget : public QTreeView
     {
         Q_OBJECT
+        
+        Q_PROPERTY(bool groupByInheritance READ groupByInheritance WRITE setGroupByInheritance DESIGNABLE true USER true)
+        Q_PROPERTY(QString nameFilterPattern READ nameFilterPattern WRITE setNameFilterPattern DESIGNABLE true USER true)
+
     public:
         /**
          * A typedef for a callback used to create user defined properties for custom datatypes
@@ -123,9 +127,13 @@ extern "C++"
          */
         void unregisterCustomPropertyCB(UserTypeCB callback);
 
-        void setSorted(bool value);
+        void setSorted(bool enabled);
 
         bool sorted() const;
+
+        bool groupByInheritance() const;
+
+        QString nameFilterPattern() const;
 
     protected:
         void mousePressEvent(QMouseEvent* event);
@@ -135,9 +143,15 @@ extern "C++"
         /// The Model for this view
         QPropertyModel* m_model;
 
+        // can be removed. deprecated.
         bool m_sorted;
 
     signals:
+
+    public slots:
+        void setGroupByInheritance(bool enabled);
+
+        void setNameFilterPattern(const QString &wildcardPattern);
 
     private slots:
         void sortedAction(bool checked);

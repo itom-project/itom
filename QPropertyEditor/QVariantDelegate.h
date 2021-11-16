@@ -29,6 +29,7 @@
 #include <qitemdelegate.h>
 
 class QSignalMapper;
+class Property;
 
 /**
  * This class is used to create the editor widgets for datatypes encapsulated in QVariant variables
@@ -79,6 +80,9 @@ public:
         QWidget* editor, const QStyleOptionViewItem& option, const QModelIndex& index) const;
 
     QSize sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const;
+
+protected:
+    Property* propertyFromModel(const QModelIndex &index) const;
 
 private:
     void parseEditorHints(QWidget* editor, const QString& editorHints) const;
