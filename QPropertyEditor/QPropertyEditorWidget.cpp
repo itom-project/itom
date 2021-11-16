@@ -83,11 +83,14 @@ QPropertyEditorWidget::QPropertyEditorWidget(QWidget* parent /*= 0*/) : QTreeVie
 
     QSortFilterProxyModel *sortModel = new PropertyEditorSortFilterProxyModel(this);
     sortModel->setSourceModel(m_model);
-    sortModel->setFilterWildcard("*");
+    sortModel->setFilterWildcard("");
     sortModel->setFilterKeyColumn(0);
     sortModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
 
     setModel(sortModel);
+
+    connect(sortModel, &QAbstractItemModel::rowsInserted, this, &QPropertyEditorWidget::dataChanged);
+    connect(sortModel, &QAbstractItemModel::rowsRemoved, this, &QPropertyEditorWidget::dataChanged);
 
     setItemDelegate(new QVariantDelegate(this));
     // setEditTriggers( QAbstractItemView::SelectedClicked | QAbstractItemView::EditKeyPressed |
@@ -130,6 +133,8 @@ void QPropertyEditorWidget::addObject(QObject* propertyObject)
     {
         expandToDepth(0);
     }
+
+    dataChanged();
 }
 
 //-------------------------------------------------------------------------------------
@@ -140,6 +145,8 @@ void QPropertyEditorWidget::setObject(QObject* propertyObject)
     {
         addObject(propertyObject);
     }
+
+    dataChanged();
 }
 
 //-------------------------------------------------------------------------------------
@@ -149,6 +156,8 @@ void QPropertyEditorWidget::updateObject(QObject* propertyObject)
     {
         m_model->updateItem(propertyObject);
     }
+
+    dataChanged();
 }
 
 //-------------------------------------------------------------------------------------
@@ -249,21 +258,26 @@ bool QPropertyEditorWidget::sorted() const
 //-------------------------------------------------------------------------------------
 void QPropertyEditorWidget::setGroupByInheritance(bool enabled)
 {
-    m_model->setGroupByInheritance(enabled);
-
-    // first action corresponds to sortingEnabled
-    QAction *action = actions()[1];
-    action->blockSignals(true);
-    action->setChecked(enabled);
-    action->blockSignals(false);
-
-    if (!enabled)
+    if (enabled != m_model->groupByInheritance())
     {
-        expandToDepth(0);
-    }
-    else
-    {
-        expandToDepth(1);
+        m_model->setGroupByInheritance(enabled);
+
+        // first action corresponds to sortingEnabled
+        QAction *action = actions()[1];
+        action->blockSignals(true);
+        action->setChecked(enabled);
+        action->blockSignals(false);
+
+        if (!enabled)
+        {
+            expandToDepth(0);
+        }
+        else
+        {
+            expandToDepth(1);
+        }
+
+        dataChanged();
     }
 }
 
@@ -277,17 +291,23 @@ bool QPropertyEditorWidget::groupByInheritance() const
 QString QPropertyEditorWidget::nameFilterPattern() const
 {
     const auto proxyModel = qobject_cast<QSortFilterProxyModel*>(model());
+    QString pattern;
     
     if (proxyModel)
     {
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
-        return proxyModel->filterRegularExpression().pattern();
+        pattern = proxyModel->filterRegularExpression().pattern();
 #else
-        return proxyModel->filterRegExp().pattern();
+        pattern = proxyModel->filterRegExp().pattern();
 #endif
     }
 
-    return "";
+    /*if (pattern.startsWith("*"))
+    {
+        pattern = pattern.mid(1);
+    }*/
+
+    return pattern;
 }
 
 //-------------------------------------------------------------------------------------
@@ -310,9 +330,30 @@ void QPropertyEditorWidget::sortedAction(bool checked)
     {
         sortByColumn(-1);
     }
+    else
+    {
+        sortByColumn(0);
+    }
     
     QAction *action = actions()[0];
     action->blockSignals(true);
     action->setChecked(checked);
     action->blockSignals(false);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void QPropertyEditorWidget::dataChanged()
+{
+    //this slot is only necessary until the span-method of AbstractItemModel will be automatically considered and changes the column span.
+    // added if due to crash on itom startup ck 26/01/2018
+    const QAbstractItemModel *m = model();
+    
+    if (m)
+    {
+        for (int row = 0; row < m->rowCount(); row++)
+        {
+            QSize span = m->span(m->index(row, 0));
+            setFirstColumnSpanned(row, QModelIndex(), span.width() > 1);
+        }
+    }
 }

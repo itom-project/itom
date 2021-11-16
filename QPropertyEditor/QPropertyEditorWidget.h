@@ -155,6 +155,7 @@ extern "C++"
 
     private slots:
         void sortedAction(bool checked);
+        void dataChanged();
     };
 
 #ifdef __APPLE__

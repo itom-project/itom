@@ -273,6 +273,19 @@ QModelIndex QPropertyModel::buddy(const QModelIndex& index) const
     return index;
 }
 
+//-------------------------------------------------------------------------------------------------------
+QSize QPropertyModel::span(const QModelIndex &index) const
+{
+    if (!index.isValid() || !groupByInheritance() || parent(index).isValid())
+    {
+        return QAbstractItemModel::span(index);
+    }
+    else
+    {
+        return QSize(2, 1);
+    }
+}
+
 //-------------------------------------------------------------------------------------
 void QPropertyModel::addItem(QObject* propertyObject)
 {

@@ -107,6 +107,8 @@ public:
         return m_groupByInheritance;
     }
 
+    QSize span(const QModelIndex &index) const;
+
 private:
     /// Adds dynamic properties to the model
     void addDynamicProperties(Property* parent, QObject* propertyObject);
