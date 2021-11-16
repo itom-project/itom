@@ -280,7 +280,11 @@ QString QPropertyEditorWidget::nameFilterPattern() const
     
     if (proxyModel)
     {
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
         return proxyModel->filterRegularExpression().pattern();
+#else
+        return proxyModel->filterRegExp().pattern();
+#endif
     }
 
     return "";
