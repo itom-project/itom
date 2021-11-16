@@ -318,10 +318,12 @@ QPixmap MainApplication::getSplashScreenPixmap() const
         }
     }
 
+    float textLeftPos = pixmap.width() * 0.455;
+
     QRectF rectVersion(
-        pixmap.width() * 0.455,
+        textLeftPos,
         pixmap.height() * 0.6,
-        pixmap.width() * 0.2,
+        pixmap.width() - textLeftPos,
         pixmap.height() * 0.1); // relative position of the version text within the image
     QFont fontVersion;
     fontVersion.setPixelSize(pixmap.width() * 0.022);
@@ -329,9 +331,9 @@ QPixmap MainApplication::getSplashScreenPixmap() const
     p.drawText(rectVersion, Qt::AlignLeft, versionText);
 
     QRectF rectBuild(
-        rectVersion.left(), 
+        textLeftPos,
         rectVersion.top() * 1.08, 
-        pixmap.width() * 0.2, 
+        pixmap.width() - textLeftPos,
         pixmap.height() * 0.2);
     QFont fontBuild;
     fontBuild.setPixelSize(pixmap.width() * 0.02);
