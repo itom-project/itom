@@ -40,7 +40,7 @@ class ItomPlotlyRenderer(ExternalRenderer):
 
     @property
     def plotHandle(self):
-        return self._handle
+        return self._plotHandle
 
     @plotHandle.setter
     def plotHandle(self, value):
