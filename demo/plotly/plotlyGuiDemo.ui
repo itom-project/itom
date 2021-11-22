@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
+    <width>1179</width>
     <height>600</height>
    </rect>
   </property>
@@ -42,6 +42,13 @@
         <widget class="QPushButton" name="btnPlot3">
          <property name="text">
           <string>Show Animation Plot</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="btnPlot4">
+         <property name="text">
+          <string>Show Parallel Coordinates Plot</string>
          </property>
         </widget>
        </item>
@@ -82,8 +89,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
-     <height>21</height>
+     <width>1179</width>
+     <height>26</height>
     </rect>
    </property>
   </widget>
