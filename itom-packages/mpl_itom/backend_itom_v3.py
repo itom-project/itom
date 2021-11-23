@@ -17,12 +17,13 @@ from matplotlib.backend_bases import (
     NavigationToolbar2,
     TimerBase,
     cursors,
-    ToolContainerBase,
-    StatusbarBase,
+    ToolContainerBase
 )
 
 if matplotlib.__version__ >= "3.3.0":
     from matplotlib.backend_bases import _Mode
+else:
+    from matplotlib.backend_bases import StatusbarBase
 
 import mpl_itom.figureoptions as figureoptions
 
@@ -1318,21 +1319,22 @@ class ToolbarItom(ToolContainerBase):
         self.statusbar_label["text"] = s
 
 
-class StatusbarItom(StatusbarBase):
-    """
+if matplotlib.__version__ < "3.3.0":
+    class StatusbarItom(StatusbarBase):
+        """
+        
+        This class is deprecated from MPL 3.3 on (since StatusbarBase
+        is deprecated, too).
+        """
     
-    This class is deprecated from MPL 3.3 on (since StatusbarBase
-    is deprecated, too).
-    """
-
-    def __init__(self, matplotlibplotUiItem, *args, **kwargs):
-        StatusbarBase.__init__(self, *args, **kwargs)
-        self.label = matplotlibplotUiItem.call("statusBar").call(
-            "addLabelWidget", "statusbarLabel"
-        )
-
-    def set_message(self, s):
-        self.label["text"] = s
+        def __init__(self, matplotlibplotUiItem, *args, **kwargs):
+            StatusbarBase.__init__(self, *args, **kwargs)
+            self.label = matplotlibplotUiItem.call("statusBar").call(
+                "addLabelWidget", "statusbarLabel"
+            )
+    
+        def set_message(self, s):
+            self.label["text"] = s
 
 
 class ConfigureSubplotsItom(backend_tools.ConfigureSubplotsBase):
