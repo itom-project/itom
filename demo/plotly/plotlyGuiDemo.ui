@@ -19,7 +19,7 @@
      <widget class="PlotlyPlot" name="plotlyPlot"/>
     </item>
     <item>
-     <widget class="QGroupBox" name="groupBox">
+     <widget class="QGroupBox" name="groupActions">
       <property name="title">
        <string>Actions</string>
       </property>
@@ -90,7 +90,7 @@
      <x>0</x>
      <y>0</y>
      <width>1179</width>
-     <height>26</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>
