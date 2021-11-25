@@ -22,25 +22,19 @@ class ItomPlotlyRenderer(ExternalRenderer):
         self,
         config=None,
         auto_play=False,
-        using=None,
-        new=0,
-        autoraise=True,
         post_script=None,
         animation_opts=None,
     ):
 
         self.config = config
         self.auto_play = auto_play
-        self.using = using
-        self.new = new
-        self.autoraise = autoraise
         self.post_script = post_script
         self.animation_opts = animation_opts
         self._plotHandle = None
 
     @property
     def plotHandle(self):
-        return self._handle
+        return self._plotHandle
 
     @plotHandle.setter
     def plotHandle(self, value):
