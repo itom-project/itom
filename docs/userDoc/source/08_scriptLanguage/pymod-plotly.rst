@@ -7,7 +7,7 @@ Python package plotly
 
 The package **plotly** can be used in order to create two or three dimensional plots like in these examples:
 
-.. figure:: images/plotly.jpg
+.. figure:: images/plotly.png
     :scale: 100%
     :align: center
 
