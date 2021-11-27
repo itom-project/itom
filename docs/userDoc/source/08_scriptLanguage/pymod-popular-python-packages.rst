@@ -31,10 +31,17 @@ should also directly download the binaries from http://www.lfd.uci.edu/~gohlke/p
 
 **Matplotlib**
 
-Matplotlib is a huge plotting package that allows the plot of many different types of schemes, graphics or charts. Matplotlib should also be downloaded as binary package for Windows users.
+Matplotlib is a huge plotting package that allows the plot of many different types of schemes, graphics or charts.
 While |itom| comes with many built-in designer plugins that can be used to visualize camera images and matrices in a fast way, Matplotlib can be used for more specific plots and charts.
 |itom| provides a specific backend for Matplotlib plots, such that the rendered output images are displayed in |itom| windows and can also be embedded in user defined GUIs. For more
 information about **Matplotlib** and |itom|, see the section :ref:`pymod-matplotlib`.
+
+**Plotly**
+
+Plotly is an alternative to **Matplotlib** and provides interactive plots, e.g. for the statistical analysisis of
+machine learning results, based on html and java script. |itom| provides a specific render widget for **Plotly**
+such that the outputs can be rendered in specific itom windows or this widget, embedded in any custom user interface.
+For more information about **Plotly** see the section :ref:`pymod-plotly`.
 
 **sphinx**
 
