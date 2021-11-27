@@ -67,7 +67,7 @@ DialogVariableDetailDataObject::DialogVariableDetailDataObject(
     }
 
     QMainWindow* tableMain = new QMainWindow(this);
-    tableMain->setWindowFlag(Qt::Widget, true);
+    tableMain->setWindowFlags(tableMain->windowFlags() | Qt::Widget);
     QToolBar* tb = tableMain->addToolBar("myToolbar");
 
     QVBoxLayout* tableLayout = qobject_cast<QVBoxLayout*>(ui.tabTable->layout());
