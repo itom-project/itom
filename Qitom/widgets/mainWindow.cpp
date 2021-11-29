@@ -780,9 +780,6 @@ void MainWindow::moveEvent(QMoveEvent* event)
     {
         m_geometryNormalState.moveTo(event->pos());
     }
-    QPoint newPos = event->pos();
-    int dpi = GuiHelper::getScreenLogicalDpi(nullptr, &newPos);
-    float scale = dpi / 96;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
