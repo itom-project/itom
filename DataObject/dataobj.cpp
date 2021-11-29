@@ -705,19 +705,21 @@ DObjIterator DObjIterator::operator++(int)
 //////
 
 //! creates template defined function table for all supported data types
-#define MAKEFUNCLIST(FuncName)                                                                     \
-    static t##FuncName fList##FuncName[] = {                                                       \
-        FuncName<int8>,                                                                            \
-        FuncName<uint8>,                                                                           \
-        FuncName<int16>,                                                                           \
-        FuncName<uint16>,                                                                          \
-        FuncName<int32>,                                                                           \
-        FuncName<uint32>,                                                                          \
-        FuncName<ito::float32>,                                                                    \
-        FuncName<ito::float64>,                                                                    \
-        FuncName<ito::complex64>,                                                                  \
-        FuncName<ito::complex128>,                                                                 \
-        FuncName<ito::Rgba32>};
+#define MAKEFUNCLIST(FuncName)                                \
+    static t##FuncName fList##FuncName[] = {                  \
+        FuncName<int8>,                                       \
+        FuncName<uint8>,                                      \
+        FuncName<int16>,                                      \
+        FuncName<uint16>,                                     \
+        FuncName<int32>,                                      \
+        FuncName<uint32>,                                     \
+        FuncName<ito::float32>,                               \
+        FuncName<ito::float64>,                               \
+        FuncName<ito::complex64>,                             \
+        FuncName<ito::complex128>,                            \
+        FuncName<ito::Rgba32>,                                \
+        FuncName<ito::DateTime>,                              \
+        FuncName<ito::TimeDelta>};
 
 //! creates function table for the function (FuncName) and both complex data types. The destination
 //! method must be templated with two template values.
@@ -4775,6 +4777,23 @@ RetVal DataObject::setTo(const ito::Rgba32& value, const DataObject& mask /*= Da
     \param mask Operation mask of the same size as *this and type uint8 or empty data object if no
    mask should be considered (default) \return retError in case of error \sa AssignScalarValue
 */
+RetVal DataObject::setTo(const ito::DateTime& value, const DataObject& mask /*= DataObject()*/)
+{
+    return fListAssignScalarMaskFunc[m_type](
+        this, &mask, ito::tDateTime, static_cast<const void*>(&value));
+}
+
+//! Sets all or some of the array elements to the specific value
+/*!
+    \param assigned scalar converted to the actual array type
+    \param mask Operation mask of the same size as *this and type uint8 or empty data object if no
+   mask should be considered (default) \return retError in case of error \sa AssignScalarValue
+*/
+RetVal DataObject::setTo(const ito::TimeDelta& value, const DataObject& mask /*= DataObject()*/)
+{
+    return fListAssignScalarMaskFunc[m_type](
+        this, &mask, ito::tTimeDelta, static_cast<const void*>(&value));
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // arithmetic operators
@@ -5591,6 +5610,20 @@ template <> RetVal OpScalarMulFunc<ito::Rgba32>(DataObject* src, const float64& 
     return retOk;
 }
 
+template <> RetVal OpScalarMulFunc<ito::DateTime>(DataObject* src, const float64& factor)
+{
+    cv::error(
+        cv::Exception(CV_StsAssert, "Scalar multiplication not supported for DateTime.", "", __FILE__, __LINE__));
+    return retError;
+}
+
+template <> RetVal OpScalarMulFunc<ito::TimeDelta>(DataObject* src, const float64& factor)
+{
+    cv::error(
+        cv::Exception(CV_StsAssert, "Scalar multiplication not supported for TimeDelta.", "", __FILE__, __LINE__));
+    return retError;
+}
+
 typedef RetVal (*tOpScalarMulFunc)(DataObject* src, const float64& factor);
 MAKEFUNCLIST(OpScalarMulFunc);
 
@@ -5780,6 +5813,20 @@ template <> RetVal OpScalarComplexMulFunc<ito::Rgba32>(DataObject* src, const co
     }
 
     return retOk;
+}
+
+template <> RetVal OpScalarComplexMulFunc<ito::DateTime>(DataObject* src, const complex128& factor)
+{
+    cv::error(
+        cv::Exception(CV_StsAssert, "Complex scalar multiplication not supported for DateTime.", "", __FILE__, __LINE__));
+    return retError;
+}
+
+template <> RetVal OpScalarComplexMulFunc<ito::TimeDelta>(DataObject* src, const complex128& factor)
+{
+    cv::error(
+        cv::Exception(CV_StsAssert, "Complex scalar multiplication not supported for TimeDelta.", "", __FILE__, __LINE__));
+    return retError;
 }
 
 typedef RetVal (*tOpScalarComplexMulFunc)(DataObject* src, const complex128& factor);
@@ -6925,6 +6972,28 @@ template <> RetVal ShiftLFunc<ito::Rgba32>(DataObject* /*src*/, const unsigned c
     return ito::retOk;
 }
 
+//! template specialisation for shift function of type DateTime
+/*!
+    \throws cv::Exception since shifting is not defined for that input type
+*/
+template <> RetVal ShiftLFunc<ito::DateTime>(DataObject* /*src*/, const unsigned char /*shiftbit*/)
+{
+    cv::error(cv::Exception(
+        CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+    return ito::retOk;
+}
+
+//! template specialisation for shift function of type TimeDelta
+/*!
+    \throws cv::Exception since shifting is not defined for that input type
+*/
+template <> RetVal ShiftLFunc<ito::TimeDelta>(DataObject* /*src*/, const unsigned char /*shiftbit*/)
+{
+    cv::error(cv::Exception(
+        CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+    return ito::retOk;
+}
+
 typedef RetVal (*tShiftLFunc)(DataObject* src, const unsigned char shiftbit);
 MAKEFUNCLIST(ShiftLFunc);
 
@@ -7066,6 +7135,28 @@ RetVal ShiftRFunc<ito::complex128>(DataObject* /*src*/, const unsigned char /*sh
     \throws cv::Exception since shifting is not defined for that input type
 */
 template <> RetVal ShiftRFunc<ito::Rgba32>(DataObject* /*src*/, const unsigned char /*shiftbit*/)
+{
+    cv::error(cv::Exception(
+        CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+    return ito::retOk;
+}
+
+//! template specialisation for shift function of type DateTime
+/*!
+    \throws cv::Exception since shifting is not defined for that input type
+*/
+template <> RetVal ShiftRFunc<ito::DateTime>(DataObject* /*src*/, const unsigned char /*shiftbit*/)
+{
+    cv::error(cv::Exception(
+        CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+    return ito::retOk;
+}
+
+//! template specialisation for shift function of type TimeDelta
+/*!
+    \throws cv::Exception since shifting is not defined for that input type
+*/
+template <> RetVal ShiftRFunc<ito::TimeDelta>(DataObject* /*src*/, const unsigned char /*shiftbit*/)
 {
     cv::error(cv::Exception(
         CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
@@ -8153,6 +8244,22 @@ template <> RetVal ConjFunc<ito::Rgba32>(DataObject* /*dObj*/)
         CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
     return ito::retOk;
 }
+//! template specialization for data object of type DateTime. throws cv::Exception, since the data
+//! type is not complex.
+template <> RetVal ConjFunc<ito::DateTime>(DataObject* /*dObj*/)
+{
+    cv::error(cv::Exception(
+        CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+    return ito::retOk;
+}
+//! template specialization for data object of type TimeDelta. throws cv::Exception, since the data
+//! type is not complex.
+template <> RetVal ConjFunc<ito::TimeDelta>(DataObject* /*dObj*/)
+{
+    cv::error(cv::Exception(
+        CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+    return ito::retOk;
+}
 //! template specialization for data object of type int64. throws cv::Exception, since the data type
 //! is not complex.
 template <> RetVal ConjFunc<int64>(DataObject* /*dObj*/)
@@ -8366,6 +8473,22 @@ RetVal MulFunc(
 #endif
     }
     return ito::retOk;
+}
+
+template <> RetVal MulFunc<DateTime>(
+    const DataObject* src1, const DataObject* src2, DataObject* res, const double /*scale*/)
+{
+    cv::error(
+        cv::Exception(CV_StsAssert, "Multiplication not supported for DateTime.", "", __FILE__, __LINE__));
+    return retError;
+}
+
+template <> RetVal MulFunc<TimeDelta>(
+    const DataObject* src1, const DataObject* src2, DataObject* res, const double /*scale*/)
+{
+    cv::error(
+        cv::Exception(CV_StsAssert, "Multiplication not supported for TimeDelta.", "", __FILE__, __LINE__));
+    return retError;
 }
 
 typedef RetVal (*tMulFunc)(
@@ -8582,6 +8705,20 @@ template <> RetVal DivFunc<Rgba32>(const DataObject* src1, const DataObject* src
     }
 
     return ito::retOk;
+}
+
+template <> RetVal DivFunc<DateTime>(const DataObject* src1, const DataObject* src2, DataObject* res)
+{
+    cv::error(
+        cv::Exception(CV_StsAssert, "Division not supported for DateTime.", "", __FILE__, __LINE__));
+    return ito::retError;
+}
+
+template <> RetVal DivFunc<TimeDelta>(const DataObject* src1, const DataObject* src2, DataObject* res)
+{
+    cv::error(
+        cv::Exception(CV_StsAssert, "Division not supported for TimeDelta.", "", __FILE__, __LINE__));
+    return ito::retError;
 }
 
 typedef RetVal (*tDivFunc)(const DataObject* src1, const DataObject* src2, DataObject* res);
@@ -10982,6 +11119,70 @@ RetVal ConvertToFunc<ito::Rgba32>(
 
         lhs.copyTagMapTo(rhs); // Deepcopy the tagspace
         lhs.copyAxisTagsTo(rhs); // Deepcopy the tagspace
+    }
+
+    return ito::retOk;
+}
+
+template <>
+RetVal ConvertToFunc<ito::DateTime>(
+    const DataObject& lhs,
+    DataObject& rhs,
+    const int dest_type,
+    const double alpha,
+    const double beta)
+{
+    if (&lhs == &rhs)
+    {
+        cv::error(cv::Exception(
+            CV_StsAssert, "inplace-conversion of dataObject not possible", "", __FILE__, __LINE__));
+    }
+    //_Tp is source type
+
+    if (dest_type == lhs.getType() && alpha == 1.0 && beta == 0.0)
+    {
+        rhs = lhs;
+    }
+    else
+    {
+        cv::error(cv::Exception(
+            CV_StsAssert,
+            "cast to destination type not defined (e.g. uint32 is not supported)",
+            "",
+            __FILE__,
+            __LINE__));
+    }
+
+    return ito::retOk;
+}
+
+template <>
+RetVal ConvertToFunc<ito::TimeDelta>(
+    const DataObject& lhs,
+    DataObject& rhs,
+    const int dest_type,
+    const double alpha,
+    const double beta)
+{
+    if (&lhs == &rhs)
+    {
+        cv::error(cv::Exception(
+            CV_StsAssert, "inplace-conversion of dataObject not possible", "", __FILE__, __LINE__));
+    }
+    //_Tp is source type
+
+    if (dest_type == lhs.getType() && alpha == 1.0 && beta == 0.0)
+    {
+        rhs = lhs;
+    }
+    else
+    {
+        cv::error(cv::Exception(
+            CV_StsAssert,
+            "cast to destination type not defined (e.g. uint32 is not supported)",
+            "",
+            __FILE__,
+            __LINE__));
     }
 
     return ito::retOk;
