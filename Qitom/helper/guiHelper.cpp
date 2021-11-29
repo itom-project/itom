@@ -34,36 +34,25 @@ namespace ito
     /*
     returns the number of dots per inch of the desktop screen or 96 in case that it can not be determined!
     */
-    int GuiHelper::getScreenLogicalDpi(bool *ok /*= NULL*/)
+    int GuiHelper::getScreenLogicalDpi(bool* ok /*= nullptr*/, QPoint *pos /*= nullptr*/)
     {
-        if (dpi > 0)
+        QScreen *currentScreen;
+        if (pos)
         {
-            if (ok)
-            {
-                *ok = true;
-            }
-
-            return dpi;
+            currentScreen = QApplication::screenAt(*pos);
+        }
+        else
+        {
+            currentScreen = QApplication::primaryScreen();
         }
 
-        QList<QScreen*> screens = QApplication::screens();
-        if (screens.size() > 0)
+        if (currentScreen)
         {
-            dpi = screens[0]->logicalDotsPerInch();
+            dpi = currentScreen->logicalDotsPerInch();            
         }
-
-        if (screens.size() == 0 || dpi <= 0)
+        else
         {
-            if (ok)
-            {
-                *ok = false;
-            }
-            return 96;
-        }
-
-        if (ok)
-        {
-            *ok = true;
+            dpi = 96;
         }
 
         return dpi;
