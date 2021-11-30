@@ -77,7 +77,8 @@ LineEditDelegate::LineEditDelegate(const ito::ParamMeta *meta, int paramType,
     }
     break;
     case ParamBase::ComplexArray: {
-        m_meta = nullptr;
+        // = nullptr is only possible since Qt 5.8
+        m_meta = QSharedPointer<ito::ParamMeta>();
     }
     break;
     case ParamBase::StringList: {

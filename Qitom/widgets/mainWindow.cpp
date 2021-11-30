@@ -62,6 +62,37 @@
 
 namespace ito {
 
+const QScreen* guiApplicationScreenAt(const QPoint &point)
+{
+#if (QT_VERSION >= QT_VERSION_CHECK(5,10,0))
+    return QGuiApplication::screenAt(point);
+#else
+    // this is a copy of the future implementation of the screenAt method.
+    QVarLengthArray<const QScreen*, 8> visitedScreens;
+
+    for (const QScreen *scr : QGuiApplication::screens())
+    {
+        if (visitedScreens.contains(scr))
+        {
+            continue;
+        }
+
+        // The virtual siblings include the screen itself, so iterate directly
+        for (QScreen *sibling : scr->virtualSiblings())
+        {
+            if (sibling->geometry().contains(point))
+            {
+                return sibling;
+            }
+
+            visitedScreens.append(sibling);
+        }
+    }
+
+    return nullptr;
+#endif
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------
 //! constructor
 /*!
@@ -443,8 +474,8 @@ MainWindow::MainWindow() :
     if (geometry != mainScreen) // check if valid
     {
         // check whether top/left and bottom/right lie in any available desktop
-        const QScreen *screen1 = QGuiApplication::screenAt(geometry.topLeft());
-        const QScreen *screen2 = QGuiApplication::screenAt(geometry.bottomRight());
+        const QScreen *screen1 = guiApplicationScreenAt(geometry.topLeft());
+        const QScreen *screen2 = guiApplicationScreenAt(geometry.bottomRight());
         QRect r1;
         QRect r2;
 

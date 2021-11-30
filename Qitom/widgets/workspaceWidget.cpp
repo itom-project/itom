@@ -477,7 +477,7 @@ void WorkspaceWidget::itemDoubleClicked(QTreeWidgetItem* item, int /*column*/)
     QSharedPointer<ito::ParamBase> value;
     QStringList key;
     QVector<int> paramBaseTypes; // Type of ParamBase, which is compatible to this value,
-    QSharedPointer<ito::DataObject> dObj = nullptr;
+    QSharedPointer<ito::DataObject> dObj;
     const ito::DataObject* obj = nullptr;
 
     PythonEngine* eng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());

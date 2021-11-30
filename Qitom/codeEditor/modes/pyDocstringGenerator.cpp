@@ -463,7 +463,7 @@ void PyDocstringGeneratorMode::parseArgList(
 
     for (int pos = 0; pos < argstr.size(); ++pos)
     {
-        if (argstr[pos] == "," && specialCharStack.size() == 0)
+        if (argstr[pos] == ',' && specialCharStack.size() == 0)
         {
             if (pos - lastpos > 0)
             {

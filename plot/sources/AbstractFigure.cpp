@@ -104,7 +104,40 @@ QPropertyEditorWidget* PropertyEditorWindow::propertyEditor() const
 float PropertyEditorWindow::screenDpiFactor()
 {
     float dpi = 0.0;
-    const QScreen *screen = QGuiApplication::screenAt(geometry().topLeft());
+    const QScreen *screen = nullptr;
+    const QPoint point = geometry().topLeft();
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5,10,0))
+    screen = QGuiApplication::screenAt(point);
+#else
+    // this is a copy of the future implementation of the screenAt method.
+    QVarLengthArray<const QScreen*, 8> visitedScreens;
+
+    for (const QScreen *scr : QGuiApplication::screens()) 
+    {
+        if (visitedScreens.contains(scr))
+        {
+            continue;
+        }
+
+        // The virtual siblings include the screen itself, so iterate directly
+        for (QScreen *sibling : scr->virtualSiblings()) 
+        {
+            if (sibling->geometry().contains(point))
+            {
+                screen = sibling;
+                break;
+            }
+
+            visitedScreens.append(sibling);
+        }
+
+        if (screen != nullptr)
+        {
+            break;
+        }
+    }
+#endif
 
     if (screen)
     {

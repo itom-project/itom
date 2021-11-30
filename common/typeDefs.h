@@ -96,7 +96,9 @@ namespace ito
 		tFloat64 = 7,    /*!< double (64bit) */
 		tComplex64 = 8,  /*!< complex value with real and imaginary part of type float32 */
 		tComplex128 = 9, /*!< complex value with real and imaginary part of type float64 */
-		tRGBA32 = 10     /*!< a uint32 / vec4u value coded as 0xAARRGGBB */
+		tRGBA32 = 10,     /*!< a uint32 / vec4u value coded as 0xAARRGGBB */
+        tDateTime = 11,
+        tTimeDelta = 12,
 	};
 
 	/**
@@ -114,6 +116,8 @@ namespace ito
 		pclXYZRGBNormal = 0x0020  /*!< point with x,y,z and r,g,b and normal vector (including curvature) */
 	};
 
+
+
 	// data types for images should always be the same size
 	// so define them to fixed byte sizes here
 
@@ -122,18 +126,12 @@ namespace ito
 	typedef int8_t  int8;
 	typedef int16_t int16;
 	typedef int32_t int32;
-
-#ifdef _WIN64
-	//typedef int64_t int64;
-	//typedef uint64_t uint64;
-#endif
-
-	//#define int int32 //commented by M. Gronle, 10.10.2011, since this caused problems while compiling with gcc and qtCreator
-	//#define uint uint32   // impossible to define this, as in qglobal uint is also defined which causes problems
+    typedef long long int64;
 
 	typedef uint8_t uint8;
 	typedef uint16_t uint16;
 	typedef uint32_t uint32;
+    typedef unsigned long long uint64;
 
 	typedef float float32;
 	typedef double float64;
@@ -157,6 +155,21 @@ namespace ito
 			ito::uint32 rgba;
 		};
 	};
+
+#pragma pack(push, 1)
+    struct DateTime
+    {
+        DateTime(ito::int64 datetimeMuS = 0) : datetime(datetimeMuS), utcOffset(0) {}
+        ito::int64 datetime; // microseconds since 01.01.1970, 00:00:00 in UTC time
+        int utcOffset; // offset from UTC time in seconds
+    };
+
+    struct TimeDelta
+    {
+        TimeDelta(ito::int64 deltaMuS = 0) : delta(deltaMuS) {}
+        ito::int64 delta; // in microseconds
+    };
+#pragma pack(pop)
 
 } // namespace ito
 
