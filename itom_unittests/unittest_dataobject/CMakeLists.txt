@@ -74,7 +74,6 @@ set(unittest_dataobject_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/dataObjectTagType_Test.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dataObjectTag_Test.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dataTest.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/dateTimeTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dimsAndtype_Test.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/DObj_copy_tests.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/DObj_cpy_test1.cpp

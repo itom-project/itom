@@ -408,9 +408,7 @@ PythonDataObject::PyDataObjectTypes PythonDataObject::PyDataObject_types[] = {
     {"float64", tFloat64},
     {"complex64", tComplex64},
     {"complex128", tComplex128},
-    {"rgba32", tRGBA32},
-    {"datetime", tDateTime},
-    {"timedelta", tTimeDelta} };
+    {"rgba32", tRGBA32}};
 
 //-------------------------------------------------------------------------------------
 int PythonDataObject::dObjTypeFromName(const char* name)
@@ -7935,7 +7933,7 @@ std::string PythonDataObject::getNpDTypeStringFromNpDTypeEnum(const int type)
         typeStr = "void";
         break;
     case NPY_DATETIME:
-        typeStr = "datetime";
+        typeStr = "void";
         break;
     case NPY_TIMEDELTA:
         typeStr = "timedelta";
@@ -7999,12 +7997,6 @@ int PythonDataObject::getNpTypeFromDataObjectType(int type)
         break;
     case ito::tComplex128:
         npTypenum = NPY_CDOUBLE;
-        break;
-    case ito::tDateTime:
-        npTypenum = NPY_DATETIME;
-        break;
-    case ito::tTimeDelta:
-        npTypenum = NPY_TIMEDELTA;
         break;
     default:
         npTypenum = -1;
@@ -8166,46 +8158,6 @@ ito::RetVal PythonDataObject::copyNpArrayValuesToDataObject(
             }
         }
         break;
-        /*case ito::tDateTime: {
-            const npy_datetime *td = reinterpret_cast<npy_datetime*>(data);
-            ito::DateTime* rowPtr;
-            PyArray_Descr* dtype = PyArray_DESCR(npNdArray);
-            if (!PyDataType_ISDATETIME(dtype)) 
-            {
-                PyErr_SetString(PyExc_TypeError,
-                    "cannot get datetime metadata from non-datetime type");
-                return NULL;
-            }
-
-            const PyArray_DatetimeMetaData *meta = &(((PyArray_DatetimeDTypeMetaData *)dtype->c_metadata)->meta);
-
-            for (m = 0; m < mat->rows; m++)
-            {
-                rowPtr = mat->ptr<DateTime>(m);
-                for (n = 0; n < mat->cols; n++)
-                {
-                    // todo
-                    
-                    rowPtr[n].utcOffset = 0;
-                    rowPtr[n].datetime = td[c++];
-                }
-            }
-        }
-        break;
-        case ito::tTimeDelta: {
-            const npy_timedelta *td = reinterpret_cast<npy_timedelta*>(data);
-            ito::TimeDelta* rowPtr;
-            for (m = 0; m < mat->rows; m++)
-            {
-                rowPtr = mat->ptr<TimeDelta>(m);
-                for (n = 0; n < mat->cols; n++)
-                {
-                    // todo
-                    rowPtr[n].delta = td[c++];
-                }
-            }
-        }
-        break;*/
         default:
             retVal += ito::RetVal(ito::retError, 0, "unknown dtype");
         }
