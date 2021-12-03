@@ -54,6 +54,8 @@
 #include <ui/widgetFindWord.h>
 #include <iostream>
 
+#include "helper/guiHelper.h"
+
 namespace ito {
 
 //----------------------------------------------------------------------------------------
@@ -89,7 +91,7 @@ HelpViewer::HelpViewer(QWidget *parent /*= NULL*/) :
 	QWebEngineProfile *profile = page->profile();
 
 	m_pDefaultZoomFactor = m_pView->zoomFactor();
-	m_pZoomFactor = m_pDefaultZoomFactor;
+    m_pZoomFactor = m_pDefaultZoomFactor * GuiHelper::screenDpiFactor();
 
 	m_pHelpEngine = new QHelpEngine("", this);
 	m_pSchemeHandler = new QtHelpUrlSchemeHandler(m_pHelpEngine, this);
