@@ -1100,6 +1100,8 @@ namespace ito {
         DataObject & operator = (const complex64 &value);     /*!< sets all elements of the data object to the given value. Value is cast to the data object's type */
         DataObject & operator = (const complex128 &value);    /*!< sets all elements of the data object to the given value. Value is cast to the data object's type */
         DataObject & operator = (const ito::Rgba32 &value);   /*!< sets all elements of the data object to the given value. Value is cast to the data object's type */
+        DataObject & operator = (const ito::DateTime &value); /*!< sets all elements of the data object to the given value. Value is cast to the data object's type */
+        DataObject & operator = (const ito::TimeDelta &value);/*!< sets all elements of the data object to the given value. Value is cast to the data object's type */
         
         
         DataObject & operator += (const DataObject &rhs);

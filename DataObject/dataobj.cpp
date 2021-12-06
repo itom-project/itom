@@ -4546,6 +4546,30 @@ DataObject& DataObject::operator=(const ito::Rgba32& value)
     return *this;
 }
 
+//! Every data element in this data object is set to the given value
+/*!
+    \param value is the scalar assignment value
+    \return modified data object
+    \sa AssignScalarValue
+*/
+DataObject& DataObject::operator=(const ito::DateTime& value)
+{
+    fListAssignScalarFunc[m_type](this, ito::tDateTime, static_cast<const void*>(&value));
+    return *this;
+}
+
+//! Every data element in this data object is set to the given value
+/*!
+    \param value is the scalar assignment value
+    \return modified data object
+    \sa AssignScalarValue
+*/
+DataObject& DataObject::operator=(const ito::TimeDelta& value)
+{
+    fListAssignScalarFunc[m_type](this, ito::tTimeDelta, static_cast<const void*>(&value));
+    return *this;
+}
+
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! low-level, templated helper method to assign the given scalar to every element within its ROI in

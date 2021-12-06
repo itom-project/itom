@@ -200,8 +200,7 @@ class PythonDataObject
         static PyObject* PyDataObj_SplitColor(PyDataObject *self, PyObject *args, PyObject *kwds);
 
         static PyObject* PyDataObj_ToList(PyDataObject *self);
-        static PyObject* PyDataObj_At(ito::DataObject *dataObj, unsigned int *idx);
-        static PyObject* PyDataObj_At(ito::DataObject *dataObj, int continuousIdx);
+        static PyObject* PyDataObj_At(ito::DataObject *dataObj, const unsigned int *idx);
         static PyObject* PyDataObj_ToListRecursive(ito::DataObject *dataObj, unsigned int *currentIdx, int iterationIndex);
 
 

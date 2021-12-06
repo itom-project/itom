@@ -27,8 +27,10 @@
 
 #include "../global.h"
 
+#include "../common/helperDatetime.h"
 #include "../common/shapeDObject.h"
 #include "pythonCommon.h"
+#include "pythonDateTime.h"
 #include "pythonRgba.h"
 #include "pythonShape.h"
 
@@ -58,6 +60,7 @@ PyObject* PythonDataObject::PyDataObject_new(
     PyTypeObject* type, PyObject* /*args*/, PyObject* /*kwds*/)
 {
     PyDataObject* self = (PyDataObject*)type->tp_alloc(type, 0);
+
     if (self != NULL)
     {
         self->dataObject = NULL;
@@ -182,7 +185,7 @@ creates a new itom-dataObject filled with undefined data.\n\
 If no parameters are given, an uninitilized DataObject (dims = 0, no sizes) is created.\n\
 \n\
 As second possibility you can also use the copy-constructor 'dataObject(anyArray : Union[dataObject, np.ndarray], dtype : str = '', continuous : int = 0)', \n\
-where 'anyArray' must be any array-like structure which is parsable by the numpy-interface. If a dtype is given or if continuous is 1, \n\
+where 'anyArray' must be any array-like structure which can be parsed by the numpy-interface. If a dtype is given or if continuous is 1, \n\
 the new data object will be a type-casted (and / or continuous) copy of 'anyArray'.\n\
 \n\
 See Also \n\
@@ -410,7 +413,7 @@ PythonDataObject::PyDataObjectTypes PythonDataObject::PyDataObject_types[] = {
     {"complex128", tComplex128},
     {"rgba32", tRGBA32},
     {"datetime", tDateTime},
-    {"timedelta", tTimeDelta} };
+    {"timedelta", tTimeDelta}};
 
 //-------------------------------------------------------------------------------------
 int PythonDataObject::dObjTypeFromName(const char* name)
@@ -680,7 +683,10 @@ return -1 in case of a general error, Python error message is set
 return -2 if args / kwds cannot be parsed, Python error message is set, too
 */
 int PythonDataObject::PyDataObj_CreateFromNpNdArrayAndType(
-    PyDataObject* self, PyObject* args, PyObject* kwds, bool addNpOrgTags) // helper method for PyDataObject_init
+    PyDataObject* self,
+    PyObject* args,
+    PyObject* kwds,
+    bool addNpOrgTags) // helper method for PyDataObject_init
 {
     const char* kwlist[] = {"object", "dtype", "continuous", nullptr};
     PyArrayObject* ndArrayRef = nullptr;
@@ -977,7 +983,8 @@ int PythonDataObject::PyDataObj_CreateFromNpNdArrayAndType(
         if (addNpOrgTags)
         {
             // add tag _dtype with original shape of numpy.ndarray
-            self->dataObject->setTag("_orgNpDType", getNpDTypeStringFromNpDTypeEnum(PyArray_TYPE(ndArrayRef)));
+            self->dataObject->setTag(
+                "_orgNpDType", getNpDTypeStringFromNpDTypeEnum(PyArray_TYPE(ndArrayRef)));
 
             // add tag _shape with original shape of numpy.ndarray
             QString npArrayNewShape = "[";
@@ -7152,7 +7159,7 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
 
     int dims = self->dataObject->getDims();
     ito::Range* ranges = NULL;
-    unsigned int* idx = NULL; // redundant to range, if only single indizes are addressed
+    unsigned int* idx = NULL; // redundant to range, if only single indices are addressed
     PyDataObject* mask = NULL;
 
     if (dims <= 0)
@@ -7358,6 +7365,48 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
                     error = true;
                 }
             }
+            else if (PythonDateTime::PyDateTime_CheckExt(value))
+            {
+                if (dataObj.getType() == ito::tDateTime)
+                {
+                    bool ok = true;
+                    dataObj = PythonDateTime::GetDateTime(value, ok);
+
+                    if (!ok)
+                    {
+                        error = true;
+                    }
+                }
+                else
+                {
+                    PyErr_SetString(
+                        PyExc_TypeError,
+                        "An assignment of type datetime is only possible for data objects of type "
+                        "datetime");
+                    error = true;
+                }
+            }
+            else if (PythonDateTime::PyTimeDelta_CheckExt(value))
+            {
+                if (dataObj.getType() == ito::tTimeDelta)
+                {
+                    bool ok = true;
+                    dataObj = PythonDateTime::GetTimeDelta(value, ok);
+
+                    if (!ok)
+                    {
+                        error = true;
+                    }
+                }
+                else
+                {
+                    PyErr_SetString(
+                        PyExc_TypeError,
+                        "An assignment of type timedelta is only possible for data objects of type "
+                        "timedelta");
+                    error = true;
+                }
+            }
             else
             {
                 // try to convert the assigned value to a numpy array and then read the values
@@ -7506,6 +7555,8 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
         float64 value2 = 0.0;
         complex128 value3 = 0.0;
         ito::Rgba32 value4;
+        ito::DateTime value5;
+        ito::TimeDelta value6;
 
         if (!error)
         {
@@ -7532,9 +7583,23 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
                 ito::PythonRgba::PyRgba* rgba = (ito::PythonRgba::PyRgba*)(value);
                 fromType = ito::tRGBA32;
                 value4 = rgba->rgba;
-                valuePtr =
-                    static_cast<void*>(&value4); // will be valid until end of function since this
-                                                 // is a direct access to the underlying structure.
+                // will be valid until end of function since this
+                // is a direct access to the underlying structure.
+                valuePtr = static_cast<void*>(&value4);
+            }
+            else if (PythonDateTime::PyDateTime_CheckExt(value))
+            {
+                bool ok = true;
+                value5 = PythonDateTime::GetDateTime(value, ok);
+                fromType = ito::tDateTime;
+                valuePtr = static_cast<void*>(&value5);
+            }
+            else if (PythonDateTime::PyTimeDelta_CheckExt(value))
+            {
+                bool ok = true;
+                value6 = PythonDateTime::GetTimeDelta(value, ok);
+                fromType = ito::tDateTime;
+                valuePtr = static_cast<void*>(&value6);
             }
             else
             {
@@ -7582,6 +7647,16 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
                         ito::numberConversion<ito::Rgba32>(fromType, valuePtr),
                         *(mask->dataObject));
                     break;
+                case ito::tDateTime:
+                    retval2 = self->dataObject->setTo(
+                        ito::numberConversion<ito::DateTime>(fromType, valuePtr),
+                        *(mask->dataObject));
+                    break;
+                case ito::tTimeDelta:
+                    retval2 = self->dataObject->setTo(
+                        ito::numberConversion<ito::TimeDelta>(fromType, valuePtr),
+                        *(mask->dataObject));
+                    break;
                 case ito::tFloat32:
                     retval2 = self->dataObject->setTo(
                         ito::numberConversion<float32>(fromType, valuePtr), *(mask->dataObject));
@@ -7620,6 +7695,8 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
         float64 value2 = 0.0;
         complex128 value3 = 0.0;
         ito::Rgba32 value4;
+        ito::DateTime value5;
+        ito::TimeDelta value6;
 
         if (!error)
         {
@@ -7661,9 +7738,23 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
                 ito::PythonRgba::PyRgba* rgba = (ito::PythonRgba::PyRgba*)(value);
                 fromType = ito::tRGBA32;
                 value4 = rgba->rgba;
-                valuePtr =
-                    static_cast<void*>(&value4); // will be valid until end of function since this
-                                                 // is a direct access to the underlying structure.
+                // will be valid until end of function since this
+                // is a direct access to the underlying structure.
+                valuePtr = static_cast<void*>(&value4);
+            }
+            else if (PythonDateTime::PyDateTime_CheckExt(value))
+            {
+                bool ok = true;
+                value5 = PythonDateTime::GetDateTime(value, ok);
+                fromType = ito::tDateTime;
+                valuePtr = static_cast<void*>(&value5);
+            }
+            else if (PythonDateTime::PyTimeDelta_CheckExt(value))
+            {
+                bool ok = true;
+                value6 = PythonDateTime::GetTimeDelta(value, ok);
+                fromType = ito::tDateTime;
+                valuePtr = static_cast<void*>(&value6);
             }
             else
             {
@@ -7708,6 +7799,14 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
                 case ito::tRGBA32:
                     self->dataObject->at<ito::Rgba32>(idx) =
                         ito::numberConversion<ito::Rgba32>(fromType, valuePtr);
+                    break;
+                case ito::tDateTime:
+                    self->dataObject->at<ito::DateTime>(idx) =
+                        ito::numberConversion<ito::DateTime>(fromType, valuePtr);
+                    break;
+                case ito::tTimeDelta:
+                    self->dataObject->at<ito::TimeDelta>(idx) =
+                        ito::numberConversion<ito::TimeDelta>(fromType, valuePtr);
                     break;
                 case ito::tFloat32:
                     self->dataObject->at<float32>(idx) =
@@ -8170,14 +8269,15 @@ ito::RetVal PythonDataObject::copyNpArrayValuesToDataObject(
             const npy_datetime *td = reinterpret_cast<npy_datetime*>(data);
             ito::DateTime* rowPtr;
             PyArray_Descr* dtype = PyArray_DESCR(npNdArray);
-            if (!PyDataType_ISDATETIME(dtype)) 
+            if (!PyDataType_ISDATETIME(dtype))
             {
                 PyErr_SetString(PyExc_TypeError,
                     "cannot get datetime metadata from non-datetime type");
                 return NULL;
             }
 
-            const PyArray_DatetimeMetaData *meta = &(((PyArray_DatetimeDTypeMetaData *)dtype->c_metadata)->meta);
+            const PyArray_DatetimeMetaData *meta = &(((PyArray_DatetimeDTypeMetaData
+        *)dtype->c_metadata)->meta);
 
             for (m = 0; m < mat->rows; m++)
             {
@@ -8185,7 +8285,7 @@ ito::RetVal PythonDataObject::copyNpArrayValuesToDataObject(
                 for (n = 0; n < mat->cols; n++)
                 {
                     // todo
-                    
+
                     rowPtr[n].utcOffset = 0;
                     rowPtr[n].datetime = td[c++];
                 }
@@ -9684,12 +9784,12 @@ PyObject* PythonDataObject::PyDataObj_ToListRecursive(
 }
 
 //-------------------------------------------------------------------------------------
-PyObject* PythonDataObject::PyDataObj_At(ito::DataObject* dataObj, unsigned int* idx)
+PyObject* PythonDataObject::PyDataObj_At(ito::DataObject* dataObj, const unsigned int* idx)
 {
-    if (dataObj == NULL)
+    if (dataObj == nullptr)
     {
         PyErr_SetString(PyExc_TypeError, "data object is NULL");
-        return NULL;
+        return nullptr;
     }
 
     switch (dataObj->getType())
@@ -9709,7 +9809,9 @@ PyObject* PythonDataObject::PyDataObj_At(ito::DataObject* dataObj, unsigned int*
     case ito::tRGBA32: {
         ito::PythonRgba::PyRgba* color = ito::PythonRgba::createEmptyPyRgba();
         if (color)
+        {
             color->rgba = dataObj->at<ito::Rgba32>(idx).rgba;
+        }
         return (PyObject*)color;
     }
     case ito::tFloat32:
@@ -9717,79 +9819,46 @@ PyObject* PythonDataObject::PyDataObj_At(ito::DataObject* dataObj, unsigned int*
     case ito::tFloat64:
         return PyFloat_FromDouble(dataObj->at<float64>(idx));
     case ito::tComplex64: {
-        ito::complex64 value = dataObj->at<complex64>(idx);
+        const ito::complex64 value = dataObj->at<complex64>(idx);
         return PyComplex_FromDoubles(value.real(), value.imag());
     }
     case ito::tComplex128: {
-        ito::complex128 value = dataObj->at<complex128>(idx);
+        const ito::complex128 value = dataObj->at<complex128>(idx);
         return PyComplex_FromDoubles(value.real(), value.imag());
+    }
+    case ito::tTimeDelta: {
+        Itom_PyDateTime_IMPORT;
+        const auto value = dataObj->at<TimeDelta>(idx);
+        int days, secs, usecs;
+        ito::timedelta::toDSU(value, days, secs, usecs);
+        PyObject* d = PyDelta_FromDSU(days, secs, usecs);
+        return d;
+    }
+    case ito::tDateTime: {
+        Itom_PyDateTime_IMPORT;
+        const auto value = dataObj->at<DateTime>(idx);
+        int year, month, day, hour, minute, sec, usec;
+
+        ito::datetime::toYMDHMSU(value, year, month, day, hour, minute, sec, usec);
+
+        PyObject* d = PyDateTime_FromDateAndTime(year, month, day, hour, minute, sec, usec);
+
+        if (value.utcOffset != 0)
+        {
+            PyDateTime_DateTime* dt = (PyDateTime_DateTime*)(d);
+            auto delta = PyDelta_FromDSU(0, value.utcOffset, 0); // new ref
+            PyObject *oldTzInfo = dt->hastzinfo ? dt->tzinfo : nullptr;
+            dt->tzinfo = PyTimeZone_FromOffset(delta); // new ref, passed to tzinfo
+            dt->hastzinfo = true;
+            Py_DECREF(delta);
+            Py_XDECREF(oldTzInfo);
+        }
+
+        return d;
     }
     default:
         PyErr_SetString(PyExc_TypeError, "type of data object not supported");
-        return NULL;
-    }
-}
-
-//-------------------------------------------------------------------------------------
-PyObject* PythonDataObject::PyDataObj_At(ito::DataObject* dataObj, int continuousIdx)
-{
-    if (dataObj == NULL)
-    {
-        PyErr_SetString(PyExc_TypeError, "data object is NULL");
-        return NULL;
-    }
-
-    if (continuousIdx >= dataObj->getTotal())
-    {
-        PyErr_SetString(PyExc_TypeError, "continuous index is out of range.");
-        return NULL;
-    }
-
-    int dims = dataObj->getDims();
-    int planeSize = dataObj->getSize(dims - 1) * dataObj->getSize(dims - 2);
-    int planeIdx = continuousIdx % planeSize;
-    int col = planeIdx % dataObj->getSize(dims - 1);
-    int row = (planeIdx - col) / dataObj->getSize(dims - 1);
-    int mat = (continuousIdx - planeIdx) / planeSize;
-    mat = dataObj->seekMat(mat);
-
-    cv::Mat* m = (cv::Mat*)dataObj->get_mdata()[mat];
-
-    switch (dataObj->getType())
-    {
-    case ito::tUInt8:
-        return PyLong_FromUnsignedLong(m->at<uint8>(row, col));
-    case ito::tInt8:
-        return PyLong_FromLong(m->at<int8>(row, col));
-    case ito::tUInt16:
-        return PyLong_FromUnsignedLong(m->at<uint16>(row, col));
-    case ito::tInt16:
-        return PyLong_FromLong(m->at<int16>(row, col));
-    case ito::tUInt32:
-        return PyLong_FromUnsignedLong(m->at<uint32>(row, col));
-    case ito::tInt32:
-        return PyLong_FromLong(m->at<int32>(row, col));
-    case ito::tRGBA32: {
-        ito::PythonRgba::PyRgba* color = ito::PythonRgba::createEmptyPyRgba();
-        if (color)
-            color->rgba = m->at<Rgba32>(row, col).rgba;
-        return (PyObject*)color;
-    }
-    case ito::tFloat32:
-        return PyFloat_FromDouble(m->at<float32>(row, col));
-    case ito::tFloat64:
-        return PyFloat_FromDouble(m->at<float64>(row, col));
-    case ito::tComplex64: {
-        ito::complex64 value = (m->at<complex64>(row, col));
-        return PyComplex_FromDoubles(value.real(), value.imag());
-    }
-    case ito::tComplex128: {
-        ito::complex128 value = (m->at<complex128>(row, col));
-        return PyComplex_FromDoubles(value.real(), value.imag());
-    }
-    default:
-        PyErr_SetString(PyExc_TypeError, "type of data object not supported");
-        return NULL;
+        return nullptr;
     }
 }
 
@@ -9818,9 +9887,10 @@ inverse : bool \n\
 Returns \n\
 ------- \n\
 mask : dataObject \n\
-    uint8 :class:`dataObject` as mask with the shape of the last two axes, :attr:`axisScales`, \n\
-    :attr:`axisOffsets`, :attr:`axisDescriptions` and :attr:`axisUnits` than this \n\
-    object.");
+    uint8 :class:`dataObject` mask (0: not contained, else: contained) whose shape is equal \n\
+    to the last two dimensions of this object. The tags :attr:`axisScales`, \n\
+    :attr:`axisOffsets`, :attr:`axisDescriptions` and :attr:`axisUnits` are accordingly copied from the \n\
+    last two axes of this object.");
 PyObject* PythonDataObject::PyDataObject_createMask(
     PyDataObject* self, PyObject* args, PyObject* kwds)
 {
@@ -10577,7 +10647,12 @@ PyObject* PythonDataObject::PyDataObj_StaticEye(PyObject* /*self*/, PyObject* ar
     {
         PyErr_SetString(
             PyExc_TypeError, "Type uint32 not supported due to incompatibility with OpenCV.");
-        return NULL;
+        return nullptr;
+    }
+    else if (typeno == ito::tDateTime || typeno == ito::tTimeDelta)
+    {
+        PyErr_SetString(PyExc_TypeError, "Eye not possible for type datetime or timedelta.");
+        return nullptr;
     }
 
     if (typeno >= 0)
@@ -10594,13 +10669,13 @@ PyObject* PythonDataObject::PyDataObj_StaticEye(PyObject* /*self*/, PyObject* ar
         else
         {
             PyErr_SetString(PyExc_TypeError, "size must be bigger than zero.");
-            return NULL;
+            return nullptr;
         }
     }
     else
     {
         PyErr_SetString(PyExc_TypeError, "unknown dtype");
-        return NULL;
+        return nullptr;
     }
 }
 
