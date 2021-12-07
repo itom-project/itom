@@ -493,6 +493,13 @@ void HelpViewer::visibilityChangedSearchWidget(bool visible)
 	}
 }
 
+//----------------------------------------------------------------------------------------
+void HelpViewer::moveEvent(QMoveEvent* event)
+{
+    m_pDefaultZoomFactor = GuiHelper::screenDpiFactor(&event->pos());
+    mnuDefaultZoomWindow();
+}
+
 
 } //end namespace ito
 

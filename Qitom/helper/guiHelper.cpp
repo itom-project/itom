@@ -34,7 +34,7 @@ namespace ito
     /*
     returns the number of dots per inch of the desktop screen or 96 in case that it can not be determined!
     */
-    int GuiHelper::getScreenLogicalDpi(bool* ok /*= nullptr*/, QPoint *pos /*= nullptr*/)
+    int GuiHelper::getScreenLogicalDpi(const QPoint *pos /*= nullptr*/)
     {
         QScreen *currentScreen;
         if (pos)
@@ -63,9 +63,9 @@ namespace ito
        screen resolution of 96dpi. A factor higher than 1 is the factor between 
        real screen resolution and 96dpi. 
     */
-    float GuiHelper::screenDpiFactor()
+    float GuiHelper::screenDpiFactor(const QPoint* pos /*= nullptr*/)
     {
-        int dpi = getScreenLogicalDpi();
+        int dpi = getScreenLogicalDpi(pos=pos);
         return qBound(1.0, (float)dpi / 96.0, 1.e10);
     }
 };

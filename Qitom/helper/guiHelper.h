@@ -31,8 +31,8 @@ namespace ito {
 class GuiHelper
 {
 public:
-    static int getScreenLogicalDpi(bool* ok = nullptr, QPoint *pos = nullptr);
-    static float screenDpiFactor(); /*!< returns a factor [1,..) by which user interface components
+    static int getScreenLogicalDpi(const QPoint *pos = nullptr);
+    static float screenDpiFactor(const QPoint* pos = nullptr); /*!< returns a factor [1,..) by which user interface components
                                        can be scaled due to high resolution screens. A factor of 1.0
                                        is related to the default 96dpi screen. */
 
