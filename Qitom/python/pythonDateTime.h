@@ -56,6 +56,12 @@ public:
     static DateTime GetDateTime(PyObject* obj, bool &ok);
     static TimeDelta GetTimeDelta(PyObject* obj, bool &ok);
 
+    // new ref, sets a PyException if an error occurs
+    static PyObject* GetPyDateTime(const DateTime &datetime);
+
+    // new ref, sets a PyException if an error occurs
+    static PyObject* GetPyTimeDelta(const TimeDelta &delta);
+
     
 
 };

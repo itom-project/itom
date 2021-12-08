@@ -26,6 +26,7 @@
 
 namespace ito
 {
+    //---------------------------------------------------------------------------------
     // checks for Python datetime and corresponding numpy types
     bool PythonDateTime::PyDateTime_CheckExt(PyObject* obj)
     {
@@ -35,6 +36,7 @@ namespace ito
         return PyDateTime_Check(obj);
     }
 
+    //---------------------------------------------------------------------------------
     // checks for Python time delta and corresponding numpy types
     bool PythonDateTime::PyTimeDelta_CheckExt(PyObject* obj)
     {
@@ -44,6 +46,7 @@ namespace ito
         return PyDelta_Check(obj);
     }
 
+    //---------------------------------------------------------------------------------
     DateTime PythonDateTime::GetDateTime(PyObject* obj, bool &ok)
     {
         // import the datetime api
@@ -91,6 +94,7 @@ namespace ito
         return ito::DateTime(0);
     }
 
+    //---------------------------------------------------------------------------------
     TimeDelta PythonDateTime::GetTimeDelta(PyObject* obj, bool &ok)
     {
         // import the datetime api
@@ -111,6 +115,42 @@ namespace ito
         }
 
         return ito::TimeDelta(0);
+    }
+
+    //---------------------------------------------------------------------------------
+    // new ref, sets a PyException if an error occurs
+    PyObject* PythonDateTime::GetPyDateTime(const DateTime &datetime)
+    {
+        Itom_PyDateTime_IMPORT;
+        int year, month, day, hour, minute, sec, usec;
+
+        ito::datetime::toYMDHMSU(datetime, year, month, day, hour, minute, sec, usec);
+
+        PyObject* d = PyDateTime_FromDateAndTime(year, month, day, hour, minute, sec, usec);
+
+        if (datetime.utcOffset != 0)
+        {
+            PyDateTime_DateTime* dt = (PyDateTime_DateTime*)(d);
+            auto delta = PyDelta_FromDSU(0, datetime.utcOffset, 0); // new ref
+            PyObject* oldTzInfo = dt->hastzinfo ? dt->tzinfo : nullptr;
+            dt->tzinfo = PyTimeZone_FromOffset(delta); // new ref, passed to tzinfo
+            dt->hastzinfo = true;
+            Py_DECREF(delta);
+            Py_XDECREF(oldTzInfo);
+        }
+
+        return d;
+    }
+
+    //---------------------------------------------------------------------------------
+    // new ref, sets a PyException if an error occurs
+    PyObject* PythonDateTime::GetPyTimeDelta(const TimeDelta &delta)
+    {
+        Itom_PyDateTime_IMPORT;
+        int days, secs, usecs;
+        ito::timedelta::toDSU(delta, days, secs, usecs);
+        PyObject* d = PyDelta_FromDSU(days, secs, usecs);
+        return d;
     }
 
 

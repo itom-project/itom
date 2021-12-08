@@ -94,6 +94,7 @@ Recently the following data types (dtype) are supported: \n\
 * Floating point (float32, float64 (=> double)),\n\
 * Complex (complex64 (2x float32), complex128 (2x float64)).\n\
 * Color (rgba32 (uint32 or uint[4] containing the four 8bit values [R, G, B, Alpha])).\n\
+* Datetime and Timedelta (datetime, timedelta). \n\
 \n\
 Arrays can also be constructed using some of the static pre-initialization methods \n\
 :meth:`zeros`, :meth:`ones`, :meth:`rand` or :meth:`randN`  \n\
@@ -109,7 +110,7 @@ dims : sequence of int, optional \n\
 dtype : str, optional \n\
     Data type of each element in the array. Possible values are: \n\
     'int8', 'uint8', 'int16', 'uint16', 'int32', 'float32', 'float64', 'complex64', \n\
-    'complex128', 'rgba32'. \n\
+    'complex128', 'rgba32', 'datetime' or 'timedelta'. \n\
 continuous : int, optional \n\
     The last two dimensions of a dataObject are always stored as continuous junk of memory, \n\
     denoted as plane. If ``continuous`` is set to ``1``, even a dataObject with a dimension \n\
@@ -119,7 +120,7 @@ continuous : int, optional \n\
     are referenced by means of an index vector. This is recommended for large arrays, since \n\
     the operating system might get trouble allocated one very big continuous junk of memory, \n\
     instead of multiple smaller ones. \n\
-data : int or float or complex or rgba or sequence of int or sequence of float or sequence of complex or dataObject or np.ndarray, optional \n\
+data : int or float or complex or rgba or datetime.datetime or datetime.timedelta or sequence of int or sequence of float or sequence of complex or dataObject or np.ndarray, optional \n\
     If ``data`` is a single value, all values in the dataObject are set to this single value. \n\
     Else, the sequence or array-like object must have the same number of values than \n\
     the data object. These values will then be assigned to the new data object (filled row by row).\n\
@@ -456,15 +457,15 @@ return -2 if args / kwds cannot be parsed, Python error message is set, too
 int PythonDataObject::PyDataObj_CreateFromShapeTypeData(
     PyDataObject* self, PyObject* args, PyObject* kwds)
 {
-    PyObject* data = NULL;
-    const char* kwlist[] = {"dims", "dtype", "continuous", "data", NULL};
-    PyObject* dimList = NULL;
+    PyObject* data = nullptr;
+    const char* kwlist[] = {"dims", "dtype", "continuous", "data", nullptr};
+    PyObject* dimList = nullptr;
     const char* typeName = "uint8\0";
     unsigned char continuous = 0;
     Py_ssize_t dims = 0;
     int intDims = 0;
     ito::RetVal retVal;
-    int* sizes = NULL;
+    int* sizes = nullptr;
     int tempSizes = 0;
 
     if (!PyArg_ParseTupleAndKeywords(
@@ -556,13 +557,16 @@ int PythonDataObject::PyDataObj_CreateFromShapeTypeData(
                 retVal += RetVal(retError);
             }
             else if (
-                !PySequence_Check(data) && PyFloat_Check(data) == false &&
-                PyLong_Check(data) == false && PyComplex_Check(data) == false)
+                !PySequence_Check(data) && !PyFloat_Check(data) && !PyLong_Check(data) &&
+                !PyComplex_Check(data) && !PyRgba_Check(data) &&
+                !PythonDateTime::PyDateTime_CheckExt(data) &&
+                !PythonDateTime::PyTimeDelta_CheckExt(data))
             {
                 PyErr_SetString(
                     PyExc_TypeError,
                     "The single value provided by data must be a numeric type (int, float, "
-                    "complex).");
+                    "complex) or a scalar value of type rgba, datetime.datetime or "
+                    "datetime.timedelta.");
                 retVal += RetVal(retError);
             }
         }
@@ -609,6 +613,45 @@ int PythonDataObject::PyDataObj_CreateFromShapeTypeData(
                         *(self->dataObject) =
                             complex128(PyComplex_RealAsDouble(data), PyComplex_ImagAsDouble(data));
                     }
+                    else if (PyRgba_Check(data))
+                    {
+                        const auto* rgba = reinterpret_cast<const PythonRgba::PyRgba*>(data);
+                        *(self->dataObject) = rgba->rgba;
+                    }
+                    else if (PythonDateTime::PyDateTime_CheckExt(data))
+                    {
+                        bool ok;
+                        const auto dt = PythonDateTime::GetDateTime(data, ok);
+
+                        if (!ok)
+                        {
+                            throw cv::Exception(
+                                0,
+                                "Value could not be parsed to an itom datetime value.",
+                                "PyDataObject_init",
+                                __FILE__,
+                                __LINE__);
+                        }
+
+                        *(self->dataObject) = dt;
+                    }
+                    else if (PythonDateTime::PyTimeDelta_CheckExt(data))
+                    {
+                        bool ok;
+                        const auto td = PythonDateTime::GetTimeDelta(data, ok);
+
+                        if (!ok)
+                        {
+                            throw cv::Exception(
+                                0,
+                                "Value could not be parsed to an itom timedelta value.",
+                                "PyDataObject_init",
+                                __FILE__,
+                                __LINE__);
+                        }
+
+                        *(self->dataObject) = td;
+                    }
                     else if (PySequence_Check(data))
                     {
                         int npTypenum = getNpTypeFromDataObjectType(typeno);
@@ -625,7 +668,7 @@ int PythonDataObject::PyDataObj_CreateFromShapeTypeData(
 
                         PyObject* npArray = PyArray_ContiguousFromAny(data, npTypenum, 1, 1);
 
-                        if (npArray == NULL)
+                        if (npArray == nullptr)
                         {
                             // Python error is set... Therefore just throw an exception without
                             // message
@@ -663,8 +706,7 @@ int PythonDataObject::PyDataObj_CreateFromShapeTypeData(
                         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
                     }
 
-                    delete self->dataObject;
-                    self->dataObject = NULL;
+                    DELETE_AND_SET_NULL(self->dataObject);
                     retVal += RetVal(retError);
                 }
             }
@@ -1052,6 +1094,7 @@ RetVal PythonDataObject::PyDataObj_ParseCreateArgs(
             &continuous))
     {
         typeno = dObjTypeFromName(type);
+
         if (typeno >= 0)
         {
             dims = PyList_Size(dimList);
@@ -1199,10 +1242,10 @@ PyDoc_STRVAR(
 \n\
 This type string has one of these values: ``uint8``, ``int8``, ``uint16``, \n\
 ``int16``, ``int32``, ``float32``, ``float64``, ``complex64``, ``complex128``, \n\
-``rgba32``.");
+``rgba32``, ``datetime`` or ``timedelta``.");
 PyObject* PythonDataObject::PyDataObj_GetType(PyDataObject* self, void* /*closure*/)
 {
-    if (self->dataObject == NULL)
+    if (self->dataObject == nullptr)
     {
         Py_RETURN_NONE;
     }
@@ -1832,10 +1875,12 @@ PyObject* PythonDataObject::PyDataObject_getValueDescription(PyDataObject* self,
     std::string tempString = self->dataObject->getValueDescription().data();
     // PyObject *temp = PyUnicode_FromString(self->dataObject->getValueDescription().data());
     PyObject* temp = PyUnicode_DecodeLatin1(tempString.data(), tempString.length(), NULL);
+
     if (temp)
     {
         return temp;
     }
+
     return PyUnicode_FromString("<encoding error>"); // TODO
 }
 
@@ -1902,19 +1947,19 @@ Example: ::\n\
     b = dataObject[1, 1:10, 1, 1].value\n\
     # or for the first value \n\
     b = dataObject[1, 1:10, 1, 1].value[0]\n\
-    # The elements of the tuple are adressed with b[idx].");
+    # The elements of the tuple are addressed with b[idx].");
 PyObject* PythonDataObject::PyDataObject_getValue(PyDataObject* self, void* /*closure*/)
 {
-    PyObject* OutputTuple = NULL;
+    PyObject* outputTuple = NULL;
 
     int dims = self->dataObject->getDims();
 
     if (dims == 0)
     {
-        return OutputTuple = PyTuple_New(0);
+        return outputTuple = PyTuple_New(0);
     }
 
-    OutputTuple = PyTuple_New(self->dataObject->getTotal());
+    outputTuple = PyTuple_New(self->dataObject->getTotal());
 
     ito::DObjConstIterator it = self->dataObject->constBegin();
     ito::DObjConstIterator itEnd = self->dataObject->constEnd();
@@ -1925,31 +1970,31 @@ PyObject* PythonDataObject::PyDataObject_getValue(PyDataObject* self, void* /*cl
     case ito::tInt8:
         for (; it < itEnd; ++it)
         {
-            PyTuple_SetItem(OutputTuple, cnt++, PyLong_FromLong((long)(*((ito::int8*)(*it)))));
+            PyTuple_SetItem(outputTuple, cnt++, PyLong_FromLong((long)(*((ito::int8*)(*it)))));
         }
         break;
     case ito::tUInt8:
         for (; it < itEnd; ++it)
         {
-            PyTuple_SetItem(OutputTuple, cnt++, PyLong_FromLong((long)(*((ito::uint8*)(*it)))));
+            PyTuple_SetItem(outputTuple, cnt++, PyLong_FromLong((long)(*((ito::uint8*)(*it)))));
         }
         break;
     case ito::tInt16:
         for (; it < itEnd; ++it)
         {
-            PyTuple_SetItem(OutputTuple, cnt++, PyLong_FromLong((long)(*((ito::int16*)(*it)))));
+            PyTuple_SetItem(outputTuple, cnt++, PyLong_FromLong((long)(*((ito::int16*)(*it)))));
         }
         break;
     case ito::tUInt16:
         for (; it < itEnd; ++it)
         {
-            PyTuple_SetItem(OutputTuple, cnt++, PyLong_FromLong((long)(*((ito::uint16*)(*it)))));
+            PyTuple_SetItem(outputTuple, cnt++, PyLong_FromLong((long)(*((ito::uint16*)(*it)))));
         }
         break;
     case ito::tInt32:
         for (; it < itEnd; ++it)
         {
-            PyTuple_SetItem(OutputTuple, cnt++, PyLong_FromLong((long)(*((ito::int32*)(*it)))));
+            PyTuple_SetItem(outputTuple, cnt++, PyLong_FromLong((long)(*((ito::int32*)(*it)))));
         }
         break;
     case ito::tRGBA32: {
@@ -1960,7 +2005,7 @@ PyObject* PythonDataObject::PyDataObject_getValue(PyDataObject* self, void* /*cl
             if (color)
             {
                 color->rgba = ((ito::Rgba32*)(*it))->rgba;
-                PyTuple_SetItem(OutputTuple, cnt++, (PyObject*)color);
+                PyTuple_SetItem(outputTuple, cnt++, (PyObject*)color);
             }
             else
             {
@@ -1973,47 +2018,79 @@ PyObject* PythonDataObject::PyDataObject_getValue(PyDataObject* self, void* /*cl
         for (; it < itEnd; ++it)
         {
             PyTuple_SetItem(
-                OutputTuple, cnt++, PyFloat_FromDouble((double)(*((ito::float32*)(*it)))));
+                outputTuple, cnt++, PyFloat_FromDouble((double)(*((ito::float32*)(*it)))));
         }
         break;
     case ito::tFloat64:
         for (; it < itEnd; ++it)
         {
             PyTuple_SetItem(
-                OutputTuple, cnt++, PyFloat_FromDouble((double)(*((ito::float64*)(*it)))));
+                outputTuple, cnt++, PyFloat_FromDouble((double)(*((ito::float64*)(*it)))));
         }
         break;
     case ito::tComplex64: {
-        complex64* value;
+        const complex64* value;
         for (; it < itEnd; ++it)
         {
-            value = (complex64*)(*it);
+            value = (const complex64*)(*it);
+            // steals a reference
             PyTuple_SetItem(
-                OutputTuple,
+                outputTuple,
                 cnt++,
                 PyComplex_FromDoubles((double)value->real(), (double)value->imag()));
         }
         break;
     }
     case ito::tComplex128: {
-        complex128* value;
+        const complex128* value;
         for (; it < itEnd; ++it)
         {
-            value = (complex128*)(*it);
+            value = (const complex128*)(*it);
+            // steals a reference
             PyTuple_SetItem(
-                OutputTuple,
+                outputTuple,
                 cnt++,
                 PyComplex_FromDoubles((double)value->real(), (double)value->imag()));
         }
         break;
     }
+    case ito::tDateTime: {
+        const DateTime* value;
+        PyObject* obj;
+        for (; it < itEnd; ++it)
+        {
+            value = (const DateTime*)(*it);
+            obj = PythonDateTime::GetPyDateTime(*value);
+            // steals a reference
+            PyTuple_SetItem(
+                outputTuple,
+                cnt++,
+                obj ? obj : Py_NewRef(Py_None));
+        }
+        break;
+    }
+    case ito::tTimeDelta: {
+        const TimeDelta* value;
+        PyObject* obj;
+        for (; it < itEnd; ++it)
+        {
+            value = (const TimeDelta*)(*it);
+            obj = PythonDateTime::GetPyTimeDelta(*value);
+            // steals a reference
+            PyTuple_SetItem(
+                outputTuple,
+                cnt++,
+                obj ? obj : Py_NewRef(Py_None));
+        }
+        break;
+    }
     default:
-        Py_XDECREF(OutputTuple);
+        Py_XDECREF(outputTuple);
         PyErr_SetString(PyExc_NotImplementedError, "Type not implemented yet");
         return NULL;
     }
 
-    return OutputTuple;
+    return outputTuple;
 }
 
 //-------------------------------------------------------------------------------------
@@ -3596,9 +3673,10 @@ PyObject* PythonDataObject::PyDataObj_nbSubtract(PyObject* o1, PyObject* o2)
                 retObj->dataObject =
                     new ito::DataObject(dobj2->dataObject->getSize(), dobj2->dataObject->getType());
                 retObj->dataObject->setTo(scalar);
-                *(retObj->dataObject) -=
-                    *(dobj2->dataObject); // resDataObj should always be the owner of its data,
-                                          // therefore base of resultObject remains None
+
+                // resDataObj should always be the owner of its data,
+                // therefore base of resultObject remains None
+                *(retObj->dataObject) -= *(dobj2->dataObject);
             }
         }
     }
@@ -4415,12 +4493,31 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceAdd(PyObject* o1, PyObject* o2)
 
         dobj1->dataObject->addToProtocol(buf);
     }
+    else if (PythonDateTime::PyTimeDelta_CheckExt(o2))
+    {
+        bool ok;
+        const auto td = PythonDateTime::GetTimeDelta(o2, ok);
+
+        try
+        {
+            *(dobj1->dataObject) += td;
+        }
+        catch (cv::Exception& exc)
+        {
+            PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+            return NULL;
+        }
+
+        char buf[PROTOCOL_STR_LENGTH] = {0};
+        sprintf_s(buf, PROTOCOL_STR_LENGTH, "Inplace scalar addition of timedelta.");
+        dobj1->dataObject->addToProtocol(buf);
+    }
     else
     {
         PyErr_SetString(
             PyExc_RuntimeError,
-            "the second operand must be either a data object or an integer, floating point or "
-            "complex value");
+            "the second operand must be either a data object or an integer, floating point, "
+            "complex or timedelta value");
         return NULL;
     }
 
@@ -4510,12 +4607,31 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceSubtract(PyObject* o1, PyObject* 
 
         dobj1->dataObject->addToProtocol(buf);
     }
+    else if (PythonDateTime::PyTimeDelta_CheckExt(o2))
+    {
+        bool ok;
+        const auto td = PythonDateTime::GetTimeDelta(o2, ok);
+
+        try
+        {
+            *(dobj1->dataObject) -= td;
+        }
+        catch (cv::Exception& exc)
+        {
+            PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+            return NULL;
+        }
+
+        char buf[PROTOCOL_STR_LENGTH] = {0};
+        sprintf_s(buf, PROTOCOL_STR_LENGTH, "Inplace scalar subtraction of timedelta.");
+        dobj1->dataObject->addToProtocol(buf);
+    }
     else
     {
         PyErr_SetString(
             PyExc_RuntimeError,
-            "the second operand must be either a data object or an integer or floating point "
-            "value");
+            "the second operand must be either a data object, an integer, floating point, "
+            "complex or timedelta value");
         return NULL;
     }
 
@@ -9827,33 +9943,13 @@ PyObject* PythonDataObject::PyDataObj_At(ito::DataObject* dataObj, const unsigne
         return PyComplex_FromDoubles(value.real(), value.imag());
     }
     case ito::tTimeDelta: {
-        Itom_PyDateTime_IMPORT;
         const auto value = dataObj->at<TimeDelta>(idx);
-        int days, secs, usecs;
-        ito::timedelta::toDSU(value, days, secs, usecs);
-        PyObject* d = PyDelta_FromDSU(days, secs, usecs);
+        PyObject* d = PythonDateTime::GetPyTimeDelta(value);
         return d;
     }
     case ito::tDateTime: {
-        Itom_PyDateTime_IMPORT;
         const auto value = dataObj->at<DateTime>(idx);
-        int year, month, day, hour, minute, sec, usec;
-
-        ito::datetime::toYMDHMSU(value, year, month, day, hour, minute, sec, usec);
-
-        PyObject* d = PyDateTime_FromDateAndTime(year, month, day, hour, minute, sec, usec);
-
-        if (value.utcOffset != 0)
-        {
-            PyDateTime_DateTime* dt = (PyDateTime_DateTime*)(d);
-            auto delta = PyDelta_FromDSU(0, value.utcOffset, 0); // new ref
-            PyObject *oldTzInfo = dt->hastzinfo ? dt->tzinfo : nullptr;
-            dt->tzinfo = PyTimeZone_FromOffset(delta); // new ref, passed to tzinfo
-            dt->hastzinfo = true;
-            Py_DECREF(delta);
-            Py_XDECREF(oldTzInfo);
-        }
-
+        PyObject* d = PythonDateTime::GetPyDateTime(value);
         return d;
     }
     default:

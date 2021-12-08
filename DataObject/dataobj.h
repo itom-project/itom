@@ -1107,18 +1107,22 @@ namespace ito {
         DataObject & operator += (const DataObject &rhs);
         DataObject & operator += (const float64 &value);
         DataObject & operator += (const complex128 &value);
+        DataObject & operator += (const TimeDelta &value);
         
         DataObject operator + (const DataObject &rhs);
         DataObject operator + (const float64 &value);
         DataObject operator + (const complex128 &value);
+        DataObject operator + (const TimeDelta &value);
         
         DataObject & operator -= (const DataObject &rhs);
         DataObject & operator -= (const float64 &value);
         DataObject & operator -= (const complex128 &value);
+        DataObject & operator -= (const TimeDelta &value);
         
         DataObject operator - (const DataObject &rhs);
         DataObject operator - (const float64 &value);
         DataObject operator - (const complex128 &value);
+        DataObject operator - (const TimeDelta &value);
         
         DataObject & operator *= (const DataObject &rhs);
         DataObject & operator *= (const float64 &factor);

@@ -34,13 +34,21 @@ namespace ito {
 namespace datetime {
     void toYMDHMSU(const DateTime &dt, int &year, int &month, int &day, int &hour, int &minute, int &second, int &usecond)
     {
+        // usecond contains milliseconds and seconds
         usecond = static_cast<int>(dt.datetime % 1000000);
 
         // milliseconds since 01.01.1970, 00:00
-        const int64 msecs = static_cast<time_t>((dt.datetime - usecond) / 1000);
+        int64 secs = static_cast<time_t>((dt.datetime - usecond) / 1000000);
+
+        if (dt.datetime < 0 && usecond != 0)
+        {
+            usecond = 1000000 + usecond;
+            secs -= 1;
+        }
+
         QDateTime qdt(QDate(1970, 1, 1));
         qdt.setOffsetFromUtc(dt.utcOffset);
-        qdt = qdt.addMSecs(msecs);
+        qdt = qdt.addSecs(secs);
 
         second = qdt.time().second();
         minute = qdt.time().minute();

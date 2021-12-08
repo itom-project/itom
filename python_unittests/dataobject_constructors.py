@@ -1,5 +1,6 @@
 import unittest
-from itom import dataObject
+from itom import dataObject, rgba
+from datetime import datetime, timedelta
 import numpy as np
 
 
@@ -125,6 +126,23 @@ class DataObjectConstructors(unittest.TestCase):
         for r in [0, 1]:
             for c in [0, 1, 2, 3]:
                 self.assertAlmostEqual(obj[r, c], 4.2 + 5.8j, places=5)
+
+        obj = dataObject([2, 4], "rgba32", data=rgba(200,100,50))
+        for r in [0, 1]:
+            for c in [0, 1, 2, 3]:
+                self.assertEqual(obj[r,c], rgba(200,100,50))
+
+        dt = datetime(1999, 7, 13, hour=14, minute=9, second=59, microsecond=12000)
+        obj = dataObject([2, 4], "datetime", data=dt)
+        for r in [0, 1]:
+            for c in [0, 1, 2, 3]:
+                self.assertEqual(obj[r,c], dt)
+
+        td = timedelta(days=-7912, seconds=59, microseconds=12000)
+        obj = dataObject([2, 4], "timedelta", data=td)
+        for r in [0, 1]:
+            for c in [0, 1, 2, 3]:
+                self.assertEqual(obj[r,c], td)
 
     ##########################################################
     def test_dtype_conversion_copy_constructor(self):

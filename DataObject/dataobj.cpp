@@ -4911,6 +4911,30 @@ RetVal AddScalarFunc<ito::Rgba32>(
     return RetVal(retOk);
 }
 
+template <>
+RetVal AddScalarFunc<ito::DateTime>(
+    const DataObject* dObjIn, ito::float64 scalar, DataObject* dObjOut)
+{
+    cv::error(cv::Exception(
+        CV_StsAssert,
+        "Integer or float cannot be added or subtracted to datetime.",
+        "",
+        __FILE__,
+        __LINE__));  
+}
+
+template <>
+RetVal AddScalarFunc<ito::TimeDelta>(
+    const DataObject* dObjIn, ito::float64 scalar, DataObject* dObjOut)
+{
+    cv::error(cv::Exception(
+        CV_StsAssert,
+        "Integer or float cannot be added or subtracted to timedelta.",
+        "",
+        __FILE__,
+        __LINE__));
+}
+
 typedef RetVal (*tAddScalarFunc)(
     const DataObject* dObjIn, ito::float64 scalar, DataObject* dObjOut);
 MAKEFUNCLIST(AddScalarFunc);
@@ -5073,9 +5097,118 @@ RetVal AddComplexScalarFunc<ito::Rgba32>(
     return RetVal(retOk);
 }
 
+template <>
+RetVal AddComplexScalarFunc<ito::DateTime>(
+    const DataObject* dObjIn, ito::complex128 scalar, DataObject* dObjOut)
+{
+    cv::error(cv::Exception(
+        CV_StsAssert,
+        "Integer or float cannot be added or subtracted to datetime.",
+        "",
+        __FILE__,
+        __LINE__));
+}
+
+template <>
+RetVal AddComplexScalarFunc<ito::TimeDelta>(
+    const DataObject* dObjIn, ito::complex128 scalar, DataObject* dObjOut)
+{
+    cv::error(cv::Exception(
+        CV_StsAssert,
+        "Integer or float cannot be added or subtracted to timedelta.",
+        "",
+        __FILE__,
+        __LINE__));
+}
+
 typedef RetVal (*tAddComplexScalarFunc)(
     const DataObject* dObjIn, ito::complex128 scalar, DataObject* dObjOut);
 MAKEFUNCLIST(AddComplexScalarFunc);
+
+template <typename _Tp>
+RetVal AddTimeDeltaScalarFunc(const DataObject* dObjIn, const ito::TimeDelta &scalar, DataObject* dObjOut)
+{
+    cv::error(cv::Exception(
+        CV_StsAssert,
+        "A timedelta scalar can only be added or subtracted to a datetime or timedelta dataObject.",
+        "",
+        __FILE__,
+        __LINE__));
+}
+
+template <>
+RetVal AddTimeDeltaScalarFunc<ito::TimeDelta>(
+    const DataObject* dObjIn, const ito::TimeDelta &scalar, DataObject* dObjOut)
+{
+    int srcTmat = 0;
+    int dstTmat = 0;
+    int numMats = dObjIn->getNumPlanes();
+    const cv::Mat_<ito::TimeDelta>* cvSrc = nullptr;
+    cv::Mat_<ito::TimeDelta>* cvDest = nullptr;
+    const ito::TimeDelta *srcPtr;
+    ito::TimeDelta* destPtr;
+
+    for (int nmat = 0; nmat < numMats; ++nmat)
+    {
+        dstTmat = dObjOut->seekMat(nmat, numMats);
+        srcTmat = dObjIn->seekMat(nmat, numMats);
+        cvSrc = static_cast<const cv::Mat_<ito::TimeDelta>*>(dObjIn->get_mdata()[srcTmat]);
+        cvDest = static_cast<cv::Mat_<ito::TimeDelta>*>(dObjOut->get_mdata()[dstTmat]);
+
+        for (int r = 0; r < cvSrc->rows; ++r)
+        {
+            srcPtr = cvSrc->ptr<const ito::TimeDelta>(r);
+            destPtr = cvDest->ptr<ito::TimeDelta>(r);
+
+            for (int c = 0; c < cvSrc->cols; ++c)
+            {
+                destPtr[c] = srcPtr[c];
+                destPtr[c].delta += scalar.delta;
+            }
+        }
+    }
+
+    return RetVal(retOk);
+}
+
+template <>
+RetVal AddTimeDeltaScalarFunc<ito::DateTime>(
+    const DataObject* dObjIn, const ito::TimeDelta &scalar, DataObject* dObjOut)
+{
+    int srcTmat = 0;
+    int dstTmat = 0;
+    int numMats = dObjIn->getNumPlanes();
+    const cv::Mat_<ito::DateTime>* cvSrc = nullptr;
+    cv::Mat_<ito::DateTime>* cvDest = nullptr;
+    const ito::DateTime *srcPtr;
+    ito::DateTime* destPtr;
+
+    for (int nmat = 0; nmat < numMats; ++nmat)
+    {
+        dstTmat = dObjOut->seekMat(nmat, numMats);
+        srcTmat = dObjIn->seekMat(nmat, numMats);
+        cvSrc = static_cast<const cv::Mat_<ito::DateTime>*>(dObjIn->get_mdata()[srcTmat]);
+        cvDest = static_cast<cv::Mat_<ito::DateTime>*>(dObjOut->get_mdata()[dstTmat]);
+
+        for (int r = 0; r < cvSrc->rows; ++r)
+        {
+            srcPtr = cvSrc->ptr<const ito::DateTime>(r);
+            destPtr = cvDest->ptr<ito::DateTime>(r);
+
+            for (int c = 0; c < cvSrc->cols; ++c)
+            {
+                destPtr[c] = srcPtr[c];
+                destPtr[c].datetime += scalar.delta;
+            }
+        }
+    }
+
+    return RetVal(retOk);
+}
+
+typedef RetVal(*tAddTimeDeltaScalarFunc)(
+    const DataObject* dObjIn, const ito::TimeDelta &scalar, DataObject* dObjOut);
+MAKEFUNCLIST(AddTimeDeltaScalarFunc);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! high-level, non-templated arithmetic operator for element-wise addition of values of given data
@@ -5102,6 +5235,12 @@ DataObject& DataObject::operator+=(const float64& value)
 DataObject& DataObject::operator+=(const complex128& value)
 {
     (fListAddComplexScalarFunc[m_type])(this, value, this);
+    return *this;
+}
+
+DataObject& DataObject::operator+=(const TimeDelta& value)
+{
+    (fListAddTimeDeltaScalarFunc[m_type])(this, value, this);
     return *this;
 }
 
@@ -5144,6 +5283,16 @@ DataObject DataObject::operator+(const complex128& value)
     copyTo(result, 1);
 
     (fListAddComplexScalarFunc[m_type])(this, value, &result);
+    return result;
+}
+
+DataObject DataObject::operator+(const TimeDelta& value)
+{
+    DataObject result;
+    result.m_continuous = this->m_continuous;
+    copyTo(result, 1);
+
+    (fListAddTimeDeltaScalarFunc[m_type])(this, value, &result);
     return result;
 }
 
@@ -5217,6 +5366,14 @@ DataObject& DataObject::operator-=(const complex128& value)
     return *this;
 }
 
+DataObject& DataObject::operator-=(const TimeDelta& value)
+{
+    TimeDelta valueNeg;
+    valueNeg.delta = -valueNeg.delta;
+    (fListAddTimeDeltaScalarFunc[m_type])(this, valueNeg, this);
+    return *this;
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------
 //! high-level, non-templated arithmetic operator for element-wise subtraction of values of given
 //! data object from values of this data object
@@ -5256,6 +5413,19 @@ DataObject DataObject::operator-(const complex128& value)
     copyTo(result, 1);
 
     (fListAddComplexScalarFunc[m_type])(this, -value, &result);
+    return result;
+}
+
+DataObject DataObject::operator-(const TimeDelta& value)
+{
+    DataObject result;
+    result.m_continuous = this->m_continuous;
+    copyTo(result, 1);
+
+    TimeDelta valueNeg = value;
+    valueNeg.delta = -valueNeg.delta;
+
+    (fListAddTimeDeltaScalarFunc[m_type])(this, valueNeg, &result);
     return result;
 }
 
@@ -12497,8 +12667,13 @@ int DataObject::elemSize() const
         return 8;
     case tComplex128:
         return 16;
+    case tDateTime:
+        return sizeof(DateTime);
+    case tTimeDelta:
+        return sizeof(TimeDelta);
     default:
-        return 0;
+        cv::error(
+            cv::Exception(CV_StsError, "elemSize(): unknown data type.", "", __FILE__, __LINE__));
     }
 }
 
