@@ -65,7 +65,7 @@ namespace ito
     */
     float GuiHelper::screenDpiFactor(const QPoint* pos /*= nullptr*/)
     {
-        int dpi = getScreenLogicalDpi(pos=pos);
+        int dpi = getScreenLogicalDpi(pos);
         return qBound(1.0, (float)dpi / 96.0, 1.e10);
     }
 };
