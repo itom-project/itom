@@ -1,6 +1,8 @@
 import unittest
 from itom import dataObject
 import numpy as np
+from numpy import testing as nptesting
+from datetime import datetime, timedelta, timezone
 
 
 class DataObjectComparison(unittest.TestCase):
@@ -16,25 +18,12 @@ class DataObjectComparison(unittest.TestCase):
                 not npArray
             )  # The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
 
-        # until further notice, this test will fail, since itom <= 4.0.0 did not implement the
-        # bool operator, such that dataObject == True always returned True, independent on the content.
-        # This will be changed in the future and behaves than similar to np.ndarray: It will
-        # raise a ValueError if the dataObject has more than one value, else the single value is
-        # compared and the result of this single value comparison is returned.
-        # see: https://bitbucket.org/itom/itom/issues/119/python-boolean-operator-of-dataobject
         dataObj = dataObject([2, 3, 4])
         with self.assertRaises(ValueError):
             result = not dataObj
 
     ##########################################################
     def test_bool(self):
-        # until further notice, this test will fail, since itom <= 4.0.0 did not implement the
-        # bool operator, such that dataObject == True always returned True, independent on the content.
-        # This will be changed in the future and behaves than similar to np.ndarray: It will
-        # raise a ValueError if the dataObject has more than one value, else the single value is
-        # compared and the result of this single value comparison is returned.
-        # see: https://bitbucket.org/itom/itom/issues/119/python-boolean-operator-of-dataobject
-
         dtypes = [
             "uint8",
             "int8",
@@ -60,6 +49,83 @@ class DataObjectComparison(unittest.TestCase):
         many = dataObject.randN([2, 3, 4])
         with self.assertRaises(ValueError):
             bool(many)
+
+    def test_comparison_equal(self):
+        dtypes = [
+            "uint8",
+            # "int8",
+            "uint16",
+            "int16",
+            "int32",
+            "float32",
+            "float64",
+            "complex64",
+            "complex128",
+            "rgba32",
+        ]
+
+        for dtype in dtypes:
+            a = dataObject.zeros([100,100], dtype)
+            b = dataObject.zeros([100,100], dtype)
+            c = (a==b)
+            nptesting.assert_array_equal(c, 255)
+
+        # datetime
+        a = dataObject([100,100], "datetime")
+        b = dataObject([100,100], "datetime")
+        dt = datetime(2000,3,12,2,3,4, tzinfo=timezone(timedelta(0,1800)))
+        a[:,:] = dt
+        b[:,:] = dt
+        c = (a==b)
+        print(c[0,0])
+        nptesting.assert_array_equal(c, 255)
+
+        # timedelta
+        a = dataObject([100,100], "timedelta")
+        b = dataObject([100,100], "timedelta")
+        dt = timedelta(2000,3,12,2,3,4)
+        a[:,:] = dt
+        b[:,:] = dt
+        c = (a==b)
+        print(c[0,0])
+        nptesting.assert_array_equal(c, 255)
+
+    def test_comparison_notequal(self):
+        dtypes = [
+            "uint8",
+            # "int8",
+            "uint16",
+            "int16",
+            "int32",
+            "float32",
+            "float64",
+            "complex64",
+            "complex128",
+            "rgba32",
+        ]
+    
+        for dtype in dtypes:
+            a = dataObject.zeros([100,100], dtype)
+            b = dataObject.ones([100,100], dtype)
+            c = (a!=b)
+            nptesting.assert_array_equal(c, 255)
+    
+        # datetime
+        a = dataObject([100,100], "datetime")
+        b = dataObject([100,100], "datetime")
+        c = dataObject([100,100], "datetime")
+        dt1 = datetime(2000,3,12,2,3,4, tzinfo=timezone(timedelta(0,1800)))
+        dt2 = datetime(2000,3,12,2,3,5, tzinfo=timezone(timedelta(0,1800)))
+        dt3 = datetime(2000,3,12,2,3,4)
+        a[:,:] = dt1
+        b[:,:] = dt2
+        c[:,:] = dt3
+        d = (a!=b)
+        e = (a!=c)
+        d[0,0]
+        nptesting.assert_array_equal(d, 255)
+        nptesting.assert_array_equal(e, 255)
+        
 
     def test_complex(self):
         # using complex comparators to force not all True / not all False

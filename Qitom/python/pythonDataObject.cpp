@@ -1938,9 +1938,12 @@ PyDoc_STRVAR(
 If this attribute is called by means of a getter, a tuple is returned which is \n\
 created by iterating through the values of the data object (row-wise). The values \n\
 in the tuple depend on the :attr:`dtype` of this dataObject and can be :class:`int`, \n\
-:class:`float`, :class:`complex` or :class:`rgba`. Analog to this, pass a new tuple \n\
+:class:`float`, :class:`complex`, :class:`rgba`, :class:`datetime.datetime` \n\
+or :class:`datetime.timedelta`. Analog to this, pass a new tuple \n\
 of number values and the correct size to change the values of this dataObject. The \n\
 size and shape of the object cannot be changed. \n\
+\n\
+Currently, the setter is only implemented for scalar number types. \n\
 \n\
 Example: ::\n\
 \n\

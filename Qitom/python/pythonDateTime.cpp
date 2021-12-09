@@ -79,6 +79,10 @@ namespace ito
                 {
                     utcoffset = PyDateTime_DELTA_GET_SECONDS(ret);
                 }
+                else
+                {
+                    ok = false;
+                }
 
                 Py_XDECREF(ret);
             }
