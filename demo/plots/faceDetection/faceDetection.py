@@ -1,9 +1,10 @@
 # coding=iso-8859-15
-from itom import *
+from itom import dataObject
+from itom import dataIO
+from itom import ui
 
 import cv2
 import numpy as np
-import time
 
 import gc
 
