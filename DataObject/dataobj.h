@@ -1149,8 +1149,26 @@ namespace ito {
 
         DataObject operator == (const ito::complex64 &value);
         DataObject operator != (const ito::complex64 &value);
+
         DataObject operator == (const ito::complex128 &value);
         DataObject operator != (const ito::complex128 &value);
+
+        DataObject operator == (const ito::Rgba32 &value);
+        DataObject operator != (const ito::Rgba32 &value);
+
+        DataObject operator < (const ito::DateTime &value);
+        DataObject operator > (const ito::DateTime &value);
+        DataObject operator <= (const ito::DateTime &value);
+        DataObject operator >= (const ito::DateTime &value);
+        DataObject operator == (const ito::DateTime &value);
+        DataObject operator != (const ito::DateTime &value);
+
+        DataObject operator < (const ito::TimeDelta &value);
+        DataObject operator > (const ito::TimeDelta &value);
+        DataObject operator <= (const ito::TimeDelta &value);
+        DataObject operator >= (const ito::TimeDelta &value);
+        DataObject operator == (const ito::TimeDelta &value);
+        DataObject operator != (const ito::TimeDelta &value);
         
         // bitshift operators
         DataObject operator << (const unsigned int shiftbit);

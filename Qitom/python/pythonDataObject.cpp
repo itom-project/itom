@@ -2065,10 +2065,7 @@ PyObject* PythonDataObject::PyDataObject_getValue(PyDataObject* self, void* /*cl
             value = (const DateTime*)(*it);
             obj = PythonDateTime::GetPyDateTime(*value);
             // steals a reference
-            PyTuple_SetItem(
-                outputTuple,
-                cnt++,
-                obj ? obj : Py_NewRef(Py_None));
+            PyTuple_SetItem(outputTuple, cnt++, obj ? obj : Py_NewRef(Py_None));
         }
         break;
     }
@@ -2080,10 +2077,7 @@ PyObject* PythonDataObject::PyDataObject_getValue(PyDataObject* self, void* /*cl
             value = (const TimeDelta*)(*it);
             obj = PythonDateTime::GetPyTimeDelta(*value);
             // steals a reference
-            PyTuple_SetItem(
-                outputTuple,
-                cnt++,
-                obj ? obj : Py_NewRef(Py_None));
+            PyTuple_SetItem(outputTuple, cnt++, obj ? obj : Py_NewRef(Py_None));
         }
         break;
     }
@@ -3204,30 +3198,30 @@ PyObject* PythonDataObject::PyDataObj_AddToProtocol(PyDataObject* self, PyObject
 PyObject* PythonDataObject::PyDataObject_RichCompare(
     PyDataObject* self, PyObject* other, int cmp_op)
 {
-    if (self->dataObject == NULL)
+    if (self->dataObject == nullptr)
     {
         PyErr_SetString(PyExc_TypeError, "data object is empty.");
-        return NULL;
+        return nullptr;
     }
 
-    if (other == NULL)
+    if (other == nullptr)
     {
         PyErr_SetString(PyExc_TypeError, "compare object is empty.");
-        return NULL;
+        return nullptr;
     }
 
     // check type of other
-    PyDataObject* otherDataObj = NULL;
+    PyDataObject* otherDataObj = nullptr;
     ito::DataObject resDataObj;
-    PyDataObject* resultObject = NULL;
+    PyDataObject* resultObject = nullptr;
 
     if (PyDataObject_Check(other))
     {
         otherDataObj = (PyDataObject*)(other);
-        if (otherDataObj->dataObject == NULL)
+        if (otherDataObj->dataObject == nullptr)
         {
             PyErr_SetString(PyExc_TypeError, "internal data object of compare object is empty.");
-            return NULL;
+            return nullptr;
         }
 
         try
@@ -3257,13 +3251,13 @@ PyObject* PythonDataObject::PyDataObject_RichCompare(
         catch (cv::Exception& exc)
         {
             PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-            return NULL;
+            return nullptr;
         }
 
         resultObject = createEmptyPyDataObject();
-        resultObject->dataObject =
-            new ito::DataObject(resDataObj); // resDataObj should always be the owner of its data,
-                                             // therefore base of resultObject remains None
+        // resDataObj should always be the owner of its data,
+        // therefore base of resultObject remains None
+        resultObject->dataObject = new ito::DataObject(resDataObj);
         return (PyObject*)resultObject;
     }
     else if (PyFloat_Check(other) || PyLong_Check(other))
@@ -3302,14 +3296,14 @@ PyObject* PythonDataObject::PyDataObject_RichCompare(
             }
 
             resultObject = createEmptyPyDataObject();
-            resultObject->dataObject = new ito::DataObject(
-                resDataObj); // resDataObj should always be the owner of its
-                             // data, therefore base of resultObject remains None
+            // resDataObj should always be the owner of its
+            // data, therefore base of resultObject remains None
+            resultObject->dataObject = new ito::DataObject(resDataObj);
             return (PyObject*)resultObject;
         }
         else
         {
-            return NULL;
+            return nullptr;
         }
     }
     else if (PyComplex_Check(other))
@@ -3343,14 +3337,149 @@ PyObject* PythonDataObject::PyDataObject_RichCompare(
             }
 
             resultObject = createEmptyPyDataObject();
-            resultObject->dataObject = new ito::DataObject(
-                resDataObj); // resDataObj should always be the owner of its
-                             // data, therefore base of resultObject remains None
+            // resDataObj should always be the owner of its
+            // data, therefore base of resultObject remains None
+            resultObject->dataObject = new ito::DataObject(resDataObj);
             return (PyObject*)resultObject;
         }
         else
         {
-            return NULL;
+            return nullptr;
+        }
+    }
+    else if (PyRgba_Check(other))
+    {
+        if (!PyErr_Occurred())
+        {
+            const auto* color = (PythonRgba::PyRgba*)(other);
+            try
+            {
+                switch (cmp_op)
+                {
+                case Py_EQ:
+                    resDataObj = *(self->dataObject) == color->rgba;
+                    break;
+                case Py_NE:
+                    resDataObj = *(self->dataObject) != color->rgba;
+                    break;
+                default:
+                    PyErr_SetString(
+                        PyExc_TypeError,
+                        "Not a valid operation for rgba32 values (not orderable).");
+                    return nullptr;
+                }
+            }
+            catch (cv::Exception& exc)
+            {
+                PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+                return NULL;
+            }
+
+            resultObject = createEmptyPyDataObject();
+            // resDataObj should always be the owner of its
+            // data, therefore base of resultObject remains None
+            resultObject->dataObject = new ito::DataObject(resDataObj);
+            return (PyObject*)resultObject;
+        }
+        else
+        {
+            return nullptr;
+        }
+    }
+    else if (PythonDateTime::PyDateTime_CheckExt(other))
+    {
+        if (!PyErr_Occurred())
+        {
+            bool ok;
+            const auto& value = PythonDateTime::GetDateTime(other, ok);
+
+            try
+            {
+                switch (cmp_op)
+                {
+                case Py_LT:
+                    resDataObj = *(self->dataObject) < value;
+                    break;
+                case Py_LE:
+                    resDataObj = *(self->dataObject) <= value;
+                    break;
+                case Py_EQ:
+                    resDataObj = *(self->dataObject) == value;
+                    break;
+                case Py_NE:
+                    resDataObj = *(self->dataObject) != value;
+                    break;
+                case Py_GT:
+                    resDataObj = *(self->dataObject) > value;
+                    break;
+                case Py_GE:
+                    resDataObj = *(self->dataObject) >= value;
+                    break;
+                }
+            }
+            catch (cv::Exception& exc)
+            {
+                PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+                return nullptr;
+            }
+
+            resultObject = createEmptyPyDataObject();
+            // resDataObj should always be the owner of its
+            // data, therefore base of resultObject remains None
+            resultObject->dataObject = new ito::DataObject(resDataObj);
+            return (PyObject*)resultObject;
+        }
+        else
+        {
+            return nullptr;
+        }
+    }
+    else if (PythonDateTime::PyTimeDelta_CheckExt(other))
+    {
+        if (!PyErr_Occurred())
+        {
+            bool ok;
+            const auto& value = PythonDateTime::GetTimeDelta(other, ok);
+
+            try
+            {
+                switch (cmp_op)
+                {
+                case Py_LT:
+                    resDataObj = *(self->dataObject) < value;
+                    break;
+                case Py_LE:
+                    resDataObj = *(self->dataObject) <= value;
+                    break;
+                case Py_EQ:
+                    resDataObj = *(self->dataObject) == value;
+                    break;
+                case Py_NE:
+                    resDataObj = *(self->dataObject) != value;
+                    break;
+                case Py_GT:
+                    resDataObj = *(self->dataObject) > value;
+                    break;
+                case Py_GE:
+                    resDataObj = *(self->dataObject) >= value;
+                    break;
+                }
+            }
+            catch (cv::Exception& exc)
+            {
+                PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+                return nullptr;
+            }
+
+            resultObject = createEmptyPyDataObject();
+            // resDataObj should always be the owner of its
+            // data, therefore base of resultObject remains None
+            resultObject->dataObject = new ito::DataObject(resDataObj);
+            return (PyObject*)resultObject;
+        }
+        else
+        {
+            return nullptr;
         }
     }
     else
@@ -3358,15 +3487,16 @@ PyObject* PythonDataObject::PyDataObject_RichCompare(
         PyErr_SetString(
             PyExc_TypeError,
             "second argument of comparison operator is no dataObject or scalar value.");
-        return NULL;
+        return nullptr;
     }
 }
 
 //-------------------------------------------------------------------------------------
 PythonDataObject::PyDataObject* PythonDataObject::createEmptyPyDataObject()
 {
-    PyDataObject* result = (PyDataObject*)PyObject_Call((PyObject*)&PyDataObjectType, NULL, NULL);
-    if (result != NULL)
+    PyDataObject* result =
+        (PyDataObject*)PyObject_Call((PyObject*)&PyDataObjectType, nullptr, nullptr);
+    if (result != nullptr)
     {
         DELETE_AND_SET_NULL(result->dataObject);
         return result; // result is always a new reference
@@ -3374,15 +3504,14 @@ PythonDataObject::PyDataObject* PythonDataObject::createEmptyPyDataObject()
     else
     {
         Py_XDECREF(result);
-        return NULL;
+        return nullptr;
     }
 }
 
 //-------------------------------------------------------------------------------------
-/*static*/ PyObject* PythonDataObject::createPyDataObjectFromArray(
-    PyObject*
-        npArray) // returns NULL with set Python exception if npArray could not be converted to data
-                 // object. If everything ok, returns a new reference of the PyDataObject
+// returns NULL with set Python exception if npArray could not be converted to data
+// object. If everything ok, returns a new reference of the PyDataObject
+/*static*/ PyObject* PythonDataObject::createPyDataObjectFromArray(PyObject* npArray)
 {
     PyObject* args = Py_BuildValue("(O)", npArray);
     ito::PythonDataObject::PyDataObject* result =
@@ -3414,12 +3543,12 @@ bool PythonDataObject::checkPyDataObject(
             continue;
         }
 
-        if (temp == NULL)
+        if (temp == nullptr)
         {
             PyErr_Format(PyExc_TypeError, "%i. operand is NULL", i + 1);
             return false;
         }
-        else if (!PyDataObject_Check(temp) || ((PyDataObject*)(temp))->dataObject == NULL)
+        else if (!PyDataObject_Check(temp) || ((PyDataObject*)(temp))->dataObject == nullptr)
         {
             PyErr_Format(PyExc_TypeError, "%i. operand must be a valid data object", i);
             return false;
@@ -4093,7 +4222,7 @@ PyObject* PythonDataObject::PyDataObj_nbNegative(PyObject* o1)
 {
     if (!checkPyDataObject(1, o1))
     {
-        return NULL;
+        return nullptr;
     }
 
     PyDataObject* dobj1 = (PyDataObject*)(o1);
@@ -4102,9 +4231,9 @@ PyObject* PythonDataObject::PyDataObj_nbNegative(PyObject* o1)
 
     try
     {
-        retObj->dataObject = new ito::DataObject(
-            (*(dobj1->dataObject) * -1.0)); // resDataObj should always be the owner of its data,
-                                            // therefore base of resultObject remains None
+        // resDataObj should always be the owner of its data,
+        // therefore base of resultObject remains None
+        retObj->dataObject = new ito::DataObject((*(dobj1->dataObject) * -1.0));
     }
     catch (cv::Exception& exc)
     {
@@ -4246,10 +4375,10 @@ PyObject* PythonDataObject::PyDataObj_nbLshift(PyObject* o1, PyObject* o2)
 
     try
     {
-        retObj->dataObject = new ito::DataObject(
-            *(dobj1->dataObject) << static_cast<unsigned int>(
-                shift)); // resDataObj should always be the owner of its data, therefore base of
-                         // resultObject remains None
+        // resDataObj should always be the owner of its data, therefore base of
+        // resultObject remains None
+        retObj->dataObject =
+            new ito::DataObject(*(dobj1->dataObject) << static_cast<unsigned int>(shift));
     }
     catch (cv::Exception& exc)
     {
@@ -4299,10 +4428,10 @@ PyObject* PythonDataObject::PyDataObj_nbRshift(PyObject* o1, PyObject* o2)
 
     try
     {
-        retObj->dataObject = new ito::DataObject(
-            *(dobj1->dataObject) >>
-            static_cast<unsigned int>(shift)); // resDataObj should always be the owner of its data,
-                                               // therefore base of resultObject remains None
+        // resDataObj should always be the owner of its data,
+        // therefore base of resultObject remains None
+        retObj->dataObject =
+            new ito::DataObject(*(dobj1->dataObject) >> static_cast<unsigned int>(shift));
     }
     catch (cv::Exception& exc)
     {
@@ -5181,8 +5310,9 @@ PyObject* PythonDataObject::PyDataObject_data(PyDataObject* self)
     catch (cv::Exception& exc)
     {
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-        return NULL;
+        return nullptr;
     }
+
     Py_RETURN_NONE;
 }
 
@@ -10432,7 +10562,7 @@ PyObject* PythonDataObject::PyDataObj_StaticOnes(PyObject* /*self*/, PyObject* a
     PyDataObject* selfDO = createEmptyPyDataObject();
     selfDO->dataObject = new ito::DataObject();
 
-    if (selfDO->dataObject != NULL)
+    if (selfDO->dataObject != nullptr)
     {
         int* sizes2 = new int[sizes.size()];
 
@@ -10443,11 +10573,19 @@ PyObject* PythonDataObject::PyDataObj_StaticOnes(PyObject* /*self*/, PyObject* a
 
         // no lock is necessary since eye is allocating the data block and no other access is
         // possible at this moment
-        selfDO->dataObject->ones(sizes.size(), sizes2, typeno, continuous);
+        try
+        {
+            selfDO->dataObject->ones(sizes.size(), sizes2, typeno, continuous);
+        }
+        catch (cv::Exception& exc)
+        {
+            Py_DECREF(selfDO);
+            selfDO = nullptr;
+            PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+        }
+
         DELETE_AND_SET_NULL_ARRAY(sizes2);
     }
-
-    sizes.clear();
 
     return (PyObject*)selfDO;
 }

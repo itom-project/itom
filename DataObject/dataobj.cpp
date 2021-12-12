@@ -30,9 +30,9 @@
 #include "../common/numeric.h"
 #include <cmath>
 
+#include <functional>
 #include <map>
 #include <vector>
-#include <functional>
 
 #ifdef USEOPENMP
 // disabled due to application hang on closing when using AddInManager dll
@@ -699,27 +699,27 @@ DObjIterator DObjIterator::operator++(int)
 ////////----------------------------------------------------------------------------------------------------------------------------------
 ///////
 ////// RetVal callBinFunc(const BinaryFunc *funcList, const int type, const DataObject *src1, const
-///DataObject *src2, DataObject *dst)
+/// DataObject *src2, DataObject *dst)
 //////{
 //////   return (funcList[type])(src1, src2, dst);
 //////}
 //////
 
 //! creates template defined function table for all supported data types
-#define MAKEFUNCLIST(FuncName)                                \
-    static t##FuncName fList##FuncName[] = {                  \
-        FuncName<int8>,                                       \
-        FuncName<uint8>,                                      \
-        FuncName<int16>,                                      \
-        FuncName<uint16>,                                     \
-        FuncName<int32>,                                      \
-        FuncName<uint32>,                                     \
-        FuncName<ito::float32>,                               \
-        FuncName<ito::float64>,                               \
-        FuncName<ito::complex64>,                             \
-        FuncName<ito::complex128>,                            \
-        FuncName<ito::Rgba32>,                                \
-        FuncName<ito::DateTime>,                              \
+#define MAKEFUNCLIST(FuncName)                                                                     \
+    static t##FuncName fList##FuncName[] = {                                                       \
+        FuncName<int8>,                                                                            \
+        FuncName<uint8>,                                                                           \
+        FuncName<int16>,                                                                           \
+        FuncName<uint16>,                                                                          \
+        FuncName<int32>,                                                                           \
+        FuncName<uint32>,                                                                          \
+        FuncName<ito::float32>,                                                                    \
+        FuncName<ito::float64>,                                                                    \
+        FuncName<ito::complex64>,                                                                  \
+        FuncName<ito::complex128>,                                                                 \
+        FuncName<ito::Rgba32>,                                                                     \
+        FuncName<ito::DateTime>,                                                                   \
         FuncName<ito::TimeDelta>};
 
 //! creates function table for the function (FuncName) and both complex data types. The destination
@@ -1237,8 +1237,9 @@ DataObject::DataObject(
     // usually it is dangerous to say that m_owndata is 1 in this case, since we cannot be sure if
     // the given planes are the owner of their data. however, in this case, owndata is unimportant
     // since the created dataObject is always not continuous, therefore owndata will never be
-    // analyzed and the destructor of the dataObject never tries to delete the continuous data block.
-    // The underlying cv::Mats however still know whether they can or can't delete their data.
+    // analyzed and the destructor of the dataObject never tries to delete the continuous data
+    // block. The underlying cv::Mats however still know whether they can or can't delete their
+    // data.
     this->create(dimensions, sizes, type, planes, nrOfPlanes);
 }
 
@@ -1582,8 +1583,8 @@ int DataObject::seekMat(const int matNum, const int numMats) const
     // Simplification of this scheme leads to first or second possibility.
 
     ////begin 1. possibility: determine indices within region of interest an call matIdxToNum in
-    ///order to get the plane-number for this index /begin 2. possibility: integrate matIdxToNum
-    ///here.
+    /// order to get the plane-number for this index /begin 2. possibility: integrate matIdxToNum
+    /// here.
     // int *idx = new int[m_dims];
     // idx[m_dims-2] = 0;
     // idx[m_dims-1] = 0;
@@ -3047,11 +3048,11 @@ RetVal DataObject::deepCopyPartial(DataObject& copyTo)
     thisDims = j;
 
     j = 0;
-    for(int i = 0; i < rhsDims; i++)
+    for (int i = 0; i < rhsDims; i++)
     {
         rhsSizes[j] = copyTo.getSize(i);
-        if (rhsSizes[j] > 1) 
-        { 
+        if (rhsSizes[j] > 1)
+        {
             j++;
         }
     }
@@ -3061,16 +3062,22 @@ RetVal DataObject::deepCopyPartial(DataObject& copyTo)
     {
         DELETE_AND_SET_NULL_ARRAY(thisSizes);
         DELETE_AND_SET_NULL_ARRAY(rhsSizes);
-        cv::error(cv::Exception(CV_StsAssert, "DataObject - operands differ in number of dimensions","", __FILE__,__LINE__));
+        cv::error(cv::Exception(
+            CV_StsAssert,
+            "DataObject - operands differ in number of dimensions",
+            "",
+            __FILE__,
+            __LINE__));
     }
 
-    for(int i = 0; i < thisDims; i++)
+    for (int i = 0; i < thisDims; i++)
     {
         if (thisSizes[i] != rhsSizes[i])
         {
             DELETE_AND_SET_NULL_ARRAY(thisSizes);
             DELETE_AND_SET_NULL_ARRAY(rhsSizes);
-            cv::error(cv::Exception(CV_StsAssert, "DataObject - operands differ in size","", __FILE__,__LINE__));
+            cv::error(cv::Exception(
+                CV_StsAssert, "DataObject - operands differ in size", "", __FILE__, __LINE__));
         }
     }
 
@@ -3128,11 +3135,11 @@ RetVal DataObject::copyTagMapTo(DataObject& rhs) const
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
    this function makes a deepcopy of the axis and value metadata from this object to rhs
-   object. It copies 
-   
+   object. It copies
+
    \param &rhs is the matrix where the map is copied from. The old map of this
           object is cleared first
-   \return retOk 
+   \return retOk
    \sa DataObjectTags
 */
 RetVal DataObject::copyAxisTagsTo(DataObject& rhs) const
@@ -3407,6 +3414,20 @@ template <> RetVal OnesFunc<ito::Rgba32>(const int sizeY, const int sizeX, uchar
         255,
         static_cast<int>(sizeY) * static_cast<int>(sizeX) * sizeof(ito::Rgba32));
     return ito::retOk;
+}
+
+template <> RetVal OnesFunc<ito::DateTime>(const int sizeY, const int sizeX, uchar** dstMat)
+{
+    cv::error(cv::Exception(
+        CV_StsAssert, "Ones constructor not defined for dtype ``datetime``.", "", __FILE__, __LINE__));
+    return ito::retError;
+}
+
+template <> RetVal OnesFunc<ito::TimeDelta>(const int sizeY, const int sizeX, uchar** dstMat)
+{
+    cv::error(cv::Exception(
+        CV_StsAssert, "Ones constructor not defined for dtype ``timedelta``.", "", __FILE__, __LINE__));
+    return ito::retError;
 }
 
 typedef RetVal (*tOnesFunc)(const int sizeY, const int sizeX, uchar** dstMat);
@@ -3820,16 +3841,16 @@ MAKEFUNCLIST(RandFunc);
    min(inclusiv) to max(exclusive). For floating point types, the noise is between 0(inclusiv) and
    1(exclusiv). In case of an integer type, the gaussian noise mean value is (max+min)/2.0 and the
    standard deviation is (max-min/)6.0 to max. For floating point types, the noise mean value is 0
-   and the standard deviation is 1.0/3.0. 
+   and the standard deviation is 1.0/3.0.
 
    \param dimensions indicates the number of dimensions
    \param *sizes is a vector with the same length than dimensions. Every element indicates the size
-   of the specific dimension 
-   \param type is the desired data-element-type 
+   of the specific dimension
+   \param type is the desired data-element-type
    \param randMode switch
-   mode between uniform distributed(false) and normal distributed noise(true) 
+   mode between uniform distributed(false) and normal distributed noise(true)
    \param continuous
-   indicates whether the data should be in one continuous block (true) or not (false) 
+   indicates whether the data should be in one continuous block (true) or not (false)
    \return retOk
     \sa OnesFunc
 */
@@ -3944,10 +3965,9 @@ RetVal DataObject::rand(
             break;
         case ito::tInt32:
             val1 = (double)(-std::pow(2, 30)); // std::numeric_limits<int32>::min();
-            val2 =
-                (double)(std::pow(2, 30) - 1); // std::numeric_limits<int32>::max(); // was +1 in order to make it inclusive,
-                                                           // however this leads to overflows with
-                                                           // non-uniform distribution
+            val2 = (double)(std::pow(2, 30) - 1); // std::numeric_limits<int32>::max(); // was +1 in
+                                                  // order to make it inclusive, however this leads
+                                                  // to overflows with non-uniform distribution
             break;
         default:
             val1 = 0.0;
@@ -4921,7 +4941,7 @@ RetVal AddScalarFunc<ito::DateTime>(
         "Integer or float cannot be added or subtracted to datetime.",
         "",
         __FILE__,
-        __LINE__));  
+        __LINE__));
 }
 
 template <>
@@ -5127,7 +5147,8 @@ typedef RetVal (*tAddComplexScalarFunc)(
 MAKEFUNCLIST(AddComplexScalarFunc);
 
 template <typename _Tp>
-RetVal AddTimeDeltaScalarFunc(const DataObject* dObjIn, const ito::TimeDelta &scalar, DataObject* dObjOut)
+RetVal AddTimeDeltaScalarFunc(
+    const DataObject* dObjIn, const ito::TimeDelta& scalar, DataObject* dObjOut)
 {
     cv::error(cv::Exception(
         CV_StsAssert,
@@ -5139,14 +5160,14 @@ RetVal AddTimeDeltaScalarFunc(const DataObject* dObjIn, const ito::TimeDelta &sc
 
 template <>
 RetVal AddTimeDeltaScalarFunc<ito::TimeDelta>(
-    const DataObject* dObjIn, const ito::TimeDelta &scalar, DataObject* dObjOut)
+    const DataObject* dObjIn, const ito::TimeDelta& scalar, DataObject* dObjOut)
 {
     int srcTmat = 0;
     int dstTmat = 0;
     int numMats = dObjIn->getNumPlanes();
     const cv::Mat_<ito::TimeDelta>* cvSrc = nullptr;
     cv::Mat_<ito::TimeDelta>* cvDest = nullptr;
-    const ito::TimeDelta *srcPtr;
+    const ito::TimeDelta* srcPtr;
     ito::TimeDelta* destPtr;
 
     for (int nmat = 0; nmat < numMats; ++nmat)
@@ -5174,14 +5195,14 @@ RetVal AddTimeDeltaScalarFunc<ito::TimeDelta>(
 
 template <>
 RetVal AddTimeDeltaScalarFunc<ito::DateTime>(
-    const DataObject* dObjIn, const ito::TimeDelta &scalar, DataObject* dObjOut)
+    const DataObject* dObjIn, const ito::TimeDelta& scalar, DataObject* dObjOut)
 {
     int srcTmat = 0;
     int dstTmat = 0;
     int numMats = dObjIn->getNumPlanes();
     const cv::Mat_<ito::DateTime>* cvSrc = nullptr;
     cv::Mat_<ito::DateTime>* cvDest = nullptr;
-    const ito::DateTime *srcPtr;
+    const ito::DateTime* srcPtr;
     ito::DateTime* destPtr;
 
     for (int nmat = 0; nmat < numMats; ++nmat)
@@ -5207,8 +5228,8 @@ RetVal AddTimeDeltaScalarFunc<ito::DateTime>(
     return RetVal(retOk);
 }
 
-typedef RetVal(*tAddTimeDeltaScalarFunc)(
-    const DataObject* dObjIn, const ito::TimeDelta &scalar, DataObject* dObjOut);
+typedef RetVal (*tAddTimeDeltaScalarFunc)(
+    const DataObject* dObjIn, const ito::TimeDelta& scalar, DataObject* dObjOut);
 MAKEFUNCLIST(AddTimeDeltaScalarFunc);
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -5807,16 +5828,46 @@ template <> RetVal OpScalarMulFunc<ito::Rgba32>(DataObject* src, const float64& 
 
 template <> RetVal OpScalarMulFunc<ito::DateTime>(DataObject* src, const float64& factor)
 {
-    cv::error(
-        cv::Exception(CV_StsAssert, "Scalar multiplication not supported for DateTime.", "", __FILE__, __LINE__));
+    cv::error(cv::Exception(
+        CV_StsAssert, "Scalar multiplication not supported for ``datetime``.", "", __FILE__, __LINE__));
     return retError;
 }
 
 template <> RetVal OpScalarMulFunc<ito::TimeDelta>(DataObject* src, const float64& factor)
 {
-    cv::error(
-        cv::Exception(CV_StsAssert, "Scalar multiplication not supported for TimeDelta.", "", __FILE__, __LINE__));
-    return retError;
+    const int numMats = src->getNumPlanes();
+    int matNum = 0;
+    ito::TimeDelta factor2;
+    cv::Mat* tempMat = nullptr;
+
+    for (int nmat = 0; nmat < numMats; nmat++)
+    {
+        matNum = src->seekMat(nmat, numMats);
+        tempMat = src->get_mdata()[matNum];
+
+#if (USEOMP)
+#pragma omp parallel num_threads(getMaximumThreadCount())
+        {
+#endif
+            ito::TimeDelta* dstPtr = nullptr;
+#if (USEOMP)
+#pragma omp for schedule(guided)
+#endif
+            for (int y = 0; y < tempMat->rows; y++)
+            {
+                dstPtr = tempMat->ptr<ito::TimeDelta>(y);
+
+                for (int x = 0; x < tempMat->cols; x++)
+                {
+                    dstPtr[x].delta *= factor;
+                }
+            }
+#if (USEOMP)
+        }
+#endif
+    }
+
+    return retOk;
 }
 
 typedef RetVal (*tOpScalarMulFunc)(DataObject* src, const float64& factor);
@@ -6012,15 +6063,23 @@ template <> RetVal OpScalarComplexMulFunc<ito::Rgba32>(DataObject* src, const co
 
 template <> RetVal OpScalarComplexMulFunc<ito::DateTime>(DataObject* src, const complex128& factor)
 {
-    cv::error(
-        cv::Exception(CV_StsAssert, "Complex scalar multiplication not supported for DateTime.", "", __FILE__, __LINE__));
+    cv::error(cv::Exception(
+        CV_StsAssert,
+        "Complex scalar multiplication not supported for DateTime.",
+        "",
+        __FILE__,
+        __LINE__));
     return retError;
 }
 
 template <> RetVal OpScalarComplexMulFunc<ito::TimeDelta>(DataObject* src, const complex128& factor)
 {
-    cv::error(
-        cv::Exception(CV_StsAssert, "Complex scalar multiplication not supported for TimeDelta.", "", __FILE__, __LINE__));
+    cv::error(cv::Exception(
+        CV_StsAssert,
+        "Complex scalar multiplication not supported for TimeDelta.",
+        "",
+        __FILE__,
+        __LINE__));
     return retError;
 }
 
@@ -6127,37 +6186,38 @@ void CmpFunc<ito::int8>(
     \throws cv::Exception since comparison is not defined for complex input types
 */
 template <>
-void CmpFunc<ito::complex64>(
+void CmpFunc<ito::Rgba32>(
     const DataObject* src1, const DataObject* src2, DataObject* dst, cv::CmpTypes cmpOp)
 {
-    typedef ito::complex64 value_type;
-    float32 eps = std::numeric_limits<float32>::epsilon();
-    std::function<ito::uint8(const value_type &, const value_type &)> cmpFunc;
+    typedef ito::Rgba32 value_type;
+    std::function<ito::uint8(const value_type&, const value_type&)> cmpFunc;
 
     switch (cmpOp)
     {
     case cv::CMP_EQ:
-        cmpFunc = [eps](const value_type &a, const value_type &b) 
-        { 
-            return ((std::abs(a.real() - b.real()) < eps) && (std::abs(a.imag() - b.imag()) < eps)) ? 255 : 0; 
+        cmpFunc = [](const value_type& a, const value_type& b) {
+            return memcmp(&a, &b, sizeof(value_type)) == 0 ? 255 : 0;
         };
         break;
     case cv::CMP_NE:
-        cmpFunc = [eps](const value_type &a, const value_type &b)
-        {
-            return ((std::abs(a.real() - b.real()) >= eps) || (std::abs(a.imag() - b.imag()) >= eps)) ? 255 : 0;
+        cmpFunc = [](const value_type& a, const value_type& b) {
+            return memcmp(&a, &b, sizeof(value_type)) == 0 ? 0 : 255;
         };
         break;
     default:
         cv::error(cv::Exception(
-            CV_StsAssert, "This compare operator is not defined for complex64.", "", __FILE__, __LINE__));
+            CV_StsAssert,
+            "This compare operator is not defined for rgba32.",
+            "",
+            __FILE__,
+            __LINE__));
     }
 
     int numMats = src1->getNumPlanes();
-    const cv::Mat *src1mat;
-    const cv::Mat *src2mat;
-    cv::Mat *dest;
-    
+    const cv::Mat* src1mat;
+    const cv::Mat* src2mat;
+    cv::Mat* dest;
+
 
     for (int nmat = 0; nmat < numMats; nmat++)
     {
@@ -6169,9 +6229,9 @@ void CmpFunc<ito::complex64>(
 #pragma omp parallel num_threads(getMaximumThreadCount())
         {
 #endif
-            const value_type *src1ptr;
-            const value_type *src2ptr;
-            ito::uint8 *destptr;
+            const value_type* src1ptr;
+            const value_type* src2ptr;
+            ito::uint8* destptr;
 #if (USEOMP)
 #pragma omp for schedule(guided)
 #endif
@@ -6189,7 +6249,7 @@ void CmpFunc<ito::complex64>(
 #if (USEOMP)
         }
 #endif
-    }    
+    }
 }
 
 //! template specialisation for compare function of type complex64
@@ -6197,36 +6257,43 @@ void CmpFunc<ito::complex64>(
     \throws cv::Exception since comparison is not defined for complex input types
 */
 template <>
-void CmpFunc<ito::complex128>(
+void CmpFunc<ito::complex64>(
     const DataObject* src1, const DataObject* src2, DataObject* dst, cv::CmpTypes cmpOp)
 {
-    typedef ito::complex128 value_type;
-    float64 eps = std::numeric_limits<float64>::epsilon();
-    std::function<ito::uint8(const value_type &, const value_type &)> cmpFunc;
+    typedef ito::complex64 value_type;
+    float32 eps = std::numeric_limits<float32>::epsilon();
+    std::function<ito::uint8(const value_type&, const value_type&)> cmpFunc;
 
     switch (cmpOp)
     {
     case cv::CMP_EQ:
-        cmpFunc = [eps](const value_type &a, const value_type &b)
-        {
-            return ((std::abs(a.real() - b.real()) < eps) && (std::abs(a.imag() - b.imag()) < eps)) ? 255 : 0;
+        cmpFunc = [eps](const value_type& a, const value_type& b) {
+            return ((std::abs(a.real() - b.real()) < eps) && (std::abs(a.imag() - b.imag()) < eps))
+                ? 255
+                : 0;
         };
         break;
     case cv::CMP_NE:
-        cmpFunc = [eps](const value_type &a, const value_type &b)
-        {
-            return ((std::abs(a.real() - b.real()) >= eps) || (std::abs(a.imag() - b.imag()) >= eps)) ? 255 : 0;
+        cmpFunc = [eps](const value_type& a, const value_type& b) {
+            return ((std::abs(a.real() - b.real()) >= eps) ||
+                    (std::abs(a.imag() - b.imag()) >= eps))
+                ? 255
+                : 0;
         };
         break;
     default:
         cv::error(cv::Exception(
-            CV_StsAssert, "This compare operator is not defined for complex128.", "", __FILE__, __LINE__));
+            CV_StsAssert,
+            "This compare operator is not defined for complex64.",
+            "",
+            __FILE__,
+            __LINE__));
     }
 
     int numMats = src1->getNumPlanes();
-    const cv::Mat *src1mat;
-    const cv::Mat *src2mat;
-    cv::Mat *dest;
+    const cv::Mat* src1mat;
+    const cv::Mat* src2mat;
+    cv::Mat* dest;
 
 
     for (int nmat = 0; nmat < numMats; nmat++)
@@ -6239,9 +6306,86 @@ void CmpFunc<ito::complex128>(
 #pragma omp parallel num_threads(getMaximumThreadCount())
         {
 #endif
-            const value_type *src1ptr;
-            const value_type *src2ptr;
-            ito::uint8 *destptr;
+            const value_type* src1ptr;
+            const value_type* src2ptr;
+            ito::uint8* destptr;
+#if (USEOMP)
+#pragma omp for schedule(guided)
+#endif
+            for (int r = 0; r < src1mat->rows; ++r)
+            {
+                src1ptr = src1mat->ptr<const value_type>(r);
+                src2ptr = src2mat->ptr<const value_type>(r);
+                destptr = dest->ptr<ito::uint8>(r);
+
+                for (int c = 0; c < src1mat->cols; ++c)
+                {
+                    destptr[c] = cmpFunc(src1ptr[c], src2ptr[c]);
+                }
+            }
+#if (USEOMP)
+        }
+#endif
+    }
+}
+
+//! template specialisation for compare function of type complex64
+/*!
+    \throws cv::Exception since comparison is not defined for complex input types
+*/
+template <>
+void CmpFunc<ito::complex128>(
+    const DataObject* src1, const DataObject* src2, DataObject* dst, cv::CmpTypes cmpOp)
+{
+    typedef ito::complex128 value_type;
+    float64 eps = std::numeric_limits<float64>::epsilon();
+    std::function<ito::uint8(const value_type&, const value_type&)> cmpFunc;
+
+    switch (cmpOp)
+    {
+    case cv::CMP_EQ:
+        cmpFunc = [eps](const value_type& a, const value_type& b) {
+            return ((std::abs(a.real() - b.real()) < eps) && (std::abs(a.imag() - b.imag()) < eps))
+                ? 255
+                : 0;
+        };
+        break;
+    case cv::CMP_NE:
+        cmpFunc = [eps](const value_type& a, const value_type& b) {
+            return ((std::abs(a.real() - b.real()) >= eps) ||
+                    (std::abs(a.imag() - b.imag()) >= eps))
+                ? 255
+                : 0;
+        };
+        break;
+    default:
+        cv::error(cv::Exception(
+            CV_StsAssert,
+            "This compare operator is not defined for complex128.",
+            "",
+            __FILE__,
+            __LINE__));
+    }
+
+    int numMats = src1->getNumPlanes();
+    const cv::Mat* src1mat;
+    const cv::Mat* src2mat;
+    cv::Mat* dest;
+
+
+    for (int nmat = 0; nmat < numMats; nmat++)
+    {
+        src1mat = src1->get_mdata()[src1->seekMat(nmat, numMats)];
+        src2mat = src2->get_mdata()[src2->seekMat(nmat, numMats)];
+        dest = dst->get_mdata()[dst->seekMat(nmat, numMats)];
+
+#if (USEOMP)
+#pragma omp parallel num_threads(getMaximumThreadCount())
+        {
+#endif
+            const value_type* src1ptr;
+            const value_type* src2ptr;
+            ito::uint8* destptr;
 #if (USEOMP)
 #pragma omp for schedule(guided)
 #endif
@@ -6271,49 +6415,43 @@ void CmpFunc<ito::DateTime>(
     const DataObject* src1, const DataObject* src2, DataObject* dst, cv::CmpTypes cmpOp)
 {
     typedef ito::DateTime value_type;
-    std::function<ito::uint8(const value_type &, const value_type &)> cmpFunc;
+    std::function<ito::uint8(const value_type&, const value_type&)> cmpFunc;
 
     switch (cmpOp)
     {
     case cv::CMP_EQ:
-        cmpFunc = [](const value_type &a, const value_type &b)
-        {
+        cmpFunc = [](const value_type& a, const value_type& b) {
             return ((a.datetime == b.datetime) && (a.utcOffset == b.utcOffset)) ? 255 : 0;
         };
         break;
     case cv::CMP_NE:
-        cmpFunc = [](const value_type &a, const value_type &b)
-        {
+        cmpFunc = [](const value_type& a, const value_type& b) {
             return ((a.datetime != b.datetime) || (a.utcOffset != b.utcOffset)) ? 255 : 0;
         };
         break;
     case cv::CMP_LT:
-        cmpFunc = [](const value_type &a, const value_type &b)
-        {
+        cmpFunc = [](const value_type& a, const value_type& b) {
             int64 a_ = a.datetime + a.utcOffset * 1000000;
             int64 b_ = b.datetime + b.utcOffset * 1000000;
             return (a_ < b_) ? 255 : 0;
         };
         break;
     case cv::CMP_LE:
-        cmpFunc = [](const value_type &a, const value_type &b)
-        {
+        cmpFunc = [](const value_type& a, const value_type& b) {
             int64 a_ = a.datetime + a.utcOffset * 1000000;
             int64 b_ = b.datetime + b.utcOffset * 1000000;
             return (a_ <= b_) ? 255 : 0;
         };
         break;
     case cv::CMP_GT:
-        cmpFunc = [](const value_type &a, const value_type &b)
-        {
+        cmpFunc = [](const value_type& a, const value_type& b) {
             int64 a_ = a.datetime + a.utcOffset * 1000000;
             int64 b_ = b.datetime + b.utcOffset * 1000000;
             return (a_ > b_) ? 255 : 0;
         };
         break;
     case cv::CMP_GE:
-        cmpFunc = [](const value_type &a, const value_type &b)
-        {
+        cmpFunc = [](const value_type& a, const value_type& b) {
             int64 a_ = a.datetime + a.utcOffset * 1000000;
             int64 b_ = b.datetime + b.utcOffset * 1000000;
             return (a_ >= b_) ? 255 : 0;
@@ -6321,13 +6459,17 @@ void CmpFunc<ito::DateTime>(
         break;
     default:
         cv::error(cv::Exception(
-            CV_StsAssert, "This compare operator is not defined for DateTime.", "", __FILE__, __LINE__));
+            CV_StsAssert,
+            "This compare operator is not defined for DateTime.",
+            "",
+            __FILE__,
+            __LINE__));
     }
 
     int numMats = src1->getNumPlanes();
-    const cv::Mat *src1mat;
-    const cv::Mat *src2mat;
-    cv::Mat *dest;
+    const cv::Mat* src1mat;
+    const cv::Mat* src2mat;
+    cv::Mat* dest;
 
 
     for (int nmat = 0; nmat < numMats; nmat++)
@@ -6340,9 +6482,9 @@ void CmpFunc<ito::DateTime>(
 #pragma omp parallel num_threads(getMaximumThreadCount())
         {
 #endif
-            const value_type *src1ptr;
-            const value_type *src2ptr;
-            ito::uint8 *destptr;
+            const value_type* src1ptr;
+            const value_type* src2ptr;
+            ito::uint8* destptr;
 #if (USEOMP)
 #pragma omp for schedule(guided)
 #endif
@@ -6369,55 +6511,53 @@ void CmpFunc<ito::TimeDelta>(
     const DataObject* src1, const DataObject* src2, DataObject* dst, cv::CmpTypes cmpOp)
 {
     typedef ito::TimeDelta value_type;
-    std::function<ito::uint8(const value_type &, const value_type &)> cmpFunc;
+    std::function<ito::uint8(const value_type&, const value_type&)> cmpFunc;
 
     switch (cmpOp)
     {
     case cv::CMP_EQ:
-        cmpFunc = [](const value_type &a, const value_type &b)
-        {
+        cmpFunc = [](const value_type& a, const value_type& b) {
             return ((a.delta == b.delta)) ? 255 : 0;
         };
         break;
     case cv::CMP_NE:
-        cmpFunc = [](const value_type &a, const value_type &b)
-        {
+        cmpFunc = [](const value_type& a, const value_type& b) {
             return ((a.delta != b.delta)) ? 255 : 0;
         };
         break;
     case cv::CMP_LT:
-        cmpFunc = [](const value_type &a, const value_type &b)
-        {
+        cmpFunc = [](const value_type& a, const value_type& b) {
             return (a.delta < b.delta) ? 255 : 0;
         };
         break;
     case cv::CMP_LE:
-        cmpFunc = [](const value_type &a, const value_type &b)
-        {
+        cmpFunc = [](const value_type& a, const value_type& b) {
             return (a.delta <= b.delta) ? 255 : 0;
         };
         break;
     case cv::CMP_GT:
-        cmpFunc = [](const value_type &a, const value_type &b)
-        {
+        cmpFunc = [](const value_type& a, const value_type& b) {
             return (a.delta > b.delta) ? 255 : 0;
         };
         break;
     case cv::CMP_GE:
-        cmpFunc = [](const value_type &a, const value_type &b)
-        {
+        cmpFunc = [](const value_type& a, const value_type& b) {
             return (a.delta >= b.delta) ? 255 : 0;
         };
         break;
     default:
         cv::error(cv::Exception(
-            CV_StsAssert, "This compare operator is not defined for DateTime.", "", __FILE__, __LINE__));
+            CV_StsAssert,
+            "This compare operator is not defined for DateTime.",
+            "",
+            __FILE__,
+            __LINE__));
     }
 
     int numMats = src1->getNumPlanes();
-    const cv::Mat *src1mat;
-    const cv::Mat *src2mat;
-    cv::Mat *dest;
+    const cv::Mat* src1mat;
+    const cv::Mat* src2mat;
+    cv::Mat* dest;
 
 
     for (int nmat = 0; nmat < numMats; nmat++)
@@ -6430,9 +6570,9 @@ void CmpFunc<ito::TimeDelta>(
 #pragma omp parallel num_threads(getMaximumThreadCount())
         {
 #endif
-            const value_type *src1ptr;
-            const value_type *src2ptr;
-            ito::uint8 *destptr;
+            const value_type* src1ptr;
+            const value_type* src2ptr;
+            ito::uint8* destptr;
 #if (USEOMP)
 #pragma omp for schedule(guided)
 #endif
@@ -6542,7 +6682,7 @@ DataObject DataObject::operator==(DataObject& rhs)
     }
 
     DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous | rhs.m_continuous);
-    
+
     fListCmpFunc[m_type](this, &rhs, &resMat, cv::CMP_EQ);
 
     return resMat;
@@ -6846,13 +6986,31 @@ RetVal CmpFuncScalarComplex64(
 template <typename _Tp>
 RetVal CmpFuncScalar(const DataObject* src, const float64& value, DataObject* dst, int cmpOp)
 {
-    if (src->getType() == ito::tComplex128 || src->getType() == ito::tComplex64)
+    switch (src->getType())
     {
+    case ito::tComplex128:
+    case ito::tComplex64: {
         ito::complex128 val(value, 0.0);
         return CmpFuncScalarComplex128(src, val, dst, cmpOp);
+        break;
+    }
+    case ito::tDateTime:
+    case ito::tTimeDelta:
+    case ito::tRGBA32:
+        cv::error(cv::Exception(
+            CV_StsAssert,
+            "A scalar number cannot be compared to the dataObject with the given dtype.",
+            "",
+            __FILE__,
+            __LINE__));
+        break;
+    case ito::tInt8:
+        cv::error(cv::Exception(
+            CV_StsAssert, "Compare operator not defined for int8.", "", __FILE__, __LINE__));
+        break;
     }
 
-    int numMats = src->getNumPlanes();
+    const int numMats = src->getNumPlanes();
     int matNum = 0;
     int resMatNum = 0;
 
@@ -6866,12 +7024,6 @@ RetVal CmpFuncScalar(const DataObject* src, const float64& value, DataObject* ds
 
         srcmat = src->get_mdata()[matNum];
         dest = dst->get_mdata()[resMatNum];
-
-        if (srcmat->depth() == 1 || srcmat->depth() == 7)
-        {
-            cv::error(cv::Exception(
-                CV_StsAssert, "Compare operator not defined for int8.", "", __FILE__, __LINE__));
-        }
 
         cv::compare(*srcmat, value, *dest, cmpOp);
     }
@@ -6966,37 +7118,187 @@ DataObject DataObject::operator==(const float64& value)
    element-wise comparison \throws cv::Exception if both data objects doesn't have the same size or
    type \sa CmpFunc
 */
-DataObject DataObject::operator!=(const ito::complex64& value)
+DataObject DataObject::operator!=(const float64& value)
 {
     DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
-    RetVal retValue = CmpFuncScalarComplex64(this, value, &resMat, cv::CMP_NE);
+    fListCmpFuncScalar[m_type](this, value, &resMat, cv::CMP_NE);
 
     return resMat;
 }
 
+//-------------------------------------------------------------------------------------
+//! template specialisation for compare function of type complex64
+/*!
+    \throws cv::Exception since comparison is not defined for complex input types
+*/
+void ScalarDateTimeCmp(
+    const DataObject* src1, DataObject* dst, const ito::DateTime& value, cv::CmpTypes cmpOp)
+{
+    if (src1->getType() != ito::tDateTime)
+    {
+        cv::error(cv::Exception(
+            CV_StsAssert,
+            "A scalar datetime value cannot only be compared to a dataObject of dtype "
+            "``datetime``.",
+            "",
+            __FILE__,
+            __LINE__));
+    }
 
-DataObject DataObject::operator==(const ito::complex64& value)
+    typedef ito::DateTime value_type;
+    std::function<ito::uint8(const value_type&, const value_type&)> cmpFunc;
+
+    switch (cmpOp)
+    {
+    case cv::CMP_EQ:
+        cmpFunc = [](const value_type& a, const value_type& b) {
+            return ((a.datetime == b.datetime) && (a.utcOffset == b.utcOffset)) ? 255 : 0;
+        };
+        break;
+    case cv::CMP_NE:
+        cmpFunc = [](const value_type& a, const value_type& b) {
+            return ((a.datetime != b.datetime) || (a.utcOffset != b.utcOffset)) ? 255 : 0;
+        };
+        break;
+    case cv::CMP_LT:
+        cmpFunc = [](const value_type& a, const value_type& b) {
+            int64 a_ = a.datetime + a.utcOffset * 1000000;
+            int64 b_ = b.datetime + b.utcOffset * 1000000;
+            return (a_ < b_) ? 255 : 0;
+        };
+        break;
+    case cv::CMP_LE:
+        cmpFunc = [](const value_type& a, const value_type& b) {
+            int64 a_ = a.datetime + a.utcOffset * 1000000;
+            int64 b_ = b.datetime + b.utcOffset * 1000000;
+            return (a_ <= b_) ? 255 : 0;
+        };
+        break;
+    case cv::CMP_GT:
+        cmpFunc = [](const value_type& a, const value_type& b) {
+            int64 a_ = a.datetime + a.utcOffset * 1000000;
+            int64 b_ = b.datetime + b.utcOffset * 1000000;
+            return (a_ > b_) ? 255 : 0;
+        };
+        break;
+    case cv::CMP_GE:
+        cmpFunc = [](const value_type& a, const value_type& b) {
+            int64 a_ = a.datetime + a.utcOffset * 1000000;
+            int64 b_ = b.datetime + b.utcOffset * 1000000;
+            return (a_ >= b_) ? 255 : 0;
+        };
+        break;
+    default:
+        cv::error(cv::Exception(
+            CV_StsAssert,
+            "This compare operator is not defined for DateTime.",
+            "",
+            __FILE__,
+            __LINE__));
+    }
+
+    int numMats = src1->getNumPlanes();
+    const cv::Mat* src1mat;
+    cv::Mat* dest;
+
+
+    for (int nmat = 0; nmat < numMats; nmat++)
+    {
+        src1mat = src1->get_mdata()[src1->seekMat(nmat, numMats)];
+        dest = dst->get_mdata()[dst->seekMat(nmat, numMats)];
+
+#if (USEOMP)
+#pragma omp parallel num_threads(getMaximumThreadCount())
+        {
+#endif
+            const value_type* src1ptr;
+            ito::uint8* destptr;
+#if (USEOMP)
+#pragma omp for schedule(guided)
+#endif
+            for (int r = 0; r < src1mat->rows; ++r)
+            {
+                src1ptr = src1mat->ptr<const value_type>(r);
+                destptr = dest->ptr<ito::uint8>(r);
+
+                for (int c = 0; c < src1mat->cols; ++c)
+                {
+                    destptr[c] = cmpFunc(src1ptr[c], value);
+                }
+            }
+#if (USEOMP)
+        }
+#endif
+    }
+}
+
+//! compare operator, compares for "lower than"
+/*!
+    \param value is the value with which this data object should element-wisely be compared
+    \return compare matrix of type uint8, which contains 0 or 1, depending on the result of the
+   element-wise comparison \throws cv::Exception if both data objects doesn't have the same size or
+   type \sa CmpFunc
+*/
+DataObject DataObject::operator<(const DateTime& value)
 {
     DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
-    RetVal retValue = CmpFuncScalarComplex64(this, value, &resMat, cv::CMP_EQ);
-
+    ScalarDateTimeCmp(this, &resMat, value, cv::CMP_LT);
     return resMat;
 }
 
-DataObject DataObject::operator!=(const ito::complex128& value)
+//! compare operator, compares for "bigger than"
+/*!
+    \param value is the value with which this data object should element-wisely be compared
+    \return compare matrix of type uint8, which contains 0 or 1, depending on the result of the
+   element-wise comparison \throws cv::Exception if both data objects doesn't have the same size or
+   type \sa CmpFunc
+*/
+DataObject DataObject::operator>(const DateTime& value)
 {
     DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
-    RetVal retValue = CmpFuncScalarComplex128(this, value, &resMat, cv::CMP_NE);
-
+    ScalarDateTimeCmp(this, &resMat, value, cv::CMP_GT);
     return resMat;
 }
 
-
-DataObject DataObject::operator==(const ito::complex128& value)
+//! compare operator, compares for "lower or equal than"
+/*!
+    \param value is the value with which this data object should element-wisely be compared
+    \return compare matrix of type uint8, which contains 0 or 1, depending on the result of the
+   element-wise comparison \throws cv::Exception if both data objects doesn't have the same size or
+   type \sa CmpFunc
+*/
+DataObject DataObject::operator<=(const DateTime& value)
 {
     DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
-    RetVal retValue = CmpFuncScalarComplex128(this, value, &resMat, cv::CMP_EQ);
+    ScalarDateTimeCmp(this, &resMat, value, cv::CMP_LE);
+    return resMat;
+}
 
+//! compare operator, compares for "bigger or equal than"
+/*!
+    \param value is the value with which this data object should element-wisely be compared
+    \return compare matrix of type uint8, which contains 0 or 1, depending on the result of the
+   element-wise comparison \throws cv::Exception if both data objects doesn't have the same size or
+   type \sa CmpFunc
+*/
+DataObject DataObject::operator>=(const DateTime& value)
+{
+    DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
+    ScalarDateTimeCmp(this, &resMat, value, cv::CMP_GE);
+    return resMat;
+}
+
+//! compare operator, compares for "equal to"
+/*!
+    \param value is the value with which this data object should element-wisely be compared
+    \return compare matrix of type uint8, which contains 0 or 1, depending on the result of the
+   element-wise comparison \throws cv::Exception if both data objects doesn't have the same size or
+   type \sa CmpFunc
+*/
+DataObject DataObject::operator==(const DateTime& value)
+{
+    DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
+    ScalarDateTimeCmp(this, &resMat, value, cv::CMP_EQ);
     return resMat;
 }
 
@@ -7007,10 +7309,335 @@ DataObject DataObject::operator==(const ito::complex128& value)
    element-wise comparison \throws cv::Exception if both data objects doesn't have the same size or
    type \sa CmpFunc
 */
-DataObject DataObject::operator!=(const float64& value)
+DataObject DataObject::operator!=(const DateTime& value)
 {
     DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
-    RetVal retValue = fListCmpFuncScalar[m_type](this, value, &resMat, cv::CMP_NE);
+    ScalarDateTimeCmp(this, &resMat, value, cv::CMP_NE);
+
+    return resMat;
+}
+
+//-------------------------------------------------------------------------------------
+void ScalarTimeDeltaCmp(
+    const DataObject* src1, DataObject* dst, const ito::TimeDelta& value, cv::CmpTypes cmpOp)
+{
+    if (src1->getType() != ito::tTimeDelta)
+    {
+        cv::error(cv::Exception(
+            CV_StsAssert,
+            "A scalar timedelta value cannot only be compared to a dataObject of dtype "
+            "``timedelta``.",
+            "",
+            __FILE__,
+            __LINE__));
+    }
+
+    typedef ito::TimeDelta value_type;
+    std::function<ito::uint8(const value_type&, const value_type&)> cmpFunc;
+
+    switch (cmpOp)
+    {
+    case cv::CMP_EQ:
+        cmpFunc = [](const value_type& a, const value_type& b) {
+            return ((a.delta == b.delta)) ? 255 : 0;
+        };
+        break;
+    case cv::CMP_NE:
+        cmpFunc = [](const value_type& a, const value_type& b) {
+            return ((a.delta != b.delta)) ? 255 : 0;
+        };
+        break;
+    case cv::CMP_LT:
+        cmpFunc = [](const value_type& a, const value_type& b) {
+            return (a.delta < b.delta) ? 255 : 0;
+        };
+        break;
+    case cv::CMP_LE:
+        cmpFunc = [](const value_type& a, const value_type& b) {
+            return (a.delta <= b.delta) ? 255 : 0;
+        };
+        break;
+    case cv::CMP_GT:
+        cmpFunc = [](const value_type& a, const value_type& b) {
+            return (a.delta > b.delta) ? 255 : 0;
+        };
+        break;
+    case cv::CMP_GE:
+        cmpFunc = [](const value_type& a, const value_type& b) {
+            return (a.delta >= b.delta) ? 255 : 0;
+        };
+        break;
+    default:
+        cv::error(cv::Exception(
+            CV_StsAssert,
+            "This compare operator is not defined for DateTime.",
+            "",
+            __FILE__,
+            __LINE__));
+    }
+
+    int numMats = src1->getNumPlanes();
+    const cv::Mat* src1mat;
+    cv::Mat* dest;
+
+
+    for (int nmat = 0; nmat < numMats; nmat++)
+    {
+        src1mat = src1->get_mdata()[src1->seekMat(nmat, numMats)];
+        dest = dst->get_mdata()[dst->seekMat(nmat, numMats)];
+
+#if (USEOMP)
+#pragma omp parallel num_threads(getMaximumThreadCount())
+        {
+#endif
+            const value_type* src1ptr;
+            ito::uint8* destptr;
+#if (USEOMP)
+#pragma omp for schedule(guided)
+#endif
+            for (int r = 0; r < src1mat->rows; ++r)
+            {
+                src1ptr = src1mat->ptr<const value_type>(r);
+                destptr = dest->ptr<ito::uint8>(r);
+
+                for (int c = 0; c < src1mat->cols; ++c)
+                {
+                    destptr[c] = cmpFunc(src1ptr[c], value);
+                }
+            }
+#if (USEOMP)
+        }
+#endif
+    }
+}
+
+//! compare operator, compares for "lower than"
+/*!
+    \param value is the value with which this data object should element-wisely be compared
+    \return compare matrix of type uint8, which contains 0 or 1, depending on the result of the
+   element-wise comparison \throws cv::Exception if both data objects doesn't have the same size or
+   type \sa CmpFunc
+*/
+DataObject DataObject::operator<(const TimeDelta& value)
+{
+    DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
+    ScalarTimeDeltaCmp(this, &resMat, value, cv::CMP_LT);
+    return resMat;
+}
+
+//! compare operator, compares for "bigger than"
+/*!
+    \param value is the value with which this data object should element-wisely be compared
+    \return compare matrix of type uint8, which contains 0 or 1, depending on the result of the
+   element-wise comparison \throws cv::Exception if both data objects doesn't have the same size or
+   type \sa CmpFunc
+*/
+DataObject DataObject::operator>(const TimeDelta& value)
+{
+    DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
+    ScalarTimeDeltaCmp(this, &resMat, value, cv::CMP_GT);
+    return resMat;
+}
+
+//! compare operator, compares for "lower or equal than"
+/*!
+    \param value is the value with which this data object should element-wisely be compared
+    \return compare matrix of type uint8, which contains 0 or 1, depending on the result of the
+   element-wise comparison \throws cv::Exception if both data objects doesn't have the same size or
+   type \sa CmpFunc
+*/
+DataObject DataObject::operator<=(const TimeDelta& value)
+{
+    DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
+    ScalarTimeDeltaCmp(this, &resMat, value, cv::CMP_LE);
+    return resMat;
+}
+
+//! compare operator, compares for "bigger or equal than"
+/*!
+    \param value is the value with which this data object should element-wisely be compared
+    \return compare matrix of type uint8, which contains 0 or 1, depending on the result of the
+   element-wise comparison \throws cv::Exception if both data objects doesn't have the same size or
+   type \sa CmpFunc
+*/
+DataObject DataObject::operator>=(const TimeDelta& value)
+{
+    DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
+    ScalarTimeDeltaCmp(this, &resMat, value, cv::CMP_GE);
+    return resMat;
+}
+
+//! compare operator, compares for "equal to"
+/*!
+    \param value is the value with which this data object should element-wisely be compared
+    \return compare matrix of type uint8, which contains 0 or 1, depending on the result of the
+   element-wise comparison \throws cv::Exception if both data objects doesn't have the same size or
+   type \sa CmpFunc
+*/
+DataObject DataObject::operator==(const TimeDelta& value)
+{
+    DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
+    ScalarTimeDeltaCmp(this, &resMat, value, cv::CMP_EQ);
+    return resMat;
+}
+
+//! compare operator, compares for "unequal to"
+/*!
+    \param value is the value with which this data object should element-wisely be compared
+    \return compare matrix of type uint8, which contains 0 or 1, depending on the result of the
+   element-wise comparison \throws cv::Exception if both data objects doesn't have the same size or
+   type \sa CmpFunc
+*/
+DataObject DataObject::operator!=(const TimeDelta& value)
+{
+    DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
+    ScalarTimeDeltaCmp(this, &resMat, value, cv::CMP_NE);
+
+    return resMat;
+}
+
+//-------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
+//! template specialisation for compare function of type complex64
+/*!
+    \throws cv::Exception since comparison is not defined for complex input types
+*/
+void ScalarRgbaCmp(
+    const DataObject* src1, DataObject* dst, const ito::Rgba32& value, cv::CmpTypes cmpOp)
+{
+    if (src1->getType() != ito::tRGBA32)
+    {
+        cv::error(cv::Exception(
+            CV_StsAssert,
+            "A scalar rgba value cannot only be compared to a dataObject of dtype ``rgba32``.",
+            "",
+            __FILE__,
+            __LINE__));
+    }
+
+    typedef ito::Rgba32 value_type;
+    std::function<ito::uint8(const value_type&, const value_type&)> cmpFunc;
+
+    switch (cmpOp)
+    {
+    case cv::CMP_EQ:
+        cmpFunc = [](const value_type& a, const value_type& b) { return (a == b) ? 255 : 0; };
+        break;
+    case cv::CMP_NE:
+        cmpFunc = [](const value_type& a, const value_type& b) { return (a == b) ? 0 : 255; };
+        break;
+    default:
+        cv::error(cv::Exception(
+            CV_StsAssert,
+            "This compare operator is not defined for Rgba32.",
+            "",
+            __FILE__,
+            __LINE__));
+    }
+
+    int numMats = src1->getNumPlanes();
+    const cv::Mat* src1mat;
+    cv::Mat* dest;
+
+
+    for (int nmat = 0; nmat < numMats; nmat++)
+    {
+        src1mat = src1->get_mdata()[src1->seekMat(nmat, numMats)];
+        dest = dst->get_mdata()[dst->seekMat(nmat, numMats)];
+
+#if (USEOMP)
+#pragma omp parallel num_threads(getMaximumThreadCount())
+        {
+#endif
+            const value_type* src1ptr;
+            ito::uint8* destptr;
+#if (USEOMP)
+#pragma omp for schedule(guided)
+#endif
+            for (int r = 0; r < src1mat->rows; ++r)
+            {
+                src1ptr = src1mat->ptr<const value_type>(r);
+                destptr = dest->ptr<ito::uint8>(r);
+
+                for (int c = 0; c < src1mat->cols; ++c)
+                {
+                    destptr[c] = cmpFunc(src1ptr[c], value);
+                }
+            }
+#if (USEOMP)
+        }
+#endif
+    }
+}
+
+//! compare operator, compares for "equal to"
+/*!
+    \param value is the value with which this data object should element-wisely be compared
+    \return compare matrix of type uint8, which contains 0 or 1, depending on the result of the
+   element-wise comparison \throws cv::Exception if both data objects doesn't have the same size or
+   type \sa CmpFunc
+*/
+DataObject DataObject::operator==(const Rgba32& value)
+{
+    DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
+    ScalarRgbaCmp(this, &resMat, value, cv::CMP_EQ);
+    return resMat;
+}
+
+//! compare operator, compares for "unequal to"
+/*!
+    \param value is the value with which this data object should element-wisely be compared
+    \return compare matrix of type uint8, which contains 0 or 1, depending on the result of the
+   element-wise comparison \throws cv::Exception if both data objects doesn't have the same size or
+   type \sa CmpFunc
+*/
+DataObject DataObject::operator!=(const Rgba32& value)
+{
+    DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
+    ScalarRgbaCmp(this, &resMat, value, cv::CMP_NE);
+
+    return resMat;
+}
+
+//-------------------------------------------------------------------------------------
+
+//! compare operator, compares for "unequal to"
+/*!
+    \param value is the value with which this data object should element-wisely be compared
+    \return compare matrix of type uint8, which contains 0 or 1, depending on the result of the
+   element-wise comparison \throws cv::Exception if both data objects doesn't have the same size or
+   type \sa CmpFunc
+*/
+DataObject DataObject::operator!=(const ito::complex64& value)
+{
+    DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
+    CmpFuncScalarComplex64(this, value, &resMat, cv::CMP_NE);
+
+    return resMat;
+}
+
+
+DataObject DataObject::operator==(const ito::complex64& value)
+{
+    DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
+    CmpFuncScalarComplex64(this, value, &resMat, cv::CMP_EQ);
+
+    return resMat;
+}
+
+DataObject DataObject::operator!=(const ito::complex128& value)
+{
+    DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
+    CmpFuncScalarComplex128(this, value, &resMat, cv::CMP_NE);
+
+    return resMat;
+}
+
+
+DataObject DataObject::operator==(const ito::complex128& value)
+{
+    DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
+    CmpFuncScalarComplex128(this, value, &resMat, cv::CMP_EQ);
 
     return resMat;
 }
@@ -7929,10 +8556,10 @@ DataObject DataObject::at(ito::Range* ranges) const
     {
         resMat.adjustROI(m_dims, lims);
     }
-    catch (cv::Exception &ex)
+    catch (cv::Exception& ex)
     {
         DELETE_AND_SET_NULL_ARRAY(lims);
-        throw ex; //rethrow
+        throw ex; // rethrow
     }
 
     DELETE_AND_SET_NULL_ARRAY(lims);
@@ -8109,7 +8736,7 @@ DataObject& DataObject::adjustROI(const unsigned char dims, const int* lims)
         startIdx = (int)m_roi.m_p[n] - lims[n * 2]; // new first index
         if (startIdx < 0 ||
             startIdx > (int)m_osize[n]) //((int)m_roi.m_p[n] - lims[n*2] + (int)m_size.m_p[n] +
-                                        //lims[n*2+1]) >= (int)m_osize[n])
+                                        // lims[n*2+1]) >= (int)m_osize[n])
         {
             cv::error(cv::Exception(
                 CV_StsAssert,
@@ -8626,19 +9253,21 @@ RetVal MulFunc(
     return ito::retOk;
 }
 
-template <> RetVal MulFunc<DateTime>(
+template <>
+RetVal MulFunc<DateTime>(
     const DataObject* src1, const DataObject* src2, DataObject* res, const double /*scale*/)
 {
-    cv::error(
-        cv::Exception(CV_StsAssert, "Multiplication not supported for DateTime.", "", __FILE__, __LINE__));
+    cv::error(cv::Exception(
+        CV_StsAssert, "Multiplication not supported for DateTime.", "", __FILE__, __LINE__));
     return retError;
 }
 
-template <> RetVal MulFunc<TimeDelta>(
+template <>
+RetVal MulFunc<TimeDelta>(
     const DataObject* src1, const DataObject* src2, DataObject* res, const double /*scale*/)
 {
-    cv::error(
-        cv::Exception(CV_StsAssert, "Multiplication not supported for TimeDelta.", "", __FILE__, __LINE__));
+    cv::error(cv::Exception(
+        CV_StsAssert, "Multiplication not supported for TimeDelta.", "", __FILE__, __LINE__));
     return retError;
 }
 
@@ -8858,17 +9487,19 @@ template <> RetVal DivFunc<Rgba32>(const DataObject* src1, const DataObject* src
     return ito::retOk;
 }
 
-template <> RetVal DivFunc<DateTime>(const DataObject* src1, const DataObject* src2, DataObject* res)
+template <>
+RetVal DivFunc<DateTime>(const DataObject* src1, const DataObject* src2, DataObject* res)
 {
-    cv::error(
-        cv::Exception(CV_StsAssert, "Division not supported for DateTime.", "", __FILE__, __LINE__));
+    cv::error(cv::Exception(
+        CV_StsAssert, "Division not supported for DateTime.", "", __FILE__, __LINE__));
     return ito::retError;
 }
 
-template <> RetVal DivFunc<TimeDelta>(const DataObject* src1, const DataObject* src2, DataObject* res)
+template <>
+RetVal DivFunc<TimeDelta>(const DataObject* src1, const DataObject* src2, DataObject* res)
 {
-    cv::error(
-        cv::Exception(CV_StsAssert, "Division not supported for TimeDelta.", "", __FILE__, __LINE__));
+    cv::error(cv::Exception(
+        CV_StsAssert, "Division not supported for TimeDelta.", "", __FILE__, __LINE__));
     return ito::retError;
 }
 
@@ -12268,7 +12899,7 @@ template <typename _Tp> RetVal MakeContinuousFunc(const DataObject& dObj, DataOb
 
 
     //#### OLD VERSION: all data is copied and a roi of the source object is finally applied to the
-    //destination, continous object (memory intense)
+    // destination, continous object (memory intense)
     /*resDObj = DataObject(dObj.getDims() , dObj.m_osize, dObj.getType() , 1);
     resDObj.m_owndata = 1;
 
@@ -13034,6 +13665,16 @@ template <> void coutValue(const ito::Rgba32* val, char* buf)
     sprintf(buf, "(%d,%d,%d,%d)", val->r, val->g, val->b, val->a);
 }
 
+template <> void coutValue(const ito::DateTime* val, char* buf)
+{
+    sprintf(buf, "datetime");
+}
+
+template <> void coutValue(const ito::TimeDelta* val, char* buf)
+{
+    sprintf(buf, "timedelta");
+}
+
 
 //----------------------------------------------------------------------------------------------------------------------------------
 template <typename _Tp>
@@ -13064,12 +13705,14 @@ std::ostream& coutPlane(
         {
             ptr = (const _Tp*)plane->ptr(r);
             std::cout << buf << "[";
+
             for (int c = 0; c < plane->cols - 1; ++c)
             {
                 coutValue<_Tp>(ptr, buf);
                 ptr++;
                 std::cout << buf << ", ";
             }
+
             coutValue<_Tp>(ptr, buf);
             std::cout << buf << "]";
         }
@@ -13106,9 +13749,11 @@ template <typename _Tp> std::ostream& coutFunc(std::ostream& out, const DataObje
         "float64",
         "complex64",
         "complex128",
-        "rgba32"};
+        "rgba32",
+        "datetime",
+        "timedelta"};
 
-    int numMats = dObj.getNumPlanes();
+    const int numMats = dObj.getNumPlanes();
     int tMat = 0;
     int dims = dObj.getDims();
 
@@ -13175,7 +13820,10 @@ tCoutFunc fListCout[] = {
     coutFunc<ito::float64>,
     coutFunc<ito::complex64>,
     coutFunc<ito::complex128>,
-    coutFunc<ito::Rgba32>};
+    coutFunc<ito::Rgba32>,
+    coutFunc<ito::DateTime>,
+    coutFunc<ito::TimeDelta>
+};
 
 //----------------------------------------------------------------------------------------------------------------------------------
 std::ostream& operator<<(std::ostream& out, const DataObject& dObj)
