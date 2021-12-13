@@ -696,7 +696,7 @@ end:
     if (po)
     {
         bool existingProcess = false;
-        QProcess *process = po->getProcess("designer", true, existingProcess, false);
+        QProcess *process = po->getProcess("designer", true, existingProcess, true);
 
         if (existingProcess && process->state() == QProcess::Running)
         {
@@ -730,7 +730,7 @@ end:
 
             if (!done)
             {
-                process = po->getProcess("designer", false, existingProcess, false);
+                process = po->getProcess("designer", false, existingProcess, true);
                 //create new process for designer, since sending data to existing one failed
                 QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
                 QString appPath = QDir::cleanPath(QCoreApplication::applicationDirPath());
