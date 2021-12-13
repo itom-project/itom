@@ -200,13 +200,28 @@ end:
         if (showMessages)
         {
             QMessageBox msgBox(parent);
+
+            if (retval.containsError())
+            {
+                msgBox.setIcon(QMessageBox::Critical);
+                msgBox.setWindowTitle(tr("Error"));
+            }
+            else
+            {
+                msgBox.setIcon(QMessageBox::Warning);
+                msgBox.setWindowTitle(tr("Warning"));
+            }
+
             if (retval.hasErrorMessage())
             {
                 QString errStr = QLatin1String(retval.errorMessage());
                 msgBox.setText(errStr);
             }
             else
-                msgBox.setText("Unknown error opening file");
+            {
+                msgBox.setText(tr("Unknown error or warning when opening the file."));
+            }
+
             msgBox.exec();
         }
     }
