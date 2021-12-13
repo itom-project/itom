@@ -16,6 +16,7 @@ import dataobject_makecontinuous
 import dataobject_scale_offset
 import datatype_conversion_test
 import pointcloud_pickle
+import idc_test
 import plot_test
 import shape_test
 if pyversion >= "3.6":
@@ -39,6 +40,7 @@ def suite():
     suite.addTest(unittest.makeSuite(shape_test.ShapeTest))
     suite.addTest(unittest.makeSuite(datatype_conversion_test.DatatypeConversionTest))
     suite.addTest(unittest.makeSuite(pointcloud_pickle.PointCloudPickle))
+    suite.addTest(unittest.makeSuite(idc_test.IdcTest))
     if pyversion >= "3.6":
         suite.addTest(unittest.makeSuite(itom_stubs_generator.ItomStubsGenTest))
         suite.addTest(unittest.makeSuite(itom_jedilib.ItomJediLibTest))

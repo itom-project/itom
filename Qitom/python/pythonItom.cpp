@@ -5680,7 +5680,7 @@ PyObject* PythonItom::PyLoadIDC(PyObject* pSelf, PyObject* pArgs, PyObject* pKwd
         if (info.exists())
         {
             PyObject* dict = PyDict_New(); // new reference
-            RetVal retval = pyEngine->unpickleDictionary(dict, filename, true);
+            RetVal retval = pyEngine->unpickleDictionary(dict, filename, true, false);
 
             if (!PythonCommon::transformRetValToPyException(retval))
             {
