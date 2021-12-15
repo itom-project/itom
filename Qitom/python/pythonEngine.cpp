@@ -3697,7 +3697,7 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString
 
         if (PyDict_Check(obj))
         {
-            if (itemKeyType == 's') //string
+            if (itemKeyType == PY_STRING) //string
             {
                 tempObj = PyDict_GetItemString(obj, itemKey); //borrowed
                 if (validVariableName)
@@ -3705,7 +3705,7 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString
                     *validVariableName = itemKey;
                 }
             }
-            else if (itemKeyType == 'n') //number
+            else if (itemKeyType == PY_NUMBER) //number
             {
                 i = itemKey.toInt(&ok);
                 if (ok)
@@ -3785,7 +3785,7 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString
             PyObject *temp = PyObject_GetAttr(obj, m_dictUnicode); //new reference
             if (temp)
             {
-                if (itemKeyType == 's') //string
+                if (itemKeyType == PY_STRING) //string
                 {
                     tempObj = PyDict_GetItemString(temp, itemKey); //borrowed
                     if (!tempObj)
@@ -3818,7 +3818,7 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString
                         }
                     }
                 }
-                else if (itemKeyType == 'n') //number
+                else if (itemKeyType == PY_NUMBER) //number
                 {
                     i = itemKey.toInt(&ok);
                     if (ok)
@@ -3867,7 +3867,7 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString
         }
         else if (PyObject_HasAttr(obj, m_slotsUnicode))
         {
-            if (itemKeyType == 's') //string
+            if (itemKeyType == PY_STRING) //string
             {
                 tempObj = PyObject_GetAttrString(obj, itemKey); //new reference (only for this case, objIsNewRef is true (if nothing failed))
                 if (validVariableName)
