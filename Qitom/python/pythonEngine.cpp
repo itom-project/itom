@@ -3717,7 +3717,7 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString
 
         if (PyDict_Check(obj))
         {
-            if (itemKeyType == 's') //string
+            if (itemKeyType == PY_STRING) //string
             {
                 tempObj = PyDict_GetItemString(obj, itemKey); //borrowed
                 if (validVariableName)
@@ -3725,7 +3725,7 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString
                     *validVariableName = itemKey;
                 }
             }
-            else if (itemKeyType == 'n') //number
+            else if (itemKeyType == PY_NUMBER) //number
             {
                 i = itemKey.toInt(&ok);
                 if (ok)
@@ -3805,7 +3805,7 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString
             PyObject *temp = PyObject_GetAttr(obj, m_dictUnicode); //new reference
             if (temp)
             {
-                if (itemKeyType == 's') //string
+                if (itemKeyType == PY_STRING) //string
                 {
                     tempObj = PyDict_GetItemString(temp, itemKey); //borrowed
                     if (!tempObj)
@@ -3838,7 +3838,7 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString
                         }
                     }
                 }
-                else if (itemKeyType == 'n') //number
+                else if (itemKeyType == PY_NUMBER) //number
                 {
                     i = itemKey.toInt(&ok);
                     if (ok)
@@ -3887,7 +3887,7 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString
         }
         else if (PyObject_HasAttr(obj, m_slotsUnicode))
         {
-            if (itemKeyType == 's') //string
+            if (itemKeyType == PY_STRING) //string
             {
                 tempObj = PyObject_GetAttrString(obj, itemKey); //new reference (only for this case, objIsNewRef is true (if nothing failed))
                 if (validVariableName)
@@ -6428,7 +6428,7 @@ ito::RetVal PythonEngine::unpickleVariables(bool globalNotLocal, QString filenam
             if (packedVarName != "")
             {
                 PyObject *dict = PyDict_New();
-                retVal += unpickleDictionary(dict, filename, true);
+                retVal += unpickleDictionary(dict, filename, true, false);
                 if (!retVal.containsError())
                 {
                     PyObject *key = PythonQtConversion::QStringToPyObject(packedVarName);
@@ -6442,7 +6442,7 @@ ito::RetVal PythonEngine::unpickleVariables(bool globalNotLocal, QString filenam
             }
             else
             {
-                retVal += unpickleDictionary(destinationDict, filename, true);
+                retVal += unpickleDictionary(destinationDict, filename, true, true);
             }
             PyGILState_Release(gstate);
 
@@ -6483,7 +6483,7 @@ ito::RetVal PythonEngine::unpickleVariables(bool globalNotLocal, QString filenam
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal PythonEngine::unpickleDictionary(PyObject *destinationDict, const QString &filename, bool overwrite)
+ito::RetVal PythonEngine::unpickleDictionary(PyObject *destinationDict, const QString &filename, bool overwrite, bool replaceKeyByValidPyIdentifier)
 {
 #if defined _DEBUG
     if (!PyGILState_Check())
@@ -6581,27 +6581,52 @@ ito::RetVal PythonEngine::unpickleDictionary(PyObject *destinationDict, const QS
             PyObject *key, *value;
             Py_ssize_t pos = 0;
             QString key_str;
-            PyObject *key_approved = NULL;
+            PyObject *key_approved = nullptr;
             bool ok;
             ito::RetVal ret;
             int counter = 0;
+            QStringList warnings;
 
             while (PyDict_Next(unpickledItem, &pos, &key, &value))
             {
-                key_str = PythonQtConversion::PyObjGetString(key, true, ok); 
-                if (ok)
+                if (replaceKeyByValidPyIdentifier)
                 {
-                    key_str.replace(".","_");
-                    key_str.replace("-","_");
-                    key_str.replace(" ","_");
-                    ret = ito::retOk;
-                    key_approved = getAndCheckIdentifier(key_str, ret); //new reference
-                }
+                    key_str = PythonQtConversion::PyObjGetString(key, false, ok);
+                    if (ok)
+                    {
+                        key_str.replace(".", "_");
+                        key_str.replace("-", "_");
+                        key_str.replace(" ", "_");
+                        ret = ito::retOk;
+                        key_approved = getAndCheckIdentifier(key_str, ret); //new reference
 
-                if (!ok || ret.containsError())
+                        if (ret.containsError())
+                        {
+                            // try an alternative for the key
+                            QString key_str2 = QString("var%1_%2").arg(counter).arg(key_str);
+                            ret = ito::retOk;
+                            key_approved = getAndCheckIdentifier(key_str2, ret); //new reference
+
+                            if (!ret.containsError())
+                            {
+                                warnings.append(tr("The key '%1' is no valid Python identifier and was renamed to '%2'").arg(key_str).arg(key_str2));
+                                counter++;
+                            }
+                        }
+                    }
+
+                    if (!ok || ret.containsError())
+                    {
+                        QString key_str2 = QString("var%1").arg(counter);
+                        key_approved = PyUnicode_FromFormat("var%i", counter); //new reference
+                        warnings.append(tr("A key could not be parsed as identifier string and was named '%1'").arg(key_str2));
+                        counter++;
+                    }
+                }
+                else
                 {
-                    key_approved = PyUnicode_FromFormat("var%i", counter); //new reference
-                    counter++;
+                    key_approved = key;
+                    Py_INCREF(key_approved);
                 }
 
                 if (PyDict_Contains(destinationDict, key_approved) && overwrite)
@@ -6609,7 +6634,6 @@ ito::RetVal PythonEngine::unpickleDictionary(PyObject *destinationDict, const QS
                     if (overwrite)
                     {
                         PyDict_DelItem(destinationDict, key_approved);
-                        //Py_INCREF(value);
                         PyDict_SetItem(destinationDict, key_approved, value); //value is not stolen by SetItem
                     }
                     else
@@ -6627,6 +6651,11 @@ ito::RetVal PythonEngine::unpickleDictionary(PyObject *destinationDict, const QS
                 }
 
                 Py_DECREF(key_approved);
+            }
+
+            if (warnings.size() > 0)
+            {
+                retval += ito::RetVal(ito::retWarning, 0, warnings.join("\n").toLatin1().data());
             }
   
         }

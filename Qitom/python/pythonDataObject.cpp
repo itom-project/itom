@@ -37,9 +37,23 @@
 #include "dataObjectFuncs.h"
 #include "pythonQtConversion.h"
 
+#include <memory>
+#include <stdexcept>
+
 #define PROTOCOL_STR_LENGTH 128
 
 namespace ito {
+
+template<typename ... Args>
+std::string string_format(const std::string& format, Args ... args)
+{
+    int size_s = std::snprintf(nullptr, 0, format.c_str(), args ...) + 1; // Extra space for '\0'
+    if (size_s <= 0) { throw std::runtime_error("Error during formatting."); }
+    auto size = static_cast<size_t>(size_s);
+    auto buf = std::make_unique<char[]>(size);
+    std::snprintf(buf.get(), size, format.c_str(), args ...);
+    return std::string(buf.get(), buf.get() + size - 1); // We don't want the '\0' inside
+}
 
 //-------------------------------------------------------------------------------------
 void PythonDataObject::PyDataObject_dealloc(PyDataObject* self)
@@ -3560,133 +3574,130 @@ bool PythonDataObject::checkPyDataObject(
 //-------------------------------------------------------------------------------------
 PyObject* PythonDataObject::PyDataObj_nbAdd(PyObject* o1, PyObject* o2)
 {
-    PyDataObject* dobj1 = NULL;
-    PyDataObject* dobj2 = NULL;
-    ito::float64 scalar = 0;
-    ito::complex128 cscalar = 0;
-    bool doneScalar = false;
-    bool complexScalar = false;
+    PyDataObject* dobj1 = nullptr;
+    PyObject* obj2 = nullptr;
 
-    if (PyDataObject_Check(o1) && PyDataObject_Check(o2))
+    if (PyDataObject_Check(o1))
     {
         dobj1 = (PyDataObject*)o1;
-        dobj2 = (PyDataObject*)o2;
-    }
-    else if (PyDataObject_Check(o1))
-    {
-        dobj1 = (PyDataObject*)o1;
-        if (PyFloat_Check(o2) || PyLong_Check(o2))
-        {
-            scalar = PyFloat_AsDouble(o2);
-        }
-        else if (PyComplex_Check(o2))
-        {
-            cscalar = ito::complex128(PyComplex_RealAsDouble(o2), PyComplex_ImagAsDouble(o2));
-            complexScalar = true;
-        }
-        else
-        {
-            PyErr_SetString(
-                PyExc_RuntimeError,
-                "second operand must be a dataObject, integer, float or complex");
-            return NULL;
-        }
+        obj2 = o2;
     }
     else if (PyDataObject_Check(o2))
     {
-        dobj1 = (PyDataObject*)o2; // dobj1 is always a dataobject!!! (difference to nbSub)
-        if (PyFloat_Check(o1) || PyLong_Check(o1))
-        {
-            scalar = PyFloat_AsDouble(o1);
-        }
-        else if (PyComplex_Check(o2))
-        {
-            cscalar = ito::complex128(PyComplex_RealAsDouble(o1), PyComplex_ImagAsDouble(o1));
-            complexScalar = true;
-        }
-        else
-        {
-            PyErr_SetString(
-                PyExc_RuntimeError,
-                "first operand must be a dataObject, integer, float or complex");
-            return NULL;
-        }
+        dobj1 = (PyDataObject*)o2;
+        obj2 = o1;
     }
     else
     {
         PyErr_SetString(PyExc_RuntimeError, "at least one operand must be a dataObject");
-        return NULL;
+        return nullptr;
     }
 
     PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
 
-    try
+    if (PyDataObject_Check(obj2))
     {
-        if (dobj2)
+        try
         {
+            // resDataObj should always be the owner of its data,
+            // therefore base of resultObject remains None
             retObj->dataObject = new ito::DataObject(
                 *(dobj1->dataObject) +
-                *(dobj2->dataObject)); // resDataObj should always be the owner of its data,
-                                       // therefore base of resultObject remains None
+                *(((PyDataObject*)obj2)->dataObject));
         }
-        else if (complexScalar)
+        catch (cv::Exception& exc)
         {
-            doneScalar = true;
-            retObj->dataObject = new ito::DataObject(
-                *(dobj1->dataObject) +
-                cscalar); // resDataObj should always be the owner of its
-                          // data, therefore base of resultObject remains None
+            Py_DECREF(retObj);
+            PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+            return nullptr;
         }
-        else
-        {
-            doneScalar = true;
-            retObj->dataObject = new ito::DataObject(
-                *(dobj1->dataObject) + scalar); // resDataObj should always be the owner of its
-                                                // data, therefore base of resultObject remains None
-        }
-    }
-    catch (cv::Exception& exc)
-    {
-        Py_DECREF(retObj);
-        PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-        return NULL;
-    }
 
-    if (doneScalar)
+        retObj->dataObject->addToProtocol("Created by adding two dataObjects.");
+    }
+    else if (PyFloat_Check(o2) || PyLong_Check(o2))
     {
-        char buf[PROTOCOL_STR_LENGTH] = {0};
-        if (complexScalar)
+        double scalar = PyFloat_AsDouble(o2);
+
+        try
         {
-            if (cscalar.imag() > 0)
-            {
-                sprintf_s(
-                    buf,
-                    PROTOCOL_STR_LENGTH,
-                    "Added %g+i%g scalar to dataObject.",
-                    cscalar.real(),
-                    cscalar.imag());
-            }
-            else
-            {
-                sprintf_s(
-                    buf,
-                    PROTOCOL_STR_LENGTH,
-                    "Added %g-i%g scalar to dataObject.",
-                    cscalar.real(),
-                    -cscalar.imag());
-            }
+            // resDataObj should always be the owner of its data,
+            // therefore base of resultObject remains None
+            retObj->dataObject = new ito::DataObject(
+                *(dobj1->dataObject) + scalar);
+        }
+        catch (cv::Exception& exc)
+        {
+            Py_DECREF(retObj);
+            PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+            return nullptr;
+        }
+
+        retObj->dataObject->addToProtocol(string_format("Added %g scalar to dataObject.", scalar));
+    }
+    else if (PyComplex_Check(o2))
+    {
+        auto cscalar = ito::complex128(PyComplex_RealAsDouble(o2), PyComplex_ImagAsDouble(o2));
+
+        try
+        {
+            // resDataObj should always be the owner of its data,
+            // therefore base of resultObject remains None
+            retObj->dataObject = new ito::DataObject(
+                *(dobj1->dataObject) + cscalar);
+        }
+        catch (cv::Exception& exc)
+        {
+            Py_DECREF(retObj);
+            PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+            return nullptr;
+        }
+
+        if (cscalar.imag() > 0)
+        {
+            retObj->dataObject->addToProtocol(string_format("Added %g+i%g scalar to dataObject.", cscalar.real(), cscalar.imag()));
         }
         else
         {
-            sprintf_s(buf, PROTOCOL_STR_LENGTH, "Added %g scalar to dataObject.", scalar);
+            retObj->dataObject->addToProtocol(string_format("Added %g-i%g scalar to dataObject.", cscalar.real(), cscalar.imag()));
         }
-        if (retObj)
-            retObj->dataObject->addToProtocol(buf);
+    }
+    else if (PythonDateTime::PyTimeDelta_CheckExt(o2))
+    {
+        bool ok;
+        auto timedelta = PythonDateTime::GetTimeDelta(o2, ok);
+
+        if (!ok)
+        {
+            Py_DECREF(retObj);
+            PyErr_SetString(
+                PyExc_RuntimeError,
+                "Timedelta value cannot be parsed.");
+            return nullptr;
+        }
+
+        try
+        {
+            // resDataObj should always be the owner of its data,
+            // therefore base of resultObject remains None
+            retObj->dataObject = new ito::DataObject(
+                *(dobj1->dataObject) + timedelta);
+        }
+        catch (cv::Exception& exc)
+        {
+            Py_DECREF(retObj);
+            PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+            return nullptr;
+        }
+
+        retObj->dataObject->addToProtocol("timedelta added to dataObject");
     }
     else
     {
-        if (retObj)
-            retObj->dataObject->addToProtocol("Created by adding two dataObjects.");
+        Py_DECREF(retObj);
+        PyErr_SetString(
+            PyExc_RuntimeError,
+            "Only a dataObject, integer, float, complex or timedelta value can be added to a dataObject.");
+        return nullptr;
     }
 
     return (PyObject*)retObj;

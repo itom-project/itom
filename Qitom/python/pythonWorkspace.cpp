@@ -55,8 +55,9 @@ PyWorkspaceItem::PyWorkspaceItem(const PyWorkspaceItem& other)
     m_compatibleParamBaseType = other.m_compatibleParamBaseType;
 }
 
-QChar PyWorkspaceContainer::delimiter = '/'; /*!< delimiter between the parent and child(ren) item
-                                                of the full path to a python variable. */
+/*!< delimiter between the parent and child(ren) item
+of the full path to a python variable. */
+QChar PyWorkspaceContainer::delimiter = QChar(0x1C, 0x00); // '/'; 
 
 //-----------------------------------------------------------------------------------------------------------
 PyWorkspaceContainer::PyWorkspaceContainer(bool globalNotLocal) : m_globalNotLocal(globalNotLocal)

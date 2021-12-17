@@ -248,7 +248,7 @@ private:
     void updatePythonWorkspaces(DictUpdateFlag globalDict, DictUpdateFlag localDict, bool lockGIL, bool delayExecution = false);
 
     ito::RetVal pickleDictionary(PyObject *dict, const QString &filename);
-    ito::RetVal unpickleDictionary(PyObject *destinationDict, const QString &filename, bool overwrite);
+    ito::RetVal unpickleDictionary(PyObject *destinationDict, const QString &filename, bool overwrite, bool replaceKeyByValidPyIdentifier);
 
     //!< runs the given Python string command
     void pythonRunString(QString cmd);
