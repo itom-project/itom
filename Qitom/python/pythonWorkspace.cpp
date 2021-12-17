@@ -332,9 +332,42 @@ void PyWorkspaceContainer::loadDictionaryRec(
 
                     keyType[0] = PY_ATTR;
                 }
+                else if (keys && (PyUnicode_Check(keys) || PyBytes_Check(keys)))
+                {
+                    PyObject* keysList = PyList_New(1); // new ref (list)
+                    PyList_SET_ITEM(keysList, 0, keys); // steals a ref
+                    keys = keysList;
+
+                    values = PyList_New(PyList_GET_SIZE(keys)); // new ref (list)
+
+                    for (Py_ssize_t idx = 0; idx < PyList_GET_SIZE(keys); ++idx)
+                    {
+                        subitem = PyObject_GetAttr(obj, PyList_GET_ITEM(keys, idx)); // new ref
+
+                        if (subitem)
+                        {
+                            PyList_SET_ITEM(values, idx, subitem); // steals a reference
+                        }
+                        else
+                        {
+                            // this is kind of an error case
+                            qDebug() << "error parsing attribute of PyObject";
+                            Py_INCREF(Py_None);
+                            PyList_SET_ITEM(values, idx, Py_None); // steals a reference
+                        }
+                    }
+
+                    if (PyErr_Occurred())
+                    {
+                        PyErr_Clear();
+                    }
+
+                    keyType[0] = PY_ATTR;
+                }
                 else
                 {
                     Py_XDECREF(keys);
+                    keys = nullptr;
                 }
             }
 
