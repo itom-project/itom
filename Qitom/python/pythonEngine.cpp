@@ -3720,9 +3720,9 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString
 
                     Py_XDECREF(number);
                 }
-                if (!ok || tempObj == NULL)
+                if (!ok || tempObj == nullptr)
                 {
-                    f = items[0].toFloat(&ok); //here, often, a rounding problem occurres... (this could not be fixed until now)
+                    f = items[0].toFloat(&ok); //here, often, a rounding problem occurs... (this could not be fixed until now)
                     if (ok)
                     {
                         number = PyFloat_FromDouble(f);
@@ -3749,7 +3749,13 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString
         else if (PyList_Check(obj))
         {
             i = itemKey.toInt(&ok);
-            if (!ok || i < 0 || i >= PyList_Size(obj)) return NULL; //error
+            
+            if (!ok || i < 0 || i >= PyList_Size(obj))
+            {
+                //error
+                return nullptr
+            };
+
             obj = PyList_GET_ITEM(obj,i); //borrowed
 
             if (validVariableName)
@@ -3766,7 +3772,13 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString
         else if (PyTuple_Check(obj))
         {
             i = itemKey.toInt(&ok);
-            if (!ok || i < 0 || i >= PyTuple_Size(obj)) return NULL; //error
+
+            if (!ok || i < 0 || i >= PyTuple_Size(obj)) 
+            { 
+                //error
+                return nullptr 
+            };
+
             obj = PyTuple_GET_ITEM(obj,i); //borrowed
 
             if (validVariableName)
@@ -3780,119 +3792,77 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString
                 objIsNewRef = false; //no new obj is a new reference, all borrowed
             }
         }
-        else if (PyObject_HasAttr(obj, m_dictUnicode))
-        {
-            PyObject *temp = PyObject_GetAttr(obj, m_dictUnicode); //new reference
-            if (temp)
-            {
-                if (itemKeyType == PY_STRING) //string
-                {
-                    tempObj = PyDict_GetItemString(temp, itemKey); //borrowed
-                    if (!tempObj)
-                    {
-                        obj = PyObject_GetAttrString(obj, itemKey); //new reference (only for this case, objIsNewRef is true (if nothing failed))
-                        if (validVariableName)
-                        {
-                            *validVariableName = itemKey;
-                        }
-
-                        if (objIsNewRef)
-                        {
-                            Py_DECREF(current_obj); 
-                        }
-
-                        objIsNewRef = (obj != NULL);
-                    }
-                    else
-                    {
-                        obj = tempObj;
-                        if (validVariableName)
-                        {
-                            *validVariableName = itemKey;
-                        }
-
-                        if (objIsNewRef)
-                        {
-                            Py_DECREF(current_obj); 
-                            objIsNewRef = false;  //no new obj is a new reference, all borrowed
-                        }
-                    }
-                }
-                else if (itemKeyType == PY_NUMBER) //number
-                {
-                    i = itemKey.toInt(&ok);
-                    if (ok)
-                    {
-                        number = PyLong_FromLong(i);
-                        tempObj = PyDict_GetItem(temp, number); //borrowed
-
-                        if (validVariableName)
-                        {
-                            *validVariableName = QString("item%1").arg(i);
-                        }
-
-                        Py_XDECREF(number);
-                    }
-                    if (!ok || tempObj == NULL)
-                    {
-                        f = items[0].toFloat(&ok); //here, often, a rounding problem occurres... (this could not be fixed until now)
-                        if (ok)
-                        {
-                            number = PyFloat_FromDouble(f);
-                            tempObj = PyDict_GetItem(temp, number); //borrowed
-
-                            if (validVariableName)
-                            {
-                                *validVariableName = QString("item%1").arg(f).replace(".", "dot").replace(",", "dot");
-                            }
-
-                            Py_XDECREF(number);
-                        }
-                    }
-
-                    obj = tempObj;
-                    if (objIsNewRef)
-                    {
-                        Py_DECREF(current_obj); 
-                        objIsNewRef = false;
-                    }
-                }
-                
-                Py_DECREF(temp);
-            }
-            else
-            {
-                return NULL;
-            }
-        }
-        else if (PyObject_HasAttr(obj, m_slotsUnicode))
+        else if (PyObject_HasAttr(obj, m_dictUnicode) || PyObject_HasAttr(obj, m_slotsUnicode))
         {
             if (itemKeyType == PY_STRING) //string
             {
-                tempObj = PyObject_GetAttrString(obj, itemKey); //new reference (only for this case, objIsNewRef is true (if nothing failed))
+                //new reference (only for this case, objIsNewRef is true (if nothing failed))
+                obj = PyObject_GetAttrString(obj, itemKey); // new reference
+                     
                 if (validVariableName)
                 {
                     *validVariableName = itemKey;
                 }
+
+                if (objIsNewRef)
+                {
+                    Py_DECREF(current_obj); 
+                }
+
+                objIsNewRef = (obj != nullptr);
             }
-
-            obj = tempObj;
-
-            if (objIsNewRef)
+            else if (itemKeyType == PY_NUMBER) //number
             {
-                Py_DECREF(current_obj);
-                objIsNewRef = false; //in the overall if-case, no new obj is a new reference, all borrowed
-            }
+                i = itemKey.toInt(&ok);
 
-            objIsNewRef = (tempObj != NULL);
+                if (ok)
+                {
+                    number = PyLong_FromLong(i); // new reference
+                    tempObj = PyObject_GetAttr(obj, number); // new reference
+
+                    if (validVariableName)
+                    {
+                        *validVariableName = QString("item%1").arg(i);
+                    }
+
+                    Py_XDECREF(number);
+                }
+                if (!ok || tempObj == nullptr)
+                {
+                    //here, often, a rounding problem occures... (this could not be fixed until now)
+                    f = items[0].toFloat(&ok);
+
+                    if (ok)
+                    {
+                        number = PyFloat_FromDouble(f); // new reference
+                        tempObj = PyObject_GetAttr(obj, number); //new reference
+
+                        if (validVariableName)
+                        {
+                            *validVariableName = QString("item%1").arg(f).replace(".", "dot").replace(",", "dot");
+                        }
+
+                        Py_XDECREF(number);
+                    }
+                }
+
+                obj = tempObj;
+
+                if (objIsNewRef)
+                {
+                    Py_DECREF(current_obj); 
+                }
+
+                objIsNewRef = (obj != nullptr);
+            }
         }
         else
         {
-            return NULL; //error
+            return nullptr; //error
         }
 
         items.removeFirst();
-        tempObj = NULL;
+        tempObj = nullptr;
     }
 
     if (objIsNewRef == false)
@@ -4585,6 +4555,7 @@ bool PythonEngine::renameVariable(bool globalNotLocal, const QString &oldFullIte
                         char parentContainerType = old[0][0].toLatin1();
                         fullNameSplit.removeLast(); 
                         PyObject *parentContainer = NULL;
+
                         if (fullNameSplit.size() > 0)
                         {
                             parentContainer = getPyObjectByFullName(globalNotLocal, fullNameSplit); //new reference
@@ -4599,14 +4570,16 @@ bool PythonEngine::renameVariable(bool globalNotLocal, const QString &oldFullIte
                         {
                         case PY_DICT:
                             value = PyDict_GetItemString(parentContainer, newKey.toLatin1().data()); //borrowed reference
-                            if (value != NULL)
+
+                            if (value != nullptr)
                             {
                                 retVal = false;
                                 std::cerr << "variable " << newKey.toLatin1().data() << " already exists in dictionary\n" << std::endl;
                             }
                             else
                             {
-                                PyDict_SetItemString(parentContainer, newKey.toLatin1().data(), oldItem); //first set new, then delete in order not to loose the reference in-between (ref of value is automatically incremented)
+                                //first set new, then delete in order not to loose the reference in-between (ref of value is automatically incremented)
+                                PyDict_SetItemString(parentContainer, newKey.toLatin1().data(), oldItem); 
                                 PyDict_DelItem(parentContainer, oldName);
 
                                 if (PyErr_Occurred())
@@ -4618,14 +4591,16 @@ bool PythonEngine::renameVariable(bool globalNotLocal, const QString &oldFullIte
                             break;
                         case PY_MAPPING:
                             value = PyMapping_GetItemString(parentContainer, newKey.toLatin1().data()); //new reference
-                            if (value != NULL)
+
+                            if (value != nullptr)
                             {
                                 retVal = false;
                                 std::cerr << "variable " << newKey.toLatin1().data() << " already exists in dictionary\n" << std::endl;
                             }
                             else
                             {
-                                PyMapping_SetItemString(parentContainer, newKey.toLatin1().data(), oldItem); //first set new, then delete in order not to loose the reference in-between (ref of value is automatically incremented)
+                                //first set new, then delete in order not to loose the reference in-between (ref of value is automatically incremented)
+                                PyMapping_SetItemString(parentContainer, newKey.toLatin1().data(), oldItem); 
                                 PyMapping_DelItem(parentContainer, oldName);
 
                                 if (PyErr_Occurred())
@@ -4633,30 +4608,34 @@ bool PythonEngine::renameVariable(bool globalNotLocal, const QString &oldFullIte
                                     retVal = false;
                                     PyErr_PrintEx(0);
                                 }
-
-                                Py_DECREF(value);
                             }
+
+                            Py_XDECREF(value);
+
                             break;
                         case PY_ATTR:
                             value = PyObject_GetAttrString(parentContainer, newKey.toLatin1().data()); //new reference
-                            if (value != NULL)
+
+                            if (value != nullptr)
                             {
                                 retVal = false;
                                 std::cerr << "variable " << newKey.toLatin1().data() << " already exists in dictionary\n" << std::endl;
                             }
                             else
                             {
-                                PyObject_SetAttrString(parentContainer, newKey.toLatin1().data(), oldItem); //first set new, then delete in order not to loose the reference in-between (ref of value is automatically incremented)
+                                //first set new, then delete in order not to loose the reference in-between (ref of value is automatically incremented)
+                                PyObject_SetAttrString(parentContainer, newKey.toLatin1().data(), oldItem); 
                                 PyObject_DelAttr(parentContainer, oldName);
 
                                 if (PyErr_Occurred())
                                 {
                                     retVal = false;
                                     PyErr_PrintEx(0);
-                                }
-
-                                Py_DECREF(value);
+                                }    
                             }
+
+                            Py_XDECREF(value);
+
                             break;
                         case PY_LIST_TUPLE:
                             retVal = false;

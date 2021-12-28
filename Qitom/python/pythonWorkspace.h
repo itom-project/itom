@@ -125,9 +125,13 @@ private:
 
     bool isNotInBlacklist(PyObject *obj) const;
 
+    //!< appends a possible names in __slots__ attribute of objOrType (object or type object) to pre-defined list slotNamesList.
+    void appendSlotNamesToList(PyObject *objOrType, PyObject *slotNamesList);
+
     bool m_globalNotLocal;
     PyObject *m_dictUnicode;
     PyObject *m_slotsUnicode;
+    PyObject *m_mroUnicode;
 
 signals:
     void updateAvailable(PyWorkspaceItem *rootItem, QString fullNameRoot, QStringList recentlyDeletedFullNames);   //TODO

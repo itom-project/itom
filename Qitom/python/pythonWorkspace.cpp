@@ -64,6 +64,7 @@ PyWorkspaceContainer::PyWorkspaceContainer(bool globalNotLocal) : m_globalNotLoc
 {
     m_dictUnicode = PyUnicode_FromString("__dict__");
     m_slotsUnicode = PyUnicode_FromString("__slots__");
+    m_mroUnicode = PyUnicode_FromString("__mro__");
 }
 
 //-----------------------------------------------------------------------------------------------------------
@@ -71,6 +72,7 @@ PyWorkspaceContainer::~PyWorkspaceContainer()
 {
     Py_XDECREF(m_dictUnicode);
     Py_XDECREF(m_slotsUnicode);
+    Py_XDECREF(m_mroUnicode);
 }
 
 //-----------------------------------------------------------------------------------------------------------
@@ -139,6 +141,36 @@ void PyWorkspaceContainer::loadDictionary(PyObject* obj, const QString& fullName
         loadDictionaryRec(obj, fullNameParentItem, parent, deleteList);
 
         emit updateAvailable(parent, fullNameParentItem, deleteList);
+    }
+}
+
+//-------------------------------------------------------------------------------------
+void PyWorkspaceContainer::appendSlotNamesToList(PyObject *objOrType, PyObject *slotNamesList)
+{
+    //__slots__ can return any sequence, here list and tuple are supported.
+    PyObject* subitem = nullptr;
+    PyObject *slotNames = PyObject_GetAttr(objOrType, m_slotsUnicode); // new ref (list, tuple or string)
+
+    if (slotNames)
+    {
+        if (PyList_Check(slotNames))
+        {
+            for (Py_ssize_t idx = 0; idx < PyList_Size(slotNames); ++idx)
+            {
+                PyList_Append(slotNamesList, PyList_GET_ITEM(slotNames, idx));
+            }
+        }
+        else if (PyTuple_Check(slotNames))
+        {
+            for (Py_ssize_t idx = 0; idx < PyTuple_Size(slotNames); ++idx)
+            {
+                PyList_Append(slotNamesList, PyTuple_GET_ITEM(slotNames, idx));
+            }
+        }
+        else if ((PyUnicode_Check(slotNames) || PyBytes_Check(slotNames)))
+        {
+            PyList_Append(slotNamesList, slotNames);
+        }
     }
 }
 
@@ -276,7 +308,82 @@ void PyWorkspaceContainer::loadDictionaryRec(
 
                 keyType[0] = PY_MAPPING;
             }
-            else if (PyObject_HasAttr(obj, m_dictUnicode))
+            else if (PyObject_HasAttr(obj, m_dictUnicode) || PyObject_HasAttr(obj, m_slotsUnicode))
+            {
+                // get the dict, containing all values from object and its bases classes
+                PyObject* subdict = PyObject_GetAttr(obj, m_dictUnicode); // new ref
+
+                if (subdict)
+                {
+                    keys = PyDict_Keys(subdict); // new ref (list)
+                    values = PyDict_Values(subdict); // new ref (list)
+                    Py_XDECREF(subdict);
+
+                    if (PyErr_Occurred())
+                    {
+                        PyErr_Clear();
+                    }
+                }
+                else
+                {
+                    keys = PyList_New(0);
+                    values = PyList_New(0);
+                }
+
+                // get all slots (here, we have to go through all base classes)
+                PyObject *slotNames = PyList_New(0);
+                PyObject *thisType = PyObject_Type(obj);
+                PyObject *mro = PyObject_GetAttr(thisType, m_mroUnicode);
+
+                if (mro)
+                {
+                    for (Py_ssize_t idx = 0; idx < PyTuple_Size(mro); ++idx)
+                    {
+                        appendSlotNamesToList(PyTuple_GET_ITEM(mro, idx), slotNames);
+                    }
+                }
+
+                Py_XDECREF(mro);
+                Py_XDECREF(thisType);
+
+                keyType[0] = PY_ATTR;
+
+                if (PyErr_Occurred())
+                {
+                    PyErr_Clear();
+                }
+
+                PyObject* subitem = nullptr;
+                PyObject *name = nullptr;
+
+                for (Py_ssize_t idx = 0; idx < PyList_GET_SIZE(slotNames); ++idx)
+                {
+                    name = PyList_GET_ITEM(slotNames, idx); //borrowed
+                    subitem = PyObject_GetAttr(obj, name); // new ref
+                    PyList_Append(keys, name); // does not steal a ref
+
+                    if (subitem)
+                    {
+                        PyList_Append(values, subitem); // does not steal a ref
+                        Py_DECREF(subitem);
+                    }
+                    else
+                    {
+                        // this is kind of an error case
+                        qDebug() << "error parsing attribute of PyObject";
+                        PyList_Append(values, Py_None);
+                    }
+                }
+
+                if (PyErr_Occurred())
+                {
+                    PyErr_Clear();
+                }
+
+                Py_DECREF(slotNames);
+
+            }
+            /*else if (PyObject_HasAttr(obj, m_dictUnicode))
             {
                 PyObject* subdict = PyObject_GetAttr(obj, m_dictUnicode); // new ref
                 keys = PyDict_Keys(subdict); // new ref (list)
@@ -369,7 +476,7 @@ void PyWorkspaceContainer::loadDictionaryRec(
                     Py_XDECREF(keys);
                     keys = nullptr;
                 }
-            }
+            }*/
 
             if (keys && values)
             {
