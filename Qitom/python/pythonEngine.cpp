@@ -3649,8 +3649,8 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString
     PyObject *number = NULL;
 
     char itemKeyType, itemType;
-    QByteArray itemName;
-    QByteArray itemKey;
+    QString itemName;
+    QString itemKey;
     bool ok;
     bool objIsNewRef = false;
 
@@ -3682,24 +3682,36 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString
     {
         current_obj = obj;
 
-        itemName = items[0].toLatin1();
+        itemName = items[0]; // .toUtf8();
 
         if (itemName.size() < 4) //every item has the form "as:name" where a,s... are values of the enumeration PyWorkspaceContainer:WorkspaceItemType
         {
-            return NULL;
+            return nullptr;
         }
         else
         {
             itemKey = itemName.mid(3);
-            itemType = itemName.at(0);
-            itemKeyType = itemName.at(1); //keyword is a number of a string
+            itemType = itemName.at(0).toLatin1();
+            itemKeyType = itemName.at(1).toLatin1(); //keyword is a number of a string
         }
 
         if (PyDict_Check(obj))
         {
             if (itemKeyType == PY_STRING) //string
             {
-                tempObj = PyDict_GetItemString(obj, itemKey); //borrowed
+                PyObject* unicode = PythonQtConversion::QStringToPyObject(itemKey);
+
+                if (unicode)
+                {
+                    tempObj = PyDict_GetItem(obj, unicode); //borrowed
+                    Py_DECREF(unicode);
+                }
+                else
+                {
+                    PyErr_Print();
+                    PyErr_Clear();
+                }
+
                 if (validVariableName)
                 {
                     *validVariableName = itemKey;
@@ -3737,6 +3749,36 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString
                     }
                 }
             }
+            else if (itemKeyType == PY_OBJID)
+            {
+                PyObject *itkey, *itvalue;
+                Py_ssize_t itpos = 0;
+                quintptr objId = itemKey.toULongLong(&ok, 16);
+                
+                if (ok)
+                {
+
+                    while (PyDict_Next(obj, &itpos, &itkey, &itvalue))
+                    {
+                        if (reinterpret_cast<quintptr>(itkey) == objId)
+                        {
+                            tempObj = itvalue;
+
+                            if (validVariableName)
+                            {
+                                *validVariableName = PythonQtConversion::PyObjGetRepresentation(itvalue);
+                                
+                                if (*validVariableName == "")
+                                {
+                                    *validVariableName = QString("item_0x%1").arg(itemKey);
+                                }
+                            }
+
+                            break;
+                        }
+                    }
+                }
+            }
 
             obj = tempObj;
 
@@ -3753,7 +3795,7 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString
             if (!ok || i < 0 || i >= PyList_Size(obj))
             {
                 //error
-                return nullptr
+                return nullptr;
             };
 
             obj = PyList_GET_ITEM(obj,i); //borrowed
@@ -3776,7 +3818,7 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString
             if (!ok || i < 0 || i >= PyTuple_Size(obj)) 
             { 
                 //error
-                return nullptr 
+                return nullptr;
             };
 
             obj = PyTuple_GET_ITEM(obj,i); //borrowed
@@ -3796,8 +3838,14 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString
         {
             if (itemKeyType == PY_STRING) //string
             {
-                //new reference (only for this case, objIsNewRef is true (if nothing failed))
-                obj = PyObject_GetAttrString(obj, itemKey); // new reference
+                PyObject* unicode = PythonQtConversion::QStringToPyObject(itemKey);
+
+                if (unicode)
+                {
+                    //new reference (only for this case, objIsNewRef is true (if nothing failed))
+                    obj = PyObject_GetAttr(obj, unicode); // new reference
+                    Py_DECREF(unicode);
+                }
                      
                 if (validVariableName)
                 {
@@ -3854,6 +3902,54 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString
                 }
 
                 objIsNewRef = (obj != nullptr);
+            }
+            else if (itemKeyType == PY_OBJID)
+            {
+                // this type can only be resolved by a reverse search if
+                // __dict__ is set, __slots__ attributes cannot be listed and
+                // compared.
+                if (PyObject_HasAttr(obj, m_dictUnicode))
+                {
+                    PyObject *d = PyObject_GetAttr(obj, m_dictUnicode); // new ref
+
+                    PyObject *itkey, *itvalue;
+                    Py_ssize_t itpos = 0;
+                    quintptr objId = itemKey.toULongLong(&ok, 16);
+
+                    if (ok)
+                    {
+                        while (PyDict_Next(d, &itpos, &itkey, &itvalue))
+                        {
+                            if (reinterpret_cast<quintptr>(itkey) == objId)
+                            {
+                                tempObj = itvalue;
+
+                                if (validVariableName)
+                                {
+                                    *validVariableName = PythonQtConversion::PyObjGetRepresentation(itvalue);
+
+                                    if (*validVariableName == "")
+                                    {
+                                        *validVariableName = QString("item_0x%1").arg(itemKey);
+                                    }
+                                }
+
+                                break;
+                            }
+                        }
+                    }
+
+                    Py_XDECREF(d);
+
+                    obj = tempObj;
+
+                    if (objIsNewRef)
+                    {
+                        Py_DECREF(current_obj);
+                    }
+
+                    objIsNewRef = (obj != nullptr);
+                }
             }
         }
         else
@@ -4493,8 +4589,9 @@ bool PythonEngine::renameVariable(bool globalNotLocal, const QString &oldFullIte
 
     tPythonState oldState = m_pythonState;
     bool retVal = true;
-    PyObject* dict = NULL;
+    PyObject* dict = nullptr;
     PyObject* value;
+    bool released = false;
 
     if (m_pythonState == pyStateRunning || m_pythonState == pyStateDebugging || m_pythonState == pyStateDebuggingWaitingButBusy)
     {
@@ -4521,7 +4618,7 @@ bool PythonEngine::renameVariable(bool globalNotLocal, const QString &oldFullIte
             dict = getLocalDictionary();
         }
 
-        if (dict == NULL)
+        if (dict == nullptr)
         {
             retVal = false;
             std::cerr << "variable can not be renamed, since dictionary is not available\n" << std::endl;
@@ -4529,8 +4626,10 @@ bool PythonEngine::renameVariable(bool globalNotLocal, const QString &oldFullIte
         else
         {
             PyGILState_STATE gstate = PyGILState_Ensure();
+            PyObject *newKeyUnicode = PythonQtConversion::QStringToPyObject(newKey);
+            bool isIdentifier = newKeyUnicode && PyUnicode_IsIdentifier(newKeyUnicode);
 
-            if (!PyUnicode_IsIdentifier(PyUnicode_DecodeLatin1(newKey.toLatin1().data(), newKey.length(), NULL)))
+            if (!isIdentifier)
             {
                 PyErr_Clear();
                 retVal = false;
@@ -4551,7 +4650,11 @@ bool PythonEngine::renameVariable(bool globalNotLocal, const QString &oldFullIte
                     if (fullNameSplit.size() > 0)
                     {
                         QStringList old = fullNameSplit.last().split(":");
-                        PyObject *oldName = old[0][1].toLatin1() == PY_STRING ? PythonQtConversion::QStringToPyObject(old[1]) : PyLong_FromLong(old[1].toInt()); //new reference
+
+                        // todo: make this available if the current value is PY_OBJPTR as type!
+                        PyObject *oldName = (old[0][1].toLatin1() == PY_STRING) ? 
+                            PythonQtConversion::QStringToPyObject(old[1]) : 
+                            PyLong_FromLong(old[1].toInt()); //new reference
                         char parentContainerType = old[0][0].toLatin1();
                         fullNameSplit.removeLast(); 
                         PyObject *parentContainer = NULL;
@@ -4569,7 +4672,7 @@ bool PythonEngine::renameVariable(bool globalNotLocal, const QString &oldFullIte
                         switch (parentContainerType)
                         {
                         case PY_DICT:
-                            value = PyDict_GetItemString(parentContainer, newKey.toLatin1().data()); //borrowed reference
+                            value = PyDict_GetItem(parentContainer, newKeyUnicode); //borrowed reference
 
                             if (value != nullptr)
                             {
@@ -4579,8 +4682,10 @@ bool PythonEngine::renameVariable(bool globalNotLocal, const QString &oldFullIte
                             else
                             {
                                 //first set new, then delete in order not to loose the reference in-between (ref of value is automatically incremented)
-                                PyDict_SetItemString(parentContainer, newKey.toLatin1().data(), oldItem); 
-                                PyDict_DelItem(parentContainer, oldName);
+                                if (PyDict_SetItem(parentContainer, newKeyUnicode, oldItem) == 0)
+                                {
+                                    PyDict_DelItem(parentContainer, oldName);
+                                }
 
                                 if (PyErr_Occurred())
                                 {
@@ -4614,7 +4719,7 @@ bool PythonEngine::renameVariable(bool globalNotLocal, const QString &oldFullIte
 
                             break;
                         case PY_ATTR:
-                            value = PyObject_GetAttrString(parentContainer, newKey.toLatin1().data()); //new reference
+                            value = PyObject_GetAttr(parentContainer, newKeyUnicode); //new reference
 
                             if (value != nullptr)
                             {
@@ -4624,14 +4729,16 @@ bool PythonEngine::renameVariable(bool globalNotLocal, const QString &oldFullIte
                             else
                             {
                                 //first set new, then delete in order not to loose the reference in-between (ref of value is automatically incremented)
-                                PyObject_SetAttrString(parentContainer, newKey.toLatin1().data(), oldItem); 
-                                PyObject_DelAttr(parentContainer, oldName);
+                                if (PyObject_SetAttr(parentContainer, newKeyUnicode, oldItem) == 0)
+                                {
+                                    PyObject_DelAttr(parentContainer, oldName);  
+                                }
 
                                 if (PyErr_Occurred())
                                 {
                                     retVal = false;
                                     PyErr_PrintEx(0);
-                                }    
+                                }
                             }
 
                             Py_XDECREF(value);
@@ -4655,12 +4762,16 @@ bool PythonEngine::renameVariable(bool globalNotLocal, const QString &oldFullIte
                 }
             }
 
+            Py_XDECREF(newKeyUnicode);
+
             PyGILState_Release(gstate);
         }
 
-        if (semaphore != NULL) //release semaphore now, since the following emit command will be a blocking connection, too.
+        if (semaphore != nullptr) //release semaphore now, since the following emit command will be a blocking connection, too.
         {
+            semaphore->returnValue = retVal;
             semaphore->release();
+            released = true;
         }
 
         if (globalNotLocal)
@@ -4682,7 +4793,11 @@ bool PythonEngine::renameVariable(bool globalNotLocal, const QString &oldFullIte
         }
     }
 
-    if (semaphore != NULL) semaphore->release();
+    if (semaphore != nullptr && !released)
+    {
+        semaphore->returnValue = retVal;
+        semaphore->release();
+    }
 
     return retVal;
 }
@@ -4694,13 +4809,11 @@ bool PythonEngine::renameVariable(bool globalNotLocal, const QString &oldFullIte
     \param globalNotLocal is true, if deletion from global workspace, else: local workspace
     \param fullItemNames is a list of full item names to all python variables that should be deleted from workspace. This list must not contain child values if the parent is part of the list, too.
 */
-bool PythonEngine::deleteVariable(bool globalNotLocal, const QStringList &fullItemNames, ItomSharedSemaphore *semaphore)
+bool PythonEngine::deleteVariable(bool globalNotLocal, const QStringList &fullItemNames)
 {
-    ItomSharedSemaphoreLocker locker(semaphore);
-
     tPythonState oldState = m_pythonState;
     bool retVal = true;
-    PyObject* dict = NULL;
+    PyObject* dict = nullptr;
     QString key;
 
     if (m_pythonState == pyStateRunning || m_pythonState == pyStateDebugging || m_pythonState == pyStateDebuggingWaitingButBusy)
@@ -4728,7 +4841,7 @@ bool PythonEngine::deleteVariable(bool globalNotLocal, const QStringList &fullIt
             dict = getLocalDictionary();
         }
 
-        if (dict == NULL)
+        if (dict == nullptr)
         {
             retVal = false;
             std::cerr << "variables " << " can not be deleted, since dictionary is not available\n" << std::endl;
@@ -4738,8 +4851,8 @@ bool PythonEngine::deleteVariable(bool globalNotLocal, const QStringList &fullIt
             PyGILState_STATE gstate = PyGILState_Ensure();
 
             QStringList fullNameSplit;
-            PyObject *parentContainer = NULL;
-            PyObject *name = NULL;
+            PyObject *parentContainer = nullptr;
+            PyObject *name = nullptr;
 
             QStringList fullItemNamesAsc = fullItemNames;
             fullItemNamesAsc.sort(); //ascending sorting, however if several indices in one list or tuple should be deleted, it is necessary to start with the last one...
@@ -4747,6 +4860,7 @@ bool PythonEngine::deleteVariable(bool globalNotLocal, const QStringList &fullIt
             for (int i = fullItemNamesAsc.size() - 1; i >= 0; --i)
             {
                 fullNameSplit = fullItemNamesAsc[i].split(PyWorkspaceContainer::delimiter);
+
                 if (fullNameSplit.size() > 0 && fullNameSplit[0] == "")
                 {
                     fullNameSplit.removeFirst();
@@ -4759,37 +4873,60 @@ bool PythonEngine::deleteVariable(bool globalNotLocal, const QStringList &fullIt
                     if (fullNameSplit.size() > 0)
                     {
                         QStringList old = fullNameSplit.last().split(":");
-                        name = old[0][1].toLatin1() == PY_STRING ? PythonQtConversion::QStringToPyObject(old[1]) : PyLong_FromLong(old[1].toInt()); //new reference
-                        char parentContainerType = old[0][0].toLatin1();
-                        fullNameSplit.removeLast();
-                        if (fullNameSplit.size() > 0)
-                        {
-                            parentContainer = getPyObjectByFullName(globalNotLocal, fullNameSplit); //new reference
-                        }
-                        else
-                        {
-                            parentContainer = dict;
-                            Py_INCREF(parentContainer);
-                        }
 
-                        switch (parentContainerType)
+                        switch (old[0][1].toLatin1())
                         {
-                        case PY_DICT:
-                            PyDict_DelItem(parentContainer, name);
+                        case PY_STRING:
+                            name = PythonQtConversion::QStringToPyObject(old[1]); // new ref
                             break;
-                        case PY_MAPPING:
-                            PyMapping_DelItem(parentContainer, name);
+                        case PY_NUMBER:
+                            name = PyLong_FromLong(old[1].toInt()); //new reference
                             break;
-                        case PY_ATTR:
-                            PyObject_DelAttr(parentContainer, name); 
+                        case PY_OBJID:
+                            retVal = false;
+                            //todo: this is possible for dict types
+                            std::cerr << "Currently, only keys of type string or int can be deleted.\n" << std::endl;
                             break;
-                        case PY_LIST_TUPLE:
-                            if (PySequence_DelItem(parentContainer, old[1].toInt()) < 0)
+                        default:
+                            retVal = false;
+                            std::cerr << "Unknown value type.\n" << std::endl;
+                            break;
+                        }
+                        
+                        if (name != nullptr)
+                        {
+                            char parentContainerType = old[0][0].toLatin1();
+                            fullNameSplit.removeLast();
+
+                            if (fullNameSplit.size() > 0)
                             {
-                                retVal = false;
-                                std::cerr << "Item could not be deleted from list or tuple. It is never allowed to delete from a tuple.\n" << std::endl;
+                                parentContainer = getPyObjectByFullName(globalNotLocal, fullNameSplit); //new reference
                             }
-                            break;
+                            else
+                            {
+                                parentContainer = dict;
+                                Py_INCREF(parentContainer);
+                            }
+
+                            switch (parentContainerType)
+                            {
+                            case PY_DICT:
+                                PyDict_DelItem(parentContainer, name);
+                                break;
+                            case PY_MAPPING:
+                                PyMapping_DelItem(parentContainer, name);
+                                break;
+                            case PY_ATTR:
+                                PyObject_DelAttr(parentContainer, name);
+                                break;
+                            case PY_LIST_TUPLE:
+                                if (PySequence_DelItem(parentContainer, old[1].toInt()) < 0)
+                                {
+                                    retVal = false;
+                                    std::cerr << "Item could not be deleted from list or tuple. It is never allowed to delete from a tuple.\n" << std::endl;
+                                }
+                                break;
+                            }
                         }
 
                         if (PyErr_Occurred())
@@ -4798,8 +4935,10 @@ bool PythonEngine::deleteVariable(bool globalNotLocal, const QStringList &fullIt
                             PyErr_PrintEx(0);
                         }
 
-                        Py_DECREF(parentContainer);
-                        Py_DECREF(name);
+                        Py_XDECREF(parentContainer);
+                        parentContainer = nullptr;
+                        Py_XDECREF(name);
+                        name = nullptr;
                     }
 
                     Py_DECREF(item);
@@ -4807,10 +4946,7 @@ bool PythonEngine::deleteVariable(bool globalNotLocal, const QStringList &fullIt
             }
 
             PyGILState_Release(gstate);
-
         }
-
-        if (semaphore != NULL) semaphore->release();
 
         if (globalNotLocal)
         {
@@ -4830,8 +4966,6 @@ bool PythonEngine::deleteVariable(bool globalNotLocal, const QStringList &fullIt
             pythonStateTransition(pyTransDebugExecCmdEnd);
         }
     }
-
-    if (semaphore != NULL) semaphore->release();
 
     return retVal;
 }
@@ -5120,8 +5254,9 @@ ito::RetVal PythonEngine::loadMatlabVariables(bool globalNotLocal, QString filen
         {
             PyGILState_STATE gstate = PyGILState_Ensure();
 
-            //PyObject *pArgs = PyTuple_Pack(1, PyUnicode_FromString(filename.toLatin1().data()));
-            PyObject *pArgs = PyTuple_Pack(1, PyUnicode_DecodeLatin1(filename.toLatin1().data(), filename.length(), NULL));
+            PyObject *filenameUnicode = PyUnicode_DecodeLatin1(filename.toLatin1().data(), filename.length(), NULL);
+            PyObject *pArgs = PyTuple_Pack(1, filenameUnicode);
+            Py_DECREF(filenameUnicode);
             PyObject *dict = ito::PythonItom::PyLoadMatlabMat(NULL, pArgs);
             Py_DECREF(pArgs);
 
@@ -5834,21 +5969,24 @@ ito::RetVal PythonEngine::registerAddInInstance(QString varname, ito::AddInBase 
 //! get the unicode object from identifier and checks if it is a valid python identifier (variable name). This returns a new reference of the unicode object or NULL with a corresponding error message (python error flag is cleared)
 PyObject* PythonEngine::getAndCheckIdentifier(const QString &identifier, ito::RetVal &retval) const
 {
-    QByteArray ba = identifier.toLatin1();
-    PyObject *obj = PyUnicode_DecodeLatin1(ba.data(), ba.size(), NULL);
+    //QByteArray ba = identifier.toLatin1();
+    //PyObject *obj = PyUnicode_DecodeLatin1(ba.data(), ba.size(), NULL);
+
+    PyObject *obj = PythonQtConversion::QStringToPyObject(identifier);
+
     if (obj)
     {
         if (!PyUnicode_IsIdentifier(obj))
         {
             Py_DECREF(obj);
             obj = NULL;
-            retval += ito::RetVal::format(ito::retError, 0, "String '%s' is no valid python identifier", ba.data());
+            retval += ito::RetVal::format(ito::retError, 0, "String '%s' is no valid python identifier", identifier.toLatin1().data());
         }
     }
     else
     {
         PyErr_Clear();
-        retval += ito::RetVal::format(ito::retError, 0, "String '%s' cannot be interpreted as unicode", ba.data());
+        retval += ito::RetVal::format(ito::retError, 0, "String '%s' cannot be interpreted as unicode", identifier.toLatin1().data());
     }
 
     return obj;
@@ -6037,7 +6175,7 @@ ito::RetVal PythonEngine::pickleVariables(bool globalNotLocal, QString filename,
             dict = getLocalDictionary();
         }
 
-        if (dict == NULL)
+        if (dict == nullptr)
         {
             retVal += ito::RetVal(retError, 0, tr("Variables can not be pickled since dictionary is not available").toLatin1().data());
         }
@@ -6045,7 +6183,8 @@ ito::RetVal PythonEngine::pickleVariables(bool globalNotLocal, QString filename,
         {
             //build dictionary, which should be pickled
             PyObject* exportDict = PyDict_New();
-            PyObject* tempElem = NULL;
+            PyObject* tempElem = nullptr;
+            PyObject* keyUnicode = nullptr;
             QString validVariableName;
 
             for (int i = 0 ; i < varNames.size() ; i++)
@@ -6058,7 +6197,15 @@ ito::RetVal PythonEngine::pickleVariables(bool globalNotLocal, QString filename,
                 }
                 else
                 {
-                    PyDict_SetItemString(exportDict, validVariableName.toLatin1().data(), tempElem); //increments tempElem by itsself
+                    keyUnicode = PythonQtConversion::QStringToPyObject(validVariableName);
+
+                    if (keyUnicode)
+                    {
+                        //increments tempElem by itsself
+                        PyDict_SetItem(exportDict, keyUnicode, tempElem);
+                        Py_DECREF(keyUnicode);
+                    }
+
                     Py_DECREF(tempElem);
                 }
             }
@@ -6083,7 +6230,7 @@ ito::RetVal PythonEngine::pickleVariables(bool globalNotLocal, QString filename,
         }
     }
 
-    if (semaphore != NULL)
+    if (semaphore != nullptr)
     {
         semaphore->returnValue = retVal;
         semaphore->release();

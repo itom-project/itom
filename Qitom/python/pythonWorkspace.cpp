@@ -37,6 +37,7 @@ PyWorkspaceItem::~PyWorkspaceItem()
     {
         delete child;
     }
+
     m_childs.clear();
 }
 
@@ -57,7 +58,7 @@ PyWorkspaceItem::PyWorkspaceItem(const PyWorkspaceItem& other)
 
 /*!< delimiter between the parent and child(ren) item
 of the full path to a python variable. */
-QChar PyWorkspaceContainer::delimiter = QChar(0x1C, 0x00); // '/'; 
+QChar PyWorkspaceContainer::delimiter = QChar(0x1C, 0x00); // '/';
 
 //-----------------------------------------------------------------------------------------------------------
 PyWorkspaceContainer::PyWorkspaceContainer(bool globalNotLocal) : m_globalNotLocal(globalNotLocal)
@@ -76,12 +77,10 @@ PyWorkspaceContainer::~PyWorkspaceContainer()
 }
 
 //-----------------------------------------------------------------------------------------------------------
-bool PyWorkspaceContainer::isNotInBlacklist(PyObject *obj) const
+bool PyWorkspaceContainer::isNotInBlacklist(PyObject* obj) const
 {
-    return !(PyFunction_Check(obj) ||
-        PyMethod_Check(obj) ||
-        PyType_Check(obj) ||
-        PyModule_Check(obj) ||
+    return !(
+        PyFunction_Check(obj) || PyMethod_Check(obj) || PyType_Check(obj) || PyModule_Check(obj) ||
         PyCFunction_Check(obj));
 }
 
@@ -145,11 +144,12 @@ void PyWorkspaceContainer::loadDictionary(PyObject* obj, const QString& fullName
 }
 
 //-------------------------------------------------------------------------------------
-void PyWorkspaceContainer::appendSlotNamesToList(PyObject *objOrType, PyObject *slotNamesList)
+void PyWorkspaceContainer::appendSlotNamesToList(PyObject* objOrType, PyObject* slotNamesList)
 {
     //__slots__ can return any sequence, here list and tuple are supported.
     PyObject* subitem = nullptr;
-    PyObject *slotNames = PyObject_GetAttr(objOrType, m_slotsUnicode); // new ref (list, tuple or string)
+    PyObject* slotNames =
+        PyObject_GetAttr(objOrType, m_slotsUnicode); // new ref (list, tuple or string)
 
     if (slotNames)
     {
@@ -214,15 +214,16 @@ void PyWorkspaceContainer::loadDictionaryRec(
 
     if (Py_IsInitialized() && obj != nullptr)
     {
-        if (PyTuple_Check(obj) ||
-            PyList_Check(obj)) // was PySequence_Check(obj) before, however a class can also
-                               // implement the sequence protocol
+        // was PySequence_Check(obj) before, however a class can also
+        // implement the sequence protocol
+        if (PyTuple_Check(obj) || PyList_Check(obj))
         {
             for (i = 0; i < PySequence_Size(obj); i++)
             {
                 value = PySequence_GetItem(obj, i); // new reference
 
-                if (isNotInBlacklist(value)) // !m_blackListType.contains(value->ob_type->tp_name)) // only if not on blacklist
+                if (isNotInBlacklist(value)) // !m_blackListType.contains(value->ob_type->tp_name))
+                                             // // only if not on blacklist
                 {
                     keyText = QString::number(i);
                     keyKey = "xx:" + keyText; // list + number
@@ -331,9 +332,9 @@ void PyWorkspaceContainer::loadDictionaryRec(
                 }
 
                 // get all slots (here, we have to go through all base classes)
-                PyObject *slotNames = PyList_New(0);
-                PyObject *thisType = PyObject_Type(obj);
-                PyObject *mro = PyObject_GetAttr(thisType, m_mroUnicode);
+                PyObject* slotNames = PyList_New(0);
+                PyObject* thisType = PyObject_Type(obj);
+                PyObject* mro = PyObject_GetAttr(thisType, m_mroUnicode);
 
                 if (mro)
                 {
@@ -354,24 +355,24 @@ void PyWorkspaceContainer::loadDictionaryRec(
                 }
 
                 PyObject* subitem = nullptr;
-                PyObject *name = nullptr;
+                PyObject* name = nullptr;
 
                 for (Py_ssize_t idx = 0; idx < PyList_GET_SIZE(slotNames); ++idx)
                 {
-                    name = PyList_GET_ITEM(slotNames, idx); //borrowed
+                    name = PyList_GET_ITEM(slotNames, idx); // borrowed
                     subitem = PyObject_GetAttr(obj, name); // new ref
-                    PyList_Append(keys, name); // does not steal a ref
-
+                    
                     if (subitem)
                     {
+                        PyList_Append(keys, name); // does not steal a ref
                         PyList_Append(values, subitem); // does not steal a ref
                         Py_DECREF(subitem);
+                        subitem = nullptr;
                     }
                     else
                     {
-                        // this is kind of an error case
+                        // this slot is not available in this object (name contained in __slots__, but attribute does not exist)
                         qDebug() << "error parsing attribute of PyObject";
-                        PyList_Append(values, Py_None);
                     }
                 }
 
@@ -381,102 +382,7 @@ void PyWorkspaceContainer::loadDictionaryRec(
                 }
 
                 Py_DECREF(slotNames);
-
             }
-            /*else if (PyObject_HasAttr(obj, m_dictUnicode))
-            {
-                PyObject* subdict = PyObject_GetAttr(obj, m_dictUnicode); // new ref
-                keys = PyDict_Keys(subdict); // new ref (list)
-                values = PyDict_Values(subdict); // new ref (list)
-                Py_XDECREF(subdict);
-
-                if (PyErr_Occurred())
-                {
-                    PyErr_Clear();
-                }
-
-                keyType[0] = PY_ATTR;
-            }
-            else if (PyObject_HasAttr(obj, m_slotsUnicode))
-            {
-                //__slots__ can return any sequence, here list and tuple are supported.
-                PyObject* subitem = nullptr;
-                keys = PyObject_GetAttr(obj, m_slotsUnicode); // new ref (list)
-
-                if (keys && (PyList_Check(keys) || PyTuple_Check(keys)))
-                {
-                    // if keys should be a tuple, turn it into a list, first...
-                    if (keys && PyTuple_Check(keys))
-                    {
-                        PyObject* keysList = PySequence_List(keys); // new ref (list)
-                        Py_XDECREF(keys);
-                        keys = keysList;
-                    }
-
-                    values = PyList_New(PyList_GET_SIZE(keys)); // new ref (list)
-
-                    for (Py_ssize_t idx = 0; idx < PyList_GET_SIZE(keys); ++idx)
-                    {
-                        subitem = PyObject_GetAttr(obj, PyList_GET_ITEM(keys, idx)); // new ref
-
-                        if (subitem)
-                        {
-                            PyList_SET_ITEM(values, idx, subitem); // steals a reference
-                        }
-                        else
-                        {
-                            // this is kind of an error case
-                            qDebug() << "error parsing attribute of PyObject";
-                            Py_INCREF(Py_None);
-                            PyList_SET_ITEM(values, idx, Py_None); // steals a reference
-                        }
-                    }
-
-                    if (PyErr_Occurred())
-                    {
-                        PyErr_Clear();
-                    }
-
-                    keyType[0] = PY_ATTR;
-                }
-                else if (keys && (PyUnicode_Check(keys) || PyBytes_Check(keys)))
-                {
-                    PyObject* keysList = PyList_New(1); // new ref (list)
-                    PyList_SET_ITEM(keysList, 0, keys); // steals a ref
-                    keys = keysList;
-
-                    values = PyList_New(PyList_GET_SIZE(keys)); // new ref (list)
-
-                    for (Py_ssize_t idx = 0; idx < PyList_GET_SIZE(keys); ++idx)
-                    {
-                        subitem = PyObject_GetAttr(obj, PyList_GET_ITEM(keys, idx)); // new ref
-
-                        if (subitem)
-                        {
-                            PyList_SET_ITEM(values, idx, subitem); // steals a reference
-                        }
-                        else
-                        {
-                            // this is kind of an error case
-                            qDebug() << "error parsing attribute of PyObject";
-                            Py_INCREF(Py_None);
-                            PyList_SET_ITEM(values, idx, Py_None); // steals a reference
-                        }
-                    }
-
-                    if (PyErr_Occurred())
-                    {
-                        PyErr_Clear();
-                    }
-
-                    keyType[0] = PY_ATTR;
-                }
-                else
-                {
-                    Py_XDECREF(keys);
-                    keys = nullptr;
-                }
-            }*/
 
             if (keys && values)
             {
@@ -487,17 +393,20 @@ void PyWorkspaceContainer::loadDictionaryRec(
                     value = PyList_GET_ITEM(values, i); // borrowed
                     key = PyList_GET_ITEM(keys, i); // borrowed
 
-                    if (PyType_Check(value))
-                    {
-                        int i = 1;
-                    }
-
-                    if (isNotInBlacklist(value)) //!m_blackListType.contains(
-                            //value->ob_type->tp_name)) // only if not on blacklist
+                    if (isNotInBlacklist(value)) // only if not on blacklist
                     {
                         keyUTF8String = PyUnicode_AsUTF8String(key); // new
 
-                        if (keyUTF8String == nullptr)
+                        if (keyUTF8String)
+                        {
+                            // borrowed reference to
+                            // char-pointer in keyUTF8String
+                            keyText = PyBytes_AS_STRING(keyUTF8String);
+                            keyKey = "xx:" + keyText;
+                            keyKey[0] = keyType[0];
+                            keyKey[1] = PY_STRING;
+                        }
+                        else
                         {
                             PyErr_Clear();
 
@@ -512,30 +421,15 @@ void PyWorkspaceContainer::loadDictionaryRec(
                                 keyKey[0] = keyType[0];
                                 keyKey[1] = PY_NUMBER;
                             }
-                            else if (PyFloat_Check(key))
-                            {
-                                keyText = QString::number(PyFloat_AsDouble(key));
-                                keyKey = "xx:" + keyText;
-                                keyKey[0] = keyType[0];
-                                keyKey[1] = PY_NUMBER;
-                            }
                             else
                             {
-                                keyText =
-                                    PythonQtConversion::PyObjGetRepresentation(key); //"<unknown>";
-                                keyKey = "xx:" + keyText;
+                                // store the pointer of the key object as hex number
+                                quintptr objId = reinterpret_cast<quintptr>(key);
+                                keyKey = "xx:" + QString::number(objId, 16);
                                 keyKey[0] = keyType[0];
-                                keyKey[1] = PY_STRING;
+                                keyKey[1] = PY_OBJID;
+                                keyText = PythonQtConversion::PyObjGetRepresentation(key);
                             }
-                        }
-                        else
-                        {
-                            keyText =
-                                PyBytes_AsString(keyUTF8String); // borrowed reference to
-                                                                 // char-pointer in keyUTF8String
-                            keyKey = "xx:" + keyText;
-                            keyKey[0] = keyType[0];
-                            keyKey[1] = PY_STRING;
                         }
 
                         it = parentItem->m_childs.find(keyKey);
@@ -700,7 +594,8 @@ void PyWorkspaceContainer::parseSinglePyObject(
             }
             if (encodedByteArray)
             {
-                item->m_extendedValue = item->m_value = QString::fromLatin1(PyBytes_AS_STRING(encodedByteArray));
+                item->m_extendedValue = item->m_value =
+                    QString::fromLatin1(PyBytes_AS_STRING(encodedByteArray));
 
                 if (item->m_value.length() > 100)
                 {
@@ -710,15 +605,16 @@ void PyWorkspaceContainer::parseSinglePyObject(
                 {
                     item->m_value = item->m_value.replace("\n", ";");
                 }
-                
+
                 Py_XDECREF(encodedByteArray);
             }
             else
             {
                 PyErr_Clear();
-                item->m_extendedValue = item->m_value =
-                    "unknown"; // maybe, encoding of str is unknown, therefore you could decode the
-                               // string to a new encoding and parse it afterwards
+
+                // maybe, encoding of str is unknown, therefore you could decode the
+                // string to a new encoding and parse it afterwards
+                item->m_extendedValue = item->m_value = "unknown";
             }
 
             Py_XDECREF(repr);
@@ -732,19 +628,21 @@ void PyWorkspaceContainer::parseSinglePyObject(
 
     if (expandableType)
     {
-        item->m_childState =
-            PyWorkspaceItem::stateChilds; // stateChildsAvailable will be set afterwards (if
-                                          // necessary) by loadDictionaryRec
+        // stateChildsAvailable will be set afterwards (if
+        // necessary) by loadDictionaryRec
+        item->m_childState = PyWorkspaceItem::stateChilds;
     }
     else // the new element is not an expandable type, if the old value has been one, delete the
          // existing elements
     {
         item->m_childState = PyWorkspaceItem::stateNoChilds;
+
         foreach (const PyWorkspaceItem* child, item->m_childs)
         {
             deletedKeys << fullName + "." + child->m_key;
             delete child;
         }
+
         item->m_childs.clear();
 
         // base types first
@@ -842,6 +740,7 @@ void PyWorkspaceContainer::parseSinglePyObject(
             }
 
             bool reload = true;
+
             if (Py_TYPE(value) == &PythonPlugins::PyDataIOPluginType && item->m_value != "")
             {
                 reload = false;
@@ -855,6 +754,7 @@ void PyWorkspaceContainer::parseSinglePyObject(
             {
                 // TODO: increase speed
                 PyObject* repr = PyObject_Repr(value);
+
                 if (repr == nullptr)
                 {
                     PyErr_Clear();
@@ -892,10 +792,12 @@ void PyWorkspaceContainer::parseSinglePyObject(
                     else
                     {
                         PyErr_Clear();
-                        item->m_extendedValue = item->m_value =
-                            "unknown"; // maybe, encoding of str is unknown, therefore you could
-                                       // decode the string to a new encoding and parse it afterwards
+                        // maybe, encoding of str is unknown, therefore you could
+                        // decode the string to a new encoding and parse it
+                        // afterwards
+                        item->m_extendedValue = item->m_value = "unknown";
                     }
+
                     Py_XDECREF(repr);
                 }
                 else
@@ -921,13 +823,19 @@ ito::PyWorkspaceItem* PyWorkspaceContainer::getItemByFullName(const QString& ful
     QHash<QString, PyWorkspaceItem*>::iterator it;
 
     if (names.count() > 0 && names[0] == "")
+    {
         names.removeFirst();
+    }
+
     if (names.count() == 0)
+    {
         result = nullptr;
+    }
 
     while (names.count() > 0 && result)
     {
         it = result->m_childs.find(names.takeFirst());
+
         if (it != result->m_childs.end())
         {
             result = (*it);

@@ -51,12 +51,16 @@
 #include <qset.h>
 #include <qstringlist.h>
 
+// type of outer container
 #define PY_LIST_TUPLE 'l'
 #define PY_MAPPING 'm'
 #define PY_ATTR 'a'
 #define PY_DICT 'd'
+
+// type of key
 #define PY_NUMBER 'n'
 #define PY_STRING 's'
+#define PY_OBJID 'h' // object id (ptr) as hex
 
 namespace ito
 {
