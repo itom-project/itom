@@ -149,7 +149,7 @@
     </message>
     <message>
         <source>The minimum plugin type bit mask of parameter &apos;%s&apos; is more restrictive than this of the interface parameter &apos;%s&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Mimimum-Plugin-Typbitmaske des Parameters &apos;%s&apos; ist restriktiver als das des Inferface-Parameters &apos;%s&apos;.</translation>
     </message>
     <message>
         <source>The allowed data object types of parameter &apos;%s&apos; are more restrictive than these required by the interface parameter &apos;%s&apos;.</source>
@@ -511,7 +511,7 @@
     </message>
     <message>
         <source>Caught exception during loading of plugin: %1</source>
-        <translation>Beim Laden des Plugins wurde eine Ausnahme empfangen: %1&apos;</translation>
+        <translation type="vanished">Beim Laden des Plugins wurde eine Ausnahme empfangen: %1&apos;</translation>
     </message>
     <message>
         <source>%1 (DataIO) loaded</source>
@@ -602,6 +602,16 @@
     <message>
         <source>Plugin with filename &apos;%1&apos; is a dataIO type, but no subtype is given in the type flag.</source>
         <translation>Das Plugin mti dem Dateinamen &apos;%1&apos; hat den dataIO Type gesetzt, aber es wurde kein Untertyp angegeben.</translation>
+    </message>
+    <message>
+        <source>Caught an exception when loading the plugin &apos;%1&apos;
+Reason: %2</source>
+        <translation type="unfinished">Beim Laden des Plugins &apos;%1&apos; trat ein Exception auf
+Grund: %2</translation>
+    </message>
+    <message>
+        <source>Caught an exception when loading the plugin &apos;%1&apos;</source>
+        <translation type="unfinished">Beim Laden des Plugins &apos;%1&apos; trat ein Exception auf</translation>
     </message>
 </context>
 <context>
