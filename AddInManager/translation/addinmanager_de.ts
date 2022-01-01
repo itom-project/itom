@@ -89,51 +89,51 @@
     </message>
     <message>
         <source>In/Out flags of parameter &apos;%s&apos; are unequal to required flags of interface parameter &apos;%s&apos;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der Parameter &apos;%s&apos; stimmt nicht mit dem benötigten Flag-Typ des Interfaces &apos;%s&apos; überein</translation>
     </message>
     <message>
         <source>The parameter &apos;%s&apos; is restricted by meta information while the interface parameter &apos;%s&apos; is not.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der Parameter &apos;%s&apos; ist durch Meta-Informationen beschränkt, während der des Interface-Parameters &apos;%s&apos; es nicht ist.</translation>
     </message>
     <message>
         <source>The type of the meta information of parameter &apos;%s&apos; is unequal to this of the interface parameter &apos;%s&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der Typ der Meta-Informationen des Parameters &apos;%s&apos; deckt sich nicht mit dem des Interface-Parameters &apos;%s&apos;.</translation>
     </message>
     <message>
         <source>The allowed char range of parameter &apos;%s&apos; is smaller than the requested range from interface parameter &apos;%s&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der erlaubte Char-Bereich des Parameters &apos;%s&apos; ist kleiner als der geforderte Bereicht des Interface-Parameters &apos;%s&apos;.</translation>
     </message>
     <message>
         <source>The allowed char range or the allowed range of numbers of elements of parameter &apos;%s&apos; is smaller than the requested range from interface parameter &apos;%s&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der erlaubte Char-Bereich oder die erlaubte Elementanzahl des Parameters &apos;%s&apos; ist kleiner als der geforderte Bereicht des Interface-Parameters &apos;%s&apos;.</translation>
     </message>
     <message>
         <source>The allowed integer range of parameter &apos;%s&apos; is smaller than the requested range from interface parameter &apos;%s&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der erlaubte Integer-Bereich des Parameters &apos;%s&apos; ist kleiner als der erwartete Bereich des Interface-Parameters &apos;%s&apos;.</translation>
     </message>
     <message>
         <source>The allowed integer range or the allowed range of numbers of elements of parameter &apos;%s&apos; is smaller than the requested range from interface parameter &apos;%s&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der erlaubte Integer-Bereich oder die erlaubte Elementanzahl des Parameters &apos;%s&apos; ist kleiner als der erwartete Bereich des Interface-Parameters &apos;%s&apos;.</translation>
     </message>
     <message>
         <source>The allowed value range or the allowed interval/range of parameter &apos;%s&apos; is smaller than the requested range from interface parameter &apos;%s&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der erlaubte Wertebereich oder das erlaubte Interval/Bereich des Parameters &apos;%s&apos; ist kleiner als der erwartete Bereich des Interface-Parameters &apos;%s&apos;.</translation>
     </message>
     <message>
         <source>The allowed double range of parameter &apos;%s&apos; is smaller than the requested range from interface parameter &apos;%s&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der erlaubte Double-Bereich des Parameters &apos;%s&apos; ist kleiner als der erwartete Bereich des Interface-Parameters &apos;%s&apos;.</translation>
     </message>
     <message>
         <source>The allowed double range or the allowed range of numbers of elements of parameter &apos;%s&apos; is smaller than the requested range from interface parameter &apos;%s&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der erlaubte Double-Bereich oder die erlaubte Elementanzahl des Parameters &apos;%s&apos; ist kleiner als der erwartete Bereich des Interface-Parameters &apos;%s&apos;.</translation>
     </message>
     <message>
         <source>The allowed value range or the allowed range of parameter &apos;%s&apos; is smaller than the requested range from interface parameter &apos;%s&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der erlaubte Wertebereich oder der erlaubte Bereich des Parameters &apos;%s&apos; ist kleiner als der erwartete Bereich des Interface-Parameters &apos;%s&apos;.</translation>
     </message>
     <message>
         <source>The string type of the meta information of parameter &apos;%s&apos; is unequal to this of the interface parameter &apos;%s&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der String-Typ der Meta-Informationen des Parameters &apos;%s&apos; deckt sich nicht mit dem des Interface-Parameters &apos;%s&apos;.</translation>
     </message>
     <message>
         <source>String &apos;%s&apos;, requested by meta data of interface parameter &apos;%s&apos; could not be found in meta data of parameter &apos;%s&apos;.</source>
@@ -141,7 +141,7 @@
     </message>
     <message>
         <source>The meta data of the interface parameter &apos;%s&apos; requires a plugin with name &apos;%s&apos;, but parameter &apos;%s&apos; does it not.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Meta-Daten des Interface-Parameters &apos;%s&apos; benötigen ein Plugin namens &apos;%s&apos;, doch Parameter &apos;%s&apos; existiert nicht.</translation>
     </message>
     <message>
         <source>Both parameter &apos;%s&apos; and interface parameter &apos;%s&apos; require different plugins.</source>
@@ -149,19 +149,19 @@
     </message>
     <message>
         <source>The minimum plugin type bit mask of parameter &apos;%s&apos; is more restrictive than this of the interface parameter &apos;%s&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Mimimum-Plugin-Typbitmaske des Parameters &apos;%s&apos; ist restriktiver als das des Inferface-Parameters &apos;%s&apos;.</translation>
     </message>
     <message>
         <source>The allowed data object types of parameter &apos;%s&apos; are more restrictive than these required by the interface parameter &apos;%s&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der erlaubte Data-Object-Tpy des Parameters &apos;%s&apos; ist restrektiver als dervom Interface erwartete Parameter &apos;%s&apos;.</translation>
     </message>
     <message>
         <source>The minimum and maximum dimensions of the data object of parameter &apos;%s&apos; are more restrictive than these required by the interface parameter &apos;%s&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Minimal- und Maximaldimensionen des Data-Objects des Parameters &apos;%s&apos; sind restrektiver als diese vom Interface-Parameter &apos;%s&apos; erwartet werden.</translation>
     </message>
     <message>
         <source>meta data of interface parameter &apos;%s&apos; is unknown.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Meta-Data des Interface-Parameters &apos;%s&apos; ist unbekannt.</translation>
     </message>
     <message>
         <source>Exact string match: (%1)</source>
@@ -205,67 +205,67 @@
     </message>
     <message>
         <source>length of char array out of range [%1, %2]</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Größe des Arrays vom Typ Char liegt außerhalb des Gültigkeitsbereichts [%1, %2]</translation>
     </message>
     <message>
         <source>length of char array does not fit to given step size [%1:%2:%3]</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Größe des Arrays vom Typ Char stimmt nicht mit der Schrittgröße  [%1:%2:%3] überein</translation>
     </message>
     <message>
         <source>the given meta information does not fit an array of character values</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die übergebenen Meta-Informationen stimmen nicht mit denen eines Arrays vom Typ Character überein</translation>
     </message>
     <message>
         <source>length of integer array out of range [%1, %2]</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Größe des Arrays vom Typ Integer liegt außerhalb des Gültigkeitsbereichts [%1, %2]</translation>
     </message>
     <message>
         <source>length of integer array does not fit to given step size [%1:%2:%3]</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Größe des Arrays vom Typ Integer stimmt nicht mit der Schrittgröße  [%1:%2:%3] überein</translation>
     </message>
     <message>
         <source>length of integer array must be 2.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Größe des Arrays vom Typ Integer muss 2 betragen.</translation>
     </message>
     <message>
         <source>The given integer array [%1,%2] is considered to be an interval but the first value is bigger than the second one</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Übergebenes Array vom Typ Integer [%1,%2] liegt im zulässigen Bereich, doch ist der erste Wert größer als der Zweite</translation>
     </message>
     <message>
         <source>The given integer array [%1,%2] is considered to be an interval but does not fit to the limits [%3,%4]</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Übergebenes Array vom Typ Integer [%1,%2] liegt im zulässigen Intervall, doch stimmt es nicht mit den Grenzwerten [%3,%4] überein</translation>
     </message>
     <message>
         <source>The given integer array [%1,%2] is considered to be a range but the first value is bigger than the second one</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Übergebenes Array vom Typ Integer [%1,%2] liegt im zulässigen Bereich,doch ist der erste Wert größer als der Zweite</translation>
     </message>
     <message>
         <source>The given integer array [%1,%2] is considered to be a range but does not fit to the limits [%3,%4]</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Übergebenes Array vom Typ Integer [%1,%2] liegt im zulässigen Bereich, doch stimmt es nicht mit den Grenzwerten [%3,%4] überein</translation>
     </message>
     <message>
         <source>The 1st value %1 does not fit to given step size [%2:%3:%4]</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der erste Wert %1 stimmt nicht mit der gegebenen Schrittweite [%2:%3:%4] überein</translation>
     </message>
     <message>
         <source>The 2nd value %1 does not fit to given step size [%2:%3:%4]</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der zweite Wert %1 stimmt nicht mit der gegebenen Schrittweite [%2:%3:%4] überein</translation>
     </message>
     <message>
         <source>The given integer array [v1,v2] is considered to be an interval but the size of the interval (v2-v1) is out of bounds [%1,%2]</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Übergebenes Array vom Typ Integer [v1,v2] ist zulässig, überschreitet jedoch den Abstand (v2-v1) der Intervallgrenze [%1,%2]</translation>
     </message>
     <message>
         <source>The given integer array [v1,v2] is considered to be a range but the size of the range (1+v2-v1) is out of bounds [%1,%2]</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Übergebenes Array vom Typ Integer [v1,v2] liegt im zulässigen Bereich, die Bereichsgröße (1+v2-v1) wird jedoch überschritten [%1,%2]</translation>
     </message>
     <message>
         <source>The size of the interval (bound2-bound1) does not fit to given step size [%1:%2:%3]</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Größe des Intervals (bound2-bound1) passt nicht zur gegebenen Schrittweite [%1:%2:%3]</translation>
     </message>
     <message>
         <source>The size of the range (1+bound2-bound1) does not fit to given step size [%1:%2:%3]</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Bereichsgröße (1+bound2-bound1) passt nicht zur gegebenen Schrittweite [%1:%2:%3]</translation>
     </message>
     <message>
         <source>roi[2] (width) is out of range [%1,%2]</source>
@@ -308,32 +308,28 @@
         <translation type="unfinished">Die ROI[1] (y0) entspricht nicht der Schrittgröße [%1:%2:%3]</translation>
     </message>
     <message>
-        <source>the given meta information does not fit a an array of integer values</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>length of double array out of range [%1, %2]</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Größe des Arrays vom Typ Double liegt außerhalb des Gültigkeitsbereichts [%1, %2]</translation>
     </message>
     <message>
         <source>length of double array does not fit to given step size [%1:%2:%3]</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Größe des Arrays vom Typ Double stimmt nicht mit der Schrittgröße  [%1:%2:%3] überein</translation>
     </message>
     <message>
         <source>length of double array must be 2.</source>
-        <translation type="unfinished">Die Länge des Double-Arrays muss 2 betragen.</translation>
+        <translation type="unfinished">Die Größe des Arrays vom Typ Double muss 2 betragen.</translation>
     </message>
     <message>
         <source>The first value of the given double interval [%1,%2] is bigger than the second value.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der erste Wert des übergebenen Double-Parameter [%1,%2] ist größer als der zweite Wert.</translation>
     </message>
     <message>
         <source>The given double array [v1=%1,v2=%2] is considered to be an interval but does not fit to v1=[%3,v2], v2=[v1,%4]</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Übergebenes Array vom Typ Double [v1=%1,v2=%2] ist zulässig, stimmt jedoch nicht mit v1=[%3,v2], v2=[v1,%4] überein</translation>
     </message>
     <message>
         <source>The given double array [v1,v2] is considered to be an interval but the size of the interval (v2-v1) is out of bounds [%1,%2]</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Übergebenes Array vom Typ Double [v1,v2] ist zulässig, überschreitet jedoch den Abstand (v2-v1) der Intervallgrenze [%1,%2]</translation>
     </message>
     <message>
         <source>Parameter %1: </source>
@@ -345,11 +341,11 @@
     </message>
     <message>
         <source>index-based parameter cannot be validated since non-index based parameter has an unhandled type</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Es wurde ein indexbasierter Parameter erwartet, aber ein unbekannter Parametertyp übergeben</translation>
     </message>
     <message>
         <source>Index-based parameter name requires an array-type parameter.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der Indexbasierter Parametername benötigt einen Array-Typparameter.</translation>
     </message>
     <message>
         <source>Parameter could not be converted to destination type.</source>
@@ -357,11 +353,11 @@
     </message>
     <message>
         <source>type of parameter does not fit to requested parameter type</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Übergebener Parametertyp stimmt nicht mit dem erwarteten Typen überein</translation>
     </message>
     <message>
         <source>index-based parameter cannot be validated since non-index based parameter is an interval</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Es wurde ein indexbasierter Parameter erwartet, aber ein nicht indizierter Parameter übergeben</translation>
     </message>
     <message>
         <source>Name of given parameter is empty.</source>
@@ -402,6 +398,10 @@
     <message>
         <source>Filter &apos;%s&apos; has no progress observer and cancellation interface</source>
         <translation>Filter &apos;%s&apos; hat keine Fortschrittsüberwachung und Abbruchschnittstelle</translation>
+    </message>
+    <message>
+        <source>the given meta information does not fit an array of integer values</source>
+        <translation type="unfinished">Die übergebenen Meta-Informationen stimmen nicht mit denen eines Arrays vom Typ Integer überein</translation>
     </message>
 </context>
 <context>
@@ -511,7 +511,7 @@
     </message>
     <message>
         <source>Caught exception during loading of plugin: %1</source>
-        <translation>Beim Laden des Plugins wurde eine Ausnahme empfangen: %1&apos;</translation>
+        <translation type="vanished">Beim Laden des Plugins wurde eine Ausnahme empfangen: %1&apos;</translation>
     </message>
     <message>
         <source>%1 (DataIO) loaded</source>
@@ -602,6 +602,16 @@
     <message>
         <source>Plugin with filename &apos;%1&apos; is a dataIO type, but no subtype is given in the type flag.</source>
         <translation>Das Plugin mti dem Dateinamen &apos;%1&apos; hat den dataIO Type gesetzt, aber es wurde kein Untertyp angegeben.</translation>
+    </message>
+    <message>
+        <source>Caught an exception when loading the plugin &apos;%1&apos;
+Reason: %2</source>
+        <translation type="unfinished">Beim Laden des Plugins &apos;%1&apos; trat ein Exception auf
+Grund: %2</translation>
+    </message>
+    <message>
+        <source>Caught an exception when loading the plugin &apos;%1&apos;</source>
+        <translation type="unfinished">Beim Laden des Plugins &apos;%1&apos; trat ein Exception auf</translation>
     </message>
 </context>
 <context>
