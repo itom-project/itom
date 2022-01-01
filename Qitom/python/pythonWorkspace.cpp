@@ -318,7 +318,7 @@ void PyWorkspaceContainer::loadDictionaryRec(
                 {
                     keys = PyDict_Keys(subdict); // new ref (list)
                     values = PyDict_Values(subdict); // new ref (list)
-                    Py_XDECREF(subdict);
+                    Py_DECREF(subdict);
 
                     if (PyErr_Occurred())
                     {
@@ -483,9 +483,6 @@ void PyWorkspaceContainer::loadDictionaryRec(
                         Py_XDECREF(keyUTF8String);
                     }
                 }
-
-                Py_DECREF(keys);
-                Py_DECREF(values);
             }
             else
             {
@@ -497,6 +494,11 @@ void PyWorkspaceContainer::loadDictionaryRec(
                     m_expandedFullNames.remove(fullNameParentItem);
                 }
             }
+
+            Py_XDECREF(keys);
+            Py_XDECREF(values);
+            keys = nullptr;
+            values = nullptr;
         }
     }
 
@@ -592,6 +594,7 @@ void PyWorkspaceContainer::parseSinglePyObject(
                     encodedByteArray = PyUnicode_AsUTF8String(repr);
                 }
             }
+
             if (encodedByteArray)
             {
                 item->m_extendedValue = item->m_value =

@@ -60,7 +60,7 @@
 // type of key
 #define PY_NUMBER 'n'
 #define PY_STRING 's'
-#define PY_OBJID 'h' // object id (ptr) as hex
+#define PY_OBJID 'h' // object id (ptr) as hex for all other objects
 
 namespace ito
 {

@@ -292,7 +292,7 @@ areaIndex : int, optional \n\
     The default ``areaIndex`` is the current subplot area, hence, ``0`` if \n\
     only one plot area exists in the figure. \n\
 className : str, optional \n\
-    class name of desired plot (if not indicated or if the ``className`` can not be found, \n\
+    class name of desired plot (if not indicated or if the ``className`` cannot be found, \n\
     the default plot will be used (see application settings) \n\
 properties : dict, optional \n\
     Optional dictionary of properties that will be directly applied to the \n\
@@ -451,7 +451,7 @@ areaIndex : int, optional \n\
     The default ``areaIndex`` is the current subplot area, hence, ``0`` if \n\
     only one plot area exists in the figure. \n\
 className : str, optional \n\
-    class name of desired plot (if not indicated or if the ``className`` can not be found, \n\
+    class name of desired plot (if not indicated or if the ``className`` cannot be found, \n\
     the default plot will be used (see application settings) \n\
 properties : dict, optional \n\
     Optional dictionary of properties that will be directly applied to the \n\
@@ -627,7 +627,7 @@ areaIndex : int, optional \n\
     The default ``areaIndex`` is the current subplot area, hence, ``0`` if \n\
     only one plot area exists in the figure. \n\
 className : str, optional \n\
-    class name of desired plot (if not indicated or if the ``className`` can not be found, \n\
+    class name of desired plot (if not indicated or if the ``className`` cannot be found, \n\
     the default plot will be used (see application settings) \n\
 properties : dict, optional \n\
     Optional dictionary of properties that will be directly applied to the \n\
@@ -794,7 +794,7 @@ areaIndex : int, optional \n\
     The default ``areaIndex`` is the current subplot area, hence, ``0`` if \n\
     only one plot area exists in the figure. \n\
 className : str, optional \n\
-    class name of desired plot (if not indicated or if the ``className`` can not be found, \n\
+    class name of desired plot (if not indicated or if the ``className`` cannot be found, \n\
     the default plot will be used (see application settings) \n\
 properties : dict, optional \n\
     Optional dictionary of properties that will be directly applied to the \n\
@@ -963,7 +963,7 @@ areaIndex : int, optional \n\
     The default ``areaIndex`` is the current subplot area, hence, ``0`` if \n\
     only one plot area exists in the figure. \n\
 className : str, optional \n\
-    class name of desired plot (if not indicated or if the ``className`` can not be found, \n\
+    class name of desired plot (if not indicated or if the ``className`` cannot be found, \n\
     the default plot will be used (see application settings) \n\
 properties : dict, optional \n\
     Optional dictionary of properties that will be directly applied to the \n\

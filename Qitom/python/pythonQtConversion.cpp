@@ -3557,7 +3557,7 @@ PyObject* PythonQtConversion::ConvertQtValueToPythonInternal(int type, const voi
         return NULL;
     }
 
-    PyErr_SetString(PyExc_TypeError, "The given Qt-type can not be parsed into an appropriate python type.");
+    PyErr_SetString(PyExc_TypeError, "The given Qt-type cannot be parsed into an appropriate python type.");
     return NULL;
 }
 
