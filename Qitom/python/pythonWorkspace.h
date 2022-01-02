@@ -125,7 +125,7 @@ public:
 
 private:
     void loadDictionaryRec(PyObject *obj, const QString &fullNameParentItem, PyWorkspaceItem *parentItem, QStringList &deletedKeys);
-    void parseSinglePyObject(PyWorkspaceItem *item, PyObject *value, QString &fullName, QStringList &deletedKeys, int &m_compatibleParamBaseType);
+    void parseSinglePyObject(PyWorkspaceItem *item, PyObject *value, const QString &fullName, QStringList &deletedKeys);
 
     bool isNotInBlacklist(PyObject *obj) const;
 

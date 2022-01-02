@@ -172,6 +172,9 @@ void PyWorkspaceContainer::appendSlotNamesToList(PyObject* objOrType, PyObject* 
             PyList_Append(slotNamesList, slotNames);
         }
     }
+
+    Py_XDECREF(slotNames);
+    slotNames = nullptr;
 }
 
 //-----------------------------------------------------------------------------------------------------------
@@ -190,7 +193,6 @@ void PyWorkspaceContainer::loadDictionaryRec(
 #endif
 
     // To call this method, the Python GIL must already be locked!
-
     PyObject* keys = nullptr;
     PyObject* values = nullptr;
     PyObject* key = nullptr;
@@ -206,6 +208,7 @@ void PyWorkspaceContainer::loadDictionaryRec(
 
     // at first, set status of all childs of parentItem to "not-existing"
     it = parentItem->m_childs.begin();
+
     while (it != parentItem->m_childs.end())
     {
         (*it)->m_exist = false;
@@ -222,9 +225,10 @@ void PyWorkspaceContainer::loadDictionaryRec(
             {
                 value = PySequence_GetItem(obj, i); // new reference
 
-                if (isNotInBlacklist(value)) // !m_blackListType.contains(value->ob_type->tp_name))
-                                             // // only if not on blacklist
+                if (isNotInBlacklist(value))
                 {
+                    // only if not on blacklist
+
                     keyText = QString::number(i);
                     keyKey = "xx:" + keyText; // list + number
                     keyKey[0] = PY_LIST_TUPLE;
@@ -241,18 +245,14 @@ void PyWorkspaceContainer::loadDictionaryRec(
                         actItem->m_isarrayelement = true;
                         fullName = fullNameParentItem + ito::PyWorkspaceContainer::delimiter +
                             actItem->m_key;
-                        parseSinglePyObject(
-                            actItem,
-                            value,
-                            fullName,
-                            deletedKeys,
-                            actItem->m_compatibleParamBaseType);
+                        parseSinglePyObject(actItem, value, fullName, deletedKeys);
 
                         if (m_expandedFullNames.contains(fullName))
                         {
                             // load subtree
                             loadDictionaryRec(value, fullName, actItem, deletedKeys);
                         }
+
                         parentItem->m_childs.insert(keyKey, actItem);
                     }
                     else // item with this name already exists
@@ -263,12 +263,7 @@ void PyWorkspaceContainer::loadDictionaryRec(
                         actItem->m_isarrayelement = true;
                         fullName = fullNameParentItem + ito::PyWorkspaceContainer::delimiter +
                             actItem->m_key;
-                        parseSinglePyObject(
-                            actItem,
-                            value,
-                            fullName,
-                            deletedKeys,
-                            actItem->m_compatibleParamBaseType);
+                        parseSinglePyObject(actItem, value, fullName, deletedKeys);
 
                         if (m_expandedFullNames.contains(fullName))
                         {
@@ -361,7 +356,7 @@ void PyWorkspaceContainer::loadDictionaryRec(
                 {
                     name = PyList_GET_ITEM(slotNames, idx); // borrowed
                     subitem = PyObject_GetAttr(obj, name); // new ref
-                    
+
                     if (subitem)
                     {
                         PyList_Append(keys, name); // does not steal a ref
@@ -371,7 +366,8 @@ void PyWorkspaceContainer::loadDictionaryRec(
                     }
                     else
                     {
-                        // this slot is not available in this object (name contained in __slots__, but attribute does not exist)
+                        // this slot is not available in this object (name contained in __slots__,
+                        // but attribute does not exist)
                         qDebug() << "error parsing attribute of PyObject";
                     }
                 }
@@ -443,12 +439,7 @@ void PyWorkspaceContainer::loadDictionaryRec(
                             actItem->m_isarrayelement = true;
                             fullName = fullNameParentItem + ito::PyWorkspaceContainer::delimiter +
                                 actItem->m_key;
-                            parseSinglePyObject(
-                                actItem,
-                                value,
-                                fullName,
-                                deletedKeys,
-                                actItem->m_compatibleParamBaseType);
+                            parseSinglePyObject(actItem, value, fullName, deletedKeys);
 
                             if (m_expandedFullNames.contains(fullName))
                             {
@@ -466,12 +457,7 @@ void PyWorkspaceContainer::loadDictionaryRec(
                             actItem->m_isarrayelement = true;
                             fullName = fullNameParentItem + ito::PyWorkspaceContainer::delimiter +
                                 actItem->m_key;
-                            parseSinglePyObject(
-                                actItem,
-                                value,
-                                fullName,
-                                deletedKeys,
-                                actItem->m_compatibleParamBaseType);
+                            parseSinglePyObject(actItem, value, fullName, deletedKeys);
 
                             if (m_expandedFullNames.contains(fullName))
                             {
@@ -526,11 +512,7 @@ void PyWorkspaceContainer::loadDictionaryRec(
 
 //-----------------------------------------------------------------------------------------------------------
 void PyWorkspaceContainer::parseSinglePyObject(
-    PyWorkspaceItem* item,
-    PyObject* value,
-    QString& fullName,
-    QStringList& deletedKeys,
-    int& /*m_compatibleParamBaseType*/)
+    PyWorkspaceItem* item, PyObject* value, const QString& fullName, QStringList& deletedKeys)
 {
     // To call this method, the Python GIL must already be locked!
     Py_ssize_t size;
@@ -619,14 +601,14 @@ void PyWorkspaceContainer::parseSinglePyObject(
                 // string to a new encoding and parse it afterwards
                 item->m_extendedValue = item->m_value = "unknown";
             }
-
-            Py_XDECREF(repr);
         }
         else
         {
             item->m_extendedValue = item->m_value = "unknown";
-            Py_XDECREF(repr);
         }
+
+        Py_XDECREF(repr);
+        repr = nullptr;
     }
 
     if (expandableType)
@@ -800,14 +782,14 @@ void PyWorkspaceContainer::parseSinglePyObject(
                         // afterwards
                         item->m_extendedValue = item->m_value = "unknown";
                     }
-
-                    Py_XDECREF(repr);
                 }
                 else
                 {
                     item->m_extendedValue = item->m_value = "unknown";
-                    Py_XDECREF(repr);
                 }
+
+                Py_XDECREF(repr);
+                repr = nullptr;
             }
         }
     }

@@ -4908,7 +4908,9 @@ bool PythonEngine::renameVariable(bool globalNotLocal, const QString &oldFullIte
     delete one or multiple variables from python global or local workspace
 
     \param globalNotLocal is true, if deletion from global workspace, else: local workspace
-    \param fullItemNames is a list of full item names to all python variables that should be deleted from workspace. This list must not contain child values if the parent is part of the list, too.
+    \param fullItemNames is a list of full item names to all python variables that should 
+        be deleted from workspace. This list must not contain child values if the parent 
+        is part of the list, too.
 */
 bool PythonEngine::deleteVariable(bool globalNotLocal, const QStringList &fullItemNames)
 {
@@ -4956,7 +4958,10 @@ bool PythonEngine::deleteVariable(bool globalNotLocal, const QStringList &fullIt
             PyObject *name = nullptr;
 
             QStringList fullItemNamesAsc = fullItemNames;
-            fullItemNamesAsc.sort(); //ascending sorting, however if several indices in one list or tuple should be deleted, it is necessary to start with the last one...
+
+            // ascending sorting, however if several indices in one list or 
+            // tuple should be deleted, it is necessary to start with the last one...
+            fullItemNamesAsc.sort(); 
 
             for (int i = fullItemNamesAsc.size() - 1; i >= 0; --i)
             {
