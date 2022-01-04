@@ -2925,11 +2925,16 @@ PyObject* PythonQtConversion::QStringToPyObject(const QString& str)
 {
     if (str.isNull()) 
     {
-        return ByteArrayToPyUnicode("",0);
+        return ByteArrayToPyUnicode("", 0);
     } 
     else 
     {
-        return QByteArrayToPyUnicode(str.toLatin1()); //str.toLatin1() decodes with current encoding and then it is transformed to PyObject with the same encoding
+        const QByteArray ba = str.toUtf8();
+        PyObject *unicode = PyUnicode_DecodeUTF8(ba.constData(), ba.size(), nullptr);
+        return unicode;
+
+        //str.toLatin1() decodes with current encoding and then it is transformed to PyObject with the same encoding
+        //return QByteArrayToPyUnicode(str.toLatin1()); 
     }
 }
 
@@ -3552,7 +3557,7 @@ PyObject* PythonQtConversion::ConvertQtValueToPythonInternal(int type, const voi
         return NULL;
     }
 
-    PyErr_SetString(PyExc_TypeError, "The given Qt-type can not be parsed into an appropriate python type.");
+    PyErr_SetString(PyExc_TypeError, "The given Qt-type cannot be parsed into an appropriate python type.");
     return NULL;
 }
 
@@ -3566,11 +3571,13 @@ PyObject* PythonQtConversion::ConvertQtValueToPythonInternal(int type, const voi
 /*static*/ PyObject* PythonQtConversion::QByteArrayToPyUnicodeSecure(const QByteArray &ba, const char *errors /*= "replace"*/)
 {
     PyObject *temp = ByteArrayToPyUnicode(ba.data(), ba.length(), errors);
+
     if (temp == NULL)
     {
         PyErr_Clear();
         temp = ByteArrayToPyUnicode("<encoding error>");
     }
+
     return temp;
 }
 

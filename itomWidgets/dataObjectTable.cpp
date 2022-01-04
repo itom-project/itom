@@ -470,7 +470,7 @@ void DataObjectTable::createActions()
     addAction(numberFormatMenu->menuAction());
 
     d->m_pActResizeColumnsToContent = new QAction(
-        QIcon(":/misc/icons/resizeColumnsToContent.svg"), "Resize Columns to Content", this);
+        QIcon(":/misc/icons/resizeColumnsToContent.svg"), tr("Resize Columns to Content"), this);
     connect(
         d->m_pActResizeColumnsToContent,
         &QAction::triggered,

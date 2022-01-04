@@ -493,7 +493,9 @@ PyObject* PythonItom::PyPlotImage(PyObject* /*pSelf*/, PyObject* pArgs, PyObject
     // return new instance of PyUiItem
     PyObject* args2 = PyTuple_New(0); // Py_BuildValue("OO", self, name);
     PyObject* kwds2 = PyDict_New();
-    PyDict_SetItemString(kwds2, "objectID", PyLong_FromLong(*objectID));
+    PyObject *objectIdObj = PyLong_FromLong(*objectID);
+    PyDict_SetItemString(kwds2, "objectID", objectIdObj);
+    Py_XDECREF(objectIdObj);
     PythonPlotItem::PyPlotItem* pyPlotItem = (PythonPlotItem::PyPlotItem*)PyObject_Call(
         (PyObject*)&PythonPlotItem::PyPlotItemType, args2, kwds2);
     Py_DECREF(args2);
@@ -511,7 +513,9 @@ PyObject* PythonItom::PyPlotImage(PyObject* /*pSelf*/, PyObject* pArgs, PyObject
     // or itom.figure
     args2 = PyTuple_New(0);
     kwds2 = PyDict_New();
-    PyDict_SetItemString(kwds2, "handle", PyLong_FromLong(*figHandle));
+    PyObject *figHandleObj = PyLong_FromLong(*figHandle);
+    PyDict_SetItemString(kwds2, "handle", figHandleObj);
+    Py_XDECREF(figHandleObj);
     PythonFigure::PyFigure* pyFigure = (PythonFigure::PyFigure*)PyObject_Call(
         (PyObject*)&PythonFigure::PyFigureType, args2, kwds2);
     Py_XDECREF(pyPlotItem->uiItem.baseItem);
@@ -724,7 +728,9 @@ PyObject* PythonItom::PyPlot1d(PyObject* /*pSelf*/, PyObject* pArgs, PyObject* p
     // return new instance of PyUiItem
     PyObject* args2 = PyTuple_New(0); // Py_BuildValue("OO", self, name);
     PyObject* kwds2 = PyDict_New();
-    PyDict_SetItemString(kwds2, "objectID", PyLong_FromLong(*objectID));
+    PyObject *objectIdObj = PyLong_FromLong(*objectID);
+    PyDict_SetItemString(kwds2, "objectID", objectIdObj);
+    Py_XDECREF(objectIdObj);
     PythonPlotItem::PyPlotItem* pyPlotItem = (PythonPlotItem::PyPlotItem*)PyObject_Call(
         (PyObject*)&PythonPlotItem::PyPlotItemType, args2, kwds2);
     Py_DECREF(args2);
@@ -742,7 +748,9 @@ PyObject* PythonItom::PyPlot1d(PyObject* /*pSelf*/, PyObject* pArgs, PyObject* p
     // or itom.figure
     args2 = PyTuple_New(0);
     kwds2 = PyDict_New();
-    PyDict_SetItemString(kwds2, "handle", PyLong_FromLong(*figHandle));
+    PyObject *figHandleObj = PyLong_FromLong(*figHandle);
+    PyDict_SetItemString(kwds2, "handle", figHandleObj);
+    Py_XDECREF(figHandleObj);
     PythonFigure::PyFigure* pyFigure = (PythonFigure::PyFigure*)PyObject_Call(
         (PyObject*)&PythonFigure::PyFigureType, args2, kwds2);
     Py_XDECREF(pyPlotItem->uiItem.baseItem);
@@ -938,7 +946,9 @@ PyObject* PythonItom::PyPlot2d(PyObject* /*pSelf*/, PyObject* pArgs, PyObject* p
     // return new instance of PyUiItem
     PyObject* args2 = PyTuple_New(0); // Py_BuildValue("OO", self, name);
     PyObject* kwds2 = PyDict_New();
-    PyDict_SetItemString(kwds2, "objectID", PyLong_FromLong(*objectID));
+    PyObject *objectIdObj = PyLong_FromLong(*objectID);
+    PyDict_SetItemString(kwds2, "objectID", objectIdObj);
+    Py_XDECREF(objectIdObj);
     PythonPlotItem::PyPlotItem* pyPlotItem = (PythonPlotItem::PyPlotItem*)PyObject_Call(
         (PyObject*)&PythonPlotItem::PyPlotItemType, args2, kwds2);
     Py_DECREF(args2);
@@ -956,7 +966,9 @@ PyObject* PythonItom::PyPlot2d(PyObject* /*pSelf*/, PyObject* pArgs, PyObject* p
     // or itom.figure
     args2 = PyTuple_New(0);
     kwds2 = PyDict_New();
-    PyDict_SetItemString(kwds2, "handle", PyLong_FromLong(*figHandle));
+    PyObject *figHandleObj = PyLong_FromLong(*figHandle);
+    PyDict_SetItemString(kwds2, "handle", figHandleObj);
+    Py_XDECREF(figHandleObj);
     PythonFigure::PyFigure* pyFigure = (PythonFigure::PyFigure*)PyObject_Call(
         (PyObject*)&PythonFigure::PyFigureType, args2, kwds2);
     Py_XDECREF(pyPlotItem->uiItem.baseItem);
@@ -1154,7 +1166,9 @@ PyObject* PythonItom::PyPlot25d(PyObject* /*pSelf*/, PyObject* pArgs, PyObject* 
     // return new instance of PyUiItem
     PyObject* args2 = PyTuple_New(0); // Py_BuildValue("OO", self, name);
     PyObject* kwds2 = PyDict_New();
-    PyDict_SetItemString(kwds2, "objectID", PyLong_FromLong(*objectID));
+    PyObject *objectIdObj = PyLong_FromLong(*objectID);
+    PyDict_SetItemString(kwds2, "objectID", objectIdObj);
+    Py_XDECREF(objectIdObj);
     PythonPlotItem::PyPlotItem* pyPlotItem = (PythonPlotItem::PyPlotItem*)PyObject_Call(
         (PyObject*)&PythonPlotItem::PyPlotItemType, args2, kwds2);
     Py_DECREF(args2);
@@ -1172,7 +1186,9 @@ PyObject* PythonItom::PyPlot25d(PyObject* /*pSelf*/, PyObject* pArgs, PyObject* 
     // or itom.figure
     args2 = PyTuple_New(0);
     kwds2 = PyDict_New();
-    PyDict_SetItemString(kwds2, "handle", PyLong_FromLong(*figHandle));
+    PyObject *figHandleObj = PyLong_FromLong(*figHandle);
+    PyDict_SetItemString(kwds2, "handle", figHandleObj);
+    Py_XDECREF(figHandleObj);
     PythonFigure::PyFigure* pyFigure = (PythonFigure::PyFigure*)PyObject_Call(
         (PyObject*)&PythonFigure::PyFigureType, args2, kwds2);
     Py_XDECREF(pyPlotItem->uiItem.baseItem);
@@ -1320,7 +1336,9 @@ PyObject* PythonItom::PyLiveImage(PyObject* /*pSelf*/, PyObject* pArgs, PyObject
     // return new instance of PyUiItem
     PyObject* args2 = PyTuple_New(0); // Py_BuildValue("OO", self, name);
     PyObject* kwds2 = PyDict_New();
-    PyDict_SetItemString(kwds2, "objectID", PyLong_FromLong(*objectID));
+    PyObject *objectIdObj = PyLong_FromLong(*objectID);
+    PyDict_SetItemString(kwds2, "objectID", objectIdObj);
+    Py_XDECREF(objectIdObj);
     PythonPlotItem::PyPlotItem* pyPlotItem = (PythonPlotItem::PyPlotItem*)PyObject_Call(
         (PyObject*)&PythonPlotItem::PyPlotItemType, args2, kwds2);
     Py_DECREF(args2);
@@ -1338,7 +1356,9 @@ PyObject* PythonItom::PyLiveImage(PyObject* /*pSelf*/, PyObject* pArgs, PyObject
     // or itom.figure
     args2 = PyTuple_New(0);
     kwds2 = PyDict_New();
-    PyDict_SetItemString(kwds2, "handle", PyLong_FromLong(*figHandle));
+    PyObject *figHandleObj = PyLong_FromLong(*figHandle);
+    PyDict_SetItemString(kwds2, "handle", figHandleObj);
+    Py_XDECREF(figHandleObj);
     PythonFigure::PyFigure* pyFigure = (PythonFigure::PyFigure*)PyObject_Call(
         (PyObject*)&PythonFigure::PyFigureType, args2, kwds2);
     Py_XDECREF(pyPlotItem->uiItem.baseItem);

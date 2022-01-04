@@ -1370,7 +1370,6 @@ PyObject* PythonDataObject::PyDataObject_getTags(PyDataObject* self, void* /*clo
         valid = self->dataObject->getTagByIndex(i, key, value);
         if (valid)
         {
-            // PyDict_SetItemString(ret, key.data(), PyUnicode_FromString(value.data()));
             if (value.getType() == DataObjectTagType::typeDouble)
             {
                 PyObject* item = PyFloat_FromDouble(value.getVal_ToDouble());
