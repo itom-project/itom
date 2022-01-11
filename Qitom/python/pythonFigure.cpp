@@ -292,7 +292,7 @@ areaIndex : int, optional \n\
     The default ``areaIndex`` is the current subplot area, hence, ``0`` if \n\
     only one plot area exists in the figure. \n\
 className : str, optional \n\
-    class name of desired plot (if not indicated or if the ``className`` can not be found, \n\
+    class name of desired plot (if not indicated or if the ``className`` cannot be found, \n\
     the default plot will be used (see application settings) \n\
 properties : dict, optional \n\
     Optional dictionary of properties that will be directly applied to the \n\
@@ -404,7 +404,9 @@ PyObject* PythonFigure::PyFigure_plot(PyFigure *self, PyObject *args, PyObject *
     //return new instance of PyUiItem
     PyObject *args2 = PyTuple_New(0); //Py_BuildValue("OO", self, name);
     PyObject *kwds2 = PyDict_New();
-    PyDict_SetItemString(kwds2, "objectID", PyLong_FromLong(*objectID));
+    PyObject *objectIdObj = PyLong_FromLong(*objectID);
+    PyDict_SetItemString(kwds2, "objectID", objectIdObj);
+    Py_XDECREF(objectIdObj);
     PyDict_SetItemString(kwds2, "figure", (PyObject*)self);
     PythonPlotItem::PyPlotItem *pyPlotItem = (PythonPlotItem::PyPlotItem *)PyObject_Call((PyObject *)&PythonPlotItem::PyPlotItemType, args2, kwds2);
     Py_DECREF(args2);
@@ -449,7 +451,7 @@ areaIndex : int, optional \n\
     The default ``areaIndex`` is the current subplot area, hence, ``0`` if \n\
     only one plot area exists in the figure. \n\
 className : str, optional \n\
-    class name of desired plot (if not indicated or if the ``className`` can not be found, \n\
+    class name of desired plot (if not indicated or if the ``className`` cannot be found, \n\
     the default plot will be used (see application settings) \n\
 properties : dict, optional \n\
     Optional dictionary of properties that will be directly applied to the \n\
@@ -580,7 +582,9 @@ PyObject* PythonFigure::PyFigure_plot1(PyFigure *self, PyObject *args, PyObject 
     //return new instance of PyUiItem
     PyObject *args2 = PyTuple_New(0); //Py_BuildValue("OO", self, name);
     PyObject *kwds2 = PyDict_New();
-    PyDict_SetItemString(kwds2, "objectID", PyLong_FromLong(*objectID));
+    PyObject *objectIdObj = PyLong_FromLong(*objectID);
+    PyDict_SetItemString(kwds2, "objectID", objectIdObj);
+    Py_XDECREF(objectIdObj);
     PyDict_SetItemString(kwds2, "figure", (PyObject*)self);
     PythonPlotItem::PyPlotItem *pyPlotItem = (PythonPlotItem::PyPlotItem *)PyObject_Call((PyObject *)&PythonPlotItem::PyPlotItemType, args2, kwds2);
     Py_DECREF(args2);
@@ -623,7 +627,7 @@ areaIndex : int, optional \n\
     The default ``areaIndex`` is the current subplot area, hence, ``0`` if \n\
     only one plot area exists in the figure. \n\
 className : str, optional \n\
-    class name of desired plot (if not indicated or if the ``className`` can not be found, \n\
+    class name of desired plot (if not indicated or if the ``className`` cannot be found, \n\
     the default plot will be used (see application settings) \n\
 properties : dict, optional \n\
     Optional dictionary of properties that will be directly applied to the \n\
@@ -745,7 +749,9 @@ PyObject* PythonFigure::PyFigure_plot2(PyFigure *self, PyObject *args, PyObject 
     //return new instance of PyUiItem
     PyObject *args2 = PyTuple_New(0); //Py_BuildValue("OO", self, name);
     PyObject *kwds2 = PyDict_New();
-    PyDict_SetItemString(kwds2, "objectID", PyLong_FromLong(*objectID));
+    PyObject *objectIdObj = PyLong_FromLong(*objectID);
+    PyDict_SetItemString(kwds2, "objectID", objectIdObj);
+    Py_XDECREF(objectIdObj);
     PyDict_SetItemString(kwds2, "figure", (PyObject*)self);
     PythonPlotItem::PyPlotItem *pyPlotItem = (PythonPlotItem::PyPlotItem *)PyObject_Call((PyObject *)&PythonPlotItem::PyPlotItemType, args2, kwds2);
     Py_DECREF(args2);
@@ -788,7 +794,7 @@ areaIndex : int, optional \n\
     The default ``areaIndex`` is the current subplot area, hence, ``0`` if \n\
     only one plot area exists in the figure. \n\
 className : str, optional \n\
-    class name of desired plot (if not indicated or if the ``className`` can not be found, \n\
+    class name of desired plot (if not indicated or if the ``className`` cannot be found, \n\
     the default plot will be used (see application settings) \n\
 properties : dict, optional \n\
     Optional dictionary of properties that will be directly applied to the \n\
@@ -910,7 +916,9 @@ PyObject* PythonFigure::PyFigure_plot25(PyFigure *self, PyObject *args, PyObject
     //return new instance of PyUiItem
     PyObject *args2 = PyTuple_New(0); //Py_BuildValue("OO", self, name);
     PyObject *kwds2 = PyDict_New();
-    PyDict_SetItemString(kwds2, "objectID", PyLong_FromLong(*objectID));
+    PyObject *objectIdObj = PyLong_FromLong(*objectID);
+    PyDict_SetItemString(kwds2, "objectID", objectIdObj);
+    Py_XDECREF(objectIdObj);
     PyDict_SetItemString(kwds2, "figure", (PyObject*)self);
     PythonPlotItem::PyPlotItem *pyPlotItem = (PythonPlotItem::PyPlotItem *)PyObject_Call((PyObject *)&PythonPlotItem::PyPlotItemType, args2, kwds2);
     Py_DECREF(args2);
@@ -955,7 +963,7 @@ areaIndex : int, optional \n\
     The default ``areaIndex`` is the current subplot area, hence, ``0`` if \n\
     only one plot area exists in the figure. \n\
 className : str, optional \n\
-    class name of desired plot (if not indicated or if the ``className`` can not be found, \n\
+    class name of desired plot (if not indicated or if the ``className`` cannot be found, \n\
     the default plot will be used (see application settings) \n\
 properties : dict, optional \n\
     Optional dictionary of properties that will be directly applied to the \n\
@@ -1065,7 +1073,9 @@ plotHandle : plotItem \n\
     //return new instance of PyUiItem
     PyObject *args2 = PyTuple_New(0); // new ref
     PyObject *kwds2 = PyDict_New(); // new ref
-    PyDict_SetItemString(kwds2, "objectID", PyLong_FromLong(*objectID));
+    PyObject *objectIdObj = PyLong_FromLong(*objectID);
+    PyDict_SetItemString(kwds2, "objectID", objectIdObj);
+    Py_XDECREF(objectIdObj);
     PyDict_SetItemString(kwds2, "figure", (PyObject*)self);
     PythonPlotItem::PyPlotItem *pyPlotItem = \
         (PythonPlotItem::PyPlotItem *)PyObject_Call((PyObject *)&PythonPlotItem::PyPlotItemType, args2, kwds2);
@@ -1194,7 +1204,9 @@ PyObject* PythonFigure::PyFigure_matplotlib(PyFigure *self, PyObject *args, PyOb
     //return new instance of PyUiItem
     PyObject *args2 = PyTuple_New(0); //Py_BuildValue("OO", self, name);
     PyObject *kwds2 = PyDict_New();
-    PyDict_SetItemString(kwds2, "objectID", PyLong_FromLong(*objectID));
+    PyObject *objectIdObj = PyLong_FromLong(*objectID);
+    PyDict_SetItemString(kwds2, "objectID", objectIdObj);
+    Py_XDECREF(objectIdObj);
     PyDict_SetItemString(kwds2, "figure", (PyObject*)self);
     PythonPlotItem::PyPlotItem *pyPlotItem = \
         (PythonPlotItem::PyPlotItem *)PyObject_Call((PyObject *)&PythonPlotItem::PyPlotItemType, args2, kwds2);
@@ -1323,7 +1335,9 @@ PyObject* PythonFigure::PyFigure_plotly(PyFigure *self, PyObject *args, PyObject
     //return new instance of PyUiItem
     PyObject *args2 = PyTuple_New(0); //Py_BuildValue("OO", self, name);
     PyObject *kwds2 = PyDict_New();
-    PyDict_SetItemString(kwds2, "objectID", PyLong_FromLong(*objectID));
+    PyObject *objectIdObj = PyLong_FromLong(*objectID);
+    PyDict_SetItemString(kwds2, "objectID", objectIdObj);
+    Py_XDECREF(objectIdObj);
     PyDict_SetItemString(kwds2, "figure", (PyObject*)self);
     PythonPlotItem::PyPlotItem *pyPlotItem = \
         (PythonPlotItem::PyPlotItem *)PyObject_Call((PyObject *)&PythonPlotItem::PyPlotItemType, args2, kwds2);

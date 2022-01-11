@@ -2,6 +2,198 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="de">
 <context>
+    <name>DataObjectDelegate</name>
+    <message>
+        <source>Real part</source>
+        <translation>Realer Teil</translation>
+    </message>
+    <message>
+        <source>Imaginary part</source>
+        <translation>Imaginärer Teil</translation>
+    </message>
+</context>
+<context>
+    <name>DataObjectMetaWidget</name>
+    <message>
+        <source>Object details</source>
+        <translation type="unfinished">Objekt</translation>
+    </message>
+    <message>
+        <source>Axes details</source>
+        <translation type="unfinished">Achse(n)</translation>
+    </message>
+    <message>
+        <source>Value details</source>
+        <translation type="unfinished">Wert</translation>
+    </message>
+    <message>
+        <source>Tags</source>
+        <translation></translation>
+    </message>
+    <message>
+        <source>Protocol</source>
+        <translation type="unfinished">Protokoll</translation>
+    </message>
+</context>
+<context>
+    <name>DataObjectTable</name>
+    <message>
+        <source>Copy Table / Selection to Clipboard</source>
+        <translation type="unfinished">Tabelle/Auswahl in die Zwischenablage kopieren</translation>
+    </message>
+    <message>
+        <source>Copy the entire table or the current selection (and optional heatmap background) to the clipboard.</source>
+        <translation type="unfinished">Kopiert die gesamte Tabelle oder die aktuelle Auswahl (und optional Heatmap im Hintergrund) in die Zwischenablage.</translation>
+    </message>
+    <message>
+        <source>Export Table / Selection to CSV File</source>
+        <translation type="unfinished">Tabelle/Auswahl in eine CSV-Datei exportieren</translation>
+    </message>
+    <message>
+        <source>Clear Selection</source>
+        <translation type="unfinished">Auswahl aufheben</translation>
+    </message>
+    <message>
+        <source>Decimals...</source>
+        <translation type="unfinished">Dezimalzahlen...</translation>
+    </message>
+    <message>
+        <source>Set the number of decimals.</source>
+        <translation type="unfinished">Anzahl der Nachkommastellen setzen.</translation>
+    </message>
+    <message>
+        <source>Standard</source>
+        <translation></translation>
+    </message>
+    <message>
+        <source>Scientific</source>
+        <translation type="unfinished">Spezifiziert</translation>
+    </message>
+    <message>
+        <source>Auto</source>
+        <translation></translation>
+    </message>
+    <message>
+        <source>Number Format</source>
+        <translation type="unfinished">Zahlenformat</translation>
+    </message>
+    <message>
+        <source>Resizes all columns to fit the current content.</source>
+        <translation type="unfinished">Alle Spaltengrößen an Inhalte anpassen.</translation>
+    </message>
+    <message>
+        <source>Off</source>
+        <translation type="unfinished">Aus</translation>
+    </message>
+    <message>
+        <source>Real Color</source>
+        <translation type="unfinished">Echtfarben</translation>
+    </message>
+    <message>
+        <source>Red-Yellow-Green</source>
+        <translation type="unfinished">Rot-Gelb-Grün</translation>
+    </message>
+    <message>
+        <source>Green-Yellow-Red</source>
+        <translation type="unfinished">Grün-Gelb-Rot</translation>
+    </message>
+    <message>
+        <source>Red-White-Green</source>
+        <translation type="unfinished">Rot-Weiß-Grün</translation>
+    </message>
+    <message>
+        <source>Green-White-Red</source>
+        <translation type="unfinished">Grün-Weiß-Rot</translation>
+    </message>
+    <message>
+        <source>Heatmap</source>
+        <translation></translation>
+    </message>
+    <message>
+        <source>Configure...</source>
+        <translation type="unfinished">Einstellungen...</translation>
+    </message>
+    <message>
+        <source>Error copying to clipboard</source>
+        <translation type="unfinished">Fehler beim Kopieren in die Zwischenablage</translation>
+    </message>
+    <message>
+        <source>The table could not be copied to the clipboard. Reason: %1</source>
+        <translation type="unfinished">Die Tabelle konnte nicht in die Zwischenablage kopiert werden. Grund: %1</translation>
+    </message>
+    <message>
+        <source>CSV File</source>
+        <translation type="unfinished">CSV-Datei</translation>
+    </message>
+    <message>
+        <source>CSV Files (*.csv *.txt)</source>
+        <translation type="unfinished">CSV-Datei (*.csv *.txt)</translation>
+    </message>
+    <message>
+        <source>Error exporting to CSV</source>
+        <translation type="unfinished">Fehler beim Export in eine CVS-Datei</translation>
+    </message>
+    <message>
+        <source>The table could not be exported to the CSV file. Reason: %1</source>
+        <translation type="unfinished">Die Tabelle konnte nicht in die CSV-Datei exportiert werden. Grund: %1</translation>
+    </message>
+    <message>
+        <source>set number of decimals</source>
+        <translation type="unfinished">Anzahl der Nachkommastellen setzen</translation>
+    </message>
+    <message>
+        <source>Count: %1</source>
+        <translation type="unfinished">Anzahl: %1</translation>
+    </message>
+    <message>
+        <source>No further information due to unsupported array type.</source>
+        <translation type="unfinished">Keine weiteren Informationen, da dieser Array-Typ nicht unterstützt wird.</translation>
+    </message>
+    <message>
+        <source>Resize Columns to Content</source>
+        <translation type="unfinished">Spaltengrößen an Inhalte anpassen</translation>
+    </message>
+    <message>
+        <source>number of decimals...</source>
+        <translation type="obsolete">Anzahl Nachkommastellen...</translation>
+    </message>
+    <message>
+        <source>number of decimals</source>
+        <translation type="unfinished">Dezimalzahlen</translation>
+    </message>
+</context>
+<context>
+    <name>DialogHeatmapConfiguration</name>
+    <message>
+        <source>Heatmap Configuration</source>
+        <translation type="unfinished">Heatmap-Einstellungen</translation>
+    </message>
+    <message>
+        <source>Heatmap interval:</source>
+        <translation type="unfinished">Heatmap-Bereich:</translation>
+    </message>
+    <message>
+        <source>auto</source>
+        <translation>Auto</translation>
+    </message>
+    <message>
+        <source>manual adjustment:</source>
+        <translation type="unfinished">Manuelle Einstellung:</translation>
+    </message>
+    <message>
+        <source>to</source>
+        <translation type="unfinished">nach</translation>
+    </message>
+    <message>
+        <source>from</source>
+        <translation type="unfinished">von</translation>
+    </message>
+    <message>
+        <source>0,000</source>
+        <translation type="unfinished">0.000</translation>
+    </message>
+</context>
+<context>
     <name>DoubleRangeWidget</name>
     <message>
         <source>SliderSpinBoxWidget</source>
@@ -257,11 +449,11 @@
     </message>
     <message>
         <source>End</source>
-        <translation type="unfinished">Ende</translation>
+        <translation>Ende</translation>
     </message>
     <message>
         <source>Length</source>
-        <translation type="unfinished">Länge</translation>
+        <translation>Länge</translation>
     </message>
     <message>
         <source>Circle %1</source>
@@ -293,19 +485,19 @@
     </message>
     <message>
         <source>Side Length</source>
-        <translation type="unfinished">Seitenlänge</translation>
+        <translation>Seitenlänge</translation>
     </message>
     <message>
         <source>Width</source>
-        <translation type="unfinished">Breite</translation>
+        <translation>Breite</translation>
     </message>
     <message>
         <source>Height</source>
-        <translation type="unfinished">Höhe</translation>
+        <translation>Höhe</translation>
     </message>
     <message>
         <source>Nodes</source>
-        <translation type="unfinished">Knoten</translation>
+        <translation>Knoten</translation>
     </message>
 </context>
 <context>
@@ -341,6 +533,34 @@
         <source>Search...</source>
         <translation type="unfinished">Suchen...</translation>
     </message>
+    <message>
+        <source>Minimum: %1%2</source>
+        <translation></translation>
+    </message>
+    <message>
+        <source>Maximum: %1%2</source>
+        <translation></translation>
+    </message>
+    <message>
+        <source>Mean: %1%2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>StdDev: %1%2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Mean: %1%2%3%4</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>itom widget to show the dataObject meta information.</source>
+        <translation type="unfinished">itom-Widget zur Ansicht der Metainformationen des DataObjects.</translation>
+    </message>
+    <message>
+        <source>itom widget to interpret a dataObject as a table.</source>
+        <translation type="unfinished">itom-Widget zur Ansicht des DataObjects in Tabellenform.</translation>
+    </message>
 </context>
 <context>
     <name>RangeWidget</name>
@@ -368,6 +588,41 @@
     </message>
 </context>
 <context>
+    <name>ito::DialogHeatmapConfiguration</name>
+    <message>
+        <source>invalid number</source>
+        <translation type="obsolete">Ungültige Anzahl</translation>
+    </message>
+    <message>
+        <source>The &apos;%1&apos; number is no valid decimal number.</source>
+        <translation type="unfinished">Das %1. ist keine gültige Dezimalzahl.</translation>
+    </message>
+    <message>
+        <source>out of range</source>
+        <translation type="obsolete">Außerhalb des Gültigkeitsbereichs</translation>
+    </message>
+    <message>
+        <source>The &apos;%1&apos; number is out of range [%2,%3]</source>
+        <translation type="unfinished">Das %1 liegt außerhalb des Gültigkeitsbereichs [%2, %3]</translation>
+    </message>
+    <message>
+        <source>Invalid number</source>
+        <translation type="unfinished">Ungültige Zahl</translation>
+    </message>
+    <message>
+        <source>Out of range</source>
+        <translation type="unfinished">Außerhalb des Gültigkeitsbereichs</translation>
+    </message>
+    <message>
+        <source>minimum</source>
+        <translation type="unfinished">Minimum</translation>
+    </message>
+    <message>
+        <source>maximum</source>
+        <translation type="unfinished">Maximum</translation>
+    </message>
+</context>
+<context>
     <name>penCreatorDialog</name>
     <message>
         <source>Pen Style</source>
@@ -387,7 +642,7 @@
     </message>
     <message>
         <source>Color</source>
-        <translation type="unfinished">Farbe</translation>
+        <translation>Farbe</translation>
     </message>
     <message>
         <source>Line Style</source>

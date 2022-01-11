@@ -154,14 +154,15 @@ protected:
 
 private:
     void updateView(
-        QHash<QString, ito::PyWorkspaceItem*> items,
-        QString baseName,
-        QTreeWidgetItem* parent = NULL);
+        const QHash<QString, ito::PyWorkspaceItem*>& items,
+        const QString& baseName,
+        QTreeWidgetItem* parent = nullptr);
     void recursivelyDeleteHash(QTreeWidgetItem* item);
     void recursivelyDeleteHash(const QString& fullBaseName);
 
-    bool m_globalNotLocal; /*!< flag indicated whether this workspaceWidget shows a global (true) or
-                              a local (false) dictionary */
+    /*!< flag indicated whether this workspaceWidget shows a global (true) or
+    a local (false) dictionary */
+    bool m_globalNotLocal;
     QHash<QString, QTreeWidgetItem*> m_itemHash;
     ito::PyWorkspaceContainer* m_workspaceContainer;
 

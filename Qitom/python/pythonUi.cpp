@@ -4405,7 +4405,7 @@ ui \n\
 \n\
 Notes \n\
 ----- \n\
-Unlike it is the case at the creation of ui's from ui files, you can not directly \n\
+Unlike it is the case at the creation of ui's from ui files, you cannot directly \n\
 parameterize behaviours like the ``deleteOnClose`` flag. This can however be done using \n\
 :meth:`setAttribute`. \n\
 \n\
@@ -4644,7 +4644,7 @@ ui \n\
 \n\
 Notes \n\
 ----- \n\
-Unlike it is the case at the creation of ui's from ui files, you can not directly \n\
+Unlike it is the case at the creation of ui's from ui files, you cannot directly \n\
 parameterize behaviours like the ``deleteOnClose`` flag. This can however be done using \n\
 :meth:`setAttribute`. \n\
 \n\

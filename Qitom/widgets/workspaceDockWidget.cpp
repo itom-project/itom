@@ -351,8 +351,7 @@ void WorkspaceDockWidget::mnuDeleteItem()
                 eng,
                 "deleteVariable",
                 Q_ARG(bool, m_globalNotLocal),
-                Q_ARG(QStringList, keyList),
-                Q_ARG(ItomSharedSemaphore*, NULL));
+                Q_ARG(QStringList, keyList));
         }
     }
 }
