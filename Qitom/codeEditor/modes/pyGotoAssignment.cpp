@@ -73,8 +73,14 @@ PyGotoAssignmentMode::PyGotoAssignmentMode(const QString &description /*= ""*/, 
 
     m_pPythonEngine = AppManagement::getPythonEngine();
 
-    m_pActionGotoDefinition = new QAction(tr("Go To Definition"), this);
-    m_pActionGotoDefinition->setShortcut(QKeySequence(tr("F12", "QShortcut")));
+    // the shortcut cannot be handled by a shortcut, set to the action,
+    // since it has the wrong context. Therefore the shortcut is caught
+    // by the keyRelease event and the shortcut string is appended via
+    // a tab sign to the string, such that it appears on the right side
+    // of the menu entry.
+    auto keySequence = QKeySequence(tr("F12", "QShortcut"));
+    m_pActionGotoDefinition = new QAction(tr("Go To Definition") + "\t" + keySequence.toString(QKeySequence::NativeText), this);
+    // m_pActionGotoDefinition->setShortcut(keySequence);
     connect(m_pActionGotoDefinition, SIGNAL(triggered()), this, SLOT(requestGotoDefinition()));
 
     m_pActionGotoAssignment = new QAction(tr("Go To Assignment"), this);
@@ -492,7 +498,7 @@ void PyGotoAssignmentMode::performGoto(const QList<PyAssignment> &assignments)
 
         float guiFactor = GuiHelper::screenDpiFactor();
 
-        QSharedPointer<QInputDialog> dialog(new QInputDialog(editor(), 0));
+        QSharedPointer<QInputDialog> dialog(new QInputDialog(editor(), QFlag(0)));        
         dialog->setWindowTitle(tr("Choose a definition"));
         dialog->setLabelText(tr("Choose the definition you want to go to:"));
         dialog->setComboBoxItems(items);

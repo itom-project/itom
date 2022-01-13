@@ -50,6 +50,7 @@
 #include <qlibraryinfo.h>
 #include <qresource.h>
 #include <qfileinfo.h>
+#include <qscreen.h>
 
 #if WIN32
 #include <Windows.h>
@@ -237,19 +238,31 @@ QString MainApplication::getSplashScreenFileName() const
 QPixmap MainApplication::getSplashScreenPixmap() const
 {
 #ifdef USEGIMMICKS
-    QString spashScreenFileName = getSplashScreenFileName(); // get the fileName of splashScreen. Different at easter and christmas time
+    QString splashScreenFileName = getSplashScreenFileName(); // get the fileName of splashScreen. Different at easter and christmas time
 #else
-    QString spashScreenFileName = ":/application/icons/itomicon/splashScreen2.png"; //only default splashScreen
+    QString splashScreenFileName = ":/application/icons/itomicon/splashScreen2.png"; //only default splashScreen
 #endif // USEUSEGIMMICKS
 
-    QPixmap pixmap(spashScreenFileName);
+    QPixmap pixmap(splashScreenFileName);
     QString versionText;
     QString buildText;
     QString bitTextShort;
     QString bitTextLong;
     QString revisionText = "";
     QString editionText = "";
+    QString dateText;
     
+    // 30% of screen size
+    int pimaryScreenWidth = QGuiApplication::primaryScreen()->geometry().width();
+
+    if (pimaryScreenWidth < 1280) // HDReady screen
+    {
+        pixmap = pixmap.scaledToWidth(550, Qt::SmoothTransformation); 
+    }
+    else if (pimaryScreenWidth <= 3840) // 30% of screen width
+    {
+        pixmap = pixmap.scaledToWidth(pimaryScreenWidth * 0.3, Qt::SmoothTransformation);
+    } 
 
     QPainter p;
     p.begin(&pixmap);
@@ -273,23 +286,31 @@ QPixmap MainApplication::getSplashScreenPixmap() const
 #endif
 
     editionText = QString::fromLatin1(ITOM_ADDITIONAL_EDITION_NAME);
+     
+ 
+#if ITOM_ADDITIONAL_BUILD_DATE
+    dateText = QString("%1 %2").arg(__DATE__, __TIME__);
+#else
+    dateText = "";
+#endif  
 
     if (editionText != "")
     {
         if (revisionText != "")
         {
-            buildText = QString("%1\n%2, %3").arg(editionText, bitTextShort, revisionText);
+            buildText =
+                QString("%1\n%2, %3\n%4").arg(editionText, bitTextShort, revisionText, dateText);
         }
         else
         {
-            buildText = QString("%1\n%2").arg(editionText, bitTextLong);
+            buildText = QString("%1\n%2\n%3").arg(editionText, bitTextLong, dateText);
         } 
     }
     else
     {
         if (revisionText != "")
         {
-            buildText = QString("%1\n%2").arg(bitTextLong, revisionText);
+            buildText = QString("%1\n%2\n%3").arg(bitTextLong, revisionText, dateText);
         }
         else
         {
@@ -297,28 +318,27 @@ QPixmap MainApplication::getSplashScreenPixmap() const
         }
     }
 
-    QRectF rectVersion(244 /*311*/, 219 /*115*/, 200, 100); //position of the version text within the image
+    float textLeftPos = pixmap.width() * 0.455;
+
+    QRectF rectVersion(
+        textLeftPos,
+        pixmap.height() * 0.6,
+        pixmap.width() - textLeftPos,
+        pixmap.height() * 0.1); // relative position of the version text within the image
     QFont fontVersion;
-    fontVersion.setPixelSize(15);
+    fontVersion.setPixelSize(pixmap.width() * 0.022);
     p.setFont(fontVersion);
     p.drawText(rectVersion, Qt::AlignLeft, versionText);
 
-    QRectF rectBuild(244, 240, 200, 100);
+    QRectF rectBuild(
+        textLeftPos,
+        rectVersion.top() * 1.08, 
+        pixmap.width() - textLeftPos,
+        pixmap.height() * 0.2);
     QFont fontBuild;
-    fontBuild.setPixelSize(12);
+    fontBuild.setPixelSize(pixmap.width() * 0.02);
     p.setFont(fontBuild);
     p.drawText(rectBuild, Qt::AlignLeft, buildText);
-
-    /*QString editionText = QString("%1").arg(ITOM_ADDITIONAL_EDITION_NAME);
-    QRectF rectEdition(380, 16, 534, 67);
-
-    QFont font;
-    font.setPixelSize(20);
-    p.setFont(font);
-    p.setPen(Qt::white);
-
-    p.drawText(rectEdition, Qt::AlignLeft, editionText);*/
-
 
     p.end();
 
@@ -344,7 +364,12 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
 
     QPixmap pixmap = getSplashScreenPixmap();
 
-    m_pSplashScreen = new QSplashScreen(pixmap);
+    m_pSplashScreen =
+        new QSplashScreen(pixmap);
+
+    QFont messageFont = m_pSplashScreen->font();
+    messageFont.setPixelSize(pixmap.width() * 0.02);
+    m_pSplashScreen->setFont(messageFont);
 
     m_pSplashScreen->show();
     QCoreApplication::processEvents();
@@ -871,22 +896,22 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
     {
         if (retValue.hasErrorMessage())
         {
-            std::cerr << "Error when starting the application: \n" << retValue.errorMessage() << std::endl;
+            std::cerr << "Error when starting the application: \n" << retValue.errorMessage() << "\n" << std::endl;
         }
         else
         {
-            std::cerr << "An unspecified error occurred when starting the application." << std::endl;
+            std::cerr << "An unspecified error occurred when starting the application.\n" << std::endl;
         }
     }
     else if (retValue.containsWarning())
     {
         if (retValue.hasErrorMessage())
         {
-            std::cout << "Warning when starting the application: \n" << retValue.errorMessage() << std::endl;
+            std::cout << "Warning when starting the application: \n" << retValue.errorMessage() << "\n" << std::endl;
         }
         else
         {
-            std::cout << "An unspecified warning occurred when starting the application." << std::endl;
+            std::cout << "An unspecified warning occurred when starting the application.\n" << std::endl;
         }
     }
 
@@ -940,9 +965,9 @@ void MainApplication::finalizeApplication()
         waitCond->waitAndProcessEvents(-1);
 
         //call further objects, which have been marked by "deleteLater" during this finalize method (partI)
-        QCoreApplication::sendPostedEvents();
-        QCoreApplication::sendPostedEvents(nullptr, QEvent::DeferredDelete); //these events are not sent by the line above, since the event-loop already has been stopped.
-        QCoreApplication::processEvents();
+        // QCoreApplication::sendPostedEvents();
+        // QCoreApplication::sendPostedEvents(nullptr, QEvent::DeferredDelete); //these events are not sent by the line above, since the event-loop already has been stopped.
+        // QCoreApplication::processEvents();
 
         waitCond->deleteSemaphore();
         waitCond = nullptr;
@@ -967,9 +992,9 @@ void MainApplication::finalizeApplication()
     AppManagement::setProcessOrganizer(NULL);
 
     //call further objects, which have been marked by "deleteLater" during this finalize method (partII)
-    QCoreApplication::sendPostedEvents();
-    QCoreApplication::sendPostedEvents(NULL,QEvent::DeferredDelete); //these events are not sent by the line above, since the event-loop already has been stopped.
-    QCoreApplication::processEvents();
+    // QCoreApplication::sendPostedEvents();
+    // QCoreApplication::sendPostedEvents(NULL,QEvent::DeferredDelete); //these events are not sent by the line above, since the event-loop already has been stopped.
+    // QCoreApplication::processEvents();
 
     QString settingsName(AppManagement::getSettingsFile());
     QSettings *settings = new QSettings(settingsName, QSettings::IniFormat);

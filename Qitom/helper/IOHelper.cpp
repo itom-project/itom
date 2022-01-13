@@ -200,13 +200,28 @@ end:
         if (showMessages)
         {
             QMessageBox msgBox(parent);
+
+            if (retval.containsError())
+            {
+                msgBox.setIcon(QMessageBox::Critical);
+                msgBox.setWindowTitle(tr("Error"));
+            }
+            else
+            {
+                msgBox.setIcon(QMessageBox::Warning);
+                msgBox.setWindowTitle(tr("Warning"));
+            }
+
             if (retval.hasErrorMessage())
             {
                 QString errStr = QLatin1String(retval.errorMessage());
                 msgBox.setText(errStr);
             }
             else
-                msgBox.setText("Unknown error opening file");
+            {
+                msgBox.setText(tr("Unknown error or warning when opening the file."));
+            }
+
             msgBox.exec();
         }
     }
@@ -696,7 +711,7 @@ end:
     if (po)
     {
         bool existingProcess = false;
-        QProcess *process = po->getProcess("designer", true, existingProcess, false);
+        QProcess *process = po->getProcess("designer", true, existingProcess, true);
 
         if (existingProcess && process->state() == QProcess::Running)
         {
@@ -730,7 +745,7 @@ end:
 
             if (!done)
             {
-                process = po->getProcess("designer", false, existingProcess, false);
+                process = po->getProcess("designer", false, existingProcess, true);
                 //create new process for designer, since sending data to existing one failed
                 QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
                 QString appPath = QDir::cleanPath(QCoreApplication::applicationDirPath());
@@ -1315,11 +1330,22 @@ end:
 {
     QFont font;
     QFontMetrics fontm(font);
-    int width = fontm.width(path);
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 11, 0))
+        int width = fontm.horizontalAdvance(path);
+#else 
+        int width = fontm.width(path);
+#endif
+    
     if (width > pixelLength)
     {
         bool end = false;
-        while(width > pixelLength - fontm.width("...") && end == false)
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 11, 0))
+        while (width > pixelLength - fontm.horizontalAdvance("...") && end == false)
+#else
+        while (width > pixelLength - fontm.width("...") && end == false)
+#endif        
         {
             int index = path.indexOf(QDir::separator(), 0)+1;
             if (index == 0 || index == path.lastIndexOf(QDir::separator()))
@@ -1327,7 +1353,11 @@ end:
                 end = true;
             }
             path.remove(index, 1);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 11, 0))
+            width = fontm.horizontalAdvance(path);
+#else
             width = fontm.width(path);
+#endif
         }
         path.insert(path.indexOf(QDir::separator(),0)+1, "...");
     }

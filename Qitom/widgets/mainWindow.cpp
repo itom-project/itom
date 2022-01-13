@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
 
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
@@ -34,23 +34,22 @@
 #include "../organizer/uiOrganizer.h"
 #include "../organizer/userOrganizer.h"
 
-#include "../ui/dialogProperties.h"
 #include "../ui/dialogAbout.h"
-#include "../ui/dialogReloadModule.h"
 #include "../ui/dialogLoadedPlugins.h"
-#include "../ui/widgetInfoBox.h"
 #include "../ui/dialogPipManager.h"
+#include "../ui/dialogProperties.h"
+#include "../ui/dialogReloadModule.h"
 #include "../ui/dialogTimerManager.h"
+#include "../ui/widgetInfoBox.h"
 
 #include "../helper/versionHelper.h"
 
 #include <qapplication.h>
-#include <qstatusbar.h>
-#include <qmessagebox.h>
-#include <qfiledialog.h>
 #include <qdesktopwidget.h>
-#include <qmessagebox.h>
 #include <qdir.h>
+#include <qfiledialog.h>
+#include <qmessagebox.h>
+#include <qstatusbar.h>
 
 #include "../organizer/scriptEditorOrganizer.h"
 
@@ -60,45 +59,56 @@
 
 namespace ito {
 
+const QScreen* guiApplicationScreenAt(const QPoint &point)
+{
+#if (QT_VERSION >= QT_VERSION_CHECK(5,10,0))
+    return QGuiApplication::screenAt(point);
+#else
+    // this is a copy of the future implementation of the screenAt method.
+    QVarLengthArray<const QScreen*, 8> visitedScreens;
+
+    for (const QScreen *scr : QGuiApplication::screens())
+    {
+        if (visitedScreens.contains(scr))
+        {
+            continue;
+        }
+
+        // The virtual siblings include the screen itself, so iterate directly
+        for (QScreen *sibling : scr->virtualSiblings())
+        {
+            if (sibling->geometry().contains(point))
+            {
+                return sibling;
+            }
+
+            visitedScreens.append(sibling);
+        }
+    }
+
+    return nullptr;
+#endif
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------
 //! constructor
 /*!
     establishes widgets being part of the main window including necessary actions
 */
 MainWindow::MainWindow() :
-	m_console(NULL),
-	m_contentLayout(NULL),
-	m_breakPointDock(NULL),
-    m_bookmarkDock(NULL),
-	m_lastCommandDock(NULL),
-	//    m_pythonMessageDock(NULL),
-	m_helpDock(NULL),
-	m_globalWorkspaceDock(NULL),
-	m_localWorkspaceDock(NULL),
-	m_callStackDock(NULL),
-	m_fileSystemDock(NULL),
-	m_pAIManagerWidget(NULL),
-	m_appFileNew(NULL),
-	m_appFileOpen(NULL),
-	m_aboutQt(NULL),
-	m_aboutQitom(NULL),
-    m_pMenuFigure(NULL),
-	m_pMenuHelp(NULL),
-	m_pMenuFile(NULL),
-	m_pMenuPython(NULL),
-	m_pMenuReloadModule(NULL),
-	m_pMenuView(NULL),
-	m_pHelpSystem(NULL),
-	m_pStatusLblCurrentDir(NULL),
-	m_pStatusLblPythonBusy(NULL),
-	m_pythonBusy(false),
-	m_pythonDebugMode(false),
-	m_pythonInWaitingMode(false),
-	m_isFullscreen(false),
-	m_userDefinedActionCounter(0),
+    m_console(NULL), m_contentLayout(NULL), m_breakPointDock(NULL), m_bookmarkDock(NULL),
+    m_lastCommandDock(NULL),
+    //    m_pythonMessageDock(NULL),
+    m_helpDock(NULL), m_globalWorkspaceDock(NULL), m_localWorkspaceDock(NULL),
+    m_callStackDock(NULL), m_fileSystemDock(NULL), m_pAIManagerWidget(NULL), m_appFileNew(NULL),
+    m_appFileOpen(NULL), m_aboutQt(NULL), m_aboutQitom(NULL), m_pMenuFigure(NULL),
+    m_pMenuHelp(NULL), m_pMenuFile(NULL), m_pMenuPython(NULL), m_pMenuReloadModule(NULL),
+    m_pMenuView(NULL), m_pHelpSystem(NULL), m_pStatusLblCurrentDir(NULL),
+    m_pStatusLblPythonBusy(NULL), m_pythonBusy(false), m_pythonDebugMode(false),
+    m_pythonInWaitingMode(false), m_isFullscreen(false), m_userDefinedActionCounter(0),
     m_plastFilesMenu(NULL)
 {
-    //qDebug() << "mainWindow. Thread: " << QThread::currentThreadId ();
+    // qDebug() << "mainWindow. Thread: " << QThread::currentThreadId ();
 #ifdef __APPLE__
     // Setting high res icon for OS X
     QApplication::setWindowIcon(QIcon(":/application/icons/itomicon/itomIcon1024"));
@@ -107,11 +117,12 @@ MainWindow::MainWindow() :
 #endif
 
     qDebug("build main window");
-    const PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
-    const PythonStatePublisher *pyStatePublisher = qobject_cast<PythonStatePublisher*>(AppManagement::getPythonStatePublisher());
+    const PythonEngine* pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
+    const PythonStatePublisher* pyStatePublisher =
+        qobject_cast<PythonStatePublisher*>(AppManagement::getPythonStatePublisher());
 
     // general windows settings
-    if (sizeof(void*) > 4) //was before a check using QT_POINTER_SIZE
+    if (sizeof(void*) > 4) // was before a check using QT_POINTER_SIZE
     {
         setWindowTitle(tr("itom (x64)"));
     }
@@ -127,18 +138,20 @@ MainWindow::MainWindow() :
     setCorner(Qt::TopRightCorner, Qt::RightDockWidgetArea);
     setCorner(Qt::BottomRightCorner, Qt::RightDockWidgetArea);
 
-    //content
-	m_contentLayout = new QVBoxLayout();
-	m_contentSplitter = new QSplitter(this);
-	m_contentSplitter->setOrientation(Qt::Vertical);
-	m_contentLayout->addWidget(m_contentSplitter);
+    // content
+    m_contentLayout = new QVBoxLayout();
+    m_contentSplitter = new QSplitter(this);
+    m_contentSplitter->setOrientation(Qt::Vertical);
+    m_contentLayout->addWidget(m_contentSplitter);
 
     // user
-    ito::UserOrganizer *uOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
-    if (uOrg && (uOrg->currentUserHasFeature(featConsoleRead) || uOrg->currentUserHasFeature(featConsoleReadWrite)))
+    ito::UserOrganizer* uOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
+    if (uOrg &&
+        (uOrg->currentUserHasFeature(featConsoleRead) ||
+         uOrg->currentUserHasFeature(featConsoleReadWrite)))
     {
         qDebug(".. before loading console widget");
-        //console (central widget):
+        // console (central widget):
         m_console = new ConsoleWidget(this);
 
         if (uOrg->currentUserHasFeature(featConsoleReadWrite) == false)
@@ -146,58 +159,112 @@ MainWindow::MainWindow() :
             m_console->setReadOnly(true);
         }
 
-        m_console->setObjectName("console"); //if a drop event onto a scripteditor comes from this object name, the drop event is always executed as copy event such that no text is deleted in the console.
-        //setCentralWidget(m_console);
+        m_console->setObjectName(
+            "console"); // if a drop event onto a scripteditor comes from this object name, the drop
+                        // event is always executed as copy event such that no text is deleted in
+                        // the console.
+        // setCentralWidget(m_console);
         qDebug(".. console widget loaded");
-		m_contentSplitter->addWidget(m_console);
+        m_contentSplitter->addWidget(m_console);
     }
 
     m_contentLayout->setContentsMargins(0, 0, 0, 0);
     m_contentLayout->setSpacing(1);
 
-    QWidget *centralWidget = new QWidget(this);
+    QWidget* centralWidget = new QWidget(this);
     centralWidget->setLayout(m_contentLayout);
-    setCentralWidget(centralWidget); 
+    setCentralWidget(centralWidget);
 
     if (uOrg && uOrg->currentUserHasFeature(featFileSystem))
     {
         // FileDir-Dock
-        m_fileSystemDock = new FileSystemDockWidget(tr("File System"), "itomFileSystemDockWidget", this, true, true, AbstractDockWidget::floatingStandard);
-        m_fileSystemDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
-        connect(m_fileSystemDock, SIGNAL(currentDirChanged()), this, SLOT(currentDirectoryChanged()));
+        m_fileSystemDock = new FileSystemDockWidget(
+            tr("File System"),
+            "itomFileSystemDockWidget",
+            this,
+            true,
+            true,
+            AbstractDockWidget::floatingStandard);
+        m_fileSystemDock->setAllowedAreas(
+            Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea |
+            Qt::TopDockWidgetArea);
+        connect(
+            m_fileSystemDock, SIGNAL(currentDirChanged()), this, SLOT(currentDirectoryChanged()));
         addDockWidget(Qt::LeftDockWidgetArea, m_fileSystemDock);
     }
 
     if (uOrg && uOrg->currentUserHasFeature(featDeveloper))
     {
         // breakPointDock
-        m_breakPointDock = new BreakPointDockWidget(tr("Breakpoints"), "itomBreakPointDockWidget", this, true, true, AbstractDockWidget::floatingStandard);
-        m_breakPointDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
+        m_breakPointDock = new BreakPointDockWidget(
+            tr("Breakpoints"),
+            "itomBreakPointDockWidget",
+            this,
+            true,
+            true,
+            AbstractDockWidget::floatingStandard);
+        m_breakPointDock->setAllowedAreas(
+            Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea |
+            Qt::TopDockWidgetArea);
         addDockWidget(Qt::LeftDockWidgetArea, m_breakPointDock);
 
         // breakPointDock
-        m_bookmarkDock = new BookmarkDockWidget(tr("Bookmarks"), "itomBookmarkDockWidget", this, true, true, AbstractDockWidget::floatingStandard);
-        m_bookmarkDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
+        m_bookmarkDock = new BookmarkDockWidget(
+            tr("Bookmarks"),
+            "itomBookmarkDockWidget",
+            this,
+            true,
+            true,
+            AbstractDockWidget::floatingStandard);
+        m_bookmarkDock->setAllowedAreas(
+            Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea |
+            Qt::TopDockWidgetArea);
         addDockWidget(Qt::LeftDockWidgetArea, m_bookmarkDock);
 
         // lastCommandDock
-        m_lastCommandDock = new LastCommandDockWidget(tr("Command History"), "itomLastCommandDockWidget", this, true, true, AbstractDockWidget::floatingStandard);
-        m_lastCommandDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
+        m_lastCommandDock = new LastCommandDockWidget(
+            tr("Command History"),
+            "itomLastCommandDockWidget",
+            this,
+            true,
+            true,
+            AbstractDockWidget::floatingStandard);
+        m_lastCommandDock->setAllowedAreas(
+            Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea |
+            Qt::TopDockWidgetArea);
         addDockWidget(Qt::LeftDockWidgetArea, m_lastCommandDock);
-        
+
         // pythonMessageDock
-        //m_pythonMessageDock = new PythonMessageDockWidget(tr("Python Messages"), "itomPythonMessageDockWidget", this, true, true, AbstractDockWidget::floatingStandard);
-        //m_pythonMessageDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
-        //addDockWidget(Qt::BottomDockWidgetArea, m_pythonMessageDock);
+        // m_pythonMessageDock = new PythonMessageDockWidget(tr("Python Messages"),
+        // "itomPythonMessageDockWidget", this, true, true, AbstractDockWidget::floatingStandard);
+        // m_pythonMessageDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea |
+        // Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
+        // addDockWidget(Qt::BottomDockWidgetArea, m_pythonMessageDock);
 
         // helpDock
-        m_helpDock = new HelpDockWidget(tr("Plugin Help Viewer"), "itomHelpDockWidget", this, true, true, AbstractDockWidget::floatingWindow);
-        m_helpDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
+        m_helpDock = new HelpDockWidget(
+            tr("Plugin Help Viewer"),
+            "itomHelpDockWidget",
+            this,
+            true,
+            true,
+            AbstractDockWidget::floatingWindow);
+        m_helpDock->setAllowedAreas(
+            Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea |
+            Qt::TopDockWidgetArea);
         addDockWidget(Qt::LeftDockWidgetArea, m_helpDock);
 
         // CallStack-Dock
-        m_callStackDock = new CallStackDockWidget(tr("Call Stack"), "itomCallStackDockWidget", this, true, true, AbstractDockWidget::floatingStandard);
-        m_callStackDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
+        m_callStackDock = new CallStackDockWidget(
+            tr("Call Stack"),
+            "itomCallStackDockWidget",
+            this,
+            true,
+            true,
+            AbstractDockWidget::floatingStandard);
+        m_callStackDock->setAllowedAreas(
+            Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea |
+            Qt::TopDockWidgetArea);
         addDockWidget(Qt::LeftDockWidgetArea, m_callStackDock);
 
         if (m_fileSystemDock)
@@ -218,27 +285,56 @@ MainWindow::MainWindow() :
         }
 
         // global workspace widget (Python)
-        m_globalWorkspaceDock = new WorkspaceDockWidget(tr("Global Variables"), "itomGlobalWorkspaceDockWidget", true, this, true, true, AbstractDockWidget::floatingStandard);
+        m_globalWorkspaceDock = new WorkspaceDockWidget(
+            tr("Global Variables"),
+            "itomGlobalWorkspaceDockWidget",
+            true,
+            this,
+            true,
+            true,
+            AbstractDockWidget::floatingStandard);
         m_globalWorkspaceDock->setAllowedAreas(Qt::AllDockWidgetAreas);
         addDockWidget(Qt::RightDockWidgetArea, m_globalWorkspaceDock);
-        connect(m_globalWorkspaceDock, SIGNAL(setStatusInformation(QString,int)), this, SLOT(setStatusText(QString, int)));
+        connect(
+            m_globalWorkspaceDock,
+            SIGNAL(setStatusInformation(QString, int)),
+            this,
+            SLOT(setStatusText(QString, int)));
 
         // local workspace widget (Python)
-        m_localWorkspaceDock = new WorkspaceDockWidget(tr("Local Variables"), "itomLocalWorkspaceDockWidget", false, this, true, true, AbstractDockWidget::floatingStandard);
+        m_localWorkspaceDock = new WorkspaceDockWidget(
+            tr("Local Variables"),
+            "itomLocalWorkspaceDockWidget",
+            false,
+            this,
+            true,
+            true,
+            AbstractDockWidget::floatingStandard);
         m_localWorkspaceDock->setAllowedAreas(Qt::AllDockWidgetAreas);
         addDockWidget(Qt::RightDockWidgetArea, m_localWorkspaceDock);
-        connect(m_localWorkspaceDock, SIGNAL(setStatusInformation(QString, int)), this, SLOT(setStatusText(QString, int)));
+        connect(
+            m_localWorkspaceDock,
+            SIGNAL(setStatusInformation(QString, int)),
+            this,
+            SLOT(setStatusText(QString, int)));
 
         // tabify global and local workspace
         tabifyDockWidget(m_globalWorkspaceDock, m_localWorkspaceDock);
-        //splitDockWidget(m_globalWorkspaceDock, m_localWorkspaceDock, Qt::Horizontal);
+        // splitDockWidget(m_globalWorkspaceDock, m_localWorkspaceDock, Qt::Horizontal);
         m_globalWorkspaceDock->raise();
     }
 
     if (uOrg && uOrg->currentUserHasFeature(featPlugins))
     {
         // AddIn-Manager
-        m_pAIManagerWidget = new AIManagerWidget(tr("Plugins"), "itomPluginsDockWidget", this, true, true, AbstractDockWidget::floatingStandard, AbstractDockWidget::movingEnabled);
+        m_pAIManagerWidget = new AIManagerWidget(
+            tr("Plugins"),
+            "itomPluginsDockWidget",
+            this,
+            true,
+            true,
+            AbstractDockWidget::floatingStandard,
+            AbstractDockWidget::movingEnabled);
         qDebug(".. plugin manager widget loaded");
 
         addDockWidget(Qt::RightDockWidgetArea, m_pAIManagerWidget);
@@ -252,8 +348,16 @@ MainWindow::MainWindow() :
 
     if (m_pAIManagerWidget != NULL && m_helpDock != NULL)
     {
-        connect(m_pAIManagerWidget, &AIManagerWidget::showPluginInfo, m_helpDock, &HelpDockWidget::mnuShowInfo);
-        connect(m_pAIManagerWidget, &AIManagerWidget::showDockWidget, this, &MainWindow::mnuShowScriptReference);
+        connect(
+            m_pAIManagerWidget,
+            &AIManagerWidget::showPluginInfo,
+            m_helpDock,
+            &HelpDockWidget::mnuShowInfo);
+        connect(
+            m_pAIManagerWidget,
+            &AIManagerWidget::showDockWidget,
+            this,
+            &MainWindow::mnuShowScriptReference);
     }
 
     // connections
@@ -261,28 +365,42 @@ MainWindow::MainWindow() :
     {
         if (pyStatePublisher)
         {
-            connect(pyStatePublisher, &PythonStatePublisher::pythonStateChanged,
-                this, &MainWindow::pythonStateChanged);
+            connect(
+                pyStatePublisher,
+                &PythonStatePublisher::pythonStateChanged,
+                this,
+                &MainWindow::pythonStateChanged);
         }
 
         connect(pyEngine, SIGNAL(pythonCurrentDirChanged()), this, SLOT(currentDirectoryChanged()));
-        connect(this, SIGNAL(pythonDebugCommand(tPythonDbgCmd)), pyEngine, SLOT(pythonDebugCommand(tPythonDbgCmd)));
+        connect(
+            this,
+            SIGNAL(pythonDebugCommand(tPythonDbgCmd)),
+            pyEngine,
+            SLOT(pythonDebugCommand(tPythonDbgCmd)));
 
-        connect(pyEngine, SIGNAL(pythonSetCursor(Qt::CursorShape)), this, SLOT(setCursor(Qt::CursorShape)));
+        connect(
+            pyEngine,
+            SIGNAL(pythonSetCursor(Qt::CursorShape)),
+            this,
+            SLOT(setCursor(Qt::CursorShape)));
         connect(pyEngine, SIGNAL(pythonResetCursor()), this, SLOT(resetCursor()));
 
         if (m_console)
         {
             connect(pyEngine, SIGNAL(clearCommandLine()), m_console, SLOT(clearCommandLine()));
             connect(
-                pyEngine, SIGNAL(startInputCommandLine(QSharedPointer<QByteArray>, ItomSharedSemaphore*)), 
-                m_console, SLOT(startInputCommandLine(QSharedPointer<QByteArray>, ItomSharedSemaphore*))
-            );
+                pyEngine,
+                SIGNAL(startInputCommandLine(QSharedPointer<QByteArray>, ItomSharedSemaphore*)),
+                m_console,
+                SLOT(startInputCommandLine(QSharedPointer<QByteArray>, ItomSharedSemaphore*)));
         }
     }
     else
     {
-        showInfoMessageLine(tr("Python could not be started. itom cannot be used in the desired way. \nStart itom again with the argument 'log' and look-up the error message in the file itomlog.txt."));
+        showInfoMessageLine(tr("Python could not be started. itom cannot be used in the desired "
+                               "way. \nStart itom again with the argument 'log' and look-up the "
+                               "error message in the file itomlog.txt."));
         if (m_console)
         {
             m_console->setReadOnly(true);
@@ -290,8 +408,16 @@ MainWindow::MainWindow() :
     }
 
     // signal mapper for user defined actions
-    connect(m_lastCommandDock, SIGNAL(runPythonCommand(QString)), m_console, SLOT(pythonRunSelection(QString)));
-    connect(m_console, SIGNAL(sendToLastCommand(QString)), m_lastCommandDock, SLOT(addLastCommand(QString)));
+    connect(
+        m_lastCommandDock,
+        SIGNAL(runPythonCommand(QString)),
+        m_console,
+        SLOT(pythonRunSelection(QString)));
+    connect(
+        m_console,
+        SIGNAL(sendToLastCommand(QString)),
+        m_lastCommandDock,
+        SLOT(addLastCommand(QString)));
 
     //
     createActions();
@@ -304,8 +430,16 @@ MainWindow::MainWindow() :
 
     if (pyEngine)
     {
-        connect(pyEngine, SIGNAL(pythonAutoReloadChanged(bool,bool,bool,bool)), this, SLOT(pythonAutoReloadChanged(bool,bool,bool,bool)));
-        connect(this, SIGNAL(pythonSetAutoReloadSettings(bool,bool,bool,bool)), pyEngine, SLOT(setAutoReloader(bool,bool,bool,bool)));
+        connect(
+            pyEngine,
+            SIGNAL(pythonAutoReloadChanged(bool, bool, bool, bool)),
+            this,
+            SLOT(pythonAutoReloadChanged(bool, bool, bool, bool)));
+        connect(
+            this,
+            SIGNAL(pythonSetAutoReloadSettings(bool, bool, bool, bool)),
+            pyEngine,
+            SLOT(setAutoReloader(bool, bool, bool, bool)));
 
         settings.beginGroup("Python");
 
@@ -314,29 +448,49 @@ MainWindow::MainWindow() :
         bool pyReloadCheckCmd = settings.value("pyReloadCheckCmd", true).toBool();
         bool pyReloadCheckFct = settings.value("pyReloadCheckFct", false).toBool();
 
-        emit pythonSetAutoReloadSettings(pyReloadEnabled, pyReloadCheckFile, pyReloadCheckCmd, pyReloadCheckFct);
+        emit pythonSetAutoReloadSettings(
+            pyReloadEnabled, pyReloadCheckFile, pyReloadCheckCmd, pyReloadCheckFct);
 
         settings.endGroup();
     }
 
-    
     settings.beginGroup("MainWindow");
 
     bool maximized = settings.value("maximized", false).toBool();
-    QDesktopWidget desktop;
-    QRect mainScreen = desktop.screenGeometry(desktop.primaryScreen());
-    mainScreen.adjust(mainScreen.width()/6, mainScreen.height()/6, -mainScreen.width()/6, -mainScreen.height()/6);
+    const QScreen* screen = QApplication::primaryScreen();
+    QRect screenGeometry = screen->geometry();
+
+    QRect mainScreen = screen->geometry();
+    mainScreen.adjust(
+        mainScreen.width() / 6,
+        mainScreen.height() / 6,
+        -mainScreen.width() / 6,
+        -mainScreen.height() / 6);
     QRect geometry = settings.value("geometry", mainScreen).toRect();
 
-    if (geometry != mainScreen) //check if valid
+    if (geometry != mainScreen) // check if valid
     {
-        //check whether top/left and bottom/right lie in any available desktop
-        QRect r1, r2;
-        r1 = desktop.availableGeometry(geometry.topLeft());
-        r2 = desktop.availableGeometry(geometry.bottomRight());
-        if (r1.isValid() == false || r2.isValid() == false  || r1.contains(geometry.topLeft()) == false || r2.contains(geometry.bottomRight()) == false)
+        // check whether top/left and bottom/right lie in any available desktop
+        const QScreen *screen1 = guiApplicationScreenAt(geometry.topLeft());
+        const QScreen *screen2 = guiApplicationScreenAt(geometry.bottomRight());
+        QRect r1;
+        QRect r2;
+
+        if (screen1)
         {
-            //reset to default
+            r1 = screen1->geometry();
+        }
+
+        if (screen2)
+        {
+            r2 = screen2->geometry();
+        }
+
+        if (r1.isValid() == false || r2.isValid() == false ||
+            r1.contains(geometry.topLeft()) == false ||
+            r2.contains(geometry.bottomRight()) == false)
+        {
+            // reset to default
             geometry = mainScreen;
             maximized = false;
         }
@@ -346,21 +500,21 @@ MainWindow::MainWindow() :
 
     settings.endGroup();
 
-    // if restore state set some dock widgets inherited from abstractDockWidget 
+    // if restore state set some dock widgets inherited from abstractDockWidget
     // to a top level state, it must be converted to a windows style using the following method:
     if (m_fileSystemDock)
     {
         m_fileSystemDock->restoreState("itomFileSystemDockWidget");
     }
 
-    if (m_helpDock) 
+    if (m_helpDock)
     {
         m_helpDock->synchronizeTopLevelState();
         m_helpDock->restoreState("itomHelpDockWidget");
     }
 
     setGeometry(geometry);
-    m_geometryNormalState = geometry; //geometry in normal state
+    m_geometryNormalState = geometry; // geometry in normal state
 
     if (maximized)
     {
@@ -402,7 +556,7 @@ MainWindow::~MainWindow()
         m_pAIManagerWidget->saveState("itomPluginsDockWidget");
     }
 
-    QSettings *settings = new QSettings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+    QSettings* settings = new QSettings(AppManagement::getSettingsFile(), QSettings::IniFormat);
 
     if (m_actions["py_autoReloadEnabled"])
     {
@@ -417,47 +571,69 @@ MainWindow::~MainWindow()
     settings->beginGroup("MainWindow");
     settings->setValue("maximized", isMaximized());
     settings->setValue("geometry", m_geometryNormalState);
-    
+
     QByteArray state = saveState();
     settings->setValue("state", state);
     settings->endGroup();
 
     delete settings;
 
-    const PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
-    const PythonStatePublisher *pyStatePublisher = qobject_cast<PythonStatePublisher*>(AppManagement::getPythonStatePublisher());
+    const PythonEngine* pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
+    const PythonStatePublisher* pyStatePublisher =
+        qobject_cast<PythonStatePublisher*>(AppManagement::getPythonStatePublisher());
 
     if (pyEngine)
     {
         if (pyStatePublisher)
         {
-            disconnect(pyEngine, &PythonEngine::pythonStateChanged,
-                this, &MainWindow::pythonStateChanged);
+            disconnect(
+                pyEngine, &PythonEngine::pythonStateChanged, this, &MainWindow::pythonStateChanged);
         }
 
-        disconnect(this, SIGNAL(pythonDebugCommand(tPythonDbgCmd)), pyEngine, SLOT(pythonDebugCommand(tPythonDbgCmd)));
+        disconnect(
+            this,
+            SIGNAL(pythonDebugCommand(tPythonDbgCmd)),
+            pyEngine,
+            SLOT(pythonDebugCommand(tPythonDbgCmd)));
     }
 
     if (m_globalWorkspaceDock)
     {
-        disconnect(m_globalWorkspaceDock, SIGNAL(setStatusInformation(QString,int)), this, SLOT(setStatusText(QString, int)));
+        disconnect(
+            m_globalWorkspaceDock,
+            SIGNAL(setStatusInformation(QString, int)),
+            this,
+            SLOT(setStatusText(QString, int)));
     }
 
     if (m_localWorkspaceDock)
     {
-        disconnect(m_localWorkspaceDock, SIGNAL(setStatusInformation(QString,int)), this, SLOT(setStatusText(QString, int)));
+        disconnect(
+            m_localWorkspaceDock,
+            SIGNAL(setStatusInformation(QString, int)),
+            this,
+            SLOT(setStatusText(QString, int)));
     }
 
     if (m_lastCommandDock && m_console)
     {
-        disconnect(m_lastCommandDock, SIGNAL(runPythonCommand(QString)), m_console, SLOT(pythonRunSelection(QString)));
-        disconnect(m_console, SIGNAL(sendToLastCommand(QString)), m_lastCommandDock, SLOT(addLastCommand(QString)));
+        disconnect(
+            m_lastCommandDock,
+            SIGNAL(runPythonCommand(QString)),
+            m_console,
+            SLOT(pythonRunSelection(QString)));
+        disconnect(
+            m_console,
+            SIGNAL(sendToLastCommand(QString)),
+            m_lastCommandDock,
+            SLOT(addLastCommand(QString)));
     }
 
-/*    if (m_pythonMessageDock && m_console)
-    {
-        disconnect(m_console, SIGNAL(sendToPythonMessage(QString)), m_pythonMessageDock, SLOT(addPythonMessage(QString)));
-    }*/
+    /*    if (m_pythonMessageDock && m_console)
+        {
+            disconnect(m_console, SIGNAL(sendToPythonMessage(QString)), m_pythonMessageDock,
+       SLOT(addPythonMessage(QString)));
+        }*/
 
     DELETE_AND_SET_NULL(m_pAIManagerWidget);
     DELETE_AND_SET_NULL(m_fileSystemDock);
@@ -467,11 +643,11 @@ MainWindow::~MainWindow()
     DELETE_AND_SET_NULL(m_localWorkspaceDock);
 
 #ifdef ITOM_USEHELPVIEWER
-		HelpViewer *hv = m_helpViewer.data();
-		DELETE_AND_SET_NULL(hv);
+    HelpViewer* hv = m_helpViewer.data();
+    DELETE_AND_SET_NULL(hv);
 #endif
 
-    //delete remaining user-defined toolbars and actions
+    // delete remaining user-defined toolbars and actions
     QMap<QString, QToolBar*>::iterator it = m_userDefinedToolBars.begin();
     while (it != m_userDefinedToolBars.end())
     {
@@ -481,8 +657,8 @@ MainWindow::~MainWindow()
     }
     m_userDefinedToolBars.clear();
 
-    //delete remaining user-defined menu elements
-    QMap<QString, QMenu* >::iterator it2 = m_userDefinedRootMenus.begin();
+    // delete remaining user-defined menu elements
+    QMap<QString, QMenu*>::iterator it2 = m_userDefinedRootMenus.begin();
     while (it2 != m_userDefinedRootMenus.end())
     {
         (*it2)->deleteLater();
@@ -492,12 +668,12 @@ MainWindow::~MainWindow()
 
     if (m_pHelpSystem)
     {
-        //delete m_pHelpSystem;
+        // delete m_pHelpSystem;
         m_pHelpSystem = NULL;
     }
 
-    QMapIterator<QString, QPointer<WidgetInfoBox> > i(m_infoBoxWidgets);
-    while (i.hasNext()) 
+    QMapIterator<QString, QPointer<WidgetInfoBox>> i(m_infoBoxWidgets);
+    while (i.hasNext())
     {
         i.next();
         if (i.value().isNull() == false)
@@ -516,7 +692,8 @@ void MainWindow::scriptEditorOrganizerAvailable()
 {
     if (m_bookmarkDock)
     {
-        ScriptEditorOrganizer *sed = qobject_cast<ScriptEditorOrganizer*>(AppManagement::getScriptEditorOrganizer());
+        ScriptEditorOrganizer* sed =
+            qobject_cast<ScriptEditorOrganizer*>(AppManagement::getScriptEditorOrganizer());
 
         if (sed)
         {
@@ -526,14 +703,16 @@ void MainWindow::scriptEditorOrganizerAvailable()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! slot invoked by ScriptEditorOrganizer, if any ScriptDockWidget should be added to main window's dock widgets
+//! slot invoked by ScriptEditorOrganizer, if any ScriptDockWidget should be added to main window's
+//! dock widgets
 /*!
     This method is also called to dock any figure to the main window.
 
     \param dockWidget ScriptDockWidget to add to any docking area
     \param area docking area, where dockWidget should be shown
 */
-void MainWindow::addAbstractDock(AbstractDockWidget* dockWidget, Qt::DockWidgetArea area /*= Qt::TopDockWidgetArea*/)
+void MainWindow::addAbstractDock(
+    AbstractDockWidget* dockWidget, Qt::DockWidgetArea area /*= Qt::TopDockWidgetArea*/)
 {
     if (dockWidget)
     {
@@ -554,22 +733,26 @@ void MainWindow::addAbstractDock(AbstractDockWidget* dockWidget, Qt::DockWidgetA
 
         if (area == Qt::NoDockWidgetArea)
         {
-            addDockWidget(Qt::TopDockWidgetArea , dockWidget);
+            addDockWidget(Qt::TopDockWidgetArea, dockWidget);
             dockWidget->setFloating(true);
         }
         else
         {
             addDockWidget(area, dockWidget);
             dockWidget->setFloating(false);
-            //qDebug() << "restoreDockWidget:" << restoreDockWidget(dockWidget); //does not work until now, since the state of docked script windows is not saved. they are deleted before destructing the main window.
+            // qDebug() << "restoreDockWidget:" << restoreDockWidget(dockWidget); //does not work
+            // until now, since the state of docked script windows is not saved. they are deleted
+            // before destructing the main window.
         }
     }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! slot invoked by ScriptEditorOrganizer, if any ScriptDockWidget should be removed from docking area
+//! slot invoked by ScriptEditorOrganizer, if any ScriptDockWidget should be removed from docking
+//! area
 /*!
-    notice, that even a ScriptDockWidget is actually undocked, it belongs to the docking area NoDockWidgetArea
+    notice, that even a ScriptDockWidget is actually undocked, it belongs to the docking area
+   NoDockWidgetArea
 
     \param dockWidget ScriptDockWidget to remove from docking area
 */
@@ -585,26 +768,32 @@ void MainWindow::removeAbstractDock(AbstractDockWidget* dockWidget)
 //----------------------------------------------------------------------------------------------------------------------------------
 void MainWindow::connectPythonMessageBox(QListWidget* pythonMessageBox)
 {
-    connect(m_console, SIGNAL(sendToPythonMessage(QString)), pythonMessageBox, SLOT(addNewMessage(QString)));
+    connect(
+        m_console,
+        SIGNAL(sendToPythonMessage(QString)),
+        pythonMessageBox,
+        SLOT(addNewMessage(QString)));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! close event invoked if main window should be closed (and therefore the whole application too)
 /*!
-    if this event is invoked the signal mainWindowCloseRequest is emitted, which invokes the slot mainWindowCloseRequest
-    in class MainApplication in order to proceed the entire closing process. Therefore the event is ignored.
+    if this event is invoked the signal mainWindowCloseRequest is emitted, which invokes the slot
+   mainWindowCloseRequest in class MainApplication in order to proceed the entire closing process.
+   Therefore the event is ignored.
 
     \param event event of type QCloseEvent, describing the close request
     \sa MainApplication
 */
-void MainWindow::closeEvent(QCloseEvent *event)
+void MainWindow::closeEvent(QCloseEvent* event)
 {
     emit(mainWindowCloseRequest());
-    event->ignore(); //!< if mainWindowCloseRequest is handled and accepted by mainApplication, MainWindow will be destroyed
+    event->ignore(); //!< if mainWindowCloseRequest is handled and accepted by mainApplication,
+                     //!< MainWindow will be destroyed
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void MainWindow::resizeEvent(QResizeEvent * event)
+void MainWindow::resizeEvent(QResizeEvent* event)
 {
     if (!isMaximized() && !isMinimized())
     {
@@ -613,7 +802,7 @@ void MainWindow::resizeEvent(QResizeEvent * event)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void MainWindow::moveEvent(QMoveEvent * event)
+void MainWindow::moveEvent(QMoveEvent* event)
 {
     if (!isMaximized() && !isMinimized())
     {
@@ -625,11 +814,11 @@ void MainWindow::moveEvent(QMoveEvent * event)
 //! creates actions for menu and toolbar
 void MainWindow::createActions()
 {
-    PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
-    QAction *a = NULL;
+    PythonEngine* pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
+    QAction* a = NULL;
 
-    //app actions
-    ito::UserOrganizer *uOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
+    // app actions
+    ito::UserOrganizer* uOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
     if (uOrg->currentUserHasFeature(featDeveloper))
     {
         m_appFileNew = new QAction(QIcon(":/files/icons/new.png"), tr("New Script..."), this);
@@ -646,100 +835,132 @@ void MainWindow::createActions()
 
     if (uOrg->currentUserHasFeature(featProperties))
     {
-        m_actions["properties"] = new QAction(QIcon(":/application/icons/adBlockAction.png"), tr("Properties..."), this);
-        connect(m_actions["properties"] , SIGNAL(triggered()), this, SLOT(mnuShowProperties()));
+        m_actions["properties"] =
+            new QAction(QIcon(":/application/icons/adBlockAction.png"), tr("Properties..."), this);
+        connect(m_actions["properties"], SIGNAL(triggered()), this, SLOT(mnuShowProperties()));
     }
 
     if (uOrg->currentUserHasFeature(featUserManagement))
     {
-        m_actions["usermanagement"] = new QAction(QIcon(":/misc/icons/User.png"), tr("User Management..."), this);
-        connect(m_actions["usermanagement"] , SIGNAL(triggered()), this, SLOT(mnuShowUserManagement()));
+        m_actions["usermanagement"] =
+            new QAction(QIcon(":/misc/icons/User.png"), tr("User Management..."), this);
+        connect(
+            m_actions["usermanagement"], SIGNAL(triggered()), this, SLOT(mnuShowUserManagement()));
     }
 
     m_aboutQt = new QAction(QIcon(":/application/icons/helpAboutQt.png"), tr("About Qt..."), this);
     connect(m_aboutQt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
-    //m_aboutQt->setShortcut(QKeySequence("F3"));
+    // m_aboutQt->setShortcut(QKeySequence("F3"));
 
-    m_aboutQitom = new QAction(QIcon(":/application/icons/itomicon/itomLogo3_64.png"), tr("About itom..."), this);
+    m_aboutQitom = new QAction(
+        QIcon(":/application/icons/itomicon/itomLogo3_64.png"), tr("About itom..."), this);
     connect(m_aboutQitom, SIGNAL(triggered()), this, SLOT(mnuAboutQitom()));
 
-    m_actions["show_loaded_plugins"] = new QAction(QIcon(":/plugins/icons/plugin.png"), tr("Loaded Plugins..."), this);
-    connect(m_actions["show_loaded_plugins"], SIGNAL(triggered()), this, SLOT(mnuShowLoadedPlugins()));
+    m_actions["show_loaded_plugins"] =
+        new QAction(QIcon(":/plugins/icons/plugin.png"), tr("Loaded Plugins..."), this);
+    connect(
+        m_actions["show_loaded_plugins"], SIGNAL(triggered()), this, SLOT(mnuShowLoadedPlugins()));
 
-    a = m_actions["open_assistant"] = new QAction(QIcon(":/application/icons/help.png"), tr("Help..."), this);
+    a = m_actions["open_assistant"] =
+        new QAction(QIcon(":/application/icons/help.png"), tr("Help..."), this);
     a->setShortcut(QKeySequence::HelpContents);
     connect(a, SIGNAL(triggered()), this, SLOT(mnuShowAssistant()));
 
-    a = m_actions["close_all_plots"] = new QAction(QIcon(":/application/icons/closePlots.png"), tr("Close All Floatable Figures"), this);
+    a = m_actions["close_all_plots"] = new QAction(
+        QIcon(":/application/icons/closePlots.png"), tr("Close All Floatable Figures"), this);
     connect(m_actions["close_all_plots"], SIGNAL(triggered(bool)), this, SLOT(mnuCloseAllPlots()));
 
-    a = m_actions["show_all_plots"] = new QAction(QIcon(":/application/icons/showAllPlots.png"), tr("Show All Floatable Figures"), this);
+    a = m_actions["show_all_plots"] = new QAction(
+        QIcon(":/application/icons/showAllPlots.png"), tr("Show All Floatable Figures"), this);
     connect(m_actions["show_all_plots"], SIGNAL(triggered(bool)), this, SLOT(mnuShowAllPlots()));
 
-    a = m_actions["minimize_all_plots"] = new QAction(QIcon(":/application/icons/hideAllPlots"), tr("Minimize All Floatable Figures"), this);
-    connect(m_actions["minimize_all_plots"], SIGNAL(triggered(bool)), this, SLOT(mnuMinimizeAllPlots()));
+    a = m_actions["minimize_all_plots"] = new QAction(
+        QIcon(":/application/icons/hideAllPlots"), tr("Minimize All Floatable Figures"), this);
+    connect(
+        m_actions["minimize_all_plots"],
+        SIGNAL(triggered(bool)),
+        this,
+        SLOT(mnuMinimizeAllPlots()));
 
     if (uOrg->currentUserHasFeature(featDeveloper))
     {
-        a = m_actions["script_reference"] = new QAction(QIcon(":/application/icons/scriptReference.png"), tr("Plugin Help Viewer..."), this);
-        connect(a , SIGNAL(triggered()), this, SLOT(mnuShowScriptReference()));
+        a = m_actions["script_reference"] = new QAction(
+            QIcon(":/application/icons/scriptReference.png"), tr("Plugin Help Viewer..."), this);
+        connect(a, SIGNAL(triggered()), this, SLOT(mnuShowScriptReference()));
 
-        a = m_actions["open_designer"] = new QAction(QIcon(":/application/icons/designer4.png"), tr("UI Designer"), this);
+        a = m_actions["open_designer"] =
+            new QAction(QIcon(":/application/icons/designer4.png"), tr("UI Designer"), this);
         connect(a, SIGNAL(triggered()), this, SLOT(mnuShowDesigner()));
 
-        a = m_actions["python_global_runmode"] = new QAction(QIcon(":/application/icons/pythonDebug.png"), tr("Run Python Code In Debug Mode"), this);
+        a = m_actions["python_global_runmode"] = new QAction(
+            QIcon(":/application/icons/pythonDebug.png"),
+            tr("Run Python Code In Debug Mode"),
+            this);
         a->setToolTip(tr("Set whether internal python code should be executed in debug mode"));
         a->setCheckable(true);
         if (pyEngine)
         {
             a->setChecked(pyEngine->execInternalCodeByDebugger());
         }
-        connect(m_actions["python_global_runmode"], SIGNAL(triggered(bool)), this, SLOT(mnuToggleExecPyCodeByDebugger(bool)));
+        connect(
+            m_actions["python_global_runmode"],
+            SIGNAL(triggered(bool)),
+            this,
+            SLOT(mnuToggleExecPyCodeByDebugger(bool)));
 
-        a = m_actions["python_stopAction"] = new QAction(QIcon(":/script/icons/stopScript.png"), tr("Stop"), this);
+        a = m_actions["python_stopAction"] =
+            new QAction(QIcon(":/script/icons/stopScript.png"), tr("Stop"), this);
         a->setShortcut(tr("Shift+F5"));
         connect(a, SIGNAL(triggered()), this, SLOT(mnuScriptStop()));
 
-        a = m_actions["python_continueAction"] = new QAction(QIcon(":/script/icons/continue.png"), tr("Continue"), this);
+        a = m_actions["python_continueAction"] =
+            new QAction(QIcon(":/script/icons/continue.png"), tr("Continue"), this);
         a->setShortcut(tr("F6"));
         connect(a, SIGNAL(triggered()), this, SLOT(mnuScriptContinue()));
 
-        m_actions["python_stepAction"] = new QAction(QIcon(":/script/icons/step.png"), tr("Step"), this);
+        m_actions["python_stepAction"] =
+            new QAction(QIcon(":/script/icons/step.png"), tr("Step"), this);
         m_actions["python_stepAction"]->setShortcut(tr("F11"));
         connect(m_actions["python_stepAction"], SIGNAL(triggered()), this, SLOT(mnuScriptStep()));
 
-        a = m_actions["python_stepOverAction"] = new QAction(QIcon(":/script/icons/stepOver.png"), tr("Step Over"), this);
+        a = m_actions["python_stepOverAction"] =
+            new QAction(QIcon(":/script/icons/stepOver.png"), tr("Step Over"), this);
         a->setShortcut(tr("F10"));
         connect(a, SIGNAL(triggered()), this, SLOT(mnuScriptStepOver()));
 
-        a = m_actions["python_stepOutAction"] = new QAction(QIcon(":/script/icons/stepOut.png"), tr("Step Out"), this);
+        a = m_actions["python_stepOutAction"] =
+            new QAction(QIcon(":/script/icons/stepOut.png"), tr("Step Out"), this);
         a->setShortcut(tr("Shift+F11"));
         connect(a, SIGNAL(triggered()), this, SLOT(mnuScriptStepOut()));
 
-        a = m_actions["python_reloadModules"] = new QAction(QIcon(":/application/icons/reload.png"), tr("Reload Modules..."), this);
+        a = m_actions["python_reloadModules"] =
+            new QAction(QIcon(":/application/icons/reload.png"), tr("Reload Modules..."), this);
         connect(a, SIGNAL(triggered()), this, SLOT(mnuPyReloadModules()));
 
         a = m_actions["py_autoReloadEnabled"] = new QAction(tr("Autoreload Modules"), this);
         a->setCheckable(true);
         connect(a, SIGNAL(triggered(bool)), this, SLOT(mnuPyAutoReloadTriggered(bool)));
 
-        a = m_actions["py_autoReloadFile"] = new QAction(tr("Autoreload Before Script Execution"), this);
+        a = m_actions["py_autoReloadFile"] =
+            new QAction(tr("Autoreload Before Script Execution"), this);
         a->setCheckable(true);
         connect(a, SIGNAL(triggered(bool)), this, SLOT(mnuPyAutoReloadTriggered(bool)));
 
-        a = m_actions["py_autoReloadCmd"] = new QAction(tr("Autoreload Before Single Command"), this);
+        a = m_actions["py_autoReloadCmd"] =
+            new QAction(tr("Autoreload Before Single Command"), this);
         a->setCheckable(true);
         connect(a, SIGNAL(triggered(bool)), this, SLOT(mnuPyAutoReloadTriggered(bool)));
 
-        a = m_actions["py_autoReloadFunc"] = new QAction(tr("Autoreload Before Events And Function Calls"), this);
+        a = m_actions["py_autoReloadFunc"] =
+            new QAction(tr("Autoreload Before Events And Function Calls"), this);
         a->setCheckable(true);
         connect(a, SIGNAL(triggered(bool)), this, SLOT(mnuPyAutoReloadTriggered(bool)));
 
         a = m_actions["py_packageManager"] = new QAction(tr("Package Manager..."), this);
         connect(a, SIGNAL(triggered()), this, SLOT(mnuPyPipManager()));
 
-		a = m_actions["python_timerManager"] = new QAction(tr("Timer Manager..."), this);
-		connect(a, SIGNAL(triggered()), this, SLOT(mnuPyTimerManager()));
+        a = m_actions["python_timerManager"] = new QAction(tr("Timer Manager..."), this);
+        connect(a, SIGNAL(triggered()), this, SLOT(mnuPyTimerManager()));
     }
 }
 
@@ -747,7 +968,7 @@ void MainWindow::createActions()
 //! creates toolbar
 void MainWindow::createToolBars()
 {
-    ito::UserOrganizer *uOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
+    ito::UserOrganizer* uOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
 
     if (m_appFileNew || m_appFileOpen)
     {
@@ -769,7 +990,7 @@ void MainWindow::createToolBars()
 
     if (m_actions.contains("open_designer") && m_actions["open_designer"])
     {
-        QToolBar *toolToolBar = addToolBar(tr("Tools"));
+        QToolBar* toolToolBar = addToolBar(tr("Tools"));
         toolToolBar->setObjectName("toolbarTools");
         toolToolBar->addAction(m_actions["open_designer"]);
         toolToolBar->setFloatable(false);
@@ -777,17 +998,16 @@ void MainWindow::createToolBars()
 
     if (m_actions.contains("open_assistant") && m_actions["open_assistant"])
     {
-        QToolBar *aboutToolBar = addToolBar(tr("About"));
+        QToolBar* aboutToolBar = addToolBar(tr("About"));
         aboutToolBar->setObjectName("toolbarAbout");
         aboutToolBar->setFloatable(false);
         aboutToolBar->addAction(m_actions["open_assistant"]);
     }
 
-    
 
     if (m_actions.contains("python_global_runmode") && m_actions["python_global_runmode"])
     {
-        QToolBar *pythonToolBar = addToolBar(tr("Python"));
+        QToolBar* pythonToolBar = addToolBar(tr("Python"));
         pythonToolBar->setObjectName("toolbarPython");
         pythonToolBar->addAction(m_actions["python_global_runmode"]);
         pythonToolBar->setFloatable(false);
@@ -797,7 +1017,7 @@ void MainWindow::createToolBars()
 //----------------------------------------------------------------------------------------------------------------------------------
 void MainWindow::createMenus()
 {
-    ito::UserOrganizer *uOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
+    ito::UserOrganizer* uOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
 
     m_pMenuFile = menuBar()->addMenu(tr("File"));
 
@@ -813,10 +1033,12 @@ void MainWindow::createMenus()
     if (uOrg->currentUserHasFeature(featDeveloper))
     {
         // dynamically created Menu with the last files
-        m_plastFilesMenu = m_pMenuFile->addMenu(QIcon(":/files/icons/filePython.png"), tr("Recently Used Files"));
-        connect(this->m_plastFilesMenu, SIGNAL(aboutToShow()), this, SLOT(menuLastFilesAboutToShow()));
+        m_plastFilesMenu =
+            m_pMenuFile->addMenu(QIcon(":/files/icons/filePython.png"), tr("Recently Used Files"));
+        connect(
+            this->m_plastFilesMenu, SIGNAL(aboutToShow()), this, SLOT(menuLastFilesAboutToShow()));
         // Add these menus dynamically
-    }    
+    }
 
     if (uOrg->currentUserHasFeature(featProperties))
     {
@@ -836,7 +1058,7 @@ void MainWindow::createMenus()
     connect(m_pMenuView, SIGNAL(aboutToShow()), this, SLOT(mnuViewAboutToShow()));
 
     m_pMenuFigure = menuBar()->addMenu(tr("Figure"));
-    
+
     if (m_actions.contains("close_all_plots"))
     {
         m_pMenuFigure->addAction(m_actions["close_all_plots"]);
@@ -852,7 +1074,8 @@ void MainWindow::createMenus()
         m_pMenuFigure->addAction(m_actions["minimize_all_plots"]);
     }
 
-    m_pShowOpenFigure = m_pMenuFigure->addMenu(QIcon(":/application/icons/showPlot.png"), tr("Current Figures"));
+    m_pShowOpenFigure =
+        m_pMenuFigure->addMenu(QIcon(":/application/icons/showPlot.png"), tr("Current Figures"));
     connect(m_pShowOpenFigure, SIGNAL(aboutToShow()), this, SLOT(mnuFigureAboutToShow()));
 
     if (uOrg->currentUserHasFeature(featDeveloper))
@@ -866,7 +1089,8 @@ void MainWindow::createMenus()
         m_pMenuPython->addSeparator();
         m_pMenuPython->addAction(m_actions["python_global_runmode"]);
 
-        m_pMenuReloadModule = m_pMenuPython->addMenu(QIcon(":/application/icons/reload.png"), tr("Reload Modules"));
+        m_pMenuReloadModule =
+            m_pMenuPython->addMenu(QIcon(":/application/icons/reload.png"), tr("Reload Modules"));
         m_pMenuReloadModule->addAction(m_actions["py_autoReloadEnabled"]);
         m_pMenuReloadModule->addSeparator();
         m_pMenuReloadModule->addAction(m_actions["py_autoReloadFile"]);
@@ -893,14 +1117,15 @@ void MainWindow::createMenus()
 
     m_pMenuHelp->addAction(m_aboutQt);
     m_pMenuHelp->addAction(m_aboutQitom);
-    
-    //linux: in some linux distributions, the menu bar did not appear if it is displayed
-    //on top of the desktop. Therefore, native menu bars (as provided by the OS) are disabled here.
-    //see: qt-project.org/forums/viewthread/7445
+
+    // linux: in some linux distributions, the menu bar did not appear if it is displayed
+    // on top of the desktop. Therefore, native menu bars (as provided by the OS) are disabled here.
+    // see: qt-project.org/forums/viewthread/7445
 #ifndef __APPLE__
     menuBar()->setNativeMenuBar(false);
 #else // __APPLE__
-    // OS X: without the native menu bar option, the menu bar is displayed within the window which might be irritating.
+    // OS X: without the native menu bar option, the menu bar is displayed within the window which
+    // might be irritating.
     menuBar()->setNativeMenuBar(true);
 #endif // __APPLE__
 }
@@ -920,34 +1145,32 @@ void MainWindow::menuLastFilesAboutToShow()
         m_plastFilesMenu->actions().at(i)->deleteLater();
     }
     m_plastFilesMenu->clear();
-    
+
     // Get StringList of last Files
     QStringList fileList;
-    QObject *seoO = AppManagement::getScriptEditorOrganizer();
+    QObject* seoO = AppManagement::getScriptEditorOrganizer();
     if (seoO)
     {
-        ScriptEditorOrganizer *sEO = qobject_cast<ScriptEditorOrganizer*>(seoO);
+        ScriptEditorOrganizer* sEO = qobject_cast<ScriptEditorOrganizer*>(seoO);
         if (sEO)
         {
             if (sEO->getRecentlyUsedFiles().isEmpty())
             {
-                QAction *a = m_plastFilesMenu->addAction(tr("No Entries"));
+                QAction* a = m_plastFilesMenu->addAction(tr("No Entries"));
                 a->setEnabled(false);
             }
             else
             {
-                QAction *a;
+                QAction* a;
 
                 // Create new menus
-                foreach (const QString &path, sEO->getRecentlyUsedFiles()) 
+                foreach (const QString& path, sEO->getRecentlyUsedFiles())
                 {
                     QString displayedPath = path;
                     IOHelper::elideFilepathMiddle(displayedPath, 200);
                     a = new QAction(QIcon(":/files/icons/filePython.png"), displayedPath, this);
                     m_plastFilesMenu->addAction(a);
-                    connect(a, &QAction::triggered, [=]() {
-                        lastFileOpen(path);
-                    });
+                    connect(a, &QAction::triggered, [=]() { lastFileOpen(path); });
                 }
             }
         }
@@ -966,20 +1189,24 @@ void MainWindow::mnuFigureAboutToShow()
         m_pShowOpenFigure->clear();
     }
     ito::RetVal retval = ito::retOk;
-    UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
+    UiOrganizer* uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
     if (uiOrga == NULL)
     {
-        retval += ito::RetVal(ito::retError, 0, tr("Instance of UiOrganizer not available").toLatin1().data());
-
+        retval += ito::RetVal(
+            ito::retError, 0, tr("Instance of UiOrganizer not available").toLatin1().data());
     }
     if (!retval.containsError())
     {
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-        QSharedPointer<QList<unsigned int> > widgetNames(new QList<unsigned int>);
+        QSharedPointer<QList<unsigned int>> widgetNames(new QList<unsigned int>);
         QSharedPointer<QString> title(new QString);
-        QMetaObject::invokeMethod(uiOrga, "getAllAvailableHandles", Q_ARG(QSharedPointer<QList<unsigned int> >, widgetNames), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+        QMetaObject::invokeMethod(
+            uiOrga,
+            "getAllAvailableHandles",
+            Q_ARG(QSharedPointer<QList<unsigned int>>, widgetNames),
+            Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
         unsigned int val;
-        QAction *a;
+        QAction* a;
         if (widgetNames->isEmpty())
         {
             a = new QAction(tr("No Figures Available"), this);
@@ -989,20 +1216,22 @@ void MainWindow::mnuFigureAboutToShow()
         else
         {
             std::sort(widgetNames->begin(), widgetNames->end());
-            
-            foreach(val, *widgetNames)
+
+            foreach (val, *widgetNames)
             {
                 ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-                QMetaObject::invokeMethod(uiOrga, "getPlotWindowTitlebyHandle", Q_ARG(unsigned int, val), Q_ARG(QSharedPointer<QString>, title), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
-                
+                QMetaObject::invokeMethod(
+                    uiOrga,
+                    "getPlotWindowTitlebyHandle",
+                    Q_ARG(unsigned int, val),
+                    Q_ARG(QSharedPointer<QString>, title),
+                    Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+
                 a = new QAction(*title, this);
                 m_pShowOpenFigure->addAction(a);
-                connect(a, &QAction::triggered, [=]() {
-                    raiseFigureByHandle(val);
-                });
+                connect(a, &QAction::triggered, [=]() { raiseFigureByHandle(val); });
             }
         }
-
     }
     return;
 }
@@ -1013,18 +1242,20 @@ void MainWindow::mnuViewAboutToShow()
     if (m_pMenuView)
     {
         m_pMenuView->clear();
-        
-        QMenu *dockWidgets = createPopupMenu();
+
+        QMenu* dockWidgets = createPopupMenu();
         if (dockWidgets)
         {
-            dockWidgets->menuAction()->setIcon(QIcon(":/application/icons/preferences-general.png"));
+            dockWidgets->menuAction()->setIcon(
+                QIcon(":/application/icons/preferences-general.png"));
             dockWidgets->menuAction()->setText(tr("Toolboxes"));
             m_pMenuView->addMenu(dockWidgets);
             m_pMenuView->addSeparator();
         }
 
-        ito::ScriptEditorOrganizer *sew = qobject_cast<ito::ScriptEditorOrganizer*>(AppManagement::getScriptEditorOrganizer());
-        QAction *a;
+        ito::ScriptEditorOrganizer* sew =
+            qobject_cast<ito::ScriptEditorOrganizer*>(AppManagement::getScriptEditorOrganizer());
+        QAction* a;
 
         if (sew != NULL)
         {
@@ -1033,15 +1264,13 @@ void MainWindow::mnuViewAboutToShow()
 
             if (filenames.size() > 0)
             {
-                foreach(const QString &filename, filenames)
+                foreach (const QString& filename, filenames)
                 {
                     filenameElided = filename;
                     IOHelper::elideFilepathMiddle(filenameElided, 200);
                     a = new QAction(QIcon(":/files/icons/filePython.png"), filenameElided, this);
                     m_pMenuView->addAction(a);
-                    connect(a, &QAction::triggered, [=]() {
-                        openScript(filename);
-                    });
+                    connect(a, &QAction::triggered, [=]() { openScript(filename); });
                 }
             }
             else if (m_plastFilesMenu)
@@ -1055,7 +1284,7 @@ void MainWindow::mnuViewAboutToShow()
 }
 //----------------------------------------------------------------------------------------------------------------------------------
 // Slot that is invoked by the lastfile Buttons over the signalmapper
-void MainWindow::lastFileOpen(const QString &path)
+void MainWindow::lastFileOpen(const QString& path)
 {
     QString fileName;
     fileName = path;
@@ -1068,9 +1297,10 @@ void MainWindow::lastFileOpen(const QString &path)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void MainWindow::openScript(const QString &filename)
+void MainWindow::openScript(const QString& filename)
 {
-    ito::ScriptEditorOrganizer *sew = qobject_cast<ito::ScriptEditorOrganizer*>(AppManagement::getScriptEditorOrganizer());
+    ito::ScriptEditorOrganizer* sew =
+        qobject_cast<ito::ScriptEditorOrganizer*>(AppManagement::getScriptEditorOrganizer());
 
     if (sew)
     {
@@ -1081,45 +1311,52 @@ void MainWindow::openScript(const QString &filename)
 void MainWindow::raiseFigureByHandle(int handle)
 {
     ito::RetVal retval = ito::retOk;
-    UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
+    UiOrganizer* uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
 
     if (uiOrga == NULL)
     {
-        retval += ito::RetVal(ito::retError, 0, tr("Instance of UiOrganizer not available").toLatin1().data());
-
+        retval += ito::RetVal(
+            ito::retError, 0, tr("Instance of UiOrganizer not available").toLatin1().data());
     }
 
     if (!retval.containsError())
     {
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-        QMetaObject::invokeMethod(uiOrga, "figureShow", Q_ARG(unsigned int, handle), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+        QMetaObject::invokeMethod(
+            uiOrga,
+            "figureShow",
+            Q_ARG(unsigned int, handle),
+            Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
     }
 }
 //----------------------------------------------------------------------------------------------------------------------------------
 //! initializes status bar
 void MainWindow::createStatusBar()
 {
-	ito::UserOrganizer *uOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
-	QLabel *userLabel = new QLabel(tr("User: %1   ").arg(uOrg->getCurrentUserName()));
-	userLabel->setToolTip(tr("Username: %1, ID: %2").arg(uOrg->getCurrentUserName(), uOrg->getCurrentUserId()));
-	statusBar()->addPermanentWidget(userLabel);
+    ito::UserOrganizer* uOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
+    QLabel* userLabel = new QLabel(tr("User: %1   ").arg(uOrg->getCurrentUserName()));
+    userLabel->setToolTip(
+        tr("Username: %1, ID: %2").arg(uOrg->getCurrentUserName(), uOrg->getCurrentUserId()));
+    statusBar()->addPermanentWidget(userLabel);
 
-	m_pStatusLblCurrentDir = new QLabel("cd: ", this);
+    m_pStatusLblCurrentDir = new QLabel("cd: ", this);
     statusBar()->addPermanentWidget(m_pStatusLblCurrentDir);
 
-	m_pStatusLblPythonBusy = new QLabel(tr("Python is being executed"), this);
-	m_pStatusLblPythonBusy->setVisible(false);
-	statusBar()->addWidget(m_pStatusLblPythonBusy);
+    m_pStatusLblPythonBusy = new QLabel(tr("Python is being executed"), this);
+    m_pStatusLblPythonBusy->setVisible(false);
+    statusBar()->addWidget(m_pStatusLblPythonBusy);
 
-    currentDirectoryChanged(); //actualize the label of m_statusLblCurrentDir
+    currentDirectoryChanged(); // actualize the label of m_statusLblCurrentDir
 
     statusBar()->showMessage(tr("Ready"));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! slot connected to signal pythonStateChanged in PythonEngine which is invoked by every change of the python state
+//! slot connected to signal pythonStateChanged in PythonEngine which is invoked by every change of
+//! the python state
 /*!
-    Actually, this slot is only evaluated in the main window in order to show python's busy state in the statusBar.
+    Actually, this slot is only evaluated in the main window in order to show python's busy state in
+   the statusBar.
 
     \param pyTransition Python transition to the next state
     \sa PythonEngine
@@ -1129,62 +1366,62 @@ void MainWindow::pythonStateChanged(tPythonTransitions pyTransition)
     QToolBar* tempToolBar;
     QAction* tempAction;
 
-    switch(pyTransition)
+    switch (pyTransition)
     {
     case pyTransBeginRun:
-        m_pythonInWaitingMode=false;
+        m_pythonInWaitingMode = false;
         m_pythonDebugMode = false;
         m_pythonBusy = true;
-		statusBar()->clearMessage();
-		m_pStatusLblPythonBusy->setVisible(true);
+        statusBar()->clearMessage();
+        m_pStatusLblPythonBusy->setVisible(true);
 
-        //disable every userDefined-Action
-        foreach(tempToolBar, m_userDefinedToolBars)
+        // disable every userDefined-Action
+        foreach (tempToolBar, m_userDefinedToolBars)
         {
-            foreach(tempAction, tempToolBar->actions())
+            foreach (tempAction, tempToolBar->actions())
             {
                 tempAction->setEnabled(false);
             }
         }
         break;
     case pyTransBeginDebug:
-        m_pythonInWaitingMode=false;
+        m_pythonInWaitingMode = false;
         m_pythonDebugMode = true;
         m_pythonBusy = true;
-		statusBar()->clearMessage();
-		m_pStatusLblPythonBusy->setVisible(true);
+        statusBar()->clearMessage();
+        m_pStatusLblPythonBusy->setVisible(true);
 
-        //disable every userDefined-Action
-        foreach(tempToolBar, m_userDefinedToolBars)
+        // disable every userDefined-Action
+        foreach (tempToolBar, m_userDefinedToolBars)
         {
-            foreach(tempAction, tempToolBar->actions())
+            foreach (tempAction, tempToolBar->actions())
             {
                 tempAction->setEnabled(false);
             }
         }
         break;
     case pyTransDebugExecCmdBegin:
-        m_pythonInWaitingMode=false;
+        m_pythonInWaitingMode = false;
         m_pythonDebugMode = true;
         m_pythonBusy = true;
         break;
     case pyTransDebugContinue:
         m_pythonBusy = true;
         m_pythonDebugMode = true;
-        m_pythonInWaitingMode=false;
+        m_pythonInWaitingMode = false;
         break;
     case pyTransEndRun:
     case pyTransEndDebug:
         m_pythonDebugMode = false;
         m_pythonBusy = false;
-        m_pythonInWaitingMode=false;
+        m_pythonInWaitingMode = false;
 
-		m_pStatusLblPythonBusy->setVisible(false);
+        m_pStatusLblPythonBusy->setVisible(false);
 
-        //enable every userDefined-Action
-        foreach(tempToolBar, m_userDefinedToolBars)
+        // enable every userDefined-Action
+        foreach (tempToolBar, m_userDefinedToolBars)
         {
-            foreach(tempAction, tempToolBar->actions())
+            foreach (tempAction, tempToolBar->actions())
             {
                 tempAction->setEnabled(true);
             }
@@ -1192,7 +1429,7 @@ void MainWindow::pythonStateChanged(tPythonTransitions pyTransition)
         break;
     case pyTransDebugWaiting:
     case pyTransDebugExecCmdEnd:
-        m_pythonInWaitingMode=true;
+        m_pythonInWaitingMode = true;
         m_pythonDebugMode = true;
         m_pythonBusy = true;
         break;
@@ -1205,17 +1442,21 @@ void MainWindow::pythonStateChanged(tPythonTransitions pyTransition)
 //! updates actions which deal with python commands
 void MainWindow::updatePythonActions()
 {
-    ito::UserOrganizer *uOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
+    ito::UserOrganizer* uOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
     if (uOrg->currentUserHasFeature(featDeveloper))
     {
         m_actions["python_stopAction"]->setEnabled(pythonBusy());
-        m_actions["python_continueAction"]->setEnabled(pythonBusy() && pythonDebugMode() && pythonInWaitingMode());
-        m_actions["python_stepAction"]->setEnabled(pythonBusy() && pythonDebugMode() && pythonInWaitingMode());
-        m_actions["python_stepOverAction"]->setEnabled(pythonBusy() && pythonDebugMode() && pythonInWaitingMode());
-        m_actions["python_stepOutAction"]->setEnabled(pythonBusy() && pythonDebugMode() && pythonInWaitingMode());
+        m_actions["python_continueAction"]->setEnabled(
+            pythonBusy() && pythonDebugMode() && pythonInWaitingMode());
+        m_actions["python_stepAction"]->setEnabled(
+            pythonBusy() && pythonDebugMode() && pythonInWaitingMode());
+        m_actions["python_stepOverAction"]->setEnabled(
+            pythonBusy() && pythonDebugMode() && pythonInWaitingMode());
+        m_actions["python_stepOutAction"]->setEnabled(
+            pythonBusy() && pythonDebugMode() && pythonInWaitingMode());
 
         bool enableUserDefMenu = (pythonBusy() && pythonInWaitingMode()) || !pythonBusy();
-        foreach(QMenu *mnu, m_userDefinedRootMenus)
+        foreach (QMenu* mnu, m_userDefinedRootMenus)
         {
             mnu->setEnabled(enableUserDefMenu);
         }
@@ -1229,7 +1470,7 @@ void MainWindow::updatePythonActions()
 */
 void MainWindow::mnuNewScript()
 {
-    QObject *sew = AppManagement::getScriptEditorOrganizer();
+    QObject* sew = AppManagement::getScriptEditorOrganizer();
 
     if (sew != NULL)
     {
@@ -1249,13 +1490,23 @@ void MainWindow::mnuOpenFile()
     QString fileName;
     RetVal retValue(retOk);
 
-    QString filter = IOHelper::getFileFilters(IOHelper::IOFilters(IOHelper::IOInput | IOHelper::IOPlugin | IOHelper::IOAllFiles | IOHelper::IOMimeAll));
-    static QString selectedFilter; //since this variable is static, it will remember the last set filter.
-    fileName = QFileDialog::getOpenFileName(this, tr("Open File"), QDir::currentPath(), filter, &selectedFilter); //tr("python (*.py);;itom data collection (*.idc);;images (*.rpm *.bmp *.png);;matlab (*.mat);;itom files(*.py *.idc *.rpm *.bmp *.png *.mat);;all files (*.*)"));
+    QString filter = IOHelper::getFileFilters(IOHelper::IOFilters(
+        IOHelper::IOInput | IOHelper::IOPlugin | IOHelper::IOAllFiles | IOHelper::IOMimeAll));
+    static QString
+        selectedFilter; // since this variable is static, it will remember the last set filter.
+    fileName = QFileDialog::getOpenFileName(
+        this,
+        tr("Open File"),
+        QDir::currentPath(),
+        filter,
+        &selectedFilter); // tr("python (*.py);;itom data collection (*.idc);;images (*.rpm *.bmp
+                          // *.png);;matlab (*.mat);;itom files(*.py *.idc *.rpm *.bmp *.png
+                          // *.mat);;all files (*.*)"));
 
     QFileInfo info(fileName);
 
-    if (fileName.isEmpty()) return;
+    if (fileName.isEmpty())
+        return;
 
     QDir::setCurrent(QFileInfo(fileName).path());
     IOHelper::openGeneralFile(fileName, false, true, this);
@@ -1264,150 +1515,166 @@ void MainWindow::mnuOpenFile()
 //----------------------------------------------------------------------------------------------------------------------------------
 void MainWindow::mnuShowAssistant()
 {
-	showAssistant();
+    showAssistant();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void MainWindow::showAssistant(const QString &collectionFile /*= ""*/)
+void MainWindow::showAssistant(const QString& collectionFile /*= ""*/)
 {
 #ifdef __APPLE__
-	QString appName = "Assistant";
+    QString appName = "Assistant";
 #else
-	QString appName = "assistant";
+    QString appName = "assistant";
 #endif
 
-	ito::RetVal retval;
-	QString collectionFile_;
+    ito::RetVal retval;
+    QString collectionFile_;
 
-	if (collectionFile == "") //create internal help, if not yet done
-	{
-		if (this->m_pHelpSystem == NULL)
-		{
-			m_pHelpSystem = HelpSystem::getInstance();
-			QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-			retval += m_pHelpSystem->rebuildHelpIfNotUpToDate();
-			collectionFile_ = m_pHelpSystem->getHelpCollectionAbsFileName();
-			QApplication::restoreOverrideCursor();
-		}
-		else
-		{
-			collectionFile_ = m_pHelpSystem->getHelpCollectionAbsFileName();
-			QFileInfo collectionFileInfo(collectionFile_);
-			if (!collectionFileInfo.exists())
-			{
-				QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-				retval += m_pHelpSystem->rebuildHelpIfNotUpToDate();
-				collectionFile_ = m_pHelpSystem->getHelpCollectionAbsFileName();
-				QApplication::restoreOverrideCursor();
-			}
-		}
-	}
-	else
-	{
-		QFileInfo fileInfo(collectionFile);
-		if (fileInfo.suffix() == "qhc" && fileInfo.exists())
-		{
-			collectionFile_ = collectionFile;
-		}
-		else
-		{
-			retval += ito::RetVal::format(ito::retError, 0, tr("The file '%s' is not a valid help collection file or does not exist.").toLatin1().data(), collectionFile.toLatin1().data());
-		}
-	}
+    if (collectionFile == "") // create internal help, if not yet done
+    {
+        if (this->m_pHelpSystem == NULL)
+        {
+            m_pHelpSystem = HelpSystem::getInstance();
+            QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+            retval += m_pHelpSystem->rebuildHelpIfNotUpToDate();
+            collectionFile_ = m_pHelpSystem->getHelpCollectionAbsFileName();
+            QApplication::restoreOverrideCursor();
+        }
+        else
+        {
+            collectionFile_ = m_pHelpSystem->getHelpCollectionAbsFileName();
+            QFileInfo collectionFileInfo(collectionFile_);
+            if (!collectionFileInfo.exists())
+            {
+                QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+                retval += m_pHelpSystem->rebuildHelpIfNotUpToDate();
+                collectionFile_ = m_pHelpSystem->getHelpCollectionAbsFileName();
+                QApplication::restoreOverrideCursor();
+            }
+        }
+    }
+    else
+    {
+        QFileInfo fileInfo(collectionFile);
+        if (fileInfo.suffix() == "qhc" && fileInfo.exists())
+        {
+            collectionFile_ = collectionFile;
+        }
+        else
+        {
+            retval += ito::RetVal::format(
+                ito::retError,
+                0,
+                tr("The file '%s' is not a valid help collection file or does not exist.")
+                    .toLatin1()
+                    .data(),
+                collectionFile.toLatin1().data());
+        }
+    }
 
-	if (!retval.containsError()) //warning is ok
-	{
+    if (!retval.containsError()) // warning is ok
+    {
 #ifdef ITOM_USEHELPVIEWER
-		if (m_helpViewer.isNull())
-		{
-			m_helpViewer = QPointer<HelpViewer>(new HelpViewer(NULL));
-			m_helpViewer->setAttribute(Qt::WA_DeleteOnClose, true);
-		}
-		m_helpViewer->setCollectionFile(collectionFile_);
-		m_helpViewer->show();
+        if (m_helpViewer.isNull())
+        {
+            m_helpViewer = QPointer<HelpViewer>(new HelpViewer(NULL));
+            // m_helpViewer->setAttribute(Qt::WA_DeleteOnClose, true);
+        }
+        m_helpViewer->setCollectionFile(collectionFile_);
+        m_helpViewer->show();
 
 #else
-		ProcessOrganizer *po = qobject_cast<ProcessOrganizer*>(AppManagement::getProcessOrganizer());
-		if (po)
-		{
-			bool existingProcess = false;
-			QProcess *process = po->getProcess(appName, true, existingProcess, true);
+        ProcessOrganizer* po =
+            qobject_cast<ProcessOrganizer*>(AppManagement::getProcessOrganizer());
+        if (po)
+        {
+            bool existingProcess = false;
+            QProcess* process = po->getProcess(appName, true, existingProcess, true);
 
-			if (existingProcess && process->state() == QProcess::Running)
-			{
-				//assistant is already loaded. try to activate it by sending the activateIdentifier command without arguments (try-and-error to find this way to activate it)
-				QByteArray ba;
-				ba.append("activateIdentifier \n");
-				process->write(ba);
-			}
-			else
-			{
-				QStringList args;
+            if (existingProcess && process->state() == QProcess::Running)
+            {
+                // assistant is already loaded. try to activate it by sending the activateIdentifier
+                // command without arguments (try-and-error to find this way to activate it)
+                QByteArray ba;
+                ba.append("activateIdentifier \n");
+                process->write(ba);
+            }
+            else
+            {
+                QStringList args;
 
-				args << QLatin1String("-collectionFile");
-				args << QLatin1String(collectionFile_.toLatin1().data());
-				args << QLatin1String("-enableRemoteControl");
+                args << QLatin1String("-collectionFile");
+                args << QLatin1String(collectionFile_.toLatin1().data());
+                args << QLatin1String("-enableRemoteControl");
 
-				QString app = ProcessOrganizer::getAbsQtToolPath(appName);
+                QString app = ProcessOrganizer::getAbsQtToolPath(appName);
 
-				process->start(app, args);
+                process->start(app, args);
 
-				connect(process, SIGNAL(error(QProcess::ProcessError)), this, SLOT(helpAssistantError(QProcess::ProcessError)));
-			}
-		}
-		else
-		{
-			retval += ito::RetVal(ito::retError, 0, tr("Process Organizer could not be loaded").toLatin1().data());
-		}
+                connect(
+                    process,
+                    SIGNAL(error(QProcess::ProcessError)),
+                    this,
+                    SLOT(helpAssistantError(QProcess::ProcessError)));
+            }
+        }
+        else
+        {
+            retval += ito::RetVal(
+                ito::retError, 0, tr("Process Organizer could not be loaded").toLatin1().data());
+        }
 #endif
-	}
+    }
 
-	if (retval != ito::retOk)
-	{
-		QString title;
-		QString text;
-		if (retval.hasErrorMessage()) text = QString("\n%1").arg(QLatin1String(retval.errorMessage()));
-		if (retval.containsError())
-		{
-			text.prepend(tr("Error when preparing help or showing assistant."));
-			QMessageBox::critical(this, tr("Error while showing assistant."), text);
-		}
-		else if (retval.containsWarning())
-		{
-			text.prepend(tr("Warning when preparing help or showing assistant."));
-			QMessageBox::warning(this, tr("Warning while showing assistant."), text);
-		}
-	}
+    if (retval != ito::retOk)
+    {
+        QString title;
+        QString text;
+        if (retval.hasErrorMessage())
+            text = QString("\n%1").arg(QLatin1String(retval.errorMessage()));
+        if (retval.containsError())
+        {
+            text.prepend(tr("Error when preparing help or showing assistant."));
+            QMessageBox::critical(this, tr("Error while showing assistant."), text);
+        }
+        else if (retval.containsWarning())
+        {
+            text.prepend(tr("Warning when preparing help or showing assistant."));
+            QMessageBox::warning(this, tr("Warning while showing assistant."), text);
+        }
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void MainWindow::mnuCloseAllPlots()
 {
-    QObject *uiOrga = AppManagement::getUiOrganizer();
+    QObject* uiOrga = AppManagement::getUiOrganizer();
     if (uiOrga == NULL)
     {
         QMessageBox::critical(this, "UiOrganizer", tr("The UiOrganizer is not available"));
         return;
     }
 
-    QMetaObject::invokeMethod(uiOrga, "closeAllFloatableFigures", Q_ARG(ItomSharedSemaphore*, NULL)); 
+    QMetaObject::invokeMethod(
+        uiOrga, "closeAllFloatableFigures", Q_ARG(ItomSharedSemaphore*, NULL));
 }
 //----------------------------------------------------------------------------------------------------------------------------------
 void MainWindow::mnuShowAllPlots()
 {
-    QObject *uiOrga = AppManagement::getUiOrganizer();
+    QObject* uiOrga = AppManagement::getUiOrganizer();
     if (uiOrga == NULL)
     {
         QMessageBox::critical(this, "UiOrganizer", tr("The UiOrganizer is not available"));
         return;
     }
-    
-    QMetaObject::invokeMethod(uiOrga, "figureShow", Q_ARG(unsigned int, 0), Q_ARG(ItomSharedSemaphore*, NULL));
+
+    QMetaObject::invokeMethod(
+        uiOrga, "figureShow", Q_ARG(unsigned int, 0), Q_ARG(ItomSharedSemaphore*, NULL));
 }
 //----------------------------------------------------------------------------------------------------------------------------------
 void MainWindow::mnuMinimizeAllPlots()
 {
-    QObject *uiOrga = AppManagement::getUiOrganizer();
+    QObject* uiOrga = AppManagement::getUiOrganizer();
     if (uiOrga == NULL)
     {
         QMessageBox::critical(this, "UiOrganizer", tr("The UiOrganizer is not available"));
@@ -1432,13 +1699,13 @@ void MainWindow::mnuAboutQitom()
 {
     QMap<QString, QString> versionList = getItomVersionMap();
 
-    DialogAboutQItom *dlgAbout = new DialogAboutQItom(versionList);
+    DialogAboutQItom* dlgAbout = new DialogAboutQItom(versionList);
     dlgAbout->exec();
     DELETE_AND_SET_NULL(dlgAbout);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void MainWindow::helpAssistantError (QProcess::ProcessError /*error*/)
+void MainWindow::helpAssistantError(QProcess::ProcessError /*error*/)
 {
     QMessageBox msgBox(this);
     msgBox.setText(tr("The help assistant could not be started."));
@@ -1448,11 +1715,10 @@ void MainWindow::helpAssistantError (QProcess::ProcessError /*error*/)
 //----------------------------------------------------------------------------------------------------------------------------------
 void MainWindow::mnuShowProperties()
 {
-    DialogProperties *dlg = new DialogProperties();
+    DialogProperties* dlg = new DialogProperties();
     dlg->exec();
     if (dlg->result() == QDialog::Accepted)
     {
-
     }
 
     DELETE_AND_SET_NULL(dlg);
@@ -1461,11 +1727,10 @@ void MainWindow::mnuShowProperties()
 //----------------------------------------------------------------------------------------------------------------------------------
 void MainWindow::mnuShowUserManagement()
 {
-    DialogUserManagement *dlg = new DialogUserManagement();
+    DialogUserManagement* dlg = new DialogUserManagement();
     dlg->exec();
     if (dlg->result() == QDialog::Accepted)
     {
-
     }
 
     DELETE_AND_SET_NULL(dlg);
@@ -1486,18 +1751,24 @@ void MainWindow::setStatusText(QString message, int timeout)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*
-An existing button with the same name (text) will not be deleted but a new button is added. This is because the possibly related
-python methods or functions cannot be deleted from this method. However, each button has its unique buttonHandle that can be used
-to explicitely delete the button.
+An existing button with the same name (text) will not be deleted but a new button is added. This is
+because the possibly related python methods or functions cannot be deleted from this method.
+However, each button has its unique buttonHandle that can be used to explicitely delete the button.
 */
-ito::RetVal MainWindow::addToolbarButton(const QString &toolbarName, const QString &buttonName, const QString &buttonIconFilename, const QString &pythonCode, QSharedPointer<size_t> buttonHandle, ItomSharedSemaphore *waitCond /*= NULL*/)
+ito::RetVal MainWindow::addToolbarButton(
+    const QString& toolbarName,
+    const QString& buttonName,
+    const QString& buttonIconFilename,
+    const QString& pythonCode,
+    QSharedPointer<size_t> buttonHandle,
+    ItomSharedSemaphore* waitCond /*= NULL*/)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval;
     QMap<QString, QToolBar*>::const_iterator it = m_userDefinedToolBars.constFind(toolbarName);
-    QToolBar *toolbar = NULL;
-    QAction *action = NULL;
-    
+    QToolBar* toolbar = NULL;
+    QAction* action = NULL;
+
     if (it == m_userDefinedToolBars.constEnd())
     {
         m_userDefinedToolBars[toolbarName] = toolbar = new QToolBar(toolbarName, this);
@@ -1508,7 +1779,7 @@ ito::RetVal MainWindow::addToolbarButton(const QString &toolbarName, const QStri
         toolbar = *it;
 
         ////check if this action already exists, if so delete it first
-        //foreach(action, (*it)->actions())
+        // foreach(action, (*it)->actions())
         //{
         //    if (action->text() == buttonName)
         //    {
@@ -1524,9 +1795,7 @@ ito::RetVal MainWindow::addToolbarButton(const QString &toolbarName, const QStri
     action->setProperty("itom__buttonHandle", ++m_userDefinedActionCounter);
     action->setToolTip(buttonName);
 
-    connect(action, &QAction::triggered, [=]() {
-        userDefinedActionTriggered(pythonCode);
-    });
+    connect(action, &QAction::triggered, [=]() { userDefinedActionTriggered(pythonCode); });
 
     toolbar->addAction(action);
 
@@ -1543,36 +1812,37 @@ ito::RetVal MainWindow::addToolbarButton(const QString &toolbarName, const QStri
 
 //-------------------------------------------------------------------------------------
 ito::RetVal MainWindow::removeToolbarButton(
-    const QString &toolbarName, 
-    const QString &buttonName, 
-    QSharedPointer<QVector<size_t> > buttonHandles, 
-    bool showMessage /*= true*/, 
-    ItomSharedSemaphore *waitCond /*= nullptr*/)
+    const QString& toolbarName,
+    const QString& buttonName,
+    QSharedPointer<QVector<size_t>> buttonHandles,
+    bool showMessage /*= true*/,
+    ItomSharedSemaphore* waitCond /*= nullptr*/)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval;
     auto it = m_userDefinedToolBars.constFind(toolbarName);
     QAction* tempAction;
     bool found = false;
-    
+
     buttonHandles->clear();
 
     if (it != m_userDefinedToolBars.constEnd())
     {
-        foreach(tempAction, (*it)->actions())
+        foreach (tempAction, (*it)->actions())
         {
             if (tempAction->text() == buttonName || buttonName == "")
             {
                 (*it)->removeAction(tempAction);
-                buttonHandles->append((size_t)(tempAction->property("itom__buttonHandle").toUInt())); //0 if invalid
+                buttonHandles->append(
+                    (size_t)(tempAction->property("itom__buttonHandle").toUInt())); // 0 if invalid
                 DELETE_AND_SET_NULL(tempAction);
                 found = true;
             }
         }
-        
-        if ((*it)->actions().size() == 0) 
+
+        if ((*it)->actions().size() == 0)
         {
-            //remove this toolbar
+            // remove this toolbar
             QString tmpName = it.key();
             removeToolBar(*it);
             m_userDefinedToolBars.remove(tmpName);
@@ -1582,21 +1852,19 @@ ito::RetVal MainWindow::removeToolbarButton(
         {
             retval += ito::RetVal::format(
                 ito::retError,
-                0, 
-                tr("The button '%s' of toolbar '%s' could not be found.").toLatin1().data(), 
-                buttonName.toLatin1().data(), 
-                toolbarName.toLatin1().data()
-            );
+                0,
+                tr("The button '%s' of toolbar '%s' could not be found.").toLatin1().data(),
+                buttonName.toLatin1().data(),
+                toolbarName.toLatin1().data());
         }
     }
     else
     {
         retval += ito::RetVal::format(
-            ito::retError, 
-            0, 
-            tr("The toolbar '%s' could not be found.").toLatin1().data(), 
-            toolbarName.toLatin1().data()
-        );
+            ito::retError,
+            0,
+            tr("The toolbar '%s' could not be found.").toLatin1().data(),
+            toolbarName.toLatin1().data());
     }
 
     if (waitCond)
@@ -1617,18 +1885,20 @@ ito::RetVal MainWindow::removeToolbarButton(
 
 //-------------------------------------------------------------------------------------
 ito::RetVal MainWindow::removeToolbarButton(
-    const size_t buttonHandle, 
-    bool showMessage /*= true*/, 
-    ItomSharedSemaphore *waitCond /*= nullptr*/)
+    const size_t buttonHandle,
+    bool showMessage /*= true*/,
+    ItomSharedSemaphore* waitCond /*= nullptr*/)
 {
-    //buttonHandle is the pointer-address to the QAction of the button
+    // buttonHandle is the pointer-address to the QAction of the button
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval;
     QAction* tempAction;
 
     bool found = false;
 
-    for (auto it = m_userDefinedToolBars.constBegin(); !found && it != m_userDefinedToolBars.constEnd(); ++it)
+    for (auto it = m_userDefinedToolBars.constBegin();
+         !found && it != m_userDefinedToolBars.constEnd();
+         ++it)
     {
         foreach (tempAction, (*it)->actions())
         {
@@ -1641,7 +1911,7 @@ ito::RetVal MainWindow::removeToolbarButton(
             }
         }
 
-        if (found && (*it)->actions().size() == 0) //remove this toolbar
+        if (found && (*it)->actions().size() == 0) // remove this toolbar
         {
             QString key = it.key();
             removeToolBar(*it);
@@ -1653,9 +1923,9 @@ ito::RetVal MainWindow::removeToolbarButton(
     if (!found)
     {
         retval += ito::RetVal::format(
-            ito::retError, 
-            0, 
-            tr("The button (%1) could not be found.").toLatin1().data(), 
+            ito::retError,
+            0,
+            tr("The button (%1) could not be found.").toLatin1().data(),
             buttonHandle);
     }
 
@@ -1676,26 +1946,37 @@ ito::RetVal MainWindow::removeToolbarButton(
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal MainWindow::addMenuElement(int typeID, const QString &key, const QString &name, const QString &code, const QString &buttonIconFilename, QSharedPointer<size_t> menuHandle, bool showMessage /*= true*/, ItomSharedSemaphore *waitCond /*= NULL*/)
+ito::RetVal MainWindow::addMenuElement(
+    int typeID,
+    const QString& key,
+    const QString& name,
+    const QString& code,
+    const QString& buttonIconFilename,
+    QSharedPointer<size_t> menuHandle,
+    bool showMessage /*= true*/,
+    ItomSharedSemaphore* waitCond /*= NULL*/)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     RetVal retValue(retOk);
 
-    //key is a slash-splitted value: e.g. rootKey/parentKey/nextParentKey/.../myKey
+    // key is a slash-splitted value: e.g. rootKey/parentKey/nextParentKey/.../myKey
     QStringList keys = key.split("/");
     QString current_key;
-    QAction *act;
-    QMenu *parent_menu = NULL;
+    QAction* act;
+    QMenu* parent_menu = NULL;
     QMap<QString, QMenu*>::iterator root_it;
     bool found = false;
 
-    //check icon
+    // check icon
     QIcon icon = IOHelper::searchIcon(buttonIconFilename, IOHelper::SFAll);
 
-    //some sanity checks
+    // some sanity checks
     if (keys.size() == 1 && typeID != 2)
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("One single menu element must be of type MENU [2]").toLatin1().data());
+        retValue += ito::RetVal(
+            ito::retError,
+            0,
+            tr("One single menu element must be of type MENU [2]").toLatin1().data());
     }
     else if (keys.size() == 0)
     {
@@ -1707,40 +1988,46 @@ ito::RetVal MainWindow::addMenuElement(int typeID, const QString &key, const QSt
     }
     else
     {
-        //check first level entry (is more special than all other ones since it is register in the m_userDefinedRootMenus map
+        // check first level entry (is more special than all other ones since it is register in the
+        // m_userDefinedRootMenus map
         current_key = keys.takeFirst();
         root_it = m_userDefinedRootMenus.find(current_key);
-        
+
         if (root_it != m_userDefinedRootMenus.end())
         {
             parent_menu = root_it.value();
             *menuHandle = (size_t)parent_menu->menuAction()->property("itom__menuHandle").toUInt();
         }
-        else //exist new root menu item
+        else // exist new root menu item
         {
-            parent_menu = menuBar()->addMenu(keys.size() == 0 ? name : current_key); //only the last item gets 'name' as visible name, all the others get their key component
+            parent_menu = menuBar()->addMenu(
+                keys.size() == 0 ? name
+                                 : current_key); // only the last item gets 'name' as visible name,
+                                                 // all the others get their key component
             parent_menu->menuAction()->setData(current_key);
             parent_menu->menuAction()->setIconText(current_key);
-            parent_menu->menuAction()->setProperty("itom__menuHandle", ++m_userDefinedActionCounter);
+            parent_menu->menuAction()->setProperty(
+                "itom__menuHandle", ++m_userDefinedActionCounter);
             *menuHandle = m_userDefinedActionCounter;
             m_userDefinedRootMenus[current_key] = parent_menu;
         }
 
-        //now parent_menu is fixed and we can now recursively create the menu item tree until the last item
+        // now parent_menu is fixed and we can now recursively create the menu item tree until the
+        // last item
         while (parent_menu && keys.size() > 0 && !retValue.containsError())
         {
             current_key = keys.takeFirst();
 
-            if (keys.size() > 0) //must be a tree item (menu item, since not the last one)
+            if (keys.size() > 0) // must be a tree item (menu item, since not the last one)
             {
-                //check if parent_menu contains a child-action that is a submenu with the same current_key
-                //if so, use this, else create a new sub-menu
+                // check if parent_menu contains a child-action that is a submenu with the same
+                // current_key if so, use this, else create a new sub-menu
                 found = false;
-                foreach(QAction* a, parent_menu->actions())
+                foreach (QAction* a, parent_menu->actions())
                 {
                     if (a->menu() && a->data().toString() == current_key)
                     {
-                        //existing one, use it
+                        // existing one, use it
                         found = true;
                         parent_menu = a->menu();
                         *menuHandle = (size_t)a->property("itom__menuHandle").toUInt();
@@ -1750,8 +2037,9 @@ ito::RetVal MainWindow::addMenuElement(int typeID, const QString &key, const QSt
 
                 if (!found)
                 {
-                    parent_menu = parent_menu->addMenu(icon,current_key);
-                    parent_menu->menuAction()->setProperty("itom__menuHandle", ++m_userDefinedActionCounter);
+                    parent_menu = parent_menu->addMenu(icon, current_key);
+                    parent_menu->menuAction()->setProperty(
+                        "itom__menuHandle", ++m_userDefinedActionCounter);
                     parent_menu->menuAction()->setIconText(current_key);
                     parent_menu->menuAction()->setData(current_key);
                     *menuHandle = m_userDefinedActionCounter;
@@ -1759,24 +2047,23 @@ ito::RetVal MainWindow::addMenuElement(int typeID, const QString &key, const QSt
             }
             else
             {
-                //append a menu, separator or button to parent_menu and returns its menuHandle.
-                if (typeID == 0) //BUTTON
+                // append a menu, separator or button to parent_menu and returns its menuHandle.
+                if (typeID == 0) // BUTTON
                 {
-                    act = parent_menu->addAction(icon,name);
+                    act = parent_menu->addAction(icon, name);
                     act->setProperty("itom__menuHandle", ++m_userDefinedActionCounter);
                     act->setIconText(name);
                     act->setData(current_key);
 
-                    connect(act, &QAction::triggered, [=]() {
-                        userDefinedActionTriggered(code);
-                    });
+                    connect(act, &QAction::triggered, [=]() { userDefinedActionTriggered(code); });
 
                     *menuHandle = m_userDefinedActionCounter;
                 }
                 else if (typeID == 2 /*MENU*/)
                 {
-                    parent_menu = parent_menu->addMenu(icon,name);
-                    parent_menu->menuAction()->setProperty("itom__menuHandle", ++m_userDefinedActionCounter);
+                    parent_menu = parent_menu->addMenu(icon, name);
+                    parent_menu->menuAction()->setProperty(
+                        "itom__menuHandle", ++m_userDefinedActionCounter);
                     parent_menu->menuAction()->setIconText(name);
                     parent_menu->menuAction()->setData(current_key);
                     *menuHandle = m_userDefinedActionCounter;
@@ -1788,7 +2075,7 @@ ito::RetVal MainWindow::addMenuElement(int typeID, const QString &key, const QSt
                     act->setIconText(name);
                     act->setData(current_key);
                     *menuHandle = m_userDefinedActionCounter;
-                } 
+                }
             }
         }
     }
@@ -1812,14 +2099,18 @@ ito::RetVal MainWindow::addMenuElement(int typeID, const QString &key, const QSt
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal MainWindow::removeMenuElement(const QString &key, QSharedPointer<QVector<size_t> > removedMenuHandles, bool showMessage /*= true*/, ItomSharedSemaphore *waitCond /*= NULL*/)
+ito::RetVal MainWindow::removeMenuElement(
+    const QString& key,
+    QSharedPointer<QVector<size_t>> removedMenuHandles,
+    bool showMessage /*= true*/,
+    ItomSharedSemaphore* waitCond /*= NULL*/)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval;
     QStringList keys = key.split("/");
     QString tempKey;
-    QMenu *parentMenu = NULL;
-    QAction *actToDelete = NULL;
+    QMenu* parentMenu = NULL;
+    QAction* actToDelete = NULL;
     QMap<QString, QMenu*>::iterator it;
 
     if (keys.size() == 1)
@@ -1829,14 +2120,21 @@ ito::RetVal MainWindow::removeMenuElement(const QString &key, QSharedPointer<QVe
         it = m_userDefinedRootMenus.find(tempKey);
         if (it != m_userDefinedRootMenus.end())
         {
-            removedMenuHandles->append((size_t)(it.value()->menuAction()->property("itom__menuHandle").toUInt()));
+            removedMenuHandles->append(
+                (size_t)(it.value()->menuAction()->property("itom__menuHandle").toUInt()));
             getMenuHandlesRecursively(it.value(), removedMenuHandles);
             (*it)->deleteLater();
             it = m_userDefinedRootMenus.erase(it);
         }
         else
         {
-            retval += ito::RetVal::format(ito::retError, 0, tr("A user-defined menu with the key sequence '%s' could not be found").toLatin1().data(), key.toLatin1().data());
+            retval += ito::RetVal::format(
+                ito::retError,
+                0,
+                tr("A user-defined menu with the key sequence '%s' could not be found")
+                    .toLatin1()
+                    .data(),
+                key.toLatin1().data());
         }
     }
     else if (keys.size() > 1)
@@ -1855,7 +2153,7 @@ ito::RetVal MainWindow::removeMenuElement(const QString &key, QSharedPointer<QVe
             keys.pop_front();
             actToDelete = NULL;
 
-            foreach(QAction *a, parentMenu->actions())
+            foreach (QAction* a, parentMenu->actions())
             {
                 if (a->data().toString() == tempKey)
                 {
@@ -1868,21 +2166,28 @@ ito::RetVal MainWindow::removeMenuElement(const QString &key, QSharedPointer<QVe
 
         if (keys.size() == 0 && actToDelete)
         {
-            removedMenuHandles->append((size_t)(actToDelete->property("itom__menuHandle").toUInt()));
+            removedMenuHandles->append(
+                (size_t)(actToDelete->property("itom__menuHandle").toUInt()));
             getMenuHandlesRecursively(actToDelete->menu(), removedMenuHandles);
 
-            if (actToDelete->menu()) //this action belongs to a QMenu -> delete the QMenu
+            if (actToDelete->menu()) // this action belongs to a QMenu -> delete the QMenu
             {
                 actToDelete->menu()->deleteLater();
             }
-            else //this action is a real action -> directly delete it
+            else // this action is a real action -> directly delete it
             {
                 actToDelete->deleteLater();
             }
         }
         else
         {
-            retval += ito::RetVal::format(ito::retError, 0, tr("A user-defined menu with the key sequence '%s' could not be found").toLatin1().data(), key.toLatin1().data());
+            retval += ito::RetVal::format(
+                ito::retError,
+                0,
+                tr("A user-defined menu with the key sequence '%s' could not be found")
+                    .toLatin1()
+                    .data(),
+                key.toLatin1().data());
         }
     }
 
@@ -1901,13 +2206,17 @@ ito::RetVal MainWindow::removeMenuElement(const QString &key, QSharedPointer<QVe
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal MainWindow::removeMenuElement(const size_t menuHandle, QSharedPointer<QVector<size_t> > removedMenuHandles, bool showMessage /*= true*/, ItomSharedSemaphore *waitCond /*= NULL*/)
+ito::RetVal MainWindow::removeMenuElement(
+    const size_t menuHandle,
+    QSharedPointer<QVector<size_t>> removedMenuHandles,
+    bool showMessage /*= true*/,
+    ItomSharedSemaphore* waitCond /*= NULL*/)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval;
     QString tempKey;
     // QMenu *parentMenu = NULL; // unused
-    QAction *actToDelete = NULL;
+    QAction* actToDelete = NULL;
     bool found = false;
     QMap<QString, QMenu*>::iterator it = m_userDefinedRootMenus.begin();
 
@@ -1928,14 +2237,15 @@ ito::RetVal MainWindow::removeMenuElement(const size_t menuHandle, QSharedPointe
             if (actToDelete)
             {
                 found = true;
-                removedMenuHandles->append((size_t)(actToDelete->property("itom__menuHandle").toUInt()));
+                removedMenuHandles->append(
+                    (size_t)(actToDelete->property("itom__menuHandle").toUInt()));
                 getMenuHandlesRecursively(actToDelete->menu(), removedMenuHandles);
-                
-                if (actToDelete->menu()) //this action belongs to a QMenu -> delete the QMenu
+
+                if (actToDelete->menu()) // this action belongs to a QMenu -> delete the QMenu
                 {
                     actToDelete->menu()->deleteLater();
                 }
-                else //this action is a real action -> directly delete it
+                else // this action is a real action -> directly delete it
                 {
                     actToDelete->deleteLater();
                 }
@@ -1947,7 +2257,11 @@ ito::RetVal MainWindow::removeMenuElement(const size_t menuHandle, QSharedPointe
 
     if (!found)
     {
-        retval += ito::RetVal::format(ito::retError, 0, tr("A user-defined menu with the handle '%1' could not be found").toLatin1().data(), menuHandle);
+        retval += ito::RetVal::format(
+            ito::retError,
+            0,
+            tr("A user-defined menu with the handle '%1' could not be found").toLatin1().data(),
+            menuHandle);
     }
 
     if (waitCond)
@@ -1965,11 +2279,12 @@ ito::RetVal MainWindow::removeMenuElement(const size_t menuHandle, QSharedPointe
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void MainWindow::getMenuHandlesRecursively(const QMenu *parent, QSharedPointer<QVector<size_t> > menuHandles)
+void MainWindow::getMenuHandlesRecursively(
+    const QMenu* parent, QSharedPointer<QVector<size_t>> menuHandles)
 {
     if (parent)
     {
-        foreach (const QAction *a, parent->actions())
+        foreach (const QAction* a, parent->actions())
         {
             if (a)
             {
@@ -1981,16 +2296,16 @@ void MainWindow::getMenuHandlesRecursively(const QMenu *parent, QSharedPointer<Q
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-QAction* MainWindow::searchActionRecursively(const size_t menuHandle, const QMenu *parent)
+QAction* MainWindow::searchActionRecursively(const size_t menuHandle, const QMenu* parent)
 {
     if (!parent)
     {
         return NULL;
     }
 
-    QAction *a2;
+    QAction* a2;
 
-    foreach (QAction *a, parent->actions())
+    foreach (QAction* a, parent->actions())
     {
         if ((size_t)a->property("itom__menuHandle").toUInt() == menuHandle)
         {
@@ -2008,97 +2323,116 @@ QAction* MainWindow::searchActionRecursively(const size_t menuHandle, const QMen
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-QString dumpChildMenus(const QString &baseKey, const QAction *parent)
+QString dumpChildMenus(const QString& baseKey, const QAction* parent)
 {
-	unsigned int id;
-	bool ok;
-	QStringList items;
-	QString key;
+    unsigned int id;
+    bool ok;
+    QStringList items;
+    QString key;
 
-	if (parent->menu())
-	{
-		foreach(const QAction *a, parent->menu()->actions())
-		{
-			id = a->property("itom__menuHandle").toUInt(&ok);
-			key = baseKey + "/" + a->data().toString();
+    if (parent->menu())
+    {
+        foreach (const QAction* a, parent->menu()->actions())
+        {
+            id = a->property("itom__menuHandle").toUInt(&ok);
+            key = baseKey + "/" + a->data().toString();
 
-			if (ok)
-			{
-				items.append(QString("{'id': %1, 'key':'%2', 'name': '%3', 'children': %4}").arg(id).arg(key).arg(a->text()).arg(dumpChildMenus(key, a)));
-			}
-			else
-			{
-				items.append(QString("{'id': %1, 'key':'%2', 'name': '%3', 'children': %4}").arg(-1).arg(key).arg(a->text()).arg(dumpChildMenus(key, a)));
-			}
-		}
-	}
-	
-	return QString("[%1]").arg(items.join(","));
+            if (ok)
+            {
+                items.append(QString("{'id': %1, 'key':'%2', 'name': '%3', 'children': %4}")
+                                 .arg(id)
+                                 .arg(key)
+                                 .arg(a->text())
+                                 .arg(dumpChildMenus(key, a)));
+            }
+            else
+            {
+                items.append(QString("{'id': %1, 'key':'%2', 'name': '%3', 'children': %4}")
+                                 .arg(-1)
+                                 .arg(key)
+                                 .arg(a->text())
+                                 .arg(dumpChildMenus(key, a)));
+            }
+        }
+    }
+
+    return QString("[%1]").arg(items.join(","));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal MainWindow::dumpToolbarsAndButtons(QSharedPointer<QString> pythonCodeString, ItomSharedSemaphore *waitCond /*= NULL*/)
+ito::RetVal MainWindow::dumpToolbarsAndButtons(
+    QSharedPointer<QString> pythonCodeString, ItomSharedSemaphore* waitCond /*= NULL*/)
 {
-	ito::RetVal retval;
+    ito::RetVal retval;
 
-	QStringList toolbar_list;
-	QStringList menu_list;
+    QStringList toolbar_list;
+    QStringList menu_list;
 
-	QStringList actions;
-	unsigned int id;
-	bool ok;
-	QAction *act;
+    QStringList actions;
+    unsigned int id;
+    bool ok;
+    QAction* act;
 
 
-	//toolbars
-	foreach(const QString &key, m_userDefinedToolBars.keys())
-	{
-		actions.clear();
+    // toolbars
+    foreach (const QString& key, m_userDefinedToolBars.keys())
+    {
+        actions.clear();
 
-		foreach(const QAction *a, m_userDefinedToolBars[key]->actions())
-		{
-			id = a->property("itom__buttonHandle").toUInt(&ok);
-			if (ok)
-			{
-				actions.append(QString("{'id': %1, 'name': '%2'}").arg(id).arg(a->text()));
-			}
-			else
-			{
-				actions.append(QString("{'id': -1, 'name': '%1'}").arg(a->text()));
-			}
-		}
+        foreach (const QAction* a, m_userDefinedToolBars[key]->actions())
+        {
+            id = a->property("itom__buttonHandle").toUInt(&ok);
+            if (ok)
+            {
+                actions.append(QString("{'id': %1, 'name': '%2'}").arg(id).arg(a->text()));
+            }
+            else
+            {
+                actions.append(QString("{'id': -1, 'name': '%1'}").arg(a->text()));
+            }
+        }
 
-		toolbar_list.append(QString("'%1':[%2]").arg(key).arg(actions.join(",")));
-	}
+        toolbar_list.append(QString("'%1':[%2]").arg(key).arg(actions.join(",")));
+    }
 
-	//menus
-	QMap<QString, QMenu *>::ConstIterator it = m_userDefinedRootMenus.constBegin();
-	while (it != m_userDefinedRootMenus.constEnd())
-	{
-		act = it.value()->menuAction();
+    // menus
+    QMap<QString, QMenu*>::ConstIterator it = m_userDefinedRootMenus.constBegin();
+    while (it != m_userDefinedRootMenus.constEnd())
+    {
+        act = it.value()->menuAction();
 
-		id = act->property("itom__menuHandle").toUInt(&ok);
-		if (ok)
-		{
-			menu_list.append(QString("{'id': %1, 'key':'%2', 'name': '%3', 'children': %4}").arg(id).arg(it.key()).arg(act->text()).arg(dumpChildMenus(it.key(), act)));
-		}
-		else
-		{
-			menu_list.append(QString("{'id': %1, 'key':'%2', 'name': '%3', 'children': %4}").arg(-1).arg(it.key()).arg(act->text()).arg(dumpChildMenus(it.key(), act)));
-		}
+        id = act->property("itom__menuHandle").toUInt(&ok);
+        if (ok)
+        {
+            menu_list.append(QString("{'id': %1, 'key':'%2', 'name': '%3', 'children': %4}")
+                                 .arg(id)
+                                 .arg(it.key())
+                                 .arg(act->text())
+                                 .arg(dumpChildMenus(it.key(), act)));
+        }
+        else
+        {
+            menu_list.append(QString("{'id': %1, 'key':'%2', 'name': '%3', 'children': %4}")
+                                 .arg(-1)
+                                 .arg(it.key())
+                                 .arg(act->text())
+                                 .arg(dumpChildMenus(it.key(), act)));
+        }
 
-		it++;
-	}
+        it++;
+    }
 
-	*pythonCodeString = QString("{'toolbars':{%1}, 'menus':[%2]}").arg(toolbar_list.join(",")).arg(menu_list.join(","));
+    *pythonCodeString = QString("{'toolbars':{%1}, 'menus':[%2]}")
+                            .arg(toolbar_list.join(","))
+                            .arg(menu_list.join(","));
 
-	if (waitCond)
-	{
-		waitCond->returnValue = retval;
-		waitCond->release();
-	}
+    if (waitCond)
+    {
+        waitCond->returnValue = retval;
+        waitCond->release();
+    }
 
-	return retval;
+    return retval;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2110,7 +2444,7 @@ void MainWindow::pythonRunSelection(QString selectionText)
 //----------------------------------------------------------------------------------------------------------------------------------
 void MainWindow::mnuPyPipManager()
 {
-    DialogPipManager *dpm = new DialogPipManager(this);
+    DialogPipManager* dpm = new DialogPipManager(this);
     dpm->exec();
     DELETE_AND_SET_NULL(dpm);
 }
@@ -2143,9 +2477,9 @@ void MainWindow::resetCursor()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void MainWindow::userDefinedActionTriggered(const QString &pythonCode)
+void MainWindow::userDefinedActionTriggered(const QString& pythonCode)
 {
-    PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
+    PythonEngine* pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
 
     if (pyEngine == NULL)
     {
@@ -2162,16 +2496,18 @@ void MainWindow::userDefinedActionTriggered(const QString &pythonCode)
     else
     {
         QByteArray ba(pythonCode.toLatin1());
-        ba.replace("\\n",QByteArray(1,'\n'));
-        ba.replace("\n",QByteArray(1,'\n'));
+        ba.replace("\\n", QByteArray(1, '\n'));
+        ba.replace("\n", QByteArray(1, '\n'));
 
         if (pyEngine->execInternalCodeByDebugger())
         {
-            QMetaObject::invokeMethod(pyEngine, "pythonDebugStringOrFunction", Q_ARG(QString, pythonCode));
+            QMetaObject::invokeMethod(
+                pyEngine, "pythonDebugStringOrFunction", Q_ARG(QString, pythonCode));
         }
         else
         {
-            QMetaObject::invokeMethod(pyEngine, "pythonRunStringOrFunction", Q_ARG(QString, pythonCode));
+            QMetaObject::invokeMethod(
+                pyEngine, "pythonRunStringOrFunction", Q_ARG(QString, pythonCode));
         }
     }
 }
@@ -2184,25 +2520,28 @@ void MainWindow::mnuShowDesigner()
 #else
     QString appName = "designer";
 #endif
-    
-    ProcessOrganizer *po = qobject_cast<ProcessOrganizer*>(AppManagement::getProcessOrganizer());
+
+    ProcessOrganizer* po = qobject_cast<ProcessOrganizer*>(AppManagement::getProcessOrganizer());
     if (po)
     {
         bool existingProcess = false;
-        QProcess *process = po->getProcess(appName, true, existingProcess, false);
+        QProcess* process = po->getProcess(appName, true, existingProcess, true);
 
         if (existingProcess && process->state() == QProcess::Running)
         {
-            //designer is already loaded. try to activate it by sending the activateIdentifier command without arguments (try-and-error to find this way to activate it)
+            // designer is already loaded. try to activate it by sending the activateIdentifier
+            // command without arguments (try-and-error to find this way to activate it)
             QByteArray ba("activateIdentifier \n");
             process->write(ba);
+
+            po->bringWindowsOnTop("Qt Designer");
         }
         else
         {
             QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
             QString appPath = QDir::cleanPath(QCoreApplication::applicationDirPath());
             env.insert("QT_PLUGIN_PATH", appPath);
-            
+
 #ifndef WIN32
             QString pathEnv = env.value("PATH");
             pathEnv.prepend(appPath + ":");
@@ -2212,29 +2551,34 @@ void MainWindow::mnuShowDesigner()
             pathEnv.prepend(appPath + ";");
             env.insert("path", pathEnv);
 #endif
-            
+
 #ifdef __APPLE__
             env.insert("PATH", env.value("PATH") + ":" + env.value("HOME") + "/Applications");
             env.insert("PATH", env.value("PATH") + ":/Applications");
 #endif // __APPLE__
-            
+
             process->setProcessEnvironment(env);
-            
-            connect(process, SIGNAL(error(QProcess::ProcessError)), this, SLOT(designerError(QProcess::ProcessError)));
+
+            connect(
+                process,
+                SIGNAL(error(QProcess::ProcessError)),
+                this,
+                SLOT(designerError(QProcess::ProcessError)));
 
             po->clearStandardOutputBuffer(appName);
 
             QStringList arguments;
-            arguments << "-server"/* << filename*/;
+            arguments << "-server" /* << filename*/;
             QString app = ProcessOrganizer::getAbsQtToolPath(appName);
-            //qDebug() << app << arguments;
-            process->start(app, arguments); //the arguments stringlist must be given here, else the process cannot be started in a setup environment!
+            // qDebug() << app << arguments;
+            process->start(app, arguments); // the arguments stringlist must be given here, else the
+                                            // process cannot be started in a setup environment!
         }
     }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void MainWindow::designerError (QProcess::ProcessError error)
+void MainWindow::designerError(QProcess::ProcessError error)
 {
     QMessageBox msgBox(this);
     msgBox.setText(tr("The UI designer (Qt designer) could not be started (%1).").arg(error));
@@ -2244,7 +2588,7 @@ void MainWindow::designerError (QProcess::ProcessError error)
 //----------------------------------------------------------------------------------------------------------------------------------
 void MainWindow::mnuToggleExecPyCodeByDebugger(bool checked)
 {
-    PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
+    PythonEngine* pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
 
     if (pyEngine != NULL)
     {
@@ -2255,7 +2599,7 @@ void MainWindow::mnuToggleExecPyCodeByDebugger(bool checked)
 //----------------------------------------------------------------------------------------------------------------------------------
 void MainWindow::mnuScriptStop()
 {
-    PythonEngine *pyeng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
+    PythonEngine* pyeng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
     if (pyeng)
     {
         pyeng->pythonInterruptExecutionThreadSafe();
@@ -2298,22 +2642,23 @@ void MainWindow::mnuScriptStepOut()
 //----------------------------------------------------------------------------------------------------------------------------------
 void MainWindow::mnuPyReloadModules()
 {
-    DialogReloadModule *dlgReloadModules = new DialogReloadModule(this);
+    DialogReloadModule* dlgReloadModules = new DialogReloadModule(this);
     dlgReloadModules->exec();
     DELETE_AND_SET_NULL(dlgReloadModules);
 }
 //----------------------------------------------------------------------------------------------------------------------------------
 void MainWindow::mnuPyTimerManager()
 {
-	DialogTimerManager *dlgTimerManager = new DialogTimerManager(this);
-	dlgTimerManager->exec();
-	DELETE_AND_SET_NULL(dlgTimerManager);
+    DialogTimerManager* dlgTimerManager = new DialogTimerManager(this);
+    dlgTimerManager->exec();
+    DELETE_AND_SET_NULL(dlgTimerManager);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void MainWindow::mnuPyAutoReloadTriggered(bool checked)
 {
-    if (m_actions["py_autoReloadEnabled"] && m_actions["py_autoReloadFile"] && m_actions["py_autoReloadCmd"] && m_actions["py_autoReloadFunc"])
+    if (m_actions["py_autoReloadEnabled"] && m_actions["py_autoReloadFile"] &&
+        m_actions["py_autoReloadCmd"] && m_actions["py_autoReloadFunc"])
     {
         bool enabled = m_actions["py_autoReloadEnabled"]->isChecked();
         bool checkFile = m_actions["py_autoReloadFile"]->isChecked();
@@ -2326,7 +2671,7 @@ void MainWindow::mnuPyAutoReloadTriggered(bool checked)
 //----------------------------------------------------------------------------------------------------------------------------------
 void MainWindow::mnuShowLoadedPlugins()
 {
-    DialogLoadedPlugins *dlgLoadedPlugins = new DialogLoadedPlugins(this);
+    DialogLoadedPlugins* dlgLoadedPlugins = new DialogLoadedPlugins(this);
     dlgLoadedPlugins->exec();
     DELETE_AND_SET_NULL(dlgLoadedPlugins);
 }
@@ -2334,14 +2679,14 @@ void MainWindow::mnuShowLoadedPlugins()
 //----------------------------------------------------------------------------------------------------------------------------------
 void MainWindow::mnuExitApplication()
 {
-    //does not call the closeEvent-method!
+    // does not call the closeEvent-method!
     emit(mainWindowCloseRequest());
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void MainWindow::showInfoMessageLine(QString text, QString winKey /*= ""*/)
 {
-    WidgetInfoBox *w = NULL;
+    WidgetInfoBox* w = NULL;
 
     if (winKey != "" && m_infoBoxWidgets.contains(winKey))
     {
@@ -2374,43 +2719,48 @@ void MainWindow::showInfoMessageLine(QString text, QString winKey /*= ""*/)
 //----------------------------------------------------------------------------------------------------------------------------------
 void MainWindow::pythonAutoReloadChanged(bool enabled, bool checkFile, bool checkCmd, bool checkFct)
 {
-    if (m_actions["py_autoReloadEnabled"]) m_actions["py_autoReloadEnabled"]->setChecked(enabled);
+    if (m_actions["py_autoReloadEnabled"])
+        m_actions["py_autoReloadEnabled"]->setChecked(enabled);
 
-    if (m_actions["py_autoReloadFile"]) m_actions["py_autoReloadFile"]->setChecked(checkFile);
-    if (m_actions["py_autoReloadCmd"]) m_actions["py_autoReloadCmd"]->setChecked(checkCmd);
-    if (m_actions["py_autoReloadFunc"]) m_actions["py_autoReloadFunc"]->setChecked(checkFct);
+    if (m_actions["py_autoReloadFile"])
+        m_actions["py_autoReloadFile"]->setChecked(checkFile);
+    if (m_actions["py_autoReloadCmd"])
+        m_actions["py_autoReloadCmd"]->setChecked(checkCmd);
+    if (m_actions["py_autoReloadFunc"])
+        m_actions["py_autoReloadFunc"]->setChecked(checkFct);
 
-    if (m_actions["py_autoReloadFile"]) m_actions["py_autoReloadFile"]->setEnabled(enabled);
-    if (m_actions["py_autoReloadCmd"]) m_actions["py_autoReloadCmd"]->setEnabled(enabled);
-    if (m_actions["py_autoReloadFunc"]) m_actions["py_autoReloadFunc"]->setEnabled(enabled);
-
+    if (m_actions["py_autoReloadFile"])
+        m_actions["py_autoReloadFile"]->setEnabled(enabled);
+    if (m_actions["py_autoReloadCmd"])
+        m_actions["py_autoReloadCmd"]->setEnabled(enabled);
+    if (m_actions["py_autoReloadFunc"])
+        m_actions["py_autoReloadFunc"]->setEnabled(enabled);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*
 Appends this widget to the splitter layout of the central area to the top of the list of widgets.
 */
-ito::RetVal MainWindow::addCentralWidget(QWidget *widget)
+ito::RetVal MainWindow::addCentralWidget(QWidget* widget)
 {
-	if (widget)
-	{
-		m_contentSplitter->insertWidget(0, widget);
-		return ito::retOk;
-	}
-	else
-	{
-		return ito::RetVal(ito::retError, 0, "empty widget");
-	}
+    if (widget)
+    {
+        m_contentSplitter->insertWidget(0, widget);
+        return ito::retOk;
+    }
+    else
+    {
+        return ito::RetVal(ito::retError, 0, "empty widget");
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*
 This slot is for instance invoked by the Python method itom.setCentralWidgetsSizes(sizes)
 */
-void MainWindow::setCentralWidgetsSizes(const QVector<int> &sizes)
+void MainWindow::setCentralWidgetsSizes(const QVector<int>& sizes)
 {
-	m_contentSplitter->setSizes(sizes.toList());
+    m_contentSplitter->setSizes(sizes.toList());
 }
 
-} //end namespace ito
-
+} // end namespace ito

@@ -31,18 +31,23 @@
 /////////////////////////////////////////////////////////////////////////////////////////////
 // Constructor
 /////////////////////////////////////////////////////////////////////////////////////////////
-FlagsProperty::FlagsProperty(const QString &name /* = QString()*/, 
-                           QObject *propertyObject /* = 0*/, QObject *parent /* = 0*/)
-: Property(name, propertyObject, parent), m_comboBox(NULL), m_inModification(false)
+FlagsProperty::FlagsProperty(
+    const QString& name /* = QString()*/,
+    QObject* propertyObject /* = 0*/,
+    QObject* parent /* = 0*/) :
+    Property(name, propertyObject, parent),
+    m_comboBox(NULL), m_inModification(false)
 {
     // get the meta property object
     const QMetaObject* meta = propertyObject->metaObject();
     QMetaProperty prop = meta->property(meta->indexOfProperty(qPrintable(name)));
 
     // if it is indeed an enum type, fill the QStringList member with the keys
-    if (prop.isEnumType()){
+    if (prop.isEnumType())
+    {
         QMetaEnum qenum = prop.enumerator();
-        for (int i=0; i < qenum.keyCount(); i++){
+        for (int i = 0; i < qenum.keyCount(); i++)
+        {
             m_enum << qenum.key(i);
             m_enumIndices << qenum.value(i);
         }
@@ -52,9 +57,12 @@ FlagsProperty::FlagsProperty(const QString &name /* = QString()*/,
 /////////////////////////////////////////////////////////////////////////////////////////////
 // value
 /////////////////////////////////////////////////////////////////////////////////////////////
-QVariant FlagsProperty::value(int role /* = Qt::UserRole */) const {
-    if (role == Qt::DisplayRole){
-        if (m_propertyObject){
+QVariant FlagsProperty::value(int role /* = Qt::UserRole */) const
+{
+    if (role == Qt::DisplayRole)
+    {
+        if (m_propertyObject)
+        {
             // resolve the value to the corresponding enum key
             int index = m_propertyObject->property(qPrintable(objectName())).toInt();
 
@@ -71,10 +79,14 @@ QVariant FlagsProperty::value(int role /* = Qt::UserRole */) const {
                 }
             }
             return list.join(";");
-        } else{
+        }
+        else
+        {
             return QVariant();
         }
-    } else {
+    }
+    else
+    {
         return Property::value(role);
     }
 }
@@ -82,13 +94,13 @@ QVariant FlagsProperty::value(int role /* = Qt::UserRole */) const {
 /////////////////////////////////////////////////////////////////////////////////////////////
 // createEditor
 /////////////////////////////////////////////////////////////////////////////////////////////
-QWidget* FlagsProperty::createEditor(QWidget* parent, const QStyleOptionViewItem& option){
+QWidget* FlagsProperty::createEditor(QWidget* parent, const QStyleOptionViewItem& option)
+{
     // create a CheckableComboBox and fill it with the QStringList values
     CheckableComboBox* editor = new CheckableComboBox(parent);
     editor->addItems(m_enum);
-    
-    connect(editor, SIGNAL(checkedIndexesChanged()),
-        this, SLOT(checkedIndexesChanged()));
+
+    connect(editor, SIGNAL(checkedIndexesChanged()), this, SLOT(checkedIndexesChanged()));
     m_comboBox = editor;
     return editor;
 }
@@ -96,16 +108,16 @@ QWidget* FlagsProperty::createEditor(QWidget* parent, const QStyleOptionViewItem
 /////////////////////////////////////////////////////////////////////////////////////////////
 // setEditorData
 /////////////////////////////////////////////////////////////////////////////////////////////
-bool FlagsProperty::setEditorData(QWidget *editor, const QVariant &data)
+bool FlagsProperty::setEditorData(QWidget* editor, const QVariant& data)
 {
     if (!m_inModification)
     {
         CheckableComboBox* combo = 0;
-        //TODO: maybe malformed if statment or put brackets to make gcc happy
+        // TODO: maybe malformed if statment or put brackets to make gcc happy
         if (combo = qobject_cast<CheckableComboBox*>(editor))
         {
             int value = data.toInt();
-            QAbstractItemModel *aim = combo->checkableModel();
+            QAbstractItemModel* aim = combo->checkableModel();
             QModelIndex index;
             Qt::CheckState checkState;
 
@@ -133,15 +145,15 @@ bool FlagsProperty::setEditorData(QWidget *editor, const QVariant &data)
 /////////////////////////////////////////////////////////////////////////////////////////////
 // editorData
 /////////////////////////////////////////////////////////////////////////////////////////////
-QVariant FlagsProperty::editorData(QWidget *editor)
+QVariant FlagsProperty::editorData(QWidget* editor)
 {
     CheckableComboBox* combo = 0;
-    //TODO: maybe malformed if statment or put brackets to make gcc happy
+    // TODO: maybe malformed if statment or put brackets to make gcc happy
     if (combo = qobject_cast<CheckableComboBox*>(editor))
     {
         int result = 0;
         QModelIndexList indexList = combo->checkedIndexes();
-        foreach(const QModelIndex &idx, indexList)
+        foreach (const QModelIndex& idx, indexList)
         {
             result |= m_enumIndices[idx.row()];
         }
@@ -159,10 +171,9 @@ QVariant FlagsProperty::editorData(QWidget *editor)
 /////////////////////////////////////////////////////////////////////////////////////////////
 void FlagsProperty::checkedIndexesChanged()
 {
-    CheckableComboBox *comboBox = qobject_cast<CheckableComboBox*>(m_comboBox);
+    CheckableComboBox* comboBox = qobject_cast<CheckableComboBox*>(m_comboBox);
     if (comboBox && !m_inModification)
     {
         setValue(editorData(comboBox));
     }
-    
 }

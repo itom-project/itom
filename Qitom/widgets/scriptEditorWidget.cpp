@@ -1017,7 +1017,7 @@ void ScriptEditorWidget::menuComment()
             lineTextTrimmed = lineTextFull.trimmed();
 
             searchIndex = lineTextFull.indexOf(lineTextTrimmed);
-            if (searchIndex >= 0)
+            if (searchIndex >= 0 && !lineTextTrimmed.isEmpty())
             {
                 QTextCursor cursor = setCursorPosition(i, searchIndex, false);
                 cursor.insertText("# ");
@@ -1973,7 +1973,7 @@ void ScriptEditorWidget::triggerCodeChecker()
 //----------------------------------------------------------------------------------------------------------------------------------
 //! slot invoked by timer
 /*!
-    This slot is invoked by the timer to trigger the syntax check. The intervall is set in the option dialog.
+    This slot is invoked by the timer to trigger the syntax check. The interval is set in the option dialog.
     \sa codeCheckResultsReady, triggerCodeChecker
 */
 void ScriptEditorWidget::updateSyntaxCheck()
@@ -2567,9 +2567,10 @@ void ScriptEditorWidget::print()
     else
     {
         ScriptEditorPrinter printer(QPrinter::HighResolution);
-        printer.setPageSize(QPagedPaintDevice::A4);
-        printer.setOrientation(QPrinter::Portrait);
-        printer.setPageMargins(20, 15, 20, 15, QPrinter::Millimeter);
+
+        printer.setPageSize(QPageSize(QPageSize::A4));
+        printer.setPageOrientation(QPageLayout::Portrait);
+        printer.setPageMargins(QMarginsF(20, 15, 20, 15), QPageLayout::Millimeter);
 
         if (hasNoFilename() == false)
         {

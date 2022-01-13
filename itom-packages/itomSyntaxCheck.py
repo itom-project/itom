@@ -519,9 +519,14 @@ if _HAS_FLAKE8:
             application.register_plugin_options()
             application.parse_configuration_and_cli(config_finder, remaining_args)
 
-            config_parser = config.MergedConfigParser(
-                option_manager=application.option_manager, config_finder=config_finder,
-            )
+            if flake8.__version__ < "4.0.0":
+                config_parser = config.MergedConfigParser(
+                    option_manager=application.option_manager, config_finder=config_finder,
+                )
+            else:
+                config_parser = config.ConfigParser(
+                    option_manager=application.option_manager, config_finder=config_finder,
+                )
 
         else:  # for older versions of flake8 < 3.8.0
             application.parse_preliminary_options_and_args(

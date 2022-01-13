@@ -159,7 +159,7 @@ RetVal HelpSystem::scanDocumentationFiles(QStringList &qchFiles, quint16 &checks
     int i;
 
     //documentation folder
-    appPath = QDir::cleanPath(QCoreApplication::applicationDirPath());
+    appPath.setPath(QDir::cleanPath(QCoreApplication::applicationDirPath()));
     i=1;
     while(appPath.exists("docs/userDoc") == false && i > 0)
     {
@@ -217,7 +217,7 @@ RetVal HelpSystem::scanPluginQhpFiles(quint16 &checksum)
     int i;
     
     //plugin base folder
-    appPath = QDir::cleanPath(QCoreApplication::applicationDirPath());
+    appPath.setPath(QDir::cleanPath(QCoreApplication::applicationDirPath()));
     i=1;
     while(appPath.exists("plugins") == false && i > 0)
     {
@@ -562,7 +562,7 @@ RetVal HelpSystem::buildPluginHelp(quint16 checksum)
             if (info.isDir())
             {
                 qDebug() << info.absoluteFilePath();
-                thisPluginDir = info.absoluteFilePath();
+                thisPluginDir.setPath(info.absoluteFilePath());
                 thisPluginDocsDir = thisPluginDir;
                 if (thisPluginDocsDir.cd("docs"))
                 {

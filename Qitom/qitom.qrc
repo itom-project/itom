@@ -104,6 +104,7 @@
         <file>icons/fileSave.png</file>
         <file>icons/fileSaveAll.png</file>
         <file>icons/fileSaveAs.png</file>
+        <file>icons/exportToCsv.svg</file>
         <file>icons/close.png</file>
         <file>icons/new.png</file>
         <file>icons/open.png</file>
@@ -115,6 +116,8 @@
         <file>icons/dirCopy.png</file>
         <file>icons/dirPaste.png</file>
         <file>icons/clipboard.png</file>
+        <file>icons/tableExport.svg</file>
+        <file>icons/tableExportSelection.svg</file>
     </qresource>
     <qresource prefix="/breakpoints">
         <file>icons/itomBreak.png</file>
@@ -231,6 +234,14 @@
         <file>icons/color_stop_add.png</file>
         <file>icons/color_stop_remove.png</file>
         <file>icons/color_stop_equidistant.png</file>
+        <file>icons/resizeColumnsToContent.svg</file>
+        <file>icons/heatmap.svg</file>
+        <file>icons/heatmap_ryg.svg</file>
+        <file>icons/heatmap_gyr.svg</file>
+        <file>icons/heatmap_rwg.svg</file>
+        <file>icons/heatmap_gwr.svg</file>
+        <file>icons/heatmap_off.svg</file>
+        <file>icons/displayDetails.svg</file>
     </qresource>
     <qresource prefix="/measurement">
         <file>icons/itom_icons/meas.png</file>

@@ -18,5 +18,12 @@
         <file alias="icons/find.png">icons/find.png</file>
         <file alias="icons/leftAlign.png">icons/leftAlign.png</file>
     </qresource>
+    <qresource prefix="/general">
+        <file alias="icons/decimals.png">icons/decimals.png</file>
+        <file alias="icons/number_format.png">icons/number_format.png</file>
+    </qresource>
+    <qresource prefix="/table">
+        <file alias="icons/clearSelection.svg">icons/clearSelection.svg</file>
+    </qresource>
 </RCC>
 

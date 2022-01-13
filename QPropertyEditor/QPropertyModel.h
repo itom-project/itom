@@ -48,42 +48,42 @@ public:
     virtual ~QPropertyModel();
 
     /// QAbstractItemModel implementation
-    QModelIndex index(int row, int column, const QModelIndex & parent = QModelIndex()) const;    
+    QModelIndex index(int row, int column, const QModelIndex& parent = QModelIndex()) const;
 
     /// QAbstractItemModel implementation
-    QModelIndex parent(const QModelIndex & index) const;
+    QModelIndex parent(const QModelIndex& index) const;
     /// QAbstractItemModel implementation
-    int rowCount(const QModelIndex & parent = QModelIndex()) const;
+    int rowCount(const QModelIndex& parent = QModelIndex()) const;
     /// QAbstractItemModel implementation
-    int columnCount (const QModelIndex & parent = QModelIndex()) const;
+    int columnCount(const QModelIndex& parent = QModelIndex()) const;
     /// QAbstractItemModel implementation
-    QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const;
+    QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
 
     /// QAbstractItemModel implementation
-    bool setData(const QModelIndex & index, const QVariant & value, int role = Qt::EditRole);
+    bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole);
     /// QAbstractItemModel implementation
-    Qt::ItemFlags flags(const QModelIndex & index) const;
+    Qt::ItemFlags flags(const QModelIndex& index) const;
 
     /// QAbstractItemModel implementation
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
-    
+
     /// QAbstractItemModel implementation
-    QModelIndex buddy(const QModelIndex & index) const;
+    QModelIndex buddy(const QModelIndex& index) const;
 
     /**
      * Adds the user properties of the given class to the QPropertyModel instance
-     * 
-     * @param propertyObject the class inherited from QObject that contains user properties that should be 
-     *        managed by this instance
+     *
+     * @param propertyObject the class inherited from QObject that contains user properties that
+     * should be managed by this instance
      */
     void addItem(QObject* propertyObject);
 
     /**
      * Creates a dataChanged signal for the given object
-     * @param propertyObject the instance of a QObject based class that should be updated 
+     * @param propertyObject the instance of a QObject based class that should be updated
      * @param parent optional model index the propertyObject is child of
      */
-    void updateItem(QObject* propertyObject, const QModelIndex& parent = QModelIndex()) ;
+    void updateItem(QObject* propertyObject, const QModelIndex& parent = QModelIndex());
 
     /**
      * Removes all objects from the model
@@ -94,27 +94,31 @@ public:
      * Adds custom callback that will be used to create Property instances for custom datatypes
      */
     void registerCustomPropertyCB(QPropertyEditorWidget::UserTypeCB callback);
-        
+
     /**
      * Adds custom callback that will be used to create Property instances for custom datatypes
      */
     void unregisterCustomPropertyCB(QPropertyEditorWidget::UserTypeCB callback);
 
-    void setSorted(bool value);
+    void setGroupByInheritance(bool enabled);
 
-    bool sorted() const { return m_sorted; }
+    bool groupByInheritance() const
+    {
+        return m_groupByInheritance;
+    }
+
+    QSize span(const QModelIndex &index) const;
 
 private:
     /// Adds dynamic properties to the model
     void addDynamicProperties(Property* parent, QObject* propertyObject);
 
     /// The Root Property for all objects
-    Property*                                    m_rootItem;
+    Property* m_rootItem;
 
     /// Custom callback
-    QList<QPropertyEditorWidget::UserTypeCB>    m_userCallbacks;
+    QList<QPropertyEditorWidget::UserTypeCB> m_userCallbacks;
 
-    bool m_sorted;
-    
+    bool m_groupByInheritance;
 };
 #endif

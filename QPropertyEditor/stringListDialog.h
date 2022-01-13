@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2021, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
@@ -10,7 +10,7 @@
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
-   
+
     In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
@@ -34,16 +34,25 @@
 
 class QListWidgetItem;
 
-class StringListDialog: public QDialog
+class StringListDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit StringListDialog(const QStringList &stringList, QWidget *parent);
+    explicit StringListDialog(const QStringList& stringList, QWidget* parent);
 
-    QListWidget *listWidget() const { return ui.listWidget; }
-    void setNewItemText(const QString &tpl) { m_newItemText = tpl; }
-    QString newItemText() const { return m_newItemText; }
+    QListWidget* listWidget() const
+    {
+        return ui.listWidget;
+    }
+    void setNewItemText(const QString& tpl)
+    {
+        m_newItemText = tpl;
+    }
+    QString newItemText() const
+    {
+        return m_newItemText;
+    }
     void setCurrentIndex(int idx);
     QStringList getStringList();
 
@@ -53,10 +62,10 @@ private slots:
     void on_moveListItemUpButton_clicked();
     void on_moveListItemDownButton_clicked();
     void on_listWidget_currentRowChanged();
-    void on_listWidget_itemDoubleClicked(QListWidgetItem *item);
+    void on_listWidget_itemDoubleClicked(QListWidgetItem* item);
 
 protected:
-    virtual void setItemData(int role, const QVariant &v);
+    virtual void setItemData(int role, const QVariant& v);
     virtual QVariant getItemData(int role) const;
 
 private:

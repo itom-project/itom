@@ -178,8 +178,11 @@ int main(int argc, char *argv[])
     //in debug mode uncaught exceptions as well as uncaught
     //cv::Exceptions will be parsed and also passed to qWarning and qFatal.
     cv::redirectError(itomCvError);
-    QItomApplication a(argc, argv);
+    
+    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
 
+    QItomApplication itomApplication(argc, argv);
 
     //itom modifies its local environment variables like PATH such that plugin libraries, python... that are loaded later
     //benefit from necessary pathes that are then guaranteed to be found.
@@ -196,7 +199,7 @@ int main(int argc, char *argv[])
     //          used for matplotlib configurations. For instance it is recommended to modify the backend variable in this file,
     //          such that matplotlib renders its content inside of an itom widget per default.
     //parse lib path:
-    QDir appLibPath = QDir(a.applicationDirPath());
+    QDir appLibPath = QDir(itomApplication.applicationDirPath());
     if(appLibPath.exists("lib"))
     {
         appLibPath.cd("lib");
@@ -210,7 +213,7 @@ int main(int argc, char *argv[])
     libDir = QDir::toNativeSeparators( libDir );
 
     //and designer path
-    appLibPath = QDir(a.applicationDirPath());
+    appLibPath = QDir(itomApplication.applicationDirPath());
     if(appLibPath.exists("designer"))
     {
         appLibPath.cd("designer");
@@ -223,7 +226,7 @@ int main(int argc, char *argv[])
     QString designerDir = QDir::cleanPath(appLibPath.filePath(""));
 
     //search for mpl_itom path in itom-packages
-    appLibPath = QDir(a.applicationDirPath());
+    appLibPath = QDir(itomApplication.applicationDirPath());
     if(appLibPath.exists("itom-packages"))
     {
         appLibPath.cd("itom-packages");
@@ -258,9 +261,9 @@ int main(int argc, char *argv[])
 #else
 #endif
     newpath += libDir.toLatin1(); //set libDir at the beginning of the path-variable
-    newpath += pathSep;
+    newpath += pathSep.toLatin1();
     newpath += designerDir.toLatin1();
-    newpath += pathSep;
+    newpath += pathSep.toLatin1();
     newpath += oldpath;
 #ifdef WIN32
     _putenv(newpath.constData());

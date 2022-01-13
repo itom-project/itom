@@ -121,7 +121,7 @@ void DialogIconBrowser::loadFinished()
     ui.treeWidget->expandAll();
     ui.treeWidget->sortItems(0, Qt::AscendingOrder);
 
-    
+    ui.txtFilter->setFocus();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

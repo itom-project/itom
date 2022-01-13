@@ -75,7 +75,7 @@ ScriptDockWidget::ScriptDockWidget(const QString &title, const QString &objName,
         bool docked, bool isDockAvailable, 
         const ScriptEditorActions &commonActions, 
         BookmarkModel *bookmarkModel,
-        QWidget *parent, Qt::WindowFlags /*flags*/) :
+        QWidget* parent, Qt::WindowFlags /*flags*/) :
     AbstractDockWidget(docked, isDockAvailable, floatingWindow, movingEnabled, title, objName, parent),
     m_tab(nullptr),
     m_pWidgetFindWord(nullptr),
@@ -255,7 +255,7 @@ void ScriptDockWidget::fillNavigationClassComboBox(
 
         if (parent->m_type == OutlineItem::typeRoot)
         {
-            QVariant userData = qVariantFromValue(parent);
+            QVariant userData = QVariant::fromValue(parent);
             m_classBox->addItem(
                 parent->icon(),
                 parent->m_name,
@@ -267,7 +267,7 @@ void ScriptDockWidget::fillNavigationClassComboBox(
         {
             if (item->m_type == OutlineItem::typeClass)
             {
-                QVariant userData = qVariantFromValue(item);
+                QVariant userData = QVariant::fromValue(item);
 
                 if (prefix != "")
                 {
@@ -375,9 +375,16 @@ void methodBoxAddItem(
         QString methArgsElide = methArgs.left(
             std::max(0, maxLength - 4 - methPre.size() - methPost.size())
         ) + "...";
+        fullSig = QString("%1(%2)").arg(methPre, methArgsElide);
+
+        if (methPost != "")
+        {
+            fullSig += " -> " + methPost;
+        }
+
         methodBox->addItem(
             icon, 
-            QString("%1(%2) -> %3").arg(methPre, methArgsElide, methPost), 
+            fullSig,
             userData
         );
 
@@ -401,7 +408,7 @@ void ScriptDockWidget::fillNavigationMethodComboBox(
     // insert empty dummy item
     if (prefix == "")
     {
-        auto invalid = qVariantFromValue(QSharedPointer<OutlineItem>());
+        auto invalid = QVariant::fromValue(QSharedPointer<OutlineItem>());
         m_methodBox->addItem(QIcon(), "", invalid);
     }
 
@@ -412,7 +419,7 @@ void ScriptDockWidget::fillNavigationMethodComboBox(
 
     foreach(const auto &item, parent->m_childs)
     {
-        auto userData = qVariantFromValue(item);
+        auto userData = QVariant::fromValue(item);
 
         switch (item->m_type)
         {
@@ -1591,14 +1598,13 @@ void ScriptDockWidget::createActions()
     m_tabCloseOthersAction = new ShortcutAction(QIcon(), tr("Close Others"), this);
     m_tabCloseOthersAction->connectTrigger(this, SLOT(mnuTabCloseOthers()));
 
-    m_tabCloseAllAction = new ShortcutAction(QIcon(), tr("Close All"), this);
+    m_tabCloseAllAction = new ShortcutAction(QIcon(":/plugins/icons/closeAll.png"), tr("Close All"), this);
     m_tabCloseAllAction->connectTrigger(this, SLOT(mnuTabCloseAll()));
 
-    m_tabDockAction = new ShortcutAction(QIcon(), tr("Dock"), this);
+    m_tabDockAction = new ShortcutAction(QIcon(":/dockWidget/icons/dockButtonGlyph.png"), tr("Dock"), this);
     m_tabDockAction->connectTrigger(this, SLOT(mnuTabDock()));
 
-    m_tabUndockAction = new ShortcutAction(QIcon(), tr("Undock"), this);
-    m_tabUndockAction = new ShortcutAction(QIcon(), tr("Undock"), this);
+    m_tabUndockAction = new ShortcutAction(QIcon(":/dockWidget/icons/undockButtonGlyph.png"), tr("Undock"), this);
     m_tabUndockAction->connectTrigger(this, SLOT(mnuTabUndock()));
 
     m_newScriptAction = new ShortcutAction(QIcon(":/files/icons/new.png"), tr("New"), 
@@ -1728,7 +1734,7 @@ void ScriptDockWidget::createActions()
     m_insertCodecAct = new ShortcutAction(tr("&Insert Codec..."), this);
     m_insertCodecAct->connectTrigger(this, SLOT(mnuInsertCodec()));
 
-    m_copyFilename = new ShortcutAction(QIcon(":/application/icons/adBlockAction.png"), tr("Copy Filename"), this);
+    m_copyFilename = new ShortcutAction(QIcon(":/editor/icons/editCopy.png"), tr("Copy Filename"), this);
     m_copyFilename->connectTrigger(this, SLOT(mnuCopyFilename()));
 
     m_findSymbols = new ShortcutAction(QIcon(":/classNavigator/icons/at.png"), tr("Fast symbol search..."),
@@ -2676,9 +2682,11 @@ void ScriptDockWidget::findTextExpr(QString expr, bool regExpr, bool caseSensiti
 void ScriptDockWidget::replaceTextExpr(QString expr, QString replace)
 {
     ScriptEditorWidget* sew = getCurrentEditor();
-    if (sew != NULL)
+
+    if (sew != nullptr)
     {
         sew->replace(replace);
+        sew->updateSyntaxCheck();
     }
 }
 
@@ -2690,7 +2698,8 @@ void ScriptDockWidget::replaceAllExpr(QString expr, QString replace, bool regExp
     int count = 0;
 
     ScriptEditorWidget* sew = getCurrentEditor();
-    if (sew != NULL)
+
+    if (sew != nullptr)
     {
         int tempLineFrom, tempIndexFrom, tempLineTo, tempIndexTo;
         int lastLineFrom = -1;
@@ -2746,11 +2755,13 @@ void ScriptDockWidget::replaceAllExpr(QString expr, QString replace, bool regExp
             count++;
         }
         sew->endUndoAction();
-
+        
         if (!inRange && lastLineFrom > -1)
         {
             sew->setSelection(lastLineFrom, lastIndexFrom, lastLineTo, lastIndexTo);
         }
+
+        sew->updateSyntaxCheck();
     }
 
     if (count == 1)

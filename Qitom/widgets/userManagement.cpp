@@ -126,10 +126,8 @@ void DialogUserManagement::loadUserList()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-DialogUserManagement::DialogUserManagement(QWidget *parent, Qt::WindowFlags f) :
-    QDialog(parent),
-    m_userModel(NULL),
-    m_currentUserName("")
+DialogUserManagement::DialogUserManagement(QWidget* parent, Qt::WindowFlags f) :
+    QDialog(parent), m_userModel(NULL), m_currentUserName("")
 {
     ui.setupUi(this);
 
@@ -259,8 +257,8 @@ void DialogUserManagement::on_userList_doubleClicked(const QModelIndex & index)
         DialogUserManagementEdit *dlg = new DialogUserManagementEdit(
             m_userModel->index(index.row(), UserModel::umiIniFile).data().toString(), 
             m_userModel, 
-            NULL, 
-            0, 
+            nullptr, 
+            Qt::WindowFlags(), 
             !m_userModel->data(index, Qt::EditRole).isValid());
         
         if (dlg->exec() == QDialog::Accepted)

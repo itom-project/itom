@@ -33,6 +33,7 @@
 #include <qstyleoption.h>
 #include <qstylepainter.h>
 #include <qtimer.h>
+#include <qscreen.h>
 
 #include <qtextdocument.h>
 #include <qdebug.h>
@@ -88,12 +89,33 @@ void ToolTipLabel::reuseTip(const QString &text, int msecDisplayTime, const QPoi
     updateSize(pos);
     restartExpireTimer(msecDisplayTime);
 }
-void  ToolTipLabel::updateSize(const QPoint &pos)
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+void ToolTipLabel::updateSize(const QPoint& pos)
+{
+    // d_func()->setScreenForPoint(pos);
+    // Ensure that we get correct sizeHints by placing this window on the right screen.
+    QFontMetrics fm(font());
+    QSize extra(1, 0);
+    // Make it look good with the default ToolTip font on Mac, which has a small descent.
+    if (fm.descent() == 2 && fm.ascent() >= 11)
+        ++extra.rheight();
+    setWordWrap(Qt::mightBeRichText(text()));
+    QSize sh = sizeHint();
+    const QScreen* screen = getTipScreen(pos, this);
+    if (!wordWrap() && sh.width() > screen->geometry().width())
+    {
+        setWordWrap(true);
+        sh = sizeHint();
+    }
+    resize(sh + extra);
+}
+#else
+void ToolTipLabel::updateSize(const QPoint& pos)
 {
 #ifndef Q_OS_WINRT
     // ### The code below does not always work well on WinRT
     // (e.g COIN fails an auto test - tst_ItomToolTip::qtbug64550_stylesheet - QTBUG-72652)
-    //d_func()->setScreenForPoint(pos);
+    // d_func()->setScreenForPoint(pos);
 #endif
     // Ensure that we get correct sizeHints by placing this window on the right screen.
     QFontMetrics fm(font());
@@ -104,13 +126,16 @@ void  ToolTipLabel::updateSize(const QPoint &pos)
     setWordWrap(Qt::mightBeRichText(text()));
     QSize sh = sizeHint();
     // ### When the above WinRT code is fixed, windowhandle should be used to find the screen.
-    const qreal screenWidth = QApplication::desktop()->screenGeometry(pos).width();
-    if (!wordWrap() && sh.width() > screenWidth) {
+    int screenWidth = QApplication::desktop()->geometry().width();
+    if (!wordWrap() && sh.width() > screenWidth)
+    {
         setWordWrap(true);
         sh = sizeHint();
     }
     resize(sh + extra);
 }
+#endif
+
 void ToolTipLabel::paintEvent(QPaintEvent *ev)
 {
     QStylePainter p(this);
@@ -225,13 +250,25 @@ bool ToolTipLabel::eventFilter(QObject *o, QEvent *e)
     return false;
 }
 
-int ToolTipLabel::getTipScreen(const QPoint &pos, QWidget *w)
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+QScreen *ToolTipLabel::getTipScreen(const QPoint& pos, QWidget* w)
+{
+    QScreen* guess = w ? w->screen() : QGuiApplication::primaryScreen();
+    QScreen* exact = guess->virtualSiblingAt(pos);
+    return exact ? exact : guess;
+}
+#else
+int ToolTipLabel::getTipScreen(const QPoint& pos, QWidget* w)
 {
     if (QApplication::desktop()->isVirtualDesktop())
+
         return QApplication::desktop()->screenNumber(pos);
+
     else
+
         return QApplication::desktop()->screenNumber(w);
 }
+#endif
 
 void ToolTipLabel::placeTip(const QPoint &pos, QWidget *w, const QPoint &alternativeTopRightPos /*= QPoint()*/)
 {
@@ -253,7 +290,7 @@ void ToolTipLabel::placeTip(const QPoint &pos, QWidget *w, const QPoint &alterna
     }
 #endif //QT_NO_STYLE_STYLESHEET
 
-    QRect screen = QApplication::desktop()->screenGeometry(getTipScreen(pos, w));
+    QRect screen = QApplication::desktop()->geometry();
 
     QPoint p = pos;
     p += QPoint(2,16);
@@ -355,7 +392,7 @@ void ToolTip::showText(const QPoint &pos, const QString &text, QWidget *w, const
         // raised when the tooltip will be shown
         QT_WARNING_PUSH
             QT_WARNING_DISABLE_DEPRECATED
-            new ToolTipLabel(text, pos, QApplication::desktop()->screen(ToolTipLabel::getTipScreen(pos, w)), msecDisplayTime);
+            new ToolTipLabel(text, pos, qobject_cast<QWidget*>(QApplication::desktop()->parent()), msecDisplayTime);
         QT_WARNING_POP
 #else
         new ToolTipLabel(text, pos, w, msecDisplayTime); // sets ToolTipLabel::instance to itself

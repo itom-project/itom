@@ -42,12 +42,16 @@
     #if (defined _DEBUG) && (defined WIN32)
         #undef _DEBUG
         #include "pythonWrapper.h"
-        #include "node.h"
+        #if (PY_VERSION_HEX < 0x03070000)
+            #include "node.h"
+        #endif
         #include "numpy/arrayobject.h"
         #define _DEBUG
     #else
         #include "pythonWrapper.h"
-        #include "node.h"
+        #if (PY_VERSION_HEX < 0x03070000)
+            #include "node.h"
+        #endif
         #include "numpy/arrayobject.h"
     #endif
 
@@ -75,7 +79,8 @@
 #include <qset.h>
 #include <qpointer.h>
 #include <qatomic.h>
-
+#include <qelapsedtimer.h>
+#include <qtimer.h>
 
 /* definition and macros */
 
@@ -124,7 +129,7 @@ public:
     Q_INVOKABLE ito::RetVal pythonShutdown(ItomSharedSemaphore *aimWait = NULL);            //shutdown
     Q_INVOKABLE ito::RetVal stringEncodingChanged();
 
-    inline ito::BreakPointModel *getBreakPointModel() const { return bpModel; }
+    inline ito::BreakPointModel *getBreakPointModel() const { return m_bpModel; }
     inline bool isPythonBusy() const                { return m_pythonState != ito::pyStateIdle; }
     inline bool isPythonDebugging() const           { return (m_pythonState == ito::pyStateDebuggingWaitingButBusy || m_pythonState == ito::pyStateDebugging || m_pythonState == ito::pyStateDebuggingWaiting); }
     inline bool isPythonDebuggingAndWaiting() const { return m_pythonState == ito::pyStateDebuggingWaiting; }
@@ -198,6 +203,36 @@ private:
         DictNoAction
     };
 
+    struct PythonWorkspaceUpdateQueue
+    {
+        PythonWorkspaceUpdateQueue() :
+            actionGlobal(DictNoAction),
+            actionLocal(DictNoAction),
+            timerElapsedSinceFirstAction(nullptr),
+            timerElapsedSinceLastUpdate(nullptr)
+        {
+        }
+
+        void reset()
+        {
+            actionGlobal = DictNoAction;
+            actionLocal = DictNoAction;
+            timerElapsedSinceLastUpdate->stop();
+            timerElapsedSinceFirstAction->stop();
+        }
+
+        //!< the elapsed time since the first action, different than
+        //!< DictNoAction has been added to the queue.
+        QTimer *timerElapsedSinceFirstAction;
+
+        //!< the elapsed time since the last action, different than
+        //!< DictNoAction has been added to the queue.
+        QTimer *timerElapsedSinceLastUpdate;
+
+        DictUpdateFlag actionGlobal;
+        DictUpdateFlag actionLocal;
+    };
+
     static PythonEngine *getInstanceInternal();
 
     /*!< returns reference to local dictionary (workspace of method, 
@@ -210,10 +245,10 @@ private:
     void setGlobalDictionary(PyObject* mainDict = NULL);
     void setLocalDictionary(PyObject* localDict);
 
-    void emitPythonDictionary(DictUpdateFlag globalDict, DictUpdateFlag localDict, bool lockGIL);
+    void updatePythonWorkspaces(DictUpdateFlag globalDict, DictUpdateFlag localDict, bool lockGIL, bool delayExecution = false);
 
     ito::RetVal pickleDictionary(PyObject *dict, const QString &filename);
-    ito::RetVal unpickleDictionary(PyObject *destinationDict, const QString &filename, bool overwrite);
+    ito::RetVal unpickleDictionary(PyObject *destinationDict, const QString &filename, bool overwrite, bool replaceKeyByValidPyIdentifier);
 
     //!< runs the given Python string command
     void pythonRunString(QString cmd);
@@ -255,35 +290,32 @@ private:
     bool m_started;
 	CodeCheckerOptions m_codeCheckerOptions;
 
-    QMutex dbgCmdMutex;
-    QMutex pythonStateChangeMutex;
-    QDesktopWidget *m_pDesktopWidget;
-    QQueue<ito::tPythonDbgCmd> debugCommandQueue;
-    ito::tPythonDbgCmd debugCommand;
+    QMutex m_dbgCmdMutex;
+    QMutex m_pythonStateChangeMutex;
+    QQueue<ito::tPythonDbgCmd> m_debugCommandQueue;
     
     ito::tPythonState m_pythonState;
     
-    ito::BreakPointModel *bpModel;
+    ito::BreakPointModel *m_bpModel;
 
-    PyObject* mainModule;          //!< main module of python (builtin) [borrowed]
+    PyObject* m_mainModule;          //!< main module of python (builtin) [borrowed]
     PyObject* m_pMainDictionary;   //!< main dictionary of python [borrowed]
     PyObject* m_pLocalDictionary;  //!< local dictionary of python [borrowed], usually NULL unless if debugger is in "interaction-mode", then m_pGlobalDictionary is equal to the local dictionary of the current frame
     PyObject* m_pGlobalDictionary; //!< global dictionary of python [borrowed], equals to m_pMainDictionary unless if debugger is in "interaction-mode", then m_pGlobalDictionary is equal to the global dictionary of the current frame
-    PyObject *itomDbgModule;       //!< debugger module
-    PyObject *itomDbgInstance;     //!< debugger instance
-    PyObject *itomModule;          //!< itom module [new ref]
-    PyObject *itomFunctions;       //!< ito functions [additional python methods] [new ref]
+    PyObject *m_itomDbgModule;       //!< debugger module
+    PyObject *m_itomDbgInstance;     //!< debugger instance
+    PyObject *m_itomModule;          //!< itom module [new ref]
+    PyObject *m_itomFunctions;       //!< ito functions [additional python methods] [new ref]
     PyObject *m_pyModGC;
     PyObject *m_pyModCodeChecker;
 	bool m_pyModCodeCheckerHasPyFlakes; //!< true if m_pyModCodeChecker could be loaded and pretends to have the syntax check feature (package: pyflakes)
 	bool m_pyModCodeCheckerHasFlake8; //!< true if m_pyModCodeChecker could be loaded and pretends to have the syntax and style check feature (package: flake8)
     
     QSharedPointer<PythonJediRunner> m_jediRunner;
-
     Qt::HANDLE m_pythonThreadId;
+    PyObject *m_dictUnicode;
+    PyObject *m_slotsUnicode;
 
-    PyObject *dictUnicode;
-    PyObject *slotsUnicode;
 
     QSet<ito::PyWorkspaceContainer*> m_mainWorkspaceContainer;
     QSet<ito::PyWorkspaceContainer*> m_localWorkspaceContainer;
@@ -293,7 +325,7 @@ private:
     QString m_pythonExecutable; //!< absolute path to the python executable
 
     bool m_executeInternalPythonCodeInDebugMode; //!< if true, button events, user interface connections to python methods... will be executed by debugger
-    PyMethodDef* PythonAdditionalModuleITOM;
+
 
     //!< decides if itom is automatically included in every source file before it is handed to the syntax checker
     bool m_includeItomImportBeforeCodeAnalysis;
@@ -317,20 +349,17 @@ private:
 
     AutoReload m_autoReload;
 
+    PythonWorkspaceUpdateQueue m_pyWorkspaceUpdateQueue;
+
     //!< debugger functionality
     static PyMethodDef PyMethodItomDbg[];
     static PyModuleDef PyModuleItomDbg;
     static PyObject* PyInitItomDbg(void);
     static PyObject* PyDbgCommandLoop(PyObject *pSelf, PyObject *pArgs);
 
-    //helper methods
-    //static PyObject* checkForTimeoutHelper(ItomSharedSemaphore* semaphore, int timeout, PyObject *retValueOk);
-
     //other static members
-    static QMutex instantiated;
     static QMutex instancePtrProtection;
     static QString fctHashPrefix;
-
     static PythonEngine* instance;
 
     QAtomicInt m_interruptCounter; //protects that a python interrupt can only be placed if there is no interrupt event queued yet.
@@ -353,6 +382,9 @@ signals:
     void pythonAutoReloadChanged(bool enabled, bool checkFile, bool checkCmd, bool checkFct);
     void clearCommandLine();
     void startInputCommandLine(QSharedPointer<QByteArray> buffer, ItomSharedSemaphore *semaphore);
+
+private slots:
+    void processPythonWorkspaceUpdateQueue();
 
 public slots:
     void pythonExecStringFromCommandLine(QString cmd);
@@ -379,7 +411,7 @@ public slots:
     ito::RetVal shutdownBreakPointDebugConnections();
 
     bool renameVariable(bool globalNotLocal, const QString &oldFullItemName, QString newKey, ItomSharedSemaphore *semaphore = NULL);
-    bool deleteVariable(bool globalNotLocal, const QStringList &fullItemNames, ItomSharedSemaphore *semaphore = NULL);
+    bool deleteVariable(bool globalNotLocal, const QStringList &fullItemNames);
     ito::RetVal pickleVariables(bool globalNotLocal, QString filename, QStringList varNames, ItomSharedSemaphore *semaphore = NULL);
     ito::RetVal pickleSingleParam(QString filename, QSharedPointer<ito::Param> value, const QString &valueName, ItomSharedSemaphore *semaphore = NULL);
     ito::RetVal unpickleVariables(bool globalNotLocal, QString filename, QString packedVarName, ItomSharedSemaphore *semaphore = NULL);

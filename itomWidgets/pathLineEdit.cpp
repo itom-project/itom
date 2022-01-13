@@ -34,7 +34,7 @@
 #include <QComboBox>
 #include <QCompleter>
 #include <QDebug>
-#include <QDirModel>
+#include <QFileSystemModel>
 #include <QFileDialog>
 #include <QHBoxLayout>
 #include <QLineEdit>
@@ -235,9 +235,9 @@ QSize PathLineEditPrivate::recomputeSizeHint(QSize& sh)const
             textWidth = this->LineEdit->fontMetrics().boundingRect(this->LineEdit->text()).width() + 8;
             }
           break;
-        case QComboBox::AdjustToMinimumContentsLength:
+        /*case QComboBox::AdjustToMinimumContentsLength:
         default:
-          ;
+          ;*/
         }
       }
 
@@ -256,7 +256,11 @@ QSize PathLineEditPrivate::recomputeSizeHint(QSize& sh)const
     sh.rwidth() = frame + textWidth + browseWidth;
     sh.rheight() = height;
   }
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+  return sh;
+#else
   return sh.expandedTo(QApplication::globalStrut());
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -265,10 +269,11 @@ void PathLineEditPrivate::updateFilter()
   Q_Q(PathLineEdit);
   // help completion for the QComboBox::QLineEdit
   QCompleter *newCompleter = new QCompleter(q);
-  newCompleter->setModel(new QDirModel(
-                           ctk::nameFiltersToExtensions(this->NameFilters),
-                           this->Filters | QDir::NoDotAndDotDot | QDir::AllDirs,
-                           QDir::Name|QDir::DirsLast, newCompleter));
+  QFileSystemModel* fileSystemModel = new QFileSystemModel(newCompleter);
+  fileSystemModel->setNameFilters(ctk::nameFiltersToExtensions(this->NameFilters));
+  fileSystemModel->setFilter(this->Filters | QDir::NoDotAndDotDot | QDir::AllDirs);
+  newCompleter->setModel(fileSystemModel);
+
   this->LineEdit->setCompleter(newCompleter);
 
   QObject::connect(this->LineEdit->completer()->completionModel(), SIGNAL(layoutChanged()),

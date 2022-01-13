@@ -25,7 +25,7 @@ if(${CMAKE_VERSION} VERSION_LESS 3.12)
 endif()
   
 include(CMakeParseArguments)
-
+ 
 # _itom_qt5_parse_qrc_file(infile _out_depends _rc_depends)
 # internal
 function(_ITOM_QT5_PARSE_QRC_FILE infile _out_depends _rc_depends)

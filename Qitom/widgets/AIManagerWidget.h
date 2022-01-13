@@ -20,8 +20,7 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef ADDINMANAGERWIDGET_H
-#define ADDINMANAGERWIDGET_H
+#pragma once
 
 #include "../organizer/uiOrganizer.h"
 #include "../../common/addInInterface.h"
@@ -85,7 +84,7 @@ namespace ito
             void createStatusBar(){}
             void updateActions();
             void updatePythonActions(){ updateActions(); }
-            void CloseInstance(const QModelIndex index);
+            void closeInstance(const QModelIndex index);
 
         private:
             QTreeView *m_pAIManagerView;
@@ -122,4 +121,3 @@ namespace ito
 
 };  // namespace ito
 
-#endif

@@ -252,9 +252,12 @@ void HelpViewer::setCollectionFile(const QString &collectionFile)
 void HelpViewer::search()
 {
 	QHelpSearchEngine *searchEngine = m_pHelpEngine->searchEngine();
-	QHelpSearchQueryWidget *query = searchEngine->queryWidget();
-	QList<QHelpSearchQuery> queryList = query->query();
-	searchEngine->search(queryList);
+    QHelpSearchQueryWidget* query = searchEngine->queryWidget();
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 9, 0))
+    searchEngine->search(query->searchInput());
+#else
+    searchEngine->search(query->query());
+#endif
 }
 
 //----------------------------------------------------------------------------------------
@@ -387,7 +390,7 @@ void HelpViewer::findNextWord(QString expr, bool regExpr, bool caseSensitive, bo
 {
 	if (forward)
 	{
-		m_pView->findText(expr, 0);
+		m_pView->findText(expr, QWebEnginePage::FindFlag());
 	}
 	else
 	{
@@ -426,7 +429,7 @@ void HelpViewer::loadFinished(bool ok)
 void HelpViewer::hideFindWordBar()
 {
 	m_pFindWord->hide();
-	m_pView->findText("", 0);
+	m_pView->findText("", QWebEnginePage::FindFlag());
 }
 
 //----------------------------------------------------------------------------------------

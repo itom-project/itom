@@ -208,8 +208,7 @@ void TimerModel::registerNewTimer(const QWeakPointer<QTimer>& timer, const QStri
         item.name = name;
         item.timer = timer;
         cacheItem(item);
-
-        connect(timer.data(), &QTimer::destroyed, this, &TimerModel::timerDestroyed);
+        connect(timer.toStrongRef().data(), &QTimer::destroyed, this, &TimerModel::timerDestroyed);
 
         beginInsertRows(QModelIndex(), m_timers.count(), m_timers.count());
         m_timers.append(item);
@@ -223,7 +222,7 @@ void TimerModel::timerDestroyed(QObject *timer)
     for (int idx = m_timers.size() - 1; idx >= 0; --idx)
     {
         if (m_timers[idx].timer.isNull() ||
-            m_timers[idx].timer.data() == timer)
+            m_timers[idx].timer.toStrongRef().data() == timer)
         {
             beginRemoveRows(QModelIndex(), idx, idx);
             m_timers.removeAt(idx);

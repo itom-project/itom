@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>838</width>
-    <height>603</height>
+    <width>792</width>
+    <height>698</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,20 +19,8 @@
   <property name="modal">
    <bool>false</bool>
   </property>
-  <layout class="QGridLayout" name="gridLayout_2">
-   <property name="leftMargin">
-    <number>9</number>
-   </property>
-   <property name="topMargin">
-    <number>9</number>
-   </property>
-   <property name="rightMargin">
-    <number>9</number>
-   </property>
-   <property name="bottomMargin">
-    <number>9</number>
-   </property>
-   <item row="0" column="0" colspan="2">
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
     <layout class="QGridLayout" name="gridLayout_5">
      <property name="leftMargin">
       <number>0</number>
@@ -270,48 +258,31 @@
         <attribute name="title">
          <string>Table</string>
         </attribute>
-        <layout class="QGridLayout" name="gridLayout_3">
-         <property name="leftMargin">
-          <number>6</number>
-         </property>
-         <property name="topMargin">
-          <number>6</number>
-         </property>
-         <property name="rightMargin">
-          <number>6</number>
-         </property>
-         <property name="bottomMargin">
-          <number>6</number>
-         </property>
-         <item row="0" column="0">
-          <widget class="DataObjectTable" name="dataTable">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="alternatingRowColors">
-            <bool>true</bool>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-           </property>
-           <property name="rowCount" stdset="0">
-            <number>3</number>
-           </property>
-           <property name="columnCount" stdset="0">
-            <number>3</number>
-           </property>
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+         <item>
+          <widget class="ito::ExtendedDataObjectTable" name="dataTable">
            <attribute name="verticalHeaderMinimumSectionSize">
             <number>20</number>
            </attribute>
            <attribute name="verticalHeaderDefaultSectionSize">
             <number>23</number>
            </attribute>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="lblSelectionInformation">
+           <property name="frameShape">
+            <enum>QFrame::NoFrame</enum>
+           </property>
+           <property name="frameShadow">
+            <enum>QFrame::Plain</enum>
+           </property>
+           <property name="text">
+            <string>&lt;Selection-Information&gt;</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
           </widget>
          </item>
         </layout>
@@ -380,131 +351,6 @@
            <item/>
            <item/>
            <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
-           <item/>
           </widget>
          </item>
         </layout>
@@ -513,41 +359,38 @@
      </item>
     </layout>
    </item>
-   <item row="1" column="0">
-    <spacer name="horizontalSpacer">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>40</width>
-       <height>20</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item row="1" column="1">
-    <widget class="QDialogButtonBox" name="buttonBox">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="standardButtons">
-      <set>QDialogButtonBox::Ok</set>
-     </property>
-    </widget>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <item>
+      <widget class="QDialogButtonBox" name="buttonBox">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="standardButtons">
+        <set>QDialogButtonBox::Ok</set>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
   </layout>
  </widget>
  <customwidgets>
   <customwidget>
-   <class>DataObjectTable</class>
-   <extends>QTableView</extends>
-   <header>dataObjectTable.h</header>
-  </customwidget>
-  <customwidget>
    <class>DataObjectMetaWidget</class>
    <extends>QTreeWidget</extends>
    <header>dataObjectMetaWidget.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ito::ExtendedDataObjectTable</class>
+   <extends>QTableView</extends>
+   <header>widgets/extendedDataObjectTable.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>

@@ -30,11 +30,12 @@
 
 #include "../itomWidgets/colorDialog.h"
 
-
+//-------------------------------------------------------------------------------------
 ColorCombo::ColorCombo(QWidget* parent /*= 0*/) : QComboBox(parent)
-{    
+{
     QStringList colorNames = QColor::colorNames();
-    for (int i = 0; i < colorNames.size(); ++i) {
+    for (int i = 0; i < colorNames.size(); ++i)
+    {
         QColor color(colorNames[i]);
         insertItem(i, colorNames[i]);
         setItemData(i, color, Qt::DecorationRole);
@@ -43,17 +44,18 @@ ColorCombo::ColorCombo(QWidget* parent /*= 0*/) : QComboBox(parent)
     connect(this, SIGNAL(currentIndexChanged(int)), this, SLOT(currentChanged(int)));
 }
 
-
+//-------------------------------------------------------------------------------------
 ColorCombo::~ColorCombo()
 {
 }
 
-
+//-------------------------------------------------------------------------------------
 QColor ColorCombo::color() const
 {
     return itemData(currentIndex(), Qt::DecorationRole).value<QColor>();
 }
 
+//-------------------------------------------------------------------------------------
 void ColorCombo::setColor(QColor color)
 {
     m_init = color;
@@ -61,23 +63,24 @@ void ColorCombo::setColor(QColor color)
     if (currentIndex() == -1)
     {
         addItem(color.name());
-        setItemData(count()-1, color, Qt::DecorationRole);
-        setCurrentIndex(count()-1);
+        setItemData(count() - 1, color, Qt::DecorationRole);
+        setCurrentIndex(count() - 1);
     }
 }
 
+//-------------------------------------------------------------------------------------
 void ColorCombo::currentChanged(int index)
 {
     if (itemData(index).isValid() && itemData(index) == QVariant((int)QVariant::UserType))
     {
         QColor color = ColorDialog::getColor(m_init, this, tr("Custom color"));
-        //QColor color = QColorDialog::getColor(m_init, this);        
+        // QColor color = QColorDialog::getColor(m_init, this);
         if (color.isValid())
         {
             if (findData(color, int(Qt::DecorationRole)) == -1)
             {
                 addItem(color.name());
-                setItemData(count()-1, color, Qt::DecorationRole);
+                setItemData(count() - 1, color, Qt::DecorationRole);
             }
             setCurrentIndex(findData(color, int(Qt::DecorationRole)));
             emit colorChanged(color);
@@ -90,6 +93,6 @@ void ColorCombo::currentChanged(int index)
     }
     else
     {
-        emit colorChanged( itemData(currentIndex(), Qt::DecorationRole).value<QColor>() );
+        emit colorChanged(itemData(currentIndex(), Qt::DecorationRole).value<QColor>());
     }
 }

@@ -25,8 +25,7 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef MARKERLEGENDWIDGET_H
-#define MARKERLEGENDWIDGET_H
+#pragma once
 
 #ifdef __APPLE__
 extern "C++" {
@@ -56,12 +55,10 @@ class ITOMWIDGETS_EXPORT PlotInfoMarker : public QTreeWidget
 
 		void removeMarker(const QString setName);
         void removeMarkers();
+        void checkMarkers(const QString setName, bool checked);
 		QPainterPath renderToPainterPath(const int xsize, const int ysize, const int fontSize);
-    private slots:
 };
 
 #ifdef __APPLE__
 }
 #endif
-
-#endif // MARKERLEGENDWIDGET_H

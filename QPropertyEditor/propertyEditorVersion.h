@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2021, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
@@ -10,7 +10,7 @@
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
-   
+
     In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
@@ -26,7 +26,7 @@
 *********************************************************************** */
 
 #define PROPERTYEDITOR_VERSION_MAJOR 1
-#define PROPERTYEDITOR_VERSION_MINOR 0
-#define PROPERTYEDITOR_VERSION_PATCH 1
+#define PROPERTYEDITOR_VERSION_MINOR 1
+#define PROPERTYEDITOR_VERSION_PATCH 0
 #define PROPERTYEDITOR_VERSION_REVISION 0
-#define PROPERTYEDITOR_VERSION_STRING  "1.0.1.0"
+#define PROPERTYEDITOR_VERSION_STRING "1.1.0.0"

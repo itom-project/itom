@@ -59,7 +59,7 @@ namespace ito
 {
 
 //----------------------------------------------------------------------------------------------------------------------------------
-DialogProperties::DialogProperties(QWidget * parent, Qt::WindowFlags f) :
+DialogProperties::DialogProperties(QWidget* parent, Qt::WindowFlags f) :
     QDialog(parent, f)
 {
     setWindowTitle(tr("Properties"));
@@ -184,16 +184,16 @@ void DialogProperties::initPages()
     m_pages["00_general/01application"] = PropertyPage(tr("Application"), tr("General - Application"), "00_general/01application", new WidgetPropGeneralApplication(), QIcon(":/application/icons/itomicon/itomLogo3_64.png"));
     m_pages["00_general/02language"] = PropertyPage(tr("Language"), tr("General - Language"), "00_general/02language", new WidgetPropGeneralLanguage(), QIcon(":/classNavigator/icons/global.png"));
     m_pages["00_general/03helpViewer"]  = PropertyPage(tr("Plugin Help Viewer"), tr("General - Plugin Help Viewer"), "00_general/03helpViewer" , new WidgetPropHelpDock(), QIcon(":/plugins/icons/plugin.png"));
-    m_pages["00_general/04styles"] = PropertyPage(tr("Styles and Themes"), tr("General - Styles And Themes"), "00_general/04styles", new WidgetPropGeneralStyles(), QIcon(":/application/icons/color-icon.png"));
+    m_pages["00_general/04styles"] = PropertyPage(tr("Styles and Themes"), tr("General - Styles and Themes"), "00_general/04styles", new WidgetPropGeneralStyles(), QIcon(":/application/icons/color-icon.png"));
     m_pages["05_workspace"] = PropertyPage(tr("Workspace"), tr("Workspace - Please Choose Subpage"), "05_workspace", NULL, QIcon(":/workspace/icons/import-prop-icon.png"));
-    m_pages["05_workspace/01unpack"] = PropertyPage(tr("Import to workspace"), tr("Workspace - Import"), "05_workspace/01unpack", new WidgetPropWorkspaceUnpack(), QIcon(":/workspace/icons/import-prop-icon.png"));
+    m_pages["05_workspace/01unpack"] = PropertyPage(tr("Import To Workspace"), tr("Workspace - Import"), "05_workspace/01unpack", new WidgetPropWorkspaceUnpack(), QIcon(":/workspace/icons/import-prop-icon.png"));
     m_pages["06_plugins"] = PropertyPage(tr("Plugins"), tr("Plugins - Please Choose Subpage"), "06_plugins", NULL, QIcon(":/plugins/icons/plugin.png"));
-    m_pages["06_plugins/02algorithms"] = PropertyPage(tr("Algorithms And Filters"), tr("Plugins - Algorithms And Filters"), "06_plugins/02algorithms", new WidgetPropPluginsAlgorithms(), QIcon(":/plugins/icons/pluginAlgo.png"));
+    m_pages["06_plugins/02algorithms"] = PropertyPage(tr("Algorithms and Filters"), tr("Plugins - Algorithms And Filters"), "06_plugins/02algorithms", new WidgetPropPluginsAlgorithms(), QIcon(":/plugins/icons/pluginAlgo.png"));
     m_pages["06_plugins/03actuators"] = PropertyPage(tr("Actuators"), tr("Plugins - Actuators"), "06_plugins/03actuators", new WidgetPropPluginsActuators(), QIcon(":/plugins/icons/pluginActuator.png"));
-    m_pages["07_plots"] = PropertyPage(tr("Plots And Figures"), tr("Plots And Figures - Please Choose Subpage"), "07_plots", NULL, QIcon(":/plots/icons/itom_icons/3d.png"));
-    m_pages["07_plots/01defaults"] = PropertyPage(tr("Default Plots"), tr("Plots And Figures - Defaults"), "07_plots/01defaults", new WidgetPropFigurePlugins(), QIcon(":/plots/icons/itom_icons/2d.png"));
+    m_pages["07_plots"] = PropertyPage(tr("Plots And Figures"), tr("Plots and Figures - Please Choose Subpage"), "07_plots", NULL, QIcon(":/plots/icons/itom_icons/3d.png"));
+    m_pages["07_plots/01defaults"] = PropertyPage(tr("Default Plots"), tr("Plots and Figures - Defaults"), "07_plots/01defaults", new WidgetPropFigurePlugins(), QIcon(":/plots/icons/itom_icons/2d.png"));
     m_pages["07_plots/02defaultSettings"] = PropertyPage(tr("Default Style Settings"), tr("Plots And Figures - Default Style Settings"), "07_plots/02defaultSettings", new WidgetPropGeneralPlotSettings(), QIcon(":/plots/icons/itom_icons/2d.png"));
-    m_pages["07_plots/03palettes"] = PropertyPage(tr("Palettes Settings"), tr("Plots And Figures - Palettes Settings"), "07_plots/03palettes", new WidgetPropPalettes(), QIcon(":/plots/icons/itom_icons/color.png"));
+    m_pages["07_plots/03palettes"] = PropertyPage(tr("Palettes Settings"), tr("Plots and Figures - Palettes Settings"), "07_plots/03palettes", new WidgetPropPalettes(), QIcon(":/plots/icons/itom_icons/color.png"));
 
     PropertyPage page;
     QStringList pathes;

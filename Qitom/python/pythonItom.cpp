@@ -50,6 +50,7 @@
 #include <qdir.h>
 #include <qresource.h>
 #include <qstringlist.h>
+#include <qscreen.h>
 
 #include <QtCore/qpluginloader.h>
 
@@ -492,7 +493,9 @@ PyObject* PythonItom::PyPlotImage(PyObject* /*pSelf*/, PyObject* pArgs, PyObject
     // return new instance of PyUiItem
     PyObject* args2 = PyTuple_New(0); // Py_BuildValue("OO", self, name);
     PyObject* kwds2 = PyDict_New();
-    PyDict_SetItemString(kwds2, "objectID", PyLong_FromLong(*objectID));
+    PyObject *objectIdObj = PyLong_FromLong(*objectID);
+    PyDict_SetItemString(kwds2, "objectID", objectIdObj);
+    Py_XDECREF(objectIdObj);
     PythonPlotItem::PyPlotItem* pyPlotItem = (PythonPlotItem::PyPlotItem*)PyObject_Call(
         (PyObject*)&PythonPlotItem::PyPlotItemType, args2, kwds2);
     Py_DECREF(args2);
@@ -510,7 +513,9 @@ PyObject* PythonItom::PyPlotImage(PyObject* /*pSelf*/, PyObject* pArgs, PyObject
     // or itom.figure
     args2 = PyTuple_New(0);
     kwds2 = PyDict_New();
-    PyDict_SetItemString(kwds2, "handle", PyLong_FromLong(*figHandle));
+    PyObject *figHandleObj = PyLong_FromLong(*figHandle);
+    PyDict_SetItemString(kwds2, "handle", figHandleObj);
+    Py_XDECREF(figHandleObj);
     PythonFigure::PyFigure* pyFigure = (PythonFigure::PyFigure*)PyObject_Call(
         (PyObject*)&PythonFigure::PyFigureType, args2, kwds2);
     Py_XDECREF(pyPlotItem->uiItem.baseItem);
@@ -723,7 +728,9 @@ PyObject* PythonItom::PyPlot1d(PyObject* /*pSelf*/, PyObject* pArgs, PyObject* p
     // return new instance of PyUiItem
     PyObject* args2 = PyTuple_New(0); // Py_BuildValue("OO", self, name);
     PyObject* kwds2 = PyDict_New();
-    PyDict_SetItemString(kwds2, "objectID", PyLong_FromLong(*objectID));
+    PyObject *objectIdObj = PyLong_FromLong(*objectID);
+    PyDict_SetItemString(kwds2, "objectID", objectIdObj);
+    Py_XDECREF(objectIdObj);
     PythonPlotItem::PyPlotItem* pyPlotItem = (PythonPlotItem::PyPlotItem*)PyObject_Call(
         (PyObject*)&PythonPlotItem::PyPlotItemType, args2, kwds2);
     Py_DECREF(args2);
@@ -741,7 +748,9 @@ PyObject* PythonItom::PyPlot1d(PyObject* /*pSelf*/, PyObject* pArgs, PyObject* p
     // or itom.figure
     args2 = PyTuple_New(0);
     kwds2 = PyDict_New();
-    PyDict_SetItemString(kwds2, "handle", PyLong_FromLong(*figHandle));
+    PyObject *figHandleObj = PyLong_FromLong(*figHandle);
+    PyDict_SetItemString(kwds2, "handle", figHandleObj);
+    Py_XDECREF(figHandleObj);
     PythonFigure::PyFigure* pyFigure = (PythonFigure::PyFigure*)PyObject_Call(
         (PyObject*)&PythonFigure::PyFigureType, args2, kwds2);
     Py_XDECREF(pyPlotItem->uiItem.baseItem);
@@ -937,7 +946,9 @@ PyObject* PythonItom::PyPlot2d(PyObject* /*pSelf*/, PyObject* pArgs, PyObject* p
     // return new instance of PyUiItem
     PyObject* args2 = PyTuple_New(0); // Py_BuildValue("OO", self, name);
     PyObject* kwds2 = PyDict_New();
-    PyDict_SetItemString(kwds2, "objectID", PyLong_FromLong(*objectID));
+    PyObject *objectIdObj = PyLong_FromLong(*objectID);
+    PyDict_SetItemString(kwds2, "objectID", objectIdObj);
+    Py_XDECREF(objectIdObj);
     PythonPlotItem::PyPlotItem* pyPlotItem = (PythonPlotItem::PyPlotItem*)PyObject_Call(
         (PyObject*)&PythonPlotItem::PyPlotItemType, args2, kwds2);
     Py_DECREF(args2);
@@ -955,7 +966,9 @@ PyObject* PythonItom::PyPlot2d(PyObject* /*pSelf*/, PyObject* pArgs, PyObject* p
     // or itom.figure
     args2 = PyTuple_New(0);
     kwds2 = PyDict_New();
-    PyDict_SetItemString(kwds2, "handle", PyLong_FromLong(*figHandle));
+    PyObject *figHandleObj = PyLong_FromLong(*figHandle);
+    PyDict_SetItemString(kwds2, "handle", figHandleObj);
+    Py_XDECREF(figHandleObj);
     PythonFigure::PyFigure* pyFigure = (PythonFigure::PyFigure*)PyObject_Call(
         (PyObject*)&PythonFigure::PyFigureType, args2, kwds2);
     Py_XDECREF(pyPlotItem->uiItem.baseItem);
@@ -1153,7 +1166,9 @@ PyObject* PythonItom::PyPlot25d(PyObject* /*pSelf*/, PyObject* pArgs, PyObject* 
     // return new instance of PyUiItem
     PyObject* args2 = PyTuple_New(0); // Py_BuildValue("OO", self, name);
     PyObject* kwds2 = PyDict_New();
-    PyDict_SetItemString(kwds2, "objectID", PyLong_FromLong(*objectID));
+    PyObject *objectIdObj = PyLong_FromLong(*objectID);
+    PyDict_SetItemString(kwds2, "objectID", objectIdObj);
+    Py_XDECREF(objectIdObj);
     PythonPlotItem::PyPlotItem* pyPlotItem = (PythonPlotItem::PyPlotItem*)PyObject_Call(
         (PyObject*)&PythonPlotItem::PyPlotItemType, args2, kwds2);
     Py_DECREF(args2);
@@ -1171,7 +1186,9 @@ PyObject* PythonItom::PyPlot25d(PyObject* /*pSelf*/, PyObject* pArgs, PyObject* 
     // or itom.figure
     args2 = PyTuple_New(0);
     kwds2 = PyDict_New();
-    PyDict_SetItemString(kwds2, "handle", PyLong_FromLong(*figHandle));
+    PyObject *figHandleObj = PyLong_FromLong(*figHandle);
+    PyDict_SetItemString(kwds2, "handle", figHandleObj);
+    Py_XDECREF(figHandleObj);
     PythonFigure::PyFigure* pyFigure = (PythonFigure::PyFigure*)PyObject_Call(
         (PyObject*)&PythonFigure::PyFigureType, args2, kwds2);
     Py_XDECREF(pyPlotItem->uiItem.baseItem);
@@ -1319,7 +1336,9 @@ PyObject* PythonItom::PyLiveImage(PyObject* /*pSelf*/, PyObject* pArgs, PyObject
     // return new instance of PyUiItem
     PyObject* args2 = PyTuple_New(0); // Py_BuildValue("OO", self, name);
     PyObject* kwds2 = PyDict_New();
-    PyDict_SetItemString(kwds2, "objectID", PyLong_FromLong(*objectID));
+    PyObject *objectIdObj = PyLong_FromLong(*objectID);
+    PyDict_SetItemString(kwds2, "objectID", objectIdObj);
+    Py_XDECREF(objectIdObj);
     PythonPlotItem::PyPlotItem* pyPlotItem = (PythonPlotItem::PyPlotItem*)PyObject_Call(
         (PyObject*)&PythonPlotItem::PyPlotItemType, args2, kwds2);
     Py_DECREF(args2);
@@ -1337,7 +1356,9 @@ PyObject* PythonItom::PyLiveImage(PyObject* /*pSelf*/, PyObject* pArgs, PyObject
     // or itom.figure
     args2 = PyTuple_New(0);
     kwds2 = PyDict_New();
-    PyDict_SetItemString(kwds2, "handle", PyLong_FromLong(*figHandle));
+    PyObject *figHandleObj = PyLong_FromLong(*figHandle);
+    PyDict_SetItemString(kwds2, "handle", figHandleObj);
+    Py_XDECREF(figHandleObj);
     PythonFigure::PyFigure* pyFigure = (PythonFigure::PyFigure*)PyObject_Call(
         (PyObject*)&PythonFigure::PyFigureType, args2, kwds2);
     Py_XDECREF(pyPlotItem->uiItem.baseItem);
@@ -1373,15 +1394,11 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs, PyObject* pK
     int listonly = 1;
     QString namefilter;
 
-    if (filterstring == NULL)
+    if (filterstring != nullptr)
     {
-        namefilter.fromLatin1(0);
-    }
-    else
-    {
-        namefilter.sprintf("%s", filterstring);
+        namefilter = QString::fromLatin1(filterstring);
 
-        if (namefilter.length())
+        if (namefilter.length() > 0)
         {
             listonly = 0;
         }
@@ -4077,8 +4094,8 @@ debugger : itoDebugger.itoDebugger \n\
         PythonEngine::instance; // works since pythonItom is friend with pythonEngine
     if (pyEngine)
     {
-        Py_INCREF(pyEngine->itomDbgInstance);
-        return pyEngine->itomDbgInstance;
+        Py_INCREF(pyEngine->m_itomDbgInstance);
+        return pyEngine->m_itomDbgInstance;
     }
     Py_RETURN_NONE;
 }
@@ -4334,17 +4351,26 @@ PyObject* PythonItom::PyGetScreenInfo(PyObject* /*pSelf*/)
     if (pyEngine)
     {
         PyObject* res = PyDict_New();
-        int nScreens = pyEngine->m_pDesktopWidget->screenCount();
-        int primaryScreen = pyEngine->m_pDesktopWidget->primaryScreen();
+        
+        QList<QScreen*> screens = QApplication::QGuiApplication::screens();
+        const QScreen* primaryScreen = QApplication::primaryScreen();
+        int nScreens = screens.length();
 
         PyObject* geom = PyTuple_New(nScreens);
-        PyObject* subgeom = NULL;
-        PyObject* item = NULL;
+        PyObject* subgeom = nullptr;
+        PyObject* item = nullptr;
         QRect rec;
-        for (int i = 0; i < nScreens; i++)
+        int i = 0;
+        int primaryIdx = 0;
+        foreach (auto scr, screens)
         {
+            if (scr == primaryScreen)
+            {
+                primaryIdx = i;
+            }
+            
             subgeom = PyDict_New();
-            rec = pyEngine->m_pDesktopWidget->screenGeometry(i);
+            rec = scr->geometry();
             item = PyLong_FromLong(rec.x());
             PyDict_SetItemString(subgeom, "x", item);
             Py_DECREF(item);
@@ -4358,12 +4384,13 @@ PyObject* PythonItom::PyGetScreenInfo(PyObject* /*pSelf*/)
             PyDict_SetItemString(subgeom, "h", item);
             Py_DECREF(item);
             PyTuple_SetItem(geom, i, subgeom); // steals reference
+            i++;
         }
 
         item = PyLong_FromLong(nScreens);
         PyDict_SetItemString(res, "screenCount", item);
         Py_DECREF(item);
-        item = PyLong_FromLong(primaryScreen);
+        item = PyLong_FromLong(primaryIdx);
         PyDict_SetItemString(res, "primaryScreen", item);
         Py_DECREF(item);
         PyDict_SetItemString(res, "geometry", geom);
@@ -4758,7 +4785,7 @@ PyObject* PythonItom::PyLoadMatlabMat(PyObject* /*pSelf*/, PyObject* pArgs)
                                     if (pyEngine)
                                     {
                                         PyObject* result = PyObject_CallMethodObjArgs(
-                                            pyEngine->itomFunctions,
+                                            pyEngine->m_itomFunctions,
                                             importMatlabMatAsDataObjectObj,
                                             value,
                                             NULL); // new reference
@@ -5312,7 +5339,8 @@ bar of the main window. \n\
 Parameters \n\
 ----------- \n\
 newPath : str \n\
-    The new path for the current working directory.\n\
+    The new path for the current working directory. If a file path is given, \n\
+    its base path is used. \n\
 \n\
 Returns \n\
 ------- \n\
@@ -5324,28 +5352,40 @@ See Also \n\
 getCurrentPath");
 PyObject* PythonItom::setCurrentPath(PyObject* /*pSelf*/, PyObject* pArgs)
 {
-    PyObject* pyObj = NULL;
+    PyObject* pyObj = nullptr;
+
     if (!PyArg_ParseTuple(pArgs, "O", &pyObj))
     {
         PyErr_SetString(PyExc_RuntimeError, "Method requires a string as argument");
-        return NULL;
+        return nullptr;
     }
 
     bool ok;
     QString path;
     path = PythonQtConversion::PyObjGetString(pyObj, true, ok);
+
     if (ok == false)
     {
         PyErr_SetString(
-            PyExc_RuntimeError, "NewPath parameter could not be interpreted as string.");
-        return NULL;
+            PyExc_RuntimeError, "Argument ``newPath`` cannot be interpreted as string.");
+        return nullptr;
     }
 
     QDir pathDir(path);
 
+    if (!pathDir.exists())
+    {
+        QFileInfo fileInfo(path);
+
+        if (fileInfo.exists())
+        {
+            pathDir = fileInfo.absoluteDir();
+        }
+    }
+
     if (pathDir.exists())
     {
-        if (!QDir::setCurrent(path))
+        if (!QDir::setCurrent(pathDir.absolutePath()))
         {
             Py_RETURN_FALSE;
         }
@@ -5357,9 +5397,7 @@ PyObject* PythonItom::setCurrentPath(PyObject* /*pSelf*/, PyObject* pArgs)
                 emit pyEngine->pythonCurrentDirChanged();
             }
 
-            if (QString::compare(
-                    QDir::current().currentPath(), pathDir.absolutePath(), Qt::CaseInsensitive) ==
-                0)
+            if (QDir::current() == pathDir)
             {
                 Py_RETURN_TRUE;
             }
@@ -5371,8 +5409,8 @@ PyObject* PythonItom::setCurrentPath(PyObject* /*pSelf*/, PyObject* pArgs)
     }
     else
     {
-        PyErr_SetString(PyExc_RuntimeError, "NewPath does not exists.");
-        return NULL;
+        PyErr_SetString(PyExc_RuntimeError, "The given path does not exist.");
+        return nullptr;
     }
 }
 
@@ -5662,7 +5700,7 @@ PyObject* PythonItom::PyLoadIDC(PyObject* pSelf, PyObject* pArgs, PyObject* pKwd
         if (info.exists())
         {
             PyObject* dict = PyDict_New(); // new reference
-            RetVal retval = pyEngine->unpickleDictionary(dict, filename, true);
+            RetVal retval = pyEngine->unpickleDictionary(dict, filename, true, false);
 
             if (!PythonCommon::transformRetValToPyException(retval))
             {
