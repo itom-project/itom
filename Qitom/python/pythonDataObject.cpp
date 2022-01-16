@@ -11568,17 +11568,17 @@ PyObject* PythonDataObject::PyDataObjectIter_iternext(PyDataObjectIter* self)
     if (self->it == self->itEnd)
     {
         PyErr_SetString(PyExc_StopIteration, "");
-        return NULL;
+        return nullptr;
     }
 
     PyDataObject* dObj = (PyDataObject*)self->base;
-    if (dObj->dataObject == NULL)
+    PyObject* output = nullptr;
+
+    if (dObj->dataObject == nullptr)
     {
         PyErr_SetString(PyExc_TypeError, "data object is empty.");
-        return NULL;
+        return nullptr;
     }
-
-    PyObject* output = NULL;
 
     switch (dObj->dataObject->getType())
     {
@@ -11600,7 +11600,9 @@ PyObject* PythonDataObject::PyDataObjectIter_iternext(PyDataObjectIter* self)
     case ito::tRGBA32: {
         ito::PythonRgba::PyRgba* color = ito::PythonRgba::createEmptyPyRgba();
         if (color)
+        {
             color->rgba = ((Rgba32*)(*(self->it)))->rgba;
+        }
         output = (PyObject*)color;
     }
     break;
@@ -11618,6 +11620,16 @@ PyObject* PythonDataObject::PyDataObjectIter_iternext(PyDataObjectIter* self)
     case ito::tComplex128: {
         complex128* value = (complex128*)(*(self->it));
         output = PyComplex_FromDoubles((double)value->real(), (double)value->imag());
+        break;
+    }
+    case ito::tDateTime: {
+        const ito::DateTime* value = reinterpret_cast<const ito::DateTime*>(*(self->it));
+        output = PythonDateTime::GetPyDateTime(*value);
+        break;
+    }
+    case ito::tTimeDelta: {
+        const ito::TimeDelta* value = reinterpret_cast<const ito::TimeDelta*>(*(self->it));
+        output = PythonDateTime::GetPyTimeDelta(*value);
         break;
     }
     default:

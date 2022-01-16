@@ -4878,6 +4878,132 @@ RetVal AddFunc(const DataObject* dObj1, const DataObject* dObj2, DataObject* dOb
     return RetVal(retOk);
 }
 
+template <>
+RetVal AddFunc<ito::DateTime>(const DataObject* dObj1, const DataObject* dObj2, DataObject* dObjRes)
+{
+    assert(dObj2->getType() == ito::tTimeDelta);
+    // further assumption: dObjRes is already equal to dObj1 (based on the content)
+
+    int srcTmat1 = 0;
+    int srcTmat2 = 0;
+    int dstTmat = 0;
+    int numMats = dObj1->getNumPlanes();
+    const cv::Mat_<ito::DateTime>* cvSrcTmat1 = nullptr;
+    const cv::Mat_<ito::TimeDelta>* cvSrcTmat2 = nullptr;
+    cv::Mat_<ito::DateTime>* cvDstTmat = nullptr;
+    ito::DateTime* dstRowPtr = nullptr;
+    const ito::DateTime* src1RowPtr = nullptr;
+    const ito::TimeDelta* src2RowPtr = nullptr;
+
+    for (int nmat = 0; nmat < numMats; ++nmat)
+    {
+        dstTmat = dObjRes->seekMat(nmat, numMats);
+        srcTmat1 = dObj1->seekMat(nmat, numMats);
+        srcTmat2 = dObj2->seekMat(nmat, numMats);
+        cvSrcTmat1 = static_cast<const cv::Mat_<ito::DateTime>*>(dObj1->get_mdata()[srcTmat1]);
+        cvSrcTmat2 = static_cast<const cv::Mat_<ito::TimeDelta>*>(dObj2->get_mdata()[srcTmat2]);
+        cvDstTmat = static_cast<cv::Mat_<ito::DateTime>*>(dObjRes->get_mdata()[dstTmat]);
+
+        for (int row = 0; row < cvDstTmat->rows; ++row)
+        {
+            dstRowPtr = cvDstTmat->ptr<ito::DateTime>(row);
+            src1RowPtr = cvSrcTmat1->ptr<ito::DateTime>(row);
+            src2RowPtr = cvSrcTmat2->ptr<ito::TimeDelta>(row);
+
+            for (int col = 0; col < cvDstTmat->cols; ++col)
+            {
+                dstRowPtr[col].datetime += src2RowPtr[col].delta;
+            }
+        }
+    }
+
+    return RetVal(retOk);
+}
+
+template <>
+RetVal AddFunc<ito::TimeDelta>(const DataObject* dObj1, const DataObject* dObj2, DataObject* dObjRes)
+{
+    int dType2 = dObj2->getType();
+
+    assert(dType2 == ito::tTimeDelta || dType2 == ito::tDateTime);
+
+    int srcTmat1 = 0;
+    int srcTmat2 = 0;
+    int dstTmat = 0;
+    int numMats = dObj1->getNumPlanes();
+
+    if (dType2 == ito::tTimeDelta)
+    {
+        assert(dObjRes->getType() == ito::tTimeDelta);
+        // further assumption: dObjRes is already equal to dObj1 (based on the content)
+
+        const cv::Mat_<ito::TimeDelta>* cvSrcTmat1 = nullptr;
+        const cv::Mat_<ito::TimeDelta>* cvSrcTmat2 = nullptr;
+        cv::Mat_<ito::TimeDelta>* cvDstTmat = nullptr;
+        ito::TimeDelta* dstRowPtr = nullptr;
+        const ito::TimeDelta* src1RowPtr = nullptr;
+        const ito::TimeDelta* src2RowPtr = nullptr;
+
+        for (int nmat = 0; nmat < numMats; ++nmat)
+        {
+            dstTmat = dObjRes->seekMat(nmat, numMats);
+            srcTmat1 = dObj1->seekMat(nmat, numMats);
+            srcTmat2 = dObj2->seekMat(nmat, numMats);
+            cvSrcTmat1 = static_cast<const cv::Mat_<ito::TimeDelta>*>(dObj1->get_mdata()[srcTmat1]);
+            cvSrcTmat2 = static_cast<const cv::Mat_<ito::TimeDelta>*>(dObj2->get_mdata()[srcTmat2]);
+            cvDstTmat = static_cast<cv::Mat_<ito::TimeDelta>*>(dObjRes->get_mdata()[dstTmat]);
+
+            for (int row = 0; row < cvDstTmat->rows; ++row)
+            {
+                dstRowPtr = cvDstTmat->ptr<ito::TimeDelta>(row);
+                src1RowPtr = cvSrcTmat1->ptr<ito::TimeDelta>(row);
+                src2RowPtr = cvSrcTmat2->ptr<ito::TimeDelta>(row);
+
+                for (int col = 0; col < cvDstTmat->cols; ++col)
+                {
+                    dstRowPtr[col].delta += src2RowPtr[col].delta;
+                }
+            }
+        }
+    }
+    else if (dType2 == ito::tDateTime)
+    {
+        assert(dObjRes->getType() == ito::tDateTime);
+        // further assumption: dObjRes is already equal to dObj2 (based on the content)
+
+        const cv::Mat_<ito::TimeDelta>* cvSrcTmat1 = nullptr;
+        const cv::Mat_<ito::DateTime>* cvSrcTmat2 = nullptr;
+        cv::Mat_<ito::DateTime>* cvDstTmat = nullptr;
+        ito::DateTime* dstRowPtr = nullptr;
+        const ito::TimeDelta* src1RowPtr = nullptr;
+        const ito::DateTime* src2RowPtr = nullptr;
+
+        for (int nmat = 0; nmat < numMats; ++nmat)
+        {
+            dstTmat = dObjRes->seekMat(nmat, numMats);
+            srcTmat1 = dObj1->seekMat(nmat, numMats);
+            srcTmat2 = dObj2->seekMat(nmat, numMats);
+            cvSrcTmat1 = static_cast<const cv::Mat_<ito::TimeDelta>*>(dObj1->get_mdata()[srcTmat1]);
+            cvSrcTmat2 = static_cast<const cv::Mat_<ito::DateTime>*>(dObj2->get_mdata()[srcTmat2]);
+            cvDstTmat = static_cast<cv::Mat_<ito::DateTime>*>(dObjRes->get_mdata()[dstTmat]);
+
+            for (int row = 0; row < cvDstTmat->rows; ++row)
+            {
+                dstRowPtr = cvDstTmat->ptr<ito::DateTime>(row);
+                src1RowPtr = cvSrcTmat1->ptr<ito::TimeDelta>(row);
+                src2RowPtr = cvSrcTmat2->ptr<ito::DateTime>(row);
+
+                for (int col = 0; col < cvDstTmat->cols; ++col)
+                {
+                    dstRowPtr[col].datetime += src1RowPtr[col].delta;
+                }
+            }
+        }
+    }
+
+    return RetVal(retOk);
+}
+
 typedef RetVal (*tAddFunc)(const DataObject* src1, const DataObject* src2, DataObject* dst);
 MAKEFUNCLIST(AddFunc);
 
@@ -5243,7 +5369,37 @@ MAKEFUNCLIST(AddTimeDeltaScalarFunc);
 */
 DataObject& DataObject::operator+=(const DataObject& rhs)
 {
-    CHECK_SAME_TYPE_AND_NUM_PLANES_AND_PLANE_SIZE(rhs)
+    CHECK_NUM_PLANES_AND_PLANE_SIZE(rhs);
+
+    switch (m_type)
+    {
+    case ito::tDateTime:
+        if (rhs.m_type != ito::tTimeDelta)
+        {
+            cv::error(cv::Exception(
+                CV_StsUnmatchedFormats,
+                "Only a timedelta object can be added to a datetime object.", "",
+                __FILE__, __LINE__));
+        }
+        break;
+    case ito::tTimeDelta:
+        if (rhs.m_type != ito::tTimeDelta)
+        {
+            cv::error(cv::Exception(
+                CV_StsUnmatchedFormats,
+                "Only a timedelta object can be added to a timedelta object.", "",
+                __FILE__, __LINE__));
+        }
+        break;
+    default:
+        if (m_type != rhs.m_type)
+        {
+            cv::error(cv::Exception(
+                CV_StsUnmatchedFormats, "dataObjects differ in type", "", __FILE__, __LINE__));
+        }
+        break;
+    }
+
     (fListAddFunc[m_type])(this, &rhs, this);
     return *this;
 }
@@ -5277,11 +5433,49 @@ DataObject& DataObject::operator+=(const TimeDelta& value)
 */
 DataObject DataObject::operator+(const DataObject& rhs)
 {
-    CHECK_SAME_TYPE_AND_NUM_PLANES_AND_PLANE_SIZE(rhs)
+    CHECK_NUM_PLANES_AND_PLANE_SIZE(rhs);
+
+    switch (m_type)
+    {
+    case ito::tDateTime:
+        if (rhs.m_type != ito::tTimeDelta)
+        {
+            cv::error(cv::Exception(
+                CV_StsUnmatchedFormats,
+                "Only a timedelta object can be added to a datetime object.", "",
+                __FILE__, __LINE__));
+        }
+        break;
+    case ito::tTimeDelta:
+        if (rhs.m_type != ito::tTimeDelta && rhs.m_type != ito::tDateTime)
+        {
+            cv::error(cv::Exception(
+                CV_StsUnmatchedFormats,
+                "Only a timedelta or datetime object can be added to a timedelta object.", "",
+                __FILE__, __LINE__));
+        }
+        break;
+    default:
+        if (m_type != rhs.m_type)
+        {
+            cv::error(cv::Exception(
+                CV_StsUnmatchedFormats, "dataObjects differ in type", "", __FILE__, __LINE__));
+        }
+        break;
+    }
 
     DataObject result;
     result.m_continuous = rhs.m_continuous;
-    copyTo(result, 1);
+
+    if (m_type == ito::tTimeDelta && rhs.m_type == ito::tDateTime)
+    {
+        // exception: timeDelta + dateTime returns a dateTime object.
+        rhs.copyTo(result, 1);
+    }
+    else
+    {
+        copyTo(result, 1);
+    }
 
     (fListAddFunc[m_type])(this, &rhs, &result);
 
@@ -5371,7 +5565,37 @@ MAKEFUNCLIST(SubFunc);
 */
 DataObject& DataObject::operator-=(const DataObject& rhs)
 {
-    CHECK_SAME_TYPE_AND_NUM_PLANES_AND_PLANE_SIZE(rhs)
+    CHECK_NUM_PLANES_AND_PLANE_SIZE(rhs);
+
+    switch (m_type)
+    {
+    case ito::tDateTime:
+        if (rhs.m_type != ito::tTimeDelta)
+        {
+            cv::error(cv::Exception(
+                CV_StsUnmatchedFormats,
+                "Only a timedelta object can be subtracted from a datetime object.", "",
+                __FILE__, __LINE__));
+        }
+        break;
+    case ito::tTimeDelta:
+        if (rhs.m_type != ito::tTimeDelta && rhs.m_type != ito::tDateTime)
+        {
+            cv::error(cv::Exception(
+                CV_StsUnmatchedFormats,
+                "Only a timedelta or datetime object can be subtracted from a timedelta object.", "",
+                __FILE__, __LINE__));
+        }
+        break;
+    default:
+        if (m_type != rhs.m_type)
+        {
+            cv::error(cv::Exception(
+                CV_StsUnmatchedFormats, "dataObjects differ in type", "", __FILE__, __LINE__));
+        }
+        break;
+    }
+
     fListSubFunc[m_type](this, &rhs, this);
     return *this;
 }
@@ -5407,7 +5631,36 @@ DataObject& DataObject::operator-=(const TimeDelta& value)
 */
 DataObject DataObject::operator-(const DataObject& rhs)
 {
-    CHECK_SAME_TYPE_AND_NUM_PLANES_AND_PLANE_SIZE(rhs)
+    CHECK_NUM_PLANES_AND_PLANE_SIZE(rhs);
+
+    switch (m_type)
+    {
+    case ito::tDateTime:
+        if (rhs.m_type != ito::tTimeDelta)
+        {
+            cv::error(cv::Exception(
+                CV_StsUnmatchedFormats,
+                "Only a timedelta object can be subtracted from a datetime object.", "",
+                __FILE__, __LINE__));
+        }
+        break;
+    case ito::tTimeDelta:
+        if (rhs.m_type != ito::tTimeDelta && rhs.m_type != ito::tDateTime)
+        {
+            cv::error(cv::Exception(
+                CV_StsUnmatchedFormats,
+                "Only a timedelta or datetime object can be subtracted from a timedelta object.", "",
+                __FILE__, __LINE__));
+        }
+        break;
+    default:
+        if (m_type != rhs.m_type)
+        {
+            cv::error(cv::Exception(
+                CV_StsUnmatchedFormats, "dataObjects differ in type", "", __FILE__, __LINE__));
+        }
+        break;
+    }
 
     DataObject result;
     result.m_continuous = rhs.m_continuous;
