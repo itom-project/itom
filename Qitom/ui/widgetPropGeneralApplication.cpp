@@ -23,6 +23,7 @@
 #include "widgetPropGeneralApplication.h"
 #include "../global.h"
 #include "../AppManagement.h"
+#include "helper/guiHelper.h"
 
 #include <qsettings.h>
 #include <qfiledialog.h>
@@ -53,6 +54,12 @@ void WidgetPropGeneralApplication::readSettings()
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("MainWindow");
 	ui.checkAskBeforeExit->setChecked(settings.value("askBeforeClose", true).toBool());
+
+    if (GuiHelper::highDPIFileExists())
+    {
+        ui.checkHighDPIScaling->setChecked(true);
+    }
+    
     settings.endGroup();
 
     settings.beginGroup("Application");
@@ -101,8 +108,17 @@ void WidgetPropGeneralApplication::writeSettings()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("MainWindow");
-    settings.setValue("askBeforeClose", ui.checkAskBeforeExit->isChecked() );
+    settings.setValue("askBeforeClose", ui.checkAskBeforeExit->isChecked());
     settings.endGroup();
+    
+    if (ui.checkHighDPIScaling->isChecked())
+    {
+        GuiHelper::saveHighDPIFile();
+    }
+    else
+    {
+        GuiHelper::deleteHighDPIFile();
+    }
 
     QStringList files;
     settings.beginGroup("Application");

@@ -22,6 +22,7 @@
 #include "mainApplication.h"
 #include "main.h"
 #include "organizer/userOrganizer.h"
+#include "helper/guiHelper.h"
 
 #define VISUAL_LEAK_DETECTOR 0 //1 if you want to active the Visual Leak Detector (MSVC and Debug only), else type 0, if build with CMake always set it to 0.
 #if defined _DEBUG  && defined(_MSC_VER) && (VISUAL_LEAK_DETECTOR > 0 || defined(VISUAL_LEAK_DETECTOR_CMAKE))
@@ -178,9 +179,14 @@ int main(int argc, char *argv[])
     //in debug mode uncaught exceptions as well as uncaught
     //cv::Exceptions will be parsed and also passed to qWarning and qFatal.
     cv::redirectError(itomCvError);
-    
-    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-    QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
+
+    // enable high DPI scaling when it was checked in itom properties
+    if (ito::GuiHelper::highDPIFileExists())  
+    {
+        QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+        QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
+        QApplication::setHighDpiScaleFactorRoundingPolicy(Qt::HighDpiScaleFactorRoundingPolicy::PassThrough);
+    }        
 
     QItomApplication itomApplication(argc, argv);
 

@@ -20,15 +20,27 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
+#include <iostream>
+#include <fstream>
 #include "guiHelper.h"
 
 #include <qscreen.h>
 #include <qapplication.h>
 #include <qglobal.h>
+#include <qdir.h>
+
+#ifdef _WIN32
+#include <io.h>
+#define access _access_s
+#else
+#include <unistd.h>
+#endif
 
 namespace ito
 {
     int GuiHelper::dpi = 0;
+    QString GuiHelper::highDPIFile = "enableHighDPI";
+    bool GuiHelper::startUp = true;
 
     //-----------------------------------------------------------------------------------
     /*
@@ -68,4 +80,29 @@ namespace ito
         int dpi = getScreenLogicalDpi(pos);
         return qBound(1.0, (float)dpi / 96.0, 1.e10);
     }
+
+    //-------------------------------------------------------------------------------------
+    bool GuiHelper::highDPIFileExists()
+    {
+        // save QItom absolute path
+        if (startUp)
+        {
+            QString absPath = QDir::currentPath();
+            highDPIFile = absPath + "/" + highDPIFile;
+            startUp = false;
+        }
+        std::string temp =  highDPIFile.toStdString();
+        return access(highDPIFile.toStdString().c_str(), 0) == 0;
+    }
+
+    void GuiHelper::saveHighDPIFile()
+    {
+        std::ofstream dpiFile(highDPIFile.toStdString().c_str());
+    }
+
+    void GuiHelper::deleteHighDPIFile()
+    {
+        remove(highDPIFile.toStdString().c_str());
+    }
+
 };

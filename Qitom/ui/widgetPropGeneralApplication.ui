@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>465</width>
+    <width>484</width>
     <height>498</height>
    </rect>
   </property>
@@ -24,6 +24,22 @@
        <widget class="QCheckBox" name="checkAskBeforeExit">
         <property name="text">
          <string>Show message before closing the application</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox_4">
+     <property name="title">
+      <string>High DPI scaling</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="0" column="0">
+       <widget class="QCheckBox" name="checkHighDPIScaling">
+        <property name="text">
+         <string>Enable high DPI scaling (itom restart required)</string>
         </property>
        </widget>
       </item>
