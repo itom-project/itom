@@ -309,6 +309,47 @@ class DataObjectDatetime(unittest.TestCase):
         with self.assertRaises(TypeError):
             self.tdObj *= (2j+3)
 
+    def test_abs(self):
+        with self.assertRaises(TypeError):
+            abs(self.dateObj)
+
+        tdabs = abs(self.tdObj)
+
+        for t1, t2 in zip(tdabs, self.tdObj):
+            self.assertEqual(t1, abs(t2))
+
+    def test_negate(self):
+        with self.assertRaises(TypeError):
+            ~(self.dateObj)
+
+        with self.assertRaises(TypeError):
+            ~(self.tdObj)
+
+    def test_shift(self):
+        with self.assertRaises(TypeError):
+            self.dateObj << 2
+
+        with self.assertRaises(TypeError):
+            self.dateObj >> 2
+    
+        with self.assertRaises(TypeError):
+            self.dateObj <<= 2
+        
+        with self.assertRaises(TypeError):
+            self.dateObj >>= 2
+
+        with self.assertRaises(TypeError):
+            self.tdObj << 2
+        
+        with self.assertRaises(TypeError):
+            self.tdObj >> 2
+        
+        with self.assertRaises(TypeError):
+            self.tdObj <<= 2
+        
+        with self.assertRaises(TypeError):
+            self.tdObj >>= 2
+
 
 if __name__ == "__main__":
     unittest.main(module="dataobject_datetime", exit=False)

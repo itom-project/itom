@@ -8818,6 +8818,16 @@ DataObject DataObject::operator^(const DataObject& rhs)
 //----------------------------------------------------------------------------------------------------------------------------------
 DataObject DataObject::bitwise_not() const
 {
+    if (getType() > tFloat64)
+    {
+        cv::error(cv::Exception(
+            CV_StsAssert,
+            "The bitwise not operator is not defined for this data type.",
+            "",
+            __FILE__,
+            __LINE__));
+    }
+
     DataObject result;
     copyTo(result, 1);
 
@@ -12517,6 +12527,54 @@ template <typename _Tp> RetVal AbsFuncReal(const DataObject* dObj, DataObject* r
     return ito::retOk;
 }
 
+template <>
+RetVal AbsFuncReal<ito::TimeDelta>(const DataObject* dObj, DataObject* resObj)
+{
+    dObj->copyTagMapTo(*resObj);
+    dObj->copyAxisTagsTo(*resObj);
+
+    int numMats = dObj->getNumPlanes();
+    int srcMatNum = 0;
+    int dstMatNum = 0;
+
+    const cv::Mat* srcMat = nullptr;
+    cv::Mat* dstMat = nullptr;
+    int sizex = dObj->getSize(dObj->getDims() - 1);
+    int sizey = dObj->getSize(dObj->getDims() - 2);
+    for (int nmat = 0; nmat < numMats; nmat++)
+    {
+        // TODO: check if non iterator version is working
+        srcMatNum = dObj->seekMat(nmat, numMats);
+        dstMatNum = resObj->seekMat(nmat, numMats);
+        srcMat = dObj->get_mdata()[srcMatNum];
+        dstMat = resObj->get_mdata()[dstMatNum];
+
+#if (USEOMP)
+#pragma omp parallel num_threads(getMaximumThreadCount())
+        {
+#endif
+            TimeDelta* dstPtr = nullptr;
+            const TimeDelta* srcPtr = nullptr;
+#if (USEOMP)
+#pragma omp for schedule(guided)
+#endif
+            for (int y = 0; y < sizey; y++)
+            {
+                dstPtr = dstMat->ptr<TimeDelta>(y);
+                srcPtr = srcMat->ptr<const TimeDelta>(y);
+
+                for (int x = 0; x < sizex; x++)
+                {
+                    dstPtr[x].delta = std::abs(srcPtr[x].delta);
+                }
+            }
+#if (USEOMP)
+        }
+#endif
+    }
+    return ito::retOk;
+}
+
 typedef RetVal (*tAbsFunc)(const DataObject* dObj, DataObject* resObj);
 MAKEFUNCLIST_CMPLX_TO_REAL(AbsFunc)
 
@@ -12536,8 +12594,7 @@ DataObject abs(const DataObject& dObj)
     if (dObj.getType() >= TYPE_OFFSET_COMPLEX && dObj.getType() < TYPE_OFFSET_RGBA)
     {
         DataObject resObj(
-            dObj.getDims(),
-            dObj.getSize().m_p,
+            dObj.getSize(),
             ito::convertCmplxTypeToRealType((ito::tDataType)dObj.getType()));
         fListAbsFunc[dObj.getType() - TYPE_OFFSET_COMPLEX](&dObj, &resObj);
         return resObj;
@@ -12549,37 +12606,41 @@ DataObject abs(const DataObject& dObj)
         switch (dObj.getType())
         {
         case ito::tInt8:
-            resObj = ito::DataObject(dObj.getDims(), dObj.getSize().m_p, dObj.getType());
+            resObj = ito::DataObject(dObj.getSize(), dObj.getType());
             AbsFuncReal<int8>(&dObj, &resObj);
             break;
         case ito::tUInt8:
             resObj = dObj;
             break;
         case ito::tInt16:
-            resObj = ito::DataObject(dObj.getDims(), dObj.getSize().m_p, dObj.getType());
+            resObj = ito::DataObject(dObj.getSize(), dObj.getType());
             AbsFuncReal<int16>(&dObj, &resObj);
             break;
         case ito::tUInt16:
             resObj = dObj;
             break;
         case ito::tInt32:
-            resObj = ito::DataObject(dObj.getDims(), dObj.getSize().m_p, dObj.getType());
+            resObj = ito::DataObject(dObj.getSize(), dObj.getType());
             AbsFuncReal<int32>(&dObj, &resObj);
             break;
         case ito::tUInt32:
             resObj = dObj;
             break;
         case ito::tFloat32:
-            resObj = ito::DataObject(dObj.getDims(), dObj.getSize().m_p, dObj.getType());
+            resObj = ito::DataObject(dObj.getSize(), dObj.getType());
             AbsFuncReal<ito::float32>(&dObj, &resObj);
             break;
         case ito::tFloat64:
-            resObj = ito::DataObject(dObj.getDims(), dObj.getSize().m_p, dObj.getType());
+            resObj = ito::DataObject(dObj.getSize(), dObj.getType());
             AbsFuncReal<ito::float64>(&dObj, &resObj);
+            break;
+        case ito::tTimeDelta:
+            resObj = ito::DataObject(dObj.getSize(), dObj.getType());
+            AbsFuncReal<ito::TimeDelta>(&dObj, &resObj);
             break;
         default:
             cv::error(cv::Exception(
-                CV_StsAssert, "abs(), unkown type of source data object", "", __FILE__, __LINE__));
+                CV_StsAssert, "abs() operator not possible for this source data object type", "", __FILE__, __LINE__));
         }
         return resObj;
     }

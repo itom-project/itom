@@ -5048,9 +5048,17 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceLshift(PyObject* o1, PyObject* o2
         return NULL;
     }
 
-    Py_INCREF(o1);
+    try
+    {
+        *(dobj1->dataObject) <<= static_cast<unsigned int>(shift);
+    }
+    catch (cv::Exception& exc)
+    {
+        PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+        return NULL;
+    }
 
-    *(dobj1->dataObject) <<= static_cast<unsigned int>(shift);
+    Py_INCREF(o1);
 
     char buf[PROTOCOL_STR_LENGTH] = {0};
     sprintf_s(buf, PROTOCOL_STR_LENGTH, "Inplace left shift by %i.", shift);
@@ -5090,9 +5098,17 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceRshift(PyObject* o1, PyObject* o2
         return NULL;
     }
 
-    Py_INCREF(o1);
-    *(dobj1->dataObject) >>= static_cast<unsigned int>(shift);
+    try
+    {
+        *(dobj1->dataObject) >>= static_cast<unsigned int>(shift);
+    }
+    catch (cv::Exception& exc)
+    {
+        PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+        return NULL;
+    }
 
+    Py_INCREF(o1);
     char buf[PROTOCOL_STR_LENGTH] = {0};
     sprintf_s(buf, PROTOCOL_STR_LENGTH, "Inplace right shift by %i.", shift);
 
