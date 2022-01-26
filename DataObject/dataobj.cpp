@@ -6806,40 +6806,32 @@ void CmpFunc<ito::DateTime>(
     {
     case cv::CMP_EQ:
         cmpFunc = [](const value_type& a, const value_type& b) {
-            return ((a.datetime == b.datetime) && (a.utcOffset == b.utcOffset)) ? 255 : 0;
+            return (a == b) ? 255 : 0;
         };
         break;
     case cv::CMP_NE:
         cmpFunc = [](const value_type& a, const value_type& b) {
-            return ((a.datetime != b.datetime) || (a.utcOffset != b.utcOffset)) ? 255 : 0;
+            return (a != b) ? 255 : 0;
         };
         break;
     case cv::CMP_LT:
         cmpFunc = [](const value_type& a, const value_type& b) {
-            int64 a_ = a.datetime + a.utcOffset * 1000000;
-            int64 b_ = b.datetime + b.utcOffset * 1000000;
-            return (a_ < b_) ? 255 : 0;
+            return (a < b) ? 255 : 0;
         };
         break;
     case cv::CMP_LE:
         cmpFunc = [](const value_type& a, const value_type& b) {
-            int64 a_ = a.datetime + a.utcOffset * 1000000;
-            int64 b_ = b.datetime + b.utcOffset * 1000000;
-            return (a_ <= b_) ? 255 : 0;
+            return (a <= b) ? 255 : 0;
         };
         break;
     case cv::CMP_GT:
         cmpFunc = [](const value_type& a, const value_type& b) {
-            int64 a_ = a.datetime + a.utcOffset * 1000000;
-            int64 b_ = b.datetime + b.utcOffset * 1000000;
-            return (a_ > b_) ? 255 : 0;
+            return (a > b) ? 255 : 0;
         };
         break;
     case cv::CMP_GE:
         cmpFunc = [](const value_type& a, const value_type& b) {
-            int64 a_ = a.datetime + a.utcOffset * 1000000;
-            int64 b_ = b.datetime + b.utcOffset * 1000000;
-            return (a_ >= b_) ? 255 : 0;
+            return (a >= b) ? 255 : 0;
         };
         break;
     default:
@@ -6902,38 +6894,38 @@ void CmpFunc<ito::TimeDelta>(
     {
     case cv::CMP_EQ:
         cmpFunc = [](const value_type& a, const value_type& b) {
-            return ((a.delta == b.delta)) ? 255 : 0;
+            return (a == b) ? 255 : 0;
         };
         break;
     case cv::CMP_NE:
         cmpFunc = [](const value_type& a, const value_type& b) {
-            return ((a.delta != b.delta)) ? 255 : 0;
+            return (a != b) ? 255 : 0;
         };
         break;
     case cv::CMP_LT:
         cmpFunc = [](const value_type& a, const value_type& b) {
-            return (a.delta < b.delta) ? 255 : 0;
+            return (a < b) ? 255 : 0;
         };
         break;
     case cv::CMP_LE:
         cmpFunc = [](const value_type& a, const value_type& b) {
-            return (a.delta <= b.delta) ? 255 : 0;
+            return (a <= b) ? 255 : 0;
         };
         break;
     case cv::CMP_GT:
         cmpFunc = [](const value_type& a, const value_type& b) {
-            return (a.delta > b.delta) ? 255 : 0;
+            return (a > b) ? 255 : 0;
         };
         break;
     case cv::CMP_GE:
         cmpFunc = [](const value_type& a, const value_type& b) {
-            return (a.delta >= b.delta) ? 255 : 0;
+            return (a >= b) ? 255 : 0;
         };
         break;
     default:
         cv::error(cv::Exception(
             CV_StsAssert,
-            "This compare operator is not defined for DateTime.",
+            "This compare operator is not defined for TimeDelta.",
             "",
             __FILE__,
             __LINE__));
@@ -8471,6 +8463,32 @@ RetVal BitAndFunc<ito::Rgba32>(
     return ito::retOk;
 }
 
+//! template specialisation for bitwise and function of type datetime
+/*!
+    \throws cv::Exception since this operation is not defined for that input type
+*/
+template <>
+RetVal BitAndFunc<ito::DateTime>(
+    const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjRes*/)
+{
+    cv::error(cv::Exception(
+        CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+    return ito::retOk;
+}
+
+//! template specialisation for bitwise and function of type timedelta
+/*!
+    \throws cv::Exception since this operation is not defined for that input type
+*/
+template <>
+RetVal BitAndFunc<ito::TimeDelta>(
+    const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjRes*/)
+{
+    cv::error(cv::Exception(
+        CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+    return ito::retOk;
+}
+
 typedef RetVal (*tBitAndFunc)(const DataObject* src1, const DataObject* src2, DataObject* dst);
 
 MAKEFUNCLIST(BitAndFunc)
@@ -8621,6 +8639,32 @@ RetVal BitOrFunc<ito::Rgba32>(
     return ito::retOk;
 }
 
+//! template specialisation for bitwise or function of type datetime
+/*!
+    \throws cv::Exception since this operation is not defined for that input type
+*/
+template <>
+RetVal BitOrFunc<ito::DateTime>(
+    const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjRes*/)
+{
+    cv::error(cv::Exception(
+        CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+    return ito::retOk;
+}
+
+//! template specialisation for bitwise or function of type timedelta
+/*!
+    \throws cv::Exception since this operation is not defined for that input type
+*/
+template <>
+RetVal BitOrFunc<ito::TimeDelta>(
+    const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjRes*/)
+{
+    cv::error(cv::Exception(
+        CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+    return ito::retOk;
+}
+
 typedef RetVal (*tBitOrFunc)(const DataObject* src1, const DataObject* src2, DataObject* dst);
 MAKEFUNCLIST(BitOrFunc)
 
@@ -8756,12 +8800,38 @@ RetVal BitXorFunc<ito::complex128>(
     return ito::retOk;
 }
 
-//! template specialisation for bitwise xor function of type complex128
+//! template specialisation for bitwise xor function of type rgba32
 /*!
     \throws cv::Exception since this operation is not defined for that input type
 */
 template <>
 RetVal BitXorFunc<ito::Rgba32>(
+    const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjRes*/)
+{
+    cv::error(cv::Exception(
+        CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+    return ito::retOk;
+}
+
+//! template specialisation for bitwise xor function of type datetime
+/*!
+    \throws cv::Exception since this operation is not defined for that input type
+*/
+template <>
+RetVal BitXorFunc<ito::DateTime>(
+    const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjRes*/)
+{
+    cv::error(cv::Exception(
+        CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+    return ito::retOk;
+}
+
+//! template specialisation for bitwise xor function of type timedelta
+/*!
+    \throws cv::Exception since this operation is not defined for that input type
+*/
+template <>
+RetVal BitXorFunc<ito::TimeDelta>(
     const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjRes*/)
 {
     cv::error(cv::Exception(
@@ -12732,7 +12802,7 @@ DataObject arg(const DataObject& dObj)
     {
         cv::error(cv::Exception(
             CV_StsAssert,
-            "Arg() not defined for real input parameter type",
+            "arg not defined for real, color or datetime input parameter types.",
             "",
             __FILE__,
             __LINE__));
@@ -12827,7 +12897,7 @@ DataObject real(const DataObject& dObj)
     {
         cv::error(cv::Exception(
             CV_StsAssert,
-            "Real not defined for real input parameter type",
+            "real not defined for real, color or datetime input parameter types.",
             "",
             __FILE__,
             __LINE__));
@@ -12999,7 +13069,7 @@ RetVal DataObject::setReal(DataObject& valuesObj)
     {
         cv::error(cv::Exception(
             CV_StsAssert,
-            "Real not defined for real input parameter type",
+            "real not defined for real, color or datetime input parameter types.",
             "",
             __FILE__,
             __LINE__));
@@ -13169,7 +13239,7 @@ RetVal DataObject::setImag(DataObject& valuesObj)
     {
         cv::error(cv::Exception(
             CV_StsAssert,
-            "Imag not defined for real input parameter type",
+            "imag not defined for real, color or datetime input parameter types.",
             "",
             __FILE__,
             __LINE__));
@@ -13262,7 +13332,7 @@ DataObject imag(const DataObject& dObj)
     {
         cv::error(cv::Exception(
             CV_StsAssert,
-            "Imag not defined for real input parameter type",
+            "imag not defined for real, color or datetime input parameter types.",
             "",
             __FILE__,
             __LINE__));
@@ -14038,87 +14108,159 @@ template DATAOBJ_EXPORT RetVal
 DataObject::linspace<float64>(const float64, const float64, const float64, const int);
 
 
-template <typename _Tp> void coutValue(const _Tp* val, char* buf)
+template <typename _Tp> void coutValue(const _Tp* val, char* buf, size_t bufsize)
 {
 }
 
-template <> void coutValue(const ito::uint8* val, char* buf)
+template <> void coutValue(const ito::uint8* val, char* buf, size_t bufsize)
 {
-    sprintf(buf, "%3d", *val);
+    sprintf_s(buf, bufsize, "%3d", *val);
 }
 
-template <> void coutValue(const ito::int8* val, char* buf)
+template <> void coutValue(const ito::int8* val, char* buf, size_t bufsize)
 {
-    sprintf(buf, "%3d", *val);
+    sprintf_s(buf, bufsize, "%3d", *val);
 }
 
-template <> void coutValue(const ito::uint16* val, char* buf)
+template <> void coutValue(const ito::uint16* val, char* buf, size_t bufsize)
 {
-    sprintf(buf, "%d", *val);
+    sprintf_s(buf, bufsize, "%d", *val);
 }
 
-template <> void coutValue(const ito::int16* val, char* buf)
+template <> void coutValue(const ito::int16* val, char* buf, size_t bufsize)
 {
-    sprintf(buf, "%d", *val);
+    sprintf_s(buf, bufsize, "%d", *val);
 }
 
-template <> void coutValue(const ito::uint32* val, char* buf)
+template <> void coutValue(const ito::uint32* val, char* buf, size_t bufsize)
 {
-    sprintf(buf, "%d", *val);
+    sprintf_s(buf, bufsize, "%d", *val);
 }
 
-template <> void coutValue(const ito::int32* val, char* buf)
+template <> void coutValue(const ito::int32* val, char* buf, size_t bufsize)
 {
-    sprintf(buf, "%d", *val);
+    sprintf_s(buf, bufsize, "%d", *val);
 }
 
-template <> void coutValue(const ito::float32* val, char* buf)
+template <> void coutValue(const ito::float32* val, char* buf, size_t bufsize)
 {
-    sprintf(buf, "%.8g", *val);
+    sprintf_s(buf, bufsize, "%.8g", *val);
 }
 
-template <> void coutValue(const ito::float64* val, char* buf)
+template <> void coutValue(const ito::float64* val, char* buf, size_t bufsize)
 {
-    sprintf(buf, "%.8g", *val);
+    sprintf_s(buf, bufsize, "%.8g", *val);
 }
 
-template <> void coutValue(const ito::complex64* val, char* buf)
+template <> void coutValue(const ito::complex64* val, char* buf, size_t bufsize)
 {
     if (val->imag() >= 0)
     {
-        sprintf(buf, "%.8g+%.8gj", val->real(), val->imag());
+        sprintf_s(buf, bufsize, "%.8g+%.8gj", val->real(), val->imag());
     }
     else
     {
-        sprintf(buf, "%.8g-%.8gj", val->real(), -val->imag());
+        sprintf_s(buf, bufsize, "%.8g-%.8gj", val->real(), -val->imag());
     }
 }
 
-template <> void coutValue(const ito::complex128* val, char* buf)
+template <> void coutValue(const ito::complex128* val, char* buf, size_t bufsize)
 {
     if (val->imag() >= 0)
     {
-        sprintf(buf, "%.8g+%.8gj", val->real(), val->imag());
+        sprintf_s(buf, bufsize, "%.8g+%.8gj", val->real(), val->imag());
     }
     else
     {
-        sprintf(buf, "%.8g-%.8gj", val->real(), -val->imag());
+        sprintf_s(buf, bufsize, "%.8g-%.8gj", val->real(), -val->imag());
     }
 }
 
-template <> void coutValue(const ito::Rgba32* val, char* buf)
+template <> void coutValue(const ito::Rgba32* val, char* buf, size_t bufsize)
 {
-    sprintf(buf, "(%d,%d,%d,%d)", val->r, val->g, val->b, val->a);
+    sprintf_s(buf, bufsize, "(%d,%d,%d,%d)", val->r, val->g, val->b, val->a);
 }
 
-template <> void coutValue(const ito::DateTime* val, char* buf)
+template <> void coutValue(const ito::DateTime* val, char* buf, size_t bufsize)
 {
-    sprintf(buf, "datetime");
+    char tz[60];
+    tz[0] = 0;
+
+    if (val->utcOffset != 0)
+    {
+        sprintf_s(tz, 59, ", tzinfo(seconds = %d)", val->utcOffset);
+    }
+
+    // usecond contains milliseconds and seconds
+    int useconds = static_cast<int>(val->datetime % 1000000);
+
+    // milliseconds since 01.01.1970, 00:00
+    int64 secs = static_cast<time_t>((val->datetime - useconds) / 1000000);
+
+    if (val->datetime < 0 && useconds != 0)
+    {
+        useconds = 1000000 + useconds;
+        secs -= 1;
+    }
+
+    if (secs < 0)
+    {
+        // before 1.1.1970
+        sprintf_s(buf, bufsize, "datetime(...%s)", tz);
+    }
+    else
+    {
+        time_t s = secs;
+        struct tm * ptm = gmtime(&s);
+
+        // datetime(year, month, day[, hour[, minute[, second[, microsecond[,tzinfo]]]]])
+
+        if (useconds != 0)
+        {
+            sprintf_s(buf, bufsize, "datetime(%d, %d, %d, %d, %d, %d, %d%s)", ptm->tm_year + 1900, ptm->tm_mon + 1, ptm->tm_mday, ptm->tm_hour, ptm->tm_min, ptm->tm_sec, useconds, tz);
+        }
+        else if (ptm->tm_sec != 0)
+        {
+            sprintf_s(buf, bufsize, "datetime(%d, %d, %d, %d, %d, %d%s)", ptm->tm_year + 1900, ptm->tm_mon + 1, ptm->tm_mday, ptm->tm_hour, ptm->tm_min, ptm->tm_sec, tz);
+        }
+        else if (ptm->tm_min != 0)
+        {
+            sprintf_s(buf, bufsize, "datetime(%d, %d, %d, %d, %d%s)", ptm->tm_year + 1900, ptm->tm_mon + 1, ptm->tm_mday, ptm->tm_hour, ptm->tm_min, tz);
+        }
+        else if (ptm->tm_hour != 0)
+        {
+            sprintf_s(buf, bufsize, "datetime(%d, %d, %d, %d%s)", ptm->tm_year + 1900, ptm->tm_mon + 1, ptm->tm_mday, ptm->tm_hour, tz);
+        }
+        else
+        {
+            sprintf_s(buf, bufsize, "datetime(%d, %d, %d%s)", ptm->tm_year + 1900, ptm->tm_mon + 1, ptm->tm_mday, tz);
+        }
+        
+    }
+
+    
 }
 
-template <> void coutValue(const ito::TimeDelta* val, char* buf)
+template <> void coutValue(const ito::TimeDelta* val, char* buf, size_t bufsize)
 {
-    sprintf(buf, "timedelta");
+    // this calculation is taken from helperDatetime::timedelta::toDSU
+    int useconds = static_cast<int>(val->delta % 1000000);
+    int64 sec = (val->delta - useconds) / 1000000;
+
+    const int64 secPerDay = 3600 * 24;
+    int days = static_cast<int>(sec / secPerDay);
+    int seconds = static_cast<int>(sec % secPerDay);
+
+    //datetime.timedelta(days = 1, seconds = 3661, microseconds = 1001)
+    if (useconds == 0)
+    {
+        sprintf_s(buf, bufsize, "timedelta(days = %d, seconds = %d)", days, seconds);
+    }
+    else
+    {
+        sprintf_s(buf, bufsize, "timedelta(days = %d, seconds = %d, microseconds = %d)", days, seconds, useconds);
+    }
+    
 }
 
 
@@ -14127,10 +14269,11 @@ template <typename _Tp>
 std::ostream& coutPlane(
     std::ostream& out, const cv::Mat* plane, int firstLineIndent, int otherIndent)
 {
-    char buf[128];
+    const size_t bufsize = 128;
+    char buf[bufsize];
     const _Tp* ptr;
-    otherIndent = std::min(otherIndent, 127);
-    firstLineIndent = std::min(firstLineIndent, 127);
+    otherIndent = std::min(otherIndent, (int)(bufsize - 1));
+    firstLineIndent = std::min(firstLineIndent, (int)(bufsize - 1));
 
     for (int r = 0; r < plane->rows; ++r)
     {
@@ -14154,12 +14297,12 @@ std::ostream& coutPlane(
 
             for (int c = 0; c < plane->cols - 1; ++c)
             {
-                coutValue<_Tp>(ptr, buf);
+                coutValue<_Tp>(ptr, buf, bufsize - 1);
                 ptr++;
                 std::cout << buf << ", ";
             }
 
-            coutValue<_Tp>(ptr, buf);
+            coutValue<_Tp>(ptr, buf, bufsize - 1);
             std::cout << buf << "]";
         }
         else

@@ -4182,9 +4182,8 @@ PyObject* PythonDataObject::PyDataObj_nbPower(PyObject* o1, PyObject* o2, PyObje
     }
 
     PyDataObject* dobj1 = (PyDataObject*)(o1);
-    PyDataObject* dobj2 = (PyDataObject*)(o2);
 
-    if ((PyObject*)o3 != Py_None)
+    if (o3 != Py_None)
     {
         PyErr_SetString(PyExc_TypeError, "Modulo in power-method not supported");
         Py_INCREF(Py_NotImplemented);
@@ -4336,9 +4335,10 @@ PyObject* PythonDataObject::PyDataObj_nbInvert(PyObject* o1)
 
     try
     {
+        // resDataObj should always be the owner of its data,
+        // therefore base of resultObject remains None
         retObj->dataObject = new ito::DataObject(
-            dobj1->dataObject->bitwise_not()); // resDataObj should always be the owner of its data,
-                                               // therefore base of resultObject remains None
+            dobj1->dataObject->bitwise_not()); 
     }
     catch (cv::Exception& exc)
     {
@@ -4472,10 +4472,11 @@ PyObject* PythonDataObject::PyDataObj_nbAnd(PyObject* o1, PyObject* o2)
 
     try
     {
+        // resDataObj should always be the owner of its data, therefore
+        // base of resultObject remains None
         retObj->dataObject = new ito::DataObject(
             *(dobj1->dataObject) &
-            *(dobj2->dataObject)); // resDataObj should always be the owner of its data, therefore
-                                   // base of resultObject remains None
+            *(dobj2->dataObject)); 
     }
     catch (cv::Exception& exc)
     {
@@ -6093,6 +6094,11 @@ Returns \n\
 normalized : dataObject \n\
     normalized data object \n\
 \n\
+Raises \n\
+------- \n\
+RuntimeError \n\
+    if a ``DateTime`` or ``TimeDelta`` dataObject should be normalized. Not supported. \n\
+\n\
 Notes \n\
 ----- \n\
 For complex data types, the current minimum and maximum values are calculated \n\
@@ -6111,17 +6117,17 @@ PyObject* PythonDataObject::PyDataObject_normalize(
     if (!PyArg_ParseTupleAndKeywords(
             args, kwds, "|dds", const_cast<char**>(kwlist), &minVal, &maxVal, &type))
     {
-        return NULL;
+        return nullptr;
     }
 
-    if (type != NULL)
+    if (type != nullptr)
     {
         typeno = dObjTypeFromName(type);
 
         if (typeno == -1)
         {
             PyErr_Format(PyExc_TypeError, "The given type string %s is unknown", type);
-            return NULL;
+            return nullptr;
         }
     }
     else
@@ -6129,13 +6135,18 @@ PyObject* PythonDataObject::PyDataObject_normalize(
         typeno = self->dataObject->getType();
     }
 
-    PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
-    ito::DataObject dataObj;
-
     double smin, smax;
     ito::uint32 loc1[] = {0, 0, 0};
     ito::uint32 loc2[] = {0, 0, 0};
-    ito::dObjHelper::minMaxValue(self->dataObject, smin, loc1, smax, loc2, true);
+    ito::RetVal retval = ito::dObjHelper::minMaxValue(self->dataObject, smin, loc1, smax, loc2, true);
+
+    if (!PythonCommon::transformRetValToPyException(retval))
+    {
+        return nullptr;
+    }
+
+    PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
+    ito::DataObject dataObj;
 
     double dmin = std::min(minVal, maxVal);
     double dmax = std::max(minVal, maxVal);
@@ -6473,7 +6484,7 @@ PyObject* PythonDataObject::PyDataObject_getReal(PyDataObject* self, void* /*clo
 {
     if (self->dataObject == NULL)
     {
-        PyErr_SetString(PyExc_TypeError, "data object is NULL");
+        PyErr_SetString(PyExc_RuntimeError, "data object is NULL");
         return NULL;
     }
 
@@ -6504,7 +6515,7 @@ int PythonDataObject::PyDataObject_setReal(PyDataObject* self, PyObject* value, 
 {
     if (self->dataObject == NULL)
     {
-        PyErr_SetString(PyExc_TypeError, "data object is NULL");
+        PyErr_SetString(PyExc_RuntimeError, "data object is NULL");
         return -1;
     }
 
@@ -6519,7 +6530,7 @@ int PythonDataObject::PyDataObject_setReal(PyDataObject* self, PyObject* value, 
     if (dataObjectType != ito::tComplex64 &&
         dataObjectType != ito::tComplex128) // input object must be complex
     {
-        PyErr_SetString(PyExc_RuntimeError, "type of dataObject is not complex.");
+        PyErr_SetString(PyExc_TypeError, "type of dataObject is not complex.");
         return -1;
     }
 
@@ -6799,7 +6810,7 @@ PyObject* PythonDataObject::PyDataObject_getImag(PyDataObject* self, void* /*clo
 {
     if (self->dataObject == NULL)
     {
-        PyErr_SetString(PyExc_TypeError, "data object is NULL");
+        PyErr_SetString(PyExc_RuntimeError, "data object is NULL");
         return NULL;
     }
 
@@ -6830,7 +6841,7 @@ int PythonDataObject::PyDataObject_setImag(PyDataObject* self, PyObject* value, 
 {
     if (self->dataObject == NULL)
     {
-        PyErr_SetString(PyExc_TypeError, "data object is NULL");
+        PyErr_SetString(PyExc_RuntimeError, "data object is NULL");
         return -1;
     }
 
@@ -6845,7 +6856,7 @@ int PythonDataObject::PyDataObject_setImag(PyDataObject* self, PyObject* value, 
     if (dataObjectType != ito::tComplex64 &&
         dataObjectType != ito::tComplex128) // input object must be complex
     {
-        PyErr_SetString(PyExc_RuntimeError, "type of dataObject is not complex.");
+        PyErr_SetString(PyExc_TypeError, "type of dataObject is not complex.");
         return -1;
     }
 
@@ -7129,7 +7140,7 @@ PyObject* PythonDataObject::PyDataObject_abs(PyDataObject* self, void* /*closure
 {
     if (self->dataObject == NULL)
     {
-        PyErr_SetString(PyExc_TypeError, "data object is NULL");
+        PyErr_SetString(PyExc_RuntimeError, "data object is NULL");
         return NULL;
     }
 
@@ -7172,7 +7183,7 @@ PyObject* PythonDataObject::PyDataObject_arg(PyDataObject* self, void* /*closure
 {
     if (self->dataObject == NULL)
     {
-        PyErr_SetString(PyExc_TypeError, "data object is NULL");
+        PyErr_SetString(PyExc_RuntimeError, "data object is NULL");
         return NULL;
     }
 
@@ -7216,7 +7227,7 @@ PyObject* PythonDataObject::PyDataObj_mappingGetElem(PyDataObject* self, PyObjec
 
     if (self->dataObject == NULL)
     {
-        PyErr_SetString(PyExc_TypeError, "data object is NULL");
+        PyErr_SetString(PyExc_RuntimeError, "data object is NULL");
         return NULL;
     }
 
@@ -7428,7 +7439,7 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
 
     if (self->dataObject == NULL)
     {
-        PyErr_SetString(PyExc_TypeError, "data object is NULL");
+        PyErr_SetString(PyExc_RuntimeError, "data object is NULL");
         return -1;
     }
 
@@ -8843,7 +8854,7 @@ PyObject* PythonDataObject::PyDataObj_Array_StructGet(PyDataObject* self)
 
     if (self->dataObject == NULL)
     {
-        PyErr_SetString(PyExc_TypeError, "data object is NULL");
+        PyErr_SetString(PyExc_RuntimeError, "data object is NULL");
         return NULL;
     }
 
@@ -8960,7 +8971,7 @@ PyObject* PythonDataObject::PyDataObj_Array_Interface(PyDataObject* self)
 {
     if (self->dataObject == NULL)
     {
-        PyErr_SetString(PyExc_TypeError, "data object is NULL");
+        PyErr_SetString(PyExc_RuntimeError, "data object is NULL");
         return NULL;
     }
     else if (self->dataObject->getContinuous() == false)
@@ -9092,7 +9103,7 @@ PyObject* PythonDataObject::PyDataObj_Array_(PyDataObject* self, PyObject* args)
 {
     if (self->dataObject == NULL)
     {
-        PyErr_SetString(PyExc_TypeError, "data object is NULL");
+        PyErr_SetString(PyExc_RuntimeError, "data object is NULL");
         return NULL;
     }
 
@@ -9977,7 +9988,7 @@ PyObject* PythonDataObject::PyDataObj_ToList(PyDataObject* self)
 {
     if (self->dataObject == NULL)
     {
-        PyErr_SetString(PyExc_TypeError, "data object is NULL");
+        PyErr_SetString(PyExc_RuntimeError, "data object is NULL");
         return NULL;
     }
 
@@ -10005,7 +10016,7 @@ PyObject* PythonDataObject::PyDataObj_ToListRecursive(
 {
     if (dataObj == NULL)
     {
-        PyErr_SetString(PyExc_TypeError, "data object is NULL");
+        PyErr_SetString(PyExc_RuntimeError, "data object is NULL");
         return NULL;
     }
 
@@ -10063,7 +10074,7 @@ PyObject* PythonDataObject::PyDataObj_At(ito::DataObject* dataObj, const unsigne
 {
     if (dataObj == nullptr)
     {
-        PyErr_SetString(PyExc_TypeError, "data object is NULL");
+        PyErr_SetString(PyExc_RuntimeError, "data object is NULL");
         return nullptr;
     }
 
@@ -10151,7 +10162,7 @@ PyObject* PythonDataObject::PyDataObject_createMask(
 {
     if (self->dataObject == NULL)
     {
-        PyErr_SetString(PyExc_TypeError, "data object is NULL");
+        PyErr_SetString(PyExc_RuntimeError, "data object is NULL");
         return NULL;
     }
 
@@ -10398,7 +10409,7 @@ PyObject* PythonDataObject::PyDataObj_lineCut(PyDataObject* self, PyObject* args
 {
     if (self->dataObject == NULL)
     {
-        PyErr_SetString(PyExc_TypeError, "data object is NULL");
+        PyErr_SetString(PyExc_RuntimeError, "data object is NULL");
         return NULL;
     }
 
