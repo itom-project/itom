@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>859</width>
-    <height>652</height>
+    <height>747</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -157,12 +157,6 @@
       </item>
       <item>
        <widget class="QGroupBox" name="groupTimestamp">
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>0</height>
-         </size>
-        </property>
         <property name="title">
          <string>Add Timestamp</string>
         </property>
@@ -225,12 +219,6 @@
          </property>
          <item row="3" column="0">
           <widget class="QGroupBox" name="groupMultishot">
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>0</height>
-            </size>
-           </property>
            <property name="title">
             <string>Multishot</string>
            </property>
@@ -435,7 +423,7 @@
      <x>0</x>
      <y>0</y>
      <width>859</width>
-     <height>21</height>
+     <height>26</height>
     </rect>
    </property>
   </widget>

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>620</width>
-    <height>464</height>
+    <width>629</width>
+    <height>484</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -78,11 +78,11 @@
         <attribute name="headerCascadingSectionResizes">
          <bool>false</bool>
         </attribute>
-        <attribute name="headerDefaultSectionSize">
-         <number>25</number>
-        </attribute>
         <attribute name="headerMinimumSectionSize">
          <number>21</number>
+        </attribute>
+        <attribute name="headerDefaultSectionSize">
+         <number>25</number>
         </attribute>
         <attribute name="headerShowSortIndicator" stdset="0">
          <bool>true</bool>
@@ -121,12 +121,6 @@
       </item>
       <item>
        <widget class="QLabel" name="lblText">
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>30</height>
-         </size>
-        </property>
         <property name="text">
          <string/>
         </property>
@@ -167,12 +161,6 @@
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
          <widget class="QCommandLinkButton" name="cmdMessage">
-          <property name="minimumSize">
-           <size>
-            <width>140</width>
-            <height>0</height>
-           </size>
-          </property>
           <property name="text">
            <string>Messages</string>
           </property>
@@ -192,12 +180,6 @@
         </item>
         <item>
          <widget class="QCommandLinkButton" name="cmdWarning">
-          <property name="minimumSize">
-           <size>
-            <width>140</width>
-            <height>0</height>
-           </size>
-          </property>
           <property name="text">
            <string>Warnings</string>
           </property>
@@ -217,12 +199,6 @@
         </item>
         <item>
          <widget class="QCommandLinkButton" name="cmdError">
-          <property name="minimumSize">
-           <size>
-            <width>140</width>
-            <height>0</height>
-           </size>
-          </property>
           <property name="text">
            <string>Errors</string>
           </property>
@@ -242,12 +218,6 @@
         </item>
         <item>
          <widget class="QCommandLinkButton" name="cmdIgnored">
-          <property name="minimumSize">
-           <size>
-            <width>140</width>
-            <height>0</height>
-           </size>
-          </property>
           <property name="text">
            <string>Ignored</string>
           </property>
