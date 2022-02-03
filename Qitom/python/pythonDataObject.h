@@ -295,7 +295,8 @@ class PythonDataObject
         static ito::RetVal copyNpArrayValuesToDataObject(PyArrayObject *npNdArray, ito::DataObject *dataObject, ito::tDataType type);
         static int PyDataObj_CreateFromShapeTypeData(PyDataObject *self, PyObject *args, PyObject *kwds); //helper method for PyDataObject_init
         static int PyDataObj_CreateFromNpNdArrayAndType(PyDataObject *self, PyObject *args, PyObject *kwds, bool addNpOrgTags); //helper method for PyDataObject_init
-
+        static bool PyDataObj_CopyFromDatetimeNpNdArray(PyDataObject *self, PyArrayObject *dateTimeArray, int dims, const int* sizes);
+        static bool PyDataObj_CopyFromTimedeltaNpNdArray(PyDataObject *self, PyArrayObject *timeDeltaArray, int dims, const int* sizes);
 
 
         //-------------------------------------------------------------------------------------------------

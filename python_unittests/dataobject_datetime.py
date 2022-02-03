@@ -428,6 +428,58 @@ class DataObjectDatetime(unittest.TestCase):
             with self.assertRaises(TypeError):
                 obj.conjugate()
 
+    def test_npdatetime64us_to_dataObject(self):
+
+        # timebase us
+        t = np.arange(datetime(1985,7,1), datetime(2003,7,1), timedelta(days=1))
+        dObj = dataObject(t)
+
+        for _t, _d in zip(t, dObj):
+            self.assertTrue(_t == np.datetime64(_d))
+
+        t = np.array([np.datetime64(1, 'Y'), np.datetime64(-5, 'Y')])
+        dObj = dataObject(t)
+        
+        for _t, _d in zip(t, dObj):
+            self.assertTrue(_t == np.datetime64(_d))
+
+        t = np.array([np.datetime64(1, 'M'), np.datetime64(-5, 'M')])
+        dObj = dataObject(t)
+        
+        for _t, _d in zip(t, dObj):
+            self.assertTrue(_t == np.datetime64(_d))
+
+        t = np.array([np.datetime64(1, 'D'), np.datetime64(-5, 'D')])
+        dObj = dataObject(t)
+        
+        for _t, _d in zip(t, dObj):
+            self.assertTrue(_t == np.datetime64(_d))
+
+        t = np.array([np.datetime64(1, 'W'), np.datetime64(-5, 'W')])
+        dObj = dataObject(t)
+        
+        for _t, _d in zip(t, dObj):
+            self.assertTrue(_t == np.datetime64(_d))
+
+        t = np.array([np.datetime64(1, 'h'), np.datetime64(-5, 'h')])
+        dObj = dataObject(t)
+        
+        for _t, _d in zip(t, dObj):
+            self.assertTrue(_t == np.datetime64(_d))
+
+        t = np.array([np.datetime64(1, 'us'), np.datetime64(-5, 'us')])
+        dObj = dataObject(t)
+        
+        for _t, _d in zip(t, dObj):
+            self.assertTrue(_t == np.datetime64(_d))
+
+        t = np.array([np.datetime64(1, 's'), np.datetime64(-5, 's')])
+        dObj = dataObject(t)
+        
+        for _t, _d in zip(t, dObj):
+            self.assertTrue(_t == np.datetime64(_d))
+        
+
 
 if __name__ == "__main__":
     unittest.main(module="dataobject_datetime", exit=False)

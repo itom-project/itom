@@ -23,6 +23,8 @@
 #include "pythonDataObject.h"
 #include "pythonEngineInc.h"
 
+#include "numpy/arrayscalars.h"
+
 #include "structmember.h"
 
 #include "../global.h"
@@ -36,6 +38,8 @@
 
 #include "dataObjectFuncs.h"
 #include "pythonQtConversion.h"
+
+#include <qdatetime.h>
 
 #include <memory>
 #include <stdexcept>
@@ -805,7 +809,7 @@ int PythonDataObject::PyDataObj_CreateFromNpNdArrayAndType(
             PyErr_SetString(
                 PyExc_ValueError,
                 "Invalid type name. Allowed type names are 'uint8', 'int8', 'uint16', 'int16', "
-                "'int32', 'float32', 'float64', 'complex64', 'complext128', 'rgba32'");
+                "'int32', 'float32', 'float64', 'complex64', 'complext128', 'rgba32', 'datetime', 'timedelta'");
             return -1;
         }
     }
@@ -828,7 +832,7 @@ int PythonDataObject::PyDataObj_CreateFromNpNdArrayAndType(
                     PyExc_ValueError,
                     "Could not find a compatible Numpy.dtype. Allowed types are 'uint8', 'int8', "
                     "'uint16', 'int16', 'int32', 'float32', 'float64', 'complex64', 'complext128', "
-                    "'rgba32'");
+                    "'rgba32', 'datetime', 'timedelta'");
                 return -1;
             }
         }
@@ -1012,22 +1016,35 @@ int PythonDataObject::PyDataObj_CreateFromNpNdArrayAndType(
         // verify that last dimension has steps size equal to itemsize
         // or the last dimension has a step size of 0, but then the size of this last dimension
         // must be 0.
-        // if (steps[dimensions - 1] == PyArray_ITEMSIZE(ndArrayNew))
-        //{
         DELETE_AND_SET_NULL(self->dataObject);
 
-        try
+        switch (destDObjTypeNo)
         {
-            self->dataObject = new ito::DataObject(
-                static_cast<unsigned char>(dimensions), sizes, destDObjTypeNo, data, steps);
+        case ito::tDateTime:
+            // always deep copy
+            error = PyDataObj_CopyFromDatetimeNpNdArray(self, ndArrayNew, dimensions, sizes);
+            break;
+        case ito::tTimeDelta:
+            // always deep copy
+            error = PyDataObj_CopyFromTimedeltaNpNdArray(self, ndArrayNew, dimensions, sizes);
+            break;
+        default:
+            // always shallow copy
+            try
+            {
+                self->dataObject = new ito::DataObject(
+                    static_cast<unsigned char>(dimensions), sizes, destDObjTypeNo, data, steps);
+            }
+            catch (cv::Exception& exc)
+            {
+                PyErr_Format(PyExc_RuntimeError, "failed to create data object: %s", (exc.err).c_str());
+                self->dataObject = nullptr;
+                error = true;
+            }
+
+            PyDataObject_SetBase(self, (PyObject*)ndArrayNew);
+            Py_XDECREF(ndArrayNew);
         }
-        catch (cv::Exception& exc)
-        {
-            PyErr_Format(PyExc_RuntimeError, "failed to create data object: %s", (exc.err).c_str());
-            self->dataObject = nullptr;
-            error = true;
-        }
-        //}
 
         // If dataObject.continuous is set to 255 in the python_unittests
         // the tags _orgNp... are added, only for the python_unittests
@@ -1036,7 +1053,7 @@ int PythonDataObject::PyDataObj_CreateFromNpNdArrayAndType(
             addNpOrgTags = true;
         }
 
-        if (addNpOrgTags)
+        if (!error && addNpOrgTags)
         {
             // add tag _dtype with original shape of numpy.ndarray
             self->dataObject->setTag(
@@ -1067,11 +1084,238 @@ int PythonDataObject::PyDataObj_CreateFromNpNdArrayAndType(
         DELETE_AND_SET_NULL_ARRAY(sizes);
         DELETE_AND_SET_NULL_ARRAY(steps);
 
-        PyDataObject_SetBase(self, (PyObject*)ndArrayNew);
-        Py_XDECREF(ndArrayNew);
-
         return error ? -1 : 0;
     }
+}
+
+//-------------------------------------------------------------------------------------
+bool npyDatetime2itoDatetime(const npy_datetime &dt, const PyArray_DatetimeDTypeMetaData* md, ito::DateTime &out)
+{
+    out.utcOffset = 0;
+
+    switch (md->meta.base)
+    {
+    case NPY_FR_Y:           /* Years */
+        out = ito::datetime::fromYMDHMSU(dt + 1970, 1, 1, 0, 0, 0, 0, 0);
+        break;
+    case NPY_FR_M:           /* Months */
+    {
+        auto qDate = QDate(1970, 1, 1);
+        qDate = qDate.addMonths(dt);
+        out = ito::datetime::fromYMDHMSU(qDate.year(), qDate.month(), qDate.day(), 0, 0, 0, 0, 0);
+        break;
+    }
+    case NPY_FR_W:           /* Weeks */
+    {
+        auto qDate = QDate(1970, 1, 1);
+        qDate = qDate.addDays(dt * 7);
+        out = ito::datetime::fromYMDHMSU(qDate.year(), qDate.month(), qDate.day(), 0, 0, 0, 0, 0);
+        break;
+    }
+    case NPY_FR_D:           /* Days */
+    {
+        auto qDate = QDate(1970, 1, 1);
+        qDate = qDate.addDays(dt);
+        out = ito::datetime::fromYMDHMSU(qDate.year(), qDate.month(), qDate.day(), 0, 0, 0, 0, 0);
+        break;
+    }
+    case NPY_FR_h:           /* hours */
+        out.datetime = (dt * 3600) * 1000000;
+        break;
+    case NPY_FR_m:           /* minutes */
+        out.datetime = (dt * 60) * 1000000;
+        break;
+    case NPY_FR_s:           /* seconds */
+        out.datetime = (dt) * 1000000;
+        break;
+    case NPY_FR_ms:          /* milliseconds */
+        out.datetime = dt * 1000;
+        break;
+    case NPY_FR_us:          /* microseconds */
+        out.datetime = dt;
+        break;
+    case NPY_FR_ns:         /* nanoseconds */
+        out.datetime = dt / 1000;
+        break;
+    case NPY_FR_ps:         /* picoseconds */
+        out.datetime = dt / (ito::int64)1000000;
+        break;
+    case NPY_FR_fs:         /* femtoseconds */
+        out.datetime = dt / (ito::int64)1000000;
+        out.datetime /= 1000;
+        break;
+    case NPY_FR_as:         /* attoseconds */
+        out.datetime = dt / (ito::int64)1000000;
+        out.datetime /= (ito::int64)1000000;
+        break;
+    default:
+        PyErr_Format(PyExc_RuntimeError, "Unsupported time unit of the numpy.ndarray.");
+        return false;
+    }
+
+    /* Divide by the multiplier */
+    if (md->meta.num > 1) 
+    {
+        if (dt >= 0) 
+        {
+            out.datetime *= md->meta.num;
+        }
+        else 
+        {
+            out = (dt * md->meta.num) + md->meta.num - 1;
+        }
+    }
+
+    return true;
+}
+
+//-------------------------------------------------------------------------------------
+bool PythonDataObject::PyDataObj_CopyFromDatetimeNpNdArray(PyDataObject *self, PyArrayObject *dateTimeArray, int dims, const int* sizes)
+{
+    bool error = false;
+
+    const uchar* data = (uchar*)PyArray_DATA(dateTimeArray);
+
+    // number of bytes to jump from one element in
+    // one dimension to the next one
+    const npy_intp* npstrides = (npy_intp*)PyArray_STRIDES(dateTimeArray);
+
+    const auto descr = PyArray_DESCR(dateTimeArray);
+
+    // in case of datetime or timedelta: The values are int64, based on 1.1.1970
+    // the timebase is given by:
+    const auto md = (PyArray_DatetimeDTypeMetaData*)(descr->c_metadata);
+    // timezone is ignored in numpy. If dataObject contains a timezone, ignore it and raise a warning.
+
+    if (md == nullptr)
+    {
+        PyErr_Format(PyExc_RuntimeError, "Failed to read the time unit of the numpy.ndarray.");
+        return false;
+    }
+
+    try
+    {
+        // create a continuous object for an easier iteration
+        self->dataObject = new ito::DataObject(
+            static_cast<unsigned char>(dims), sizes, ito::tDateTime, (unsigned char)1);
+    }
+    catch (cv::Exception& exc)
+    {
+        PyErr_Format(PyExc_RuntimeError, "failed to create data object: %s", (exc.err).c_str());
+        self->dataObject = nullptr;
+        error = true;
+    }
+
+    if (self->dataObject->getTotal() == 0)
+    {
+        return true;
+    }
+
+    ito::DateTime *dObjData = self->dataObject->rowPtr<ito::DateTime>(0, 0);
+
+    /*
+     * Create and use an iterator to count the nonzeros.
+     *   flag NPY_ITER_READONLY
+     *     - The array is never written to.
+     *   flag NPY_ITER_EXTERNAL_LOOP
+     *     - Inner loop is done outside the iterator for efficiency.
+     *   flag NPY_ITER_NPY_ITER_REFS_OK
+     *     - Reference types are acceptable.
+     *   order NPY_KEEPORDER
+     *     - Visit elements in memory order, regardless of strides.
+     *       This is good for performance when the specific order
+     *       elements are visited is unimportant.
+     *   casting NPY_NO_CASTING
+     *     - No casting is required for this operation.
+     */
+    NpyIter* iter = NpyIter_New(dateTimeArray, NPY_ITER_READONLY |
+        NPY_ITER_EXTERNAL_LOOP |
+        NPY_ITER_REFS_OK,
+        NPY_CORDER, NPY_NO_CASTING,
+        nullptr);
+
+    if (iter == nullptr) 
+    {
+        PyErr_Format(PyExc_RuntimeError, "Failed to iterate over numpy.ndarray.");
+        DELETE_AND_SET_NULL(self->dataObject);
+        return false;
+    }
+
+    /*
+     * The iternext function gets stored in a local variable
+     * so it can be called repeatedly in an efficient manner.
+     */
+    NpyIter_IterNextFunc *iternext = NpyIter_GetIterNext(iter, nullptr);
+
+    if (iternext == nullptr) 
+    {
+        NpyIter_Deallocate(iter);
+        
+        PyErr_Format(PyExc_RuntimeError, "Failed to iterate over numpy.ndarray.");
+        DELETE_AND_SET_NULL(self->dataObject);
+        return false;
+    }
+
+    /* The location of the data pointer which the iterator may update */
+    char** dataptr = NpyIter_GetDataPtrArray(iter);
+    /* The location of the stride which the iterator may update */
+    npy_intp* strideptr = NpyIter_GetInnerStrideArray(iter);
+    /* The location of the inner loop size which the iterator may update */
+    npy_intp* innersizeptr = NpyIter_GetInnerLoopSizePtr(iter);
+
+    npy_datetime dt;
+
+    do 
+    {
+        /* Get the inner loop data/stride/count values */
+        char* data = *dataptr;
+        npy_intp stride = *strideptr;
+        npy_intp count = *innersizeptr;
+
+        /* This is a typical inner loop for NPY_ITER_EXTERNAL_LOOP */
+        while (count--) 
+        {
+            dt = *((npy_datetime*)data);
+
+            if (!npyDatetime2itoDatetime(dt, md, *dObjData))
+            {
+                error = true;
+            }
+
+            dObjData++;
+
+            data += stride;
+        }
+
+        /* Increment the iterator to the next inner loop */
+    } 
+    while (iternext(iter));
+
+    NpyIter_Deallocate(iter);
+
+    return error;
+}
+
+//-------------------------------------------------------------------------------------
+bool PythonDataObject::PyDataObj_CopyFromTimedeltaNpNdArray(PyDataObject *self, PyArrayObject *timeDeltaArray, int dims, const int* sizes)
+{
+    bool error = false;
+
+    try
+    {
+        self->dataObject = new ito::DataObject(
+            static_cast<unsigned char>(dims), sizes, ito::tTimeDelta, nullptr, nullptr);
+    }
+    catch (cv::Exception& exc)
+    {
+        PyErr_Format(PyExc_RuntimeError, "failed to create data object: %s", (exc.err).c_str());
+        self->dataObject = nullptr;
+        error = true;
+    }
+
+
+
+    return error;
 }
 
 //-------------------------------------------------------------------------------------
@@ -8134,46 +8378,66 @@ RetVal PythonDataObject::parseTypeNumber(int typeno, char& typekind, int& itemsi
     switch (typeno)
     {
     case ito::tUInt8:
-        typekind = 'u';
+        typekind = NPY_UNSIGNEDLTR;
         itemsize = sizeof(uint8);
         break;
     case ito::tInt8:
-        typekind = 'i';
+        typekind = NPY_SIGNEDLTR;
         itemsize = sizeof(int8);
         break;
     case ito::tUInt16:
-        typekind = 'u';
+        typekind = NPY_UNSIGNEDLTR;
         itemsize = sizeof(uint16);
         break;
     case ito::tInt16:
-        typekind = 'i';
+        typekind = NPY_SIGNEDLTR;
         itemsize = sizeof(int16);
         break;
     case ito::tUInt32:
     case ito::tRGBA32:
-        typekind = 'u';
+        typekind = NPY_UNSIGNEDLTR;
         itemsize = sizeof(uint32);
         break;
     case ito::tInt32:
-        typekind = 'i';
+        typekind = NPY_SIGNEDLTR;
         itemsize = sizeof(int32);
         break;
     case ito::tFloat32:
-        typekind = 'f';
+        typekind = NPY_FLOATINGLTR;
         itemsize = sizeof(float32);
         break;
     case ito::tFloat64:
-        typekind = 'f';
+        typekind = NPY_FLOATINGLTR;
         itemsize = sizeof(float64);
         break;
     case ito::tComplex64:
-        typekind = 'c';
+        typekind = NPY_COMPLEXLTR;
         itemsize = sizeof(complex64);
         break;
     case ito::tComplex128:
-        typekind = 'c';
+        typekind = NPY_COMPLEXLTR;
         itemsize = sizeof(complex128);
         break;
+    case ito::tDateTime:
+    {
+        // todo: maybe kind and size can be hard coded
+        PyArray_Descr *descr = PyArray_DescrNewFromType(NPY_DATETIME);
+        typekind = descr->kind; // NPY_DATETIMELTR
+        itemsize = descr->elsize; // 8
+        Py_DECREF(descr);
+
+        //PyDatetimeScalarObject
+        break;
+    }
+    case ito::tTimeDelta:
+    {
+        // todo: maybe kind and size can be hard coded
+        PyArray_Descr *descr = PyArray_DescrNewFromType(NPY_TIMEDELTA);
+        typekind = descr->kind; // NPY_TIMEDELTALTR
+        itemsize = descr->elsize; // 8
+        Py_DECREF(descr);
+        break;
+    }
     default:
         return RetVal(retError, 0, "type conversion failed");
     }
@@ -8184,7 +8448,7 @@ RetVal PythonDataObject::parseTypeNumber(int typeno, char& typekind, int& itemsi
 //-------------------------------------------------------------------------------------
 int PythonDataObject::getDObjTypeOfNpArray(char typekind, int itemsize)
 {
-    if (typekind == 'i')
+    if (typekind == NPY_SIGNEDLTR)
     {
         switch (itemsize)
         {
@@ -8196,7 +8460,7 @@ int PythonDataObject::getDObjTypeOfNpArray(char typekind, int itemsize)
             return ito::tInt32;
         }
     }
-    else if (typekind == 'u')
+    else if (typekind == NPY_UNSIGNEDLTR)
     {
         switch (itemsize)
         {
@@ -8208,7 +8472,7 @@ int PythonDataObject::getDObjTypeOfNpArray(char typekind, int itemsize)
             return ito::tUInt32;
         }
     }
-    else if (typekind == 'f')
+    else if (typekind == NPY_FLOATINGLTR)
     {
         switch (itemsize)
         {
@@ -8218,7 +8482,7 @@ int PythonDataObject::getDObjTypeOfNpArray(char typekind, int itemsize)
             return ito::tFloat64;
         }
     }
-    else if (typekind == 'c')
+    else if (typekind == NPY_COMPLEXLTR)
     {
         switch (itemsize)
         {
@@ -8226,6 +8490,22 @@ int PythonDataObject::getDObjTypeOfNpArray(char typekind, int itemsize)
             return ito::tComplex64;
         case 16:
             return ito::tComplex128;
+        }
+    }
+    else if (typekind == NPY_DATETIMELTR)
+    {
+        switch (itemsize)
+        {
+        case 8:
+            return ito::tDateTime;
+        }
+    }
+    else if (typekind == NPY_TIMEDELTALTR)
+    {
+        switch (itemsize)
+        {
+        case 8:
+            return ito::tTimeDelta;
         }
     }
 
@@ -8852,10 +9132,10 @@ PyObject* PythonDataObject::PyDataObj_Array_StructGet(PyDataObject* self)
 {
     PyArrayInterface* inter;
 
-    if (self->dataObject == NULL)
+    if (self->dataObject == nullptr)
     {
         PyErr_SetString(PyExc_RuntimeError, "data object is NULL");
-        return NULL;
+        return nullptr;
     }
 
     ito::DataObject* selfDO = self->dataObject;
@@ -8873,11 +9153,12 @@ PyObject* PythonDataObject::PyDataObj_Array_StructGet(PyDataObject* self)
             "it is not continuous (call dataObject.makeContinuous() for conversion first)."
         );*/
 
-        return NULL;
+        return nullptr;
     }
 
     inter = new PyArrayInterface;
-    if (inter == NULL)
+
+    if (inter == nullptr)
     {
         return PyErr_NoMemory();
     }
@@ -8889,22 +9170,24 @@ PyObject* PythonDataObject::PyDataObj_Array_StructGet(PyDataObject* self)
     {
         PyErr_SetString(PyExc_TypeError, "data object is empty.");
         DELETE_AND_SET_NULL(inter)
-        return NULL;
+        return nullptr;
     }
 
     RetVal ret = parseTypeNumber(selfDO->getType(), inter->typekind, inter->itemsize);
+
     if (ret.containsError())
     {
         DELETE_AND_SET_NULL(inter)
+
         if (ret.hasErrorMessage())
         {
             PythonCommon::transformRetValToPyException(ret, PyExc_TypeError);
-            return NULL;
-            // return PyErr_Format(PyExc_TypeError, ret.errorMessage());
+            return nullptr;
         }
+
         PyErr_SetString(
             PyExc_TypeError, "Error converting type of dataObject to corresponding numpy type");
-        return NULL;
+        return nullptr;
     }
 
 #if (NPY_FEATURE_VERSION < NPY_1_7_API_VERSION)
@@ -8927,10 +9210,10 @@ PyObject* PythonDataObject::PyDataObj_Array_StructGet(PyDataObject* self)
 #endif
     }
 
-    inter->descr = NULL;
-    inter->data = NULL;
-    inter->shape = NULL;
-    inter->strides = NULL;
+    inter->descr = nullptr;
+    inter->data = nullptr;
+    inter->shape = nullptr;
+    inter->strides = nullptr;
 
     if (selfDO->getDims() > 0)
     {
@@ -8957,7 +9240,7 @@ PyObject* PythonDataObject::PyDataObj_Array_StructGet(PyDataObject* self)
 
     // don't icrement SELF here, since the receiver of the capsule (e.g. numpy-method) will
     // increment the refcount of then PyDataObject SELF by itself.
-    return PyCapsule_New((void*)inter, NULL, &PyDataObj_Capsule_Destructor);
+    return PyCapsule_New((void*)inter, nullptr, &PyDataObj_Capsule_Destructor);
 }
 
 //-------------------------------------------------------------------------------------

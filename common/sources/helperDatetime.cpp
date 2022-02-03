@@ -60,7 +60,10 @@ namespace datetime {
 
     DateTime fromYMDHMSU(int year, int month, int day, int hour, int minute, int second, int usecond, int utcoffset)
     {
-        QDateTime qdt(QDate(year, month, day), QTime(hour, minute, second), QTimeZone(0));
+        QDate date(year, 1, 1);
+        date = date.addMonths(month - 1);
+        date = date.addDays(day - 1);
+        QDateTime qdt(date, QTime(hour, minute, second), QTimeZone(0));
         DateTime dt;
         dt.datetime = qdt.toMSecsSinceEpoch() * 1000 + usecond;
         dt.utcOffset = utcoffset;

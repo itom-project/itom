@@ -4,6 +4,8 @@
 #include "helperDatetime.h"
 #include "typeDefs.h"
 
+#include <qdatetime.h>
+
 using namespace ito;
 
 class DatetimeTest : public testing::Test
@@ -13,7 +15,6 @@ protected:
     void SetUp() override
     {
     }
-
 };
 
 TEST_F(DatetimeTest, TimeDeltaToDSU)
@@ -45,4 +46,44 @@ TEST_F(DatetimeTest, TimeDeltaToDSU)
     }
 }
 
+TEST_F(DatetimeTest, DateTimeFromTo)
+{
+    int components[7];
+    const int numRows = 2;
 
+    int desired[numRows][8] = {
+        // each row is year, month, day, hour, minute, second, usecond, utcoffset
+        {1930, 1, 1, 10, 11, 12, 13,-3600},
+        {2023, 2, 5, 0, 0, 0, 1, 3600}
+    };
+
+    for (int i = 0; i < numRows; ++i)
+    {
+        ito::DateTime date1 = datetime::fromYMDHMSU(
+            desired[i][0],
+            desired[i][1],
+            desired[i][2],
+            desired[i][3],
+            desired[i][4],
+            desired[i][5],
+            desired[i][6],
+            desired[i][7]);
+
+        datetime::toYMDHMSU(
+            date1,
+            components[0],
+            components[1],
+            components[2],
+            components[3],
+            components[4],
+            components[5],
+            components[6]);
+
+        for (int j = 0; j < 7; ++j)
+        {
+            EXPECT_EQ(components[j], desired[i][j]);
+        }
+        
+        EXPECT_EQ(desired[i][7], date1.utcOffset);
+    }
+}
