@@ -1178,7 +1178,7 @@ bool PythonDataObject::PyDataObj_CopyFromDatetimeNpNdArray(PyDataObject *self, P
 
     // number of bytes to jump from one element in
     // one dimension to the next one
-    const npy_intp* npstrides = (npy_intp*)PyArray_STRIDES(dateTimeArray);
+    const npy_intp* npstrides = PyArray_STRIDES(dateTimeArray);
 
     const auto descr = PyArray_DESCR(dateTimeArray);
 
@@ -1190,7 +1190,7 @@ bool PythonDataObject::PyDataObj_CopyFromDatetimeNpNdArray(PyDataObject *self, P
     if (md == nullptr)
     {
         PyErr_Format(PyExc_RuntimeError, "Failed to read the time unit of the numpy.ndarray.");
-        return false;
+        return true;
     }
 
     try
@@ -1208,7 +1208,7 @@ bool PythonDataObject::PyDataObj_CopyFromDatetimeNpNdArray(PyDataObject *self, P
 
     if (self->dataObject->getTotal() == 0)
     {
-        return true;
+        return false;
     }
 
     ito::DateTime *dObjData = self->dataObject->rowPtr<ito::DateTime>(0, 0);
@@ -1238,7 +1238,7 @@ bool PythonDataObject::PyDataObj_CopyFromDatetimeNpNdArray(PyDataObject *self, P
     {
         PyErr_Format(PyExc_RuntimeError, "Failed to iterate over numpy.ndarray.");
         DELETE_AND_SET_NULL(self->dataObject);
-        return false;
+        return true;
     }
 
     /*
@@ -1253,7 +1253,7 @@ bool PythonDataObject::PyDataObj_CopyFromDatetimeNpNdArray(PyDataObject *self, P
         
         PyErr_Format(PyExc_RuntimeError, "Failed to iterate over numpy.ndarray.");
         DELETE_AND_SET_NULL(self->dataObject);
-        return false;
+        return true;
     }
 
     /* The location of the data pointer which the iterator may update */
@@ -1297,14 +1297,113 @@ bool PythonDataObject::PyDataObj_CopyFromDatetimeNpNdArray(PyDataObject *self, P
 }
 
 //-------------------------------------------------------------------------------------
+bool npyTimedelta2itoTimedelta(const npy_timedelta &dt, const PyArray_DatetimeDTypeMetaData* md, ito::TimeDelta &out)
+{
+    switch (md->meta.base)
+    {
+    case NPY_FR_Y:           /* Years */
+        // cannot convert a Y timedelta into microseconds
+        return false;
+        break;
+    case NPY_FR_M:           /* Months */
+    {
+        // cannot convert a M timedelta into microseconds
+        return false;
+        break;
+    }
+    case NPY_FR_W:           /* Weeks */
+    {
+        out = ito::timedelta::fromDSU(dt * 7, 0, 0);
+        break;
+    }
+    case NPY_FR_D:           /* Days */
+    {
+        out = ito::timedelta::fromDSU(dt, 0, 0);
+        break;
+    }
+    case NPY_FR_h:           /* hours */
+        out.delta = (dt * 3600) * 1000000;
+        break;
+    case NPY_FR_m:           /* minutes */
+        out.delta = (dt * 60) * 1000000;
+        break;
+    case NPY_FR_s:           /* seconds */
+        out.delta = (dt) * 1000000;
+        break;
+    case NPY_FR_ms:          /* milliseconds */
+        out.delta = dt * 1000;
+        break;
+    case NPY_FR_us:          /* microseconds */
+        out.delta = dt;
+        break;
+    case NPY_FR_ns:         /* nanoseconds */
+        out.delta = dt / 1000;
+        break;
+    case NPY_FR_ps:         /* picoseconds */
+        out.delta = dt / (ito::int64)1000000;
+        break;
+    case NPY_FR_fs:         /* femtoseconds */
+        out.delta = dt / (ito::int64)1000000;
+        out.delta /= 1000;
+        break;
+    case NPY_FR_as:         /* attoseconds */
+        out.delta = dt / (ito::int64)1000000;
+        out.delta /= (ito::int64)1000000;
+        break;
+    default:
+        PyErr_Format(PyExc_RuntimeError, "Unsupported time unit of the numpy.ndarray.");
+        return false;
+    }
+
+    /* Divide by the multiplier */
+    if (md->meta.num > 1)
+    {
+        if (dt >= 0)
+        {
+            out.delta *= md->meta.num;
+        }
+        else
+        {
+            out = (dt * md->meta.num) + md->meta.num - 1;
+        }
+    }
+
+    return true;
+}
+
+//-------------------------------------------------------------------------------------
 bool PythonDataObject::PyDataObj_CopyFromTimedeltaNpNdArray(PyDataObject *self, PyArrayObject *timeDeltaArray, int dims, const int* sizes)
 {
     bool error = false;
 
+    const uchar* data = (uchar*)PyArray_DATA(timeDeltaArray);
+
+    // number of bytes to jump from one element in
+    // one dimension to the next one
+    const npy_intp* npstrides = PyArray_STRIDES(timeDeltaArray);
+
+    const auto descr = PyArray_DESCR(timeDeltaArray);
+
+    // in case of datetime or timedelta: The values are int64, based on 1.1.1970
+    // the timebase is given by:
+    const auto md = (PyArray_DatetimeDTypeMetaData*)(descr->c_metadata);
+
+    if (md == nullptr)
+    {
+        PyErr_Format(PyExc_RuntimeError, "Failed to read the time unit of the numpy.ndarray.");
+        return true;
+    }
+    else if (md->meta.base == NPY_FR_Y || md->meta.base == NPY_FR_M)
+    {
+        PyErr_Format(PyExc_RuntimeError, "Cannot convert a year or month timebase into a dataObject timedelta data type.");
+        return true;
+    }
+
     try
     {
+        // create a continuous object for an easier iteration
         self->dataObject = new ito::DataObject(
-            static_cast<unsigned char>(dims), sizes, ito::tTimeDelta, nullptr, nullptr);
+            static_cast<unsigned char>(dims), sizes, ito::tTimeDelta, (unsigned char)1);
     }
     catch (cv::Exception& exc)
     {
@@ -1313,7 +1412,91 @@ bool PythonDataObject::PyDataObj_CopyFromTimedeltaNpNdArray(PyDataObject *self, 
         error = true;
     }
 
+    if (self->dataObject->getTotal() == 0)
+    {
+        return false;
+    }
 
+    ito::TimeDelta *dObjData = self->dataObject->rowPtr<ito::TimeDelta>(0, 0);
+
+    /*
+     * Create and use an iterator to count the nonzeros.
+     *   flag NPY_ITER_READONLY
+     *     - The array is never written to.
+     *   flag NPY_ITER_EXTERNAL_LOOP
+     *     - Inner loop is done outside the iterator for efficiency.
+     *   flag NPY_ITER_NPY_ITER_REFS_OK
+     *     - Reference types are acceptable.
+     *   order NPY_KEEPORDER
+     *     - Visit elements in memory order, regardless of strides.
+     *       This is good for performance when the specific order
+     *       elements are visited is unimportant.
+     *   casting NPY_NO_CASTING
+     *     - No casting is required for this operation.
+     */
+    NpyIter* iter = NpyIter_New(timeDeltaArray, NPY_ITER_READONLY |
+        NPY_ITER_EXTERNAL_LOOP |
+        NPY_ITER_REFS_OK,
+        NPY_CORDER, NPY_NO_CASTING,
+        nullptr);
+
+    if (iter == nullptr)
+    {
+        PyErr_Format(PyExc_RuntimeError, "Failed to iterate over numpy.ndarray.");
+        DELETE_AND_SET_NULL(self->dataObject);
+        return true;
+    }
+
+    /*
+     * The iternext function gets stored in a local variable
+     * so it can be called repeatedly in an efficient manner.
+     */
+    NpyIter_IterNextFunc *iternext = NpyIter_GetIterNext(iter, nullptr);
+
+    if (iternext == nullptr)
+    {
+        NpyIter_Deallocate(iter);
+
+        PyErr_Format(PyExc_RuntimeError, "Failed to iterate over numpy.ndarray.");
+        DELETE_AND_SET_NULL(self->dataObject);
+        return true;
+    }
+
+    /* The location of the data pointer which the iterator may update */
+    char** dataptr = NpyIter_GetDataPtrArray(iter);
+    /* The location of the stride which the iterator may update */
+    npy_intp* strideptr = NpyIter_GetInnerStrideArray(iter);
+    /* The location of the inner loop size which the iterator may update */
+    npy_intp* innersizeptr = NpyIter_GetInnerLoopSizePtr(iter);
+
+    npy_timedelta dt;
+
+    do
+    {
+        /* Get the inner loop data/stride/count values */
+        char* data = *dataptr;
+        npy_intp stride = *strideptr;
+        npy_intp count = *innersizeptr;
+
+        /* This is a typical inner loop for NPY_ITER_EXTERNAL_LOOP */
+        while (count--)
+        {
+            dt = *((npy_timedelta*)data);
+
+            if (!npyTimedelta2itoTimedelta(dt, md, *dObjData))
+            {
+                error = true;
+            }
+
+            dObjData++;
+
+            data += stride;
+        }
+
+        /* Increment the iterator to the next inner loop */
+    } while (iternext(iter));
+
+    NpyIter_Deallocate(iter);
 
     return error;
 }
