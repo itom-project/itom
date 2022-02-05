@@ -42,7 +42,7 @@
 #include <QSysInfo>
 #include <QScreen>
 
-#if WIN32
+#ifdef WIN32
 #include <Windows.h>
 #include <VersionHelpers.h>
 #include <ShellScalingApi.h>
@@ -139,10 +139,12 @@ int main(int argc, char *argv[])
     // enable high DPI scaling when it was checked in itom properties
     if (ito::GuiHelper::highDPIFileExists())
     {
+#ifdef WIN32
         // DPI_AWARENESS_CONTEXT_UNAWARE show unsharp on 4k monitor with scaling 120%
         // DPI_AWARENESS_CONTEXT_SYSTEM_AWARE looks ugly when move itom onto fullHD monitor with scaling 100% An advancement over the original per-monitor DPI awareness mode, which
         // DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2 enables applications to access new DPI-related scaling behaviors on a per top-level window basis. 
         SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2); 
+#endif
         QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
         QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
     } 
@@ -166,8 +168,9 @@ int main(int argc, char *argv[])
     //      run=pathToPythonFile : runs the given script (if it exists) after possible autostart scripts added to the selected user role, put
     //                             'pathToPythonFile' in "..." if it contains spaces or other special characters. You can stack multiple run= items to execute multiple scripts.
     //      pipManager : only opens the Python Pip Manager to update packages like Numpy. Numpy cannot be updated if itom is running since Numpy is used and files are blocked.
-
+#ifdef WIN32
     DPI_AWARENESS_CONTEXT SetThreadDpiAwarenessContext(DPI_AWARENESS_CONTEXT dpiContext);
+#endif
 
     QStringList args;
     for (int i = 0; i < argc; ++i)
