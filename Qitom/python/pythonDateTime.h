@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -24,25 +24,31 @@
 
 /* includes */
 #ifndef Q_MOC_RUN
-    #define PY_ARRAY_UNIQUE_SYMBOL itom_ARRAY_API //see numpy help ::array api :: Miscellaneous :: Importing the api (this line must bebefore include global.h)
-    #define NO_IMPORT_ARRAY
+#define PY_ARRAY_UNIQUE_SYMBOL                                                                     \
+    itom_ARRAY_API // see numpy help ::array api :: Miscellaneous :: Importing the api (this line
+                   // must bebefore include global.h)
+#define NO_IMPORT_ARRAY
 
-    //python
-    // see http://vtk.org/gitweb?p=VTK.git;a=commitdiff;h=7f3f750596a105d48ea84ebfe1b1c4ca03e0bab3
-    #if (defined _DEBUG) && (defined WIN32)
-        #undef _DEBUG
-        #include "python/pythonWrapper.h"
-        #define _DEBUG
-    #else
-        #include "python/pythonWrapper.h"
-    #endif
+#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
+
+// python
+//  see http://vtk.org/gitweb?p=VTK.git;a=commitdiff;h=7f3f750596a105d48ea84ebfe1b1c4ca03e0bab3
+#if (defined _DEBUG) && (defined WIN32)
+#undef _DEBUG
+#include "numpy/arrayobject.h"
+#include "python/pythonWrapper.h"
+#define _DEBUG
+#else
+#include "numpy/arrayobject.h"
+#include "python/pythonWrapper.h"
+#endif
 #endif
 
+#include "DataObject/dataobj.h"
 #include "common/helperDatetime.h"
 #include "common/typeDefs.h"
 
-namespace ito
-{
+namespace ito {
 
 class PythonDateTime
 {
@@ -53,18 +59,97 @@ public:
     // checks for Python time delta and corresponding numpy types
     static bool PyTimeDelta_CheckExt(PyObject* obj);
 
-    static DateTime GetDateTime(PyObject* obj, bool &ok);
-    static TimeDelta GetTimeDelta(PyObject* obj, bool &ok);
+    static DateTime GetDateTime(PyObject* obj, bool& ok);
+    static TimeDelta GetTimeDelta(PyObject* obj, bool& ok);
 
     // new ref, sets a PyException if an error occurs
-    static PyObject* GetPyDateTime(const DateTime &datetime);
+    static PyObject* GetPyDateTime(const DateTime& datetime);
 
     // new ref, sets a PyException if an error occurs
-    static PyObject* GetPyTimeDelta(const TimeDelta &delta);
+    static PyObject* GetPyTimeDelta(const TimeDelta& delta);
 
-    
+    static bool ItoDatetime2npyDatetime(
+        const ito::DateTime& src, npy_datetime& dest, const PyArray_DatetimeMetaData& meta);
 
+    static bool ItoTimedelta2npyTimedleta(
+        const ito::TimeDelta& src, npy_timedelta& dest, const PyArray_DatetimeMetaData& meta);
+
+    template <typename _Tp, size_t timeMemberOffset>
+    static void GuessDateTimeMetaFromDataObjectValues(
+        const ito::DataObject* dobj, PyArray_DatetimeMetaData& descr_meta)
+    {
+        ito::int64 combined = 0LL;
+        int dims = dobj->getDims();
+        const cv::Mat* plane;
+        const _Tp* rowPtr;
+        const uchar* item;
+
+        if (dims > 0)
+        {
+            for (int p = 0; p < dobj->getNumPlanes(); ++p)
+            {
+                plane = dobj->getCvPlaneMat(p);
+
+                for (int r = 0; r < plane->rows; ++r)
+                {
+                    rowPtr = plane->ptr<_Tp>(r);
+
+                    for (int c = 0; c < plane->cols; ++c)
+                    {
+                        item = reinterpret_cast<const uchar*>(&(rowPtr[c]));
+
+                        combined |= *reinterpret_cast<const ito::int64*>(item + timeMemberOffset);
+                    }
+                }
+            }
+        }
+
+        // set defaults
+        descr_meta.num = 1;
+        descr_meta.base = NPY_FR_us;
+
+        if (combined % 1000LL == 0)
+        {
+            // no microseconds --> milli
+            if (combined % 1000000LL == 0)
+            {
+                // no milliseconds
+                if (combined % 1000000000LL == 0)
+                {
+                    // no seconds
+                    if (combined % (60LL * 1000000000LL) == 0)
+                    {
+                        // no minutes
+                        if (combined % (3600LL * 1000000000LL) == 0)
+                        {
+                            // no hours
+                            descr_meta.base = NPY_FR_D;
+                        }
+                        else
+                        {
+                            descr_meta.base = NPY_FR_h;
+                        }
+                    }
+                    else
+                    {
+                        descr_meta.base = NPY_FR_m;
+                    }
+                }
+                else
+                {
+                    descr_meta.base = NPY_FR_s;
+                }
+            }
+            else
+            {
+                descr_meta.base = NPY_FR_ms;
+            }
+        }
+        else
+        {
+            descr_meta.base = NPY_FR_us;
+        }
+    }
 };
 
-}; //end namespace ito
-
+}; // end namespace ito

@@ -521,7 +521,7 @@ class DataObjectDatetime(unittest.TestCase):
             self.assertTrue(_t == np.timedelta64(_d))
 
     def test_dataObject2nparray(self):
-        dateNp = np.array(self.dateObj, copy=False)
+        dateNp = np.array(self.tdObj, copy=False)
 
         # must be a copy
         self.assertTrue(dateNp.base is None)

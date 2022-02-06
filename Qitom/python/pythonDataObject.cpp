@@ -9314,16 +9314,22 @@ therefore a helper method for the array interface.");
 PyObject* PythonDataObject::PyDataObj_Array_StructGet(PyDataObject* self)
 {
     PyArrayInterface* inter;
+    const ito::DataObject* selfDO = self->dataObject;
 
-    if (self->dataObject == nullptr)
+    if (selfDO == nullptr)
     {
-        PyErr_SetString(PyExc_RuntimeError, "data object is NULL");
+        PyErr_SetString(PyExc_RuntimeError, "data object is nullptr");
         return nullptr;
     }
-
-    ito::DataObject* selfDO = self->dataObject;
-
-    if (selfDO->getContinuous() == false)
+    else if (selfDO->getType() == ito::tDateTime ||
+        selfDO->getType() == ito::tTimeDelta)
+    {
+        // it is not allowed to set a Python error here, else the
+        // fallback method PyDataObj_Array_ will not be called afterwards.
+        //PyErr_SetString(PyExc_NotImplementedError, "__array_struct__ not supported for dataObjects of type dateTime or timeDelta");
+        return nullptr;
+    }
+    else if (selfDO->getContinuous() == false)
     {
         // For Numpy >= 1.18 it seems, that an exception set will
         // change the behaviour. We want, that if this method
@@ -9339,7 +9345,7 @@ PyObject* PythonDataObject::PyDataObj_Array_StructGet(PyDataObject* self)
         return nullptr;
     }
 
-    inter = new PyArrayInterface;
+    inter = new PyArrayInterface();
 
     if (inter == nullptr)
     {
@@ -9374,13 +9380,13 @@ PyObject* PythonDataObject::PyDataObj_Array_StructGet(PyDataObject* self)
     }
 
 #if (NPY_FEATURE_VERSION < NPY_1_7_API_VERSION)
-    inter->flags = NPY_WRITEABLE | NPY_ALIGNED |
-        NPY_NOTSWAPPED; // NPY_NOTSWAPPED indicates, that both data in opencv and data in numpy
-                        // should have the same byteorder (Intel: little-endian)
+    // NPY_NOTSWAPPED indicates, that both data in opencv and data in numpy
+    // should have the same byteorder (Intel: little-endian)
+    inter->flags = NPY_WRITEABLE | NPY_ALIGNED | NPY_NOTSWAPPED; 
 #else
-    inter->flags = NPY_ARRAY_WRITEABLE | NPY_ARRAY_ALIGNED |
-        NPY_ARRAY_NOTSWAPPED; // NPY_NOTSWAPPED indicates, that both data in opencv and data in
-                              // numpy should have the same byteorder (Intel: little-endian)
+    // NPY_NOTSWAPPED indicates, that both data in opencv and data in
+    // numpy should have the same byteorder (Intel: little-endian)
+    inter->flags = NPY_ARRAY_WRITEABLE | NPY_ARRAY_ALIGNED | NPY_ARRAY_NOTSWAPPED; 
 #endif
 
     // check if size and osize are totally equal, then set continuous flag
@@ -9406,23 +9412,24 @@ PyObject* PythonDataObject::PyDataObj_Array_StructGet(PyDataObject* self)
         inter->shape = (npy_intp*)malloc(inter->nd * sizeof(npy_intp));
         inter->strides = (npy_intp*)malloc(inter->nd * sizeof(npy_intp));
 
-        inter->shape[inter->nd - 1] = (npy_intp)selfDO->getSize(
-            inter->nd -
-            1); // since transpose flag has been evaluated and is false now, everything is ok here
+        // since transpose flag has been evaluated and is false now, everything is ok here
+        inter->shape[inter->nd - 1] = (npy_intp)selfDO->getSize(inter->nd - 1); 
         inter->strides[inter->nd - 1] = inter->itemsize;
+
         for (int i = inter->nd - 2; i >= 0; i--)
         {
-            inter->shape[i] =
-                (npy_intp)selfDO->getSize(i); // since transpose flag has been evaluated and is
-                                              // false now, everything is ok here
-            inter->strides[i] = inter->strides[i + 1] *
-                selfDO->getOriginalSize(i + 1); // since transpose flag has been evaluated and is
-                                                // false now, everything is ok here
+            // since transpose flag has been evaluated and is
+            // false now, everything is ok here
+            inter->shape[i] = (npy_intp)selfDO->getSize(i); 
+
+            // since transpose flag has been evaluated and is
+            // false now, everything is ok here
+            inter->strides[i] = inter->strides[i + 1] * selfDO->getOriginalSize(i + 1); 
         }
     }
 
-    // don't icrement SELF here, since the receiver of the capsule (e.g. numpy-method) will
-    // increment the refcount of then PyDataObject SELF by itself.
+    // don't increment SELF here, since the receiver of the capsule (e.g. numpy-method) will
+    // increment the refcount of the PyDataObject SELF by itself.
     return PyCapsule_New((void*)inter, nullptr, &PyDataObj_Capsule_Destructor);
 }
 
@@ -9435,12 +9442,19 @@ This interface makes the data object compatible to every array structure in pyth
 which does equally implement the array interface (e.g. NumPy).");
 PyObject* PythonDataObject::PyDataObj_Array_Interface(PyDataObject* self)
 {
-    if (self->dataObject == NULL)
+    const ito::DataObject* selfDO = self->dataObject;
+
+    if (selfDO == nullptr)
     {
-        PyErr_SetString(PyExc_RuntimeError, "data object is NULL");
-        return NULL;
+        PyErr_SetString(PyExc_RuntimeError, "data object is nullptr");
+        return nullptr;
     }
-    else if (self->dataObject->getContinuous() == false)
+    else if (selfDO->getType() == ito::tDateTime ||
+        selfDO->getType() == ito::tTimeDelta)
+    {
+        return nullptr;
+    }
+    else if (selfDO->getContinuous() == false)
     {
         // For Numpy >= 1.18 it seems, that an exception set will
         // change the behaviour. We want, that if this method
@@ -9453,28 +9467,27 @@ PyObject* PythonDataObject::PyDataObj_Array_Interface(PyDataObject* self)
             "it is not continuous (call dataObject.makeContinuous() for conversion first)."
         );*/
 
-        return NULL;
+        return nullptr;
     }
 
-    PyObject* item = NULL;
-    const ito::DataObject* selfDO = self->dataObject;
-
+    PyObject* item = nullptr;
     int itemsize;
     char typekind;
     char typekind2[] = "a\0";
 
     RetVal ret = parseTypeNumber(selfDO->getType(), typekind, itemsize);
+
     if (ret.containsError())
     {
         if (ret.hasErrorMessage())
         {
             PythonCommon::transformRetValToPyException(ret, PyExc_TypeError);
-            return NULL;
-            // return PyErr_Format(PyExc_TypeError, ret.errorMessage());
+            return nullptr;
         }
+
         PyErr_SetString(
             PyExc_TypeError, "Error converting type of dataObject to corresponding numpy type");
-        return NULL;
+        return nullptr;
     }
 
     PyObject* retDict = PyDict_New();
@@ -9498,12 +9511,12 @@ PyObject* PythonDataObject::PyDataObj_Array_Interface(PyDataObject* self)
         npy_intp strides_iPlus1;
 
         bool isFullyContiguous = true;
+
         for (int i = 0; i < dims; i++)
         {
             if (selfDO->getSize(i) != selfDO->getOriginalSize(i))
                 isFullyContiguous = false;
         }
-
 
         PyTuple_SetItem(
             data,
@@ -9543,6 +9556,238 @@ PyObject* PythonDataObject::PyDataObj_Array_Interface(PyDataObject* self)
     return retDict;
 }
 
+
+
+//-------------------------------------------------------------------------------------
+PyArrayObject* nparrayFromTimeDeltaDataObject(const ito::DataObject* dobj, const PyArray_DatetimeMetaData *meta)
+{
+    // step 1: create numpy array
+    PyArray_Descr *descr = PyArray_DescrNewFromType(NPY_TIMEDELTA);
+    auto metaData = (PyArray_DatetimeDTypeMetaData*)(descr->c_metadata);
+
+    if (meta != nullptr)
+    {
+        metaData->meta.base = meta->base;
+        metaData->meta.num = meta->num;
+    }
+    else
+    {
+        // guess best datetime meta from dataObject
+        PythonDateTime::GuessDateTimeMetaFromDataObjectValues<ito::TimeDelta, offsetof(ito::TimeDelta, delta)>(dobj, metaData->meta);
+    }
+
+    npy_intp* sizes = new npy_intp[dobj->getDims()];
+    for (int i = 0; i < dobj->getDims(); ++i)
+    {
+        sizes[i] = dobj->getSize(i);
+    }
+
+    // steals a ref to descr
+    PyArrayObject* timeDeltaArray = (PyArrayObject*)PyArray_SimpleNewFromDescr(dobj->getDims(), sizes, descr);
+    DELETE_AND_SET_NULL_ARRAY(sizes);
+
+    if (!timeDeltaArray)
+    {
+        return nullptr;
+    }
+
+    /*
+     * Create and use an iterator to count the nonzeros.
+     *   flag NPY_ITER_READONLY
+     *     - The array is never written to.
+     *   flag NPY_ITER_EXTERNAL_LOOP
+     *     - Inner loop is done outside the iterator for efficiency.
+     *   flag NPY_ITER_NPY_ITER_REFS_OK
+     *     - Reference types are acceptable.
+     *   order NPY_KEEPORDER
+     *     - Visit elements in memory order, regardless of strides.
+     *       This is good for performance when the specific order
+     *       elements are visited is unimportant.
+     *   casting NPY_NO_CASTING
+     *     - No casting is required for this operation.
+     */
+    NpyIter* iter = NpyIter_New(timeDeltaArray, NPY_ITER_READONLY |
+        NPY_ITER_EXTERNAL_LOOP |
+        NPY_ITER_REFS_OK,
+        NPY_CORDER, NPY_NO_CASTING,
+        nullptr);
+
+    if (iter == nullptr)
+    {
+        PyErr_Format(PyExc_RuntimeError, "Failed to iterate over numpy.ndarray.");
+        Py_DECREF(timeDeltaArray);
+        return nullptr;
+    }
+
+    /*
+     * The iternext function gets stored in a local variable
+     * so it can be called repeatedly in an efficient manner.
+     */
+    NpyIter_IterNextFunc *iternext = NpyIter_GetIterNext(iter, nullptr);
+
+    if (iternext == nullptr)
+    {
+        NpyIter_Deallocate(iter);
+
+        PyErr_Format(PyExc_RuntimeError, "Failed to iterate over numpy.ndarray.");
+        Py_DECREF(timeDeltaArray);
+        return nullptr;
+    }
+
+    /* The location of the data pointer which the iterator may update */
+    char** dataptr = NpyIter_GetDataPtrArray(iter);
+    /* The location of the stride which the iterator may update */
+    npy_intp* strideptr = NpyIter_GetInnerStrideArray(iter);
+    /* The location of the inner loop size which the iterator may update */
+    npy_intp* innersizeptr = NpyIter_GetInnerLoopSizePtr(iter);
+
+    ito::DObjConstIterator it = dobj->constBegin();
+    ito::DObjConstIterator itEnd = dobj->constEnd();
+
+    do
+    {
+        /* Get the inner loop data/stride/count values */
+        char* data = *dataptr;
+        npy_intp stride = *strideptr;
+        npy_intp count = *innersizeptr;
+
+        /* This is a typical inner loop for NPY_ITER_EXTERNAL_LOOP */
+        while (count--)
+        {
+            if (!PythonDateTime::ItoTimedelta2npyTimedleta(*((const ito::TimeDelta*)(*it)), *((npy_datetime*)data), metaData->meta))
+            {
+                // error message set in method above
+                Py_DECREF(timeDeltaArray);
+                return nullptr;
+            }
+
+            it++;
+            data += stride;
+        }
+
+        /* Increment the iterator to the next inner loop */
+    } while (iternext(iter));
+
+    NpyIter_Deallocate(iter);
+
+    return timeDeltaArray;
+}
+
+//-------------------------------------------------------------------------------------
+PyArrayObject* nparrayFromDateTimeDataObject(const ito::DataObject* dobj, const PyArray_DatetimeMetaData *meta)
+{
+    // step 1: create numpy array
+    PyArray_Descr *descr = PyArray_DescrNewFromType(NPY_DATETIME);
+    auto metaData = (PyArray_DatetimeDTypeMetaData*)(descr->c_metadata);
+
+    if (meta != nullptr)
+    {
+        metaData->meta.base = meta->base;
+        metaData->meta.num = meta->num;
+    }
+    else
+    {
+        // guess best datetime meta from dataObject
+        PythonDateTime::GuessDateTimeMetaFromDataObjectValues<ito::DateTime, offsetof(ito::DateTime, datetime)>(dobj, metaData->meta);
+    }
+
+    npy_intp* sizes = new npy_intp[dobj->getDims()];
+    for (int i = 0; i < dobj->getDims(); ++i)
+    {
+        sizes[i] = dobj->getSize(i);
+    }
+
+    // steals a ref to descr
+    PyArrayObject* dateTimeArray = (PyArrayObject*)PyArray_SimpleNewFromDescr(dobj->getDims(), sizes, descr);
+    DELETE_AND_SET_NULL_ARRAY(sizes);
+
+    if (!dateTimeArray)
+    {
+        return nullptr;
+    }
+
+    /*
+     * Create and use an iterator to count the nonzeros.
+     *   flag NPY_ITER_READONLY
+     *     - The array is never written to.
+     *   flag NPY_ITER_EXTERNAL_LOOP
+     *     - Inner loop is done outside the iterator for efficiency.
+     *   flag NPY_ITER_NPY_ITER_REFS_OK
+     *     - Reference types are acceptable.
+     *   order NPY_KEEPORDER
+     *     - Visit elements in memory order, regardless of strides.
+     *       This is good for performance when the specific order
+     *       elements are visited is unimportant.
+     *   casting NPY_NO_CASTING
+     *     - No casting is required for this operation.
+     */
+    NpyIter* iter = NpyIter_New(dateTimeArray, NPY_ITER_READONLY |
+        NPY_ITER_EXTERNAL_LOOP |
+        NPY_ITER_REFS_OK,
+        NPY_CORDER, NPY_NO_CASTING,
+        nullptr);
+
+    if (iter == nullptr)
+    {
+        PyErr_Format(PyExc_RuntimeError, "Failed to iterate over numpy.ndarray.");
+        Py_DECREF(dateTimeArray);
+        return nullptr;
+    }
+
+    /*
+     * The iternext function gets stored in a local variable
+     * so it can be called repeatedly in an efficient manner.
+     */
+    NpyIter_IterNextFunc *iternext = NpyIter_GetIterNext(iter, nullptr);
+
+    if (iternext == nullptr)
+    {
+        NpyIter_Deallocate(iter);
+
+        PyErr_Format(PyExc_RuntimeError, "Failed to iterate over numpy.ndarray.");
+        Py_DECREF(dateTimeArray);
+        return nullptr;
+    }
+
+    /* The location of the data pointer which the iterator may update */
+    char** dataptr = NpyIter_GetDataPtrArray(iter);
+    /* The location of the stride which the iterator may update */
+    npy_intp* strideptr = NpyIter_GetInnerStrideArray(iter);
+    /* The location of the inner loop size which the iterator may update */
+    npy_intp* innersizeptr = NpyIter_GetInnerLoopSizePtr(iter);
+
+    ito::DObjConstIterator it = dobj->constBegin();
+    ito::DObjConstIterator itEnd = dobj->constEnd();
+
+    do
+    {
+        /* Get the inner loop data/stride/count values */
+        char* data = *dataptr;
+        npy_intp stride = *strideptr;
+        npy_intp count = *innersizeptr;
+
+        /* This is a typical inner loop for NPY_ITER_EXTERNAL_LOOP */
+        while (count--)
+        {
+            if (!PythonDateTime::ItoDatetime2npyDatetime(*((const ito::DateTime*)(*it)), *((npy_datetime*)data), metaData->meta))
+            {
+                // error message set in method above
+                Py_DECREF(dateTimeArray);
+                return nullptr;
+            }
+
+            it++;
+            data += stride;
+        }
+
+        /* Increment the iterator to the next inner loop */
+    } while (iternext(iter));
+
+    NpyIter_Deallocate(iter);
+
+    return dateTimeArray;
+}
+
 //-------------------------------------------------------------------------------------
 PyDoc_STRVAR(dataObject_Array__doc, "__array__(dtype = None) -> np.ndarray \n\
 \n\
@@ -9551,8 +9796,9 @@ Returns a numpy.ndarray from this dataObject. If possible a shallow copy is retu
 If no ``dtype`` is given and if the this :class:`dataObject` is continuous, \n\
 a :class:`numpy.ndarray` that shares its memory with this dataObject is returned. \n\
 If the desired ``dtype`` does not fit to the type of this :class:`dataObject`, \n\
-a casted deep copy is returned. This is also the case if this dataObject is not \n\
-continuous. Then a continuous dataObject is created that is the base object of \n\
+a casted deep copy is returned, this is also always the case for the data types \n\
+dateTime and timeDelta, as well as for non-continuous dataObjects. \n\
+Then a continuous dataObject is created that is the base object of \n\
 the returned :class:`numpy.ndarray`. \n\
 \n\
 Parameters \n\
@@ -9567,26 +9813,47 @@ arr : numpy.ndarray \n\
     The converted :class:`numpy.ndarray`");
 PyObject* PythonDataObject::PyDataObj_Array_(PyDataObject* self, PyObject* args)
 {
-    if (self->dataObject == NULL)
+    if (self->dataObject == nullptr)
     {
-        PyErr_SetString(PyExc_RuntimeError, "data object is NULL");
-        return NULL;
+        PyErr_SetString(PyExc_RuntimeError, "data object is nullptr");
+        return nullptr;
     }
 
-    PyArray_Descr* newtype = NULL;
-    PyArrayObject* newArray = NULL;
+    PyArray_Descr* newtype = nullptr;
+    PyArrayObject* newArray = nullptr;
 
     if (!PyArg_ParseTuple(args, "|O&", PyArray_DescrConverter, &newtype))
     {
         Py_XDECREF(newtype);
-        return NULL;
+        return nullptr;
     }
 
-    PyObject* item = NULL;
-
+    PyObject* item = nullptr;
     ito::DataObject* selfDO = self->dataObject;
 
-    if (selfDO->getContinuous())
+    if (selfDO->getType() == ito::tDateTime)
+    {
+        const PyArray_DatetimeMetaData *meta = nullptr;
+
+        if (newtype && PyDataType_ISDATETIME(newtype))
+        {
+            meta = &(((PyArray_DatetimeDTypeMetaData*)newtype->c_metadata)->meta);
+        }
+
+        newArray = nparrayFromDateTimeDataObject(selfDO, meta);
+    }
+    else if (selfDO->getType() == ito::tTimeDelta)
+    {
+        const PyArray_DatetimeMetaData *meta = nullptr;
+
+        if (newtype && PyDataType_ISDATETIME(newtype))
+        {
+            meta = &(((PyArray_DatetimeDTypeMetaData*)newtype->c_metadata)->meta);
+        }
+
+        newArray = nparrayFromTimeDeltaDataObject(selfDO, meta);
+    }
+    else if (selfDO->getContinuous())
     {
         newArray = (PyArrayObject*)PyArray_FromStructInterface((PyObject*)self);
     }
@@ -9594,7 +9861,7 @@ PyObject* PythonDataObject::PyDataObj_Array_(PyDataObject* self, PyObject* args)
     {
         // at first try to make continuous copy of data object and handle possible exceptions before
         // going on
-        ito::DataObject* continuousObject = NULL;
+        ito::DataObject* continuousObject = nullptr;
 
         try
         {
@@ -9616,7 +9883,12 @@ PyObject* PythonDataObject::PyDataObj_Array_(PyDataObject* self, PyObject* args)
         Py_DECREF(newDO);
     }
 
-    if ((newtype == NULL) || PyArray_EquivTypes(PyArray_DESCR(newArray) /*->descr*/, newtype))
+    if (newArray == nullptr)
+    {
+        return nullptr;
+    }
+
+    if ((newtype == nullptr) || PyArray_EquivTypes(PyArray_DESCR(newArray) /*->descr*/, newtype))
     {
         return (PyObject*)newArray;
     }
@@ -10921,9 +11193,9 @@ PyObject* PythonDataObject::PyDataObj_lineCut(PyDataObject* self, PyObject* args
 //-------------------------------------------------------------------------------------
 void PythonDataObject::PyDataObj_Capsule_Destructor(PyObject* capsule)
 {
-    PyArrayInterface* inter = (PyArrayInterface*)PyCapsule_GetPointer(capsule, NULL);
+    PyArrayInterface* inter = (PyArrayInterface*)PyCapsule_GetPointer(capsule, nullptr);
 
-    if (inter != NULL)
+    if (inter != nullptr)
     {
         free(inter->shape);
         free(inter->strides);
