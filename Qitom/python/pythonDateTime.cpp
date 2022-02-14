@@ -291,6 +291,19 @@ bool PythonDateTime::ItoDatetime2npyDatetime(
     return true;
 }
 
+ //------------------------------------------------------------------------------------
+ito::int64 LLDivide(const long long &nom, const long long &den)
+{
+    if (nom >= 0 || nom % den == 0)
+    {
+        return nom / den;
+    }
+    else
+    {
+        return nom / den - 1;
+    }
+}
+
 //-------------------------------------------------------------------------------------
 bool PythonDateTime::ItoTimedelta2npyTimedleta(
     const ito::TimeDelta& src, npy_timedelta& dest, const PyArray_DatetimeMetaData& meta)
@@ -313,22 +326,22 @@ bool PythonDateTime::ItoTimedelta2npyTimedleta(
         return false;
         break;
     case NPY_FR_W:
-        dest = src.delta / (1000000LL * 3600LL * 24LL * 7LL);
+        dest = LLDivide(src.delta, (1000000LL * 3600LL * 24LL * 7LL));
         break;
     case NPY_FR_D:
-        dest = src.delta / (1000000LL * 3600LL * 24LL);
+        dest = LLDivide(src.delta, (1000000LL * 3600LL * 24LL));
         break;
     case NPY_FR_h:
-        dest = src.delta / (1000000LL * 3600LL);
+        dest = LLDivide(src.delta, (1000000LL * 3600LL));
         break;
     case NPY_FR_m:
-        dest = src.delta / (1000000LL * 60LL);
+        dest = LLDivide(src.delta, (1000000LL * 60LL));
         break;
     case NPY_FR_s:
-        dest = src.delta / 1000000LL;
+        dest = LLDivide(src.delta, 1000000LL);
         break;
     case NPY_FR_ms:
-        dest = src.delta / 1000;
+        dest = LLDivide(src.delta, 1000LL);
         break;
     case NPY_FR_us:
         dest = src.delta;

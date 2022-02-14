@@ -28,6 +28,7 @@ class DataObjectDatetime(unittest.TestCase):
         self.td1 = timedelta(-1, 5, 0, 0, 30, 6)
         self.td2 = timedelta(1, 1, 1, 1, 1, 1)
         self.tdObj[0, :, :] = self.td1
+        self.tdObj[0, 0, 1] = timedelta(days=0, seconds=-24*3600+23405)
         self.tdObj[1, :, :] = self.td2
 
     def test_compare_operator(self):
@@ -521,10 +522,27 @@ class DataObjectDatetime(unittest.TestCase):
             self.assertTrue(_t == np.timedelta64(_d))
 
     def test_dataObject2nparray(self):
+
+        # timedelta
         dateNp = np.array(self.tdObj, copy=False)
+        
 
         # must be a copy
         self.assertTrue(dateNp.base is None)
+
+        for a, b in zip(dateNp.ravel(), self.tdObj):
+            self.assertEqual(a,b)
+
+        # a Python datetime object cannot be converted into Y and M
+        for timebase in ["Y", "M"]:
+            with self.assertRaises(ValueError):
+                dateNpTimebase = np.array(self.tdObj, dtype="timedelta64[%s]" % timebase)
+
+        for timebase in ["W", "D", "h", "m", "s", "ms", "us", "ns", "as", "fs", "ps"]:
+            dateNpTimebase = np.array(self.tdObj, dtype="timedelta64[%s]" % timebase)
+            dateNpTimebase2 = dateNp.astype("timedelta64[%s]" % timebase)
+            nptesting.assert_array_equal(dateNpTimebase, dateNpTimebase2, err_msg="Timebase: %s" % timebase)
+        dateNp = np.array(self.tdObj, dtype="timedelta[s]")
         
 
 

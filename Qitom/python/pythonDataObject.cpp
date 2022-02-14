@@ -8466,7 +8466,7 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
             {
                 bool ok = true;
                 value6 = PythonDateTime::GetTimeDelta(value, ok);
-                fromType = ito::tDateTime;
+                fromType = ito::tTimeDelta;
                 valuePtr = static_cast<void*>(&value6);
             }
             else
