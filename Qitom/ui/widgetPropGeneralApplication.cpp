@@ -54,11 +54,6 @@ void WidgetPropGeneralApplication::readSettings()
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("MainWindow");
 	ui.checkAskBeforeExit->setChecked(settings.value("askBeforeClose", true).toBool());
-
-    if (GuiHelper::highDPIFileExists())
-    {
-        ui.checkHighDPIScaling->setChecked(true);
-    }
     
     settings.endGroup();
 
@@ -110,15 +105,6 @@ void WidgetPropGeneralApplication::writeSettings()
     settings.beginGroup("MainWindow");
     settings.setValue("askBeforeClose", ui.checkAskBeforeExit->isChecked());
     settings.endGroup();
-    
-    if (ui.checkHighDPIScaling->isChecked())
-    {
-        GuiHelper::saveHighDPIFile();
-    }
-    else
-    {
-        GuiHelper::deleteHighDPIFile();
-    }
 
     QStringList files;
     settings.beginGroup("Application");

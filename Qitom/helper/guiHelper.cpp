@@ -28,6 +28,7 @@
 #include <qapplication.h>
 #include <qglobal.h>
 #include <qdir.h>
+#include <qdebug.h>
 
 #ifdef _WIN32
 #include <io.h>
@@ -39,8 +40,7 @@
 namespace ito
 {
     int GuiHelper::dpi = 0;
-    QString GuiHelper::highDPIFile = "enableHighDPI";
-    bool GuiHelper::startUp = true;
+    QList<int> GuiHelper::screensDPI;
 
     //-----------------------------------------------------------------------------------
     /*
@@ -60,11 +60,121 @@ namespace ito
 
         if (currentScreen)
         {
-            dpi = currentScreen->logicalDotsPerInch();            
+            dpi = currentScreen->logicalDotsPerInch(); 
+            qDebug() << "logical" << dpi << "physical" << currentScreen->physicalDotsPerInch();
         }
         else
         {
             dpi = 96;
+        }
+
+        QList<QScreen*> screens = qApp->screens();
+
+        for (int ii = 0; ii < screens.length(); ++ii)
+
+        {
+            QSize pixelSize = screens[ii]->size();
+
+            QSizeF physicalSize = screens[ii]->physicalSize();
+
+            double devicePixelRatio = screens[ii]->devicePixelRatio();
+
+            double logicalDPIX = screens[ii]->logicalDotsPerInchX();
+
+            double logicalDPIY = screens[ii]->logicalDotsPerInchY();
+
+            double logicalDPI = screens[ii]->logicalDotsPerInch();
+
+            double physicalDPIX = screens[ii]->physicalDotsPerInchX();
+
+            double physicalDPIY = screens[ii]->physicalDotsPerInchY();
+
+            double physicalDPI = screens[ii]->physicalDotsPerInch();
+
+
+            double pixelValX = pixelSize.width();
+
+            double pixelValY = pixelSize.height();
+
+            double physicalSizeX_cm = physicalSize.width() / 10.0;
+
+            double physicalSizeY_cm = physicalSize.height() / 10.0;
+
+            double calcPixelPerCMX = pixelValX / physicalSizeX_cm;
+
+            double calcPixelPerCMY = pixelValY / physicalSizeY_cm;
+
+
+            double givenLogicalDotsPerCMX = logicalDPIX * 2.54;
+
+            double givenLogicalDotsPerCMY = logicalDPIY * 2.54;
+
+            double givenLogicalDotsPerCM = logicalDPI * 2.54;
+
+
+            double givenPhysicalDotsPerCMX = physicalDPIX * 2.54;
+
+            double givenPhysicalDotsPerCMY = physicalDPIY * 2.54;
+
+            double givenPhysicalDotsPerCM = physicalDPI * 2.54;
+
+
+            double ratioLogicalDPCMvsPPCMX = givenLogicalDotsPerCMX / calcPixelPerCMX;
+
+            double ratioLogicalDPCMvsPPCMY = givenLogicalDotsPerCMY / calcPixelPerCMY;
+
+            double ratioPhysicalDPCMvsPPCMX = givenPhysicalDotsPerCMX / calcPixelPerCMX;
+
+            double ratioPhysicalDPCMvsPPCMY = givenPhysicalDotsPerCMY / calcPixelPerCMY;
+
+
+            qDebug() << "\n\nScreen; " << ii;
+
+            qDebug() << "logicalDPI; " << logicalDPI;
+
+            qDebug() << "physicalDPI; " << physicalDPI;
+
+            qDebug() << "Device Pixel Ratio; " << devicePixelRatio;
+
+            qDebug() << "Pixel in X-Direction; " << pixelValX;
+
+            qDebug() << "Pixel in Y-Direction; " << pixelValY;
+
+            qDebug() << "Physical Size X-Direction in CM; " << physicalSizeX_cm;
+
+            qDebug() << "Physical Size Y-Direction in CM; " << physicalSizeY_cm;
+
+            qDebug() << "Calculated Pixel Per CM in X-Direction; " << calcPixelPerCMX;
+
+            qDebug() << "Calculated Pixel Per CM in Y-Direction; " << calcPixelPerCMY;
+
+            qDebug() << "Qt Logical Dots Per CM in X-Direction; " << givenLogicalDotsPerCMX;
+
+            qDebug() << "Qt Logical Dots Per CM in Y-Direction; " << givenLogicalDotsPerCMY;
+
+            qDebug() << "Qt Logical Dots Per CM Average; " << givenLogicalDotsPerCM;
+
+            qDebug() << "Qt Physical Dots Per CM in X-Direction; " << givenPhysicalDotsPerCMX;
+
+            qDebug() << "Qt Physical Dots Per CM in Y-Direction; " << givenPhysicalDotsPerCMY;
+
+            qDebug() << "Qt Physical Dots Per CM Average; " << givenPhysicalDotsPerCM;
+
+            qDebug() << "Ratio of Logical Dots Per CM vs Pixel Per CM in X-Direction; "
+
+                     << ratioLogicalDPCMvsPPCMX;
+
+            qDebug() << "Ratio of Logical Dots Per CM vs Pixel Per CM in Y-Direction; "
+
+                     << ratioLogicalDPCMvsPPCMY;
+
+            qDebug() << "Ratio of Physical Dots Per CM vs Pixel Per CM in X-Direction; "
+
+                     << ratioPhysicalDPCMvsPPCMX;
+
+            qDebug() << "Ratio of Physical Dots Per CM vs Pixel Per CM in Y-Direction; "
+
+                     << ratioPhysicalDPCMvsPPCMY;
         }
 
         return dpi;
@@ -79,30 +189,6 @@ namespace ito
     {
         int dpi = getScreenLogicalDpi(pos);
         return qBound(1.0, (float)dpi / 96.0, 1.e10);
-    }
-
-    //-------------------------------------------------------------------------------------
-    bool GuiHelper::highDPIFileExists()
-    {
-        // save QItom absolute path
-        if (startUp)
-        {
-            QString absPath = QDir::currentPath();
-            highDPIFile = absPath + "/" + highDPIFile;
-            startUp = false;
-        }
-        std::string temp =  highDPIFile.toStdString();
-        return access(highDPIFile.toStdString().c_str(), 0) == 0;
-    }
-
-    void GuiHelper::saveHighDPIFile()
-    {
-        std::ofstream dpiFile(highDPIFile.toStdString().c_str());
-    }
-
-    void GuiHelper::deleteHighDPIFile()
-    {
-        remove(highDPIFile.toStdString().c_str());
     }
 
 };

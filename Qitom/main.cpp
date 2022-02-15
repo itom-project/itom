@@ -136,17 +136,15 @@ int itomCvError( int status, const char* func_name,
 int main(int argc, char *argv[])
 {
 
-    // enable high DPI scaling when it was checked in itom properties
-    if (ito::GuiHelper::highDPIFileExists())
-    {
+
 #ifdef WIN32
-        // DPI_AWARENESS_CONTEXT_UNAWARE show unsharp on 4k monitor with scaling 120%
-        // DPI_AWARENESS_CONTEXT_SYSTEM_AWARE looks ugly when move itom onto fullHD monitor with scaling 100% An advancement over the original per-monitor DPI awareness mode, which
-        // DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2 enables applications to access new DPI-related scaling behaviors on a per top-level window basis. 
-        SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);  // avoids unsharp font
+    // DPI_AWARENESS_CONTEXT_UNAWARE show unsharp on 4k monitor with scaling 120%
+    // DPI_AWARENESS_CONTEXT_SYSTEM_AWARE looks ugly when move itom onto fullHD monitor with scaling 100% An advancement over the original per-monitor DPI awareness mode, which
+    // DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2 enables applications to access new DPI-related scaling behaviors on a per top-level window basis. 
+    SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);  // avoids unsharp font
 #endif
-        qputenv("QT_AUTO_SCREEN_SCALE_FACTOR", "1");
-    } 
+    qputenv("QT_AUTO_SCREEN_SCALE_FACTOR", "1");  // auto scale by qt
+    //qputenv("QT_SCREEN_SCALE_FACTORS", "1;1.5;2.0");
 
     int ret = 0;
 #if linux
@@ -197,65 +195,6 @@ int main(int argc, char *argv[])
    
 
     QItomApplication itomApplication(argc, argv);
-
-    QList<QScreen*> screens = qApp->screens();
-    for (int ii = 0; ii < screens.length(); ++ii)
-    {
-        QSize pixelSize = screens[ii]->size();
-        QSizeF physicalSize = screens[ii]->physicalSize();
-        double devicePixelRatio = screens[ii]->devicePixelRatio();
-        double logicalDPIX = screens[ii]->logicalDotsPerInchX();
-        double logicalDPIY = screens[ii]->logicalDotsPerInchY();
-        double logicalDPI = screens[ii]->logicalDotsPerInch();
-        double physicalDPIX = screens[ii]->physicalDotsPerInchX();
-        double physicalDPIY = screens[ii]->physicalDotsPerInchY();
-        double physicalDPI = screens[ii]->physicalDotsPerInch();
-
-        double pixelValX = pixelSize.width();
-        double pixelValY = pixelSize.height();
-        double physicalSizeX_cm = physicalSize.width() / 10.0;
-        double physicalSizeY_cm = physicalSize.height() / 10.0;
-        double calcPixelPerCMX = pixelValX / physicalSizeX_cm;
-        double calcPixelPerCMY = pixelValY / physicalSizeY_cm;
-
-        double givenLogicalDotsPerCMX = logicalDPIX * 2.54;
-        double givenLogicalDotsPerCMY = logicalDPIY * 2.54;
-        double givenLogicalDotsPerCM = logicalDPI * 2.54;
-
-        double givenPhysicalDotsPerCMX = physicalDPIX * 2.54;
-        double givenPhysicalDotsPerCMY = physicalDPIY * 2.54;
-        double givenPhysicalDotsPerCM = physicalDPI * 2.54;
-
-        double ratioLogicalDPCMvsPPCMX = givenLogicalDotsPerCMX / calcPixelPerCMX;
-        double ratioLogicalDPCMvsPPCMY = givenLogicalDotsPerCMY / calcPixelPerCMY;
-        double ratioPhysicalDPCMvsPPCMX = givenPhysicalDotsPerCMX / calcPixelPerCMX;
-        double ratioPhysicalDPCMvsPPCMY = givenPhysicalDotsPerCMY / calcPixelPerCMY;
-
-        qDebug() << "\n\nScreen: " << ii;
-        qDebug() << "logicalDPI: " << logicalDPI;
-        qDebug() << "physicalDPI: " << physicalDPI;
-        qDebug() << "Device Pixel Ratio: " << devicePixelRatio;
-        qDebug() << "Pixel in X-Direction: " << pixelValX;
-        qDebug() << "Pixel in Y-Direction: " << pixelValY;
-        qDebug() << "Physical Size X-Direction in CM: " << physicalSizeX_cm;
-        qDebug() << "Physical Size Y-Direction in CM: " << physicalSizeY_cm;
-        qDebug() << "Calculated Pixel Per CM in X-Direction: " << calcPixelPerCMX;
-        qDebug() << "Calculated Pixel Per CM in Y-Direction: " << calcPixelPerCMY;
-        qDebug() << "Qt Logical Dots Per CM in X-Direction: " << givenLogicalDotsPerCMX;
-        qDebug() << "Qt Logical Dots Per CM in Y-Direction: " << givenLogicalDotsPerCMY;
-        qDebug() << "Qt Logical Dots Per CM Average: " << givenLogicalDotsPerCM;
-        qDebug() << "Qt Physical Dots Per CM in X-Direction: " << givenPhysicalDotsPerCMX;
-        qDebug() << "Qt Physical Dots Per CM in Y-Direction: " << givenPhysicalDotsPerCMY;
-        qDebug() << "Qt Physical Dots Per CM Average: " << givenPhysicalDotsPerCM;
-        qDebug() << "Ratio of Logical Dots Per CM vs Pixel Per CM in X-Direction: "
-                 << ratioLogicalDPCMvsPPCMX;
-        qDebug() << "Ratio of Logical Dots Per CM vs Pixel Per CM in Y-Direction: "
-                 << ratioLogicalDPCMvsPPCMY;
-        qDebug() << "Ratio of Physical Dots Per CM vs Pixel Per CM in X-Direction: "
-                 << ratioPhysicalDPCMvsPPCMX;
-        qDebug() << "Ratio of Physical Dots Per CM vs Pixel Per CM in Y-Direction: "
-                 << ratioPhysicalDPCMvsPPCMY;
-    }
 
     //itom modifies its local environment variables like PATH such that plugin libraries, python... that are loaded later
     //benefit from necessary pathes that are then guaranteed to be found.
@@ -388,7 +327,7 @@ int main(int argc, char *argv[])
     //  5. finalizeApplication() if itom is closed
 
     ret = QDialog::Accepted;
-    ito::MainApplication m(ito::MainApplication::standard);
+    ito::MainApplication mainApp(ito::MainApplication::standard);
 
     ito::RetVal userRetVal = ito::UserOrganizer::getInstance()->loadSettings(defUserName);
 
@@ -407,7 +346,7 @@ int main(int argc, char *argv[])
     {
         if (ito::UserOrganizer::getInstance()->currentUserHasFeature(ito::featDeveloper))
         {
-            ret = m.execPipManagerOnly();
+            ret = mainApp.execPipManagerOnly();
         }
         else
         {
@@ -445,15 +384,15 @@ int main(int argc, char *argv[])
             }
         }
 
-        m.setupApplication(scriptsToOpen, scriptsToExecute);
+        mainApp.setupApplication(scriptsToOpen, scriptsToExecute);
 
         qDebug("starting main event loop");
 
-        ret = m.exec();
+        ret = mainApp.exec();
 
         qDebug("application exited. call finalize");
 
-        m.finalizeApplication();
+        mainApp.finalizeApplication();
 
         qDebug("finalize done");
     }

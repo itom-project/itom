@@ -36,15 +36,11 @@ public:
                                        can be scaled due to high resolution screens. A factor of 1.0
                                        is related to the default 96dpi screen. */
 
-
-    static bool highDPIFileExists();
-    static void saveHighDPIFile();
-    static void deleteHighDPIFile();
-
 private:
     static int dpi;
     static QString highDPIFile;
     static bool startUp;
+    static QList<int> screensDPI;
 };
 
 } // namespace ito
