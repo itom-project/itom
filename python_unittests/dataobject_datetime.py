@@ -433,6 +433,7 @@ class DataObjectDatetime(unittest.TestCase):
 
         # timebase us
         t = np.arange(datetime(1985, 7, 1), datetime(2003, 7, 1), timedelta(days=1))
+        t[20] = datetime(2010,6,7,16,23,59)
         dObj = dataObject(t)
 
         for _t, _d in zip(t, dObj):
