@@ -231,6 +231,13 @@ bool PythonDateTime::ItoDatetime2npyDatetime(
 
         const QDateTime epochDate(QDate(1970, 1, 1));
         QDateTime date = epochDate.addSecs(secs);
+
+        if (date.isDaylightTime())
+        {
+            // numpy does not consider daylight saving time
+            date = date.addSecs(-3600);
+        }
+
         QTime time = date.time();
         auto secsSinceEpoch = epochDate.secsTo(date);
 
