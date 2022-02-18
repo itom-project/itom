@@ -9924,12 +9924,14 @@ PyObject* PythonDataObject::PyDataObj_Reduce(PyDataObject* self, PyObject* /*arg
 
     PyObject* sizeList = PyList_New(dims);
     for (int i = 0; i < dims; i++)
+    {
+        // since transpose flag has been evaluated and
+        // is false now, everything is ok here
         PyList_SetItem(
             sizeList,
             i,
-            Py_BuildValue(
-                "I", self->dataObject->getSize(i))); // since transpose flag has been evaluated and
-                                                     // is false now, everything is ok here
+            Py_BuildValue("I", self->dataObject->getSize(i))); 
+    }
 
     // 1. elem -> callable object
     // 2. elem -> arguments for init-method
@@ -10152,7 +10154,8 @@ PyObject* PythonDataObject::PyDataObj_Reduce(PyDataObject* self, PyObject* /*arg
         "(O(Osb)O)",
         Py_TYPE(self),
         sizeList,
-        typeNumberToName(self->dataObject->getType()),
+        "horst",
+        //typeNumberToName(self->dataObject->getType()),
         self->dataObject->getContinuous(),
         stateTuple);
 
@@ -10172,9 +10175,9 @@ PyObject* PythonDataObject::PyDataObj_SetState(PyDataObject* self, PyObject* arg
     // see log in PyDataObj_Reduce
 
     bool transpose = false;
-    PyObject* dataTuple = NULL; // borrowed reference
-    PyObject* tagTuple = NULL; // borrowed reference
-    PyObject* tempTag = NULL; // borrowed reference
+    PyObject* dataTuple = nullptr; // borrowed reference
+    PyObject* tagTuple = nullptr; // borrowed reference
+    PyObject* tempTag = nullptr; // borrowed reference
     long version = 21120; // this is the first version, current is 21121
 
     if (!PyArg_ParseTuple(
@@ -10182,13 +10185,13 @@ PyObject* PythonDataObject::PyDataObj_SetState(PyDataObject* self, PyObject* arg
     {
         PyErr_Clear();
         // test if maybe no tagTuple is available
-        tagTuple = NULL;
+        tagTuple = nullptr;
         if (!PyArg_ParseTuple(args, "(bO!)", &transpose, &PyTuple_Type, &dataTuple))
         {
             PyErr_SetString(
                 PyExc_NotImplementedError,
                 "unpickling for dataObject not possible since state vector is invalid");
-            return NULL;
+            return nullptr;
         }
     }
 
@@ -10197,84 +10200,74 @@ PyObject* PythonDataObject::PyDataObj_SetState(PyDataObject* self, PyObject* arg
     {
         if (PyTuple_Size(tagTuple) != 10)
         {
-            // Py_XDECREF(dataTuple);
-            // Py_XDECREF(tagTuple);
             PyErr_SetString(
                 PyExc_NotImplementedError,
                 "tags in pickled data object does not have the required number of elements (10)");
-            return NULL;
+            return nullptr;
         }
         else
         {
             tempTag = PyTuple_GetItem(tagTuple, 0); // borrowed ref
+
             if (!PyLong_Check(tempTag))
             {
-                // Py_XDECREF(dataTuple);
-                // Py_XDECREF(tagTuple);
                 PyErr_SetString(
                     PyExc_NotImplementedError,
                     "first element in tag tuple must be an integer number, which it is not.");
-                return NULL;
+                return nullptr;
             }
 
             version = PyLong_AsLong(tempTag);
+
             if (version != 21120 && version != 21121)
             {
-                // Py_XDECREF(dataTuple);
-                // Py_XDECREF(tagTuple);
                 PyErr_SetString(
                     PyExc_NotImplementedError,
-                    "first element in tag tuple is a check sum and does not have the right value.");
-                return NULL;
+                    "This version of itom does not support the version number of this pickled dataset. Consider to update itom.");
+                return nullptr;
             }
         }
     }
 
     if (transpose == true)
     {
-        // Py_XDECREF(dataTuple);
-        // Py_XDECREF(tagTuple);
         PyErr_SetString(
             PyExc_NotImplementedError,
             "transpose flag of unpickled data must be false (since the transposition has been "
             "evaluated before pickling). Transpose flag is obsolete now.");
-        return NULL;
+        return nullptr;
     }
 
-    if (self->dataObject == NULL)
+    if (self->dataObject == nullptr)
     {
-        // Py_XDECREF(dataTuple);
-        // Py_XDECREF(tagTuple);
         PyErr_SetString(PyExc_NotImplementedError, "unpickling for dataObject failed");
-        return NULL;
+        return nullptr;
     }
 
     int vectorLength = self->dataObject->calcNumMats();
 
     if (PyTuple_Size(dataTuple) != vectorLength)
     {
-        // Py_XDECREF(dataTuple);
-        // Py_XDECREF(tagTuple);
         PyErr_SetString(
             PyExc_NotImplementedError,
             "unpickling for dataObject failed since data dimensions does not fit");
-        return NULL;
+        return nullptr;
     }
 
     int dims = self->dataObject->getDims();
-    PyObject* byteArray = NULL;
+    PyObject* byteArray = nullptr;
     cv::Mat* tempMat;
     unsigned int seekNr;
     Py_ssize_t sizeU = 0;
     Py_ssize_t sizeV = 0;
-    uchar* startPtr = NULL;
-    char* byteArrayContent = NULL;
+    uchar* startPtr = nullptr;
+    char* byteArrayContent = nullptr;
     Py_ssize_t elemSize = 0;
     std::string tempString;
     std::string keyString;
     PyObject *key, *value;
     Py_ssize_t pos = 0;
-    PyObject* seqItem = NULL;
+    PyObject* seqItem = nullptr;
     bool stringOk;
 
     if (dims == 1)
@@ -10427,9 +10420,6 @@ PyObject* PythonDataObject::PyDataObj_SetState(PyDataObject* self, PyObject* arg
         // 9.
         // tempTag = PyTuple_GetItem(tagTuple,9);
     }
-
-    // Py_XDECREF(dataTuple);
-    // Py_XDECREF(tagTuple);
 
     Py_RETURN_NONE;
 }
