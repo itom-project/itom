@@ -2327,6 +2327,13 @@ void DataObject::create(
         requiredElemSize = 16;
         break;
 
+    case tDateTime:
+        requiredElemSize = sizeof(DateTime);
+        break;
+    case tTimeDelta:
+        requiredElemSize = sizeof(TimeDelta);
+        break;
+
     default:
         cv::error(cv::Exception(CV_StsError, "unkown type.", "", __FILE__, __LINE__));
         break;
@@ -2413,7 +2420,7 @@ void DataObject::create(
                     __LINE__));
             }
 
-            if (planes[i].channels() != 4)
+            if (planes[i].channels() != cv::DataType<ito::Rgba32>::channels)
             {
                 cv::error(cv::Exception(
                     CV_StsUnsupportedFormat,
@@ -2423,7 +2430,7 @@ void DataObject::create(
                     __LINE__));
             }
 
-            if ((planes[i].elemSize1() * 4) != requiredElemSize)
+            if ((planes[i].elemSize1() * cv::DataType<ito::Rgba32>::channels) != requiredElemSize)
             {
                 cv::error(cv::Exception(
                     CV_StsUnsupportedFormat,
@@ -2444,6 +2451,104 @@ void DataObject::create(
                     __LINE__));
             }
         }
+    }
+    else if (type == ito::tTimeDelta)
+    {
+        for (int i = 0; i < numMats; i++)
+        {
+            planeSize = planes[i].size();
+
+            if ((int)planeSize.height != sizey || (int)planeSize.width != sizex)
+            {
+                cv::error(cv::Exception(
+                    CV_BadImageSize,
+                    "image size of at least one cv::Mat-plane does not correspond to the given "
+                    "height and width.",
+                    "",
+                    __FILE__,
+                    __LINE__));
+            }
+
+            if (planes[i].channels() != cv::DataType<ito::TimeDelta>::channels)
+            {
+                cv::error(cv::Exception(
+                    CV_StsUnsupportedFormat,
+                    "at least one cv::Mat-plane has not four channels (TimeDelta type).",
+                    "",
+                    __FILE__,
+                    __LINE__));
+            }
+
+            if ((planes[i].elemSize1() * cv::DataType<ito::TimeDelta>::channels) != requiredElemSize)
+            {
+                cv::error(cv::Exception(
+                    CV_StsUnsupportedFormat,
+                    "the element size of at least one cv::Mat-plane does not correspond to the "
+                    "given dataObject-type.",
+                    "",
+                    __FILE__,
+                    __LINE__));
+            }
+
+            if (planes[i].data == NULL)
+            {
+                cv::error(cv::Exception(
+                    CV_StsUnsupportedFormat,
+                    "data pointer of cv::Mat is zeros.",
+                    "",
+                    __FILE__,
+                    __LINE__));
+            }
+        }
+    }
+    else if (type == ito::tDateTime)
+    {
+    for (int i = 0; i < numMats; i++)
+    {
+        planeSize = planes[i].size();
+
+        if ((int)planeSize.height != sizey || (int)planeSize.width != sizex)
+        {
+            cv::error(cv::Exception(
+                CV_BadImageSize,
+                "image size of at least one cv::Mat-plane does not correspond to the given "
+                "height and width.",
+                "",
+                __FILE__,
+                __LINE__));
+        }
+
+        if (planes[i].channels() != cv::DataType<ito::DateTime>::channels)
+        {
+            cv::error(cv::Exception(
+                CV_StsUnsupportedFormat,
+                "at least one cv::Mat-plane has not four channels (DateTime type).",
+                "",
+                __FILE__,
+                __LINE__));
+        }
+
+        if ((planes[i].elemSize1() * cv::DataType<ito::DateTime>::channels) != requiredElemSize)
+        {
+            cv::error(cv::Exception(
+                CV_StsUnsupportedFormat,
+                "the element size of at least one cv::Mat-plane does not correspond to the "
+                "given dataObject-type.",
+                "",
+                __FILE__,
+                __LINE__));
+        }
+
+        if (planes[i].data == NULL)
+        {
+            cv::error(cv::Exception(
+                CV_StsUnsupportedFormat,
+                "data pointer of cv::Mat is zeros.",
+                "",
+                __FILE__,
+                __LINE__));
+        }
+    }
     }
     else
     {
