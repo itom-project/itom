@@ -10154,8 +10154,7 @@ PyObject* PythonDataObject::PyDataObj_Reduce(PyDataObject* self, PyObject* /*arg
         "(O(Osb)O)",
         Py_TYPE(self),
         sizeList,
-        "horst",
-        //typeNumberToName(self->dataObject->getType()),
+        typeNumberToName(self->dataObject->getType()),
         self->dataObject->getContinuous(),
         stateTuple);
 
