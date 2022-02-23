@@ -23,7 +23,6 @@
 #include "widgetPropGeneralApplication.h"
 #include "../global.h"
 #include "../AppManagement.h"
-#include "helper/guiHelper.h"
 
 #include <qsettings.h>
 #include <qfiledialog.h>

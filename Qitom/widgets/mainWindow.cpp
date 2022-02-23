@@ -811,12 +811,6 @@ void MainWindow::moveEvent(QMoveEvent* event)
     {
         m_geometryNormalState.moveTo(event->pos());
     }
-
-    int dpi = GuiHelper::getScreenLogicalDpi(&event->pos());
-
-
-    /*showInfoMessageLine(tr("Windows scaling has been changed, which may result in "
-                           "differently scaled font sizes. Please restart itom."));*/
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

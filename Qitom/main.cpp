@@ -22,7 +22,6 @@
 #include "mainApplication.h"
 #include "main.h"
 #include "organizer/userOrganizer.h"
-#include "helper/guiHelper.h"
 
 #define VISUAL_LEAK_DETECTOR 0 //1 if you want to active the Visual Leak Detector (MSVC and Debug only), else type 0, if build with CMake always set it to 0.
 #if defined _DEBUG  && defined(_MSC_VER) && (VISUAL_LEAK_DETECTOR > 0 || defined(VISUAL_LEAK_DETECTOR_CMAKE))
