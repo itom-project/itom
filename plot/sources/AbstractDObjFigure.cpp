@@ -70,9 +70,13 @@ ito::RetVal AbstractDObjFigure::update(void)
         //displayed is the same than source, source is already cached. Therefore we don't need to cache displayed
         m_dataPointer["displayed"].clear();
     }
-    else
+    else if (newDisplayed)
     {
         m_dataPointer["displayed"] = QSharedPointer<ito::DataObject>(new ito::DataObject(*newDisplayed));
+    }
+    else
+    {
+        m_dataPointer["displayed"].clear();
     }
 
     return retval;
