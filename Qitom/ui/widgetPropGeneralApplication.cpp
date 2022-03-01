@@ -53,6 +53,7 @@ void WidgetPropGeneralApplication::readSettings()
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("MainWindow");
 	ui.checkAskBeforeExit->setChecked(settings.value("askBeforeClose", true).toBool());
+    
     settings.endGroup();
 
     settings.beginGroup("Application");
@@ -101,7 +102,7 @@ void WidgetPropGeneralApplication::writeSettings()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("MainWindow");
-    settings.setValue("askBeforeClose", ui.checkAskBeforeExit->isChecked() );
+    settings.setValue("askBeforeClose", ui.checkAskBeforeExit->isChecked());
     settings.endGroup();
 
     QStringList files;
