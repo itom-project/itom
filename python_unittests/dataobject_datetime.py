@@ -584,6 +584,15 @@ class DataObjectDatetime(unittest.TestCase):
                 dateNpTimebase, dateNpTimebase2, err_msg="Timebase: %s" % timebase
             )
 
+    def test_createDatetimeDataObject(self):
+        a = datetime.today()
+        numdays = 100
+        dateList = []
+        for x in range (0, numdays):
+            dateList.append(a - timedelta(days = x))
+            
+        dateScale = dataObject([1, len(dateList)], "datetime", data=dateList)
+
 
 if __name__ == "__main__":
     unittest.main(module="dataobject_datetime", exit=False)
