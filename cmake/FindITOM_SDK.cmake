@@ -242,7 +242,7 @@ if(EXISTS ${ITOM_SDK_CONFIG_FILE})
             endif(ITOM_SDK_FIND_QUIETLY)
             
             if(OpenCV_FOUND)
-                set(ITOM_SDK_INCLUDE_DIRS ${ITOM_SDK_INCLUDE_DIRS} ${OpenCV_DIR}/include)
+                set(ITOM_SDK_INCLUDE_DIRS ${ITOM_SDK_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS})
                 set(ITOM_SDK_LIBRARIES ${ITOM_SDK_LIBRARIES} ${OpenCV_LIBS})
             else(OpenCV_FOUND)
                 set(ITOM_SDK_FOUND_TMP false)
