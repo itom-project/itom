@@ -156,7 +156,7 @@ ParamBase::ParamBase(const ByteArray& name, const uint32 typeAndFlags, const cha
             // delete d since destructor of ParamBase will not be called if exception is thrown.
             DELETE_AND_SET_NULL(d);
             throw std::logic_error(
-                "valie must be nullptr for CharArray, "
+                "value must be nullptr for CharArray, "
                 "IntArray, DoubleArray, ComplexArray or StringList.");
         }
         break;
