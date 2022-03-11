@@ -1793,6 +1793,49 @@ PyObject *parseParamMetaAsDict(const ito::ParamMeta *meta)
 				Py_DECREF(temp);
             }
             break;
+        case ito::ParamMeta::rttiStringListMeta: {
+                const ito::StringListMeta* cm = static_cast<const ito::StringListMeta*>(meta);
+                temp = PyUnicode_FromString("string list meta");
+                PyDict_SetItemString(dict, "metaTypeStr", temp);
+                Py_DECREF(temp);
+
+                switch (cm->getStringType())
+                {
+                case ito::StringMeta::String:
+                    temp = PyUnicode_FromString("String");
+                    break;
+                case ito::StringMeta::Wildcard:
+                    temp = PyUnicode_FromString("Wildcard");
+                    break;
+                case ito::StringMeta::RegExp:
+                    temp = PyUnicode_FromString("RegExp");
+                    break;
+                }
+                PyDict_SetItemString(dict, "stringType", temp);
+                Py_DECREF(temp);
+
+                temp = PyTuple_New(cm->getLen());
+                for (int i = 0; i < cm->getLen(); ++i)
+                {
+                    PyTuple_SetItem(
+                        temp, i, PyUnicode_FromString(cm->getString(i))); // steals reference
+                }
+                PyDict_SetItemString(dict, "allowedItems", temp);
+                Py_DECREF(temp);
+
+                temp = PyLong_FromLong(cm->getNumMin());
+                PyDict_SetItemString(dict, "numMin", temp);
+                Py_DECREF(temp);
+
+                temp = PyLong_FromLong(cm->getNumMax());
+                PyDict_SetItemString(dict, "numMax", temp);
+                Py_DECREF(temp);
+
+                temp = PyLong_FromLong(cm->getNumStepSize());
+                PyDict_SetItemString(dict, "numStep", temp);
+                Py_DECREF(temp);
+            }
+            break;
         case ito::ParamMeta::rttiIntervalMeta:
             {
                 const ito::IntervalMeta *cm = static_cast<const ito::IntervalMeta*>(meta);
