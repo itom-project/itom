@@ -54,6 +54,8 @@
 #include <ui/widgetFindWord.h>
 #include <iostream>
 
+#include "helper/guiHelper.h"
+
 namespace ito {
 
 //----------------------------------------------------------------------------------------
@@ -89,7 +91,7 @@ HelpViewer::HelpViewer(QWidget *parent /*= NULL*/) :
 	QWebEngineProfile *profile = page->profile();
 
 	m_pDefaultZoomFactor = m_pView->zoomFactor();
-	m_pZoomFactor = m_pDefaultZoomFactor;
+    m_pZoomFactor = m_pDefaultZoomFactor * GuiHelper::screenDpiFactor();
 
 	m_pHelpEngine = new QHelpEngine("", this);
 	m_pSchemeHandler = new QtHelpUrlSchemeHandler(m_pHelpEngine, this);
@@ -252,9 +254,12 @@ void HelpViewer::setCollectionFile(const QString &collectionFile)
 void HelpViewer::search()
 {
 	QHelpSearchEngine *searchEngine = m_pHelpEngine->searchEngine();
-	QHelpSearchQueryWidget *query = searchEngine->queryWidget();
-	QList<QHelpSearchQuery> queryList = query->query();
-	searchEngine->search(queryList);
+    QHelpSearchQueryWidget* query = searchEngine->queryWidget();
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 9, 0))
+    searchEngine->search(query->searchInput());
+#else
+    searchEngine->search(query->query());
+#endif
 }
 
 //----------------------------------------------------------------------------------------
@@ -387,7 +392,7 @@ void HelpViewer::findNextWord(QString expr, bool regExpr, bool caseSensitive, bo
 {
 	if (forward)
 	{
-		m_pView->findText(expr, 0);
+		m_pView->findText(expr, QWebEnginePage::FindFlag());
 	}
 	else
 	{
@@ -426,7 +431,7 @@ void HelpViewer::loadFinished(bool ok)
 void HelpViewer::hideFindWordBar()
 {
 	m_pFindWord->hide();
-	m_pView->findText("", 0);
+	m_pView->findText("", QWebEnginePage::FindFlag());
 }
 
 //----------------------------------------------------------------------------------------
@@ -486,6 +491,13 @@ void HelpViewer::visibilityChangedSearchWidget(bool visible)
 		QHelpSearchQueryWidget *queryWidget = m_pHelpEngine->searchEngine()->queryWidget();
 		queryWidget->setFocus();
 	}
+}
+
+//----------------------------------------------------------------------------------------
+void HelpViewer::moveEvent(QMoveEvent* event)
+{
+    m_pDefaultZoomFactor = GuiHelper::screenDpiFactor(&event->pos());
+    mnuDefaultZoomWindow();
 }
 
 

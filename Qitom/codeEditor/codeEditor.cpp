@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -23,34 +23,34 @@
     ------------------------
 
     This file belongs to the code editor of itom. The code editor is
-    in major parts a fork / rewritten version of the python-based source 
-    code editor PyQode from Colin Duquesnoy and others 
-    (see https://github.com/pyQode). PyQode itself is licensed under 
+    in major parts a fork / rewritten version of the python-based source
+    code editor PyQode from Colin Duquesnoy and others
+    (see https://github.com/pyQode). PyQode itself is licensed under
     the MIT License (MIT).
 
     Some parts of the code editor of itom are also inspired by the
     source code editor of the Spyder IDE (https://github.com/spyder-ide),
     also licensed under the MIT License and developed by the Spyder Project
-    Contributors. 
+    Contributors.
 
 *********************************************************************** */
 
 #include "codeEditor.h"
 
 #include <qapplication.h>
-#include <qevent.h>
-#include <qtooltip.h>
-#include <qtextdocument.h>
 #include <qdebug.h>
-#include <qpainter.h>
+#include <qevent.h>
 #include <qmenu.h>
 #include <qmimedata.h>
+#include <qpainter.h>
+#include <qtextdocument.h>
+#include <qtooltip.h>
 
+#include "delayJobRunner.h"
+#include "managers/modesManager.h"
 #include "managers/panelsManager.h"
 #include "managers/textDecorationsManager.h"
-#include "managers/modesManager.h"
 #include "panels/foldingPanel.h"
-#include "delayJobRunner.h"
 #include "utils/utils.h"
 
 #include <iostream>
@@ -58,33 +58,15 @@
 
 namespace ito {
 
-CodeEditor::CodeEditor(QWidget *parent /*= NULL*/, bool createDefaultActions /*= true*/)
-    : QPlainTextEdit(parent),
-    m_showCtxMenu(true),
-    m_defaultFontSize(10),
-    m_useSpacesInsteadOfTabs(true),
-    m_showWhitespaces(false),
-    m_tabLength(0),
-    m_zoomLevel(0),
-    m_fontSize(10),
-    m_fontFamily("Verdana"),
-    m_selectLineOnCopyEmpty(true),
-    m_wordSeparators("~!@#$%^&*()+{}|:\"'<>?,./;[]\\\n\t=- "),
-    m_pPanels(NULL),
-    m_pDecorations(NULL),
-    m_pModes(NULL),
-    m_lastMousePos(QPoint(0,0)),
-    m_prevTooltipBlockNbr(-1),
-    m_pTooltipsRunner(NULL),
-    m_edgeMode(EdgeNone),
-    m_edgeColumn(88),
-    m_edgeColor(Qt::darkGray),
-    m_showIndentationGuides(true),
-    m_indentationGuidesColor(Qt::darkGray),
-    m_redoAvailable(false),
-    m_undoAvailable(false),
-    m_pContextMenu(NULL),
-    m_minLineJumpsForGoBackNavigationReport(11)
+CodeEditor::CodeEditor(QWidget* parent /*= NULL*/, bool createDefaultActions /*= true*/) :
+    QPlainTextEdit(parent), m_showCtxMenu(true), m_defaultFontSize(10),
+    m_useSpacesInsteadOfTabs(true), m_showWhitespaces(false), m_tabLength(0), m_zoomLevel(0),
+    m_fontSize(10), m_fontFamily("Verdana"), m_selectLineOnCopyEmpty(true),
+    m_wordSeparators("~!@#$%^&*()+{}|:\"'<>?,./;[]\\\n\t=- "), m_pPanels(NULL),
+    m_pDecorations(NULL), m_pModes(NULL), m_lastMousePos(QPoint(0, 0)), m_prevTooltipBlockNbr(-1),
+    m_pTooltipsRunner(NULL), m_edgeMode(EdgeNone), m_edgeColumn(88), m_edgeColor(Qt::darkGray),
+    m_showIndentationGuides(true), m_indentationGuidesColor(Qt::darkGray), m_redoAvailable(false),
+    m_undoAvailable(false), m_pContextMenu(NULL), m_minLineJumpsForGoBackNavigationReport(11)
 {
     installEventFilter(this);
     connect(document(), SIGNAL(modificationChanged(bool)), this, SLOT(emitDirtyChanged(bool)));
@@ -106,7 +88,7 @@ CodeEditor::CodeEditor(QWidget *parent /*= NULL*/, bool createDefaultActions /*=
     m_pDecorations = new TextDecorationsManager(this);
     m_pModes = new ModesManager(this);
 
-    m_pTooltipsRunner = new DelayJobRunner<CodeEditor, void(CodeEditor::*)(QList<QVariant>)>(700);
+    m_pTooltipsRunner = new DelayJobRunner<CodeEditor, void (CodeEditor::*)(QList<QVariant>)>(700);
 
     m_pContextMenu = new QMenu(this);
 
@@ -117,7 +99,7 @@ CodeEditor::CodeEditor(QWidget *parent /*= NULL*/, bool createDefaultActions /*=
 //-----------------------------------------------------------
 CodeEditor::~CodeEditor()
 {
-    foreach(auto item, m_textBlockUserDataList)
+    foreach (auto item, m_textBlockUserDataList)
     {
         item->removeCodeEditorRef();
     }
@@ -182,7 +164,8 @@ Returns a reference to the syntax highlighter mode currently used to
 */
 SyntaxHighlighterBase* CodeEditor::syntaxHighlighter() const
 {
-    if (!m_pModes) return NULL;
+    if (!m_pModes)
+        return NULL;
 
     SyntaxHighlighterBase* out = NULL;
     ModesManager::const_iterator it = m_pModes->constBegin();
@@ -221,7 +204,7 @@ QColor CodeEditor::background() const
     return m_background;
 }
 
-void CodeEditor::setBackground(const QColor &value)
+void CodeEditor::setBackground(const QColor& value)
 {
     if (m_background != value)
     {
@@ -239,7 +222,7 @@ QColor CodeEditor::foreground() const
     return m_foreground;
 }
 
-void CodeEditor::setForeground(const QColor &value)
+void CodeEditor::setForeground(const QColor& value)
 {
     if (m_foreground != value)
     {
@@ -257,7 +240,7 @@ QColor CodeEditor::selectionForeground() const
     return m_selForeground;
 }
 
-void CodeEditor::setSelectionForeground(const QColor &value)
+void CodeEditor::setSelectionForeground(const QColor& value)
 {
     if (m_selForeground != value)
     {
@@ -275,7 +258,7 @@ QColor CodeEditor::selectionBackground() const
     return m_selBackground;
 }
 
-void CodeEditor::setSelectionBackground(const QColor &value)
+void CodeEditor::setSelectionBackground(const QColor& value)
 {
     if (m_selBackground != value)
     {
@@ -331,7 +314,7 @@ QColor CodeEditor::edgeColor() const
     return m_edgeColor;
 }
 
-void CodeEditor::setEdgeColor(const QColor &color)
+void CodeEditor::setEdgeColor(const QColor& color)
 {
     if (m_edgeColor != color)
     {
@@ -362,7 +345,7 @@ QColor CodeEditor::indentationGuidesColor() const
     return m_indentationGuidesColor;
 }
 
-void CodeEditor::setIndentationGuidesColor(const QColor &color)
+void CodeEditor::setIndentationGuidesColor(const QColor& color)
 {
     if (m_indentationGuidesColor != color)
     {
@@ -470,7 +453,11 @@ QColor CodeEditor::whitespacesForeground() const
 {
     if (syntaxHighlighter())
     {
-        return syntaxHighlighter()->editorStyle()->format(StyleItem::KeyWhitespace).foreground().color();
+        return syntaxHighlighter()
+            ->editorStyle()
+            ->format(StyleItem::KeyWhitespace)
+            .foreground()
+            .color();
     }
     else
     {
@@ -478,7 +465,7 @@ QColor CodeEditor::whitespacesForeground() const
     }
 }
 
-void CodeEditor::setWhitespacesForeground(const QColor &value)
+void CodeEditor::setWhitespacesForeground(const QColor& value)
 {
     if (syntaxHighlighter())
     {
@@ -487,7 +474,7 @@ void CodeEditor::setWhitespacesForeground(const QColor &value)
 
     m_whitespacesForeground = value;
 
-    //updateTabStopAndIndentationWidth();
+    // updateTabStopAndIndentationWidth();
 }
 
 //-----------------------------------------------------------
@@ -503,7 +490,7 @@ void CodeEditor::emitDirtyChanged(bool state)
 }
 
 //-----------------------------------------------------------
-void CodeEditor::cursorPosition(int &line, int &column) const
+void CodeEditor::cursorPosition(int& line, int& column) const
 {
     line = textCursor().blockNumber();
     column = textCursor().columnNumber();
@@ -516,7 +503,7 @@ bool CodeEditor::dirty() const
 }
 
 //-----------------------------------------------------------
-void CodeEditor::setMouseCursor(const QCursor &cursor)
+void CodeEditor::setMouseCursor(const QCursor& cursor)
 {
     viewport()->setCursor(cursor);
 }
@@ -530,7 +517,6 @@ void CodeEditor::initSettings()
     m_useSpacesInsteadOfTabs = true;
     setWhitespacesFlags(m_showWhitespaces);
     updateTabStopAndIndentationWidth();
-    
 }
 
 //-----------------------------------------------------------
@@ -544,27 +530,39 @@ void CodeEditor::updateTabStopAndIndentationWidth()
         fm = QFontMetrics(f);
     }
 
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 11, 0))
+    setTabStopDistance(tabLength() * fm.horizontalAdvance(" "));
+#else
     setTabStopWidth(tabLength() * fm.width(" "));
+#endif
 
     if (useSpacesInsteadOfTabs())
     {
         QString tab_text = QString(tabLength(), ' ');
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 11, 0))
+        m_indentationBarWidth = fm.horizontalAdvance(tab_text);
+#else
         m_indentationBarWidth = fm.width(tab_text);
+#endif
     }
     else
     {
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
+        m_indentationBarWidth = tabStopDistance();
+#else
         m_indentationBarWidth = tabStopWidth();
-    } 
+#endif
+    }
 }
 
 //-----------------------------------------------------------
 void CodeEditor::initStyle()
 {
-    //Inits style options
+    // Inits style options
     m_background = QColor("white");
     m_foreground = QColor("black");
     m_whitespacesForeground = QColor("light gray");
-    QApplication *app = qobject_cast<QApplication*>(QApplication::instance());
+    QApplication* app = qobject_cast<QApplication*>(QApplication::instance());
     m_selBackground = app->palette().highlight().color();
     m_selForeground = app->palette().highlightedText().color();
     m_fontSize = 10;
@@ -574,18 +572,16 @@ void CodeEditor::initStyle()
 //-----------------------------------------------------------
 void CodeEditor::setWhitespacesFlags(bool show)
 {
-    //Sets show white spaces flag
-    QTextDocument *doc = document();
+    // Sets show white spaces flag
+    QTextDocument* doc = document();
     QTextOption options = doc->defaultTextOption();
     if (show)
     {
-        options.setFlags(options.flags() |
-                            QTextOption::ShowTabsAndSpaces);
+        options.setFlags(options.flags() | QTextOption::ShowTabsAndSpaces);
     }
     else
     {
-        options.setFlags(
-            options.flags() & ~QTextOption::ShowTabsAndSpaces);
+        options.setFlags(options.flags() & ~QTextOption::ShowTabsAndSpaces);
     }
 
     doc->setDefaultTextOption(options);
@@ -600,7 +596,7 @@ void CodeEditor::setViewportMargins(int left, int top, int right, int bottom)
 }
 
 //-----------------------------------------------------------
-void CodeEditor::resizeEvent(QResizeEvent *e)
+void CodeEditor::resizeEvent(QResizeEvent* e)
 {
     /*
     Overrides resize event to resize the editor's panels.
@@ -611,7 +607,7 @@ void CodeEditor::resizeEvent(QResizeEvent *e)
 }
 
 //-----------------------------------------------------------
-void CodeEditor::closeEvent(QCloseEvent *e)
+void CodeEditor::closeEvent(QCloseEvent* e)
 {
     close();
     QPlainTextEdit::closeEvent(e);
@@ -623,7 +619,7 @@ Overrides paint event to update the list of visible blocks and emit
 the painted e->
 :param e: paint event
 */
-void CodeEditor::paintEvent(QPaintEvent *e)
+void CodeEditor::paintEvent(QPaintEvent* e)
 {
     updateVisibleBlocks(); //_update_visible_blocks
 
@@ -635,27 +631,33 @@ void CodeEditor::paintEvent(QPaintEvent *e)
     {
     case EdgeNone:
         break;
-    case EdgeLine:
-        {
+    case EdgeLine: {
         QPainter painter(viewport());
         painter.setPen(m_edgeColor);
 
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 11, 0))
+        int x = fontMetrics().horizontalAdvance(QString(m_edgeColumn, '9'));
+#else
         int x = fontMetrics().width(QString(m_edgeColumn, '9'));
+#endif
         x += xoffset;
         painter.drawLine(x, 0, x, size().height());
-        }
-        break;
-    case EdgeBackground:
-        {
+    }
+    break;
+    case EdgeBackground: {
         QPainter painter(viewport());
         painter.setBrush(m_edgeColor);
         painter.setPen(Qt::NoPen);
 
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 11, 0))
+        int x = fontMetrics().horizontalAdvance(QString(m_edgeColumn, '9'));
+#else
         int x = fontMetrics().width(QString(m_edgeColumn, '9'));
+#endif
         x += xoffset;
         painter.drawRect(x, 0, size().width() - x, size().height());
-        }
-        break;
+    }
+    break;
     }
 
     QPlainTextEdit::paintEvent(e);
@@ -670,7 +672,7 @@ void CodeEditor::paintEvent(QPaintEvent *e)
         int bottom;
         int indentation;
 
-        foreach (const VisibleBlock &block, visibleBlocks())
+        foreach (const VisibleBlock& block, visibleBlocks())
         {
             bottom = block.topPosition + blockBoundingRect(block.textBlock).height() - 1;
             indentation = Utils::TextBlockHelper::getFoldLvl(block.textBlock);
@@ -681,8 +683,7 @@ void CodeEditor::paintEvent(QPaintEvent *e)
                     xoffset + m_indentationBarWidth * i,
                     block.topPosition,
                     xoffset + m_indentationBarWidth * i,
-                    bottom
-                );
+                    bottom);
             }
         }
     }
@@ -691,7 +692,7 @@ void CodeEditor::paintEvent(QPaintEvent *e)
 }
 
 //-----------------------------------------------------------
-void CodeEditor::keyPressEvent(QKeyEvent *e)
+void CodeEditor::keyPressEvent(QKeyEvent* e)
 {
     /*
     Overrides the keyPressEvent to emit the key_pressed signal.
@@ -717,38 +718,35 @@ void CodeEditor::keyPressEvent(QKeyEvent *e)
     {
         forward = false;
 
-        if (e->key() == Qt::Key_Tab && e->modifiers() == \
-            Qt::NoModifier)
+        if (e->key() == Qt::Key_Tab && e->modifiers() == Qt::NoModifier)
         {
             indent();
             e->accept();
         }
-        else if (e->key() == Qt::Key_Backtab && \
-            e->modifiers() == Qt::NoModifier)
+        else if (e->key() == Qt::Key_Backtab && e->modifiers() == Qt::NoModifier)
         {
             unindent();
             e->accept();
         }
-        else if (e->key() == Qt::Key_Backtab && \
-            e->modifiers() == Qt::ShiftModifier)
+        else if (e->key() == Qt::Key_Backtab && e->modifiers() == Qt::ShiftModifier)
         {
             unindent();
             e->accept();
         }
-        else if (e->key() == Qt::Key_Home && \
-                (int(e->modifiers()) & Qt::ControlModifier) == 0)
+        else if (e->key() == Qt::Key_Home && (int(e->modifiers()) & Qt::ControlModifier) == 0)
         {
             doHomeKey(e, int(e->modifiers()) & Qt::ShiftModifier);
         }
-        else if ((e->modifiers() & Qt::ShiftModifier) && \
+        else if (
+            (e->modifiers() & Qt::ShiftModifier) &&
             ((e->key() == Qt::Key_Enter) || (e->key() == Qt::Key_Return)))
         {
-            //deny soft line break. not desired in editor.
-            e->accept(); //do not further process this key
+            // deny soft line break. not desired in editor.
+            e->accept(); // do not further process this key
         }
-        else if ((e->modifiers() & Qt::AltModifier) 
-            && (e->modifiers() & Qt::ControlModifier) 
-            && (e->key() == Qt::Key_D))
+        else if (
+            (e->modifiers() & Qt::AltModifier) && (e->modifiers() & Qt::ControlModifier) &&
+            (e->key() == Qt::Key_D))
         {
             // ignore this key, even if the generate docstring action is currently disabled.
             e->accept();
@@ -758,7 +756,6 @@ void CodeEditor::keyPressEvent(QKeyEvent *e)
         {
             e->setAccepted(initial_state);
             QPlainTextEdit::keyPressEvent(e);
-            
         }
     }
 
@@ -775,7 +772,7 @@ void CodeEditor::keyPressEvent(QKeyEvent *e)
 }
 
 //-----------------------------------------------------------
-void CodeEditor::keyReleaseEvent(QKeyEvent *e)
+void CodeEditor::keyReleaseEvent(QKeyEvent* e)
 {
     /*
     Overrides keyReleaseEvent to emit the key_released signal.
@@ -796,7 +793,7 @@ void CodeEditor::keyReleaseEvent(QKeyEvent *e)
 }
 
 //-----------------------------------------------------------
-void CodeEditor::mouseDoubleClickEvent(QMouseEvent *e)
+void CodeEditor::mouseDoubleClickEvent(QMouseEvent* e)
 {
     bool initial_state = e->isAccepted();
     e->ignore();
@@ -813,16 +810,16 @@ void CodeEditor::mouseDoubleClickEvent(QMouseEvent *e)
 Overrides focusInEvent to emits the focused_in signal
 :param event: QFocusEvent
 */
-void CodeEditor::focusInEvent(QFocusEvent *e)
-{   
+void CodeEditor::focusInEvent(QFocusEvent* e)
+{
     emit focusedIn(e);
     QPlainTextEdit::focusInEvent(e);
 }
 
 //-----------------------------------------------------------
 /* Saves content if save_on_focus_out is True.
-*/
-void CodeEditor::focusOutEvent(QFocusEvent *e)
+ */
+void CodeEditor::focusOutEvent(QFocusEvent* e)
 {
     QPlainTextEdit::focusOutEvent(e);
 }
@@ -833,7 +830,7 @@ void CodeEditor::focusOutEvent(QFocusEvent *e)
 
     :param event: QMouseEvent
 */
-void CodeEditor::mousePressEvent(QMouseEvent *e)
+void CodeEditor::mousePressEvent(QMouseEvent* e)
 {
     bool initialState = e->isAccepted();
     e->ignore();
@@ -858,7 +855,7 @@ void CodeEditor::mousePressEvent(QMouseEvent *e)
             }
 
             ++it;
-        }          
+        }
     }
 
     if (!e->isAccepted())
@@ -886,13 +883,13 @@ void CodeEditor::mouseReleaseEvent(QMouseEvent* e)
 }
 
 //-----------------------------------------------------------
-void CodeEditor::callWheelEvent(QWheelEvent *e)
+void CodeEditor::callWheelEvent(QWheelEvent* e)
 {
     wheelEvent(e);
 }
 
 //-----------------------------------------------------------
-void CodeEditor::wheelEvent(QWheelEvent *e)
+void CodeEditor::wheelEvent(QWheelEvent* e)
 {
     /*
     Emits the mouse_wheel_activated signal.
@@ -916,8 +913,7 @@ void CodeEditor::wheelEvent(QWheelEvent *e)
 */
 void CodeEditor::mouseMoveEvent(QMouseEvent* e)
 {
-    
-    QTextCursor cursor  = this->cursorForPosition(e->pos());
+    QTextCursor cursor = this->cursorForPosition(e->pos());
     m_lastMousePos = e->pos();
     bool blockFound = false;
 
@@ -929,13 +925,12 @@ void CodeEditor::mouseMoveEvent(QMouseEvent* e)
         itPtr = *it;
         if (itPtr->containsCursor(cursor) && (itPtr->tooltip() != ""))
         {
-            if (m_prevTooltipBlockNbr != cursor.blockNumber() || \
-                    !QToolTip::isVisible())
+            if (m_prevTooltipBlockNbr != cursor.blockNumber() || !QToolTip::isVisible())
             {
                 QPoint position = e->pos();
-                //add left margin
+                // add left margin
                 position.setX(position.x() + m_pPanels->marginSize(Panel::Left));
-                //add top margin
+                // add top margin
                 position.setY(position.y() + m_pPanels->marginSize(Panel::Top));
 
                 QList<QVariant> args;
@@ -945,8 +940,9 @@ void CodeEditor::mouseMoveEvent(QMouseEvent* e)
 
                 if (m_pTooltipsRunner)
                 {
-                    DELAY_JOB_RUNNER(m_pTooltipsRunner, CodeEditor, void(CodeEditor::*)(QList<QVariant>))->requestJob(\
-                        this, &CodeEditor::showTooltipDelayJobRunner, args);
+                    DELAY_JOB_RUNNER(
+                        m_pTooltipsRunner, CodeEditor, void (CodeEditor::*)(QList<QVariant>))
+                        ->requestJob(this, &CodeEditor::showTooltipDelayJobRunner, args);
                 }
 
                 m_prevTooltipBlockNbr = cursor.blockNumber();
@@ -962,7 +958,7 @@ void CodeEditor::mouseMoveEvent(QMouseEvent* e)
     {
         QToolTip::hideText();
         m_prevTooltipBlockNbr = -1;
-        
+
         if (m_pTooltipsRunner)
         {
             m_pTooltipsRunner->cancelRequests();
@@ -982,7 +978,8 @@ void CodeEditor::mouseMoveEvent(QMouseEvent* e)
     :param _sender_deco: TextDecoration which is the sender of the show
         tooltip request. (for internal use only).
 */
-void CodeEditor::showTooltip(const QPoint &pos, const QString &tooltip, const TextDecoration::Ptr &senderDeco)
+void CodeEditor::showTooltip(
+    const QPoint& pos, const QString& tooltip, const TextDecoration::Ptr& senderDeco)
 {
     if (!m_pDecorations->contains(senderDeco))
     {
@@ -992,13 +989,13 @@ void CodeEditor::showTooltip(const QPoint &pos, const QString &tooltip, const Te
     QToolTip::showText(pos, tooltip.left(1024), this);
 }
 
-void CodeEditor::showTooltip(const QPoint &pos, const QString &tooltip)
+void CodeEditor::showTooltip(const QPoint& pos, const QString& tooltip)
 {
     QToolTip::showText(pos, tooltip.left(1024), this);
 }
 
 //-----------------------------------------------------------
-void CodeEditor::showEvent(QShowEvent *e)
+void CodeEditor::showEvent(QShowEvent* e)
 {
     /* Overrides showEvent to update the viewport margins */
     QPlainTextEdit::showEvent(e);
@@ -1037,12 +1034,12 @@ void CodeEditor::unindent()
 /*
 Performs home key action
 */
-void CodeEditor::doHomeKey(QEvent *event /*= NULL*/, bool select /* = false*/)
+void CodeEditor::doHomeKey(QEvent* event /*= NULL*/, bool select /* = false*/)
 {
-    //get nb char to first significative char
+    // get nb char to first significative char
     QTextCursor cursor = textCursor();
     int delta = (cursor.positionInBlock() - lineIndent());
-    
+
     QTextCursor::MoveMode move = QTextCursor::MoveAnchor;
     if (select)
     {
@@ -1068,9 +1065,10 @@ void CodeEditor::doHomeKey(QEvent *event /*= NULL*/, bool select /* = false*/)
 }
 
 //-----------------------------------------------------------
-void CodeEditor::reportGoBackNavigationCursorMovement(const CursorPosition &cursor, const QString &origin) const
+void CodeEditor::reportGoBackNavigationCursorMovement(
+    const CursorPosition& cursor, const QString& origin) const
 {
-    //do nothing
+    // do nothing
 }
 
 
@@ -1083,13 +1081,12 @@ void CodeEditor::updateVisibleBlocks()
     m_visibleBlocks.clear();
     QTextBlock block = firstVisibleBlock();
     int block_nbr = block.blockNumber();
-    int top = int(blockBoundingGeometry(block).translated(
-        contentOffset()).top());
+    int top = int(blockBoundingGeometry(block).translated(contentOffset()).top());
     int bottom = top + int(blockBoundingRect(block).height());
     int ebottom_top = 0;
     int ebottom_bottom = height();
     while (block.isValid())
-    {            
+    {
         bool visible = ((top >= ebottom_top) && (bottom <= ebottom_bottom));
         if (!visible)
         {
@@ -1171,7 +1168,8 @@ QTextCursor CodeEditor::gotoLine(int line, int column, bool move /*= true*/)
 }
 
 //-----------------------------------------------------------
-void CodeEditor::reportPositionAsGoBackNavigationItem(const QTextCursor &cursor, const QString &reason) const
+void CodeEditor::reportPositionAsGoBackNavigationItem(
+    const QTextCursor& cursor, const QString& reason) const
 {
     reportGoBackNavigationCursorMovement(CursorPosition(cursor), reason);
 }
@@ -1200,12 +1198,12 @@ int CodeEditor::lineIndent(int lineNumber /*= -1*/) const
     {
         lindent++;
     }
-    
+
     return lindent;
 }
 
 //-------------------------------------------------------------
-int CodeEditor::lineIndent(const QTextBlock *lineNbr) const
+int CodeEditor::lineIndent(const QTextBlock* lineNbr) const
 {
     if (lineNbr == NULL)
     {
@@ -1218,11 +1216,11 @@ int CodeEditor::lineIndent(const QTextBlock *lineNbr) const
 }
 
 //-------------------------------------------------------------
-/*virtual*/ bool CodeEditor::eventFilter(QObject *obj, QEvent *e)
+/*virtual*/ bool CodeEditor::eventFilter(QObject* obj, QEvent* e)
 {
     if ((obj == this) && (e->type() == QEvent::KeyPress))
     {
-        QKeyEvent *ke = dynamic_cast<QKeyEvent*>(e);
+        QKeyEvent* ke = dynamic_cast<QKeyEvent*>(e);
         if (ke->matches(QKeySequence::Cut))
         {
             cut();
@@ -1239,8 +1237,8 @@ int CodeEditor::lineIndent(const QTextBlock *lineNbr) const
 
 //-------------------------------------------------------------
 /*
-Cuts the selected text or the whole line if no text was selected, 
-the current line is not empty and selectLineOnCopy() is true. 
+Cuts the selected text or the whole line if no text was selected,
+the current line is not empty and selectLineOnCopy() is true.
 (the latter feature can be turned off by
 setting :attr:`select_line_on_copy_empty` to False).
 */
@@ -1282,7 +1280,7 @@ void CodeEditor::copy()
 {
     if (selectLineOnCopyEmpty() && !textCursor().hasSelection())
     {
-            selectWholeLine();
+        selectWholeLine();
     }
 
     QPlainTextEdit::copy();
@@ -1303,13 +1301,13 @@ QString CodeEditor::lineText(int lineIdx) const
         return "";
     }
 
-    const QTextBlock &block = document()->findBlockByNumber(lineIdx);
+    const QTextBlock& block = document()->findBlockByNumber(lineIdx);
     return block.text();
 }
 
 /*
 Returns the text cursor's line number.
-        
+
 :return: Line number
 */
 int CodeEditor::currentLineNumber() const
@@ -1344,10 +1342,10 @@ QString CodeEditor::previousLineText() const
 
 //------------------------------------------------------------
 /*
-QScintilla uses the combination of a line number and a character 
-index from the start of that line to specify the position of a 
-character within the text. The underlying Scintilla instead uses 
-a byte index from the start of the text. This will return the byte 
+QScintilla uses the combination of a line number and a character
+index from the start of that line to specify the position of a
+character within the text. The underlying Scintilla instead uses
+a byte index from the start of the text. This will return the byte
 index corresponding to the line line number and index character index.
 */
 int CodeEditor::positionFromLineIndex(int line, int column) const
@@ -1385,7 +1383,8 @@ Emits the new_text_set signal.
                     pygments lexer.
 :param encoding: text encoding
 */
-void CodeEditor::setPlainText(const QString &text, const QString &mimeType /*= ""*/, const QString &encoding /*= ""*/)
+void CodeEditor::setPlainText(
+    const QString& text, const QString& mimeType /*= ""*/, const QString& encoding /*= ""*/)
 {
     QPlainTextEdit::setPlainText(text);
     emit newTextSet();
@@ -1395,7 +1394,7 @@ void CodeEditor::setPlainText(const QString &text, const QString &mimeType /*= "
 
 //------------------------------------------------------------
 /*
-*/
+ */
 QString CodeEditor::selectedText() const
 {
     return textCursor().selectedText().replace(QChar(0x2029), '\n');
@@ -1403,12 +1402,12 @@ QString CodeEditor::selectedText() const
 
 //------------------------------------------------------------
 void CodeEditor::removeSelectedText()
-{ 
+{
     textCursor().removeSelectedText();
 }
 
 //------------------------------------------------------------
-void CodeEditor::append(const QString &text)
+void CodeEditor::append(const QString& text)
 {
     QTextCursor cursor = textCursor();
     cursor.movePosition(QTextCursor::End);
@@ -1416,7 +1415,7 @@ void CodeEditor::append(const QString &text)
 }
 
 //------------------------------------------------------------
-void CodeEditor::insertAt(const QString &text, int line, int index)
+void CodeEditor::insertAt(const QString& text, int line, int index)
 {
     setCursorPosition(line, index, true);
     insertPlainText(text);
@@ -1424,17 +1423,17 @@ void CodeEditor::insertAt(const QString &text, int line, int index)
 
 //------------------------------------------------------------
 /*
-Replace the current selection, set by a previous call to 
+Replace the current selection, set by a previous call to
 findFirst(), findFirstInSelection() or findNext(), with replaceStr.
 */
-void CodeEditor::replace(const QString &text)
+void CodeEditor::replace(const QString& text)
 {
     QTextCursor cursor = textCursor();
-     
+
     int start = cursor.selectionStart();
     int end = cursor.selectionEnd();
-     
-    if(!cursor.hasSelection())
+
+    if (!cursor.hasSelection())
     {
         return;
     }
@@ -1447,9 +1446,17 @@ void CodeEditor::replace(const QString &text)
 
 //--------------------------------------------------------------
 /*
-*/
-bool CodeEditor::findFirst(const QString &expr,	bool re, bool cs, bool wo, bool wrap, \
-        bool forward /*= true*/, int line /*= -1*/, int index /*= -1*/, bool show /*= true*/)
+ */
+bool CodeEditor::findFirst(
+    const QString& expr,
+    bool re,
+    bool cs,
+    bool wo,
+    bool wrap,
+    bool forward /*= true*/,
+    int line /*= -1*/,
+    int index /*= -1*/,
+    bool show /*= true*/)
 {
     QTextCursor current_cursor = textCursor();
 
@@ -1478,7 +1485,7 @@ bool CodeEditor::findFirst(const QString &expr,	bool re, bool cs, bool wo, bool 
     {
         QRegExp regExp(expr);
         regExp.setCaseSensitivity(cs ? Qt::CaseSensitive : Qt::CaseInsensitive);
-        
+
         cursor = document()->find(regExp, current_cursor, flags);
 
         if (cursor.isNull() && wrap)
@@ -1535,7 +1542,7 @@ bool CodeEditor::findFirst(const QString &expr,	bool re, bool cs, bool wo, bool 
 
             reportGoBackNavigationCursorMovement(CursorPosition(cursor), "findFirst");
         }
-        
+
         return true;
     }
 
@@ -1544,10 +1551,10 @@ bool CodeEditor::findFirst(const QString &expr,	bool re, bool cs, bool wo, bool 
 
 //--------------------------------------------------------------
 /*
-*/
+ */
 bool CodeEditor::findNext()
 {
-    const FindOptions &f = m_lastFindOptions;
+    const FindOptions& f = m_lastFindOptions;
 
     if (f.valid)
     {
@@ -1563,7 +1570,6 @@ Resets stylesheet
 */
 void CodeEditor::resetStylesheet()
 {
-
     setFont(QFont(m_fontFamily, m_fontSize + m_zoomLevel));
 
     bool flg_stylesheet = property("flg_stylesheet").isValid();
@@ -1581,7 +1587,8 @@ void CodeEditor::resetStylesheet()
             { \
                 background-color: %1; \
                 color: %2; \
-            }").arg(m_background.name(), m_foreground.name()));
+            }")
+                              .arg(m_background.name(), m_foreground.name()));
         }
         else
         {
@@ -1590,7 +1597,8 @@ void CodeEditor::resetStylesheet()
             { \
                 background-color: %1; \
                 color: %2; \
-            }").arg(m_background.name(), m_foreground.name()));
+            }")
+                              .arg(m_background.name(), m_foreground.name()));
 #else
             /*on linux/osx we just have to set an empty stylesheet to
             cancel any previous stylesheet and still keep a correct
@@ -1604,10 +1612,8 @@ void CodeEditor::resetStylesheet()
         QPalette p = palette();
         p.setColor(QPalette::Base, m_background);
         p.setColor(QPalette::Text, m_foreground);
-        p.setColor(QPalette::Highlight,
-                    m_selBackground);
-        p.setColor(QPalette::HighlightedText,
-                    m_selForeground);
+        p.setColor(QPalette::Highlight, m_selBackground);
+        p.setColor(QPalette::HighlightedText, m_selForeground);
         setPalette(p);
     }
     repaint();
@@ -1622,7 +1628,9 @@ Checks if a block/cursor is a string or a comment.
     default, it will consider the following keys: 'comment', 'string',
     'docstring'.
 */
-bool CodeEditor::isCommentOrString(const QTextCursor &cursor, const QList<StyleItem::StyleType> &formats /*= QList<StyleItem::StyleType>()*/)
+bool CodeEditor::isCommentOrString(
+    const QTextCursor& cursor,
+    const QList<StyleItem::StyleType>& formats /*= QList<StyleItem::StyleType>()*/)
 {
     return isCommentOrString(cursor.block(), formats);
 }
@@ -1636,7 +1644,9 @@ Checks if a block/cursor is a string or a comment.
     default, it will consider the following keys: 'comment', 'string',
     'docstring'.
 */
-bool CodeEditor::isCommentOrString(const QTextBlock &block, const QList<StyleItem::StyleType> &formats /*= QList<StyleItem::StyleType>()*/)
+bool CodeEditor::isCommentOrString(
+    const QTextBlock& block,
+    const QList<StyleItem::StyleType>& formats /*= QList<StyleItem::StyleType>()*/)
 {
     QList<StyleItem::StyleType> formats_ = formats;
     if (formats_.size() == 0)
@@ -1645,19 +1655,19 @@ bool CodeEditor::isCommentOrString(const QTextBlock &block, const QList<StyleIte
     }
 
     int pos = block.text().size() - 1;
-    const QTextLayout *layout = block.layout();
+    const QTextLayout* layout = block.layout();
     bool is_user_obj;
 
     if (layout)
     {
         auto additional_formats = layout->formats();
-        const SyntaxHighlighterBase *sh = syntaxHighlighter();
+        const SyntaxHighlighterBase* sh = syntaxHighlighter();
 
         if (sh)
         {
             QSharedPointer<CodeEditorStyle> ref_formats = sh->editorStyle();
 
-            foreach (const QTextLayout::FormatRange &r, additional_formats)
+            foreach (const QTextLayout::FormatRange& r, additional_formats)
             {
                 if ((r.start <= pos) && (pos < (r.start + r.length)))
                 {
@@ -1688,7 +1698,7 @@ Checks if a block/cursor is a number (int, float, complex...).
     default, it will consider the following keys: 'comment', 'string',
     'docstring'.
 */
-bool CodeEditor::isNumber(const QTextCursor &cursor) const
+bool CodeEditor::isNumber(const QTextCursor& cursor) const
 {
     return isNumber(cursor.block());
 }
@@ -1699,22 +1709,22 @@ Checks if a block/cursor is a number (int, float, complex...).
 
 :param cursor_or_block: QTextCursor or QTextBlock
 */
-bool CodeEditor::isNumber(const QTextBlock &block) const
+bool CodeEditor::isNumber(const QTextBlock& block) const
 {
     int pos = block.text().size() - 1;
-    const QTextLayout *layout = block.layout();
+    const QTextLayout* layout = block.layout();
     bool is_user_obj;
 
     if (layout)
     {
         auto additional_formats = layout->formats();
-        const SyntaxHighlighterBase *sh = syntaxHighlighter();
+        const SyntaxHighlighterBase* sh = syntaxHighlighter();
 
         if (sh)
         {
             QSharedPointer<CodeEditorStyle> ref_formats = sh->editorStyle();
 
-            foreach (const QTextLayout::FormatRange &r, additional_formats)
+            foreach (const QTextLayout::FormatRange& r, additional_formats)
             {
                 is_user_obj = (r.format.objectType() == StyleItem::GroupNumber);
 
@@ -1753,14 +1763,14 @@ QTextCursor CodeEditor::wordUnderCursor(bool selectWholeWord) const
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-QTextCursor CodeEditor::wordUnderCursor(const QTextCursor &cursor, bool selectWholeWord) const
+QTextCursor CodeEditor::wordUnderCursor(const QTextCursor& cursor, bool selectWholeWord) const
 {
     QTextCursor text_cursor = cursor;
     int endPos, startPos;
     endPos = startPos = text_cursor.position();
     QString selectedText;
     QChar firstChar;
-    //select char by char until we are at the original cursor position.
+    // select char by char until we are at the original cursor position.
     while (!text_cursor.atStart())
     {
         text_cursor.movePosition(QTextCursor::Left, QTextCursor::KeepAnchor, 1);
@@ -1770,9 +1780,9 @@ QTextCursor CodeEditor::wordUnderCursor(const QTextCursor &cursor, bool selectWh
             firstChar = selectedText[0];
             if (m_wordSeparators.contains(firstChar) &&
                     (selectedText != "n" && selectedText != "t") ||
-                    firstChar.isSpace())
+                firstChar.isSpace())
             {
-                break;  //start boundary found
+                break; // start boundary found
             }
         }
         startPos = text_cursor.position();
@@ -1781,7 +1791,7 @@ QTextCursor CodeEditor::wordUnderCursor(const QTextCursor &cursor, bool selectWh
 
     if (selectWholeWord)
     {
-        //select the rest of the word
+        // select the rest of the word
         text_cursor.setPosition(endPos);
         while (!text_cursor.atEnd())
         {
@@ -1792,16 +1802,16 @@ QTextCursor CodeEditor::wordUnderCursor(const QTextCursor &cursor, bool selectWh
                 firstChar = selectedText[0];
                 if (m_wordSeparators.contains(selectedText) &&
                         (selectedText != "n" && selectedText != "t") ||
-                        firstChar.isSpace())
+                    firstChar.isSpace())
                 {
-                    break;  //end boundary found
+                    break; // end boundary found
                 }
                 endPos = text_cursor.position();
                 text_cursor.setPosition(endPos);
             }
         }
     }
-    //now that we habe the boundaries, we can select the text
+    // now that we habe the boundaries, we can select the text
     text_cursor.setPosition(startPos);
     text_cursor.setPosition(endPos, QTextCursor::KeepAnchor);
 
@@ -1818,7 +1828,7 @@ QTextCursor CodeEditor::wordUnderMouseCursor() const
 {
     QTextCursor text_cursor = cursorForPosition(m_lastMousePos);
 
-    //check if text_cursor is not behind end of line
+    // check if text_cursor is not behind end of line
     QTextCursor end_of_line_cursor(text_cursor);
     end_of_line_cursor.movePosition(QTextCursor::EndOfLine, QTextCursor::MoveAnchor);
 
@@ -1856,8 +1866,9 @@ QString CodeEditor::wordAtPosition(int line, int index, bool selectWholeWord) co
 
     QTextCursor text_cursor = textCursor();
     text_cursor.movePosition(QTextCursor::Start);
-    text_cursor.movePosition(QTextCursor::Down, QTextCursor::MoveAnchor, line); //go down y-times
-    text_cursor.movePosition(QTextCursor::Right, QTextCursor::MoveAnchor, index); //go right x-times
+    text_cursor.movePosition(QTextCursor::Down, QTextCursor::MoveAnchor, line); // go down y-times
+    text_cursor.movePosition(QTextCursor::Right, QTextCursor::MoveAnchor, index); // go right
+                                                                                  // x-times
     return wordUnderCursor(text_cursor, selectWholeWord).selectedText();
 }
 
@@ -1871,10 +1882,9 @@ Returns the line number from the y_pos
 int CodeEditor::lineNbrFromPosition(int yPos) const
 {
     int height = fontMetrics().height();
-    foreach(const VisibleBlock &vb, visibleBlocks())
+    foreach (const VisibleBlock& vb, visibleBlocks())
     {
-        if ((vb.topPosition <= yPos) && \
-            (yPos <= (vb.topPosition + height)))
+        if ((vb.topPosition <= yPos) && (yPos <= (vb.topPosition + height)))
         {
             return vb.lineNumber;
         }
@@ -1883,7 +1893,7 @@ int CodeEditor::lineNbrFromPosition(int yPos) const
 }
 
 //------------------------------------------------------------
-void CodeEditor::lineIndexFromPosition(const QPoint &pos, int *line, int *column) const
+void CodeEditor::lineIndexFromPosition(const QPoint& pos, int* line, int* column) const
 {
     QTextCursor cursor = cursorForPosition(pos);
 
@@ -1899,7 +1909,7 @@ void CodeEditor::lineIndexFromPosition(const QPoint &pos, int *line, int *column
 }
 
 //------------------------------------------------------------
-void CodeEditor::lineIndexFromPosition(int pos, int *line, int *column) const
+void CodeEditor::lineIndexFromPosition(int pos, int* line, int* column) const
 {
     QTextBlock block = document()->findBlock(pos);
     if (block.isValid())
@@ -1928,7 +1938,7 @@ void CodeEditor::lineIndexFromPosition(int pos, int *line, int *column) const
 }
 
 //------------------------------------------------------------
-void CodeEditor::getCursorPosition(int *line, int *column) const
+void CodeEditor::getCursorPosition(int* line, int* column) const
 {
     QTextCursor cursor = textCursor();
     if (line)
@@ -1972,7 +1982,9 @@ void CodeEditor::unfoldCursorPosition()
 
                 while (block.isValid())
                 {
-                    //qDebug() << block.blockNumber() << Utils::TextBlockHelper::isFoldTrigger(block) << Utils::TextBlockHelper::isCollapsed(block);
+                    // qDebug() << block.blockNumber() <<
+                    // Utils::TextBlockHelper::isFoldTrigger(block) <<
+                    // Utils::TextBlockHelper::isCollapsed(block);
                     if (Utils::TextBlockHelper::isCollapsed(block))
                     {
                         fp->toggleFoldTrigger(block);
@@ -2008,8 +2020,8 @@ TextBlockUserData* CodeEditor::getTextBlockUserData(int lineIndex, bool createIf
 
     if (block.isValid())
     {
-        //set docstring dynamic attribute, used by the fold detector.
-        TextBlockUserData *userData = dynamic_cast<TextBlockUserData*>(block.userData());
+        // set docstring dynamic attribute, used by the fold detector.
+        TextBlockUserData* userData = dynamic_cast<TextBlockUserData*>(block.userData());
         if (userData == NULL && createIfNotExist)
         {
             userData = new TextBlockUserData(this);
@@ -2047,12 +2059,13 @@ structure is allocated, attached to the line and returned.
 
 Returns NULL if the line does not exist
 */
-TextBlockUserData* CodeEditor::getTextBlockUserData(QTextBlock &block, bool createIfNotExist /*= true*/)
+TextBlockUserData* CodeEditor::getTextBlockUserData(
+    QTextBlock& block, bool createIfNotExist /*= true*/)
 {
     if (block.isValid())
     {
-        //set docstring dynamic attribute, used by the fold detector.
-        TextBlockUserData *userData = dynamic_cast<TextBlockUserData*>(block.userData());
+        // set docstring dynamic attribute, used by the fold detector.
+        TextBlockUserData* userData = dynamic_cast<TextBlockUserData*>(block.userData());
         if (userData == NULL && createIfNotExist)
         {
             userData = new TextBlockUserData(this);
@@ -2073,7 +2086,7 @@ Returns true if at least one bookmark is set, else false
 */
 bool CodeEditor::bookmarksAvailable() const
 {
-    foreach (TextBlockUserData *tbud, textBlockUserDataList())
+    foreach (TextBlockUserData* tbud, textBlockUserDataList())
     {
         if (tbud->m_bookmark)
         {
@@ -2089,7 +2102,7 @@ Returns true if at least one bookmark is set, else false
 */
 bool CodeEditor::breakpointsAvailable() const
 {
-    foreach (TextBlockUserData *tbud, textBlockUserDataList())
+    foreach (TextBlockUserData* tbud, textBlockUserDataList())
     {
         if (tbud->m_breakpointType != TextBlockUserData::TypeNoBp)
         {
@@ -2131,7 +2144,7 @@ int CodeEditor::lineLength(int line) const
     QTextBlock block = document()->findBlockByNumber(line);
     if (block.isValid())
     {
-        return block.text().length(); //length();
+        return block.text().length(); // length();
     }
 
     return -1;
@@ -2154,7 +2167,8 @@ on the code editor widget by setting ``apply_selection`` to False.
     the QTextCursor.
 :returns: A QTextCursor that holds the requested selection
 */
-QTextCursor CodeEditor::selectLines(int start /*= 0*/, int end /*= -1*/, bool applySelection /*= true*/)
+QTextCursor CodeEditor::selectLines(
+    int start /*= 0*/, int end /*= -1*/, bool applySelection /*= true*/)
 {
     if (end == -1)
     {
@@ -2165,29 +2179,23 @@ QTextCursor CodeEditor::selectLines(int start /*= 0*/, int end /*= -1*/, bool ap
         start = 0;
     }
 
-    QTextCursor text_cursor = moveCursorTo(start); //reports goback navigation if necessary
+    QTextCursor text_cursor = moveCursorTo(start); // reports goback navigation if necessary
 
-    if (end > start)  //Going down
+    if (end > start) // Going down
     {
-        text_cursor.movePosition(QTextCursor::Down,
-                                    QTextCursor::KeepAnchor, end - start);
-        text_cursor.movePosition(QTextCursor::EndOfLine,
-                                    QTextCursor::KeepAnchor);
+        text_cursor.movePosition(QTextCursor::Down, QTextCursor::KeepAnchor, end - start);
+        text_cursor.movePosition(QTextCursor::EndOfLine, QTextCursor::KeepAnchor);
     }
-    else if (end < start)  //going up
+    else if (end < start) // going up
     {
         // don't miss end of line !
-        text_cursor.movePosition(QTextCursor::EndOfLine,
-                                    QTextCursor::MoveAnchor);
-        text_cursor.movePosition(QTextCursor::Up,
-                                    QTextCursor::KeepAnchor, start - end);
-        text_cursor.movePosition(QTextCursor::StartOfLine,
-                                    QTextCursor::KeepAnchor);
+        text_cursor.movePosition(QTextCursor::EndOfLine, QTextCursor::MoveAnchor);
+        text_cursor.movePosition(QTextCursor::Up, QTextCursor::KeepAnchor, start - end);
+        text_cursor.movePosition(QTextCursor::StartOfLine, QTextCursor::KeepAnchor);
     }
     else
     {
-        text_cursor.movePosition(QTextCursor::EndOfLine,
-                                    QTextCursor::KeepAnchor);
+        text_cursor.movePosition(QTextCursor::EndOfLine, QTextCursor::KeepAnchor);
     }
 
     if (applySelection)
@@ -2223,51 +2231,58 @@ Returns the selected lines boundaries (start line, end line)
 
 :return: tuple(int, int)
 */
-QPair<int,int> CodeEditor::selectionRange() const
-{        
-    int start = document()->findBlock(
-        textCursor().selectionStart()).blockNumber();
-    int end = document()->findBlock(
-        textCursor().selectionEnd()).blockNumber();
+QPair<int, int> CodeEditor::selectionRange() const
+{
+    int start = document()->findBlock(textCursor().selectionStart()).blockNumber();
+    int end = document()->findBlock(textCursor().selectionEnd()).blockNumber();
     QTextCursor text_cursor = textCursor();
     text_cursor.setPosition(textCursor().selectionEnd());
     if ((text_cursor.columnNumber() == 0) && (start != end))
     {
         end -= 1;
     }
-    return QPair<int,int>(start, end);
+    return QPair<int, int>(start, end);
 }
 
 //------------------------------------------------------------
 /*
-If there is a selection, *lineFrom is set to the line number in which the selection 
-begins and *lineTo is set to the line number in which the selection ends. 
-(They could be the same.) *indexFrom is set to the index at which the selection 
-begins within *lineFrom, and *indexTo is set to the index at which the selection ends within *lineTo. 
-If there is no selection, *lineFrom, *indexFrom, *lineTo and *indexTo are all set to -1.
+If there is a selection, *lineFrom is set to the line number in which the selection
+begins and *lineTo is set to the line number in which the selection ends.
+(They could be the same.) *indexFrom is set to the index at which the selection
+begins within *lineFrom, and *indexTo is set to the index at which the selection ends within
+*lineTo. If there is no selection, *lineFrom, *indexFrom, *lineTo and *indexTo are all set to
+-1.
 */
-void CodeEditor::getSelection(int *lineFrom, int *indexFrom, int *lineTo, int *indexTo)
+void CodeEditor::getSelection(int* lineFrom, int* indexFrom, int* lineTo, int* indexTo)
 {
-    const QTextCursor &cursor = textCursor();
+    const QTextCursor& cursor = textCursor();
     if (!cursor.hasSelection())
     {
-        if (lineFrom) *lineFrom = -1;
-        if (lineTo) *lineTo = -1;
-        if (indexFrom) *indexFrom = -1;
-        if (indexTo) *indexTo = -1;
+        if (lineFrom)
+            *lineFrom = -1;
+        if (lineTo)
+            *lineTo = -1;
+        if (indexFrom)
+            *indexFrom = -1;
+        if (indexTo)
+            *indexTo = -1;
     }
     else
     {
         int start = cursor.selectionStart();
         int end = cursor.selectionEnd();
         QTextBlock block = document()->findBlock(start);
-        
-        if (lineFrom) *lineFrom = block.blockNumber();
-        if (indexFrom) *indexFrom = start - block.position();
+
+        if (lineFrom)
+            *lineFrom = block.blockNumber();
+        if (indexFrom)
+            *indexFrom = start - block.position();
 
         block = document()->findBlock(end);
-        if (lineTo) *lineTo = block.blockNumber();
-        if (indexTo) *indexTo = end - block.position();
+        if (lineTo)
+            *lineTo = block.blockNumber();
+        if (indexTo)
+            *indexTo = end - block.position();
     }
 }
 
@@ -2297,7 +2312,7 @@ void CodeEditor::setSelection(int lineFrom, int indexFrom, int lineTo, int index
 //------------------------------------------------------------
 bool CodeEditor::hasSelectedText() const
 {
-    const QTextCursor &cursor = textCursor();
+    const QTextCursor& cursor = textCursor();
     return cursor.hasSelection();
 }
 
@@ -2347,8 +2362,7 @@ void CodeEditor::markWholeDocDirty()
 {
     QTextCursor text_cursor = textCursor();
     text_cursor.select(QTextCursor::Document);
-    document()->markContentsDirty(text_cursor.selectionStart(),
-                                                text_cursor.selectionEnd());
+    document()->markContentsDirty(text_cursor.selectionStart(), text_cursor.selectionEnd());
 }
 
 //------------------------------------------------------------
@@ -2372,9 +2386,10 @@ void CodeEditor::rehighlightBlock(int lineFromIdx, int lineToIdx /*=-1*/)
     if (syntaxHighlighter())
     {
         QTextBlock begin = document()->findBlockByNumber(lineFromIdx);
-        QTextBlock end = lineToIdx == -1 ? begin : document()->findBlockByNumber(qMax(lineFromIdx, lineToIdx));
+        QTextBlock end =
+            lineToIdx == -1 ? begin : document()->findBlockByNumber(qMax(lineFromIdx, lineToIdx));
         end = end.next();
-        
+
         while (begin != end)
         {
             syntaxHighlighter()->rehighlightBlock(begin);
@@ -2424,31 +2439,34 @@ void CodeEditor::setRedoAvailable(bool available)
 }
 
 //------------------------------------------------------------
-void CodeEditor::contextMenuEvent(QContextMenuEvent *e)
+void CodeEditor::contextMenuEvent(QContextMenuEvent* e)
 {
     if (m_showCtxMenu)
     {
         e->accept();
-		int line = -1;
-		int index = -1;
+        int line = -1;
+        int index = -1;
         lineIndexFromPosition(e->pos(), &line, &index);
 
-		int selLineFrom, selLineTo;
-		int selIndexFrom, selIndexTo;
-		getSelection(&selLineFrom, &selIndexFrom, &selLineTo, &selIndexTo);
+        int selLineFrom, selLineTo;
+        int selIndexFrom, selIndexTo;
+        getSelection(&selLineFrom, &selIndexFrom, &selLineTo, &selIndexTo);
 
-		if (selLineFrom == -1) //nothing selected yet -> set the cursor to the current mouse position
-		{
-			setCursorPosition(line, index);
-		}
-		else if (line < selLineFrom || 
-			(line == selLineFrom && index < selIndexFrom) ||
-			line > selLineTo ||
-			(line == selLineTo && index > selIndexTo)) //the right mouse click happened out of the current selection, move the cursor to the clicked position
-		{
-			setCursorPosition(line, index);
-		}
-        
+        if (selLineFrom ==
+            -1) // nothing selected yet -> set the cursor to the current mouse position
+        {
+            setCursorPosition(line, index);
+        }
+        else if (
+            line < selLineFrom || (line == selLineFrom && index < selIndexFrom) ||
+            line > selLineTo ||
+            (line == selLineTo &&
+             index > selIndexTo)) // the right mouse click happened out of the current
+                                  // selection, move the cursor to the clicked position
+        {
+            setCursorPosition(line, index);
+        }
+
         contextMenuAboutToShow(line);
         m_pContextMenu->exec(e->globalPos());
     }
@@ -2460,4 +2478,4 @@ void CodeEditor::contextMenuAboutToShow(int contextMenuLine)
 }
 
 
-} //end namespace ito
+} // end namespace ito

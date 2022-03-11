@@ -1107,9 +1107,14 @@ QSize DoubleSpinBox::sizeHint() const
   newSizeHint += extraSize;
 #endif
   opt.rect = this->rect();
-  d->CachedSizeHint = this->style()->sizeFromContents(
-      QStyle::CT_SpinBox, &opt, newSizeHint, this)
-      .expandedTo(QApplication::globalStrut());
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+  d->CachedSizeHint = this->style()
+                          ->sizeFromContents(QStyle::CT_SpinBox, &opt, newSizeHint, this);
+#else
+  d->CachedSizeHint = this->style()
+                          ->sizeFromContents(QStyle::CT_SpinBox, &opt, newSizeHint, this)
+                          .expandedTo(QApplication::globalStrut());
+#endif
   return d->CachedSizeHint;
 }
 
@@ -1160,9 +1165,14 @@ QSize DoubleSpinBox::minimumSizeHint() const
     newSizeHint += extraSize;
 #endif
     opt.rect = this->rect();
-    d->CachedMinimumSizeHint = this->style()->sizeFromContents(
-        QStyle::CT_SpinBox, &opt, newSizeHint, this)
-        .expandedTo(QApplication::globalStrut());
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+    d->CachedMinimumSizeHint = this->style()
+                                   ->sizeFromContents(QStyle::CT_SpinBox, &opt, newSizeHint, this);
+#else
+    d->CachedMinimumSizeHint = this->style()
+                                   ->sizeFromContents(QStyle::CT_SpinBox, &opt, newSizeHint, this)
+                                   .expandedTo(QApplication::globalStrut());
+#endif    
     return d->CachedMinimumSizeHint;
 }
 

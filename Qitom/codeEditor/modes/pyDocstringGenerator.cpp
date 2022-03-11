@@ -43,6 +43,7 @@
 #include "../../widgets/menuOnlyForEnter.h"
 
 #include <qdebug.h>
+#include <iostream>
 #include <qregularexpression.h>
 
 namespace ito {
@@ -250,6 +251,24 @@ void PyDocstringGeneratorMode::insertDocstring(
         // deep copy of outline and replace m_endLineIdx
         outline = QSharedPointer<ito::OutlineItem>(new ito::OutlineItem(*outline));
         outline->m_endLineIdx = overwriteEndLineIdx;
+
+        auto it = outline->m_childs.begin();
+
+        while (it != outline->m_childs.end())
+        {
+            if ((*it)->m_startLineIdx >= overwriteEndLineIdx)
+            {
+                // remove this child since it is outside of overwriteEndLineIdx
+                it = outline->m_childs.erase(it);
+                continue;
+            }
+            else if ((*it)->m_endLineIdx > overwriteEndLineIdx)
+            {
+                (*it)->m_endLineIdx = overwriteEndLineIdx;
+            }
+
+            it++;
+        }
     }
 
     CodeEditor *e = editor();
@@ -360,6 +379,15 @@ PyDocstringGeneratorMode::FunctionInfo PyDocstringGeneratorMode::parseFunctionIn
         // remove code from subfunctions
         for (int i = c->m_startLineIdx; i <= c->m_endLineIdx; ++i)
         {
+            if (i < startIdx || i >= item->m_endLineIdx)
+            {
+                // error. This should never happen.
+#if _DEBUG
+                std::cout << "Warning. Improper outline structure detected when parsing the docstring.\n" << std::endl;
+#endif
+                break;
+            }
+
             codelines[i - startIdx] = "";
         }
     }
@@ -435,7 +463,7 @@ void PyDocstringGeneratorMode::parseArgList(
 
     for (int pos = 0; pos < argstr.size(); ++pos)
     {
-        if (argstr[pos] == "," && specialCharStack.size() == 0)
+        if (argstr[pos] == ',' && specialCharStack.size() == 0)
         {
             if (pos - lastpos > 0)
             {

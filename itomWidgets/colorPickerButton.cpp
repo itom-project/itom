@@ -59,7 +59,7 @@ ColorPickerButtonPrivate::ColorPickerButtonPrivate(ColorPickerButton& object)
   this->Color = Qt::black;
   this->ColorName = QString();
   this->DisplayColorName = true;
-  this->DialogOptions = 0;
+  this->DialogOptions = ColorPickerButton::ColorDialogOption();
 }
 
 //-----------------------------------------------------------------------------
@@ -303,18 +303,30 @@ QSize ColorPickerButton::sizeHint()const
     opt.icon = d->Icon;
     opt.iconSize = QSize(iconSize, iconSize);
     opt.rect.setSize(opt.iconSize); // PM_MenuButtonIndicator depends on the height
-    d->CachedSizeHint = this->style()->sizeFromContents(
-      QStyle::CT_ToolButton, &opt, opt.iconSize, this).
-      expandedTo(QApplication::globalStrut());
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+    d->CachedSizeHint = this->style()
+                            ->sizeFromContents(QStyle::CT_ToolButton, &opt, opt.iconSize, this);
+#else
+    d->CachedSizeHint = this->style()
+                            ->sizeFromContents(QStyle::CT_ToolButton, &opt, opt.iconSize, this)
+                            .expandedTo(QApplication::globalStrut());
+#endif
     }
   else
     {
     pushButtonOpt.icon = d->Icon;
     pushButtonOpt.iconSize = QSize(iconSize, iconSize);
     pushButtonOpt.rect.setSize(pushButtonOpt.iconSize); // PM_MenuButtonIndicator depends on the height
-    d->CachedSizeHint = (style()->sizeFromContents(
-                           QStyle::CT_PushButton, &pushButtonOpt, pushButtonOpt.iconSize, this).
-                         expandedTo(QApplication::globalStrut()));
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+    d->CachedSizeHint =
+        (style()
+             ->sizeFromContents(QStyle::CT_PushButton, &pushButtonOpt, pushButtonOpt.iconSize, this));
+#else
+    d->CachedSizeHint =
+        (style()
+             ->sizeFromContents(QStyle::CT_PushButton, &pushButtonOpt, pushButtonOpt.iconSize, this)
+             .expandedTo(QApplication::globalStrut()));
+#endif
     }
   return d->CachedSizeHint;
 }

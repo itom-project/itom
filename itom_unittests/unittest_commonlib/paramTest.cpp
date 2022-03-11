@@ -1131,3 +1131,13 @@ TEST(ParamTest, ConstGetValTest)
     //                   << ", dbl-array:" << (end_time2 - end_time1) /
     //                   std::chrono::milliseconds(1);
 }
+
+TEST(ParamTest, AssignEmptyStringToParam)
+{
+    ParamBase p("name", ParamBase::String, nullptr);
+
+    p.setVal<const char*>("");
+
+    EXPECT_STREQ("", p.getVal<const char*>());
+
+}

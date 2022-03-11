@@ -18,9 +18,44 @@
 
     You should have received a copy of the GNU Library General Public License
     along with itom. If not, see <http://www.gnu.org/licenses/>.
+
 *********************************************************************** */
-#if defined(WIN32) && defined(_DEBUG)
-#define _AFXDLL
-    #include "afx.h"
-  #define new DEBUG_NEW
-#endif
+
+#pragma once
+
+#include <qwidget.h>
+#include <qaction.h>
+
+#include "itomWidgets/dataObjectTable.h"
+
+
+namespace ito {
+
+
+class ExtendedDataObjectTable : public DataObjectTable
+{
+    Q_OBJECT
+public:
+    ExtendedDataObjectTable(QWidget *parent = nullptr);
+    virtual ~ExtendedDataObjectTable();
+
+    void setTableName(const QString &name);
+
+protected:
+    virtual void selectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
+    void showPlotGeneric(const QString &plotClass);
+    bool coverAllRangesTheSameRows(const QItemSelection &ranges, int &nrOfColumns) const;
+    bool coverAllRangesTheSameColumns(const QItemSelection &ranges, int &nrOfRows) const;
+
+    QAction *m_pActPlot2d;
+    QAction *m_pActPlot1d;
+    QString m_name;
+
+private slots:
+    void showPlot2d();
+    void showPlot1d();
+};
+
+
+
+} //end namespace ito

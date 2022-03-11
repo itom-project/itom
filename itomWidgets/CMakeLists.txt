@@ -25,7 +25,7 @@
 # along with itom. If not, see <http://www.gnu.org/licenses/>.
 
 cmake_minimum_required(VERSION 3.1)
-  
+     
 set(target_name itomWidgets)
 project(${target_name})
 
@@ -141,8 +141,6 @@ set(paramPropertyBrowser_CPP_MOC_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/paramStringWidget.cpp
 )
 
-
-
 set(itomWidgets_Factory_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/itomWidgetsFactory.h
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/rangeSliderFactory.h
@@ -190,6 +188,7 @@ set(itomWidgets_Factory_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/plotInfoShapes.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pythonLogWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/paramEditorWidget.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/dialogHeatmapConfiguration.h
     ${CMAKE_CURRENT_SOURCE_DIR}/valueProxy.h
     ${CMAKE_CURRENT_SOURCE_DIR}/utils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/proxyStyle.h
@@ -339,6 +338,7 @@ set(itomWidgets_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/dataObjectModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dataObjectTable.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dataObjectMetaWidget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/dialogHeatmapConfiguration.cpp
 )
 
 #If you want to use automatical metadata for dlls under windows use the following if-case.
@@ -354,6 +354,7 @@ set(itomWidgets_UI
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/motorAxisController.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/penCreatorDialog.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/brushCreatorDialog.ui
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogHeatmapConfiguration.ui
 )
 
 QT5_WRAP_UI(itomWidgets_UI_MOC ${itomWidgets_UI})

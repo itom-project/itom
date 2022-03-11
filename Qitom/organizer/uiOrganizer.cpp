@@ -1590,8 +1590,7 @@ RetVal UiOrganizer::showFileDialogExistingDir(unsigned int objectID, const QStri
         parent = ((ito::AbstractDockWidget*)parent)->getActiveInstance();
     }
 
-    QFileDialog::Options opt = 0;
-    opt = (~opt) & options;
+    QFlags<QFileDialog::Option> opt(options);
     QString result = QFileDialog::getExistingDirectory(parent, caption, *directory, opt);
     *directory = result;
 
@@ -1627,8 +1626,7 @@ RetVal UiOrganizer::showFilesOpenDialog(unsigned int objectID, const QString &ca
         parent = ((ito::AbstractDockWidget*)parent)->getActiveInstance();
     }
 
-    QFileDialog::Options opt = 0;
-    opt = (~opt) & options;
+    QFlags<QFileDialog::Option> opt(options);
     QStringList filters = filter.split(";;");
     QString *selectedFilter = NULL;
     if (selectedFilterIndex >= 0 && selectedFilterIndex < filters.size())
@@ -1673,8 +1671,7 @@ RetVal UiOrganizer::showFileOpenDialog(unsigned int objectID, const QString &cap
         parent = ((ito::AbstractDockWidget*)parent)->getActiveInstance();
     }
 
-    QFileDialog::Options opt = 0;
-    opt = (~opt) & options;
+    QFlags<QFileDialog::Option> opt(options);
     QStringList filters = filter.split(";;");
     QString *selectedFilter = NULL;
     if (selectedFilterIndex >= 0 && selectedFilterIndex < filters.size())
@@ -1719,8 +1716,7 @@ RetVal UiOrganizer::showFileSaveDialog(unsigned int objectID, const QString &cap
         parent = ((ito::AbstractDockWidget*)parent)->getActiveInstance();
     }
 
-    QFileDialog::Options opt = 0;
-    opt = (~opt) & options;
+    QFlags<QFileDialog::Option> opt(options);
     QStringList filters = filter.split(";;");
     QString *selectedFilter = NULL;
     if (selectedFilterIndex >= 0 && selectedFilterIndex < filters.size())

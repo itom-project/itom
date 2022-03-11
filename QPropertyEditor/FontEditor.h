@@ -26,11 +26,11 @@
 #ifndef FONTEDITOR_H_
 #define FONTEDITOR_H_
 
-#include <qwidget.h>
+#include <qevent.h>
 #include <qfont.h>
 #include <qlineedit.h>
 #include <qtoolbutton.h>
-#include <qevent.h>
+#include <qwidget.h>
 
 class FontEditor : public QWidget
 {
@@ -44,11 +44,11 @@ public:
 
 private:
     QFont m_font;
-    QLineEdit *m_textEdit;
-    QToolButton *m_toolBtn;
+    QLineEdit* m_textEdit;
+    QToolButton* m_toolBtn;
 
 protected:
-    //void focusOutEvent ( QFocusEvent * event );
+    // void focusOutEvent ( QFocusEvent * event );
 
 signals:
     /** slot that is being called by the editor widget */
@@ -56,6 +56,5 @@ signals:
 
 private slots:
     void btnClicked();
-
 };
 #endif

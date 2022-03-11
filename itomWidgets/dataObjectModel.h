@@ -25,20 +25,21 @@
    which can be found in the file LGPL_EXCEPTION.txt in this package.
 *********************************************************************** */
 
-#ifndef DATAOBJECTMODEL_H
-#define DATAOBJECTMODEL_H
+#pragma once
 
 #include "DataObject/dataobj.h"
+#include "common/interval.h"
 
 #include <qabstractitemmodel.h>
 #include <qsharedpointer.h>
 #include <qstringlist.h>
+#include <qcolor.h>
 
 #ifndef DATAOBJECTMODEL_TYPEDEFINED
 #define DATAOBJECTMODEL_TYPEDEFINED
-Q_DECLARE_METATYPE(ito::complex64);
-Q_DECLARE_METATYPE(ito::complex128);
-Q_DECLARE_METATYPE(ito::Rgba32);
+    Q_DECLARE_METATYPE(ito::complex64);
+    Q_DECLARE_METATYPE(ito::complex128);
+    Q_DECLARE_METATYPE(ito::Rgba32);
 #endif
 
 class DataObjectModel : public QAbstractItemModel
@@ -46,6 +47,8 @@ class DataObjectModel : public QAbstractItemModel
     Q_OBJECT
 
 public:
+    
+
     DataObjectModel();
     ~DataObjectModel();
 
@@ -115,8 +118,23 @@ public:
         return m_alignment;
     }
 
+    void setNumberFormat(const char& format);
+    inline char getNumberFormat() const
+    {
+        return m_numberFormat;
+    }
+
+    void setHeatmapType(int type);
+
+    void setHeatmapInterval(const ito::AutoInterval &interval);
+    ito::AutoInterval getHeatmapInterval() const
+    {
+        return m_heatmapInterval;
+    }
+
     static int displayRoleWithoutSuffix;
     static int preciseDisplayRoleWithoutSuffix;
+    static int longlongDoubleOrStringRoleWithoutSuffix;
 
 protected:
     bool setValue(const int& row, const int& column, const QVariant& value);
@@ -141,8 +159,12 @@ private:
     int m_decimals;
     QStringList m_suffixes;
     Qt::Alignment m_alignment;
+    char m_numberFormat;
+    ito::AutoInterval m_heatmapInterval;
+    bool m_enableHeatmap;
+    QColor m_colorStopLow;
+    QColor m_colorStopMiddle;
+    QColor m_colorStopHigh;
 
     bool m_dummyData;
 };
-
-#endif // DATAOBJECTMODEL_H

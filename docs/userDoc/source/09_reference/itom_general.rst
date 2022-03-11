@@ -16,13 +16,6 @@ Camera plugins have the special method *liveImage*.
 .. automodule:: itom
     :members: liveImage, plot, plot1, plot2, plot25 ,close
 
-Using algorithms and filters
-============================
-Algorithms and filters are called by the method *filter*. 
-    
-.. automodule:: itom
-    :members: filter
-
 Methods for getting help and information about filters, plugins, ui-elements, ...
 =================================================================================
 You can get the help string in the itom command line for plugins, widgets, filters, ...

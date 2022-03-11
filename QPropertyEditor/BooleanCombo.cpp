@@ -28,29 +28,32 @@
 #include <qcolordialog.h>
 #include <qdebug.h>
 
+//-------------------------------------------------------------------------------------
 BooleanCombo::BooleanCombo(QWidget* parent /*= 0*/) : QComboBox(parent)
-{    
+{
     addItem("true");
     addItem("false");
     connect(this, SIGNAL(currentIndexChanged(int)), this, SLOT(currentChanged(int)));
 }
 
-
+//-------------------------------------------------------------------------------------
 BooleanCombo::~BooleanCombo()
 {
 }
 
-
+//-------------------------------------------------------------------------------------
 bool BooleanCombo::value() const
 {
     return currentIndex() == 0;
 }
 
+//-------------------------------------------------------------------------------------
 void BooleanCombo::setValue(bool value)
 {
-    setCurrentIndex( value == true ? 0 : 1 );
+    setCurrentIndex(value == true ? 0 : 1);
 }
 
+//-------------------------------------------------------------------------------------
 void BooleanCombo::currentChanged(int index)
 {
     emit boolChanged(index == 0);

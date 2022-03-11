@@ -74,8 +74,12 @@ QSize ComboBoxPrivate::recomputeSizeHint(QSize &sh) const
 {
   Q_Q(const ComboBox);
   if (sh.isValid())
-    {
-    return sh.expandedTo(QApplication::globalStrut());
+    {    
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+        return sh;
+#else
+        return sh.expandedTo(QApplication::globalStrut());
+#endif
     }
 
   bool hasIcon = false;
@@ -91,41 +95,44 @@ QSize ComboBoxPrivate::recomputeSizeHint(QSize &sh) const
       case QComboBox::AdjustToContents:
       case QComboBox::AdjustToContentsOnFirstShow:
         if (count == 0 || this->ForceDefault)
-          {
-          sh.rwidth() = this->DefaultText.isEmpty() ?
-            7 * fm.width(QLatin1Char('x')) :
-            fm.boundingRect(this->DefaultText).width();
-          if (!this->DefaultIcon.isNull())
+        {
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 11, 0))
+
+            sh.rwidth() = this->DefaultText.isEmpty()
+                  ? 7 * fm.horizontalAdvance(QLatin1Char('x'))
+                  : fm.boundingRect(this->DefaultText).width();
+
+#else
+
+            sh.rwidth() = this->DefaultText.isEmpty()
+                  ? 7 * fm.width(QLatin1Char('x'))
+                  : fm.boundingRect(this->DefaultText).width();
+
+#endif
+
+            if (!this->DefaultIcon.isNull())
             {
             hasIcon = true;
             sh.rwidth() += iconSize.width() + 4;
             }
-          }
+        }
+
         for (int i = 0; i < count; ++i)
-          {
-          if (!q->itemIcon(i).isNull())
+        {
+            if (!q->itemIcon(i).isNull())
             {
-            hasIcon = true;
-            sh.setWidth(qMax(sh.width(), fm.boundingRect(q->itemText(i)).width() + iconSize.width() + 4));
+                hasIcon = true;
+                sh.setWidth(qMax(sh.width(), fm.boundingRect(q->itemText(i)).width() + iconSize.width() + 4));
             }
-          else
+            else
             {
-            sh.setWidth(qMax(sh.width(), fm.boundingRect(q->itemText(i)).width()));
+                sh.setWidth(qMax(sh.width(), fm.boundingRect(q->itemText(i)).width()));
             }
-          }
-        break;
-      case QComboBox::AdjustToMinimumContentsLength:
-        if ((count == 0 || this->ForceDefault) && !this->DefaultIcon.isNull())
-          {
-          hasIcon = true;
-          }
-        for (int i = 0; i < count && !hasIcon; ++i)
-          {
-          hasIcon = !q->itemIcon(i).isNull();
-          }
+        }
         break;
       case QComboBox::AdjustToMinimumContentsLengthWithIcon:
-        hasIcon = true;
+          hasIcon = true;
+          break;
         break;
       default:
         break;
@@ -145,9 +152,22 @@ QSize ComboBoxPrivate::recomputeSizeHint(QSize &sh) const
     }
   if (q->minimumContentsLength() > 0)
     {
-    sh.setWidth(qMax(sh.width(),
-                     q->minimumContentsLength() * fm.width(QLatin1Char('X'))
-                     + (hasIcon ? iconSize.width() + 4 : 0)));
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 11, 0))
+
+      sh.setWidth(qMax(
+            sh.width(),
+            q->minimumContentsLength() * fm.horizontalAdvance(QLatin1Char('X')) +
+                (hasIcon ? iconSize.width() + 4 : 0)));
+
+#else
+
+      sh.setWidth(qMax(
+            sh.width(),
+            q->minimumContentsLength() * fm.width(QLatin1Char('X')) +
+                (hasIcon ? iconSize.width() + 4 : 0)));
+
+#endif
+    
     }
 
   // height
@@ -161,7 +181,11 @@ QSize ComboBoxPrivate::recomputeSizeHint(QSize &sh) const
   QStyleOptionComboBox opt;
   this->initStyleOption(&opt);
   sh = q->style()->sizeFromContents(QStyle::CT_ComboBox, &opt, sh, q);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+  return sh;
+#else
   return sh.expandedTo(QApplication::globalStrut());
+#endif
 }
 
 // -------------------------------------------------------------------------

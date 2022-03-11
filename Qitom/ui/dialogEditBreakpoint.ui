@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>396</width>
-    <height>222</height>
+    <width>442</width>
+    <height>233</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -26,12 +26,6 @@
        </property>
        <item row="0" column="0">
         <widget class="QLabel" name="label">
-         <property name="minimumSize">
-          <size>
-           <width>75</width>
-           <height>20</height>
-          </size>
-         </property>
          <property name="text">
           <string>Filename:</string>
          </property>
@@ -46,12 +40,6 @@
        </item>
        <item row="1" column="0">
         <widget class="QLabel" name="label_2">
-         <property name="minimumSize">
-          <size>
-           <width>75</width>
-           <height>20</height>
-          </size>
-         </property>
          <property name="text">
           <string>Line-Number:</string>
          </property>
@@ -66,12 +54,6 @@
        </item>
        <item row="2" column="0">
         <widget class="QLabel" name="label_3">
-         <property name="minimumSize">
-          <size>
-           <width>75</width>
-           <height>20</height>
-          </size>
-         </property>
          <property name="text">
           <string>&amp;Condition:</string>
          </property>
@@ -85,12 +67,6 @@
        </item>
        <item row="3" column="0">
         <widget class="QLabel" name="label_4">
-         <property name="minimumSize">
-          <size>
-           <width>75</width>
-           <height>0</height>
-          </size>
-         </property>
          <property name="text">
           <string>&amp;Ignore Count:</string>
          </property>
@@ -154,12 +130,6 @@
        </item>
        <item row="3" column="1" colspan="2">
         <widget class="QSpinBox" name="spinBoxIgnoreCount">
-         <property name="minimumSize">
-          <size>
-           <width>50</width>
-           <height>0</height>
-          </size>
-         </property>
          <property name="suffix">
           <string/>
          </property>

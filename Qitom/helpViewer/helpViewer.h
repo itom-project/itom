@@ -32,8 +32,9 @@
 class QWebEngineView; //forward declaration
 class QHelpEngine; //forward declaration
 class QLineEdit;//forward declaration
-class QUrl;//forward declaration
-class QMainWindow;//forward declaration
+class QUrl; //forward declaration
+class QMainWindow; //forward declaration
+class QMoveEvent; //forward declaration
 
 namespace ito {
 
@@ -65,6 +66,7 @@ private:
 protected:
 	void keyPressEvent(QKeyEvent *event);
 	void mousePressEvent(QMouseEvent *event);
+    void moveEvent(QMoveEvent* event);
 
 private slots:
 	void linkActivated(const QUrl &url);

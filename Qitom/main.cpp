@@ -39,10 +39,12 @@
 #include <qmutex.h>
 #include <qmessagebox.h>
 #include <QSysInfo>
+#include <QScreen>
 
-#if WIN32
+#ifdef WIN32
 #include <Windows.h>
 #include <VersionHelpers.h>
+#include <ShellScalingApi.h>
 #endif
 
 //#include "benchmarks.h"
@@ -132,6 +134,22 @@ int itomCvError( int status, const char* func_name,
 
 int main(int argc, char *argv[])
 {
+
+
+#ifdef WIN32
+#if NTDDI_WIN10_RS2 >= 0x0A000003 // available with windows 10 creators update
+    // https://docs.microsoft.com/de-de/windows/win32/winprog/using-the-windows-headers
+    // https://naughter.wordpress.com/2017/02/14/changes-in-the-windows-v10-0-15021-sdk-compared-to-windows-v10-0-14393-sdk-part-one/
+    // DPI_AWARENESS_CONTEXT_UNAWARE show unsharp on 4k monitor with scaling 120%
+    // DPI_AWARENESS_CONTEXT_SYSTEM_AWARE looks ugly when move itom onto fullHD monitor with scaling 100% An advancement over the original per-monitor DPI awareness mode, which
+    // DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2 enables applications to access new DPI-related scaling behaviors on a per top-level window basis. 
+    SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);  
+#else
+    SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE); 
+#endif
+#endif
+    qputenv("QT_AUTO_SCREEN_SCALE_FACTOR", "1");  // auto scale by qt
+
     int ret = 0;
 #if linux
     // https://www.qt.io/blog/2011/06/03/threaded-opengl-in-4-8
@@ -178,8 +196,9 @@ int main(int argc, char *argv[])
     //in debug mode uncaught exceptions as well as uncaught
     //cv::Exceptions will be parsed and also passed to qWarning and qFatal.
     cv::redirectError(itomCvError);
-    QItomApplication a(argc, argv);
+   
 
+    QItomApplication itomApplication(argc, argv);
 
     //itom modifies its local environment variables like PATH such that plugin libraries, python... that are loaded later
     //benefit from necessary pathes that are then guaranteed to be found.
@@ -196,7 +215,7 @@ int main(int argc, char *argv[])
     //          used for matplotlib configurations. For instance it is recommended to modify the backend variable in this file,
     //          such that matplotlib renders its content inside of an itom widget per default.
     //parse lib path:
-    QDir appLibPath = QDir(a.applicationDirPath());
+    QDir appLibPath = QDir(itomApplication.applicationDirPath());
     if(appLibPath.exists("lib"))
     {
         appLibPath.cd("lib");
@@ -210,7 +229,7 @@ int main(int argc, char *argv[])
     libDir = QDir::toNativeSeparators( libDir );
 
     //and designer path
-    appLibPath = QDir(a.applicationDirPath());
+    appLibPath = QDir(itomApplication.applicationDirPath());
     if(appLibPath.exists("designer"))
     {
         appLibPath.cd("designer");
@@ -223,7 +242,7 @@ int main(int argc, char *argv[])
     QString designerDir = QDir::cleanPath(appLibPath.filePath(""));
 
     //search for mpl_itom path in itom-packages
-    appLibPath = QDir(a.applicationDirPath());
+    appLibPath = QDir(itomApplication.applicationDirPath());
     if(appLibPath.exists("itom-packages"))
     {
         appLibPath.cd("itom-packages");
@@ -258,9 +277,9 @@ int main(int argc, char *argv[])
 #else
 #endif
     newpath += libDir.toLatin1(); //set libDir at the beginning of the path-variable
-    newpath += pathSep;
+    newpath += pathSep.toLatin1();
     newpath += designerDir.toLatin1();
-    newpath += pathSep;
+    newpath += pathSep.toLatin1();
     newpath += oldpath;
 #ifdef WIN32
     _putenv(newpath.constData());
@@ -312,7 +331,7 @@ int main(int argc, char *argv[])
     //  5. finalizeApplication() if itom is closed
 
     ret = QDialog::Accepted;
-    ito::MainApplication m(ito::MainApplication::standard);
+    ito::MainApplication mainApp(ito::MainApplication::standard);
 
     ito::RetVal userRetVal = ito::UserOrganizer::getInstance()->loadSettings(defUserName);
 
@@ -331,7 +350,7 @@ int main(int argc, char *argv[])
     {
         if (ito::UserOrganizer::getInstance()->currentUserHasFeature(ito::featDeveloper))
         {
-            ret = m.execPipManagerOnly();
+            ret = mainApp.execPipManagerOnly();
         }
         else
         {
@@ -369,15 +388,15 @@ int main(int argc, char *argv[])
             }
         }
 
-        m.setupApplication(scriptsToOpen, scriptsToExecute);
+        mainApp.setupApplication(scriptsToOpen, scriptsToExecute);
 
         qDebug("starting main event loop");
 
-        ret = m.exec();
+        ret = mainApp.exec();
 
         qDebug("application exited. call finalize");
 
-        m.finalizeApplication();
+        mainApp.finalizeApplication();
 
         qDebug("finalize done");
     }

@@ -23,7 +23,7 @@
 #include "pythonItom.h"
 #include "pythonCommon.h"
 #include "pythonFigure.h"
-#include "pythonNumeric.h"
+#include "pythonAlgorithms.h"
 #include "pythonPlotItem.h"
 #include "pythonPlugins.h"
 #include "pythonProgressObserver.h"
@@ -50,6 +50,7 @@
 #include <qdir.h>
 #include <qresource.h>
 #include <qstringlist.h>
+#include <qscreen.h>
 
 #include <QtCore/qpluginloader.h>
 
@@ -492,7 +493,9 @@ PyObject* PythonItom::PyPlotImage(PyObject* /*pSelf*/, PyObject* pArgs, PyObject
     // return new instance of PyUiItem
     PyObject* args2 = PyTuple_New(0); // Py_BuildValue("OO", self, name);
     PyObject* kwds2 = PyDict_New();
-    PyDict_SetItemString(kwds2, "objectID", PyLong_FromLong(*objectID));
+    PyObject *objectIdObj = PyLong_FromLong(*objectID);
+    PyDict_SetItemString(kwds2, "objectID", objectIdObj);
+    Py_XDECREF(objectIdObj);
     PythonPlotItem::PyPlotItem* pyPlotItem = (PythonPlotItem::PyPlotItem*)PyObject_Call(
         (PyObject*)&PythonPlotItem::PyPlotItemType, args2, kwds2);
     Py_DECREF(args2);
@@ -510,7 +513,9 @@ PyObject* PythonItom::PyPlotImage(PyObject* /*pSelf*/, PyObject* pArgs, PyObject
     // or itom.figure
     args2 = PyTuple_New(0);
     kwds2 = PyDict_New();
-    PyDict_SetItemString(kwds2, "handle", PyLong_FromLong(*figHandle));
+    PyObject *figHandleObj = PyLong_FromLong(*figHandle);
+    PyDict_SetItemString(kwds2, "handle", figHandleObj);
+    Py_XDECREF(figHandleObj);
     PythonFigure::PyFigure* pyFigure = (PythonFigure::PyFigure*)PyObject_Call(
         (PyObject*)&PythonFigure::PyFigureType, args2, kwds2);
     Py_XDECREF(pyPlotItem->uiItem.baseItem);
@@ -723,7 +728,9 @@ PyObject* PythonItom::PyPlot1d(PyObject* /*pSelf*/, PyObject* pArgs, PyObject* p
     // return new instance of PyUiItem
     PyObject* args2 = PyTuple_New(0); // Py_BuildValue("OO", self, name);
     PyObject* kwds2 = PyDict_New();
-    PyDict_SetItemString(kwds2, "objectID", PyLong_FromLong(*objectID));
+    PyObject *objectIdObj = PyLong_FromLong(*objectID);
+    PyDict_SetItemString(kwds2, "objectID", objectIdObj);
+    Py_XDECREF(objectIdObj);
     PythonPlotItem::PyPlotItem* pyPlotItem = (PythonPlotItem::PyPlotItem*)PyObject_Call(
         (PyObject*)&PythonPlotItem::PyPlotItemType, args2, kwds2);
     Py_DECREF(args2);
@@ -741,7 +748,9 @@ PyObject* PythonItom::PyPlot1d(PyObject* /*pSelf*/, PyObject* pArgs, PyObject* p
     // or itom.figure
     args2 = PyTuple_New(0);
     kwds2 = PyDict_New();
-    PyDict_SetItemString(kwds2, "handle", PyLong_FromLong(*figHandle));
+    PyObject *figHandleObj = PyLong_FromLong(*figHandle);
+    PyDict_SetItemString(kwds2, "handle", figHandleObj);
+    Py_XDECREF(figHandleObj);
     PythonFigure::PyFigure* pyFigure = (PythonFigure::PyFigure*)PyObject_Call(
         (PyObject*)&PythonFigure::PyFigureType, args2, kwds2);
     Py_XDECREF(pyPlotItem->uiItem.baseItem);
@@ -937,7 +946,9 @@ PyObject* PythonItom::PyPlot2d(PyObject* /*pSelf*/, PyObject* pArgs, PyObject* p
     // return new instance of PyUiItem
     PyObject* args2 = PyTuple_New(0); // Py_BuildValue("OO", self, name);
     PyObject* kwds2 = PyDict_New();
-    PyDict_SetItemString(kwds2, "objectID", PyLong_FromLong(*objectID));
+    PyObject *objectIdObj = PyLong_FromLong(*objectID);
+    PyDict_SetItemString(kwds2, "objectID", objectIdObj);
+    Py_XDECREF(objectIdObj);
     PythonPlotItem::PyPlotItem* pyPlotItem = (PythonPlotItem::PyPlotItem*)PyObject_Call(
         (PyObject*)&PythonPlotItem::PyPlotItemType, args2, kwds2);
     Py_DECREF(args2);
@@ -955,7 +966,9 @@ PyObject* PythonItom::PyPlot2d(PyObject* /*pSelf*/, PyObject* pArgs, PyObject* p
     // or itom.figure
     args2 = PyTuple_New(0);
     kwds2 = PyDict_New();
-    PyDict_SetItemString(kwds2, "handle", PyLong_FromLong(*figHandle));
+    PyObject *figHandleObj = PyLong_FromLong(*figHandle);
+    PyDict_SetItemString(kwds2, "handle", figHandleObj);
+    Py_XDECREF(figHandleObj);
     PythonFigure::PyFigure* pyFigure = (PythonFigure::PyFigure*)PyObject_Call(
         (PyObject*)&PythonFigure::PyFigureType, args2, kwds2);
     Py_XDECREF(pyPlotItem->uiItem.baseItem);
@@ -1153,7 +1166,9 @@ PyObject* PythonItom::PyPlot25d(PyObject* /*pSelf*/, PyObject* pArgs, PyObject* 
     // return new instance of PyUiItem
     PyObject* args2 = PyTuple_New(0); // Py_BuildValue("OO", self, name);
     PyObject* kwds2 = PyDict_New();
-    PyDict_SetItemString(kwds2, "objectID", PyLong_FromLong(*objectID));
+    PyObject *objectIdObj = PyLong_FromLong(*objectID);
+    PyDict_SetItemString(kwds2, "objectID", objectIdObj);
+    Py_XDECREF(objectIdObj);
     PythonPlotItem::PyPlotItem* pyPlotItem = (PythonPlotItem::PyPlotItem*)PyObject_Call(
         (PyObject*)&PythonPlotItem::PyPlotItemType, args2, kwds2);
     Py_DECREF(args2);
@@ -1171,7 +1186,9 @@ PyObject* PythonItom::PyPlot25d(PyObject* /*pSelf*/, PyObject* pArgs, PyObject* 
     // or itom.figure
     args2 = PyTuple_New(0);
     kwds2 = PyDict_New();
-    PyDict_SetItemString(kwds2, "handle", PyLong_FromLong(*figHandle));
+    PyObject *figHandleObj = PyLong_FromLong(*figHandle);
+    PyDict_SetItemString(kwds2, "handle", figHandleObj);
+    Py_XDECREF(figHandleObj);
     PythonFigure::PyFigure* pyFigure = (PythonFigure::PyFigure*)PyObject_Call(
         (PyObject*)&PythonFigure::PyFigureType, args2, kwds2);
     Py_XDECREF(pyPlotItem->uiItem.baseItem);
@@ -1319,7 +1336,9 @@ PyObject* PythonItom::PyLiveImage(PyObject* /*pSelf*/, PyObject* pArgs, PyObject
     // return new instance of PyUiItem
     PyObject* args2 = PyTuple_New(0); // Py_BuildValue("OO", self, name);
     PyObject* kwds2 = PyDict_New();
-    PyDict_SetItemString(kwds2, "objectID", PyLong_FromLong(*objectID));
+    PyObject *objectIdObj = PyLong_FromLong(*objectID);
+    PyDict_SetItemString(kwds2, "objectID", objectIdObj);
+    Py_XDECREF(objectIdObj);
     PythonPlotItem::PyPlotItem* pyPlotItem = (PythonPlotItem::PyPlotItem*)PyObject_Call(
         (PyObject*)&PythonPlotItem::PyPlotItemType, args2, kwds2);
     Py_DECREF(args2);
@@ -1337,7 +1356,9 @@ PyObject* PythonItom::PyLiveImage(PyObject* /*pSelf*/, PyObject* pArgs, PyObject
     // or itom.figure
     args2 = PyTuple_New(0);
     kwds2 = PyDict_New();
-    PyDict_SetItemString(kwds2, "handle", PyLong_FromLong(*figHandle));
+    PyObject *figHandleObj = PyLong_FromLong(*figHandle);
+    PyDict_SetItemString(kwds2, "handle", figHandleObj);
+    Py_XDECREF(figHandleObj);
     PythonFigure::PyFigure* pyFigure = (PythonFigure::PyFigure*)PyObject_Call(
         (PyObject*)&PythonFigure::PyFigureType, args2, kwds2);
     Py_XDECREF(pyPlotItem->uiItem.baseItem);
@@ -1373,15 +1394,11 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs, PyObject* pK
     int listonly = 1;
     QString namefilter;
 
-    if (filterstring == NULL)
+    if (filterstring != nullptr)
     {
-        namefilter.fromLatin1(0);
-    }
-    else
-    {
-        namefilter.sprintf("%s", filterstring);
+        namefilter = QString::fromLatin1(filterstring);
 
-        if (namefilter.length())
+        if (namefilter.length() > 0)
         {
             listonly = 0;
         }
@@ -3026,6 +3043,7 @@ PyObject* PythonItom::PyItomVersion(PyObject* /*pSelf*/, PyObject* pArgs, PyObje
     PyObject* myTempDic = PyDict_New(); // new ref
     PyObject* key = nullptr;
     PyObject* value = nullptr;
+    PyObject* pluginType = nullptr;
 
     QMap<QString, QString> versionMap = ito::getItomVersionMap();
     QMapIterator<QString, QString> i(versionMap);
@@ -3073,14 +3091,32 @@ PyObject* PythonItom::PyItomVersion(PyObject* /*pSelf*/, PyObject* pArgs, PyObje
                     int last = PATCHVERSION(val);
                     value = PyUnicode_FromFormat("%d.%d.%d", first, middle, last);
 
+                    switch (curAddInInterface->getType())
+                    {
+                    case ito::typeDataIO:
+                        pluginType = PyUnicode_FromString("dataIO");
+                        break;
+                    case ito::typeActuator:
+                        pluginType = PyUnicode_FromString("actuator");
+                        break;
+                    case ito::typeAlgo:
+                        pluginType = PyUnicode_FromString("algorithm");
+                        break;
+                    default:
+                        pluginType = PyUnicode_FromString("unknown");
+                        break;
+                    }
+
                     PyDict_SetItemString(info, "version", value);
                     PyDict_SetItemString(info, "license", license);
+                    PyDict_SetItemString(info, "type", pluginType);
 
                     PyDict_SetItem(myTempDic, key, info);
 
                     Py_DECREF(key);
                     Py_DECREF(value);
                     Py_DECREF(license);
+                    Py_DECREF(pluginType);
                     Py_XDECREF(info);
                 }
             }
@@ -4058,8 +4094,8 @@ debugger : itoDebugger.itoDebugger \n\
         PythonEngine::instance; // works since pythonItom is friend with pythonEngine
     if (pyEngine)
     {
-        Py_INCREF(pyEngine->itomDbgInstance);
-        return pyEngine->itomDbgInstance;
+        Py_INCREF(pyEngine->m_itomDbgInstance);
+        return pyEngine->m_itomDbgInstance;
     }
     Py_RETURN_NONE;
 }
@@ -4315,17 +4351,26 @@ PyObject* PythonItom::PyGetScreenInfo(PyObject* /*pSelf*/)
     if (pyEngine)
     {
         PyObject* res = PyDict_New();
-        int nScreens = pyEngine->m_pDesktopWidget->screenCount();
-        int primaryScreen = pyEngine->m_pDesktopWidget->primaryScreen();
+        
+        QList<QScreen*> screens = QApplication::QGuiApplication::screens();
+        const QScreen* primaryScreen = QApplication::primaryScreen();
+        int nScreens = screens.length();
 
         PyObject* geom = PyTuple_New(nScreens);
-        PyObject* subgeom = NULL;
-        PyObject* item = NULL;
+        PyObject* subgeom = nullptr;
+        PyObject* item = nullptr;
         QRect rec;
-        for (int i = 0; i < nScreens; i++)
+        int i = 0;
+        int primaryIdx = 0;
+        foreach (auto scr, screens)
         {
+            if (scr == primaryScreen)
+            {
+                primaryIdx = i;
+            }
+            
             subgeom = PyDict_New();
-            rec = pyEngine->m_pDesktopWidget->screenGeometry(i);
+            rec = scr->geometry();
             item = PyLong_FromLong(rec.x());
             PyDict_SetItemString(subgeom, "x", item);
             Py_DECREF(item);
@@ -4339,12 +4384,13 @@ PyObject* PythonItom::PyGetScreenInfo(PyObject* /*pSelf*/)
             PyDict_SetItemString(subgeom, "h", item);
             Py_DECREF(item);
             PyTuple_SetItem(geom, i, subgeom); // steals reference
+            i++;
         }
 
         item = PyLong_FromLong(nScreens);
         PyDict_SetItemString(res, "screenCount", item);
         Py_DECREF(item);
-        item = PyLong_FromLong(primaryScreen);
+        item = PyLong_FromLong(primaryIdx);
         PyDict_SetItemString(res, "primaryScreen", item);
         Py_DECREF(item);
         PyDict_SetItemString(res, "geometry", geom);
@@ -4739,7 +4785,7 @@ PyObject* PythonItom::PyLoadMatlabMat(PyObject* /*pSelf*/, PyObject* pArgs)
                                     if (pyEngine)
                                     {
                                         PyObject* result = PyObject_CallMethodObjArgs(
-                                            pyEngine->itomFunctions,
+                                            pyEngine->m_itomFunctions,
                                             importMatlabMatAsDataObjectObj,
                                             value,
                                             NULL); // new reference
@@ -4811,7 +4857,11 @@ filter and / or interrupting the execution. If such an observer is given, you ha
 pass it as keyword-based argument ``_observer``!. \n\
 \n\
 During the execution of the filter, the python GIL (general interpreter lock) is \n\
-released (e.g. for further asynchronous processes. \n\
+released (e.g. for further asynchronous processes). \n\
+\n\
+Instead of this generic function to call any itom algorithm from an algorithm plugin, \n\
+these algorithms are also available via the direct algorithm wrapper methods in the \n\
+submodule ``itom.algorithms`` (see :ref:`algoAndWidgets`). \n\
 \n\
 Parameters \n\
 ----------- \n\
@@ -4842,301 +4892,33 @@ See Also \n\
 filterHelp");
 PyObject* PythonItom::PyFilter(PyObject* /*pSelf*/, PyObject* pArgs, PyObject* pKwds)
 {
-    PythonEngine* pyEngine =
-        PythonEngine::instance; // works since pythonItom is friend with pythonEngine
-
     int length = PyTuple_Size(pArgs);
-    ito::RetVal ret = ito::retOk;
+    
 
     if (length == 0)
     {
         PyErr_SetString(PyExc_ValueError, "No filter specified");
-        return NULL;
+        return nullptr;
     }
     PyObject* tempObj = PyTuple_GetItem(pArgs, 0);
-    QString key;
+    QString algorithmName;
+
     if (PyUnicode_Check(tempObj))
     {
         bool ok = false;
-        key = PythonQtConversion::PyObjGetString(tempObj, false, ok);
+        algorithmName = PythonQtConversion::PyObjGetString(tempObj, false, ok);
     }
     else
     {
         PyErr_SetString(
             PyExc_TypeError, "First argument must be the filter name! Wrong argument type!");
-        return NULL;
+        return nullptr;
     }
 
-    ito::AddInManager* aim = qobject_cast<ito::AddInManager*>(AppManagement::getAddInManager());
-    const QHash<QString, ito::AddInAlgo::FilterDef*>* flist = aim->getFilterList();
-    QHash<QString, ito::AddInAlgo::FilterDef*>::ConstIterator cfit = flist->constFind(key);
-
-    if (cfit == flist->constEnd())
-    {
-        PyErr_SetString(PyExc_ValueError, "Unknown filter, please check typing!");
-        return NULL;
-    }
-
-    ito::AddInAlgo::FilterDef* fFunc = cfit.value();
-    ito::AddInAlgo::FilterDefExt* fFuncExt = dynamic_cast<ito::AddInAlgo::FilterDefExt*>(fFunc);
-
-    QVector<ito::ParamBase> paramsMandBase, paramsOptBase, paramsOutBase;
-
-    const ito::FilterParams* filterParams = aim->getHashedFilterParams(fFunc->m_paramFunc);
-    if (filterParams == NULL)
-    {
-        PyErr_SetString(PyExc_RuntimeError, "Parameters of filter could not be found.");
-        return NULL;
-    }
-
-    PyObject* positionalArgs = PyTuple_GetSlice(pArgs, 1, PyTuple_Size(pArgs)); // new reference
-    PyObject* kwdsArgs = NULL;
-
-    // check if pKwds contain the special argument name 'statusObserver' and if so obtain its value,
-    // make a copy of pKwds without this argument and use this to parse the remaining parameters
-    PyObject* statusObserverName = PyUnicode_FromString("_observer"); // new reference
-    PyObject* statusObserver = pKwds
-        ? PyDict_GetItem(pKwds, statusObserverName)
-        : NULL; // NULL, if it does not contain, else: borrowed reference
-
-    if (statusObserver)
-    {
-        kwdsArgs = PyDict_Copy(pKwds); // new reference
-        PyDict_DelItem(kwdsArgs, statusObserverName);
-    }
-    else
-    {
-        kwdsArgs = pKwds;
-        Py_XINCREF(kwdsArgs);
-    }
-
-    Py_XDECREF(statusObserverName);
-    statusObserverName = NULL;
-
-    if (statusObserver)
-    {
-        if (!PyProgressObserver_Check(statusObserver))
-        {
-            Py_XDECREF(positionalArgs);
-            Py_XDECREF(kwdsArgs);
-            kwdsArgs = NULL;
-            positionalArgs = NULL;
-            PyErr_SetString(
-                PyExc_RuntimeError,
-                "Keyword-based parameter '_observer' must be of type itom.progressObserver");
-            return NULL;
-        }
-        else if (fFuncExt == NULL)
-        {
-            if (PyErr_WarnEx(
-                    PyExc_RuntimeWarning,
-                    "Parameter '_observer' is given, but the called filter does not implement the "
-                    "extended interface with additional status information",
-                    1) == -1) // exception is raised instead of warning (depending on user defined
-                              // warning levels)
-            {
-                Py_XDECREF(positionalArgs);
-                Py_XDECREF(kwdsArgs);
-                kwdsArgs = NULL;
-                positionalArgs = NULL;
-                return NULL;
-            }
-        }
-    }
-
-    // parses python-parameters with respect to the default values given py (*it).paramsMand
-    // and (*it).paramsOpt and returns default-initialized ParamBase-Vectors paramsMand and
-    // paramsOpt.
-    ret += parseInitParams(
-        &(filterParams->paramsMand),
-        &(filterParams->paramsOpt),
-        positionalArgs,
-        kwdsArgs,
-        paramsMandBase,
-        paramsOptBase);
-
-    // makes deep copy from default-output parameters (*it).paramsOut and returns it in paramsOut
-    // (ParamBase-Vector)
-    ret += copyParamVector(&(filterParams->paramsOut), paramsOutBase);
-
-    Py_XDECREF(positionalArgs);
-    Py_XDECREF(kwdsArgs);
-    kwdsArgs = NULL;
-    positionalArgs = NULL;
-
-    if (ret.containsError())
-    {
-        PyErr_SetString(
-            PyExc_RuntimeError, QObject::tr("Error while parsing parameters.").toLatin1().data());
-        return NULL;
-    }
-
-    Py_BEGIN_ALLOW_THREADS // from here, python can do something else... (we assume that the filter
-                           // might be a longer operation)
-
-        QSharedPointer<ito::FunctionCancellationAndObserver>
-            observer;
-
-    if (fFuncExt)
-    {
-        if (statusObserver)
-        {
-            observer =
-                *(((PythonProgressObserver::PyProgressObserver*)statusObserver)->progressObserver);
-        }
-
-        if (observer.isNull())
-        {
-            observer = QSharedPointer<ito::FunctionCancellationAndObserver>(
-                new ito::FunctionCancellationAndObserver());
-        }
-
-        if (pyEngine)
-        {
-            pyEngine->addFunctionCancellationAndObserver(observer.toWeakRef());
-        }
-    }
-
-    try
-    {
-        if (fFuncExt)
-        {
-            observer->reset();
-            ret = (*(fFuncExt->m_filterFuncExt))(
-                &paramsMandBase, &paramsOptBase, &paramsOutBase, observer);
-        }
-        else
-        {
-            ret = (*(fFunc->m_filterFunc))(&paramsMandBase, &paramsOptBase, &paramsOutBase);
-        }
-    }
-    catch (cv::Exception& exc)
-    {
-        const char* errorStr = cvErrorStr(exc.code);
-
-        ret += ito::RetVal::format(
-            ito::retError,
-            0,
-            QObject::tr("OpenCV Error: %s (%s) in %s, file %s, line %d").toLatin1().data(),
-            errorStr,
-            exc.err.c_str(),
-            exc.func.size() > 0 ? exc.func.c_str()
-                                : QObject::tr("Unknown function").toLatin1().data(),
-            exc.file.c_str(),
-            exc.line);
-        // see also cv::setBreakOnError(true) -> then cv::error(...) forces an access to 0x0000
-        // (throws access error, the debugger stops and you can debug it)
-
-        // use this to raise an access error that forces the IDE to break in this line (replaces
-        // cv::setBreakOnError(true)).
-#if defined _DEBUG
-        static volatile int* p =
-            0; // if your debugger stops in this line, another exception has been raised and you
-               // have now the chance to see your callstack for debugging.
-        *p = 0;
-#endif
-    }
-    catch (std::exception& exc)
-    {
-        if (exc.what())
-        {
-            ret += ito::RetVal::format(
-                ito::retError,
-                0,
-                QObject::tr("The exception '%s' has been thrown").toLatin1().data(),
-                exc.what());
-        }
-        else
-        {
-            ret += ito::RetVal(
-                ito::retError,
-                0,
-                QObject::tr("The exception '<unknown>' has been thrown").toLatin1().data());
-        }
-#if defined _DEBUG
-        static volatile int* p =
-            0; // if your debugger stops in this line, another exception has been raised and you
-               // have now the chance to see your callstack for debugging.
-        *p = 0;
-#endif
-    }
-    catch (...)
-    {
-        ret += ito::RetVal(
-            ito::retError,
-            0,
-            QObject::tr("An unspecified exception has been thrown").toLatin1().data());
-#if defined _DEBUG
-        static volatile int* p =
-            0; // if your debugger stops in this line, another exception has been raised and you
-               // have now the chance to see your callstack for debugging.
-        *p = 0;
-#endif
-    }
-
-    if (fFuncExt && pyEngine)
-    {
-        pyEngine->removeFunctionCancellationAndObserver(observer.data());
-    }
-
-    if (observer && observer->isCancelled() &&
-        observer->cancellationReason() ==
-            ito::FunctionCancellationAndObserver::ReasonKeyboardInterrupt)
-    {
-        ret = ito::retOk; // ignore the error message, since Python will raise a keyboardInterrupt
-                          // though
-    }
-
-    Py_END_ALLOW_THREADS // now we want to get back the GIL from Python
-
-        if (!PythonCommon::transformRetValToPyException(ret))
-    {
-        return NULL;
-    }
-    else
-    {
-        if (paramsOutBase.size() == 0)
-        {
-            Py_RETURN_NONE;
-        }
-        else if (paramsOutBase.size() == 1)
-        {
-            return PythonParamConversion::ParamBaseToPyObject(paramsOutBase[0]); // new ref
-        }
-        else
-        {
-            // parse output vector to PyObject-Tuple
-            PyObject* out = PyTuple_New(paramsOutBase.size());
-            PyObject* temp;
-            Py_ssize_t i = 0;
-            bool error = false;
-
-            foreach (const ito::ParamBase& p, paramsOutBase)
-            {
-                temp = PythonParamConversion::ParamBaseToPyObject(p); // new ref
-                if (temp)
-                {
-                    PyTuple_SetItem(out, i, temp); // steals ref
-                    i++;
-                }
-                else
-                {
-                    error = true;
-                    break;
-                }
-            }
-
-            if (error)
-            {
-                Py_DECREF(out);
-                return NULL;
-            }
-            else
-            {
-                return out;
-            }
-        }
-    }
+    PyObject *pArgsSlice = PyTuple_GetSlice(pArgs, 1, PyTuple_GET_SIZE(pArgs));
+    PyObject* result = PythonAlgorithms::PyGenericAlgorithm(algorithmName, nullptr, pArgsSlice, pKwds);
+    Py_DECREF(pArgsSlice);
+    return result;
 }
 
 //-------------------------------------------------------------------------------------
@@ -5557,7 +5339,8 @@ bar of the main window. \n\
 Parameters \n\
 ----------- \n\
 newPath : str \n\
-    The new path for the current working directory.\n\
+    The new path for the current working directory. If a file path is given, \n\
+    its base path is used. \n\
 \n\
 Returns \n\
 ------- \n\
@@ -5569,28 +5352,40 @@ See Also \n\
 getCurrentPath");
 PyObject* PythonItom::setCurrentPath(PyObject* /*pSelf*/, PyObject* pArgs)
 {
-    PyObject* pyObj = NULL;
+    PyObject* pyObj = nullptr;
+
     if (!PyArg_ParseTuple(pArgs, "O", &pyObj))
     {
         PyErr_SetString(PyExc_RuntimeError, "Method requires a string as argument");
-        return NULL;
+        return nullptr;
     }
 
     bool ok;
     QString path;
     path = PythonQtConversion::PyObjGetString(pyObj, true, ok);
+
     if (ok == false)
     {
         PyErr_SetString(
-            PyExc_RuntimeError, "NewPath parameter could not be interpreted as string.");
-        return NULL;
+            PyExc_RuntimeError, "Argument ``newPath`` cannot be interpreted as string.");
+        return nullptr;
     }
 
     QDir pathDir(path);
 
+    if (!pathDir.exists())
+    {
+        QFileInfo fileInfo(path);
+
+        if (fileInfo.exists())
+        {
+            pathDir = fileInfo.absoluteDir();
+        }
+    }
+
     if (pathDir.exists())
     {
-        if (!QDir::setCurrent(path))
+        if (!QDir::setCurrent(pathDir.absolutePath()))
         {
             Py_RETURN_FALSE;
         }
@@ -5602,9 +5397,7 @@ PyObject* PythonItom::setCurrentPath(PyObject* /*pSelf*/, PyObject* pArgs)
                 emit pyEngine->pythonCurrentDirChanged();
             }
 
-            if (QString::compare(
-                    QDir::current().currentPath(), pathDir.absolutePath(), Qt::CaseInsensitive) ==
-                0)
+            if (QDir::current() == pathDir)
             {
                 Py_RETURN_TRUE;
             }
@@ -5616,8 +5409,8 @@ PyObject* PythonItom::setCurrentPath(PyObject* /*pSelf*/, PyObject* pArgs)
     }
     else
     {
-        PyErr_SetString(PyExc_RuntimeError, "NewPath does not exists.");
-        return NULL;
+        PyErr_SetString(PyExc_RuntimeError, "The given path does not exist.");
+        return nullptr;
     }
 }
 
@@ -5907,7 +5700,7 @@ PyObject* PythonItom::PyLoadIDC(PyObject* pSelf, PyObject* pArgs, PyObject* pKwd
         if (info.exists())
         {
             PyObject* dict = PyDict_New(); // new reference
-            RetVal retval = pyEngine->unpickleDictionary(dict, filename, true);
+            RetVal retval = pyEngine->unpickleDictionary(dict, filename, true, false);
 
             if (!PythonCommon::transformRetValToPyException(retval))
             {
@@ -6910,10 +6703,16 @@ PyModuleDef PythonItom::PythonModuleItom = {
 PyObject* PythonItom::PyInitItom(void)
 {
     PyObject* m = PyModule_Create(&PythonModuleItom);
-    if (m != NULL)
+
+    if (m != nullptr)
     {
-        // PyModule_AddObject(m, "numeric",
-        // PyModule_Create(&PythonNumeric::PythonModuleItomNumeric));
+        PyObject *algorithmModule = PyModule_Create(&PythonAlgorithms::PythonModuleItomAlgorithms);
+        PythonAlgorithms::AddAlgorithmFunctions(algorithmModule);
+
+        if (PyModule_AddObject(m, PythonAlgorithms::PythonModuleItomAlgorithms.m_name, algorithmModule) < 0)
+        {
+            Py_DECREF(algorithmModule);
+        }
 
         // constants for addMenu
         PyModule_AddObject(m, "BUTTON", PyLong_FromLong(0)); // steals reference to value

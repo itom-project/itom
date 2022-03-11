@@ -27,10 +27,10 @@
 #define PROPERTY_H_
 
 #include "defines.h"
-#include <qwidget.h>
+#include <qfont.h>
 #include <qstyleoption.h>
 #include <qvariant.h>
-#include <qfont.h>
+#include <qwidget.h>
 
 /**
  * The Property class is the base class for all properties in the QPropertyEditor
@@ -42,16 +42,16 @@ class QPROPERTYEDITOR_EXPORT Property : public QObject
     Q_OBJECT
 
 public:
-
     /**
      * Constructor
      *
-     * @param name the name of the property within the propertyObject (will be used in the QPropertyEditorWidget view too)
+     * @param name the name of the property within the propertyObject (will be used in the
+     * QPropertyEditorWidget view too)
      * @param propertyObject the object that contains the property
-     * @param parent optional parent object 
+     * @param parent optional parent object
      */
     Property(const QString& name = QString(), QObject* propertyObject = 0, QObject* parent = 0);
-    
+
     /**
      * The value stored by this property
      * @return QVariant the data converted to a QVariant
@@ -74,14 +74,21 @@ public:
      * Returns the QObject which contains the property managed by this instance
      * @return QObject* pointer to the QObject that contains user defined properties
      */
-    QObject* propertyObject() {return m_propertyObject;}
+    QObject* propertyObject()
+    {
+        return m_propertyObject;
+    }
 
     /**
      * Flag if property is used for indicating a group or really manages a property
-     * @return bool true if this property is only used to display a category in the QPropertyEditorWidget
+     * @return bool true if this property is only used to display a category in the
+     * QPropertyEditorWidget
      */
-    bool isRoot() {return m_propertyObject == 0;}
-    
+    bool isRoot()
+    {
+        return m_propertyObject == 0;
+    }
+
     /**
      * Flag if the property can be set
      * @return bool true if this property has no set method
@@ -92,26 +99,48 @@ public:
      * Returns the row of this instance within the QPropertyModel
      * @return int row within the QPropertyModel
      */
-    int row() {return parent()->children().indexOf(this);}
-    
-    /**
-     * returns optional settings for the editor widget that is used to manipulate the properties value
-     * @return QString a string that contains property settings for the editor widget (e.g. "minimum=1.0;maximum=10.0;")
-     */
-    QString editorHints() {return m_hints;}
-    
-    /**
-     * Sets properties for the editor widget that is used to manipulate the data value managed by this instance
-     * @param hints a string containing property settings for the editor widget that manipulates this property
-     */
-    virtual void setEditorHints(const QString& hints) {m_hints = hints;}
+    int row()
+    {
+        return parent()->children().indexOf(this);
+    }
 
-    QString info() { return m_info; }
-    virtual void setInfo(const QString& info) {m_info = info;}
+    /**
+     * returns optional settings for the editor widget that is used to manipulate the properties
+     * value
+     * @return QString a string that contains property settings for the editor widget (e.g.
+     * "minimum=1.0;maximum=10.0;")
+     */
+    QString editorHints()
+    {
+        return m_hints;
+    }
 
-    bool enabled() { return m_enabled; }
+    /**
+     * Sets properties for the editor widget that is used to manipulate the data value managed by
+     * this instance
+     * @param hints a string containing property settings for the editor widget that manipulates
+     * this property
+     */
+    virtual void setEditorHints(const QString& hints)
+    {
+        m_hints = hints;
+    }
+
+    QString info()
+    {
+        return m_info;
+    }
+    virtual void setInfo(const QString& info)
+    {
+        m_info = info;
+    }
+
+    bool enabled()
+    {
+        return m_enabled;
+    }
     virtual void setEnabled(bool enabled);
-    
+
     /**
      * Creates an editor for the data managed by this instance
      * @param parent widget the newly created editor widget will be child of
@@ -119,38 +148,39 @@ public:
      * @return QWidget* pointer to the editor widget
      */
     virtual QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem& option);
-    
+
     /**
      * Returns the data of the editor widget used to manipulate this instance
      * @return QVariant the data converted to a QVariant
      */
-    virtual QVariant editorData(QWidget *editor);
-    
+    virtual QVariant editorData(QWidget* editor);
+
     /**
      * Changes the editor widget's data to a specific value
      * @param editor the editor widget
      * @param data the data to set in the editor widget
-     * @return bool true if editor widget was set to the given data successfully, false if the data can not be set in the editor (e.g. wrong datatype)
+     * @return bool true if editor widget was set to the given data successfully, false if the data
+     * can not be set in the editor (e.g. wrong datatype)
      */
-    virtual bool setEditorData(QWidget *editor, const QVariant& data);
+    virtual bool setEditorData(QWidget* editor, const QVariant& data);
 
     /**
      * Tries to find the first property that manages the given propertyObject
      * @param propertyObject
      * @return Property
      */
-    Property*    findPropertyObject(QObject* propertyObject);
+    Property* findPropertyObject(QObject* propertyObject);
 
 private slots:
     /**
-     * This slot is used to immediately set the properties when the editor widget's value of a double or float 
-     * property has changed
+     * This slot is used to immediately set the properties when the editor widget's value of a
+     * double or float property has changed
      * @param value the new value
      */
     void setValue(double value);
     /**
-     * This slot is used to immediately set the properties when the editor widget's value of an integer
-     * property has changed
+     * This slot is used to immediately set the properties when the editor widget's value of an
+     * integer property has changed
      * @param value the new value
      */
     void setValue(int value);
@@ -164,11 +194,10 @@ private slots:
     void setValue(QStringList value);
 
 protected:
-    QObject*    m_propertyObject;
-    QString     m_hints;
-    QString     m_info;
-    bool        m_enabled;
-
+    QObject* m_propertyObject;
+    QString m_hints;
+    QString m_info;
+    bool m_enabled;
 };
 
 #endif

@@ -53,6 +53,7 @@ void WidgetPropGeneralApplication::readSettings()
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("MainWindow");
 	ui.checkAskBeforeExit->setChecked(settings.value("askBeforeClose", true).toBool());
+    
     settings.endGroup();
 
     settings.beginGroup("Application");
@@ -61,7 +62,7 @@ void WidgetPropGeneralApplication::readSettings()
     ui.spinBoxTimeoutFileSaveLoad->setValue(settings.value("timeoutFileSaveLoad", 60000).toInt());
 
 	QListWidgetItem *lwi = new QListWidgetItem(QCoreApplication::applicationDirPath() + "/lib", ui.listWidget, QListWidgetItem::UserType);
-    lwi->setTextColor(Qt::gray);
+    lwi->setForeground(Qt::gray);
 
     QStringList prepend;
     QStringList append;
@@ -88,7 +89,7 @@ void WidgetPropGeneralApplication::readSettings()
     }
 
     lwi = new QListWidgetItem("pathes from global PATH variable", ui.listWidget, QListWidgetItem::UserType + 1);
-    lwi->setTextColor(Qt::gray);
+    lwi->setForeground(Qt::gray);
 
     foreach(const QString &p, append)
     {
@@ -101,7 +102,7 @@ void WidgetPropGeneralApplication::writeSettings()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("MainWindow");
-    settings.setValue("askBeforeClose", ui.checkAskBeforeExit->isChecked() );
+    settings.setValue("askBeforeClose", ui.checkAskBeforeExit->isChecked());
     settings.endGroup();
 
     QStringList files;

@@ -29,8 +29,9 @@
 
 #include <qabstractitemview.h>
 #include <qsignalmapper.h>
+#include <qsortfilterproxymodel.h>
 
-
+//-------------------------------------------------------------------------------------
 QVariantDelegate::QVariantDelegate(QObject* parent) : QItemDelegate(parent)
 {
     m_finishedMapper = new QSignalMapper(this);
@@ -38,30 +39,50 @@ QVariantDelegate::QVariantDelegate(QObject* parent) : QItemDelegate(parent)
     connect(m_finishedMapper, SIGNAL(mapped(QWidget*)), this, SIGNAL(closeEditor(QWidget*)));
 }
 
-
+//-------------------------------------------------------------------------------------
 QVariantDelegate::~QVariantDelegate()
 {
 }
 
-QWidget *QVariantDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem& option , const QModelIndex & index ) const
+//-------------------------------------------------------------------------------------
+Property* QVariantDelegate::propertyFromModel(const QModelIndex &index) const
+{
+    // if the index is based on QSortFilterProxyModel, its internalPointer
+    // is used differently. Therefore, this method is required.
+    const QSortFilterProxyModel *proxyModel = qobject_cast<const QSortFilterProxyModel*>(index.model());
+
+    if (proxyModel)
+    {
+        auto srcIndex = proxyModel->mapToSource(index);
+        return static_cast<Property*>(srcIndex.internalPointer());
+    }
+
+    return static_cast<Property*>(index.internalPointer());
+}
+
+//-------------------------------------------------------------------------------------
+QWidget* QVariantDelegate::createEditor(
+    QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
     QWidget* editor = 0;
-    Property* p = static_cast<Property*>(index.internalPointer());
-    switch(p->value().type())
+    Property* p = propertyFromModel(index);
+
+    switch (p->value().type())
     {
     case QVariant::Bool:
     case QVariant::Color:
     case QVariant::Font:
     case QVariant::StringList:
     case QVariant::Int:
-    case QMetaType::Float:    
-    case QVariant::Double:    
-    case QVariant::UserType:            
+    case QMetaType::Float:
+    case QVariant::Double:
+    case QVariant::UserType:
         editor = p->createEditor(parent, option);
-        if (editor)    
+        if (editor)
         {
             if (editor->metaObject()->indexOfSignal("editFinished()") != -1)
             {
+                //connect(editor &QWidget::edit)
                 connect(editor, SIGNAL(editFinished()), m_finishedMapper, SLOT(map()));
                 m_finishedMapper->setMapping(editor, editor);
             }
@@ -74,12 +95,14 @@ QWidget *QVariantDelegate::createEditor(QWidget *parent, const QStyleOptionViewI
     return editor;
 }
 
-void QVariantDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const
-{        
+
+//-------------------------------------------------------------------------------------
+void QVariantDelegate::setEditorData(QWidget* editor, const QModelIndex& index) const
+{
     m_finishedMapper->blockSignals(true);
-    QVariant data = index.model()->data(index, Qt::EditRole);    
-    
-    switch(data.type())
+    QVariant data = index.model()->data(index, Qt::EditRole);
+
+    switch (data.type())
     {
     case QVariant::Bool:
     case QVariant::Color:
@@ -89,57 +112,66 @@ void QVariantDelegate::setEditorData(QWidget *editor, const QModelIndex &index) 
     case QMetaType::Float:
     case QVariant::UserType:
     case QVariant::Int:
-        if (static_cast<Property*>(index.internalPointer())->setEditorData(editor, data)) // if editor couldn't be recognized use default
-            break; 
+        if (propertyFromModel(index)->setEditorData(editor, data))
+        {
+            break;
+        }
     default:
+        // if editor couldn't be recognized use default
         QItemDelegate::setEditorData(editor, index);
         break;
     }
     m_finishedMapper->blockSignals(false);
 }
 
-void QVariantDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const
-{    
-    QVariant data = index.model()->data(index, Qt::EditRole);    
-    switch(data.type())
+//-------------------------------------------------------------------------------------
+void QVariantDelegate::setModelData(
+    QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const
+{
+    QVariant data = index.model()->data(index, Qt::EditRole);
+    switch (data.type())
     {
     case QVariant::Bool:
-    case QVariant::Color:    
+    case QVariant::Color:
     case QVariant::Font:
     case QVariant::StringList:
     case QMetaType::Double:
-    case QMetaType::Float:                
-    case QVariant::UserType: 
-    case QVariant::Int:
+    case QMetaType::Float:
+    case QVariant::UserType:
+    case QVariant::Int: {
+        QVariant data = propertyFromModel(index)->editorData(editor);
+
+        if (data.isValid())
         {
-            QVariant data = static_cast<Property*>(index.internalPointer())->editorData(editor);
-            if (data.isValid())
-            {
-                model->setData(index, data , Qt::EditRole); 
-                break;
-            }
+            model->setData(index, data, Qt::EditRole);
+            break;
         }
+    }
     default:
         QItemDelegate::setModelData(editor, model, index);
         break;
     }
 }
 
-void QVariantDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex& index ) const
+//-------------------------------------------------------------------------------------
+void QVariantDelegate::updateEditorGeometry(
+    QWidget* editor, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
     return QItemDelegate::updateEditorGeometry(editor, option, index);
 }
 
-QSize QVariantDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
+//-------------------------------------------------------------------------------------
+QSize QVariantDelegate::sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
-    //height control of each row. \Todo: it would be nice, if the minimum height of 18px would be extracted
-    //from the os-dependent height of a widget (like lineEdit, comboBox...). Until now, the minimum height is
-    //fixed to 18px.
+    // height control of each row. \Todo: it would be nice, if the minimum height of 18px would be
+    // extracted from the os-dependent height of a widget (like lineEdit, comboBox...). Until now,
+    // the minimum height is fixed to 18px.
     QSize sizeHint(QItemDelegate::sizeHint(option, index));
     sizeHint.rheight() = qMax(sizeHint.rheight(), 18);
     return sizeHint;
 }
 
+//-------------------------------------------------------------------------------------
 void QVariantDelegate::parseEditorHints(QWidget* editor, const QString& editorHints) const
 {
     if (editor && !editorHints.isEmpty())
@@ -149,10 +181,10 @@ void QVariantDelegate::parseEditorHints(QWidget* editor, const QString& editorHi
         QRegExp rx("(.*)(=\\s*)(.*)(;{1})");
         rx.setMinimal(true);
         int pos = 0;
-        while ((pos = rx.indexIn(editorHints, pos)) != -1) 
+        while ((pos = rx.indexIn(editorHints, pos)) != -1)
         {
-            //qDebug("Setting %s to %s", qPrintable(rx.cap(1)), qPrintable(rx.cap(3)));
-            editor->setProperty(qPrintable(rx.cap(1).trimmed()), rx.cap(3).trimmed());                
+            // qDebug("Setting %s to %s", qPrintable(rx.cap(1)), qPrintable(rx.cap(3)));
+            editor->setProperty(qPrintable(rx.cap(1).trimmed()), rx.cap(3).trimmed());
             pos += rx.matchedLength();
         }
         editor->blockSignals(false);

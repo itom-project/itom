@@ -1071,7 +1071,7 @@ template <typename _Tp> struct ItomParamHelper
             {
                 int len = static_cast<int>(strlen((const char*)val));
 
-                if ((ito::int32)len != param->d->len)
+                if (((ito::int32)len != param->d->len) || (param->d->data.ptrVal == nullptr))
                 {
                     param->d->data.ptrVal = new char[len + 1];
                 }

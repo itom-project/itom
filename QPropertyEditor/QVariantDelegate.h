@@ -25,10 +25,11 @@
 #ifndef COLORSELECTIONBUTTON_H_
 #define COLORSELECTIONBUTTON_H_
 
-#include <qitemdelegate.h>
 #include "defines.h"
+#include <qitemdelegate.h>
 
 class QSignalMapper;
+class Property;
 
 /**
  * This class is used to create the editor widgets for datatypes encapsulated in QVariant variables
@@ -39,7 +40,7 @@ class QVariantDelegate : public QItemDelegate
 
 public:
     /**
-     * Constructor 
+     * Constructor
      * @param parent optional parent object
      */
     QVariantDelegate(QObject* parent = 0);
@@ -48,37 +49,44 @@ public:
 
     /**
      * Creates an editor widget as child of a given widget for a specific QModelIndex
-     * 
+     *
      * @param parent the parent widget for the editor
      * @param option some style options that the editor should use
      * @param index the index of the item the editor will be created for
      * @return QWidget the editor widget
      */
-    QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const;
+    QWidget* createEditor(
+        QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const;
 
     /**
      * Tries to set the editor data based on the value stored at a specific QModelIndex
      * @param editor the editor widget
      * @param index the model index of the value that should be used in the editor
      */
-    virtual void setEditorData(QWidget *editor, const QModelIndex &index) const;
+    virtual void setEditorData(QWidget* editor, const QModelIndex& index) const;
 
     /**
      * Sets the data of a specific QModelIndex to tha value of the editor widget
      * @param editor the editor widget that contains the new value
      * @param model the model that contains the index
-     * @param index the index within the model whose data value should be set to the data value of the editor
+     * @param index the index within the model whose data value should be set to the data value of
+     * the editor
      */
-    virtual void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const;
+    virtual void setModelData(
+        QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const;
 
     /// QItemDelegate implementation
-    virtual void updateEditorGeometry(QWidget *editor,  const QStyleOptionViewItem &option, const QModelIndex &index) const;
+    virtual void updateEditorGeometry(
+        QWidget* editor, const QStyleOptionViewItem& option, const QModelIndex& index) const;
 
-    QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const;
+    QSize sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const;
+
+protected:
+    Property* propertyFromModel(const QModelIndex &index) const;
 
 private:
     void parseEditorHints(QWidget* editor, const QString& editorHints) const;
 
-    QSignalMapper*    m_finishedMapper;
+    QSignalMapper* m_finishedMapper;
 };
 #endif

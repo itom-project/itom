@@ -25,9 +25,12 @@
 #include <qsharedpointer.h>
 #include <qstandarditemmodel.h>
 
+#include <qboxlayout.h>
 #include <qclipboard.h>
+#include <qmainwindow.h>
 #include <qmap.h>
 #include <qspinbox.h>
+#include <qtoolbar.h>
 
 namespace ito {
 
@@ -39,15 +42,64 @@ DialogVariableDetailDataObject::DialogVariableDetailDataObject(
     QSharedPointer<ito::DataObject> dObj,
     QWidget* parent) :
     QDialog(parent),
-    m_pAxesRanges(nullptr), m_dObj(dObj)
+    m_pAxesRanges(nullptr), m_dObj(dObj), m_selectedAll(false)
 {
+    // show maximize button
+    setWindowFlags(
+        windowFlags() | Qt::CustomizeWindowHint | Qt::WindowMaximizeButtonHint |
+        Qt::WindowCloseButtonHint);
+
     ui.setupUi(this);
+
+    bool hasNPArrayTags;
+    ito::DataObjectTagType tag = dObj->getTag("_orgNpDType", hasNPArrayTags);
 
     ui.txtName->setText(name);
     ui.txtType->setText(type);
-    ui.txtDType->setText(dtype);
 
+    if (hasNPArrayTags) // use tags information from numpy array
+    {
+        ui.txtDType->setText(QString::fromStdString(tag.getVal_ToString().data()));
+    }
+    else
+    {
+        ui.txtDType->setText(dtype);
+    }
+
+    QMainWindow* tableMain = new QMainWindow(this);
+    tableMain->setWindowFlags(tableMain->windowFlags() | Qt::Widget);
+    QToolBar* tb = tableMain->addToolBar("myToolbar");
+
+    QVBoxLayout* tableLayout = qobject_cast<QVBoxLayout*>(ui.tabTable->layout());
+    tableLayout->insertWidget(0, tableMain);
+    tableLayout->removeWidget(ui.dataTable);
+    tableMain->setCentralWidget(ui.dataTable);
+    tb->addActions(ui.dataTable->actions());
+
+    ui.dataTable->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
     ui.dataTable->setReadOnly(true);
+    ui.dataTable->setTableName(name);
+
+    connect(
+        ui.dataTable,
+        &DataObjectTable::selectionInformationChanged,
+        ui.lblSelectionInformation,
+        &QLabel::setText);
+
+    QAbstractButton* cornerButton = ui.dataTable->findChild<QAbstractButton*>();
+    if (cornerButton)
+    {
+        cornerButton->disconnect();
+        connect(cornerButton, SIGNAL(clicked()), this, SLOT(tableCornerButtonClicked()));
+        cornerButton->setToolTip(tr("select/ deselect all items"));
+    }
+
+    // do not show metaWidget for numpy.ndarray
+    if (hasNPArrayTags)
+    {
+        ui.tabWidget->setTabEnabled(1, false);
+        ui.metaWidget->setVisible(false);
+    }
 
     ui.metaWidget->setData(m_dObj);
     ui.metaWidget->setReadOnly(true);
@@ -59,21 +111,30 @@ DialogVariableDetailDataObject::DialogVariableDetailDataObject(
 
     if (dims > 0)
     {
-        dObjSize = "[";
+        ito::DataObjectTagType tag = dObj->getTag("_orgNpShape", hasNPArrayTags);
 
-        for (int dim = 0; dim < dims; dim++)
+        if (hasNPArrayTags) // use tag information from numpy.ndarray
         {
-            if (dim < dims - 1)
-            {
-                dObjSize.append(QString("%1 x ").arg(m_dObj->getSize(dim)));
-            }
-            else
-            {
-                dObjSize.append(QString("%1").arg(m_dObj->getSize(dim)));
-            }
+            dObjSize = tag.getVal_ToString().data();
         }
+        else
+        {
+            dObjSize = "[";
 
-        dObjSize.append("]");
+            for (int dim = 0; dim < dims; dim++)
+            {
+                if (dim < dims - 1)
+                {
+                    dObjSize.append(QString("%1 x ").arg(m_dObj->getSize(dim)));
+                }
+                else
+                {
+                    dObjSize.append(QString("%1").arg(m_dObj->getSize(dim)));
+                }
+            }
+
+            dObjSize.append("]");
+        }
     }
     else
     {
@@ -124,7 +185,7 @@ DialogVariableDetailDataObject::DialogVariableDetailDataObject(
         ui.comboBoxDisplayedCol->addItems(items);
         ui.comboBoxDisplayedCol->setCurrentIndex(col);
 
-        
+
         QStandardItemModel* model =
             qobject_cast<QStandardItemModel*>(ui.comboBoxDisplayedRow->model());
         QStandardItem* item =
@@ -247,6 +308,7 @@ void DialogVariableDetailDataObject::changeDisplayedAxes(int isColNotRow = -1)
             col = row + 1;
             ui.comboBoxDisplayedCol->setCurrentIndex(col);
         }
+
         deleteSlicingWidgets();
         addSlicingWidgets();
     }
@@ -264,6 +326,7 @@ void DialogVariableDetailDataObject::changeDisplayedAxes(int isColNotRow = -1)
         else
         {
             int index;
+
             if (m_spinBoxToIdxMap.empty())
             {
                 index = 0;
@@ -272,6 +335,7 @@ void DialogVariableDetailDataObject::changeDisplayedAxes(int isColNotRow = -1)
             {
                 index = m_spinBoxToIdxMap.value(idx)->value();
             }
+
             m_pAxesRanges[idx] = ito::Range(index, index + 1);
         }
     }
@@ -281,6 +345,21 @@ void DialogVariableDetailDataObject::changeDisplayedAxes(int isColNotRow = -1)
 
     ui.comboBoxDisplayedCol->blockSignals(false);
     ui.comboBoxDisplayedRow->blockSignals(false);
+}
+
+//----------------------------------------------------------------------------------------------
+void DialogVariableDetailDataObject::tableCornerButtonClicked()
+{
+    if (m_selectedAll)
+    {
+        ui.dataTable->clearSelection();
+        m_selectedAll = false;
+    }
+    else
+    {
+        ui.dataTable->selectAll();
+        m_selectedAll = true;
+    }
 }
 
 } // end namespace ito

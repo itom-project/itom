@@ -86,6 +86,7 @@ public:
     static PyObject* PyFigure_plot25(PyFigure *self, PyObject *args, PyObject *kwds);
     static PyObject* PyFigure_liveImage(PyFigure *self, PyObject *args, PyObject *kwds);
     static PyObject* PyFigure_matplotlib(PyFigure *self, PyObject *args, PyObject *kwds);
+    static PyObject* PyFigure_plotly(PyFigure *self, PyObject *args, PyObject *kwds);
 
     static PyObject* PyFigure_getSubplot(PyFigure *self, PyObject *args);
 

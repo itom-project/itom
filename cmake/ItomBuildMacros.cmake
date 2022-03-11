@@ -589,6 +589,7 @@ macro(itom_find_package_qt SET_AUTOMOC)
     endif(DETECT_QT5)
     
     add_definitions(${QT_DEFINITIONS})
+    # add_compile_definitions(QT_DISABLE_DEPRECATED_BEFORE=0x050F00)
     
     if(NOT QT5_FOUND)
         message(SEND_ERROR "Qt5 (>= 5.5) could not be found. Please indicate Qt5_DIR to the cmake/Qt5 subfolder of the library folder of Qt")

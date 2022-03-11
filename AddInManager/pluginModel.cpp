@@ -27,12 +27,12 @@
 
 #include "../common/semVerVersion.h"
 
-namespace ito
-{
+namespace ito {
+
     class PlugInModelPrivate
     {
     public:
-        PlugInModelPrivate() : m_pAIM(NULL), m_bgColorItemsWithPythonRef(QColor(255, 255, 175)) {};
+    PlugInModelPrivate() : m_pAIM(nullptr), m_bgColorItemsWithPythonRef(QColor(255, 255, 175)){};
         ~PlugInModelPrivate() {};
 
     public:
@@ -57,22 +57,24 @@ namespace ito
         ito::AddInManager *m_pAIM;
     };
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 /** constructor
 *
 *   contructor, creating column headers for the tree view
 */
-PlugInModel::PlugInModel(ito::AddInManager *addInManager, QObject *parent /*= NULL*/) :
-    QAbstractItemModel(parent),
-    d_ptr(new PlugInModelPrivate())
-    
+PlugInModel::PlugInModel(ito::AddInManager* addInManager, QObject* parent /*= nullptr*/) :
+    QAbstractItemModel(parent), d_ptr(new PlugInModelPrivate())
 {
     Q_D(PlugInModel);
 
     d->m_pAIM = addInManager;
 
-    d->m_headers << tr("Name") << tr("Type") << tr("Version") << tr("Filename") << tr("Author") << tr("min. itom Version") << tr("max. itom Version") << tr("Description");
-    d->m_alignment << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignCenter) << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignRight) << QVariant(Qt::AlignRight) << QVariant(Qt::AlignLeft);
+    d->m_headers << tr("Name") << tr("Type") << tr("Version") << tr("Filename") << tr("Author")
+                 << tr("min. itom Version") << tr("max. itom Version") << tr("Description");
+    d->m_alignment << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft)
+                   << QVariant(Qt::AlignCenter) << QVariant(Qt::AlignLeft)
+                   << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignRight)
+                   << QVariant(Qt::AlignRight) << QVariant(Qt::AlignLeft);
 
     d->m_iconActuator = QIcon(":/plugins/icons/pluginActuator.png");
     d->m_iconGrabber = QIcon(":/plugins/icons/pluginGrabber.png");
@@ -98,7 +100,7 @@ PlugInModel::PlugInModel(ito::AddInManager *addInManager, QObject *parent /*= NU
     d->m_treeFixIndizes[5] = createIndex(2, 0, &(d->m_treeFixNodes[5])); //level 1
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 /** destructor - clean up, clear header and alignment list
 *
 */
@@ -125,7 +127,7 @@ QModelIndex PlugInModel::getTypeNode(const int type) const
     return QModelIndex();
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 /** 
 *   @param
 *   @return     
@@ -136,7 +138,7 @@ Qt::ItemFlags PlugInModel::flags(const QModelIndex &index) const
 
     if (!index.isValid())
     {
-        return 0;
+        return Qt::NoItemFlags;
     }
     
     tItemType itemType;
@@ -144,12 +146,13 @@ Qt::ItemFlags PlugInModel::flags(const QModelIndex &index) const
 
     if (!getModelIndexInfo(index, itemType, itemInternalData) )
     {
-        return 0;
+        return Qt::NoItemFlags;
     }
     
     if(itemType == itemInstance)
     {
         ito::AddInBase *aib = (ito::AddInBase*)(itemInternalData);
+
         if (d->m_pAIM->isPluginInstanceDead(aib))
         {
             return Qt::ItemIsSelectable;
@@ -159,14 +162,17 @@ Qt::ItemFlags PlugInModel::flags(const QModelIndex &index) const
             return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
         }
     }
-    if (!getIsAlgoPlugIn(itemType, itemInternalData) && (itemType & (itemPlugin|itemFilter|itemWidget)))
+
+    if (!getIsAlgoPlugIn(itemType, itemInternalData) &&
+        (itemType & (itemPlugin | itemFilter | itemWidget)))
     {
         return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled;
     }
+
     return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 /** return parent element
 *   @param [in] index   the element's index for which the parent should be returned
 *   @return     the parent element. 
@@ -193,18 +199,15 @@ QModelIndex PlugInModel::parent(const QModelIndex &index) const
     {
         case itemCatDataIO:
         case itemCatActuator:
-        case itemCatAlgo:
-        {
+    case itemCatAlgo: {
             return QModelIndex();
         }
         case itemSubCategoryDataIO_Grabber:
         case itemSubCategoryDataIO_ADDA:
-        case itemSubCategoryDataIO_RawIO:
-        {
+    case itemSubCategoryDataIO_RawIO: {
             return d->m_treeFixIndizes[0];
         }
-        case itemPlugin:
-        {
+    case itemPlugin: {
             ito::AddInInterfaceBase *aiib = (ito::AddInInterfaceBase*)(itemInternalData);
             return getTypeNode(aiib->getType());
             /*for (int i = 0 ; i < sizeof(m_treeFixNodes) / sizeof(m_treeFixNodes[0]) ; i++)
@@ -215,8 +218,7 @@ QModelIndex PlugInModel::parent(const QModelIndex &index) const
                 }
             }*/
         }
-        case itemInstance:
-        {
+    case itemInstance: {
             ito::AddInBase *aib = (ito::AddInBase*)(itemInternalData);
             ito::AddInInterfaceBase *aiib = aib->getBasePlugin();
         
@@ -229,24 +231,29 @@ QModelIndex PlugInModel::parent(const QModelIndex &index) const
                         return createIndex(i, 0, (void*)aiib);
                     }
                 }
+
                 return QModelIndex();
             }
             else if (aiib->getType() & ito::typeDataIO)
             {
                 int rowCounter = -1;
-                ito::AddInInterfaceBase *aiib2 = NULL;
+            ito::AddInInterfaceBase* aiib2 = nullptr;
+
                 for (int i = 0; i < d->m_pAIM->getDataIOList()->count(); i++)
                 {
                     aiib2 = (ito::AddInInterfaceBase*)d->m_pAIM->getDataIOList()->at(i);
+
                     if (aiib2->getType() == aiib->getType())
                     {
                         rowCounter++;
                     }
+
                     if (aiib2 == aiib)
                     {
                         return createIndex(rowCounter, 0, (void*)aiib);
                     }
                 }
+
                 return QModelIndex();
             }
             else
@@ -254,9 +261,9 @@ QModelIndex PlugInModel::parent(const QModelIndex &index) const
                 return QModelIndex();
             }
         }
-        case itemFilter:
-        {
+    case itemFilter: {
             ito::AddInAlgo::FilterDef* filter = (ito::AddInAlgo::FilterDef*)(itemInternalData);
+
             for (int i = 0; i < d->m_pAIM->getAlgList()->count(); i++)
             {
                 if (d->m_pAIM->getAlgList()->at(i) == (QObject*)filter->m_pBasePlugin)
@@ -264,11 +271,12 @@ QModelIndex PlugInModel::parent(const QModelIndex &index) const
                     return createIndex(i, 0, (void*)filter->m_pBasePlugin);
                 }
             }
+
             return QModelIndex();
         }
-        case itemWidget:
-        {
+    case itemWidget: {
             ito::AddInAlgo::AlgoWidgetDef* widget = (ito::AddInAlgo::AlgoWidgetDef*)(itemInternalData);
+
             for (int i = 0; i < d->m_pAIM->getAlgList()->count(); i++)
             {
                 if (d->m_pAIM->getAlgList()->at(i) == (QObject*)widget->m_pBasePlugin)
@@ -278,18 +286,17 @@ QModelIndex PlugInModel::parent(const QModelIndex &index) const
             }
             return QModelIndex();
         }
-        default:
-        {
+    default: {
             return QModelIndex();
         }
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 /** return number of rows
 *   @param [in] parent parent of current item
-*   @return     returns 0 for all child-child elements, the number of instances for child elements (a plugin) and the number of plugins
-*               for a root element
+ *   @return     returns 0 for all child-child elements, the number of instances for child elements
+ * (a plugin) and the number of plugins for a root element
 */
 int PlugInModel::rowCount(const QModelIndex &parent) const
 {
@@ -303,6 +310,7 @@ int PlugInModel::rowCount(const QModelIndex &parent) const
     {
         tItemType parentType;
         size_t parentInternalData;
+
         if (!getModelIndexInfo(parent, parentType, parentInternalData))
         {
             return 0;
@@ -310,25 +318,21 @@ int PlugInModel::rowCount(const QModelIndex &parent) const
 
         switch (parentType)
         {
-            case itemCatDataIO:
-            {
+        case itemCatDataIO: {
                 return 3; //three sub-categories of dataIO
             }
-            case itemCatActuator:
-            {
+        case itemCatActuator: {
                 return d->m_pAIM->getActList()->count();
             }
-            case itemCatAlgo:
-            {
+        case itemCatAlgo: {
                 return d->m_pAIM->getAlgList()->count();
             }
             case itemSubCategoryDataIO_Grabber:
             case itemSubCategoryDataIO_ADDA:
-            case itemSubCategoryDataIO_RawIO:
-            {
+        case itemSubCategoryDataIO_RawIO: {
                 int counter = 0;
                 const QList<QObject*> *dataIOs = d->m_pAIM->getDataIOList();
-                ito::AddInInterfaceBase *aiib = NULL;
+            ito::AddInInterfaceBase* aiib = nullptr;
                 for (int i = 0; i < dataIOs->count(); i++)
                 {
                     aiib = qobject_cast<ito::AddInInterfaceBase*>(dataIOs->at(i));
@@ -339,8 +343,7 @@ int PlugInModel::rowCount(const QModelIndex &parent) const
                 }
                 return counter;
             }
-            case itemPlugin:
-            {
+        case itemPlugin: {
                 ito::AddInInterfaceBase *aiib = (ito::AddInInterfaceBase*)(parentInternalData);
                 if (aiib->getType() & ito::typeAlgo)
                 {
@@ -360,15 +363,14 @@ int PlugInModel::rowCount(const QModelIndex &parent) const
             case itemFilter:
             case itemWidget:
             case itemUnknown:*/
-            default:
-            {
+        default: {
                 return 0;
             }
         }
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 /** return column count
 *   @param [in] parent parent of current item
 *   @return     2 for child elements (instances) and the header size for root elements (plugins)
@@ -380,19 +382,21 @@ int PlugInModel::columnCount(const QModelIndex & /*parent*/) const
     return d->m_headers.size();
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 /** return current index element
 *   @param [in] row row of current element
 *   @param [in] column column of current element
 *   @param [in] parent  parent of current element
 *   @return QModelIndex - element at current index
 *
-*   This method returns the QModelIndex for the current element. As the tree structure is not cached it has to be "calculated" on
-*   each call. An invalid parent means were in the top most "plane" of the tree, i.e. the plugin-plane. If the passed index is out
-*   of range we return an empty element. Otherwise a new element marked as root level element (i.e. interal pointer = ROOTPOINTER) is 
-*   returned. If the parent element is valid the index for an instance is requested. In that case it is first checked if the index
-*   for a child child element is queried. In that case again an empty element is returned else the plugin for the selected instance
-*   is searched in the plugin lists and an according index is created.
+ *   This method returns the QModelIndex for the current element. As the tree structure is not
+ * cached it has to be "calculated" on each call. An invalid parent means were in the top most
+ * "plane" of the tree, i.e. the plugin-plane. If the passed index is out of range we return an
+ * empty element. Otherwise a new element marked as root level element (i.e. interal pointer =
+ * ROOTPOINTER) is returned. If the parent element is valid the index for an instance is requested.
+ * In that case it is first checked if the index for a child child element is queried. In that case
+ * again an empty element is returned else the plugin for the selected instance is searched in the
+ * plugin lists and an according index is created.
 */
 QModelIndex PlugInModel::index(int row, int column, const QModelIndex &parent) const
 {
@@ -409,12 +413,14 @@ QModelIndex PlugInModel::index(int row, int column, const QModelIndex &parent) c
         {
             return createIndex(row, column, (void*)&d->m_treeFixNodes[row]);
         }
+
         return QModelIndex();
     }
     else //parent valid
     {
         tItemType parentType;
         size_t parentInternalData;
+
         if (!getModelIndexInfo(parent, parentType, parentInternalData))
         {
             return QModelIndex();
@@ -422,25 +428,22 @@ QModelIndex PlugInModel::index(int row, int column, const QModelIndex &parent) c
 
         switch (parentType)
         {
-            case itemCatDataIO:
-            {
+        case itemCatDataIO: {
                 return createIndex(row, column, (void*)(&d->m_treeFixNodes[row + 3]));
             }
-            case itemCatActuator:
-            {
+        case itemCatActuator: {
                 return createIndex(row, column, (void*)d->m_pAIM->getActList()->at(row));
             }
-            case itemCatAlgo:
-            {
+        case itemCatAlgo: {
                 return createIndex(row, column, (void*)d->m_pAIM->getAlgList()->at(row));
             }
             case itemSubCategoryDataIO_Grabber:
             case itemSubCategoryDataIO_ADDA:
-            case itemSubCategoryDataIO_RawIO:
-            {
+        case itemSubCategoryDataIO_RawIO: {
                 int counter = -1;
                 const QList<QObject*> *dataIOs = d->m_pAIM->getDataIOList();
-                ito::AddInInterfaceBase *aiib = NULL;
+            ito::AddInInterfaceBase* aiib = nullptr;
+
                 for (int i = 0; i < dataIOs->count(); i++)
                 {
                     aiib = qobject_cast<ito::AddInInterfaceBase*>(dataIOs->at(i));
@@ -454,9 +457,9 @@ QModelIndex PlugInModel::index(int row, int column, const QModelIndex &parent) c
                     }
                 }
             }
-            case itemPlugin:
-            {
+        case itemPlugin: {
                 ito::AddInInterfaceBase *aiib = (ito::AddInInterfaceBase*)(parentInternalData);
+
                 if (aiib->getType() & ito::typeAlgo)
                 {
                     ito::AddInAlgo *aia = (ito::AddInAlgo*)(aiib->getInstList()[0]);
@@ -472,7 +475,8 @@ QModelIndex PlugInModel::index(int row, int column, const QModelIndex &parent) c
                     else
                     {
                         aia->getAlgoWidgetList(widgets);
-                        //qDebug() << "AlgoWidget: r" << row << ", c:" << column << ", p:" << (void*)widgets.values()[row - filters.count()];
+                    // qDebug() << "AlgoWidget: r" << row << ", c:" << column << ", p:" <<
+                    // (void*)widgets.values()[row - filters.count()];
                         return createIndex(row, column, (void*)widgets.values()[row - filters.count()]);
                     }
                 }
@@ -485,15 +489,14 @@ QModelIndex PlugInModel::index(int row, int column, const QModelIndex &parent) c
             case itemFilter:
             case itemWidget:
             case itemUnknown:*/
-            default:
-            {
+        default: {
                 return QModelIndex();
             }
         }
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 /** return the header / captions for the tree view model
 *
 */
@@ -509,10 +512,11 @@ QVariant PlugInModel::headerData(int section, Qt::Orientation orientation, int r
         }
         return QVariant();
     }
+
     return QVariant();
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 QColor PlugInModel::backgroundColorInstancesWithPythonRef() const
 {
     Q_D(const PlugInModel);
@@ -520,7 +524,7 @@ QColor PlugInModel::backgroundColorInstancesWithPythonRef() const
     return d->m_bgColorItemsWithPythonRef;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void PlugInModel::setBackgroundColorInstancesWithPythonRef(const QColor &bgColor)
 {
     Q_D(PlugInModel);
@@ -533,7 +537,7 @@ void PlugInModel::setBackgroundColorInstancesWithPythonRef(const QColor &bgColor
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 /** 
 *   @param index
 *   @param type
@@ -542,7 +546,8 @@ void PlugInModel::setBackgroundColorInstancesWithPythonRef(const QColor &bgColor
 *
 *
 */
-bool PlugInModel::getModelIndexInfo(const QModelIndex &index, tItemType &type, size_t &internalData) const
+bool PlugInModel::getModelIndexInfo(
+    const QModelIndex& index, tItemType& type, size_t& internalData) const
 {
     Q_D(const PlugInModel);
 
@@ -559,64 +564,56 @@ bool PlugInModel::getModelIndexInfo(const QModelIndex &index, tItemType &type, s
     //itemCatDataIO         -> ito::typeDataIO
     //itemCatActuator       -> ito::typeActuator
     //itemCatAlgo           -> ito::typeAlgo
-    //itemSubCategoryDataIO_... -> Content of m_treeFixNodes[3,4,5] (OR-combination of ito::typeDataIO and sub-type)
-    //itemPlugin            -> Pointer to corresponding AddInInterfaceBase
-    //itemInstance          -> Pointer to corresponding AddInBase
-    //itemFilter            -> Pointer to corresponding FilterDef
-    //itemWidget            -> Pointer to corresponding AlgoWidgetDef
+    // itemSubCategoryDataIO_... -> Content of m_treeFixNodes[3,4,5] (OR-combination of
+    // ito::typeDataIO and sub-type) itemPlugin            -> Pointer to corresponding
+    // AddInInterfaceBase itemInstance          -> Pointer to corresponding AddInBase itemFilter ->
+    // Pointer to corresponding FilterDef itemWidget            -> Pointer to corresponding
+    // AlgoWidgetDef
 
     //check if item is of type itemCategory or itemSubCategory
     const int *ptr1 = &d->m_treeFixNodes[0];
-//    const int *ptr2 = &m_treeFixNodes[5];
     void *internalPtr = index.internalPointer();
-    QObject *obj = NULL;
+    QObject* obj = nullptr;
 //    int rowIndex;
 
     if (internalPtr >= ptr1 && internalPtr <= (ptr1 + sizeof(d->m_treeFixNodes)))
     {
         switch (* (int*)index.internalPointer())
         {
-            case typeAlgo:
-            {
+        case typeAlgo: {
                 type = itemCatAlgo;
                 internalData = ito::typeAlgo;
                 break;
             }
-            case typeDataIO:
-            {
+        case typeDataIO: {
                 type = itemCatDataIO;
                 internalData = ito::typeDataIO;
                 break;
             }
-            case typeActuator:
-            {
+        case typeActuator: {
                 type = itemCatActuator;
                 internalData = ito::typeActuator;
                 break;
             }
-            case typeDataIO | typeGrabber:
-            {
+        case typeDataIO | typeGrabber: {
                 //sub category of dataIO
                 type = itemSubCategoryDataIO_Grabber;
                 internalData = * (int*)index.internalPointer();
                 break;
             }
-            case typeDataIO | typeADDA:
-            {
+        case typeDataIO | typeADDA: {
                 //sub category of dataIO
                 type = itemSubCategoryDataIO_ADDA;
                 internalData = * (int*)index.internalPointer();
                 break;
             }
-            case typeDataIO | typeRawIO:
-            {
+        case typeDataIO | typeRawIO: {
                 //sub category of dataIO
                 type = itemSubCategoryDataIO_RawIO;
                 internalData = * (int*)index.internalPointer();
                 break;
             }
-            default:
-            {
+        default: {
                 return false;
             }
         }
@@ -641,7 +638,8 @@ bool PlugInModel::getModelIndexInfo(const QModelIndex &index, tItemType &type, s
         }
 
         //check if item is a widget
-        const QHash<QString, ito::AddInAlgo::AlgoWidgetDef *> *widgets = d->m_pAIM->getAlgoWidgetList();
+        const QHash<QString, ito::AddInAlgo::AlgoWidgetDef*>* widgets =
+            d->m_pAIM->getAlgoWidgetList();
         QHash<QString, ito::AddInAlgo::AlgoWidgetDef *>::const_iterator j = widgets->constBegin();
         while (j != widgets->constEnd()) 
         {
@@ -655,7 +653,8 @@ bool PlugInModel::getModelIndexInfo(const QModelIndex &index, tItemType &type, s
             ++j;
         }
 
-        //if the element is no filter and no widget, it only can be a plugin (the DLL itself) or an instance of a plugin
+        // if the element is no filter and no widget, it only can be a plugin (the DLL itself) or an
+        // instance of a plugin
         obj = (QObject*)internalPtr;
 
         ito::AddInInterfaceBase *aiib = qobject_cast<ito::AddInInterfaceBase*>(obj);
@@ -681,7 +680,7 @@ bool PlugInModel::getModelIndexInfo(const QModelIndex &index, tItemType &type, s
     return false;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 /** 
 *   @param index
 *   @param name
@@ -692,9 +691,15 @@ bool PlugInModel::getModelIndexInfo(const QModelIndex &index, tItemType &type, s
 *
 *
 */
-QVariant PlugInModel::getFixedNodeInfo(const QModelIndex &index, const QVariant &name, const tItemType &itemType, const int &role, const QIcon icon) const
+QVariant PlugInModel::getFixedNodeInfo(
+    const QModelIndex& index,
+    const QVariant& name,
+    const tItemType& itemType,
+    const int& role,
+    const QIcon icon) const
 {
     Q_D(const PlugInModel);
+
     if (role == Qt::DisplayRole)
     {
         if (index.column() == 0)
@@ -743,50 +748,45 @@ QVariant PlugInModel::getFixedNodeInfo(const QModelIndex &index, const QVariant 
     {
         switch(itemType)
         {
-            case itemCatDataIO:
-            {
+        case itemCatDataIO: {
                 return ito::typeDataIO;
             }
-            case itemCatActuator:
-            {
+        case itemCatActuator: {
                 return ito::typeActuator;
             }
-            case itemCatAlgo:
-            {
+        case itemCatAlgo: {
                 return ito::typeAlgo;
             }
-            case itemSubCategoryDataIO_Grabber:
-            {
+        case itemSubCategoryDataIO_Grabber: {
                 return ito::typeDataIO | ito::typeGrabber;
             }
-            case itemSubCategoryDataIO_ADDA:
-            {
+        case itemSubCategoryDataIO_ADDA: {
                 return ito::typeDataIO | ito::typeADDA;
             }
-            case itemSubCategoryDataIO_RawIO:
-            {
+        case itemSubCategoryDataIO_RawIO: {
                 return ito::typeDataIO | ito::typeRawIO;
             }
-            default:
-            {
+        default: {
                 return QVariant();
             }
         }
         return itemType;
     }
-    else if (role == Qt::UserRole + 2) //returns true if item is a category or sub-category, else false
+    else if (role == Qt::UserRole + 2)
     {
+        // returns true if item is a category or sub-category, else  false
         return true;
     }
-    else if (role == Qt::UserRole + 3) //returns tItemType
+    else if (role == Qt::UserRole + 3)
     {
+        // returns tItemType
         return itemType;
     }
 
     return QVariant();
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 /** 
 *   @param index
 *   @param role
@@ -796,8 +796,9 @@ QVariant PlugInModel::getFixedNodeInfo(const QModelIndex &index, const QVariant 
 */
 QVariant PlugInModel::getPluginNodeInfo(const QModelIndex &index, const int &role) const
 {
-    ito::AddInInterfaceBase *aib = (ito::AddInInterfaceBase *)index.internalPointer();
     Q_D(const PlugInModel);
+
+    ito::AddInInterfaceBase *aib = (ito::AddInInterfaceBase *)index.internalPointer();
 
     if (role == Qt::DisplayRole)
     {
@@ -810,24 +811,19 @@ QVariant PlugInModel::getPluginNodeInfo(const QModelIndex &index, const int &rol
             case 1: //type
                 switch (aib->getType())
                 {
-                    case typeActuator:
-                    {
+            case typeActuator: {
                         return tr("Actuator");
                     }
-                    case typeDataIO | typeGrabber:
-                    {
+            case typeDataIO | typeGrabber: {
                         return tr("Grabber");
                     }
-                    case typeDataIO | typeADDA:
-                    {
+            case typeDataIO | typeADDA: {
                         return tr("ADDA");
                     }
-                    case typeDataIO | typeRawIO:
-                    {
+            case typeDataIO | typeRawIO: {
                         return tr("Raw IO");
                     }
-                    case typeAlgo:
-                    {
+            case typeAlgo: {
                         return tr("Algorithm");
                     }
                     default:
@@ -870,8 +866,7 @@ QVariant PlugInModel::getPluginNodeInfo(const QModelIndex &index, const int &rol
             {
                 return aib->getDescription();
             }
-            default:
-            {
+        default: {
                 return QVariant();
             }
         }
@@ -931,12 +926,14 @@ QVariant PlugInModel::getPluginNodeInfo(const QModelIndex &index, const int &rol
             return QVariant();
         }
     }
-    else if (role == Qt::UserRole + 1) //returns type (OR-combination)
+    else if (role == Qt::UserRole + 1)
     {
+        // returns type (OR-combination)
         return aib->getType();
     }
-    else if (role == Qt::UserRole + 2) //returns true if item is a category or sub-category, else false
+    else if (role == Qt::UserRole + 2)
     {
+        // returns true if item is a category or sub-category, else false
         return false;
     }
     else if (role == Qt::UserRole + 3) //returns tItemType
@@ -947,7 +944,7 @@ QVariant PlugInModel::getPluginNodeInfo(const QModelIndex &index, const int &rol
     return QVariant();
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 /** 
 *   @param index
 *   @param role
@@ -957,8 +954,9 @@ QVariant PlugInModel::getPluginNodeInfo(const QModelIndex &index, const int &rol
 */
 QVariant PlugInModel::getInstanceNodeInfo(const QModelIndex &index, const int &role) const
 {
-    ito::AddInBase *ai = (ito::AddInBase *)index.internalPointer();
     Q_D(const PlugInModel);
+
+    ito::AddInBase *ai = (ito::AddInBase *)index.internalPointer();
 
     if (role == Qt::DisplayRole)
     {
@@ -977,25 +975,22 @@ QVariant PlugInModel::getInstanceNodeInfo(const QModelIndex &index, const int &r
             {
                 //return aib->getDescription();
             }
-            default:
-            {
+        default: {
                 return QVariant();
             }
         }
     }
-/*    else if (role == Qt::DecorationRole)
-    {
-        return QVariant();
-    }*/
     else if (role == Qt::ToolTipRole)
     {
         if (index.column() == 0)
         {
             QString ident = ai->getIdentifier();
+
             if(ident.size() > 0)
             {
                 return ident;
             }
+
             return QString("ID: %1").arg(ai->getID());
         }
         else
@@ -1014,12 +1009,14 @@ QVariant PlugInModel::getInstanceNodeInfo(const QModelIndex &index, const int &r
             return QVariant();
         }
     }
-    else if (role == Qt::UserRole + 1) //returns type (OR-combination)
+    else if (role == Qt::UserRole + 1)
     {
+        // returns type (OR-combination)
         return ai->getBasePlugin()->getType();
     }
-    else if (role == Qt::UserRole + 2) //returns true if item is a category or sub-category, else false
+    else if (role == Qt::UserRole + 2)
     {
+        // returns true if item is a category or sub-category, else false
         return false;
     }
     else if (role == Qt::UserRole + 3) //returns tItemType
@@ -1029,6 +1026,7 @@ QVariant PlugInModel::getInstanceNodeInfo(const QModelIndex &index, const int &r
     else if (role == Qt::BackgroundRole)
     {
         ito::AddInBase *ais = (ito::AddInBase *)index.internalPointer();
+
         if (ais)
         {
             if (ais->createdByGUI() == 0 || ais->getRefCount() > 0)
@@ -1045,7 +1043,7 @@ QVariant PlugInModel::getInstanceNodeInfo(const QModelIndex &index, const int &r
     return QVariant();
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 /** 
 *   @param index
 *   @param role
@@ -1054,7 +1052,8 @@ QVariant PlugInModel::getInstanceNodeInfo(const QModelIndex &index, const int &r
 *
 *
 */
-QVariant PlugInModel::getFilterOrWidgetNodeInfo(const QModelIndex &index, const int &role, bool filterNotWidget) const
+QVariant PlugInModel::getFilterOrWidgetNodeInfo(
+    const QModelIndex& index, const int& role, bool filterNotWidget) const
 {
     Q_D(const PlugInModel);
     QString *name;
@@ -1062,13 +1061,15 @@ QVariant PlugInModel::getFilterOrWidgetNodeInfo(const QModelIndex &index, const 
 
     if (filterNotWidget)
     {
-        ito::AddInAlgo::FilterDef *filterDef = (ito::AddInAlgo::FilterDef*)(index.internalPointer());
+        ito::AddInAlgo::FilterDef* filterDef =
+            (ito::AddInAlgo::FilterDef*)(index.internalPointer());
         name = &(filterDef->m_name);
         description = &(filterDef->m_description);
     }
     else
     {
-        ito::AddInAlgo::AlgoWidgetDef *widgetDef = (ito::AddInAlgo::AlgoWidgetDef*)(index.internalPointer());
+        ito::AddInAlgo::AlgoWidgetDef* widgetDef =
+            (ito::AddInAlgo::AlgoWidgetDef*)(index.internalPointer());
         name = &(widgetDef->m_name);
         description = &(widgetDef->m_description);
     }
@@ -1103,8 +1104,7 @@ QVariant PlugInModel::getFilterOrWidgetNodeInfo(const QModelIndex &index, const 
                 }
                 return shortDesc;
             }
-            default:
-            {
+        default: {
                 return QVariant();
             }
         }
@@ -1170,8 +1170,7 @@ QVariant PlugInModel::getFilterOrWidgetNodeInfo(const QModelIndex &index, const 
                 }
                 return text;
             }
-            default:
-            {
+        default: {
                 return QVariant();
             }
         }
@@ -1191,7 +1190,8 @@ QVariant PlugInModel::getFilterOrWidgetNodeInfo(const QModelIndex &index, const 
     {
         return ito::typeAlgo;
     }
-    else if (role == Qt::UserRole + 2) //returns true if item is a category or sub-category, else false
+    else if (role == Qt::UserRole + 2) // returns true if item is a category or sub-category, else
+                                       // false
     {
         return false;
     }
@@ -1210,19 +1210,22 @@ QVariant PlugInModel::getFilterOrWidgetNodeInfo(const QModelIndex &index, const 
     return QVariant();
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 /** return data elements for a given row
 *   @param [in] index   index for which the data elements should be delivered
 *   @param [in] role    the current role of the model 
-*   @return data of the selected element, depending on the element's row and column (passed in index.row and index.column)
+ *   @return data of the selected element, depending on the element's row and column (passed in
+ * index.row and index.column)
 *
-*   This method is actually used to fill the tree view. It returns the data for the selected element, depending as well on the 
-*   column of the selected element, passed in index.column. The method here is divded into two parts. The first one handels requests
-*   for root elements (plugins) the second one is used for child elements (instances of plugins).
+ *   This method is actually used to fill the tree view. It returns the data for the selected
+ * element, depending as well on the column of the selected element, passed in index.column. The
+ * method here is divded into two parts. The first one handels requests for root elements (plugins)
+ * the second one is used for child elements (instances of plugins).
 */
 QVariant PlugInModel::data(const QModelIndex &index, int role) const
 {
     Q_D(const PlugInModel);
+
     tItemType itemType;
     size_t itemInternalData;
 
@@ -1233,33 +1236,27 @@ QVariant PlugInModel::data(const QModelIndex &index, int role) const
     
     switch (itemType)
     {
-        case itemCatDataIO:
-        {
+    case itemCatDataIO: {
             return getFixedNodeInfo(index, tr("DataIO"), itemType, role, d->m_iconDataIO);
         }
-        case itemCatActuator:
-        {
+    case itemCatActuator: {
             return getFixedNodeInfo(index, tr("Actuator"), itemType, role, d->m_iconActuator);
         }
-        case itemCatAlgo:
-        {
+    case itemCatAlgo: {
             return getFixedNodeInfo(index, tr("Algorithm"), itemType, role, d->m_iconAlgo);
         }
-        case itemSubCategoryDataIO_Grabber:
-        {
+    case itemSubCategoryDataIO_Grabber: {
             return getFixedNodeInfo(index, tr("Grabber"), itemType, role, d->m_iconGrabber);
         }
-        case itemSubCategoryDataIO_ADDA:
-        {
+    case itemSubCategoryDataIO_ADDA: {
             return getFixedNodeInfo(index, tr("ADDA"), itemType, role, d->m_iconADDA);
         }
-        case itemSubCategoryDataIO_RawIO:
-        {
+    case itemSubCategoryDataIO_RawIO: {
             return getFixedNodeInfo(index, tr("Raw IO"), itemType, role, d->m_iconRawIO);
         }
-        case itemPlugin:
-        {
+    case itemPlugin: {
             ito::AddInInterfaceBase *aiib = (ito::AddInInterfaceBase*)(itemInternalData);
+
             for (int i = 0; i < sizeof(d->m_treeFixNodes) / sizeof(d->m_treeFixNodes[0]); i++)
             {
                 if (aiib->getType() == d->m_treeFixNodes[i])
@@ -1269,14 +1266,14 @@ QVariant PlugInModel::data(const QModelIndex &index, int role) const
             }
             break;
         }
-        case itemInstance:
-        {
+    case itemInstance: {
             ito::AddInBase *aib = (ito::AddInBase*)(itemInternalData);
             ito::AddInInterfaceBase *aiib = aib->getBasePlugin();
 
             if (aiib->getType() & ito::typeActuator)
             {
                 int count = d->m_pAIM->getActList()->count();
+
                 for (int i = 0 ; i < count ; i++)
                 {
                     if (d->m_pAIM->getActList()->at(i) == (QObject*)aiib)
@@ -1288,6 +1285,7 @@ QVariant PlugInModel::data(const QModelIndex &index, int role) const
             else if(aiib->getType() & ito::typeDataIO)
             {
                 int count = d->m_pAIM->getDataIOList()->count();
+
                 for (int i = 0; i < count; i++)
                 {
                     if (d->m_pAIM->getDataIOList()->at(i) == (QObject*)aiib)
@@ -1298,12 +1296,10 @@ QVariant PlugInModel::data(const QModelIndex &index, int role) const
             }
             break;
         }
-        case itemFilter:
-        {
+    case itemFilter: {
             return getFilterOrWidgetNodeInfo(index, role, true);
         }
-        case itemWidget:
-        {
+    case itemWidget: {
             return getFilterOrWidgetNodeInfo(index, role, false);
         }
         //default:
@@ -1315,7 +1311,7 @@ QVariant PlugInModel::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 /** 
 *   @param ai
 *   @return QModelIndex  
@@ -1324,12 +1320,13 @@ QVariant PlugInModel::data(const QModelIndex &index, int role) const
 */
 QModelIndex PlugInModel::getIndexByAddIn(ito::AddInBase *ai) const
 {
-    if (ai == NULL)
+    if (ai == nullptr)
     {
         return QModelIndex();
     }
 
     QModelIndex baseIndex = getIndexByAddInInterface(ai->getBasePlugin());
+
     if(baseIndex.isValid() == false)
     {
         return QModelIndex();
@@ -1337,9 +1334,11 @@ QModelIndex PlugInModel::getIndexByAddIn(ito::AddInBase *ai) const
 
     int rows = rowCount(baseIndex);
     QModelIndex idx;
+
     for (int i = 0; i < rows; i++)
     {
         idx = index(i, 0, baseIndex);
+
         if (idx.isValid() && idx.internalPointer() == (void*)ai)
         {
             return index(i, 0, baseIndex);
@@ -1348,7 +1347,7 @@ QModelIndex PlugInModel::getIndexByAddIn(ito::AddInBase *ai) const
     return QModelIndex();
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 /** 
 *   @param aib
 *   @return QModelIndex  
@@ -1358,14 +1357,14 @@ QModelIndex PlugInModel::getIndexByAddIn(ito::AddInBase *ai) const
 QModelIndex PlugInModel::getIndexByAddInInterface(AddInInterfaceBase *aib) const
 {
     Q_D(const PlugInModel);
+
     if (aib)
     {
-        const QList<QObject*> *list = NULL;
+        const QList<QObject*>* list = nullptr;
 
         switch (aib->getType())
         {
-            case ito::typeActuator:
-                {
+        case ito::typeActuator: {
                     list = d->m_pAIM->getActList();
 
                     for (int i = 0; i < list->count(); i++)
@@ -1377,8 +1376,7 @@ QModelIndex PlugInModel::getIndexByAddInInterface(AddInInterfaceBase *aib) const
                     }
                 }
                 break;
-            case ito::typeAlgo:
-                {
+        case ito::typeAlgo: {
                     list = d->m_pAIM->getAlgList();
 
                     for (int i = 0; i < list->count(); i++)
@@ -1392,17 +1390,17 @@ QModelIndex PlugInModel::getIndexByAddInInterface(AddInInterfaceBase *aib) const
                 break;
             case ito::typeDataIO | ito::typeGrabber:
             case ito::typeDataIO | ito::typeRawIO:
-            case ito::typeDataIO | ito::typeADDA:
-                {
+        case ito::typeDataIO | ito::typeADDA: {
                     list = d->m_pAIM->getDataIOList();
                     int countGrabber = 0;
                     int countRawIO = 0;
                     int countADDA = 0;
-                    ito::AddInInterfaceBase *aib2 = NULL;
+            ito::AddInInterfaceBase* aib2 = nullptr;
 
                     for (int i = 0; i < list->count(); i++)
                     {
                         aib2 = qobject_cast<ito::AddInInterfaceBase*>(list->at(i));
+
                         if (aib2 == aib)
                         {
                             if (aib->getType() & ito::typeGrabber)
@@ -1421,17 +1419,18 @@ QModelIndex PlugInModel::getIndexByAddInInterface(AddInInterfaceBase *aib) const
                             {
                                 return QModelIndex();
                             }
-                        
                         }
 
                         if (aib2->getType() & ito::typeGrabber)
                         {
                             countGrabber++;
                         }
+
                         if (aib2->getType() & ito::typeRawIO)
                         {
                             countRawIO++;
                         }
+
                         if (aib2->getType() & ito::typeADDA)
                         {
                             countADDA++;
@@ -1445,7 +1444,7 @@ QModelIndex PlugInModel::getIndexByAddInInterface(AddInInterfaceBase *aib) const
     return QModelIndex();
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 /** 
 *   @param itemType
 *   @param internalData
@@ -1456,15 +1455,17 @@ QModelIndex PlugInModel::getIndexByAddInInterface(AddInInterfaceBase *aib) const
 bool PlugInModel::getIsAlgoPlugIn(tItemType &itemType, size_t &internalData) const
 {
     Q_D(const PlugInModel);
+
     if(itemType == PlugInModel::itemPlugin)
     {
         ito::AddInInterfaceBase *aiib = (ito::AddInInterfaceBase*)(internalData);
         return (aiib->getType() == d->m_treeFixNodes[2]);
     }
+
     return false;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 /** 
 *   @param itemType
 *   @param internalData
@@ -1483,11 +1484,9 @@ bool PlugInModel::getIsGrabberInstance(tItemType &itemType, size_t &internalData
         }
     }
     return false;
-        /*ito::AddInInterfaceBase *aiib = (ito::AddInInterfaceBase*)(internalData);
-    return (aiib->getType() == typeGrabber + 1);*/
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 /** 
 *   @param addInInterface
 *   @param beginOperation
@@ -1500,12 +1499,14 @@ bool PlugInModel::insertInstance(ito::AddInInterfaceBase* addInInterface, bool b
     if (beginOperation)
     {
         QModelIndex baseIndex = getIndexByAddInInterface(addInInterface);
+
         if (baseIndex.isValid())
         {
             int rows = rowCount(baseIndex);
             beginInsertRows(baseIndex, rows, rows); //append element
             return true;
         }
+
         return false;
     }
     else
@@ -1515,7 +1516,7 @@ bool PlugInModel::insertInstance(ito::AddInInterfaceBase* addInInterface, bool b
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 /** 
 *   @param addInInterface
 *   @param addInInstance
@@ -1529,6 +1530,7 @@ bool PlugInModel::deleteInstance(ito::AddInBase *addInInstance, const bool begin
     if (beginOperation)
     {
         QModelIndex index = getIndexByAddIn(addInInstance);
+
         if (index.isValid())
         {
             QModelIndex parentIdx = parent(index);
@@ -1536,6 +1538,7 @@ bool PlugInModel::deleteInstance(ito::AddInBase *addInInstance, const bool begin
             beginRemoveRows(parentIdx, i, i);
             return true;
         }
+
         return false;
     }
     else
@@ -1545,7 +1548,7 @@ bool PlugInModel::deleteInstance(ito::AddInBase *addInInstance, const bool begin
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 /** 
 *   @param beginOperation
 *   @return bool  
@@ -1570,20 +1573,23 @@ bool PlugInModel::resetModel(bool beginOperation)
 QString PlugInModel::getInitCommand(const QModelIndex &item) const
 {
     Q_D(const PlugInModel);
+
     tItemType type;
     size_t internalData;
     getModelIndexInfo(item, type, internalData);
     QString command;
+
     if (type & itemPlugin) //check if item is a plugin
     {
         ito::AddInInterfaceBase *aiib = (ito::AddInInterfaceBase*)(internalData);
         int aiibType = aiib->getType();
+
         if (aiibType & d->m_treeFixNodes[0]) //dataIO
         {
             QVector<ito::Param>* mandParam(aiib->getInitParamsMand());
             QStringList listParam;
 
-            foreach(ito::Param item, *mandParam)
+            foreach (const auto& item, *mandParam)
             {
                 listParam.append(item.getName());
             }
@@ -1592,14 +1598,18 @@ QString PlugInModel::getInitCommand(const QModelIndex &item) const
             {
                 listParam[0].prepend(", ");
             }
-            command = QString("dataIO(\"%1\"%2)").arg(aiib->objectName(), listParam.join(", ")).toLatin1().data();
+
+            command = QString("dataIO(\"%1\"%2)")
+                          .arg(aiib->objectName(), listParam.join(", "))
+                          .toLatin1()
+                          .data();
         }
         else if (aiibType & d->m_treeFixNodes[1]) //actuator
         {
             QVector<ito::Param>* mandParam(aiib->getInitParamsMand());
             QStringList listParam;
 
-            foreach(ito::Param item, *mandParam)
+            foreach (const auto& item, *mandParam)
             {
                 listParam.append(item.getName());
             }
@@ -1608,7 +1618,11 @@ QString PlugInModel::getInitCommand(const QModelIndex &item) const
             {
                 listParam[0].prepend(", ");
             }
-            command = QString("actuator(\"%1\"%2)").arg(aiib->objectName(), listParam.join(", ")).toLatin1().data();
+
+            command = QString("actuator(\"%1\"%2)")
+                          .arg(aiib->objectName(), listParam.join(", "))
+                          .toLatin1()
+                          .data();
         }
     }
     else if(type & itemFilter)
@@ -1622,16 +1636,12 @@ QString PlugInModel::getInitCommand(const QModelIndex &item) const
            QVector<ito::Param> outParams;
            paramFunc(&mandParams, &optParams, &outParams);
                 
-            foreach(ito::Param item, mandParams)
+        foreach (const auto& item, mandParams)
             {
                 listParam.append(item.getName());
             }
 
-            if (listParam.length() > 0)
-            {
-                listParam[0].prepend(", ");
-            }
-            command = QString("filter(\"%1\"%2)").arg(fd->m_name, listParam.join(", ")).toLatin1().data();
+        command = QString("algorithms.%1(%2)").arg(fd->m_name, listParam.join(", "));
     }
     else if (type & itemWidget)
     {
@@ -1643,7 +1653,7 @@ QString PlugInModel::getInitCommand(const QModelIndex &item) const
         QVector<ito::Param> outParams;
         paramFunc(&mandParams, &optParams, &outParams);
 
-        foreach(ito::Param item, mandParams)
+        foreach (const auto& item, mandParams)
         {
             listParam.append(item.getName());
         }
@@ -1652,7 +1662,10 @@ QString PlugInModel::getInitCommand(const QModelIndex &item) const
         {
             listParam[0].prepend(", ");
         }
-        command = QString("ui.createNewPluginWidget(\"%1%2\")").arg(aw->m_name, listParam.join(", ")).toLatin1().data();
+        command = QString("ui.createNewPluginWidget(\"%1%2\")")
+                      .arg(aw->m_name, listParam.join(", "))
+                      .toLatin1()
+                      .data();
     }
     return command;
 }
@@ -1663,16 +1676,16 @@ QMimeData* PlugInModel::mimeData(const QModelIndexList &indexes) const
     QMimeData *mimeData = QAbstractItemModel::mimeData(indexes);
     QStringList texts;
 
-    foreach(const QModelIndex item, indexes)
+    foreach (const QModelIndex& item, indexes)
     {
         if (item.column() == 0)
         {
-            
             texts.append(getInitCommand(item));
         }
     }
 
-    //text in mimeData must be UTF8 encoded, not Latin1 (since it could also be read by other applications).
+    // text in mimeData must be UTF8 encoded, not Latin1 (since it could also be read by other
+    // applications).
     mimeData->setData("text/plain", texts.join("\n").toUtf8());
     return mimeData;
 }

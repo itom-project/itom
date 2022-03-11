@@ -247,17 +247,17 @@ Returns an invalid QModelIndex if the user could not be found.
 */
 QModelIndex UserModel::getUser(const QString &userId) const
 {
-	int row = -1;
+    int row = -1;
 
-	for (int row = 0; row < m_userInfo.size(); ++row)
-	{
-		if (m_userInfo[row].id == userId)
-		{
-			return createIndex(row, 0);
-		}
-	}
+    for (int row = 0; row < m_userInfo.size(); ++row)
+    {
+        if (m_userInfo[row].id == userId)
+        {
+            return createIndex(row, 0);
+        }
+    }
 
-	return QModelIndex();
+    return QModelIndex();
 }
 
 //-------------------------------------------------------------------------------------
@@ -267,101 +267,101 @@ is ignored) has a password set, else false.
 */
 bool UserModel::hasPassword(const QModelIndex &index) const
 {
-	if (index.isValid() && index.row() >= 0 && index.row() < m_userInfo.size())
-	{
-		return m_userInfo[index.row()].password != "";
-	}
-	else
-	{
-		return false;
-	}
+    if (index.isValid() && index.row() >= 0 && index.row() < m_userInfo.size())
+    {
+        return m_userInfo[index.row()].password != "";
+    }
+    else
+    {
+        return false;
+    }
 }
 
 //-------------------------------------------------------------------------------------
 bool UserModel::checkPassword(const QModelIndex &index, const QString &password) const
 {
-	if (index.isValid() && index.row() >= 0 && index.row() < m_userInfo.size())
-	{
-		QByteArray passwordSha512 = m_userInfo[index.row()].password;
-		if (passwordSha512 == "" && password == "")
-		{
-			return true;
-		}
-		else
-		{
-			QByteArray newPasswordSha512 = QCryptographicHash::hash(password.toUtf8(), QCryptographicHash::Sha3_512);
-			return passwordSha512 == newPasswordSha512;
-		}
-	}
-	else
-	{
-		return false;
-	}
+    if (index.isValid() && index.row() >= 0 && index.row() < m_userInfo.size())
+    {
+        QByteArray passwordSha512 = m_userInfo[index.row()].password;
+        if (passwordSha512 == "" && password == "")
+        {
+            return true;
+        }
+        else
+        {
+            QByteArray newPasswordSha512 = QCryptographicHash::hash(password.toUtf8(), QCryptographicHash::Sha3_512);
+            return passwordSha512 == newPasswordSha512;
+        }
+    }
+    else
+    {
+        return false;
+    }
 }
 
 //-------------------------------------------------------------------------------------
 QString UserModel::getUserName(const QModelIndex &index) const
 {
-	if (index.isValid() && index.row() >= 0 && index.row() < m_userInfo.size())
-	{
-		return m_userInfo[index.row()].name;
-	}
-	else
-	{
-		return QString();
-	}
+    if (index.isValid() && index.row() >= 0 && index.row() < m_userInfo.size())
+    {
+        return m_userInfo[index.row()].name;
+    }
+    else
+    {
+        return QString();
+    }
 }
 
 //-------------------------------------------------------------------------------------
 QString UserModel::getUserId(const QModelIndex &index) const
 {
-	if (index.isValid() && index.row() >= 0 && index.row() < m_userInfo.size())
-	{
-		return m_userInfo[index.row()].id;
-	}
-	else
-	{
-		return QString();
-	}
+    if (index.isValid() && index.row() >= 0 && index.row() < m_userInfo.size())
+    {
+        return m_userInfo[index.row()].id;
+    }
+    else
+    {
+        return QString();
+    }
 }
 
 //-------------------------------------------------------------------------------------
 UserRole UserModel::getUserRole(const QModelIndex &index) const
 {
-	if (index.isValid() && index.row() >= 0 && index.row() < m_userInfo.size())
-	{
-		return m_userInfo[index.row()].role;
-	}
-	else
-	{
-		return userRoleBasic;
-	}
+    if (index.isValid() && index.row() >= 0 && index.row() < m_userInfo.size())
+    {
+        return m_userInfo[index.row()].role;
+    }
+    else
+    {
+        return userRoleBasic;
+    }
 }
 
 //-------------------------------------------------------------------------------------
 UserFeatures UserModel::getUserFeatures(const QModelIndex &index) const
 {
-	if (index.isValid() && index.row() >= 0 && index.row() < m_userInfo.size())
-	{
-		return m_userInfo[index.row()].features;
-	}
-	else
-	{
-		return 0;
-	}
+    if (index.isValid() && index.row() >= 0 && index.row() < m_userInfo.size())
+    {
+        return m_userInfo[index.row()].features;
+    }
+    else
+    {
+        return UserFeatures();
+    }
 }
 
 //-------------------------------------------------------------------------------------
 QString UserModel::getUserSettingsFile(const QModelIndex &index) const
 {
-	if (index.isValid() && index.row() >= 0 && index.row() < m_userInfo.size())
-	{
-		return m_userInfo[index.row()].iniFile;
-	}
-	else
-	{
-		return 0;
-	}
+    if (index.isValid() && index.row() >= 0 && index.row() < m_userInfo.size())
+    {
+        return m_userInfo[index.row()].iniFile;
+    }
+    else
+    {
+        return "";
+    }
 }
 
 //-------------------------------------------------------------------------------------
