@@ -36,11 +36,16 @@ extern "C++"
 #include "commonGlobal.h"
 #include "typeDefs.h"
 
+#include <qdatetime.h>
+
 
 namespace ito {
 namespace datetime {
     void ITOMCOMMONQT_EXPORT toYMDHMSU(const DateTime &dt, int &year, int &month, int &day, int &hour, int &minute, int &second, int &usecond);
     DateTime ITOMCOMMONQT_EXPORT fromYMDHMSU(int year, int month, int day, int hour, int minute, int second, int usecond, int utcoffset);
+
+    //!< converts a DateTime object to QDateTime (microseconds are ignored)
+    QDateTime ITOMCOMMONQT_EXPORT toQDateTime(const DateTime &dt);
 } // end namespace datetime
 
 namespace timedelta {

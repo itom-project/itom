@@ -32,6 +32,7 @@
 
 #include "DataObject/dataObjectFuncs.h"
 #include "common/typeDefs.h"
+#include "common/helperDatetime.h"
 
 int DataObjectModel::displayRoleWithoutSuffix = Qt::UserRole + 1;
 int DataObjectModel::preciseDisplayRoleWithoutSuffix = Qt::UserRole + 2;
@@ -92,7 +93,7 @@ QString DataObjectModel::getDisplayNumber(const int& number, const int column) c
     }
     else
     {
-        // programm style, dot remains dot... (for copy to clipboard operations)
+        // program style, dot remains dot... (for copy to clipboard operations)
         return QString("%1%2").arg(number).arg(suffix);
     }
 }
@@ -298,6 +299,47 @@ QString DataObjectModel::getDisplayNumber(
 }
 
 //-------------------------------------------------------------------------------------
+QString DataObjectModel::getDisplayNumber(
+    const ito::DateTime& number, const int column, bool longDate) const
+{
+    auto dt = ito::datetime::toQDateTime(number);
+
+    if (longDate)
+    {
+        return dt.toString(Qt::DateFormat::DefaultLocaleLongDate);
+    }
+    else
+    {
+        return dt.toString(Qt::DateFormat::DefaultLocaleShortDate);
+    }
+}
+
+//-------------------------------------------------------------------------------------
+QString DataObjectModel::getDisplayNumber(
+    const ito::TimeDelta& number, const int column, bool /*longDate*/) const
+{
+    int days, seconds, useconds;
+    ito::timedelta::toDSU(number, days, seconds, useconds);
+
+    int sec = seconds % 60;
+    seconds -= sec;
+    int minutes = seconds / 60;
+    int min = minutes % 60;
+    minutes -= min;
+    int hour = minutes / 60;
+    QLatin1Char fill('0');
+
+    QString result = QObject::tr("%1 days %2:%3:%4").arg(days).arg(hour, 2, 10, fill).arg(min, 2, 10, fill).arg(sec, 2, 10, fill);
+
+    if (useconds != 0)
+    {
+        result += QString(".%1").arg(useconds, 6, 10, fill);
+    }
+    
+    return result;
+}
+
+//-------------------------------------------------------------------------------------
 QVariant DataObjectModel::data(const QModelIndex& index, int role) const
 {
     if (index.row() < 0 || index.column() < 0 ||
@@ -356,6 +398,12 @@ QVariant DataObjectModel::data(const QModelIndex& index, int role) const
                 ito::Rgba32 c = m_sharedDataObj->at<ito::Rgba32>(row, column);
                 return QColor::fromRgba(c.argb());
             }
+            case ito::tDateTime:
+                return getDisplayNumber(
+                    m_sharedDataObj->at<ito::DateTime>(row, column), column, false);
+            case ito::tTimeDelta:
+                return getDisplayNumber(
+                    m_sharedDataObj->at<ito::TimeDelta>(row, column), column, false);
             }
         }
         default:
@@ -395,6 +443,8 @@ QVariant DataObjectModel::data(const QModelIndex& index, int role) const
                 return QVariant::fromValue(m_sharedDataObj->at<ito::complex128>(row, column));
             case ito::tRGBA32:
                 return QColor(m_sharedDataObj->at<ito::Rgba32>(row, column).argb());
+            case ito::tDateTime:
+                return ito::datetime::toQDateTime(m_sharedDataObj->at<ito::DateTime>(row, column));
             }
         default:
             return QVariant();
@@ -487,6 +537,17 @@ QVariant DataObjectModel::data(const QModelIndex& index, int role) const
 
                 return QColor(c.argb());
             }
+            case ito::tDateTime:
+            {
+                const auto dt = m_sharedDataObj->at<ito::DateTime>(row, column);
+                // seconds since epoch in utc
+                value = dt.datetime / 1000000.0 + dt.utcOffset;
+                break;
+            }
+            case ito::tTimeDelta:
+                // seconds
+                value = m_sharedDataObj->at<ito::TimeDelta>(row, column).delta / 1000000.0;
+                break;
             default:
                 return QVariant();
             }
@@ -528,8 +589,9 @@ QVariant DataObjectModel::data(const QModelIndex& index, int role) const
         switch (m_sharedDataObj->getDims())
         {
         case 0:
-            return getDisplayNumber(0.0, -1); // default case (for designer, adjustment can be done
-                                              // using the defaultRow and defaultCol property)
+            // default case (for designer, adjustment can be done
+            // using the defaultRow and defaultCol property)
+            return getDisplayNumber(0.0, -1); 
         case 1:
         case 2: {
             switch (m_sharedDataObj->getType())
@@ -562,6 +624,12 @@ QVariant DataObjectModel::data(const QModelIndex& index, int role) const
                 ito::Rgba32 c = m_sharedDataObj->at<ito::Rgba32>(row, column);
                 return QColor::fromRgba(c.argb());
             }
+            case ito::tDateTime:
+                return getDisplayNumber(
+                    m_sharedDataObj->at<ito::DateTime>(row, column), -1, role == preciseDisplayRoleWithoutSuffix);
+            case ito::tTimeDelta:
+                return getDisplayNumber(
+                    m_sharedDataObj->at<ito::TimeDelta>(row, column), -1, role == preciseDisplayRoleWithoutSuffix);
             }
         }
         default:
@@ -725,6 +793,7 @@ QModelIndex DataObjectModel::index(int row, int column, const QModelIndex& paren
     {
         return createIndex(row, column);
     }
+
     return QModelIndex();
 }
 
@@ -745,6 +814,7 @@ int DataObjectModel::rowCount(const QModelIndex& parent) const
     {
         return m_defaultRows;
     }
+
     return 0;
 }
 
@@ -761,8 +831,10 @@ int DataObjectModel::columnCount(const QModelIndex& parent) const
         {
             return m_defaultCols;
         }
+
         return 1;
     }
+
     return 0;
 }
 
@@ -842,6 +914,7 @@ QVariant DataObjectModel::headerData(int section, Qt::Orientation orientation, i
 void DataObjectModel::setHeaderLabels(Qt::Orientation orientation, const QStringList& labels)
 {
     beginResetModel();
+
     if (orientation == Qt::Horizontal)
     {
         m_horizontalHeader = labels;
@@ -850,6 +923,7 @@ void DataObjectModel::setHeaderLabels(Qt::Orientation orientation, const QString
     {
         m_verticalHeader = labels;
     }
+
     endResetModel();
     emit headerDataChanged(orientation, 0, labels.count() - 1);
 }
@@ -861,6 +935,7 @@ Qt::ItemFlags DataObjectModel::flags(const QModelIndex& index) const
     {
         return Qt::ItemIsSelectable | Qt::ItemIsEnabled;
     }
+
     return Qt::ItemIsEditable | Qt::ItemIsSelectable | Qt::ItemIsEnabled;
 }
 
@@ -911,6 +986,7 @@ void DataObjectModel::setDefaultGrid(int rows, int cols)
             {
                 newObj->zeros(rows, cols, ito::tFloat32);
             }
+
             m_sharedDataObj = newObj;
         }
 

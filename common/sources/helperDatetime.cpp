@@ -70,6 +70,26 @@ namespace datetime {
         return dt;
     }
 
+    QDateTime toQDateTime(const DateTime &dt)
+    {
+        // usecond contains milliseconds and seconds
+        int usecond = static_cast<int>(dt.datetime % 1000000);
+
+        // milliseconds since 01.01.1970, 00:00
+        int64 secs = static_cast<time_t>((dt.datetime - usecond) / 1000000);
+
+        if (dt.datetime < 0 && usecond != 0)
+        {
+            usecond = 1000000 + usecond;
+            secs -= 1;
+        }
+
+        QDateTime qdt(QDate(1970, 1, 1));
+        qdt.setOffsetFromUtc(dt.utcOffset);
+        qdt = qdt.addSecs(secs);
+        return qdt.addMSecs(usecond / 1000.0);
+    }
+
 } // end namespace datetime
 
 namespace timedelta {

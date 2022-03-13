@@ -1556,30 +1556,127 @@ RetVal minMaxValueFunc<Rgba32>(
     return ito::retOk;
 }
 
+// minValue and maxValue are in seconds.
 template <>
 RetVal minMaxValueFunc<TimeDelta>(
-    const DataObject* /*dObj*/,
-    float64& /*minValue*/,
-    uint32* /*firstMinLocation*/,
-    float64& /*maxValue*/,
-    uint32* /*firstMaxLocation*/,
+    const DataObject* dObj,
+    float64& minValue,
+    uint32* firstMinLocation,
+    float64& maxValue,
+    uint32* firstMaxLocation,
     bool /*ignoreInf*/,
     const int /*specialDataTypeFlags*/)
 {
-    return RetVal(retError, 0, "minMaxValue not defined for TimeDelta type.");
+    int numMats = dObj->getNumPlanes();
+    int matIndex = 0;
+    int m, n;
+    cv::Mat_<ito::TimeDelta>* mat = nullptr;
+    const ito::TimeDelta* rowPtr;
+    float64 tempResultMin = maximumValueOfType<float64>();
+    float64 tempResultMax = minimumValueOfType<float64>();
+    float64 deltaSeconds;
+
+    for (int nmat = 0; nmat < numMats; nmat++)
+    {
+        matIndex = dObj->seekMat(nmat, numMats);
+        mat = (cv::Mat_<ito::TimeDelta>*)(dObj->get_mdata())[matIndex];
+
+        for (m = 0; m < mat->rows; m++)
+        {
+            rowPtr = (ito::TimeDelta*)mat->ptr(m);
+
+            for (n = 0; n < mat->cols; n++)
+            {
+                deltaSeconds = rowPtr[n].delta / 1000000.0;
+
+                if (deltaSeconds < tempResultMin)
+                {
+                    // NaN will be ignored by this comparison (that means if
+                    // rowPtr[n]=NaN, the if-result is always false)
+                    tempResultMin = deltaSeconds;
+                    firstMinLocation[0] = nmat;
+                    firstMinLocation[1] = m;
+                    firstMinLocation[2] = n;
+                }
+                if (deltaSeconds > tempResultMax)
+                {
+                    // NaN will be ignored by this comparison (that means if
+                    // rowPtr[n]=NaN, the if-result is always false)
+                    tempResultMax = deltaSeconds;
+                    firstMaxLocation[0] = nmat;
+                    firstMaxLocation[1] = m;
+                    firstMaxLocation[2] = n;
+                }
+            }
+        }
+    }
+
+    minValue = cv::saturate_cast<float64>(tempResultMin);
+    maxValue = cv::saturate_cast<float64>(tempResultMax);
+
+    return ito::retOk;
 }
 
+// minValue / maxValue in seconds since epoch.
 template <>
 RetVal minMaxValueFunc<DateTime>(
-    const DataObject* /*dObj*/,
-    float64& /*minValue*/,
-    uint32* /*firstMinLocation*/,
-    float64& /*maxValue*/,
-    uint32* /*firstMaxLocation*/,
+    const DataObject* dObj,
+    float64& minValue,
+    uint32* firstMinLocation,
+    float64& maxValue,
+    uint32* firstMaxLocation,
     bool /*ignoreInf*/,
     const int /*specialDataTypeFlags*/)
 {
-    return RetVal(retError, 0, "minMaxValue not defined for DateTime type.");
+    int numMats = dObj->getNumPlanes();
+    int matIndex = 0;
+    int m, n;
+    cv::Mat_<ito::DateTime>* mat = nullptr;
+    const ito::DateTime* rowPtr;
+    float64 tempResultMin = maximumValueOfType<float64>();
+    float64 tempResultMax = minimumValueOfType<float64>();
+    float64 secondsSinceEpochInUtc;
+
+    for (int nmat = 0; nmat < numMats; nmat++)
+    {
+        matIndex = dObj->seekMat(nmat, numMats);
+        mat = (cv::Mat_<ito::DateTime>*)(dObj->get_mdata())[matIndex];
+
+        for (m = 0; m < mat->rows; m++)
+        {
+            rowPtr = (ito::DateTime*)mat->ptr(m);
+
+            for (n = 0; n < mat->cols; n++)
+            {
+                secondsSinceEpochInUtc = rowPtr[n].datetime / 1000000.0 + rowPtr[n].utcOffset;
+
+                if (secondsSinceEpochInUtc < tempResultMin)
+                {
+                    // NaN will be ignored by this comparison (that means if
+                    // rowPtr[n]=NaN, the if-result is always false)
+                    tempResultMin = secondsSinceEpochInUtc;
+                    firstMinLocation[0] = nmat;
+                    firstMinLocation[1] = m;
+                    firstMinLocation[2] = n;
+                }
+
+                if (secondsSinceEpochInUtc > tempResultMax)
+                {
+                    // NaN will be ignored by this comparison (that means if
+                    // rowPtr[n]=NaN, the if-result is always false)
+                    tempResultMax = secondsSinceEpochInUtc;
+                    firstMaxLocation[0] = nmat;
+                    firstMaxLocation[1] = m;
+                    firstMaxLocation[2] = n;
+                }
+            }
+        }
+    }
+
+    minValue = cv::saturate_cast<float64>(tempResultMin);
+    maxValue = cv::saturate_cast<float64>(tempResultMax);
+
+    return ito::retOk;
 }
 
 typedef RetVal (*tminMaxValueFunc)(

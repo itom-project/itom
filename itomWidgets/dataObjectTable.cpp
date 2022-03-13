@@ -1,7 +1,7 @@
 /* ********************************************************************
    itom measurement system
    URL: http://www.uni-stuttgart.de/ito
-   Copyright (C) 2021, Institut fuer Technische Optik (ITO),
+   Copyright (C) 2022, Institut fuer Technische Optik (ITO),
    Universitaet Stuttgart, Germany
 
    This file is part of itom.
@@ -45,6 +45,7 @@
 #include "dialogHeatmapConfiguration.h"
 
 #include "common/typeDefs.h"
+#include "common/helperDatetime.h"
 
 
 class DataObjectTablePrivate
@@ -1105,6 +1106,129 @@ void gatherSelectionInformation<ito::complex128>(
                      .arg(v));
 }
 
+template <>
+void gatherSelectionInformation<ito::DateTime>(
+    const ito::DataObject* dObj, const QModelIndexList& indexes, QStringList& infos)
+{
+    if (indexes.size() == 0)
+    {
+        infos.clear();
+        return;
+    }
+
+    ito::DateTime minimum;
+    ito::DateTime maximum;
+
+    QString v = QString::fromLocal8Bit(dObj->getValueUnit().data());
+
+    if (v != "")
+    {
+        v.prepend(" ");
+    }
+
+    ito::DateTime value;
+    size_t count = 0;
+
+    foreach(const QModelIndex& idx, indexes)
+    {
+        value = dObj->at<ito::DateTime>(idx.row(), idx.column());
+
+        if (count == 0)
+        {
+            minimum = value;
+            maximum = value;
+        }
+        else
+        {
+            minimum = std::min(minimum, value);
+            maximum = std::max(maximum, value);
+        }
+
+        count++;
+    }
+
+    if (count > 0)
+    {
+        QString minStr = ito::datetime::toQDateTime(minimum).toString(Qt::ISODateWithMs);
+        QString maxStr = ito::datetime::toQDateTime(minimum).toString(Qt::ISODateWithMs);
+        infos.append(QObject::tr("Minimum: %1%2").arg(minStr).arg(v));
+        infos.append(QObject::tr("Maximum: %1%2").arg(maxStr).arg(v));
+    }
+}
+
+template <>
+void gatherSelectionInformation<ito::TimeDelta>(
+    const ito::DataObject* dObj, const QModelIndexList& indexes, QStringList& infos)
+{
+    if (indexes.size() == 0)
+    {
+        infos.clear();
+        return;
+    }
+
+    ito::TimeDelta minimum;
+    ito::TimeDelta maximum;
+
+    QString v = QString::fromLocal8Bit(dObj->getValueUnit().data());
+
+    if (v != "")
+    {
+        v.prepend(" ");
+    }
+
+    ito::TimeDelta value;
+    size_t count = 0;
+
+    foreach(const QModelIndex& idx, indexes)
+    {
+        value = dObj->at<ito::TimeDelta>(idx.row(), idx.column());
+
+        if (count == 0)
+        {
+            minimum = value;
+            maximum = value;
+        }
+        else
+        {
+            minimum = std::min(minimum, value);
+            maximum = std::max(maximum, value);
+        }
+
+        count++;
+    }
+
+    if (count > 0)
+    {
+        auto timeDeltaToString = [](const ito::TimeDelta &td)
+        {
+            int days, seconds, useconds;
+            ito::timedelta::toDSU(td, days, seconds, useconds);
+
+            int sec = seconds % 60;
+            seconds -= sec;
+            int minutes = seconds / 60;
+            int min = minutes % 60;
+            minutes -= min;
+            int hour = minutes / 60;
+            QLatin1Char fill('0');
+
+            QString result = QObject::tr("%1 days %2:%3:%4").arg(days).arg(hour, 2, 10, fill).arg(min, 2, 10, fill).arg(sec, 2, 10, fill);
+
+            if (useconds != 0)
+            {
+                result += QString(".%1").arg(useconds, 6, 10, fill);
+            }
+
+            return result;
+        };
+
+        QString minStr = timeDeltaToString(minimum);
+        QString maxStr = timeDeltaToString(maximum);
+        infos.append(QObject::tr("Minimum: %1%2").arg(minStr).arg(v));
+        infos.append(QObject::tr("Maximum: %1%2").arg(maxStr).arg(v));
+    }
+}
+
 //-------------------------------------------------------------------------------------
 void DataObjectTable::selectionChanged(
     const QItemSelection& selected, const QItemSelection& deselected)
@@ -1169,6 +1293,12 @@ void DataObjectTable::selectionChanged(
                 break;
             case ito::tRGBA32:
                 gatherSelectionInformation<ito::Rgba32>(dObjPtr.data(), indexes, infos);
+                break;
+            case ito::tDateTime:
+                gatherSelectionInformation<ito::DateTime>(dObjPtr.data(), indexes, infos);
+                break;
+            case ito::tTimeDelta:
+                gatherSelectionInformation<ito::TimeDelta>(dObjPtr.data(), indexes, infos);
                 break;
             default:
                 infos.append(tr("No further information due to unsupported array type."));
