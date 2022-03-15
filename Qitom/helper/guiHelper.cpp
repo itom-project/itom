@@ -68,7 +68,7 @@ namespace ito
             dpi = 96;
         }
 
-        QList<QScreen*> screens = qApp->screens();
+        /*QList<QScreen*> screens = qApp->screens();
 
         for (int ii = 0; ii < screens.length(); ++ii)
 
@@ -175,7 +175,7 @@ namespace ito
             qDebug() << "Ratio of Physical Dots Per CM vs Pixel Per CM in Y-Direction; "
 
                      << ratioPhysicalDPCMvsPPCMY;
-        }
+        }*/
 
         return dpi;
     }
