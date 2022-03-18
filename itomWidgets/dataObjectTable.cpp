@@ -1212,11 +1212,33 @@ void gatherSelectionInformation<ito::TimeDelta>(
             int hour = minutes / 60;
             QLatin1Char fill('0');
 
-            QString result = QObject::tr("%1 days %2:%3:%4").arg(days).arg(hour, 2, 10, fill).arg(min, 2, 10, fill).arg(sec, 2, 10, fill);
+            QString result;
+
+            if (days != 0)
+            {
+                result = QObject::tr("%1 days ").arg(days);
+            }
+
+            if ((days >= 0) && (sec < 0 || min < 0 || hour < 0 || useconds < 0))
+            {
+                result += "-";
+            }
+
+            result += QObject::tr("%1:%2:%3")
+                .arg(std::abs(hour), 2, 10, fill)
+                .arg(std::abs(min), 2, 10, fill)
+                .arg(std::abs(sec), 2, 10, fill);
 
             if (useconds != 0)
             {
-                result += QString(".%1").arg(useconds, 6, 10, fill);
+                if (useconds % 1000 == 0)
+                {
+                    result += QString(".%1").arg(std::abs(useconds / 1000), 3, 10, fill);
+                }
+                else
+                {
+                    result += QString(".%1").arg(std::abs(useconds), 6, 10, fill);
+                }
             }
 
             return result;

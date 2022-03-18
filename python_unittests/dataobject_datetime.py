@@ -433,7 +433,7 @@ class DataObjectDatetime(unittest.TestCase):
 
         # timebase us
         t = np.arange(datetime(1985, 7, 1), datetime(2003, 7, 1), timedelta(days=1))
-        t[20] = datetime(2010,6,7,16,23,59)
+        t[20] = datetime(2010, 6, 7, 16, 23, 59)
         dObj = dataObject(t)
 
         for _t, _d in zip(t, dObj):
@@ -584,14 +584,65 @@ class DataObjectDatetime(unittest.TestCase):
                 dateNpTimebase, dateNpTimebase2, err_msg="Timebase: %s" % timebase
             )
 
+    def test_dateTimeAssign(self):
+        dobj = dataObject([1, 1], "datetime")
+        d1 = datetime.today()
+        d2 = np.datetime64("2005-02-25")
+        d3 = np.datetime64("2005-02-25T03:30")
+
+        dobj[0, 0] = d1
+        self.assertEqual(d1, dobj[0, 0])
+        dobj[0, 0] = d2
+        self.assertEqual(d2, np.array(dobj)[0, 0])
+        dobj[0, 0] = d3
+        self.assertEqual(d3, np.array(dobj)[0, 0])
+
+    def test_timeDeltaAssign(self):
+        dobj = dataObject([1, 1], "timedelta")
+        d1 = timedelta(days=1, seconds=300)
+        d2 = np.timedelta64(-10, "h")
+        d3 = np.timedelta64(20, "D")
+
+        dobj[0, 0] = d1
+        self.assertEqual(d1, dobj[0, 0])
+        dobj[0, 0] = d2
+        self.assertEqual(d2, np.array(dobj)[0, 0])
+        dobj[0, 0] = d3
+        self.assertEqual(d3, np.array(dobj)[0, 0])
+
     def test_createDatetimeDataObject(self):
         a = datetime.today()
         numdays = 100
         dateList = []
-        for x in range (0, numdays):
-            dateList.append(a - timedelta(days = x))
-            
+        for x in range(0, numdays):
+            dateList.append(a - timedelta(days=x))
+
         dateScale = dataObject([1, len(dateList)], "datetime", data=dateList)
+
+        for item1, item2 in zip(dateList, dateScale):
+            self.assertEqual(item1, item2)
+
+        # with timezone
+        # a = datetime(2022, 3, 2, 22, 3, 45, tzinfo=timezone(timedelta(seconds=-7200)))
+        # dateList = []
+        # for x in range(0, numdays):
+            # dateList.append(a - timedelta(days=x))
+
+        # dateScale = dataObject([1, len(dateList)], "datetime", data=dateList)
+
+        # for item1, item2 in zip(dateList, dateScale):
+            # self.assertEqual(item1, item2)
+
+    def test_createTimedeltaDataObject(self):
+        numdays = 100
+        dateList = []
+        for x in range(0, numdays):
+            dateList.append(timedelta(days=x))
+
+        dateScale = dataObject([1, len(dateList)], "timedelta", data=dateList)
+
+        for item1, item2 in zip(dateList, dateScale):
+            self.assertEqual(item1, item2)
 
 
 if __name__ == "__main__":

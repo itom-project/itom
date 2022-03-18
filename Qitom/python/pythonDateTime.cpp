@@ -32,7 +32,7 @@ bool PythonDateTime::PyDateTime_CheckExt(PyObject* obj)
     // import the datetime api
     Itom_PyDateTime_IMPORT;
 
-    return PyDateTime_Check(obj);
+    return PyDateTime_Check(obj) || PyArray_IsScalar(obj, Datetime);
 }
 
 //---------------------------------------------------------------------------------
@@ -42,7 +42,7 @@ bool PythonDateTime::PyTimeDelta_CheckExt(PyObject* obj)
     // import the datetime api
     Itom_PyDateTime_IMPORT;
 
-    return PyDelta_Check(obj);
+    return PyDelta_Check(obj) || PyArray_IsScalar(obj, Timedelta);
 }
 
 //---------------------------------------------------------------------------------
@@ -76,7 +76,7 @@ DateTime PythonDateTime::GetDateTime(PyObject* obj, bool& ok)
 
             if (ret && PyDelta_Check(ret))
             {
-                utcoffset = PyDateTime_DELTA_GET_SECONDS(ret);
+                utcoffset = PyDateTime_DELTA_GET_DAYS(ret) * 24 * 3600 + PyDateTime_DELTA_GET_SECONDS(ret);
             }
             else
             {
@@ -88,6 +88,19 @@ DateTime PythonDateTime::GetDateTime(PyObject* obj, bool& ok)
 
         return ito::datetime::fromYMDHMSU(
             year, month, day, hour, minute, second, usecond, utcoffset);
+    }
+    else if (PyArray_IsScalar(obj, Datetime))
+    {
+        PyDatetimeScalarObject *dt = (PyDatetimeScalarObject*)obj;
+        ito::DateTime itoDateTime;
+
+        if (!NpyDatetime2itoDatetime(dt->obval, dt->obmeta, itoDateTime))
+        {
+            ok = false;
+            PyErr_Format(PyExc_RuntimeError, "invalid datetime format.");
+        }
+
+        return itoDateTime;
     }
     else
     {
@@ -111,6 +124,19 @@ TimeDelta PythonDateTime::GetTimeDelta(PyObject* obj, bool& ok)
         int useconds = PyDateTime_DELTA_GET_MICROSECONDS(obj);
 
         return ito::timedelta::fromDSU(days, seconds, useconds);
+    }
+    else if (PyArray_IsScalar(obj, Timedelta))
+    {
+        PyTimedeltaScalarObject *dt = (PyTimedeltaScalarObject*)obj;
+        ito::TimeDelta itoTimeDelta;
+
+        if (!NpyTimedelta2itoTimedelta(dt->obval, dt->obmeta, itoTimeDelta))
+        {
+            ok = false;
+            PyErr_Format(PyExc_RuntimeError, "invalid timedelta format.");
+        }
+
+        return itoTimeDelta;
     }
     else
     {
@@ -381,6 +407,165 @@ bool PythonDateTime::ItoTimedelta2npyTimedleta(
         else
         {
             dest = (dest - meta.num + 1) / meta.num;
+        }
+    }
+
+    return true;
+}
+
+
+//-------------------------------------------------------------------------------------
+bool PythonDateTime::NpyDatetime2itoDatetime(
+    const npy_datetime& dt, const PyArray_DatetimeMetaData& md, ito::DateTime& out)
+{
+    out.utcOffset = 0;
+
+    switch (md.base)
+    {
+    case NPY_FR_Y: /* Years */
+        out = ito::datetime::fromYMDHMSU(dt + 1970, 1, 1, 0, 0, 0, 0, 0);
+        break;
+    case NPY_FR_M: /* Months */
+    {
+        auto qDate = QDate(1970, 1, 1);
+        qDate = qDate.addMonths(dt);
+        out = ito::datetime::fromYMDHMSU(qDate.year(), qDate.month(), qDate.day(), 0, 0, 0, 0, 0);
+        break;
+    }
+    case NPY_FR_W: /* Weeks */
+    {
+        auto qDate = QDate(1970, 1, 1);
+        qDate = qDate.addDays(dt * 7);
+        out = ito::datetime::fromYMDHMSU(qDate.year(), qDate.month(), qDate.day(), 0, 0, 0, 0, 0);
+        break;
+    }
+    case NPY_FR_D: /* Days */
+    {
+        auto qDate = QDate(1970, 1, 1);
+        qDate = qDate.addDays(dt);
+        out = ito::datetime::fromYMDHMSU(qDate.year(), qDate.month(), qDate.day(), 0, 0, 0, 0, 0);
+        break;
+    }
+    case NPY_FR_h: /* hours */
+        out.datetime = (dt * 3600) * 1000000;
+        break;
+    case NPY_FR_m: /* minutes */
+        out.datetime = (dt * 60) * 1000000;
+        break;
+    case NPY_FR_s: /* seconds */
+        out.datetime = (dt) * 1000000;
+        break;
+    case NPY_FR_ms: /* milliseconds */
+        out.datetime = dt * 1000;
+        break;
+    case NPY_FR_us: /* microseconds */
+        out.datetime = dt;
+        break;
+    case NPY_FR_ns: /* nanoseconds */
+        out.datetime = dt / 1000;
+        break;
+    case NPY_FR_ps: /* picoseconds */
+        out.datetime = dt / (ito::int64)1000000;
+        break;
+    case NPY_FR_fs: /* femtoseconds */
+        out.datetime = dt / (ito::int64)1000000;
+        out.datetime /= 1000;
+        break;
+    case NPY_FR_as: /* attoseconds */
+        out.datetime = dt / (ito::int64)1000000;
+        out.datetime /= (ito::int64)1000000;
+        break;
+    default:
+        PyErr_Format(PyExc_RuntimeError, "Unsupported time unit of the numpy.ndarray.");
+        return false;
+    }
+
+    /* Divide by the multiplier */
+    if (md.num > 1)
+    {
+        if (dt >= 0)
+        {
+            out.datetime *= md.num;
+        }
+        else
+        {
+            out = (dt * md.num) + md.num - 1;
+        }
+    }
+
+    return true;
+}
+
+//-------------------------------------------------------------------------------------
+bool PythonDateTime::NpyTimedelta2itoTimedelta(
+    const npy_timedelta& dt, const PyArray_DatetimeMetaData& md, ito::TimeDelta& out)
+{
+    switch (md.base)
+    {
+    case NPY_FR_Y: /* Years */
+        // cannot convert a Y timedelta into microseconds
+        return false;
+        break;
+    case NPY_FR_M: /* Months */
+    {
+        // cannot convert a M timedelta into microseconds
+        return false;
+        break;
+    }
+    case NPY_FR_W: /* Weeks */
+    {
+        out = ito::timedelta::fromDSU(dt * 7, 0, 0);
+        break;
+    }
+    case NPY_FR_D: /* Days */
+    {
+        out = ito::timedelta::fromDSU(dt, 0, 0);
+        break;
+    }
+    case NPY_FR_h: /* hours */
+        out.delta = (dt * 3600) * 1000000;
+        break;
+    case NPY_FR_m: /* minutes */
+        out.delta = (dt * 60) * 1000000;
+        break;
+    case NPY_FR_s: /* seconds */
+        out.delta = (dt) * 1000000;
+        break;
+    case NPY_FR_ms: /* milliseconds */
+        out.delta = dt * 1000;
+        break;
+    case NPY_FR_us: /* microseconds */
+        out.delta = dt;
+        break;
+    case NPY_FR_ns: /* nanoseconds */
+        out.delta = dt / 1000;
+        break;
+    case NPY_FR_ps: /* picoseconds */
+        out.delta = dt / (ito::int64)1000000;
+        break;
+    case NPY_FR_fs: /* femtoseconds */
+        out.delta = dt / (ito::int64)1000000;
+        out.delta /= 1000;
+        break;
+    case NPY_FR_as: /* attoseconds */
+        out.delta = dt / (ito::int64)1000000;
+        out.delta /= (ito::int64)1000000;
+        break;
+    default:
+        PyErr_Format(PyExc_RuntimeError, "Unsupported time unit of the numpy.ndarray.");
+        return false;
+    }
+
+    /* Divide by the multiplier */
+    if (md.num > 1)
+    {
+        if (dt >= 0)
+        {
+            out.delta *= md.num;
+        }
+        else
+        {
+            out = (dt * md.num) + md.num - 1;
         }
     }
 

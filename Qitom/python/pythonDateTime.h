@@ -36,10 +36,12 @@
 #if (defined _DEBUG) && (defined WIN32)
 #undef _DEBUG
 #include "numpy/arrayobject.h"
+#include "numpy/arrayscalars.h"
 #include "python/pythonWrapper.h"
 #define _DEBUG
 #else
 #include "numpy/arrayobject.h"
+#include "numpy/arrayscalars.h"
 #include "python/pythonWrapper.h"
 #endif
 #endif
@@ -71,8 +73,14 @@ public:
     static bool ItoDatetime2npyDatetime(
         const ito::DateTime& src, npy_datetime& dest, const PyArray_DatetimeMetaData& meta);
 
+    static bool NpyDatetime2itoDatetime(
+        const npy_datetime& dt, const PyArray_DatetimeMetaData &md, ito::DateTime& out);
+
     static bool ItoTimedelta2npyTimedleta(
         const ito::TimeDelta& src, npy_timedelta& dest, const PyArray_DatetimeMetaData& meta);
+
+    static bool NpyTimedelta2itoTimedelta(
+        const npy_timedelta& dt, const PyArray_DatetimeMetaData &md, ito::TimeDelta& out);
 
     template <typename _Tp, size_t timeMemberOffset>
     static void GuessDateTimeMetaFromDataObjectValues(

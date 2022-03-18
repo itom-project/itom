@@ -48,14 +48,16 @@
 
 namespace ito {
 
-template<typename ... Args>
-std::string string_format(const std::string& format, Args ... args)
+template <typename... Args> std::string string_format(const std::string& format, Args... args)
 {
-    int size_s = std::snprintf(nullptr, 0, format.c_str(), args ...) + 1; // Extra space for '\0'
-    if (size_s <= 0) { throw std::runtime_error("Error during formatting."); }
+    int size_s = std::snprintf(nullptr, 0, format.c_str(), args...) + 1; // Extra space for '\0'
+    if (size_s <= 0)
+    {
+        throw std::runtime_error("Error during formatting.");
+    }
     auto size = static_cast<size_t>(size_s);
     auto buf = std::make_unique<char[]>(size);
-    std::snprintf(buf.get(), size, format.c_str(), args ...);
+    std::snprintf(buf.get(), size, format.c_str(), args...);
     return std::string(buf.get(), buf.get() + size - 1); // We don't want the '\0' inside
 }
 
@@ -809,7 +811,8 @@ int PythonDataObject::PyDataObj_CreateFromNpNdArrayAndType(
             PyErr_SetString(
                 PyExc_ValueError,
                 "Invalid type name. Allowed type names are 'uint8', 'int8', 'uint16', 'int16', "
-                "'int32', 'float32', 'float64', 'complex64', 'complext128', 'rgba32', 'datetime', 'timedelta'");
+                "'int32', 'float32', 'float64', 'complex64', 'complext128', 'rgba32', 'datetime', "
+                "'timedelta'");
             return -1;
         }
     }
@@ -1037,7 +1040,8 @@ int PythonDataObject::PyDataObj_CreateFromNpNdArrayAndType(
             }
             catch (cv::Exception& exc)
             {
-                PyErr_Format(PyExc_RuntimeError, "failed to create data object: %s", (exc.err).c_str());
+                PyErr_Format(
+                    PyExc_RuntimeError, "failed to create data object: %s", (exc.err).c_str());
                 self->dataObject = nullptr;
                 error = true;
             }
@@ -1089,88 +1093,8 @@ int PythonDataObject::PyDataObj_CreateFromNpNdArrayAndType(
 }
 
 //-------------------------------------------------------------------------------------
-bool npyDatetime2itoDatetime(const npy_datetime &dt, const PyArray_DatetimeDTypeMetaData* md, ito::DateTime &out)
-{
-    out.utcOffset = 0;
-
-    switch (md->meta.base)
-    {
-    case NPY_FR_Y:           /* Years */
-        out = ito::datetime::fromYMDHMSU(dt + 1970, 1, 1, 0, 0, 0, 0, 0);
-        break;
-    case NPY_FR_M:           /* Months */
-    {
-        auto qDate = QDate(1970, 1, 1);
-        qDate = qDate.addMonths(dt);
-        out = ito::datetime::fromYMDHMSU(qDate.year(), qDate.month(), qDate.day(), 0, 0, 0, 0, 0);
-        break;
-    }
-    case NPY_FR_W:           /* Weeks */
-    {
-        auto qDate = QDate(1970, 1, 1);
-        qDate = qDate.addDays(dt * 7);
-        out = ito::datetime::fromYMDHMSU(qDate.year(), qDate.month(), qDate.day(), 0, 0, 0, 0, 0);
-        break;
-    }
-    case NPY_FR_D:           /* Days */
-    {
-        auto qDate = QDate(1970, 1, 1);
-        qDate = qDate.addDays(dt);
-        out = ito::datetime::fromYMDHMSU(qDate.year(), qDate.month(), qDate.day(), 0, 0, 0, 0, 0);
-        break;
-    }
-    case NPY_FR_h:           /* hours */
-        out.datetime = (dt * 3600) * 1000000;
-        break;
-    case NPY_FR_m:           /* minutes */
-        out.datetime = (dt * 60) * 1000000;
-        break;
-    case NPY_FR_s:           /* seconds */
-        out.datetime = (dt) * 1000000;
-        break;
-    case NPY_FR_ms:          /* milliseconds */
-        out.datetime = dt * 1000;
-        break;
-    case NPY_FR_us:          /* microseconds */
-        out.datetime = dt;
-        break;
-    case NPY_FR_ns:         /* nanoseconds */
-        out.datetime = dt / 1000;
-        break;
-    case NPY_FR_ps:         /* picoseconds */
-        out.datetime = dt / (ito::int64)1000000;
-        break;
-    case NPY_FR_fs:         /* femtoseconds */
-        out.datetime = dt / (ito::int64)1000000;
-        out.datetime /= 1000;
-        break;
-    case NPY_FR_as:         /* attoseconds */
-        out.datetime = dt / (ito::int64)1000000;
-        out.datetime /= (ito::int64)1000000;
-        break;
-    default:
-        PyErr_Format(PyExc_RuntimeError, "Unsupported time unit of the numpy.ndarray.");
-        return false;
-    }
-
-    /* Divide by the multiplier */
-    if (md->meta.num > 1) 
-    {
-        if (dt >= 0) 
-        {
-            out.datetime *= md->meta.num;
-        }
-        else 
-        {
-            out = (dt * md->meta.num) + md->meta.num - 1;
-        }
-    }
-
-    return true;
-}
-
-//-------------------------------------------------------------------------------------
-bool PythonDataObject::PyDataObj_CopyFromDatetimeNpNdArray(PyDataObject *self, PyArrayObject *dateTimeArray, int dims, const int* sizes)
+bool PythonDataObject::PyDataObj_CopyFromDatetimeNpNdArray(
+    PyDataObject* self, PyArrayObject* dateTimeArray, int dims, const int* sizes)
 {
     bool error = false;
 
@@ -1185,7 +1109,8 @@ bool PythonDataObject::PyDataObj_CopyFromDatetimeNpNdArray(PyDataObject *self, P
     // in case of datetime or timedelta: The values are int64, based on 1.1.1970
     // the timebase is given by:
     const auto md = (PyArray_DatetimeDTypeMetaData*)(descr->c_metadata);
-    // timezone is ignored in numpy. If dataObject contains a timezone, ignore it and raise a warning.
+    // timezone is ignored in numpy. If dataObject contains a timezone, ignore it and raise a
+    // warning.
 
     if (md == nullptr)
     {
@@ -1211,7 +1136,7 @@ bool PythonDataObject::PyDataObj_CopyFromDatetimeNpNdArray(PyDataObject *self, P
         return false;
     }
 
-    ito::DateTime *dObjData = self->dataObject->rowPtr<ito::DateTime>(0, 0);
+    ito::DateTime* dObjData = self->dataObject->rowPtr<ito::DateTime>(0, 0);
 
     /*
      * Create and use an iterator to count the nonzeros.
@@ -1228,13 +1153,14 @@ bool PythonDataObject::PyDataObj_CopyFromDatetimeNpNdArray(PyDataObject *self, P
      *   casting NPY_NO_CASTING
      *     - No casting is required for this operation.
      */
-    NpyIter* iter = NpyIter_New(dateTimeArray, NPY_ITER_READONLY |
-        NPY_ITER_EXTERNAL_LOOP |
-        NPY_ITER_REFS_OK,
-        NPY_CORDER, NPY_NO_CASTING,
+    NpyIter* iter = NpyIter_New(
+        dateTimeArray,
+        NPY_ITER_READONLY | NPY_ITER_EXTERNAL_LOOP | NPY_ITER_REFS_OK,
+        NPY_CORDER,
+        NPY_NO_CASTING,
         nullptr);
 
-    if (iter == nullptr) 
+    if (iter == nullptr)
     {
         PyErr_Format(PyExc_RuntimeError, "Failed to iterate over numpy.ndarray.");
         DELETE_AND_SET_NULL(self->dataObject);
@@ -1245,12 +1171,12 @@ bool PythonDataObject::PyDataObj_CopyFromDatetimeNpNdArray(PyDataObject *self, P
      * The iternext function gets stored in a local variable
      * so it can be called repeatedly in an efficient manner.
      */
-    NpyIter_IterNextFunc *iternext = NpyIter_GetIterNext(iter, nullptr);
+    NpyIter_IterNextFunc* iternext = NpyIter_GetIterNext(iter, nullptr);
 
-    if (iternext == nullptr) 
+    if (iternext == nullptr)
     {
         NpyIter_Deallocate(iter);
-        
+
         PyErr_Format(PyExc_RuntimeError, "Failed to iterate over numpy.ndarray.");
         DELETE_AND_SET_NULL(self->dataObject);
         return true;
@@ -1265,7 +1191,7 @@ bool PythonDataObject::PyDataObj_CopyFromDatetimeNpNdArray(PyDataObject *self, P
 
     npy_datetime dt;
 
-    do 
+    do
     {
         /* Get the inner loop data/stride/count values */
         char* data = *dataptr;
@@ -1273,11 +1199,11 @@ bool PythonDataObject::PyDataObj_CopyFromDatetimeNpNdArray(PyDataObject *self, P
         npy_intp count = *innersizeptr;
 
         /* This is a typical inner loop for NPY_ITER_EXTERNAL_LOOP */
-        while (count--) 
+        while (count--)
         {
             dt = *((npy_datetime*)data);
 
-            if (!npyDatetime2itoDatetime(dt, md, *dObjData))
+            if (!PythonDateTime::NpyDatetime2itoDatetime(dt, md->meta, *dObjData))
             {
                 error = true;
             }
@@ -1288,8 +1214,7 @@ bool PythonDataObject::PyDataObj_CopyFromDatetimeNpNdArray(PyDataObject *self, P
         }
 
         /* Increment the iterator to the next inner loop */
-    } 
-    while (iternext(iter));
+    } while (iternext(iter));
 
     NpyIter_Deallocate(iter);
 
@@ -1297,82 +1222,8 @@ bool PythonDataObject::PyDataObj_CopyFromDatetimeNpNdArray(PyDataObject *self, P
 }
 
 //-------------------------------------------------------------------------------------
-bool npyTimedelta2itoTimedelta(const npy_timedelta &dt, const PyArray_DatetimeDTypeMetaData* md, ito::TimeDelta &out)
-{
-    switch (md->meta.base)
-    {
-    case NPY_FR_Y:           /* Years */
-        // cannot convert a Y timedelta into microseconds
-        return false;
-        break;
-    case NPY_FR_M:           /* Months */
-    {
-        // cannot convert a M timedelta into microseconds
-        return false;
-        break;
-    }
-    case NPY_FR_W:           /* Weeks */
-    {
-        out = ito::timedelta::fromDSU(dt * 7, 0, 0);
-        break;
-    }
-    case NPY_FR_D:           /* Days */
-    {
-        out = ito::timedelta::fromDSU(dt, 0, 0);
-        break;
-    }
-    case NPY_FR_h:           /* hours */
-        out.delta = (dt * 3600) * 1000000;
-        break;
-    case NPY_FR_m:           /* minutes */
-        out.delta = (dt * 60) * 1000000;
-        break;
-    case NPY_FR_s:           /* seconds */
-        out.delta = (dt) * 1000000;
-        break;
-    case NPY_FR_ms:          /* milliseconds */
-        out.delta = dt * 1000;
-        break;
-    case NPY_FR_us:          /* microseconds */
-        out.delta = dt;
-        break;
-    case NPY_FR_ns:         /* nanoseconds */
-        out.delta = dt / 1000;
-        break;
-    case NPY_FR_ps:         /* picoseconds */
-        out.delta = dt / (ito::int64)1000000;
-        break;
-    case NPY_FR_fs:         /* femtoseconds */
-        out.delta = dt / (ito::int64)1000000;
-        out.delta /= 1000;
-        break;
-    case NPY_FR_as:         /* attoseconds */
-        out.delta = dt / (ito::int64)1000000;
-        out.delta /= (ito::int64)1000000;
-        break;
-    default:
-        PyErr_Format(PyExc_RuntimeError, "Unsupported time unit of the numpy.ndarray.");
-        return false;
-    }
-
-    /* Divide by the multiplier */
-    if (md->meta.num > 1)
-    {
-        if (dt >= 0)
-        {
-            out.delta *= md->meta.num;
-        }
-        else
-        {
-            out = (dt * md->meta.num) + md->meta.num - 1;
-        }
-    }
-
-    return true;
-}
-
-//-------------------------------------------------------------------------------------
-bool PythonDataObject::PyDataObj_CopyFromTimedeltaNpNdArray(PyDataObject *self, PyArrayObject *timeDeltaArray, int dims, const int* sizes)
+bool PythonDataObject::PyDataObj_CopyFromTimedeltaNpNdArray(
+    PyDataObject* self, PyArrayObject* timeDeltaArray, int dims, const int* sizes)
 {
     bool error = false;
 
@@ -1395,7 +1246,9 @@ bool PythonDataObject::PyDataObj_CopyFromTimedeltaNpNdArray(PyDataObject *self, 
     }
     else if (md->meta.base == NPY_FR_Y || md->meta.base == NPY_FR_M)
     {
-        PyErr_Format(PyExc_RuntimeError, "Cannot convert a year or month timebase into a dataObject timedelta data type.");
+        PyErr_Format(
+            PyExc_RuntimeError,
+            "Cannot convert a year or month timebase into a dataObject timedelta data type.");
         return true;
     }
 
@@ -1417,7 +1270,7 @@ bool PythonDataObject::PyDataObj_CopyFromTimedeltaNpNdArray(PyDataObject *self, 
         return false;
     }
 
-    ito::TimeDelta *dObjData = self->dataObject->rowPtr<ito::TimeDelta>(0, 0);
+    ito::TimeDelta* dObjData = self->dataObject->rowPtr<ito::TimeDelta>(0, 0);
 
     /*
      * Create and use an iterator to count the nonzeros.
@@ -1434,10 +1287,11 @@ bool PythonDataObject::PyDataObj_CopyFromTimedeltaNpNdArray(PyDataObject *self, 
      *   casting NPY_NO_CASTING
      *     - No casting is required for this operation.
      */
-    NpyIter* iter = NpyIter_New(timeDeltaArray, NPY_ITER_READONLY |
-        NPY_ITER_EXTERNAL_LOOP |
-        NPY_ITER_REFS_OK,
-        NPY_CORDER, NPY_NO_CASTING,
+    NpyIter* iter = NpyIter_New(
+        timeDeltaArray,
+        NPY_ITER_READONLY | NPY_ITER_EXTERNAL_LOOP | NPY_ITER_REFS_OK,
+        NPY_CORDER,
+        NPY_NO_CASTING,
         nullptr);
 
     if (iter == nullptr)
@@ -1451,7 +1305,7 @@ bool PythonDataObject::PyDataObj_CopyFromTimedeltaNpNdArray(PyDataObject *self, 
      * The iternext function gets stored in a local variable
      * so it can be called repeatedly in an efficient manner.
      */
-    NpyIter_IterNextFunc *iternext = NpyIter_GetIterNext(iter, nullptr);
+    NpyIter_IterNextFunc* iternext = NpyIter_GetIterNext(iter, nullptr);
 
     if (iternext == nullptr)
     {
@@ -1483,7 +1337,7 @@ bool PythonDataObject::PyDataObj_CopyFromTimedeltaNpNdArray(PyDataObject *self, 
         {
             dt = *((npy_timedelta*)data);
 
-            if (!npyTimedelta2itoTimedelta(dt, md, *dObjData))
+            if (!PythonDateTime::NpyTimedelta2itoTimedelta(dt, md->meta, *dObjData))
             {
                 error = true;
             }
@@ -4027,9 +3881,8 @@ PyObject* PythonDataObject::PyDataObj_nbAdd(PyObject* o1, PyObject* o2)
         {
             // resDataObj should always be the owner of its data,
             // therefore base of resultObject remains None
-            retObj->dataObject = new ito::DataObject(
-                *(dobj1->dataObject) +
-                *(((PyDataObject*)obj2)->dataObject));
+            retObj->dataObject =
+                new ito::DataObject(*(dobj1->dataObject) + *(((PyDataObject*)obj2)->dataObject));
         }
         catch (cv::Exception& exc)
         {
@@ -4048,8 +3901,7 @@ PyObject* PythonDataObject::PyDataObj_nbAdd(PyObject* o1, PyObject* o2)
         {
             // resDataObj should always be the owner of its data,
             // therefore base of resultObject remains None
-            retObj->dataObject = new ito::DataObject(
-                *(dobj1->dataObject) + scalar);
+            retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) + scalar);
         }
         catch (cv::Exception& exc)
         {
@@ -4068,8 +3920,7 @@ PyObject* PythonDataObject::PyDataObj_nbAdd(PyObject* o1, PyObject* o2)
         {
             // resDataObj should always be the owner of its data,
             // therefore base of resultObject remains None
-            retObj->dataObject = new ito::DataObject(
-                *(dobj1->dataObject) + cscalar);
+            retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) + cscalar);
         }
         catch (cv::Exception& exc)
         {
@@ -4080,11 +3931,13 @@ PyObject* PythonDataObject::PyDataObj_nbAdd(PyObject* o1, PyObject* o2)
 
         if (cscalar.imag() > 0)
         {
-            retObj->dataObject->addToProtocol(string_format("Added %g+i%g scalar to dataObject.", cscalar.real(), cscalar.imag()));
+            retObj->dataObject->addToProtocol(string_format(
+                "Added %g+i%g scalar to dataObject.", cscalar.real(), cscalar.imag()));
         }
         else
         {
-            retObj->dataObject->addToProtocol(string_format("Added %g-i%g scalar to dataObject.", cscalar.real(), cscalar.imag()));
+            retObj->dataObject->addToProtocol(string_format(
+                "Added %g-i%g scalar to dataObject.", cscalar.real(), cscalar.imag()));
         }
     }
     else if (PythonDateTime::PyTimeDelta_CheckExt(o2))
@@ -4095,9 +3948,7 @@ PyObject* PythonDataObject::PyDataObj_nbAdd(PyObject* o1, PyObject* o2)
         if (!ok)
         {
             Py_DECREF(retObj);
-            PyErr_SetString(
-                PyExc_RuntimeError,
-                "Timedelta value cannot be parsed.");
+            PyErr_SetString(PyExc_RuntimeError, "Timedelta value cannot be parsed.");
             return nullptr;
         }
 
@@ -4105,8 +3956,7 @@ PyObject* PythonDataObject::PyDataObj_nbAdd(PyObject* o1, PyObject* o2)
         {
             // resDataObj should always be the owner of its data,
             // therefore base of resultObject remains None
-            retObj->dataObject = new ito::DataObject(
-                *(dobj1->dataObject) + timedelta);
+            retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) + timedelta);
         }
         catch (cv::Exception& exc)
         {
@@ -4122,7 +3972,8 @@ PyObject* PythonDataObject::PyDataObj_nbAdd(PyObject* o1, PyObject* o2)
         Py_DECREF(retObj);
         PyErr_SetString(
             PyExc_RuntimeError,
-            "Only a dataObject, integer, float, complex or timedelta value can be added to a dataObject.");
+            "Only a dataObject, integer, float, complex or timedelta value can be added to a "
+            "dataObject.");
         return nullptr;
     }
 
@@ -4764,8 +4615,7 @@ PyObject* PythonDataObject::PyDataObj_nbInvert(PyObject* o1)
     {
         // resDataObj should always be the owner of its data,
         // therefore base of resultObject remains None
-        retObj->dataObject = new ito::DataObject(
-            dobj1->dataObject->bitwise_not()); 
+        retObj->dataObject = new ito::DataObject(dobj1->dataObject->bitwise_not());
     }
     catch (cv::Exception& exc)
     {
@@ -4901,9 +4751,7 @@ PyObject* PythonDataObject::PyDataObj_nbAnd(PyObject* o1, PyObject* o2)
     {
         // resDataObj should always be the owner of its data, therefore
         // base of resultObject remains None
-        retObj->dataObject = new ito::DataObject(
-            *(dobj1->dataObject) &
-            *(dobj2->dataObject)); 
+        retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) & *(dobj2->dataObject));
     }
     catch (cv::Exception& exc)
     {
@@ -6565,7 +6413,8 @@ PyObject* PythonDataObject::PyDataObject_normalize(
     double smin, smax;
     ito::uint32 loc1[] = {0, 0, 0};
     ito::uint32 loc2[] = {0, 0, 0};
-    ito::RetVal retval = ito::dObjHelper::minMaxValue(self->dataObject, smin, loc1, smax, loc2, true);
+    ito::RetVal retval =
+        ito::dObjHelper::minMaxValue(self->dataObject, smin, loc1, smax, loc2, true);
 
     if (!PythonCommon::transformRetValToPyException(retval))
     {
@@ -8474,8 +8323,8 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
                 error = true;
                 PyErr_SetString(
                     PyExc_TypeError,
-                    "assign value has no of the following types: integer, floating point, complex, "
-                    "dataObject");
+                    "assign value has none of the following types: integer, floating point, complex, "
+                    "dataObject, rgba, datetime, timedelta");
             }
         }
 
@@ -8601,21 +8450,19 @@ RetVal PythonDataObject::parseTypeNumber(int typeno, char& typekind, int& itemsi
         typekind = NPY_COMPLEXLTR;
         itemsize = sizeof(complex128);
         break;
-    case ito::tDateTime:
-    {
+    case ito::tDateTime: {
         // todo: maybe kind and size can be hard coded
-        PyArray_Descr *descr = PyArray_DescrNewFromType(NPY_DATETIME);
+        PyArray_Descr* descr = PyArray_DescrNewFromType(NPY_DATETIME);
         typekind = descr->kind; // NPY_DATETIMELTR
         itemsize = descr->elsize; // 8
         Py_DECREF(descr);
 
-        //PyDatetimeScalarObject
+        // PyDatetimeScalarObject
         break;
     }
-    case ito::tTimeDelta:
-    {
+    case ito::tTimeDelta: {
         // todo: maybe kind and size can be hard coded
-        PyArray_Descr *descr = PyArray_DescrNewFromType(NPY_TIMEDELTA);
+        PyArray_Descr* descr = PyArray_DescrNewFromType(NPY_TIMEDELTA);
         typekind = descr->kind; // NPY_TIMEDELTALTR
         itemsize = descr->elsize; // 8
         Py_DECREF(descr);
@@ -9014,47 +8861,65 @@ ito::RetVal PythonDataObject::copyNpArrayValuesToDataObject(
             }
         }
         break;
-        /*case ito::tDateTime: {
-            const npy_datetime *td = reinterpret_cast<npy_datetime*>(data);
+        case ito::tDateTime: {
+            const npy_datetime* td = reinterpret_cast<npy_datetime*>(data);
             ito::DateTime* rowPtr;
             PyArray_Descr* dtype = PyArray_DESCR(npNdArray);
-            if (!PyDataType_ISDATETIME(dtype))
+
+            const auto md = (PyArray_DatetimeDTypeMetaData*)(dtype->c_metadata);
+            // timezone is ignored in numpy. If dataObject contains a timezone, ignore it and raise a
+            // warning.
+
+            if (md == nullptr)
             {
-                PyErr_SetString(PyExc_TypeError,
-                    "cannot get datetime metadata from non-datetime type");
-                return NULL;
+                retVal += ito::RetVal(ito::retError, 0, "Failed to read the time unit of the numpy.ndarray.");
             }
-
-            const PyArray_DatetimeMetaData *meta = &(((PyArray_DatetimeDTypeMetaData
-        *)dtype->c_metadata)->meta);
-
-            for (m = 0; m < mat->rows; m++)
+            else
             {
-                rowPtr = mat->ptr<DateTime>(m);
-                for (n = 0; n < mat->cols; n++)
+                for (m = 0; m < mat->rows; m++)
                 {
-                    // todo
-
-                    rowPtr[n].utcOffset = 0;
-                    rowPtr[n].datetime = td[c++];
+                    rowPtr = mat->ptr<DateTime>(m);
+                    for (n = 0; n < mat->cols; n++)
+                    {
+                        if (!PythonDateTime::NpyDatetime2itoDatetime(td[c++], md->meta, rowPtr[n]))
+                        {
+                            retVal += ito::RetVal(ito::retError, 0, "invalid datetime format.");
+                        }
+                    }
                 }
             }
         }
         break;
         case ito::tTimeDelta: {
-            const npy_timedelta *td = reinterpret_cast<npy_timedelta*>(data);
+            const npy_timedelta* td = reinterpret_cast<npy_timedelta*>(data);
             ito::TimeDelta* rowPtr;
-            for (m = 0; m < mat->rows; m++)
+            PyArray_Descr* dtype = PyArray_DESCR(npNdArray);
+
+            const auto md = (PyArray_DatetimeDTypeMetaData*)(dtype->c_metadata);
+            // timezone is ignored in numpy. If dataObject contains a timezone, ignore it and raise a
+            // warning.
+
+            if (md == nullptr)
             {
-                rowPtr = mat->ptr<TimeDelta>(m);
-                for (n = 0; n < mat->cols; n++)
+                retVal += ito::RetVal(ito::retError, 0, "Failed to read the time unit of the numpy.ndarray.");
+            }
+            else
+            {
+                for (m = 0; m < mat->rows; m++)
                 {
-                    // todo
-                    rowPtr[n].delta = td[c++];
+                    rowPtr = mat->ptr<TimeDelta>(m);
+
+                    for (n = 0; n < mat->cols; n++)
+                    {
+                        if (!PythonDateTime::NpyTimedelta2itoTimedelta(td[c++], md->meta, rowPtr[n]))
+                        {
+                            retVal += ito::RetVal(ito::retError, 0, "invalid datetime format.");
+                        }
+                    }
                 }
             }
         }
-        break;*/
+        break;
         default:
             retVal += ito::RetVal(ito::retError, 0, "unknown dtype");
         }
@@ -9321,12 +9186,12 @@ PyObject* PythonDataObject::PyDataObj_Array_StructGet(PyDataObject* self)
         PyErr_SetString(PyExc_RuntimeError, "data object is nullptr");
         return nullptr;
     }
-    else if (selfDO->getType() == ito::tDateTime ||
-        selfDO->getType() == ito::tTimeDelta)
+    else if (selfDO->getType() == ito::tDateTime || selfDO->getType() == ito::tTimeDelta)
     {
         // it is not allowed to set a Python error here, else the
         // fallback method PyDataObj_Array_ will not be called afterwards.
-        //PyErr_SetString(PyExc_NotImplementedError, "__array_struct__ not supported for dataObjects of type dateTime or timeDelta");
+        // PyErr_SetString(PyExc_NotImplementedError, "__array_struct__ not supported for
+        // dataObjects of type dateTime or timeDelta");
         return nullptr;
     }
     else if (selfDO->getContinuous() == false)
@@ -9382,11 +9247,11 @@ PyObject* PythonDataObject::PyDataObj_Array_StructGet(PyDataObject* self)
 #if (NPY_FEATURE_VERSION < NPY_1_7_API_VERSION)
     // NPY_NOTSWAPPED indicates, that both data in opencv and data in numpy
     // should have the same byteorder (Intel: little-endian)
-    inter->flags = NPY_WRITEABLE | NPY_ALIGNED | NPY_NOTSWAPPED; 
+    inter->flags = NPY_WRITEABLE | NPY_ALIGNED | NPY_NOTSWAPPED;
 #else
     // NPY_NOTSWAPPED indicates, that both data in opencv and data in
     // numpy should have the same byteorder (Intel: little-endian)
-    inter->flags = NPY_ARRAY_WRITEABLE | NPY_ARRAY_ALIGNED | NPY_ARRAY_NOTSWAPPED; 
+    inter->flags = NPY_ARRAY_WRITEABLE | NPY_ARRAY_ALIGNED | NPY_ARRAY_NOTSWAPPED;
 #endif
 
     // check if size and osize are totally equal, then set continuous flag
@@ -9413,18 +9278,18 @@ PyObject* PythonDataObject::PyDataObj_Array_StructGet(PyDataObject* self)
         inter->strides = (npy_intp*)malloc(inter->nd * sizeof(npy_intp));
 
         // since transpose flag has been evaluated and is false now, everything is ok here
-        inter->shape[inter->nd - 1] = (npy_intp)selfDO->getSize(inter->nd - 1); 
+        inter->shape[inter->nd - 1] = (npy_intp)selfDO->getSize(inter->nd - 1);
         inter->strides[inter->nd - 1] = inter->itemsize;
 
         for (int i = inter->nd - 2; i >= 0; i--)
         {
             // since transpose flag has been evaluated and is
             // false now, everything is ok here
-            inter->shape[i] = (npy_intp)selfDO->getSize(i); 
+            inter->shape[i] = (npy_intp)selfDO->getSize(i);
 
             // since transpose flag has been evaluated and is
             // false now, everything is ok here
-            inter->strides[i] = inter->strides[i + 1] * selfDO->getOriginalSize(i + 1); 
+            inter->strides[i] = inter->strides[i + 1] * selfDO->getOriginalSize(i + 1);
         }
     }
 
@@ -9449,8 +9314,7 @@ PyObject* PythonDataObject::PyDataObj_Array_Interface(PyDataObject* self)
         PyErr_SetString(PyExc_RuntimeError, "data object is nullptr");
         return nullptr;
     }
-    else if (selfDO->getType() == ito::tDateTime ||
-        selfDO->getType() == ito::tTimeDelta)
+    else if (selfDO->getType() == ito::tDateTime || selfDO->getType() == ito::tTimeDelta)
     {
         return nullptr;
     }
@@ -9557,12 +9421,12 @@ PyObject* PythonDataObject::PyDataObj_Array_Interface(PyDataObject* self)
 }
 
 
-
 //-------------------------------------------------------------------------------------
-PyArrayObject* nparrayFromTimeDeltaDataObject(const ito::DataObject* dobj, const PyArray_DatetimeMetaData *meta)
+PyArrayObject* nparrayFromTimeDeltaDataObject(
+    const ito::DataObject* dobj, const PyArray_DatetimeMetaData* meta)
 {
     // step 1: create numpy array
-    PyArray_Descr *descr = PyArray_DescrNewFromType(NPY_TIMEDELTA);
+    PyArray_Descr* descr = PyArray_DescrNewFromType(NPY_TIMEDELTA);
     auto metaData = (PyArray_DatetimeDTypeMetaData*)(descr->c_metadata);
 
     if (meta != nullptr)
@@ -9573,7 +9437,9 @@ PyArrayObject* nparrayFromTimeDeltaDataObject(const ito::DataObject* dobj, const
     else
     {
         // guess best datetime meta from dataObject
-        PythonDateTime::GuessDateTimeMetaFromDataObjectValues<ito::TimeDelta, offsetof(ito::TimeDelta, delta)>(dobj, metaData->meta);
+        PythonDateTime::
+            GuessDateTimeMetaFromDataObjectValues<ito::TimeDelta, offsetof(ito::TimeDelta, delta)>(
+                dobj, metaData->meta);
     }
 
     npy_intp* sizes = new npy_intp[dobj->getDims()];
@@ -9583,7 +9449,8 @@ PyArrayObject* nparrayFromTimeDeltaDataObject(const ito::DataObject* dobj, const
     }
 
     // steals a ref to descr
-    PyArrayObject* timeDeltaArray = (PyArrayObject*)PyArray_SimpleNewFromDescr(dobj->getDims(), sizes, descr);
+    PyArrayObject* timeDeltaArray =
+        (PyArrayObject*)PyArray_SimpleNewFromDescr(dobj->getDims(), sizes, descr);
     DELETE_AND_SET_NULL_ARRAY(sizes);
 
     if (!timeDeltaArray)
@@ -9606,10 +9473,11 @@ PyArrayObject* nparrayFromTimeDeltaDataObject(const ito::DataObject* dobj, const
      *   casting NPY_NO_CASTING
      *     - No casting is required for this operation.
      */
-    NpyIter* iter = NpyIter_New(timeDeltaArray, NPY_ITER_READONLY |
-        NPY_ITER_EXTERNAL_LOOP |
-        NPY_ITER_REFS_OK,
-        NPY_CORDER, NPY_NO_CASTING,
+    NpyIter* iter = NpyIter_New(
+        timeDeltaArray,
+        NPY_ITER_READONLY | NPY_ITER_EXTERNAL_LOOP | NPY_ITER_REFS_OK,
+        NPY_CORDER,
+        NPY_NO_CASTING,
         nullptr);
 
     if (iter == nullptr)
@@ -9623,7 +9491,7 @@ PyArrayObject* nparrayFromTimeDeltaDataObject(const ito::DataObject* dobj, const
      * The iternext function gets stored in a local variable
      * so it can be called repeatedly in an efficient manner.
      */
-    NpyIter_IterNextFunc *iternext = NpyIter_GetIterNext(iter, nullptr);
+    NpyIter_IterNextFunc* iternext = NpyIter_GetIterNext(iter, nullptr);
 
     if (iternext == nullptr)
     {
@@ -9654,7 +9522,8 @@ PyArrayObject* nparrayFromTimeDeltaDataObject(const ito::DataObject* dobj, const
         /* This is a typical inner loop for NPY_ITER_EXTERNAL_LOOP */
         while (count--)
         {
-            if (!PythonDateTime::ItoTimedelta2npyTimedleta(*((const ito::TimeDelta*)(*it)), *((npy_datetime*)data), metaData->meta))
+            if (!PythonDateTime::ItoTimedelta2npyTimedleta(
+                    *((const ito::TimeDelta*)(*it)), *((npy_datetime*)data), metaData->meta))
             {
                 // error message set in method above
                 Py_DECREF(timeDeltaArray);
@@ -9674,10 +9543,11 @@ PyArrayObject* nparrayFromTimeDeltaDataObject(const ito::DataObject* dobj, const
 }
 
 //-------------------------------------------------------------------------------------
-PyArrayObject* nparrayFromDateTimeDataObject(const ito::DataObject* dobj, const PyArray_DatetimeMetaData *meta)
+PyArrayObject* nparrayFromDateTimeDataObject(
+    const ito::DataObject* dobj, const PyArray_DatetimeMetaData* meta)
 {
     // step 1: create numpy array
-    PyArray_Descr *descr = PyArray_DescrNewFromType(NPY_DATETIME);
+    PyArray_Descr* descr = PyArray_DescrNewFromType(NPY_DATETIME);
     auto metaData = (PyArray_DatetimeDTypeMetaData*)(descr->c_metadata);
 
     if (meta != nullptr)
@@ -9688,7 +9558,9 @@ PyArrayObject* nparrayFromDateTimeDataObject(const ito::DataObject* dobj, const 
     else
     {
         // guess best datetime meta from dataObject
-        PythonDateTime::GuessDateTimeMetaFromDataObjectValues<ito::DateTime, offsetof(ito::DateTime, datetime)>(dobj, metaData->meta);
+        PythonDateTime::
+            GuessDateTimeMetaFromDataObjectValues<ito::DateTime, offsetof(ito::DateTime, datetime)>(
+                dobj, metaData->meta);
     }
 
     npy_intp* sizes = new npy_intp[dobj->getDims()];
@@ -9698,7 +9570,8 @@ PyArrayObject* nparrayFromDateTimeDataObject(const ito::DataObject* dobj, const 
     }
 
     // steals a ref to descr
-    PyArrayObject* dateTimeArray = (PyArrayObject*)PyArray_SimpleNewFromDescr(dobj->getDims(), sizes, descr);
+    PyArrayObject* dateTimeArray =
+        (PyArrayObject*)PyArray_SimpleNewFromDescr(dobj->getDims(), sizes, descr);
     DELETE_AND_SET_NULL_ARRAY(sizes);
 
     if (!dateTimeArray)
@@ -9721,10 +9594,11 @@ PyArrayObject* nparrayFromDateTimeDataObject(const ito::DataObject* dobj, const 
      *   casting NPY_NO_CASTING
      *     - No casting is required for this operation.
      */
-    NpyIter* iter = NpyIter_New(dateTimeArray, NPY_ITER_READONLY |
-        NPY_ITER_EXTERNAL_LOOP |
-        NPY_ITER_REFS_OK,
-        NPY_CORDER, NPY_NO_CASTING,
+    NpyIter* iter = NpyIter_New(
+        dateTimeArray,
+        NPY_ITER_READONLY | NPY_ITER_EXTERNAL_LOOP | NPY_ITER_REFS_OK,
+        NPY_CORDER,
+        NPY_NO_CASTING,
         nullptr);
 
     if (iter == nullptr)
@@ -9738,7 +9612,7 @@ PyArrayObject* nparrayFromDateTimeDataObject(const ito::DataObject* dobj, const 
      * The iternext function gets stored in a local variable
      * so it can be called repeatedly in an efficient manner.
      */
-    NpyIter_IterNextFunc *iternext = NpyIter_GetIterNext(iter, nullptr);
+    NpyIter_IterNextFunc* iternext = NpyIter_GetIterNext(iter, nullptr);
 
     if (iternext == nullptr)
     {
@@ -9769,7 +9643,8 @@ PyArrayObject* nparrayFromDateTimeDataObject(const ito::DataObject* dobj, const 
         /* This is a typical inner loop for NPY_ITER_EXTERNAL_LOOP */
         while (count--)
         {
-            if (!PythonDateTime::ItoDatetime2npyDatetime(*((const ito::DateTime*)(*it)), *((npy_datetime*)data), metaData->meta))
+            if (!PythonDateTime::ItoDatetime2npyDatetime(
+                    *((const ito::DateTime*)(*it)), *((npy_datetime*)data), metaData->meta))
             {
                 // error message set in method above
                 Py_DECREF(dateTimeArray);
@@ -9833,7 +9708,7 @@ PyObject* PythonDataObject::PyDataObj_Array_(PyDataObject* self, PyObject* args)
 
     if (selfDO->getType() == ito::tDateTime)
     {
-        const PyArray_DatetimeMetaData *meta = nullptr;
+        const PyArray_DatetimeMetaData* meta = nullptr;
 
         if (newtype && PyDataType_ISDATETIME(newtype))
         {
@@ -9844,7 +9719,7 @@ PyObject* PythonDataObject::PyDataObj_Array_(PyDataObject* self, PyObject* args)
     }
     else if (selfDO->getType() == ito::tTimeDelta)
     {
-        const PyArray_DatetimeMetaData *meta = nullptr;
+        const PyArray_DatetimeMetaData* meta = nullptr;
 
         if (newtype && PyDataType_ISDATETIME(newtype))
         {
@@ -9927,10 +9802,7 @@ PyObject* PythonDataObject::PyDataObj_Reduce(PyDataObject* self, PyObject* /*arg
     {
         // since transpose flag has been evaluated and
         // is false now, everything is ok here
-        PyList_SetItem(
-            sizeList,
-            i,
-            Py_BuildValue("I", self->dataObject->getSize(i))); 
+        PyList_SetItem(sizeList, i, Py_BuildValue("I", self->dataObject->getSize(i)));
     }
 
     // 1. elem -> callable object
@@ -10222,7 +10094,8 @@ PyObject* PythonDataObject::PyDataObj_SetState(PyDataObject* self, PyObject* arg
             {
                 PyErr_SetString(
                     PyExc_NotImplementedError,
-                    "This version of itom does not support the version number of this pickled dataset. Consider to update itom.");
+                    "This version of itom does not support the version number of this pickled "
+                    "dataset. Consider to update itom.");
                 return nullptr;
             }
         }
