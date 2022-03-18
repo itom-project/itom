@@ -1150,7 +1150,7 @@ void gatherSelectionInformation<ito::DateTime>(
     if (count > 0)
     {
         QString minStr = ito::datetime::toQDateTime(minimum).toString(Qt::ISODateWithMs);
-        QString maxStr = ito::datetime::toQDateTime(minimum).toString(Qt::ISODateWithMs);
+        QString maxStr = ito::datetime::toQDateTime(maximum).toString(Qt::ISODateWithMs);
         infos.append(QObject::tr("Minimum: %1%2").arg(minStr).arg(v));
         infos.append(QObject::tr("Maximum: %1%2").arg(maxStr).arg(v));
     }

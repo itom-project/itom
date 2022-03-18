@@ -602,7 +602,7 @@ int PythonDataObject::PyDataObj_CreateFromShapeTypeData(
             {
                 PyErr_Format(
                     PyExc_RuntimeError, "failed to create data object: %s", (exc.err).c_str());
-                self->dataObject = NULL;
+                self->dataObject = nullptr;
                 retVal += RetVal(retError);
             }
 
@@ -674,43 +674,95 @@ int PythonDataObject::PyDataObj_CreateFromShapeTypeData(
                     }
                     else if (PySequence_Check(data))
                     {
-                        int npTypenum = getNpTypeFromDataObjectType(typeno);
-
-                        if (npTypenum == -1)
+                        if (typeno == ito::tDateTime)
                         {
-                            throw cv::Exception(
-                                0,
-                                "No compatible np datatype found for desired dtype",
-                                "PyDataObject_init",
-                                __FILE__,
-                                __LINE__);
-                        }
+                            // a bypass by a numpy array would lead to a removal of
+                            // timezone information, since they are not available
+                            // in np.datetime64. Therefore, the assignment is done
+                            // manually for this specific data type.
+                            Py_ssize_t seqIdx = 0;
+                            PyObject *item;
+                            int numPlanes = self->dataObject->getNumPlanes();
+                            ito::DateTime *rowPtr;
 
-                        PyObject* npArray = PyArray_ContiguousFromAny(data, npTypenum, 1, 1);
+                            for (int planeIdx = 0; planeIdx < numPlanes; ++planeIdx)
+                            {
+                                cv::Mat *mat = self->dataObject->getCvPlaneMat(planeIdx);
 
-                        if (npArray == nullptr)
-                        {
-                            // Python error is set... Therefore just throw an exception without
-                            // message
-                            throw cv::Exception(0, "", "PyDataObject_init", __FILE__, __LINE__);
+                                for (int c = 0; c < mat->cols; ++c)
+                                {
+                                    rowPtr = mat->ptr<ito::DateTime>(0, c);
+
+                                    for (int r = 0; r < mat->rows; ++r)
+                                    {
+                                        item = PySequence_GetItem(data, seqIdx); // new ref
+
+                                        if (PythonDateTime::PyDateTime_CheckExt(item))
+                                        {
+                                            rowPtr[r] = PythonDateTime::GetDateTime(item, ok);
+
+                                            if (!ok)
+                                            {
+                                                PyErr_Format(
+                                                    PyExc_ValueError,
+                                                    "The %i. value cannot be converted to a datetime.", seqIdx + 1);
+                                                retVal += RetVal(retError);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            PyErr_Format(
+                                                PyExc_ValueError,
+                                                "The %i. value cannot be converted to a datetime.", seqIdx + 1);
+                                            retVal += RetVal(retError);
+                                        }
+
+                                        seqIdx++;
+                                        Py_XDECREF(item);
+                                    }
+                                }
+                            }
                         }
                         else
                         {
-                            retVal += copyNpArrayValuesToDataObject(
-                                (PyArrayObject*)npArray, self->dataObject, (ito::tDataType)typeno);
+                            int npTypenum = getNpTypeFromDataObjectType(typeno);
 
-                            if (retVal.containsError())
+                            if (npTypenum == -1)
                             {
                                 throw cv::Exception(
                                     0,
-                                    retVal.errorMessage(),
+                                    "No compatible np datatype found for desired dtype",
                                     "PyDataObject_init",
                                     __FILE__,
                                     __LINE__);
                             }
-                        }
 
-                        Py_XDECREF(npArray);
+                            PyObject* npArray = PyArray_ContiguousFromAny(data, npTypenum, 1, 1);
+
+                            if (npArray == nullptr)
+                            {
+                                // Python error is set... Therefore just throw an exception without
+                                // message
+                                throw cv::Exception(0, "", "PyDataObject_init", __FILE__, __LINE__);
+                            }
+                            else
+                            {
+                                retVal += copyNpArrayValuesToDataObject(
+                                    (PyArrayObject*)npArray, self->dataObject, (ito::tDataType)typeno);
+
+                                if (retVal.containsError())
+                                {
+                                    throw cv::Exception(
+                                        0,
+                                        retVal.errorMessage(),
+                                        "PyDataObject_init",
+                                        __FILE__,
+                                        __LINE__);
+                                }
+                            }
+
+                            Py_XDECREF(npArray);
+                        }
                     }
                     else
                     {
