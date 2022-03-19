@@ -63,7 +63,7 @@ public:
 
     struct CellItem
     {
-        QVariant number; // int, double or string allowed
+        QVariant value; // int, double or string allowed
         QColor bgColor;
     };
 
@@ -149,18 +149,18 @@ ito::RetVal DataObjectTablePrivate::copyToClipboard(
                 attributes = "";
             }
 
-            if (item.number.isValid())
+            if (item.value.isValid())
             {
-                if (item.number.type() == QVariant::LongLong ||
-                    item.number.type() == QVariant::String)
+                if (item.value.type() == QVariant::LongLong ||
+                    item.value.type() == QVariant::String)
                 {
-                    columnTexts.append(item.number.toString());
+                    columnTexts.append(item.value.toString());
                     columnsHtml.append(
-                        QString("<td%1>%2</td>").arg(attributes).arg(item.number.toString()));
+                        QString("<td%1>%2</td>").arg(attributes).arg(item.value.toString()));
                 }
-                else if (item.number.type() == QVariant::Double)
+                else if (item.value.type() == QVariant::Double)
                 {
-                    columnTexts.append(locale.toString(item.number.toDouble(), 'f', 8));
+                    columnTexts.append(locale.toString(item.value.toDouble(), 'f', 8));
                     columnsHtml.append(
                         QString("<td%1>%2</td>").arg(attributes).arg(columnTexts.last()));
                 }
@@ -229,16 +229,16 @@ ito::RetVal DataObjectTablePrivate::saveToCsv(
         {
             const CellItem& item = items[r * cols + c];
 
-            if (item.number.isValid())
+            if (item.value.isValid())
             {
-                if (item.number.type() == QVariant::LongLong ||
-                    item.number.type() == QVariant::String)
+                if (item.value.type() == QVariant::LongLong ||
+                    item.value.type() == QVariant::String)
                 {
-                    itemText = item.number.toByteArray();
+                    itemText = item.value.toByteArray();
                 }
-                else if (item.number.type() == QVariant::Double)
+                else if (item.value.type() == QVariant::Double)
                 {
-                    itemText = QByteArray::number(item.number.toDouble(), format, precision);
+                    itemText = QByteArray::number(item.value.toDouble(), format, precision);
 
                     if (decimalSign != '.')
                     {
@@ -330,7 +330,7 @@ ito::RetVal DataObjectTablePrivate::getSelectedItems(
         {
             currentIdx = cols * (idx.row() - firstRow) + (idx.column() - firstCol);
             items[currentIdx].bgColor = model->data(idx, Qt::BackgroundRole).value<QColor>();
-            items[currentIdx].number =
+            items[currentIdx].value =
                 model->data(idx, DataObjectModel::longlongDoubleOrStringRoleWithoutSuffix);
         }
     }
@@ -352,7 +352,7 @@ ito::RetVal DataObjectTablePrivate::getSelectedItems(
                     QModelIndex idx = model->index(r, c);
                     items[currentIdx].bgColor =
                         model->data(idx, Qt::BackgroundRole).value<QColor>();
-                    items[currentIdx].number =
+                    items[currentIdx].value =
                         model->data(idx, DataObjectModel::longlongDoubleOrStringRoleWithoutSuffix);
                 }
             }

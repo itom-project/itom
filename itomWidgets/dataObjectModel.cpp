@@ -425,7 +425,9 @@ QVariant DataObjectModel::data(const QModelIndex& index, int role) const
             }
             case ito::tDateTime:
                 return getDisplayNumber(
-                    m_sharedDataObj->at<ito::DateTime>(row, column), column, role == Qt::ToolTipRole);
+                    m_sharedDataObj->at<ito::DateTime>(row, column),
+                    column,
+                    role == Qt::ToolTipRole);
             case ito::tTimeDelta:
                 return getDisplayNumber(
                     m_sharedDataObj->at<ito::TimeDelta>(row, column), column, false);
@@ -442,7 +444,7 @@ QVariant DataObjectModel::data(const QModelIndex& index, int role) const
         case 0:
             // default case (for designer, adjustment can be done using the
             // defaultRow and defaultCol property)
-            return (double)0.0; 
+            return (double)0.0;
         case 1:
         case 2:
             switch (m_sharedDataObj->getType())
@@ -485,7 +487,7 @@ QVariant DataObjectModel::data(const QModelIndex& index, int role) const
         case 0:
             // default case (for designer, adjustment can be done using the
             // defaultRow and defaultCol property)
-            return (qlonglong)0; 
+            return (qlonglong)0;
         case 1:
         case 2:
             switch (m_sharedDataObj->getType())
@@ -514,8 +516,20 @@ QVariant DataObjectModel::data(const QModelIndex& index, int role) const
                     m_sharedDataObj->at<ito::complex128>(row, column), -1, decimals);
             case ito::tRGBA32: {
                 ito::Rgba32 c = m_sharedDataObj->at<ito::Rgba32>(row, column);
-                return QColor::fromRgba(c.argb()).name();
+
+                if (c.alpha() < 255)
+                {
+                    return QColor::fromRgba(c.argb()).name(QColor::HexArgb);
+                }
+                else
+                {
+                    return QColor::fromRgba(c.argb()).name(QColor::HexRgb);
+                }
             }
+            case ito::tTimeDelta:
+                return getDisplayNumber(m_sharedDataObj->at<ito::TimeDelta>(row, column), -1, true);
+            case ito::tDateTime:
+                return getDisplayNumber(m_sharedDataObj->at<ito::DateTime>(row, column), -1, true);
             }
         default:
             return QVariant();

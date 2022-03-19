@@ -623,15 +623,26 @@ class DataObjectDatetime(unittest.TestCase):
             self.assertEqual(item1, item2)
 
         # with timezone
-        # a = datetime(2022, 3, 2, 22, 3, 45, tzinfo=timezone(timedelta(seconds=-7200)))
-        # dateList = []
-        # for x in range(0, numdays):
-            # dateList.append(a - timedelta(days=x))
+        a = datetime(2022, 3, 2, 22, 3, 45, tzinfo=timezone(timedelta(seconds=-7200)))
+        dateList = []
+        for x in range(0, numdays):
+            dateList.append(a - timedelta(days=x))
 
-        # dateScale = dataObject([1, len(dateList)], "datetime", data=dateList)
+        dateScale = dataObject([1, len(dateList)], "datetime", data=dateList)
 
-        # for item1, item2 in zip(dateList, dateScale):
-            # self.assertEqual(item1, item2)
+        for item1, item2 in zip(dateList, dateScale):
+            self.assertEqual(item1, item2)
+
+        # create from one scalar
+        dateScale = dataObject([2, 2], "datetime", data=a)
+        for item1 in dateScale:
+            self.assertEqual(item1, a)
+
+        b1 = np.datetime64("2022-03-04")
+        b2 = datetime(2022, 3, 4)
+        dateScale = dataObject([2, 2], "datetime", data=b1)
+        for item1 in dateScale:
+            self.assertEqual(item1, b2)
 
     def test_createTimedeltaDataObject(self):
         numdays = 100
