@@ -525,7 +525,8 @@ void QPropertyModel::addDynamicProperties(Property* parent, QObject* propertyObj
 
     QModelIndex parentIndex = createIndex(parent->row(), 0, static_cast<Property*>(parent));
     int rows = rowCount(parentIndex);
-    beginInsertRows(parentIndex, rows, rows + dynamicProperties.count() - 1);
+
+    beginResetModel();
 
     // Add properties left in the list
     foreach (QByteArray dynProp, dynamicProperties)
@@ -547,7 +548,7 @@ void QPropertyModel::addDynamicProperties(Property* parent, QObject* propertyObj
         p->setProperty("__Dynamic", true);
     }
 
-    endInsertRows();
+    endResetModel();
 }
 
 //-------------------------------------------------------------------------------------

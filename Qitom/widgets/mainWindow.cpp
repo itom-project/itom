@@ -43,6 +43,7 @@
 #include "../ui/widgetInfoBox.h"
 
 #include "../helper/versionHelper.h"
+#include "../helper/guiHelper.h"
 
 #include <qapplication.h>
 #include <qdesktopwidget.h>
@@ -52,6 +53,8 @@
 #include <qstatusbar.h>
 
 #include "../organizer/scriptEditorOrganizer.h"
+
+
 
 #ifdef ITOM_USEHELPVIEWER
 #include "../helpViewer/helpViewer.h"
