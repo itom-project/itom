@@ -39,7 +39,6 @@ public:
 private:
     static int dpi;
     static QString highDPIFile;
-    static bool startUp;
     static QList<int> screensDPI;
 };
 
