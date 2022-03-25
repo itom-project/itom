@@ -61,7 +61,7 @@ namespace ito
         if (currentScreen)
         {
             dpi = currentScreen->logicalDotsPerInch(); 
-            qDebug() << "logical" << dpi << "physical" << currentScreen->physicalDotsPerInch();
+            //qDebug() << "logical" << dpi << "physical" << currentScreen->physicalDotsPerInch();
         }
         else
         {
