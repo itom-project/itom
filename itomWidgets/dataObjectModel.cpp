@@ -470,7 +470,10 @@ QVariant DataObjectModel::data(const QModelIndex& index, int role) const
             case ito::tComplex128:
                 return QVariant::fromValue(m_sharedDataObj->at<ito::complex128>(row, column));
             case ito::tRGBA32:
-                return QColor(m_sharedDataObj->at<ito::Rgba32>(row, column).argb());
+            {
+                ito::Rgba32 c = m_sharedDataObj->at<ito::Rgba32>(row, column);
+                return QColor(c.r, c.g, c.b, c.a);
+            }
             case ito::tDateTime:
                 return ito::datetime::toQDateTime(m_sharedDataObj->at<ito::DateTime>(row, column));
             }
@@ -825,7 +828,18 @@ bool DataObjectModel::setValue(const int& row, const int& column, const QVariant
             return true;
         }
         return false;
+    case ito::tDateTime:
+        if (value.canConvert<QDateTime>())
+        {
+            QDateTime dt = value.value<QDateTime>();
+            ito::DateTime dt2 = ito::datetime::toDateTime(dt);
+            m_sharedDataObj->at<ito::DateTime>(row, column) = dt2;
+            emit dataChanged(i, i);
+            return true;
+        }
+        return false;
     }
+
     return false;
 }
 

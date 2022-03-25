@@ -46,6 +46,9 @@ namespace datetime {
 
     //!< converts a DateTime object to QDateTime (microseconds are ignored)
     QDateTime ITOMCOMMONQT_EXPORT toQDateTime(const DateTime &dt);
+
+    //!< converts a QDateTime to DateTime
+    DateTime ITOMCOMMONQT_EXPORT toDateTime(const QDateTime &dt);
 } // end namespace datetime
 
 namespace timedelta {
