@@ -289,6 +289,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonAlgorithms.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonCommon.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonDataObject.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonDateTime.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonEngine.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonEngineInc.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonFigure.h
@@ -543,6 +544,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonAlgorithms.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonCommon.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonDataObject.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonDateTime.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonEngine.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonFigure.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonFont.cpp

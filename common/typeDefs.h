@@ -157,16 +157,98 @@ namespace ito
 	};
 
 #pragma pack(push, 1)
-    struct DateTime
+    class DateTime
     {
+    public:
         DateTime(ito::int64 datetimeMuS = 0) : datetime(datetimeMuS), utcOffset(0) {}
+
+        bool operator ==(const DateTime &b) const
+        {
+            if (utcOffset == b.utcOffset)
+            {
+                return datetime == b.datetime;
+            }
+
+            ito::int64 utcDiffMicroSec = (ito::int64)(b.utcOffset - utcOffset) * 1000000;
+            return datetime + utcDiffMicroSec == b.datetime;
+        }
+
+        bool operator !=(const DateTime &b) const
+        {
+            return !(*this == b);
+        }
+
+        bool operator <(const DateTime &b) const
+        {
+            return !(*this >= b);
+        }
+
+        bool operator >(const DateTime &b) const
+        {
+            return !(*this <= b);
+        }
+
+        bool operator <=(const DateTime &b) const
+        {
+            if (utcOffset == b.utcOffset)
+            {
+                return datetime <= b.datetime;
+            }
+
+            ito::int64 utcDiffMicroSec = (ito::int64)(b.utcOffset - utcOffset) * 1000000;
+            return datetime + utcDiffMicroSec <= b.datetime;
+        }
+
+        bool operator >=(const DateTime &b) const
+        {
+            if (utcOffset == b.utcOffset)
+            {
+                return datetime >= b.datetime;
+            }
+
+            ito::int64 utcDiffMicroSec = (ito::int64)(b.utcOffset - utcOffset) * 1000000;
+            return datetime + utcDiffMicroSec >= b.datetime;
+        }
+
         ito::int64 datetime; // microseconds since 01.01.1970, 00:00:00 in UTC time
         int utcOffset; // offset from UTC time in seconds
     };
 
-    struct TimeDelta
+    class TimeDelta
     {
+    public:
         TimeDelta(ito::int64 deltaMuS = 0) : delta(deltaMuS) {}
+
+        bool operator ==(const TimeDelta &b) const
+        {
+            return delta == b.delta;
+        }
+
+        bool operator !=(const TimeDelta &b) const
+        {
+            return delta != b.delta;
+        }
+
+        bool operator <(const TimeDelta &b) const
+        {
+            return delta < b.delta;
+        }
+
+        bool operator >(const TimeDelta &b) const
+        {
+            return delta > b.delta;
+        }
+
+        bool operator <=(const TimeDelta &b) const
+        {
+            return delta <= b.delta;
+        }
+
+        bool operator >=(const TimeDelta &b) const
+        {
+            return delta >= b.delta;
+        }
+
         ito::int64 delta; // in microseconds
     };
 #pragma pack(pop)

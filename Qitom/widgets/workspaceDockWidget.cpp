@@ -451,6 +451,7 @@ void WorkspaceDockWidget::mnuImportItem()
         IOHelper::IOPlugin | IOHelper::IOInput | IOHelper::IOWorkspace | IOHelper::IOMimeAll,
         QString(),
         this);
+
     if (retValue.containsError())
     {
         const char* errorMsg = retValue.errorMessage();

@@ -200,8 +200,7 @@ class PythonDataObject
         static PyObject* PyDataObj_SplitColor(PyDataObject *self, PyObject *args, PyObject *kwds);
 
         static PyObject* PyDataObj_ToList(PyDataObject *self);
-        static PyObject* PyDataObj_At(ito::DataObject *dataObj, unsigned int *idx);
-        static PyObject* PyDataObj_At(ito::DataObject *dataObj, int continuousIdx);
+        static PyObject* PyDataObj_At(ito::DataObject *dataObj, const unsigned int *idx);
         static PyObject* PyDataObj_ToListRecursive(ito::DataObject *dataObj, unsigned int *currentIdx, int iterationIndex);
 
 
@@ -296,7 +295,8 @@ class PythonDataObject
         static ito::RetVal copyNpArrayValuesToDataObject(PyArrayObject *npNdArray, ito::DataObject *dataObject, ito::tDataType type);
         static int PyDataObj_CreateFromShapeTypeData(PyDataObject *self, PyObject *args, PyObject *kwds); //helper method for PyDataObject_init
         static int PyDataObj_CreateFromNpNdArrayAndType(PyDataObject *self, PyObject *args, PyObject *kwds, bool addNpOrgTags); //helper method for PyDataObject_init
-
+        static bool PyDataObj_CopyFromDatetimeNpNdArray(PyDataObject *self, PyArrayObject *dateTimeArray, int dims, const int* sizes);
+        static bool PyDataObj_CopyFromTimedeltaNpNdArray(PyDataObject *self, PyArrayObject *timeDeltaArray, int dims, const int* sizes);
 
 
         //-------------------------------------------------------------------------------------------------
