@@ -2410,8 +2410,18 @@ PyObject* PythonDataObject::PyDataObject_getValue(PyDataObject* self, void* /*cl
         {
             value = (const DateTime*)(*it);
             obj = PythonDateTime::GetPyDateTime(*value);
-            // steals a reference
-            PyTuple_SetItem(outputTuple, cnt++, obj ? obj : Py_NewRef(Py_None));
+
+            if (obj)
+            {
+                // steals a reference
+                PyTuple_SetItem(outputTuple, cnt++, obj);
+            }
+            else
+            {
+                Py_INCREF(Py_None);
+                // steals a reference
+                PyTuple_SetItem(outputTuple, cnt++, Py_None);
+            }
         }
         break;
     }
@@ -2422,8 +2432,18 @@ PyObject* PythonDataObject::PyDataObject_getValue(PyDataObject* self, void* /*cl
         {
             value = (const TimeDelta*)(*it);
             obj = PythonDateTime::GetPyTimeDelta(*value);
-            // steals a reference
-            PyTuple_SetItem(outputTuple, cnt++, obj ? obj : Py_NewRef(Py_None));
+            
+            if (obj)
+            {
+                // steals a reference
+                PyTuple_SetItem(outputTuple, cnt++, obj);
+            }
+            else
+            {
+                Py_INCREF(Py_None);
+                // steals a reference
+                PyTuple_SetItem(outputTuple, cnt++, Py_None);
+            }
         }
         break;
     }
