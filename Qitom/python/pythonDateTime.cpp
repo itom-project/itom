@@ -96,8 +96,8 @@ DateTime PythonDateTime::GetDateTime(PyObject* obj, bool& ok)
 
         if (!NpyDatetime2itoDatetime(dt->obval, dt->obmeta, itoDateTime))
         {
+            // Python error already set
             ok = false;
-            PyErr_Format(PyExc_RuntimeError, "invalid datetime format.");
         }
 
         return itoDateTime;
@@ -132,8 +132,8 @@ TimeDelta PythonDateTime::GetTimeDelta(PyObject* obj, bool& ok)
 
         if (!NpyTimedelta2itoTimedelta(dt->obval, dt->obmeta, itoTimeDelta))
         {
+            //Python error already set
             ok = false;
-            PyErr_Format(PyExc_RuntimeError, "invalid timedelta format.");
         }
 
         return itoTimeDelta;
@@ -476,7 +476,7 @@ bool PythonDateTime::NpyDatetime2itoDatetime(
         out.datetime /= (ito::int64)1000000;
         break;
     default:
-        PyErr_Format(PyExc_RuntimeError, "Unsupported time unit of the numpy.ndarray.");
+        PyErr_Format(PyExc_RuntimeError, "Unsupported time unit of the numpy.datetime64 value. NaT is not supported, too.");
         return false;
     }
 
@@ -552,7 +552,7 @@ bool PythonDateTime::NpyTimedelta2itoTimedelta(
         out.delta /= (ito::int64)1000000;
         break;
     default:
-        PyErr_Format(PyExc_RuntimeError, "Unsupported time unit of the numpy.ndarray.");
+        PyErr_Format(PyExc_RuntimeError, "Unsupported time unit of the numpy.timedelta64 value. NaT is not supported, too.");
         return false;
     }
 

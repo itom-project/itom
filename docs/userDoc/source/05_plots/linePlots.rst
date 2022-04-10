@@ -67,6 +67,9 @@ are listed here:
     # method 3
     plot1(yDataObject, properties = {'xData', xVector})
 
+
+.. _itom1dqwtplotdatetime:
+
 DateTime x-axis
 =================
 
@@ -127,6 +130,10 @@ It is also possible to directly use a ``datetime`` :py:class:`numpy.ndarray` as 
     dateScale = np.arange('2005-02', '2005-03', dtype='datetime64[D]')
     values = dataObject.randN([1, len(dateScale)], "uint8")
     plot1(values, dateScale)
+
+.. note::
+    
+    For more information about datetime in :py:class:`itom.dataObject`, see :ref:`itomDataObjectDatetime`.
 
 Itom1dQwtPlot
 ==========================

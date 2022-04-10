@@ -1258,6 +1258,7 @@ bool PythonDataObject::PyDataObj_CopyFromDatetimeNpNdArray(
             if (!PythonDateTime::NpyDatetime2itoDatetime(dt, md->meta, *dObjData))
             {
                 error = true;
+                break;
             }
 
             dObjData++;
@@ -1266,7 +1267,7 @@ bool PythonDataObject::PyDataObj_CopyFromDatetimeNpNdArray(
         }
 
         /* Increment the iterator to the next inner loop */
-    } while (iternext(iter));
+    } while (iternext(iter) && !error);
 
     NpyIter_Deallocate(iter);
 
@@ -1400,7 +1401,7 @@ bool PythonDataObject::PyDataObj_CopyFromTimedeltaNpNdArray(
         }
 
         /* Increment the iterator to the next inner loop */
-    } while (iternext(iter));
+    } while (iternext(iter) && !error);
 
     NpyIter_Deallocate(iter);
 
@@ -8086,8 +8087,9 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
                                 else if (dataObj.getSize(d) == 1) // this dimension is not required
                                                                   // in np-array
                                 {
-                                    map_dims_to_npdims[d] = -1; // d.th dimension of dataObj is not
-                                                                // available in np-array (squeezed)
+                                    // d.th dimension of dataObj is not
+                                    // available in np-array (squeezed)
+                                    map_dims_to_npdims[d] = -1; 
                                 }
                                 else
                                 {
@@ -8168,8 +8170,8 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
                 {
                     PyErr_SetString(
                         PyExc_TypeError,
-                        "assign value has no of the following types: integer, floating point, "
-                        "complex, rgba (type rgba32 only) or data object");
+                        "Allowed values for assignment: int, float, complex, itom.rgba, "
+                        "datetime.datetime, datetime.timedelta, np.ndarray or itom.dataObject");
                     error = true;
                 }
             }
@@ -8382,6 +8384,11 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
                 value5 = PythonDateTime::GetDateTime(value, ok);
                 fromType = ito::tDateTime;
                 valuePtr = static_cast<void*>(&value5);
+
+                if (!ok) 
+                {
+                    error = true;
+                }
             }
             else if (PythonDateTime::PyTimeDelta_CheckExt(value))
             {
@@ -8389,6 +8396,11 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
                 value6 = PythonDateTime::GetTimeDelta(value, ok);
                 fromType = ito::tTimeDelta;
                 valuePtr = static_cast<void*>(&value6);
+
+                if (!ok)
+                {
+                    error = true;
+                }
             }
             else
             {
@@ -8955,7 +8967,8 @@ ito::RetVal PythonDataObject::copyNpArrayValuesToDataObject(
                     {
                         if (!PythonDateTime::NpyDatetime2itoDatetime(td[c++], md->meta, rowPtr[n]))
                         {
-                            retVal += ito::RetVal(ito::retError, 0, "invalid datetime format.");
+                            PyErr_Clear();
+                            retVal += ito::RetVal(ito::retError, 0, "invalid or unsupported datetime format (e.g. NaT).");
                         }
                     }
                 }
@@ -8985,7 +8998,8 @@ ito::RetVal PythonDataObject::copyNpArrayValuesToDataObject(
                     {
                         if (!PythonDateTime::NpyTimedelta2itoTimedelta(td[c++], md->meta, rowPtr[n]))
                         {
-                            retVal += ito::RetVal(ito::retError, 0, "invalid datetime format.");
+                            PyErr_Clear();
+                            retVal += ito::RetVal(ito::retError, 0, "invalid timedelta format or unsupported value (NaT).");
                         }
                     }
                 }
