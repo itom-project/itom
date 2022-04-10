@@ -4,7 +4,7 @@ import numpy as np
 import datetime
 
 # start date with a specific timezone
-a = datetime.datetime(
+timestamp = datetime.datetime(
     2022, 5, 6, 12, 23, 5, tzinfo=datetime.timezone(datetime.timedelta(0, -7200))
 )
 
@@ -14,7 +14,7 @@ dateList = []
 
 for x in range(0, numsteps, 15):
     dateList.append(
-        a + datetime.timedelta(hours=x)
+        timestamp + datetime.timedelta(hours=x)
     )
 
 # create a dataObject from the list of datetime objects
@@ -31,7 +31,6 @@ h["fillCurve"] = "FillFromBottom"
 h["grid"] = "GridMajorXY"
 h["axisLabel"] = "date"
 h["valueLabel"] = "value"
-
 
 
 # example with numpy datetime array
