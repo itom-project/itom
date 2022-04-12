@@ -65,7 +65,7 @@ templates_path = ['_templates']
 source_suffix = '.rst'
 
 # The encoding of source files.
-source_encoding = 'iso-8859-15'  # 'iso-8859-15' #'utf-8-sig'
+source_encoding = "utf-8"  # 'iso-8859-15'  # 'iso-8859-15' #'utf-8-sig'
 
 # The master toctree document.
 master_doc = 'index'
