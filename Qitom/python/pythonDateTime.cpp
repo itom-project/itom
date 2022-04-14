@@ -158,8 +158,9 @@ PyObject* PythonDateTime::GetPyDateTime(const DateTime& datetime)
 
     PyObject* d = PyDateTime_FromDateAndTime(year, month, day, hour, minute, sec, usec);
 
-    if (datetime.utcOffset != 0)
+    if (d && datetime.utcOffset != 0)
     {
+#if (PY_VERSION_HEX >= 0x03070000)
         PyDateTime_DateTime* dt = (PyDateTime_DateTime*)(d);
         auto delta = PyDelta_FromDSU(0, datetime.utcOffset, 0); // new ref
         PyObject* oldTzInfo = dt->hastzinfo ? dt->tzinfo : nullptr;
@@ -167,6 +168,13 @@ PyObject* PythonDateTime::GetPyDateTime(const DateTime& datetime)
         dt->hastzinfo = true;
         Py_DECREF(delta);
         Py_XDECREF(oldTzInfo);
+#else
+        if (PyErr_WarnEx(PyExc_RuntimeWarning, "timezone offset not supported via C-API for Python < 3.7", 1) == -1)
+        {
+            Py_XDECREF(d);
+            return nullptr; //warning was turned into a real exception, 
+        }
+#endif
     }
 
     return d;
