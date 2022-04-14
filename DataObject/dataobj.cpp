@@ -5202,6 +5202,7 @@ RetVal AddScalarFunc<ito::DateTime>(
         "",
         __FILE__,
         __LINE__));
+	return RetVal(retOk);
 }
 
 template <>
@@ -5214,6 +5215,7 @@ RetVal AddScalarFunc<ito::TimeDelta>(
         "",
         __FILE__,
         __LINE__));
+	return RetVal(retOk);
 }
 
 typedef RetVal (*tAddScalarFunc)(
@@ -5388,6 +5390,7 @@ RetVal AddComplexScalarFunc<ito::DateTime>(
         "",
         __FILE__,
         __LINE__));
+	return RetVal(retOk);
 }
 
 template <>
@@ -5400,6 +5403,7 @@ RetVal AddComplexScalarFunc<ito::TimeDelta>(
         "",
         __FILE__,
         __LINE__));
+	return RetVal(retOk);
 }
 
 typedef RetVal (*tAddComplexScalarFunc)(
@@ -5416,6 +5420,7 @@ RetVal AddTimeDeltaScalarFunc(
         "",
         __FILE__,
         __LINE__));
+	return RetVal(retOk);
 }
 
 template <>
