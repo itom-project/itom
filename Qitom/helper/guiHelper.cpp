@@ -48,6 +48,7 @@ namespace ito
     */
     int GuiHelper::getScreenLogicalDpi(const QPoint *pos /*= nullptr*/)
     {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
         QScreen *currentScreen;
         if (pos)
         {
@@ -176,6 +177,18 @@ namespace ito
 
                      << ratioPhysicalDPCMvsPPCMY;
         }*/
+#else
+          QList<QScreen*> screens = QApplication::screens();
+          if (screens.size() > 0)
+          {
+              dpi = screens[0]->logicalDotsPerInch();
+          }
+
+          if (screens.size() == 0 || dpi <= 0)
+          {
+              return 96;
+          }
+#endif
 
         return dpi;
     }

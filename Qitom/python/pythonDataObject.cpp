@@ -47,7 +47,11 @@
 #define PROTOCOL_STR_LENGTH 128
 
 namespace ito {
-
+template<class T>
+std::unique_ptr<T> make_unique(std::size_t size)
+{
+    return std::unique_ptr<T>(new typename std::remove_extent<T>::type[size]());
+}
 template <typename... Args> std::string string_format(const std::string& format, Args... args)
 {
     int size_s = _snprintf(nullptr, 0, format.c_str(), args...) + 1; // Extra space for '\0'
@@ -56,7 +60,7 @@ template <typename... Args> std::string string_format(const std::string& format,
         throw std::runtime_error("Error during formatting.");
     }
     auto size = static_cast<size_t>(size_s);
-    auto buf = std::make_unique<char[]>(size);
+    auto buf = make_unique<char[]>(size);
     _snprintf(buf.get(), size, format.c_str(), args...);
     return std::string(buf.get(), buf.get() + size - 1); // We don't want the '\0' inside
 }

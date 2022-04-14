@@ -387,7 +387,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap
                 }
                 else
                 {
-                    (*retValue) += RetVal::format(retError, 0, tr("The itom subdirectory of Python '%s' is not existing.\nPlease change setting in the property dialog of itom.").toLatin1().data(),
+                    (*retValue) += RetVal::format(retError, 0, tr("The itom subdirectory of Python '%s' does not exist.\nPlease change setting in the property dialog of itom.").toLatin1().data(),
                         pythonSubDir.toLatin1().data());
                     return;
                 }

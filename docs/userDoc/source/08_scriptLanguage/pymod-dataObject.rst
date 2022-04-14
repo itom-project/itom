@@ -504,6 +504,8 @@ to the next microsecond value. The Numpy values do not support any timezone info
 
 Internally, itom stores a ``datetime`` value as 64bit value, where 0 is equal to the date ``1970-01-01 00:00:00.0000`` (epoch).
 
+A time zone support (different than the UTC default timezone) is only supported from Python 3.7 on.
+
 **timedelta**
 
 Similar to ``datetime``. The itom internal value has a microseconds resolution, too, equal to the Python core
