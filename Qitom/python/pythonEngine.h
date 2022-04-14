@@ -248,7 +248,7 @@ private:
     void updatePythonWorkspaces(DictUpdateFlag globalDict, DictUpdateFlag localDict, bool lockGIL, bool delayExecution = false);
 
     ito::RetVal pickleDictionary(PyObject *dict, const QString &filename);
-    ito::RetVal unpickleDictionary(PyObject *destinationDict, const QString &filename, bool overwrite);
+    ito::RetVal unpickleDictionary(PyObject *destinationDict, const QString &filename, bool overwrite, bool replaceKeyByValidPyIdentifier);
 
     //!< runs the given Python string command
     void pythonRunString(QString cmd);
@@ -411,7 +411,7 @@ public slots:
     ito::RetVal shutdownBreakPointDebugConnections();
 
     bool renameVariable(bool globalNotLocal, const QString &oldFullItemName, QString newKey, ItomSharedSemaphore *semaphore = NULL);
-    bool deleteVariable(bool globalNotLocal, const QStringList &fullItemNames, ItomSharedSemaphore *semaphore = NULL);
+    bool deleteVariable(bool globalNotLocal, const QStringList &fullItemNames);
     ito::RetVal pickleVariables(bool globalNotLocal, QString filename, QStringList varNames, ItomSharedSemaphore *semaphore = NULL);
     ito::RetVal pickleSingleParam(QString filename, QSharedPointer<ito::Param> value, const QString &valueName, ItomSharedSemaphore *semaphore = NULL);
     ito::RetVal unpickleVariables(bool globalNotLocal, QString filename, QString packedVarName, ItomSharedSemaphore *semaphore = NULL);

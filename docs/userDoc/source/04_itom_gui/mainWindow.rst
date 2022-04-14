@@ -21,6 +21,15 @@ can also be docked into |itom|'s main window.
 Further functionalities of |itom| are reached by the menu or the toolbars. It is possible to add further user defined 
 menus and toolbars using the python scripting language (see :ref:`toolbar-start`).
 
+To support high dpi screens, |itom| enables |Qt| automatic scaling. 
+
+.. seealso:: 
+
+    https://doc.qt.io/qt-5/highdpi.html 
+    
+    https://www.qt.io/blog/2016/01/26/high-dpi-support-in-qt-5-6
+
+
 .. _console:
 
 Command Line

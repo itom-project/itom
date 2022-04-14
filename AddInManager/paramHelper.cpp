@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2022, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
@@ -22,11 +22,10 @@
 
 #include "paramHelper.h"
 #include "../common/addInInterface.h"
-#include "../common/helperCommon.h"
 
 namespace ito {
 
-//---------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------------------
 tCompareResult ParamHelper::compareParam(
     const ito::Param& paramTemplate, const ito::Param& param, ito::RetVal& ret)
 {
@@ -68,7 +67,7 @@ tCompareResult ParamHelper::compareParam(
     return compareMetaParam(metaTemplate, meta, paramTemplate.getName(), param.getName(), ret);
 }
 
-//---------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------------------
 tCompareResult ParamHelper::compareMetaParam(
     const ito::ParamMeta* metaTemplate,
     const ito::ParamMeta* meta,
@@ -82,9 +81,10 @@ tCompareResult ParamHelper::compareMetaParam(
     }
     else if (meta == nullptr)
     {
-        return tCmpCompatible; // param is compatible to paramTemplate, since it has no meta block
-                               // defined, but paramTemplate has. A meta bock always is more
-                               // restrictive than no.
+        // param is compatible to paramTemplate, since it has no meta block
+        // defined, but paramTemplate has. A meta bock always is more
+        // restrictive than no.
+        return tCmpCompatible;
     }
     else if (metaTemplate == nullptr)
     {
@@ -105,8 +105,8 @@ tCompareResult ParamHelper::compareMetaParam(
         ret += ito::RetVal::format(
             ito::retError,
             0,
-            QObject::tr("The type of the meta information of parameter '%s' is unequal to this "
-                        "of the interface parameter '%s'.")
+            QObject::tr("The type of the meta information of parameter '%s' is unequal to this of "
+                        "the interface parameter '%s'.")
                 .toLatin1()
                 .data(),
             name,
@@ -117,23 +117,21 @@ tCompareResult ParamHelper::compareMetaParam(
     switch (metaTemplate->getType())
     {
     case ito::ParamMeta::rttiCharMeta: {
-        auto mT = static_cast<const ito::CharMeta*>(metaTemplate);
-        auto m = static_cast<const ito::CharMeta*>(meta);
-
+        const ito::CharMeta* mT = static_cast<const ito::CharMeta*>(metaTemplate);
+        const ito::CharMeta* m = static_cast<const ito::CharMeta*>(meta);
         if (!mT || !m)
         {
             ret += ito::RetVal::format(
                 ito::retError,
                 0,
-                QObject::tr("The type of the meta information of parameter '%s' is unequal to "
-                            "this of the interface parameter '%s'.")
+                QObject::tr("The type of the meta information of parameter '%s' is unequal to this "
+                            "of the interface parameter '%s'.")
                     .toLatin1()
                     .data(),
                 name,
                 nameTemplate);
             return tCmpFailed;
         }
-
         if (m->getMax() == mT->getMax() && m->getMin() == mT->getMin())
         {
             return tCmpEqual;
@@ -159,23 +157,21 @@ tCompareResult ParamHelper::compareMetaParam(
     break;
 
     case ito::ParamMeta::rttiCharArrayMeta: {
-        auto mT = static_cast<const ito::CharArrayMeta*>(metaTemplate);
-        auto m = static_cast<const ito::CharArrayMeta*>(meta);
-
+        const ito::CharArrayMeta* mT = static_cast<const ito::CharArrayMeta*>(metaTemplate);
+        const ito::CharArrayMeta* m = static_cast<const ito::CharArrayMeta*>(meta);
         if (!mT || !m)
         {
             ret += ito::RetVal::format(
                 ito::retError,
                 0,
-                QObject::tr("The type of the meta information of parameter '%s' is unequal to "
-                            "this of the interface parameter '%s'.")
+                QObject::tr("The type of the meta information of parameter '%s' is unequal to this "
+                            "of the interface parameter '%s'.")
                     .toLatin1()
                     .data(),
                 name,
                 nameTemplate);
             return tCmpFailed;
         }
-
         if (m->getMax() == mT->getMax() && m->getMin() == mT->getMin() &&
             m->getNumMin() == mT->getNumMin() && m->getNumMax() == mT->getNumMax())
         {
@@ -193,8 +189,8 @@ tCompareResult ParamHelper::compareMetaParam(
                 ito::retError,
                 0,
                 QObject::tr("The allowed char range or the allowed range of numbers of elements of "
-                            "parameter '%s' is "
-                            "smaller than the requested range from interface parameter '%s'.")
+                            "parameter '%s' is smaller than the requested range from interface "
+                            "parameter '%s'.")
                     .toLatin1()
                     .data(),
                 name,
@@ -205,23 +201,21 @@ tCompareResult ParamHelper::compareMetaParam(
     break;
 
     case ito::ParamMeta::rttiIntMeta: {
-        auto mT = static_cast<const ito::IntMeta*>(metaTemplate);
-        auto m = static_cast<const ito::IntMeta*>(meta);
-
+        const ito::IntMeta* mT = static_cast<const ito::IntMeta*>(metaTemplate);
+        const ito::IntMeta* m = static_cast<const ito::IntMeta*>(meta);
         if (!mT || !m)
         {
             ret += ito::RetVal::format(
                 ito::retError,
                 0,
-                QObject::tr("The type of the meta information of parameter '%s' is unequal to "
-                            "this of the interface parameter '%s'.")
+                QObject::tr("The type of the meta information of parameter '%s' is unequal to this "
+                            "of the interface parameter '%s'.")
                     .toLatin1()
                     .data(),
                 name,
                 nameTemplate);
             return tCmpFailed;
         }
-
         if (m->getMax() == mT->getMax() && m->getMin() == mT->getMin())
         {
             return tCmpEqual;
@@ -247,23 +241,21 @@ tCompareResult ParamHelper::compareMetaParam(
     break;
 
     case ito::ParamMeta::rttiIntArrayMeta: {
-        auto mT = static_cast<const ito::IntArrayMeta*>(metaTemplate);
-        auto m = static_cast<const ito::IntArrayMeta*>(meta);
-
+        const ito::IntArrayMeta* mT = static_cast<const ito::IntArrayMeta*>(metaTemplate);
+        const ito::IntArrayMeta* m = static_cast<const ito::IntArrayMeta*>(meta);
         if (!mT || !m)
         {
             ret += ito::RetVal::format(
                 ito::retError,
                 0,
-                QObject::tr("The type of the meta information of parameter '%s' is unequal to "
-                            "this of the interface parameter '%s'.")
+                QObject::tr("The type of the meta information of parameter '%s' is unequal to this "
+                            "of the interface parameter '%s'.")
                     .toLatin1()
                     .data(),
                 name,
                 nameTemplate);
             return tCmpFailed;
         }
-
         if (m->getMax() == mT->getMax() && m->getMin() == mT->getMin() &&
             m->getNumMin() == mT->getNumMin() && m->getNumMax() == mT->getNumMax())
         {
@@ -281,8 +273,8 @@ tCompareResult ParamHelper::compareMetaParam(
                 ito::retError,
                 0,
                 QObject::tr("The allowed integer range or the allowed range of numbers of elements "
-                            "of parameter '%s' "
-                            "is smaller than the requested range from interface parameter '%s'.")
+                            "of parameter '%s' is smaller than the requested range from interface "
+                            "parameter '%s'.")
                     .toLatin1()
                     .data(),
                 name,
@@ -294,23 +286,21 @@ tCompareResult ParamHelper::compareMetaParam(
 
     case ito::ParamMeta::rttiIntervalMeta:
     case ito::ParamMeta::rttiRangeMeta: {
-        auto mT = static_cast<const ito::IntervalMeta*>(metaTemplate);
-        auto m = static_cast<const ito::IntervalMeta*>(meta);
-
+        const ito::IntervalMeta* mT = static_cast<const ito::IntervalMeta*>(metaTemplate);
+        const ito::IntervalMeta* m = static_cast<const ito::IntervalMeta*>(meta);
         if (!mT || !m)
         {
             ret += ito::RetVal::format(
                 ito::retError,
                 0,
-                QObject::tr("The type of the meta information of parameter '%s' is unequal to "
-                            "this of the interface parameter '%s'.")
+                QObject::tr("The type of the meta information of parameter '%s' is unequal to this "
+                            "of the interface parameter '%s'.")
                     .toLatin1()
                     .data(),
                 name,
                 nameTemplate);
             return tCmpFailed;
         }
-
         if (m->getMax() == mT->getMax() && m->getMin() == mT->getMin() &&
             m->getSizeMin() == mT->getSizeMin() && m->getSizeMax() == mT->getSizeMax())
         {
@@ -327,9 +317,9 @@ tCompareResult ParamHelper::compareMetaParam(
             ret += ito::RetVal::format(
                 ito::retError,
                 0,
-                QObject::tr("The allowed value range or the allowed interval/range of parameter "
-                            "'%s' is smaller than "
-                            "the requested range from interface parameter '%s'.")
+                QObject::tr(
+                    "The allowed value range or the allowed interval/range of parameter '%s' is "
+                    "smaller than the requested range from interface parameter '%s'.")
                     .toLatin1()
                     .data(),
                 name,
@@ -340,15 +330,15 @@ tCompareResult ParamHelper::compareMetaParam(
     break;
 
     case ito::ParamMeta::rttiRectMeta: {
-        auto mT = static_cast<const ito::RectMeta*>(metaTemplate);
-        auto m = static_cast<const ito::RectMeta*>(meta);
+        const ito::RectMeta* mT = static_cast<const ito::RectMeta*>(metaTemplate);
+        const ito::RectMeta* m = static_cast<const ito::RectMeta*>(meta);
         if (!mT || !m)
         {
             ret += ito::RetVal::format(
                 ito::retError,
                 0,
-                QObject::tr("The type of the meta information of parameter '%s' is unequal to "
-                            "this of the interface parameter '%s'.")
+                QObject::tr("The type of the meta information of parameter '%s' is unequal to this "
+                            "of the interface parameter '%s'.")
                     .toLatin1()
                     .data(),
                 name,
@@ -380,23 +370,21 @@ tCompareResult ParamHelper::compareMetaParam(
     break;
 
     case ito::ParamMeta::rttiDoubleMeta: {
-        auto mT = static_cast<const ito::DoubleMeta*>(metaTemplate);
-        auto m = static_cast<const ito::DoubleMeta*>(meta);
-
+        const ito::DoubleMeta* mT = static_cast<const ito::DoubleMeta*>(metaTemplate);
+        const ito::DoubleMeta* m = static_cast<const ito::DoubleMeta*>(meta);
         if (!mT || !m)
         {
             ret += ito::RetVal::format(
                 ito::retError,
                 0,
-                QObject::tr("The type of the meta information of parameter '%s' is unequal to "
-                            "this of the interface parameter '%s'.")
+                QObject::tr("The type of the meta information of parameter '%s' is unequal to this "
+                            "of the interface parameter '%s'.")
                     .toLatin1()
                     .data(),
                 name,
                 nameTemplate);
             return tCmpFailed;
         }
-
         if (m->getMax() == mT->getMax() && m->getMin() == mT->getMin())
         {
             return tCmpEqual;
@@ -422,23 +410,21 @@ tCompareResult ParamHelper::compareMetaParam(
     break;
 
     case ito::ParamMeta::rttiDoubleArrayMeta: {
-        auto mT = static_cast<const ito::DoubleArrayMeta*>(metaTemplate);
-        auto m = static_cast<const ito::DoubleArrayMeta*>(meta);
-
+        const ito::DoubleArrayMeta* mT = static_cast<const ito::DoubleArrayMeta*>(metaTemplate);
+        const ito::DoubleArrayMeta* m = static_cast<const ito::DoubleArrayMeta*>(meta);
         if (!mT || !m)
         {
             ret += ito::RetVal::format(
                 ito::retError,
                 0,
-                QObject::tr("The type of the meta information of parameter '%s' is unequal to "
-                            "this of the interface parameter '%s'.")
+                QObject::tr("The type of the meta information of parameter '%s' is unequal to this "
+                            "of the interface parameter '%s'.")
                     .toLatin1()
                     .data(),
                 name,
                 nameTemplate);
             return tCmpFailed;
         }
-
         if (m->getMax() == mT->getMax() && m->getMin() == mT->getMin() &&
             m->getNumMin() == mT->getNumMin() && m->getNumMax() == mT->getNumMax())
         {
@@ -456,8 +442,8 @@ tCompareResult ParamHelper::compareMetaParam(
                 ito::retError,
                 0,
                 QObject::tr("The allowed double range or the allowed range of numbers of elements "
-                            "of parameter '%s' is "
-                            "smaller than the requested range from interface parameter '%s'.")
+                            "of parameter '%s' is smaller than the requested range from interface "
+                            "parameter '%s'.")
                     .toLatin1()
                     .data(),
                 name,
@@ -468,23 +454,22 @@ tCompareResult ParamHelper::compareMetaParam(
     break;
 
     case ito::ParamMeta::rttiDoubleIntervalMeta: {
-        auto mT = static_cast<const ito::DoubleIntervalMeta*>(metaTemplate);
-        auto m = static_cast<const ito::DoubleIntervalMeta*>(meta);
-
+        const ito::DoubleIntervalMeta* mT =
+            static_cast<const ito::DoubleIntervalMeta*>(metaTemplate);
+        const ito::DoubleIntervalMeta* m = static_cast<const ito::DoubleIntervalMeta*>(meta);
         if (!mT || !m)
         {
             ret += ito::RetVal::format(
                 ito::retError,
                 0,
-                QObject::tr("The type of the meta information of parameter '%s' is unequal to "
-                            "this of the interface parameter '%s'.")
+                QObject::tr("The type of the meta information of parameter '%s' is unequal to this "
+                            "of the interface parameter '%s'.")
                     .toLatin1()
                     .data(),
                 name,
                 nameTemplate);
             return tCmpFailed;
         }
-
         if (m->getMax() == mT->getMax() && m->getMin() == mT->getMin() &&
             m->getSizeMin() == mT->getSizeMin() && m->getSizeMax() == mT->getSizeMax())
         {
@@ -513,16 +498,15 @@ tCompareResult ParamHelper::compareMetaParam(
     break;
 
     case ito::ParamMeta::rttiStringMeta: {
-        auto mT = static_cast<const ito::StringMeta*>(metaTemplate);
-        auto m = static_cast<const ito::StringMeta*>(meta);
-
+        const ito::StringMeta* mT = static_cast<const ito::StringMeta*>(metaTemplate);
+        const ito::StringMeta* m = static_cast<const ito::StringMeta*>(meta);
         if (!mT || !m)
         {
             ret += ito::RetVal::format(
                 ito::retError,
                 0,
-                QObject::tr("The type of the meta information of parameter '%s' is unequal to "
-                            "this of the interface parameter '%s'.")
+                QObject::tr("The type of the meta information of parameter '%s' is unequal to this "
+                            "of the interface parameter '%s'.")
                     .toLatin1()
                     .data(),
                 name,
@@ -535,8 +519,8 @@ tCompareResult ParamHelper::compareMetaParam(
             ret += ito::RetVal::format(
                 ito::retError,
                 0,
-                QObject::tr("The string type of the meta information of parameter '%s' is "
-                            "unequal to this of the interface parameter '%s'.")
+                QObject::tr("The string type of the meta information of parameter '%s' is unequal "
+                            "to this of the interface parameter '%s'.")
                     .toLatin1()
                     .data(),
                 name,
@@ -566,8 +550,8 @@ tCompareResult ParamHelper::compareMetaParam(
                 ret += ito::RetVal::format(
                     ito::retError,
                     0,
-                    QObject::tr("String '%s', requested by meta data of interface parameter "
-                                "'%s' could not be found in meta data of parameter '%s'.")
+                    QObject::tr("String '%s', requested by meta data of interface parameter '%s' "
+                                "could not be found in meta data of parameter '%s'.")
                         .toLatin1()
                         .data(),
                     sT,
@@ -588,71 +572,16 @@ tCompareResult ParamHelper::compareMetaParam(
     }
     break;
 
-    case ito::ParamMeta::rttiStringListMeta: {
-        auto mT = static_cast<const ito::StringListMeta*>(metaTemplate);
-        auto m = static_cast<const ito::StringListMeta*>(meta);
-
-        tCompareResult strCmp = compareMetaParam(
-            static_cast<const ito::StringMeta*>(metaTemplate),
-            static_cast<const ito::StringMeta*>(meta),
-            nameTemplate,
-            name,
-            ret);
-
-        if (strCmp == tCmpFailed)
-        {
-            return strCmp;
-        }
-
-        if (!mT || !m)
-        {
-            ret += ito::RetVal::format(
-                ito::retError,
-                0,
-                QObject::tr("The type of the meta information of parameter '%s' is unequal to "
-                            "this of the interface parameter '%s'.")
-                    .toLatin1()
-                    .data(),
-                name,
-                nameTemplate);
-            return tCmpFailed;
-        }
-
-        if (m->getNumMin() == mT->getNumMin() && m->getNumMax() == mT->getNumMax())
-        {
-            return strCmp; // tCmpEqual + result of stringMeta comparison
-        }
-        else if (m->getNumMax() >= mT->getNumMax() && m->getNumMin() <= mT->getNumMin())
-        {
-            return tCmpCompatible; // stringMeta comparison can also be equal or compatible
-        }
-        else
-        {
-            ret += ito::RetVal::format(
-                ito::retError,
-                0,
-                QObject::tr("The allowed range of numbers of elements of parameter '%s' is "
-                            "smaller than the requested range from interface parameter '%s'.")
-                    .toLatin1()
-                    .data(),
-                name,
-                nameTemplate);
-            return tCmpFailed;
-        }
-    }
-    break;
-
     case ito::ParamMeta::rttiHWMeta: {
-        auto mT = static_cast<const ito::HWMeta*>(metaTemplate);
-        auto m = static_cast<const ito::HWMeta*>(meta);
-
+        const ito::HWMeta* mT = static_cast<const ito::HWMeta*>(metaTemplate);
+        const ito::HWMeta* m = static_cast<const ito::HWMeta*>(meta);
         if (!mT || !m)
         {
             ret += ito::RetVal::format(
                 ito::retError,
                 0,
-                QObject::tr("The type of the meta information of parameter '%s' is unequal to "
-                            "this of the interface parameter '%s'.")
+                QObject::tr("The type of the meta information of parameter '%s' is unequal to this "
+                            "of the interface parameter '%s'.")
                     .toLatin1()
                     .data(),
                 name,
@@ -667,8 +596,8 @@ tCompareResult ParamHelper::compareMetaParam(
                 ret += ito::RetVal::format(
                     ito::retError,
                     0,
-                    QObject::tr("The meta data of the interface parameter '%s' requires a "
-                                "plugin with name '%s', but parameter '%s' does it not.")
+                    QObject::tr("The meta data of the interface parameter '%s' requires a plugin "
+                                "with name '%s', but parameter '%s' does it not.")
                         .toLatin1()
                         .data(),
                     nameTemplate,
@@ -715,16 +644,15 @@ tCompareResult ParamHelper::compareMetaParam(
     break;
 
     case ito::ParamMeta::rttiDObjMeta: {
-        auto mT = static_cast<const ito::DObjMeta*>(metaTemplate);
-        auto m = static_cast<const ito::DObjMeta*>(meta);
-
+        const ito::DObjMeta* mT = static_cast<const ito::DObjMeta*>(metaTemplate);
+        const ito::DObjMeta* m = static_cast<const ito::DObjMeta*>(meta);
         if (!mT || !m)
         {
             ret += ito::RetVal::format(
                 ito::retError,
                 0,
-                QObject::tr("The type of the meta information of parameter '%s' is unequal to "
-                            "this of the interface parameter '%s'.")
+                QObject::tr("The type of the meta information of parameter '%s' is unequal to this "
+                            "of the interface parameter '%s'.")
                     .toLatin1()
                     .data(),
                 name,
@@ -738,8 +666,8 @@ tCompareResult ParamHelper::compareMetaParam(
             ret += ito::RetVal::format(
                 ito::retError,
                 0,
-                QObject::tr("The allowed data object types of parameter '%s' are more "
-                            "restrictive than these required by the interface parameter '%s'.")
+                QObject::tr("The allowed data object types of parameter '%s' are more restrictive "
+                            "than these required by the interface parameter '%s'.")
                     .toLatin1()
                     .data(),
                 name,
@@ -762,9 +690,9 @@ tCompareResult ParamHelper::compareMetaParam(
                 ret += ito::RetVal::format(
                     ito::retError,
                     0,
-                    QObject::tr("The minimum and maximum dimensions of the data object of "
-                                "parameter '%s' are more "
-                                "restrictive than these required by the interface parameter '%s'.")
+                    QObject::tr(
+                        "The minimum and maximum dimensions of the data object of parameter '%s' "
+                        "are more restrictive than these required by the interface parameter '%s'.")
                         .toLatin1()
                         .data(),
                     name,
@@ -783,9 +711,9 @@ tCompareResult ParamHelper::compareMetaParam(
                 ret += ito::RetVal::format(
                     ito::retError,
                     0,
-                    QObject::tr("The minimum and maximum dimensions of the data object of "
-                                "parameter '%s' are more "
-                                "restrictive than these required by the interface parameter '%s'.")
+                    QObject::tr(
+                        "The minimum and maximum dimensions of the data object of parameter '%s' "
+                        "are more restrictive than these required by the interface parameter '%s'.")
                         .toLatin1()
                         .data(),
                     name,
@@ -795,6 +723,7 @@ tCompareResult ParamHelper::compareMetaParam(
         }
     }
     break;
+
 
     default: {
         ret += ito::RetVal::format(
@@ -807,7 +736,7 @@ tCompareResult ParamHelper::compareMetaParam(
     }
 }
 
-//---------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal ParamHelper::validateStringMeta(
     const ito::StringMeta* meta,
     const char* value,
@@ -816,17 +745,20 @@ ito::RetVal ParamHelper::validateStringMeta(
 {
     QLatin1String value_(value);
 
+
     if (meta && meta->getLen() > 0 && value)
     {
         bool found = false;
         QRegExp reg;
-
         switch (meta->getStringType())
         {
         case ito::StringMeta::String:
+            reg.setPatternSyntax(QRegExp::FixedString);
+
             for (int i = 0; i < meta->getLen(); i++)
             {
-                if (QLatin1String(meta->getString(i)) == value_)
+                reg.setPattern(QLatin1String(meta->getString(i)));
+                if (reg.exactMatch(value_))
                 {
                     found = true;
                     break;
@@ -909,7 +841,7 @@ ito::RetVal ParamHelper::validateStringMeta(
     return ito::retOk;
 }
 
-//---------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal ParamHelper::validateDoubleMeta(
     const ito::DoubleMeta* meta, double value, const char* name /*= nullptr*/)
 {
@@ -925,7 +857,7 @@ ito::RetVal ParamHelper::validateDoubleMeta(
                 ito::retError,
                 0,
                 (parseNamePrefix(name) +
-                 QObject::tr("value %1 out of range [%2, %3]").arg(value).arg(minVal).arg(maxVal))
+                 QObject::tr("value out of range [%1, %2]").arg(minVal).arg(maxVal))
                     .toLatin1()
                     .data());
         }
@@ -937,8 +869,7 @@ ito::RetVal ParamHelper::validateDoubleMeta(
                 ito::retError,
                 0,
                 (parseNamePrefix(name) +
-                 QObject::tr("value %1 does not fit to given step size [%2:%3:%4]")
-                     .arg(value)
+                 QObject::tr("value does not fit to given step size [%1:%2:%3]")
                      .arg(minVal)
                      .arg(step)
                      .arg(maxVal))
@@ -949,7 +880,7 @@ ito::RetVal ParamHelper::validateDoubleMeta(
     return ito::retOk;
 }
 
-//---------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal ParamHelper::validateDoubleMetaAndRoundToStepSize(
     const ito::DoubleMeta* meta,
     ito::ParamBase& doubleParam,
@@ -970,7 +901,7 @@ ito::RetVal ParamHelper::validateDoubleMetaAndRoundToStepSize(
                 ito::retError,
                 0,
                 (parseNamePrefix(name) +
-                 QObject::tr("value %1 out of range [%2, %3]").arg(value).arg(minVal).arg(maxVal))
+                 QObject::tr("value out of range [%1, %2]").arg(minVal).arg(maxVal))
                     .toLatin1()
                     .data());
         }
@@ -983,8 +914,7 @@ ito::RetVal ParamHelper::validateDoubleMetaAndRoundToStepSize(
                     ito::retError,
                     0,
                     (parseNamePrefix(name) +
-                     QObject::tr("value %1 does not fit to given step size [%2:%3:%4]")
-                         .arg(value)
+                     QObject::tr("value does not fit to given step size [%1:%2:%3]")
                          .arg(minVal)
                          .arg(step)
                          .arg(maxVal))
@@ -1004,7 +934,7 @@ ito::RetVal ParamHelper::validateDoubleMetaAndRoundToStepSize(
     return ito::retOk;
 }
 
-//---------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal ParamHelper::validateDoubleMetaAndRoundToStepSize(
     const ito::DoubleMeta* meta,
     double& value,
@@ -1024,7 +954,7 @@ ito::RetVal ParamHelper::validateDoubleMetaAndRoundToStepSize(
                 ito::retError,
                 0,
                 (parseNamePrefix(name) +
-                 QObject::tr("value %1 out of range [%2, %3]").arg(value).arg(minVal).arg(maxVal))
+                 QObject::tr("value out of range [%1, %2]").arg(minVal).arg(maxVal))
                     .toLatin1()
                     .data());
         }
@@ -1037,8 +967,7 @@ ito::RetVal ParamHelper::validateDoubleMetaAndRoundToStepSize(
                     ito::retError,
                     0,
                     (parseNamePrefix(name) +
-                     QObject::tr("value %1 does not fit to given step size [%2:%3:%4]")
-                         .arg(value)
+                     QObject::tr("value does not fit to given step size [%1:%2:%3]")
                          .arg(minVal)
                          .arg(step)
                          .arg(maxVal))
@@ -1057,7 +986,7 @@ ito::RetVal ParamHelper::validateDoubleMetaAndRoundToStepSize(
     return ito::retOk;
 }
 
-//---------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal ParamHelper::validateIntMeta(
     const ito::IntMeta* meta, int value, const char* name /*= nullptr*/)
 {
@@ -1072,7 +1001,7 @@ ito::RetVal ParamHelper::validateIntMeta(
                 ito::retError,
                 0,
                 (parseNamePrefix(name) +
-                 QObject::tr("value %1 out of range [%2, %3]").arg(value).arg(minVal).arg(maxVal))
+                 QObject::tr("value out of range [%1, %2]").arg(minVal).arg(maxVal))
                     .toLatin1()
                     .data());
         }
@@ -1084,8 +1013,7 @@ ito::RetVal ParamHelper::validateIntMeta(
                 ito::retError,
                 0,
                 (parseNamePrefix(name) +
-                 QObject::tr("value %1 does not fit to given step size [%2:%3:%4]")
-                     .arg(value)
+                 QObject::tr("value does not fit to given step size [%1:%2:%3]")
                      .arg(minVal)
                      .arg(step)
                      .arg(maxVal))
@@ -1096,15 +1024,14 @@ ito::RetVal ParamHelper::validateIntMeta(
     return ito::retOk;
 }
 
-//---------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal ParamHelper::validateCharMeta(
     const ito::CharMeta* meta, char value, const char* name /*= nullptr*/)
 {
     if (meta)
     {
-        // cast to int, else the error message would contain the char representation
-        int minVal = (int)meta->getMin();
-        int maxVal = (int)meta->getMax();
+        char minVal = meta->getMin();
+        char maxVal = meta->getMax();
 
         if (value < minVal || value > maxVal)
         {
@@ -1112,25 +1039,19 @@ ito::RetVal ParamHelper::validateCharMeta(
                 ito::retError,
                 0,
                 (parseNamePrefix(name) +
-                 QObject::tr("value %1 out of range [%2, %3]")
-                     .arg((int)value)
-                     .arg(minVal)
-                     .arg(maxVal))
+                 QObject::tr("value out of range [%1, %2]").arg(minVal).arg(maxVal))
                     .toLatin1()
                     .data());
         }
 
-        // cast to int, else the error message would contain the char representation
-        int step = (int)meta->getStepSize();
-
+        char step = meta->getStepSize();
         if (step > 1 && ((value - minVal) % step) != 0)
         {
             return ito::RetVal(
                 ito::retError,
                 0,
                 (parseNamePrefix(name) +
-                 QObject::tr("value %1 does not fit to given step size [%2:%3:%4]")
-                     .arg((int)value)
+                 QObject::tr("value does not fit to given step size [%1:%2:%3]")
                      .arg(minVal)
                      .arg(step)
                      .arg(maxVal))
@@ -1141,7 +1062,7 @@ ito::RetVal ParamHelper::validateCharMeta(
     return ito::retOk;
 }
 
-//---------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal ParamHelper::validateHWMeta(
     const ito::HWMeta* meta,
     ito::AddInBase* value,
@@ -1187,7 +1108,74 @@ ito::RetVal ParamHelper::validateHWMeta(
     return ito::retOk;
 }
 
-//---------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal ParamHelper::validateCharArrayMeta(
+    const ito::ParamMeta* meta, const char* values, size_t len, const char* name /*= nullptr*/)
+{
+    if (meta)
+    {
+        switch (meta->getType())
+        {
+        case ito::ParamMeta::rttiCharArrayMeta: {
+            const ito::CharArrayMeta* cam = (const ito::CharArrayMeta*)meta;
+            size_t steps = cam->getNumStepSize();
+
+            if (len < cam->getNumMin() || len > cam->getNumMax())
+            {
+                return ito::RetVal(
+                    ito::retError,
+                    0,
+                    (parseNamePrefix(name) +
+                     QObject::tr("length of char array out of range [%1, %2]")
+                         .arg(cam->getNumMin())
+                         .arg(cam->getNumMax()))
+                        .toLatin1()
+                        .data());
+            }
+            else if (steps > 1 && ((len - cam->getNumMin()) % steps) != 0)
+            {
+                return ito::RetVal(
+                    ito::retError,
+                    0,
+                    (parseNamePrefix(name) +
+                     QObject::tr("length of char array does not fit to given step size [%1:%2:%3]")
+                         .arg(cam->getNumMin())
+                         .arg(cam->getNumStepSize())
+                         .arg(cam->getNumMax()))
+                        .toLatin1()
+                        .data());
+            }
+            else
+            {
+                ito::RetVal ret;
+
+                // this cast is allowed since CharArrayMeta is derived from CharMeta
+                const ito::CharMeta* cm = (const ito::CharMeta*)meta;
+
+                for (size_t i = 0; i < len; ++i)
+                {
+                    ret += validateCharMeta(cm, values[i]);
+                }
+
+                return ret;
+            }
+        }
+        break;
+        default:
+            return ito::RetVal(
+                ito::retError,
+                0,
+                (parseNamePrefix(name) +
+                 QObject::tr(
+                     "the given meta information does not fit an array of character values"))
+                    .toLatin1()
+                    .data());
+        }
+    }
+    return ito::retOk;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal ParamHelper::validateStringListMeta(
     const ito::ParamMeta* meta,
     const ito::ByteArray* values,
@@ -1199,7 +1187,7 @@ ito::RetVal ParamHelper::validateStringListMeta(
         switch (meta->getType())
         {
         case ito::ParamMeta::rttiStringListMeta: {
-            auto slm = static_cast<const ito::StringListMeta*>(meta);
+            const ito::StringListMeta* slm = (const ito::StringListMeta*)meta;
             size_t steps = slm->getNumStepSize();
 
             if (len < slm->getNumMin() || len > slm->getNumMax())
@@ -1231,8 +1219,8 @@ ito::RetVal ParamHelper::validateStringListMeta(
             {
                 ito::RetVal ret;
 
-                // this cast is allowed since StringListMeta is derived from StringMeta
-                auto sm = static_cast<const ito::StringMeta*>(meta);
+                // this cast is allowed since CharArrayMeta is derived from CharMeta
+                const ito::StringMeta* sm = (const ito::StringMeta*)meta;
 
                 for (size_t i = 0; i < len; ++i)
                 {
@@ -1248,7 +1236,7 @@ ito::RetVal ParamHelper::validateStringListMeta(
                 ito::retError,
                 0,
                 (parseNamePrefix(name) +
-                 QObject::tr("the given meta information does not fit to a list of strings."))
+                 QObject::tr("the given meta information does not fit an array of string values"))
                     .toLatin1()
                     .data());
         }
@@ -1256,72 +1244,7 @@ ito::RetVal ParamHelper::validateStringListMeta(
     return ito::retOk;
 }
 
-//---------------------------------------------------------------------------------
-ito::RetVal ParamHelper::validateCharArrayMeta(
-    const ito::ParamMeta* meta, const char* values, size_t len, const char* name /*= nullptr*/)
-{
-    if (meta)
-    {
-        switch (meta->getType())
-        {
-        case ito::ParamMeta::rttiCharArrayMeta: {
-            auto cam = static_cast<const ito::CharArrayMeta*>(meta);
-            size_t steps = cam->getNumStepSize();
-
-            if (len < cam->getNumMin() || len > cam->getNumMax())
-            {
-                return ito::RetVal(
-                    ito::retError,
-                    0,
-                    (parseNamePrefix(name) +
-                     QObject::tr("length of char array out of range [%1, %2]")
-                         .arg(cam->getNumMin())
-                         .arg(cam->getNumMax()))
-                        .toLatin1()
-                        .data());
-            }
-            else if (steps > 1 && ((len - cam->getNumMin()) % steps) != 0)
-            {
-                return ito::RetVal(
-                    ito::retError,
-                    0,
-                    (parseNamePrefix(name) +
-                     QObject::tr("length of char array does not fit to given step size [%1:%2:%3]")
-                         .arg(cam->getNumMin())
-                         .arg(cam->getNumStepSize())
-                         .arg(cam->getNumMax()))
-                        .toLatin1()
-                        .data());
-            }
-            else
-            {
-                ito::RetVal ret;
-                // this cast is allowed since CharArrayMeta is derived from CharMeta
-                auto cm = static_cast<const ito::CharMeta*>(meta);
-
-                for (size_t i = 0; i < len; ++i)
-                {
-                    ret += validateCharMeta(cm, values[i]);
-                }
-                return ret;
-            }
-        }
-        break;
-        default:
-            return ito::RetVal(
-                ito::retError,
-                0,
-                (parseNamePrefix(name) +
-                 QObject::tr(
-                     "the given meta information does not fit an array of character values"))
-                    .toLatin1()
-                    .data());
-        }
-    }
-    return ito::retOk;
-}
-
-//---------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal ParamHelper::validateIntArrayMeta(
     const ito::ParamMeta* meta, const int* values, size_t len, const char* name /*= nullptr*/)
 {
@@ -1330,7 +1253,7 @@ ito::RetVal ParamHelper::validateIntArrayMeta(
         switch (meta->getType())
         {
         case ito::ParamMeta::rttiIntArrayMeta: {
-            auto cam = static_cast<const ito::IntArrayMeta*>(meta);
+            const ito::IntArrayMeta* cam = (const ito::IntArrayMeta*)meta;
             size_t steps = cam->getNumStepSize();
 
             if (len < cam->getNumMin() || len > cam->getNumMax())
@@ -1362,19 +1285,22 @@ ito::RetVal ParamHelper::validateIntArrayMeta(
             else
             {
                 ito::RetVal ret;
-                const ito::IntMeta* im = (const ito::IntMeta*)
-                    meta; // this cast is allowed since CharArrayMeta is derived from CharMeta
+
+                // this cast is allowed since CharArrayMeta is derived from CharMeta
+                const ito::IntMeta* im = (const ito::IntMeta*)meta;
+
                 for (size_t i = 0; i < len; ++i)
                 {
                     ret += validateIntMeta(im, values[i]);
                 }
+
                 return ret;
             }
         }
         break;
         case ito::ParamMeta::rttiIntervalMeta:
         case ito::ParamMeta::rttiRangeMeta: {
-            auto drm = static_cast<const ito::IntervalMeta*>(meta);
+            const ito::IntervalMeta* drm = (const ito::IntervalMeta*)meta;
             if (len != 2)
             {
                 return ito::RetVal(
@@ -1387,8 +1313,10 @@ ito::RetVal ParamHelper::validateIntArrayMeta(
             int min = drm->getMin();
             int max = drm->getMax();
             int offset = drm->isIntervalNotRange() ? 0 : 1;
-            int range =
-                offset + values[1] - values[0]; // this is the difference between interval and range
+
+            // this is the difference between interval and range
+            int range = offset + values[1] - values[0];
+
             int ivalStep = drm->getSizeStepSize();
             int step = drm->getStepSize();
 
@@ -1403,8 +1331,8 @@ ito::RetVal ParamHelper::validateIntArrayMeta(
                             0,
                             (parseNamePrefix(name) +
                              QObject::tr(
-                                 "The given integer array [%1,%2] is considered to be an "
-                                 "interval but the first value is bigger than the second one")
+                                 "The given integer array [%1,%2] is considered to be an interval "
+                                 "but the first value is bigger than the second one")
                                  .arg(values[0])
                                  .arg(values[1]))
                                 .toLatin1()
@@ -1416,8 +1344,8 @@ ito::RetVal ParamHelper::validateIntArrayMeta(
                             ito::retError,
                             0,
                             (parseNamePrefix(name) +
-                             QObject::tr("The given integer array [%1,%2] is considered to be "
-                                         "an interval but does not fit to the limits [%3,%4]")
+                             QObject::tr("The given integer array [%1,%2] is considered to be an "
+                                         "interval but does not fit to the limits [%3,%4]")
                                  .arg(values[0])
                                  .arg(values[1])
                                  .arg(min)
@@ -1434,9 +1362,8 @@ ito::RetVal ParamHelper::validateIntArrayMeta(
                             ito::retError,
                             0,
                             (parseNamePrefix(name) +
-                             QObject::tr(
-                                 "The given integer array [%1,%2] is considered to be a range "
-                                 "but the first value is bigger than the second one")
+                             QObject::tr("The given integer array [%1,%2] is considered to be a "
+                                         "range but the first value is bigger than the second one")
                                  .arg(values[0])
                                  .arg(values[1]))
                                 .toLatin1()
@@ -1448,8 +1375,8 @@ ito::RetVal ParamHelper::validateIntArrayMeta(
                             ito::retError,
                             0,
                             (parseNamePrefix(name) +
-                             QObject::tr("The given integer array [%1,%2] is considered to be "
-                                         "a range but does not fit to the limits [%3,%4]")
+                             QObject::tr("The given integer array [%1,%2] is considered to be a "
+                                         "range but does not fit to the limits [%3,%4]")
                                  .arg(values[0])
                                  .arg(values[1])
                                  .arg(min)
@@ -1498,8 +1425,8 @@ ito::RetVal ParamHelper::validateIntArrayMeta(
                         0,
                         (parseNamePrefix(name) +
                          QObject::tr(
-                             "The given integer array [v1,v2] is considered to be an interval "
-                             "but the size of the interval (v2-v1) is out of bounds [%1,%2]")
+                             "The given integer array [v1,v2] is considered to be an interval but "
+                             "the size of the interval (v2-v1) is out of bounds [%1,%2]")
                              .arg(drm->getSizeMin())
                              .arg(drm->getSizeMax()))
                             .toLatin1()
@@ -1511,9 +1438,8 @@ ito::RetVal ParamHelper::validateIntArrayMeta(
                         ito::retError,
                         0,
                         (parseNamePrefix(name) +
-                         QObject::tr(
-                             "The given integer array [v1,v2] is considered to be a range but "
-                             "the size of the range (1+v2-v1) is out of bounds [%1,%2]")
+                         QObject::tr("The given integer array [v1,v2] is considered to be a range "
+                                     "but the size of the range (1+v2-v1) is out of bounds [%1,%2]")
                              .arg(drm->getSizeMin())
                              .arg(drm->getSizeMax()))
                             .toLatin1()
@@ -1555,7 +1481,7 @@ ito::RetVal ParamHelper::validateIntArrayMeta(
         }
         break;
         case ito::ParamMeta::rttiRectMeta: {
-            auto rm = static_cast<const ito::RectMeta*>(meta);
+            const ito::RectMeta* rm = (const ito::RectMeta*)meta;
             const ito::RangeMeta& widthMeta = rm->getWidthRangeMeta();
             const ito::RangeMeta& heightMeta = rm->getHeightRangeMeta();
 
@@ -1564,9 +1490,11 @@ ito::RetVal ParamHelper::validateIntArrayMeta(
             int max = widthMeta.getMax();
             int ivalStep = widthMeta.getSizeStepSize();
             int step = widthMeta.getStepSize();
-            ivalStep =
-                std::max(ivalStep, step); // the step of the interval must always be bigger or equal
-                                          // than the step size of the left and right border
+
+            // the step of the interval must always be bigger or equal
+            // than the step size of the left and right border
+            ivalStep = std::max(ivalStep, step);
+
             int widthMax = std::min(widthMeta.getSizeMax(), max - min + 1);
 
             if (values[2] < widthMeta.getSizeMin() || values[2] > widthMax)
@@ -1639,9 +1567,11 @@ ito::RetVal ParamHelper::validateIntArrayMeta(
             max = heightMeta.getMax();
             ivalStep = heightMeta.getSizeStepSize();
             step = heightMeta.getStepSize();
-            ivalStep =
-                std::max(ivalStep, step); // the step of the interval must always be bigger or equal
-                                          // than the step size of the left and right border
+
+            // the step of the interval must always be bigger or equal
+            // than the step size of the left and right border
+            ivalStep = std::max(ivalStep, step);
+
             int heightMax = std::min(heightMeta.getSizeMax(), max - min + 1);
 
             if (values[3] < heightMeta.getSizeMin() || values[3] > heightMax)
@@ -1715,8 +1645,7 @@ ito::RetVal ParamHelper::validateIntArrayMeta(
                 ito::retError,
                 0,
                 (parseNamePrefix(name) +
-                 QObject::tr(
-                     "the given meta information does not fit a an array of integer values"))
+                 QObject::tr("the given meta information does not fit an array of integer values"))
                     .toLatin1()
                     .data());
         }
@@ -1724,7 +1653,7 @@ ito::RetVal ParamHelper::validateIntArrayMeta(
     return ito::retOk;
 }
 
-//---------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal ParamHelper::validateDoubleArrayMeta(
     const ito::ParamMeta* meta, const double* values, size_t len, const char* name /*= nullptr*/)
 {
@@ -1733,7 +1662,7 @@ ito::RetVal ParamHelper::validateDoubleArrayMeta(
         switch (meta->getType())
         {
         case ito::ParamMeta::rttiDoubleArrayMeta: {
-            auto cam = static_cast<const ito::DoubleArrayMeta*>(meta);
+            const ito::DoubleArrayMeta* cam = (const ito::DoubleArrayMeta*)meta;
             size_t steps = cam->getNumStepSize();
 
             if (len < cam->getNumMin() || len > cam->getNumMax())
@@ -1776,8 +1705,7 @@ ito::RetVal ParamHelper::validateDoubleArrayMeta(
         }
         break;
         case ito::ParamMeta::rttiDoubleIntervalMeta: {
-            auto drm = static_cast<const ito::DoubleIntervalMeta*>(meta);
-
+            const ito::DoubleIntervalMeta* drm = (const ito::DoubleIntervalMeta*)meta;
             if (len != 2)
             {
                 return ito::RetVal(
@@ -1857,9 +1785,8 @@ ito::RetVal ParamHelper::validateDoubleArrayMeta(
                     ito::retError,
                     0,
                     (parseNamePrefix(name) +
-                     QObject::tr(
-                         "The given double array [v1,v2] is considered to be an interval but "
-                         "the size of the interval (v2-v1) is out of bounds [%1,%2]")
+                     QObject::tr("The given double array [v1,v2] is considered to be an interval "
+                                 "but the size of the interval (v2-v1) is out of bounds [%1,%2]")
                          .arg(drm->getSizeMin())
                          .arg(drm->getSizeMax()))
                         .toLatin1()
@@ -1896,7 +1823,7 @@ ito::RetVal ParamHelper::validateDoubleArrayMeta(
     return ito::retOk;
 }
 
-//---------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------------------
 QString ParamHelper::parseNamePrefix(const char* name)
 {
     if (name == nullptr || strcmp(name, "") == 0)
@@ -1909,7 +1836,7 @@ QString ParamHelper::parseNamePrefix(const char* name)
     }
 }
 
-//---------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal ParamHelper::validateParam(
     const ito::Param& templateParam,
     const ito::ParamBase& param,
@@ -1923,6 +1850,7 @@ ito::RetVal ParamHelper::validateParam(
 
     // check whether param has an index
     QRegExp rx("^([a-zA-Z]+\\w*)(\\[(\\d+)\\])(:(.*)){0,1}$");
+
     if (rx.indexIn(param.getName()) >= 0)
     {
         hasIndex = true;
@@ -1956,50 +1884,37 @@ ito::RetVal ParamHelper::validateParam(
         break;
         case ito::ParamBase::CharArray: {
             retVal += validateCharArrayMeta(
-                templateParam.getMeta(),
-                param.getVal<const char*>(),
-                std::max(0, param.getLen()),
-                name);
-        }
-        break;
-        case ito::ParamBase::StringList: {
-            retVal += validateStringListMeta(
-                templateParam.getMeta(),
-                param.getVal<ito::ByteArray*>(),
-                std::max(0, param.getLen()),
-                name);
+                templateParam.getMeta(), param.getVal<const char*>(), param.getLen(), name);
         }
         break;
         case ito::ParamBase::IntArray: {
             // check intArray, range, interval and rect
             retVal += validateIntArrayMeta(
-                templateParam.getMeta(),
-                param.getVal<const int*>(),
-                std::max(0, param.getLen()),
-                name);
+                templateParam.getMeta(), param.getVal<const int*>(), param.getLen(), name);
         }
         break;
         case ito::ParamBase::DoubleArray: {
             retVal += validateDoubleArrayMeta(
+                templateParam.getMeta(), param.getVal<const double*>(), param.getLen(), name);
+        }
+        break;
+        case ito::ParamBase::StringList: {
+            retVal += validateStringListMeta(
                 templateParam.getMeta(),
-                param.getVal<const double*>(),
-                std::max(0, param.getLen()),
+                param.getVal<const ito::ByteArray*>(),
+                param.getLen(),
                 name);
         }
         break;
-        case ito::ParamBase::ComplexArray: {
-            // no meta information for complex types available.
-            retVal += ito::retOk;
-        }
         case ito::ParamBase::String: {
             retVal += validateStringMeta(
                 dynamic_cast<const ito::StringMeta*>(templateParam.getMeta()),
-                param.getVal<char*>(),
+                param.getVal<const char*>(),
                 mandatory,
                 name);
         }
         break;
-        case ito::ParamBase::HWRef: {
+        case ito::ParamBase::HWRef& ito::paramTypeMask: {
             retVal += validateHWMeta(
                 dynamic_cast<const ito::HWMeta*>(templateParam.getMeta()),
                 (ito::AddInBase*)param.getVal<void*>(),
@@ -2007,15 +1922,13 @@ ito::RetVal ParamHelper::validateParam(
                 name);
         }
         break;
-        default:
-            retVal += ito::RetVal(
-                ito::retError, 0, "Validation of parameter failed due to unsupported type.");
-            break;
         }
     }
     else if (
         hasIndex && (templateParam.getType() & ito::ParamBase::Pointer) &&
-        (templateParam.getType() == (param.getType() ^ ito::ParamBase::Pointer)))
+        ((templateParam.getType() == (param.getType() ^ ito::ParamBase::Pointer)) ||
+         (templateParam.getType() == ito::ParamBase::StringList &&
+          param.getType() == ito::ParamBase::String)))
     {
         if (index < 0 || index >= templateParam.getLen())
         {
@@ -2040,6 +1953,15 @@ ito::RetVal ParamHelper::validateParam(
                         dynamic_cast<const ito::CharMeta*>(tmplMeta), param.getVal<char>(), name);
                 }
                 break;
+                case ito::ParamBase::StringList: {
+                    // for stringList there is only StringListMeta possible, this allows only
+                    // checking single values
+                    retVal += validateStringMeta(
+                        dynamic_cast<const ito::StringMeta*>(tmplMeta),
+                        param.getVal<const char*>(),
+                        name);
+                }
+                break;
                 case ito::ParamBase::IntArray: {
                     if (tmplMeta->getType() == ito::ParamMeta::rttiIntArrayMeta)
                     {
@@ -2056,8 +1978,8 @@ ito::RetVal ParamHelper::validateParam(
                         int vals[4];
                         memcpy(
                             vals,
-                            templateParam.getVal<const int*>(),
-                            sizeof(int) * std::min(4, templateParam.getLen()));
+                            templateParam.getVal<int*>(),
+                            sizeof(int) * templateParam.getLen());
                         vals[index] = param.getVal<int>();
                         retVal +=
                             validateIntArrayMeta(tmplMeta, vals, templateParam.getLen(), name);
@@ -2084,12 +2006,12 @@ ito::RetVal ParamHelper::validateParam(
                     {
                         // create a temporary set of the list (up to 2 values, more are not allowed
                         // for interval)
-                        ito::float64 vals[2];
+                        double vals[2];
                         memcpy(
                             vals,
-                            templateParam.getVal<const ito::float64*>(),
-                            sizeof(ito::float64) * std::min(2, templateParam.getLen()));
-                        vals[index] = param.getVal<ito::float64>();
+                            templateParam.getVal<int*>(),
+                            sizeof(double) * templateParam.getLen());
+                        vals[index] = param.getVal<double>();
                         retVal +=
                             validateDoubleArrayMeta(tmplMeta, vals, templateParam.getLen(), name);
                     }
@@ -2149,7 +2071,7 @@ ito::RetVal ParamHelper::validateParam(
     return retVal;
 }
 
-//---------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal ParamHelper::validateAndCastParam(
     const ito::Param& templateParam,
     ito::ParamBase& param,
@@ -2219,7 +2141,7 @@ ito::RetVal ParamHelper::validateAndCastParam(
                 name);
         }
         break;
-        case ito::ParamBase::HWRef: {
+        case ito::ParamBase::HWRef& ito::paramTypeMask: {
             retVal += validateHWMeta(
                 dynamic_cast<const ito::HWMeta*>(templateParam.getMeta()),
                 (ito::AddInBase*)param.getVal<void*>(),
@@ -2309,7 +2231,6 @@ ito::RetVal ParamHelper::validateAndCastParam(
     {
         bool ok = false;
         ito::ParamBase p = convertParam(param, templateParam.getType(), &ok);
-
         if (ok)
         {
             retVal += validateAndCastParam(templateParam, p, true, roundToSteps);
@@ -2338,23 +2259,20 @@ ito::RetVal ParamHelper::validateAndCastParam(
     return retVal;
 }
 
-//---------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::ParamBase ParamHelper::convertParam(
     const ito::ParamBase& source, int destType, bool* ok /*= nullptr*/)
 {
     int sourceType = source.getType();
     bool ok2;
     if (ok)
-    {
         *ok = true;
-    }
 
-    if (sourceType == destType)
-    {
+    if (sourceType == (destType & (int)ito::paramTypeMask))
         return source;
-    }
 
-    switch (destType)
+
+    switch (destType & ito::paramTypeMask)
     {
     case ito::ParamBase::Int: {
         if (source.isNumeric())
@@ -2417,14 +2335,11 @@ ito::ParamBase ParamHelper::convertParam(
     }
 
     if (ok)
-    {
         *ok = false;
-    }
-
     return ParamBase();
 }
 
-//---------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal ParamHelper::getParamFromMapByKey(
     QMap<QString, ito::Param>& paramMap,
     const QString& key,
@@ -2437,8 +2352,7 @@ ito::RetVal ParamHelper::getParamFromMapByKey(
             ito::retError, 0, QObject::tr("Name of given parameter is empty.").toLatin1().data());
     }
 
-    auto it = paramMap.find(key);
-
+    QMap<QString, ito::Param>::iterator it = paramMap.find(key);
     if (it != paramMap.end())
     {
         if (errorIfReadOnly && (it->getFlags() & ito::ParamBase::Readonly))
@@ -2470,7 +2384,7 @@ ito::RetVal ParamHelper::getParamFromMapByKey(
     return ito::retOk;
 }
 
-//---------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------------------
 //! parses parameter name with respect to regular expression, assigned for parameter-communcation
 //! with plugins
 /*!
@@ -2488,7 +2402,7 @@ ito::RetVal ParamHelper::getParamFromMapByKey(
     [4] :ADDITIONALTAG or empty-string if no tag is given
     [5] ADDITIONALTAG or empty-string if no tag is given
 
-    \param [in] key is the raw parameter name
+    \param [in] name is the raw parameter name
     \param [out] paramName is the real parameter name (first part of name; part before the first
    opening bracket ('[') or if not available the first colon (':')) \param [out] hasIndex indicates
    whether the name contains an index part (defined by a number within two brackets (e.g.
@@ -2498,12 +2412,40 @@ ito::RetVal ParamHelper::getParamFromMapByKey(
    index part is taken.
 */
 ito::RetVal ParamHelper::parseParamName(
-    const QString& key, QString& paramName, bool& hasIndex, int& index, QString& additionalTag)
+    const QString& name, QString& paramName, bool& hasIndex, int& index, QString& additionalTag)
 {
-    return ito::parseParamName(key, paramName, hasIndex, index, additionalTag);
+    ito::RetVal retValue = ito::retOk;
+    paramName = QString();
+    hasIndex = false;
+    index = -1;
+    additionalTag = QString();
+
+    QRegExp rx("^([a-zA-Z]+\\w*)(\\[(\\d+)\\]){0,1}(:(.*)){0,1}$");
+    if (rx.indexIn(name) == -1)
+    {
+        retValue +=
+            ito::RetVal(ito::retError, 0, QObject::tr("invalid parameter name").toLatin1().data());
+    }
+    else
+    {
+        QStringList pname = rx.capturedTexts();
+        paramName = pname[1];
+        if (pname.size() >= 4)
+        {
+            if (!pname[3].isEmpty())
+            {
+                index = pname[3].toInt(&hasIndex);
+            }
+        }
+        if (pname.size() >= 6)
+        {
+            additionalTag = pname[5];
+        }
+    }
+    return retValue;
 }
 
-//---------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal ParamHelper::getItemFromArray(
     const ito::Param& arrayParam, const int index, ito::Param& itemParam)
 {
@@ -2521,11 +2463,10 @@ ito::RetVal ParamHelper::parseParamName(
 
     switch (arrayParam.getType())
     {
-    case ito::ParamBase::CharArray:
-    case ito::ParamBase::IntArray:
-    case ito::ParamBase::DoubleArray:
-    case ito::ParamBase::ComplexArray:
-    case ito::ParamBase::StringList: {
+    case ito::ParamBase::CharArray& ito::paramTypeMask:
+    case ito::ParamBase::IntArray& ito::paramTypeMask:
+    case ito::ParamBase::DoubleArray& ito::paramTypeMask:
+    case ito::ParamBase::ComplexArray& ito::paramTypeMask: {
         itemParam = arrayParam[index];
         break;
     }
@@ -2536,7 +2477,7 @@ ito::RetVal ParamHelper::parseParamName(
     return retval;
 }
 
-//---------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::Param ParamHelper::getParam(
     const ito::Param& param, const bool hasIndex, const int index, ito::RetVal& ret)
 {
@@ -2548,11 +2489,10 @@ ito::RetVal ParamHelper::parseParamName(
     {
         // check whether param is an array type
         ito::uint32 type = param.getType();
-        if (type == (ito::ParamBase::IntArray) ||
-            type == (ito::ParamBase::DoubleArray) ||
-            type == (ito::ParamBase::CharArray) ||
-            type == (ito::ParamBase::ComplexArray) ||
-            type == (ito::ParamBase::StringList))
+        if (type == (ito::ParamBase::IntArray & ito::paramTypeMask) ||
+            type == (ito::ParamBase::DoubleArray & ito::paramTypeMask) ||
+            type == (ito::ParamBase::CharArray & ito::paramTypeMask) ||
+            type == (ito::ParamBase::ComplexArray & ito::paramTypeMask))
         {
             ito::Param p;
             ret += getItemFromArray(param, index, p);
@@ -2571,7 +2511,7 @@ ito::RetVal ParamHelper::parseParamName(
     return ito::Param();
 }
 
-//---------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal ParamHelper::updateParameters(
     QMap<QString, ito::Param>& paramMap, const QVector<QSharedPointer<ito::ParamBase>>& values)
 {
@@ -2599,7 +2539,7 @@ ito::RetVal ParamHelper::parseParamName(
     return retval;
 }
 
-//---------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ bool ParamHelper::fitToDoubleStepSize(double min, double step, double val)
 {
     static double eps = std::numeric_limits<double>::epsilon();

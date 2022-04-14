@@ -200,13 +200,28 @@ end:
         if (showMessages)
         {
             QMessageBox msgBox(parent);
+
+            if (retval.containsError())
+            {
+                msgBox.setIcon(QMessageBox::Critical);
+                msgBox.setWindowTitle(tr("Error"));
+            }
+            else
+            {
+                msgBox.setIcon(QMessageBox::Warning);
+                msgBox.setWindowTitle(tr("Warning"));
+            }
+
             if (retval.hasErrorMessage())
             {
                 QString errStr = QLatin1String(retval.errorMessage());
                 msgBox.setText(errStr);
             }
             else
-                msgBox.setText("Unknown error opening file");
+            {
+                msgBox.setText(tr("Unknown error or warning when opening the file."));
+            }
+
             msgBox.exec();
         }
     }
@@ -481,7 +496,7 @@ end:
             uiImportPyWorkspaceDefaultPath = QFileInfo(filename).canonicalPath(); //save directory as default for next call to this export dialog
 
             QFileInfo info(filename);
-            return openGeneralFile(filename, false, true, parent, NULL, globalNotLocal);
+            return openGeneralFile(filename, false, false, parent, nullptr, globalNotLocal);
         }
         else
         {
@@ -696,7 +711,7 @@ end:
     if (po)
     {
         bool existingProcess = false;
-        QProcess *process = po->getProcess("designer", true, existingProcess, false);
+        QProcess *process = po->getProcess("designer", true, existingProcess, true);
 
         if (existingProcess && process->state() == QProcess::Running)
         {
@@ -730,7 +745,7 @@ end:
 
             if (!done)
             {
-                process = po->getProcess("designer", false, existingProcess, false);
+                process = po->getProcess("designer", false, existingProcess, true);
                 //create new process for designer, since sending data to existing one failed
                 QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
                 QString appPath = QDir::cleanPath(QCoreApplication::applicationDirPath());

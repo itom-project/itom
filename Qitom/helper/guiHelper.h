@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -26,19 +26,22 @@
 #include "../global.h"
 
 
-namespace ito
+namespace ito {
+
+class GuiHelper
 {
+public:
+    static int getScreenLogicalDpi(const QPoint *pos = nullptr);
+    static float screenDpiFactor(const QPoint* pos = nullptr); /*!< returns a factor [1,..) by which user interface components
+                                       can be scaled due to high resolution screens. A factor of 1.0
+                                       is related to the default 96dpi screen. */
 
-    class GuiHelper
-    {
-    public:
-        static int getScreenLogicalDpi(bool *ok = NULL);
-        static float screenDpiFactor(); /*!< returns a factor [1,..) by which user interface components can be scaled due to high resolution screens. A factor of 1.0 is related to the default 96dpi screen. */
+private:
+    static int dpi;
+    static QString highDPIFile;
+    static QList<int> screensDPI;
+};
 
-    private:
-        static int dpi;
-    };
+} // namespace ito
 
-}
-
-#endif //GUIHELPER
+#endif // GUIHELPER

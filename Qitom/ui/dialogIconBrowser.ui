@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>564</width>
-    <height>456</height>
+    <width>584</width>
+    <height>447</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -71,12 +71,6 @@
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
       <widget class="QPushButton" name="pushButtonInsert">
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>25</height>
-        </size>
-       </property>
        <property name="text">
         <string>Insert and Close</string>
        </property>
@@ -87,12 +81,6 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButtonClipboard">
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>25</height>
-        </size>
-       </property>
        <property name="text">
         <string>Copy to Clipboard</string>
        </property>
@@ -103,12 +91,6 @@
      </item>
      <item>
       <widget class="QPushButton" name="cancelButton">
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>25</height>
-        </size>
-       </property>
        <property name="text">
         <string>Cancel</string>
        </property>

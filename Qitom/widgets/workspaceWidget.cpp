@@ -27,6 +27,7 @@
 #include "../AppManagement.h"
 #include "../ui/dialogVariableDetail.h"
 #include "../ui/dialogVariableDetailDataObject.h"
+#include "helper/guiHelper.h"
 
 #include "dataobj.h"
 
@@ -79,14 +80,16 @@ WorkspaceWidget::WorkspaceWidget(bool globalNotLocal, QWidget* parent) :
     sortByColumn(0, Qt::AscendingOrder);
     setTextElideMode(Qt::ElideMiddle);
 
-    setExpandsOnDoubleClick(false); // dont expand or collapse items on double-click (since
-                                    // double-click opens the content information dialog)
+    // dont expand or collapse items on double-click (since
+    // double-click opens the content information dialog)
+    setExpandsOnDoubleClick(false);
 
     clear();
     m_itemHash.clear();
 
     QIcon icon(":/application/icons/preferences-python.png");
-    m_dragPixmap = icon.pixmap(22, 22);
+    const float screenFactor = GuiHelper::screenDpiFactor();
+    m_dragPixmap = icon.pixmap(screenFactor * 22, screenFactor * 22);
 
     /* '__', 'NoneType', 'type',\
          'bool', 'int', 'long', 'float', 'complex',\
@@ -98,18 +101,21 @@ WorkspaceWidget::WorkspaceWidget(bool globalNotLocal, QWidget* parent) :
          'ellipsis', 'traceback', 'frame', 'other']*/
 
     m_workspaceContainer = new ito::PyWorkspaceContainer(m_globalNotLocal);
+
     connect(
         m_workspaceContainer,
-        SIGNAL(updateAvailable(PyWorkspaceItem*, QString, QStringList)),
+        &PyWorkspaceContainer::updateAvailable,
         this,
-        SLOT(workspaceContainerUpdated(PyWorkspaceItem*, QString, QStringList)));
+        &WorkspaceWidget::workspaceContainerUpdated);
+
+    // when double-clicking on an item, its content is showed in
+    // DialogVariableDetail-Dialog
     connect(
         this,
         SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)),
         this,
-        SLOT(itemDoubleClicked(
-            QTreeWidgetItem*, int))); // when double-clicking on an item, its content is showed in
-                                      // DialogVariableDetail-Dialog
+        SLOT(itemDoubleClicked(QTreeWidgetItem*, int)));
+
     connect(
         this, SIGNAL(itemExpanded(QTreeWidgetItem*)), this, SLOT(itemExpanded(QTreeWidgetItem*)));
 
@@ -118,12 +124,14 @@ WorkspaceWidget::WorkspaceWidget(bool globalNotLocal, QWidget* parent) :
     connect(m_displayItemDetails, SIGNAL(triggered()), this, SLOT(displayItemDetails()));
 
     int size = settings.beginReadArray("ColWidth");
+
     for (int i = 0; i < size; ++i)
     {
         settings.setArrayIndex(i);
         setColumnWidth(i, settings.value("width", 100).toInt());
         setColumnHidden(i, columnWidth(i) == 0);
     }
+
     settings.endArray();
     settings.endGroup();
 }
@@ -139,6 +147,7 @@ Qt::DropActions WorkspaceWidget::supportedDragActions() const
 WorkspaceWidget::~WorkspaceWidget()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+
     if (m_globalNotLocal)
     {
         settings.beginGroup("itomGlobalWorkspaceDockWidget");
@@ -149,25 +158,30 @@ WorkspaceWidget::~WorkspaceWidget()
     }
 
     settings.beginWriteArray("ColWidth");
+
     for (int i = 0; i < columnCount(); i++)
     {
         settings.setArrayIndex(i);
         settings.setValue("width", columnWidth(i));
     }
+
     settings.endArray();
     settings.endGroup();
 
     disconnect(
         m_workspaceContainer,
-        SIGNAL(updateAvailable(PyWorkspaceItem*, QString, QStringList)),
+        &PyWorkspaceContainer::updateAvailable,
         this,
-        SLOT(workspaceContainerUpdated(PyWorkspaceItem*, QString, QStringList)));
+        &WorkspaceWidget::workspaceContainerUpdated);
+
     m_workspaceContainer->deleteLater();
+
     disconnect(
         this,
         SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)),
         this,
         SLOT(itemDoubleClicked(QTreeWidgetItem*, int)));
+
     disconnect(
         this, SIGNAL(itemExpanded(QTreeWidgetItem*)), this, SLOT(itemExpanded(QTreeWidgetItem*)));
 }
@@ -206,20 +220,21 @@ QMimeData* WorkspaceWidget::mimeData(const QList<QTreeWidgetItem*> items) const
 QString WorkspaceWidget::getPythonReadableName(const QTreeWidgetItem* item) const
 {
     QString name;
-    const QTreeWidgetItem* tempItem = NULL;
+    const QTreeWidgetItem* tempItem = nullptr;
 
     if (item)
     {
         QByteArray type = item->data(0, RoleType).toByteArray();
 
-        if (item->parent() == NULL)
+        if (item->parent() == nullptr)
         {
             name = item->text(0);
         }
         else
         {
             tempItem = item;
-            while (tempItem->parent() != NULL)
+
+            while (tempItem->parent() != nullptr)
             {
                 type = tempItem->data(0, RoleType).toByteArray();
 
@@ -229,17 +244,23 @@ QString WorkspaceWidget::getPythonReadableName(const QTreeWidgetItem* item) cons
                     {
                         name.prepend("[" + tempItem->text(0) + "]");
                     }
-                    else
+                    else if (type[1] == PY_STRING)
                     {
                         name.prepend("[\"" + tempItem->text(0) + "\"]");
+                    }
+                    else
+                    {
+                        name.prepend("[" + tempItem->text(0) + "]");
                     }
                 }
                 else if (type[0] == PY_ATTR)
                 {
                     name.prepend("." + tempItem->text(0));
                 }
+
                 tempItem = tempItem->parent();
             }
+
             name.prepend(tempItem->text(0));
         }
     }
@@ -252,10 +273,13 @@ int WorkspaceWidget::numberOfSelectedMainItems() const
 {
     int counter = 0;
     QList<QTreeWidgetItem*> items = selectedItems();
+
     foreach (const QTreeWidgetItem* item, items)
     {
-        if (item->parent() == NULL)
+        if (item->parent() == nullptr)
+        {
             counter++;
+        }
     }
 
     return counter;
@@ -266,6 +290,7 @@ int WorkspaceWidget::numberOfSelectedItems(bool ableToBeRenamed /*= false*/) con
 {
     int counter = 0;
     QList<QTreeWidgetItem*> items = selectedItems();
+
     if (ableToBeRenamed)
     {
         QByteArray type;
@@ -273,6 +298,7 @@ int WorkspaceWidget::numberOfSelectedItems(bool ableToBeRenamed /*= false*/) con
         foreach (const QTreeWidgetItem* item, items)
         {
             type = item->data(0, RoleType).toByteArray();
+
             if (type[0] != PY_LIST_TUPLE)
             {
                 // only variables and not index-entries of lists or tuples can be renamed
@@ -290,16 +316,20 @@ int WorkspaceWidget::numberOfSelectedItems(bool ableToBeRenamed /*= false*/) con
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void WorkspaceWidget::updateView(
-    QHash<QString, ito::PyWorkspaceItem*> items, QString baseName, QTreeWidgetItem* parent)
+    const QHash<QString, ito::PyWorkspaceItem*>& items,
+    const QString& baseName,
+    QTreeWidgetItem* parent)
 {
     QHash<QString, QTreeWidgetItem*>::const_iterator it;
     QString hashName;
     QTreeWidgetItem* actItem;
     QTreeWidgetItem* tempItem;
+
     foreach (const ito::PyWorkspaceItem* item, items)
     {
         hashName = baseName + ito::PyWorkspaceContainer::delimiter + item->m_key;
         it = m_itemHash.constFind(hashName);
+
         if (it != m_itemHash.constEnd())
         {
             actItem = *it;
@@ -308,7 +338,8 @@ void WorkspaceWidget::updateView(
         {
             actItem = new WorkspaceTreeItem(parent, 0);
             m_itemHash[hashName] = actItem;
-            if (parent == NULL)
+
+            if (parent == nullptr)
             {
                 addTopLevelItem(actItem);
                 actItem->setFlags(
@@ -329,16 +360,16 @@ void WorkspaceWidget::updateView(
         actItem->setText(2, item->m_type); // data type
         actItem->setData(0, RoleFullName, hashName);
         actItem->setData(0, RoleCompatibleTypes, item->m_compatibleParamBaseType);
-        actItem->setData(
-            0,
-            RoleType,
-            item->m_key.left(2).toLatin1()); // m_key is ab:name where a is
-                                             // [PY_LIST_TUPLE,PY_MAPPING,PY_DICT,PY_ATTR]
-                                             // and b is [PY_NUMBER or PY_STRING]
+
+        // m_key is ab:name where a is
+        // [PY_LIST_TUPLE,PY_MAPPING,PY_DICT,PY_ATTR]
+        // and b is [PY_NUMBER or PY_STRING]
+        actItem->setData(0, RoleType, item->m_key.left(2).toLatin1());
 
         if (item->m_childState == ito::PyWorkspaceItem::stateNoChilds)
         {
             actItem->setChildIndicatorPolicy(QTreeWidgetItem::DontShowIndicator);
+
             while (actItem->childCount() > 0)
             {
                 tempItem = actItem->child(0);
@@ -349,6 +380,7 @@ void WorkspaceWidget::updateView(
         else
         {
             actItem->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
+
             if (item->m_childs.count() == 0) // item has children, but they are not shown yet
             {
                 while (actItem->childCount() > 0)
@@ -370,7 +402,7 @@ void WorkspaceWidget::updateView(
 void WorkspaceWidget::workspaceContainerUpdated(
     PyWorkspaceItem* rootItem, QString fullNameRoot, QStringList recentlyDeletedFullNames)
 {
-    QTreeWidgetItem* parent = NULL;
+    QTreeWidgetItem* parent = nullptr;
     QTreeWidgetItem* temp;
 
     if (m_workspaceContainer)
@@ -383,12 +415,13 @@ void WorkspaceWidget::workspaceContainerUpdated(
                 clear();
                 recentlyDeletedFullNames.clear();
             }
-            parent = NULL;
+
+            parent = nullptr;
         }
         else
         {
-            QHash<QString, QTreeWidgetItem*>::const_iterator it =
-                m_itemHash.constFind(fullNameRoot);
+            auto it = m_itemHash.constFind(fullNameRoot);
+
             if (it == m_itemHash.constEnd())
             {
                 return; // error
@@ -398,14 +431,17 @@ void WorkspaceWidget::workspaceContainerUpdated(
         }
 
         QHash<QString, QTreeWidgetItem*>::const_iterator it;
+
         foreach (const QString& deleteHashName, recentlyDeletedFullNames)
         {
-            temp = NULL;
+            temp = nullptr;
             it = m_itemHash.constFind(deleteHashName);
+
             if (it != m_itemHash.constEnd())
             {
                 temp = (*it);
             }
+
             recursivelyDeleteHash(deleteHashName);
 
             DELETE_AND_SET_NULL(temp);
@@ -471,7 +507,7 @@ void WorkspaceWidget::itemDoubleClicked(QTreeWidgetItem* item, int /*column*/)
     QString extendedValue = "";
     QString name;
     QSharedPointer<QString> tempValue;
-    QTreeWidgetItem* tempItem = NULL;
+    QTreeWidgetItem* tempItem = nullptr;
     QString fullName("empty item");
     QByteArray type;
     QSharedPointer<ito::ParamBase> value;
@@ -490,40 +526,12 @@ void WorkspaceWidget::itemDoubleClicked(QTreeWidgetItem* item, int /*column*/)
         item2 = m_workspaceContainer->getItemByFullName(fullName);
         extendedValue = item2->m_extendedValue;
 
-        if (item->parent() == NULL)
-        {
-            name = item->text(0);
-        }
-        else
-        {
-            tempItem = item;
-            while (tempItem->parent() != NULL)
-            {
-                type = tempItem->data(0, RoleType).toByteArray();
-
-                if (type[0] == PY_DICT || type[0] == PY_MAPPING || type[0] == PY_LIST_TUPLE)
-                {
-                    if (type[1] == PY_NUMBER)
-                    {
-                        name.prepend("[" + tempItem->text(0) + "]");
-                    }
-                    else
-                    {
-                        name.prepend("[\"" + tempItem->text(0) + "\"]");
-                    }
-                }
-                else if (type[0] == PY_ATTR)
-                {
-                    name.prepend("." + tempItem->text(0));
-                }
-                tempItem = tempItem->parent();
-            }
-            name.prepend(tempItem->text(0));
-        }
+        name = getPythonReadableName(item);
     }
 
-    if (extendedValue == "") // ask python to get extendedValue, since this value has been complex
-                             // such that it hasn't been evaluated at runtime before
+    // ask python to get extendedValue, since this value has been complex
+    // such that it hasn't been evaluated at runtime before
+    if (extendedValue == "")
     {
         if (eng)
         {
@@ -563,6 +571,7 @@ void WorkspaceWidget::itemDoubleClicked(QTreeWidgetItem* item, int /*column*/)
             Q_ARG(QVector<int>, paramBaseTypes),
             Q_ARG(QSharedPointer<SharedParamBasePointerVector>, values),
             Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+
         if (!locker.getSemaphore()->wait(5000))
         {
             extendedValue = tr("timeout while asking python for detailed information");

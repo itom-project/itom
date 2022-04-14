@@ -4,7 +4,7 @@
 
 .. _scriptLanguage:
 
-Python scripting language
+Python Scripting Language
 #########################
 
 One main component of |itom| is the integrated scripting language |python|. In order to make |itom| ready for the future, |python| is based on the version-family 3.
@@ -25,6 +25,7 @@ contains a huge tutorial about |python| which is good for newbies. This section 
     pymod-load-save-files.rst
     pymod-popular-python-packages.rst
     pymod-matplotlib.rst
+    pymod-plotly.rst
     pymod-matlab.rst
     pymod-reload-modules.rst
     pymod-limitations.rst

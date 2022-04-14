@@ -33,13 +33,24 @@ sys.path.append(os.path.join(thisDir,'..' + os.sep + 'sphinxext'))
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.todo', 'sphinx.ext.imgmath', 'sphinx.ext.ifconfig', 'numpydoc', 'sphinx.ext.intersphinx', 'itom_extension']
+extensions = [
+    "sphinx.ext.autodoc",
+    "sphinx.ext.todo",
+    "sphinx.ext.imgmath",
+    "sphinx.ext.ifconfig",
+    "numpydoc",
+    "sphinx.ext.intersphinx",
+    "itom_extension"
+]
 
 if sphinx.__version__ >= "0.7":
     extensions.append('sphinx.ext.autosummary')
 else:
     extensions.append('autosummary')
     extensions.append('only_directives')
+
+if sphinx.__version__ >= "1.4":
+	extensions.append("sphinx.ext.mathjax")
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = [] #['_templates']

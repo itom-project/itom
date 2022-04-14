@@ -104,7 +104,7 @@ bool DialogHeatmapConfiguration::checkValue(
     {
         QMessageBox::critical(
             this,
-            tr("invalid number"),
+            tr("Invalid number"),
             tr("The '%1' number is no valid decimal number.").arg(name));
     }
     else if ((val < min) || (val > max))
@@ -112,7 +112,7 @@ bool DialogHeatmapConfiguration::checkValue(
         ok = false;
         QMessageBox::critical(
             this,
-            tr("out of range"),
+            tr("Out of range"),
             tr("The '%1' number is out of range [%2,%3]")
                 .arg(name)
                 .arg(m_locale.toString(min, 'g'))
@@ -133,12 +133,12 @@ void DialogHeatmapConfiguration::on_buttonBox_accepted()
 {
     bool ok = true;
 
-    if (!checkValue(ui.txtMax, m_min, m_max, "minimum"))
+    if (!checkValue(ui.txtMax, m_min, m_max, tr("minimum")))
     {
         return;
     }
 
-    if (!checkValue(ui.txtMax, m_min, m_max, "maximum"))
+    if (!checkValue(ui.txtMax, m_min, m_max, tr("maximum")))
     {
         return;
     }

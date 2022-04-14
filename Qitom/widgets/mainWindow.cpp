@@ -43,6 +43,7 @@
 #include "../ui/widgetInfoBox.h"
 
 #include "../helper/versionHelper.h"
+#include "../helper/guiHelper.h"
 
 #include <qapplication.h>
 #include <qdesktopwidget.h>
@@ -52,6 +53,8 @@
 #include <qstatusbar.h>
 
 #include "../organizer/scriptEditorOrganizer.h"
+
+
 
 #ifdef ITOM_USEHELPVIEWER
 #include "../helpViewer/helpViewer.h"
@@ -2525,7 +2528,7 @@ void MainWindow::mnuShowDesigner()
     if (po)
     {
         bool existingProcess = false;
-        QProcess* process = po->getProcess(appName, true, existingProcess, false);
+        QProcess* process = po->getProcess(appName, true, existingProcess, true);
 
         if (existingProcess && process->state() == QProcess::Running)
         {
@@ -2533,6 +2536,8 @@ void MainWindow::mnuShowDesigner()
             // command without arguments (try-and-error to find this way to activate it)
             QByteArray ba("activateIdentifier \n");
             process->write(ba);
+
+            po->bringWindowsOnTop("Qt Designer");
         }
         else
         {

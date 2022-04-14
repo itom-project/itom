@@ -96,7 +96,7 @@ class ParseError(Exception):
         return message
 
 
-class ItomDocString(collections.Mapping):
+class ItomDocString(collections.abc.Mapping):
     def __init__(self, docstring, config={}):
         orig_docstring = docstring
         docstring = textwrap.dedent(docstring).split('\n')

@@ -51,12 +51,16 @@
 #include <qset.h>
 #include <qstringlist.h>
 
+// type of outer container
 #define PY_LIST_TUPLE 'l'
 #define PY_MAPPING 'm'
 #define PY_ATTR 'a'
 #define PY_DICT 'd'
+
+// type of key
 #define PY_NUMBER 'n'
 #define PY_STRING 's'
+#define PY_OBJID 'h' // object id (ptr) as hex for all other objects
 
 namespace ito
 {
@@ -121,13 +125,17 @@ public:
 
 private:
     void loadDictionaryRec(PyObject *obj, const QString &fullNameParentItem, PyWorkspaceItem *parentItem, QStringList &deletedKeys);
-    void parseSinglePyObject(PyWorkspaceItem *item, PyObject *value, QString &fullName, QStringList &deletedKeys, int &m_compatibleParamBaseType);
+    void parseSinglePyObject(PyWorkspaceItem *item, PyObject *value, const QString &fullName, QStringList &deletedKeys);
 
     bool isNotInBlacklist(PyObject *obj) const;
+
+    //!< appends a possible names in __slots__ attribute of objOrType (object or type object) to pre-defined list slotNamesList.
+    void appendSlotNamesToList(PyObject *objOrType, PyObject *slotNamesList);
 
     bool m_globalNotLocal;
     PyObject *m_dictUnicode;
     PyObject *m_slotsUnicode;
+    PyObject *m_mroUnicode;
 
 signals:
     void updateAvailable(PyWorkspaceItem *rootItem, QString fullNameRoot, QStringList recentlyDeletedFullNames);   //TODO
