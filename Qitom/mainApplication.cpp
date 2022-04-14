@@ -219,16 +219,16 @@ QString MainApplication::getSplashScreenFileName() const
     if (currentMonth == 12)
     {
         //Christmas splashScreen whole december of each year
-        fileName = ":/application/icons/itomicon/splashScreen3Christmas.png";
+        fileName = ":/application/icons/itomicon/splashScreen4Christmas.png";
     }
     else if (qAbs(daysDiffToEaster) <= 7)
     {
         //Easter splashScreen one week before and after easter day
-        fileName = ":/application/icons/itomicon/splashScreen3Easter.png";
+        fileName = ":/application/icons/itomicon/splashScreen4Easter.png";
     }
     else //default splashScreen
     {
-        fileName = ":/application/icons/itomicon/splashScreen3.png";
+        fileName = ":/application/icons/itomicon/splashScreen4.png";
     }
 
     return fileName;
@@ -240,7 +240,7 @@ QPixmap MainApplication::getSplashScreenPixmap() const
 #ifdef USEGIMMICKS
     QString splashScreenFileName = getSplashScreenFileName(); // get the fileName of splashScreen. Different at easter and christmas time
 #else
-    QString splashScreenFileName = ":/application/icons/itomicon/splashScreen3.png"; //only default splashScreen
+    QString splashScreenFileName = ":/application/icons/itomicon/splashScreen4.png"; //only default splashScreen
 #endif // USEUSEGIMMICKS
 
     QPixmap pixmap(splashScreenFileName);
