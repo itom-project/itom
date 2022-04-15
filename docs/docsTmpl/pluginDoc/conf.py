@@ -50,7 +50,7 @@ else:
     extensions.append('only_directives')
 
 if sphinx.__version__ >= "1.4":
-	extensions.append("sphinx.ext.mathjax")
+    extensions.append("sphinx.ext.mathjax")
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = [] #['_templates']
@@ -59,7 +59,7 @@ templates_path = [] #['_templates']
 source_suffix = '.rst'
 
 # The encoding of source files.
-source_encoding = 'iso-8859-15'
+source_encoding = 'utf-8'
 
 # The master toctree document.
 master_doc = 'index' #will be overwritten

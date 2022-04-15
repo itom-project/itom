@@ -17,20 +17,15 @@ import textwrap
 
 clc()
 
-
-# choose instance
-varnames = [name for name in dir() if (type(globals()[name]) is itom.actuator or type(globals()[name]) is itom.dataIO)]
-[name,success] = ui.getItem("Choose instance", "Choose actuator or dataIO instance", varnames, editable=False)
-
-
 def parse_parameters(instance):
     result = []
     info = instance.getParamListInfo(1)
+    
     for p in info:
-        
+
         info = textwrap.wrap(p["info"], width=88)
         info = "\n    ".join(info)
-        
+
         if p["readonly"]:
             item = "**%s**: {%s}, read-only\n    %s" % (p["name"], p["type"], info)
         else:
@@ -38,6 +33,19 @@ def parse_parameters(instance):
         result.append(item)
     print("\n".join(result))
 
+
+# scan the global workspace for all itom.actuator and itom.dataIO objects
+varnames = [
+    name
+    for name in dir()
+    if (type(globals()[name]) is itom.actuator or type(globals()[name]) is itom.dataIO)
+]
+
+# the user can now select for which of these objects, the parameter docs should
+# be printed to the command line
+[name, success] = ui.getItem(
+    "Choose instance", "Choose actuator or dataIO instance", varnames, editable=False
+)
 
 if success:
     parse_parameters(globals()[name])
