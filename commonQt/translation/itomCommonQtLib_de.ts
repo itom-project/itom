@@ -25,7 +25,7 @@
     <message>
         <location filename="../../common/sources/sharedFunctionsQt.cpp" line="239"/>
         <source>ParamList not properly initialized</source>
-        <translation type="unfinished"></translation>
+        <translation>ParamList nicht korrekt initialisiert</translation>
     </message>
     <message>
         <location filename="../../common/sources/sharedFunctionsQt.cpp" line="481"/>
