@@ -1540,6 +1540,8 @@ PyObject* buildFilterOutputValues(QVector<QVariant> *outVals, ito::RetVal &retVa
 //----------------------------------------------------------------------------------------------------------------------------------
 PyObject *parseParamMetaAsDict(const ito::ParamMeta *meta, const ito::Param* param /*= nullptr*/)
 {
+    bool b = PyErr_Occurred();
+
     if (meta)
     {
         PyObject *dict = PyDict_New();
@@ -1566,7 +1568,7 @@ PyObject *parseParamMetaAsDict(const ito::ParamMeta *meta, const ito::Param* par
                 Py_DECREF(temp);
 
 				ito::ByteArray unit = cm->getUnit();
-				temp = PyUnicode_FromString(unit.data());
+				temp = PythonQtConversion::QByteArrayToPyUnicodeSecure(unit.data());
 				PyDict_SetItemString(dict, "unit", temp);
 				Py_DECREF(temp);
             }
@@ -1591,7 +1593,7 @@ PyObject *parseParamMetaAsDict(const ito::ParamMeta *meta, const ito::Param* par
                 Py_DECREF(temp);
 
 				ito::ByteArray unit = cm->getUnit();
-				temp = PyUnicode_FromString(unit.data());
+				temp = PythonQtConversion::QByteArrayToPyUnicodeSecure(unit.data());
 				PyDict_SetItemString(dict, "unit", temp);
 				Py_DECREF(temp);
             }
@@ -1623,7 +1625,7 @@ PyObject *parseParamMetaAsDict(const ito::ParamMeta *meta, const ito::Param* par
                 }
 
 				ito::ByteArray unit = cm->getUnit();
-				temp = PyUnicode_FromString(unit.data());
+				temp = PythonQtConversion::QByteArrayToPyUnicodeSecure(unit.data());
 				PyDict_SetItemString(dict, "unit", temp);
 				Py_DECREF(temp);
             }
@@ -1634,6 +1636,7 @@ PyObject *parseParamMetaAsDict(const ito::ParamMeta *meta, const ito::Param* par
                 temp = PyUnicode_FromString("string meta");
                 PyDict_SetItemString(dict, "metaTypeStr", temp);
                 Py_DECREF(temp);
+                QByteArray ba;
 
                 switch (cm->getStringType())
                 {
@@ -1651,10 +1654,13 @@ PyObject *parseParamMetaAsDict(const ito::ParamMeta *meta, const ito::Param* par
                 Py_DECREF(temp);
 
                 temp = PyTuple_New(cm->getLen());
+
                 for (int i = 0 ; i < cm->getLen(); ++i)
                 {
-                    PyTuple_SetItem(temp, i, PyUnicode_FromString(cm->getString(i))); //steals reference
+                    ba = cm->getString(i);
+                    PyTuple_SetItem(temp, i, PythonQtConversion::QByteArrayToPyUnicodeSecure(ba)); //steals reference
                 }
+
                 PyDict_SetItemString(dict, "allowedItems", temp);
                 Py_DECREF(temp);
             }
@@ -1666,7 +1672,7 @@ PyObject *parseParamMetaAsDict(const ito::ParamMeta *meta, const ito::Param* par
                 PyDict_SetItemString(dict, "metaTypeStr", temp);
                 Py_DECREF(temp);
 
-                temp = PyUnicode_FromString(cm->getHWAddInName().data());
+                temp = PythonQtConversion::QByteArrayToPyUnicodeSecure(cm->getHWAddInName().data());
                 PyDict_SetItemString(dict, "requiredPluginName", temp);
                 Py_DECREF(temp);
             }
@@ -1719,7 +1725,7 @@ PyObject *parseParamMetaAsDict(const ito::ParamMeta *meta, const ito::Param* par
                 Py_DECREF(temp);
 
 				ito::ByteArray unit = cm->getUnit();
-				temp = PyUnicode_FromString(unit.data());
+				temp = PythonQtConversion::QByteArrayToPyUnicodeSecure(unit.data());
 				PyDict_SetItemString(dict, "unit", temp);
 				Py_DECREF(temp);
             }
@@ -1756,7 +1762,7 @@ PyObject *parseParamMetaAsDict(const ito::ParamMeta *meta, const ito::Param* par
                 Py_DECREF(temp);
 
 				ito::ByteArray unit = cm->getUnit();
-				temp = PyUnicode_FromString(unit.data());
+				temp = PythonQtConversion::QByteArrayToPyUnicodeSecure(unit.data());
 				PyDict_SetItemString(dict, "unit", temp);
 				Py_DECREF(temp);
             }
@@ -1793,7 +1799,7 @@ PyObject *parseParamMetaAsDict(const ito::ParamMeta *meta, const ito::Param* par
                 Py_DECREF(temp);
 
 				ito::ByteArray unit = cm->getUnit();
-				temp = PyUnicode_FromString(unit.data());
+				temp = PythonQtConversion::QByteArrayToPyUnicodeSecure(unit.data());
 				PyDict_SetItemString(dict, "unit", temp);
 				Py_DECREF(temp);
             }
@@ -1823,7 +1829,7 @@ PyObject *parseParamMetaAsDict(const ito::ParamMeta *meta, const ito::Param* par
                 for (int i = 0; i < cm->getLen(); ++i)
                 {
                     PyTuple_SetItem(
-                        temp, i, PyUnicode_FromString(cm->getString(i))); // steals reference
+                        temp, i, PythonQtConversion::QByteArrayToPyUnicodeSecure(cm->getString(i))); // steals reference
                 }
                 PyDict_SetItemString(dict, "allowedItems", temp);
                 Py_DECREF(temp);
@@ -1873,7 +1879,7 @@ PyObject *parseParamMetaAsDict(const ito::ParamMeta *meta, const ito::Param* par
                 Py_DECREF(temp);
 
 				ito::ByteArray unit = cm->getUnit();
-				temp = PyUnicode_FromString(unit.data());
+				temp = PythonQtConversion::QByteArrayToPyUnicodeSecure(unit.data());
 				PyDict_SetItemString(dict, "unit", temp);
 				Py_DECREF(temp);
             }
@@ -1924,7 +1930,7 @@ PyObject *parseParamMetaAsDict(const ito::ParamMeta *meta, const ito::Param* par
                 }
 
 				ito::ByteArray unit = cm->getUnit();
-				temp = PyUnicode_FromString(unit.data());
+				temp = PythonQtConversion::QByteArrayToPyUnicodeSecure(unit.data());
 				PyDict_SetItemString(dict, "unit", temp);
 				Py_DECREF(temp);
             }
@@ -1961,7 +1967,7 @@ PyObject *parseParamMetaAsDict(const ito::ParamMeta *meta, const ito::Param* par
                 Py_DECREF(temp);
 
 				ito::ByteArray unit = cm->getUnit();
-				temp = PyUnicode_FromString(unit.data());
+				temp = PythonQtConversion::QByteArrayToPyUnicodeSecure(unit.data());
 				PyDict_SetItemString(dict, "unit", temp);
 				Py_DECREF(temp);
             }
@@ -1982,7 +1988,7 @@ PyObject *parseParamMetaAsDict(const ito::ParamMeta *meta, const ito::Param* par
                 Py_DECREF(temp);
 
 				ito::ByteArray unit = cm->getUnit();
-				temp = PyUnicode_FromString(unit.data());
+				temp = PythonQtConversion::QByteArrayToPyUnicodeSecure(unit.data());
 				PyDict_SetItemString(dict, "unit", temp);
 				Py_DECREF(temp);
             }
@@ -2007,7 +2013,7 @@ PyObject *parseParamMetaAsDict(const ito::ParamMeta *meta, const ito::Param* par
         }
 
 		ito::ByteArray category = meta->getCategory();
-		temp = PyUnicode_FromString(category.data());
+		temp = PythonQtConversion::QByteArrayToPyUnicodeSecure(category.data());
 		PyDict_SetItemString(dict, "category", temp);
 		Py_DECREF(temp);
 

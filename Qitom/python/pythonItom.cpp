@@ -21,9 +21,9 @@
 *********************************************************************** */
 
 #include "pythonItom.h"
+#include "pythonAlgorithms.h"
 #include "pythonCommon.h"
 #include "pythonFigure.h"
-#include "pythonAlgorithms.h"
 #include "pythonPlotItem.h"
 #include "pythonPlugins.h"
 #include "pythonProgressObserver.h"
@@ -45,12 +45,14 @@
 #include "../organizer/uiOrganizer.h"
 #include "../organizer/userOrganizer.h"
 
+#include <qclipboard.h>
+#include <qmimedata.h>
 #include <qcoreapplication.h>
 #include <qdesktopwidget.h>
 #include <qdir.h>
 #include <qresource.h>
-#include <qstringlist.h>
 #include <qscreen.h>
+#include <qstringlist.h>
 
 #include <QtCore/qpluginloader.h>
 
@@ -493,7 +495,7 @@ PyObject* PythonItom::PyPlotImage(PyObject* /*pSelf*/, PyObject* pArgs, PyObject
     // return new instance of PyUiItem
     PyObject* args2 = PyTuple_New(0); // Py_BuildValue("OO", self, name);
     PyObject* kwds2 = PyDict_New();
-    PyObject *objectIdObj = PyLong_FromLong(*objectID);
+    PyObject* objectIdObj = PyLong_FromLong(*objectID);
     PyDict_SetItemString(kwds2, "objectID", objectIdObj);
     Py_XDECREF(objectIdObj);
     PythonPlotItem::PyPlotItem* pyPlotItem = (PythonPlotItem::PyPlotItem*)PyObject_Call(
@@ -513,7 +515,7 @@ PyObject* PythonItom::PyPlotImage(PyObject* /*pSelf*/, PyObject* pArgs, PyObject
     // or itom.figure
     args2 = PyTuple_New(0);
     kwds2 = PyDict_New();
-    PyObject *figHandleObj = PyLong_FromLong(*figHandle);
+    PyObject* figHandleObj = PyLong_FromLong(*figHandle);
     PyDict_SetItemString(kwds2, "handle", figHandleObj);
     Py_XDECREF(figHandleObj);
     PythonFigure::PyFigure* pyFigure = (PythonFigure::PyFigure*)PyObject_Call(
@@ -728,7 +730,7 @@ PyObject* PythonItom::PyPlot1d(PyObject* /*pSelf*/, PyObject* pArgs, PyObject* p
     // return new instance of PyUiItem
     PyObject* args2 = PyTuple_New(0); // Py_BuildValue("OO", self, name);
     PyObject* kwds2 = PyDict_New();
-    PyObject *objectIdObj = PyLong_FromLong(*objectID);
+    PyObject* objectIdObj = PyLong_FromLong(*objectID);
     PyDict_SetItemString(kwds2, "objectID", objectIdObj);
     Py_XDECREF(objectIdObj);
     PythonPlotItem::PyPlotItem* pyPlotItem = (PythonPlotItem::PyPlotItem*)PyObject_Call(
@@ -748,7 +750,7 @@ PyObject* PythonItom::PyPlot1d(PyObject* /*pSelf*/, PyObject* pArgs, PyObject* p
     // or itom.figure
     args2 = PyTuple_New(0);
     kwds2 = PyDict_New();
-    PyObject *figHandleObj = PyLong_FromLong(*figHandle);
+    PyObject* figHandleObj = PyLong_FromLong(*figHandle);
     PyDict_SetItemString(kwds2, "handle", figHandleObj);
     Py_XDECREF(figHandleObj);
     PythonFigure::PyFigure* pyFigure = (PythonFigure::PyFigure*)PyObject_Call(
@@ -946,7 +948,7 @@ PyObject* PythonItom::PyPlot2d(PyObject* /*pSelf*/, PyObject* pArgs, PyObject* p
     // return new instance of PyUiItem
     PyObject* args2 = PyTuple_New(0); // Py_BuildValue("OO", self, name);
     PyObject* kwds2 = PyDict_New();
-    PyObject *objectIdObj = PyLong_FromLong(*objectID);
+    PyObject* objectIdObj = PyLong_FromLong(*objectID);
     PyDict_SetItemString(kwds2, "objectID", objectIdObj);
     Py_XDECREF(objectIdObj);
     PythonPlotItem::PyPlotItem* pyPlotItem = (PythonPlotItem::PyPlotItem*)PyObject_Call(
@@ -966,7 +968,7 @@ PyObject* PythonItom::PyPlot2d(PyObject* /*pSelf*/, PyObject* pArgs, PyObject* p
     // or itom.figure
     args2 = PyTuple_New(0);
     kwds2 = PyDict_New();
-    PyObject *figHandleObj = PyLong_FromLong(*figHandle);
+    PyObject* figHandleObj = PyLong_FromLong(*figHandle);
     PyDict_SetItemString(kwds2, "handle", figHandleObj);
     Py_XDECREF(figHandleObj);
     PythonFigure::PyFigure* pyFigure = (PythonFigure::PyFigure*)PyObject_Call(
@@ -1166,7 +1168,7 @@ PyObject* PythonItom::PyPlot25d(PyObject* /*pSelf*/, PyObject* pArgs, PyObject* 
     // return new instance of PyUiItem
     PyObject* args2 = PyTuple_New(0); // Py_BuildValue("OO", self, name);
     PyObject* kwds2 = PyDict_New();
-    PyObject *objectIdObj = PyLong_FromLong(*objectID);
+    PyObject* objectIdObj = PyLong_FromLong(*objectID);
     PyDict_SetItemString(kwds2, "objectID", objectIdObj);
     Py_XDECREF(objectIdObj);
     PythonPlotItem::PyPlotItem* pyPlotItem = (PythonPlotItem::PyPlotItem*)PyObject_Call(
@@ -1186,7 +1188,7 @@ PyObject* PythonItom::PyPlot25d(PyObject* /*pSelf*/, PyObject* pArgs, PyObject* 
     // or itom.figure
     args2 = PyTuple_New(0);
     kwds2 = PyDict_New();
-    PyObject *figHandleObj = PyLong_FromLong(*figHandle);
+    PyObject* figHandleObj = PyLong_FromLong(*figHandle);
     PyDict_SetItemString(kwds2, "handle", figHandleObj);
     Py_XDECREF(figHandleObj);
     PythonFigure::PyFigure* pyFigure = (PythonFigure::PyFigure*)PyObject_Call(
@@ -1336,7 +1338,7 @@ PyObject* PythonItom::PyLiveImage(PyObject* /*pSelf*/, PyObject* pArgs, PyObject
     // return new instance of PyUiItem
     PyObject* args2 = PyTuple_New(0); // Py_BuildValue("OO", self, name);
     PyObject* kwds2 = PyDict_New();
-    PyObject *objectIdObj = PyLong_FromLong(*objectID);
+    PyObject* objectIdObj = PyLong_FromLong(*objectID);
     PyDict_SetItemString(kwds2, "objectID", objectIdObj);
     Py_XDECREF(objectIdObj);
     PythonPlotItem::PyPlotItem* pyPlotItem = (PythonPlotItem::PyPlotItem*)PyObject_Call(
@@ -1356,7 +1358,7 @@ PyObject* PythonItom::PyLiveImage(PyObject* /*pSelf*/, PyObject* pArgs, PyObject
     // or itom.figure
     args2 = PyTuple_New(0);
     kwds2 = PyDict_New();
-    PyObject *figHandleObj = PyLong_FromLong(*figHandle);
+    PyObject* figHandleObj = PyLong_FromLong(*figHandle);
     PyDict_SetItemString(kwds2, "handle", figHandleObj);
     Py_XDECREF(figHandleObj);
     PythonFigure::PyFigure* pyFigure = (PythonFigure::PyFigure*)PyObject_Call(
@@ -1848,7 +1850,7 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs, PyObject* pK
                         else if (!retDict)
                         {
                             std::cout << "\nMandatory parameters: " << contextName.toLatin1().data()
-                                      << " function has no mandatory parameters \n";
+                                << " function has no mandatory parameters \n";
                         }
                         if (filterParams->paramsOpt.size())
                         {
@@ -1870,7 +1872,7 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs, PyObject* pK
                         else if (!retDict)
                         {
                             std::cout << "\nOptional parameters: " << contextName.toLatin1().data()
-                                      << " function has no optional parameters \n";
+                                << " function has no optional parameters \n";
                         }
                         if (filterParams->paramsOut.size())
                         {
@@ -1892,7 +1894,7 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs, PyObject* pK
                         else if (!retDict)
                         {
                             std::cout << "\nOutput parameters: " << contextName.toLatin1().data()
-                                      << " function has no output parameters \n";
+                                << " function has no output parameters \n";
                         }
                     }
                     else if (!retDict)
@@ -1904,10 +1906,10 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs, PyObject* pK
                     {
                         std::cout << "\n";
                     }
-
-                    PyDict_SetItemString(result, filteredKey.toLatin1().data(), resulttemp);
-                    Py_DECREF(resulttemp);
                 }
+
+                PyDict_SetItemString(result, filteredKey.toLatin1().data(), resulttemp);
+                Py_DECREF(resulttemp);
             }
             else
             {
@@ -3031,7 +3033,7 @@ PyObject* PythonItom::PyItomVersion(PyObject* /*pSelf*/, PyObject* pArgs, PyObje
 {
     bool returnDict = false;
     bool addPluginInfo = false;
-    const char* kwlist[] = {"dictionary", "addPluginInfo", nullptr };
+    const char* kwlist[] = {"dictionary", "addPluginInfo", nullptr};
 
     if (!PyArg_ParseTupleAndKeywords(
             pArgs, pKwds, "|bb", const_cast<char**>(kwlist), &returnDict, &addPluginInfo))
@@ -4351,7 +4353,7 @@ PyObject* PythonItom::PyGetScreenInfo(PyObject* /*pSelf*/)
     if (pyEngine)
     {
         PyObject* res = PyDict_New();
-        
+
         QList<QScreen*> screens = QApplication::QGuiApplication::screens();
         const QScreen* primaryScreen = QApplication::primaryScreen();
         int nScreens = screens.length();
@@ -4368,7 +4370,7 @@ PyObject* PythonItom::PyGetScreenInfo(PyObject* /*pSelf*/)
             {
                 primaryIdx = i;
             }
-            
+
             subgeom = PyDict_New();
             rec = scr->geometry();
             item = PyLong_FromLong(rec.x());
@@ -4893,7 +4895,7 @@ filterHelp");
 PyObject* PythonItom::PyFilter(PyObject* /*pSelf*/, PyObject* pArgs, PyObject* pKwds)
 {
     int length = PyTuple_Size(pArgs);
-    
+
 
     if (length == 0)
     {
@@ -4915,8 +4917,9 @@ PyObject* PythonItom::PyFilter(PyObject* /*pSelf*/, PyObject* pArgs, PyObject* p
         return nullptr;
     }
 
-    PyObject *pArgsSlice = PyTuple_GetSlice(pArgs, 1, PyTuple_GET_SIZE(pArgs));
-    PyObject* result = PythonAlgorithms::PyGenericAlgorithm(algorithmName, nullptr, pArgsSlice, pKwds);
+    PyObject* pArgsSlice = PyTuple_GetSlice(pArgs, 1, PyTuple_GET_SIZE(pArgs));
+    PyObject* result =
+        PythonAlgorithms::PyGenericAlgorithm(algorithmName, nullptr, pArgsSlice, pKwds);
     Py_DECREF(pArgsSlice);
     return result;
 }
@@ -6530,6 +6533,7 @@ PyObject* PythonItom::PyGetPaletteList(PyObject* pSelf, PyObject* pArgs)
 
     return tuple;
 }
+
 //-------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyClearAll_doc, "clearAll() \n\
 \n\
@@ -6547,6 +6551,53 @@ PyObject* PythonItom::PyClearAll(PyObject* pSelf)
     pyEngine->pythonClearAll();
     Py_RETURN_NONE;
 }
+
+//-------------------------------------------------------------------------------------
+/*PyDoc_STRVAR(pyCopyStringToClipboard_doc, "copyStringToClipboard(text) \n\
+\n\
+Copies the given text to the clipboard of your operating system. \n\
+\n\
+Parameters \n\
+---------- - \n\
+text : str \n\
+    This text is copied to the clipboard.");
+PyObject* PythonItom::PyCopyStringToClipboard(PyObject* pSelf, PyObject* pArgs, PyObject* pKwds)
+{
+    const char* kwlist[] = {"text", nullptr};
+    PyObject* text = nullptr;
+
+    if (!PyArg_ParseTupleAndKeywords(pArgs, pKwds, "O", const_cast<char**>(kwlist), &text))
+    {
+        return nullptr;
+    }
+
+    bool ok;
+    auto string = PythonQtConversion::PyObjGetString(text, true, ok);
+
+    if (!ok)
+    {
+        PyErr_SetString(PyExc_TypeError, "Argument 'text' must be a string.");
+        return nullptr;
+    }
+
+    auto clipboard = QApplication::clipboard();
+    clipboard->clear();
+    clipboard->setText(string, QClipboard::Clipboard);
+
+    QString txt = clipboard->text();
+
+    QMimeData* mime = new QMimeData();
+    mime->setText(string);
+    clipboard->setMimeData(mime);
+
+    txt = clipboard->text();
+
+
+    QThread::msleep(1); //without this line I get allways empty clipboard
+
+    Py_RETURN_NONE;
+}*/
+
 //-------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -6686,6 +6737,10 @@ PyMethodDef PythonItom::PythonMethodItom[] = {
      setPalette_doc},
     {"getPaletteList", (PyCFunction)PythonItom::PyGetPaletteList, METH_VARARGS, getPaletteList_doc},
     {"clearAll", (PyCFunction)PythonItom::PyClearAll, METH_NOARGS, pyClearAll_doc},
+    /*{"copyStringToClipboard",
+     (PyCFunction)PythonItom::PyCopyStringToClipboard,
+     METH_VARARGS | METH_KEYWORDS,
+     pyCopyStringToClipboard_doc},*/
     {"registerResource",
      (PyCFunction)PythonItom::PyRegisterResource,
      METH_VARARGS | METH_KEYWORDS,
@@ -6706,10 +6761,11 @@ PyObject* PythonItom::PyInitItom(void)
 
     if (m != nullptr)
     {
-        PyObject *algorithmModule = PyModule_Create(&PythonAlgorithms::PythonModuleItomAlgorithms);
+        PyObject* algorithmModule = PyModule_Create(&PythonAlgorithms::PythonModuleItomAlgorithms);
         PythonAlgorithms::AddAlgorithmFunctions(algorithmModule);
 
-        if (PyModule_AddObject(m, PythonAlgorithms::PythonModuleItomAlgorithms.m_name, algorithmModule) < 0)
+        if (PyModule_AddObject(
+                m, PythonAlgorithms::PythonModuleItomAlgorithms.m_name, algorithmModule) < 0)
         {
             Py_DECREF(algorithmModule);
         }
