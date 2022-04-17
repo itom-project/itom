@@ -26,10 +26,19 @@ def parse_parameters(instance):
         info = textwrap.wrap(p["info"], width=88)
         info = "\n    ".join(info)
 
+        meta = p.get("metaReadableStr", "")
+        if meta != "":
+            meta = textwrap.wrap(meta, width=88)
+            meta = "\n    ".join(meta)
+
         if p["readonly"]:
-            item = "**%s**: {%s}, read-only\n    %s" % (p["name"], p["type"], info)
+            item = "**%s**: %s, read-only\n    %s" % (p["name"], p["type"], info)
         else:
-            item = "**%s**: {%s}\n    %s" % (p["name"], p["type"], info)
+            item = "**%s**: %s\n    %s" % (p["name"], p["type"], info)
+
+        if meta != "":
+            item = item + "\n    \n    *%s*" % meta
+        
         result.append(item)
     print("\n".join(result))
 

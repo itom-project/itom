@@ -33,6 +33,8 @@
 #include <qsharedpointer.h>
 #include <qstringlist.h>
 
+#include "common/addInInterface.h"
+
 namespace ito {
 
 //-------------------------------------------------------------------------------------
@@ -709,6 +711,934 @@ ito::RetVal parseParamName(
     }
 
     return retValue;
+}
+
+//-------------------------------------------------------------------------------------
+//! Returns a data-type dependent string representation of the given number
+QString boundedNumberText(char value, ito::ParamMeta::tRepresentation representation)
+{
+    if (value == std::numeric_limits<char>::min())
+    {
+        return "-inf";
+    }
+    else if (value == std::numeric_limits<char>::max())
+    {
+        return "inf";
+    }
+
+    switch (representation)
+    {
+    case ito::ParamMeta::HexNumber:
+        return (value < 0 ? QString("-") : QString()) +
+            QString("0x%1").arg(QString::number(value, 16));
+    default:
+        return QString::number(value);
+    }
+}
+
+//-------------------------------------------------------------------------------------
+//! Returns a data-type dependent string representation of the given number
+QString boundedNumberText(int value, ito::ParamMeta::tRepresentation representation)
+{
+    if (value == std::numeric_limits<int>::min())
+    {
+        return "-inf";
+    }
+    else if (value == std::numeric_limits<int>::max())
+    {
+        return "inf";
+    }
+
+    switch (representation)
+    {
+    case ito::ParamMeta::HexNumber:
+        return (value < 0 ? QString("-") : QString()) +
+            QString("0x%1").arg(QString::number(value, 16));
+    default:
+        return QString::number(value);
+    }
+}
+
+//-------------------------------------------------------------------------------------
+//! Returns a data-type dependent string representation of the given number
+QString boundedNumberText(
+    double value, ito::DoubleMeta::tDisplayNotation displayNotation, int displayPrecision)
+{
+    if (value < 0 && std::isinf(value))
+    {
+        return "-inf";
+    }
+    else if (
+        value <= (-std::numeric_limits<double>::max() + std::numeric_limits<double>::epsilon()))
+    {
+        return "-inf";
+    }
+    else if (value > 0 && std::isinf(value))
+    {
+        return "inf";
+    }
+    else if (value >= (std::numeric_limits<double>::max() - std::numeric_limits<double>::epsilon()))
+    {
+        return "inf";
+    }
+    else if (std::isnan(value))
+    {
+        return "nan";
+    }
+
+    switch (displayNotation)
+    {
+    default:
+    case ito::DoubleMeta::Automatic:
+        return QString::number(value, 'g');
+    case ito::DoubleMeta::Fixed:
+        return QString::number(value, 'f', displayPrecision);
+    case ito::DoubleMeta::Scientific:
+        return QString::number(value, 'e', displayPrecision);
+    }
+}
+
+//-------------------------------------------------------------------------------------
+//!< helper method for getMetaDocstringFromParam
+QString renderArrayContent(
+    const char* values, size_t num, ito::ParamMeta::tRepresentation representation)
+{
+    QStringList items;
+    QString content;
+
+    if (num < 10)
+    {
+        for (size_t i = 0; i < num; ++i)
+        {
+            items << boundedNumberText(values[i], representation);
+        }
+    }
+    else if (num >= 10)
+    {
+        for (size_t i = 0; i < 4; ++i)
+        {
+            items << boundedNumberText(values[i], representation);
+        }
+
+        items << "...";
+
+        for (size_t i = num - 4; i < num; ++i)
+        {
+            items << boundedNumberText(values[i], representation);
+        }
+    }
+
+    content = items.join(", ");
+
+    if (content.size() == 0)
+    {
+        content = " ";
+    }
+
+    return QString("[%1]").arg(content);
+}
+
+//-------------------------------------------------------------------------------------
+//!< helper method for getMetaDocstringFromParam
+QString renderArrayContent(
+    const int* values, size_t num, ito::ParamMeta::tRepresentation representation)
+{
+    QStringList items;
+    QString content;
+
+    if (num < 10)
+    {
+        for (size_t i = 0; i < num; ++i)
+        {
+            items << boundedNumberText(values[i], representation);
+        }
+    }
+    else if (num >= 10)
+    {
+        for (size_t i = 0; i < 4; ++i)
+        {
+            items << boundedNumberText(values[i], representation);
+        }
+
+        items << "...";
+
+        for (size_t i = num - 4; i < num; ++i)
+        {
+            items << boundedNumberText(values[i], representation);
+        }
+    }
+
+    content = items.join(", ");
+
+    if (content.size() == 0)
+    {
+        content = " ";
+    }
+
+    return QString("[%1]").arg(content);
+}
+
+//-------------------------------------------------------------------------------------
+//!< helper method for getMetaDocstringFromParam
+QString renderArrayContent(
+    const double* values,
+    size_t num,
+    ito::DoubleMeta::tDisplayNotation displayNotation,
+    int displayPrecision)
+{
+    QStringList items;
+    QString content;
+
+    if (num < 10)
+    {
+        for (size_t i = 0; i < num; ++i)
+        {
+            items << boundedNumberText(values[i], displayNotation, displayPrecision);
+        }
+    }
+    else if (num >= 10)
+    {
+        for (size_t i = 0; i < 4; ++i)
+        {
+            items << boundedNumberText(values[i], displayNotation, displayPrecision);
+        }
+
+        items << "...";
+
+        for (size_t i = num - 4; i < num; ++i)
+        {
+            items << boundedNumberText(values[i], displayNotation, displayPrecision);
+        }
+    }
+
+    content = items.join(", ");
+
+    if (content.size() == 0)
+    {
+        content = " ";
+    }
+
+    return QString("[%1]").arg(content);
+}
+
+//-------------------------------------------------------------------------------------
+//!< helper method for getMetaDocstringFromParam
+QString renderArrayContent(const ito::ByteArray* values, size_t num)
+{
+    QStringList items;
+    QString content;
+
+    auto parse = [](const ito::ByteArray& ba) {
+        if (ba.empty())
+        {
+            return QLatin1String("\"\"");
+        }
+        else
+        {
+            return QLatin1String(ba.data(), ba.size());
+        }
+    }; // end of lambda expression
+
+    if (num < 10)
+    {
+        for (size_t i = 0; i < num; ++i)
+        {
+            items << parse(values[i]);
+        }
+    }
+    else if (num >= 10)
+    {
+        for (size_t i = 0; i < 4; ++i)
+        {
+            items << parse(values[i]);
+        }
+
+        items << "...";
+
+        for (size_t i = num - 4; i < num; ++i)
+        {
+            items << parse(values[i]);
+        }
+    }
+
+    content = items.join(", ");
+
+    if (content.size() == 0)
+    {
+        content = " ";
+    }
+
+    return QString("[%1]").arg(content);
+}
+
+//-------------------------------------------------------------------------------------
+//!< helper method for getMetaDocstringFromParam
+QString renderListMetaInfo(const ito::ListMeta* meta, bool translate)
+{
+    QString content;
+
+    if (meta->getNumMin() == meta->getNumMax())
+    {
+        content =
+            (translate ? QObject::tr("%1 values required") : QLatin1String("%1 values required"))
+                .arg(meta->getNumMin());
+    }
+    else
+    {
+        content = translate ? QObject::tr("Allowed number of values: %1 - %2")
+                            : QString("Allowed number of values: %1 - %2");
+        content = content.arg(meta->getNumMin()).arg(meta->getNumMax());
+
+        if (meta->getNumStepSize() != 1)
+        {
+            QString content2 = (translate ? QObject::tr(", step: %1") : QString(", step: %1"))
+                                   .arg(meta->getNumStepSize());
+            content += content2;
+        }
+    }
+
+    return content;
+}
+
+//-------------------------------------------------------------------------------------
+//!< helper method for getMetaDocstringFromParam
+QString renderDoubleMetaInfo(const ito::DoubleMeta* meta, bool translate)
+{
+    QString temp;
+    const double minimum = meta->getMin();
+    const double maximum = meta->getMax();
+    const double eps = std::numeric_limits<double>::epsilon();
+    const double dblmax = std::numeric_limits<double>::max();
+    auto prec = meta->getDisplayPrecision();
+    auto not = meta->getDisplayNotation();
+
+    if (meta->getStepSize() == 0.0)
+    {
+        if ((minimum < 0) && ((minimum >= (-dblmax + eps)) || std::isinf(minimum)) &&
+            (maximum > 0) && ((maximum >= (dblmax - eps)) || std::isinf(maximum)))
+        {
+            temp =
+                translate ? QObject::tr("All values allowed") : QLatin1String("All values allowed");
+        }
+        else
+        {
+            temp = translate ? QObject::tr("Value range: [%1, %2]")
+                             : QLatin1String("Value range: [%1, %2]");
+            temp = temp.arg(boundedNumberText(minimum, not, prec))
+                       .arg(boundedNumberText(maximum, not, prec));
+        }
+    }
+    else
+    {
+        temp = translate ? QObject::tr("Value range: [%1:%2:%3]")
+                         : QLatin1String("Value range: [%1:%2:%3]");
+        temp = temp.arg(boundedNumberText(minimum, not, prec))
+                   .arg(meta->getStepSize())
+                   .arg(boundedNumberText(maximum, not, prec));
+    }
+
+    const auto& unit = meta->getUnit();
+
+    if (!unit.empty())
+    {
+        temp += (translate ? QObject::tr(", Unit: %1") : QLatin1String(", Unit: %1"))
+                    .arg(QLatin1String(unit.data(), unit.size()));
+    }
+
+    return temp;
+}
+
+//-------------------------------------------------------------------------------------
+//!< helper method for getMetaDocstringFromParam
+QString renderCharMetaInfo(const ito::CharMeta* meta, bool translate)
+{
+    QString temp;
+    char minimum = meta->getMin();
+    char maximum = meta->getMax();
+    auto repr = meta->getRepresentation();
+
+    if (meta->getStepSize() == 1)
+    {
+        if ((minimum == std::numeric_limits<char>::min()) &&
+            (maximum == std::numeric_limits<char>::max()))
+        {
+            temp =
+                translate ? QObject::tr("All values allowed") : QLatin1String("All values allowed");
+        }
+        else
+        {
+            temp = translate ? QObject::tr("Value range: [%1, %2]")
+                             : QLatin1String("Value range: [%1, %2]");
+            temp = temp.arg(boundedNumberText(minimum, repr)).arg(boundedNumberText(maximum, repr));
+        }
+    }
+    else
+    {
+        temp = translate ? QObject::tr("Value range: [%1:%2:%3]")
+                         : QLatin1String("Value range: [%1:%2:%3]");
+        temp = temp.arg(boundedNumberText(minimum, repr))
+                   .arg(meta->getStepSize())
+                   .arg(boundedNumberText(maximum, repr));
+    }
+
+    const auto& unit = meta->getUnit();
+
+    if (!unit.empty())
+    {
+        temp += (translate ? QObject::tr(", Unit: %1") : QLatin1String(", Unit: %1"))
+                    .arg(QLatin1String(unit.data(), unit.size()));
+    }
+
+    return temp;
+}
+
+//-------------------------------------------------------------------------------------
+//!< helper method for getMetaDocstringFromParam
+QString renderIntMetaInfo(const ito::IntMeta* meta, bool translate)
+{
+    QString temp;
+    int minimum = meta->getMin();
+    int maximum = meta->getMax();
+    auto repr = meta->getRepresentation();
+
+    if (meta->getStepSize() == 1)
+    {
+        if ((minimum == std::numeric_limits<int>::min()) &&
+            (maximum == std::numeric_limits<int>::max()))
+        {
+            temp =
+                translate ? QObject::tr("All values allowed") : QLatin1String("All values allowed");
+        }
+        else
+        {
+            temp = translate ? QObject::tr("Value range: [%1, %2]")
+                             : QLatin1String("Value range: [%1, %2]");
+            temp = temp.arg(boundedNumberText(minimum, repr)).arg(boundedNumberText(maximum, repr));
+        }
+    }
+    else
+    {
+        temp = translate ? QObject::tr("Value range: [%1:%2:%3]")
+                         : QLatin1String("Value range: [%1:%2:%3]");
+        temp = temp.arg(boundedNumberText(minimum, repr))
+                   .arg(meta->getStepSize())
+                   .arg(boundedNumberText(maximum, repr));
+    }
+
+    const auto& unit = meta->getUnit();
+
+    if (!unit.empty())
+    {
+        temp += (translate ? QObject::tr(", Unit: %1") : QLatin1String(", Unit: %1"))
+                    .arg(QLatin1String(unit.data(), unit.size()));
+    }
+
+    return temp;
+}
+
+//-------------------------------------------------------------------------------------
+//!< helper method for getMetaDocstringFromParam
+QString renderStrMetaInfo(const ito::StringMeta* meta, bool translate)
+{
+    QString temp;
+
+    switch (meta->getStringType())
+    {
+    case ito::StringMeta::RegExp:
+        temp = translate ? QObject::tr("RegExp") : "RegExp";
+
+        if (meta->getLen() == 1)
+        {
+            temp = temp + QString(": \"%1\"").arg(QLatin1String(meta->getString(0)));
+        }
+        else if (meta->getLen() > 1)
+        {
+            QStringList allowed;
+            for (int i = 0; i < meta->getLen(); ++i)
+            {
+                allowed += QString("\"%1\"").arg(QLatin1String(meta->getString(i)));
+            }
+            temp = temp + QString(": [%1]").arg(allowed.join("; "));
+        }
+        else if (meta->getLen() == 0)
+        {
+            temp = translate ? QObject::tr("RegExp: <no pattern given>")
+                             : "RegExp: <no pattern given>";
+        }
+        break;
+    case ito::StringMeta::String:
+        temp = translate ? QObject::tr("Match") : "Match";
+
+        if (meta->getLen() == 1)
+        {
+            temp = temp + QString(": \"%1\"").arg(QLatin1String(meta->getString(0)));
+        }
+        else if (meta->getLen() > 1)
+        {
+            QStringList allowed;
+
+            for (int i = 0; i < meta->getLen(); ++i)
+            {
+                allowed += QString("\"%1\"").arg(QLatin1String(meta->getString(i)));
+            }
+
+            temp = temp + QString(": [%1]").arg(allowed.join(", "));
+        }
+        else if (meta->getLen() == 0)
+        {
+            temp =
+                translate ? QObject::tr("Match: <no pattern given>") : "Match: <no pattern given>";
+        }
+        break;
+    case ito::StringMeta::Wildcard:
+        temp = translate ? QObject::tr("Wildcard") : "Wildcard";
+
+        if (meta->getLen() == 1)
+        {
+            temp = temp + QString(": \"%1\"").arg(QLatin1String(meta->getString(0)));
+        }
+        else if (meta->getLen() > 1)
+        {
+            QStringList allowed;
+            for (int i = 0; i < meta->getLen(); ++i)
+            {
+                allowed += QString("\"%1\"").arg(QLatin1String(meta->getString(i)));
+            }
+            temp = temp + QString("Wildcard: [%1]").arg(allowed.join("; "));
+        }
+        else if (meta->getLen() == 0)
+        {
+            temp = translate ? QObject::tr("Wildcard: <no pattern given>")
+                             : "Wildcard: <no pattern given>";
+        }
+
+        break;
+    }
+
+    return temp;
+}
+
+//-------------------------------------------------------------------------------------
+QString getMetaDocstringFromParam(const Param& param, bool translate, QString& pythonLikeTypename)
+{
+    QString meta;
+    QString temp;
+    QString defaultStr;
+
+    switch (param.getType())
+    {
+    case ito::ParamBase::Int: {
+        pythonLikeTypename = "int";
+        const ito::IntMeta* pMeta = dynamic_cast<const ito::IntMeta*>(param.getMeta());
+        ito::ParamMeta::tRepresentation repr = ito::ParamMeta::PureNumber;
+
+        if (pMeta)
+        {
+            repr = pMeta->getRepresentation();
+        }
+
+        defaultStr = (translate ? QObject::tr("Default: %1") : QString("Default: %1"))
+                         .arg(boundedNumberText(param.getVal<ito::int32>(), repr));
+
+        if (pMeta)
+        {
+            meta = renderIntMetaInfo(pMeta, translate) + ", " + defaultStr;
+        }
+        else
+        {
+            meta = defaultStr;
+        }
+    }
+    break;
+    case ito::ParamBase::Char: {
+        // Never tested ... no filter holding metadata as char available
+        pythonLikeTypename = "int (char)";
+        const ito::CharMeta* pMeta = dynamic_cast<const ito::CharMeta*>(param.getMeta());
+        ito::ParamMeta::tRepresentation repr = ito::ParamMeta::PureNumber;
+
+        if (pMeta)
+        {
+            repr = pMeta->getRepresentation();
+        }
+
+        defaultStr = (translate ? QObject::tr("Default: %1") : QString("Default: %1"))
+                         .arg(boundedNumberText(param.getVal<char>(), repr));
+
+        if (pMeta)
+        {
+            meta = renderCharMetaInfo(pMeta, translate) + ", " + defaultStr;
+        }
+        else
+        {
+            meta = defaultStr;
+        }
+    }
+    break;
+    case ito::ParamBase::Double: {
+        pythonLikeTypename = "float (double-precision)";
+        const ito::DoubleMeta* pMeta = dynamic_cast<const ito::DoubleMeta*>(param.getMeta());
+
+        if (pMeta)
+        {
+            defaultStr = (translate ? QObject::tr("Default: %1") : QString("Default: %1"))
+                             .arg(boundedNumberText(
+                                 param.getVal<float64>(),
+                                 pMeta->getDisplayNotation(),
+                                 pMeta->getDisplayPrecision()));
+
+            meta = renderDoubleMetaInfo(pMeta, translate) + ", " + defaultStr;
+        }
+        else
+        {
+            defaultStr =
+                (translate ? QObject::tr("Default: %1") : QString("Default: %1"))
+                    .arg(boundedNumberText(param.getVal<float64>(), ito::DoubleMeta::Automatic, 3));
+
+            meta = defaultStr;
+        }
+    }
+    break;
+    case ito::ParamBase::Complex: {
+        pythonLikeTypename = "complex (double-precision)";
+        ito::float64 real = param.getVal<ito::complex128>().real();
+        ito::float64 imag = param.getVal<ito::complex128>().imag();
+
+        if (imag >= 0)
+        {
+            temp = translate ? QObject::tr("Default: %1+%2i") : QLatin1String("Default: %1+%2i");
+            meta = temp.arg(real).arg(imag);
+        }
+        else
+        {
+            temp = translate ? QObject::tr("Default: %1-%2i") : QLatin1String("Default: %1-%2i");
+            meta = temp.arg(real).arg(-imag);
+        }
+    }
+    break;
+    case ito::ParamBase::String: {
+        pythonLikeTypename = "str";
+        const ito::StringMeta* pMeta = dynamic_cast<const ito::StringMeta*>(param.getMeta());
+        defaultStr = (translate ? QObject::tr("Default: \"%1\"") : QString("Default: \"%1\""));
+        const char* str = param.getVal<const char*>();
+
+        if (str == nullptr)
+        {
+            defaultStr = (translate ? QObject::tr("Default: <nullptr / None>") : QString("Default: <nullptr / None>"));
+        }
+        else if (strlen(str) == 0)
+        {
+            defaultStr = (translate ? QObject::tr("Default: <empty str>") : QString("Default: <empty str>"));
+        }
+        else
+        {
+            defaultStr = defaultStr.arg(QLatin1String(str));
+        }
+
+        if (pMeta)
+        {
+            meta = renderStrMetaInfo(pMeta, translate);
+            meta += ", " + defaultStr;
+        }
+        else
+        {
+            meta = defaultStr;
+        }
+    }
+    break;
+    case ito::ParamBase::CharArray: {
+        const ito::ParamMeta* m = param.getMeta();
+        const auto pMeta = dynamic_cast<const ito::CharArrayMeta*>(param.getMeta());
+
+        pythonLikeTypename = "Sequence[int (char)]";
+
+        ito::ParamMeta::tRepresentation repr = ito::ParamMeta::PureNumber;
+
+        if (pMeta)
+        {
+            repr = pMeta->getRepresentation();
+        }
+
+        defaultStr = (translate ? QObject::tr("Default: %1") : QString("Default: %1"));
+        defaultStr =
+            defaultStr.arg(renderArrayContent(param.getVal<const char*>(), param.getLen(), repr));
+
+        if (m && m->getType() == ito::ParamMeta::rttiCharArrayMeta)
+        {
+            meta = renderListMetaInfo(pMeta, translate);
+            meta += ", " + renderCharMetaInfo(pMeta, translate);
+            meta += ", " + defaultStr;
+        }
+        else
+        {
+            meta = defaultStr;
+        }
+    }
+
+    break;
+    case ito::ParamBase::IntArray: {
+        const ito::ParamMeta* m = param.getMeta();
+
+        ito::ParamMeta::tRepresentation repr = ito::ParamMeta::PureNumber;
+
+        defaultStr = (translate ? QObject::tr("Default: %1") : QString("Default: %1"));
+
+
+        if (!m)
+        {
+            pythonLikeTypename = "Sequence[int]";
+            defaultStr = defaultStr.arg(
+                renderArrayContent(param.getVal<const int*>(), param.getLen(), repr));
+
+            meta = defaultStr;
+        }
+        else if (m->getType() == ito::ParamMeta::rttiIntArrayMeta)
+        {
+            pythonLikeTypename = "Sequence[int]";
+
+            const auto pMeta = dynamic_cast<const ito::IntArrayMeta*>(param.getMeta());
+            defaultStr = defaultStr.arg(renderArrayContent(
+                param.getVal<const int*>(), param.getLen(), pMeta->getRepresentation()));
+            meta = renderListMetaInfo(pMeta, translate);
+            meta += ", " + renderIntMetaInfo(pMeta, translate);
+            meta += ", " + defaultStr;
+        }
+        else if (m->getType() == ito::ParamMeta::rttiIntervalMeta)
+        {
+            pythonLikeTypename = "interval [first: int, last: int]";
+
+            const auto pMeta = dynamic_cast<const ito::IntervalMeta*>(param.getMeta());
+            defaultStr = defaultStr.arg(renderArrayContent(
+                param.getVal<const int*>(), param.getLen(), pMeta->getRepresentation()));
+            meta += ", " + renderIntMetaInfo(pMeta, translate);
+            meta += ", " + defaultStr;
+        }
+        else if (m->getType() == ito::ParamMeta::rttiRangeMeta)
+        {
+            pythonLikeTypename = "range [first: int, last: int]";
+
+            const auto pMeta = dynamic_cast<const ito::RangeMeta*>(param.getMeta());
+            defaultStr = defaultStr.arg(renderArrayContent(
+                param.getVal<const int*>(), param.getLen(), pMeta->getRepresentation()));
+            meta += ", " + renderIntMetaInfo(pMeta, translate);
+            meta += ", " + defaultStr;
+        }
+        else if (m->getType() == ito::ParamMeta::rttiRectMeta)
+        {
+            pythonLikeTypename = "rectangle [left: int, top: int, width: int, height: int]";
+
+            const auto pMeta = dynamic_cast<const ito::RectMeta*>(param.getMeta());
+            defaultStr = defaultStr.arg(
+                renderArrayContent(param.getVal<const int*>(), param.getLen(), repr));
+
+            const auto widthMeta = pMeta->getWidthRangeMeta();
+            const auto heightMeta = pMeta->getHeightRangeMeta();
+            meta = (translate ? QObject::tr("Width: %1") : QLatin1String("Width: %1"))
+                       .arg(renderIntMetaInfo(&widthMeta, translate));
+            meta = (translate ? QObject::tr("Height: %1") : QLatin1String("Height: %1"))
+                       .arg(renderIntMetaInfo(&heightMeta, translate));
+            meta += ", " + defaultStr;
+        }
+    }
+
+    break;
+    case ito::ParamBase::DoubleArray: {
+        const ito::ParamMeta* m = param.getMeta();
+
+        defaultStr = (translate ? QObject::tr("Default: %1") : QString("Default: %1"));
+
+
+        if ((m && m->getType() == ito::ParamMeta::rttiDoubleArrayMeta) || !m)
+        {
+            pythonLikeTypename = "Sequence[float]";
+
+            const auto pMeta = dynamic_cast<const ito::DoubleArrayMeta*>(param.getMeta());
+
+            if (pMeta)
+            {
+                meta = renderListMetaInfo(pMeta, translate);
+                meta += ", " + renderDoubleMetaInfo(pMeta, translate);
+                defaultStr = defaultStr.arg(renderArrayContent(
+                    param.getVal<const double*>(),
+                    param.getLen(),
+                    pMeta->getDisplayNotation(),
+                    pMeta->getDisplayPrecision()));
+                meta += ", " + defaultStr;
+            }
+            else
+            {
+                defaultStr = defaultStr.arg(renderArrayContent(
+                    param.getVal<const double*>(), param.getLen(), ito::DoubleMeta::Automatic, 3));
+                meta = defaultStr;
+            }
+        }
+        else if (m && m->getType() == ito::ParamMeta::rttiDoubleIntervalMeta)
+        {
+            pythonLikeTypename = "interval [first: float, last: float]";
+
+            const auto pMeta = dynamic_cast<const ito::DoubleIntervalMeta*>(param.getMeta());
+
+            if (pMeta)
+            {
+                meta += ", " + renderDoubleMetaInfo(pMeta, translate);
+                defaultStr = defaultStr.arg(renderArrayContent(
+                    param.getVal<const double*>(),
+                    param.getLen(),
+                    pMeta->getDisplayNotation(),
+                    pMeta->getDisplayPrecision()));
+                meta += ", " + defaultStr;
+            }
+            else
+            {
+                defaultStr = defaultStr.arg(renderArrayContent(
+                    param.getVal<const double*>(), param.getLen(), ito::DoubleMeta::Automatic, 3));
+                meta = defaultStr;
+            }
+        }
+        else
+        {
+            defaultStr = defaultStr.arg(renderArrayContent(
+                param.getVal<const double*>(), param.getLen(), ito::DoubleMeta::Automatic, 3));
+            meta = defaultStr;
+        }
+    }
+
+    break;
+    case ito::ParamBase::StringList: {
+        pythonLikeTypename = "Sequence[str]";
+        const ito::ParamMeta* m = param.getMeta();
+
+        defaultStr = (translate ? QObject::tr("Default: %1") : QString("Default: %1"));
+        defaultStr = defaultStr.arg(
+            renderArrayContent(param.getVal<const ito::ByteArray*>(), param.getLen()));
+
+        if ((m && m->getType() == ito::ParamMeta::rttiStringListMeta) || !m)
+        {
+            const auto pMeta = dynamic_cast<const ito::StringListMeta*>(param.getMeta());
+
+            if (pMeta)
+            {
+                meta = renderListMetaInfo(pMeta, translate);
+                meta += ", " +
+                    (translate ? QObject::tr("Value rules: ") : QLatin1String("Value rules: ")) +
+                    renderStrMetaInfo(pMeta, translate);
+                meta += ", " + defaultStr;
+            }
+            else
+            {
+                meta = defaultStr;
+            }
+        }
+    }
+
+    break;
+    case ito::ParamBase::ComplexArray: {
+        pythonLikeTypename = "Sequence[complex], double precision";
+    }
+
+    break;
+    case ito::ParamBase::DObjPtr: {
+        pythonLikeTypename = "itom.dataObject";
+
+        const ito::DObjMeta* pMeta = dynamic_cast<const ito::DObjMeta*>(param.getMeta());
+
+        if (pMeta)
+        {
+            meta = "";
+
+            if (pMeta->getMinDim() > 0)
+            {
+                meta += (translate ? QObject::tr("Min. dims: %1") : QString("Min. dims: %1"))
+                            .arg(pMeta->getMinDim());
+            }
+
+            if (pMeta->getMaxDim() > 0)
+            {
+                if (meta != "")
+                {
+                    meta += ", ";
+                }
+
+                meta += (translate ? QObject::tr("Max. dims: %1") : QString("Max. dims: %1"))
+                            .arg(pMeta->getMaxDim());
+            }
+        }
+    }
+
+    break;
+    case ito::ParamBase::PointCloudPtr: {
+        pythonLikeTypename = "itom.pointCloud";
+    }
+
+    break;
+    case ito::ParamBase::PointPtr: {
+        pythonLikeTypename = "itom.point";
+    }
+
+    break;
+    case ito::ParamBase::PolygonMeshPtr: {
+        pythonLikeTypename = "itom.polygonMesh";
+    }
+
+    break;
+    case ito::ParamBase::HWRef: {
+        pythonLikeTypename = "Union[itom.dataIO, itom.actuator]";
+
+        if (param.getMeta() != nullptr)
+        {
+            const ito::HWMeta* pMeta = dynamic_cast<const ito::HWMeta*>(param.getMeta());
+            ito::ByteArray name = pMeta->getHWAddInName();
+
+            if (name.length() > 0)
+            {
+                temp = translate ? QObject::tr("Only plugin \"%1\" is allowed")
+                                 : QString("Only plugin \"%1\" is allowed");
+                meta = temp.arg(name.data());
+            }
+            else
+            {
+                meta = "";
+                bool dataIOIncluded = false;
+
+                if (pMeta->getMinType() & ito::typeActuator)
+                {
+                    meta.append("Actuator, ");
+                }
+                if (pMeta->getMinType() & ito::typeAlgo)
+                {
+                    meta.append("Algorithms, ");
+                }
+                if (pMeta->getMinType() & ito::typeGrabber)
+                {
+                    meta.append("DataIO::Grabber, ");
+                    dataIOIncluded = true;
+                }
+                else if (pMeta->getMinType() & ito::typeADDA)
+                {
+                    meta.append("DataIO::ADDA, ");
+                    dataIOIncluded = true;
+                }
+                else if (pMeta->getMinType() & ito::typeRawIO)
+                {
+                    meta.append("DataIO::Raw IO, ");
+                    dataIOIncluded = true;
+                }
+                else if (!dataIOIncluded && pMeta->getMinType() & ito::typeDataIO)
+                {
+                    meta.append("DataIO, ");
+                }
+
+                meta = meta.mid(0, meta.size() - 2);
+                meta = (translate ? QObject::tr("Allowed plugin type(s): \"%1\".")
+                                  : QString("Allowed plugin type(s): \"%1\"."))
+                           .arg(meta);
+            }
+        }
+    }
+
+    break;
+    }
+
+    return meta;
 }
 
 } // end namespace ito

@@ -83,6 +83,12 @@ ITOMCOMMONQT_EXPORT ito::RetVal setParamValue(
     QString& name,
     int& index);
 
+//!< parses the type and meta information of param and returns a readable
+//!< string of the meta information and default value (if possible) as well
+//!< as a readable type information in a python-like representation.
+ITOMCOMMONQT_EXPORT QString
+getMetaDocstringFromParam(const Param& param, bool translate, QString& pythonLikeTypename);
+
 }; // end namespace ito
 
 #endif //#if !defined(Q_MOC_RUN) || defined(ITOMCOMMONQT_MOC)

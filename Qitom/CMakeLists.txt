@@ -263,7 +263,6 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/api/apiFunctionsGraph.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/guiHelper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/IOHelper.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/helper/sharedPointerHelper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/versionHelper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helpViewer/helpViewer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helpViewer/qtHelpUrlSchemeHandler.h

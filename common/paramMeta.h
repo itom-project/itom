@@ -350,7 +350,7 @@ class ITOMCOMMON_EXPORT DoubleMeta : public ParamMeta
     */
     enum tDisplayNotation
     {
-        Automatic, //!< double number is automatically rendered in any GUI element
+        Automatic, //!< double number is automatically rendered in any GUI element (default)
         Fixed,     //!< if possible, the double number should be shown as fixed number, e.g. 1000.00
         Scientific //!< if possible, the double number should be rendered in a scientific notation, e.g. 1.0E3
     };
