@@ -19,9 +19,13 @@
         <translation type="unfinished">Der Plugin-Name ist nicht definiert. Es wurde keine XML-Datei geladen</translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="239"/>
         <source>ParamList not inialized properly</source>
-        <translation type="unfinished">Die ParamList wurde nicht richtig inizialisiert</translation>
+        <translation type="obsolete">Die ParamList wurde nicht richtig inizialisiert</translation>
+    </message>
+    <message>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="239"/>
+        <source>ParamList not properly initialized</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../common/sources/sharedFunctionsQt.cpp" line="481"/>

@@ -7836,25 +7836,31 @@ Bitte itom mit dem Argument &apos;log&apos; erneut starten und die Fehlermeldung
     </message>
     <message>
         <location line="+7"/>
-        <location line="+702"/>
+        <location line="+733"/>
         <source>Invalid input</source>
         <translation>Ungültiger Input</translation>
     </message>
     <message>
-        <location line="-586"/>
+        <location line="-617"/>
         <source>checked: 1, unchecked: 0</source>
         <translation>ausgewählt: 1, nicht ausgewählt: 0</translation>
     </message>
     <message>
-        <location line="+13"/>
-        <location line="+32"/>
-        <location line="+34"/>
+        <location line="+21"/>
+        <location line="+47"/>
+        <source>min: 0x%1, max: 0x%2, step: 0x%3</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-40"/>
+        <location line="+47"/>
+        <location line="+35"/>
         <source>min: %1, max: %2, step: %3</source>
         <translation>min: %1, max: %2, Schritt: %3</translation>
     </message>
     <message>
-        <location line="-56"/>
-        <location line="+32"/>
+        <location line="-71"/>
+        <location line="+47"/>
         <location line="+38"/>
         <source>unlimited</source>
         <translation>Unlimitiert</translation>

@@ -410,16 +410,32 @@ QWidget* ParamInputParser::renderTypeInt(
     else
     {
         QSpinBox* box = new QSpinBox(parent);
+        box->setDisplayIntegerBase(10);
 
         if (meta)
         {
             box->setMinimum(meta->getMin());
             box->setMaximum(meta->getMax());
             box->setSingleStep(meta->getStepSize());
-            box->setToolTip(tr("min: %1, max: %2, step: %3")
-                                .arg(meta->getMin())
-                                .arg(meta->getMax())
-                                .arg(meta->getStepSize()));
+
+            if (meta->getMin() >= 0 && meta->getRepresentation() == ito::ParamMeta::HexNumber)
+            {
+                // numbers >= 0 and in Hex-representation can be handled...
+                box->setDisplayIntegerBase(16);
+                box->setPrefix("0x");
+
+                box->setToolTip(tr("min: 0x%1, max: 0x%2, step: 0x%3")
+                    .arg(meta->getMin(), 0, 16)
+                    .arg(meta->getMax(), 0, 16)
+                    .arg(meta->getStepSize(), 0, 16));
+            }
+            else
+            {
+                box->setToolTip(tr("min: %1, max: %2, step: %3")
+                    .arg(meta->getMin())
+                    .arg(meta->getMax())
+                    .arg(meta->getStepSize()));
+            }
         }
         else
         {
@@ -448,10 +464,25 @@ QWidget* ParamInputParser::renderTypeChar(
         box->setMinimum((int)meta->getMin());
         box->setMaximum((int)meta->getMax());
         box->setSingleStep((int)meta->getStepSize());
-        box->setToolTip(tr("min: %1, max: %2, step: %3")
-                            .arg(meta->getMin())
-                            .arg(meta->getMax())
-                            .arg(meta->getStepSize()));
+
+        if (meta->getMin() >= 0 && meta->getRepresentation() == ito::ParamMeta::HexNumber)
+        {
+            // numbers >= 0 and in Hex-representation can be handled...
+            box->setDisplayIntegerBase(16);
+            box->setPrefix("0x");
+
+            box->setToolTip(tr("min: 0x%1, max: 0x%2, step: 0x%3")
+                .arg((int)meta->getMin(), 0, 16)
+                .arg((int)meta->getMax(), 0, 16)
+                .arg((int)meta->getStepSize(), 0, 16));
+        }
+        else
+        {
+            box->setToolTip(tr("min: %1, max: %2, step: %3")
+                .arg((int)meta->getMin())
+                .arg((int)meta->getMax())
+                .arg((int)meta->getStepSize()));
+        }
     }
     else
     {
