@@ -21,7 +21,7 @@
     08_scriptLanguage/script-language.rst
     09_reference/reference.rst
     10_miscellaneous/miscellaneous.rst
-    11_test-scripts/test-scripts.rst
+    11_demos/index.rst
     12_tutorials/tutorials.rst
     13_contributing/contributing.rst
 
