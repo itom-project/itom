@@ -16,6 +16,9 @@ For a general python introduction go to the **python tutorials** chapter.
     Only for html documentation: Each code-block can be copied
     to clipboard by moving the mouse in the upper right corner of it.
 
+    .. image:: _static/copyToClipboard.png
+        :width: 100%
+
 .. tip::
 
     An extended overview about all methods of the dataObject,
