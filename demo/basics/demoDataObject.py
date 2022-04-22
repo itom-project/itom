@@ -1,4 +1,4 @@
-# coding=iso-8859-15
+# coding=utf8
 
 """DataObject
 ===========
@@ -123,7 +123,7 @@ def demo_dataObject():
     obj2dim.axisDescriptions = ("y-axis", "x-axis")
     obj2dim.setTag("title", "obj2dim Title")
 
-    obj2dim.valueUnit = "deg"  # this is a special character. To allow this, the first line of this script is relevant (right click -> insert codec)
+    obj2dim.valueUnit = u"\xb0"  # this is a special character. To allow this, the first line of this script is relevant (right click -> insert codec)
     obj2dim.valueDescription = "phase"
 
     plot(obj2dim, properties={"colorBarVisible": True})

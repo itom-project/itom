@@ -1,4 +1,5 @@
-# coding=iso-8859-15
+# coding=utf8
+
 """Gaussian spot centroid detection
 ========================
 
@@ -112,10 +113,10 @@ class GaussianSpotCentroidDetection:
         # define dataobject
         dObj.setAxisDescription(0, "y axis")
         dObj.setAxisDescription(1, "x axis")
-        dObj.setAxisUnit(0, "µm")
-        dObj.setAxisUnit(1, "µm")
-        dObj.setAxisScale(0, 10e-3)  # pixel pitch of 10 µm
-        dObj.setAxisScale(1, 10e-3)  # pixel pitch of 10 µm
+        dObj.setAxisUnit(0, u"\xb5m")
+        dObj.setAxisUnit(1, u"\xb5m")
+        dObj.setAxisScale(0, 10e-3)  # pixel pitch of 10 \xb5m
+        dObj.setAxisScale(1, 10e-3)  # pixel pitch of 10 \xb5m
         dObj.valueDescription = "intensity"
         dObj.valueUnit = "counts"
 
