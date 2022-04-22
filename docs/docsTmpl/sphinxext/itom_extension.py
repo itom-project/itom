@@ -186,7 +186,8 @@ def pluginVersion_role(name, rawtext, text, lineno, inliner, options={}, content
 
 
 class PluginSummaryExtended(Directive):
-    """display detailed description from plugin (the description is inserted into the loaded rst-code such that
+    """display detailed description from plugin (the description is inserted into the
+    loaded rst-code such that
     it is also parsed using the rst-parser."""
 
     has_content = False
@@ -352,7 +353,7 @@ class PluginInitParams(Directive):
                     param["value"],
                 )
         elif "value" in param:
-            content = "default: \"%s\"" % param["value"]
+            content = 'default: "%s"' % param["value"]
         else:
             content = ""
         return content
@@ -406,12 +407,14 @@ class PluginFilterList(Directive):
 
         textlist = []
         if pluginInfo["filter"] is None:
-            textlist.append("The plugin does not contain any filters")
+            textlist.append("The plugin does not contain any algorithms (filters)")
         else:
             if "overviewonly" in self.options:
                 for f in pluginInfo["filter"]:
-                    textlist.append("#. %s" % f)
+                    textlist.append("#. :py:meth:`~itom.algorithms.%s`" % f)
             else:
+                textlist.append(".. py:currentmodule:: itom.algorithms\n\n")
+                
                 for f in pluginInfo["filter"]:
                     [signature, description, parameters] = self.analyzeFilter(f)
                     t = ".. py:function:: %s(%s)" % (f, signature)
@@ -438,9 +441,24 @@ class PluginFilterList(Directive):
         return "\n".join(result)
 
     def analyzeFilter(self, filterName):
-        data = itom.filterHelp(
-            filterName, True
-        )  # returns dictionary with all information about the filter
+        # returns dictionary with all information about the filter
+        data = itom.filterHelp(filterName, dictionary=1, furtherInfos=1)
+
+        def parseParam(p):
+            info = p["info"].split("\n")
+            meta = p.get("metaReadableStr", "")
+
+            result = ""
+
+            if len(info) == 1:
+                result = info[0]
+            elif len(info) > 1:
+                result = info[0] + "\n" + self.indent(info[1:])
+
+            if meta != "":
+                result = result + "\n    \n    | *" + meta + "*"
+
+            return result
 
         if filterName in data:
             data = data[filterName]
@@ -457,6 +475,7 @@ class PluginFilterList(Directive):
             mandSignature = ", ".join([i["name"] for i in mandParams])
             optSignature = ", ".join([i["name"] for i in optParams])
             signature = mandSignature
+            
             if signature != "" and optSignature != "":
                 signature += "[, " + optSignature + "]"
             elif optSignature != "":
@@ -464,16 +483,17 @@ class PluginFilterList(Directive):
 
             description = data["description"]
             parameters = []
+            
             if signature != "":
                 for i in mandParams:
                     parameters.append(
                         ":param %s: %s\n:type %s: %s"
-                        % (i["name"], i["info"], i["name"], i["type"])
+                        % (i["name"], parseParam(i), i["name"], i["type"])
                     )
                 for i in optParams:
                     parameters.append(
-                        ":param %s: %s\n:type %s: %s - optional"
-                        % (i["name"], i["info"], i["name"], i["type"])
+                        ":param %s: %s\n:type %s: %s, optional"
+                        % (i["name"], parseParam(i), i["name"], i["type"])
                     )
 
             for i in outParams:
@@ -488,8 +508,8 @@ class PluginFilterList(Directive):
         return [signature, description, "\n".join(parameters)]
 
 
-# -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-# -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------
 
 
 def getPlotInfo(env, plugin):
