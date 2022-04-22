@@ -81,17 +81,17 @@ def demo_DummyGraber():
     liveImage(camera)
     
 ###############################################################################
-# .. image:: ../_static/1_demoDummyGrabber.png
+# .. image:: ../_static/demoDummyGrabber_1.png
 #    :width: 100%
     liveImage(cameraGaussian)
     
 ###############################################################################
-# .. image:: ../_static/2_demoDummyGrabber.png
+# .. image:: ../_static/demoDummyGrabber_2.png
 #    :width: 100%
     liveImage(cameraGaussianArray)
     
 ###############################################################################
-# .. image:: ../_static/3_demoDummyGrabber.png
+# .. image:: ../_static/demoDummyGrabber_3.png
 #    :width: 100%
 
 ###############################################################################

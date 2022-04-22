@@ -114,5 +114,5 @@ if __name__ == "__main__":
 ###############################################################################
 # The DummyMotor Toolbox dockWidget will appear below the Plugins dockWidget.
 # 
-# .. image:: ../_static/1_demoDummyMotor.png
+# .. image:: ../_static/demoDummyMotor_1.png
 #    :width: 100%

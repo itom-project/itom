@@ -87,7 +87,7 @@ def demo_dataObject():
     # (hence, objZero, objZero2 and objZero4 are changed, too). Proof:
     plot(objZero)  # opens a 2d plot of objZero
 ###############################################################################
-# .. image:: ../_static/1_demoDataObject.png
+# .. image:: ../_static/demoDataObject_1.png
 #    :width: 100%
 
 ###############################################################################
@@ -96,7 +96,7 @@ def demo_dataObject():
     obj2dimCopy = obj2dim.copy()
     plot(obj2dimCopy)
 ###############################################################################
-# .. image:: ../_static/2_demoDataObject.png
+# .. image:: ../_static/demoDataObject_2.png
 #    :width: 100%
 
 ###############################################################################
@@ -128,7 +128,7 @@ def demo_dataObject():
 
     plot(obj2dim, properties={"colorBarVisible": True})
 ###############################################################################
-# .. image:: ../_static/3_demoDataObject.png
+# .. image:: ../_static/demoDataObject_3.png
 #    :width: 100%
 
 ###############################################################################
@@ -142,7 +142,7 @@ def demo_dataObject():
     )
     plot(obj3dim)
 ###############################################################################
-# .. image:: ../_static/4_demoDataObject.png
+# .. image:: ../_static/demoDataObject_4.png
 #    :width: 100%
 
     # Set additional informations (meta data) as tags
