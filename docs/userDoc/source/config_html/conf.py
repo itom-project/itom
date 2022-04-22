@@ -1,7 +1,5 @@
 # coding=iso-8859-15
 
-# DELETED:# -*- coding: utf-8 -*-
-#
 # iTOM documentation build configuration file, created by
 # sphinx-quickstart on Sat Jul 30 14:36:28 2011.
 #
