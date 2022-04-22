@@ -7,7 +7,7 @@ how you acquire an image and apply some filters."""
 from itom import dataIO
 from itom import dataObject
 from itom import algorithms
-# sphinx_gallery_thumbnail_path = 'demo_thumbnail/demoCameraAndImages.png'
+# sphinx_gallery_thumbnail_path = '_static/_thumb/demoCameraAndImages.png'
 
 ###############################################################################
 # Initialize a ``DummyGrabber`` camera

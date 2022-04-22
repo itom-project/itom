@@ -1,5 +1,4 @@
 # coding=iso-8859-15
-
 """Gaussian spot centroid detection
 ========================
 
@@ -29,7 +28,7 @@ from itom import dataIO
 from itom import dataObject
 from itom import plot2
 from itom import timer
-# sphinx_gallery_thumbnail_path = 'demo_thumbnail/demoGaussianSpotCentroidDetection.png'
+# sphinx_gallery_thumbnail_path = '_static/_thumb/demoGaussianSpotCentroidDetection.png'
 
 
 class GaussianSpotCentroidDetection:
@@ -115,8 +114,8 @@ class GaussianSpotCentroidDetection:
         dObj.setAxisDescription(1, "x axis")
         dObj.setAxisUnit(0, "µm")
         dObj.setAxisUnit(1, "µm")
-        dObj.setAxisScale(0, 10)  # pixel pitch of 10 µm
-        dObj.setAxisScale(1, 10)  # pixel pitch of 10 µm
+        dObj.setAxisScale(0, 10e-3)  # pixel pitch of 10 µm
+        dObj.setAxisScale(1, 10e-3)  # pixel pitch of 10 µm
         dObj.valueDescription = "intensity"
         dObj.valueUnit = "counts"
 
