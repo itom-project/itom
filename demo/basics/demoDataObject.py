@@ -86,12 +86,18 @@ def demo_dataObject():
     
     # (hence, objZero, objZero2 and objZero4 are changed, too). Proof:
     plot(objZero)  # opens a 2d plot of objZero
+###############################################################################
+# .. image:: ../_static/1_demoDataObject.png
+#    :width: 100%
 
 ###############################################################################
 # Deep copy
     # If you want to have a deep copy, with separated memory and meta information of a dataObject, use the copy-operator'''
     obj2dimCopy = obj2dim.copy()
     plot(obj2dimCopy)
+###############################################################################
+# .. image:: ../_static/2_demoDataObject.png
+#    :width: 100%
 
 ###############################################################################
 # Accessing values
@@ -121,6 +127,9 @@ def demo_dataObject():
     obj2dim.valueDescription = "phase"
 
     plot(obj2dim, properties={"colorBarVisible": True})
+###############################################################################
+# .. image:: ../_static/3_demoDataObject.png
+#    :width: 100%
 
 ###############################################################################
 # Tags
@@ -132,6 +141,9 @@ def demo_dataObject():
         "This is a 3d object, use the spin box to switch between planes",
     )
     plot(obj3dim)
+###############################################################################
+# .. image:: ../_static/4_demoDataObject.png
+#    :width: 100%
 
     # Set additional informations (meta data) as tags
     # Use set tag "key", "value". Key / value are user defined.

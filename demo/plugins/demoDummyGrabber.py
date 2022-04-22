@@ -12,9 +12,9 @@ from itom import dataObject
 ###############################################################################
 # Start camera (e.g.: ``DummyGrabber``)
 def demo_DummyGraber():
-    camera = dataIO("DummyGrabber")
-    cameraGaussian = dataIO("DummyGrabber", imageType="gaussianSpot")
-    cameraGaussianArray = dataIO("DummyGrabber", imageType="gaussianSpotArray")
+    camera = dataIO("DummyGrabber")  # noise camera
+    cameraGaussian = dataIO("DummyGrabber", imageType="gaussianSpot")  # moving Gaussian spot 
+    cameraGaussianArray = dataIO("DummyGrabber", imageType="gaussianSpotArray")  # moving 4 Gaussian spots
 
 ###############################################################################
 # Set region of interest (ROI).
@@ -79,12 +79,24 @@ def demo_DummyGraber():
 ###############################################################################
 # Start a live image.
     liveImage(camera)
+    
+###############################################################################
+# .. image:: ../_static/1_demoDummyGrabber.png
+#    :width: 100%
     liveImage(cameraGaussian)
+    
+###############################################################################
+# .. image:: ../_static/2_demoDummyGrabber.png
+#    :width: 100%
     liveImage(cameraGaussianArray)
+    
+###############################################################################
+# .. image:: ../_static/3_demoDummyGrabber.png
+#    :width: 100%
 
 ###############################################################################
 # Acquire an image stack of 10 measurements.
-    num = 10
+    num = 100
     camera.startDevice()
     image = dataObject()
     imageStack = dataObject([num, sizey, sizex], "uint8")

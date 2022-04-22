@@ -82,7 +82,7 @@ def demo_DummyMotor():
 
 ###############################################################################
 # Control the state of the actuator by connecting to the
-# actuatorStatusChanged (or targetChanged) signals of the actuator.
+# ``actuatorStatusChanged`` (or ``targetChanged``) signals of the actuator.
 #
 # .. note::
 #    The corresponding python methods can only be called if the current script
@@ -96,11 +96,12 @@ def demo_DummyMotor():
             % (str(state), str(currentPos))
         )
 
-    # the method 'statusChanged' can only be called if the script is not executing any more.
-    # Therefore this approach is made for GUI applications
-    # since the actuatorStatusChanged signal might be emitted very often, a minimum timeout of 100ms will
-    # be added to the connection, such that the statusChanged slot is only called after 100ms again. All intermediate
-    # calls are ignored (new in itom 3.2)
+###############################################################################
+# The method ``statusChanged`` can only be called if the script is not executing any more.
+# Therefore this approach is made for GUI applications
+# since the ``actuatorStatusChanged`` signal might be emitted very often, a minimum timeout of 100ms will
+# be added to the connection, such that the ``statusChanged slot`` is only called after 100ms again. All intermediate
+# calls are ignored (new in itom 3.2)
     stage.connect(
         "actuatorStatusChanged(QVector<int>,QVector<double>)", statusChanged, 100,
     )
@@ -109,3 +110,9 @@ def demo_DummyMotor():
 
 if __name__ == "__main__":
     demo_DummyMotor()
+
+###############################################################################
+# The DummyMotor Toolbox dockWidget will appear below the Plugins dockWidget.
+# 
+# .. image:: ../_static/1_demoDummyMotor.png
+#    :width: 100%
