@@ -6,7 +6,7 @@ how grabber and cameras are used in ``itom``."""
 
 from itom import dataIO
 from itom import dataObject
-# sphinx_gallery_thumbnail_path = '_static/demo_thumbnail/demoDummyGrabber.png'
+# sphinx_gallery_thumbnail_path = 'demo_thumbnail/demoDummyGrabber.png'
 
 
 ###############################################################################

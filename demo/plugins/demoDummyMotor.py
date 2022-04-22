@@ -6,7 +6,7 @@ how grabber and cameras are used in ``itom``."""
 
 import time
 from itom import actuator
-# sphinx_gallery_thumbnail_path = '_static/demo_thumbnail/demoDummyMotor.png'
+# sphinx_gallery_thumbnail_path = 'demo_thumbnail/demoDummyMotor.png'
 
 ###############################################################################
 # Initialisation of an actuator (e.g: ``DummyMotor``).

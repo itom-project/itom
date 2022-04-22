@@ -1,4 +1,4 @@
-.. _demos-index:
+.. _basics-index:
 
 .. _gallery:
 
