@@ -1,15 +1,19 @@
-"""
-This script creates an instance of a dummy grabber
-and implements a timer with an interval of 1000ms.
+"""timer
+===========
 
-Everytime, the interval is expired the method imageAcquisition
+This script creates an instance of a ``DummyGrabber``
+and implements a timer with an interval of ``1000ms``.
+
+Everytime, the interval is expired the method ``imageAcquisition``
 is called. It acquires a new image an appends it to the global
-list myImages
+list ``myImages``.
 
-To stop the timer, call the method cancel. Additionally, the timer
-is automatically interrupted after 10 iterations.
+To stop the timer, call the method ``cancel``. Additionally, the timer
+is automatically interrupted after ``10`` iterations.
 """
-from itom import *
+from itom import timer
+from itom import dataIO
+from itom import dataObject
 
 
 def imageAcquisition():
