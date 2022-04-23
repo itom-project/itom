@@ -11,10 +11,12 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-import sys, os, inspect
+import sys
+import os
 import sphinx
-import __main__
 import itom as itomFuncs
+import __main__
+import inspect
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -283,9 +285,28 @@ suppress_warnings = ["app.add_directive", "app.add_role", "app.add_node"]
 autosummary_generate = True
 
 # -----------------------------------------------------------------------------
+# Autodoc
+# -----------------------------------------------------------------------------
+autoclass_content = 'both'
+autodoc_member_order = 'groupwise'
+autodoc_docstring_signature = True
+
+# -----------------------------------------------------------------------------
+# Numpydoc
+# -----------------------------------------------------------------------------
+numpydoc_class_members_toctree = False
+numpydoc_xref_param_type = True
+numpydoc_show_class_members = False
+
+# -----------------------------------------------------------------------------
 # Todo
 # -----------------------------------------------------------------------------
 #todo_include_todos = True
 
 
-#intersphinx_mapping = {'python': ('http://docs.python.org/3.2', None)}
+# Files for auto-generating links in documentation to methods / datatypes etc. of other projects...
+# to get the inv files, open the given URL/objects.inv.
+intersphinx_mapping = {
+    'python': ('https://docs.python.org/3.8', None),
+    'numpy': ('https://numpy.org/doc/stable', None)
+}

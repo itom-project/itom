@@ -1607,7 +1607,7 @@ p, li { white-space: pre-wrap; }
         <location filename="../python/pythonPCL.cpp" line="+1983"/>
         <location line="+100"/>
         <location line="+25"/>
-        <location line="+2256"/>
+        <location line="+2208"/>
         <location line="+19"/>
         <location line="+78"/>
         <location line="+24"/>
@@ -1615,7 +1615,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished">Der API-Funktionspointer wurde nicht gesetzt</translation>
     </message>
     <message>
-        <location line="-2496"/>
+        <location line="-2448"/>
         <source>No more memory available when saving point cloud</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1638,12 +1638,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="-74"/>
         <location line="+119"/>
-        <location line="+2377"/>
+        <location line="+2329"/>
         <source>Temporary file for writing point cloud binary data could not be created</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-2328"/>
+        <location line="-2280"/>
         <source>No more memory available when loading point cloud</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1729,7 +1729,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished">Es wurde eine nicht spezifizierte &apos;Exception&apos; zurückgegeben</translation>
     </message>
     <message>
-        <location filename="../python/pythonItom.cpp" line="+2944"/>
+        <location filename="../python/pythonItom.cpp" line="+3004"/>
         <source>No code is given</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1850,7 +1850,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished">Unbekannter Parameter vom Typ QVariant</translation>
     </message>
     <message>
-        <location line="+510"/>
+        <location line="+516"/>
         <source>- Unknown message -</source>
         <translation type="unfinished">- Unbekannte Nachricht -</translation>
     </message>
@@ -9511,7 +9511,7 @@ Soll dieses Feature deaktiviert werden? Dies kann später erneut im Eigenschafte
 <context>
     <name>ito::UiOrganizer</name>
     <message>
-        <location filename="../organizer/uiOrganizer.cpp" line="+312"/>
+        <location filename="../organizer/uiOrganizer.cpp" line="+313"/>
         <source>the plugin did not return a valid widget pointer.</source>
         <translation>Das Plugin gibt keinen gültigen Widget-Pointer zurück.</translation>
     </message>
