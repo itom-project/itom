@@ -16,6 +16,12 @@ import sphinx
 import itom as itomFuncs
 import __main__
 
+try:
+    import plotly.io as pio
+    pio.renderers.default = 'sphinx_gallery'
+except ModuleNotFoundError:
+    print("plotly is not installed. Plots will not be added to the sphinx_gallery")
+
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
@@ -183,24 +189,20 @@ html_short_title = "itom"
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_css_files = ["html.css"]
-html_static_path = ['../_static']
+html_static_path = ["../_static"]
 
 # sphinx gallery config
 sphinx_gallery_conf = {
     "examples_dirs": "../../../demo",  # path to your example scripts
     "gallery_dirs": "11_demos",  # path to where to save gallery generated output
-    'doc_module': ("matplotlib", "numpy", "pandas", "itom"),
-    'reference_url': {
-        'matplotlib': None,
-        'numpy': None,
-        'pandas': None,
-        'itom': None
-    },
-    "show_memory": False,
+    "doc_module": ("matplotlib", "numpy", "pandas", "itom"),
+    "reference_url": {"matplotlib": None, "numpy": None, "pandas": None, "itom": None},
+    "show_memory": True,
     "show_signature": False,
-    'remove_config_comments': True,
-    'download_all_examples': False,
-    "min_reported_time": 0.0001
+    "remove_config_comments": True,
+    "download_all_examples": False,
+    "min_reported_time": 0.0001,
+    "filename_pattern": "demo_",
 }
 
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
