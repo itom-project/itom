@@ -6,6 +6,10 @@ to/from image formats as well as native itom formats."""
 
 from itom import dataObject
 from itom import algorithms
+from itom import rgba
+from itom import plot
+from itom import saveIDC
+from itom import loadIDC
 # sphinx_gallery_thumbnail_path = '_static/_thumb/demoLoadSaveDataObjects.png'
 
 ###############################################################################

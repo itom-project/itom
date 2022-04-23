@@ -5,6 +5,9 @@ This demo shows how buttons are added and removed from the ``itom`` toolbar.
 Frequently used methods are thus easier to access.
 By clicking the button, these are executed. """
 
+from itom import addButton
+from itom import removeButton
+
 ###############################################################################
 # Create a new application class.
 
@@ -19,8 +22,9 @@ class myToolBar:
         # clean up buttonbar entries after killing the class
         removeButton("helloBar", "HelloWorld")
 
-###############################################################################
-# Add a new function to the class ``myToolBar``.
+    ###############################################################################
+    # Add a new function to the class ``myToolBar``.
+
     def printHelloWorld(self, test):
         # Try to print Hello-World and return test
         print("Hello World")
@@ -28,6 +32,7 @@ class myToolBar:
 
     def __len__(self):
         return 42
+
 
 ###############################################################################
 # Create a new instance of the class ``myToolBar`` with the name app.

@@ -37,8 +37,7 @@ except ImportError:
 
 class GaussianSpotCentroidDetection:
     def __init__(self):
-        """Constructor function of the class.
-        """
+        """Constructor function of the class."""
         # first initialize the DummyGrabber with a gaussianSpot as private member
         self.__cam = dataIO("DummyGrabber", imageType="gaussianSpot")
         self.__cam.startDevice()
@@ -58,12 +57,11 @@ class GaussianSpotCentroidDetection:
 
         return
 
-###############################################################################
-# Callback function to update the live image.
+    ###############################################################################
+    # Callback function to update the live image.
 
     def __updateTimerCallBack(self):
-        """Callback function to update the live image. 
-        """
+        """Callback function to update the live image."""
         # stop live time if plot window is closed
         if self.__plotHandle:
             if not self.__plotHandle.exists():
@@ -107,8 +105,8 @@ class GaussianSpotCentroidDetection:
 
         return
 
-###############################################################################
-# Function to defines the dataObject by meta information.
+    ###############################################################################
+    # Function to defines the dataObject by meta information.
 
     def __defineDObj(self, dObj: dataObject) -> dataObject:
         """Private function to define the meta information of the image dataObject.
@@ -122,8 +120,8 @@ class GaussianSpotCentroidDetection:
         # define dataobject
         dObj.setAxisDescription(0, "y axis")
         dObj.setAxisDescription(1, "x axis")
-        dObj.setAxisUnit(0, u"\xb5m")
-        dObj.setAxisUnit(1, u"\xb5m")
+        dObj.setAxisUnit(0, "\xb5m")
+        dObj.setAxisUnit(1, "\xb5m")
         dObj.setAxisScale(0, 10e-3)  # pixel pitch of 10 \xb5m
         dObj.setAxisScale(1, 10e-3)  # pixel pitch of 10 \xb5m
         dObj.valueDescription = "intensity"

@@ -10,6 +10,7 @@ and gray values with respect to their hue are determined. The resulting image is
 import colorsys
 import itom
 from itom import dataObject
+from itom import plot
 # sphinx_gallery_thumbnail_path = '_static/_thumb/demoConvertFalseColor.png'
 
 

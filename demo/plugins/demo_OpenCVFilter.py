@@ -14,10 +14,15 @@ dObj = dataObject.rand([150, 150], "float32")
 ###############################################################################
 # Get information about the filter and its parameters.
 # First, no idea about the filters name, therefore get all names containing the keyword ``cv``:
-filterHelp("cv")
+filterInfoDict = filterHelp("cv", dictionary=1)
+
+for key, value in filterInfoDict.items():
+    print("{}: {}".format(value["name"], value["description"]))
 
 # the desired filter is called "cvMedianBlur", now obtain detailed information
-filterHelp("cvMedianBlur")
+medianBlurDict = filterHelp("cvMedianBlur", dictionary=1)
+
+print("{}: {}".format(medianBlurDict["cvMedianBlur"]["name"], medianBlurDict["cvMedianBlur"]["description"]))
 
 # create an empty output image (its content will be filled within the filter-call)
 outputImage = dataObject()

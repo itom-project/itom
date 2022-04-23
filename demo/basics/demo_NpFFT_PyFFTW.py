@@ -16,6 +16,9 @@ myfft2 = np.fft.fft2  # default: fft2 from numpy
 myifft2 = np.fft.ifft2  # default: ifft2 from numpy
 
 
+###############################################################################
+# Define function and overwrite it when ``pyfftw`` is available. 
+
 def getAlignNdArray(image):
     return np.array(image)
 
@@ -27,14 +30,12 @@ try:
     myifft2 = pyfftw.interfaces.numpy_fft.ifft2
     alignSize = pyfftw.simd_alignment
 
-
-###############################################################################
-# Overwritten implementation from the idle one above.
     def getAlignNdArray(image):
         return pyfftw.n_byte_align(np.array(image), alignSize)
 
 except ModuleNotFoundError:
     print("pyfftw could not be found. Numpy fft is used instead")
+
 
 image = np.random.randn(1024, 512)
 I = getAlignNdArray(image)

@@ -7,6 +7,10 @@ how you acquire an image and apply some filters."""
 from itom import dataIO
 from itom import dataObject
 from itom import algorithms
+from itom import liveImage
+from itom import saveIDC
+from itom import loadIDC
+from itom import plot
 # sphinx_gallery_thumbnail_path = '_static/_thumb/demoCameraAndImages.png'
 
 ###############################################################################
