@@ -39,3 +39,7 @@ algorithms.cvMedianBlur(dObj, outputImage, 5)
 
 plot(dObj)  # plot original image
 plot(outputImage)  # plot filtered image
+
+###############################################################################
+# .. image:: ../_static/demoOpenCVFilter_1.png
+#    :width: 100%

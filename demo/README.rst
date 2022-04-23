@@ -11,13 +11,15 @@ Click on any image to see the full script documentation.
 This examples preferably show the ``itom`` features. 
 For a general python introduction go to the **python tutorials** chapter.
 
-.. note::
-    
-    Only for html documentation: Each code-block can be copied
-    to clipboard by moving the mouse in the upper right corner of it.
+.. only:: html
 
-    .. image:: _static/copyToClipboard.png
-        :width: 100%
+    .. note::
+        
+        Only for html documentation: Each code-block can be copied
+        to clipboard by moving the mouse in the upper right corner of it.
+
+        .. image:: _static/copyToClipboard.png
+            :width: 100%
 
 .. tip::
 
