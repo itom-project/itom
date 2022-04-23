@@ -8,7 +8,8 @@ import numpy as np
 from numpy.linalg import svd
 from numpy.typing import ArrayLike
 
-
+###############################################################################
+# Function to estimate the rank (i.e. the dimension of the nullspace) of a matrix.
 def rank(A: ArrayLike, atol: float = 1e-13, rtol: int = 0) -> int:
     """Estimate the rank (i.e. the dimension of the nullspace) of a matrix.
 
@@ -42,7 +43,8 @@ def rank(A: ArrayLike, atol: float = 1e-13, rtol: int = 0) -> int:
     rank = int((s >= tol).sum())
     return rank
 
-
+###############################################################################
+# Function to compute an approximate basis for the nullspace of A.
 def nullspace(A: ArrayLike, atol: float = 1e-13, rtol: int = 0) -> ArrayLike:
     """Compute an approximate basis for the nullspace of A.
 
@@ -78,6 +80,9 @@ def nullspace(A: ArrayLike, atol: float = 1e-13, rtol: int = 0) -> ArrayLike:
     return ns
 
 
+###############################################################################
+# Function to check rank and nullspace of the matrix. 
+
 def checkit(a):
     print("a:")
     print(a)
@@ -91,37 +96,32 @@ def checkit(a):
         print("max residual is", res)
 
 
-def demo_numpy():
-    print("-" * 25)
+print("-" * 25)
 
-    a = np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]])
-    checkit(a)
+a = np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]])
+checkit(a)
 
-    b = 2
+b = 2
 
-    print("-" * 25)
+print("-" * 25)
 
-    a = np.array([[0.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]])
-    checkit(a)
+a = np.array([[0.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]])
+checkit(a)
 
-    print("-" * 25)
+print("-" * 25)
 
-    a = np.array([[0.0, 1.0, 2.0, 4.0], [1.0, 2.0, 3.0, 4.0]])
-    checkit(a)
+a = np.array([[0.0, 1.0, 2.0, 4.0], [1.0, 2.0, 3.0, 4.0]])
+checkit(a)
 
-    print("-" * 25)
+print("-" * 25)
 
-    a = np.array(
-        [
-            [1.0, 1.0j, 2.0 + 2.0j],
-            [1.0j, -1.0, -2.0 + 2.0j],
-            [0.5, 0.5j, 1.0 + 1.0j],
-        ]
-    )
-    checkit(a)
+a = np.array(
+    [
+        [1.0, 1.0j, 2.0 + 2.0j],
+        [1.0j, -1.0, -2.0 + 2.0j],
+        [0.5, 0.5j, 1.0 + 1.0j],
+    ]
+)
+checkit(a)
 
-    print("-" * 25)
-
-
-if __name__ == "__main__":
-    demo_numpy()
+print("-" * 25)

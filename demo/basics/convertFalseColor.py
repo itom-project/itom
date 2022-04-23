@@ -8,9 +8,19 @@ the gray values stay like they are, the false color values are decoded in ``HSV`
 and gray values with respect to their hue are determined. The resulting image is called ``img2``."""
 
 import colorsys
+import itom
+from itom import dataObject
+# sphinx_gallery_thumbnail_path = '_static/_thumb/demoConvertFalseColor.png'
 
+
+img1 = dataObject.rand([200, 200], "rgba32")
 [height, width] = img1.shape
 img2 = img1.copy()
+
+plot(img1)
+###############################################################################
+# .. image:: ../_static/demoConvertFalseColor_1.png
+#    :width: 100%
 
 for m in range(height):
     for n in range(width):
@@ -24,12 +34,11 @@ for m in range(height):
 # img1 contains an rgba-image with false color encoded color information and gray values
 # the gray values stay like they are, the false color values are decoded in HSV color space
 # and gray values with respect to their hue are determined. The resulting image is called img2
-import colorsys
 
 [height, width] = img1.shape
 img2 = img1.copy()
 
-result_map = "hotIron"  #'gray' or 'hotIron'
+result_map = "hotIron"  # 'gray' or 'hotIron'
 
 if result_map == "hotIron":
     map = []
@@ -54,3 +63,8 @@ for m in range(height):
                 img2[m, n] = map[int(h * map_len)] * itom.rgba(s_, s_, s_)
             else:
                 raise RuntimeError("map must be gray or hotIron")
+
+plot(img2)
+###############################################################################
+# .. image:: ../_static/demoConvertFalseColor_2.png
+#    :width: 100%

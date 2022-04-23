@@ -11,12 +11,7 @@ For more information, see the module ``distortion_test.py``."""
 from cameraToolbox import distortion_test
 # sphinx_gallery_thumbnail_path = '_static/_thumb/demoImageDistortion.png'
 
-def demo_distortion():
-    distortion_test.distortionTest()
-
-
-if __name__ == "__main__":
-    demo_distortion()
+distortion_test.distortionTest()
 
 ###############################################################################
 # .. image:: ../_static/demoImageDistortion_1.png

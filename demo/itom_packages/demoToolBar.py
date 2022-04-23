@@ -7,6 +7,8 @@ By clicking the button, these are executed. """
 
 ###############################################################################
 # Create a new application class.
+
+
 class myToolBar:
     def __init__(self):
         # init method which creates a member test with value 1
@@ -29,23 +31,17 @@ class myToolBar:
 
 ###############################################################################
 # Create a new instance of the class ``myToolBar`` with the name app.
-def demo_toolbar():
-    global app
-
-    app = myToolBar()
-
-    # Add the button Hello with the function myToolBar.printHelloWorld(...) to the buttonbar amipola
-    addButton(
-        "helloBar",
-        "HelloWorld",
-        "res = app.printHelloWorld(True)",
-        ":/classNavigator/icons/global.png",
-    )
-
-    # For Debug test with single step
-    app.printHelloWorld(True)
 
 
-if __name__ == "__main__":
-    demo_toolbar()
+app = myToolBar()
 
+# Add the button Hello with the function myToolBar.printHelloWorld(...) to the buttonbar amipola
+addButton(
+    "helloBar",
+    "HelloWorld",
+    "res = app.printHelloWorld(True)",
+    ":/classNavigator/icons/global.png",
+)
+
+# For Debug test with single step
+app.printHelloWorld(True)

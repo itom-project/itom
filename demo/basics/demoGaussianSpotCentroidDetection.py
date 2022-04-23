@@ -13,6 +13,11 @@ Finally, this examples shows how a centroid position marker is added to the gaus
     For older ``itom`` versions the ``itom.filter`` function is used for the centroidXY algorithm.
     By using the itom.algorithms you will get the algorithms information by a pop-up during typing."""
 
+from itom import dataIO
+from itom import dataObject
+from itom import plot2
+from itom import timer
+
 try:
     from itom import algorithms
 
@@ -24,17 +29,15 @@ except ImportError:
     print(
         "The itom.algorithms module cannot be used because" "of an older itom version. Use the itom.filter functions."
     )
-
-from itom import dataIO
-from itom import dataObject
-from itom import plot2
-from itom import timer
 # sphinx_gallery_thumbnail_path = '_static/_thumb/demoGaussianSpotCentroidDetection.png'
+
+###############################################################################
+# Constructor of the live gaussianSpot centroid detection.
 
 
 class GaussianSpotCentroidDetection:
     def __init__(self):
-        """Constructor of the live gaussianSpot centroid detection.
+        """Constructor function of the class.
         """
         # first initialize the DummyGrabber with a gaussianSpot as private member
         self.__cam = dataIO("DummyGrabber", imageType="gaussianSpot")
@@ -55,8 +58,11 @@ class GaussianSpotCentroidDetection:
 
         return
 
+###############################################################################
+# Callback function to update the live image.
+
     def __updateTimerCallBack(self):
-        """Callback function to update the live image.
+        """Callback function to update the live image. 
         """
         # stop live time if plot window is closed
         if self.__plotHandle:
@@ -101,8 +107,11 @@ class GaussianSpotCentroidDetection:
 
         return
 
+###############################################################################
+# Function to defines the dataObject by meta information.
+
     def __defineDObj(self, dObj: dataObject) -> dataObject:
-        """Defines the meta information of the image
+        """Private function to define the meta information of the image dataObject.
 
         Args:
             image (dataObject): 2D image

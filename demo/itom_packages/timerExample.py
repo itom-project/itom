@@ -15,6 +15,9 @@ from itom import timer
 from itom import dataIO
 from itom import dataObject
 
+###############################################################################
+# Function for the image acquisition.
+
 
 def imageAcquisition():
     global iters
@@ -31,27 +34,22 @@ def imageAcquisition():
     if iters >= 10:
         t.stop()
 
+###############################################################################
+# Call this method (e.g. by your gui) to stop the timer.
+
 
 def cancel():
-    """call this method (e.g. by your gui) to stop the timer"""
     global t
     global cam
     t.stop()
     cam.stopDevice()
 
-
-def demo_timedAcquisition():
-    global t
-    global cam
-    global myImages
-    global iters
-
-    cam = dataIO("DummyGrabber")
-    myImages = []
-    iters = 0
-    cam.startDevice()
-    t = timer(1000, imageAcquisition)
+###############################################################################
+# Define a ``DummyGrabber`` camera and timer for a timed acquisition.
 
 
-if __name__ == "__main__":
-    demo_timedAcquisition()
+cam = dataIO("DummyGrabber")
+myImages = []
+iters = 0
+cam.startDevice()
+t = timer(1000, imageAcquisition)
