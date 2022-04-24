@@ -433,6 +433,8 @@ class PluginFilterList(Directive):
         return []
 
     def indent(self, text, nrOfSpaces=4):
+        if type(text) is list or type(text) is tuple:
+            text = "\n".join(text)
         texts = text.split("\n")
         result = []
         indent = " " * nrOfSpaces

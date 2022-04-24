@@ -38,12 +38,17 @@ sys.path.append(os.path.join(thisDir,'..' + os.sep + 'sphinxext'))
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.todo",
-    "sphinx.ext.imgmath",
     "sphinx.ext.ifconfig",
     "numpydoc",
     "sphinx.ext.intersphinx",
     "itom_extension"
 ]
+
+pymajor = sys.version_info.major
+pyminor = sys.version_info.minor
+
+if pymajor > 3 or (pymajor == 3 and pyminor > 5):
+    extensions.append("sphinx_copybutton")
 
 if sphinx.__version__ >= "0.7":
     extensions.append('sphinx.ext.autosummary')

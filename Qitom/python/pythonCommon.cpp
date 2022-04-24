@@ -515,7 +515,7 @@ PyObject* printOutParams(const QVector<ito::Param> *params, bool asErr, bool add
                 break;
 
                 case ((ito::ParamBase::Pointer|ito::ParamBase::HWRef)):
-                    type = ("Union[dataIO,actuator]");
+                    type = ("Union[itom.dataIO, itom.actuator]");
                 break;
 
                 case (ito::ParamBase::Pointer):
@@ -523,19 +523,19 @@ PyObject* printOutParams(const QVector<ito::Param> *params, bool asErr, bool add
                 break;
 
                 case (ito::ParamBase::DObjPtr):
-                    type = ("dataObject");
+                    type = ("itom.dataObject");
                 break;
 
                 case (ito::ParamBase::PointCloudPtr):
-                    type = ("pointCloud");
+                    type = ("itom.pointCloud");
                 break;
 
                 case (ito::ParamBase::PointPtr):
-                    type = ("point");
+                    type = ("itom.point");
                 break;
 
                 case (ito::ParamBase::PolygonMeshPtr):
-                    type = ("polygonMesh");
+                    type = ("itom.polygonMesh");
                 break;
 
                 default:
