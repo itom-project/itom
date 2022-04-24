@@ -11,7 +11,7 @@ from itom import plotItem
 
 ###############################################################################
 # **Pick Points demo**
-# 
+#
 # Create a random 2 dimensional ``dataObject`` and plot it.
 obj = dataObject.randN([1024, 1024], "int16")
 
@@ -51,12 +51,12 @@ h.call("plotMarkers", pickedPoints, "b+10", "setName")  # 'setName' is the name 
 
 ###############################################################################
 # Delete marker set
-h.call("deleteMarkers","setName") #deletes given set
-h.call("deleteMarkers","") #deletes all sets
+h.call("deleteMarkers", "setName")  # deletes given set
+h.call("deleteMarkers", "")  # deletes all sets
 
 ###############################################################################
 # **Paint geometric shapes**
-# 
+#
 # Create a random 2 dimensional ``dataObject`` and plot it.
 obj = dataObject.randN([1024, 1024], "int16")
 [nr, h] = plot2(obj)
