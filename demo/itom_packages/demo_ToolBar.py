@@ -7,6 +7,7 @@ By clicking the button, these are executed. """
 
 from itom import addButton
 from itom import removeButton
+# sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoToolbar.png'
 
 ###############################################################################
 # Create a new application class.

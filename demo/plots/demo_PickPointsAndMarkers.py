@@ -7,7 +7,7 @@ This demo shows how you can pick points and markers in the ``itom`` plot."""
 from itom import dataObject
 from itom import plot2
 from itom import plotItem
-# sphinx_gallery_thumbnail_path = '_static/_thumb/demoPickPointsAndMarkers.png'
+# sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoPickPointsAndMarkers.png'
 
 ###############################################################################
 # **Pick Points demo**

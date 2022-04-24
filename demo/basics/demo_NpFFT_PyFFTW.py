@@ -14,7 +14,7 @@ import numpy as np
 
 myfft2 = np.fft.fft2  # default: fft2 from numpy
 myifft2 = np.fft.ifft2  # default: ifft2 from numpy
-
+# sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/Numpy.png'
 
 ###############################################################################
 # Define function and overwrite it when ``pyfftw`` is available. 

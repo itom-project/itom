@@ -11,7 +11,7 @@ from itom import liveImage
 from itom import saveIDC
 from itom import loadIDC
 from itom import plot
-# sphinx_gallery_thumbnail_path = '_static/_thumb/demoCameraAndImages.png'
+# sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoCameraAndImages.png'
 
 ###############################################################################
 # Initialize a ``DummyGrabber`` camera

@@ -8,7 +8,7 @@ from itom import dataIO
 from itom import dataObject
 from itom import plot
 from itom import liveImage
-# sphinx_gallery_thumbnail_path = '_static/_thumb/demoDummyGrabber.png'
+# sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoDummyGrabber.png'
 
 
 ###############################################################################

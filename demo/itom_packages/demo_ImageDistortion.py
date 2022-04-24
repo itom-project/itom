@@ -9,7 +9,7 @@ To simplify the access to this script, this demo is added.
 For more information, see the module ``distortion_test.py``."""
 
 from cameraToolbox import distortion_test
-# sphinx_gallery_thumbnail_path = '_static/_thumb/demoImageDistortion.png'
+# sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoImageDistortion.png'
 
 distortion_test.distortionTest()
 

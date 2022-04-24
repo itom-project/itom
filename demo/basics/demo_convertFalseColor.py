@@ -11,7 +11,7 @@ import colorsys
 import itom
 from itom import dataObject
 from itom import plot
-# sphinx_gallery_thumbnail_path = '_static/_thumb/demoConvertFalseColor.png'
+# sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoConvertFalseColor.png'
 
 
 img1 = dataObject.rand([200, 200], "rgba32")

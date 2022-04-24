@@ -10,7 +10,7 @@ from itom import rgba
 from itom import plot
 from itom import saveIDC
 from itom import loadIDC
-# sphinx_gallery_thumbnail_path = '_static/_thumb/demoLoadSaveDataObjects.png'
+# sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoLoadSaveDataObjects.png'
 
 ###############################################################################
 # Create a colored dataObject of type ``rgba32``.

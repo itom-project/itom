@@ -7,6 +7,7 @@ from itom import dataObject
 from itom import algorithms
 from itom import plot
 from itom import filterHelp
+# sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoOpenCV.png'
 
 # create a randomly filled  150x150px dataObject
 dObj = dataObject.rand([150, 150], "float32")

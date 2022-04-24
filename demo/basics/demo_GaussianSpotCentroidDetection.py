@@ -29,7 +29,7 @@ except ImportError:
     print(
         "The itom.algorithms module cannot be used because" "of an older itom version. Use the itom.filter functions."
     )
-# sphinx_gallery_thumbnail_path = '_static/_thumb/demoGaussianSpotCentroidDetection.png'
+# sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoGaussianSpotCentroidDetection.png'
 
 ###############################################################################
 # Constructor of the live gaussianSpot centroid detection.

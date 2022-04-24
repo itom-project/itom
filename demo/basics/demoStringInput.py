@@ -8,6 +8,9 @@ please see the methods in the module ``itom.ui``.
 Inputs in this demo will force an input line in the command line
 (green background). Put some text there and press return to continue."""
 
+# sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoStringInput.png'
+
+
 name = input("Please put your name after the colon:")
 age = input("Please put your age:")
 

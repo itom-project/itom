@@ -7,7 +7,7 @@ This demo shows some basic features of the ``itom`` dataObject."""
 
 from itom import dataObject
 from itom import plot
-# sphinx_gallery_thumbnail_path = '_static/_thumb/demoDataObject.png'
+# sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoDataObject.png'
 
 # some constants
 yDim = 480

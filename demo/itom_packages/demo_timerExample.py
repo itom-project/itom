@@ -14,6 +14,7 @@ is automatically interrupted after ``10`` iterations.
 from itom import timer
 from itom import dataIO
 from itom import dataObject
+# sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoTimer.png'
 
 ###############################################################################
 # Function for the image acquisition.
