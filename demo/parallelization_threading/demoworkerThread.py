@@ -1,6 +1,13 @@
+"""Worker thread
+===============
+
+This example shows how to use the Python ``threading`` package.
+"""
+
 import threading
 import time
 
+# sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoWorkerThread.png'
 
 def worker():
     """thread worker function"""
