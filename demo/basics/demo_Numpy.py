@@ -7,7 +7,7 @@ This demo shows an example on how to use ``numpy`` in ``itom``.
 import numpy as np
 from numpy.linalg import svd
 from numpy.typing import ArrayLike
-# sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/Numpy.png'
+# sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoNumpy.png'
 
 ###############################################################################
 # Function to estimate the rank (i.e. the dimension of the nullspace) of a matrix.
