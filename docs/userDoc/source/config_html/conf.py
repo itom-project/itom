@@ -18,7 +18,8 @@ import __main__
 
 try:
     import plotly.io as pio
-    pio.renderers.default = 'sphinx_gallery'
+
+    pio.renderers.default = "sphinx_gallery"
 except ModuleNotFoundError:
     print("plotly is not installed. Plots will not be added to the sphinx_gallery")
 
@@ -44,9 +45,11 @@ extensions = [
     "breathe",
     "sphinx.ext.intersphinx",
     "itomext.designerplugindoc",
-    "sphinx_copybutton",
     "sphinx_gallery.gen_gallery",
 ]
+
+if [sys.version_info.major, sys.version_info.minor] >= [3, 6]:
+    extensions.append("sphinx_copybutton")
 
 if sphinx.__version__ >= "0.7":
     extensions.append("sphinx.ext.autosummary")
