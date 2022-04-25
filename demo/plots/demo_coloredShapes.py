@@ -1,6 +1,5 @@
 # coding=utf8
 
-
 """Colored shapes
 ==============
 
@@ -23,7 +22,6 @@ from itom import dataObject
 from itom import rgba
 from itom import shape
 from itom import plot
-
 # sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoColorShapes.png'
 
 
@@ -32,12 +30,12 @@ image[0:100, 0:200] = 128
 image[100:, 200:] = 255
 # coordinates of shapes are always given in 'physical' scales
 # (considering scale and offset of the displayed object)
-image.axisScales = (0.25, 0.25,)
+image.axisScales = (0.25, 0.25)
 image.axisOffsets = (100, 200)
 
 rect1 = shape.createRectangle((10, 5), (40, 20))
 # change the color of the upper right rectangle to a permanent color (dark green)
-rect1.color = rgba(0, 128, 55)  
+rect1.color = rgba(0, 128, 55)
 rect2 = shape.createRectangle(center=(0, 0), size=(40, 20))
 rect2.color = None  # automatic, color map dependent coloring (default)
 
