@@ -1,3 +1,8 @@
+"""Toolmanager
+============
+
+"""
+
 import matplotlib.pyplot as plt
 plt.rcParams['toolbar'] = 'toolmanager'
 from matplotlib.backend_tools import ToolBase, ToolToggleBase

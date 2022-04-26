@@ -1,4 +1,10 @@
+"""Path editor
+===========
+
+"""
+
 import numpy as np
+import matplotlib
 import matplotlib.path as mpath
 import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
@@ -21,28 +27,22 @@ pathdata = [
 
 codes, verts = zip(*pathdata)
 path = mpath.Path(verts, codes)
-patch = mpatches.PathPatch(
-    path, facecolor="green", edgecolor="yellow", alpha=0.5
-)
+patch = mpatches.PathPatch(path, facecolor="green", edgecolor="yellow", alpha=0.5)
 ax.add_patch(patch)
 
 
-class PathInteractor(object):
-    """
-    An path editor.
-
-    Key-bindings
-
-      't' toggle vertex markers on and off.  When vertex markers are on,
-          you can move them, delete them
-
-
-    """
+class PathInteractor:
 
     showverts = True
     epsilon = 5  # max pixel distance to count as a vertex hit
 
-    def __init__(self, pathpatch):
+    def __init__(self, pathpatch: matplotlib.patches.PathPatch):
+        """Path editor class. ``t`` toggle vertex markers on and off.
+        When vertex markers are on, you can move them, delete them. 
+
+        Args:
+            pathpatch (matplotlib.patches.PathPatch): PathPatch instance
+        """
 
         self.ax = pathpatch.axes
         canvas = self.ax.figure.canvas
@@ -51,9 +51,7 @@ class PathInteractor(object):
 
         x, y = zip(*self.pathpatch.get_path().vertices)
 
-        (self.line,) = ax.plot(
-            x, y, marker="o", markerfacecolor="r", animated=True
-        )
+        (self.line,) = ax.plot(x, y, marker="o", markerfacecolor="r", animated=True)
 
         self._ind = None  # the active vert
 
@@ -64,13 +62,13 @@ class PathInteractor(object):
         canvas.mpl_connect("motion_notify_event", self.motion_notify_callback)
         self.canvas = canvas
 
-    def draw_callback(self, event):
+    def draw_callback(self, event: matplotlib.backend_bases.DrawEvent):
         self.background = self.canvas.copy_from_bbox(self.ax.bbox)
         self.ax.draw_artist(self.pathpatch)
         self.ax.draw_artist(self.line)
         self.canvas.blit(self.ax.bbox)
 
-    def pathpatch_changed(self, pathpatch):
+    def pathpatch_changed(self, pathpatch: matplotlib.patches.PathPatch):
         "this method is called whenever the pathpatchgon object is called"
         # only copy the artist props to the line (except visibility)
         vis = self.line.get_visible()

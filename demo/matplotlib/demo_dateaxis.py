@@ -1,3 +1,11 @@
+"""Date axis
+=========
+
+Load a numpy record array from yahoo csv data with fields date, open, close,
+volume, adj_close from the mpl-data/example directory. The record array
+stores the date as an np.datetime64 with a day unit ('D') in the date column.
+"""
+
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
@@ -8,9 +16,7 @@ years = mdates.YearLocator()  # every year
 months = mdates.MonthLocator()  # every month
 yearsFmt = mdates.DateFormatter("%Y")
 
-# Load a numpy record array from yahoo csv data with fields date, open, close,
-# volume, adj_close from the mpl-data/example directory. The record array
-# stores the date as an np.datetime64 with a day unit ('D') in the date column.
+
 if matplotlib.__version__ < "3.3.0":
     with cbook.get_sample_data("goog.npz") as datafile:
         r = np.load(datafile)

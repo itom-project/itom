@@ -1,4 +1,6 @@
-"""
+"""Polar axis
+===========
+
 Demo of a line plot on a polar axis.
 """
 import numpy as np
@@ -8,6 +10,7 @@ import matplotlib.pyplot as plt
 r = np.arange(0, 2, 0.01)
 theta = 2 * np.pi * r
 
+plt.figure()
 ax = plt.subplot(111, projection="polar")
 ax.plot(theta, r)
 ax.set_rmax(2)

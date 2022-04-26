@@ -1,5 +1,7 @@
-"""
-This example demonstrates the "ggplot" style, which adjusts the style to
+"""GGPlot
+=========
+
+This example demonstrates the ``ggplot`` style, which adjusts the style to
 emulate ggplot_ (a popular plotting package for R_).
 
 These settings were shamelessly stolen from [1]_ (with permission).
@@ -8,7 +10,6 @@ These settings were shamelessly stolen from [1]_ (with permission).
 
 .. _ggplot: http://had.co.nz/ggplot/
 .. _R: http://www.r-project.org/
-
 """
 import numpy as np
 import matplotlib.pyplot as plt
