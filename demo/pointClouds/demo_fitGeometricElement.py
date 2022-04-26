@@ -9,6 +9,10 @@ by Wolfram Lyda, Licenced under LGPL, Copyright twip optical solutions
 import numpy as np
 import math as mathe
 from itom import pointCloud
+from itom import dataObject
+from itom import algorithms
+from itom import plot
+# sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoFitGeometricElements.png'
 
 geometryList = [
     "circle2D",
@@ -35,9 +39,7 @@ for fitGeometry in geometryList:
         # filter("pclEstimateNormals", cloud, pclNorm)
         # [cPt, cAxis, cInl] = filter("pclFitLine", pclNorm, optimizeParameters=0)
 
-        [cPt, cAxis, cInl] = filter(
-            "pclFitLine", cloud, optimizeParameters=0
-        )
+        [cPt, cAxis, cInl] = algorithms.pclFitLine(cloud, optimizeParameters=0)
         print(
             "The line is at ({}, {}, {}) with the direction ({}, {}, {})".format(
                 cPt[0], cPt[1], cPt[2], cAxis[0], cAxis[1], cAxis[2]
@@ -46,9 +48,7 @@ for fitGeometry in geometryList:
 
     elif fitGeometry == "plane":
 
-        [X, Y] = np.meshgrid(
-            np.arange(-2.0, 2.0, 0.1), np.arange(-2.0, 2.0, 0.1)
-        )
+        [X, Y] = np.meshgrid(np.arange(-2.0, 2.0, 0.1), np.arange(-2.0, 2.0, 0.1))
         Z = np.ones(X.shape, X.dtype) + Y * np.sin(45 * np.pi / 180)
         Y *= np.cos(45 * np.pi / 180)
         cloud = pointCloud.fromXYZ(
@@ -57,15 +57,9 @@ for fitGeometry in geometryList:
             dataObject(Z.astype("float32")),
         )
 
-        [cVec, cPt, cInl] = filter(
-            "pclFitPlane", cloud, 1, optimizeParameters=0
-        )
+        [cVec, cPt, cInl] = algorithms.pclFitPlane(cloud, 1, optimizeParameters=0)
 
-        print(
-            "The plane's direction is ({}, {}, {}) with the constant {}".format(
-                cVec[0], cVec[1], cVec[2], cPt
-            )
-        )
+        print("The plane's direction is ({}, {}, {}) with the constant {}".format(cVec[0], cVec[1], cVec[2], cPt))
 
     elif fitGeometry == "circle2D":
 
@@ -78,15 +72,9 @@ for fitGeometry in geometryList:
             dataObject(Z.astype("float32")),
         )
 
-        [cPt, cRad, cInl] = filter(
-            "pclFitCircle2D", cloud, [1, 6], optimizeParameters=0
-        )
+        [cPt, cRad, cInl] = algorithms.pclFitCircle2D(cloud, [1, 6], optimizeParameters=0)
 
-        print(
-            "The circle has a radius {} and is centered at ({}, {})".format(
-                cRad, cPt[0], cPt[1]
-            )
-        )
+        print("The circle has a radius {} and is centered at ({}, {})".format(cRad, cPt[0], cPt[1]))
 
     elif fitGeometry == "circle3D":
 
@@ -100,19 +88,10 @@ for fitGeometry in geometryList:
             dataObject(Z.astype("float32")),
         )
 
-        [cPt, cNormal, cRad, cInl] = filter(
-            "pclFitCircle3D", cloud, [1, 6], optimizeParameters=0
-        )
+        [cPt, cNormal, cRad, cInl] = algorithms.pclFitCircle3D(cloud, [1, 6], optimizeParameters=0)
 
         angle = (
-            mathe.acos(
-                cNormal[2]
-                / (
-                    cNormal[0] * cNormal[0]
-                    + cNormal[1] * cNormal[1]
-                    + cNormal[2] * cNormal[2]
-                )
-            )
+            mathe.acos(cNormal[2] / (cNormal[0] * cNormal[0] + cNormal[1] * cNormal[1] + cNormal[2] * cNormal[2]))
             * 180
             / np.pi
         )
@@ -127,9 +106,7 @@ for fitGeometry in geometryList:
 
     elif fitGeometry == "sphere":
 
-        [X, Y] = np.meshgrid(
-            np.arange(-2.0, 2.0, 0.1), np.arange(-2.0, 2.0, 0.1)
-        )
+        [X, Y] = np.meshgrid(np.arange(-2.0, 2.0, 0.1), np.arange(-2.0, 2.0, 0.1))
         Z = np.sqrt(9 - Y * Y - X * X)
         cloud = pointCloud.fromXYZ(
             dataObject(X.astype("float32")),
@@ -137,19 +114,11 @@ for fitGeometry in geometryList:
             dataObject(Z.astype("float32")),
         )
 
-        [cPt, cRad, cInl] = filter(
-            "pclFitSphere", cloud, [1, 6], optimizeParameters=0
-        )
-        print(
-            "The sphere has a radius {} and is centered at ({}, {}, {})".format(
-                cRad, cPt[0], cPt[1], cPt[2]
-            )
-        )
+        [cPt, cRad, cInl] = algorithms.pclFitSphere(cloud, [1, 6], optimizeParameters=0)
+        print("The sphere has a radius {} and is centered at ({}, {}, {})".format(cRad, cPt[0], cPt[1], cPt[2]))
     elif fitGeometry == "cylinder":
 
-        [X, Y] = np.meshgrid(
-            np.arange(-2.0, 2.0, 0.1), np.arange(-2.0, 2.0, 0.1)
-        )
+        [X, Y] = np.meshgrid(np.arange(-2.0, 2.0, 0.1), np.arange(-2.0, 2.0, 0.1))
         Z = np.sqrt(9 - Y * Y)
         cloud = pointCloud.fromXYZ(
             dataObject(X.astype("float32")),
@@ -159,11 +128,9 @@ for fitGeometry in geometryList:
 
         # For cylinder fits we need normals defined
         pclNorm = pointCloud()
-        filter("pclEstimateNormals", cloud, pclNorm)
+        algorithms.pclEstimateNormals(cloud, pclNorm)
 
-        [cPt, cAxis, cRad, cInl] = filter(
-            "pclFitCylinder", pclNorm, [1, 6], optimizeParameters=0
-        )
+        [cPt, cAxis, cRad, cInl] = algorithms.pclFitCylinder(pclNorm, [1, 6], optimizeParameters=0)
         print(
             "The cylinder has a radius {} and its axis is at ({}, {}, {}) with the direction ({}, {}, {})".format(
                 cRad, cPt[0], cPt[1], cPt[2], cAxis[0], cAxis[1], cAxis[2]
@@ -171,18 +138,12 @@ for fitGeometry in geometryList:
         )
     elif fitGeometry == "cone":
         # Not defined yet
-        [X, Y] = np.meshgrid(
-            np.arange(-2.0, 2.0, 0.1), np.arange(-2.0, 2.0, 0.1)
-        )
+        [X, Y] = np.meshgrid(np.arange(-2.0, 2.0, 0.1), np.arange(-2.0, 2.0, 0.1))
         Z = np.sqrt(Y * Y + X * X)
         cloud = pointCloud.fromXYZ(
             dataObject(X.astype("float32")),
             dataObject(Y.astype("float32")),
             dataObject(Z.astype("float32")),
         )
-
-    else:
-        print("type not defiend")
-        raise
 
     plot(cloud)

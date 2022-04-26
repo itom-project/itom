@@ -7,6 +7,9 @@ import numpy as np
 from itom import pointCloud
 from itom import algorithms
 from itom import dataObject
+from itom import polygonMesh
+# sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoMesh.png'
+
 
 [X, Y] = np.meshgrid(range(0, 2), range(0, 2))
 Z = np.array([[0, 0], [1, 1]])
