@@ -1,10 +1,14 @@
-# coding=iso-8859-15
-"""This demo shows how to render to output of the Python plotly library in
+# coding=utf8
+
+"""GUI integrated
+=============
+
+This demo shows how to render to output of the Python ``plotly`` library in
 custom user interfaces.
 
-In the given ui file, a widget of the class type "PlotlyPlot" is placed.
-If the ItomPlotlyRenderer renderer class is loaded and assigned as renderer
-to ploty, the ``show`` method of the plotly.graph_objects.Figure class has
+In the given '*:ui' file, a widget of the class type ``PlotlyPlot`` is placed.
+If the ``ItomPlotlyRenderer`` renderer class is loaded and assigned as renderer
+to ``ploty``, the ``show`` method of the ``plotly.graph_objects.Figure`` class has
 another optional keyword argument ``plotHandle``, where you can pass the
 ``itom.plotHandle`` object of the corresponding widget in the ui file. Then
 the output is rendered in this widget.
@@ -19,6 +23,7 @@ import plotly.express as px
 # import the base class ItomUi from the module itomUi in the itom-packages subfolder
 from itomUi import ItomUi
 from itom import ui
+# sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoPloty.png'
 
 
 class PlotlyGuiDemo(ItomUi):
@@ -102,3 +107,7 @@ class PlotlyGuiDemo(ItomUi):
 if __name__ == "__main__":
     win = PlotlyGuiDemo()
     win.show()
+
+###############################################################################
+# .. image:: ../_static/demoPlotlyGUI_1.png
+#    :width: 100%
