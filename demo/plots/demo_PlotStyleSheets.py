@@ -14,7 +14,6 @@ from itomUi import ItomUi
 import inspect
 import os.path
 import numpy as np
-
 # sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoPlotStyleSheet.png'
 
 
