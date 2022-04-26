@@ -25,7 +25,6 @@ from itom import polygonMesh
 from itom import dataObject
 from itom import plot25
 from itom import algorithms
-
 # sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoVTK3DVisualizer.png'
 
 
