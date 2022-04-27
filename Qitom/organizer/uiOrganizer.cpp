@@ -51,6 +51,7 @@
 #include <qcoreapplication.h>
 #include <qpluginloader.h>
 #include <QtUiTools/quiloader.h>
+#include <qclipboard.h>
 
 #include <QtUiPlugin/QDesignerCustomWidgetInterface>
 #include <qsettings.h>
@@ -4283,4 +4284,23 @@ RetVal UiOrganizer::getPlotWindowTitlebyHandle(const unsigned int& objectID, QSh
 
     return retval;
 }
+
+//-------------------------------------------------------------------------------------
+RetVal UiOrganizer::copyStringToClipboard(const QString &text, ItomSharedSemaphore *semaphore)
+{
+    RetVal retval;
+    auto clipboard = QApplication::clipboard();
+    clipboard->setText(text, QClipboard::Clipboard);
+
+    if (semaphore)
+    {
+        semaphore->returnValue = retval;
+        semaphore->release();
+        semaphore->deleteSemaphore();
+    }
+
+    return retval;
+}
+
+
 } //end namespace ito

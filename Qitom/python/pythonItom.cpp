@@ -45,8 +45,6 @@
 #include "../organizer/uiOrganizer.h"
 #include "../organizer/userOrganizer.h"
 
-#include <qclipboard.h>
-#include <qmimedata.h>
 #include <qcoreapplication.h>
 #include <qdesktopwidget.h>
 #include <qdir.h>
@@ -6553,7 +6551,7 @@ PyObject* PythonItom::PyClearAll(PyObject* pSelf)
 }
 
 //-------------------------------------------------------------------------------------
-/*PyDoc_STRVAR(pyCopyStringToClipboard_doc, "copyStringToClipboard(text) \n\
+PyDoc_STRVAR(pyCopyStringToClipboard_doc, "copyStringToClipboard(text) \n\
 \n\
 Copies the given text to the clipboard of your operating system. \n\
 \n\
@@ -6580,23 +6578,29 @@ PyObject* PythonItom::PyCopyStringToClipboard(PyObject* pSelf, PyObject* pArgs, 
         return nullptr;
     }
 
-    auto clipboard = QApplication::clipboard();
-    clipboard->clear();
-    clipboard->setText(string, QClipboard::Clipboard);
+    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
 
-    QString txt = clipboard->text();
+    UiOrganizer* uiOrg = (UiOrganizer*)AppManagement::getUiOrganizer();
 
-    QMimeData* mime = new QMimeData();
-    mime->setText(string);
-    clipboard->setMimeData(mime);
+    QMetaObject::invokeMethod(
+        uiOrg,
+        "copyStringToClipboard",
+        Q_ARG(QString, string),
+        Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
 
-    txt = clipboard->text();
+    if (!locker.getSemaphore()->wait(PLUGINWAIT * 5))
+    {
+        PyErr_SetString(PyExc_RuntimeError, "Timeout while saving text to clipboard");
+        return nullptr;
+    }
 
-
-    QThread::msleep(1); //without this line I get allways empty clipboard
+    if (!PythonCommon::transformRetValToPyException(locker.getSemaphore()->returnValue))
+    {
+        return nullptr;
+    }
 
     Py_RETURN_NONE;
-}*/
+}
 
 //-------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------
@@ -6737,10 +6741,10 @@ PyMethodDef PythonItom::PythonMethodItom[] = {
      setPalette_doc},
     {"getPaletteList", (PyCFunction)PythonItom::PyGetPaletteList, METH_VARARGS, getPaletteList_doc},
     {"clearAll", (PyCFunction)PythonItom::PyClearAll, METH_NOARGS, pyClearAll_doc},
-    /*{"copyStringToClipboard",
+    {"copyStringToClipboard",
      (PyCFunction)PythonItom::PyCopyStringToClipboard,
      METH_VARARGS | METH_KEYWORDS,
-     pyCopyStringToClipboard_doc},*/
+     pyCopyStringToClipboard_doc},
     {"registerResource",
      (PyCFunction)PythonItom::PyRegisterResource,
      METH_VARARGS | METH_KEYWORDS,

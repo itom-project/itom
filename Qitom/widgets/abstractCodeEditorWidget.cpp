@@ -604,7 +604,27 @@ void AbstractCodeEditorWidget::paste()
         if (clipboard->mimeData()->hasText())
         {
             int lineIdx, column;
-            getCursorPosition(&lineIdx, &column);
+            int lineToIdx, columnTo;
+            getSelection(&lineIdx, &column, &lineToIdx, &columnTo);
+
+            if (lineIdx == -1)
+            {
+                // no selection, get the current cursor position
+                getCursorPosition(&lineIdx, &column);
+            }
+            else if (lineIdx > lineToIdx)
+            {
+                // the start of the selection is at the end of the selection. swap it.
+                lineIdx = lineToIdx;
+                column = columnTo;
+            }
+            else if (lineIdx == lineToIdx && column > columnTo)
+            {
+                // the start of the selection is at the end of the selection. swap it.
+                lineIdx = lineToIdx;
+                column = columnTo;
+            }
+
             QString indent;
 
             // if this is a console widget and the current line starts with >>,

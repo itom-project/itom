@@ -98,7 +98,8 @@ Source: "{#SourceDirItomBuild}\itomWidgets.dll"; DestDir: "{app}"; Flags: ignore
 Source: "{#SourceDirItomBuild}\pointcloud.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\qpropertyeditor.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\addinmanager.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SourcePythonDir}\python37.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourcePythonDir}\python38.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourcePythonDir}\python3.dll"; DestDir: "{app}"; Flags: ignoreversion
 
 ; DLLs Redistributable 2010,2012,2013,2015
 Source: "{#SourceRedistributableDir}\2010\32 Bit\*.dll"; DestDir: "{app}"; Flags: ignoreversion

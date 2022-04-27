@@ -504,7 +504,7 @@ public slots:
 
 	RetVal registerActiveTimer(const QWeakPointer<QTimer> &timer, const QString &name);
 
-
+    RetVal copyStringToClipboard(const QString &text, ItomSharedSemaphore *semaphore);
 
     void figureDestroyed(QObject *obj);
 

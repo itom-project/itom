@@ -1,4 +1,4 @@
-    # coding=iso-8859-15
+# coding=iso-8859-15
 
 #
 # itom documentation build configuration file
@@ -20,7 +20,8 @@ import inspect
 
 try:
     import plotly.io as pio
-    pio.renderers.default = 'sphinx_gallery'
+
+    pio.renderers.default = "sphinx_gallery"
 except ModuleNotFoundError:
     print("plotly is not installed. Plots will not be added to the sphinx_gallery")
 
@@ -205,7 +206,7 @@ sphinx_gallery_conf = {
     "download_all_examples": False,
     "min_reported_time": 0.0001,
     "filename_pattern": "demo_",
-    "matplotlib_animations": True
+    "matplotlib_animations": True,
 }
 
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
@@ -401,7 +402,7 @@ todo_include_todos = True
 # to get the inv files, open the given URL/objects.inv.
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3.8", "python3.8-inv.txt"),
-    "numpy": ("https://docs.scipy.org/doc/numpy", "numpy1.20-inv.txt"),
+    "numpy": ("https://numpy.org/doc/stable", "numpy1.22-inv.txt"),
     "scipy": ("https://docs.scipy.org/doc/scipy/reference", "scipy1.6.1-inv.txt"),
-    "matplotlib": ("http://matplotlib.sourceforge.net", "matplotlib3.3.inv.txt"),
+    "matplotlib": ("https://matplotlib.org", "matplotlib3.5-inv.txt"),
 }

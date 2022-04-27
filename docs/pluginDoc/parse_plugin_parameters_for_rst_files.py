@@ -18,7 +18,7 @@ import textwrap
 clc()
 
 def parse_parameters(instance):
-    result = []
+    results = {}
     info = instance.getParamListInfo(1)
     
     for p in info:
@@ -38,9 +38,13 @@ def parse_parameters(instance):
 
         if meta != "":
             item = item + "\n    \n    *%s*" % meta
-        
-        result.append(item)
-    print("\n".join(result))
+
+        results[p["name"]] = item
+
+    results = dict(sorted(results.items()))
+    text = "\n".join(list(results.values()))
+    itom.copyStringToClipboard(text)
+    print(text)
 
 
 # scan the global workspace for all itom.actuator and itom.dataIO objects
