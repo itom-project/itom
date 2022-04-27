@@ -303,6 +303,27 @@ Data processing
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbcontainer" tooltip="In this demo the lateral image shift is determined. ">
+
+.. only:: html
+
+ .. figure:: /11_demos/dataProcessing/images/thumb/sphx_glr_demo_LateralShift_thumb.png
+     :alt: Later shifted image
+
+     :ref:`sphx_glr_11_demos_dataProcessing_demo_LateralShift.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /11_demos/dataProcessing/demo_LateralShift
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="This demo shows how data fitting can be performed using the itom.dataObject and itom.algorithms...">
 
 .. only:: html

@@ -22,8 +22,7 @@
     09_reference/reference.rst
     10_miscellaneous/miscellaneous.rst
     11_demos/index.rst
-    12_tutorials/tutorials.rst
-    13_contributing/contributing.rst
+    12_contributing/contributing.rst
 
 .. only:: builder_qthelp
     

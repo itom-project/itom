@@ -117,7 +117,7 @@ Plugins
 * all plugins: 
     - adaptations for OpenCV 4
     - ``CMakeLists.txt`` and ``\*.cmake`` files adapted to (new) cmake style guide of itom 
-      (see documentation/13_contributing/cmake_style_guide.rst). General settings 
+      (see documentation/12_contributing/cmake_style_guide.rst). General settings 
       of itom libraries as well as plugin and   designer plugin libraries are now 
       added in the INIT_ITOM_LIBRARY() macro of ItomBuildMacros.cmake. Include 
       ItomBuildMacros.cmake at the beginning of the file and call INIT_ITOM_LIBRARY, 
@@ -164,7 +164,7 @@ Designer Plugins
 (more than 58 commits in designerPlugins repository)
 
 * general: ``CMakeLists.txt`` and ``\*.cmake`` files adapted to (new) cmake style 
-  guide of itom (see documentation/13_contributing/cmake_style_guide.rst). 
+  guide of itom (see documentation/12_contributing/cmake_style_guide.rst). 
   General settings of itom libraries as well as plugin and designer plugin libraries 
   are now added in the INIT_ITOM_LIBRARY() macro of ItomBuildMacros.cmake. Include 
   ItomBuildMacros.cmake at the beginning of the file and call INIT_ITOM_LIBRARY, 
