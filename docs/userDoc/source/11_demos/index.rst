@@ -2061,6 +2061,27 @@ User interface
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbcontainer" tooltip="Create a dockWidget form the main window at the bottom dock widget area The dock widget can be ...">
+
+.. only:: html
+
+ .. figure:: /11_demos/ui/images/thumb/sphx_glr_demo_dockWidgetExamples_thumb.png
+     :alt: Dockwidget
+
+     :ref:`sphx_glr_11_demos_ui_demo_dockWidgetExamples.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /11_demos/ui/demo_dockWidgetExamples
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="This demo opens the Roughness Evaluator app.">
 
 .. only:: html
@@ -2079,6 +2100,27 @@ User interface
    :hidden:
 
    /11_demos/ui/demo_roughnessEvaluator
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="The dialog is created from a QDialog, designed in QtDesigner. The dialog already has OK and Can...">
+
+.. only:: html
+
+ .. figure:: /11_demos/ui/images/thumb/sphx_glr_demo_dialogExamples_thumb.png
+     :alt: Dialog
+
+     :ref:`sphx_glr_11_demos_ui_demo_dialogExamples.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /11_demos/ui/demo_dialogExamples
 
 .. raw:: html
 
@@ -2184,6 +2226,27 @@ User interface
    :hidden:
 
    /11_demos/ui/demo_cameraWindow
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Window is a stand-alone window. The window is only hidden if the user closes it. Call show agai...">
+
+.. only:: html
+
+ .. figure:: /11_demos/ui/images/thumb/sphx_glr_demo_windowExamples_thumb.png
+     :alt: Window
+
+     :ref:`sphx_glr_11_demos_ui_demo_windowExamples.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /11_demos/ui/demo_windowExamples
 
 .. raw:: html
 

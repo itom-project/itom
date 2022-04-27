@@ -1,12 +1,20 @@
-"""window is a stand-alone window. The window is only hidden
+"""Window
+========
+
+Window is a stand-alone window. The window is only hidden
 if the user closes it. Call show again to re-show it. It is only
 deleted, if the window variable is deleted."""
+from itom import ui
+
+# sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoWindow.png'
+
+
 window = ui("mainWindow.ui", ui.TYPEWINDOW)
 window.show()
 
-"""window_destroy is a stand-alone window,
-that is deleted if the user closes it, not only hidden"""
-
+###############################################################################
+# Window_destroy is a stand-alone window,
+# that is deleted if the user closes it, not only hidden"""
 
 def window_destroyed():
     print("window_destroy destroyed")
@@ -23,19 +31,21 @@ window_destroy[
 window_destroy.connect("destroyed()", window_destroyed)
 window_destroy.show()
 
-"""window_no_child is a stand-alone window that is no child of the main window with own symbol in the task bar"""
+###############################################################################
+# Window_no_child is a stand-alone window that is no child of the main window with own symbol in the task bar
 window_no_child = ui("mainWindow.ui", ui.TYPEWINDOW, childOfMainWindow=False)
 window_no_child[
     "windowTitle"
 ] = "Stand-alone main window"  # change title of main window
 window_no_child.show()
 
-"""widget_window is a stand-alone window obtained from a widget that was created in QtDesigner"""
+###############################################################################
+# Widget_window is a stand-alone window obtained from a widget that was created in QtDesigner.
 widget_window = ui("widget.ui", ui.TYPEWINDOW)
 widget_window.show()
 
-
-"""configure a window to not have a maximize button and to always stay on top."""
+###############################################################################
+# Configure a window to not have a maximize button and to always stay on top.
 window_on_top = ui("mainWindow.ui", ui.TYPEWINDOW)
 window_on_top["windowTitle"] = "On-top window"  # change title of main window
 # 0x00040000 is the flag Qt::WindowStaysOnTopHint and needs to be added if not yet done (or)
