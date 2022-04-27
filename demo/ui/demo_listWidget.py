@@ -1,21 +1,24 @@
-"""this demo shows how to use the auto-connection feature
+"""List widget
+===========
+
+This demo shows how to use the auto-connection feature
 for automatically connecting signals from widgets to methods.
 
 The base requirement for this is, that the ui-file is wrapped
-by a class in Python."""
+by a class in Python.
+
+.. hint::
+    This demo uses specially wrapped methods of QListWidget. For more information see
+    section 'Calling slots' in https://itom.bitbucket.io/latest/docs/06_extended_gui/qtdesigner.html)
+    
+    These methods are indiciated by #-> special method call
+"""
 
 from itomUi import (
     ItomUi,
 )  # import the base class ItomUi from the module itomUi in the itom-packages subfolder
 from itom import ui
-
-"""
-Hint:
-this demo uses specially wrapped methods of QListWidget. For more information see
-section 'Calling slots' in https://itom.bitbucket.io/latest/docs/06_extended_gui/qtdesigner.html)
-
-These methods are indiciated by #-> special method call
-"""
+# sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoListWidget.png'
 
 
 class ListWidgetDemo(ItomUi):  # ListWidgetDemo is inherited from ItomUi

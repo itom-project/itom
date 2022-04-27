@@ -1,3 +1,8 @@
+"""Measure tool
+============
+
+"""
+
 from itom import dataObject
 from itom import ui
 from itomUi import ItomUi

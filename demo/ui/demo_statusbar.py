@@ -1,11 +1,13 @@
+"""Statusbar
+=========
+
+This is a short tutorial about how to use the statusbar
+"""
+
 from itomUi import ItomUi
 from itom import ui
-from itom import *
-import itom
 import os
 import inspect
-
-""" this is a short tutorial about how to use the statusbar"""
 
 
 class Statusbar(ItomUi):

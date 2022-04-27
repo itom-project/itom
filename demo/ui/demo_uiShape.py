@@ -1,4 +1,7 @@
-"""This demo shows a window with a 2D plot as center widget.
+"""UI shape
+=======
+
+This demo shows a window with a 2D plot as center widget.
 A random dataObject is shown in the plot. The user can then
 create various geometric shapes (like points, lines, rectangles...)
 in the plot either by the toolbar of the plot or by pressing dedicated buttons.
@@ -17,7 +20,6 @@ from itomUi import ItomUi
 from itom import shape
 import inspect
 import os.path
-import numpy as np
 
 
 class UiShapeDemo(ItomUi):
@@ -34,7 +36,7 @@ class UiShapeDemo(ItomUi):
         self.gui.plot["source"] = dObj
 
     def show(self, modalLevel=0):
-        ret = self.gui.show(modalLevel)
+        self.gui.show(modalLevel)
 
     def drawShapeButtonsEnable(self, enabled, modal=False):
         self.gui.btnCancel["enabled"] = not enabled and not modal
@@ -213,3 +215,7 @@ if __name__ == "__main__":
     dObj = dataObject.randN([600, 800], "float32")
     uiShapeDemo = UiShapeDemo()
     uiShapeDemo.show()
+
+###############################################################################
+# .. image:: ../_static/demoUIShape_1.png
+#    :width: 100%

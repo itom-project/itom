@@ -1,3 +1,10 @@
+"""Algorithm cancel and progress widget
+==========================
+
+This scipt shows how the ``itom.progressObserver`` is used
+to observe and report the progress of functions.
+"""
+
 from itomUi import (
     ItomUi,
 )  # import the base class ItomUi from the module itomUi in the itom-packages subfolder
@@ -5,8 +12,8 @@ from itom import ui
 from itom import uiItem
 from itom import progressObserver
 from contextlib import contextmanager
-
 from typing import Dict
+# sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoAlgoCancelAndProgress.png'
 
 
 class AlgoCancelAndProgressWidget(ItomUi):

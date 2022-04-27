@@ -1,16 +1,18 @@
-"""This demo shows how to manipulate a splitter, set as layout in QtDesigner"""
+"""Splitter
+==========
+
+This demo shows how to manipulate a splitter, set as layout in QtDesigner.
+
+.. hint::
+
+    This demo uses specially wrapped methods of QSplitter. For more information see
+    section ``Calling slots`` in https://itom.bitbucket.io/latest/docs/06_extended_gui/qtdesigner.html)
+    These methods are indiciated by #-> special method call
+"""
 from itomUi import (
     ItomUi,
 )  # import the base class ItomUi from the module itomUi in the itom-packages subfolder
 from itom import ui
-
-"""
-Hint:
-this demo uses specially wrapped methods of QSplitter. For more information see
-section 'Calling slots' in https://itom.bitbucket.io/latest/docs/06_extended_gui/qtdesigner.html)
-
-These methods are indiciated by #-> special method call
-"""
 
 
 class SplitterDemo(ItomUi):  # ListWidgetDemo is inherited from ItomUi

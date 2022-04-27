@@ -1,8 +1,13 @@
+"""Table widget
+===========
+
+"""
 from itomUi import (
     ItomUi,
 )  # import the base class ItomUi from the module itomUi in the itom-packages subfolder
 from itom import ui
 import random
+# sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoTableWidget.png'
 
 
 class TableWidgetDemo(ItomUi):

@@ -1,6 +1,7 @@
-# coding=iso-8859-15
+"""ItomUI class
+============
 
-"""Demo to show how to create a user interface in an object oriented approach.
+Demo to show how to create a user interface in an object oriented approach.
 
 This demo uses the base class ``ItomUi`` from the module ``itomUi``. This module
 is distributed with itom and can directly be imported (located in the itom-packages
@@ -25,10 +26,10 @@ The benefits are:
    exception, the GUI is reverted to the original state.
 """
 
-
 from itomUi import ItomUi
 from itom import ui
 import time
+# sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoEmbeddedPlot.png'
 
 
 class ItomUiClassDemo(ItomUi):

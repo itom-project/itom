@@ -1,6 +1,7 @@
-# coding=iso-8859-15
+"""Parameter editor widget
+==================
 
-"""This example shows the usage of the generic ParamEditorWidget.
+This example shows the usage of the generic ParamEditorWidget.
 
 The widget can be used in various ways. Some of them are shwon in
 this example.
@@ -18,6 +19,10 @@ a subset of parameters (depending on their category). The category
 of a parameter is an optional meta information and is part of the 
 plugin.
 """
+from itom import dataIO
+from itom import actuator
+from itom import ui
+# sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoParamEditorWidget.png'
 
 
 cam = dataIO("DummyGrabber", 1280, 1024, 8)

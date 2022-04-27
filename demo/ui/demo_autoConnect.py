@@ -1,4 +1,7 @@
-"""this demo shows how to use the auto-connection feature
+"""Auto connect signals
+=================
+
+This demo shows how to use the auto-connection feature
 for automatically connecting signals from widgets to methods.
 
 The base requirement for this is, that the ui-file is wrapped
@@ -8,6 +11,7 @@ from itomUi import (
     ItomUi,
 )  # import the base class ItomUi from the module itomUi in the itom-packages subfolder
 from itom import ui
+# sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoAutoConnect.png'
 
 
 class AutoConnectExample(ItomUi):  # AutoConnectExample is inherited from ItomUi

@@ -1,4 +1,12 @@
-# open dummy camera
+"""Camera widget
+===========
+
+"""
+from itom import dataIO
+from itom import ui
+from itom import dataObject
+
+
 cam = dataIO("DummyGrabber")
 
 win = ui("cameraWindow.ui", ui.TYPEWINDOW, childOfMainWindow=True)

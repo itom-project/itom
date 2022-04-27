@@ -1,6 +1,7 @@
-# coding=iso-8859-15
+"""Observe parallel functions
+===================
 
-"""This demo shows how to use a customized progressObserver to observer and
+This demo shows how to use a customized progressObserver to observer and
 possibly cancel multiple 'complex' function calls, that are executed in 
 parallel in four different background threads.
 
@@ -35,6 +36,7 @@ from itomUi import ItomUi
 from itom import progressObserver
 from threading import Thread
 from time import sleep
+# sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoObserveParallelFunction.png'
 
 
 class FunctionCall:

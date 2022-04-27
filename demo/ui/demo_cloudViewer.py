@@ -1,4 +1,13 @@
+"""Cloud viewer
+============
+
+"""
+
 import numpy as np
+from itom import pointCloud
+from itom import polygonMesh
+from itom import ui
+from itom import dataObject
 
 try:
     from itom import pointCloud
@@ -8,9 +17,12 @@ except Exception as ex:
         "your itom version is compiled without support of pointClouds",
     )
     raise ex
+# sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoCloudAndMeshVisualization.png'
 
-# create a data objects with X, Y and Z values of a topography
-# as well as a 2.5D topography in terms of a data object
+
+###############################################################################
+# Create a data objects with X, Y and Z values of a topography
+# as well as a 2.5D topography in terms of a data object.
 [X, Y] = np.meshgrid(np.arange(0, 5, 0.1), np.arange(0, 5, 0.1))
 Z = np.sin(X * 2) + np.cos(Y * 0.5)
 I = np.random.rand(*X.shape)  # further intensity
@@ -21,20 +33,25 @@ topography = dataObject(Z).astype("float32")
 topography.axisScales = (0.1, 0.1)
 topography[0, 0] = float("nan")
 
-# create a point cloud from the X, Y and Z arrays with further intensity information
+###############################################################################
+# Create a point cloud from the X, Y and Z arrays with further intensity information.
 cloud1 = pointCloud.fromXYZI(X, Y, Z, I)
 
-# create a point cloud from the topography image with further colour information
+###############################################################################
+# Create a point cloud from the topography image with further colour information.
 cloud2 = pointCloud.fromTopography(topography, color=C)
 
-# create a point cloud from the X, Y and Z arrays with further colour information
+###############################################################################
+# Create a point cloud from the X, Y and Z arrays with further colour information.
 cloud3 = pointCloud.fromXYZRGBA(X, Y, Z, C)
 
-# create a point cloud from the X, Y and Z arrays with the Z-values as intensity information
+###############################################################################
+# Create a point cloud from the X, Y and Z arrays with the Z-values as intensity information.
 cloud4 = pointCloud.fromXYZI(X, Y, Z - 0.1, Z)
 
-# manually create triangular polygons for the whole surface
-# the polygons are regularly distributed and each rectangle is divided into two polygons
+###############################################################################
+# Manually create triangular polygons for the whole surface
+# the polygons are regularly distributed and each rectangle is divided into two polygons.
 polygons = dataObject.zeros([2 * 49 * 49, 3], "uint16")
 c = 0
 for row in range(0, 49):
@@ -50,16 +67,18 @@ for row in range(0, 49):
         polygons[c, 2] = row * 50 + col + 1
         c += 1
 
-# create polygonal mesh structure from cloud3 and polygons
+###############################################################################
+# Create polygonal mesh structure from cloud3 and polygons.
 mesh = polygonMesh.fromCloudAndPolygons(cloud3, polygons)
 
-# as alternative approach you can directly create the same polygonal mesh
+###############################################################################
+# As alternative approach you can directly create the same polygonal mesh
 # from the point cloud if you know that the point cloud is organized, hence,
 # the points are located like in a regular grid.
 mesh2 = polygonMesh.fromOrganizedCloud(cloud2)
 
-
-# create GUI (3D Viewer)
+###############################################################################
+# Create GUI (3D Viewer)
 gui = ui("cloudViewer.ui", ui.TYPEWINDOW)
 
 # gui.plot.call("addPointCloud",cloud1,"cloud1")

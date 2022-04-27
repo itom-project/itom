@@ -1,4 +1,11 @@
+"""Motor axis controller
+=================
+
+"""
+from itom import ui
+from itom import actuator
 from itom import version as itomVersion
+# sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoMotorAxisController.png'
 
 gui = ui("demoMotorAxisController.ui", ui.TYPEWINDOW)
 # please notice, that some signals/slots are already connected via Designer!
