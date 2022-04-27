@@ -23,7 +23,6 @@ from itomUi import ItomUi
 import numpy as np
 import matplotlib.pyplot as plt
 import plotly.express as px
-
 # sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoMeasurement.png'
 
 ###############################################################################

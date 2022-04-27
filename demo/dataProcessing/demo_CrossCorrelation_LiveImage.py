@@ -1,4 +1,16 @@
-import calc_correlation
+"""Cross correlation of images
+======================
+
+In this demo the cross-correlation is calculated between two images
+acquired via the integrated webcam of your PC.
+"""
+
+from itom import dataIO
+from itom import dataObject
+from itom import ui
+import numpy as np
+from numpy import fft
+# sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoCrossCorrelation.png'
 
 # some methods
 def acquireImage1():
@@ -18,12 +30,31 @@ def acquireImage2():
     gui.plot2["source"] = image2
     cam.setAutoGrabbing(g)
 
-
 def evaluate():
-    [dx, dy] = calc_correlation.evaluate(image1, image2)
-    gui.lbl_dx["text"] = "dx: " + str(dx)
-    gui.lbl_dy["text"] = "dy: " + str(dy)
+    """determines the offset between image1 and image2
+    using cross-correlation and returns a tuple containing
+    the shift in x and y-direction"""
 
+    npImg1 = np.array(image1)
+    npImg2 = np.array(image2)
+
+    npImg1FFT = fft.fft2(npImg1)
+    npImg2FFT = fft.fft2(npImg2)
+    ccr = fft.ifft2(npImg1FFT * npImg2FFT.conj())
+    ccr_abs = np.abs(ccr)  # np.ascontiguousarray(np.abs(ccr))
+
+    [m, n] = ccr_abs.shape
+    max_pos = np.argmax(ccr_abs)
+    offset_x = max_pos % n
+    offset_y = (max_pos - offset_x) / n
+
+    if offset_x > n / 2:
+        offset_x = offset_x - n
+    if offset_y > m / 2:
+        offset_y = offset_y - m
+
+    gui.lbl_dx["text"] = "dx: " + str(offset_x)
+    gui.lbl_dy["text"] = "dy: " + str(offset_y)
 
 def saveImages():
     filename = ui.getSaveFileName("Filename", filters="IDC (*.idc)", parent=gui)
@@ -44,7 +75,7 @@ def loadImages():
 
 
 # open camera (make it before you start this script)
-cam = dataIO("MSMediaFoundation", colorMode="gray")
+cam = dataIO("OpenCVGrabber", colorMode="gray")
 # cam = dataIO("FileGrabber","*.tif","samples",8,2)
 
 # start camera
@@ -69,5 +100,7 @@ else:
     cam.setAutoGrabbing(False)
 
 gui.plotLive["camera"] = cam
+gui.plotLive["keepAspectRatio"] = True
+gui.plotLive["yAxisFlipped"] = True
 
 gui.show()
