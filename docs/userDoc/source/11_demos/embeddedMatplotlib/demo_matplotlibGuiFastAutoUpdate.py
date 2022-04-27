@@ -6,8 +6,10 @@
 import matplotlib
 import matplotlib.pyplot as plt
 from itomUi import ItomUi
+from itom import ui
+
 matplotlib.use("module://mpl_itom.backend_itomagg")
-# sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoDynamicFormLayout.png'
+# sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoMatplotlibGUI.png'
 
 
 class MatplotGuiAutoUpdate(ItomUi):

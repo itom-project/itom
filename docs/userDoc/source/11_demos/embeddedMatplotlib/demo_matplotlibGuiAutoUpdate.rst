@@ -20,24 +20,13 @@
 Matplotlib auto update
 =====================
 
-.. GENERATED FROM PYTHON SOURCE LINES 5-98
-
-
-.. rst-class:: sphx-glr-script-out
-
-.. code-block:: pytb
-
-    Traceback (most recent call last):
-      File "C:\itom\3rdParty\Python\lib\site-packages\sphinx_gallery\gen_rst.py", line 720, in execute_code_block
-        is_last_expr, mem_max = _exec_and_get_memory(
-    NameError: name 'ui' is not defined
+.. GENERATED FROM PYTHON SOURCE LINES 5-101
 
 
 
 
 
 
-|
 
 .. code-block:: default
 
@@ -45,7 +34,10 @@ Matplotlib auto update
     import matplotlib
     import matplotlib.pyplot as plt
     from itomUi import ItomUi
+    from itom import ui
+
     matplotlib.use("module://mpl_itom.backend_itomagg")
+
 
     class MatplotGuiAutoUpdate(ItomUi):
         def __init__(self):
@@ -138,7 +130,7 @@ Matplotlib auto update
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.002 seconds)
+   **Total running time of the script:** ( 0 minutes  0.022 seconds)
 
 
 .. _sphx_glr_download_11_demos_embeddedMatplotlib_demo_matplotlibGuiAutoUpdate.py:

@@ -23,13 +23,14 @@ Matplotlib embedded in GUI
 This examples shows how the ``matplotlib`` can be integrated
 into a ``GUI`` based on the ``MatplotlibPlot`` Qt Designer plugin. 
 
-.. GENERATED FROM PYTHON SOURCE LINES 7-13
+.. GENERATED FROM PYTHON SOURCE LINES 7-14
 
 .. code-block:: default
 
     import matplotlib
     import numpy as np
     import matplotlib.pyplot as plt
+    from itom import ui
 
     matplotlib.use("module://mpl_itom.backend_itomagg")
 
@@ -40,11 +41,11 @@ into a ``GUI`` based on the ``MatplotlibPlot`` Qt Designer plugin.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 15-16
+.. GENERATED FROM PYTHON SOURCE LINES 16-17
 
 Plots spines into the ``MatplotlibPlot`` Qt Designer plugin.
 
-.. GENERATED FROM PYTHON SOURCE LINES 16-42
+.. GENERATED FROM PYTHON SOURCE LINES 17-43
 
 .. code-block:: default
 
@@ -81,16 +82,16 @@ Plots spines into the ``MatplotlibPlot`` Qt Designer plugin.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 43-45
+.. GENERATED FROM PYTHON SOURCE LINES 44-46
 
 .. image:: ../_static/demoMatplotlibGUI_1.png
    :width: 75%
 
-.. GENERATED FROM PYTHON SOURCE LINES 47-48
+.. GENERATED FROM PYTHON SOURCE LINES 48-49
 
 Plots a sine curve into the ``MatplotlibPlot`` Qt Designer plugin.
 
-.. GENERATED FROM PYTHON SOURCE LINES 48-74
+.. GENERATED FROM PYTHON SOURCE LINES 49-75
 
 .. code-block:: default
 
@@ -122,19 +123,12 @@ Plots a sine curve into the ``MatplotlibPlot`` Qt Designer plugin.
 
 
 
-.. rst-class:: sphx-glr-script-out
-
-.. code-block:: pytb
-
-    Traceback (most recent call last):
-      File "C:\itom\3rdParty\Python\lib\site-packages\sphinx_gallery\gen_rst.py", line 720, in execute_code_block
-        is_last_expr, mem_max = _exec_and_get_memory(
-    NameError: name 'ui' is not defined
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 75-77
+
+.. GENERATED FROM PYTHON SOURCE LINES 76-78
 
 .. image:: ../_static/demoMatplotlibGUI_2.png
    :width: 75%
@@ -142,7 +136,7 @@ Plots a sine curve into the ``MatplotlibPlot`` Qt Designer plugin.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.009 seconds)
+   **Total running time of the script:** ( 0 minutes  0.034 seconds)
 
 
 .. _sphx_glr_download_11_demos_embeddedMatplotlib_demo_matplotlibGui.py:

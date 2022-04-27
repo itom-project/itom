@@ -20,7 +20,7 @@
 Matplotlib fast auto update
 ====================
 
-.. GENERATED FROM PYTHON SOURCE LINES 5-108
+.. GENERATED FROM PYTHON SOURCE LINES 5-110
 
 .. code-block:: default
 
@@ -28,6 +28,8 @@ Matplotlib fast auto update
     import matplotlib
     import matplotlib.pyplot as plt
     from itomUi import ItomUi
+    from itom import ui
+
     matplotlib.use("module://mpl_itom.backend_itomagg")
 
 
@@ -129,19 +131,12 @@ Matplotlib fast auto update
 
 
 
-.. rst-class:: sphx-glr-script-out
-
-.. code-block:: pytb
-
-    Traceback (most recent call last):
-      File "C:\itom\3rdParty\Python\lib\site-packages\sphinx_gallery\gen_rst.py", line 720, in execute_code_block
-        is_last_expr, mem_max = _exec_and_get_memory(
-    NameError: name 'ui' is not defined
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 110-112
+
+.. GENERATED FROM PYTHON SOURCE LINES 112-114
 
 .. image:: ../_static/demoMatplotlibFastAutoUpdate_1.png
    :width: 75%
@@ -149,7 +144,7 @@ Matplotlib fast auto update
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.002 seconds)
+   **Total running time of the script:** ( 0 minutes  0.097 seconds)
 
 
 .. _sphx_glr_download_11_demos_embeddedMatplotlib_demo_matplotlibGuiFastAutoUpdate.py:

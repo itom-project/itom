@@ -355,7 +355,7 @@ Data processing
 .. _gallery:
 
 
-Embedded matplotlib
+Matplotlib embedded
 -------------------
 
 

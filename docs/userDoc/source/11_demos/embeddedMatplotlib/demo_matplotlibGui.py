@@ -7,6 +7,7 @@ into a ``GUI`` based on the ``MatplotlibPlot`` Qt Designer plugin.
 import matplotlib
 import numpy as np
 import matplotlib.pyplot as plt
+from itom import ui
 
 matplotlib.use("module://mpl_itom.backend_itomagg")
 # sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoMatplotlibGUI.png'

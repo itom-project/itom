@@ -3,5 +3,5 @@
 .. _gallery:
 
 
-Embedded matplotlib
+Matplotlib embedded
 -------------------
