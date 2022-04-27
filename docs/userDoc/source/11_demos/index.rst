@@ -348,6 +348,86 @@ Data processing
 
 
 
+.. _sphx_glr_11_demos_embeddedMatplotlib:
+
+.. _embeddedMatplotlib-index:
+
+.. _gallery:
+
+
+Embedded matplotlib
+-------------------
+
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This examples shows how the matplotlib can be integrated into a GUI based on the MatplotlibPlot...">
+
+.. only:: html
+
+ .. figure:: /11_demos/embeddedMatplotlib/images/thumb/sphx_glr_demo_matplotlibGui_thumb.png
+     :alt: Matplotlib embedded in GUI
+
+     :ref:`sphx_glr_11_demos_embeddedMatplotlib_demo_matplotlibGui.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /11_demos/embeddedMatplotlib/demo_matplotlibGui
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Matplotlib auto update">
+
+.. only:: html
+
+ .. figure:: /11_demos/embeddedMatplotlib/images/thumb/sphx_glr_demo_matplotlibGuiAutoUpdate_thumb.png
+     :alt: Matplotlib auto update
+
+     :ref:`sphx_glr_11_demos_embeddedMatplotlib_demo_matplotlibGuiAutoUpdate.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /11_demos/embeddedMatplotlib/demo_matplotlibGuiAutoUpdate
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Matplotlib fast auto update">
+
+.. only:: html
+
+ .. figure:: /11_demos/embeddedMatplotlib/images/thumb/sphx_glr_demo_matplotlibGuiFastAutoUpdate_thumb.png
+     :alt: Matplotlib fast auto update
+
+     :ref:`sphx_glr_11_demos_embeddedMatplotlib_demo_matplotlibGuiFastAutoUpdate.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /11_demos/embeddedMatplotlib/demo_matplotlibGuiFastAutoUpdate
+.. raw:: html
+
+    <div class="sphx-glr-clear"></div>
+
+
+
 .. _sphx_glr_11_demos_itom_packages:
 
 .. _itom-packages-index:

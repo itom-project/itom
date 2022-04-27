@@ -1,10 +1,13 @@
-import matplotlib
+"""Matplotlib fast auto update
+====================
 
-matplotlib.use("module://mpl_itom.backend_itomagg")
-import numpy as np
+"""
+
+import matplotlib
 import matplotlib.pyplot as plt
-from matplotlib import _pylab_helpers
-from itomUi import *
+from itomUi import ItomUi
+matplotlib.use("module://mpl_itom.backend_itomagg")
+# sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoDynamicFormLayout.png'
 
 
 class MatplotGuiAutoUpdate(ItomUi):
@@ -24,7 +27,13 @@ class MatplotGuiAutoUpdate(ItomUi):
         self.timerID = None
         self.counter = 1
         self.fignum = (
-            max([0,] + plt.get_fignums()) + 1
+            max(
+                [
+                    0,
+                ]
+                + plt.get_fignums()
+            )
+            + 1
         )  # guarantee to get a new matplotlib figure number
         self.axisImage = None
 
@@ -69,9 +78,7 @@ class MatplotGuiAutoUpdate(ItomUi):
         if self.axisImage is None:
             # first time call, a new AxesImage object is created
             ax = fig.add_subplot(111)
-            self.axisImage = ax.imshow(
-                dataObject.randN([100, 100], "uint8"), cmap=plt.cm.gray
-            )
+            self.axisImage = ax.imshow(dataObject.randN([100, 100], "uint8"), cmap=plt.cm.gray)
             ax.set_title("title of plot [%i]" % self.counter)
             self.counter += 1
             # Move left and bottom spines outward by 10 points
@@ -91,9 +98,14 @@ class MatplotGuiAutoUpdate(ItomUi):
             fig.canvas.draw()
 
     def show(self):
-        ret = self.gui.show()
+        self.gui.show()
 
 
 if __name__ == "__main__":
     gui = MatplotGuiAutoUpdate()
     gui.show()
+
+
+###############################################################################
+# .. image:: ../_static/demoMatplotlibFastAutoUpdate_1.png
+#    :width: 75%

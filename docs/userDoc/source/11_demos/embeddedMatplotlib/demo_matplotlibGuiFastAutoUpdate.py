@@ -1,10 +1,13 @@
-import matplotlib
+"""Matplotlib fast auto update
+====================
 
-matplotlib.use("module://mpl_itom.backend_itomagg")
-import numpy as np
+"""
+
+import matplotlib
 import matplotlib.pyplot as plt
-from matplotlib import _pylab_helpers
-from itomUi import *
+from itomUi import ItomUi
+matplotlib.use("module://mpl_itom.backend_itomagg")
+# sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoDynamicFormLayout.png'
 
 
 class MatplotGuiAutoUpdate(ItomUi):
@@ -24,8 +27,15 @@ class MatplotGuiAutoUpdate(ItomUi):
         self.timerID = None
         self.counter = 1
         self.fignum = (
-            max([0,] + plt.get_fignums()) + 1
+            max(
+                [
+                    0,
+                ]
+                + plt.get_fignums()
+            )
+            + 1
         )  # guarantee to get a new matplotlib figure number
+        self.axisImage = None
 
         if not "__version__" in ItomUi.__dict__ or ItomUi.__version__ < "2.1":
             # in earlier versions of itom, an auto-connection to methods of the gui itself was not possible.
@@ -37,7 +47,7 @@ class MatplotGuiAutoUpdate(ItomUi):
     def on_btnStart_clicked(self):
         if self.timerID is None:
             # start the timer that calls the method 'timeout' every 2 seconds
-            self.timerID = timer(2000, self.timeout)
+            self.timerID = timer(500, self.timeout)
             self.timeout()
         self.gui.btnStart["enabled"] = False
         self.gui.btnStop["enabled"] = True
@@ -65,26 +75,37 @@ class MatplotGuiAutoUpdate(ItomUi):
 
         canvas = self.gui.matplotlibPlot  # Reference to matplotlibPlot widget
         fig = plt.figure(num=self.fignum, canvas=canvas)
-        ax = fig.add_subplot(111)
-        ax.clear()
-        ax.imshow(dataObject.randN([100, 100], "uint8"), cmap=plt.cm.gray)
-        ax.set_title("title of plot [%i]" % self.counter)
-        self.counter += 1
-        # Move left and bottom spines outward by 10 points
-        ax.spines["left"].set_position(("outward", 10))
-        ax.spines["bottom"].set_position(("outward", 10))
-        # Hide the right and top spines
-        ax.spines["right"].set_visible(False)
-        ax.spines["top"].set_visible(False)
-        # Only show ticks on the left and bottom spines
-        ax.yaxis.set_ticks_position("left")
-        ax.xaxis.set_ticks_position("bottom")
-        plt.show()
+        if self.axisImage is None:
+            # first time call, a new AxesImage object is created
+            ax = fig.add_subplot(111)
+            self.axisImage = ax.imshow(dataObject.randN([100, 100], "uint8"), cmap=plt.cm.gray)
+            ax.set_title("title of plot [%i]" % self.counter)
+            self.counter += 1
+            # Move left and bottom spines outward by 10 points
+            ax.spines["left"].set_position(("outward", 10))
+            ax.spines["bottom"].set_position(("outward", 10))
+            # Hide the right and top spines
+            ax.spines["right"].set_visible(False)
+            ax.spines["top"].set_visible(False)
+            # Only show ticks on the left and bottom spines
+            ax.yaxis.set_ticks_position("left")
+            ax.xaxis.set_ticks_position("bottom")
+            plt.show()
+        else:
+            # subsequent calls: the existing AxesImage object is updated, this is much faster than replotting a new object
+            self.axisImage.set_data(dataObject.randN([200, 200], "uint8"))
+            self.axisImage.set_extent([0, 200, 0, 200])  # update the new size
+            fig.canvas.draw()
 
     def show(self):
-        ret = self.gui.show()
+        self.gui.show()
 
 
 if __name__ == "__main__":
     gui = MatplotGuiAutoUpdate()
     gui.show()
+
+
+###############################################################################
+# .. image:: ../_static/demoMatplotlibFastAutoUpdate_1.png
+#    :width: 75%

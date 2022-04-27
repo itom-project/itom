@@ -1,11 +1,18 @@
-import matplotlib
+"""Matplotlib embedded in GUI
+======================
 
-matplotlib.use("module://mpl_itom.backend_itomagg")
+This examples shows how the ``matplotlib`` can be integrated
+into a ``GUI`` based on the ``MatplotlibPlot`` Qt Designer plugin. 
+"""
+import matplotlib
 import numpy as np
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
 
+matplotlib.use("module://mpl_itom.backend_itomagg")
+# sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoMatplotlibGUI.png'
 
+###############################################################################
+# Plots spines into the ``MatplotlibPlot`` Qt Designer plugin.
 def plotDroppedSpines():
     """
     plot taken from matplotlib example 'spines_demo_dropped.py'
@@ -32,6 +39,12 @@ def plotDroppedSpines():
     plt.show()
 
 
+###############################################################################
+# .. image:: ../_static/demoMatplotlibGUI_1.png
+#    :width: 75%
+
+###############################################################################
+# Plots a sine curve into the ``MatplotlibPlot`` Qt Designer plugin.
 def plotSine():
     """
     plots sine, taken from matplotlib gallery examples
@@ -57,3 +70,7 @@ gui.show()
 # is already in used for the lastly closed figure. Therefore also tell
 # matplotlib to close this figure handle.
 plt.close(3)
+
+###############################################################################
+# .. image:: ../_static/demoMatplotlibGUI_2.png
+#    :width: 75%
