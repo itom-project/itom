@@ -12,7 +12,6 @@ This files come without warenty and are used on own risk.
 from itom import dataObject
 from itomUi import ItomUi
 from itom import ui
-
 # sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoEmbeddedPlot.png'
 
 
