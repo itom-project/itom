@@ -1,16 +1,24 @@
-""""""
+"""Dynamic grid layout
+================
+
+Example for dynamically changing the content of a grid layout.
+"""
 
 from itomUi import (
     ItomUi,
 )  # import the base class ItomUi from the module itomUi in the itom-packages subfolder
-from itom import ui, uiItem, dataObject
+from itom import ui
+
+# sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoDynamicGridLayout.png'
 
 
 class DynamicGridLayout(ItomUi):
 
     LOAD_FROM_UI = "<load from ui file>"
 
-    def __init__(self):  # constructor
+    def __init__(self):
+        """Constructor.
+        """
 
         # call constructor of ItomUi like it would be the constructor of the class itom.ui:
         ItomUi.__init__(self, "dynamicGridLayout.ui", ui.TYPEWINDOW)
@@ -22,7 +30,11 @@ class DynamicGridLayout(ItomUi):
         self.layout.call("setContentsMargins", 30, 15, 20, 5)
 
         self.gui.comboAddWidget.call(
-            "addItems", [self.LOAD_FROM_UI,] + ui.availableWidgets()
+            "addItems",
+            [
+                self.LOAD_FROM_UI,
+            ]
+            + ui.availableWidgets(),
         )
 
         self._update()
@@ -51,9 +63,7 @@ class DynamicGridLayout(ItomUi):
         widget = self.gui.comboAddWidget["currentText"]
 
         if widget == self.LOAD_FROM_UI:
-            filename = ui.getOpenFileName(
-                "UI File", filters="UI Files (*.ui)", parent=self.gui
-            )
+            filename = ui.getOpenFileName("UI File", filters="UI Files (*.ui)", parent=self.gui)
 
             if filename is not None:
                 self.layout.call(
@@ -111,15 +121,11 @@ class DynamicGridLayout(ItomUi):
         if self.rowCount * self.columnCount <= 0:
             return
 
-        stretchs = [
-            str(self.layout.call("columnStretch", idx))
-            for idx in range(self.columnCount)
-        ]
+        stretchs = [str(self.layout.call("columnStretch", idx)) for idx in range(self.columnCount)]
 
         text, valid = ui.getText(
             "Stretch",
-            f"Indicate a comma-separated list of stretch "
-            f"factors for up to {self.columnCount} columns",
+            f"Indicate a comma-separated list of stretch " f"factors for up to {self.columnCount} columns",
             ",".join(stretchs),
         )
 
@@ -129,8 +135,7 @@ class DynamicGridLayout(ItomUi):
             if len(stretchs) > self.columnCount:
                 ui.msgCritical(
                     "Wrong input",
-                    f"Stretchs must be a comma separated list of "
-                    f"integers (max. {self.columnCount} entries)",
+                    f"Stretchs must be a comma separated list of " f"integers (max. {self.columnCount} entries)",
                     parent=self.gui,
                 )
                 return
@@ -154,15 +159,11 @@ class DynamicGridLayout(ItomUi):
         if self.rowCount * self.columnCount <= 0:
             return
 
-        stretchs = [
-            str(self.layout.call("rowStretch", idx))
-            for idx in range(self.rowCount)
-        ]
+        stretchs = [str(self.layout.call("rowStretch", idx)) for idx in range(self.rowCount)]
 
         text, valid = ui.getText(
             "Stretch",
-            f"Indicate a comma-separated list of stretch "
-            f"factors for up to {self.rowCount} columns",
+            f"Indicate a comma-separated list of stretch " f"factors for up to {self.rowCount} columns",
             ",".join(stretchs),
         )
 
@@ -172,8 +173,7 @@ class DynamicGridLayout(ItomUi):
             if len(stretchs) > self.rowCount:
                 ui.msgCritical(
                     "Wrong input",
-                    f"Stretchs must be a comma separated list of "
-                    f"integers (max. {self.rowCount} entries)",
+                    f"Stretchs must be a comma separated list of " f"integers (max. {self.rowCount} entries)",
                     parent=self.gui,
                 )
                 return
@@ -192,18 +192,11 @@ class DynamicGridLayout(ItomUi):
                 self.layout.call("setRowStretch", idx, val)
 
     def _update(self):
-        self.gui.btnRemoveWidget["enabled"] = (
-            self.rowCount * self.columnCount
-        ) > 0
-        self.gui.btnColStretch["enabled"] = (
-            self.rowCount * self.columnCount
-        ) > 0
-        self.gui.btnRowStretch["enabled"] = (
-            self.rowCount * self.columnCount
-        ) > 0
+        self.gui.btnRemoveWidget["enabled"] = (self.rowCount * self.columnCount) > 0
+        self.gui.btnColStretch["enabled"] = (self.rowCount * self.columnCount) > 0
+        self.gui.btnRowStretch["enabled"] = (self.rowCount * self.columnCount) > 0
         self.gui.lblCaption["text"] = (
-            f"Grid Layout (Current grid size: "
-            f"{self.rowCount} rows x {self.columnCount} columns)"
+            f"Grid Layout (Current grid size: " f"{self.rowCount} rows x {self.columnCount} columns)"
         )
 
 
@@ -211,3 +204,7 @@ if __name__ == "__main__":
     # create a first instance of AutoConnectExample and the gui
     win1 = DynamicGridLayout()
     win1.gui.show()  # show the gui
+
+###############################################################################
+# .. image:: ../_static/demoDynamicGridLayout_1.png
+#    :width: 100%

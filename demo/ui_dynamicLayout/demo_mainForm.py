@@ -1,12 +1,15 @@
-from itom import ui, uiItem
+"""Main form
+==========
+
+"""
+
+from itom import ui
+from itom import uiItem
+# sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoDynamicFormLayout.png'
+
 
 gui: ui = ui("mainForm.ui", type=ui.TYPEWINDOW)
-print("a")
 vlayout: uiItem = gui.vlayout
-print("b")
-#raise
-import time
-
 
 
 # add 10 items from item.ui
@@ -39,3 +42,7 @@ for i in range(0, 10):
 
 # show the gui
 gui.show()
+
+###############################################################################
+# .. image:: ../_static/demoMainform_1.png
+#    :width: 25%

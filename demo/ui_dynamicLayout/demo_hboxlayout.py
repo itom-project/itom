@@ -1,19 +1,28 @@
-from itom import ui, uiItem
+"""Horizontal Box Layout
+=================
+
+"""
+
+from itom import ui
+from itom import uiItem
 import time
+# sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoDynamicFormLayout.png'
+
 
 t0 = time.time()
 
 gui: ui = ui("layoutExample.ui", type=ui.TYPEWINDOW)
 
-
+num = 100
 t = time.time()
-for i in range(0,100):
+for i in range(num):
     hlayout: uiItem = gui.horLayout  # access the layout item
-# print(time.time()-t)
+print(time.time()-t)
 t = time.time()
-for i in range(0,100):
+
+for i in range(num):
     hlayout = gui.getChild("horLayout")
-# print(time.time()-t)
+print(time.time()-t)
 
 # remove the 2nd widget at index position 1
 hlayout.call("removeItemAt", 1)
@@ -34,3 +43,4 @@ spinBox["value"] = 7
 
 print(time.time() - t)
 gui.show()  # show the user interface
+

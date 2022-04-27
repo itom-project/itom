@@ -2402,3 +2402,125 @@ User interface
 
     <div class="sphx-glr-clear"></div>
 
+
+
+.. _sphx_glr_11_demos_ui_dynamicLayout:
+
+.. _uidynamic-index:
+
+.. _gallery:
+
+
+User interface dynamic layouts
+------------------------------
+
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Horizontal Box Layout">
+
+.. only:: html
+
+ .. figure:: /11_demos/ui_dynamicLayout/images/thumb/sphx_glr_demo_hboxlayout_thumb.png
+     :alt: Horizontal Box Layout
+
+     :ref:`sphx_glr_11_demos_ui_dynamicLayout_demo_hboxlayout.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /11_demos/ui_dynamicLayout/demo_hboxlayout
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Main form">
+
+.. only:: html
+
+ .. figure:: /11_demos/ui_dynamicLayout/images/thumb/sphx_glr_demo_mainForm_thumb.png
+     :alt: Main form
+
+     :ref:`sphx_glr_11_demos_ui_dynamicLayout_demo_mainForm.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /11_demos/ui_dynamicLayout/demo_mainForm
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Example for dynamically changing the content of a form layout.">
+
+.. only:: html
+
+ .. figure:: /11_demos/ui_dynamicLayout/images/thumb/sphx_glr_demo_dynamicFormLayout_thumb.png
+     :alt: Dynamic form layout
+
+     :ref:`sphx_glr_11_demos_ui_dynamicLayout_demo_dynamicFormLayout.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /11_demos/ui_dynamicLayout/demo_dynamicFormLayout
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Example for dynamically changing the content of a form layout.">
+
+.. only:: html
+
+ .. figure:: /11_demos/ui_dynamicLayout/images/thumb/sphx_glr_demo_multiplePlotsInHorizontalLayout_thumb.png
+     :alt: Multiple plots in horizontal layout
+
+     :ref:`sphx_glr_11_demos_ui_dynamicLayout_demo_multiplePlotsInHorizontalLayout.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /11_demos/ui_dynamicLayout/demo_multiplePlotsInHorizontalLayout
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Example for dynamically changing the content of a grid layout.">
+
+.. only:: html
+
+ .. figure:: /11_demos/ui_dynamicLayout/images/thumb/sphx_glr_demo_dynamicGridLayout_thumb.png
+     :alt: Dynamic grid layout
+
+     :ref:`sphx_glr_11_demos_ui_dynamicLayout_demo_dynamicGridLayout.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /11_demos/ui_dynamicLayout/demo_dynamicGridLayout
+.. raw:: html
+
+    <div class="sphx-glr-clear"></div>
+

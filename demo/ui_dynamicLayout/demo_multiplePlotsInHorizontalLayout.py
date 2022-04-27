@@ -1,18 +1,24 @@
-""""""
+"""Multiple plots in horizontal layout
+==========================
+
+Example for dynamically changing the content of a form layout.
+"""
 
 from itomUi import (
     ItomUi,
 )  # import the base class ItomUi from the module itomUi in the itom-packages subfolder
-from itom import ui, uiItem, dataObject
+from itom import ui
+from itom import uiItem
+from itom import dataObject
+
+# sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoMultipledPlotsLayout.png'
 
 
 class MultiPlotHorLayout(ItomUi):
     def __init__(self):  # constructor
 
         # call constructor of ItomUi like it would be the constructor of the class itom.ui:
-        ItomUi.__init__(
-            self, "multiplePlotsInHorizontalLayout.ui", ui.TYPEWINDOW
-        )
+        ItomUi.__init__(self, "multiplePlotsInHorizontalLayout.ui", ui.TYPEWINDOW)
 
         # the spacing between each item of the layout is a property
         self.layout["spacing"] = 7
@@ -76,9 +82,7 @@ class MultiPlotHorLayout(ItomUi):
         if valid:
             className = "QPushButton"
             objectName = f"Button_{self.numWidgets}"
-            obj: uiItem = self.layout.call(
-                "insertItem", idx, className, objectName
-            )
+            obj: uiItem = self.layout.call("insertItem", idx, className, objectName)
             obj["text"] = objectName
 
             obj.connect("clicked()", self._buttonClicked)
@@ -100,8 +104,7 @@ class MultiPlotHorLayout(ItomUi):
                 "insertItemFromUiFile",
                 idx,  # index
                 "container.ui",  # filename to ui file
-                "_%i"
-                % self.numWidgets,  # prefix, added to the objectNames of all new widgets and layouts
+                "_%i" % self.numWidgets,  # prefix, added to the objectNames of all new widgets and layouts
             )
 
             self.gui.btnRemove["enabled"] = self.numWidgets > 0
@@ -113,10 +116,7 @@ class MultiPlotHorLayout(ItomUi):
         if self.numWidgets <= 0:
             return
 
-        labels = [
-            self.layout.call("itemAt", idx)["objectName"]
-            for idx in range(self.numWidgets)
-        ]
+        labels = [self.layout.call("itemAt", idx)["objectName"] for idx in range(self.numWidgets)]
 
         name, valid = ui.getItem(
             "Widget to remove",
@@ -138,15 +138,11 @@ class MultiPlotHorLayout(ItomUi):
         if self.numWidgets <= 0:
             return
 
-        stretchs = [
-            str(self.layout.call("stretch", idx))
-            for idx in range(self.numWidgets)
-        ]
+        stretchs = [str(self.layout.call("stretch", idx)) for idx in range(self.numWidgets)]
 
         text, valid = ui.getText(
             "Stretch",
-            f"Indicate a comma-separated list of stretch "
-            f"factors for up to {self.numWidgets} widgets",
+            f"Indicate a comma-separated list of stretch " f"factors for up to {self.numWidgets} widgets",
             ",".join(stretchs),
         )
 
@@ -156,8 +152,7 @@ class MultiPlotHorLayout(ItomUi):
             if len(stretchs) > self.numWidgets:
                 ui.msgCritical(
                     "Wrong input",
-                    f"Stretchs must be a comma separated list of "
-                    f"integers (max. {self.numWidgets} entries)",
+                    f"Stretchs must be a comma separated list of " f"integers (max. {self.numWidgets} entries)",
                     parent=self.gui,
                 )
                 return
@@ -177,11 +172,14 @@ class MultiPlotHorLayout(ItomUi):
 
     def _buttonClicked(self):
         # slot, called if any button is clicked
-        ui.msgInformation(
-            "Button clicked", "The button has been clicked", parent=self.gui
-        )
+        ui.msgInformation("Button clicked", "The button has been clicked", parent=self.gui)
 
 
 # create a first instance of AutoConnectExample and the gui
 win1 = MultiPlotHorLayout()
 win1.gui.show()  # show the gui
+
+
+###############################################################################
+# .. image:: ../_static/demoMultiplePlotsLayout_1.png
+#    :width: 100%

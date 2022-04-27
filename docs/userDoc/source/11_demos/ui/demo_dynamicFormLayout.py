@@ -1,25 +1,25 @@
-# coding=iso-8859-15
+"""Dynamic form layout
+==================
 
-"""Example for dynamically changing the content of a form layout.
+Example for dynamically changing the content of a form layout.
 
 This example shows how new widgets are added or inserted to a form
 layout in an user interface, how entire rows are removed or how
 the existing widgets in a form layout are requested.
 
 Most functions used in this example are based on special methods
-of the form layout (Qt class: QFormLayout), that are made accessible
-in itom via the uiItem.call('methodName', *args) method.
+of the form layout (Qt class: ``QFormLayout``), that are made accessible
+in itom via the ``uiItem.call('methodName', *args)`` method.
 """
-
-# imports the base class ItomUi from the module itomUi in the itom-packages subfolder
 from itomUi import ItomUi
-from itom import ui, uiItem
-
+from itom import ui
+from itom import uiItem
+# sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoDynamicFormLayout.png'
 
 class DynamicFormLayout(ItomUi):
     """Main class with the functionality of the user interface."""
 
-    def __init__(self):  # constructor
+    def __init__(self): 
         """Constructor."""
         # call constructor of ItomUi like it would be the constructor of the class itom.ui:
         ItomUi.__init__(self, "dynamicFormLayout.ui", ui.TYPEWINDOW)
@@ -170,3 +170,7 @@ if __name__ == "__main__":
     # create an object of DynamicFormLayout and shows it
     win1 = DynamicFormLayout()
     win1.gui.show()
+
+###############################################################################
+# .. image:: ../_static/demoDynamicFormLayout_1.png
+#    :width: 100%
