@@ -1,8 +1,20 @@
-# coding=iso-8859-15
+# coding=utf8
+"""Measurement
+============
+
+This example shows how a typical measurement automation can be realized in ``itom``.
+Let's say a laser beam is detected by a camera. Different positions are to be approached
+with a actuator stage and camera images are to be recorded.
+Afterwards the centroid position distribution of the beam is evaluated.
+Finally the result is plotted in three different ways using the ``itom.plot1``, ``matplotlib``
+and ``plotly`` plot engine. 
+"""
 from itom import actuator
 from itom import dataIO
 from itom import dataObject
 from itom import algorithms
+from itom import plot1
+from itom import plot2
 import itomPlotlyRenderer
 
 from itom import ui
@@ -12,9 +24,25 @@ import numpy as np
 import matplotlib.pyplot as plt
 import plotly.express as px
 
+# sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoMeasurement.png'
+
+###############################################################################
+# This is the main measurement class consisting of following methods:
+#
+# * **__init__** : Constructor of the class which opens the ``MeasureGUI``, connects to a camera ``DummyGrabber``,
+#   connects to a actuator stage ``DummyMotor``.
+#
+# * **on_pushButtonStart_clicked** : Start measurement methods which is connected to the signal ``clicked``
+#   of the button ``pushButtonStart`` of the GUI.
+#
+# * **measurementRoutine** : Measurement routine which moves the actuator ``DummyMotor`` to the given
+#   positions, captures the camera ``DummyGrabber`` images and evaluates the centroid distribution.
+#   Afterwards the live image of the camera is activated again.
+
 
 class MeasureDemoGUI(ItomUi):
     def __init__(self):
+        """Constructor method of the MeasureDemoGUI class."""
         # init the gui
         ItomUi.__init__(self, "MeasureGUI.ui", ui.TYPEWINDOW, deleteOnClose=True)
 
@@ -119,7 +147,7 @@ class MeasureDemoGUI(ItomUi):
             centroidMarker[1, 0] = cY
             self.gui.camPlot.call("deleteMarkers")
             self.gui.camPlot.call("plotMarkers", centroidMarker, "w+25;2", "centroid", 0)
-            self.gui.progressBar["value"] = idx/ (len(zVec) - 1) * 100
+            self.gui.progressBar["value"] = idx / (len(zVec) - 1) * 100
 
         self.cam.enableAutoGrabbing()
         self.gui.camPlot.call("deleteMarkers")
@@ -130,16 +158,16 @@ class MeasureDemoGUI(ItomUi):
         self.imageStack.setAxisDescription(1, "y axis")
         self.imageStack.setAxisDescription(2, "x axis")
         self.imageStack.setAxisUnit(0, "mm")
-        self.imageStack.setAxisUnit(1, "µm")
-        self.imageStack.setAxisUnit(2, "µm")
+        self.imageStack.setAxisUnit(1, "\xb5m")
+        self.imageStack.setAxisUnit(2, "\xb5m")
 
         # calc meta info
         zScale = (zMax - zMin) / (numZSteps - 1)
         zOffset = -(zVec[0] / zScale)
         self.imageStack.setAxisScale(0, zScale)
         self.imageStack.setAxisOffset(0, zOffset)
-        self.imageStack.setAxisScale(1, 17e-3)  # pixel pitch of 17 µm
-        self.imageStack.setAxisScale(2, 17e-3)  # pixel pitch of 17 µm
+        self.imageStack.setAxisScale(1, 17e-3)  # pixel pitch of 17 \xb5m
+        self.imageStack.setAxisScale(2, 17e-3)  # pixel pitch of 17 \xb5m
         self.imageStack.valueDescription = "intensity"
         self.imageStack.valueUnit = "counts"
 
@@ -189,3 +217,7 @@ class MeasureDemoGUI(ItomUi):
 # -------------------------------
 if __name__ == "__main__":
     demo = MeasureDemoGUI()
+
+###############################################################################
+# .. image:: ../_static/demoMeasurement_1.png
+#    :width: 100%
