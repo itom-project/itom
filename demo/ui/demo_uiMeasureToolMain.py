@@ -10,6 +10,7 @@ from itom import shape
 import inspect
 import os.path
 import numpy as np
+# sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoMeasureTool.png'
 
 
 class MeasureToolMain(ItomUi):

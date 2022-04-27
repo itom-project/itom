@@ -13,7 +13,8 @@ We want to have an auto-created vertical button bar at the right side
 (dialogButtonBar = ``ui.BUTTONBAR_VERTICAL``). The button bar
 should consist of one ``OK`` button, therefore its role is ``AcceptRole``."""
 from itom import ui
-# sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoEmbeddedPlot.png'
+
+# sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoSimpleUI.png'
 
 mainWin = ui(
     "simpleExample.ui",
@@ -39,12 +40,13 @@ mainWin.txtMessage["text"] = "hello world"
 #     of that class and all inherited classes (QPushButton >> QAbstractPushButton >> QWidget...)
 #     Note the name of the signal you want to connect and the argument list (clicked(bool checked = false))
 # In our case, we want to connect to the ``clicked`` signal, its argument can be a boolean argument (optional)
-# 
+#
 # Finally, we connect the clicked-signal without argument (not interesting for us) with a method ``showMessage``
 # This method needs to have the same number of arguments than the signal (here: 0)
 def showMessage():
     text = mainWin.txtMessage["text"]
     ui.msgInformation("your text", text, parent=mainWin)
+
 
 mainWin.btnShowText.connect("clicked()", showMessage)
 
@@ -77,11 +79,12 @@ mainWin.btnReadOnly.connect("clicked(bool)", btnReadOnlyToggled)
 # At first, the third group box should be hidden.
 # If the checkbox checkShowThirdExample is clicked, the visibility should change.
 # We have two possibilities:
-# 
+#
 # * Change visible-property of group3,
 # * Use the slot (special, accessible method of any widget, that can be addressed by python)
 #   ``hide`` or ``show`` from group3 (the slots are part of any widget)
 #   in order to show or hide the element.
+
 
 def checkShowThirdExample_clicked(checked):
     # Here: we want to call the slots
@@ -126,27 +129,27 @@ listBox.connect("currentRowChanged(int)", listCurrentChanged)
 
 ###############################################################################
 # To show the dialog you have three options:
-# 
+#
 # * Show dialog in a non-modal form (user can still click something else in itom).
-# 
+#
 #   .. code-block:: python
-# 
+#
 #       mainWin.show(0) or mainWin.show()
-# 
+#
 # * Show dialog in a model form (user cannot interact with itom, python script execution stops until
 #   dialog has been closed. The return value is the role-number of the button, that has been clicked
 #   for closing (``AcceptRole``:0, ``RejectRole``:1) (see Qt-enum ``QDialogButtonBox::ButtonRole``).
-# 
+#
 #   .. code-block:: python
-# 
+#
 #      mainWin.show(1)
-# 
+#
 # * Show dialog in a model form, python script execution continues,
 #   you don't have access to the return value.
-# 
+#
 #   .. code-block:: python
-# 
+#
 #       mainWin.show(2)
-# 
+#
 
 mainWin.show(1)

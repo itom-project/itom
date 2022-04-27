@@ -12,6 +12,7 @@ This files come without warenty and are used on own risk.
 from itom import dataObject
 from itomUi import ItomUi
 from itom import ui
+
 # sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoEmbeddedPlot.png'
 
 
@@ -53,9 +54,7 @@ class EmbeddedPlots(ItomUi):
             # if the same plot is used for different sub-plots, invalidate one type at first
             # before you assign the new one
             self.gui.plot2D["zSlicePlotItem"] = None  # invalidating
-            self.gui.plot2D[
-                "lineCutPlotItem"
-            ] = self.gui.plot1D  # assigning new one
+            self.gui.plot2D["lineCutPlotItem"] = self.gui.plot1D  # assigning new one
             self.gui.group1D["enabled"] = True
 
 

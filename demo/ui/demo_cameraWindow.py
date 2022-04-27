@@ -5,7 +5,7 @@
 from itom import dataIO
 from itom import ui
 from itom import dataObject
-
+# sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoDummyGrabber.png'
 
 cam = dataIO("DummyGrabber")
 
