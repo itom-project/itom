@@ -21,7 +21,7 @@ div.sphx-glr-download a:hover {
 }
 
 /* hide jupyter download button */
-div.sphx-glr-download-jupyter a{
+div.sphx-glr-download-jupyter {
     height: 0px;
     visibility: hidden;
 }
