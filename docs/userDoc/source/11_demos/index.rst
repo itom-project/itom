@@ -2061,6 +2061,27 @@ User interface
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbcontainer" tooltip="In this example, all icons are loaded in the UI file as relative path to the icons in this or t...">
+
+.. only:: html
+
+ .. figure:: /11_demos/ui/images/thumb/sphx_glr_demo_gui_icons_images_thumb.png
+     :alt: GUI icons as images
+
+     :ref:`sphx_glr_11_demos_ui_demo_gui_icons_images.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /11_demos/ui/demo_gui_icons_images
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="Create a dockWidget form the main window at the bottom dock widget area The dock widget can be ...">
 
 .. only:: html
@@ -2100,6 +2121,27 @@ User interface
    :hidden:
 
    /11_demos/ui/demo_roughnessEvaluator
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Demostration to show a ui file, that contains icons from a qrc / rcc resource file.">
+
+.. only:: html
+
+ .. figure:: /11_demos/ui/images/thumb/sphx_glr_demo_gui_with_icons_from_resource_thumb.png
+     :alt: GUI icons from resources
+
+     :ref:`sphx_glr_11_demos_ui_demo_gui_with_icons_from_resource.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /11_demos/ui/demo_gui_with_icons_from_resource
 
 .. raw:: html
 
