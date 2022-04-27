@@ -2229,6 +2229,27 @@ User interface
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbcontainer" tooltip="GUI for live coding of a Qt stylesheet document.">
+
+.. only:: html
+
+ .. figure:: /11_demos/ui/images/thumb/sphx_glr_demo_stylesheetEditor_thumb.png
+     :alt: Stylesheet editor
+
+     :ref:`sphx_glr_11_demos_ui_demo_stylesheetEditor.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /11_demos/ui/demo_stylesheetEditor
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="This demo shows how to use the auto-connection feature for automatically connecting signals fro...">
 
 .. only:: html

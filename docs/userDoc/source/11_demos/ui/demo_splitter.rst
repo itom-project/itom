@@ -28,7 +28,7 @@ This demo shows how to manipulate a splitter, set as layout in QtDesigner.
     section ``Calling slots`` in https://itom.bitbucket.io/latest/docs/06_extended_gui/qtdesigner.html)
     These methods are indiciated by #-> special method call
 
-.. GENERATED FROM PYTHON SOURCE LINES 12-54
+.. GENERATED FROM PYTHON SOURCE LINES 12-47
 
 
 
@@ -57,23 +57,16 @@ This demo shows how to manipulate a splitter, set as layout in QtDesigner.
     from itom import ui
 
 
+
     class SplitterDemo(ItomUi):  # ListWidgetDemo is inherited from ItomUi
         def __init__(self):  # constructor
             # call constructor of ItomUi like it would be the constructor of the class itom.ui:
             ItomUi.__init__(self, "splitterDemo.ui", ui.TYPEWINDOW)
 
-            self.gui.splitter.call(
-                "setStretchFactor", 0, 3
-            )  # -> special method call
-            self.gui.splitter.call(
-                "setStretchFactor", 1, 1
-            )  # -> special method call
-            self.gui.splitter.call(
-                "setCollapsible", 0, False
-            )  # -> special method call
-            self.gui.splitter.call(
-                "setCollapsible", 1, True
-            )  # -> special method call
+            self.gui.splitter.call("setStretchFactor", 0, 3)  # -> special method call
+            self.gui.splitter.call("setStretchFactor", 1, 1)  # -> special method call
+            self.gui.splitter.call("setCollapsible", 0, False)  # -> special method call
+            self.gui.splitter.call("setCollapsible", 1, True)  # -> special method call
             print(
                 "Top section. Collapsible:",
                 self.gui.splitter.call("isCollapsible", 0),
@@ -97,7 +90,7 @@ This demo shows how to manipulate a splitter, set as layout in QtDesigner.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.329 seconds)
+   **Total running time of the script:** ( 0 minutes  0.036 seconds)
 
 
 .. _sphx_glr_download_11_demos_ui_demo_splitter.py:

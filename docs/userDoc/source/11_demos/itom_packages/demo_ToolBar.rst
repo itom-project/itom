@@ -110,7 +110,7 @@ The callback function is the unbounded method ``method`` without arguments.
  .. code-block:: none
 
 
-    54
+    67
 
 
 
@@ -137,7 +137,7 @@ a method from the itom module, implemented in C.
  .. code-block:: none
 
 
-    55
+    68
 
 
 
@@ -166,7 +166,7 @@ the name of the button is shown in the tooltip text of the button.
  .. code-block:: none
 
 
-    57
+    70
 
 
 
@@ -194,7 +194,7 @@ more arguments, but selected arguments are already preset.
  .. code-block:: none
 
 
-    58
+    71
 
 
 
@@ -219,7 +219,7 @@ Add a button to the 'demobar' toolbar, that evaluates a Python code string.
  .. code-block:: none
 
 
-    59
+    72
 
 
 
@@ -250,7 +250,7 @@ Add a button that triggers a member method of the object ``myTest``.
  .. code-block:: none
 
 
-    60
+    73
 
 
 
@@ -341,16 +341,17 @@ Then remove all remaining buttons including the toolbar 'otherbar'.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 111-113
+.. GENERATED FROM PYTHON SOURCE LINES 111-114
 
-Following buttons/bar will be added to the ``itom`` toolbar. 
+Following buttons/bar will be added to the ``itom`` toolbar.
+
 .. image:: ../_static/demoToolBar_1.png
    :width: 75%
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.307 seconds)
+   **Total running time of the script:** ( 0 minutes  0.201 seconds)
 
 
 .. _sphx_glr_download_11_demos_itom_packages_demo_ToolBar.py:

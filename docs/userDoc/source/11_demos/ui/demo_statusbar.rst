@@ -22,7 +22,7 @@ Statusbar
 
 This is a short tutorial about how to use the statusbar
 
-.. GENERATED FROM PYTHON SOURCE LINES 6-52
+.. GENERATED FROM PYTHON SOURCE LINES 6-46
 
 
 
@@ -39,12 +39,11 @@ This is a short tutorial about how to use the statusbar
     import inspect
 
 
+
     class Statusbar(ItomUi):
         def __init__(self):
-            """get current path and and initialize the GUI """
-            dir = os.path.dirname(
-                os.path.abspath(inspect.getfile(inspect.currentframe()))
-            )
+            """get current path and and initialize the GUI"""
+            dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
             absPath = os.path.join(dir, "statusbar.ui")
             ItomUi.__init__(
                 self,
@@ -56,21 +55,17 @@ This is a short tutorial about how to use the statusbar
 
         @ItomUi.autoslot("")
         def on_btnAdd_clicked(self):
-            """call the status bar and show the message: Here I am 
-            """
+            """call the status bar and show the message: Here I am"""
             self.gui.call("statusBar").call("showMessage", "Here I am")
 
         @ItomUi.autoslot("")
         def on_btnShow_clicked(self):
-            """call the status bar and show the message: I am here for a second. The message will disappear after 1000 ms  
-            """
-            self.gui.call("statusBar").call(
-                "showMessage", "I am here for a second", 1000
-            )
+            """call the status bar and show the message: I am here for a second. The message will disappear after 1000 ms"""
+            self.gui.call("statusBar").call("showMessage", "I am here for a second", 1000)
 
         @ItomUi.autoslot("")
         def on_btnDelete_clicked(self):
-            """ clear the status bar"""
+            """clear the status bar"""
             self.gui.call("statusBar").call("clearMessage")
 
 
@@ -79,10 +74,9 @@ This is a short tutorial about how to use the statusbar
         inst = Statusbar()
         inst.show()  # show the gui
 
-
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.036 seconds)
+   **Total running time of the script:** ( 0 minutes  0.010 seconds)
 
 
 .. _sphx_glr_download_11_demos_ui_demo_statusbar.py:

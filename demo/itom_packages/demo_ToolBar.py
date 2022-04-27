@@ -108,6 +108,7 @@ removeButton("otherbar", "btn3")
 removeButton("otherbar")
 
 ###############################################################################
-# Following buttons/bar will be added to the ``itom`` toolbar. 
+# Following buttons/bar will be added to the ``itom`` toolbar.
+# 
 # .. image:: ../_static/demoToolBar_1.png
 #    :width: 75%
