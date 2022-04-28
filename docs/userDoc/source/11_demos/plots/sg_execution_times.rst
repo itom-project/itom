@@ -5,44 +5,46 @@
 
 Computation times
 =================
-**38:00.871** total execution time for **11_demos_plots** files:
+**00:00.712** total execution time for **11_demos_plots** files:
 
 +----------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_11_demos_plots_demo_interactiveShapePicker.py` (``demo_interactiveShapePicker.py``)       | 37:45.276 | 0.0 MB |
+| :ref:`sphx_glr_11_demos_plots_demo_lineCut_volumeCut.py` (``demo_lineCut_volumeCut.py``)                 | 00:00.712 | 0.0 MB |
 +----------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_11_demos_plots_demo_AutoUpdatePlot.py` (``demo_AutoUpdatePlot.py``)                       | 00:10.170 | 0.0 MB |
+| :ref:`sphx_glr_11_demos_plots_demo_AutoUpdatePlot.py` (``demo_AutoUpdatePlot.py``)                       | 00:00.000 | 0.0 MB |
 +----------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_11_demos_plots_demo_PickPointsAndMarkers.py` (``demo_PickPointsAndMarkers.py``)           | 00:03.399 | 0.0 MB |
+| :ref:`sphx_glr_11_demos_plots_demo_ContourLines2dPlot.py` (``demo_ContourLines2dPlot.py``)               | 00:00.000 | 0.0 MB |
 +----------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_11_demos_plots_demo_plotXY.py` (``demo_plotXY.py``)                                       | 00:00.317 | 0.0 MB |
+| :ref:`sphx_glr_11_demos_plots_demo_PickPointsAndMarkers.py` (``demo_PickPointsAndMarkers.py``)           | 00:00.000 | 0.0 MB |
 +----------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_11_demos_plots_demo_cloudAndMeshVisualization.py` (``demo_cloudAndMeshVisualization.py``) | 00:00.281 | 0.0 MB |
+| :ref:`sphx_glr_11_demos_plots_demo_Plot1DDateTime.py` (``demo_Plot1DDateTime.py``)                       | 00:00.000 | 0.0 MB |
 +----------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_11_demos_plots_demo_drawAndTransformShapes.py` (``demo_drawAndTransformShapes.py``)       | 00:00.252 | 0.0 MB |
+| :ref:`sphx_glr_11_demos_plots_demo_Plot1DLegendTitles.py` (``demo_Plot1DLegendTitles.py``)               | 00:00.000 | 0.0 MB |
 +----------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_11_demos_plots_demo_Vtk3dVisualizer.py` (``demo_Vtk3dVisualizer.py``)                     | 00:00.240 | 0.0 MB |
+| :ref:`sphx_glr_11_demos_plots_demo_Plot1DLineProperties.py` (``demo_Plot1DLineProperties.py``)           | 00:00.000 | 0.0 MB |
 +----------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_11_demos_plots_demo_drawMarkers.py` (``demo_drawMarkers.py``)                             | 00:00.136 | 0.0 MB |
+| :ref:`sphx_glr_11_demos_plots_demo_PlotStyleSheets.py` (``demo_PlotStyleSheets.py``)                     | 00:00.000 | 0.0 MB |
 +----------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_11_demos_plots_demo_Plot1DDateTime.py` (``demo_Plot1DDateTime.py``)                       | 00:00.108 | 0.0 MB |
+| :ref:`sphx_glr_11_demos_plots_demo_Shapes.py` (``demo_Shapes.py``)                                       | 00:00.000 | 0.0 MB |
 +----------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_11_demos_plots_demo_Plot1DLineProperties.py` (``demo_Plot1DLineProperties.py``)           | 00:00.099 | 0.0 MB |
+| :ref:`sphx_glr_11_demos_plots_demo_ShapesTransformation.py` (``demo_ShapesTransformation.py``)           | 00:00.000 | 0.0 MB |
 +----------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_11_demos_plots_demo_Shapes.py` (``demo_Shapes.py``)                                       | 00:00.083 | 0.0 MB |
+| :ref:`sphx_glr_11_demos_plots_demo_Vtk3dVisualizer.py` (``demo_Vtk3dVisualizer.py``)                     | 00:00.000 | 0.0 MB |
 +----------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_11_demos_plots_demo_ContourLines2dPlot.py` (``demo_ContourLines2dPlot.py``)               | 00:00.074 | 0.0 MB |
+| :ref:`sphx_glr_11_demos_plots_demo_cloudAndMeshVisualization.py` (``demo_cloudAndMeshVisualization.py``) | 00:00.000 | 0.0 MB |
 +----------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_11_demos_plots_demo_PlotStyleSheets.py` (``demo_PlotStyleSheets.py``)                     | 00:00.073 | 0.0 MB |
+| :ref:`sphx_glr_11_demos_plots_demo_coloredShapes.py` (``demo_coloredShapes.py``)                         | 00:00.000 | 0.0 MB |
 +----------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_11_demos_plots_demo_coloredShapes.py` (``demo_coloredShapes.py``)                         | 00:00.072 | 0.0 MB |
+| :ref:`sphx_glr_11_demos_plots_demo_drawAndTransformShapes.py` (``demo_drawAndTransformShapes.py``)       | 00:00.000 | 0.0 MB |
 +----------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_11_demos_plots_demo_figurePositioning.py` (``demo_figurePositioning.py``)                 | 00:00.066 | 0.0 MB |
+| :ref:`sphx_glr_11_demos_plots_demo_drawMarkers.py` (``demo_drawMarkers.py``)                             | 00:00.000 | 0.0 MB |
 +----------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_11_demos_plots_demo_Plot1DLegendTitles.py` (``demo_Plot1DLegendTitles.py``)               | 00:00.059 | 0.0 MB |
+| :ref:`sphx_glr_11_demos_plots_demo_drawPickersPlot1D.py` (``demo_drawPickersPlot1D.py``)                 | 00:00.000 | 0.0 MB |
 +----------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_11_demos_plots_demo_maskEditor.py` (``demo_maskEditor.py``)                               | 00:00.057 | 0.0 MB |
+| :ref:`sphx_glr_11_demos_plots_demo_figurePositioning.py` (``demo_figurePositioning.py``)                 | 00:00.000 | 0.0 MB |
 +----------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_11_demos_plots_demo_ShapesTransformation.py` (``demo_ShapesTransformation.py``)           | 00:00.055 | 0.0 MB |
+| :ref:`sphx_glr_11_demos_plots_demo_interactiveShapePicker.py` (``demo_interactiveShapePicker.py``)       | 00:00.000 | 0.0 MB |
 +----------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_11_demos_plots_demo_drawPickersPlot1D.py` (``demo_drawPickersPlot1D.py``)                 | 00:00.054 | 0.0 MB |
+| :ref:`sphx_glr_11_demos_plots_demo_maskEditor.py` (``demo_maskEditor.py``)                               | 00:00.000 | 0.0 MB |
++----------------------------------------------------------------------------------------------------------+-----------+--------+
+| :ref:`sphx_glr_11_demos_plots_demo_plotXY.py` (``demo_plotXY.py``)                                       | 00:00.000 | 0.0 MB |
 +----------------------------------------------------------------------------------------------------------+-----------+--------+

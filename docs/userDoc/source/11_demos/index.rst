@@ -1539,6 +1539,27 @@ Plots
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbcontainer" tooltip="This demo shows how the itom.plot ``1D line cut``, 2D volume cut and through z-stack feature ar...">
+
+.. only:: html
+
+ .. figure:: /11_demos/plots/images/thumb/sphx_glr_demo_lineCut_volumeCut_thumb.png
+     :alt: Plot line cut, volume cut, through z-stack
+
+     :ref:`sphx_glr_11_demos_plots_demo_lineCut_volumeCut.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /11_demos/plots/demo_lineCut_volumeCut
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="The Vtk3dVisualizer can be used to visualize the following items:">
 
 .. only:: html
