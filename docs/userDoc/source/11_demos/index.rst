@@ -1824,6 +1824,86 @@ PyTest
 
 
 
+.. _sphx_glr_11_demos_scikit-learn:
+
+.. _scikit-index:
+
+.. _gallery:
+
+
+Scikit-learn
+------------
+
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="An example of scikit-learn, copied from `scikit-learn.org &lt;https://scikit-learn.org/stable/auto...">
+
+.. only:: html
+
+ .. figure:: /11_demos/scikit-learn/images/thumb/sphx_glr_demo_featureSelection_thumb.png
+     :alt: Recursive feature elimination
+
+     :ref:`sphx_glr_11_demos_scikit-learn_demo_featureSelection.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /11_demos/scikit-learn/demo_featureSelection
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="An example of scikit-learn, copied from `scikit-learn.org &lt;https://scikit-learn.org/stable/auto...">
+
+.. only:: html
+
+ .. figure:: /11_demos/scikit-learn/images/thumb/sphx_glr_demo_kMeansClustering_thumb.png
+     :alt: K-Means clustering
+
+     :ref:`sphx_glr_11_demos_scikit-learn_demo_kMeansClustering.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /11_demos/scikit-learn/demo_kMeansClustering
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="An example of scikit-learn, copied from `scikit-learn.org &lt;https://scikit-learn.org/stable/auto...">
+
+.. only:: html
+
+ .. figure:: /11_demos/scikit-learn/images/thumb/sphx_glr_demo_componentRegression_thumb.png
+     :alt: Principal Component Regression vs Partial Least Squares Regression
+
+     :ref:`sphx_glr_11_demos_scikit-learn_demo_componentRegression.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /11_demos/scikit-learn/demo_componentRegression
+.. raw:: html
+
+    <div class="sphx-glr-clear"></div>
+
+
+
 .. _sphx_glr_11_demos_scipy:
 
 .. _scipy-index:
