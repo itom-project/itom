@@ -3394,6 +3394,24 @@ ito::RetVal UiOrganizer::figurePlot(
                 {
                     *objectID = addObjectToList(destWidget);
 
+                    if (!properties.contains("keepAspectRatio"))   // add value from settings
+                    {
+                        QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+                        settings.beginGroup("DesignerPlugins");
+                        settings.beginGroup("ito::AbstractFigure");
+                        bool keepAspect = settings.value("keepAspectRatio").toBool();
+                        settings.endGroup();
+                        settings.endGroup();
+
+                        if (keepAspect)
+                        {
+                            QVariantMap* keep = new QVariantMap;
+                            keep->insert("keepAspectRatio", QVariant(keepAspect));
+                            properties.insert(*keep);
+                        }
+                        
+                    }
+
                     if (properties.size() > 0)
                     {
                         retval += writeProperties(*objectID, properties, NULL);

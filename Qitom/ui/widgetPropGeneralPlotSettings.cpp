@@ -40,7 +40,6 @@ namespace ito
         settings.beginGroup("DesignerPlugins");
         settings.beginGroup("ito::AbstractFigure");
 
-
         ui.titleFontBtn->setCurrentFont(settings.value("titleFont", ("Verdana", 12)).value<QFont>());
         ui.labelFontBtn->setCurrentFont(settings.value("labelFont", ("Verdana", 10)).value<QFont>());
         ui.axisFontBtn->setCurrentFont(settings.value("axisFont", ("Verdana", 10)).value<QFont>());
@@ -65,6 +64,8 @@ namespace ito
 		ui.legendLabelWidthSpin->setValue(settings.value("legendLabelWidth", 15).value<int>());
         ui.checkAntiAliasing->setChecked(settings.value("antiAliased", false).value<bool>());
         ui.clipboardResolutionSpin->setValue(settings.value("copyClipboardResolutionDpi", 200).value<int>());
+        ui.comboDefaultColorMap->setCurrentIndex(ui.comboDefaultColorMap->findText(settings.value("defaultColorMap").toString()));
+        ui.checkBoxKeepAspectRatio->setChecked(settings.value("keepAspectRatio").toBool());
         settings.endGroup();
         settings.endGroup();
     }
@@ -72,35 +73,36 @@ namespace ito
     //----------------------------------------------------------------------------------------------------------------------------------
     void WidgetPropGeneralPlotSettings::writeSettings()
     {
-      QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-      settings.beginGroup("DesignerPlugins");
-      settings.beginGroup("ito::AbstractFigure");
-      settings.setValue("titleFont", ui.titleFontBtn->currentFont());
-      settings.setValue("labelFont", ui.labelFontBtn->currentFont());
-      settings.setValue("axisFont", ui.axisFontBtn->currentFont());
-      settings.setValue("lineStyle", (int) ui.lineStyleBtn->getPen().style());
-      settings.setValue("lineWidth", (qreal)ui.lineStyleBtn->getPen().width());
-      settings.setValue("legendFont", ui.legendFontBtn->currentFont());
-      settings.setValue("zoomRubberBandPen", ui.zoomRubberBandPenBtn->getPen());
-      QPen trackerPen(ui.trackerPenBtn->color(), 2);
-      settings.setValue("trackerPen", trackerPen);
-      settings.setValue("trackerFont", ui.trackerFontBtn->currentFont());
-      settings.setValue("trackerBackground", ui.trackerBackgroundBtn->getBrush());
-      settings.setValue("centerMarkerPen", ui.centerMerkerPenBtn->getPen());
-      settings.setValue("centerMarkerSize", QSize(ui.centerMarkerSizeSpin->value(), ui.centerMarkerSizeSpin->value()));
-      settings.setValue("zStackMarkerPen", ui.zStackMarkerPenBtn->getPen());
-      settings.setValue("zStackMarkerSize", QSize(ui.zStackMarkerSizeSpin->value(), ui.zStackMarkerSizeSpin->value()));
-      //settings.setValue("shapePen", ui.shapePenBtn->getPen());
-      settings.setValue("shapeLabelBackground", ui.shapeLabelBgBtn->getBrush());
-      settings.setValue("shapeLabelFont", ui.shapeLabelFontBtn->currentFont());
-      settings.setValue("geometricShapePen", ui.geometricShapePenBtn->getPen());
-      settings.setValue("shapeLabelTextColor", ui.shapeLabelTextColorBtn->color());
-	  settings.setValue("legendLabelWidth", ui.legendLabelWidthSpin->value());
-      settings.setValue("antiAliased", ui.checkAntiAliasing->isChecked());
-      settings.setValue("copyClipboardResolutionDpi", ui.clipboardResolutionSpin->value());
-
-      settings.endGroup();
-      settings.endGroup();
+        QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+        settings.beginGroup("DesignerPlugins");
+        settings.beginGroup("ito::AbstractFigure");
+        settings.setValue("titleFont", ui.titleFontBtn->currentFont());
+        settings.setValue("labelFont", ui.labelFontBtn->currentFont());
+        settings.setValue("axisFont", ui.axisFontBtn->currentFont());
+        settings.setValue("lineStyle", (int) ui.lineStyleBtn->getPen().style());
+        settings.setValue("lineWidth", (qreal)ui.lineStyleBtn->getPen().width());
+        settings.setValue("legendFont", ui.legendFontBtn->currentFont());
+        settings.setValue("zoomRubberBandPen", ui.zoomRubberBandPenBtn->getPen());
+        QPen trackerPen(ui.trackerPenBtn->color(), 2);
+        settings.setValue("trackerPen", trackerPen);
+        settings.setValue("trackerFont", ui.trackerFontBtn->currentFont());
+        settings.setValue("trackerBackground", ui.trackerBackgroundBtn->getBrush());
+        settings.setValue("centerMarkerPen", ui.centerMerkerPenBtn->getPen());
+        settings.setValue("centerMarkerSize", QSize(ui.centerMarkerSizeSpin->value(), ui.centerMarkerSizeSpin->value()));
+        settings.setValue("zStackMarkerPen", ui.zStackMarkerPenBtn->getPen());
+        settings.setValue("zStackMarkerSize", QSize(ui.zStackMarkerSizeSpin->value(), ui.zStackMarkerSizeSpin->value()));
+        //settings.setValue("shapePen", ui.shapePenBtn->getPen());
+        settings.setValue("shapeLabelBackground", ui.shapeLabelBgBtn->getBrush());
+        settings.setValue("shapeLabelFont", ui.shapeLabelFontBtn->currentFont());
+        settings.setValue("geometricShapePen", ui.geometricShapePenBtn->getPen());
+        settings.setValue("shapeLabelTextColor", ui.shapeLabelTextColorBtn->color());
+	    settings.setValue("legendLabelWidth", ui.legendLabelWidthSpin->value());
+        settings.setValue("antiAliased", ui.checkAntiAliasing->isChecked());
+        settings.setValue("copyClipboardResolutionDpi", ui.clipboardResolutionSpin->value());
+        settings.setValue("defaultColorMap", ui.comboDefaultColorMap->currentText());
+        settings.setValue("keepAspectRatio", ui.checkBoxKeepAspectRatio->isChecked());
+        settings.endGroup();
+        settings.endGroup();
     }
     //----------------------------------------------------------------------------------------------------------------------------------
     void WidgetPropGeneralPlotSettings::on_defaultBtn_clicked()
@@ -127,6 +129,8 @@ namespace ito
         ui.shapeLabelTextColorBtn->setColor(Qt::red);
         ui.checkAntiAliasing->setChecked(false);
 		ui.legendLabelWidthSpin->setValue(15);
+        ui.comboDefaultColorMap->setCurrentIndex(0);
+        ui.checkBoxKeepAspectRatio->setChecked(false);
         this->update();
     }
 
