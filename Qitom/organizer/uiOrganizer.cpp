@@ -3392,17 +3392,15 @@ ito::RetVal UiOrganizer::figurePlot(
 
                 if (!retval.containsError())
                 {
-                    *objectID = addObjectToList(destWidget);
+                    *objectID = addObjectToList(destWidget);   
+                    
+                    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+                    settings.beginGroup("DesignerPlugins");
+                    settings.beginGroup("ito::AbstractFigure");
 
                     if (!properties.contains("keepAspectRatio"))   // add value from settings
                     {
-                        QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-                        settings.beginGroup("DesignerPlugins");
-                        settings.beginGroup("ito::AbstractFigure");
                         bool keepAspect = settings.value("keepAspectRatio").toBool();
-                        settings.endGroup();
-                        settings.endGroup();
-
                         if (keepAspect)
                         {
                             QVariantMap* keep = new QVariantMap;
@@ -3411,6 +3409,21 @@ ito::RetVal UiOrganizer::figurePlot(
                         }
                         
                     }
+
+                    if (!properties.contains("yAxisFlipped")) // add value from settings
+                    {
+                        bool flipped = settings.value("yAxisFlipped").toBool();
+
+                        if (flipped)
+                        {
+                            QVariantMap* axis = new QVariantMap;
+                            axis->insert("yAxisFlipped", QVariant(flipped));
+                            properties.insert(*axis);
+                        }
+                    }
+
+                    settings.endGroup();
+                    settings.endGroup();
 
                     if (properties.size() > 0)
                     {

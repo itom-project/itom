@@ -66,6 +66,7 @@ namespace ito
         ui.clipboardResolutionSpin->setValue(settings.value("copyClipboardResolutionDpi", 200).value<int>());
         ui.comboDefaultColorMap->setCurrentIndex(ui.comboDefaultColorMap->findText(settings.value("defaultColorMap").toString()));
         ui.checkBoxKeepAspectRatio->setChecked(settings.value("keepAspectRatio").toBool());
+        ui.checkBoxYAxisFlipped->setChecked(settings.value("yAxisFlipped").toBool());
         settings.endGroup();
         settings.endGroup();
     }
@@ -101,6 +102,7 @@ namespace ito
         settings.setValue("copyClipboardResolutionDpi", ui.clipboardResolutionSpin->value());
         settings.setValue("defaultColorMap", ui.comboDefaultColorMap->currentText());
         settings.setValue("keepAspectRatio", ui.checkBoxKeepAspectRatio->isChecked());
+        settings.setValue("yAxisFlipped", ui.checkBoxYAxisFlipped->isChecked());
         settings.endGroup();
         settings.endGroup();
     }
@@ -131,6 +133,7 @@ namespace ito
 		ui.legendLabelWidthSpin->setValue(15);
         ui.comboDefaultColorMap->setCurrentIndex(0);
         ui.checkBoxKeepAspectRatio->setChecked(false);
+        ui.checkBoxYAxisFlipped->setChecked(false);
         this->update();
     }
 
