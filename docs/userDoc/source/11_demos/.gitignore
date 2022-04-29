@@ -1,1 +1,5 @@
 *.ipynb
+*.py
+*.md5
+*.pickle
+images/thumbs/*.*

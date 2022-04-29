@@ -4,12 +4,9 @@
 
 
 Demo scripts
-============
+############
 
-This chapter contains examples how to use the features of ``itom``. 
-Click on any image to see the full script documentation. 
-This examples preferably show the ``itom`` features. 
-For a general python introduction go to the **python tutorials** chapter.
+This chapter contains demo scripts of Python basics, Python packages and the itom features based on them. 
 
 .. only:: html
 
