@@ -34,6 +34,7 @@ For a general python introduction go to the **python tutorials** chapter.
 
 .. toctree::
     :numbered:
+    :glob:
     :maxdepth: 2
 
     itom/index.rst
