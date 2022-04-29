@@ -1,5 +1,3 @@
-*.ipynb
-*.py
-*.md5
-*.pickle
-images/thumbs/*.*
+/python_packages
+/itom
+/python
