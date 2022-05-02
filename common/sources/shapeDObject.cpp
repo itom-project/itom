@@ -177,10 +177,24 @@ namespace ito {
             else
                 color = cv::Scalar(255, 255, 255);
 
+
+            cv::Size size =
+                cv::Size(qRound((p2.x() - p1.x()) / 2.0), qRound((p2.y() - p1.y()) / 2.0));
+
+            if (size.height < 0)
+            {
+                size.height *= -1.0;
+            }
+
+            if (size.width < 0)
+            {
+                size.width *= -1.0;
+            }
+
             cv::ellipse(
                 *mask.getCvPlaneMat(0),
                 cv::Point2f(p3.x(), p3.y()),
-                cv::Size(qRound((p2.x() - p1.x()) / 2.0), qRound((p2.y() - p1.y()) / 2.0)),
+                size,
                 shape.rotationAngleDeg(),
                 0,
                 360,
@@ -204,8 +218,8 @@ namespace ito {
     if (dataObject.getTotal() > 0)
     {
         mask.zeros(
-            dataObject.getSize()[dataObject.getDims() - 1],
             dataObject.getSize()[dataObject.getDims() - 2],
+            dataObject.getSize()[dataObject.getDims() - 1],
             ito::tUInt8); // 2d mask dataObject
         dataObject.copyAxisTagsTo(mask);
 
