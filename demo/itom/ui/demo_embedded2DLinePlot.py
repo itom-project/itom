@@ -4,9 +4,6 @@
 This script shows how to use embedded static line plots in ``itom`` in a single GUI.
 The z-slicing tool will display its line output in a ``1D`` line plot below the ``2D``
 plot (becomes visible then). The line cut tool will open a new ``1D`` line plot.
-
-The demo was developed by Wolfram Lyda, twip optical solutions GmbH, Stuttgart.
-This files come without warenty and are used on own risk.
 """
 
 from itom import dataObject

@@ -2,8 +2,6 @@
 =================
 
 Fit geomtric elements to pointClouds.
-
-by Wolfram Lyda, Licenced under LGPL, Copyright twip optical solutions
 """
 
 import numpy as np

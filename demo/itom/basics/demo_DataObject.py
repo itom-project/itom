@@ -145,7 +145,7 @@ plot(obj3dim)
 
 # Set additional informations (meta data) as tags
 # Use set tag "key", "value". Key / value are user defined.
-obj2dim.setTag("Creator", "Lyda")
+obj2dim.setTag("Creator", "itom")
 obj2dim.setTag("Type", "Measurement")
 obj2dim.setTag("DummyTag", "Delete Me")
 
