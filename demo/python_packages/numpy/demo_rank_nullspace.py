@@ -1,5 +1,5 @@
-"""Numpy
-===========
+"""Rank and nullspace demo
+=====================
 
 This demo shows an example on how to use ``numpy`` in ``itom``.
 """

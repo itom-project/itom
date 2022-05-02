@@ -41,3 +41,4 @@ image = np.random.randn(1024, 512)
 I = getAlignNdArray(image)
 I1 = myfft2(I)
 I2 = myifft2(I)
+I2
