@@ -1,5 +1,5 @@
 """Dialog
-=======
+=========
 
 The dialog is created from a QDialog, designed in QtDesigner.
 The dialog already has OK and Cancel buttons whose clicked

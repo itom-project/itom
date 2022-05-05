@@ -1,5 +1,5 @@
 """Worker thread
-===============
+================
 
 This example shows how to use the Python ``threading`` package.
 """

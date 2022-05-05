@@ -1,5 +1,5 @@
 """Pytest
-==========
+=========
 
 Execute lines from this file from demo folder to run all subsequent pytest scripts.
 

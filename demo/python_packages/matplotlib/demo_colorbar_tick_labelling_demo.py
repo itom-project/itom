@@ -1,5 +1,5 @@
 """Colorbar tick labelling
-=====================
+==========================
 
 Produce custom labelling for a colorbar.
 

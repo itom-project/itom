@@ -1,5 +1,5 @@
 """Joint kernel
-=============
+===============
 """
 
 import seaborn as sns

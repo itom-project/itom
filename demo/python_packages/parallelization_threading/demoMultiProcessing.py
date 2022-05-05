@@ -1,5 +1,5 @@
 """Multi processing
-===============
+===================
 
 This is a modified example from the python documentation.
 The only difference is the ``set_executable`` section at the start.

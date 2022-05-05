@@ -1,5 +1,5 @@
 """Splitting array
-========================
+==================
 """
 
 import numpy as np

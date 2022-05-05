@@ -1,5 +1,5 @@
 """Cross correlation of images
-======================
+============================
 
 In this demo the cross-correlation is calculated between two images
 acquired via the integrated webcam of your PC.

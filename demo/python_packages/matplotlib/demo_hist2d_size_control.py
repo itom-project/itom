@@ -1,5 +1,6 @@
 """Histogram 2D size control
-======================
+============================
+
 """
 
 import matplotlib.pyplot as plt

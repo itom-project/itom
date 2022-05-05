@@ -1,5 +1,5 @@
 """Stacking arrays
-========================
+==================
 """
 
 import numpy as np

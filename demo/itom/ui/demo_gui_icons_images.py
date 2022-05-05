@@ -1,5 +1,5 @@
 """GUI icons as images
-===============
+======================
 
 In this example, all icons are loaded in the UI file
 as relative path to the icons in this or the icons subfolder.

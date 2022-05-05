@@ -1,5 +1,5 @@
 """Thread pool executor
-===========
+=======================
 
 ``Asyncio``/``concurrent`` heavily changed from python ``3.4`` to ``3.7``, better read the docs
 and do some tutorials. Asyncio is preferred over plain concurrent module. """

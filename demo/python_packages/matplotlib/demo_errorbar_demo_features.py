@@ -1,5 +1,5 @@
 """Errorbar
-==========
+===========
 
 Demo of errorbar function with different ways of specifying error bars.
 

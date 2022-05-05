@@ -1,5 +1,5 @@
 """Load and save dataObject
-====================
+=========================
 
 This demo shows how to **save** and **load** ``dataObjects``
 to/from image formats as well as native itom formats."""

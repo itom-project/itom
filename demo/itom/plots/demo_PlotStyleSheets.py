@@ -1,5 +1,5 @@
 """Plot style sheets
-==================
+====================
 
 This demo shows how you can set and change the theme of your GUI.
 The style can not be entirely removed to the windows, mac or plastique style

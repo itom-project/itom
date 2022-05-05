@@ -1,5 +1,5 @@
 """GUI icons from resources
-===================
+===========================
 
 Demostration to show a ui file, that contains icons from a qrc / rcc
 resource file.

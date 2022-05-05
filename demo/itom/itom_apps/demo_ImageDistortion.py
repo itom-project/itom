@@ -1,5 +1,5 @@
 """cameraToolbox
-===========
+================
 
 In the folder ``itom_packages``, there is a package ``cameraToolbox``.
 This mainly contains methods to simulate distorted images

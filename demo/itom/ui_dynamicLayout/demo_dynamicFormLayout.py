@@ -1,5 +1,5 @@
 """Dynamic form layout
-==================
+======================
 
 Example for dynamically changing the content of a form layout.
 

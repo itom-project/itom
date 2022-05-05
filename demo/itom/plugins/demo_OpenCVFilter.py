@@ -1,5 +1,5 @@
 """OpenCV filter
-===========
+================
 
 This demo shows how OpenCV filters are applied to the ``dataObject``."""
 

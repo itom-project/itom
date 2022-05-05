@@ -1,5 +1,5 @@
 """Table widget
-===========
+===============
 
 """
 from itomUi import (

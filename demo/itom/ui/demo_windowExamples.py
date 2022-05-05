@@ -1,5 +1,5 @@
 """Window
-========
+=========
 
 Window is a stand-alone window. The window is only hidden
 if the user closes it. Call show again to re-show it. It is only

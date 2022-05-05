@@ -1,5 +1,5 @@
 """Camera widget
-===========
+================
 
 """
 from itom import dataIO

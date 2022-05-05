@@ -1,7 +1,7 @@
 # coding=utf8
 
 """Colored shapes
-==============
+=================
 
 This demo script shows how to set the line color of geometric shapes.
 

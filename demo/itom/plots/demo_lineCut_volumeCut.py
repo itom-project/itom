@@ -1,6 +1,6 @@
 # coding=utf8
 """Plot line cut, volume cut, through z-stack
-============================
+=============================================
 
 This demo shows how the ``itom.plot`` ``1D line cut``,
 ``2D volume cut`` and ``through z-stack`` feature are used. First, a 3D ``dataObject``

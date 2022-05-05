@@ -1,5 +1,5 @@
 """2D animation
-==============
+===============
 
 This example demonstrates how matplotlib can be used to create 
 animated movie and export these in the mp4 movie format. 

@@ -1,5 +1,5 @@
 """Grouping data
-===============
+================
 
 """
 import pandas as pd

@@ -1,5 +1,5 @@
 """Observe parallel functions
-===================
+=============================
 
 This demo shows how to use a customized progressObserver to observer and
 possibly cancel multiple 'complex' function calls, that are executed in 

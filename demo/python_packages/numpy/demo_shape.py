@@ -1,5 +1,5 @@
 """Shape manipulation
-========================
+=====================
 """
 
 import numpy as np

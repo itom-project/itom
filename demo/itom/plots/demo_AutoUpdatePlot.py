@@ -1,5 +1,5 @@
 """Auto-update plot
-==================
+===================
 
 This demo shows two possibilities of how to create an auto
 updating plot, when the data does not come from a device allowing a live plot."""

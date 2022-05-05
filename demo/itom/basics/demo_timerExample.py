@@ -1,4 +1,4 @@
-"""timer
+"""Timer
 ===========
 
 This script creates an instance of a ``DummyGrabber``

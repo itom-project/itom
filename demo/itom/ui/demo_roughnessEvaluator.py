@@ -1,5 +1,5 @@
 """Roughness evaluation
-================
+=======================
 
 This demo opens the Roughness Evaluator app.
 

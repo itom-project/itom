@@ -21,7 +21,7 @@
     08_scriptLanguage/script-language.rst
     09_reference/reference.rst
     10_miscellaneous/miscellaneous.rst
-    11_demos/index.rst
+    11_demos/demos.rst
     12_contributing/contributing.rst
 
 .. only:: builder_qthelp

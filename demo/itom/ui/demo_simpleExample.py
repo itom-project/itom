@@ -1,5 +1,5 @@
 """Simple UI
-===========
+============
 
 This script shows an example how to integrate the user interface
 ``simpleExample.ui`` into ``itom``, connect it with the necessary methods

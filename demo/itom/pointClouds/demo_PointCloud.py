@@ -1,5 +1,5 @@
 """PointCloud 
-======================
+=============
 
 This demo shows how you can work with
 pointClouds based on the ``pointCloudLibrary`` in ``itom``."""

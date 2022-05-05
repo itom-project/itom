@@ -23,7 +23,7 @@ except Exception as ex:
 
 from itom import polygonMesh
 from itom import dataObject
-from itom import plot25
+from itom import plot
 from itom import algorithms
 # sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoVTK3DVisualizer.png'
 
@@ -41,7 +41,7 @@ trafo[0:3, 3] = (0, 0, -2)
 bunny_transformed_mesh = polygonMesh()
 algorithms.meshTransformAffine(bunny, bunny_transformed_mesh, trafo)
 
-[i, h] = plot25(bunny_transformed_mesh)
+[i, h] = plot(bunny_transformed_mesh, "Vtk3dVisualizer")
 
 ###############################################################################
 # Configure the mesh (called ``source_mesh``).

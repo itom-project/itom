@@ -2,7 +2,7 @@
 
 
 """Draw and transform shapes
-===========================
+============================
 
 In this demo script, multi shapes are created.
 These shapes are then rotated and translated by

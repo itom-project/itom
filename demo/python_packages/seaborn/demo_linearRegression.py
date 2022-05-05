@@ -1,5 +1,5 @@
 """Linear regression
-===============
+====================
 """
 
 import seaborn as sns

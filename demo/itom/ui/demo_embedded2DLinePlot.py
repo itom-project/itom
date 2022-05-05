@@ -1,5 +1,5 @@
 """Embedded plots
-==============
+=================
 
 This script shows how to use embedded static line plots in ``itom`` in a single GUI.
 The z-slicing tool will display its line output in a ``1D`` line plot below the ``2D``

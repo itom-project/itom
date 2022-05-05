@@ -1,5 +1,5 @@
 """Auto connect signals
-=================
+=======================
 
 This demo shows how to use the auto-connection feature
 for automatically connecting signals from widgets to methods.

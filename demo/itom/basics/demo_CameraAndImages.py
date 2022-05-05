@@ -1,5 +1,5 @@
 """Cameras and images
-=================
+===================
 
 This demo shows with the example of the ``DummyGrabber``
 how you acquire an image and apply some filters."""

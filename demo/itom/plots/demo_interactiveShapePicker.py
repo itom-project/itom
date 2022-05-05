@@ -1,7 +1,7 @@
 # coding=utf8
 
 """Interactive shape picker
-=======================
+===========================
 
 This demo shows how to let the user select a certain number of shapes in a plot.
 

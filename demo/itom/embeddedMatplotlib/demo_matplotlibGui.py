@@ -1,5 +1,5 @@
 """Matplotlib embedded in GUI
-======================
+=============================
 
 This examples shows how the ``matplotlib`` can be integrated
 into a ``GUI`` based on the ``MatplotlibPlot`` Qt Designer plugin. 

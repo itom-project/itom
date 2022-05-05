@@ -1,5 +1,5 @@
 """Pick points and markers
-======================
+==========================
 
 This demo shows how you can pick points and markers in the ``itom`` plot."""
 

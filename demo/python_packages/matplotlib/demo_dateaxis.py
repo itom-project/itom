@@ -1,5 +1,5 @@
 """Date axis
-=========
+============
 
 Load a numpy record array from yahoo csv data with fields date, open, close,
 volume, adj_close from the mpl-data/example directory. The record array

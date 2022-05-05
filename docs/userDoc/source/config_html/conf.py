@@ -197,8 +197,15 @@ html_static_path = ["../_static"]
 
 # sphinx gallery config
 sphinx_gallery_conf = {
-    "examples_dirs": ["../../../demo/itom", "../../../demo/python", "../../../demo/python_packages"],
-    "gallery_dirs": ["11_demos/itom", "11_demos/python", "11_demos/python_packages"],
+    "examples_dirs": [
+        "../../../demo/itom",
+        "../../../demo/python",
+        "../../../demo/python_packages",
+    ],
+    "gallery_dirs": [
+        "11_demos/itom",
+        "11_demos/python",
+        "11_demos/python_packages"],
     "doc_module": ("matplotlib", "numpy", "pandas", "itom"),
     "reference_url": {"matplotlib": None, "numpy": None, "pandas": None, "itom": None},
     "show_memory": True,
@@ -207,7 +214,7 @@ sphinx_gallery_conf = {
     "download_all_examples": False,
     "min_reported_time": 0.0001,
     "filename_pattern": "demo_",
-    "matplotlib_animations": True
+    "matplotlib_animations": True,
 }
 
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
@@ -403,5 +410,5 @@ intersphinx_mapping = {
     "numpy": ("https://numpy.org/doc/stable", "../numpy1.22-inv.txt"),
     "scipy": ("https://docs.scipy.org/doc/scipy/reference", "../scipy1.6.1-inv.txt"),
     "matplotlib": ("https://matplotlib.org", "../matplotlib3.5-inv.txt"),
-    "pandas": ("https://pandas.pydata.org/docs/", "../pandas1.3.5-inv.txt")
+    "pandas": ("https://pandas.pydata.org/docs/", "../pandas1.3.5-inv.txt"),
 }

@@ -1,5 +1,5 @@
 """String input
-===========
+===============
 
 This demo shows how to get input from the user.
 For more sophisticated inputs based on input boxes etc.

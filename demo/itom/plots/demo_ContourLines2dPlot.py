@@ -1,6 +1,6 @@
 # coding=iso-8859-15
 """Contourlines 2D plot
-====================
+=======================
 
 This demo shows how to display contour lines in an ``itom.plot2``.
 

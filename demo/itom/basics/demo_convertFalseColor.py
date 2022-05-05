@@ -1,5 +1,5 @@
 """Convert falseColor
-===========
+===================
 
 This demo shows how colored images are converted into other color spaces..
 

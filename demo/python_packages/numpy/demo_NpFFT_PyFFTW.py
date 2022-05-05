@@ -1,5 +1,5 @@
 """Numpy FFT, PyFFTW
-===============
+====================
 
 This example shows how to use the FFT or IFFT from ``Numpy``.
 If possible the package PyFFTW is searched. If it is avaible,

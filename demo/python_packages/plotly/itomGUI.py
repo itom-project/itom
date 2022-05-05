@@ -1,7 +1,7 @@
 # coding=utf8
 
 """GUI integrated
-=============
+=================
 
 This demo shows how to render to output of the Python ``plotly`` library in
 custom user interfaces.

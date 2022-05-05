@@ -1,5 +1,5 @@
 """Multiple plots in horizontal layout
-==========================
+======================================
 
 Example for dynamically changing the content of a form layout.
 """

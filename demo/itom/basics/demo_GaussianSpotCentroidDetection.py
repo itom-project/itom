@@ -1,7 +1,7 @@
 # coding=utf8
 
 """Gaussian spot centroid detection
-========================
+=================================
 
 This demo shows how the ``itom.algorithms`` can be used.
 In this example a camera ``DummyGrabber`` is used to acquire a moving gaussian spot.

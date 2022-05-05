@@ -1,5 +1,5 @@
 """Dynamic grid layout
-================
+======================
 
 Example for dynamically changing the content of a grid layout.
 """

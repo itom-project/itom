@@ -1,5 +1,5 @@
 """Stylesheet editor
-=============
+====================
 
 GUI for live coding of a Qt stylesheet document.
 

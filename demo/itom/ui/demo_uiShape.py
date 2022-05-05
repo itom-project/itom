@@ -1,5 +1,5 @@
 """UI shape
-=======
+===========
 
 This demo shows a window with a 2D plot as center widget.
 A random dataObject is shown in the plot. The user can then

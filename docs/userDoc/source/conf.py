@@ -196,8 +196,15 @@ html_css_files = ["qthelp.css"]
 html_static_path = ["_static"]
 
 sphinx_gallery_conf = {
-    "examples_dirs": ["../../../demo/itom", "../../../demo/python"],
-    "gallery_dirs": ["11_demos/itom", "11_demos/python"],
+    "examples_dirs": [
+        "../../demo/itom",
+        "../../demo/python",
+        "../../demo/python_packages",
+    ],
+    "gallery_dirs": [
+        "11_demos/itom",
+        "11_demos/python",
+        "11_demos/python_packages"],
     "doc_module": ("matplotlib", "numpy", "pandas", "itom"),
     "reference_url": {"matplotlib": None, "numpy": None, "pandas": None, "itom": None},
     "show_memory": True,

@@ -1,5 +1,5 @@
 """Pyro4
-===========
+========
 
 This demo shows an example on how to the Pyro4 package.
 """

@@ -1,5 +1,5 @@
 """Splitter
-==========
+===========
 
 This demo shows how to manipulate a splitter, set as layout in QtDesigner.
 

@@ -1,5 +1,5 @@
 """DummyMotor
-===========
+=============
 
 This demo shows with the example of the ``DummyMotor``
 how grabber and cameras are used in ``itom``."""

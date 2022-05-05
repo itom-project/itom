@@ -1,5 +1,5 @@
 """Streamplot
-============
+=============
 
 Demo of the ``streamplot`` function.
 

@@ -1,5 +1,5 @@
 """Polar axis
-===========
+=============
 
 Demo of a line plot on a polar axis.
 """

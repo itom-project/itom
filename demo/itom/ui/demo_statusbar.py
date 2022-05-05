@@ -1,5 +1,5 @@
 """Statusbar
-=========
+============
 
 This is a short tutorial about how to use the statusbar
 """

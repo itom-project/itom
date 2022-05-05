@@ -25,3 +25,10 @@ This chapter contains demo scripts of Python basics, Python packages and the ito
     https://itom.bitbucket.io/documents/itom_cheatsheet.pdf
 
     All demo scripts can be found in the ``itom/demo`` folder.
+
+.. toctree::
+    :maxdepth: 2
+    
+    itom/index.rst
+    python/index.rst
+    python_packages/index.rst

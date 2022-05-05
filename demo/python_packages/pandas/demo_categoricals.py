@@ -1,5 +1,5 @@
 """Categoricals
-=============
+===============
 
 """
 import pandas as pd

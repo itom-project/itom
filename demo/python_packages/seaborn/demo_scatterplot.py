@@ -1,5 +1,5 @@
 """Scatterplot
-===========
+==============
 """
 
 import seaborn as sns

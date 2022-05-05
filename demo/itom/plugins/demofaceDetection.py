@@ -1,6 +1,6 @@
 # coding=utf8
 """Face Detection
-======================
+=================
 
 This demo shows how a simple image processing example can be demonstrated.
 The ``itom`` grabber ``OpenCVGrabber`` captures your webcam.

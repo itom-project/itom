@@ -1,5 +1,5 @@
 """Property dialog
-============
+==================
 
 """
 from itom import ui

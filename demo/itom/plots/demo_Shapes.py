@@ -1,5 +1,5 @@
 """Shapes
-======================
+=========
 
 This demo shows how you can add different shapes in the ``itom`` plot."""
 

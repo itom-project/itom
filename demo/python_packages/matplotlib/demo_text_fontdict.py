@@ -1,5 +1,5 @@
 """Text fontdict
-============
+================
 
 Demo using fontdict to control style of text and labels.
 """

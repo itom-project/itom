@@ -1,5 +1,5 @@
 """Parameter editor widget
-==================
+==========================
 
 This example shows the usage of the generic ParamEditorWidget.
 

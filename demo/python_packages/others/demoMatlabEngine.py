@@ -1,5 +1,5 @@
 """Matlab engine
-==============
+================
 
 This demo shows how to communicate with the Matlab engine."""
 

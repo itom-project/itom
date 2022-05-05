@@ -1,5 +1,5 @@
 """Dockwidget
-==========
+=============
 
 Create a dockWidget form the main window at the bottom dock widget area
 The dock widget can be destroyed by deleting the variable, that references to it.
