@@ -197,9 +197,9 @@ html_static_path = ["_static"]
 
 sphinx_gallery_conf = {
     "examples_dirs": [
-        "../../demo/itom",
-        "../../demo/python",
-        "../../demo/python_packages",
+        "../../../demo/itom",
+        "../../../demo/python",
+        "../../../demo/python_packages",
     ],
     "gallery_dirs": [
         "11_demos/itom",
