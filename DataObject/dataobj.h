@@ -429,8 +429,8 @@ namespace ito {
             }
             else
             {
-                if (cvIsNaN(m_dVal)) return "NaN";
-                if (cvIsInf(m_dVal)) return "Inf";
+                if (std::isnan(m_dVal)) return "NaN";
+                if (std::isinf(m_dVal)) return "Inf";
                 
                 std::ostringstream strs;
                 strs << m_dVal;
