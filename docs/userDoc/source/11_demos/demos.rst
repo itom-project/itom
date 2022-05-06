@@ -28,6 +28,7 @@ This chapter contains demo scripts of Python basics, Python packages and the ito
 
 .. toctree::
     :maxdepth: 2
+    :includehidden:
     
     itom/index.rst
     python/index.rst

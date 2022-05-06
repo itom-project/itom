@@ -1,4 +1,4 @@
-.. _python-index:
+.. _python_packages-index:
 
 .. _gallery:
 
