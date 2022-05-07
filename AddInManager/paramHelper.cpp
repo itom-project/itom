@@ -661,21 +661,49 @@ tCompareResult ParamHelper::compareMetaParam(
         }
 
         // all bits in allowedTypes of mT must be set in m, too
-        if ((m->getAllowedTypes() & mT->getAllowedTypes()) != mT->getAllowedTypes())
+        if (m->getNumAllowedDataTypes() > 0)
         {
-            ret += ito::RetVal::format(
-                ito::retError,
-                0,
-                QObject::tr("The allowed data object types of parameter '%s' are more restrictive "
-                            "than these required by the interface parameter '%s'.")
+            if (mT->getNumAllowedDataTypes() == 0)
+            {
+                // the template allows all types, m only few types and is therefore more restrictive
+                ret += ito::RetVal::format(
+                    ito::retError,
+                    0,
+                    QObject::tr("The allowed data object types of parameter '%s' are more restrictive "
+                        "than these required by the interface parameter '%s'.")
                     .toLatin1()
                     .data(),
-                name,
-                nameTemplate);
-            return tCmpFailed;
+                    name,
+                    nameTemplate);
+                return tCmpFailed;
+            }
+            else
+            {
+                for (int i = 0; i < mT->getNumAllowedDataTypes(); ++i)
+                {
+                    if (!m->isDataTypeAllowed(mT->getAllowedDataType(i)))
+                    {
+                        ret += ito::RetVal::format(
+                            ito::retError,
+                            0,
+                            QObject::tr("The allowed data object types of parameter '%s' are more restrictive "
+                                "than these required by the interface parameter '%s'.")
+                            .toLatin1()
+                            .data(),
+                            name,
+                            nameTemplate);
+                        return tCmpFailed;
+                    }
+                }
+            }
         }
 
-        if (m->getAllowedTypes() == mT->getAllowedTypes())
+        ito::DObjMeta m2 = *m;
+        m2.setMinDim(mT->getMinDim());
+        m2.getMaxDim(mT->getMaxDim());
+
+        // check if the allowed types of m and mT are exactly equal... therefore compare m2 and mT
+        if (m2 == *mT)
         {
             if (m->getMinDim() == mT->getMinDim() && m->getMaxDim() == mT->getMaxDim())
             {

@@ -443,7 +443,7 @@ PythonDataObject::PyDataObjectTypes PythonDataObject::PyDataObject_types[] = {
 //-------------------------------------------------------------------------------------
 int PythonDataObject::dObjTypeFromName(const char* name)
 {
-    int length = sizeof(PyDataObject_types) / sizeof(PyDataObject_types[0]);
+    int length = numDataTypes();
     int i;
 
     for (i = 0; i < length; i++)
@@ -460,16 +460,21 @@ int PythonDataObject::dObjTypeFromName(const char* name)
 //-------------------------------------------------------------------------------------
 char* PythonDataObject::typeNumberToName(int typeno)
 {
-    int length = sizeof(PyDataObject_types) / sizeof(PyDataObject_types[0]);
-
-    if (typeno < 0 || typeno >= length)
+    if (typeno < 0 || typeno >= numDataTypes())
     {
-        return NULL;
+        return nullptr;
     }
     else
     {
         return PyDataObject_types[typeno].name;
     }
+}
+
+//-------------------------------------------------------------------------------------
+int PythonDataObject::numDataTypes()
+{
+    int length = sizeof(PyDataObject_types) / sizeof(PyDataObject_types[0]);
+    return length;
 }
 
 //-------------------------------------------------------------------------------------
