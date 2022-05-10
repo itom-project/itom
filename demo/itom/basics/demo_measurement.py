@@ -218,5 +218,5 @@ if __name__ == "__main__":
     demo = MeasureDemoGUI()
 
 ###############################################################################
-# .. image:: ../_static/demoMeasurement_1.png
+# .. image:: ../../_static/demoMeasurement_1.png
 #    :width: 100%

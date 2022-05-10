@@ -109,5 +109,5 @@ if __name__ == "__main__":
 
 
 ###############################################################################
-# .. image:: ../_static/demoMatplotlibFastAutoUpdate_1.png
+# .. image:: ../../_static/demoMatplotlibFastAutoUpdate_1.png
 #    :width: 75%

@@ -85,7 +85,7 @@ objZero4[:, :] = 5
 # (hence, objZero, objZero2 and objZero4 are changed, too). Proof:
 plot(objZero)  # opens a 2d plot of objZero
 ###############################################################################
-# .. image:: ../_static/demoDataObject_1.png
+# .. image:: ../../_static/demoDataObject_1.png
 #    :width: 100%
 
 ###############################################################################
@@ -94,7 +94,7 @@ plot(objZero)  # opens a 2d plot of objZero
 obj2dimCopy = obj2dim.copy()
 plot(obj2dimCopy)
 ###############################################################################
-# .. image:: ../_static/demoDataObject_2.png
+# .. image:: ../../_static/demoDataObject_2.png
 #    :width: 100%
 
 ###############################################################################
@@ -126,7 +126,7 @@ obj2dim.valueDescription = "phase"
 
 plot(obj2dim, properties={"colorBarVisible": True})
 ###############################################################################
-# .. image:: ../_static/demoDataObject_3.png
+# .. image:: ../../_static/demoDataObject_3.png
 #    :width: 100%
 
 ###############################################################################
@@ -140,7 +140,7 @@ obj3dim.setTag(
 )
 plot(obj3dim)
 ###############################################################################
-# .. image:: ../_static/demoDataObject_4.png
+# .. image:: ../../_static/demoDataObject_4.png
 #    :width: 100%
 
 # Set additional informations (meta data) as tags

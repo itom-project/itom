@@ -119,5 +119,5 @@ gui.listModificationTypes.call("selectRows", (0, 1))
 gui.show()
 
 ###############################################################################
-# .. image:: ../_static/demoMaskEditor.png
+# .. image:: ../../_static/demoMaskEditor.png
 #    :width: 100%

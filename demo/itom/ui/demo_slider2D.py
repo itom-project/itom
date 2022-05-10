@@ -10,5 +10,5 @@ gui = ui("slider2DDemo.ui", ui.TYPEWINDOW, deleteOnClose = True)
 gui.show()
 
 ###############################################################################
-# .. image:: ../_static/demoSlider2D_1.png
+# .. image:: ../../_static/demoSlider2D_1.png
 #    :width: 100%

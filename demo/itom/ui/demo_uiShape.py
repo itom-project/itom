@@ -195,5 +195,5 @@ if __name__ == "__main__":
     uiShapeDemo.show()
 
 ###############################################################################
-# .. image:: ../_static/demoUIShape_1.png
+# .. image:: ../../_static/demoUIShape_1.png
 #    :width: 100%

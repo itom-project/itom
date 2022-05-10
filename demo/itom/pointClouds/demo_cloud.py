@@ -71,5 +71,5 @@ handle.call("setItemProperty", "cloud2", "ColorMap", "blue2red")
 handle.call("setItemProperty", "cloud2", "ColorValueRange", (0.1, 0.2))
 
 ###############################################################################
-# .. image:: ../_static/demoClouds_1.png
+# .. image:: ../../_static/demoClouds_1.png
 #    :width: 100%

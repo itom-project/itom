@@ -110,5 +110,5 @@ stage.setPosAbs(0, 0.0, 1, 0.0)
 ###############################################################################
 # The DummyMotor Toolbox dockWidget will appear below the Plugins dockWidget.
 # 
-# .. image:: ../_static/demoDummyMotor_1.png
+# .. image:: ../../_static/demoDummyMotor_1.png
 #    :width: 100%

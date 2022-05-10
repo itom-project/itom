@@ -181,5 +181,5 @@ win1.gui.show()  # show the gui
 
 
 ###############################################################################
-# .. image:: ../_static/demoMultiplePlotsLayout_1.png
+# .. image:: ../../_static/demoMultiplePlotsLayout_1.png
 #    :width: 100%

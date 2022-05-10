@@ -69,5 +69,5 @@ if __name__ == "__main__":
     win.show()
 
 ###############################################################################
-# .. image:: ../_static/demoEmbedded2DLinePlot_1.png
+# .. image:: ../../_static/demoEmbedded2DLinePlot_1.png
 #    :width: 100%

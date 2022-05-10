@@ -90,7 +90,7 @@ result_mean.axisUnits = ("px", "px")
 result_mean.axisDescriptions = ("y", "x")
 plot(result_mean)
 ###############################################################################
-# .. image:: ../_static/demoCameraAndImages_1.png
+# .. image:: ../../_static/demoCameraAndImages_1.png
 #    :width: 100%
 
 ###############################################################################
@@ -105,7 +105,7 @@ result_filter.copyMetaInfo(result_mean)
 result_filter.setTag("title", "Gaussian filter with kernel {}".format(kernelVal))
 plot(result_filter)
 ###############################################################################
-# .. image:: ../_static/demoCameraAndImages_2.png
+# .. image:: ../../_static/demoCameraAndImages_2.png
 #    :width: 100%
 
 # reset the auto grabbing functionality of possibly connected live images

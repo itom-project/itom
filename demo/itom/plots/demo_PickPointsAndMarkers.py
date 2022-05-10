@@ -19,7 +19,7 @@ obj = dataObject.randN([1024, 1024], "int16")
 h["title"] = "Showcase: pick marker"
 
 ###############################################################################
-# .. image:: ../_static/demoPickPointsAndMarkers_1.png
+# .. image:: ../../_static/demoPickPointsAndMarkers_1.png
 #    :width: 100%
 
 ###############################################################################
@@ -46,7 +46,7 @@ h["title"] = "Showcase: plot the currently selected points"
 h.call("plotMarkers", pickedPoints, "b+10", "setName")  # 'setName' is the name for this set of markers (optional)
 
 ###############################################################################
-# .. image:: ../_static/demoPickPointsAndMarkers_2.png
+# .. image:: ../../_static/demoPickPointsAndMarkers_2.png
 #    :width: 100%
 
 ###############################################################################
@@ -78,5 +78,5 @@ hDrawInto.call("setGeometricShapes", geometricShapes)  # "b" and "setname" will 
 shapes = hDrawInto["geometricShapes"]
 
 ###############################################################################
-# .. image:: ../_static/demoPickPointsAndMarkers_3.png
+# .. image:: ../../_static/demoPickPointsAndMarkers_3.png
 #    :width: 100%

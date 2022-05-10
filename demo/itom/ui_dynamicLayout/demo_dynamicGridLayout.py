@@ -206,5 +206,5 @@ if __name__ == "__main__":
     win1.gui.show()  # show the gui
 
 ###############################################################################
-# .. image:: ../_static/demoDynamicGridLayout_1.png
+# .. image:: ../../_static/demoDynamicGridLayout_1.png
 #    :width: 100%

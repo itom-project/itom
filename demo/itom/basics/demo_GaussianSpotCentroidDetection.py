@@ -134,5 +134,5 @@ if __name__ == "__main__":
     gaussianSpotCentroid = GaussianSpotCentroidDetection()
 
 ###############################################################################
-# .. image:: ../_static/demoGaussianSpotCentroidDetection_1.png
+# .. image:: ../../_static/demoGaussianSpotCentroidDetection_1.png
 #    :width: 100%

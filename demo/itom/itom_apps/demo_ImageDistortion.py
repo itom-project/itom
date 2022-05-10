@@ -14,17 +14,17 @@ from cameraToolbox import distortion_test
 distortion_test.distortionTest()
 
 ###############################################################################
-# .. image:: ../_static/demoImageDistortion_1.png
+# .. image:: ../../_static/demoImageDistortion_1.png
 #    :width: 100%
 
 ###############################################################################
-# .. image:: ../_static/demoImageDistortion_2.png
+# .. image:: ../../_static/demoImageDistortion_2.png
 #    :width: 100%
 
 ###############################################################################
-# .. image:: ../_static/demoImageDistortion_3.png
+# .. image:: ../../_static/demoImageDistortion_3.png
 #    :width: 100%
 
 ###############################################################################
-# .. image:: ../_static/demoImageDistortion_4.png
+# .. image:: ../../_static/demoImageDistortion_4.png
 #    :width: 100%

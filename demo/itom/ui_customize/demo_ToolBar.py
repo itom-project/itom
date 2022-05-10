@@ -110,5 +110,5 @@ removeButton("otherbar")
 ###############################################################################
 # Following buttons/bar will be added to the ``itom`` toolbar.
 # 
-# .. image:: ../_static/demoToolBar_1.png
+# .. image:: ../../_static/demoToolBar_1.png
 #    :width: 75%

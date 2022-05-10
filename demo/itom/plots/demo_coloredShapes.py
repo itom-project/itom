@@ -49,5 +49,5 @@ ellipse.color = None  # automatic, color map dependent coloring (default)
 handle["geometricShapes"] = (rect1, rect2, circle, ellipse)
 
 ###############################################################################
-# .. image:: ../_static/demoColoredShapes_1.png
+# .. image:: ../../_static/demoColoredShapes_1.png
 #    :width: 100%

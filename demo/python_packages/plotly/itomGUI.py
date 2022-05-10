@@ -109,5 +109,5 @@ if __name__ == "__main__":
     win.show()
 
 ###############################################################################
-# .. image:: ../_static/demoPlotlyGUI_1.png
+# .. image:: ../../_static/demoPlotlyGUI_1.png
 #    :width: 100%

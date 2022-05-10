@@ -52,17 +52,17 @@ for shapeType, numShapes in elementList:
         print("---------------------")
 
 ###############################################################################
-# .. image:: ../_static/demoInteractiveShapePicker_1.png
+# .. image:: ../../_static/demoInteractiveShapePicker_1.png
 #    :width: 100%
 
 ###############################################################################
-# .. image:: ../_static/demoInteractiveShapePicker_2.png
+# .. image:: ../../_static/demoInteractiveShapePicker_2.png
 #    :width: 100%
 
 ###############################################################################
-# .. image:: ../_static/demoInteractiveShapePicker_3.png
+# .. image:: ../../_static/demoInteractiveShapePicker_3.png
 #    :width: 100%
 
 ###############################################################################
-# .. image:: ../_static/demoInteractiveShapePicker_4.png
+# .. image:: ../../_static/demoInteractiveShapePicker_4.png
 #    :width: 100%

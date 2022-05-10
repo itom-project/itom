@@ -31,5 +31,5 @@ handle["contourColorMap"] = "hotIron"
 handle["contourLineWidth"] = 5
 
 ###############################################################################
-# .. image:: ../_static/demoContourLine2DPlot_1.png
+# .. image:: ../../_static/demoContourLine2DPlot_1.png
 #    :width: 100%

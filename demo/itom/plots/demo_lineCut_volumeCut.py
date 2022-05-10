@@ -117,5 +117,5 @@ gauss3D.valueUnit = "a. u."
 plot(gauss3D, properties={"keepAspectRatio": True, "colorMap": "viridis"})
 
 ###############################################################################
-# .. image:: ../_static/demoDataObjectCuts_1.png
+# .. image:: ../../_static/demoDataObjectCuts_1.png
 #    :width: 100%

@@ -37,5 +37,5 @@ gui = ui("gui_with_icons_from_resource.ui", type=ui.TYPEWINDOW)
 gui.show()
 
 ###############################################################################
-# .. image:: ../_static/demoGUIIconsResources_1.png
+# .. image:: ../../_static/demoGUIIconsResources_1.png
 #    :width: 50%

@@ -108,5 +108,5 @@ mask = dObj.createMask(all_shapes)
 h["overlayImage"] = mask
 
 ###############################################################################
-# .. image:: ../_static/demoDrawAndTransformShapes_1.png
+# .. image:: ../../_static/demoDrawAndTransformShapes_1.png
 #    :width: 100%

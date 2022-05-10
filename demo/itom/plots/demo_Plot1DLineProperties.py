@@ -28,7 +28,7 @@ foursines[3, :] = sine4
 [i, h] = plot1(foursines)
 
 ###############################################################################
-# .. image:: ../_static/demoPlot1DLineProperties_1.png
+# .. image:: ../../_static/demoPlot1DLineProperties_1.png
 #    :width: 100%
 
 ###############################################################################

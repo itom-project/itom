@@ -44,5 +44,5 @@ for i in range(0, 10):
 gui.show()
 
 ###############################################################################
-# .. image:: ../_static/demoMainform_1.png
+# .. image:: ../../_static/demoMainform_1.png
 #    :width: 25%

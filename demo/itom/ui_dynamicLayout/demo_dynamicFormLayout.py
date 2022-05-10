@@ -163,5 +163,5 @@ if __name__ == "__main__":
     win1.gui.show()
 
 ###############################################################################
-# .. image:: ../_static/demoDynamicFormLayout_1.png
+# .. image:: ../../_static/demoDynamicFormLayout_1.png
 #    :width: 75%

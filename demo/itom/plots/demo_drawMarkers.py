@@ -107,7 +107,7 @@ for i in range(0, 5):
 h1.call("plotMarkers", maximas, "gs5", "local-maximas")
 
 ###############################################################################
-# .. image:: ../_static/demoDrawMarkers_1.png
+# .. image:: ../../_static/demoDrawMarkers_1.png
 #    :width: 100%
 
 ###############################################################################
@@ -128,5 +128,5 @@ corners2[1, :] = Y2.flatten()
 h2.call("plotMarkers", corners1, "r+25;2", "corners1", 0)  # draw to plane 0 only
 h2.call("plotMarkers", corners2, "c+25", "corners2", 1)  # draw to plane 1 only
 ###############################################################################
-# .. image:: ../_static/demoDrawMarkers_2.png
+# .. image:: ../../_static/demoDrawMarkers_2.png
 #    :width: 100%

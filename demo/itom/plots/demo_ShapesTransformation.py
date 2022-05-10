@@ -28,5 +28,5 @@ rect4.rotateDeg(30)
 
 h["geometricShapes"] = (rect, rect2, rect3, rect4)
 ###############################################################################
-# .. image:: ../_static/demoShapesTransformation_1.png
+# .. image:: ../../_static/demoShapesTransformation_1.png
 #    :width: 100%

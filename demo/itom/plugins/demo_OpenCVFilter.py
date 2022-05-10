@@ -42,5 +42,5 @@ plot(dObj)  # plot original image
 plot(outputImage)  # plot filtered image
 
 ###############################################################################
-# .. image:: ../_static/demoOpenCVFilter_1.png
+# .. image:: ../../_static/demoOpenCVFilter_1.png
 #    :width: 100%

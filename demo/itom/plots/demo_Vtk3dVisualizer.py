@@ -108,5 +108,5 @@ h["yDrawGridlines"] = True
 h["zDrawGridlines"] = True
 
 ###############################################################################
-# .. image:: ../_static/demoVTK3DVisualizer_1.png
+# .. image:: ../../_static/demoVTK3DVisualizer_1.png
 #    :width: 100%

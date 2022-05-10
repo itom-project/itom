@@ -82,17 +82,17 @@ camera.stopDevice()
 liveImage(camera)
 
 ###############################################################################
-# .. image:: ../_static/demoDummyGrabber_1.png
+# .. image:: ../../_static/demoDummyGrabber_1.png
 #    :width: 100%
 liveImage(cameraGaussian)
 
 ###############################################################################
-# .. image:: ../_static/demoDummyGrabber_2.png
+# .. image:: ../../_static/demoDummyGrabber_2.png
 #    :width: 100%
 liveImage(cameraGaussianArray)
 
 ###############################################################################
-# .. image:: ../_static/demoDummyGrabber_3.png
+# .. image:: ../../_static/demoDummyGrabber_3.png
 #    :width: 100%
 
 ###############################################################################

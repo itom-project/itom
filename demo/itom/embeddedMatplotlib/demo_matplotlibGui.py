@@ -41,7 +41,7 @@ def plotDroppedSpines():
 
 
 ###############################################################################
-# .. image:: ../_static/demoMatplotlibGUI_1.png
+# .. image:: ../../_static/demoMatplotlibGUI_1.png
 #    :width: 75%
 
 ###############################################################################
@@ -73,5 +73,5 @@ gui.show()
 plt.close(3)
 
 ###############################################################################
-# .. image:: ../_static/demoMatplotlibGUI_2.png
+# .. image:: ../../_static/demoMatplotlibGUI_2.png
 #    :width: 75%

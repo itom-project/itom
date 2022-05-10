@@ -18,5 +18,5 @@ print(dObj.tags)
 plot1(dObj, properties={"legendPosition": "Right"})
 
 ###############################################################################
-# .. image:: ../_static/demoPlot1DLegendTitle_1.png
+# .. image:: ../../_static/demoPlot1DLegendTitle_1.png
 #    :width: 100%

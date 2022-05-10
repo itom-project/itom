@@ -21,5 +21,5 @@ profile_roughness.show()
 
 
 ###############################################################################
-# .. image:: ../_static/demoRoughnessEvaluator_1.png
+# .. image:: ../../_static/demoRoughnessEvaluator_1.png
 #    :width: 100%

@@ -90,5 +90,5 @@ h["geometricShapes"] = [
 ]
 
 ###############################################################################
-# .. image:: ../_static/demoShapes_1.png
+# .. image:: ../../_static/demoShapes_1.png
 #    :width: 100%

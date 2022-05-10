@@ -18,5 +18,5 @@ gui.actionClose.connect("triggered()", closeGui)
 gui.show()
 
 ###############################################################################
-# .. image:: ../_static/demoGUIIconsImages_1.png
+# .. image:: ../../_static/demoGUIIconsImages_1.png
 #    :width: 50%

@@ -73,5 +73,5 @@ hmi.gui.show()
 # itom.clc()
 
 ###############################################################################
-# .. image:: ../_static/demoStyleSheetEditor_1.png
+# .. image:: ../../_static/demoStyleSheetEditor_1.png
 #    :width: 100%

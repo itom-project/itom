@@ -34,7 +34,7 @@ values = dataObject.randN(dateScale.shape, "float32")
 [i, h] = plot1(values, dateScale)
 
 ###############################################################################
-# .. image:: ../_static/demoPlot1DDateTime_1.png
+# .. image:: ../../_static/demoPlot1DDateTime_1.png
 #    :width: 100%
 
 h["lineWidth"] = 3
@@ -53,5 +53,5 @@ values = dataObject.randN([1, len(dateScale)], "uint8")
 plot1(values, dateScale)
 
 ###############################################################################
-# .. image:: ../_static/demoPlot1DDateTime_2.png
+# .. image:: ../../_static/demoPlot1DDateTime_2.png
 #    :width: 100%

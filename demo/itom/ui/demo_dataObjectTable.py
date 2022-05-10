@@ -95,5 +95,5 @@ gui.table.connect("clicked(int,int)", cellClicked)
 gui.show()
 
 ###############################################################################
-# .. image:: ../_static/demoDataObjectTable_1.png
+# .. image:: ../../_static/demoDataObjectTable_1.png
 #    :width: 100%

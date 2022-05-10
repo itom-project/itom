@@ -119,5 +119,5 @@ win.connect("destroyed()", guiClosed)
 win.show(0)
 
 ###############################################################################
-# .. image:: ../_static/demoFaceDetection_1.png
+# .. image:: ../../_static/demoFaceDetection_1.png
 #    :width: 100%

@@ -20,7 +20,7 @@ img2 = img1.copy()
 
 plot(img1)
 ###############################################################################
-# .. image:: ../_static/demoConvertFalseColor_1.png
+# .. image:: ../../_static/demoConvertFalseColor_1.png
 #    :width: 100%
 
 for m in range(height):
@@ -67,5 +67,5 @@ for m in range(height):
 
 plot(img2)
 ###############################################################################
-# .. image:: ../_static/demoConvertFalseColor_2.png
+# .. image:: ../../_static/demoConvertFalseColor_2.png
 #    :width: 100%

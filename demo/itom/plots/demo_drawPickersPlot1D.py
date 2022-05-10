@@ -63,5 +63,5 @@ h.call("setPicker", (1.5 * np.pi, 2.5 * np.pi), 0)
 h.call("appendPicker", (40, 80, 120, 160, 200), 1, False)
 
 ###############################################################################
-# .. image:: ../_static/demoDrawPickers1DPlot_1.png
+# .. image:: ../../_static/demoDrawPickers1DPlot_1.png
 #    :width: 100%

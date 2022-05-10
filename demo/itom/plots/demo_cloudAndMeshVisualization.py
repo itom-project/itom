@@ -39,5 +39,5 @@ mesh_triangles = polygonMesh.fromTopography(topography, triangulationType=1)
 h.call("addMesh", mesh_triangles, "mesh_triangles")
 
 ###############################################################################
-# .. image:: ../_static/demoColoredShapes_1.png
+# .. image:: ../../_static/demoColoredShapes_1.png
 #    :width: 100%

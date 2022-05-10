@@ -73,9 +73,9 @@ if __name__ == "__main__":
     instance.show()
 
 ###############################################################################
-# .. image:: ../_static/demoPlotStyleSheets_1.png
+# .. image:: ../../_static/demoPlotStyleSheets_1.png
 #    :width: 100%
 
 ###############################################################################
-# .. image:: ../_static/demoPlotStyleSheets_2.png
+# .. image:: ../../_static/demoPlotStyleSheets_2.png
 #    :width: 100%
