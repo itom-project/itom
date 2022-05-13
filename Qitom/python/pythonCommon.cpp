@@ -31,6 +31,7 @@
 #include "../../AddInManager/paramHelper.h"
 #include "../AppManagement.h"
 #include "../common/numeric.h"
+#include "../common/helperCommon.h"
 
 #include <qsettings.h>
 #include <qtextboundaryfinder.h>
@@ -514,7 +515,7 @@ PyObject* printOutParams(const QVector<ito::Param> *params, bool asErr, bool add
                 break;
 
                 case ((ito::ParamBase::Pointer|ito::ParamBase::HWRef)):
-                    type = ("Union[dataIO,actuator]");
+                    type = ("Union[itom.dataIO, itom.actuator]");
                 break;
 
                 case (ito::ParamBase::Pointer):
@@ -522,19 +523,19 @@ PyObject* printOutParams(const QVector<ito::Param> *params, bool asErr, bool add
                 break;
 
                 case (ito::ParamBase::DObjPtr):
-                    type = ("dataObject");
+                    type = ("itom.dataObject");
                 break;
 
                 case (ito::ParamBase::PointCloudPtr):
-                    type = ("pointCloud");
+                    type = ("itom.pointCloud");
                 break;
 
                 case (ito::ParamBase::PointPtr):
-                    type = ("point");
+                    type = ("itom.point");
                 break;
 
                 case (ito::ParamBase::PolygonMeshPtr):
-                    type = ("polygonMesh");
+                    type = ("itom.polygonMesh");
                 break;
 
                 default:
@@ -627,7 +628,7 @@ PyObject* printOutParams(const QVector<ito::Param> *params, bool asErr, bool add
 						PyDict_SetItemString(p_pyLine, "value", item);
 						Py_DECREF(item);
 
-						item = parseParamMetaAsDict(meta);
+						item = parseParamMetaAsDict(meta, &p);
 						PyDict_Merge(p_pyLine, item, 1);
 						Py_DECREF(item);
 					}
@@ -669,7 +670,7 @@ PyObject* printOutParams(const QVector<ito::Param> *params, bool asErr, bool add
 						PyDict_SetItemString(p_pyLine, "value", item);
 						Py_DECREF(item);
 
-						item = parseParamMetaAsDict(meta);
+						item = parseParamMetaAsDict(meta, &p);
 						PyDict_Merge(p_pyLine, item, 1);
 						Py_DECREF(item);
 					}
@@ -704,6 +705,10 @@ PyObject* printOutParams(const QVector<ito::Param> *params, bool asErr, bool add
 							PyDict_SetItemString(p_pyLine, "value", item);
 							Py_DECREF(item);
 						}
+
+                        item = parseParamMetaAsDict(meta, &p);
+                        PyDict_Merge(p_pyLine, item, 1);
+                        Py_DECREF(item);
 					}
 					break;
 
@@ -739,7 +744,7 @@ PyObject* printOutParams(const QVector<ito::Param> *params, bool asErr, bool add
 							break;
 						}
 
-						item = parseParamMetaAsDict(meta);
+						item = parseParamMetaAsDict(meta, &p);
 						PyDict_Merge(p_pyLine, item, 1);
 						Py_DECREF(item);
 					}
@@ -777,7 +782,7 @@ PyObject* printOutParams(const QVector<ito::Param> *params, bool asErr, bool add
 							break;
 						}
 
-						item = parseParamMetaAsDict(meta);
+						item = parseParamMetaAsDict(meta, &p);
 						PyDict_Merge(p_pyLine, item, 1);
 						Py_DECREF(item);
 					}
@@ -815,7 +820,7 @@ PyObject* printOutParams(const QVector<ito::Param> *params, bool asErr, bool add
 							break;
 						}
 
-						item = parseParamMetaAsDict(meta);
+						item = parseParamMetaAsDict(meta, &p);
 						PyDict_Merge(p_pyLine, item, 1);
 						Py_DECREF(item);
 					}
@@ -864,7 +869,7 @@ PyObject* printOutParams(const QVector<ito::Param> *params, bool asErr, bool add
                             break;
                         }
 
-                        item = parseParamMetaAsDict(meta);
+                        item = parseParamMetaAsDict(meta, &p);
                         PyDict_Merge(p_pyLine, item, 1);
                         Py_DECREF(item);
                     }
@@ -902,7 +907,7 @@ PyObject* printOutParams(const QVector<ito::Param> *params, bool asErr, bool add
                             break;
                         }
 
-                        item = parseParamMetaAsDict(meta);
+                        item = parseParamMetaAsDict(meta, &p);
                         PyDict_Merge(p_pyLine, item, 1);
                         Py_DECREF(item);
                     }
@@ -915,14 +920,14 @@ PyObject* printOutParams(const QVector<ito::Param> *params, bool asErr, bool add
 					case (ito::ParamBase::PointPtr) :
 					case (ito::ParamBase::PolygonMeshPtr) :
 						values["values"].append("<Object-Pointer>");
-						item = parseParamMetaAsDict(meta);
+						item = parseParamMetaAsDict(meta, &p);
 						PyDict_Merge(p_pyLine, item, 1);
 						Py_DECREF(item);
 						break;
 
 					default:
 						values["values"].append("<unknown>");
-						item = parseParamMetaAsDict(meta);
+						item = parseParamMetaAsDict(meta, &p);
 						PyDict_Merge(p_pyLine, item, 1);
 						Py_DECREF(item);
 						break;
@@ -1533,8 +1538,10 @@ PyObject* buildFilterOutputValues(QVector<QVariant> *outVals, ito::RetVal &retVa
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyObject *parseParamMetaAsDict(const ito::ParamMeta *meta)
+PyObject *parseParamMetaAsDict(const ito::ParamMeta *meta, const ito::Param* param /*= nullptr*/)
 {
+    bool b = PyErr_Occurred();
+
     if (meta)
     {
         PyObject *dict = PyDict_New();
@@ -1561,7 +1568,7 @@ PyObject *parseParamMetaAsDict(const ito::ParamMeta *meta)
                 Py_DECREF(temp);
 
 				ito::ByteArray unit = cm->getUnit();
-				temp = PyUnicode_FromString(unit.data());
+				temp = PythonQtConversion::QByteArrayToPyUnicodeSecure(unit.data());
 				PyDict_SetItemString(dict, "unit", temp);
 				Py_DECREF(temp);
             }
@@ -1586,7 +1593,7 @@ PyObject *parseParamMetaAsDict(const ito::ParamMeta *meta)
                 Py_DECREF(temp);
 
 				ito::ByteArray unit = cm->getUnit();
-				temp = PyUnicode_FromString(unit.data());
+				temp = PythonQtConversion::QByteArrayToPyUnicodeSecure(unit.data());
 				PyDict_SetItemString(dict, "unit", temp);
 				Py_DECREF(temp);
             }
@@ -1618,7 +1625,7 @@ PyObject *parseParamMetaAsDict(const ito::ParamMeta *meta)
                 }
 
 				ito::ByteArray unit = cm->getUnit();
-				temp = PyUnicode_FromString(unit.data());
+				temp = PythonQtConversion::QByteArrayToPyUnicodeSecure(unit.data());
 				PyDict_SetItemString(dict, "unit", temp);
 				Py_DECREF(temp);
             }
@@ -1629,6 +1636,7 @@ PyObject *parseParamMetaAsDict(const ito::ParamMeta *meta)
                 temp = PyUnicode_FromString("string meta");
                 PyDict_SetItemString(dict, "metaTypeStr", temp);
                 Py_DECREF(temp);
+                QByteArray ba;
 
                 switch (cm->getStringType())
                 {
@@ -1646,10 +1654,13 @@ PyObject *parseParamMetaAsDict(const ito::ParamMeta *meta)
                 Py_DECREF(temp);
 
                 temp = PyTuple_New(cm->getLen());
+
                 for (int i = 0 ; i < cm->getLen(); ++i)
                 {
-                    PyTuple_SetItem(temp, i, PyUnicode_FromString(cm->getString(i))); //steals reference
+                    ba = cm->getString(i);
+                    PyTuple_SetItem(temp, i, PythonQtConversion::QByteArrayToPyUnicodeSecure(ba)); //steals reference
                 }
+
                 PyDict_SetItemString(dict, "allowedItems", temp);
                 Py_DECREF(temp);
             }
@@ -1661,7 +1672,7 @@ PyObject *parseParamMetaAsDict(const ito::ParamMeta *meta)
                 PyDict_SetItemString(dict, "metaTypeStr", temp);
                 Py_DECREF(temp);
 
-                temp = PyUnicode_FromString(cm->getHWAddInName().data());
+                temp = PythonQtConversion::QByteArrayToPyUnicodeSecure(cm->getHWAddInName().data());
                 PyDict_SetItemString(dict, "requiredPluginName", temp);
                 Py_DECREF(temp);
             }
@@ -1714,7 +1725,7 @@ PyObject *parseParamMetaAsDict(const ito::ParamMeta *meta)
                 Py_DECREF(temp);
 
 				ito::ByteArray unit = cm->getUnit();
-				temp = PyUnicode_FromString(unit.data());
+				temp = PythonQtConversion::QByteArrayToPyUnicodeSecure(unit.data());
 				PyDict_SetItemString(dict, "unit", temp);
 				Py_DECREF(temp);
             }
@@ -1751,7 +1762,7 @@ PyObject *parseParamMetaAsDict(const ito::ParamMeta *meta)
                 Py_DECREF(temp);
 
 				ito::ByteArray unit = cm->getUnit();
-				temp = PyUnicode_FromString(unit.data());
+				temp = PythonQtConversion::QByteArrayToPyUnicodeSecure(unit.data());
 				PyDict_SetItemString(dict, "unit", temp);
 				Py_DECREF(temp);
             }
@@ -1788,7 +1799,7 @@ PyObject *parseParamMetaAsDict(const ito::ParamMeta *meta)
                 Py_DECREF(temp);
 
 				ito::ByteArray unit = cm->getUnit();
-				temp = PyUnicode_FromString(unit.data());
+				temp = PythonQtConversion::QByteArrayToPyUnicodeSecure(unit.data());
 				PyDict_SetItemString(dict, "unit", temp);
 				Py_DECREF(temp);
             }
@@ -1818,7 +1829,7 @@ PyObject *parseParamMetaAsDict(const ito::ParamMeta *meta)
                 for (int i = 0; i < cm->getLen(); ++i)
                 {
                     PyTuple_SetItem(
-                        temp, i, PyUnicode_FromString(cm->getString(i))); // steals reference
+                        temp, i, PythonQtConversion::QByteArrayToPyUnicodeSecure(cm->getString(i))); // steals reference
                 }
                 PyDict_SetItemString(dict, "allowedItems", temp);
                 Py_DECREF(temp);
@@ -1868,7 +1879,7 @@ PyObject *parseParamMetaAsDict(const ito::ParamMeta *meta)
                 Py_DECREF(temp);
 
 				ito::ByteArray unit = cm->getUnit();
-				temp = PyUnicode_FromString(unit.data());
+				temp = PythonQtConversion::QByteArrayToPyUnicodeSecure(unit.data());
 				PyDict_SetItemString(dict, "unit", temp);
 				Py_DECREF(temp);
             }
@@ -1919,7 +1930,7 @@ PyObject *parseParamMetaAsDict(const ito::ParamMeta *meta)
                 }
 
 				ito::ByteArray unit = cm->getUnit();
-				temp = PyUnicode_FromString(unit.data());
+				temp = PythonQtConversion::QByteArrayToPyUnicodeSecure(unit.data());
 				PyDict_SetItemString(dict, "unit", temp);
 				Py_DECREF(temp);
             }
@@ -1956,7 +1967,7 @@ PyObject *parseParamMetaAsDict(const ito::ParamMeta *meta)
                 Py_DECREF(temp);
 
 				ito::ByteArray unit = cm->getUnit();
-				temp = PyUnicode_FromString(unit.data());
+				temp = PythonQtConversion::QByteArrayToPyUnicodeSecure(unit.data());
 				PyDict_SetItemString(dict, "unit", temp);
 				Py_DECREF(temp);
             }
@@ -1968,16 +1979,16 @@ PyObject *parseParamMetaAsDict(const ito::ParamMeta *meta)
                 PyDict_SetItemString(dict, "metaTypeStr", temp);
                 Py_DECREF(temp);
 
-                temp = parseParamMetaAsDict(&cm->getWidthRangeMeta());
+                temp = parseParamMetaAsDict(&cm->getWidthRangeMeta(), nullptr);
                 PyDict_SetItemString(dict, "widthMeta", temp);
                 Py_DECREF(temp);
 
-                temp = parseParamMetaAsDict(&cm->getHeightRangeMeta());
+                temp = parseParamMetaAsDict(&cm->getHeightRangeMeta(), nullptr);
                 PyDict_SetItemString(dict, "heightMeta", temp);
                 Py_DECREF(temp);
 
 				ito::ByteArray unit = cm->getUnit();
-				temp = PyUnicode_FromString(unit.data());
+				temp = PythonQtConversion::QByteArrayToPyUnicodeSecure(unit.data());
 				PyDict_SetItemString(dict, "unit", temp);
 				Py_DECREF(temp);
             }
@@ -1993,8 +2004,16 @@ PyObject *parseParamMetaAsDict(const ito::ParamMeta *meta)
         PyDict_SetItemString(dict, "metaType", temp);
         Py_DECREF(temp);
 
+        if (param)
+        {
+            QString pythonLikeTypename;
+            temp = PythonQtConversion::QStringToPyObject(ito::getMetaDocstringFromParam(*param, false, pythonLikeTypename));
+            PyDict_SetItemString(dict, "metaReadableStr", temp);
+            Py_DECREF(temp);
+        }
+
 		ito::ByteArray category = meta->getCategory();
-		temp = PyUnicode_FromString(category.data());
+		temp = PythonQtConversion::QByteArrayToPyUnicodeSecure(category.data());
 		PyDict_SetItemString(dict, "category", temp);
 		Py_DECREF(temp);
 

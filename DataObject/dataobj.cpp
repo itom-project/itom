@@ -2609,10 +2609,12 @@ void DataObject::create(
 \detail Function returns the not rounded pixel index of a physical coordinate (Unit-Coordinate = (
 px-Coordinate - Offset)* Scale). If the pixel is outside of the image, the isInsideImage-flag is set
 to false else it is set to true. To avoid memory access-error, the returnvalue is clipped within the
-range of the image ([0...imagesize-1]) \param[in] dim  Axis-dimension for which the physical
-coordinate is calculated \param[in] pix  Pixel-index as double \param[out] isInsideImage   flag
-which is set to true if coordinate is within range of the image. \return (double)( phys / AxisScale
-+ AxisOffset) & [0..imagesize-1]
+range of the image ([0...imagesize-1]) 
+
+\param[in] dim  Axis-dimension for which the physical coordinate is calculated 
+\param[in] pix  Pixel-index as double 
+\param[out] isInsideImage   flag which is set to true if coordinate is within range of the image. 
+\return (double)( phys / AxisScale + AxisOffset) & [0..imagesize-1]
 */
 double DataObject::getPhysToPix(
     const unsigned int dim, const double phys, bool& isInsideImage) const
@@ -2628,6 +2630,7 @@ double DataObject::getPhysToPix(
         {
             isInsideImage = false;
         }
+
         return 0.0;
     }
 
@@ -2642,15 +2645,16 @@ double DataObject::getPhysToPix(
         tPx = phys;
     }
 
-    if (tPx > getSize(dim) - 1)
+    // allow the rounded tPx value to be within the pixel boundaries.
+    if (tPx >= (getSize(dim) - 0.5))
     {
         isInsideImage = false;
         tPx = static_cast<double>(getSize(dim) - 1);
     }
-    else if (tPx < 0)
+    else if (tPx <= -0.5)
     {
         isInsideImage = false;
-        tPx = 0;
+        tPx = 0.0;
     }
     else
     {
@@ -2665,13 +2669,15 @@ double DataObject::getPhysToPix(
 \brief Function returns the not rounded pixel index of a physical coordinate
 \detail Function returns the not rounded pixel index of a physical coordinate (Unit-Coordinate = (
 px-Coordinate - Offset)* Scale). To avoid memory access-error, the return value is clipped within
-the range of the image ([0...imagesize-1]) \param[in] dim  Axis-dimension for which the physical
-coordinate is calculated \param[in] pix  Pixel-index as double \return (double)( phys / AxisScale +
-AxisOffset) & [0..imagesize-1]
+the range of the image ([0...imagesize-1]) 
+
+\param[in] dim  Axis-dimension for which the physical coordinate is calculated 
+\param[in] pix  Pixel-index as double \return (double)( phys / AxisScale + AxisOffset) & [0..imagesize-1]
 */
 double DataObject::getPhysToPix(const unsigned int dim, const double phys) const
 {
     double tPx = 0.0;
+
     if (static_cast<int>(dim) >= m_dims)
     {
         return 0.0;
@@ -2694,7 +2700,30 @@ double DataObject::getPhysToPix(const unsigned int dim, const double phys) const
     }
     else if (tPx < 0)
     {
-        tPx = 0;
+        tPx = 0.0;
+    }
+
+    return tPx;
+}
+
+double DataObject::getPhysToPixUnclipped(const unsigned int dim, const double phys) const
+{
+    double tPx = 0.0;
+
+    if (static_cast<int>(dim) >= m_dims)
+    {
+        return 0.0;
+    }
+
+    if (m_pDataObjectTags)
+    {
+        // tPx = (phys / scale) + offset
+        tPx = (phys / m_pDataObjectTags->m_axisScales[dim]) +
+            (m_pDataObjectTags->m_axisOffsets[dim] - m_roi[dim]);
+    }
+    else
+    {
+        tPx = phys;
     }
 
     return tPx;

@@ -59,4 +59,4 @@ Further commands
 Some further commands. 
 
 .. automodule:: itom
-    :members: scriptEditor, openScript, newScript, setCurrentPath, getAppPath, getCurrentPath, getScreenInfo, checkSignals, getDefaultScaleableUnits, processEvents, scaleValueAndUnit, setApplicationCursor, clc, autoReloader, getPalette, setPalette, getPaletteList, showHelpViewer, getQtToolPath, registerResource, unregisterResource, clearAll
+    :members: copyStringToClipboard, scriptEditor, openScript, newScript, setCurrentPath, getAppPath, getCurrentPath, getScreenInfo, checkSignals, getDefaultScaleableUnits, processEvents, scaleValueAndUnit, setApplicationCursor, clc, autoReloader, getPalette, setPalette, getPaletteList, showHelpViewer, getQtToolPath, registerResource, unregisterResource, clearAll

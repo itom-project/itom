@@ -138,16 +138,6 @@ private:
     static const int rolePath = Qt::UserRole + 1;
     static const int roleType = Qt::UserRole + 2;
     static const int roleFilename = Qt::UserRole + 3;
-
-    QString minText(int minimum) const;
-    QString minText(double minimum) const;
-    QString minText(char minimum) const;
-    QString maxText(int minimum) const;
-    QString maxText(double minimum) const;
-    QString maxText(char minimum) const;
-    QString minmaxText(int value) const;
-    QString minmaxText(double value) const;
-    QString minmaxText(char value) const;
     
     // Variables
     Ui::HelpTreeDockWidget   ui;                

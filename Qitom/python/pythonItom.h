@@ -141,6 +141,8 @@ public:
 
     static PyObject* PyClearAll(PyObject* pSelf);
 
+    static PyObject* PyCopyStringToClipboard(PyObject* pSelf, PyObject* pArgs, PyObject *pKwds);
+
 protected:
     static QHash<size_t, QString> m_gcTrackerList; //!< list with objects currently tracked by python garbage collector.
 

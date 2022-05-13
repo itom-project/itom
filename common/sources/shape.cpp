@@ -732,6 +732,7 @@ QPolygonF Shape::ramerDouglasPeucker(qreal tol) const
     if (type() == Ellipse || type() == Circle)
     {
         QRectF rect(d->m_polygon[0], d->m_polygon[1]);
+        rect = rect.normalized(); // in case of a negative width or height
         int N = 0;
 
         if (tol < 0)
@@ -823,7 +824,40 @@ QRegion Shape::region() const
 //----------------------------------------------------------------------------------------------
 QPointF Shape::centerPoint() const
 {
-    return d->m_transform.map(baseCenterPoint());
+    if (d->m_transform.isIdentity())
+    {
+        return baseCenterPoint();
+    }
+
+    switch (type())
+    {
+    case Point:
+        return d->m_transform.map(d->m_polygon[0]);
+    case Polygon:
+    case MultiPointPick: {
+        QPointF sum(0.0, 0.0);
+
+        foreach (const QPointF &curPoint, d->m_polygon)
+        {
+            sum += d->m_transform.map(curPoint);
+        }
+
+        return sum / (qreal)d->m_polygon.size();
+    }
+    case Line:
+    case Rectangle:
+    case Square:
+    case Ellipse:
+    case Circle: {
+        QPointF p1 = d->m_polygon[1];
+        QPointF p2 = d->m_polygon[0];
+        p1 = d->m_transform.map(p1);
+        p2 = d->m_transform.map(p2);
+        return (p1+p2) / 2.0;
+    }
+    default:
+        return QPointF(0.0, 0.0);
+    }
 }
 
 //----------------------------------------------------------------------------------------------
@@ -838,10 +872,12 @@ QPointF Shape::baseCenterPoint() const
 	case MultiPointPick:
 	{
 		QPointF sum(0.0, 0.0);
-		foreach (QPointF curPoint, d->m_polygon)
+
+		foreach (const QPointF &curPoint, d->m_polygon)
 		{
 			sum += curPoint;
 		}
+
 		return sum / (qreal)d->m_polygon.size();
 	}
 	case Line:

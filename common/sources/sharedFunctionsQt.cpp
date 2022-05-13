@@ -236,7 +236,7 @@ namespace ito
 
         if (!paramList)
         {
-            return RetVal(retWarning, 0, QObject::tr("ParamList not inialized properly").toLatin1().data());
+            return RetVal(retWarning, 0, QObject::tr("ParamList not properly initialized").toLatin1().data());
         }
 
         if (!paramList->empty())

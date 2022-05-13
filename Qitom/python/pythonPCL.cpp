@@ -2660,53 +2660,6 @@ pointCloud \n\
 }
 
 //---------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPointCloudFromDisparity_doc,"fromDisparity(disparity, intensity = None, deleteNaN = False, color = None) -> pointCloud \n\
-\n\
-Creates a point cloud from a given topography dataObject.\n\
-\n\
-Creates a point cloud from the 2.5D data set given by the topography :class:`dataObject`. \n\
-The x and y-components of each point are taken from the regular grid, spanned by the \n\
-coordinate system of ``topography`` (considering the scaling and offset of the object). \n\
-The corresponding z-value is the topography's value itself. \n\
-\n\
-This method is deprecated. Use the method :meth:`fromTopography` with the same arguments \n\
-instead. \n\
-\n\
-Parameters \n\
------------ \n\
-disparity : dataObject \n\
-    ``M x N``, `float32`:class:`dataObject` are the disparity values. \n\
-intensity : dataObject, optional \n\
-    a ``M x N``, `float32` :class:`dataObject`. If given, a ``point.PointXYZI`` \n\
-    :class:`pointCloud` is created whose intensity values are determined by \n\
-    this argument (cannot be used together with ``color``). \n\
-deleteNaN : bool, optional \n\
-    If ``True``, ``NaN`` or ``Inf`` z-coordiantes in the ``disparity`` object will \n\
-    not be copied into the point cloud (the point cloud is not organized any more).\n\
-color : dataObject, optional \n\
-    a ``M x N``, `rgba32` :class:`dataObject`. If given, a ``point.PointXYZRGBA`` \n\
-    :class:`pointCloud` is created whose color values are determined by \n\
-    this argument (cannot be used together with ``intensity``). \n\
-\n\
-Returns \n\
-------- \n\
-pointCloud \n\
-    the newly created :class:`pointCloud` (either of type ``point.POINTXYZI`` \n\
-    or ``point.PointXYZRGBA``.");
-/*static*/ PyObject* PythonPCL::PyPointCloud_fromDisparity(PyPointCloud *self, PyObject *args, PyObject *kwds)
-{
-    if (PyErr_WarnEx(
-        PyExc_DeprecationWarning,
-        "fromDisparity is deprecated. Use fromTopography with the same arguments instead.", 1) == -1)
-    {
-        //exception is raised instead of warning (depending on user defined warning levels)
-        return NULL;
-    }
-
-    return PyPointCloud_fromTopography(self, args, kwds);
-}
-
-//---------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyPointCloudFromTopography_doc, "fromTopography(topography, intensity = None, deleteNaN = False, color = None) -> pointCloud \n\
 \n\
 Creates a point cloud from a given topography dataObject.\n\
@@ -2863,7 +2816,6 @@ PyMethodDef PythonPCL::PyPointCloud_methods[] = {
     {"fromXYZ",       (PyCFunction)PyPointCloud_fromXYZ, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyPointCloudFromXYZ_doc},
     {"fromXYZI",      (PyCFunction)PyPointCloud_fromXYZI, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyPointCloudFromXYZI_doc},
     {"fromXYZRGBA",   (PyCFunction)PyPointCloud_fromXYZRGBA, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyPointCloudFromXYZRGBA_doc},
-    {"fromDisparity", (PyCFunction)PyPointCloud_fromDisparity, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyPointCloudFromDisparity_doc},
     {"fromTopography",  (PyCFunction)PyPointCloud_fromTopography, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyPointCloudFromTopography_doc },
 
     {"copy",          (PyCFunction)PyPointCloud_copy, METH_NOARGS, pyPointCloudCopy_doc},

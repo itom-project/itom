@@ -184,7 +184,8 @@ class DataObjectConstructors(unittest.TestCase):
 
         # rgba
         obj1 = dataObject.ones([3, 2], "rgba32")
-        nptesting.assert_array_equal(obj1, rgba(255,255,255,255))
+        for val in obj1:
+            self.assertEqual(val, rgba(255, 255, 255, 255))
 
         # datetime, timedelta
         with self.assertRaises(TypeError):
@@ -208,15 +209,16 @@ class DataObjectConstructors(unittest.TestCase):
         ]:
             obj1 = dataObject.zeros([3, 2], dt)
             nptesting.assert_array_almost_equal(obj1, 0.0)
-    
+
         # rgba
         obj1 = dataObject.ones([3, 2], "rgba32")
-        nptesting.assert_array_equal(obj1, rgba(0,0,0,0))
-    
+        for val in obj1:
+            self.assertEqual(val, rgba(255, 255, 255, 255))
+
         # datetime, timedelta
         with self.assertRaises(TypeError):
             obj1 = dataObject.ones([3, 2], "datetime")
-    
+
         with self.assertRaises(TypeError):
             obj1 = dataObject.ones([3, 2], "timedelta")
 
