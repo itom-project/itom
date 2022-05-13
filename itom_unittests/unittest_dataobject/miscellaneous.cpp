@@ -368,3 +368,59 @@ TYPED_TEST(miscellaneousTests, getXYRotationalMatrix_Test)
     EXPECT_EQ(0, r21);
     EXPECT_EQ(1, r22);
 }
+
+//!< this test should check if a mask for all NaN values can be obtained
+//! from OpenCV matrices if the array is compared to itself.
+//! see: https://stackoverflow.com/questions/41759247/filter-opencv-mat-for-nan-values
+TYPED_TEST(miscellaneousTests, openCVNanMask_Test)
+{
+    cv::Mat arr = cv::Mat::zeros(9, 10, CV_32FC1);
+    
+    for (int r = 3; r< 7; ++r)
+    {
+        for (int c = 4; c < 8; ++c)
+        {
+            arr.at<float>(r, c) = std::numeric_limits<float>::quiet_NaN();
+        }
+    }
+
+    cv::Mat maskValid = (arr == arr);
+
+    for (int r = 0; r < 9; ++r)
+    {
+        for (int c = 0; c < 10; ++c)
+        {
+            if (r >= 3 && r < 7 && c >= 4 && c < 8)
+            {
+                EXPECT_EQ(maskValid.at<unsigned char>(r, c), 0);
+            }
+            else
+            {
+                EXPECT_EQ(maskValid.at<unsigned char>(r, c), 255);
+            }
+        }
+    }
+}
+
+//!< similar test than above, taken from https://github.com/opencv/opencv/issues/16465
+//! It is indeed true to compare to matrices with an equal operator, however
+//! if the != operator would be used, the result is undefined!
+int count_NaNs_in_image(int rows, int cols) 
+{
+    cv::Mat1f test(rows, cols);
+    test.setTo(std::numeric_limits<float>::quiet_NaN());
+    /*
+    // this will not work for all cases
+    cv::Mat1b is_nan = (test != test);
+    return cv::countNonZero(is_nan);*/
+
+    // this should work
+    cv::Mat1b is_notnan = (test == test);
+    return (rows * cols) - cv::countNonZero(is_notnan);
+}
+
+TYPED_TEST(miscellaneousTests, openCVNanMask2_Test)
+{
+    EXPECT_EQ(16, count_NaNs_in_image(4, 4)); // succeeds
+    EXPECT_EQ(44, count_NaNs_in_image(4, 11)); // fails with 12 NaNs found instead of 44?
+}

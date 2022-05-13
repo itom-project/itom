@@ -57,15 +57,19 @@ namespace cv
 {
     template<> inline ito::float32 saturate_cast<ito::float32>( ito::float64 v)
     {
-        if(cvIsInf(v)) return std::numeric_limits<ito::float32>::infinity();
-        if(cvIsNaN(v)) return std::numeric_limits<ito::float32>::quiet_NaN();
+        if(std::isinf(v)) 
+            return std::numeric_limits<ito::float32>::infinity();
+        if(std::isnan(v)) 
+            return std::numeric_limits<ito::float32>::quiet_NaN();
         return static_cast<ito::float32>(std::max ( (ito::float64)(- (std::numeric_limits<ito::float32>::max)()) ,  std::min ( v , (ito::float64) ((std::numeric_limits<ito::float32>::max)()) )));
     }
     
     template<> inline ito::float64 saturate_cast<ito::float64>( ito::float32 v)
     {
-        if(cvIsInf(v)) return std::numeric_limits<ito::float64>::infinity();
-        if(cvIsNaN(v)) return std::numeric_limits<ito::float64>::quiet_NaN();
+        if(std::isinf(v)) 
+            return std::numeric_limits<ito::float64>::infinity();
+        if(std::isnan(v)) 
+            return std::numeric_limits<ito::float64>::quiet_NaN();
         return static_cast<ito::float64>(v);
     }
     
@@ -425,8 +429,8 @@ namespace ito {
             }
             else
             {
-                if (cvIsNaN(m_dVal)) return "NaN";
-                if (cvIsInf(m_dVal)) return "Inf";
+                if (std::isnan(m_dVal)) return "NaN";
+                if (std::isinf(m_dVal)) return "Inf";
                 
                 std::ostringstream strs;
                 strs << m_dVal;
@@ -801,13 +805,25 @@ namespace ito {
         
         /**
          \brief Function returns the not rounded pixel index of a physical coordinate
+
+         The pixel value is clipped to the valid range of this object.
          */
         double getPhysToPix(const unsigned int dim, const double phys, bool &isInsideImage) const;
 
         /**
          \brief Function returns the not rounded pixel index of a physical coordinate
+
+         The pixel value is clipped to the valid range of this object.
          */
         double getPhysToPix(const unsigned int dim, const double phys) const;
+
+        /**
+         \brief Function returns the not rounded pixel index of a physical coordinate
+
+         The pixel value is not clipped to the valid range of this object, hence,
+         the returned index might not exist in the dataObject.
+         */
+        double getPhysToPixUnclipped(const unsigned int dim, const double phys) const;
         
         /**
          \brief Function returns the not rounded pixel index of a physical coordinate
