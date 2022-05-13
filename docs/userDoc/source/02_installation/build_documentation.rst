@@ -41,13 +41,20 @@ installed on your computer:
     However, you 
     then need to separately install all depending packages of **Sphinx**.
 
-3. Python-Packages breathe and numpydoc
+3. Python-Packages breathe, numpydoc, sphinx-gallery
     
     Besides **Sphinx**, the additional packages 
-    `breathe <https://pypi.org/project/breathe/>`_ and 
-    `numpydoc <https://pypi.org/project/numpydoc/>`_ have to be installed in 
+    `breathe <https://pypi.org/project/breathe/>`_
+    `numpydoc <https://pypi.org/project/numpydoc/>`_ and
+    `sphinx-gallery <https://pypi.org/project/sphinx-gallery/>`_  have to be installed in 
     order to create the user documentation of itom. It is recommended to 
     install them via the Python Package Manager of itom, too.
+
+4. For html builder: the Python-packages sphinx-copybutton and sphinx-rtd-theme
+    
+    If the html website builder is used for **Sphinx**, the additional packages
+    `sphinx-copybutton <https://pypi.org/project/sphinx-copybutton/>`_ and 
+    `sphinx-rtd-theme <https://pypi.org/project/sphinx-rtd-theme/>`_ have to be installed, too.
 
 
 Run doxygen

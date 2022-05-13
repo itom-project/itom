@@ -301,3 +301,5 @@ for buildername in buildernames:
                     print("ERROR: Can not create pdf")
 
 del __main__.__dict__["__doxygen__xml"]
+
+close("all")
