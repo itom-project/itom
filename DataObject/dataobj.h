@@ -40,7 +40,9 @@
     #pragma warning(disable:4996)
 #endif
 
-#define NOMINMAX //see: http://social.msdn.microsoft.com/Forums/sv/vclanguage/thread/d986a370-d856-4f9e-9f14-53f3b18ab63e, this is only an issue with OpenCV 2.4.3, not 2.3.x
+// see: http://social.msdn.microsoft.com/Forums/sv/vclanguage/thread/d986a370-d856-4f9e-9f14-53f3b18ab63e, 
+// this is only an issue with OpenCV 2.4.3, not 2.3.x
+#define NOMINMAX 
 
 #include "opencv2/opencv.hpp"
 #include "opencv2/core/core.hpp"
@@ -55,24 +57,67 @@ namespace cv
 {
     template<> inline ito::float32 saturate_cast<ito::float32>( ito::float64 v)
     {
-        if(cvIsInf(v)) return std::numeric_limits<ito::float32>::infinity();
-        if(cvIsNaN(v)) return std::numeric_limits<ito::float32>::quiet_NaN();
+        if(std::isinf(v)) 
+            return std::numeric_limits<ito::float32>::infinity();
+        if(std::isnan(v)) 
+            return std::numeric_limits<ito::float32>::quiet_NaN();
         return static_cast<ito::float32>(std::max ( (ito::float64)(- (std::numeric_limits<ito::float32>::max)()) ,  std::min ( v , (ito::float64) ((std::numeric_limits<ito::float32>::max)()) )));
     }
     
     template<> inline ito::float64 saturate_cast<ito::float64>( ito::float32 v)
     {
-        if(cvIsInf(v)) return std::numeric_limits<ito::float64>::infinity();
-        if(cvIsNaN(v)) return std::numeric_limits<ito::float64>::quiet_NaN();
+        if(std::isinf(v)) 
+            return std::numeric_limits<ito::float64>::infinity();
+        if(std::isnan(v)) 
+            return std::numeric_limits<ito::float64>::quiet_NaN();
         return static_cast<ito::float64>(v);
     }
     
-    template<typename _Tp> static inline _Tp saturate_cast(ito::complex128 /*v*/) {     cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__)); return 0; }
-    template<typename _Tp> static inline _Tp saturate_cast(ito::complex64 /*v*/) {     cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__)); return 0; }
+    template<typename _Tp> static inline _Tp saturate_cast(ito::complex128 /*v*/) 
+    {     
+        cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__)); 
+        return 0; 
+    }
+
+    template<typename _Tp> static inline _Tp saturate_cast(ito::complex64 /*v*/) 
+    {     
+        cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__)); 
+        return 0; 
+    }
     
-    template<typename _Tp> static inline _Tp saturate_cast(ito::Rgba32 /*v*/) {     cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__)); return 0; }
-    //   template<typename _Tp> static inline ito::Rgba32 saturate_cast(_Tp /*v*/) {     cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__)); return 0; }
-    
+    template<typename _Tp> static inline _Tp saturate_cast(ito::Rgba32 /*v*/) 
+    {     
+        cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__)); 
+        return 0; 
+    }
+
+    template<typename _Tp> static inline _Tp saturate_cast(ito::DateTime /*v*/)
+    {
+        cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+        return 0;
+    }
+
+    template<typename _Tp> static inline _Tp saturate_cast(ito::TimeDelta /*v*/)
+    {
+        cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+        return 0;
+    }
+
+    template<> inline ito::Rgba32 saturate_cast(ito::DateTime /*v*/)
+    {
+        cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+        return ito::Rgba32::black();
+    }
+
+    template<> inline ito::Rgba32 saturate_cast(ito::TimeDelta /*v*/)
+    {
+        cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+        return ito::Rgba32::black();
+    }
+
+    template<> inline ito::TimeDelta saturate_cast(ito::TimeDelta v) { return v; }
+    template<> inline ito::DateTime saturate_cast(ito::DateTime v) { return v; }
+
     template<> inline ito::complex64 saturate_cast(ito::uint8 v){ return ito::complex64(static_cast<ito::float32>(v),0.0); }
     template<> inline ito::complex64 saturate_cast(ito::int8 v){ return ito::complex64(static_cast<ito::float32>(v),0.0); }
     template<> inline ito::complex64 saturate_cast(ito::uint16 v){ return ito::complex64(static_cast<ito::float32>(v),0.0); }
@@ -225,6 +270,40 @@ namespace cv
             type = CV_MAKETYPE(depth, channels)
         };
     };
+
+    template<> class DataType<ito::DateTime>
+    {
+    public:
+        typedef ito::DateTime value_type;
+        typedef ito::uint8 channel_type;
+        typedef ito::DateTime work_type;
+        typedef value_type vec_type;
+        enum
+        {
+            generic_type = 0,
+            depth = cv::DataDepth<channel_type>::value,
+            channels = sizeof(ito::DateTime),
+            fmt = ((channels - 1) << 8) + cv::DataDepth<channel_type>::fmt,
+            type = CV_MAKETYPE(depth, channels)
+        };
+    };
+
+    template<> class DataType<ito::TimeDelta>
+    {
+    public:
+        typedef ito::TimeDelta value_type;
+        typedef ito::uint8 channel_type;
+        typedef ito::TimeDelta work_type;
+        typedef value_type vec_type;
+        enum
+        {
+            generic_type = 0,
+            depth = cv::DataDepth<channel_type>::value,
+            channels = sizeof(ito::TimeDelta),
+            fmt = ((channels - 1) << 8) + cv::DataDepth<channel_type>::fmt,
+            type = CV_MAKETYPE(depth, channels)
+        };
+    };
     
     
 } // namespace cv
@@ -350,8 +429,8 @@ namespace ito {
             }
             else
             {
-                if (cvIsNaN(m_dVal)) return "NaN";
-                if (cvIsInf(m_dVal)) return "Inf";
+                if (std::isnan(m_dVal)) return "NaN";
+                if (std::isinf(m_dVal)) return "Inf";
                 
                 std::ostringstream strs;
                 strs << m_dVal;
@@ -994,6 +1073,8 @@ namespace ito {
         RetVal setTo(const complex64 &value, const DataObject &mask = DataObject());   /*!< Sets all or some (if uint8 mask is given) of the array elements to the specified value. */
         RetVal setTo(const complex128 &value, const DataObject &mask = DataObject());  /*!< Sets all or some (if uint8 mask is given) of the array elements to the specified value. */
         RetVal setTo(const ito::Rgba32 &value, const DataObject &mask = DataObject()); /*!< Sets all or some (if uint8 mask is given) of the array elements to the specified value. */
+        RetVal setTo(const ito::DateTime &value, const DataObject &mask = DataObject()); /*!< Sets all or some (if uint8 mask is given) of the array elements to the specified value. */
+        RetVal setTo(const ito::TimeDelta &value, const DataObject &mask = DataObject()); /*!< Sets all or some (if uint8 mask is given) of the array elements to the specified value. */
         
         //! copy all values of this data object to the copyTo data object. The copyTo-data object must be allocated and have the same type and size (of its roi) than this data object. The compared sequence of sizes only contains dimensions whose size is bigger than one (e.g. it is possible to copy a 5x1 object to a 1x1x5 object)
         RetVal deepCopyPartial(DataObject &copyTo);
@@ -1023,23 +1104,29 @@ namespace ito {
         DataObject & operator = (const complex64 &value);     /*!< sets all elements of the data object to the given value. Value is cast to the data object's type */
         DataObject & operator = (const complex128 &value);    /*!< sets all elements of the data object to the given value. Value is cast to the data object's type */
         DataObject & operator = (const ito::Rgba32 &value);   /*!< sets all elements of the data object to the given value. Value is cast to the data object's type */
+        DataObject & operator = (const ito::DateTime &value); /*!< sets all elements of the data object to the given value. Value is cast to the data object's type */
+        DataObject & operator = (const ito::TimeDelta &value);/*!< sets all elements of the data object to the given value. Value is cast to the data object's type */
         
         
         DataObject & operator += (const DataObject &rhs);
         DataObject & operator += (const float64 &value);
         DataObject & operator += (const complex128 &value);
+        DataObject & operator += (const TimeDelta &value);
         
         DataObject operator + (const DataObject &rhs);
         DataObject operator + (const float64 &value);
         DataObject operator + (const complex128 &value);
+        DataObject operator + (const TimeDelta &value);
         
         DataObject & operator -= (const DataObject &rhs);
         DataObject & operator -= (const float64 &value);
         DataObject & operator -= (const complex128 &value);
+        DataObject & operator -= (const TimeDelta &value);
         
         DataObject operator - (const DataObject &rhs);
         DataObject operator - (const float64 &value);
         DataObject operator - (const complex128 &value);
+        DataObject operator - (const TimeDelta &value);
         
         DataObject & operator *= (const DataObject &rhs);
         DataObject & operator *= (const float64 &factor);
@@ -1066,8 +1153,26 @@ namespace ito {
 
         DataObject operator == (const ito::complex64 &value);
         DataObject operator != (const ito::complex64 &value);
+
         DataObject operator == (const ito::complex128 &value);
         DataObject operator != (const ito::complex128 &value);
+
+        DataObject operator == (const ito::Rgba32 &value);
+        DataObject operator != (const ito::Rgba32 &value);
+
+        DataObject operator < (const ito::DateTime &value);
+        DataObject operator > (const ito::DateTime &value);
+        DataObject operator <= (const ito::DateTime &value);
+        DataObject operator >= (const ito::DateTime &value);
+        DataObject operator == (const ito::DateTime &value);
+        DataObject operator != (const ito::DateTime &value);
+
+        DataObject operator < (const ito::TimeDelta &value);
+        DataObject operator > (const ito::TimeDelta &value);
+        DataObject operator <= (const ito::TimeDelta &value);
+        DataObject operator >= (const ito::TimeDelta &value);
+        DataObject operator == (const ito::TimeDelta &value);
+        DataObject operator != (const ito::TimeDelta &value);
         
         // bitshift operators
         DataObject operator << (const unsigned int shiftbit);
@@ -1440,6 +1545,12 @@ namespace ito {
             case ito::tRGBA32:
                 retValue = cv::saturate_cast<_Tp>(*(static_cast<const ito::Rgba32*>(scalar)));
                 break;
+            case ito::tDateTime:
+                retValue = cv::saturate_cast<_Tp>(*(static_cast<const ito::DateTime*>(scalar)));
+                break;
+            case ito::tTimeDelta:
+                retValue = cv::saturate_cast<_Tp>(*(static_cast<const ito::TimeDelta*>(scalar)));
+                break;
             default:
                 cv::error(cv::Exception(CV_StsAssert, "Input value type unkown", "", __FILE__, __LINE__));
                 retValue = 0;
@@ -1472,6 +1583,8 @@ namespace ito {
             case ito::tFloat32:
             case ito::tFloat64:
             case ito::tRGBA32:
+            case ito::tDateTime:
+            case ito::tTimeDelta:
                 return cmplxType;
             case ito::tComplex64:
                 return ito::tFloat32;
@@ -1519,6 +1632,10 @@ namespace ito {
                     return ito::tComplex64;
                 case cv::DataType<ito::complex128>::type:
                     return ito::tComplex128;
+                case cv::DataType<ito::DateTime>::type:
+                    return ito::tDateTime;
+                case cv::DataType<ito::TimeDelta>::type:
+                    return ito::tTimeDelta;
             }
             
             retval += ito::RetVal(ito::retError, 0, "type of cv::Mat is incompatible to ito::DataObject");
@@ -1556,7 +1673,9 @@ namespace ito {
     template<> inline ito::tDataType getDataType(const float64* /*src*/)    { return ito::tFloat64; }
     template<> inline ito::tDataType getDataType(const complex64* /*src*/)  { return ito::tComplex64; }
     template<> inline ito::tDataType getDataType(const complex128* /*src*/) { return ito::tComplex128; }
-    template<> inline ito::tDataType getDataType(const Rgba32* /*src*/) { return ito::tRGBA32; }
+    template<> inline ito::tDataType getDataType(const Rgba32* /*src*/)     { return ito::tRGBA32; }
+    template<> inline ito::tDataType getDataType(const DateTime* /*src*/)   { return ito::tDateTime; }
+    template<> inline ito::tDataType getDataType(const TimeDelta* /*src*/)   { return ito::tTimeDelta; }
     
     
     //! method which returns the value of enumeration ito::tDataType, which corresponds to the template parameter (must be a pointer).
@@ -1586,6 +1705,8 @@ namespace ito {
     template<> inline ito::tDataType getDataType2<complex64*>()  { return ito::tComplex64; }
     template<> inline ito::tDataType getDataType2<complex128*>() { return ito::tComplex128; }
     template<> inline ito::tDataType getDataType2<Rgba32*>()     { return ito::tRGBA32; }  
+    template<> inline ito::tDataType getDataType2<DateTime*>()   { return ito::tDateTime; }
+    template<> inline ito::tDataType getDataType2<TimeDelta*>()   { return ito::tTimeDelta; }
     
 } //namespace ito
 

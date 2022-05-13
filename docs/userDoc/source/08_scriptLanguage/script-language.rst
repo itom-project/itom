@@ -4,7 +4,7 @@
 
 .. _scriptLanguage:
 
-Python scripting language
+Python Scripting Language
 #########################
 
 One main component of |itom| is the integrated scripting language |python|. In order to make |itom| ready for the future, |python| is based on the version-family 3.

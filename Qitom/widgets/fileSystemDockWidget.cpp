@@ -385,8 +385,16 @@ void FileSystemDockWidget::createActions()
 void FileSystemDockWidget::createMenus()
 {
     m_pContextMenu = new QMenu(this);
-    if (m_pActOpenFile) m_pContextMenu->addAction(m_pActOpenFile->action());
-    if (m_pActExecuteFile) m_pContextMenu->addAction(m_pActExecuteFile->action());
+    if (m_pActOpenFile)
+    {
+        m_pContextMenu->addAction(m_pActOpenFile->action());
+    }
+
+    if (m_pActExecuteFile)
+    {
+        m_pContextMenu->addAction(m_pActExecuteFile->action());
+    }
+
     m_pContextMenu->addAction(m_pActLocateOnDisk->action());
     m_pContextMenu->addSeparator();
     m_pContextMenu->addAction(m_pActRenameItem->action());
@@ -477,11 +485,13 @@ void FileSystemDockWidget::updateActions()
     }
     else
     {
-        areFiles = true;
+        areFiles = indexList.size() == 0 ? false : true;
+
         foreach (const QModelIndex &idx, indexList)
         {
             QFileInfo fileinfo = m_pFileSystemModel->fileInfo(idx);
             areFiles = fileinfo.isFile();
+
             if (!areFiles)
             {
                 break;

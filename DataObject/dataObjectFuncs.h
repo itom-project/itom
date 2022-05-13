@@ -275,9 +275,20 @@ namespace dObjHelper
     
 
     //! Helperfunction to copy axis related tags from a n-D-Object to a m-D-Object.
-    DATAOBJ_EXPORT ito::RetVal dObjCopyLastNAxisTags(const ito::DataObject &DataObjectIn, ito::DataObject &DataObjectOut, const int copyLastNDims, const bool includeValueTags = true, const bool includeRotationMatrix = true);
+    DATAOBJ_EXPORT ito::RetVal dObjCopyLastNAxisTags(const ito::DataObject &dataObjIn, ito::DataObject &dataObjOut, const int copyLastNDims, const bool includeValueTags = true, const bool includeRotationMatrix = true);
 
-    DATAOBJ_EXPORT ito::RetVal dObjSetScaleRectangle(ito::DataObject &DataObjectInOut, const double &x0, const double &x1, const double &y0, const double &y1);
+    //!< Modifies scale and offset values for the 2dim dataObj to fit to given range.
+    /* The values are adjusted, such that the minimum physical x-coordinate is equal
+    to x0 and the maximum one to x1. The same holds for the y-direction and the
+    boundaries y0 and y1.
+
+    \param dataObj is the 2dim dataObject to be adjusted.
+    \param x0 is the minimum physical x-coordinate
+    \param x0 is the maximum physical x-coordinate
+    \param x0 is the minimum physical y-coordinate
+    \param x0 is the maximum physical y-coordinate
+    */
+    DATAOBJ_EXPORT ito::RetVal dObjSetScaleRectangle(ito::DataObject &dataObj, const double &x0, const double &x1, const double &y0, const double &y1);
 
 
     //-----------------------------------------------------------------------------------------------

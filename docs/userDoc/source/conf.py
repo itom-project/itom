@@ -65,7 +65,7 @@ templates_path = ['_templates']
 source_suffix = '.rst'
 
 # The encoding of source files.
-source_encoding = 'iso-8859-15'  # 'iso-8859-15' #'utf-8-sig'
+source_encoding = "utf-8"  # 'iso-8859-15'  # 'iso-8859-15' #'utf-8-sig'
 
 # The master toctree document.
 master_doc = 'index'
@@ -380,6 +380,6 @@ todo_include_todos = True
 # to get the inv files, open the given URL/objects.inv.
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3.8', 'python3.8-inv.txt'),
-    'numpy': ('https://docs.scipy.org/doc/numpy', 'numpy1.20-inv.txt'),
+    'numpy': ('https://numpy.org/doc/stable', 'numpy1.22-inv.txt'),
     'scipy': ('https://docs.scipy.org/doc/scipy/reference', 'scipy1.6.1-inv.txt'),
-    'matplotlib': ('http://matplotlib.sourceforge.net', 'matplotlib3.3.inv.txt')}
+    'matplotlib': ('https://matplotlib.org', 'matplotlib3.5-inv.txt')}

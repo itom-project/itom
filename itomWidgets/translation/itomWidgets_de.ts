@@ -561,6 +561,14 @@
         <source>itom widget to interpret a dataObject as a table.</source>
         <translation type="unfinished">itom-Widget zur Ansicht des DataObjects in Tabellenform.</translation>
     </message>
+    <message>
+        <source>%1 days </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1:%2:%3</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RangeWidget</name>

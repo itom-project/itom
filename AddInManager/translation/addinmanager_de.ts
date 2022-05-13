@@ -201,7 +201,7 @@
     </message>
     <message>
         <source>AddIn must not be NULL</source>
-        <translation type="unfinished">Das AddIn darf nicht NULL sein</translation>
+        <translation type="obsolete">Das AddIn darf nicht NULL sein</translation>
     </message>
     <message>
         <source>length of char array out of range [%1, %2]</source>
@@ -402,6 +402,22 @@
     <message>
         <source>the given meta information does not fit an array of integer values</source>
         <translation type="unfinished">Die übergebenen Meta-Informationen stimmen nicht mit denen eines Arrays vom Typ Integer überein</translation>
+    </message>
+    <message>
+        <source>AddIn must not be nullptr</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>length of string list out of range [%1, %2]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>length of string list does not fit to given step size [%1:%2:%3]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>the given meta information does not fit an array of string values</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

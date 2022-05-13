@@ -703,7 +703,7 @@ bool ParamBase::operator==(const ParamBase& rhs) const
         case ComplexArray:
             if (d->len > 0 && (d->len == rhs.d->len))
             {
-                for (int i = 0; i < d->len; ++i)
+                for (ito::uint32 i = 0; i < d->len; ++i)
                 {
                     if (!ito::areEqual(
                             ((complex128*)d->data.ptrVal)[i], ((complex128*)rhs.d->data.ptrVal)[i]))
@@ -724,7 +724,7 @@ bool ParamBase::operator==(const ParamBase& rhs) const
                 const ByteArray* list1 = (const ByteArray*)d->data.ptrVal;
                 const ByteArray* list2 = (const ByteArray*)rhs.d->data.ptrVal;
 
-                for (int i = 0; i < d->len; ++i)
+                for (ito::uint32 i = 0; i < d->len; ++i)
                 {
                     if (list1[i] != list2[i])
                     {

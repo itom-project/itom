@@ -496,7 +496,7 @@ end:
             uiImportPyWorkspaceDefaultPath = QFileInfo(filename).canonicalPath(); //save directory as default for next call to this export dialog
 
             QFileInfo info(filename);
-            return openGeneralFile(filename, false, true, parent, NULL, globalNotLocal);
+            return openGeneralFile(filename, false, false, parent, nullptr, globalNotLocal);
         }
         else
         {

@@ -38,7 +38,6 @@
 #include "pythonQtSignalMapper.h"
 
 #include <qsharedpointer.h>
-#include "../helper/sharedPointerHelper.h"
 #include "../../AddInManager/paramHelper.h"
 #include "../../common/helperCommon.h"
 

@@ -147,6 +147,10 @@ protected:
         const ito::complex64& number, const int column, int decimals = -1) const;
     QString getDisplayNumber(
         const ito::complex128& number, const int column, int decimals = -1) const;
+    QString getDisplayNumber(
+        const ito::DateTime& number, const int column, bool longDate) const;
+    QString getDisplayNumber(
+        const ito::TimeDelta& number, const int column, bool longDate) const;
 
     QSharedPointer<ito::DataObject> m_sharedDataObj;
 

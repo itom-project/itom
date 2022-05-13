@@ -31,6 +31,7 @@
 #include <qnumeric.h>
 
 #include "DataObject/dataObjectFuncs.h"
+#include "common/helperDatetime.h"
 #include "common/typeDefs.h"
 
 int DataObjectModel::displayRoleWithoutSuffix = Qt::UserRole + 1;
@@ -92,7 +93,7 @@ QString DataObjectModel::getDisplayNumber(const int& number, const int column) c
     }
     else
     {
-        // programm style, dot remains dot... (for copy to clipboard operations)
+        // program style, dot remains dot... (for copy to clipboard operations)
         return QString("%1%2").arg(number).arg(suffix);
     }
 }
@@ -298,6 +299,73 @@ QString DataObjectModel::getDisplayNumber(
 }
 
 //-------------------------------------------------------------------------------------
+QString DataObjectModel::getDisplayNumber(
+    const ito::DateTime& number, const int column, bool longDate) const
+{
+    auto dt = ito::datetime::toQDateTime(number);
+
+    if (longDate || dt.time().msec() != 0)
+    {
+        return dt.toString(Qt::DateFormat::ISODateWithMs);
+    }
+    else if (dt.time().second() != 0)
+    {
+        return dt.toString(Qt::DateFormat::ISODate);
+    }
+    else
+    {
+        return dt.toString(Qt::DateFormat::DefaultLocaleShortDate);
+    }
+}
+
+//-------------------------------------------------------------------------------------
+QString DataObjectModel::getDisplayNumber(
+    const ito::TimeDelta& number, const int column, bool /*longDate*/) const
+{
+    int days, seconds, useconds;
+    ito::timedelta::toDSU(number, days, seconds, useconds);
+
+    int sec = seconds % 60;
+    seconds -= sec;
+    int minutes = seconds / 60;
+    int min = minutes % 60;
+    minutes -= min;
+    int hour = minutes / 60;
+    QLatin1Char fill('0');
+
+    QString result;
+
+    if (days != 0)
+    {
+        result = QObject::tr("%1 days ").arg(days);
+    }
+
+    if ((days >= 0) && (sec < 0 || min < 0 || hour < 0 || useconds < 0))
+    {
+        result += "-";
+    }
+
+    result += QObject::tr("%1:%2:%3")
+                  .arg(std::abs(hour), 2, 10, fill)
+                  .arg(std::abs(min), 2, 10, fill)
+                  .arg(std::abs(sec), 2, 10, fill);
+
+    if (useconds != 0)
+    {
+        if (useconds % 1000 == 0)
+        {
+            result += QString(".%1").arg(std::abs(useconds / 1000), 3, 10, fill);
+        }
+        else
+        {
+            result += QString(".%1").arg(std::abs(useconds), 6, 10, fill);
+        }
+    }
+
+    return result;
+}
+
+//-------------------------------------------------------------------------------------
 QVariant DataObjectModel::data(const QModelIndex& index, int role) const
 {
     if (index.row() < 0 || index.column() < 0 ||
@@ -314,9 +382,8 @@ QVariant DataObjectModel::data(const QModelIndex& index, int role) const
 
     if (role == Qt::DisplayRole || role == Qt::ToolTipRole)
     {
-        int decimals = (role == Qt::DisplayRole)
-            ? m_decimals
-            : 2 * m_decimals; // show the tooltip text more precise than the display
+        // show the tooltip text more precise than the display
+        int decimals = (role == Qt::DisplayRole) ? m_decimals : 2 * m_decimals;
 
         switch (m_sharedDataObj->getDims())
         {
@@ -356,6 +423,14 @@ QVariant DataObjectModel::data(const QModelIndex& index, int role) const
                 ito::Rgba32 c = m_sharedDataObj->at<ito::Rgba32>(row, column);
                 return QColor::fromRgba(c.argb());
             }
+            case ito::tDateTime:
+                return getDisplayNumber(
+                    m_sharedDataObj->at<ito::DateTime>(row, column),
+                    column,
+                    role == Qt::ToolTipRole);
+            case ito::tTimeDelta:
+                return getDisplayNumber(
+                    m_sharedDataObj->at<ito::TimeDelta>(row, column), column, false);
             }
         }
         default:
@@ -367,8 +442,9 @@ QVariant DataObjectModel::data(const QModelIndex& index, int role) const
         switch (m_sharedDataObj->getDims())
         {
         case 0:
-            return (double)0.0; // default case (for designer, adjustment can be done using the
-                                // defaultRow and defaultCol property)
+            // default case (for designer, adjustment can be done using the
+            // defaultRow and defaultCol property)
+            return (double)0.0;
         case 1:
         case 2:
             switch (m_sharedDataObj->getType())
@@ -394,7 +470,12 @@ QVariant DataObjectModel::data(const QModelIndex& index, int role) const
             case ito::tComplex128:
                 return QVariant::fromValue(m_sharedDataObj->at<ito::complex128>(row, column));
             case ito::tRGBA32:
-                return QColor(m_sharedDataObj->at<ito::Rgba32>(row, column).argb());
+            {
+                ito::Rgba32 c = m_sharedDataObj->at<ito::Rgba32>(row, column);
+                return QColor(c.r, c.g, c.b, c.a);
+            }
+            case ito::tDateTime:
+                return ito::datetime::toQDateTime(m_sharedDataObj->at<ito::DateTime>(row, column));
             }
         default:
             return QVariant();
@@ -407,8 +488,9 @@ QVariant DataObjectModel::data(const QModelIndex& index, int role) const
         switch (m_sharedDataObj->getDims())
         {
         case 0:
-            return (qlonglong)0; // default case (for designer, adjustment can be done using the
-                                // defaultRow and defaultCol property)
+            // default case (for designer, adjustment can be done using the
+            // defaultRow and defaultCol property)
+            return (qlonglong)0;
         case 1:
         case 2:
             switch (m_sharedDataObj->getType())
@@ -437,8 +519,20 @@ QVariant DataObjectModel::data(const QModelIndex& index, int role) const
                     m_sharedDataObj->at<ito::complex128>(row, column), -1, decimals);
             case ito::tRGBA32: {
                 ito::Rgba32 c = m_sharedDataObj->at<ito::Rgba32>(row, column);
-                return QColor::fromRgba(c.argb()).name();
+
+                if (c.alpha() < 255)
+                {
+                    return QColor::fromRgba(c.argb()).name(QColor::HexArgb);
+                }
+                else
+                {
+                    return QColor::fromRgba(c.argb()).name(QColor::HexRgb);
+                }
             }
+            case ito::tTimeDelta:
+                return getDisplayNumber(m_sharedDataObj->at<ito::TimeDelta>(row, column), -1, true);
+            case ito::tDateTime:
+                return getDisplayNumber(m_sharedDataObj->at<ito::DateTime>(row, column), -1, true);
             }
         default:
             return QVariant();
@@ -476,8 +570,7 @@ QVariant DataObjectModel::data(const QModelIndex& index, int role) const
             case ito::tFloat64:
                 value = m_sharedDataObj->at<ito::float64>(row, column);
                 break;
-            case ito::tRGBA32:
-            {
+            case ito::tRGBA32: {
                 ito::Rgba32 c(m_sharedDataObj->at<ito::Rgba32>(row, column));
 
                 if (c.alpha() == 0)
@@ -487,6 +580,16 @@ QVariant DataObjectModel::data(const QModelIndex& index, int role) const
 
                 return QColor(c.argb());
             }
+            case ito::tDateTime: {
+                const auto dt = m_sharedDataObj->at<ito::DateTime>(row, column);
+                // seconds since epoch in utc
+                value = dt.datetime / 1000000.0 + dt.utcOffset;
+                break;
+            }
+            case ito::tTimeDelta:
+                // seconds
+                value = m_sharedDataObj->at<ito::TimeDelta>(row, column).delta / 1000000.0;
+                break;
             default:
                 return QVariant();
             }
@@ -528,8 +631,9 @@ QVariant DataObjectModel::data(const QModelIndex& index, int role) const
         switch (m_sharedDataObj->getDims())
         {
         case 0:
-            return getDisplayNumber(0.0, -1); // default case (for designer, adjustment can be done
-                                              // using the defaultRow and defaultCol property)
+            // default case (for designer, adjustment can be done
+            // using the defaultRow and defaultCol property)
+            return getDisplayNumber(0.0, -1);
         case 1:
         case 2: {
             switch (m_sharedDataObj->getType())
@@ -562,6 +666,16 @@ QVariant DataObjectModel::data(const QModelIndex& index, int role) const
                 ito::Rgba32 c = m_sharedDataObj->at<ito::Rgba32>(row, column);
                 return QColor::fromRgba(c.argb());
             }
+            case ito::tDateTime:
+                return getDisplayNumber(
+                    m_sharedDataObj->at<ito::DateTime>(row, column),
+                    -1,
+                    role == preciseDisplayRoleWithoutSuffix);
+            case ito::tTimeDelta:
+                return getDisplayNumber(
+                    m_sharedDataObj->at<ito::TimeDelta>(row, column),
+                    -1,
+                    role == preciseDisplayRoleWithoutSuffix);
             }
         }
         default:
@@ -714,7 +828,18 @@ bool DataObjectModel::setValue(const int& row, const int& column, const QVariant
             return true;
         }
         return false;
+    case ito::tDateTime:
+        if (value.canConvert<QDateTime>())
+        {
+            QDateTime dt = value.value<QDateTime>();
+            ito::DateTime dt2 = ito::datetime::toDateTime(dt);
+            m_sharedDataObj->at<ito::DateTime>(row, column) = dt2;
+            emit dataChanged(i, i);
+            return true;
+        }
+        return false;
     }
+
     return false;
 }
 
@@ -725,6 +850,7 @@ QModelIndex DataObjectModel::index(int row, int column, const QModelIndex& paren
     {
         return createIndex(row, column);
     }
+
     return QModelIndex();
 }
 
@@ -745,6 +871,7 @@ int DataObjectModel::rowCount(const QModelIndex& parent) const
     {
         return m_defaultRows;
     }
+
     return 0;
 }
 
@@ -761,8 +888,10 @@ int DataObjectModel::columnCount(const QModelIndex& parent) const
         {
             return m_defaultCols;
         }
+
         return 1;
     }
+
     return 0;
 }
 
@@ -842,6 +971,7 @@ QVariant DataObjectModel::headerData(int section, Qt::Orientation orientation, i
 void DataObjectModel::setHeaderLabels(Qt::Orientation orientation, const QStringList& labels)
 {
     beginResetModel();
+
     if (orientation == Qt::Horizontal)
     {
         m_horizontalHeader = labels;
@@ -850,6 +980,7 @@ void DataObjectModel::setHeaderLabels(Qt::Orientation orientation, const QString
     {
         m_verticalHeader = labels;
     }
+
     endResetModel();
     emit headerDataChanged(orientation, 0, labels.count() - 1);
 }
@@ -861,6 +992,7 @@ Qt::ItemFlags DataObjectModel::flags(const QModelIndex& index) const
     {
         return Qt::ItemIsSelectable | Qt::ItemIsEnabled;
     }
+
     return Qt::ItemIsEditable | Qt::ItemIsSelectable | Qt::ItemIsEnabled;
 }
 
@@ -911,6 +1043,7 @@ void DataObjectModel::setDefaultGrid(int rows, int cols)
             {
                 newObj->zeros(rows, cols, ito::tFloat32);
             }
+
             m_sharedDataObj = newObj;
         }
 
@@ -946,7 +1079,7 @@ void DataObjectModel::setDecimals(const int decimals)
 void DataObjectModel::setHeatmapType(int type)
 {
     beginResetModel();
-    
+
     switch ((DataObjectTable::HeatmapType)type)
     {
     case DataObjectTable::Off:
@@ -1004,7 +1137,7 @@ void DataObjectModel::setSuffixes(const QStringList& suffixes)
 }
 
 //-------------------------------------------------------------------------------------
-void DataObjectModel::setHeatmapInterval(const ito::AutoInterval &interval)
+void DataObjectModel::setHeatmapInterval(const ito::AutoInterval& interval)
 {
     beginResetModel();
     m_heatmapInterval = interval;
@@ -1016,11 +1149,15 @@ void DataObjectModel::setHeatmapInterval(const ito::AutoInterval &interval)
         if (m_heatmapInterval.isAuto() && type != ito::tRGBA32 && type != ito::tComplex64 &&
             type != ito::tComplex128)
         {
-            ito::uint32 temp[] = { 0, 0, 0 };
+            ito::uint32 temp[] = {0, 0, 0};
             ito::dObjHelper::minMaxValue(
-                m_sharedDataObj.data(), m_heatmapInterval.rmin(), temp, m_heatmapInterval.rmax(), temp, true);
+                m_sharedDataObj.data(),
+                m_heatmapInterval.rmin(),
+                temp,
+                m_heatmapInterval.rmax(),
+                temp,
+                true);
         }
-
     }
 
     endResetModel();

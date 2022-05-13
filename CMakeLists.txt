@@ -1,6 +1,6 @@
 # - itom software - 
 # URL: http://www.uni-stuttgart.de/ito
-# Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+# Copyright (C) 2022, Institut fuer Technische Optik (ITO),
 # Universitaet Stuttgart, Germany
 #
 # This file is part of itom and its software development toolkit (SDK).
@@ -17,9 +17,9 @@
 #
 # You should have received a copy of the GNU Library General Public License
 # along with itom. If not, see <http://www.gnu.org/licenses/>.
-  
+    
 cmake_minimum_required(VERSION 3.1)
- 
+   
 project(itom)
   
 message(STATUS "--------------- PROJECT itom -----------------")

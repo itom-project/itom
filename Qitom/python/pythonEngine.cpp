@@ -387,7 +387,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap
                 }
                 else
                 {
-                    (*retValue) += RetVal::format(retError, 0, tr("The itom subdirectory of Python '%s' is not existing.\nPlease change setting in the property dialog of itom.").toLatin1().data(),
+                    (*retValue) += RetVal::format(retError, 0, tr("The itom subdirectory of Python '%s' does not exist.\nPlease change setting in the property dialog of itom.").toLatin1().data(),
                         pythonSubDir.toLatin1().data());
                     return;
                 }
@@ -484,10 +484,20 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap
             }
 
             setGlobalDictionary(m_pMainDictionary);   // reference to string-list of available methods, member-variables... of module.
-            setLocalDictionary(NULL);
+            setLocalDictionary(nullptr);
 
             updatePythonWorkspaces(DictUpdate, DictUpdate, false);
 
+            // import datetime support
+            PyDateTime_IMPORT;
+
+            if (PyDateTimeAPI == nullptr)
+            {
+                (*retValue) += RetVal(retError, 0, "failed to import the Python datetime C-API.");
+                return;
+            }
+
+            // import numpy
             if (_import_array() < 0)
             {
                 PyObject *type = nullptr;
@@ -534,6 +544,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap
                 (*retValue) += ito::RetVal(ito::retError, 0, tr("Error redirecting stderr in start python engine\n").toLatin1().data());
             if ((tretVal = runString("sys.stdin = sys.__stdin__ = itom.pythonStream(3)")) != ito::retOk)
                 (*retValue) += ito::RetVal(ito::retError, 0, tr("Error redirecting stdin in start python engine\n").toLatin1().data());
+
             //this and the sys.stdout part above initializes the python internal help system.
             //if pydoc output is not set, help() will Stream to "more "(systemcommand), 
             //so this should be initialized to something
@@ -551,14 +562,23 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap
             settings.endGroup();
 
             if ((tretVal = runString("import pydoc")) != ito::retOk)
+            {
                 (*retValue) += ito::RetVal(ito::retError, 0, tr("Error importing pydoc in start python engine\n").toLatin1().data());
+            }
+
             if(python3rdPartyHelperUse && python3rdPartyHelperCommand.length()>1)
             {
                 if ((tretVal = runString("pydoc.help = pydoc.Helper()")) != ito::retOk)
+                {
                     (*retValue) += ito::RetVal(ito::retError, 0, tr("Error setting up help pipe in start python engine\n").toLatin1().data());
-            }else{
+                }
+            }
+            else
+            {
                 if ((tretVal = runString("pydoc.help = pydoc.Helper(sys.stdin, sys.stdout)")) != ito::retOk)
+                {
                     (*retValue) += ito::RetVal(ito::retError, 0, tr("Error setting up help pipe in start python engine\n").toLatin1().data());
+                }
             }
             
             static wchar_t *wargv = L"";

@@ -39,7 +39,8 @@ extensions = [
     'numpydoc',
     'breathe',
     'sphinx.ext.intersphinx',
-    'itomext.designerplugindoc'
+    'itomext.designerplugindoc',
+    'sphinx_copybutton'
 ]
 
 if sphinx.__version__ >= "0.7":
