@@ -24,6 +24,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include "../global.h"
 #include "../AppManagement.h"
 #include <qsettings.h>
+#include "../Qitom/organizer/paletteOrganizer.h"
 
 namespace ito
 {
@@ -31,6 +32,15 @@ namespace ito
         AbstractPropertyPageWidget(parent)
     {
         ui.setupUi(this);
+        ito::PaletteOrganizer* paletteOrganizer =
+            (PaletteOrganizer*)AppManagement::getPaletteOrganizer();
+        QList<QString> palettes = paletteOrganizer->getColorPaletteList();
+        for each (auto name in palettes)
+        {
+            ui.comboDefaultColorMap->addItem(name);
+        }
+        ui.comboDefaultColorMap->setCurrentIndex(0); 
+
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
