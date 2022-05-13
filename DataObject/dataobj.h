@@ -57,15 +57,19 @@ namespace cv
 {
     template<> inline ito::float32 saturate_cast<ito::float32>( ito::float64 v)
     {
-        if(cvIsInf(v)) return std::numeric_limits<ito::float32>::infinity();
-        if(cvIsNaN(v)) return std::numeric_limits<ito::float32>::quiet_NaN();
+        if(std::isinf(v)) 
+            return std::numeric_limits<ito::float32>::infinity();
+        if(std::isnan(v)) 
+            return std::numeric_limits<ito::float32>::quiet_NaN();
         return static_cast<ito::float32>(std::max ( (ito::float64)(- (std::numeric_limits<ito::float32>::max)()) ,  std::min ( v , (ito::float64) ((std::numeric_limits<ito::float32>::max)()) )));
     }
     
     template<> inline ito::float64 saturate_cast<ito::float64>( ito::float32 v)
     {
-        if(cvIsInf(v)) return std::numeric_limits<ito::float64>::infinity();
-        if(cvIsNaN(v)) return std::numeric_limits<ito::float64>::quiet_NaN();
+        if(std::isinf(v)) 
+            return std::numeric_limits<ito::float64>::infinity();
+        if(std::isnan(v)) 
+            return std::numeric_limits<ito::float64>::quiet_NaN();
         return static_cast<ito::float64>(v);
     }
     
@@ -425,8 +429,8 @@ namespace ito {
             }
             else
             {
-                if (cvIsNaN(m_dVal)) return "NaN";
-                if (cvIsInf(m_dVal)) return "Inf";
+                if (std::isnan(m_dVal)) return "NaN";
+                if (std::isinf(m_dVal)) return "Inf";
                 
                 std::ostringstream strs;
                 strs << m_dVal;
