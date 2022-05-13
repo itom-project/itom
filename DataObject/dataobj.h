@@ -805,13 +805,25 @@ namespace ito {
         
         /**
          \brief Function returns the not rounded pixel index of a physical coordinate
+
+         The pixel value is clipped to the valid range of this object.
          */
         double getPhysToPix(const unsigned int dim, const double phys, bool &isInsideImage) const;
 
         /**
          \brief Function returns the not rounded pixel index of a physical coordinate
+
+         The pixel value is clipped to the valid range of this object.
          */
         double getPhysToPix(const unsigned int dim, const double phys) const;
+
+        /**
+         \brief Function returns the not rounded pixel index of a physical coordinate
+
+         The pixel value is not clipped to the valid range of this object, hence,
+         the returned index might not exist in the dataObject.
+         */
+        double getPhysToPixUnclipped(const unsigned int dim, const double phys) const;
         
         /**
          \brief Function returns the not rounded pixel index of a physical coordinate
