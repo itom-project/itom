@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>617</width>
-    <height>681</height>
+    <width>613</width>
+    <height>697</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -111,41 +111,28 @@
            <string>2D Plot</string>
           </property>
           <layout class="QGridLayout" name="gridLayout_6">
-           <item row="4" column="0">
-            <widget class="QLabel" name="label_21">
-             <property name="layoutDirection">
-              <enum>Qt::RightToLeft</enum>
-             </property>
+           <item row="2" column="0">
+            <widget class="QLabel" name="label_13">
              <property name="text">
-              <string>color map</string>
+              <string>Z stack marker pen</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="1">
-            <widget class="QSpinBox" name="centerMarkerSizeSpin"/>
-           </item>
-           <item row="0" column="0">
-            <widget class="QLabel" name="label_9">
-             <property name="text">
-              <string>Center marker pen</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1">
-            <widget class="PenCreatorButton" name="centerMerkerPenBtn">
-             <property name="editableColor" stdset="0">
-              <bool>false</bool>
              </property>
             </widget>
            </item>
            <item row="4" column="1">
             <widget class="QComboBox" name="comboDefaultColorMap"/>
+           </item>
+           <item row="6" column="1">
+            <widget class="QCheckBox" name="checkBoxKeepAspectRatio">
+             <property name="layoutDirection">
+              <enum>Qt::LeftToRight</enum>
+             </property>
+             <property name="text">
+              <string>keep aspect ratio</string>
+             </property>
+            </widget>
            </item>
            <item row="1" column="0">
             <widget class="QLabel" name="label_10">
@@ -157,13 +144,24 @@
              </property>
             </widget>
            </item>
-           <item row="3" column="1">
-            <widget class="QSpinBox" name="zStackMarkerSizeSpin"/>
+           <item row="2" column="1">
+            <widget class="PenCreatorButton" name="zStackMarkerPenBtn">
+             <property name="editableColor" stdset="0">
+              <bool>false</bool>
+             </property>
+            </widget>
            </item>
-           <item row="2" column="0">
-            <widget class="QLabel" name="label_13">
+           <item row="5" column="1">
+            <widget class="QCheckBox" name="checkBoxYAxisFlipped">
              <property name="text">
-              <string>Z stack marker pen</string>
+              <string>y axis flipped</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_9">
+             <property name="text">
+              <string>Center marker pen</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -180,36 +178,31 @@
              </property>
             </widget>
            </item>
-           <item row="2" column="1">
-            <widget class="PenCreatorButton" name="zStackMarkerPenBtn">
+           <item row="4" column="0">
+            <widget class="QLabel" name="label_21">
+             <property name="layoutDirection">
+              <enum>Qt::RightToLeft</enum>
+             </property>
+             <property name="text">
+              <string>color map</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="PenCreatorButton" name="centerMerkerPenBtn">
              <property name="editableColor" stdset="0">
               <bool>false</bool>
              </property>
             </widget>
            </item>
-           <item row="5" column="0" colspan="2">
-            <layout class="QHBoxLayout" name="horizontalLayout">
-             <property name="bottomMargin">
-              <number>0</number>
-             </property>
-             <item>
-              <widget class="QCheckBox" name="checkBoxYAxisFlipped">
-               <property name="text">
-                <string>y axis flipped</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QCheckBox" name="checkBoxKeepAspectRatio">
-               <property name="layoutDirection">
-                <enum>Qt::LeftToRight</enum>
-               </property>
-               <property name="text">
-                <string>keep aspect ratio</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
+           <item row="1" column="1">
+            <widget class="QSpinBox" name="centerMarkerSizeSpin"/>
+           </item>
+           <item row="3" column="1">
+            <widget class="QSpinBox" name="zStackMarkerSizeSpin"/>
            </item>
           </layout>
          </widget>
