@@ -322,7 +322,7 @@ QPixmap MainApplication::getSplashScreenPixmap() const
 
     QRectF rectVersion(
         textLeftPos,
-        pixmap.height() * 0.6,
+        pixmap.height() * 0.63,
         pixmap.width() - textLeftPos,
         pixmap.height() * 0.1); // relative position of the version text within the image
     QFont fontVersion;
