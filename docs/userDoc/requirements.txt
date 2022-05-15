@@ -2,10 +2,13 @@ breathe
 matplotlib
 numpy
 numpydoc
+openpyxl
 pandas
-pytables
+plotly
+tables
 scikit-learn
 scipy
+seaborn
 sphinx
 sphinx_copybutton
 sphinx_gallery
