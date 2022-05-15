@@ -1,0 +1,12 @@
+breathe
+matplotlib
+numpy
+numpydoc
+pandas
+pytables
+scikit-learn
+scipy
+sphinx
+sphinx_copybutton
+sphinx_gallery
+sphinx_rtd_theme
