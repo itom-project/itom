@@ -14,7 +14,7 @@ Then you must install the ffmpeg codec. A detailed description can be found on:
 http://www.adaptivesamples.com/how-to-install-ffmpeg-on-windows
 
 The build version of the ffmpeg codec can be downloaded here: 
-https://ffmpeg.zeranoe.com/builds
+https://www.gyan.dev/ffmpeg/builds/
 
 Download and unzip the builds files to your harddrive. Typically the folder is like: 
 C:\\Program files\\ffmpeg
