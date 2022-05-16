@@ -1,7 +1,4 @@
-.. _pointClouds-index:
-
-.. _gallery:
-
+.. _gallery_pointClouds_label:
 
 PointCloud
 ~~~~~~~~~~

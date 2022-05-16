@@ -1,7 +1,4 @@
-.. _plots-index:
-
-.. _gallery:
-
+.. _gallery_itomPlots_label:
 
 Plots
 ~~~~~

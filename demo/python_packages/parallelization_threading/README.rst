@@ -1,7 +1,4 @@
-.. _parallelization-index:
-
-.. _gallery:
-
+.. _gallery_parallelization_label:
 
 Parallelization and Threading
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

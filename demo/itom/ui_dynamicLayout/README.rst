@@ -1,7 +1,4 @@
-.. _uidynamic-index:
-
-.. _gallery:
-
+.. _gallery_uidynamic_label:
 
 User interface dynamic layouts
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

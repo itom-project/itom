@@ -1,7 +1,6 @@
-.. _demos-index:
+.. include:: ../include/global.inc
 
-.. _gallery:
-
+.. _gallery-demos-label:
 
 Demo scripts
 ############

@@ -1,7 +1,4 @@
-.. _plotly-index:
-
-.. _gallery:
-
+.. _gallery_plotly_label:
 
 Plotly
 ~~~~~~

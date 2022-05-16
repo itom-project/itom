@@ -1,7 +1,4 @@
-.. _numpy-index:
-
-.. _gallery:
-
+.. _gallery_numpy_label:
 
 Numpy
 ~~~~~

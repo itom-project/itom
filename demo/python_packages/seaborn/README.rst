@@ -1,7 +1,4 @@
-.. _seaborn-index:
-
-.. _gallery:
-
+.. _gallery_seaborn_label:
 
 Seaborn
 ~~~~~~~

@@ -1,7 +1,4 @@
-.. _plugins-index:
-
-.. _gallery:
-
+.. _gallery_plugins_label:
 
 Plugins
 ~~~~~~~

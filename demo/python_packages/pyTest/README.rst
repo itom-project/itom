@@ -1,7 +1,4 @@
-.. _pytest-index:
-
-.. _gallery:
-
+.. _gallery_pytest_label:
 
 PyTest
 ~~~~~~

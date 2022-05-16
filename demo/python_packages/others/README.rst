@@ -1,7 +1,4 @@
-.. _others-index:
-
-.. _gallery:
-
+.. _gallery_others_label:
 
 others
-~~~~~~~~~~
+~~~~~~

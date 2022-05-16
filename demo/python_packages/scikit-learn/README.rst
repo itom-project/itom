@@ -1,7 +1,4 @@
-.. _scikit-index:
-
-.. _gallery:
-
+.. _gallery_scikit_label:
 
 Scikit-learn
 ~~~~~~~~~~~~

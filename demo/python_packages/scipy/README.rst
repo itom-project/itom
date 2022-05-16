@@ -1,7 +1,4 @@
-.. _scipy-index:
-
-.. _gallery:
-
+.. _gallery_scipy_label:
 
 Scipy
 ~~~~~

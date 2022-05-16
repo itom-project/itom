@@ -1,7 +1,4 @@
-.. _embeddedMatplotlib-index:
-
-.. _gallery:
-
+.. _gallery_embeddedMatplotlib_label:
 
 Matplotlib embedded
 ~~~~~~~~~~~~~~~~~~~

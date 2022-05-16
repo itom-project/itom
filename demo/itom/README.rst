@@ -1,7 +1,4 @@
-.. _itom-index:
-
-.. _gallery:
-
+.. _gallery_itom_label:
 
 itom
 ====

@@ -1,7 +1,4 @@
-.. _pandas-index:
-
-.. _gallery:
-
+.. _gallery_pandas_label:
 
 Pandas
 ~~~~~~

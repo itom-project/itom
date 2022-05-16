@@ -1,7 +1,4 @@
-.. _python_packages-index:
-
-.. _gallery:
-
+.. _gallery_python_packages_label:
 
 Python packages
 ===============

@@ -1,7 +1,4 @@
-.. _matplotlib-index:
-
-.. _gallery:
-
+.. _gallery_matplotlib_label:
 
 Matplotlib
 ~~~~~~~~~~

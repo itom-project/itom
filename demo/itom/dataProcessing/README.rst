@@ -1,7 +1,4 @@
-.. _data-index:
-
-.. _gallery:
-
+.. _gallery_dataProcessing_label:
 
 Data processing
 ~~~~~~~~~~~~~~~

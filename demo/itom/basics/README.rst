@@ -1,7 +1,4 @@
-.. _basics-index:
-
-.. _gallery:
-
+.. _gallery_itomBasic_label:
 
 Basics
 ~~~~~~

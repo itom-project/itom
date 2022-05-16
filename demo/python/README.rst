@@ -1,7 +1,4 @@
-.. _python-index:
-
-.. _gallery:
-
+.. _gallery_python_label:
 
 Python
 ======

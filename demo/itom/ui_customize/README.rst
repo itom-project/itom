@@ -1,7 +1,4 @@
-.. _itom-apps-index:
-
-.. _gallery:
-
+.. _gallery_itom-customize_label:
 
 Customize itom GUI
 ~~~~~~~~~~~~~~~~~~
