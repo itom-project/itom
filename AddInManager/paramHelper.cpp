@@ -21,7 +21,9 @@
 *********************************************************************** */
 
 #include "paramHelper.h"
+
 #include "../common/addInInterface.h"
+#include "../DataObject/dataobj.h"
 
 namespace ito {
 
@@ -67,7 +69,26 @@ tCompareResult ParamHelper::compareParam(
     return compareMetaParam(metaTemplate, meta, paramTemplate.getName(), param.getName(), ret);
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
+//!< verifies the meta informaiton of two different parameters for compatibility
+/*
+The method verifies if meta information of a given parameter (meta, name) is
+compatible to the meta information of a template parameter.
+
+Both meta information are equal, if they are both either nullptr or if both
+have the same type and configurations. If their type is different, the compatiblity
+failed. A compatibility is returned, if the meta information is of the same type
+than the template but less restrictive than the template. If the meta information
+would be more restrictive than the template, the compatibility failed, too.
+
+\param metaTemplate is the meta information of a parameter ``nameTemplate``
+\param meta is the meta information of another parameter ``name``
+\param nameTemplate is only the name (for error messages) of the template parameter
+\param name is the name of the parameter to be checked
+\param ret contains a detailed error message in case of an incompatibility
+
+\returns tCompareResult to signal the comparison result: equal, compatible, failed.
+*/
 tCompareResult ParamHelper::compareMetaParam(
     const ito::ParamMeta* metaTemplate,
     const ito::ParamMeta* meta,
@@ -83,7 +104,7 @@ tCompareResult ParamHelper::compareMetaParam(
     {
         // param is compatible to paramTemplate, since it has no meta block
         // defined, but paramTemplate has. A meta bock always is more
-        // restrictive than no.
+        // restrictive than none.
         return tCmpCompatible;
     }
     else if (metaTemplate == nullptr)
@@ -119,6 +140,7 @@ tCompareResult ParamHelper::compareMetaParam(
     case ito::ParamMeta::rttiCharMeta: {
         const ito::CharMeta* mT = static_cast<const ito::CharMeta*>(metaTemplate);
         const ito::CharMeta* m = static_cast<const ito::CharMeta*>(meta);
+
         if (!mT || !m)
         {
             ret += ito::RetVal::format(
@@ -646,6 +668,7 @@ tCompareResult ParamHelper::compareMetaParam(
     case ito::ParamMeta::rttiDObjMeta: {
         const ito::DObjMeta* mT = static_cast<const ito::DObjMeta*>(metaTemplate);
         const ito::DObjMeta* m = static_cast<const ito::DObjMeta*>(meta);
+
         if (!mT || !m)
         {
             ret += ito::RetVal::format(
@@ -700,7 +723,7 @@ tCompareResult ParamHelper::compareMetaParam(
 
         ito::DObjMeta m2 = *m;
         m2.setMinDim(mT->getMinDim());
-        m2.getMaxDim(mT->getMaxDim());
+        m2.setMaxDim(mT->getMaxDim());
 
         // check if the allowed types of m and mT are exactly equal... therefore compare m2 and mT
         if (m2 == *mT)
@@ -1087,6 +1110,47 @@ ito::RetVal ParamHelper::validateCharMeta(
                     .data());
         }
     }
+
+    return ito::retOk;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal ParamHelper::validateDObjMeta(const ito::DObjMeta *meta, const ito::DataObject* value, bool mandatory /*= false*/, const char* name /*= nullptr*/)
+{
+    if (meta && value)
+    {
+        const int dims = value->getDims();
+
+        if (dims < meta->getMinDim() || dims > meta->getMaxDim())
+        {
+            return ito::RetVal(
+                ito::retError,
+                0,
+                (parseNamePrefix(name) +
+                    QObject::tr("number of dimensions out of range."))
+                .toLatin1()
+                .data());
+        }
+
+        if (!meta->isDataTypeAllowed((ito::tDataType)(value->getType())))
+        {
+            return ito::RetVal(
+                ito::retError,
+                0,
+                (parseNamePrefix(name) +
+                    QObject::tr("unallowed data type."))
+                .toLatin1()
+                .data());
+        }
+    }
+    else if (mandatory && value == nullptr)
+    {
+        return ito::RetVal(
+            ito::retError,
+            0,
+            (parseNamePrefix(name) + QObject::tr("DataObject must not be nullptr")).toLatin1().data());
+    }
+
     return ito::retOk;
 }
 
@@ -1942,10 +2006,17 @@ ito::RetVal ParamHelper::validateParam(
                 name);
         }
         break;
-        case ito::ParamBase::HWRef& ito::paramTypeMask: {
+        case ito::ParamBase::HWRef & ito::paramTypeMask: {
             retVal += validateHWMeta(
                 dynamic_cast<const ito::HWMeta*>(templateParam.getMeta()),
                 (ito::AddInBase*)param.getVal<void*>(),
+                mandatory,
+                name);
+        }
+        case ito::ParamBase::DObjPtr & ito::paramTypeMask: {
+            retVal += validateDObjMeta(
+                dynamic_cast<const ito::DObjMeta*>(templateParam.getMeta()),
+                param.getVal<const ito::DataObject*>(),
                 mandatory,
                 name);
         }

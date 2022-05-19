@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2022, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
@@ -20,18 +20,20 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef PARAMHELPER_H
-#define PARAMHELPER_H
+#pragma once
 
 #include "addInMgrDefines.h"
 #include "../common/sharedStructures.h"
+#include "../common/param.h"
+#include "../common/paramMeta.h"
 
 #include <qmap.h>
 #include <qsharedpointer.h>
 
 namespace ito 
 {
-    class AddInBase; //forward declaration
+    class AddInBase; // forward declaration
+    class DataObject; // forward declaration
 
     class ADDINMGR_EXPORT ParamHelper
     {
@@ -46,6 +48,7 @@ namespace ito
         static ito::RetVal validateDoubleMetaAndRoundToStepSize(const ito::DoubleMeta *meta, double &value, bool allowRounding = true, const char* name = nullptr);
         static ito::RetVal validateIntMeta(const ito::IntMeta *meta, int value, const char* name = nullptr);
         static ito::RetVal validateCharMeta(const ito::CharMeta *meta, char value, const char* name = nullptr);
+        static ito::RetVal validateDObjMeta(const ito::DObjMeta *meta, const ito::DataObject* value, bool mandatory = false, const char* name = nullptr);
         static ito::RetVal validateCharArrayMeta(const ito::ParamMeta *meta, const char* values, size_t len, const char* name = nullptr);
         static ito::RetVal validateIntArrayMeta(const ito::ParamMeta *meta, const int* values, size_t len, const char* name = nullptr);
         static ito::RetVal validateDoubleArrayMeta(const ito::ParamMeta *meta, const double* values, size_t len, const char* name = nullptr);
@@ -69,7 +72,6 @@ namespace ito
         ParamHelper() = delete;
         ~ParamHelper() = delete;
     };
-} //end namespace ito
 
-#endif
+} //end namespace ito
 
