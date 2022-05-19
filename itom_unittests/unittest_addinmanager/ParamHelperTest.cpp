@@ -193,3 +193,48 @@ TEST(ParamHelperTest, ValidateDataObjParam)
     retVal = ParamHelper::validateDObjMeta(&dobjMeta, &dobj3, false);
     EXPECT_EQ(retVal, retError);
 }
+
+TEST(ParamHelperTest, ParseParamNameTest)
+{
+    QString paramName;
+    bool hasIndex;
+    int index;
+    QString additionalTag;
+
+    RetVal ret = ParamHelper::parseParamName("p2aram_Name34", paramName, hasIndex, index, additionalTag);
+    EXPECT_EQ(ret, retOk);
+    EXPECT_EQ(paramName, "p2aram_Name34");
+    EXPECT_FALSE(hasIndex);
+    EXPECT_EQ(index, -1);
+    EXPECT_EQ(additionalTag, "");
+
+    ret = ParamHelper::parseParamName("p2aram_Name34[45]", paramName, hasIndex, index, additionalTag);
+    EXPECT_EQ(ret, retOk);
+    EXPECT_EQ(paramName, "p2aram_Name34");
+    EXPECT_TRUE(hasIndex);
+    EXPECT_EQ(index, 45);
+    EXPECT_EQ(additionalTag, "");
+
+    ret = ParamHelper::parseParamName("p2aram_Name34[45]:suffix", paramName, hasIndex, index, additionalTag);
+    EXPECT_EQ(ret, retOk);
+    EXPECT_EQ(paramName, "p2aram_Name34");
+    EXPECT_TRUE(hasIndex);
+    EXPECT_EQ(index, 45);
+    EXPECT_EQ(additionalTag, "suffix");
+
+    ret = ParamHelper::parseParamName("p2aram_Name34:suffix", paramName, hasIndex, index, additionalTag);
+    EXPECT_EQ(ret, retOk);
+    EXPECT_EQ(paramName, "p2aram_Name34");
+    EXPECT_FALSE(hasIndex);
+    EXPECT_EQ(index, -1);
+    EXPECT_EQ(additionalTag, "suffix");
+
+    ret = ParamHelper::parseParamName("2p2aram_Name34", paramName, hasIndex, index, additionalTag);
+    EXPECT_EQ(ret, retError);
+
+    ret = ParamHelper::parseParamName("p2aram Name34", paramName, hasIndex, index, additionalTag);
+    EXPECT_EQ(ret, retError);
+
+    ret = ParamHelper::parseParamName("p2aram/Name34", paramName, hasIndex, index, additionalTag);
+    EXPECT_EQ(ret, retError);
+}

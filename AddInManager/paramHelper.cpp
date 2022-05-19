@@ -25,6 +25,8 @@
 #include "../common/addInInterface.h"
 #include "../DataObject/dataobj.h"
 
+#include <qregularexpression.h>
+
 namespace ito {
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1935,19 +1937,19 @@ ito::RetVal ParamHelper::validateParam(
     bool strict /*= true*/,
     bool mandatory /*= false*/)
 {
-    ito::RetVal retVal;
+    
     bool hasIndex = false;
     int index;
-    const char* name = param.getName();
+    QString paramName;
+    QString additionalName;
+    ito::RetVal retVal = parseParamName(param.getName(), paramName, hasIndex, index, additionalName);
 
-    // check whether param has an index
-    QRegExp rx("^([a-zA-Z]+\\w*)(\\[(\\d+)\\])(:(.*)){0,1}$");
-
-    if (rx.indexIn(param.getName()) >= 0)
+    if (retVal.containsError())
     {
-        hasIndex = true;
-        index = rx.capturedTexts()[3].toInt();
+        return retVal;
     }
+
+    const char* name = param.getName();
 
     if (!hasIndex && (templateParam.getType() == param.getType()))
     {
@@ -2178,18 +2180,18 @@ ito::RetVal ParamHelper::validateAndCastParam(
     bool mandatory /*= false*/,
     bool roundToSteps /*= false*/)
 {
-    ito::RetVal retVal;
     bool hasIndex = false;
     int index;
-    const char* name = param.getName();
+    QString paramName;
+    QString additionalName;
+    ito::RetVal retVal = parseParamName(param.getName(), paramName, hasIndex, index, additionalName);
 
-    // check whether param has an index
-    QRegExp rx("^([a-zA-Z]+\\w*)(\\[(\\d+)\\])(:(.*)){0,1}$");
-    if (rx.indexIn(param.getName()) >= 0)
+    if (retVal.containsError())
     {
-        hasIndex = true;
-        index = rx.capturedTexts()[3].toInt();
+        return retVal;
     }
+
+    const char* name = param.getName();
 
     if (!hasIndex && (templateParam.getType() == param.getType()))
     {
@@ -2244,6 +2246,13 @@ ito::RetVal ParamHelper::validateAndCastParam(
             retVal += validateHWMeta(
                 dynamic_cast<const ito::HWMeta*>(templateParam.getMeta()),
                 (ito::AddInBase*)param.getVal<void*>(),
+                mandatory,
+                name);
+        }
+        case ito::ParamBase::DObjPtr & ito::paramTypeMask: {
+            retVal += validateDObjMeta(
+                dynamic_cast<const ito::DObjMeta*>(templateParam.getMeta()),
+                param.getVal<const ito::DataObject*>(),
                 mandatory,
                 name);
         }
@@ -2484,7 +2493,7 @@ ito::RetVal ParamHelper::getParamFromMapByKey(
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! parses parameter name with respect to regular expression, assigned for parameter-communcation
+//! parses parameter name with respect to regular expression, assigned for parameter-communication
 //! with plugins
 /*!
     This method parses any parameter-name with respect to the rules defined for possible names of
@@ -2513,22 +2522,25 @@ ito::RetVal ParamHelper::getParamFromMapByKey(
 ito::RetVal ParamHelper::parseParamName(
     const QString& name, QString& paramName, bool& hasIndex, int& index, QString& additionalTag)
 {
-    ito::RetVal retValue = ito::retOk;
+    ito::RetVal retValue;
+    QRegularExpression rx("^([a-zA-Z]+\\w*)(\\[(\\d+)\\]){0,1}(:(.*)){0,1}$");
+
     paramName = QString();
     hasIndex = false;
     index = -1;
     additionalTag = QString();
+    auto match = rx.match(name);
 
-    QRegExp rx("^([a-zA-Z]+\\w*)(\\[(\\d+)\\]){0,1}(:(.*)){0,1}$");
-    if (rx.indexIn(name) == -1)
+    if (!match.hasMatch())
     {
         retValue +=
             ito::RetVal(ito::retError, 0, QObject::tr("invalid parameter name").toLatin1().data());
     }
     else
     {
-        QStringList pname = rx.capturedTexts();
+        QStringList pname = match.capturedTexts();
         paramName = pname[1];
+
         if (pname.size() >= 4)
         {
             if (!pname[3].isEmpty())
@@ -2536,11 +2548,13 @@ ito::RetVal ParamHelper::parseParamName(
                 index = pname[3].toInt(&hasIndex);
             }
         }
+
         if (pname.size() >= 6)
         {
             additionalTag = pname[5];
         }
     }
+
     return retValue;
 }
 
