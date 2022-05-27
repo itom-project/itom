@@ -35,7 +35,7 @@ namespace ito
         ito::PaletteOrganizer* paletteOrganizer =
             (PaletteOrganizer*)AppManagement::getPaletteOrganizer();
         QList<QString> palettes = paletteOrganizer->getColorPaletteList();
-        for each (auto name in palettes)
+        foreach(auto name, palettes)
         {
             ui.comboDefaultColorMap->addItem(name);
         }

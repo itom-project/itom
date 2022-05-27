@@ -1010,7 +1010,7 @@ QString renderDoubleMetaInfo(const ito::DoubleMeta* meta, bool translate)
     const double eps = std::numeric_limits<double>::epsilon();
     const double dblmax = std::numeric_limits<double>::max();
     auto prec = meta->getDisplayPrecision();
-    auto not = meta->getDisplayNotation();
+    auto disnot = meta->getDisplayNotation();
 
     if (meta->getStepSize() == 0.0)
     {
@@ -1024,17 +1024,17 @@ QString renderDoubleMetaInfo(const ito::DoubleMeta* meta, bool translate)
         {
             temp = translate ? QObject::tr("Value range: [%1, %2]")
                              : QLatin1String("Value range: [%1, %2]");
-            temp = temp.arg(boundedNumberText(minimum, not, prec))
-                       .arg(boundedNumberText(maximum, not, prec));
+            temp = temp.arg(boundedNumberText(minimum, disnot, prec))
+                       .arg(boundedNumberText(maximum, disnot, prec));
         }
     }
     else
     {
         temp = translate ? QObject::tr("Value range: [%1:%2:%3]")
                          : QLatin1String("Value range: [%1:%2:%3]");
-        temp = temp.arg(boundedNumberText(minimum, not, prec))
+        temp = temp.arg(boundedNumberText(minimum, disnot, prec))
                    .arg(meta->getStepSize())
-                   .arg(boundedNumberText(maximum, not, prec));
+                   .arg(boundedNumberText(maximum, disnot, prec));
     }
 
     const auto& unit = meta->getUnit();
