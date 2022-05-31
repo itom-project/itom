@@ -33,9 +33,11 @@ extern "C++"
 #include "defines.h"
 
 #include <QtWidgets/qtreeview.h>
+#include <qscopedpointer.h>
 
     class QPropertyModel;
     class Property;
+    class QPropertyEditorWidgetPrivate;
 
     /**
      * QPropertyEditor
@@ -140,11 +142,11 @@ extern "C++"
         void keyPressEvent(QKeyEvent* event);
 
     private:
-        /// The Model for this view
-        QPropertyModel* m_model;
-
-        // can be removed. deprecated.
-        bool m_sorted;
+        //!< self-managed pointer to the private class container (deletes itself if d_ptr is destroyed). 
+        //!< pointer to private class of AddInBase defined in AddInInterface.cpp. This container is used 
+        //!< to allow flexible changes in the interface without destroying the binary compatibility
+        QScopedPointer<QPropertyEditorWidgetPrivate> d_ptr; 
+        Q_DECLARE_PRIVATE(QPropertyEditorWidget);
 
     signals:
 
