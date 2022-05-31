@@ -2242,7 +2242,7 @@ ito::RetVal ParamHelper::validateAndCastParam(
                 name);
         }
         break;
-        case ito::ParamBase::HWRef& ito::paramTypeMask: {
+        case ito::ParamBase::HWRef & ito::paramTypeMask: {
             retVal += validateHWMeta(
                 dynamic_cast<const ito::HWMeta*>(templateParam.getMeta()),
                 (ito::AddInBase*)param.getVal<void*>(),
@@ -2373,11 +2373,16 @@ ito::ParamBase ParamHelper::convertParam(
 {
     int sourceType = source.getType();
     bool ok2;
+
     if (ok)
+    {
         *ok = true;
+    }
 
     if (sourceType == (destType & (int)ito::paramTypeMask))
+    {
         return source;
+    }
 
 
     switch (destType & ito::paramTypeMask)
@@ -2443,7 +2448,10 @@ ito::ParamBase ParamHelper::convertParam(
     }
 
     if (ok)
+    {
         *ok = false;
+    }
+
     return ParamBase();
 }
 

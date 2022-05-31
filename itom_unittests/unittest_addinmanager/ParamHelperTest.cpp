@@ -194,6 +194,74 @@ TEST(ParamHelperTest, ValidateDataObjParam)
     EXPECT_EQ(retVal, retError);
 }
 
+TEST(ParamHelperTest, ConvertDObjParam)
+{
+    DObjMeta dobjMeta(2, 4, "category");
+    dobjMeta.appendAllowedDataType(ito::tFloat32);
+    dobjMeta.appendAllowedDataType(ito::tComplex128);
+
+    DataObject dObj(2, 4, ito::tComplex128);
+    ParamBase p1("param", ParamBase::DObjPtr | ParamBase::In, nullptr);
+    p1.setVal<DataObject*>(&dObj);
+
+    bool ok;
+    ParamBase result = ParamHelper::convertParam(p1, ParamBase::DObjPtr, &ok);
+
+    EXPECT_EQ(ok, true);
+    EXPECT_EQ(&dObj, result.getVal<const DataObject*>());
+
+    result = ParamHelper::convertParam(p1, ParamBase::ComplexArray, &ok);
+
+    EXPECT_EQ(ok, false);
+    EXPECT_EQ(result.getType(), 0);
+}
+
+TEST(ParamHelperTest, ValidateAndCastDObjParam)
+{
+    DObjMeta dobjMeta(2, 4, "category");
+    dobjMeta.appendAllowedDataType(ito::tFloat32);
+    dobjMeta.appendAllowedDataType(ito::tComplex128);
+
+    DataObject dObj(2, 4, ito::tComplex128);
+    ParamBase p1("param:suffix", ParamBase::DObjPtr | ParamBase::In, nullptr);
+    p1.setVal<DataObject*>(&dObj);
+
+    ParamBase p2("param[0]", ParamBase::DObjPtr | ParamBase::In, nullptr);
+    p1.setVal<DataObject*>(&dObj);
+
+    ParamBase p3("param", ParamBase::Int, 0);
+
+    Param templateParam("tmpl", ParamBase::DObjPtr, nullptr, "");
+    templateParam.setMeta(&dobjMeta, false);
+
+    RetVal ret = ParamHelper::validateAndCastParam(templateParam, p1, false);
+    EXPECT_EQ(ret, retOk);
+
+    ret = ParamHelper::validateParam(templateParam, p1, false);
+    EXPECT_EQ(ret, retOk);
+
+    ret = ParamHelper::validateAndCastParam(templateParam, p2, false);
+    EXPECT_EQ(ret, retError);
+
+    ret = ParamHelper::validateParam(templateParam, p2, false);
+    EXPECT_EQ(ret, retError);
+
+    ret = ParamHelper::validateAndCastParam(templateParam, p3, true);
+    EXPECT_EQ(ret, retError);
+
+    ret = ParamHelper::validateParam(templateParam, p3, true);
+    EXPECT_EQ(ret, retError);
+
+    dObj = DataObject();
+    p1.setVal<DataObject*>(&dObj);
+
+    ret = ParamHelper::validateAndCastParam(templateParam, p1, false);
+    EXPECT_EQ(ret, retError);
+
+    ret = ParamHelper::validateParam(templateParam, p1, false);
+    EXPECT_EQ(ret, retError);
+}
+
 TEST(ParamHelperTest, ParseParamNameTest)
 {
     QString paramName;
