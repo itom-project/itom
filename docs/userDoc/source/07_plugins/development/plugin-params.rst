@@ -612,7 +612,10 @@ In the following, examples about how to create parameters and meta information o
         
 * **Reference to any initialized instance of DataObject (Type: DObjPtr)**
     
-    This is the reference to an instance of *DataObject*. The called method should check whether the instance has the necessary properties or type. Consider, that the flag *NoAutosave* is always set for that type. You can further give a meta information struct of class *DObjMeta* in order to specify the data object more in detail.
+    This is the reference to an instance of *DataObject*. The called method should check whether the instance 
+    has the necessary properties or type. Consider, that the flag *NoAutosave* is always set for that type. 
+    You can further give a meta information struct of class *DObjMeta* in order to specify the data object 
+    more in detail.
     
     .. code-block:: c++
         
@@ -621,7 +624,9 @@ In the following, examples about how to create parameters and meta information o
         
         //create a meta information where you only allow 2-dim data objects of type (u)int8.
         //The necessary check is not automatically executed. You have to manually program it.
-        ito::DObjMeta *meta = new ito::DObjMeta(ito::tUInt8 | ito::tInt8, 2, 2);
+        ito::DObjMeta *meta = new ito::DObjMeta(2, 2);
+        meta->appendAllowedDataType(ito::tInt8);
+        meta->appendAllowedDataType(ito::tUInt8);
         param.setMeta(meta,true);
         
         //returns the pointer casted to DataObject*
