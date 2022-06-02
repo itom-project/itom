@@ -77,12 +77,26 @@ protected:
 };
 
 //-------------------------------------------------------------------------------------
-QPropertyEditorWidget::QPropertyEditorWidget(QWidget* parent /*= 0*/) : QTreeView(parent)
+class QPropertyEditorWidgetPrivate
 {
-    m_model = new QPropertyModel(this);
+public:
+    QPropertyEditorWidgetPrivate() :
+        m_model(nullptr)
+    {}
+
+    /// The Model for this view
+    QPropertyModel *m_model;
+};
+
+//-------------------------------------------------------------------------------------
+QPropertyEditorWidget::QPropertyEditorWidget(QWidget* parent /*= 0*/) : QTreeView(parent), d_ptr(new QPropertyEditorWidgetPrivate())
+{
+    Q_D(QPropertyEditorWidget);
+
+    d->m_model = new QPropertyModel(this);
 
     QSortFilterProxyModel *sortModel = new PropertyEditorSortFilterProxyModel(this);
-    sortModel->setSourceModel(m_model);
+    sortModel->setSourceModel(d->m_model);
     sortModel->setFilterWildcard("");
     sortModel->setFilterKeyColumn(0);
     sortModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
@@ -112,7 +126,7 @@ QPropertyEditorWidget::QPropertyEditorWidget(QWidget* parent /*= 0*/) : QTreeVie
 
     action = new QAction(QIcon(":/files/icons/browser.png"), tr("Group by inheritance"), this);
     action->setCheckable(true);
-    action->setChecked(m_model->groupByInheritance());
+    action->setChecked(d->m_model->groupByInheritance());
     connect(action, &QAction::triggered, this, &QPropertyEditorWidget::setGroupByInheritance);
     addAction(action);
 
@@ -127,9 +141,11 @@ QPropertyEditorWidget::~QPropertyEditorWidget()
 //-------------------------------------------------------------------------------------
 void QPropertyEditorWidget::addObject(QObject* propertyObject)
 {
-    m_model->addItem(propertyObject);
+    Q_D(QPropertyEditorWidget);
 
-    if (m_model->groupByInheritance())
+    d->m_model->addItem(propertyObject);
+
+    if (d->m_model->groupByInheritance())
     {
         expandToDepth(0);
     }
@@ -140,7 +156,10 @@ void QPropertyEditorWidget::addObject(QObject* propertyObject)
 //-------------------------------------------------------------------------------------
 void QPropertyEditorWidget::setObject(QObject* propertyObject)
 {
-    m_model->clear();
+    Q_D(QPropertyEditorWidget);
+
+    d->m_model->clear();
+
     if (propertyObject)
     {
         addObject(propertyObject);
@@ -152,9 +171,11 @@ void QPropertyEditorWidget::setObject(QObject* propertyObject)
 //-------------------------------------------------------------------------------------
 void QPropertyEditorWidget::updateObject(QObject* propertyObject)
 {
+    Q_D(QPropertyEditorWidget);
+
     if (propertyObject)
     {
-        m_model->updateItem(propertyObject);
+        d->m_model->updateItem(propertyObject);
     }
 
     dataChanged();
@@ -163,13 +184,17 @@ void QPropertyEditorWidget::updateObject(QObject* propertyObject)
 //-------------------------------------------------------------------------------------
 void QPropertyEditorWidget::registerCustomPropertyCB(UserTypeCB callback)
 {
-    m_model->registerCustomPropertyCB(callback);
+    Q_D(QPropertyEditorWidget);
+
+    d->m_model->registerCustomPropertyCB(callback);
 }
 
 //-------------------------------------------------------------------------------------
 void QPropertyEditorWidget::unregisterCustomPropertyCB(UserTypeCB callback)
 {
-    m_model->unregisterCustomPropertyCB(callback);
+    Q_D(QPropertyEditorWidget);
+
+    d->m_model->unregisterCustomPropertyCB(callback);
 }
 
 //-------------------------------------------------------------------------------------
@@ -242,25 +267,13 @@ void QPropertyEditorWidget::keyPressEvent(QKeyEvent* event)
 }
 
 //-------------------------------------------------------------------------------------
-//!< todo: deprecated
-void QPropertyEditorWidget::setSorted(bool enabled)
-{
-}
-
-//-------------------------------------------------------------------------------------
-//!< todo: deprecated
-bool QPropertyEditorWidget::sorted() const
-{
-
-    return isSortingEnabled();
-}
-
-//-------------------------------------------------------------------------------------
 void QPropertyEditorWidget::setGroupByInheritance(bool enabled)
 {
-    if (enabled != m_model->groupByInheritance())
+    Q_D(QPropertyEditorWidget);
+
+    if (enabled != d->m_model->groupByInheritance())
     {
-        m_model->setGroupByInheritance(enabled);
+        d->m_model->setGroupByInheritance(enabled);
 
         // first action corresponds to sortingEnabled
         QAction *action = actions()[1];
@@ -284,7 +297,9 @@ void QPropertyEditorWidget::setGroupByInheritance(bool enabled)
 //-------------------------------------------------------------------------------------
 bool QPropertyEditorWidget::groupByInheritance() const
 {
-    return m_model->groupByInheritance();
+    Q_D(const QPropertyEditorWidget);
+
+    return d->m_model->groupByInheritance();
 }
 
 //-------------------------------------------------------------------------------------

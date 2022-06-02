@@ -1691,6 +1691,25 @@ PyObject *parseParamMetaAsDict(const ito::ParamMeta *meta, const ito::Param* par
                 temp = PyLong_FromLong(cm->getMaxDim());
                 PyDict_SetItemString(dict, "dimMax", temp);
                 Py_DECREF(temp);
+
+                int length = PythonDataObject::numDataTypes();
+
+                temp = PyTuple_New(cm->getNumAllowedDataTypes() == 0 ? length : cm->getNumAllowedDataTypes());
+                int idx = 0;
+
+                for (int typeno = 0; typeno < length; ++typeno)
+                {
+                    if (cm->isDataTypeAllowed((ito::tDataType)typeno))
+                    {
+                        PyTuple_SetItem(temp, idx, 
+                            PythonQtConversion::QByteArrayToPyUnicodeSecure(PythonDataObject::typeNumberToName(typeno))
+                        ); //steals reference
+                        idx++;
+                    }
+                }
+
+                PyDict_SetItemString(dict, "allowedDataTypes", temp);
+                Py_DECREF(temp);
             }
             break;
         case ito::ParamMeta::rttiIntArrayMeta:

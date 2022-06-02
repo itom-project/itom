@@ -21,7 +21,11 @@
 *********************************************************************** */
 
 #include "paramHelper.h"
+
 #include "../common/addInInterface.h"
+#include "../DataObject/dataobj.h"
+
+#include <qregularexpression.h>
 
 namespace ito {
 
@@ -67,7 +71,26 @@ tCompareResult ParamHelper::compareParam(
     return compareMetaParam(metaTemplate, meta, paramTemplate.getName(), param.getName(), ret);
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
+//!< verifies the meta informaiton of two different parameters for compatibility
+/*
+The method verifies if meta information of a given parameter (meta, name) is
+compatible to the meta information of a template parameter.
+
+Both meta information are equal, if they are both either nullptr or if both
+have the same type and configurations. If their type is different, the compatiblity
+failed. A compatibility is returned, if the meta information is of the same type
+than the template but less restrictive than the template. If the meta information
+would be more restrictive than the template, the compatibility failed, too.
+
+\param metaTemplate is the meta information of a parameter ``nameTemplate``
+\param meta is the meta information of another parameter ``name``
+\param nameTemplate is only the name (for error messages) of the template parameter
+\param name is the name of the parameter to be checked
+\param ret contains a detailed error message in case of an incompatibility
+
+\returns tCompareResult to signal the comparison result: equal, compatible, failed.
+*/
 tCompareResult ParamHelper::compareMetaParam(
     const ito::ParamMeta* metaTemplate,
     const ito::ParamMeta* meta,
@@ -83,7 +106,7 @@ tCompareResult ParamHelper::compareMetaParam(
     {
         // param is compatible to paramTemplate, since it has no meta block
         // defined, but paramTemplate has. A meta bock always is more
-        // restrictive than no.
+        // restrictive than none.
         return tCmpCompatible;
     }
     else if (metaTemplate == nullptr)
@@ -119,6 +142,7 @@ tCompareResult ParamHelper::compareMetaParam(
     case ito::ParamMeta::rttiCharMeta: {
         const ito::CharMeta* mT = static_cast<const ito::CharMeta*>(metaTemplate);
         const ito::CharMeta* m = static_cast<const ito::CharMeta*>(meta);
+
         if (!mT || !m)
         {
             ret += ito::RetVal::format(
@@ -646,6 +670,7 @@ tCompareResult ParamHelper::compareMetaParam(
     case ito::ParamMeta::rttiDObjMeta: {
         const ito::DObjMeta* mT = static_cast<const ito::DObjMeta*>(metaTemplate);
         const ito::DObjMeta* m = static_cast<const ito::DObjMeta*>(meta);
+
         if (!mT || !m)
         {
             ret += ito::RetVal::format(
@@ -661,21 +686,49 @@ tCompareResult ParamHelper::compareMetaParam(
         }
 
         // all bits in allowedTypes of mT must be set in m, too
-        if ((m->getAllowedTypes() & mT->getAllowedTypes()) != mT->getAllowedTypes())
+        if (m->getNumAllowedDataTypes() > 0)
         {
-            ret += ito::RetVal::format(
-                ito::retError,
-                0,
-                QObject::tr("The allowed data object types of parameter '%s' are more restrictive "
-                            "than these required by the interface parameter '%s'.")
+            if (mT->getNumAllowedDataTypes() == 0)
+            {
+                // the template allows all types, m only few types and is therefore more restrictive
+                ret += ito::RetVal::format(
+                    ito::retError,
+                    0,
+                    QObject::tr("The allowed data object types of parameter '%s' are more restrictive "
+                        "than these required by the interface parameter '%s'.")
                     .toLatin1()
                     .data(),
-                name,
-                nameTemplate);
-            return tCmpFailed;
+                    name,
+                    nameTemplate);
+                return tCmpFailed;
+            }
+            else
+            {
+                for (int i = 0; i < mT->getNumAllowedDataTypes(); ++i)
+                {
+                    if (!m->isDataTypeAllowed(mT->getAllowedDataType(i)))
+                    {
+                        ret += ito::RetVal::format(
+                            ito::retError,
+                            0,
+                            QObject::tr("The allowed data object types of parameter '%s' are more restrictive "
+                                "than these required by the interface parameter '%s'.")
+                            .toLatin1()
+                            .data(),
+                            name,
+                            nameTemplate);
+                        return tCmpFailed;
+                    }
+                }
+            }
         }
 
-        if (m->getAllowedTypes() == mT->getAllowedTypes())
+        ito::DObjMeta m2 = *m;
+        m2.setMinDim(mT->getMinDim());
+        m2.setMaxDim(mT->getMaxDim());
+
+        // check if the allowed types of m and mT are exactly equal... therefore compare m2 and mT
+        if (m2 == *mT)
         {
             if (m->getMinDim() == mT->getMinDim() && m->getMaxDim() == mT->getMaxDim())
             {
@@ -1059,6 +1112,47 @@ ito::RetVal ParamHelper::validateCharMeta(
                     .data());
         }
     }
+
+    return ito::retOk;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal ParamHelper::validateDObjMeta(const ito::DObjMeta *meta, const ito::DataObject* value, bool mandatory /*= false*/, const char* name /*= nullptr*/)
+{
+    if (meta && value)
+    {
+        const int dims = value->getDims();
+
+        if (dims < meta->getMinDim() || dims > meta->getMaxDim())
+        {
+            return ito::RetVal(
+                ito::retError,
+                0,
+                (parseNamePrefix(name) +
+                    QObject::tr("number of dimensions out of range."))
+                .toLatin1()
+                .data());
+        }
+
+        if (!meta->isDataTypeAllowed((ito::tDataType)(value->getType())))
+        {
+            return ito::RetVal(
+                ito::retError,
+                0,
+                (parseNamePrefix(name) +
+                    QObject::tr("unallowed data type."))
+                .toLatin1()
+                .data());
+        }
+    }
+    else if (mandatory && value == nullptr)
+    {
+        return ito::RetVal(
+            ito::retError,
+            0,
+            (parseNamePrefix(name) + QObject::tr("DataObject must not be nullptr")).toLatin1().data());
+    }
+
     return ito::retOk;
 }
 
@@ -1843,19 +1937,19 @@ ito::RetVal ParamHelper::validateParam(
     bool strict /*= true*/,
     bool mandatory /*= false*/)
 {
-    ito::RetVal retVal;
+    
     bool hasIndex = false;
     int index;
-    const char* name = param.getName();
+    QString paramName;
+    QString additionalName;
+    ito::RetVal retVal = parseParamName(param.getName(), paramName, hasIndex, index, additionalName);
 
-    // check whether param has an index
-    QRegExp rx("^([a-zA-Z]+\\w*)(\\[(\\d+)\\])(:(.*)){0,1}$");
-
-    if (rx.indexIn(param.getName()) >= 0)
+    if (retVal.containsError())
     {
-        hasIndex = true;
-        index = rx.capturedTexts()[3].toInt();
+        return retVal;
     }
+
+    const char* name = param.getName();
 
     if (!hasIndex && (templateParam.getType() == param.getType()))
     {
@@ -1914,10 +2008,17 @@ ito::RetVal ParamHelper::validateParam(
                 name);
         }
         break;
-        case ito::ParamBase::HWRef& ito::paramTypeMask: {
+        case ito::ParamBase::HWRef & ito::paramTypeMask: {
             retVal += validateHWMeta(
                 dynamic_cast<const ito::HWMeta*>(templateParam.getMeta()),
                 (ito::AddInBase*)param.getVal<void*>(),
+                mandatory,
+                name);
+        }
+        case ito::ParamBase::DObjPtr & ito::paramTypeMask: {
+            retVal += validateDObjMeta(
+                dynamic_cast<const ito::DObjMeta*>(templateParam.getMeta()),
+                param.getVal<const ito::DataObject*>(),
                 mandatory,
                 name);
         }
@@ -2079,18 +2180,18 @@ ito::RetVal ParamHelper::validateAndCastParam(
     bool mandatory /*= false*/,
     bool roundToSteps /*= false*/)
 {
-    ito::RetVal retVal;
     bool hasIndex = false;
     int index;
-    const char* name = param.getName();
+    QString paramName;
+    QString additionalName;
+    ito::RetVal retVal = parseParamName(param.getName(), paramName, hasIndex, index, additionalName);
 
-    // check whether param has an index
-    QRegExp rx("^([a-zA-Z]+\\w*)(\\[(\\d+)\\])(:(.*)){0,1}$");
-    if (rx.indexIn(param.getName()) >= 0)
+    if (retVal.containsError())
     {
-        hasIndex = true;
-        index = rx.capturedTexts()[3].toInt();
+        return retVal;
     }
+
+    const char* name = param.getName();
 
     if (!hasIndex && (templateParam.getType() == param.getType()))
     {
@@ -2141,10 +2242,17 @@ ito::RetVal ParamHelper::validateAndCastParam(
                 name);
         }
         break;
-        case ito::ParamBase::HWRef& ito::paramTypeMask: {
+        case ito::ParamBase::HWRef & ito::paramTypeMask: {
             retVal += validateHWMeta(
                 dynamic_cast<const ito::HWMeta*>(templateParam.getMeta()),
                 (ito::AddInBase*)param.getVal<void*>(),
+                mandatory,
+                name);
+        }
+        case ito::ParamBase::DObjPtr & ito::paramTypeMask: {
+            retVal += validateDObjMeta(
+                dynamic_cast<const ito::DObjMeta*>(templateParam.getMeta()),
+                param.getVal<const ito::DataObject*>(),
                 mandatory,
                 name);
         }
@@ -2265,11 +2373,16 @@ ito::ParamBase ParamHelper::convertParam(
 {
     int sourceType = source.getType();
     bool ok2;
+
     if (ok)
+    {
         *ok = true;
+    }
 
     if (sourceType == (destType & (int)ito::paramTypeMask))
+    {
         return source;
+    }
 
 
     switch (destType & ito::paramTypeMask)
@@ -2335,7 +2448,10 @@ ito::ParamBase ParamHelper::convertParam(
     }
 
     if (ok)
+    {
         *ok = false;
+    }
+
     return ParamBase();
 }
 
@@ -2385,7 +2501,7 @@ ito::RetVal ParamHelper::getParamFromMapByKey(
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! parses parameter name with respect to regular expression, assigned for parameter-communcation
+//! parses parameter name with respect to regular expression, assigned for parameter-communication
 //! with plugins
 /*!
     This method parses any parameter-name with respect to the rules defined for possible names of
@@ -2414,22 +2530,25 @@ ito::RetVal ParamHelper::getParamFromMapByKey(
 ito::RetVal ParamHelper::parseParamName(
     const QString& name, QString& paramName, bool& hasIndex, int& index, QString& additionalTag)
 {
-    ito::RetVal retValue = ito::retOk;
+    ito::RetVal retValue;
+    QRegularExpression rx("^([a-zA-Z]+\\w*)(\\[(\\d+)\\]){0,1}(:(.*)){0,1}$");
+
     paramName = QString();
     hasIndex = false;
     index = -1;
     additionalTag = QString();
+    auto match = rx.match(name);
 
-    QRegExp rx("^([a-zA-Z]+\\w*)(\\[(\\d+)\\]){0,1}(:(.*)){0,1}$");
-    if (rx.indexIn(name) == -1)
+    if (!match.hasMatch())
     {
         retValue +=
             ito::RetVal(ito::retError, 0, QObject::tr("invalid parameter name").toLatin1().data());
     }
     else
     {
-        QStringList pname = rx.capturedTexts();
+        QStringList pname = match.capturedTexts();
         paramName = pname[1];
+
         if (pname.size() >= 4)
         {
             if (!pname[3].isEmpty())
@@ -2437,11 +2556,13 @@ ito::RetVal ParamHelper::parseParamName(
                 index = pname[3].toInt(&hasIndex);
             }
         }
+
         if (pname.size() >= 6)
         {
             additionalTag = pname[5];
         }
     }
+
     return retValue;
 }
 

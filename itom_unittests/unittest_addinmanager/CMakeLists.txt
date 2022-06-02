@@ -46,10 +46,11 @@ set(unittest_HEADERS
 
 set(unittest_SOURCES 
     ${CMAKE_CURRENT_SOURCE_DIR}/AddInManagerTest.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ParamHelperTest.cpp
 )
 
 cxx_executable(${target_name} ${CMAKE_CURRENT_SOURCE_DIR} gtest ${unittest_SOURCES} ${unittest_HEADERS})
-target_link_libraries(${target_name} itomCommonLib addinmanager ${QT5_LIBRARIES} ${OpenCV_LIBS})
+target_link_libraries(${target_name} itomCommonLib addinmanager dataobject ${QT5_LIBRARIES} ${OpenCV_LIBS})
 
 set_target_properties( ${target_name}
     PROPERTIES

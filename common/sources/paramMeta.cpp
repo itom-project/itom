@@ -646,6 +646,13 @@ bool StringMeta::operator==(const ParamMeta& other) const
 }
 
 //---------------------------------------------------------------------------------
+DObjMeta::DObjMeta(int minDim /*= 0*/, int maxDim /*= (std::numeric_limits<int>::max)()*/,
+    ito::ByteArray category /*= ito::ByteArray()*/)
+    : ParamMeta(rttiDObjMeta, category), m_allowedTypes(ito::ByteArray()), m_minDim(minDim), m_maxDim(maxDim)
+{
+}
+
+//---------------------------------------------------------------------------------
 bool DObjMeta::operator==(const ParamMeta& other) const
 {
     if (!ParamMeta::operator==(other))
@@ -676,6 +683,89 @@ DObjMeta& DObjMeta::operator=(const DObjMeta &rhs)
     m_minDim = rhs.m_minDim;
     m_allowedTypes = rhs.m_allowedTypes;
     return *this;
+}
+
+//---------------------------------------------------------------------------------
+void DObjMeta::appendAllowedDataType(ito::tDataType dataType)
+{
+    bool exists = false;
+    int num = getNumAllowedDataTypes();
+    
+    if (num > 0)
+    {
+        exists = isDataTypeAllowed(dataType);
+    }
+
+    if (!exists)
+    {
+        const char* buf_old = m_allowedTypes.data();
+        char* buf = new char[num + 2];
+        char new_val = dataType;
+        buf[num] = new_val;
+        buf[num + 1] = '\0';
+        size_t new_i = 0;
+        bool added = false;
+
+        for (int i = 0; i < num; ++i)
+        {
+            if (added || (buf_old[i] < new_val))
+            {
+                buf[new_i] = buf_old[i];
+                new_i++;
+            }
+            else
+            {
+                buf[new_i] = new_val;
+                buf[new_i + 1] = buf_old[i];
+                new_i += 2;
+                added = true;
+            }
+        }
+
+        m_allowedTypes = buf;
+        delete[] buf;
+    }
+}
+
+//---------------------------------------------------------------------------------
+bool DObjMeta::isDataTypeAllowed(ito::tDataType dataType) const
+{
+    if (m_allowedTypes.size() == 0)
+    {
+        return true;
+    }
+
+    const char* types = m_allowedTypes.data();
+    ito::tDataType type;
+
+    for (int i = 0; i < m_allowedTypes.size(); ++i)
+    {
+        type = (ito::tDataType)(types[i]);
+        
+        if (type == dataType)
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+//---------------------------------------------------------------------------------
+int DObjMeta::getNumAllowedDataTypes() const
+{
+    return m_allowedTypes.size();
+}
+
+//---------------------------------------------------------------------------------
+ito::tDataType DObjMeta::getAllowedDataType(int index) const
+{
+    if (index < 0 || index >= m_allowedTypes.size())
+    {
+        throw std::logic_error("index must be in range [0, getNumAllowedDataTypes())");
+    }
+
+    return (ito::tDataType)(m_allowedTypes.data()[index]);
 }
 
 //---------------------------------------------------------------------------------
