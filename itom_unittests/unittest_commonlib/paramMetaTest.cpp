@@ -53,9 +53,14 @@ TEST(ParamMetaTest, AssignmentAndCopyConstructor)
         sm, StringMeta(StringMeta::String, "category2"), "StringMeta");
     AssignmentAndCopyConstrImpl<HWMeta>(
         HWMeta("sdf", "category"), HWMeta("sdf", "category2"), "HWMeta");
+
+    DObjMeta dobj1(2, 32, "category");
+    dobj1.appendAllowedDataType(ito::tUInt8);
+    dobj1.appendAllowedDataType(ito::tInt32);
+    DObjMeta dobj2(2, 32, "category");
+
     AssignmentAndCopyConstrImpl<DObjMeta>(
-        DObjMeta(ito::tUInt8 | ito::tInt32, 2, 32, "category"),
-        DObjMeta(ito::tUInt16 | ito::tInt32, 2, 32, "category"),
+        dobj1, dobj2,
         "DObjMeta");
     AssignmentAndCopyConstrImpl<CharArrayMeta>(
         CharArrayMeta(2, 200, 10, 20, 50, 6, "category"),
@@ -92,4 +97,47 @@ TEST(ParamMetaTest, AssignmentAndCopyConstructor)
     RangeMeta height2(64, 256, 2, "height");
     AssignmentAndCopyConstrImpl<RectMeta>(
         RectMeta(width, height, "category"), RectMeta(width, height2, "category"), "RectMeta");
+}
+
+TEST(ParamMetaTest, DObjMetaAllowedDataTypes)
+{
+    DObjMeta meta(2, 3, "category");
+
+    EXPECT_STREQ(meta.getCategory().data(), "category");
+    EXPECT_EQ(meta.getNumAllowedDataTypes(), 0);
+    EXPECT_EQ(meta.isDataTypeAllowed(ito::tDateTime), true);
+
+    meta.appendAllowedDataType(ito::tFloat32);
+    EXPECT_EQ(meta.getNumAllowedDataTypes(), 1);
+    EXPECT_EQ(meta.isDataTypeAllowed(ito::tDateTime), false);
+    EXPECT_EQ(meta.isDataTypeAllowed(ito::tFloat32), true);
+
+    meta.appendAllowedDataType(ito::tFloat32);
+    EXPECT_EQ(meta.getNumAllowedDataTypes(), 1);
+    EXPECT_EQ(meta.isDataTypeAllowed(ito::tDateTime), false);
+    EXPECT_EQ(meta.isDataTypeAllowed(ito::tFloat32), true);
+
+    meta.appendAllowedDataType(ito::tUInt8);
+    EXPECT_EQ(meta.getNumAllowedDataTypes(), 2);
+    EXPECT_EQ(meta.isDataTypeAllowed(ito::tDateTime), false);
+    EXPECT_EQ(meta.isDataTypeAllowed(ito::tFloat32), true);
+    EXPECT_EQ(meta.isDataTypeAllowed(ito::tUInt8), true);
+
+    meta.appendAllowedDataType(ito::tDateTime);
+    EXPECT_EQ(meta.getNumAllowedDataTypes(), 3);
+    EXPECT_EQ(meta.isDataTypeAllowed(ito::tDateTime), true);
+    EXPECT_EQ(meta.isDataTypeAllowed(ito::tFloat32), true);
+    EXPECT_EQ(meta.isDataTypeAllowed(ito::tUInt8), true);
+
+    meta.appendAllowedDataType(ito::tInt16);
+    EXPECT_EQ(meta.getNumAllowedDataTypes(), 4);
+    EXPECT_EQ(meta.isDataTypeAllowed(ito::tDateTime), true);
+    EXPECT_EQ(meta.isDataTypeAllowed(ito::tFloat32), true);
+    EXPECT_EQ(meta.isDataTypeAllowed(ito::tUInt8), true);
+    EXPECT_EQ(meta.isDataTypeAllowed(ito::tInt16), true);
+
+    EXPECT_EQ(meta.getAllowedDataType(0), ito::tUInt8);
+    EXPECT_EQ(meta.getAllowedDataType(1), ito::tInt16);
+    EXPECT_EQ(meta.getAllowedDataType(2), ito::tFloat32);
+    EXPECT_EQ(meta.getAllowedDataType(3), ito::tDateTime);
 }

@@ -267,6 +267,7 @@ class PythonDataObject
         static PyDataObjectTypes PyDataObject_types[];
         static int dObjTypeFromName(const char *name);
         static char* typeNumberToName(int typeno);
+        static int numDataTypes();
 
         static PyDataObject* createEmptyPyDataObject();
         static PyObject* createPyDataObjectFromArray(PyObject *npArray); //returns NULL with set Python exception if npArray could not be converted to data object
