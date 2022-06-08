@@ -57,4 +57,3 @@
     if (PyDateTimeAPI == nullptr)                                                                  \
     {                                                                                              \
         PyDateTime_IMPORT;                                                                         \
-    }
