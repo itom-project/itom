@@ -317,6 +317,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonUiTimer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonWorkspace.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/qDebugStream.h
+	${CMAKE_CURRENT_SOURCE_DIR}/python/pythonWrapper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/abstractFilterDialog.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/abstractPropertyPageWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogAbout.h
