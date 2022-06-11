@@ -70,7 +70,7 @@ macro(itom_init_cmake_policy TESTED_CMAKE_VERSION)
 endmacro()
 
 # - initializes macros common to plugins and designerplugins.
-# These vars are widely used, shold be available whenever cmake is issued on individual
+# These vars are widely used, should be available whenever cmake is issued on individual
 # itom project parts.
 #
 # This macro is automatically called from itom_init_plugin_library and 
