@@ -107,7 +107,7 @@ class DataObjectNpConversion(unittest.TestCase):
         )
 
     def test_npArray2dataObjectReadonly(self):
-        x = np.array([[1, 2], [2, 3]])
+        x = np.array([[1, 2], [2, 3]], dtype="int32")
         x.setflags(write=False)
         dx = dataObject(x)
         self.assertIsNot(x, dx.base)
