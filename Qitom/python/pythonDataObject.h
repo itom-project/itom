@@ -54,7 +54,7 @@ class PythonDataObject
 
         typedef struct
         {
-            char *name;
+            const char *name;
             int typeno;
         }
         PyDataObjectTypes;
@@ -266,7 +266,7 @@ class PythonDataObject
 
         static PyDataObjectTypes PyDataObject_types[];
         static int dObjTypeFromName(const char *name);
-        static char* typeNumberToName(int typeno);
+        static const char* typeNumberToName(int typeno);
         static int numDataTypes();
 
         static PyDataObject* createEmptyPyDataObject();

@@ -458,7 +458,7 @@ int PythonDataObject::dObjTypeFromName(const char* name)
 }
 
 //-------------------------------------------------------------------------------------
-char* PythonDataObject::typeNumberToName(int typeno)
+const char* PythonDataObject::typeNumberToName(int typeno)
 {
     if (typeno < 0 || typeno >= numDataTypes())
     {
