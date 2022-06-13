@@ -19,17 +19,18 @@ for |itom| (comments after the hash-tag should not be copied to the command line
     sudo dnf install cmake cmake-gui git
     sudo dnf install gcc gcc-c++
     sudo dnf install python3 python3-devel python3-numpy python3-pip #problem: python3-dev
-    sudo dnf install qt5 qt5-devel
+    sudo dnf install qt5 qt5-devel  # only Fedora < 35
+    sudo dnf install qt5-qtbase-devel qt5-qtbase-static qt5-qttools-devel qt5-qttools-static qt5-qtwebengine-devel qt5-qtsvg-devel  # Fedora >= 35
     sudo dnf install opencv opencv-devel
     
     sudo dnf install libv4l libv4l-devel #this is optional to get the video for linux drivers
     sudo dnf install xerces-c xerces-c-devel xsd #this is optional to being able to compile the x3p plugin
     
-In one line, the packages above are equal to:
+In one line, the packages above are equal to (for Fedora >= 35):
     
 .. code-block:: bash
     
-    sudo dnf install cmake cmake-gui git gcc gcc-c++ python3 python3-devel python3-numpy python3-pip qt5 qt5-devel opencv opencv-devel libv4l libv4l-devel xerces-c xerces-c-devel xsd
+    sudo dnf install cmake cmake-gui git gcc gcc-c++ python3 python3-devel python3-numpy python3-pip qt5-qtbase-devel qt5-qtbase-static qt5-qttools-devel qt5-qttools-static qt5-qtwebengine-devel qt5-qtsvg-devel opencv opencv-devel libv4l libv4l-devel xerces-c xerces-c-devel xsd
 
 If you want to compile |itom| with support from the Point Cloud Library, also get the following packages:
 
@@ -38,9 +39,13 @@ If you want to compile |itom| with support from the Point Cloud Library, also ge
     sudo dnf install pcl pcl-devel proj-devel boost boost-devel
 
 Now, change to the base directory, where the sources and builds of itom and its plugins should be placed. The following commands are not executed
-with super-user rights; prepend *sudo* if this is required. In comparison to building *itom* under Debian based Linux versions, the CMake
+with super-user rights; prepend *sudo* if this is required. 
+
+**Fedora version < 35**
+
+In comparison to building *itom* under Debian based Linux versions, the CMake
 configuration process under Fedora needs some more *hints* about where to find some libraries etc. Therefore, it might be, that you have
-to adjust some pathes below. Currently, Qt5 is still built with webkit-support under Fedora, such that the WebEngine-support is not available.
+to adjust some pathes below. Currently, Qt5 is still built without webkit-support under Fedora, such that the WebEngine-support is not available.
 Therefore, the built-in helpviewer of itom has to be disabled. For building itom **without** point cloud support use:
 
 .. code-block:: bash
@@ -50,14 +55,35 @@ Therefore, the built-in helpviewer of itom has to be disabled. For building itom
     git clone https://bitbucket.org/itom/plugins.git ./itom/sources/plugins
     git clone https://bitbucket.org/itom/designerplugins.git ./itom/sources/designerplugins
     mkdir -p itom/build/itom itom/build/plugins itom/build/designerplugins
-    cd itom/build
+    cd itom/build/itom
     cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=OFF -PYTHON_LIBRARY=/usr/lib64/libpython3.5m.so -PYTHON_INCLUDE_DIR=/usr/include/python3.5m -BUILD_QTVERSION=Qt5 -Qt5_DIR=/usr/lib64/cmake/Qt5 -Qt5Core_DIR=/usr/lib64/cmake/Qt5Core -BUILD_WITH_HELPVIEWER=OFF ../../sources/itom 
     make
-    cd ../designerPlugins
-    cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=OFF -PYTHON_LIBRARY=/usr/lib64/libpython3.5m.so -PYTHON_INCLUDE_DIR=/usr/include/python3.5m -BUILD_QTVERSION=Qt5 -Qt5_DIR=/usr/lib64/cmake/Qt5 -Qt5Core_DIR=/usr/lib64/cmake/Qt5Core -BUILD_WITH_HELPVIEWER=OFF -DITOM_SDK_DIR=../itom/SDK ../../sources/designerPlugins
+    cd ../designerplugins
+    cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=OFF -PYTHON_LIBRARY=/usr/lib64/libpython3.5m.so -PYTHON_INCLUDE_DIR=/usr/include/python3.5m -BUILD_QTVERSION=Qt5 -Qt5_DIR=/usr/lib64/cmake/Qt5 -Qt5Core_DIR=/usr/lib64/cmake/Qt5Core -BUILD_WITH_HELPVIEWER=OFF -DITOM_SDK_DIR=../itom/SDK ../../sources/designerplugins
     make
     cd ../plugins
     cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=OFF -PYTHON_LIBRARY=/usr/lib64/libpython3.5m.so -PYTHON_INCLUDE_DIR=/usr/include/python3.5m -BUILD_QTVERSION=Qt5 -Qt5_DIR=/usr/lib64/cmake/Qt5 -Qt5Core_DIR=/usr/lib64/cmake/Qt5Core -BUILD_WITH_HELPVIEWER=OFF -DITOM_SDK_DIR=../itom/SDK ../../sources/plugins
+    make
+
+**Fedora >= 35**
+
+For these versions, CMake is able to detect Qt5 and Python automatically. Additionally, the qt5 webengine is available:
+
+.. code-block:: bash
+    
+    mkdir -p itom/sources/itom itom/sources/plugins itom/sources/designerplugins
+    git clone https://bitbucket.org/itom/itom.git ./itom/sources/itom
+    git clone https://bitbucket.org/itom/plugins.git ./itom/sources/plugins
+    git clone https://bitbucket.org/itom/designerplugins.git ./itom/sources/designerplugins
+    mkdir -p itom/build/itom itom/build/plugins itom/build/designerplugins
+    cd itom/build/itom
+    cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=OFF ../../sources/itom 
+    make
+    cd ../designerplugins
+    cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=OFF -DITOM_SDK_DIR=../itom/SDK ../../sources/designerplugins
+    make
+    cd ../plugins
+    cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=OFF -DITOM_SDK_DIR=../itom/SDK ../../sources/plugins
     make
     
 **With** point cloud support use:

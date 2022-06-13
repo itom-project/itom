@@ -209,7 +209,7 @@ dataObject.ones([2, 2])"""
         self.assertEqual(h, [('dobj3 = dobj.reshape([3, 2])', ['dobj3: dataObject'])])
         h = jedilib.get_help(doc, 26, 19, path=p)  # dobj3.shape, word 'shape'
         if jedi.__version__ > "0.18.0":
-            self._assertOneHelpEntry(h, "def shape", "shape: tuple\n\nGets the shape", True)
+            self._assertOneHelpEntry(h, "def shape", "shape: tuple\n\ntuple of int : Gets the shape", True)
         else:
             self._assertOneHelpEntry(h, "def shape", "shape: tuple", True)
         
