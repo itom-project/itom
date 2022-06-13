@@ -117,6 +117,8 @@ TimeDelta PythonDateTime::GetTimeDelta(PyObject* obj, bool& ok)
     // import the datetime api
     Itom_PyDateTime_IMPORT;
 
+    ok = true;
+
     if (PyDelta_Check(obj))
     {
         int days = PyDateTime_DELTA_GET_DAYS(obj);

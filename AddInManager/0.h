@@ -10,6 +10,10 @@
 ///python
 // see http://vtk.org/gitweb?p=VTK.git;a=commitdiff;h=7f3f750596a105d48ea84ebfe1b1c4ca03e0bab3
 #if (defined _DEBUG) && (defined WIN32)
+    // see https://github.com/microsoft/onnxruntime/issues/9735#issuecomment-970718821
+    #include <corecrt.h>
+
+
     #undef _DEBUG
 
     //workaround following: https://stackoverflow.com/questions/23068700/embedding-python3-in-qt-5

@@ -1,7 +1,6 @@
 import sys
 
-pyversion = "%i.%i" % \
-    (sys.version_info.major, sys.version_info.minor)
+pyversion = (sys.version_info.major, sys.version_info.minor)
 
 
 import unittest
@@ -20,7 +19,8 @@ import pointcloud_pickle
 import idc_test
 import plot_test
 import shape_test
-if pyversion >= "3.6":
+
+if pyversion >= (3, 6):
     import itom_stubs_generator
     import itom_algorithm_stubs_generator
     import itom_jedilib
@@ -43,7 +43,8 @@ def suite():
     suite.addTest(unittest.makeSuite(datatype_conversion_test.DatatypeConversionTest))
     suite.addTest(unittest.makeSuite(pointcloud_pickle.PointCloudPickle))
     suite.addTest(unittest.makeSuite(idc_test.IdcTest))
-    if pyversion >= "3.6":
+    
+    if pyversion >= (3, 6):
         suite.addTest(unittest.makeSuite(itom_stubs_generator.ItomStubsGenTest))
         suite.addTest(unittest.makeSuite(itom_jedilib.ItomJediLibTest))
         suite.addTest(unittest.makeSuite(itom_algorithm_stubs_generator.ItomAlgorithmsStubsGenTest))

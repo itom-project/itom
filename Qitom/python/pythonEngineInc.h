@@ -22,7 +22,7 @@
 #ifndef Q_MOC_RUN
 #define PYTHONENGINEINC_H
         #include <string>
-        #define PY_ARRAY_UNIQUE_SYMBOL itom_ARRAY_API //see numpy help ::array api :: Miscellaneous :: Importing the api (this line must bebefore include global.h)
+        #define PY_ARRAY_UNIQUE_SYMBOL itom_ARRAY_API //see numpy help ::array api :: Miscellaneous :: Importing the api (this line must before include global.h)
         #define NO_IMPORT_ARRAY
     #include "./pythonEngine.h"
 #endif
