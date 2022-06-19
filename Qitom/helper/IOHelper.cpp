@@ -1392,6 +1392,7 @@ end:
     if (!found && (searchFolders & SFDirect))
     {
         icon = QIcon(filename);
+
         if (icon.isNull() == false && icon.availableSizes().size() > 0)
         {
             found = true;
@@ -1401,9 +1402,11 @@ end:
     if (!found && (searchFolders & SFCurrent))
     {
         dir = QDir::current();
+
         if (!filename.isEmpty() && dir.exists() && dir.exists(filename))
         {
             icon = QIcon(dir.absoluteFilePath(filename));
+
             if (icon.isNull() == false && icon.availableSizes().size() > 0)
             {
                 found = true;
@@ -1413,10 +1416,12 @@ end:
 
     if (!found && (searchFolders & SFAppDir))
     {
-        dir = QCoreApplication::applicationDirPath();
+        dir.setPath(QCoreApplication::applicationDirPath());
+
         if (!filename.isEmpty() && dir.exists() && dir.exists(filename))
         {
             icon = QIcon(dir.absoluteFilePath(filename));
+
             if (icon.isNull() == false && icon.availableSizes().size() > 0)
             {
                 found = true;
@@ -1426,11 +1431,13 @@ end:
 
     if (!found && (searchFolders & SFAppDirQItom))
     {
-        dir = QCoreApplication::applicationDirPath();
+        dir.setPath(QCoreApplication::applicationDirPath());
         dir.cd("Qitom");
+
         if (!filename.isEmpty() && dir.exists() && dir.exists(filename))
         {
             icon = QIcon(dir.absoluteFilePath(filename));
+
             if (icon.isNull() == false && icon.availableSizes().size() > 0)
             {
                 found = true;
