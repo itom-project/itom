@@ -493,7 +493,7 @@ p, li { white-space: pre-wrap; }
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:7.8pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+14"/>
@@ -1256,7 +1256,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1035"/>
+        <location line="+1053"/>
         <source>point1 cannot be changed for square and circle. Change center and width / height.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1850,7 +1850,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished">Unbekannter Parameter vom Typ QVariant</translation>
     </message>
     <message>
-        <location line="+516"/>
+        <location line="+535"/>
         <source>- Unknown message -</source>
         <translation type="unfinished">- Unbekannte Nachricht -</translation>
     </message>
@@ -2250,7 +2250,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished">Die Eigenschaft &apos;%s&apos; existiert nicht.</translation>
     </message>
     <message>
-        <location filename="../helper/versionHelper.cpp" line="+89"/>
+        <location filename="../helper/versionHelper.cpp" line="+92"/>
         <source>none</source>
         <translation type="unfinished">nicht</translation>
     </message>
@@ -2847,7 +2847,7 @@ p, li { white-space: pre-wrap; }
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;black --line-length 88 --quiet -&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+21"/>
@@ -3713,7 +3713,22 @@ transparent anzeigen</translation>
         <translation type="unfinished">Allgemeine Style-Einstellungen </translation>
     </message>
     <message>
-        <location line="+91"/>
+        <location line="+113"/>
+        <source>keep aspect ratio</source>
+        <translation type="unfinished">Seitenverhältnis beibehalten</translation>
+    </message>
+    <message>
+        <location line="+24"/>
+        <source>y axis flipped</source>
+        <translation type="unfinished">Y-Achse umdrehen</translation>
+    </message>
+    <message>
+        <location line="+30"/>
+        <source>color map</source>
+        <translation type="unfinished">Farbgebung</translation>
+    </message>
+    <message>
+        <location line="+169"/>
         <source>Tracker Settings</source>
         <translation type="unfinished">Cursor-Positionsmarker</translation>
     </message>
@@ -3738,32 +3753,32 @@ transparent anzeigen</translation>
         <translation type="unfinished">Zoom-Rahmenstift</translation>
     </message>
     <message>
-        <location line="+36"/>
+        <location line="+39"/>
         <source>Label color</source>
         <translation type="unfinished">Labelfarbe</translation>
     </message>
     <message>
-        <location line="+13"/>
+        <location line="+27"/>
         <source>Shape label background</source>
         <translation type="unfinished">Labelhintergrund</translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="-17"/>
         <source>Shape label font</source>
         <translation type="unfinished">Labelschriftart</translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="+27"/>
         <source>Shape pen</source>
         <translation type="unfinished">Malstift</translation>
     </message>
     <message>
-        <location line="+20"/>
+        <location line="-370"/>
         <source>2D Plot</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+69"/>
+        <location line="+102"/>
         <source>1D Plot</source>
         <translation></translation>
     </message>
@@ -3778,27 +3793,27 @@ transparent anzeigen</translation>
         <translation type="unfinished">Breite der Legende</translation>
     </message>
     <message>
-        <location line="-36"/>
+        <location line="-86"/>
         <source>Center marker size</source>
         <translation type="unfinished">Größe des zentrierten Fadenkreuzes</translation>
     </message>
     <message>
-        <location line="-257"/>
+        <location line="-102"/>
         <source>When opening any plot supported by itom a set of default style settings is loaded. Each plot decides whehter the setting is relevant or not for its type (e.g. the line style does not affect a 2D plot). Plots, that are integrated in an ui-file, only consider these settings above, that cannot be set in the QtDesigner properties.</source>
         <translation type="unfinished">Wenn über itom ein Plot geöffnet wird, werden diese Werte standardmäßig geladen. Dabei werden natürlich nur Werte berücksichtigt, die für den entsprechenden Typ des Plots relevant sind (so z. B. hat der Linienstil keinen Effekt auf einen 2D-Plot). Plots, die in eine UI-Datei integriert wurden, können nicht über die QtDesigner-Optionen gesetzt werden.</translation>
     </message>
     <message>
-        <location line="+267"/>
+        <location line="+126"/>
         <source>Center marker pen</source>
         <translation type="unfinished">Stil des zentrierten Fadenkreuzes</translation>
     </message>
     <message>
-        <location line="+53"/>
+        <location line="+89"/>
         <source>Anti aliasing</source>
         <translation type="unfinished">Anti-Aliasing</translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="+23"/>
         <source>Print and Export</source>
         <translation type="unfinished">Druck und Export</translation>
     </message>
@@ -3813,7 +3828,7 @@ transparent anzeigen</translation>
         <translation type="unfinished">Diese Auflösung wird benutzt, wenn ein Plot in die Zwischenablage kopiert wird</translation>
     </message>
     <message>
-        <location line="-354"/>
+        <location line="-262"/>
         <source>Label font</source>
         <translation type="unfinished">Schriftart für Label</translation>
     </message>
@@ -3833,32 +3848,32 @@ transparent anzeigen</translation>
         <translation type="unfinished">Schriftart der Legende</translation>
     </message>
     <message>
-        <location line="+85"/>
+        <location line="+330"/>
         <source>Geometric Shape Settings</source>
         <translation type="unfinished">Einstellungen der Geometrischen Formen</translation>
     </message>
     <message>
-        <location line="+82"/>
+        <location line="-308"/>
         <source>Z stack marker pen</source>
         <translation type="unfinished">Stil der Z-Stapelmarkierung</translation>
     </message>
     <message>
-        <location line="+13"/>
+        <location line="+57"/>
         <source>Z stack marker size</source>
         <translation type="unfinished">Größe der Z-Stapelmarkierung</translation>
     </message>
     <message>
-        <location line="-225"/>
+        <location line="-124"/>
         <source>Axes Settings</source>
         <translation type="unfinished">Achsenbeschriftung</translation>
     </message>
     <message>
-        <location line="+363"/>
+        <location line="+271"/>
         <source> dpi</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+35"/>
+        <location line="+186"/>
         <source>Set To Default</source>
         <translation type="unfinished">Zurücksetzen</translation>
     </message>
@@ -7696,7 +7711,7 @@ Bitte itom mit dem Argument &apos;log&apos; erneut starten und die Fehlermeldung
 <context>
     <name>ito::PaletteOrganizer</name>
     <message>
-        <location filename="../organizer/paletteOrganizer.cpp" line="+553"/>
+        <location filename="../organizer/paletteOrganizer.cpp" line="+561"/>
         <source>Settings do not contain a color palette entry for the palette name &apos;%s&apos;</source>
         <translation>Es existiert kein Farbpaletteneintrag mit dem Palettennamen &apos;%s&apos;</translation>
     </message>
@@ -7849,7 +7864,7 @@ Bitte itom mit dem Argument &apos;log&apos; erneut starten und die Fehlermeldung
         <location line="+21"/>
         <location line="+47"/>
         <source>min: 0x%1, max: 0x%2, step: 0x%3</source>
-        <translation type="unfinished"></translation>
+        <translation>Min: 0x%1, Max: 0x%2, Schritt: 0x%3</translation>
     </message>
     <message>
         <location line="-40"/>
@@ -8152,7 +8167,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
 <context>
     <name>ito::PythonEngine</name>
     <message>
-        <location filename="../python/pythonEngine.cpp" line="+1226"/>
+        <location filename="../python/pythonEngine.cpp" line="+1227"/>
         <source>Python not initialized</source>
         <translation type="unfinished">Python ist nicht inizialisiert</translation>
     </message>
@@ -8246,7 +8261,7 @@ Please change setting in the property dialog of itom.</source>
 Bitte die Einstellungen unter &apos;Optionen&apos; ändern.</translation>
     </message>
     <message>
-        <location line="-5282"/>
+        <location line="-5283"/>
         <source>Settings value Python::pyHome has not been set as Python Home directory since it does not exist:  %s</source>
         <translation type="unfinished">Der unter &apos;Python::pyHome&apos; eingestellte Wert wurde nicht als Python-Verzeichnis gesetzt, da dieses Verzeichnis nicht existiert: %s</translation>
     </message>
@@ -8312,7 +8327,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+275"/>
+        <location line="+276"/>
         <source>The module itoFunctions could not be loaded. Make sure that the script itoFunctions.py is available in the itom root directory.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -8524,7 +8539,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-4848"/>
+        <location line="-4849"/>
         <source>The itom subdirectory of Python &apos;%s&apos; does not exist.
 Please change setting in the property dialog of itom.</source>
         <translation type="unfinished"></translation>
@@ -8541,7 +8556,7 @@ Numpy load error: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+307"/>
+        <location line="+308"/>
         <source>Error loading the module itomSyntaxCheck.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -9167,7 +9182,7 @@ Numpy load error: %1</source>
 <context>
     <name>ito::ScriptEditorWidget</name>
     <message>
-        <location filename="../widgets/scriptEditorWidget.cpp" line="+1214"/>
+        <location filename="../widgets/scriptEditorWidget.cpp" line="+1232"/>
         <source>Choose an encoding of the file which is added to the first line of the script</source>
         <translation>Eine Kodierung für die erste Zeile im Skript auswählen</translation>
     </message>
@@ -9182,7 +9197,7 @@ Numpy load error: %1</source>
         <translation>Es gibt nichts zu drucken</translation>
     </message>
     <message>
-        <location line="-2100"/>
+        <location line="-2118"/>
         <source>Cut</source>
         <translation>Ausschneiden</translation>
     </message>
@@ -9354,7 +9369,7 @@ Numpy load error: %1</source>
         <translation>&amp;Kodierung einfügen...</translation>
     </message>
     <message>
-        <location line="+696"/>
+        <location line="+714"/>
         <source>Missing auto code format command</source>
         <translation>Fehlender Befehl</translation>
     </message>
