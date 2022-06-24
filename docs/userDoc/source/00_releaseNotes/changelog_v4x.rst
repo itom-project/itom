@@ -96,6 +96,92 @@ Plugins
 Designer Plugins
 ----------------
 
+(more than 115 comits in plugin repository)
+
+
+**vtk3dVisualizer**
+
+* `Pull request 14 <https://bitbucket.org/itom/designerplugins/pull-requests/14>`_: for VTK < 8.2 this plugin is still based on the 
+  legacy Qt class QVTKWidget. For other versions, the new QVTKOpenGLNativeWidget class is used as base class.
+  The legacy class can also be used if the CMAKE variable **VTK3DVISUALIZER_FORCE_LEGACY_VTK** is set.
+* bugfixes in geometry item: some properties can only be adjusted in the range [0,1]. The opacity is set to [0,100] in order to have the same range than for point clouds and meshes.
+* prevent crash if an empty mesh should be displayed 
+* title property added, order of icons in toolbar improved
+* It is not allowed to add an item in another base group (meshes, clouds, geometries) that has the same name than another existing item in another group.
+
+**plotly**
+
+* `Pull request 15 <https://bitbucket.org/itom/designerplugins/pull-requests/15>`_: Added the new designer plugin **plotly** as a backend
+  for the Python package `Plotly <https://pypi.org/project/plotly/>`_. There are demo scripts in the itom core repository that show the usage of this plugin.
+
+
+**twipoglfigure**
+
+* `Pull request 17 <https://bitbucket.org/itom/designerplugins/pull-requests/17>`_: The 3D plot plugin "twipoglfigure" is integrated 
+  in the official designer plugin repository as a fork from https://bitbucket.org/twipOS/itomplugins (origin by twip optical solutions GmbH). This plugin
+  was slightly modified to better fit to other itom designer plugins.
+
+**itom2dqwtplot**
+
+* color of point and multipoint shapes is now equal to the line color of all other shapes, and not equal to the drag&drop indicators.
+* better synchronization between grid style property and its corresponding menu and actions.
+* menu for all toolboxes available in menu view
+* redesign of markerInfoWidget. The widget is now directly included in itomQwtPlotBase, and consists of a view and model. It can be extended by a toolbar.
+* marker groups in marker widget have now a checkbox, such that all markers of a group can be hidden or shown. 
+  This is also possible by the new slot "showMarkers" and "hideMarkers"
+* minor fix in ItomColorMap::colorTable256()
+* bugfix for 1xN or Nx1 dataObjects, plotted with an 2d plot. Fixes bugs for the value picker and for the rendering outside of the boundaries of the dataObject.
+* improved position for optional labels of geometric shapes of types circle or ellipse
+* horizontal zoom with mouse wheel fixed
+* `Issue 31 <https://bitbucket.org/itom/designerplugins/issues/31>`_: slot 'setLinePlot' of itom2dqwtplot also plots a line plot, if a 
+  camera has recently be assigned to this 2d plot. However, the latest displayed object of the plot must be bigger than the extent of the 
+  new line cut, else the line cut will be reduced to the size of the latest data object.
+* fixes to prevent plotting dateTime or timeDelta dataObjects
+* bug fix while copy complex dataObject from 2dPlot via right click
+* zoom direction with Ctrl + mouse wheel is inverted, such that two finger mouse gestures on the mousepad have the intuitive direction.
+* bugfix in color map base classes of itom1dqwtplot and itom2dqwtplot, when using logarithmic scales. This fix came also when moving to Qwt 6.2.
+* Fixes the `issue 186 <https://bitbucket.org/itom/itom/issues/186>`_ concerning the "send-current-view-to-workspace" method with an 
+  inverted y-axis. Since the minValue is bigger than the maxValue of the yAxisInterval in this case, 
+  this interval has to be normalized before getting the current zoom rectangle.
+
+**itom1dqwtplot**
+
+* improved number representation of the value picker and the coordinates in the toolbar. Numbers < 100000 will be displayed with three decimal 
+  digits, other values will be displayed using the +-9.99E100 representation. This fixes issue `issue 36 <https://bitbucket.org/itom/designerplugins/issues/36>`_.
+* XY-plot: fixes a bug if the x-obj is a floating point object with partial NaN values and the y-obj is an integer object. 
+  Before, the NaN value was plotted as point in the top-left-corner of the plot.
+* color of point and multipoint shapes is now equal to the line color of all other shapes, and not equal to the drag&drop indicators.
+* better synchronization between grid style property and its corresponding menu and actions.
+* menu for all toolboxes available in menu view
+* redesign of markerInfoWidget. The widget is now directly included in itomQwtPlotBase, and consists of a view and model. It can be extended by a toolbar.
+* marker groups in marker widget have now a checkbox, such that all markers of a group can be hidden or shown. 
+  This is also possible by the new slot "showMarkers" and "hideMarkers"
+* minor fix in ItomColorMap::colorTable256()
+* improved position for optional labels of geometric shapes of types circle or ellipse
+* horizontal zoom with mouse wheel fixed
+* `Pull request 16 <https://bitbucket.org/itom/designerplugins/pull-requests/16>`_: This plot now supports plotting XY-plots, whose x-values is a ``datetime`` data type.
+* zoom direction with Ctrl + mouse wheel is inverted, such that two finger mouse gestures on the mousepad have the intuitive direction.
+* X/Y plot, move to previous or next picker position tries to consider the current index position (important, if multiple points have exactly the same position)
+* properties ``axisLabelRotation`` and ``axisLabelAlignment`` added to optionally rotate and / or align the labels of the horizontal x-axis.
+* bugfix in color map base classes of itom1dqwtplot and itom2dqwtplot, when using logarithmic scales. This fix came also when moving to Qwt 6.2.
+
+**matplotlib**
+
+* subfig configuration widget is destroyed after use, refactoring the code to more modern code (nullptr, ...)
+* bugfix if a negative position value is passed to addUserDefinedAction
+* more fixes for QWheelEvent::angleDelta instead of delta
+
+**motorController**
+
+* bugfix when getting numaxis parameter from any actuator plugin
+
+**General**
+
+* replaced deprecated Qt methods, that have been deprecated before Qt 5.6.
+* the plugins **dObjMetaDataTable** and **dataObjectTable** is moved into the core code of itom (*itomWidgets** library)
+* Qwt altered to version 6.2.
+* Some modifications to support Qt 5.15, as preparation for upcoming Qt 6.x versions.
+
 
 Version 4.1.0 (2021-03-05)
 **************************
