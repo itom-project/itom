@@ -5,6 +5,98 @@
 Changelog Versions 4.x
 ######################
 
+Version 4.2.0 (2022-06-xx)
+**************************
+
+itom
+----
+
+Plugins
+-------
+
+(more than 170 comits in plugin repository)
+
+**New plugins:**
+
+* ThorlabsTCubeTEC (RawIO)
+
+* QuantumComposer (RawIO)
+
+* ThorlabsKCubeDCServo (actuator)
+
+* HBMSpider8 (ADDA)
+
+**Bugfixes and improvements:**
+
+* AvtVimba: added USB camera support.
+* BasicGenericFilters: GaussianFilter: changed kernel and sigma to optional parameters and added default values.
+* BasicFilters: remove space in name of parameter, since this is not a valid parameter name.
+* dataObjectArithmetic: GaussianFit1D filter added to fit a Gaussian curve into a set of x,y coordinates.
+* dataObjectIO: added documentation.
+* DataObjectIO: QString::SkipEmptyParts change to Qt::SkipEmptyParts for Qt > 5.14.0.
+* dispWindow: projWindow class now inherits from QOpenGLWidget instead of the deprecated QGLWidget. This fixes issue #15.
+* DummyGrabber: exemplary parameter "demoEnumStringList" with a StringListMeta added. This parameter is only a demo parameter and has no use.
+* DummyGrabber: deleted unused variable.
+* DummyMotor: updated documentation.
+* FileGrabber: = operand change to setPath().
+* FittingFilters: removed ambiguity of uint64 datatype.
+* GenICam: fix for Optronis CoaxPress cameras together with Euresys framegrabber.
+* GenICam: further improvements if many plugins are running in parallel.
+* GenICam: fix in copy RGB8/BGR8 buffer to dataObject row-wise.
+* GenICam: add colorMode for color PixelFormats.
+* GenICam: added supported of RGB8 pixelFormat.
+* GenICam plugin can now automatically detect GenICam 3.3 libraries (2021.02).
+* GenICam: add toStrongRef() to QWeakPointer.
+* GenICam: cleanup, changed BGR10p, BGR12p pixelformat check RetVal from Error to Warning.
+* GenICam: Adapted to BGR8 color; BGR10p, BGR12p included, but no color atm. Tested with Jai AP1600T-USB. Known issue "PulseGeneratorFrequencyConverter2_ConvertFrom" throws infinity warning while Cam Data readout.
+* Genicam: fixes correct initialization of String init parameter.
+* glDisplay: uses now QOpenGLWidget instead of the deprecated QGLWidget. This fixes also a problem with a wrong position at startup.
+* IDSuEye: update IDSuEye SDK to 4.95.
+* Newport2936: bugfix setting channel parameter.
+* OpenCVFilters: added "rgba32" datatype to cvBlur, cvMedianBlur, cvRot180, cvRotM90, cvRotP90, cvFlipLeftRight, cvFlipUpDown.
+* OpenCVFilters: added try, catch and some more changes in plugin.
+* OpenCVFilters: added warpAffine filter.
+* OpenCVFilters: added protocol to getRotationMatrix2D.
+* OpenCVFilters: added getRotationMatrix2D.
+* OphirPowermeter: timeout parameter deleted read-only flag.
+* OphirPowermeter: QElapsedTimer is now started in readString.
+* OphirPowermeter: bug fix with missing timer start.
+* OphirPowermeter: bug fix while closing the instance.
+* OphirPowermeter: bug fix while initializing several devices.
+* OphirPowermeter: Qtime changed to QElapsedTimer.
+* OphirPowermeter: bug fixed in init of plugin when have multiple devices connected.
+* PclTools: adaptations for VTK 9 ´https://vtk.org/doc/nightly/html/md__builds_gitlab-kitware-sciviz-ci_Documentation_Doxygen_ModuleMigration.html https://discourse.vtk.org/t/how-to-handle-cmake-components-name-change-between-8-2-and-9/5338/7´.
+* PclTools: bugfix if an invalid point cloud is passed.
+* PclTools: added pclSurfaceByMarchingCubes algorithm to reconstruct a polygon mesh from a pointCloud.
+* PIGCS2: added reference move for C-663 controllers.
+* PIHexapodCtrl: QTime changed to QElapsedTimer. QString::sprintf change to QString::asprintf.
+* RawImport: QProcess::start use of overloaded function.
+* RawImport: bugfix converting file with whitespace in name.
+* SerialIO: Qtime change to QElapsedTimer.
+* ST8SMC4USB: added command_homezero into plugin calib function.
+* ST8SMC4USB: changed constructor, destructor to protected.
+* ST8SMC4USB: better status, position updates in calib function.
+* ST8SMC4USB: added homezero calibration run in seperate thread because its a long command.
+* ST8SMC4USB: update XILib to 2.13.1.
+* ThorlabsISM: update parameter in documentation.
+* ThorlabsISM: when moving relative the wrap on 360° was removed.
+* ThorlabsISM: can now also connect to Kinesis Simulator software; if multiple devices are connected, the first device of supported type is loaded if no serial number is given.
+* ThorlabsKCubeDCServo: Qtime changed to QElapsedTimer.
+* ThorlabsKCubeIM: movement interrupt resets axes by retval.errorcde == -1.
+* ThorlabsKCubeIM: implemented interrupt while moving multiple axes.
+* ThorlabsKCubeIM: implemente KIM_RelativeMove and setInterrupt trigger KIM_MoveStop to stop the axis.
+* Ximea: added lensAvialable to plugin documentation.
+* Ximea: added lens flag to optional parameters.
+* Ximea: Removed support for SDK < 4.10 from source.
+* further bugfixes and smaller improvements.
+* minor param meta information adaptions in several plugins.
+* added Sphinx math syntax to render equation using latex.
+* some Qt6 adaptions.
+
+Designer Plugins
+----------------
+
+
 Version 4.1.0 (2021-03-05)
 **************************
 
