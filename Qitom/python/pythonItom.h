@@ -25,18 +25,10 @@
 
 /* includes */
 #ifndef Q_MOC_RUN
-    #define PY_ARRAY_UNIQUE_SYMBOL itom_ARRAY_API //see numpy help ::array api :: Miscellaneous :: Importing the api (this line must bebefore include global.h)
+    #define PY_ARRAY_UNIQUE_SYMBOL itom_ARRAY_API //see numpy help ::array api :: Miscellaneous :: Importing the api (this line must before include global.h)
     #define NO_IMPORT_ARRAY
 
-    //python
-    // see http://vtk.org/gitweb?p=VTK.git;a=commitdiff;h=7f3f750596a105d48ea84ebfe1b1c4ca03e0bab3
-    #if (defined _DEBUG) && (defined WIN32)
-        #undef _DEBUG
-        #include "python/pythonWrapper.h"
-        #define _DEBUG
-    #else
-        #include "python/pythonWrapper.h"
-    #endif
+    #include "python/pythonWrapper.h"
 #endif
 
 #include "../global.h"
@@ -140,6 +132,8 @@ public:
     static PyObject* userGetUserInfo(PyObject* pSelf);
 
     static PyObject* PyClearAll(PyObject* pSelf);
+
+    static PyObject* PyCopyStringToClipboard(PyObject* pSelf, PyObject* pArgs, PyObject *pKwds);
 
 protected:
     static QHash<size_t, QString> m_gcTrackerList; //!< list with objects currently tracked by python garbage collector.

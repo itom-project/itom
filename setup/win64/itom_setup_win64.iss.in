@@ -21,7 +21,7 @@
 ;#define SourceRedistributable2013 "W:\m\ITOM\Installationen\1. MS VisualStudio 2013 Pro"
 ;#define SourceRedistributable2015 "W:\m\ITOM\Software\MS VisualStudio\Redistributable\64 bit"
 #define SourceRedistributable2017 "W:\m\ITOM\Software\MS VisualStudio\Redistributable\64 bit"
-#define SourcePythonDir "W:\m\ITOM\Software\Python\Python 3.8\64 Bit\Minimal"
+#define SourcePythonDir "W:\m\ITOM\Software\Python\Python 3.8.10"
 #define SourceRedistributableDir "W:\m\ITOM\Software\MS VisualStudio\Redistributable\DLLs"
 
 
@@ -96,6 +96,7 @@ Source: "{#SourceDirItomBuild}\itomWidgets.dll"; DestDir: "{app}"; Flags: ignore
 Source: "{#SourceDirItomBuild}\pointcloud.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\qpropertyeditor.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourcePythonDir}\python38.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourcePythonDir}\python3.dll"; DestDir: "{app}"; Flags: ignoreversion
 
 ; DLLs Redistributable 2010,2012,2013,2015
 Source: "{#SourceRedistributableDir}\2010\64 Bit\*.dll"; DestDir: "{app}"; Flags: ignoreversion
@@ -212,6 +213,7 @@ Source: "{#SourceDirItomBuild}\plugins\FringeProj\*.*"; DestDir: "{app}\plugins\
 Source: "{#SourceDirItomBuild}\plugins\GenICam\*.*"; DestDir: "{app}\plugins\GenICam"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\glDisplay\*.*"; DestDir: "{app}\plugins\glDisplay"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\GWInstekPSP\*.*"; DestDir: "{app}\plugins\GWInstekPSP"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\HBMSpider8\*.*"; DestDir: "{app}\plugins\HBMSpider8"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\hidApi\*.*"; DestDir: "{app}\plugins\hidApi"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\IDSuEye\*.*"; DestDir: "{app}\plugins\IDSuEye"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\LeicaMotorFocus\*.*"; DestDir: "{app}\plugins\LeicaMotorFocus"; Flags: ignoreversion recursesubdirs
@@ -238,6 +240,7 @@ Source: "{#SourceDirItomBuild}\plugins\PiezosystemJena_NV40_1\*.*"; DestDir: "{a
 Source: "{#SourceDirItomBuild}\plugins\PIPiezoCtrl\*.*"; DestDir: "{app}\plugins\PIPiezoCtrl"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\PmdPico\*.*"; DestDir: "{app}\plugins\PmdPico"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\QCam\*.*"; DestDir: "{app}\plugins\QCam"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\QuantumComposer\*.*"; DestDir: "{app}\plugins\QuantumComposer"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\rawImport\*.*"; DestDir: "{app}\plugins\rawImport"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\Roughness\*.*"; DestDir: "{app}\plugins\Roughness"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\SerialIO\*.*"; DestDir: "{app}\plugins\SerialIO"; Flags: ignoreversion recursesubdirs
@@ -251,6 +254,7 @@ Source: "{#SourceDirItomBuild}\plugins\ThorlabsISM\*.*"; DestDir: "{app}\plugins
 Source: "{#SourceDirItomBuild}\plugins\ThorlabsKCubePA\*.*"; DestDir: "{app}\plugins\ThorlabsKCubePA"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\ThorlabsKCubeIM\*.*"; DestDir: "{app}\plugins\ThorlabsKCubeIM"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\ThorlabsKCubeDCServo\*.*"; DestDir: "{app}\plugins\ThorlabsKCubeDCServo"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\ThorlabsTCubeTEC\*.*"; DestDir: "{app}\plugins\ThorlabsTCubeTEC"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\ThorlabsPowerMeter\*.*"; DestDir: "{app}\plugins\ThorlabsPowerMeter"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\UhlRegister\*.*"; DestDir: "{app}\plugins\UhlRegister"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\UhlText\*.*"; DestDir: "{app}\plugins\UhlText"; Flags: ignoreversion recursesubdirs
@@ -274,16 +278,17 @@ Source: "{#SourceDirItomBuild}\lib\AeroBasic64.dll"; DestDir: "{app}\lib"; Flags
 Source: "{#SourceDirItomBuild}\lib\atcl_bitflow.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\atcore.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\atdevregcam.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\bindy.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\cbw64.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirItomBuild}\lib\CLAllSerial_MD_VC141_v3_2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirItomBuild}\lib\CLProtocol_MD_VC141_v3_2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\CLAllSerial_MD_VC141_v3_3.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\CLProtocol_MD_VC141_v3_3.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\clsercom.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\EnsembleC64.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\EnsembleCore64.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\FlyCapture2_v140.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirItomBuild}\lib\GCBase_MD_VC141_v3_2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirItomBuild}\lib\GenApi_MD_VC141_v3_2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirItomBuild}\lib\GenCP_MD_VC141_v3_2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\GCBase_MD_VC141_v3_3.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\GenApi_MD_VC141_v3_3.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\GenCP_MD_VC141_v3_3.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\iso5436-2-xml64.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\libblas.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\libfftw3-3.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
@@ -296,14 +301,15 @@ Source: "{#SourceDirItomBuild}\lib\liblapacke.dll"; DestDir: "{app}\lib"; Flags:
 Source: "{#SourceDirItomBuild}\lib\libquadmath-0.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\libtmglib.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\libwinpthread-1.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\libjximc.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\libximc.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirItomBuild}\lib\Log_MD_VC141_v3_2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirItomBuild}\lib\log4cpp_MD_VC141_v3_2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirItomBuild}\lib\MathParser_MD_VC141_v3_2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirItomBuild}\lib\MathParser_MD_VC141_v3_2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\Log_MD_VC141_v3_3.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\log4cpp_MD_VC141_v3_3.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\MathParser_MD_VC141_v3_3.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\MathParser_MD_VC141_v3_3.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\msvcp140.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirItomBuild}\lib\NITLibrary.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirItomBuild}\lib\NodeMapData_MD_VC141_v3_2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\NITLibrary_x64.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\NodeMapData_MD_VC141_v3_3.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\PI_GCS2_DLL_x64.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\SC2_Cam.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\SVGigE.x64.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
@@ -317,13 +323,16 @@ Source: "{#SourceDirItomBuild}\lib\Thorlabs.MotionControl.KCube.PositionAligner.
 Source: "{#SourceDirItomBuild}\lib\Thorlabs.MotionControl.KCube.InertialMotor.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\Thorlabs.MotionControl.KCube.DCServo.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\Thorlabs.MotionControl.TCube.Quad.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\Thorlabs.MotionControl.TCube.TEC.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\ftd2xx.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\vcruntime140.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\VimbaC.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\VimbaCPP.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\vrmusbcam2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\xerces-c_3_1_vc120.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\xiapi64.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirItomBuild}\lib\XmlParser_MD_VC141_v3_2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\xiwrapper.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\XmlParser_MD_VC141_v3_3.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\dcraw.exe"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\exiftool.exe"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\iso5436_2.xsd"; DestDir: "{app}\lib"; Flags: ignoreversion

@@ -372,3 +372,6 @@ Makefile*
 #QtCtreator Qml
 *.qmlproject.user
 *.qmlproject.user.*
+
+#GitEyen - Git GUi Editor
+/.project

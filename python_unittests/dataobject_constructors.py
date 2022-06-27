@@ -1,6 +1,8 @@
 import unittest
-from itom import dataObject
+from itom import dataObject, rgba
+from datetime import datetime, timedelta
 import numpy as np
+from numpy import testing as nptesting
 
 
 class DataObjectConstructors(unittest.TestCase):
@@ -126,6 +128,23 @@ class DataObjectConstructors(unittest.TestCase):
             for c in [0, 1, 2, 3]:
                 self.assertAlmostEqual(obj[r, c], 4.2 + 5.8j, places=5)
 
+        obj = dataObject([2, 4], "rgba32", data=rgba(200, 100, 50))
+        for r in [0, 1]:
+            for c in [0, 1, 2, 3]:
+                self.assertEqual(obj[r, c], rgba(200, 100, 50))
+
+        dt = datetime(1999, 7, 13, hour=14, minute=9, second=59, microsecond=12000)
+        obj = dataObject([2, 4], "datetime", data=dt)
+        for r in [0, 1]:
+            for c in [0, 1, 2, 3]:
+                self.assertEqual(obj[r, c], dt)
+
+        td = timedelta(days=-7912, seconds=59, microseconds=12000)
+        obj = dataObject([2, 4], "timedelta", data=td)
+        for r in [0, 1]:
+            for c in [0, 1, 2, 3]:
+                self.assertEqual(obj[r, c], td)
+
     ##########################################################
     def test_dtype_conversion_copy_constructor(self):
         obj1 = dataObject.randN([200, 200], "uint8")
@@ -146,6 +165,62 @@ class DataObjectConstructors(unittest.TestCase):
         obj2 = dataObject(obj1)
         self.assertEqual(obj2.dtype, "uint8")
         self.assertGreater(np.min(obj1 == obj2), 0)
+
+    ##########################################################
+    def test_ones_constructor(self):
+        for dt in [
+            "int8",
+            "uint8",
+            "int16",
+            "uint16",
+            "int32",
+            "float32",
+            "float64",
+            "complex64",
+            "complex128",
+        ]:
+            obj1 = dataObject.ones([3, 2], dt)
+            nptesting.assert_array_almost_equal(obj1, 1.0)
+
+        # rgba
+        obj1 = dataObject.ones([3, 2], "rgba32")
+        for val in obj1:
+            self.assertEqual(val, rgba(255, 255, 255, 255))
+
+        # datetime, timedelta
+        with self.assertRaises(TypeError):
+            obj1 = dataObject.ones([3, 2], "datetime")
+
+        with self.assertRaises(TypeError):
+            obj1 = dataObject.ones([3, 2], "timedelta")
+
+    ##########################################################
+    def test_zeros_constructor(self):
+        for dt in [
+            "int8",
+            "uint8",
+            "int16",
+            "uint16",
+            "int32",
+            "float32",
+            "float64",
+            "complex64",
+            "complex128",
+        ]:
+            obj1 = dataObject.zeros([3, 2], dt)
+            nptesting.assert_array_almost_equal(obj1, 0.0)
+
+        # rgba
+        obj1 = dataObject.ones([3, 2], "rgba32")
+        for val in obj1:
+            self.assertEqual(val, rgba(255, 255, 255, 255))
+
+        # datetime, timedelta
+        with self.assertRaises(TypeError):
+            obj1 = dataObject.ones([3, 2], "datetime")
+
+        with self.assertRaises(TypeError):
+            obj1 = dataObject.ones([3, 2], "timedelta")
 
 
 if __name__ == "__main__":

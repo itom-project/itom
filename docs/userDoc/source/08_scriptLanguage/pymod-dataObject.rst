@@ -10,39 +10,60 @@ Introduction
 
 In |itom|, the class :py:class:`~itom.dataObject` is the main array object. Arrays in |itom| can have the following properties:
 
-* unlimited number of dimensions
+* unlimited number of dimensions (a 1-dim object is always mapped to a [1xN] 2-dim object)
 * each dimension can have an arbitrary size
 * possible data types:
     .. code-block:: python
         
-        "uint8"      #unsigned integer, 8 bit [0,255]
-        "int8"       #signed integer, 8 bit [-128,127]
-        "uint16"     #unsigned integer, 16 bit [0,65536]
-        "int16"      #signed integer, 16 bit [-32768,32767]
-        "uint32"     #unsigned integer, 32 bit
-        "int32"      #signed integer, 32 bit
-        "float32"    #floating point, 32 bit single precision
-        "float64"    #floating point, 64 bit double precision
-        "complex64"  #complex number with two float32 components
-        "complex128" #complex number with two float64 components
-        "rgba32"     #color format, 4x uint8 values (alpha,r,g,b)
+        "uint8"      # unsigned integer, 8 bit [0,255]
+        "int8"       # signed integer, 8 bit [-128,127]
+        "uint16"     # unsigned integer, 16 bit [0,65536]
+        "int16"      # signed integer, 16 bit [-32768,32767]
+        "uint32"     # unsigned integer, 32 bit
+        "int32"      # signed integer, 32 bit
+        "float32"    # floating point, 32 bit single precision
+        "float64"    # floating point, 64 bit double precision
+        "complex64"  # complex number with two float32 components
+        "complex128" # complex number with two float64 components
+        "rgba32"     # color format, 4x uint8 values (alpha,r,g,b)
+        "datetime"   # :py:class:`datetime.datetime` values with an optional time zone delta from UTC (resolution: microseconds)
+        "timedelta"  # :py:class:`datetime.timedelta` values with a microseconds resolution
 
-Before giving a short tutorial about how to use the class :py:class:`~itom.dataObject`, the base idea and concept of the array structure should be explained. If you already now the huge |python| module **Numpy** with its base array class **numpy.array**, one will ask why another similar array class is provided by |itom|. The reasons for this are as follows:
+Before giving a short tutorial about how to use the class :py:class:`~itom.dataObject`, the base idea and concept of
+the array structure should be explained. If you already now the huge |python| module **Numpy** with its base array 
+class :py:class:`numpy.ndarray`, one will ask why another similar array class is provided by |itom|. The reasons for this 
+are as follows:
 
-* The python class :py:class:`~itom.dataObject` is just a wrapper for the |itom| internal class **DataObject**, written in C++. This array structure is used all over |itom| and also passed to any plugin instances of |itom|. Internally, the C++ class **DataObject** is based on OpenCV-matrices, such that functionalities provided by the open-source Computer-Vision Library (OpenCV) can be used by |itom|.
-* The class **dataObject** should also be used to store real measurement data. Therefore it is possible to add tags and other meta information to every dataObject (like axis descriptions, scale and offset values, protocol entries...).
-* Usually, array classes (like the class **Numpy.array**) store the whole matrix in one continuous block in memory. Due to the working principle of every operating system, it is sometimes difficult to allocate a huge block in memory. Therefore, **dataObject** only stores the sub-matrices of the last two-dimensions in single blocks in memory, while the first **n-2** dimensions of the array are represented by one vector in memory, where every cell is pointing to the corresponding sub-matrix (called plane). Using this concept, huger arrays can be allocated without causing a memory error.
+* The python class :py:class:`~itom.dataObject` is just a wrapper for the |itom| internal class **DataObject**, written in C++. 
+  This array structure is used all over |itom| and also passed to any plugin instances of |itom|. Internally, the C++ class 
+  **DataObject** is based on OpenCV matrices (cv::Mat), such that functionalities provided by the open-source 
+  Computer-Vision Library (OpenCV) can be used by |itom|, too.
+* The class :py:class:`~itom.dataObject` should also be used to store real measurement data. Therefore it is possible to 
+  add tags and other meta information to every dataObject (like axis descriptions, scale and offset values, protocol entries...).
+* Usually, array classes (like the class :py:class:`numpy.ndarray`) store the whole matrix in one continuous block in memory. 
+  Due to the working principle of every operating system, it is sometimes difficult to allocate a huge block in memory. 
+  Therefore, **dataObject** only stores the sub-matrices of the last two-dimensions in single blocks in memory, while the 
+  first ``N - 2`` dimensions of the array are represented by one vector in memory, where every item points to its corresponding 
+  sub-matrix (called plane). Using this concept, huger arrays can be allocated without causing a memory error.
 
+The class :py:class:`~itom.dataObject` is compatible to a :py:class:`numpy.ndarray`, however the dataObject does not support
+all data types of numpy. A ``dataObject`` supports the ``array-like`` interface of ``Numpy``, such that it can be passed
+to methods, that expect an ``array-like`` object. In general a ``dataObject`` can be converted to a :py:class:`numpy.ndarray`
+by passing it to the constructor and vice-versa to convert a Numpy array to a dataObject. In the first case, data is deeply
+copied as default (set the argument ``copy`` to False to avoid this). In the latter case, a shallow copy is used as default
+(as long as the data types are compatible). For more information see :ref:`itomDataObjectVsNumpyArray`.
+
+For more information about the ``datetime`` and ``timedelta`` data types, see :ref:`itomDataObjectDatetime`.
 
 .. note::
     In order to realize a compatible version with respect to *numpy*, *matlab*... data in a **DataObject** can also be stored *continuously*. The basic structure for
-    the data object is the same than in the *non-continuous* (default) version, but the data of each 2dim-matrix lies continuously in memory and each data-pointer
+    the data object is the same than in the *non-continuous* (default) version, but the data of each 2dim-matrix is continuously aligned in memory and each data-pointer
     of each matrix just points to the first element of the corresponding matrix in this big data block in memory. 
 
-    The non-continuous representation has advantages especially in the case of huge data sets, since it is more difficult to obtain a free, big continuous block in memory without
-    reorganizing it than multiple smaller blocks of memory, which can be distributed randomly in memory.
+    The non-continuous representation has advantages especially in the case of huge data sets, since it is more difficult to allocate a free, big continuous block in memory without
+    reorganizing it compared to multiple smaller blocks of memory, which can be distributed randomly in memory.
 
-    Matrixes with only one or two dimension are automatically stored continuously.
+    Matrices with only one or two dimension are automatically stored continuously.
 
 Creating a dataObject
 ---------------------
@@ -398,12 +419,12 @@ and can be requested and deleted using the methods described above.
     
 .. _itomDataObjectVsNumpyArray:
 
-DataObject vs. Numpy.array
+DataObject vs. numpy.array
 --------------------------------
 
 The most common Python package that is used for numeric calculations is **Numpy**. **Numpy** is one of the most famous and used Python packages and is the basis
 for other packages, like Scipy, Matplotlib, Scikit-image, ... Numpy is directly included in |itom| and also connected to some features of the GUI. Nevertheless,
-the main array structure of |itom| is the class :py:class:`~itom.dataObject` and not :py:class:`numpy.array`. The main reason for this is, that the basis of **dataObject**
+the main array structure of |itom| is the class :py:class:`~itom.dataObject` and not :py:class:`numpy.ndarray`. The main reason for this is, that the basis of **dataObject**
 is a C++ class with the same name that can be used in all plugins. Further points for the class :py:class:`~itom.dataObject` are:
 
 * Numpy arrays are always stored in one continuous block in memory. This is a compact and fast structure, however huge matrices can easily run into memory errors, since the computer may have free memory, however probably not in one single block in memory. Therefore, a dataObject usually stores every plane (this is every 2d array of the last two dimensions (x-y-plane)) in one block, whereas all planes lie at arbitrary positions in memory. This is only the case, if the dataObject is created as non-continuous object (see constructor of :py:class:`~itom.dataObject`). 2D dataObjects are always continuous.
@@ -411,8 +432,8 @@ is a C++ class with the same name that can be used in all plugins. Further point
 * Internally, every plane in a DataObject is based on OpenCV matrices (in the C++ code). Therefore, it is directly possible to apply OpenCV methods to DataObjects. Furthermore, a direct
 use of dataObjects, created in Python, in algorithms or hardware plugins is possible.
 
-Despite the stated differences, the good is, that the classes *dataObject* and *numpy.array* are compatible to each other. This is especially the case for continuous dataObjects.
-They can directly be converted to and from *numpy.arrays* even as shallow copy, such that both objects share the same matrix memory. If a 3- or higher dimensional dataObject is converted to a numpy-array, it is implicitly converted to a continuous form (such that all planes lie in adjacent blocks in the memory).
+Despite the stated differences, the good is, that the classes ``dataObject`` and ``numpy.array`` are compatible to each other. This is especially the case for continuous dataObjects.
+They can directly be converted to and from ``numpy.arrays`` even as shallow copy, such that both objects share the same matrix memory. If a 3- or higher dimensional dataObject is converted to a numpy-array, it is implicitly converted to a continuous form (such that all planes lie in adjacent blocks in the memory).
 
 Examples for these conversions are:
 
@@ -459,7 +480,121 @@ dataObjects:
     itom.plot(a) #works
     itom.filter("minValue", a) #raises an error
     itom.filter("minValue", itom.dataObject(a)) #works
+
+.. _itomDataObjectDatetime
+
+Datetime and timedelta types
+---------------------------------
+
+A ``dataObject`` can also contain values, that represent either a certain date and time (``datetime``)
+or a time span, denoted as ``timedelta``. Both the Python core implementation and Numpy have their own 
+data types to represent datetimes and time spans and both representations are slightly different. The
+data types used in ``dataObject`` are fully compatible to the Python core types and compatible as close
+as possible to the Numpy data types:
+
+**datetime**
+
+The Python core type :py:class:`datetime.datetime` allows indicating any date and times with a minimum
+resolution of microseconds. This is equal to the itom internal type used as value for dataObjects. Additionally,
+it is possible to define a timezone. The itom data type allows indicating a timezone as a delta in seconds
+to the UTC time. The default is ``0`` if not otherwise stated. The numpy data type :py:class:`numpy.datetime64`
+has a variable resolution, that can also be in the attoseconds range. However, the allowed value range depend
+on the chosen resolution. If such values are converted to the itom datetime values, they will always be rounded
+to the next microsecond value. The Numpy values do not support any timezone information.
+
+Internally, itom stores a ``datetime`` value as 64bit value, where 0 is equal to the date ``1970-01-01 00:00:00.0000`` (epoch).
+
+A time zone support (different than the UTC default timezone) is only supported from Python 3.7 on.
+
+**timedelta**
+
+Similar to ``datetime``. The itom internal value has a microseconds resolution, too, equal to the Python core
+class :py:class:`datetime.timedelta`. The Numpy class :py:class:`numpy.timedelta64` can have different resolutions,
+directly connected to the minimum relative and absolute time spans.
+
+.. note::
     
+    A numpy ``NaT`` (not a time) value is not supported by the itom date and time data types.
+
+Examples for constructing such ``dataObjects`` are:
+
+.. code-block:: python
+    
+    from datetime import datetime, timedelta, timezone
+    
+    # constructs an arbitrarily filled 2x3 datetime dataObject
+    dt1 = dataObject([2,3], 'datetime')
+    
+    # constructs a 2x3 datetime dataObject, where 
+    # are values are set to 1970-01-01 00:00 (epoch)
+    td2 = dataObject.zeros([2,3], 'datetime')
+    
+    # constructs a 1x2 datetime dataObject with two dates
+    # one value is in UTC time, the other one +1h from UTC
+    tz = timezone(timedelta(0, 3600))
+    values = (
+        datetime(2022, 4, 1),
+        datetime(1999,12,31,23,59, tzinfo = tz)
+    )
+    td3 = dataObject([1,2], 'datetime', data=values)
+    
+    # constructs an arbitrarily filled 2x3 timedelta dataObject
+    td1 = dataObject([2,3], 'timedelta')
+    
+    # constructs a 2x3 timedelta dataObject, where 
+    # are values are set to a 0 time span.
+    td2 = dataObject.zeros([2,3], 'timedelta')
+    
+    # constructs a 1x2 timedelta dataObject with two time spans
+    values = (
+        timedelta(days=0, seconds=20, microseconds=44000),
+        timedelta(days=3, hours=5)
+    )
+    td3 = dataObject([1,2], 'timedelta', data=values)
+
+Many mathematical operators are defined for ``datetime`` and ``timedelta`` objects, however only, if possible.
+For instance it is possible to add or subtract a ``timedelta`` dataObject to or from a ``datetime`` dataObject,
+as long as their shapes are equal. The result is a ``datetime`` dataObject. The difference of two ``datetime``
+objects is a ``timedelta`` dataObject. However, it is not possible to multiply such objects or to add two
+``datetime`` objects.
+
+For scalar operations (e.g. add, subtract or setting a value), it is possible to use both the
+Python class :py:class:`datetime.datetime` or :py:class:`datetime.timedelta` as well as the Numpy
+classes :py:class:`numpy.datetime64` or :py:class:`numpy.timedelta64` (as long as the operations is
+valid at all):
+
+.. code-block:: python
+    
+    from datetime import datetime, timedelta, timezone
+    import numpy as np
+    
+    td1 = dataObject.zeros([2,3], 'datetime')
+    td1 += timedelta(days=2)
+    print(td1[1,1])
+    # >> 1970-01-03 00:00:00
+    
+    td1[:,:] = datetime(2023, 4, 5, 23, 4, 5)
+    print(td1[1,1])
+    # >> 2023-04-05 23:04:05
+    
+    td1[0,0] = np.datetime64('2005-02-25T03:30')
+    print(td1[0,0])
+    # >> 2005-02-25 03:30:00
+
+A ``datetime`` dataObject can be used as x-axis for a line plot. See :ref:`itom1dqwtplotdatetime` for more details.
+If you want to create a linearly distributed datetime x-axis, the numpy method ``arange`` can help, e.g.:
+
+.. code-block:: python
+    
+    import numpy as np
+    
+    # pass this numpy ndarray as xData property to a 1d plot
+    # here, a range with a step size of 1 day is created
+    dateScale = np.arange('2005-02', '2005-03', dtype='datetime64[D]')
+    
+    # or convert it to a dataObject
+    dateScale2 = dataObject(dateScale)
+
 Main operations on numpy.arrays and itom.dataObjects
 ----------------------------------------------------------
 

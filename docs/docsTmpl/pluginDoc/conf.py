@@ -11,10 +11,12 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-import sys, os, inspect
+import sys
+import os
 import sphinx
-import __main__
 import itom as itomFuncs
+import __main__
+import inspect
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -36,12 +38,17 @@ sys.path.append(os.path.join(thisDir,'..' + os.sep + 'sphinxext'))
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.todo",
-    "sphinx.ext.imgmath",
     "sphinx.ext.ifconfig",
     "numpydoc",
     "sphinx.ext.intersphinx",
     "itom_extension"
 ]
+
+pymajor = sys.version_info.major
+pyminor = sys.version_info.minor
+
+if pymajor > 3 or (pymajor == 3 and pyminor > 5):
+    extensions.append("sphinx_copybutton")
 
 if sphinx.__version__ >= "0.7":
     extensions.append('sphinx.ext.autosummary')
@@ -50,7 +57,7 @@ else:
     extensions.append('only_directives')
 
 if sphinx.__version__ >= "1.4":
-	extensions.append("sphinx.ext.mathjax")
+    extensions.append("sphinx.ext.mathjax")
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = [] #['_templates']
@@ -59,7 +66,7 @@ templates_path = [] #['_templates']
 source_suffix = '.rst'
 
 # The encoding of source files.
-source_encoding = 'iso-8859-15'
+source_encoding = 'utf-8'
 
 # The master toctree document.
 master_doc = 'index' #will be overwritten
@@ -283,9 +290,28 @@ suppress_warnings = ["app.add_directive", "app.add_role", "app.add_node"]
 autosummary_generate = True
 
 # -----------------------------------------------------------------------------
+# Autodoc
+# -----------------------------------------------------------------------------
+autoclass_content = 'both'
+autodoc_member_order = 'groupwise'
+autodoc_docstring_signature = True
+
+# -----------------------------------------------------------------------------
+# Numpydoc
+# -----------------------------------------------------------------------------
+numpydoc_class_members_toctree = False
+numpydoc_xref_param_type = True
+numpydoc_show_class_members = False
+
+# -----------------------------------------------------------------------------
 # Todo
 # -----------------------------------------------------------------------------
 #todo_include_todos = True
 
 
-#intersphinx_mapping = {'python': ('http://docs.python.org/3.2', None)}
+# Files for auto-generating links in documentation to methods / datatypes etc. of other projects...
+# to get the inv files, open the given URL/objects.inv.
+intersphinx_mapping = {
+    'python': ('https://docs.python.org/3.8', None),
+    'numpy': ('https://numpy.org/doc/stable', None)
+}

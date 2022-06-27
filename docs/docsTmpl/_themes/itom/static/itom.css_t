@@ -12,35 +12,97 @@ html {
 }
 
 body {
-    line-height: 1.5;
+    
     margin: auto;
     padding: 0px;
-    font-family: "DejaVu Sans", Arial, Helvetica, sans-serif;
+    font-size: 100%;
+    font-family: "Lato","proxima-nova","Helvetica Neue",Arial,sans-serif;;
     min-width: 59em;
     max-width: 70em;
     color: #000000;
     border-style:double;
     border-width: 0px;
+    line-height: 130%;
+}
+
+code.docutils.literal {
+    font-weight: bold;
+    color: #E74C3C;
+    font-family: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",Courier,monospace;
+    white-space: nowrap;
+    font-size: 90%;
+    padding: 2px 5px;
+    background: #fff;
+    border: solid 1px #e1e4e5;
+}
+
+div.highlight pre {
+    padding: 5px;
+}
+
+/*div.figure {
+    width: 100%;
+    margin-bottom: 8px;
+}*/
+
+div.figure.align-left {
+    clear: left;
+    float: left;
+    margin-right: 1em;
+    margin-bottom: 8px;
+}
+
+div.figure.align-right {
+    clear: right;
+    float: right;
+    margin-left: 1em;
+    margin-bottom: 8px;
+}
+
+div.figure.align-center {
+    /*display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 15px;*/
+    clear: left;
+    float: left;
+    margin-right: 1em;
+    margin-bottom: 8px;
+    width: 1120px;
 }
 
 /*Parameters, Returns, etc - Spalte*/
 col.field-name{ 
     background-color: #F6E3CE;
     overflow: hidden;
-	width: 115px;
+    width: 115px;
     border-left: 2px solid #000000;
 }
 
+tt > span.pre {
+    font-size: 11pt;
+    font-weight: bold;
+    font-family: Helvetica, sans-serif;
+}
+
 /*class.itom ... Ueberschrift*/
-dl.class dt{
-   font-size: 19px; 
+dl.class > dt{
+   font-size: 11pt; 
+   border-bottom: dotted thin #e0e0e0;
 }
 
 /*Das Wort "class" in der Klassenueberschrift*/
-dl.class dt em.property{
-	font-size: 1.05em  
+dl.class > dt > em{
+    font-size: 11pt;  
 }
 
+dl.class > dt > tt.descname {
+    background-color:;
+    font-size: 11pt;
+    font-weight: bold;
+}
+
+dl.class dt
 
 /*Hinterlegung der gesamten Methoden*/
 dl.method, dl.staticmethod, dl.function{
@@ -55,23 +117,40 @@ dl.attribute{
 }
 
 /*Hinterlegung des Attributeheaders*/
-dl.attribute dt{
- 	background-color: #E6E6E6;
-  font-size: 13px;
-  padding-left: 7px;
+dl.attribute > dt{
+    background-color: #E6E6E6;
+    font-size: 11pt;
+    padding-left: 7px;
 }
 
 /*Hinterlegung des static- und Mehodenheaders*/
 dl.method dt, dl.staticmethod dt, dl.function dt{
- 	background-color: #E6E6E6; 
-  border-top: 1px solid #000000; /*#B40404*/
-  font-size: 13px;
-  padding-left: 7px;
+    background-color: #E6E6E6; 
+    border-top: 0px solid #000000;
+    font-size: 11pt;
+    padding-left: 7px;
+    margin-top: 15x;
+}
+
+dl.method dt code.descname, dl.class dt code.descname, dl.function dt code.descname, dl.attribute dt code.descname {
+    font-size: 11pt;
+}
+
+dl.method dt span.sig-paren, dl.class dt span.sig-paren, dl.attribute dt span.sig-paren {
+    font-size: 11pt;
+}
+
+dl.method dt span.optional, dl.class dt span.optional, dl.attribute dt span.optional {
+    font-size: 11pt;
+}
+
+dl.method, dl.staticmethod, dl.function > dt > tt {
+    font-family: Helvetica, sans-serif;
 }
 
 div.footer {
     padding: 10px;
-    font-size: 11px;
+    font-size: 11pt;
     text-align: center;
     letter-spacing: 0.5px;
 }
@@ -79,13 +158,13 @@ div.footer {
 /* link colors and text decoration */
 
 a:link {
-    font-weight: bold;
+    font-weight: normal;
     text-decoration: none;
     color: #dc3c01;
 }
 
 a:visited {
-    font-weight: bold;
+    font-weight: normal;
     text-decoration: none;
     color: #892601;
 }
@@ -133,7 +212,7 @@ div.content {
     margin-left: 40px;
     margin-right: 40px;
     margin-bottom: 50px;
-    font-size: 0.9em;
+    font-size: 11pt;
 }
 
 /* heading and navigation */
@@ -151,7 +230,7 @@ div.header {
     padding: 0 40px;
 }
 div.header h1 {
-    font-size: 1.6em;
+    font-size: 18pt;
     font-weight: normal;
     letter-spacing: 3px;
     color: #0c3762;
@@ -165,7 +244,7 @@ div.header h1 a {
     color: #0c3762;
 }
 div.header h2 {
-    font-size: 1.3em;
+    font-size: 16pt;
     font-weight: normal;
     letter-spacing: 1px;
     text-transform: uppercase;
@@ -182,14 +261,14 @@ div.header img.rightlogo {
 
 
 div.title {
-    font-size: 1.3em;
+    font-size: 14pt;
     font-weight: bold;
     color: #0c3762;
     border-bottom: dotted thin #e0e0e0;
     margin-bottom: 25px;
 }
 div.topnav {
-    background: #e0e0e0; */
+    background: #e0e0e0;
 }
 div.topnav p {
     margin-top: 0;
@@ -197,7 +276,7 @@ div.topnav p {
     margin-right: 40px;
     margin-bottom: 0px;
     text-align: right;
-    font-size: 0.8em;
+    font-size: 9pt;
 }
 div.bottomnav {
     background: #e0e0e0;
@@ -205,7 +284,7 @@ div.bottomnav {
 div.bottomnav p {
     margin-right: 40px;
     text-align: right;
-    font-size: 0.8em;
+    font-size: 9pt;
 }
 
 a.uplink {
@@ -226,7 +305,7 @@ table.index tr.heading {
     background-color: #e0e0e0;
     text-align: center;
     font-weight: bold;
-    font-size: 1.1em;
+    font-size: 13pt;
 }
 table.index tr.index {
     background-color: #eeeeee;
@@ -272,11 +351,13 @@ table.index a:hover, table.index a:active {
 
 div.admonition.note, div.warning, 
 div.admonition.seealso{
-    font-size: 0.9em;
+    font-size: 11pt;
     margin: 1em 0 1em 0;
     border: 1px solid #86989B;
     background-color: #f7f7f7;
     padding: 0;
+    float: none;
+    clear: both;
 }
 
 div.admonition p, div.warning p {
@@ -315,12 +396,12 @@ div.warning ul, div.warning ol {
 }
 
 div.versioninfo {
-    margin: 1em 0 0 0;
+    margin-top: 1em;
     border: 1px solid #ccc;
     background-color: #DDEAF0;
     padding: 8px;
     line-height: 1.3em;
-    font-size: 0.9em;
+    font-size: 11pt;
 }
 
 div.seealso {
@@ -328,47 +409,94 @@ div.seealso {
 }
 
 /* More layout and styles */
-h1 {
-    font-size: 1.3em;
-    font-weight: bold;
+div.content h1 {
+    font-size: 18pt;
     color: #0c3762;
     border-bottom: dotted thin #e0e0e0;
-    margin-top: 30px;
+    -webkit-margin-after: 20px;
+    -webkit-margin-before: 20px;
+    -webkit-margin-start: 0px;
+    -webkit-margin-end: 0px;
+    padding-top: 25px;
 }
 
-h2 {
-    font-size: 1.2em;
+/*logo*/
+div.content div.section h1 img
+{
+    float:none;
+}
+    
+div.content h2 {
+    font-size: 16pt;
     font-weight: normal;
     color: #0c3762;
     border-bottom: dotted thin #e0e0e0;
-    margin-top: 30px;
+    -webkit-margin-after: 10px;
+    -webkit-margin-before: 20px;
+    -webkit-margin-start: 0px;
+    -webkit-margin-end: 0px;
+    padding-top: 25px;
 }
 
-h3 {
-    font-size: 1.1em;
+div.content h3 {
+    font-size: 14pt;
     font-weight: normal;
     color: #0c3762;
-    margin-top: 30px;
+    -webkit-margin-after: 10px;
+    -webkit-margin-before: 20px;
+    -webkit-margin-start: 0px;
+    -webkit-margin-end: 0px;
+    padding-top: 15px;
 }
 
-h4 {
-    font-size: 1.0em;
+div.content h4 {
+    font-size: 13pt;
     font-weight: normal;
     color: #0c3762;
-    margin-top: 30px;
+    -webkit-margin-after: 0px;
+    -webkit-margin-before: 2em;
+    -webkit-margin-start: 0px;
+    -webkit-margin-end: 0px;
+    padding-top: 10px;
+}
+
+div.content h5 {
+    font-size: 12pt;
+    font-weight: normal;
+    color: #0c3762;
+    -webkit-margin-after: 0px;
+    -webkit-margin-before: 2em;
+    -webkit-margin-start: 0px;
+    -webkit-margin-end: 0px;
 }
 
 p {
     text-align: justify;
 }
 
+p.caption {
+    font-size: 16pt;
+    font-weight: normal;
+    color: #0c3762;
+    border-bottom: dotted thin #e0e0e0;
+    -webkit-margin-after: 10px;
+    -webkit-margin-before: 20px;
+    -webkit-margin-start: 0px;
+    -webkit-margin-end: 0px;
+}
+
+span.caption-text
+{
+    font-size: 11pt;
+}
+
 p.last {
     margin-bottom: 0;
 }
 
-ol {
+/*ol {
     padding-left: 20px;
-}
+}*/
 
 ul {
     padding-left: 5px;
@@ -376,19 +504,9 @@ ul {
 }
 
 li {
-    line-height: 1.3;
+    padding-left: 5px;
+    margin-top: 3px;
 }
-
-/*div.content ul > li {
-    -moz-background-clip:border;
-    -moz-background-inline-policy:continuous;
-    -moz-background-origin:padding;
-    background: transparent url(bullet_orange.png) no-repeat scroll left 0.45em;
-    list-style-image: none;
-    list-style-type: none;
-    padding: 0 0 0 1.666em;
-    margin-bottom: 3px;
-}*/
 
 div.content ul > li {
     -moz-background-clip:border;
@@ -396,9 +514,22 @@ div.content ul > li {
     -moz-background-origin:padding;
     list-style-image: none;
     list-style-type: disc;
-    padding: 0 0 0 1em;
+    padding-left: 10px;
     margin-bottom: 3px;
     margin-left: 10px;
+    font-size: 11pt;
+}
+
+div.content ul > li.toctree-l1, div.content ul > li.toctree-l2, div.content ul > li.toctree-l3 {
+    -moz-background-clip:border;
+    -moz-background-inline-policy:continuous;
+    -moz-background-origin:padding;
+    list-style-image: none;
+    list-style-type: none;
+    padding-left: 10px;
+    margin-bottom: 3px;
+    margin-left: 10px;
+    font-size: 11pt;
 }
 
 td {
@@ -407,20 +538,6 @@ td {
 
 /*Groesse aller Links*/
 /*Vorsicht, da relativ und manche Boxen dadurch extrem grosse Links*/
-tt {
-    background-color: #e2e2e2;
-    font-size: 1.2em;
-    font-family: monospace;
-}
-
-pre {
-    border-color: #0c3762;
-    border-style: dotted;
-    border-width: thin;
-    margin: 0 0 12px 0;
-    padding: 0.8em;
-    background-color: #f0f0f0;
-}
 
 hr {
     border-top: 1px solid #ccc;
@@ -431,9 +548,41 @@ hr {
     margin-top: 20px;
 }
 
+/* -- Code Blocks -----------------------------------------------*/
+
+code {
+    font-family: Helvetica, sans-serif;
+}
+
+td.code pre {
+    border-color: #0c3762;
+    border-style: dotted;
+    border-width: thin;
+    margin: 0 0 12px 0;
+    padding: 5px 5px;
+    background-color: #f0f0f0;
+    font-size: 11pt;
+}
+
+td.linenos pre {
+    padding: 5px 0px;
+    margin: 0 0 12px 0;
+    border: 0;
+    background-color: transparent;
+    color: #aaa;
+    font-size: 11pt;
+}
+
+table.highlighttable {
+    margin-left: 0.5em;
+}
+
+table.highlighttable td {
+    padding: 0 0.5em 0 0.5em;
+}
 
 
-/* printer only pretty stuff */
+/* -- printer only pretty stuff -----------------------------------------------*/
 @media print {
     .noprint {
         display: none;
@@ -461,7 +610,7 @@ hr {
 }
 
 .viewcode-back {
-    font-family: "DejaVu Sans", Arial, Helvetica, sans-serif;
+    font-family: Helvetica, sans-serif;
 }
 
 div.viewcode-block:target {
@@ -519,4 +668,27 @@ table.citation td {
 /* So parameter descriptions are displayed inline to the item */
 .breatheparameterlist li tt + p {
     display: inline;
+}
+
+p.breathe-sectiondef-title {
+    border-bottom: dotted thin #e0e0e0;
+    font-weight: bold;
+    margin-top: 30px;
+}
+
+dl.enum > dt {
+    background-color: #E6E6E6; 
+    border-top: 0px solid #000000;
+    font-weight: bold;
+    font-size: 16pt;
+    padding-left: 7px;
+    font-family: Helvetica, sans-serif;
+}
+
+dl.function > dt > tt.descname {
+    background-color: #E6E6E6; 
+    border-top: 0px solid #000000;
+    font-size: 16pt;
+    font-family: Helvetica, sans-serif;
+    font-weight: bold;
 }

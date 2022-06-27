@@ -732,8 +732,27 @@ void ScriptEditorWidget::insertFromMimeData(const QMimeData *source)
         source->hasText() &&
         !m_wasReadonly)
     {
-        int currentColumn;
-        getCursorPosition(nullptr, &currentColumn);
+        int lineIdx, currentColumn;
+        int lineToIdx, columnTo;
+        getSelection(&lineIdx, &currentColumn, &lineToIdx, &columnTo);
+
+        if (lineIdx == -1)
+        {
+            // no selection, get the current cursor position
+            getCursorPosition(nullptr, &currentColumn);
+        }
+        else if (lineIdx > lineToIdx)
+        {
+            // the start of the selection is at the end of the selection. swap it.
+            lineIdx = lineToIdx;
+            currentColumn = columnTo;
+        }
+        else if (lineIdx == lineToIdx && currentColumn > columnTo)
+        {
+            // the start of the selection is at the end of the selection. swap it.
+            lineIdx = lineToIdx;
+            currentColumn = columnTo;
+        }
 
         QString currentIndent;
 
@@ -748,7 +767,6 @@ void ScriptEditorWidget::insertFromMimeData(const QMimeData *source)
 
         int lineCount;
         QString formattedText = formatCodeBeforeInsertion(source->text(), lineCount, false, currentIndent);
-
         QMimeData mimeData;
         mimeData.setText(formattedText);
         AbstractCodeEditorWidget::insertFromMimeData(&mimeData);

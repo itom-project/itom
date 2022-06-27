@@ -1,7 +1,7 @@
 /* ********************************************************************
    itom measurement system
    URL: http://www.uni-stuttgart.de/ito
-   Copyright (C) 2021, Institut fuer Technische Optik (ITO),
+   Copyright (C) 2022, Institut fuer Technische Optik (ITO),
    Universitaet Stuttgart, Germany
 
    This file is part of itom.
@@ -45,6 +45,7 @@
 #include "dialogHeatmapConfiguration.h"
 
 #include "common/typeDefs.h"
+#include "common/helperDatetime.h"
 
 
 class DataObjectTablePrivate
@@ -62,7 +63,7 @@ public:
 
     struct CellItem
     {
-        QVariant number; // int, double or string allowed
+        QVariant value; // int, double or string allowed
         QColor bgColor;
     };
 
@@ -148,18 +149,18 @@ ito::RetVal DataObjectTablePrivate::copyToClipboard(
                 attributes = "";
             }
 
-            if (item.number.isValid())
+            if (item.value.isValid())
             {
-                if (item.number.type() == QVariant::LongLong ||
-                    item.number.type() == QVariant::String)
+                if (item.value.type() == QVariant::LongLong ||
+                    item.value.type() == QVariant::String)
                 {
-                    columnTexts.append(item.number.toString());
+                    columnTexts.append(item.value.toString());
                     columnsHtml.append(
-                        QString("<td%1>%2</td>").arg(attributes).arg(item.number.toString()));
+                        QString("<td%1>%2</td>").arg(attributes).arg(item.value.toString()));
                 }
-                else if (item.number.type() == QVariant::Double)
+                else if (item.value.type() == QVariant::Double)
                 {
-                    columnTexts.append(locale.toString(item.number.toDouble(), 'f', 8));
+                    columnTexts.append(locale.toString(item.value.toDouble(), 'f', 8));
                     columnsHtml.append(
                         QString("<td%1>%2</td>").arg(attributes).arg(columnTexts.last()));
                 }
@@ -228,16 +229,16 @@ ito::RetVal DataObjectTablePrivate::saveToCsv(
         {
             const CellItem& item = items[r * cols + c];
 
-            if (item.number.isValid())
+            if (item.value.isValid())
             {
-                if (item.number.type() == QVariant::LongLong ||
-                    item.number.type() == QVariant::String)
+                if (item.value.type() == QVariant::LongLong ||
+                    item.value.type() == QVariant::String)
                 {
-                    itemText = item.number.toByteArray();
+                    itemText = item.value.toByteArray();
                 }
-                else if (item.number.type() == QVariant::Double)
+                else if (item.value.type() == QVariant::Double)
                 {
-                    itemText = QByteArray::number(item.number.toDouble(), format, precision);
+                    itemText = QByteArray::number(item.value.toDouble(), format, precision);
 
                     if (decimalSign != '.')
                     {
@@ -329,7 +330,7 @@ ito::RetVal DataObjectTablePrivate::getSelectedItems(
         {
             currentIdx = cols * (idx.row() - firstRow) + (idx.column() - firstCol);
             items[currentIdx].bgColor = model->data(idx, Qt::BackgroundRole).value<QColor>();
-            items[currentIdx].number =
+            items[currentIdx].value =
                 model->data(idx, DataObjectModel::longlongDoubleOrStringRoleWithoutSuffix);
         }
     }
@@ -351,7 +352,7 @@ ito::RetVal DataObjectTablePrivate::getSelectedItems(
                     QModelIndex idx = model->index(r, c);
                     items[currentIdx].bgColor =
                         model->data(idx, Qt::BackgroundRole).value<QColor>();
-                    items[currentIdx].number =
+                    items[currentIdx].value =
                         model->data(idx, DataObjectModel::longlongDoubleOrStringRoleWithoutSuffix);
                 }
             }
@@ -1105,6 +1106,151 @@ void gatherSelectionInformation<ito::complex128>(
                      .arg(v));
 }
 
+template <>
+void gatherSelectionInformation<ito::DateTime>(
+    const ito::DataObject* dObj, const QModelIndexList& indexes, QStringList& infos)
+{
+    if (indexes.size() == 0)
+    {
+        infos.clear();
+        return;
+    }
+
+    ito::DateTime minimum;
+    ito::DateTime maximum;
+
+    QString v = QString::fromLocal8Bit(dObj->getValueUnit().data());
+
+    if (v != "")
+    {
+        v.prepend(" ");
+    }
+
+    ito::DateTime value;
+    size_t count = 0;
+
+    foreach(const QModelIndex& idx, indexes)
+    {
+        value = dObj->at<ito::DateTime>(idx.row(), idx.column());
+
+        if (count == 0)
+        {
+            minimum = value;
+            maximum = value;
+        }
+        else
+        {
+            minimum = std::min(minimum, value);
+            maximum = std::max(maximum, value);
+        }
+
+        count++;
+    }
+
+    if (count > 0)
+    {
+        QString minStr = ito::datetime::toQDateTime(minimum).toString(Qt::ISODateWithMs);
+        QString maxStr = ito::datetime::toQDateTime(maximum).toString(Qt::ISODateWithMs);
+        infos.append(QObject::tr("Minimum: %1%2").arg(minStr).arg(v));
+        infos.append(QObject::tr("Maximum: %1%2").arg(maxStr).arg(v));
+    }
+}
+
+template <>
+void gatherSelectionInformation<ito::TimeDelta>(
+    const ito::DataObject* dObj, const QModelIndexList& indexes, QStringList& infos)
+{
+    if (indexes.size() == 0)
+    {
+        infos.clear();
+        return;
+    }
+
+    ito::TimeDelta minimum;
+    ito::TimeDelta maximum;
+
+    QString v = QString::fromLocal8Bit(dObj->getValueUnit().data());
+
+    if (v != "")
+    {
+        v.prepend(" ");
+    }
+
+    ito::TimeDelta value;
+    size_t count = 0;
+
+    foreach(const QModelIndex& idx, indexes)
+    {
+        value = dObj->at<ito::TimeDelta>(idx.row(), idx.column());
+
+        if (count == 0)
+        {
+            minimum = value;
+            maximum = value;
+        }
+        else
+        {
+            minimum = std::min(minimum, value);
+            maximum = std::max(maximum, value);
+        }
+
+        count++;
+    }
+
+    if (count > 0)
+    {
+        auto timeDeltaToString = [](const ito::TimeDelta &td)
+        {
+            int days, seconds, useconds;
+            ito::timedelta::toDSU(td, days, seconds, useconds);
+
+            int sec = seconds % 60;
+            seconds -= sec;
+            int minutes = seconds / 60;
+            int min = minutes % 60;
+            minutes -= min;
+            int hour = minutes / 60;
+            QLatin1Char fill('0');
+
+            QString result;
+
+            if (days != 0)
+            {
+                result = QObject::tr("%1 days ").arg(days);
+            }
+
+            if ((days >= 0) && (sec < 0 || min < 0 || hour < 0 || useconds < 0))
+            {
+                result += "-";
+            }
+
+            result += QObject::tr("%1:%2:%3")
+                .arg(std::abs(hour), 2, 10, fill)
+                .arg(std::abs(min), 2, 10, fill)
+                .arg(std::abs(sec), 2, 10, fill);
+
+            if (useconds != 0)
+            {
+                if (useconds % 1000 == 0)
+                {
+                    result += QString(".%1").arg(std::abs(useconds / 1000), 3, 10, fill);
+                }
+                else
+                {
+                    result += QString(".%1").arg(std::abs(useconds), 6, 10, fill);
+                }
+            }
+
+            return result;
+        };
+
+        QString minStr = timeDeltaToString(minimum);
+        QString maxStr = timeDeltaToString(maximum);
+        infos.append(QObject::tr("Minimum: %1%2").arg(minStr).arg(v));
+        infos.append(QObject::tr("Maximum: %1%2").arg(maxStr).arg(v));
+    }
+}
+
 //-------------------------------------------------------------------------------------
 void DataObjectTable::selectionChanged(
     const QItemSelection& selected, const QItemSelection& deselected)
@@ -1169,6 +1315,12 @@ void DataObjectTable::selectionChanged(
                 break;
             case ito::tRGBA32:
                 gatherSelectionInformation<ito::Rgba32>(dObjPtr.data(), indexes, infos);
+                break;
+            case ito::tDateTime:
+                gatherSelectionInformation<ito::DateTime>(dObjPtr.data(), indexes, infos);
+                break;
+            case ito::tTimeDelta:
+                gatherSelectionInformation<ito::TimeDelta>(dObjPtr.data(), indexes, infos);
                 break;
             default:
                 infos.append(tr("No further information due to unsupported array type."));

@@ -58,15 +58,82 @@ are listed here:
 .. code-block:: python
     
     # method 1 
-    plot(yDataObject, xVector)
+    plot1(yDataObject, xVector)
     
     # method 2
-    fig = plot(yDataObject)
-    fig[-1]['xData'] = xVector
+    figNumber, handle = plot1(yDataObject)
+    handle['xData'] = xVector
     
     # method 3
-    plot(yDataObject, properties = {'xData', xVector})
+    plot1(yDataObject, properties = {'xData', xVector})
+
+
+.. _itom1dqwtplotdatetime:
+
+DateTime x-axis
+=================
+
+It is also possible to use date time values for the x-axis. This is done by setting
+a ``datetime`` :py:class:`~itom.dataObject` as ``xData`` property of the 1d plot (see section above).
+
+The ``datetime`` :py:class:`~itom.dataObject` can either be constructed from :py:class:`datetime.datetime`
+values or a ``np.datetime64`` :py:class:`numpy.ndarray`.
+
+The following code snippet:
+
+.. code-block:: python
     
+    # This demo shows how the x-axis of a 1d plot can be a date time.
+
+    import numpy as np
+    import datetime
+
+    # start date with a specific timezone
+    a = datetime.datetime(
+        2022, 5, 6, 12, 23, 5, tzinfo=datetime.timezone(datetime.timedelta(0, -7200))
+    )
+
+    # create a list of datetime.datetime objects
+    numsteps = 100
+    dateList = []
+
+    for x in range(0, numsteps, 15):
+        dateList.append(
+            a + datetime.timedelta(hours=x)
+        )
+
+    # create a dataObject from the list of datetime objects
+    dateScale = dataObject([1, len(dateList)], "datetime", data=dateList)
+
+    values = dataObject.randN(dateScale.shape, "float32")
+
+    [i, h] = plot1(values, dateScale)
+
+    h["lineWidth"] = 3
+    h["axisLabelRotation"] = -45
+    h["axisLabelAlignment"] = "AlignLeft"
+    h["fillCurve"] = "FillFromBottom"
+    h["grid"] = "GridMajorXY"
+    h["axisLabel"] = "date"
+    h["valueLabel"] = "value"
+
+The result looks like this:
+
+.. figure:: images/plot1d_datetime.png
+    :scale: 100%
+    :align: center
+
+It is also possible to directly use a ``datetime`` :py:class:`numpy.ndarray` as ``xData`` object:
+
+.. code-block:: python
+    
+    dateScale = np.arange('2005-02', '2005-03', dtype='datetime64[D]')
+    values = dataObject.randN([1, len(dateScale)], "uint8")
+    plot1(values, dateScale)
+
+.. note::
+    
+    For more information about datetime in :py:class:`itom.dataObject`, see :ref:`itomDataObjectDatetime`.
 
 Itom1dQwtPlot
 ==========================
@@ -127,7 +194,7 @@ following line properties are acessable via Python:
 * **lineSymbolStyle**
 * **legendVisible**
 
-A propertie of a line can be acessed as followed:
+A property of a line can be accessed as followed:
 
 .. code-block:: python
     
@@ -139,7 +206,7 @@ the properties read the section below. In the file
 :file:`itom/demo/plots/demoPlot1DLineProperties.py` a short demonstration of 
 how to set the properties is given.
 
-For acessing the propties via the user interface the line properties widget 
+For accessing the properties via the user interface the line properties widget 
 can be used. Additional to the properties listed above the legend name, the 
 legend visibility and the symbol color can be set.  
 
@@ -149,13 +216,13 @@ legend visibility and the symbol color can be set.
 
 This shows the curve Properties widget.
 
-If you want to set a propertie global for all curves you can also use the 
+If you want to set a property global for all curves you can also use the 
 properties widget (View >> properties or via right click on the toolbar)
     
 Legend title of line plots
 ---------------------------
 
-Legendtitles of a line plot can be activated and modified by the **curve 
+Legend titles of a line plot can be activated and modified by the **curve 
 properties** or by the **plot properties**. Per default the legendtitles are 
 defined as *curve 0, curve 1,...* If the dataObject which is plotted has 
 defined tags named **legendTitle0, legendTitle1, ...**, then the tag entries 
@@ -432,6 +499,33 @@ Properties
     * 'Right' (3)
     * 'Bottom' (4)
 
+.. py:attribute:: axisLabelAlignment : Qt::Alignment 
+    :noindex:
+    
+    The label alignment for the x-axis. This value has to be adjusted if the rotation is changed.
+    
+    The type 'Qt::Alignment' is a flag mask that can be a combination of one or several of the following values (or-combination number values or semicolon separated strings):
+    
+    * 'AlignLeft' (1)
+    * 'AlignLeading' (1)
+    * 'AlignRight' (2)
+    * 'AlignTrailing' (2)
+    * 'AlignHCenter' (4)
+    * 'AlignJustify' (8)
+    * 'AlignAbsolute' (16)
+    * 'AlignHorizontal_Mask' (31)
+    * 'AlignTop' (32)
+    * 'AlignBottom' (64)
+    * 'AlignVCenter' (128)
+    * 'AlignBaseline' (256)
+    * 'AlignVertical_Mask' (480)
+    * 'AlignCenter' (132)
+
+.. py:attribute:: axisLabelRotation : float 
+    :noindex:
+    
+    The rotation angle in degree of the labels on the bottom x-axis. If changed, the alignment should also be adapted.
+
 .. py:attribute:: legendFont : font 
     :noindex:
     
@@ -472,6 +566,11 @@ Properties
     
     
 
+.. py:attribute:: allowCameraParameterEditor : bool 
+    :noindex:
+    
+    If a live camera is connected to this plot, a camera parameter editor can be displayed as toolbox of the plot. If this property is false, this toolbox is not available (default: true)
+
 .. py:attribute:: complexStyle : ItomQwtPlotEnums::ComplexType 
     :noindex:
     
@@ -488,12 +587,6 @@ Properties
     :noindex:
     
     Toggle visibility of marker labels, the label is the set name of the marker.
-
-.. py:attribute:: allowCameraParameterEditor : bool
-    :noindex:
-    
-    If a live camera is connected to this plot, a camera parameter editor can be displayed as 
-    toolbox of the plot. If this property is false, this toolbox is not available (default: true)
 
 .. py:attribute:: unitLabelStyle : ito::AbstractFigure::UnitLabelStyle 
     :noindex:
@@ -758,6 +851,26 @@ Slots
     
     
     Force a replot which is for instance necessary if values of the displayed data object changed and you want to update the plot, too.
+    
+
+.. py:function:: hideMarkers(id) [slot]
+    :noindex:
+    
+    
+    Hides all existing markers with the given name
+    
+    :param id: Name of the set of markers, that should be hidden.
+    :type id: str
+    
+
+.. py:function:: showMarkers(id) [slot]
+    :noindex:
+    
+    
+    Shows all existing markers with the given name
+    
+    :param id: Name of the set of markers, that should be shown.
+    :type id: str
     
 
 .. py:function:: deleteMarkers(id) [slot]
@@ -1106,6 +1219,7 @@ Signals
     
     signature for connection to this signal: windowTitleModified(QString)
     
+
 
 .. END plot_help_to_rst_format.py: itom1dqwtplot
 

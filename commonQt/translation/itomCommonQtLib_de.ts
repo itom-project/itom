@@ -19,9 +19,13 @@
         <translation type="unfinished">Der Plugin-Name ist nicht definiert. Es wurde keine XML-Datei geladen</translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="239"/>
         <source>ParamList not inialized properly</source>
-        <translation type="unfinished">Die ParamList wurde nicht richtig inizialisiert</translation>
+        <translation type="obsolete">Die ParamList wurde nicht richtig inizialisiert</translation>
+    </message>
+    <message>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="239"/>
+        <source>ParamList not properly initialized</source>
+        <translation>ParamList nicht korrekt initialisiert</translation>
     </message>
     <message>
         <location filename="../../common/sources/sharedFunctionsQt.cpp" line="481"/>
@@ -458,85 +462,230 @@ Typkonflikt für &apos;%1&apos;</translation>
         <translation type="unfinished">Fehler bei setPosAbs: Vektoren unterscheiden sich in der Größe</translation>
     </message>
     <message>
-        <location filename="../../common/sources/helperCommon.cpp" line="49"/>
+        <location filename="../../common/sources/helperCommon.cpp" line="51"/>
         <source>parameter vector is not initialized</source>
         <translation type="unfinished">Der Parametervektor wurde nicht initialisiert</translation>
     </message>
     <message>
-        <location filename="../../common/sources/helperCommon.cpp" line="76"/>
+        <location filename="../../common/sources/helperCommon.cpp" line="78"/>
         <source>mandatory parameter vector is not initialized</source>
         <translation type="unfinished">Der Pflichtparametervektor wurde nicht inistalisiert</translation>
     </message>
     <message>
-        <location filename="../../common/sources/helperCommon.cpp" line="84"/>
+        <location filename="../../common/sources/helperCommon.cpp" line="86"/>
         <source>optional parameter vector is not initialized</source>
         <translation type="unfinished">Der optionale Parametervektor wurde nicht inistialisiert</translation>
     </message>
     <message>
-        <location filename="../../common/sources/helperCommon.cpp" line="92"/>
+        <location filename="../../common/sources/helperCommon.cpp" line="94"/>
         <source>output parameter vector is not initialized</source>
         <translation type="unfinished">Der Ausgabeparametervektor wurde nicht initialisiert</translation>
     </message>
     <message>
-        <location filename="../../common/sources/helperCommon.cpp" line="140"/>
-        <location filename="../../common/sources/helperCommon.cpp" line="187"/>
+        <location filename="../../common/sources/helperCommon.cpp" line="142"/>
+        <location filename="../../common/sources/helperCommon.cpp" line="189"/>
         <source>parameter &apos;%1&apos; cannot be found in given parameter vector</source>
         <translation type="unfinished">Der Parameter &apos;%1&apos; wurde nicht im gegebenen Parametervektor gefunden</translation>
     </message>
     <message>
-        <location filename="../../common/sources/helperCommon.cpp" line="314"/>
-        <location filename="../../common/sources/helperCommon.cpp" line="508"/>
+        <location filename="../../common/sources/helperCommon.cpp" line="316"/>
+        <location filename="../../common/sources/helperCommon.cpp" line="510"/>
         <source>name of requested parameter is empty.</source>
         <translation type="unfinished">Der Name des gesuchten Parameters ist leer.</translation>
     </message>
     <message>
-        <location filename="../../common/sources/helperCommon.cpp" line="333"/>
+        <location filename="../../common/sources/helperCommon.cpp" line="335"/>
         <source>the parameter name &apos;%1&apos; is invald</source>
         <translation type="unfinished">Der Parametername &apos;%1&apos; ist ungültig</translation>
     </message>
     <message>
-        <location filename="../../common/sources/helperCommon.cpp" line="371"/>
+        <location filename="../../common/sources/helperCommon.cpp" line="373"/>
         <source>array index of parameter out of bounds.</source>
         <translation type="unfinished">Array-Index des Parameters außerhalb der Beschränkung.</translation>
     </message>
     <message>
-        <location filename="../../common/sources/helperCommon.cpp" line="382"/>
-        <location filename="../../common/sources/helperCommon.cpp" line="550"/>
+        <location filename="../../common/sources/helperCommon.cpp" line="384"/>
+        <location filename="../../common/sources/helperCommon.cpp" line="552"/>
         <source>given index of parameter name ignored since parameter is no array type</source>
         <translation type="unfinished">Der Index des Parameters wurde ignoriert, da der Parameter kein Array-Typ ist</translation>
     </message>
     <message>
-        <location filename="../../common/sources/helperCommon.cpp" line="397"/>
-        <location filename="../../common/sources/helperCommon.cpp" line="639"/>
+        <location filename="../../common/sources/helperCommon.cpp" line="399"/>
+        <location filename="../../common/sources/helperCommon.cpp" line="641"/>
         <source>parameter not found in m_params.</source>
         <translation type="unfinished">Der Parameter wurde nicht in &apos;m_params&apos; gefunden.</translation>
     </message>
     <message>
-        <location filename="../../common/sources/helperCommon.cpp" line="527"/>
+        <location filename="../../common/sources/helperCommon.cpp" line="529"/>
         <source>the parameter name &apos;%1&apos; is invalid</source>
         <translation type="unfinished">Der Parametername &apos;%1&apos; ist ungültig</translation>
     </message>
     <message>
-        <location filename="../../common/sources/helperCommon.cpp" line="571"/>
-        <location filename="../../common/sources/helperCommon.cpp" line="599"/>
+        <location filename="../../common/sources/helperCommon.cpp" line="573"/>
+        <location filename="../../common/sources/helperCommon.cpp" line="601"/>
         <source>The type of the new value does not fit to the given array or list type.</source>
         <translation type="unfinished">Der Typ des übergebenen Werts entspricht nicht dem gegebenen Array- oder List-Typ.</translation>
     </message>
     <message>
-        <location filename="../../common/sources/helperCommon.cpp" line="589"/>
-        <location filename="../../common/sources/helperCommon.cpp" line="617"/>
+        <location filename="../../common/sources/helperCommon.cpp" line="591"/>
+        <location filename="../../common/sources/helperCommon.cpp" line="619"/>
         <source>array index out of bounds.</source>
         <translation type="unfinished">Array-Index liegt außerhalb des Bereichs.</translation>
     </message>
     <message>
-        <location filename="../../common/sources/helperCommon.cpp" line="625"/>
+        <location filename="../../common/sources/helperCommon.cpp" line="627"/>
         <source>The parameter is either no array or list, or the type of the new value does not correspond to this parameter.</source>
         <translation type="unfinished">Der Parameter ist entweder kein Array oder Liste oder der Typ des neuen Werts entspricht nicht diesem Parameter.</translation>
     </message>
     <message>
-        <location filename="../../common/sources/helperCommon.cpp" line="690"/>
+        <location filename="../../common/sources/helperCommon.cpp" line="692"/>
         <source>invalid parameter name</source>
         <translation type="unfinished">Ungültiger Parametername</translation>
+    </message>
+    <message>
+        <location filename="../../common/sources/helperCommon.cpp" line="983"/>
+        <source>%1 values required</source>
+        <translation>%1 Werte erforderlich</translation>
+    </message>
+    <message>
+        <location filename="../../common/sources/helperCommon.cpp" line="988"/>
+        <source>Allowed number of values: %1 - %2</source>
+        <translation>Erlaubte Anzahl an Werten: %1 - %2</translation>
+    </message>
+    <message>
+        <location filename="../../common/sources/helperCommon.cpp" line="994"/>
+        <source>, step: %1</source>
+        <translation>, Schrittweite: %1</translation>
+    </message>
+    <message>
+        <location filename="../../common/sources/helperCommon.cpp" line="1021"/>
+        <location filename="../../common/sources/helperCommon.cpp" line="1066"/>
+        <location filename="../../common/sources/helperCommon.cpp" line="1110"/>
+        <source>All values allowed</source>
+        <translation>Wertebereich nicht eingeschränkt</translation>
+    </message>
+    <message>
+        <location filename="../../common/sources/helperCommon.cpp" line="1025"/>
+        <location filename="../../common/sources/helperCommon.cpp" line="1070"/>
+        <location filename="../../common/sources/helperCommon.cpp" line="1114"/>
+        <source>Value range: [%1, %2]</source>
+        <translation>Wertebereich: [%1, %2]</translation>
+    </message>
+    <message>
+        <location filename="../../common/sources/helperCommon.cpp" line="1033"/>
+        <location filename="../../common/sources/helperCommon.cpp" line="1077"/>
+        <location filename="../../common/sources/helperCommon.cpp" line="1121"/>
+        <source>Value range: [%1:%2:%3]</source>
+        <translation>Wertebereich: [%1:%2:%3]</translation>
+    </message>
+    <message>
+        <location filename="../../common/sources/helperCommon.cpp" line="1044"/>
+        <location filename="../../common/sources/helperCommon.cpp" line="1088"/>
+        <location filename="../../common/sources/helperCommon.cpp" line="1132"/>
+        <source>, Unit: %1</source>
+        <translation>, Einheit: %1</translation>
+    </message>
+    <message>
+        <location filename="../../common/sources/helperCommon.cpp" line="1148"/>
+        <source>RegExp</source>
+        <translation>Regulärer Ausdruck</translation>
+    </message>
+    <message>
+        <location filename="../../common/sources/helperCommon.cpp" line="1165"/>
+        <source>RegExp: &lt;no pattern given&gt;</source>
+        <translation>Regulärer Ausdruck: &lt;kein Muster angegeben&gt;</translation>
+    </message>
+    <message>
+        <location filename="../../common/sources/helperCommon.cpp" line="1170"/>
+        <source>Match</source>
+        <translation>Treffer</translation>
+    </message>
+    <message>
+        <location filename="../../common/sources/helperCommon.cpp" line="1190"/>
+        <source>Match: &lt;no pattern given&gt;</source>
+        <translation>Treffer: &lt;keine Werte gegeben&gt;</translation>
+    </message>
+    <message>
+        <location filename="../../common/sources/helperCommon.cpp" line="1194"/>
+        <source>Wildcard</source>
+        <translation>Wildcard</translation>
+    </message>
+    <message>
+        <location filename="../../common/sources/helperCommon.cpp" line="1211"/>
+        <source>Wildcard: &lt;no pattern given&gt;</source>
+        <translation>Wildcard: &lt;keine Werte gegeben&gt;</translation>
+    </message>
+    <message>
+        <location filename="../../common/sources/helperCommon.cpp" line="1240"/>
+        <location filename="../../common/sources/helperCommon.cpp" line="1264"/>
+        <location filename="../../common/sources/helperCommon.cpp" line="1283"/>
+        <location filename="../../common/sources/helperCommon.cpp" line="1294"/>
+        <location filename="../../common/sources/helperCommon.cpp" line="1361"/>
+        <location filename="../../common/sources/helperCommon.cpp" line="1383"/>
+        <location filename="../../common/sources/helperCommon.cpp" line="1447"/>
+        <location filename="../../common/sources/helperCommon.cpp" line="1510"/>
+        <source>Default: %1</source>
+        <translation>Standard: %1</translation>
+    </message>
+    <message>
+        <location filename="../../common/sources/helperCommon.cpp" line="1308"/>
+        <source>Default: %1+%2i</source>
+        <translation>Standard: %1+%2i</translation>
+    </message>
+    <message>
+        <location filename="../../common/sources/helperCommon.cpp" line="1313"/>
+        <source>Default: %1-%2i</source>
+        <translation>Standard: %1-%2i</translation>
+    </message>
+    <message>
+        <location filename="../../common/sources/helperCommon.cpp" line="1321"/>
+        <source>Default: &quot;%1&quot;</source>
+        <translation>Standard: &quot;%1&quot;</translation>
+    </message>
+    <message>
+        <location filename="../../common/sources/helperCommon.cpp" line="1326"/>
+        <source>Default: &lt;nullptr / None&gt;</source>
+        <translation>Standard: &lt;nullptr / None&gt;</translation>
+    </message>
+    <message>
+        <location filename="../../common/sources/helperCommon.cpp" line="1330"/>
+        <source>Default: &lt;empty str&gt;</source>
+        <translation>Standard: &lt;leere Zeichenkette&gt;</translation>
+    </message>
+    <message>
+        <location filename="../../common/sources/helperCommon.cpp" line="1435"/>
+        <source>Width: %1</source>
+        <translation>Breite: %1</translation>
+    </message>
+    <message>
+        <location filename="../../common/sources/helperCommon.cpp" line="1437"/>
+        <source>Height: %1</source>
+        <translation>Höhe: %1</translation>
+    </message>
+    <message>
+        <location filename="../../common/sources/helperCommon.cpp" line="1522"/>
+        <source>Value rules: </source>
+        <translation>Regeln für Werte:</translation>
+    </message>
+    <message>
+        <location filename="../../common/sources/helperCommon.cpp" line="1550"/>
+        <source>Min. dims: %1</source>
+        <translation>Min. Anzahl Dimensionen: %1</translation>
+    </message>
+    <message>
+        <location filename="../../common/sources/helperCommon.cpp" line="1561"/>
+        <source>Max. dims: %1</source>
+        <translation>Max. Anzahl Dimensionen: %1</translation>
+    </message>
+    <message>
+        <location filename="../../common/sources/helperCommon.cpp" line="1593"/>
+        <source>Only plugin &quot;%1&quot; is allowed</source>
+        <translation>Nur Plugin &quot;%1&quot; ist erlaubt</translation>
+    </message>
+    <message>
+        <location filename="../../common/sources/helperCommon.cpp" line="1631"/>
+        <source>Allowed plugin type(s): &quot;%1&quot;.</source>
+        <translation>Mögliche(r) Plugin Typ(en): &quot;%1&quot;.</translation>
     </message>
 </context>
 <context>

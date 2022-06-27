@@ -26,24 +26,11 @@
 /* includes */
 #include <string>
 
-#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
-
 #ifndef Q_MOC_RUN
     #define PY_ARRAY_UNIQUE_SYMBOL itom_ARRAY_API //see numpy help ::array api :: Miscellaneous :: Importing the api (this line must before including global.h)
     #define NO_IMPORT_ARRAY
 
-    //#define NPY_NO_DEPRECATED_API 0x00000007 //see comment in pythonNpDataObject.cpp
-    //python
-    // see http://vtk.org/gitweb?p=VTK.git;a=commitdiff;h=7f3f750596a105d48ea84ebfe1b1c4ca03e0bab3
-    #if (defined _DEBUG) && (defined WIN32)
-        #undef _DEBUG
-        #include "pythonWrapper.h"
-        #include "numpy/arrayobject.h"
-        #define _DEBUG
-    #else
-        #include "pythonWrapper.h"
-        #include "numpy/arrayobject.h"
-    #endif
+    #include "pythonWrapper.h"
 #endif
 
 #include "../../DataObject/dataobj.h"
@@ -67,7 +54,7 @@ class PythonDataObject
 
         typedef struct
         {
-            char *name;
+            const char *name;
             int typeno;
         }
         PyDataObjectTypes;
@@ -200,8 +187,7 @@ class PythonDataObject
         static PyObject* PyDataObj_SplitColor(PyDataObject *self, PyObject *args, PyObject *kwds);
 
         static PyObject* PyDataObj_ToList(PyDataObject *self);
-        static PyObject* PyDataObj_At(ito::DataObject *dataObj, unsigned int *idx);
-        static PyObject* PyDataObj_At(ito::DataObject *dataObj, int continuousIdx);
+        static PyObject* PyDataObj_At(ito::DataObject *dataObj, const unsigned int *idx);
         static PyObject* PyDataObj_ToListRecursive(ito::DataObject *dataObj, unsigned int *currentIdx, int iterationIndex);
 
 
@@ -280,7 +266,8 @@ class PythonDataObject
 
         static PyDataObjectTypes PyDataObject_types[];
         static int dObjTypeFromName(const char *name);
-        static char* typeNumberToName(int typeno);
+        static const char* typeNumberToName(int typeno);
+        static int numDataTypes();
 
         static PyDataObject* createEmptyPyDataObject();
         static PyObject* createPyDataObjectFromArray(PyObject *npArray); //returns NULL with set Python exception if npArray could not be converted to data object
@@ -296,7 +283,8 @@ class PythonDataObject
         static ito::RetVal copyNpArrayValuesToDataObject(PyArrayObject *npNdArray, ito::DataObject *dataObject, ito::tDataType type);
         static int PyDataObj_CreateFromShapeTypeData(PyDataObject *self, PyObject *args, PyObject *kwds); //helper method for PyDataObject_init
         static int PyDataObj_CreateFromNpNdArrayAndType(PyDataObject *self, PyObject *args, PyObject *kwds, bool addNpOrgTags); //helper method for PyDataObject_init
-
+        static bool PyDataObj_CopyFromDatetimeNpNdArray(PyDataObject *self, PyArrayObject *dateTimeArray, int dims, const int* sizes);
+        static bool PyDataObj_CopyFromTimedeltaNpNdArray(PyDataObject *self, PyArrayObject *timeDeltaArray, int dims, const int* sizes);
 
 
         //-------------------------------------------------------------------------------------------------

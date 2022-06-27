@@ -31,16 +31,7 @@
 #endif
 
 #ifndef Q_MOC_RUN
-    /* includes */
-    //python
-    // see http://vtk.org/gitweb?p=VTK.git;a=commitdiff;h=7f3f750596a105d48ea84ebfe1b1c4ca03e0bab3
-    #if (defined _DEBUG) && (defined WIN32)
-        #undef _DEBUG
-        #include "python/pythonWrapper.h"
-        #define _DEBUG
-    #else
-        #include "python/pythonWrapper.h"
-    #endif
+    #include "python/pythonWrapper.h"
 #endif
 
 #include "../../common/sharedStructures.h"
@@ -55,7 +46,7 @@ namespace ito
     ito::RetVal checkAndSetParamVal(PyObject *pyObj, const ito::Param *defaultParam, ito::ParamBase &outParam, int *set);
     //!< This function is used to print out parameters to a dictionary and the itom-console
     PyObject* printOutParams(const QVector<ito::Param> *params, bool asErr, bool addInfos, const int num, bool printToStdStream = true);
-    PyObject *parseParamMetaAsDict(const ito::ParamMeta *meta);
+    PyObject *parseParamMetaAsDict(const ito::ParamMeta *meta, const ito::Param* param = nullptr);
     void errOutInitParams(const QVector<ito::Param> *params, const int num, const char *reason);
     ito::RetVal parseInitParams(const QVector<ito::Param> *defaultParamListMand, const QVector<ito::Param> *defaultParamListOpt, PyObject *args, PyObject *kwds, QVector<ito::ParamBase> &paramListMandOut, QVector<ito::ParamBase> &paramListOptOut);
     ito::RetVal copyParamVector(const QVector<ito::ParamBase> *paramVecIn, QVector<ito::ParamBase> &paramVecOut);

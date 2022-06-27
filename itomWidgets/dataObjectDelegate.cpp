@@ -29,6 +29,8 @@
 #include "dataObjectModel.h"
 
 #include <qboxlayout.h>
+#include <qcolordialog.h>
+#include <qdatetimeedit.h>
 #include <qitemdelegate.h>
 #include <qlabel.h>
 #include <qspinbox.h>
@@ -228,6 +230,19 @@ QWidget* DataObjectDelegate::createEditor(
     }
     break;
     case ito::tRGBA32: {
+        QColorDialog* colorDialog = new QColorDialog(parent);
+        colorDialog->setOption(QColorDialog::ShowAlphaChannel, true);
+        return colorDialog;
+    }
+    break;
+    case ito::tTimeDelta: {
+        // no editor available for this
+    }
+    break;
+    case ito::tDateTime: {
+        QDateTimeEdit* dte = new QDateTimeEdit(parent);
+        dte->setCalendarPopup(true);
+        return dte;
     }
     break;
     }
@@ -293,6 +308,15 @@ void DataObjectDelegate::setEditorData(QWidget* editor, const QModelIndex& index
     }
     break;
     case ito::tRGBA32: {
+        QColorDialog* colorDialog = static_cast<QColorDialog*>(editor);
+        QColor color = model->data(index, Qt::EditRole).value<QColor>();
+        colorDialog->setCurrentColor(color);
+    }
+    break;
+    case ito::tDateTime: {
+        QDateTimeEdit* dte = static_cast<QDateTimeEdit*>(editor);
+        QDateTime dt = model->data(index, Qt::EditRole).value<QDateTime>();
+        dte->setDateTime(dt);
     }
     break;
     }
@@ -355,6 +379,18 @@ void DataObjectDelegate::setModelData(
             QVariant::fromValue<ito::complex128>(
                 ito::complex128(realSpinBox->value(), imagSpinBox->value())),
             Qt::EditRole);
+    }
+    break;
+    case ito::tRGBA32: {
+        QColorDialog* colorDialog = static_cast<QColorDialog*>(editor);
+        QColor color = colorDialog->currentColor();
+        model->setData(index, color, Qt::EditRole);
+    }
+    break;
+    case ito::tDateTime: {
+        QDateTimeEdit* dte = static_cast<QDateTimeEdit*>(editor);
+        QDateTime datetime = dte->dateTime();
+        model->setData(index, datetime, Qt::EditRole);
     }
     break;
     }

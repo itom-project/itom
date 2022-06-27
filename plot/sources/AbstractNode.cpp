@@ -659,7 +659,7 @@ RetVal AbstractNode::updateChannels(const QList<QString> &outputParamNames)
     QList<QSharedPointer<ito::Channel> > channelList;
     int nrProcessedChannels = 0;
 
-    dumpChannels(d->m_channels, this, "update channels start.");
+    //dumpChannels(d->m_channels, this, "update channels start.");
 
     // Iterate over all channels and check if they are outputs from this node and whose senderParam name is within the given list
     foreach(QSharedPointer<ito::Channel> channel, d->m_channels)
@@ -676,7 +676,7 @@ RetVal AbstractNode::updateChannels(const QList<QString> &outputParamNames)
         }
     }
 
-    dumpChannels(d->m_channels, this, "update channels after update");
+    //dumpChannels(d->m_channels, this, "update channels after update");
 
     if (retVal.containsError())
     {

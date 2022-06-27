@@ -1,7 +1,6 @@
 import sys
 
-pyversion = "%i.%i" % \
-    (sys.version_info.major, sys.version_info.minor)
+pyversion = (sys.version_info.major, sys.version_info.minor)
 
 
 import unittest
@@ -14,13 +13,14 @@ import dataobject_multiplication
 import dataobject_np_conversion
 import dataobject_makecontinuous
 import dataobject_scale_offset
+import dataobject_datetime
 import datatype_conversion_test
 import pointcloud_pickle
 import idc_test
 import plot_test
 import shape_test
 import multichannel_test
-if pyversion >= "3.6":
+if pyversion >= (3, 6):
     import itom_stubs_generator
     import itom_algorithm_stubs_generator
     import itom_jedilib
@@ -37,13 +37,15 @@ def suite():
     suite.addTest(unittest.makeSuite(dataobject_np_conversion.DataObjectNpConversion))
     suite.addTest(unittest.makeSuite(dataobject_makecontinuous.DataObjectMakeContinuous))
     suite.addTest(unittest.makeSuite(dataobject_scale_offset.DataObjectScaleOffset))
+    suite.addTest(unittest.makeSuite(dataobject_datetime.DataObjectDatetime))
     suite.addTest(unittest.makeSuite(plot_test.PlotTest))
     suite.addTest(unittest.makeSuite(shape_test.ShapeTest))
     suite.addTest(unittest.makeSuite(datatype_conversion_test.DatatypeConversionTest))
-suite.addTest(unittest.makeSuite(pointcloud_pickle.PointCloudPickle))
-suite.addTest(unittest.makeSuite(idc_test.IdcTest))    suite.addTest(unittest.makeSuite(multichannel_test.MultiChannelDummyGrabberTest))
+    suite.addTest(unittest.makeSuite(pointcloud_pickle.PointCloudPickle))
+    suite.addTest(unittest.makeSuite(idc_test.IdcTest))     
+    suite.addTest(unittest.makeSuite(multichannel_test.MultiChannelDummyGrabberTest))
     
-    if pyversion >= "3.6":
+    if pyversion >= (3, 6):
         suite.addTest(unittest.makeSuite(itom_stubs_generator.ItomStubsGenTest))
         suite.addTest(unittest.makeSuite(itom_jedilib.ItomJediLibTest))
         suite.addTest(unittest.makeSuite(itom_algorithm_stubs_generator.ItomAlgorithmsStubsGenTest))

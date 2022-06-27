@@ -1048,26 +1048,44 @@ shape \n\
         }
         else
         {
-            const QPolygonF &contour = self->shape->contour();
-
             switch (self->shape->type())
             {
-            case Shape::Point:
-                result = PyUnicode_FromFormat("shape(Point, (%f, %f), index: %i)", contour[0].x(), contour[0].y(), self->shape->index());
-                break;
-            case Shape::Line:
-                result = PyUnicode_FromFormat("shape(Line, (%f, %f) - (%f, %f), index: %i)", contour[0].x(), contour[0].y(), contour[1].x(), contour[1].y(), self->shape->index());
-                break;
-            case Shape::Rectangle:
+            case Shape::Point: {
+                QPointF p = self->shape->centerPoint();
                 result = PyUnicode_FromFormat(
-                    QString("shape(Rectangle, (%1, %2) - (%3, %4), index: %5)").arg(contour[0].x()).arg(contour[0].y()).arg(contour[2].x()).arg(contour[2].y()).arg(self->shape->index()).toLatin1().data());
+                    "shape(Point, (%f, %f), index: %i)", p.x(), p.y(), self->shape->index());
+            }
+            break;
+            case Shape::Line: {
+                const QPolygonF& contour = self->shape->contour();
+                result = PyUnicode_FromFormat(
+                    "shape(Line, (%f, %f) - (%f, %f), index: %i)",
+                    contour[0].x(),
+                    contour[0].y(),
+                    contour[1].x(),
+                    contour[1].y(),
+                    self->shape->index());
+            }
+            break;
+            case Shape::Rectangle: {
+                const QPolygonF& contour = self->shape->contour();
+                result =
+                    PyUnicode_FromFormat(QString("shape(Rectangle, (%1, %2) - (%3, %4), index: %5)")
+                                             .arg(contour[0].x())
+                                             .arg(contour[0].y())
+                                             .arg(contour[2].x())
+                                             .arg(contour[2].y())
+                                             .arg(self->shape->index())
+                                             .toLatin1()
+                                             .data());
+            }
                 break;
             case Shape::Square:
             {
-                QPointF p = contour[0] + contour[2];
+                QPointF p = self->shape->centerPoint();
                 QPointF s = base[1] - base[0];
                 result = PyUnicode_FromFormat(
-                    QString("shape(Square, center (%1, %2), l: %3, index: %4)").arg(p.rx() / 2).arg(p.ry() / 2).arg(s.rx() / 2).arg(self->shape->index()).toLatin1().data());
+                    QString("shape(Square, center (%1, %2), l: %3, index: %4)").arg(p.rx()).arg(p.ry()).arg(s.rx() / 2).arg(self->shape->index()).toLatin1().data());
             }
                 break;
             case Shape::Polygon:
@@ -1075,18 +1093,18 @@ shape \n\
                 break;
             case Shape::Ellipse:
             {
-                QPointF p = contour[0] + contour[2];
+                QPointF p = self->shape->centerPoint();
                 QPointF s = base[1] - base[0];
                 result = PyUnicode_FromFormat(
-                    QString("shape(Ellipse, center (%1, %2), (a=%3, b=%4), index: %5)").arg(p.rx() / 2).arg(p.ry() / 2).arg(s.rx() / 2).arg(s.ry() / 2).arg(self->shape->index()).toLatin1().data());
+                    QString("shape(Ellipse, center (%1, %2), (a=%3, b=%4), index: %5)").arg(p.rx()).arg(p.ry()).arg(s.rx() / 2).arg(s.ry() / 2).arg(self->shape->index()).toLatin1().data());
             }
                 break;
             case Shape::Circle:
             {
-                QPointF p = contour[0] + contour[2];
+                QPointF p = self->shape->centerPoint();
                 QPointF s = base[1] - base[0];
                 result = PyUnicode_FromFormat(
-                    QString("shape(Circle, center (%1, %2), l: %3, index: %4)").arg(p.rx() / 2).arg(p.ry() / 2).arg(s.rx() / 2).arg(self->shape->index()).toLatin1().data());
+                    QString("shape(Circle, center (%1, %2), l: %3, index: %4)").arg(p.rx()).arg(p.ry()).arg(s.rx() / 2).arg(self->shape->index()).toLatin1().data());
             }
                 break;
             case Shape::Invalid:
@@ -2157,7 +2175,7 @@ PyObject* PythonShape::PyShape_getArea(PyShape *self, void * /*closure*/)
 //-------------------------------------------------------------------------------------
 PyDoc_STRVAR(shape_rotateDeg_doc, "rotateDeg(angle) \n\
 \n\
-Rotate shape by given angle in radians around the center point of this shape \n\
+Rotate shape by given angle in degrees around the center point of this shape \n\
 (counterclockwise). This method only affects the :attr:`transform` matrix, not the \n\
 base points themselfs. \n\
 \n\

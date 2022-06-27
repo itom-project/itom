@@ -114,7 +114,7 @@ for |itom| (comments after the hash-tag should not be copied to the command line
     sudo apt update && sudo apt-get install build-essential
     sudo apt install libopencv-dev python3-opencv #make sure opencv and pythonbindings are consistent. 
     sudo apt install libv4l-dev #this is optional to get the video for linux drivers
-    sudo apt install xsdcxx libxerces-c3.1 libxerces-c-dev #this is optional to being able to compile the x3p plugin
+    sudo apt install xsdcxx libxerces-c3.2 libxerces-c-dev #this is optional to being able to compile the x3p plugin
     
 In almost one line, the packages above are equal to:
     
