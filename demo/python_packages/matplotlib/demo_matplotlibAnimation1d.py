@@ -4,17 +4,17 @@
 This example demonstrates how matplotlib can be used to create 
 animated movie and export these in the mp4 movie format. 
 It is shown here with some random generated 2d images, which ware plotted via matplotlib. 
-By using the figure handle the animation is created. So you can plot your matplot figures in your own way 
-and used some similar syntax to create an animation. 
+By using the figure handle the animation is created. So you can plot your matplot
+figures in your own way and used some similar syntax to create an animation. 
 
-First of all you must install the matplotlib package:
-http://www.lfd.uci.edu/~gohlke/pythonlibs/#matplotlib
+First of all you must install the matplotlib package, e.g. from
+https://pypi.org/project/matplotlib/
 
 Then you must install the ffmpeg codec. A detailed description can be found on: 
-http://www.adaptivesamples.com/how-to-install-ffmpeg-on-windows
+http://blog.gregzaal.com/how-to-install-ffmpeg-on-windows/
 
 The build version of the ffmpeg codec can be downloaded here: 
-https://www.gyan.dev/ffmpeg/builds/
+http://ffmpeg.zeranoe.com/builds/
 
 Download and unzip the builds files to your harddrive. Typically the folder is like: 
 C:\\Program files\\ffmpeg
@@ -62,5 +62,7 @@ ani = animation.FuncAnimation(
 #     writer = animation.FFMpegWriter(
 #     fps=15, metadata=dict(artist='Me'), bitrate=1800)
 #     ani.save("movie.mp4", writer=writer)
+#
+# Please consider that this requires the ffmpeg installed on your computer.
 
 plt.show()
