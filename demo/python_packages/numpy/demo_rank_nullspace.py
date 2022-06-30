@@ -84,21 +84,25 @@ def nullspace(A: ArrayLike, atol: float = 1e-13, rtol: int = 0) -> ArrayLike:
 ###############################################################################
 # Function to check rank and nullspace of the matrix. 
 
-def checkit(a):
-    print("a:")
-    print(a)
-    r = rank(a)
+def checkit(mat):
+    """This method calculates the rank and nullspace of matrix mat. The results
+    are printed."""
+    print("mat:")
+    print(mat)
+    r = rank(mat)
     print("rank is", r)
-    ns = nullspace(a)
+    ns = nullspace(mat)
     print("nullspace:")
     print(ns)
     if ns.size > 0:
-        res = np.abs(np.dot(a, ns)).max()
+        res = np.abs(np.dot(mat, ns)).max()
         print("max residual is", res)
 
 
 print("-" * 25)
 
+# checks rank and nulllspace of a. The rank is limited since the 3rd row
+# is equal to 2x the 2nd row minus 1x the 1st row.
 a = np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]])
 checkit(a)
 
@@ -106,16 +110,19 @@ b = 2
 
 print("-" * 25)
 
+# full rank matrix
 a = np.array([[0.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]])
 checkit(a)
 
 print("-" * 25)
 
+# the rank is 2 since the matrix has only two rows
 a = np.array([[0.0, 1.0, 2.0, 4.0], [1.0, 2.0, 3.0, 4.0]])
 checkit(a)
 
 print("-" * 25)
 
+# check the rank and nullspace of a complex matrix
 a = np.array(
     [
         [1.0, 1.0j, 2.0 + 2.0j],
