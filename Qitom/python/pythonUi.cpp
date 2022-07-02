@@ -129,7 +129,7 @@ uiItem \n\
     is the new :class:`uiItem` object that wraps the indicated widget or layout. \n\
 \n\
 Notes \n\
------- \n\
+----- \n\
 It is not intended to directly instantiate this class. Either create a user interface \n\
 using the class :class:`ui` or obtain a reference to an existing widget (this is then \n\
 an instance of :class:`uiItem`) using the dot-operator of a parent widget or the entire \n\
@@ -255,7 +255,7 @@ Qt framework. \n\
 New in itom 4.1. \n\
 \n\
 Returns \n\
------------ \n\
+------- \n\
 className : str \n\
     The class name of this :class:`uiItem`.");
 PyObject* PythonUi::PyUiItem_getClassName(PyUiItem *self)
@@ -477,7 +477,7 @@ Information about all possible slots of this :class:`uiItem` can be obtained by 
 official Qt help or the method :meth:`uiItem.info`. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 publicSlotName : str \n\
     name of the public slot or a specially wrapped slot of the widget or layout. \n\
 *args : Any, optional\n\
@@ -486,7 +486,7 @@ publicSlotName : str \n\
     (see section :ref:`qtdesigner-datatypes`).\n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 info");
 PyObject* PythonUi::PyUiItem_call(PyUiItem *self, PyObject* args)
 {
@@ -772,7 +772,7 @@ function to a certain minimum time interval. This can be given by the ``minRepea
 parameter. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 signalSignature : str \n\
     This must be the valid signature, known from the Qt-method *connect* \n\
     (e.g. ``targetChanged(QVector<double>)``) \n\
@@ -793,7 +793,7 @@ operation has finished. For these cases it is recommenden to connect the trigger
 signal (e.g. `clicked()`) by the :meth:`invokeKeyboardInterrupt` method. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 disconnect, info, invokeKeyboardInterrupt");
 PyObject* PythonUi::PyUiItem_connect(PyUiItem *self, PyObject* args, PyObject *kwds)
 {
@@ -894,13 +894,13 @@ immediately raise the Python interrupt signal, use this method to establish the 
 connection instead of the :meth:`uiItem.connect` command. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 signalSignature : str \n\
     This must be the valid signature, known from the Qt-method *connect* \n\
     (e.g. 'clicked(bool)') \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 connect, invokeProgressObserverCancellation");
 PyObject* PythonUi::PyUiItem_connectKeyboardInterrupt(PyUiItem *self, PyObject* args, PyObject *kwds)
 {
@@ -965,7 +965,7 @@ For more information about the class :class:`requestCancellation`, see also this
 section: :ref:`filter_interruptible`. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 signalSignature : str \n\
     This must be the valid signature, known from the Qt-method *connect* \n\
     (e.g. 'clicked(bool)') \n\
@@ -974,7 +974,7 @@ observer : progressObserver \n\
     to the slot ``requestCancellation`` of this progressObserver.\n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 connect, invokeKeyboardInterrupt");
 PyObject* PythonUi::PyUiItem_connectProgressObserverInterrupt(PyUiItem *self, PyObject* args, PyObject *kwds)
 {
@@ -1043,7 +1043,7 @@ PyDoc_STRVAR(PyUiItemDisconnect_doc, "disconnect(signalSignature, callableMethod
 Disconnects a connection which must have been established before with exactly the same parameters.\n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 signalSignature : str \n\
     This must be the valid signature, known from the Qt-method *connect* \n\
     (e.g. ``clicked(bool)``) \n\
@@ -1052,7 +1052,7 @@ callableMethod : callable \n\
     given signal is emitted. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 connect, info");
 PyObject* PythonUi::PyUiItem_disconnect(PyUiItem *self, PyObject* args, PyObject *kwds)
 {
@@ -1150,7 +1150,7 @@ property, its value is returned as it is. If the property names are passed as se
 a list of same size is returned with the corresponding values. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 propertyName : str or list of str or tuple of str \n\
     Name of one property or sequence (tuple, list...) of property names. \n\
 \n\
@@ -1161,7 +1161,7 @@ value : Any or list of Any \n\
     is given as parameter. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 setProperty");
 PyObject* PythonUi::PyUiItem_getProperties(PyUiItem *self, PyObject *args)
 {
@@ -1274,13 +1274,13 @@ Each property in the ``propertyDict`` is set to the dictionaries value. \n\
 As an alternative, a single property can also be set using the operator []. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 propertyDict : dict\n\
     Dictionary with properties (the keys are the property names) and the values \n\
     that should be set.\n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 getProperty");
 PyObject* PythonUi::PyUiItem_setProperties(PyUiItem *self, PyObject *args)
 {
@@ -1374,7 +1374,7 @@ The structure of this dictionary is as follows: \n\
 * **constant**: ``True`` if this property is constant, otherwise ``False``.\n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 propertyName : str, optional \n\
     The name of the property whose detailed information should be returned or \n\
     ``None``, if a list of all property names should be returned. \n\
@@ -1501,7 +1501,7 @@ Important attributes are: \n\
 * Qt::WA_MouseTracking (2) -> indicates that the widget has mouse tracking enabled \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 attributeNumber : int \n\
     Number of the attribute of the widget to query (see Qt enumeration \n\
     ``Qt::WidgetAttribute``) \n\
@@ -1512,7 +1512,7 @@ bool \n\
     ``True`` if attribute is set (enabled), otherwise ``False``. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 setAttribute");
 PyObject* PythonUi::PyUiItem_getAttribute(PyUiItem *self, PyObject *args)
 {
@@ -1589,14 +1589,14 @@ Important attributes are: \n\
 * Qt::WA_MouseTracking (2) -> indicates that the widget has mouse tracking enabled. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 attributeNumber : int \n\
     Number of the attribute of the widget to set (enum ``Qt::WidgetAttribute``). \n\
 value : bool \n\
     ``True`` if attribute should be enabled, else ``False``. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 getAttribute");
 PyObject* PythonUi::PyUiItem_setAttribute(PyUiItem *self, PyObject *args)
 {
@@ -1688,12 +1688,12 @@ Further hints can be (among others): \n\
   close button \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 flags : int \n\
     window flags to set (or-combination, see ``Qt::WindowFlags``). \n\
 \n\
 See Also \n\
----------- \n\
+-------- \n\
 getWindowFlags");
 PyObject* PythonUi::PyUiItem_setWindowFlags(PyUiItem *self, PyObject *args)
 {
@@ -1754,13 +1754,13 @@ The returned ``flags`` value is an or-combination, hence bitmask, of enumeration
 values of the Qt enumeration ``Qt::WindowType``. \n\
 \n\
 Returns \n\
--------- \n\
+------- \n\
 flags : int \n\
     or-combination of ``Qt::WindowType`` describing the type and further hints \n\
     of the referenced widget. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 setWindowFlags");
 PyObject* PythonUi::PyUiItem_getWindowFlags(PyUiItem *self)
 {
@@ -1810,7 +1810,7 @@ PyDoc_STRVAR(PyUiItemInfo_doc,"info(verbose = 0) \n\
 Prints information about properties, public accessible slots and signals of the wrapped widget. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 verbose : int \n\
     * ``0``: only properties, slots and signals that do not come from Qt-classes are \n\
       printed (default) \n\
@@ -1957,7 +1957,7 @@ Qt class name (see :meth:`getClassName`). \n\
 Child items without valid ``objectName`` are not contained in the returned dict. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 recursive : bool \n\
     ``True``: all objects including sub-widgets of widgets are returned, \n\
     ``False``: only children of this :class:`uiItem` are returned (default). \n\
@@ -2040,7 +2040,7 @@ Returns the uiItem of the child widget with the given ``widgetName``. \n\
 This call is equal to ``self.widgetName``, where ``self`` is this :class:`uiItem`. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 widgetName : str \n\
     ``objectName`` of the requested child widget or layout. \n\
 \n\
@@ -2483,7 +2483,7 @@ buttons for instance with the ``accept()`` or ``reject()`` slot of the dialog by
 For more information see also the section :ref:`qtdesigner` of the user documentation. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 filename : str \n\
     path to the user interface file (.ui), absolute or relative to current directory. \n\
 type : int, optional \n\
@@ -2764,14 +2764,14 @@ PyDoc_STRVAR(pyUiShow_doc,"show(modal = 0) -> Optional[int] \n\
 Shows the window or dialog. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 modal : int, optional \n\
     * 0: non-modal, the opened GUI does not block other windows of itom (default)\n\
     * 1: modal (python waits until dialog is hidden)\n\
     * 2: modal (python returns immediately)\n\
 \n\
 Returns \n\
----------- \n\
+------- \n\
 None or int \n\
     Usually the value -1 is returned. Only if a dialog is shown with ``modal = 1``, \n\
     the exit code of the shown dialog is returned, once this dialog is closed again. \n\
@@ -2780,7 +2780,7 @@ None or int \n\
     via the close icon in its title bar. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 hide");
 PyObject* PythonUi::PyUi_show(PyUi *self, PyObject *args)
 {
@@ -2858,7 +2858,7 @@ Hides the user interface reference by this ui object. \n\
 A hidden window or dialog can be shown again via the method :py:meth:`show`.\n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 show");
 PyObject* PythonUi::PyUi_hide(PyUi *self)
 {
@@ -3005,7 +3005,7 @@ Shows a dialog to get a float value from the user. \n\
 For more information, see also the section :ref:`msgInputBoxes` of the documentation. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 title : str\n\
     is the title of the dialog. \n\
 label : str \n\
@@ -3030,7 +3030,7 @@ success : bool \n\
     ``True`` if the dialog has been accepted, otherwise ``False``. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 getInt, getText, getItem");
 PyObject* PythonUi::PyUi_getDouble(PyUi * /*self*/, PyObject *args, PyObject *kwds)
 {
@@ -3132,7 +3132,7 @@ Shows a dialog to get an integer value from the user. \n\
 For more information, see also the section :ref:`msgInputBoxes` of the documentation. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 title : str\n\
     is the title of the dialog. \n\
 label : str\n\
@@ -3157,7 +3157,7 @@ success : bool \n\
     ``True`` if the dialog has been accepted, otherwise ``False``. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 getDouble, getText, getItem");
 PyObject* PythonUi::PyUi_getInt(PyUi * /*self*/, PyObject *args, PyObject *kwds)
 {
@@ -3274,7 +3274,7 @@ Shows a dialog to let the user select an item from a string list. \n\
 For more information, see also the section :ref:`msgInputBoxes` of the documentation. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 title : str \n\
     is the title of the dialog.\n\
 label : str \n\
@@ -3297,7 +3297,7 @@ success : bool \n\
     ``True`` if the dialog has been accepted, otherwise ``False``. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 getInt, getDouble, getText");
 PyObject* PythonUi::PyUi_getItem(PyUi * /*self*/, PyObject *args, PyObject *kwds)
 {
@@ -3441,7 +3441,7 @@ Opens a dialog to ask the user for a string value. \n\
 For more information, see also the section :ref:`msgInputBoxes` of the documentation. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 title : str \n\
     is the title of the dialog. \n\
 label : str \n\
@@ -3460,7 +3460,7 @@ success : bool \n\
     ``True`` if dialog has been accepted, otherwise ``False``. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 getInt, getDouble, getItem");
 PyObject* PythonUi::PyUi_getText(PyUi * /*self*/, PyObject *args, PyObject *kwds)
 {
@@ -3578,7 +3578,7 @@ Opens an information message box. \n\
 For more information, see also the section :ref:`msgInputBoxes` of the documentation. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 title : str \n\
     is the title of the message box. \n\
 text : str \n\
@@ -3601,7 +3601,7 @@ buttonText : str \n\
     caption of the button that has been clicked to close the message box. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 msgCritical, msgQuestion, msgWarning");                                  
 PyObject* PythonUi::PyUi_msgInformation(PyUi *self, PyObject *args, PyObject *kwds)
 {
@@ -3616,7 +3616,7 @@ Opens a question message box. \n\
 For more information, see also the section :ref:`msgInputBoxes` of the documentation. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 title : str \n\
     is the title of the message box. \n\
 text : str \n\
@@ -3639,7 +3639,7 @@ buttonText : str \n\
     caption of the button that has been clicked to close the message box. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 msgCritical, msgWarning, msgInformation");
 PyObject* PythonUi::PyUi_msgQuestion(PyUi *self, PyObject *args, PyObject *kwds)
 {
@@ -3654,7 +3654,7 @@ Opens a warning message box. \n\
 For more information, see also the section :ref:`msgInputBoxes` of the documentation. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 title : str \n\
     is the title of the message box. \n\
 text : str \n\
@@ -3677,7 +3677,7 @@ buttonText : str \n\
     caption of the button that has been clicked to close the message box. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 msgCritical, msgQuestion, msgInformation");
 PyObject* PythonUi::PyUi_msgWarning(PyUi *self, PyObject *args, PyObject *kwds)
 {
@@ -3692,7 +3692,7 @@ Opens a critical message box. \n\
 For more information, see also the section :ref:`msgInputBoxes` of the documentation. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 title : str \n\
     is the title of the message box. \n\
 text : str \n\
@@ -3715,7 +3715,7 @@ buttonText : str \n\
     caption of the button that has been clicked to close the message box. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 msgWarning, msgQuestion, msgInformation");
 PyObject* PythonUi::PyUi_msgCritical(PyUi *self, PyObject *args, PyObject *kwds)
 {
@@ -3834,7 +3834,7 @@ Opens a dialog to choose an existing directory. \n\
 For more information, see also the section :ref:`msgInputBoxes` of the documentation. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 caption : str \n\
     is the caption of this dialog. \n\
 startDirectory : str \n\
@@ -3857,7 +3857,7 @@ directory : None or str \n\
     has been rejected. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 getSaveFileName, getOpenFileName");
 PyObject* PythonUi::PyUi_getExistingDirectory(PyUi * /*self*/, PyObject *args, PyObject *kwds)
 {
@@ -3948,7 +3948,7 @@ names used for opening these files. \n\
 For more information, see also the section :ref:`msgInputBoxes` of the documentation. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 caption : str, optional \n\
     This is the title of the dialog. \n\
 startDirectory : str, optional \n\
@@ -3971,7 +3971,7 @@ selectedFileNames : None or list of str \n\
     The selected file pathes or ``None`` if the dialog has been aborted. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 getOpenFileName, getSaveFileName"); 
 PyObject* PythonUi::PyUi_getOpenFileNames(PyUi * /*self*/, PyObject *args, PyObject *kwds)
 {
@@ -4086,7 +4086,7 @@ This method creates a modal file dialog to let the user select a file name used 
 For more information, see also the section :ref:`msgInputBoxes` of the documentation. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 caption : str, optional \n\
     This is the title of the dialog. \n\
 startDirectory : str, optional \n\
@@ -4109,7 +4109,7 @@ selectedFileName : None or str \n\
     The selected file path or ``None`` if the dialog has been aborted. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 getOpenFileNames, getSaveFileName");
 PyObject* PythonUi::PyUi_getOpenFileName(PyUi * /*self*/, PyObject *args, PyObject *kwds)
 {
@@ -4225,7 +4225,7 @@ This method creates a modal file dialog to let the user select a file name used 
 For more information, see also the section :ref:`msgInputBoxes` of the documentation. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 caption : str, optional \n\
     This is the title of the dialog. \n\
 startDirectory : str, optional \n\
@@ -4248,7 +4248,7 @@ selectedFileName : None or str \n\
     The selected file path or ``None`` if the dialog has been aborted. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 getOpenFileName");
 PyObject* PythonUi::PyUi_getSaveFileName(PyUi * /*self*/, PyObject *args, PyObject *kwds)
 {
@@ -4381,7 +4381,7 @@ for the windows appearance: \n\
 If you want to have other default parameters than these ones, call :meth:`createNewPluginWidget2`. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 widgetName : str \n\
     Name of algorithm widget method. \n\
 *args \n\
@@ -4410,7 +4410,7 @@ parameterize behaviours like the ``deleteOnClose`` flag. This can however be don
 :meth:`setAttribute`. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 createNewPluginWidget2, widgetHelp");
 PyObject* PythonUi::PyUi_createNewAlgoWidget(PyUi * /*self*/, PyObject *args, PyObject *kwds)
 {
@@ -4578,7 +4578,7 @@ initialize such an user-interface and returns its corresponding :class:`ui` obje
 For a list of available widget methods, see :meth:`widgetHelp`. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 widgetName : str \n\
     Name of algorithm widget method. \n\
 paramsArgs : tuple \n\
@@ -4649,7 +4649,7 @@ parameterize behaviours like the ``deleteOnClose`` flag. This can however be don
 :meth:`setAttribute`. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 createNewPluginWidget, widgetHelp");
 PyObject* PythonUi::PyUi_createNewAlgoWidget2(PyUi * /*self*/, PyObject *args, PyObject *kwds)
 {

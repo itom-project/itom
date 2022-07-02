@@ -174,7 +174,7 @@ attribute. This attribute is then read and used as path. \n\
 The relative filename is relative with respect to the current directory. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 filename : str or Any \n\
     Relative or absolute filename to a python script that is then opened \n\
     (in the current editor window). Alternatively an object with a \n\
@@ -272,7 +272,7 @@ The user documentation is shown in the help viewer window. If ``collectionFile``
 is given, this user-defined collection file is displayed in this help viewer.\n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 collectionFile : str, optional \n\
 	If given, the indicated Qt collection file (.qch) will be loaded in the help viewer.\n\
     Per default, the user documentation is loaded (pass an empty string or nothing).");
@@ -341,7 +341,7 @@ of the corresponding :class:`~itom.uiItem` instance. \n\
 Use the ``properties`` argument to pass a :obj:`dict` with properties you want to set. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 data : dataObject or pointCloud or polygonMesh \n\
     Is the data object, point cloud or polygonal mesh, that will be plotted.\n\
 className : str, optional \n\
@@ -353,7 +353,7 @@ properties : dict, optional \n\
     optional dictionary of properties that will be directly applied to the plot widget. \n\
 \n\
 Returns \n\
--------- \n\
+------- \n\
 index : int \n\
     This index is the figure index of the plot figure that is opened by this command. Use \n\
     ``figure(index)`` to get a reference to the figure window of this plot. The plot can \n\
@@ -363,7 +363,7 @@ plotHandle : plotItem \n\
     its signals or call slots of the plot. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 liveImage, plotItem, plot1, plot2, plot25");
 PyObject* PythonItom::PyPlotImage(PyObject* /*pSelf*/, PyObject* pArgs, PyObject* pKwds)
 {
@@ -549,7 +549,7 @@ embedded in a GUI), or by the property toolbox in the plot itself or by using th
 Use the ``properties`` argument to pass a dictionary with properties you want to set. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 data : dataObject \n\
     Is the :class:`dataObject` whose region of interest will be plotted.\n\
 xData : dataObject, optional \n\
@@ -561,7 +561,7 @@ properties : dict, optional \n\
     optional dictionary of properties that will be directly applied to the plot widget. \n\
 \n\
 Returns \n\
--------- \n\
+------- \n\
 index : int \n\
     This index is the figure index of the plot figure that is opened by this command. \n\
     Use ``figure(index)`` to get a reference to the figure window of this plot. The \n\
@@ -571,7 +571,7 @@ plotHandle : plotItem \n\
     connect signals to it or call slots of the plot. \n\
 \n\
 See Also \n\
----------- \n\
+-------- \n\
 liveImage, plotItem, plot, plot2, plot25");
 
 //-------------------------------------------------------------------------------------
@@ -780,7 +780,7 @@ Use the ``properties`` argument to pass a dictionary with properties you want to
 to certain values. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 data : dataObject \n\
     Is the :class:`dataObject` whose region of interest will be plotted.\n\
 className : str, optional \n\
@@ -790,7 +790,7 @@ properties : dict, optional \n\
     optional dictionary of properties that will be directly applied to the plot widget. \n\
 \n\
 Returns \n\
--------- \n\
+------- \n\
 index : int \n\
     This index is the figure index of the plot figure that is opened by this command. \n\
     Use ``figure(index)`` to get a reference to the figure window of this plot. The \n\
@@ -800,7 +800,7 @@ plotHandle : plotItem \n\
     connect signals to it or call slots of the plot. \n\
 \n\
 See Also \n\
----------- \n\
+-------- \n\
 liveImage, plotItem, plot, plot1, plot25");
 
 //-------------------------------------------------------------------------------------
@@ -998,7 +998,7 @@ Use the ``properties`` argument to pass a dictionary with properties you want to
 desired values. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 data : dataObject or pointCloud or polygonMesh \n\
     is the object, that is plotted.\n\
 className : str, optional \n\
@@ -1008,7 +1008,7 @@ properties : dict, optional \n\
     optional dictionary of properties that will be directly applied to the plot widget. \n\
 \n\
 Returns \n\
--------- \n\
+------- \n\
 index : int \n\
     This index is the figure index of the plot figure that is opened by this command. \n\
     Use ``figure(index)`` to get a reference to the figure window of this plot. The \n\
@@ -1018,7 +1018,7 @@ plotHandle : plotItem \n\
     connect signals to it or call slots of the plot. \n\
 \n\
 See Also \n\
----------- \n\
+-------- \n\
 liveImage, plotItem, plot, plot1, plot2");
 
 //-------------------------------------------------------------------------------------
@@ -1227,7 +1227,7 @@ Use the ``properties`` argument to pass a dictionary with properties you want to
 certain values. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 cam : dataIO \n\
     Camera grabber device from which images are acquired.\n\
 className : str, optional \n\
@@ -1237,7 +1237,7 @@ properties : dict, optional \n\
     optional dictionary of properties that will be directly applied to the plot widget. \n\
 \n\
 Returns \n\
--------- \n\
+------- \n\
 index : int \n\
     This index is the figure index of the plot figure that is opened by this command. \n\
     Use ``figure(index)`` to get a reference to the figure window of this plot. The \n\
@@ -1247,7 +1247,7 @@ plotHandle : plotItem \n\
     connect signals to it or call slots of the plot. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 plot, plotItem, plot1, plot2, plot25");
 PyObject* PythonItom::PyLiveImage(PyObject* /*pSelf*/, PyObject* pArgs, PyObject* pKwds)
 {
@@ -1945,7 +1945,7 @@ is printed or returned. Else, a list of filters is printed whose name contains t
 given ``filterName``.\n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 filterName : str, optional \n\
     is the fullname or a part of any filter name which should be displayed. \n\
     If ``filterName`` is empty or no filter matches ``filterName`` (case sensitive) \n\
@@ -1985,7 +1985,7 @@ is printed or returned. Else, a list of widgets is printed whose name contains t
 given ``widgetName``.\n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 widgetName : str, optional \n\
     is the fullname or a part of any widget name which should be displayed. \n\
     If ``widgetName`` is empty or no widget matches ``widgetName`` (case sensitive) \n\
@@ -2019,7 +2019,7 @@ This method checks if a specified plugin is loaded and returns ``True`` if \n\
 this is the case, otherwise ``False``. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 pluginName :  str \n\
     The name of a specified plugin as usually displayed in the plugin window.\n\
 \n\
@@ -2076,7 +2076,7 @@ This method checks if a specified plot widget is available and loaded and \n\
 returns ``True`` in case of success, otherwise ``False``. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 plotName :  str \n\
     The name of a specified plot widget as displayed in the itom property dialog. \n\
 \n\
@@ -2131,7 +2131,7 @@ The output of this method depend on the content of the argument ``plotName``: \n
   are printed to the command line or returned as nested dictionary structure. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 plotName : str \n\
     See the description above. This value can either be an empty string or a star (``*``) \n\
     or the name of a plot designer plugin class. \n\
@@ -2595,7 +2595,7 @@ by this method, are the name of the plugin, its version, its type, contained fil
 (in case of an algorithm) or the description and initialization parameters (otherwise). \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 pluginName : str \n\
     is the fullname of a plugin library as specified in the plugin toolbox.\n\
 dictionary : bool, optional \n\
@@ -2965,7 +2965,7 @@ PyDoc_STRVAR(pyAboutInfo_doc, "aboutInfo(pluginName) -> str \n\
 Returns the `about` information for the given plugin as string.\n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 pluginName : str \n\
     is the name of a plugin library as specified in the plugin toolbox.\n\
 \n\
@@ -2975,7 +2975,7 @@ str \n\
     Returns a string containing the about information. \n\
 \n\
 Raises \n\
-------- \n\
+------ \n\
 RuntimeError \n\
     if ``pluginName`` is an unknown plugin.");
 PyObject* PythonItom::PyAboutInfo(PyObject* /*pSelf*/, PyObject* pArgs, PyObject* pKwds)
@@ -3015,7 +3015,7 @@ PyDoc_STRVAR(
 Retrieves, prints out or returns complete version information of itom (and optionally plugins). \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 dictionary : bool, optional \n\
     If ``True``, all information is returned as nested :class:`dict`. \n\
     Otherwise (default), this information is printed to the command line. \n\
@@ -3315,7 +3315,7 @@ For more information see also the section :ref:`toolbar-addtoolbar` of the docum
 only Python methods and functions. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 toolbarName : str \n\
     The name of the toolbar.\n\
 buttonName : str \n\
@@ -3341,12 +3341,12 @@ handle : int \n\
     exactly this button) \n\
 \n\
 Raises \n\
-------- \n\
+------ \n\
 RuntimeError \n\
     if the main window is not available \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 removeButton");
 PyObject* PythonItom::PyAddButton(PyObject* /*pSelf*/, PyObject* pArgs, PyObject* kwds)
 {
@@ -3486,7 +3486,7 @@ A button can be identified by two different ways: \n\
 For more information see also the section :ref:`toolbar-addtoolbar` of the documentation. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 handle : int \n\
     The handle returned by :meth:`addButton`. \n\
 toolbarName : str \n\
@@ -3497,12 +3497,12 @@ buttonName : str \n\
     all buttons of the given toolbar are removed (including the toolbar itself). \n\
 \n\
 Raises \n\
-------- \n\
+------ \n\
 RuntimeError \n\
     if the main window is not available or the addressed button could not be found. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 addButton");
 PyObject* PythonItom::PyRemoveButton(PyObject* /*pSelf*/, PyObject* pArgs)
 {
@@ -3624,7 +3624,7 @@ format is png). \n\
 For more information see also the section :ref:`toolbar-createmenu` of the documentation. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 type : int \n\
     The type of the menu-element (:attr:`~itom.BUTTON` : 0 [default], \n\
     :attr:`~itom.SEPARATOR` : 1, :attr:`~itom.MENU` : 2). Use the corresponding \n\
@@ -3652,12 +3652,12 @@ handle : int \n\
     handle to delete the item including its child items (for type 'menu'). \n\
 \n\
 Raises \n\
-------- \n\
+------ \n\
 RuntimeError \n\
     if the main window is not available or the given button could not be found. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 removeMenu");
 PyObject* PythonItom::PyAddMenu(PyObject* /*pSelf*/, PyObject* args, PyObject* kwds)
 {
@@ -3875,7 +3875,7 @@ For more information see also the section :ref:`toolbar-createmenu` of the \n\
 documentation.\n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 key : str\n\
     The key (can be a slash-separated list) of the menu entry to remove. If it \n\
     is a slash-separated list, the menu entry is searched down the path, \n\
@@ -3886,12 +3886,12 @@ menuHandle : int \n\
     possible child items). This handle is usually returned by :meth:`addMenu`.\n\
 \n\
 Raises \n\
-------- \n\
+------ \n\
 RuntimeError \n\
     if the main window is not available or the given button could not be found. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 addMenu");
 PyObject* PythonItom::PyRemoveMenu(PyObject* /*pSelf*/, PyObject* args, PyObject* kwds)
 {
@@ -3988,7 +3988,7 @@ PyDoc_STRVAR(pyDumpButtonsAndMenus_doc, "dumpButtonsAndMenus() -> dict \n\
 Gets all user-defined toolbars, menus and its buttons. \n\
 \n\
 Returns \n\
--------- \n\
+------- \n\
 dict \n\
     Dictionary with two top-level entries:: \n\
         \n\
@@ -4046,7 +4046,7 @@ PyDoc_STRVAR(pyCheckSignals_doc, "checkSignals() -> int \n\
 Verifies if a Python interrupt request is currently queued. \n\
 \n\
 Returns \n\
--------- \n\
+------- \n\
 int \n\
     Returns 1 if an interrupt is currently queued, else 0.");
 /*static */ PyObject* PythonItom::PyCheckSignals(PyObject* /*pSelf*/)
@@ -4269,7 +4269,7 @@ checkFctExec : bool \n\
     function or method is run (e.g. by an event or button click) (default: ``False``)\n\
 \n\
 Notes \n\
-------- \n\
+----- \n\
 This tool is inspired by and based on the IPython extension `autoreload`. \n\
 \n\
 Reloading Python modules in a reliable way is in general difficult, \n\
@@ -4411,7 +4411,7 @@ Save strings, numbers, arrays or combinations into a Matlab mat file. \n\
 \n\
 Save one or multiple objects (strings, numbers, arrays, :class:`dataObject`, \n\
 :class:`numpy.ndarray`...) to a Matlab *mat* file. There are the following \n\
-possibilites for saving, depending on the type of ``values``: \n\
+possibilities for saving, depending on the type of ``values``: \n\
 \n\
 * ``values`` is a :class:`dict`: All values in the dictionary are stored under their \n\
   corresponding key. \n\
@@ -4422,7 +4422,7 @@ possibilites for saving, depending on the type of ``values``: \n\
   Then, the items are stored under the self-incremented keys ``matrix1``, ``matrix2``, ... \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 filename : str \n\
     Filename under which the file should be saved (.mat will be appended if not available)\n\
 values : dict or list or tuple or Any \n\
@@ -4687,7 +4687,7 @@ PyDoc_STRVAR(pyLoadMatlabMat_doc, "loadMatlabMat(filename) -> dict \n\
 Loads Matlab mat-file by using :mod:`scipy` methods and returns the loaded dictionary. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 filename : str \n\
     Filename from which the data will be imported (.mat will be added if not available)\n\
 \n\
@@ -4706,7 +4706,7 @@ Notes \n\
 This method requires the package :mod:`scipy` and its module :mod:`scipy.io`. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 saveMatlabMat");
 PyObject* PythonItom::PyLoadMatlabMat(PyObject* /*pSelf*/, PyObject* pArgs)
 {
@@ -4864,7 +4864,7 @@ these algorithms are also available via the direct algorithm wrapper methods in 
 submodule ``itom.algorithms`` (see :ref:`algoAndWidgets`). \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 name : str \n\
     The name of the filter\n\
 *args : Any \n\
@@ -4882,13 +4882,13 @@ _observer : progressObserver, optional \n\
     ``_observer`` is reserved for special use. \n\
 \n\
 Returns \n\
--------- \n\
+------- \n\
 out : obj \n\
     The returned values depend on the definition of each filter. In general it is a \n\
     tuple of all output parameters that are defined by the filter function.\n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 filterHelp");
 PyObject* PythonItom::PyFilter(PyObject* /*pSelf*/, PyObject* pArgs, PyObject* pKwds)
 {
@@ -4925,7 +4925,7 @@ PyObject* PythonItom::PyFilter(PyObject* /*pSelf*/, PyObject* pArgs, PyObject* p
 //-------------------------------------------------------------------------------------
 PyDoc_STRVAR(pySaveDataObject_doc, "saveDataObject(filename, dataObject, tagsAsBinary = False) \n\
 \n\
-Saves a dataObject to the harddrive in a xml-based file format (ido). \n\
+Saves a dataObject to the hard drive in a xml-based file format (ido). \n\
 \n\
 This method writes a :class:`dataObject` into the file specified by ``filename``. \n\
 The data is stored in a binary format within a xml-based structure. \n\
@@ -4934,7 +4934,7 @@ the value of numerical tags are either converted to strings with 15 significant 
 (>32bit) or stored as base64 encoded values. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 filename : str \n\
     absolute or relative file path to the destination file (.ido will be added if \n\
     no valid suffix is given)\n\
@@ -4946,10 +4946,10 @@ tagsAsBinary : bool, optional \n\
 \n\
 Notes \n\
 ----- \n\
-Tagnames which contains special characters might lead to XML-conflics. \n\
+Tagnames which contains special characters might lead to XML-conflicts. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 loadDataObject");
 PyObject* PythonItom::PySaveDataObject(PyObject* /*pSelf*/, PyObject* pArgs, PyObject* pKwds)
 {
@@ -4997,7 +4997,7 @@ This function reads a `dataObject` from the file specified by filename. \n\
 MetaData saveType (string, binary) are extracted from the file and restored within the object.\n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 filename : str \n\
     absolute or relative ido file path to the target file \n\
 dataObject : dataObject \n\
@@ -5069,7 +5069,7 @@ If you speciy a size of 0, the widget will be invisible and can be made visible 
 using this method or by increasing its size again with the mouse. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 sizes : sequence of int \n\
     Sizes in pixel for each central widget from top to bottom (including the command line). \n\
 ");
@@ -5172,7 +5172,7 @@ Use the method :meth:`getDefaultScaleableUnits` to obtain a suitable list of SI 
 base units. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 scaleableUnits : list of str \n\
     A list of str with all base units that should be considered for scaling. \n\
     If the given ''valueUnit'' is not contained in this list of base units, \n\
@@ -5189,7 +5189,7 @@ tuple \n\
     a float and ``newUnit`` is a string. \n\
 \n\
 Examples \n\
---------- \n\
+-------- \n\
 >>> baseUnits = getDefaultScaleableUnits() \n\
 >>> print(scaleValueAndUnit(baseUnits, 0.001, 'm')) \n\
 [1, 'mm']");
@@ -5267,7 +5267,7 @@ PyDoc_STRVAR(getQtToolPath_doc, "getQtToolPath(toolname) -> str \n\
 Gets the absolute path of the given Qt tool \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 toolname : str \n\
     The filename of the tool that should be searched \n\
     (e.g. ``qcollectiongenerator``; suffix is not required)\n\
@@ -5278,7 +5278,7 @@ path : str \n\
     Absolute path to the given Qt tool. \n\
 \n\
 Raises \n\
-------- \n\
+------ \n\
 FileExistsError \n\
     if the given toolname could not be found");
 PyObject* PythonItom::getQtToolPath(PyObject* /*pSelf*/, PyObject* pArgs)
@@ -5318,7 +5318,7 @@ str\n\
     the absolute path of the current working directory \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 setCurrentPath");
 PyObject* PythonItom::getCurrentPath(PyObject* /*pSelf*/)
 {
@@ -5338,7 +5338,7 @@ The current directory is always indicated in the right corner of the status \n\
 bar of the main window. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 newPath : str \n\
     The new path for the current working directory. If a file path is given, \n\
     its base path is used. \n\
@@ -5349,7 +5349,7 @@ success : bool \n\
     ``True`` in case of success else ``False``. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 getCurrentPath");
 PyObject* PythonItom::setCurrentPath(PyObject* /*pSelf*/, PyObject* pArgs)
 {
@@ -5425,7 +5425,7 @@ The compression is done using the zlib library and the command \n\
 `qCompress` of the Qt framework. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 text : str \n\
     The string that should be compressed. \n\
 level : int \n\
@@ -5438,7 +5438,7 @@ compressed_text : bytes \n\
     The compressed version of ``text``. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 uncompressData");
 /*static*/ PyObject* PythonItom::compressData(PyObject* pSelf, PyObject* pArgs)
 {
@@ -5473,7 +5473,7 @@ The uncompression is done using the zlib library and the command \n\
 `qUncompress` of the Qt framework. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 compressed_text : bytes \n\
     The compressed bytes string. \n\
 \n\
@@ -5483,7 +5483,7 @@ uncompressed_text : bytes \n\
     The uncompressed ``compressed_text``. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 compressData");
 /*static*/ PyObject* PythonItom::uncompressData(PyObject* pSelf, PyObject* pArgs)
 {
@@ -5514,19 +5514,19 @@ in a qrc file and uses the rcc binary from Qt to compile the rcc file. \n\
 This method is new in itom > 4.0.0. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 rccFileName : str\n\
     filepath to the rcc resource file \n\
 mapRoot : str, optional \n\
     root key, where the resources should be registered below (default: empty string) \n\
 \n\
 Returns \n\
----------- \n\
+------- \n\
 bool \n\
     ``True`` if the file could be successfully opened, else ``False``.\n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 unregisterResource");
 /*static*/ PyObject* PythonItom::PyRegisterResource(
     PyObject* pSelf, PyObject* pArgs, PyObject* pKwds)
@@ -5568,19 +5568,19 @@ path, starting with a slash. \n\
 This method is new in itom > 4.0.0. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 rccFileName : str\n\
     filepath to the rcc resource file \n\
 mapRoot : str, optional \n\
     root key, where the resources should be unloaded from (default: empty string). \n\
 \n\
 Returns \n\
----------- \n\
+------- \n\
 bool \n\
     ``True`` if the file could be successfully opened, else ``False``.\n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 registerResource");
 /*static*/ PyObject* PythonItom::PyUnregisterResource(
     PyObject* pSelf, PyObject* pArgs, PyObject* pKwds)
@@ -5628,7 +5628,7 @@ Every change of the cursor is put on a stack. The previous cursor type is \n\
 restored, if ``cursorIndex`` is set to ``-1``. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 cursorIndex : int, optional\n\
     The cursor enumeration value of the desired cursor shape (``Qt::CursorShape``) \n\
     or ``-1`` if the previous cursor should be restored (default)");
@@ -5669,18 +5669,18 @@ This methods loads the given idc file using the method :meth:`pickle.load` from 
 Python buildin module :mod:`pickle` and returns the loaded dictionary. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 filename : str \n\
     Filename to the `idc`-file, that should be loaded. Can be an absolute \n\
     path, or relative with respect to the current working directory. \n\
 \n\
 Returns \n\
--------- \n\
+------- \n\
 content : dict \n\
     dictionary with loaded content. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 pickle.load, saveIDC");
 PyObject* PythonItom::PyLoadIDC(PyObject* pSelf, PyObject* pArgs, PyObject* pKwds)
 {
@@ -5736,7 +5736,7 @@ This method saves the given dictionary ``dict`` as pickled idc-file using the me
 The file will be saved with the pickle protocol version 3 (default for Python 3).\n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 filename : str \n\
     Filename of the destination `idc` file. Can be an absolute filename \n\
     or relative with respect to the current working directory. \n\
@@ -5753,7 +5753,7 @@ RuntimeError \n\
     is ``False``. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 pickle.dump, loadIDC");
 PyObject* PythonItom::PySaveIDC(PyObject* pSelf, PyObject* pArgs, PyObject* pKwds)
 {
@@ -5989,7 +5989,7 @@ line cut of an image plot (2D). \n\
 This method is a redirect of the staticmethod :meth:`figure.close`. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 handle : int \n\
     a valid figure handle, whose reference figure should be closed. \n\
     This figure handle is for instance obtained by the first value of the \n\
@@ -5998,12 +5998,12 @@ all : {\"all\"} \n\
     Pass the string ``\"all\"``  if all closeable opened figures should be closed. \n\
 \n\
 Notes \n\
-------- \n\
+----- \n\
 If a :class:`figure` instance still keeps a reference to any figure, it is only closed \n\
 and will be deleted after that the last referencing instance has been deleted. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 figure.close");
 
 //!< try to convert object to PyRgba or to None.
@@ -6052,7 +6052,7 @@ It is also possible to modify or create color palettes in the color palette edit
 the itom property dialog. For more information see :ref:`gui-color-palette-editor`. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 name : str \n\
     Name of the color palette. \n\
 colorStops : tuple \n\
@@ -6073,7 +6073,7 @@ invalidColor : rgba, optional \n\
     stop is taken. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 getPalette, getPaletteList");
 PyObject* PythonItom::PySetPalette(PyObject* pSelf, PyObject* pArgs, PyObject* pKwds)
 {
@@ -6323,12 +6323,12 @@ as dictionary. The values in this dictionary can also be used to call the \n\
 method :meth:`setPalette`. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 name : str \n\
     name of the new palette. \n\
 \n\
 Returns \n\
--------- \n\
+------- \n\
 palette : dict \n\
     Dictionary with the following entries: \n\
     \n\
@@ -6347,12 +6347,12 @@ palette : dict \n\
         color used for ``NaN`` or ``Inf`` values. \n\
 \n\
 Raises \n\
------------ \n\
+------ \n\
 RuntimeError \n\
     if no color palette with the given name is available. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 setPalette, getPaletteList");
 PyObject* PythonItom::PyGetPalette(PyObject* pSelf, PyObject* pArgs)
 {
@@ -6464,7 +6464,7 @@ PyDoc_STRVAR(getPaletteList_doc, "getPaletteList(type = 0) -> Tuple[str] \n\
 Returns a tuple with the names of all currently available color palettes. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 type : int, optional \n\
     Unused parameter. \n\
 \n\
@@ -6474,7 +6474,7 @@ tuple of str \n\
     Tuple with the names of all available color palettes. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 setPalette, getPalette");
 PyObject* PythonItom::PyGetPaletteList(PyObject* pSelf, PyObject* pArgs)
 {
@@ -6556,7 +6556,7 @@ PyDoc_STRVAR(pyCopyStringToClipboard_doc, "copyStringToClipboard(text) \n\
 Copies the given text to the clipboard of your operating system. \n\
 \n\
 Parameters \n\
----------- - \n\
+---------- \n\
 text : str \n\
     This text is copied to the clipboard.");
 PyObject* PythonItom::PyCopyStringToClipboard(PyObject* pSelf, PyObject* pArgs, PyObject* pKwds)

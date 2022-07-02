@@ -86,7 +86,7 @@ if it is used, ``objectID`` must be used as keyword argument, else ``subplotIdx`
 assumed to be initialized. \n\
 \n\
 Parameters \n\
------------- \n\
+---------- \n\
 figure : figure \n\
     The :class:`figure` window, that contains an itom plot. \n\
 subplotIdx : int, optional \n\

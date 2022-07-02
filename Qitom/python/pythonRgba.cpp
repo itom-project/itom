@@ -63,7 +63,7 @@ such that it becomes possible to add, subtract, multiply... two colors. In most 
 cases these operations are executed for each color component independently. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 r : int \n\
     red component [0,255]. \n\
 g : int \n\
@@ -74,7 +74,7 @@ alpha : int, optional \n\
     alpha component [0,255], default: 255 (opaque). \n\
 \n\
 Notes \n\
------- \n\
+----- \n\
 \n\
 For a gray value set all colors to the same value.");
 int PythonRgba::PyRgba_init(PyRgba *self, PyObject *args, PyObject *kwds)

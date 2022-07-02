@@ -50,6 +50,7 @@ extensions = [
     "sphinx.ext.intersphinx",
     "itomext.designerplugindoc",
     "sphinx_gallery.gen_gallery",
+    "sphinxcontrib.moderncmakedomain"
 ]
 
 if sphinx.__version__ >= "0.7":

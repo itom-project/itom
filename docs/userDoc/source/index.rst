@@ -24,21 +24,7 @@
     11_demos/demos.rst
     12_contributing/contributing.rst
 
-.. only:: builder_qthelp
-    
-    .. toctree::
-        :maxdepth: 1
-        
-        .. structure.rst
-        .. todo.rst
 
-.. only:: latex
-    
-    ..toctree::
-        :maxdepth: 1
-        
-        .. todo.rst
-   
 Indices and tables
 ###################
 

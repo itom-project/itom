@@ -90,7 +90,7 @@ was previously connected to this interrupt flag using the method \n\
 :py:meth:`~itom.uiItem.invokeProgressObserverCancellation`. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 progressBar : uiItem, optional \n\
     This is an optional handle to a progress bar in any user interface. The minimum \n\
     requirement is that the given widget has at least a slot 'setValue(int)', which \n\
@@ -106,7 +106,7 @@ progressMaximum : int, optional \n\
     Maximum progress value that should be used and reported by the target of this observer. \n\
 \n\
 Notes \n\
--------- \n\
+----- \n\
 This class wraps the C++ class `ito::FunctionCancellationAndObserver`.");
 int PythonProgressObserver::PyProgressObserver_init(PyProgressObserver *self, PyObject *args, PyObject * kwds)
 {
@@ -356,7 +356,7 @@ Possible signals are (among others): \n\
 New in itom 4.1. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 signalSignature : str \n\
     This must be the valid signature. Possible signatures are: \n\
     ``progressTextChanged(QString)`` or ``progressValueChanged(int)``\n\
@@ -368,7 +368,7 @@ minRepeatInterval : int, optional \n\
     Default: 0 (all signals will invoke the callable Python method. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 disconnect");
 PyObject* PythonProgressObserver::PyProgressObserver_connect(PyProgressObserver *self, PyObject* args, PyObject *kwds)
 {
@@ -447,7 +447,7 @@ Disconnects a connection which must have been established with exactly the same 
 New in itom 4.1. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 signalSignature : str \n\
     This must be the valid signature (``progressTextChanged(QString)`` or ``progressValueChanged(int)``)\n\
 callableMethod : callable \n\
@@ -455,7 +455,7 @@ callableMethod : callable \n\
     emitted. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 connect");
 PyObject* PythonProgressObserver::PyProgressObserver_disconnect(PyProgressObserver *self, PyObject* args, PyObject* kwds)
 {
@@ -511,7 +511,7 @@ PyDoc_STRVAR(progressObserver_info_doc, "info(verbose = 0) \n\
 Prints information about possible signals to the command line.\n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 verbose : int \n\
     0: only signals from the plugin class are printed (default) \n\
     1: all signals from all inherited classes are printed");

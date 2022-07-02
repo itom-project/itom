@@ -109,7 +109,7 @@ Possible point types of this point cloud are: \n\
 * ``point.PointXYZRGBNormal`` \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 type : int, optional \n\
     The type of this point cloud. \n\
 pointCloud : pointCloud \n\
@@ -782,7 +782,7 @@ PyDoc_STRVAR(pyPointCloudScaleXYZ_doc, "scaleXYZ(x = 1.0, y = 1.0, z = 1.0) \n\
 Scales the x, y and z components of every point by the given values. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 x : float, optional \n\
     scaling factor for the ``x``-component. \n\
 y : float, optional \n\
@@ -820,7 +820,7 @@ PyDoc_STRVAR(pyPointCloudMoveXYZ_doc, "moveXYZ(x = 0.0, y = 0.0, z = 0.0) \n\
 Moves the x, y and z components of every point by the given offsets. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 x : float, optional \n\
     offset value for the ``x``-component \n\
 y : float, optional \n\
@@ -869,7 +869,7 @@ If this cloud has an invalid type and a :class:`point` or a :class:`pointCloud` 
 given, the type of this arguments is used to initialize this point cloud. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 pointCloud : pointCloud \n\
     is another pointCloud, appended to this cloud. If this cloud was uninitialized \n\
     yet (``type`` = ``pointCloud.PointInvalid``), the type of the given ``pointCloud`` \n\
@@ -1746,7 +1746,7 @@ The new points are inserted before the existing value at the index-th position. 
 The type of the inserted points must fit to the type of the point cloud. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 index : int \n\
     the new point(s) is / are inserted before the existing value at the index-th \n\
     position. index must be in range ``[0, size of point cloud - 1]``. Negative values \n\
@@ -1836,7 +1836,7 @@ PyDoc_STRVAR(pyPointCloudErase_doc,"erase(indices) \n\
 Erases the points in point clouds indicated by indices. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 indices : int or slice\n\
     Single index or slice of indices whose corresponding points should be deleted. \n\
 \n\
@@ -2158,7 +2158,7 @@ The created point cloud is not organized (``height = 1``) and ``dense``, if no `
 ``deleteNaN = True``. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 X : dataObject \n\
     A ``M x N`` `float32` :class:`dataObject` with the x-coordinates of all points. \n\
 Y : dataObject \n\
@@ -2175,7 +2175,7 @@ deleteNaN : bool \n\
     be skipped. Else, they are also put to the cloud, however it is not :attr:`dense` anymore. \n\
 \n\
 Notes \n\
------- \n\
+----- \n\
 The :class:`dataObject` ``X``, ``Y``, ``Z``, ``XYZ`` are recommended to have the ``dtype`` \n\
 `float32`. However, it is possible to pass any real data type, that is then implicitly \n\
 converted to `float32`. \n\
@@ -2332,7 +2332,7 @@ The created point cloud is not organized (``height = 1``) and ``dense``, if no `
 ``deleteNaN = True``. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 X : dataObject \n\
     A ``M x N`` `float32` :class:`dataObject` with the x-coordinates of all points. \n\
 Y : dataObject \n\
@@ -2351,7 +2351,7 @@ deleteNaN : bool \n\
     be skipped. Else, they are also put to the cloud, however it is not :attr:`dense` anymore. \n\
 \n\
 Notes \n\
------- \n\
+----- \n\
 The :class:`dataObject` ``X``, ``Y``, ``Z``, ``XYZ`` and ``I`` are recommended to have the ``dtype`` \n\
 `float32`. However, it is possible to pass any real data type, that is then implicitly \n\
 converted to `float32`. \n\
@@ -2496,7 +2496,7 @@ The created point cloud is not organized(``height = 1``) and ``dense``, if no ``
 ``deleteNaN = True``. \n\
 \n\
 Parameters \n\
----------- - \n\
+---------- \n\
 X : dataObject \n\
     A ``M x N`` `float32` :class :`dataObject` with the x - coordinates of all points. \n\
 Y : dataObject \n\
@@ -2515,7 +2515,7 @@ deleteNaN : bool \n\
     be skipped.Else, they are also put to the cloud, however it is not :attr:`dense` anymore. \n\
 \n\
 Notes \n\
------- \n\
+----- \n\
 The :class:`dataObject` ``X``, ``Y``, ``Z``, ``XYZ`` are recommended to have the ``dtype`` \n\
 `float32`. However, it is possible to pass any real data type, that is then implicitly \n\
 converted to `float32`. \n\
@@ -2670,7 +2670,7 @@ coordinate system of ``topography`` (considering the scaling and offset of the o
 The corresponding z-value is the topography's value itself. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 topography : dataObject \n\
     ``M x N``, `float32`:class:`dataObject` are the topography values. \n\
 intensity : dataObject, optional \n\
@@ -3033,7 +3033,7 @@ One point can be of different ``types``. Possible types are: \n\
   colour value ``(R, G, B, A)``. \n\
 \n\
 Parameters \n\
------------- \n\
+---------- \n\
 type : int, optional \n\
     the desired type of this point. Depending on this type, some of the following \n\
     parameters must be or must not be given. \n\
@@ -3192,7 +3192,7 @@ PyDoc_STRVAR(pyPointName_doc, "name() -> str \n\
 Name of this class. \n\
 \n\
 Returns \n\
--------- \n\
+------- \n\
 str \n\
     the name of this object (``Point``).");
 PyObject* PythonPCL::PyPoint_name(PyPoint* /*self*/)
@@ -3722,7 +3722,7 @@ PyDoc_STRVAR(pyPointIntensity_doc,
 "float : gGts or sets intensity if type of point supports intensity values. \n\
 \n\
 Raises \n\
--------- \n\
+------ \n\
 ValueError \n\
     if type of point does not support an intensity value.");
 PyObject* PythonPCL::PyPoint_GetIntensity(PyPoint *self, void * /*closure*/)
@@ -3775,7 +3775,7 @@ PyDoc_STRVAR(pyPointRgb_doc,
 "tuple of float : Gets or sets rgb-values as tuple ``(r,g,b)``, where each color component is in range [0, 255].\n\
 \n\
 Raises \n\
--------- \n\
+------ \n\
 ValueError \n\
     if type of point does not support r,g,b values.");
 PyObject* PythonPCL::PyPoint_GetRgb(PyPoint *self, void * /*closure*/)
@@ -3829,7 +3829,7 @@ PyDoc_STRVAR(pyPointRgba_doc,
 "tuple of float : Gets or sets rgba-values as tuple ``(r,g,b,a)``, where each color component is in range [0, 255].\n\
 \n\
 Raises \n\
--------- \n\
+------ \n\
 ValueError \n\
     if type of point does not support r,g,b,a values.");
 PyObject* PythonPCL::PyPoint_GetRgba(PyPoint *self, void * /*closure*/)
@@ -3882,7 +3882,7 @@ PyDoc_STRVAR(pyPointCurvature_doc,
 "float : Gets or sets the curvature value.\n\
 \n\
 Raises \n\
--------- \n\
+------ \n\
 ValueError \n\
     if type of point does not support a curvature value.");
 PyObject* PythonPCL::PyPoint_GetCurvature(PyPoint *self, void * /*closure*/)
@@ -3940,7 +3940,7 @@ PyDoc_STRVAR(pyPointNormal_doc,
 "tuple of float : Gets or sets the normal vector of this point as tuple ``(nx,ny,nz)``.\n\
 \n\
 Raises \n\
--------- \n\
+------ \n\
 ValueError \n\
     if type of point does not support normal vector data.");
 PyObject* PythonPCL::PyPoint_GetNormal(PyPoint *self, void * /*closure*/)
@@ -4134,7 +4134,7 @@ In this case, the containing cloud is reduced and no longer organized \n\
 (``height = 1``, ``dense = False``). \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 mesh : polygonMesh, optional \n\
     another polygon mesh instance (shallow or deep copy depending on argument \n\
     ``polygons``).\n\
@@ -4530,7 +4530,7 @@ If the ``newPointType`` is not given or ``point.PointInvalid``, the type of the 
 internal :class:`pointCloud` is guessed with respect to available types. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 newPointType : int, optional \n\
     the point type value of the desired type, the point cloud should be converted \n\
     too (default: point.PointInvalid)");
@@ -4655,7 +4655,7 @@ PyDoc_STRVAR(pyPolygonMeshFromCloudAndPolygons_docs,"fromCloudAndPolygons(cloud,
 Creates a polygon mesh from a given cloud and polygons. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 cloud : pointCloud \n\
     is the input point cloud. \n\
 polygons : array-like or dataObject \n\
@@ -4735,7 +4735,7 @@ This method is the same than calling \n\
 ``polygonMesh.fromOrganizedCloud(pointCloud.fromTopography(topography))``. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 topography : dataObject \n\
     the topography data object. The grid of the data object, defined by its size, \n\
     the ``axisScales`` and ``axisOffsets`` values indicate the x- and y-coordinates \n\
@@ -4796,7 +4796,7 @@ polygons, such that a closed polygon mesh can be created, that is the hull of \n
 this given ``cloud``. This is done by this method. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 cloud : pointCloud \n\
     is the input point cloud (must be organized, see attribute :attr:`organized`). \n\
 triangulationType : int \n\

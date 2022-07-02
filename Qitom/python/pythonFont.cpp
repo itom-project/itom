@@ -88,7 +88,7 @@ This class is a wrapper for the class `QFont` of the Qt framework. \n\
 It provides possibilities for creating a font type. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 family : str \n\
     The family name may optionally also include a foundry name, e.g. \"Helvetica [Cronyx]\". \n\
     If the family is available from more than one foundry and the foundry isn't specified, \n\
@@ -461,12 +461,12 @@ PyDoc_STRVAR(pyFont_isFamilyInstalled_DOC, "isFamilyInstalled(family) -> bool \n
 Checks if the given font family is installed on this computer. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 family : str \n\
     The name of the font family that should be checked \n\
 \n\
 Returns \n\
---------- \n\
+------- \n\
 installed : bool \n\
     ``True`` if family is installed, else ``False``.");
 PyObject* PythonFont::PyFont_isFamilyInstalled(PyFont * /*self*/, PyObject *args, PyObject *kwds)

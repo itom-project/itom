@@ -99,7 +99,7 @@ The size and position control can afterwards done using the property ``geometry`
 the figure. \n\
 \n\
 Parameters \n\
-------------- \n\
+---------- \n\
 handle : int \n\
     integer handle of the desired figure. \n\
 rows : int, optional \n\
@@ -284,7 +284,7 @@ Use the ``properties`` argument to pass a dictionary with properties you want to
 to certain values. \n\
 \n\
 Parameters\n\
------------\n\
+----------\n\
 data : dataObject or pointCloud or polygonMesh \n\
     Is the data object whose region of interest will be plotted.\n\
 areaIndex : int, optional \n\
@@ -299,7 +299,7 @@ properties : dict, optional \n\
     plot widget.\n\
 \n\
 Returns \n\
--------- \n\
+------- \n\
 plotHandle : plotItem \n\
     Handle of the subplot. This handle is used to control the properties of the plot, \n\
     connect signals to it or call slots of the plot.");
@@ -439,7 +439,7 @@ embedded in a GUI), or by the property toolbox in the plot itself or by using th
 Use the ``properties`` argument to pass a dictionary with properties you want to set. \n\
 \n\
 Parameters\n\
------------\n\
+----------\n\
 data : dataObject \n\
     Is the data object whose region of interest will be plotted.\n\
 xData : dataObject, optional \n\
@@ -458,7 +458,7 @@ properties : dict, optional \n\
     plot widget.\n\
 \n\
 Returns \n\
--------- \n\
+------- \n\
 plotHandle : plotItem \n\
     Handle of the subplot. This handle is used to control the properties of the plot, \n\
     connect signals to it or call slots of the plot.");
@@ -617,7 +617,7 @@ embedded in a GUI), or by the property toolbox in the plot itself or by using th
 Use the ``properties`` argument to pass a dictionary with properties you want to set. \n\
 \n\
 Parameters\n\
------------\n\
+----------\n\
 data : dataObject \n\
     is the data, that should be plotted. If a ``className`` it must support dataObjects \n\
     as accepted data type. Else, the default ``className`` for 2D :class:`dataObject` \n\
@@ -634,7 +634,7 @@ properties : dict, optional \n\
     plot widget.\n\
 \n\
 Returns \n\
--------- \n\
+------- \n\
 plotHandle : plotItem \n\
     Handle of the subplot. This handle is used to control the properties of the plot, \n\
     connect signals to it or call slots of the plot.");
@@ -783,7 +783,7 @@ embedded in a GUI), or by the property toolbox in the plot itself or by using th
 Use the ``properties`` argument to pass a dictionary with properties you want to set. \n\
 \n\
 Parameters\n\
------------\n\
+----------\n\
 data : dataObject or pointCloud or polygonMesh \n\
     is the data, that should be plotted. If a ``className`` is given, only the \n\
     type of data, supported by this class, can be displayed. Else, the default \n\
@@ -801,7 +801,7 @@ properties : dict, optional \n\
     plot widget.\n\
 \n\
 Returns \n\
--------- \n\
+------- \n\
 plotHandle : plotItem \n\
     Handle of the subplot. This handle is used to control the properties of the plot, \n\
     connect signals to it or call slots of the plot.");
@@ -955,7 +955,7 @@ Use the ``properties`` argument to pass a dictionary with properties you want to
 certain values. \n\
 \n\
 Parameters\n\
------------\n\
+----------\n\
 cam : dataIO \n\
     Camera grabber device from which images are acquired.\n\
 areaIndex : int, optional \n\
@@ -970,7 +970,7 @@ properties : dict, optional \n\
     plot widget.\n\
 \n\
 Returns \n\
--------- \n\
+------- \n\
 plotHandle : plotItem \n\
     Handle of the subplot. This handle is used to control the properties of the plot, \n\
     connect signals to it or call slots of the plot.");
@@ -1101,7 +1101,7 @@ This canvas can be used as canvas argument for :class:`matplotlib.pyplot.figure`
 matplotlib and is internally used by the itom backend of matplotlib. \n\
 \n\
 Parameters\n\
------------\n\
+----------\n\
 areaIndex : int, optional \n\
     Area index where the plot canvas should be created (if subplots exists). \n\
     The default ``areaIndex`` is the current subplot area, hence, ``0`` if \n\
@@ -1111,7 +1111,7 @@ properties : dict, optional \n\
     plot widget.\n\
 \n\
 Returns \n\
--------- \n\
+------- \n\
 plotHandle : plotItem \n\
     Handle of the subplot. This handle is used to control the properties of the plot, connect to \n\
     its signals or call slots of the plot.");
@@ -1232,7 +1232,7 @@ If the itom plotly renderer is used, this renderer calls this method to send the
 html output to this widget. \n\
 \n\
 Parameters\n\
------------\n\
+----------\n\
 areaIndex : int, optional \n\
     Area index where the plot canvas should be created (if subplots exists). \n\
     The default ``areaIndex`` is the current subplot area, hence, ``0`` if \n\
@@ -1242,7 +1242,7 @@ properties : dict, optional \n\
     plot widget.\n\
 \n\
 Returns \n\
--------- \n\
+------- \n\
 plotHandle : plotItem \n\
     Handle of the subplot. This handle is used to control the properties of the plot, connect to \n\
     its signals or call slots of the plot.");
@@ -1453,7 +1453,7 @@ PyDoc_STRVAR(pyFigureSubplot_doc,"subplot(index) -> plotItem \n\
 Returns :class:`plotItem` of desired subplot.\n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 index : int \n\
     index to desired subplot in the range ``[0, n)``, where n is the number of subplots. \n\
     The subplot at the top, left position has the index 0 and the index is \n\
@@ -1621,7 +1621,7 @@ All figure can only be closed, if no other figure references this figure (e.g. \
 line cut of an image plot (2D). \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 handle : int \n\
     a valid figure handle, whose reference figure should be closed. \n\
     This figure handle is for instance obtained by the first value of the \n\
@@ -1630,12 +1630,12 @@ all : {\"all\"} \n\
     Pass the string ``\"all\"``  if all closeable opened figures should be closed. \n\
 \n\
 Notes \n\
-------- \n\
+----- \n\
 If a :class:`figure` instance still keeps a reference to any figure, it is only closed \n\
 and will be deleted after that the last referencing instance has been deleted. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 itom.close");
 /*static*/ PyObject* PythonFigure::PyFigure_close(PyFigure * /*self*/, PyObject *args)
 {

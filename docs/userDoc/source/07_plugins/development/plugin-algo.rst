@@ -222,10 +222,6 @@ For the parsing of the given input parameters, you can (like stated above) eithe
 can use the high-level method **getParamByName**, which is provided in the file **helperCommon.h** and **helperCommon.cpp** in the **common**-folder.
 If you want to use this method, integrate both files in your project and include the header file in your plugin file.
 
-.. todo::
-    
-    Move getParamByName into the API and remove it from helperCommon. Correct the documentation.
-    
 .. note::
     
     Always make sure, that if you are access (read or write) any parameter in any of the three vectors, you must have the specific parameter

@@ -47,6 +47,7 @@ extensions = [
     "sphinx.ext.intersphinx",
     "itomext.designerplugindoc",
     "sphinx_gallery.gen_gallery",
+    "sphinxcontrib.moderncmakedomain"
 ]
 
 if [sys.version_info.major, sys.version_info.minor] >= [3, 6]:

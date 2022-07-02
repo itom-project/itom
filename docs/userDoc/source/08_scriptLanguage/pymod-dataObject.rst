@@ -481,7 +481,7 @@ dataObjects:
     itom.filter("minValue", a) #raises an error
     itom.filter("minValue", itom.dataObject(a)) #works
 
-.. _itomDataObjectDatetime
+.. _itomDataObjectDatetime:
 
 Datetime and timedelta types
 ---------------------------------
