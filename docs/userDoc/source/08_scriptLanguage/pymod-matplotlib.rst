@@ -428,26 +428,18 @@ Slots
 .. py:function:: getPlotID() [slot]
     :noindex:
     
-    
     Return window ID of this plot {int}.
-    
-    .. index:: 
 
 .. py:function:: replot() [slot]
     :noindex:
     
-    
     forces a replot of the plot
-    
-    .. index:: 
 
 .. py:function:: refreshPlot() [slot]
     :noindex:
     
-    
     Triggers an update of the current plot window.
-    
-    .. index:: 
+
 
 .. py:function:: showSubplotConfig(left, top, right, bottom, wSpace, hSpace) [slot]
     :noindex:
@@ -469,8 +461,6 @@ Slots
     :type wSpace: float
     :param hSpace: vertical space between every subplot of the current configuration.
     :type hSpace: float
-    
-    .. index:: 
 
 .. py:function:: setLabelText(text) [slot]
     :noindex:
@@ -482,8 +472,6 @@ Slots
     
     :param text: text to display
     :type text: str
-    
-    .. index:: 
 
 Signals
 -------------------------
@@ -500,8 +488,6 @@ Signals
         To connect to this signal use the following signature::
         
             yourItem.connect('subplotConfigSliderChanged(int,int)', yourMethod)
-    
-    .. index:: 
 
 .. END plot_help_to_rst_format.py: matplotlibPlot
 

@@ -5967,7 +5967,7 @@ from a dataObject that is not continuous, this function is implicitely called in
 to firstly make the dataObject continuous before passing to Numpy. \n\
 \n\
 Returns \n\
--------- \n\
+------- \n\
 dataObject \n\
     If this dataObject is not continuous, its continuous representation is returned \n\
     as deep copy. A deep copy is also returned if this object is already :attr:`continuous`.");
@@ -6781,7 +6781,7 @@ of ``1`` is not deleted. If :this method returns a shallow copy, a change in a \
 value will change the same value in the original object, too. \n\
 \n\
 Returns \n\
--------- \n\
+------- \n\
 squeezed : dataObject \n\
     The squeezed data object. \n\
 \n\
@@ -11269,7 +11269,7 @@ eye : method for creating an eye matrix \n\
 zeros : method for creating a matrix filled with zeros \n\
 \n\
 Notes \n\
------- \n\
+----- \n\
 For the color data type ``rgba32``, every value will be white: \n\
 ``(r=255, g=255, b=255, alpha=255)``.");
 PyObject* PythonDataObject::PyDataObj_StaticOnes(PyObject* /*self*/, PyObject* args, PyObject* kwds)

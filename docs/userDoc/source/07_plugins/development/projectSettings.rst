@@ -51,7 +51,7 @@ Since the plugin, you will write, is based on *Qt*'s plugin system, these steps 
 The pre-processor-step contains the following steps:
 
 #. In a folder "generated-files" additional files will be created for each class, containing the macro *Q_OBJECT* (moc-process).
-#. Any user-interface file (*.ui) will be transformed into an additional C++-class file, that is also contained in the "generated-files" folder (uic-process).
+#. Any user-interface file (.ui) will be transformed into an additional C++-class file, that is also contained in the "generated-files" folder (uic-process).
 #. The translation tables will be created.
 #. The resource-files will be parsed and an appropriate C++-file is created (rcc-process).
 
@@ -60,6 +60,7 @@ It is always necessary to link against the library **QtCore** and **QtGui** if y
 **QtOpenGL** for OpenGL-support, **QtSvg** for *Svg*-support or **QtXml**, **QtSql** or **QtNetwork**. For each of these libraries you plugin must have an entry in the *include*-directories and the *linker*-commands.
 
 The pre-processor-definitions must contain the following entries:
+
 * WIN32 or _WIN64
 * QT_LARGEFILE_SUPPORT
 * QT_PLUGIN
@@ -67,6 +68,7 @@ The pre-processor-definitions must contain the following entries:
 * QDESIGNER_EXPORT_WIDGETS
 
 and for every Qt-library you need (in capital letters)
+
 * QT_CORE_LIB
 * QT_GUI_LIB
 * ...
@@ -82,6 +84,7 @@ Add the following include-directories ($(ITOM_QTDIR) is the path to the |Qt|-sou
 * $(ITOM_QTDIR)\include\qtmain
 
 and for every further Qt-library
+
 * $(ITOM_QTDIR)\include\QtCore
 * $(ITOM_QTDIR)\include\QtGui
 * ...

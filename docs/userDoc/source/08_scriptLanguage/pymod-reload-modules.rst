@@ -15,7 +15,7 @@ There are different possibilities to force Python to reload such a changed modul
 2. The Python builtin-module **imp** provides mechanisms like the method **reload** to force Python to reload a specific module.
 3. The mechanisms provided by the **imp** module are covered by the dialog **reload modules...** that is available in the menu **Script >> reload modules** of the main window of |itom|.
 4. |itom| consists of a powerful auto-reload tool that can check all modules are their dependencies whether they have changed since the last check and reloads them. This tool is discussed in the
-course of this section.
+   course of this section.
 
 At first, let us denote several issues that may happen due to the caching mechanism of |itom|. Consider the following three script files:
 
