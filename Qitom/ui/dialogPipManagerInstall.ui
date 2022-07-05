@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>492</width>
-    <height>381</height>
+    <width>491</width>
+    <height>440</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -82,6 +82,16 @@
          </widget>
         </item>
        </layout>
+      </item>
+      <item>
+       <widget class="QLabel" name="lblPypiHint">
+        <property name="text">
+         <string>Examples: package-name; package-name=23.2; package-name&gt;=0.7.5. Separate multiple packages by spaces: package1 package2 ...</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>
