@@ -25,8 +25,8 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#define PROPERTYEDITOR_VERSION_MAJOR 1
-#define PROPERTYEDITOR_VERSION_MINOR 1
+#define PROPERTYEDITOR_VERSION_MAJOR 2
+#define PROPERTYEDITOR_VERSION_MINOR 0
 #define PROPERTYEDITOR_VERSION_PATCH 0
 #define PROPERTYEDITOR_VERSION_REVISION 0
-#define PROPERTYEDITOR_VERSION_STRING "1.1.0.0"
+#define PROPERTYEDITOR_VERSION_STRING "2.0.0.0"

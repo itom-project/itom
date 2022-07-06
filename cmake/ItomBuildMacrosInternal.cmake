@@ -25,7 +25,7 @@ if(${CMAKE_VERSION} VERSION_LESS 3.12)
 endif()
 
 # - initializes settings, that are common to all core libraries and executables.
-# These vars are widely used, shold be available whenever cmake is issued on individual
+# These vars are widely used, should be available whenever cmake is issued on individual
 # itom project parts.
 #
 # This macro is automatically called from itom_init_plugin_library and 

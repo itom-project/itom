@@ -593,11 +593,11 @@ class ITOMCOMMON_EXPORT StringMeta : public ParamMeta
 class ITOMCOMMON_EXPORT DObjMeta : public ParamMeta
 {
   public:
-    explicit DObjMeta(uint32 allowedTypes = 0xFFFF, int minDim = 0, int maxDim = (std::numeric_limits<int>::max)(),
-                      ito::ByteArray category = ito::ByteArray())
-        : ParamMeta(rttiDObjMeta, category), m_allowedTypes(allowedTypes), m_minDim(minDim), m_maxDim(maxDim)
-    {
-    }
+
+    //!< constructor. This default constructor has no data type restrictions.
+    //!< use appendAllowedDataType to add one of multiple allowed data types.
+    explicit DObjMeta(int minDim = 0, int maxDim = (std::numeric_limits<int>::max)(),
+          ito::ByteArray category = ito::ByteArray());
 
     //! copy constructor
     DObjMeta(const DObjMeta &cpy);
@@ -607,25 +607,47 @@ class ITOMCOMMON_EXPORT DObjMeta : public ParamMeta
 
     virtual bool operator==(const ParamMeta &other) const;
 
-    inline int getAllowedTypes() const
-    {
-        return m_allowedTypes;
-    }
+    //!< returns the number of allowed data types or 0 if no type restriction is given.
+    int getNumAllowedDataTypes() const;
 
-    //!< returns maximum allowed dimensions of data object
+    //!< returns the i-th allowed data type. i must be in range [0, getNumAllowedDataTypes).
+    ito::tDataType getAllowedDataType(int index) const;
+
+    //!< returns true if the given dataType is allowed
+    bool isDataTypeAllowed(ito::tDataType dataType) const;
+
+    //!< add a new data type to the list of allowed data types.
+    void appendAllowedDataType(ito::tDataType dataType);
+
+    //!< returns minimum allowed dimensions of data object
     inline int getMinDim() const
     {
         return m_minDim;
     }
 
-    //!< returns minimum number of dimensions of data object
+    //!< returns maximum number of dimensions of data object
     inline int getMaxDim() const
     {
         return m_maxDim;
     }
 
+    //!< set the minimum allowed dimensions of data object
+    inline void setMinDim(int minDim)
+    {
+        m_minDim = minDim;
+    }
+
+    //!< set the maximum number of dimensions of data object
+    inline void setMaxDim(int maxDim)
+    {
+        m_maxDim = maxDim;
+    }
+
   private:
-    uint32 m_allowedTypes;
+    //!< all allowed data types, every character in this array has to
+    //!< be interpreted as ito::tDataType value. If the size of this
+    //!< array is 0, no type restriction is set.
+    ito::ByteArray m_allowedTypes;
     int m_minDim;
     int m_maxDim;
 };
@@ -845,8 +867,6 @@ class ITOMCOMMON_EXPORT DoubleIntervalMeta : public DoubleMeta
        minVal+2*stepSize...,maxVal] are allowed
     */
     void setSizeStep(float64 val);
-
-    
 
   private:
     float64 m_sizeMin;

@@ -52,10 +52,6 @@ to :ref:`gettingStarted`.
 
 
 
-**TODO**: Add the basic idea and structure of ITOM and explain it in more detail 
-than this above
-
-
 About us
 **************
 

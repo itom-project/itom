@@ -125,7 +125,7 @@ Arrays can also be constructed using some of the static pre-initialization metho
 (refer to the See Also section below). \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 dims : sequence of int, optional \n\
     ``dims`` is a list or tuple indicating the size of each dimension. The length \n\
     of this sequence defines the dimension of this dataObject. As an example, \n\
@@ -150,7 +150,7 @@ data : int or float or complex or rgba or datetime.datetime or datetime.timedelt
     the data object. These values will then be assigned to the new data object (filled row by row).\n\
 \n\
 Notes \n\
------- \n\
+----- \n\
 The :class:`itom.dataObject` is a direct wrapper for the underlying C++ class *dataObject*. \n\
 This array class mainly is based on the class *Mat* of the computer vision library (OpenCV). \n\
 \n\
@@ -214,7 +214,7 @@ where 'anyArray' must be any array-like structure which can be parsed by the num
 the new data object will be a type-casted (and / or continuous) copy of 'anyArray'.\n\
 \n\
 See Also \n\
----------- \n\
+-------- \n\
 ones : Static method to construct a data object filled with ones. \n\
 zeros : Static method to construct a data object filled with zeros. \n\
 nans : Static method to construct a data object (float or complex only) with NaNs. \n\
@@ -443,7 +443,7 @@ PythonDataObject::PyDataObjectTypes PythonDataObject::PyDataObject_types[] = {
 //-------------------------------------------------------------------------------------
 int PythonDataObject::dObjTypeFromName(const char* name)
 {
-    int length = sizeof(PyDataObject_types) / sizeof(PyDataObject_types[0]);
+    int length = numDataTypes();
     int i;
 
     for (i = 0; i < length; i++)
@@ -458,18 +458,23 @@ int PythonDataObject::dObjTypeFromName(const char* name)
 }
 
 //-------------------------------------------------------------------------------------
-char* PythonDataObject::typeNumberToName(int typeno)
+const char* PythonDataObject::typeNumberToName(int typeno)
 {
-    int length = sizeof(PyDataObject_types) / sizeof(PyDataObject_types[0]);
-
-    if (typeno < 0 || typeno >= length)
+    if (typeno < 0 || typeno >= numDataTypes())
     {
-        return NULL;
+        return nullptr;
     }
     else
     {
         return PyDataObject_types[typeno].name;
     }
+}
+
+//-------------------------------------------------------------------------------------
+int PythonDataObject::numDataTypes()
+{
+    int length = sizeof(PyDataObject_types) / sizeof(PyDataObject_types[0]);
+    return length;
 }
 
 //-------------------------------------------------------------------------------------
@@ -1643,12 +1648,12 @@ The shape is a tuple where each element is the size of one dimension of this \n\
 dataObject. As an example ``shape = [2, 3]`` corresponds to a ``2 x 3`` dataObject. \n\
 \n\
 Notes\n\
-------\n\
+-----\n\
 In difference to the shape attribute of :class:`numpy.ndarray`, this attribute cannot \n\
 be set. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 size : Alternative method to return the size of all or any specific axis");
 PyObject* PythonDataObject::PyDataObj_GetShape(PyDataObject* self, void* /*closure*/)
 {
@@ -1811,7 +1816,7 @@ If the data object is plot with scalings != 1, the scaled (physical) units are \
 displayed in the plot. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 setAxisScale : Alternative method to set the scale value of one single axis");
 PyObject* PythonDataObject::PyDataObject_getAxisScales(PyDataObject* self, void* /*closure*/)
 {
@@ -1907,7 +1912,7 @@ If the data object is plot with offsets != 0, the scaled (physical) units are \n
 displayed in the plot. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 setAxisOffset : Alternative method to set the offset value of one single axis");
 PyObject* PythonDataObject::PyDataObject_getAxisOffsets(PyDataObject* self, void* /*closure*/)
 {
@@ -2001,7 +2006,7 @@ tuple indexing. \n\
 The axis descriptions are considered if the data object is plotted. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 setAxisDescriptions : alternative method to change the description string of one single axis.");
 PyObject* PythonDataObject::PyDataObject_getAxisDescriptions(PyDataObject* self, void* /*closure*/)
 {
@@ -2099,7 +2104,7 @@ tuple indexing. \n\
 The axis units are considered if the data object is plotted. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 setAxisDescriptions : alternative method to change the description string of one single axis.");
 PyObject* PythonDataObject::PyDataObject_getAxisUnits(PyDataObject* self, void* /*closure*/)
 {
@@ -2733,19 +2738,19 @@ The conversion between physical and pixel units is: \n\
 ``physical_value = (pixel_value - axisOffset) * axisScale`` \n\
 \n\
 Parameters  \n\
-------------\n\
+----------\n\
 axisNum : int\n\
     The axis index in the range [0, n), where ``n`` is the dimension of this dataObject. \n\
 axisOffset : float\n\
     New axis offset value in pixels. \n\
 \n\
 Raises \n\
-------- \n\
+------ \n\
 RuntimeError \n\
     if the given ``axisNum`` is out of range. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 axisOffsets : this attribute can directly be used to get or set the axis offset(s) of single or all axes");
 PyObject* PythonDataObject::PyDataObj_SetAxisOffset(PyDataObject* self, PyObject* args)
 {
@@ -2794,12 +2799,12 @@ axisScale : float\n\
     New scale value for this axis in [unit/px]. \n\
 \n\
 Raises \n\
-------- \n\
+------ \n\
 RuntimeError \n\
     if the given ``axisNum`` is out of range. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 axisScales : this attribute can directly be used to get or set the axis scale(s) of single or all axes");
 PyObject* PythonDataObject::PyDataObj_SetAxisScale(PyDataObject* self, PyObject* args)
 {
@@ -2834,19 +2839,19 @@ Sets the axis description of one axis. \n\
 Each axis in the data object can get a specific description string (e.g. 'x-axis'). \n\
 \n\
 Parameters  \n\
-------------\n\
+----------\n\
 axisNum : int\n\
     The axis index in the range [0, n), where ``n`` is the dimension of this dataObject. \n\
 axisDescription : str\n\
     New axis description.\n\
 \n\
 Raises \n\
-------- \n\
+------ \n\
 RuntimeError \n\
     if the given ``axisNum`` is out of range \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 axisDescriptions : this attribute can directly be used to get or set the axis description(s) of single or all axes");
 PyObject* PythonDataObject::PyDataObj_SetAxisDescription(PyDataObject* self, PyObject* args)
 {
@@ -2890,19 +2895,19 @@ Sets the unit of the specified axis. \n\
 Each axis in the data object can get a specific unit string (e.g. 'mm'). \n\
 \n\
 Parameters  \n\
-------------\n\
+----------\n\
 axisNum : int\n\
     The axis index in the range [0, n), where ``n`` is the dimension of this dataObject. \n\
 axisUnit : str\n\
     New axis unit.\n\
 \n\
 Raises \n\
-------- \n\
+------ \n\
 RuntimeError  \n\
     if the given ``axisNum`` is out of range. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 axisUnits : this attribute can directly be used to get or set the axis unit(s) of single or all axes");
 PyObject* PythonDataObject::PyDataObj_SetAxisUnit(PyDataObject* self, PyObject* args)
 {
@@ -2953,7 +2958,7 @@ list (0, 1, 2, 3...). The returned pixel value is clipped by the real size of th
 object in the requested dimension ``[0, shape[axis] - 1]``. \n\
 \n\
 Parameters  \n\
-------------\n\
+----------\n\
 values : float or sequence of float\n\
     One single physical coordinate or a tuple of physical coordinates.\n\
 axes : int or sequence of int, optional \n\
@@ -2966,12 +2971,12 @@ axes : int or sequence of int, optional \n\
     If ``None`` is given, ``axes`` is assumed to be an ascending list of values ``0, 1, 2, ...``. \n\
 \n\
 Returns \n\
--------- \n\
+------- \n\
 float or tuple of float \n\
     The transformed physical coordinates for the given axes to pixel coordinates. \n\
 \n\
 Raises \n\
-------- \n\
+------ \n\
 ValueError \n\
     if the given axes is out of range \n\
 RuntimeWarning \n\
@@ -3166,7 +3171,7 @@ list (0, 1, 2, 3...). The returned pixel value is clipped by the real size of th
 object in the requested dimension ``[0, shape[axis] - 1]``. \n\
 \n\
 Parameters  \n\
-------------\n\
+----------\n\
 values : float or sequence of float\n\
     One single pixel coordinate or a tuple of pixel coordinates.\n\
 axes : int or sequence of int, optional \n\
@@ -3179,12 +3184,12 @@ axes : int or sequence of int, optional \n\
     If ``None`` is given, ``axes`` is assumed to be an ascending list of values ``0, 1, 2, ...``. \n\
 \n\
 Returns \n\
--------- \n\
+------- \n\
 float or tuple of float \n\
     The transformed pixel coordinates for the given axes to physical coordinates. \n\
 \n\
 Raises \n\
-------- \n\
+------ \n\
 ValueError \n\
     if the given axes is out of range.");
 PyObject* PythonDataObject::PyDataObj_PixToPhys(PyDataObject* self, PyObject* args, PyObject* kwds)
@@ -3414,12 +3419,12 @@ PyDoc_STRVAR(pyDataObjectDeleteTag_doc, "deleteTag(key) -> bool \n\
 Deletes a tag specified by ``key`` from the tag dictionary. \n\
 \n\
 Parameters  \n\
-------------\n\
+----------\n\
 key : str\n\
     the name of the tag to be deleted.\n\
 \n\
 Returns \n\
--------- \n\
+------- \n\
 success : bool \n\
     ``True`` if tag with given key existed and could be deleted, otherwise ``False``.");
 PyObject* PythonDataObject::PyDataObj_DeleteTag(PyDataObject* self, PyObject* args)
@@ -3452,12 +3457,12 @@ Checks whether a tag with the given ``key`` exists in tag dictionary of this \n\
 data object and returns ``True`` if such a tag exists, else ``False``. \n\
 \n\
 Parameters  \n\
-------------\n\
+----------\n\
 key : str\n\
     the key of the tag.\n\
 \n\
 Returns \n\
--------- \n\
+------- \n\
 bool\n\
     ``True`` if tag exists, else ``False``");
 PyObject* PythonDataObject::PyDataObj_TagExists(PyDataObject* self, PyObject* args)
@@ -3523,7 +3528,7 @@ Address the content of the protocol by ``obj.tags[\"protocol\"]``. The protocol 
 contained in the ordinary tag dictionary of this data object under the key ``protocol``. \n\
 \n\
 Parameters  \n\
-------------\n\
+----------\n\
 newLine : str\n\
     The text to be added to the protocol.");
 PyObject* PythonDataObject::PyDataObj_AddToProtocol(PyDataObject* self, PyObject* args)
@@ -5703,12 +5708,12 @@ Converts this dataObject into its complex-conjugate (inline). \n\
 Every value of this :class:`dataObject` is replaced by its complex-conjugate value. \n\
 \n\
 Raises \n\
-------- \n\
+------ \n\
 TypeError \n\
     if the data type of this data object is not complex.\n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 conjugate : does the same operation but returns a complex-conjugated copy of this data object");
 PyObject* PythonDataObject::PyDataObject_conj(PyDataObject* self)
 {
@@ -5741,12 +5746,12 @@ dataObject \n\
     element-wise complex conjugate of this data object \n\
 \n\
 Raises \n\
-------- \n\
+------ \n\
 TypeError \n\
     if the data type of this data object is not complex.\n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 conj : does the same operation but manipulates this object inline.");
 PyObject* PythonDataObject::PyDataObject_conjugate(PyDataObject* self)
 {
@@ -5788,12 +5793,12 @@ Every plane (spanned by the last two axes) is transposed and every element is \n
 replaced by its complex conjugate value. This is done in-line. \n\
 \n\
 Raises \n\
-------- \n\
+------ \n\
 TypeError \n\
     if the data type of this data object is not complex.\n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 adjugate : does the same operation but returns the resulting data object");
 PyObject* PythonDataObject::PyDataObject_adj(PyDataObject* self)
 {
@@ -5825,9 +5830,9 @@ PyDoc_STRVAR(pyDataObjectAdjugate_doc, "adjugate() -> dataObject \n\
 \n\
 Returns the plane-wise adjugated array of this dataObject. \n\
 \n\
-If this data object has a complex type, the tranposed data object is returned where \n\
+If this data object has a complex type, the transposed data object is returned where \n\
 every element is complex conjugated. For data objects with more than two dimensions \n\
-the tranposition is done plane-wise, hence, only the last two dimensions are permuted. \n\
+the transposition is done plane-wise, hence, only the last two dimensions are permuted. \n\
 \n\
 Returns \n\
 ------- \n\
@@ -5835,12 +5840,12 @@ dataObject \n\
     adjugate of this dataObject. \n\
 \n\
 Raises \n\
-------- \n\
+------ \n\
 TypeError \n\
     if the data type of this data object is not complex.\n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 adj : does the same operation but manipulates this object inline.");
 PyObject* PythonDataObject::PyDataObject_adjugate(PyDataObject* self)
 {
@@ -5887,12 +5892,12 @@ dataObject is then equal to the :attr:`shape` of this dataObject, but the last t
 values in the shape tuple are swapped. \n\
 \n\
 Returns \n\
--------- \n\
+------- \n\
 dataObject \n\
     A copy of this dataObject is returned where every plane is its transposed plane. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 T : this method is equal to the attribute :attr:`dataObject.T`.");
 PyObject* PythonDataObject::PyDataObject_trans(PyDataObject* self)
 {
@@ -5940,7 +5945,7 @@ values in the shape tuple are swapped. \n\
 This attribute was added with itom 5.0. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 trans : This method is equal to the method :meth:`dataObject.trans`.");
 PyObject* PythonDataObject::PyDataObject_transpose(PyDataObject* self, void* closure)
 {
@@ -5962,7 +5967,7 @@ from a dataObject that is not continuous, this function is implicitely called in
 to firstly make the dataObject continuous before passing to Numpy. \n\
 \n\
 Returns \n\
--------- \n\
+------- \n\
 dataObject \n\
     If this dataObject is not continuous, its continuous representation is returned \n\
     as deep copy. A deep copy is also returned if this object is already :attr:`continuous`.");
@@ -5994,13 +5999,13 @@ PyDoc_STRVAR(pyDataObjectSize_doc, "size(axisIndex = None) -> Union[int, Tuple[i
 Returns the size of the selected axis of this dataObject or the entire shape tuple, if no specific axis is given. \n\
 \n\
 Parameters  \n\
-------------\n\
+----------\n\
 axisIndex : int, optional\n\
     If ``axisIndex`` is given, only the size of the indicated axis is returned as \n\
     single number. \n\
 \n\
 Returns \n\
--------- \n\
+------- \n\
 int or tuple of int \n\
     A tuple containing the sizes of all dimensions or one single size value \n\
     if ``axisIndex`` is given. \n\
@@ -6012,7 +6017,7 @@ DeprecatedWarning \n\
     :class:`numpy.ndarray` objects, use :attr:`shape` instead. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 shape : the read-only attribute shape is equal to ``size()``.");
 PyObject* PythonDataObject::PyDataObject_size(PyDataObject* self, PyObject* args)
 {
@@ -6059,7 +6064,7 @@ PyDoc_STRVAR(pyDataObjectCopy_doc, "copy(regionOnly = False) -> dataObject \n\
 Returns a deep copy of this dataObject\n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 regionOnly : bool, optional \n\
     If ``regionOnly`` is ``True``, only the current region of interest of this \n\
     dataObject is copied, else the entire dataObject including the shaded areas outside \n\
@@ -6137,20 +6142,20 @@ All meta information (axis scales, offsets, descriptions, units, tags...) of the
 resulting object are copied from this data object. \n\
 \n\
 Parameters  \n\
-------------\n\
+----------\n\
 otherObj : dataObject \n\
     The returned :class:`dataObject` contains the result of the element-wise \n\
     multiplication of all values in this object and ``otherObj``. Must have the \n\
     same shape and data type than this object. \n\
 \n\
 Returns \n\
--------- \n\
+------- \n\
 result : dataObject \n\
     Resulting multiplied data object. Values, that exceed the range of the current \n\
     data type, will be set to the ``result modulo max(dtype)``. \n\
 \n\
 Notes \n\
------- \n\
+----- \n\
 For a mathematical multiplication see the @-operator.");
 PyObject* PythonDataObject::PyDataObject_mul(PyDataObject* self, PyObject* args)
 {
@@ -6199,14 +6204,14 @@ All meta information (axis scales, offsets, descriptions, units, tags...) of the
 resulting object are copied from this data object. \n\
 \n\
 Parameters  \n\
-------------\n\
+----------\n\
 otherObj : dataObject \n\
     The returned :class:`dataObject` contains the result of the element-wise \n\
     division of all values in this object by ``otherObj``. Must have the \n\
     same shape and data type than this object. \n\
 \n\
 Returns \n\
--------- \n\
+------- \n\
 result : dataObject \n\
     Resulting divided data object. Values, that exceed the range of the current \n\
     data type, will be set to the ``result modulo max(dtype)``. \n\
@@ -6271,12 +6276,12 @@ whose size will not change beginning from the last axis (``x``). Copying the axi
 meta information is stopped after the first axis with a differing new size. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 shape : sequence of int \n\
     New shape of the returned object. A minimal size of this list or tuple is two. \n\
 \n\
 Returns \n\
--------- \n\
+------- \n\
 reshaped : dataObject \n\
     The reshaped data object. \n\
 \n\
@@ -6343,13 +6348,13 @@ this object if the new type does not correspond to the current type, else a shal
 copy of this object is returned. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 typestring : str \n\
     Type string indicating the new type (``uint8``, ..., ``float32``, ..., \n\
     ``complex128``). \n\
 \n\
 Returns \n\
--------- \n\
+------- \n\
 dataObject \n\
     The converted :class:`dataObject`.");
 PyObject* PythonDataObject::PyDataObject_astype(PyDataObject* self, PyObject* args, PyObject* kwds)
@@ -6431,7 +6436,7 @@ Each value `v` is then normalized by: \n\
 .. math:: v_{norm} = minValue + (v - min_{cur}) * (maxValue - minValue) / (max_{cur} - min_{cur}) \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 minValue : float \n\
     minimum value of the normalized range. \n\
 maxValue : float \n\
@@ -6442,12 +6447,12 @@ typestring : str \n\
     (``uint8``, ..., ``float32``, ..., ``complex128``). \n\
 \n\
 Returns \n\
--------- \n\
+------- \n\
 normalized : dataObject \n\
     normalized data object \n\
 \n\
 Raises \n\
-------- \n\
+------ \n\
 RuntimeError \n\
     if a ``DateTime`` or ``TimeDelta`` dataObject should be normalized. Not supported. \n\
 \n\
@@ -6679,7 +6684,7 @@ Now, ``droi`` has a ROI, whose first value is equal to ``d[2, 1]`` and its shape
 is ``(3, 2)``. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 offsets : list of int or tuple of int \n\
     This sequence must have twice as many values than the number of dimensions of \n\
     this :class:`dataObject`. A pair of numbers indicates the shift of the \n\
@@ -6694,7 +6699,7 @@ RuntimeError \n\
     if desired, new ROI exceeds the original shape of this :class:`dataObject`. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 locateROI : method to get the borders of the current ROI");
 PyObject* PythonDataObject::PyDataObject_adjustROI(
     PyDataObject* self, PyObject* args, PyObject* kwds)
@@ -6776,7 +6781,7 @@ of ``1`` is not deleted. If :this method returns a shallow copy, a change in a \
 value will change the same value in the original object, too. \n\
 \n\
 Returns \n\
--------- \n\
+------- \n\
 squeezed : dataObject \n\
     The squeezed data object. \n\
 \n\
@@ -10398,7 +10403,7 @@ conversion is done using the formula: \n\
 .. math: gray = 0.299 * red + 0.587 * green + 0.114 * blue.\n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 destinationType : {\"uint8\", \"int8\", \"uint16\", \"int16\", \"int32\", \"float32\", \"float64\"}, optional \n\
     Desired data type of the returned dataObject (only real value data types allowed). \n\
 \n\
@@ -10489,7 +10494,7 @@ three channels (red, green and blue) should have been splitted, such that \n\
 ``split_colors[0, :, :]`` contains the red component, etc. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 color : str \n\
     Desired color string, that indicates the type and order of extracted color \n\
     components. This string can consist of the following letters: ``('b', 'r', 'g', 'a')``. \n\
@@ -10573,7 +10578,7 @@ The order of this last axis is ``blue``, ``green``, ``red`` and optional ``alpha
 The remaining first axes of the returned object have the same shape than this dataObject. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 addAlphaChannel : int, optional \n\
     If ``0``, the last dimension of the returned :class:`numpy.ndarray` has a size of ``3`` \n\
     and contains the blue, green and red value, whereas ``1`` adds the alpha value as \n\
@@ -10831,7 +10836,7 @@ will be set to ``255`` in the returned array, otherwise ``0``. \n\
 (see return value below)\n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 shapes : shape or list of shape or tuple of shape \n\
     The union of all given shapes (polygons, rectangles, squares, circles and ellipes \n\
     are considered, only) is used to determine if any pixel should be masked in the \n\
@@ -10956,7 +10961,7 @@ If any of the input dataObjects has more than two dimensions, all contained plan
 (x,y-matrices) are also stacked in the resulting object.\n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 objects : list of dataObject or tuple of dataObject \n\
     Sequence (list) of dataObjects containing planes that will be stacked together. \n\
     All dataObjects must be of the same type and have the same shape of planes \n\
@@ -11075,7 +11080,7 @@ the line cut is defined plane-by-plane and the values are put in one row \n\
 for each plane of this object. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 coordinates : list of float or tuple of float \n\
     A sequence of 4 :class:`float` values, that define the physical coordinates \n\
     of the start- and end point of the desired line along which the nearest values \n\
@@ -11168,7 +11173,7 @@ PyDoc_STRVAR(
 Creates a dataObject filled with zeros. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 dims : tuple of int or list of int \n\
     ``dims`` is the shape of the new :class:`dataObject`. The length of this list \n\
     or tuple defines the number of dimensions, e.g. ``[2, 3]`` creates a 2D dataObject\n\
@@ -11190,12 +11195,12 @@ array : dataObject \n\
     zeros. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 eye : method for creating an eye matrix \n\
 ones : method for creating a matrix filled with ones \n\
 \n\
 Notes \n\
------- \n\
+----- \n\
 For the color data type ``rgba32``, every value will be black and transparent: \n\
 ``(r=0, g=0, b=0, alpha=0)``.");
 PyObject* PythonDataObject::PyDataObj_StaticZeros(
@@ -11237,7 +11242,7 @@ PyDoc_STRVAR(
 Creates a dataObject filled ones. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 dims : tuple of int or list of int \n\
     ``dims`` is the shape of the new :class:`dataObject`. The length of this list \n\
     or tuple defines the number of dimensions, e.g. ``[2, 3]`` creates a 2D dataObject\n\
@@ -11259,12 +11264,12 @@ array : dataObject \n\
     ones. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 eye : method for creating an eye matrix \n\
 zeros : method for creating a matrix filled with zeros \n\
 \n\
 Notes \n\
------- \n\
+----- \n\
 For the color data type ``rgba32``, every value will be white: \n\
 ``(r=255, g=255, b=255, alpha=255)``.");
 PyObject* PythonDataObject::PyDataObj_StaticOnes(PyObject* /*self*/, PyObject* args, PyObject* kwds)
@@ -11324,7 +11329,7 @@ PyDoc_STRVAR(
 Creates a floating-point dataObject filled with ``NaN`` values. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 dims : tuple of int or list of int \n\
     ``dims`` is the shape of the new :class:`dataObject`. The length of this list \n\
     or tuple defines the number of dimensions, e.g. ``[2, 3]`` creates a 2D dataObject\n\
@@ -11345,7 +11350,7 @@ array : dataObject \n\
     ``NaN``. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 eye : method for creating an eye matrix \n\
 zeros : method for creating a matrix filled with zeros \n\
 ones : method for creating a matrix filled with ones.");
@@ -11410,7 +11415,7 @@ The value range of the random numbers depend on the desired data type ``dtype``:
    distributed in the range ``[0, 1)``. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 dims : tuple of int or list of int \n\
     ``dims`` is the shape of the new :class:`dataObject`. The length of this list \n\
     or tuple defines the number of dimensions, e.g. ``[2, 3]`` creates a 2D dataObject\n\
@@ -11432,7 +11437,7 @@ array : dataObject \n\
     random numbers. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 randN : method for creating a matrix filled with gaussian distributed values");
 PyObject* PythonDataObject::PyDataObj_StaticRand(PyObject* /*self*/, PyObject* args, PyObject* kwds)
 {
@@ -11499,7 +11504,7 @@ The mean ``m`` and standard deviation ``s`` of the Gaussian distribution is as f
 * For all **floating point** types holds: ``m = 0.0`` and ``s = 1/3``. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 dims : tuple of int or list of int \n\
     ``dims`` is the shape of the new :class:`dataObject`. The length of this list \n\
     or tuple defines the number of dimensions, e.g. ``[2, 3]`` creates a 2D dataObject\n\
@@ -11521,7 +11526,7 @@ array : dataObject \n\
     random numbers. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 rand : method for creating a matrix filled with unformly distributed values");
 PyObject* PythonDataObject::PyDataObj_StaticRandN(
     PyObject* /*self*/, PyObject* args, PyObject* kwds)
@@ -11576,7 +11581,7 @@ the diagonal values which are set to ``1``. For ``dtype == rgba32``, the \n\
 diagonal values are ``r = 0, g = 0, b = 1, alpha = 0``. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 size : int \n\
     The size of the squared matrix (single integer value).\n\
 dtype : str, optional \n\
@@ -11590,7 +11595,7 @@ eyeMatrix : dataObject \n\
     The created eye-matrix as ``size x size`` :class:`dataObject`. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 ones : method for creating a matrix filled with ones \n\
 zeros : method for creating a matrix filled with zeros");
 PyObject* PythonDataObject::PyDataObj_StaticEye(PyObject* /*self*/, PyObject* args, PyObject* kwds)
@@ -11662,7 +11667,7 @@ This method can especially be used to convert numpy.arrays that are obtained by 
 from packages like ``OpenCV (cv2)`` or ``PIL`` to dataObjects. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 array : numpy.ndarray \n\
     ``M x N x 3`` or ``M x N x 4``, uint8 :class:`numpy.ndarray` \n\
 \n\
@@ -11801,7 +11806,7 @@ Tags: \n\
   string. The existing tag map in this object is deleted first. \n\
 \n\
 Parameters  \n\
-------------\n\
+----------\n\
 sourceObj : dataObject \n\
     source object, where meta information is copied from. \n\
 copyAxisInfo : bool, optional \n\
@@ -11812,7 +11817,7 @@ copyTags : bool, optional \n\
 \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 metaDict : this attribute can directly be used to print meta information of a dataObject.");
 PyObject* PythonDataObject::PyDataObj_CopyMetaInfo(
     PyDataObject* self, PyObject* args, PyObject* kwds)

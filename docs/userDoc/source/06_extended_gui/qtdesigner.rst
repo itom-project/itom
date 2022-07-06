@@ -104,7 +104,7 @@ Basically you have the choice between three different base layouts:
      of itom or as toolbox (denoted as dock widget), in one of the four toolbox areas of the main window of |itom|.
      The toolbox can be docked or undocked and moved from one allowed area to another one. For using a widget as central
      widget, see :ref:`this section <qtdesigner-typecentralwidget>`, for a usage as toolbox see 
-     :ref:`here <qtdesigner-typedockwidet`.
+     :ref:`here <qtdesigner-typedockwidget>`.
    * Since **itom 4.1** it is further possible to add such a customized widget base layout to one **layout** of another
      customized user interface. For more information about this, see :ref:`this section <qtdesigner-extentlayouts>`.
 

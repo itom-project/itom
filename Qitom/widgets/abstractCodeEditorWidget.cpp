@@ -570,8 +570,21 @@ void AbstractCodeEditorWidget::copy()
             }
 
             QString modifiedText = formatCodeForClipboard(mimeData->text(), prependText);
-            clipboard->clear(); // mimeData is now invalid!
-            clipboard->setText(modifiedText);
+
+            // from Win11 on, directly reassigning a text to the clipboard
+            // might lead to errors (similar to https://bugreports.qt.io/browse/QTBUG-27097).
+            // A workaround seems to be to change the clipboard with a small
+            // delay, however the event loop has to be run at least one time.
+            // Therefore, a simple sleep / delay does not work.
+#ifdef _WIN32
+            QTimer::singleShot(25, [=]() 
+            { 
+                clipboard->setText(modifiedText);
+            });
+#else
+            //clipboard->clear(); // mimeData is now invalid!
+            //clipboard->setText(modifiedText);
+#endif
         }
     }
 }
@@ -711,8 +724,21 @@ void AbstractCodeEditorWidget::cut()
             }
 
             QString modifiedText = formatCodeForClipboard(mimeData->text(), prependText);
-            clipboard->clear(); // mimeData is now invalid!
-            clipboard->setText(modifiedText);
+
+            // from Win11 on, directly reassigning a text to the clipboard
+// might lead to errors (similar to https://bugreports.qt.io/browse/QTBUG-27097).
+// A workaround seems to be to change the clipboard with a small
+// delay, however the event loop has to be run at least one time.
+// Therefore, a simple sleep / delay does not work.
+#ifdef _WIN32
+            QTimer::singleShot(25, [=]()
+            {
+                clipboard->setText(modifiedText);
+            });
+#else
+            //clipboard->clear(); // mimeData is now invalid!
+            //clipboard->setText(modifiedText);
+#endif
         }
     }
 }

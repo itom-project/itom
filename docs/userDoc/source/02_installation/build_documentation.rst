@@ -9,7 +9,7 @@ Necessary tools
 -----------------
 
 In order to be able to build the documentation, you need to have some tools 
-installed on your computer:
+installed on your computer. The main applications are:
 
 1. Doxygen
     
@@ -41,14 +41,42 @@ installed on your computer:
     However, you 
     then need to separately install all depending packages of **Sphinx**.
 
-3. Python-Packages breathe and numpydoc
-    
-    Besides **Sphinx**, the additional packages 
-    `breathe <https://pypi.org/project/breathe/>`_ and 
-    `numpydoc <https://pypi.org/project/numpydoc/>`_ have to be installed in 
-    order to create the user documentation of itom. It is recommended to 
-    install them via the Python Package Manager of itom, too.
+3. Python-Packages and Sphinx extensions
 
+    In the |itom| sources folder **itom/docs/userDoc**, you can find a 
+    **requirements.txt** file containing all further necessary python packages 
+    and Sphinx extensions. Install them by using **pip**:
+    
+    .. code-block: bat
+        
+        python.exe -m pip install -r requirements.txt
+        
+    Following packages will be installed: 
+    
+    * `breathe <https://pypi.org/project/breathe/>`_
+    * `matplotlib <https://pypi.org/project/matplotlib/>`_
+    * `numpy <https://pypi.org/project/numpy/>`_
+    * `numpydoc <https://pypi.org/project/numpydoc/>`_
+    * `openpyxl <https://pypi.org/project/openpyxl/>`_
+    * `pandas <https://pypi.org/project/pandas/>`_
+    * `plotly <https://pypi.org/project/plotly/>`_
+    * `tables <https://pypi.org/project/tables/>`_
+    * `scikit learn <https://pypi.org/project/scikit-learn/>`_
+    * `scipy <https://pypi.org/project/scipy/>`_
+    * `seaborn <https://pypi.org/project/seaborn/>`_
+    * `sphinx <https://pypi.org/project/Sphinx/>`_
+    
+    To create the demo chapter documentation, the Sphinx extension:
+    
+    * `sphinx_gallery <https://pypi.org/project/sphinx-gallery/>`_
+    
+    is needed. See in chapter :ref:`add-demo-label`, how a demo must be formatted
+    to build the it into the documentation. 
+
+    For the html builder the following packages are installed, too.
+    
+    * `sphinx-copybutton <https://pypi.org/project/sphinx-copybutton/>`_
+    * `sphinx-rtd-theme <https://pypi.org/project/sphinx-rtd-theme/>`_ 
 
 Run doxygen
 ---------------
@@ -77,11 +105,10 @@ After the build process, a folder **xml** is created in the **doxygen**
 sub-folder of the **docs** folder. This **xml** folder is required afterwards.
 
 
-.. sphinxLabel:
+.. _sphinxLabel:
 
 Run Sphinx
 --------------
-
 
 Now, open |itom| and execute the script **create_doc.py** in the folder **docs/userDoc** 
 of the build-directory. The default-builder of the
@@ -115,3 +142,21 @@ and displayed in the assistant. If you have a setup version of |itom|, the help-
 already contains a compiled documentation file, that is displayed in this case. 
 Please note that the file check is only execute once per |itom| session. 
 Restart it in order to redo the check.
+
+.. _add-demo-label:
+
+Add a demo script to the documentation
+--------------------------------------
+
+The demo documentation chapter is build using the Sphinx extension `sphinx_gallery <https://sphinx-gallery.github.io/stable/index.html>`_, 
+which auto-generates the documentation necessary files from the python script. This adds the demo to the :ref:`itom demo gallery <gallery-demos-label>` , 
+which is divided into **itom** , **python** and **python-packages**. The demo page is divided accordingly 
+into code blocks and documentation markdowns, similar to a Juypter notebook. For this, each script must contain a header, 
+as described in the `Sphinx Gallery documentation <https://sphinx-gallery.github.io/stable/getting_started.html#creating-a-basic-gallery>`_.
+
+`Sphinx_gallery <https://sphinx-gallery.github.io/stable/index.html>`_ can also integrate **print outputs** and **plots** into the documentation. 
+
+.. important::
+
+    If the demo script filename contains the prefix **demo_**, this script will be executed 
+    when creating the documentation and the print outputs and plots will be generated and added. 

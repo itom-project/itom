@@ -219,6 +219,6 @@ If you are developing your own GUI and want wo use live images from a grabber, y
 
 Demo script cameraWindow.py
 ================================
-A demo script named **cameraWindow.py** is provided, which demonstrates basic grabber use. Detailed discussion of this script is :ref:`available<demoCameraWindow>`.
+A demo script named **cameraWindow.py** is provided, which demonstrates basic grabber use. Detailed discussion of this script is available :ref:`here <sphx_glr_11_demos_itom_ui_demo_cameraWindow.py>`.
 
 

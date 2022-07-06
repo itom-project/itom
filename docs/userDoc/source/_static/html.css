@@ -1,0 +1,27 @@
+/* hide note linking to the download section at the bottom of galleries
+ * as suggested in https://github.com/sphinx-gallery/sphinx-gallery/issues/760
+ */
+/* hide note for download button */
+div.sphx-glr-download-link-note {
+    height: 0px;
+    visibility: hidden;
+}
+
+/* re-style the download button */
+div.sphx-glr-download a {
+    background-color: #297fb9;
+    background-image: none;
+    color: #FFFFFF;
+    border: 0;
+}
+
+/* re-style the download button */
+div.sphx-glr-download a:hover {
+    background-color: #297fb9;
+}
+
+/* hide jupyter download button */
+div.sphx-glr-download-jupyter {
+    height: 0px;
+    visibility: hidden;
+}

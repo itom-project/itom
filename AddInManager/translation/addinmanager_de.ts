@@ -419,6 +419,18 @@
         <source>the given meta information does not fit an array of string values</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>number of dimensions out of range.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>unallowed data type.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>DataObject must not be nullptr</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ito::AddInManager</name>

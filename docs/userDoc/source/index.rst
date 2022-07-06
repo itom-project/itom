@@ -21,25 +21,10 @@
     08_scriptLanguage/script-language.rst
     09_reference/reference.rst
     10_miscellaneous/miscellaneous.rst
-    11_test-scripts/test-scripts.rst
-    12_tutorials/tutorials.rst
-    13_contributing/contributing.rst
+    11_demos/demos.rst
+    12_contributing/contributing.rst
 
-.. only:: builder_qthelp
-    
-    .. toctree::
-        :maxdepth: 1
-        
-        .. structure.rst
-        .. todo.rst
 
-.. only:: latex
-    
-    ..toctree::
-        :maxdepth: 1
-        
-        .. todo.rst
-   
 Indices and tables
 ###################
 

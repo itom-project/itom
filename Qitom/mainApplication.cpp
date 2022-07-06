@@ -219,16 +219,16 @@ QString MainApplication::getSplashScreenFileName() const
     if (currentMonth == 12)
     {
         //Christmas splashScreen whole december of each year
-        fileName = ":/application/icons/itomicon/splashScreen2Christmas.png";
+        fileName = ":/application/icons/itomicon/splashScreen4Christmas.png";
     }
     else if (qAbs(daysDiffToEaster) <= 7)
     {
         //Easter splashScreen one week before and after easter day
-        fileName = ":/application/icons/itomicon/splashScreen2Easter.png";
+        fileName = ":/application/icons/itomicon/splashScreen4Easter.png";
     }
     else //default splashScreen
     {
-        fileName = ":/application/icons/itomicon/splashScreen2.png";
+        fileName = ":/application/icons/itomicon/splashScreen4.png";
     }
 
     return fileName;
@@ -240,7 +240,7 @@ QPixmap MainApplication::getSplashScreenPixmap() const
 #ifdef USEGIMMICKS
     QString splashScreenFileName = getSplashScreenFileName(); // get the fileName of splashScreen. Different at easter and christmas time
 #else
-    QString splashScreenFileName = ":/application/icons/itomicon/splashScreen2.png"; //only default splashScreen
+    QString splashScreenFileName = ":/application/icons/itomicon/splashScreen4.png"; //only default splashScreen
 #endif // USEUSEGIMMICKS
 
     QPixmap pixmap(splashScreenFileName);
@@ -322,7 +322,7 @@ QPixmap MainApplication::getSplashScreenPixmap() const
 
     QRectF rectVersion(
         textLeftPos,
-        pixmap.height() * 0.6,
+        pixmap.height() * 0.63,
         pixmap.width() - textLeftPos,
         pixmap.height() * 0.1); // relative position of the version text within the image
     QFont fontVersion;

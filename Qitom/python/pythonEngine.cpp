@@ -581,7 +581,8 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap
                 }
             }
             
-            static wchar_t *wargv = L"";
+            wchar_t wargv0[] = L"";
+            wchar_t* wargv = { wargv0 };
             PySys_SetArgv(1, &wargv);
 
             ito::PythonDataObject::PyDataObjectType.tp_base = 0;

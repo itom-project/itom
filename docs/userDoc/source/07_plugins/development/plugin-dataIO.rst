@@ -239,7 +239,3 @@ RawIO-Plugins
 
 Further IO plugins are directly inherited from **ito::AddInDataIO**.
 
-.. todo::
-    
-    documentation for other IO devices
-

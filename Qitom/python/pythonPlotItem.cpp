@@ -86,7 +86,7 @@ if it is used, ``objectID`` must be used as keyword argument, else ``subplotIdx`
 assumed to be initialized. \n\
 \n\
 Parameters \n\
------------- \n\
+---------- \n\
 figure : figure \n\
     The :class:`figure` window, that contains an itom plot. \n\
 subplotIdx : int, optional \n\
@@ -275,7 +275,7 @@ available for the classes ``itom1dqwtplot`` (see section :ref:`plot-line`) or \n
 ``itom2dqwtplot`` (see section :ref:`plot-image`). \n\
 \n\
 Parameters\n\
------------\n\
+----------\n\
 points : dataObject \n\
     This object will be a ``2 x nrOfSelectedPoints`` :class:`dataObject` of dtype \n\
     ``float64`` after the successful call of this method. The first row contains \n\
@@ -405,7 +405,7 @@ or if the user presses the ``Esc`` key in the plot, this operation is stopped by
 a ``RuntimeError``. \n\
 \n\
 Parameters\n\
------------\n\
+----------\n\
 elementType : int \n\
     The element type that the user should interactively draw on the canvas of the plot. \n\
     Allowed types are: \n\
@@ -429,7 +429,7 @@ RuntimeError \n\
     if the user interrupts the selection (by pressing the Esc key). \n\
 \n\
 Returns \n\
--------- \n\
+------- \n\
 tuple of shape \n\
     A tuple with all drawn elements, represented as :class:`shape` objects is returned.");
 /*static*/ PyObject* PythonPlotItem::PyPlotItem_drawAndPickElements(PyPlotItem *self, PyObject *args, PyObject *kwds)

@@ -97,8 +97,8 @@ namespace ito
 		tComplex64 = 8,  /*!< complex value with real and imaginary part of type float32 */
 		tComplex128 = 9, /*!< complex value with real and imaginary part of type float64 */
 		tRGBA32 = 10,     /*!< a uint32 / vec4u value coded as 0xAARRGGBB */
-        tDateTime = 11,
-        tTimeDelta = 12,
+        tDateTime = 11,  /*!< a date time value, number of microseconds since 01.01.1970 */
+        tTimeDelta = 12,  /*!< a time difference value, with microseconds precision. */
 	};
 
 	/**

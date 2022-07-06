@@ -543,15 +543,15 @@
     </message>
     <message>
         <source>Mean: %1%2</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Durchschnitt: %1%2</translation>
     </message>
     <message>
         <source>StdDev: %1%2</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Standardabweichung: %1%2</translation>
     </message>
     <message>
         <source>Mean: %1%2%3%4</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Mittelwert: %1%2%3%4</translation>
     </message>
     <message>
         <source>itom widget to show the dataObject meta information.</source>
@@ -563,11 +563,11 @@
     </message>
     <message>
         <source>%1 days </source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">%1 Tage </translation>
     </message>
     <message>
         <source>%1:%2:%3</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
 </context>
 <context>

@@ -293,7 +293,7 @@ Scaling and offset transform the pixel coordinate in the matrix (beginning with 
 by their pixel coordinate (in integer values), the physical units are displayed in the plots (e.g. designer widget type *itom1dqwtplot* or *itom2dqwtplot*). The following
 example should explain the advantage of the scaling and offset values:
 
-Lets assume that a white-light interferometer records a 2.5D topography of an object. The distance between two adjacent pixels in 2.5 µm in both directions. Additionally, the
+Lets assume that a white-light interferometer records a 2.5D topography of an object. The distance between two adjacent pixels in 2.5 Âµm in both directions. Additionally, the
 start position of the x-y-stage is (20.5 mm and 47.7 mm in x and y direction, respectively). These values can then be considered in the obtained **dataObject** by the following code:
 
 .. code-block:: python
@@ -307,7 +307,7 @@ start position of the x-y-stage is (20.5 mm and 47.7 mm in x and y direction, re
     record.axisOffsets = (-47.7 / 0.0025, -20.5 / 0.0025) #offset is given in pixel
     record.axisUnits = ('mm', 'mm')
     record.axisDescriptions = ('y', 'x')
-    record.valueUnit = ('µm')
+    record.valueUnit = ('Âµm')
     record.valueDescription = 'height'
     plot(record)
     
@@ -430,7 +430,7 @@ is a C++ class with the same name that can be used in all plugins. Further point
 * Numpy arrays are always stored in one continuous block in memory. This is a compact and fast structure, however huge matrices can easily run into memory errors, since the computer may have free memory, however probably not in one single block in memory. Therefore, a dataObject usually stores every plane (this is every 2d array of the last two dimensions (x-y-plane)) in one block, whereas all planes lie at arbitrary positions in memory. This is only the case, if the dataObject is created as non-continuous object (see constructor of :py:class:`~itom.dataObject`). 2D dataObjects are always continuous.
 * DataObjects are also created with respect to measurement data. Therefore, dataObjects have further meta information, like stated in the sections above.
 * Internally, every plane in a DataObject is based on OpenCV matrices (in the C++ code). Therefore, it is directly possible to apply OpenCV methods to DataObjects. Furthermore, a direct
-use of dataObjects, created in Python, in algorithms or hardware plugins is possible.
+  use of dataObjects, created in Python, in algorithms or hardware plugins is possible.
 
 Despite the stated differences, the good is, that the classes ``dataObject`` and ``numpy.array`` are compatible to each other. This is especially the case for continuous dataObjects.
 They can directly be converted to and from ``numpy.arrays`` even as shallow copy, such that both objects share the same matrix memory. If a 3- or higher dimensional dataObject is converted to a numpy-array, it is implicitly converted to a continuous form (such that all planes lie in adjacent blocks in the memory).
@@ -481,7 +481,7 @@ dataObjects:
     itom.filter("minValue", a) #raises an error
     itom.filter("minValue", itom.dataObject(a)) #works
 
-.. _itomDataObjectDatetime
+.. _itomDataObjectDatetime:
 
 Datetime and timedelta types
 ---------------------------------

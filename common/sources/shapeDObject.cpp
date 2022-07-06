@@ -85,29 +85,34 @@ namespace ito {
         case Shape::Square: {
             QPointF p1 = shape.rbasePoints()[0];
             QPointF p2 = shape.rbasePoints()[1];
-            QPointF p3 = shape.centerPoint();
+            QPointF pCenter = shape.centerPoint();
 
-            p1.setX(dataObject.getPhysToPix(dims - 1, p1.x()));
-            p1.setY(dataObject.getPhysToPix(dims - 2, p1.y()));
+            p1.setX(dataObject.getPhysToPixUnclipped(dims - 1, p1.x()));
+            p1.setY(dataObject.getPhysToPixUnclipped(dims - 2, p1.y()));
 
-            p2.setX(dataObject.getPhysToPix(dims - 1, p2.x()));
-            p2.setY(dataObject.getPhysToPix(dims - 2, p2.y()));
+            p2.setX(dataObject.getPhysToPixUnclipped(dims - 1, p2.x()));
+            p2.setY(dataObject.getPhysToPixUnclipped(dims - 2, p2.y()));
 
-            p3.setX(dataObject.getPhysToPix(dims - 1, p3.x()));
-            p3.setY(dataObject.getPhysToPix(dims - 2, p3.y()));
+            pCenter.setX(dataObject.getPhysToPixUnclipped(dims - 1, pCenter.x()));
+            pCenter.setY(dataObject.getPhysToPixUnclipped(dims - 2, pCenter.y()));
 
             cv::Scalar color;
+
             if (inverse)
+            {
                 color = cv::Scalar(0, 0, 0);
+            }
             else
+            {
                 color = cv::Scalar(255, 255, 255);
+            }
 
             double angle = shape.rotationAngleDeg();
 
             if (angle == 0.0)
             {
                 cv::RotatedRect rRect = cv::RotatedRect(
-                    cv::Point2f(p3.x(), p3.y()),
+                    cv::Point2f(pCenter.x(), pCenter.y()),
                     cv::Size(fabs(p2.x() - p1.x()), fabs(p2.y() - p1.y())),
                     0.0);
                 cv::Rect brect = rRect.boundingRect();
@@ -116,12 +121,13 @@ namespace ito {
             else
             {
                 cv::RotatedRect rRect = cv::RotatedRect(
-                    cv::Point2f(p3.x(), p3.y()),
+                    cv::Point2f(pCenter.x(), pCenter.y()),
                     cv::Size(fabs(p2.x() - p1.x()), fabs(p2.y() - p1.y())),
                     angle);
                 cv::Point2f vertices[4];
                 rRect.points(vertices);
                 cv::Point vertices_int[4];
+
                 for (int i = 0; i < 4; ++i)
                 {
                     vertices_int[i] = cv::Point(qRound(vertices[i].x), qRound(vertices[i].y));
@@ -141,17 +147,23 @@ namespace ito {
             for (int np = 0; np < vertices.size(); np++)
             {
                 p = vertices[np];
-                p.setX(dataObject.getPhysToPix(dims - 1, p.x()));
-                p.setY(dataObject.getPhysToPix(dims - 2, p.y()));
+                p.setX(dataObject.getPhysToPixUnclipped(dims - 1, p.x()));
+                p.setY(dataObject.getPhysToPixUnclipped(dims - 2, p.y()));
                 pts.push_back(cv::Point(qRound(p.x()), qRound(p.y())));
             }
-            cnt.push_back(pts);
 
+            cnt.push_back(pts);
             cv::Scalar color;
+
             if (inverse)
+            {
                 color = cv::Scalar(0, 0, 0);
+            }
             else
+            {
                 color = cv::Scalar(255, 255, 255);
+            }
+
             cv::fillPoly(*mask.getCvPlaneMat(0), cnt, color);
         }
         break;
@@ -160,23 +172,27 @@ namespace ito {
         case Shape::Circle: {
             QPointF p1 = shape.rbasePoints()[0];
             QPointF p2 = shape.rbasePoints()[1];
-            QPointF p3 = shape.centerPoint();
+            QPointF pCenter = shape.centerPoint();
 
-            p1.setX(dataObject.getPhysToPix(dims - 1, p1.x()));
-            p1.setY(dataObject.getPhysToPix(dims - 2, p1.y()));
+            p1.setX(dataObject.getPhysToPixUnclipped(dims - 1, p1.x()));
+            p1.setY(dataObject.getPhysToPixUnclipped(dims - 2, p1.y()));
 
-            p2.setX(dataObject.getPhysToPix(dims - 1, p2.x()));
-            p2.setY(dataObject.getPhysToPix(dims - 2, p2.y()));
+            p2.setX(dataObject.getPhysToPixUnclipped(dims - 1, p2.x()));
+            p2.setY(dataObject.getPhysToPixUnclipped(dims - 2, p2.y()));
 
-            p3.setX(dataObject.getPhysToPix(dims - 1, p3.x()));
-            p3.setY(dataObject.getPhysToPix(dims - 2, p3.y()));
+            pCenter.setX(dataObject.getPhysToPixUnclipped(dims - 1, pCenter.x()));
+            pCenter.setY(dataObject.getPhysToPixUnclipped(dims - 2, pCenter.y()));
 
             cv::Scalar color;
-            if (inverse)
-                color = cv::Scalar(0, 0, 0);
-            else
-                color = cv::Scalar(255, 255, 255);
 
+            if (inverse)
+            {
+                color = cv::Scalar(0, 0, 0);
+            }
+            else
+            {
+                color = cv::Scalar(255, 255, 255);
+            }
 
             cv::Size size =
                 cv::Size(qRound((p2.x() - p1.x()) / 2.0), qRound((p2.y() - p1.y()) / 2.0));
@@ -193,7 +209,7 @@ namespace ito {
 
             cv::ellipse(
                 *mask.getCvPlaneMat(0),
-                cv::Point2f(p3.x(), p3.y()),
+                cv::Point2f(pCenter.x(), pCenter.y()),
                 size,
                 shape.rotationAngleDeg(),
                 0,

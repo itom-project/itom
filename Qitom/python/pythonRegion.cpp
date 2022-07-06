@@ -84,7 +84,7 @@ region has the value 255 and all other values 0 \n\
 If the constructor is called without argument, an empty region is created. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 otherRegion : region \n\
     Pass this object of :class:`region` to create a copied object of it. \n\
 x : int\n\
@@ -197,7 +197,7 @@ This method returns True, if the given point (x,y) or rectangle (x,y,w,h) is ful
 contained in this region. Otherwise returns False.\n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 x : int \n\
     x-coordinate of one corner of the new rectangular region \n\
 y : int \n\
@@ -208,7 +208,7 @@ h : int, optional \n\
     height of the new rectangular region. If not given, point is assumed.\n\
 \n\
 Returns \n\
--------- \n\
+------- \n\
 bool \n\
     True if point or rectangle is contained in region, otherwise False.");
 /*static*/ PyObject* PythonRegion::PyRegion_contains(PyRegion *self, PyObject *args, PyObject *kwds)
@@ -257,7 +257,7 @@ region, defined by its corner points (``x``, ``y``) and its width ``w`` \n\
 and height ``h``. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 x : int \n\
     x-coordinate of one corner of the new rectangular region \n\
 y : int \n\
@@ -308,7 +308,7 @@ region, defined by its corner points (``x``, ``y``) and its width ``w`` \n\
 and height ``h``. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 x : int \n\
     x-coordinate of one corner of the new rectangular region \n\
 y : int \n\
@@ -362,7 +362,7 @@ region, defined by its corner points (``x``, ``y``) and its width ``w`` \n\
 and height ``h``. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 x : int \n\
     x-coordinate of one corner of the new rectangular region \n\
 y : int \n\
@@ -408,14 +408,14 @@ PyDoc_STRVAR(pyRegionTranslate_doc,"translate(x, y)\n\
 This method translates this region by the given translation values. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 x : int \n\
     translation in x-direction \n\
 y : int \n\
     translation in y-direction \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 translated");
 /*static*/ PyObject* PythonRegion::PyRegion_translate(PyRegion *self, PyObject *args, PyObject *kwds)
 {
@@ -441,7 +441,7 @@ PyDoc_STRVAR(pyRegionTranslated_doc,"translated(x, y) -> region\n\
 This method returns a new region, which is translated by the given distances in x and y direction. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 x : int \n\
     translation in x-direction \n\
 y : int \n\
@@ -453,7 +453,7 @@ region \n\
     new translated region.\n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 translate");
 /*static*/ PyObject* PythonRegion::PyRegion_translated(PyRegion *self, PyObject *args, PyObject *kwds)
 {
@@ -486,7 +486,7 @@ region, defined by its corner points (``x``, ``y``) and its width ``w`` \n\
 and height ``h``. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 x : int \n\
     x-coordinate of one corner of a rectangular region \n\
 y : int \n\
@@ -540,7 +540,7 @@ region, defined by its corner points (``x``, ``y``) and its width ``w`` \n\
 and height ``h``. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 x : int \n\
     x-coordinate of one corner of a rectangular region \n\
 y : int \n\
@@ -694,7 +694,7 @@ Indicate a ``boundingRegion`` in order to increase the size of the returned data
 Its size will have the size of the union between the boundingRegion and the region.\n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 boundingRegion : region, optional\n\
     If a :class:`region` object is given, the shape of the returned :class:`dataObject`\n\
     is the maximum (union) between this ``boundingRegion`` and this region. \n\

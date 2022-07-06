@@ -24,26 +24,12 @@
 
 /* includes */
 #ifndef Q_MOC_RUN
-#define PY_ARRAY_UNIQUE_SYMBOL                                                                     \
-    itom_ARRAY_API // see numpy help ::array api :: Miscellaneous :: Importing the api (this line
-                   // must bebefore include global.h)
-#define NO_IMPORT_ARRAY
+    // see numpy help ::array api :: Miscellaneous :: Importing the api (this line
+    // must before include global.h)
+    #define PY_ARRAY_UNIQUE_SYMBOL itom_ARRAY_API 
+    #define NO_IMPORT_ARRAY
 
-#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
-
-// python
-//  see http://vtk.org/gitweb?p=VTK.git;a=commitdiff;h=7f3f750596a105d48ea84ebfe1b1c4ca03e0bab3
-#if (defined _DEBUG) && (defined WIN32)
-#undef _DEBUG
-#include "numpy/arrayobject.h"
-#include "numpy/arrayscalars.h"
-#include "python/pythonWrapper.h"
-#define _DEBUG
-#else
-#include "numpy/arrayobject.h"
-#include "numpy/arrayscalars.h"
-#include "python/pythonWrapper.h"
-#endif
+    #include "python/pythonWrapper.h"
 #endif
 
 #include "DataObject/dataobj.h"

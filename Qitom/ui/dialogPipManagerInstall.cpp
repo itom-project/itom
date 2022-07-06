@@ -42,6 +42,7 @@ DialogPipManagerInstall::DialogPipManagerInstall(QWidget *parent, QString packag
 
     ui.radioSearchIndex->setChecked(true);
     on_radioSearchIndex_clicked(true);
+    ui.lblPypiHint->setVisible(true);
 
 #if WIN32
     ui.checkRunSudo->setVisible(false);
@@ -192,6 +193,7 @@ void DialogPipManagerInstall::on_radioWhl_clicked(bool checked)
     ui.txtPackage->setReadOnly(true);
     ui.checkUpgrade->setVisible(true);
     ui.checkInstallDeps->setVisible(true);
+    ui.lblPypiHint->setVisible(false);
 }
 
 //--------------------------------------------------------------------------------
@@ -203,6 +205,7 @@ void DialogPipManagerInstall::on_radioTarGz_clicked(bool checked)
     ui.txtPackage->setReadOnly(true);
     ui.checkUpgrade->setVisible(true);
     ui.checkInstallDeps->setVisible(true);
+    ui.lblPypiHint->setVisible(false);
 }
 
 //--------------------------------------------------------------------------------
@@ -215,6 +218,7 @@ void DialogPipManagerInstall::on_radioSearchIndex_clicked(bool checked)
     ui.txtPackage->setFocus();
     ui.checkUpgrade->setVisible(true);
     ui.checkInstallDeps->setVisible(true);
+    ui.lblPypiHint->setVisible(true);
 }
 
 //--------------------------------------------------------------------------------
