@@ -1,7 +1,7 @@
-"""TwipOGLFigure
-=========
+"""Plot 2.5D/ 3D
+=============
 
-This itom plot is for visualisation of 2D / 3D DataObjects and PointClouds.
+The itom twipOGLFigure plot is for visualisation of 2D / 3D DataObjects and PointClouds.
 """
 
 import numpy as np
