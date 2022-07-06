@@ -728,7 +728,25 @@ void PipManager::installPackage(const PipInstall &installSettings, const PipGene
             arguments << "-r";
         }
         
-        arguments << installSettings.packageName;
+        // if typeSearchIndex, multiple packages can be installed. They
+        // are separated by spaces
+        
+        if (installSettings.type == PipInstall::typeSearchIndex)
+        {
+            auto packageNames = installSettings.packageName.split(" ");
+
+            foreach (const QString& pn, packageNames)
+            {
+                if (pn.trimmed() != "")
+                {
+                    arguments << pn.trimmed();
+                }
+            }
+        }
+        else
+        {
+            arguments << installSettings.packageName;
+        }
 
         emit pipRequestStarted(taskInstall, arguments.mid(1).join(" ") + "\n");
 

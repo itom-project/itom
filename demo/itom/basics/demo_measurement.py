@@ -15,7 +15,6 @@ from itom import dataObject
 from itom import algorithms
 from itom import plot1
 from itom import plot2
-import itomPlotlyRenderer
 
 from itom import ui
 from itomUi import ItomUi
