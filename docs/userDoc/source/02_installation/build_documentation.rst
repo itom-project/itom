@@ -68,7 +68,7 @@ installed on your computer. The main applications are:
     
     To create the demo chapter documentation, the Sphinx extension:
     
-    * `sphinx_gallery <https://pypi.org/project/sphinx-gallery/>`_
+    * `sphinx_gallery <https://pypi.org/project/sphinx-gallery/>`__
     
     is needed. See in chapter :ref:`add-demo-label`, how a demo must be formatted
     to build the it into the documentation. 
@@ -148,13 +148,13 @@ Restart it in order to redo the check.
 Add a demo script to the documentation
 --------------------------------------
 
-The demo documentation chapter is build using the Sphinx extension `sphinx_gallery <https://sphinx-gallery.github.io/stable/index.html>`_, 
+The demo documentation chapter is build using the Sphinx extension `sphinx_gallery <https://sphinx-gallery.github.io/stable/index.html>`__, 
 which auto-generates the documentation necessary files from the python script. This adds the demo to the :ref:`itom demo gallery <gallery-demos-label>` , 
 which is divided into **itom** , **python** and **python-packages**. The demo page is divided accordingly 
 into code blocks and documentation markdowns, similar to a Juypter notebook. For this, each script must contain a header, 
-as described in the `Sphinx Gallery documentation <https://sphinx-gallery.github.io/stable/getting_started.html#creating-a-basic-gallery>`_.
+as described in the `Sphinx Gallery documentation <https://sphinx-gallery.github.io/stable/getting_started.html#creating-a-basic-gallery>`__.
 
-`Sphinx_gallery <https://sphinx-gallery.github.io/stable/index.html>`_ can also integrate **print outputs** and **plots** into the documentation. 
+`sphinx_gallery <https://sphinx-gallery.github.io/stable/index.html>`__ can also integrate **print outputs** and **plots** into the documentation. 
 
 .. important::
 

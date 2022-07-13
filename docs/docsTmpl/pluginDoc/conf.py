@@ -312,6 +312,9 @@ numpydoc_show_class_members = False
 # Files for auto-generating links in documentation to methods / datatypes etc. of other projects...
 # to get the inv files, open the given URL/objects.inv.
 intersphinx_mapping = {
-    'python': ('https://docs.python.org/3.8', None),
-    'numpy': ('https://numpy.org/doc/stable', None)
+    "python": ("https://docs.python.org/3", (None, "..\\..\\..\\..\\sources\\itom\\docs\\userDoc\\source\\python3.8-inv.txt")),
+    "numpy": ("https://numpy.org/doc/stable", (None, "..\\..\\..\\..\\sources\\itom\\docs\\userDoc\\source\\numpy1.22-inv.txt")),
+    "scipy": ("https://docs.scipy.org/doc/scipy", (None, "..\\..\\..\\..\\sources\\itom\\docs\\userDoc\\source\\scipy1.6.1-inv.txt")),
+    "matplotlib": ("https://matplotlib.org", (None, "..\\..\\..\\..\\sources\\itom\\docs\\userDoc\\source\\matplotlib3.5-inv.txt")),
+    "pandas": ("https://pandas.pydata.org/docs/", (None, "..\\..\\..\\..\\sources\\itom\\docs\\userDoc\\source\\pandas1.3.5-inv.txt")),
 }
