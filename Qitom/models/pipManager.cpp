@@ -69,7 +69,6 @@ namespace ito
             if (!retval.containsError())
             {
                 //Pip Manager has been started as standalone application to update packages like Numpy that cannot be updated if itom is running and the Python Engine has been entirely started.
-                Py_Initialize();
                 if (Py_IsInitialized())
                 {
 #if defined WIN32
@@ -166,7 +165,7 @@ ito::RetVal PipManager::initPythonIfStandalone()
 	//keep this method consistent to PythonEngine::pythonSetup
 
 	QString pythonSubDir = QCoreApplication::applicationDirPath() + QString("/python%1").arg(PY_MAJOR_VERSION);
-	QString pythonAllInOneDir = QCoreApplication::applicationDirPath() + QString("/../../3rdParty/Python");
+	QString pythonAllInOneDir = QCoreApplication::applicationDirPath() + QString("/../../3rdParty/Python3");
 	qDebug() << "pythonAllInOneDir:" << pythonAllInOneDir;
 	//check if an alternative home directory of Python should be set:
 	QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
@@ -237,6 +236,8 @@ ito::RetVal PipManager::initPythonIfStandalone()
         m_pUserDefinedPythonHome = Py_DecodeLocale(pythonDir.toLatin1().data(), NULL);
 		Py_SetPythonHome(m_pUserDefinedPythonHome);
 	}
+
+    Py_Initialize();
 
 	//read directory values from Python
 	qDebug() << "Py_GetPythonHome:" << QString::fromWCharArray(Py_GetPythonHome());
