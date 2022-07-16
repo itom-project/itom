@@ -50,8 +50,8 @@ if(${BUILD_WITH_HELPVIEWER})
     #HELPVIEWER is only available for Qt >= 5.6.0
     #at first, get the available Qt version
     itom_find_package_qt(ON Core)
-
-    if((NOT ${Qt5_FOUND}) OR (Qt5_VERSION VERSION_LESS 5.6.0))
+    
+    if (QT5_FOUND AND (Qt5_VERSION VERSION_LESS 5.6.0))
         message(WARNING "BUILD_WITH_HELPVIEWER is set to FALSE, since it is only possible for Qt >= 5.6.0")
         set(BUILD_WITH_HELPVIEWER FALSE)
     endif()
@@ -61,7 +61,7 @@ if(${BUILD_WITH_HELPVIEWER})
     #requires Qt5 and Qt5WebEngine in order to built a built-in help viewer, since QtAssistant only has a limited set of rendering options since Qt5.6.
     itom_find_package_qt(ON Core Widgets UiTools PrintSupport Network Sql Xml OpenGL Svg WebEngineWidgets Help Designer LinguistTools)
     
-    if(Qt5WebEngineWidgets_FOUND)
+    if(Qt5WebEngineWidgets_FOUND OR Qt6WebEngineWidgets_FOUND)
         add_definitions(-DUSEHELPVIEWER -D_USEHELPVIEWER)
     else()
         message(FATAL "Your Qt installation does not provide the component WebEngineWidgets. Disable the option BUILD_WITH_HELPVIEWER in CMAKE to proceed without the integrated help viewer")
