@@ -218,6 +218,10 @@ include_directories(
     ${Qt5WebEngineWidgets_INCLUDE_DIRS}
     ${Qt5Help_INCLUDE_DIRS}
     ${Qt5Network_INCLUDE_DIRS}
+    ${Qt6Widgets_INCLUDE_DIRS}
+    ${Qt6WebEngineWidgets_INCLUDE_DIRS}
+    ${Qt6Help_INCLUDE_DIRS}
+    ${Qt6Network_INCLUDE_DIRS}
     ${PYTHON_INCLUDE_DIR}
     ${NUMPY_INCLUDE_DIRS}
     ${PCL_INCLUDE_DIRS}
