@@ -29,7 +29,7 @@
 ; NOTE: The value of AppId uniquely identifies this application.
 ; Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
-AppId={{BC92C903-FB9E-49ED-AF5C-F43F37D3974A}
+AppId={{CD424B05-DB81-4C1E-9674-95F71514650B}
 AppName={#Name}
 AppVersion={#Version}
 AppVerName={#Name} {#Version}
@@ -37,7 +37,7 @@ AppPublisher={#Publisher}
 AppPublisherURL={#URL}
 AppSupportURL={#URL}
 AppUpdatesURL={#URL}
-DefaultDirName={pf64}\{#Name}
+DefaultDirName={pf64}\{#Name} {#Version}
 DefaultGroupName={#Name}
 OutputBaseFilename=setup
 Compression=lzma
@@ -184,8 +184,10 @@ Source: "{#SourceDirItomBuild}\designer\itomQwtPlotBase.dll"; DestDir: "{app}\de
 Source: "{#SourceDirItomBuild}\designer\itomWidgets.dll"; DestDir: "{app}\designer"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\designer\matplotlibPlot.dll"; DestDir: "{app}\designer"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\designer\motorController.dll"; DestDir: "{app}\designer"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\designer\plotlyPlot.dll"; DestDir: "{app}\designer"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\designer\qwt.dll"; DestDir: "{app}\designer"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\designer\slider2D.dll"; DestDir: "{app}\designer"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\designer\twipOGLPlugin.dll"; DestDir: "{app}\designer"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\designer\vtk3dVisualizer.dll"; DestDir: "{app}\designer"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\designer\translation\*.qm"; DestDir: "{app}\designer\translation"; Flags: ignoreversion recursesubdirs
 
@@ -208,6 +210,7 @@ Source: "{#SourceDirItomBuild}\plugins\DummyMotor\*.*"; DestDir: "{app}\plugins\
 Source: "{#SourceDirItomBuild}\plugins\FFTWfilters\*.*"; DestDir: "{app}\plugins\FFTWfilters"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\FileGrabber\*.*"; DestDir: "{app}\plugins\FileGrabber"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\FireGrabber\*.*"; DestDir: "{app}\plugins\FireGrabber"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\FirgelliLAC\*.*"; DestDir: "{app}\plugins\FirgelliLAC"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\FittingFilters\*.*"; DestDir: "{app}\plugins\FittingFilters"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\FringeProj\*.*"; DestDir: "{app}\plugins\FringeProj"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\GenICam\*.*"; DestDir: "{app}\plugins\GenICam"; Flags: ignoreversion recursesubdirs
@@ -222,6 +225,7 @@ Source: "{#SourceDirItomBuild}\plugins\LibUSB\*.*"; DestDir: "{app}\plugins\LibU
 Source: "{#SourceDirItomBuild}\plugins\MeasurementComputing\*.*"; DestDir: "{app}\plugins\MeasurementComputing"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\MSMediaFoundation\*.*"; DestDir: "{app}\plugins\MSMediaFoundation"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\NanotecStepMotor\*.*"; DestDir: "{app}\plugins\NanotecStepMotor"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\NerianSceneScanPro\*.*"; DestDir: "{app}\plugins\NerianSceneScanPro"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\Newport2936\*.*"; DestDir: "{app}\plugins\Newport2936"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\NewportSMC100\*.*"; DestDir: "{app}\plugins\NewportSMC100"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\niDAQmx\*.*"; DestDir: "{app}\plugins\niDAQmx"; Flags: ignoreversion recursesubdirs
@@ -236,6 +240,7 @@ Source: "{#SourceDirItomBuild}\plugins\PCOPixelFly\*.*"; DestDir: "{app}\plugins
 Source: "{#SourceDirItomBuild}\plugins\PCOSensicam\*.*"; DestDir: "{app}\plugins\PCOSensicam"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\PGRFlyCapture\*.*"; DestDir: "{app}\plugins\PGRFlyCapture"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\PI_GCS2\*.*"; DestDir: "{app}\plugins\PI_GCS2"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\PIHexapodCtrl\*.*"; DestDir: "{app}\plugins\PIHexapodCtrl"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\PiezosystemJena_NV40_1\*.*"; DestDir: "{app}\plugins\PiezosystemJena_NV40_1"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\PIPiezoCtrl\*.*"; DestDir: "{app}\plugins\PIPiezoCtrl"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\PmdPico\*.*"; DestDir: "{app}\plugins\PmdPico"; Flags: ignoreversion recursesubdirs

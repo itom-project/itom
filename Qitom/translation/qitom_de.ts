@@ -646,12 +646,17 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location line="+16"/>
-        <location line="+60"/>
+        <location line="+70"/>
         <source>...</source>
         <translation>...</translation>
     </message>
     <message>
-        <location line="-48"/>
+        <location line="-61"/>
+        <source>Examples: package-name; package-name=23.2; package-name&gt;=0.7.5. Separate multiple packages by spaces: package1 package2 ...</source>
+        <translation type="unfinished">Beispiele: Paketname; Paketname=23.2; Paketname&gt;=0.7.5. Mehrere Pakete durch Leerzeichen trennen: Paket1 Paket2 ...</translation>
+    </message>
+    <message>
+        <location line="+13"/>
         <source>Options (Basic pip options are also considered)</source>
         <translation>Optionen (Enthält auch Basisoptionen für Pip)</translation>
     </message>
@@ -5385,7 +5390,7 @@ Es ist ebenfalls möglich über das Argument &apos;pipManager&apos; beim Program
 <context>
     <name>ito::DialogPipManagerInstall</name>
     <message>
-        <location filename="../ui/dialogPipManagerInstall.cpp" line="+52"/>
+        <location filename="../ui/dialogPipManagerInstall.cpp" line="+53"/>
         <source>Install Package</source>
         <translation>Paket installieren</translation>
     </message>
@@ -5410,17 +5415,17 @@ Es ist ebenfalls möglich über das Argument &apos;pipManager&apos; beim Program
         <translation>Whl-Archiv wählen...</translation>
     </message>
     <message>
-        <location line="+11"/>
+        <location line="+12"/>
         <source>choose tar.gz or zip archive...</source>
         <translation>Tar.gz-Archiv wählen...</translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+13"/>
         <source>package-name</source>
         <translation>Paketname</translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+13"/>
         <source>choose requirements txt file...</source>
         <translation>requirements.txt Datei wählen...</translation>
     </message>
@@ -8048,7 +8053,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation>unbekannt</translation>
     </message>
     <message>
-        <location line="+389"/>
+        <location line="+407"/>
         <source>Could not start python pip
 </source>
         <translation>Python-Pip kann nicht gestartet werden</translation>
