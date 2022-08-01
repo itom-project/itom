@@ -77,33 +77,53 @@ namespace ito
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
-    //! this method returns the size of a pixel for a given pixelFormat.
-    int AddInAbstractGrabber::pixelFormatStringToBpp(const char* val)
+    //! this method gives the value range pixel for a given integer pixelFormat.
+    void AddInAbstractGrabber::integerPixelFormatStringToMinMaxValue(
+        const char* val, double& min, double& max, bool& ok)
     {
-        bool ok;
-        int format = pixelFormatStringToEnum(val, &ok);
-        if (ok)
+        ok = false;
+        const QByteArray formatString(val);
+        QByteArray lowerByteArray = formatString.toLower();
+        if (lowerByteArray == "mono8" || lowerByteArray == "rgb8" || lowerByteArray == "rgba8" ||
+            lowerByteArray == "rgb8planar" || lowerByteArray == "rg8" ||
+            lowerByteArray == "rg8packed" || lowerByteArray == "gb8")
         {
-            if (format == mono8)
-            {
-                return 8;
-            }
-            else if (format == mono10 || format == mono12 || format == mono16)
-            {
-                return 16;
-            }
-            else if(format == rgb32)
-            {
-                return 40;
-            }
-            else
-            {
-                return -1;
-            }
+            min = 0.0;
+            max = 255.0;
+            ok = true;
         }
-        else
+        else if (lowerByteArray == "mono8s")
         {
-            return -1;
+            min = -128.0;
+            max = 127.0;
+            ok = true;
+        }
+        else if (
+            lowerByteArray == "mono10" || lowerByteArray == "mono10packed" || lowerByteArray == "rgb10planar")
+        {
+            min = 0.0;
+            max = 1023.0;
+            ok = true;
+        }
+        else if (
+            lowerByteArray == "mono12" || lowerByteArray == "mono12packed" || lowerByteArray == "rgb12planar")
+        {
+            min = 0.0;
+            max = 4095.0;
+            ok = true;
+        }
+        else if (lowerByteArray == "mono14" || lowerByteArray == "mono14packed")
+        {
+            min = 0.0;
+            max = 16383.0;
+            ok = true;
+        }
+        else if (
+            lowerByteArray == "mono16" || lowerByteArray == "rgb16planar")
+        {
+            min = 0.0;
+            max = 65535.0;
+            ok = true;
         }
         
     }

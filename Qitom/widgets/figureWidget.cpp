@@ -492,40 +492,47 @@ RetVal FigureWidget::liveImage(
         bool isLine = false;
         ito::AutoInterval bitRange (0.0, 1.0);
 
-		int bpp = 0;
 		if (qobject_cast<AddInMultiChannelGrabber*>(cam))
 		{
 			QSharedPointer<ito::Param> paramFormat = getParamByInvoke(cam.data(), "pixelFormat", retval);
 			const char * pixelFormat = paramFormat->getVal<const char*>();
-			bpp = AddInAbstractGrabber::pixelFormatStringToBpp(pixelFormat);
+            double min, max = 0.0; 
+            bool ok = false;
+            AddInAbstractGrabber::integerPixelFormatStringToMinMaxValue(pixelFormat, min, max, ok);
+            if (ok)
+            {
+                bitRange.setMaximum(max);
+                bitRange.setMinimum(min);
+                setDepth = true;
+            }
+
 		}
 		else // fall back for AddInGrabber
 		{
-			bpp = getParamByInvoke(cam.data(), "bpp", retval)->getVal<int>();
+			int bpp = getParamByInvoke(cam.data(), "bpp", retval)->getVal<int>();
+            if (!retval.containsError())
+            {
+                if (bpp == 8)
+                {
+                    setDepth = true;
+                    bitRange.setMaximum(255.0);
+                }
+                else if (bpp < 17)
+                {
+                    setDepth = true;
+                    bitRange.setMaximum((float)((1 << bpp) - 1));
+                }
+                else if (bpp == 32)
+                {
+                    // ToDo define float32 and int32 behavior!
+                }
+                else if (bpp == 64)
+                {
+                    // ToDo define float64 behavior!
+                }
+            }
+
 		}
-        if (!retval.containsError())
-        {
-            if (bpp == 8)
-            {
-                setDepth = true;
-                bitRange.setMaximum(255.0);
-            }
-            else if (bpp < 17)
-            {
-                setDepth = true;
-                bitRange.setMaximum((float)((1 << bpp)-1));
-            }
-            else if (bpp == 32)
-            {
-                // ToDo define float32 and int32 behavior!
-            }
-            else if (bpp == 64)
-            {
-                // ToDo define float64 behavior!
-            }
-
-        }
-
         //get size of camera image
         QSharedPointer<ito::Param> sizex = getParamByInvoke(cam.data(), "sizex", retval);
         QSharedPointer<ito::Param> sizey = getParamByInvoke(cam.data(), "sizey", retval);

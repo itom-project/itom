@@ -17,12 +17,12 @@ class MultiChannelDummyGrabberTest(unittest.TestCase):
 
     def test_setAndGetParamViaSuffix(self):
         cam = dataIO("DummyMultiChannelGrabber")
-        cam.setParam('defaultChannel', 'Channel_0')
+        cam.setParam('defaultChannel', 'channel_0')
         originalRoi = cam.getParam('roi')
-        cam.setParam('roi:Channel_1', [0, 0, 20, 20])
+        cam.setParam('roi:channel_1', [0, 0, 20, 20])
         roiDefaultChannel = cam.getParam('roi')
-        roiChannel0 = cam.getParam('roi:Channel_0')
-        roiChannel1 = cam.getParam('roi:Channel_1')
+        roiChannel0 = cam.getParam('roi:channel_0')
+        roiChannel1 = cam.getParam('roi:channel_1')
         
         self.assertEqual(originalRoi, roiChannel0)
         self.assertNotEquals(originalRoi, roiChannel1)
@@ -31,13 +31,13 @@ class MultiChannelDummyGrabberTest(unittest.TestCase):
 
     def test_setAndGetParamViaDefaultChannel(self):
         cam = dataIO("DummyMultiChannelGrabber")
-        cam.setParam('defaultChannel', 'Channel_0')
+        cam.setParam('defaultChannel', 'channel_0')
         originalRoi = cam.getParam('roi')
-        cam.setParam('defaultChannel', 'Channel_1')
+        cam.setParam('defaultChannel', 'channel_1')
         cam.setParam('roi', [0,0,40,40])
-        cam.setParam('defaultChannel', 'Channel_0')
+        cam.setParam('defaultChannel', 'channel_0')
         channel0Roi = cam.getParam('roi')
-        cam.setParam('defaultChannel', 'Channel_1')
+        cam.setParam('defaultChannel', 'channel_1')
         channel1Roi = cam.getParam('roi')
 
         self.assertEqual(originalRoi, channel0Roi)
@@ -45,9 +45,9 @@ class MultiChannelDummyGrabberTest(unittest.TestCase):
 
     def test_channelSwitchAfterSuffixUsage(self):
         cam = dataIO("DummyMultiChannelGrabber")
-        cam.setParam('defaultChannel', 'Channel_0')
+        cam.setParam('defaultChannel', 'channel_0')
         originalChannel = cam.getParam('defaultChannel')
-        cam.setParam('roi:Channel_1', (0, 0, 40, 40))
+        cam.setParam('roi:channel_1', (0, 0, 40, 40))
         afterSuffixUsage = cam.getParam('defaultChannel')
         self.assertEqual(originalChannel, afterSuffixUsage)
         

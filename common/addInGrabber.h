@@ -50,10 +50,27 @@ namespace ito
         enum PixelFormat
         {
             mono8 = ito::tUInt8,
+            mono8s = ito::tInt8,
             mono10 = ito::tUInt16,
+            mono10Packed = ito::tUInt16,
             mono12 = ito::tUInt16,
+            mono12Packed = ito::tUInt16,
+            mono14 = ito::tUInt16,
+            mono14Packed = ito::tUInt16,
             mono16 = ito::tUInt16,
-            rgb32 = ito::tRGBA32,
+            rgb8 = ito::tRGBA32,
+            rgba8 = ito::tRGBA32,
+            rgb8Planar = ito::tUInt8,
+            rgb10Planar = ito::tUInt16,
+            rgb12Planar = ito::tUInt16,
+            rgb16Planar = ito::tUInt16,
+            rg8 = ito::tRGBA32,
+            rg8Packed = ito::tRGBA32,
+            gb8 = ito::tRGBA32,
+            float32 = ito::tFloat32,
+            float64 = ito::tFloat64,
+            complex64 = ito::tComplex64,
+            complex128 = ito::tComplex128,
         };
 #if QT_VERSION < 0x050500
         //for >= Qt 5.5.0 see Q_ENUM definition below
@@ -123,7 +140,11 @@ namespace ito
         }  
 
     public:
-        static int pixelFormatStringToBpp(const char* val); /*!< this method returns the size of a pixel for a given pixelFormat */
+        static void integerPixelFormatStringToMinMaxValue(
+            const char* val,
+            double& min,
+            double& max,
+            bool& ok); /*!< this method gives the value range pixel for a given integer pixelFormat */
         static int pixelFormatStringToEnum(const QByteArray &val, bool* ok); /*!< this method maps a string to a value of pixelFormat  */
         AddInAbstractGrabber();
         ~AddInAbstractGrabber();
