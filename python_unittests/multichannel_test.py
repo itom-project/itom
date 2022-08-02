@@ -25,7 +25,7 @@ class MultiChannelDummyGrabberTest(unittest.TestCase):
         roiChannel1 = cam.getParam('roi:channel_1')
         
         self.assertEqual(originalRoi, roiChannel0)
-        self.assertNotEquals(originalRoi, roiChannel1)
+        self.assertNotEqual(originalRoi, roiChannel1)
         self.assertEqual(roiChannel1, (0, 0, 20, 20))
         self.assertEqual(roiDefaultChannel, roiChannel0)
 

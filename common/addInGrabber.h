@@ -142,8 +142,8 @@ namespace ito
     public:
         static void integerPixelFormatStringToMinMaxValue(
             const char* val,
-            double& min,
-            double& max,
+            int& min,
+            int& max,
             bool& ok); /*!< this method gives the value range pixel for a given integer pixelFormat */
         static int pixelFormatStringToEnum(const QByteArray &val, bool* ok); /*!< this method maps a string to a value of pixelFormat  */
         AddInAbstractGrabber();
