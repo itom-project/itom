@@ -2097,6 +2097,9 @@ ito::RetVal PythonEngine::debugFile(const QString &pythonFileName)
         {
             std::cerr << tr("Error while clearing all breakpoints in itoDebugger.").toLatin1().data() << "\n" << std::endl;
             printPythonErrorWithoutTraceback(); //traceback is sense-less, since the traceback is in itoDebugger.py only!
+
+            PyGILState_STATE gstate = PyGILState_Ensure();
+
             return RetVal(retError);
         }
 
@@ -2200,6 +2203,7 @@ ito::RetVal PythonEngine::debugString(const QString &command)
         PyErr_PrintEx(0);
         //check if already a syntax error has been raised (come from previous call to parseAndSplitCommandInMainComponents)
         retValue += RetVal(retError, 2, tr("syntax error").toLatin1().data());
+
         PyErr_Clear();
     }
     else

@@ -4,12 +4,12 @@
 This examples shows how the ``matplotlib`` can be integrated
 into a ``GUI`` based on the ``MatplotlibPlot`` Qt Designer plugin. 
 """
-import matplotlib
+
 import numpy as np
 import matplotlib.pyplot as plt
 from itom import ui
 
-matplotlib.use("module://mpl_itom.backend_itomagg")
+
 # sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoMatplotlibGUI.png'
 
 ###############################################################################
@@ -19,9 +19,19 @@ def plotDroppedSpines():
     plot taken from matplotlib example 'spines_demo_dropped.py'
     """
     canvas = gui.plot  # reference to matplotlibPlot widget
+
+    # if the same figure object in the matplotlib figure manager should
+    # be reused, since it is assigned to the pre-defined canvas in the ui
+    # file, you need to always set a unique number (can be arbitrary, but unique)
     fig = plt.figure(num=3, canvas=canvas)
-    ax = fig.add_subplot(111)
-    ax.clear()
+
+    if len(fig.axes) == 0:
+        # create a new subplot in the figure
+        ax = fig.add_subplot(111)
+    else:
+        # reuse the existing first subplot
+        ax = fig.axes[0]
+        ax.clear()
 
     image = np.random.uniform(size=(10, 10))
     ax.imshow(image, cmap=plt.cm.gray, interpolation="nearest")
@@ -55,8 +65,15 @@ def plotSine():
 
     canvas = gui.plot  # reference to matplotlibPlot widget
     fig = plt.figure(num=3, canvas=canvas)
-    ax = fig.add_subplot(111)
-    ax.clear()
+    
+    if len(fig.axes) == 0:
+        # create a new subplot in the figure
+        ax = fig.add_subplot(111)
+    else:
+        # reuse the existing first subplot
+        ax = fig.axes[0]
+        ax.clear()
+    
     ax.plot(t, s)
 
     plt.show()

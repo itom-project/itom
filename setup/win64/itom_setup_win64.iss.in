@@ -29,7 +29,7 @@
 ; NOTE: The value of AppId uniquely identifies this application.
 ; Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
-AppId={{BC92C903-FB9E-49ED-AF5C-F43F37D3974A}
+AppId={{CD424B05-DB81-4C1E-9674-95F71514650B}
 AppName={#Name}
 AppVersion={#Version}
 AppVerName={#Name} {#Version}
@@ -37,7 +37,7 @@ AppPublisher={#Publisher}
 AppPublisherURL={#URL}
 AppSupportURL={#URL}
 AppUpdatesURL={#URL}
-DefaultDirName={pf64}\{#Name}
+DefaultDirName={pf64}\{#Name} {#Version}
 DefaultGroupName={#Name}
 OutputBaseFilename=setup
 Compression=lzma

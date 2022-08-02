@@ -132,7 +132,6 @@
      </layout>
      <zorder>tree</zorder>
      <zorder>lblText</zorder>
-     <zorder></zorder>
     </widget>
    </item>
    <item>

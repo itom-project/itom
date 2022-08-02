@@ -76,8 +76,15 @@ class MatplotGuiAutoUpdate(ItomUi):
 
         canvas = self.gui.matplotlibPlot  # Reference to matplotlibPlot widget
         fig = plt.figure(num=self.fignum, canvas=canvas)
-        ax = fig.add_subplot(111)
-        ax.clear()
+
+        if len(fig.axes) == 0:
+            # create a new subplot in the figure
+            ax = fig.add_subplot(111)
+        else:
+            # reuse the existing first subplot
+            ax = fig.axes[0]
+            ax.clear()
+        
         ax.imshow(dataObject.randN([100, 100], "uint8"), cmap=plt.cm.gray)
         ax.set_title("title of plot [%i]" % self.counter)
         self.counter += 1

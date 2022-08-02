@@ -69,7 +69,6 @@ namespace ito
             if (!retval.containsError())
             {
                 //Pip Manager has been started as standalone application to update packages like Numpy that cannot be updated if itom is running and the Python Engine has been entirely started.
-                Py_Initialize();
                 if (Py_IsInitialized())
                 {
 #if defined WIN32
@@ -237,6 +236,8 @@ ito::RetVal PipManager::initPythonIfStandalone()
         m_pUserDefinedPythonHome = Py_DecodeLocale(pythonDir.toLatin1().data(), NULL);
 		Py_SetPythonHome(m_pUserDefinedPythonHome);
 	}
+
+    Py_Initialize();
 
 	//read directory values from Python
 	qDebug() << "Py_GetPythonHome:" << QString::fromWCharArray(Py_GetPythonHome());
