@@ -50,6 +50,7 @@ extensions = [
     "sphinx.ext.intersphinx",
     "itomext.designerplugindoc",
     "sphinx_gallery.gen_gallery",
+    "sphinxcontrib.moderncmakedomain"
 ]
 
 if sphinx.__version__ >= "0.7":
@@ -408,9 +409,9 @@ todo_include_todos = True
 # Files for auto-generating links in documentation to methods / datatypes etc. of other projects...
 # to get the inv files, open the given URL/objects.inv.
 intersphinx_mapping = {
-    "python": ("https://docs.python.org/3.8", "python3.8-inv.txt"),
-    "numpy": ("https://numpy.org/doc/stable", "numpy1.22-inv.txt"),
-    "scipy": ("https://docs.scipy.org/doc/scipy/reference", "scipy1.6.1-inv.txt"),
-    "matplotlib": ("https://matplotlib.org", "matplotlib3.5-inv.txt"),
-    "pandas": ("https://pandas.pydata.org/docs/", "pandas1.3.5-inv.txt"),
+    "python": ("https://docs.python.org/3", (None, "python3.8-inv.txt")),
+    "numpy": ("https://numpy.org/doc/stable", (None, "numpy1.22-inv.txt")),
+    "scipy": ("https://docs.scipy.org/doc/scipy", (None, "scipy1.6.1-inv.txt")),
+    "matplotlib": ("https://matplotlib.org", (None, "matplotlib3.5-inv.txt")),
+    "pandas": ("https://pandas.pydata.org/docs/", (None, "pandas1.3.5-inv.txt")),
 }

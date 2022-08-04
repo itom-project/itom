@@ -9,6 +9,9 @@
 ; Deutsch.PythonHomeText=Wenn Python aus dem Unterverzeichnis von itom benutzt werden soll (Standard), muss die bestehende PYTHONHOME-Umgebungsvariable vor der Installation gelöscht werden.
 English.PythonHomeText = If you want to use Python in subdirectory of itom you have to delete the PYTHONHOME environmental variable bevor installation.
 Deutsch.PythonHomeText = Wenn Python aus dem Unterverzeichnis von itom benutzt werden soll, muss die PYTHONHOME-Umgebungsvariable vor der Installation geloescht werden.
+English.WindowsNWarning = One of the following files could not be found on the system: MFReadWrite.dll, MF.dll and MFPlat.dll. It looks like you are running a Windows without an installed media feature pack. You may need to install the Windows Media Feature Pack to run itom. 
+Deutsch.WindowsNWarning = Eine der folgenden Dateien konnte auf dem System nicht gefunden werden: MFReadWrite.dll, MF.dll und MFPlat.dll. Es sieht so aus, als ob Sie ein Windows ohne installiertes Media Feature Pack verwenden. Moeglicherweise muessen Sie das Windows Media Feature Pack installieren, um itom auszufuehren.
+
 
 [Code]
 function MsiQueryProductState(ProductCode: string): integer;
@@ -86,6 +89,16 @@ begin
     DelTree(Filter, IsDir, DeleteFiles, DeleteSubdirsAlso);
   end;
 end;}
+
+procedure CurStepChanged(CurStep: TSetupStep);
+begin
+  if CurStep = ssDone then begin
+    if not FileExists('C:\Windows\System32\MF.dll') or not FileExists('C:\Windows\System32\MFReadWrite.dll') or not FileExists('C:\Windows\System32\MFPlat.dll') then begin
+      MsgBox(CustomMessage('WindowsNWarning'), mbInformation, MB_OK);
+    end;
+  end;
+end;
+  
 
 {procedure CurStepChanged(CurStep: TSetupStep);
 var  AppDir: string;

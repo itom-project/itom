@@ -851,12 +851,12 @@ PyDoc_STRVAR(pyPluginName_doc, "name() -> str \n\
 Returns the name of this plugin object.\n\
 \n\
 Returns \n\
--------- \n\
+------- \n\
 name : str \n\
     name of the plugin, which corresponds to ``getParam(\"name\")`` \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 getParam");
 
 //-------------------------------------------------------------------------------------
@@ -914,7 +914,7 @@ list of str \n\
     list of available parameter names in this plugin. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 getParam, setParam, getParamListInfo");
 
 //-------------------------------------------------------------------------------------
@@ -951,7 +951,7 @@ Dependin`g on ``detailLevel``, this method will not print the listing to the com
 but returns it using a nested :class:`dict`. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 detailLevel : dict, optional \n\
     if ``detailLevel`` is set to ``1``, this method returns a nested dictionary with all \n\
     information about all parameters of this plugin. Otherwise ``None`` is returned and \n\
@@ -963,7 +963,7 @@ None or dict \n\
     See the parameter ``detailLevel`` for the difference in returned values. \n\
 \n\
 See Also \n\
----------- \n\
+-------- \n\
 getParam, setParam, getParamInfo, getParamList, getParamInfo");
 
 //-------------------------------------------------------------------------------------
@@ -979,7 +979,7 @@ These values are returned as nested dictionary (if available, else the dict is \
 more or less empty). \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 name : str \n\
     Name of the plugin parameter. \n\
 \n\
@@ -1015,7 +1015,7 @@ The ``name`` of the parameter must have the following form: \n\
 * **name[index]:additionalTag** (a combination of the two possibilies above) \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 name : str\n\
     Name of the requested parameter.\n\
 \n\
@@ -1025,12 +1025,12 @@ int or float or str or tuple of int or tuple of float or dataObject or polygonMe
     Current value of the parameter ``name``. \n\
 \n\
 Raises \n\
-------- \n\
+------ \n\
 ValueError \n\
     if parameter does not exist \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 setParam, getParamList, getParamListInfo");
 
 //-------------------------------------------------------------------------------------
@@ -1053,7 +1053,7 @@ The ``name`` of the parameter must have the following form: \n\
 * **name[index]:additionalTag** (a combination of the two possibilies above) \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 name : str\n\
     Name of the parameter. \n\
 value : int or float or str or tuple of int or tuple of float or dataObject or polygonMesh or pointCloud or dataIO or actuator\n\
@@ -1067,7 +1067,7 @@ RuntimeError \n\
     if the new ``value`` is (currently) not accepted. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 getParam, getParamList, getParamListInfo");
 
 //-------------------------------------------------------------------------------------
@@ -1081,7 +1081,7 @@ RuntimeError \n\
     if this plugin does not provide a toolbox. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 hideToolbox");
 
 //-------------------------------------------------------------------------------------
@@ -1095,7 +1095,7 @@ RuntimeError \n\
     if this plugin does not provide a toolbox. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 showToolbox");
 
 //-------------------------------------------------------------------------------------
@@ -1104,7 +1104,7 @@ PyDoc_STRVAR(pyPluginShowConfiguration_doc, "showConfiguration() \n\
 Shows the (optional) configuration dialog of this plugin as modal dialog. \n\
 \n\
 Raises \n\
-------- \n\
+------ \n\
 RuntimeError \n\
     if this plugin does not provide a configuration dialog.");
 
@@ -1121,7 +1121,7 @@ This method either prints requested information in a readable form to the comman
 or returns this information as nested dictionary. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 funcName : str, optional \n\
     is the fullname or a part of any name of such an additional plugin function. \n\
     If ``funcName`` is an empty string or does not match any plugin function \n\
@@ -1160,7 +1160,7 @@ Additionally, every function can return one or multiple values. Either the singl
 or a tuple of all returned values is returned by this method. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 funcName : str \n\
     The name of the additional function.\n\
 *args : Any \n\
@@ -1457,7 +1457,7 @@ See :meth:`pluginHelp` for detailed information about the specific initialisatio
 parameters.\n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 name : str \n\
     is the fullname (case sensitive) of an :class:`actuator`-plugin. \n\
 *args : Any \n\
@@ -1470,7 +1470,7 @@ name : str \n\
     Further keyword based parameters. See also ``*args``. \n\
 \n\
 Returns \n\
--------- \n\
+------- \n\
 actuator \n\
     new instance of the desired actuator plugin.");
 
@@ -1774,7 +1774,7 @@ Most actuators have the possibility to calibrate or home certain axes. \n\
 Use this command to start the calibration. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 axisIndex1 : int\n\
     Index of the first axis to be calibrated or homed (e.g. 0 for first axis). \n\
 *args : int \n\
@@ -1782,7 +1782,7 @@ axisIndex1 : int\n\
     if more than one axis should be calibrated or homed. \n\
 \n\
 Raises \n\
----------- \n\
+------ \n\
 NotImplemented \n\
     if calibration routine not available in this plugin.");
 /** calibrate actuator axi(e)s
@@ -1868,7 +1868,7 @@ to be ``0`` such that future positioning commands are relative with respect to t
 current position. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 axisIndex1 : int\n\
     index of the first axis (e.g. 0 for first axis) \n\
 *args : int \n\
@@ -1876,7 +1876,7 @@ axisIndex1 : int\n\
     if more than one axis should be origined. \n\
 \n\
 Raises \n\
----------- \n\
+------ \n\
 NotImplemented \n\
     if actuator does not support this feature");
 /** set the origin of axi(e)s
@@ -1990,7 +1990,7 @@ Status flags: \n\
 * actuatorError       = 0x10000 : axis has encountered error/reports error\n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 axis : int, optional\n\
     If an index >= 0 is passed, the status of this specific axis is returned. \n\
     Else, a list of status values for all axes is returned (default). \n\
@@ -2109,7 +2109,7 @@ Returns the current position(s) of the given axis or axes (in mm or degree).\n\
 This method requests the current position(s) of the given axes and returns it or them. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 axisIndex1 : int\n\
     index of the first axis (e.g. 0 for first axis) \n\
 *args : int\n\
@@ -2122,7 +2122,7 @@ positions : float or tuple of float \n\
     if multiple axis indices are given. The unit is **mm** or **degree**. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 setPosRel, setPosAbs");                         
                                
 /** get the current position of axi(e)S
@@ -2351,7 +2351,7 @@ function to a certain minimum time interval. This can be given by the ``minRepea
 parameter. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 signalSignature : str \n\
     This must be the valid signature, known from the Qt-method *connect* \n\
     (e.g. ``targetChanged(QVector<double>)``) \n\
@@ -2362,7 +2362,7 @@ minRepeatInterval : int, optional \n\
     Default: 0 (all signals will invoke the callable python method. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 disconnect, info");
 PyObject* PythonPlugins::PyActuatorPlugin_connect(PyActuatorPlugin *self, PyObject* args, PyObject *kwds)
 {
@@ -2433,7 +2433,7 @@ PyDoc_STRVAR(pyActuatorDisconnect_doc, "disconnect(signalSignature, callableMeth
 Disconnects a connection which must have been established before with exactly the same parameters.\n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 signalSignature : str \n\
     This must be the valid signature, known from the Qt-method *connect* \n\
     (e.g. ``clicked(bool)``) \n\
@@ -2442,7 +2442,7 @@ callableMethod : callable \n\
     given signal is emitted. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 connect, info");
 PyObject *PythonPlugins::PyActuatorPlugin_disconnect(PyActuatorPlugin *self, PyObject* args, PyObject* kwds)
 {
@@ -2493,7 +2493,7 @@ PyDoc_STRVAR(pyActuatorInfo_doc, "info(verbose = 0) \n\
 Prints out information about signal and callable slots of this actuator.\n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 verbose : int \n\
     0: only slots and signals from the plugin class are printed (default) \n\
     1: all slots and signals from all inherited classes are printed\n\
@@ -2700,7 +2700,7 @@ axes reached their target positions or a timeout occurred. Else, (``async = 1``)
 method immediately returns and the actuator continuous its movement. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 axisIndex1 : int \n\
     index of the first axis, that should be moved. \n\
 pos1 : float \n\
@@ -2709,7 +2709,7 @@ pos1 : float \n\
     Pass more arguments of the form ``axisIndexX, posX`` to move more than one axis. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 getPos, setPosRel");                      
 
 /** set actuator axi(e)s to new absolute position(s)
@@ -2809,7 +2809,7 @@ axes reached their target positions or a timeout occurred. Else, (``async = 1``)
 method immediately returns and the actuator continuous its movement. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 axisIndex1 : int \n\
     index of the first axis, that should be moved. \n\
 offset1 : float \n\
@@ -2819,7 +2819,7 @@ offset1 : float \n\
     Pass more arguments of the form ``axisIndexX, offsetX`` to move more than one axis. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 getPos, setPosAbs");
 /** set actuator axi(e)s to new relative position(s)
 *   @param [in] self    the actuator object (python)
@@ -3302,7 +3302,7 @@ See :meth:`pluginHelp` for detailed information about the specific initialisatio
 parameters.\n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 name : str \n\
     is the fullname (case sensitive) of an :class:`dataIO`-plugin. \n\
 *args : Any \n\
@@ -3315,7 +3315,7 @@ name : str \n\
     Further keyword based parameters. See also ``*args``. \n\
 \n\
 Returns \n\
--------- \n\
+------- \n\
 actuator \n\
     new instance of the desired dataIO plugin.");
 
@@ -3607,12 +3607,12 @@ without knownledge about any previous start. No acquisition is possible, if the 
 has not been started, hence the counter is 0. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 count : int, optional \n\
     Number of increments to the internal start-counter (default: 1). \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 stopDevice");
 /** start a dataIO device, i.e. prepare it for recording data
 *   @param [in] self    the dataIO object (python)
@@ -3693,7 +3693,7 @@ Once a live image is connected to a camera, :meth:`startDevice` is automatically
 at start of the live acquisition and :meth:`stopDevice` at shutdown. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 count : int, optional\n\
     if ``count`` > 1, :meth:`stopDevice` is executed ``count`` times, in order to \n\
     decrement the grabber internal start counter. You can also set ``count = -1``, \n\
@@ -3701,13 +3701,13 @@ count : int, optional\n\
     drops to 0. The number of effective counts is then returned.\n\
 \n\
 Returns \n\
--------- \n\
+------- \n\
 counts : None or int \n\
     If ``count = -1`` the number of required calls to ``stopDevice`` to finally \n\
     stop the device is returned. For ``count >= 0``, ``None`` is returned. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 startDevice");
 
 /** stop a dataIO device
@@ -3828,7 +3828,7 @@ Before calling :meth:`acquire`, the device must have been started using \n\
 :meth:`startDevice`. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 trigger : int, optional\n\
     Type of the trigger: \n\
     \n\
@@ -3903,7 +3903,7 @@ implemented in every plugin. A common example for its implementation is to stop 
 infinite, continuous acquisition job of an AD-converter plugin. \n\
 \n\
 See also\n\
----------\n\
+--------\n\
 acquire");
 
 /** stop continuous acquisiiton with a dataIO device
@@ -3974,7 +3974,7 @@ the buffer is too small, only the data that fits into the buffer is copied. Anot
 call to :meth:`getVal` will copy the rest. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 dataObj : dataObject \n\
     Usually for cameras and grabber: A reference (shallow copy) to the internal memory \n\
     of the camera plugin is set to the given data object. Therefore its content may \n\
@@ -3990,13 +3990,13 @@ length : int, optional \n\
     must not be given. \n\
 \n\
 Returns \n\
--------- \n\
+------- \n\
 None or int \n\
     ``None`` if ``dataObj`` is given, else the size of the values filled into the given \n\
     ``buffer``. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 copyVal");
 
 /** get values from a dataIO device
@@ -4138,7 +4138,7 @@ acquisition is not finished yet, this method blocks and waits until the end of t
 acquisition. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 destObject : dataObject\n\
     `dataObject` where the plugin data is copied to. Either provide an empty \n\
     :class:`dataObject` or a :class:`dataObject` whose shape exactly fits to the \n\
@@ -4147,13 +4147,13 @@ destObject : dataObject\n\
     the plugin is copied into this plane. \n\
 \n\
 Raises \n\
-------- \n\
+------ \n\
 RuntimeError \n\
     if the dataIO plugin is anything else than ADDA or grabber\n\
     or if no acquisition has been triggered \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 getVal");
 /** copy values from a dataIO device to an existing dataObject
 *   @param [in] self    the dataIO object (python)
@@ -4293,7 +4293,7 @@ from this value. However it is also possible to define a user-defined size using
 ``length`` argument. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 dataObj : dataObject \n\
     The array, that should be transmitted to the output of an analog-digital converter. \n\
     Usually, the shape of this array is ``M x N``, where ``M`` channels will obtain up \n\
@@ -4488,7 +4488,7 @@ All connected live images will then get new images only if :meth:`getVal` or \n\
 This method enables the auto grabbing timer. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 setAutoGrabbing, disableAutoGrabbing, getAutoGrabbing, setAutoGrabbingInterval");
                
 /** enable timer triggered autograbbing of a dataIO device
@@ -4561,7 +4561,7 @@ All connected live images will then get new images only if :meth:`getVal` or \n\
 This method disables the auto grabbing timer. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 setAutoGrabbing, enableAutoGrabbing, getAutoGrabbing, setAutoGrabbingInterval");
 /** disable timer triggered autograbbing of a dataIO device
 *   @param [in] self    the dataIO object (python)
@@ -4630,12 +4630,12 @@ All connected live images will then get new images only if :meth:`getVal` or \n\
 :meth:`copyVal` is called. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 enable : bool \n\
     ``True`` will enable the auto grabbing timer, ``False`` disables it. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 enableAutoGrabbing, disableAutoGrabbing, getAutoGrabbing");
 PyObject *PythonPlugins::PyDataIOPlugin_setAutoGrabbing(PyDataIOPlugin *self, PyObject * args)
 {
@@ -4716,7 +4716,7 @@ bool \n\
     ``True`` if the auto grabbing timer is currently active, otherwise ``False``. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 enableAutoGrabbing, disableAutoGrabbing, setAutoGrabbing");
 
 /** return the status of the autograbbing
@@ -4753,12 +4753,12 @@ change this interval even if auto grabbing is currently disabled. The new interv
 will be considered from the next activation on. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 interval : int\n\
     New minimum auto grabbing timer interval in `ms`. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 enableAutoGrabbing, disableAutoGrabbing, getAutoGrabbing, setAutoGrabbing, getAutoGrabbingInterval");
 PyObject *PythonPlugins::PyDataIOPlugin_setAutoGrabbingInterval(PyDataIOPlugin *self, PyObject *args)
 {
@@ -4835,7 +4835,7 @@ int \n\
     the current auto grabbing timer interval in `ms`. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 enableAutoGrabbing, disableAutoGrabbing, getAutoGrabbing, setAutoGrabbing, setAutoGrabbingInterval");
 PyObject *PythonPlugins::PyDataIOPlugin_getAutoGrabbingInterval(PyDataIOPlugin *self)
 {
@@ -4902,7 +4902,7 @@ function to a certain minimum time interval. This can be given by the ``minRepea
 parameter. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 signalSignature : str \n\
     This must be the valid signature, known from the Qt-method *connect* \n\
     (e.g. ``targetChanged(QVector<double>)``) \n\
@@ -4913,7 +4913,7 @@ minRepeatInterval : int, optional \n\
     Default: 0 (all signals will invoke the callable python method. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 disconnect, info");
 PyObject *PythonPlugins::PyDataIOPlugin_connect(PyDataIOPlugin *self, PyObject *args, PyObject *kwds)
 {
@@ -4986,7 +4986,7 @@ PyDoc_STRVAR(PyDataIOPlugin_disconnect_doc, "disconnect(signalSignature, callabl
 Disconnects a connection which must have been established before with exactly the same parameters.\n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 signalSignature : str \n\
     This must be the valid signature, known from the Qt-method *connect* \n\
     (e.g. ``clicked(bool)``) \n\
@@ -4995,7 +4995,7 @@ callableMethod : callable \n\
     given signal is emitted. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 connect, info");
 PyObject *PythonPlugins::PyDataIOPlugin_disconnect(PyDataIOPlugin *self, PyObject *args, PyObject *kwds)
 {
@@ -5092,7 +5092,7 @@ PyDoc_STRVAR(PyDataIOPlugin_info_doc, "info(verbose = 0) \n\
 Prints out information about signal and callable slots of this actuator.\n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 verbose : int \n\
     0: only slots and signals from the plugin class are printed (default) \n\
     1: all slots and signals from all inherited classes are printed\n\

@@ -15,7 +15,7 @@
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:6.6pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt; color:#000000;&quot;&gt;Institut fuer Technische Optik (&lt;/span&gt;&lt;a href=&quot;http://www.ito.uni-stuttgart.de&quot;&gt;&lt;span style=&quot; font-size:8pt; text-decoration: underline; color:#000000;&quot;&gt;ITO&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-size:8pt; color:#000000;&quot;&gt;) Universitaet Stuttgart Prof. Dr. Wolfgang Osten Pfaffenwaldring 9, 70569 Stuttgart, Germany&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt; color:#000000;&quot;&gt;Institut fuer Technische Optik (&lt;/span&gt;&lt;a href=&quot;http://www.ito.uni-stuttgart.de&quot;&gt;&lt;span style=&quot; font-size:8pt; text-decoration: underline; color:#000000;&quot;&gt;ITO&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-size:8pt; color:#000000;&quot;&gt;) Universitaet Stuttgart Prof. Dr. Stephan Reichelt Pfaffenwaldring 9, 70569 Stuttgart, Germany&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation></translation>
     </message>
     <message>
@@ -646,12 +646,17 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location line="+16"/>
-        <location line="+60"/>
+        <location line="+70"/>
         <source>...</source>
         <translation>...</translation>
     </message>
     <message>
-        <location line="-48"/>
+        <location line="-61"/>
+        <source>Examples: package-name; package-name=23.2; package-name&gt;=0.7.5. Separate multiple packages by spaces: package1 package2 ...</source>
+        <translation type="unfinished">Beispiele: Paketname; Paketname=23.2; Paketname&gt;=0.7.5. Mehrere Pakete durch Leerzeichen trennen: Paket1 Paket2 ...</translation>
+    </message>
+    <message>
+        <location line="+13"/>
         <source>Options (Basic pip options are also considered)</source>
         <translation>Optionen (Enthält auch Basisoptionen für Pip)</translation>
     </message>
@@ -5385,7 +5390,7 @@ Es ist ebenfalls möglich über das Argument &apos;pipManager&apos; beim Program
 <context>
     <name>ito::DialogPipManagerInstall</name>
     <message>
-        <location filename="../ui/dialogPipManagerInstall.cpp" line="+52"/>
+        <location filename="../ui/dialogPipManagerInstall.cpp" line="+53"/>
         <source>Install Package</source>
         <translation>Paket installieren</translation>
     </message>
@@ -5410,17 +5415,17 @@ Es ist ebenfalls möglich über das Argument &apos;pipManager&apos; beim Program
         <translation>Whl-Archiv wählen...</translation>
     </message>
     <message>
-        <location line="+11"/>
+        <location line="+12"/>
         <source>choose tar.gz or zip archive...</source>
         <translation>Tar.gz-Archiv wählen...</translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+13"/>
         <source>package-name</source>
         <translation>Paketname</translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+13"/>
         <source>choose requirements txt file...</source>
         <translation>requirements.txt Datei wählen...</translation>
     </message>
@@ -8048,7 +8053,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation>unbekannt</translation>
     </message>
     <message>
-        <location line="+389"/>
+        <location line="+407"/>
         <source>Could not start python pip
 </source>
         <translation>Python-Pip kann nicht gestartet werden</translation>

@@ -6,7 +6,7 @@
 This demo shows how to render to output of the Python ``plotly`` library in
 custom user interfaces.
 
-In the given '*:ui' file, a widget of the class type ``PlotlyPlot`` is placed.
+In the given '.ui' file, a widget of the class type ``PlotlyPlot`` is placed.
 If the ``ItomPlotlyRenderer`` renderer class is loaded and assigned as renderer
 to ``ploty``, the ``show`` method of the ``plotly.graph_objects.Figure`` class has
 another optional keyword argument ``plotHandle``, where you can pass the

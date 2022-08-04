@@ -1,5 +1,5 @@
 """Basic variables
-==============
+==================
 
 """
 # sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoPython.png'

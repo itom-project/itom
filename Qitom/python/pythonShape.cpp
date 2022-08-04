@@ -335,7 +335,7 @@ This static method is equal to the command:: \n\
     myShape.flags = flags  # optional\n\
 \n\
 Parameters \n\
------------\n\
+----------\n\
 point : sequence of float or dataObject or numpy.ndarray \n\
     (x,y) coordinate of the point, given as any type that can be interpreted as \n\
     array with two float64 values. \n\
@@ -400,7 +400,7 @@ This static method is equal to the command:: \n\
     myShape.flags = flags #optional\n\
 \n\
 Parameters \n\
------------\n\
+----------\n\
 point1 : sequence of float or dataObject or numpy.ndarray \n\
     (x,y) coordinate of the first point, given as any type that can be interpreted as \n\
     array with two values \n\
@@ -470,7 +470,7 @@ This static method is equal to the command:: \n\
     myShape.flags = flags #optional\n\
 \n\
 Parameters \n\
------------\n\
+----------\n\
 center : sequence of float or dataObject or numpy.ndarray \n\
     (x,y) coordinate of the center point, given as any type that can be interpreted \n\
     as array with two values \n\
@@ -545,7 +545,7 @@ This static method is equal to the command:: \n\
     myShape.flags = flags #optional\n\
 \n\
 Parameters \n\
------------\n\
+----------\n\
 corner1 : sequence of float or dataObject or numpy.ndarray, optional \n\
     (x,y) coordinate of the top, left corner point of the bounding box, given as \n\
     any type that can be interpreted as array with two values \n\
@@ -682,7 +682,7 @@ This static method is equal to the command:: \n\
     myShape.flags = flags #optional\n\
 \n\
 Parameters \n\
------------\n\
+----------\n\
 center : sequence of float or dataObject or numpy.ndarray \n\
     (x,y) coordinate of the center point, given as any type that can be interpreted \n\
     as array with two values \n\
@@ -757,7 +757,7 @@ This static method is equal to the command:: \n\
     myShape.flags = flags #optional\n\
 \n\
 Parameters \n\
------------\n\
+----------\n\
 corner1 : sequence of float or dataObject or numpy.ndarray, optional \n\
     (x,y) coordinate of the top, left corner point, given as any type that can be \n\
     interpreted as array with two values \n\
@@ -893,7 +893,7 @@ This static method is equal to the command:: \n\
     myShape.flags = flags #optional\n\
 \n\
 Parameters \n\
------------\n\
+----------\n\
 points : sequence of sequence of float or dataObject or numpy.ndarray \n\
     An array-like object of shape ``2 x M`` (with M > 2), that can be converted \n\
     to float64. This object defines ``M`` points for the polygon (order: x, y). \n\
@@ -2180,12 +2180,12 @@ Rotate shape by given angle in degrees around the center point of this shape \n\
 base points themselfs. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 angle : float \n\
     is the rotation angle (in radians) by which the shape is rotated by its center. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 translate, rotateRad");
 PyObject* PythonShape::PyShape_rotateDeg(PyShape *self, PyObject *args)
 {
@@ -2214,12 +2214,12 @@ Rotate shape by given angle in radians around the center point of this shape \n\
 base points themselfs. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 angle : float \n\
     is the rotation angle (in radians) by which the shape is rotated by its center. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 translate, rotateDeg");
 PyObject* PythonShape::PyShape_rotateRad(PyShape *self, PyObject *args)
 {
@@ -2250,13 +2250,13 @@ This means, that dx and dy are added to the existing tx and ty values of the cur
 transformation matrix. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 dxy : sequence of float or dataObject or numpy.ndarray \n\
     array-like object with two elements, that define the desired ``dx`` and ``dy`` \n\
     component. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 rotateRad, rotateDeg");
 PyObject* PythonShape::PyShape_translate(PyShape *self, PyObject *args)
 {
@@ -2405,7 +2405,7 @@ is ``True``, the returned contour points correspond to the transformed base shap
 the contour with respect to the base points is returned. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 applyTrafo : bool \n\
     Define if the transformation matrix (default: unity matrix, attribute :attr:`transform`) \n\
     should be considered for the returned contour points (``True``) or not (``False``). \n\
@@ -2467,7 +2467,7 @@ Tests if one or multiple ``points`` lie within the contour of the given shape. I
 shape has an empty area (e.g. points, line...) the test will always return ``False``.\n\
 \n\
 Parameters  \n\
-------------\n\
+----------\n\
 points : sequence of float or dataObject or numpy.ndarray \n\
     The coordinates ``(x, y)`` of the point to be tested as sequence or an array-like \n\
     object (shape ``2 x N``), where the first row contains the x-coordinates and the \n\
@@ -2475,7 +2475,7 @@ points : sequence of float or dataObject or numpy.ndarray \n\
     must be convertible to ``float64``, which is internally done before testing. \n\
 \n\
 Returns \n\
--------- \n\
+------- \n\
 result : bool or dataObject \n\
     If one point is passed as sequence, ``True`` is returned if this point is within \n\
     the contour of this shape, otherwise ``False``. If ``points`` is given as array-like \n\

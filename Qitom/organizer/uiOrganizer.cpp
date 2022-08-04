@@ -3106,7 +3106,7 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
                                         shortDescription = QString("%1 -> %2 ... (connect signature: %3)").arg(QLatin1String(signature)).arg(QLatin1String(signalInfoMap[methodName].left(idx))).arg(QLatin1String(methodSignature));
                                     }
 
-                                    description = QString("%1 -> %2\n\nNotes\n--------------\n\nTo connect to this signal use the following signature::\n\n    yourItem.connect('%3', yourMethod)\n"). \
+                                    description = QString("%1 -> %2\n\nNotes\n-----\n\nTo connect to this signal use the following signature::\n\n    yourItem.connect('%3', yourMethod)\n"). \
                                         arg(QLatin1String(signature)).arg(QLatin1String(signalInfoMap[methodName])).arg(QLatin1String(methodSignature));
                                 }
                                 else

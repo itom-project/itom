@@ -153,7 +153,7 @@ Plugins
 * ThorlabsISM plugin based on Kinesis 1.7.0 added (Thorlabs Integrated Stepper Motor)
 * ThorlabsBP plugin based on Kinesis 1.7.0 added (Thorlabs brushless piezo). This plugin has some known bugs that are described in the documentation due to errors in Kinesis.
 * Build plugins *dispWindow* and *glDisplay* only if OpenGL is available (not the case for older version of Raspberry). Only OpenGL >= 2.0 allowed.
-* Many filters have been adapted to the new shape class of itom (see :py:ref:`itom.shape` )
+* Many filters have been adapted to the new shape class of itom (see :py:class:`itom.shape` )
 
 Designer Plugins
 ----------------

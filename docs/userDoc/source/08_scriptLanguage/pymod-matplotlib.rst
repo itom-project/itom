@@ -303,7 +303,7 @@ searching for a cache file, use the following snippet:
 Creating an animation via Matplotlib
 =====================================
 
-Matplotlib can be used to create animation and save it as a *mp4* file. The **ffmpeg codec** is required for this feature and needs to be installed on your computer. A detailed description for the installation of the ffmpeg codec can be found `here <http://www.adaptivesamples.com/how-to-install-ffmpeg-on-windows>`_. The build version of the ffmpeg codec can be downloaded `here 
+Matplotlib can be used to create animation and save it as a *mp4* file. The **ffmpeg codec** is required for this feature and needs to be installed on your computer. A detailed description for the installation of the ffmpeg codec can be found `here <http://www.adaptivesamples.com/how-to-install-ffmpeg-on-windows>`__. The build version of the ffmpeg codec can be downloaded `here 
 <http://ffmpeg.zeranoe.com/builds>`_. Download and unzip the build files to your harddrive. 
 
 Typically the folder is like:: 
@@ -428,26 +428,18 @@ Slots
 .. py:function:: getPlotID() [slot]
     :noindex:
     
-    
     Return window ID of this plot {int}.
-    
-    .. index:: 
 
 .. py:function:: replot() [slot]
     :noindex:
     
-    
     forces a replot of the plot
-    
-    .. index:: 
 
 .. py:function:: refreshPlot() [slot]
     :noindex:
     
-    
     Triggers an update of the current plot window.
-    
-    .. index:: 
+
 
 .. py:function:: showSubplotConfig(left, top, right, bottom, wSpace, hSpace) [slot]
     :noindex:
@@ -469,8 +461,6 @@ Slots
     :type wSpace: float
     :param hSpace: vertical space between every subplot of the current configuration.
     :type hSpace: float
-    
-    .. index:: 
 
 .. py:function:: setLabelText(text) [slot]
     :noindex:
@@ -482,8 +472,6 @@ Slots
     
     :param text: text to display
     :type text: str
-    
-    .. index:: 
 
 Signals
 -------------------------
@@ -500,8 +488,6 @@ Signals
         To connect to this signal use the following signature::
         
             yourItem.connect('subplotConfigSliderChanged(int,int)', yourMethod)
-    
-    .. index:: 
 
 .. END plot_help_to_rst_format.py: matplotlibPlot
 

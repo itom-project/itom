@@ -70,7 +70,7 @@ Example:: \n\
     h['zAxisInterval'] = [-90, 90] \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 min : float, optional \n\
     minimum value of interval (default: -:obj:`math.inf`). \n\
 max : float, optional \n\

@@ -191,7 +191,7 @@ all or selected timers can be started or stopped. \n\
 **New in itom 4.1**: Added optional ``startAfterInit`` argument. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 interval : int \n\
     Time out interval in ms. \n\
 callbackFunc : callable \n\
@@ -386,7 +386,7 @@ This method starts or restarts the timer with its timeout interval. \n\
 If the timer is already running, it will be stopped and restarted. \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 isActive, stop");
 PyObject* PythonTimer::PyTimer_start(PyTimer *self) 
 { 
@@ -406,7 +406,7 @@ Stops the timer. \n\
 This method stop the timer (if currently active). \n\
 \n\
 See Also \n\
---------- \n\
+-------- \n\
 isActive, start");
 PyObject* PythonTimer::PyTimer_stop(PyTimer *self) 
 { 
@@ -457,12 +457,12 @@ the callback function is tried to be continously triggered whenever the interval
 expired. \n\
 \n\
 Parameters \n\
------------ \n\
+---------- \n\
 interval : int \n\
     Timeout interval in milliseconds. \n\
 \n\
 Notes \n\
------- \n\
+----- \n\
 If Python is currently busy, a timer event can also be triggered at a later time, \n\
 if the same trigger event is not already in the execution queue.");
 PyObject* PythonTimer::PyTimer_setInterval(PyTimer *self, PyObject *args)

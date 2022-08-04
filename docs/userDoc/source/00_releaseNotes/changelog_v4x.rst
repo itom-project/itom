@@ -11,10 +11,177 @@ Version 4.2.0 (2022-06-xx)
 itom
 ----
 
+(more than 750 commits in itom repository)
+
+**New Features**
+
+* The C++ and Python class :py:class:`itom.dataObject` has now two new data types ``datetime`` and ``timedelta``.
+  Both have an accuracy of microseconds. The ``datetime`` data type can also have a timezone (for Python >= 3.7 only) as difference to UTC.
+  These data types are compatible to the Python types :py:class:`datetime.datetime` and :py:class:`datetime.timedelta` as
+  well to the corresponding numpy data types. It is also possible to plot a XY-plot (plugin: itom1dqwtplot), whose x-data
+  is a ``datetime`` dataObject. The variable detail dialog (double click on corresponding workspace items) can also 
+  visualize dataObjects or numpy arrays of these types. (`pull request 77 <https://bitbucket.org/itom/itom/pull-requests/77>`_)
+* Complete redesigned variable detail dialog for items in the workspace widgets, especially for variables of type
+  dataObject or numpy.ndarray. In this case a table preview is shown for the array, including some basic information,
+  meta information etc. A heatmap can be shown using background colors in the table, values can be exported and it is
+  possible to display 1D or 2D plots from selected ranges, columns or rows in the displayed table.
+  (`pull request 71 <https://bitbucket.org/itom/itom/pull-requests/71>`_)
+* Algorithms in algorithm plugins can now not only be called by the method :py:meth:`itom.filter` but also by the
+  wrapper module :py:meth:`itom.algorithms`. This module is automatically generated at startup of itom and contains
+  all methods that are available in the current instance of itom. Due to auto-generated stub files, complete calltips 
+  and auto completions are available in the Python script editor if one starts typing the desired command. This means
+  that a previous call of ``itom.filter("findMultiSpots", obj1, arg2,...)`` is now called by ``itom.algorithms.findMultiSpots(obj1, arg2, ...)``.
+* drag&drop of algorithm into script or console will now paste the new 
+  ``algorithms.myAlgo(...)`` formalism instead of ``filter("myAlgo", args)``.
+* Plugin Help Viewer shows algorithms and widgets in an alphabetic list
+* The properties ``yAxisFlipped`` and ``keepAspectRatio`` as well as the default color map of plots can now be set as default
+  in the tab **Default Style Settings** of the itom property editor (`pull request 81 <https://bitbucket.org/itom/itom/pull-requests/81>`_).
+* Complete rework of the demo script sections in the user documentation. A gallery shows an introduction to several demo scripts.
+  Both the source code and the ouput (including plots...) after run are displayed for each demo script in the user documentation.
+  The scripts are also located in the **demo** folder of the itom installation (as usual).
+* added `sphinx_copybutton <https://pypi.org/project/sphinx-copybutton>`_ extension to html documentation
+* QPropertyEditorWidget can now be filtered, sorted and grouped. This feature is enabled in the corresponding dock widget of the plots.
+* new parameter type ``StringList`` in C-Api of class ``ito::ParamBase``, including the meta class ``ito::StringListMeta``.
+  This allows passing lists of strings to plugin methods among others. Validators have been added, too.
+* new method :py:meth:`~itom.copyStringToClipboard` to copy a string to the clipboard
+* Moved the designer plugin ``dataObjectTable`` from the designer plugins repository to the itom core (itomWidgets library).
+  This widget is used in the improved **variable detail** dialog for dataObjects and numpy.ndarrays. This widget now also
+  supports ``rgba`` and ``datetime`` values. The widget also provides a new export-to-csv feature and a copy-to-clipboard
+  feature, that can both provide a raw-text mime type as well as an html mime type, where the background color of the selected
+  cells is exported, too.
+* Support for the Python plot package `plotly <https://pypi.org/project/plotly/>`_ is provided (also by a new plotly designer plugin). 
+  See also `pull request 74 <https://bitbucket.org/itom/itom/pull-requests/74>`_.
+* If a :py:class:`numpy.ndarray` is converted to a :py:class:`itom.dataObject`, the original type and shape of the numpy array
+  is stored in the special tags ``_orgNpShape`` and ``_orgNpDType``. This is for instance used to show the original type
+  in the variable detail dialog of the itom workspace.
+
+**Changed Behaviour**
+
+* Fixes `issue 119 <https://bitbucket.org/itom/itom/issues/119>`_: The ``bool(dataObject)`` operator has changed its behaviour
+  to be consistent with the behaviour of ``numpy.ndarray``.
+* Implements `issue 137 <https://bitbucket.org/itom/itom/issues/137>`_: comparison operators of **ito::RetVal** are ``const`` now.
+* `Pull request 66 <https://bitbucket.org/itom/itom/pull-requests/66>`_: :py:meth:`~itom.dataObject.createMask` will always returnd a 2D dataObject, whose size correspond
+  to the last two dimension of the source dataObject instead of an object, whose number of dimension is equal to the dimensions
+  of the source object.
+* Updated splash screen of itom (`pull request 78 <https://bitbucket.org/itom/itom/pull-requests/78>`_)
+* removed the deprecated method :py:meth:`itom.pointCloud.fromDisparity`. This method is equivalent to the 
+  already existing method :py:meth:`itom.pointCloud.fromTopography`. A warning was already set since 
+  a long time if the deprecated method has been used.
+* QPropertyEditorWidget: removed deprecated members and added a QPropertyEditorWidgetPrivate class for better 
+  future improvements. This is an incompatible change and is therefore part of the AddInInterface version change to 6.0.0.
+* adapted colormap ``grayMarked`` to support a more robust visibility of red and violet extreme values, 
+  also in case of numerical calculation uncertainties
+* dataObject: ``getPhysToPix``: isInsideImage is set to true if the rounded pixel value, 
+  obtained from the given physical value, is inside the bounds of the dataObject.
+* default encoding of rst documentation files is utf-8
+
+
+**Improvements**
+
+* Totally renewed demo section in the user documentation. All demo scripts are now added to a gallery view including the
+  demo code snippets as well as plot outputs or other results (using the python package `Sphinx gallery <https://sphinx-gallery.github.io>`_).
+* Support for Python 3.10
+* `Pull request 73 <https://bitbucket.org/itom/itom/pull-requests/73>`_: changes in PythonEngine such that updates of the 
+  workspaces will be delayed for several intermediate steps of minor importance, such that the total amount of time for all the updates will be reduced.
+* **parse_plugin_parameters_for_rst_files.py**: sort alphabetically and copy the resulting string to the clipboard
+* The **new plugin instance** dialog shows now a Hex-based spin box for char and integer parameters, 
+  if their minimum value is >= 0 and their representation is set to HexNumber.
+* improved parameter representation, including meta information, in help viewer, documentation generation, ...
+* The widget ``dataObjectTable`` emits a signal ``selectionInformationChanged`` with basic math information about the current 
+  selection (min, max, mean, std). This is displayed in a label of the **variable detail** dialog for dataObjects and
+  numpy.ndarrays.
+* better handling of previous and new indentation levels of copied, cut, pasted, drag&dropped texts.
+* script editor: F12 shortcut for goto assignment is now displayed in context menu
+* script editor: comments (Ctrl+R) are only added to non-empty lines
+* adaptions and fixes to support Python 3.10 and flake8 4.0. Still missing: stubs generator 
+  should support new | operator as alias for typing.Union
+* :py:meth:`itom.setCurrentPath` accepts both a path to a folder or a file in this folder. In both cases, the folder is used as current directory.
+  Returns ``False`` if the path does not exist or could not be set.
+* script editor: code checker is re-run if a search&replace operation has been finished
+* faster and more robust parsing of Python variables in the workspace widgets
+* update of plotInfoMarker to support a checkbox in front of the top level items including the interaction if these checkboxes are checked / unchecked.
+  plotInfoMarker of itom1dqwtplot and itom2dqwtplot: marker group names will now span the entire row
+* :py:meth:`dataObject.dstack` has now keyboard based arguments including the new optional argument ``copyAxisInfo``. 
+  If True (default: False), axis information of the first given object is copied to the last dimensions of the returned object.
+* Attribute :py:attr:`dataObject.T` added as synonym to :py:meth:`dataObject.trans`, to be more compatible to the Numpy syntax.
+* From python 3.7 on, the deprecated method PyParser_SimpleParseString is not used any more to split a multiline 
+  command into major blocks. Instead, the AST is directly parsed using Py_CompileStringFlags.
+* scalar numpy types, like np.int, np.float, np.complex... are now implicitly converted to ParamBase::Int, ::Double, ::Complex 
+  if a plugin is called, or to suitable Qt types if any slot or property of a widget is called
+  `Pull request 67 <https://bitbucket.org/itom/itom/pull-requests/67>`_.
+* new optional CMake variable ``BUILD_QT_DISABLE_DEPRECATED_BEFORE`` added for itom, designerplugins and plugins. 
+  You can set it to a hex Qt version number. The compiler raises an exception if a method should be used, that
+  was deprecated in an earlier version that the one set in this variable.
+* increase the stack size of the Python thread to 5MB, such that the maximum recursion depth, e.g. for Jedi, 
+  can be increased. The maximum recursion limit of Jedi calls is no limited to 1800, independent on other limits. 
+  The jedi unittest is extended to also verify a recursive call with a similar recursion depth limit.
+* Since the stack size of a QThreadPool, e.g. used to call Python jedi, cannot be locally increased for Qt < 5.10, 
+  the overall stack size of all threads is set to 4MB for MSVC builts using the Linker flag /STACK 
+  (only for Qt < 5.10). Else only the Python and Jedi worker threads get an increased stack size of 5MB.
+  Increase stack size of Jedi worker threads (only for Qt >= 5.10).
+* fixes and improvements in figure widget (base window for plots): better handling of default plot class for pointCloud 
+  and polygonMesh plots. Title is also exposed to the window title for liveImages and pointCloud/polygonMesh plots.
+
+**Refactorings and bugfixes**
+
+* code refactored to remove Qt methods, deprecated before Qt 5.6, to support Qt 5.15 and therefore be prepared for Qt 6.x.
+* many linux bugfixes to be compatible to the latest versions of Fedora, Kubuntu, Ubuntu and Debian (e.g. removed GCC compiler warnings)
+* `Pull request 85 <https://bitbucket.org/itom/itom/pull-requests/85>`_: improved include of Python in C++ to prevent compiler warnings
+  in Visual Studio 2019 or higher
+* `Pull request 84 <https://bitbucket.org/itom/itom/pull-requests/84>`_: AddInInterface version altered to ``6.0.0`` due to an incompatible
+  fix / redefinition of the dataObject meta class ``ito::DObjMeta``, that can be used to further describe parameters (ito::ParamBase) of
+  type dataObject. Unittests extended for several parameter meta classes.
+* bugfix in inno setup: python38.dll and python3.dll needs to be copied to root directory, such that newer opencv-python packages 
+  can be loaded. They require a detectable python3.dll, too.
+* Code refactored to better support Qt 5.15 or Qt 6.x, to remove compiler warnings with modern compilers... Replaced some string-based
+  signal-slot-connections or signal mappers by lambda functions.
+* C++ unittest framework gtest updated to version 1.10.0. These unittests have been adapted to work with linux / gcc
+* itom_unittests can now be executed via the Visual Studio extension "Google Test Adapter". Its configuration is set via the itom.gta.runsettings file (via CMake configure_file)
+* matplotlib backend (v3) adapted to also support Matplotlib 3.4 and 3.5.
+* fixes `issue 179 <https://bitbucket.org/itom/itom/issues/179>`_: fixes ValueError if right click in matplotlib canvas
+* added .lang-format style configuration file to allow the clang formatting for source code files
+* more work to better support high-dpi screens and mixed screen resolutions (`pull request 76 <https://bitbucket.org/itom/itom/pull-requests/76>`_ among others)
+* fixes `issue 200 <https://bitbucket.org/itom/itom/issues/200>`_: error in ``dataObject.createMask`` if the bounding box of the shape is not fully 
+  contained in the area of the given dataObject. This is fixed now by means of the new method ``dataObject::getPhysToPixUnclipped``.
+* fixes for shapes. shape unittest extended to verify all these fixes. Most fixes are related to rotated shapes and 
+  shapes with a "negative" side length (rectangle and ellipse)
+* bugfix in PythonQtConversion::PyObjGetRepresentation
+* fixes `issue 165 <https://bitbucket.org/itom/itom/issues/165>`_ about the correction of the indentation level when pasting a text to a script
+* Python workspace can now also handle inherited classes, with mixups of __dict__ and __slots__. Keys of nested objects can now have
+  other data types than strings or integers.
+  (`pull request 75 <https://bitbucket.org/itom/itom/pull-requests/75>`_)
+* fixes `issue 193 <https://bitbucket.org/itom/itom/issues/193>`_: the QPropertyModel does not crash any more if the propertyObject 
+  is updated with dynamic properties, too.
+* fixes `issue 188 <https://bitbucket.org/itom/itom/issues/188>`_: crash if a key of a dict contains a slash (internal delimiter) 
+  and is clicked in the workspace widget
+* fixes another issue: loadIDC will not change any keys of the loaded dict any more. The same holds if an idc is load into the 
+  workspace using the "packed" version. However, if the content of the IDC file should be unpacked into the workspace, keys are 
+  checked to be valid Python identifiers. If this is not the case, they will be renamed and a list of all changes will be shown as warning message box.
+* fixes `issue 189 <https://bitbucket.org/itom/itom/issues/189>`_: the Qt designer, opened within itom, will be closed if itom is closed. 
+  If Qt designer is already opened and the user clicks the button again, the first instance is activated and brought to the front.
+* fixes `issue 185 <https://bitbucket.org/itom/itom/issues/185>`_ and prevents an error if a docstring is automatically generated for 
+  a method within a specific class / function constellation.
+* fixes `issue 181 <https://bitbucket.org/itom/itom/issues/181>`_: from Python 3.8 on, Py_CompileStringFlags requires knowledge about the supported 
+  Python feature set (which features from which minimum Python version should be used). Else, underscores in numbers will 
+  for instance be blocked, since they are only supported from Python 3.6 on.
+* fixes `issue 180 <https://bitbucket.org/itom/itom/issues/180>`_:  workaround to provide a correct (but not very efficient) implementation 
+  for dataObject.rand(...,"int32"). This only affects the ``int32`` datatype both in Python and C++.
+* fixes `issue 176 <https://bitbucket.org/itom/itom/issues/176>`_: fixes a bug when creating a dataObject from a numpy.ndarray, whose 
+  stride can be 0 in specific cases. Additionally, less deep copies are created in this constructor, compared to the previous version.
+* fixes `issue 170 <https://bitbucket.org/itom/itom/issues/170>`_: prevent Python error if an expanded dictionary in the workspace 
+  is replaced by a dataObject (among others)
+* fixes `issue 164 <https://bitbucket.org/itom/itom/issues/164>`_: If PyErr_Occurred() is called, the Python GIL must be hold for Python >= 3.9.
+* :py:meth:`itom.filterHelp` properly displays parameters whose description contains newline characters.
+* several memory leaks fixed.
+* many more minor bugfixes, also considering Ubuntu, Fedora, Debian...
+* fixes for PCL >= 1.12.0
+* bugfix in itom if last screen position is ouf of current set of screens
+
+
 Plugins
 -------
 
-(more than 170 comits in plugin repository)
+(more than 170 commits in plugin repository)
 
 **New plugins:**
 
@@ -96,8 +263,7 @@ Plugins
 Designer Plugins
 ----------------
 
-(more than 115 comits in plugin repository)
-
+(more than 115 commits in plugin repository)
 
 **vtk3dVisualizer**
 
