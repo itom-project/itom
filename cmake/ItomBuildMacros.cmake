@@ -593,7 +593,11 @@ macro(itom_find_package_qt SET_AUTOMOC)
         
     else(DETECT_QT5)
         #message(STATUS "TRY TO FIND QT6 COMPONENTS: ${Components}.... ${Qt6_DIR}")
-        set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} "${Qt6_DIR}")
+        if(WIN32)
+            # https://stackoverflow.com/questions/71086422/cmake-cannot-find-packages-within-qt6-installation
+            set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} "${Qt6_DIR}/../../..")
+        endif()
+        
         find_package(Qt6 6.2 QUIET COMPONENTS Core) #QUIET)
         
         #QT5 could be found with component based find_package command

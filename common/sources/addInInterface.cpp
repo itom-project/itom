@@ -36,6 +36,7 @@
 #include <QtCore/qpluginloader.h>
 
 #include "abstractAddInDockWidget.h"
+#include "helperCommon.h"
 
 #include "opencv2/opencv.hpp"
 
@@ -456,31 +457,31 @@ namespace ito
     */
     const Param AddInBase::getParamRec(const QString name, bool *nameCheckOk /*= NULL*/) const
     {
-        QRegExp rx("^([a-zA-Z]+\\w*)(\\[(\\d+)\\]){0,1}(:(.*)){0,1}$");
-        if (rx.indexIn(name) == -1)
+        QString paramName;
+        bool hasIndex;
+        int index;
+        QString additionalTag;
+
+        if (ito::parseParamName(name, paramName, hasIndex, index, additionalTag) != retOk)
         {
             if (nameCheckOk)
             {
                 *nameCheckOk = false;
             }
+
             return Param();
         }
         else
         {
-            QStringList pname = rx.capturedTexts();
-            if (pname.length() > 1)
+            if (paramName.length() > 1)
             {
                 if (nameCheckOk)
                 {
                     *nameCheckOk = true;
                 }
-                ito::Param tempParam = m_params.value(pname[1]);
-                if (pname[2].length())
-                {
-                }
-                if (pname[4].length())
-                {
-                }
+
+                ito::Param tempParam = m_params.value(paramName);
+
                 return tempParam; //returns default constructor if value not available in m_params. Default constructor has member isValid() => false
             }
         }

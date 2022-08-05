@@ -1263,7 +1263,7 @@ namespace ito
         }
 
         paramFile.setFileName(fileName);
-        checkFile = paramFile;
+        checkFile.setFile(paramFile);
         fileName = checkFile.canonicalFilePath();
 
         if (!checkFile.isWritable() && checkFile.exists())
@@ -2029,7 +2029,7 @@ namespace ito
                 folderFileName.append(".ido");
             }
 
-            checkFile = folderFileName;
+            checkFile.setFile(folderFileName);
         }
 
         paramFile.setFileName(checkFile.canonicalFilePath());
