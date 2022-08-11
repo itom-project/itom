@@ -137,15 +137,16 @@ int main(int argc, char *argv[])
 
 
 #ifdef WIN32
-#if NTDDI_WIN10_RS2 >= 0x0A000003 // available with windows 10 creators update
+#if NTDDI_WIN10_RS2 >= 0x0A000003 // DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2 is only supported for > Windows 10, version 1703
     // https://docs.microsoft.com/de-de/windows/win32/winprog/using-the-windows-headers
     // https://naughter.wordpress.com/2017/02/14/changes-in-the-windows-v10-0-15021-sdk-compared-to-windows-v10-0-14393-sdk-part-one/
     // DPI_AWARENESS_CONTEXT_UNAWARE show unsharp on 4k monitor with scaling 120%
     // DPI_AWARENESS_CONTEXT_SYSTEM_AWARE looks ugly when move itom onto fullHD monitor with scaling 100% An advancement over the original per-monitor DPI awareness mode, which
     // DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2 enables applications to access new DPI-related scaling behaviors on a per top-level window basis. 
     SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);  
-#else
+#else if NTDDI_WIN10_RS2 == 0x0A000002 // SetProcessDpiAwarenessContext is only supported for > Windows 10, version 1607
     SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE); 
+    // https://docs.microsoft.com/en-us/windows/win32/hidpi/dpi-awareness-context
 #endif
 #endif
     qputenv("QT_AUTO_SCREEN_SCALE_FACTOR", "1");  // auto scale by qt
