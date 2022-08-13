@@ -341,6 +341,7 @@ void QPropertyEditorWidget::sortedAction(bool checked)
 {
     setSortingEnabled(checked);
 
+#if (QT_VERSION < QT_VERSION_CHECK(5, 15, 0))
     if (!checked)
     {
         sortByColumn(-1);
@@ -349,6 +350,16 @@ void QPropertyEditorWidget::sortedAction(bool checked)
     {
         sortByColumn(0);
     }
+#else
+    if (!checked)
+    {
+        sortByColumn(-1, Qt::AscendingOrder);
+    }
+    else
+    {
+        sortByColumn(0, Qt::AscendingOrder);
+    }
+#endif
     
     QAction *action = actions()[0];
     action->blockSignals(true);

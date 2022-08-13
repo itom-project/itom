@@ -29,7 +29,11 @@ message(STATUS "--------------- EXECUTABLE ${target_name} -----------------")
 include("../cmake/ItomBuildMacros.cmake")
 include("../cmake/ItomBuildMacrosInternal.cmake")
 
-set(CMAKE_CXX_STANDARD 11)
+if(${BUILD_QTVERSION} STREQUAL "Qt6")
+    set(CMAKE_CXX_STANDARD 17)
+else()
+    set(CMAKE_CXX_STANDARD 11)
+endif()
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 itom_init_cmake_policy(3.12)
@@ -903,6 +907,10 @@ if(MSVC)
     if((NOT ${Qt5_FOUND}) OR (Qt5_VERSION VERSION_LESS 5.10.0))
         # see https://stackoverflow.com/questions/49644273/cmake-change-stack-size
         set_target_properties(${target_name} PROPERTIES LINK_FLAGS "/STACK:4000000")
+    endif()
+
+    if(QT6_FOUND)
+        target_compile_options(${target_name} PUBLIC "/Zc:__cplusplus" "permissive-")
     endif()
 endif()
  
