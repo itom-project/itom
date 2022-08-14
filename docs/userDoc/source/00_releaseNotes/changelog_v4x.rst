@@ -5,7 +5,12 @@
 Changelog Versions 4.x
 ######################
 
-Version 4.2.0 (2022-06-xx)
+Version 4.2.1 (2022-08-12)
+**************************
+
+Itom 4.2.1 contains a bugfix in the Ximea-Plugin. This bug made it impossible to use the Plugin for many camera models (Mainly from XiC series). In addition, other small fixes were made in the plugins, the designerplugins and in the core.
+
+Version 4.2.0 (2022-07-14)
 **************************
 
 itom
