@@ -166,7 +166,9 @@ ito::RetVal PipManager::initPythonIfStandalone()
 
 	QString pythonSubDir = QCoreApplication::applicationDirPath() + QString("/python%1").arg(PY_MAJOR_VERSION);
 	QString pythonAllInOneDir = QCoreApplication::applicationDirPath() + QString("/../../3rdParty/Python");
-	qDebug() << "pythonAllInOneDir:" << pythonAllInOneDir;
+    QString pythonInstallDir = QCoreApplication::applicationDirPath() +
+        QString("/../../3rdParty/Python%1%2").arg(PY_MAJOR_VERSION).arg(PY_MINOR_VERSION);
+    qDebug() << "pythonAllInOneDir:" << pythonAllInOneDir;
 	//check if an alternative home directory of Python should be set:
 	QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
 	settings.beginGroup("Python");
@@ -187,6 +189,12 @@ ito::RetVal PipManager::initPythonIfStandalone()
 			pythonHomeFromSettings = pythonAllInOneDir;
 			settings.setValue("pyHome", pythonHomeFromSettings);
 		}
+        else if (QDir(pythonInstallDir).exists())
+        {
+            pythonDirState = 2;
+            pythonHomeFromSettings = pythonInstallDir;
+            settings.setValue("pyHome", pythonHomeFromSettings);
+        }
 		else
 		{
 			pythonDirState = 1; //use python default search mechanism for home path (e.g. registry...)
