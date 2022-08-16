@@ -21,16 +21,16 @@
 *********************************************************************** */
 
 #include "abstractCodeEditorWidget.h"
-#include "../global.h"
-#include "../AppManagement.h"
-#include "../helper/guiHelper.h"
-#include "../codeEditor/foldDetector/indentFoldDetector.h"
-#include "../codeEditor/syntaxHighlighter/pythonSyntaxHighlighter.h"
-#include "../codeEditor/modes/occurrences.h"
-#include "../codeEditor/managers/modesManager.h"
-#include "../codeEditor/modes/pyAutoIndent.h"
-#include "../codeEditor/modes/indenter.h"
-#include "../codeEditor/syntaxHighlighter/codeEditorStyle.h"
+#include "global.h"
+#include "AppManagement.h"
+#include "helper/guiHelper.h"
+#include "codeEditor/foldDetector/indentFoldDetector.h"
+#include "codeEditor/syntaxHighlighter/pythonSyntaxHighlighter.h"
+#include "codeEditor/modes/occurrences.h"
+#include "codeEditor/managers/modesManager.h"
+#include "codeEditor/modes/pyAutoIndent.h"
+#include "codeEditor/modes/indenter.h"
+#include "codeEditor/syntaxHighlighter/codeEditorStyle.h"
 
 #include <qstring.h>
 #include <qsettings.h>

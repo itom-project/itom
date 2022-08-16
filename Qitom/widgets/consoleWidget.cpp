@@ -20,12 +20,12 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#include "../python/pythonEngineInc.h"
-#include "../python/pythonStatePublisher.h"
-#include "../python/qDebugStream.h"
+#include "python/pythonEngineInc.h"
+#include "python/pythonStatePublisher.h"
+#include "python/qDebugStream.h"
 #include "consoleWidget.h"
-#include "../global.h"
-#include "../AppManagement.h"
+#include "global.h"
+#include "AppManagement.h"
 
 #include <qmessagebox.h>
 #include <qfile.h>
@@ -39,13 +39,13 @@
 #include <qdebug.h>
 #include <qtextboundaryfinder.h>
 
-#include "../codeEditor/managers/panelsManager.h"
-#include "../codeEditor/managers/modesManager.h"
-#include "../codeEditor/textBlockUserData.h"
+#include "codeEditor/managers/panelsManager.h"
+#include "codeEditor/managers/modesManager.h"
+#include "codeEditor/textBlockUserData.h"
 
-#include "../organizer/userOrganizer.h"
-#include "../organizer/scriptEditorOrganizer.h"
-#include "../helper/IOHelper.h"
+#include "organizer/userOrganizer.h"
+#include "organizer/scriptEditorOrganizer.h"
+#include "helper/IOHelper.h"
 
 namespace ito
 {

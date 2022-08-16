@@ -22,7 +22,7 @@
 
 #include "pythonFont.h"
 
-#include "../global.h"
+#include "global.h"
 #include "pythonQtConversion.h"
 #include <qfontdatabase.h>
 

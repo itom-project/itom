@@ -18,9 +18,9 @@
 # You should have received a copy of the GNU Library General Public License
 # along with itom. If not, see <http://www.gnu.org/licenses/>.
     
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.12)
    
-project(itom)
+project(itom VERSION 4.2.1)
   
 message(STATUS "--------------- PROJECT itom -----------------")
  
@@ -58,40 +58,13 @@ set(CMAKE_MODULE_PATH
     ${PROJECT_SOURCE_DIR}
     ${PROJECT_SOURCE_DIR}/cmake)
 
-add_subdirectory(DataObject)
+################################################################################################################
+#CONFIGURE AND PREPARE THE ITOM GLOBAL DEFINITION FILE
 
-if(BUILD_WITH_PCL)
-    add_subdirectory(PointCloud)
-    set(ITOM_SDK_LIB_COMPONENTS_STR "dataobject pointcloud addinmanager qpropertyeditor itomCommonLib itomCommonQtLib itomCommonPlotLib itomWidgets itomShapeLib")
-else()
-    set(ITOM_SDK_LIB_COMPONENTS_STR "dataobject addinmanager qpropertyeditor itomCommonLib itomCommonQtLib itomCommonPlotLib itomWidgets itomShapeLib")
-endif()
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Qitom/global.h.in
+    ${CMAKE_CURRENT_BINARY_DIR}/Qitom/global.h)
 
-add_subdirectory(common)
-add_subdirectory(AddInManager)
-add_subdirectory(shape)
-add_subdirectory(commonQt)
-add_subdirectory(QPropertyEditor)
-add_subdirectory(plot)
-add_subdirectory(itomWidgets)
-add_subdirectory(Qitom)
-add_subdirectory(iconThemes)
-
-if(BUILD_UNITTEST)
-    #put this as last, since gtest is globally changing many compiler flags
-    add_subdirectory(gtest-1.10.0)
-    add_subdirectory(itom_unittests)
-endif()
-
-if(SETUP_ISSCONFIG)
-    set(InnoSetupPath CACHE PATH "base path to inno setup")
-endif()
-
-#find current itom version from qitom/global.h
-file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/Qitom/global.h ITOM_versionStringFull LIMIT_COUNT 1 REGEX "^#define ITOM_VERSION_STR.*$")
-string(REGEX MATCH "([0-9]+).([0-9]+).([0-9]+)" ITOM_versionString ${ITOM_versionStringFull}) #searches for Number.Number.Number[.Number] in ITOM_versionStringFull
-
-message(STATUS "itom version is: ${ITOM_versionString}. If wrong change it in global.h and reconfigure CMake")
+message(STATUS "itom version is: ${CMAKE_PROJECT_VERSION}.")
 message(STATUS "")
 message(STATUS "CMAKE_CURRENT_BINARY_DIR: ${CMAKE_CURRENT_BINARY_DIR}")
 message(STATUS "")
@@ -121,6 +94,38 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/styles
     PATTERN "*.odg" EXCLUDE)
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/licenses
     DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
+add_subdirectory(DataObject)
+
+if(BUILD_WITH_PCL)
+    add_subdirectory(PointCloud)
+    set(ITOM_SDK_LIB_COMPONENTS_STR "dataobject pointcloud addinmanager qpropertyeditor itomCommonLib itomCommonQtLib itomCommonPlotLib itomWidgets itomShapeLib")
+else()
+    set(ITOM_SDK_LIB_COMPONENTS_STR "dataobject addinmanager qpropertyeditor itomCommonLib itomCommonQtLib itomCommonPlotLib itomWidgets itomShapeLib")
+endif()
+
+################################################################################################################
+
+add_subdirectory(common)
+add_subdirectory(AddInManager)
+add_subdirectory(shape)
+add_subdirectory(commonQt)
+add_subdirectory(QPropertyEditor)
+add_subdirectory(plot)
+add_subdirectory(itomWidgets)
+add_subdirectory(Qitom)
+add_subdirectory(iconThemes)
+
+if(BUILD_UNITTEST)
+    #put this as last, since gtest is globally changing many compiler flags
+    add_subdirectory(gtest-1.10.0)
+    add_subdirectory(itom_unittests)
+endif()
+
+if(SETUP_ISSCONFIG)
+    set(InnoSetupPath CACHE PATH "base path to inno setup")
+endif()
+
 
 ################################################################################################################
 itom_find_package_qt(ON Core)

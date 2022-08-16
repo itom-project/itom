@@ -26,7 +26,7 @@
 #include "pythonWrapper.h"
 #include "structmember.h"
 
-#include "../global.h"
+#include "global.h"
 
 #if ITOM_PYTHONMATLAB == 1
 /* * *

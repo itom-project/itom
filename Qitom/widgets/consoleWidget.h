@@ -27,13 +27,13 @@
 
 #include "common/sharedStructures.h"
 #include "common/sharedStructuresQt.h"
-#include "../python/qDebugStream.h"
-#include "../global.h"
+#include "python/qDebugStream.h"
+#include "global.h"
 
 #include "abstractCodeEditorWidget.h"
-#include "../codeEditor/modes/lineBackgroundMarker.h"
-#include "../codeEditor/modes/pyGotoAssignment.h"
-#include "../codeEditor/panels/lineNumber.h"
+#include "codeEditor/modes/lineBackgroundMarker.h"
+#include "codeEditor/modes/pyGotoAssignment.h"
+#include "codeEditor/panels/lineNumber.h"
 
 #include <QKeyEvent>
 #include <QDropEvent>

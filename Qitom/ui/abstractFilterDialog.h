@@ -23,7 +23,7 @@
 #ifndef ABSTRACTFILTERDIALOG_H
 #define ABSTRACTFILTERDIALOG_H
 
-#include "../global.h"
+#include "global.h"
 
 #include <qdialog.h>
 #include <qtreewidget.h>

@@ -23,12 +23,12 @@
 #ifndef WIDGETWRAPPER_H
 #define WIDGETWRAPPER_H
 
-#include "../python/pythonItomMetaObject.h"
+#include "python/pythonItomMetaObject.h"
 
 #include <qobject.h>
 #include <qhash.h>
 #include <qmetaobject.h>
-#include "../global.h"
+#include "global.h"
 
 // a bunch of forward declarations
 class QListWidget;

@@ -29,7 +29,7 @@
 #include "node.h"
 #endif
 
-#include "../global.h"
+#include "global.h"
 
 #include "pythonStream.h"
 #include "pythonItom.h"

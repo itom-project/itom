@@ -23,9 +23,9 @@
 #ifndef DIALOGOPENNEWGUI_H
 #define DIALOGOPENNEWGUI_H
 
-#include "../../common/sharedStructures.h"
+#include "common/sharedStructures.h"
 
-#include "../global.h"
+#include "global.h"
 
 #include <QtGui>
 #include <qdialog.h>

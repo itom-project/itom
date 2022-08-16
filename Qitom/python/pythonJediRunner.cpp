@@ -22,8 +22,8 @@
 
 #include "pythonJediRunner.h"
 
-#include "../AppManagement.h"
-#include "../global.h"
+#include "AppManagement.h"
+#include "global.h"
 #include "pythonQtConversion.h"
 
 #include <iostream>

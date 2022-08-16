@@ -255,10 +255,10 @@ set(qitom_HEADERS_NOMOC
 )
 
 set(qitom_HEADERS
+    ${CMAKE_CURRENT_BINARY_DIR}/global.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../AddInManager/0.h   # this file must be first in list for automoc
     ${CMAKE_CURRENT_SOURCE_DIR}/main.h
     ${CMAKE_CURRENT_SOURCE_DIR}/AppManagement.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/global.h
     ${CMAKE_CURRENT_SOURCE_DIR}/mainApplication.h
     ${CMAKE_CURRENT_SOURCE_DIR}/api/apiFunctionsGraph.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/guiHelper.h
@@ -714,16 +714,8 @@ itom_add_source_group(codeEditor/utils)
 itom_add_source_group(textdiff)
 #end add filters to visual studio
 
-
 #Find ITOM_VERION version by looking at global.h
-file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/global.h ITOM_VERSIONS_TMP REGEX "^#define ITOM_VERSION_[A-Z]+[ \t]+0x[0-9A-F]+$")
-string(REGEX REPLACE ".*#define ITOM_VERSION_MAJOR[ \t]+(0x[0-9A-F]+).*" "\\1" ITOM_VERSION_MAJOR ${ITOM_VERSIONS_TMP})
-string(REGEX REPLACE ".*#define ITOM_VERSION_MINOR[ \t]+(0x[0-9A-F]+).*" "\\1" ITOM_VERSION_MINOR ${ITOM_VERSIONS_TMP})
-string(REGEX REPLACE ".*#define ITOM_VERSION_PATCH[ \t]+(0x[0-9A-F]+).*" "\\1" ITOM_VERSION_PATCH ${ITOM_VERSIONS_TMP})
-#set(ITOM_VERSION_STRING ${ITOM_VERSION_MAJOR}.${ITOM_VERSION_MINOR}.${ITOM_VERSION_PATCH} CACHE STRING "" FORCE)
-
-file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/global.h ITOM_VERSIONS_TMP REGEX "^#define ITOM_VERSION_STR[ \t]+.*$")
-string(REGEX REPLACE ".*#define ITOM_VERSION_STR[ \t]+.([0-9\\.]+).*" "\\1" ITOM_VERSION_STRING ${ITOM_VERSIONS_TMP})
+file(STRINGS ${CMAKE_CURRENT_BINARY_DIR}/global.h ITOM_VERSIONS_TMP REGEX "^#define ITOM_VERSION_[A-Z]+[ \t]+0x[0-9A-F]+$")
 
 if(APPLE)
     # Set meta data for OS X bundle
@@ -731,9 +723,9 @@ if(APPLE)
     set(MACOSX_BUNDLE_BUNDLE_NAME "itom")
     set(MACOSX_BUNDLE_GUI_IDENTIFIER "ITO.itom")
     set(MACOSX_BUNDLE_INFO_STRING "itom - an Open Source Measurement, Automation and Evaluation Software\nhttp://itom.bitbucket.org")
-    set(MACOSX_BUNDLE_LONG_VERSION_STRING "${ITOM_VERSION_STRING}")
-    set(MACOSX_BUNDLE_SHORT_VERSION_STRING "${ITOM_VERSION_STRING}")
-    set(MACOSX_BUNDLE_BUNDLE_VERSION ${ITOM_VERSION_STRING})
+    set(MACOSX_BUNDLE_LONG_VERSION_STRING "${CMAKE_PROJECT_VERSION}")
+    set(MACOSX_BUNDLE_SHORT_VERSION_STRING "${CMAKE_PROJECT_VERSION}")
+    set(MACOSX_BUNDLE_BUNDLE_VERSION ${CMAKE_PROJECT_VERSION})
     set(MACOSX_BUNDLE_COPYRIGHT "GNU LGPL with itom exception. Used plugins and libraries might differ. http://itom.bitbucket.org/latest/docs/01_introduction/introduction.html#licensing.")
 
     # Setting icon for OS X
@@ -982,7 +974,9 @@ else(ITOM_VERSION_TMP)
     set(ITOM_ADDININTERFACE_VERSION_PATCH "?")
 endif(ITOM_VERSION_TMP)
 
-set(ITOM_VERSION_STRING_WITH_API "ito.AddIn.InterfaceBase/${ITOM_ADDININTERFACE_VERSION_MAJOR}.${ITOM_ADDININTERFACE_VERSION_MINOR}.${ITOM_ADDININTERFACE_VERSION_PATCH}")
+set(ITOM_ADDININTERFACE_VERSION_STR "ito.AddIn.InterfaceBase/${ITOM_ADDININTERFACE_VERSION_MAJOR}.${ITOM_ADDININTERFACE_VERSION_MINOR}.${ITOM_ADDININTERFACE_VERSION_PATCH}")
+
+message(STATUS "ITOM_ADDININTERFACE_VERSION_STR: " ${ITOM_ADDININTERFACE_VERSION_STR})
 
 #find designer plugin interface version from plot/designerPluginInterfaceVersion.h
 file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/../plot/designerPluginInterfaceVersion.h DesignerPluginInterfaceVersionFull LIMIT_COUNT 1 REGEX "^#define ITOM_DESIGNERPLUGININTERFACE_VERSION_STR.*$")

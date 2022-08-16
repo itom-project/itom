@@ -22,8 +22,8 @@
 
 #pragma once
 
-#include "../../common/sharedStructures.h"
-#include "../global.h"
+#include "common/sharedStructures.h"
+#include "global.h"
 
 #include <qhash.h>
 #include <qobject.h>

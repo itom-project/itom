@@ -21,10 +21,10 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 #include "widgetPropGeneralPlotSettings.h"
 
-#include "../global.h"
-#include "../AppManagement.h"
+#include "global.h"
+#include "AppManagement.h"
 #include <qsettings.h>
-#include "../Qitom/organizer/paletteOrganizer.h"
+#include "Qitom/organizer/paletteOrganizer.h"
 
 namespace ito
 {

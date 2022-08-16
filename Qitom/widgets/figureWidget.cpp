@@ -20,7 +20,7 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#include "../global.h"
+#include "global.h"
 
 #include "figureWidget.h"
 #include "../AppManagement.h"

@@ -22,10 +22,10 @@
 
 #include "python/pythonEngineInc.h"
 #include "fileSystemDockWidget.h"
-#include "../global.h"
-#include "../AppManagement.h"
-#include "../helper/IOHelper.h"
-#include "../organizer/userOrganizer.h"
+#include "global.h"
+#include "AppManagement.h"
+#include "helper/IOHelper.h"
+#include "organizer/userOrganizer.h"
 
 #include <qheaderview.h>
 #include <qclipboard.h>

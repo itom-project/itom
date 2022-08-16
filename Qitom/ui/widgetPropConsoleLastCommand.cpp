@@ -22,9 +22,9 @@
 
 #include "widgetPropConsoleLastCommand.h"
 
-#include "../global.h"
-#include "../AppManagement.h"
-#include "../widgets/lastCommandDockWidget.h"
+#include "global.h"
+#include "AppManagement.h"
+#include "widgets/lastCommandDockWidget.h"
 
 #include <qcolor.h>
 #include <qsettings.h>

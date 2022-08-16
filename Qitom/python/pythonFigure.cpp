@@ -24,8 +24,8 @@
 
 #include "structmember.h"
 
-#include "../global.h"
-#include "../organizer/uiOrganizer.h"
+#include "global.h"
+#include "organizer/uiOrganizer.h"
 
 #include "pythonQtConversion.h"
 #include "AppManagement.h"

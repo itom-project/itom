@@ -28,9 +28,9 @@
 #include <qrect.h>
 #include <qdebug.h>
 
-#include "../codeEditor/codeEditor.h"
-#include "../global.h"
-#include "../helper/guiHelper.h"
+#include "codeEditor/codeEditor.h"
+#include "global.h"
+#include "helper/guiHelper.h"
 
 namespace ito
 {

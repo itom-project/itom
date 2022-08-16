@@ -32,7 +32,7 @@
     #include "pythonWrapper.h"
 #endif
 
-#include "../global.h"
+#include "global.h"
 
 #if ITOM_POINTCLOUDLIBRARY > 0
 

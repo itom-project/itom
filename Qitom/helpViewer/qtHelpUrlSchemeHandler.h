@@ -23,7 +23,7 @@
 #ifndef QTHELPURLSCHEMEHANDLER_H
 #define QTHELPURLSCHEMEHANDLER_H
 
-#include "../global.h"
+#include "global.h"
 
 #ifdef ITOM_USEHELPVIEWER
 

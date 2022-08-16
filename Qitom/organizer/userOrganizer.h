@@ -23,7 +23,7 @@
 #ifndef USEROGRANIZER_H
 #define USEROGRANIZER_H
 
-#include "../global.h"
+#include "global.h"
 #include <qobject.h>
 #include <qdatetime.h>
 #include <qhash.h>

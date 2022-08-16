@@ -22,8 +22,8 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 
 #include "widgetPropWorkspaceUnpack.h"
 
-#include "../global.h"
-#include "../AppManagement.h"
+#include "global.h"
+#include "AppManagement.h"
 
 #include <qsettings.h>
 

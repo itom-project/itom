@@ -23,8 +23,8 @@
 #ifndef ABSTRACTDOCKWIDGET_H
 #define ABSTRACTDOCKWIDGET_H
 
-#include "../global.h"
-#include "../common/sharedStructures.h"
+#include "global.h"
+#include "common/sharedStructures.h"
 #include "shortcutAction.h"
 
 #include <qmainwindow.h>

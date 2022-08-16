@@ -20,13 +20,13 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#include "../python/pythonEngineInc.h"
+#include "python/pythonEngineInc.h"
 
-#include "../AppManagement.h"
-#include "../common/typeDefs.h"
-#include "../global.h"
-#include "../helper/IOHelper.h"
-#include "../organizer/uiOrganizer.h"
+#include "AppManagement.h"
+#include "common/typeDefs.h"
+#include "global.h"
+#include "helper/IOHelper.h"
+#include "organizer/uiOrganizer.h"
 #include "workspaceDockWidget.h"
 
 #include <qapplication.h>

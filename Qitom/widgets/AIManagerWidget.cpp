@@ -22,15 +22,14 @@
 
 #include "AIManagerWidget.h"
 
-#include "../../AddInManager/addInManager.h"
-#include "../ui/dialogNewPluginInstance.h"
-#include "../ui/dialogOpenNewGui.h"
-#include "../ui/dialogSnapshot.h"
+#include "ui/dialogNewPluginInstance.h"
+#include "ui/dialogOpenNewGui.h"
+#include "ui/dialogSnapshot.h"
 
-#include "../AppManagement.h"
-#include "../global.h"
+#include "AppManagement.h"
+#include "global.h"
 
-#include "../../AddInManager/pluginModel.h"
+#include "AddInManager/pluginModel.h"
 #include <qabstractitemmodel.h>
 #include <qaction.h>
 #include <qdockwidget.h>

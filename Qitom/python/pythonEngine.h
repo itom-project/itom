@@ -63,12 +63,12 @@
 #include "pythonCommon.h"
 #include "pythonJediRunner.h"
 
-#include "../models/breakPointModel.h"
-#include "../../common/sharedStructuresQt.h"
-#include "../../common/addInInterface.h"
-#include "../../common/functionCancellationAndObserver.h"
-#include "../codeEditor/codeCheckerItem.h"
-#include "../global.h"
+#include "models/breakPointModel.h"
+#include "common/sharedStructuresQt.h"
+#include "common/addInInterface.h"
+#include "common/functionCancellationAndObserver.h"
+#include "codeEditor/codeCheckerItem.h"
+#include "global.h"
 
 #include "pythonWorkspace.h"
 

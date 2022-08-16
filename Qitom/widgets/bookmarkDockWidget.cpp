@@ -21,11 +21,11 @@
 *********************************************************************** */
 
 #include "bookmarkDockWidget.h"
-#include "../global.h"
-#include "../AppManagement.h"
+#include "global.h"
+#include "AppManagement.h"
 
-#include "../organizer/scriptEditorOrganizer.h"
-#include "../helper/guiHelper.h"
+#include "organizer/scriptEditorOrganizer.h"
+#include "helper/guiHelper.h"
 
 #include <qheaderview.h>
 #include <qsettings.h>

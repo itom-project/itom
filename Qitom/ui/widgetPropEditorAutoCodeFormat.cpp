@@ -22,8 +22,8 @@
 
 #include "widgetPropEditorAutoCodeFormat.h"
 
-#include "../global.h"
-#include "../AppManagement.h"
+#include "global.h"
+#include "AppManagement.h"
 
 #include <qsettings.h>
 #include <qmessagebox.h>

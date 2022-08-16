@@ -27,10 +27,10 @@
 
 #include "structmember.h"
 
-#include "../global.h"
+#include "global.h"
 
-#include "../common/helperDatetime.h"
-#include "../common/shapeDObject.h"
+#include "common/helperDatetime.h"
+#include "common/shapeDObject.h"
 #include "pythonCommon.h"
 #include "pythonDateTime.h"
 #include "pythonRgba.h"

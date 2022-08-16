@@ -23,7 +23,7 @@
 #include "pythonEngineInc.h"
 #include "pythonAutoInterval.h"
 
-#include "../global.h"
+#include "global.h"
 
 #include "pythonQtConversion.h"
 

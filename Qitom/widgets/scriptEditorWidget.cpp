@@ -20,19 +20,19 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#include "../python/pythonEngineInc.h"
-#include "../python/pythonStatePublisher.h"
-#include "../widgets/mainWindow.h"
+#include "python/pythonEngineInc.h"
+#include "python/pythonStatePublisher.h"
+#include "widgets/mainWindow.h"
 #include "scriptEditorWidget.h"
 #include "qpair.h"
 
-#include "../global.h"
-#include "../AppManagement.h"
-#include "../mainApplication.h"
-#include "../helper/guiHelper.h"
+#include "global.h"
+#include "AppManagement.h"
+#include "mainApplication.h"
+#include "helper/guiHelper.h"
 
 #include <qfileinfo.h>
-#include "../ui/dialogEditBreakpoint.h"
+#include "ui/dialogEditBreakpoint.h"
 
 #include <qmessagebox.h>
 #include <QtPrintSupport/qprintpreviewdialog.h>
@@ -47,13 +47,13 @@
 #include <qtextdocumentfragment.h>
 #include <qregularexpression.h>
 
-#include "../codeEditor/managers/panelsManager.h"
-#include "../codeEditor/managers/modesManager.h"
-#include "../codeEditor/textBlockUserData.h"
+#include "codeEditor/managers/panelsManager.h"
+#include "codeEditor/managers/modesManager.h"
+#include "codeEditor/textBlockUserData.h"
 #include "scriptEditorPrinter.h"
-#include "../organizer/userOrganizer.h"
-#include "../widgets/consoleWidget.h"
-#include "../python/pythonCommon.h"
+#include "organizer/userOrganizer.h"
+#include "widgets/consoleWidget.h"
+#include "python/pythonCommon.h"
 
 #include "textdiff/diff.h"
 

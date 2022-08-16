@@ -23,12 +23,12 @@
 #include "../python/pythonEngineInc.h"
 
 #include "breakPointDockWidget.h"
-#include "../global.h"
-#include "../AppManagement.h"
+#include "global.h"
+#include "AppManagement.h"
 #include "ui/dialogEditBreakpoint.h"
 
-#include "../organizer/scriptEditorOrganizer.h"
-#include "../helper/guiHelper.h"
+#include "organizer/scriptEditorOrganizer.h"
+#include "helper/guiHelper.h"
 
 #include <qheaderview.h>
 #include <qsettings.h>

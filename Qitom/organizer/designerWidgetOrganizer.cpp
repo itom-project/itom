@@ -22,14 +22,14 @@
 
 #include "designerWidgetOrganizer.h"
 
-#include "../global.h"
-#include "../AppManagement.h"
-#include "../common/apiFunctionsGraphInc.h"
-#include "../common/apiFunctionsInc.h"
-#include "../common/abstractApiWidget.h"
+#include "global.h"
+#include "AppManagement.h"
+#include "common/apiFunctionsGraphInc.h"
+#include "common/apiFunctionsInc.h"
+#include "common/abstractApiWidget.h"
 #include "plot/AbstractFigure.h"
 #include "plot/AbstractDObjFigure.h"
-#include "../common/semVerVersion.h"
+#include "common/semVerVersion.h"
 
 #include <qmetaobject.h>
 #include <qpluginloader.h>

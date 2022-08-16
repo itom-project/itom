@@ -24,7 +24,7 @@
 
 #include "structmember.h"
 
-#include "../global.h"
+#include "global.h"
 #include "../organizer/uiOrganizer.h"
 #include "../../AddInManager/addInManager.h"
 #include <qcoreapplication.h>

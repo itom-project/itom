@@ -31,7 +31,7 @@
     #include "python/pythonWrapper.h"
 #endif
 
-#include "../global.h"
+#include "global.h"
 
 #include <qhash.h>
 #include <qstring.h>

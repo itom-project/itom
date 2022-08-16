@@ -23,21 +23,21 @@
 #ifndef SCRIPTEDITORWIDGET_H
 #define SCRIPTEDITORWIDGET_H
 
-#include "../models/breakPointModel.h"
+#include "models/breakPointModel.h"
 
 #include "abstractCodeEditorWidget.h"
-#include "../codeEditor/panels/foldingPanel.h"
-#include "../codeEditor/panels/checkerBookmarkPanel.h"
-#include "../codeEditor/panels/breakpointPanel.h"
-#include "../codeEditor/modes/errorLineHighlight.h"
-#include "../codeEditor/modes/pyGotoAssignment.h"
-#include "../codeEditor/modes/pyDocstringGenerator.h"
-#include "../codeEditor/modes/wordHoverTooltip.h"
-#include "../codeEditor/panels/lineNumber.h"
-#include "../codeEditor/codeCheckerItem.h"
-#include "../codeEditor/pyCodeFormatter.h"
+#include "codeEditor/panels/foldingPanel.h"
+#include "codeEditor/panels/checkerBookmarkPanel.h"
+#include "codeEditor/panels/breakpointPanel.h"
+#include "codeEditor/modes/errorLineHighlight.h"
+#include "codeEditor/modes/pyGotoAssignment.h"
+#include "codeEditor/modes/pyDocstringGenerator.h"
+#include "codeEditor/modes/wordHoverTooltip.h"
+#include "codeEditor/panels/lineNumber.h"
+#include "codeEditor/codeCheckerItem.h"
+#include "codeEditor/pyCodeFormatter.h"
 
-#include "../global.h"
+#include "global.h"
 
 #include <qfilesystemwatcher.h>
 #include <qwidget.h>
@@ -47,8 +47,8 @@
 #include <qmetaobject.h>
 #include <qsharedpointer.h>
 #include <qregularexpression.h>
-#include "../models/outlineItem.h"
-#include "../models/bookmarkModel.h"
+#include "models/outlineItem.h"
+#include "models/bookmarkModel.h"
 
 #include <QtPrintSupport/qprinter.h>
 

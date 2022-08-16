@@ -21,7 +21,7 @@
 *********************************************************************** */
 #include <vector>
 #include "pythonPCL.h"
-#include "../global.h"
+#include "global.h"
 #include "common/typeDefs.h"
 
 #if ITOM_POINTCLOUDLIBRARY > 0
@@ -34,7 +34,7 @@
 #include "pythonCommon.h"
 
 //#include "api/apiFunctions.h"
-#include "../../common/apiFunctionsInc.h"
+#include "common/apiFunctionsInc.h"
 
 #include <qbytearray.h>
 #include <qstring.h>

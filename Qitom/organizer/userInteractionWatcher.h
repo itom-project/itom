@@ -25,7 +25,7 @@
 
 #include <qobject.h>
 
-#include "../global.h"
+#include "global.h"
 #include "common/sharedStructuresQt.h"
 #include "DataObject/dataobj.h"
 #include "common/shape.h"

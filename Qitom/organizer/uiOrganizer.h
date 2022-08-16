@@ -23,28 +23,27 @@
 #ifndef UIORGANIZER_H
 #define UIORGANIZER_H
 
-//#include "../python/pythonQtConversion.h"
-#include "../python/pythonItomMetaObject.h"
+#include "python/pythonItomMetaObject.h"
 
 #include <qwidget.h>
 
-#include "../common/sharedStructuresQt.h"
-#include "../common/functionCancellationAndObserver.h"
+#include "common/sharedStructuresQt.h"
+#include "common/functionCancellationAndObserver.h"
 
 #include "../DataObject/dataobj.h"
 #if ITOM_POINTCLOUDLIBRARY > 0
-#include "../../PointCloud/pclStructures.h"
+#include "PointCloud/pclStructures.h"
 #endif
 
-#include "../widgets/userUiDialog.h"
-#include "../widgets/figureWidget.h"
+#include "widgets/userUiDialog.h"
+#include "widgets/figureWidget.h"
 
-#include "../global.h"
-#include "../common/sharedStructuresGraphics.h"
-#include "../common/addInInterface.h"
-#include "../common/shape.h"
+#include "global.h"
+#include "common/sharedStructuresGraphics.h"
+#include "common/addInInterface.h"
+#include "common/shape.h"
 
-#include "../../plot/AbstractFigure.h"
+#include "plot/AbstractFigure.h"
 
 #include <qmap.h>
 #include <qsharedpointer.h>

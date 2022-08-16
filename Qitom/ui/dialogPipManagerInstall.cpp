@@ -22,8 +22,8 @@
 
 #include "dialogPipManagerInstall.h"
 
-#include "../global.h"
-#include "../models/pipManager.h"
+#include "global.h"
+#include "models/pipManager.h"
 
 #include <qfiledialog.h>
 #include <qmessagebox.h>

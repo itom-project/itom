@@ -22,9 +22,9 @@
 
 #include "widgetPropFigurePlugins.h"
 
-#include "../global.h"
-#include "../AppManagement.h"
-#include "../helper/guiHelper.h"
+#include "global.h"
+#include "AppManagement.h"
+#include "helper/guiHelper.h"
 
 #include <qtableview.h>
 #include <qcombobox.h>

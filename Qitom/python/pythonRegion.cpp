@@ -23,7 +23,7 @@
 #include "pythonRegion.h"
 
 #include "pythonDataObject.h"
-#include "../global.h"
+#include "global.h"
 
 #include <qvector.h>
 #include <qrect.h>

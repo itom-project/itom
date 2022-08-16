@@ -22,7 +22,7 @@
 
 #include "dialogProperties.h"
 
-#include "../global.h"
+#include "global.h"
 #include <qmetaobject.h>
 #include <qdialogbuttonbox.h>
 #include <qscrollarea.h>

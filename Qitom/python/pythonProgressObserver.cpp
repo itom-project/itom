@@ -22,11 +22,11 @@
 
 #include "pythonProgressObserver.h"
 
-#include "../global.h"
+#include "global.h"
 #include <qsharedpointer.h>
 #include "pythonUi.h"
-#include "../organizer/uiOrganizer.h"
-#include "../AppManagement.h"
+#include "organizer/uiOrganizer.h"
+#include "AppManagement.h"
 #include "pythonQtConversion.h"
 #include "pythonQtSignalMapper.h"
 

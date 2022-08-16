@@ -23,7 +23,7 @@
 #ifndef PYTHONITOMMETAOBJECT_H
 #define PYTHONITOMMETAOBJECT_H
 
-#include "../global.h"
+#include "global.h"
 
 #include <qbytearray.h>
 #include <qmetaobject.h>

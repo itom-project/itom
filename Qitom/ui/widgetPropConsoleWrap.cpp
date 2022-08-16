@@ -22,8 +22,8 @@
 
 #include "widgetPropConsoleWrap.h"
 
-#include "../global.h"
-#include "../AppManagement.h"
+#include "global.h"
+#include "AppManagement.h"
 
 namespace ito
 {

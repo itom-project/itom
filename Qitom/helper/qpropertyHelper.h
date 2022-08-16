@@ -23,13 +23,13 @@
 #ifndef QPROPERTYHELPER
 #define QPROPERTYHELPER
 
-#include "../global.h"
-#include "../common/retVal.h"
-#include "../common/addInInterface.h"
-#include "../common/interval.h"
-#include "../common/shape.h"
-#include "../DataObject/dataobj.h"
-#include "../common/qtMetaTypeDeclarations.h"
+#include "global.h"
+#include "common/retVal.h"
+#include "common/addInInterface.h"
+#include "common/interval.h"
+#include "common/shape.h"
+#include "DataObject/dataobj.h"
+#include "common/qtMetaTypeDeclarations.h"
 #include "common/itomPlotHandle.h"
 
 #if ITOM_POINTCLOUDLIBRARY > 0

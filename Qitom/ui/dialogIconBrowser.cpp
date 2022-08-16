@@ -21,7 +21,7 @@
 *********************************************************************** */
 
 #include "dialogIconBrowser.h"
-#include "../global.h"
+#include "global.h"
 #include "helper/guiHelper.h"
 
 #include <qclipboard.h>

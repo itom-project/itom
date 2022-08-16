@@ -27,11 +27,11 @@
     #include "python/pythonWrapper.h"
 #endif
 
-#include "../common/sharedStructures.h"
-#include "../common/sharedStructuresQt.h"
-#include "../global.h"
+#include "common/sharedStructures.h"
+#include "common/sharedStructuresQt.h"
+#include "global.h"
 
-#include "../python/pythonWorkspace.h"
+#include "python/pythonWorkspace.h"
 
 #include <qhash.h>
 #include <qmimedata.h>

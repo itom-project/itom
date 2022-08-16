@@ -23,8 +23,8 @@
 #include "pythonUiTimer.h"
 
 #include "structmember.h"
-#include "../global.h"
-#include "../organizer/uiOrganizer.h"
+#include "global.h"
+#include "organizer/uiOrganizer.h"
 #include "pythonEngineInc.h"
 #include "AppManagement.h"
 #include <iostream>

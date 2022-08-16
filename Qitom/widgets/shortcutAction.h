@@ -23,8 +23,8 @@
 #ifndef SHORTCUTACTION_H
 #define SHORTCUTACTION_H
 
-#include "../global.h"
-#include "../common/sharedStructures.h"
+#include "global.h"
+#include "common/sharedStructures.h"
 
 #include <qaction.h>
 #include <qobject.h>

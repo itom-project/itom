@@ -22,7 +22,7 @@
 
 #include "paramInputDialog.h"
 
-#include "../global.h"
+#include "global.h"
 #include "itomWidgets/doubleSpinBox.h"
 #include "AddInManager/paramHelper.h"
 

@@ -20,13 +20,13 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#include "../python/pythonEngineInc.h"
+#include "python/pythonEngineInc.h"
 
 #include "scriptDockWidget.h"
 #include "scriptEditorWidget.h"
 
-#include "../widgets/mainWindow.h"
-#include "../global.h"
+#include "widgets/mainWindow.h"
+#include "global.h"
 
 #include <qlist.h>
 #include <qfileinfo.h>
@@ -35,15 +35,15 @@
 #include <qmessagebox.h>
 #include <qdir.h>
 
-#include "../ui/dialogGoto.h"
-#include "../ui/dialogReplace.h"
+#include "ui/dialogGoto.h"
+#include "ui/dialogReplace.h"
 
 #include <qsignalmapper.h>
 
-#include "../ui/dialogIconBrowser.h"
-#include "../Qitom/AppManagement.h"
-#include "../organizer/scriptEditorOrganizer.h"
-#include "../helper/IOHelper.h"
+#include "ui/dialogIconBrowser.h"
+#include "Qitom/AppManagement.h"
+#include "organizer/scriptEditorOrganizer.h"
+#include "helper/IOHelper.h"
 
 namespace ito {
 

@@ -23,7 +23,7 @@
 #ifndef HELPVIEWER_H
 #define HELPVIEWER_H
 
-#include "../global.h"
+#include "global.h"
 
 #ifdef ITOM_USEHELPVIEWER
 

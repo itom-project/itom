@@ -23,7 +23,7 @@
 #ifndef DIALOGSELECTUSER_H
 #define DIALOGSELECTUSER_H
 
-#include "../global.h"
+#include "global.h"
 #include "models/UserModel.h"
 
 #include <qdialog.h>

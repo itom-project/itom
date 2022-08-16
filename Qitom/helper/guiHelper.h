@@ -23,7 +23,7 @@
 #ifndef GUIHELPER
 #define GUIHELPER
 
-#include "../global.h"
+#include "global.h"
 
 
 namespace ito {

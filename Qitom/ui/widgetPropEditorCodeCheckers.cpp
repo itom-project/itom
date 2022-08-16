@@ -22,10 +22,10 @@
 
 #include "widgetPropEditorCodeCheckers.h"
 
-#include "../global.h"
-#include "../AppManagement.h"
-#include "../codeEditor/codeEditor.h"
-#include "../python/pythonCommon.h" //required for some enumeration values related to code checkers
+#include "global.h"
+#include "AppManagement.h"
+#include "codeEditor/codeEditor.h"
+#include "python/pythonCommon.h" //required for some enumeration values related to code checkers
 #include <qmenu.h>
 #include <qsettings.h>
 #include <qmap.h>

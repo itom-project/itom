@@ -26,8 +26,8 @@
 #include "python/pythonWrapper.h"
 #endif
 
-#include "../../common/sharedStructures.h"
-#include "../global.h"
+#include "common/sharedStructures.h"
+#include "global.h"
 
 namespace ito
 {

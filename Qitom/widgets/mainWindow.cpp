@@ -21,29 +21,29 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#include "../python/pythonEngineInc.h"
-#include "../python/pythonStatePublisher.h"
+#include "python/pythonEngineInc.h"
+#include "python/pythonStatePublisher.h"
 
 #include "mainWindow.h"
 
-#include "../AppManagement.h"
-#include "../global.h"
+#include "AppManagement.h"
+#include "global.h"
 
-#include "../../AddInManager/addInManager.h"
-#include "../organizer/processOrganizer.h"
-#include "../organizer/uiOrganizer.h"
-#include "../organizer/userOrganizer.h"
+#include "AddInManager/addInManager.h"
+#include "organizer/processOrganizer.h"
+#include "organizer/uiOrganizer.h"
+#include "organizer/userOrganizer.h"
 
-#include "../ui/dialogAbout.h"
-#include "../ui/dialogLoadedPlugins.h"
-#include "../ui/dialogPipManager.h"
-#include "../ui/dialogProperties.h"
-#include "../ui/dialogReloadModule.h"
-#include "../ui/dialogTimerManager.h"
-#include "../ui/widgetInfoBox.h"
+#include "ui/dialogAbout.h"
+#include "ui/dialogLoadedPlugins.h"
+#include "ui/dialogPipManager.h"
+#include "ui/dialogProperties.h"
+#include "ui/dialogReloadModule.h"
+#include "ui/dialogTimerManager.h"
+#include "ui/widgetInfoBox.h"
 
-#include "../helper/versionHelper.h"
-#include "../helper/guiHelper.h"
+#include "helper/versionHelper.h"
+#include "helper/guiHelper.h"
 
 #include <qapplication.h>
 #include <qdesktopwidget.h>

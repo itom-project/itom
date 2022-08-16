@@ -22,10 +22,10 @@
 
 #include "versionHelper.h"
 
-#include "../global.h"
+#include "global.h"
 #include "version.h"
 #include "opencv2/core/version.hpp"
-//#include "../../designerPluginSource/qwt/src/qwt_global.h"
+
 #include "common/addInInterface.h"
 
 #include "common/commonVersion.h"

@@ -23,9 +23,9 @@
 #ifndef USERUIDIALOG
 #define USERUIDIALOG
 
-#include "../common/sharedStructuresQt.h"
-#include "../api/apiFunctionsGraph.h"
-#include "../global.h"
+#include "common/sharedStructuresQt.h"
+#include "api/apiFunctionsGraph.h"
+#include "global.h"
 
 #include <qdialog.h>
 

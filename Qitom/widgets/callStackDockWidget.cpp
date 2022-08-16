@@ -20,12 +20,12 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#include "../python/pythonEngineInc.h"
-#include "../organizer/scriptEditorOrganizer.h"
+#include "python/pythonEngineInc.h"
+#include "organizer/scriptEditorOrganizer.h"
 
 #include "callStackDockWidget.h"
-#include "../global.h"
-#include "../AppManagement.h"
+#include "global.h"
+#include "AppManagement.h"
 
 #include <qmessagebox.h>
 #include <qapplication.h>

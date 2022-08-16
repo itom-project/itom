@@ -23,7 +23,7 @@
 #ifndef DIALOGLOADEDPLUGINS_H
 #define DIALOGLOADEDPLUGINS_H
 
-#include "../global.h"
+#include "global.h"
 
 #include <qdialog.h>
 #include <qlist.h>

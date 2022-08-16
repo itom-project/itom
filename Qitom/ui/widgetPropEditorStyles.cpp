@@ -21,8 +21,8 @@
 *********************************************************************** */
 
 #include "widgetPropEditorStyles.h"
-#include "../global.h"
-#include "../AppManagement.h"
+#include "global.h"
+#include "AppManagement.h"
 
 
 #include <qcolordialog.h>

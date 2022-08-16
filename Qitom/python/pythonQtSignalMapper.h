@@ -29,7 +29,7 @@
     #include "python/pythonWrapper.h"
 #endif
 
-#include "../global.h"
+#include "global.h"
 
 #include <qvariant.h>
 #include <qobject.h>

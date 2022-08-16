@@ -23,10 +23,10 @@
 #ifndef IOHELPER_H
 #define IOHELPER_H
 
-#include "../global.h"
-#include "../common/sharedStructures.h"
-#include "../common/sharedStructuresQt.h"
-#include "../../common/addInInterface.h"
+#include "global.h"
+#include "common/sharedStructures.h"
+#include "common/sharedStructuresQt.h"
+#include "common/addInInterface.h"
 
 #include <qstring.h>
 #include <qobject.h>

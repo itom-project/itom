@@ -24,9 +24,9 @@
 
 #include "dialogReloadModule.h"
 
-#include "../global.h"
-#include "../../common/sharedStructuresQt.h"
-#include "../AppManagement.h"
+#include "global.h"
+#include "common/sharedStructuresQt.h"
+#include "AppManagement.h"
 
 #include <qmessagebox.h>
 #include <qsharedpointer.h>

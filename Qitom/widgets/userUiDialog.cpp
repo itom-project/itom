@@ -22,9 +22,9 @@
 
 #include "userUiDialog.h"
 
-#include "../global.h"
-#include "../../common/apiFunctionsGraphInc.h"
-#include "../../common/apiFunctionsInc.h"
+#include "global.h"
+#include "common/apiFunctionsGraphInc.h"
+#include "common/apiFunctionsInc.h"
 #include "plot/AbstractFigure.h"
 
 #include <QtUiTools/quiloader.h>

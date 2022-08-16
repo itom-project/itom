@@ -23,9 +23,9 @@
 #ifndef DIALOGOPENFILEWITHFILTER_H
 #define DIALOGOPENFILEWITHFILTER_H
 
-#include "../global.h"
+#include "global.h"
 
-#include "../../common/addInInterface.h"
+#include "common/addInInterface.h"
 #include "abstractFilterDialog.h"
 #include <qfuture.h>
 #include <qevent.h>

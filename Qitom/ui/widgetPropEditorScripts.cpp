@@ -22,9 +22,9 @@
 
 #include "widgetPropEditorScripts.h"
 
-#include "../global.h"
-#include "../AppManagement.h"
-#include "../codeEditor/codeEditor.h"
+#include "global.h"
+#include "AppManagement.h"
+#include "codeEditor/codeEditor.h"
 #include <qmenu.h>
 
 #include <qsettings.h>

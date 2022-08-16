@@ -30,7 +30,7 @@
     #include "pythonWrapper.h"
 #endif
 
-#include "../global.h"
+#include "global.h"
 
 #include <qstring.h>
 #include <qhash.h>

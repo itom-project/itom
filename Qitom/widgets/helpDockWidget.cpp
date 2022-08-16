@@ -23,15 +23,15 @@
 #include "../ui/helpTreeDockWidget.h"
 #include "helpDockWidget.h"
 
-#include "../global.h"
-#include "../AppManagement.h"
-#include "../helper/guiHelper.h"
+#include "global.h"
+#include "AppManagement.h"
+#include "helper/guiHelper.h"
 
-#include "../organizer/scriptEditorOrganizer.h"
+#include "organizer/scriptEditorOrganizer.h"
 
 #include <qheaderview.h>
 #include <qsettings.h>
-#include "../widgets/abstractDockWidget.h"
+#include "widgets/abstractDockWidget.h"
 
 namespace ito {
 

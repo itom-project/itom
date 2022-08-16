@@ -22,7 +22,7 @@
 
 #include "pythonShape.h"
 
-#include "../global.h"
+#include "global.h"
 #include "pythonQtConversion.h"
 #include "pythonDataObject.h"
 #include "pythonRegion.h"

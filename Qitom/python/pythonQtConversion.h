@@ -32,9 +32,9 @@
 #include "datetime.h"
 #include "patchlevel.h"
 
-#include "../global.h"
-#include "../../common/itomPlotHandle.h"
-#include "../../common/shape.h"
+#include "global.h"
+#include "common/itomPlotHandle.h"
+#include "common/shape.h"
 
 #include "opencv2/opencv.hpp"
 #include <qvariant.h>
@@ -43,7 +43,7 @@
 #include <qbytearray.h>
 #include <qpointer.h>
 
-#include "../helper/qpropertyHelper.h"
+#include "helper/qpropertyHelper.h"
 
 Q_DECLARE_METATYPE(ito::PythonNone)
 

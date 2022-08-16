@@ -22,8 +22,8 @@
 
 #include "widgetPropEditorGeneral.h"
 
-#include "../global.h"
-#include "../AppManagement.h"
+#include "global.h"
+#include "AppManagement.h"
 #include <qmenu.h>
 
 #include <qsettings.h>

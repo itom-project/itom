@@ -33,9 +33,9 @@
 #include <qclipboard.h>
 #include <qfile.h>
 
-#include "../global.h"
-#include "../AppManagement.h"
-#include "../helper/guiHelper.h"
+#include "global.h"
+#include "AppManagement.h"
+#include "helper/guiHelper.h"
 
 #include "dialogPipManagerInstall.h"
 

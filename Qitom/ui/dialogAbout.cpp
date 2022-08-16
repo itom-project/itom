@@ -22,7 +22,7 @@
 
 #include "dialogAbout.h" 
 
-#include "../global.h"
+#include "global.h"
 
 #include <QClipboard>
 #include <qmessagebox.h>

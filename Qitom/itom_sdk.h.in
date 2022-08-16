@@ -19,16 +19,18 @@
     You should have received a copy of the GNU Library General Public License
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
+
+//HELLO WORLD
+
 #ifndef ITOM_SDK_H
 #define ITOM_SDK_H
 
 //this file is copied to the SDK/include folder.
-
-#define ITOM_MAJOR_VERSION  ${ITOM_VERSION_MAJOR}
-#define ITOM_MINOR_VERSION  ${ITOM_VERSION_MINOR}
-#define ITOM_PATCH_VERSION  ${ITOM_VERSION_PATCH}
-#define ITOM_VERSION_STRING "${ITOM_VERSION_STRING}"
-#define INTERFACE_VERSION   "${ITOM_VERSION_STRING_WITH_API}"
+#define ITOM_MAJOR_VERSION  ${CMAKE_PROJECT_VERSION_MAJOR}
+#define ITOM_MINOR_VERSION  ${CMAKE_PROJECT_VERSION_MINOR}
+#define ITOM_PATCH_VERSION  ${CMAKE_PROJECT_VERSION_PATCH}
+#define ITOM_VERSION_STRING "${CMAKE_PROJECT_VERSION}"
+#define INTERFACE_VERSION   "${ITOM_ADDININTERFACE_VERSION_STR}"
 #define ITOM_APP_NAME       "itom - ito measurement software"
 
 #define CREATE_VERSION(major,minor,patch) ((major<<16)|(minor<<8)|(patch))

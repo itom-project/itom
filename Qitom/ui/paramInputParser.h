@@ -23,10 +23,10 @@
 #ifndef PARAMINPUTPARSER_H
 #define PARAMINPUTPARSER_H
 
-#include "../../common/addInInterface.h"
-#include "../../common/sharedStructures.h"
+#include "common/addInInterface.h"
+#include "common/sharedStructures.h"
 
-#include "../global.h"
+#include "global.h"
 
 #include <QtGui>
 #include <qdialog.h>

@@ -25,7 +25,7 @@
 #include <qobject.h>
 #include <qevent.h>
 
-#include "../global.h"
+#include "global.h"
 
 
 namespace ito

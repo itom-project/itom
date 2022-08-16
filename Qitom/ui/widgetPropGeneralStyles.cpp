@@ -21,8 +21,8 @@
 *********************************************************************** */
 
 #include "widgetPropGeneralStyles.h"
-#include "../global.h"
-#include "../AppManagement.h"
+#include "global.h"
+#include "AppManagement.h"
 
 #include <qsettings.h>
 #include <qdir.h>
