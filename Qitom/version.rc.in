@@ -1,8 +1,8 @@
 #include <windows.h>
 
 VS_VERSION_INFO     VERSIONINFO
-FILEVERSION         ${ITOM_VERSION_MAJOR}, ${ITOM_VERSION_MINOR}, ${ITOM_VERSION_PATCH}, 0
-PRODUCTVERSION      ${ITOM_VERSION_MAJOR}, ${ITOM_VERSION_MINOR}, 0, 0
+FILEVERSION         ${CMAKE_PROJECT_VERSION_MAJOR}, ${CMAKE_PROJECT_VERSION_MINOR}, ${CMAKE_PROJECT_VERSION_PATCH}, 0
+PRODUCTVERSION      ${CMAKE_PROJECT_VERSION_MAJOR}, ${CMAKE_PROJECT_VERSION_MINOR}, 0, 0
 FILEFLAGSMASK       VS_FF_PRERELEASE
 
 #ifdef _DEBUG
@@ -25,7 +25,7 @@ BEGIN
         BEGIN
             VALUE   "CompanyName",      "Institut fuer Technische Optik, University Stuttgart\0"
             VALUE   "FileDescription",  "ITO Measurement Program\0"
-            VALUE   "FileVersion",      "${ITOM_VERSION_STRING}\0"
+            VALUE   "FileVersion",      "${CMAKE_PROJECT_VERSION}\0"
             VALUE   "InternalName",     "itom\0"
             VALUE   "LegalCopyright",   "Copyright under LGPL v2.0 with itom-exception\0"
 #ifdef _DEBUG
@@ -34,7 +34,7 @@ BEGIN
             VALUE   "OriginalFilename", "qitom.exe\0"
 #endif
             VALUE   "ProductName",      "itom\0"
-            VALUE   "ProductVersion",   "${ITOM_VERSION_STRING} with ${ITOM_VERSION_STRING_WITH_API}\0"
+            VALUE   "ProductVersion",   "${CMAKE_PROJECT_VERSION} with ${ITOM_ADDININTERFACE_VERSION_STR}\0"
         END
     END
 END
