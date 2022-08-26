@@ -618,10 +618,7 @@ macro(itom_find_package_qt SET_AUTOMOC)
         endif(${SET_AUTOMOC})
         
         foreach(comp ${Components})
-            if(${comp} STREQUAL "Widgets")
-                add_definitions(${Qt6Widgets_DEFINITIONS})
-                set(QT5_LIBRARIES ${QT5_LIBRARIES} Qt6::${comp})
-            elseif(${comp} STREQUAL "LinguistTools")
+            if(${comp} STREQUAL "LinguistTools")
                 #it is not possible to link Qt5::LinguistTools since it does not exist
             else()
                 set(QT5_LIBRARIES ${QT5_LIBRARIES} Qt6::${comp})

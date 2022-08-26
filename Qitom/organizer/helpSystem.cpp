@@ -427,7 +427,7 @@ RetVal HelpSystem::rebuildHelpCollection(QStringList &qchFiles, quint16 checksum
     }
 
     QXmlStreamWriter stream(&file);
-    stream.setCodec("UTF-8");       // Set text codec
+    // Qt5: UTF-8 is the default codec, Qt6: uses always UTF-8
     stream.setAutoFormatting(true);
 
     stream.writeStartDocument();
