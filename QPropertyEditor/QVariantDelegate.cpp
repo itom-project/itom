@@ -181,12 +181,14 @@ void QVariantDelegate::parseEditorHints(QWidget* editor, const QString& editorHi
         QRegExp rx("(.*)(=\\s*)(.*)(;{1})");
         rx.setMinimal(true);
         int pos = 0;
+
         while ((pos = rx.indexIn(editorHints, pos)) != -1)
         {
             // qDebug("Setting %s to %s", qPrintable(rx.cap(1)), qPrintable(rx.cap(3)));
             editor->setProperty(qPrintable(rx.cap(1).trimmed()), rx.cap(3).trimmed());
             pos += rx.matchedLength();
         }
+
         editor->blockSignals(false);
     }
 }
