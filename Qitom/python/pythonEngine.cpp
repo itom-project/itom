@@ -343,10 +343,6 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap
             //pipManager::initPythonIfStandalone, too
             QString pythonSubDir = QCoreApplication::applicationDirPath() + QString("/python%1").arg(PY_MAJOR_VERSION);
             QString pythonAllInOneDir = QCoreApplication::applicationDirPath() + QString("/../../3rdParty/Python");
-            QString pythonInstallDir = QCoreApplication::applicationDirPath() +
-                             QString("/../../3rdParty/Python%1%2")
-                                 .arg(PY_MAJOR_VERSION)
-                                 .arg(PY_MINOR_VERSION);
             qDebug() << "pythonAllInOneDir:" << pythonAllInOneDir;
             //check if an alternative home directory of Python should be set:
             QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
@@ -366,12 +362,6 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap
                 {
                     pythonDirState = 2;
                     pythonHomeFromSettings = pythonAllInOneDir;
-                    settings.setValue("pyHome", pythonHomeFromSettings);
-                }
-                else if (QDir(pythonInstallDir).exists())
-                {
-                    pythonDirState = 2;
-                    pythonHomeFromSettings = pythonInstallDir;
                     settings.setValue("pyHome", pythonHomeFromSettings);
                 }
                 else
