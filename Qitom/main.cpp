@@ -38,7 +38,6 @@
 #include <qdir.h>
 #include <qmutex.h>
 #include <qmessagebox.h>
-#include <qoperatingsystemversion.h>
 #include <QSysInfo>
 #include <QScreen>
 
