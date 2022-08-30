@@ -127,6 +127,7 @@ int itomCvError( int status, const char* func_name,
     return 0; //Return value is not used
 }
 
+#ifdef WIN32 // only for windows
 DWORDLONG GetWindowsBuildAndServicePackVersion(bool onlyVersion = true)
 {
     // https://stackoverflow.com/questions/32115255/c-how-to-detect-windows-10/52122386#52122386
@@ -228,6 +229,8 @@ bool IsNotWin7PreRTM()
     return IsWin7SP1OrLater() || IsWindows10BuildVersionOrLater(7600);
 }
 
+#endif
+
 //! starts application
 //!
 //!  Starts Application by instantiating MainApplication with a desired GuiType
@@ -251,7 +254,6 @@ int main(int argc, char *argv[])
     {
         SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE);
     }
-
 #endif
     qputenv("QT_AUTO_SCREEN_SCALE_FACTOR", "1");  // auto scale by qt
 
