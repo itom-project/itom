@@ -237,23 +237,25 @@ bool IsNotWin7PreRTM()
 //!  \sa MainApplication, tGuiType
 int main(int argc, char *argv[])
 {
-#ifdef WIN32 // only for windows
-    //  https://docs.microsoft.com/de-de/windows/win32/winprog/using-the-windows-headers
-    //  https://naughter.wordpress.com/2017/02/14/changes-in-the-windows-v10-0-15021-sdk-compared-to-windows-v10-0-14393-sdk-part-one/
-    //  https://searchfox.org/mozilla-central/source/mfbt/WindowsVersion.h#84
-    //  SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2) was added in the Win10 Creator Update
-    //  SetProcessDpiAwarenessContext() was added in the Win10 Anniversary Update
-    //  SetProcessDpiAwareness() was added in Windows 8.1
-    //  SetProcessDpiAware() was added in Windows Vista
+#ifdef WIN32
+    #if WINVER >= 0x0A00 // only for windows
+        //  https://docs.microsoft.com/de-de/windows/win32/winprog/using-the-windows-headers
+        //  https://naughter.wordpress.com/2017/02/14/changes-in-the-windows-v10-0-15021-sdk-compared-to-windows-v10-0-14393-sdk-part-one/
+        //  https://searchfox.org/mozilla-central/source/mfbt/WindowsVersion.h#84
+        //  SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2) was added in the Win10 Creator Update
+        //  SetProcessDpiAwarenessContext() was added in the Win10 Anniversary Update
+        //  SetProcessDpiAwareness() was added in Windows 8.1
+        //  SetProcessDpiAware() was added in Windows Vista
 
-    if (IsWin10CreatorsUpdateOrLater())
-    {
-        SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
-    }
-    else if (IsWin10AnniversaryUpdateOrLater())
-    {
-        SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE);
-    }
+        if (IsWin10CreatorsUpdateOrLater())
+        {
+            SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
+        }
+        else if (IsWin10AnniversaryUpdateOrLater())
+        {
+            SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE);
+        }
+    #endif
 #endif
     qputenv("QT_AUTO_SCREEN_SCALE_FACTOR", "1");  // auto scale by qt
 
