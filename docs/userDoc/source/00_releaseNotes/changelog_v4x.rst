@@ -8,7 +8,17 @@ Changelog Versions 4.x
 Version 4.2.2 (2022-09-02)
 **************************
 
+itom
+----
+
 Itom 4.2.2 contains beside some small changes an important bug fix for Windows 7 and 8. SetDpiAwarenessContext is not supported by these Windows versions and therefore launching Itom was not possible.
+
+Plugins
+-------
+
+**New plugins:**
+
+* ThorlabsDCServo (actuator)
 
 Version 4.2.1 (2022-08-12)
 **************************
