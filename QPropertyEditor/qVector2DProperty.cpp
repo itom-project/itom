@@ -29,6 +29,7 @@
 #include "qVector2DProperty.h"
 
 #include <qregexp.h>
+#include <qregularexpression.h>
 #include <qvector2d.h>
 
 namespace ito {
@@ -67,21 +68,30 @@ void QVector2DProperty::setValue(const QVariant& value)
     if (value.type() == QVariant::String)
     {
         QString v = value.toString();
-        QRegExp rx("([+-]?([0-9]*[\\.,])?[0-9]+(e[+-]?[0-9]+)?)");
-        rx.setCaseSensitivity(Qt::CaseInsensitive);
+        QRegularExpression rx("([+-]?([0-9]*[\\.,])?[0-9]+(e[+-]?[0-9]+)?)", QRegularExpression::CaseInsensitiveOption);
+        
         int count = 0;
         int pos = 0;
         float x = 0.0f, y = 0.0f;
-        while ((pos = rx.indexIn(v, pos)) != -1)
+        QRegularExpressionMatch match;
+
+        while ((match = rx.match(v, pos)).hasMatch())
         {
             if (count == 0)
-                x = rx.cap(1).toDouble();
+            {
+                x = match.capturedRef(1).toDouble();
+            }
             else if (count == 1)
-                y = rx.cap(1).toDouble();
+            {
+                y = match.capturedRef(1).toDouble();
+            }
             else if (count > 1)
+            {
                 break;
+            }
+
             ++count;
-            pos += rx.matchedLength();
+            pos += match.capturedLength();
         }
         m_x->setProperty("x", x);
         m_y->setProperty("y", y);
