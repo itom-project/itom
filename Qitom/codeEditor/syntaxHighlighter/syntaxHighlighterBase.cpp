@@ -56,8 +56,8 @@ SyntaxHighlighterBase::SyntaxHighlighterBase(const QString &name, QTextDocument 
     Mode(name, description)
 {
     m_editorStyle =(editorStyle);
-    m_regSpacesPtrn=(QRegExp("[ \\t]+"));
-    m_regWhitespaces=(QRegExp("\\s+"));
+    m_regSpacesPtrn = (QRegularExpression("[ \\t]+"));
+    m_regWhitespaces = (QRegularExpression("\\s+"));
     m_foldDetector.clear();
 }
 
@@ -97,15 +97,11 @@ void SyntaxHighlighterBase::setFoldDetector(QSharedPointer<FoldDetector> foldDet
 //-------------------------------------------------------------------
 void SyntaxHighlighterBase::highlightWhitespaces(const QString &text)
 {
-    int index = m_regWhitespaces.indexIn(text, 0);
-    int length;
+    QRegularExpressionMatch match = m_regWhitespaces.match(text);
 
-    while (index >= 0)
+    if (match.hasMatch())
     {
-        index = m_regWhitespaces.pos(0);
-        length = m_regWhitespaces.cap(0).size();
-        setFormat(index, length, m_editorStyle->format(StyleItem::KeyWhitespace));
-        index = m_regWhitespaces.indexIn(text, index + length);
+        setFormat(match.capturedStart(0) match.capturedLength(0), m_editorStyle->format(StyleItem::KeyWhitespace));
     }
 }
 
