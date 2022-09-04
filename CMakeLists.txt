@@ -26,6 +26,11 @@ message(STATUS "--------------- PROJECT itom -----------------")
  
 if(BUILD_QTVERSION STREQUAL "Qt6")
     set(CMAKE_CXX_STANDARD 17)
+    set(CXXFLAGS "${CXXFLAGS} /permissive-")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /permissive-")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /permissive-")
+
+    add_compile_options(/permissive-)
 else()
     set(CMAKE_CXX_STANDARD 11)
 endif()
