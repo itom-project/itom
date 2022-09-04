@@ -24,12 +24,14 @@ project(itom)
   
 message(STATUS "--------------- PROJECT itom -----------------")
  
-if(${BUILD_QTVERSION} STREQUAL "Qt6")
+if(BUILD_QTVERSION STREQUAL "Qt6")
     set(CMAKE_CXX_STANDARD 17)
 else()
     set(CMAKE_CXX_STANDARD 11)
 endif()
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+message(STATUS "CMAKE_CXX_STANDARD: ${CMAKE_CXX_STANDARD}")
 
 include(cmake/ItomBuildMacros.cmake)
 include(cmake/ItomBuildMacrosInternal.cmake)
