@@ -78,14 +78,22 @@ void SubsequenceSortFilterProxyModel::setPrefix(const QString &prefix)
     for (int i = prefix.size(); i >= 1; --i)
     {
         ptrn = QString(".*%1.*%2").arg(prefix.left(i), prefix.mid(i));
-        //m_filterPatterns.append(QRegExp(ptrn, m_caseSensitivity));
-        m_filterPatterns.append(QRegularExpression(QRegularExpression::fromWildcard(ptrn, Qt::CaseInsensitive)));
-        //m_filterPatternsCaseSensitive.append(QRegExp(ptrn, Qt::CaseSensitive));
-        m_filterPatternsCaseSensitive.append(QRegularExpression(QRegularExpression::fromWildcard(ptrn, Qt::CaseSensitive)));
-
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 3, 0))
+         m_filterPatterns.append(QRegularExpression(QRegularExpression::fromWildcard(ptrn,
+         m_caseSensitivity)));
+         m_filterPatternsCaseSensitive.append(QRegularExpression(QRegularExpression::fromWildcard(ptrn,
+         Qt::CaseSensitive)));
+         ptrn = QString("%1.*%1").arg(prefix.left(i), prefix.mid(i));
+         m_sortPatterns.append(QRegularExpression(QRegularExpression::fromWildcard(ptrn,
+         m_caseSensitivity)));
+#else
+        m_filterPatterns.append(QRegExp(ptrn, m_caseSensitivity));
+        m_filterPatternsCaseSensitive.append(QRegExp(ptrn, Qt::CaseSensitive));
         ptrn = QString("%1.*%1").arg(prefix.left(i), prefix.mid(i));
-        //m_sortPatterns.append(QRegExp(ptrn, m_caseSensitivity));
-        m_sortPatterns.append(QRegularExpression(ptrn));
+        m_sortPatterns.append(QRegExp(ptrn, m_caseSensitivity));
+#endif
+        
+        
     }
     m_prefix = prefix;
 }
@@ -126,20 +134,31 @@ bool SubsequenceSortFilterProxyModel::filterAcceptsRow(int source_row, const QMo
 
     for (int idx = 0; idx < m_filterPatterns.size(); ++idx)
     {
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 3, 0))
         QRegularExpressionMatch match = m_filterPatterns[idx].match(completion);
         if (match.hasMatch())
+#else
+        if (m_filterPatterns[idx].exactMatch(completion))
+#endif
         {
             // compute rank, the lowest rank the closer it is from the
             // completion
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 3, 0))
             int start = match.lastCapturedIndex();
+#else
+            int start = m_sortPatterns[idx].lastIndexIn(completion);
+#endif
             if (start == -1)
             {
                 start = INT_MAX;
             }
             rank = start + idx * 10;
-            QRegularExpressionMatch matchCaseSensitive =
-                m_filterPatternsCaseSensitive[idx].match(completion);
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 3, 0))
+            QRegularExpressionMatch matchCaseSensitive = m_filterPatternsCaseSensitive[idx].match(completion);
             if (matchCaseSensitive.hasMatch())
+#else
+            if (m_filterPatternsCaseSensitive[idx].exactMatch(completion))
+#endif
             {
                 // favorise completions where case is matched
                 rank -= 10;
