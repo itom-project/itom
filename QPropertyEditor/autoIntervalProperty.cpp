@@ -113,11 +113,11 @@ void AutoIntervalProperty::setValue(const QVariant& value)
             {
                 if (count == 0)
                 {
-                    min = match.capturedRef(1).toDouble();
+                    min = match.captured(1).toDouble();
                 }
                 else if (count == 1)
                 {
-                    max = match.capturedRef(1).toDouble();
+                    max = match.captured(1).toDouble();
                 }
                 else if (count > 1)
                 {

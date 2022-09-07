@@ -316,7 +316,7 @@ RetVal HelpSystem::getCheckSumOfBuild(QDir &helpDir, QString &projectFileName, q
         }
 
         QXmlStreamReader stream(&file);
-        QStringView ReadSigns;
+        QString readSigns;
         QXmlStreamAttributes attr;
 
         if(stream.atEnd())
@@ -325,17 +325,19 @@ RetVal HelpSystem::getCheckSumOfBuild(QDir &helpDir, QString &projectFileName, q
             return RetVal(retWarning, 0, QObject::tr("Load XML file failed: file seems corrupt").toLatin1().data());
         }
 
-        ReadSigns = stream.documentVersion();
+        readSigns = stream.documentVersion().toString();
 		const QString stringToComp = "1.0";
-        if(!ReadSigns.compare(stringToComp))
+
+        if(!readSigns.compare(stringToComp))
         {
             file.close();
             return RetVal(retWarning, 0, QObject::tr("Load XML file failed:  wrong xml version").toLatin1().data());
         }
 
-        ReadSigns = stream.documentEncoding();
+        readSigns = stream.documentEncoding().toString();
 		const QString stringToCompUTF = "UTF-8";
-        if(!ReadSigns.compare(stringToCompUTF))
+
+        if(!readSigns.compare(stringToCompUTF))
         {
             file.close();
             return RetVal(retWarning, 0, QObject::tr("Load XML file failed: wrong document encoding").toLatin1().data());
@@ -344,17 +346,17 @@ RetVal HelpSystem::getCheckSumOfBuild(QDir &helpDir, QString &projectFileName, q
         while(stream.readNextStartElement())
         {
             qDebug() << stream.name();
-            if (stream.name().contains(QString("QHelpCollectionProject").constData()))
+            if (stream.name().toString().contains(QString("QHelpCollectionProject")))
             {
                 attr = stream.attributes();
-                ReadSigns = attr.value("itomChecksum");
+                readSigns = attr.value("itomChecksum").toString();
                 bool ok = false;
-                checksum = ReadSigns.toString().toUInt(&ok);
+                checksum = readSigns.toUInt(&ok);
                 if(!ok)
                 {
                     checksum = 0;
                     file.close();
-                    return RetVal(retWarning, 0, QObject::tr("Load XML file failed: could not intepret checksum content as uint").toLatin1().data());
+                    return RetVal(retWarning, 0, QObject::tr("Load XML file failed: could not interpret checksum content as uint").toLatin1().data());
                 }
                 else
                 {

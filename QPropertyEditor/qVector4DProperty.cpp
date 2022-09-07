@@ -88,19 +88,19 @@ void QVector4DProperty::setValue(const QVariant& value)
         {
             if (count == 0)
             {
-                x = match.capturedRef(1).toDouble();
+                x = match.captured(1).toDouble();
             }
             else if (count == 1)
             {
-                y = match.capturedRef(1).toDouble();
+                y = match.captured(1).toDouble();
             }
             else if (count == 2)
             {
-                z = match.capturedRef(1).toDouble();
+                z = match.captured(1).toDouble();
             }
             else if (count == 3)
             {
-                w = match.capturedRef(1).toDouble();
+                w = match.captured(1).toDouble();
             }
             else if (count > 3)
             {

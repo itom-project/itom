@@ -79,11 +79,11 @@ void QVector2DProperty::setValue(const QVariant& value)
         {
             if (count == 0)
             {
-                x = match.capturedRef(1).toDouble();
+                x = match.captured(1).toDouble();
             }
             else if (count == 1)
             {
-                y = match.capturedRef(1).toDouble();
+                y = match.captured(1).toDouble();
             }
             else if (count > 1)
             {
