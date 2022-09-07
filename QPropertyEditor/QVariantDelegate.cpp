@@ -30,6 +30,7 @@
 #include <qabstractitemview.h>
 #include <qsignalmapper.h>
 #include <qsortfilterproxymodel.h>
+#include <qregularexpression.h>
 
 //-------------------------------------------------------------------------------------
 QVariantDelegate::QVariantDelegate(QObject* parent) : QItemDelegate(parent)
@@ -177,16 +178,28 @@ void QVariantDelegate::parseEditorHints(QWidget* editor, const QString& editorHi
     if (editor && !editorHints.isEmpty())
     {
         editor->blockSignals(true);
-        // Parse for property values
-        QRegExp rx("(.*)(=\\s*)(.*)(;{1})");
-        rx.setMinimal(true);
-        int pos = 0;
 
-        while ((pos = rx.indexIn(editorHints, pos)) != -1)
+        // Parse for property values
+        QStringList hintList = editorHints.split(";");
+        QString hintTrimmed;
+        QString pattern = QString("^(.*)(=\\s*)(.*)$");
+        QRegularExpression rx(pattern);
+        QRegularExpressionMatch match;
+        QString name, value;
+
+        foreach(const QString &hint, hintList)
         {
-            // qDebug("Setting %s to %s", qPrintable(rx.cap(1)), qPrintable(rx.cap(3)));
-            editor->setProperty(qPrintable(rx.cap(1).trimmed()), rx.cap(3).trimmed());
-            pos += rx.matchedLength();
+            hintTrimmed = hint.trimmed();
+
+            if (hintTrimmed != "")
+            {
+                if ((match = rx.match(hintTrimmed)).hasMatch())
+                {
+                    name = match.captured(1).trimmed();
+                    value = match.captured(4).trimmed();
+                    editor->setProperty(qPrintable(name), value);
+                }
+            }
         }
 
         editor->blockSignals(false);

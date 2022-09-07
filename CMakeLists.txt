@@ -45,6 +45,7 @@ itom_init_cmake_policy(3.15)
 itom_init_core_common_vars()
 
 option(BUILD_UNITTEST "Build unittest for itom (including gtest)." OFF)
+option(BUILD_UNITTEST_INTERNAL_ENABLE "If set, some libraries are compiled to export some internal methods, too. These can be tested then in unittests." OFF)
 option(SETUP_ISSCONFIG "Set up batch for inno setup compilation." OFF)
 
 option(ITOM_UPDATE_TRANSLATIONS "Update source translation translation/*.ts files\

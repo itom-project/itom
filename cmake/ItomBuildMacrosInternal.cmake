@@ -33,7 +33,8 @@ endif()
 macro(itom_init_core_common_vars)
     set(BUILD_QTVERSION "auto" CACHE STRING "currently only Qt5 is supported. Set this value to 'auto' in order to auto-detect the correct Qt version or set it to 'Qt5' to hardly select Qt5.")
     option(BUILD_OPENMP_ENABLE "Use OpenMP parallelization if available. If TRUE, the definition USEOPENMP is set. This is only the case if OpenMP is generally available and if the build is release." ON)
-    
+    option(BUILD_UNITTEST_INTERNAL_ENABLE "If set, some libraries are compiled to export some internal methods, too. These can be tested then in unittests." OFF)
+
     if(CMAKE_SIZEOF_VOID_P GREATER 4)
         option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON) 
     else()
@@ -72,6 +73,10 @@ macro(itom_init_core_common_vars)
     
     if (BUILD_QT_DISABLE_DEPRECATED_BEFORE)
         add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=${BUILD_QT_DISABLE_DEPRECATED_BEFORE})
+    endif()
+    
+    if(BUILD_UNITTEST_INTERNAL_ENABLE)
+        add_definitions(-DENABLE_INTERNAL_TESTS -D_ENABLE_INTERNAL_TESTS)
     endif()
     
     #try to enable OpenMP (e.g. not available with VS Express)

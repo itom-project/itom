@@ -37,7 +37,7 @@ class QObject;
 
 namespace ito
 {
-    class AutoIntervalProperty : public Property
+    class QPROPERTYEDITOR_TEST_EXPORT AutoIntervalProperty : public Property
     {
         Q_OBJECT
         Q_PROPERTY(double minimum READ minimum WRITE setMinimum DESIGNABLE true USER true)
