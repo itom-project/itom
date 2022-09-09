@@ -38,8 +38,7 @@
 #include <QFileDialog>
 #include <QHBoxLayout>
 #include <QLineEdit>
-#include <QRegExp>
-#include <QRegExpValidator>
+#include <qregularexpression.h>
 #include <QSettings>
 #include <QStyleOptionComboBox>
 #include <QToolButton>
@@ -268,6 +267,7 @@ void PathLineEditPrivate::updateFilter()
 {
   Q_Q(PathLineEdit);
   // help completion for the QComboBox::QLineEdit
+
   QCompleter *newCompleter = new QCompleter(q);
   QFileSystemModel* fileSystemModel = new QFileSystemModel(newCompleter);
   fileSystemModel->setNameFilters(ctk::nameFiltersToExtensions(this->NameFilters));
@@ -280,7 +280,7 @@ void PathLineEditPrivate::updateFilter()
                    q, SLOT(_q_recomputeCompleterPopupSize()));
 
   // don't accept invalid path
-  QRegExpValidator* validator = new QRegExpValidator(
+  QRegularExpressionValidator* validator = new QRegularExpressionValidator(
     ctk::nameFiltersToRegExp(this->NameFilters), q);
   this->LineEdit->setValidator(validator);
 }

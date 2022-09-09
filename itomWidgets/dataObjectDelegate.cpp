@@ -66,7 +66,7 @@ QWidget* DataObjectDelegate::createEditor(
     QString suffix;
     if (m_suffixes.size() > 0)
     {
-        suffix = m_suffixes[std::min(m_suffixes.size() - 1, index.column())];
+        suffix = m_suffixes[std::min((int)m_suffixes.size() - 1, index.column())];
     }
 
     switch (type)

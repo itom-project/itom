@@ -63,6 +63,7 @@ add_definitions(-DITOMSHAREDDESIGNER)
 # if not included like this an "undefined interface error will be risen from Qt (moc?!)
 INCLUDE_DIRECTORIES(
     ${Qt5Designer_INCLUDE_DIRS}
+    ${Qt6Designer_INCLUDE_DIRS}
     ${ITOM_SDK_INCLUDE_DIR}
 )
 
@@ -73,6 +74,7 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser
     ${CMAKE_CURRENT_SOURCE_DIR}/..
     ${Qt5Widgets_INCLUDE_DIRS}
+    ${Qt6Widgets_INCLUDE_DIRS}
     ${VISUALLEAKDETECTOR_INCLUDE_DIR}
 )
 

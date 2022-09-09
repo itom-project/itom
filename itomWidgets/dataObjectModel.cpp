@@ -62,7 +62,7 @@ QString DataObjectModel::getDisplayNumber(const unsigned int& number, const int 
     QString suffix;
     if (m_suffixes.size() > 0 && column >= 0)
     {
-        suffix = m_suffixes[std::min(column, m_suffixes.size() - 1)];
+        suffix = m_suffixes[std::min(column, (int)m_suffixes.size() - 1)];
     }
 
     if (column >= 0)
@@ -83,7 +83,7 @@ QString DataObjectModel::getDisplayNumber(const int& number, const int column) c
     QString suffix;
     if (m_suffixes.size() > 0 && column >= 0)
     {
-        suffix = m_suffixes[std::min(column, m_suffixes.size() - 1)];
+        suffix = m_suffixes[std::min(column, (int)m_suffixes.size() - 1)];
     }
 
     if (column >= 0)
@@ -105,7 +105,7 @@ QString DataObjectModel::getDisplayNumber(
     QString suffix;
     if (m_suffixes.size() > 0 && column >= 0)
     {
-        suffix = m_suffixes[std::min(column, m_suffixes.size() - 1)];
+        suffix = m_suffixes[std::min(column, (int)m_suffixes.size() - 1)];
     }
 
     if (decimals < 0)
@@ -145,7 +145,7 @@ QString DataObjectModel::getDisplayNumber(
     QString suffix;
     if (m_suffixes.size() > 0 && column >= 0)
     {
-        suffix = m_suffixes[std::min(column, m_suffixes.size() - 1)];
+        suffix = m_suffixes[std::min(column, (int)m_suffixes.size() - 1)];
     }
 
     if (decimals < 0)
@@ -185,7 +185,7 @@ QString DataObjectModel::getDisplayNumber(
     QString suffix;
     if (m_suffixes.size() > 0 && column >= 0)
     {
-        suffix = m_suffixes[std::min(column, m_suffixes.size() - 1)];
+        suffix = m_suffixes[std::min(column, (int)m_suffixes.size() - 1)];
     }
 
     if (decimals < 0)
@@ -245,7 +245,7 @@ QString DataObjectModel::getDisplayNumber(
     QString suffix;
     if (m_suffixes.size() > 0 && column >= 0)
     {
-        suffix = m_suffixes[std::min(column, m_suffixes.size() - 1)];
+        suffix = m_suffixes[std::min(column, (int)m_suffixes.size() - 1)];
     }
 
     if (decimals < 0)
@@ -314,7 +314,12 @@ QString DataObjectModel::getDisplayNumber(
     }
     else
     {
-        return dt.toString(Qt::DateFormat::DefaultLocaleShortDate);
+        QString datestring = m_locale.toString(dt, QLocale::ShortFormat);
+
+        // deprecated in Qt6, however the method above should be equal.
+        //QString datestring = dt.toString(Qt::DateFormat::DefaultLocaleShortDate);
+
+        return datestring;
     }
 }
 

@@ -73,7 +73,7 @@ QString ITOMWIDGETS_EXPORT extensionToRegExp(const QString& extension);
 /// Convert a list of wildcar extension filters ("*.jpg")
 /// into a regular expression string
 /// "*.jpg", "*.txt" -> "(.*\\.jpg?$|.*\\.txt?$)"
-QRegExp ITOMWIDGETS_EXPORT nameFiltersToRegExp(const QStringList& nameFilters);
+QRegularExpression ITOMWIDGETS_EXPORT nameFiltersToRegExp(const QStringList& nameFilters);
 
 ///
 /// \ingroup Core
