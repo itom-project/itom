@@ -807,7 +807,7 @@ ito::RetVal ParamHelper::validateStringMeta(
         switch (meta->getStringType())
         {
         case ito::StringMeta::String:
-
+            reg.setPatternOptions(QRegularExpression::NoPatternOption);
             for (int i = 0; i < meta->getLen(); i++)
             {
                 if (reg.match(value_).hasMatch())
@@ -818,7 +818,7 @@ ito::RetVal ParamHelper::validateStringMeta(
             }
             break;
         case ito::StringMeta::Wildcard:
-
+            
             for (int i = 0; i < meta->getLen(); i++)
             {
                 reg = QRegularExpression(
