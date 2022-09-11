@@ -464,7 +464,8 @@ RetVal AddInManagerPrivate::loadAddIn(QString &filename)
             else
             {
                 QString notValidQtLibraryMsg = tr("The file '%1' is not a valid Qt plugin.").arg("*");
-                QRegularExpression rx = QRegularExpression(QRegularExpression::fromWildcard(notValidQtLibraryMsg, Qt::CaseInsensitive));
+                QRegularExpression rx = QRegularExpression(QRegularExpression::fromWildcard(notValidQtLibraryMsg, Qt::CaseSensitive));
+                
                 qDebug() << loader->errorString();
 
                 if (rx.match(loader->errorString()).hasMatch())
