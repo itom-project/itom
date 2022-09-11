@@ -25,6 +25,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include "addInManager.h"
 
 #include <QtCore/qpluginloader.h>
+#include <qregularexpression.h>
 
 namespace ito
 {
@@ -463,9 +464,10 @@ RetVal AddInManagerPrivate::loadAddIn(QString &filename)
             else
             {
                 QString notValidQtLibraryMsg = tr("The file '%1' is not a valid Qt plugin.").arg("*");
-                QRegExp rx(notValidQtLibraryMsg, Qt::CaseSensitive, QRegExp::Wildcard);
+                QRegularExpression rx = QRegularExpression(QRegularExpression::fromWildcard(notValidQtLibraryMsg, Qt::CaseInsensitive));
                 qDebug() << loader->errorString();
-                if (rx.exactMatch(loader->errorString()))
+
+                if (rx.match(loader->errorString()).hasMatch())
                 {
                     message = tr("Library '%1' was ignored. Message: %2").arg(filename).arg(loader->errorString());
                     qDebug() << message;
@@ -477,8 +479,10 @@ RetVal AddInManagerPrivate::loadAddIn(QString &filename)
                 {
                     //This regular expression is used to check whether the error message during loading a plugin contains the words
                     //'debug' or 'release'. This means, that a release plugin is tried to be loaded with a debug version of itom or vice-versa
-                    QRegExp regExpDebugRelease(".*(release|debug).*", Qt::CaseInsensitive);
-                    if (regExpDebugRelease.exactMatch(loader->errorString()))
+                    QRegularExpression regExpDebugRelease = QRegularExpression(".*(release|debug).*");
+                    regExpDebugRelease.setPatternOptions(QRegularExpression::CaseInsensitiveOption);
+
+                    if (regExpDebugRelease.match(loader->errorString()).hasMatch())
                     {
                         message = tr("AddIn '%1' could not be loaded. Error message: %2").arg(filename).arg(loader->errorString());
                         qDebug() << message;

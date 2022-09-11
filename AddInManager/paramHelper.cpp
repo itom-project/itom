@@ -802,16 +802,15 @@ ito::RetVal ParamHelper::validateStringMeta(
     if (meta && meta->getLen() > 0 && value)
     {
         bool found = false;
-        QRegExp reg;
+        QRegularExpression reg;
+
         switch (meta->getStringType())
         {
         case ito::StringMeta::String:
-            reg.setPatternSyntax(QRegExp::FixedString);
 
             for (int i = 0; i < meta->getLen(); i++)
             {
-                reg.setPattern(QLatin1String(meta->getString(i)));
-                if (reg.exactMatch(value_))
+                if (reg.match(value_).hasMatch())
                 {
                     found = true;
                     break;
@@ -819,25 +818,24 @@ ito::RetVal ParamHelper::validateStringMeta(
             }
             break;
         case ito::StringMeta::Wildcard:
-            reg.setPatternSyntax(QRegExp::Wildcard);
 
             for (int i = 0; i < meta->getLen(); i++)
             {
-                reg.setPattern(QLatin1String(meta->getString(i)));
-                if (reg.exactMatch(value_))
+                reg = QRegularExpression(
+                    QRegularExpression::wildcardToRegularExpression(meta->getString(i)));
+                if (reg.match(value_).hasMatch())
                 {
                     found = true;
                     break;
                 }
             }
             break;
-        case ito::StringMeta::RegExp:
-            reg.setPatternSyntax(QRegExp::RegExp);
+        case ito::StringMeta::RegularExpression:
 
             for (int i = 0; i < meta->getLen(); i++)
             {
                 reg.setPattern(QLatin1String(meta->getString(i)));
-                if (reg.indexIn(value_, 0) > -1)
+                if (reg.match(value_).hasMatch())
                 {
                     found = true;
                     break;
@@ -864,8 +862,8 @@ ito::RetVal ParamHelper::validateStringMeta(
             case ito::StringMeta::Wildcard:
                 constraints = QObject::tr("Wildcard match: (%1)").arg(items.join(","));
                 break;
-            case ito::StringMeta::RegExp:
-                constraints = QObject::tr("RegExp match: (%1)").arg(items.join(","));
+            case ito::StringMeta::RegularExpression:
+                constraints = QObject::tr("RegularExpression match: (%1)").arg(items.join(","));
                 break;
             }
 
