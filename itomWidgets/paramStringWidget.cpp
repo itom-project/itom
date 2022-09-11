@@ -31,7 +31,7 @@
 #include <qcombobox.h>
 #include <qlineedit.h>
 #include <qlayout.h>
-#include <QRegExpValidator>
+#include <qregularexpression.h>
 
 namespace ito
 {
