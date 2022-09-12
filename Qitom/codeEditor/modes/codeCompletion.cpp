@@ -52,8 +52,19 @@
 #include <qdir.h>
 
 
-
 namespace ito {
+
+//--------------------------------------------------------------------
+/*
+ */
+QString regExpAnchoredPattern(const QString& expression)
+{
+#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
+    return QRegularExpression::anchoredPattern(expression);
+#else
+    return QString() + QLatin1String("\\A(?:") + expression + QLatin1String(")\\z");
+#endif
+}
 
 //--------------------------------------------------------------------
 /*
@@ -135,7 +146,7 @@ bool SubsequenceSortFilterProxyModel::filterAcceptsRow(int source_row, const QMo
     for (int idx = 0; idx < m_filterPatterns.size(); ++idx)
     {
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 3, 0))
-        QRegularExpressionMatch match = m_filterPatterns[idx].match(QRegularExpression::anchoredPattern(completion));
+        QRegularExpressionMatch match = m_filterPatterns[idx].match(regExpAnchoredPattern(completion));
         if (match.hasMatch())
 #else
         if (m_filterPatterns[idx].exactMatch(completion))
@@ -154,7 +165,7 @@ bool SubsequenceSortFilterProxyModel::filterAcceptsRow(int source_row, const QMo
             }
             rank = start + idx * 10;
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 3, 0))
-            QRegularExpressionMatch matchCaseSensitive = m_filterPatternsCaseSensitive[idx].match(QRegularExpression::anchoredPattern(completion));
+            QRegularExpressionMatch matchCaseSensitive = m_filterPatternsCaseSensitive[idx].match(regExpAnchoredPattern(completion));
             if (matchCaseSensitive.hasMatch())
 #else
             if (m_filterPatternsCaseSensitive[idx].exactMatch(completion))

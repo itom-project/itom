@@ -27,7 +27,18 @@
 
 #include <qregularexpression.h>
 
+
 namespace ito {
+
+//----------------------------------------------------------------------------------------------------------------------------------
+QString regExpAnchoredPattern(const QString& expression)
+{
+#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
+    return QRegularExpression::anchoredPattern(expression);
+#else
+    return QString() + QLatin1String("\\A(?:") + expression + QLatin1String(")\\z");
+#endif
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 tCompareResult ParamHelper::compareParam(
@@ -810,7 +821,7 @@ ito::RetVal ParamHelper::validateStringMeta(
             reg.setPatternOptions(QRegularExpression::NoPatternOption);
             for (int i = 0; i < meta->getLen(); i++)
             {
-                if (reg.match(QRegularExpression::anchoredPattern(value_)).hasMatch())
+                if (reg.match(regExpAnchoredPattern(value_)).hasMatch())
                 {
                     found = true;
                     break;
@@ -823,7 +834,7 @@ ito::RetVal ParamHelper::validateStringMeta(
             {
                 reg = QRegularExpression(
                     QRegularExpression::wildcardToRegularExpression(meta->getString(i)));
-                if (reg.match(QRegularExpression::anchoredPattern(value_)).hasMatch())
+                if (reg.match(regExpAnchoredPattern(value_)).hasMatch())
                 {
                     found = true;
                     break;
