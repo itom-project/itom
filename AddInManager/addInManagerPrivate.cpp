@@ -23,7 +23,6 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include "addInManagerPrivate.h"
 #include "pluginModel.h"
 #include "addInManager.h"
-#include "../common/sharedFunctionsQt.h"
 
 #include <QtCore/qpluginloader.h>
 #include <qregularexpression.h>
