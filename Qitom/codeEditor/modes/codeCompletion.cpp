@@ -135,7 +135,7 @@ bool SubsequenceSortFilterProxyModel::filterAcceptsRow(int source_row, const QMo
     for (int idx = 0; idx < m_filterPatterns.size(); ++idx)
     {
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 3, 0))
-        QRegularExpressionMatch match = m_filterPatterns[idx].match(completion);
+        QRegularExpressionMatch match = m_filterPatterns[idx].match(QRegularExpression::anchoredPattern(completion));
         if (match.hasMatch())
 #else
         if (m_filterPatterns[idx].exactMatch(completion))
@@ -154,7 +154,7 @@ bool SubsequenceSortFilterProxyModel::filterAcceptsRow(int source_row, const QMo
             }
             rank = start + idx * 10;
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 3, 0))
-            QRegularExpressionMatch matchCaseSensitive = m_filterPatternsCaseSensitive[idx].match(completion);
+            QRegularExpressionMatch matchCaseSensitive = m_filterPatternsCaseSensitive[idx].match(QRegularExpression::anchoredPattern(completion));
             if (matchCaseSensitive.hasMatch())
 #else
             if (m_filterPatternsCaseSensitive[idx].exactMatch(completion))

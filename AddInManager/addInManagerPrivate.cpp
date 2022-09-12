@@ -465,10 +465,10 @@ RetVal AddInManagerPrivate::loadAddIn(QString &filename)
             {
                 QString notValidQtLibraryMsg = tr("The file '%1' is not a valid Qt plugin.").arg("*");
                 QRegularExpression rx = QRegularExpression(QRegularExpression::fromWildcard(notValidQtLibraryMsg, Qt::CaseSensitive));
-                
+
                 qDebug() << loader->errorString();
 
-                if (rx.match(loader->errorString()).hasMatch())
+                if (rx.match(QRegularExpression::anchoredPattern(loader->errorString())).hasMatch())
                 {
                     message = tr("Library '%1' was ignored. Message: %2").arg(filename).arg(loader->errorString());
                     qDebug() << message;
@@ -483,7 +483,7 @@ RetVal AddInManagerPrivate::loadAddIn(QString &filename)
                     QRegularExpression regExpDebugRelease = QRegularExpression(".*(release|debug).*");
                     regExpDebugRelease.setPatternOptions(QRegularExpression::CaseInsensitiveOption);
 
-                    if (regExpDebugRelease.match(loader->errorString()).hasMatch())
+                    if (regExpDebugRelease.match(QRegularExpression::anchoredPattern(loader->errorString())).hasMatch())
                     {
                         message = tr("AddIn '%1' could not be loaded. Error message: %2").arg(filename).arg(loader->errorString());
                         qDebug() << message;
