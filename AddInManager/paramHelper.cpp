@@ -31,7 +31,7 @@
 namespace ito {
 
 //----------------------------------------------------------------------------------------------------------------------------------
-QString regExpAnchoredPattern(const QString& expression)
+QString ParamHelper::regExpAnchoredPattern(const QString& expression)
 {
 #if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
     return QRegularExpression::anchoredPattern(expression);

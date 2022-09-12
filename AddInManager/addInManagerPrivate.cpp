@@ -23,22 +23,13 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include "addInManagerPrivate.h"
 #include "pluginModel.h"
 #include "addInManager.h"
+#include "paramHelper.h"
 
 #include <QtCore/qpluginloader.h>
 #include <qregularexpression.h>
 
 namespace ito
 {
-
-//----------------------------------------------------------------------------------------------------------------------------------
-QString regExpAnchoredPattern(const QString& expression)
-{
-#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
-    return QRegularExpression::anchoredPattern(expression);
-#else
-    return QString() + QLatin1String("\\A(?:") + expression + QLatin1String(")\\z");
-#endif
-}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 AddInManagerPrivate::AddInManagerPrivate(AddInManager* addInMgr) :
@@ -478,7 +469,7 @@ RetVal AddInManagerPrivate::loadAddIn(QString &filename)
 
                 qDebug() << loader->errorString();
                 
-                if (rx.match(regExpAnchoredPattern(loader->errorString())).hasMatch())
+                if (rx.match(ParamHelper::regExpAnchoredPattern(loader->errorString())).hasMatch())
                 {
                     message = tr("Library '%1' was ignored. Message: %2").arg(filename).arg(loader->errorString());
                     qDebug() << message;
@@ -493,7 +484,7 @@ RetVal AddInManagerPrivate::loadAddIn(QString &filename)
                     QRegularExpression regExpDebugRelease = QRegularExpression(".*(release|debug).*");
                     regExpDebugRelease.setPatternOptions(QRegularExpression::CaseInsensitiveOption);
 
-                    if (regExpDebugRelease.match(regExpAnchoredPattern(loader->errorString()))
+                    if (regExpDebugRelease.match(ParamHelper::regExpAnchoredPattern(loader->errorString()))
                             .hasMatch())
                     {
                         message = tr("AddIn '%1' could not be loaded. Error message: %2").arg(filename).arg(loader->errorString());
