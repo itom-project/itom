@@ -38,19 +38,25 @@
 #else
 #ifdef QPROPERTYEDITOR_DLL
 #define QPROPERTYEDITOR_EXPORT __export
+#define QPROPERTYEDITOR_TEST_EXPORT __export
 #else
 #define QPROPERTYEDITOR_EXPORT /*__import */ /* doesn't exist AFAIK in VC++ */
+#define QPROPERTYEDITOR_TEST_EXPORT /*__import */ /* doesn't exist AFAIK in VC++ */
 #endif /* Exists in Borland C++ for                                                                \
                    C++ classes (== huge) */
 #endif
 #endif
 
 #ifndef QPROPERTYEDITOR_EXPORT // QPROPERTYEDITOR_EXPORT has not be defined yet
-#ifdef QPROPERTYEDITOR_DLL
-#define QPROPERTYEDITOR_EXPORT __declspec(dllexport)
-#else
-#define QPROPERTYEDITOR_EXPORT __declspec(dllimport)
-#endif
+    #ifdef QPROPERTYEDITOR_DLL
+        #define QPROPERTYEDITOR_EXPORT __declspec(dllexport)
+        #define QPROPERTYEDITOR_TEST_EXPORT __declspec(dllexport)
+    #else
+        #define QPROPERTYEDITOR_EXPORT __declspec(dllimport)
+        #ifdef QPROPERTYEDITOR_TEST
+            #define QPROPERTYEDITOR_TEST_EXPORT __declspec(dllimport)
+        #endif
+    #endif
 #endif
 
 #endif // QPROPERTYEDITOR_EXPORT
@@ -59,4 +65,8 @@
 
 #ifndef QPROPERTYEDITOR_EXPORT
 #define QPROPERTYEDITOR_EXPORT
+#endif
+
+#ifndef QPROPERTYEDITOR_TEST_EXPORT
+#define QPROPERTYEDITOR_TEST_EXPORT
 #endif
