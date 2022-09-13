@@ -465,15 +465,8 @@ RetVal AddInManagerPrivate::loadAddIn(QString &filename)
             else
             {
                 QString notValidQtLibraryMsg = tr("The file '%1' is not a valid Qt plugin.").arg("*");
-                qDebug() << loader->errorString();
-
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 3, 0))
-                QRegularExpression rx = QRegularExpression(QRegularExpression::fromWildcard(notValidQtLibraryMsg, Qt::CaseSensitive));
-                if (rx.match(ParamHelper::regExpAnchoredPattern(loader->errorString())).hasMatch())
-#else
-                QRegExp rx(notValidQtLibraryMsg, Qt::CaseSensitive, QRegExp::Wildcard);
-                if(rx.exactMatch(loader->errorString()))
-#endif
+                QRegularExpression rx = QRegularExpression(AddInManagerPrivate::wildcardToRegularExpression(notValidQtLibraryMsg));
+                if (rx.match(loader->errorString()).hasMatch())
                 {
                     message = tr("Library '%1' was ignored. Message: %2").arg(filename).arg(loader->errorString());
                     qDebug() << message;
@@ -488,8 +481,7 @@ RetVal AddInManagerPrivate::loadAddIn(QString &filename)
                     QRegularExpression regExpDebugRelease = QRegularExpression(".*(release|debug).*");
                     regExpDebugRelease.setPatternOptions(QRegularExpression::CaseInsensitiveOption);
 
-                    if (regExpDebugRelease.match(ParamHelper::regExpAnchoredPattern(loader->errorString()))
-                            .hasMatch())
+                    if (regExpDebugRelease.match(loader->errorString()).hasMatch())
                     {
                         message = tr("AddIn '%1' could not be loaded. Error message: %2").arg(filename).arg(loader->errorString());
                         qDebug() << message;
@@ -1383,6 +1375,96 @@ ito::RetVal AddInManagerPrivate::initDockWidget(const ito::AddInBase *addIn)
     }
 
     return ito::retOk;
+}
+
+//-------------------------------------------------------------------------------
+QString AddInManagerPrivate::regExpAnchoredPattern(const QString& expression)
+{
+#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
+    return QRegularExpression::anchoredPattern(expression);
+#else
+    return QString() + QLatin1String("\\A(?:") + expression + QLatin1String(")\\z");
+#endif
+}
+
+//-------------------------------------------------------------------------------
+QString AddInManagerPrivate::wildcardToRegularExpression(const QString &pattern)
+{
+#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
+    // conversion should be anchored, hence, strict. Not partial.
+    return QRegularExpression::wildcardToRegularExpression(pattern);
+#else
+    // from the Qt source code
+    const qsizetype wclen = pattern.size();
+    QString rx;
+    rx.reserve(wclen + wclen / 16);
+    qsizetype i = 0;
+    const QChar *wc = pattern.data();
+#ifdef Q_OS_WIN
+    const QLatin1Char nativePathSeparator('\\');
+    const QLatin1String starEscape("[^/\\\\]*");
+    const QLatin1String questionMarkEscape("[^/\\\\]");
+#else
+    const QLatin1Char nativePathSeparator('/');
+    const QLatin1String starEscape("[^/]*");
+    const QLatin1String questionMarkEscape("[^/]");
+#endif
+    while (i < wclen) {
+        const QChar c = wc[i++];
+        switch (c.unicode()) {
+        case '*':
+            rx += starEscape;
+            break;
+        case '?':
+            rx += questionMarkEscape;
+            break;
+        case '\\':
+#ifdef Q_OS_WIN
+        case '/':
+            rx += QLatin1String("[/\\\\]");
+            break;
+#endif
+        case '$':
+        case '(':
+        case ')':
+        case '+':
+        case '.':
+        case '^':
+        case '{':
+        case '|':
+        case '}':
+            rx += QLatin1Char('\\');
+            rx += c;
+            break;
+        case '[':
+            rx += c;
+            // Support for the [!abc] or [!a-c] syntax
+            if (i < wclen) {
+                if (wc[i] == QLatin1Char('!')) {
+                    rx += QLatin1Char('^');
+                    ++i;
+                }
+                if (i < wclen && wc[i] == QLatin1Char(']'))
+                    rx += wc[i++];
+                while (i < wclen && wc[i] != QLatin1Char(']')) {
+                    // The '/' appearing in a character class invalidates the
+                    // regular expression parsing. It also concerns '\\' on
+                    // Windows OS types.
+                    if (wc[i] == QLatin1Char('/') || wc[i] == nativePathSeparator)
+                        return rx;
+                    if (wc[i] == QLatin1Char('\\'))
+                        rx += QLatin1Char('\\');
+                    rx += wc[i++];
+                }
+            }
+            break;
+        default:
+            rx += c;
+            break;
+        }
+    }
+    return regExpAnchoredPattern(rx);
+#endif
 }
 
 } //end namespace ito

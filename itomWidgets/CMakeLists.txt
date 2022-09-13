@@ -59,6 +59,10 @@ find_package(OpenCV COMPONENTS core REQUIRED)
 add_definitions(-DITOMWIDGETS_DLL -D_ITOMWIDGETS_DLL)
 add_definitions(-DITOMSHAREDDESIGNER)
 
+if (MSVC)
+  add_compile_options(/bigobj)
+endif ()
+
 #check https://blog.initiali.se/posts/building-qt-designer-plugins-for-your-custom-qt-widgets/
 # if not included like this an "undefined interface error will be risen from Qt (moc?!)
 INCLUDE_DIRECTORIES(

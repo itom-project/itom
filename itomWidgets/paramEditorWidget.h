@@ -34,6 +34,11 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include <qpointer.h>
 #include <qvector.h>
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+// https://stackoverflow.com/questions/66581395/q-property-must-be-fully-defined-error-in-qt-6
+Q_MOC_INCLUDE("common/addInInterface.h")
+#endif
+
 class ParamEditorModel;
 class ParamEditorWidgetPrivate;
 class QtProperty;

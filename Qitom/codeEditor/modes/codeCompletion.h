@@ -76,16 +76,9 @@ protected:
     virtual bool filterAcceptsRow(int source_row, const QModelIndex &source_parent) const;
 
     Qt::CaseSensitivity m_caseSensitivity;
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 3, 0))
     QList<QRegularExpression> m_filterPatterns;
     QList<QRegularExpression> m_filterPatternsCaseSensitive;
     QList<QRegularExpression> m_sortPatterns;
-#else
-    QList<QRegExp> m_filterPatterns;
-    QList<QRegExp> m_filterPatternsCaseSensitive;
-    QList<QRegExp> m_sortPatterns;
-#endif
-    
     QString m_prefix;
 };
 

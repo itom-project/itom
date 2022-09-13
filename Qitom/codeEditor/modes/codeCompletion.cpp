@@ -54,7 +54,7 @@
 
 namespace ito {
 
-//--------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 /*
  */
 QString regExpAnchoredPattern(const QString& expression)
@@ -63,6 +63,86 @@ QString regExpAnchoredPattern(const QString& expression)
     return QRegularExpression::anchoredPattern(expression);
 #else
     return QString() + QLatin1String("\\A(?:") + expression + QLatin1String(")\\z");
+#endif
+}
+
+//-------------------------------------------------------------------------------
+QString wildcardToRegularExpression(const QString &pattern)
+{
+#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
+    // conversion should be anchored, hence, strict. Not partial.
+    return QRegularExpression::wildcardToRegularExpression(pattern);
+#else
+    // from the Qt source code
+    const qsizetype wclen = pattern.size();
+    QString rx;
+    rx.reserve(wclen + wclen / 16);
+    qsizetype i = 0;
+    const QChar *wc = pattern.data();
+#ifdef Q_OS_WIN
+    const QLatin1Char nativePathSeparator('\\');
+    const QLatin1String starEscape("[^/\\\\]*");
+    const QLatin1String questionMarkEscape("[^/\\\\]");
+#else
+    const QLatin1Char nativePathSeparator('/');
+    const QLatin1String starEscape("[^/]*");
+    const QLatin1String questionMarkEscape("[^/]");
+#endif
+    while (i < wclen) {
+        const QChar c = wc[i++];
+        switch (c.unicode()) {
+        case '*':
+            rx += starEscape;
+            break;
+        case '?':
+            rx += questionMarkEscape;
+            break;
+        case '\\':
+#ifdef Q_OS_WIN
+        case '/':
+            rx += QLatin1String("[/\\\\]");
+            break;
+#endif
+        case '$':
+        case '(':
+        case ')':
+        case '+':
+        case '.':
+        case '^':
+        case '{':
+        case '|':
+        case '}':
+            rx += QLatin1Char('\\');
+            rx += c;
+            break;
+        case '[':
+            rx += c;
+            // Support for the [!abc] or [!a-c] syntax
+            if (i < wclen) {
+                if (wc[i] == QLatin1Char('!')) {
+                    rx += QLatin1Char('^');
+                    ++i;
+                }
+                if (i < wclen && wc[i] == QLatin1Char(']'))
+                    rx += wc[i++];
+                while (i < wclen && wc[i] != QLatin1Char(']')) {
+                    // The '/' appearing in a character class invalidates the
+                    // regular expression parsing. It also concerns '\\' on
+                    // Windows OS types.
+                    if (wc[i] == QLatin1Char('/') || wc[i] == nativePathSeparator)
+                        return rx;
+                    if (wc[i] == QLatin1Char('\\'))
+                        rx += QLatin1Char('\\');
+                    rx += wc[i++];
+                }
+            }
+            break;
+        default:
+            rx += c;
+            break;
+        }
+    }
+    return regExpAnchoredPattern(rx);
 #endif
 }
 
@@ -88,23 +168,30 @@ void SubsequenceSortFilterProxyModel::setPrefix(const QString &prefix)
     
     for (int i = prefix.size(); i >= 1; --i)
     {
-        ptrn = QString(".*%1.*%2").arg(prefix.left(i), prefix.mid(i));
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 3, 0))
-         m_filterPatterns.append(QRegularExpression(QRegularExpression::fromWildcard(ptrn,
-         m_caseSensitivity)));
-         m_filterPatternsCaseSensitive.append(QRegularExpression(QRegularExpression::fromWildcard(ptrn,
-         Qt::CaseSensitive)));
-         ptrn = QString("%1.*%1").arg(prefix.left(i), prefix.mid(i));
-         m_sortPatterns.append(QRegularExpression(QRegularExpression::fromWildcard(ptrn,
-         m_caseSensitivity)));
-#else
-        m_filterPatterns.append(QRegExp(ptrn, m_caseSensitivity));
-        m_filterPatternsCaseSensitive.append(QRegExp(ptrn, Qt::CaseSensitive));
+        ptrn = regExpAnchoredPattern(QString(".*%1.*%2").arg(prefix.left(i), prefix.mid(i)));
+        QRegularExpression regExp(ptrn);
+        m_filterPatternsCaseSensitive.append(regExp);
+
+        if (!m_caseSensitivity)
+        {
+            regExp.setPatternOptions(QRegularExpression::CaseInsensitiveOption);
+        }
+
+        m_filterPatterns.append(regExp);
+        
         ptrn = QString("%1.*%1").arg(prefix.left(i), prefix.mid(i));
-        m_sortPatterns.append(QRegExp(ptrn, m_caseSensitivity));
-#endif
-        
-        
+        regExp.setPattern(ptrn);
+
+        if (m_caseSensitivity)
+        {
+            regExp.setPatternOptions(0);
+        }
+        else
+        {
+            regExp.setPatternOptions(QRegularExpression::CaseInsensitiveOption);
+        }
+
+        m_sortPatterns.append(regExp);       
     }
     m_prefix = prefix;
 }
@@ -145,32 +232,20 @@ bool SubsequenceSortFilterProxyModel::filterAcceptsRow(int source_row, const QMo
 
     for (int idx = 0; idx < m_filterPatterns.size(); ++idx)
     {
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 3, 0))
-        QRegularExpressionMatch match = m_filterPatterns[idx].match(regExpAnchoredPattern(completion));
-        if (match.hasMatch())
-#else
-        if (m_filterPatterns[idx].exactMatch(completion))
-#endif
+        if (m_filterPatterns[idx].match(completion).hasMatch())
         {
+            // exact match due to pattern of regular expression
             // compute rank, the lowest rank the closer it is from the
             // completion
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 3, 0))
-            int start = match.lastCapturedIndex();
-#else
-            int start = m_sortPatterns[idx].lastIndexIn(completion);
-#endif
+            int start = completion.lastIndexOf(m_sortPatterns[idx]);
             if (start == -1)
             {
                 start = INT_MAX;
             }
             rank = start + idx * 10;
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 3, 0))
-            QRegularExpressionMatch matchCaseSensitive = m_filterPatternsCaseSensitive[idx].match(regExpAnchoredPattern(completion));
-            if (matchCaseSensitive.hasMatch())
-#else
-            if (m_filterPatternsCaseSensitive[idx].exactMatch(completion))
-#endif
+            if (m_filterPatternsCaseSensitive[idx].match(completion).hasMatch())
             {
+                // exact match due to pattern of regular expression
                 // favorise completions where case is matched
                 rank -= 10;
             }
@@ -178,6 +253,7 @@ bool SubsequenceSortFilterProxyModel::filterAcceptsRow(int source_row, const QMo
             return true;
         }
     }
+
     return m_prefix.size() == 0;
 }
 
@@ -191,7 +267,7 @@ SubsequenceCompleter::SubsequenceCompleter(QObject *parent /*= NULL*/) :
     m_pFilterProxyModel(NULL)
 {
     m_localCompletionPrefix = "";
-    m_pSourceModel = NULL;
+    m_pSourceModel = nullptr;
     m_pFilterProxyModel = new SubsequenceSortFilterProxyModel(caseSensitivity(), this);
     m_pFilterProxyModel->setSortRole(Qt::UserRole);
     m_forceNextUpdate = true;

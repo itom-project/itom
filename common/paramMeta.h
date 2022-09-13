@@ -530,7 +530,7 @@ class ITOMCOMMON_EXPORT StringMeta : public ParamMeta
     {
         String,   //!< string elements should be considered as strings (exact match)
         Wildcard, //!< string elements should be considered as wildcard-expressions (e.g. *.doc)
-        RegularExpression    //!< string elements should be considered as regular expressions (e.g. ^(.*)[abc]{1,5}$)
+        RegExp    //!< string elements should be considered as regular expressions (e.g. ^(.*)[abc]{1,5}$)
     };
 
     //! constructor

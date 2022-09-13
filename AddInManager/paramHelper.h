@@ -39,7 +39,6 @@ namespace ito
     {
     public: 
 
-        static QString regExpAnchoredPattern(const QString& expression);
         static tCompareResult compareParam(const ito::Param &paramTemplate, const ito::Param &param, ito::RetVal &ret);
         static tCompareResult compareMetaParam(const ito::ParamMeta *metaTemplate, const ito::ParamMeta *meta, const char* nameTemplate, const char *name, ito::RetVal &ret);
 

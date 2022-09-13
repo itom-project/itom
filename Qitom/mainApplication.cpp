@@ -151,7 +151,7 @@ MainApplication::~MainApplication()
 //----------------------------------------------------------------------------------------------------------------------------------
 void MainApplication::registerMetaObjects()
 {
-#if QT_VERSION < QT_VERSION_CHECK(6, 0 0)
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     // must not be called any more in Qt6, since this is automatically done then.
     qRegisterMetaTypeStreamOperators<ito::ScriptEditorStorage>("ito::ScriptEditorStorage");
     qRegisterMetaTypeStreamOperators<QList<ito::ScriptEditorStorage> >("QList<ito::ScriptEditorStorage>");

@@ -39,12 +39,18 @@
 #include "common/retVal.h"
 #include "common/interval.h"
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+// https://stackoverflow.com/questions/66581395/q-property-must-be-fully-defined-error-in-qt-6
+Q_MOC_INCLUDE("common/addInInterface.h")
+#endif
+
 class ItomSharedSemaphore; //forward declaration
 
 class MotorAxisControllerPrivate; //forward declaration
 
 namespace ito {
     class AddInActuator; //forward declaration
+    
 };
 
 class ITOMWIDGETS_EXPORT MotorAxisController : public QWidget

@@ -1395,9 +1395,29 @@ void QtStringPropertyManager::setValue(QtProperty *property, const QString &val)
     if (data.val == val)
         return;
 
+    if (data.regularExpression.isValid())
+    {
+        QString pattern = data.regularExpression.pattern();
 
-    if (data.regularExpression.isValid() && !data.regularExpression.match(regExpAnchoredPattern(val)).hasMatch())
-        return;
+        if (pattern.startsWith(QLatin1String("\\A(?:")) && pattern.endsWith(QLatin1String(")\\z")))
+        {
+            // the regular expression already contains a pattern for an exact match
+            if (!data.regularExpression.match(val).hasMatch())
+            {
+                return;
+            }
+        }
+        else
+        {
+            // reformat the regular expression for an exact match
+            QRegularExpression regExp(regExpAnchoredPattern(pattern));
+
+            if (!regExp.match(val).hasMatch())
+            {
+                return;
+            }
+        }
+    }
 
     data.val = val;
 

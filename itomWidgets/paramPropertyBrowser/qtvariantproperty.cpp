@@ -46,6 +46,7 @@
 #include <QtGui/QIcon>
 #include <QtCore/QDate>
 #include <QtCore/QLocale>
+#include <qregularexpression.h>
 
 #if defined(Q_CC_MSVC)
 #    pragma warning(disable: 4786) /* MS VS 6: truncating debug info after 255 characters */
@@ -1200,7 +1201,7 @@ QtVariantPropertyManager::QtVariantPropertyManager(QObject *parent)
 		// MarginsPropertyManager
     QtMarginsPropertyManager *marginsPropertyManager = new QtMarginsPropertyManager(this);
 		qRegisterMetaType<QMargins>("QMargins");
-#if QT_VERSION < QT_VERSION_CHECK(6, 0 0)
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         // must not be called any more in Qt6, since this is automatically done then.
 		qRegisterMetaTypeStreamOperators<QMargins>("QMargins");
 #endif
@@ -1226,7 +1227,7 @@ QtVariantPropertyManager::QtVariantPropertyManager(QObject *parent)
 		// MarginsFPropertyManager
     QtMarginsFPropertyManager *marginsfPropertyManager = new QtMarginsFPropertyManager(this);
 		qRegisterMetaType<QMarginsF>("QMarginsF");
-#if QT_VERSION < QT_VERSION_CHECK(6, 0 0)
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         // must not be called any more in Qt6, since this is automatically done then.
 		qRegisterMetaTypeStreamOperators<QMarginsF>("QMarginsF");
 #endif
@@ -1822,7 +1823,7 @@ void QtVariantPropertyManager::setAttribute(QtProperty *property,
         return;
     } else if (QtStringPropertyManager *stringManager = qobject_cast<QtStringPropertyManager *>(manager)) {
         if (attribute == d_ptr->m_regExpAttribute)
-            stringManager->setRegExp(internProp, qvariant_cast<QRegExp>(value));
+            stringManager->setRegExp(internProp, qvariant_cast<QRegularExpression>(value));
         if (attribute == d_ptr->m_echoModeAttribute)
             stringManager->setEchoMode(internProp, (EchoMode)qvariant_cast<int>(value));
         return;
