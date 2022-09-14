@@ -25,7 +25,6 @@
 #include <qcombobox.h>
 #include <qlineedit.h>
 #include <qmessagebox.h>
-#include <qregexp.h>
 #include <qspinbox.h>
 #include <qtoolbutton.h>
 

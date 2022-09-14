@@ -30,6 +30,7 @@
 #include <qdebug.h>
 #include <QCryptographicHash>
 #include <qsettings.h>
+#include <qregularexpression.h>
 #include <qfiledialog.h>
 
 namespace ito {
@@ -188,7 +189,7 @@ bool DialogUserManagementEdit::saveUser()
 QString DialogUserManagementEdit::clearName(const QString &name)
 {
     QString name_(name);
-    name_.replace( QRegExp( "[" + QRegExp::escape( "\\/:*?\"<>|" ) + "]" ), QString( "_" ) );
+    name_.replace(QRegularExpression( "[" + QRegularExpression::escape( "\\/:*?\"<>|" ) + "]" ), QString( "_" ) );
     name_.replace(QChar(0x00, 0xE4), "ae"); //german umlaut 'a with diaresis' replaced by ae
     name_.replace(QChar(0x00, 0xF6), "oe"); //german umlaut 'o with diaresis' replaced by oe
     name_.replace(QChar(0x00, 0xFC), "ue"); //german umlaut 'u with diaresis' replaced by ue

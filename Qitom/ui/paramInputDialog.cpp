@@ -213,12 +213,12 @@ QWidget *LineEditDelegate::createEditor(QWidget *parent, const QStyleOptionViewI
                     break;
                 case ito::StringMeta::Wildcard: {
                     QRegExp regexp(QLatin1String(meta->getString(0)), Qt::CaseSensitive, QRegExp::Wildcard);
-                    lineEdit->setValidator(new QRegExpValidator(regexp, lineEdit));
+                    lineEdit->setValidator(new QRegularExpressionValidator(regexp, lineEdit));
                     break;
                 }
                 case ito::StringMeta::RegExp: {
-                    QRegExp regexp(QLatin1String(meta->getString(0)), Qt::CaseSensitive, QRegExp::RegExp);
-                    lineEdit->setValidator(new QRegExpValidator(regexp, lineEdit));
+                    QRegularExpression regexp(QLatin1String(meta->getString(0)));
+                    lineEdit->setValidator(new QRegularExpressionValidator(regexp, lineEdit));
                     break;
                 }
                 }

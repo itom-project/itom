@@ -33,7 +33,6 @@
 #include <qurl.h>
 #include <qsettings.h>
 #include <qfileinfo.h>
-#include <qregexp.h>
 
 #include <qevent.h>
 #include <qdebug.h>

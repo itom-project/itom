@@ -71,7 +71,7 @@ bool ItomFileSystemModel::dropMimeData(const QMimeData *data, Qt::DropAction act
 
     for (; it != urls.constEnd(); ++it)
     {
-        fromFile = it->toLocalFile();
+        fromFile.setFile(it->toLocalFile());
         fromFileAbs = fromFile.absoluteFilePath();
              
         if (!fromFile.exists())

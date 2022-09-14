@@ -40,7 +40,6 @@
 #include <qcombobox.h>
 #include <qapplication.h>
 #include <qshortcut.h>
-#include <qregexp.h>
 #include <qmimedata.h>
 
 namespace ito {

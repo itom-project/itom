@@ -9,7 +9,6 @@
 #include <qfiledialog.h>
 #include <qmessagebox.h>
 #include <qpainter.h>
-#include <qregexp.h>
 #include <qsortfilterproxymodel.h>
 #include <qstandarditemmodel.h>
 #include <qstringlistmodel.h>

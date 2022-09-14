@@ -92,6 +92,7 @@ if (${PYTHONLIBS_VERSION_STRING} VERSION_LESS "3.5.0")
 endif()
 
 find_package(OpenCV COMPONENTS core REQUIRED)
+
 if(BUILD_WITH_PCL)
     find_package(PCL 1.5.1 REQUIRED COMPONENTS common)
     
@@ -231,17 +232,20 @@ include_directories(
     ${PCL_INCLUDE_DIRS}
     ${PYMATLAB_INCLUDE_DIR}
     ${VISUALLEAKDETECTOR_INCLUDE_DIR}
+    ${OpenCV_INCLUDE_DIRS}
     ../DataObject/
     ../PointCloud/
     ../AddInManager/
     ../itomWidgets
 )
 
+message(WARNING "OpenCV XYZ ${OpenCV_INCLUDE_DIRS} ${OpenCV_LIBS} - ${OpenCV_FOUND}")
+
 link_directories(
     ${CMAKE_CURRENT_BINARY_DIR}/../DataObject
     ${CMAKE_CURRENT_BINARY_DIR}/../PointCloud
-    ${CMAKE_CURRENT_BINARY_DIR}/../AddInManager   
-    ${CMAKE_CURRENT_BINARY_DIR}/../itomWidgets  
+    ${CMAKE_CURRENT_BINARY_DIR}/../AddInManager
+    ${CMAKE_CURRENT_BINARY_DIR}/../itomWidgets
 )
  
 set(qitom_HEADERS_NOMOC
@@ -845,41 +849,39 @@ else()
     set(POINTCLOUD_LIBRARIES "")
 endif()
 
-if(QT5_FOUND)
-    if(WIN32)
-        target_link_libraries(${target_name}
-            ${WINICONRES}
-            ${PYTHON_LIBRARY_ITOM}
-            ${OpenCV_LIBS}
-            ${POINTCLOUD_LIBRARIES}
-            ${VISUALLEAKDETECTOR_LIBRARIES}
-            ${QT5_LIBRARIES}
-            dataobject
-            addinmanager
-            qpropertyeditor
-            itomCommonLib
-            itomCommonQtLib
-            itomWidgets
-            itomCommonPlotLib
-            ${PYMATLAB_LIBRARIES}
-            shell32)
-    else()
-        target_link_libraries(${target_name}
-            ${WINICONRES}
-            ${PYTHON_LIBRARY_ITOM}
-            ${OpenCV_LIBS}
-            ${POINTCLOUD_LIBRARIES}
-            ${VISUALLEAKDETECTOR_LIBRARIES}
-            ${QT5_LIBRARIES}
-            dataobject
-            addinmanager
-            qpropertyeditor
-            itomCommonLib
-            itomCommonQtLib
-            itomWidgets
-            itomCommonPlotLib
-            ${PYMATLAB_LIBRARIES})
-    endif()
+if(WIN32)
+    target_link_libraries(${target_name}
+        ${WINICONRES}
+        ${PYTHON_LIBRARY_ITOM}
+        ${OpenCV_LIBS}
+        ${POINTCLOUD_LIBRARIES}
+        ${VISUALLEAKDETECTOR_LIBRARIES}
+        ${QT5_LIBRARIES}
+        dataobject
+        addinmanager
+        qpropertyeditor
+        itomCommonLib
+        itomCommonQtLib
+        itomWidgets
+        itomCommonPlotLib
+        ${PYMATLAB_LIBRARIES}
+        shell32)
+else()
+    target_link_libraries(${target_name}
+        ${WINICONRES}
+        ${PYTHON_LIBRARY_ITOM}
+        ${OpenCV_LIBS}
+        ${POINTCLOUD_LIBRARIES}
+        ${VISUALLEAKDETECTOR_LIBRARIES}
+        ${QT5_LIBRARIES}
+        dataobject
+        addinmanager
+        qpropertyeditor
+        itomCommonLib
+        itomCommonQtLib
+        itomWidgets
+        itomCommonPlotLib
+        ${PYMATLAB_LIBRARIES})
 endif()
 
 #translation
