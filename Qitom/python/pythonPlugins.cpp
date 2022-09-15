@@ -3949,7 +3949,6 @@ PyObject* PythonPlugins::PyDataIOPlugin_stop(PyDataIOPlugin *self)
 
     Py_RETURN_NONE;
 }
-
 //-------------------------------------------------------------------------------------
 PyDoc_STRVAR(PyDataIOPlugin_getVal_doc,"getVal(dataObj) -> None \\\n\
 getVal(buffer, length = INT_MAX) -> int \n\
@@ -4040,6 +4039,57 @@ PyObject* PythonPlugins::PyDataIOPlugin_getVal(PyDataIOPlugin *self, PyObject *a
 
         invokeMethod = 1;
     }
+    else if (PyErr_Clear(), PyArg_ParseTuple(args, "O!", &PyDict_Type, &bufferObj))
+    {
+        PyObject *key, *value, *repr, *str;
+        Py_ssize_t pos = 0;
+        ito::DataObject* channelDataObj;
+        QMap<QString, ito::DataObject*> channelMap;
+        while (PyDict_Next(bufferObj, &pos, &key, &value))
+        {
+            if (PyUnicode_Check(key))
+            {
+
+                if ((Py_TYPE(value) == &PythonDataObject::PyDataObjectType))
+                {
+                    repr = PyObject_Repr(key);
+                    str = PyUnicode_AsEncodedString(repr, "utf-8", "strict");
+                    if (((PythonDataObject::PyDataObject*)value)->dataObject)
+                    {
+                        channelMap[QString(PyBytes_AS_STRING(str))] =
+                            ((PythonDataObject::PyDataObject*)value)->dataObject;
+                    }
+                    else
+                    {
+                        Py_XDECREF(repr);
+                        Py_XDECREF(str);
+                        PyErr_SetString(
+                            PyExc_RuntimeError,
+                            "given data object of at least one data object is empty (internal dataObject-pointer is NULL)");
+                        return NULL;
+                    }
+                    
+                    if (channelMap.size()!=0)
+                    {
+
+                    }
+
+                }
+                else
+                {
+                    PyErr_SetString(
+                        PyExc_RuntimeError, "The value of at least one item isn't a data object");
+                    return NULL;
+                }
+            }
+            else
+            {
+                PyErr_SetString(PyExc_RuntimeError, "The key of at least one item isn't a string");
+                return NULL;
+            }
+        }
+
+    }
     else if (PyErr_Clear(), PyArg_ParseTuple(args, "O|i", &bufferObj, &length))
     {
         if (PyByteArray_Check(bufferObj))
@@ -4085,7 +4135,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_getVal(PyDataIOPlugin *self, PyObject *a
         PyErr_Clear();
         PyErr_SetString(
             PyExc_RuntimeError, 
-            "arguments of method must be either one data object, byte array or "
+            "arguments of method must be either one data object, a dictionary containing data objects, a byte array or a "
             "byte object.");
         return NULL;
     }
