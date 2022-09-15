@@ -41,6 +41,7 @@
 #include <qclipboard.h>
 #include <qapplication.h>
 #include <qmimedata.h>
+#include <qregularexpression.h>
 
 
 
@@ -361,13 +362,13 @@ QString AbstractCodeEditorWidget::getWordAtPosition(const int &line, const int &
 int AbstractCodeEditorWidget::getSpaceTabCount(const QString &text) const
 {
     int res = 0;
-    if (text.mid(res, 1).indexOf(QRegExp("[\t]")) > -1 || text.mid(res, 1) == " ")
+    if (text.mid(res, 1).indexOf(QRegularExpression("[\t]")) > -1 || text.mid(res, 1) == " ")
     {
         do
         {
             ++res;
         }
-        while (text.mid(res, 1).indexOf(QRegExp("[\t]")) > -1 || text.mid(res, 1) == " ");
+        while (text.mid(res, 1).indexOf(QRegularExpression("[\t]")) > -1 || text.mid(res, 1) == " ");
     }
 
     return res;

@@ -26,7 +26,11 @@
 *********************************************************************** */
 
 #include <qapplication.h>
+
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include <qdesktopwidget.h>
+#endif
+
 #include <qevent.h>
 #include <qpointer.h>
 #include <qstyle.h>

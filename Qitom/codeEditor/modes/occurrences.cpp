@@ -42,7 +42,7 @@
 #include "../utils/utils.h"
 
 #include <qbrush.h>
-#include <qregexp.h>
+#include <qregularexpression.h>
 #include <QtConcurrent/QtConcurrentRun>
 
 namespace ito {

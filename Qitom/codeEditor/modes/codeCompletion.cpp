@@ -184,7 +184,7 @@ void SubsequenceSortFilterProxyModel::setPrefix(const QString &prefix)
 
         if (m_caseSensitivity)
         {
-            regExp.setPatternOptions(0);
+            regExp.setPatternOptions(QRegularExpression::PatternOptions());
         }
         else
         {

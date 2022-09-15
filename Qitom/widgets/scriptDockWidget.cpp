@@ -309,7 +309,7 @@ QString argsWordWrap(QString text, int width)
 
     for (;;)
     {
-        i = std::min(width, text.length());
+        i = std::min(width, (int)text.length());
         j = text.lastIndexOf(", ", i);
 
         if (j == -1)
@@ -373,7 +373,7 @@ void methodBoxAddItem(
         // minimumSize of the comboBox seems to be adapted to the necessary
         // size of the real text in all entries (maybe a bug in Qt???).
         QString methArgsElide = methArgs.left(
-            std::max(0, maxLength - 4 - methPre.size() - methPost.size())
+            std::max(0, maxLength - 4 - (int)methPre.size() - (int)methPost.size())
         ) + "...";
         fullSig = QString("%1(%2)").arg(methPre, methArgsElide);
 

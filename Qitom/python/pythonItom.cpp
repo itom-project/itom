@@ -46,7 +46,10 @@
 #include "../organizer/userOrganizer.h"
 
 #include <qcoreapplication.h>
+
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include <qdesktopwidget.h>
+#endif
 #include <qdir.h>
 #include <qresource.h>
 #include <qscreen.h>

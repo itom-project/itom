@@ -587,8 +587,8 @@ QWidget* ParamInputParser::renderTypeString(
         {
             if (meta->getLen() == 1)
             {
-                QRegExp reg(QLatin1String(meta->getString(0)), Qt::CaseSensitive, QRegExp::RegExp);
-                txt->setValidator(new QRegExpValidator(reg, txt));
+                QRegularExpression reg(QLatin1String(meta->getString(0)));
+                txt->setValidator(new QRegularExpressionValidator(reg, txt));
                 QString toolTip = tr("%1 [Regular Expression]").arg(reg.pattern());
                 txt->setToolTip(toolTip);
             }

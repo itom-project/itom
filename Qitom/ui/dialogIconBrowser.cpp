@@ -31,6 +31,8 @@
 #include <QApplication>
 #include <QDirIterator>
 #include <QtConcurrent/qtconcurrentrun.h>
+#include <qlist.h>
+#include <qtreewidget.h>
 
 namespace ito
 {
