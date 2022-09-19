@@ -1154,7 +1154,31 @@ namespace ito
             return ito::retError;
         }
     }
+    //----------------------------------------------------------------------------------------------------------------------------------
+    ito::RetVal AddInDataIO::getVal(QSharedPointer<QMap<QString, ito::DataObject*>> dataObjMap, ItomSharedSemaphore* waitCond)
+    {
+        if (waitCond)
+        {
+            waitCond->returnValue += ito::RetVal(
+                ito::retError,
+                0,
+                tr("method getVal(QSharedPointer<QMap<QString, ito::DataObject*>>, ItomSharedSemaphore*) "
+                   "is not implemented in this plugin")
+                    .toLatin1()
+                    .data());
+            waitCond->release();
 
+            return waitCond->returnValue;
+        }
+        else
+        {
+            return ito::retError;
+        }
+    }
+    ito::RetVal AddInDataIO::getVal(ItomSharedSemaphore* waitCond)
+    {
+        return ito::retError;
+    }
     //----------------------------------------------------------------------------------------------------------------------------------
     ito::RetVal AddInDataIO::getVal(QSharedPointer<char> /*data*/, QSharedPointer<int> /*length*/, ItomSharedSemaphore *waitCond)
     {

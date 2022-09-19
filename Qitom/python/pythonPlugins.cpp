@@ -4044,7 +4044,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_getVal(PyDataIOPlugin *self, PyObject *a
         PyObject *key, *value, *repr, *str;
         Py_ssize_t pos = 0;
         ito::DataObject* channelDataObj;
-        QMap<QString, ito::DataObject*> channelMap;
+        QSharedPointer<QMap<QString, ito::DataObject*>> channelMap(new QMap<QString, ito::DataObject*>);
         while (PyDict_Next(bufferObj, &pos, &key, &value))
         {
             if (PyUnicode_Check(key))
@@ -4056,8 +4056,9 @@ PyObject* PythonPlugins::PyDataIOPlugin_getVal(PyDataIOPlugin *self, PyObject *a
                     str = PyUnicode_AsEncodedString(repr, "utf-8", "strict");
                     if (((PythonDataObject::PyDataObject*)value)->dataObject)
                     {
-                        channelMap[QString(PyBytes_AS_STRING(str))] =
+                        (*channelMap)[QString(PyBytes_AS_STRING(str))] =
                             ((PythonDataObject::PyDataObject*)value)->dataObject;
+                        std::cout << PyBytes_AS_STRING(str) << "\n";
                     }
                     else
                     {
@@ -4068,12 +4069,6 @@ PyObject* PythonPlugins::PyDataIOPlugin_getVal(PyDataIOPlugin *self, PyObject *a
                             "given data object of at least one data object is empty (internal dataObject-pointer is NULL)");
                         return NULL;
                     }
-                    
-                    if (channelMap.size()!=0)
-                    {
-
-                    }
-
                 }
                 else
                 {
@@ -4088,6 +4083,14 @@ PyObject* PythonPlugins::PyDataIOPlugin_getVal(PyDataIOPlugin *self, PyObject *a
                 return NULL;
             }
         }
+        locker = (new ItomSharedSemaphore());
+
+                QMetaObject::invokeMethod(
+            self->dataIOObj, "getVal", Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+        QMetaObject::invokeMethod(
+            self->dataIOObj, "getVal",
+            QArgument<QSharedPointer<QMap<QString, ito::DataObject*> > >("QSharedPointer<QMap<QString, ito::DataObject*> >",channelMap),
+            Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
 
     }
     else if (PyErr_Clear(), PyArg_ParseTuple(args, "O|i", &bufferObj, &length))

@@ -829,6 +829,7 @@ AddInManager::AddInManager(QString itomSettingsFile, void **apiFuncsGraph, QObje
     qRegisterMetaType<QMap<QString, ito::Param> >("QMap<QString, ito::ParamBase>");
     qRegisterMetaType<QSharedPointer<QVector<ito::ParamBase> > >("QSharedPointer<QVector<ito::ParamBase> >");
     qRegisterMetaType<QVector<QSharedPointer<ito::ParamBase> > >("QVector<QSharedPointer<ito::ParamBase> >");
+    qRegisterMetaType<QSharedPointer<QMap<QString, ito::DataObject*> > >("QSharedPointer<QMap<QString, ito::DataObject*> >");
 
 #if ITOM_POINTCLOUDLIBRARY > 0    
     qRegisterMetaType<ito::PCLPointCloud >("ito::PCLPointCloud");
