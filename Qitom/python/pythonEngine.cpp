@@ -56,8 +56,7 @@
 #include <qlist.h>
 #include <qstringlist.h>
 #include <qdir.h>
-#include <qdesktopwidget.h>
-
+#include <qtextcodec.h>
 #include <qjsondocument.h>
 #include <qjsonobject.h>
 #include <qsettings.h>
@@ -65,7 +64,6 @@
 
 #include <qsharedpointer.h>
 #include <qtimer.h>
-#include <qtextcodec.h>
 #include <QtConcurrent/qtconcurrentrun.h>
 #include <QtCore/qmath.h>
 

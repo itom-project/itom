@@ -134,9 +134,10 @@ public:
     {
         m_args = new void*[m_sizeArgs];
         m_argTypes = new int[m_sizeArgs];
-        for(int i=0;i<m_sizeArgs;i++) 
+
+        for (int i = 0; i < m_sizeArgs; i++) 
         {
-            m_args[i] = NULL;
+            m_args[i] = nullptr;
             m_argTypes[i] = -1;
         }
     };
@@ -148,10 +149,11 @@ public:
     */
     ~FctCallParamContainer()
     {
-        for(int i=0;i<m_sizeArgs;i++) 
+        for (int i = 0; i < m_sizeArgs; i++) 
         {
-            QMetaType::destroy(m_argTypes[i], m_args[i]);
+            QMetaType(m_argTypes[i]).destroy(m_args[i]);
         }
+
         DELETE_AND_SET_NULL_ARRAY(m_argTypes);
         DELETE_AND_SET_NULL_ARRAY(m_args);
     }
@@ -169,9 +171,13 @@ public:
     */
     inline void initRetArg(int type)  //reference of ptr is stolen and will be deleted by this class
     { 
-        if(m_args[0]) QMetaType::destroy(m_argTypes[0], m_args[0]);
+        if (m_args[0])
+        {
+            QMetaType(m_argTypes[0]).destroy(m_args[0]);
+        }
+
         m_argTypes[0] = type; 
-        m_args[0] = QMetaType::create(type, NULL);
+        m_args[0] = QMetaType(type).create(nullptr);
     };
 
     //! stores a pair of variable-type and corresponding void-pointer as parameter with given index number
@@ -187,8 +193,16 @@ public:
     */
     inline void setParamArg(unsigned int index, void* ptr, int type)  //reference of ptr is stolen and will be deleted by this class
     { 
-        if((int)index < 0 || (int)index >= m_nrOfParams) return;
-        if(m_args[index+1]) QMetaType::destroy(m_argTypes[index+1], m_args[index+1]);
+        if ((int)index < 0 || (int)index >= m_nrOfParams)
+        {
+            return;
+        }
+
+        if (m_args[index + 1])
+        {
+            QMetaType(m_argTypes[index + 1]).destroy(m_args[index + 1]);
+        }
+
         m_args[index+1] = ptr; 
         m_argTypes[index+1] = type; 
     };

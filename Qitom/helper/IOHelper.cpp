@@ -31,7 +31,7 @@
 #include "../organizer/processOrganizer.h"
 #include "../../AddInManager/addInManager.h"
 #include "../../AddInManager/algoInterfaceValidator.h"
-
+#include "compatHelper.h"
 #include "../ui/dialogOpenFileWithFilter.h"
 #include "../ui/dialogSaveFileWithFilter.h"
 
@@ -1302,13 +1302,13 @@ end:
 {
     QStringList allPatterns;
     getFileFilters(IOfilters, &allPatterns);
-    QRegExp reg;
-    reg.setPatternSyntax( QRegExp::Wildcard );
+    QRegularExpression reg;
 
     foreach(const QString &pat, allPatterns)
     {
-        reg.setPattern(pat);
-        if(reg.exactMatch(filename))
+        reg.setPattern(CompatHelper::regExpAnchoredPattern(CompatHelper::wildcardToRegularExpression(pat)));
+        
+        if(filename.indexOf(reg) >= 0)
         {
             return true;
         }

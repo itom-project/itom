@@ -26,6 +26,7 @@
 #include "../common/typeDefs.h"
 #include "../global.h"
 #include "../helper/IOHelper.h"
+#include "../helper/compatHelper.h"
 #include "../organizer/uiOrganizer.h"
 #include "workspaceDockWidget.h"
 
@@ -35,6 +36,7 @@
 #include <qmimedata.h>
 #include <qsettings.h>
 #include <qurl.h>
+#include <qregularexpression.h>
 
 namespace ito {
 
@@ -967,10 +969,8 @@ void WorkspaceDockWidget::dragEnterEvent(QDragEnterEvent* event)
                 IOHelper::IOPlugin | IOHelper::IOInput | IOHelper::IOWorkspace |
                 IOHelper::IOMimeAll),
             &allPatterns);
-        QRegExp reg;
+        QRegularExpression reg("", QRegularExpression::CaseInsensitiveOption);
         bool ok = false;
-        reg.setPatternSyntax(QRegExp::Wildcard);
-        reg.setCaseSensitivity(Qt::CaseInsensitive);
 
         // check files
         foreach (const QUrl& url, urls)
@@ -982,8 +982,9 @@ void WorkspaceDockWidget::dragEnterEvent(QDragEnterEvent* event)
 
             foreach (const QString& pat, allPatterns)
             {
-                reg.setPattern(pat);
-                if (reg.exactMatch(url.toLocalFile()))
+                reg.setPattern(CompatHelper::regExpAnchoredPattern(CompatHelper::wildcardToRegularExpression(pat)));
+
+                if (url.toLocalFile().indexOf(reg) >= 0)
                 {
                     ok = true;
                     break;

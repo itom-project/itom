@@ -32,7 +32,6 @@
 
 #include <qstringlist.h>
 #include <qurl.h>
-#include <qtextcodec.h>
 #include <qdatetime.h>
 #include <qvector2d.h>
 #include <qvector3d.h>
@@ -2863,7 +2862,13 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
         {
             void *ptrToOriginalValue = *retPtr;
 
-            QVariant *variantValue = new QVariant(type, *retPtr);
+            QVariant* variantValue = nullptr;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            variantValue = new QVariant(QMetaType(type), *retPtr);
+#else
+            variantValue = new QVariant(type, *retPtr);
+#endif
+
             if (variantValue->isValid())
             {
                 *retType = QMetaType::QVariant;

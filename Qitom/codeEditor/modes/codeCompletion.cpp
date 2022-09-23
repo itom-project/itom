@@ -44,6 +44,7 @@
 
 #include "../../python/pythonEngine.h"
 #include "../../widgets/scriptEditorWidget.h"
+#include "../../helper/compatHelper.h"
 
 #include <qtooltip.h>
 #include <qabstractitemview.h>
@@ -53,98 +54,6 @@
 
 
 namespace ito {
-
-//-------------------------------------------------------------------------------
-/*
- */
-QString regExpAnchoredPattern(const QString& expression)
-{
-#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
-    return QRegularExpression::anchoredPattern(expression);
-#else
-    return QString() + QLatin1String("\\A(?:") + expression + QLatin1String(")\\z");
-#endif
-}
-
-//-------------------------------------------------------------------------------
-QString wildcardToRegularExpression(const QString &pattern)
-{
-#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
-    // conversion should be anchored, hence, strict. Not partial.
-    return QRegularExpression::wildcardToRegularExpression(pattern);
-#else
-    // from the Qt source code
-    const qsizetype wclen = pattern.size();
-    QString rx;
-    rx.reserve(wclen + wclen / 16);
-    qsizetype i = 0;
-    const QChar *wc = pattern.data();
-#ifdef Q_OS_WIN
-    const QLatin1Char nativePathSeparator('\\');
-    const QLatin1String starEscape("[^/\\\\]*");
-    const QLatin1String questionMarkEscape("[^/\\\\]");
-#else
-    const QLatin1Char nativePathSeparator('/');
-    const QLatin1String starEscape("[^/]*");
-    const QLatin1String questionMarkEscape("[^/]");
-#endif
-    while (i < wclen) {
-        const QChar c = wc[i++];
-        switch (c.unicode()) {
-        case '*':
-            rx += starEscape;
-            break;
-        case '?':
-            rx += questionMarkEscape;
-            break;
-        case '\\':
-#ifdef Q_OS_WIN
-        case '/':
-            rx += QLatin1String("[/\\\\]");
-            break;
-#endif
-        case '$':
-        case '(':
-        case ')':
-        case '+':
-        case '.':
-        case '^':
-        case '{':
-        case '|':
-        case '}':
-            rx += QLatin1Char('\\');
-            rx += c;
-            break;
-        case '[':
-            rx += c;
-            // Support for the [!abc] or [!a-c] syntax
-            if (i < wclen) {
-                if (wc[i] == QLatin1Char('!')) {
-                    rx += QLatin1Char('^');
-                    ++i;
-                }
-                if (i < wclen && wc[i] == QLatin1Char(']'))
-                    rx += wc[i++];
-                while (i < wclen && wc[i] != QLatin1Char(']')) {
-                    // The '/' appearing in a character class invalidates the
-                    // regular expression parsing. It also concerns '\\' on
-                    // Windows OS types.
-                    if (wc[i] == QLatin1Char('/') || wc[i] == nativePathSeparator)
-                        return rx;
-                    if (wc[i] == QLatin1Char('\\'))
-                        rx += QLatin1Char('\\');
-                    rx += wc[i++];
-                }
-            }
-            break;
-        default:
-            rx += c;
-            break;
-        }
-    }
-    return regExpAnchoredPattern(rx);
-#endif
-}
 
 //--------------------------------------------------------------------
 /*
@@ -168,7 +77,7 @@ void SubsequenceSortFilterProxyModel::setPrefix(const QString &prefix)
     
     for (int i = prefix.size(); i >= 1; --i)
     {
-        ptrn = regExpAnchoredPattern(QString(".*%1.*%2").arg(prefix.left(i), prefix.mid(i)));
+        ptrn = CompatHelper::regExpAnchoredPattern(QString(".*%1.*%2").arg(prefix.left(i), prefix.mid(i)));
         QRegularExpression regExp(ptrn);
         m_filterPatternsCaseSensitive.append(regExp);
 
@@ -988,7 +897,7 @@ QPair<QStringList, QString> CodeCompletionMode::parseTooltipDocstring(const QStr
         docstr += tr("...");
     }
 
-    return qMakePair<QStringList, QString>(signatures, docstr);
+    return qMakePair<QStringList, QString>(std::move(signatures), std::move(docstr));
 }
 
 //--------------------------------------------------------------------
