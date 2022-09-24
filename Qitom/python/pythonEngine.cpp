@@ -56,7 +56,11 @@
 #include <qlist.h>
 #include <qstringlist.h>
 #include <qdir.h>
+#include <qregularexpression.h>
+
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include <qtextcodec.h>
+#endif
 #include <qjsondocument.h>
 #include <qjsonobject.h>
 #include <qsettings.h>
@@ -69,6 +73,7 @@
 
 #include "../organizer/paletteOrganizer.h"
 #include "../codeEditor/codeCheckerItem.h"
+#include "../helper/compatHelper.h"
 
 #if ITOM_PYTHONMATLAB == 1
 #include "pythonMatlab.h"
@@ -1244,6 +1249,21 @@ ito::RetVal PythonEngine::pythonShutdown(ItomSharedSemaphore *aimWait)
     return retValue;
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6,0 ,0)
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal PythonEngine::stringEncodingChanged()
+{
+    ito::RetVal retval;
+
+    PythonQtConversion::textEncoding = PythonQtConversion::utf_8;
+    PythonQtConversion::textEncodingName = "UTF-8";
+
+    qDebug() << "Set encodings to: " << PythonQtConversion::textEncoding << ": " << PythonQtConversion::textEncodingName;
+
+    return retval;
+}
+#else
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal PythonEngine::stringEncodingChanged()
 {
@@ -1384,6 +1404,7 @@ ito::RetVal PythonEngine::stringEncodingChanged()
 
     return retval;
 }
+#endif
 
 //----------------------------------------------------------------------------------------------------------------------------------
 QList<int> PythonEngine::parseAndSplitCommandInMainComponents(const QString &str, QByteArray &encoding) const
@@ -5626,14 +5647,13 @@ ito::RetVal PythonEngine::getVarnamesListInWorkspace(bool globalNotLocal, const 
             varnameList->clear();
             PyObject *key, *value;
             Py_ssize_t pos = 0;
-            QRegExp rx(find);
-            rx.setPatternSyntax(QRegExp::Wildcard);
+            QRegularExpression rx(CompatHelper::regExpAnchoredPattern(CompatHelper::wildcardToRegularExpression(find)));
             bool ok;
 
             while (PyDict_Next(destinationDict, &pos, &key, &value))
             {
                 QString qstringKey = PythonQtConversion::PyObjGetString(key, true, ok);
-                if (ok && rx.exactMatch(qstringKey))
+                if (ok && qstringKey.indexOf(rx) >= 0)
                 {
                     varnameList->append(qstringKey);
                 }

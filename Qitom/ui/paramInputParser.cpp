@@ -27,9 +27,11 @@
 #include <qmessagebox.h>
 #include <qspinbox.h>
 #include <qtoolbutton.h>
+#include <qregularexpression.h>
 
 #include "../../AddInManager/paramHelper.h"
 #include "../helper/guiHelper.h"
+#include "../helper/compatHelper.h"
 #include "dialogPluginPicker.h"
 #include "paramInputDialog.h"
 
@@ -576,9 +578,9 @@ QWidget* ParamInputParser::renderTypeString(
         {
             if (meta->getLen() == 1)
             {
-                QRegExp reg(
-                    QLatin1String(meta->getString(0)), Qt::CaseSensitive, QRegExp::Wildcard);
-                txt->setValidator(new QRegExpValidator(reg, txt));
+                QString pattern = CompatHelper::regExpAnchoredPattern(CompatHelper::wildcardToRegularExpression(QLatin1String(meta->getString(0))));
+                QRegularExpression reg(pattern);
+                txt->setValidator(new QRegularExpressionValidator(reg, txt));
                 QString toolTip = tr("%1 [Wildcard]").arg(reg.pattern());
                 txt->setToolTip(toolTip);
             }

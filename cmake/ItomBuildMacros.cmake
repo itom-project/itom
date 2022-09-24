@@ -624,6 +624,12 @@ macro(itom_find_package_qt SET_AUTOMOC)
                 set(QT5_LIBRARIES ${QT5_LIBRARIES} Qt6::${comp})
             endif()  
         endforeach(comp)
+        
+        if(Qt6Core_FOUND)
+            # These variables are not defined with Qt5 CMake modules
+            set(QT_BINARY_DIR "${QT6_INSTALL_PREFIX}/bin")
+            set(QT_LIBRARY_DIR "${QT6_INSTALL_PREFIX}/lib")
+        endif()
     endif(DETECT_QT5)
     
     add_definitions(${QT_DEFINITIONS})

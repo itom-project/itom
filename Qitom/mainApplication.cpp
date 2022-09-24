@@ -531,6 +531,8 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
     {
         textCodec = QStringConverter::Latin1;
     }
+
+    textCodec = QStringConverter::Utf8;
     
     AppManagement::setScriptTextCodec(textCodec.value());
 
@@ -538,10 +540,10 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
     // Qt docu it should not have been used anyway. So
     // we need to find another solution here
     // QTextCodec::setCodecForCStrings(textCodec);
-    if (setCodecForLocal && textCodec)
+    /*if (setCodecForLocal && textCodec)
     {
         QTextCodec::setCodecForLocale(textCodec);
-    }
+    }*/
 #endif
 
     if (m_guiType == standard || m_guiType == console)

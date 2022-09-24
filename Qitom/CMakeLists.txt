@@ -239,8 +239,6 @@ include_directories(
     ../itomWidgets
 )
 
-message(WARNING "OpenCV XYZ ${OpenCV_INCLUDE_DIRS} ${OpenCV_LIBS} - ${OpenCV_FOUND}")
-
 link_directories(
     ${CMAKE_CURRENT_BINARY_DIR}/../DataObject
     ${CMAKE_CURRENT_BINARY_DIR}/../PointCloud
