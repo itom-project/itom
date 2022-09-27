@@ -47,7 +47,8 @@ extensions = [
     "sphinx.ext.intersphinx",
     "itomext.designerplugindoc",
     "sphinx_gallery.gen_gallery",
-    "sphinxcontrib.moderncmakedomain"
+    "sphinxcontrib.moderncmakedomain",
+    "sphinx_rtd_dark_mode"
 ]
 
 if [sys.version_info.major, sys.version_info.minor] >= [3, 6]:
@@ -264,6 +265,8 @@ html_use_index = True
 # Output file base name for HTML help builder.
 htmlhelp_basename = "itom_doc"
 
+# user starts in light mode
+default_dark_mode = False
 
 # -- Options for LaTeX output --------------------------------------------------
 

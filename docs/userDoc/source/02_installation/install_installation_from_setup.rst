@@ -17,12 +17,12 @@ In the course of installation, a large number of third-party components will be 
 * Point Cloud Library 1.10.0
 * VTK 8.2.0 
 * Python 3.8.10 (as sub directory of itom)
-* Python package *NumPy* 1.23.1
+* Python package *NumPy* 1.23.2
 * Python package *Jedi* 0.18.1
 
 **Optional:**
 
-* Python package *SciPy* 1.9.0
+* Python package *SciPy* 1.9.1
 * Python package *Matplotlib* 3.5.3
 * Python package *Scikit-image* 0.19.3
 * Python package *Scikit-learn* 1.1.2
