@@ -419,7 +419,8 @@ QList<QPair<int,int> > OccurrencesHighlighterMode::findAll(const QString &text, 
 
         while ((match = rx.match(text, pos)).hasMatch())
         {
-            results.append(QPair<int,int>(pos, pos+length));
+            pos = match.capturedStart();
+            results.append(QPair<int,int>(pos, pos + length));
             //qDebug() << rx.pattern() << rx.matchedLength();
             pos = match.capturedEnd();
         }
