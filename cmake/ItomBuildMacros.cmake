@@ -999,8 +999,15 @@ function(itom_qt_wrap_ui outfiles target)
         target_sources(${target} PRIVATE ${temp_output})
         list(APPEND ${outfiles} ${temp_output})
         set(${outfiles} ${${outfiles}} PARENT_SCOPE)
+    elseif(QT6_FOUND)
+        #parse all *.ui files by Qt's uic process and get the parsed source files
+        qt6_wrap_ui(temp_output ${ARGN})
+        #add the output files to the target
+        target_sources(${target} PRIVATE ${temp_output})
+        list(APPEND ${outfiles} ${temp_output})
+        set(${outfiles} ${${outfiles}} PARENT_SCOPE)
     else()
-        message(SEND_ERROR "Currently only Qt5 is supported")
+        message(SEND_ERROR "Currently only Qt5 or Qt6 are supported")
     endif()
 endfunction()
 
