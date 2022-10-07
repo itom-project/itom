@@ -248,8 +248,8 @@ int PyAutoIndentMode::getIndentOfOpeningParen(const QTextCursor &cursor) const
 {
     QTextCursor cursor2(cursor);
     cursor2.movePosition(QTextCursor::Left, QTextCursor::KeepAnchor);
-    QChar character = cursor.selectedText()[0];
-    cursor2.movePosition(QTextCursor::Right, QTextCursor::MoveAnchor);
+    auto selectedText = cursor2.selectedText();
+    QChar character = selectedText.size() > 0 ? selectedText[0] : QChar();
 
     QMap<QChar, QPair<SymbolMatcherMode::CharType, SymbolMatcherMode::Symbols> > mapping;
     mapping[')'] = QPair<SymbolMatcherMode::CharType, SymbolMatcherMode::Symbols>(SymbolMatcherMode::Open, SymbolMatcherMode::Paren);
