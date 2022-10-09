@@ -4,4 +4,5 @@ sphinx
 sphinx_copybutton
 sphinx_gallery
 sphinx_rtd_theme
+sphinx-rtd-dark-mode
 sphinxcontrib-moderncmakedomain

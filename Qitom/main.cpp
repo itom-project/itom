@@ -127,30 +127,138 @@ int itomCvError( int status, const char* func_name,
     return 0; //Return value is not used
 }
 
+#ifdef WIN32 // only for windows
+DWORDLONG GetWindowsBuildAndServicePackVersion(bool onlyVersion = true)
+{
+    // https://stackoverflow.com/questions/32115255/c-how-to-detect-windows-10/52122386#52122386
+    NTSTATUS(WINAPI * RtlGetVersion)(LPOSVERSIONINFOEXW);
+    OSVERSIONINFOEXW osInfo;
+
+    *(FARPROC*)&RtlGetVersion = GetProcAddress(GetModuleHandleA("ntdll"), "RtlGetVersion");
+
+    if (NULL != RtlGetVersion)
+    {
+        osInfo.dwOSVersionInfoSize = sizeof(osInfo);
+        RtlGetVersion(&osInfo);
+    }
+    
+    if (onlyVersion)
+    {
+        return osInfo.dwMajorVersion | osInfo.dwMinorVersion | 
+            osInfo.wServicePackMajor | osInfo.wServicePackMinor;
+    }
+    else
+    {
+        return osInfo.dwMajorVersion | osInfo.dwMinorVersion | osInfo.dwBuildNumber | osInfo.wServicePackMajor |
+                osInfo.wServicePackMinor;
+    }
+}
+
+bool IsWindows10BuildVersionOrLater(uint32_t inVersion)
+{
+    return GetWindowsBuildAndServicePackVersion(false) >= inVersion ? true : false;
+}
+
+bool IsWindowsVersionOrLater(uint32_t inVersion)
+{
+    return GetWindowsBuildAndServicePackVersion() >= inVersion ? true : false;
+}
+
+bool IsWin7SP1OrLater()
+{
+    return IsWindowsVersionOrLater(0x06010100ul);
+}
+
+bool IsWin8OrLater()
+{
+    return IsWindowsVersionOrLater(0x06020000ul);
+}
+
+bool IsWin8Point1OrLater()
+{
+    return IsWindowsVersionOrLater(0x06030000ul);
+}
+
+bool IsWin10OrLater()
+{
+    return IsWindowsVersionOrLater(0x0a000000ul);
+}
+
+bool IsWin10November2015UpdateOrLater()
+{
+    return IsWindows10BuildVersionOrLater(10586);
+}
+
+bool IsWin10AnniversaryUpdateOrLater()
+{
+    return IsWindows10BuildVersionOrLater(14393);
+}
+
+bool IsWin10CreatorsUpdateOrLater()
+{
+    return IsWindows10BuildVersionOrLater(15063);
+}
+
+bool IsWin10FallCreatorsUpdateOrLater()
+{
+    return IsWindows10BuildVersionOrLater(16299);
+}
+
+bool IsWin10April2018UpdateOrLater()
+{
+    return IsWindows10BuildVersionOrLater(17134);
+}
+
+bool IsWin10Sep2018UpdateOrLater()
+{
+    return IsWindows10BuildVersionOrLater(17763);
+}
+
+bool IsWin10May2019UpdateOrLater()
+{
+    return IsWindows10BuildVersionOrLater(18362);
+}
+
+bool IsWin11OrLater()
+{
+    return IsWindows10BuildVersionOrLater(22000);
+}
+
+bool IsNotWin7PreRTM()
+{
+    return IsWin7SP1OrLater() || IsWindows10BuildVersionOrLater(7600);
+}
+
+#endif
+
 //! starts application
 //!
 //!  Starts Application by instantiating MainApplication with a desired GuiType
 //!  \sa MainApplication, tGuiType
-
 int main(int argc, char *argv[])
 {
-
-
 #ifdef WIN32
-#if NTDDI_WIN10_RS2 >= 0x0A000003 // available with windows 10 creators update
-    // https://docs.microsoft.com/de-de/windows/win32/winprog/using-the-windows-headers
-    // https://naughter.wordpress.com/2017/02/14/changes-in-the-windows-v10-0-15021-sdk-compared-to-windows-v10-0-14393-sdk-part-one/
-    // DPI_AWARENESS_CONTEXT_UNAWARE show unsharp on 4k monitor with scaling 120%
-    // DPI_AWARENESS_CONTEXT_SYSTEM_AWARE looks ugly when move itom onto fullHD monitor with scaling 100% An advancement over the original per-monitor DPI awareness mode, which
-    // DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2 enables applications to access new DPI-related scaling behaviors on a per top-level window basis. 
-    SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);  
-#else
-    SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE); 
+#if WDK_NTDDI_VERSION >= 0x0A000002 // only for windows 10 anniversity update because SetProcessDpiAwarenessContext was introduced
+    //  https://docs.microsoft.com/de-de/windows/win32/winprog/using-the-windows-headers
+    //  https://naughter.wordpress.com/2017/02/14/changes-in-the-windows-v10-0-15021-sdk-compared-to-windows-v10-0-14393-sdk-part-one/
+    //  https://searchfox.org/mozilla-central/source/mfbt/WindowsVersion.h#84
+    //  SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2) was added in the Win10 Creator Update
+    //  SetProcessDpiAwarenessContext() was added in the Win10 Anniversary Update
+    //  SetProcessDpiAwareness() was added in Windows 8.1
+    //  SetProcessDpiAware() was added in Windows Vista
+
+    if (IsWin10CreatorsUpdateOrLater())
+    {
+        SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
+    }
+    else if (IsWin10AnniversaryUpdateOrLater())
+    {
+        SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE);
+    }
 #endif
 #endif
     qputenv("QT_AUTO_SCREEN_SCALE_FACTOR", "1");  // auto scale by qt
 
-    int ret = 0;
 #if linux
     // https://www.qt.io/blog/2011/06/03/threaded-opengl-in-4-8
     QCoreApplication::setAttribute(Qt::AA_X11InitThreads);
@@ -330,7 +438,7 @@ int main(int argc, char *argv[])
     //  4. start the application's main loop
     //  5. finalizeApplication() if itom is closed
 
-    ret = QDialog::Accepted;
+    int ret = QDialog::Accepted;
     ito::MainApplication mainApp(ito::MainApplication::standard);
 
     ito::RetVal userRetVal = ito::UserOrganizer::getInstance()->loadSettings(defUserName);

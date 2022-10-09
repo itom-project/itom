@@ -37,7 +37,7 @@ class QObject;
 
 
 namespace ito {
-class QVector2DProperty : public Property
+class QPROPERTYEDITOR_TEST_EXPORT QVector2DProperty : public Property
 {
     Q_OBJECT
     Q_PROPERTY(float x READ x WRITE setX DESIGNABLE true USER true)
