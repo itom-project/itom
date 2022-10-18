@@ -818,5 +818,31 @@ namespace ito
         }
         return retValue;
     }
+    ito::RetVal AddInMultiChannelGrabber::getVal(QSharedPointer<QMap<QString, ito::DataObject*>> dataObjMap, ItomSharedSemaphore* waitCond)
+    {
+
+        ito::RetVal retval(ito::retOk);
+        ItomSharedSemaphoreLocker locker(waitCond);
+        QMap<QString, ito::DataObject*>::const_iterator it = (*dataObjMap).constBegin();
+        bool validChannelNames = true;
+        while (it != (*dataObjMap).constEnd())
+        {
+            if (!m_channels.contains(it.key()))
+            {
+                retval += ito::RetVal(ito::retError, 0, tr("The following channel is not a valid channel of the dataIO instance: %1").arg(it.key()).toLatin1().data());
+            }
+            ++it;
+        }
+        if (!retval.containsError())
+        {
+            retval = getValByMap(dataObjMap);
+        }
+        if (waitCond)
+        {
+            waitCond->returnValue = retval;
+            waitCond->release();
+        }
+        return retval;
+    }
 
 }//end namespace ito

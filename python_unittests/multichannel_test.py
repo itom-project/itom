@@ -1,5 +1,5 @@
 import unittest
-from itom import dataIO
+from itom import dataIO, dataObject
 
 def channelSpecificFunc1():
     cam = dataIO("DummyMultiChannelGrabber")
@@ -80,6 +80,36 @@ class MultiChannelDummyGrabberTest(unittest.TestCase):
         for elem in paramList:
             testParamDict[elem] = cam.getParam(elem)
         self.assertEqual(originalParamDict, testParamDict)
+
+    def test_getValByDict(self):
+        cam=dataIO("DummyMultiChannelGrabber")
+        cam.startDevice()
+        cam.acquire()
+        channelList=cam.getParam('channelList')
+        roi={}
+        getValDict={}
+        for elem in channelList:
+            roi[elem] = cam.getParam('roi:'+elem)
+            getValDict[elem]=dataObject()
+        cam.getVal(getValDict)
+        for key in roi:
+            self.assertEqual(roi[key][-2], getValDict[key].shape[-1])
+            self.assertEqual(roi[key][-1], getValDict[key].shape[-2])
+
+def test_copyValByDict(self):
+    cam=dataIO("DummyMultiChannelGrabber")
+    cam.startDevice()
+    cam.acquire()
+    channelList=cam.getParam('channelList')
+    roi={}
+    getValDict={}
+    for elem in channelList:
+        roi[elem] = cam.getParam('roi:'+elem)
+        getValDict[elem]=dataObject()
+    cam.copyVal(getValDict)
+    for key in roi:
+        self.assertEqual(roi[key][-2], getValDict[key].shape[-1])
+        self.assertEqual(roi[key][-1], getValDict[key].shape[-2])
 
 
     def test_channelSpecific(self):

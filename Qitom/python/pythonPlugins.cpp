@@ -4056,9 +4056,13 @@ PyObject* PythonPlugins::PyDataIOPlugin_getVal(PyDataIOPlugin *self, PyObject *a
                     str = PyUnicode_AsEncodedString(repr, "utf-8", "strict");
                     if (((PythonDataObject::PyDataObject*)value)->dataObject)
                     {
-                        (*channelMap)[QString(PyBytes_AS_STRING(str))] =
+                        QString key = QString(PyBytes_AS_STRING(str));
+                        if (key[0] == '\'' && key[key.length() - 1] == '\'')
+                        {
+                            key = key.mid(1, key.length() - 2);
+                        }
+                        (*channelMap)[key] =
                             ((PythonDataObject::PyDataObject*)value)->dataObject;
-                        std::cout << PyBytes_AS_STRING(str) << "\n";
                     }
                     else
                     {
@@ -4084,9 +4088,6 @@ PyObject* PythonPlugins::PyDataIOPlugin_getVal(PyDataIOPlugin *self, PyObject *a
             }
         }
         locker = (new ItomSharedSemaphore());
-
-                QMetaObject::invokeMethod(
-            self->dataIOObj, "getVal", Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
         QMetaObject::invokeMethod(
             self->dataIOObj, "getVal",
             QArgument<QSharedPointer<QMap<QString, ito::DataObject*> > >("QSharedPointer<QMap<QString, ito::DataObject*> >",channelMap),
