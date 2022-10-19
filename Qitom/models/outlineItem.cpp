@@ -22,7 +22,7 @@
 
 #include "outlineItem.h"
 #include <qicon.h>
-
+#include <qobject.h>
 
 
 namespace ito
