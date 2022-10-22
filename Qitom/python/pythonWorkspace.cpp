@@ -760,8 +760,8 @@ void PyWorkspaceContainer::parseSinglePyObject(
                     }
                     if (encodedByteArray)
                     {
-                        item->m_extendedValue = item->m_value =
-                            QString::fromLatin1(PyBytes_AS_STRING(encodedByteArray));
+                        const char* bytesString = PyBytes_AS_STRING(encodedByteArray);
+                        item->m_extendedValue = item->m_value = QLatin1String(bytesString);
 
                         if (item->m_value.length() > 100)
                         {
