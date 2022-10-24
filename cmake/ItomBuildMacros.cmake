@@ -607,8 +607,21 @@ macro(itom_find_package_qt SET_AUTOMOC)
           set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${WINDOWSSDK_PREFERRED_DIR}/Lib/)
         endif(WIN32)
         
+        set(COMPONENTS_FILTERED "")
         
-        find_package(Qt6 COMPONENTS ${Components} REQUIRED)
+        foreach(comp ${Components})
+            if (${comp} STREQUAL "OpenGLExtensions")
+                # Qt6 does not have OpenGLExtensions, Qt5 has. Therefore remove it from list.
+            elseif(${comp} STREQUAL "LinguistTools")
+                #it is not possible to link Qt6::LinguistTools since it does not exist
+                list(APPEND COMPONENTS_FILTERED ${comp})
+            else()
+                list(APPEND COMPONENTS_FILTERED ${comp})
+                set(QT5_LIBRARIES ${QT5_LIBRARIES} Qt6::${comp})
+            endif()
+        endforeach(comp)
+        
+        find_package(Qt6 COMPONENTS ${COMPONENTS_FILTERED} REQUIRED)
         set(QT6_FOUND TRUE)
         
         if(${SET_AUTOMOC})
@@ -616,14 +629,6 @@ macro(itom_find_package_qt SET_AUTOMOC)
         else(${SET_AUTOMOC})
             set(CMAKE_AUTOMOC OFF)
         endif(${SET_AUTOMOC})
-        
-        foreach(comp ${Components})
-            if(${comp} STREQUAL "LinguistTools")
-                #it is not possible to link Qt5::LinguistTools since it does not exist
-            else()
-                set(QT5_LIBRARIES ${QT5_LIBRARIES} Qt6::${comp})
-            endif()  
-        endforeach(comp)
         
         if(Qt6Core_FOUND)
             # These variables are not defined with Qt5 CMake modules
