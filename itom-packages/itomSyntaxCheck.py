@@ -501,10 +501,36 @@ if _HAS_FLAKE8:
 
         application = app.Application()
 
-        if not hasattr(
+        if flake8.__version__ >= "5":
+            # flake8 >= 5.0
+            prelim_opts, remaining_args = application.parse_preliminary_options([])
+            flake8.configure_logging(prelim_opts.verbose, prelim_opts.output_file)
+
+            cfg, cfg_dir = config.load_config(
+                config=prelim_opts.config,
+                extra=prelim_opts.append_config,
+                isolated=prelim_opts.isolated,
+            )
+            
+            application.find_plugins(
+                cfg,
+                cfg_dir,
+                enable_extensions=prelim_opts.enable_extensions,
+                require_plugins=prelim_opts.require_plugins,
+            )
+            
+            application.register_plugin_options()
+            application.parse_configuration_and_cli(cfg, cfg_dir, remaining_args)
+
+            # Get the local (project, e.g. tox.ini) config again
+            local_config = {}
+
+            if "flake8" in cfg:
+                local_config = dict(cfg["flake8"])
+            
+        elif not hasattr(
             application, "parse_preliminary_options_and_args"
         ):  # flake8 >= 3.8
-            application.parse_preliminary_options([])
             prelim_opts, remaining_args = application.parse_preliminary_options([])
             flake8.configure_logging(prelim_opts.verbose, prelim_opts.output_file)
 
@@ -528,6 +554,9 @@ if _HAS_FLAKE8:
                     option_manager=application.option_manager, config_finder=config_finder,
                 )
 
+            # Get the local (project, e.g. tox.ini) config again
+            local_config = config_parser.parse_local_config()
+
         else:  # for older versions of flake8 < 3.8.0
             application.parse_preliminary_options_and_args(
                 []
@@ -549,8 +578,8 @@ if _HAS_FLAKE8:
                 option_manager=application.option_manager, config_finder=config_finder,
             )
 
-        # Get the local (project) config again
-        local_config = config_parser.parse_local_config()
+            # Get the local (project, e.g. tox.ini) config again
+            local_config = config_parser.parse_local_config()
 
         # the dependent local config files can be read by this list:
         # local_config_files = config_finder._local_found_files  # careful: might change!!!
@@ -583,14 +612,31 @@ if _HAS_FLAKE8:
             # and must then be propagated to the flake8 plugins
             # the following lines are taken from
             # application.parse_configuration_and_cli
-            options._running_from_vcs = False
 
-            application.check_plugins.provide_options(
-                application.option_manager, options, application.args
-            )
-            application.formatting_plugins.provide_options(
-                application.option_manager, options, application.args
-            )
+            if flake8.__version__ < "5.0":
+                options._running_from_vcs = False
+    
+                application.check_plugins.provide_options(
+                    application.option_manager, options, application.args
+                )
+                application.formatting_plugins.provide_options(
+                    application.option_manager, options, application.args
+                )
+            else:
+                for loaded in application.plugins.all_plugins():
+                    parse_options = getattr(loaded.obj, "parse_options", None)
+                    if parse_options is None:
+                        continue
+        
+                    # XXX: ideally we wouldn't have two forms of parse_options
+                    try:
+                        parse_options(
+                            application.option_manager,
+                            options,
+                            options.filenames,
+                        )
+                    except TypeError:
+                        parse_options(options)
 
         # import pprint
         # pprint.pprint(options)
