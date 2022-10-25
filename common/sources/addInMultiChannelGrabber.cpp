@@ -217,6 +217,40 @@ namespace ito
         return retValue;
     }
 
+
+    ito::RetVal ito::AddInMultiChannelGrabber::checkData(QMap<QString, ito::DataObject*>& externalDataObject)
+    {
+        assert(m_defaultConfigReady);
+        ito::RetVal retVal(ito::retOk);
+        unsigned int futureType = 0;
+        bool ok;
+        QMap<QString, ito::DataObject*>::const_iterator it = externalDataObject.constBegin();
+        while (it != externalDataObject.constEnd())
+        {
+            futureType = pixelFormatStringToEnum(m_channels[it.key()].m_channelParam["pixelFormat"].getVal<const char*>(), &ok);
+            if (ok)
+            {
+                int* roi = m_channels[it.key()].m_channelParam["roi"].getVal<int*>();
+                int width = roi[2];
+                int height = roi[3];
+                if (it.value()->getDims() == 0)
+                {
+                    *(it.value()) = ito::DataObject(height, width, futureType);
+                }
+                else if (it.value()->calcNumMats() != 1)
+                {
+                    return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject for channel %1 is invalid. Object has more or less than 1 plane. It must be of right size and type or an uninitilized image.").arg(it.key()).toLatin1().data());
+                }
+                else if (it.value()->getSize(it.value()->getDims() - 2) != height || it.value()->getSize(it.value()->getDims() - 1) != width || it.value()->getType() != futureType)
+                {
+                    return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject for channel %1 is invalid. Object must be of right size and type or an uninitilized image.").arg(it.key()).toLatin1().data());
+                }
+            }
+            ++it;
+        }
+        return retVal;
+
+    }
     ito::RetVal ito::AddInMultiChannelGrabber::checkData(ito::DataObject *externalDataObject)
     {
         assert(m_defaultConfigReady);
@@ -836,6 +870,32 @@ namespace ito
         if (!retval.containsError())
         {
             retval = getValByMap(dataObjMap);
+        }
+        if (waitCond)
+        {
+            waitCond->returnValue = retval;
+            waitCond->release();
+        }
+        return retval;
+    }
+    ito::RetVal AddInMultiChannelGrabber::copyVal(QSharedPointer<QMap<QString, ito::DataObject*>> dataObjMap, ItomSharedSemaphore* waitCond)
+    {
+
+        ito::RetVal retval(ito::retOk);
+        ItomSharedSemaphoreLocker locker(waitCond);
+        QMap<QString, ito::DataObject*>::const_iterator it = (*dataObjMap).constBegin();
+        bool validChannelNames = true;
+        while (it != (*dataObjMap).constEnd())
+        {
+            if (!m_channels.contains(it.key()))
+            {
+                retval += ito::RetVal(ito::retError, 0, tr("The following channel is not a valid channel of the dataIO instance: %1").arg(it.key()).toLatin1().data());
+            }
+            ++it;
+        }
+        if (!retval.containsError())
+        {
+            retval = copyValByMap(dataObjMap);
         }
         if (waitCond)
         {

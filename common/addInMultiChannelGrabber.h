@@ -66,6 +66,7 @@ namespace ito
         };
         QMap<QString, ChannelContainer> m_channels; /*!< Map for recently grabbed images of various channels*/
         virtual ito::RetVal checkData(ito::DataObject *externalDataObject = NULL);
+        virtual ito::RetVal checkData(QMap<QString, ito::DataObject*>& externalDataObject);
         virtual ito::RetVal sendDataToListeners(int waitMS); /*!< sends m_data to all registered listeners. */
         ito::RetVal adaptDefaultChannelParams(); /*!< adaptes the params after changing the defaultChannel param*/
         void addChannel(QString name);
@@ -96,6 +97,7 @@ namespace ito
         virtual ito::RetVal setParameter(QSharedPointer<ito::ParamBase> val, const ParamMapIterator& it, const QString& suffix, const QString& key, int index, bool hasIndex, bool &ok, QStringList &pendingUpdate) = 0;
         virtual ito::RetVal getParameter(QSharedPointer<ito::Param> val, const ParamMapIterator& it, const QString& suffix, const QString& key, int index, bool hasIndex, bool &ok) = 0;
         virtual ito::RetVal getValByMap(QSharedPointer<QMap<QString, ito::DataObject*>> dataObjMap) = 0;
+        virtual ito::RetVal copyValByMap(QSharedPointer<QMap<QString, ito::DataObject*>> dataObjMap) = 0;
         void updateSizeXY(); /*!< updates sizex und sizey*/
 
     public:
@@ -106,6 +108,7 @@ namespace ito
         ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond) final;
         ito::RetVal changeChannelForListerners(const QString& newChannel, QObject* obj);
         ito::RetVal getVal(QSharedPointer<QMap<QString, ito::DataObject*>> dataObjMap, ItomSharedSemaphore* waitCond);
+        ito::RetVal copyVal(QSharedPointer<QMap<QString, ito::DataObject*>> dataObjMap, ItomSharedSemaphore* waitCond);
     };
 }
 #endif
