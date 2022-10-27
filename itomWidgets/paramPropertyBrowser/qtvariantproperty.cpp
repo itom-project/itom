@@ -1204,6 +1204,8 @@ QtVariantPropertyManager::QtVariantPropertyManager(QObject *parent)
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         // must not be called any more in Qt6, since this is automatically done then.
 		qRegisterMetaTypeStreamOperators<QMargins>("QMargins");
+#else
+        qRegisterMetaType<QMargins>("QMargins");
 #endif
 		int marginsType = QMetaTypeId<QMargins>::qt_metatype_id();
     d_ptr->m_typeToPropertyManager[marginsType] = marginsPropertyManager;
@@ -1230,6 +1232,8 @@ QtVariantPropertyManager::QtVariantPropertyManager(QObject *parent)
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         // must not be called any more in Qt6, since this is automatically done then.
 		qRegisterMetaTypeStreamOperators<QMarginsF>("QMarginsF");
+#else
+        qRegisterMetaType<QMarginsF>("QMarginsF");
 #endif
 		int marginsfType = qMetaTypeId<QMarginsF>();
     d_ptr->m_typeToPropertyManager[marginsfType] = marginsfPropertyManager;

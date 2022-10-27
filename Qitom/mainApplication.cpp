@@ -162,6 +162,12 @@ void MainApplication::registerMetaObjects()
 
     qRegisterMetaTypeStreamOperators<ito::BreakPointItem>("BreakPointItem");
     qRegisterMetaTypeStreamOperators<ito::BookmarkItem>("BookmarkItem");
+#else
+    qRegisterMetaType<ito::ScriptEditorStorage>("ito::ScriptEditorStorage");
+    qRegisterMetaType<QList<ito::ScriptEditorStorage> >("QList<ito::ScriptEditorStorage>");
+
+    qRegisterMetaType<ito::BreakPointItem>("BreakPointItem");
+    qRegisterMetaType<ito::BookmarkItem>("BookmarkItem");
 #endif
 
     qRegisterMetaType<ito::tStreamMessageType>("ito::tStreamMessageType");

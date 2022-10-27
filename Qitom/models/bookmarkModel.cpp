@@ -64,6 +64,8 @@ BookmarkModel::BookmarkModel() : QAbstractItemModel(), m_currentIndex(-1)
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     // must not be called any more in Qt6, since this is automatically done then.
     qRegisterMetaTypeStreamOperators<ito::BookmarkItem>("BookmarkItem");
+#else
+    qRegisterMetaType<ito::BookmarkItem>("BookmarkItem");
 #endif
 
     m_headers   << tr("Bookmarks") ;
