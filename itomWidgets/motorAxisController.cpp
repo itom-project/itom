@@ -49,8 +49,7 @@ public:
         movementType(MotorAxisController::MovementBoth), numAxis(0), isChanging(false),
         defaultAxisType(MotorAxisController::TypeLinear),
         defaultAxisUnit(MotorAxisController::UnitMm), defaultRelativeStepSize(5),
-        defaultDecimals(2), cancelAvailable(true), startAllAvailable(true), stepUpMapper(NULL),
-        stepDownMapper(NULL), runSingleMapper(NULL), arbitraryUnit(" a.u."),
+        defaultDecimals(2), cancelAvailable(true), startAllAvailable(true), arbitraryUnit(" a.u."),
         bgColorMoving("yellow"), bgColorInterrupted("red"), bgColorTimeout("#FFA3FD")
     {
     }
@@ -67,10 +66,6 @@ public:
 
     int numAxis;
     bool isChanging;
-
-    QSignalMapper* stepUpMapper;
-    QSignalMapper* stepDownMapper;
-    QSignalMapper* runSingleMapper;
 
     MotorAxisController::AxisType defaultAxisType;
     MotorAxisController::AxisUnit defaultAxisUnit;
@@ -107,13 +102,6 @@ MotorAxisController::MotorAxisController(QWidget* parent) : QWidget(parent)
     qRegisterMetaType<AxisType>("AxisType");
 
     d = new MotorAxisControllerPrivate();
-
-    d->stepUpMapper = new QSignalMapper(this);
-    d->stepDownMapper = new QSignalMapper(this);
-    d->runSingleMapper = new QSignalMapper(this);
-    connect(d->stepUpMapper, SIGNAL(mapped(int)), this, SLOT(stepUpClicked(int)));
-    connect(d->stepDownMapper, SIGNAL(mapped(int)), this, SLOT(stepDownClicked(int)));
-    connect(d->runSingleMapper, SIGNAL(mapped(int)), this, SLOT(runSingleClicked(int)));
 
     d->ui.setupUi(this);
     d->ui.tableMovement->setColumnCount(5);
@@ -338,16 +326,14 @@ void MotorAxisController::setNumAxis(int numAxis)
         stepUp->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
         stepUp->setText(tr("up"));
         stepUp->setIcon(QIcon(":/icons/up.png"));
-        connect(stepUp, SIGNAL(clicked()), d->stepUpMapper, SLOT(map()));
-        d->stepUpMapper->setMapping(stepUp, i);
+        connect(stepUp, &QToolButton::clicked, [=]() { stepUpClicked(i); });
 
         // button for step down
         stepDown = new QToolButton(this);
         stepDown->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
         stepDown->setText(tr("down"));
         stepDown->setIcon(QIcon(":/icons/down.png"));
-        connect(stepDown, SIGNAL(clicked()), d->stepDownMapper, SLOT(map()));
-        d->stepDownMapper->setMapping(stepDown, i);
+        connect(stepDown, &QToolButton::clicked, [=]() { stepDownClicked(i); });
 
         // group of step down and step up buttons
         buttonsRelative = new QWidget(this);
@@ -364,8 +350,7 @@ void MotorAxisController::setNumAxis(int numAxis)
         runSingle->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
         runSingle->setText(tr("go"));
         runSingle->setIcon(QIcon(":/icons/run.png"));
-        connect(runSingle, SIGNAL(clicked()), d->runSingleMapper, SLOT(map()));
-        d->runSingleMapper->setMapping(runSingle, i);
+        connect(runSingle, &QToolButton::clicked, [=]() { runSingleClicked(i); });
         runSingle->setEnabled(d->axisEnabled[i]);
 
         // add all widgets to table view
