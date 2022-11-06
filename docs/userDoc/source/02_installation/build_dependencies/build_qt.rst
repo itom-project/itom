@@ -5,8 +5,8 @@
 
 .. _build_dependencies_qt:
 
-Compile QT
-===========
+Install QT 5
+============
 
 Creating prebuild version of Qt:
 For a working |itom| development environment only a prebuild version of Qt is necessary. 
@@ -42,3 +42,10 @@ For a working |itom| development environment only a prebuild version of Qt is ne
     and change the name of these dll-files into **Qt5WebEngineWidgets.dll** and 
     **Qt5WebEngineWidgetsd.dll**. This bug should be solved with QT version 5.6.3 
     (release August 2017).
+
+Install Qt 6
+============
+
+During installation of Qt6 by the `Online Installer <https://www.qt.io/download-qt-installer?hsCtaTracking=99d9dd4f-5681-48d2-b096-470725510d34%7C074ddad0-fdef-4e53-8aa8-5e8a876d6ab4>`_ check the following **Additional Libraries**:
+
+* QtPositioning, QtWebChannel, QtWebEngine, QtWebSockets, QtWebView
