@@ -3,7 +3,7 @@ matplotlib
 numpydoc
 pandas
 plotly
-pytables
+tables
 pytest
 scikit-learn
 scipy
