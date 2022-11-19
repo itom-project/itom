@@ -673,7 +673,9 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
 
     m_pyThread = new QThread();
     // increase the stack size of the Python thread to 5MB (instead of 1MB default).
-    m_pyThread->setStackSize(5000000);
+#ifdef __arm64__
+    m_pyThread->setStackSize(8388608);
+#endif
     qDebug() << "..python engine thread stack size" << m_pyThread->stackSize();
     m_pyEngine->moveToThread(m_pyThread);
     m_pyThread->start();

@@ -176,7 +176,7 @@ macro(itom_init_plugin_common_vars)
     endif()
     
     if(APPLE)
-        set(CMAKE_OSX_ARCHITECTURES "x86_64")
+        set(CMAKE_OSX_ARCHITECTURES "arm64")
     endif()
     
     if(MSVC)

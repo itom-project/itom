@@ -308,8 +308,8 @@ PythonEngine::~PythonEngine()
 //----------------------------------------------------------------------------------------------------------------------------------
 void PythonEngine::pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap> infoMessages)
 {
-    PyObject* itomDbgClass = nullptr;
-    PyObject* itomDbgDict = nullptr;
+    PyObject *itomDbgClass = nullptr;
+    PyObject *itomDbgDict = nullptr;
 
     m_pythonThreadId = QThread::currentThreadId ();
 
