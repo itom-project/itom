@@ -451,7 +451,7 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
 
     settings->beginGroup("Language");
     QString language = settings->value("language", "en").toString();
-    QByteArray codec =  settings->value("codec", "ISO 8859-1").toByteArray(); //latin1 is default
+    QByteArray codec =  settings->value("codec", "UTF-8").toByteArray(); //utf-8 is default
     bool setCodecForLocal = settings->value("setCodecForLocale", false).toBool();
     settings->endGroup();
     settings->sync();
@@ -497,9 +497,9 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
 
     //3. set default encoding codec
     QTextCodec *textCodec = QTextCodec::codecForName(codec);
-    if (textCodec == NULL)
+    if (textCodec == nullptr)
     {
-        textCodec = QTextCodec::codecForName("ISO 8859-1"); //latin1 is default
+        textCodec = QTextCodec::codecForName("UTF-8"); //latin1 is default
     }
     if (!textCodec)
     {

@@ -563,24 +563,24 @@ void PyWorkspaceContainer::parseSinglePyObject(
         }
         else if (PyUnicode_Check(repr))
         {
-            PyObject* encodedByteArray = PyUnicode_AsLatin1String(repr);
+            PyObject* encodedByteArray = PyUnicode_AsUTF8String(repr);
 
             if (!encodedByteArray)
             {
                 PyErr_Clear();
-                encodedByteArray = PyUnicode_AsASCIIString(repr);
+                encodedByteArray = PyUnicode_AsLatin1String(repr);
 
                 if (!encodedByteArray)
                 {
                     PyErr_Clear();
-                    encodedByteArray = PyUnicode_AsUTF8String(repr);
+                    encodedByteArray = PyUnicode_AsASCIIString(repr);
                 }
             }
 
             if (encodedByteArray)
             {
                 item->m_extendedValue = item->m_value =
-                    QString::fromLatin1(PyBytes_AS_STRING(encodedByteArray));
+                    QString::fromUtf8(PyBytes_AS_STRING(encodedByteArray));
 
                 if (item->m_value.length() > 100)
                 {
@@ -747,21 +747,22 @@ void PyWorkspaceContainer::parseSinglePyObject(
                 }
                 else if (PyUnicode_Check(repr))
                 {
-                    PyObject* encodedByteArray = PyUnicode_AsLatin1String(repr);
+                    PyObject* encodedByteArray = PyUnicode_AsUTF8String(repr);
                     if (!encodedByteArray)
                     {
                         PyErr_Clear();
-                        encodedByteArray = PyUnicode_AsASCIIString(repr);
+                        encodedByteArray = PyUnicode_AsLatin1String(repr);
+
                         if (!encodedByteArray)
                         {
                             PyErr_Clear();
-                            encodedByteArray = PyUnicode_AsUTF8String(repr);
+                            encodedByteArray = PyUnicode_AsASCIIString(repr);
                         }
                     }
                     if (encodedByteArray)
                     {
                         item->m_extendedValue = item->m_value =
-                            QString::fromLatin1(PyBytes_AS_STRING(encodedByteArray));
+                            QString::fromUtf8(PyBytes_AS_STRING(encodedByteArray));
 
                         if (item->m_value.length() > 100)
                         {
