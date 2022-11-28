@@ -728,6 +728,11 @@ void PipManager::installPackage(const PipInstall &installSettings, const PipGene
         {
             arguments << "-r";
         }
+        else if (installSettings.type == PipInstall::typePackageSource) // pip development mode of python packages
+        {
+            arguments << "-e";
+        }
+        
         
         // if typeSearchIndex, multiple packages can be installed. They
         // are separated by spaces

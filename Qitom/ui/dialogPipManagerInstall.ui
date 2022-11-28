@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>491</width>
-    <height>440</height>
+    <width>492</width>
+    <height>427</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -52,6 +52,13 @@
        </widget>
       </item>
       <item>
+       <widget class="QRadioButton" name="radioPackageDevelopment">
+        <property name="text">
+         <string>Install from package source (setup.py or pyproject.toml must be included)</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="Line" name="line">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -61,7 +68,7 @@
       <item>
        <widget class="QLabel" name="label">
         <property name="text">
-         <string>Package file, package name or requirements file:</string>
+         <string>Package file, package name, requirements file or package source folder:</string>
         </property>
        </widget>
       </item>

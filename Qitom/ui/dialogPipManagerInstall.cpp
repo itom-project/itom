@@ -130,6 +130,10 @@ void DialogPipManagerInstall::getResult(
     {
         type = PipInstall::typeSearchIndex;
     }
+    else if (ui.radioPackageDevelopment->isChecked())
+    {
+        type = PipInstall::typePackageSource;
+    }
     else
     {
         type = PipInstall::typeRequirements;
@@ -162,7 +166,18 @@ void DialogPipManagerInstall::on_btnPackage_clicked()
         filter = "Requirements file (*.txt)";
     }
 
-    QString name = QFileDialog::getOpenFileName(this, tr("Select package archive"), btnPackageDirectory, filter);
+    QString name;
+
+    if (ui.radioPackageDevelopment->isChecked())
+    {
+        name = QFileDialog::getExistingDirectory(
+            this, tr("Select package source folder").toLatin1().data(), btnPackageDirectory);
+    }
+    else
+    {
+        name = QFileDialog::getOpenFileName(
+            this, tr("Select package archive").toLatin1().data(), btnPackageDirectory, filter);
+    }
 
     if (name != "")
     {
@@ -228,6 +243,17 @@ void DialogPipManagerInstall::on_radioRequirements_clicked(bool checked)
     ui.txtPackage->setText("");
     ui.txtPackage->setReadOnly(false);
     ui.txtPackage->setPlaceholderText(tr("choose requirements txt file..."));
+    ui.txtPackage->setFocus();
+    ui.checkUpgrade->setVisible(false);
+    ui.checkInstallDeps->setVisible(false);
+}
+
+void DialogPipManagerInstall::on_radioPackageDevelopment_clicked(bool checked)
+{
+    ui.btnPackage->setEnabled(true);
+    ui.txtPackage->setText("");
+    ui.txtPackage->setReadOnly(false);
+    ui.txtPackage->setPlaceholderText(tr("choose package source folder..."));
     ui.txtPackage->setFocus();
     ui.checkUpgrade->setVisible(false);
     ui.checkInstallDeps->setVisible(false);
