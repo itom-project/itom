@@ -46,6 +46,12 @@ try:
 except ImportError:
     _HAS_FLAKE8 = False
 
+try:
+    import flake8_docstrings
+    _HAS_FLAKE8_DOCSTRINGS = True
+except ImportError:
+    _HAS_FLAKE8_DOCSTRINGS = False
+
 if _HAS_FLAKE8:
     import flake8
     from flake8.formatting import base
@@ -54,6 +60,9 @@ if _HAS_FLAKE8:
 
     if False:  # `typing.TYPE_CHECKING` was introduced in 3.5.2
         from flake8.style_guide import Violation
+
+    if flake8.__version__ >= "6":
+        from flake8.options.parse_args import parse_args
 
     # disable the flake8.checker logger
     log = logging.getLogger("flake8.checker")
@@ -501,7 +510,44 @@ if _HAS_FLAKE8:
 
         application = app.Application()
 
-        if flake8.__version__ >= "5":
+        if flake8.__version__ >= "6":
+            # flake8 >= 6.0
+
+            # get parameters from tox.ini, setup.cfg or .flake8 files
+            cfg, cfg_dir = config.load_config(
+                config=None,
+                extra=[],
+                isolated=False,
+            )
+
+            if "flake8" in cfg:
+                # remove all parameters in cfg["flake8"] from kwargs
+                # (settings from itom properties) to set the priority to cfg.
+                for cfg_item in cfg["flake8"]:
+                    cfg_item = cfg_item.replace("-", "_")
+                    if cfg_item in kwargs:
+                        # do not overwrite itom settings, that are set by any project
+                        # setting file (tox.ini, setup.cfg ..)
+                        del kwargs[cfg_item]
+
+            kwargs_parsed = []
+
+            for item in kwargs:
+                val = kwargs[item]
+                item = item.replace("_", "-")
+                
+                if type(val) is list:
+                    kwargs_parsed.append(
+                        "--%s=%s" % (item, ",".join([str(ii) for ii in val]))
+                        )
+                else:
+                    kwargs_parsed.append("--%s=%s" % (item, val))
+            
+            application.plugins, application.options = parse_args(kwargs_parsed)
+
+            # reset kwargs, since already handled.
+            kwargs = {}
+        elif flake8.__version__ >= "5":
             # flake8 >= 5.0
             prelim_opts, remaining_args = application.parse_preliminary_options([])
             flake8.configure_logging(prelim_opts.verbose, prelim_opts.output_file)
@@ -638,12 +684,13 @@ if _HAS_FLAKE8:
                     except TypeError:
                         parse_options(options)
 
-        # import pprint
-        # pprint.pprint(options)
-
         application.make_formatter()
         application.make_guide()
-        application.make_file_checker_manager()
+
+        if flake8.__version__ >= "6":
+            application.make_file_checker_manager([])
+        else:
+            application.make_file_checker_manager()
         return flake8legacy.StyleGuide(application)
 
     def createFlake8OptionsFromProperties(props):
@@ -661,7 +708,8 @@ if _HAS_FLAKE8:
 
         # if pydocstyle is installed:
         if "codeCheckerFlake8Docstyle" in props:
-            options["docstring_convention"] = props["codeCheckerFlake8Docstyle"]
+            if _HAS_FLAKE8_DOCSTRINGS:
+                options["docstring_convention"] = props["codeCheckerFlake8Docstyle"]
 
         if (
             "codeCheckerFlake8IgnoreEnabled" in props
