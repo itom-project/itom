@@ -60,14 +60,14 @@ Similar to Windows, the following folder structure is recommended:
     ./sources
         ./itom    # cloned repository of core
         ./plugins # cloned sources of plugins
-        ./designerPlugins # cloned sources of designerPlugins
+        ./designerplugins # cloned sources of designerPlugins
         ...
     # base folder for compilation. The makefiles should 
     # be stored in the following subfolders (depending on project):
     ./build       
         ./itom    # ...core
         ./plugins # ...plugins
-        ./designerPlugins # ...designer plugins
+        ./designerplugins # ...designerPlugins
         ...
     #Optionally, if you want to do debug and release builds separately:
     # base folder for debug compilation (if desired). The makefiles 
@@ -75,14 +75,14 @@ Similar to Windows, the following folder structure is recommended:
     ./build_debug 
         ./itom    # ...core
         ./plugins # ...plugins
-        ./designerPlugins # ...designer plugins
+        ./designerplugins # ...designerPlugins
         ...
     # base folder for release compilation (if desired). The makefiles should 
     # be stored in the following subfolders (depending on project):
     ./build_release 
         ./itom      # ...core
         ./plugins   # ...plugins
-        ./designerPlugins # ...designer plugins
+        ./designerplugins # ...designerPlugins
         ...
         
         
@@ -148,8 +148,8 @@ Obtain the sources
     cd itom/build_release/itom
     cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=OFF -DCMAKE_BUILD_TYPE=Release ../../sources/itom  #If PCL-support should be enabled, replace OFF by ON
     make -j4
-    cd ../designerPlugins
-    cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=OFF -DCMAKE_BUILD_TYPE=Release -DITOM_SDK_DIR=../itom/SDK ../../sources/designerPlugins #If PCL-support should be enabled, replace OFF by ON
+    cd ../designerplugins
+    cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=OFF -DCMAKE_BUILD_TYPE=Release -DITOM_SDK_DIR=../itom/SDK ../../sources/designerplugins #If PCL-support should be enabled, replace OFF by ON
     make -j4
     cd ../plugins
     cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=OFF -DCMAKE_BUILD_TYPE=Release -DITOM_SDK_DIR=../itom/SDK ../../sources/plugins #If PCL-support should be enabled, replace OFF by ON
