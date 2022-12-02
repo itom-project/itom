@@ -33,7 +33,7 @@
 #include <qregularexpression.h>
 
 //-------------------------------------------------------------------------------------
-QVariantDelegate::QVariantDelegate(QObject* parent) : QItemDelegate(parent)
+QVariantDelegate::QVariantDelegate(QObject* parent) : QItemDelegate(parent), m_finishedMapper(nullptr)
 {
     m_finishedMapper = new QSignalMapper(this);
     connect(m_finishedMapper, SIGNAL(mapped(QWidget*)), this, SIGNAL(commitData(QWidget*)));
