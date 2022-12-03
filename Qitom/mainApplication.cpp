@@ -484,7 +484,14 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
     QCoreApplication::processEvents();
 
     //1. try to load qt-translations from qt-folder
-    m_qtTranslator.load("qt_" + local.name(), QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    m_qtTranslator.load(
+        "qt_" + local.name(), QLibraryInfo::path(QLibraryInfo::TranslationsPath));
+#else
+    m_qtTranslator.load(
+        "qt_" + local.name(), QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+#endif
+    
     if (m_qtTranslator.isEmpty())
     {
         //qt-folder is not available, then try itom translation folder
