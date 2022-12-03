@@ -36,8 +36,23 @@
 QVariantDelegate::QVariantDelegate(QObject* parent) : QItemDelegate(parent), m_finishedMapper(nullptr)
 {
     m_finishedMapper = new QSignalMapper(this);
+
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
+    connect(m_finishedMapper, &QSignalMapper::mappedObject, this, 
+        [=](QObject* obj) 
+        {
+            QWidget* wid = qobject_cast<QWidget*>(obj);
+            if (wid)
+            {
+                commitData(wid);
+                closeEditor(wid);
+            }
+        }
+    );
+#else
     connect(m_finishedMapper, SIGNAL(mapped(QWidget*)), this, SIGNAL(commitData(QWidget*)));
     connect(m_finishedMapper, SIGNAL(mapped(QWidget*)), this, SIGNAL(closeEditor(QWidget*)));
+#endif
 }
 
 //-------------------------------------------------------------------------------------
