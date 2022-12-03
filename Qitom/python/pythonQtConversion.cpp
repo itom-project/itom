@@ -3543,6 +3543,16 @@ PyObject* PythonQtConversion::ConvertQtValueToPythonInternal(int type, const voi
             }
             return temp;
         }
+        else if (strcmp(name, "QList<ito::Shape>") == 0)
+        {
+        QList<ito::Shape>* temp2 = (QList<ito::Shape>*)data;
+        PyObject* temp = PyTuple_New(temp2->size());
+        for (int i = 0; i < temp2->size(); ++i)
+        {
+            PyTuple_SetItem(temp, i, ito::PythonShape::createPyShape(temp2->at(i))); //steals reference
+        }
+        return temp;
+        }
         else if (strcmp(name, "ito::Shape") == 0)
         {
             return ito::PythonShape::createPyShape(*((ito::Shape*)data));
