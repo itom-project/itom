@@ -195,11 +195,13 @@ QString MotorAxisController::suffixFromAxisUnit(const AxisUnit& unit) const
     case UnitMm:
         return " mm";
     case UnitMum:
-        return QLatin1String(" \u00B5m"); // \mu
+    {
+        return QString(" %1m").arg(QChar(0xb5, 0x00)); // QLatin1String(" \u00B5m"); // \mu
+    }
     case UnitNm:
         return " nm";
     case UnitDeg:
-        return QLatin1String(" \u00B0"); // \degree
+        return QString(" %1").arg(QChar(0xb0, 0x00)); // \degree
     case UnitAU:
         return d->arbitraryUnit;
     }
@@ -1332,7 +1334,7 @@ void MotorAxisController::customContextMenuRequested(const QPoint& pos)
                 }
                 unitMenu->addAction(a);
 
-                a = new QAction(QLatin1String("\u00B5m"), this); // \mu m
+                a = new QAction(QString("%1m").arg(QChar(0xb5, 0x00)), this); // \mu m
                 a->setCheckable(true);
                 a->setData(UnitMum);
                 if (axisUnit(index.row()) == UnitMum)
@@ -1352,7 +1354,7 @@ void MotorAxisController::customContextMenuRequested(const QPoint& pos)
             }
             else
             {
-                a = new QAction(QLatin1String("\u00B0"), this); // \degree
+                a = new QAction(QString(QChar(0xb0, 0x00)), this); // \degree
                 a->setCheckable(true);
                 a->setChecked(true);
                 a->setData(UnitDeg);
