@@ -3572,6 +3572,22 @@ PyObject* PythonQtConversion::ConvertQtValueToPythonInternal(int type, const voi
         return NULL;
     }
 
+    // since Qt6 it seems that an enumeration value is now returned as
+    // user-defined meta type. Since we cannot transfer every available
+    // enum, the enumeration is tried to be converted to an integer
+    // variable and returned as Python integer value.
+    auto flags = QMetaType::typeFlags(type);
+    
+    if (flags.testFlag(QMetaType::IsEnumeration))
+    {
+        long val;
+
+        if (QMetaType::convert(data, type, &val, QMetaType::Long))
+        {
+            return PyLong_FromLong(val);
+        }
+    }
+
     PyErr_SetString(PyExc_TypeError, "The given Qt-type cannot be parsed into an appropriate python type.");
     return NULL;
 }
