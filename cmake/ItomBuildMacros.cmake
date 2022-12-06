@@ -967,6 +967,13 @@ macro(itom_add_designerlibrary_to_copy_list target sources destinations)
     
     list(APPEND ${sources} "$<TARGET_LINKER_FILE:${target}>")
     list(APPEND ${destinations} ${ITOM_APP_DIR}/designer)
+	if(APPLE)
+        list(APPEND ${sources} "$<TARGET_FILE:${target}>") #adds the complete source path including filename of the dll (configuration-dependent) to the list 'sources'
+        list(APPEND ${destinations} ${ITOM_APP_DIR}/itom.app/Contents/MacOS/designer)
+    
+        list(APPEND ${sources} "$<TARGET_LINKER_FILE:${target}>")
+        list(APPEND ${destinations} ${ITOM_APP_DIR}/itom.app/Contents/MacOS/designer)
+    endif(APPLE)
 endmacro()
 
 
@@ -1014,6 +1021,10 @@ macro(itom_add_pluginlibrary_to_copy_list target sources destinations)
     # (configuration-dependent) to the list 'sources'
     list(APPEND ${sources} "$<TARGET_FILE:${target}>") 
     list(APPEND ${destinations} ${ITOM_APP_DIR}/plugins/${target})
+	if(APPLE)
+        list(APPEND ${sources} "$<TARGET_FILE:${target}>") 
+        list(APPEND ${destinations} ${ITOM_APP_DIR}/itom.app/Contents/MacOS/plugins/${target})
+    endif(APPLE)
 endmacro()
 
 # - appends the list of binary translation files (qm_files) to be copied from their source
