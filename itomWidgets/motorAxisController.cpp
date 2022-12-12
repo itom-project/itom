@@ -107,7 +107,7 @@ MotorAxisController::MotorAxisController(QWidget* parent) : QWidget(parent)
     d->ui.tableMovement->setColumnCount(5);
     QStringList labels;
     labels << tr("Current Pos.") << tr("Target Pos.") << tr("Abs.") << tr("Step Size")
-           << tr("Rel.");
+        << tr("Rel.");
     d->ui.tableMovement->setHorizontalHeaderLabels(labels);
 
     QHeaderView* header = d->ui.tableMovement->horizontalHeader();
@@ -1074,18 +1074,18 @@ void MotorAxisController::on_btnRefresh_clicked()
     if (d->actuator)
     {
         if (!QMetaObject::invokeMethod(
-                d->actuator,
-                "requestStatusAndPosition",
-                Qt::QueuedConnection,
-                Q_ARG(bool, true),
-                Q_ARG(bool, true)))
+            d->actuator,
+            "requestStatusAndPosition",
+            Qt::QueuedConnection,
+            Q_ARG(bool, true),
+            Q_ARG(bool, true)))
         {
             retval += ito::RetVal(
                 ito::retError,
                 0,
                 tr("slot 'requestStatusAndPosition' could not be invoked since it does not exist.")
-                    .toLatin1()
-                    .data());
+                .toLatin1()
+                .data());
         }
     }
     else
@@ -1132,11 +1132,11 @@ void MotorAxisController::on_btnStart_clicked()
         d->actuator->resetInterrupt();
 
         if (QMetaObject::invokeMethod(
-                d->actuator,
-                "setPosAbs",
-                Q_ARG(const QVector<int>, axes),
-                Q_ARG(QVector<double>, positions),
-                Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
+            d->actuator,
+            "setPosAbs",
+            Q_ARG(const QVector<int>, axes),
+            Q_ARG(QVector<double>, positions),
+            Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
         {
             retval += observeInvocation(locker.getSemaphore());
         }
@@ -1146,8 +1146,8 @@ void MotorAxisController::on_btnStart_clicked()
                 ito::retError,
                 0,
                 tr("slot 'setPosAbs' could not be invoked since it does not exist.")
-                    .toLatin1()
-                    .data());
+                .toLatin1()
+                .data());
         }
     }
     else
@@ -1172,11 +1172,11 @@ void MotorAxisController::moveRelOrAbs(int axis, double value, bool relNotAbs)
         d->actuator->resetInterrupt();
 
         if (QMetaObject::invokeMethod(
-                d->actuator,
-                func,
-                Q_ARG(const int, axis),
-                Q_ARG(double, valueBase),
-                Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
+            d->actuator,
+            func,
+            Q_ARG(const int, axis),
+            Q_ARG(double, valueBase),
+            Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
         {
             retval += observeInvocation(locker.getSemaphore());
         }
@@ -1186,9 +1186,9 @@ void MotorAxisController::moveRelOrAbs(int axis, double value, bool relNotAbs)
                 ito::retError,
                 0,
                 tr("slot '%s' could not be invoked since it does not exist.")
-                    .arg(QLatin1String(func))
-                    .toLatin1()
-                    .data());
+                .arg(QLatin1String(func))
+                .toLatin1()
+                .data());
         }
     }
     else
