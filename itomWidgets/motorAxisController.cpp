@@ -49,8 +49,7 @@ public:
         movementType(MotorAxisController::MovementBoth), numAxis(0), isChanging(false),
         defaultAxisType(MotorAxisController::TypeLinear),
         defaultAxisUnit(MotorAxisController::UnitMm), defaultRelativeStepSize(5),
-        defaultDecimals(2), cancelAvailable(true), startAllAvailable(true), stepUpMapper(NULL),
-        stepDownMapper(NULL), runSingleMapper(NULL), arbitraryUnit(" a.u."),
+        defaultDecimals(2), cancelAvailable(true), startAllAvailable(true), arbitraryUnit(" a.u."),
         bgColorMoving("yellow"), bgColorInterrupted("red"), bgColorTimeout("#FFA3FD")
     {
     }
@@ -67,10 +66,6 @@ public:
 
     int numAxis;
     bool isChanging;
-
-    QSignalMapper* stepUpMapper;
-    QSignalMapper* stepDownMapper;
-    QSignalMapper* runSingleMapper;
 
     MotorAxisController::AxisType defaultAxisType;
     MotorAxisController::AxisUnit defaultAxisUnit;
@@ -108,18 +103,11 @@ MotorAxisController::MotorAxisController(QWidget* parent) : QWidget(parent)
 
     d = new MotorAxisControllerPrivate();
 
-    d->stepUpMapper = new QSignalMapper(this);
-    d->stepDownMapper = new QSignalMapper(this);
-    d->runSingleMapper = new QSignalMapper(this);
-    connect(d->stepUpMapper, SIGNAL(mapped(int)), this, SLOT(stepUpClicked(int)));
-    connect(d->stepDownMapper, SIGNAL(mapped(int)), this, SLOT(stepDownClicked(int)));
-    connect(d->runSingleMapper, SIGNAL(mapped(int)), this, SLOT(runSingleClicked(int)));
-
     d->ui.setupUi(this);
     d->ui.tableMovement->setColumnCount(5);
     QStringList labels;
     labels << tr("Current Pos.") << tr("Target Pos.") << tr("Abs.") << tr("Step Size")
-           << tr("Rel.");
+        << tr("Rel.");
     d->ui.tableMovement->setHorizontalHeaderLabels(labels);
 
     QHeaderView* header = d->ui.tableMovement->horizontalHeader();
@@ -207,11 +195,13 @@ QString MotorAxisController::suffixFromAxisUnit(const AxisUnit& unit) const
     case UnitMm:
         return " mm";
     case UnitMum:
-        return QLatin1String(" \u00B5m"); // \mu
+    {
+        return QString(" %1m").arg(QChar(0xb5, 0x00)); // QLatin1String(" \u00B5m"); // \mu
+    }
     case UnitNm:
         return " nm";
     case UnitDeg:
-        return QLatin1String(" \u00B0"); // \degree
+        return QString(" %1").arg(QChar(0xb0, 0x00)); // \degree
     case UnitAU:
         return d->arbitraryUnit;
     }
@@ -338,16 +328,14 @@ void MotorAxisController::setNumAxis(int numAxis)
         stepUp->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
         stepUp->setText(tr("up"));
         stepUp->setIcon(QIcon(":/icons/up.png"));
-        connect(stepUp, SIGNAL(clicked()), d->stepUpMapper, SLOT(map()));
-        d->stepUpMapper->setMapping(stepUp, i);
+        connect(stepUp, &QToolButton::clicked, [=]() { stepUpClicked(i); });
 
         // button for step down
         stepDown = new QToolButton(this);
         stepDown->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
         stepDown->setText(tr("down"));
         stepDown->setIcon(QIcon(":/icons/down.png"));
-        connect(stepDown, SIGNAL(clicked()), d->stepDownMapper, SLOT(map()));
-        d->stepDownMapper->setMapping(stepDown, i);
+        connect(stepDown, &QToolButton::clicked, [=]() { stepDownClicked(i); });
 
         // group of step down and step up buttons
         buttonsRelative = new QWidget(this);
@@ -364,8 +352,7 @@ void MotorAxisController::setNumAxis(int numAxis)
         runSingle->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
         runSingle->setText(tr("go"));
         runSingle->setIcon(QIcon(":/icons/run.png"));
-        connect(runSingle, SIGNAL(clicked()), d->runSingleMapper, SLOT(map()));
-        d->runSingleMapper->setMapping(runSingle, i);
+        connect(runSingle, &QToolButton::clicked, [=]() { runSingleClicked(i); });
         runSingle->setEnabled(d->axisEnabled[i]);
 
         // add all widgets to table view
@@ -1087,18 +1074,18 @@ void MotorAxisController::on_btnRefresh_clicked()
     if (d->actuator)
     {
         if (!QMetaObject::invokeMethod(
-                d->actuator,
-                "requestStatusAndPosition",
-                Qt::QueuedConnection,
-                Q_ARG(bool, true),
-                Q_ARG(bool, true)))
+            d->actuator,
+            "requestStatusAndPosition",
+            Qt::QueuedConnection,
+            Q_ARG(bool, true),
+            Q_ARG(bool, true)))
         {
             retval += ito::RetVal(
                 ito::retError,
                 0,
                 tr("slot 'requestStatusAndPosition' could not be invoked since it does not exist.")
-                    .toLatin1()
-                    .data());
+                .toLatin1()
+                .data());
         }
     }
     else
@@ -1145,11 +1132,11 @@ void MotorAxisController::on_btnStart_clicked()
         d->actuator->resetInterrupt();
 
         if (QMetaObject::invokeMethod(
-                d->actuator,
-                "setPosAbs",
-                Q_ARG(const QVector<int>, axes),
-                Q_ARG(QVector<double>, positions),
-                Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
+            d->actuator,
+            "setPosAbs",
+            Q_ARG(const QVector<int>, axes),
+            Q_ARG(QVector<double>, positions),
+            Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
         {
             retval += observeInvocation(locker.getSemaphore());
         }
@@ -1159,8 +1146,8 @@ void MotorAxisController::on_btnStart_clicked()
                 ito::retError,
                 0,
                 tr("slot 'setPosAbs' could not be invoked since it does not exist.")
-                    .toLatin1()
-                    .data());
+                .toLatin1()
+                .data());
         }
     }
     else
@@ -1185,11 +1172,11 @@ void MotorAxisController::moveRelOrAbs(int axis, double value, bool relNotAbs)
         d->actuator->resetInterrupt();
 
         if (QMetaObject::invokeMethod(
-                d->actuator,
-                func,
-                Q_ARG(const int, axis),
-                Q_ARG(double, valueBase),
-                Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
+            d->actuator,
+            func,
+            Q_ARG(const int, axis),
+            Q_ARG(double, valueBase),
+            Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
         {
             retval += observeInvocation(locker.getSemaphore());
         }
@@ -1199,9 +1186,9 @@ void MotorAxisController::moveRelOrAbs(int axis, double value, bool relNotAbs)
                 ito::retError,
                 0,
                 tr("slot '%s' could not be invoked since it does not exist.")
-                    .arg(QLatin1String(func))
-                    .toLatin1()
-                    .data());
+                .arg(QLatin1String(func))
+                .toLatin1()
+                .data());
         }
     }
     else
@@ -1347,7 +1334,7 @@ void MotorAxisController::customContextMenuRequested(const QPoint& pos)
                 }
                 unitMenu->addAction(a);
 
-                a = new QAction(QLatin1String("\u00B5m"), this); // \mu m
+                a = new QAction(QString("%1m").arg(QChar(0xb5, 0x00)), this); // \mu m
                 a->setCheckable(true);
                 a->setData(UnitMum);
                 if (axisUnit(index.row()) == UnitMum)
@@ -1367,7 +1354,7 @@ void MotorAxisController::customContextMenuRequested(const QPoint& pos)
             }
             else
             {
-                a = new QAction(QLatin1String("\u00B0"), this); // \degree
+                a = new QAction(QString(QChar(0xb0, 0x00)), this); // \degree
                 a->setCheckable(true);
                 a->setChecked(true);
                 a->setData(UnitDeg);
