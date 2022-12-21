@@ -52,7 +52,11 @@ QStringList LastCommandTreeWidget::mimeTypes() const
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-QMimeData * LastCommandTreeWidget::mimeData(const QList<QTreeWidgetItem *> items) const
+#if QT_VERSION < QT_VERSION_CHECK(6,0,0)
+QMimeData* LastCommandTreeWidget::mimeData(const QList<QTreeWidgetItem *> items) const
+#else
+QMimeData* LastCommandTreeWidget::mimeData(const QList<QTreeWidgetItem*>& items) const
+#endif
 {
     QMimeData *mimeData = QTreeWidget::mimeData(items);
     QStringList texts;
