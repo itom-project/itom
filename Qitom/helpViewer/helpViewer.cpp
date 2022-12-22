@@ -157,9 +157,17 @@ HelpViewer::HelpViewer(QWidget *parent /*= NULL*/) :
 
 	//toolbar
 	QToolBar *toolbar = new QToolBar(tr("toolBar"), this);
-	toolbar->addAction(m_pView->pageAction(QWebEnginePage::Back));
-	toolbar->addAction(m_pView->pageAction(QWebEnginePage::Forward));
-	toolbar->addAction(m_pView->pageAction(QWebEnginePage::Reload));
+    QAction* back = m_pView->pageAction(QWebEnginePage::Back);
+    back->setIcon(QIcon(":/qt-project.org/shared/images/win/previous.png"));
+    toolbar->addAction(back);
+
+	QAction* forward = m_pView->pageAction(QWebEnginePage::Forward);
+    forward->setIcon(QIcon(":/qt-project.org/shared/images/win/next.png"));
+    toolbar->addAction(forward);
+
+	QAction* reload = m_pView->pageAction(QWebEnginePage::Reload);
+    reload->setIcon(QIcon(":/application/icons/reload.png"));
+    toolbar->addAction(reload);
 
 	toolbar->addSeparator();
 
