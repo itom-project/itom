@@ -227,7 +227,7 @@ HelpViewer::HelpViewer(QWidget *parent /*= NULL*/) :
 	
 	setMenuWidget(menuBar);
 
-	showMaximized();
+    showFullScreen();
 }
 
 //----------------------------------------------------------------------------------------
