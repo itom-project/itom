@@ -5,7 +5,7 @@ from matplotlib.transforms import Bbox
 
 from matplotlib import cbook
 from matplotlib.backends.backend_agg import FigureCanvasAgg
-from .backend_itom_v3 import FigureCanvasItom, _BackendItom
+from .backend_itom_v3_6 import FigureCanvasItom, _BackendItom
 
 import itom
 import numpy as np  # for color channel conversion in copy to clipboard

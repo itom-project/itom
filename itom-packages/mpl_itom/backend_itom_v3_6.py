@@ -17,13 +17,15 @@ from matplotlib.backend_bases import (
     NavigationToolbar2,
     TimerBase,
     cursors,
-    ToolContainerBase
+    ToolContainerBase,
+    _Mode,
+    MouseButton,
+    CloseEvent, 
+    KeyEvent, 
+    LocationEvent, 
+    MouseEvent, 
+    ResizeEvent
 )
-
-if matplotlib.__version__ >= "3.3.0":
-    from matplotlib.backend_bases import _Mode
-else:
-    from matplotlib.backend_bases import StatusbarBase
 
 import mpl_itom.figureoptions as figureoptions
 
@@ -38,7 +40,7 @@ import weakref
 
 # itom specific imports (end)
 
-backend_version = "3.1.0"
+backend_version = "3.2.0"
 DEBUG = False
 
 # SPECIAL_KEYS are keys that do *not* return their unicode name
@@ -97,7 +99,7 @@ if sys.platform == "darwin":
     # in OSX, the control and super (aka cmd/apple) keys are switched, so
     # switch them back.
     SPECIAL_KEYS.update(
-        {0x01000021: "cmd", 0x01000022: "control",}  # cmd/apple key
+        {0x01000021: "cmd", 0x01000022: "control"}  # cmd/apple key
     )
     MODIFIER_KEYS[0] = ("cmd", 0x04000000, 0x01000021)
     MODIFIER_KEYS[2] = ("ctrl", 0x10000000, 0x01000022)
@@ -126,19 +128,6 @@ def draw_if_interactive():
             figManager.canvas.draw_idle()
 
 
-# if matplotlib.__version__ < '2.1.0':
-#    class Show(ShowBase):
-#        def mainloop(self):
-#            pass
-# else:
-#    class Show(ShowBase):
-#        @classmethod
-#        def mainloop(cls):
-#            pass
-
-# show = Show()
-
-
 class TimerItom(TimerBase):
     """
     Subclass of :class:`backend_bases.TimerBase` that uses Qt timer events.
@@ -160,24 +149,16 @@ class TimerItom(TimerBase):
     def __init__(self, *args, **kwargs):
         # Create a new timer and connect the timeout() signal to the
         # _on_timer method.
-        if matplotlib.__version__ < "3.3.0":
-            TimerBase.__init__(self, *args, **kwargs)
-            self._timer = itom.timer(
-                self._interval, self._on_timer, singleShot=self._single
-            )
-            self._timer_set_interval()
-        else:
-            # set a long default interval to stop the timer. The super
-            # constructor will then directly set the interval and singleShot.
-            self._timer = itom.timer(
-                1000000, self._on_timer, singleShot=False
-            )
-            super().__init__(*args, **kwargs)
+        # set a long default interval to stop the timer. The super
+        # constructor will then directly set the interval and singleShot.
+        self._timer = itom.timer(
+            1000000, self._on_timer, singleShot=False
+        )
+        super().__init__(*args, **kwargs)
 
     def __del__(self):
         # Probably not necessary in practice, but is good behavior to
         # disconnect
-        print("-------------disconnect-----------------")
         try:
             self._timer_stop()
             TimerBase.__del__(self)
@@ -209,9 +190,9 @@ class FigureCanvasItom(FigureCanvasBase):
     # to MouseButton.LEFT, MouseButton.RIGHT, MouseButton.MIDDLE...
     buttond = {
         0: 0,
-        1: 1,
-        2: 2,
-        3: 3,
+        1: MouseButton.LEFT,
+        2: MouseButton.MIDDLE,
+        3: MouseButton.RIGHT,
         # QtCore.Qt.XButton1: None,
         # QtCore.Qt.XButton2: None,
     }
@@ -219,7 +200,7 @@ class FigureCanvasItom(FigureCanvasBase):
     def __init__(self, figure, num, matplotlibplotUiItem, embeddedWidget):
         """
         embeddedWidget: bool
-            True, if matplotlib widget is embedded into a loaded ui file, 
+            True, if matplotlib widget is embedded into a loaded ui file,
             False: matplotlib widget is displayed in figure window
         """
         super().__init__(figure=figure)
@@ -274,9 +255,10 @@ class FigureCanvasItom(FigureCanvasBase):
         self._erase_before_paint = False
         self._is_drawing = False
 
-        ##self.setAttribute(QtCore.Qt.WA_OpaquePaintEvent)
-        ##self.setMouseTracking(True)
-        self.resize(*self.get_width_height())
+        # self.setAttribute(QtCore.Qt.WA_OpaquePaintEvent)
+        # self.setMouseTracking(True)
+        # resize is done by manager constructor later
+        # self.resize(*self.get_width_height())
         # Key auto-repeat enabled by default
         self._keyautorepeat = True
 
@@ -355,19 +337,27 @@ class FigureCanvasItom(FigureCanvasBase):
         else:
             return 0, 0
 
+    def set_cursor(self, cursor):
+        # docstring inherited
+        self.matplotlibWidgetUiItem.call("setCursor", cursord[cursor])
+
     def enterEvent(self, x, y):
         """itom specific: 
         replacement of enterEvent and leaveEvent of Qt5 backend
         """
         x_, y_ = self.mouseEventCoords(x, y)
-        FigureCanvasBase.enter_notify_event(self, guiEvent=None, xy=(x_, y_))
+        LocationEvent("figure_enter_event", self,
+                      x_, y_,
+                      guiEvent=None)._process()
 
     def leaveEvent(self):
         """itom specific: 
         replacement of enterEvent and leaveEvent of Qt5 backend
         """
         itom.setApplicationCursor(-1)
-        FigureCanvasBase.leave_notify_event(self, guiEvent=None)
+        LocationEvent("figure_leave_event", self,
+                      0, 0,
+                      guiEvent=None)._process()
 
     def mouseEventCoords(self, x, y):
         """Calculate mouse coordinates in physical pixels
@@ -400,17 +390,25 @@ class FigureCanvasItom(FigureCanvasBase):
         try:
             # button: left 1, middle 2, right 3
             if eventType == 0:  # mousePressEvent
-                FigureCanvasBase.button_press_event(self, x, y, button)
+                MouseEvent("button_press_event", 
+                           self, x, y, button,
+                           guiEvent=None)._process()
             elif eventType == 1:  # mouseDoubleClickEvent
-                FigureCanvasBase.button_press_event(self, x, y, button, dblclick=True)
+                MouseEvent("button_press_event", 
+                           self, x, y, button, dblclick=True,
+                           guiEvent=None)._process()
             elif eventType == 2:  # mouseMoveEvent
-                if (
-                    button == 0
-                ):  # if move without button press, reset timer since no other visualization is given to Qt, which could then reset the timer
+                if button == 0:  
+                    # if move without button press, reset timer since no other 
+                    # visualization is given to Qt, which could then reset the timer
                     self.matplotlibWidgetUiItem.call("stopTimer")
-                FigureCanvasBase.motion_notify_event(self, x, y)
+                MouseEvent("motion_notify_event", self,
+                   x, y,
+                   guiEvent=None)._process()
             elif eventType == 3:  # mouseReleaseEvent
-                FigureCanvasBase.button_release_event(self, x, y, button)
+                MouseEvent("button_release_event", self,
+                       x, y, button,
+                       guiEvent=None)._process()
         except NotImplementedError:
             # derived from RuntimeError, therefore handle it separately.
             pass
@@ -422,7 +420,9 @@ class FigureCanvasItom(FigureCanvasBase):
         # from QWheelEvent::delta doc
         steps = delta / 120
         if orientation == 1:  # vertical
-            FigureCanvasBase.scroll_event(self, x, y, steps)
+            MouseEvent("scroll_event", self,
+                       x, y, step=steps,
+                       guiEvent=None)._process()
 
     def keyEvent(self, type, key, modifiers, autoRepeat):
         key = self._get_key(key, modifiers, autoRepeat)
@@ -430,31 +430,14 @@ class FigureCanvasItom(FigureCanvasBase):
             return
 
         if type == 0:  # keyPressEvent
-            FigureCanvasBase.key_press_event(self, key)
+            # mouse coordinates are missing here
+            KeyEvent("key_press_event", self,
+                     key, 0, 0,
+                     guiEvent=None)._process()
         elif type == 1:  # keyReleaseEvent
-            FigureCanvasBase.key_release_event(self, key)
-
-    if matplotlib.__version__ < "3.2.0":
-        @property
-        @cbook.deprecated(
-            "3.0",
-            message="Manually check `event.guiEvent.isAutoRepeat()` "
-            "in the event handler.",
-        )
-        def keyAutoRepeat(self):
-            """
-            If True, enable auto-repeat for key events.
-            """
-            return self._keyautorepeat
-    
-        @keyAutoRepeat.setter
-        @cbook.deprecated(
-            "3.0",
-            message="Manually check `event.guiEvent.isAutoRepeat()` "
-            "in the event handler.",
-        )
-        def keyAutoRepeat(self, val):
-            self._keyautorepeat = bool(val)
+            KeyEvent("key_release_event", self,
+                     key, 0, 0,
+                     guiEvent=None)._process()
 
     def resizeEvent(self, w, h, draw=True):
         if self._destroying or (w, h) == self.lastResizeSize:
@@ -476,14 +459,15 @@ class FigureCanvasItom(FigureCanvasBase):
             hinch = self._dpi_ratio * h / dpival
             self.figure.set_size_inches(winch, hinch, forward=False)
             status = self._is_drawing
-            if not draw and matplotlib.__version__ >= "2.1.0":
+            if not draw:
                 self._is_drawing = (
                     True  # else the following resize_event will call draw_idle, too
                 )
             # emit our resize events
-            FigureCanvasBase.resize_event(self)
+            ResizeEvent("resize_event", self)._process()
             self._is_drawing = status
             self.lastResizeSize = (w, h)
+            self.draw_idle()
 
     def copyToClipboardEvent(self, dpi):
         self.copyToClipboard(dpi)
@@ -549,7 +533,6 @@ class FigureCanvasItom(FigureCanvasBase):
 
     def flush_events(self):
         itom.processEvents()
-        ##qApp.processEvents()
 
     def start_event_loop(self, timeout=0):
         raise NotImplementedError("itom backend does not support interactive mode")
@@ -588,7 +571,7 @@ class FigureCanvasItom(FigureCanvasBase):
         if not (self._draw_pending or self._is_drawing):
             self._draw_pending = True
             self._draw_idle()
-            ##QtCore.QTimer.singleShot(0, self._draw_idle)
+
 
     def _draw_idle(self):
         # if self.height() < 0 or self.width() < 0:
@@ -628,10 +611,9 @@ class FigureCanvasItom(FigureCanvasBase):
         is not accessible any more, then the manager is closed as quick as possible, such that
         a new figure can be opened, if desired.
         """
-
         if self._destroying == False:
             self._destroying = True
-            FigureCanvasBase.close_event(self)
+            CloseEvent("close_event", self)._process()
             try:
                 Gcf.destroy(self.num)
             except AttributeError:
@@ -697,18 +679,10 @@ class FigureManagerItom(FigureManagerBase):
         self.toolmanager = self._get_toolmanager()
         self.toolbar = self._get_toolbar(self.canvas, self.windowUi)
 
-        if matplotlib.__version__ < "3.3.0":
-            self.statusbar = None
-
         if self.toolmanager:
             backend_tools.add_tools_to_manager(self.toolmanager)
             if self.toolbar:
                 backend_tools.add_tools_to_container(self.toolbar)
-
-                if matplotlib.__version__ < "3.3.0":
-                    self.statusbar = StatusbarItom(
-                        matplotlibplotUiItem, self.toolmanager
-                    )
 
         if self.toolbar is not None:
             # self.windowUi.addToolBar(self.toolbar)
@@ -781,9 +755,10 @@ class FigureManagerItom(FigureManagerBase):
         return toolmanager
 
     def resize(self, width, height):
-        "set the canvas size in pixels"
+        """set the canvas size in pixels"""
         if "do_not_resize_window" in self.canvas.__dict__:
-            # savefig or copyToClipboard will force to resize the window if dpi is higher than default (only in matplotlib >= 2.0). This is not wanted.
+            # savefig or copyToClipboard will force to resize the window if dpi
+            # is higher than default (only in matplotlib >= 2.0). This is not wanted.
             if self.canvas.do_not_resize_window:
                 return
         self.matplotlibWidgetUiItem.canvasWidget.call("externalResize", width, height)
@@ -862,7 +837,7 @@ class Signal:
                     widget.call(c["slot"], *args)
 
     def connect(self, widget, property=None, slot=None):
-        if not property is None:
+        if property is not None:
             self.callbacks.append({"uiItem": weakref.ref(widget), "property": property})
         else:
             self.callbacks.append({"uiItem": weakref.ref(widget), "slot": slot})
@@ -1027,12 +1002,8 @@ class NavigationToolbar2Itom(NavigationToolbar2):
 
     def _update_buttons_checked(self):
         # sync button checkstates to match active mode
-        if matplotlib.__version__ < "3.3.0":
-            self._get_predef_action("pan")["checked"] = self._active == "PAN"
-            self._get_predef_action("zoom")["checked"] = self._active == "ZOOM"
-        else:
-            self._get_predef_action("pan")["checked"] = self.mode == _Mode.PAN
-            self._get_predef_action("zoom")["checked"] = self.mode == _Mode.ZOOM
+        self._get_predef_action("pan")["checked"] = self.mode == _Mode.PAN
+        self._get_predef_action("zoom")["checked"] = self.mode == _Mode.ZOOM
 
     def pan(self, *args):
         super().pan(*args)
@@ -1043,7 +1014,10 @@ class NavigationToolbar2Itom(NavigationToolbar2):
         self._update_buttons_checked()
 
     def set_message(self, s):
-        self.message.emit(s)
+        # text, that is shown in the statusbar should not contain multi
+        # line texts. Therefore replace it by ', '.
+        s_ = s.replace("\n", ", ")
+        self.message.emit(s_)
         if self.coordinates:
             r = self.matplotlibplotUiItem()
             if not r is None:
@@ -1319,27 +1293,10 @@ class ToolbarItom(ToolContainerBase):
         self.statusbar_label["text"] = s
 
 
-if matplotlib.__version__ < "3.3.0":
-    class StatusbarItom(StatusbarBase):
-        """
-        
-        This class is deprecated from MPL 3.3 on (since StatusbarBase
-        is deprecated, too).
-        """
-    
-        def __init__(self, matplotlibplotUiItem, *args, **kwargs):
-            StatusbarBase.__init__(self, *args, **kwargs)
-            self.label = matplotlibplotUiItem.call("statusBar").call(
-                "addLabelWidget", "statusbarLabel"
-            )
-    
-        def set_message(self, s):
-            self.label["text"] = s
-
-
+@backend_tools._register_tool_class(FigureCanvasItom)
 class ConfigureSubplotsItom(backend_tools.ConfigureSubplotsBase):
     def __init__(self, name, *args, **kwargs):
-        super(ConfigureSubplotsItom, self).__init__(name, *args, **kwargs)
+        super(backend_tools.ConfigureSubplotsBase, self).__init__(name, *args, **kwargs)
         self.subplotConfigDialog = None
 
     def trigger(self, *args):
@@ -1350,6 +1307,7 @@ class ConfigureSubplotsItom(backend_tools.ConfigureSubplotsBase):
         self.subplotConfigDialog.showDialog()
 
 
+@backend_tools._register_tool_class(FigureCanvasItom)
 class SaveFigureItom(backend_tools.SaveFigureBase):
     def __init__(self, *args, **kwargs):
         backend_tools.SaveFigureBase.__init__(self, *args, **kwargs)
@@ -1395,11 +1353,13 @@ class SaveFigureItom(backend_tools.SaveFigureBase):
                 itom.ui.msgCritical("Error saving file", str(e), parent=parent)
 
 
+@backend_tools._register_tool_class(FigureCanvasItom)
 class SetCursorItom(backend_tools.SetCursorBase):
     def set_cursor(self, cursor):
         self.canvas.matplotlibWidgetUiItem.call("setCursor", cursord[cursor])
 
 
+@backend_tools._register_tool_class(FigureCanvasItom)
 class RubberbandItom(backend_tools.RubberbandBase):
     def draw_rubberband(self, x0, y0, x1, y1):
         height = self.canvas.figure.bbox.height
@@ -1412,6 +1372,7 @@ class RubberbandItom(backend_tools.RubberbandBase):
         self.canvas.drawRectangle(None)
 
 
+@backend_tools._register_tool_class(FigureCanvasItom)
 class HelpItom(backend_tools.ToolHelpBase):
     def trigger(self, *args):
         ui.msgInformation(
@@ -1419,43 +1380,15 @@ class HelpItom(backend_tools.ToolHelpBase):
         )
 
 
+@backend_tools._register_tool_class(FigureCanvasItom)
 class ToolCopyToClipboardItom(backend_tools.ToolCopyToClipboardBase):
     def trigger(self, *args, **kwargs):
         self.canvas.copyToClipboard(self.canvas._dpi_ratio)
 
 
-backend_tools.ToolSaveFigure = SaveFigureItom
-backend_tools.ToolConfigureSubplots = ConfigureSubplotsItom
-backend_tools.ToolSetCursor = SetCursorItom
-backend_tools.ToolRubberband = RubberbandItom
-backend_tools.ToolHelp = HelpItom
-backend_tools.ToolCopyToClipboard = ToolCopyToClipboardItom
-
-if matplotlib.__version__ < "3.2.0":
-    @cbook.deprecated("3.0")
-    def error_msg_itom(msg, parent=None):
-        if not isinstance(msg, str):
-            msg = ",".join(map(str, msg))
-    
-        itom.ui.msgWarning("Matplotlib", msg)
-    
-    
-    @cbook.deprecated("3.0")
-    def exception_handler(type, value, tb):
-        """Handle uncaught exceptions
-        It does not catch SystemExit
-        """
-        msg = ""
-        # get the filename attribute if available (for IOError)
-        if hasattr(value, "filename") and value.filename is not None:
-            msg = value.filename + ": "
-        if hasattr(value, "strerror") and value.strerror is not None:
-            msg += value.strerror
-        else:
-            msg += str(value)
-    
-        if len(msg):
-            error_msg_itom(msg)
+FigureManagerItom._toolbar2_class = NavigationToolbar2Itom
+# must be None, not ToolbarItom!
+FigureManagerItom._toolmanager_toolbar_class = None
 
 
 @_Backend.export
