@@ -337,6 +337,10 @@ class FigureCanvasItom(FigureCanvasBase):
         else:
             return 0, 0
 
+    def set_cursor(self, cursor):
+        # docstring inherited
+        self.matplotlibWidgetUiItem.call("setCursor", cursord[cursor])
+
     def enterEvent(self, x, y):
         """itom specific: 
         replacement of enterEvent and leaveEvent of Qt5 backend
@@ -1289,9 +1293,10 @@ class ToolbarItom(ToolContainerBase):
         self.statusbar_label["text"] = s
 
 
+@backend_tools._register_tool_class(FigureCanvasItom)
 class ConfigureSubplotsItom(backend_tools.ConfigureSubplotsBase):
     def __init__(self, name, *args, **kwargs):
-        super(ConfigureSubplotsItom, self).__init__(name, *args, **kwargs)
+        super(backend_tools.ConfigureSubplotsBase, self).__init__(name, *args, **kwargs)
         self.subplotConfigDialog = None
 
     def trigger(self, *args):
@@ -1302,6 +1307,7 @@ class ConfigureSubplotsItom(backend_tools.ConfigureSubplotsBase):
         self.subplotConfigDialog.showDialog()
 
 
+@backend_tools._register_tool_class(FigureCanvasItom)
 class SaveFigureItom(backend_tools.SaveFigureBase):
     def __init__(self, *args, **kwargs):
         backend_tools.SaveFigureBase.__init__(self, *args, **kwargs)
@@ -1347,11 +1353,13 @@ class SaveFigureItom(backend_tools.SaveFigureBase):
                 itom.ui.msgCritical("Error saving file", str(e), parent=parent)
 
 
+@backend_tools._register_tool_class(FigureCanvasItom)
 class SetCursorItom(backend_tools.SetCursorBase):
     def set_cursor(self, cursor):
         self.canvas.matplotlibWidgetUiItem.call("setCursor", cursord[cursor])
 
 
+@backend_tools._register_tool_class(FigureCanvasItom)
 class RubberbandItom(backend_tools.RubberbandBase):
     def draw_rubberband(self, x0, y0, x1, y1):
         height = self.canvas.figure.bbox.height
@@ -1364,6 +1372,7 @@ class RubberbandItom(backend_tools.RubberbandBase):
         self.canvas.drawRectangle(None)
 
 
+@backend_tools._register_tool_class(FigureCanvasItom)
 class HelpItom(backend_tools.ToolHelpBase):
     def trigger(self, *args):
         ui.msgInformation(
@@ -1371,17 +1380,15 @@ class HelpItom(backend_tools.ToolHelpBase):
         )
 
 
+@backend_tools._register_tool_class(FigureCanvasItom)
 class ToolCopyToClipboardItom(backend_tools.ToolCopyToClipboardBase):
     def trigger(self, *args, **kwargs):
         self.canvas.copyToClipboard(self.canvas._dpi_ratio)
 
 
-backend_tools.ToolSaveFigure = SaveFigureItom
-backend_tools.ToolConfigureSubplots = ConfigureSubplotsItom
-backend_tools.ToolSetCursor = SetCursorItom
-backend_tools.ToolRubberband = RubberbandItom
-backend_tools.ToolHelp = HelpItom
-backend_tools.ToolCopyToClipboard = ToolCopyToClipboardItom
+FigureManagerItom._toolbar2_class = NavigationToolbar2Itom
+# must be None, not ToolbarItom!
+FigureManagerItom._toolmanager_toolbar_class = None
 
 
 @_Backend.export
