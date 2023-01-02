@@ -17,18 +17,18 @@ In the course of installation, a large number of third-party components will be 
 * Point Cloud Library 1.10.0
 * VTK 8.2.0 
 * Python 3.8.10 (as sub directory of itom)
-* Python package *NumPy* 1.23.1
+* Python package *NumPy* 1.23.2
 * Python package *Jedi* 0.18.1
 
 **Optional:**
 
-* Python package *SciPy* 1.8.1
-* Python package *Matplotlib* 3.5.2
+* Python package *SciPy* 1.9.1
+* Python package *Matplotlib* 3.5.3
 * Python package *Scikit-image* 0.19.3
-* Python package *Scikit-learn* 1.1.1
+* Python package *Scikit-learn* 1.1.2
 * Python package *OpenCV-Python* 4.6.0.66
 * Python package *Pandas* 1.4.3
-* Python package *Plotly* 5.9.0
+* Python package *Plotly* 5.10.0
 * Python package *Openpyxl* 3.0.10
 * Python package *Tables* 3.7.0
 * Python package *Seaborn* 0.11.2

@@ -1,7 +1,16 @@
 breathe
+matplotlib
 numpydoc
+pandas
+plotly
+tables
+pytest
+scikit-learn
+scipy
+seaborn
 sphinx
 sphinx_copybutton
 sphinx_gallery
 sphinx_rtd_theme
 sphinxcontrib-moderncmakedomain
+sphinx-rtd-dark-mode

@@ -26,23 +26,14 @@ A 32-bit version is created in the same way with the corresponding 32-bit softwa
 First download all the needed software and packages. This download links are for 
 the current availabe software versions. 
 
-* `MS Visual Studio 2017 Community <http://www.visualstudio.com/de-de/downloads/download-visual-studio-vs.aspx>`_ (vs_community__45489951.1547806605.exe) 
-* `Qt Visual Studio Add-in 2.3.0 <https://download.qt.io/development_releases/vsaddin/>`_ (qt-vsaddin-msvc2017-2.3.0.vsix)
-* `Qt 5.12.0 for Windows 64-bit (VS 2017) Offline Installer <https://www.qt.io/offline-installers/>`_ (qt-opensource-windows-x86-5.12.1.exe)    
-* `CMake 3.13.4 <http://cmake.org/download/>`_ (cmake-3.13.2-win32-x86.msi)
-* `Python 3.7.2 Windows x86-64 executable installer <http://www.python.org/downloads/windows/>`_ (python-3.7.2-amd64.exe) 
-    - `Numpy 1.16.0 cp37-cp37m-win_amd64 <https://www.lfd.uci.edu/~gohlke/pythonlibs/#numpy>`_ (numpy-1.16.2+mkl-cp37-cp37m-win_amd64.whl) 
-    - `Pip 19.0.2 <https://www.lfd.uci.edu/~gohlke/pythonlibs/#pip>`_ (pip-19.0.2-py2.py3-none-any.whl)
-    - `Setuptools 40.8.0 <https://www.lfd.uci.edu/~gohlke/pythonlibs/#setuptools>`_ (setuptools-40.8.0-py2.py3-none-any.whl)
-    - `Wheel 0.33.0 <https://www.lfd.uci.edu/~gohlke/pythonlibs/#wheel>`_ (wheel-0.33.0-py2.py3-none-any.whl)
-    - `Jedi 0.12.3 <https://www.lfd.uci.edu/~gohlke/pythonlibs/#jedi>`_ (jedi-0.13.3-py2.py3-none-any.whl)
-    - `Parso 0.3.4 <https://www.lfd.uci.edu/~gohlke/pythonlibs/#parso>`_ (parso-0.3.4-py2.py3-none-any.whl)
-    - `Pyflakes 2.1.1 <https://www.lfd.uci.edu/~gohlke/pythonlibs/#pyflakes>`_ (pyflakes-2.1.1-py2.py3-none-any.whl)  
-* `Git 2.21.0 64-bit <http://git-scm.com/download/win/>`_ (Git-2.21.0-64-bit.exe)
-* `TortoiseGit 2.8.0.0 <http://tortoisegit.org/download/>`_ (TortoiseGit-2.8.0.0-64bit.msi)
-* `Doxygen 1.8.11 <https://sourceforge.net/projects/doxygen/files/rel-1.8.11/>`_ (doxygen-1.8.11.windows.x64.bin.zip)
-* `OpenSSL 1.0.2l <https://indy.fulgan.com/SSL/>`_ (openssl-1.0.2l-x64_86-win64.zip)
-
+* `MS Visual Studio Community Edition <http://www.visualstudio.com/de-de/downloads/download-visual-studio-vs.aspx>`_ 
+* `Qt Visual Studio Add-in <https://download.qt.io/development_releases/vsaddin/>`_
+* `Qt for Windows x64 Online Installer <https://www.qt.io/download-qt-installer?hsCtaTracking=99d9dd4f-5681-48d2-b096-470725510d34%7C074ddad0-fdef-4e53-8aa8-5e8a876d6ab4>`_    
+* `CMake <http://cmake.org/download/>`_
+* `Python Windows x64 executable installer <http://www.python.org/downloads/windows/>`_
+* `Git x64 <https://git-scm.com/downloads>`_ 
+* `TortoiseGit <http://tortoisegit.org/download/>`_ 
+* `Doxygen <https://sourceforge.net/projects/doxygen/files/rel-1.8.11/>`_
 
 .. warning::
 
@@ -57,23 +48,23 @@ the current availabe software versions.
 Download packages for the 3rdPartyPCL tools
 --------------------------------------------
 
-* `OpenCV 3.4.5 source <https://opencv.org/releases.html>`_ (opencv-master.zip)
-* `Boost 1.69.0 binaries <https://sourceforge.net/projects/boost/files/boost-binaries/>`_ (boost_1_69_0-msvc-12.0-64.exe) 
-* `Eigen 3.3.7 repository <http://bitbucket.org/eigen/eigen/downloads/>`_ (eigen-eigen-323c052e1731.zip)
-* `VTK 8.2.0 source <http://www.vtk.org/download/>`_ (VTK-8.2.0.zip)
-* `PCL 1.9.1 source <http://github.com/PointCloudLibrary/pcl/>`_ (pcl-master.zip)
+* `OpenCV source <https://opencv.org/releases.html>`_
+* `Boost binaries <https://www.boost.org/>`_
+* `Eigen repository <https://eigen.tuxfamily.org/index.php?title=Main_Page>`_
+* `VTK source <http://www.vtk.org/download/>`_ 
+* `PCL source <http://github.com/PointCloudLibrary/pcl/>`_
 * FLANN and QHULL can be copied from the current all-in-one development version. 
 * FLANN: repository <https://github.com/mariusmuja/flann/>
-* `QHull repository <http://www.qhull.org/download/>`_ (qhull-2019.1.zip)
+* `QHull repository <http://www.qhull.org/download/>`_
 
 
 Compile/setup dependencies
-==============================
+==========================
 
-Install Visual Studio 2017
--------------------------------
+Install Visual Studio
+---------------------
 
-Install Visual Studio 2017 Community without optional features. 
+Install Visual Studio Community Edition without optional features. 
 
 Creating the _install_ and 3rdParty folder
 ---------------------------------------------

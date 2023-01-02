@@ -556,7 +556,7 @@ RetVal QPropertyHelper::readProperty(const QObject *object, const char* propName
     if (object)
     {
         value = object->property(propName);
-        if (value.isValid())
+        if (!value.isValid())
         {
             retValue += RetVal::format(retError, 0, QObject::tr("Property '%s' could not be read").toLatin1().data(), propName);
         }

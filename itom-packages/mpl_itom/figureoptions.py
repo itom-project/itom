@@ -154,6 +154,8 @@ def figure_edit(matplotlibplotUiItem, axes, parent=None):
 
         if matplotlib.__version__ < "3.3.0":
             cm_cmaps = cm.cmap_d
+        elif matplotlib.__version__ >= "3.6.0":
+            cm_cmaps = cm._colormaps
         else:
             cm_cmaps = cm._cmap_registry
 

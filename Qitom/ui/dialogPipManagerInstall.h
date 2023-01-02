@@ -71,6 +71,7 @@ private slots:
     void on_radioTarGz_clicked(bool checked);
     void on_radioSearchIndex_clicked(bool checked);
     void on_radioRequirements_clicked(bool checked);
+    void on_radioPackageDevelopment_clicked(bool checked);
     void on_buttonBox_accepted();
     
 };
