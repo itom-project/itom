@@ -177,6 +177,11 @@ RetVal HelpSystem::scanDocumentationFiles(QStringList &qchFiles, quint16 &checks
         baseFolders << appPath.filePath("docs/pluginDoc/build");
     }
 
+    if (appPath.exists("docs/additionalDocs"))
+    {
+        baseFolders << appPath.filePath("docs/additionalDocs");
+    }
+
     qchFiles.clear();
     checksum = 0;
 
