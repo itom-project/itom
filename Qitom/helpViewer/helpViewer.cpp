@@ -250,6 +250,13 @@ void HelpViewer::setCollectionFile(const QString &collectionFile)
 	m_pHelpEngine->setupData();
 }
 
+void HelpViewer::showUrl(const QString& url)
+{
+    QUrl u;
+    u.setUrl(url);
+    this->linkActivated(u);
+}
+
 //----------------------------------------------------------------------------------------
 void HelpViewer::search()
 {
