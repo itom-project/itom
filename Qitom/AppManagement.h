@@ -56,9 +56,6 @@ class AppManagement
         inline static QObject* getUserOrganizer() { QMutexLocker locker (&m_mutex); return m_userOrganizer; }
         inline static QObject* getCoutStream() { QMutexLocker locker (&m_mutex); return m_coutStream; }
         inline static QObject* getCerrStream() { QMutexLocker locker (&m_mutex); return m_cerrStream; }
-        
-        static QTextCodec* getScriptTextCodec();
-        static void setScriptTextCodec(QTextCodec *codec);
 
 
         static void setScriptEditorOrganizer(QObject* scriptEditorOrganizer)     /*!< sets ScriptEditorOrganizer instance pointer */

@@ -83,7 +83,9 @@ ScriptEditorWidget::ScriptEditorWidget(BookmarkModel *bookmarkModel, QWidget* pa
     m_currentLineIndex(-1),
     m_textBlockLineIdxAboutToBeDeleted(-1),
     m_outlineDirty(true),
-    m_wasReadonly(false)
+    m_wasReadonly(false),
+    m_charsetEncoding("UTF-8"),
+    m_charsetEncodingAutoGuess(true)
 {
     qRegisterMetaType<QList<ito::CodeCheckerItem> >("QList<ito::CodeCheckerItem>");
 
@@ -449,6 +451,16 @@ void ScriptEditorWidget::loadSettings()
     {
         m_pyDocstringGeneratorMode->setDocstringStyle(PyDocstringGeneratorMode::GoogleStyle);
     }
+
+    // charset encoding
+    m_charsetEncoding = settings.value("characterSetEncoding", "UTF-8").toString();
+    
+    if (QTextCodec::codecForName(m_charsetEncoding.toLatin1()) == nullptr)
+    {
+        m_charsetEncoding = "UTF-8";
+    }
+
+    m_charsetEncodingAutoGuess = settings.value("characterSetEncodingAutoGuess", true).toBool();
 
     settings.endGroup();
 
@@ -1688,8 +1700,73 @@ void ScriptEditorWidget::pyCodeFormatterDone(bool success, QString code)
     m_pyCodeFormatter.clear();
 }
 
+//-------------------------------------------------------------------------------------
+QString ScriptEditorWidget::guessEncoding(const QByteArray &content)
+{
+    QList<QByteArray> firstLines;
+
+    int from = 0;
+    int idx = content.indexOf("\n", from);
+
+    if (idx >= 0)
+    {
+        firstLines << content.mid(from, idx - from).trimmed();
+        from = idx + 1;
+
+        idx = content.indexOf("\n", from);
+
+        if (idx >= from)
+        {
+            firstLines << content.mid(from, idx - from).trimmed();
+        }
+    }
+
+    QRegularExpression re("#.*?coding[:=][ \\t]*([-_.a-zA-Z0-9]+)");
+    bool found = false;
+
+    foreach(const QByteArray &ba, firstLines)
+    {
+        auto match = re.match(QString::fromUtf8(ba));
+
+        if (match.hasMatch())
+        {
+            m_charsetEncoding = IOHelper::getEncodingFromAlias(match.captured(1));
+            found = true;
+            break;
+        }
+    }
+
+    if (!found)
+    {
+        // check for Byte Order Marks
+        if (content.startsWith(QByteArray::fromHex("EFBBBF")))
+        {
+            m_charsetEncoding = IOHelper::getEncodingFromAlias("UTF-8");
+        }
+        else if (content.startsWith(QByteArray::fromHex("FEFF")))
+        {
+            m_charsetEncoding = IOHelper::getEncodingFromAlias("UTF-16BE");
+        }
+        else if (content.startsWith(QByteArray::fromHex("FFFE")))
+        {
+            m_charsetEncoding = IOHelper::getEncodingFromAlias("UTF-16LE");
+        }
+        else if (content.startsWith(QByteArray::fromHex("0000FEFF")))
+        {
+            m_charsetEncoding = IOHelper::getEncodingFromAlias("UTF-32BE");
+        }
+        else if (content.startsWith(QByteArray::fromHex("FFFE0000")))
+        {
+            m_charsetEncoding = IOHelper::getEncodingFromAlias("UTF-32LE");
+        }
+    }
+
+
+    return m_charsetEncoding;
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal ScriptEditorWidget::openFile(QString fileName, bool ignorePresentDocument)
+RetVal ScriptEditorWidget::openFile(const QString &fileName, bool ignorePresentDocument)
 {
     //!< check for modifications in the present document first
     if (!ignorePresentDocument)
@@ -1716,6 +1793,7 @@ RetVal ScriptEditorWidget::openFile(QString fileName, bool ignorePresentDocument
     }
 
     QFile file(fileName);
+
     if (! file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         QMessageBox::warning(this, tr("Error while opening file"), tr("File %1 could not be loaded").arg(fileName));
@@ -1726,7 +1804,23 @@ RetVal ScriptEditorWidget::openFile(QString fileName, bool ignorePresentDocument
         //therefore there is a setting property telling the encoding of saved python files and the files are loaded assuming
         //this special encoding. If no encoding is given, latin1 is always assumed.
         QByteArray content = file.readAll();
-        QString text = AppManagement::getScriptTextCodec()->toUnicode(content);
+        QString text;
+
+        if (m_charsetEncodingAutoGuess)
+        {
+            m_charsetEncoding = guessEncoding(content);
+        }
+
+        QTextCodec *tc = QTextCodec::codecForName(m_charsetEncoding.toLatin1());
+
+        if (!tc)
+        {
+            qDebug() << "unknown encoding " << m_charsetEncoding << ". Assume UTF_8";
+            tc = QTextCodec::codecForName("UTF-8");
+        }
+
+        text = tc->toUnicode(content);
+        
         file.close();
 
         clearAllBreakpoints();
@@ -1815,21 +1909,54 @@ RetVal ScriptEditorWidget::saveFile(bool askFirst)
         }
     }
 
-    m_pFileSysWatcher->removePath(getFilename());
-
     QFile file(getFilename());
 
-    if (! file.open(QIODevice::WriteOnly | QIODevice::Text))
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
         QMessageBox::warning(this, tr("Error while accessing file"), tr("File %1 could not be accessed").arg(getFilename()));
-        return RetVal(retError);
+        return false;
     }
+
+    m_pFileSysWatcher->removePath(getFilename());
 
     //todo
     //convertEols(QsciScintilla::EolUnix);
-    
+
     QString t = toPlainText();
-    file.write(AppManagement::getScriptTextCodec()->fromUnicode(t));
+    QByteArray text;
+
+    if (m_charsetEncodingAutoGuess)
+    {
+        QString encoding = guessEncoding(t.toUtf8());
+
+        if (encoding != m_charsetEncoding)
+        {
+            int ret = QMessageBox::question(
+                this,
+                tr("Inconsistent encoding"),
+                tr("The coding tag %1 does not correspond to the file encoding %2. Use %1 as new file encoding?").arg(encoding).arg(m_charsetEncoding),
+                QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes
+            );
+
+            if (ret & QMessageBox::Yes)
+            {
+                m_charsetEncoding = encoding;
+            }
+        }
+    }
+
+    QTextCodec *tc = QTextCodec::codecForName(m_charsetEncoding.toLatin1());
+
+    if (!tc)
+    {
+        QMessageBox::warning(this, tr("Unsupported encoding"),
+            tr("The encoding %s is unsupported on this computer. Switch to the default encoding UTF-8").arg(m_charsetEncoding));
+        m_charsetEncoding = IOHelper::getEncodingFromAlias("UTF-8");
+        tc = QTextCodec::codecForName(m_charsetEncoding.toUtf8());
+    }
+
+    text = tc->fromUnicode(t);
+    file.write(text);
     file.close();
     QFileInfo fi(getFilename());
 
@@ -1884,7 +2011,7 @@ RetVal ScriptEditorWidget::saveAsFile(bool askFirst)
         return RetVal(retError);
     }
 
-    if (! file.open(QIODevice::WriteOnly | QIODevice::Text))
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
         QMessageBox::warning(this, tr("Error while accessing file"), tr("File %1 could not be accessed").arg(getFilename()));
         return RetVal(retError);
@@ -1896,7 +2023,40 @@ RetVal ScriptEditorWidget::saveAsFile(bool askFirst)
     //convertEols(QsciScintilla::EolUnix);
     
     QString t = toPlainText();
-    file.write(AppManagement::getScriptTextCodec()->fromUnicode(t));
+    QByteArray text;
+
+    if (m_charsetEncodingAutoGuess)
+    {
+        QString encoding = guessEncoding(t.toUtf8());
+
+        if (encoding != m_charsetEncoding)
+        {
+            int ret = QMessageBox::question(
+                this,
+                tr("Inconsistent encoding"),
+                tr("The coding tag %1 does not correspond to the file encoding %2. Use %1 as new file encoding?").arg(encoding).arg(m_charsetEncoding),
+                QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes
+            );
+
+            if (ret & QMessageBox::Yes)
+            {
+                m_charsetEncoding = encoding;
+            }
+        }
+    }
+
+    QTextCodec *tc = QTextCodec::codecForName(m_charsetEncoding.toLatin1());
+
+    if (!tc)
+    {
+        QMessageBox::warning(this, tr("Unsupported encoding"),
+            tr("The encoding %s is unsupported on this computer. Switch to the default encoding UTF-8").arg(m_charsetEncoding));
+        m_charsetEncoding = IOHelper::getEncodingFromAlias("UTF-8");
+        tc = QTextCodec::codecForName(m_charsetEncoding.toUtf8());
+    }
+
+    text = tc->fromUnicode(t);
+    file.write(text);
     file.close();
 
     changeFilename(tempFileName);

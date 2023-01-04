@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2022, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
@@ -1452,6 +1452,61 @@ end:
     }
 
     return icon;
+}
+
+//-------------------------------------------------------------------------------------
+//! return a list of default encodings, that are officially supported by Qt (as well as Python).
+/*
+    \return a map with the official name as key and a string list of aliases as value. The
+        aliases are only in small letters, one has to convert a comparison string to small
+        letters first.
+*/
+/*static*/ QMap<QString, QStringList> IOHelper::getDefaultScriptEncodings()
+{
+    QMap<QString, QStringList> codecs;
+
+    codecs["Latin1"] = QStringList() << "latin-1" << "latin1" << "latin_1" << "iso-8859-15" << "iso8859-1" << "8859" << "cp819" << "latin" << "L1";
+    codecs["UTF-8"] = QStringList() << "utf8" << "utf-8" << "utf_8" << "u8" << "utf" << "cp650001";
+    codecs["UTF-16"] = QStringList() << "utf16" << "utf-16" << "utf_16" << "u16";
+    codecs["UTF-16BE"] = QStringList() << "utf-16be" << "utf_16_be";
+    codecs["UTF-16LE"] = QStringList() << "utf-16le" << "utf_16_le";
+    codecs["UTF-32"] = QStringList() << "utf32" << "utf-32" << "utf_32" << "u32";
+    codecs["UTF-32BE"] = QStringList() << "utf-32be" << "utf_32_be";
+    codecs["UTF-32LE"] = QStringList() << "utf-32le" << "utf_32_le";
+
+    return codecs;
+}
+
+//-------------------------------------------------------------------------------------
+/*static*/ QString IOHelper::getEncodingFromAlias(const QString &alias, bool* found /*= nullptr*/)
+{
+    auto defaultEncodings = getDefaultScriptEncodings();
+    auto it = defaultEncodings.constBegin();
+
+    while (!found && it != defaultEncodings.constEnd())
+    {
+        foreach(const QString &s, it.value())
+        {
+            if (QString::compare(alias, s, Qt::CaseInsensitive) == 0)
+            {
+                if (found)
+                {
+                    *found = true;
+                }
+
+                return it.key();
+            }
+        }
+
+        ++it;
+    }
+
+    if (found)
+    {
+        *found = false;
+    }
+
+    return alias;
 }
 
 } //end namespace ito

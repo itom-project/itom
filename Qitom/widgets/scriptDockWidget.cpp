@@ -1233,6 +1233,8 @@ void ScriptDockWidget::currentTabChanged(int index)
     }
 
     tabFilenameOrModificationChanged(index);
+
+    emit statusBarInformationChanged("UTF-8", index, 0);
 }
 
 //-------------------------------------------------------------------------------------

@@ -221,6 +221,8 @@ signals:
 
     void addGoBackNavigationItem(const GoBackNavigationItem &item);
 
+    void statusBarInformationChanged(const QString &encoding, int line, int column);
+
 private slots:
     void tabContextMenuEvent (QContextMenuEvent * event);
 

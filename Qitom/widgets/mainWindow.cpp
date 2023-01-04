@@ -41,6 +41,7 @@
 #include "../ui/dialogReloadModule.h"
 #include "../ui/dialogTimerManager.h"
 #include "../ui/widgetInfoBox.h"
+#include "scriptDockWidget.h"
 
 #include "../helper/versionHelper.h"
 #include "../helper/guiHelper.h"
@@ -107,6 +108,7 @@ MainWindow::MainWindow() :
     m_appFileOpen(NULL), m_aboutQt(NULL), m_aboutQitom(NULL), m_pMenuFigure(NULL),
     m_pMenuHelp(NULL), m_pMenuFile(NULL), m_pMenuPython(NULL), m_pMenuReloadModule(NULL),
     m_pMenuView(NULL), m_pHelpSystem(NULL), m_pStatusLblCurrentDir(NULL),
+    m_pStatusLblScriptInfo(nullptr),
     m_pStatusLblPythonBusy(NULL), m_pythonBusy(false), m_pythonDebugMode(false),
     m_pythonInWaitingMode(false), m_isFullscreen(false), m_userDefinedActionCounter(0),
     m_plastFilesMenu(NULL)
@@ -734,6 +736,21 @@ void MainWindow::addAbstractDock(
             }
         }
 
+        ScriptDockWidget* sdw = qobject_cast<ScriptDockWidget*>(dockWidget);
+
+        if (sdw)
+        {
+            connect(sdw, &ScriptDockWidget::statusBarInformationChanged, 
+                [=](const QString &encoding, int line, int column) 
+                {
+                    if (m_pStatusLblScriptInfo)
+                    {
+                        m_pStatusLblScriptInfo->setText(tr("Ln %1, Col %2, %3").arg(line).arg(column).arg(encoding));
+                    }
+                }
+            );
+        }
+
         if (area == Qt::NoDockWidgetArea)
         {
             addDockWidget(Qt::TopDockWidgetArea, dockWidget);
@@ -763,6 +780,13 @@ void MainWindow::removeAbstractDock(AbstractDockWidget* dockWidget)
 {
     if (dockWidget)
     {
+        ScriptDockWidget* sdw = qobject_cast<ScriptDockWidget*>(dockWidget);
+
+        if (sdw)
+        {
+            disconnect(sdw, &ScriptDockWidget::statusBarInformationChanged,this, 0);
+        }
+
         dockWidget->setParent(NULL);
         removeDockWidget(dockWidget);
     }
@@ -1336,6 +1360,9 @@ void MainWindow::raiseFigureByHandle(int handle)
 //! initializes status bar
 void MainWindow::createStatusBar()
 {
+    m_pStatusLblScriptInfo = new QLabel("", this);
+    statusBar()->addPermanentWidget(m_pStatusLblScriptInfo);
+
     ito::UserOrganizer* uOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
     QLabel* userLabel = new QLabel(tr("User: %1   ").arg(uOrg->getCurrentUserName()));
     userLabel->setToolTip(
@@ -2456,6 +2483,7 @@ void MainWindow::mnuPyPipManager()
 void MainWindow::currentDirectoryChanged()
 {
     QString cd = QDir::cleanPath(QDir::currentPath());
+
     if (m_pStatusLblCurrentDir)
     {
         m_pStatusLblCurrentDir->setText(tr("Current Directory: %1").arg(cd));

@@ -31,6 +31,7 @@
 #include <qstring.h>
 #include <qobject.h>
 #include <qicon.h>
+#include <qmap.h>
 
 namespace ito {
 
@@ -99,6 +100,9 @@ public:
     static QIcon searchIcon(const QString &filename, const SearchFolders &searchFolders = SFAll, const QIcon &fallbackIcon = QIcon());
 
     static QString getAllItomFilesName() { return allItomFilesName; } /*!< name of file filter that bundles are readable files of itom, usually 'Itom Files'. */
+
+    static QMap<QString, QStringList> getDefaultScriptEncodings();
+    static QString getEncodingFromAlias(const QString &alias, bool* found = nullptr);
 
 private:
     IOHelper() {}; /*!< private constructor since this class only contains static method and no instance must be created */

@@ -103,7 +103,7 @@ public:
     RetVal saveFile(bool askFirst = true);
     RetVal saveAsFile(bool askFirst = true);
 
-    RetVal openFile(QString file, bool ignorePresentDocument = false);
+    RetVal openFile(const QString &fileName, bool ignorePresentDocument = false);
 
     bool keepIndentationOnPaste() const;
     void setKeepIndentationOnPaste(bool value);
@@ -179,6 +179,8 @@ private:
 
     RetVal changeFilename(const QString &newFilename);
 
+    QString guessEncoding(const QByteArray &content);
+
     QFileSystemWatcher *m_pFileSysWatcher;
 
     // the following variables are related to the code checker feature of Python
@@ -211,6 +213,12 @@ private:
 
     QSharedPointer<PyCodeFormatter> m_pyCodeFormatter;
     QString m_autoCodeFormatCmd; //!< the current command string for the python auto code formatting.
+
+    //!< this is the encoding of this script, hence,
+    //!< the encoding that was used to load this script from
+    //!< a file and will also be used to store it in a file.
+    QString m_charsetEncoding;
+    bool m_charsetEncodingAutoGuess;
 
     QSharedPointer<FoldingPanel> m_foldingPanel;
     QSharedPointer<CheckerBookmarkPanel> m_checkerBookmarkPanel;

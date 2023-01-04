@@ -506,8 +506,6 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
         textCodec = QTextCodec::codecForLocale();
     }
 
-    AppManagement::setScriptTextCodec(textCodec);
-
     // None of these two is available in Qt5 and according to
     // Qt docu it should not have been used anyway. So
     // we need to find another solution here

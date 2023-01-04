@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2023, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
@@ -24,12 +24,17 @@
 
 #include "../global.h"
 #include "../AppManagement.h"
-#include <qmenu.h>
+#include "../helper/IOHelper.h"
 
+#include <qmenu.h>
 #include <qsettings.h>
+#include <qstringlist.h>
+#include <qtextcodec.h>
 
 namespace ito
 {
+
+    QString WidgetPropEditorGeneral::DefaultCharsetEncoding = "UTF-8";
 
 //----------------------------------------------------------------------------------------------------------------------------------
 WidgetPropEditorGeneral::WidgetPropEditorGeneral(QWidget *parent) :
@@ -38,6 +43,15 @@ WidgetPropEditorGeneral::WidgetPropEditorGeneral(QWidget *parent) :
     ui.setupUi(this);
 
     ui.groupEolMode->setVisible(false);
+
+    // file available text codecs
+    auto codecs = IOHelper::getDefaultScriptEncodings().keys();
+    codecs << DefaultCharsetEncoding;
+
+    codecs.sort(Qt::CaseInsensitive);
+    codecs.removeDuplicates();
+
+    ui.comboEncoding->addItems(codecs);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -80,6 +94,19 @@ void WidgetPropEditorGeneral::readSettings()
     ui.checkSelectLineOnCopyEmpty->setChecked(settings.value("selectLineOnCopyEmpty", true).toBool());
     ui.checkKeepIndentationOnPaste->setChecked(settings.value("keepIndentationOnPaste", true).toBool());
 
+    // encoding
+    QString encoding = settings.value("characterSetEncoding", DefaultCharsetEncoding).toString();
+    encoding = IOHelper::getEncodingFromAlias(encoding, nullptr);
+
+    ui.comboEncoding->setCurrentText(encoding);
+
+    if (ui.comboEncoding->currentIndex() == -1)
+    {
+        ui.comboEncoding->setCurrentText(DefaultCharsetEncoding);
+    }
+
+    ui.checkAutoDetectEncoding->setChecked(settings.value("characterSetEncodingAutoGuess", true).toBool());
+
     settings.endGroup();
 }
 
@@ -104,7 +131,7 @@ void WidgetPropEditorGeneral::writeSettings()
         settings.setValue("eolMode", "EolMac");
     }
 
-    // Indentation
+    // indentation
     settings.setValue("autoIndent", ui.checkAutoIndent->isChecked());
     settings.setValue("indentationUseTabs", ui.checkIndentUseTabs->isChecked());
     settings.setValue("indentationWidth", ui.spinIndentWidth->value());
@@ -113,9 +140,24 @@ void WidgetPropEditorGeneral::writeSettings()
 
     settings.setValue("autoStripTrailingSpacesAfterReturn", ui.checkStripSpacesAfterReturn->isChecked());
 
-    //cut, copy, paste behaviour
+    // cut, copy, paste behaviour
     settings.setValue("selectLineOnCopyEmpty", ui.checkSelectLineOnCopyEmpty->isChecked());
     settings.setValue("keepIndentationOnPaste", ui.checkKeepIndentationOnPaste->isChecked());
+
+    // character set encoding
+    QString encoding = ui.comboEncoding->currentText();
+    encoding = IOHelper::getEncodingFromAlias(encoding, nullptr);
+
+    if (encoding != "")
+    {
+        settings.setValue("characterSetEncoding", encoding);
+    }
+    else
+    {
+        settings.setValue("characterSetEncoding", DefaultCharsetEncoding);
+    }
+
+    settings.setValue("characterSetEncodingAutoGuess", ui.checkAutoDetectEncoding->isChecked());
 
     settings.endGroup();
 }

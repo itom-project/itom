@@ -58,25 +58,4 @@ QTextCodec* AppManagement::m_scriptTextCodec = nullptr;
     return ((ito::UserOrganizer*)m_userOrganizer)->getCurrentUserSettingsFile();
 }
 
-//-------------------------------------------------------------------------------------------
-/*static*/ QTextCodec* AppManagement::getScriptTextCodec()
-{
-    QMutexLocker locker(&m_mutex);
-    if (m_scriptTextCodec)
-    {
-        return m_scriptTextCodec;
-    }
-    else
-    {
-        return QTextCodec::codecForLocale();
-    }
-}
-
-//-------------------------------------------------------------------------------------------
-/*static*/ void AppManagement::setScriptTextCodec(QTextCodec *codec)
-{
-    QMutexLocker locker(&m_mutex);
-    m_scriptTextCodec = codec;
-}
-
 } //end namespace ito
