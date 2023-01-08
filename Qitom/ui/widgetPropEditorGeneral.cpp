@@ -34,8 +34,6 @@
 namespace ito
 {
 
-    QString WidgetPropEditorGeneral::DefaultCharsetEncoding = "UTF-8";
-
 //----------------------------------------------------------------------------------------------------------------------------------
 WidgetPropEditorGeneral::WidgetPropEditorGeneral(QWidget *parent) :
     AbstractPropertyPageWidget(parent)
@@ -45,13 +43,12 @@ WidgetPropEditorGeneral::WidgetPropEditorGeneral(QWidget *parent) :
     ui.groupEolMode->setVisible(false);
 
     // file available text codecs
-    auto codecs = IOHelper::getDefaultScriptEncodings().keys();
-    codecs << DefaultCharsetEncoding;
+    auto codecs = IOHelper::getSupportedScriptEncodings();
 
-    codecs.sort(Qt::CaseInsensitive);
-    codecs.removeDuplicates();
-
-    ui.comboEncoding->addItems(codecs);
+    foreach(const IOHelper::CharsetEncodingItem &item, codecs)
+    {
+        ui.comboEncoding->addItem(item.displayName, item.encodingName);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -95,15 +92,17 @@ void WidgetPropEditorGeneral::readSettings()
     ui.checkKeepIndentationOnPaste->setChecked(settings.value("keepIndentationOnPaste", true).toBool());
 
     // encoding
-    QString encoding = settings.value("characterSetEncoding", DefaultCharsetEncoding).toString();
-    encoding = IOHelper::getEncodingFromAlias(encoding, nullptr);
+    auto defaultEncodingItem = IOHelper::getDefaultScriptEncoding();
+    QString encoding = settings.value("characterSetEncoding", defaultEncodingItem.encodingName).toString();
+    auto encodingItem = IOHelper::getEncodingFromAlias(encoding, nullptr);
+    int idx = ui.comboEncoding->findData(encodingItem.encodingName, Qt::UserRole);
 
-    ui.comboEncoding->setCurrentText(encoding);
-
-    if (ui.comboEncoding->currentIndex() == -1)
+    if (idx == -1)
     {
-        ui.comboEncoding->setCurrentText(DefaultCharsetEncoding);
+        idx = ui.comboEncoding->findData(defaultEncodingItem.encodingName, Qt::UserRole);
     }
+
+    ui.comboEncoding->setCurrentIndex(idx);
 
     ui.checkAutoDetectEncoding->setChecked(settings.value("characterSetEncodingAutoGuess", true).toBool());
 
@@ -145,17 +144,9 @@ void WidgetPropEditorGeneral::writeSettings()
     settings.setValue("keepIndentationOnPaste", ui.checkKeepIndentationOnPaste->isChecked());
 
     // character set encoding
-    QString encoding = ui.comboEncoding->currentText();
-    encoding = IOHelper::getEncodingFromAlias(encoding, nullptr);
-
-    if (encoding != "")
-    {
-        settings.setValue("characterSetEncoding", encoding);
-    }
-    else
-    {
-        settings.setValue("characterSetEncoding", DefaultCharsetEncoding);
-    }
+    QString encoding = ui.comboEncoding->currentData(Qt::UserRole).toString();
+    auto encodingItem = IOHelper::getEncodingFromAlias(encoding, nullptr);
+    settings.setValue("characterSetEncoding", encodingItem.encodingName);
 
     settings.setValue("characterSetEncodingAutoGuess", ui.checkAutoDetectEncoding->isChecked());
 

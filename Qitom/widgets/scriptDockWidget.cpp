@@ -39,6 +39,7 @@
 #include "../ui/dialogReplace.h"
 
 #include <qsignalmapper.h>
+#include <qstatusbar.h>
 
 #include "../ui/dialogIconBrowser.h"
 #include "../Qitom/AppManagement.h"
@@ -1994,7 +1995,39 @@ void ScriptDockWidget::createToolBars()
 //! init status bar \todo right now, this is an empty method
 void ScriptDockWidget::createStatusBar()
 {
+    //QMainWindow *mainWin = getCanvas();
+    //QLabel* lbl = new QLabel("label", this);
+    //QComboBox* cmb = new QComboBox(this);
+    //cmb->addItem("filter 1");
+    //cmb->addItem("filter 2");
+    //QWidget *wid = new QWidget(this);
+    //QHBoxLayout *hbox = new QHBoxLayout(this);
+    //wid->setLayout(hbox);
+    //wid->setContentsMargins(0, 0, 0, 0);
+    //hbox->setSpacing(0);
+    //hbox->setContentsMargins(0, 0, 0, 0);
+    //hbox->addWidget(lbl);
+    //hbox->addWidget(cmb);
+    //mainWin->statusBar()->addPermanentWidget(wid);
+    ////mainWin->statusBar()->showMessage("hello");
+    ////mainWin->dumpObjectTree();
 }
+
+//void ScriptDockWidget::focusOutEvent(QFocusEvent *event)
+//{
+//    qDebug() << "focusOutEvent " << this;
+//    AbstractDockWidget::focusOutEvent(event);
+//}
+//void ScriptDockWidget::focusInEvent(QFocusEvent *event)
+//{
+//    qDebug() << "focusInEvent " << this;
+//    AbstractDockWidget::focusInEvent(event);
+//}
+//
+//void ScriptDockWidget::windowStateChanged(bool windowNotToolbox)
+//{
+//
+//}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! activates tab with script whose filename corresponds to the filename parameter (or the UID, if >= 0 for scripts without current filename).

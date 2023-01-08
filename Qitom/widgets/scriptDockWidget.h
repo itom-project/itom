@@ -107,6 +107,9 @@ protected:
     void createToolBars();
     void createStatusBar();
     void closeEvent(QCloseEvent *event);
+    /*void focusOutEvent(QFocusEvent *event);
+    void focusInEvent(QFocusEvent *event);
+    virtual void windowStateChanged(bool windowNotToolbox);*/
 
     RetVal closeTab(int index, bool saveFirst = true, bool closeScriptWidgetIfLastTabClosed = true);
     RetVal saveTab(int index, bool forceSaveAs = false, bool askFirst = true);
@@ -118,6 +121,7 @@ private:
     WidgetFindWord *m_pWidgetFindWord;
     DialogReplace *m_pDialogReplace;
     BookmarkModel* m_pBookmarkModel; //! borrowed reference to the bookmark model. This model is owned by the script editor organizer.
+    //QWidget* m_pStatusBarWidget;
     
     int m_actTabIndex;                  /*!<  member indicating the tab-index of the active script editor */
 

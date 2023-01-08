@@ -48,9 +48,6 @@ protected:
 private:
     Ui::WidgetPropEditorGeneral ui;
 
-    static QString DefaultCharsetEncoding;
-    
-
 signals:
 
 public slots:

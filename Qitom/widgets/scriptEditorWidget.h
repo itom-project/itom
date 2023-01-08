@@ -49,6 +49,7 @@
 #include <qregularexpression.h>
 #include "../models/outlineItem.h"
 #include "../models/bookmarkModel.h"
+#include "../helper/IOHelper.h"
 
 #include <QtPrintSupport/qprinter.h>
 
@@ -179,7 +180,7 @@ private:
 
     RetVal changeFilename(const QString &newFilename);
 
-    QString guessEncoding(const QByteArray &content);
+    IOHelper::CharsetEncodingItem guessEncoding(const QByteArray &content) const;
 
     QFileSystemWatcher *m_pFileSysWatcher;
 
@@ -217,7 +218,7 @@ private:
     //!< this is the encoding of this script, hence,
     //!< the encoding that was used to load this script from
     //!< a file and will also be used to store it in a file.
-    QString m_charsetEncoding;
+    IOHelper::CharsetEncodingItem m_charsetEncoding;
     bool m_charsetEncodingAutoGuess;
 
     QSharedPointer<FoldingPanel> m_foldingPanel;

@@ -31,7 +31,7 @@
 #include <qstring.h>
 #include <qobject.h>
 #include <qicon.h>
-#include <qmap.h>
+#include <qlist.h>
 
 namespace ito {
 
@@ -75,6 +75,34 @@ public:
     };
     Q_DECLARE_FLAGS(SearchFolders, SearchFolder)
 
+    /** This struct defines all necessary information for a possible charset encoding.
+    */
+    struct CharsetEncodingItem
+    {
+        CharsetEncodingItem() :
+            encodingName(""), displayName(""), displayNameShort(""), bom(""), userDefined(false)
+        {}
+
+        //!< the name that is accepted by QTextCodec or QStringConverter.
+        //!< This is also used as value in the itom settings.
+        QString encodingName;
+
+        //!< the name used as display name in a config dialog
+        QString displayName;
+
+        //!< the short version, e.g. for a status bar
+        QString displayNameShort;
+
+        //!< all possible aliases, e.g. in Python scripts (coding=...)
+        QStringList aliases;
+
+        //!< the Byte-Order-Mark used to automatically detect this encoding (or empty, if not used)
+        QByteArray bom;
+
+        //!< false if part of the officially supported list of encodings, else true
+        bool userDefined;
+    };
+
 
     static RetVal openGeneralFile(const QString &generalFileName, bool openUnknownsWithExternalApp = true, bool showMessages = false, QWidget* parent = NULL, const char* errorSlotMemberOfParent = NULL, bool globalNotLocalWorkspace = true);
 
@@ -101,8 +129,9 @@ public:
 
     static QString getAllItomFilesName() { return allItomFilesName; } /*!< name of file filter that bundles are readable files of itom, usually 'Itom Files'. */
 
-    static QMap<QString, QStringList> getDefaultScriptEncodings();
-    static QString getEncodingFromAlias(const QString &alias, bool* found = nullptr);
+    static QList<CharsetEncodingItem> getSupportedScriptEncodings();
+    static CharsetEncodingItem getDefaultScriptEncoding();
+    static CharsetEncodingItem getEncodingFromAlias(const QString &alias, bool* found = nullptr);
 
 private:
     IOHelper() {}; /*!< private constructor since this class only contains static method and no instance must be created */
@@ -110,6 +139,7 @@ private:
     IOHelper(const IOHelper &) : QObject() {};
 
     static QString allItomFilesName;
+    static QList<CharsetEncodingItem> supportedScriptEncodings;
 
 };
 
