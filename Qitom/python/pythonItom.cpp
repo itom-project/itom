@@ -277,7 +277,9 @@ collectionFile : str, optional \n\
     If given, the indicated Qt collection file (.qch) will be loaded in the help viewer.\n\
     Per default, the user documentation is loaded (pass an empty string or nothing).\n\
 showUrl : str, optional \n\
-    Shows the document with the given URL. Per default, the index is shown (pass an empty string or nothing).");
+    Shows the document with the given URL inside the collection file (e.g.\n\
+    qthelp://org.sphinx.itomdocumentation.4.2.0/doc/02_installation/install_get_this_help.html).\n\
+    Per default, the index is shown (pass an empty string or nothing).");
 PyObject* PythonItom::PyShowHelpViewer(PyObject* pSelf, PyObject* pArgs, PyObject* pKwds)
 {
     const char* kwlist[] = {"collectionFile", "showUrl", NULL};
