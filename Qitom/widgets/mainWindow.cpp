@@ -740,15 +740,25 @@ void MainWindow::addAbstractDock(
 
         if (sdw)
         {
-            connect(sdw, &ScriptDockWidget::statusBarInformationChanged, 
-                [=](const QString &encoding, int line, int column) 
+            connect(sdw, &ScriptDockWidget::dockStateChanged, [=](bool docked)
                 {
-                    if (m_pStatusLblScriptInfo)
+                    if (docked)
                     {
-                        m_pStatusLblScriptInfo->setText(tr("Ln %1, Col %2, %3").arg(line).arg(column).arg(encoding));
+                        connect(
+                            sdw, 
+                            &ScriptDockWidget::statusBarInformationChanged, 
+                            this, 
+                            &MainWindow::scriptStatusBarInformationChanged
+                        );
+                    }
+                    else
+                    {
+                        disconnect(sdw, &ScriptDockWidget::statusBarInformationChanged, this, 0);
                     }
                 }
             );
+
+            
         }
 
         if (area == Qt::NoDockWidgetArea)
@@ -763,6 +773,14 @@ void MainWindow::addAbstractDock(
             // qDebug() << "restoreDockWidget:" << restoreDockWidget(dockWidget); //does not work
             // until now, since the state of docked script windows is not saved. they are deleted
             // before destructing the main window.
+
+            // make the connection right here, since dockStateChanged is only called after the next change
+            connect(
+                sdw,
+                &ScriptDockWidget::statusBarInformationChanged,
+                this,
+                &MainWindow::scriptStatusBarInformationChanged
+            );
         }
     }
 }
@@ -784,11 +802,27 @@ void MainWindow::removeAbstractDock(AbstractDockWidget* dockWidget)
 
         if (sdw)
         {
-            disconnect(sdw, &ScriptDockWidget::statusBarInformationChanged,this, 0);
+            disconnect(sdw, &ScriptDockWidget::statusBarInformationChanged, this, 0);
         }
 
         dockWidget->setParent(NULL);
         removeDockWidget(dockWidget);
+    }
+}
+
+//-------------------------------------------------------------------------------------
+void MainWindow::scriptStatusBarInformationChanged(const QString &encoding, int line, int column)
+{
+    if (m_pStatusLblScriptInfo)
+    {
+        if (line >= 0 && column >= 0)
+        {
+            m_pStatusLblScriptInfo->setText(tr("Ln %1, Col %2, %3 ").arg(line).arg(column).arg(encoding));
+        }
+        else
+        {
+            m_pStatusLblScriptInfo->setText("");
+        }
     }
 }
 

@@ -49,6 +49,7 @@
 namespace ito {
 
 /*static*/ QPointer<ScriptEditorWidget> ScriptDockWidget::currentSelectedCallstackLineEditor = QPointer<ScriptEditorWidget>();
+/*static*/ const char* ScriptDockWidget::statusBarStatePropertyName = "_statusBarState";
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
@@ -72,11 +73,11 @@ namespace ito {
 
     \sa AbstractDockWidget::AbstractDockWidget
 */
-ScriptDockWidget::ScriptDockWidget(const QString &title, const QString &objName, 
-        bool docked, bool isDockAvailable, 
-        const ScriptEditorActions &commonActions, 
-        BookmarkModel *bookmarkModel,
-        QWidget* parent, Qt::WindowFlags /*flags*/) :
+ScriptDockWidget::ScriptDockWidget(const QString &title, const QString &objName,
+    bool docked, bool isDockAvailable,
+    const ScriptEditorActions &commonActions,
+    BookmarkModel *bookmarkModel,
+    QWidget* parent, Qt::WindowFlags /*flags*/) :
     AbstractDockWidget(docked, isDockAvailable, floatingWindow, movingEnabled, title, objName, parent),
     m_tab(nullptr),
     m_pWidgetFindWord(nullptr),
@@ -86,7 +87,8 @@ ScriptDockWidget::ScriptDockWidget(const QString &title, const QString &objName,
     m_winMenu(NULL),
     m_commonActions(commonActions),
     m_pBookmarkModel(bookmarkModel),
-    m_outlineShowNavigation(true)
+    m_outlineShowNavigation(true),
+    m_pStatusBarWidget(nullptr)
 {
     qRegisterMetaType<QSharedPointer<OutlineItem> >("QSharedPointer<OutlineItem>");
 
@@ -1235,7 +1237,47 @@ void ScriptDockWidget::currentTabChanged(int index)
 
     tabFilenameOrModificationChanged(index);
 
-    emit statusBarInformationChanged("UTF-8", index, 0);
+    auto currentEditor = getCurrentEditor();
+
+    if (currentEditor)
+    {
+        currentScriptCursorPositionChanged();
+
+        // disconnect all previous connections
+        disconnect(this, SLOT(currentScriptCursorPositionChanged()));
+
+        connect(currentEditor, &ScriptEditorWidget::cursorPositionChanged, this, &ScriptDockWidget::currentScriptCursorPositionChanged);
+    }
+    else
+    {
+        emit statusBarInformationChanged("", -1, -1);
+    }
+}
+
+//-------------------------------------------------------------------------------------
+void ScriptDockWidget::currentScriptCursorPositionChanged()
+{
+    auto currentEditor = getCurrentEditor();
+
+    if (currentEditor)
+    {
+        auto charsetEncoding = currentEditor->charsetEncoding();
+        int line = currentEditor->currentLineNumber() + 1;
+        int col = currentEditor->currentColumnNumber() + 1;
+
+        emit statusBarInformationChanged(
+            charsetEncoding.displayNameShort,
+            line,
+            col
+        );
+
+        m_pStatusBarWidget->setText(tr("Ln %1, Col %2, %3 ").arg(line).arg(col).arg(charsetEncoding.displayNameShort));
+    }
+    else
+    {
+        emit statusBarInformationChanged("", -1, -1);
+        m_pStatusBarWidget->setText("");
+    }
 }
 
 //-------------------------------------------------------------------------------------
@@ -1995,39 +2037,56 @@ void ScriptDockWidget::createToolBars()
 //! init status bar \todo right now, this is an empty method
 void ScriptDockWidget::createStatusBar()
 {
-    //QMainWindow *mainWin = getCanvas();
-    //QLabel* lbl = new QLabel("label", this);
-    //QComboBox* cmb = new QComboBox(this);
-    //cmb->addItem("filter 1");
-    //cmb->addItem("filter 2");
-    //QWidget *wid = new QWidget(this);
-    //QHBoxLayout *hbox = new QHBoxLayout(this);
-    //wid->setLayout(hbox);
-    //wid->setContentsMargins(0, 0, 0, 0);
-    //hbox->setSpacing(0);
-    //hbox->setContentsMargins(0, 0, 0, 0);
-    //hbox->addWidget(lbl);
-    //hbox->addWidget(cmb);
-    //mainWin->statusBar()->addPermanentWidget(wid);
-    ////mainWin->statusBar()->showMessage("hello");
-    ////mainWin->dumpObjectTree();
+    m_pStatusBarWidget = new QLabel(this);
+    m_pStatusBarWidget->setProperty(statusBarStatePropertyName, 0);    
 }
 
-//void ScriptDockWidget::focusOutEvent(QFocusEvent *event)
-//{
-//    qDebug() << "focusOutEvent " << this;
-//    AbstractDockWidget::focusOutEvent(event);
-//}
-//void ScriptDockWidget::focusInEvent(QFocusEvent *event)
-//{
-//    qDebug() << "focusInEvent " << this;
-//    AbstractDockWidget::focusInEvent(event);
-//}
-//
-//void ScriptDockWidget::windowStateChanged(bool windowNotToolbox)
-//{
-//
-//}
+//-------------------------------------------------------------------------------------
+void ScriptDockWidget::windowStateChanged(bool windowNotToolbox)
+{
+    int state = m_pStatusBarWidget->property(statusBarStatePropertyName).toInt();
+
+    if (windowNotToolbox)
+    {
+        switch (state)
+        {
+        case 0: //not added yet
+        {
+            QStatusBar* sb = getCanvas()->statusBar();
+            sb->addPermanentWidget(m_pStatusBarWidget);
+            sb->setVisible(true);
+            m_pStatusBarWidget->setVisible(true);
+            m_pStatusBarWidget->setProperty(statusBarStatePropertyName, 1);
+            break;
+        }
+        case 1: //already added to own status bar
+            break;
+        }
+    }
+    else
+    {
+        switch (state)
+        {
+        case 0: //not added yet
+        {
+            // todo: add to status bar of main window
+            break;
+        }
+        case 1: // currently added to own status bar -> shift it to main window
+        {
+            QStatusBar* sb = getCanvas()->statusBar();
+            sb->removeWidget(m_pStatusBarWidget);
+            sb->setVisible(false);
+            m_pStatusBarWidget->setProperty(statusBarStatePropertyName, 0);
+        }
+        break;
+        }
+    }
+
+    // force the emit of new line, column and encoding updates
+    currentScriptCursorPositionChanged();
+    
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! activates tab with script whose filename corresponds to the filename parameter (or the UID, if >= 0 for scripts without current filename).

@@ -139,6 +139,8 @@ public:
     //!< for a possible method / function, this line belongs to.
     bool currentLineCanHaveDocstring() const;
 
+    IOHelper::CharsetEncodingItem charsetEncoding() const { return m_charsetEncoding; }
+
     static QString filenameFromUID(int UID, bool &found);
 
 protected:
