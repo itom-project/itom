@@ -249,7 +249,7 @@ void CheckerBookmarkPanel::mouseMoveEvent(QMouseEvent *e)
         //all messages are of the same type
         foreach(const CodeCheckerItem &cm, markers)
         {
-            texts.append(cm.checkerItemText(addShortType));
+            texts.append(cm.checkerItemText(addShortType, 100));
         }
 
         QString text = texts.join("\n");
