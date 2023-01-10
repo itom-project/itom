@@ -177,7 +177,7 @@ public slots:
 
     void showInfoMessageLine( QString text, QString winKey = "" );
 
-	void showAssistant(const QString &collectionFile = "");
+    void showAssistant(const QString& collectionFile = "", const QString& showUrl = "");
 
 	void setCentralWidgetsSizes(const QVector<int> &sizes);
 
