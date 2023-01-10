@@ -131,11 +131,16 @@ inserted into the script **create_doc.py**.
 Show documentation in |itom|
 -----------------------------
 
-When clicking the *help*-button in |itom| or pressing **F1**, |Qt|'s assistant 
-is opened with a set of documentation files. At first, |itom|
-checks your |itom| installation for various documentation files. Their latest version 
-is then copied into the **help** folder of the build-directory.
-The search is executed for all **.qch**-files that are located in the **docs/userDoc**-directory.
+When clicking the *help*-button in |itom| or pressing **F1**, |Qt|'s assistant
+is opened with a set of documentation files. At first, |itom| checks your |itom|
+installation for various documentation files. Their latest version is then
+copied into the **help** folder of the build-directory. The search is executed
+for all **.qch**-files in the following subdirectories of the **docs**
+directory:
+
+* **userDoc**: The user documentation for itom.
+* **pluginDoc**: The plugin documentation for all currently available plugins.
+* **additionalDocs**: Additional **.qch**-files can be placed here and will be appended to the documentation.
 
 After having copied the files, a collection-file is generated (containing all qch-files) 
 and displayed in the assistant. If you have a setup version of |itom|, the help-folder 

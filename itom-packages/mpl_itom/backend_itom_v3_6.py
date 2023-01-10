@@ -1386,7 +1386,8 @@ class ToolCopyToClipboardItom(backend_tools.ToolCopyToClipboardBase):
         self.canvas.copyToClipboard(self.canvas._dpi_ratio)
 
 
-FigureManagerItom._toolbar2_class = NavigationToolbar2Itom
+# must be None, not NavigationToolbar2Itom!
+FigureManagerItom._toolbar2_class = None
 # must be None, not ToolbarItom!
 FigureManagerItom._toolmanager_toolbar_class = None
 

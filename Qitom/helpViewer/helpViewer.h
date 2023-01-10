@@ -50,7 +50,8 @@ public:
     ~HelpViewer();
 
     void setCollectionFile(const QString &collectionFile);
-	void getHelpViewer(const QWidget &helpViewer);
+    void getHelpViewer(const QWidget& helpViewer);
+    void showUrl(const QString& url);
 
 private:
     QWebEngineView *m_pView;
