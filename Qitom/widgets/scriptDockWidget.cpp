@@ -1854,32 +1854,6 @@ void ScriptDockWidget::lastFileOpen(const QString &path)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//void ScriptDockWidget::windowStateChanged(bool windowNotToolbox)
-//{
-//    //Qt::ShortcutContext context = Qt::WidgetWithChildrenShortcut;
-//    //if (windowNotToolbox)
-//    //{
-//    //    context = Qt::WindowShortcut;
-//    //}
-//
-//    //m_findTextExprAction->setShortcutContext(context);
-//    //m_gotoAction->setShortcutContext(context);
-//    //m_openIconBrowser->setShortcutContext(context);
-//    //m_uncommentAction->setShortcutContext(context);
-//    //m_commentAction->setShortcutContext(context);
-//    //m_redoAction->setShortcutContext(context);
-//    //m_undoAction->setShortcutContext(context);
-//    //m_pasteAction->setShortcutContext(context);
-//    //m_copyAction->setShortcutContext(context);
-//    //m_cutAction->setShortcutContext(context);
-//    ////m_saveScriptAction->setShortcutContext(context);
-//    ////m_saveScriptAsAction->setShortcutContext(context);
-//    //m_newScriptAction->setShortcutContext(context);
-//    //m_tabCloseAction->setShortcutContext(context);
-//
-//}
-
-//----------------------------------------------------------------------------------------------------------------------------------
 //! create menus
 void ScriptDockWidget::createMenus()
 {
@@ -2084,7 +2058,7 @@ void ScriptDockWidget::windowStateChanged(bool windowNotToolbox)
     }
 
     // force the emit of new line, column and encoding updates
-    currentScriptCursorPositionChanged();
+    QTimer::singleShot(20, this, &ScriptDockWidget::currentScriptCursorPositionChanged);
     
 }
 
@@ -2735,6 +2709,7 @@ void ScriptDockWidget::closeEvent(QCloseEvent *event)
     else
     {
         event->accept();
+        emit statusBarInformationChanged("", -1, -1);
         emit (removeAndDeleteScriptDockWidget(this));
     }
 }

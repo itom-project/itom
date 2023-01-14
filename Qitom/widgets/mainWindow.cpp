@@ -805,7 +805,7 @@ void MainWindow::removeAbstractDock(AbstractDockWidget* dockWidget)
             disconnect(sdw, &ScriptDockWidget::statusBarInformationChanged, this, 0);
         }
 
-        dockWidget->setParent(NULL);
+        dockWidget->setParent(nullptr);
         removeDockWidget(dockWidget);
     }
 }
