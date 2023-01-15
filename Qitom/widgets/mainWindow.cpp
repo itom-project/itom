@@ -774,13 +774,16 @@ void MainWindow::addAbstractDock(
             // until now, since the state of docked script windows is not saved. they are deleted
             // before destructing the main window.
 
-            // make the connection right here, since dockStateChanged is only called after the next change
-            connect(
-                sdw,
-                &ScriptDockWidget::statusBarInformationChanged,
-                this,
-                &MainWindow::scriptStatusBarInformationChanged
-            );
+            if (sdw)
+            {
+                // make the connection right here, since dockStateChanged is only called after the next change
+                connect(
+                    sdw,
+                    &ScriptDockWidget::statusBarInformationChanged,
+                    this,
+                    &MainWindow::scriptStatusBarInformationChanged
+                );
+            }
         }
     }
 }
@@ -811,10 +814,34 @@ void MainWindow::removeAbstractDock(AbstractDockWidget* dockWidget)
 }
 
 //-------------------------------------------------------------------------------------
-void MainWindow::scriptStatusBarInformationChanged(const QString &encoding, int line, int column)
+void MainWindow::scriptStatusBarInformationChanged(const QString &scriptDockWidgetObjectName, const QString &encoding, int line, int column)
 {
     if (m_pStatusLblScriptInfo)
     {
+        QObject* widget = QApplication::focusWidget();
+        ScriptDockWidget *sdw = nullptr;  
+        QString currentScriptDockWidgetObjectName;
+
+        while (widget)
+        {
+            sdw = qobject_cast<ScriptDockWidget*>(widget);
+
+            if (sdw)
+            {
+                currentScriptDockWidgetObjectName = sdw->objectName();
+                break;
+            }
+
+            widget = widget->parent();
+        }
+
+        if (currentScriptDockWidgetObjectName != "" && currentScriptDockWidgetObjectName != scriptDockWidgetObjectName)
+        {
+            // this information belongs to a script dock widget, that does currently not
+            // have the focus. Ignore it.
+            return;
+        }
+
         if (line >= 0 && column >= 0)
         {
             m_pStatusLblScriptInfo->setText(tr("Ln %1, Col %2, %3 ").arg(line).arg(column).arg(encoding));

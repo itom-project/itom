@@ -1250,7 +1250,7 @@ void ScriptDockWidget::currentTabChanged(int index)
     }
     else
     {
-        emit statusBarInformationChanged("", -1, -1);
+        emit statusBarInformationChanged(objectName(), "", -1, -1);
     }
 }
 
@@ -1266,6 +1266,7 @@ void ScriptDockWidget::currentScriptCursorPositionChanged()
         int col = currentEditor->currentColumnNumber() + 1;
 
         emit statusBarInformationChanged(
+            objectName(),
             charsetEncoding.displayNameShort,
             line,
             col
@@ -1275,7 +1276,7 @@ void ScriptDockWidget::currentScriptCursorPositionChanged()
     }
     else
     {
-        emit statusBarInformationChanged("", -1, -1);
+        emit statusBarInformationChanged(objectName(), "", -1, -1);
         m_pStatusBarWidget->setText("");
     }
 }
@@ -2057,7 +2058,11 @@ void ScriptDockWidget::windowStateChanged(bool windowNotToolbox)
         }
     }
 
-    // force the emit of new line, column and encoding updates
+    // force the emit of new line, column and encoding updates.
+    // This has to be done with a small delay, since the main window connects
+    // to the statusBarInformationChanged signal after the call to this method.
+    // However, this connection has to be established before currentScriptCursorPositionChanged
+    // is called, to send the current values to the main window (if docked).
     QTimer::singleShot(20, this, &ScriptDockWidget::currentScriptCursorPositionChanged);
     
 }
@@ -2709,7 +2714,7 @@ void ScriptDockWidget::closeEvent(QCloseEvent *event)
     else
     {
         event->accept();
-        emit statusBarInformationChanged("", -1, -1);
+        emit statusBarInformationChanged(objectName(), "", -1, -1);
         emit (removeAndDeleteScriptDockWidget(this));
     }
 }

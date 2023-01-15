@@ -223,7 +223,7 @@ private slots:
     void mnuViewAboutToShow();
     void mnuFigureAboutToShow();
     void raiseFigureByHandle(int handle);
-    void scriptStatusBarInformationChanged(const QString &encoding, int line, int column);
+    void scriptStatusBarInformationChanged(const QString &scriptDockWidgetObjectName, const QString &encoding, int line, int column);
 
 };
 
