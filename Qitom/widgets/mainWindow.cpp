@@ -814,28 +814,30 @@ void MainWindow::removeAbstractDock(AbstractDockWidget* dockWidget)
 }
 
 //-------------------------------------------------------------------------------------
-void MainWindow::scriptStatusBarInformationChanged(const QString &scriptDockWidgetObjectName, const QString &encoding, int line, int column)
+void MainWindow::scriptStatusBarInformationChanged(
+    const QPointer<ScriptDockWidget> sourceDockWidget,
+    const QString& encoding,
+    int line,
+    int column)
 {
     if (m_pStatusLblScriptInfo)
     {
         QObject* widget = QApplication::focusWidget();
-        ScriptDockWidget *sdw = nullptr;  
-        QString currentScriptDockWidgetObjectName;
+        ScriptDockWidget *focussedDockWidget = nullptr;  
 
         while (widget)
         {
-            sdw = qobject_cast<ScriptDockWidget*>(widget);
+            focussedDockWidget = qobject_cast<ScriptDockWidget*>(widget);
 
-            if (sdw)
+            if (focussedDockWidget)
             {
-                currentScriptDockWidgetObjectName = sdw->objectName();
                 break;
             }
 
             widget = widget->parent();
         }
 
-        if (currentScriptDockWidgetObjectName != "" && currentScriptDockWidgetObjectName != scriptDockWidgetObjectName)
+        if (focussedDockWidget && sourceDockWidget && focussedDockWidget != sourceDockWidget.data())
         {
             // this information belongs to a script dock widget, that does currently not
             // have the focus. Ignore it.

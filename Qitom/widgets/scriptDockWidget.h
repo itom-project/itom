@@ -226,7 +226,11 @@ signals:
 
     void addGoBackNavigationItem(const GoBackNavigationItem &item);
 
-    void statusBarInformationChanged(const QString &scriptDockWidgetObjectName, const QString &encoding, int line, int column);
+    void statusBarInformationChanged(
+        const QPointer<ScriptDockWidget> sourceDockWidget, 
+        const QString &encoding, 
+        int line, 
+        int column);
 
 private slots:
     void tabContextMenuEvent (QContextMenuEvent * event);

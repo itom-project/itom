@@ -1250,7 +1250,7 @@ void ScriptDockWidget::currentTabChanged(int index)
     }
     else
     {
-        emit statusBarInformationChanged(objectName(), "", -1, -1);
+        emit statusBarInformationChanged(this, "", -1, -1);
     }
 }
 
@@ -1266,7 +1266,7 @@ void ScriptDockWidget::currentScriptCursorPositionChanged()
         int col = currentEditor->currentColumnNumber() + 1;
 
         emit statusBarInformationChanged(
-            objectName(),
+            this,
             charsetEncoding.displayNameShort,
             line,
             col
@@ -1276,7 +1276,7 @@ void ScriptDockWidget::currentScriptCursorPositionChanged()
     }
     else
     {
-        emit statusBarInformationChanged(objectName(), "", -1, -1);
+        emit statusBarInformationChanged(this, "", -1, -1);
         m_pStatusBarWidget->setText("");
     }
 }
@@ -2023,6 +2023,8 @@ void ScriptDockWidget::windowStateChanged(bool windowNotToolbox)
 
     if (windowNotToolbox)
     {
+        m_pStatusBarWidget->setVisible(true);
+
         switch (state)
         {
         case 0: //not added yet
@@ -2030,7 +2032,6 @@ void ScriptDockWidget::windowStateChanged(bool windowNotToolbox)
             QStatusBar* sb = getCanvas()->statusBar();
             sb->addPermanentWidget(m_pStatusBarWidget);
             sb->setVisible(true);
-            m_pStatusBarWidget->setVisible(true);
             m_pStatusBarWidget->setProperty(statusBarStatePropertyName, 1);
             break;
         }
@@ -2040,6 +2041,8 @@ void ScriptDockWidget::windowStateChanged(bool windowNotToolbox)
     }
     else
     {
+        m_pStatusBarWidget->setVisible(false);
+
         switch (state)
         {
         case 0: //not added yet
@@ -2050,8 +2053,8 @@ void ScriptDockWidget::windowStateChanged(bool windowNotToolbox)
         case 1: // currently added to own status bar -> shift it to main window
         {
             QStatusBar* sb = getCanvas()->statusBar();
-            sb->removeWidget(m_pStatusBarWidget);
             sb->setVisible(false);
+            sb->removeWidget(m_pStatusBarWidget);
             m_pStatusBarWidget->setProperty(statusBarStatePropertyName, 0);
         }
         break;
@@ -2714,7 +2717,7 @@ void ScriptDockWidget::closeEvent(QCloseEvent *event)
     else
     {
         event->accept();
-        emit statusBarInformationChanged(objectName(), "", -1, -1);
+        emit statusBarInformationChanged(this, "", -1, -1);
         emit (removeAndDeleteScriptDockWidget(this));
     }
 }
