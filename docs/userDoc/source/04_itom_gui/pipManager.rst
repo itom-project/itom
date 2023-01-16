@@ -64,22 +64,26 @@ The radio buttons in the group **Install** provide four different options
 to install a package:
 
 1. Install a package from a modern wheel archive file (*whl*). Indicate the path
-   to the *whl* file by clicking the tool button below.
+    to the *whl* file by clicking the tool button below.
 2. Install a package from a tar.gz source archive. Indicate the path
-   to the *tar.gz* file by clicking the tool button below.
+    to the *tar.gz* file by clicking the tool button below.
 3. Indicate the name of the package only and let the package manager search
-   the official python package index (https://pypi.python.org) for the newest
-   version of this package. If found, the package is downloaded and automatically
-   installed.
+    the official python package index (https://pypi.python.org) for the newest
+    version of this package. If found, the package is downloaded and automatically
+    installed.
 4. It is also possible to create a **requirements.txt** file and list all
-   packages, that should be installed, in separated lines. It is further possible
-   to append further versions constraints for each package in the text file.
-   Then pass the path to this **requirements.txt** file by clicking the tool
-   button. Each package is then tried to be found (either from the official
-   python package index and / or from the path given in *find links*),
-   downloaded (if necessary) and installed (or upgraded). An upgrade is
-   only done if the version constraint in the requirements.txt file is properly
-   set.
+    packages, that should be installed, in separated lines. It is further possible
+    to append further versions constraints for each package in the text file.
+    Then pass the path to this **requirements.txt** file by clicking the tool
+    button. Each package is then tried to be found (either from the official
+    python package index and / or from the path given in *find links*),
+    downloaded (if necessary) and installed (or upgraded). An upgrade is
+    only done if the version constraint in the requirements.txt file is properly
+    set.
+5. A package can be installed in `"editable" or "develop" mode <https://packaging.python.org/en/latest/guides/distributing-packages-using-setuptools/#working-in-development-mode>`_ to work on it. 
+    In this case, it is not installed in the Python directory, but executed 
+    directly from the source directory. 
+    This allows work to be done on the sources without having to install it again. 
 
 See the next section for more information about the ideal package source.
 
