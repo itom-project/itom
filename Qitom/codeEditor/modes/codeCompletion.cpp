@@ -740,7 +740,7 @@ Checks if the event's key and modifiers make the completion shortcut
 */
 bool CodeCompletionMode::isShortcut(QKeyEvent *e) const
 {
-#if Q_OS_DARWIN
+#ifdef __APPLE__
     Qt::KeyboardModifier modifier = Qt::MetaModifier;
 #else
     Qt::KeyboardModifier modifier = Qt::ControlModifier;
