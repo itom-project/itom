@@ -25,6 +25,7 @@
 
 #include "workspaceDockWidget.h"
 #include "callStackDockWidget.h"
+#include "scriptDockWidget.h"
 #include "consoleWidget.h"
 #include "AIManagerWidget.h"
 #include "fileSystemDockWidget.h"
@@ -223,7 +224,12 @@ private slots:
     void mnuViewAboutToShow();
     void mnuFigureAboutToShow();
     void raiseFigureByHandle(int handle);
-    void scriptStatusBarInformationChanged(const QString &scriptDockWidgetObjectName, const QString &encoding, int line, int column);
+
+    void scriptStatusBarInformationChanged(
+        const QPointer<ScriptDockWidget> sourceDockWidget,
+        const QString& encoding,
+        int line,
+        int column);
 
 };
 
