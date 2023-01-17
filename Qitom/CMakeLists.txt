@@ -770,11 +770,13 @@ if(APPLE)
     # Copy files into app bundle after build
     itom_copy_type_to_bundle_nonrec(${target_name} "${CMAKE_CURRENT_BINARY_DIR}/../" "" ".dylib")
     itom_copy_type_to_bundle_nonrec(${target_name} "${CMAKE_CURRENT_BINARY_DIR}/../" "" ".py")
+	itom_copy_type_to_bundle_nonrec(${target_name} "${CMAKE_CURRENT_BINARY_DIR}/../" "" ".rcc")
     itom_copy_to_bundle(${target_name} "${CMAKE_CURRENT_BINARY_DIR}/../itom-packages" "itom-packages")
     itom_copy_to_bundle(${target_name} "${CMAKE_CURRENT_BINARY_DIR}/../plugins" "plugins")
     itom_copy_to_bundle(${target_name} "${CMAKE_CURRENT_BINARY_DIR}/../designer" "designer")
     itom_copy_to_bundle(${target_name} "${CMAKE_CURRENT_BINARY_DIR}/../help" "help")
     itom_copy_to_bundle(${target_name} "${CMAKE_CURRENT_BINARY_DIR}/../demo" "../demo")
+    itom_copy_to_bundle(${target_name} "${CMAKE_CURRENT_BINARY_DIR}/../itomSettings" "itomSettings")
 else(APPLE)
     # Executable for WINDOWS and LINUX
     add_executable(${target_name}

@@ -2,6 +2,7 @@ breathe
 matplotlib
 numpydoc
 pandas
+openpyxl
 plotly
 tables
 pytest
