@@ -19,7 +19,7 @@
 # along with itom. If not, see <http://www.gnu.org/licenses/>.
      
 cmake_minimum_required(VERSION 3.1)
-     
+
 project(itom)
   
 message(STATUS "--------------- PROJECT itom -----------------")
@@ -76,7 +76,6 @@ add_subdirectory(plot)
 add_subdirectory(itomWidgets)
 add_subdirectory(Qitom)
 add_subdirectory(iconThemes)
-
 if(BUILD_UNITTEST)
     #put this as last, since gtest is globally changing many compiler flags
     add_subdirectory(gtest-1.10.0)

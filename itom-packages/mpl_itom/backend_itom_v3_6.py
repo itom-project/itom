@@ -40,7 +40,7 @@ import weakref
 
 # itom specific imports (end)
 
-backend_version = "3.2.0"
+backend_version = "3.2.1"
 DEBUG = False
 
 # SPECIAL_KEYS are keys that do *not* return their unicode name
@@ -369,16 +369,14 @@ class FigureCanvasItom(FigureCanvasBase):
         Also, the origin is different and needs to be corrected.
 
         """
-        dpi_ratio = self._dpi_ratio
-
         # flip y so y=0 is bottom of canvas
         if self.figure is not None:
-            y = self.figure.bbox.height / dpi_ratio - y
+            y = self.figure.bbox.height - y
         else:
             # figure has already been closed.
             y, x = 0, 0
 
-        return x * dpi_ratio, y * dpi_ratio
+        return x, y
 
     def mouseEvent(self, eventType, x, y, button):
         x, y = self.mouseEventCoords(x, y)
@@ -593,7 +591,7 @@ class FigureCanvasItom(FigureCanvasBase):
         try:
             if rect:
                 self.matplotlibWidgetUiItem.call(
-                    "paintRect", True, *(pt / self._dpi_ratio for pt in rect)
+                    "paintRect", True, *(pt / (1+0*self._dpi_ratio) for pt in rect)
                 )
             else:
                 self.matplotlibWidgetUiItem.call("paintRect", False, 0, 0, 0, 0)

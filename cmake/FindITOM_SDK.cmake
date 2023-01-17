@@ -142,7 +142,9 @@ if(EXISTS ${ITOM_SDK_CONFIG_FILE})
     # The following list has to be consistent with the
     # macro itom_add_library_to_appdir_and_sdk of ItomBuildMacroInternal.cmake.
     # From VS higher than 1900, the default case vc${MSVC_VERSION} is used.
-    if(MSVC_VERSION EQUAL 1900)
+    if(APPLE)
+        set(SDK_COMPILER "osx_default")
+    elseif(MSVC_VERSION EQUAL 1900)
         set(SDK_COMPILER "vc14")
     elseif(MSVC_VERSION EQUAL 1800)
         set(SDK_COMPILER "vc12")
@@ -164,13 +166,12 @@ if(EXISTS ${ITOM_SDK_CONFIG_FILE})
         set(SDK_COMPILER "gnucxx")
     elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
         set(SDK_COMPILER "intel")
-    elseif(APPLE)
-        set(SDK_COMPILER "osx_default")
     else()
         set(SDK_COMPILER "unknown")
     endif()
     
     set(ITOM_SDK_LIBSUFFIX "/lib/${SDK_COMPILER}_${SDK_PLATFORM}")
+	message(STATUS "CMAKE_CXX_COMPILER_ID: ${CMAKE_CXX_COMPILER_ID}")
     message(STATUS "ITOM LIB SUFFIX: ${ITOM_SDK_LIBSUFFIX}")
     
     #Initiate the variable before the loop

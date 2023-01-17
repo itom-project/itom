@@ -1213,8 +1213,8 @@ void MainWindow::createMenus()
     menuBar()->setNativeMenuBar(false);
 #else // __APPLE__
     // OS X: without the native menu bar option, the menu bar is displayed within the window which
-    // might be irritating.
-    menuBar()->setNativeMenuBar(true);
+    // might be irritating. The menu bar is not embedded in the system menu bar for unclear reasons, therefore the option is set to off.
+    menuBar()->setNativeMenuBar(false);
 #endif // __APPLE__
 }
 
