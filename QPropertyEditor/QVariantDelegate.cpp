@@ -30,13 +30,29 @@
 #include <qabstractitemview.h>
 #include <qsignalmapper.h>
 #include <qsortfilterproxymodel.h>
+#include <qregularexpression.h>
 
 //-------------------------------------------------------------------------------------
-QVariantDelegate::QVariantDelegate(QObject* parent) : QItemDelegate(parent)
+QVariantDelegate::QVariantDelegate(QObject* parent) : QItemDelegate(parent), m_finishedMapper(nullptr)
 {
     m_finishedMapper = new QSignalMapper(this);
+
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
+    connect(m_finishedMapper, &QSignalMapper::mappedObject, this, 
+        [=](QObject* obj) 
+        {
+            QWidget* wid = qobject_cast<QWidget*>(obj);
+            if (wid)
+            {
+                commitData(wid);
+                closeEditor(wid);
+            }
+        }
+    );
+#else
     connect(m_finishedMapper, SIGNAL(mapped(QWidget*)), this, SIGNAL(commitData(QWidget*)));
     connect(m_finishedMapper, SIGNAL(mapped(QWidget*)), this, SIGNAL(closeEditor(QWidget*)));
+#endif
 }
 
 //-------------------------------------------------------------------------------------
@@ -177,16 +193,30 @@ void QVariantDelegate::parseEditorHints(QWidget* editor, const QString& editorHi
     if (editor && !editorHints.isEmpty())
     {
         editor->blockSignals(true);
+
         // Parse for property values
-        QRegExp rx("(.*)(=\\s*)(.*)(;{1})");
-        rx.setMinimal(true);
-        int pos = 0;
-        while ((pos = rx.indexIn(editorHints, pos)) != -1)
+        QStringList hintList = editorHints.split(";");
+        QString hintTrimmed;
+        QString pattern = QString("^(.*)(=\\s*)(.*)$");
+        QRegularExpression rx(pattern);
+        QRegularExpressionMatch match;
+        QString name, value;
+
+        foreach(const QString &hint, hintList)
         {
-            // qDebug("Setting %s to %s", qPrintable(rx.cap(1)), qPrintable(rx.cap(3)));
-            editor->setProperty(qPrintable(rx.cap(1).trimmed()), rx.cap(3).trimmed());
-            pos += rx.matchedLength();
+            hintTrimmed = hint.trimmed();
+
+            if (hintTrimmed != "")
+            {
+                if ((match = rx.match(hintTrimmed)).hasMatch())
+                {
+                    name = match.captured(1).trimmed();
+                    value = match.captured(4).trimmed();
+                    editor->setProperty(qPrintable(name), value);
+                }
+            }
         }
+
         editor->blockSignals(false);
     }
 }

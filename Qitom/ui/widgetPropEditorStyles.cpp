@@ -662,23 +662,23 @@ void WidgetPropEditorStyles::on_btnImport_clicked()
 
                     if (xml.readNextStartElement())
                     {
-                        if (xml.name() == "NotepadPlus")
+                        if (xml.name() == QLatin1String("NotepadPlus"))
                         {
                             while (xml.readNextStartElement())
                             {
-                                if (xml.name() == "LexerStyles")
+                                if (xml.name() == QLatin1String("LexerStyles"))
                                 {
                                     LexerStylesFound = true;
                                     
                                     while (xml.readNextStartElement())
                                     {
-                                        if (xml.name() == "LexerType" && xml.attributes().value("name") == "python")
+                                        if (xml.name() == QLatin1String("LexerType") && xml.attributes().value("name") == QLatin1String("python"))
                                         {
                                             PythonLexerFound = true;
 
                                             while (xml.readNextStartElement())
                                             {
-                                                if (xml.name() == "WordsStyle")
+                                                if (xml.name() == QLatin1String("WordsStyle"))
                                                 {
                                                     pythonStyles.append(xml.attributes());
                                                 }
@@ -693,13 +693,13 @@ void WidgetPropEditorStyles::on_btnImport_clicked()
                                     }
 
                                 }
-                                else if (xml.name() == "GlobalStyles")
+                                else if (xml.name() == QLatin1String("GlobalStyles"))
                                 {
                                     GlobalStylesFound = true;
 
                                     while (xml.readNextStartElement())
                                     {
-                                        if (xml.name() == "WidgetStyle")
+                                        if (xml.name() == QLatin1String("WidgetStyle"))
                                         {
                                             globalStyles.append(xml.attributes());
                                         }
@@ -758,7 +758,7 @@ void WidgetPropEditorStyles::on_btnImport_clicked()
 
                         foreach(const QXmlStreamAttributes &attr, globalStyles)
                         {
-                            if (attr.hasAttribute("name") && attr.value("name") == "Global override")
+                            if (attr.hasAttribute("name") && attr.value("name") == QLatin1String("Global override"))
                             {
                                 globalForegroundColor = QColor(QString("#%1").arg(attr.value("fgColor").toString()));
                                 
@@ -777,40 +777,40 @@ void WidgetPropEditorStyles::on_btnImport_clicked()
                                     globalOverrideFont.setPointSize(attr.value("fontSize").toString().toInt());
                                 }
                             }
-                            else if (attr.hasAttribute("name") && attr.value("name") == "Default Style")
+                            else if (attr.hasAttribute("name") && attr.value("name") == QLatin1String("Default Style"))
                             {
                                 m_paperBgcolor = QColor(QString("#%1").arg(attr.value("bgColor").toString()));
                                 globalBackgroundColor = QColor(QString("#%1").arg(attr.value("bgColor").toString()));
                                 m_selectionFgcolor = globalBackgroundColor;
                                 m_whitespaceBgcolor = globalBackgroundColor;
                             }
-                            else if (attr.hasAttribute("name") && attr.value("name") == "Line number margin")
+                            else if (attr.hasAttribute("name") && attr.value("name") == QLatin1String("Line number margin"))
                             {
                                 // pass
                             }
-                            else if (attr.hasAttribute("name") && attr.value("name") == "Fold margin")
+                            else if (attr.hasAttribute("name") && attr.value("name") == QLatin1String("Fold margin"))
                             {
                                 // pass
                             }
-                            else if (attr.hasAttribute("name") && attr.value("name") == "Brace highlight style")
+                            else if (attr.hasAttribute("name") && attr.value("name") == QLatin1String("Brace highlight style"))
                             {
                                 m_matchedBraceBgcolor = QColor(QString("#%1").arg(attr.value("bgColor").toString()));
                                 m_matchedBraceFgcolor = QColor(QString("#%1").arg(attr.value("fgColor").toString()));
                             }
-                            else if (attr.hasAttribute("name") && attr.value("name") == "Bad brace colour")
+                            else if (attr.hasAttribute("name") && attr.value("name") == QLatin1String("Bad brace colour"))
                             {
                                 m_unmatchedBraceBgcolor = QColor(QString("#%1").arg(attr.value("bgColor").toString()));
                                 m_unmatchedBraceFgcolor = QColor(QString("#%1").arg(attr.value("fgColor").toString()));
                             }
-                            else if (attr.hasAttribute("name") && attr.value("name") == "White space symbol")
+                            else if (attr.hasAttribute("name") && attr.value("name") == QLatin1String("White space symbol"))
                             {
                                 m_whitespaceFgcolor = QColor(QString("#%1").arg(attr.value("fgColor").toString()));
                             }
-                            else if (attr.hasAttribute("name") && attr.value("name") == "Caret colour")
+                            else if (attr.hasAttribute("name") && attr.value("name") == QLatin1String("Caret colour"))
                             {
                                 m_caretFgcolor = QColor(QString("#%1").arg(attr.value("fgColor").toString()));
                             }
-                            else if (attr.hasAttribute("name") && attr.value("name") == "Current line background colour")
+                            else if (attr.hasAttribute("name") && attr.value("name") == QLatin1String("Current line background colour"))
                             {
                                 if (attr.hasAttribute("bgColor") && !attr.value("bgColor").isEmpty())
                                 {
@@ -821,11 +821,10 @@ void WidgetPropEditorStyles::on_btnImport_clicked()
                                     m_caretBgcolor = globalBackgroundColor;
                                 }
                             }
-                            else if (attr.hasAttribute("name") && attr.value("name") == "Selected text colour")
+                            else if (attr.hasAttribute("name") && attr.value("name") == QLatin1String("Selected text colour"))
                             {
                                 m_selectionBgcolor = QColor(QString("#%1").arg(attr.value("bgColor").toString()));
-                            }
-                            
+                            } 
                         }
 
                         QMap<StyleItem::StyleType, int> mapIdx;

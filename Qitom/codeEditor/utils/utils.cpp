@@ -434,7 +434,7 @@ namespace Utils
 
         for (;;)
         {
-            i = std::min(width, signature.length());
+            i = std::min(width, (int)signature.length());
             j = signature.lastIndexOf(", ", i);
 
             if (j == -1)

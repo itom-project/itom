@@ -24,6 +24,7 @@
 
 #include "../global.h"
 #include "itomWidgets/doubleSpinBox.h"
+#include "../helper/compatHelper.h"
 #include "AddInManager/paramHelper.h"
 
 #include <QtWidgets/qmessagebox.h>
@@ -39,8 +40,6 @@
 
 namespace ito
 {
-
-
 
 //-------------------------------------------------------------------------------------
 LineEditDelegate::LineEditDelegate(const ito::ParamMeta *meta, int paramType,
@@ -212,13 +211,13 @@ QWidget *LineEditDelegate::createEditor(QWidget *parent, const QStyleOptionViewI
                     lineEdit->setValidator(nullptr);
                     break;
                 case ito::StringMeta::Wildcard: {
-                    QRegExp regexp(QLatin1String(meta->getString(0)), Qt::CaseSensitive, QRegExp::Wildcard);
-                    lineEdit->setValidator(new QRegExpValidator(regexp, lineEdit));
+                    QRegularExpression regexp(CompatHelper::wildcardToRegularExpression(meta->getString(0)));
+                    lineEdit->setValidator(new QRegularExpressionValidator(regexp, lineEdit));
                     break;
                 }
                 case ito::StringMeta::RegExp: {
-                    QRegExp regexp(QLatin1String(meta->getString(0)), Qt::CaseSensitive, QRegExp::RegExp);
-                    lineEdit->setValidator(new QRegExpValidator(regexp, lineEdit));
+                    QRegularExpression regexp(QLatin1String(meta->getString(0)));
+                    lineEdit->setValidator(new QRegularExpressionValidator(regexp, lineEdit));
                     break;
                 }
                 }

@@ -29,6 +29,7 @@
 #include <qcoreapplication.h>
 #include <qdiriterator.h>
 #include <qdatetime.h>
+#include <qregularexpression.h>
 
 #include <qxmlstream.h>
 #include <qdebug.h>
@@ -320,7 +321,7 @@ RetVal HelpSystem::getCheckSumOfBuild(QDir &helpDir, QString &projectFileName, q
         }
 
         QXmlStreamReader stream(&file);
-        QStringRef ReadSigns;
+        QString readSigns;
         QXmlStreamAttributes attr;
 
         if(stream.atEnd())
@@ -329,17 +330,19 @@ RetVal HelpSystem::getCheckSumOfBuild(QDir &helpDir, QString &projectFileName, q
             return RetVal(retWarning, 0, QObject::tr("Load XML file failed: file seems corrupt").toLatin1().data());
         }
 
-        ReadSigns = stream.documentVersion();
+        readSigns = stream.documentVersion().toString();
 		const QString stringToComp = "1.0";
-        if(!ReadSigns.compare(stringToComp))
+
+        if(!readSigns.compare(stringToComp))
         {
             file.close();
             return RetVal(retWarning, 0, QObject::tr("Load XML file failed:  wrong xml version").toLatin1().data());
         }
 
-        ReadSigns = stream.documentEncoding();
+        readSigns = stream.documentEncoding().toString();
 		const QString stringToCompUTF = "UTF-8";
-        if(!ReadSigns.compare(stringToCompUTF))
+
+        if(!readSigns.compare(stringToCompUTF))
         {
             file.close();
             return RetVal(retWarning, 0, QObject::tr("Load XML file failed: wrong document encoding").toLatin1().data());
@@ -348,17 +351,17 @@ RetVal HelpSystem::getCheckSumOfBuild(QDir &helpDir, QString &projectFileName, q
         while(stream.readNextStartElement())
         {
             qDebug() << stream.name();
-            if(stream.name() == "QHelpCollectionProject")
+            if (stream.name().toString().contains(QString("QHelpCollectionProject")))
             {
                 attr = stream.attributes();
-                ReadSigns = attr.value("itomChecksum");
+                readSigns = attr.value("itomChecksum").toString();
                 bool ok = false;
-                checksum = ReadSigns.toString().toUInt(&ok);
+                checksum = readSigns.toUInt(&ok);
                 if(!ok)
                 {
                     checksum = 0;
                     file.close();
-                    return RetVal(retWarning, 0, QObject::tr("Load XML file failed: could not intepret checksum content as uint").toLatin1().data());
+                    return RetVal(retWarning, 0, QObject::tr("Load XML file failed: could not interpret checksum content as uint").toLatin1().data());
                 }
                 else
                 {
@@ -432,7 +435,7 @@ RetVal HelpSystem::rebuildHelpCollection(QStringList &qchFiles, quint16 checksum
     }
 
     QXmlStreamWriter stream(&file);
-    stream.setCodec("UTF-8");       // Set text codec
+    // Qt5: UTF-8 is the default codec, Qt6: uses always UTF-8
     stream.setAutoFormatting(true);
 
     stream.writeStartDocument();
@@ -789,7 +792,7 @@ RetVal HelpSystem::buildSinglePluginHelp(const QString &pluginFolder, QDir &buil
                 mainFileInfo = _mainFileInfo;
                 foreach(const QString &fileToCopy, filesToCopy)
                 {
-                    if (copyFile( sourceDir.absoluteFilePath(fileToCopy), buildDir))
+                    if (copyFile( QFileInfo(sourceDir.absoluteFilePath(fileToCopy)), buildDir))
                     {
                         if (fileToCopy.endsWith(".html")) 
                         {
@@ -819,19 +822,28 @@ RetVal HelpSystem::buildSinglePluginHelp(const QString &pluginFolder, QDir &buil
 */
 RetVal HelpSystem::analyzeQhpFile(const QString &pluginFolder, QFile &qhpFile, QString &tocs, QString &keywords, QString &files, QStringList &filesToCopy, QPair<QString,QString> &mainFileInfo)
 {
-    QRegExp regExp("^.*<toc>(.*)</toc>.*<keywords>(.*)</keywords>.*<files>(.*)</files>.*$");
+    QRegularExpression regExp(
+        "^.*<toc>(.*)<\/toc>.*<keywords>(.*)<\/keywords>.*<files>(.*)<\/files>.*$",
+        QRegularExpression::DotMatchesEverythingOption |
+            QRegularExpression::MultilineOption);
     if (qhpFile.open(QIODevice::ReadOnly))
     {
         QByteArray content = qhpFile.readAll();
 
-        if (regExp.indexIn(content) != -1)
+        QRegularExpressionMatch match = regExp.match(content);
+        if (match.hasMatch())
         {
             QString mainFile;
-            tocs += modifyTocs(regExp.cap(1), pluginFolder, mainFile);
+            tocs += modifyTocs(match.captured(1), pluginFolder, mainFile);
             mainFileInfo.first = pluginFolder;
             mainFileInfo.second = mainFile;
-            keywords += modifyKeywords(regExp.cap(2), pluginFolder);
-            files += modifyFiles(regExp.cap(3), pluginFolder, QStringList() << "search.html" << "_static", filesToCopy);
+            keywords += modifyKeywords(match.captured(2), pluginFolder);
+            files += modifyFiles(
+                match.captured(3),
+                pluginFolder,
+                QStringList() << "search.html"
+                              << "_static",
+                filesToCopy);
         }
         qhpFile.close();
     }
@@ -924,7 +936,7 @@ QString HelpSystem::modifyFiles(const QString &in, const QString &hrefPrefix, co
 {
     //this file searches all ref="..." substrings and replaces ... by hrefPrefix\...
     QString files;
-    QRegExp regExp("<file>([a-zA-Z0-9#.?%&]*)</file>");
+    QRegularExpression regExp("<file>([a-zA-Z0-9#.?%&]*)</file>");
     QString cap;
     
 #ifndef WIN32
@@ -936,10 +948,11 @@ QString HelpSystem::modifyFiles(const QString &in, const QString &hrefPrefix, co
     int pos = 0;
     bool take;
 
-    while ((pos = regExp.indexIn(in, pos)) != -1) 
+    QRegularExpressionMatch match = regExp.match(in);
+    if (match.hasMatch()) 
     {
         take = true;
-        cap = regExp.cap(1);
+        cap = match.captured(1);
         foreach(const QString &str, excludeContent)
         {
             if (cap.contains(str))
@@ -955,7 +968,7 @@ QString HelpSystem::modifyFiles(const QString &in, const QString &hrefPrefix, co
             files += "<file>" + hrefPrefix + delimiter + cap+ "</file>\n";
         }
 
-        pos += regExp.matchedLength();
+        pos += match.capturedLength();
     }
 
     return files;

@@ -127,6 +127,7 @@ UiOrganizer::UiOrganizer(ito::RetVal &retval) :
     qRegisterMetaType<ito::UiOrganizer::ClassInfoContainerList*>("ito::UiOrganizer::ClassInfoContainerList*");
     qRegisterMetaType<ito::UiOrganizer::ClassInfoContainerList*>("ito::UiOrganizer::ClassInfoContainerList&");
     qRegisterMetaType<QWeakPointer<QTimer> >("QWeakPointer<QTimer>");
+    qRegisterMetaType<QWidget*>("QWidget*");
 
 
     if (QEvent::registerEventType(QEvent::User+123) != QEvent::User+123)
@@ -2650,10 +2651,12 @@ RetVal UiOrganizer::getMethodDescriptions(unsigned int objectID,
         QMetaMethod metaMethod;
         QList<QByteArray> paramTypes;
         bool ok = false;
-        for (int i = 0; i<mo->methodCount(); ++i)
+
+        for (int i = 0; i < mo->methodCount(); ++i)
         {
             metaMethod = mo->method(i);
             ok = true;
+            
             if (metaMethod.access() == QMetaMethod::Public && (metaMethod.methodType() == QMetaMethod::Slot || metaMethod.methodType() == QMetaMethod::Method))
             {
                 //check if args can be interpreted by QMetaType:
@@ -2661,21 +2664,26 @@ RetVal UiOrganizer::getMethodDescriptions(unsigned int objectID,
                 {
                     if (QMetaType::type(metaMethod.typeName()) == 0)
                     {
+                        //qDebug() << "unsupported return type: " << metaMethod.typeName();
                         ok = false;
                     }
                 }
+
                 if (ok)
                 {
                     paramTypes = metaMethod.parameterTypes();
+
                     for (int j = 0; j < paramTypes.size(); ++j)
                     {
                         if (QMetaType::type(paramTypes[j].data()) == 0)
                         {
+                            //qDebug() << "unsupported arg type: " << paramTypes[j].data();
                             ok = false;
                             break;
                         }
                     }
                 }
+
                 if (ok)
                 {
                     methodList->append(MethodDescription(metaMethod));

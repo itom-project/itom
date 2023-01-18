@@ -1,20 +1,15 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2022, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
-    This file is part of itom and its software development toolkit (SDK).
+    This file is part of itom.
 
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
-   
-    In addition, as a special exception, the Institut fuer Technische
-    Optik (ITO) gives you certain additional rights.
-    These rights are described in the ITO LGPL Exception version 1.0,
-    which can be found in the file LGPL_EXCEPTION.txt in this package.
 
     itom is distributed in the hope that it will be useful, but
     WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,14 +20,23 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef QTMETATYPEDECLARATIONS_H
-#define QTMETATYPEDECLARATIONS_H
+#pragma once
 
-#include "interval.h"
-#include <qmetatype.h>
+#include "../global.h"
 
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-Q_DECLARE_METATYPE(ito::AutoInterval);
-#endif
+#include <qregularexpression.h>
+#include <qstring.h>
 
-#endif
+
+namespace ito {
+
+class CompatHelper
+{
+public:
+    static QString regExpAnchoredPattern(const QString& expression);
+    static QString wildcardToRegularExpression(const QString &pattern);
+
+
+};
+
+} // namespace ito

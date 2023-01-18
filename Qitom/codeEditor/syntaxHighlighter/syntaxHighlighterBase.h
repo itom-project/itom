@@ -43,6 +43,7 @@
 #include <qsyntaxhighlighter.h>
 #include <qpointer.h>
 #include <qmap.h>
+#include <qregularexpression.h>
 
 #include "../textBlockUserData.h"
 #include "../mode.h"
@@ -99,8 +100,8 @@ protected:
 
     void highlightWhitespaces(const QString &text);
 
-    QRegExp m_regWhitespaces;
-    QRegExp m_regSpacesPtrn;
+    QRegularExpression m_regWhitespaces;
+    QRegularExpression m_regSpacesPtrn;
     QSharedPointer<CodeEditorStyle> m_editorStyle;
     QSharedPointer<FoldDetector> m_foldDetector;
 };

@@ -4,7 +4,8 @@ project(${target_name})
 
 cmake_minimum_required(VERSION 3.0.2)
 
-option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON) 
+option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
+option(BUILD_UNITTEST_INTERNAL_ENABLE "If set, some libraries are compiled to export some internal methods, too. These can be tested then in unittests." OFF)
 
 set(CMAKE_MODULE_PATH 
     ${CMAKE_MODULE_PATH} 
@@ -28,12 +29,15 @@ if(WIN32 AND NOT ${gtest_force_shared_crt})
     message("Please set gtest_force_shared_crt to ON.")
 endif()
 
-add_definitions(-DQPROPERTYEDITOR_TEST -D_QPROPERTYEDITOR_TEST)
+if(BUILD_UNITTEST_INTERNAL_ENABLE)
+    add_definitions(-DENABLE_INTERNAL_TESTS -D_ENABLE_INTERNAL_TESTS)
+endif()
 
 
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/../../gtest-1.10.0/googletest/include
     ${CMAKE_CURRENT_SOURCE_DIR}/../../QPropertyEditor
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../common
 )
 
 link_directories(
@@ -48,7 +52,7 @@ set(unittest_SOURCES
 )
 
 cxx_executable(${target_name} ${CMAKE_CURRENT_SOURCE_DIR} gtest ${unittest_SOURCES} ${unittest_HEADERS})
-target_link_libraries(${target_name} qpropertyeditor ${OpenCV_LIBS})
+target_link_libraries(${target_name} qpropertyeditor itomCommonLib ${OpenCV_LIBS})
 
 set_target_properties( ${target_name}
     PROPERTIES

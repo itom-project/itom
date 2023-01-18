@@ -136,7 +136,7 @@ ito::RetVal apiFCheckAndSetParamVal(QVariant *tempParam, ito::ParamBase *param, 
             {
                 *set = 1;
                 QString tempStr = tempParam->toString();
-                param->setVal<char *>((char*)tempStr.data_ptr(), tempStr.length());
+                param->setVal<char*>((char*)tempStr.toLatin1().data(), tempStr.length());
             }
             else
             {

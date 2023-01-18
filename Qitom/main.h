@@ -77,7 +77,7 @@ public:
         {
             int enumIdx = QEvent::staticMetaObject.indexOfEnumerator("Type");
             QMetaEnum me = QEvent::staticMetaObject.enumerator(enumIdx);
-            QByteArray key = event ? me.valueToKeys(event->type()) : "";
+            QByteArray key = event ? me.valueToKeys(event->type()) : QByteArray("");
             int type = event ? event->type() : -1;
             QString name = QString("%1 (%2)").arg(receiver->objectName()).arg(receiver->metaObject()->className());
             qWarning("Itom-Application has caught an unknown exception");

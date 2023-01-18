@@ -40,12 +40,15 @@
 #include <qtimer.h>
 #include <qpainter.h>
 #include <qmimedata.h>
-#include <qtextcodec.h>
 #include <qinputdialog.h>
 #include <qdatetime.h>
 #include <qcryptographichash.h>
 #include <qtextdocumentfragment.h>
 #include <qregularexpression.h>
+
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+#include <qtextcodec.h>
+#endif
 
 #include "../codeEditor/managers/panelsManager.h"
 #include "../codeEditor/managers/modesManager.h"
@@ -1726,7 +1729,14 @@ RetVal ScriptEditorWidget::openFile(QString fileName, bool ignorePresentDocument
         //therefore there is a setting property telling the encoding of saved python files and the files are loaded assuming
         //this special encoding. If no encoding is given, latin1 is always assumed.
         QByteArray content = file.readAll();
-        QString text = AppManagement::getScriptTextCodec()->toUnicode(content);
+
+        QString text;
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+        text = AppManagement::getScriptTextCodec()->toUnicode(content);
+#else
+        text = AppManagement::decodeByteArrayToDefaultCodec(content);
+#endif
+
         file.close();
 
         clearAllBreakpoints();
@@ -1829,7 +1839,13 @@ RetVal ScriptEditorWidget::saveFile(bool askFirst)
     //convertEols(QsciScintilla::EolUnix);
     
     QString t = toPlainText();
+
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     file.write(AppManagement::getScriptTextCodec()->fromUnicode(t));
+#else
+    file.write(AppManagement::encodeStringFromDefaultCodec(t));
+#endif
+    
     file.close();
     QFileInfo fi(getFilename());
 
@@ -1896,7 +1912,13 @@ RetVal ScriptEditorWidget::saveAsFile(bool askFirst)
     //convertEols(QsciScintilla::EolUnix);
     
     QString t = toPlainText();
+
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     file.write(AppManagement::getScriptTextCodec()->fromUnicode(t));
+#else
+    file.write(AppManagement::encodeStringFromDefaultCodec(t));
+#endif
+
     file.close();
 
     changeFilename(tempFileName);

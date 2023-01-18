@@ -200,7 +200,11 @@ QStringList WorkspaceWidget::mimeTypes() const
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 QMimeData* WorkspaceWidget::mimeData(const QList<QTreeWidgetItem*> items) const
+#else
+QMimeData* WorkspaceWidget::mimeData(const QList<QTreeWidgetItem*>& items) const
+#endif
 {
     QMimeData* mimeData = QTreeWidget::mimeData(items);
     QStringList texts;

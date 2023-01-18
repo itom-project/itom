@@ -66,6 +66,18 @@
 QT_BEGIN_NAMESPACE
 #endif
 
+QString regExpAnchoredPattern(const QString& expression)
+{
+#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
+    return QRegularExpression::anchoredPattern(expression);
+#else
+    return QString()
+        + QLatin1String("\\A(?:")
+        + expression
+        + QLatin1String(")\\z");
+#endif
+}
+
 template <class PrivateData, class Value>
 static void setSimpleMinimumData(PrivateData *data, const Value &minVal)
 {
@@ -1230,11 +1242,11 @@ public:
 
     struct Data
     {
-        Data() : regExp(QString(QLatin1Char('*')),  Qt::CaseSensitive, QRegExp::Wildcard), echoMode(QLineEdit::Normal)
+        Data() : regularExpression(QString(QLatin1Char('.*'))), echoMode(QLineEdit::Normal)
         {
         }
         QString val;
-        QRegExp regExp;
+        QRegularExpression regularExpression; // has to somehow accept wildcard expressions
         int echoMode;
     };
 
@@ -1322,9 +1334,9 @@ QString QtStringPropertyManager::value(const QtProperty *property) const
 
     \sa setRegExp()
 */
-QRegExp QtStringPropertyManager::regExp(const QtProperty *property) const
+QRegularExpression QtStringPropertyManager::regExp(const QtProperty *property) const
 {
-    return getData<QRegExp>(d_ptr->m_values, &QtStringPropertyManagerPrivate::Data::regExp, property, QRegExp());
+    return getData<QRegularExpression>(d_ptr->m_values, &QtStringPropertyManagerPrivate::Data::regularExpression, property, QRegularExpression());
 }
 
 /*!
@@ -1383,8 +1395,29 @@ void QtStringPropertyManager::setValue(QtProperty *property, const QString &val)
     if (data.val == val)
         return;
 
-    if (data.regExp.isValid() && !data.regExp.exactMatch(val))
-        return;
+    if (data.regularExpression.isValid())
+    {
+        QString pattern = data.regularExpression.pattern();
+
+        if (pattern.startsWith(QLatin1String("\\A(?:")) && pattern.endsWith(QLatin1String(")\\z")))
+        {
+            // the regular expression already contains a pattern for an exact match
+            if (!data.regularExpression.match(val).hasMatch())
+            {
+                return;
+            }
+        }
+        else
+        {
+            // reformat the regular expression for an exact match
+            QRegularExpression regExp(regExpAnchoredPattern(pattern));
+
+            if (!regExp.match(val).hasMatch())
+            {
+                return;
+            }
+        }
+    }
 
     data.val = val;
 
@@ -1399,7 +1432,7 @@ void QtStringPropertyManager::setValue(QtProperty *property, const QString &val)
 
     \sa regExp(), setValue(), regExpChanged()
 */
-void QtStringPropertyManager::setRegExp(QtProperty *property, const QRegExp &regExp)
+void QtStringPropertyManager::setRegExp(QtProperty *property, const QRegularExpression &regExp)
 {
     const QtStringPropertyManagerPrivate::PropertyValueMap::iterator it = d_ptr->m_values.find(property);
     if (it == d_ptr->m_values.end())
@@ -1407,14 +1440,14 @@ void QtStringPropertyManager::setRegExp(QtProperty *property, const QRegExp &reg
 
     QtStringPropertyManagerPrivate::Data data = it.value() ;
 
-    if (data.regExp == regExp)
+    if (data.regularExpression == regExp)
         return;
 
-    data.regExp = regExp;
+    data.regularExpression = regExp;
 
     it.value() = data;
 
-    emit regExpChanged(property, data.regExp);
+    emit regExpChanged(property, data.regularExpression);
 }
 
 void QtStringPropertyManager::setEchoMode(QtProperty *property, EchoMode echoMode)
@@ -6673,7 +6706,7 @@ void QtFontPropertyManager::setValue(QtProperty *property, const QFont &val)
         return;
 
     const QFont oldVal = it.value();
-    if (oldVal == val && oldVal.resolve() == val.resolve())
+    if (oldVal == val) // resolve() was always internal. Can be skipped: && oldVal.resolve() == val.resolve())
         return;
 
     it.value() = val;

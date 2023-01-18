@@ -33,4 +33,4 @@ install_x64/x64/vc14/bin folder. They are not needed for the compilation of |ito
 
 .. note::
 
-    Check the entry **BUILD_opencv_world** to combine all modules in one dll-file. 
+    Check **BUILD_opencv_world** to combine all modules in one dll-file. 

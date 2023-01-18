@@ -32,6 +32,7 @@
 #include <qmetatype.h>
 #include <qlist.h>
 #include <qpair.h>
+#include <qregularexpression.h>
 
 Q_DECLARE_METATYPE(ito::complex128)
 
@@ -95,7 +96,7 @@ private:
     size_t m_maxSize;
     size_t m_stepSize;
     Param m_param;
-    QRegExp m_RegExp;
+    QRegularExpression m_RegExp;
     LineEditDelegate *m_lineEditDel;
 };
 
