@@ -1783,7 +1783,7 @@ void ScriptDockWidget::createActions()
     m_copyFilename = new ShortcutAction(QIcon(":/editor/icons/editCopy.png"), tr("Copy Filename"), this);
     m_copyFilename->connectTrigger(this, SLOT(mnuCopyFilename()));
 
-    m_findSymbols = new ShortcutAction(QIcon(":/classNavigator/icons/at.png"), tr("Fast symbol search..."),
+    m_findSymbols = new ShortcutAction(QIcon(":/classNavigator/icons/at.png"), tr("Fast Symbol Search..."),
         this, QKeySequence(tr("Ctrl+D", "QShortcut")), Qt::WidgetWithChildrenShortcut);
     m_findSymbols->connectTrigger(this, SLOT(mnuFindSymbolsShow()));
 
@@ -2670,7 +2670,7 @@ void ScriptDockWidget::mnuInsertCodec()
     ScriptEditorWidget *sew = getCurrentEditor();
     if (sew != NULL)
     {
-        sew->menuInsertCodec();
+        sew->menuScriptCharsetEncoding();
     }
 }
 

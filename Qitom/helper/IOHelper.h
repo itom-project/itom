@@ -145,6 +145,7 @@ private:
 
 } //end namespace ito
 
+Q_DECLARE_METATYPE(ito::IOHelper::CharsetEncodingItem)
 Q_DECLARE_OPERATORS_FOR_FLAGS(ito::IOHelper::IOFilters)
 
 #endif

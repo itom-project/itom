@@ -44,12 +44,14 @@
 #include <qstring.h>
 #include <qmenu.h>
 #include <qevent.h>
+#include <qpointer.h>
 #include <qmetaobject.h>
 #include <qsharedpointer.h>
 #include <qregularexpression.h>
 #include "../models/outlineItem.h"
 #include "../models/bookmarkModel.h"
 #include "../helper/IOHelper.h"
+#include "../ui/dialogScriptCharsetEncoding.h"
 
 #include <QtPrintSupport/qprinter.h>
 
@@ -104,7 +106,7 @@ public:
     RetVal saveFile(bool askFirst = true);
     RetVal saveAsFile(bool askFirst = true);
 
-    RetVal openFile(const QString &fileName, bool ignorePresentDocument = false);
+    RetVal openFile(const QString &fileName, bool ignorePresentDocument = false, QWidget *parent = nullptr);
 
     bool keepIndentationOnPaste() const;
     void setKeepIndentationOnPaste(bool value);
@@ -184,6 +186,8 @@ private:
 
     IOHelper::CharsetEncodingItem guessEncoding(const QByteArray &content) const;
 
+    void changeFileSaveEncoding(const IOHelper::CharsetEncodingItem &encoding);
+
     QFileSystemWatcher *m_pFileSysWatcher;
 
     // the following variables are related to the code checker feature of Python
@@ -221,6 +225,7 @@ private:
     //!< the encoding that was used to load this script from
     //!< a file and will also be used to store it in a file.
     IOHelper::CharsetEncodingItem m_charsetEncoding;
+    bool m_charsetDefined;
     bool m_charsetEncodingAutoGuess;
 
     QSharedPointer<FoldingPanel> m_foldingPanel;
@@ -287,7 +292,7 @@ public slots:
 
     void menuPyCodeFormatting();
     void menuGenerateDocstring();
-    void menuInsertCodec();
+    void menuScriptCharsetEncoding();
 
     void pythonStateChanged(tPythonTransitions pyTransition);
     void pythonDebugPositionChanged(QString filename, int lineno);

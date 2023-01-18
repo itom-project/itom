@@ -1499,6 +1499,7 @@ end:
     item.displayNameShort = "UTF-8 BOM";
     supportedScriptEncodings.append(item);
  
+#if 0
 #if Q_BYTE_ORDER == Q_LITTLE_ENDIAN
     item = CharsetEncodingItem();
     item.aliases = QStringList() << "utf-16be" << "utf_16_be";
@@ -1596,6 +1597,7 @@ end:
     item.displayName = tr("UTF-32LE with BOM (not recommended for Python scripts)");
     item.displayNameShort = tr("UTF-32LE BOM");
     supportedScriptEncodings.append(item);
+#endif
 
     return supportedScriptEncodings;
 }
