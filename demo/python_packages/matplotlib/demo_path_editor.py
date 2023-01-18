@@ -8,6 +8,7 @@ import matplotlib
 import matplotlib.path as mpath
 import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
+from matplotlib.backend_bases import MouseButton
 
 Path = mpath.Path
 
