@@ -822,7 +822,10 @@ RetVal HelpSystem::buildSinglePluginHelp(const QString &pluginFolder, QDir &buil
 */
 RetVal HelpSystem::analyzeQhpFile(const QString &pluginFolder, QFile &qhpFile, QString &tocs, QString &keywords, QString &files, QStringList &filesToCopy, QPair<QString,QString> &mainFileInfo)
 {
-    QRegularExpression regExp("^.*<toc>(.*)</toc>.*<keywords>(.*)</keywords>.*<files>(.*)</files>.*$");
+    QRegularExpression regExp(
+        "^.*<toc>(.*)<.toc>.*<keywords>(.*)<.keywords>.*<files>(.*)<.files>.*$",
+        QRegularExpression::DotMatchesEverythingOption |
+            QRegularExpression::MultilineOption);
     if (qhpFile.open(QIODevice::ReadOnly))
     {
         QByteArray content = qhpFile.readAll();
@@ -946,7 +949,7 @@ QString HelpSystem::modifyFiles(const QString &in, const QString &hrefPrefix, co
     bool take;
 
     QRegularExpressionMatch match = regExp.match(in);
-    while (match.hasMatch()) 
+    if (match.hasMatch()) 
     {
         take = true;
         cap = match.captured(1);

@@ -386,7 +386,7 @@ class FigureCanvasItom(FigureCanvasBase):
             # figure has already been closed.
             y, x = 0, 0
 
-        return x * dpi_ratio, y * dpi_ratio
+        return x, y
 
     def mouseEvent(self, eventType, x, y, button):
         x, y = self.mouseEventCoords(x, y)
