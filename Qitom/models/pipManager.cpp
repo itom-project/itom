@@ -897,22 +897,27 @@ void PipManager::finalizeTask(int exitCode /*= 0*/)
         {
             if (exitCode == 0)
             {
-                QRegExp reg("pip ((\\d+)\\.(\\d+)\\.(\\d+)) from(.*)");
-                if (reg.indexIn(output) != -1)
+                QRegularExpression reg("pip ((\\d+)\\.(\\d+)\\.(\\d+)) from(.*)");
+                QRegularExpressionMatch match = reg.match(output);
+                if (match.hasMatch())
                 {
-                    m_pipVersion = CREATEVERSION(reg.cap(2).toInt(), reg.cap(3).toInt(), reg.cap(4).toInt());
-                    QString version = reg.cap(1);
+                    m_pipVersion = CREATEVERSION(
+                        match.captured(2).toInt(),
+                        match.captured(3).toInt(),
+                        match.captured(4).toInt());
+                    QString version = match.captured(1);
                     emit pipVersion(version);
                     m_pipAvailable = true;
                     emit pipRequestFinished(temp, "", true);
                 }
                 else
                 {
-                    QRegExp reg("pip ((\\d+)\\.(\\d+)) from(.*)");
-                    if (reg.indexIn(output) != -1)
+                    QRegularExpression reg("pip ((\\d+)\\.(\\d+)) from(.*)");
+                    QRegularExpressionMatch match = reg.match(output);
+                    if (match.hasMatch())
                     {
-                        m_pipVersion = CREATEVERSION(reg.cap(2).toInt(), reg.cap(3).toInt(), 0);
-                        QString version = reg.cap(1);
+                        m_pipVersion = CREATEVERSION(match.captured(2).toInt(), match.captured(3).toInt(), 0);
+                        QString version = match.captured(1);
                         emit pipVersion(version);
                         m_pipAvailable = true;
                         emit pipRequestFinished(temp, "", true);
@@ -1153,32 +1158,34 @@ void PipManager::finalizeTask(int exitCode /*= 0*/)
                 }
                 else
                 {
-                    QRegExp rx("(\\S+) \\(Current: (\\S+) Latest: (\\S+)( \\[\\S+\\])?\\)"); //the style is "scipy (Current: 0.16.1 Latest: 0.17.0 [sdist])"
-                    int pos = 0;
-                    
-                    while ((pos = rx.indexIn(output, pos)) != -1)
+                    QRegularExpression rx("(\\S+) \\(Current: (\\S+) Latest: (\\S+)( \\[\\S+\\])?\\)"); //the style is "scipy (Current: 0.16.1 Latest: 0.17.0 [sdist])"
+                    QRegularExpressionMatchIterator matchIterator = rx.globalMatch(output);
+
+                    while (matchIterator.hasNext())
                     {
-                        outdated[rx.cap(1)] = rx.cap(3);
-                        pos += rx.matchedLength();
+                        QRegularExpressionMatch match = matchIterator.next();
+                        outdated[match.captured(1)] = match.captured(3);
                     }
 
                     //check for style of pip >= 8.0.0
-                    pos = 0;
                     rx.setPattern("(\\S+) \\((\\S+)(, \\S+)?\\) - Latest: (\\S+)( \\[\\S+\\])?"); //the style is "scipy (0.16.1) - Latest: 0.17.0 [sdist]" or "scipy (0.16.1, path-to-location) - Latest: 0.17.0 [sdist]"
-                    while ((pos = rx.indexIn(output, pos)) != -1)
+                    matchIterator = rx.globalMatch(output);
+                    
+                    while (matchIterator.hasNext())
                     {
-                        outdated[rx.cap(1)] = rx.cap(4);
-                        pos += rx.matchedLength();
+                        QRegularExpressionMatch match = matchIterator.next();
+                        outdated[match.captured(1)] = match.captured(4);
                     }
 
                     //check for unknown (that could not been fetched)
-                    pos = 0;
-                    rx.setPattern("Could not find any downloads that satisfy the requirement (\\S+)");
 
-                    while ((pos = rx.indexIn(output, pos)) != -1)
+                    rx.setPattern("Could not find any downloads that satisfy the requirement (\\S+)");
+                    matchIterator = rx.globalMatch(output);
+
+                    while (matchIterator.hasNext())
                     {
-                        unknown[rx.cap(1)] = "unknown";
-                        pos += rx.matchedLength();
+                        QRegularExpressionMatch match = matchIterator.next();
+                        unknown[match.captured(1)] = "unknown";
                     }
                 }
 

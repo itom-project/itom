@@ -33,7 +33,6 @@
 #include <qurl.h>
 #include <qsettings.h>
 #include <qfileinfo.h>
-#include <qregexp.h>
 
 #include <qevent.h>
 #include <qdebug.h>
@@ -911,49 +910,57 @@ void ConsoleWidget::textDoubleClicked(int position, int line, int modifiers)
 				selectedText.append(lineText(line).mid(longLineWrapPrefix.size()));
 			}
 
-            QRegExp rx("^  File \"(.*\\.[pP][yY])\", line (\\d+)(, in )?.*$");
-            if (rx.indexIn(selectedText) >= 0)
+            QRegularExpression rx("^  File \"(.*\\.[pP][yY])\", line (\\d+)(, in )?.*$");
+            auto rxMatch = rx.match(selectedText);
+
+            if (rxMatch.hasMatch())
             {
                 ScriptEditorOrganizer *seo = qobject_cast<ScriptEditorOrganizer*>(AppManagement::getScriptEditorOrganizer());
+
                 if (seo)
                 {
                     bool ok;
-                    int lineInMsg = rx.cap(2).toInt(&ok);
+                    int lineInMsg = rxMatch.captured(2).toInt(&ok);
+
                     if (ok)
                     {
-                        seo->openScript(rx.cap(1), NULL, lineInMsg - 1, true);
+                        seo->openScript(rxMatch.captured(1), nullptr, lineInMsg - 1, true);
                     }
                 }
             }
             else
             {
                 rx.setPattern("^.*Line (\\d+) in file \"(.*\\.[pP][yY])\".*$");
-                if (rx.indexIn(selectedText) >= 0)
+                rxMatch = rx.match(selectedText);
+
+                if (rxMatch.hasMatch())
                 {
                     ScriptEditorOrganizer *seo = qobject_cast<ScriptEditorOrganizer*>(AppManagement::getScriptEditorOrganizer());
                     if (seo)
                     {
                         bool ok;
-                        int line = rx.cap(1).toInt(&ok);
+                        int line = rxMatch.captured(1).toInt(&ok);
                         if (ok)
                         {
-                            seo->openScript(rx.cap(2), NULL, line - 1, true);
+                            seo->openScript(rxMatch.captured(2), NULL, line - 1, true);
                         }
                     }
                 }
                 else
                 {
                     rx.setPattern("^(.*\\.[pP][yY]):(\\d+): (\\w)*Warning:.*$");
-                    if (rx.indexIn(selectedText) >= 0)
+                    rxMatch = rx.match(selectedText);
+
+                    if (rxMatch.hasMatch())
                     {
                         ScriptEditorOrganizer *seo = qobject_cast<ScriptEditorOrganizer*>(AppManagement::getScriptEditorOrganizer());
                         if (seo)
                         {
                             bool ok;
-                            int line = rx.cap(2).toInt(&ok);
+                            int line = rxMatch.captured(2).toInt(&ok);
                             if (ok)
                             {
-                                seo->openScript(rx.cap(1), NULL, line - 1, true);
+                                seo->openScript(rxMatch.captured(1), NULL, line - 1, true);
                             }
                         }
                     }

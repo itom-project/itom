@@ -1483,8 +1483,12 @@ bool CodeEditor::findFirst(
 
     if (re)
     {
-        QRegExp regExp(expr);
-        regExp.setCaseSensitivity(cs ? Qt::CaseSensitive : Qt::CaseInsensitive);
+        QRegularExpression regExp(expr);
+
+        if (!cs)
+        {
+            regExp.setPatternOptions(QRegularExpression::CaseInsensitiveOption);
+        }
 
         cursor = document()->find(regExp, current_cursor, flags);
 

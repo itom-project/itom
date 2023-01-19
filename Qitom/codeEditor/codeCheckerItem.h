@@ -183,9 +183,10 @@ namespace ito {
 
         //----------------------------------------------------
         /* return a string representation of this checker item. */
-        QString checkerItemText(bool addShortType = false) const
+        QString checkerItemText(bool addShortType = false, int wordWrapLength = -1) const
         {
             QString prefix;
+            QString text;
 
             if (addShortType)
             {
@@ -208,24 +209,59 @@ namespace ito {
             {
                 if (m_col != -1)
                 {
-                    return QObject::tr("%1 (Column %2)").arg(prefix + m_description).arg(m_col + 1);
+                    text = QObject::tr("%1 (Column %2)").arg(prefix + m_description).arg(m_col + 1);
                 }
                 else
                 {
-                    return m_description;
+                    text = m_description;
                 }
             }
             else
             {
                 if (m_col != -1)
                 {
-                    return QObject::tr("%1: %2 (Column %3)").arg(prefix + m_code).arg(m_description).arg(m_col + 1);
+                    text = QObject::tr("%1: %2 (Column %3)")
+                               .arg(prefix + m_code)
+                               .arg(m_description)
+                               .arg(m_col + 1);
                 }
                 else
                 {
-                    return QString("%1: %2").arg(prefix + m_code).arg(m_description);
+                    text = QString("%1: %2").arg(prefix + m_code).arg(m_description);
                 }
             }
+
+            if (wordWrapLength > 0 && text.size() > wordWrapLength)
+            {
+                // text too long. Wrap it in multiple lines, but inherit
+                // every next line by 8 spaces.
+                QStringList words = text.split(" ");
+                int len = 0;
+                QStringList finalParts;
+                QStringList parts;
+
+                foreach (const QString& word, text.split(" "))
+                {
+                    parts << word;
+                    len += (word.size() + 1);
+
+                    if (len >= wordWrapLength)
+                    {
+                        finalParts.append(parts.join(" "));
+                        len = 0;
+                        parts.clear();
+                    }
+                }
+
+                if (len > 0)
+                {
+                    finalParts.append(parts.join(" "));
+                }
+
+                text = finalParts.join("\n        ");
+            }
+
+            return text;
         }
 
     private:
@@ -237,9 +273,6 @@ namespace ito {
         int m_col;
         QColor m_color;
     };
-
-
-    
 
 } //end namespace ito
 

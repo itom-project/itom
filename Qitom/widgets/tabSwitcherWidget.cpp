@@ -99,7 +99,7 @@ int TabSwitcherWidget::loadData()
         if (m_tabs->tabToolTip(index) != text)
         {
             // real path, else: unsaved script
-            fi = m_tabs->tabToolTip(index);
+            fi.setFile(m_tabs->tabToolTip(index));
             path = fi.absolutePath();
 
             if (path.size() > 60)

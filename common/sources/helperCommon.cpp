@@ -1145,7 +1145,7 @@ QString renderStrMetaInfo(const ito::StringMeta* meta, bool translate)
     switch (meta->getStringType())
     {
     case ito::StringMeta::RegExp:
-        temp = translate ? QObject::tr("RegExp") : "RegExp";
+        temp = translate ? QObject::tr("RegularExpression") : "RegularExpression";
 
         if (meta->getLen() == 1)
         {

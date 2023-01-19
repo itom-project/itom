@@ -32,6 +32,7 @@
 #include "../common/addInMultiChannelGrabber.h"
 
 #include <qlayoutitem.h>
+#include <qactiongroup.h>
 
 
 

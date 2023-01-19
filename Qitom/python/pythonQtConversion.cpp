@@ -32,7 +32,6 @@
 
 #include <qstringlist.h>
 #include <qurl.h>
-#include <qtextcodec.h>
 #include <qdatetime.h>
 #include <qvector2d.h>
 #include <qvector3d.h>
@@ -2863,7 +2862,13 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
         {
             void *ptrToOriginalValue = *retPtr;
 
-            QVariant *variantValue = new QVariant(type, *retPtr);
+            QVariant* variantValue = nullptr;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            variantValue = new QVariant(QMetaType(type), *retPtr);
+#else
+            variantValue = new QVariant(type, *retPtr);
+#endif
+
             if (variantValue->isValid())
             {
                 *retType = QMetaType::QVariant;
@@ -3538,6 +3543,16 @@ PyObject* PythonQtConversion::ConvertQtValueToPythonInternal(int type, const voi
             }
             return temp;
         }
+        else if (strcmp(name, "QList<ito::Shape>") == 0)
+        {
+        QList<ito::Shape>* temp2 = (QList<ito::Shape>*)data;
+        PyObject* temp = PyTuple_New(temp2->size());
+        for (int i = 0; i < temp2->size(); ++i)
+        {
+            PyTuple_SetItem(temp, i, ito::PythonShape::createPyShape(temp2->at(i))); //steals reference
+        }
+        return temp;
+        }
         else if (strcmp(name, "ito::Shape") == 0)
         {
             return ito::PythonShape::createPyShape(*((ito::Shape*)data));
@@ -3555,6 +3570,22 @@ PyObject* PythonQtConversion::ConvertQtValueToPythonInternal(int type, const voi
     {
         PyErr_SetString(PyExc_TypeError, "The given Qt-type is not registered in the Qt-MetaType system.");
         return NULL;
+    }
+
+    // since Qt6 it seems that an enumeration value is now returned as
+    // user-defined meta type. Since we cannot transfer every available
+    // enum, the enumeration is tried to be converted to an integer
+    // variable and returned as Python integer value.
+    auto flags = QMetaType::typeFlags(type);
+    
+    if (flags.testFlag(QMetaType::IsEnumeration))
+    {
+        long val;
+
+        if (QMetaType::convert(data, type, &val, QMetaType::Long))
+        {
+            return PyLong_FromLong(val);
+        }
     }
 
     PyErr_SetString(PyExc_TypeError, "The given Qt-type cannot be parsed into an appropriate python type.");

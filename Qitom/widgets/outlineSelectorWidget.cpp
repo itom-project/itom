@@ -196,7 +196,7 @@ QString OutlineSelectorWidget::argsWordWrap(QString argText, int maxLineLength) 
 
     for (;;)
     {
-        i = std::min(maxLineLength, argText.length());
+        i = std::min(maxLineLength, (int)(argText.length()));
         j = argText.lastIndexOf(", ", i);
 
         if (j == -1)

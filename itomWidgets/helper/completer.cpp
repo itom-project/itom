@@ -97,9 +97,20 @@ QStringList CompleterPrivate::splitPath(const QString& s)
     case Completer::FilterWordStartsWith:
       {
       this->updateSortFilterProxyModel();
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+      QRegularExpression regexp = QRegularExpression(QRegularExpression::escape(s));
+
+      if (!q->caseSensitivity())
+      {
+          regexp.setPatternOptions(QRegularExpression::CaseInsensitiveOption);
+      }
+
+      this->SortFilterProxyModel->setFilterRegularExpression(regexp);
+#else
       QRegExp regexp = QRegExp(QRegExp::escape(s));
       regexp.setCaseSensitivity(q->caseSensitivity());
       this->SortFilterProxyModel->setFilterRegExp(regexp);
+#endif
       paths = QStringList();
       break;
       }

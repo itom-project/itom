@@ -38,7 +38,7 @@ import weakref
 
 # itom specific imports (end)
 
-backend_version = "3.1.1"
+backend_version = "3.1.0"
 DEBUG = False
 
 # SPECIAL_KEYS are keys that do *not* return their unicode name

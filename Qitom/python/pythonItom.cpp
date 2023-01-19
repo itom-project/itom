@@ -46,7 +46,7 @@
 #include "../organizer/userOrganizer.h"
 
 #include <qcoreapplication.h>
-#include <qdesktopwidget.h>
+
 #include <qdir.h>
 #include <qresource.h>
 #include <qscreen.h>
@@ -264,7 +264,7 @@ PyObject* PythonItom::PyOpenScript(PyObject* /*pSelf*/, PyObject* pArgs)
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyShowHelpViewer_doc, "showHelpViewer(collectionFile = \"\") \n\
+PyDoc_STRVAR(pyShowHelpViewer_doc, "showHelpViewer(collectionFile = \"\", showUrl = \"\") \n\
 \n\
 Opens the itom help viewer and displays the itom user documentation or another desired documentation. \n\
 \n\
@@ -274,12 +274,24 @@ is given, this user-defined collection file is displayed in this help viewer.\n\
 Parameters \n\
 ---------- \n\
 collectionFile : str, optional \n\
-	If given, the indicated Qt collection file (.qch) will be loaded in the help viewer.\n\
-    Per default, the user documentation is loaded (pass an empty string or nothing).");
-PyObject* PythonItom::PyShowHelpViewer(PyObject* pSelf, PyObject* pArgs)
+    If given, the indicated Qt collection file (.qch) will be loaded in the help viewer.\n\
+    Per default, the user documentation is loaded (pass an empty string or nothing).\n\
+showUrl : str, optional \n\
+    Shows the document with the given URL inside the collection file (e.g.\n\
+    qthelp://org.sphinx.itomdocumentation.4.2.0/doc/02_installation/install_get_this_help.html).\n\
+    Per default, the index is shown (pass an empty string or nothing).");
+PyObject* PythonItom::PyShowHelpViewer(PyObject* pSelf, PyObject* pArgs, PyObject* pKwds)
 {
+    const char* kwlist[] = {"collectionFile", "showUrl", NULL};
     const char* collectionFile = NULL;
-    if (!PyArg_ParseTuple(pArgs, "|s", &collectionFile))
+    const char* showUrl = NULL;
+    if (!PyArg_ParseTupleAndKeywords(
+            pArgs,
+            pKwds,
+            "|ss",
+            const_cast<char**>(kwlist),
+            &collectionFile,
+            &showUrl))
     {
         return NULL;
     }
@@ -288,7 +300,9 @@ PyObject* PythonItom::PyShowHelpViewer(PyObject* pSelf, PyObject* pArgs)
     if (mainWindow)
     {
         QString collection = (collectionFile ? QLatin1String(collectionFile) : QLatin1String(""));
-        QMetaObject::invokeMethod(mainWindow, "showAssistant", Q_ARG(QString, collection));
+        QString showUrlString = (showUrl ? QLatin1String(showUrl) : QLatin1String(""));
+        QMetaObject::invokeMethod(
+            mainWindow, "showAssistant", Q_ARG(QString, collection), Q_ARG(QString, showUrlString));
     }
     else
     {
@@ -6627,7 +6641,7 @@ PyMethodDef PythonItom::PythonMethodItom[] = {
     {"openScript", (PyCFunction)PythonItom::PyOpenScript, METH_VARARGS, pyOpenScript_doc},
     {"showHelpViewer",
      (PyCFunction)PythonItom::PyShowHelpViewer,
-     METH_VARARGS,
+     METH_VARARGS | METH_KEYWORDS,
      pyShowHelpViewer_doc},
     {"plot", (PyCFunction)PythonItom::PyPlotImage, METH_VARARGS | METH_KEYWORDS, pyPlotImage_doc},
     {"plot1", (PyCFunction)PythonItom::PyPlot1d, METH_VARARGS | METH_KEYWORDS, pyPlot1d_doc},

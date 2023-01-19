@@ -40,7 +40,6 @@
 #include <qcombobox.h>
 #include <qapplication.h>
 #include <qshortcut.h>
-#include <qregexp.h>
 #include <qmimedata.h>
 
 namespace ito {
@@ -568,16 +567,18 @@ void FileSystemDockWidget::fillFilterList()
     QString filters = IOHelper::getFileFilters(IOHelper::IOFilters(IOHelper::IOInput | IOHelper::IOOutput | IOHelper::IOPlugin | IOHelper::IOAllFiles | IOHelper::IOMimeAll));
     QStringList fList = filters.split(";;");
     defaultFilterPatterns.clear();
-    QRegExp regExp("^[a-zA-Z0-9-_ ]+ \\((\\*\\..*)\\)$");
+    QRegularExpression regExp("^[a-zA-Z0-9-_ ]+ \\((\\*\\..*)\\)$");
+    QRegularExpressionMatch regExpMatch;
     QStringList suffixes;
 
     foreach(const QString &s, fList)
     {
         m_pCmbFilter->addItem(s, s);
+        regExpMatch = regExp.match(s);
 
-        if (regExp.indexIn(s) >= 0)
+        if (regExpMatch.hasMatch())
         {
-            suffixes = regExp.capturedTexts()[1].split(" ");
+            suffixes = regExpMatch.captured(1).split(" ");
             defaultFilterPatterns[s] << suffixes;
         }
 

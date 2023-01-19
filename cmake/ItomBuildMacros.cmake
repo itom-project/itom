@@ -176,7 +176,7 @@ macro(itom_init_plugin_common_vars)
     endif()
     
     if(APPLE)
-        set(CMAKE_OSX_ARCHITECTURES "x86_64")
+        set(CMAKE_OSX_ARCHITECTURES "arm64")
     endif()
     
     if(MSVC)
@@ -499,6 +499,11 @@ macro(itom_find_package_qt SET_AUTOMOC)
             cmake_policy(SET CMP0020 NEW)
         endif(POLICY CMP0020)
         set(DETECT_QT5 TRUE)
+    elseif(${BUILD_QTVERSION} STREQUAL "Qt6")
+        if(POLICY CMP0020)
+            cmake_policy(SET CMP0020 NEW)
+        endif(POLICY CMP0020)
+        set(DETECT_QT5 FALSE)
     elseif(${BUILD_QTVERSION} STREQUAL "auto")
         if(POLICY CMP0020)
             cmake_policy(SET CMP0020 NEW)
@@ -586,12 +591,60 @@ macro(itom_find_package_qt SET_AUTOMOC)
             set(QT_LIBRARY_DIR "${_qt5Core_install_prefix}/lib")
         endif()
         
+    else(DETECT_QT5)
+        #message(STATUS "TRY TO FIND QT6 COMPONENTS: ${Components}.... ${Qt6_DIR}")
+        if(WIN32)
+            # https://stackoverflow.com/questions/71086422/cmake-cannot-find-packages-within-qt6-installation
+            set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} "${Qt6_DIR}/../../..")
+        endif()
+        
+        find_package(Qt6 6.2 QUIET COMPONENTS Core) #QUIET)
+        
+        #QT5 could be found with component based find_package command
+        if(WIN32)
+          find_package(WindowsSDK REQUIRED)
+          set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} "${WINDOWSSDK_PREFERRED_DIR}/Lib/")
+          set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${WINDOWSSDK_PREFERRED_DIR}/Lib/)
+        endif(WIN32)
+        
+        set(COMPONENTS_FILTERED "")
+        
+        foreach(comp ${Components})
+            if (${comp} STREQUAL "OpenGLExtensions")
+                # Qt6 does not have OpenGLExtensions, Qt5 has. Therefore remove it from list.
+            elseif(${comp} STREQUAL "LinguistTools")
+                #it is not possible to link Qt6::LinguistTools since it does not exist
+                list(APPEND COMPONENTS_FILTERED ${comp})
+            else()
+                list(APPEND COMPONENTS_FILTERED ${comp})
+                set(QT5_LIBRARIES ${QT5_LIBRARIES} Qt6::${comp})
+            endif()
+        endforeach(comp)
+        
+        find_package(Qt6 COMPONENTS ${COMPONENTS_FILTERED} REQUIRED)
+        set(QT6_FOUND TRUE)
+        
+        if(${SET_AUTOMOC})
+            set(CMAKE_AUTOMOC ON)
+        else(${SET_AUTOMOC})
+            set(CMAKE_AUTOMOC OFF)
+        endif(${SET_AUTOMOC})
+        
+        if(Qt6Core_FOUND)
+            # These variables are not defined with Qt5 CMake modules
+            set(QT_BINARY_DIR "${QT6_INSTALL_PREFIX}/bin")
+            set(QT_LIBRARY_DIR "${QT6_INSTALL_PREFIX}/lib")
+        endif()
     endif(DETECT_QT5)
     
     add_definitions(${QT_DEFINITIONS})
     # add_compile_definitions(QT_DISABLE_DEPRECATED_BEFORE=0x050F00)
     
-    if(NOT QT5_FOUND)
+    if(QT5_FOUND)
+        # ok
+    elseif (QT6_FOUND)
+        # ok
+    else()
         message(SEND_ERROR "Qt5 (>= 5.5) could not be found. Please indicate Qt5_DIR to the cmake/Qt5 subfolder of the library folder of Qt")
     endif()
 endmacro()
@@ -666,8 +719,12 @@ macro(itom_library_translation qm_files)
     
     # also support cmakes findpackage qt using virtual targets... 
     # https://doc.qt.io/qt-5/cmake-variable-reference.html#module-variables
-    if(NOT (QT5_FOUND OR Qt5Core_FOUND))
-        message(SEND_ERROR "Qt5 (>= 5.5) not found. Currently only Qt5 is supported.")
+    if ((QT5_FOUND OR Qt5Core_FOUND))
+        # ok
+    elseif (QT6_FOUND OR Qt6Core_FOUND)
+        # ok
+    else()
+        message(SEND_ERROR "Qt5 (>= 5.5) or Qt6 not found. Currently only Qt5.5 or higher or Qt6 is supported.")
     endif()
     
     if(${ITOM_UPDATE_TRANSLATIONS})
@@ -854,15 +911,20 @@ endmacro()
 # "build_translation_target" "file1.ts file2.ts file3.ts")
 # .
 macro(itom_qt5_compile_translation _qm_files output_location target)
-    if(NOT (QT5_FOUND OR Qt5LinguistTools_FOUND))
-        message(send_error "translation requires LinguistTools")
+    if (NOT (QT5_FOUND OR Qt5LinguistTools_FOUND OR QT6_FOUND OR Qt6LinguistTools_FOUND))
+        message(SEND_ERROR "translation requires LinguistTools")
     endif()
     # use qt5 native translator function.
     # https://doc.qt.io/qt-5/qtlinguist-cmake-qt5-add-translation.html
     set(TS_FILES ${ARGN})
     set_source_files_properties(${TS_FILES} 
         PROPERTIES OUTPUT_LOCATION ${output_location})
-    qt5_add_translation(compiled_qmfiles ${TS_FILES})
+        
+    if (QT5_FOUND OR Qt5LinguistTools_FOUND)
+        qt5_add_translation(compiled_qmfiles ${TS_FILES})
+    else ()
+        qt6_add_translation(compiled_qmfiles ${TS_FILES})
+    endif ()
     # dereference the input/output parameter _qm_files and set its value to the 
     # translated files list to be used outside this scope ...
     set(${_qm_files} ${compiled_qmfiles}) 
@@ -896,10 +958,12 @@ macro(itom_qt_generate_mocs)
     foreach(file ${ARGN})
         set(moc_file moc_${file})
         
-        if(${QT5_FOUND})
+        if(QT5_FOUND)
             QT5_GENERATE_MOC(${file} ${moc_file})
+        elseif (QT6_FOUND)
+            QT6_GENERATE_MOC(${file} ${moc_file})
         else()
-            message(SEND_ERROR "Qt5 must be present to generate mocs")
+            message(SEND_ERROR "Qt5 or Qt6 must be present to generate mocs")
         endif()
 
         get_filename_component(source_name ${file} NAME_WE)
@@ -940,8 +1004,15 @@ function(itom_qt_wrap_ui outfiles target)
         target_sources(${target} PRIVATE ${temp_output})
         list(APPEND ${outfiles} ${temp_output})
         set(${outfiles} ${${outfiles}} PARENT_SCOPE)
+    elseif(QT6_FOUND)
+        #parse all *.ui files by Qt's uic process and get the parsed source files
+        qt6_wrap_ui(temp_output ${ARGN})
+        #add the output files to the target
+        target_sources(${target} PRIVATE ${temp_output})
+        list(APPEND ${outfiles} ${temp_output})
+        set(${outfiles} ${${outfiles}} PARENT_SCOPE)
     else()
-        message(SEND_ERROR "Currently only Qt5 is supported")
+        message(SEND_ERROR "Currently only Qt5 or Qt6 are supported")
     endif()
 endfunction()
 
@@ -967,6 +1038,13 @@ macro(itom_add_designerlibrary_to_copy_list target sources destinations)
     
     list(APPEND ${sources} "$<TARGET_LINKER_FILE:${target}>")
     list(APPEND ${destinations} ${ITOM_APP_DIR}/designer)
+	if(APPLE)
+        list(APPEND ${sources} "$<TARGET_FILE:${target}>") #adds the complete source path including filename of the dll (configuration-dependent) to the list 'sources'
+        list(APPEND ${destinations} ${ITOM_APP_DIR}/itom.app/Contents/MacOS/designer)
+    
+        list(APPEND ${sources} "$<TARGET_LINKER_FILE:${target}>")
+        list(APPEND ${destinations} ${ITOM_APP_DIR}/itom.app/Contents/MacOS/designer)
+    endif(APPLE)
 endmacro()
 
 
@@ -1014,6 +1092,10 @@ macro(itom_add_pluginlibrary_to_copy_list target sources destinations)
     # (configuration-dependent) to the list 'sources'
     list(APPEND ${sources} "$<TARGET_FILE:${target}>") 
     list(APPEND ${destinations} ${ITOM_APP_DIR}/plugins/${target})
+	if(APPLE)
+        list(APPEND ${sources} "$<TARGET_FILE:${target}>") 
+        list(APPEND ${destinations} ${ITOM_APP_DIR}/itom.app/Contents/MacOS/plugins/${target})
+    endif(APPLE)
 endmacro()
 
 # - appends the list of binary translation files (qm_files) to be copied from their source

@@ -121,6 +121,19 @@ int PythonFont::PyFont_init(PyFont *self, PyObject *args, PyObject * kwds)
         return -1;
     }
 
+    if (weight >= 100)
+    {
+        PyErr_SetString(PyExc_ValueError, "weight must be in the range [0, 99]");
+    }
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    if (weight >= 0)
+    {
+        // Qt6: weight is between 0 and 1000.
+        weight *= 10;
+    }
+#endif
+
     QFontInfo info(QFont(family, pointSize, weight, italic));
     self->font = new QFont(info.family(), info.pointSize(), info.weight(), info.italic());
 
@@ -154,10 +167,14 @@ int PythonFont::PyFont_init(PyFont *self, PyObject *args, PyObject * kwds)
     else
     {
         result = PyUnicode_FromFormat(
-            "font(%s, %ipt, weight: %i)", 
-            self->font->family().toUtf8().data(), 
-            self->font->pointSize(), 
-            self->font->weight()  
+            "font(%s, %ipt, weight: %i)",
+            self->font->family().toUtf8().data(),
+            self->font->pointSize(),
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            ((int)self->font->weight()) / 10
+#else
+            self->font->weight() 
+#endif
         );
     }
     return result;
@@ -270,8 +287,61 @@ PyObject* PythonFont::PyFont_getWeight(PyFont *self, void * /*closure*/)
         return NULL;
     }
 
-    return PyLong_FromLong(self->font->weight());
+    int weight = self->font->weight();
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    weight /= 10;
+#endif
+
+    return PyLong_FromLong(weight);
 }
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+QFont::Weight fontWeightConversion(int weight)
+{
+    if (weight <= 10)
+    {
+        return QFont::Thin;
+    }
+    else if (weight <= 20)
+    {
+        return QFont::ExtraLight;
+    }
+    else if (weight <= 30)
+    {
+        return QFont::Light;
+    }
+    else if (weight <= 40)
+    {
+        return QFont::Normal;
+    }
+    else if (weight <= 50)
+    {
+        return QFont::Medium;
+    }
+    else if (weight <= 60)
+    {
+        return QFont::DemiBold;
+    }
+    else if (weight <= 70)
+    {
+        return QFont::Bold;
+    }
+    else if (weight <= 80)
+    {
+        return QFont::ExtraBold;
+    }
+    else
+    {
+        return QFont::Black;
+    }
+}
+#else
+int fontWeightConversion(int weight)
+{
+    return weight;
+}
+#endif
 
 int PythonFont::PyFont_setWeight(PyFont *self, PyObject *value, void * /*closure*/)
 {
@@ -283,9 +353,13 @@ int PythonFont::PyFont_setWeight(PyFont *self, PyObject *value, void * /*closure
         if (weight <= 99)
         {
             QFont temp = *self->font;
-            temp.setWeight(weight);
+            temp.setWeight(fontWeightConversion(weight));
             QFontInfo info(temp);
-            self->font->setWeight(info.weight());
+            weight = info.weight(); // Qt5: [0,99], Qt6: [0, 999]
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            weight /= 10;
+#endif
+            self->font->setWeight(fontWeightConversion(weight));
             return 0;
         }
         else

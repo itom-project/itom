@@ -36,6 +36,7 @@
 #include <qdir.h>
 #include <qfiledialog.h>
 #include <qpair.h>
+#include <qregularexpression.h>
 
 namespace ito {
 
@@ -150,8 +151,8 @@ DialogSnapshot::DialogSnapshot(QWidget *parent, QPointer<ito::AddInDataIO> cam, 
         ui.checkAutograbbing->setChecked(cam->getAutoGrabbing());
     }
 
-    QRegExp regExp("^[a-zA-Z][a-zA-Z0-9_]*$");
-    QRegExpValidator *validator = new QRegExpValidator(regExp, ui.leFilename);
+    QRegularExpression regExp("^[a-zA-Z][a-zA-Z0-9_]*$");
+    auto *validator = new QRegularExpressionValidator(regExp, ui.leFilename);
     ui.leFilename->setValidator(validator);
     ui.leFilename->setToolTip(tr("The name must start with a letter followed by numbers or letters [a-z] or [A-Z]"));
 

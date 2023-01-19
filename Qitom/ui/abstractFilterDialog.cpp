@@ -93,7 +93,7 @@ QTreeWidgetItem* AbstractFilterDialog::renderParam( const ito::ParamBase &p ) co
             root->setData(0, Qt::DisplayRole, "String");
             if( p.getVal<char*>() )
             {
-                root->setData(1, Qt::DisplayRole, p.getVal<char*>() );
+                root->setData(1, Qt::DisplayRole, p.getVal<const char*>() );
             }
             else
             {

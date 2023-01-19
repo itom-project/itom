@@ -90,8 +90,13 @@ class FigureCanvasItomAgg(FigureCanvasItom, FigureCanvasAgg):
             self.matplotlibWidgetUiItem.call("paintResult", buf, x0, y0, W, H, blit)
         except RuntimeError as e:
             # it is possible that the figure has currently be closed by the user
-            self.signalDestroyedWidget()
-            print("Matplotlib figure is not available (err: %s)" % str(e))
+            # do not call self.signalDestroyedWidget() among others,
+            # since it might be, that the paintEvent is called from
+            # a timer event, that should finish, such that a close event
+            # is called afterwards.
+            pass
+            # self.signalDestroyedWidget()
+            # print("paintEvent::Matplotlib figure is not available (err: %s)" % str(e))
         # itom specific end -->
 
     def copyToClipboard(self, dpi):

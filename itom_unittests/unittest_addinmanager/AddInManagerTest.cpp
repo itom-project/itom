@@ -59,21 +59,49 @@ TEST(AddInManagerTest, General)
 #else
     QString aimName("addinmanager.dll");
 #endif
+
+#ifdef UNICODE
+    wchar_t path[_MAX_PATH + 1];
+    wchar_t aimName2[_MAX_PATH + 1];
+    int len = aimName.toWCharArray(aimName2);
+    aimName2[len] = 0;
+#else
+    char aimName2[_MAX_PATH + 1];
     char path[_MAX_PATH + 1];
-    GetModuleFileName(
-        GetModuleHandle(aimName.toLatin1().data()), path, sizeof(path) / sizeof(path[0]));
-    QFileInfo fi = QFileInfo(path);
+#endif
+
+    GetModuleFileName(GetModuleHandle(aimName2), path, sizeof(path) / sizeof(path[0]));
+
+#ifdef UNICODE
+    QString path2 = QString::fromWCharArray(path);
+#else
+    QString path2 = QString::fromUtf8(path);
+#endif
+
+    QFileInfo fi = QFileInfo(path2);
+
     if (fi.exists())
+    {
         addInPath = fi.absolutePath();
+    }
     else
     {
-        GetModuleFileName(
-            GetModuleHandle(aimName.toLatin1().data()), path, sizeof(path) / sizeof(path[0]));
-        fi = QFileInfo(path);
+        GetModuleFileName(GetModuleHandle(aimName2), path, sizeof(path) / sizeof(path[0]));
+#ifdef UNICODE
+        path2 = QString::fromWCharArray(path);
+#else
+        path2 = QString::fromUtf8(path);
+#endif
+        fi = QFileInfo(path2);
+
         if (fi.exists())
+        {
             addInPath = fi.absolutePath();
+        }
         else
+        {
             addInPath = "";
+        }
     }
 
     char* oldpath = getenv("path");

@@ -303,7 +303,7 @@ QPair<QStringList, QString>  WordHoverTooltipMode::parseTooltipDocstring(const Q
         docstr += tr("...");
     }
 
-    return qMakePair<QStringList, QString>(signatures, docstr);
+    return qMakePair<QStringList, QString>(std::move(signatures), std::move(docstr));
 }
 
 //-------------------------------------------------------------------------------------

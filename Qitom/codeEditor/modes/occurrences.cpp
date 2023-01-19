@@ -42,7 +42,7 @@
 #include "../utils/utils.h"
 
 #include <qbrush.h>
-#include <qregexp.h>
+#include <qregularexpression.h>
 #include <QtConcurrent/QtConcurrentRun>
 
 namespace ito {
@@ -267,7 +267,25 @@ void OccurrencesHighlighterMode::sendRequest()
                 //concurrent
                 if (!m_asyncFindAllWatcher.isRunning())
                 {
-                    m_asyncFindAllWatcher.setFuture(QtConcurrent::run(this, &OccurrencesHighlighterMode::findAll, editor()->toPlainText(), m_sub, m_wholeWord, m_caseSensitive));
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+                    m_asyncFindAllWatcher.setFuture(
+                        QtConcurrent::run(
+                            &OccurrencesHighlighterMode::findAll, 
+                            this,
+                            editor()->toPlainText(), 
+                            m_sub, 
+                            m_wholeWord, 
+                            m_caseSensitive));
+#else
+                    m_asyncFindAllWatcher.setFuture(
+                        QtConcurrent::run(
+                            this,
+                            &OccurrencesHighlighterMode::findAll,
+                            editor()->toPlainText(),
+                            m_sub,
+                            m_wholeWord,
+                            m_caseSensitive));
+#endif
                 }
                 else
                 {
@@ -378,26 +396,33 @@ QList<QPair<int,int> > OccurrencesHighlighterMode::findAll(const QString &text, 
 
     if (sub != "")
     {
-        QRegExp rx;
-        //int offset = 0;
-        Qt::CaseSensitivity cs = caseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive;
+        QRegularExpression rx;
+
+        if (!caseSensitive)
+        {
+            rx.setPatternOptions(QRegularExpression::CaseInsensitiveOption);
+        }
+
         if (wholeWord)
         {
-            rx = QRegExp(QString("\\b%1\\b").arg(sub), cs);
+            rx.setPattern(QString("\\b%1\\b").arg(sub));
             //offset = -1;
         }
         else
         {
-            rx = QRegExp(sub, cs);
+            rx.setPattern(sub);
         }
 
         int pos = 0;
         int length = sub.size();
-        while ((pos = rx.indexIn(text, pos)) != -1)
+        QRegularExpressionMatch match;
+
+        while ((match = rx.match(text, pos)).hasMatch())
         {
-            results.append(QPair<int,int>(pos, pos+length));
+            pos = match.capturedStart();
+            results.append(QPair<int,int>(pos, pos + length));
             //qDebug() << rx.pattern() << rx.matchedLength();
-            pos += (rx.matchedLength()); // + offset);
+            pos = match.capturedEnd();
         }
     }
 

@@ -31,7 +31,9 @@
 // Qt includes
 #include <QApplication>
 #include <QDebug>
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include <QDesktopWidget>
+#endif
 #include <QDir>
 #include <QEvent>
 #include <QLabel>
@@ -416,12 +418,21 @@ void PopupWidget::leaveEvent(QEvent* event)
 }
 
 // --------------------------------------------------------------------------
-void PopupWidget::enterEvent(QEvent* event)
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+void PopupWidget::enterEvent(QEnterEvent* event)
 {
   Q_D(PopupWidget);
   QTimer::singleShot(d->ShowDelay, this, SLOT(updatePopup()));
   this->Superclass::enterEvent(event);
 }
+#else
+void PopupWidget::enterEvent(QEvent* event)
+{
+    Q_D(PopupWidget);
+    QTimer::singleShot(d->ShowDelay, this, SLOT(updatePopup()));
+    this->Superclass::enterEvent(event);
+}
+#endif
 
 // --------------------------------------------------------------------------
 bool PopupWidget::eventFilter(QObject* obj, QEvent* event)

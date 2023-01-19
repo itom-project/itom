@@ -31,6 +31,8 @@
 #include <QApplication>
 #include <QDirIterator>
 #include <QtConcurrent/qtconcurrentrun.h>
+#include <qlist.h>
+#include <qtreewidget.h>
 
 namespace ito
 {
@@ -60,7 +62,12 @@ DialogIconBrowser::DialogIconBrowser(QWidget *parent) :
     ui.txtFilter->setEnabled(false);
 
     connect(&m_loadWatcher, SIGNAL(finished()), this, SLOT(loadFinished()));
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QFuture<QList<QTreeWidgetItem*> > f1 = QtConcurrent::run(&DialogIconBrowser::loadIcons, this);
+#else
     QFuture<QList<QTreeWidgetItem*> > f1 = QtConcurrent::run(this, &DialogIconBrowser::loadIcons);
+#endif
     m_loadWatcher.setFuture(f1);
 }
 

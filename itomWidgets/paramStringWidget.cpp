@@ -31,7 +31,7 @@
 #include <qcombobox.h>
 #include <qlineedit.h>
 #include <qlayout.h>
-#include <QRegExpValidator>
+#include <qregularexpression.h>
 
 namespace ito
 {
@@ -63,6 +63,98 @@ private:
 
     Q_DISABLE_COPY(ParamStringWidgetPrivate);
 };
+
+//-------------------------------------------------------------------------------
+/*
+ */
+QString regExpAnchoredPattern(const QString& expression)
+{
+#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
+    return QRegularExpression::anchoredPattern(expression);
+#else
+    return QString() + QLatin1String("\\A(?:") + expression + QLatin1String(")\\z");
+#endif
+}
+
+//-------------------------------------------------------------------------------
+QString wildcardToRegularExpression(const QString& pattern)
+{
+#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
+    // conversion should be anchored, hence, strict. Not partial.
+    return QRegularExpression::wildcardToRegularExpression(pattern);
+#else
+    // from the Qt source code
+    const qsizetype wclen = pattern.size();
+    QString rx;
+    rx.reserve(wclen + wclen / 16);
+    qsizetype i = 0;
+    const QChar* wc = pattern.data();
+#ifdef Q_OS_WIN
+    const QLatin1Char nativePathSeparator('\\');
+    const QLatin1String starEscape("[^/\\\\]*");
+    const QLatin1String questionMarkEscape("[^/\\\\]");
+#else
+    const QLatin1Char nativePathSeparator('/');
+    const QLatin1String starEscape("[^/]*");
+    const QLatin1String questionMarkEscape("[^/]");
+#endif
+    while (i < wclen) {
+        const QChar c = wc[i++];
+        switch (c.unicode()) {
+        case '*':
+            rx += starEscape;
+            break;
+        case '?':
+            rx += questionMarkEscape;
+            break;
+        case '\\':
+#ifdef Q_OS_WIN
+        case '/':
+            rx += QLatin1String("[/\\\\]");
+            break;
+#endif
+        case '$':
+        case '(':
+        case ')':
+        case '+':
+        case '.':
+        case '^':
+        case '{':
+        case '|':
+        case '}':
+            rx += QLatin1Char('\\');
+            rx += c;
+            break;
+        case '[':
+            rx += c;
+            // Support for the [!abc] or [!a-c] syntax
+            if (i < wclen) {
+                if (wc[i] == QLatin1Char('!')) {
+                    rx += QLatin1Char('^');
+                    ++i;
+                }
+                if (i < wclen && wc[i] == QLatin1Char(']'))
+                    rx += wc[i++];
+                while (i < wclen && wc[i] != QLatin1Char(']')) {
+                    // The '/' appearing in a character class invalidates the
+                    // regular expression parsing. It also concerns '\\' on
+                    // Windows OS types.
+                    if (wc[i] == QLatin1Char('/') || wc[i] == nativePathSeparator)
+                        return rx;
+                    if (wc[i] == QLatin1Char('\\'))
+                        rx += QLatin1Char('\\');
+                    rx += wc[i++];
+                }
+            }
+            break;
+        default:
+            rx += c;
+            break;
+        }
+    }
+    return regExpAnchoredPattern(rx);
+#endif
+}
 
 //---------------------------------------------------------------------------
 ParamStringWidget::ParamStringWidget(QWidget *parent /*= NULL*/) :
@@ -137,14 +229,14 @@ void ParamStringWidget::setParam(const ito::Param &param, bool forceValueChanged
                         break;
                     case ito::StringMeta::Wildcard:
                         {
-                        QRegExp regexp(QLatin1String(metaNew->getString(0)), Qt::CaseSensitive, QRegExp::Wildcard);
-                        d->m_pLineEdit->setValidator(new QRegExpValidator(regexp, d->m_pLineEdit));
+                        QRegularExpression regexp(wildcardToRegularExpression(QLatin1String(metaNew->getString(0))));
+                        d->m_pLineEdit->setValidator(new QRegularExpressionValidator(regexp, d->m_pLineEdit));
                         break;
                         }
                     case ito::StringMeta::RegExp:
                         {
-                        QRegExp regexp(QLatin1String(metaNew->getString(0)), Qt::CaseSensitive, QRegExp::RegExp);
-                        d->m_pLineEdit->setValidator(new QRegExpValidator(regexp, d->m_pLineEdit));
+                        QRegularExpression regexp(QLatin1String(metaNew->getString(0)));
+                        d->m_pLineEdit->setValidator(new QRegularExpressionValidator(regexp, d->m_pLineEdit));
                         break;
                         }
                     }

@@ -31,6 +31,7 @@
 #include "qmath.h"
 
 #include <qfileinfo.h>
+#include <qregularexpression.h>
 
 namespace ito {
 
@@ -257,19 +258,24 @@ void DialogLoadedPlugins::filter()
 {
     int stateCount[4] = { 0, 0, 0, 0}; // we need 1: plsfOK, 2: plsfWarning, 4: plsfError, 8: plsfIgnored
 
-    int flag =  ui.cmdMessage->isChecked() * ito::plsfOk      + 
-                ui.cmdWarning->isChecked() * ito::plsfWarning +
-                ui.cmdError->isChecked()   * ito::plsfError   +
-                ui.cmdIgnored->isChecked() * ito::plsfIgnored;
+    int flag = (ui.cmdMessage->isChecked() ? ito::plsfOk : 0) |
+        (ui.cmdWarning->isChecked() ? ito::plsfWarning : 0) |
+        (ui.cmdError->isChecked() ? ito::plsfError : 0) |
+        (ui.cmdIgnored->isChecked() ? ito::plsfIgnored : 0);
 
-    QRegExp rx("*" + ui.filterEdit->text() + "*", Qt::CaseInsensitive, QRegExp::Wildcard);
+    QRegularExpression rx(".*" + ui.filterEdit->text() + ".*", QRegularExpression::CaseInsensitiveOption);
 
     for (int i = 0; i < m_items.size(); i++)
     {
         int first = m_items[i].first;
-        bool show = (first & flag) != 0 &&      // check if button is active for this type of message
-                    (!ui.onlyCompatibleCheck->checkState() || (first & ito::plsfRelDbg) == 0) &&    // Isn't compability checkbox set OR if reldgb flag is set it's incompatibel, if 0 it's compatible
-                    ((m_items[i].second->childCount() == 0) || ui.filterEdit->text() == "" || rx.exactMatch(m_items[i].second->text(5))); // has no child OR filter text is empty OR filter text matches node text
+
+        // check if button is active for this type of message
+        bool show = (first & flag) != 0; 
+        // Isn't compability checkbox set OR if reldgb flag is set it's incompatibel, if 0 it's compatible
+        show &= (!ui.onlyCompatibleCheck->checkState() || (first & ito::plsfRelDbg) == 0);
+        // has no child OR filter text is empty OR filter text matches node text
+        show &= ((m_items[i].second->childCount() == 0) || ui.filterEdit->text() == "" || rx.match(m_items[i].second->text(5)).hasMatch()); 
+
         m_items[i].second->setHidden(!show);
     }
 

@@ -66,8 +66,6 @@ public:
         InsideDqString = 4 // the line is within a "..." string
     };
 
-    typedef QRegularExpression QQRegExp;
-
     PythonSyntaxHighlighter(QTextDocument *parent, const QString &description = "", QSharedPointer<CodeEditorStyle> editorStyle = QSharedPointer<CodeEditorStyle>());
 
     virtual ~PythonSyntaxHighlighter();
@@ -88,17 +86,17 @@ private:
 
     struct NamedRegExp
     {
-        NamedRegExp(const QString &groupName_, const QQRegExp &regExp_) : regExp(regExp_), groupNames(groupName_) {}
-        NamedRegExp(const QStringList &groupNames_, const QQRegExp &regExp_) : regExp(regExp_), groupNames(groupNames_) {}
-        QQRegExp regExp;
+        NamedRegExp(const QString &groupName_, const QRegularExpression &regExp_) : regExp(regExp_), groupNames(groupName_) {}
+        NamedRegExp(const QStringList &groupNames_, const QRegularExpression &regExp_) : regExp(regExp_), groupNames(groupNames_) {}
+        QRegularExpression regExp;
         QStringList groupNames;
     };
 
     //syntax highlighting rules
     static QList<NamedRegExp> regExpProg;
-    static QRegExp regExpIdProg;
-    static QRegExp regExpAsProg;
-    static QQRegExp regExpOeComment; //comments suitable for outline explorer
+    static QRegularExpression regExpIdProg;
+    static QRegularExpression regExpAsProg;
+    static QRegularExpression regExpOeComment; //comments suitable for outline explorer
 
     QTextCharFormat getFormatFromStyle(StyleItem::StyleType token) const;
     const QTextCharFormat getTextCharFormat(const QString &colorName, const QString &style = QString());

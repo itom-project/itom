@@ -29,6 +29,7 @@
 #include <qfileinfo.h>
 #include <qfileiconprovider.h>
 #include <qmessagebox.h>
+#include <qregularexpression.h>
 
 namespace ito {
 
@@ -52,15 +53,18 @@ namespace ito {
     ui.lblFilename->setText( info.fileName() );
 
     QString var = info.completeBaseName();
-    QRegExp regExp("^[a-zA-Z][a-zA-Z0-9_]*$");
-    QRegExpValidator *validator = new QRegExpValidator( regExp, ui.txtPythonVariable );
+    QRegularExpression regExp("^[a-zA-Z][a-zA-Z0-9_]*$");
+    auto *validator = new QRegularExpressionValidator( regExp, ui.txtPythonVariable );
     ui.txtPythonVariable->setValidator( validator );
     ui.txtPythonVariable->setToolTip( tr("The name must start with a letter followed by numbers or letters [a-z] or [A-Z]") );
-    if(regExp.indexIn(var) == -1)
+
+
+    if(var.indexOf(regExp) == -1)
     {
         var.prepend("var");
         var.replace("-", "_");
-        if(regExp.indexIn(var) == -1)
+
+        if(var.indexOf(regExp) == -1)
         {
             var = "varName";
         }

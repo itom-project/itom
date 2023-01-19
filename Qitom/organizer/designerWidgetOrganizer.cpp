@@ -39,7 +39,7 @@
 #include <qdir.h>
 #include <QDirIterator>
 #include <qapplication.h>
-
+#include <qregularexpression.h>
 #include <qpen.h>
 #include <qnamespace.h>
 
@@ -139,7 +139,7 @@ RetVal DesignerWidgetOrganizer::scanDesignerPlugins()
     //during loading a plugin contains the words
     //'debug' or 'release'. This means, that a release plugin is tried to be
     //loaded with a debug version of itom or vice-versa
-    QRegExp regExpDebugRelease(".*(release|debug).*", Qt::CaseInsensitive);
+    QRegularExpression regExpDebugRelease(".*(release|debug).*", QRegularExpression::CaseInsensitiveOption);
 
     foreach(const QString &plugin, candidates)
     {
@@ -323,7 +323,7 @@ RetVal DesignerWidgetOrganizer::scanDesignerPlugins()
                         message = loader->errorString();
                         loader->unload();
 
-                        if (regExpDebugRelease.exactMatch(message)) //debug/release conflict is only a warning, no error
+                        if (message.indexOf(regExpDebugRelease) >= 0) //debug/release conflict is only a warning, no error
                         {
                             pluginStatus = ito::PluginLoadStatusFlags(plsfWarning | plsfRelDbg);
                             status.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(pluginStatus, message));

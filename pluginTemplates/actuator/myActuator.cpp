@@ -655,7 +655,7 @@ ito::RetVal MyActuator::waitForDone(const int timeoutMS, const QVector<int> axis
     bool done = false;
     bool timeout = false;
     char motor;
-    QTime timer;
+    QElapsedTimer timer;
     QMutex waitMutex;
     QWaitCondition waitCondition;
     long delay = 100; //[ms]

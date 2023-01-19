@@ -14,11 +14,18 @@ The plotly outputs are then shown in an itom designerPlugin with the name
 import itomPlotlyRenderer
 
 import plotly.express as px
+
 # sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoPloty.png'
 
 df = px.data.tips()
-fig = px.bar(df, x='sex', y='total_bill', facet_col='day', color='smoker', barmode='group',
-             template='presentation+plotly'
-             )
+fig = px.bar(
+    df,
+    x="sex",
+    y="total_bill",
+    facet_col="day",
+    color="smoker",
+    barmode="group",
+    template="presentation+plotly",
+)
 fig.update_layout(height=400)
-fig
+fig.show()

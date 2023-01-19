@@ -33,7 +33,8 @@ endif()
 macro(itom_init_core_common_vars)
     set(BUILD_QTVERSION "auto" CACHE STRING "currently only Qt5 is supported. Set this value to 'auto' in order to auto-detect the correct Qt version or set it to 'Qt5' to hardly select Qt5.")
     option(BUILD_OPENMP_ENABLE "Use OpenMP parallelization if available. If TRUE, the definition USEOPENMP is set. This is only the case if OpenMP is generally available and if the build is release." ON)
-    
+    option(BUILD_UNITTEST_INTERNAL_ENABLE "If set, some libraries are compiled to export some internal methods, too. These can be tested then in unittests." OFF)
+
     if(CMAKE_SIZEOF_VOID_P GREATER 4)
         option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON) 
     else()
@@ -72,6 +73,10 @@ macro(itom_init_core_common_vars)
     
     if (BUILD_QT_DISABLE_DEPRECATED_BEFORE)
         add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=${BUILD_QT_DISABLE_DEPRECATED_BEFORE})
+    endif()
+    
+    if(BUILD_UNITTEST_INTERNAL_ENABLE)
+        add_definitions(-DENABLE_INTERNAL_TESTS -D_ENABLE_INTERNAL_TESTS)
     endif()
     
     #try to enable OpenMP (e.g. not available with VS Express)
@@ -139,7 +144,7 @@ macro(itom_init_core_common_vars)
     endif()
     
     if(APPLE)
-        set(CMAKE_OSX_ARCHITECTURES "x86_64")
+        set(CMAKE_OSX_ARCHITECTURES "arm64")
     endif()
     
     if(MSVC)
@@ -225,10 +230,12 @@ macro(itom_add_library_to_appdir_and_sdk target sources destinations)
     else()
         set(SDK_PLATFORM "x64")
     endif()
-    
+    message(STATUS "Compiler: ${CMAKE_CXX_COMPILER_ID}")
     # The following list has to be consistent with FindITOM_SDK.cmake! 
     # From VS higher than 1900, the default case vc${MSVC_VERSION} is used.
-    if(MSVC_VERSION EQUAL 1900)
+    if(APPLE)
+        set(SDK_COMPILER "osx_default")
+	elseif(MSVC_VERSION EQUAL 1900)
         set(SDK_COMPILER "vc14")
     elseif(MSVC_VERSION EQUAL 1800)
         set(SDK_COMPILER "vc12")
@@ -250,8 +257,6 @@ macro(itom_add_library_to_appdir_and_sdk target sources destinations)
         set(SDK_COMPILER "gnucxx")
     elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
         set(SDK_COMPILER "intel")
-    elseif(APPLE)
-        set(SDK_COMPILER "osx_default")
     else()
         set(SDK_COMPILER "unknown")
     endif()

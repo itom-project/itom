@@ -265,7 +265,7 @@ bool PythonDateTime::ItoDatetime2npyDatetime(
             usecond += 1000000LL;
         }
 
-        const QDateTime epochDate(QDate(1970, 1, 1));
+        const QDateTime epochDate(QDate(1970, 1, 1), QTime(0, 0, 0));
         QDateTime date = epochDate.addSecs(secs);
 
         if (date.isDaylightTime())

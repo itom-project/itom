@@ -46,7 +46,6 @@
 #include "../helper/guiHelper.h"
 
 #include <qapplication.h>
-#include <qdesktopwidget.h>
 #include <qdir.h>
 #include <qfiledialog.h>
 #include <qmessagebox.h>
@@ -1128,8 +1127,8 @@ void MainWindow::createMenus()
     menuBar()->setNativeMenuBar(false);
 #else // __APPLE__
     // OS X: without the native menu bar option, the menu bar is displayed within the window which
-    // might be irritating.
-    menuBar()->setNativeMenuBar(true);
+    // might be irritating. The menu bar is not embedded in the system menu bar for unclear reasons, therefore the option is set to off.
+    menuBar()->setNativeMenuBar(false);
 #endif // __APPLE__
 }
 
@@ -1522,7 +1521,8 @@ void MainWindow::mnuShowAssistant()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void MainWindow::showAssistant(const QString& collectionFile /*= ""*/)
+void MainWindow::showAssistant(
+    const QString& collectionFile /*= ""*/, const QString& showUrl /*= ""*/)
 {
 #ifdef __APPLE__
     QString appName = "Assistant";
@@ -1584,6 +1584,10 @@ void MainWindow::showAssistant(const QString& collectionFile /*= ""*/)
             // m_helpViewer->setAttribute(Qt::WA_DeleteOnClose, true);
         }
         m_helpViewer->setCollectionFile(collectionFile_);
+        if (!showUrl.isEmpty())
+        {
+            m_helpViewer->showUrl(showUrl);
+        }
         m_helpViewer->show();
 
 #else
@@ -1609,6 +1613,11 @@ void MainWindow::showAssistant(const QString& collectionFile /*= ""*/)
                 args << QLatin1String("-collectionFile");
                 args << QLatin1String(collectionFile_.toLatin1().data());
                 args << QLatin1String("-enableRemoteControl");
+                if (!showUrl.isEmpty())
+                {
+                    args << QLatin1String("-showUrl");
+                    args << QLatin1String(showUrl.toLatin1().data());
+                }
 
                 QString app = ProcessOrganizer::getAbsQtToolPath(appName);
 

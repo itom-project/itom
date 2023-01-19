@@ -25,8 +25,9 @@
     https://code.woboq.org/qt5/qtbase/src/widgets/kernel/qtooltip.cpp.html
 *********************************************************************** */
 
+#include <qguiapplication.h>
 #include <qapplication.h>
-#include <qdesktopwidget.h>
+
 #include <qevent.h>
 #include <qpointer.h>
 #include <qstyle.h>
@@ -42,12 +43,16 @@
 
 #include "toolTip.h"
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
+#include <qdesktopwidget.h>
+#endif
+
 ToolTipLabel *ToolTipLabel::instance = 0;
 ToolTipLabel::ToolTipLabel(const QString &text, const QPoint &pos, QWidget *w, int msecDisplayTime)
 #ifndef QT_NO_STYLE_STYLESHEET
-    : QLabel(w, Qt::ToolTip | Qt::BypassGraphicsProxyWidget), styleSheetParent(0), widget(0)
+    : QLabel(w, Qt::ToolTip | Qt::BypassGraphicsProxyWidget), styleSheetParent(nullptr), widget(nullptr)
 #else
-    : QLabel(w, Qt::ToolTip | Qt::BypassGraphicsProxyWidget), widget(0)
+    : QLabel(w, Qt::ToolTip | Qt::BypassGraphicsProxyWidget), widget(nullptr)
 #endif
 {
     delete instance;
@@ -56,13 +61,13 @@ ToolTipLabel::ToolTipLabel(const QString &text, const QPoint &pos, QWidget *w, i
     setBackgroundRole(QPalette::ToolTipBase);
     setPalette(ToolTip::palette());
     ensurePolished();
-    setMargin(1 + style()->pixelMetric(QStyle::PM_ToolTipLabelFrameWidth, 0, this));
+    setMargin(1 + style()->pixelMetric(QStyle::PM_ToolTipLabelFrameWidth, nullptr, this));
     setFrameStyle(QFrame::NoFrame);
     setAlignment(Qt::AlignLeft);
     setIndent(1);
     //setTextFormat(Qt::RichText);
     qApp->installEventFilter(this);
-    setWindowOpacity(style()->styleHint(QStyle::SH_ToolTipLabel_Opacity, 0, this) / 255.0);
+    setWindowOpacity(style()->styleHint(QStyle::SH_ToolTipLabel_Opacity, nullptr, this) / 255.0);
     setMouseTracking(true);
     fadingOut = false;
     reuseTip(text, msecDisplayTime, pos);
@@ -82,7 +87,7 @@ void ToolTipLabel::reuseTip(const QString &text, int msecDisplayTime, const QPoi
     if (styleSheetParent) {
         disconnect(styleSheetParent, SIGNAL(destroyed()),
             ToolTipLabel::instance, SLOT(styleSheetParentDestroyed()));
-        styleSheetParent = 0;
+        styleSheetParent = nullptr;
     }
 #endif
     setText(text);
@@ -140,20 +145,22 @@ void ToolTipLabel::paintEvent(QPaintEvent *ev)
 {
     QStylePainter p(this);
     QStyleOptionFrame opt;
-    opt.init(this);
+    opt.initFrom(this);
     p.drawPrimitive(QStyle::PE_PanelTipLabel, opt);
     p.end();
     QLabel::paintEvent(ev);
 }
+
 void ToolTipLabel::resizeEvent(QResizeEvent *e)
 {
     QStyleHintReturnMask frameMask;
     QStyleOption option;
-    option.init(this);
+    option.initFrom(this);
     if (style()->styleHint(QStyle::SH_ToolTip_Mask, &option, this, &frameMask))
         setMask(frameMask.region);
     QLabel::resizeEvent(e);
 }
+
 void ToolTipLabel::mouseMoveEvent(QMouseEvent *e)
 {
     if (!rect.isNull()) {
@@ -165,20 +172,24 @@ void ToolTipLabel::mouseMoveEvent(QMouseEvent *e)
     }
     QLabel::mouseMoveEvent(e);
 }
+
 ToolTipLabel::~ToolTipLabel()
 {
-    instance = 0;
+    instance = nullptr;
 }
+
 void ToolTipLabel::hideTip()
 {
     if (!hideTimer.isActive())
         hideTimer.start(300, this);
 }
+
 void ToolTipLabel::hideTipImmediately()
 {
     close(); // to trigger QEvent::Close which stops the animation
     deleteLater();
 }
+
 void ToolTipLabel::setTipRect(QWidget *w, const QRect &r)
 {
     if (Q_UNLIKELY(!r.isNull() && !w)) {
@@ -188,6 +199,7 @@ void ToolTipLabel::setTipRect(QWidget *w, const QRect &r)
     widget = w;
     rect = r;
 }
+
 void ToolTipLabel::timerEvent(QTimerEvent *e)
 {
     if (e->timerId() == hideTimer.timerId()
@@ -197,6 +209,7 @@ void ToolTipLabel::timerEvent(QTimerEvent *e)
         hideTipImmediately();
     }
 }
+
 bool ToolTipLabel::eventFilter(QObject *o, QEvent *e)
 {
     switch (e->type()) {
@@ -234,7 +247,13 @@ bool ToolTipLabel::eventFilter(QObject *o, QEvent *e)
     case QEvent::FocusIn:
     case QEvent::FocusOut:
 #endif
-    case QEvent::Close: // For QTBUG-55523 (QQC) specifically: Hide tooltip when windows are closed
+    case QEvent::Close:
+        // For QTBUG-55523 (QQC) specifically: Hide tooltip when windows are closed,
+        // unless the close event is for the this tooltip, in which case we don't
+        // recursively hide/close again.
+        if (o != (QObject*)windowHandle() && o != this)
+            hideTipImmediately();
+        break;
     case QEvent::MouseButtonPress:
     case QEvent::MouseButtonRelease:
     case QEvent::MouseButtonDblClick:
@@ -290,12 +309,24 @@ void ToolTipLabel::placeTip(const QPoint &pos, QWidget *w, const QPoint &alterna
     }
 #endif //QT_NO_STYLE_STYLESHEET
 
-    QRect screen = QApplication::desktop()->geometry();
-
     QPoint p = pos;
-    p += QPoint(2,16);
+    p += QPoint(2, 16);
 
-    if (p.x() + this->width() > screen.x() + screen.width())
+    const auto screens = QGuiApplication::screens();
+    QRect allScreensRect;
+    
+    if (screens.size() > 0)
+    {
+        allScreensRect = screens[0]->geometry();
+    } 
+
+    for (int i = 1; i < screens.size(); ++i)
+    {
+        const QScreen* screen = screens[i];
+        allScreensRect = allScreensRect.united(screen->geometry());
+    }
+
+    if (p.x() + width() > allScreensRect.x() + allScreensRect.width())
     {
         if (alternativeTopRightPos.isNull())
         {
@@ -307,7 +338,7 @@ void ToolTipLabel::placeTip(const QPoint &pos, QWidget *w, const QPoint &alterna
         }
     }
     
-    if (p.y() + this->height() > screen.y() + screen.height())
+    if (p.y() + this->height() > allScreensRect.y() + allScreensRect.height())
     {
         if (alternativeTopRightPos.isNull())
         {
@@ -319,14 +350,26 @@ void ToolTipLabel::placeTip(const QPoint &pos, QWidget *w, const QPoint &alterna
         }
     }
 
-    if (p.y() < screen.y())
-        p.setY(screen.y());
-    if (p.x() + this->width() > screen.x() + screen.width())
-        p.setX(screen.x() + screen.width() - this->width());
-    if (p.x() < screen.x())
-        p.setX(screen.x());
-    if (p.y() + this->height() > screen.y() + screen.height())
-        p.setY(screen.y() + screen.height() - this->height());
+    if (p.y() < allScreensRect.y())
+    {
+        p.setY(allScreensRect.y());
+    }
+
+    if (p.x() + this->width() > allScreensRect.x() + allScreensRect.width())
+    {
+        p.setX(allScreensRect.x() + allScreensRect.width() - this->width());
+    }
+
+    if (p.x() < allScreensRect.x())
+    {
+        p.setX(allScreensRect.x());
+    }
+
+    if (p.y() + this->height() > allScreensRect.y() + allScreensRect.height())
+    {
+        p.setY(allScreensRect.y() + allScreensRect.height() - this->height());
+    }
+
     this->move(p);
 }
 bool ToolTipLabel::tipChanged(const QPoint &pos, const QString &text, QObject *o)
@@ -387,16 +430,17 @@ void ToolTip::showText(const QPoint &pos, const QString &text, QWidget *w, const
         }
     }
     if (!text.isEmpty()) { // no tip can be reused, create new tip:
+        QWidget* tipLabelParent = [w]() -> QWidget* {
 #ifdef Q_OS_WIN32
-        // On windows, we can't use the widget as parent otherwise the window will be
-        // raised when the tooltip will be shown
-        QT_WARNING_PUSH
-            QT_WARNING_DISABLE_DEPRECATED
-            new ToolTipLabel(text, pos, qobject_cast<QWidget*>(QApplication::desktop()->parent()), msecDisplayTime);
-        QT_WARNING_POP
+            // On windows, we can't use the widget as parent otherwise the window will be
+            // raised when the tooltip will be shown
+            Q_UNUSED(w);
+            return nullptr;
 #else
-        new ToolTipLabel(text, pos, w, msecDisplayTime); // sets ToolTipLabel::instance to itself
+            return w;
 #endif
+        }();
+        new ToolTipLabel(text, pos, tipLabelParent, msecDisplayTime);
         ToolTipLabel::instance->setTipRect(w, rect);
         ToolTipLabel::instance->placeTip(pos, w, alternativeTopRightPos);
         ToolTipLabel::instance->setObjectName(QLatin1String("ToolTip_label"));

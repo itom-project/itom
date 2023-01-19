@@ -392,10 +392,13 @@ void GoToAssignmentRunnable::run()
                 {
                     if (line >= 0)
                     {
-                        QFileInfo filepath2 = QString(QLatin1String(path2));
+                        QFileInfo filepath2;
+                        filepath2.setFile(QLatin1String(path2));
+
                         if (lineOffset == 1)
                         {
-                            QFileInfo filepath = m_request.m_path;
+                            QFileInfo filepath(m_request.m_path);
+
                             if (filepath != filepath2)
                             {
                                 lineOffset = 0;
