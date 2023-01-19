@@ -66,6 +66,7 @@ TEST(AddInManagerTest, General)
     int len = aimName.toWCharArray(aimName2);
     aimName2[len] = 0;
 #else
+    char aimName2[_MAX_PATH + 1];
     char path[_MAX_PATH + 1];
 #endif
 
