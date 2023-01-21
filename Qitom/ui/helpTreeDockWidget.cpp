@@ -1557,7 +1557,11 @@ void HelpTreeDockWidget::liveFilter(const QString& filterText)
 void HelpTreeDockWidget::timerEvent(QTimerEvent* event)
 {
     //    showTreeview();
+#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
     m_pMainFilterModel->setFilterRegularExpression(m_filterTextPending);
+#else
+    m_pMainFilterModel->setFilterRegExp(m_filterTextPending);
+#endif
     expandTree();
 
     killTimer(m_filterTextPendingTimer);
