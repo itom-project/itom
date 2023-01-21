@@ -107,8 +107,12 @@ namespace ito
         ito::RetVal setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond = NULL) final;
         ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond) final;
         ito::RetVal changeChannelForListerners(const QString& newChannel, QObject* obj);
-        ito::RetVal getVal(QSharedPointer<QMap<QString, ito::DataObject*>> dataObjMap, ItomSharedSemaphore* waitCond);
-        ito::RetVal copyVal(QSharedPointer<QMap<QString, ito::DataObject*>> dataObjMap, ItomSharedSemaphore* waitCond);
+        ito::RetVal getVal(QSharedPointer<QMap<QString, ito::DataObject*> > dataObjMap, ItomSharedSemaphore* waitCond);
+        ito::RetVal copyVal(QSharedPointer<QMap<QString, ito::DataObject*> > dataObjMap, ItomSharedSemaphore* waitCond);
+
+    signals:
+
+        void newGrabberData(QSharedPointer<QMap<QString, ito::DataObject> > dataObjMap); /*!<Signals that a new image or set of images is available. Connect to this signal to obtain a shallow copy of the new images*/
     };
 }
 #endif

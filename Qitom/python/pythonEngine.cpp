@@ -263,7 +263,7 @@ PythonEngine::PythonEngine() :
     qRegisterMetaType<ito::JediAssignment>("ito::JediAssignment");
     qRegisterMetaType<QVector<ito::JediAssignment> >("QVector<ito::JediAssignment>");
     qRegisterMetaType<QSharedPointer<ito::FunctionCancellationAndObserver> >("QSharedPointer<ito::FunctionCancellationAndObserver>");
-
+    qRegisterMetaType <QSharedPointer<QMap<QString, ito::DataObject>>>("QSharedPointer<QMap<QString, ito::DataObject>>");
     m_autoReload.modAutoReload = NULL;
     m_autoReload.classAutoReload = NULL;
     m_autoReload.checkFctExec = false;
