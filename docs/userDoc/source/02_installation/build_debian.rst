@@ -53,44 +53,49 @@ Recommended (optional):
 Recommended folder structure
 -------------------------------------------------------------------------------
 
-Similar to Windows, the following folder structure is recommended:
+The following folder structure is recommended and should be setup when cloning
+this repository and the subsequent submodules.
 
 .. code-block:: bash
     
-    ./sources
+    ./itomproject
         ./itom    # cloned repository of core
         ./plugins # cloned sources of plugins
         ./designerplugins # cloned sources of designerPlugins
         ...
     # base folder for compilation. The makefiles should 
     # be stored in the following subfolders (depending on project):
-    ./build       
-        ./itom    # ...core
-        ./plugins # ...plugins
-        ./designerplugins # ...designerPlugins
-        ...
+    ./itomproject
+        ./build       
+            ./itom    # ...core
+            ./plugins # ...plugins
+            ./designerplugins # ...designerPlugins
+            ...
     #Optionally, if you want to do debug and release builds separately:
     # base folder for debug compilation (if desired). The makefiles 
     # should be stored in the following subfolders (depending on project):
-    ./build_debug 
-        ./itom    # ...core
-        ./plugins # ...plugins
-        ./designerplugins # ...designerPlugins
-        ...
+    ./itomproject
+        ./build_debug 
+            ./itom    # ...core
+            ./plugins # ...plugins
+            ./designerplugins # ...designerPlugins
+            ...
     # base folder for release compilation (if desired). The makefiles should 
     # be stored in the following subfolders (depending on project):
-    ./build_release 
-        ./itom      # ...core
-        ./plugins   # ...plugins
-        ./designerplugins # ...designerPlugins
-        ...
+    ./itomproject
+        ./build_release 
+            ./itom      # ...core
+            ./plugins   # ...plugins
+            ./designerplugins # ...designerPlugins
+            ...
         
         
 Copy code to make folder structure:
 
 .. code-block:: bash
     
-    mkdir itom \ mkdir -p itom/{sources,build_debug,build_release}/{itom,plugins,designerplugins}
+    cd itomproject
+    mkdir -p ./{build_debug,build_release}
 
 
 Obtain the Dependencies
@@ -141,18 +146,13 @@ Obtain the sources
 
 .. code-block:: bash
     
-    git clone https://bitbucket.org/itom/itom.git ./itom/sources/itom
-    git clone https://bitbucket.org/itom/plugins.git ./itom/sources/plugins
-    git clone https://bitbucket.org/itom/designerplugins.git ./itom/sources/designerplugins
-    
-    cd itom/build_release/itom
-    cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=OFF -DCMAKE_BUILD_TYPE=Release ../../sources/itom  #If PCL-support should be enabled, replace OFF by ON
-    make -j4
-    cd ../designerplugins
-    cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=OFF -DCMAKE_BUILD_TYPE=Release -DITOM_SDK_DIR=../itom/SDK ../../sources/designerplugins #If PCL-support should be enabled, replace OFF by ON
-    make -j4
-    cd ../plugins
-    cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=OFF -DCMAKE_BUILD_TYPE=Release -DITOM_SDK_DIR=../itom/SDK ../../sources/plugins #If PCL-support should be enabled, replace OFF by ON
+    git clone https://berndbertschinger@bitbucket.org/itom/itomproject.git
+    cd itomproject
+    git submodule init
+    git submodule update
+    mkdir -p ./{build_debug,build_release}
+    cd ./build_release
+    cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=OFF -DCMAKE_BUILD_TYPE=Release ../  #If PCL-support should be enabled, replace OFF by ON
     make -j4
     
 If you want to compile **itom** under **Raspbian** add **BUILD_WITH_HELPVIEWER=OFF** to the **cmake**
@@ -160,8 +160,8 @@ command of the itom project (necessary due to unavailable webengine package of Q
 
 .. code-block:: bash
     
-    cd itom/build/itom
-    cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=OFF -DBUILD_WITH_HELPVIEWER=OFF ../../sources/itom
+    cd build_release
+    cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=OFF -DBUILD_WITH_HELPVIEWER=OFF ../
     make -j4
     
 Configuration process
