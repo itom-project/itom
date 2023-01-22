@@ -50,20 +50,14 @@ Therefore, the built-in helpviewer of itom has to be disabled. For building itom
 
 .. code-block:: bash
     
-    mkdir -p itom/sources/itom itom/sources/plugins itom/sources/designerplugins
-    git clone https://bitbucket.org/itom/itom.git ./itom/sources/itom
-    git clone https://bitbucket.org/itom/plugins.git ./itom/sources/plugins
-    git clone https://bitbucket.org/itom/designerplugins.git ./itom/sources/designerplugins
-    mkdir -p itom/build/itom itom/build/plugins itom/build/designerplugins
-    cd itom/build/itom
-    cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=OFF -PYTHON_LIBRARY=/usr/lib64/libpython3.5m.so -PYTHON_INCLUDE_DIR=/usr/include/python3.5m -BUILD_QTVERSION=Qt5 -Qt5_DIR=/usr/lib64/cmake/Qt5 -Qt5Core_DIR=/usr/lib64/cmake/Qt5Core -BUILD_WITH_HELPVIEWER=OFF ../../sources/itom 
-    make
-    cd ../designerplugins
-    cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=OFF -PYTHON_LIBRARY=/usr/lib64/libpython3.5m.so -PYTHON_INCLUDE_DIR=/usr/include/python3.5m -BUILD_QTVERSION=Qt5 -Qt5_DIR=/usr/lib64/cmake/Qt5 -Qt5Core_DIR=/usr/lib64/cmake/Qt5Core -BUILD_WITH_HELPVIEWER=OFF -DITOM_SDK_DIR=../itom/SDK ../../sources/designerplugins
-    make
-    cd ../plugins
-    cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=OFF -PYTHON_LIBRARY=/usr/lib64/libpython3.5m.so -PYTHON_INCLUDE_DIR=/usr/include/python3.5m -BUILD_QTVERSION=Qt5 -Qt5_DIR=/usr/lib64/cmake/Qt5 -Qt5Core_DIR=/usr/lib64/cmake/Qt5Core -BUILD_WITH_HELPVIEWER=OFF -DITOM_SDK_DIR=../itom/SDK ../../sources/plugins
-    make
+    git clone git clone git@bitbucket.org:itom/itomproject.git
+    cd itomproject
+    git submodule init
+    git submodule update
+    mkdir -p ./{build_debug,build_release}
+    cd ./build_release
+    cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=OFF -PYTHON_LIBRARY=/usr/lib64/libpython3.5m.so -PYTHON_INCLUDE_DIR=/usr/include/python3.5m -BUILD_QTVERSION=Qt5 -Qt5_DIR=/usr/lib64/cmake/Qt5 -Qt5Core_DIR=/usr/lib64/cmake/Qt5Core -BUILD_WITH_HELPVIEWER=OFF ../ 
+    make -j4
 
 **Fedora >= 35**
 
@@ -71,39 +65,27 @@ For these versions, CMake is able to detect Qt5 and Python automatically. Additi
 
 .. code-block:: bash
     
-    mkdir -p itom/sources/itom itom/sources/plugins itom/sources/designerplugins
-    git clone https://bitbucket.org/itom/itom.git ./itom/sources/itom
-    git clone https://bitbucket.org/itom/plugins.git ./itom/sources/plugins
-    git clone https://bitbucket.org/itom/designerplugins.git ./itom/sources/designerplugins
-    mkdir -p itom/build/itom itom/build/plugins itom/build/designerplugins
-    cd itom/build/itom
-    cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=OFF ../../sources/itom 
-    make
-    cd ../designerplugins
-    cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=OFF -DITOM_SDK_DIR=../itom/SDK ../../sources/designerplugins
-    make
-    cd ../plugins
-    cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=OFF -DITOM_SDK_DIR=../itom/SDK ../../sources/plugins
-    make
+    git clone git clone git@bitbucket.org:itom/itomproject.git
+    cd itomproject
+    git submodule init
+    git submodule update
+    mkdir -p ./{build_debug,build_release}
+    cd ./build_release
+    cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=OFF ../
+    make -j4
     
 **With** point cloud support use:
 
 .. code-block:: bash
     
-    mkdir -p itom/sources/itom itom/sources/plugins itom/sources/designerplugins
-    git clone https://bitbucket.org/itom/itom.git ./itom/sources/itom
-    git clone https://bitbucket.org/itom/plugins.git ./itom/sources/plugins
-    git clone https://bitbucket.org/itom/designerplugins.git ./itom/sources/designerplugins
-    mkdir -p itom/build/itom itom/build/plugins itom/build/designerplugins
-    cd itom/build
-    cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=ON -DPYTHON_LIBRARY=/usr/lib64/libpython3.5m.so -DPYTHON_INCLUDE_DIR=/usr/include/python3.5m -DBUILD_QTVERSION=Qt5 -Qt5_DIR=/usr/lib64/cmake/Qt5 -DQt5Core_DIR=/usr/lib64/cmake/Qt5Core -DBUILD_WITH_HELPVIEWER=OFF -DPCL_DIR=/usr/lib64/cmake/pcl -DBOOST_INCLUDEDIR=/usr/include -DBOOST_LIBRARYDIR=/usr/lib64 ../../sources/itom
-    make
-    cd ../designerPlugins
-    cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=ON -DPYTHON_LIBRARY=/usr/lib64/libpython3.5m.so -DPYTHON_INCLUDE_DIR=/usr/include/python3.5m -DBUILD_QTVERSION=Qt5 -DQt5_DIR=/usr/lib64/cmake/Qt5 -DQt5Core_DIR=/usr/lib64/cmake/Qt5Core -DBUILD_WITH_HELPVIEWER=OFF -DPCL_DIR=/usr/lib64/cmake/pcl -DBOOST_INCLUDEDIR=/usr/include -DBOOST_LIBRARYDIR=/usr/lib64 -DITOM_SDK_DIR=../itom/SDK ../../sources/designerPlugins
-    make
-    cd ../plugins
-    cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=ON -DPYTHON_LIBRARY=/usr/lib64/libpython3.5m.so -DPYTHON_INCLUDE_DIR=/usr/include/python3.5m -DBUILD_QTVERSION=Qt5 -DQt5_DIR=/usr/lib64/cmake/Qt5 -DQt5Core_DIR=/usr/lib64/cmake/Qt5Core -DBUILD_WITH_HELPVIEWER=OFF -DPCL_DIR=/usr/lib64/cmake/pcl -DBOOST_INCLUDEDIR=/usr/include -DBOOST_LIBRARYDIR=/usr/lib64 -DITOM_SDK_DIR=../itom/SDK ../../sources/plugins
-    make
+    git clone git clone git@bitbucket.org:itom/itomproject.git
+    cd itomproject
+    git submodule init
+    git submodule update
+    mkdir -p ./{build_debug,build_release}
+    cd ./build_release
+    cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=ON -DPYTHON_LIBRARY=/usr/lib64/libpython3.5m.so -DPYTHON_INCLUDE_DIR=/usr/include/python3.5m -DBUILD_QTVERSION=Qt5 -DQt5_DIR=/usr/lib64/cmake/Qt5 -DQt5Core_DIR=/usr/lib64/cmake/Qt5Core -DBUILD_WITH_HELPVIEWER=OFF -DPCL_DIR=/usr/lib64/cmake/pcl -DBOOST_INCLUDEDIR=/usr/include -DBOOST_LIBRARYDIR=/usr/lib64 -DITOM_SDK_DIR=../itom/SDK ../
+    make -j4
     
 Hints
 --------------

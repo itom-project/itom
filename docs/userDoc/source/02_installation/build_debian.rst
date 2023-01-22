@@ -146,7 +146,7 @@ Obtain the sources
 
 .. code-block:: bash
     
-    git clone https://berndbertschinger@bitbucket.org/itom/itomproject.git
+    git clone git clone git@bitbucket.org:itom/itomproject.git
     cd itomproject
     git submodule init
     git submodule update
