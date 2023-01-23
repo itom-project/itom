@@ -4727,6 +4727,46 @@ PyObject* PythonEngine::PyDbgCommandLoop(PyObject * /*pSelf*/, PyObject *pArgs)
     return Py_BuildValue("i", 1);
 }
 
+//-------------------------------------------------------------------------------------
+/*static*/ PyObject* PythonEngine::PyDbgClearBreakpoint(PyObject* pSelf, PyObject* pArgs)
+{
+    PythonEngine* pyEngine = PythonEngine::getInstanceInternal();
+
+    int bpNumber;
+
+    if (!PyArg_ParseTuple(pArgs, "i", &bpNumber))
+    {
+        return nullptr;
+    }
+
+    ito::RetVal retVal; // = pyEngine->pythonDeleteBreakpoint(bpNumber);
+
+    
+
+    auto bpModel = pyEngine->getBreakPointModel();
+    foreach(const BreakPointItem &item, bpModel->getBreakpoints())
+    {
+        if (item.pythonDbgBpNumber == bpNumber)
+        {
+            auto index = bpModel->getFirstBreakPointIndex(item.filename, item.lineIdx);
+
+            if (index.isValid())
+            {
+                retVal = bpModel->deleteBreakPoint(index);
+            }
+
+            break;
+        }
+    }
+
+    if (!PythonCommon::transformRetValToPyException(retVal))
+    {
+        return nullptr;
+    }
+
+    Py_RETURN_NONE;
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------
 bool PythonEngine::renameVariable(bool globalNotLocal, const QString &oldFullItemName, QString newKey, ItomSharedSemaphore *semaphore)
 {
@@ -6950,6 +6990,7 @@ void PythonEngine::connectNotify(const QMetaMethod &signal)
 PyMethodDef PythonEngine::PyMethodItomDbg[] = {
     // "Python name", C Ffunction Code, Argument Flags, __doc__ description
     {"pyDbgCommandLoop", PythonEngine::PyDbgCommandLoop, METH_VARARGS, "will be invoked if debugger stopped at the given filename and line"},
+    {"pyDbgClearBreakpoint", PythonEngine::PyDbgClearBreakpoint, METH_VARARGS, "will be invoked if debugger wants to remove a temporary breakpoint"},
     {NULL, NULL, 0, NULL}
 };
 
