@@ -176,6 +176,17 @@ namespace ito
     */
     #define apiDisconnectFromOutputAndErrorStream \
                 (* (ito::RetVal (*)(const QObject *receiver, const char *method, ito::tStreamMessageType messageType)) ito::ITOM_API_FUNCS_GRAPH[19])
+    
+    //! shows the help viewer (assistant) of the itom main application.
+    /*!
+    \param collectionFile is either an empty string, such that the default help files of itom are shown or a 
+        qhc help collection file, that is loaded and shown.
+    \param showUrl can be an empty string or the URL of the page, that should be displayed
+
+    \return ito::retOk if everything ok, else ito::retError
+    */
+    #define apiShowHelpViewer \
+                (* (ito::RetVal (*)(const QString &collectionFile, const QString &showUrl)) ito::ITOM_API_FUNCS_GRAPH[20])
 
 } //end namespace ito
 

@@ -66,6 +66,7 @@ namespace ito
 
             static ito::RetVal mConnectToOutputAndErrorStream(const QObject *receiver, const char *method, ito::tStreamMessageType messageType);
             static ito::RetVal mDisconnectFromOutputAndErrorStream(const QObject *receiver, const char *method, ito::tStreamMessageType messageType);
+            static ito::RetVal mShowHelpViewer(const QString& collectionFile, const QString& showUrl);
 
         private:
     };

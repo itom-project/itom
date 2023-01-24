@@ -61,6 +61,7 @@ namespace ito
         (void*)&QPropertyHelper::writeProperty,                                 /* [17] */
         (void*)&singleApiFunctionsGraph.mConnectToOutputAndErrorStream,         /* [18] */
         (void*)&singleApiFunctionsGraph.mDisconnectFromOutputAndErrorStream,    /* [19] */
+        (void*)&singleApiFunctionsGraph.mShowHelpViewer, /* [20] */
         NULL
     };
 
@@ -624,6 +625,24 @@ ito::RetVal apiFunctionsGraph::mDisconnectFromOutputAndErrorStream(const QObject
     }
 
     return retval;
+}
+
+//-------------------------------------------------------------------------------------
+ito::RetVal apiFunctionsGraph::mShowHelpViewer(const QString& collectionFile, const QString& showUrl)
+{
+    QObject* mainWindow = AppManagement::getMainWindow();
+
+    if (!mainWindow)
+    {
+        return RetVal(retError, 0, "Main window not available");
+    }
+
+    if (!QMetaObject::invokeMethod(mainWindow, "showAssistant", Q_ARG(QString, collectionFile), Q_ARG(QString, showUrl)))
+    {
+        return RetVal(retError, 0, "The method to show the help viewer could not be invoked");
+    }
+
+    return retOk;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------
