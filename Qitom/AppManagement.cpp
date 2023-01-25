@@ -23,7 +23,9 @@
 #include "AppManagement.h"
 #include "organizer/userOrganizer.h"
 
-#include <qtextcodec.h>
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    #include <qtextcodec.h>
+#endif
 
 namespace ito
 {
@@ -49,7 +51,13 @@ QObject* AppManagement::m_cerrStream = nullptr;
 QObject* AppManagement::m_coutStream = nullptr;
 QMutex AppManagement::m_mutex;
 AppManagement::Timeouts AppManagement::timeouts;
+
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 QTextCodec* AppManagement::m_scriptTextCodec = nullptr;
+#else
+QStringEncoder AppManagement::m_scriptTextCodecEncoder;
+QStringDecoder AppManagement::m_scriptTextCodecDecoder;
+#endif
 
 //-------------------------------------------------------------------------------------------
 /*static*/ QString AppManagement::getSettingsFile(void)
@@ -58,6 +66,7 @@ QTextCodec* AppManagement::m_scriptTextCodec = nullptr;
     return ((ito::UserOrganizer*)m_userOrganizer)->getCurrentUserSettingsFile();
 }
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 //-------------------------------------------------------------------------------------------
 /*static*/ QTextCodec* AppManagement::getScriptTextCodec()
 {
@@ -78,5 +87,28 @@ QTextCodec* AppManagement::m_scriptTextCodec = nullptr;
     QMutexLocker locker(&m_mutex);
     m_scriptTextCodec = codec;
 }
+
+#else
+
+//-------------------------------------------------------------------------------------------
+/*static*/ QByteArray AppManagement::encodeStringFromDefaultCodec(const QString& string)
+{
+    return m_scriptTextCodecEncoder(string);
+}
+
+//-------------------------------------------------------------------------------------------
+/*static*/ QString AppManagement::decodeByteArrayToDefaultCodec(const QByteArray& ba)
+{
+    return m_scriptTextCodecDecoder(ba);
+}
+
+//-------------------------------------------------------------------------------------------
+/*static*/ void AppManagement::setScriptTextCodec(QStringConverter::Encoding& encoding)
+{
+    m_scriptTextCodecDecoder = QStringDecoder(encoding);
+    m_scriptTextCodecEncoder = QStringEncoder(encoding);
+}
+
+#endif
 
 } //end namespace ito

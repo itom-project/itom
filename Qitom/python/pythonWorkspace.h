@@ -38,6 +38,7 @@
 #include <qchar.h>
 #include <qset.h>
 #include <qstringlist.h>
+#include <qobject.h>
 
 // type of outer container
 #define PY_LIST_TUPLE 'l'

@@ -40,9 +40,7 @@
 
 #include <qsettings.h>
 #include <qstringlist.h>
-
 #include <qdir.h>
-#include <qtextcodec.h>
 #include <qsplashscreen.h>
 #include <qstylefactory.h>
 #include <qmessagebox.h>
@@ -51,6 +49,12 @@
 #include <qresource.h>
 #include <qfileinfo.h>
 #include <qscreen.h>
+
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+#include <qtextcodec.h>
+#else
+#include <qstringconverter.h>
+#endif
 
 #if WIN32
 #include <Windows.h>
@@ -151,11 +155,20 @@ MainApplication::~MainApplication()
 //----------------------------------------------------------------------------------------------------------------------------------
 void MainApplication::registerMetaObjects()
 {
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    // must not be called any more in Qt6, since this is automatically done then.
     qRegisterMetaTypeStreamOperators<ito::ScriptEditorStorage>("ito::ScriptEditorStorage");
     qRegisterMetaTypeStreamOperators<QList<ito::ScriptEditorStorage> >("QList<ito::ScriptEditorStorage>");
 
     qRegisterMetaTypeStreamOperators<ito::BreakPointItem>("BreakPointItem");
     qRegisterMetaTypeStreamOperators<ito::BookmarkItem>("BookmarkItem");
+#else
+    qRegisterMetaType<ito::ScriptEditorStorage>("ito::ScriptEditorStorage");
+    qRegisterMetaType<QList<ito::ScriptEditorStorage> >("QList<ito::ScriptEditorStorage>");
+
+    qRegisterMetaType<ito::BreakPointItem>("BreakPointItem");
+    qRegisterMetaType<ito::BookmarkItem>("BookmarkItem");
+#endif
 
     qRegisterMetaType<ito::tStreamMessageType>("ito::tStreamMessageType");
 }
@@ -412,8 +425,8 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
     if (appendPathes.size() > 0 || prependPathes.size() > 0)
     {
         QByteArray oldpath = qgetenv("path");
-        QByteArray prepend = prependPathes.size() > 0 ? prependPathes.join(";").toLatin1() + ";" : "";
-        QByteArray append = appendPathes.size() > 0 ? ";" + appendPathes.join("; ").toLatin1() : "";
+        QByteArray prepend = prependPathes.size() > 0 ? prependPathes.join(";").toLatin1() + QByteArray(";") : QByteArray("");
+        QByteArray append = appendPathes.size() > 0 ? QByteArray(";") + appendPathes.join("; ").toLatin1() : QByteArray("");
         QByteArray newpath = "path=" + prepend + oldpath + append; //set libDir at the beginning of the path-variable
         _putenv(newpath.data());
     }
@@ -471,7 +484,14 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
     QCoreApplication::processEvents();
 
     //1. try to load qt-translations from qt-folder
-    m_qtTranslator.load("qt_" + local.name(), QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    m_qtTranslator.load(
+        "qt_" + local.name(), QLibraryInfo::path(QLibraryInfo::TranslationsPath));
+#else
+    m_qtTranslator.load(
+        "qt_" + local.name(), QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+#endif
+    
     if (m_qtTranslator.isEmpty())
     {
         //qt-folder is not available, then try itom translation folder
@@ -496,8 +516,9 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
     QCoreApplication::instance()->installTranslator(&m_addinmanagerTranslator);
 
     //3. set default encoding codec
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     QTextCodec *textCodec = QTextCodec::codecForName(codec);
-    if (textCodec == NULL)
+    if (textCodec == nullptr)
     {
         textCodec = QTextCodec::codecForName("ISO 8859-1"); //latin1 is default
     }
@@ -516,6 +537,27 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
     {
         QTextCodec::setCodecForLocale(textCodec);
     }
+#else
+    auto textCodec = QStringConverter::encodingForName(codec);
+
+    if (!textCodec.has_value())
+    {
+        textCodec = QStringConverter::Latin1;
+    }
+
+    textCodec = QStringConverter::Utf8;
+    
+    AppManagement::setScriptTextCodec(textCodec.value());
+
+    // None of these two is available in Qt5 and according to
+    // Qt docu it should not have been used anyway. So
+    // we need to find another solution here
+    // QTextCodec::setCodecForCStrings(textCodec);
+    /*if (setCodecForLocal && textCodec)
+    {
+        QTextCodec::setCodecForLocale(textCodec);
+    }*/
+#endif
 
     if (m_guiType == standard || m_guiType == console)
     {
@@ -672,8 +714,8 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
     qDebug("..python engine started");
 
     m_pyThread = new QThread();
-    // increase the stack size of the Python thread to 5MB (instead of 1MB default).
-    m_pyThread->setStackSize(5000000);
+    // increase the stack size of the Python thread.
+    m_pyThread->setStackSize(8388608);
     qDebug() << "..python engine thread stack size" << m_pyThread->stackSize();
     m_pyEngine->moveToThread(m_pyThread);
     m_pyThread->start();

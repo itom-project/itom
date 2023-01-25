@@ -23,11 +23,15 @@
 #include "paramHelper.h"
 
 #include "../common/addInInterface.h"
+#include "addInManagerPrivate.h"
 #include "../DataObject/dataobj.h"
 
 #include <qregularexpression.h>
 
+
 namespace ito {
+
+
 
 //----------------------------------------------------------------------------------------------------------------------------------
 tCompareResult ParamHelper::compareParam(
@@ -802,16 +806,14 @@ ito::RetVal ParamHelper::validateStringMeta(
     if (meta && meta->getLen() > 0 && value)
     {
         bool found = false;
-        QRegExp reg;
+        QRegularExpression reg;
+
         switch (meta->getStringType())
         {
         case ito::StringMeta::String:
-            reg.setPatternSyntax(QRegExp::FixedString);
-
             for (int i = 0; i < meta->getLen(); i++)
             {
-                reg.setPattern(QLatin1String(meta->getString(i)));
-                if (reg.exactMatch(value_))
+                if (QLatin1String(meta->getString(i)) == value_)
                 {
                     found = true;
                     break;
@@ -819,12 +821,12 @@ ito::RetVal ParamHelper::validateStringMeta(
             }
             break;
         case ito::StringMeta::Wildcard:
-            reg.setPatternSyntax(QRegExp::Wildcard);
-
+            
             for (int i = 0; i < meta->getLen(); i++)
             {
-                reg.setPattern(QLatin1String(meta->getString(i)));
-                if (reg.exactMatch(value_))
+                reg.setPattern(AddInManagerPrivate::wildcardToRegularExpression(meta->getString(i)));
+
+                if (reg.match(AddInManagerPrivate::regExpAnchoredPattern(value_)).hasMatch())
                 {
                     found = true;
                     break;
@@ -832,12 +834,12 @@ ito::RetVal ParamHelper::validateStringMeta(
             }
             break;
         case ito::StringMeta::RegExp:
-            reg.setPatternSyntax(QRegExp::RegExp);
 
             for (int i = 0; i < meta->getLen(); i++)
             {
                 reg.setPattern(QLatin1String(meta->getString(i)));
-                if (reg.indexIn(value_, 0) > -1)
+
+                if (reg.match(value_).hasMatch())
                 {
                     found = true;
                     break;
@@ -865,7 +867,7 @@ ito::RetVal ParamHelper::validateStringMeta(
                 constraints = QObject::tr("Wildcard match: (%1)").arg(items.join(","));
                 break;
             case ito::StringMeta::RegExp:
-                constraints = QObject::tr("RegExp match: (%1)").arg(items.join(","));
+                constraints = QObject::tr("RegularExpression match: (%1)").arg(items.join(","));
                 break;
             }
 

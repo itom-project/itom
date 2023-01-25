@@ -87,6 +87,7 @@ protected:
 private:
     void parseEditorHints(QWidget* editor, const QString& editorHints) const;
 
+    // deprecated, can be removed in a future version. It is not used any more.
     QSignalMapper* m_finishedMapper;
 };
 #endif

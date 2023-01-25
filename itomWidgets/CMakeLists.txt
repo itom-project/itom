@@ -59,10 +59,15 @@ find_package(OpenCV COMPONENTS core REQUIRED)
 add_definitions(-DITOMWIDGETS_DLL -D_ITOMWIDGETS_DLL)
 add_definitions(-DITOMSHAREDDESIGNER)
 
+if (MSVC)
+  add_compile_options(/bigobj)
+endif ()
+
 #check https://blog.initiali.se/posts/building-qt-designer-plugins-for-your-custom-qt-widgets/
 # if not included like this an "undefined interface error will be risen from Qt (moc?!)
 INCLUDE_DIRECTORIES(
     ${Qt5Designer_INCLUDE_DIRS}
+    ${Qt6Designer_INCLUDE_DIRS}
     ${ITOM_SDK_INCLUDE_DIR}
 )
 
@@ -73,6 +78,7 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser
     ${CMAKE_CURRENT_SOURCE_DIR}/..
     ${Qt5Widgets_INCLUDE_DIRS}
+    ${Qt6Widgets_INCLUDE_DIRS}
     ${VISUALLEAKDETECTOR_INCLUDE_DIR}
 )
 
@@ -230,9 +236,15 @@ set(itomWidgets_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/dataObjectMetaWidget.h
 )
 
-QT5_WRAP_CPP(paramPropertyBrowser_MOC ${paramPropertyBrowser_MOC_SOURCES})
-QT5_WRAP_CPP(itomWidgets_HEADERS_MOC ${itomWidgets_HEADERS})
-QT5_WRAP_CPP(itomWidgets_Factory_HEADERS_MOC ${itomWidgets_Factory_HEADERS})
+if (QT5_FOUND)
+    QT5_WRAP_CPP(paramPropertyBrowser_MOC ${paramPropertyBrowser_MOC_SOURCES})
+    QT5_WRAP_CPP(itomWidgets_HEADERS_MOC ${itomWidgets_HEADERS})
+    QT5_WRAP_CPP(itomWidgets_Factory_HEADERS_MOC ${itomWidgets_Factory_HEADERS})
+else ()
+    QT6_WRAP_CPP(paramPropertyBrowser_MOC ${paramPropertyBrowser_MOC_SOURCES})
+    QT6_WRAP_CPP(itomWidgets_HEADERS_MOC ${itomWidgets_HEADERS})
+    QT6_WRAP_CPP(itomWidgets_Factory_HEADERS_MOC ${itomWidgets_Factory_HEADERS})
+endif ()
 
 #these header files need to be moc'ed, but the moc file should not be added to the project
 #since it is included in another source file that actually compiles the moc'ed file.
@@ -248,14 +260,22 @@ set(paramPropertyBrowser_MOC_CPP)
 foreach(filename ${paramPropertyBrowser_HEADERS_MOC_SOURCES})
     get_filename_component(filename_we ${filename} NAME_WE)
     set(output_file moc_${filename_we}.cpp) #HEEEERE CHECK THIS LINE!!!
-    QT5_GENERATE_MOC(${filename} ${output_file})
+    if (QT5_FOUND)
+        QT5_GENERATE_MOC(${filename} ${output_file})
+    else ()
+        QT6_GENERATE_MOC(${filename} ${output_file})
+    endif ()
     list(APPEND paramPropertyBrowser_MOC_CPP ${output_file})
 endforeach()
 
 foreach(filename ${paramPropertyBrowser_CPP_MOC_SOURCES})
     get_filename_component(filename_we ${filename} NAME_WE)
     set(output_file ${filename_we}.moc)#it differs from the above one
-    QT5_GENERATE_MOC(${filename} ${output_file})
+    if (QT5_FOUND)
+        QT5_GENERATE_MOC(${filename} ${output_file})
+    else ()
+        QT6_GENERATE_MOC(${filename} ${output_file})
+    endif ()
     list(APPEND paramPropertyBrowser_MOC_CPP ${output_file})
 endforeach()
 
@@ -357,8 +377,13 @@ set(itomWidgets_UI
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogHeatmapConfiguration.ui
 )
 
-QT5_WRAP_UI(itomWidgets_UI_MOC ${itomWidgets_UI})
-QT5_ADD_RESOURCES(itomWidgets_RCC_MOC ${itomWidgets_RCC})
+if (QT5_FOUND)
+    QT5_WRAP_UI(itomWidgets_UI_MOC ${itomWidgets_UI})
+    QT5_ADD_RESOURCES(itomWidgets_RCC_MOC ${itomWidgets_RCC})
+else ()
+    QT6_WRAP_UI(itomWidgets_UI_MOC ${itomWidgets_UI})
+    QT6_ADD_RESOURCES(itomWidgets_RCC_MOC ${itomWidgets_RCC})
+endif ()
 
 #add filters to visual studio
 itom_add_source_group(factories)

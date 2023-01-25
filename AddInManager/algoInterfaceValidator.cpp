@@ -24,6 +24,7 @@
 #include "paramHelper.h"
 
 #include <qmap.h>
+#include <qregularexpression.h>
 
 namespace ito
 {
@@ -223,13 +224,16 @@ namespace ito
             {
                 QStringList l = metaInformation.split(";;");
                 //the regExp checks for strings like "Text Files (*.txt *.dat *.bat)"
-                QRegExp regExp("^[a-zA-Z0-9-_ ]+\\(((\\*\\.[a-zA-Z0-9]{2,4} )*\\*\\.[a-zA-Z0-9]{2,4})\\)$");
+                QRegularExpression regExp("^[a-zA-Z0-9-_ ]+\\(((\\*\\.[a-zA-Z0-9]{2,4} )*\\*\\.[a-zA-Z0-9]{2,4})\\)$");
                 QStringList l2;
+                QRegularExpressionMatch match;
+
                 foreach(const QString &s, l)
                 {
-                    if(regExp.indexIn(s) >= 0)
+                    match = regExp.match(s);
+                    if (match.hasMatch())
                     {
-                        l2 = regExp.capturedTexts()[1].split(" ");
+                        l2 = match.capturedTexts()[1].split(" ");
                         foreach(const QString &s2,l2)
                         {
                             if(s2.size() > 2)

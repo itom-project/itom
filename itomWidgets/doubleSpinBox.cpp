@@ -94,9 +94,8 @@ void itomQDoubleSpinBox::stepBy(int steps)
 void itomQDoubleSpinBox::focusOutEvent(QFocusEvent * event)
 {
     QDoubleSpinBox::focusOutEvent(event);
-    QFocusEvent e(*event);
     QObject *p = parent();
-    QCoreApplication::sendEvent(p, &e);
+    QCoreApplication::sendEvent(p, event);
 }
 
 //----------------------------------------------------------------------------
@@ -416,7 +415,19 @@ double DoubleSpinBoxPrivate
   // could be because of group separators:
   if (!ok && state == QValidator::Acceptable)
     {
-    if (q->locale().groupSeparator().isPrint())
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+      QChar groupSeparator;
+
+      if (q->locale().groupSeparator().size() == 1)
+      {
+          groupSeparator = q->locale().groupSeparator()[0];
+      }
+      // else: group separator does not necessarily fit into a QChar (https://bugreports.qt.io/browse/QTBUG-69324) 
+      // but CTK only support group separators if they fit into a QChar
+#else
+      QChar groupSeparator = q->locale().groupSeparator();
+#endif
+      if (groupSeparator.isPrint())
       {
       int start = (dec == -1 ? text.size() : dec)- 1;
       int lastGroupSeparator = start;

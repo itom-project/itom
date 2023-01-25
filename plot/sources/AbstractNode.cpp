@@ -83,11 +83,11 @@ bool AbstractNodePrivate::channelExists(const QSharedPointer<Channel> &other) co
     {
         if ((channel->getHash() == other->getHash()))
         {
-            return channel;
+            return true;
         }
     }
 
-    return QSharedPointer<Channel>();
+    return false;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

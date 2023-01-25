@@ -34,6 +34,7 @@
 #include <qsharedpointer.h>
 #include <qstringlist.h>
 #include <qcolor.h>
+#include <qlocale.h>
 
 #ifndef DATAOBJECTMODEL_TYPEDEFINED
 #define DATAOBJECTMODEL_TYPEDEFINED
@@ -169,6 +170,7 @@ private:
     QColor m_colorStopLow;
     QColor m_colorStopMiddle;
     QColor m_colorStopHigh;
+    QLocale m_locale;
 
     bool m_dummyData;
 };

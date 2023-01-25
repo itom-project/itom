@@ -31,6 +31,8 @@
 #include "interval.h"
 #include <qmetatype.h>
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 Q_DECLARE_METATYPE(ito::AutoInterval);
+#endif
 
 #endif

@@ -56,8 +56,11 @@
 #include <qlist.h>
 #include <qstringlist.h>
 #include <qdir.h>
-#include <qdesktopwidget.h>
+#include <qregularexpression.h>
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+#include <qtextcodec.h>
+#endif
 #include <qjsondocument.h>
 #include <qjsonobject.h>
 #include <qsettings.h>
@@ -65,12 +68,12 @@
 
 #include <qsharedpointer.h>
 #include <qtimer.h>
-#include <qtextcodec.h>
 #include <QtConcurrent/qtconcurrentrun.h>
 #include <QtCore/qmath.h>
 
 #include "../organizer/paletteOrganizer.h"
 #include "../codeEditor/codeCheckerItem.h"
+#include "../helper/compatHelper.h"
 
 #if ITOM_PYTHONMATLAB == 1
 #include "pythonMatlab.h"
@@ -308,8 +311,8 @@ PythonEngine::~PythonEngine()
 //----------------------------------------------------------------------------------------------------------------------------------
 void PythonEngine::pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap> infoMessages)
 {
-    PyObject* itomDbgClass = nullptr;
-    PyObject* itomDbgDict = nullptr;
+    PyObject *itomDbgClass = nullptr;
+    PyObject *itomDbgDict = nullptr;
 
     m_pythonThreadId = QThread::currentThreadId ();
 
@@ -1246,6 +1249,21 @@ ito::RetVal PythonEngine::pythonShutdown(ItomSharedSemaphore *aimWait)
     return retValue;
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6,0 ,0)
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal PythonEngine::stringEncodingChanged()
+{
+    ito::RetVal retval;
+
+    PythonQtConversion::textEncoding = PythonQtConversion::utf_8;
+    PythonQtConversion::textEncodingName = "UTF-8";
+
+    qDebug() << "Set encodings to: " << PythonQtConversion::textEncoding << ": " << PythonQtConversion::textEncodingName;
+
+    return retval;
+}
+#else
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal PythonEngine::stringEncodingChanged()
 {
@@ -1386,6 +1404,7 @@ ito::RetVal PythonEngine::stringEncodingChanged()
 
     return retval;
 }
+#endif
 
 //----------------------------------------------------------------------------------------------------------------------------------
 QList<int> PythonEngine::parseAndSplitCommandInMainComponents(const QString &str, QByteArray &encoding) const
@@ -4708,6 +4727,46 @@ PyObject* PythonEngine::PyDbgCommandLoop(PyObject * /*pSelf*/, PyObject *pArgs)
     return Py_BuildValue("i", 1);
 }
 
+//-------------------------------------------------------------------------------------
+/*static*/ PyObject* PythonEngine::PyDbgClearBreakpoint(PyObject* pSelf, PyObject* pArgs)
+{
+    PythonEngine* pyEngine = PythonEngine::getInstanceInternal();
+
+    int bpNumber;
+
+    if (!PyArg_ParseTuple(pArgs, "i", &bpNumber))
+    {
+        return nullptr;
+    }
+
+    ito::RetVal retVal; // = pyEngine->pythonDeleteBreakpoint(bpNumber);
+
+    
+
+    auto bpModel = pyEngine->getBreakPointModel();
+    foreach(const BreakPointItem &item, bpModel->getBreakpoints())
+    {
+        if (item.pythonDbgBpNumber == bpNumber)
+        {
+            auto index = bpModel->getFirstBreakPointIndex(item.filename, item.lineIdx);
+
+            if (index.isValid())
+            {
+                retVal = bpModel->deleteBreakPoint(index);
+            }
+
+            break;
+        }
+    }
+
+    if (!PythonCommon::transformRetValToPyException(retVal))
+    {
+        return nullptr;
+    }
+
+    Py_RETURN_NONE;
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------
 bool PythonEngine::renameVariable(bool globalNotLocal, const QString &oldFullItemName, QString newKey, ItomSharedSemaphore *semaphore)
 {
@@ -5628,14 +5687,13 @@ ito::RetVal PythonEngine::getVarnamesListInWorkspace(bool globalNotLocal, const 
             varnameList->clear();
             PyObject *key, *value;
             Py_ssize_t pos = 0;
-            QRegExp rx(find);
-            rx.setPatternSyntax(QRegExp::Wildcard);
+            QRegularExpression rx(CompatHelper::regExpAnchoredPattern(CompatHelper::wildcardToRegularExpression(find)));
             bool ok;
 
             while (PyDict_Next(destinationDict, &pos, &key, &value))
             {
                 QString qstringKey = PythonQtConversion::PyObjGetString(key, true, ok);
-                if (ok && rx.exactMatch(qstringKey))
+                if (ok && qstringKey.indexOf(rx) >= 0)
                 {
                     varnameList->append(qstringKey);
                 }
@@ -6932,6 +6990,7 @@ void PythonEngine::connectNotify(const QMetaMethod &signal)
 PyMethodDef PythonEngine::PyMethodItomDbg[] = {
     // "Python name", C Ffunction Code, Argument Flags, __doc__ description
     {"pyDbgCommandLoop", PythonEngine::PyDbgCommandLoop, METH_VARARGS, "will be invoked if debugger stopped at the given filename and line"},
+    {"pyDbgClearBreakpoint", PythonEngine::PyDbgClearBreakpoint, METH_VARARGS, "will be invoked if debugger wants to remove a temporary breakpoint"},
     {NULL, NULL, 0, NULL}
 };
 

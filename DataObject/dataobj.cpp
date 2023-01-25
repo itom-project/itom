@@ -1899,7 +1899,7 @@ RetVal CreateFunc(
     else // if one-dimensional create a two-dimensional data-object
     {
         int sizes_inc[2] = {1, sizes[0]};
-        int steps_inc[2] = {sizes[0] * sizeof(_Tp), sizeof(_Tp)};
+        int steps_inc[2] = {int(sizes[0] * sizeof(_Tp)), sizeof(_Tp)};
         dObj->createHeader(2, sizes_inc, steps_inc, sizeof(_Tp));
     }
 

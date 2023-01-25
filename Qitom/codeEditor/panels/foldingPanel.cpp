@@ -436,7 +436,7 @@ void FoldingPanel::drawRect(const QRectF &rect, QPainter &painter) const
     }
     QLinearGradient grad(rect.topLeft(), rect.topRight());
     QColor outline;
-#if Q_OS_DARWIN
+#ifdef __APPLE__
     grad.setColorAt(0, c.lighter(100));
     grad.setColorAt(1, c.lighter(110));
     outline = c.darker(110);

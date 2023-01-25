@@ -29,7 +29,11 @@ message(STATUS "--------------- EXECUTABLE ${target_name} -----------------")
 include("../cmake/ItomBuildMacros.cmake")
 include("../cmake/ItomBuildMacrosInternal.cmake")
 
-set(CMAKE_CXX_STANDARD 11)
+if(${BUILD_QTVERSION} STREQUAL "Qt6")
+    set(CMAKE_CXX_STANDARD 17)
+else()
+    set(CMAKE_CXX_STANDARD 11)
+endif()
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 itom_init_cmake_policy(3.12)
@@ -50,8 +54,8 @@ if(${BUILD_WITH_HELPVIEWER})
     #HELPVIEWER is only available for Qt >= 5.6.0
     #at first, get the available Qt version
     itom_find_package_qt(ON Core)
-
-    if((NOT ${Qt5_FOUND}) OR (Qt5_VERSION VERSION_LESS 5.6.0))
+    
+    if (QT5_FOUND AND (Qt5_VERSION VERSION_LESS 5.6.0))
         message(WARNING "BUILD_WITH_HELPVIEWER is set to FALSE, since it is only possible for Qt >= 5.6.0")
         set(BUILD_WITH_HELPVIEWER FALSE)
     endif()
@@ -61,7 +65,7 @@ if(${BUILD_WITH_HELPVIEWER})
     #requires Qt5 and Qt5WebEngine in order to built a built-in help viewer, since QtAssistant only has a limited set of rendering options since Qt5.6.
     itom_find_package_qt(ON Core Widgets UiTools PrintSupport Network Sql Xml OpenGL Svg WebEngineWidgets Help Designer LinguistTools)
     
-    if(Qt5WebEngineWidgets_FOUND)
+    if(Qt5WebEngineWidgets_FOUND OR Qt6WebEngineWidgets_FOUND)
         add_definitions(-DUSEHELPVIEWER -D_USEHELPVIEWER)
     else()
         message(FATAL "Your Qt installation does not provide the component WebEngineWidgets. Disable the option BUILD_WITH_HELPVIEWER in CMAKE to proceed without the integrated help viewer")
@@ -88,6 +92,7 @@ if (${PYTHONLIBS_VERSION_STRING} VERSION_LESS "3.5.0")
 endif()
 
 find_package(OpenCV COMPONENTS core REQUIRED)
+
 if(BUILD_WITH_PCL)
     find_package(PCL 1.5.1 REQUIRED COMPONENTS common)
     
@@ -146,7 +151,7 @@ if(BUILD_WITH_PYMATLAB)
             "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\R2015b;MATLABROOT]"
             "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\R2016a;MATLABROOT]"
             "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\R2016b;MATLABROOT]"
-            "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\R2017a;MATLABROOT]"
+            "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\R2017a;MATLABROOT]"
             "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\R2017b;MATLABROOT]"
             "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\R2018a;MATLABROOT]"
             "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\R2018b;MATLABROOT]"
@@ -218,11 +223,16 @@ include_directories(
     ${Qt5WebEngineWidgets_INCLUDE_DIRS}
     ${Qt5Help_INCLUDE_DIRS}
     ${Qt5Network_INCLUDE_DIRS}
+    ${Qt6Widgets_INCLUDE_DIRS}
+    ${Qt6WebEngineWidgets_INCLUDE_DIRS}
+    ${Qt6Help_INCLUDE_DIRS}
+    ${Qt6Network_INCLUDE_DIRS}
     ${PYTHON_INCLUDE_DIR}
     ${NUMPY_INCLUDE_DIRS}
     ${PCL_INCLUDE_DIRS}
     ${PYMATLAB_INCLUDE_DIR}
     ${VISUALLEAKDETECTOR_INCLUDE_DIR}
+    ${OpenCV_INCLUDE_DIRS}
     ../DataObject/
     ../PointCloud/
     ../AddInManager/
@@ -232,8 +242,8 @@ include_directories(
 link_directories(
     ${CMAKE_CURRENT_BINARY_DIR}/../DataObject
     ${CMAKE_CURRENT_BINARY_DIR}/../PointCloud
-    ${CMAKE_CURRENT_BINARY_DIR}/../AddInManager   
-    ${CMAKE_CURRENT_BINARY_DIR}/../itomWidgets  
+    ${CMAKE_CURRENT_BINARY_DIR}/../AddInManager
+    ${CMAKE_CURRENT_BINARY_DIR}/../itomWidgets
 )
  
 set(qitom_HEADERS_NOMOC
@@ -261,6 +271,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/global.h
     ${CMAKE_CURRENT_SOURCE_DIR}/mainApplication.h
     ${CMAKE_CURRENT_SOURCE_DIR}/api/apiFunctionsGraph.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/helper/compatHelper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/guiHelper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/IOHelper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/versionHelper.h
@@ -517,6 +528,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/mainApplication.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/api/apiFunctionsGraph.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/helper/compatHelper.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/guiHelper.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/IOHelper.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/versionHelper.cpp
@@ -758,11 +770,13 @@ if(APPLE)
     # Copy files into app bundle after build
     itom_copy_type_to_bundle_nonrec(${target_name} "${CMAKE_CURRENT_BINARY_DIR}/../" "" ".dylib")
     itom_copy_type_to_bundle_nonrec(${target_name} "${CMAKE_CURRENT_BINARY_DIR}/../" "" ".py")
+	itom_copy_type_to_bundle_nonrec(${target_name} "${CMAKE_CURRENT_BINARY_DIR}/../" "" ".rcc")
     itom_copy_to_bundle(${target_name} "${CMAKE_CURRENT_BINARY_DIR}/../itom-packages" "itom-packages")
     itom_copy_to_bundle(${target_name} "${CMAKE_CURRENT_BINARY_DIR}/../plugins" "plugins")
     itom_copy_to_bundle(${target_name} "${CMAKE_CURRENT_BINARY_DIR}/../designer" "designer")
     itom_copy_to_bundle(${target_name} "${CMAKE_CURRENT_BINARY_DIR}/../help" "help")
     itom_copy_to_bundle(${target_name} "${CMAKE_CURRENT_BINARY_DIR}/../demo" "../demo")
+    itom_copy_to_bundle(${target_name} "${CMAKE_CURRENT_BINARY_DIR}/../itomSettings" "itomSettings")
 else(APPLE)
     # Executable for WINDOWS and LINUX
     add_executable(${target_name}
@@ -837,41 +851,39 @@ else()
     set(POINTCLOUD_LIBRARIES "")
 endif()
 
-if(QT5_FOUND)
-    if(WIN32)
-        target_link_libraries(${target_name}
-            ${WINICONRES}
-            ${PYTHON_LIBRARY_ITOM}
-            ${OpenCV_LIBS}
-            ${POINTCLOUD_LIBRARIES}
-            ${VISUALLEAKDETECTOR_LIBRARIES}
-            ${QT5_LIBRARIES}
-            dataobject
-            addinmanager
-            qpropertyeditor
-            itomCommonLib
-            itomCommonQtLib
-            itomWidgets
-            itomCommonPlotLib
-            ${PYMATLAB_LIBRARIES}
-            shell32)
-    else()
-        target_link_libraries(${target_name}
-            ${WINICONRES}
-            ${PYTHON_LIBRARY_ITOM}
-            ${OpenCV_LIBS}
-            ${POINTCLOUD_LIBRARIES}
-            ${VISUALLEAKDETECTOR_LIBRARIES}
-            ${QT5_LIBRARIES}
-            dataobject
-            addinmanager
-            qpropertyeditor
-            itomCommonLib
-            itomCommonQtLib
-            itomWidgets
-            itomCommonPlotLib
-            ${PYMATLAB_LIBRARIES})
-    endif()
+if(WIN32)
+    target_link_libraries(${target_name}
+        ${WINICONRES}
+        ${PYTHON_LIBRARY_ITOM}
+        ${OpenCV_LIBS}
+        ${POINTCLOUD_LIBRARIES}
+        ${VISUALLEAKDETECTOR_LIBRARIES}
+        ${QT5_LIBRARIES}
+        dataobject
+        addinmanager
+        qpropertyeditor
+        itomCommonLib
+        itomCommonQtLib
+        itomWidgets
+        itomCommonPlotLib
+        ${PYMATLAB_LIBRARIES}
+        shell32)
+else()
+    target_link_libraries(${target_name}
+        ${WINICONRES}
+        ${PYTHON_LIBRARY_ITOM}
+        ${OpenCV_LIBS}
+        ${POINTCLOUD_LIBRARIES}
+        ${VISUALLEAKDETECTOR_LIBRARIES}
+        ${QT5_LIBRARIES}
+        dataobject
+        addinmanager
+        qpropertyeditor
+        itomCommonLib
+        itomCommonQtLib
+        itomWidgets
+        itomCommonPlotLib
+        ${PYMATLAB_LIBRARIES})
 endif()
 
 #translation
@@ -899,6 +911,10 @@ if(MSVC)
     if((NOT ${Qt5_FOUND}) OR (Qt5_VERSION VERSION_LESS 5.10.0))
         # see https://stackoverflow.com/questions/49644273/cmake-change-stack-size
         set_target_properties(${target_name} PROPERTIES LINK_FLAGS "/STACK:4000000")
+    endif()
+
+    if(QT6_FOUND)
+        target_compile_options(${target_name} PUBLIC "/Zc:__cplusplus") #  "permissive-")
     endif()
 endif()
  

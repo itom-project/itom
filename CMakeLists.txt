@@ -19,13 +19,24 @@
 # along with itom. If not, see <http://www.gnu.org/licenses/>.
      
 cmake_minimum_required(VERSION 3.1)
-     
+ 
 project(itom)
-  
+
 message(STATUS "--------------- PROJECT itom -----------------")
  
-set(CMAKE_CXX_STANDARD 11)
+if(BUILD_QTVERSION STREQUAL "Qt6")
+    set(CMAKE_CXX_STANDARD 17)
+    set(CXXFLAGS "${CXXFLAGS} /permissive-")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /permissive-")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /permissive-")
+
+    add_compile_options(/permissive-)
+else()
+    set(CMAKE_CXX_STANDARD 11)
+endif()
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+message(STATUS "CMAKE_CXX_STANDARD: ${CMAKE_CXX_STANDARD}")
 
 include(cmake/ItomBuildMacros.cmake)
 include(cmake/ItomBuildMacrosInternal.cmake)
@@ -34,6 +45,7 @@ itom_init_cmake_policy(3.15)
 itom_init_core_common_vars()
 
 option(BUILD_UNITTEST "Build unittest for itom (including gtest)." OFF)
+option(BUILD_UNITTEST_INTERNAL_ENABLE "If set, some libraries are compiled to export some internal methods, too. These can be tested then in unittests." OFF)
 option(SETUP_ISSCONFIG "Set up batch for inno setup compilation." OFF)
 
 option(ITOM_UPDATE_TRANSLATIONS "Update source translation translation/*.ts files\
@@ -76,7 +88,6 @@ add_subdirectory(plot)
 add_subdirectory(itomWidgets)
 add_subdirectory(Qitom)
 add_subdirectory(iconThemes)
-
 if(BUILD_UNITTEST)
     #put this as last, since gtest is globally changing many compiler flags
     add_subdirectory(gtest-1.10.0)
@@ -198,13 +209,13 @@ if(WIN32)
     elseif(MSVC_VERSION EQUAL 1900)
         set(MSVC_VSCOMNTOOLS "%VS140COMNTOOLS%")
         set(MSVC_COMPILE_TMPL "${CMAKE_CURRENT_SOURCE_DIR}/msvc/compile_100to140.bat.in")
-    elseif((MSVC_VERSION GREATER 1909) AND (MSVC_VERSION LESS 1920))
+    elseif(MSVC_VERSION GREATER 1909) # AND (MSVC_VERSION LESS 1920))
         set(MSVC_VSCOMNTOOLS "")
         set(MSVC_COMPILE_TMPL "${CMAKE_CURRENT_SOURCE_DIR}/msvc/compile_150toXXX.bat.in")
     else()
         set(MSVC_COMPILE_TMPL "")
     endif()
-    
+     
     if(MSVC_COMPILE_TMPL)
         set(MSVC_REBUILD_TAG "")
         set(MSVC_CONFIGURATION "debug")

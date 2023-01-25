@@ -44,13 +44,13 @@
 
 #include "../../python/pythonEngine.h"
 #include "../../widgets/scriptEditorWidget.h"
+#include "../../helper/compatHelper.h"
 
 #include <qtooltip.h>
 #include <qabstractitemview.h>
 #include <qstandarditemmodel.h>
 #include <qscrollbar.h>
 #include <qdir.h>
-
 
 
 namespace ito {
@@ -77,11 +77,30 @@ void SubsequenceSortFilterProxyModel::setPrefix(const QString &prefix)
     
     for (int i = prefix.size(); i >= 1; --i)
     {
-        ptrn = QString(".*%1.*%2").arg(prefix.left(i), prefix.mid(i));
-        m_filterPatterns.append(QRegExp(ptrn, m_caseSensitivity));
-        m_filterPatternsCaseSensitive.append(QRegExp(ptrn, Qt::CaseSensitive));
+        ptrn = CompatHelper::regExpAnchoredPattern(QString(".*%1.*%2").arg(prefix.left(i), prefix.mid(i)));
+        QRegularExpression regExp(ptrn);
+        m_filterPatternsCaseSensitive.append(regExp);
+
+        if (!m_caseSensitivity)
+        {
+            regExp.setPatternOptions(QRegularExpression::CaseInsensitiveOption);
+        }
+
+        m_filterPatterns.append(regExp);
+        
         ptrn = QString("%1.*%1").arg(prefix.left(i), prefix.mid(i));
-        m_sortPatterns.append(QRegExp(ptrn, m_caseSensitivity));
+        regExp.setPattern(ptrn);
+
+        if (m_caseSensitivity)
+        {
+            regExp.setPatternOptions(QRegularExpression::PatternOptions());
+        }
+        else
+        {
+            regExp.setPatternOptions(QRegularExpression::CaseInsensitiveOption);
+        }
+
+        m_sortPatterns.append(regExp);       
     }
     m_prefix = prefix;
 }
@@ -122,18 +141,20 @@ bool SubsequenceSortFilterProxyModel::filterAcceptsRow(int source_row, const QMo
 
     for (int idx = 0; idx < m_filterPatterns.size(); ++idx)
     {
-        if (m_filterPatterns[idx].exactMatch(completion))
+        if (m_filterPatterns[idx].match(completion).hasMatch())
         {
+            // exact match due to pattern of regular expression
             // compute rank, the lowest rank the closer it is from the
             // completion
-            int start = m_sortPatterns[idx].lastIndexIn(completion);
+            int start = completion.lastIndexOf(m_sortPatterns[idx]);
             if (start == -1)
             {
                 start = INT_MAX;
             }
             rank = start + idx * 10;
-            if (m_filterPatternsCaseSensitive[idx].exactMatch(completion))
+            if (m_filterPatternsCaseSensitive[idx].match(completion).hasMatch())
             {
+                // exact match due to pattern of regular expression
                 // favorise completions where case is matched
                 rank -= 10;
             }
@@ -141,6 +162,7 @@ bool SubsequenceSortFilterProxyModel::filterAcceptsRow(int source_row, const QMo
             return true;
         }
     }
+
     return m_prefix.size() == 0;
 }
 
@@ -154,7 +176,7 @@ SubsequenceCompleter::SubsequenceCompleter(QObject *parent /*= NULL*/) :
     m_pFilterProxyModel(NULL)
 {
     m_localCompletionPrefix = "";
-    m_pSourceModel = NULL;
+    m_pSourceModel = nullptr;
     m_pFilterProxyModel = new SubsequenceSortFilterProxyModel(caseSensitivity(), this);
     m_pFilterProxyModel->setSortRole(Qt::UserRole);
     m_forceNextUpdate = true;
@@ -718,7 +740,7 @@ Checks if the event's key and modifiers make the completion shortcut
 */
 bool CodeCompletionMode::isShortcut(QKeyEvent *e) const
 {
-#if Q_OS_DARWIN
+#ifdef __APPLE__
     Qt::KeyboardModifier modifier = Qt::MetaModifier;
 #else
     Qt::KeyboardModifier modifier = Qt::ControlModifier;
@@ -875,7 +897,7 @@ QPair<QStringList, QString> CodeCompletionMode::parseTooltipDocstring(const QStr
         docstr += tr("...");
     }
 
-    return qMakePair<QStringList, QString>(signatures, docstr);
+    return qMakePair<QStringList, QString>(std::move(signatures), std::move(docstr));
 }
 
 //--------------------------------------------------------------------

@@ -44,7 +44,11 @@ namespace ito
     
     protected:
         QStringList mimeTypes() const;
-        QMimeData * mimeData(const QList<QTreeWidgetItem *> items) const;
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+        QMimeData* mimeData(const QList<QTreeWidgetItem*> items) const;
+#else
+        QMimeData* mimeData(const QList<QTreeWidgetItem*>& items) const;
+#endif
     };
 
     class LastCommandDockWidget : public AbstractDockWidget
