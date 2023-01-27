@@ -4,8 +4,28 @@
 
 .. _build_dependencies_pcl:
 
-Compile PCL
-===============
+Compile PCL (QT6, VTK9)
+=======================
+
+Unpack the PCL source on your hard drive. Create a build_x64/build_x86 folder and 
+execute CMake with this folders. After each step, you must start the CMake configuration, 
+otherwise the new entries will not be added. 
+
+* Set **EIGEN_INCLUDE_DIR** to ${MAINDIR}/3rdPartyPCL/Eigen3.4.0
+* Set **FLANN_INCLUDE_DIR** to ${MAINDIR}/3rdPartyPCL/flann1.9.1/include
+* Set **FLANN_LIBRARY** to ${MAINDIR}/3rdPartyPCL/flann1.9.1/lib/flann_cpp_s.lib
+* set **FLANN_LIBRARAY_DEBUG** to ${MAINDIR}/3rdPartyPCL/flann1.9.1/lib/flann_cpp_s-gd.lib
+* Set **Boost_INCLUDE_DIR** to ${MAINDIR}/3rdPartyPCL/boost1.81.0 (Boost library must be named libboost... \*.lib) 
+* Add new entry: **Boost_LIBRARY_DIR** with path ${MAINDIR}/3rdPartyPCL/boost1.69.0/lib64-msvc-14.3
+* Set **QHULL_INCLUDE_DIR** include dir to ${MAINDIR}/3rdPartyPCL/qhull-2015.2/include
+* Set **QHULL_LIBRARY** dir to ${MAINDIR}/3rdPartyPCL/qhull-2015.2/lib/qhullstatic.lib
+* Set **QHULL_LIBRARY_DEBURG** dir to ${MAINDIR}/3rdPartyPCL/qhull-2015.2/lib/qhullstatic_d.lib
+* Set **Qt6_DIR** to to **${MAINDIR}/3rdParty/Qt6.4.1/msvc2016_64/lib/cmake/Qt6**. 
+* Set **CMAKE_INSTALL_PREFIX** ${MAINDIR}/3rdPartyPCL/pclM.M.P
+
+
+Compile PCL (QT5, VTK8) 
+=======================
 
 Unpack the PCL source on your hard drive. Create a build_x64/build_x86 folder and 
 execute CMake with this folders. After each step, you must start the CMake configuration, 

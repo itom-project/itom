@@ -50,7 +50,7 @@
 #include <qstring.h>
 #include <qlist.h>
 #include <qsortfilterproxymodel.h>
-#include <qregexp.h>
+#include <qregularexpression.h>
 #include <qcompleter.h>
 #include <qsharedpointer.h>
 
@@ -76,9 +76,9 @@ protected:
     virtual bool filterAcceptsRow(int source_row, const QModelIndex &source_parent) const;
 
     Qt::CaseSensitivity m_caseSensitivity;
-    QList<QRegExp> m_filterPatterns;
-    QList<QRegExp> m_filterPatternsCaseSensitive;
-    QList<QRegExp> m_sortPatterns;
+    QList<QRegularExpression> m_filterPatterns;
+    QList<QRegularExpression> m_filterPatternsCaseSensitive;
+    QList<QRegularExpression> m_sortPatterns;
     QString m_prefix;
 };
 

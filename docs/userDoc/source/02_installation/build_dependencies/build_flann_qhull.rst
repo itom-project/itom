@@ -14,5 +14,4 @@ BUILD_TESTS**.
 
 * Set the **CMAKE_INSTALL_PREFIX** to the Flann or QHull folder in the 
   **${MAINDIR}/3rdPartyPCL** folder. 
-  
 * Compile the **INSTALL** solution of the MSVC Project. 

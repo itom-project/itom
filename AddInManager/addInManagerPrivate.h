@@ -58,6 +58,10 @@ class AddInManagerPrivate : public QObject
     public:
         AddInManagerPrivate(AddInManager* addInMgr);
         ~AddInManagerPrivate();
+
+        // two helper methods for Qt < 5.12. They can be removed once the minimum Qt version is 5.12.
+        static QString regExpAnchoredPattern(const QString& expression);
+        static QString wildcardToRegularExpression(const QString &pattern);
     
     protected:
         AddInManager* const q_ptr;

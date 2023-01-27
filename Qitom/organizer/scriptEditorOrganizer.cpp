@@ -236,13 +236,14 @@ RetVal ScriptEditorOrganizer::restoreScriptState()
         }
     }
     settings.endArray();
+    settings.endGroup();
 
     // open all script windows that where open at the last shutdown (only if the user allows this)
 	ito::UserOrganizer *userOrg = qobject_cast<ito::UserOrganizer*>(AppManagement::getUserOrganizer());
 
 	if (userOrg->currentUserHasFeature(featDeveloper))
 	{
-
+        settings.beginGroup("ScriptEditorOrganizer");
 		counter = settings.beginReadArray("scriptWidgets");
 
 		for (int i = 0; i < counter; ++i)
@@ -295,6 +296,7 @@ RetVal ScriptEditorOrganizer::restoreScriptState()
 		}
 
 		settings.endArray();
+        settings.endGroup();
 	}
 
     return retval;

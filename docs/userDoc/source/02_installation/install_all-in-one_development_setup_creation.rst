@@ -69,7 +69,7 @@ Install Visual Studio Community Edition without optional features.
 Creating the _install_ and 3rdParty folder
 ---------------------------------------------
 
-Create a path on your hard drive with a long, long path name called **${MAINDIR}**. 
+Create a path on your hard drive with a long, long path name called **${MAINDIR}** (*only for QT5*). 
 Later, the all-in-one path on the destination computer must be shorter than this path 
 name, due to the Qt patching. For example your path can be called: 
 E:\\itom_all-in-one_development\\itom_all-in-one_development\\vs2017_qt5.12.1_x64\\. 
@@ -79,8 +79,6 @@ necessary to create a working |itom|.
 .. figure:: images/all-in-one-create/folder_structure.png
     :scale: 100%
     :align: center
-
-
 
 _install_ folder
 ``````````````````````````````````````
@@ -118,12 +116,11 @@ file. Execute the script and check if the filenames in the **files-to-patch-wind
 
 
 3rdParty folder
-``````````````````````````````````````
+```````````````
 
 Python folder
->>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>
 
-preinstalled Verison of python 3.7
 For the compilation of |itom|, it is not necessary to have a installed Python on 
 the computer. For the Python 3rdParty folder, first: 
 
@@ -133,73 +130,82 @@ the computer. For the Python 3rdParty folder, first:
 
 .. warning:: 
 
-    You have to copy the installed folder, rename and deinstall it does not work!
+    You have to copy the installed folder. Renaming and deinstall it does not work!
+
+* Install numpy using pip
+
+.. code-block:: bash
+    
+    python.exe -m pip install numpy
 
 
 Qtx.xx.x folder
->>>>>>>>>>>>>>>>>>>>>
-    copy the output of the qt compilation process into this folder.
-    :ref:`build_dependencies_qt`
+>>>>>>>>>>>>>>>
+
+copy the output of the qt compilation process into this folder.
+:ref:`build_dependencies_qt`
 	  
     
 OpenCVx.x.x folder
->>>>>>>>>>>>>>>>>>>>>
-    copy the output of the compilation process to this folder.
-    :ref:`build_dependencies_opencv`
+>>>>>>>>>>>>>>>>>>
+
+copy the output of the compilation process to this folder.
+:ref:`build_dependencies_opencv`
 
 
 3rdPartyPCL folder
-``````````````````````````````````````
-    For the 3rdPartyPCL folder the software packages Boost, Eigen, Flann and QHull 
-    can be downloaded as binaries. VTK and PCL must be compiled on your computer. 
-    Have the version dotted in the Name.
+``````````````````
+
+For the 3rdPartyPCL folder the software packages Boost, Eigen, Flann and QHull 
+can be downloaded as binaries. VTK and PCL must be compiled on your computer. 
+Have the version dotted in the Name.
 
 boostX.XX.X
->>>>>>>>>>>>>>>>>>>>
-    * Go for the prebuilt binaries(downloaded, see above)
-      Execute the **boost_1_69_0-msvc-12.0-64.exe** file and install boost on your hard 
-      drive in a folder with a short path that is different from QT. Copy than the 
-      folders **boost** and **lib** into **${MAINDIR}/3rdPartyPCL/boost1.69.0-64**. 
+>>>>>>>>>>>
+
+Go for the prebuilt binaries(downloaded, see above)
+Execute the **boost_1_69_0-msvc-12.0-64.exe** file and install boost on your hard 
+drive in a folder with a short path that is different from QT. Copy than the 
+folders **boost** and **lib** into **${MAINDIR}/3rdPartyPCL/boost1.69.0-64**. 
 
 
 EigenX.X.X
->>>>>>>>>>>>>>>>>>>>>>
-    * Unzip from the Eigen zip-file the folders **Eigen** and **unupported** into 
-      the **${MAINDIR}/3rdPartyPCL/Eigen3.3.7/**. (this folder)
-      for further information check with
-      http://eigen.tuxfamily.org/index.php?title=Main_Page
+>>>>>>>>>>
+
+Unzip from the Eigen zip-file the folders **Eigen** and **unupported** into 
+the **${MAINDIR}/3rdPartyPCL/Eigen3.3.7/**. (this folder)
+for further information check with
+http://eigen.tuxfamily.org/index.php?title=Main_Page
 
 flannX.X.X
->>>>>>>>>>>>>>>>>>>
-    * Copy the downloaded flannX.X.X into **${MAINDIR}/3rdPartyPCL/flann1.9.1** (here). 
-      For further info: https://github.com/mariusmuja/flann
-      or check with  
-      :ref:`build_dependencies_flann_qhull`
+>>>>>>>>>>
+
+Copy the downloaded flannX.X.X into **${MAINDIR}/3rdPartyPCL/flann1.9.1** (here). 
+For further info: https://github.com/mariusmuja/flann
+or check with  
+:ref:`build_dependencies_flann_qhull`
 
 
 QHullxxxx.x
->>>>>>>>>>>>>>>>>>>>>>>>>>>
-    * Copy qhull-2015.2 into **${MAINDIR}/3rdPartyPCL/qhull-2015.2**.
-      or get some version from http://www.qhull.org/download/
-      or check with 
-      :ref:`build_dependencies_flann_qhull`
+>>>>>>>>>>>
+
+Copy qhull-2015.2 into **${MAINDIR}/3rdPartyPCL/qhull-2015.2**.
+or get some version from http://www.qhull.org/download/
+or check with 
+:ref:`build_dependencies_flann_qhull`
 
 VTKx.x.x
->>>>>>>>>>>>>>>>>>
-    * Copy the output of the compilation process to this folder
-      :ref:`build_dependencies_vtk`
+>>>>>>>>
+
+Copy the output of the compilation process to this folder
+:ref:`build_dependencies_vtk`
 
 
 PCLx.x.x
->>>>>>>>>>>>>>>>>>>
-    * Copy the output of the compilation process to this folder
-      :ref:`build_dependencies_pcl`
+>>>>>>>>
 
-
-
-
-
-
+Copy the output of the compilation process to this folder
+:ref:`build_dependencies_pcl`
 
 
 Modify setupscript

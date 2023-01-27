@@ -29,7 +29,6 @@
 #include <qmenu.h>
 #include <qsettings.h>
 #include <qstringlist.h>
-#include <qtextcodec.h>
 
 namespace ito
 {

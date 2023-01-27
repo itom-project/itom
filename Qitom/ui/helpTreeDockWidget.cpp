@@ -9,10 +9,10 @@
 #include <qfiledialog.h>
 #include <qmessagebox.h>
 #include <qpainter.h>
-#include <qregexp.h>
 #include <qsortfilterproxymodel.h>
 #include <qstandarditemmodel.h>
 #include <qstringlistmodel.h>
+#include <qregularexpression.h>
 
 #include <QtConcurrent/qtconcurrentrun.h>
 
@@ -1432,12 +1432,13 @@ ito::RetVal HelpTreeDockWidget::highlightContent(
     // Allgemeine HTML sachen anfuegen /
     /*********************************/
     QString rawContent = helpText;
-    QRegExp bodyFinder("<body>(.*)</body>");
-    if (bodyFinder.indexIn(rawContent) >= 0)
-    {
-        rawContent = bodyFinder.cap(1);
-    }
+    QRegularExpression bodyFinder("<body>(.*)</body>");
+    auto bodyFinderMatch = bodyFinder.match(rawContent);
 
+    if (bodyFinderMatch.hasMatch())
+    {
+        rawContent = bodyFinderMatch.captured(1);
+    }
 
     QString html = "<html><head>"
                    "<link rel='stylesheet' type='text/css' href='itom_help_style.css'>"
@@ -1501,12 +1502,12 @@ ito::RetVal HelpTreeDockWidget::highlightContent(
             // matches :obj:`test <sdf>` where sdf must not contain a > sign. < and > are written as
             // &lt; or &gt; in html!
             rawContent.replace(
-                QRegExp(":obj:`([a-zA-Z0-9_-\\.]+) &lt;(((?!&gt;).)*)&gt;`"),
+                QRegularExpression(":obj:`([a-zA-Z0-9_-\\.]+) &lt;(((?!&gt;).)*)&gt;`"),
                 "<a id=\"HiLink\" href=\"itom://" + prefix.left(prefix.lastIndexOf('.')) +
                     ".\\1\">\\2</a>");
 
             rawContent.replace(
-                QRegExp(":obj:`([a-zA-Z0-9_-\\.]+)`"),
+                QRegularExpression(":obj:`([a-zA-Z0-9_-\\.]+)`"),
                 "<a id=\"HiLink\" href=\"itom://" + prefix.left(prefix.lastIndexOf('.')) +
                     ".\\1\">\\1</a>");
         }
@@ -1515,56 +1516,12 @@ ito::RetVal HelpTreeDockWidget::highlightContent(
             // matches :obj:`test <sdf>` where sdf must not contain a > sign. < and > are written as
             // &lt; or &gt; in html!
             rawContent.replace(
-                QRegExp(":obj:`([a-zA-Z0-9_-\\.]+) &lt;(((?!&gt;).)*)&gt;`"),
+                QRegularExpression(":obj:`([a-zA-Z0-9_-\\.]+) &lt;(((?!&gt;).)*)&gt;`"),
                 "<a id=\"HiLink\" href=\"itom://" + prefix + ".\\1\">\\2</a>");
 
             rawContent.replace(
-                QRegExp(":obj:`([a-zA-Z0-9_-\\.]+)`"),
+                QRegularExpression(":obj:`([a-zA-Z0-9_-\\.]+)`"),
                 "<a id=\"HiLink\" href=\"itom://" + prefix + ".\\1\">\\1</a>");
-        }
-
-        if (0)
-        {
-            // Remake "See Also"-Section so that the links work
-            // -------------------------------------
-            // Alte "See Also" Section kopieren
-            QRegExp seeAlso("(<div class=\"seealso\">).*(</div>)");
-            seeAlso.setMinimal(true);
-            seeAlso.indexIn(rawContent);
-            QString oldSec = seeAlso.capturedTexts()[0];
-
-            if (oldSec == "") // there are version, where the see-also section is an admonition
-            {
-                seeAlso.setPattern("(<div class=\"admonition-see-also seealso\">).*(</div>)");
-                seeAlso.indexIn(rawContent);
-                oldSec = seeAlso.capturedTexts()[0];
-            }
-
-            // Extract Links (names) from old Section
-            QRegExp links("`(.*)`");
-            links.setMinimal(true);
-            int offset = 0;
-            QStringList texts;
-            while (links.indexIn(oldSec, offset) > -1)
-            {
-                texts.append(links.capturedTexts()[1]);
-                offset = links.pos() + links.matchedLength();
-            }
-
-            // Build the new Section with Headings, Links, etc
-            QString newSection = "<p class=\"rubric\">See Also</p><p>";
-            for (int i = 0; i < texts.length(); i++)
-            {
-                newSection.append(
-                    "\n<a id=\"HiLink\" href=\"itom://" + prefix.left(prefix.lastIndexOf('.')) +
-                    "." + texts[i] + "\">" + texts[i].remove('`') + "</a>, ");
-            }
-            newSection = newSection.left(newSection.length() - 2);
-            newSection.append("\n</p>");
-
-            // Exchange old Section against new one
-            rawContent.remove(seeAlso.pos(), seeAlso.matchedLength());
-            rawContent.insert(seeAlso.pos(), newSection);
         }
 
         document->setHtml(html.arg(rawContent));
@@ -1600,7 +1557,11 @@ void HelpTreeDockWidget::liveFilter(const QString& filterText)
 void HelpTreeDockWidget::timerEvent(QTimerEvent* event)
 {
     //    showTreeview();
+#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
+    m_pMainFilterModel->setFilterRegularExpression(m_filterTextPending);
+#else
     m_pMainFilterModel->setFilterRegExp(m_filterTextPending);
+#endif
     expandTree();
 
     killTimer(m_filterTextPendingTimer);

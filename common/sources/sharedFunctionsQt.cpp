@@ -1263,7 +1263,7 @@ namespace ito
         }
 
         paramFile.setFileName(fileName);
-        checkFile = paramFile;
+        checkFile.setFile(paramFile);
         fileName = checkFile.canonicalFilePath();
 
         if (!checkFile.isWritable() && checkFile.exists())
@@ -1276,7 +1276,7 @@ namespace ito
         QXmlStreamWriter stream(&paramFile);
         QString attrname;
 
-        stream.setCodec("UTF-8");       // Set text codec
+        // Qt5: UTF-8 is the default codec, Qt6: uses always UTF-8
         stream.setAutoFormatting(true);
 
         stream.writeStartDocument();
@@ -1424,7 +1424,7 @@ namespace ito
 
         if (attrStream.hasAttribute("dims") && attrStream.hasAttribute("dataType"))
         {
-            attrStream.value("dataType").appendTo(&type);
+            type += attrStream.value("dataType");
             ndims = attrStream.value("dims").toString().toInt();
             if (ndims < 2)
             {
@@ -1620,8 +1620,8 @@ namespace ito
         attrStream = stream.attributes();
         if (attrStream.hasAttribute("doubleExport"))
         {
-            QString type("");
-            attrStream.value("doubleExport").appendTo(&type);
+            QString type = attrStream.value("doubleExport").toString();
+
             if (type.compare("d2s") == 0)
             {
                 doubleAsBinary = false;
@@ -2001,7 +2001,7 @@ namespace ito
     {
         RetVal ret(retOk);    /*!< Returnvalue for the complete function */
         QFile paramFile;     /*!< Handle to the source data */
-        QStringRef ReadSigns;
+        QString readSigns;
         
         int elementsize = 1;
 
@@ -2029,7 +2029,7 @@ namespace ito
                 folderFileName.append(".ido");
             }
 
-            checkFile = folderFileName;
+            checkFile.setFile(folderFileName);
         }
 
         paramFile.setFileName(checkFile.canonicalFilePath());
@@ -2054,18 +2054,20 @@ namespace ito
         }
         else
         {
-            ReadSigns = stream.documentVersion();
+            readSigns = stream.documentVersion().toString();
 			const QString stringToComp = "1.0";
-            if (ReadSigns.compare(stringToComp) == 0)
+
+            if (readSigns.compare(stringToComp) == 0)
             {
                 paramFile.close();
                 return  RetVal(retError, 0, QObject::tr("Load object failed: wrong xml version").toLatin1().data());
             }
         }
 
-        ReadSigns = stream.documentEncoding();
+        readSigns = stream.documentEncoding().toString();
 		const QString stringToComp = "UTF-8";
-        if (ReadSigns.compare(stringToComp) == 0)
+
+        if (readSigns.compare(stringToComp) == 0)
         {
             paramFile.close();
             return RetVal(retError, 0, QObject::tr("Load object failed: wrong document encoding").toLatin1().data());
@@ -2095,6 +2097,7 @@ namespace ito
             paramFile.close();
             return  RetVal(retError, 0, QObject::tr("Load object failed: file is no itomDataObjectFile").toLatin1().data());
         }
+
         attrStream = stream.attributes();
 
         if (attrStream.hasAttribute("FormatVersion"))
@@ -2102,10 +2105,12 @@ namespace ito
             if (attrStream.value("FormatVersion").toString().compare("1.0") == 0)
             {                   
                 ret += createObjectFromXMLV1(stream, tempObjIn, elementsize);                               // Create the object by xml-parameter
+
                 if (!ret.containsError())
                 {
                     ret += loadObjectHeaderFromXMLV1(stream, tempObjIn);               // Fill meta data
                 }
+
                 if (!ret.containsError())
                 {
                     ret += loadTagSpaceFromXMLV1(stream, tempObjIn);                   // Fill tag-Map data
@@ -2134,7 +2139,9 @@ namespace ito
         {
             (*dObjIn) = tempObjIn;
         }
+
         paramFile.close();
         return ret;
     }
+
 }   // end namespace ito

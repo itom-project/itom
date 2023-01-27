@@ -413,7 +413,7 @@ ito::RetVal MotorAxisController::setAxisUnit(int axisIndex, AxisUnit unit)
                 ito::retWarning,
                 0,
                 "type of axis is rotational, the unit is set to '%s'.",
-                QLatin1String("\u00B0").data());
+                QString("%1").arg(QChar(0xb0, 0x00)).data());
         }
 
         d->spinTargetPos[axisIndex]->setSuffix(suffixFromAxisUnit(unit));

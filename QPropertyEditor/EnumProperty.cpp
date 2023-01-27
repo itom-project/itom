@@ -84,11 +84,8 @@ QWidget* EnumProperty::createEditor(QWidget* parent, const QStyleOptionViewItem&
     QComboBox* editor = new QComboBox(parent);
     editor->addItems(m_enum);
 
-    connect(
-        editor,
-        SIGNAL(currentIndexChanged(const QString)),
-        this,
-        SLOT(valueChanged(const QString)));
+    connect(editor, &QComboBox::currentTextChanged, this, &EnumProperty::valueChanged);
+
     return editor;
 }
 

@@ -353,12 +353,10 @@ void ProcessOrganizer::readyReadStandardOutput()
     if (sendingProcess)
     {
         QByteArray ba = sendingProcess->readAllStandardOutput();
+        auto it = m_processes.constBegin();
 
-        QHashIterator<QString, QPair<QProcess*, bool>> it(m_processes);
-
-        while (it.hasNext())
+        while (it != m_processes.constEnd())
         {
-            it.next();
             if (it.value().first == sendingProcess)
             {
                 QByteArray ba2 = m_processStdOut[it.key()];
@@ -366,6 +364,8 @@ void ProcessOrganizer::readyReadStandardOutput()
                 m_processStdOut[it.key()] = ba2;
                 break;
             }
+
+            it = it++;
         }
     }
 }

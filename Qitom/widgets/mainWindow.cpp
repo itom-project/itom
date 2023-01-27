@@ -47,7 +47,6 @@
 #include "../helper/guiHelper.h"
 
 #include <qapplication.h>
-#include <qdesktopwidget.h>
 #include <qdir.h>
 #include <qfiledialog.h>
 #include <qmessagebox.h>

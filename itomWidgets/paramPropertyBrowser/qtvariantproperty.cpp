@@ -46,6 +46,7 @@
 #include <QtGui/QIcon>
 #include <QtCore/QDate>
 #include <QtCore/QLocale>
+#include <qregularexpression.h>
 
 #if defined(Q_CC_MSVC)
 #    pragma warning(disable: 4786) /* MS VS 6: truncating debug info after 255 characters */
@@ -320,7 +321,7 @@ public:
     void slotDecimalsChanged(QtProperty *property, int prec);
     void slotValueChanged(QtProperty *property, bool val);
     void slotValueChanged(QtProperty *property, const QString &val);
-    void slotRegExpChanged(QtProperty *property, const QRegExp &regExp);
+    void slotRegExpChanged(QtProperty *property, const QRegularExpression&regExp);
     void slotEchoModeChanged(QtProperty *property, int);
     void slotValueChanged(QtProperty *property, const QDate &val);
     void slotRangeChanged(QtProperty *property, const QDate &min, const QDate &max);
@@ -546,7 +547,7 @@ void QtVariantPropertyManagerPrivate::slotValueChanged(QtProperty *property, con
     valueChanged(property, QVariant(val));
 }
 
-void QtVariantPropertyManagerPrivate::slotRegExpChanged(QtProperty *property, const QRegExp &regExp)
+void QtVariantPropertyManagerPrivate::slotRegExpChanged(QtProperty *property, const QRegularExpression&regExp)
 {
     if (QtVariantProperty *varProp = m_internalToProperty.value(property, 0))
         emit q_ptr->attributeChanged(varProp, m_regExpAttribute, QVariant(regExp));
@@ -875,8 +876,8 @@ void QtVariantPropertyManagerPrivate::slotFlagNamesChanged(QtProperty *property,
         \o QVariant::Int
     \row
         \o QString
-        \o regExp
-        \o QVariant::RegExp
+        \o regular expression
+        \o QVariant::RegularExpression
     \row
         \o QDate
         \o minimum
@@ -1028,12 +1029,12 @@ QtVariantPropertyManager::QtVariantPropertyManager(QObject *parent)
     d_ptr->m_typeToPropertyManager[QVariant::String] = stringPropertyManager;
     d_ptr->m_typeToValueType[QVariant::String] = QVariant::String;
     d_ptr->m_typeToAttributeToAttributeType[QVariant::String][d_ptr->m_regExpAttribute] =
-            QVariant::RegExp;
+            QVariant::RegularExpression;
     d_ptr->m_typeToAttributeToAttributeType[QVariant::String][d_ptr->m_echoModeAttribute] =
             QVariant::Int;
     connect(stringPropertyManager, SIGNAL(valueChanged(QtProperty *, const QString &)),
                 this, SLOT(slotValueChanged(QtProperty *, const QString &)));
-    connect(stringPropertyManager, SIGNAL(regExpChanged(QtProperty *, const QRegExp &)),
+    connect(stringPropertyManager, SIGNAL(regExpChanged(QtProperty *, const QRegularExpression&)),
                 this, SLOT(slotRegExpChanged(QtProperty *, const QRegExp &)));
     connect(stringPropertyManager, SIGNAL(echoModeChanged(QtProperty*,int)),
                 this, SLOT(slotEchoModeChanged(QtProperty*, int)));
@@ -1200,7 +1201,12 @@ QtVariantPropertyManager::QtVariantPropertyManager(QObject *parent)
 		// MarginsPropertyManager
     QtMarginsPropertyManager *marginsPropertyManager = new QtMarginsPropertyManager(this);
 		qRegisterMetaType<QMargins>("QMargins");
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+        // must not be called any more in Qt6, since this is automatically done then.
 		qRegisterMetaTypeStreamOperators<QMargins>("QMargins");
+#else
+        qRegisterMetaType<QMargins>("QMargins");
+#endif
 		int marginsType = QMetaTypeId<QMargins>::qt_metatype_id();
     d_ptr->m_typeToPropertyManager[marginsType] = marginsPropertyManager;
     d_ptr->m_typeToValueType[marginsType] = marginsType;
@@ -1223,7 +1229,12 @@ QtVariantPropertyManager::QtVariantPropertyManager(QObject *parent)
 		// MarginsFPropertyManager
     QtMarginsFPropertyManager *marginsfPropertyManager = new QtMarginsFPropertyManager(this);
 		qRegisterMetaType<QMarginsF>("QMarginsF");
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+        // must not be called any more in Qt6, since this is automatically done then.
 		qRegisterMetaTypeStreamOperators<QMarginsF>("QMarginsF");
+#else
+        qRegisterMetaType<QMarginsF>("QMarginsF");
+#endif
 		int marginsfType = qMetaTypeId<QMarginsF>();
     d_ptr->m_typeToPropertyManager[marginsfType] = marginsfPropertyManager;
     d_ptr->m_typeToValueType[marginsfType] = marginsfType;
@@ -1816,7 +1827,7 @@ void QtVariantPropertyManager::setAttribute(QtProperty *property,
         return;
     } else if (QtStringPropertyManager *stringManager = qobject_cast<QtStringPropertyManager *>(manager)) {
         if (attribute == d_ptr->m_regExpAttribute)
-            stringManager->setRegExp(internProp, qvariant_cast<QRegExp>(value));
+            stringManager->setRegExp(internProp, qvariant_cast<QRegularExpression>(value));
         if (attribute == d_ptr->m_echoModeAttribute)
             stringManager->setEchoMode(internProp, (EchoMode)qvariant_cast<int>(value));
         return;

@@ -35,7 +35,11 @@
 #include <qlayout.h>
 #include <qtimer.h>
 #include <qsettings.h>
+
+#if linux
 #include <qdesktopwidget.h>
+#endif
+
 #include <qapplication.h>
 
 #include <iostream>

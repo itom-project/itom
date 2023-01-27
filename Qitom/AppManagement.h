@@ -27,8 +27,6 @@
 #include <qobject.h>
 #include <qmutex.h>
 
-class QTextCodec;
-
 namespace ito
 {
 
@@ -154,7 +152,7 @@ class AppManagement
         static QObject *m_userOrganizer;    /*!< static pointer to UserOrganizer (default: NULL) */
         static QObject* m_coutStream; /*!< static pointer to QDebugStream for std::cout redirection */
         static QObject* m_cerrStream; /*!< static pointer to QDebugStream for std::cerr redirection */
-        static QTextCodec *m_scriptTextCodec; /*!< static, borrowed pointer to the text codec used for loading and saving script files */
+     
         static QMutex m_mutex;  /*!< static mutex, protecting every read and write operation in class AppManagement */
 
 };

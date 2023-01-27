@@ -52,9 +52,9 @@
 namespace ito {
 
 /*static*/ QList<PythonSyntaxHighlighter::NamedRegExp> PythonSyntaxHighlighter::regExpProg = PythonSyntaxHighlighter::makePythonPatterns();
-/*static*/ QRegExp PythonSyntaxHighlighter::regExpIdProg = QRegExp("\\s+(\\w+)");
-/*static*/ QRegExp PythonSyntaxHighlighter::regExpAsProg = QRegExp(".*?\\b(as)\\b");
-/*static*/ PythonSyntaxHighlighter::QQRegExp PythonSyntaxHighlighter::regExpOeComment = PythonSyntaxHighlighter::QQRegExp("^(// ?--[-]+|##[#]+ )[ -]*[^- ]+");
+/*static*/ QRegularExpression PythonSyntaxHighlighter::regExpIdProg = QRegularExpression("\\s+(\\w+)");
+/*static*/ QRegularExpression PythonSyntaxHighlighter::regExpAsProg = QRegularExpression(".*?\\b(as)\\b");
+/*static*/ QRegularExpression PythonSyntaxHighlighter::regExpOeComment = QRegularExpression("^(// ?--[-]+|##[#]+ )[ -]*[^- ]+");
 
 
 //-------------------------------------------------------------------
@@ -310,12 +310,13 @@ void PythonSyntaxHighlighter::highlight_block(const QString &text, QTextBlock &b
                 if (key == "keyword")
                 {
                     if (value == "def" || value == "class")
-                    {
-                        int pos2 = PythonSyntaxHighlighter::regExpIdProg.indexIn(text2, end);
-                        if (pos2 >= 0)
+                    {   
+                        auto match = PythonSyntaxHighlighter::regExpIdProg.match(text2, end);
+
+                        if (match.hasMatch())
                         {
-                            int start1 = pos2;
-                            int end1 = start1 + PythonSyntaxHighlighter::regExpIdProg.matchedLength();
+                            int start1 = match.capturedStart();
+                            int end1 = match.capturedEnd();
                             QTextCharFormat fmt = getFormatFromStyle(value == "class" ? StyleItem::KeyClass : StyleItem::KeyFunction);
                             setFormat(start1, end1 - start1, fmt);
                         }
@@ -327,20 +328,34 @@ void PythonSyntaxHighlighter::highlight_block(const QString &text, QTextBlock &b
                     // if in a comment; cheap approximation to the
                     // truth
                     int endpos;
+                    QString text2stripped;
+
                     if (text2.contains('#'))
                     {
                         endpos = text2.indexOf('#');
+                        text2stripped = text2.left(endpos);
                     }
                     else
                     {
                         endpos = text2.size();
+                        text2stripped = text2;
                     }
 
-                    int pos3 = 0;
-                    while ((pos3 = PythonSyntaxHighlighter::regExpAsProg.indexIn(text2.left(endpos), end)) != -1)
+                    QRegularExpressionMatch match;
+
+                    while (true)
                     {
-                        setFormat(pos3, pos3 + PythonSyntaxHighlighter::regExpAsProg.matchedLength(), getFormatFromStyle(StyleItem::KeyNamespace));
-                        pos3 += PythonSyntaxHighlighter::regExpAsProg.matchedLength();
+                        match = PythonSyntaxHighlighter::regExpAsProg.match(text2stripped, end);
+
+                        if (!match.hasMatch())
+                        {
+                            break;
+                        }
+
+                        start = match.capturedStart(1);
+                        end = match.capturedEnd(1);
+                        QTextCharFormat fmt = getFormatFromStyle(StyleItem::KeyNamespace);
+                        setFormat(start, end - start, fmt);
                     }
                 }
             }
@@ -501,24 +516,24 @@ QString any(const QString &name, const QStringList &alternates)
     QStringList all;
     all << instance << decorator << kw << kw_namespace << builtin << word_operators << builtin_fct << comment;
     all << ufstring1 << ufstring2 << ufstring3 << ufstring4 << string << number << any("SNYC", QStringList("\\n"));
-    QQRegExp regExp = QQRegExp(all.join("|"));
+    QRegularExpression regExp = QRegularExpression(all.join("|"));
     regExpressions.append(NamedRegExp(regExp.namedCaptureGroups(), regExp));
 #else
-    regExpressions.append(NamedRegExp("instance", QQRegExp(instance)));
-    regExpressions.append(NamedRegExp("decorator", QQRegExp(decorator)));
-    regExpressions.append(NamedRegExp("keyword", QQRegExp(kw)));
-    regExpressions.append(NamedRegExp("namespace", QQRegExp(kw_namespace)));
-    regExpressions.append(NamedRegExp("builtin", QQRegExp(builtin)));
-    regExpressions.append(NamedRegExp("operator_word", QQRegExp(word_operators)));
-    regExpressions.append(NamedRegExp("builtin_fct", QQRegExp(builtin_fct)));
-    regExpressions.append(NamedRegExp("comment", QQRegExp(comment)));
-    regExpressions.append(NamedRegExp("uf_sqstring", QQRegExp(ufstring1)));
-    regExpressions.append(NamedRegExp("uf_dqstring", QQRegExp(ufstring2)));
-    regExpressions.append(NamedRegExp("uf_sq3string", QQRegExp(ufstring3)));
-    regExpressions.append(NamedRegExp("uf_dq3string", QQRegExp(ufstring4)));
-    regExpressions.append(NamedRegExp("string", QQRegExp(string)));
-    regExpressions.append(NamedRegExp("number", QQRegExp(number)));
-    regExpressions.append(NamedRegExp("SYNC", QQRegExp(any("SYNC", QStringList("\\n")))));
+    regExpressions.append(NamedRegExp("instance", QRegularExpression(instance)));
+    regExpressions.append(NamedRegExp("decorator", QRegularExpression(decorator)));
+    regExpressions.append(NamedRegExp("keyword", QRegularExpression(kw)));
+    regExpressions.append(NamedRegExp("namespace", QRegularExpression(kw_namespace)));
+    regExpressions.append(NamedRegExp("builtin", QRegularExpression(builtin)));
+    regExpressions.append(NamedRegExp("operator_word", QRegularExpression(word_operators)));
+    regExpressions.append(NamedRegExp("builtin_fct", QRegularExpression(builtin_fct)));
+    regExpressions.append(NamedRegExp("comment", QRegularExpression(comment)));
+    regExpressions.append(NamedRegExp("uf_sqstring", QRegularExpression(ufstring1)));
+    regExpressions.append(NamedRegExp("uf_dqstring", QRegularExpression(ufstring2)));
+    regExpressions.append(NamedRegExp("uf_sq3string", QRegularExpression(ufstring3)));
+    regExpressions.append(NamedRegExp("uf_dq3string", QRegularExpression(ufstring4)));
+    regExpressions.append(NamedRegExp("string", QRegularExpression(string)));
+    regExpressions.append(NamedRegExp("number", QRegularExpression(number)));
+    regExpressions.append(NamedRegExp("SYNC", QRegularExpression(any("SYNC", QStringList("\\n")))));
 #endif
 
     return regExpressions;

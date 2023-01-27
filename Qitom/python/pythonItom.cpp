@@ -46,7 +46,7 @@
 #include "../organizer/userOrganizer.h"
 
 #include <qcoreapplication.h>
-#include <qdesktopwidget.h>
+
 #include <qdir.h>
 #include <qresource.h>
 #include <qscreen.h>

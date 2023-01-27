@@ -54,7 +54,7 @@ void toYMDHMSU(
         secs -= 1;
     }
 
-    QDateTime qdt(QDate(1970, 1, 1));
+    QDateTime qdt(QDate(1970, 1, 1), QTime(0, 0, 0));
     qdt.setOffsetFromUtc(dt.utcOffset);
     qdt = qdt.addSecs(secs);
 
@@ -93,7 +93,7 @@ QDateTime toQDateTime(const DateTime& dt)
         secs -= 1;
     }
 
-    QDateTime qdt(QDate(1970, 1, 1));
+    QDateTime qdt(QDate(1970, 1, 1), QTime(0, 0, 0));
     qdt.setOffsetFromUtc(dt.utcOffset);
     qdt = qdt.addSecs(secs);
     return qdt.addMSecs(usecond / 1000.0);

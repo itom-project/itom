@@ -354,6 +354,7 @@ private:
     static PyModuleDef PyModuleItomDbg;
     static PyObject* PyInitItomDbg(void);
     static PyObject* PyDbgCommandLoop(PyObject *pSelf, PyObject *pArgs);
+    static PyObject* PyDbgClearBreakpoint(PyObject* pSelf, PyObject* pArgs);
 
     //other static members
     static QMutex instancePtrProtection;

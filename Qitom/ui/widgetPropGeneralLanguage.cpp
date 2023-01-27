@@ -31,7 +31,6 @@
 #include <qdir.h>
 #include <qfileinfo.h>
 #include <qlocale.h>
-#include <qregexp.h>
 
 namespace ito
 {

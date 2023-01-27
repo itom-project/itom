@@ -31,7 +31,7 @@
 #include "../organizer/processOrganizer.h"
 #include "../../AddInManager/addInManager.h"
 #include "../../AddInManager/algoInterfaceValidator.h"
-
+#include "compatHelper.h"
 #include "../ui/dialogOpenFileWithFilter.h"
 #include "../ui/dialogSaveFileWithFilter.h"
 
@@ -50,6 +50,13 @@
 #include <qinputdialog.h>
 #include <qmessagebox.h>
 #include <qsettings.h>
+#include <qregularexpression.h>
+
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    #include <qtextcodec.h>
+#else
+    #include <QStringDecoder>
+#endif
 
 namespace ito {
 
@@ -562,15 +569,17 @@ end:
 
     if (!unpackDict)
     {
-        QRegExp regExp("^[a-zA-Z][a-zA-Z0-9_]*$");
+        QRegularExpression regExp("^[a-zA-Z][a-zA-Z0-9_]*$");
         QString defaultName = info.completeBaseName();
-        if (regExp.indexIn(defaultName) == -1)
+
+        if (defaultName.indexOf(regExp) == -1)
         {
             //defaultName.prepend("var");
             defaultName.replace("-", "_");
 			defaultName.replace(".", "_");
 			defaultName.replace(" ", "_");
-            if (regExp.indexIn(defaultName) == -1)
+
+            if (defaultName.indexOf(regExp) == -1)
             {
                 defaultName = "varName";
             }
@@ -584,12 +593,13 @@ end:
         }
 
         packedVarname = QInputDialog::getText(parent, tr("Variable name of imported dictionary"), tr("Please indicate a variable name for the dictionary in file '%1' \n(name must start with a letter followed by numbers or letters).").arg(info.fileName()), QLineEdit::Normal, defaultName, &ok);
+        
         if (!ok)
         {
             return ito::retOk;
         }
 
-        if (regExp.indexIn(packedVarname) == -1)
+        if (packedVarname.indexOf(regExp) == -1)
         {
             return RetVal(retError, 0, tr("Invalid variable name").toLatin1().data());
         }
@@ -1258,14 +1268,17 @@ end:
     filter.removeDuplicates();
 
     //get all file-patterns from all filters and merge them together to one entry containing all, that is then added as 'Itom Files'
-    QRegExp reg("^.*\\((.*)\\)$");
+    QRegularExpression reg("^.*\\((.*)\\)$");
     QStringList _allPatterns;
+    QRegularExpressionMatch match;
 
     foreach(const QString &item, filter)
     {
-        if( reg.indexIn(item) >= 0 )
+        match = reg.match(item);
+
+        if(match.hasMatch())
         {
-            _allPatterns.append( reg.cap(1).trimmed().split(" ") );
+            _allPatterns.append( match.captured(1).trimmed().split(" "));
         }
     }
 
@@ -1299,17 +1312,18 @@ end:
 {
     QStringList allPatterns;
     getFileFilters(IOfilters, &allPatterns);
-    QRegExp reg;
-    reg.setPatternSyntax( QRegExp::Wildcard );
+    QRegularExpression reg;
 
     foreach(const QString &pat, allPatterns)
     {
-        reg.setPattern(pat);
-        if(reg.exactMatch(filename))
+        reg.setPattern(CompatHelper::regExpAnchoredPattern(CompatHelper::wildcardToRegularExpression(pat)));
+        
+        if(filename.indexOf(reg) >= 0)
         {
             return true;
         }
     }
+
     return false;
 }
 
@@ -1643,9 +1657,15 @@ end:
     }
 
     // alias not found, create a user defined one, as long as QTextCodec supports it.
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     QTextCodec *tc = QTextCodec::codecForName(alias.toLatin1());
 
     if (tc)
+#else
+    QStringDecoder decoder(alias.toLatin1());
+
+    if (decoder.isValid())
+#endif
     {
         CharsetEncodingItem item;
         item.encodingName = alias;

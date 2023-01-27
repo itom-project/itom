@@ -32,6 +32,7 @@
 #include "../DataObject/dataobj.h"
 #include "../DataObject/dataObjectFuncs.h"
 #include <qrect.h>
+#include <qiodevice.h>
 
 
 

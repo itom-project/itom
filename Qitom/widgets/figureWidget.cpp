@@ -31,6 +31,7 @@
 #include "plot/AbstractDObjPCLFigure.h"
 
 #include <qlayoutitem.h>
+#include <qactiongroup.h>
 
 
 namespace ito {

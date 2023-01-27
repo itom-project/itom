@@ -23,7 +23,6 @@
 #include "AppManagement.h"
 #include "organizer/userOrganizer.h"
 
-#include <qtextcodec.h>
 
 namespace ito
 {
@@ -49,7 +48,6 @@ QObject* AppManagement::m_cerrStream = nullptr;
 QObject* AppManagement::m_coutStream = nullptr;
 QMutex AppManagement::m_mutex;
 AppManagement::Timeouts AppManagement::timeouts;
-QTextCodec* AppManagement::m_scriptTextCodec = nullptr;
 
 //-------------------------------------------------------------------------------------------
 /*static*/ QString AppManagement::getSettingsFile(void)

@@ -4,7 +4,22 @@
 
 .. _build_dependencies_vtk:
 
-Compile VTK
+Compile VTK 9
+=============
+
+Unzip the VTK source on your hard drive. Create a build_x64/build_x86 folder 
+and execute than CMake with this two folders. 
+
+* Change **CMAKE_INSTALL_PREFIX** to **${MAINDIR}/3rdPartyPCL/vtk9.2.2**
+* Set **Qt6_DIR** to to **${MAINDIR}/3rdParty/Qt6.4.1/msvc2016_64/lib/cmake/Qt6**. 
+* Set **VTK_MODULE_ENABLE_VTK_GUISupportQt** to the value **YES**.
+* Set **VTK_MODULE_ENABLE_VTK_GUISupportQtSql** to the value **YES**.
+* Set **VTK_MODULE_ENABLE_VTK_RenderingOpenGL2** to the value **YES**.
+* Set **VTK_MODULE_ENABLE_VTK_RenderingQt** to the value **YES**.
+* Set **VTK_MODULE_ENABLE_VTK_ViewsQt** to the value **YES**.
+* Set **VTK_MODULE_ENABLE_VTK_WrappingTools** to the value **YES**.
+
+Compile VTK 8
 ==============
 
 Unzip the VTK source on your hard drive. Create a build_x64/build_x86 folder 
@@ -20,7 +35,7 @@ and execute than CMake with this two folders.
 * Change **CMAKE_INSTALL_PREFIX** to **${MAINDIR}/3rdPartyPCL/vtk8.2.0**
 * If an error occures with wrong Qt Version, change **VTK_QT_VERSION** to **5**
 * Choose with the variable **VTK_RENDERING_BACKEND** which OpenGL is used for VTK/PCL. 
-* Set the Entry **Qt5_DIR** to to **${MAINDIR}/3rdParty/Qt5.12.1/msvc2017_64/lib/cmake/Qt5**. 
+* Set the entry **Qt5_DIR** to to **${MAINDIR}/3rdParty/Qt5.12.1/msvc2017_64/lib/cmake/Qt5**. 
 * Check **VTK_BUILD_QT_DESIGNER_PLUGIN**.
 
 .. note::
@@ -40,3 +55,4 @@ and execute than CMake with this two folders.
 .. warning:: 
 
     Disable deprecation warnings by setting the cmake variable: **VTK_LEGACY_SILENT:ON**
+
