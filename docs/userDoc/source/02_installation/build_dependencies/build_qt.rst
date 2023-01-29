@@ -47,6 +47,16 @@ For a working |itom| development environment only a prebuild version of Qt is ne
     **Qt5WebEngineWidgetsd.dll**. This bug should be solved with QT version 5.6.3 
     (release August 2017).
 
+.. warning::
+
+    **Qt WebEngine**, **Qt WebEngineWidgets** are only available under VS 2017 as it is shown in the figure below! 
+    
+    Qt 5.10.1 supports **Qt WebEngine**, **Qt WebEngineWidgets** for VS2015.
+    
+.. figure:: images/all-in-one-create/QT_WebEngine_hint.png
+    :scale: 100%
+    :align: center
+    
 Qt 6
 ----
 
