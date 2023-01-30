@@ -23,10 +23,13 @@ class MultiChannelDummyGrabberTest(unittest.TestCase):
         roiDefaultChannel = cam.getParam('roi')
         roiChannel0 = cam.getParam('roi:channel_0')
         roiChannel1 = cam.getParam('roi:channel_1')
+        cam.setParam('roi:channel_0', [0, 0, 50, 50])
+        roiChannel0Modified = cam.getParam('roi:channel_0')
         
         self.assertEqual(originalRoi, roiChannel0)
         self.assertNotEqual(originalRoi, roiChannel1)
         self.assertEqual(roiChannel1, (0, 0, 20, 20))
+        self.assertEqual(roiChannel0Modified,(0,0,50,50))
         self.assertEqual(roiDefaultChannel, roiChannel0)
 
     def test_setAndGetParamViaDefaultChannel(self):

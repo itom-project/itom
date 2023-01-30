@@ -58,7 +58,6 @@ namespace ito
         paramVal = ito::Param("channelList", ito::ParamBase::StringList | ito::ParamBase::Readonly, {}, tr("names of the channels provided by the plugin").toLatin1().data());
         m_params.insert(paramVal.getName(), paramVal);
 
-
         //int roi[] = { 0, 0, 2048, 2048 };
         //paramVal = ito::Param("roi", ito::ParamBase::IntArray, 4, roi, tr("ROI (x,y,width,height) [this replaces the values x0,x1,y0,y1]").toLatin1().data());
         //ito::RectMeta *rm = new ito::RectMeta(ito::RangeMeta(roi[0], roi[0] + roi[2] - 1), ito::RangeMeta(roi[1], roi[1] + roi[3] - 1), "ImageFormatControl");
@@ -157,7 +156,7 @@ namespace ito
     ////----------------------------------------------------------------------------------------------------------------------------------
     ////! sends m_image to all registered listeners.
     ///*!
-    //This method is continuously called from timerEvent. Also call this method from your getVal-Method (usually with 0-timeout)
+    //This method is continuously called from timerEvent. Also call this method from your getVal-Method (usually with 0-timeout). The function adds axis scale and axis unit to the dataObject.
 
     //\param [in] waitMS indicates the time (in ms) that should be waiting until every registered live image source node received m_image. 0: no wait, -1: infinit waiting time, else time in milliseconds
     //\return retOk if everything was ok, retWarning if live image could not be invoked
@@ -172,7 +171,25 @@ namespace ito
             QMultiMap<QString, QObject*>::iterator it = m_autoGrabbingListeners.begin();
             while (it != m_autoGrabbingListeners.end())
             {
-                if (!QMetaObject::invokeMethod(it.value(), "setSource", Q_ARG(QSharedPointer<ito::DataObject>, QSharedPointer<ito::DataObject>(new ito::DataObject(m_channels[it.key().toLatin1().data()].data))), Q_ARG(ItomSharedSemaphore*, NULL)))
+                const ChannelContainer& container = m_channels[it.key().toLatin1().data()];
+                QSharedPointer<ito::DataObject> pDObj(new ito::DataObject(container.data));
+                int numAxis = pDObj->getDims();
+                if(container.m_channelParam["axisOffset"].getLen() == numAxis && container.m_channelParam["axisScale"].getLen() == numAxis)
+                {
+                    const double* axisOffset = container.m_channelParam["axisOffset"].getVal<double*>();
+                    const double* axisScale = container.m_channelParam["axisScale"].getVal<double*>();
+                    for (unsigned int i = 0; i < numAxis; ++i)
+                    {
+                        pDObj->setAxisOffset(i, axisOffset[i]);
+                        pDObj->setAxisScale(i, axisScale[i]);
+                    }
+                }
+                else
+                {
+                    retValue += ito::RetVal(ito::retWarning, 1001, tr("could not set axis scale or axis offset since the array length of at least one parameter does not fit to the dataObject size.").toLatin1().data());
+                }
+                
+                if (!QMetaObject::invokeMethod(it.value(), "setSource", Q_ARG(QSharedPointer<ito::DataObject>, pDObj), Q_ARG(ItomSharedSemaphore*, NULL)))
                 {
                     retValue += ito::RetVal(ito::retWarning, 1001, tr("slot 'setSource' of live source node could not be invoked").toLatin1().data());
                 }
@@ -317,7 +334,7 @@ namespace ito
 
     void AddInMultiChannelGrabber::addChannel(QString name)
     {
-        ChannelContainer a(m_params["roi"], m_params["pixelFormat"], m_params["sizex"], m_params["sizey"]);
+        ChannelContainer a(m_params["roi"], m_params["pixelFormat"], m_params["sizex"], m_params["sizey"], m_params["axisOffset"], m_params["axisScale"]);
         m_channels[name] = a;
         const ByteArray* channelList = m_params["channelList"].getVal<const ByteArray*>();
         int len = 0;
@@ -418,7 +435,12 @@ namespace ito
         }
         return retValue;
     }
-    //todo: update setParam... 
+    //todo: modify setParam such that the if a value is set by a suffix the value gets copied to m_params if the suffix is the default channel. Right now the channelParam gets overridden by the m_param value.
+    //Maybe the functions needs to be splitted into different cases:
+    //1) a param is set without suffix -> if the param is a channelparam we need to update the channel param as well
+    //2) a param is set with a suffix -> we need to set the channelparam and update the m_params as well. If the suffix isn't the default param we do not have to update m_params
+    //3) a param wich isn't a channel param is set -> we just have to update m_params
+    //We want to create a list which clearly indicates if further params requrire a update and if so if the update is needed in channel param or m_param or both
     ito::RetVal AddInMultiChannelGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond/* = NULL*/)
     {
         assert(m_defaultConfigReady);
@@ -634,7 +656,6 @@ namespace ito
         }
         return retVal;
     }
-
     ////----------------------------------------------------------------------------------------------------------------------------------
     ////! updates sizex and sizey
     ///*!

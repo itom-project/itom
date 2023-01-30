@@ -55,13 +55,19 @@ namespace ito
             ito::DataObject data;
             QMap<QString, ito::Param> m_channelParam;
             ChannelContainer() {};
-            ChannelContainer(ito::Param roi, ito::Param pixelFormat, ito::Param sizex, ito::Param sizey)
+            ChannelContainer(ito::Param roi,
+                             ito::Param pixelFormat,
+                             ito::Param sizex,
+                             ito::Param sizey,
+                             ito::Param axisOffset,
+                             ito::Param axisScale)
             {
                 m_channelParam.insert("pixelFormat", pixelFormat);
                 m_channelParam.insert("roi", roi);
                 m_channelParam.insert("sizex", sizex);
                 m_channelParam.insert("sizey", sizey);
-
+                m_channelParam.insert("axisOffset", axisOffset);
+                m_channelParam.insert("axisScale", axisScale);
             }
         };
         QMap<QString, ChannelContainer> m_channels; /*!< Map for recently grabbed images of various channels*/
