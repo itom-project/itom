@@ -333,7 +333,7 @@ PyObject* PyStream::PythonStream_readline(PythonStream* self, PyObject *args)
         return NULL;
     }
 
-    return PythonQtConversion::QByteArrayToPyUnicodeSecure(*buffer);
+    return PythonQtConversion::QByteArrayUtf8ToPyUnicodeSecure(*buffer);
 }
 
 } //end namespace ito

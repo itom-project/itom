@@ -1270,7 +1270,7 @@ ito::RetVal PythonEngine::stringEncodingChanged()
     ito::RetVal retval;
 
     enum unicodeEncodings { utf_16, utf_16_LE, utf_16_BE, utf_32, utf_32_BE, utf_32_LE, other };
-    PythonQtConversion::unicodeEncodings encodingType = PythonQtConversion::other;
+    PythonQtConversion::UnicodeEncodings encodingType = PythonQtConversion::other;
     QByteArray encodingName = "";
     bool found = false;
 //    QList<QByteArray> qtCodecNames = QTextCodec::codecForCStrings()->aliases();

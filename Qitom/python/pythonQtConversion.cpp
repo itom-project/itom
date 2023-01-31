@@ -56,7 +56,7 @@ namespace ito
         Parts of this class are taken from the project PythonQt (http://pythonqt.sourceforge.net/)
 */
 //PythonQtConversion::unicodeEncodings PythonQtConversion::textEncoding = PythonQtConversion::utf_8;
-PythonQtConversion::unicodeEncodings PythonQtConversion::textEncoding = PythonQtConversion::latin_1;
+PythonQtConversion::UnicodeEncodings PythonQtConversion::textEncoding = PythonQtConversion::latin_1;
 
 //QByteArray PythonQtConversion::textEncodingName = "utf8";
 QByteArray PythonQtConversion::textEncodingName = "latin_1";
@@ -3663,6 +3663,30 @@ PyObject* PythonQtConversion::ConvertQtValueToPythonInternal(int type, const voi
             return res;
         }
     }
+}
+
+//-------------------------------------------------------------------------------------
+/*static*/ PyObject* PythonQtConversion::QByteArrayUtf8ToPyUnicodeSecure(const QByteArray &ba, const char *errors /*= "replace"*/)
+{
+    PyObject *temp = QByteArrayUtf8ToPyUnicode(ba, errors);
+
+    if (temp == nullptr)
+    {
+        PyErr_Clear();
+        temp = ByteArrayToPyUnicode("<encoding error>");
+    }
+
+    return temp;
+}
+
+//-------------------------------------------------------------------------------------
+/*static*/ PyObject* PythonQtConversion::QByteArrayUtf8ToPyUnicode(const QByteArray &ba, const char *errors)
+{
+    int bo;
+    int len = ba.size();
+    const char* data = ba.constData();
+
+    return PyUnicode_DecodeUTF8(data, len, errors);
 }
 
 //-------------------------------------------------------------------------------------
