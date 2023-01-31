@@ -512,4 +512,67 @@ To add such a docstring, there are three different possibilities:
    by pressing Return or Enter. If you press any other key, the popup automatically
    disappears.
 
+.. _gui-editor-charset-encoding:
+
+Charset Encoding
+=================
+
+If not otherwise stated, Python (since Python 3.7) assumes, that a script file is
+stored with the charset encoding **UTF-8**. Before, the local encoding was used (at least
+for Windows). If the script file is stored with another encoding, it is possible to
+name this encoding in the first or second line, using the **coding** statement
+(see `PEP 263 <https://peps.python.org/pep-0263/>`_).
+
+itom is able to load and save scripts with different typical encodings. The current
+encoding for every script can be different and will be displayed in the status bar of
+the script window, if the script is undocked from the main window, or in the status bar
+of the main window:
+
+.. figure:: images/scripteditor_encoding1.png
+    :scale: 100%
+    :align: center
+
+Offically supported encodings are:
+
+* UTF-8
+* latin1
+* UTF-8 with BOM (byte order mark)
+
+Byte order mark means, that the file starts with some magic characters, that indicates
+the encoding of this file.
+
+When a script is loaded, the default encoding, that can be selected in the **Editor >> General**
+tab of the itom property editor, is usually assumed and the script is loaded with this
+charset encoding. However, it is also possible to let itom guess the encoding, if possible.
+This can also be set in the same page of the property dialog. If set, the script is either scanned
+for a possible byte-order-mark or the first or second line is scanned for a **coding** statement
+and this encoding is assumed, if it is supported.
+
+The encoding, used to load a script, is also the current encoding of this script. If changes
+to the script are stored, this current encoding is used to save the file. It is not checked, if
+the **coding** statement is added as comment in the first or second line, at least if this is different
+to the Python standard **UTF-8**. The following coding values in the script are supported and
+mapped to the indicated charset encoding (see `this link <https://docs.python.org/3.11/library/codecs.html#standard-encodings>`_):
+
+* latin-1, latin1, latin_1, iso-8859-15, iso8859-1, 8859, cp819, latin, L1 --> Latin1
+* utf8, utf-8, utf_8, u8, utf, cp650001 --> utf-8
+* utf_8_sig --> utf-8 with BOM
+
+itom allows changing the current encoding of this script. This can be selected by the item
+**Charset Encoding...** of the context menu or the **Edit** menu of the script editor.
+This menu action opens the following dialog:
+
+.. figure:: images/scripteditor_encoding2.png
+    :scale: 100%
+    :align: center
+
+This dialog provides two features: On the one hand, one can select another encoding, that is used as future charset
+encoding for saving the file. However, it is also possible to reload the current script using this encoding. This can
+be useful if the script has been loaded with a wrong encoding and strange characters are visible.
+
+If the script is encoded in a charset encoding different than **UTF-8**, it is highly recommended to indicate
+this encoding using the **coding** comment in the first or second line of the script, as described in 
+`PEP 263 <https://peps.python.org/pep-0263/>`_. It is possible to insert the specific comment line by selecting the
+desired encoding in the dialog and press the button to insert it in the first line of the dialog.
+
 
