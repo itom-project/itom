@@ -375,3 +375,4 @@ Makefile*
 
 #GitEyen - Git GUi Editor
 /.project
+.clang-tidy
