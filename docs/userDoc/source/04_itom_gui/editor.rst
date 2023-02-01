@@ -72,7 +72,9 @@ These are:
 * **Run Selection**: If you mark a specific part of the script and choose 
   **run selection**, this selection is copied into the command line and executed. 
   Please notice, that the number of leading spaces of the first selected line 
-  is also removed from the following lines.
+  is also removed from the following lines. If no selection is active in the script,
+  the current line of the cursor is executed and the cursor jumps to the same
+  position in the next line.
 * **Debug** (F6): Click this to debug the current script such that you can jump 
   from line to line or breakpoint and see the state of the script and all global 
   or local variables. The line where the debugger is currently stopped is marked 

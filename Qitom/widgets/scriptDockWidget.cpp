@@ -1501,7 +1501,7 @@ void ScriptDockWidget::updatePythonActions()
     int tabCount = m_tab->count();
 
     m_scriptRunAction->setEnabled(!busy1);
-    m_scriptRunSelectionAction->setEnabled(sew && sew->getCanCopy() && (!busy1 || pythonInWaitingMode()));
+    m_scriptRunSelectionAction->setEnabled(sew && (!busy1 || pythonInWaitingMode()));
     m_scriptDebugAction->setEnabled(!busy1);
     m_scriptStopAction->setEnabled(busy1);
     m_scriptContinueAction->setEnabled(busy2);
@@ -1511,7 +1511,6 @@ void ScriptDockWidget::updatePythonActions()
 
     m_scriptRunSelectionAction->setEnabled(
         sew != nullptr &&
-        sew->getCanCopy() &&
         (!pythonBusy() || pythonInWaitingMode()));
 
     m_replaceTextExprAction->setEnabled(
