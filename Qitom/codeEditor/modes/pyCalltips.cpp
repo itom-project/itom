@@ -212,7 +212,7 @@ bool PyCalltipsMode::isLastChardEndOfWord() const
 }
 
 //--------------------------------------------------------------------------------
-QString parseCalltip(const ito::JediCalltip &tip)
+QString parseCalltip(const ito::JediCalltip &tip, bool compactLayout)
 {
     if (tip.m_calltipParams.size() == 0)
     {
@@ -221,17 +221,63 @@ QString parseCalltip(const ito::JediCalltip &tip)
     else
     {
         int paramLength = 0;
+        const int maxLineLength = 88;
 
         foreach(const QString &p, tip.m_calltipParams)
         {
             paramLength += 2 + p.size();
         }
 
-        if (paramLength + tip.m_calltipMethodName.size() + 2 < (2 * 88))
+        if (paramLength + tip.m_calltipMethodName.size() + 2 < (2 * maxLineLength))
         {
             return QString("<p><nobr>%1(%2)</nobr></p>")
                 .arg(tip.m_calltipMethodName)
                 .arg(tip.m_calltipParams.join(", "));
+        }
+        else if (compactLayout)
+        {
+            QString currentLine;
+            QString params;
+
+            foreach (const QString& p, tip.m_calltipParams)
+            {
+                if (currentLine == "")
+                {
+                    // at least one argument in the line
+                    currentLine = p;
+                }
+                else if (currentLine.size() + p.size() > maxLineLength)
+                {
+                    if (params != "")
+                    {
+                        params += ", ";
+                    }
+
+                    params += "<br>&nbsp;&nbsp;&nbsp;&nbsp;";
+                    params += currentLine;
+
+                    currentLine = p;
+                }
+                else
+                {
+                    currentLine = currentLine + ", " + p;
+                }
+            }
+
+            if (currentLine != "")
+            {
+                if (params != "")
+                {
+                    params += ", ";
+                }
+
+                params += "<br>&nbsp;&nbsp;&nbsp;&nbsp;";
+                params += currentLine;
+            }
+
+            return QString("<p><nobr>%1(%2)</nobr></p>")
+                .arg(tip.m_calltipMethodName)
+                .arg(params);
         }
         else
         {
@@ -257,16 +303,25 @@ void PyCalltipsMode::onJediCalltipResultAvailable(QVector<ito::JediCalltip> call
     QString text;
 
     if (calltips.size() > 0)
-    {        
+    {       
+        // estimate the number of lines if every argument will be 
+        // in a new line
+        int noLines = calltips.size();
+
+        foreach (const JediCalltip& tip, calltips)
+        {
+            noLines += tip.m_calltipParams.size();
+        }
+
         foreach(const JediCalltip &tip, calltips)
         {
             // newline not necessary, since each calltip is in a <p>...</p> block
-            text.append(parseCalltip(tip));
+            text.append(parseCalltip(tip, noLines > 20));
         }
     }
     else
     {
-        text = parseCalltip(first_calltip);
+        text = parseCalltip(first_calltip, false);
     }
 
     // set tool tip position at the start of the bracket
@@ -287,7 +342,7 @@ void PyCalltipsMode::onJediCalltipResultAvailable(QVector<ito::JediCalltip> call
     //position = QPoint(0, 0);
 
     // show tooltip
-    ToolTip::showText(position, text, editor(), QRect());
+    ToolTip::showText(position, text, editor(), QRect(), true);
 }
 
 } //end namespace ito

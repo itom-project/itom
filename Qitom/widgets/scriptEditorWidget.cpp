@@ -695,7 +695,7 @@ void ScriptEditorWidget::contextMenuAboutToShow(int contextMenuLine)
     m_editorMenuActions["copy"]->setEnabled(lineFrom != -1 || selectLineOnCopyEmpty());
     m_editorMenuActions["paste"]->setEnabled(!m_pythonBusy && contextMenuLine >= 0 && canPaste());
     m_editorMenuActions["runScript"]->setEnabled(!m_pythonBusy);
-    m_editorMenuActions["runSelection"]->setEnabled(lineFrom != -1 && pyEngine && (!m_pythonBusy || pyEngine->isPythonDebuggingAndWaiting()));
+    m_editorMenuActions["runSelection"]->setEnabled(pyEngine && (!m_pythonBusy || pyEngine->isPythonDebuggingAndWaiting()));
     m_editorMenuActions["debugScript"]->setEnabled(!m_pythonBusy);
     m_editorMenuActions["stopScript"]->setEnabled(m_pythonBusy);
     m_editorMenuActions["charsetEncoding"]->setEnabled(!m_pythonBusy); 
@@ -1194,6 +1194,7 @@ void ScriptEditorWidget::menuRunSelection()
 
     //check whether text has been marked
     getSelection(&lineFrom, &indexFrom, &lineTo, &indexTo);
+
     if (lineFrom >= 0)
     {
         QString defaultText = selectedText();
@@ -1212,6 +1213,22 @@ void ScriptEditorWidget::menuRunSelection()
         
 
         emit pythonRunSelection(defaultText);
+    }
+    else
+    {
+        // single line
+        getCursorPosition(&lineFrom, &indexFrom);
+
+        QString defaultText = lineText(lineFrom).trimmed();
+
+        if (lineCount() > lineFrom + 1)
+        {
+            setCursorPosAndEnsureVisible(lineFrom + 1);
+            setCursorPosition(lineFrom + 1, indexFrom);
+        }
+
+        emit pythonRunSelection(defaultText);
+
     }
 }
 
