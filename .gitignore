@@ -377,4 +377,4 @@ Makefile*
 /.project
 
 .clang-tid
-*.ba
+*.bak
