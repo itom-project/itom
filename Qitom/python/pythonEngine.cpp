@@ -1249,7 +1249,7 @@ ito::RetVal PythonEngine::pythonShutdown(ItomSharedSemaphore *aimWait)
     return retValue;
 }
 
-#if QT_VERSION >= QT_VERSION_CHECK(6,0 ,0)
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0 ,0)
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal PythonEngine::stringEncodingChanged()
 {
@@ -1270,7 +1270,7 @@ ito::RetVal PythonEngine::stringEncodingChanged()
     ito::RetVal retval;
 
     enum unicodeEncodings { utf_16, utf_16_LE, utf_16_BE, utf_32, utf_32_BE, utf_32_LE, other };
-    PythonQtConversion::unicodeEncodings encodingType = PythonQtConversion::other;
+    PythonQtConversion::UnicodeEncodings encodingType = PythonQtConversion::other;
     QByteArray encodingName = "";
     bool found = false;
 //    QList<QByteArray> qtCodecNames = QTextCodec::codecForCStrings()->aliases();
@@ -1760,8 +1760,8 @@ ito::RetVal PythonEngine::runPyFile(const QString &pythonFileName)
             if (data.open(QFile::ReadOnly))
             {
                 QTextStream stream(&data);
-                QByteArray fileContent = stream.readAll().toLatin1();
-                QByteArray filename = data.fileName().toLatin1();
+                QByteArray fileContent = stream.readAll().toUtf8();
+                QByteArray filename = data.fileName().toUtf8();
                 data.close();
 
                 if (m_autoReload.enabled && m_autoReload.checkFileExec)
@@ -1774,7 +1774,8 @@ ito::RetVal PythonEngine::runPyFile(const QString &pythonFileName)
                     Py_XDECREF(result);
                 }
 
-                compile = Py_CompileString(fileContent.data(), filename.data(), Py_file_input);
+                compile = Py_CompileString(fileContent.constData(), filename.constData(), Py_file_input);
+
                 if (compile == NULL)
                 {
                     if (PyErr_Occurred() && PyErr_ExceptionMatches(PyExc_SystemExit))

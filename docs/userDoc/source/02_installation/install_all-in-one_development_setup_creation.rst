@@ -35,16 +35,6 @@ the current availabe software versions.
 * `TortoiseGit <http://tortoisegit.org/download/>`_ 
 * `Doxygen <https://sourceforge.net/projects/doxygen/files/rel-1.8.11/>`_
 
-.. warning::
-
-    **Qt WebEngine**, **Qt WebEngineWidgets** are only available under VS 2017 as it is shown in the figure below! 
-    
-    Qt 5.10.1 supports **Qt WebEngine**, **Qt WebEngineWidgets** for VS2015.
-    
-.. figure:: images/all-in-one-create/QT_WebEngine_hint.png
-    :scale: 100%
-    :align: center
-
 Download packages for the 3rdPartyPCL tools
 --------------------------------------------
 

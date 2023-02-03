@@ -51,7 +51,7 @@ public:
     void setTipRect(QWidget *w, const QRect &r);
     void restartExpireTimer(int msecDisplayTime);
     bool tipChanged(const QPoint &pos, const QString &text, QObject *o);
-    void placeTip(const QPoint &pos, QWidget *w, const QPoint &alternativeTopRightPos = QPoint());
+    void placeTip(const QPoint &pos, QWidget *w, const QPoint &alternativeTopRightPos = QPoint(), bool doNotForceYToBeWithinScreen = false);
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
     static QScreen *getTipScreen(const QPoint& pos, QWidget* w);
 #else
@@ -85,9 +85,26 @@ class ToolTip
     ToolTip() = delete;
 public:
     // ### Qt 6 - merge the three showText functions below
-    static void showText(const QPoint &pos, const QString &text, QWidget *w = nullptr, const QPoint &alternativeTopRightPos = QPoint());
-    static void showText(const QPoint &pos, const QString &text, QWidget *w, const QRect &rect);
-    static void showText(const QPoint &pos, const QString &text, QWidget *w, const QRect &rect, int msecShowTime, const QPoint &alternativeTopRightPos = QPoint());
+    static void showText(
+        const QPoint& pos,
+        const QString& text,
+        QWidget* w = nullptr,
+        const QPoint& alternativeTopRightPos = QPoint(),
+        bool doNotForceYToBeWithinScreen = false);
+    static void showText(
+        const QPoint& pos,
+        const QString& text,
+        QWidget* w,
+        const QRect& rect,
+        bool doNotForceYToBeWithinScreen = false);
+    static void showText(
+        const QPoint& pos,
+        const QString& text,
+        QWidget* w,
+        const QRect& rect,
+        int msecShowTime,
+        const QPoint& alternativeTopRightPos = QPoint(),
+        bool doNotForceYToBeWithinScreen = false);
     static inline void hideText() { showText(QPoint(), QString()); }
     static bool isVisible();
     static QString text();

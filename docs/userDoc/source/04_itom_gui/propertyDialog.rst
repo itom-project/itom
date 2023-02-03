@@ -168,6 +168,14 @@ General
   It uses the SystemEnvironment's variables. You can test the command using the
   cmd shell. win10: use setx instead of set for setting environment variables.
 
+* The default charset encoding, used to open a Python script can be selected in the
+  **File** section of this property page. Officially supported encodings are **Latin1**,
+  **UTF-8** and **UTF-8 with byte-order-mark (BOM)**, where **UTF-8** is the Python
+  standard encoding, if not otherwise stated in the script. It is further possible to
+  allow itom to automatically guess the encoding of a newly loaded script, if possible.
+  For further information about this, see the section :ref:`charset encoding <gui-editor-charset-encoding>`
+  of the script editor documentation page.
+
 Startup
 --------------------
 

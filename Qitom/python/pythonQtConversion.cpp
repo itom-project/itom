@@ -56,7 +56,7 @@ namespace ito
         Parts of this class are taken from the project PythonQt (http://pythonqt.sourceforge.net/)
 */
 //PythonQtConversion::unicodeEncodings PythonQtConversion::textEncoding = PythonQtConversion::utf_8;
-PythonQtConversion::unicodeEncodings PythonQtConversion::textEncoding = PythonQtConversion::latin_1;
+PythonQtConversion::UnicodeEncodings PythonQtConversion::textEncoding = PythonQtConversion::latin_1;
 
 //QByteArray PythonQtConversion::textEncodingName = "utf8";
 QByteArray PythonQtConversion::textEncodingName = "latin_1";
@@ -144,6 +144,7 @@ QString PythonQtConversion::PyObjGetString(PyObject* val, bool strict, bool& ok)
 {
     QString r;
     ok = true;
+
     if (PyBytes_Check(val))
     {
         r = QString::fromUtf8(PyObjGetBytes(val, strict, ok));
@@ -151,16 +152,18 @@ QString PythonQtConversion::PyObjGetString(PyObject* val, bool strict, bool& ok)
     else if (PyUnicode_Check(val))
     {
         //we need to have a latin1-decoded string, since we assume to have latin1 in the QString conversion below.
-        PyObject *latin1repr = PyUnicode_AsLatin1String(val); 
-        if (latin1repr != NULL)
+        PyObject *utf8repr = PyUnicode_AsUTF8String(val); 
+
+        if (utf8repr != nullptr)
         {
-            r = QString::fromLatin1(PyObjGetBytes(latin1repr, strict, ok));
-            Py_DECREF(latin1repr);
+            r = QString::fromUtf8(PyObjGetBytes(utf8repr, strict, ok));
+            Py_DECREF(utf8repr);
         }
         else
         {
             PyErr_Clear();
             PyObject* utf16repr = PyUnicode_AsUTF16String(val);
+
             if (utf16repr)
             {
                 Py_ssize_t bytes_length = PyBytes_GET_SIZE(utf16repr);
@@ -178,6 +181,7 @@ QString PythonQtConversion::PyObjGetString(PyObject* val, bool strict, bool& ok)
     {
         // EXTRA: could also use _Unicode, but why should we?
         PyObject* str =  PyObject_Str(val);
+
         if (str) 
         {
             r = PyObjGetString(str, strict, ok);
@@ -192,6 +196,7 @@ QString PythonQtConversion::PyObjGetString(PyObject* val, bool strict, bool& ok)
     {
         ok = false;
     }
+
     return r;
 }
 
@@ -3658,6 +3663,30 @@ PyObject* PythonQtConversion::ConvertQtValueToPythonInternal(int type, const voi
             return res;
         }
     }
+}
+
+//-------------------------------------------------------------------------------------
+/*static*/ PyObject* PythonQtConversion::QByteArrayUtf8ToPyUnicodeSecure(const QByteArray &ba, const char *errors /*= "replace"*/)
+{
+    PyObject *temp = QByteArrayUtf8ToPyUnicode(ba, errors);
+
+    if (temp == nullptr)
+    {
+        PyErr_Clear();
+        temp = ByteArrayToPyUnicode("<encoding error>");
+    }
+
+    return temp;
+}
+
+//-------------------------------------------------------------------------------------
+/*static*/ PyObject* PythonQtConversion::QByteArrayUtf8ToPyUnicode(const QByteArray &ba, const char *errors)
+{
+    int bo;
+    int len = ba.size();
+    const char* data = ba.constData();
+
+    return PyUnicode_DecodeUTF8(data, len, errors);
 }
 
 //-------------------------------------------------------------------------------------
