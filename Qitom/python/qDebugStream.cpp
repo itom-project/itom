@@ -79,7 +79,7 @@ QDebugStream::~QDebugStream()
     {
         // Python stdout and stderr streams as well as std::cout streams in itom and plugins are
         // encoded with latin1.
-        QString str = QString::fromLatin1(m_string.c_str());
+        QString str = QString::fromUtf8(m_string.c_str());
 
         // the c_str will be converted into QString using the codec set by
         // QTextCodec::setCodecForCStrings(textCodec) in MainApplication
@@ -96,7 +96,7 @@ std::streamsize QDebugStream::xsputn(const char* p, std::streamsize n)
 
     // Python stdout and stderr streams as well as std::cout streams in itom and plugins are encoded
     // with latin1.
-    QString str = QString::fromLatin1(m_string.c_str());
+    QString str = QString::fromUtf8(m_string.c_str());
 
     // the c_str will be converted into QString using the codec set by
     // QTextCodec::setCodecForCStrings(textCodec) in MainApplication
@@ -127,7 +127,7 @@ std::basic_streambuf<char>::int_type QDebugStream::overflow(int_type v)
     {
         // Python stdout and stderr streams as well as std::cout streams in itom and plugins are
         // encoded with latin1.
-        QString str = QString::fromLatin1(m_string.c_str());
+        QString str = QString::fromUtf8(m_string.c_str());
         emit flushStream(str, msg_type);
         m_string.erase(m_string.begin(), m_string.end());
 

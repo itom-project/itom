@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2023, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
@@ -20,42 +20,38 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef WIDGETPROPEDITORGENERAL_H
-#define WIDGETPROPEDITORGENERAL_H
+#pragma once
 
-#include "abstractPropertyPageWidget.h"
+#include <qdialog.h>
+#include <qstring.h>
 
-#include <qwidget.h>
+#include "../helper/IOHelper.h"
 
-#include "ui_widgetPropEditorGeneral.h"
+#include "ui_dialogScriptCharsetEncoding.h"
 
 namespace ito
 {
 
-class WidgetPropEditorGeneral: public AbstractPropertyPageWidget
+class DialogScriptCharsetEncoding : public QDialog 
 {
     Q_OBJECT
 
 public:
-    WidgetPropEditorGeneral(QWidget *parent = NULL);
-    ~WidgetPropEditorGeneral();
+    DialogScriptCharsetEncoding(const IOHelper::CharsetEncodingItem &currentEncoding, bool enableReload, QWidget *parent);
+    ~DialogScriptCharsetEncoding() {}
 
-    void readSettings();
-    void writeSettings();
-
-protected:
+    IOHelper::CharsetEncodingItem getSaveCharsetEncoding() const;
 
 private:
-    Ui::WidgetPropEditorGeneral ui;
-
-signals:
-
-public slots:
+    Ui::DialogCharsetEncoding ui;
 
 private slots:
+    void on_btnReloadFile_clicked();
+    void on_btnAddPythonEncodingComment_clicked();
 
+Q_SIGNALS:
+    void addPythonEncodingComment(const QString &encoding);
+    void reloadWithEncoding(const IOHelper::CharsetEncodingItem &item);
 };
 
 } //end namespace ito
-
-#endif
