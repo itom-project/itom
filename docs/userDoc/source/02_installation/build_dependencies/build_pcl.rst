@@ -16,7 +16,8 @@ otherwise the new entries will not be added.
 * Set **FLANN_LIBRARY** to ${MAINDIR}/3rdPartyPCL/flann1.9.1/lib/flann_cpp_s.lib
 * set **FLANN_LIBRARAY_DEBUG** to ${MAINDIR}/3rdPartyPCL/flann1.9.1/lib/flann_cpp_s-gd.lib
 * Set **Boost_INCLUDE_DIR** to ${MAINDIR}/3rdPartyPCL/boost1.81.0 (Boost library must be named libboost... \*.lib) 
-* Add new entry: **Boost_LIBRARY_DIR** with path ${MAINDIR}/3rdPartyPCL/boost1.69.0/lib64-msvc-14.3
+* Add new path entry: **Boost_LIBRARY_DIR** with path ${MAINDIR}/3rdPartyPCL/boost1.69.0/lib64-msvc-14.3
+* Add new bool entry: **Boost_USE_STATIC_LIBS** with value **ON**
 * Set **QHULL_INCLUDE_DIR** include dir to ${MAINDIR}/3rdPartyPCL/qhull-2015.2/include
 * Set **QHULL_LIBRARY** dir to ${MAINDIR}/3rdPartyPCL/qhull-2015.2/lib/qhullstatic.lib
 * Set **QHULL_LIBRARY_DEBURG** dir to ${MAINDIR}/3rdPartyPCL/qhull-2015.2/lib/qhullstatic_d.lib
