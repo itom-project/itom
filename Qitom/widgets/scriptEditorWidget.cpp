@@ -2507,7 +2507,7 @@ RetVal ScriptEditorWidget::toggleBreakpoint(int line)
             bpModel->addBreakPoint(bp);
         }
 
-        m_breakpointPanel->update();
+        panels()->refresh();
 
         return RetVal(retOk);
     }
@@ -2539,7 +2539,7 @@ RetVal ScriptEditorWidget::toggleEnableBreakpoint(int line)
                 bpModel->changeBreakPoint(indexList.at(i), item);
             }
 
-            m_breakpointPanel->update();
+            panels()->refresh();
             return RetVal(retOk);
         }
     }
@@ -2589,7 +2589,7 @@ RetVal ScriptEditorWidget::editBreakpoint(int line)
                 }
 
                 DELETE_AND_SET_NULL(dlg);
-                m_breakpointPanel->update();
+                panels()->refresh();
                 return RetVal(retOk);
             }
         }
@@ -2613,7 +2613,7 @@ RetVal ScriptEditorWidget::clearAllBreakpoints()
         bpModel->deleteBreakPoints(bpModel->getBreakPointIndizes(getFilename()));
     }
 
-    m_breakpointPanel->update();
+    panels()->refresh();
 
     return RetVal(retOk);
 }

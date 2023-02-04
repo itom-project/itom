@@ -85,6 +85,8 @@ protected:
 private:
     QMap<TextBlockUserData::BreakpointType, QIcon> m_icons;
     QBrush m_backgroundBrush;
+    QIcon m_breakpointIcon;
+    QIcon m_bookmarkIcon;
 };
 
 } //end namespace ito

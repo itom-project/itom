@@ -60,6 +60,8 @@ GlobalCheckerPanel::GlobalCheckerPanel(const QString &description /*= ""*/, QWid
     Panel("GlobalCheckerPanel", false, description, parent)
 {
     setScrollable(true);
+    m_breakpointIcon = QIcon(":/breakpoints/icons/itomBreak.png");
+    m_bookmarkIcon = QIcon(":/bookmark/icons/bookmark.png");
 }
 
 //----------------------------------------------------------
@@ -101,8 +103,8 @@ void GlobalCheckerPanel::paintEvent(QPaintEvent *e)
         m_backgroundBrush = QBrush(editor()->background());
         QPainter painter(this);
         painter.fillRect(e->rect(), m_backgroundBrush);
-        drawMessages(painter);
         drawVisibleArea(painter);
+        drawMessages(painter);
     }
 }
 
@@ -118,12 +120,13 @@ void GlobalCheckerPanel::drawMessages(QPainter &painter)
     CodeCheckerItem::CheckerType worstStatus = CodeCheckerItem::Info;
     bool hasCheckerMessage;
     QRect rect;
-    QBrush brushInfo(Qt::blue);
-    QBrush brushWarning(QColor(255,165,0));
-    QBrush brushError(Qt::red);
+    QBrush brushInfo(QColor(60, 111, 179));
+    QBrush brushWarning(QColor(241,133,46));
+    QBrush brushError(QColor(226, 0, 0));
 
     const QTextDocument* td = editor()->document();
     QTextBlock b = td->firstBlock();
+    QSize markerSize = getMarkerSize();
 
     while (b.isValid())
     {
@@ -146,9 +149,9 @@ void GlobalCheckerPanel::drawMessages(QPainter &painter)
             if (hasCheckerMessage)
             {
                 rect = QRect();
-                rect.setX(sizeHint().width() / 4);
-                rect.setY(b.blockNumber() * getMarkerHeight());
-                rect.setSize(getMarkerSize());
+                rect.setX(sizeHint().width() / 6);
+                rect.setY(b.blockNumber() * getMarkerHeight() - markerSize.height() / 2);
+                rect.setSize(markerSize);
 
                 switch (worstStatus)
                 {
@@ -162,7 +165,28 @@ void GlobalCheckerPanel::drawMessages(QPainter &painter)
                     painter.fillRect(rect, brushError);
                     break;
                 }
-                
+            }
+
+            if (tbud->m_bookmark)
+            {
+                int s = std::max(2 + sizeHint().width() / 2, 8);
+                rect = QRect();
+                rect.setX((sizeHint().width() - s) / 2);
+                rect.setY(b.blockNumber()* getMarkerHeight() - s / 2);
+                rect.setWidth(s);
+                rect.setHeight(s);
+                m_bookmarkIcon.paint(&painter, rect);
+            }
+
+            if (tbud->m_breakpointType != ito::TextBlockUserData::TypeNoBp)
+            {
+                int s = std::max(sizeHint().width() / 2, 8);
+                rect = QRect();
+                rect.setX((sizeHint().width() - s) / 2);
+                rect.setY(b.blockNumber()* getMarkerHeight() - s / 2);
+                rect.setWidth(s);
+                rect.setHeight(s);
+                m_breakpointIcon.paint(&painter, rect);
             }
         }
 
@@ -192,7 +216,7 @@ void GlobalCheckerPanel::drawVisibleArea(QPainter &painter)
 
         if (editor()->background().lightness() < 128)
         {
-            c = editor()->background().darker(150);
+            c = editor()->background().darker(180);
         }
         else
         {
@@ -219,14 +243,14 @@ Gets the size of a message marker.
 */
 QSize GlobalCheckerPanel::getMarkerSize() const
 {
-    int h = getMarkerHeight();
+    /*int h = getMarkerHeight();
 
     if (h < 1)
     {
         h = 1;
-    }
+    }*/
 
-    return QSize(sizeHint().width() / 2, h);
+    return QSize(2.0 * sizeHint().width() / 3.0, 3);
 }
 
 //----------------------------------------------------------
