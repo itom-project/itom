@@ -75,19 +75,9 @@ else()
     itom_find_package_qt(ON Core Widgets UiTools PrintSupport Network Sql Xml OpenGL Svg Designer LinguistTools)
 endif()
 
-find_package(PythonLibs 3.0 REQUIRED)
-# can be used from 3.12 onwards
-# find_package(Python 3.0 COMPONENTS Interpreter Development REQUIRED )
-# FIND_PACKAGE (Python3 COMPONENTS Interpreter Development)
+find_package(Python3 3.7 REQUIRED COMPONENTS Interpreter Development NumPy)
 
-find_package(NumPy REQUIRED)
-
-message(STATUS "Detected Python version: ${PYTHONLIBS_VERSION_STRING}")
-message(STATUS "Python include directory: ${PYTHON_INCLUDE_DIR}")
-message(STATUS "Python executable: ${PYTHON_EXECUTABLE}")
-message(STATUS "Numpy include directory: ${NUMPY_INCLUDE_DIRS}")
-
-if (${PYTHONLIBS_VERSION_STRING} VERSION_LESS "3.5.0")
+if (${Python3_VERSION} VERSION_LESS "3.5.0")
     message(FATAL_ERROR "The minimum required Python version is 3.5.0")
 endif()
 
@@ -227,8 +217,8 @@ include_directories(
     ${Qt6WebEngineWidgets_INCLUDE_DIRS}
     ${Qt6Help_INCLUDE_DIRS}
     ${Qt6Network_INCLUDE_DIRS}
-    ${PYTHON_INCLUDE_DIR}
-    ${NUMPY_INCLUDE_DIRS}
+    ${Python3_INCLUDE_DIRS}
+    ${Python3_NumPy_INCLUDE_DIRS}
     ${PCL_INCLUDE_DIRS}
     ${PYMATLAB_INCLUDE_DIR}
     ${VISUALLEAKDETECTOR_INCLUDE_DIR}
@@ -804,7 +794,7 @@ if(CONSIDER_GIT_SVN AND GIT_FOUND)
     
     add_custom_target(
         ${target_name}_versionCheck
-        COMMAND    ${PYTHON_EXECUTABLE}
+        COMMAND    ${Python3_EXECUTABLE}
         "${CMAKE_CURRENT_BINARY_DIR}/pyGit2Header.py"
     )
     
@@ -830,16 +820,16 @@ if(MSVC)
     endif()
 endif()
 
-if(PYTHON_LIBRARY_DEBUG AND PYTHON_LIBRARY_RELEASE)
-    set(PYTHON_LIBRARY_ITOM ${PYTHON_LIBRARY_RELEASE})
+if(Python3_LIBRARY_DEBUG AND Python3_LIBRARY_RELEASE)
+    set(PYTHON_LIBRARY_ITOM ${Python3_LIBRARY_RELEASE})
 #only debug
-elseif(PYTHON_LIBRARY_DEBUG)
+elseif(Python3_LIBRARY_DEBUG)
     message(STATUS "Python is always linked as release version to itom, therefore indicate the release library of python")
 #only release
-elseif(PYTHON_LIBRARY_RELEASE)
-    set(PYTHON_LIBRARY_ITOM ${PYTHON_LIBRARY_RELEASE})
-elseif(PYTHON_LIBRARY)
-    set(PYTHON_LIBRARY_ITOM ${PYTHON_LIBRARY})
+elseif(Python3_LIBRARY_RELEASE)
+    set(PYTHON_LIBRARY_ITOM ${PYTHON3_LIBRARY_RELEASE})
+elseif(Python3_LIBRARY)
+    set(PYTHON_LIBRARY_ITOM ${Python3_LIBRARY})
 #no library found
 else()
     message(STATUS "Python could not be found")

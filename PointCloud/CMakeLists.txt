@@ -40,10 +40,6 @@ itom_init_core_common_vars()
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/../cmake)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-#pre-create the necessary CMake variables for PCL to simplify the creation in the CMake GUI
-set(Boost_INCLUDE_DIR "" CACHE PATH "include directory of Boost (Windows: usually the root directory of Boost)")
-set(Boost_LIBRARY_DIR "" CACHE PATH "library directory of Boost (Windows: usually a lib subdirectory of Boost)")
-
 # add 3rd party packages
 find_package(OpenCV COMPONENTS core REQUIRED)
 find_package(PCL 1.5.1 REQUIRED COMPONENTS common)
