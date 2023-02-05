@@ -42,7 +42,12 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 # add 3rd party packages
 find_package(OpenCV COMPONENTS core REQUIRED)
-find_package(PCL 1.5.1 REQUIRED COMPONENTS common)
+include(Setup_PCL_Itom)
+if(WIN32)
+    find_package(PCL 1.5.1 QUIET REQUIRED COMPONENTS common PATHS ${PCL_CMAKE_DIR} NO_DEFAULT_PATH)
+else(WIN32)
+    find_package(PCL 1.5.1 QUIET REQUIRED COMPONENTS common)
+endif(WIN32)
 
 # set some preprocessor directives
 add_definitions(-DPOINTCLOUD_DLL -D_POINTCLOUD_DLL)

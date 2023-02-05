@@ -77,9 +77,6 @@ endmacro()
 # itom_init_designerplugin_library.
 macro(itom_init_plugin_common_vars)
     #commonly used variables / options in the cache
-    set(BUILD_QTVERSION "auto" CACHE STRING
-        "currently only Qt5 is supported. Set this value to 'auto' in order\
-        to auto-detect the correct Qt version or set it to 'Qt5' to hardly select Qt5.")
     option(BUILD_OPENMP_ENABLE "Use OpenMP parallelization if available.\
         If TRUE, the definition USEOPENMP is set. This is only the case if\
         OpenMP is generally available and if the build is release." ON)
@@ -472,7 +469,7 @@ macro(itom_fetch_git_commit_hash)
     endif()
 endmacro()
 
-# - call this macro to find one of the supported Qt packages (currently only Qt5 is supported, the support
+# - call this macro to find one of the supported Qt packages (currently only Qt6 and Qt5 is supported, the support
 # of Qt4 has been removed.
 # 
 # example:
@@ -490,7 +487,7 @@ macro(itom_find_package_qt SET_AUTOMOC)
     
     set(Components ${ARGN}) #all arguments after SET_AUTOMOC are components for Qt
     set(QT_COMPONENTS ${ARGN})
-    set(QT5_LIBRARIES "")
+    set(QT_LIBRARIES "")
 
     if(${BUILD_QTVERSION} STREQUAL "Qt4")
         message(SEND_ERROR "The support for Qt4 has been removed for itom > 3.2.1")
@@ -503,22 +500,21 @@ macro(itom_find_package_qt SET_AUTOMOC)
         if(POLICY CMP0020)
             cmake_policy(SET CMP0020 NEW)
         endif(POLICY CMP0020)
-        set(DETECT_QT5 FALSE)
-    elseif(${BUILD_QTVERSION} STREQUAL "auto")
-        if(POLICY CMP0020)
-            cmake_policy(SET CMP0020 NEW)
-        endif(POLICY CMP0020)
-        set(DETECT_QT5 TRUE)
+        set(DETECT_QT6 TRUE)
     else()
-        message(SEND_ERROR "wrong value for BUILD_QTVERSION. auto, Qt5 allowed")
+        message(SEND_ERROR "wrong value for BUILD_QTVERSION. Qt6, Qt5 allowed")
     endif()
-    set(QT5_FOUND FALSE)
+    set(QT_FOUND FALSE)
         
     if(DETECT_QT5)
+        if(WIN32)
+            set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${Qt_DIR})
+        endif()
+
         #TRY TO FIND QT5
-        find_package(Qt5 5.5 COMPONENTS Core QUIET)
+        find_package(Qt5 5.5 QUIET COMPONENTS Core REQUIRED)
         
-        if(${Qt5_DIR} STREQUAL "Qt5_DIR-NOTFOUND")
+        if(${Qt_DIR} STREQUAL "Qt_DIR-NOTFOUND")
             #maybe Qt5.0 is installed that does not support the overall FindQt5 script
             find_package(Qt5Core 5.5 REQUIRED)
             
@@ -562,7 +558,7 @@ macro(itom_find_package_qt SET_AUTOMOC)
               set(CMAKE_PREFIX_PATH "${WINDOWSSDK_PREFERRED_DIR}/Lib/")
               set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${WINDOWSSDK_PREFERRED_DIR}/Lib/)
             endif(WIN32)
-            
+
             find_package(Qt5 COMPONENTS ${Components} REQUIRED)
             set(QT5_FOUND TRUE)
             
@@ -591,22 +587,22 @@ macro(itom_find_package_qt SET_AUTOMOC)
             set(QT_LIBRARY_DIR "${_qt5Core_install_prefix}/lib")
         endif()
         
-    else(DETECT_QT5)
-        #message(STATUS "TRY TO FIND QT6 COMPONENTS: ${Components}.... ${Qt6_DIR}")
+    elseif(DETECT_QT6)
         if(WIN32)
-            # https://stackoverflow.com/questions/71086422/cmake-cannot-find-packages-within-qt6-installation
-            set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} "${Qt6_DIR}/../../..")
+            set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${Qt_DIR})
         endif()
+
+        message(STATUS "CMAKE_PREFIX_PATH: " ${Qt_DIR})
         
-        find_package(Qt6 6.2 QUIET COMPONENTS Core) #QUIET)
+        find_package(Qt6 6.2 QUIET COMPONENTS Core REQUIRED)
         
-        #QT5 could be found with component based find_package command
+        #QT6 could be found with component based find_package command
         if(WIN32)
           find_package(WindowsSDK REQUIRED)
           set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} "${WINDOWSSDK_PREFERRED_DIR}/Lib/")
           set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${WINDOWSSDK_PREFERRED_DIR}/Lib/)
         endif(WIN32)
-        
+
         set(COMPONENTS_FILTERED "")
         
         foreach(comp ${Components})
@@ -620,8 +616,9 @@ macro(itom_find_package_qt SET_AUTOMOC)
                 set(QT5_LIBRARIES ${QT5_LIBRARIES} Qt6::${comp})
             endif()
         endforeach(comp)
-        
+
         find_package(Qt6 COMPONENTS ${COMPONENTS_FILTERED} REQUIRED)
+
         set(QT6_FOUND TRUE)
         
         if(${SET_AUTOMOC})
@@ -645,7 +642,7 @@ macro(itom_find_package_qt SET_AUTOMOC)
     elseif (QT6_FOUND)
         # ok
     else()
-        message(SEND_ERROR "Qt5 (>= 5.5) could not be found. Please indicate Qt5_DIR to the cmake/Qt5 subfolder of the library folder of Qt")
+        message(SEND_ERROR "Qt could not be found. Please indicate Qt_DIR to the cmake/Qt5 or cmake/Qt6 subfolder of the library folder of Qt or set the Qt Environment Variable Qt_ROOT to the Qt Directory.")
     endif()
 endmacro()
 

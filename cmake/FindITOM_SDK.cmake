@@ -95,16 +95,18 @@ if(EXISTS ${ITOM_SDK_CONFIG_FILE})
             #... if they do not exist or are not valid in this project, yet.
             #
             # EIGEN_INCLUDE_DIRS was for PCL 1.9, PCL 1.11 now requires EIGEN_INCLUDE_DIR!
-            set(CACHE_VARIABLES 
-                VTK_DIR 
-                VISUALLEAKDETECTOR_DIR 
-                Qt5_DIR 
-                PCL_DIR 
-                OpenCV_DIR 
+            set(CACHE_VARIABLES
+                Qt_DIR
+                BUILD_QTVERSION
+                OpenCV_DIR
+                Boost_INCLUDE_DIR
+                Boost_LIBRARY_DIR 
+                FLANN_INCLUDE_DIRS
+                VTK_DIR
                 EIGEN_INCLUDE_DIRS 
                 EIGEN_INCLUDE_DIR
-                Boost_LIBRARY_DIR 
-                Boost_INCLUDE_DIR 
+                PCL_DIR 
+                VISUALLEAKDETECTOR_DIR                  
                 GIT_EXECUTABLE
                 )
             
@@ -121,7 +123,7 @@ if(EXISTS ${ITOM_SDK_CONFIG_FILE})
                         if(DEFINED ${CACHE_VAR} AND ${CACHE_VAR})
                             message(STATUS "    -> This variable is not copied since it already is defined and valid in this project: ${${CACHE_VAR}}")
                         else()
-                            if(EXISTS "${ITOMCACHE_${CACHE_VAR}}")
+                            if(EXISTS "${ITOMCACHE_${CACHE_VAR}}" OR ${CACHE_VAR} MATCHES BUILD_QTVERSION)
                                 message(STATUS "    -> This variable is copied to this project.")
                                 set(${CACHE_VAR} "${ITOMCACHE_${CACHE_VAR}}" CACHE PATH "Variable obtained from CMakeCache of itom project." FORCE)
                             else()
@@ -328,6 +330,20 @@ if(EXISTS ${ITOM_SDK_CONFIG_FILE})
             if(${__ITOMLIB} STREQUAL "itomWidgets")
                 set(ITOM_SDK_INCLUDE_DIRS ${ITOM_SDK_INCLUDE_DIRS} ${ITOM_SDK_INCLUDE_DIR}/itomWidgets)
             endif()
+            include(Setup_PCL_Itom)
+            if(ITOM_SDK_FIND_QUIETLY)
+                find_package(PCL 1.5.1 QUIET REQUIRED COMPONENTS common PATHS ${PCL_CMAKE_DIR} NO_DEFAULT_PATH)
+            else(ITOM_SDK_FIND_QUIETLY)
+                find_package(PCL 1.5.1 REQUIRED COMPONENTS common PATHS ${PCL_CMAKE_DIR} NO_DEFAULT_PATH)
+            endif(ITOM_SDK_FIND_QUIETLY)
+                
+            if(PCL_FOUND)
+                set(ITOM_SDK_INCLUDE_DIRS ${ITOM_SDK_INCLUDE_DIRS} ${PCL_INCLUDE_DIRS})
+                set(ITOM_SDK_LIBRARIES ${ITOM_SDK_LIBRARIES} ${PCL_LIBRARIES})
+            else(PCL_FOUND)
+                set(ITOM_SDK_FOUND_TMP false)
+                set(ERR_MSG "PCL not found. Use PCL_DIR to indicate the (install-)folder of PCL.")
+            endif(PCL_FOUND)
             
         endforeach(__ITOMLIB)
 

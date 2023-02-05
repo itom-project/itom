@@ -84,7 +84,12 @@ endif()
 find_package(OpenCV COMPONENTS core REQUIRED)
 
 if(BUILD_WITH_PCL)
-    find_package(PCL 1.5.1 REQUIRED COMPONENTS common)
+    include(Setup_PCL_Itom)
+    if(WIN32)
+        find_package(PCL 1.5.1 QUIET REQUIRED COMPONENTS common PATHS ${PCL_CMAKE_DIR} NO_DEFAULT_PATH)
+    else(WIN32)
+        find_package(PCL 1.5.1 QUIET REQUIRED COMPONENTS common)
+    endif(WIN32)
     
     # actually we need this only to configure the itom.bat including vtk, otherwise 
     # eventually pcl-tools plugin will not be loaded

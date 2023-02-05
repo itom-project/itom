@@ -23,13 +23,14 @@ cmake_minimum_required(VERSION 3.12)
 project(itom)
 
 message(STATUS "--------------- PROJECT itom -----------------")
+
+include(cmake/Setup_Core_Itom.cmake)
  
 if(BUILD_QTVERSION STREQUAL "Qt6")
     set(CMAKE_CXX_STANDARD 17)
     set(CXXFLAGS "${CXXFLAGS} /permissive-")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /permissive-")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /permissive-")
-
     add_compile_options(/permissive-)
 else()
     set(CMAKE_CXX_STANDARD 11)
@@ -241,6 +242,8 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/pluginTemplates               DESTINATION 
 
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/cmake                         DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/SDK FILES_MATCHING PATTERN "Find*.cmake")
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/cmake/ItomBuildMacros.cmake   DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/SDK/cmake)
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Setup_PCL_Itom.cmake   DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/SDK/cmake)
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Setup_PCL_Plugins.cmake   DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/SDK/cmake)
 
 if(MSVC)
     file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/designerPluginLibraryVersion.rc DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/SDK)
