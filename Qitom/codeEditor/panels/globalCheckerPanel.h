@@ -77,12 +77,14 @@ protected:
     virtual void paintEvent(QPaintEvent *e);
     virtual void mousePressEvent(QMouseEvent *e);
 
-    int getMarkerHeight() const;
+    float getMarkerHeight() const;
     QSize getMarkerSize() const;
     void drawVisibleArea(QPainter &painter);
     void drawMessages(QPainter& painter);
 
 private:
+    int verticalOffset() const;
+
     QMap<TextBlockUserData::BreakpointType, QIcon> m_icons;
     QBrush m_backgroundBrush;
     QIcon m_breakpointIcon;

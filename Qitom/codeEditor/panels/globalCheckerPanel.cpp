@@ -44,6 +44,9 @@
 #include <qtooltip.h>
 #include <qmenu.h>
 #include <qaction.h>
+#include <qscrollbar.h>
+#include <qstyle.h>
+#include <qstyleoption.h>
 #include "../textBlockUserData.h"
 #include "../codeEditor.h"
 #include "../delayJobRunner.h"
@@ -110,6 +113,35 @@ void GlobalCheckerPanel::paintEvent(QPaintEvent *e)
 
 //----------------------------------------------------------
 /*
+This property holds the vertical offset of the scroll flag area
+relative to the top of the text editor.
+*/
+int GlobalCheckerPanel::verticalOffset() const
+{
+    const auto vsb = editor()->verticalScrollBar();
+
+    if (!vsb ||!vsb->isVisible())
+    {
+        return 0;
+    }
+
+    const auto style = qApp->style();
+    QStyleOptionSlider opt;
+    opt.initFrom(vsb);
+
+    // Get the area in which the slider handle may move.
+    QRect grooveRect = style->subControlRect(QStyle::CC_ScrollBar, &opt, QStyle::SC_ScrollBarGroove, this);
+    
+    if (opt.orientation == Qt::Horizontal)
+    {
+        return grooveRect.x();
+    }
+
+    return grooveRect.y();
+}
+
+//----------------------------------------------------------
+/*
 Draw messages from all subclass of CheckerMode currently
 installed on the editor.
 */
@@ -127,6 +159,8 @@ void GlobalCheckerPanel::drawMessages(QPainter &painter)
     const QTextDocument* td = editor()->document();
     QTextBlock b = td->firstBlock();
     QSize markerSize = getMarkerSize();
+    float markerHeight = getMarkerHeight();
+    int voffset = verticalOffset();
 
     while (b.isValid())
     {
@@ -150,7 +184,7 @@ void GlobalCheckerPanel::drawMessages(QPainter &painter)
             {
                 rect = QRect();
                 rect.setX(sizeHint().width() / 6);
-                rect.setY(b.blockNumber() * getMarkerHeight() - markerSize.height() / 2);
+                rect.setY(qRound(voffset + b.blockNumber() * markerHeight - markerSize.height() / 2.0));
                 rect.setSize(markerSize);
 
                 switch (worstStatus)
@@ -172,7 +206,7 @@ void GlobalCheckerPanel::drawMessages(QPainter &painter)
                 int s = std::max(2 + sizeHint().width() / 2, 8);
                 rect = QRect();
                 rect.setX((sizeHint().width() - s) / 2);
-                rect.setY(b.blockNumber()* getMarkerHeight() - s / 2);
+                rect.setY(qRound(voffset + b.blockNumber() * markerHeight - s / 2.0));
                 rect.setWidth(s);
                 rect.setHeight(s);
                 m_bookmarkIcon.paint(&painter, rect);
@@ -183,7 +217,7 @@ void GlobalCheckerPanel::drawMessages(QPainter &painter)
                 int s = std::max(sizeHint().width() / 2, 8);
                 rect = QRect();
                 rect.setX((sizeHint().width() - s) / 2);
-                rect.setY(b.blockNumber()* getMarkerHeight() - s / 2);
+                rect.setY(qRound(voffset + b.blockNumber() * markerHeight - s / 2.0));
                 rect.setWidth(s);
                 rect.setHeight(s);
                 m_breakpointIcon.paint(&painter, rect);
@@ -192,6 +226,12 @@ void GlobalCheckerPanel::drawMessages(QPainter &painter)
 
         b = b.next();
     }
+
+    rect = QRect();
+    rect.setX(sizeHint().width() / 6);
+    rect.setY(verticalOffset());
+    rect.setSize(markerSize);
+    painter.fillRect(rect, brushInfo);
 }
 
 
@@ -232,9 +272,9 @@ void GlobalCheckerPanel::drawVisibleArea(QPainter &painter)
 //----------------------------------------------------------
 /* Gets the height of message marker.
 */
-int GlobalCheckerPanel::getMarkerHeight() const
+float GlobalCheckerPanel::getMarkerHeight() const
 {
-    return editor()->viewport()->height() / editor()->lineCount();
+    return (editor()->viewport()->height() - 2 * verticalOffset()) / editor()->lineCount();
 }
 
 //---------------------------------------------------------
@@ -259,8 +299,8 @@ QSize GlobalCheckerPanel::getMarkerSize() const
 */
 void GlobalCheckerPanel::mousePressEvent(QMouseEvent *e)
 {
-    auto height = e->pos().y();
-    auto line = height / getMarkerHeight();
+    auto height = e->pos().y() - verticalOffset();
+    int line = qBound<int>(0, qRound(height / getMarkerHeight()), editor()->lineCount() - 1);
     //height = event.pos().y() line = height // self.get_marker_height()
     editor()->gotoLine(line, 0);
 }
