@@ -76,14 +76,18 @@ public:
 protected:
     virtual void paintEvent(QPaintEvent *e);
     virtual void mousePressEvent(QMouseEvent *e);
+    virtual void wheelEvent(QWheelEvent* e);
 
-    float getMarkerHeight() const;
+    float getMarkerSpacing() const;
     QSize getMarkerSize() const;
     void drawVisibleArea(QPainter &painter);
     void drawMessages(QPainter& painter);
 
 private:
     int verticalOffset() const;
+    QRect getScrollbarGrooveRect() const;
+    int getScrollbarValueHeight() const;
+    constexpr int markerHeight() const { return 3; }
 
     QMap<TextBlockUserData::BreakpointType, QIcon> m_icons;
     QBrush m_backgroundBrush;
