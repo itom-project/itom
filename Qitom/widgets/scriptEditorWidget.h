@@ -44,11 +44,14 @@
 #include <qstring.h>
 #include <qmenu.h>
 #include <qevent.h>
+#include <qpointer.h>
 #include <qmetaobject.h>
 #include <qsharedpointer.h>
 #include <qregularexpression.h>
 #include "../models/outlineItem.h"
 #include "../models/bookmarkModel.h"
+#include "../helper/IOHelper.h"
+#include "../ui/dialogScriptCharsetEncoding.h"
 
 #include <QtPrintSupport/qprinter.h>
 
@@ -103,7 +106,7 @@ public:
     RetVal saveFile(bool askFirst = true);
     RetVal saveAsFile(bool askFirst = true);
 
-    RetVal openFile(QString file, bool ignorePresentDocument = false);
+    RetVal openFile(const QString &fileName, bool ignorePresentDocument = false, QWidget *parent = nullptr);
 
     bool keepIndentationOnPaste() const;
     void setKeepIndentationOnPaste(bool value);
@@ -137,6 +140,8 @@ public:
     //!< returns true if the current line can be a trigger to insert a template docstring
     //!< for a possible method / function, this line belongs to.
     bool currentLineCanHaveDocstring() const;
+
+    IOHelper::CharsetEncodingItem charsetEncoding() const { return m_charsetEncoding; }
 
     static QString filenameFromUID(int UID, bool &found);
 
@@ -179,6 +184,10 @@ private:
 
     RetVal changeFilename(const QString &newFilename);
 
+    IOHelper::CharsetEncodingItem guessEncoding(const QByteArray &content) const;
+
+    void changeFileSaveEncoding(const IOHelper::CharsetEncodingItem &encoding);
+
     QFileSystemWatcher *m_pFileSysWatcher;
 
     // the following variables are related to the code checker feature of Python
@@ -211,6 +220,13 @@ private:
 
     QSharedPointer<PyCodeFormatter> m_pyCodeFormatter;
     QString m_autoCodeFormatCmd; //!< the current command string for the python auto code formatting.
+
+    //!< this is the encoding of this script, hence,
+    //!< the encoding that was used to load this script from
+    //!< a file and will also be used to store it in a file.
+    IOHelper::CharsetEncodingItem m_charsetEncoding;
+    bool m_charsetDefined;
+    bool m_charsetEncodingAutoGuess;
 
     QSharedPointer<FoldingPanel> m_foldingPanel;
     QSharedPointer<CheckerBookmarkPanel> m_checkerBookmarkPanel;
@@ -276,7 +292,7 @@ public slots:
 
     void menuPyCodeFormatting();
     void menuGenerateDocstring();
-    void menuInsertCodec();
+    void menuScriptCharsetEncoding();
 
     void pythonStateChanged(tPythonTransitions pyTransition);
     void pythonDebugPositionChanged(QString filename, int lineno);

@@ -344,6 +344,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSaveFileWithFilter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSelectUser.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSnapshot.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogScriptCharsetEncoding.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogTimerManager.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogVariableDetail.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogVariableDetailDataObject.h
@@ -474,6 +475,7 @@ set(qitom_UI
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogReplace.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSaveFileWithFilter.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSelectUser.ui
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogScriptCharsetEncoding.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSnapshot.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogTimerManager.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogVariableDetail.ui
@@ -594,6 +596,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogReplace.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSaveFileWithFilter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSelectUser.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogScriptCharsetEncoding.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSnapshot.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogTimerManager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogVariableDetail.cpp

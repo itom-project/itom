@@ -39,6 +39,7 @@
 #include "../ui/dialogReplace.h"
 
 #include <qsignalmapper.h>
+#include <qstatusbar.h>
 
 #include "../ui/dialogIconBrowser.h"
 #include "../Qitom/AppManagement.h"
@@ -48,6 +49,7 @@
 namespace ito {
 
 /*static*/ QPointer<ScriptEditorWidget> ScriptDockWidget::currentSelectedCallstackLineEditor = QPointer<ScriptEditorWidget>();
+/*static*/ const char* ScriptDockWidget::statusBarStatePropertyName = "_statusBarState";
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
@@ -71,11 +73,11 @@ namespace ito {
 
     \sa AbstractDockWidget::AbstractDockWidget
 */
-ScriptDockWidget::ScriptDockWidget(const QString &title, const QString &objName, 
-        bool docked, bool isDockAvailable, 
-        const ScriptEditorActions &commonActions, 
-        BookmarkModel *bookmarkModel,
-        QWidget* parent, Qt::WindowFlags /*flags*/) :
+ScriptDockWidget::ScriptDockWidget(const QString &title, const QString &objName,
+    bool docked, bool isDockAvailable,
+    const ScriptEditorActions &commonActions,
+    BookmarkModel *bookmarkModel,
+    QWidget* parent, Qt::WindowFlags /*flags*/) :
     AbstractDockWidget(docked, isDockAvailable, floatingWindow, movingEnabled, title, objName, parent),
     m_tab(nullptr),
     m_pWidgetFindWord(nullptr),
@@ -85,7 +87,8 @@ ScriptDockWidget::ScriptDockWidget(const QString &title, const QString &objName,
     m_winMenu(NULL),
     m_commonActions(commonActions),
     m_pBookmarkModel(bookmarkModel),
-    m_outlineShowNavigation(true)
+    m_outlineShowNavigation(true),
+    m_pStatusBarWidget(nullptr)
 {
     qRegisterMetaType<QSharedPointer<OutlineItem> >("QSharedPointer<OutlineItem>");
 
@@ -1233,6 +1236,49 @@ void ScriptDockWidget::currentTabChanged(int index)
     }
 
     tabFilenameOrModificationChanged(index);
+
+    auto currentEditor = getCurrentEditor();
+
+    if (currentEditor)
+    {
+        currentScriptCursorPositionChanged();
+
+        // disconnect all previous connections
+        disconnect(this, SLOT(currentScriptCursorPositionChanged()));
+
+        connect(currentEditor, &ScriptEditorWidget::cursorPositionChanged, this, &ScriptDockWidget::currentScriptCursorPositionChanged);
+    }
+    else
+    {
+        emit statusBarInformationChanged(this, "", -1, -1);
+    }
+}
+
+//-------------------------------------------------------------------------------------
+void ScriptDockWidget::currentScriptCursorPositionChanged()
+{
+    auto currentEditor = getCurrentEditor();
+
+    if (currentEditor)
+    {
+        auto charsetEncoding = currentEditor->charsetEncoding();
+        int line = currentEditor->currentLineNumber() + 1;
+        int col = currentEditor->currentColumnNumber() + 1;
+
+        emit statusBarInformationChanged(
+            this,
+            charsetEncoding.displayNameShort,
+            line,
+            col
+        );
+
+        m_pStatusBarWidget->setText(tr("Ln %1, Col %2, %3 ").arg(line).arg(col).arg(charsetEncoding.displayNameShort));
+    }
+    else
+    {
+        emit statusBarInformationChanged(this, "", -1, -1);
+        m_pStatusBarWidget->setText("");
+    }
 }
 
 //-------------------------------------------------------------------------------------
@@ -1501,7 +1547,7 @@ void ScriptDockWidget::updatePythonActions()
     int tabCount = m_tab->count();
 
     m_scriptRunAction->setEnabled(!busy1);
-    m_scriptRunSelectionAction->setEnabled(sew && sew->getCanCopy() && (!busy1 || pythonInWaitingMode()));
+    m_scriptRunSelectionAction->setEnabled(sew && (!busy1 || pythonInWaitingMode()));
     m_scriptDebugAction->setEnabled(!busy1);
     m_scriptStopAction->setEnabled(busy1);
     m_scriptContinueAction->setEnabled(busy2);
@@ -1511,7 +1557,6 @@ void ScriptDockWidget::updatePythonActions()
 
     m_scriptRunSelectionAction->setEnabled(
         sew != nullptr &&
-        sew->getCanCopy() &&
         (!pythonBusy() || pythonInWaitingMode()));
 
     m_replaceTextExprAction->setEnabled(
@@ -1737,7 +1782,7 @@ void ScriptDockWidget::createActions()
     m_copyFilename = new ShortcutAction(QIcon(":/editor/icons/editCopy.png"), tr("Copy Filename"), this);
     m_copyFilename->connectTrigger(this, SLOT(mnuCopyFilename()));
 
-    m_findSymbols = new ShortcutAction(QIcon(":/classNavigator/icons/at.png"), tr("Fast symbol search..."),
+    m_findSymbols = new ShortcutAction(QIcon(":/classNavigator/icons/at.png"), tr("Fast Symbol Search..."),
         this, QKeySequence(tr("Ctrl+D", "QShortcut")), Qt::WidgetWithChildrenShortcut);
     m_findSymbols->connectTrigger(this, SLOT(mnuFindSymbolsShow()));
 
@@ -1807,32 +1852,6 @@ void ScriptDockWidget::lastFileOpen(const QString &path)
         emit (openScriptRequest(fileName, this));
     }
 }
-
-//----------------------------------------------------------------------------------------------------------------------------------
-//void ScriptDockWidget::windowStateChanged(bool windowNotToolbox)
-//{
-//    //Qt::ShortcutContext context = Qt::WidgetWithChildrenShortcut;
-//    //if (windowNotToolbox)
-//    //{
-//    //    context = Qt::WindowShortcut;
-//    //}
-//
-//    //m_findTextExprAction->setShortcutContext(context);
-//    //m_gotoAction->setShortcutContext(context);
-//    //m_openIconBrowser->setShortcutContext(context);
-//    //m_uncommentAction->setShortcutContext(context);
-//    //m_commentAction->setShortcutContext(context);
-//    //m_redoAction->setShortcutContext(context);
-//    //m_undoAction->setShortcutContext(context);
-//    //m_pasteAction->setShortcutContext(context);
-//    //m_copyAction->setShortcutContext(context);
-//    //m_cutAction->setShortcutContext(context);
-//    ////m_saveScriptAction->setShortcutContext(context);
-//    ////m_saveScriptAsAction->setShortcutContext(context);
-//    //m_newScriptAction->setShortcutContext(context);
-//    //m_tabCloseAction->setShortcutContext(context);
-//
-//}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! create menus
@@ -1992,6 +2011,62 @@ void ScriptDockWidget::createToolBars()
 //! init status bar \todo right now, this is an empty method
 void ScriptDockWidget::createStatusBar()
 {
+    m_pStatusBarWidget = new QLabel(this);
+    m_pStatusBarWidget->setProperty(statusBarStatePropertyName, 0);    
+}
+
+//-------------------------------------------------------------------------------------
+void ScriptDockWidget::windowStateChanged(bool windowNotToolbox)
+{
+    int state = m_pStatusBarWidget->property(statusBarStatePropertyName).toInt();
+
+    if (windowNotToolbox)
+    {
+        m_pStatusBarWidget->setVisible(true);
+
+        switch (state)
+        {
+        case 0: //not added yet
+        {
+            QStatusBar* sb = getCanvas()->statusBar();
+            sb->addPermanentWidget(m_pStatusBarWidget);
+            sb->setVisible(true);
+            m_pStatusBarWidget->setProperty(statusBarStatePropertyName, 1);
+            break;
+        }
+        case 1: //already added to own status bar
+            break;
+        }
+    }
+    else
+    {
+        m_pStatusBarWidget->setVisible(false);
+
+        switch (state)
+        {
+        case 0: //not added yet
+        {
+            // todo: add to status bar of main window
+            break;
+        }
+        case 1: // currently added to own status bar -> shift it to main window
+        {
+            QStatusBar* sb = getCanvas()->statusBar();
+            sb->setVisible(false);
+            sb->removeWidget(m_pStatusBarWidget);
+            m_pStatusBarWidget->setProperty(statusBarStatePropertyName, 0);
+        }
+        break;
+        }
+    }
+
+    // force the emit of new line, column and encoding updates.
+    // This has to be done with a small delay, since the main window connects
+    // to the statusBarInformationChanged signal after the call to this method.
+    // However, this connection has to be established before currentScriptCursorPositionChanged
+    // is called, to send the current values to the main window (if docked).
+    QTimer::singleShot(20, this, &ScriptDockWidget::currentScriptCursorPositionChanged);
+    
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2594,7 +2669,7 @@ void ScriptDockWidget::mnuInsertCodec()
     ScriptEditorWidget *sew = getCurrentEditor();
     if (sew != NULL)
     {
-        sew->menuInsertCodec();
+        sew->menuScriptCharsetEncoding();
     }
 }
 
@@ -2641,6 +2716,7 @@ void ScriptDockWidget::closeEvent(QCloseEvent *event)
     else
     {
         event->accept();
+        emit statusBarInformationChanged(this, "", -1, -1);
         emit (removeAndDeleteScriptDockWidget(this));
     }
 }
