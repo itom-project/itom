@@ -828,16 +828,17 @@ if(MSVC)
     endif()
 endif()
 
+
 if(Python3_LIBRARY_DEBUG AND Python3_LIBRARY_RELEASE)
-    set(PYTHON_LIBRARY_ITOM ${Python3_LIBRARY_RELEASE})
+    set(PYTHON3_LIBRARY_ITOM ${Python3_LIBRARY_RELEASE})
 #only debug
 elseif(Python3_LIBRARY_DEBUG)
     message(STATUS "Python is always linked as release version to itom, therefore indicate the release library of python")
 #only release
 elseif(Python3_LIBRARY_RELEASE)
-    set(PYTHON_LIBRARY_ITOM ${PYTHON3_LIBRARY_RELEASE})
+    set(PYTHON3_LIBRARY_ITOM ${Python3_LIBRARY_RELEASE})
 elseif(Python3_LIBRARY)
-    set(PYTHON_LIBRARY_ITOM ${Python3_LIBRARY})
+    set(PYTHON3_LIBRARY_ITOM ${Python3_LIBRARY})
 #no library found
 else()
     message(STATUS "Python could not be found")
@@ -852,7 +853,7 @@ endif()
 if(WIN32)
     target_link_libraries(${target_name}
         ${WINICONRES}
-        ${PYTHON_LIBRARY_ITOM}
+        ${PYTHON3_LIBRARY_ITOM}
         ${OpenCV_LIBS}
         ${POINTCLOUD_LIBRARIES}
         ${VISUALLEAKDETECTOR_LIBRARIES}
@@ -869,7 +870,7 @@ if(WIN32)
 else()
     target_link_libraries(${target_name}
         ${WINICONRES}
-        ${PYTHON_LIBRARY_ITOM}
+        ${PYTHON3_LIBRARY_ITOM}
         ${OpenCV_LIBS}
         ${POINTCLOUD_LIBRARIES}
         ${VISUALLEAKDETECTOR_LIBRARIES}

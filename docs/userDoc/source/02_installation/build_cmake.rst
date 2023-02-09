@@ -283,8 +283,8 @@ Known problems during CMake configuration
 ---------------------------------------------
 
 * **Qt could not be detected**: Sometimes, Qt cannot be automatically detected. 
-  Then try to pass a directory similar to **G:\\Qt\\qtbase\\lib\\cmake\\Qt6** to 
-  **Qt_DIR** or set the environment Variable "QT_ROOT" accordingly.
+  Then try to pass a directory similar to **G:\\Qt\\qtbase** to 
+  **Qt_Prefix_DIR** or set the environment Variable **QT_ROOT**"** accordingly.
 * **Linker error: Multiply defined symbols in msvcrt and similar libraries**: 
   Make sure that OpenCV is not statically linked against itom. Make sure that 
   **BUILD_OPENCV_SHARED** is True.
