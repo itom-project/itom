@@ -508,13 +508,13 @@ macro(itom_find_package_qt SET_AUTOMOC)
         
     if(DETECT_QT5)
         if(WIN32)
-            set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${Qt_DIR})
+            set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${Qt_Prefix_DIR})
         endif()
 
         #TRY TO FIND QT5
         find_package(Qt5 5.5 QUIET COMPONENTS Core REQUIRED)
         
-        if(${Qt_DIR} STREQUAL "Qt_DIR-NOTFOUND")
+        if(${Qt_Prefix_DIR} STREQUAL "Qt_Prefix_DIR-NOTFOUND")
             #maybe Qt5.0 is installed that does not support the overall FindQt5 script
             find_package(Qt5Core 5.5 REQUIRED)
             
@@ -589,10 +589,10 @@ macro(itom_find_package_qt SET_AUTOMOC)
         
     elseif(DETECT_QT6)
         if(WIN32)
-            set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${Qt_DIR})
+            set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${Qt_Prefix_DIR})
         endif()
 
-        message(STATUS "CMAKE_PREFIX_PATH: " ${Qt_DIR})
+        message(STATUS "CMAKE_PREFIX_PATH: " ${Qt_Prefix_DIR})
         
         find_package(Qt6 6.2 QUIET COMPONENTS Core REQUIRED)
         
@@ -642,7 +642,7 @@ macro(itom_find_package_qt SET_AUTOMOC)
     elseif (QT6_FOUND)
         # ok
     else()
-        message(SEND_ERROR "Qt could not be found. Please indicate Qt_DIR to the cmake/Qt5 or cmake/Qt6 subfolder of the library folder of Qt or set the Qt Environment Variable Qt_ROOT to the Qt Directory.")
+        message(SEND_ERROR "Qt could not be found. Please indicate the Cmake Vairbaile Qt_Prefix_DIR or set the Qt Environment Variable Qt_ROOT to the Qt Directory.")
     endif()
 endmacro()
 

@@ -97,7 +97,7 @@ Environment Variables:
 Cmake Variables:
 ----------------
 
-.. |cmakelist_qt_dir| replace:: 
+.. |cmakelist_Qt_Prefix_DIR| replace:: 
    Path to the compiler specifice Qt build folder (e.g. <QT_BuildFolder>/msvc####_##).
 
 .. |cmakelist_build_qtversion| replace:: 
@@ -169,7 +169,7 @@ Cmake Variables:
     +----------------------------+--------------------------------------------+
     | Cmake Variable             | Description                                |
     +============================+============================================+
-    | **Qt_DIR**                 | |cmakelist_qt_dir|                         |
+    | **Qt_Prefix_DIR**          | |cmakelist_Qt_Prefix_DIR|                  |
     +----------------------------+--------------------------------------------+
     | **BUILD_QTVERSION**        | |cmakelist_build_qtversion|                |
     +----------------------------+--------------------------------------------+

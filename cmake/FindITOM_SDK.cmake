@@ -96,7 +96,7 @@ if(EXISTS ${ITOM_SDK_CONFIG_FILE})
             #
             # EIGEN_INCLUDE_DIRS was for PCL 1.9, PCL 1.11 now requires EIGEN_INCLUDE_DIR!
             set(CACHE_VARIABLES
-                Qt_DIR
+                Qt_Prefix_DIR
                 BUILD_QTVERSION
                 OpenCV_DIR
                 Boost_INCLUDE_DIR
