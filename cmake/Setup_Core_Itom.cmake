@@ -1,6 +1,27 @@
 ###############################################################################
 # SETUP Configuration to define CMAKE Variables ITOM Core condiguration
 
+###############################################################################
+# Python Definitions
+
+if(NOT EXISTS ${Python3_ROOT_DIR})
+    if(EXISTS $ENV{PYTHON_ROOT})
+        set(Python3_ROOT_DIR $ENV{PYTHON_ROOT} CACHE PATH "Path to the OpenCV Directory")
+    else(EXISTS $ENV{PYTHON_ROOT})
+        set(Python3_ROOT_DIR "Python3_ROOT_DIR-NOTFOUND" CACHE PATH "Path to the OpenCV Directory")
+    endif(EXISTS $ENV{PYTHON_ROOT})
+endif(NOT EXISTS ${Python3_ROOT_DIR})
+
+if(WIN32)
+    if(NOT EXISTS ${Python3_ROOT_DIR})
+        message(FATAL_ERROR "Depencencies Missing for Python Library. Please make sure that the Cmake Variable Python3_ROOT_DIR or the Environment Variable PYTHON_ROOT are well defined")
+    endif(NOT EXISTS ${Python3_ROOT_DIR})
+endif(WIN32)
+
+
+###############################################################################
+# OpenCV Definitions
+
 if(NOT EXISTS ${OpenCV_DIR})
     if(EXISTS $ENV{OPENCV_ROOT})
         set(OpenCV_DIR $ENV{OPENCV_ROOT} CACHE PATH "Path to the OpenCV Directory")
@@ -11,7 +32,7 @@ endif(NOT EXISTS ${OpenCV_DIR})
 
 if(WIN32)
     if(NOT EXISTS ${OpenCV_DIR})
-        message(FATAL_ERROR "Depencencies Missing for OpenCV Library. Please make sure that OpenCV_DIR are well defined")
+        message(FATAL_ERROR "Depencencies Missing for OpenCV Library. Please make sure that the Cmake Variable OpenCV_DIR or the Environment Variable OPENCV_ROOT are well defined")
     endif(NOT EXISTS ${OpenCV_DIR})
 endif(WIN32)
 

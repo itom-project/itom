@@ -10,12 +10,15 @@ if(NOT EXISTS ${EIGEN_INCLUDE_DIR})
     endif(EXISTS $ENV{EIGEN_ROOT})
 endif(NOT EXISTS ${EIGEN_INCLUDE_DIR})
 
+# Boost use only Static Libs, also used as a search parameter
+set(Boost_USE_STATIC_LIBS ON)
+
 if(NOT EXISTS ${Boost_INCLUDE_DIR})
-    if(EXISTS $ENV{Boost_ROOT})
-        set(Boost_INCLUDE_DIR $ENV{Boost_ROOT} CACHE PATH "Path to the BOOST Directory")
-    else(EXISTS $ENV{Boost_ROOT})
+    if(EXISTS $ENV{BOOST_ROOT})
+        set(Boost_INCLUDE_DIR $ENV{BOOST_ROOT} CACHE PATH "Path to the BOOST Directory")
+    else(EXISTS $ENV{BOOST_ROOT})
         set(Boost_INCLUDE_DIR "Boost_INCLUDE_DIR-NOTFOUND" CACHE PATH "Path to the BOOST Directory")
-    endif(EXISTS $ENV{Boost_ROOT})
+    endif(EXISTS $ENV{BOOST_ROOT})
 endif(NOT EXISTS ${Boost_INCLUDE_DIR})
 
 if(NOT EXISTS ${PCL_DIR})
