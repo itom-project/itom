@@ -1,21 +1,26 @@
 ###############################################################################
-# SETUP Configuration to define CMAKE Variables ITOM Core condiguration
+# CMAKE Variables ITOM Core configuration
+
+###############################################################################
+# ITOM Diszribution Definitions
+
+option(ITOM_BUILD_PACKAGE "Choose to build ITOM as a System specific Package for further distribution-" OFF)
 
 ###############################################################################
 # Python Definitions
 
-if(NOT EXISTS ${Python3_ROOT_DIR})
+if(NOT EXISTS ${Python_ROOT_DIR})
     if(EXISTS $ENV{PYTHON_ROOT})
-        set(Python3_ROOT_DIR $ENV{PYTHON_ROOT} CACHE PATH "Path to the OpenCV Directory")
+        set(Python_ROOT_DIR $ENV{PYTHON_ROOT} CACHE PATH "Path to the OpenCV Directory")
     else(EXISTS $ENV{PYTHON_ROOT})
-        set(Python3_ROOT_DIR "Python3_ROOT_DIR-NOTFOUND" CACHE PATH "Path to the OpenCV Directory")
+        set(Python_ROOT_DIR "Python_ROOT_DIR-NOTFOUND" CACHE PATH "Path to the OpenCV Directory")
     endif(EXISTS $ENV{PYTHON_ROOT})
-endif(NOT EXISTS ${Python3_ROOT_DIR})
+endif(NOT EXISTS ${Python_ROOT_DIR})
 
 if(WIN32)
-    if(NOT EXISTS ${Python3_ROOT_DIR})
-        message(FATAL_ERROR "Depencencies Missing for Python Library. Please make sure that the Cmake Variable Python3_ROOT_DIR or the Environment Variable PYTHON_ROOT are well defined")
-    endif(NOT EXISTS ${Python3_ROOT_DIR})
+    if(NOT EXISTS ${Python_ROOT_DIR})
+        message(FATAL_ERROR "Depencencies Missing for Python Library. Please make sure that the Cmake Variable Python_ROOT_DIR or the Environment Variable PYTHON_ROOT are well defined")
+    endif(NOT EXISTS ${Python_ROOT_DIR})
 endif(WIN32)
 
 

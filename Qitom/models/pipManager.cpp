@@ -179,7 +179,7 @@ ito::RetVal PipManager::initPythonIfStandalone()
             QFileInfo(pythonSubDir + QString("/python%1%2.dll").arg(PY_MAJOR_VERSION).arg(PY_MINOR_VERSION)).exists())
         {
             pythonDirState = 0; //use pythonXX subdirectory of itom as python home path
-    }
+        }
         else if (QDir(pythonAllInOneDir).exists() && \
             QFileInfo(pythonAllInOneDir + QString("/python%1%2.dll").arg(PY_MAJOR_VERSION).arg(PY_MINOR_VERSION)).exists())
         {

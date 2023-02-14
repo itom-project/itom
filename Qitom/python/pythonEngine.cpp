@@ -48,6 +48,7 @@
 #include "pythonAutoInterval.h"
 #include "pythonJedi.h"
 #include "pythonProgressObserver.h"
+#include "pythonBuildDir.h"
 
 #include "common/interval.h"
 
@@ -345,8 +346,8 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap
             //if something is changed in the following initialization process, please upgrade
             //pipManager::initPythonIfStandalone, too
             QString pythonSubDir = QCoreApplication::applicationDirPath() + QString("/python%1").arg(PY_MAJOR_VERSION);
-            QString pythonAllInOneDir = QCoreApplication::applicationDirPath() + QString("/../../3rdParty/Python");
-            qDebug() << "pythonAllInOneDir:" << pythonAllInOneDir;
+            QString pythonItomBuildDir = QString(PYTHON_ITOM_BUILD_DIR);
+            qDebug() << "pythonItomBuildDir:" << pythonItomBuildDir;
             //check if an alternative home directory of Python should be set:
             QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
             settings.beginGroup("Python");
@@ -360,11 +361,11 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap
                 {
                     pythonDirState = 0; //use pythonXX subdirectory of itom as python home path
                 }
-                else if (QDir(pythonAllInOneDir).exists() && \
-                    QFileInfo(pythonAllInOneDir + QString("/python%1%2.dll").arg(PY_MAJOR_VERSION).arg(PY_MINOR_VERSION)).exists())
+                else if (QDir(pythonItomBuildDir).exists() && \
+                    QFileInfo(pythonItomBuildDir + QString("/python%1%2.dll").arg(PY_MAJOR_VERSION).arg(PY_MINOR_VERSION)).exists())
                 {
                     pythonDirState = 2;
-                    pythonHomeFromSettings = pythonAllInOneDir;
+                    pythonHomeFromSettings = pythonItomBuildDir;
                     settings.setValue("pyHome", pythonHomeFromSettings);
                 }
                 else
@@ -429,7 +430,10 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap
 #endif
 
             //!< must be called after any PyImport_AppendInittab-call
-            Py_Initialize();
+            if(pythonDirState > 1)
+            {
+                Py_Initialize();
+            }
 
             //read directory values from Python
             qDebug() << "Py_GetPythonHome:" << QString::fromWCharArray(Py_GetPythonHome());

@@ -50,7 +50,10 @@ Environment Variables:
 ----------------------
 
 .. |cmakelist_qt_root| replace:: 
-   Path to the compiler specifice Qt build folder (e.g. <QT_BuildFolder>/msvc####_##).
+   Path to the compiler specific Qt folder (e.g. <QT_BuildFolder>/msvc####_##).
+
+.. |cmakelist_qt_root| replace:: 
+   Path to the Python installation folder (e.g. C:/Python3).
 
 .. |cmakelist_opencv_root| replace:: path to folder containing OpenCVConfig.cmake or
    OpenCVConfig-version.cmake  (e.g. <OpenCV_BuildFolder>/x64/vc##/lib).
@@ -77,6 +80,8 @@ Environment Variables:
     +=================+=======================================================+
     | **QT_ROOT**     | |cmakelist_qt_root|                                   |
     +-------------------------------------------------------------------------+
+    | **PYTHON_ROOT** | |cmakelist_python_root|                               |
+    +-------------------------------------------------------------------------+
     | **OPENCV_ROOT** | |cmakelist_opencv_root|                               |
     +-------------------------------------------------------------------------+
     | **BOOST_ROOT**  | |cmakelist_boost_root|                                |
@@ -100,6 +105,9 @@ Cmake Variables:
 .. |cmakelist_Qt_Prefix_DIR| replace:: 
    Path to the compiler specifice Qt build folder (e.g. <QT_BuildFolder>/msvc####_##).
 
+.. |cmakelist_Python_ROOT_DIR| replace:: 
+   Path to the Python installation folder (e.g. C:/Python3).
+
 .. |cmakelist_build_qtversion| replace:: 
    Selected Qt Version. Currently Qt6 and Qt5 are supported. Qt6 i set to default.
 
@@ -110,18 +118,6 @@ Cmake Variables:
    into itom. This folder contains folders "boost" and "lib64-msvc-xxx". If you 
    set the right one here the boost libraries will get autopoulated... 
    If not, this entry gets cleared again...
-
-.. |cmakelist_boost_includedir| replace:: from FindBoost.cmake:
-   "preferred include directory e.g. .../include"
-   create this entry if you have multiple boost versions installed and point it to the 
-   include directory(the folder containing **headers**) of the right version.
-   Note the all-caps spelling.
-
-.. |cmakelist_boost_librarydir| replace:: from FindBoost.cmake:
-   "Preferred library directory e.g. .../lib"
-   create this entry and point it to the folder containing the 
-   **compiled** boost libraries(\*.dll, \*.lib, \*.a, \*.so ...)
-   Note the all-caps spelling.
 
 .. |cmakelist_flann_include_dirs| replace:: path to filder named "include" 
    which lives in a directory side-by-side with "bin" and "lib" folders.
@@ -171,15 +167,13 @@ Cmake Variables:
     +============================+============================================+
     | **Qt_Prefix_DIR**          | |cmakelist_Qt_Prefix_DIR|                  |
     +----------------------------+--------------------------------------------+
+    | **Python_ROOT_DIR**        | |cmakelist_Python_ROOT_DIR|                |
+    +-------------------------------------------------------------------------+
     | **BUILD_QTVERSION**        | |cmakelist_build_qtversion|                |
     +----------------------------+--------------------------------------------+
     | **OpenCV_DIR**             | |cmakelist_opencv_dir|                     |
     +----------------------------+--------------------------------------------+
     | **Boost_INCLUDE_DIR**      | |cmakelist_boost_dir|                      |
-    +----------------------------+--------------------------------------------+
-    | **BOOST_INCLUDEDIR**       | |cmakelist_boost_includedir|               |
-    +----------------------------+--------------------------------------------+
-    | **BOOST_LIBRARYDIR**       | |cmakelist_boost_librarydir|               |
     +----------------------------+--------------------------------------------+
     | **FLANN_INCLUDE_DIRS**     | |cmakelist_flann_include_dirs|             |
     +----------------------------+--------------------------------------------+

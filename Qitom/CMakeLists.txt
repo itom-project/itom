@@ -75,9 +75,9 @@ else()
     itom_find_package_qt(ON Core Widgets UiTools PrintSupport Network Sql Xml OpenGL Svg Designer LinguistTools)
 endif()
 
-find_package(Python3 3.7 REQUIRED COMPONENTS Interpreter Development NumPy)
+find_package(Python 3.7 REQUIRED COMPONENTS Interpreter Development NumPy)
 
-if (${Python3_VERSION} VERSION_LESS "3.5.0")
+if (${Python_VERSION} VERSION_LESS "3.5.0")
     message(FATAL_ERROR "The minimum required Python version is 3.5.0")
 endif()
 
@@ -208,9 +208,9 @@ foreach( OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES} )
     set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${ITOMOUTPUTDIR} )
 endforeach()
 
-
 include_directories(
     ${CMAKE_CURRENT_BINARY_DIR}
+    ${CMAKE_CURRENT_BINARY_DIR}/python
     ${CMAKE_CURRENT_BINARY_DIR}/GeneratedFiles
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/..
@@ -222,8 +222,8 @@ include_directories(
     ${Qt6WebEngineWidgets_INCLUDE_DIRS}
     ${Qt6Help_INCLUDE_DIRS}
     ${Qt6Network_INCLUDE_DIRS}
-    ${Python3_INCLUDE_DIRS}
-    ${Python3_NumPy_INCLUDE_DIRS}
+    ${Python_INCLUDE_DIRS}
+    ${Python_NumPy_INCLUDE_DIRS}
     ${PCL_INCLUDE_DIRS}
     ${PYMATLAB_INCLUDE_DIR}
     ${VISUALLEAKDETECTOR_INCLUDE_DIR}
@@ -802,7 +802,7 @@ if(CONSIDER_GIT_SVN AND GIT_FOUND)
     
     add_custom_target(
         ${target_name}_versionCheck
-        COMMAND    ${Python3_EXECUTABLE}
+        COMMAND    ${Python_EXECUTABLE}
         "${CMAKE_CURRENT_BINARY_DIR}/pyGit2Header.py"
     )
     
@@ -828,17 +828,16 @@ if(MSVC)
     endif()
 endif()
 
-
-if(Python3_LIBRARY_DEBUG AND Python3_LIBRARY_RELEASE)
-    set(PYTHON3_LIBRARY_ITOM ${Python3_LIBRARY_RELEASE})
+if(Python_LIBRARY_DEBUG AND Python_LIBRARY_RELEASE)
+    set(PYTHON_LIBRARY_ITOM ${Python_LIBRARY_RELEASE})
 #only debug
-elseif(Python3_LIBRARY_DEBUG)
+elseif(Python_LIBRARY_DEBUG)
     message(STATUS "Python is always linked as release version to itom, therefore indicate the release library of python")
 #only release
-elseif(Python3_LIBRARY_RELEASE)
-    set(PYTHON3_LIBRARY_ITOM ${Python3_LIBRARY_RELEASE})
-elseif(Python3_LIBRARY)
-    set(PYTHON3_LIBRARY_ITOM ${Python3_LIBRARY})
+elseif(Python_LIBRARY_RELEASE)
+    set(PYTHON_LIBRARY_ITOM ${Python_LIBRARY_RELEASE})
+elseif(Python_LIBRARY)
+    set(PYTHON_LIBRARY_ITOM ${Python_LIBRARY})
 #no library found
 else()
     message(STATUS "Python could not be found")
@@ -853,7 +852,7 @@ endif()
 if(WIN32)
     target_link_libraries(${target_name}
         ${WINICONRES}
-        ${PYTHON3_LIBRARY_ITOM}
+        ${PYTHON_LIBRARY_ITOM}
         ${OpenCV_LIBS}
         ${POINTCLOUD_LIBRARIES}
         ${VISUALLEAKDETECTOR_LIBRARIES}
@@ -870,7 +869,7 @@ if(WIN32)
 else()
     target_link_libraries(${target_name}
         ${WINICONRES}
-        ${PYTHON3_LIBRARY_ITOM}
+        ${PYTHON_LIBRARY_ITOM}
         ${OpenCV_LIBS}
         ${POINTCLOUD_LIBRARIES}
         ${VISUALLEAKDETECTOR_LIBRARIES}
@@ -1009,6 +1008,15 @@ configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/../pluginMetaData.json.in ${CMAKE_CU
 
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../translation )
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../lib )
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/python)
+
+if(ITOM_BUILD_PACKAGE)
+    set(Python_Itom_Build_Dir "./python3" )
+    configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonBuildDir.h.in ${CMAKE_CURRENT_BINARY_DIR}/python/pythonBuildDir.h)
+else(ITOM_BUILD_PACKAGE)
+    cmake_path(GET Python_EXECUTABLE PARENT_PATH Python_Itom_Build_Dir)
+    configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonBuildDir.h.in ${CMAKE_CURRENT_BINARY_DIR}/python/pythonBuildDir.h)
+endif(ITOM_BUILD_PACKAGE)
  
 #ADD symbols/lib directory in application directory where pdb files will be loaded for debugging (MSVC only)
 if(MSVC)
