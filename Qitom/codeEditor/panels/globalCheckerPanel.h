@@ -72,7 +72,6 @@ public:
 
     virtual QSize sizeHint() const;
 
-
 protected:
     virtual void paintEvent(QPaintEvent *e);
     virtual void mousePressEvent(QMouseEvent *e);

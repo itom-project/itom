@@ -199,66 +199,75 @@ void GlobalCheckerPanel::drawMessages(QPainter& painter)
     auto grooveRect = getScrollbarGrooveRect();
     int voffset = grooveRect.y();
 
+    // b.blockNumber() is zero-based
+    int blockIndex = 0;
+    float markerSpacing = getMarkerSpacing();
+
     while (b.isValid())
     {
         worstStatus = CodeCheckerItem::Info;
         hasCheckerMessage = false;
         tbud = dynamic_cast<TextBlockUserData*>(b.userData());
 
-        if (tbud)
+        if (b.isVisible())
         {
-            foreach (const CodeCheckerItem &cci,tbud->m_checkerMessages)
+            if (tbud)
             {
-                hasCheckerMessage = true;
-
-                if (cci.type() > worstStatus)
+                foreach(const CodeCheckerItem & cci, tbud->m_checkerMessages)
                 {
-                    worstStatus = cci.type();
+                    hasCheckerMessage = true;
+
+                    if (cci.type() > worstStatus)
+                    {
+                        worstStatus = cci.type();
+                    }
+                }
+
+                if (hasCheckerMessage)
+                {
+                    rect = QRect();
+                    rect.setX(sizeHint().width() / 6);
+                    rect.setY(qRound(voffset + blockIndex * markerSpacing - markerSize.height() / 2.0));
+                    rect.setSize(markerSize);
+
+                    switch (worstStatus)
+                    {
+                    case ito::CodeCheckerItem::Info:
+                        painter.fillRect(rect, brushInfo);
+                        break;
+                    case ito::CodeCheckerItem::Warning:
+                        painter.fillRect(rect, brushWarning);
+                        break;
+                    case ito::CodeCheckerItem::Error:
+                        painter.fillRect(rect, brushError);
+                        break;
+                    }
+                }
+
+                if (tbud->m_bookmark)
+                {
+                    int s = std::max(2 + sizeHint().width() / 2, 8);
+                    rect = QRect();
+                    rect.setX((sizeHint().width() - s) / 2);
+                    rect.setY(qRound(voffset + blockIndex * markerSpacing - s / 2.0));
+                    rect.setWidth(s);
+                    rect.setHeight(s);
+                    m_bookmarkIcon.paint(&painter, rect);
+                }
+
+                if (tbud->m_breakpointType != ito::TextBlockUserData::TypeNoBp)
+                {
+                    int s = std::max(sizeHint().width() / 2, 8);
+                    rect = QRect();
+                    rect.setX((sizeHint().width() - s) / 2);
+                    rect.setY(qRound(voffset + blockIndex * markerSpacing - s / 2.0));
+                    rect.setWidth(s);
+                    rect.setHeight(s);
+                    m_breakpointIcon.paint(&painter, rect);
                 }
             }
 
-            if (hasCheckerMessage)
-            {
-                rect = QRect();
-                rect.setX(sizeHint().width() / 6);
-                rect.setY(qRound(voffset + b.blockNumber() * getMarkerSpacing() - markerSize.height() / 2.0));
-                rect.setSize(markerSize);
-
-                switch (worstStatus)
-                {
-                case ito::CodeCheckerItem::Info:
-                    painter.fillRect(rect, brushInfo);
-                    break;
-                case ito::CodeCheckerItem::Warning:
-                    painter.fillRect(rect, brushWarning);
-                    break;
-                case ito::CodeCheckerItem::Error:
-                    painter.fillRect(rect, brushError);
-                    break;
-                }
-            }
-
-            if (tbud->m_bookmark)
-            {
-                int s = std::max(2 + sizeHint().width() / 2, 8);
-                rect = QRect();
-                rect.setX((sizeHint().width() - s) / 2);
-                rect.setY(qRound(voffset + b.blockNumber() * getMarkerSpacing() - s / 2.0));
-                rect.setWidth(s);
-                rect.setHeight(s);
-                m_bookmarkIcon.paint(&painter, rect);
-            }
-
-            if (tbud->m_breakpointType != ito::TextBlockUserData::TypeNoBp)
-            {
-                int s = std::max(sizeHint().width() / 2, 8);
-                rect = QRect();
-                rect.setX((sizeHint().width() - s) / 2);
-                rect.setY(qRound(voffset + b.blockNumber() * getMarkerSpacing() - s / 2.0));
-                rect.setWidth(s);
-                rect.setHeight(s);
-                m_breakpointIcon.paint(&painter, rect);
-            }
+            blockIndex++;
         }
 
         b = b.next();
@@ -275,15 +284,29 @@ void GlobalCheckerPanel::drawVisibleArea(QPainter &painter)
 {
     if (editor()->visibleBlocks().size() > 0)
     {
-        auto startBlock = editor()->visibleBlocks()[0].textBlock;
-
-        auto endBlock = editor()->visibleBlocks().last().textBlock;
         QRect rect;
         int voffset = verticalOffset();
+        
+
+        const int vh = editor()->viewport()->height();
+        float contentHeight = static_cast<float>(vh - 2 * verticalOffset());
+
+        // the first block of the document has the right height. Only the last block has a different height.
+        // Therefore always refer to the first one, and not the first visible one.
+        QRectF firstBlock = editor()->blockBoundingGeometry(editor()->document()->firstBlock());
+        QScrollBar* sb = editor()->verticalScrollBar();
+
+        // number of rows in the editor() widget
+        float numRowsInEditor = (float)editor()->height() / firstBlock.height();
+
         rect.setX(0);
-        rect.setY(startBlock.blockNumber() * getMarkerSpacing() + voffset);
         rect.setWidth(sizeHint().width());
-        rect.setBottom(endBlock.blockNumber() * getMarkerSpacing() + voffset);
+
+        // sb->minimum() is always zero, sb->maximum() is the index of the last line (zero-based)
+        // and sb->value() is the index of the first visible line in the view point
+        rect.setY(sb->value() * getMarkerSpacing() + voffset);
+        rect.setHeight(numRowsInEditor * getMarkerSpacing());
+
         QColor c;
 
         if (editor()->background().lightness() < 128)
@@ -331,7 +354,6 @@ void GlobalCheckerPanel::mousePressEvent(QMouseEvent *e)
     int line = qBound<int>(vsb->minimum(), qRound(height / getMarkerSpacing()), vsb->maximum());
     
     vsb->setValue(line);
-    //editor()->gotoLine(line, 0);
 }
 
 //----------------------------------------------------------
