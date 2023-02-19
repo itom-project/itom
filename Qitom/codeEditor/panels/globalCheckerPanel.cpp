@@ -177,6 +177,70 @@ int GlobalCheckerPanel::getScrollbarValueHeight() const
     return h;
 }
 
+//-------------------------------------------------------------------------------------
+void GlobalCheckerPanel::createItemCache()
+{
+    const QTextDocument* td = editor()->document();
+    const QScrollBar* sb = editor()->verticalScrollBar();
+    QTextBlock b = td->lastBlock();
+    int idx = 1;
+    int numVisibleLines = sb->maximum() + 1;
+    int worstStatus = 0;
+    TextBlockUserData* tbud;
+    bool previousInvisible = false;
+
+    m_itemCache.clear();
+    m_itemCache.resize(numVisibleLines);
+
+    while (b.isValid())
+    {
+        tbud = dynamic_cast<TextBlockUserData*>(b.userData());
+
+        if (tbud)
+        {
+            foreach(const CodeCheckerItem & cci, tbud->m_checkerMessages)
+            {
+                if (cci.type() > worstStatus)
+                {
+                    worstStatus = cci.type();
+                }
+            }
+
+            if (b.isVisible())
+            {
+                CheckerItem item(b.blockNumber());
+                item.headOfCollapsedFold = previousInvisible;
+                item.worstCaseStatus = worstStatus;
+                item.bookmark = tbud->m_bookmark;
+                item.breakpoint = tbud->m_breakpointType != ito::TextBlockUserData::TypeNoBp;
+                worstStatus = 0;
+                m_itemCache[numVisibleLines - idx] = item;
+                idx++;
+            }
+        }
+        else
+        {
+            if (b.isVisible())
+            {
+                CheckerItem item(b.blockNumber());
+                item.headOfCollapsedFold = previousInvisible;
+                item.worstCaseStatus = worstStatus;
+                worstStatus = 0;
+                m_itemCache[numVisibleLines - idx] = item;
+                idx++;
+            }
+        }
+
+        previousInvisible = !b.isVisible();
+        b = b.previous();
+
+        if (idx > numVisibleLines)
+        {
+            break;
+        }
+    }
+}
+
 //----------------------------------------------------------
 /*
 Draw messages from all subclass of CheckerMode currently
@@ -184,14 +248,15 @@ installed on the editor.
 */
 void GlobalCheckerPanel::drawMessages(QPainter& painter)
 {
-    TextBlockUserData* tbud;
+    createItemCache();
+
     QIcon icon;
     CodeCheckerItem::CheckerType worstStatus = CodeCheckerItem::Info;
-    bool hasCheckerMessage;
     QRect rect;
     QBrush brushInfo(QColor(60, 111, 179));
     QBrush brushWarning(QColor(241, 133, 46));
     QBrush brushError(QColor(226, 0, 0));
+    QBrush brushCollapsedFold(QColor(145, 205, 251));
 
     const QTextDocument* td = editor()->document();
     QTextBlock b = td->firstBlock();
@@ -200,77 +265,66 @@ void GlobalCheckerPanel::drawMessages(QPainter& painter)
     int voffset = grooveRect.y();
 
     // b.blockNumber() is zero-based
-    int blockIndex = 0;
     float markerSpacing = getMarkerSpacing();
+    const float offset1 = markerSpacing / 2.0 - markerSize.height() / 2.0;
+    int sizeHintWidth = sizeHint().width();
 
-    while (b.isValid())
+    for (int blockIndex = 0; blockIndex < m_itemCache.size(); ++blockIndex)
     {
-        worstStatus = CodeCheckerItem::Info;
-        hasCheckerMessage = false;
-        tbud = dynamic_cast<TextBlockUserData*>(b.userData());
+        const CheckerItem& item = m_itemCache[blockIndex];
 
-        if (b.isVisible())
+        if (item.headOfCollapsedFold)
         {
-            if (tbud)
-            {
-                foreach(const CodeCheckerItem & cci, tbud->m_checkerMessages)
-                {
-                    hasCheckerMessage = true;
-
-                    if (cci.type() > worstStatus)
-                    {
-                        worstStatus = cci.type();
-                    }
-                }
-
-                if (hasCheckerMessage)
-                {
-                    rect = QRect();
-                    rect.setX(sizeHint().width() / 6);
-                    rect.setY(qRound(voffset + blockIndex * markerSpacing - markerSize.height() / 2.0));
-                    rect.setSize(markerSize);
-
-                    switch (worstStatus)
-                    {
-                    case ito::CodeCheckerItem::Info:
-                        painter.fillRect(rect, brushInfo);
-                        break;
-                    case ito::CodeCheckerItem::Warning:
-                        painter.fillRect(rect, brushWarning);
-                        break;
-                    case ito::CodeCheckerItem::Error:
-                        painter.fillRect(rect, brushError);
-                        break;
-                    }
-                }
-
-                if (tbud->m_bookmark)
-                {
-                    int s = std::max(2 + sizeHint().width() / 2, 8);
-                    rect = QRect();
-                    rect.setX((sizeHint().width() - s) / 2);
-                    rect.setY(qRound(voffset + blockIndex * markerSpacing - s / 2.0));
-                    rect.setWidth(s);
-                    rect.setHeight(s);
-                    m_bookmarkIcon.paint(&painter, rect);
-                }
-
-                if (tbud->m_breakpointType != ito::TextBlockUserData::TypeNoBp)
-                {
-                    int s = std::max(sizeHint().width() / 2, 8);
-                    rect = QRect();
-                    rect.setX((sizeHint().width() - s) / 2);
-                    rect.setY(qRound(voffset + blockIndex * markerSpacing - s / 2.0));
-                    rect.setWidth(s);
-                    rect.setHeight(s);
-                    m_breakpointIcon.paint(&painter, rect);
-                }
-            }
-
-            blockIndex++;
+            rect = QRect();
+            rect.setX(sizeHintWidth * 2.0 / 3.0);
+            rect.setWidth(sizeHintWidth / 3.0);
+            rect.setY(voffset + blockIndex * markerSpacing + markerSpacing / 2.0 - 15.0 / 2.0);
+            rect.setHeight(15.0);
+            painter.fillRect(rect, brushCollapsedFold);
         }
 
-        b = b.next();
+        if (item.worstCaseStatus > 0)
+        {
+            rect = QRect();
+            rect.setX(sizeHintWidth / 6);
+            rect.setY(qRound(voffset + blockIndex * markerSpacing + offset1));
+            rect.setSize(markerSize);
+
+            switch (item.worstCaseStatus)
+            {
+            case ito::CodeCheckerItem::Info:
+                painter.fillRect(rect, brushInfo);
+                break;
+            case ito::CodeCheckerItem::Warning:
+                painter.fillRect(rect, brushWarning);
+                break;
+            case ito::CodeCheckerItem::Error:
+                painter.fillRect(rect, brushError);
+                break;
+            }
+        }
+
+        if (item.bookmark)
+        {
+            int s = std::max(2 + sizeHintWidth / 2, 8);
+            rect = QRect();
+            rect.setX((sizeHintWidth - s) / 2);
+            rect.setY(qRound(voffset + blockIndex * markerSpacing - s / 2.0 + markerSpacing / 2.0));
+            rect.setWidth(s);
+            rect.setHeight(s);
+            m_bookmarkIcon.paint(&painter, rect);
+        }
+
+        if (item.breakpoint)
+        {
+            int s = std::max(sizeHintWidth / 2, 8);
+            rect = QRect();
+            rect.setX((sizeHintWidth - s) / 2);
+            rect.setY(qRound(voffset + blockIndex * markerSpacing - s / 2.0 + markerSpacing / 2.0));
+            rect.setWidth(s);
+            rect.setHeight(s);
+            m_breakpointIcon.paint(&painter, rect);
+        }
     }
 }
 
@@ -350,10 +404,15 @@ QSize GlobalCheckerPanel::getMarkerSize() const
 void GlobalCheckerPanel::mousePressEvent(QMouseEvent *e)
 {
     auto vsb = editor()->verticalScrollBar();
-    auto height = e->pos().y() - verticalOffset();
-    int line = qBound<int>(vsb->minimum(), qRound(height / getMarkerSpacing()), vsb->maximum());
-    
-    vsb->setValue(line);
+    auto markerSpacing = getMarkerSpacing();
+    auto height = e->pos().y() - verticalOffset() - markerSpacing / 2.0f;
+    int line = qBound<int>(vsb->minimum(), qRound(height / markerSpacing), vsb->maximum());
+
+    if (m_itemCache.size() >= line + 1)
+    {
+        editor()->setCursorPosition(line, 0);
+        editor()->ensureLineVisible(line);
+    }
 }
 
 //----------------------------------------------------------
