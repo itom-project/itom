@@ -119,7 +119,6 @@ protected:
 
 private:
     int verticalOffset() const;
-    QRect getScrollbarGrooveRect() const;
     int getScrollbarValueHeight() const;
     constexpr int markerHeight() const { return 3; }
     void createItemCache();

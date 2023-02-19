@@ -56,7 +56,7 @@
 #include <qdebug.h>
 namespace ito {
 
-//----------------------------------------------------------
+    //-------------------------------------------------------------------------------------
 /*
 */
 GlobalCheckerPanel::GlobalCheckerPanel(const QString &description /*= ""*/, QWidget *parent /*= nullptr */) :
@@ -67,7 +67,7 @@ GlobalCheckerPanel::GlobalCheckerPanel(const QString &description /*= ""*/, QWid
     m_bookmarkIcon = QIcon(":/bookmark/icons/bookmark.png");
 }
 
-//----------------------------------------------------------
+//-------------------------------------------------------------------------------------
 /*
 */
 GlobalCheckerPanel::~GlobalCheckerPanel()
@@ -75,7 +75,7 @@ GlobalCheckerPanel::~GlobalCheckerPanel()
 
 }
 
-//------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 /*
 Returns the panel size hint. (fixed with of 16px)
 */
@@ -93,7 +93,7 @@ QSize GlobalCheckerPanel::sizeHint() const
     return size_hint;
 }
 
-//----------------------------------------------------------
+//-------------------------------------------------------------------------------------
 /*Paints the messages and the visible area on the panel.
 
 */
@@ -111,7 +111,7 @@ void GlobalCheckerPanel::paintEvent(QPaintEvent *e)
     }
 }
 
-//----------------------------------------------------------
+//-------------------------------------------------------------------------------------
 /*
 This property holds the vertical offset of the scroll flag area
 relative to the top of the text editor.
@@ -125,46 +125,25 @@ int GlobalCheckerPanel::verticalOffset() const
         return 0;
     }
 
-    const auto style = qApp->style();
+    const auto style = vsb->style();// qApp->style();
     QStyleOptionSlider opt;
     opt.initFrom(vsb);
 
     // Get the area in which the slider handle may move.
+    // usually grooveRect is correct, however if stylesheets are
+    // applied, addPageRect seems to deliver better results.
     QRect grooveRect = style->subControlRect(QStyle::CC_ScrollBar, &opt, QStyle::SC_ScrollBarGroove, this);
+    QRect addPageRect = style->subControlRect(QStyle::CC_ScrollBar, &opt, QStyle::SC_ScrollBarAddPage, this);
     
     if (opt.orientation == Qt::Horizontal)
     {
-        return grooveRect.x();
+        return std::max(grooveRect.x(), addPageRect.x());
     }
 
-    return grooveRect.y();
+    return std::max(grooveRect.y(), addPageRect.y());
 }
 
-//----------------------------------------------------------
-QRect GlobalCheckerPanel::getScrollbarGrooveRect() const
-{
-    const auto vsb = editor()->verticalScrollBar();
-
-    if (!vsb || !vsb->isVisible())
-    {
-        return QRect();
-    }
-
-    const auto style = qApp->style();
-    QStyleOptionSlider opt;
-    opt.initFrom(vsb);
-
-    // Get the area in which the slider handle may move.
-    QRect grooveRect = style->subControlRect(QStyle::CC_ScrollBar, &opt, QStyle::SC_ScrollBarGroove, this);
-
-    grooveRect.setY(qMax(grooveRect.y(), grooveRect.x()));
-    grooveRect.setX(0);
-    grooveRect.setWidth(qAbs(grooveRect.width()));
-
-    return grooveRect;
-}
-
-//----------------------------------------------------------
+//-------------------------------------------------------------------------------------
 /* Return the value span height of the scrollbar
 */
 int GlobalCheckerPanel::getScrollbarValueHeight() const
@@ -182,66 +161,50 @@ void GlobalCheckerPanel::createItemCache()
 {
     const QTextDocument* td = editor()->document();
     const QScrollBar* sb = editor()->verticalScrollBar();
-    QTextBlock b = td->lastBlock();
-    int idx = 1;
-    int numVisibleLines = sb->maximum() + 1;
-    int worstStatus = 0;
+    QTextBlock b = td->firstBlock();
     TextBlockUserData* tbud;
-    bool previousInvisible = false;
+    CheckerItem* current = nullptr;
 
     m_itemCache.clear();
-    m_itemCache.resize(numVisibleLines);
+    m_itemCache.reserve(sb->maximum() + 1);
 
     while (b.isValid())
     {
         tbud = dynamic_cast<TextBlockUserData*>(b.userData());
 
-        if (tbud)
+        if (b.isVisible())
+        {
+            m_itemCache.push_back(CheckerItem(b.blockNumber()));
+            current = &(m_itemCache.last());
+        }
+        else if (current)
+        {
+            // there is at least one invisible item below current
+            current->headOfCollapsedFold = true;
+        }
+
+        if (tbud && current)
         {
             foreach(const CodeCheckerItem & cci, tbud->m_checkerMessages)
             {
-                if (cci.type() > worstStatus)
+                if (cci.type() > current->worstCaseStatus)
                 {
-                    worstStatus = cci.type();
+                    current->worstCaseStatus = cci.type();
                 }
             }
 
             if (b.isVisible())
             {
-                CheckerItem item(b.blockNumber());
-                item.headOfCollapsedFold = previousInvisible;
-                item.worstCaseStatus = worstStatus;
-                item.bookmark = tbud->m_bookmark;
-                item.breakpoint = tbud->m_breakpointType != ito::TextBlockUserData::TypeNoBp;
-                worstStatus = 0;
-                m_itemCache[numVisibleLines - idx] = item;
-                idx++;
-            }
-        }
-        else
-        {
-            if (b.isVisible())
-            {
-                CheckerItem item(b.blockNumber());
-                item.headOfCollapsedFold = previousInvisible;
-                item.worstCaseStatus = worstStatus;
-                worstStatus = 0;
-                m_itemCache[numVisibleLines - idx] = item;
-                idx++;
+                current->bookmark = tbud->m_bookmark;
+                current->breakpoint = tbud->m_breakpointType != ito::TextBlockUserData::TypeNoBp;
             }
         }
 
-        previousInvisible = !b.isVisible();
-        b = b.previous();
-
-        if (idx > numVisibleLines)
-        {
-            break;
-        }
+        b = b.next();
     }
 }
 
-//----------------------------------------------------------
+//-------------------------------------------------------------------------------------
 /*
 Draw messages from all subclass of CheckerMode currently
 installed on the editor.
@@ -251,18 +214,14 @@ void GlobalCheckerPanel::drawMessages(QPainter& painter)
     createItemCache();
 
     QIcon icon;
-    CodeCheckerItem::CheckerType worstStatus = CodeCheckerItem::Info;
     QRect rect;
     QBrush brushInfo(QColor(60, 111, 179));
     QBrush brushWarning(QColor(241, 133, 46));
     QBrush brushError(QColor(226, 0, 0));
     QBrush brushCollapsedFold(QColor(145, 205, 251));
 
-    const QTextDocument* td = editor()->document();
-    QTextBlock b = td->firstBlock();
     QSize markerSize = getMarkerSize();    
-    auto grooveRect = getScrollbarGrooveRect();
-    int voffset = grooveRect.y();
+    int voffset = verticalOffset();
 
     // b.blockNumber() is zero-based
     float markerSpacing = getMarkerSpacing();
@@ -329,7 +288,7 @@ void GlobalCheckerPanel::drawMessages(QPainter& painter)
 }
 
 
-//----------------------------------------------------------
+//-------------------------------------------------------------------------------------
 /*
 Draw the visible area.
 This method does not take folded blocks into account.
@@ -340,8 +299,6 @@ void GlobalCheckerPanel::drawVisibleArea(QPainter &painter)
     {
         QRect rect;
         int voffset = verticalOffset();
-        
-
         const int vh = editor()->viewport()->height();
         float contentHeight = static_cast<float>(vh - 2 * verticalOffset());
 
@@ -361,24 +318,23 @@ void GlobalCheckerPanel::drawVisibleArea(QPainter &painter)
         rect.setY(sb->value() * getMarkerSpacing() + voffset);
         rect.setHeight(numRowsInEditor * getMarkerSpacing());
 
-        QColor c;
+        QColor c = editor()->background();
 
-        if (editor()->background().lightness() < 128)
+        if (c.lightness() < 128)
         {
-            c = editor()->background().darker(180);
+            c = c.darker(50);
         }
         else
         {
-            c = editor()->background().darker(110);
+            c = c.darker(120);
         }
 
-        c.setAlpha(128);
         painter.fillRect(rect, c);
     }
 }
 
 
-//----------------------------------------------------------
+//-------------------------------------------------------------------------------------
 /* Gets the distance from one line to another line in the panel
 */
 float GlobalCheckerPanel::getMarkerSpacing() const
@@ -388,7 +344,7 @@ float GlobalCheckerPanel::getMarkerSpacing() const
     return static_cast<float>(vh - 2 * verticalOffset()) / numLinesTotal;
 }
 
-//---------------------------------------------------------
+//-------------------------------------------------------------------------------------
 /*
 Gets the size of a message marker.
 */
@@ -397,7 +353,7 @@ QSize GlobalCheckerPanel::getMarkerSize() const
     return QSize(2.0 * sizeHint().width() / 3.0, markerHeight());
 }
 
-//----------------------------------------------------------
+//-------------------------------------------------------------------------------------
 /*
 * Moves the editor text cursor to the clicked line.
 */
@@ -415,7 +371,7 @@ void GlobalCheckerPanel::mousePressEvent(QMouseEvent *e)
     }
 }
 
-//----------------------------------------------------------
+//-------------------------------------------------------------------------------------
 /*
 * Moves the editor text cursor to the clicked line.
 */
