@@ -72,7 +72,6 @@ public:
 
     virtual QSize sizeHint() const;
 
-
 protected:
     virtual void paintEvent(QPaintEvent *e);
     virtual void mousePressEvent(QMouseEvent *e);
@@ -83,16 +82,55 @@ protected:
     void drawVisibleArea(QPainter &painter);
     void drawMessages(QPainter& painter);
 
+    struct CheckerItem
+    {
+        CheckerItem() :
+            originalLineIndex(-1),
+            bookmark(false),
+            breakpoint(false),
+            headOfCollapsedFold(false),
+            worstCaseStatus(0)
+        {}
+
+        CheckerItem(int orgLineIndex) :
+            originalLineIndex(orgLineIndex),
+            bookmark(false),
+            breakpoint(false),
+            headOfCollapsedFold(false),
+            worstCaseStatus(0)
+        {}
+
+        int originalLineIndex;
+
+        //!< true if bookmark in this line
+        bool bookmark;
+
+        //!> true if breakpoint in this line
+        bool breakpoint;
+
+        //!< true, if this line is the start of a fold area,
+        //! that is currently collapsed
+        bool headOfCollapsedFold;
+
+        //!< 0 if no status flag in this line, else the
+        //! worst case as ito::CodeCheckerItem value
+        int worstCaseStatus;
+    };
+
 private:
     int verticalOffset() const;
-    QRect getScrollbarGrooveRect() const;
     int getScrollbarValueHeight() const;
     constexpr int markerHeight() const { return 3; }
+    void createItemCache();
 
     QMap<TextBlockUserData::BreakpointType, QIcon> m_icons;
     QBrush m_backgroundBrush;
     QIcon m_breakpointIcon;
     QIcon m_bookmarkIcon;
+
+    // the list contains one item for each non-collapsed line of code
+    // in the script.
+    QList<CheckerItem> m_itemCache;
 };
 
 } //end namespace ito
