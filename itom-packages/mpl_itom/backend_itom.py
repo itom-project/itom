@@ -6,5 +6,7 @@ elif matplotlib.__version__ < "3.0.0":
     from .backend_itom_v2 import *
 elif matplotlib.__version__ < "3.6.0":
     from .backend_itom_v3 import *
-else:
+elif matplotlib.__version__ < "3.7.0":
     from .backend_itom_v3_6 import *
+else:
+    from .backend_itom_v3_7 import *
