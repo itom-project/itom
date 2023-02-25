@@ -48,7 +48,7 @@ This file usually already contains a lot of subdirectories, added by the CMake-c
     endif()
 
     if(NOT ITOM_SDK_DIR)
-        message(SEND_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
+        message(FATAL_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
     endif()
 
     # Insert the following section for your plugin
