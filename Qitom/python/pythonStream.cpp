@@ -63,7 +63,7 @@ int PyStream::PythonStream_init(PythonStream *self, PyObject *args, PyObject *kw
     }
 
     Py_XDECREF(self->encoding);
-    self->encoding = PyUnicode_FromString("latin_1"); //the python stdout and stderr streams will be encoded using latin_1
+    self->encoding = PyUnicode_FromString("utf-8"); //the python stdout and stderr streams will be encoded using latin_1
     self->closed = 0;
 
     return 0;
@@ -177,12 +177,12 @@ PyObject* PyStream::PythonStream_write(PythonStream* self, PyObject *args)
         PyObject *v = NULL;
         if (PyUnicode_Check(text))
         {
-            v = PyUnicode_AsLatin1String(text); //default encoding of itom/Qt (C-side) is latin1 (was PyUnicode_AsUTF8String before)
+            v = PyUnicode_AsUTF8String(text); //default encoding of itom/Qt (C-side) is utf8
             if (v == NULL)
             {
-				//latin1 failed, try utf8 instead
+				//utf8 failed, try latin1 instead
 				PyErr_Clear();
-				v = PyUnicode_AsUTF8String(text);
+				v = PyUnicode_AsLatin1String(text);
 
 				if (v == NULL)
 				{
@@ -200,7 +200,8 @@ PyObject* PyStream::PythonStream_write(PythonStream* self, PyObject *args)
         else
         {
             v =  PyObject_Str(text);
-            if (v == NULL)
+
+            if (v == nullptr)
             {
                 PyErr_Print();
                 PyErr_Clear();
@@ -209,9 +210,10 @@ PyObject* PyStream::PythonStream_write(PythonStream* self, PyObject *args)
             else
             {
                 PyObject *temp = v;
-                v = PyUnicode_AsLatin1String(temp); //default encoding of itom/Qt (C-side) is latin1 (was PyUnicode_AsUTF8String before)
+                v = PyUnicode_AsUTF8String(temp); //default encoding of itom/Qt (C-side) is utf8
                 Py_DECREF(temp);
-                if (v == NULL)
+
+                if (v == nullptr)
                 {
                     PyErr_Print();
                     PyErr_Clear();
@@ -331,7 +333,7 @@ PyObject* PyStream::PythonStream_readline(PythonStream* self, PyObject *args)
         return NULL;
     }
 
-    return PythonQtConversion::QByteArrayToPyUnicodeSecure(*buffer);
+    return PythonQtConversion::QByteArrayUtf8ToPyUnicodeSecure(*buffer);
 }
 
 } //end namespace ito

@@ -259,11 +259,6 @@ int main(int argc, char *argv[])
 #endif
     qputenv("QT_AUTO_SCREEN_SCALE_FACTOR", "1");  // auto scale by qt
 
-#if linux
-    // https://www.qt.io/blog/2011/06/03/threaded-opengl-in-4-8
-    QCoreApplication::setAttribute(Qt::AA_X11InitThreads);
-    bool mthread = QCoreApplication::testAttribute(Qt::AA_X11InitThreads);
-#endif
     //startBenchmarks();
 
     //parse arguments passed to the executable

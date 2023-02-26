@@ -27,12 +27,6 @@
 #include <qobject.h>
 #include <qmutex.h>
 
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-    class QTextCodec;
-#else
-    #include <qstringconverter.h>
-#endif
-
 namespace ito
 {
 
@@ -61,14 +55,6 @@ class AppManagement
         inline static QObject* getCoutStream() { QMutexLocker locker (&m_mutex); return m_coutStream; }
         inline static QObject* getCerrStream() { QMutexLocker locker (&m_mutex); return m_cerrStream; }
 
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-        static QTextCodec* getScriptTextCodec();
-        static void setScriptTextCodec(QTextCodec *codec);
-#else
-        static QByteArray encodeStringFromDefaultCodec(const QString& string);
-        static QString decodeByteArrayToDefaultCodec(const QByteArray& ba);
-        static void setScriptTextCodec(QStringConverter::Encoding& encoding);
-#endif
 
         static void setScriptEditorOrganizer(QObject* scriptEditorOrganizer)     /*!< sets ScriptEditorOrganizer instance pointer */
         {
@@ -166,14 +152,7 @@ class AppManagement
         static QObject *m_userOrganizer;    /*!< static pointer to UserOrganizer (default: NULL) */
         static QObject* m_coutStream; /*!< static pointer to QDebugStream for std::cout redirection */
         static QObject* m_cerrStream; /*!< static pointer to QDebugStream for std::cerr redirection */
-
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-        static QTextCodec* m_scriptTextCodec; /*!< static, borrowed pointer to the text codec used for loading and saving script files */
-#else
-        static QStringEncoder m_scriptTextCodecEncoder;
-        static QStringDecoder m_scriptTextCodecDecoder;
-#endif
-        
+     
         static QMutex m_mutex;  /*!< static mutex, protecting every read and write operation in class AppManagement */
 
 };

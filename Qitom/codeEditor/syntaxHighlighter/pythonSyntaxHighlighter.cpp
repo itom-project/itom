@@ -352,8 +352,8 @@ void PythonSyntaxHighlighter::highlight_block(const QString &text, QTextBlock &b
                             break;
                         }
 
-                        start = match.capturedStart();
-                        end = match.capturedEnd();
+                        start = match.capturedStart(1);
+                        end = match.capturedEnd(1);
                         QTextCharFormat fmt = getFormatFromStyle(StyleItem::KeyNamespace);
                         setFormat(start, end - start, fmt);
                     }

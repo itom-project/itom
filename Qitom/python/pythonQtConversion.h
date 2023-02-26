@@ -53,7 +53,7 @@ namespace ito
 class PythonQtConversion
 {
 public:
-    enum unicodeEncodings { utf_8, latin_1, iso_8859_1, mbcs, ascii, utf_16, utf_16_LE, utf_16_BE, utf_32, utf_32_BE, utf_32_LE, other };
+    enum UnicodeEncodings { utf_8, latin_1, iso_8859_1, mbcs, ascii, utf_16, utf_16_LE, utf_16_BE, utf_32, utf_32_BE, utf_32_LE, other };
 
     //! converts QString to Python string (unicode!)
     static PyObject* QStringToPyObject(const QString& str);
@@ -164,6 +164,8 @@ public:
 
     static PyObject* QByteArrayToPyUnicode(const QByteArray &ba, const char *errors = "replace");
     static PyObject* QByteArrayToPyUnicodeSecure(const QByteArray &ba, const char *errors = "replace");
+    static PyObject* QByteArrayUtf8ToPyUnicode(const QByteArray &ba, const char *errors = "replace");
+    static PyObject* QByteArrayUtf8ToPyUnicodeSecure(const QByteArray &ba, const char *errors = "replace");
     static PyObject* ByteArrayToPyUnicode(const char* byteArray, Py_ssize_t len = 0, const char *errors = "replace");
 
     static PyObject* PyUnicodeToPyByteObject(PyObject *unicode, const char *errors = "replace");
@@ -171,7 +173,7 @@ public:
     friend class PythonEngine; //such that the pythonEngine can set the encoding values below
 
 private:
-    static unicodeEncodings textEncoding;
+    static UnicodeEncodings textEncoding;
     static QByteArray textEncodingName;
 
     static int guessQMetaTypeFromPyObject(PyObject* val);

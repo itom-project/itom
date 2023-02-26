@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2022, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
@@ -52,6 +52,12 @@
 #include <qsettings.h>
 #include <qregularexpression.h>
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    #include <qtextcodec.h>
+#else
+    #include <QStringDecoder>
+#endif
+
 namespace ito {
 
 /*!
@@ -69,6 +75,10 @@ namespace ito {
 
 //! name of set of all itom files (used in file open dialog or file system dialog)
 QString IOHelper::allItomFilesName = QObject::tr("Itom Files");
+
+//! the list of all officially supported encodings for Python scripts
+//! This will be filled by the first call to IOHelper::getSupportedScriptEncodings
+QList<IOHelper::CharsetEncodingItem> IOHelper::supportedScriptEncodings;
 
 //------------------------------------------------------------------------------------------------------------------------------------------------
 //! method to load any supported file
@@ -1460,6 +1470,222 @@ end:
     }
 
     return icon;
+}
+
+//-------------------------------------------------------------------------------------
+//! return a list of default encodings, that are officially supported by Qt (as well as Python).
+/*
+    \return a map with the official name as key and a string list of aliases as value. The
+        aliases are only in small letters, one has to convert a comparison string to small
+        letters first. The aliases are mostly aliases used in Python scripts (e.g. #coding=... line).
+*/
+/*static*/ QList<IOHelper::CharsetEncodingItem> IOHelper::getSupportedScriptEncodings()
+{
+    if (supportedScriptEncodings.size() > 0)
+    {
+        return supportedScriptEncodings;
+    }
+
+    // aliases contain the name as well as all aliases 
+    // from https://docs.python.org/3.11/library/codecs.html#standard-encodings
+
+    auto item = CharsetEncodingItem();
+    item.aliases = QStringList() << "latin-1" << "latin1" << "latin_1" << "iso-8859-15" << "iso8859-1" << "8859" << "cp819" << "latin" << "L1";
+    item.bom = "";
+    item.encodingName = "Latin1";
+    item.displayName = "Latin 1";
+    item.displayNameShort = "Latin 1";
+    supportedScriptEncodings.append(item);
+
+    item = CharsetEncodingItem();
+    item.aliases = QStringList() << "utf8" << "utf-8" << "utf_8" << "u8" << "utf" << "cp650001";
+    item.bom = "";
+    item.encodingName = "UTF-8";
+    item.displayName = "UTF-8";
+    item.displayNameShort = "UTF-8";
+    supportedScriptEncodings.append(item);
+
+    item = CharsetEncodingItem();
+    item.aliases = QStringList() << "utf_8_sig";
+    item.bom = QByteArray::fromHex("EFBBBF");
+    item.encodingName = "UTF-8"; //do not change or remove, see getDefaultScriptEncoding
+    item.displayName = "UTF-8 with BOM";
+    item.displayNameShort = "UTF-8 BOM";
+    supportedScriptEncodings.append(item);
+ 
+#if 0
+#if Q_BYTE_ORDER == Q_LITTLE_ENDIAN
+    item = CharsetEncodingItem();
+    item.aliases = QStringList() << "utf-16be" << "utf_16_be";
+    item.bom = "";
+    item.encodingName = "UTF-16BE";
+    item.displayName = tr("UTF-16BE (not recommended for Python scripts)");
+    item.displayNameShort = "UTF-16BE";
+    supportedScriptEncodings.append(item);
+
+    item = CharsetEncodingItem();
+    item.aliases = QStringList() << "utf-16le" << "utf_16_le" << "utf16" << "utf-16" << "utf_16" << "u16";
+    item.bom = "";
+    item.encodingName = "UTF-16LE";
+    item.displayName = tr("UTF-16LE (not recommended for Python scripts)");
+    item.displayNameShort = "UTF-16LE";
+    supportedScriptEncodings.append(item);
+
+    item = CharsetEncodingItem();
+    item.aliases = QStringList() << "utf-32be" << "utf_32_be";
+    item.bom = "";
+    item.encodingName = "UTF-32BE";
+    item.displayName = tr("UTF-32BE (not recommended for Python scripts)");
+    item.displayNameShort = "UTF-32BE";
+    supportedScriptEncodings.append(item);
+
+    item = CharsetEncodingItem();
+    item.aliases = QStringList() << "utf-32le" << "utf_32_le" << "utf32" << "utf-32" << "utf_32" << "u32";
+    item.bom = "";
+    item.encodingName = "UTF-32LE";
+    item.displayName = tr("UTF-32LE (not recommended for Python scripts)");
+    item.displayNameShort = "UTF-32LE";
+    supportedScriptEncodings.append(item);
+#else
+    item = CharsetEncodingItem();
+    item.aliases = QStringList() << "utf-16be" << "utf_16_be" << "utf16" << "utf-16" << "utf_16" << "u16";
+    item.bom = "";
+    item.encodingName = "UTF-16BE";
+    item.displayName = tr("UTF-16BE (not recommended for Python scripts)");
+    item.displayNameShort = "UTF-16BE";
+    supportedScriptEncodings.append(item);
+
+    item = CharsetEncodingItem();
+    item.aliases = QStringList() << "utf-16le" << "utf_16_le";
+    item.bom = "";
+    item.encodingName = "UTF-16LE";
+    item.displayName = tr("UTF-16LE (not recommended for Python scripts)");
+    item.displayNameShort = "UTF-16LE";
+    supportedScriptEncodings.append(item);
+
+    item = CharsetEncodingItem();
+    item.aliases = QStringList() << "utf-32be" << "utf_32_be" << "utf32" << "utf-32" << "utf_32" << "u32";
+    item.bom = "";
+    item.encodingName = "UTF-32BE";
+    item.displayName = tr("UTF-32BE (not recommended for Python scripts)");
+    item.displayNameShort = "UTF-32BE";
+    supportedScriptEncodings.append(item);
+
+    item = CharsetEncodingItem();
+    item.aliases = QStringList() << "utf-32le" << "utf_32_le";
+    item.bom = "";
+    item.encodingName = "UTF-32LE";
+    item.displayName = tr("UTF-32LE (not recommended for Python scripts)");
+    item.displayNameShort = "UTF-32LE";
+    supportedScriptEncodings.append(item);
+#endif
+
+    item = CharsetEncodingItem();
+    item.aliases = QStringList();
+    item.bom = QByteArray::fromHex("FEFF");
+    item.encodingName = "UTF-16BE";
+    item.displayName = "UTF-16BE with BOM (not recommended for Python scripts)";
+    item.displayNameShort = tr("UTF-16BE BOM");
+    supportedScriptEncodings.append(item);
+
+    item = CharsetEncodingItem();
+    item.aliases = QStringList();
+    item.bom = QByteArray::fromHex("FFFE");
+    item.encodingName = "UTF-16LE";
+    item.displayName = "UTF-16LE with BOM (not recommended for Python scripts)";
+    item.displayNameShort = tr("UTF-16LE BOM");
+    supportedScriptEncodings.append(item);
+
+    item = CharsetEncodingItem();
+    item.aliases = QStringList();
+    item.bom = QByteArray::fromHex("0000FEFF");
+    item.encodingName = "UTF-32BE";
+    item.displayName = tr("UTF-32BE with BOM (not recommended for Python scripts)");
+    item.displayNameShort = tr("UTF-32BE BOM");
+    supportedScriptEncodings.append(item);
+
+    item = CharsetEncodingItem();
+    item.aliases = QStringList();
+    item.bom = QByteArray::fromHex("FFFE0000");
+    item.encodingName = "UTF-32LE";
+    item.displayName = tr("UTF-32LE with BOM (not recommended for Python scripts)");
+    item.displayNameShort = tr("UTF-32LE BOM");
+    supportedScriptEncodings.append(item);
+#endif
+
+    return supportedScriptEncodings;
+}
+
+//-------------------------------------------------------------------------------------
+/*static*/ IOHelper::CharsetEncodingItem IOHelper::getDefaultScriptEncoding()
+{
+    auto encodings = getSupportedScriptEncodings();
+
+    foreach(const auto &enc, encodings)
+    {
+        if (enc.encodingName == "UTF-8" && enc.bom == "")
+        {
+            return enc;
+        }
+    }
+    
+    return CharsetEncodingItem();
+}
+
+//-------------------------------------------------------------------------------------
+/*static*/ IOHelper::CharsetEncodingItem IOHelper::getEncodingFromAlias(const QString &alias, bool* found /*= nullptr*/)
+{
+    auto defaultEncodings = getSupportedScriptEncodings();
+    auto it = defaultEncodings.constBegin();
+
+    while (!found && it != defaultEncodings.constEnd())
+    {
+        foreach(const QString &s, it->aliases)
+        {
+            if (QString::compare(alias, s, Qt::CaseInsensitive) == 0)
+            {
+                if (found)
+                {
+                    *found = true;
+                }
+
+                return *it;
+            }
+        }
+
+        ++it;
+    }
+
+    // alias not found, create a user defined one, as long as QTextCodec supports it.
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    QTextCodec *tc = QTextCodec::codecForName(alias.toLatin1());
+
+    if (tc)
+#else
+    QStringDecoder decoder(alias.toLatin1());
+
+    if (decoder.isValid())
+#endif
+    {
+        CharsetEncodingItem item;
+        item.encodingName = alias;
+        item.displayName = item.displayNameShort = alias;
+        item.userDefined = true;
+
+        if (found)
+        {
+            *found = true;
+        }
+
+        return item;
+    }
+
+    if (found)
+    {
+        *found = false;
+    }
+
+    return CharsetEncodingItem();
 }
 
 } //end namespace ito
