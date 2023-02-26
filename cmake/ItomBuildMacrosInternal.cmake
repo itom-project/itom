@@ -43,7 +43,9 @@ macro(itom_init_core_common_vars)
     
     option(BUILD_WITH_PCL "Build itom with PointCloudLibrary support (pointCloud, polygonMesh, point...)" ON)
     set(ITOM_APP_DIR ${CMAKE_CURRENT_BINARY_DIR} CACHE PATH "base path to itom")
-    set(ITOM_SDK_DIR ${CMAKE_CURRENT_BINARY_DIR}/SDK CACHE PATH "base path to itom_sdk")
+    
+    set(ITOM_SDK_DIR ${CMAKE_CURRENT_BINARY_DIR}/SDK CACHE PATH "Base path of SDK subfolder")
+
     set(CMAKE_DEBUG_POSTFIX d CACHE STRING "Adds a postfix for debug-built libraries.")
     set(BUILD_QT_DISABLE_DEPRECATED_BEFORE "" CACHE STRING "indicate a Qt version number as hex \
         string, if all methods that have been deprecated before this version, \

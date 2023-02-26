@@ -55,7 +55,21 @@ endmacro()
 # example:
 # 
 # set(target_name yourTargetName)
-# set(ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk folder")
+#
+# # this is to automatically detect the SDK subfolder of the itom build directory.
+# if(NOT EXISTS ${ITOM_SDK_DIR})
+#     find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
+#     HINTS "$ENV{ITOM_SDK_ROOT}"
+#           "${CMAKE_CURRENT_BINARY_DIR}/../itom/SDK"
+#     DOC "Path of SDK subfolder of itom root (build) directory")
+# else(NOT EXISTS ${ITOM_SDK_DIR})
+#     if(EXISTS $ENV{ITOM_SDK_ROOT})
+#         set(ITOM_SDK_DIR $ENV{ITOM_SDK_ROOT} CACHE PATH "Path of SDK subfolder of itom root (build) directory")
+#     else(EXISTS $ENV{ITOM_SDK_ROOT})
+#         set(ITOM_SDK_DIR NOTFOUND CACHE PATH "Path of SDK subfolder of itom root (build) directory")
+#     endif(EXISTS $ENV{ITOM_SDK_ROOT})
+#     message(FATAL_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
+# endif(NOT EXISTS ${ITOM_SDK_DIR})
 # 
 # include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake")
 # 
@@ -87,8 +101,19 @@ macro(itom_init_plugin_common_vars)
     #their real values are usually forced by a find_package(ITOM_SDK)
     #command, since these values are taken from information in the itom SDK.
     option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
-    set(ITOM_APP_DIR NOTFOUND CACHE PATH "base path to itom build / install folder")
-    set(ITOM_SDK_DIR NOTFOUND CACHE PATH "base path to SDK subfolder of itom build / install folder")
+
+    # this is to automatically detect the SDK subfolder of the itom build directory.
+	if(NOT EXISTS ${ITOM_SDK_DIR})
+		find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
+		HINTS "$ENV{ITOM_SDK_ROOT}"
+			  "${CMAKE_CURRENT_BINARY_DIR}/../itom/SDK"
+		DOC "Path of SDK subfolder of itom root (build) directory")
+	endif(NOT EXISTS ${ITOM_SDK_DIR})
+
+	if(NOT EXISTS ${ITOM_SDK_DIR})
+		message(FATAL_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
+	endif(NOT EXISTS ${ITOM_SDK_DIR})
+
     set(BUILD_QT_DISABLE_DEPRECATED_BEFORE "" CACHE STRING "indicate a Qt version number as \
         hex string, if all methods that have been deprecated before this version, \
         should raise a compiler error.")
@@ -245,7 +270,21 @@ endmacro()
 # example:
 # 
 # set(target_name yourTargetName)
-# set(ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk folder")
+#
+# # this is to automatically detect the SDK subfolder of the itom build directory.
+# if(NOT EXISTS ${ITOM_SDK_DIR})
+#     find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
+#     HINTS "$ENV{ITOM_SDK_ROOT}"
+#           "${CMAKE_CURRENT_BINARY_DIR}/../itom/SDK"
+#     DOC "Path of SDK subfolder of itom root (build) directory")
+# else(NOT EXISTS ${ITOM_SDK_DIR})
+#     if(EXISTS $ENV{ITOM_SDK_ROOT})
+#         set(ITOM_SDK_DIR $ENV{ITOM_SDK_ROOT} CACHE PATH "Path of SDK subfolder of itom root (build) directory")
+#     else(EXISTS $ENV{ITOM_SDK_ROOT})
+#         set(ITOM_SDK_DIR NOTFOUND CACHE PATH "Path of SDK subfolder of itom root (build) directory")
+#     endif(EXISTS $ENV{ITOM_SDK_ROOT})
+#     message(FATAL_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
+# endif(NOT EXISTS ${ITOM_SDK_DIR})
 # 
 # include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake")
 # 
@@ -382,7 +421,18 @@ macro(itom_fetch_git_commit_hash)
     cmake_parse_arguments(OPT "${options}" "${oneValueArgs}"
                           "${multiValueArgs}" ${ARGN} )
                           
-    set(ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk")
+    # this is to automatically detect the SDK subfolder of the itom build directory.
+	if(NOT EXISTS ${ITOM_SDK_DIR})
+		find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
+		HINTS "$ENV{ITOM_SDK_ROOT}"
+			  "${CMAKE_CURRENT_BINARY_DIR}/../itom/SDK"
+		DOC "Path of SDK subfolder of itom root (build) directory")
+	endif(NOT EXISTS ${ITOM_SDK_DIR})
+
+	if(NOT EXISTS ${ITOM_SDK_DIR})
+		message(FATAL_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
+	endif(NOT EXISTS ${ITOM_SDK_DIR})
+
     option(BUILD_GIT_TAG "Fetch the current Git commit hash and add it to the gitVersion.h file in the binary directory of each plugin." ON)
     
     set(GITVERSIONAVAILABLE 0)

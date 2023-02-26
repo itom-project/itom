@@ -149,10 +149,10 @@ Obtain the sources
     cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=OFF -DCMAKE_BUILD_TYPE=Release ../../sources/itom  #If PCL-support should be enabled, replace OFF by ON
     make -j4
     cd ../designerplugins
-    cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=OFF -DCMAKE_BUILD_TYPE=Release -DITOM_SDK_DIR=../itom/SDK ../../sources/designerplugins #If PCL-support should be enabled, replace OFF by ON
+    cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=OFF -DCMAKE_BUILD_TYPE=Release ../../sources/designerplugins #If PCL-support should be enabled, replace OFF by ON
     make -j4
     cd ../plugins
-    cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=OFF -DCMAKE_BUILD_TYPE=Release -DITOM_SDK_DIR=../itom/SDK ../../sources/plugins #If PCL-support should be enabled, replace OFF by ON
+    cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=OFF -DCMAKE_BUILD_TYPE=Release ../../sources/plugins #If PCL-support should be enabled, replace OFF by ON
     make -j4
     
 If you want to compile **itom** under **Raspbian** add **BUILD_WITH_HELPVIEWER=OFF** to the **cmake**

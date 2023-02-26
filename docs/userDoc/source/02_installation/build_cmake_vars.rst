@@ -49,6 +49,11 @@ doc provided by it.
 Environment Variables:
 ----------------------
 
+.. |cmakelist_itom_sdk_root| replace:: 
+   Path to the build ITOM SDK Path, as created after a succesfull |Itom| build.
+   (e.g. <Itom_BuildFolder>/SDK). Should be set manually if ITOM is not build
+   outside of the proposed build structure.
+
 .. |cmakelist_qt_root| replace:: 
    Path to the compiler specific Qt folder (e.g. <QT_BuildFolder>/msvc####_##).
 
@@ -75,32 +80,39 @@ Environment Variables:
 
 .. |cmakelist_fftw_root| replace:: path to the fftw build folder.
 
-    +-----------------+-------------------------------------------------------+
-    | Env. Variable   | Description                                           |
-    +=================+=======================================================+
-    | **QT_ROOT**     | |cmakelist_qt_root|                                   |
-    +-------------------------------------------------------------------------+
-    | **PYTHON_ROOT** | |cmakelist_python_root|                               |
-    +-------------------------------------------------------------------------+
-    | **OPENCV_ROOT** | |cmakelist_opencv_root|                               |
-    +-------------------------------------------------------------------------+
-    | **BOOST_ROOT**  | |cmakelist_boost_root|                                |
-    +-------------------------------------------------------------------------+
-    | **FLANN_ROOT**  | |cmakelist_flann_root|                                |
-    +-------------------------------------------------------------------------+
-    | **VTK_ROOT**    | |cmakelist_vtk_root|                                  |
-    +-------------------------------------------------------------------------+
-    | **EIGEN_ROOT**  | |cmakelist_eigen_root|                                |
-    +-------------------------------------------------------------------------+
-    | **PCL_ROOT**    | |cmakelist_pcl_root|                                  |
-    +-------------------------------------------------------------------------+
-    | **LIBUSB_ROOT** | |cmakelist_libusb_root|                               |
-    +-------------------------------------------------------------------------+
-    | **FFTW_ROOT**   | |cmakelist_fftw_root|                                 |
-    +-------------------------------------------------------------------------+
+    +-------------------+-------------------------------------------------------+
+    | Env. Variable     | Description                                           |
+    +===================+=======================================================+
+    | **ITOM_SDK_ROOT** | |cmakelist_itom_sdk_root|                             |
+    +---------------------------------------------------------------------------+
+    | **QT_ROOT**       | |cmakelist_qt_root|                                   |
+    +---------------------------------------------------------------------------+
+    | **PYTHON_ROOT**   | |cmakelist_python_root|                               |
+    +---------------------------------------------------------------------------+
+    | **OPENCV_ROOT**   | |cmakelist_opencv_root|                               |
+    +---------------------------------------------------------------------------+
+    | **BOOST_ROOT**    | |cmakelist_boost_root|                                |
+    +---------------------------------------------------------------------------+
+    | **FLANN_ROOT**    | |cmakelist_flann_root|                                |
+    +---------------------------------------------------------------------------+
+    | **VTK_ROOT**      | |cmakelist_vtk_root|                                  |
+    +---------------------------------------------------------------------------+
+    | **EIGEN_ROOT**    | |cmakelist_eigen_root|                                |
+    +---------------------------------------------------------------------------+
+    | **PCL_ROOT**      | |cmakelist_pcl_root|                                  |
+    +---------------------------------------------------------------------------+
+    | **LIBUSB_ROOT**   | |cmakelist_libusb_root|                               |
+    +---------------------------------------------------------------------------+
+    | **FFTW_ROOT**     | |cmakelist_fftw_root|                                 |
+    +---------------------------------------------------------------------------+
 
 Cmake Variables:
 ----------------
+
+.. |cmakelist_Itom_SDK_DIR| replace:: 
+   Path to the build ITOM SDK Path, as created after a succesfull |Itom| build.
+   (e.g. <Itom_BuildFolder>/SDK). Should be set manually if ITOM is not build
+   outside of the proposed build structure.
 
 .. |cmakelist_Qt_Prefix_DIR| replace:: 
    Path to the compiler specifice Qt build folder (e.g. <QT_BuildFolder>/msvc####_##).
@@ -165,6 +177,8 @@ Cmake Variables:
     +----------------------------+--------------------------------------------+
     | Cmake Variable             | Description                                |
     +============================+============================================+
+    | **ITOM_SDK_DIR**           | |cmakelist_Itom_SDK_DIR|                   |
+    +----------------------------+--------------------------------------------+
     | **Qt_Prefix_DIR**          | |cmakelist_Qt_Prefix_DIR|                  |
     +----------------------------+--------------------------------------------+
     | **Python_ROOT_DIR**        | |cmakelist_Python_ROOT_DIR|                |

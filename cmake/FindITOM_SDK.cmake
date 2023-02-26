@@ -4,7 +4,7 @@
 #
 ## 1: Setup:
 # The following variables are optionally searched for defaults
-#  ITOM_SDK_DIR:            Base directory of itom SDK tree to use.
+#  ITOM_SDK_DIR: Base directory of itom SDK tree to use.
 #  ITOM_DIR:         
 #
 ## 2: Variable
