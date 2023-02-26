@@ -384,6 +384,18 @@ class itoDebugger(bdb.Bdb):
         """
         self.print_stack_trace()
 
+    def do_clear(self, arg):
+        """Remove temporary breakpoint.
+
+        Must implement in derived classes or get NotImplementedError.
+        """
+        try:
+            bpNumber = int(arg)
+        except Exception:
+            return
+
+        itomDbgWrapper.pyDbgClearBreakpoint(bpNumber)
+
     def _select_frame(self, number):
         assert 0 <= number < len(self.stack)
         self.curindex = number

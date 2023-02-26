@@ -618,7 +618,8 @@ bool ConsoleWidget::keyPressInternalEvent(QKeyEvent *event)
                         texts.append(lineText(i));
                     }
 
-                    QByteArray ba = texts.join("").toLatin1().data();
+                    QByteArray ba = texts.join("").toUtf8().data();
+
                     if (m_inputStreamBuffer->size() == 0)
                     {
                         *m_inputStreamBuffer = ba;

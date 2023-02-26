@@ -107,6 +107,7 @@ protected:
     void createToolBars();
     void createStatusBar();
     void closeEvent(QCloseEvent *event);
+    virtual void windowStateChanged(bool windowNotToolbox);
 
     RetVal closeTab(int index, bool saveFirst = true, bool closeScriptWidgetIfLastTabClosed = true);
     RetVal saveTab(int index, bool forceSaveAs = false, bool askFirst = true);
@@ -118,6 +119,9 @@ private:
     WidgetFindWord *m_pWidgetFindWord;
     DialogReplace *m_pDialogReplace;
     BookmarkModel* m_pBookmarkModel; //! borrowed reference to the bookmark model. This model is owned by the script editor organizer.
+    QLabel* m_pStatusBarWidget;
+
+    static const char* statusBarStatePropertyName;
     
     int m_actTabIndex;                  /*!<  member indicating the tab-index of the active script editor */
 
@@ -205,6 +209,7 @@ private:
 
     static QPointer<ScriptEditorWidget> currentSelectedCallstackLineEditor; //this static variable holds the (weak) pointer to the script editor widget that received the last "selected callstack line" selector.
 
+
 signals:
     void removeAndDeleteScriptDockWidget(ScriptDockWidget* widget);                             /*!<  signal emitted if given ScriptDockWidget should be closed and removed by ScriptEditorOrganizer */
 
@@ -220,6 +225,12 @@ signals:
     void pythonRunSelection(QString selectionText);                                             /*!<  will be received by consoleWidget, directly */
 
     void addGoBackNavigationItem(const GoBackNavigationItem &item);
+
+    void statusBarInformationChanged(
+        const QPointer<ScriptDockWidget> sourceDockWidget, 
+        const QString &encoding, 
+        int line, 
+        int column);
 
 private slots:
     void tabContextMenuEvent (QContextMenuEvent * event);
@@ -291,6 +302,8 @@ private slots:
 
     void loadSettings();
     void findWordWidgetFinished();
+
+    void currentScriptCursorPositionChanged();
 
 public slots:
     void editorMarginChanged();

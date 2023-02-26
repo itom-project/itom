@@ -91,7 +91,7 @@
        <item row="4" column="0" colspan="3">
         <widget class="QCheckBox" name="checkTemporaryBP">
          <property name="text">
-          <string>temporary &amp;breakpoint</string>
+          <string>temporary &amp;breakpoint (will be deleted after first hit)</string>
          </property>
         </widget>
        </item>

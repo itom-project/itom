@@ -13,15 +13,23 @@ and build path. Configure the CMake file with following options:
 
 * CMAKE_INSTALL_PREFIX: absolute path to **install_x64**.
 
-* BUILD options:
+* **BUILD** options:
 
 .. figure:: ../images/all-in-one-create/CMake_BUILD_OPENCV.png
    :scale: 100%
    :align: center
        
-WITH options:
+* **WITH** options:
 
 .. figure:: ../images/all-in-one-create/CMake_WITH_OPENCV.png
+   :scale: 100%
+   :align: center
+   
+* **OPENCV** options:
+
+Check **OPENCV_GAPI_GSTREAMER** to get VideoCaptuer of OpenCV.
+
+.. figure:: ../images/all-in-one-create/CMake_OPENCV.PNG
    :scale: 100%
    :align: center
 
