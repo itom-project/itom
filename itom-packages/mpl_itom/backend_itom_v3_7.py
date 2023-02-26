@@ -1352,7 +1352,7 @@ class SaveFigureItom(backend_tools.SaveFigureBase):
 
 
 @backend_tools._register_tool_class(FigureCanvasItom)
-class SetCursorItom(backend_tools.SetCursorBase):
+class SetCursorItom(backend_tools.ToolSetCursor):
     def set_cursor(self, cursor):
         self.canvas.matplotlibWidgetUiItem.call("setCursor", cursord[cursor])
 
