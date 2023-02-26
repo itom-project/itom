@@ -65,6 +65,10 @@ GlobalCheckerPanel::GlobalCheckerPanel(const QString &description /*= ""*/, QWid
     setScrollable(true);
     m_breakpointIcon = QIcon(":/breakpoints/icons/itomBreak.png");
     m_bookmarkIcon = QIcon(":/bookmark/icons/bookmark.png");
+
+    m_cacheRenewTimer.setSingleShot(true);
+    m_cacheRenewTimer.setInterval(250);
+    connect(&m_cacheRenewTimer, &QTimer::timeout, this, &GlobalCheckerPanel::renewItemCache);
 }
 
 //-------------------------------------------------------------------------------------
@@ -157,6 +161,13 @@ int GlobalCheckerPanel::getScrollbarValueHeight() const
 }
 
 //-------------------------------------------------------------------------------------
+void GlobalCheckerPanel::renewItemCache()
+{
+    createItemCache();
+    update();
+}
+
+//-------------------------------------------------------------------------------------
 void GlobalCheckerPanel::createItemCache()
 {
     const QTextDocument* td = editor()->document();
@@ -211,7 +222,19 @@ installed on the editor.
 */
 void GlobalCheckerPanel::drawMessages(QPainter& painter)
 {
-    createItemCache();
+    if (m_itemCache.size() != editor()->lineCount())
+    {
+        // immediate refresh the cache
+        createItemCache();
+    }
+    else if (!m_cacheRenewTimer.isActive())
+    {
+        m_cacheRenewTimer.start();
+    }
+    /*else
+    {
+        // the timer exceeds soon, renews the cache and calls update() again
+    }*/
 
     QIcon icon;
     QRect rect;

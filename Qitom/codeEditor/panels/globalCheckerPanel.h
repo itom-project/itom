@@ -53,6 +53,7 @@ and error indicators.
 #include <qcolor.h>
 #include <qicon.h>
 #include <qmap.h>
+#include <qtimer.h>
 
 class QMenu;
 class QAction;
@@ -131,6 +132,11 @@ private:
     // the list contains one item for each non-collapsed line of code
     // in the script.
     QList<CheckerItem> m_itemCache;
+    QTimer m_cacheRenewTimer;
+
+private Q_SLOTS:
+    void renewItemCache();
+
 };
 
 } //end namespace ito

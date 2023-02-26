@@ -229,6 +229,8 @@ If you press the return key after the begin of a new indented block (usually
 indicated by a colon character), the next
 line is automatically indented.
 
+
+
 Auto completion and calltips
 ===================================================
 
@@ -423,6 +425,41 @@ displayed in multiple lines in the tooltip text.
     to check if pyflakes is installed correctly.
     
     The bug icons are then available after a restart of itom.
+
+
+Global checker panel
+=====================
+
+For a total overview about all available indicators for different annotations,
+a small column panel is located left to the scrollbar.
+
+The vertical axis of this panel is aligned with the scrollbar, such that the
+active area represents all lines of the script, that are currently not collapsed.
+
+.. figure:: images/editor_global_checker.png
+    :scale: 100%
+    :align: center
+
+The following annotations are visualized:
+
+* All outputs of the syntax check and code check by blue, orange and red horizontal lines
+  in the bar.
+* All breakpoints (independent on their subtypes) by a red dot
+* All bookmarks by a yellow star
+
+You can click at any location in this panel and the cursor jumps to the corresponding
+line in the script.
+
+Whenever the user clicks a fold (in the left panel), parts of the script can be
+collapsed (or uncollapsed again). In this case, the collapsed lines are not visualized
+any more in the panel, since the scrollbar excludes them as well. However, the position
+of the collapsed fold is marked by a vertical blue light line. This gives a hint, that part
+of the code is collapsed here. Additionally, the last line above the collapsed block 
+contains the most severe annotations in all lines of the collapsed block. Hence, if there
+is any breakpoint or bookmark in the collapsed part, this last visible line contains a 
+bookmark or breakpoint mark. The same hold for informations, warnings and errors from
+the style and syntax check (errors are more severe than warnings, and warnings beat infos).
+
 
 .. _gui-editor-iconbrowser:
 
