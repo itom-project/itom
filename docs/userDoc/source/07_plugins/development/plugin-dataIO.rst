@@ -193,6 +193,27 @@ an individual channel. The **ChannelContainer** is a struct which looks as follo
 As it can be seen each container has its own **ito::DataObject** called **data** for storing the captured data. Furthermore a **QMap** called **m_channelParam** for the storage
 of channel specific parameters is included. By default the parameters **pixelFormat**, **roi**, **sizex**, **sizey**, **axisOffset** and **axisScale** are added to this Map.
 
+Like all plugins **ito::AddInMultiChannelGrabber** inherits from **ito::AddInBase** and therefore also contains a **m_params** member (**QMap<QString, Param>**). This map contains all
+parameters of all channels and also further global parameters. A new mandatory global parameter is the **defaultChannel** which is used to indicate the current selected channel wich
+will be adressed if **getParam** or **setParam** is called. If a parameter is adressed which is not provided by the current default channel the parameter in the **m_params** map will
+be set to read only. 
+
+In the following it is described how to initialize a plugin derived from the **AddInMultiChannelGrabber** interface. The initialization is done by the same functions like with the former **ito::AddInGrabber** interface.
+During the initialization the function **AddInMultiChannelGrabber::initializeDefaultConfiguration** must be called. The function takes as a first argument a **QMap<QString, ito::ChannelContainer>**
+containing a ChannelContainer for each channel of the plugin. The **QString** defines the name of the channel. Channel specific parameters must be added to the to the parameter map of
+the corresponding **ChannelContainer**. If a value (or its meta information) of a parameter varies for the individual channels the parameter must be added to each parameter map. Keep in mind that the
+**m_channelParam** by default allready contains some mandatory parameters, which have to be adapted to the plugin. For convenience a construtor of the **ChannelContainer** is available which takes 
+the mandatory parameters and adds them to the map.
+Non channel specific parameters (parameters affecting all channels) must be passed to **AddInMultiChannelGrabber::initializeDefaultConfiguration** as a second argument. 
+**AddInMultiChannelGrabber::initializeDefaultConfiguration** iterates through all parameters and adds all of them to **m_params**. Parameters with the same name in multiple channels
+are only added ones to the **m_params** list containing the value of the channel selected by the **defaultChannel** parameter which is automatically added to **m_params**. Furthermore the 
+**AddInMultiChannelGrabber::initializeDefaultConfiguration** adds all channels to the **channelList** parameter of type **ito::ParamBase::StringList**.
+
+When using the new grabber interface, a function called **setParameter** must be implemented. This function gets called by **AddInMultiChannelGrabber::setParam**.
+
+
+ 
+
 
 
 AD-Converters
