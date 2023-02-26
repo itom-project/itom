@@ -3,34 +3,22 @@ from itom import dataIO, dataObject
 
 def channelSpecificFunc1():
     cam = dataIO("DummyMultiChannelGrabber")
-    cam.setParam('defaultChannel','Channel_1')
+    cam.setParam('defaultChannel','channel_1')
     cam.setParam('channelSpecificParameter',200)
 
-def channelSpecificFunc2():
+def test_invalidDefaultChannelErrorFunc():
     cam = dataIO("DummyMultiChannelGrabber")
-    cam.setParam('channelSpecificParameter:Channel_1',200)
+    cam.setParam('defaultChannel', 'xyz')
 
 class MultiChannelDummyGrabberTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         pass
 
-    def test_setAndGetParamViaSuffix(self):
+    def channelSpecificFunc1():
         cam = dataIO("DummyMultiChannelGrabber")
-        cam.setParam('defaultChannel', 'channel_0')
-        originalRoi = cam.getParam('roi')
-        cam.setParam('roi:channel_1', [0, 0, 20, 20])
-        roiDefaultChannel = cam.getParam('roi')
-        roiChannel0 = cam.getParam('roi:channel_0')
-        roiChannel1 = cam.getParam('roi:channel_1')
-        cam.setParam('roi:channel_0', [0, 0, 50, 50])
-        roiChannel0Modified = cam.getParam('roi:channel_0')
-        
-        self.assertEqual(originalRoi, roiChannel0)
-        self.assertNotEqual(originalRoi, roiChannel1)
-        self.assertEqual(roiChannel1, (0, 0, 20, 20))
-        self.assertEqual(roiChannel0Modified,(0,0,50,50))
-        self.assertEqual(roiDefaultChannel, roiChannel0)
+        cam.setParam('defaultChannel','Channel_1')
+        cam.setParam('channelSpecificParameter',200)
 
     def test_setAndGetParamViaDefaultChannel(self):
         cam = dataIO("DummyMultiChannelGrabber")
@@ -46,13 +34,8 @@ class MultiChannelDummyGrabberTest(unittest.TestCase):
         self.assertEqual(originalRoi, channel0Roi)
         self.assertNotEqual(originalRoi, channel1Roi)
 
-    def test_channelSwitchAfterSuffixUsage(self):
-        cam = dataIO("DummyMultiChannelGrabber")
-        cam.setParam('defaultChannel', 'channel_0')
-        originalChannel = cam.getParam('defaultChannel')
-        cam.setParam('roi:channel_1', (0, 0, 40, 40))
-        afterSuffixUsage = cam.getParam('defaultChannel')
-        self.assertEqual(originalChannel, afterSuffixUsage)
+    def test_invalidDefaultChannelErrorTest(self):
+        self.assertRaises(RuntimeError, test_invalidDefaultChannelErrorFunc)
         
     def test_invalidDefaultChannelTest(self):
         cam = dataIO("DummyMultiChannelGrabber")
@@ -69,20 +52,6 @@ class MultiChannelDummyGrabberTest(unittest.TestCase):
             testParamDict[elem] = cam.getParam(elem)
         self.assertEqual(originalParamDict, testParamDict)
 
-    def test_invalidSuffixUsage(self):
-        cam = dataIO("DummyMultiChannelGrabber")
-        paramList = cam.getParamList()
-        originalParamDict = {}
-        for elem in paramList:
-            originalParamDict[elem] = cam.getParam(elem)
-        try:
-            cam.setParam('roi:channel_7', (0, 0, 40, 40))
-        except RuntimeError:
-            pass
-        testParamDict = {}
-        for elem in paramList:
-            testParamDict[elem] = cam.getParam(elem)
-        self.assertEqual(originalParamDict, testParamDict)
 
     def test_getValByDict(self):
         cam=dataIO("DummyMultiChannelGrabber")
@@ -92,7 +61,8 @@ class MultiChannelDummyGrabberTest(unittest.TestCase):
         roi={}
         getValDict={}
         for elem in channelList:
-            roi[elem] = cam.getParam('roi:'+elem)
+            cam.setParam("defaultChannel", elem)
+            roi[elem] = cam.getParam('roi')
             getValDict[elem]=dataObject()
         cam.getVal(getValDict)
         for key in roi:
@@ -107,7 +77,8 @@ class MultiChannelDummyGrabberTest(unittest.TestCase):
         roi={}
         getValDict={}
         for elem in channelList:
-            roi[elem] = cam.getParam('roi:'+elem)
+            cam.setParam('defaultChannel',elem)
+            roi[elem] = cam.getParam('roi')
             getValDict[elem]=dataObject()
         cam.copyVal(getValDict)
         for key in roi:
@@ -117,7 +88,6 @@ class MultiChannelDummyGrabberTest(unittest.TestCase):
 
     def test_channelSpecific(self):
         self.assertRaises(RuntimeError, channelSpecificFunc1)
-        self.assertRaises(RuntimeError, channelSpecificFunc2)
 
         
         

@@ -37,6 +37,30 @@
 
 namespace ito
 {
+    AddInMultiChannelGrabber::ChannelContainer::ChannelContainer()
+    {
+        ito::Param paramVal;
+        int roi[] = { 0, 0, 1, 1 };
+        paramVal = ito::Param("roi", ito::ParamBase::IntArray, 4, roi, "roi");
+        m_channelParam.insert("roi", paramVal);
+
+        paramVal = ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 1, 1, "sizex");
+        m_channelParam.insert("sizex", paramVal);
+
+        paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 1, 1, "sizey");
+        m_channelParam.insert("sizey", paramVal);
+
+        paramVal = ito::Param("pixelFormat", ito::ParamBase::String, "mono8", "pixelFormat");
+        m_channelParam.insert("pixelFormat", paramVal);
+
+        double axisOffset[] = { 0.0, 0.0 };
+        paramVal = ito::Param("axisOffset", ito::ParamBase::DoubleArray, 2, axisOffset, "axis offset");
+        m_channelParam.insert("axisOffset", paramVal);
+
+        double axisScale[] = { 1.0, 1.0 };
+        paramVal = ito::Param("axisScale", ito::ParamBase::DoubleArray, 2, axisScale, "axis scale");
+        m_channelParam.insert("axisScale", paramVal);
+    }
     class AddInMultiChannelGrabberPrivate
     {
     };
@@ -370,21 +394,9 @@ namespace ito
         //parse the given parameter-name (if you support indexed or suffix-based parameters)
         retValue += apiParseParamName(val->getName(), key, hasIndex, index, suffix);
 
-        if (retValue == ito::retOk)
+        if (!retValue.containsError())
         {
-            //gets the parameter key from m_params map (read-only is allowed, since we only want to get the value).
-            if (!suffix.isEmpty() && m_channels.contains(suffix))
-            {
-                retValue += apiGetParamFromMapByKey(m_channels[suffix].m_channelParam, key, it, false);
-                if (retValue.containsError())
-                {
-                    retValue = ito::RetVal(ito::retError, 0, tr("an error occured while searching parameter \"%0\" for channel \"%1\". Maybe this is a channel specific parameter.").arg(key).arg(suffix).toLatin1().data());
-                }
-            }
-            else
-            {
                 retValue += apiGetParamFromMapByKey(m_params, key, it, false);
-            }
         }
         if (!retValue.containsError())
         {
@@ -435,12 +447,19 @@ namespace ito
         }
         return retValue;
     }
-    //todo: modify setParam such that the if a value is set by a suffix the value gets copied to m_params if the suffix is the default channel. Right now the channelParam gets overridden by the m_param value.
-    //Maybe the functions needs to be splitted into different cases:
-    //1) a param is set without suffix -> if the param is a channelparam we need to update the channel param as well
-    //2) a param is set with a suffix -> we need to set the channelparam and update the m_params as well. If the suffix isn't the default param we do not have to update m_params
-    //3) a param wich isn't a channel param is set -> we just have to update m_params
-    //We want to create a list which clearly indicates if further params requrire a update and if so if the update is needed in channel param or m_param or both
+    ////----------------------------------------------------------------------------------------------------------------------------------
+    ////! Sets a new value to a parameter.
+    ///*!
+    // This function parses the given parameter and calls setParameter. If the bool parameter ok in the setParameter (to be implemented in the individual plugins)
+    // function returns false, it gets assumed that the plugin didn't process the parameter. In this case the value of the parameter gets copied here.
+    // If the parameter name is "roi" sizex and sizey gets updated by setParam. If the key of the parameter is "defaultChannel" the function "switchDefaultChannel" gets called.
+    // Both happens also if the "ok" value of setParameter is true. 
+    // "applyParamsToChannelParams" is called to synchronize the parameters of the channel container follwed by a call of checkData.
+
+    //\param [in] val is a QSharedPOinter of type ParamBase containing the paremeter to be set.
+    //\param [in] waitCond
+    //\return retOk if everything was ok, else retError
+    //*/
     ito::RetVal AddInMultiChannelGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond/* = NULL*/)
     {
         assert(m_defaultConfigReady);
@@ -449,101 +468,59 @@ namespace ito
         bool hasIndex, ok;
         int index;
         QString suffix, key;
+        QStringList paramUpdateList;
         ParamMapIterator it;
-        retValue += ito::parseParamName(val->getName(), key, hasIndex, index, suffix);
         int cntStartedDevices = grabberStartedCount();
+        retValue += ito::parseParamName(val->getName(), key, hasIndex, index, suffix);
+        retValue += apiGetParamFromMapByKey(m_params, key, it, true);
+        retValue += apiValidateParam(*it, *val, false, true);
         if (!retValue.containsError())
         {
-            if (!suffix.isEmpty() && m_channels.contains(suffix))
-            {
-                retValue += apiGetParamFromMapByKey(m_channels[suffix].m_channelParam, key, it, true);
-                if (retValue.containsError())
-                {
-                    retValue = ito::RetVal(ito::retError, 0, tr("an error occured while searching parameter \"%0\" for channel \"%1\".Maybe this is a non channel specific parameter.").arg(key).arg(suffix).toLatin1().data());
-                }
-            }
-            else
-            {
-                if (suffix.isEmpty())
-                {
-                    retValue += apiGetParamFromMapByKey(m_params, key, it, true);
-                }
-                else
-                {
-                    retValue += ito::RetVal(ito::retError, 0, tr("unknown channel: %1").arg(suffix).toLatin1().data());
-                }
-            }
-        }
-        if (!retValue.containsError())
-        {
-            retValue += apiValidateParam(*it, *val, false, true);
-        }
-        if (!retValue.containsError())
-        {
-            QStringList list;
-            retValue += setParameter(val, it, suffix, key, index, hasIndex, ok, list);
+            retValue += setParameter(val, it, suffix, key, index, hasIndex, ok, paramUpdateList);
+
             if (!retValue.containsError() && !ok)
             {
-                if (key == "defaultChannel")
-                {
 
-                    if (m_channels.find(val->getVal<char*>()) != m_channels.end())
+
+                if (!retValue.containsError())
+                {
+                    if (key != "defaultChannel")
                     {
                         retValue += it->copyValueFrom(&(*val));
-                        retValue += switchDefaultChannel();
-                        //retValue += synchronizeParamswithChannelParams(previousChannel);
+                        paramUpdateList << val->getName();
                     }
                     else
                     {
-                        retValue += ito::RetVal(ito::retError, 0, tr("unknown channel: %1").arg(val->getVal<char*>()).toLatin1().data());
+                        if (m_channels.find(val->getVal<char*>()) != m_channels.end())
+                        {
+                            retValue += it->copyValueFrom(&(*val));
+                            paramUpdateList << val->getName();
+                        }
+                        else
+                        {
+                            retValue += retValue += ito::RetVal(ito::retError, 0, tr("could not switch to channel %1. The channel is unknown.").arg(val->getVal<const char*>()).toLatin1().data());
+                        }
                     }
                 }
-                else if (key == "roi")
-                {
-                    if (!hasIndex)
-                    {
-                        retValue += it->copyValueFrom(&(*val));
-                        list << "roi";
-                    }
-                    else
-                    {
-                        it->getVal<int*>()[index] = val->getVal<int>();
-                        list << "roi";
-                    }
-
-                }
-                else
-                {
-                    retValue += it->copyValueFrom(&(*val)); // it seems that the plugin does not process the param therefore it is copied here
-                    if (m_channels[m_params["defaultChannel"].getVal<char*>()].m_channelParam.contains(key))
-                    {
-                        list << key;
-                    }
-                }
-            }
-            if (list.contains("roi")) //if key is roi sizex and sizey must be adapted
-            {
-                if (!suffix.isEmpty())
-                {
-                    QByteArrayList channelList;
-                    channelList.append(suffix.toLatin1());
-                    roiChanged(channelList);
-                }
-                else
-                {
-                    roiChanged();
-                }
-
             }
             if (!retValue.containsError())
             {
-                applyParamsToChannelParams(list);
-                checkData();
+                if (key == "roi" || paramUpdateList.contains("roi"))
+                {
+                    updateSizeXY();
+                    paramUpdateList << "sizex" << "sizey";
+                }
+                if (key == "defaultChannel")
+                {
+                        retValue += switchDefaultChannel();
+                }
+                retValue += applyParamsToChannelParams(paramUpdateList);
+                retValue += checkData();
             }
-        }
-        if (!retValue.containsError())
-        {
-            emit parametersChanged(m_params);
+            if (!retValue.containsError())
+            {
+                emit parametersChanged(m_params);
+            }
         }
         if (cntStartedDevices < grabberStartedCount())
         {
@@ -563,12 +540,10 @@ namespace ito
     ////----------------------------------------------------------------------------------------------------------------------------------
     ////! synchronizes m_params with the params of default channel container
     ///*!
-    //This method synchronizes the parameters from the current selected channel container with m_params. Call this function after changing the default parameter.Parameters which are not available for the current default channel are set to readonly
+    //This method synchronizes the parameters from the current selected channel container with m_params. Call this function after changing the defaultChannel parameter.Parameters which are not available for the current default channel are set to readonly
 
-    //\param [in] previousChannel indicates the name of the previous default channel. This is needed to check whether a parameter is no longer contained in the current channel, which was contained in the previous one.
     //\return retOk if everything was ok, else retError
     //*/
-    //Todo: this function will be replaced by switchDefaultChannel 
     ito::RetVal AddInMultiChannelGrabber::switchDefaultChannel()
     {
         assert(m_defaultConfigReady);
@@ -602,13 +577,13 @@ namespace ito
     ////----------------------------------------------------------------------------------------------------------------------------------
     ////! copies value m_params to the channel params of the current default channel 
     ///*!
-    //This method copies params of m_params to the params of the channel container. This function is usally called after setParam to apply the changed entries of m_params to the corresponding channel container. 
+    //This method copies params of m_params to the params of the channel container if the param is contained in the channel container . This function is usally called after setParam to apply the changed entries of m_params to the corresponding channel container. 
     //If a parameter is not found in the channel container nothing happens. This function updates also sizex and sizey if roi or nothing is passed as key.
 
     //\param [in] keyList indicates which params are copied. If the List is empty all Parameters of the current channel are updated.  
     //\return retOk if everything was ok, else retError
     //*/
-    ito::RetVal AddInMultiChannelGrabber::applyParamsToChannelParams(QStringList keyList)
+    ito::RetVal AddInMultiChannelGrabber::applyParamsToChannelParams(const QStringList& keyList)
     {
         assert(m_defaultConfigReady);
         ito::RetVal retVal(ito::retOk);
@@ -625,11 +600,6 @@ namespace ito
                         if (m_params.contains(tmp))
                         {
                             m_channels[currentChannel].m_channelParam[tmp] = m_params[tmp];
-                            if (tmp == "roi")
-                            {
-                                m_channels[currentChannel].m_channelParam["sizex"] = m_params["sizex"];
-                                m_channels[currentChannel].m_channelParam["sizey"] = m_params["sizey"];
-                            }
                         }
                         else
                         {
@@ -659,10 +629,9 @@ namespace ito
     ////----------------------------------------------------------------------------------------------------------------------------------
     ////! updates sizex and sizey
     ///*!
-    //Call this function to update sizex and sizey. If the roi is changed via setParam this function will be call automatically.
-    //Do not forget to apply the changes to the channel parameters by calling applyParamsToChannelParams after calling this function.
-
-    //\param [in] keyList indicates which params are copied. If the List is empty all Parameters of the current channel are updated.  
+    //Call this function to update sizex and sizey. If the roi is changed via setParam this function will be called automatically.
+    //Note: Do not forget to apply the changes to the channel parameters by calling applyParamsToChannelParams after calling this function.
+  
     //\return retOk if everything was ok, else retError
     //*/
     void AddInMultiChannelGrabber::updateSizeXY()
@@ -675,61 +644,6 @@ namespace ito
         m_params["sizey"].setVal<int>(height);
     }
 
-    template<typename T> ito::RetVal ito::AddInMultiChannelGrabber::setParamVal(  const QByteArray& paramName, const T & val, const QList<QByteArray>& channelList /*=QList()*/)
-    {
-        assert(m_defaultConfigReady);
-        ito::RetVal retValue(ito::retOk);
-        if (m_paramChannelAvailabilityMap.contains(paramName) && m_params.contains(paramName))
-        {
-            if (channelList.isEmpty()) //we want to update the param for all channels even if it is a global one
-            {
-                retValue = m_params[paramName].setVal<T>(val);
-                QStringListIterator it (m_paramChannelAvailabilityMap[paramName]);
-                while (it.hasNext()) // update param for all channels
-                {
-                    it.next();
-                    retValue += m_channels[it.value()].m_channelParam[paramName].setVal<T>(val);
-                }
-            }
-            else // we only want to update the param for a list of channels
-            {       
-                for (int i = 0; i < channelList.length(); i++)
-                {
-                    if (m_channels.contains(channelList[i]))
-                    {
-                        if (m_paramChannelAvailabilityMap[paramName].contains(channelList[i]))
-                        {
-                            retValue += m_channels[channelList[i]].m_channelParam[paramName].setVal<T>(val);
-                        }
-                    }
-                    else
-                    {
-                        retValue += ito::RetVal(ito::retError, 0, QString("unknown channel %1").arg(channelList[i]));
-                    }
-                    
-                }
-                if (!retValue.containsError())
-                {
-                    //update m_params if the current default channel is listed in channelList or if the current default channel does not support the param (the param in m_params then is set to readonly) 
-                    if (channelList.contains(m_params["defaultChannel"].getVal<const char*>()) || !m_paramChannelAvailabilityMap[paramName].contains(m_params["defaultChannel"].getVal<const char*>()))
-                    {
-                        retValue += m_params[paramName].setVal<T>(val);
-                    }
-                }
-            }
-
-        }
-        else
-        {
-            retValue += ito::RetVal(ito::retError, 0, QString("could not find parameter %1. Maybe the parameter is not registered").arg(paramName));
-        }
-        if (paramName == "roi" && !retValue.containsError())
-        {
-            retValue += roiChanged(channelList);
-        }
-        
-        return retValue;
-    }
 
     ito::RetVal AddInMultiChannelGrabber::setParamMeta(const QByteArray& paramName, ito::ParamMeta* meta, bool takeOwnerShip ,const QList<QByteArray>& channelList/* = QList<ByteArray>()*/)
     {
@@ -830,47 +744,6 @@ namespace ito
             retValue += ito::RetVal(ito::retError, 0, QString("could not find parameter %1. Maybe the parameter is not registered").arg(QString(paramName)).toLatin1().data());
         }
 
-        return retValue;
-    }
-
-    ito::RetVal AddInMultiChannelGrabber::roiChanged(const QList<QByteArray>& channelList /*= QList<QByteArray>()*/)
-    {
-        ito::RetVal retValue(ito::retOk);
-        if (channelList.isEmpty())//assume the roi changed for all channels
-        {
-            QMapIterator<QString, ChannelContainer> it(m_channels);
-            while (it.hasNext())
-            {
-                it.next();
-                const int* roi = m_channels[it.key()].m_channelParam["roi"].getVal<const int*>();
-                int height = roi[3];
-                int width = roi[2];
-                retValue += m_channels[it.key()].m_channelParam["sizex"].setVal<int>(width);
-                retValue += m_channels[it.key()].m_channelParam["sizey"].setVal<int>(height);
-
-            }
-            const int* roi = m_params["roi"].getVal<const int*>();
-            int height = roi[3];
-            int width = roi[2];
-            retValue += m_params["sizex"].setVal<int>(width);
-            retValue += m_params["sizey"].setVal<int>(height);
-        }
-        else
-        {
-            for (int i = 0; i < channelList.length(); i++)
-            {
-                const int* roi = m_channels[channelList[i]].m_channelParam["roi"].getVal<const int*>();
-                retValue += m_channels[channelList[i]].m_channelParam["sizex"].setVal<int>(roi[2]);
-                retValue += m_channels[channelList[i]].m_channelParam["sizey"].setVal<int>(roi[3]);
-
-            }
-            if (channelList.contains(m_params["defaultChannel"].getVal<const char*>()))
-            {
-                const int* roi = m_params["roi"].getVal<const int*>();
-                retValue += m_params["sizex"].setVal<int>(roi[2]);
-                retValue += m_params["sizey"].setVal<int>(roi[3]);
-            }
-        }
         return retValue;
     }
     ito::RetVal AddInMultiChannelGrabber::getVal(QSharedPointer<QMap<QString, ito::DataObject*>> dataObjMap, ItomSharedSemaphore* waitCond)

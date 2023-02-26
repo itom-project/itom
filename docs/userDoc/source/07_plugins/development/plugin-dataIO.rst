@@ -23,7 +23,7 @@ Base idea behind any DataIO
 Grabber plugin
 ------------------------------
 
-This is a subtype of DataIO for camera / framegrabber communication. Plugins of this type are inherited from **ito::AddInGrabber**. The data acquisition is managed as follows:
+This is a subtype of DataIO for camera / framegrabber communication. Plugins of this type are inherited from **ito::AddInGrabber** or the newer **ito::AddInMultiChannelGrabber** section. For more information about the new **ito::AddInMultiChannelGrabber** interface please read the :ref:`addInMultiChannelGrabber` The data acquisition is managed as follows:
 
 * The methods **startDevice** and **stopDevice** open and close the capture logic of the devices to reduce CPU-load. For serial ports these functions are unnecessary. 
 * The method **acquire** starts the DataIO grabbing a frame with the current parameters. The function returns after sending the trigger. The function should be callable several times without calling get-/copyVal().
@@ -153,6 +153,45 @@ If desired implement the following optional parameters in the map **m_params**:
     Since itom AddIn Interface version 1.3.1 (itom 1.4.0 or higher), it is recommended to replace *x0* *y0*, *x1* and *y1* by the integer array based
     parameter **roi** which expects an array [left, top, width, height]. This parameter can easily be parametrized using the meta information ito::RectMeta
     and allows the direct configuration of the entire ROI or a single access to one of the four components, by passing the parametername *roi[0]*, *roi[1]*....
+
+.. _AddInMultiChannelGrabber:
+
+AddInMultiChannelGrabber
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This section describes the new AddInMultiChannelGrabber-Interface which replaces the previous AddInGrabber-Interface. The new interface allows the implementation 
+of grabbers with multiple channels like hyperspectral imagers or stereo-vision systems. To use the new interface a grabber plugin must be derived
+from the class **ito::AddInMultiChannelGrabber**.
+
+By inheriting **ito::AddInMultiChannelGrabber** the plugin inherits a **QMap<QString, ChannelContainer>** called **m_channels**. Each element contained in **m_channels** represents
+an individual channel. The **ChannelContainer** is a struct which looks as followed:
+
+.. code-block:: c++
+    :linenos:
+    
+        struct ChannelContainer
+    {
+        ito::DataObject data;
+        QMap<QString, ito::Param> m_channelParam;
+        ChannelContainer() {};
+        ChannelContainer(ito::Param roi,
+                         ito::Param pixelFormat,
+                         ito::Param sizex,
+                         ito::Param sizey,
+                         ito::Param axisOffset,
+                         ito::Param axisScale)
+        {
+            m_channelParam.insert("pixelFormat", pixelFormat);
+            m_channelParam.insert("roi", roi);
+            m_channelParam.insert("sizex", sizex);
+            m_channelParam.insert("sizey", sizey);
+            m_channelParam.insert("axisOffset", axisOffset);
+            m_channelParam.insert("axisScale", axisScale);
+        }
+    };
+
+As it can be seen each container has its own **ito::DataObject** called **data** for storing the captured data. Furthermore a **QMap** called **m_channelParam** for the storage
+of channel specific parameters is included. By default the parameters **pixelFormat**, **roi**, **sizex**, **sizey**, **axisOffset** and **axisScale** are added to this Map.
 
 
 

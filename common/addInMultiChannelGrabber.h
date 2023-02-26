@@ -48,13 +48,14 @@ namespace ito
         AddInMultiChannelGrabberPrivate *dd;
         bool m_defaultConfigReady;
         QMap<QString, QStringList> m_paramChannelAvailabilityMap;
+
     protected:
 
         struct ChannelContainer
         {
             ito::DataObject data;
             QMap<QString, ito::Param> m_channelParam;
-            ChannelContainer() {};
+            ChannelContainer();
             ChannelContainer(ito::Param roi,
                              ito::Param pixelFormat,
                              ito::Param sizex,
@@ -77,13 +78,12 @@ namespace ito
         ito::RetVal adaptDefaultChannelParams(); /*!< adaptes the params after changing the defaultChannel param*/
         void addChannel(QString name);
         virtual ito::RetVal switchDefaultChannel();/*!< synchronizes m_params with the params of default channel container */
-        virtual ito::RetVal applyParamsToChannelParams(QStringList keyList = QStringList());
+        virtual ito::RetVal applyParamsToChannelParams(const QStringList& keyList = QStringList());
         void initializeDefaultConfiguration(const QMap<QString, ChannelContainer>& channelContainerMap, const QMap<QString, ito::Param>& nonChannelSpecificParams = QMap<QString, ito::Param>());/*!< sets the channel parameters.*/
         
-        template <typename T> ito::RetVal setParamVal(const QByteArray& paramName,const T& val, const QList<QByteArray>& channelList = QList<QByteArray>());
         ito::RetVal setParamMeta(const QByteArray& paramName, ito::ParamMeta* meta, bool takeOwnerShip, const QList<QByteArray>& channelList = QList<QByteArray>());
         ito::RetVal setParamFlags(const QByteArray& paramName, const unsigned int& flags, const QList<QByteArray>& channelList = QList<QByteArray>());
-        ito::RetVal roiChanged(const QList<QByteArray>& channelList = QList<QByteArray>());
+
 
 
         ////! Specific function to set the parameters in the respective plugin class
@@ -100,7 +100,7 @@ namespace ito
         //\param [in] add key of changed channel specific parameters to pendingUpdate. 
         //\return retOk if everything was ok, else retError
         //*/
-        virtual ito::RetVal setParameter(QSharedPointer<ito::ParamBase> val, const ParamMapIterator& it, const QString& suffix, const QString& key, int index, bool hasIndex, bool &ok, QStringList &pendingUpdate) = 0;
+        virtual ito::RetVal setParameter(QSharedPointer<ito::ParamBase>& val, const ParamMapIterator& it, const QString& suffix, const QString& key, int index, bool hasIndex, bool &ok, QStringList &pendingUpdate) = 0;
         virtual ito::RetVal getParameter(QSharedPointer<ito::Param> val, const ParamMapIterator& it, const QString& suffix, const QString& key, int index, bool hasIndex, bool &ok) = 0;
         virtual ito::RetVal getValByMap(QSharedPointer<QMap<QString, ito::DataObject*>> dataObjMap) = 0;
         virtual ito::RetVal copyValByMap(QSharedPointer<QMap<QString, ito::DataObject*>> dataObjMap) = 0;
