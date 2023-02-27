@@ -209,6 +209,9 @@ public:
 
     void setViewportMargins(int left, int top, int right, int bottom);
 
+    QRectF blockBoundingGeometry(const QTextBlock& block) const { return QPlainTextEdit::blockBoundingGeometry(block); }
+    QPointF contentOffset() const { return QPlainTextEdit::contentOffset(); }
+
     PanelsManager* panels() const;
     TextDecorationsManager* decorations() const;
     ModesManager* modes() const;
