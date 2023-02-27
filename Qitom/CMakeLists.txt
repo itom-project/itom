@@ -444,6 +444,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panels/breakpointPanel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panels/foldingPanel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panels/lineNumber.h
+	${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panels/globalCheckerPanel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/syntaxHighlighter/pythonSyntaxHighlighter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/syntaxHighlighter/syntaxHighlighterBase.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/syntaxHighlighter/codeEditorStyle.h
@@ -642,7 +643,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/helpDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/lastCommandDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/mainWindow.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/widgets/outlineSelectorWidget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/outlineSelectorWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptEditorWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptEditorPrinter.cpp
@@ -688,6 +689,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panels/breakpointPanel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panels/foldingPanel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panels/lineNumber.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panels/globalCheckerPanel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/syntaxHighlighter/pythonSyntaxHighlighter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/syntaxHighlighter/syntaxHighlighterBase.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/syntaxHighlighter/codeEditorStyle.cpp

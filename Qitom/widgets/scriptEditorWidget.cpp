@@ -54,6 +54,7 @@
 
 #include "../codeEditor/managers/panelsManager.h"
 #include "../codeEditor/managers/modesManager.h"
+#include "../codeEditor/panels/globalCheckerPanel.h"
 #include "../codeEditor/textBlockUserData.h"
 #include "scriptEditorPrinter.h"
 #include "../organizer/userOrganizer.h"
@@ -309,6 +310,9 @@ RetVal ScriptEditorWidget::initEditor()
     m_lineNumberPanel = QSharedPointer<LineNumberPanel>(new LineNumberPanel("LineNumberPanel"));
     panels()->append(m_lineNumberPanel.dynamicCast<ito::Panel>());
     m_lineNumberPanel->setOrderInZone(3);
+
+    auto p = QSharedPointer<GlobalCheckerPanel>(new GlobalCheckerPanel("GlobalCheckerPanel"));
+    panels()->append(p.dynamicCast<ito::Panel>(), ito::Panel::Right);
 
     m_pyGotoAssignmentMode = QSharedPointer<PyGotoAssignmentMode>(new PyGotoAssignmentMode("PyGotoAssignmentMode"));
     connect(m_pyGotoAssignmentMode.data(), SIGNAL(outOfDoc(PyAssignment)), this, SLOT(gotoAssignmentOutOfDoc(PyAssignment)));
@@ -2503,7 +2507,7 @@ RetVal ScriptEditorWidget::toggleBreakpoint(int line)
             bpModel->addBreakPoint(bp);
         }
 
-        m_breakpointPanel->update();
+        panels()->refresh();
 
         return RetVal(retOk);
     }
@@ -2535,7 +2539,7 @@ RetVal ScriptEditorWidget::toggleEnableBreakpoint(int line)
                 bpModel->changeBreakPoint(indexList.at(i), item);
             }
 
-            m_breakpointPanel->update();
+            panels()->refresh();
             return RetVal(retOk);
         }
     }
@@ -2585,7 +2589,7 @@ RetVal ScriptEditorWidget::editBreakpoint(int line)
                 }
 
                 DELETE_AND_SET_NULL(dlg);
-                m_breakpointPanel->update();
+                panels()->refresh();
                 return RetVal(retOk);
             }
         }
@@ -2609,7 +2613,7 @@ RetVal ScriptEditorWidget::clearAllBreakpoints()
         bpModel->deleteBreakPoints(bpModel->getBreakPointIndizes(getFilename()));
     }
 
-    m_breakpointPanel->update();
+    panels()->refresh();
 
     return RetVal(retOk);
 }
