@@ -194,27 +194,42 @@ As it can be seen each container has its own **ito::DataObject** called **data**
 of channel specific parameters is included. By default the parameters **pixelFormat**, **roi**, **sizex**, **sizey**, **axisOffset** and **axisScale** are added to this Map.
 
 Like all plugins **ito::AddInMultiChannelGrabber** inherits from **ito::AddInBase** and therefore also contains a **m_params** member (**QMap<QString, Param>**). This map contains all
-parameters of all channels and also further global parameters. A new mandatory global parameter is the **defaultChannel** which is used to indicate the current selected channel wich
-will be adressed if **getParam** or **setParam** is called. If a parameter is adressed which is not provided by the current default channel the parameter in the **m_params** map will
+parameters of all channels and also further global parameters. A new mandatory global parameter is the **defaultChannel** which is used to indicate the current selected channel which
+will be addressed if **getParam** or **setParam** is called. If a parameter is addressed which is not provided by the current default channel the parameter in the **m_params** map will
 be set to read only. 
 
 In the following it is described how to initialize a plugin derived from the **AddInMultiChannelGrabber** interface. The initialization is done by the same functions like with the former **ito::AddInGrabber** interface.
 During the initialization the function **AddInMultiChannelGrabber::initializeDefaultConfiguration** must be called. The function takes as a first argument a **QMap<QString, ito::ChannelContainer>**
 containing a ChannelContainer for each channel of the plugin. The **QString** defines the name of the channel. Channel specific parameters must be added to the to the parameter map of
 the corresponding **ChannelContainer**. If a value (or its meta information) of a parameter varies for the individual channels the parameter must be added to each parameter map. Keep in mind that the
-**m_channelParam** by default allready contains some mandatory parameters, which have to be adapted to the plugin. For convenience a construtor of the **ChannelContainer** is available which takes 
+**m_channelParam** by default already contains some mandatory parameters, which have to be adapted to the plugin. For convenience a constructor of the **ChannelContainer** is available which takes 
 the mandatory parameters and adds them to the map.
 Non channel specific parameters (parameters affecting all channels) must be passed to **AddInMultiChannelGrabber::initializeDefaultConfiguration** as a second argument. 
 **AddInMultiChannelGrabber::initializeDefaultConfiguration** iterates through all parameters and adds all of them to **m_params**. Parameters with the same name in multiple channels
 are only added ones to the **m_params** list containing the value of the channel selected by the **defaultChannel** parameter which is automatically added to **m_params**. Furthermore the 
 **AddInMultiChannelGrabber::initializeDefaultConfiguration** adds all channels to the **channelList** parameter of type **ito::ParamBase::StringList**.
 
-When using the new grabber interface, a function called **setParameter** must be implemented. This function gets called by **AddInMultiChannelGrabber::setParam**.
+When using the new grabber interface, a function called **setParameter** must be implemented. This function gets called by **AddInMultiChannelGrabber::setParam**. **AddInMultiChannelGrabber::setParam**
+parses and checks the parameter followed by a call to **setParameter**. If the plugin consumes and updates the corresponding parameter the **bool** parameter **ok** should be set to true. If not
+**AddInMultiChannelGrabber** will copy the value to parameter stored in m_param. Regardless if the parameter was processed or not **AddInMultiChannelGrabber::setParam** will synchronize the corresponding
+parameter stored in **m_params** with the corresponding parameter stored in the channel parameter map. If a change of a parameter affects the value of other parameters the plugin has the possibility to trigger 
+an update of the additional changed parameters. For this, add the name of the additional changed parameter to the **QStringList** called **pendingUpdate** passed to the **setParameter** function by an argument.
+If an update of a parameter affects a channel specific parameter of channel which is not the current default channel, the plugin can change the value of the parameter directly in the parameter map
+of the corresponding channel container. If setParam is called on the mandatory parameter **roi** **sizex** and **sizey** will be updated automatically. A change of the **defaultChannel** must be
+followed by a subsequent call of **AddInMultiChannelGrabber::switchDefaultChannel** to synchronize **m_param** with the channel parameter. If the channel switch is triggered by a call to 
+**AddInMultiChannelGrabber::setParam** **AddInMultiChannelGrabber::switchDefaultChannel** is called automatically. If for any reason the parameters stored in the **ChannelContainer** of the current default channel,
+needs to be synchronized with the parameters stored in **m_params** this can be done by calling **AddInMultiChannelGrabber::applyParamsToChannelParams(const QStringList& keyList)**.
 
 
- 
+The plugin needs to provide a function **getParameter**. This is called by **AddInMultiChannelGrabber::getParam**. If the boolean parameter **ok** is set to true inside of **getParameter** the value of the requested 
+parameter needs to be copied to the provided **ito::param** by the plugin. If **ok** stays false, the value copy procedure is carried out by **AddInMultiChannelGrabber**.
 
+With the new AddInMultiChannelGrabber interface new versions of getVal and copyVal are introduced. The new functions offer the possibility to copy data captured by multiple channels by 
+a single function call. The functions expect a **QSharedPointer<QMap<QString, ito::DataObject*>>** where the **QString** indicates the requested channels. The functions **getVal** and **copyVal** 
+with a single pointer to a **ito::DataObject** remains.
 
+**AddInMultichannelGrabber** introduces a new signal called **newData**. If this signal is emitted with a **QSharedPointer<QMap<QString, ito::DataObject> >** containing a Map of new data. The **QString** should
+contain the name of the channel which recorded the data stored in the **ito::DataObject**. The signal can used to trigger a python function. The signature of the Signal is **newData(QSharedPointer<QMap<QString,ito::DataObject>>)**.
 
 AD-Converters
 -------------------------------------

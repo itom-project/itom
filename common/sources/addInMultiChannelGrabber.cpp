@@ -37,30 +37,6 @@
 
 namespace ito
 {
-    AddInMultiChannelGrabber::ChannelContainer::ChannelContainer()
-    {
-        ito::Param paramVal;
-        int roi[] = { 0, 0, 1, 1 };
-        paramVal = ito::Param("roi", ito::ParamBase::IntArray, 4, roi, "roi");
-        m_channelParam.insert("roi", paramVal);
-
-        paramVal = ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 1, 1, "sizex");
-        m_channelParam.insert("sizex", paramVal);
-
-        paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 1, 1, "sizey");
-        m_channelParam.insert("sizey", paramVal);
-
-        paramVal = ito::Param("pixelFormat", ito::ParamBase::String, "mono8", "pixelFormat");
-        m_channelParam.insert("pixelFormat", paramVal);
-
-        double axisOffset[] = { 0.0, 0.0 };
-        paramVal = ito::Param("axisOffset", ito::ParamBase::DoubleArray, 2, axisOffset, "axis offset");
-        m_channelParam.insert("axisOffset", paramVal);
-
-        double axisScale[] = { 1.0, 1.0 };
-        paramVal = ito::Param("axisScale", ito::ParamBase::DoubleArray, 2, axisScale, "axis scale");
-        m_channelParam.insert("axisScale", paramVal);
-    }
     class AddInMultiChannelGrabberPrivate
     {
     };
@@ -477,7 +453,10 @@ namespace ito
         if (!retValue.containsError())
         {
             retValue += setParameter(val, it, suffix, key, index, hasIndex, ok, paramUpdateList);
-
+            if (ok && !paramUpdateList.contains(val->getName())) 
+            {
+                paramUpdateList << val->getName();
+            }
             if (!retValue.containsError() && !ok)
             {
 
@@ -578,7 +557,7 @@ namespace ito
     ////! copies value m_params to the channel params of the current default channel 
     ///*!
     //This method copies params of m_params to the params of the channel container if the param is contained in the channel container . This function is usally called after setParam to apply the changed entries of m_params to the corresponding channel container. 
-    //If a parameter is not found in the channel container nothing happens. This function updates also sizex and sizey if roi or nothing is passed as key.
+    //If a parameter is not found in the channel container nothing happens.
 
     //\param [in] keyList indicates which params are copied. If the List is empty all Parameters of the current channel are updated.  
     //\return retOk if everything was ok, else retError

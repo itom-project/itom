@@ -55,7 +55,32 @@ namespace ito
         {
             ito::DataObject data;
             QMap<QString, ito::Param> m_channelParam;
-            ChannelContainer();
+            ChannelContainer()
+            {
+                ito::Param paramVal;
+                int roi[] = { 0, 0, 1, 1 };
+                paramVal = ito::Param("roi", ito::ParamBase::IntArray, 4, roi, "roi");
+                m_channelParam.insert("roi", paramVal);
+
+                paramVal = ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 1, 1, "sizex");
+                m_channelParam.insert("sizex", paramVal);
+
+                paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 1, 1, "sizey");
+                m_channelParam.insert("sizey", paramVal);
+
+                paramVal = ito::Param("pixelFormat", ito::ParamBase::String, "mono8", "pixelFormat");
+                m_channelParam.insert("pixelFormat", paramVal);
+
+                double axisOffset[] = { 0.0, 0.0 };
+                paramVal = ito::Param("axisOffset", ito::ParamBase::DoubleArray, 2, axisOffset, "axis offset");
+                m_channelParam.insert("axisOffset", paramVal);
+
+                double axisScale[] = { 1.0, 1.0 };
+                paramVal = ito::Param("axisScale", ito::ParamBase::DoubleArray, 2, axisScale, "axis scale");
+                m_channelParam.insert("axisScale", paramVal);
+            };
+            ~ChannelContainer() = default;
+            ChannelContainer(const ChannelContainer&) = default;
             ChannelContainer(ito::Param roi,
                              ito::Param pixelFormat,
                              ito::Param sizex,
@@ -118,7 +143,7 @@ namespace ito
 
     signals:
 
-        void newGrabberData(QSharedPointer<QMap<QString, ito::DataObject> > dataObjMap); /*!<Signals that a new image or set of images is available. Connect to this signal to obtain a shallow copy of the new images*/
+        void newData(QSharedPointer<QMap<QString, ito::DataObject> > dataObjMap); /*!<Signals that a new image or set of images is available. Connect to this signal to obtain a shallow copy of the new images*/
     };
 }
 #endif
