@@ -62,6 +62,7 @@ QString Property::displayValue(int role /*= Qt::UserRole*/) const
     if (v.type() == QVariant::StringList)
     {
         QStringList stringlist = v.toStringList();
+
         switch (stringlist.count())
         {
         case 0:
@@ -81,7 +82,19 @@ QString Property::displayValue(int role /*= Qt::UserRole*/) const
     }
     else
     {
-        return v.toString();
+        switch (v.type())
+        {
+        case QMetaType::Float: {
+            QLocale defaultLocale;
+            return defaultLocale.toString(v.value<float>());
+        }
+        case QMetaType::Double: {
+            QLocale defaultLocale;
+            return defaultLocale.toString(v.value<double>());
+        }
+        default:
+            return v.toString();
+        }
     }
 }
 

@@ -63,7 +63,7 @@ private slots:
     void on_rbPyHomeUse_clicked();
     
     //3rd Party HelpViewer Buttons
-    void on_cbbPyUse3rdPartyPresets_currentIndexChanged(QString caption);
+    void on_cbbPyUse3rdPartyPresets_currentTextChanged(QString caption);
     void on_cbPyUse3rdPartyHelp_stateChanged(int checked);
     void on_pbApplyPyUse3rdPartyHelpViewer_clicked();
 

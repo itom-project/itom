@@ -48,7 +48,10 @@ public:
 protected:
 
 private:
+    QString textFromLocale(const QLocale& locale) const;
     Ui::WidgetPropGeneralLanguage ui;
+    QString m_operatingSystemLocale;
+    QStringList m_allLocals;
 
 signals:
 

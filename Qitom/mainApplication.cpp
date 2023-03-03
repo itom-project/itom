@@ -375,6 +375,8 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
 
     registerMetaObjects();
 
+    QLocale::setDefault(QLocale("en_EN"));
+
     QPixmap pixmap = getSplashScreenPixmap();
 
     m_pSplashScreen =
@@ -466,6 +468,24 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
     QString language = settings->value("language", "en").toString();
     QByteArray codec =  settings->value("codec", "UTF-8").toByteArray(); //utf-8 is default
     bool setCodecForLocal = settings->value("setCodecForLocale", false).toBool();
+
+    // allowed are en_EN, de_DE, de, en, "c" for the locale C standard or "operatingSystem" for the QLocale::system()
+    QString numberStringConversionStandard = settings->value("numberStringConversionStandard", "operatingsystem").toString(); 
+
+    if (numberStringConversionStandard.toLower() == "operatingsystem")
+    {
+        QLocale::setDefault(QLocale::system());
+    }
+    else
+    {
+        QLocale::setDefault(QLocale(numberStringConversionStandard));
+    }
+
+    qDebug() << "language and country standard for number / currency / datetime conversion to and "
+                "from strings: "
+             << QLocale().name() << "(" << QLocale().bcp47Name() << ")";
+
+
     settings->endGroup();
     settings->sync();
 

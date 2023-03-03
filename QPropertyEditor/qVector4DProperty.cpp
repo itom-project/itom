@@ -29,6 +29,7 @@
 #include "qVector4DProperty.h"
 
 #include <qregularexpression.h>
+#include <qlocale.h>
 
 namespace ito {
 
@@ -50,22 +51,20 @@ QVector4DProperty::QVector4DProperty(
 QVariant QVector4DProperty::value(int role) const
 {
     QVariant data = Property::value();
+    QLocale defaultLocale;
+    QString xStr = defaultLocale.toString(data.value<QVector4D>().x());
+    QString yStr = defaultLocale.toString(data.value<QVector4D>().y());
+    QString zStr = defaultLocale.toString(data.value<QVector4D>().z());
+    QString wStr = defaultLocale.toString(data.value<QVector4D>().w());
+
     if (data.isValid() && role != Qt::UserRole)
     {
         switch (role)
         {
         case Qt::DisplayRole:
-            return tr("[%1, %2, %3, %4]")
-                .arg(data.value<QVector4D>().x())
-                .arg(data.value<QVector4D>().y())
-                .arg(data.value<QVector4D>().z())
-                .arg(data.value<QVector4D>().w());
+            return tr("[%1, %2, %3, %4]").arg(xStr, yStr, zStr, wStr);
         case Qt::EditRole:
-            return tr("%1, %2, %3, %4")
-                .arg(data.value<QVector4D>().x())
-                .arg(data.value<QVector4D>().y())
-                .arg(data.value<QVector4D>().z())
-                .arg(data.value<QVector4D>().w());
+            return tr("%1, %2, %3, %4").arg(xStr, yStr, zStr, wStr);
         };
     }
     return data;
@@ -78,7 +77,7 @@ void QVector4DProperty::setValue(const QVariant& value)
     {
         QString v = value.toString();
         QRegularExpression rx("([+-]?([0-9]*[\\.,])?[0-9]+(e[+-]?[0-9]+)?)", QRegularExpression::CaseInsensitiveOption);
-
+        QLocale defaultLocale;
         int count = 0;
         int pos = 0;
         float x = 0.0f, y = 0.0f, z = 0.0f, w = 0.0f;
@@ -88,19 +87,19 @@ void QVector4DProperty::setValue(const QVariant& value)
         {
             if (count == 0)
             {
-                x = match.captured(1).toDouble();
+                x = defaultLocale.toDouble(match.captured(1));
             }
             else if (count == 1)
             {
-                y = match.captured(1).toDouble();
+                y = defaultLocale.toDouble(match.captured(1));
             }
             else if (count == 2)
             {
-                z = match.captured(1).toDouble();
+                z = defaultLocale.toDouble(match.captured(1));
             }
             else if (count == 3)
             {
-                w = match.captured(1).toDouble();
+                w = defaultLocale.toDouble(match.captured(1));
             }
             else if (count > 3)
             {

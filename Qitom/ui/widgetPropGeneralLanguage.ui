@@ -27,9 +27,37 @@
       <widget class="QListWidget" name="listWidget"/>
      </item>
      <item>
+      <widget class="Line" name="line">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="lblCurrentLocale">
+       <property name="text">
+        <string>Current Language for Number Representation:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="comboLocale">
+       <property name="editable">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="Line" name="line_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QLabel" name="lblCurrentWarning">
        <property name="text">
-        <string>Affected after program restart!</string>
+        <string>Changes in these settings are only considered after a restart of itom!</string>
        </property>
       </widget>
      </item>
