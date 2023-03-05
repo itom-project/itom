@@ -471,15 +471,25 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
 
     // allowed are en_EN, de_DE, de, en, "c" for the locale C standard or "operatingSystem" for the QLocale::system()
     QString numberStringConversionStandard = settings->value("numberStringConversionStandard", "operatingsystem").toString(); 
+    bool omitGroupSeparators = settings->value("numberFormatOmitGroupSeparator", false).toBool();
+
+    QLocale defaultLocale;
 
     if (numberStringConversionStandard.toLower() == "operatingsystem")
     {
-        QLocale::setDefault(QLocale::system());
+        defaultLocale = QLocale::system();
     }
     else
     {
-        QLocale::setDefault(QLocale(numberStringConversionStandard));
+        defaultLocale = QLocale(numberStringConversionStandard);
     }
+
+    if (omitGroupSeparators)
+    {
+        defaultLocale.setNumberOptions(defaultLocale.numberOptions() | QLocale::OmitGroupSeparator);
+    }
+
+    QLocale::setDefault(defaultLocale);
 
     qDebug() << "language and country standard for number / currency / datetime conversion to and "
                 "from strings: "

@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2023, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
@@ -33,6 +33,7 @@
 #include <QtWidgets/QApplication>
 #include <qpainter.h>
 #include <qcheckbox.h>
+#include <qlocale.h>
 
 #include "common/addInInterface.h"
 #include "DataObject/dataobj.h"
@@ -578,6 +579,7 @@ QString ParamDoublePropertyManager::valueText(const QtProperty *property) const
     const ito::Param &param = it.value().param;
     const ito::DoubleMeta *meta = param.getMetaT<const ito::DoubleMeta>();
     QString number;
+    QLocale locale;
 
     if (meta)
     {
@@ -588,24 +590,24 @@ QString ParamDoublePropertyManager::valueText(const QtProperty *property) const
         case ito::DoubleMeta::Automatic:
             if (std::abs(val) > 100000)
             {
-                number = QString::number(param.getVal<ito::float64>(), 'e', meta->getDisplayPrecision());
+                number = locale.toString(param.getVal<ito::float64>(), 'e', meta->getDisplayPrecision());
             }
             else
             {
-                number = QString::number(param.getVal<ito::float64>(), 'f', meta->getDisplayPrecision());
+                number = locale.toString(param.getVal<ito::float64>(), 'f', meta->getDisplayPrecision());
             }
             break;
         case ito::DoubleMeta::Fixed:
-            number = QString::number(param.getVal<ito::float64>(), 'f', meta->getDisplayPrecision());
+            number = locale.toString(param.getVal<ito::float64>(), 'f', meta->getDisplayPrecision());
             break;
         case ito::DoubleMeta::Scientific:
-            number = QString::number(param.getVal<ito::float64>(), 'e', meta->getDisplayPrecision());
+            number = locale.toString(param.getVal<ito::float64>(), 'e', meta->getDisplayPrecision());
             break;
         }
     }
     else
     {
-        number= QString::number(param.getVal<ito::float64>());
+        number= locale.toString(param.getVal<ito::float64>());
     }
 
     if (meta)
@@ -1932,17 +1934,18 @@ QString ParamDoubleArrayPropertyManager::valueText(const QtProperty *property) c
     const ito::Param &param = it.value().param;
     int len = param.getLen();
     const DataType* vals = param.getVal<const DataType*>();
+    QLocale locale;
 
     switch (len)
     {
     case 0:
         return tr("<empty>");
     case 1:
-        return QString("[%1]").arg(vals[0]);
+        return QString("[%1]").arg(locale.toString(vals[0]));
     case 2:
-        return QString("[%1,%2]").arg(vals[0]).arg(vals[1]);
+        return QString("[%1,%2]").arg(locale.toString(vals[0]), locale.toString(vals[1]));
     case 3:
-        return QString("[%1,%2,%3]").arg(vals[0]).arg(vals[1]).arg(vals[2]);
+        return QString("[%1,%2,%3]").arg(locale.toString(vals[0]), locale.toString(vals[1]), locale.toString(vals[2]));
     default:
         return tr("<%1 values>").arg(len);
     }
@@ -2386,14 +2389,15 @@ QString ParamOtherPropertyManager::valueText(const QtProperty *property) const
         {
             auto val = param.getVal<ito::complex128>();
             QString s;
+            QLocale locale;
 
             if (val.imag() >= 0)
             {
-                s = QString::number(val.real(), 'g', 4) + "+" + QString::number(val.imag(), 'g', 4) + "i";
+                s = locale.toString(val.real(), 'g', 4) + "+" + locale.toString(val.imag(), 'g', 4) + "i";
             }
             else
             {
-                s = QString::number(val.real(), 'g', 4) + "-" + QString::number(std::abs(val.imag()), 'g', 4) + "i";
+                s = locale.toString(val.real(), 'g', 4) + "-" + locale.toString(std::abs(val.imag()), 'g', 4) + "i";
             }
 
             return s;

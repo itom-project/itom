@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2023, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
@@ -31,6 +31,7 @@
 #include <qdir.h>
 #include <qfileinfo.h>
 #include <qlocale.h>
+#include <qdatetime.h>
 
 namespace ito
 {
@@ -78,6 +79,7 @@ WidgetPropGeneralLanguage::WidgetPropGeneralLanguage(QWidget *parent) :
 
     QString locEnStr = textFromLocale(QLocale("en_EN"));
     QString locDeStr = textFromLocale(QLocale("de_DE"));
+    QString locDeEnStr = textFromLocale(QLocale("en_DE"));
     QList<QLocale> allLocales =
         QLocale::matchingLocales(QLocale::AnyLanguage, QLocale::AnyScript, QLocale::AnyCountry);
     QStringList languageCodes;
@@ -90,6 +92,9 @@ WidgetPropGeneralLanguage::WidgetPropGeneralLanguage(QWidget *parent) :
     languageCodes.sort();
     languageCodes.removeAll(locEnStr);
     languageCodes.removeAll(locDeStr);
+    languageCodes.removeAll(locDeEnStr);
+
+    languageCodes.prepend(locDeEnStr);
     languageCodes.prepend(locEnStr);
     languageCodes.prepend(locDeStr);
     languageCodes.prepend(m_operatingSystemLocale);
@@ -145,10 +150,14 @@ void WidgetPropGeneralLanguage::readSettings()
         ui.comboLocale->setCurrentText(textFromLocale(loc));
     }
 
+    ui.checkOmitGroupSeparator->setChecked(settings.value("numberFormatOmitGroupSeparator", false).toBool());
+
+    on_comboLocale_currentIndexChanged(ui.comboLocale->currentIndex());
+
     settings.endGroup();
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void WidgetPropGeneralLanguage::writeSettings()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
@@ -163,7 +172,7 @@ void WidgetPropGeneralLanguage::writeSettings()
 
     QString locale = ui.comboLocale->currentText();
 
-    if (locale.toLower() == "operatingsystem")
+    if (locale.toLower() == m_operatingSystemLocale)
     {
         settings.setValue("numberStringConversionStandard", "operatingsystem");
     }
@@ -173,7 +182,55 @@ void WidgetPropGeneralLanguage::writeSettings()
         settings.setValue("numberStringConversionStandard", loc.name());
     }
 
+    settings.setValue("numberFormatOmitGroupSeparator", ui.checkOmitGroupSeparator->isChecked());
+
     settings.endGroup();
 }
+
+//-------------------------------------------------------------------------------------
+void WidgetPropGeneralLanguage::on_comboLocale_currentIndexChanged(int index)
+{
+    if (index < 0)
+    {
+        ui.lblDoubleExample->setText("");
+        ui.lblDatetimeExample->setText("");
+    }
+    else
+    {
+        QString itemText = ui.comboLocale->itemText(index);
+        QLocale locale;
+
+        if (itemText == m_operatingSystemLocale)
+        {
+            locale = QLocale::system();
+        }
+        else
+        {
+            locale = QLocale(itemText);
+        }
+
+        if (ui.checkOmitGroupSeparator->isChecked())
+        {
+            locale.setNumberOptions(locale.numberOptions() | QLocale::OmitGroupSeparator);
+        }
+
+        ui.lblDoubleExample->setText(
+            locale.toString(20100400.234) 
+            + " | " + locale.toString(9876.234) 
+            + " | " + locale.toString(-0.023)
+        );
+
+        QDateTime dt(QDate(2020, 05, 02), QTime(21, 10, 21));
+        ui.lblDatetimeExample->setText(locale.toString(dt, QLocale::ShortFormat));
+    }
+}
+
+
+//-------------------------------------------------------------------------------------
+void WidgetPropGeneralLanguage::on_checkOmitGroupSeparator_toggled(bool checked)
+{
+    on_comboLocale_currentIndexChanged(ui.comboLocale->currentIndex());
+}
+
 
 } //end namespace ito
