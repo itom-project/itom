@@ -1350,11 +1350,16 @@ class SaveFigureItom(backend_tools.SaveFigureBase):
             except Exception as e:
                 itom.ui.msgCritical("Error saving file", str(e), parent=parent)
 
-
-@backend_tools._register_tool_class(FigureCanvasItom)
-class SetCursorItom(backend_tools.ToolSetCursor):
-    def set_cursor(self, cursor):
-        self.canvas.matplotlibWidgetUiItem.call("setCursor", cursord[cursor])
+if matplotlib.__version__ < "3.7.0":
+    @backend_tools._register_tool_class(FigureCanvasItom)
+    class SetCursorItom(backend_tools.SetCursorBase):
+        def set_cursor(self, cursor):
+            self.canvas.matplotlibWidgetUiItem.call("setCursor", cursord[cursor])
+else:
+    @backend_tools._register_tool_class(FigureCanvasItom)
+    class SetCursorItom(backend_tools.ToolSetCursor):
+        def set_cursor(self, cursor):
+            self.canvas.matplotlibWidgetUiItem.call("setCursor", cursord[cursor])
 
 
 @backend_tools._register_tool_class(FigureCanvasItom)

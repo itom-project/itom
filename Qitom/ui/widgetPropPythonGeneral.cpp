@@ -95,12 +95,13 @@ void WidgetPropPythonGeneral::readSettings()
     on_cbPyUse3rdPartyHelp_stateChanged(python3rdPartyHelperUse);
     ui.lePyUse3rdPartyCommand->setText(python3rdPartyHelperCommand);
     QMap<QString, QString>::const_iterator it;
+
     for (it = pyExtHelpers.constBegin(); it != pyExtHelpers.constEnd(); ++it)
     {
         if (it.value() == python3rdPartyHelperCommand)
         {
             ui.cbbPyUse3rdPartyPresets->setCurrentText(it.key());
-            on_cbbPyUse3rdPartyPresets_currentIndexChanged(it.key());
+            on_cbbPyUse3rdPartyPresets_currentTextChanged(it.key());
         }
     }
     settings.endGroup();
@@ -169,7 +170,7 @@ void WidgetPropPythonGeneral::on_cbPyUse3rdPartyHelp_stateChanged(int checked)
     ui.cbbPyUse3rdPartyPresets->setEnabled(checked);
 }
 
-void WidgetPropPythonGeneral::on_cbbPyUse3rdPartyPresets_currentIndexChanged(QString caption)
+void WidgetPropPythonGeneral::on_cbbPyUse3rdPartyPresets_currentTextChanged(QString caption)
 {
     ui.lePyUse3rdPartyCommand->setText(pyExtHelpers[caption]);
 }

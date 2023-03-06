@@ -29,6 +29,7 @@
 
 #include <qregularexpression.h>
 #include <qvector3d.h>
+#include <qlocale.h>
 
 namespace ito {
 
@@ -48,20 +49,19 @@ QVector3DProperty::QVector3DProperty(
 QVariant QVector3DProperty::value(int role) const
 {
     QVariant data = Property::value();
+    QLocale defaultLocale;
+    QString xStr = defaultLocale.toString(data.value<QVector3D>().x());
+    QString yStr = defaultLocale.toString(data.value<QVector3D>().y());
+    QString zStr = defaultLocale.toString(data.value<QVector3D>().z());
+
     if (data.isValid() && role != Qt::UserRole)
     {
         switch (role)
         {
         case Qt::DisplayRole:
-            return tr("[%1, %2, %3]")
-                .arg(data.value<QVector3D>().x())
-                .arg(data.value<QVector3D>().y())
-                .arg(data.value<QVector3D>().z());
+            return tr("[%1, %2, %3]").arg(xStr, yStr, zStr);
         case Qt::EditRole:
-            return tr("%1, %2, %3")
-                .arg(data.value<QVector3D>().x())
-                .arg(data.value<QVector3D>().y())
-                .arg(data.value<QVector3D>().z());
+            return tr("%1, %2, %3").arg(xStr, yStr, zStr);
         };
     }
     return data;
@@ -74,7 +74,7 @@ void QVector3DProperty::setValue(const QVariant& value)
     {
         QString v = value.toString();
         QRegularExpression rx("([+-]?([0-9]*[\\.,])?[0-9]+(e[+-]?[0-9]+)?)", QRegularExpression::CaseInsensitiveOption);
-
+        QLocale defaultLocale;
         int count = 0;
         int pos = 0;
         float x = 0.0f, y = 0.0f, z = 0.0f;
