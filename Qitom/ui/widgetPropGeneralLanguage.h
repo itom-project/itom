@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2023, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
@@ -48,14 +48,18 @@ public:
 protected:
 
 private:
+    QString textFromLocale(const QLocale& locale) const;
     Ui::WidgetPropGeneralLanguage ui;
+    QString m_operatingSystemLocale;
+    QStringList m_allLocals;
 
 signals:
 
 public slots:
 
 private slots:
-
+    void on_comboLocale_currentIndexChanged(int index);
+    void on_checkOmitGroupSeparator_toggled(bool checked);
 };
 
 } //end namespace ito

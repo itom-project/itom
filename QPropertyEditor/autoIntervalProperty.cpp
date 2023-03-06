@@ -31,6 +31,7 @@
 
 #include <qmetatype.h>
 #include <qregularexpression.h>
+#include <qlocale.h>
 
 Q_DECLARE_METATYPE(ito::AutoInterval)
 
@@ -57,10 +58,14 @@ AutoIntervalProperty::AutoIntervalProperty(
 QVariant AutoIntervalProperty::value(int role) const
 {
     QVariant data = Property::value();
+    QLocale defaultLocale;
+
     if (data.isValid() && role != Qt::UserRole)
     {
-        ito::AutoInterval ai =
-            qvariant_cast<ito::AutoInterval>(data); // data.value<ito::AutoInterval>();
+        ito::AutoInterval ai = qvariant_cast<ito::AutoInterval>(data);
+        QString minStr = defaultLocale.toString(ai.minimum());
+        QString maxStr = defaultLocale.toString(ai.maximum());
+
         switch (role)
         {
         case Qt::DisplayRole:
@@ -70,7 +75,7 @@ QVariant AutoIntervalProperty::value(int role) const
             }
             else
             {
-                return tr("[%1; %2]").arg(ai.minimum()).arg(ai.maximum());
+                return tr("[%1; %2]").arg(minStr, maxStr);
             }
         case Qt::EditRole:
             if (ai.isAuto())
@@ -79,7 +84,7 @@ QVariant AutoIntervalProperty::value(int role) const
             }
             else
             {
-                return tr("%1; %2").arg(ai.minimum()).arg(ai.maximum());
+                return tr("%1; %2").arg(minStr, maxStr);
             }
         };
     }
@@ -95,6 +100,7 @@ void AutoIntervalProperty::setValue(const QVariant& value)
         bool autoScaling;
         double min = minimum();
         double max = maximum();
+        QLocale defaultLocale;
 
         if (QString::compare(v, "auto", Qt::CaseInsensitive) == 0 ||
             QString::compare(v, "<auto>", Qt::CaseInsensitive) == 0)
@@ -113,11 +119,11 @@ void AutoIntervalProperty::setValue(const QVariant& value)
             {
                 if (count == 0)
                 {
-                    min = match.captured(1).toDouble();
+                    min = defaultLocale.toDouble(match.captured(1));
                 }
                 else if (count == 1)
                 {
-                    max = match.captured(1).toDouble();
+                    max = defaultLocale.toDouble(match.captured(1));
                 }
                 else if (count > 1)
                 {
