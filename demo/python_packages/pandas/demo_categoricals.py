@@ -12,7 +12,7 @@ dataFrame = pd.DataFrame({"id": [1, 2, 3, 4, 5, 6], "raw_grade": ["a", "b", "b",
 dataFrame["grade"] = dataFrame["raw_grade"].astype("category")
 
 ###############################################################################
-dataFrame["grade"].cat.categories = ["very good", "good", "very bad"]
+dataFrame["grade"].cat.rename_categories(["very good", "good", "very bad"])
 dataFrame["grade"] = dataFrame["grade"].cat.set_categories(["very bad", "bad", "medium", "good", "very good"])
 dataFrame["grade"]
 
