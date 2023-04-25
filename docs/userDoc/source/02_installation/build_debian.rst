@@ -105,7 +105,7 @@ for |itom| (comments after the hash-tag should not be copied to the command line
 .. code-block:: bash
       
     sudo apt update
-    sudo apt install build-essential cmake cmake-qt-gui git python3 python3-dev python3-numpy python3-pip python3-apt-dbg
+    sudo apt install build-essential cmake cmake-qt-gui git python3 python3-dev python3-numpy python3-pip python-apt-dev
     sudo apt install libopencv-dev python3-opencv libv4l-dev xsdcxx libxerces-c3.2 libxerces-c-dev #these are optional
     sudo apt install libv4l-dev #this is optional to get the video for linux drivers
 
@@ -129,7 +129,8 @@ Furthermore you have to install the Qt dependencies.
 
 **Qt6:**
 .. code-block:: bash
-    sudo apt install qt6-base qt6-tools-dev-tools qt6-tools-dev libqt6svg6 libqt6svg6-dev
+    sudo apt install qt6-wayland
+    sudo apt install qt6-base-dev qt6-tools-dev-tools qt6-tools-dev libqt6svg6 libqt6svg6-dev
     sudo apt install qt6-webengine-dev
 
 Since the Qt webengine is not available (yet) on **Rasbpian** (at least for Raspbian buster or older),
