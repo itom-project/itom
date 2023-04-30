@@ -24,6 +24,7 @@
     #define PY_ARRAY_UNIQUE_SYMBOL itom_ARRAY_API
 #endif
 #include "pythonEngine.h"
+#include "patchlevel.h"
 
 #if (PY_VERSION_HEX < 0x03070000)
 #include "node.h"
@@ -401,12 +402,27 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap
             }
         }
 
-        if (pythonDir != "")
+#if (PY_VERSION_HEX >= 0x030B0000)
+        // from Python 3.11 on, the pre-init config is used to
+        // configure Python to a local configuration with UTF8 mode.
+        PyStatus status;
+        PyPreConfig preconfig;
+
+        PyPreConfig_InitIsolatedConfig(&preconfig);
+
+        preconfig.utf8_mode = 1;
+        preconfig.use_environment = 0;
+        preconfig.parse_argv = 0;
+
+        status = Py_PreInitialize(&preconfig);
+
+        if (PyStatus_Exception(status))
         {
-            //the python home path given to Py_SetPythonHome must be persistent for the whole Python session
-            m_pUserDefinedPythonHome = Py_DecodeLocale(pythonDir.toLatin1().data(), NULL);
-            Py_SetPythonHome(m_pUserDefinedPythonHome);
+            (*retValue) += RetVal::format(retError, 0, tr("Error pre-initializing Python in isolated mode:  %s").toLatin1().data(),
+                status.err_msg);
+            return;
         }
+#endif
 
         m_dictUnicode = PyUnicode_FromString("__dict__");
         m_slotsUnicode = PyUnicode_FromString("__slots__");
@@ -421,8 +437,72 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap
         PyImport_AppendInittab("matlab", &PythonMatlab::PyInit_matlab);
 #endif
 
+        if (pythonDir != "")
+        {
+            //the python home path given to Py_SetPythonHome must be persistent for the whole Python session
+            m_pUserDefinedPythonHome = Py_DecodeLocale(pythonDir.toLatin1().data(), NULL);
+        }
+
+#if (PY_VERSION_HEX >= 0x030B0000)
+        // from Python 3.11 on, the init config is used to
+        // configure Python.
+        PyConfig config;
+
+        PyConfig_InitIsolatedConfig(&config);
+
+        /* Set the program name before reading the configuration
+           (decode byte string from the locale encoding).
+
+           Implicitly preinitialize Python. */
+        /*status = PyConfig_SetBytesString(&config, &config.program_name,
+            program_name);
+        if (PyStatus_Exception(status)) {
+            goto done;
+        }*/
+
+        if (m_pUserDefinedPythonHome)
+        {
+            status = PyConfig_SetString(&config, &config.home, m_pUserDefinedPythonHome);
+            if (PyStatus_Exception(status)) 
+            {
+                PyConfig_Clear(&config);
+                (*retValue) += RetVal::format(retError, 0, tr("Error setting custom Python home path:  %s").toLatin1().data(),
+                    status.err_msg);
+                return;
+            }
+        }
+
+        /* Read all configuration at once */
+        status = PyConfig_Read(&config);
+
+        if (PyStatus_Exception(status))
+        {
+            PyConfig_Clear(&config);
+            (*retValue) += RetVal::format(retError, 0, tr("Error reading the Python configuration:  %s").toLatin1().data(),
+                status.err_msg);
+            return;
+        }
+
+        status = Py_InitializeFromConfig(&config);
+        PyConfig_Clear(&config);
+
+        if (PyStatus_Exception(status))
+        {
+            (*retValue) += RetVal::format(retError, 0, tr("Error initializing Python:  %s.\nVerify the Python base directory in the itom property dialog and restart itom.").toLatin1().data(),
+                status.err_msg);
+            return;
+        }
+        
+#else
+        if (m_pUserDefinedPythonHome)
+        {
+            Py_SetPythonHome(m_pUserDefinedPythonHome);
+        }
+
         //!< must be called after any PyImport_AppendInittab-call
         Py_Initialize();
+#endif
+        
 
         //read directory values from Python
         qDebug() << "Py_GetPythonHome:" << QString::fromWCharArray(Py_GetPythonHome());
@@ -529,9 +609,11 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap
             return;
         }
 
+#if (PY_VERSION_HEX < 0x030B0000)
         wchar_t wargv0[] = L"";
         wchar_t* wargv = { wargv0 };
         PySys_SetArgv(1, &wargv);
+#endif
 
         tretVal = startupAddModulesToItomModule();
         tretVal += startupInitPythonHelpStreamConsumer(settings);
