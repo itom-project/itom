@@ -3391,12 +3391,12 @@ ito::RetVal PythonEngine::pythonStateTransition(tPythonTransitions transition, b
     switch (m_pythonState)
     {
     case pyStateIdle:
-        if (transition == pyTransBeginRun)
+        if (transition & pyTransBeginRun)
         {
             m_pythonState = pyStateRunning;
             emit(pythonStateChanged(transition, immediate));
         }
-        else if (transition == pyTransBeginDebug)
+        else if (transition & pyTransBeginDebug)
         {
             m_pythonState = pyStateDebugging;
             emit(pythonStateChanged(transition, immediate));
@@ -3407,7 +3407,7 @@ ito::RetVal PythonEngine::pythonStateTransition(tPythonTransitions transition, b
         }
         break;
     case pyStateRunning:
-        if (transition == pyTransEndRun)
+        if (transition & pyTransEndRun)
         {
             m_pythonState = pyStateIdle;
             emit(pythonStateChanged(transition, immediate));
@@ -3418,12 +3418,12 @@ ito::RetVal PythonEngine::pythonStateTransition(tPythonTransitions transition, b
         }
         break;
     case pyStateDebugging:
-        if (transition == pyTransEndDebug)
+        if (transition & pyTransEndDebug)
         {
             m_pythonState = pyStateIdle;
             emit(pythonStateChanged(transition, immediate));
         }
-        else if (transition == pyTransDebugWaiting)
+        else if (transition & pyTransDebugWaiting)
         {
             m_pythonState = pyStateDebuggingWaiting;
             emit(pythonStateChanged(transition, immediate));
@@ -3434,17 +3434,17 @@ ito::RetVal PythonEngine::pythonStateTransition(tPythonTransitions transition, b
         }
         break;
     case pyStateDebuggingWaiting:
-        if (transition == pyTransEndDebug)
+        if (transition & pyTransEndDebug)
         {
             m_pythonState = pyStateIdle;
             emit(pythonStateChanged(transition, immediate));
         }
-        else if (transition == pyTransDebugContinue)
+        else if (transition & pyTransDebugContinue)
         {
             m_pythonState = pyStateDebugging;
             emit(pythonStateChanged(transition, immediate));
         }
-        else if (transition == pyTransDebugExecCmdBegin)
+        else if (transition & pyTransDebugExecCmdBegin)
         {
             m_pythonState = pyStateDebuggingWaitingButBusy;
             emit(pythonStateChanged(transition, immediate));
@@ -3455,12 +3455,12 @@ ito::RetVal PythonEngine::pythonStateTransition(tPythonTransitions transition, b
         }
         break;
     case pyStateDebuggingWaitingButBusy:
-        if (transition == pyTransEndDebug)
+        if (transition & pyTransEndDebug)
         {
             m_pythonState = pyStateIdle;
             emit(pythonStateChanged(transition, immediate));
         }
-        else if (transition == pyTransDebugExecCmdEnd)
+        else if (transition & pyTransDebugExecCmdEnd)
         {
             m_pythonState = pyStateDebuggingWaiting;
             emit(pythonStateChanged(transition, immediate));
@@ -4779,18 +4779,18 @@ bool PythonEngine::renameVariable(bool globalNotLocal, const QString &oldFullIte
     PyObject* value;
     bool released = false;
 
-    if (m_pythonState == pyStateRunning || m_pythonState == pyStateDebugging || m_pythonState == pyStateDebuggingWaitingButBusy)
+    if ((m_pythonState & pyStateRunning) || (m_pythonState & pyStateDebugging) || (m_pythonState & pyStateDebuggingWaitingButBusy))
     {
         std::cerr << "it is not allowed to rename a variable in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy\n" << std::endl;
         retVal = false;
     }
     else
     {
-        if (m_pythonState == pyStateIdle)
+        if (m_pythonState & pyStateIdle)
         {
             pythonStateTransition(pyTransBeginRun);
         }
-        else if (m_pythonState == pyStateDebuggingWaiting)
+        else if (m_pythonState & pyStateDebuggingWaiting)
         {
             pythonStateTransition(pyTransDebugExecCmdBegin);
         }
@@ -4969,11 +4969,11 @@ bool PythonEngine::renameVariable(bool globalNotLocal, const QString &oldFullIte
             updatePythonWorkspaces(DictNoAction, DictUpdate, true);
         }
 
-        if (oldState == pyStateIdle)
+        if (oldState & pyStateIdle)
         {
             pythonStateTransition(pyTransEndRun);
         }
-        else if (oldState == pyStateDebuggingWaiting)
+        else if (oldState & pyStateDebuggingWaiting)
         {
             pythonStateTransition(pyTransDebugExecCmdEnd);
         }
@@ -5004,18 +5004,18 @@ bool PythonEngine::deleteVariable(bool globalNotLocal, const QStringList &fullIt
     PyObject* dict = nullptr;
     QString key;
 
-    if (m_pythonState == pyStateRunning || m_pythonState == pyStateDebugging || m_pythonState == pyStateDebuggingWaitingButBusy)
+    if ((m_pythonState & pyStateRunning) || (m_pythonState & pyStateDebugging) || (m_pythonState & pyStateDebuggingWaitingButBusy))
     {
         std::cerr << "it is not allowed to delete a variable in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy\n" << std::endl;
         retVal = false;
     }
     else
     {
-        if (m_pythonState == pyStateIdle)
+        if (m_pythonState & pyStateIdle)
         {
             pythonStateTransition(pyTransBeginRun);
         }
-        else if (m_pythonState == pyStateDebuggingWaiting)
+        else if (m_pythonState & pyStateDebuggingWaiting)
         {
             pythonStateTransition(pyTransDebugExecCmdBegin);
         }
@@ -5148,11 +5148,11 @@ bool PythonEngine::deleteVariable(bool globalNotLocal, const QStringList &fullIt
             updatePythonWorkspaces(DictNoAction, DictUpdate, true);
         }
 
-        if (oldState == pyStateIdle)
+        if (oldState & pyStateIdle)
         {
             pythonStateTransition(pyTransEndRun);
         }
-        else if (oldState == pyStateDebuggingWaiting)
+        else if (oldState & pyStateDebuggingWaiting)
         {
             pythonStateTransition(pyTransDebugExecCmdEnd);
         }
@@ -5170,17 +5170,17 @@ ito::RetVal PythonEngine::saveMatlabVariables(bool globalNotLocal, QString filen
     RetVal retVal;
     PyObject* dict = NULL;
 
-    if (m_pythonState == pyStateRunning || m_pythonState == pyStateDebugging || m_pythonState == pyStateDebuggingWaitingButBusy)
+    if ((m_pythonState & pyStateRunning) || (m_pythonState & pyStateDebugging) || (m_pythonState & pyStateDebuggingWaitingButBusy))
     {
         retVal += RetVal(retError, 0, tr("It is not allowed to save a variable in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy").toLatin1().data());
     }
     else
     {
-        if (m_pythonState == pyStateIdle)
+        if (m_pythonState & pyStateIdle)
         {
             pythonStateTransition(pyTransBeginRun);
         }
-        else if (m_pythonState == pyStateDebuggingWaiting)
+        else if (m_pythonState & pyStateDebuggingWaiting)
         {
             pythonStateTransition(pyTransDebugExecCmdBegin);
         }
@@ -5244,11 +5244,11 @@ ito::RetVal PythonEngine::saveMatlabVariables(bool globalNotLocal, QString filen
         }
 
 
-        if (oldState == pyStateIdle)
+        if (oldState & pyStateIdle)
         {
             pythonStateTransition(pyTransEndRun);
         }
-        else if (oldState == pyStateDebuggingWaiting)
+        else if (oldState & pyStateDebuggingWaiting)
         {
             pythonStateTransition(pyTransDebugExecCmdEnd);
         }
@@ -5281,17 +5281,17 @@ ito::RetVal PythonEngine::saveMatlabSingleParam(QString filename, QSharedPointer
     RetVal retVal;
     PyObject* dict = NULL;
 
-    if (m_pythonState == pyStateRunning || m_pythonState == pyStateDebugging || m_pythonState == pyStateDebuggingWaitingButBusy)
+    if ((m_pythonState & pyStateRunning) || (m_pythonState & pyStateDebugging) || (m_pythonState & pyStateDebuggingWaitingButBusy))
     {
         retVal += ito::RetVal(retError, 0, tr("It is not allowed to pickle a variable in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy").toLatin1().data());
     }
     else
     {
-        if (m_pythonState == pyStateIdle)
+        if (m_pythonState & pyStateIdle)
         {
             pythonStateTransition(pyTransBeginRun);
         }
-        else if (m_pythonState == pyStateDebuggingWaiting)
+        else if (m_pythonState & pyStateDebuggingWaiting)
         {
             pythonStateTransition(pyTransDebugExecCmdBegin);
         }
@@ -5382,11 +5382,11 @@ ito::RetVal PythonEngine::saveMatlabSingleParam(QString filename, QSharedPointer
         }
 
 
-        if (oldState == pyStateIdle)
+        if (oldState & pyStateIdle)
         {
             pythonStateTransition(pyTransEndRun);
         }
-        else if (oldState == pyStateDebuggingWaiting)
+        else if (oldState & pyStateDebuggingWaiting)
         {
             pythonStateTransition(pyTransDebugExecCmdEnd);
         }
@@ -5413,17 +5413,17 @@ ito::RetVal PythonEngine::loadMatlabVariables(bool globalNotLocal, QString filen
     PyObject* destinationDict = NULL;
     bool released = false;
 
-    if (m_pythonState == pyStateRunning || m_pythonState == pyStateDebugging || m_pythonState == pyStateDebuggingWaitingButBusy)
+    if ((m_pythonState & pyStateRunning) || (m_pythonState & pyStateDebugging) || (m_pythonState & pyStateDebuggingWaitingButBusy))
     {
         retVal += RetVal(retError, 0, tr("It is not allowed to load matlab variables in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy").toLatin1().data());
     }
     else
     {
-        if (m_pythonState == pyStateIdle)
+        if (m_pythonState & pyStateIdle)
         {
             pythonStateTransition(pyTransBeginRun);
         }
-        else if (m_pythonState == pyStateDebuggingWaiting)
+        else if (m_pythonState & pyStateDebuggingWaiting)
         {
             pythonStateTransition(pyTransDebugExecCmdBegin);
         }
@@ -5522,11 +5522,11 @@ ito::RetVal PythonEngine::loadMatlabVariables(bool globalNotLocal, QString filen
             }
         }
 
-        if (oldState == pyStateIdle)
+        if (oldState & pyStateIdle)
         {
             pythonStateTransition(pyTransEndRun);
         }
-        else if (oldState == pyStateDebuggingWaiting)
+        else if (oldState & pyStateDebuggingWaiting)
         {
             pythonStateTransition(pyTransDebugExecCmdEnd);
         }
@@ -5551,17 +5551,17 @@ ito::RetVal PythonEngine::checkVarnamesInWorkspace(bool globalNotLocal, const QS
     PyObject* value = NULL;
     bool released = false;
 
-    if (m_pythonState == pyStateRunning || m_pythonState == pyStateDebugging || m_pythonState == pyStateDebuggingWaitingButBusy)
+    if ((m_pythonState & pyStateRunning) || (m_pythonState & pyStateDebugging) || (m_pythonState & pyStateDebuggingWaitingButBusy))
     {
         retVal += ito::RetVal(ito::retError, 0, tr("It is not allowed to check names of variables in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy").toLatin1().data());
     }
     else
     {
-        if (m_pythonState == pyStateIdle)
+        if (m_pythonState & pyStateIdle)
         {
             pythonStateTransition(pyTransBeginRun);
         }
-        else if (m_pythonState == pyStateDebuggingWaiting)
+        else if (m_pythonState & pyStateDebuggingWaiting)
         {
             pythonStateTransition(pyTransDebugExecCmdBegin);
         }
@@ -5625,11 +5625,11 @@ ito::RetVal PythonEngine::checkVarnamesInWorkspace(bool globalNotLocal, const QS
             }
         }
 
-        if (oldState == pyStateIdle)
+        if (oldState & pyStateIdle)
         {
             pythonStateTransition(pyTransEndRun);
         }
-        else if (oldState == pyStateDebuggingWaiting)
+        else if (oldState & pyStateDebuggingWaiting)
         {
             pythonStateTransition(pyTransDebugExecCmdEnd);
         }
@@ -5654,17 +5654,17 @@ ito::RetVal PythonEngine::getVarnamesListInWorkspace(bool globalNotLocal, const 
     PyObject* value = NULL;
     bool released = false;
 
-    if (m_pythonState == pyStateRunning || m_pythonState == pyStateDebugging || m_pythonState == pyStateDebuggingWaitingButBusy)
+    if ((m_pythonState & pyStateRunning) || (m_pythonState & pyStateDebugging) || (m_pythonState & pyStateDebuggingWaitingButBusy))
     {
         retVal += ito::RetVal(ito::retError, 0, tr("It is not allowed to check names of variables in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy").toLatin1().data());
     }
     else
     {
-        if (m_pythonState == pyStateIdle)
+        if (m_pythonState & pyStateIdle)
         {
             pythonStateTransition(pyTransBeginRun);
         }
-        else if (m_pythonState == pyStateDebuggingWaiting)
+        else if (m_pythonState & pyStateDebuggingWaiting)
         {
             pythonStateTransition(pyTransDebugExecCmdBegin);
         }
@@ -5710,11 +5710,11 @@ ito::RetVal PythonEngine::getVarnamesListInWorkspace(bool globalNotLocal, const 
             }
         }
 
-        if (oldState == pyStateIdle)
+        if (oldState & pyStateIdle)
         {
             pythonStateTransition(pyTransEndRun);
         }
-        else if (oldState == pyStateDebuggingWaiting)
+        else if (oldState & pyStateDebuggingWaiting)
         {
             pythonStateTransition(pyTransDebugExecCmdEnd);
         }
@@ -5749,17 +5749,17 @@ ito::RetVal PythonEngine::putParamsToWorkspace(bool globalNotLocal, const QStrin
     {
         retVal += ito::RetVal(ito::retError, 0, tr("The number of names and values must be equal").toLatin1().data());
     }
-    /*else if (m_pythonState == pyStateRunning || m_pythonState == pyStateDebugging || m_pythonState == pyStateDebuggingWaitingButBusy)
+    /*else if ((m_pythonState & pyStateRunning) || (m_pythonState & pyStateDebugging) || (m_pythonState & pyStateDebuggingWaitingButBusy))
     {
         retVal += ito::RetVal(ito::retError, 0, tr("It is not allowed to put variables in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy").toLatin1().data());
     }*/
     else
     {
-        //if (m_pythonState == pyStateIdle)
+        //if (m_pythonState & pyStateIdle)
         //{
         //    pythonStateTransition(pyTransBeginRun);
         //}
-        //else if (m_pythonState == pyStateDebuggingWaiting)
+        //else if (m_pythonState & pyStateDebuggingWaiting)
         //{
         //    pythonStateTransition(pyTransDebugExecCmdBegin);
         //}
@@ -5853,11 +5853,11 @@ ito::RetVal PythonEngine::putParamsToWorkspace(bool globalNotLocal, const QStrin
             PyGILState_Release(gstate);
         }
 
-        /*if (oldState == pyStateIdle)
+        /*if (oldState & pyStateIdle)
         {
             pythonStateTransition(pyTransEndRun);
         }
-        else if (oldState == pyStateDebuggingWaiting)
+        else if (oldState & pyStateDebuggingWaiting)
         {
             pythonStateTransition(pyTransDebugExecCmdEnd);
         }*/
@@ -5889,17 +5889,17 @@ ito::RetVal PythonEngine::getParamsFromWorkspace(bool globalNotLocal, const QStr
     {
         retVal += ito::RetVal(ito::retError, 0, tr("The number of names and types must be equal").toLatin1().data());
     }
-    else if (m_pythonState == pyStateRunning || m_pythonState == pyStateDebugging || m_pythonState == pyStateDebuggingWaitingButBusy)
+    else if ((m_pythonState & pyStateRunning) || (m_pythonState & pyStateDebugging) || (m_pythonState & pyStateDebuggingWaitingButBusy))
     {
         retVal += ito::RetVal(ito::retError, 0, tr("It is not allowed to load variables in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy").toLatin1().data());
     }
     else
     {
-        if (m_pythonState == pyStateIdle)
+        if (m_pythonState & pyStateIdle)
         {
             pythonStateTransition(pyTransBeginRun);
         }
-        else if (m_pythonState == pyStateDebuggingWaiting)
+        else if (m_pythonState & pyStateDebuggingWaiting)
         {
             pythonStateTransition(pyTransDebugExecCmdBegin);
         }
@@ -5951,11 +5951,11 @@ ito::RetVal PythonEngine::getParamsFromWorkspace(bool globalNotLocal, const QStr
             }
         }
 
-        if (oldState == pyStateIdle)
+        if (oldState & pyStateIdle)
         {
             pythonStateTransition(pyTransEndRun);
         }
-        else if (oldState == pyStateDebuggingWaiting)
+        else if (oldState & pyStateDebuggingWaiting)
         {
             pythonStateTransition(pyTransDebugExecCmdEnd);
         }
@@ -6027,7 +6027,7 @@ ito::RetVal PythonEngine::registerAddInInstance(QString varname, ito::AddInBase 
     PyObject* value = NULL;
     bool globalNotLocal = true; //may also be accessed by parameter, if desired
 
-    if (m_pythonState == pyStateRunning || m_pythonState == pyStateDebugging || m_pythonState == pyStateDebuggingWaitingButBusy)
+    if ((m_pythonState & pyStateRunning) || (m_pythonState & pyStateDebugging) || (m_pythonState & pyStateDebuggingWaitingButBusy))
     {
         retVal += RetVal(retError, 0, tr("It is not allowed to register an AddIn-instance in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy").toLatin1().data());
 
@@ -6039,11 +6039,11 @@ ito::RetVal PythonEngine::registerAddInInstance(QString varname, ito::AddInBase 
     }
     else
     {
-        if (m_pythonState == pyStateIdle)
+        if (m_pythonState & pyStateIdle)
         {
             pythonStateTransition(pyTransBeginRun);
         }
-        else if (m_pythonState == pyStateDebuggingWaiting)
+        else if (m_pythonState & pyStateDebuggingWaiting)
         {
             pythonStateTransition(pyTransDebugExecCmdBegin);
         }
@@ -6142,11 +6142,11 @@ ito::RetVal PythonEngine::registerAddInInstance(QString varname, ito::AddInBase 
             updatePythonWorkspaces(DictNoAction, DictUpdate, true);
         }
 
-        if (oldState == pyStateIdle)
+        if (oldState & pyStateIdle)
         {
             pythonStateTransition(pyTransEndRun);
         }
-        else if (oldState == pyStateDebuggingWaiting)
+        else if (oldState & pyStateDebuggingWaiting)
         {
             pythonStateTransition(pyTransDebugExecCmdEnd);
         }
@@ -6190,17 +6190,17 @@ ito::RetVal PythonEngine::getSysModules(QSharedPointer<QStringList> modNames, QS
     PyObject *elem;
     bool ok;
 
-    if (m_pythonState == pyStateRunning || m_pythonState == pyStateDebugging || m_pythonState == pyStateDebuggingWaitingButBusy)
+    if ((m_pythonState & pyStateRunning) || (m_pythonState & pyStateDebugging) || (m_pythonState & pyStateDebuggingWaitingButBusy))
     {
         retValue += RetVal(retError, 0, tr("It is not allowed to get modules if python is currently executed").toLatin1().data());
     }
     else
     {
-        if (m_pythonState == pyStateIdle)
+        if (m_pythonState & pyStateIdle)
         {
             pythonStateTransition(pyTransBeginRun);
         }
-        else if (m_pythonState == pyStateDebuggingWaiting)
+        else if (m_pythonState & pyStateDebuggingWaiting)
         {
             pythonStateTransition(pyTransDebugExecCmdBegin);
         }
@@ -6237,11 +6237,11 @@ ito::RetVal PythonEngine::getSysModules(QSharedPointer<QStringList> modNames, QS
         }
         //code
 
-        if (oldState == pyStateIdle)
+        if (oldState & pyStateIdle)
         {
             pythonStateTransition(pyTransEndRun);
         }
-        else if (oldState == pyStateDebuggingWaiting)
+        else if (oldState & pyStateDebuggingWaiting)
         {
             pythonStateTransition(pyTransDebugExecCmdEnd);
         }
@@ -6265,17 +6265,17 @@ ito::RetVal PythonEngine::reloadSysModules(QSharedPointer<QStringList> modNames,
     //PyObject *elem;
     //bool ok;
 
-    if (m_pythonState == pyStateRunning || m_pythonState == pyStateDebugging || m_pythonState == pyStateDebuggingWaitingButBusy)
+    if ((m_pythonState & pyStateRunning) || (m_pythonState & pyStateDebugging) || (m_pythonState & pyStateDebuggingWaitingButBusy))
     {
         retValue += RetVal(retError, 0, tr("It is not allowed to get modules if python is currently executed").toLatin1().data());
     }
     else
     {
-        if (m_pythonState == pyStateIdle)
+        if (m_pythonState & pyStateIdle)
         {
             pythonStateTransition(pyTransBeginRun);
         }
-        else if (m_pythonState == pyStateDebuggingWaiting)
+        else if (m_pythonState & pyStateDebuggingWaiting)
         {
             pythonStateTransition(pyTransDebugExecCmdBegin);
         }
@@ -6310,11 +6310,11 @@ ito::RetVal PythonEngine::reloadSysModules(QSharedPointer<QStringList> modNames,
         }
         //code
 
-        if (oldState == pyStateIdle)
+        if (oldState & pyStateIdle)
         {
             pythonStateTransition(pyTransEndRun);
         }
-        else if (oldState == pyStateDebuggingWaiting)
+        else if (oldState & pyStateDebuggingWaiting)
         {
             pythonStateTransition(pyTransDebugExecCmdEnd);
         }
@@ -6339,17 +6339,17 @@ ito::RetVal PythonEngine::pickleVariables(bool globalNotLocal, QString filename,
     RetVal retVal;
     PyObject* dict = NULL;
 
-    if (m_pythonState == pyStateRunning || m_pythonState == pyStateDebugging || m_pythonState == pyStateDebuggingWaitingButBusy)
+    if ((m_pythonState & pyStateRunning) || (m_pythonState & pyStateDebugging) || (m_pythonState & pyStateDebuggingWaitingButBusy))
     {
         retVal += ito::RetVal(retError, 0, tr("It is not allowed to pickle a variable in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy").toLatin1().data());
     }
     else
     {
-        if (m_pythonState == pyStateIdle)
+        if (m_pythonState & pyStateIdle)
         {
             pythonStateTransition(pyTransBeginRun);
         }
-        else if (m_pythonState == pyStateDebuggingWaiting)
+        else if (m_pythonState & pyStateDebuggingWaiting)
         {
             pythonStateTransition(pyTransDebugExecCmdBegin);
         }
@@ -6410,11 +6410,11 @@ ito::RetVal PythonEngine::pickleVariables(bool globalNotLocal, QString filename,
         PyGILState_Release(gstate);
 
 
-        if (oldState == pyStateIdle)
+        if (oldState & pyStateIdle)
         {
             pythonStateTransition(pyTransEndRun);
         }
-        else if (oldState == pyStateDebuggingWaiting)
+        else if (oldState & pyStateDebuggingWaiting)
         {
             pythonStateTransition(pyTransDebugExecCmdEnd);
         }
@@ -6447,17 +6447,17 @@ ito::RetVal PythonEngine::pickleSingleParam(QString filename, QSharedPointer<ito
     RetVal retVal;
     PyObject* dict = NULL;
 
-    if (m_pythonState == pyStateRunning || m_pythonState == pyStateDebugging || m_pythonState == pyStateDebuggingWaitingButBusy)
+    if ((m_pythonState & pyStateRunning) || (m_pythonState & pyStateDebugging) || (m_pythonState & pyStateDebuggingWaitingButBusy))
     {
         retVal += ito::RetVal(retError, 0, tr("It is not allowed to pickle a variable in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy").toLatin1().data());
     }
     else
     {
-        if (m_pythonState == pyStateIdle)
+        if (m_pythonState & pyStateIdle)
         {
             pythonStateTransition(pyTransBeginRun);
         }
-        else if (m_pythonState == pyStateDebuggingWaiting)
+        else if (m_pythonState & pyStateDebuggingWaiting)
         {
             pythonStateTransition(pyTransDebugExecCmdBegin);
         }
@@ -6549,11 +6549,11 @@ ito::RetVal PythonEngine::pickleSingleParam(QString filename, QSharedPointer<ito
 
         Py_XDECREF(item);
 
-        if (oldState == pyStateIdle)
+        if (oldState & pyStateIdle)
         {
             pythonStateTransition(pyTransEndRun);
         }
-        else if (oldState == pyStateDebuggingWaiting)
+        else if (oldState & pyStateDebuggingWaiting)
         {
             pythonStateTransition(pyTransDebugExecCmdEnd);
         }
@@ -6690,17 +6690,17 @@ ito::RetVal PythonEngine::unpickleVariables(bool globalNotLocal, QString filenam
     bool released = false;
     PyObject* destinationDict = NULL;
 
-    if (m_pythonState == pyStateRunning || m_pythonState == pyStateDebugging || m_pythonState == pyStateDebuggingWaitingButBusy)
+    if ((m_pythonState & pyStateRunning) || (m_pythonState & pyStateDebugging) || (m_pythonState & pyStateDebuggingWaitingButBusy))
     {
         retVal += RetVal(retError, 0, tr("It is not allowed to unpickle a data collection in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy").toLatin1().data());
     }
     else
     {
-        if (m_pythonState == pyStateIdle)
+        if (m_pythonState & pyStateIdle)
         {
             pythonStateTransition(pyTransBeginRun);
         }
-        else if (m_pythonState == pyStateDebuggingWaiting)
+        else if (m_pythonState & pyStateDebuggingWaiting)
         {
             pythonStateTransition(pyTransDebugExecCmdBegin);
         }
@@ -6759,11 +6759,11 @@ ito::RetVal PythonEngine::unpickleVariables(bool globalNotLocal, QString filenam
             }
         }
 
-        if (oldState == pyStateIdle)
+        if (oldState & pyStateIdle)
         {
             pythonStateTransition(pyTransEndRun);
         }
-        else if (oldState == pyStateDebuggingWaiting)
+        else if (oldState & pyStateDebuggingWaiting)
         {
             pythonStateTransition(pyTransDebugExecCmdEnd);
         }

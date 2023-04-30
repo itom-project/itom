@@ -52,10 +52,10 @@ namespace ito
         m_headers << tr("Name") << tr("Version") << tr("Location") << tr("Requires") << tr("Updates") << tr("Summary") << tr("Homepage") << tr("License");
         m_alignment << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft);
 
-        connect(&m_pipProcess, SIGNAL(error(QProcess::ProcessError)), this, SLOT(processError(QProcess::ProcessError)));
-        connect(&m_pipProcess, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(processFinished(int, QProcess::ExitStatus)));
-        connect(&m_pipProcess, SIGNAL(readyReadStandardError()), this, SLOT(processReadyReadStandardError()));
-        connect(&m_pipProcess, SIGNAL(readyReadStandardOutput()), this, SLOT(processReadyReadStandardOutput()));
+        connect(&m_pipProcess, &QProcess::errorOccurred, this, &PipManager::processError);
+        connect(&m_pipProcess, &QProcess::finished, this, &PipManager::processFinished);
+        connect(&m_pipProcess, &QProcess::readyReadStandardError, this, &PipManager::processReadyReadStandardError);
+        connect(&m_pipProcess, &QProcess::readyReadStandardOutput, this, &PipManager::processReadyReadStandardOutput);
 
         const PythonEngine *pyeng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
         if (pyeng)
@@ -535,7 +535,7 @@ void PipManager::listAvailablePackages(const PipGeneralOptions &options /*= PipG
     //2. get more information using show package1 package2 ...
     if (m_currentTask == taskNo)
     {
-        emit pipRequestStarted(taskListPackages1, "Get list of installed packages... (step 1)\n", true);
+        emit pipRequestStarted(taskListPackages1, "Get list of names of installed packages... (step 1)\n", true);
         clearBuffers();
         m_currentTask = taskListPackages1;
         m_generalOptionsCache = options;
@@ -576,7 +576,7 @@ void PipManager::listAvailablePackages2(const QStringList &names)
     //2. get more information using show package1 package2 ...
     if (m_currentTask == taskNo)
     {
-        emit pipRequestStarted(taskListPackages2, "Get list of installed packages... (step 2)\n", true);
+        emit pipRequestStarted(taskListPackages2, "Get details of all installed packages... (step 2)\n", true);
         clearBuffers();
         m_currentTask = taskListPackages2;
 

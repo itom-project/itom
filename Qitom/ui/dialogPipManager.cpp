@@ -283,6 +283,8 @@ void DialogPipManager::outputReceived(const QString &text, bool success)
 //--------------------------------------------------------------------------------
 void DialogPipManager::pipRequestStarted(const PipManager::Task &task, const QString &text, bool outputSilent)
 {
+    m_outputSilent = false;
+
     outputReceived(text, true);
 
     m_outputSilent = outputSilent;

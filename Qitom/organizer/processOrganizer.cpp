@@ -54,14 +54,14 @@ ProcessOrganizer::~ProcessOrganizer()
         {
             disconnect(
                 it->first,
-                SIGNAL(finished(int, QProcess::ExitStatus)),
+                &QProcess::finished,
                 this,
-                SLOT(processFinished(int, QProcess::ExitStatus)));
+                &ito::ProcessOrganizer::processFinished);
             disconnect(
                 it->first,
-                SIGNAL(error(QProcess::ProcessError)),
+                &QProcess::errorOccurred,
                 this,
-                SLOT(processError(QProcess::ProcessError)));
+                &ito::ProcessOrganizer::processError);
         }
         ++it;
     }
@@ -295,18 +295,9 @@ QProcess* ProcessOrganizer::getProcess(
     }
 
     process = new QProcess();
-    connect(
-        process,
-        SIGNAL(finished(int, QProcess::ExitStatus)),
-        this,
-        SLOT(processFinished(int, QProcess::ExitStatus)));
-    connect(
-        process,
-        SIGNAL(error(QProcess::ProcessError)),
-        this,
-        SLOT(processError(QProcess::ProcessError)));
-
-    connect(process, SIGNAL(readyReadStandardOutput()), this, SLOT(readyReadStandardOutput()));
+    connect(process, &QProcess::finished, this, &ProcessOrganizer::processFinished);
+    connect(process, &QProcess::errorOccurred, this, &ProcessOrganizer::processError);
+    connect(process, &QProcess::readyReadStandardOutput, this, &ProcessOrganizer::readyReadStandardOutput);
 
     m_processes.insert(name, QPair<QProcess*, bool>(process, closeOnFinalize));
 

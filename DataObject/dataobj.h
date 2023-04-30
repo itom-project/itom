@@ -406,7 +406,7 @@ namespace ito {
             }
             else
             {
-                double dVal = std::numeric_limits<double>::quiet_NaN();
+                constexpr double dVal = std::numeric_limits<double>::quiet_NaN();
                 //dVal = atof(m_strValue.c_str()); //sometimes the result of that line has been arbitrary, therefore this conversion should fail.
                 return dVal;
             }
