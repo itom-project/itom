@@ -1051,15 +1051,23 @@ void PipManager::finalizeTask(int exitCode /*= 0*/)
 
                 if (m_pipVersion >= 0x120000) //>= 18.0
                 {
+                    beginResetModel();
+                    m_pythonPackages.clear();
+
                     //format columns (first line are headings, then one line with dashes)
                     for (int idx = 2; idx < packages.size(); ++idx)
                     {
-                        QStringList items = packages[idx].split(" ");
+                        QStringList items = packages[idx].split(QRegularExpression("\\s+"));
+
                         if (items.size() > 0 && items[0].trimmed() != "")
                         {
                             packages_out.append(items[0].trimmed());
+                            PythonPackage pp(items[0].trimmed(), items[1].trimmed(), tr("loading..."), "");
+                            m_pythonPackages.append(pp);
                         }
                     }
+
+                    endResetModel();
                 }
                 else
                 {
