@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2023, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
@@ -46,7 +46,7 @@ namespace ito
         m_currentTask(taskNo),
         m_pipAvailable(false),
         m_pipVersion(0x000000),
-        m_pUserDefinedPythonHome(NULL),
+        m_pUserDefinedPythonHome(nullptr),
         m_pipCallMode(PipMode::pipModeDirect)
     {
         m_headers << tr("Name") << tr("Version") << tr("Location") << tr("Requires") << tr("Updates") << tr("Summary") << tr("Homepage") << tr("License");
@@ -58,6 +58,7 @@ namespace ito
         connect(&m_pipProcess, &QProcess::readyReadStandardOutput, this, &PipManager::processReadyReadStandardOutput);
 
         const PythonEngine *pyeng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
+
         if (pyeng)
         {
             m_pythonPath = pyeng->getPythonExecutable();
@@ -78,9 +79,11 @@ namespace ito
                     {
                         bool ok;
                         m_pythonPath = PythonQtConversion::PyObjGetString(python_path_prefix, true, ok);
+
                         if (ok)
                         {
                             QDir pythonPath(m_pythonPath);
+
                             if (pythonPath.exists())
                             {
                                 m_pythonPath = pythonPath.absoluteFilePath("python.exe");
@@ -98,6 +101,7 @@ namespace ito
 #elif defined linux
                     //on linux, sys.executable returns the absolute path to the python application, even in an embedded mode.
                     PyObject *python_executable = PySys_GetObject("executable"); //borrowed reference
+
                     if (python_executable)
                     {
                         bool ok;
@@ -110,6 +114,7 @@ namespace ito
 #else //APPLE
                     //on apple, sys.executable returns the absolute path to the python application, even in an embedded mode. (TODO: Check this assumption)
                     PyObject *python_executable = PySys_GetObject("executable"); //borrowed reference
+
                     if (python_executable)
                     {
                         bool ok;
@@ -128,6 +133,7 @@ namespace ito
         if (!retval.containsError())
         {
             QString pythonHome = QString::fromWCharArray(Py_GetPythonHome());
+
             if (pythonHome != "")
             {
                 QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
@@ -172,16 +178,19 @@ ito::RetVal PipManager::initPythonIfStandalone()
     settings.beginGroup("Python");
     QString pythonHomeFromSettings = settings.value("pyHome", "").toString();
     int pythonDirState = settings.value("pyDirState", -1).toInt();
+
     if (pythonDirState == -1) //not yet decided
     {
 #ifdef WIN32
+        const QString pythonExe = QString("/python%1%2.dll").arg(PY_MAJOR_VERSION).arg(PY_MINOR_VERSION);
+
         if (QDir(pythonSubDir).exists() && \
-            QFileInfo(pythonSubDir + QString("/python%1%2.dll").arg(PY_MAJOR_VERSION).arg(PY_MINOR_VERSION)).exists())
+            QFileInfo(pythonSubDir + pythonExe).exists())
         {
             pythonDirState = 0; //use pythonXX subdirectory of itom as python home path
     }
         else if (QDir(pythonAllInOneDir).exists() && \
-            QFileInfo(pythonAllInOneDir + QString("/python%1%2.dll").arg(PY_MAJOR_VERSION).arg(PY_MINOR_VERSION)).exists())
+            QFileInfo(pythonAllInOneDir + pythonExe).exists())
         {
             pythonDirState = 2;
             pythonHomeFromSettings = pythonAllInOneDir;
@@ -230,14 +239,89 @@ ito::RetVal PipManager::initPythonIfStandalone()
         }
     }
 
+#if (PY_VERSION_HEX >= 0x030B0000)
+    // from Python 3.11 on, the pre-init config is used to
+    // configure Python to a local configuration with UTF8 mode.
+    PyStatus status;
+    PyPreConfig preconfig;
+
+    PyPreConfig_InitIsolatedConfig(&preconfig);
+
+    preconfig.utf8_mode = 1;
+    preconfig.use_environment = 0;
+    preconfig.parse_argv = 0;
+
+    status = Py_PreInitialize(&preconfig);
+
+    if (PyStatus_Exception(status))
+    {
+        return RetVal::format(retError, 0, tr("Error pre-initializing Python in isolated mode:  %s").toLatin1().data(),
+            status.err_msg);
+    }
+#endif
+
     if (pythonDir != "")
     {
         //the python home path given to Py_SetPythonHome must be persistent for the whole Python session
         m_pUserDefinedPythonHome = Py_DecodeLocale(pythonDir.toLatin1().data(), NULL);
+    }
+
+#if (PY_VERSION_HEX >= 0x030B0000)
+    // from Python 3.11 on, the init config is used to
+    // configure Python.
+    PyConfig config;
+
+    PyConfig_InitIsolatedConfig(&config);
+
+    /* Set the program name before reading the configuration
+       (decode byte string from the locale encoding).
+
+       Implicitly preinitialize Python. */
+       /*status = PyConfig_SetBytesString(&config, &config.program_name,
+           program_name);
+       if (PyStatus_Exception(status)) {
+           goto done;
+       }*/
+
+    if (m_pUserDefinedPythonHome)
+    {
+        status = PyConfig_SetString(&config, &config.home, m_pUserDefinedPythonHome);
+        if (PyStatus_Exception(status))
+        {
+            PyConfig_Clear(&config);
+            return RetVal::format(retError, 0, tr("Error setting custom Python home path:  %s").toLatin1().data(),
+                status.err_msg);
+        }
+    }
+
+    /* Read all configuration at once */
+    status = PyConfig_Read(&config);
+
+    if (PyStatus_Exception(status))
+    {
+        PyConfig_Clear(&config);
+        return RetVal::format(retError, 0, tr("Error reading the Python configuration: %s").toLatin1().data(),
+            status.err_msg);
+    }
+
+    status = Py_InitializeFromConfig(&config);
+    PyConfig_Clear(&config);
+
+    if (PyStatus_Exception(status))
+    {
+        return RetVal::format(retError, 0, tr("Error initializing Python: %s.\nVerify the Python base directory in the itom property dialog and restart itom.").toLatin1().data(),
+            status.err_msg);
+    }
+
+#else
+    if (m_pUserDefinedPythonHome)
+    {
         Py_SetPythonHome(m_pUserDefinedPythonHome);
     }
 
+    //!< must be called after any PyImport_AppendInittab-call
     Py_Initialize();
+#endif
 
     //read directory values from Python
     qDebug() << "Py_GetPythonHome:" << QString::fromWCharArray(Py_GetPythonHome());
@@ -253,10 +337,16 @@ ito::RetVal PipManager::initPythonIfStandalone()
 #endif
     QDir pythonHomeDir(pythonHome);
     bool pythonPathValid = false;
+
     if (!pythonHomeDir.exists() && pythonHome != "")
     {
-        retval += RetVal::format(retError, 0, tr("The home directory of Python is currently set to the non-existing directory '%s'\nPython cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python \nor correct the base directory in the property dialog of itom.").toLatin1().data(),
-            pythonHomeDir.absolutePath().toLatin1().data());
+        retval += RetVal::format(
+            retError, 
+            0, 
+            tr("The home directory of Python is currently set to the non-existing directory '%s'\nPython cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python \nor correct the base directory in the property dialog of itom.").toLatin1().data(),
+            pythonHomeDir.absolutePath().toLatin1().data()
+        );
+
         return retval;
     }
 
@@ -272,8 +362,13 @@ ito::RetVal PipManager::initPythonIfStandalone()
 
     if (!pythonPathValid)
     {
-        retval += RetVal::format(retError, 0, tr("The built-in library path of Python could not be found. The current home directory is '%s'\nPython cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python \nor correct the base directory in the preferences dialog of itom.").toLatin1().data(),
-            pythonHomeDir.absolutePath().toLatin1().data());
+        retval += RetVal::format(
+            retError, 
+            0, 
+            tr("The built-in library path of Python could not be found. The current home directory is '%s'\nPython cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python \nor correct the base directory in the preferences dialog of itom.").toLatin1().data(),
+            pythonHomeDir.absolutePath().toLatin1().data()
+        );
+
         return retval;
     }
 
@@ -300,13 +395,11 @@ is used for all calls to pip, else the direct call is used.
 */
 ito::RetVal PipManager::checkCallMode()
 {
-
-
 #ifdef WIN32
     QProcess process;
-
     QStringList args;
     QDir pipProcessDir = QCoreApplication::applicationDirPath();
+
     pipProcessDir.cd("itom-packages");
     pipProcessDir.cd("pipProcess");
 
@@ -362,8 +455,10 @@ QVariant PipManager::headerData(int section, Qt::Orientation orientation, int ro
         {
             return m_headers.at(section);
         }
+
         return QVariant();
     }
+
     return QVariant();
 }
 
@@ -384,6 +479,7 @@ QVariant PipManager::data(const QModelIndex &index, int role) const
     if(role == Qt::DisplayRole || role == Qt::ToolTipRole)
     {
         const PythonPackage &package = m_pythonPackages[index.row()];
+
         switch (index.column())
         {
             case 0:
@@ -449,7 +545,7 @@ int PipManager::columnCount(const QModelIndex & /*parent*/) const
 */
 QModelIndex PipManager::index(int row, int column, const QModelIndex &parent) const
 {
-    if(parent.isValid() || row < 0 || row >= m_pythonPackages.length() || column < 0 || column >= m_headers.size())
+    if (parent.isValid() || row < 0 || row >= m_pythonPackages.length() || column < 0 || column >= m_headers.size())
     {
         return QModelIndex();
     }
@@ -551,6 +647,7 @@ void PipManager::listAvailablePackages(const PipGeneralOptions &options /*= PipG
         {
             arguments << "--format=legacy";
         }
+
         arguments << parseGeneralOptions(options, false, true);
         startProcess(arguments);
     }
