@@ -33,6 +33,7 @@
 #include <iostream>
 #include <qdir.h>
 #include <qfileinfo.h>
+#include <qtemporarydir.h>
 
 namespace ito {
 
@@ -69,7 +70,64 @@ PyCodeFormatter::~PyCodeFormatter()
 //-------------------------------------------------------------------------------------
 ito::RetVal PyCodeFormatter::getPythonPath(QString &path) const
 {
-    
+    return ito::retOk;
+}
+
+//-------------------------------------------------------------------------------------
+ito::RetVal PyCodeFormatter::executeISort(QString& code, QSharedPointer<QProgressDialog> progress) const
+{
+    if (progress)
+    {
+        progress->setLabelText(tr("Run isort to sort import statements..."));
+    }
+
+    QTemporaryDir tempDir;
+    const QString fileName = "isort_temp.py";
+    auto filePath = tempDir.filePath(fileName);
+    QFile tempFile(filePath);
+
+    if (tempDir.isValid() && tempFile.open(QIODeviceBase::ReadWrite))
+    {
+        tempFile.write(code.toUtf8());
+        tempFile.close();
+    }
+    else
+    {
+        return ito::RetVal(ito::retWarning, 0, "Cannot execute isort, since a temporary file could not be created.");
+    }
+
+    const PythonEngine* pyeng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
+    QString pythonPath = "";
+
+    if (pyeng)
+    {
+        pythonPath = pyeng->getPythonExecutable();
+    }
+    else
+    {
+        return RetVal(ito::retError, 0, "could not get python engine.");
+    }
+
+    QStringList args;
+    args << "-m" << "isort" << "--py" << "3" << "--profile" << "black" << QString("\"%1\"").arg(filePath);
+
+    QProcess process;
+    process.start(pythonPath, args);
+
+    if (!process.waitForFinished() || process.exitCode() != 0)
+    {
+        return ito::RetVal::format(ito::retError, 0, "Error calling isort: %s", process.readAllStandardError().data());
+    }
+
+    if (tempDir.isValid() && tempFile.open(QIODeviceBase::ReadOnly))
+    {
+        code = QString::fromUtf8(tempFile.readAll());
+        tempFile.close();
+    }
+    else
+    {
+        return ito::RetVal(ito::retWarning, 0, "Cannot execute isort, since a temporary file could not be re-opened.");
+    }
 
     return ito::retOk;
 }
@@ -104,7 +162,7 @@ ito::RetVal PyCodeFormatter::startFormatting(const QString &cmd, const QString &
     {
         m_progressDialog = QSharedPointer<QProgressDialog>(
             new QProgressDialog(
-                tr("The code formatter is running..."), 
+                "",
                 tr("Cancel"), 
                 0, 100, dialogParent)
             );
@@ -116,6 +174,14 @@ ito::RetVal PyCodeFormatter::startFormatting(const QString &cmd, const QString &
     }
 
     m_currentCode = code;
+
+    executeISort(m_currentCode, m_progressDialog);
+
+    if (m_progressDialog)
+    {
+        m_progressDialog->setLabelText(tr("The code formatter is running..."));
+    }
+
     m_currentError = "";
 
     /* Under Windows, if itom is directly started from C:/Program Files,

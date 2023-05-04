@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2023, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
@@ -51,6 +51,7 @@ namespace ito
         bool m_isCancelling;
 
         ito::RetVal getPythonPath(QString &path) const;
+        ito::RetVal executeISort(QString& code, QSharedPointer<QProgressDialog> progress) const;
 
 
     private slots:
