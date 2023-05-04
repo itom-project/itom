@@ -1,13 +1,16 @@
 breathe
 matplotlib
+mplcyberpunk
 numpydoc
 pandas
 openpyxl
 plotly
 tables
 pytest
+qbstyles
 scikit-learn
 scipy
+SciencePlots
 seaborn
 sphinx
 sphinx_copybutton
