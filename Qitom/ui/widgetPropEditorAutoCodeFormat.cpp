@@ -37,7 +37,7 @@ WidgetPropEditorAutoCodeFormat::WidgetPropEditorAutoCodeFormat(QWidget *parent) 
 {
     ui.setupUi(this);
 
-    m_demoCode = "#comment\nif True:\n  print('test')\n  abc=[1,2,3]";
+    m_demoCode = "import libB\nimport libA\n#comment\nif True:\n  print('test')\n  abc=[1,2,3]";
 }
 
 //-------------------------------------------------------------------------------------
@@ -90,8 +90,16 @@ void WidgetPropEditorAutoCodeFormat::on_btnTest_clicked()
 
     connect(m_pyCodeFormatter.data(), &PyCodeFormatter::formattingDone,
         this, &WidgetPropEditorAutoCodeFormat::testCodeFormatterDone);
-    ito::RetVal retval = m_pyCodeFormatter->startFormatting(
-        ui.txtCmd->toPlainText(), m_demoCode, this);
+
+    QString importSortCmd = "";
+
+    if (ui.groupImportsSorting->isChecked())
+    {
+        importSortCmd = ui.txtPreCmd->text();
+    }
+
+    ito::RetVal retval = m_pyCodeFormatter->startSortingAndFormatting(
+        importSortCmd, ui.txtCmd->toPlainText(), m_demoCode, this);
 
     if (retval.containsError())
     {

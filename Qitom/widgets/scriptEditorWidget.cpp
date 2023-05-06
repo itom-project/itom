@@ -1376,7 +1376,7 @@ void ScriptEditorWidget::menuPyCodeFormatting()
     m_pyCodeFormatter = QSharedPointer<PyCodeFormatter>(new PyCodeFormatter(this), doDeleteLater);
     connect(m_pyCodeFormatter.data(), &PyCodeFormatter::formattingDone,
         this, &ScriptEditorWidget::pyCodeFormatterDone);
-    ito::RetVal retval = m_pyCodeFormatter->startFormatting(m_autoCodeFormatCmd, toPlainText(), this);
+    ito::RetVal retval = m_pyCodeFormatter->startSortingAndFormatting("", m_autoCodeFormatCmd, toPlainText(), this);
 
     if (retval.containsError())
     {
