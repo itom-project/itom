@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>460</width>
-    <height>532</height>
+    <height>515</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -113,6 +113,9 @@ li.checked::marker { content: &quot;\2612&quot;; }
       </item>
       <item>
        <widget class="QGroupBox" name="groupImportsSorting">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
         <property name="minimumSize">
          <size>
           <width>0</width>
@@ -125,11 +128,14 @@ li.checked::marker { content: &quot;\2612&quot;; }
         <property name="checkable">
          <bool>true</bool>
         </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
         <layout class="QVBoxLayout" name="verticalLayout_3">
          <item>
           <widget class="QLabel" name="label_5">
            <property name="text">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Before starting the auto code formatting, it is possible to execute another process to for instance sort imports. This can for instance be done by the Python package &amp;quot;isort&amp;quot;.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;The full call is then: python -m &amp;lt;cmd&amp;gt; &amp;lt;filename&amp;gt;, where &amp;lt;filename&amp;gt; is a temporary file with the code to be modified, and &amp;lt;cmd&amp;gt; is as follows:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Before starting the auto code formatting, it is possible to execute another process to for instance sort imports. This can for instance be done by the Python package &amp;quot;isort&amp;quot;.&lt;/p&gt;&lt;p&gt;The full call is then: python -m &amp;lt;cmd&amp;gt; &amp;lt;filename&amp;gt;, where &amp;lt;filename&amp;gt; is a temporary file with the code to be modified, and &amp;lt;cmd&amp;gt; is as follows:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="wordWrap">
             <bool>true</bool>

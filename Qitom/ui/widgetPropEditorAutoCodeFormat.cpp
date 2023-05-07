@@ -59,6 +59,14 @@ void WidgetPropEditorAutoCodeFormat::readSettings()
         settings.value("autoCodeFormatCmd", "black --line-length 88 --quiet -").toString()
     );
 
+    ui.txtPreCmd->setText(
+        settings.value("autoCodeFormatImportsSortCmd", "isort --py 3 --profile black").toString()
+    );
+
+    ui.groupImportsSorting->setChecked(
+        settings.value("autoCodeFormatEnableImportsSort", false).toBool()
+    );
+
     settings.endGroup();
 }
 
@@ -70,6 +78,8 @@ void WidgetPropEditorAutoCodeFormat::writeSettings()
     
     settings.setValue("autoCodeFormatEnabled", ui.groupAutoCodeFormat->isChecked());
     settings.setValue("autoCodeFormatCmd", ui.txtCmd->toPlainText());
+    settings.setValue("autoCodeFormatImportsSortCmd", ui.txtPreCmd->text());
+    settings.setValue("autoCodeFormatEnableImportsSort", ui.groupImportsSorting->isChecked());
 
     settings.endGroup();
 }

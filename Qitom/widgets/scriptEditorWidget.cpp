@@ -445,6 +445,13 @@ void ScriptEditorWidget::loadSettings()
 
     bool pyCodeFormatEnabled = settings.value("autoCodeFormatEnabled", true).toBool();
     m_autoCodeFormatCmd = settings.value("autoCodeFormatCmd", "black --line-length 88 --quiet -").toString();
+    m_autoCodeFormatPreCmd = settings.value("autoCodeFormatImportsSortCmd", "isort --py 3 --profile black").toString();
+
+    if (!settings.value("autoCodeFormatEnableImportsSort", false).toBool())
+    {
+        m_autoCodeFormatPreCmd = "";
+    }
+
     auto pyCodeFormatAction = m_editorMenuActions.find("formatFile");
 
     if (pyCodeFormatAction != m_editorMenuActions.end())
@@ -1376,7 +1383,12 @@ void ScriptEditorWidget::menuPyCodeFormatting()
     m_pyCodeFormatter = QSharedPointer<PyCodeFormatter>(new PyCodeFormatter(this), doDeleteLater);
     connect(m_pyCodeFormatter.data(), &PyCodeFormatter::formattingDone,
         this, &ScriptEditorWidget::pyCodeFormatterDone);
-    ito::RetVal retval = m_pyCodeFormatter->startSortingAndFormatting("", m_autoCodeFormatCmd, toPlainText(), this);
+    ito::RetVal retval = m_pyCodeFormatter->startSortingAndFormatting(
+        m_autoCodeFormatPreCmd, 
+        m_autoCodeFormatCmd, 
+        toPlainText(), 
+        this
+    );
 
     if (retval.containsError())
     {
