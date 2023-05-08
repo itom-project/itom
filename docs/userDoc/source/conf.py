@@ -136,7 +136,7 @@ default_role = "autolink"
 show_authors = False
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = "sphinx"
+# pygments_style = "sphinx"
 
 # A list of ignored prefixes for module index sorting.
 # modindex_common_prefix = []
@@ -154,7 +154,7 @@ pygments_style = "sphinx"
 qt_version = itomVersionInfo["QT_Version"]
 
 # choose itom theme as main theme
-html_theme = "itom"
+# html_theme = "itom"
 qthelp_theme = "itom"  # theme for QtHelp only (available since Sphinx 1.5.3)
 html_theme_path = ["_themes"]
 
