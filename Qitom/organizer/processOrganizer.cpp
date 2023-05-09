@@ -52,11 +52,15 @@ ProcessOrganizer::~ProcessOrganizer()
     {
         if (it->first != nullptr)
         {
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
             disconnect(
                 it->first,
-                &QProcess::finished,
+                SIGNAL(finished(int, QProcess::ExitStatus)),
                 this,
-                &ito::ProcessOrganizer::processFinished);
+                SLOT(processFinished(int, QProcess::ExitStatus)));
+#else
+            disconnect(it->first, &QProcess::finished, this, &ProcessOrganizer::processFinished);
+#endif
             disconnect(
                 it->first,
                 &QProcess::errorOccurred,
@@ -295,7 +299,17 @@ QProcess* ProcessOrganizer::getProcess(
     }
 
     process = new QProcess();
+
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    connect(
+        process,
+        SIGNAL(finished(int, QProcess::ExitStatus)),
+        this,
+        SLOT(processFinished(int, QProcess::ExitStatus)));
+#else
     connect(process, &QProcess::finished, this, &ProcessOrganizer::processFinished);
+#endif
+
     connect(process, &QProcess::errorOccurred, this, &ProcessOrganizer::processError);
     connect(process, &QProcess::readyReadStandardOutput, this, &ProcessOrganizer::readyReadStandardOutput);
 
