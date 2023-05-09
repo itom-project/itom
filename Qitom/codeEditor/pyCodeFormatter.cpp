@@ -63,8 +63,16 @@ PyCodeFormatter::PyCodeFormatter(QObject *parent /*= nullptr*/) :
     connect(&m_processFormatter, &QProcess::readyReadStandardError,
         this, &PyCodeFormatter::formatterReadyReadStandardError);
 
-    connect(&m_processFormatter, &QProcess::finished,
-        this, &PyCodeFormatter::formatterFinished);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    connect(
+        &m_processFormatter,
+        SIGNAL(finished(int, QProcess::ExitStatus)),
+        this,
+        SLOT(formatterFinished(int, QProcess::ExitStatus)));
+#else
+    connect(&m_processFormatter, &QProcess::finished, this, &PyCodeFormatter::formatterFinished);
+#endif
+    
 
     connect(&m_processFormatter, &QProcess::started,
         this, &PyCodeFormatter::formatterStarted);
@@ -75,8 +83,17 @@ PyCodeFormatter::PyCodeFormatter(QObject *parent /*= nullptr*/) :
     connect(&m_processImportSort, &QProcess::readyReadStandardError,
         this, &PyCodeFormatter::importSortReadyReadStandardError);
 
-    connect(&m_processImportSort, &QProcess::finished,
-        this, &PyCodeFormatter::importSortFinished);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    connect(
+        &m_processImportSort,
+        SIGNAL(finished(int, QProcess::ExitStatus)),
+        this,
+        SLOT(importSortFinished(int, QProcess::ExitStatus)));
+#else
+    connect(&m_processImportSort, &QProcess::finished, this, &PyCodeFormatter::importSortFinished);
+#endif
+
+    
 
     connect(&m_processImportSort, &QProcess::started,
         this, &PyCodeFormatter::importSortStarted);
@@ -108,7 +125,11 @@ ito::RetVal PyCodeFormatter::startImportsSorting(const QString& importSortingCmd
     auto filePath = m_importSortTempDir.filePath(m_importSortTempFileName);
     QFile tempFile(filePath);
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    if (m_importSortTempDir.isValid() && tempFile.open(QIODevice::ReadWrite))
+#else
     if (m_importSortTempDir.isValid() && tempFile.open(QIODeviceBase::ReadWrite))
+#endif
     {
         tempFile.write(code.toUtf8());
         tempFile.close();
@@ -381,7 +402,11 @@ void PyCodeFormatter::importSortFinished(int exitCode, QProcess::ExitStatus exit
         {
             QFile tempFile(m_importSortTempDir.filePath(m_importSortTempFileName));
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+            if (tempFile.open(QIODevice::ReadOnly))
+#else
             if (tempFile.open(QIODeviceBase::ReadOnly))
+#endif
             {
                 m_currentCode = QString::fromUtf8(tempFile.readAll());
                 tempFile.close();
