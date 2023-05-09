@@ -37,6 +37,9 @@
 
 #include "pythonSyntaxHighlighter.h"
 
+// for Python version check
+#include "patchlevel.h"
+
 #include "../codeEditor.h"
 #include <qapplication.h>
 #include <qtextdocument.h>
@@ -402,11 +405,39 @@ QString any(const QString &name, const QStringList &alternates)
 {
     QList<NamedRegExp> regExpressions;
 
-    QStringList kwlist = QStringList() << "self" << "False" << "None" << "True" << "assert" << "break" \
-        << "class" << "continue" << "def" << "del" << "elif" << "else" << "except" << "finally" << "for" \
-        << "global" << "if" << "lambda" << "nonlocal" << "pass" << "raise" << "return" << "try" \
-        << "while" << "with" << "yield" << "async" << "await" \
-        << "match";  // match is new in Python 3.10
+    QStringList kwlist = QStringList() << "self"
+                                       << "False"
+                                       << "None"
+                                       << "True"
+                                       << "assert"
+                                       << "break"
+                                       << "class"
+                                       << "continue"
+                                       << "def"
+                                       << "del"
+                                       << "elif"
+                                       << "else"
+                                       << "except"
+                                       << "finally"
+                                       << "for"
+                                       << "global"
+                                       << "if"
+                                       << "lambda"
+                                       << "nonlocal"
+                                       << "pass"
+                                       << "raise"
+                                       << "return"
+                                       << "try"
+                                       << "while"
+                                       << "with"
+                                       << "yield"
+                                       << "async"
+                                       << "await";
+
+#if (PY_VERSION_HEX >= 0x030A0000)
+    kwlist << "match"
+           << "case"; // match/case is new in Python 3.10
+#endif
 
     QStringList kwNamespaceList = QStringList() << "from" << "import" << "as";
     QStringList wordopList = QStringList() << "and" << "or" << "not" << "in" << "is";

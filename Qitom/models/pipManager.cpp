@@ -53,7 +53,16 @@ namespace ito
         m_alignment << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft);
 
         connect(&m_pipProcess, &QProcess::errorOccurred, this, &PipManager::processError);
+
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+        connect(
+            &m_pipProcess,
+            SIGNAL(finished(int, QProcess::ExitStatus)),
+            this,
+            SLOT(processFinished(int, QProcess::ExitStatus)));
+#else
         connect(&m_pipProcess, &QProcess::finished, this, &PipManager::processFinished);
+#endif
         connect(&m_pipProcess, &QProcess::readyReadStandardError, this, &PipManager::processReadyReadStandardError);
         connect(&m_pipProcess, &QProcess::readyReadStandardOutput, this, &PipManager::processReadyReadStandardOutput);
 

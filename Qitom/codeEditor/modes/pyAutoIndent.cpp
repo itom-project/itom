@@ -37,6 +37,9 @@
 
 #include "pyAutoIndent.h"
 
+// for Python version check
+#include "patchlevel.h"
+
 #include "../codeEditor.h"
 #include "../modes/symbolMatcherMode.h"
 #include "../managers/modesManager.h"
@@ -47,7 +50,11 @@ namespace ito {
 
 
 /*static*/ QStringList PyAutoIndentMode::newScopeKeywords = QStringList() << "if" << "class" << "def" << "while" << "for" << \
-                                                                "else" << "elif" << "except" << "finally" << "try" << "with";
+                                                                "else" << "elif" << "except" << "finally" << "try" << "with"
+#if (PY_VERSION_HEX >= 0x030A0000)
+ << "match" << "case"; // match/case is new in Python 3.10
+#endif
+;
 
 //----------------------------------------------------------
 PyAutoIndentMode::PyAutoIndentMode(const QString &description /*= ""*/, QObject *parent /*= NULL*/) :
