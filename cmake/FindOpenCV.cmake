@@ -83,8 +83,13 @@ if(EXISTS "${OpenCV_CMAKE}")
         ## Search for a specific version
         set(CVLIB_SUFFIX "${OpenCV_VERSION_MAJOR}${OpenCV_VERSION_MINOR}${OpenCV_VERSION_PATCH}")
         
+        set(OpenCV_LIB_PATH "${OpenCV_DIR}" )
         set(OpenCV_BIN_DIR "${OpenCV_LIB_PATH}/../bin" CACHE PATH "OpenCV bin dir")
         set(OpenCV_LIB_VERSION ${CVLIB_SUFFIX} CACHE PATH "version of OpenCV")
+
+        if(NOT EXISTS "${OpenCV_BIN_DIR}")
+            message(FATAL_ERROR "OpenCV_BIN_DIR: ${OpenCV_BIN_DIR} does not exist!")
+        endif(NOT EXISTS "${OpenCV_BIN_DIR}")
     
     elseif(EXISTS "${OpenCV_DIR}/include" AND EXISTS "${OpenCV_DIR}/x86" AND EXISTS "${OpenCV_DIR}/x64")
         #the OpenCV_DIR seems to point to a build version of OpenCV 2.3 on a windows pc
@@ -176,17 +181,10 @@ if(EXISTS "${OpenCV_CMAKE}")
 
     endif(EXISTS "${OpenCV_CMAKE}/OpenCVConfig.cmake")
 
-    #message(STATUS "GENERATOR: ::: ${CMAKE_GENERATOR} - ${BUILD_TARGET64} -- ${CVLIB_LIBSUFFIX}")
-
     ## Initiate the variable before the loop
     set(GLOBAL OpenCV_LIBS "")
     set(OpenCV_FOUND_TMP true)
     
-    #if(EXISTS "${OpenCV_BIN_DIR}/release/" AND "${OpenCV_BIN_DIR}/debug/"}
-    #    set(OpenCV_BIN_RELEASE_DIR "${OpenCV_DIR}${CVLIB_LIBSUFFIX}/../bin" CACHE PATH "OpenCV bin dir")
-    #    set(OpenCV_BIN_DEBUG_DIR "${OpenCV_DIR}${CVLIB_LIBSUFFIX}/../bin" CACHE PATH "OpenCV bin dir")
-    #endif
-#    message(STATUS "OpenCV_BIN_DIR: ${OpenCV_BIN_DIR}; OpenCV_DIR: ${OpenCV_DIR}")
     
     ## Loop over each components
     foreach(__CVLIB ${OPENCV_LIB_COMPONENTS})
