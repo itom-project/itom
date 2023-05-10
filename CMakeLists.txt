@@ -136,6 +136,8 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/licenses
 
 ################################################################################################################
 itom_find_package_qt(ON Core)
+itom_define_sdk_platform()
+itom_define_sdk_compiler()
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win32/itom_setup_win32.iss.in
     ${CMAKE_CURRENT_BINARY_DIR}/setup/win32/itom_setup_win32.iss )

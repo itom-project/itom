@@ -11,9 +11,11 @@
 #define SourceDirItomBuild "${CMAKE_CURRENT_BINARY_DIR}"
 #define SourceDirQT "${QT_BINARY_DIR}"
 #define SourceDirOpenCV "${OpenCV_BIN_DIR}"
+#define SourceQTVersion "${BUILD_QTVERSION}"
 #define SourceDirPCL "${PCL_DIR}/.."
 #define SourceDirVTK "${VTK_DIR}/../../.."
 #define SourcePythonPackDir "${CMAKE_CURRENT_BINARY_DIR}/setup/win64/PythonRequirements"
+#define BuildPlatform "${SDK_COMPILER}_${SDK_PLATFORM}"
 
 ; You should change...
 #define SourceDirSys32 "C:\Windows\System32"
@@ -23,7 +25,6 @@
 #define SourceRedistributable2017 "W:\m\ITOM\Software\MS VisualStudio\Redistributable\64 bit"
 #define SourcePythonDir "W:\m\ITOM\Software\Python\Python 3.8.10"
 #define SourceRedistributableDir "W:\m\ITOM\Software\MS VisualStudio\Redistributable\DLLs"
-
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
@@ -66,7 +67,6 @@ Name: "{app}\SDK"; Permissions: everyone-modify
 ; EXEs
 Source: "{#SourceRedistributable2017}\Microsoft Visual C++ 2017 Redistributable (x64) - 14.16.27027.1.exe"; DestDir: "{tmp}"
 Source: "{#SourcePythonPackDir}\*"; DestDir: "{tmp}\pythonPackages"
-
 
 [Languages]
 Name: "Deutsch"; MessagesFile: "compiler:Languages\German.isl"
@@ -118,7 +118,7 @@ Source: "{#SourceDirItomBuild}\iconThemeDark.rcc"; DestDir: "{app}"; Flags: igno
 
 ; QT Files
 Source: "{#SourceDirItomBuild}\setup\qt_deployment\*.*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs
-Source: "{#SourceDirQT}\Qt5OpenGL.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirQT}\{#SourceQTVersion}OpenGL.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirQT}\..\plugins\platforms\qminimal.dll"; DestDir: "{app}\platforms"; Flags: ignoreversion
 
 ; Help Files
@@ -126,7 +126,9 @@ Source: "{#SourceDirItomBuild}\docs\userDoc\build\qthelp\*.qch"; DestDir: "{app}
 Source: "{#SourceDirItomBuild}\docs\pluginDoc\build\*.qch"; DestDir: "{app}\docs\pluginDoc\build"; Flags: ignoreversion
 Source: "{#SourceDirQT}\assistant.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirQT}\qhelpgenerator.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SourceDirQT}\qcollectiongenerator.exe"; DestDir: "{app}"; Flags: ignoreversion
+#if "Qt5" == SourceQTVersion
+    Source: "{#SourceDirQT}\qcollectiongenerator.exe"; DestDir: "{app}"; Flags: ignoreversion
+#endif
 
 ; Languages
 Source: "{#SourceDirItomBuild}\translation\*.qm"; DestDir: "{app}\translation"; Flags: ignoreversion
@@ -171,7 +173,7 @@ Source: "{#SourceDirItomBuild}\SDK\*.*"; DestDir: "{app}\SDK"; Flags: ignorevers
 Source: "{#SourceDirItomBuild}\SDK\docs\*.*"; DestDir: "{app}\SDK\docs"; Flags: ignoreversion recursesubdirs; Components: SDK
 Source: "{#SourceDirItomBuild}\SDK\include\*.*"; DestDir: "{app}\SDK\include"; Flags: ignoreversion recursesubdirs; Components: SDK
 Source: "{#SourceDirItomBuild}\SDK\pluginTemplates\*.*"; DestDir: "{app}\SDK\pluginTemplates"; Flags: ignoreversion recursesubdirs; Components: SDK
-Source: "{#SourceDirItomBuild}\SDK\lib\vc1916_x64\*.*"; DestDir: "{app}\SDK\lib\vc14_x64"; Flags: ignoreversion; Components: SDK
+Source: "{#SourceDirItomBuild}\SDK\lib\{#BuildPlatform}\*.*"; DestDir: "{app}\SDK\lib\{#BuildPlatform}"; Flags: ignoreversion; Components: SDK
 
 ; Python
 Source: "{#SourcePythonDir}\*.*"; DestDir: "{app}\python3"; Flags: ignoreversion recursesubdirs

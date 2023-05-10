@@ -46,7 +46,7 @@ endif(WIN32)
 # QT Definitions
 
 if(NOT EXISTS BUILD_QTVERSION)
-    SET(BUILD_QTVERSION "Qt6" CACHE STRING "Qt Version to be used, currently only Qt6 and Qt5 is supported.Qt6 by default.")
+    SET(BUILD_QTVERSION "Qt5" CACHE STRING "Qt Version to be used, currently only Qt6 and Qt5 is supported.Qt5 by default.")
 endif(NOT EXISTS BUILD_QTVERSION)
 set_property(CACHE BUILD_QTVERSION PROPERTY STRINGS Qt6 Qt5)
 
