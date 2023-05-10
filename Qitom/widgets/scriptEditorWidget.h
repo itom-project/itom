@@ -219,7 +219,12 @@ private:
     BookmarkModel *m_pBookmarkModel; //! borrowed reference to the bookmark model. The owner of this model is the ScriptEditorOrganizer.
 
     QSharedPointer<PyCodeFormatter> m_pyCodeFormatter;
-    QString m_autoCodeFormatCmd; //!< the current command string for the python auto code formatting.
+
+    //!< the current command string for the python auto code formatting.
+    QString m_autoCodeFormatCmd; 
+
+    //!< the current command string for the python imports sorting (or empty, if this pre-step is not enabled)
+    QString m_autoCodeFormatPreCmd; 
 
     //!< this is the encoding of this script, hence,
     //!< the encoding that was used to load this script from
