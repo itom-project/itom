@@ -37,7 +37,7 @@ WidgetPropEditorAutoCodeFormat::WidgetPropEditorAutoCodeFormat(QWidget *parent) 
 {
     ui.setupUi(this);
 
-    m_demoCode = "#comment\nif True:\n  print('test')\n  abc=[1,2,3]";
+    m_demoCode = "import libB\nimport libA\n#comment\nif True:\n  print('test')\n  abc=[1,2,3]";
 }
 
 //-------------------------------------------------------------------------------------
@@ -59,6 +59,14 @@ void WidgetPropEditorAutoCodeFormat::readSettings()
         settings.value("autoCodeFormatCmd", "black --line-length 88 --quiet -").toString()
     );
 
+    ui.txtPreCmd->setText(
+        settings.value("autoCodeFormatImportsSortCmd", "isort --py 3 --profile black").toString()
+    );
+
+    ui.groupImportsSorting->setChecked(
+        settings.value("autoCodeFormatEnableImportsSort", false).toBool()
+    );
+
     settings.endGroup();
 }
 
@@ -70,6 +78,8 @@ void WidgetPropEditorAutoCodeFormat::writeSettings()
     
     settings.setValue("autoCodeFormatEnabled", ui.groupAutoCodeFormat->isChecked());
     settings.setValue("autoCodeFormatCmd", ui.txtCmd->toPlainText());
+    settings.setValue("autoCodeFormatImportsSortCmd", ui.txtPreCmd->text());
+    settings.setValue("autoCodeFormatEnableImportsSort", ui.groupImportsSorting->isChecked());
 
     settings.endGroup();
 }
@@ -90,8 +100,16 @@ void WidgetPropEditorAutoCodeFormat::on_btnTest_clicked()
 
     connect(m_pyCodeFormatter.data(), &PyCodeFormatter::formattingDone,
         this, &WidgetPropEditorAutoCodeFormat::testCodeFormatterDone);
-    ito::RetVal retval = m_pyCodeFormatter->startFormatting(
-        ui.txtCmd->toPlainText(), m_demoCode, this);
+
+    QString importSortCmd = "";
+
+    if (ui.groupImportsSorting->isChecked())
+    {
+        importSortCmd = ui.txtPreCmd->text();
+    }
+
+    ito::RetVal retval = m_pyCodeFormatter->startSortingAndFormatting(
+        importSortCmd, ui.txtCmd->toPlainText(), m_demoCode, this);
 
     if (retval.containsError())
     {
