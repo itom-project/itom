@@ -39,11 +39,11 @@ Therefore, the built-in helpviewer of itom has to be disabled. For building itom
     git clone https://bitbucket.org/itom/designerplugins.git ./itom/sources/designerplugins
     mkdir -p build/itom build/designerPlugins build/plugins
     cd ./itom/build/itom
-    cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=OFF -PYTHON_LIBRARY=/usr/lib64/libpython3.6m.so -PYTHON_INCLUDE_DIR=/usr/include/python3.6m -BUILD_QTVERSION=Qt5 -Qt5_DIR=/usr/lib64/cmake/Qt5 -Qt5Core_DIR=/usr/lib64/cmake/Qt5Core -BUILD_WITH_HELPVIEWER=OFF ../../sources/itom
+    cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=OFF -PYTHON_LIBRARY=/usr/lib64/libpython3.6m.so -PYTHON_INCLUDE_DIR=/usr/include/python3.6m -Qt_Prefix_DIR=/usr/lib64 -BUILD_WITH_HELPVIEWER=OFF ../../sources/itom
     make
-    cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=OFF -PYTHON_LIBRARY=/usr/lib64/libpython3.6m.so -PYTHON_INCLUDE_DIR=/usr/include/python3.6m -BUILD_QTVERSION=Qt5 -Qt5_DIR=/usr/lib64/cmake/Qt5 -Qt5Core_DIR=/usr/lib64/cmake/Qt5Core -BUILD_WITH_HELPVIEWER=OFF -DITOM_SDK_DIR=../itom/SDK ../../sources/designerPlugins
+    cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=OFF -PYTHON_LIBRARY=/usr/lib64/libpython3.6m.so -PYTHON_INCLUDE_DIR=/usr/include/python3.6m -Qt_Prefix_DIR=/usr/lib64 -BUILD_WITH_HELPVIEWER=OFF ../../sources/designerPlugins
     make
-    cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=OFF -PYTHON_LIBRARY=/usr/lib64/libpython3.6m.so -PYTHON_INCLUDE_DIR=/usr/include/python3.6m -BUILD_QTVERSION=Qt5 -Qt5_DIR=/usr/lib64/cmake/Qt5 -Qt5Core_DIR=/usr/lib64/cmake/Qt5Core -BUILD_WITH_HELPVIEWER=OFF -DITOM_SDK_DIR=../itom/SDK ../../sources/plugins
+    cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=OFF -PYTHON_LIBRARY=/usr/lib64/libpython3.6m.so -PYTHON_INCLUDE_DIR=/usr/include/python3.6m -Qt_Prefix_DIR=/usr/lib64 -BUILD_WITH_HELPVIEWER=OFF ../../sources/plugins
     make
     
 Errors in cmake configuration process can be fixed using ccmake or cmake-gui

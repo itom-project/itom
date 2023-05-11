@@ -773,9 +773,9 @@ end:
 
                 process->setProcessEnvironment(env);
 
-                if (errorSlotMemberOfParent != NULL)
+                if (errorSlotMemberOfParent != nullptr)
                 {
-                    connect(process, SIGNAL(error(QProcess::ProcessError)), parent, errorSlotMemberOfParent);
+                    connect(process, SIGNAL(errorOccurred(QProcess::ProcessError)), parent, errorSlotMemberOfParent);
                 }
 
                 po->clearStandardOutputBuffer("designer");
@@ -805,9 +805,9 @@ end:
 
             process->setProcessEnvironment(env);
 
-            if (errorSlotMemberOfParent != NULL)
+            if (errorSlotMemberOfParent != nullptr)
             {
-                connect(process, SIGNAL(error(QProcess::ProcessError)), parent, errorSlotMemberOfParent);
+                connect(process, SIGNAL(errorOccurred(QProcess::ProcessError)), parent, errorSlotMemberOfParent);
             }
 
             po->clearStandardOutputBuffer("designer");

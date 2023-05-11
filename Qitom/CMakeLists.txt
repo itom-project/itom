@@ -75,26 +75,21 @@ else()
     itom_find_package_qt(ON Core Widgets UiTools PrintSupport Network Sql Xml OpenGL Svg Designer LinguistTools)
 endif()
 
-find_package(PythonLibs 3.0 REQUIRED)
-# can be used from 3.12 onwards
-# find_package(Python 3.0 COMPONENTS Interpreter Development REQUIRED )
-# FIND_PACKAGE (Python3 COMPONENTS Interpreter Development)
+find_package(Python 3.7 REQUIRED COMPONENTS Interpreter Development NumPy)
 
-find_package(NumPy REQUIRED)
-
-message(STATUS "Detected Python version: ${PYTHONLIBS_VERSION_STRING}")
-message(STATUS "Python include directory: ${PYTHON_INCLUDE_DIR}")
-message(STATUS "Python executable: ${PYTHON_EXECUTABLE}")
-message(STATUS "Numpy include directory: ${NUMPY_INCLUDE_DIRS}")
-
-if (${PYTHONLIBS_VERSION_STRING} VERSION_LESS "3.5.0")
+if (${Python_VERSION} VERSION_LESS "3.5.0")
     message(FATAL_ERROR "The minimum required Python version is 3.5.0")
 endif()
 
 find_package(OpenCV COMPONENTS core REQUIRED)
 
 if(BUILD_WITH_PCL)
-    find_package(PCL 1.5.1 REQUIRED COMPONENTS common)
+    include(Setup_PCL_Itom)
+    if(WIN32)
+        find_package(PCL 1.5.1 QUIET REQUIRED COMPONENTS common PATHS ${PCL_CMAKE_DIR} NO_DEFAULT_PATH)
+    else(WIN32)
+        find_package(PCL 1.5.1 QUIET REQUIRED COMPONENTS common)
+    endif(WIN32)
     
     # actually we need this only to configure the itom.bat including vtk, otherwise 
     # eventually pcl-tools plugin will not be loaded
@@ -213,9 +208,9 @@ foreach( OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES} )
     set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${ITOMOUTPUTDIR} )
 endforeach()
 
-
 include_directories(
     ${CMAKE_CURRENT_BINARY_DIR}
+    ${CMAKE_CURRENT_BINARY_DIR}/python
     ${CMAKE_CURRENT_BINARY_DIR}/GeneratedFiles
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/..
@@ -227,8 +222,8 @@ include_directories(
     ${Qt6WebEngineWidgets_INCLUDE_DIRS}
     ${Qt6Help_INCLUDE_DIRS}
     ${Qt6Network_INCLUDE_DIRS}
-    ${PYTHON_INCLUDE_DIR}
-    ${NUMPY_INCLUDE_DIRS}
+    ${Python_INCLUDE_DIRS}
+    ${Python_NumPy_INCLUDE_DIRS}
     ${PCL_INCLUDE_DIRS}
     ${PYMATLAB_INCLUDE_DIR}
     ${VISUALLEAKDETECTOR_INCLUDE_DIR}
@@ -809,7 +804,7 @@ if(CONSIDER_GIT_SVN AND GIT_FOUND)
     
     add_custom_target(
         ${target_name}_versionCheck
-        COMMAND    ${PYTHON_EXECUTABLE}
+        COMMAND    ${Python_EXECUTABLE}
         "${CMAKE_CURRENT_BINARY_DIR}/pyGit2Header.py"
     )
     
@@ -835,16 +830,16 @@ if(MSVC)
     endif()
 endif()
 
-if(PYTHON_LIBRARY_DEBUG AND PYTHON_LIBRARY_RELEASE)
-    set(PYTHON_LIBRARY_ITOM ${PYTHON_LIBRARY_RELEASE})
+if(Python_LIBRARY_DEBUG AND Python_LIBRARY_RELEASE)
+    set(PYTHON_LIBRARY_ITOM ${Python_LIBRARY_RELEASE})
 #only debug
-elseif(PYTHON_LIBRARY_DEBUG)
+elseif(Python_LIBRARY_DEBUG)
     message(STATUS "Python is always linked as release version to itom, therefore indicate the release library of python")
 #only release
-elseif(PYTHON_LIBRARY_RELEASE)
-    set(PYTHON_LIBRARY_ITOM ${PYTHON_LIBRARY_RELEASE})
-elseif(PYTHON_LIBRARY)
-    set(PYTHON_LIBRARY_ITOM ${PYTHON_LIBRARY})
+elseif(Python_LIBRARY_RELEASE)
+    set(PYTHON_LIBRARY_ITOM ${Python_LIBRARY_RELEASE})
+elseif(Python_LIBRARY)
+    set(PYTHON_LIBRARY_ITOM ${Python_LIBRARY})
 #no library found
 else()
     message(STATUS "Python could not be found")
@@ -1015,6 +1010,15 @@ configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/../pluginMetaData.json.in ${CMAKE_CU
 
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../translation )
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../lib )
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/python)
+
+if(ITOM_BUILD_PACKAGE)
+    set(Python_Itom_Build_Dir "./python3" )
+    configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonBuildDir.h.in ${CMAKE_CURRENT_BINARY_DIR}/python/pythonBuildDir.h)
+else(ITOM_BUILD_PACKAGE)
+    cmake_path(GET Python_EXECUTABLE PARENT_PATH Python_Itom_Build_Dir)
+    configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonBuildDir.h.in ${CMAKE_CURRENT_BINARY_DIR}/python/pythonBuildDir.h)
+endif(ITOM_BUILD_PACKAGE)
  
 #ADD symbols/lib directory in application directory where pdb files will be loaded for debugging (MSVC only)
 if(MSVC)

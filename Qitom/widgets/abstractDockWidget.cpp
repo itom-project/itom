@@ -36,10 +36,6 @@
 #include <qtimer.h>
 #include <qsettings.h>
 
-#if linux
-#include <qdesktopwidget.h>
-#endif
-
 #include <qapplication.h>
 
 #include <iostream>
@@ -1010,8 +1006,8 @@ void AbstractDockWidget::undockWidget(bool show_it /*= true*/)
     //center of the current main window.
     if (m_lastUndockedSize.isEmpty())
     {
-      QDesktopWidget *dw = QApplication::desktop();
-      QRect overallRect = dw->availableGeometry(-1);
+      QScreen *ps = QGuiApplication::primaryScreen();
+      QRect overallRect = ps->availableGeometry();
       QPoint centerPoint = overallRect.center();
       m_pWindow->adjustSize();
       m_pWindow->move(centerPoint - m_pWindow->rect().center());

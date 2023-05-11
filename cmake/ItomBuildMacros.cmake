@@ -55,7 +55,21 @@ endmacro()
 # example:
 # 
 # set(target_name yourTargetName)
-# set(ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk folder")
+#
+# # this is to automatically detect the SDK subfolder of the itom build directory.
+# if(NOT EXISTS ${ITOM_SDK_DIR})
+#     find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
+#     HINTS "$ENV{ITOM_SDK_ROOT}"
+#           "${CMAKE_CURRENT_BINARY_DIR}/../itom/SDK"
+#     DOC "Path of SDK subfolder of itom root (build) directory")
+# else(NOT EXISTS ${ITOM_SDK_DIR})
+#     if(EXISTS $ENV{ITOM_SDK_ROOT})
+#         set(ITOM_SDK_DIR $ENV{ITOM_SDK_ROOT} CACHE PATH "Path of SDK subfolder of itom root (build) directory")
+#     else(EXISTS $ENV{ITOM_SDK_ROOT})
+#         set(ITOM_SDK_DIR NOTFOUND CACHE PATH "Path of SDK subfolder of itom root (build) directory")
+#     endif(EXISTS $ENV{ITOM_SDK_ROOT})
+#     message(FATAL_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
+# endif(NOT EXISTS ${ITOM_SDK_DIR})
 # 
 # include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake")
 # 
@@ -77,9 +91,6 @@ endmacro()
 # itom_init_designerplugin_library.
 macro(itom_init_plugin_common_vars)
     #commonly used variables / options in the cache
-    set(BUILD_QTVERSION "auto" CACHE STRING
-        "currently only Qt5 is supported. Set this value to 'auto' in order\
-        to auto-detect the correct Qt version or set it to 'Qt5' to hardly select Qt5.")
     option(BUILD_OPENMP_ENABLE "Use OpenMP parallelization if available.\
         If TRUE, the definition USEOPENMP is set. This is only the case if\
         OpenMP is generally available and if the build is release." ON)
@@ -90,8 +101,19 @@ macro(itom_init_plugin_common_vars)
     #their real values are usually forced by a find_package(ITOM_SDK)
     #command, since these values are taken from information in the itom SDK.
     option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
-    set(ITOM_APP_DIR NOTFOUND CACHE PATH "base path to itom build / install folder")
-    set(ITOM_SDK_DIR NOTFOUND CACHE PATH "base path to SDK subfolder of itom build / install folder")
+
+    # this is to automatically detect the SDK subfolder of the itom build directory.
+	if(NOT EXISTS ${ITOM_SDK_DIR})
+		find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
+		HINTS "$ENV{ITOM_SDK_ROOT}"
+			  "${CMAKE_CURRENT_BINARY_DIR}/../itom/SDK"
+		DOC "Path of SDK subfolder of itom root (build) directory")
+	endif(NOT EXISTS ${ITOM_SDK_DIR})
+
+	if(NOT EXISTS ${ITOM_SDK_DIR})
+		message(FATAL_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
+	endif(NOT EXISTS ${ITOM_SDK_DIR})
+
     set(BUILD_QT_DISABLE_DEPRECATED_BEFORE "" CACHE STRING "indicate a Qt version number as \
         hex string, if all methods that have been deprecated before this version, \
         should raise a compiler error.")
@@ -248,7 +270,21 @@ endmacro()
 # example:
 # 
 # set(target_name yourTargetName)
-# set(ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk folder")
+#
+# # this is to automatically detect the SDK subfolder of the itom build directory.
+# if(NOT EXISTS ${ITOM_SDK_DIR})
+#     find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
+#     HINTS "$ENV{ITOM_SDK_ROOT}"
+#           "${CMAKE_CURRENT_BINARY_DIR}/../itom/SDK"
+#     DOC "Path of SDK subfolder of itom root (build) directory")
+# else(NOT EXISTS ${ITOM_SDK_DIR})
+#     if(EXISTS $ENV{ITOM_SDK_ROOT})
+#         set(ITOM_SDK_DIR $ENV{ITOM_SDK_ROOT} CACHE PATH "Path of SDK subfolder of itom root (build) directory")
+#     else(EXISTS $ENV{ITOM_SDK_ROOT})
+#         set(ITOM_SDK_DIR NOTFOUND CACHE PATH "Path of SDK subfolder of itom root (build) directory")
+#     endif(EXISTS $ENV{ITOM_SDK_ROOT})
+#     message(FATAL_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
+# endif(NOT EXISTS ${ITOM_SDK_DIR})
 # 
 # include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake")
 # 
@@ -385,7 +421,18 @@ macro(itom_fetch_git_commit_hash)
     cmake_parse_arguments(OPT "${options}" "${oneValueArgs}"
                           "${multiValueArgs}" ${ARGN} )
                           
-    set(ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk")
+    # this is to automatically detect the SDK subfolder of the itom build directory.
+	if(NOT EXISTS ${ITOM_SDK_DIR})
+		find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
+		HINTS "$ENV{ITOM_SDK_ROOT}"
+			  "${CMAKE_CURRENT_BINARY_DIR}/../itom/SDK"
+		DOC "Path of SDK subfolder of itom root (build) directory")
+	endif(NOT EXISTS ${ITOM_SDK_DIR})
+
+	if(NOT EXISTS ${ITOM_SDK_DIR})
+		message(FATAL_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
+	endif(NOT EXISTS ${ITOM_SDK_DIR})
+
     option(BUILD_GIT_TAG "Fetch the current Git commit hash and add it to the gitVersion.h file in the binary directory of each plugin." ON)
     
     set(GITVERSIONAVAILABLE 0)
@@ -472,7 +519,7 @@ macro(itom_fetch_git_commit_hash)
     endif()
 endmacro()
 
-# - call this macro to find one of the supported Qt packages (currently only Qt5 is supported, the support
+# - call this macro to find one of the supported Qt packages (currently only Qt6 and Qt5 is supported, the support
 # of Qt4 has been removed.
 # 
 # example:
@@ -490,7 +537,7 @@ macro(itom_find_package_qt SET_AUTOMOC)
     
     set(Components ${ARGN}) #all arguments after SET_AUTOMOC are components for Qt
     set(QT_COMPONENTS ${ARGN})
-    set(QT5_LIBRARIES "")
+    set(QT_LIBRARIES "")
 
     if(${BUILD_QTVERSION} STREQUAL "Qt4")
         message(SEND_ERROR "The support for Qt4 has been removed for itom > 3.2.1")
@@ -503,22 +550,21 @@ macro(itom_find_package_qt SET_AUTOMOC)
         if(POLICY CMP0020)
             cmake_policy(SET CMP0020 NEW)
         endif(POLICY CMP0020)
-        set(DETECT_QT5 FALSE)
-    elseif(${BUILD_QTVERSION} STREQUAL "auto")
-        if(POLICY CMP0020)
-            cmake_policy(SET CMP0020 NEW)
-        endif(POLICY CMP0020)
-        set(DETECT_QT5 TRUE)
+        set(DETECT_QT6 TRUE)
     else()
-        message(SEND_ERROR "wrong value for BUILD_QTVERSION. auto, Qt5 allowed")
+        message(SEND_ERROR "wrong value for BUILD_QTVERSION. Qt6, Qt5 allowed")
     endif()
-    set(QT5_FOUND FALSE)
+    set(QT_FOUND FALSE)
         
     if(DETECT_QT5)
+        if(WIN32)
+            set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${Qt_Prefix_DIR})
+        endif()
+
         #TRY TO FIND QT5
-        find_package(Qt5 5.5 COMPONENTS Core QUIET)
+        find_package(Qt5 5.5 QUIET COMPONENTS Core REQUIRED)
         
-        if(${Qt5_DIR} STREQUAL "Qt5_DIR-NOTFOUND")
+        if(${Qt_Prefix_DIR} STREQUAL "Qt_Prefix_DIR-NOTFOUND")
             #maybe Qt5.0 is installed that does not support the overall FindQt5 script
             find_package(Qt5Core 5.5 REQUIRED)
             
@@ -562,7 +608,7 @@ macro(itom_find_package_qt SET_AUTOMOC)
               set(CMAKE_PREFIX_PATH "${WINDOWSSDK_PREFERRED_DIR}/Lib/")
               set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${WINDOWSSDK_PREFERRED_DIR}/Lib/)
             endif(WIN32)
-            
+
             find_package(Qt5 COMPONENTS ${Components} REQUIRED)
             set(QT5_FOUND TRUE)
             
@@ -591,22 +637,22 @@ macro(itom_find_package_qt SET_AUTOMOC)
             set(QT_LIBRARY_DIR "${_qt5Core_install_prefix}/lib")
         endif()
         
-    else(DETECT_QT5)
-        #message(STATUS "TRY TO FIND QT6 COMPONENTS: ${Components}.... ${Qt6_DIR}")
+    elseif(DETECT_QT6)
         if(WIN32)
-            # https://stackoverflow.com/questions/71086422/cmake-cannot-find-packages-within-qt6-installation
-            set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} "${Qt6_DIR}/../../..")
+            set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${Qt_Prefix_DIR})
         endif()
+
+        message(STATUS "CMAKE_PREFIX_PATH: " ${Qt_Prefix_DIR})
         
-        find_package(Qt6 6.2 QUIET COMPONENTS Core) #QUIET)
+        find_package(Qt6 6.2 QUIET COMPONENTS Core REQUIRED)
         
-        #QT5 could be found with component based find_package command
+        #QT6 could be found with component based find_package command
         if(WIN32)
           find_package(WindowsSDK REQUIRED)
           set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} "${WINDOWSSDK_PREFERRED_DIR}/Lib/")
           set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${WINDOWSSDK_PREFERRED_DIR}/Lib/)
         endif(WIN32)
-        
+
         set(COMPONENTS_FILTERED "")
         
         foreach(comp ${Components})
@@ -620,8 +666,9 @@ macro(itom_find_package_qt SET_AUTOMOC)
                 set(QT5_LIBRARIES ${QT5_LIBRARIES} Qt6::${comp})
             endif()
         endforeach(comp)
-        
+
         find_package(Qt6 COMPONENTS ${COMPONENTS_FILTERED} REQUIRED)
+
         set(QT6_FOUND TRUE)
         
         if(${SET_AUTOMOC})
@@ -645,7 +692,7 @@ macro(itom_find_package_qt SET_AUTOMOC)
     elseif (QT6_FOUND)
         # ok
     else()
-        message(SEND_ERROR "Qt5 (>= 5.5) could not be found. Please indicate Qt5_DIR to the cmake/Qt5 subfolder of the library folder of Qt")
+        message(SEND_ERROR "Qt could not be found. Please indicate the Cmake Vairbaile Qt_Prefix_DIR or set the Qt Environment Variable Qt_ROOT to the Qt Directory.")
     endif()
 endmacro()
 

@@ -1713,11 +1713,7 @@ void MainWindow::showAssistant(
 
                 process->start(app, args);
 
-                connect(
-                    process,
-                    SIGNAL(error(QProcess::ProcessError)),
-                    this,
-                    SLOT(helpAssistantError(QProcess::ProcessError)));
+                connect(process, &QProcess::errorOccurred, this, &MainWindow::helpAssistantError);
             }
         }
         else
@@ -2662,11 +2658,7 @@ void MainWindow::mnuShowDesigner()
 
             process->setProcessEnvironment(env);
 
-            connect(
-                process,
-                SIGNAL(error(QProcess::ProcessError)),
-                this,
-                SLOT(designerError(QProcess::ProcessError)));
+            connect(process, &QProcess::errorOccurred, this, &MainWindow::designerError);
 
             po->clearStandardOutputBuffer(appName);
 

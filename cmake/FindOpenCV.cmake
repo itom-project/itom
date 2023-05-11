@@ -49,7 +49,7 @@
 
 #on linux the hint helps to find opencv obtained by the package manager
 find_path(
-    OpenCV_DIR 
+    OpenCV_CMAKE 
     "OpenCVConfig.cmake" 
     HINTS 
     "/usr/share/OpenCV" 
@@ -58,6 +58,8 @@ find_path(
     "/usr/lib64/cmake/OpenCV" 
     "/usr/lib/OpenCV" 
     "/usr/lib/x86_64-linux-gnu/cmake/opencv4"
+    ${OpenCV_DIR}
+    $ENV{OPENCV_ROOT}
     DOC "Root directory of OpenCV")
 
 set(CVLIB_LIBSUFFIX "/lib")
@@ -70,19 +72,24 @@ endif()
 ##====================================================
 ## Find OpenCV libraries
 ##----------------------------------------------------
-if(EXISTS "${OpenCV_DIR}")
+if(EXISTS "${OpenCV_CMAKE}")
 
     #When its possible to use the Config script use it.
-    if(EXISTS "${OpenCV_DIR}/OpenCVConfig.cmake")
+    if(EXISTS "${OpenCV_CMAKE}/OpenCVConfig.cmake")
         
         ## include the standard CMake script
-        include("${OpenCV_DIR}/OpenCVConfig.cmake")
+        include("${OpenCV_CMAKE}/OpenCVConfig.cmake")
 
         ## Search for a specific version
         set(CVLIB_SUFFIX "${OpenCV_VERSION_MAJOR}${OpenCV_VERSION_MINOR}${OpenCV_VERSION_PATCH}")
         
+        set(OpenCV_LIB_PATH "${OpenCV_DIR}" )
         set(OpenCV_BIN_DIR "${OpenCV_LIB_PATH}/../bin" CACHE PATH "OpenCV bin dir")
         set(OpenCV_LIB_VERSION ${CVLIB_SUFFIX} CACHE PATH "version of OpenCV")
+
+        if(NOT EXISTS "${OpenCV_BIN_DIR}")
+            message(FATAL_ERROR "OpenCV_BIN_DIR: ${OpenCV_BIN_DIR} does not exist!")
+        endif(NOT EXISTS "${OpenCV_BIN_DIR}")
     
     elseif(EXISTS "${OpenCV_DIR}/include" AND EXISTS "${OpenCV_DIR}/x86" AND EXISTS "${OpenCV_DIR}/x64")
         #the OpenCV_DIR seems to point to a build version of OpenCV 2.3 on a windows pc
@@ -148,7 +155,7 @@ if(EXISTS "${OpenCV_DIR}")
         set(OpenCV_BIN_DIR "${OpenCV_DIR}${CVLIB_LIBSUFFIX}/../bin" CACHE PATH "OpenCV bin dir")
         
     #Otherwise it try to guess it.
-    else(EXISTS "${OpenCV_DIR}/OpenCVConfig.cmake")
+    else(EXISTS "${OpenCV_CMAKE}/OpenCVConfig.cmake")
     
         if(NOT OpenCV_FIND_COMPONENTS)
             set(OPENCV_LIB_COMPONENTS cxcore cv ml highgui cvaux imgproc)
@@ -172,19 +179,12 @@ if(EXISTS "${OpenCV_DIR}")
         set(CVLIB_SUFFIX "${OpenCV_VERSION_MAJOR}${OpenCV_VERSION_MINOR}${OpenCV_VERSION_PATCH}")
         set(OpenCV_LIB_VERSION ${CVLIB_SUFFIX} CACHE PATH "version of OpenCV")
 
-    endif(EXISTS "${OpenCV_DIR}/OpenCVConfig.cmake")
-
-    #message(STATUS "GENERATOR: ::: ${CMAKE_GENERATOR} - ${BUILD_TARGET64} -- ${CVLIB_LIBSUFFIX}")
+    endif(EXISTS "${OpenCV_CMAKE}/OpenCVConfig.cmake")
 
     ## Initiate the variable before the loop
     set(GLOBAL OpenCV_LIBS "")
     set(OpenCV_FOUND_TMP true)
     
-    #if(EXISTS "${OpenCV_BIN_DIR}/release/" AND "${OpenCV_BIN_DIR}/debug/"}
-    #    set(OpenCV_BIN_RELEASE_DIR "${OpenCV_DIR}${CVLIB_LIBSUFFIX}/../bin" CACHE PATH "OpenCV bin dir")
-    #    set(OpenCV_BIN_DEBUG_DIR "${OpenCV_DIR}${CVLIB_LIBSUFFIX}/../bin" CACHE PATH "OpenCV bin dir")
-    #endif
-#    message(STATUS "OpenCV_BIN_DIR: ${OpenCV_BIN_DIR}; OpenCV_DIR: ${OpenCV_DIR}")
     
     ## Loop over each components
     foreach(__CVLIB ${OPENCV_LIB_COMPONENTS})
@@ -219,9 +219,9 @@ if(EXISTS "${OpenCV_DIR}")
 
     set(OpenCV_FOUND ${OpenCV_FOUND_TMP} CACHE BOOL "" FORCE)
 
-else(EXISTS "${OpenCV_DIR}")
-        set(ERR_MSG "Please specify OpenCV directory using OpenCV_DIR env. variable")
-endif(EXISTS "${OpenCV_DIR}")
+else(EXISTS "${OpenCV_CMAKE}")
+        set(ERR_MSG "Please specify OpenCV directory using **OpenCV_DIR** Cmake Variabel or set the **OPENCV_ROOT* env. variable.")
+endif(EXISTS "${OpenCV_CMAKE}")
 ##====================================================
 
 

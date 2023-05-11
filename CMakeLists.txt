@@ -18,11 +18,16 @@
 # You should have received a copy of the GNU Library General Public License
 # along with itom. If not, see <http://www.gnu.org/licenses/>.
 
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.12)
  
 project(itom)
 
+# set qitom as Visual Studio Startup-Projekt
+set_property( DIRECTORY PROPERTY VS_STARTUP_PROJECT "qitom" )
+
 message(STATUS "--------------- PROJECT itom -----------------")
+
+include(cmake/Setup_Core_Itom.cmake)
  
 if(BUILD_QTVERSION STREQUAL "Qt6")
     set(CMAKE_CXX_STANDARD 17)
@@ -131,6 +136,8 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/licenses
 
 ################################################################################################################
 itom_find_package_qt(ON Core)
+itom_define_sdk_platform()
+itom_define_sdk_compiler()
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win32/itom_setup_win32.iss.in
     ${CMAKE_CURRENT_BINARY_DIR}/setup/win32/itom_setup_win32.iss )
@@ -237,6 +244,8 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/pluginTemplates               DESTINATION 
 
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/cmake                         DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/SDK FILES_MATCHING PATTERN "Find*.cmake")
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/cmake/ItomBuildMacros.cmake   DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/SDK/cmake)
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Setup_PCL_Itom.cmake   DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/SDK/cmake)
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Setup_PCL_Plugins.cmake   DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/SDK/cmake)
 
 if(MSVC)
     file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/designerPluginLibraryVersion.rc DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/SDK)

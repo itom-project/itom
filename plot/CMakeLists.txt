@@ -51,7 +51,12 @@ add_definitions(-DUNICODE -D_UNICODE)
 add_definitions(-DITOMCOMMONPLOT_MOC)
 
 if(BUILD_WITH_PCL)
-    find_package(PCL 1.5.1 REQUIRED COMPONENTS common)
+    include(Setup_PCL_Itom)
+    if(WIN32)
+        find_package(PCL 1.5.1 REQUIRED COMPONENTS common PATHS ${PCL_CMAKE_DIR} NO_DEFAULT_PATH)
+    else(WIN32)
+        find_package(PCL 1.5.1 REQUIRED COMPONENTS common)
+    endif(WIN32)
     add_definitions(-DUSEPCL -D_USEPCL)
 endif(BUILD_WITH_PCL)
 
