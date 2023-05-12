@@ -17,6 +17,7 @@ import sys
 import __main__
 import itom as itomFuncs
 import sphinx
+from sphinx_gallery.sorting import FileNameSortKey
 
 try:
     import plotly.io as pio
@@ -223,6 +224,7 @@ sphinx_gallery_conf = {
     "min_reported_time": 0.0001,
     "filename_pattern": "demo_",
     "matplotlib_animations": True,
+    "within_subsection_order": FileNameSortKey,
 }
 
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
