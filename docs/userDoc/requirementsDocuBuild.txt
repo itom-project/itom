@@ -5,7 +5,6 @@ numpydoc
 pandas
 openpyxl
 plotly
-tables
 pytest
 qbstyles
 scikit-learn

@@ -5,6 +5,7 @@
 import pandas as pd
 import numpy as np
 
+
 # sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoPandas.png'
 timeStemps = pd.Series(np.random.randn(1000), index=pd.date_range("1/1/2000", periods=1000))
 timeStemps = timeStemps.cumsum()
@@ -13,10 +14,6 @@ dataFrame = dataFrame.cumsum()
 
 dataFrame.to_csv("foo.csv")
 pd.read_csv("foo.csv")
-
-###############################################################################
-dataFrame.to_hdf("foo.h5", "df")
-pd.read_hdf("foo.h5", "df")
 
 ###############################################################################
 dataFrame.to_excel("foo.xlsx", sheet_name="Sheet1")
