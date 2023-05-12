@@ -40,3 +40,7 @@ html[data-theme="dark"] {
   --pst-color-text-muted: rgb(221, 221, 221);
   --pst-color-surface: rgb(11,11,11)
 }
+
+table.dataframe {
+    width: auto
+}
