@@ -208,13 +208,13 @@ sphinx_gallery_conf = {
         "11_demos/python_packages"],
     "doc_module": ("matplotlib", "numpy", "pandas", "itom"),
     "reference_url": {"matplotlib": None, "numpy": None, "pandas": None, "itom": None},
-    "show_memory": True,
+    "show_memory": False,
     "show_signature": False,
     "remove_config_comments": True,
     "download_all_examples": False,
     "min_reported_time": 0.0001,
     "filename_pattern": "demo_",
-    "matplotlib_animations": True,
+    "matplotlib_animations": False,
 }
 
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,

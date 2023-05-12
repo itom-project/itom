@@ -537,6 +537,22 @@ optionally display a vertical line or different background color in the itom
 editor (see :ref:`gui-prop-script-editors`) as well as the maximum line 
 length used in the :ref:`code checker <gui-prop-py-code-checkers>`.
 
+Before starting the auto code formatter, it is also possible to execute a
+previous step, that is designed to sort the import statements in a script.
+For this, the package `isort <https://pypi.org/project/isort/>`_ can be used.
+You can enable to start this pre-step by activating the group box in the 
+corresponding tab. Additionally, you can configure the command. This time,
+the current script is copied to a temporary python script, whose path is
+passed at last statement to the user-defined command::
+
+    python -m <cmd> <filename>
+
+where **<cmd>** can be fully configured. An example is **isort --py 3 --profile black**,
+which prepares **isort** to be compatible with any Python 3 version and
+configure itself to be compatible with the auto formatter **black**. If you
+want to use another auto code formatter, it might be useful to change the profile
+accordingly.
+
 
 .. _gui-prop-py-styles:
 
