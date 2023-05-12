@@ -3,10 +3,9 @@
 
 """
 
-import numpy as np
-
 import matplotlib.animation as animation
 import matplotlib.pyplot as plt
+import numpy as np
 from matplotlib.lines import Line2D
 
 
@@ -58,6 +57,8 @@ fig, ax = plt.subplots()
 scope = Scope(ax)
 
 # pass a generator in "emitter" to produce data for the update func
-ani = animation.FuncAnimation(fig, scope.update, emitter, interval=50, cache_frame_data=False, blit=True)
+ani = animation.FuncAnimation(
+    fig, scope.update, emitter, interval=50, blit=True, save_count=100
+)
 
 plt.show()

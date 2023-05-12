@@ -222,7 +222,7 @@ sphinx_gallery_conf = {
     "download_all_examples": False,
     "min_reported_time": 0.0001,
     "filename_pattern": "demo_",
-    "matplotlib_animations": False,
+    "matplotlib_animations": True,
 }
 
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
