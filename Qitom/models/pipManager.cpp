@@ -640,7 +640,7 @@ void PipManager::listAvailablePackages(const PipGeneralOptions &options /*= PipG
     //2. get more information using show package1 package2 ...
     if (m_currentTask == taskNo)
     {
-        emit pipRequestStarted(taskListPackages1, "Get list of names of installed packages... (step 1)\n", true);
+        emit pipRequestStarted(taskListPackages1, "Step 1: Get list of names of installed packages...\n", true);
         clearBuffers();
         m_currentTask = taskListPackages1;
         m_generalOptionsCache = options;
@@ -682,7 +682,7 @@ void PipManager::listAvailablePackages2(const QStringList &names)
     //2. get more information using show package1 package2 ...
     if (m_currentTask == taskNo)
     {
-        emit pipRequestStarted(taskListPackages2, "Get details of all installed packages... (step 2)\n", true);
+        emit pipRequestStarted(taskListPackages2, "Step 2: Get details of all installed packages...\n", true);
         clearBuffers();
         m_currentTask = taskListPackages2;
 
@@ -967,6 +967,7 @@ void PipManager::processFinished(int exitCode, QProcess::ExitStatus exitStatus)
 void PipManager::processReadyReadStandardError()
 {
     QByteArray str = m_pipProcess.readAllStandardError();
+
     if (str.length() > 0)
     {
         m_standardErrorBuffer += str;
@@ -978,6 +979,7 @@ void PipManager::processReadyReadStandardError()
 void PipManager::processReadyReadStandardOutput()
 {
     QByteArray str = m_pipProcess.readAllStandardOutput();
+
     if (str.length() > 0)
     {
         m_standardOutputBuffer += str;
@@ -1174,10 +1176,12 @@ void PipManager::finalizeTask(int exitCode /*= 0*/)
 
                 PythonPackage package;
                 bool package_started = false;
+
                 if (m_pipVersion >= 0x090000)
                 {
                     package_started = true;
                 }
+
                 int pos;
                 QString key, value;
                 QStringList keys;
@@ -1199,6 +1203,7 @@ void PipManager::finalizeTask(int exitCode /*= 0*/)
                     {
                         //check if line consists of key: value
                         pos = line.indexOf(": ");
+
                         if (pos != -1)
                         {
                             key = line.left(pos);
@@ -1255,9 +1260,9 @@ void PipManager::finalizeTask(int exitCode /*= 0*/)
                 if (m_pipVersion >= 0x120000)
                 {
                     QStringList lines = output.split("\n");
+
                     for (int idx = 2; idx < lines.size(); ++idx)
                     {
-
                         #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)) 
                             QStringList items = lines[idx].split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
                         #else 
