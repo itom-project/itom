@@ -177,7 +177,8 @@ html_theme_options = {
         {
             "name": "ITO",
             "url": "https://www.ito.uni-stuttgart.de/",
-            "icon": "https://www.ito.uni-stuttgart.de/img/img_institut/img_koll/ITO_Logo_neu_II.png?__scale=w:220,h:220,cx:117,cy:13,cw:695,ch:695",
+            "icon": "_static/ITO_Logo_neu_II.png",
+            "type": "local",
         },
     ],
 }
