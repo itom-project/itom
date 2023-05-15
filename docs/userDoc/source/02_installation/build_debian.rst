@@ -9,6 +9,11 @@ This section describes how |itom| and its plugins are built on a Debian-based
 operating system, like Debian itself, Ubuntu or any of its derivates or even
 the Raspberry Pi (Raspbian) operation system.
 
+Please be aware that Qt6 is currently not fully supported by Debian-based destributions,
+such as Ubuntu. Therefore the PCL libary is not available as Qt6 build and
+consequently not available for ITOM in the Qt6 Version.
+
+
 Steps are as usual:
 
 *  obtain dependencies
@@ -26,7 +31,7 @@ The following list describe packages that are required or recommended for buildi
 
 Required:
 
-* **Qt5** (libqtcore*, libqt*-dev, libqt*-...)
+* **Qt5** or **Qt6**(libqtcore*, libqt*-dev, libqt*-...)
 * **OpenCV** (libopencv-core* libopencv-core-dev, libopencv-imgproc, libopencv-highgui...)
 * **Python3** (python3, python3-dev, python3-dbg)
 * **Numpy** (python3-numpy, python3-numpy-dbg)
@@ -112,20 +117,17 @@ for |itom| (comments after the hash-tag should not be copied to the command line
 The packages *xsdcxx* and *libxerces-c-dev* are only required for building the optional plugin *x3p*. Usually, *libxerces-c-dev*
 should install its runtime package *libxerces-c3.2* (or similar).
 
-If you want to compile |itom| with support from the Point Cloud Library, also get the following packages:
-
-.. code-block:: bash
-    
-    sudo apt install libpcl-dev libproj-dev
-
-
-Furthermore you have to install the Qt dependencies.
-
 **Qt5:**
 .. code-block:: bash
     sudo apt install libqt5webkit5 libqt5webkit5-dev libqt5widgets5 libqt5xml5 libqt5svg5 libqt5svg5-dev libqt5gui5 libqt5designer5 \
         libqt5concurrent5 qttools5-dev-tools qttools5-dev
     sudo apt install qtwebengine5-dev libqt5webengine5 libqt5webenginewidgets5 # not possible on raspbian
+
+If you want to compile |itom| with support from the Point Cloud Library, also get the following packages:
+
+.. code-block:: bash
+    
+    sudo apt install libpcl-dev libproj-dev
 
 **Qt6:**
 .. code-block:: bash

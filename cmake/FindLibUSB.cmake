@@ -74,6 +74,18 @@ else()
                     x64/Debug/dll
 					VS2015-x64/lib
 					VS2015-x64/dll
+                    build/v141/x64/Debug/lib
+                    build/v141/x64/Debug/dll
+                    build/v141/x64/Release/lib
+                    build/v141/x64/Release/dll
+                    build/v142/x64/Debug/lib
+                    build/v142/x64/Debug/dll
+                    build/v142/x64/Release/lib
+                    build/v142/x64/Release/dll
+                    build/v143/x64/Debug/lib
+                    build/v143/x64/Debug/dll
+                    build/v143/x64/Release/lib
+                    build/v143/x64/Release/dll
 					)
             else (BUILD_TARGET64)
                 set( LibUSB_LIBRARY_PATH_SUFFIX 
@@ -87,6 +99,18 @@ else()
                     Win32/Debug/dll
 					VS2015-Win32/lib
 					VS2015-Win32/dll
+                    build/v141/Win32/Debug/lib
+                    build/v141/Win32/Debug/dll
+                    build/v141/Win32/Release/lib
+                    build/v141/Win32/Release/dll
+                    build/v142/Win32/Debug/lib
+                    build/v142/Win32/Debug/dll
+                    build/v142/Win32/Release/lib
+                    build/v142/Win32/Release/dll
+                    build/v143/Win32/Debug/lib
+                    build/v143/Win32/Debug/dll
+                    build/v143/Win32/Release/lib
+                    build/v143/Win32/Release/dll
 					)
             endif(BUILD_TARGET64)
         elseif( BORLAND )

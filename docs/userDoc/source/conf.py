@@ -17,6 +17,7 @@ import sphinx
 import itom as itomFuncs
 import __main__
 import inspect
+from sphinx_gallery.sorting import FileNameSortKey
 
 try:
     import plotly.io as pio
@@ -154,7 +155,7 @@ pygments_style = "sphinx"
 qt_version = itomVersionInfo["QT_Version"]
 
 # choose itom theme as main theme
-html_theme = "itom"
+# html_theme = "itom"
 qthelp_theme = "itom"  # theme for QtHelp only (available since Sphinx 1.5.3)
 html_theme_path = ["_themes"]
 
@@ -208,13 +209,14 @@ sphinx_gallery_conf = {
         "11_demos/python_packages"],
     "doc_module": ("matplotlib", "numpy", "pandas", "itom"),
     "reference_url": {"matplotlib": None, "numpy": None, "pandas": None, "itom": None},
-    "show_memory": True,
+    "show_memory": False,
     "show_signature": False,
     "remove_config_comments": True,
     "download_all_examples": False,
     "min_reported_time": 0.0001,
     "filename_pattern": "demo_",
     "matplotlib_animations": True,
+    "within_subsection_order": FileNameSortKey,
 }
 
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
