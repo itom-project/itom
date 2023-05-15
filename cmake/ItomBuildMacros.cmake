@@ -732,7 +732,7 @@ macro(itom_library_translation qm_files)
         set(TRANSLATION_OUTPUT_FILES)
         message(STATUS "lupdate for target ${PARAM_TARGET} for languages ${ITOM_LANGUAGES}" 
                         "for files ${PARAM_FILES_TO_TRANSLATE}")
-        itom_qt5_create_translation(
+        itom_qt_create_translation(
             TRANSLATION_OUTPUT_FILES 
             TRANSLATIONS_FILES 
             ${PARAM_TARGET} 
@@ -755,7 +755,7 @@ macro(itom_library_translation qm_files)
         endforeach()
     endif()
     unset(QMFILES)
-    itom_qt5_compile_translation(
+    itom_qt_compile_translation(
             QMFILES 
             ${CMAKE_CURRENT_BINARY_DIR}/translation
             ${PARAM_TARGET} 
@@ -772,11 +772,11 @@ endmacro()
 # desired language using Qt's tool lupdate.
 # 
 # The call is
-# itom_qt5_create_translation(outputFiles tsFiles target languages srcfile1 srcfile2...)
+# itom_qt_create_translation(outputFiles tsFiles target languages srcfile1 srcfile2...)
 # 
 # .
-macro(itom_qt5_create_translation outputFiles tsFiles target languages)
-    message(STATUS "itom_qt5_create_translation: Create ts files (lupdate) for target ${target} and languages ${${languages}}.")
+macro(itom_qt_create_translation outputFiles tsFiles target languages)
+    message(STATUS "itom_qt_create_translation: Create ts files (lupdate) for target ${target} and languages ${${languages}}.")
     message(STATUS "--------------------------------------------------")
     
     option(ITOM_UPDATE_TRANSLATIONS_REMOVE_UNUSED_STRINGS "If ITOM_UPDATE_TRANSLATIONS is ON, this option defines if strings, \
@@ -882,10 +882,18 @@ macro(itom_qt5_create_translation outputFiles tsFiles target languages)
             endforeach()
             file(WRITE ${_ts_lst_file} "${_lst_file_srcs}")
         endif()
-        add_custom_command(OUTPUT ${_ts_file}_update
-            COMMAND ${Qt5_LUPDATE_EXECUTABLE}
-            ARGS ${_lupdate_options} "@${_ts_lst_file}" -ts "${_ts_file}"
-            DEPENDS ${_my_sources} ${_ts_lst_file} VERBATIM)
+		
+		if (QT6_FOUND OR Qt6Core_FOUND)
+			add_custom_command(OUTPUT ${_ts_file}_update
+				COMMAND ${QT_CMAKE_EXPORT_NAMESPACE}::lupdate
+				ARGS ${_lupdate_options} "@${_ts_lst_file}" -ts "${_ts_file}"
+				DEPENDS ${_my_sources} ${_ts_lst_file} VERBATIM)
+		else()
+			add_custom_command(OUTPUT ${_ts_file}_update
+				COMMAND ${Qt5_LUPDATE_EXECUTABLE}
+				ARGS ${_lupdate_options} "@${_ts_lst_file}" -ts "${_ts_file}"
+				DEPENDS ${_my_sources} ${_ts_lst_file} VERBATIM)
+		endif()
         set(${outputFiles} ${${outputFiles}} ${_ts_file}_update) #add output file for custom command to outputFiles list
         message(STATUS "- Update (existing) ts-file (lupdate process): ${_ts_file}")
     endforeach()
@@ -903,14 +911,14 @@ endmacro()
 # to this target.
 #
 # The call is
-# itom_qt5_compile_translation(qm_files output_location target tsfile1 tsfile2...)
+# itom_qt_compile_translation(qm_files output_location target tsfile1 tsfile2...)
 #
 # example:
 # set(QM_FILES "")
 # itom_qt5_add_transation(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/translation" 
 # "build_translation_target" "file1.ts file2.ts file3.ts")
 # .
-macro(itom_qt5_compile_translation _qm_files output_location target)
+macro(itom_qt_compile_translation _qm_files output_location target)
     if (NOT (QT5_FOUND OR Qt5LinguistTools_FOUND OR QT6_FOUND OR Qt6LinguistTools_FOUND))
         message(SEND_ERROR "translation requires LinguistTools")
     endif()
@@ -1376,7 +1384,7 @@ macro(PLUGIN_TRANSLATION qm_files target force_translation_update existing_trans
     if(${force_translation_update})
         set(TRANSLATIONS_FILES) #list with all ts files
         set(TRANSLATION_OUTPUT_FILES)
-        itom_qt5_create_translation(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target} ${languages} ${files_to_translate})
+        itom_qt_create_translation(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target} ${languages} ${files_to_translate})
         add_custom_target (_${target}_translation DEPENDS ${TRANSLATION_OUTPUT_FILES})
         add_dependencies(${target} _${target}_translation)
     else()
@@ -1384,7 +1392,7 @@ macro(PLUGIN_TRANSLATION qm_files target force_translation_update existing_trans
     endif()
     
     set(QMFILES)
-    itom_qt5_compile_translation(QMFILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target} ${TRANSLATIONS_FILES})
+    itom_qt_compile_translation(QMFILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target} ${TRANSLATIONS_FILES})
     set(${qm_files} ${${qm_files}} ${QMFILES})
     
     #add the translation files to the solution
