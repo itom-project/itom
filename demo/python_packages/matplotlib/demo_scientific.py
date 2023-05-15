@@ -1,5 +1,5 @@
 """Science Plots
-==========
+=============
 
 This `matplotlib <https://matplotlib.org/>`_ style `Science Plots <https://github.com/garrettj403/SciencePlots>`_ is focused to generate figures using common scientific journal styles such as IEEE. 
 The figures are suitable to print in colored are back and white. In addition to `matplotlib <https://matplotlib.org/>`_, the style must be installed.

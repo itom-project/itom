@@ -6,11 +6,6 @@ An example of ``scikit-learn``, copied from
 
 A recursive feature elimination example showing the relevance of pixels in
 a digit classification task.
-
-.. note::
-
-    See also :ref:`sphx_glr_auto_examples_feature_selection_plot_rfe_with_cross_validation.py`
-
 """
 # noqa: E501
 
