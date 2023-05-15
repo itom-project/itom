@@ -3205,12 +3205,37 @@ void ScriptEditorWidget::fileSysWatcherFileChangedStep2(const QString &path)
         }
         else //file changed
         {
+            // compare the content of the file with the content of this script...
             QCryptographicHash fileHash(QCryptographicHash::Sha1);
             file.open(QIODevice::ReadOnly | QIODevice::Text);
             fileHash.addData(file.readAll());
 
+            QByteArray currentByteArray;
+
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+            QTextCodec* tc = QTextCodec::codecForName(m_charsetEncoding.encodingName.toLatin1());
+
+            if (!tc)
+            {
+                // fallback to utf8
+                tc = QTextCodec::codecForName("UTF-8");
+            }
+
+            currentByteArray = tc->fromUnicode(toPlainText());
+#else
+            QStringEncoder encoder(m_charsetEncoding.encodingName.toLatin1());
+
+            if (!encoder.isValid())
+            {
+                // fallback to utf8
+                encoder = QStringEncoder("UTF-8");
+            }
+
+            currentByteArray = encoder(toPlainText());
+#endif
+
             QCryptographicHash fileHash2(QCryptographicHash::Sha1);
-            fileHash2.addData(toPlainText().toLatin1());
+            fileHash2.addData(currentByteArray);
 
             if (!(fileHash.result() == fileHash2.result())) //does not ask user in the case of same texts
             {
@@ -3224,7 +3249,14 @@ void ScriptEditorWidget::fileSysWatcherFileChangedStep2(const QString &path)
 
                 if (ret == QMessageBox::Yes)
                 {
+                    int line, col;
+                    cursorPosition(line, col);
+
                     openFile(path, true);
+
+                    // try to apply the cursor position again
+                    setCursorPosAndEnsureVisible(line);
+                    setCursorPosition(line, col);
                 }
                 else
                 {
