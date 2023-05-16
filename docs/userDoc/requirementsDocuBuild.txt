@@ -18,4 +18,5 @@ sphinx_rtd_theme
 sphinxcontrib-moderncmakedomain
 sphinx-favicon
 sphinxcontrib-fulltoc
+sphinxcontrib-jquery
 pydata-sphinx-theme
