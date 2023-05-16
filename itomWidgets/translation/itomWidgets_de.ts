@@ -197,10 +197,6 @@
         <translation type="unfinished">Spaltengrößen an Inhalte anpassen</translation>
     </message>
     <message>
-        <source>number of decimals...</source>
-        <translation type="obsolete">Anzahl Nachkommastellen...</translation>
-    </message>
-    <message>
         <location filename="../dataObjectTable.cpp" line="932"/>
         <source>number of decimals</source>
         <translation type="unfinished">Dezimalzahlen</translation>
@@ -773,17 +769,9 @@
 <context>
     <name>ito::DialogHeatmapConfiguration</name>
     <message>
-        <source>invalid number</source>
-        <translation type="obsolete">Ungültige Anzahl</translation>
-    </message>
-    <message>
         <location filename="../dialogHeatmapConfiguration.cpp" line="108"/>
         <source>The &apos;%1&apos; number is no valid decimal number.</source>
         <translation type="unfinished">Das %1. ist keine gültige Dezimalzahl.</translation>
-    </message>
-    <message>
-        <source>out of range</source>
-        <translation type="obsolete">Außerhalb des Gültigkeitsbereichs</translation>
     </message>
     <message>
         <location filename="../dialogHeatmapConfiguration.cpp" line="116"/>
