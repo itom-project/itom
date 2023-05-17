@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="de_DE">
+<TS version="2.1" language="de">
 <context>
     <name>DialogAboutQItom</name>
     <message>
@@ -2663,7 +2663,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.cpp" line="+445"/>
+        <location filename="../main.cpp" line="+444"/>
         <source>User Management</source>
         <translation type="unfinished">Benutzerverwaltung</translation>
     </message>
@@ -4715,7 +4715,7 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::AbstractDockWidget</name>
     <message>
-        <location filename="../widgets/abstractDockWidget.cpp" line="+119"/>
+        <location filename="../widgets/abstractDockWidget.cpp" line="+115"/>
         <source>Stay On Top</source>
         <translation>Im Vordergrund anzeigen</translation>
     </message>
@@ -8439,7 +8439,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
 <context>
     <name>ito::PythonEngine</name>
     <message>
-        <location filename="../python/pythonEngine.cpp" line="+1392"/>
+        <location filename="../python/pythonEngine.cpp" line="+1395"/>
         <source>Python not initialized</source>
         <translation type="unfinished">Python ist nicht inizialisiert</translation>
     </message>
@@ -8533,12 +8533,12 @@ Please change setting in the property dialog of itom.</source>
 Bitte die Einstellungen unter &apos;Optionen&apos; ändern.</translation>
     </message>
     <message>
-        <location line="-5513"/>
+        <location line="-5515"/>
         <source>Settings value Python::pyHome has not been set as Python Home directory since it does not exist:  %s</source>
         <translation type="unfinished">Der unter &apos;Python::pyHome&apos; eingestellte Wert wurde nicht als Python-Verzeichnis gesetzt, da dieses Verzeichnis nicht existiert: %s</translation>
     </message>
     <message>
-        <location line="+128"/>
+        <location line="+130"/>
         <source>The home directory of Python is currently set to the non-existing directory &apos;%s&apos;
 Python cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python 
 or correct the base directory in the property dialog of itom.</source>
@@ -8811,7 +8811,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-5080"/>
+        <location line="-5082"/>
         <source>The itom subdirectory of Python &apos;%s&apos; does not exist.
 Please change setting in the property dialog of itom.</source>
         <translation type="unfinished"></translation>
@@ -8819,12 +8819,12 @@ Please change setting in the property dialog of itom.</source>
     <message>
         <location line="+36"/>
         <source>Error pre-initializing Python in isolated mode:  %s</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Fehler beim Vorinitialisieren von Python im isolierten Modus: %s</translation>
     </message>
     <message>
         <location line="+48"/>
         <source>Error setting custom Python home path:  %s</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Fehler beim Setzen eines benutzerdefinierten Python Home Pfades: %s</translation>
     </message>
     <message>
         <location line="+12"/>
@@ -8838,7 +8838,7 @@ Verify the Python base directory in the itom property dialog and restart itom.</
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+104"/>
+        <location line="+106"/>
         <source>Numpy.core.multiarray failed to import. Please verify that you have a compatible version of Numpy installed.</source>
         <translation type="unfinished"></translation>
     </message>
