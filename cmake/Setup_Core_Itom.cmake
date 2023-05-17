@@ -33,15 +33,18 @@ endif(WIN32)
 
 if(NOT EXISTS ${OpenCV_DIR})
     if(EXISTS $ENV{OPENCV_ROOT})
-        set(OpenCV_DIR $ENV{OPENCV_ROOT} CACHE PATH "Path to the OpenCV Directory")
+        set(OpenCV_DIR $ENV{OPENCV_ROOT} CACHE PATH "Path to the OpenCV root directory")
     else(EXISTS $ENV{OPENCV_ROOT})
-        set(OpenCV_DIR "OpenCV_DIR-NOTFOUND" CACHE PATH "Path to the OpenCV Directory")
+        set(OpenCV_DIR "OpenCV_DIR-NOTFOUND" CACHE PATH "Path to the OpenCV root directory")
     endif(EXISTS $ENV{OPENCV_ROOT})
 endif(NOT EXISTS ${OpenCV_DIR})
 
 if(WIN32)
     if(NOT EXISTS ${OpenCV_DIR})
-        message(FATAL_ERROR "Depencencies Missing for OpenCV Library. Please make sure that the Cmake Variable OpenCV_DIR or the Environment Variable OPENCV_ROOT are well defined")
+        message(FATAL_ERROR "Depencencies Missing for OpenCV Library. \
+		Please make sure that the Cmake Variable OpenCV_DIR or the \
+		Environment Variable OPENCV_ROOT are well defined and point \
+		to the root directory of OpenCV.")
     endif(NOT EXISTS ${OpenCV_DIR})
 endif(WIN32)
 
@@ -64,6 +67,6 @@ endif(NOT EXISTS ${Qt_Prefix_DIR})
 
 if(WIN32)
     if(NOT EXISTS ${Qt_Prefix_DIR})
-        message(FATAL_ERROR "Depencencies Missing for Qt Library. Please make sure that the Cmake Variable Qt_Prefix_DIR or the Environment Variable QT_ROOT are well defined")
+        message(FATAL_ERROR "Depencencies missing for Qt Library. Please make sure that the Cmake Variable Qt_Prefix_DIR or the Environment Variable QT_ROOT are well defined")
     endif(NOT EXISTS ${Qt_Prefix_DIR})
 endif(WIN32)
