@@ -11,15 +11,19 @@ option(ITOM_BUILD_PACKAGE "Choose to build ITOM as a System specific Package for
 
 if(NOT EXISTS ${Python_ROOT_DIR})
     if(EXISTS $ENV{PYTHON_ROOT})
-        set(Python_ROOT_DIR $ENV{PYTHON_ROOT} CACHE PATH "Path to the OpenCV Directory")
+        set(Python_ROOT_DIR $ENV{PYTHON_ROOT} CACHE PATH "Path to the root directory of the Python installation")
     else(EXISTS $ENV{PYTHON_ROOT})
-        set(Python_ROOT_DIR "Python_ROOT_DIR-NOTFOUND" CACHE PATH "Path to the OpenCV Directory")
+        set(Python_ROOT_DIR "Python_ROOT_DIR-NOTFOUND" CACHE PATH "Path to the root directory of the Python installation")
     endif(EXISTS $ENV{PYTHON_ROOT})
 endif(NOT EXISTS ${Python_ROOT_DIR})
 
 if(WIN32)
     if(NOT EXISTS ${Python_ROOT_DIR})
-        message(FATAL_ERROR "Depencencies Missing for Python Library. Please make sure that the Cmake Variable Python_ROOT_DIR or the Environment Variable PYTHON_ROOT are well defined")
+        message(FATAL_ERROR "Depencencies Missing for Python Library. \
+		Please make sure that the Cmake Variable Python_ROOT_DIR or \
+		the Environment Variable PYTHON_ROOT are well defined and \
+		point to the root directory of the Python installation, that \
+		should be used for compiling itom.")
     endif(NOT EXISTS ${Python_ROOT_DIR})
 endif(WIN32)
 
