@@ -20,10 +20,10 @@ endif(NOT EXISTS ${Python_ROOT_DIR})
 if(WIN32)
     if(NOT EXISTS ${Python_ROOT_DIR})
         message(FATAL_ERROR "Depencencies Missing for Python Library. \
-		Please make sure that the Cmake Variable Python_ROOT_DIR or \
-		the Environment Variable PYTHON_ROOT are well defined and \
-		point to the root directory of the Python installation, that \
-		should be used for compiling itom.")
+Please make sure that the Cmake variable Python_ROOT_DIR or \
+the Environment Variable PYTHON_ROOT are well defined and \
+point to the root directory of the Python installation, that \
+should be used for compiling itom.")
     endif(NOT EXISTS ${Python_ROOT_DIR})
 endif(WIN32)
 
@@ -42,9 +42,9 @@ endif(NOT EXISTS ${OpenCV_DIR})
 if(WIN32)
     if(NOT EXISTS ${OpenCV_DIR})
         message(FATAL_ERROR "Depencencies Missing for OpenCV Library. \
-		Please make sure that the Cmake Variable OpenCV_DIR or the \
-		Environment Variable OPENCV_ROOT are well defined and point \
-		to the root directory of OpenCV.")
+Please make sure that the Cmake Variable OpenCV_DIR or the \
+environment variable OPENCV_ROOT are well defined and point \
+to the root directory of OpenCV.")
     endif(NOT EXISTS ${OpenCV_DIR})
 endif(WIN32)
 
@@ -67,6 +67,9 @@ endif(NOT EXISTS ${Qt_Prefix_DIR})
 
 if(WIN32)
     if(NOT EXISTS ${Qt_Prefix_DIR})
-        message(FATAL_ERROR "Depencencies missing for Qt Library. Please make sure that the Cmake Variable Qt_Prefix_DIR or the Environment Variable QT_ROOT are well defined")
+        message(FATAL_ERROR "Depencencies missing for Qt Library. \
+Please make sure that the Cmake Variable Qt_Prefix_DIR or the environment \
+variable QT_ROOT are well defined and point to the root directory \
+of the Qt installation, e.g. a folder like ...Qt/6.4.0/msvc2019_64")
     endif(NOT EXISTS ${Qt_Prefix_DIR})
 endif(WIN32)

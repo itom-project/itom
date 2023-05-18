@@ -597,16 +597,23 @@ void PipManager::checkPipAvailable(const PipGeneralOptions &options /*= PipGener
     if (m_currentTask == taskNo)
     {
 #if WIN32
-        if (PY_VERSION_HEX >= 0x03050000)
+        if (PY_VERSION_HEX >= 0x03050000 && PY_VERSION_HEX < 0x03090000)
         {
-            emit pipRequestStarted(taskCheckAvailable, "For Python 3.5 or higher, some packages (e.g. Scipy or OpenCV) might depend on the Microsoft Visual C++ 2015 redistributable package. Please install it if not yet done.\n\nCheck connection to pip and get version...\n");
+            emit pipRequestStarted(taskCheckAvailable, 
+                "For Python 3.5 or higher, some packages (e.g. Scipy or OpenCV) \
+might depend on the Microsoft Visual C++ 2015 redistributable package. Please \
+install it if not yet done.\n\nCheck connection to pip and get version...\n");
         }
         else
         {
-            emit pipRequestStarted(taskCheckAvailable, "Check connection to pip and get version...\n");
+            emit pipRequestStarted(taskCheckAvailable, 
+                QString("Python %1.\nCheck connection to pip and get version...\n").arg(PY_VERSION)
+            );
         }
 #else
-        emit pipRequestStarted(taskCheckAvailable, "Check connection to pip and get version...\n");
+        emit pipRequestStarted(taskCheckAvailable,
+            QString("Python %1.\nCheck connection to pip and get version...\n").arg(PY_VERSION)
+        );
 #endif
         
         clearBuffers();
