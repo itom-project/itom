@@ -353,7 +353,7 @@ void DialogPipManager::closeEvent(QCloseEvent *e)
 //--------------------------------------------------------------------------------
 void DialogPipManager::on_btnReload_clicked()
 {
-    m_pPipManager->listAvailablePackages(createOptions());
+    m_pPipManager->listAvailablePackages(createOptions(), true);
 }
 
 //--------------------------------------------------------------------------------
@@ -465,6 +465,7 @@ It is also possible to directly start the package manager by calling the itom ap
 void DialogPipManager::on_btnUninstall_clicked()
 {
     QModelIndex mi = ui.tablePackages->currentIndex();
+
     if (mi.isValid())
     {
         QString packageName = m_pPipManager->data(m_pPipManager->index(mi.row(), 0), Qt::DisplayRole).toString();
@@ -526,22 +527,16 @@ void DialogPipManager::on_btnSudoUninstall_clicked()
 //---------------------------------------------------------------------------------
 void DialogPipManager::treeViewSelectionChanged(const QItemSelection & selected, const QItemSelection & deselected)
 {
-    bool updateAvailabe = false;
+    bool updateAvailable = false;
 
     if (selected.size() > 0)
     {
-        updateAvailabe = true;
+        updateAvailable = true;
     }
 
-    /*foreach (const QModelIndex &mi, selected.indexes())
-    {
-        if (mi.column() == 0)
-        {
-            updateAvailabe = m_pPipManager->data(mi, Qt::UserRole + 1).toBool();
-        }
-    }*/
-
-    ui.btnUpdate->setEnabled(updateAvailabe && ui.btnInstall->isEnabled());
+    ui.btnUpdate->setEnabled(updateAvailable && ui.btnInstall->isEnabled());
+    ui.btnUninstall->setEnabled(updateAvailable && ui.btnInstall->isEnabled());
+    ui.btnSudoUninstall->setEnabled(updateAvailable && ui.btnInstall->isEnabled());
 }
 
 //---------------------------------------------------------------------------------
