@@ -63,17 +63,21 @@ DialogPipManager::DialogPipManager(QWidget *parent /*= NULL*/, bool standalone /
     ui.btnStartItom->setVisible(standalone);
     ui.btnOk->setVisible(!standalone);
 
+    ui.progressCancelFetchDetails->setVisible(false);
+    ui.btnCancelFetchDetails->setVisible(false);
+
     ito::RetVal retval;
     m_pPipManager = new PipManager(retval, this);
 
     if (!retval.containsError())
     {
-        connect(m_pPipManager, SIGNAL(pipVersion(QString)), this, SLOT(pipVersion(QString)));
-        connect(m_pPipManager, SIGNAL(outputAvailable(QString, bool)), this, SLOT(outputReceived(QString, bool)));
+        connect(m_pPipManager, &PipManager::pipVersion, this, &DialogPipManager::pipVersion);
+        connect(m_pPipManager, &PipManager::outputAvailable, this, &DialogPipManager::outputReceived);
         connect(m_pPipManager, SIGNAL(pipRequestStarted(PipManager::Task, QString, bool)), this, SLOT(pipRequestStarted(PipManager::Task, QString, bool)));
         connect(m_pPipManager, SIGNAL(pipRequestFinished(PipManager::Task, QString, bool)), this, SLOT(pipRequestFinished(PipManager::Task, QString, bool)));
         connect(ui.tablePackages, SIGNAL(selectedItemsChanged(QItemSelection, QItemSelection)), this, SLOT(treeViewSelectionChanged(QItemSelection, QItemSelection)));
         connect(ui.tablePackages, SIGNAL(customContextMenuRequested(QPoint)),this, SLOT(tableCustomContextMenuRequested(QPoint)));
+        connect(m_pPipManager, &PipManager::pipFetchDetailsProgress, this, &DialogPipManager::pipFetchDetailsProgress);
 
         m_pPipManager->checkPipAvailable(createOptions());
 
@@ -333,6 +337,15 @@ void DialogPipManager::pipRequestFinished(const PipManager::Task &task, const QS
     }
 }
 
+//-------------------------------------------------------------------------------------
+void DialogPipManager::pipFetchDetailsProgress(int totalNumberOfUnfetchedDetails, int recentlyFetchedDetails, bool finished)
+{
+    ui.progressCancelFetchDetails->setVisible(!finished);
+    ui.btnCancelFetchDetails->setVisible(!finished);
+    ui.progressCancelFetchDetails->setMaximum(totalNumberOfUnfetchedDetails);
+    ui.progressCancelFetchDetails->setValue(recentlyFetchedDetails);
+}
+
 //--------------------------------------------------------------------------------
 void DialogPipManager::closeEvent(QCloseEvent *e)
 {
@@ -360,6 +373,14 @@ void DialogPipManager::on_btnReload_clicked()
 void DialogPipManager::on_btnVerifyInstalledPackages_clicked()
 {
     m_pPipManager->checkVerifyInstalledPackages(createOptions());
+}
+
+//-------------------------------------------------------------------------------------
+void DialogPipManager::on_btnCancelFetchDetails_clicked()
+{
+    m_pPipManager->interruptPipProcess();
+    ui.progressCancelFetchDetails->setVisible(false);
+    ui.btnCancelFetchDetails->setVisible(false);
 }
 
 //--------------------------------------------------------------------------------

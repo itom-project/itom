@@ -156,9 +156,13 @@ class PipManager : public QAbstractItemModel
         PipMode m_pipCallMode;
         QString m_runPipUtf8Path; //!< only valid if m_pipCallMode == pipModeRunPipUtf8
 
-        void fetchPackageDetails(const QStringList& names, int totalNumberOfUnfetchedDetails);
+        int m_numberOfUnfetchedPackageDetails;
+        int m_numberOfNewlyObtainedPackageDetails;
+        bool m_fetchDetailCancelRequested;
+
+        void fetchPackageDetails(const QStringList& names, int totalNumberOfUnfetchedDetails, bool firstCall);
         void updatePythonPackageDetails(const PythonPackage& details);
-        bool triggerFetchDetailsForOpenPackages();
+        bool triggerFetchDetailsForOpenPackages(bool firstCall);
 
         void finalizeTask(int exitCode = 0);
         void finalizeTaskCheckAvailable(const QString& error, const QString& output, int exitCode);
@@ -181,6 +185,7 @@ class PipManager : public QAbstractItemModel
         void pipVersion(const QString &version);
         void pipRequestStarted(const PipManager::Task &task, const QString &text, bool outputSilent = false);
         void pipRequestFinished(const PipManager::Task &task, const QString &text, bool success);
+        void pipFetchDetailsProgress(int totalNumberOfUnfetchedDetails, int recentlyFetchedDetails, bool finished);
 };
 
 }

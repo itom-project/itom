@@ -47,7 +47,10 @@ namespace ito
         m_pipAvailable(false),
         m_pipVersion(0x000000),
         m_pUserDefinedPythonHome(nullptr),
-        m_pipCallMode(PipMode::pipModeDirect)
+        m_pipCallMode(PipMode::pipModeDirect),
+        m_numberOfUnfetchedPackageDetails(0),
+        m_numberOfNewlyObtainedPackageDetails(0),
+        m_fetchDetailCancelRequested(false)
     {
         m_headers << tr("Name") << tr("Version") << tr("Location") << tr("Requires") << tr("Updates") << tr("Summary") << tr("Homepage") << tr("License");
         m_alignment << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft);
@@ -571,6 +574,8 @@ bool PipManager::isPipStarted() const
 //----------------------------------------------------------------------------------------------------------------------------------
 void PipManager::startProcess(const QStringList &arguments)
 {
+    m_fetchDetailCancelRequested = false;
+
     if (m_pipCallMode == PipMode::pipModeDirect)
     {
         QStringList args;
@@ -676,8 +681,8 @@ void PipManager::listAvailablePackages(const PipGeneralOptions &options /*= PipG
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-void PipManager::fetchPackageDetails(const QStringList &names, int totalNumberOfUnfetchedDetails)
+//-------------------------------------------------------------------------------------
+void PipManager::fetchPackageDetails(const QStringList &names, int totalNumberOfUnfetchedDetails, bool firstCall)
 {
     if (m_pythonPath == "")
     {
@@ -696,14 +701,16 @@ void PipManager::fetchPackageDetails(const QStringList &names, int totalNumberOf
     //2. get more information using show package1 package2 ...
     if (m_currentTask == taskNo)
     {
-        QString appendix;
+        QString text;
 
-        if (totalNumberOfUnfetchedDetails > names.size())
+        if (firstCall)
         {
-            appendix = QString("%1 more packages open").arg(totalNumberOfUnfetchedDetails - names.size());
+            text = QString("Step 2: Fetch details of %1 out of %2 installed packages...\n").arg(totalNumberOfUnfetchedDetails).arg(m_pythonPackages.size());
+            m_numberOfUnfetchedPackageDetails = totalNumberOfUnfetchedDetails;
+            m_numberOfNewlyObtainedPackageDetails = 0;
+            emit pipFetchDetailsProgress(totalNumberOfUnfetchedDetails, 0, false);
         }
 
-        QString text = QString("Fetch details of %1 of %2 installed packages. %3...\n").arg(names.size()).arg(m_pythonPackages.size()).arg(appendix);
         emit pipRequestStarted(taskFetchPackagesDetails, text, true);
         clearBuffers();
         m_currentTask = taskFetchPackagesDetails;
@@ -715,7 +722,7 @@ void PipManager::fetchPackageDetails(const QStringList &names, int totalNumberOf
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void PipManager::checkPackageUpdates(const PipGeneralOptions &options /*= PipGeneralOptions()*/)
 {
     if (m_pythonPath == "")
@@ -753,7 +760,7 @@ void PipManager::checkPackageUpdates(const PipGeneralOptions &options /*= PipGen
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void PipManager::checkVerifyInstalledPackages(const PipGeneralOptions &options /*= PipGeneralOptions()*/)
 {
     if (m_pythonPath == "")
@@ -781,7 +788,7 @@ void PipManager::checkVerifyInstalledPackages(const PipGeneralOptions &options /
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void PipManager::installPackage(const PipInstall &installSettings, const PipGeneralOptions &options /*= PipGeneralOptions()*/)
 {
     if (m_pythonPath == "")
@@ -897,7 +904,7 @@ void PipManager::installPackage(const PipInstall &installSettings, const PipGene
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void PipManager::uninstallPackage(const QString &packageName, bool runAsSudo, const PipGeneralOptions &options /*= PipGeneralOptions()*/)
 {
     if (m_pythonPath == "")
@@ -938,7 +945,7 @@ void PipManager::uninstallPackage(const QString &packageName, bool runAsSudo, co
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void PipManager::processError(QProcess::ProcessError error)
 {
     if (m_currentTask != taskNo)
@@ -951,16 +958,27 @@ void PipManager::processError(QProcess::ProcessError error)
         case QProcess::ReadError:
             emit outputAvailable(tr("An error occurred when attempting to read from the process.\n"), false);
             break;
-        default:
-            emit outputAvailable(tr("other error"), false);
+        case QProcess::Crashed:
+            if (!m_fetchDetailCancelRequested)
+            {
+                emit outputAvailable(tr("Process crashed.\n"), false);
+            }
             break;
+        default:
+            emit outputAvailable(tr("other error\n"), false);
+            break;
+        }
+
+        if (m_currentTask == taskFetchPackagesDetails)
+        {
+            emit pipFetchDetailsProgress(m_numberOfUnfetchedPackageDetails, m_numberOfUnfetchedPackageDetails, true);
         }
     }
 
     finalizeTask();
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void PipManager::processFinished(int exitCode, QProcess::ExitStatus exitStatus)
 {
     if (exitStatus == QProcess::CrashExit)
@@ -968,7 +986,10 @@ void PipManager::processFinished(int exitCode, QProcess::ExitStatus exitStatus)
         Task temp = m_currentTask;
         m_currentTask = taskNo;
 
-        emit pipRequestFinished(temp, tr("Python pip crashed during execution\n"), false);
+        if (!m_fetchDetailCancelRequested)
+        {
+            emit pipRequestFinished(temp, tr("Python pip crashed during execution\n"), false);
+        }
 
         if (temp != taskNo)
         {
@@ -985,7 +1006,7 @@ void PipManager::processFinished(int exitCode, QProcess::ExitStatus exitStatus)
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void PipManager::processReadyReadStandardError()
 {
     QByteArray str = m_pipProcess.readAllStandardError();
@@ -1198,7 +1219,7 @@ void PipManager::finalizeTaskListPackages(const QString& error, const QString& o
 
         endResetModel();
 
-        if (!triggerFetchDetailsForOpenPackages())
+        if (!triggerFetchDetailsForOpenPackages(true))
         {
             emit pipRequestFinished(taskFetchPackagesDetails, "List of packages obtained.\n", true);
         }
@@ -1206,7 +1227,7 @@ void PipManager::finalizeTaskListPackages(const QString& error, const QString& o
 }
 
 //-------------------------------------------------------------------------------------
-bool PipManager::triggerFetchDetailsForOpenPackages()
+bool PipManager::triggerFetchDetailsForOpenPackages(bool firstCall)
 {
     // fetch all details from packages, that have not been updated yet
     QStringList packages_out;
@@ -1223,7 +1244,7 @@ bool PipManager::triggerFetchDetailsForOpenPackages()
 
     if (packages_out.size() > 0)
     {
-        fetchPackageDetails(packages_out.mid(0, 10), packages_out.size());
+        fetchPackageDetails(packages_out.mid(0, 5), packages_out.size(), firstCall);
         return true;
     }
 
@@ -1324,6 +1345,7 @@ void PipManager::finalizeTaskFetchPackagesDetails(const QString& error, const QS
                 if (package_started)
                 {
                     updatePythonPackageDetails(package);
+                    m_numberOfNewlyObtainedPackageDetails++;
                 }
 
                 package_started = true;
@@ -1391,13 +1413,25 @@ void PipManager::finalizeTaskFetchPackagesDetails(const QString& error, const QS
         if (package_started)
         {
             updatePythonPackageDetails(package);
+            m_numberOfNewlyObtainedPackageDetails++;
         }
 
         endResetModel();
 
-        if (!triggerFetchDetailsForOpenPackages())
+        emit pipFetchDetailsProgress(m_numberOfUnfetchedPackageDetails, m_numberOfNewlyObtainedPackageDetails, false);
+
+        if (!m_fetchDetailCancelRequested)
         {
-            emit pipRequestFinished(taskFetchPackagesDetails, "List of packages obtained.\n", true);
+            if (!triggerFetchDetailsForOpenPackages(false))
+            {
+                emit pipRequestFinished(taskFetchPackagesDetails, "List of packages obtained.\n", true);
+                emit pipFetchDetailsProgress(m_numberOfUnfetchedPackageDetails, m_numberOfUnfetchedPackageDetails, true);
+            }
+        }
+        else
+        {
+            emit pipRequestFinished(taskFetchPackagesDetails, "List of packages obtained (details only partially available).\n", true);
+            emit pipFetchDetailsProgress(m_numberOfUnfetchedPackageDetails, m_numberOfUnfetchedPackageDetails, true);
         }
     }
 }
@@ -1527,7 +1561,7 @@ void PipManager::finalizeTaskUninstall(const QString& error, const QString& outp
     }
 }
 
-//-----------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 QStringList PipManager::parseGeneralOptions(const PipGeneralOptions &options, bool ignoreRetries /*= false*/, bool ignoreVersionCheck /*= true*/) const
 {
     QStringList output;
@@ -1583,10 +1617,17 @@ void PipManager::clearBuffers()
 //-----------------------------------------------------------------------------------------
 void PipManager::interruptPipProcess()
 {
+    if (m_currentTask == taskFetchPackagesDetails)
+    {
+        m_fetchDetailCancelRequested = true;
+    }
+
     if (m_pipProcess.state() == QProcess::Running || m_pipProcess.state() == QProcess::Starting)
     {
         m_pipProcess.kill();
     }
+
+    
 }
 
 //-----------------------------------------------------------------------------------------
