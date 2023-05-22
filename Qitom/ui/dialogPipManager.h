@@ -20,8 +20,7 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef DIALOGPIPMANAGER_H
-#define DIALOGPIPMANAGER_H
+#pragma once
 
 #include "../../common/addInInterface.h"
 #include "../../common/sharedStructures.h"
@@ -88,12 +87,13 @@ private slots:
     void on_btnUpdate_clicked();
     void on_btnSudoUninstall_clicked();
     void on_btnVerifyInstalledPackages_clicked();
+    void on_btnCancelFetchDetails_clicked();
     void treeViewSelectionChanged(const QItemSelection & selected, const QItemSelection & deselected);
     void tableCustomContextMenuRequested(const QPoint &pos);
     void exportTableToClipboard();
     void exportTableToCsv();
+    void pipFetchDetailsProgress(int totalNumberOfUnfetchedDetails, int recentlyFetchedDetails, bool finished);
 };
 
 } //end namespace ito
 
-#endif
