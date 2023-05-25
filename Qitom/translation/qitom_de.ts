@@ -525,16 +525,7 @@ p, li { white-space: pre-wrap; }
         <translation>Protokoll</translation>
     </message>
     <message>
-        <location line="+21"/>
-        <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:7.8pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location line="+14"/>
+        <location line="+50"/>
         <source>Pip Settings</source>
         <translation>Pip-Einstellungen</translation>
     </message>
@@ -549,7 +540,7 @@ p, li { white-space: pre-wrap; }
         <translation>Proxy-Angaben in der Form: [Benutzer:Passwort@]Proxy.Server:Port</translation>
     </message>
     <message>
-        <location line="-106"/>
+        <location line="-121"/>
         <source>Check For Updates</source>
         <translation>Nach Updates suchen</translation>
     </message>
@@ -564,7 +555,24 @@ p, li { white-space: pre-wrap; }
         <translation>Installierte Pakete prüfen</translation>
     </message>
     <message>
-        <location line="+68"/>
+        <location line="+21"/>
+        <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;meta charset=&quot;utf-8&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+hr { height: 1px; border-width: 0; }
+li.unchecked::marker { content: &quot;\2610&quot;; }
+li.checked::marker { content: &quot;\2612&quot;; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Segoe UI&apos;; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+29"/>
+        <source>Stop Fetching Package Details</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+33"/>
         <source>Version:</source>
         <translation></translation>
     </message>
@@ -5392,7 +5400,7 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::DialogPipManager</name>
     <message>
-        <location filename="../ui/dialogPipManager.cpp" line="+111"/>
+        <location filename="../ui/dialogPipManager.cpp" line="+115"/>
         <source>Python initialization error</source>
         <translation>Inizialisierungsfehler von Python</translation>
     </message>
@@ -5402,7 +5410,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished">In der Ini-Datei des aktuellen itom-Benutzers wurde ein Proxy-Server ohne Passwort angelegt. Bitte unter den Pip-Einstellungen (siehe unten) den Proxy erneut angeben.</translation>
     </message>
     <message>
-        <location line="+219"/>
+        <location line="+228"/>
         <source>Abort</source>
         <translation>Abbruch</translation>
     </message>
@@ -5412,7 +5420,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation>Der Pip-Prozess läuft bereits. Soll dieser abgebrochen werden?</translation>
     </message>
     <message>
-        <location line="+77"/>
+        <location line="+85"/>
         <source>Pip Manager</source>
         <translation>Pip-Manager</translation>
     </message>
@@ -5447,7 +5455,7 @@ Nach dem Klick auf &apos;OK&apos; wird die Datei &apos;restart_itom_with_pip_man
 Es ist ebenfalls möglich über das Argument &apos;pipManager&apos; beim Programmstart den Paket-Manager direkt zu starten.</translation>
     </message>
     <message>
-        <location line="+54"/>
+        <location line="+55"/>
         <location line="+7"/>
         <location line="+24"/>
         <location line="+7"/>
@@ -5467,7 +5475,7 @@ Es ist ebenfalls möglich über das Argument &apos;pipManager&apos; beim Program
         <translation>Soll das Paket &apos;%1&apos; wirklich deinstalliert werden?</translation>
     </message>
     <message>
-        <location line="+40"/>
+        <location line="+34"/>
         <source>Export table to clipboard</source>
         <translation>Tabelle in die Zwischenablage kopieren</translation>
     </message>
@@ -8020,7 +8028,7 @@ Bitte itom mit dem Argument &apos;log&apos; erneut starten und die Fehlermeldung
 <context>
     <name>ito::PipManager</name>
     <message>
-        <location filename="../models/pipManager.cpp" line="+52"/>
+        <location filename="../models/pipManager.cpp" line="+55"/>
         <source>Name</source>
         <translation></translation>
     </message>
@@ -8127,7 +8135,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation>unbekannt</translation>
     </message>
     <message>
-        <location line="+413"/>
+        <location line="+439"/>
         <source>Could not start python pip
 </source>
         <translation>Python-Pip kann nicht gestartet werden</translation>
@@ -8140,20 +8148,22 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
 </translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>other error</source>
-        <translation>Es ist ein Fehler aufgetreten</translation>
+        <location line="+5"/>
+        <source>Process crashed.
+</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+16"/>
+        <location line="+4"/>
+        <source>other error
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+23"/>
         <source>Python pip crashed during execution
 </source>
         <translation>Python-Pip ist bei der Ausführung abgestürzt</translation>
-    </message>
-    <message>
-        <location line="+127"/>
-        <source>loading...</source>
-        <translation type="unfinished">laden...</translation>
     </message>
 </context>
 <context>
