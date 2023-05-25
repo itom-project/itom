@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="de">
+<TS version="2.1" language="de_DE">
 <context>
     <name>DialogAboutQItom</name>
     <message>
@@ -182,10 +182,6 @@ p, li { white-space: pre-wrap; }
         <location line="+23"/>
         <source>temporary &amp;breakpoint (will be deleted after first hit)</source>
         <translation>&amp;Temporärer Haltepunkt (wird nach dem ersten Treffer gelöscht)</translation>
-    </message>
-    <message>
-        <source>temporary &amp;breakpoint</source>
-        <translation type="vanished">&amp;Temporärer Haltepunkt</translation>
     </message>
     <message>
         <location line="+20"/>
@@ -680,10 +676,6 @@ p, li { white-space: pre-wrap; }
         <location line="+7"/>
         <source>Install or upgrade listed packages in requirements text file</source>
         <translation>Installiert oder aktualisiert Pakete, die in einer &quot;requirements.txt&quot; Textdatei eingetragen sind</translation>
-    </message>
-    <message>
-        <source>Package file, package name or requirements file:</source>
-        <translation type="vanished">Paketdatei, Paketname oder &quot;requirements.txt&quot; Dateiname:</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -2062,10 +2054,6 @@ p, li { white-space: pre-wrap; }
         <location line="+9"/>
         <source>Load XML file failed: wrong document encoding</source>
         <translation type="unfinished">Das Öffnen der XML-Datei schlug fehl: Falscher Dokumenten-Encoder</translation>
-    </message>
-    <message>
-        <source>Load XML file failed: could not intepret checksum content as uint</source>
-        <translation type="obsolete">Das Öffnen der XML-Datei schlug fehl: Checksummenfehler</translation>
     </message>
     <message>
         <location line="+16"/>
@@ -3831,10 +3819,6 @@ transparent anzeigen</translation>
         <source>Changes in these settings are only considered after a restart of itom!</source>
         <translation>Änderungen in diesen Einstellungen werden erst nach einem Neustart von itom berücksichtigt!</translation>
     </message>
-    <message>
-        <source>Affected after program restart!</source>
-        <translation type="vanished">Einstellung wird erst nach einem Programmneustart wirksam!</translation>
-    </message>
 </context>
 <context>
     <name>WidgetPropGeneralPlotSettings</name>
@@ -5513,10 +5497,6 @@ Es ist ebenfalls möglich über das Argument &apos;pipManager&apos; beim Program
         <source>The file &apos;%1&apos; could not be opened</source>
         <translation>Die Datei &apos;%1&apos; konnte nicht geöffnet werden</translation>
     </message>
-    <message>
-        <source>The file &apos;%s&apos; could not be opened</source>
-        <translation type="vanished">Die Datei &apos;%s&apos; konnte nicht geöffnet werden</translation>
-    </message>
 </context>
 <context>
     <name>ito::DialogPipManagerInstall</name>
@@ -5813,10 +5793,6 @@ Meldung: &apos;%1&apos;</translation>
         <translation>Plots und Figures - Paletteneinstellungen</translation>
     </message>
     <message>
-        <source>General - Styles And Themes</source>
-        <translation type="vanished">Allgemein - Themen und Stile</translation>
-    </message>
-    <message>
         <location line="-8"/>
         <source>Workspace - Please Choose Subpage</source>
         <translation>Workspace - Bitte Unterrubrik auswählen</translation>
@@ -5825,10 +5801,6 @@ Meldung: &apos;%1&apos;</translation>
         <location line="+2"/>
         <source>Plugins - Please Choose Subpage</source>
         <translation>Plugins - Bitte Unterrubrik auswählen</translation>
-    </message>
-    <message>
-        <source>Algorithms And Filters</source>
-        <translation type="vanished">Algorithmen und Filter</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -5856,14 +5828,6 @@ Meldung: &apos;%1&apos;</translation>
         <translation>Plots und Figures</translation>
     </message>
     <message>
-        <source>Plots And Figures - Please Choose Subpage</source>
-        <translation type="vanished">Plots und Figures - Bitte Unterrubrik auswählen</translation>
-    </message>
-    <message>
-        <source>Plots And Figures - Defaults</source>
-        <translation type="vanished">Plots und Figures - Standard</translation>
-    </message>
-    <message>
         <location line="+2"/>
         <source>Default Style Settings</source>
         <translation>Standard Style-Einstellungen</translation>
@@ -5877,10 +5841,6 @@ Meldung: &apos;%1&apos;</translation>
         <location line="+1"/>
         <source>Palettes Settings</source>
         <translation type="unfinished">Paletteneinstellungen</translation>
-    </message>
-    <message>
-        <source>Plots And Figures - Palettes Settings</source>
-        <translation type="obsolete">Plots und Figures - Paletteneinstellungen</translation>
     </message>
     <message>
         <location line="-14"/>
@@ -5921,10 +5881,6 @@ Meldung: &apos;%1&apos;</translation>
         <location line="+1"/>
         <source>Workspace</source>
         <translation>Workspace</translation>
-    </message>
-    <message>
-        <source>Import to workspace</source>
-        <translation type="vanished">Import in den Workspace</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -6799,70 +6755,6 @@ Sind Sie sicher?</translation>
         <translation type="unfinished">Template-Fehler: Das End-Tag von &quot;%s section&quot; liegt vor dem Start-Tag.</translation>
     </message>
     <message>
-        <source>Range: [%1,%2], Default: %3</source>
-        <translation type="vanished">Bereich: [%1, %2], Voreinstellung: %3</translation>
-    </message>
-    <message>
-        <source>Range: [%1:%2:%3], Default: %4</source>
-        <translation type="vanished">Bereich: [%1:%2:%3], Voreinstellung: %4</translation>
-    </message>
-    <message>
-        <source>Default: %1</source>
-        <translation type="vanished">Voreinstellung: %1</translation>
-    </message>
-    <message>
-        <source>Default: %1+%2i</source>
-        <translation type="vanished">Voreinstellung: %1+%2i</translation>
-    </message>
-    <message>
-        <source>Default: %1-%2i</source>
-        <translation type="vanished">Voreinstellung: %1-%2i</translation>
-    </message>
-    <message>
-        <source>RegExp: &apos;%1&apos;</source>
-        <translation type="vanished">RegAusdr.: &apos;%1&apos;</translation>
-    </message>
-    <message>
-        <source>RegExp: [%1]</source>
-        <translation type="vanished">RegAusdr.: [%1]</translation>
-    </message>
-    <message>
-        <source>RegExp: &lt;no pattern given&gt;</source>
-        <translation type="vanished">RegAusdr.: &lt;keine Vorlage&gt;</translation>
-    </message>
-    <message>
-        <source>Match: &apos;%1&apos;</source>
-        <translation type="vanished">Treffer: &apos;%1&apos;</translation>
-    </message>
-    <message>
-        <source>Match: [%1]</source>
-        <translation type="vanished">Treffer: [%1]</translation>
-    </message>
-    <message>
-        <source>Match: &lt;no pattern given&gt;</source>
-        <translation type="vanished">Treffer: &lt;keine Vorlage&gt;</translation>
-    </message>
-    <message>
-        <source>Wildcard: &apos;%1&apos;</source>
-        <translation type="vanished">Platzhalter: &apos;%1&apos;</translation>
-    </message>
-    <message>
-        <source>Wildcard: [%1]</source>
-        <translation type="vanished">Platzhalter: [%1]</translation>
-    </message>
-    <message>
-        <source>Wildcard: &lt;no pattern given&gt;</source>
-        <translation type="vanished">Platzhalter: &lt;keine Vorlage&gt;</translation>
-    </message>
-    <message>
-        <source>Only plugin &apos;%1&apos; is allowed.</source>
-        <translation type="vanished">Nur ein Plugin vom Typ &apos;%1&apos; ist erlaubt.</translation>
-    </message>
-    <message>
-        <source>Plugin of type &apos;%1&apos; are allowed.</source>
-        <translation type="vanished">Erlaubt sind Plugins vom Typ &apos;%1&apos;.</translation>
-    </message>
-    <message>
         <location line="+178"/>
         <source>Help resources are loading...</source>
         <translation type="unfinished">Die Hilfe wird geladen...</translation>
@@ -7306,17 +7198,9 @@ Sind Sie sicher?</translation>
         <translation type="unfinished">Die Datei &apos;%1&apos; existiert bereits. Soll diese mit neuer Verknüpfung überschrieben werden?</translation>
     </message>
     <message>
-        <source>The file &apos;%s&apos; already exists. Should it be overwritten?</source>
-        <translation type="vanished">Die Datei &apos;%s&apos; existiert bereits. Soll diese überschrieben werden?</translation>
-    </message>
-    <message>
         <location line="-16"/>
         <source>- Copy</source>
         <translation>- Kopie</translation>
-    </message>
-    <message>
-        <source>The file &apos;%s&apos; already exists. Should it be overwritten by the new link?</source>
-        <translation type="vanished">Die Datei &apos;%s&apos; existiert bereits. Soll diese durch den neuen Link überschrieben werden?</translation>
     </message>
 </context>
 <context>
@@ -8123,26 +8007,6 @@ Bitte itom mit dem Argument &apos;log&apos; erneut starten und die Fehlermeldung
         <translation>Qt-Fehler: String-Eingabe-Widget wurde nicht gefunden</translation>
     </message>
     <message>
-        <source>Qt error: IntArray widget could not be found</source>
-        <translation type="vanished">Qt-Fehler: IntArray-Eingabe-Widget wurde nicht gefunden</translation>
-    </message>
-    <message>
-        <source>Invalid integer list of parameter &apos;%1&apos;: Value &apos;%2&apos; at position %3 is no integer number.</source>
-        <translation type="vanished">Ungültige Integer-Liste in Parameter &apos;%1&apos;: Wert &apos;%2&apos; an Position %3 ist keine Ganzzahl.</translation>
-    </message>
-    <message>
-        <source>Qt error: DoubleArray widget could not be found</source>
-        <translation type="vanished">Qt-Fehler: DoubleArray-Eingabe-Widget wurde nicht gefunden</translation>
-    </message>
-    <message>
-        <source>Invalid double list of parameter &apos;%1&apos;: Value &apos;%2&apos; at position %3 is no double number.</source>
-        <translation type="vanished">Ungültige Double-Liste in Parameter &apos;%1&apos;: Wert &apos;%2&apos; an Position %3 ist keine Kommazahl.</translation>
-    </message>
-    <message>
-        <source>Qt error: CharArray widget could not be found</source>
-        <translation type="vanished">Qt-Fehler: CharArray-Eingabe-Widget wurde nicht gefunden</translation>
-    </message>
-    <message>
         <location line="+90"/>
         <source>%1, Identifier: %2</source>
         <translation>%1, Identifikator: %2</translation>
@@ -8151,18 +8015,6 @@ Bitte itom mit dem Argument &apos;log&apos; erneut starten und die Fehlermeldung
         <location line="+7"/>
         <source>%1, ID: %2</source>
         <translation></translation>
-    </message>
-    <message>
-        <source>Invalid integer list: Value &apos;%1&apos; at position %2 is no integer number.</source>
-        <translation type="vanished">Ungültige Integer-Liste: Wert &apos;%1&apos; an Position %2 ist keine Ganzzahl.</translation>
-    </message>
-    <message>
-        <source>Invalid double list: Value &apos;%1&apos; at position %2 is no double number.</source>
-        <translation type="vanished">Ungültige Double-Liste: Wert &apos;%1&apos; an Position %2 ist keine Kommazahl.</translation>
-    </message>
-    <message>
-        <source>Unknown paramType: %1</source>
-        <translation type="vanished">Unbekannter Parametertyp: %1</translation>
     </message>
 </context>
 <context>
@@ -8527,12 +8379,6 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>The itom subdirectory of Python &apos;%s&apos; is not existing.
-Please change setting in the property dialog of itom.</source>
-        <translation type="obsolete">Das itom-Unterverzeichnis von Python &apos;%s&apos; existiert nicht.
-Bitte die Einstellungen unter &apos;Optionen&apos; ändern.</translation>
-    </message>
-    <message>
         <location line="-5515"/>
         <source>Settings value Python::pyHome has not been set as Python Home directory since it does not exist:  %s</source>
         <translation type="unfinished">Der unter &apos;Python::pyHome&apos; eingestellte Wert wurde nicht als Python-Verzeichnis gesetzt, da dieses Verzeichnis nicht existiert: %s</translation>
@@ -8617,10 +8463,6 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <location line="+16"/>
         <source>The module &apos;autoreload&apos; could not be loaded. Make sure that the script autoreload.py is available in the itom-packages directory.</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Deadlock in python setup.</source>
-        <translation type="obsolete">Deadlock in Python.</translation>
     </message>
     <message>
         <location line="+948"/>
@@ -9032,10 +8874,6 @@ Numpy load error: %1</source>
         <source>F3</source>
         <comment>QShortcut</comment>
         <translation></translation>
-    </message>
-    <message>
-        <source>Fast symbol search...</source>
-        <translation type="vanished">Schnelle Symbolsuche...</translation>
     </message>
     <message>
         <location line="+25"/>
@@ -9484,10 +9322,6 @@ Numpy load error: %1</source>
 <context>
     <name>ito::ScriptEditorWidget</name>
     <message>
-        <source>Choose an encoding of the file which is added to the first line of the script</source>
-        <translation type="vanished">Eine Kodierung für die erste Zeile im Skript auswählen</translation>
-    </message>
-    <message>
         <location filename="../widgets/scriptEditorWidget.cpp" line="+2856"/>
         <source>Print</source>
         <translation>Drucken</translation>
@@ -9664,18 +9498,10 @@ Numpy load error: %1</source>
         <translation>&amp;Zeichenkettenkodierung...</translation>
     </message>
     <message>
-        <source>Fast symbol search...</source>
-        <translation type="vanished">Schnelle Symbolsuche...</translation>
-    </message>
-    <message>
         <location line="-3"/>
         <source>Ctrl+D</source>
         <comment>QShortcut</comment>
         <translation>Strg+D</translation>
-    </message>
-    <message>
-        <source>&amp;Insert Codec...</source>
-        <translation type="vanished">&amp;Kodierung einfügen...</translation>
     </message>
     <message>
         <location line="+756"/>
@@ -9727,10 +9553,6 @@ Soll dieses Feature deaktiviert werden? Dies kann später erneut im Eigenschafte
         <location line="+1479"/>
         <source>The file &apos;%1&apos; has been modified by another program.</source>
         <translation>Die Datei &apos;%1&apos; wurde durch ein anderes Programm geändert.</translation>
-    </message>
-    <message>
-        <source>Insert Codec</source>
-        <translation type="vanished">Kodierung einfügen</translation>
     </message>
     <message>
         <location line="-1404"/>
