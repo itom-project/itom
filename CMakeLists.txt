@@ -24,7 +24,7 @@ project(itom)
 
 # set qitom as Visual Studio Startup-Projekt
 set_property( DIRECTORY PROPERTY VS_STARTUP_PROJECT "qitom" )
-
+ 
 message(STATUS "--------------- PROJECT itom -----------------")
 
 include(cmake/Setup_Core_Itom.cmake)
