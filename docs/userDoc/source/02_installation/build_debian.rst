@@ -9,6 +9,11 @@ This section describes how |itom| and its plugins are built on a Debian-based
 operating system, like Debian itself, Ubuntu or any of its derivates or even
 the Raspberry Pi (Raspbian) operation system.
 
+Please be aware that Qt6 is currently not fully supported by Debian-based destributions,
+such as Ubuntu. Therefore the PCL libary is not available as Qt6 build and
+consequently not available for ITOM in the Qt6 Version.
+
+
 Steps are as usual:
 
 *  obtain dependencies
@@ -26,7 +31,7 @@ The following list describe packages that are required or recommended for buildi
 
 Required:
 
-* **Qt5** (libqtcore*, libqt*-dev, libqt*-...)
+* **Qt5** or **Qt6**(libqtcore*, libqt*-dev, libqt*-...)
 * **OpenCV** (libopencv-core* libopencv-core-dev, libopencv-imgproc, libopencv-highgui...)
 * **Python3** (python3, python3-dev, python3-dbg)
 * **Numpy** (python3-numpy, python3-numpy-dbg)
@@ -90,6 +95,7 @@ this repository and the subsequent submodules.
             ...
         
         
+        
 Copy code to make folder structure:
 
 .. code-block:: bash
@@ -110,31 +116,43 @@ for |itom| (comments after the hash-tag should not be copied to the command line
 .. code-block:: bash
       
     sudo apt update
-    sudo apt install build-essential cmake cmake-qt-gui git python3 python3-dev python3-numpy python3-pip python3-apt-dbg \
-        libqt5webkit5 libqt5webkit5-dev libqt5widgets5 libqt5xml5 libqt5svg5 libqt5svg5-dev libqt5gui5 libqt5designer5 libqt5concurrent5 qttools5-dev-tools qttools5-dev
+    sudo apt install build-essential cmake cmake-qt-gui git python3 python3-dev python3-numpy python3-pip python-apt-dev
     sudo apt install libopencv-dev python3-opencv libv4l-dev xsdcxx libxerces-c3.2 libxerces-c-dev #these are optional
-    sudo apt install qtwebengine5-dev libqt5webengine5 libqt5webenginewidgets5 # not possible on raspbian
     sudo apt install libv4l-dev #this is optional to get the video for linux drivers
-
-Since the Qt webengine is not available (yet) on **Rasbpian** (at least for Raspbian buster or older),
-you cannot get the webengine libraries. Therfore the update commands look like this:
-
-.. code-block:: bash
-    
-    sudo apt update
-    sudo apt install build-essential cmake cmake-qt-gui git python3 python3-dev python3-numpy python3-pip python3-apt-dbg \
-        libqt5webkit5 libqt5webkit5-dev libqt5widgets5 libqt5xml5 libqt5svg5 libqt5svg5-dev libqt5gui5 libqt5designer5 libqt5concurrent5 qttools5-dev-tools qttools5-dev
-    sudo apt install libopencv-dev python3-opencv libv4l-dev xsdcxx libxerces-c3.2 libxerces-c-dev #these are optional
-    sudo apt install freeglut3-dev #if the itomIsoGlWidget (designerplugin) should be compiled
 
 The packages *xsdcxx* and *libxerces-c-dev* are only required for building the optional plugin *x3p*. Usually, *libxerces-c-dev*
 should install its runtime package *libxerces-c3.2* (or similar).
+
+**Qt5:**
+.. code-block:: bash
+    sudo apt install libqt5webkit5 libqt5webkit5-dev libqt5widgets5 libqt5xml5 libqt5svg5 libqt5svg5-dev libqt5gui5 libqt5designer5 \
+        libqt5concurrent5 qttools5-dev-tools qttools5-dev
+    sudo apt install qtwebengine5-dev libqt5webengine5 libqt5webenginewidgets5 # not possible on raspbian
 
 If you want to compile |itom| with support from the Point Cloud Library, also get the following packages:
 
 .. code-block:: bash
     
     sudo apt install libpcl-dev libproj-dev
+
+**Qt6:**
+.. code-block:: bash
+    sudo apt install qt6-wayland
+    sudo apt install qt6-base-dev qt6-tools-dev-tools qt6-tools-dev libqt6svg6 libqt6svg6-dev
+    sudo apt install qt6-webengine-dev
+
+Since the Qt webengine is not available (yet) on **Rasbpian** (at least for Raspbian buster or older),
+you cannot get the webengine libraries. Therfore the update commands look like this:
+
+**Qt5:**
+.. code-block:: bash
+    sudo apt install libqt5webkit5 libqt5webkit5-dev libqt5widgets5 libqt5xml5 libqt5svg5 libqt5svg5-dev libqt5gui5 libqt5designer5 \
+        libqt5concurrent5 qttools5-dev-tools qttools5-dev
+
+**Qt6:**
+.. code-block:: bash
+    sudo apt install qt6-base qt6-tools-dev-tools qt6-tools-dev qt6-svg 
+
 
 Now, change to the base directory, where the sources and builds of itom and its 
 plugins should be placed. The following commands are not executed
@@ -146,7 +164,7 @@ Obtain the sources
 
 .. code-block:: bash
     
-    git clone git clone git@bitbucket.org:itom/itomproject.git
+git clone git clone git@bitbucket.org:itom/itomproject.git
     cd itomproject
     git submodule init
     git submodule update

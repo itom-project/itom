@@ -40,7 +40,7 @@ Therefore, the built-in helpviewer of itom has to be disabled. For building itom
     git submodule update
     mkdir -p ./{build_debug,build_release}
     cd ./build_release
-    cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=OFF -PYTHON_LIBRARY=/usr/lib64/libpython3.6m.so -PYTHON_INCLUDE_DIR=/usr/include/python3.6m -BUILD_QTVERSION=Qt5 -Qt5_DIR=/usr/lib64/cmake/Qt5 -Qt5Core_DIR=/usr/lib64/cmake/Qt5Core -BUILD_WITH_HELPVIEWER=OFF ../
+    cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=OFF -PYTHON_LIBRARY=/usr/lib64/libpython3.6m.so -PYTHON_INCLUDE_DIR=/usr/include/python3.6m -Qt_Prefix_DIR=/usr/lib64 -BUILD_WITH_HELPVIEWER=OFF ../
     make -j4
     
 Errors in cmake configuration process can be fixed using ccmake or cmake-gui

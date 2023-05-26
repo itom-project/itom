@@ -43,7 +43,9 @@ macro(itom_init_core_common_vars)
     
     option(BUILD_WITH_PCL "Build itom with PointCloudLibrary support (pointCloud, polygonMesh, point...)" ON)
     set(ITOM_APP_DIR ${CMAKE_CURRENT_BINARY_DIR} CACHE PATH "base path to itom")
-    set(ITOM_SDK_DIR ${CMAKE_CURRENT_BINARY_DIR}/SDK CACHE PATH "base path to itom_sdk")
+    
+    set(ITOM_SDK_DIR ${CMAKE_CURRENT_BINARY_DIR}/SDK CACHE PATH "Base path of SDK subfolder")
+
     set(CMAKE_DEBUG_POSTFIX d CACHE STRING "Adds a postfix for debug-built libraries.")
     set(BUILD_QT_DISABLE_DEPRECATED_BEFORE "" CACHE STRING "indicate a Qt version number as hex \
         string, if all methods that have been deprecated before this version, \
@@ -202,6 +204,56 @@ macro(itom_init_core_common_vars)
     # End: Remove duplicates compilation flags
 endmacro()
 
+
+# Sets the ITOM SDK Platform to either x86 or x64.
+macro(itom_define_sdk_platform)
+    if(CMAKE_SIZEOF_VOID_P EQUAL 4)
+    set(SDK_PLATFORM "x86")
+    else()
+    set(SDK_PLATFORM "x64")
+    endif()
+    message(STATUS "Compiler: ${CMAKE_CXX_COMPILER_ID}")
+endmacro()
+
+# Sets the ITOM SDK Compiler name used for building ITOM.
+# The following list has to be consistent with FindITOM_SDK.cmake! 
+# From VS higher than 1900, the default case vc${MSVC_VERSION} is used.
+macro(itom_define_sdk_compiler)
+    if(APPLE)
+    set(SDK_COMPILER "osx_default")
+    elseif(MSVC_VERSION LESS 1940 AND MSVC_VERSION GREATER 1929)
+    set(SDK_COMPILER "vc17")
+    elseif(MSVC_VERSION LESS 1930 AND MSVC_VERSION GREATER 1919)
+    set(SDK_COMPILER "vc16")
+    elseif(MSVC_VERSION LESS 1920 AND MSVC_VERSION GREATER 1909)
+    set(SDK_COMPILER "vc15")
+    elseif(MSVC_VERSION EQUAL 1900)
+    set(SDK_COMPILER "vc14")
+    elseif(MSVC_VERSION EQUAL 1800)
+    set(SDK_COMPILER "vc12")
+    elseif(MSVC_VERSION EQUAL 1700)
+    set(SDK_COMPILER "vc11")
+    elseif(MSVC_VERSION EQUAL 1600)
+    set(SDK_COMPILER "vc10")
+    elseif(MSVC_VERSION EQUAL 1500)
+    set(SDK_COMPILER "vc9")
+    elseif(MSVC_VERSION EQUAL 1400)
+    set(SDK_COMPILER "vc8")
+    elseif(MSVC)
+    set(SDK_COMPILER "vc${MSVC_VERSION}")
+    elseif(CMAKE_COMPILER_IS_GNUCXX)
+    set(SDK_COMPILER "gnucxx")
+    elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    set(SDK_COMPILER "clang")
+    elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    set(SDK_COMPILER "gnucxx")
+    elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
+    set(SDK_COMPILER "intel")
+    else()
+    set(SDK_COMPILER "unknown")
+    endif()
+endmacro()
+
 # - appends two entries to sources and destinations in order to copy
 # the linker file of the given target both to the root directory of itom (ITOM_APP_DIR)
 # as well as to the SDK directory of itom (ITOM_SDK_DIR).
@@ -225,41 +277,9 @@ macro(itom_add_library_to_appdir_and_sdk target sources destinations)
         message(SEND_ERROR "ITOM_APP_DIR is not indicated")
     endif()
     
-    if(CMAKE_SIZEOF_VOID_P EQUAL 4)
-        set(SDK_PLATFORM "x86")
-    else()
-        set(SDK_PLATFORM "x64")
-    endif()
-    message(STATUS "Compiler: ${CMAKE_CXX_COMPILER_ID}")
-    # The following list has to be consistent with FindITOM_SDK.cmake! 
-    # From VS higher than 1900, the default case vc${MSVC_VERSION} is used.
-    if(APPLE)
-        set(SDK_COMPILER "osx_default")
-	elseif(MSVC_VERSION EQUAL 1900)
-        set(SDK_COMPILER "vc14")
-    elseif(MSVC_VERSION EQUAL 1800)
-        set(SDK_COMPILER "vc12")
-    elseif(MSVC_VERSION EQUAL 1700)
-        set(SDK_COMPILER "vc11")
-    elseif(MSVC_VERSION EQUAL 1600)
-        set(SDK_COMPILER "vc10")
-    elseif(MSVC_VERSION EQUAL 1500)
-        set(SDK_COMPILER "vc9")
-    elseif(MSVC_VERSION EQUAL 1400)
-        set(SDK_COMPILER "vc8")
-    elseif(MSVC)
-        set(SDK_COMPILER "vc${MSVC_VERSION}")
-    elseif(CMAKE_COMPILER_IS_GNUCXX)
-        set(SDK_COMPILER "gnucxx")
-    elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-        set(SDK_COMPILER "clang")
-    elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-        set(SDK_COMPILER "gnucxx")
-    elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
-        set(SDK_COMPILER "intel")
-    else()
-        set(SDK_COMPILER "unknown")
-    endif()
+
+    itom_define_sdk_platform()
+    itom_define_sdk_compiler()
     
     set(SDK_DESTINATION "${ITOM_SDK_DIR}/lib/${SDK_COMPILER}_${SDK_PLATFORM}" )
     

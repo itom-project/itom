@@ -13,38 +13,21 @@ set(target_name MyActuatorPlugin)
 # this should be the first line of your project.
 cmake_minimum_required(VERSION 3.1...3.15)
 
-set(ITOM_SDK_DIR NOTFOUND CACHE PATH "path of SDK subfolder of itom root (build) directory")
-
 #this is to automatically detect the SDK subfolder of the itom build directory.
-find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
-    HINTS "C:/itom/build/itom/SDK"
-          "${CMAKE_CURRENT_BINARY_DIR}/../../itom/SDK"
-    DOC "path of SDK subfolder of itom root (build) directory")
+if(NOT EXISTS ${ITOM_SDK_DIR})
+    find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
+    HINTS "$ENV{ITOM_SDK_ROOT}"
+          "${CMAKE_CURRENT_BINARY_DIR}/../itom/SDK"
+    DOC "Path of SDK subfolder of itom root (build) directory")
+endif(NOT EXISTS ${ITOM_SDK_DIR})
 
-if(NOT ITOM_SDK_DIR)
-    message(SEND_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
-endif()
+if(NOT EXISTS ${ITOM_SDK_DIR})
+    message(FATAL_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
+endif(NOT EXISTS ${ITOM_SDK_DIR})
 
 # ...which contains useful scripts for completing this file
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
-# ... for example this one, found in the CMAKE_MODULE_PATH
-include(ItomBuildMacros)
-
-# The CMake policies are assumed to behave like the tested version given as argument.
-itom_init_cmake_policy(3.12)
-
-# and this does some magic for you, as setting some common vars and 
-# passing some switches to your project you can use in sourcecode.
-# If your sources are within a Git repository, it will also parse
-# the current commit hash and store it to gitVersion.h.
-#
-# This macro will also check if the package VisualLeakDetector can
-# be found (Visual Studio only) by calling find_package(VisualLeakDetector). 
-# If so, you can enable this via the CMake option VISUALLEAKDETECTOR_ENABLED. 
-# Add ${VISUALLEAKDETECTOR_LIBRARIES} to target_link_libraries below.
-itom_init_plugin_library(${target_name})
 
 #################################################################
 # Input elements for CMake GUI (Checkboxes, Pathes, Strings...)
@@ -54,7 +37,6 @@ itom_init_plugin_library(${target_name})
 # This value is usually forced to the bitage of the itom SDK if
 # find_package(ITOM_SDK...) is used (see below).
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
-
 
 #################################################################
 # Automatic package detection
@@ -79,6 +61,17 @@ find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWi
 #       if the dataobject is included in the ITOM_SDK components, the OpenCV core component is detected there and the necessary include
 #       directories and libraries to link agains are contained in ITOM_SDK_LIBRARIES and ITOM_SDK_INCLUDE_DIRS
 
+#################################################################
+# Add Additional Scipts
+#   add here include commands for searching for adding
+#    useful scripts
+#################################################################
+
+# ... for example this one, found in the CMAKE_MODULE_PATH
+include(ItomBuildMacros)
+# The CMake policies are assumed to behave like the tested version given as argument.
+itom_init_cmake_policy(3.12)
+
 # 'itom_find_package_qt' is a wrapper for find_package(Qt5...) and internally calls
 # this and sets some things more. The component names are wrapped to Qt5_{name}.
 #
@@ -90,6 +83,17 @@ find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWi
 # of settings the properties of this target (see below):
 # set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC ON AUTOUIC ON)
 itom_find_package_qt(ON Core Widgets LinguistTools)
+
+# and this does some magic for you, as setting some common vars and 
+# passing some switches to your project you can use in sourcecode.
+# If your sources are within a Git repository, it will also parse
+# the current commit hash and store it to gitVersion.h.
+#
+# This macro will also check if the package VisualLeakDetector can
+# be found (Visual Studio only) by calling find_package(VisualLeakDetector). 
+# If so, you can enable this via the CMake option VISUALLEAKDETECTOR_ENABLED. 
+# Add ${VISUALLEAKDETECTOR_LIBRARIES} to target_link_libraries below.
+itom_init_plugin_library(${target_name})
 
 #################################################################
 # General settings and preprocessor settings

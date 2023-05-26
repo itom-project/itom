@@ -2,9 +2,10 @@
 # This module will find libusb as published by
 #  http://libusb.sf.net and
 #  http://libusb-win32.sf.net
+#  http://libusb-win32.sf.net
 # 
 # It will use PkgConfig if present and supported, else search
-# it on its own. If the LibUSB_ROOT_DIR environment variable
+# it on its own. If the **LIBUSB_ROOT** environment variable
 # is defined, it will be used as base path.
 # The following standard variables get defined:
 #  LibUSB_FOUND:        true if LibUSB was found
@@ -20,6 +21,8 @@ find_package ( PkgConfig QUIET)
 if( PKG_CONFIG_FOUND )
   pkg_check_modules ( PKGCONFIG_LIBUSB libusb-1.0>=1.0 )
 endif( PKG_CONFIG_FOUND )
+
+message(STATUS "PkgConfig: " ${PkgConfig})
 
 if( PKGCONFIG_LIBUSB_FOUND )
     set( LibUSB_FOUND ${PKGCONFIG_LIBUSB_FOUND} )
@@ -37,12 +40,12 @@ if( PKGCONFIG_LIBUSB_FOUND )
 
 else()
     
-    find_path ( LibUSB_DIR
+    find_path(LibUSB_INCLUDE_DIRS
     NAMES
       libusb.h
     PATHS
       $ENV{ProgramFiles}/LibUSB-Win32
-      $ENV{LibUSB_ROOT_DIR}
+      $ENV{LIBUSB_ROOT}/libusb-cygwin-x64
       ${LibUSB_DIR}
     PATH_SUFFIXES
       libusb
@@ -51,23 +54,9 @@ else()
       include/libusb-1.0
     DOC "root directory of LibUSB"
     )
-    
-    find_path ( LibUSB_INCLUDE_DIRS
-    NAMES
-      libusb.h
-    PATHS
-      $ENV{ProgramFiles}/LibUSB-Win32
-      $ENV{LibUSB_ROOT_DIR}
-      ${LibUSB_DIR}
-    PATH_SUFFIXES
-      libusb
-      libusb-1.0
-      include
-      include/libusb-1.0
-    )
 
     mark_as_advanced ( LibUSB_INCLUDE_DIRS )
-    #  message( STATUS "LibUSB include dir: ${LibUSB_ROOT_DIR}" )
+    #  message( STATUS "LibUSB include dir: ${LIBUSB_ROOT}" )
 
     if( ${CMAKE_SYSTEM_NAME} STREQUAL "Windows" )
         # LibUSB-Win32 binary distribution contains several libs.
@@ -82,7 +71,22 @@ else()
                     x64/Release/lib
                     x64/Debug/lib 
                     x64/Release/dll
-                    x64/Debug/dll)
+                    x64/Debug/dll
+					VS2015-x64/lib
+					VS2015-x64/dll
+                    build/v141/x64/Debug/lib
+                    build/v141/x64/Debug/dll
+                    build/v141/x64/Release/lib
+                    build/v141/x64/Release/dll
+                    build/v142/x64/Debug/lib
+                    build/v142/x64/Debug/dll
+                    build/v142/x64/Release/lib
+                    build/v142/x64/Release/dll
+                    build/v143/x64/Debug/lib
+                    build/v143/x64/Debug/dll
+                    build/v143/x64/Release/lib
+                    build/v143/x64/Release/dll
+					)
             else (BUILD_TARGET64)
                 set( LibUSB_LIBRARY_PATH_SUFFIX 
                     MS32/static 
@@ -92,7 +96,22 @@ else()
                     Win32/Release/lib
                     Win32/Debug/lib
                     Win32/Release/dll
-                    Win32/Debug/dll)
+                    Win32/Debug/dll
+					VS2015-Win32/lib
+					VS2015-Win32/dll
+                    build/v141/Win32/Debug/lib
+                    build/v141/Win32/Debug/dll
+                    build/v141/Win32/Release/lib
+                    build/v141/Win32/Release/dll
+                    build/v142/Win32/Debug/lib
+                    build/v142/Win32/Debug/dll
+                    build/v142/Win32/Release/lib
+                    build/v142/Win32/Release/dll
+                    build/v143/Win32/Debug/lib
+                    build/v143/Win32/Debug/dll
+                    build/v143/Win32/Release/lib
+                    build/v143/Win32/Release/dll
+					)
             endif(BUILD_TARGET64)
         elseif( BORLAND )
             set( LibUSB_LIBRARY_PATH_SUFFIX lib/bcc )
@@ -106,11 +125,14 @@ else()
         libusb usb libusb-1.0
     PATHS
         $ENV{ProgramFiles}/LibUSB-Win32
-        $ENV{LibUSB_ROOT_DIR}
+        $ENV{LIBUSB_ROOT}
         ${LibUSB_DIR}
     PATH_SUFFIXES
         ${LibUSB_LIBRARY_PATH_SUFFIX}
     )
+	
+	message(STATUS "LibUSB_LIBRARY: " ${LibUSB_LIBRARY})
+	
     mark_as_advanced ( LibUSB_LIBRARY )
     if( LibUSB_LIBRARY )
         set( LibUSB_LIBRARIES ${LibUSB_LIBRARY} )
@@ -143,7 +165,7 @@ endif( LibUSB_FOUND )
 
 if( NOT LibUSB_FOUND )
     if( NOT LibUSB_FIND_QUIETLY )
-      message( STATUS "LibUSB not found, try setting LibUSB_ROOT_DIR environment variable." )
+      message( STATUS "LibUSB not found, try setting LibUSB_ROOT environment variable." )
     endif( NOT LibUSB_FIND_QUIETLY )
     if( LibUSB_FIND_REQUIRED )
       message( FATAL_ERROR "" )

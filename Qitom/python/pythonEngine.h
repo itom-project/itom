@@ -79,6 +79,7 @@
 #include <qatomic.h>
 #include <qelapsedtimer.h>
 #include <qtimer.h>
+#include <qsettings.h>
 
 /* definition and macros */
 
@@ -123,6 +124,7 @@ public:
     ~PythonEngine();                                //destructor
 
     Q_INVOKABLE void pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap> infoMessages);               //setup
+    
     Q_INVOKABLE ito::RetVal scanAndRunAutostartFolder(QString currentDirAfterScan = QString() );
     Q_INVOKABLE ito::RetVal pythonShutdown(ItomSharedSemaphore *aimWait = NULL);            //shutdown
     Q_INVOKABLE ito::RetVal stringEncodingChanged();
@@ -183,7 +185,10 @@ protected:
     ito::RetVal modifyTracebackDepth(int NrOfLevelsToPopAtFront = -1, bool showTraceback = true);
 
     PyObject* setPyErrFromException(const std::exception &exc);
-
+    void startupInitPythonWorkspaceUpdateQueue();
+    ito::RetVal startupInitPythonHelpStreamConsumer(QSettings& settings);
+    ito::RetVal startupAddModulesToItomModule();
+    ito::RetVal startupLoadAndImportAdditionalModules(QSharedPointer<QVariantMap>& infoMessages);
     void connectNotify(const QMetaMethod &signal);
 
     enum DebuggerErrorCode

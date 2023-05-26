@@ -9,8 +9,8 @@
 
 set(FFTW_FOUND false)
 
-find_path(FFTW_DIR fftw3.h PATHS /usr/local/include /usr/include /opt/local/lib DOC "Root directory of fftw")
-find_path(FFTW_INCLUDE_DIR fftw3.h PATHS /usr/local/include /usr/include /opt/local/lib ${FFTW_DIR})
+find_path(FFTW_DIR fftw3.h PATHS $ENV{FFTW_ROOT} /usr/local/include /usr/include /opt/local/lib DOC "Root directory of fftw")
+find_path(FFTW_INCLUDE_DIR fftw3.h PATHS $ENV{FFTW_ROOT} /usr/local/include /usr/include /opt/local/lib ${FFTW_DIR})
 
 find_library(FFTW_LIBRARY_F NAMES fftw3f-3 fftw3f libfftw3f-3 PATHS /usr/lib /usr/local/lib /opt/locala/lib ${FFTW_DIR})
 find_library(FFTW_LIBRARY_D NAMES fftw3-3 fftw3 libfftw3-3  PATHS /usr/lib /usr/local/lib /opt/locala/lib ${FFTW_DIR})

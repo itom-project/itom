@@ -56,7 +56,7 @@ Therefore, the built-in helpviewer of itom has to be disabled. For building itom
     git submodule update
     mkdir -p ./{build_debug,build_release}
     cd ./build_release
-    cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=OFF -PYTHON_LIBRARY=/usr/lib64/libpython3.5m.so -PYTHON_INCLUDE_DIR=/usr/include/python3.5m -BUILD_QTVERSION=Qt5 -Qt5_DIR=/usr/lib64/cmake/Qt5 -Qt5Core_DIR=/usr/lib64/cmake/Qt5Core -BUILD_WITH_HELPVIEWER=OFF ../ 
+    cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=OFF -PYTHON_LIBRARY=/usr/lib64/libpython3.5m.so -PYTHON_INCLUDE_DIR=/usr/include/python3.5m -DQt_Prefix_DIR=/usr/lib64 -BUILD_WITH_HELPVIEWER=OFF ../
     make -j4
 
 **Fedora >= 35**
@@ -84,7 +84,7 @@ For these versions, CMake is able to detect Qt5 and Python automatically. Additi
     git submodule update
     mkdir -p ./{build_debug,build_release}
     cd ./build_release
-    cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=ON -DPYTHON_LIBRARY=/usr/lib64/libpython3.5m.so -DPYTHON_INCLUDE_DIR=/usr/include/python3.5m -DBUILD_QTVERSION=Qt5 -DQt5_DIR=/usr/lib64/cmake/Qt5 -DQt5Core_DIR=/usr/lib64/cmake/Qt5Core -DBUILD_WITH_HELPVIEWER=OFF -DPCL_DIR=/usr/lib64/cmake/pcl -DBOOST_INCLUDEDIR=/usr/include -DBOOST_LIBRARYDIR=/usr/lib64 -DITOM_SDK_DIR=../itom/SDK ../
+    cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=ON -DPYTHON_LIBRARY=/usr/lib64/libpython3.5m.so -DPYTHON_INCLUDE_DIR=/usr/include/python3.5m -DQt_Prefix_DIR=/usr/lib64 -DBUILD_WITH_HELPVIEWER=OFF -DPCL_DIR=/usr/lib64/cmake/pcl -DBOOST_INCLUDEDIR=/usr/include -DBOOST_LIBRARYDIR=/usr/lib64 -DITOM_SDK_DIR=../itom/SDK ../
     make -j4
     
 Hints

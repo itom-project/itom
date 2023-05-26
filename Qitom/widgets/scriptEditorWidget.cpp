@@ -445,6 +445,13 @@ void ScriptEditorWidget::loadSettings()
 
     bool pyCodeFormatEnabled = settings.value("autoCodeFormatEnabled", true).toBool();
     m_autoCodeFormatCmd = settings.value("autoCodeFormatCmd", "black --line-length 88 --quiet -").toString();
+    m_autoCodeFormatPreCmd = settings.value("autoCodeFormatImportsSortCmd", "isort --py 3 --profile black").toString();
+
+    if (!settings.value("autoCodeFormatEnableImportsSort", false).toBool())
+    {
+        m_autoCodeFormatPreCmd = "";
+    }
+
     auto pyCodeFormatAction = m_editorMenuActions.find("formatFile");
 
     if (pyCodeFormatAction != m_editorMenuActions.end())
@@ -1376,7 +1383,12 @@ void ScriptEditorWidget::menuPyCodeFormatting()
     m_pyCodeFormatter = QSharedPointer<PyCodeFormatter>(new PyCodeFormatter(this), doDeleteLater);
     connect(m_pyCodeFormatter.data(), &PyCodeFormatter::formattingDone,
         this, &ScriptEditorWidget::pyCodeFormatterDone);
-    ito::RetVal retval = m_pyCodeFormatter->startFormatting(m_autoCodeFormatCmd, toPlainText(), this);
+    ito::RetVal retval = m_pyCodeFormatter->startSortingAndFormatting(
+        m_autoCodeFormatPreCmd, 
+        m_autoCodeFormatCmd, 
+        toPlainText(), 
+        this
+    );
 
     if (retval.containsError())
     {
@@ -3193,12 +3205,37 @@ void ScriptEditorWidget::fileSysWatcherFileChangedStep2(const QString &path)
         }
         else //file changed
         {
+            // compare the content of the file with the content of this script...
             QCryptographicHash fileHash(QCryptographicHash::Sha1);
             file.open(QIODevice::ReadOnly | QIODevice::Text);
             fileHash.addData(file.readAll());
 
+            QByteArray currentByteArray;
+
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+            QTextCodec* tc = QTextCodec::codecForName(m_charsetEncoding.encodingName.toLatin1());
+
+            if (!tc)
+            {
+                // fallback to utf8
+                tc = QTextCodec::codecForName("UTF-8");
+            }
+
+            currentByteArray = tc->fromUnicode(toPlainText());
+#else
+            QStringEncoder encoder(m_charsetEncoding.encodingName.toLatin1());
+
+            if (!encoder.isValid())
+            {
+                // fallback to utf8
+                encoder = QStringEncoder("UTF-8");
+            }
+
+            currentByteArray = encoder(toPlainText());
+#endif
+
             QCryptographicHash fileHash2(QCryptographicHash::Sha1);
-            fileHash2.addData(toPlainText().toLatin1());
+            fileHash2.addData(currentByteArray);
 
             if (!(fileHash.result() == fileHash2.result())) //does not ask user in the case of same texts
             {
@@ -3212,7 +3249,14 @@ void ScriptEditorWidget::fileSysWatcherFileChangedStep2(const QString &path)
 
                 if (ret == QMessageBox::Yes)
                 {
+                    int line, col;
+                    cursorPosition(line, col);
+
                     openFile(path, true);
+
+                    // try to apply the cursor position again
+                    setCursorPosAndEnsureVisible(line);
+                    setCursorPosition(line, col);
                 }
                 else
                 {

@@ -71,7 +71,6 @@
 #endif /*DOXYGEN_SHOULD_SKIP_THIS*/
 
 
-
 QTextStream *messageStream = NULL;
 QMutex msgOutputProtection;
 

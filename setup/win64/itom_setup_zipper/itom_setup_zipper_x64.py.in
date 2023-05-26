@@ -12,7 +12,7 @@ sourceRedistributableDir = r"W:/m/ITOM/Software/MS VisualStudio/Redistributable/
 
 #C:/
 innosetupscript = r"@CMAKE_CURRENT_BINARY_DIR@/setup/win64/itom_setup_win64.iss"
-sourceQtDir = r"@QT_QMAKE_EXECUTABLE@"
+sourceQtDir = r"@QT_BINARY_DIR@"
 sourceDirItomBuild = r"@ITOM_APP_DIR@"
 sourceDirItomSource = r"@CMAKE_CURRENT_SOURCE_DIR@"
 opencvVersion = "@OpenCV_LIB_VERSION@"

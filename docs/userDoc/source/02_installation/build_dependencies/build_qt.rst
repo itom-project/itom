@@ -53,7 +53,7 @@ For a working |itom| development environment only a prebuild version of Qt is ne
     
     Qt 5.10.1 supports **Qt WebEngine**, **Qt WebEngineWidgets** for VS2015.
     
-.. figure:: images/all-in-one-create/QT_WebEngine_hint.png
+.. figure:: ../images/all-in-one-create/QT_WebEngine_hint.png
     :scale: 100%
     :align: center
     

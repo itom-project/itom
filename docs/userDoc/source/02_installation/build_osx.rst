@@ -140,8 +140,7 @@ We need some more python packages. Just run the following command:
 Recommended folder structure
 -----------------------------
 
-The following folder structure is recommended and should be setup when cloning
-this repository and the subsequent submodules.
+Similar to Windows, the following folder structure is recommended:
 
 .. code-block:: python
     
@@ -255,6 +254,7 @@ Use **CMake** to create the necessary makefiles for debug and/or release:
     * **make**: Open a command line and switch to the **build_debug/itom** or **build_release/itom** directory. Simply call **make** such that the file **qitom** or **qitomd** (debug) is built. Start this application by calling **./qitom** or **./qitomd** in order to run |itom|.
 
     * **Xcode**: If you plan to change something in the source code it is recommended to use Xcode. Just open the **itom.xcodeproj** with Xcode and compile the project.
+
 
 Known Problems
 --------------
