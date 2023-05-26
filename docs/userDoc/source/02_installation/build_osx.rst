@@ -144,36 +144,61 @@ Similar to Windows, the following folder structure is recommended:
 
 .. code-block:: python
     
-    ./sources
+    ./itomproject
         ./itom    # cloned repository of core
         ./plugins # cloned sources of plugins
-        ./designerPlugins # cloned sources of designerPlugins
+        ./designerplugins # cloned sources of designerPlugins
         ...
-    ./build_debug # build folder for debug makefiles of...
-        ./itom    # ...core
-        ./plugins # ...plugins
-        ...
-    ./build_release # build folder for release makefiles of...
-        ./itom      # ...core
-        ...
+    # base folder for compilation. The makefiles should 
+    # be stored in the following subfolders (depending on project):
+    ./itomproject
+        ./build       
+            ./itom    # ...core
+            ./plugins # ...plugins
+            ./designerplugins # ...designerPlugins
+            ...
+    #Optionally, if you want to do debug and release builds separately:
+    # base folder for debug compilation (if desired). The makefiles 
+    # should be stored in the following subfolders (depending on project):
+    ./itomproject
+        ./build_debug 
+            ./itom    # ...core
+            ./plugins # ...plugins
+            ./designerplugins # ...designerPlugins
+            ...
+    # base folder for release compilation (if desired). The makefiles should 
+    # be stored in the following subfolders (depending on project):
+    ./itomproject
+        ./build_release 
+            ./itom      # ...core
+            ./plugins   # ...plugins
+            ./designerplugins # ...designerPlugins
+            ...
 
 To create all folders in your user directory in one step, call the following bash commands:
 
 .. code-block:: bash
     
-    mkdir ~/itom; cd ~/itom; mkdir ./sources; mkdir ./build_debug; mkdir ./build_debug/itom; mkdir ./build_debug/plugins; mkdir ./build_debug/designerPlugins; mkdir ./build_release; mkdir ./build_release/itom; mkdir ./build_release/plugins; mkdir ./build_release/designerPlugins
+    cd ~/itomprojetc; mkdir ./build_debug; mkdir ./build_release
 
-Obtain the sources
---------------------
+Obtain and build the sources
+-----------------------------
 
-Clone at least the core repository of |itom| (bitbucket.org/itom/itom) as well as the open source plugin and designerPlugin repository into the corresponding subfolders of the **sources** folder. You can do this by using any git client or the command 
+Clone the central projetc repository of |itom| (git clone git@bitbucket.org:itom/itomproject.git)
+and initialize and update the subsequent submodules. This should load the necessary **itom** core,
+**plugin** and **designerplugin** submodules.
+You can do this by using any git client or the command shell.
 
 .. code-block:: bash
     
-    cd sources
-    git clone https://bitbucket.org/itom/itom.git
-    git clone https://bitbucket.org/itom/plugins.git
-    git clone https://bitbucket.org/itom/designerplugins.git
+    git clone git clone git@bitbucket.org:itom/itomproject.git
+    cd itomproject
+    git submodule init
+    git submodule update
+    mkdir -p ./{build_debug,build_release}
+    cd ./build_release
+    cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=OFF -DCMAKE_BUILD_TYPE=Release ../  #If PCL-support should be enabled, replace OFF by ON
+    make -j4
 
 Configuration process
 ----------------------
@@ -230,15 +255,6 @@ Use **CMake** to create the necessary makefiles for debug and/or release:
 
     * **Xcode**: If you plan to change something in the source code it is recommended to use Xcode. Just open the **itom.xcodeproj** with Xcode and compile the project.
 
-Build plugins
----------------
-
-Build the plugins, designerPlugins... in the same way than |itom| but make sure that you compiled |itom| at least once before you start configuring and compiling any plugin. In CMake, you need to indicate the same variables 
-than above, but you also need to set the CMake variable **ITOM_SDK_DIR** or the Environment variable **ITOM_SDK_ROOT** to the **sdk** folder in **build_debug/itom/sdk** or **build_release/itom/sdk** depending whether you want to compile a debug or release version (please don't forget to set **CMAKE_BUILD_TYPE**. 
-
-If you don't want to have some of the plugins, simply uncheck them in CMake under the group **Plugin**.
-
-The plugins and designerPlugins will finally be compiled and then copy their resulting library files into the **designer** and **plugins** subfolder of |itom|. Restart |itom| and you the plugin will be loaded.
 
 Known Problems
 --------------

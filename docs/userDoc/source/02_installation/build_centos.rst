@@ -34,16 +34,13 @@ Therefore, the built-in helpviewer of itom has to be disabled. For building itom
 
 .. code-block:: bash
     
-    git clone https://bitbucket.org/itom/itom.git ./itom/sources/itom
-    git clone https://bitbucket.org/itom/plugins.git ./itom/sources/plugins
-    git clone https://bitbucket.org/itom/designerplugins.git ./itom/sources/designerplugins
-    mkdir -p build/itom build/designerPlugins build/plugins
-    cd ./itom/build/itom
-    cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=OFF -PYTHON_LIBRARY=/usr/lib64/libpython3.6m.so -PYTHON_INCLUDE_DIR=/usr/include/python3.6m -Qt_Prefix_DIR=/usr/lib64 -BUILD_WITH_HELPVIEWER=OFF ../../sources/itom
-    make
-    cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=OFF -PYTHON_LIBRARY=/usr/lib64/libpython3.6m.so -PYTHON_INCLUDE_DIR=/usr/include/python3.6m -Qt_Prefix_DIR=/usr/lib64 -BUILD_WITH_HELPVIEWER=OFF ../../sources/designerPlugins
-    make
-    cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=OFF -PYTHON_LIBRARY=/usr/lib64/libpython3.6m.so -PYTHON_INCLUDE_DIR=/usr/include/python3.6m -Qt_Prefix_DIR=/usr/lib64 -BUILD_WITH_HELPVIEWER=OFF ../../sources/plugins
-    make
+    git clone git clone git@bitbucket.org:itom/itomproject.git
+    cd itomproject
+    git submodule init
+    git submodule update
+    mkdir -p ./{build_debug,build_release}
+    cd ./build_release
+    cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=OFF -PYTHON_LIBRARY=/usr/lib64/libpython3.6m.so -PYTHON_INCLUDE_DIR=/usr/include/python3.6m -Qt_Prefix_DIR=/usr/lib64 -BUILD_WITH_HELPVIEWER=OFF ../
+    make -j4
     
 Errors in cmake configuration process can be fixed using ccmake or cmake-gui

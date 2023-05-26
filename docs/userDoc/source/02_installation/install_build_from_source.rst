@@ -11,12 +11,21 @@ Build from Sources
     from sources. See the section :ref:`All-In-One development setup 
     <install-all-in-one-dev-setup>` below for more information.
 
-Alternatively, it is possible to get the sources of |itom| (e.g. clone the latest 
-Git repository from https://bitbucket.org/itom/itom.git) and
-compile an up-to-date version of |itom|. This is recommended for developers 
+Alternatively, it is possible to get the sources of |itomproject| (e.g. clone the latest 
+Git repository from git@bitbucket.org:itom/itomproject.git), initialize and update the
+submodules **itom**, **plugins** and **designerplugins**.
+
+.. code-block:: bash
+    
+    git clone git@bitbucket.org:itom/itomproject.git
+    cd itomproject
+    git submodule init
+    git submodule update
+
+Then you can compile an up-to-date version of |itomproject|. This is recommended for developers 
 (e.g. plugin developers) and required for linux users. Before getting the source files,
 check the build dependencies below which contain software packages and libraries 
-necessary to build and |itom|.
+necessary to build and |itomproject|.
 
 .. toctree::
     :maxdepth: 2
