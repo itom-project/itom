@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -23,15 +23,15 @@
     ------------------------
 
     This file belongs to the code editor of itom. The code editor is
-    in major parts a fork / rewritten version of the python-based source 
-    code editor PyQode from Colin Duquesnoy and others 
-    (see https://github.com/pyQode). PyQode itself is licensed under 
+    in major parts a fork / rewritten version of the python-based source
+    code editor PyQode from Colin Duquesnoy and others
+    (see https://github.com/pyQode). PyQode itself is licensed under
     the MIT License (MIT).
 
     Some parts of the code editor of itom are also inspired by the
     source code editor of the Spyder IDE (https://github.com/spyder-ide),
     also licensed under the MIT License and developed by the Spyder Project
-    Contributors. 
+    Contributors.
 
 *********************************************************************** */
 
@@ -142,8 +142,8 @@ void FoldDetector::processBlock(QTextBlock &currentBlock, QTextBlock &previousBl
     // and prev state must then be reset).
     QTextBlock prev = currentBlock.previous();  // real prev block (may be blank)
 
-    if (prev.isValid() 
-        && prev.text().trimmed() == "" 
+    if (prev.isValid()
+        && prev.text().trimmed() == ""
         && Utils::TextBlockHelper::isFoldTrigger(prev))
     {
         // prev line has the correct trigger fold state
@@ -364,7 +364,7 @@ QList<QTextBlock> FoldScope::blocks(bool ignoreBlankLines /*= true*/) const
     QList<QTextBlock> retlist;
     QPair<int,int> start_end = getRange(ignoreBlankLines);
     QTextBlock block = m_trigger.next();
-    
+
     while ((block.blockNumber() <= start_end.second) && block.isValid())
     {
         retlist << block;
@@ -424,7 +424,7 @@ QSharedPointer<FoldScope> FoldScope::parent() const
 
         if (Utils::TextBlockHelper::isFoldTrigger(block))
         {
-            bool valid; 
+            bool valid;
             return QSharedPointer<FoldScope>(new FoldScope(block, valid));  //valid has to be true, since check for fold trigger was already done above
         }
         else

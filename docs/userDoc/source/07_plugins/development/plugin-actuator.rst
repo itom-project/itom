@@ -7,7 +7,7 @@
 Plugin class - Actuator
 =========================
 
-If you want to create a plugin in order to access piezo- or motor-stages, multi-axes-machines,... it is intended to derive your plugin class from **ito::AddInActuator**. 
+If you want to create a plugin in order to access piezo- or motor-stages, multi-axes-machines,... it is intended to derive your plugin class from **ito::AddInActuator**.
 
 Base idea of any actuator
 -----------------------------
@@ -69,7 +69,7 @@ A sample header file of the actuator's plugin class is illustrated in the follow
 
 .. code-block:: c++
     :linenos:
-    
+
     #define ITOM_IMPORT_API
     #define ITOM_IMPORT_PLOTAPI
 
@@ -78,16 +78,16 @@ A sample header file of the actuator's plugin class is illustrated in the follow
     #include "dialogMyMotor.h"
     #include "dockWidgetMyMotor.h"
 
-    class MyMotor : public ito::AddInActuator 
+    class MyMotor : public ito::AddInActuator
     {
         Q_OBJECT
 
         protected:
             ~MyMotor() {};  /*! < Destructor*/
             MyMotor();/*! < Constructor*/
-            
+
             ito::RetVal waitForDone(int timeoutMS = -1, QVector<int> axis = QVector<int>() /*if empty -> all axis*/, int flags = 0 /*for your use*/);
-            
+
         public:
             friend class MyMotorInterface;
             const ito::RetVal showConfDialog(void); /*!< Opens the modal configuration dialog (called from main thread) */
@@ -97,37 +97,37 @@ A sample header file of the actuator's plugin class is illustrated in the follow
             //! get/set parameters
             ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond = NULL);
             ito::RetVal setParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond = NULL);
-            
+
             //! init/close method
-            ito::RetVal init(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, ItomSharedSemaphore *waitCond = NULL); 
+            ito::RetVal init(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, ItomSharedSemaphore *waitCond = NULL);
             ito::RetVal close(ItomSharedSemaphore *waitCond);
 
             //! calibration for single or multiple axis
             ito::RetVal calib(const int axis, ItomSharedSemaphore *waitCond = NULL);
             ito::RetVal calib(const QVector<int> axis, ItomSharedSemaphore *waitCond = NULL);
-            
+
             //! current axis position is new zero-position
             ito::RetVal setOrigin(const int axis, ItomSharedSemaphore *waitCond = NULL);
             ito::RetVal setOrigin(const QVector<int> axis, ItomSharedSemaphore *waitCond = NULL);
-            
+
             //! Reads out status request answer and gives back ito::retOk or ito::retError
             ito::RetVal getStatus(QSharedPointer<QVector<int> > status, ItomSharedSemaphore *waitCond);
 
             //! get current position of single or multiple axis (in mm or degree)
             ito::RetVal getPos(const int axis, QSharedPointer<double> pos, ItomSharedSemaphore *waitCond);
             ito::RetVal getPos(const QVector<int> axis, QSharedPointer<QVector<double> > pos, ItomSharedSemaphore *waitCond);
-            
+
             //! move one or more axis to certain absolute positions (in mm or degree)
             ito::RetVal setPosAbs(const int axis, const double pos, ItomSharedSemaphore *waitCond = NULL);
             ito::RetVal setPosAbs(const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond = NULL);
-            
+
             //! move one or more axis by certain relative distances (in mm or degree)
             ito::RetVal setPosRel(const int axis, const double pos, ItomSharedSemaphore *waitCond = NULL);
             ito::RetVal setPosRel(const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond = NULL);
-            
+
             //! if this slot is triggered, the current status and position is emitted (e.g. for actualizing a dock widget)
             ito::RetVal RequestStatusAndPosition(bool sendActPosition, bool sendTargetPos);
-            
+
             //ito::RetVal requestStatusAndPosition(bool sendCurrentPos, bool sendTargetPos); //!see notes above
 
         private slots:
@@ -138,24 +138,24 @@ The corresponding source file should start with something like this:
 
 .. code-block:: c++
     :linenos:
-    
+
     #define ITOM_IMPORT_API
     #define ITOM_IMPORT_PLOTAPI
-    
+
     #include "yourHeaderFile.h"
-    
+
     //implement your code here
-    
+
 Signalling the current position and status of any axes
 -------------------------------------------------------
 
 Each actuator has the possibility to signalize the target position, the current position and the current status of each axis. Then its own toolbox or other widgets or slots (general: listeners) can be connected to the corresponding signals in order to be informed about the current activity. The base class **ito::AddInActuator** provides the necessary structures for this:
 
 1. The vector **m_currentPos** must be initialized to a length corresponding to the number of axes and contains the current position of every axis using the units stated below. Whenever
-the actuator registers a change of any current position, the corresponding value should be changed as well. Listeners are finally informed about this change by calling the method 
+the actuator registers a change of any current position, the corresponding value should be changed as well. Listeners are finally informed about this change by calling the method
 
     .. code-block:: c++
-        
+
         sendStatusUpdate(false)
 
     The argument **false** means that not only a change of the current status happened, but also a change of any current position. This method internally emits the signal **actuatorStatusChanged**.
@@ -163,7 +163,7 @@ the actuator registers a change of any current position, the corresponding value
 2. The vector **m_targetPos** must also be initialized to a length corresponding to the number of axes. Whenever a positioning operation starts, set the target value of specific axes to the new target value and call
 
     .. code-block:: c++
-        
+
         sendTargetUpdate()
 
     that finally emits the signal **targetChanged**.
@@ -181,12 +181,12 @@ The **moving flags** contain flags about the current moving status of any axis (
     * ito::actuatorTimeout: A timeout occurred during the movement of this axis
 
 The **status flags** inform about the general status of any axis (bits containing to this group are set in the mask **ito::actStatusMask**):
-    
+
     * ito::actuatorAvailable: This axis is available (usually set)
     * ito::actuatorEnabled: This axis is enabled and can be driven (usually set, but there are drivers that allowing disabling selected axis)
 
 Axes that have got any reference or end switches can signal related status information using the **switches flags**. All bits belonging to this group are set in the mask **ito::actSwitchesMask** divided into **ito::actEndSwitchMask** and **ito::actRefSwitchMask**):
-    
+
     * ito::actuatorEndSwitch: This bit is set if any (unknown) end switch was reached
     * ito::actuatorLeftEndSwitch: This bit is additionally set if the left end switch was reached
     * ito::actuatorRightEndSwitch: This bit is additionally set if the right end switch was reached
@@ -197,21 +197,21 @@ Axes that have got any reference or end switches can signal related status infor
 You can either manually set the necessary bit-combination of moving, status and switch flags for signalling the right status of the axis. There are three methods defined in **ito::AddInActuator** that simplify this process:
 
 .. code-block:: c++
-    
+
     setStatus(int &status, const int newFlags, const int keepMask = 0)
     setStatus(const QVector<int> &axis, const int newFlags, const in keepMask = 0)
 
 Use this methods to the set the status of one or multiple axis. The parameter **newFlags** should contain an or-combination of all flags that should be set. The status flags are then set to this value (hence, old values are overwritten). If you want to keep the current bit values of a certain group, pass the specific mask as argument **keepMask**. For instance, if you want to the status of the second axis to **actuatorMoving** without changing the **status flags**, use the following command:
 
 .. code-block:: c++
-    
+
     setStatus(m_currentStatus[1], ito::actuatorMoving, ito::actStatusFlags)
     # this command will set all bits of the switches mask to 0!
 
 The equivalent command for multiple axis, requires a vector with axes-indices as first argument. This example does the same for the first and third axis:
 
 .. code-block:: c++
-    
+
     QVector<int> axis;
     axis << 0 << 2;
     setStatus(axis, ito::actuatorMoving, ito::actStatusFlags)
@@ -219,14 +219,14 @@ The equivalent command for multiple axis, requires a vector with axes-indices as
 The similar commands **replaceStatus**
 
 .. code-block:: c++
-    
+
     replaceStatus(int &status, const int existingFlag, const int replaceFlag)
     replaceStatus(const QVector<int> &axis, const int existingFlag, const int replaceFlag)
 
 can be used to replace one status flag by another one without changing the other bits. If the bit corresponding to the **existingFlag** is set, it is set to zero and the bit of the **replaceFlag** is set to 1. In the following example, the flag of the first axis is set from moving to atTarget:
 
 .. code-block:: c++
-    
+
     replaceStatus(m_currentStatus[0], ito::actuatorMoving, ito::actuatorAtTarget)
 
 After using one of these functions to set the current status, call **sendStatusUpdate** to emit the signal **actuatorStatusChanged** such that connected listeners can for instance visualize the current status.
@@ -240,16 +240,16 @@ In the method **waitForDone** regularly check if the interrupt flag has been set
 returns true, set the moving state of all moving axes to **ito::actuatorInterrupted** and return with an appropriate return value, like:
 
 .. code-block:: c++
-    
+
     return ito::RetVal(ito::retError, 0, "movement interrupted");
 
 .. note::
-    
+
     Once **isInterrupted()** returns true, the internal interrupt flag is reset to false. Therefore consider to call this function to reset the interrupt flag if desired (e.g. at the begin of the next movement).
 
 
-    
-Parameters and Unit Conventions 
+
+Parameters and Unit Conventions
 ---------------------------------
 
 In order to have a unified behaviour of all actuator plugins, respect the following unit conventions. That means, the plugin should store related parameters using these conventions, such that **getParam** and **setParam** returns and obtains values using these units. Internally, it is sometimes
@@ -258,7 +258,7 @@ necessary to convert these units to the units required by the interface of the r
 * Length values in **mm**
 * Angles in **degree**
 * Velocity in **mm/sec** or **degree/sec**
-* Acceleration, deceleration in **mm/sec^2** or **degree/sec^2** 
+* Acceleration, deceleration in **mm/sec^2** or **degree/sec^2**
 
 Implement the following mandatory parameters in the map **m_params**:
 

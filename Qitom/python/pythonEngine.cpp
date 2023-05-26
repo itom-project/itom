@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -95,7 +95,7 @@ PythonEngine* PythonEngine::instance = NULL;
 QString PythonEngine::fctHashPrefix = ":::itomfcthash:::";
 
 //----------------------------------------------------------------------------------------------------------------------------------
-FuncWeakRef::FuncWeakRef() : m_proxyObject(NULL), m_argument(NULL), m_handle(0) 
+FuncWeakRef::FuncWeakRef() : m_proxyObject(NULL), m_argument(NULL), m_handle(0)
 {
 }
 
@@ -167,8 +167,8 @@ PythonEngine *PythonEngine::getInstanceInternal()
 
 //----------------------------------------------------------------------------------------------------------------------------------
 PythonEngine::PythonEngine() :
-    m_started(false), 
-    m_pythonState(pyStateIdle), 
+    m_started(false),
+    m_pythonState(pyStateIdle),
     m_bpModel(nullptr),
     m_mainModule(nullptr),
     m_pMainDictionary(nullptr),
@@ -178,15 +178,15 @@ PythonEngine::PythonEngine() :
     m_itomDbgInstance(nullptr),
     m_itomModule(nullptr),
     m_itomFunctions(nullptr),
-    m_pyFuncWeakRefAutoInc(0), 
+    m_pyFuncWeakRefAutoInc(0),
     m_pyModGC(nullptr),
     m_pyModCodeChecker(nullptr),
-    m_pyModCodeCheckerHasPyFlakes(false), 
+    m_pyModCodeCheckerHasPyFlakes(false),
     m_pyModCodeCheckerHasFlake8(false),
-    m_executeInternalPythonCodeInDebugMode(false), 
-    m_dictUnicode(nullptr), 
+    m_executeInternalPythonCodeInDebugMode(false),
+    m_dictUnicode(nullptr),
     m_pythonThreadId(0),
-    m_includeItomImportString(""), 
+    m_includeItomImportString(""),
     m_pUserDefinedPythonHome(nullptr)
 {
     qRegisterMetaType<tPythonDbgCmd>("tPythonDbgCmd");
@@ -219,14 +219,14 @@ PythonEngine::PythonEngine() :
     qRegisterMetaType<QSharedPointer<QVariantMap> >("QSharedPointer<QVariantMap>");
     qRegisterMetaType<QSharedPointer<QObject*> >("QSharedPointer<QObject*>");
     qRegisterMetaType<QPointer<QObject> >("QPointer<QObject>");
-    qRegisterMetaType<QSharedPointer<IntList> >("QSharedPointer<IntList>"); 
+    qRegisterMetaType<QSharedPointer<IntList> >("QSharedPointer<IntList>");
     qRegisterMetaType<QSharedPointer<IntVector> >("QSharedPointer<QVector<int> >"); //if the string is QVector<int> and not IntList (which is the same), Q_ARG(QShared...<QVector<int>>) can be submitted and not QShared..<QIntVector>
     qRegisterMetaType<PyObject*>("PyObject*");
     qRegisterMetaType<QSharedPointer<MethodDescriptionList> >("QSharedPointer<MethodDescriptionList>");
     qRegisterMetaType<QSharedPointer<FctCallParamContainer> >("QSharedPointer<FctCallParamContainer>");
-    qRegisterMetaType<QVector<SharedParamPointer> >("QVector<QSharedPointer<ito::Param>>"); 
+    qRegisterMetaType<QVector<SharedParamPointer> >("QVector<QSharedPointer<ito::Param>>");
     qRegisterMetaType<QSharedPointer<ParamVector> >("QSharedPointer<QVector<ito::Param>>");
-    qRegisterMetaType<QVector<SharedParamBasePointer> >("QVector<SharedParamBasePointer>"); 
+    qRegisterMetaType<QVector<SharedParamBasePointer> >("QVector<SharedParamBasePointer>");
     qRegisterMetaType<QSharedPointer<SharedParamBasePointerVector> >("QSharedPointer<SharedParamBasePointerVector>");
     qRegisterMetaType<QSharedPointer<ParamBaseVector> >("QSharedPointer<QVector<ito::ParamBase>>");
     qRegisterMetaType<QSharedPointer<QVector<ito::ParamBase> > >("QSharedPointer<QVector<ito::ParamBase> >");
@@ -234,7 +234,7 @@ PythonEngine::PythonEngine() :
     qRegisterMetaType<QPointer<ito::AddInDataIO> >("QPointer<ito::AddInDataIO>");
     qRegisterMetaType<QPointer<ito::AddInActuator> >("QPointer<ito::AddInActuator>");
     qRegisterMetaType<QSharedPointer< QSharedPointer< unsigned int > > >("QSharedPointer<QSharedPointer<unsigned int> >");
-#if ITOM_POINTCLOUDLIBRARY > 0    
+#if ITOM_POINTCLOUDLIBRARY > 0
     qRegisterMetaType<ito::PCLPointCloud >("ito::PCLPointCloud");
     qRegisterMetaType<ito::PCLPolygonMesh >("ito::PCLPolygonMesh");
     qRegisterMetaType<ito::PCLPointCloud >("ito::PCLPointCloud&");
@@ -315,7 +315,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap
 {
     m_pythonThreadId = QThread::currentThreadId();
 
-    /*set new seed for random generator of OpenCV. 
+    /*set new seed for random generator of OpenCV.
     This is required to have real random values for any randn or randu command.
     The seed must be set in every thread. This is for the main thread.
     */
@@ -349,7 +349,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap
                 QFileInfo(pythonSubDir + pythonExe).exists())
             {
                 //use pythonXX subdirectory of itom as python home path
-                pythonDirState = 0; 
+                pythonDirState = 0;
             }
             else if (QDir(pythonItomBuildDir).exists() && \
                 QFileInfo(pythonItomBuildDir + pythonExe).exists())
@@ -361,7 +361,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap
             else
             {
                 //use python default search mechanism for home path (e.g. registry...)
-                pythonDirState = 1; 
+                pythonDirState = 1;
             }
 #else
             pythonDirState = 1;
@@ -390,7 +390,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap
         }
         else if (pythonDirState == 2) //user-defined value
         {
-                
+
             if (QDir(pythonHomeFromSettings).exists())
             {
                 pythonDir = pythonHomeFromSettings;
@@ -429,10 +429,10 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap
         m_slotsUnicode = PyUnicode_FromString("__slots__");
 
         //!< add all static, known function calls to python-module itom
-        PyImport_AppendInittab("itom", &PythonItom::PyInitItom);                
+        PyImport_AppendInittab("itom", &PythonItom::PyInitItom);
 
         //!< add all static, known function calls to python-module itomdbg
-        PyImport_AppendInittab("itomDbgWrapper", &PythonEngine::PyInitItomDbg);  
+        PyImport_AppendInittab("itomDbgWrapper", &PythonEngine::PyInitItomDbg);
 
 #if ITOM_PYTHONMATLAB == 1
         PyImport_AppendInittab("matlab", &PythonMatlab::PyInit_matlab);
@@ -464,7 +464,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap
         if (m_pUserDefinedPythonHome)
         {
             status = PyConfig_SetString(&config, &config.home, m_pUserDefinedPythonHome);
-            if (PyStatus_Exception(status)) 
+            if (PyStatus_Exception(status))
             {
                 PyConfig_Clear(&config);
                 (*retValue) += RetVal::format(retError, 0, tr("Error setting custom Python home path:  %s").toLatin1().data(),
@@ -493,7 +493,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap
                 status.err_msg);
             return;
         }
-        
+
 #else
         if (m_pUserDefinedPythonHome)
         {
@@ -525,8 +525,8 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap
         if (!pythonHomeDir.exists() && pythonHome != "")
         {
             (*retValue) += RetVal::format(
-                retError, 
-                0, 
+                retError,
+                0,
                 tr("The home directory of Python is currently set to the non-existing directory '%s'\nPython cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python \nor correct the base directory in the property dialog of itom.").toLatin1().data(),
                 pythonHomeDir.absolutePath().toLatin1().data()
             );
@@ -547,8 +547,8 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap
         if (!pythonPathValid)
         {
             (*retValue) += RetVal::format(
-                retError, 
-                0, 
+                retError,
+                0,
                 tr("The built-in library path of Python could not be found. The current home directory is '%s'\nPython cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python \nor correct the base directory in the preferences dialog of itom.").toLatin1().data(),
                 pythonHomeDir.absolutePath().toLatin1().data()
             );
@@ -726,11 +726,11 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap
 
         runString("from itom import *");
 
-        // parse the main components of module itom to generate a string like 
-        // "from itom import dataObject, dataIO, ... to be prepended to each script 
+        // parse the main components of module itom to generate a string like
+        // "from itom import dataObject, dataIO, ... to be prepended to each script
         // before syntax check (only for this case)
         PyGILState_STATE gstate = PyGILState_Ensure();
-            
+
         PyObject *itomDir = PyObject_Dir(m_itomModule); //new ref
 
         if (itomDir && PyList_Check(itomDir))
@@ -753,13 +753,13 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap
                     }
                 }
             }
-                
+
             if (elements.size() > 0)
             {
                 m_includeItomImportString = QString("from itom import %1").arg(elements.join(", "));
             }
         }
-               
+
         Py_XDECREF(itomDir);
         PyGILState_Release(gstate);
         //end parse main components
@@ -874,7 +874,7 @@ ito::RetVal PythonEngine::startupInitPythonHelpStreamConsumer(QSettings& setting
     ito::RetVal retValue;
 
     //this and the sys.stdout part above initializes the python internal help system.
-    //if pydoc output is not set, help() will Stream to "more "(systemcommand), 
+    //if pydoc output is not set, help() will Stream to "more "(systemcommand),
     //so this should be initialized to something
     settings.beginGroup("Python");
     QString python3rdPartyHelperCommand = settings.value("python3rdPartyHelperCommand", "").toString();
@@ -934,7 +934,7 @@ ito::RetVal PythonEngine::startupAddModulesToItomModule()
 {
     ito::RetVal retValue;
 
-    //!< start python-type pythonStream, in order to redirect stdout and stderr 
+    //!< start python-type pythonStream, in order to redirect stdout and stderr
             //to std::cout and std::cerr (possibly redirected to qDebugStream)
     if (PyType_Ready(&PyStream::PythonStreamType) >= 0)
     {
@@ -953,7 +953,7 @@ ito::RetVal PythonEngine::startupAddModulesToItomModule()
         retValue += ito::RetVal(ito::retError, 0, tr("Error importing itom in start python engine\n").toLatin1().data());
     }
 
-    //the streams __stdout__ and __stderr__, pointing to the original streams at startup are None, 
+    //the streams __stdout__ and __stderr__, pointing to the original streams at startup are None,
     //but need to have a valid value for instance when using pip.
     if (runString("sys.stdout = sys.__stdout__ = itom.pythonStream(1)") != ito::retOk)
     {
@@ -1225,11 +1225,11 @@ QVariantMap PythonEngine::checkCodeCheckerRequirements()
 
 		if (mainWin)
 		{
-			
+
 			QMetaObject::invokeMethod(mainWin, "showInfoMessageLine", Q_ARG(QString, text), Q_ARG(QString, "PySyntaxStyleCheck"));
 		}
 	}
-	else if (opt.mode == PythonCommon::CodeCheckerPyFlakes 
+	else if (opt.mode == PythonCommon::CodeCheckerPyFlakes
 		&& !m_pyModCodeCheckerHasPyFlakes)
 	{
         QString text = tr("Syntax and basic code check not possible since package pyflakes missing. Install it or disable the syntax check in the properties.");
@@ -1239,9 +1239,9 @@ QVariantMap PythonEngine::checkCodeCheckerRequirements()
 
 		if (mainWin)
 		{
-			
+
 			QMetaObject::invokeMethod(mainWin, "showInfoMessageLine", Q_ARG(QString, text), Q_ARG(QString, "PySyntaxStyleCheck"));
-		}       
+		}
 	}
 
     return messages;
@@ -1268,7 +1268,7 @@ PyObject* PythonEngine::setPyErrFromException(const std::exception &exc)
         }
         else
         {
-            return PyErr_Format(PyExc_RuntimeError, "The exception '<unknown>' has been thrown"); 
+            return PyErr_Format(PyExc_RuntimeError, "The exception '<unknown>' has been thrown");
         }
     }
 }
@@ -1538,7 +1538,7 @@ ito::RetVal PythonEngine::stringEncodingChanged()
             }
 
             PyGILState_Release(gstate);
-        
+
             if (!found)
             {
                 if (codec->name().isEmpty())
@@ -1549,7 +1549,7 @@ ito::RetVal PythonEngine::stringEncodingChanged()
                 {
                     retval += RetVal(ito::retWarning, 0, tr("Qt text encoding %1 not compatible to python. Python encoding is set to latin 1").arg(codec->name().data()).toLatin1().data());
                 }
-                    
+
                 encodingType = PythonQtConversion::latin_1;
                 encodingName = "latin_1";
             }
@@ -1561,7 +1561,7 @@ ito::RetVal PythonEngine::stringEncodingChanged()
         encodingType = PythonQtConversion::latin_1;
         encodingName = "latin_1";
     }
-    
+
     PythonQtConversion::textEncoding = encodingType;
     PythonQtConversion::textEncodingName = encodingName;
 
@@ -1586,7 +1586,7 @@ QList<int> PythonEngine::parseAndSplitCommandInMainComponents(const QString &str
 
     // ignore cookie should interpret the input str as utf8 always
     // (at least, this is what could be seen from the cpython source code).
-    flags.cf_flags = PyCF_ONLY_AST | PyCF_IGNORE_COOKIE; 
+    flags.cf_flags = PyCF_ONLY_AST | PyCF_IGNORE_COOKIE;
 #if (PY_VERSION_HEX >= 0x03080000)
     // Python docs:
     // cf_feature_version is the minor Python version. It should be initialized to PY_MINOR_VERSION.
@@ -1668,7 +1668,7 @@ QList<int> PythonEngine::parseAndSplitCommandInMainComponents(const QString &str
             ret.append(temp->n_lineno);
         }
     }
-    
+
     PyNode_Free(n);
     PyGILState_Release(gstate);
 
@@ -1766,7 +1766,7 @@ ito::RetVal PythonEngine::autoReloaderCheck()
                 PyErr_PrintEx(0);
             }
             Py_XDECREF(result);
-            
+
             result = PyObject_CallMethod(m_autoReload.classAutoReload, "post_execute_hook", "");
             if (!result)
             {
@@ -2537,7 +2537,7 @@ void PythonEngine::enqueueGoToAssignmentRequest(const ito::JediAssignmentRequest
 //! public slot invoked by the scriptEditorWidget
 /*!
     This function calls the pyflakes or frosted python module. This module is able to check the syntax.
-    It\B4s called from ScriptEditorWidget::triggerCodeChecker() and delivers the results by 
+    It\B4s called from ScriptEditorWidget::triggerCodeChecker() and delivers the results by
     calling ScriptEditorWidget::codeCheckResultsReady(...).
 
     \param code This QString contains the code that the linter / code checker is supposed to check
@@ -2559,8 +2559,8 @@ void PythonEngine::pythonCodeCheck(const QString &code, const QString &filename,
             if (s && callbackFctName != "")
             {
                 QMetaObject::invokeMethod(
-                    s, 
-                    callbackFctName.constData(), 
+                    s,
+                    callbackFctName.constData(),
                     Q_ARG(QList<ito::CodeCheckerItem>, QList<ito::CodeCheckerItem>())
                 );
             }
@@ -2589,7 +2589,7 @@ void PythonEngine::pythonCodeCheck(const QString &code, const QString &filename,
             }
             modeNumber = 2;
             break;
-        
+
         case PythonCommon::CodeCheckerAuto:
             if ((!m_pyModCodeCheckerHasFlake8) &&
                 (!m_pyModCodeCheckerHasPyFlakes))
@@ -2609,14 +2609,14 @@ void PythonEngine::pythonCodeCheck(const QString &code, const QString &filename,
         QString codeToCheck = code;
         QString filename_ = filename;
 
-        
+
 
         PyGILState_STATE gstate = PyGILState_Ensure();
-        PyObject *result = PyObject_CallMethod(m_pyModCodeChecker, 
-            "check", 
-            "ssiiis", 
-            codeToCheck.toUtf8().constData(), 
-            filename.toUtf8().constData(), 
+        PyObject *result = PyObject_CallMethod(m_pyModCodeChecker,
+            "check",
+            "ssiiis",
+            codeToCheck.toUtf8().constData(),
+            filename.toUtf8().constData(),
             fileSaved ? 1 : 0,
             modeNumber,
             opt.includeItomModuleBeforeCheck ? 1 : 0,
@@ -2771,7 +2771,7 @@ void PythonEngine::submitAllBreakpointsToDebugger()
 
 //-------------------------------------------------------------------------------------
 ito::RetVal PythonEngine::pythonAddBreakpoint(
-    const BreakPointItem &breakpoint, 
+    const BreakPointItem &breakpoint,
     int &pyBpNumber)
 {
     RetVal retval;
@@ -2792,26 +2792,26 @@ ito::RetVal PythonEngine::pythonAddBreakpoint(
         if (breakpoint.condition == "")
         {
             result = PyObject_CallMethod(
-                m_itomDbgInstance, 
-                "addNewBreakPoint", 
-                "siOOOi", 
-                breakpoint.filename.toUtf8().data(), 
+                m_itomDbgInstance,
+                "addNewBreakPoint",
+                "siOOOi",
+                breakpoint.filename.toUtf8().data(),
                 lineNo,
-                pyEnabled, 
-                pyTemporary, 
-                Py_None, 
+                pyEnabled,
+                pyTemporary,
+                Py_None,
                 breakpoint.ignoreCount);
         }
         else
         {
             result = PyObject_CallMethod(
-                m_itomDbgInstance, 
-                "addNewBreakPoint", 
-                "siOOsi", 
+                m_itomDbgInstance,
+                "addNewBreakPoint",
+                "siOOsi",
                 breakpoint.filename.toUtf8().data(),
                 lineNo,
-                pyEnabled, 
-                pyTemporary, 
+                pyEnabled,
+                pyTemporary,
                 breakpoint.condition.toLatin1().data(),
                 breakpoint.ignoreCount);
         }
@@ -2823,12 +2823,12 @@ ito::RetVal PythonEngine::pythonAddBreakpoint(
                 .arg(breakpoint.filename).arg(lineNo).toLatin1().constData() << "\n" << std::endl;
 
             //traceback is sense-less, since the traceback is in itoDebugger.py only!
-            printPythonErrorWithoutTraceback(); 
+            printPythonErrorWithoutTraceback();
             PyErr_Clear();
 
             retval += RetVal(
-                retError, 
-                DbgErrorOther, 
+                retError,
+                DbgErrorOther,
                 tr("Adding breakpoint to file '%1', line %2 failed in Python debugger.")
                     .arg(breakpoint.filename).arg(lineNo).toLatin1().constData());
         }
@@ -2843,9 +2843,9 @@ ito::RetVal PythonEngine::pythonAddBreakpoint(
                 {
                     pyBpNumber = -1;
                     retval += RetVal::format(
-                        retError, 
+                        retError,
                         DbgErrorOther,
-                        tr("Adding breakpoint to file '%s', line %i failed in Python debugger (invalid breakpoint id).").toLatin1().data(), 
+                        tr("Adding breakpoint to file '%s', line %i failed in Python debugger (invalid breakpoint id).").toLatin1().data(),
                         breakpoint.filename.toLatin1().data(),
                         lineNo
                     );
@@ -2876,8 +2876,8 @@ ito::RetVal PythonEngine::pythonAddBreakpoint(
                 else
                 {
                     retval += RetVal::format(
-                        retError, 
-                        DbgErrorOther, 
+                        retError,
+                        DbgErrorOther,
                         tr("Adding breakpoint to file '%s', line %i in Python debugger returned unknown error string.").toLatin1().data(),
                         breakpoint.filename.toLatin1().data(),
                         lineNo
@@ -2912,29 +2912,29 @@ ito::RetVal PythonEngine::pythonEditBreakpoint(const int pyBpNumber, const Break
         if (newBreakpoint.condition == "")
         {
             result = PyObject_CallMethod(
-                m_itomDbgInstance, 
-                "editBreakPoint", 
-                "isiOOOi", 
-                pyBpNumber, 
+                m_itomDbgInstance,
+                "editBreakPoint",
+                "isiOOOi",
+                pyBpNumber,
                 newBreakpoint.filename.toUtf8().data(),
-                lineno, 
-                pyEnabled, 
-                pyTemporary, 
-                Py_None, 
+                lineno,
+                pyEnabled,
+                pyTemporary,
+                Py_None,
                 newBreakpoint.ignoreCount
             );
         }
         else
         {
             result = PyObject_CallMethod(
-                m_itomDbgInstance, 
-                "editBreakPoint", 
-                "isiOOsi", 
-                pyBpNumber, 
+                m_itomDbgInstance,
+                "editBreakPoint",
+                "isiOOsi",
+                pyBpNumber,
                 newBreakpoint.filename.toUtf8().data(),
-                lineno, 
-                pyEnabled, 
-                pyTemporary, 
+                lineno,
+                pyEnabled,
+                pyTemporary,
                 newBreakpoint.condition.toLatin1().data(),
                 newBreakpoint.ignoreCount
             );
@@ -2949,8 +2949,8 @@ ito::RetVal PythonEngine::pythonEditBreakpoint(const int pyBpNumber, const Break
             PyErr_Clear();
 
             retval += RetVal(
-                retError, 
-                DbgErrorOther, 
+                retError,
+                DbgErrorOther,
                 tr("Exception raised while editing breakpoint in debugger.").toLatin1().data()
             );
         }
@@ -2961,10 +2961,10 @@ ito::RetVal PythonEngine::pythonEditBreakpoint(const int pyBpNumber, const Break
             if (val != 0)
             {
                 retval += RetVal::format(
-                    retError, DbgErrorOther, 
-                    tr("Editing breakpoint (file '%s', line %i) in Python debugger returned error code %i").toLatin1().data(), 
-                    newBreakpoint.filename.toLatin1().data(), 
-                    lineno, 
+                    retError, DbgErrorOther,
+                    tr("Editing breakpoint (file '%s', line %i) in Python debugger returned error code %i").toLatin1().data(),
+                    newBreakpoint.filename.toLatin1().data(),
+                    lineno,
                     val
                 );
             }
@@ -2989,10 +2989,10 @@ ito::RetVal PythonEngine::pythonEditBreakpoint(const int pyBpNumber, const Break
             else
             {
                 retval += RetVal::format(
-                    retError, 
-                    DbgErrorOther, 
-                    tr("Editing breakpoint (file '%s', line %i) in Python debugger returned unknown error string").toLatin1().data(), 
-                    newBreakpoint.filename.toLatin1().data(), 
+                    retError,
+                    DbgErrorOther,
+                    tr("Editing breakpoint (file '%s', line %i) in Python debugger returned unknown error string").toLatin1().data(),
+                    newBreakpoint.filename.toLatin1().data(),
                     lineno);
             }
         }
@@ -3003,10 +3003,10 @@ ito::RetVal PythonEngine::pythonEditBreakpoint(const int pyBpNumber, const Break
     else
     {
         retval += RetVal::format(
-            retError, 
-            0, 
-            tr("Breakpoint in file '%s', line %i could not be edited since it has no valid Python breakpoint number (maybe a comment or blank line in script)").toLatin1().data(), 
-            newBreakpoint.filename.toLatin1().data(), 
+            retError,
+            0,
+            tr("Breakpoint in file '%s', line %i could not be edited since it has no valid Python breakpoint number (maybe a comment or blank line in script)").toLatin1().data(),
+            newBreakpoint.filename.toLatin1().data(),
             lineno);
     }
 
@@ -3209,7 +3209,7 @@ void PythonEngine::pythonRunFile(QString filename)
         }
 
         updatePythonWorkspaces(DictUpdate, DictNoAction, true);
-        
+
         pythonStateTransition(pyTransEndRun);
         }
         break;
@@ -3335,15 +3335,15 @@ void PythonEngine::pythonDebugFunction(PyObject *callable, PyObject *argTuple, b
     case pyStateRunning:
     case pyStateDebugging:
         // no command execution allowed if running or debugging without being in waiting mode
-        std::cerr 
-            << "it is not allowed to debug a function or python string in mode pyStateRunning or pyStateDebugging\n" 
+        std::cerr
+            << "it is not allowed to debug a function or python string in mode pyStateRunning or pyStateDebugging\n"
             << std::endl;
         break;
     case pyStateDebuggingWaiting:
     case pyStateDebuggingWaitingButBusy:
         pythonStateTransition(pyTransDebugExecCmdBegin);
-        std::cout 
-            << "Function will be executed instead of debugged since another debug session is currently running.\n" 
+        std::cout
+            << "Function will be executed instead of debugged since another debug session is currently running.\n"
             << std::endl;
         pythonRunFunction(callable, argTuple, gilExternal);
         pythonStateTransition(pyTransDebugExecCmdEnd);
@@ -3369,9 +3369,9 @@ void PythonEngine::pythonRunFunction(PyObject *callable, PyObject *argTuple, boo
 
         case pyStateRunning:
         case pyStateDebugging:
-        case pyStateDebuggingWaitingButBusy: 
-            // functions (from signal-calls) can be executed whenever another python method is 
-            // executed (only possible if another method executing python code is calling 
+        case pyStateDebuggingWaitingButBusy:
+            // functions (from signal-calls) can be executed whenever another python method is
+            // executed (only possible if another method executing python code is calling
             // processEvents. processEvents stops until this "runFunction" has been terminated
             runFunction(callable, argTuple, gilExternal);
             updatePythonWorkspaces(DictUpdate, DictUpdate, !gilExternal, true);
@@ -3398,13 +3398,13 @@ void PythonEngine::pythonRunStringOrFunction(QString cmdOrFctHash)
 
         QString cmdOrFctHashCropped = cmdOrFctHash.mid(PythonEngine::fctHashPrefix.length());
         hashValue = cmdOrFctHashCropped.toUInt(&success);
-        
+
         if (!success)
         {
-            std::cerr 
-                << "The command '" 
-                << cmdOrFctHashCropped.toLatin1().data() 
-                << "' seems to be a hashed function or method, but no handle value can be extracted (size_t required)\n" 
+            std::cerr
+                << "The command '"
+                << cmdOrFctHashCropped.toLatin1().data()
+                << "' seems to be a hashed function or method, but no handle value can be extracted (size_t required)\n"
                 << std::endl;
             return;
         }
@@ -3435,21 +3435,21 @@ void PythonEngine::pythonRunStringOrFunction(QString cmdOrFctHash)
             }
             else
             {
-                std::cerr 
-                    << "The method associated with the key '" 
-                    << cmdOrFctHashCropped.toLatin1().data() 
-                    << "' does not exist any more\n" 
+                std::cerr
+                    << "The method associated with the key '"
+                    << cmdOrFctHashCropped.toLatin1().data()
+                    << "' does not exist any more\n"
                     << std::endl;
             }
 
-            Py_XDECREF(argTuple);    
+            Py_XDECREF(argTuple);
         }
         else
         {
-            std::cerr 
-                << "No action associated with key '" 
-                << cmdOrFctHashCropped.toLatin1().data() 
-                << "' could be found in internal hash table\n" 
+            std::cerr
+                << "No action associated with key '"
+                << cmdOrFctHashCropped.toLatin1().data()
+                << "' could be found in internal hash table\n"
                 << std::endl;
         }
 
@@ -3472,13 +3472,13 @@ void PythonEngine::pythonDebugStringOrFunction(QString cmdOrFctHash)
         bool success;
         QString cmdOrFctHashCropped = cmdOrFctHash.mid(PythonEngine::fctHashPrefix.length());
         hashValue = cmdOrFctHashCropped.toUInt(&success);
-        
+
         if (!success)
         {
-            std::cerr 
-                << "The command '" 
-                << cmdOrFctHashCropped.toLatin1().data() 
-                << "' seems to be a hashed function or method, but no handle value can be extracted (size_t required)\n" 
+            std::cerr
+                << "The command '"
+                << cmdOrFctHashCropped.toLatin1().data()
+                << "' seems to be a hashed function or method, but no handle value can be extracted (size_t required)\n"
                 << std::endl;
             return;
         }
@@ -3509,25 +3509,25 @@ void PythonEngine::pythonDebugStringOrFunction(QString cmdOrFctHash)
             }
             else
             {
-                std::cerr 
-                    << "The method associated with the key '" 
-                    << cmdOrFctHashCropped.toLatin1().data() 
-                    << "' does not exist any more\n" 
+                std::cerr
+                    << "The method associated with the key '"
+                    << cmdOrFctHashCropped.toLatin1().data()
+                    << "' does not exist any more\n"
                     << std::endl;
             }
-            Py_XDECREF(argTuple);    
+            Py_XDECREF(argTuple);
         }
         else
         {
-            std::cerr 
-                << "No action associated with key '" 
-                << cmdOrFctHashCropped.toLatin1().data() 
-                << "' could be found in internal hash table\n" 
+            std::cerr
+                << "No action associated with key '"
+                << cmdOrFctHashCropped.toLatin1().data()
+                << "' could be found in internal hash table\n"
                 << std::endl;
         }
 
         PyGILState_Release(gstate);
-        
+
     }
     else
     {
@@ -3649,10 +3649,10 @@ void PythonEngine::enqueueDbgCmd(ito::tPythonDbgCmd dbgCmd)
     {
         m_dbgCmdMutex.lock();
 
-        // if you don't want, that shortcuts are collected in a queue and 
-        // handled one after the other one, then only enqueue the new 
+        // if you don't want, that shortcuts are collected in a queue and
+        // handled one after the other one, then only enqueue the new
         // command if the queue is empty
-        m_debugCommandQueue.enqueue(dbgCmd); 
+        m_debugCommandQueue.enqueue(dbgCmd);
         m_dbgCmdMutex.unlock();
     }
 }
@@ -3663,7 +3663,7 @@ ito::tPythonDbgCmd PythonEngine::dequeueDbgCmd()
     tPythonDbgCmd cmd = pyDbgNone;
     m_dbgCmdMutex.lock();
 
-    if (m_debugCommandQueue.length()>0) 
+    if (m_debugCommandQueue.length()>0)
     {
         cmd = m_debugCommandQueue.dequeue();
     }
@@ -3964,7 +3964,7 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString
                 PyObject *itkey, *itvalue;
                 Py_ssize_t itpos = 0;
                 quintptr objId = itemKey.toULongLong(&ok, 16);
-                
+
                 if (ok)
                 {
 
@@ -3977,7 +3977,7 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString
                             if (validVariableName)
                             {
                                 *validVariableName = PythonQtConversion::PyObjGetRepresentation(itvalue);
-                                
+
                                 if (*validVariableName == "")
                                 {
                                     *validVariableName = QString("item_0x%1").arg(itemKey);
@@ -3998,14 +3998,14 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString
 
             if (objIsNewRef)
             {
-                Py_DECREF(current_obj); 
+                Py_DECREF(current_obj);
                 objIsNewRef = false; //in the overall if-case, no new obj is a new reference, all borrowed
             }
         }
         else if (itemType == PY_LIST_TUPLE && PyList_Check(obj))
         {
             i = itemKey.toInt(&ok);
-            
+
             if (!ok || i < 0 || i >= PyList_Size(obj))
             {
                 //error
@@ -4021,7 +4021,7 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString
 
             if (objIsNewRef)
             {
-                Py_DECREF(current_obj); 
+                Py_DECREF(current_obj);
                 objIsNewRef = false; //no new obj is a new reference, all borrowed
             }
         }
@@ -4029,8 +4029,8 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString
         {
             i = itemKey.toInt(&ok);
 
-            if (!ok || i < 0 || i >= PyTuple_Size(obj)) 
-            { 
+            if (!ok || i < 0 || i >= PyTuple_Size(obj))
+            {
                 //error
                 return nullptr;
             };
@@ -4044,7 +4044,7 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString
 
             if (objIsNewRef)
             {
-                Py_DECREF(current_obj); 
+                Py_DECREF(current_obj);
                 objIsNewRef = false; //no new obj is a new reference, all borrowed
             }
         }
@@ -4060,7 +4060,7 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString
                     obj = PyObject_GetAttr(obj, unicode); // new reference
                     Py_DECREF(unicode);
                 }
-                     
+
                 if (validVariableName)
                 {
                     *validVariableName = itemKey;
@@ -4068,7 +4068,7 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString
 
                 if (objIsNewRef)
                 {
-                    Py_DECREF(current_obj); 
+                    Py_DECREF(current_obj);
                 }
 
                 objIsNewRef = (obj != nullptr);
@@ -4092,7 +4092,7 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString
 
                 if (objIsNewRef)
                 {
-                    Py_DECREF(current_obj); 
+                    Py_DECREF(current_obj);
                 }
 
                 objIsNewRef = (obj != nullptr);
@@ -4292,7 +4292,7 @@ void PythonEngine::workspaceGetChildNode(PyWorkspaceContainer *container, QStrin
     PyGILState_STATE gstate = PyGILState_Ensure();
 
     PyObject *obj = getPyObjectByFullName(container->isGlobalWorkspace(), fullNameParentItem);
-    
+
     if (obj)
     {
         container->loadDictionary(obj, fullNameParentItem);
@@ -4342,7 +4342,7 @@ void PythonEngine::workspaceGetValueInformation(PyWorkspaceContainer *container,
                 *extendedValue = "unknown";
             }
             Py_XDECREF(repr);
-        
+
         }
         else
         {
@@ -4364,8 +4364,8 @@ void PythonEngine::workspaceGetValueInformation(PyWorkspaceContainer *container,
 
 //-------------------------------------------------------------------------------------
 void PythonEngine::updatePythonWorkspaces(
-    DictUpdateFlag globalDictAction, 
-    DictUpdateFlag localDictAction, 
+    DictUpdateFlag globalDictAction,
+    DictUpdateFlag localDictAction,
     bool lockGIL,
     bool delayExecution /*= false*/)
 {
@@ -4375,8 +4375,8 @@ void PythonEngine::updatePythonWorkspaces(
     PyGILState_STATE gstate;
     bool gilLocked = false;
 
-    /* if localDictAction is equal to globalDictAction, the localDictAction is the 
-       current global dict (currently debugging at top level) -> it is sufficient 
+    /* if localDictAction is equal to globalDictAction, the localDictAction is the
+       current global dict (currently debugging at top level) -> it is sufficient
        to only show the global dict and delete the local dict */
     if (m_mainWorkspaceContainer.count() > 0)
     {
@@ -4569,8 +4569,8 @@ void PythonEngine::removeFunctionCancellationAndObserver(ito::FunctionCancellati
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-int PythonEngine::queuedInterrupt(void* /*arg*/) 
-{ 
+int PythonEngine::queuedInterrupt(void* /*arg*/)
+{
     // ok this is REALLY ugly, BUT if we want to break python constructs like:
     // while 1:
     //      try:
@@ -4591,8 +4591,8 @@ int PythonEngine::queuedInterrupt(void* /*arg*/)
     PythonEngine::getInstanceInternal()->m_interruptCounter.deref();
     //PyErr_Clear(); 4
 
-    return 0; 
-} 
+    return 0;
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ bool PythonEngine::isInterruptQueued()
@@ -4611,9 +4611,9 @@ int PythonEngine::queuedInterrupt(void* /*arg*/)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void PythonEngine::pythonInterruptExecutionThreadSafe(bool *interruptActuatorsAndTimers /*= NULL*/)
-{ 
+{
     // only queue the interrupt event if not yet done.
-    // ==operator(int) of QAtomicInt does not exist for all versions of Qt5. 
+    // ==operator(int) of QAtomicInt does not exist for all versions of Qt5.
     //testAndSetRelaxed returns true, if the value was 0 (and assigns one to it)
     if (m_interruptCounter.testAndSetRelaxed(0, 1))
     {
@@ -4907,7 +4907,7 @@ PyObject* PythonEngine::PyDbgCommandLoop(PyObject * /*pSelf*/, PyObject *pArgs)
 
     ito::RetVal retVal; // = pyEngine->pythonDeleteBreakpoint(bpNumber);
 
-    
+
 
     auto bpModel = pyEngine->getBreakPointModel();
     foreach(const BreakPointItem &item, bpModel->getBreakpoints())
@@ -5003,11 +5003,11 @@ bool PythonEngine::renameVariable(bool globalNotLocal, const QString &oldFullIte
                         QStringList old = fullNameSplit.last().split(":");
 
                         // todo: make this available if the current value is PY_OBJPTR as type!
-                        PyObject *oldName = (old[0][1].toLatin1() == PY_STRING) ? 
-                            PythonQtConversion::QStringToPyObject(old[1]) : 
+                        PyObject *oldName = (old[0][1].toLatin1() == PY_STRING) ?
+                            PythonQtConversion::QStringToPyObject(old[1]) :
                             PyLong_FromLong(old[1].toInt()); //new reference
                         char parentContainerType = old[0][0].toLatin1();
-                        fullNameSplit.removeLast(); 
+                        fullNameSplit.removeLast();
                         PyObject *parentContainer = NULL;
 
                         if (fullNameSplit.size() > 0)
@@ -5056,7 +5056,7 @@ bool PythonEngine::renameVariable(bool globalNotLocal, const QString &oldFullIte
                             else
                             {
                                 //first set new, then delete in order not to loose the reference in-between (ref of value is automatically incremented)
-                                PyMapping_SetItemString(parentContainer, newKey.toLatin1().data(), oldItem); 
+                                PyMapping_SetItemString(parentContainer, newKey.toLatin1().data(), oldItem);
                                 PyMapping_DelItem(parentContainer, oldName);
 
                                 if (PyErr_Occurred())
@@ -5082,7 +5082,7 @@ bool PythonEngine::renameVariable(bool globalNotLocal, const QString &oldFullIte
                                 //first set new, then delete in order not to loose the reference in-between (ref of value is automatically incremented)
                                 if (PyObject_SetAttr(parentContainer, newKeyUnicode, oldItem) == 0)
                                 {
-                                    PyObject_DelAttr(parentContainer, oldName);  
+                                    PyObject_DelAttr(parentContainer, oldName);
                                 }
 
                                 if (PyErr_Occurred())
@@ -5158,8 +5158,8 @@ bool PythonEngine::renameVariable(bool globalNotLocal, const QString &oldFullIte
     delete one or multiple variables from python global or local workspace
 
     \param globalNotLocal is true, if deletion from global workspace, else: local workspace
-    \param fullItemNames is a list of full item names to all python variables that should 
-        be deleted from workspace. This list must not contain child values if the parent 
+    \param fullItemNames is a list of full item names to all python variables that should
+        be deleted from workspace. This list must not contain child values if the parent
         is part of the list, too.
 */
 bool PythonEngine::deleteVariable(bool globalNotLocal, const QStringList &fullItemNames)
@@ -5209,9 +5209,9 @@ bool PythonEngine::deleteVariable(bool globalNotLocal, const QStringList &fullIt
 
             QStringList fullItemNamesAsc = fullItemNames;
 
-            // ascending sorting, however if several indices in one list or 
+            // ascending sorting, however if several indices in one list or
             // tuple should be deleted, it is necessary to start with the last one...
-            fullItemNamesAsc.sort(); 
+            fullItemNamesAsc.sort();
 
             for (int i = fullItemNamesAsc.size() - 1; i >= 0; --i)
             {
@@ -5248,7 +5248,7 @@ bool PythonEngine::deleteVariable(bool globalNotLocal, const QStringList &fullIt
                             std::cerr << "Unknown value type.\n" << std::endl;
                             break;
                         }
-                        
+
                         if (name != nullptr)
                         {
                             char parentContainerType = old[0][0].toLatin1();
@@ -5370,7 +5370,7 @@ ito::RetVal PythonEngine::saveMatlabVariables(bool globalNotLocal, QString filen
             //build dictionary, which should be pickled
             PyObject* pArgs = PyTuple_New(3);
             PyTuple_SetItem(pArgs,0, PyUnicode_DecodeLatin1(filename.toLatin1().data(), filename.length(), NULL));
-            
+
 
             PyObject* keyList = PyList_New(0);
             PyObject* valueList = PyList_New(0);
@@ -5419,7 +5419,7 @@ ito::RetVal PythonEngine::saveMatlabVariables(bool globalNotLocal, QString filen
         }
     }
 
-    if (semaphore != NULL) 
+    if (semaphore != NULL)
     {
         semaphore->returnValue = retVal;
         semaphore->release();
@@ -5487,7 +5487,7 @@ ito::RetVal PythonEngine::saveMatlabSingleParam(QString filename, QSharedPointer
             }
             break;
 
-#if ITOM_POINTCLOUDLIBRARY > 0 
+#if ITOM_POINTCLOUDLIBRARY > 0
             case (ito::ParamBase::PointCloudPtr):
             {
                 const ito::PCLPointCloud *cloud = value->getVal<const ito::PCLPointCloud*>();
@@ -5644,7 +5644,7 @@ ito::RetVal PythonEngine::loadMatlabVariables(bool globalNotLocal, QString filen
 
                     while (PyDict_Next(dict, &pos, &key, &value)) //returns borrowed references to key and value.
                     {
-                        key_str = PythonQtConversion::PyObjGetString(key, true, ok); 
+                        key_str = PythonQtConversion::PyObjGetString(key, true, ok);
                         if (ok)
                         {
                             key_str.replace(".","_");
@@ -5670,7 +5670,7 @@ ito::RetVal PythonEngine::loadMatlabVariables(bool globalNotLocal, QString filen
 
             PyGILState_Release(gstate);
 
-            if (semaphore) 
+            if (semaphore)
             {
                 semaphore->returnValue = retVal;
                 semaphore->release();
@@ -5896,7 +5896,7 @@ ito::RetVal PythonEngine::getVarnamesListInWorkspace(bool globalNotLocal, const 
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*
-This method tries to acquire the Python GIL before putting the values to the workspace. However, the current state of the 
+This method tries to acquire the Python GIL before putting the values to the workspace. However, the current state of the
 state machine is not considered. This is a first test for this behaviour and should work quite well in this case, since
 the operation will not take a lot of time. \TODO: think about similar behaviours and the role of the state machine in the context
 of the GIL.
@@ -5995,11 +5995,11 @@ ito::RetVal PythonEngine::putParamsToWorkspace(bool globalNotLocal, const QStrin
                         Py_XDECREF(value);
                     }
                 }
-                
+
                 Py_XDECREF(varname);
             }
 
-            if (semaphore != NULL) 
+            if (semaphore != NULL)
             {
                 semaphore->returnValue = retVal;
                 semaphore->release();
@@ -6028,7 +6028,7 @@ ito::RetVal PythonEngine::putParamsToWorkspace(bool globalNotLocal, const QStrin
         }*/
     }
 
-    if (semaphore != NULL && !released) 
+    if (semaphore != NULL && !released)
     {
         semaphore->returnValue = retVal;
         semaphore->release();
@@ -6089,7 +6089,7 @@ ito::RetVal PythonEngine::getParamsFromWorkspace(bool globalNotLocal, const QStr
                 else
                 {
                     //non strict conversion, such that numpy-arrays are converted to dataObject, if possible
-                    //the value of pyObject is either copied to param, or in case of a pointer-type, a shallow copy of this pointer-type is stored in 
+                    //the value of pyObject is either copied to param, or in case of a pointer-type, a shallow copy of this pointer-type is stored in
                     //param, and if the param runs out of scope, the special deleter method of QSharedPointer
                     param = PythonParamConversion::PyObjectToParamBase(value, validVariableName.toLatin1().data(), retVal, paramBaseTypes[i], false);
 
@@ -6108,7 +6108,7 @@ ito::RetVal PythonEngine::getParamsFromWorkspace(bool globalNotLocal, const QStr
 
             PyGILState_Release(gstate);
 
-            if (semaphore != NULL) 
+            if (semaphore != NULL)
             {
                 semaphore->returnValue = retVal;
                 semaphore->release();
@@ -6126,7 +6126,7 @@ ito::RetVal PythonEngine::getParamsFromWorkspace(bool globalNotLocal, const QStr
         }
     }
 
-    if (semaphore != NULL && !released) 
+    if (semaphore != NULL && !released)
     {
         semaphore->returnValue = retVal;
         semaphore->release();
@@ -6136,7 +6136,7 @@ ito::RetVal PythonEngine::getParamsFromWorkspace(bool globalNotLocal, const QStr
 }
 //----------------------------------------------------------------------------------------------------------------------------------
 /*
-This method calls getClearAllValues in the Python module itomFunctions.py. 
+This method calls getClearAllValues in the Python module itomFunctions.py.
 This function detects all currently available variables and stores them in a global python variable.
 */
 ito::RetVal PythonEngine::pythonGetClearAllValues()
@@ -6177,7 +6177,7 @@ ito::RetVal PythonEngine::pythonClearAll()
         PyGILState_STATE gstate = PyGILState_Ensure();
         PyObject_CallMethod(m_itomFunctions, "clearAll", "");
         updatePythonWorkspaces(DictUpdate, DictNoAction, false);
-        PyGILState_Release(gstate);        
+        PyGILState_Release(gstate);
     }
     return retVal;
 }
@@ -6466,7 +6466,7 @@ ito::RetVal PythonEngine::reloadSysModules(QSharedPointer<QStringList> modNames,
             }
             else
             {
-                
+
             }
             Py_XDECREF(result);
             Py_XDECREF(stringList);
@@ -6598,7 +6598,7 @@ ito::RetVal PythonEngine::pickleVariables(bool globalNotLocal, QString filename,
 /** save a single DataObject, PointCloud or PolygonMesh to an *.idc file using the python module 'pickle'.
 *
 *  Invoke this method by another thread (e.g. any GUI) to save a single object to an 'idc' file.
-*  
+*
 *  \param filename is the filename of the idc file
 *  \param value is the given DataObject, PointCloud or PolygonMesh in terms of ito::Param
 *  \param valueName is the name of the variable in the idc file
@@ -6652,7 +6652,7 @@ ito::RetVal PythonEngine::pickleSingleParam(QString filename, QSharedPointer<ito
                 }
             }
             break;
-#if ITOM_POINTCLOUDLIBRARY > 0 
+#if ITOM_POINTCLOUDLIBRARY > 0
             case (ito::ParamBase::PointCloudPtr):
             {
                 const ito::PCLPointCloud *cloud = value->getVal<const ito::PCLPointCloud*>();
@@ -6768,21 +6768,21 @@ ito::RetVal PythonEngine::pickleDictionary(PyObject *dict, const QString &filena
     }
 
     PyObject* openMethod = PyDict_GetItemString(PyModule_GetDict(builtinsModule), "open"); //both: borrowed
-    
+
     Py_DECREF(builtinsModule);
     builtinsModule = NULL;
-    
+
     PyObject* pyMode = PyUnicode_FromString("wb\0"); //new reference
     PyObject* fileHandle = NULL;
 
     PyObject* pyFileName = PyUnicode_DecodeLatin1(filename.toLatin1().data(), filename.length(), NULL);
-    
+
     if (pyFileName != NULL)
     {
         fileHandle = PyObject_CallFunctionObjArgs(openMethod, pyFileName, pyMode, NULL); //new reference
         Py_DECREF(pyFileName);
     }
-    
+
     Py_XDECREF(pyMode);
 
     if (fileHandle == NULL)
@@ -6794,7 +6794,7 @@ ito::RetVal PythonEngine::pickleDictionary(PyObject *dict, const QString &filena
         PyObject *result = NULL;
         PyObject *version = PyLong_FromLong(3); //Use pickle protocol version 3 as default. This is readable by all itom version that have been published (default for Python 3).
         PyObject *dumpObj = PyUnicode_FromString("dump"); //new reference
-        
+
         try
         {
             result = PyObject_CallMethodObjArgs(pickleModule, dumpObj, dict, fileHandle, version, NULL); //new reference
@@ -6978,21 +6978,21 @@ ito::RetVal PythonEngine::unpickleDictionary(PyObject *destinationDict, const QS
     }
 
     PyObject* openMethod = PyDict_GetItemString(PyModule_GetDict(builtinsModule), "open"); //borrowed
-    
+
     Py_DECREF(builtinsModule);
     builtinsModule = NULL;
-    
+
     PyObject* pyMode = PyUnicode_FromString("rb\0");
     PyObject* fileHandle = NULL;
 
     PyObject* pyFileName = PyUnicode_DecodeLatin1(filename.toLatin1().data(), filename.length(), NULL);
-    
+
     if (pyFileName != NULL)
     {
         fileHandle = PyObject_CallFunctionObjArgs(openMethod, pyFileName, pyMode, NULL); //new reference
         Py_DECREF(pyFileName);
     }
-    
+
     if (pyMode) Py_DECREF(pyMode);
 
     if (fileHandle == NULL)
@@ -7100,9 +7100,9 @@ ito::RetVal PythonEngine::unpickleDictionary(PyObject *destinationDict, const QS
                     else
                     {
                         bool ok_;
-                        qDebug() << 
-                            "variable with key '" << 
-                            PythonQtConversion::PyObjGetString(key_approved, false, ok_) << 
+                        qDebug() <<
+                            "variable with key '" <<
+                            PythonQtConversion::PyObjGetString(key_approved, false, ok_) <<
                             "' already exists and must not be overwritten.";
                     }
                 }
@@ -7118,7 +7118,7 @@ ito::RetVal PythonEngine::unpickleDictionary(PyObject *destinationDict, const QS
             {
                 retval += ito::RetVal(ito::retWarning, 0, warnings.join("\n").toLatin1().data());
             }
-  
+
         }
 
         PyObject *callRet = PyObject_CallMethod(fileHandle, "close", ""); //new reference
@@ -7172,4 +7172,3 @@ PyObject* PythonEngine::PyInitItomDbg(void)
 }
 
 } //end namespace ito
-

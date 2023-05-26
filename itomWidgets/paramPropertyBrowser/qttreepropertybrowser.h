@@ -102,10 +102,10 @@ public:
 
     int splitterPosition() const;
     void setSplitterPosition(int position);
-		
+
 	void setExpanded(QtBrowserItem *item, bool expanded);
     bool isExpanded(QtBrowserItem *item) const;
-		
+
 	void setSelected(QtBrowserItem *item, bool selected);
     bool isSelected(QtBrowserItem *item) const;
 

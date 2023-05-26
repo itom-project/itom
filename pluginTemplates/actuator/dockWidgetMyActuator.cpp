@@ -1,6 +1,6 @@
 /* ********************************************************************
     Template for an actuator plugin for the software itom
-    
+
     You can use this template, use it in your plugins, modify it,
     copy it and distribute it without any license restrictions.
 *********************************************************************** */
@@ -14,11 +14,11 @@ DockWidgetMyActuator::DockWidgetMyActuator(ito::AddInActuator *actuator) :
     m_firstRun(true)
 {
     ui.setupUi(this);
-    
+
     //in order to simplify the communication with the axis specific
     //widgets without the need of programming the same thing multiple
     //times, all relevant widget pointers are now saved in few vectors.
-    
+
     m_btnRelInc.append(ui.btnXp);
     m_btnRelInc.append(ui.btnYp);
     m_btnRelInc.append(ui.btnZp);
@@ -26,7 +26,7 @@ DockWidgetMyActuator::DockWidgetMyActuator(ito::AddInActuator *actuator) :
     {
         connect(btn, SIGNAL(clicked()), this, SLOT(btnRelIncClicked()));
     }
-    
+
     m_btnRelDec.append(ui.btnXm);
     m_btnRelDec.append(ui.btnYm);
     m_btnRelDec.append(ui.btnZm);
@@ -34,7 +34,7 @@ DockWidgetMyActuator::DockWidgetMyActuator(ito::AddInActuator *actuator) :
     {
         connect(btn, SIGNAL(clicked()), this, SLOT(btnRelDecClicked()));
     }
-    
+
     m_spinCurrentPos.append(ui.spinCurrentPosX);
     m_spinCurrentPos.append(ui.spinCurrentPosY);
     m_spinCurrentPos.append(ui.spinCurrentPosZ);
@@ -53,7 +53,7 @@ DockWidgetMyActuator::DockWidgetMyActuator(ito::AddInActuator *actuator) :
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetMyActuator::parametersChanged(QMap<QString, ito::Param> params)
 {
-    
+
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------

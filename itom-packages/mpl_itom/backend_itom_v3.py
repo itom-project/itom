@@ -219,7 +219,7 @@ class FigureCanvasItom(FigureCanvasBase):
     def __init__(self, figure, num, matplotlibplotUiItem, embeddedWidget):
         """
         embeddedWidget: bool
-            True, if matplotlib widget is embedded into a loaded ui file, 
+            True, if matplotlib widget is embedded into a loaded ui file,
             False: matplotlib widget is displayed in figure window
         """
         super().__init__(figure=figure)
@@ -356,14 +356,14 @@ class FigureCanvasItom(FigureCanvasBase):
             return 0, 0
 
     def enterEvent(self, x, y):
-        """itom specific: 
+        """itom specific:
         replacement of enterEvent and leaveEvent of Qt5 backend
         """
         x_, y_ = self.mouseEventCoords(x, y)
         FigureCanvasBase.enter_notify_event(self, guiEvent=None, xy=(x_, y_))
 
     def leaveEvent(self):
-        """itom specific: 
+        """itom specific:
         replacement of enterEvent and leaveEvent of Qt5 backend
         """
         itom.setApplicationCursor(-1)
@@ -444,7 +444,7 @@ class FigureCanvasItom(FigureCanvasBase):
             If True, enable auto-repeat for key events.
             """
             return self._keyautorepeat
-    
+
         @keyAutoRepeat.setter
         @cbook.deprecated(
             "3.0",
@@ -655,7 +655,7 @@ class FigureManagerItom(FigureManagerBase):
     """
 
     def __init__(self, canvas, num, matplotlibplotUiItem, windowUi, embeddedWidget):
-        
+
         self.canvas = canvas
         self.windowUi = windowUi  # can also be None if embeddedWidget is True
         self.matplotlibplotUiItem = matplotlibplotUiItem
@@ -674,12 +674,12 @@ class FigureManagerItom(FigureManagerBase):
 
         """self.windowUi.closing.connect(canvas.close_event)
         self.windowUi.closing.connect(self._widgetclosed)
-        
+
         self.windowUi.setWindowTitle("Figure %d" % num)
         image = os.path.join(matplotlib.rcParams['datapath'],
                              'images', 'matplotlib.svg')
         self.windowUi.setWindowIcon(QtGui.QIcon(image))
-        
+
         # Give the keyboard focus to the figure instead of the
         # manager; StrongFocus accepts both tab and click to focus and
         # will enable the canvas to process event w/o clicking.
@@ -730,7 +730,7 @@ class FigureManagerItom(FigureManagerBase):
         self._status_and_tool_height = tbs_height + sbs.height()
         height = cs.height() + self._status_and_tool_height
         self.windowUi.resize(cs.width(), height)
-        
+
         self.windowUi.setCentralWidget(self.canvas)"""
 
         if matplotlib.is_interactive():
@@ -1308,7 +1308,7 @@ class ToolbarItom(ToolContainerBase):
     def set_message(self, s):
         """
         Display a message on the toolbar (here: statusbar).
-    
+
         Parameters
         ----------
         s : str
@@ -1320,17 +1320,17 @@ class ToolbarItom(ToolContainerBase):
 if matplotlib.__version__ < "3.3.0":
     class StatusbarItom(StatusbarBase):
         """
-        
+
         This class is deprecated from MPL 3.3 on (since StatusbarBase
         is deprecated, too).
         """
-    
+
         def __init__(self, matplotlibplotUiItem, *args, **kwargs):
             StatusbarBase.__init__(self, *args, **kwargs)
             self.label = matplotlibplotUiItem.call("statusBar").call(
                 "addLabelWidget", "statusbarLabel"
             )
-    
+
         def set_message(self, s):
             self.label["text"] = s
 
@@ -1434,10 +1434,10 @@ if matplotlib.__version__ < "3.2.0":
     def error_msg_itom(msg, parent=None):
         if not isinstance(msg, str):
             msg = ",".join(map(str, msg))
-    
+
         itom.ui.msgWarning("Matplotlib", msg)
-    
-    
+
+
     @cbook.deprecated("3.0")
     def exception_handler(type, value, tb):
         """Handle uncaught exceptions
@@ -1451,7 +1451,7 @@ if matplotlib.__version__ < "3.2.0":
             msg += value.strerror
         else:
             msg += str(value)
-    
+
         if len(msg):
             error_msg_itom(msg)
 

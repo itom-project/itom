@@ -43,4 +43,3 @@ spinBox["value"] = 7
 
 print(time.time() - t)
 gui.show()  # show the user interface
-

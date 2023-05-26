@@ -374,20 +374,20 @@ void LineEditDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionV
 //-------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------
 ////////////////// List editor ///////////////
-ParamInputDialog::ParamInputDialog(const Param &param, QWidget *parent /*= nullptr*/) : 
-    QDialog(parent), 
-    m_RegExp(""), 
-    m_updating(false), 
-    m_lineEditDel(nullptr), 
+ParamInputDialog::ParamInputDialog(const Param &param, QWidget *parent /*= nullptr*/) :
+    QDialog(parent),
+    m_RegExp(""),
+    m_updating(false),
+    m_lineEditDel(nullptr),
     m_minSize(0),
-    m_maxSize(std::numeric_limits<int>::max()), 
-    m_stepSize(1), 
+    m_maxSize(std::numeric_limits<int>::max()),
+    m_stepSize(1),
     m_param(param)
 {
-    assert((param.getType() == ParamBase::CharArray) 
-        || (param.getType() == ParamBase::IntArray) 
-        || (param.getType() == ParamBase::DoubleArray) 
-        || (param.getType() == ParamBase::ComplexArray) 
+    assert((param.getType() == ParamBase::CharArray)
+        || (param.getType() == ParamBase::IntArray)
+        || (param.getType() == ParamBase::DoubleArray)
+        || (param.getType() == ParamBase::ComplexArray)
         || (param.getType() == ParamBase::StringList));
 
     ui.setupUi(this);
@@ -566,9 +566,9 @@ Param ParamInputDialog::getItems(RetVal &retValue) const
             if (!ok || val < std::numeric_limits<char>::min() || val > std::numeric_limits<char>::max())
             {
                 retValue += ito::RetVal::format(
-                    ito::retError, 
-                    0, 
-                    tr("The %i.th value in the list cannot be parsed to a char value.").toLatin1().data(), 
+                    ito::retError,
+                    0,
+                    tr("The %i.th value in the list cannot be parsed to a char value.").toLatin1().data(),
                     i);
             }
             else

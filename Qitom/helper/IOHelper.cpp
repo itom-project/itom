@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -98,13 +98,13 @@ QList<IOHelper::CharsetEncodingItem> IOHelper::supportedScriptEncodings;
     If two or more algorithms pretend to be able to load the file format, a dialog appears where the user can select the desired filter.
 
     \param generalFileName is the file name to load. If the file name is not absolute, it is considered to be relative to the current directory.
-    \param openUnknownsWithExternalApp is a boolean variable that indicates if an unsupported or unknown file format is opened with the external 
+    \param openUnknownsWithExternalApp is a boolean variable that indicates if an unsupported or unknown file format is opened with the external
                application that is officially connected with this file format
     \param showMessages if true, an error or warning during the execution of this method will be displayed in a message box.
     \param parent is the widget this method should be related to. Dialogs or messages are then displayed using this parent.
-    \param errorSlotMemberOfParent is only considered for ui-files. Pass a SLOT(myMethod(QProcess::ProcessError)) description such that errors 
+    \param errorSlotMemberOfParent is only considered for ui-files. Pass a SLOT(myMethod(QProcess::ProcessError)) description such that errors
                occurred in the QtDesigner will call the given slot. Else pass NULL.
-    \param globalNotLocalWorkspace is only considered when files are opened that load data objects, point clouds or polygonal meshes to the Python 
+    \param globalNotLocalWorkspace is only considered when files are opened that load data objects, point clouds or polygonal meshes to the Python
                workspace. If true, the object is loaded to the global workspace, else to the local (only allowed if a local workspace is currently available)
     \return success of loading as RetVal
     \sa openPythonScript, importPyWorkspaceVars, openUIFile, uiOpenFileWithFilter
@@ -351,7 +351,7 @@ end:
             {
                 retVal += locker.getSemaphore()->returnValue;
             }
-            
+
             if (values->size() != varNames.size())
             {
                 retVal += RetVal(retError, 0, tr("The number of values returned from workspace does not correspond to requested number").toLatin1().data());
@@ -414,7 +414,7 @@ end:
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore(1));
 
         QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-        QApplication::processEvents(QEventLoop::ExcludeSocketNotifiers); //the WaitCursor only becomes visible if the event loop of the main thread is called once. 
+        QApplication::processEvents(QEventLoop::ExcludeSocketNotifiers); //the WaitCursor only becomes visible if the event loop of the main thread is called once.
                                                                          //(it is not allowed to filter  QEventLoop::ExcludeUserInputEvents here out, since mouse events
                                                                          //have to be passed to the operating system. Else the cursor is not changed. - at least with Windows)
 
@@ -436,7 +436,7 @@ end:
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore(1));
 
         QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-        QApplication::processEvents(QEventLoop::ExcludeSocketNotifiers); //the WaitCursor only becomes visible if the event loop of the main thread is called once. 
+        QApplication::processEvents(QEventLoop::ExcludeSocketNotifiers); //the WaitCursor only becomes visible if the event loop of the main thread is called once.
                                                                          //(it is not allowed to filter  QEventLoop::ExcludeUserInputEvents here out, since mouse events
                                                                          //have to be passed to the operating system. Else the cursor is not changed. - at least with Windows)
 
@@ -593,7 +593,7 @@ end:
         }
 
         packedVarname = QInputDialog::getText(parent, tr("Variable name of imported dictionary"), tr("Please indicate a variable name for the dictionary in file '%1' \n(name must start with a letter followed by numbers or letters).").arg(info.fileName()), QLineEdit::Normal, defaultName, &ok);
-        
+
         if (!ok)
         {
             return ito::retOk;
@@ -610,7 +610,7 @@ end:
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore(1));
 
         QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-        QApplication::processEvents(QEventLoop::ExcludeSocketNotifiers); //the WaitCursor only becomes visible if the event loop of the main thread is called once. 
+        QApplication::processEvents(QEventLoop::ExcludeSocketNotifiers); //the WaitCursor only becomes visible if the event loop of the main thread is called once.
                                                                          //(it is not allowed to filter  QEventLoop::ExcludeUserInputEvents here out, since mouse events
                                                                          //have to be passed to the operating system. Else the cursor is not changed. - at least with Windows)
 
@@ -631,12 +631,12 @@ end:
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore(1));
 
         QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-        QApplication::processEvents(QEventLoop::ExcludeSocketNotifiers); //the WaitCursor only becomes visible if the event loop of the main thread is called once. 
+        QApplication::processEvents(QEventLoop::ExcludeSocketNotifiers); //the WaitCursor only becomes visible if the event loop of the main thread is called once.
                                                                          //(it is not allowed to filter  QEventLoop::ExcludeUserInputEvents here out, since mouse events
                                                                         //have to be passed to the operating system. Else the cursor is not changed. - at least with Windows)
 
         QMetaObject::invokeMethod(eng, "loadMatlabVariables", Q_ARG(bool, globalNotLocal), Q_ARG(QString, filename), Q_ARG(QString, packedVarname), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
-        
+
         if (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginFileSaveLoad))
         {
             retValue += RetVal(retError, 2, tr("Timeout while loading matlab variables").toLatin1().data());
@@ -680,7 +680,7 @@ end:
             ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore(1));
 
             QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-            QApplication::processEvents(QEventLoop::ExcludeSocketNotifiers); //the WaitCursor only becomes visible if the event loop of the main thread is called once. 
+            QApplication::processEvents(QEventLoop::ExcludeSocketNotifiers); //the WaitCursor only becomes visible if the event loop of the main thread is called once.
                                                                              //(it is not allowed to filter  QEventLoop::ExcludeUserInputEvents here out, since mouse events
                                                                              //have to be passed to the operating system. Else the cursor is not changed. - at least with Windows)
 
@@ -715,7 +715,7 @@ end:
 
     \param filename is the filename to the ui file
     \param parent is the widget where the slot given by errorSlotMemberOfParent is defined
-    \param errorSlotMemberOfParent is SLOT(myMethod(QProcess::ProcessError)) description such that errors 
+    \param errorSlotMemberOfParent is SLOT(myMethod(QProcess::ProcessError)) description such that errors
                occurred in the QtDesigner will call the given slot. Else pass NULL.
     \return retOk in case of success and retError in case of an error or timeout.
 */
@@ -961,7 +961,7 @@ end:
             if (!retval.containsError() && putParamsToWorkspace)
             {
                 ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-                        
+
                 QMetaObject::invokeMethod(pyEng, "putParamsToWorkspace", Q_ARG(bool, globalNotLocal), Q_ARG(QStringList, pythonVarNames), Q_ARG(QVector<SharedParamBasePointer>, values), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
                 if (locker.getSemaphore()->wait(AppManagement::timeouts.pluginFileSaveLoad) == false)
                 {
@@ -998,14 +998,14 @@ end:
 
         if (!retval.containsError())
         {
-            
+
         }
     }
     else
     {
         retval += RetVal(retError, 0, tr("AddInManager or PythonEngine not available").toLatin1().data());
     }
-    
+
     return retval;
 }
 
@@ -1013,13 +1013,13 @@ end:
 //! save a file using a filter method from an algorithm plugin and shows an export dialog
 /*!
     This method tries to save a given data object, point cloud or polygonal mesh using a given filter method from an algorithm plugin.
-    The given filter method must support one of the filter interfaces ito::AddInAlgo::iWriteDataObject, 
+    The given filter method must support one of the filter interfaces ito::AddInAlgo::iWriteDataObject,
     ito::AddInAlgo::iWritePointCloud or ito::AddInAlgo::iWritePolygonMesh.
 
     If the export requires further mandatory or optional parameters, an export dialog (class DialogSaveFileWithFilter)
     is shown.
 
-    \param value is the export object as shared pointer of ParamBase. Only the types ito::ParamBase::DObjPtr, ito::ParamBase::PointCloudPtr 
+    \param value is the export object as shared pointer of ParamBase. Only the types ito::ParamBase::DObjPtr, ito::ParamBase::PointCloudPtr
                and ito::ParamBase::PolygonMeshPtr are supported.
     \param filename is the name of the file
     \param parent is the parent widget of the possible export dialog.
@@ -1117,7 +1117,7 @@ end:
                         if (dialog->exec() == QDialog::Accepted)
                         {
                             QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-                            QApplication::processEvents(QEventLoop::ExcludeSocketNotifiers); //the WaitCursor only becomes visible if the event loop of the main thread is called once. 
+                            QApplication::processEvents(QEventLoop::ExcludeSocketNotifiers); //the WaitCursor only becomes visible if the event loop of the main thread is called once.
                                                                                              //(it is not allowed to filter  QEventLoop::ExcludeUserInputEvents here out, since mouse events
                                                                                              //have to be passed to the operating system. Else the cursor is not changed. - at least with Windows)
 
@@ -1141,7 +1141,7 @@ end:
                     else
                     {
                         QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-                        QApplication::processEvents(QEventLoop::ExcludeSocketNotifiers); //the WaitCursor only becomes visible if the event loop of the main thread is called once. 
+                        QApplication::processEvents(QEventLoop::ExcludeSocketNotifiers); //the WaitCursor only becomes visible if the event loop of the main thread is called once.
                                                                                          //(it is not allowed to filter  QEventLoop::ExcludeUserInputEvents here out, since mouse events
                                                                                          //have to be passed to the operating system. Else the cursor is not changed. - at least with Windows)
 
@@ -1317,7 +1317,7 @@ end:
     foreach(const QString &pat, allPatterns)
     {
         reg.setPattern(CompatHelper::regExpAnchoredPattern(CompatHelper::wildcardToRegularExpression(pat)));
-        
+
         if(filename.indexOf(reg) >= 0)
         {
             return true;
@@ -1333,7 +1333,7 @@ end:
     This functio is used to shorten paths so they fit into a menu or something
     compareable.
 
-    Example: 
+    Example:
     D:/testdir1/testdir2/file.py
     becomes D:/...ir2/file.py
 
@@ -1351,10 +1351,10 @@ end:
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 11, 0))
         int width = fontm.horizontalAdvance(path);
-#else 
+#else
         int width = fontm.width(path);
 #endif
-    
+
     if (width > pixelLength)
     {
         bool end = false;
@@ -1363,7 +1363,7 @@ end:
         while (width > pixelLength - fontm.horizontalAdvance("...") && end == false)
 #else
         while (width > pixelLength - fontm.width("...") && end == false)
-#endif        
+#endif
         {
             int index = path.indexOf(QDir::separator(), 0)+1;
             if (index == 0 || index == path.lastIndexOf(QDir::separator()))
@@ -1486,7 +1486,7 @@ end:
         return supportedScriptEncodings;
     }
 
-    // aliases contain the name as well as all aliases 
+    // aliases contain the name as well as all aliases
     // from https://docs.python.org/3.11/library/codecs.html#standard-encodings
 
     auto item = CharsetEncodingItem();
@@ -1512,7 +1512,7 @@ end:
     item.displayName = "UTF-8 with BOM";
     item.displayNameShort = "UTF-8 BOM";
     supportedScriptEncodings.append(item);
- 
+
 #if 0
 #if Q_BYTE_ORDER == Q_LITTLE_ENDIAN
     item = CharsetEncodingItem();
@@ -1628,7 +1628,7 @@ end:
             return enc;
         }
     }
-    
+
     return CharsetEncodingItem();
 }
 

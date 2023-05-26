@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -249,7 +249,7 @@ void DialogReplace::on_pushButtonFindNext_clicked()
     bool regExpr = ui.checkBoxRegular->isChecked();
     bool caseSensitive = ui.checkBoxCase->isChecked();
     bool wholeWord = ui.checkBoxWholeWord->isChecked();
-    bool wrap = ui.checkBoxWrapAround->isChecked(); 
+    bool wrap = ui.checkBoxWrapAround->isChecked();
     bool forward = ui.radioButtonDown->isChecked();
     emit findNext(ui.comboBoxFindText->currentText(), regExpr, caseSensitive, wholeWord, wrap, forward, false);
 }
@@ -275,7 +275,7 @@ void DialogReplace::on_pushButtonReplaceAll_clicked()
 {
     comboBoxAddItem(ui.comboBoxFindText->currentText(), ui.comboBoxFindText);
     comboBoxAddItem(ui.comboBoxReplacedText->currentText(), ui.comboBoxReplacedText);
- 
+
     bool regExpr = ui.checkBoxRegular->isChecked();
     bool caseSensitive = ui.checkBoxCase->isChecked();
     bool wholeWord = ui.checkBoxWholeWord->isChecked();
@@ -293,7 +293,7 @@ void DialogReplace::on_pushButtonExpand_clicked()
         QRect rect = geometry();
         ui.groupBoxOptions->setVisible(false);
         ui.pushButtonExpand->setText(tr("Expand"));
-        
+
         setVisible(false);
         setMaximumHeight(100);
         setVisible(true);

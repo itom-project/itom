@@ -27,7 +27,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////////
 // Constructor
 /////////////////////////////////////////////////////////////////////////////////////////////
-EnumProperty::EnumProperty(const QString &name /* = QString()*/, 
+EnumProperty::EnumProperty(const QString &name /* = QString()*/,
                            QObject *propertyObject /* = 0*/, QObject *parent /* = 0*/)
 : Property(name, propertyObject, parent)
 {
@@ -71,8 +71,8 @@ QWidget* EnumProperty::createEditor(QWidget* parent, const QStyleOptionViewItem&
     // create a QComboBox and fill it with the QStringList values
     QComboBox* editor = new QComboBox(parent);
     editor->addItems(m_enum);
-    
-    connect(editor, SIGNAL(currentIndexChanged(const QString)), 
+
+    connect(editor, SIGNAL(currentIndexChanged(const QString)),
         this, SLOT(valueChanged(const QString)));
     return editor;
 }
@@ -89,7 +89,7 @@ bool EnumProperty::setEditorData(QWidget *editor, const QVariant &data)
         int value = data.toInt();
         const QMetaObject* meta = m_propertyObject->metaObject();
         QMetaProperty prop = meta->property(meta->indexOfProperty(qPrintable(objectName())));
-        
+
         int index = combo->findText(prop.enumerator().valueToKey(value));
         if(index == -1)
             return false;

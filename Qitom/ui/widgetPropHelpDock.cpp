@@ -52,7 +52,7 @@ void WidgetPropHelpDock::readSettings()
     settings.beginGroup("HelpScriptReference"); //keep this name fix here!
 
     ui.checkPlaintext->setChecked( settings.value("plaintext", false).toBool() );
-    
+
     settings.endGroup();
 }
 
@@ -64,7 +64,7 @@ void WidgetPropHelpDock::writeSettings()
     settings.beginGroup("HelpScriptReference");
 
     settings.setValue("plaintext", ui.checkPlaintext->isChecked());
-    
+
     settings.endGroup();
 }
 

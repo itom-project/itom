@@ -275,7 +275,7 @@ class FigureCanvasItom(FigureCanvasBase):
         self.initialized = False
 
     def leaveEnterEvent(self, enter):
-        """itom specific: 
+        """itom specific:
         replacement of enterEvent and leaveEvent of Qt5 backend
         """
         if enter:

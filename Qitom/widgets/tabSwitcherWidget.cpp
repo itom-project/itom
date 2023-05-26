@@ -1,11 +1,11 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO), 
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -41,10 +41,10 @@ namespace ito
 
 //-------------------------------------------------------------------------------------
 TabSwitcherWidget::TabSwitcherWidget(
-        QTabWidget *tabWidget, 
-        const QList<int> &stackHistory, 
+        QTabWidget *tabWidget,
+        const QList<int> &stackHistory,
         ScriptDockWidget *scriptDockWidget,
-        QWidget *parent /*= nullptr*/) : 
+        QWidget *parent /*= nullptr*/) :
     QListWidget(parent),
     m_tabs(tabWidget),
     m_pScriptDockWidget(scriptDockWidget)
@@ -109,7 +109,7 @@ int TabSwitcherWidget::loadData()
 
             text += QString(" [%1]").arg(path);
         }
-        
+
         maxWidth = std::max(fm.boundingRect(text).width(), maxWidth);
         item = new QListWidgetItem(icon, text);
         addItem(item);

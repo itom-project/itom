@@ -36,7 +36,7 @@ if(WIN32)
     else(${PCL_CMAKE_FOLDER} STREQUAL  "cmake")
         set(PCL_CMAKE_DIR ${PCL_DIR}/cmake)
     endif(${PCL_CMAKE_FOLDER} STREQUAL  "cmake")
-        
+
     if(NOT EXISTS ${PCL_DIR} OR NOT EXISTS ${Boost_INCLUDE_DIR} OR NOT EXISTS ${EIGEN_INCLUDE_DIR})
         message(FATAL_ERROR "Depencencies Missing for Point-Cloud Library. Please make sure that PCL_DIR, Boost_INCLUDE_DIR and EIGEN_INCLUDE_DIR are well defined")
     endif(NOT EXISTS ${PCL_DIR} OR NOT EXISTS ${Boost_INCLUDE_DIR} OR NOT EXISTS ${EIGEN_INCLUDE_DIR})

@@ -4964,7 +4964,7 @@ void QtMarginsPropertyManager::setConstraint(QtProperty *property, const QMargin
     if (!data.constraint.isNull()) {
         QMargins r1 = data.constraint;
         QMargins r2 = data.val;
-				
+
 				// XXX constraints
 //        if (r2.ri() > r1.width())
 //            r2.setWidth(r1.width());
@@ -5351,7 +5351,7 @@ void QtMarginsFPropertyManager::setConstraint(QtProperty *property, const QMargi
     if (!data.constraint.isNull()) {
         QMarginsF r1 = data.constraint;
         QMarginsF r2 = data.val;
-				
+
 				// XXX constraints
 //        if (r2.ri() > r1.width())
 //            r2.setWidth(r1.width());

@@ -12,10 +12,9 @@ implement complex GUIs with dependecies to other 3rd party libraries within a pl
 .. toctree::
    :maxdepth: 2
    :caption: Content
-   
+
    toolbar.rst
    method-itom.rst
    qtdesigner.rst
    list_custom_widgets.rst
    algo-plugin.rst
-   

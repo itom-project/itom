@@ -131,10 +131,10 @@ class surfaceAnalysisTools(abstractObjInteractionToolBar):
         """
         calcRzSz([skipBox [, defaultVarName]) -> give a list with all objects and calculate Rz or Sz, Sp, Sv
         Parameters:
-            - skipBox             If True, the dialog will be skipped and 
+            - skipBox             If True, the dialog will be skipped and
             - defaultVarName  The name of the variable to plot
         Return parameters:
-            - check:                   True finishied correctly 
+            - check:                   True finishied correctly
             - List with parameter: [Rz, Skipped Pixel] or [Sp, Sv, Sz]
         """
         if defaultVarName == None:
@@ -225,10 +225,10 @@ class surfaceAnalysisTools(abstractObjInteractionToolBar):
         """
         calcSz10P([skipBox [, defaultVarName]) -> give a list with all objects and calculate former Sz (10 Point height)
         Parameters:
-            - skipBox             If True, the dialog will be skipped and 
+            - skipBox             If True, the dialog will be skipped and
             - defaultVarName  The name of the variable to plot
         Return parameters:
-            - check:                   True finishied correctly 
+            - check:                   True finishied correctly
             - List with parameter: [Sz, Skipped Pixel in y, Skipped Pixel in x]
         """
         if defaultVarName == None:
@@ -292,10 +292,10 @@ class surfaceAnalysisTools(abstractObjInteractionToolBar):
         """
         calcRaSa([skipBox [, defaultVarName]) -> give a list with all objects and calculate Ra or Sa
         Parameters:
-            - skipBox             If True, the dialog will be skipped and 
+            - skipBox             If True, the dialog will be skipped and
             - defaultVarName  The name of the variable to plot
         Return parameters:
-            - check:                   True finishied correctly 
+            - check:                   True finishied correctly
             - List with parameter: [Ra] or [Sa]
         """
         if defaultVarName == None:
@@ -363,10 +363,10 @@ class surfaceAnalysisTools(abstractObjInteractionToolBar):
         """
         calcRqSq([skipBox [, defaultVarName]) -> give a list with all objects and calculate Rq or Sq
         Parameters:
-            - skipBox             If True, the dialog will be skipped 
+            - skipBox             If True, the dialog will be skipped
             - defaultVarName  The name of the variable to plot
         Return parameters:
-            - check:                   True finishied correctly 
+            - check:                   True finishied correctly
             - List with parameter: [Rq] or [Sq]
         """
         if defaultVarName == None:
@@ -435,10 +435,10 @@ class surfaceAnalysisTools(abstractObjInteractionToolBar):
         """
         planefit([skipBox [, defaultVarName]) -> Fit a plane or a line into the object and substract the values. The function works in place and the object will be changed to float64.
         Parameters:
-            - skipBox             If True, the dialog will be skipped 
+            - skipBox             If True, the dialog will be skipped
             - defaultVarName  The name of the variable to plot
         Return parameters:
-            - check:                   True finishied correctly 
+            - check:                   True finishied correctly
         """
         if defaultVarName == None:
             defaultVar = self.defaultVarName
@@ -486,10 +486,10 @@ class surfaceAnalysisTools(abstractObjInteractionToolBar):
         """
         polyfit([skipBox [, defaultVarName]) -> Fit a mxn-th Order or n-th Order into a 1D or 2D object and substract the values. The function works in place and the object will be changed to float64.
         Parameters:
-            - skipBox             If True, the dialog will be skipped 
+            - skipBox             If True, the dialog will be skipped
             - defaultVarName  The name of the variable to plot
         Return parameters:
-            - check:                   True finishied correctly 
+            - check:                   True finishied correctly
             - List with parameter: [Rq] or [Sq]
         """
         if defaultVarName == None:

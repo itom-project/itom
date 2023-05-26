@@ -46,7 +46,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 //
 // This helps, that deprecated or "future" plugins, which fit not to the current implementation of the interface will not be loaded
 // but a sophisticated error message is shown.
-// 
+//
 // From version 4.0.0 on, the version numbers follow the schematic of semantic versioning (semver.org).
 // In general, any plugin can be loaded whose interface is based on the CREATE_ADDININTERFACE_MAJOR_VERSION_STR (major version number must fit).
 // itom loads such a plugin if its minor version number is lower or equal than the minor version number, defined in the compiled version of the core
@@ -92,7 +92,7 @@ static const char* ito_AddInInterface_OldVersions[] = {
     "ito.AddIn.InterfaceBase/2.5.0", //outdated on 2017-02-05 due to changes in ParamMeta classes
     "ito.AddIn.InterfaceBase/2.6.0", //outdated on 2017-02-05 since the AddInManager has been separated into its own shared library
     "ito.AddIn.InterfaceBase/3.0.0", //outdated on 2017-12-06 due to change of type (float to double) in ito::AutoInterval
-    "ito.AddIn.InterfaceBase/3.1.0", //outdated on 2018-01-10 due to introduction of xData feature in plots  
+    "ito.AddIn.InterfaceBase/3.1.0", //outdated on 2018-01-10 due to introduction of xData feature in plots
     "ito.AddIn.InterfaceBase/3.2.0", //outdated on 2019-03-03 due to cleanup in AddInInterface including Private-classes for all AddIn classes and the ability to return the last reported state and position of axes (even while the axis is currently moving)
     "ito.AddIn.InterfaceBase/3.3.0", //outdated on 2019-11-19 due to new FilterDefExt class and semver based interface numbering
     "ito.AddIn.InterfaceBase/4.0.0", //outdated on 2020-01-01 due to removal of Qt4 support and removal of #precompiler checks that differ between Qt4 and Qt5.

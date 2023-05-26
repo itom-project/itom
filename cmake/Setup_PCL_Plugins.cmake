@@ -17,7 +17,7 @@ if(NOT EXISTS ${QHULL_ROOT})
         set(QHULL_ROOT "QHULL_ROOT-NOTFOUND" CACHE PATH "Path to the QHULL Directory")
     endif(EXISTS $ENV{QHULL_ROOT})
 endif(NOT EXISTS ${QHULL_ROOT})
-    
+
 if(NOT EXISTS ${VTK_ROOT})
     if(EXISTS $ENV{VTK_ROOT})
         set(VTK_ROOT $ENV{VTK_ROOT} CACHE PATH "Path to the VTK Directory")

@@ -19,7 +19,7 @@ and an optional transformation matrix. The following shapes are currently define
 Examples for the creation of shapes are:
 
 .. code-block:: python
-    
+
     point = shape(shape.Point, (0,0))
     line = shape(shape.Line, (0,0), (100,50))
     rect = shape(shape.Rectangle, (20,20), (70,100)) #top-left, bottom-right

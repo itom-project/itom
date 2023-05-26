@@ -23,7 +23,7 @@ Software that imports the Licensed Software.
 the Licensed Software: You may link applications with binary pre-installed
 versions of the Licensed Software.
 
-3) The right to subclass from classes of the licensed software: Classes that are 
+3) The right to subclass from classes of the licensed software: Classes that are
 subclassed from classes of the licensed software are not considered to be
-constituting derivative work and therefore the author of such classes does 
+constituting derivative work and therefore the author of such classes does
 not need to provide source code for this classes.

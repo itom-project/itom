@@ -12,7 +12,7 @@ html {
 }
 
 body {
-    
+
     margin: auto;
     padding: 0px;
     font-size: 100%;
@@ -72,7 +72,7 @@ div.figure.align-center {
 }
 
 /*Parameters, Returns, etc - Spalte*/
-col.field-name{ 
+col.field-name{
     background-color: #F6E3CE;
     overflow: hidden;
     width: 115px;
@@ -87,13 +87,13 @@ tt > span.pre {
 
 /*class.itom ... Ueberschrift*/
 dl.class > dt{
-   font-size: 11pt; 
+   font-size: 11pt;
    border-bottom: dotted thin #e0e0e0;
 }
 
 /*Das Wort "class" in der Klassenueberschrift*/
 dl.class > dt > em{
-    font-size: 11pt;  
+    font-size: 11pt;
 }
 
 dl.class > dt > tt.descname {
@@ -125,7 +125,7 @@ dl.attribute > dt{
 
 /*Hinterlegung des static- und Mehodenheaders*/
 dl.method dt, dl.staticmethod dt, dl.function dt{
-    background-color: #E6E6E6; 
+    background-color: #E6E6E6;
     border-top: 0px solid #000000;
     font-size: 11pt;
     padding-left: 7px;
@@ -349,7 +349,7 @@ table.index a:hover, table.index a:active {
     min-height: 42px;
 }*/
 
-div.admonition.note, div.warning, 
+div.admonition.note, div.warning,
 div.admonition.seealso{
     font-size: 11pt;
     margin: 1em 0 1em 0;
@@ -425,7 +425,7 @@ div.content div.section h1 img
 {
     float:none;
 }
-    
+
 div.content h2 {
     font-size: 16pt;
     font-weight: normal;
@@ -677,7 +677,7 @@ p.breathe-sectiondef-title {
 }
 
 dl.enum > dt {
-    background-color: #E6E6E6; 
+    background-color: #E6E6E6;
     border-top: 0px solid #000000;
     font-weight: bold;
     font-size: 16pt;
@@ -686,7 +686,7 @@ dl.enum > dt {
 }
 
 dl.function > dt > tt.descname {
-    background-color: #E6E6E6; 
+    background-color: #E6E6E6;
     border-top: 0px solid #000000;
     font-size: 16pt;
     font-family: Helvetica, sans-serif;

@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -209,7 +209,7 @@ int PythonShape::PyShape_init(PyShape *self, PyObject *args, PyObject * kwds)
                 self->shape = new ito::Shape(ito::Shape::fromLine(pt1, pt2, index, name_));
             }
         break;
-    
+
         case Shape::Rectangle:
             pt1 = PyObject2PointF(param1, retval, "param1");
             pt2 = PyObject2PointF(param2, retval, "param2");
@@ -298,7 +298,7 @@ int PythonShape::PyShape_init(PyShape *self, PyObject *args, PyObject * kwds)
                 self->shape = new ito::Shape(ito::Shape::fromCircle(pt1, dbl, index, name_));
             }
         break;
-    
+
         default:
             PyErr_SetString(PyExc_RuntimeError, "unknown type");
             return -1;
@@ -981,7 +981,7 @@ shape \n\
         shape->shape->setFlags(flags & ito::Shape::FlagMask);
 
         return (PyObject*)shape;
-    }            
+    }
 }
 
 //-------------------------------------------------------------------------------------
@@ -1176,7 +1176,7 @@ shape \n\
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(shape_getType_doc,  
+PyDoc_STRVAR(shape_getType_doc,
 "int : Get the type of this shape. \n\
 \n\
 Possible types are: \n\
@@ -1199,7 +1199,7 @@ PyObject* PythonShape::PyShape_getType(PyShape *self, void * /*closure*/)
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(shape_getValid_doc,  
+PyDoc_STRVAR(shape_getValid_doc,
 "bool : Returns True if this shape is valid, otherwise False. \n\
 \n\
 An invalid shape is the one constructed with the type ``shape.Invalid``. All other \n\
@@ -1212,14 +1212,14 @@ PyObject* PythonShape::PyShape_getValid(PyShape *self, void * /*closure*/)
         return NULL;
     }
 
-    if (self->shape->type() == ito::Shape::Invalid) 
+    if (self->shape->type() == ito::Shape::Invalid)
         Py_RETURN_FALSE;
     else
         Py_RETURN_TRUE;
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(shape_getFlags_doc,  
+PyDoc_STRVAR(shape_getFlags_doc,
 "int : Gets or sets a flag (bitmask) that define denied manipulation of this shape. \n\
 \n\
 It is possible to deny the following manipulations: \n\
@@ -1306,7 +1306,7 @@ PyObject* PythonShape::PyShape_getPoint1(PyShape *self, void * /*closure*/)
             return PointF2PyObject(point);
         }
         break;
-    
+
         case Shape::Polygon:
         case Shape::Invalid:
         default:
@@ -1359,7 +1359,7 @@ int PythonShape::PyShape_setPoint1(PyShape *self, PyObject *value, void * /*clos
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(shape_point2_doc, 
+PyDoc_STRVAR(shape_point2_doc,
 "tuple of float : Gets or sets the second point of the bounding box of this shape. \n\
 \n\
 The second point is the 2nd point of a ``shape.Line`` or the bottom right point of \n\
@@ -1448,7 +1448,7 @@ int PythonShape::PyShape_setPoint2(PyShape *self, PyObject *value, void * /*clos
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(shape_center_doc,  
+PyDoc_STRVAR(shape_center_doc,
 "tuple of float : Gets or sets the center point of this shape. \n\
 \n\
 The center point is defined for all types of shapes, beside ``shape.Polygon``. \n\
@@ -1585,7 +1585,7 @@ int PythonShape::PyShape_setAngleDeg(PyShape *self, PyObject *value, void * /*cl
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(shape_angleRad_doc,  
+PyDoc_STRVAR(shape_angleRad_doc,
 "float : Gets or sets the current angle of rotation of the transformation matrix in Radians. \n\
 \n\
 A rotation is always defined counter-clockwise.");
@@ -1623,7 +1623,7 @@ int PythonShape::PyShape_setAngleRad(PyShape *self, PyObject *value, void * /*cl
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(shape_radius_doc,  
+PyDoc_STRVAR(shape_radius_doc,
 "float or tuple of float : Gets or sets the radius of this shape. \n\
 \n\
 A radius can only be set for shapes of type ``shape.Circle`` or ``shape.Ellipse``. \n\
@@ -1684,7 +1684,7 @@ int PythonShape::PyShape_setRadius(PyShape *self, PyObject *value, void * /*clos
     }
 
     bool ok;
-    
+
     switch (self->shape->type())
     {
         case Shape::Ellipse:
@@ -1692,7 +1692,7 @@ int PythonShape::PyShape_setRadius(PyShape *self, PyObject *value, void * /*clos
             ito::RetVal retval;
             QPointF ab = PyObject2PointF(value, retval, "radius (a,b)");
             if (!PythonCommon::transformRetValToPyException(retval)) return -1;
-                
+
             QPointF dr(ab.x(), ab.y());
             QPolygonF &basePoints = self->shape->rbasePoints();
             basePoints[0] -= dr;
@@ -1783,7 +1783,7 @@ int PythonShape::PyShape_setWidth(PyShape *self, PyObject *value, void * /*closu
     }
 
     bool ok;
-    
+
     switch (self->shape->type())
     {
         case Shape::Square:
@@ -1886,7 +1886,7 @@ int PythonShape::PyShape_setHeight(PyShape *self, PyObject *value, void * /*clos
     }
 
     bool ok;
-    
+
     switch (self->shape->type())
     {
         case Shape::Square:
@@ -2014,7 +2014,7 @@ int PythonShape::PyShape_setName(PyShape *self, PyObject *value, void * /*closur
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(shape_getColor_doc, 
+PyDoc_STRVAR(shape_getColor_doc,
 "None or rgba : Gets or sets color of this shape. \n\
 \n\
 The default color is an invalid color, given by the ``None`` value. \n\
@@ -2064,8 +2064,8 @@ int PythonShape::PyShape_setColor(PyShape *self, PyObject *value, void * /*closu
 		ito::PythonRgba::PyRgba *rgba = (ito::PythonRgba::PyRgba*)value;
 		color = QColor(rgba->rgba.r, rgba->rgba.g, rgba->rgba.b, rgba->rgba.a);
 		ok = true;
-	}    
-    
+	}
+
     if (ok)
     {
         self->shape->setColor(color);
@@ -2079,7 +2079,7 @@ int PythonShape::PyShape_setColor(PyShape *self, PyObject *value, void * /*closu
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(shape_getTransform_doc, 
+PyDoc_STRVAR(shape_getTransform_doc,
 "dataObject : gets or sets the affine, non scaled 2D transformation matrix as dataObject. \n\
 \n\
 The returned matrix is a ``2 x 3``, float64 :class:`dataObject`, where the left \n\
@@ -2325,7 +2325,7 @@ PyObject* PythonShape::PyShape_translate(PyShape *self, PyObject *args)
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(shape_basePoints_doc, 
+PyDoc_STRVAR(shape_basePoints_doc,
 "dataObject : base points of this shape, given as ``2 x M``, float64 dataObject. \n\
 \n\
 The ``M`` base points are untransformed points that describe the shape \n\
@@ -2529,12 +2529,12 @@ result : bool or dataObject \n\
     if (ok)
     {
         ito::DataObject dataobj_ = ito::dObjHelper::squeezeConvertCheck2DDataObject(
-            dataobj.data(), 
-            "points", 
-            ito::Range(2, 2), 
-            ito::Range::all(), 
-            pointsRetVal, 
-            ito::tFloat64, 
+            dataobj.data(),
+            "points",
+            ito::Range(2, 2),
+            ito::Range::all(),
+            pointsRetVal,
+            ito::tFloat64,
             8, ito::tUInt8, ito::tInt8, ito::tUInt16, ito::tInt16, ito::tUInt32, ito::tInt32, ito::tFloat32, ito::tFloat64);
 
         if (PythonCommon::transformRetValToPyException(pointsRetVal))
@@ -2680,9 +2680,9 @@ QPointF PythonShape::PyObject2PointF(PyObject *value, ito::RetVal &retval, const
     }
 	else
 	{
-		//if PyArray_ContiguousFromAny could not convert the input to an array, it has raised an exception, 
+		//if PyArray_ContiguousFromAny could not convert the input to an array, it has raised an exception,
 		//that is transformed here to a retval. If this is not the case, ok = false --> retval is set to error at the end of this function
-		retval += PythonCommon::checkForPyExceptions(true); 
+		retval += PythonCommon::checkForPyExceptions(true);
 		if (!retval.containsError())
 		{
 			ok = false;

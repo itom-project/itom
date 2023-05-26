@@ -1,7 +1,7 @@
 """itom module to reload modules before executing user code.
 
-This module is inspired by and based on the IPython extension 'autoreload' 
-(lincensed under the new or revised BSD license, see 
+This module is inspired by and based on the IPython extension 'autoreload'
+(lincensed under the new or revised BSD license, see
 http://ipython.org/ipython-doc/dev/about/license_and_copyright.html)
 
 Usage

@@ -18,13 +18,11 @@ the corresponding breakpoint.
 
 In the toolbox, all breakpoints are sorted by the script file and the line number. A red dot indicates that the breakpoint is active, a gray dot stands for a disabled breakpoint.
 Using the context menu or the buttons in the toolbox, you have the following possibilities:
-    
+
     * Delete the breakpoint that is currently selected (one single breakpoint, the one that has the focus).
     * En- or disable the breakpoint that is currently selected.
     * Delete all breakpoints
     * Toggle the status (en- or disable) or all breakpoints
     * Edit the breakpoint that is currently selected.
-    
+
 The configuration of every breakpoint is displayed in the corresponding columns. For more information about this, please see the :ref:`documentation <gui-editor-breakpoints>`.
-
-

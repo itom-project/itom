@@ -10,7 +10,7 @@
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
-   
+
     In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
@@ -48,7 +48,7 @@ public:
     rttiNodeType m_nodeType;            //!> the type of the actual node inheriting this abstract node
     QHash<QString, ito::Param*> m_inputParams;        //!> the node's input parameter, given as ito::Param. The name of the parameter is mapped to its pointer of ito::Param.
     QHash<QString, ito::Param*> m_outputParams;       //!> the node's output parameter, given as ito::Param. The name of the parameter is mapped to its pointer of ito::Param.
-    QList<QSharedPointer<Channel> > m_channels;  //!> 
+    QList<QSharedPointer<Channel> > m_channels;  //!>
 
     unsigned int m_uniqueID;
 
@@ -213,8 +213,8 @@ RetVal AbstractNode::attachChannel(QSharedPointer<Channel> channel)
 {
     Q_D(AbstractNode);
 
-    qDebug() << "attach channel " << this << ". sender: " << channel->getSender() 
-        << "->" << channel->getSenderParam()->getName() << ", receiver: " 
+    qDebug() << "attach channel " << this << ". sender: " << channel->getSender()
+        << "->" << channel->getSenderParam()->getName() << ", receiver: "
         << channel->getReceiver() << "->" << channel->getReceiverParam()->getName();
 
 
@@ -275,7 +275,7 @@ RetVal AbstractNode::addOutputParam(ito::Param* param)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//!> removes the parameter 'paramName' from the list of output parameters and deletes it (if it exists). 
+//!> removes the parameter 'paramName' from the list of output parameters and deletes it (if it exists).
 //!> Also removes all channels that have this output parameter as sender.
 RetVal AbstractNode::removeAndDeleteOutputParam(const QString &paramName)
 {
@@ -327,7 +327,7 @@ RetVal AbstractNode::addInputParam(ito::Param* param)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//!> removes the parameter 'paramName' from the list of output parameters and deletes it (if it exists). 
+//!> removes the parameter 'paramName' from the list of output parameters and deletes it (if it exists).
 //!> Also removes all channels that have this output parameter as sender.
 RetVal AbstractNode::removeAndDeleteInputParam(const QString &paramName)
 {
@@ -372,7 +372,7 @@ RetVal AbstractNode::inputParamChanged(const ito::ParamBase *updatedInputParam)
     ito::RetVal retval = ito::retOk;
 
     QString paramName = QLatin1String(updatedInputParam->getName());
-    
+
     ito::Param *inputParam = getInputParam(paramName);
 
     if (!inputParam)
@@ -401,7 +401,7 @@ RetVal AbstractNode::inputParamChanged(const ito::ParamBase *updatedInputParam)
     }
 
     //check if all necessary input is available
-    foreach(const QSharedPointer<ito::Channel> channel, d->m_channels) 
+    foreach(const QSharedPointer<ito::Channel> channel, d->m_channels)
     {
         if (channel->isReceiver(this) && channel->getUpdateState() == Channel::StateUpdatePending)
         {
@@ -523,7 +523,7 @@ RetVal AbstractNode::updateChannelData(QSharedPointer<Channel> updatedChannel)
         return retval;
     }
 
-    //propagate the update to 
+    //propagate the update to
     foreach(QSharedPointer<ito::Channel> channel, d->m_channels)
     {
         if (channel->isSender(this))
@@ -686,7 +686,7 @@ RetVal AbstractNode::updateChannels(const QList<QString> &outputParamNames)
     if (copyParamNames.length() != 0)
     {
         // even if we have not found every parameter in the channel list, we should update the rest anyway!
-        retVal += ito::RetVal(ito::retWarning, 0, 
+        retVal += ito::RetVal(ito::retWarning, 0,
             QObject::tr("Not all parameters in list could not be found in channels, in updateChannels").toLatin1().data());
     }
 
@@ -695,7 +695,7 @@ RetVal AbstractNode::updateChannels(const QList<QString> &outputParamNames)
         ito::AbstractNode *receiver = thisChannel->getReceiver();
         retVal += receiver->updateChannelData(thisChannel);
     }
-    
+
     //check if there are still some unhandled updates
     foreach(const QSharedPointer<ito::Channel> &channel, d->m_channels)
     {
@@ -756,24 +756,24 @@ RetVal AbstractNode::setUpdatePending(QSharedPointer<ito::Channel> singleOutputC
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-rttiNodeType AbstractNode::getType() const 
-{ 
+rttiNodeType AbstractNode::getType() const
+{
     Q_D(const AbstractNode);
 
     return d->m_nodeType;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-bool AbstractNode::isConnected() const 
-{ 
+bool AbstractNode::isConnected() const
+{
     Q_D(const AbstractNode);
 
     return !(d->m_channels.isEmpty());
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-unsigned int AbstractNode::getUniqueID(void) const 
-{ 
+unsigned int AbstractNode::getUniqueID(void) const
+{
     Q_D(const AbstractNode);
 
     return d->m_uniqueID;

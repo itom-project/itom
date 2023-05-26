@@ -24,7 +24,7 @@ You have the following possibilities:
    Then the content of the files is imported by one of the following commands:
 
 	>> import myPackage.yourFileName1 (then call any method in yourFileName1 by myPackage.yourFileName1.method(params))
-	
+
 		or
 
 	>> from myPackage import yourFileName1 (then call any method in yourFileName1 by yourFileName1.method(params))

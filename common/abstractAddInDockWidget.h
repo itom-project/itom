@@ -10,7 +10,7 @@
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
-   
+
     In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
@@ -50,9 +50,9 @@ namespace ito
     *   Inherit your plugin's dock widget from this class in order to benefit from many simplified and unified
     *   processes. Since the plugin runs in its own thread while the dock widget runs in the main thread, the communication
     *   between the plugin and its dock widget needs to be done via signal/slot connections or general invocations.
-    *   
+    *
     *   The methods of this class help in this process.
-    *   
+    *
     *   Communication plugin -> dock widget:
     *   - once any parameter in the plugin is changed, the signal ito::AddInBase::parametersChanged is emitted.
     *   - this signal should be connected to the slot AbstractAddInDockWidget::parametersChanged.
@@ -69,24 +69,24 @@ namespace ito
         Q_OBJECT
 
         public:
-            //! constructor. 
+            //! constructor.
             AbstractAddInDockWidget(ito::AddInBase *plugin);
 
             //! destructor
             virtual ~AbstractAddInDockWidget();
-            
+
             /**
             * MessageLevel enumeration
             * defines whether warnings and/or errors that might occur during some executions should be displayed with a message box.
             */
-            enum MessageLevel 
+            enum MessageLevel
             {
                 msgLevelNo = 0,          /*!< no messagebox should information about warnings or errors */
                 msgLevelErrorOnly = 1,   /*!< a message box should only inform about errors */
                 msgLevelWarningOnly = 2, /*!< a message box should only inform about warnings */
                 msgLevelWarningAndError = msgLevelErrorOnly | msgLevelWarningOnly /*!< a message box should inform about warnings and errors */
             };
-        
+
         protected:
             //! invokes AddInBase::setParam of plugin in order to set the given parameter
             /*!
@@ -113,12 +113,12 @@ namespace ito
                 \sa observeInvocation
             */
             ito::RetVal setPluginParameters(const QVector<QSharedPointer<ito::ParamBase> > params, MessageLevel msgLevel = msgLevelWarningAndError) const;
-            
+
             //! observes the status of the given semaphore and returns after the semaphore has been released or a timeout occurred
             /*!
                 This helper method is mainly called by setPluginParameter or setPluginParameters in order to wait until the parameters
                 have been set within the plugin. The corresponding return value is obtained and returned or displayed in a message box (if desired).
-                
+
                 Directly call this method after having invoked any other slot where an instance of ItomSharedSemaphore has been passed as wait condition.
                 This method returns if the wait condition has been released by the receiver, if the invocation failed or if a timeout occurred. For any possible
                 timeout the AddInBase::isAlive flag is continuously evaluated.
@@ -195,7 +195,7 @@ namespace ito
                 \params map of parameters (usually equal to m_params member of ito::AddInBase)
             */
             virtual void parametersChanged(QMap<QString, ito::Param> params) = 0;
-        
+
             //! slot invoked if identifier of plugin has been set using AddInBase::setIdentifier
             /*!
                 overload this method in order to get the identfier of the plugin. Usually, this identifier is only set in the
@@ -205,7 +205,7 @@ namespace ito
                 \param identifier new identifier name of the plugin
             */
             virtual void identifierChanged(const QString &identifier) = 0;
-        
+
             //! slot invoked if the status or current position of an actuator plugin has been changed
             /*!
                 overload this method if you want to react on such changes.

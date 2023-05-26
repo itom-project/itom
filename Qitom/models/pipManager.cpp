@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -152,9 +152,9 @@ namespace ito
                 env.insert("PYTHONHOME", pythonHome); // Add an environment variable
                 m_pipProcess.setProcessEnvironment(env);
             }
-            
+
         }
-        
+
         if (!retval.containsError())
         {
             checkCallMode();
@@ -353,8 +353,8 @@ ito::RetVal PipManager::initPythonIfStandalone()
     if (!pythonHomeDir.exists() && pythonHome != "")
     {
         retval += RetVal::format(
-            retError, 
-            0, 
+            retError,
+            0,
             tr("The home directory of Python is currently set to the non-existing directory '%s'\nPython cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python \nor correct the base directory in the property dialog of itom.").toLatin1().data(),
             pythonHomeDir.absolutePath().toLatin1().data()
         );
@@ -375,8 +375,8 @@ ito::RetVal PipManager::initPythonIfStandalone()
     if (!pythonPathValid)
     {
         retval += RetVal::format(
-            retError, 
-            0, 
+            retError,
+            0,
             tr("The built-in library path of Python could not be found. The current home directory is '%s'\nPython cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python \nor correct the base directory in the preferences dialog of itom.").toLatin1().data(),
             pythonHomeDir.absolutePath().toLatin1().data()
         );
@@ -416,13 +416,13 @@ ito::RetVal PipManager::checkCallMode()
     pipProcessDir.cd("pipProcess");
 
     QFileInfo runPipUtf8(pipProcessDir, "runPipUtf8.py");
-    
+
     if (runPipUtf8.exists())
     {
         m_runPipUtf8Path = runPipUtf8.absoluteFilePath();
         args << m_runPipUtf8Path << "pip" << "-V";  // get version
         int exitCode = QProcess::execute(m_pythonPath, args); // 0: ok, 1: any error
-        
+
         if (exitCode == 0)
         {
             m_pipCallMode = PipMode::pipModeRunPipUtf8;
@@ -437,7 +437,7 @@ ito::RetVal PipManager::checkCallMode()
 //----------------------------------------------------------------------------------------------------------------------------------
 /** return parent element
 *   @param [in] index   the element's index for which the parent should be returned
-*   @return     the parent element. 
+*   @return     the parent element.
 *
 */
 QModelIndex PipManager::parent(const QModelIndex &index) const
@@ -477,7 +477,7 @@ QVariant PipManager::headerData(int section, Qt::Orientation orientation, int ro
 //----------------------------------------------------------------------------------------------------------------------------------
 /** return data elements for a given row
 *   @param [in] index   index for which the data elements should be delivered
-*   @param [in] role    the current role of the model 
+*   @param [in] role    the current role of the model
 *   @return data of the selected element, depending on the element's row and column (passed in index.row and index.column)
 *
 */
@@ -487,7 +487,7 @@ QVariant PipManager::data(const QModelIndex &index, int role) const
     {
         return QVariant();
     }
- 
+
     if(role == Qt::DisplayRole || role == Qt::ToolTipRole)
     {
         const PythonPackage &package = m_pythonPackages[index.row()];
@@ -532,7 +532,7 @@ QVariant PipManager::data(const QModelIndex &index, int role) const
         const PythonPackage &package = m_pythonPackages[index.row()];
         return (package.m_status == PythonPackage::Outdated);
     }
-    
+
     return QVariant();
 }
 
@@ -561,7 +561,7 @@ QModelIndex PipManager::index(int row, int column, const QModelIndex &parent) co
     {
         return QModelIndex();
     }
-    
+
     return createIndex(row, column);
 }
 
@@ -604,14 +604,14 @@ void PipManager::checkPipAvailable(const PipGeneralOptions &options /*= PipGener
 #if WIN32
         if (PY_VERSION_HEX >= 0x03050000 && PY_VERSION_HEX < 0x03090000)
         {
-            emit pipRequestStarted(taskCheckAvailable, 
+            emit pipRequestStarted(taskCheckAvailable,
                 "For Python 3.5 or higher, some packages (e.g. Scipy or OpenCV) \
 might depend on the Microsoft Visual C++ 2015 redistributable package. Please \
 install it if not yet done.\n\nCheck connection to pip and get version...\n");
         }
         else
         {
-            emit pipRequestStarted(taskCheckAvailable, 
+            emit pipRequestStarted(taskCheckAvailable,
                 QString("Python %1.\nCheck connection to pip and get version...\n").arg(PY_VERSION)
             );
         }
@@ -620,7 +620,7 @@ install it if not yet done.\n\nCheck connection to pip and get version...\n");
             QString("Python %1.\nCheck connection to pip and get version...\n").arg(PY_VERSION)
         );
 #endif
-        
+
         clearBuffers();
         m_currentTask = taskCheckAvailable;
 
@@ -745,7 +745,7 @@ void PipManager::checkPackageUpdates(const PipGeneralOptions &options /*= PipGen
 
         QStringList arguments;
         arguments << "pip" << "list" << "--outdated"; //version has already been checked in listAvailablePackages. This is sufficient.
-        
+
         if (m_pipVersion >= 0x120000) // >= 18.0
         {
             arguments << "--format=columns";
@@ -867,11 +867,11 @@ void PipManager::installPackage(const PipInstall &installSettings, const PipGene
         {
             arguments << "-e";
         }
-        
-        
+
+
         // if typeSearchIndex, multiple packages can be installed. They
         // are separated by spaces
-        
+
         if (installSettings.type == PipInstall::typeSearchIndex)
         {
             auto packageNames = installSettings.packageName.split(" ");
@@ -1154,7 +1154,7 @@ void PipManager::finalizeTaskListPackages(const QString& error, const QString& o
                 {
                     listedPackages[items[0].trimmed()] = items[1].trimmed();
                 }
-            } 
+            }
         }
         else
         {
@@ -1454,9 +1454,9 @@ void PipManager::finalizeTaskCheckUpdates(const QString& error, const QString& o
 
             for (int idx = 2; idx < lines.size(); ++idx)
             {
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)) 
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
                 QStringList items = lines[idx].split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
-#else 
+#else
                 QStringList items = lines[idx].split(QRegularExpression("\\s+"), QString::SkipEmptyParts);
 #endif
 
@@ -1567,7 +1567,7 @@ QStringList PipManager::parseGeneralOptions(const PipGeneralOptions &options, bo
     QStringList output;
 
     if (options.isolated)
-    {   
+    {
         output << "--isolated";
     }
 
@@ -1627,7 +1627,7 @@ void PipManager::interruptPipProcess()
         m_pipProcess.kill();
     }
 
-    
+
 }
 
 //-----------------------------------------------------------------------------------------

@@ -10,7 +10,7 @@
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
-   
+
     In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
@@ -32,7 +32,7 @@
 #include "dataobj.h"
 #include <assert.h>     /* assert */
 
-namespace ito 
+namespace ito
 {
 namespace dObjHelper
 {
@@ -50,30 +50,30 @@ namespace dObjHelper
 
     //! Find the global maximum of the given dataObject and saves it in maxValue. The plane-index, row and column is saved in the pre-allocated array firstLocation (three values).
     DATAOBJ_EXPORT RetVal maxValue(const DataObject *dObj, float64 &maxValue, uint32 *firstLocation, bool ignoreInf = true);
-        
+
     //! Find the minimal and maximal Value in the dataObject and saves their first occurence in firstMinLocation (uint32[3]-Array) and firstMaxLocation (uint32[3]-Array)
     DATAOBJ_EXPORT RetVal minMaxValue(const DataObject *dObj, float64 &minValue, uint32 *firstMinLocation, float64 &maxValue, uint32 *firstMaxLocation, bool ignoreInf = true, const int specialDataTypeFlags = CMPLX_ABS_VALUE);
-    
+
     DATAOBJ_EXPORT RetVal meanValue(const DataObject *dObj, float64 &meanResult, bool ignoreNaN = true);
-    
+
     DATAOBJ_EXPORT RetVal medianValue(const DataObject *dObj, float64 &medianResult, bool ignoreNaN = true);
-    
+
     DATAOBJ_EXPORT RetVal devValue(const DataObject *dObj, const int devTypFlag, float64 &meanResult, float64 &devResult, bool ignoreNaN = true);
-    
+
     DATAOBJ_EXPORT RetVal calcCVDFT(DataObject *dObjIO, const bool inverse, const bool inverseAsReal, const bool lineWise);
 
     //! Check if the dataObject is of right type
     DATAOBJ_EXPORT RetVal verifyDataObjectType(const DataObject* dObj, const char* name, uint8 numberOfAllowedTypes, ...); //append allowed data types, e.g. ito::tUint8, ito::tInt8... (order does not care)
-    
+
     //! Check if the dataObject is of right type and if it is 2D and if it is of right size
     DATAOBJ_EXPORT RetVal verify2DDataObject(const DataObject* dObj, const char* name, int sizeYMin, int sizeYMax, int sizeXMin, int sizeXMax, uint8 numberOfAllowedTypes, ...); //append allowed data types, e.g. ito::tUint8, ito::tInt8... (order does not care)
-    
+
     //! Check if the dataObject is of right type and if it is 2D or is 1x...xYxX and if it is of right size
     //ito::RetVal DATAOBJ_EXPORT verify1PlaneDObject(const ito::DataObject* dObj, const char* name, int &yIdx, int sizeYMin, int sizeYMax, int &xIdx, int sizeXMin, int sizeXMax, uint8 numberOfAllowedTypes, ...); //append allowed data types, e.g. ito::tUint8, ito::tInt8... (order does not care)
-    
+
     //! Check if the dataObject is of right type and if it is 3D and if it is of right size
     DATAOBJ_EXPORT RetVal verify3DDataObject(const DataObject* dObj, const char* name, int sizeZMin, int sizeZMax, int sizeYMin, int sizeYMax, int sizeXMin, int sizeXMax, uint8 numberOfAllowedTypes, ...); //append allowed data types, e.g. ito::tUint8, ito::tInt8... (order does not care)
-    
+
     /*! checks given size to be in range [minSize, maxSize] and returns ito::retOk if this is the case
 
     If maxSize == -1, size must only be equal to minSize or bigger. In case of error, an error meassage is set
@@ -94,12 +94,12 @@ namespace dObjHelper
         \param[in]   dObj1   DataObject1
         \param[in]   dObj2   DataObject2
         \param[out]  typeFlag    If true both objects are of same type
-        \param[out]  dimsFlag    If true both object have same dims and sizes 
+        \param[out]  dimsFlag    If true both object have same dims and sizes
         \param[out]  last2DimsFlag   If true x/y of the object are equal
         \return true if equal else false
         \author  Lyda
-        \sa  
-        \date    12.2011 
+        \sa
+        \date    12.2011
     */
     inline bool dObjareEqualDetail(const ito::DataObject *dObj1, const ito::DataObject *dObj2, bool &typeFlag, bool &dimsFlag, bool &last2DimsFlag)
     {
@@ -169,7 +169,7 @@ namespace dObjHelper
         assert(obj1 && obj2);
         return (obj1->getType() == obj2->getType()) && (obj1->getSize() == obj2->getSize());
     }
-    
+
     //--------------------------------------------------------------------------------------------
     //! tries to return the 'inverse' of the given unit
     /*!
@@ -184,15 +184,15 @@ namespace dObjHelper
     \return inverted unit string
     */
     DATAOBJ_EXPORT std::string invertUnit(const std::string &oldUnit);
- 
+
     //-----------------------------------------------------------------------------------------------
-    /*! \fn isIntType 
+    /*! \fn isIntType
         \brief  Helpfunction to check if object type is integer type or not and if integer point the size is spezified in size
-        \param[in]   type    tDataType of a DataObject 
+        \param[in]   type    tDataType of a DataObject
         \param[out]  size    Number of bytes if floating point type (1 or 4) else -1
         \author  Lyda
-        \sa  
-        \date    12.2011 
+        \sa
+        \date    12.2011
     */
     inline bool isIntType(const ito::tDataType type, int *size)
     {
@@ -217,13 +217,13 @@ namespace dObjHelper
     }
 
     //-----------------------------------------------------------------------------------------------
-    /*! \fn isFPType 
+    /*! \fn isFPType
         \brief  Helpfunction to check if object type is floating point type or not and if floating point point the size is spezified in size
-        \param[in]   type    tDataType of a DataObject 
+        \param[in]   type    tDataType of a DataObject
         \param[out]  size    Number of bytes if floating point type (4 or 8) else -1
         \author  Lyda
-        \sa  
-        \date    12.2011 
+        \sa
+        \date    12.2011
     */
     inline bool isFPType(const ito::tDataType type, int *size)
     {
@@ -245,13 +245,13 @@ namespace dObjHelper
     }
 
     //-----------------------------------------------------------------------------------------------
-    /*! \fn isCplxType 
+    /*! \fn isCplxType
         \brief  Helpfunction to check if object type is complex-type or not and if complex point the size is spezified in size
-        \param[in]   type    tDataType of a DataObject 
+        \param[in]   type    tDataType of a DataObject
         \param[out]  size    Number of bytes if complex type (8 or 16) else -1
         \author  Lyda
-        \sa  
-        \date    12.2011 
+        \sa
+        \date    12.2011
     */
     inline bool isCplxType(const ito::tDataType type, int *size)
     {
@@ -272,7 +272,7 @@ namespace dObjHelper
         }
     }
 
-    
+
 
     //! Helperfunction to copy axis related tags from a n-D-Object to a m-D-Object.
     DATAOBJ_EXPORT ito::RetVal dObjCopyLastNAxisTags(const ito::DataObject &dataObjIn, ito::DataObject &dataObjOut, const int copyLastNDims, const bool includeValueTags = true, const bool includeRotationMatrix = true);
@@ -339,24 +339,24 @@ namespace dObjHelper
 
         \author  Lyda
         \sa      freeRowPointer
-        \date    12.2012 
+        \date    12.2012
     */
-    template<typename _Tp> ito::RetVal getRowPointer(ito::DataObject* dObj, _Tp *** &pointer)  
+    template<typename _Tp> ito::RetVal getRowPointer(ito::DataObject* dObj, _Tp *** &pointer)
     {
 
         if(!dObj)
         {
-            return ito::RetVal::format(ito::retError, 0, "DataObject was a NULL pointer in function getRowPointer(...)");               
+            return ito::RetVal::format(ito::retError, 0, "DataObject was a NULL pointer in function getRowPointer(...)");
         }
 
         if(dObj->getType() != ito::getDataType2<_Tp*>())
         {
-            return ito::RetVal::format(ito::retError, 0, "DataObject and template Type differed in function getRowPointer(...)");               
+            return ito::RetVal::format(ito::retError, 0, "DataObject and template Type differed in function getRowPointer(...)");
         }
 
         if(dObj->getDims() < 2)
         {
-            return ito::RetVal::format(ito::retError, 0, "DataObject was not initialized in function getRowPointer(...)");   
+            return ito::RetVal::format(ito::retError, 0, "DataObject was not initialized in function getRowPointer(...)");
         }
 
         pointer = (_Tp***)calloc(dObj->getNumPlanes() + 1, sizeof(_Tp**)); //all bytes are allocated to zero
@@ -393,7 +393,7 @@ namespace dObjHelper
             freeRowPointer(pointer);
         }
         return retVal;
-    } 
+    }
 
 
     //-------------------------------------------------------------------------------------------------------------------

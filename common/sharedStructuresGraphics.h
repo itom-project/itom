@@ -10,7 +10,7 @@
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
-   
+
     In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
@@ -42,14 +42,14 @@ namespace ito
     //! enumeration that describes the type of input data that a designer plot widget accepts
     enum PlotDataType
     {
-        DataObjLine         = 0x0001, /*!< 1xN or Nx1 data object */ 
+        DataObjLine         = 0x0001, /*!< 1xN or Nx1 data object */
         DataObjPlane        = 0x0002, /*!< 2D data object */
         DataObjPlaneStack   = 0x0004, /*!< data object with more than one plane */
         PointCloud          = 0x0008, /*!< point cloud */
         PolygonMesh         = 0x0010  /*!< polygon mesh */
     };
     Q_DECLARE_FLAGS(PlotDataTypes, PlotDataType)
-    
+
     //! allowed data formats
     enum PlotDataFormat
     {
@@ -64,7 +64,7 @@ namespace ito
         Format_Complex  = 0x0100
     };
     Q_DECLARE_FLAGS(PlotDataFormats, PlotDataFormat)
-    
+
     //! this enumeration describe the features a designer plot widget provides concerning the visualization of data objects, point clouds or polygonal meshes
     enum PlotFeature
     {
@@ -82,16 +82,16 @@ namespace ito
         Plot3D      = 0x0800
     };
     Q_DECLARE_FLAGS(PlotFeatures, PlotFeature)
-    
 
-    class PluginInfo 
+
+    class PluginInfo
     {
         public:
             PluginInfo(void) : m_plotFeatures(Static) {}
-            PluginInfo(PlotDataTypes plotDataTypes, PlotDataFormats plotDataFormats, PlotFeatures plotFeatures) 
-                : m_plotDataTypes(plotDataTypes), 
-                m_plotDataFormats(plotDataFormats), 
-                m_plotFeatures(plotFeatures) 
+            PluginInfo(PlotDataTypes plotDataTypes, PlotDataFormats plotDataFormats, PlotFeatures plotFeatures)
+                : m_plotDataTypes(plotDataTypes),
+                m_plotDataFormats(plotDataFormats),
+                m_plotFeatures(plotFeatures)
             {}
 
             PlotDataTypes m_plotDataTypes;

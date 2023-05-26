@@ -7,7 +7,7 @@ which is licensed under the BSD license.
 
 Please check the about dialog of itom to see if your version of itom contains
 an integration of the point cloud library. Plugins can also be based on the point
-cloud library, however they can only be loaded if itom is also compiled with the 
+cloud library, however they can only be loaded if itom is also compiled with the
 point cloud library.
 
 The sources of the point cloud library can be obtained from https://github.com/PointCloudLibrary/pcl.
@@ -26,7 +26,7 @@ All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
-are met: 
+are met:
 
  * Redistributions of source code must retain the above copyright
    notice, this list of conditions and the following disclaimer.

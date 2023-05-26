@@ -3,4 +3,4 @@
 Python
 ======
 
-This chapter shows some basics of ``Python``. 
+This chapter shows some basics of ``Python``.

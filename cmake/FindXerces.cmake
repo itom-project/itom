@@ -10,7 +10,7 @@
 if((CMAKE_MAJOR_VERSION GREATER 2) AND (CMAKE_MAJOR_VERSION LESS 4) AND (CMAKE_MINOR_VERSION GREATER 1))
     cmake_policy(SET CMP0053 NEW)
 endif((CMAKE_MAJOR_VERSION GREATER 2) AND (CMAKE_MAJOR_VERSION LESS 4) AND (CMAKE_MINOR_VERSION GREATER 1))
- 
+
 if(XERCESC_INCLUDE AND XERCESC_LIBRARY)
   # in cache already
   set(XERCESC_FIND_QUIETLY TRUE)
@@ -39,9 +39,9 @@ set(XERCESC_POSSIBLE_ROOT_DIRS
  "$ENV{PATH}"
   )
 
-  find_path(XERCESC_ROOT_DIR 
-  NAMES 
-  include/xercesc/util/XercesVersion.hpp  
+  find_path(XERCESC_ROOT_DIR
+  NAMES
+  include/xercesc/util/XercesVersion.hpp
   PATHS ${XERCESC_POSSIBLE_ROOT_DIRS}
   )
 
@@ -55,12 +55,12 @@ find_path(XERCESC_INCLUDE NAMES xercesc/util/XercesVersion.hpp
   "$ENV{ProgramW6432}/CodeSynthesis XSD 3.3/include"
   "$ENV{ProgramFiles}/CodeSynthesis XSD 4.0/include"
   "$ENV{ProgramFiles}(x86)/CodeSynthesis XSD 4.0/include"
-  "$ENV{ProgramW6432}/CodeSynthesis XSD 4.0/include"  
+  "$ENV{ProgramW6432}/CodeSynthesis XSD 4.0/include"
   /usr/local/include
   /usr/include
   "${XERCESC_ROOT_DIR}/include"
 )
-  
+
 # XSD VERSION
   file(READ "${XERCESC_INCLUDE}/xsd/cxx/version.hxx" XSD_VER_FILE)
   string(REGEX MATCH "XSD_INT_VERSION ([0-9]0[0-9]0000L*)" _ ${XSD_VER_FILE})
@@ -107,7 +107,7 @@ if(DEFINED MSVC_VERSION)
   endif(MSVC_VERSION EQUAL 1300)
 
   # Wiora: Set 64 bit target dir (currently this is windows only. How does this work on linux/mac?)
-  if(BUILD_SHARED_LIBS)  
+  if(BUILD_SHARED_LIBS)
      if(CMAKE_CL_64)
         set(XERCES_LIBPATH_POSTFIX lib64/)
         set(XERCES_BINPATH_POSTFIX bin64/)
@@ -147,7 +147,7 @@ if(BUILD_SHARED_LIBS)
         "$ENV{ProgramW6432}/CodeSynthesis XSD 3.3/${XERCES_LIBPATH_POSTFIX}"
         "$ENV{ProgramFiles}/CodeSynthesis XSD 4.0/${XERCES_LIBPATH_POSTFIX}"
         "$ENV{ProgramFiles}(x86)/CodeSynthesis XSD 4.0/${XERCES_LIBPATH_POSTFIX}"
-        "$ENV{ProgramW6432}/CodeSynthesis XSD 4.0/${XERCES_LIBPATH_POSTFIX}"  
+        "$ENV{ProgramW6432}/CodeSynthesis XSD 4.0/${XERCES_LIBPATH_POSTFIX}"
         /usr/lib
         /usr/lib64
         /usr/local/lib
@@ -169,7 +169,7 @@ if(BUILD_SHARED_LIBS)
         "$ENV{ProgramW6432}/CodeSynthesis XSD 3.3/${XERCES_LIBPATH_POSTFIX}"
         "$ENV{ProgramFiles}/CodeSynthesis XSD 4.0/${XERCES_LIBPATH_POSTFIX}"
         "$ENV{ProgramFiles}(x86)/CodeSynthesis XSD 4.0/${XERCES_LIBPATH_POSTFIX}"
-        "$ENV{ProgramW6432}/CodeSynthesis XSD 4.0/${XERCES_LIBPATH_POSTFIX}"  
+        "$ENV{ProgramW6432}/CodeSynthesis XSD 4.0/${XERCES_LIBPATH_POSTFIX}"
         /usr/lib
         /usr/lib64
         /usr/local/lib
@@ -191,7 +191,7 @@ if(BUILD_SHARED_LIBS)
         "$ENV{ProgramW6432}/CodeSynthesis XSD 3.3/${XERCES_BINPATH_POSTFIX}"
         "$ENV{ProgramFiles}/CodeSynthesis XSD 4.0/${XERCES_LIBPATH_POSTFIX}"
         "$ENV{ProgramFiles}(x86)/CodeSynthesis XSD 4.0/${XERCES_LIBPATH_POSTFIX}"
-        "$ENV{ProgramW6432}/CodeSynthesis XSD 4.0/${XERCES_LIBPATH_POSTFIX}"  
+        "$ENV{ProgramW6432}/CodeSynthesis XSD 4.0/${XERCES_LIBPATH_POSTFIX}"
         /usr/lib
         /usr/lib64
         /usr/local/lib
@@ -226,8 +226,8 @@ else (BUILD_SHARED_LIBS)
         PATH_SUFFIXES ${XERCES_LIBPATH_POSTFIX} ""
         DOC "Xerces library static linking"
     )
-  
-    find_library(XERCESC_LIBRARY_DEBUG NAMES xerces-c_static_3D xerces-c_3_1D${XERCES_LIB_POSTFIX} xerces-c-3.1D xerces-c_3D libxerces-c.la 
+
+    find_library(XERCESC_LIBRARY_DEBUG NAMES xerces-c_static_3D xerces-c_3_1D${XERCES_LIB_POSTFIX} xerces-c-3.1D xerces-c_3D libxerces-c.la
         PATHS
         $ENV{XERCESC_LIBRARY_DIR}
         "${XERCESC_LIBRARY_DIR}"
@@ -237,7 +237,7 @@ else (BUILD_SHARED_LIBS)
         "$ENV{ProgramW6432}/CodeSynthesis XSD 3.3/${XERCES_LIBPATH_POSTFIX}"
         "$ENV{ProgramFiles}/CodeSynthesis XSD 4.0/${XERCES_LIBPATH_POSTFIX}"
         "$ENV{ProgramFiles}(x86)/CodeSynthesis XSD 4.0/${XERCES_LIBPATH_POSTFIX}"
-        "$ENV{ProgramW6432}/CodeSynthesis XSD 4.0/${XERCES_LIBPATH_POSTFIX}"   
+        "$ENV{ProgramW6432}/CodeSynthesis XSD 4.0/${XERCES_LIBPATH_POSTFIX}"
         /usr/lib
         /usr/lib64
         /usr/local/lib
@@ -248,7 +248,7 @@ else (BUILD_SHARED_LIBS)
         PATH_SUFFIXES ${XERCES_LIBPATH_POSTFIX} ""
         DOC "Xerces library static linking debug"
     )
-    
+
     find_file(XERCESC_BINARY NAMES xerces-c_3_1 xerces-c_3_1.dll xerces-c_3_1${XERCES_LIB_POSTFIX} xerces-c_3_1${XERCES_LIB_POSTFIX}.dll
         PATHS
         $ENV{XERCESC_LIBRARY_DIR}
@@ -314,8 +314,7 @@ if(XERCESC_FOUND)
      message(STATUS "              : ${XERCESC_INCLUDE}")
      message(STATUS "       Version: ${XERCESC_VERSION}")
     endif(NOT XERCESC_FIND_QUIETLY)
-    
+
 elseif(XERCESC_FIND_REQUIRED)
    message(FATAL_ERROR "Could not find Xerces-C !")
 endif(XERCESC_FOUND)
-

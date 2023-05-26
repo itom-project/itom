@@ -441,7 +441,7 @@ int PythonPCL::PyPointCloud_init(PyPointCloud *self, PyObject *args, PyObject *k
     if (!done)
     {
         PyErr_SetString(
-            PyExc_RuntimeError, 
+            PyExc_RuntimeError,
             "arguments for constructor must be a type value, another instance of "
             "point cloud, an instance of point or width, height and an instance of point"
         );
@@ -929,7 +929,7 @@ PyObject* PythonPCL::PyPointCloud_append(PyPointCloud *self, PyObject *args, PyO
 
     }
     else if (
-        PyErr_Clear(), 
+        PyErr_Clear(),
         PyArg_ParseTupleAndKeywords(
             args,
             kwds,
@@ -2216,26 +2216,26 @@ pointCloud \n\
             }
 
             ito::RetVal tmpRetval = ito::dObjHelper::verify3DDataObject(
-                XYZ.data(), 
-                "XYZ", 
-                3, 
-                3, 
-                1, 
-                std::numeric_limits<int>::max(), 
-                1, 
-                std::numeric_limits<int>::max(), 
-                1, 
+                XYZ.data(),
+                "XYZ",
+                3,
+                3,
+                1,
+                std::numeric_limits<int>::max(),
+                1,
+                std::numeric_limits<int>::max(),
+                1,
                 ito::tFloat32);
 
             if (tmpRetval.containsWarningOrError() && XYZ.data()->getDims() == 2)
             {
                 retval += ito::dObjHelper::verify2DDataObject(
-                    XYZ.data(), 
-                    "XYZ", 
-                    1, 
-                    std::numeric_limits<int>::max(), 
-                    3, 
-                    3, 
+                    XYZ.data(),
+                    "XYZ",
+                    1,
+                    std::numeric_limits<int>::max(),
+                    3,
+                    3,
                     ito::tFloat32);
 
                 if (PythonCommon::transformRetValToPyException(retval) == false)
@@ -2321,7 +2321,7 @@ pointCloud \n\
 }
 
 //---------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPointCloudFromXYZI_doc, 
+PyDoc_STRVAR(pyPointCloudFromXYZI_doc,
 "fromXYZI(X, Y, Z, I, deleteNaN = False) -> pointCloud \\\n\
 fromXYZI(XYZ, I, deleteNaN = False) -> pointCloud \n\
 \n\
@@ -2558,15 +2558,15 @@ pointCloud \n\
             }
 
             ito::RetVal tmpRetval = ito::dObjHelper::verify3DDataObject(
-                XYZ.data(), 
-                "XYZ", 
-                3, 
-                3, 
-                1, 
-                std::numeric_limits<int>::max(), 
-                1, 
-                std::numeric_limits<int>::max(), 
-                1, 
+                XYZ.data(),
+                "XYZ",
+                3,
+                3,
+                1,
+                std::numeric_limits<int>::max(),
+                1,
+                std::numeric_limits<int>::max(),
+                1,
                 ito::tFloat32
             );
 
@@ -4255,10 +4255,10 @@ PyObject* PythonPCL::PyPolygonMesh_repr(PyPolygonMesh *self)
     else
     {
         return PyUnicode_FromFormat(
-            "PolygonMesh (%u polygons, [%u x %u] points, fields: %s)", 
-            self->polygonMesh->polygonMesh()->polygons.size(), 
-            self->polygonMesh->height(), 
-            self->polygonMesh->width(), 
+            "PolygonMesh (%u polygons, [%u x %u] points, fields: %s)",
+            self->polygonMesh->polygonMesh()->polygons.size(),
+            self->polygonMesh->height(),
+            self->polygonMesh->width(),
             self->polygonMesh->getFieldsList().data());
     }
 }
@@ -4389,7 +4389,7 @@ PyObject* PythonPCL::PyPolygonMesh_SetState(PyPolygonMesh *self, PyObject *args)
         if (success == false)
         {
             PyErr_SetString(
-                PyExc_RuntimeError, 
+                PyExc_RuntimeError,
                 QObject::tr("Temporary file for writing point cloud binary data could not be created").toLatin1().data()
             );
 
@@ -4427,7 +4427,7 @@ PyObject* PythonPCL::PyPolygonMesh_SetState(PyPolygonMesh *self, PyObject *args)
         // set first optional parameter "type"
         paramsOpt[0].setVal<const char*>("obj");
 
-        
+
         if (apiFilterCall != nullptr)
         {
             retval = apiFilterCall("loadPolygonMesh", &paramsMand, &paramsOpt, &paramsOut);

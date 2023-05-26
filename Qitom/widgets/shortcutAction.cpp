@@ -1,11 +1,11 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO), 
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -40,7 +40,7 @@ ShortcutAction::ShortcutAction(const QString &text, AbstractDockWidget *parent) 
 }
 
 //------------------------------------------------------------------------------------
-ShortcutAction::ShortcutAction(const QIcon &icon, const QString &text, AbstractDockWidget *parent) : 
+ShortcutAction::ShortcutAction(const QIcon &icon, const QString &text, AbstractDockWidget *parent) :
     QObject(parent),
     m_dockedShortcut(Qt::WidgetShortcut),
     m_undockedShortcut(Qt::WidgetShortcut)
@@ -52,9 +52,9 @@ ShortcutAction::ShortcutAction(const QIcon &icon, const QString &text, AbstractD
 }
 
 //------------------------------------------------------------------------------------
-ShortcutAction::ShortcutAction(const QIcon &icon, const QString &text, 
-        AbstractDockWidget *parent, const QKeySequence &key, 
-        Qt::ShortcutContext context /*= Qt::WindowShortcut*/) : 
+ShortcutAction::ShortcutAction(const QIcon &icon, const QString &text,
+        AbstractDockWidget *parent, const QKeySequence &key,
+        Qt::ShortcutContext context /*= Qt::WindowShortcut*/) :
     QObject(parent),
     m_dockedShortcut(context),
     m_undockedShortcut(context)
@@ -81,7 +81,7 @@ ShortcutAction::ShortcutAction(const QIcon &icon, const QString &text,
 //!< Action with text, icon and shortcut (different contexts for docked and undocked state)
 ShortcutAction::ShortcutAction(const QIcon &icon, const QString &text, AbstractDockWidget *parent,
     const QKeySequence &key, Qt::ShortcutContext dockedContext,
-    Qt::ShortcutContext undockedContext) : 
+    Qt::ShortcutContext undockedContext) :
     QObject(parent),
     m_dockedShortcut(dockedContext),
     m_undockedShortcut(undockedContext)
@@ -139,8 +139,8 @@ void ShortcutAction::parentDockStateChanged(bool docked)
 
 //----------------------------------------------------------------
 void ShortcutAction::connectTrigger(
-    const QObject *receiver, 
-    const char *method, 
+    const QObject *receiver,
+    const char *method,
     Qt::ConnectionType type /*= Qt::AutoConnection*/)
 {
     if (m_action)

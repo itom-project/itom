@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -228,10 +228,10 @@ PyObject* plugin_showToolbox(ito::AddInBase *aib)
         ito::AddInManager *aim = qobject_cast<ito::AddInManager*>(AppManagement::getAddInManager());
 
         if (QMetaObject::invokeMethod(
-            aim, 
-            "showDockWidget", 
-            Q_ARG(ito::AddInBase*, aib), 
-            Q_ARG(int, 1), 
+            aim,
+            "showDockWidget",
+            Q_ARG(ito::AddInBase*, aib),
+            Q_ARG(int, 1),
             Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
         {
             if (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginGeneral))
@@ -246,8 +246,8 @@ PyObject* plugin_showToolbox(ito::AddInBase *aib)
         else
         {
             retval += ito::RetVal(
-                ito::retError, 
-                0, 
+                ito::retError,
+                0,
                 QObject::tr("Member 'showDockWidget' of plugin could not be invoked (error in signal/slot connection).").toLatin1().data());
         }
     }
@@ -275,10 +275,10 @@ PyObject* plugin_hideToolbox(ito::AddInBase *aib)
         ito::AddInManager *aim = qobject_cast<ito::AddInManager*>(AppManagement::getAddInManager());
 
         if (QMetaObject::invokeMethod(
-            aim, 
-            "showDockWidget", 
-            Q_ARG(ito::AddInBase*, aib), 
-            Q_ARG(int, 0), 
+            aim,
+            "showDockWidget",
+            Q_ARG(ito::AddInBase*, aib),
+            Q_ARG(int, 0),
             Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
         {
             if (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginGeneral))
@@ -397,11 +397,11 @@ PyObject* getExecFuncsList(ito::AddInBase *aib)
 
 
 //-------------------------------------------------------------------------------------
-/** returns a list of execFunction available in a plugin similar to filterHelp 
+/** returns a list of execFunction available in a plugin similar to filterHelp
 *   @param [in] aib   the plugin for which the execFuncs names are requested
 *   @param [in] args  2 Item-Vector with integer request for additional dictionary return
-*   @return           python dictionary with list of functions or specific dictionary 
-*                     for one execFunc with the parameters' names, min, max, current 
+*   @return           python dictionary with list of functions or specific dictionary
+*                     for one execFunc with the parameters' names, min, max, current
 *                     value, (infostring)
 */
 PyObject * getExecFuncsInfo(ito::AddInBase *aib, PyObject *args, PyObject *kwds)
@@ -500,12 +500,12 @@ PyObject * getExecFuncsInfo(ito::AddInBase *aib, PyObject *args, PyObject *kwds)
                 {
                     std::cout << "\nOutput values:\n- no output parameters -";
                 }
-            
+
             }
             else
             {
                 execFuncs.sort();
-                
+
                 if (printToStream)
                 {
                     std::cout << "Plugin 'exec' functions are:\n\n";
@@ -516,7 +516,7 @@ PyObject * getExecFuncsInfo(ito::AddInBase *aib, PyObject *args, PyObject *kwds)
                 int longname = 0;
 
                 for (int funcs = 0; funcs < execFuncs.size(); funcs++)
-                {  
+                {
                     if (longname < execFuncs.value(funcs).length())
                         longname = execFuncs.value(funcs).length();
 
@@ -545,7 +545,7 @@ PyObject * getExecFuncsInfo(ito::AddInBase *aib, PyObject *args, PyObject *kwds)
         }
         else if (printToStream)
         {
-            std::cout << " \nPlugin has no additional 'exec' functions. \n";        
+            std::cout << " \nPlugin has no additional 'exec' functions. \n";
         }
 
     }
@@ -579,9 +579,9 @@ PyObject* getName(ito::AddInBase *addInObj)
     QSharedPointer<ito::Param> qsParam(new ito::Param("name", ito::ParamBase::String, "", NULL));
 
     if (QMetaObject::invokeMethod(
-        addInObj, 
-        "getParam", 
-        Q_ARG(QSharedPointer<ito::Param>, qsParam), 
+        addInObj,
+        "getParam",
+        Q_ARG(QSharedPointer<ito::Param>, qsParam),
         Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
     {
         bool timeout = false;
@@ -646,7 +646,7 @@ PyObject* execFunc(ito::AddInBase *aib, PyObject *args, PyObject *kwds)
             ret += ito::RetVal(ito::retError, 0, QObject::tr("the first function name parameter can not be interpreted as string").toLatin1().data());
         }
     }
-    
+
     if (!ret.containsError())
     {
         ret += aib->getExecFuncList(&funcList);
@@ -755,7 +755,7 @@ PyObject* execFunc(ito::AddInBase *aib, PyObject *args, PyObject *kwds)
         }
     }
 
-    
+
 }
 
 //-------------------------------------------------------------------------------------
@@ -810,7 +810,7 @@ PyObject* getParam(ito::AddInBase *addInObj, PyObject *args)
     //create a container for the returned parameter. This value is initialized by the full name including the type of the corresponding parameter of the m_params map.
     //Usually, this type is correct, such that setVal can directly used within the plugin. However, the plugin is also allowed to change the type.
     QSharedPointer<ito::Param> qsParam(new ito::Param(paramName, it->getType() | it->getFlags()));
-    
+
     if (QMetaObject::invokeMethod(addInObj, "getParam", Q_ARG(QSharedPointer<ito::Param>, qsParam), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
     {
         bool timeout = false;
@@ -1354,7 +1354,7 @@ PyObject* setParam(ito::AddInBase *addInObj, PyObject *args)
     {
         return NULL;
     }
-    
+
     Py_RETURN_NONE;
 }
 
@@ -1623,7 +1623,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_repr(PyActuatorPlugin *self)
         PyObject *tempObj = NULL;
 
         if ((tempObj = getName(self->actuatorObj)) != NULL)
-        {   
+        {
             QString ident = self->actuatorObj->getIdentifier();
 
             if(ident != "")
@@ -1635,7 +1635,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_repr(PyActuatorPlugin *self)
                 result = PyUnicode_FromFormat("Actuator-Plugin(%U, ID: %i)", tempObj, self->actuatorObj->getID());
             }
 
-            Py_DECREF(tempObj);    
+            Py_DECREF(tempObj);
         }
         else
         {
@@ -2021,7 +2021,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_getStatus(PyActuatorPlugin* self, PyOb
     {
         return NULL;
     }
-    
+
     if (axis == -1)
     {
         QSharedPointer<QVector<int> > status(new QVector<int>());
@@ -2123,8 +2123,8 @@ positions : float or tuple of float \n\
 \n\
 See Also \n\
 -------- \n\
-setPosRel, setPosAbs");                         
-                               
+setPosRel, setPosAbs");
+
 /** get the current position of axi(e)S
 *   @param [in] self    the actuator object (python)
 *   @param [in] args    the axi(e)s numbers
@@ -2159,19 +2159,19 @@ PyObject* PythonPlugins::PyActuatorPlugin_getPos(PyActuatorPlugin* self, PyObjec
     if (axisVec.size() == 1)
     {
         invokeOk = QMetaObject::invokeMethod(
-            self->actuatorObj, 
-            "getPos", 
-            Q_ARG(int, axisVec[0]), 
-            Q_ARG(QSharedPointer<double>, pos), 
+            self->actuatorObj,
+            "getPos",
+            Q_ARG(int, axisVec[0]),
+            Q_ARG(QSharedPointer<double>, pos),
             Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
     }
     else
     {
         invokeOk = QMetaObject::invokeMethod(
-            self->actuatorObj, 
-            "getPos", 
-            Q_ARG(QVector<int>, axisVec), 
-            Q_ARG(QSharedPointer<QVector<double> >, posVec), 
+            self->actuatorObj,
+            "getPos",
+            Q_ARG(QVector<int>, axisVec),
+            Q_ARG(QSharedPointer<QVector<double> >, posVec),
             Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
     }
 
@@ -2196,8 +2196,8 @@ PyObject* PythonPlugins::PyActuatorPlugin_getPos(PyActuatorPlugin* self, PyObjec
     else
     {
         ret += ito::RetVal(
-            ito::retError, 
-            0, 
+            ito::retError,
+            0,
             QObject::tr("Member 'getPos' of plugin could not be invoked (error in signal/slot connection).").toLatin1().data());
     }
 
@@ -2261,7 +2261,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_getType(PyActuatorPlugin *self)
             return NULL;
         }
     }
-    
+
     return result;
 }
 
@@ -2554,7 +2554,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_info(PyActuatorPlugin* self, PyObject*
     else
     {
         PyErr_SetString(
-            PyExc_RuntimeError, 
+            PyExc_RuntimeError,
             "Invalid verbose level. Use level 0 to display all signals and slots "
             "defined by the plugin itself. Level 1 also displays all inherited signals and slots");
         return NULL;
@@ -2710,7 +2710,7 @@ pos1 : float \n\
 \n\
 See Also \n\
 -------- \n\
-getPos, setPosRel");                      
+getPos, setPosRel");
 
 /** set actuator axi(e)s to new absolute position(s)
 *   @param [in] self    the actuator object (python)
@@ -2741,20 +2741,20 @@ PyObject* PythonPlugins::PyActuatorPlugin_setPosAbs(PyActuatorPlugin* self, PyOb
     if (axisVec.size() == 1)
     {
         invokeOk = QMetaObject::invokeMethod(
-            self->actuatorObj, 
-            "setPosAbs", 
-            Q_ARG(int, axisVec[0]), 
-            Q_ARG(double, posVec[0]), 
+            self->actuatorObj,
+            "setPosAbs",
+            Q_ARG(int, axisVec[0]),
+            Q_ARG(double, posVec[0]),
             Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())
         );
     }
     else
     {
         invokeOk = QMetaObject::invokeMethod(
-            self->actuatorObj, 
-            "setPosAbs", 
-            Q_ARG(QVector<int>, axisVec), 
-            Q_ARG(QVector<double>, posVec), 
+            self->actuatorObj,
+            "setPosAbs",
+            Q_ARG(QVector<int>, axisVec),
+            Q_ARG(QVector<double>, posVec),
             Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())
         );
     }
@@ -2779,7 +2779,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_setPosAbs(PyActuatorPlugin* self, PyOb
     }
     else
     {
-        ret += ito::RetVal(ito::retError, 0, 
+        ret += ito::RetVal(ito::retError, 0,
             QObject::tr("Member 'setPosAbs' of plugin could not be invoked (error in signal/slot connection).").toLatin1().data());
     }
 
@@ -2850,19 +2850,19 @@ PyObject* PythonPlugins::PyActuatorPlugin_setPosRel(PyActuatorPlugin* self, PyOb
     if (axisVec.size() == 1)
     {
         invokeOk = QMetaObject::invokeMethod(
-            self->actuatorObj, 
-            "setPosRel", 
-            Q_ARG(int, axisVec[0]), 
-            Q_ARG(double, posVec[0]), 
+            self->actuatorObj,
+            "setPosRel",
+            Q_ARG(int, axisVec[0]),
+            Q_ARG(double, posVec[0]),
             Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
     }
     else
     {
         invokeOk = QMetaObject::invokeMethod(
-            self->actuatorObj, 
-            "setPosRel", 
-            Q_ARG(QVector<int>, axisVec), 
-            Q_ARG(QVector<double>, posVec), 
+            self->actuatorObj,
+            "setPosRel",
+            Q_ARG(QVector<int>, axisVec),
+            Q_ARG(QVector<double>, posVec),
             Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
     }
 
@@ -2886,7 +2886,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_setPosRel(PyActuatorPlugin* self, PyOb
     }
     else
     {
-        ret += ito::RetVal(ito::retError, 0, 
+        ret += ito::RetVal(ito::retError, 0,
             QObject::tr("Member 'setPosRel' of plugin could not be invoked (error in signal/slot connection).").toLatin1().data());
     }
 
@@ -2899,7 +2899,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_setPosRel(PyActuatorPlugin* self, PyOb
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyActuatorGetCurrentStatus_doc, 
+PyDoc_STRVAR(pyActuatorGetCurrentStatus_doc,
 "tuple of int : Gets the current status (flag mask, see :py:meth:`~itom.actuator.getStatus`) of all axes \n\
 \n\
 This property returns a tuple whose size corresponds to the number of axes of this \n\
@@ -2944,7 +2944,7 @@ current states for instance due to performance reasons).");
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyActuatorGetCurrentPositions_doc, 
+PyDoc_STRVAR(pyActuatorGetCurrentPositions_doc,
 "tuple of float : Gets the current positions (in mm or degree) of all axes. \n\
 \n\
 This property returns a tuple whose size corresponds to the number of axes of this \n\
@@ -2987,7 +2987,7 @@ reasons).");
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyActuatorGetTargetPositions_doc, 
+PyDoc_STRVAR(pyActuatorGetTargetPositions_doc,
 "tuple of float : Gets the target positions (in mm or degree) of all axes. \n\
 \n\
 This property returns a tuple whose size corresponds to the number of axes of this \n\
@@ -3355,7 +3355,7 @@ int PythonPlugins::PyDataIOPlugin_init(PyDataIOPlugin *self, PyObject *args, PyO
             {
                 copyPlugin->dataIOObj->getBasePlugin()->incRef(copyPlugin->dataIOObj);
             }
-            
+
             self->dataIOObj = copyPlugin->dataIOObj;
             self->base = copyPlugin->base;
 
@@ -3449,7 +3449,7 @@ int PythonPlugins::PyDataIOPlugin_init(PyDataIOPlugin *self, PyObject *args, PyO
 
 
 
-//-------------------------------------------------------------------------------------   
+//-------------------------------------------------------------------------------------
 //PyDoc_STRVAR(PyDataIOPlugin_name_doc, -> see pyPluginName_doc);
 
 /** Returns the plugin's name
@@ -3676,7 +3676,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_startDevice(PyDataIOPlugin *self, PyObje
             return NULL;
         }
     }
-    
+
     Py_RETURN_NONE;
 }
 
@@ -3765,7 +3765,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_stopDevice(PyDataIOPlugin *self, PyObjec
                 return NULL;
             }
         }
-    
+
         Py_RETURN_NONE;
     }
     else if (count == -1)
@@ -3916,7 +3916,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_stop(PyDataIOPlugin *self)
 
     ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
     bool timeout = false;
-    
+
     if (QMetaObject::invokeMethod(self->dataIOObj, "stop", Q_ARG(ItomSharedSemaphore*, waitCond)))
     {
         while (!waitCond->wait(AppManagement::timeouts.pluginGeneral))
@@ -4032,8 +4032,8 @@ PyObject* PythonPlugins::PyDataIOPlugin_getVal(PyDataIOPlugin *self, PyObject *a
         locker = (new ItomSharedSemaphore());
 
         QMetaObject::invokeMethod(
-            self->dataIOObj, 
-            "getVal", 
+            self->dataIOObj,
+            "getVal",
             Q_ARG(void*, (void*)(bufferDataObj->dataObject)),
             Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())
         );
@@ -4057,7 +4057,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_getVal(PyDataIOPlugin *self, PyObject *a
         else
         {
             PyErr_SetString(
-                PyExc_RuntimeError, 
+                PyExc_RuntimeError,
                 "arguments of method must be a byte array or byte object");
             return NULL;
         }
@@ -4071,10 +4071,10 @@ PyObject* PythonPlugins::PyDataIOPlugin_getVal(PyDataIOPlugin *self, PyObject *a
         locker = (new ItomSharedSemaphore());
 
         QMetaObject::invokeMethod(
-            self->dataIOObj, 
-            "getVal", 
-            Q_ARG(QSharedPointer<char>, sharedBuffer), 
-            Q_ARG(QSharedPointer<int>, maxLength), 
+            self->dataIOObj,
+            "getVal",
+            Q_ARG(QSharedPointer<char>, sharedBuffer),
+            Q_ARG(QSharedPointer<int>, maxLength),
             Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())
         );
 
@@ -4084,7 +4084,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_getVal(PyDataIOPlugin *self, PyObject *a
     {
         PyErr_Clear();
         PyErr_SetString(
-            PyExc_RuntimeError, 
+            PyExc_RuntimeError,
             "arguments of method must be either one data object, byte array or "
             "byte object.");
         return NULL;
@@ -4106,7 +4106,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_getVal(PyDataIOPlugin *self, PyObject *a
     {
         ret += locker.getSemaphore()->returnValue;
     }
-    
+
     if (!PythonCommon::setReturnValueMessage(ret, "getVal", PythonCommon::invokeFunc))
     {
         return NULL;
@@ -4240,7 +4240,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_copyVal(PyDataIOPlugin *self, PyObject *
         }
 
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-        
+
         if (QMetaObject::invokeMethod(self->dataIOObj, "copyVal", Q_ARG(void *, (void *)dObj), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
         {
             bool timeout = false;
@@ -4329,10 +4329,10 @@ PyObject* PythonPlugins::PyDataIOPlugin_setVal(PyDataIOPlugin *self, PyObject *a
         ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
 
         if (QMetaObject::invokeMethod(
-            self->dataIOObj, 
-            "setVal", 
-            Q_ARG(const char *, (const char *)(dObj->dataObject)), 
-            Q_ARG(int, 1), 
+            self->dataIOObj,
+            "setVal",
+            Q_ARG(const char *, (const char *)(dObj->dataObject)),
+            Q_ARG(int, 1),
             Q_ARG(ItomSharedSemaphore*, waitCond)))
         {
             bool timeout = false;
@@ -4355,8 +4355,8 @@ PyObject* PythonPlugins::PyDataIOPlugin_setVal(PyDataIOPlugin *self, PyObject *a
         else
         {
             ret += ito::RetVal(
-                ito::retError, 
-                0, 
+                ito::retError,
+                0,
                 QObject::tr("Member 'setVal' of plugin could not be invoked (error in signal/slot connection).").toLatin1().data()
             );
         }
@@ -4422,14 +4422,14 @@ PyObject* PythonPlugins::PyDataIOPlugin_setVal(PyDataIOPlugin *self, PyObject *a
         }
 
         ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
-        
+
         if (QMetaObject::invokeMethod(
-            self->dataIOObj, 
-            "setVal", 
-            Q_ARG(const char *, (const char *)buf), 
-            Q_ARG(int, datalen), 
+            self->dataIOObj,
+            "setVal",
+            Q_ARG(const char *, (const char *)buf),
+            Q_ARG(int, datalen),
             Q_ARG(ItomSharedSemaphore*, waitCond)))
-        {        
+        {
             bool timeout = false;
 
             while (!waitCond->wait(AppManagement::timeouts.pluginGeneral))
@@ -4450,8 +4450,8 @@ PyObject* PythonPlugins::PyDataIOPlugin_setVal(PyDataIOPlugin *self, PyObject *a
         else
         {
             ret += ito::RetVal(
-                ito::retError, 
-                0, 
+                ito::retError,
+                0,
                 QObject::tr("Member 'setVal' of plugin could not be invoked (error in signal/slot connection).").toLatin1().data()
             );
         }
@@ -4490,7 +4490,7 @@ This method enables the auto grabbing timer. \n\
 See Also \n\
 -------- \n\
 setAutoGrabbing, disableAutoGrabbing, getAutoGrabbing, setAutoGrabbingInterval");
-               
+
 /** enable timer triggered autograbbing of a dataIO device
 *   @param [in] self    the dataIO object (python)
 *   @param [in] args    empty
@@ -4525,8 +4525,8 @@ PyObject *PythonPlugins::PyDataIOPlugin_enableAutoGrabbing(PyDataIOPlugin *self,
     else
     {
         ret += ito::RetVal(
-            ito::retError, 
-            0, 
+            ito::retError,
+            0,
             QObject::tr("Member 'enableAutoGrabbing' of plugin could not be invoked (error in signal/slot connection).").toLatin1().data());
     }
 
@@ -4577,7 +4577,7 @@ PyObject *PythonPlugins::PyDataIOPlugin_disableAutoGrabbing(PyDataIOPlugin *self
 {
     ito::RetVal ret = ito::retOk;
     ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
-    
+
     if (QMetaObject::invokeMethod(self->dataIOObj, "disableAutoGrabbing", Q_ARG(ItomSharedSemaphore*, waitCond)))
     {
         bool timeout = false;
@@ -4599,8 +4599,8 @@ PyObject *PythonPlugins::PyDataIOPlugin_disableAutoGrabbing(PyDataIOPlugin *self
     else
     {
         ret += ito::RetVal(
-            ito::retError, 
-            0, 
+            ito::retError,
+            0,
             QObject::tr("Member 'disableAutoGrabbing' of plugin could not be invoked (error in signal/slot connection).").toLatin1().data());
     }
 
@@ -4680,8 +4680,8 @@ PyObject *PythonPlugins::PyDataIOPlugin_setAutoGrabbing(PyDataIOPlugin *self, Py
     else
     {
         ret += ito::RetVal(
-            ito::retError, 
-            0, 
+            ito::retError,
+            0,
             QObject::tr("Member 'enableAutoGrabbing' or 'disableAutoGrabbing' of plugin could not be invoked (error in signal/slot connection).").toLatin1().data());
     }
 
@@ -4781,9 +4781,9 @@ PyObject *PythonPlugins::PyDataIOPlugin_setAutoGrabbingInterval(PyDataIOPlugin *
     *interval = val;
 
     QMetaObject::invokeMethod(
-        self->dataIOObj, 
-        "setAutoGrabbingInterval", 
-        Q_ARG(QSharedPointer<int>, interval), 
+        self->dataIOObj,
+        "setAutoGrabbingInterval",
+        Q_ARG(QSharedPointer<int>, interval),
         Q_ARG(ItomSharedSemaphore*, waitCond));
 
     bool timeout = false;
@@ -4845,7 +4845,7 @@ PyObject *PythonPlugins::PyDataIOPlugin_getAutoGrabbingInterval(PyDataIOPlugin *
     QSharedPointer<int> interval(new int);
     *interval = 0; //setAutoGrabbingInterval with interval=0 only returns the current interval
     QMetaObject::invokeMethod(self->dataIOObj, "setAutoGrabbingInterval", Q_ARG(QSharedPointer<int>, interval), Q_ARG(ItomSharedSemaphore*, waitCond));
-    
+
     bool timeout = false;
     while (!waitCond->wait(AppManagement::timeouts.pluginGeneral))
     {
@@ -5083,8 +5083,8 @@ PyObject* PythonPlugins::PyDataIOPlugin_getType(PyDataIOPlugin *self)
             return NULL;
         }
     }
-    
-    return result; 
+
+    return result;
 }
 //-------------------------------------------------------------------------------------
 PyDoc_STRVAR(PyDataIOPlugin_info_doc, "info(verbose = 0) \n\
@@ -5114,7 +5114,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_info(PyDataIOPlugin* self, PyObject* arg
         PyErr_SetString(PyExc_RuntimeError, "No valid instance of dataIO available");
         return NULL;
     }
-    
+
     QStringList signalSignatureList, slotSignatureList;
     const QMetaObject *mo = self->dataIOObj->metaObject();
     QMetaMethod metaFunc;
@@ -5158,7 +5158,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_info(PyDataIOPlugin* self, PyObject* arg
     else
     {
         PyErr_SetString(
-            PyExc_RuntimeError, 
+            PyExc_RuntimeError,
             "Invalid verbose level. Use level 0 to display all signals and slots defined "
             "by the plugin itself. Level 1 also displays all inherited signals and slots");
 
@@ -5358,7 +5358,7 @@ PyTypeObject PythonPlugins::PyDataIOPluginType = {
     value = Py_BuildValue("i", 0);
     PyDict_SetItemString(tp_dict, "TRIGGER_SOFTWARE", value);
     Py_DECREF(value);
-    
+
 }
 
 

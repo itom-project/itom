@@ -54,13 +54,13 @@ class ObjectControllerPrivate
     ObjectController *q_ptr;
     Q_DECLARE_PUBLIC(ObjectController)
 public:
-		
+
 		typedef enum PropertyState
 		{
 			STATE_NONE = 0,
 			STATE_SELECTED = 0x01,
 			STATE_EXPANDED = 0x02
-			
+
 		} PropertyState;
 
     void addClassProperties(const QMetaObject *metaObject);
@@ -84,7 +84,7 @@ public:
     QMap<QtProperty *, int>     m_propertyToIndex;
     QMap<const QMetaObject *, QMap<int, QtVariantProperty *> > m_classToIndexToProperty;
 
-		// ideally this should use a QMetaObject,int pair to index a property rather than by name using QString 
+		// ideally this should use a QMetaObject,int pair to index a property rather than by name using QString
     QMap<QString, int /* PropertyState */>    m_propertyToState;
 
     QList<QtProperty *>         m_topLevelProperties;
@@ -209,7 +209,7 @@ void ObjectControllerPrivate::updateClassProperties(const QMetaObject *metaObjec
 
     for (int idx = metaObject->propertyOffset(); idx < metaObject->propertyCount(); idx++) {
         QMetaProperty metaProperty = metaObject->property(idx);
-				
+
         if (metaProperty.isReadable()) {
             if (m_classToIndexToProperty.contains(metaObject) && m_classToIndexToProperty[metaObject].contains(idx)) {
                 QtVariantProperty *subProperty = m_classToIndexToProperty[metaObject][idx];
@@ -258,7 +258,7 @@ void ObjectControllerPrivate::addClassProperties(const QMetaObject *metaObject)
 			QLatin1String propertyName = QLatin1String(metaProperty.name());
 			QString displayName = propertyName;
             int type = metaProperty.userType();
-						
+
 			if (q_ptr->_filterList.contains(propertyName) && q_ptr->_filterList.value(propertyName))
 				continue;
 
@@ -312,16 +312,16 @@ void ObjectControllerPrivate::addClassProperties(const QMetaObject *metaObject)
                 subProperty->setValue(QLatin1String("< Unknown Type >"));
                 subProperty->setEnabled(false);
             }
-				
+
 				if (subProperty != NULL)
 				{
 					QList<QtProperty *> subList = subProperty->subProperties();
-					
+
 					for (int l = 0; l < subList.count(); l++)
 					{
 						QtProperty *subProp = subList.at(l);
 						QString subName = propertyName + "." + subProp->propertyName();
-						
+
 						if (q_ptr->_displayList.contains(subName))
 						{
 							subProp->setPropertyName(q_ptr->_displayList.value(subName));
@@ -364,7 +364,7 @@ void ObjectControllerPrivate::addClassProperties(const QMetaObject *metaObject)
 void ObjectControllerPrivate::saveState()
 {
 	QtTreePropertyBrowser *treeBrowser = qobject_cast<QtTreePropertyBrowser*>(m_browser);
-	
+
 	if (treeBrowser != NULL)
 	{
 		for (int i = 0; i < m_topLevelProperties.count(); i++)
@@ -379,32 +379,32 @@ void ObjectControllerPrivate::saveState()
 void ObjectControllerPrivate::saveState(QtProperty *prop, QString prefix)
 {
 	QtTreePropertyBrowser *treeBrowser = qobject_cast<QtTreePropertyBrowser*>(m_browser);
-	
+
 	if (treeBrowser != NULL && prop != NULL)
 	{
 		QList<QtBrowserItem *> items = treeBrowser->items(prop);
-		
+
 		if (items != NULL && items.count() > 0)
 		{
 			QtBrowserItem *item = items.first();
 			QString name = prop->propertyName();
-			
+
 			if (!prefix.isEmpty())
 				name = prefix + "." + name;
-			
+
 			int state = STATE_NONE;
-			
+
 			if (treeBrowser->isExpanded(item))
 				state |= STATE_EXPANDED;
-			
+
 			if (treeBrowser->isSelected(item))
 				state |= STATE_SELECTED;
-			
+
 			//qDebug() << "saveState name: " << prop->propertyName() << " count: " << items.count() << " subs: " << item->children().count() << " state: " << state;
 			m_propertyToState[name] = state;
-			
+
 			QList<QtBrowserItem *> children = item->children();
-			
+
 			for (int i = 0; i < children.count(); i++)
 			{
 				saveState(children.at(i)->property(), name);
@@ -416,13 +416,13 @@ void ObjectControllerPrivate::saveState(QtProperty *prop, QString prefix)
 void ObjectControllerPrivate::restoreState()
 {
 	QtTreePropertyBrowser *treeBrowser = qobject_cast<QtTreePropertyBrowser*>(m_browser);
-	
+
 	if (treeBrowser != NULL)
 	{
 		for (int i = 0; i < m_topLevelProperties.count(); i++)
 		{
 			QtProperty *prop = m_topLevelProperties.at(i);
-			
+
 			restoreState(prop);
 		}
 	}
@@ -431,28 +431,28 @@ void ObjectControllerPrivate::restoreState()
 void ObjectControllerPrivate::restoreState(QtProperty *prop, QString prefix)
 {
 	QtTreePropertyBrowser *treeBrowser = qobject_cast<QtTreePropertyBrowser*>(m_browser);
-	
+
 	if (treeBrowser != NULL && prop != NULL)
 	{
 		QList<QtBrowserItem *> items = treeBrowser->items(prop);
-		
+
 		if (items != NULL && items.count() > 0)
 		{
 			QtBrowserItem *item = items.first();
 			QString name = prop->propertyName();
-			
+
 			if (!prefix.isEmpty())
 				name = prefix + "." + name;
-			
+
 			if (m_propertyToState.contains(name))
 			{
 				int state = m_propertyToState[name];
-				
+
 				treeBrowser->setExpanded(item, state & STATE_EXPANDED);
 				treeBrowser->setSelected(item, state & STATE_SELECTED);
-				
+
 				QList<QtBrowserItem *> children = item->children();
-				
+
 				for (int i = 0; i < children.count(); i++)
 				{
 					restoreState(children.at(i)->property(), name);
@@ -559,9 +559,9 @@ QObject *ObjectController::object() const
 void ObjectController::updateObject()
 {
 	QObject *ob = d_ptr->m_object;
-	
+
 	if (ob != NULL)
-		d_ptr->updateClassProperties(ob->metaObject(), true);	
+		d_ptr->updateClassProperties(ob->metaObject(), true);
 }
 
 const QString ObjectController::getDisplayName(const QString &propertyName) const

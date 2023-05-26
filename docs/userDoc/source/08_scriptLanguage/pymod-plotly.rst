@@ -13,7 +13,7 @@ The package **plotly** can be used in order to create two or three dimensional p
 
 For more examples see the plotly gallery under https://plotly.com/python/.
 
-itom provides a renderer for plotly, such that plotly figures are displayed in an itom plot window, 
+itom provides a renderer for plotly, such that plotly figures are displayed in an itom plot window,
 that has the same window managements functions than any other plot window (dockable, integrated in main window...).
 Additionally, the used itom plotly widget can be added to custom user interfaces and plotly figures
 can directly be displayed there.
@@ -26,9 +26,9 @@ In order to open a plotly figure in itom, make sure that you have the **plotly**
 installed. Then see the following example:
 
 .. code-block:: python
-    
+
     import itomPlotlyRenderer
-    
+
     # x and y given as array_like objects
     import plotly.express as px
 
@@ -46,19 +46,19 @@ installed. Then see the following example:
     fig.show(renderer="itom")
 
 This example is part of the official plotly examples. The only difference is the import of the
-**itomPlotlyRenderer**. The renderer, called **itom** is then set as default. Therefore, it is 
+**itomPlotlyRenderer**. The renderer, called **itom** is then set as default. Therefore, it is
 not required to pass it as keyword argument **renderer** to the **fig.show** command, however this
 shows how to set another renderer, e.g. **browser** if you would like to see the output in a browser tab.
 
-In order to display a plotly output in any custom user interface, place the designer widget 
-**PlotlyPlot** from the **itom Plugins** section in your custom user interface and set a suitable 
+In order to display a plotly output in any custom user interface, place the designer widget
+**PlotlyPlot** from the **itom Plugins** section in your custom user interface and set a suitable
 object name. In order to display the plotly output in this given widget, you have to pass
 the handle to this widget (the :py:class:`~itom.plotItem` instance) to the keyword argument
 **plotHandle** of the **fig.show** command. The following example code is taken from the **plotlyGuiDemo.py**
 demo script:
 
 .. code-block:: python
-    
+
     class PlotlyGuiDemo(ItomUi):
     def __init__(self):
         """Constructor."""
@@ -78,7 +78,7 @@ demo script:
         """
         with self.disableGui(disableItems=[self.gui.groupActions]):
             long_df = px.data.medals_long()
-    
+
             fig = px.bar(long_df, x="nation", y="count", color="medal", title="Long-Form Input")
             fig.show(plotHandle=self.plotlyPlot)
 

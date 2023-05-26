@@ -10,7 +10,7 @@
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
-   
+
     In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
@@ -24,7 +24,7 @@
     You should have received a copy of the GNU Library General Public License
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 
-    This file is a port and modified version of the 
+    This file is a port and modified version of the
     CTK Common Toolkit (http://www.commontk.org)
 *********************************************************************** */
 
@@ -40,7 +40,7 @@
 #include "valueProxy.h"
 #include "ui_sliderWidget.h"
 
-// STD includes 
+// STD includes
 #include <cmath>
 
 //-----------------------------------------------------------------------------
@@ -182,7 +182,7 @@ SliderWidget::SliderWidget(QWidget* _parent) : Superclass(_parent)
   , d_ptr(new SliderWidgetPrivate(*this))
 {
   Q_D(SliderWidget);
-  
+
   d->setupUi(this);
 
   d->Slider->setMaximum(d->SpinBox->maximum());
@@ -259,12 +259,12 @@ void SliderWidget::setMaximum(double max)
 void SliderWidget::setRange(double min, double max)
 {
   Q_D(SliderWidget);
-  
+
   bool wasBlockSetSliderValue = d->BlockSetSliderValue;
   d->BlockSetSliderValue = true;
   d->SpinBox->setRange(min, max);
   d->BlockSetSliderValue = wasBlockSetSliderValue;
-  
+
   // SpinBox can truncate the range (depending on decimals).
   // use Spinbox's range to set Slider's range
   d->Slider->setRange(d->SpinBox->minimum(), d->SpinBox->maximum());
@@ -365,13 +365,13 @@ void SliderWidget::setSliderValue(double spinBoxValue)
 void SliderWidget::setSpinBoxValue(double sliderValue)
 {
   Q_D(SliderWidget);
-  
+
   bool wasBlockSetSliderValue = d->BlockSetSliderValue;
   d->BlockSetSliderValue = true;
   d->SpinBox->setValue(sliderValue);
   d->BlockSetSliderValue = wasBlockSetSliderValue;
   Q_ASSERT(d->equal(d->SpinBox->value(), d->Slider->value()));
-  
+
   if (!d->Tracking)
     {
     emit this->valueIsChanging(sliderValue);
@@ -393,7 +393,7 @@ bool SliderWidget::eventFilter(QObject *obj, QEvent *event)
        this->startChanging();
        }
      }
-   else if (event->type() == QEvent::MouseButtonRelease) 
+   else if (event->type() == QEvent::MouseButtonRelease)
      {
      QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
      if (mouseEvent->button() & Qt::LeftButton)
@@ -403,7 +403,7 @@ bool SliderWidget::eventFilter(QObject *obj, QEvent *event)
        // send a valueChanged() after eventFilter() is done.
        this->stopChanging();
        }
-     } 
+     }
    // standard event processing
    return this->Superclass::eventFilter(obj, event);
  }
@@ -516,7 +516,7 @@ double SliderWidget::tickInterval()const
 
 // --------------------------------------------------------------------------
 void SliderWidget::setTickInterval(double ti)
-{ 
+{
   Q_D(SliderWidget);
   d->Slider->setTickInterval(ti);
 }

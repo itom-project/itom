@@ -123,7 +123,7 @@ def polyfitweighted2(koX, koY, koZ, n, margin=0.2, w=None):
         nputils.condest(R) > 1.0e10
     ):  # in Mathlab war das mal 'condest(R)' Warnung bezueglich Unterbestimmung, wenn gleiche Punkte in der Matrix auftauchen
         print(
-            """  polyfitweighted2:RepeatedPointsOrRescale Polynomial is badly conditioned. 
+            """  polyfitweighted2:RepeatedPointsOrRescale Polynomial is badly conditioned.
                             Remove repeated data points\nor try centering and scaling as described in HELP POLYFIT."""
         )
 

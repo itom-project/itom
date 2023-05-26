@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -18,7 +18,7 @@
 
     You should have received a copy of the GNU Library General Public License
     along with itom. If not, see <http://www.gnu.org/licenses/>.
-*********************************************************************** */   
+*********************************************************************** */
 
 #include "itomFileSystemModel.h"
 #include <qmimedata.h>
@@ -29,7 +29,7 @@
 
 namespace ito
 {
- 
+
 /*!
     \class ItomFileSystemModel
     \brief  Instead of the default QFileSystemModel, this model is able to provide a more flexible support for drop or
@@ -57,7 +57,7 @@ bool ItomFileSystemModel::dropMimeData(const QMimeData *data, Qt::DropAction act
 
 
     bool success = true;
-    
+
     QString to = filePath(parent) + QDir::separator();
 
 
@@ -73,7 +73,7 @@ bool ItomFileSystemModel::dropMimeData(const QMimeData *data, Qt::DropAction act
     {
         fromFile.setFile(it->toLocalFile());
         fromFileAbs = fromFile.absoluteFilePath();
-             
+
         if (!fromFile.exists())
         {
             QMessageBox::critical(0, tr("file does not exist."), tr("The source file '%s' does not exist and can not be moved or pasted").arg(fromFileAbs));
@@ -177,7 +177,7 @@ bool ItomFileSystemModel::dropMimeData(const QMimeData *data, Qt::DropAction act
      return success;
  }
 
- 
+
 
 
 } //end namespace ito

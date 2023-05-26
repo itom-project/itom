@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -59,7 +59,7 @@ public:
         IOMimeAll = IOMimeDataObject | IOMimePointCloud | IOMimePolygonMesh /*!< or-combination of IOMimeDataObject, IOMimePointCloud and IOMimePolygonMesh */
     };
     Q_DECLARE_FLAGS(IOFilters, IOFilter)
-    
+
     /**
     * SearchFolder enumeration
     * This enumeration contains values to describe specific directories that are searched for files (e.g. icons)

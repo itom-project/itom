@@ -744,9 +744,9 @@ void MainWindow::addAbstractDock(
                     if (docked)
                     {
                         connect(
-                            sdw, 
-                            &ScriptDockWidget::statusBarInformationChanged, 
-                            this, 
+                            sdw,
+                            &ScriptDockWidget::statusBarInformationChanged,
+                            this,
                             &MainWindow::scriptStatusBarInformationChanged
                         );
                     }
@@ -757,7 +757,7 @@ void MainWindow::addAbstractDock(
                 }
             );
 
-            
+
         }
 
         if (area == Qt::NoDockWidgetArea)
@@ -822,7 +822,7 @@ void MainWindow::scriptStatusBarInformationChanged(
     if (m_pStatusLblScriptInfo)
     {
         QObject* widget = QApplication::focusWidget();
-        ScriptDockWidget *focussedDockWidget = nullptr;  
+        ScriptDockWidget *focussedDockWidget = nullptr;
 
         while (widget)
         {

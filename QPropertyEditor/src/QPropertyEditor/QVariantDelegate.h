@@ -38,7 +38,7 @@ class QVariantDelegate : public QItemDelegate
 
 public:
     /**
-     * Constructor 
+     * Constructor
      * @param parent optional parent object
      */
     QVariantDelegate(QObject* parent = 0);
@@ -47,7 +47,7 @@ public:
 
     /**
      * Creates an editor widget as child of a given widget for a specific QModelIndex
-     * 
+     *
      * @param parent the parent widget for the editor
      * @param option some style options that the editor should use
      * @param index the index of the item the editor will be created for

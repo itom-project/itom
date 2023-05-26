@@ -9,7 +9,7 @@
 ; Deutsch.PythonHomeText=Wenn Python aus dem Unterverzeichnis von itom benutzt werden soll (Standard), muss die bestehende PYTHONHOME-Umgebungsvariable vor der Installation gelöscht werden.
 English.PythonHomeText = If you want to use Python in subdirectory of itom you have to delete the PYTHONHOME environmental variable bevor installation.
 Deutsch.PythonHomeText = Wenn Python aus dem Unterverzeichnis von itom benutzt werden soll, muss die PYTHONHOME-Umgebungsvariable vor der Installation geloescht werden.
-English.WindowsNWarning = One of the following files could not be found on the system: MFReadWrite.dll, MF.dll and MFPlat.dll. It looks like you are running a Windows without an installed media feature pack. You may need to install the Windows Media Feature Pack to run itom. 
+English.WindowsNWarning = One of the following files could not be found on the system: MFReadWrite.dll, MF.dll and MFPlat.dll. It looks like you are running a Windows without an installed media feature pack. You may need to install the Windows Media Feature Pack to run itom.
 Deutsch.WindowsNWarning = Eine der folgenden Dateien konnte auf dem System nicht gefunden werden: MFReadWrite.dll, MF.dll und MFPlat.dll. Es sieht so aus, als ob Sie ein Windows ohne installiertes Media Feature Pack verwenden. Moeglicherweise muessen Sie das Windows Media Feature Pack installieren, um itom auszufuehren.
 
 
@@ -39,15 +39,15 @@ const
 //  RP15_64_MIN = '{0D3E9E15-DE7A-300B-96F1-B4AF12B96488}';
 //  RP15_86_ADD = '{BE960C1C-7BAD-3DE6-8B1A-2616FE532845}';
 //  RP15_64_ADD = '{BC958BD2-5DAC-3862-BB1A-C1BE0790438D}';
-  
+
   // Visual C++ 2017 Redistributable 14.16.27024
   RP17_86_MIN = '{F1B0FB3A-E0EA-47A6-9383-3650655403B0}';
   RP17_64_MIN = '{0D3E9E15-DE7A-300B-96F1-B4AF12B96488}';
   RP17_86_ADD = '{7258184A-EC44-4B1A-A7D3-68D85A35BFD0}';
   RP17_64_ADD = '{9D29FC96-9EEE-4253-943F-96B3BBFDD0B6}';
-  
+
   // You can find product codes for other Visual Studio versions in HKEY_CLASSES_ROOT\Installer\Dependencies\, for example HKEY_CLASSES_ROOT\Installer\Dependencies\Microsoft.VS.VC_RuntimeAdditionalVSU_amd64,v14
-  
+
 function IsMsiProductInstalled(const ProductId: string): Boolean;
 begin
   Result := MsiQueryProductState(ProductId) = INSTALLSTATE_DEFAULT;
@@ -98,7 +98,7 @@ begin
     end;
   end;
 end;
-  
+
 
 {procedure CurStepChanged(CurStep: TSetupStep);
 var  AppDir: string;
@@ -128,7 +128,7 @@ var  PythonPath: string;
      RootKey: Integer;
 begin
   Found := True;
-  
+
   if not RegQueryStringValue(HKEY_LOCAL_MACHINE, 'SOFTWARE\Python\PythonCore\3.5\InstallPath', '', PythonPath) then begin
     if not RegQueryStringValue(HKEY_LOCAL_MACHINE, 'SOFTWARE\Wow6432Node\Python\PythonCore\3.5\InstallPath', '', PythonPath) then begin
       if not RegQueryStringValue(HKEY_LOCAL_MACHINE, 'SOFTWARE\Python\PythonCore\3.5-32\PythonPath', '', PythonPath) then begin
@@ -146,9 +146,9 @@ begin
           end;
         end;
       end;
-    end; 
+    end;
   end;
-  
+
   if Found then
     Result := PythonPath;
 //  else
@@ -166,8 +166,8 @@ var  ListBox: TNewCheckListBox;
 begin
   ListBox := TNewCheckListBox(Sender);
   Idx:= ListBox.ItemIndex;
-  
-  if (Idx<ListBox.Items.Count-1) then begin 
+
+  if (Idx<ListBox.Items.Count-1) then begin
     x:= Idx+1;
     while (x<ListBox.Items.Count) and (ListBox.ItemLevel[Idx]<ListBox.ItemLevel[x]) do begin
       if ListBox.State[Idx]=cbUnchecked then begin

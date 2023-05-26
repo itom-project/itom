@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -42,10 +42,10 @@ class AppManagement
         inline static QObject* getScriptEditorOrganizer() { QMutexLocker locker(&m_mutex); return m_sew; } /*!< returns static pointer to ScriptEditorOrganizer instance */
         inline static QObject* getPythonEngine() { QMutexLocker locker(&m_mutex); return m_pe; }           /*!< returns static pointer to PythonEngine instance */
         inline static QObject* getPythonStatePublisher() { QMutexLocker locker(&m_mutex); return m_psp; }           /*!< returns static pointer to PythonStatePublisher instance */
-    
+
         inline static QObject* getPaletteOrganizer() { QMutexLocker locker(&m_mutex); return m_plo; }        /*!< returns static pointer to PaletteOrganizer instance */
         inline static QObject* getDesignerWidgetOrganizer() { QMutexLocker locker(&m_mutex); return m_dwo; }        /*!< returns static pointer to DesignerWidgetOrganizer instance */
-    
+
         inline static QObject* getMainApplication() { QMutexLocker locker (&m_mutex); return m_app; }
         inline static QObject* getAddInManager() { QMutexLocker locker(&m_mutex); return m_addInManager; }
         inline static QObject* getMainWindow() { QMutexLocker locker (&m_mutex); return m_mainWin; }
@@ -102,7 +102,7 @@ class AppManagement
         {
             QMutexLocker locker(&m_mutex);
             m_mainWin = mainWindow;
-        }    
+        }
 
         static void setUiOrganizer(QObject* uiOrganizer)
         {
@@ -152,7 +152,7 @@ class AppManagement
         static QObject *m_userOrganizer;    /*!< static pointer to UserOrganizer (default: NULL) */
         static QObject* m_coutStream; /*!< static pointer to QDebugStream for std::cout redirection */
         static QObject* m_cerrStream; /*!< static pointer to QDebugStream for std::cerr redirection */
-     
+
         static QMutex m_mutex;  /*!< static mutex, protecting every read and write operation in class AppManagement */
 
 };

@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -57,24 +57,24 @@ namespace ito
     with the given value. Usually this initial slot counter is set to the highest slot number
     of the graphical user interface this mapper is assigned to.
 
-    \param initSlotCount should be set to the methodOffset() value of the underlying 
-           QObject, in order to separate default signals and slots of the base class 
+    \param initSlotCount should be set to the methodOffset() value of the underlying
+           QObject, in order to separate default signals and slots of the base class
            from new, virtually created slots.
 
-    \todo: probably, m_slotCount can also be set to methodOffset() of the QObject 
+    \todo: probably, m_slotCount can also be set to methodOffset() of the QObject
            base class of PythonQtSignalMapper and should not be given as argument.
-           it should not be offset of the object, that emits the signal but of 
+           it should not be offset of the object, that emits the signal but of
            this object, that has the virtual slot!
 */
     PythonQtSignalMapper::PythonQtSignalMapper()
-    { 
+    {
         m_slotCount = this->metaObject()->methodOffset();
     }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! destructor
 /*!
-    Destroys this signal mapper and deletes the managed targets (virtual slots). 
+    Destroys this signal mapper and deletes the managed targets (virtual slots).
     The connected signals are automatically disconnected by Qt.
 */
 PythonQtSignalMapper::~PythonQtSignalMapper()
@@ -94,18 +94,18 @@ PythonQtSignalMapper::~PythonQtSignalMapper()
     \param [in] obj is the instance derived from QObject that is the signaling instance
     \param [in] signal is the signature of the signal (Qt-syntax)
     \param [in] sigId is the Qt-internal ID of the signal (obtained by QMetaObject-system)
-    \param [in] callable is a reference to the real python method, that should act as 
+    \param [in] callable is a reference to the real python method, that should act as
                 slot. This method can be bounded or unbounded.
-    \param [in] argTypeList is a list of integer values that describe the Qt-internal 
-                type number for all arguments of the signal (type number with respect to 
+    \param [in] argTypeList is a list of integer values that describe the Qt-internal
+                type number for all arguments of the signal (type number with respect to
                 QMetaType)
-    \param [in] minRepeatInterval is a minimum amount of time (in ms) which has to be 
-                passed until the same signal-slot-connection is accepted again (additional 
+    \param [in] minRepeatInterval is a minimum amount of time (in ms) which has to be
+                passed until the same signal-slot-connection is accepted again (additional
                 signal emissions are blocked), default: 0 (no timeout)
     \return true if the connection could be established, else false.
 */
 bool PythonQtSignalMapper::addSignalHandler(
-    QObject *obj, const char* signal, int sigId, 
+    QObject *obj, const char* signal, int sigId,
     PyObject* callable, IntList &argTypeList, int minRepeatInterval)
 {
     bool success = false;
@@ -249,7 +249,7 @@ PythonQtSignalTarget::PythonQtSignalTarget() :
                 (no timeout)
 */
 PythonQtSignalTarget::PythonQtSignalTarget(
-    IntList &argTypeList, int slotId, int signalId, 
+    IntList &argTypeList, int slotId, int signalId,
     PyObject* callable, const char *signal, int minRepeatInterval) :
         m_slotId(slotId),
         m_signalId(signalId),
@@ -519,4 +519,3 @@ void PythonQtSignalTarget::call(void ** arguments)
 }
 
 } //end namespace ito
-

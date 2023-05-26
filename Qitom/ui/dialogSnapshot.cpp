@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -93,7 +93,7 @@ DialogSnapshot::DialogSnapshot(QWidget *parent, QPointer<ito::AddInDataIO> cam, 
 
         widget = dwo->createWidget(plotClassName, ui.groupPlot, AbstractFigure::ModeStandaloneInUi);
         widget->setVisible(true);
-        
+
         QVBoxLayout *layout = new QVBoxLayout();
         layout->addWidget(widget);
         ui.groupPlot->setLayout(layout);
@@ -220,7 +220,7 @@ void DialogSnapshot::timerEvent(QTimerEvent *event)
                 {
                     //create 3D data object
                     ito::DataObject stack(m_totalSnaps, image.getSize(0), image.getSize(1), image.getType());
-                    
+
                     //get shallow copy of first plane in stack
                     ito::Range ranges[] = { ito::Range(0, 1), ito::Range::all(), ito::Range::all() };
                     ito::DataObject plane0 = stack.at(ranges);
@@ -247,7 +247,7 @@ void DialogSnapshot::timerEvent(QTimerEvent *event)
         }
 
         m_numSnapsDone++;
-        
+
         ui.progress->setValue(ui.progress->value() + 1);
         if (m_numSnapsDone >= m_totalSnaps)
         {
@@ -266,11 +266,11 @@ void DialogSnapshot::timerEvent(QTimerEvent *event)
 //----------------------------------------------------------------------------------------------------------------------------------
 void DialogSnapshot::closeEvent(QCloseEvent *event)
 {
-    if (m_timerID == -1) 
+    if (m_timerID == -1)
     {
         event->accept();
-    } 
-    else 
+    }
+    else
     {
         QMessageBox msgBox;
         msgBox.setText(tr("Please stop the acquisition before closing the dialog"));
@@ -391,7 +391,7 @@ void DialogSnapshot::acquisitionEnd()
 
                 if (list->size() > 0)
                 {
-                    if (!ui.checkFilename->isChecked())//if there is no timestamp in the name the name might be not unique 
+                    if (!ui.checkFilename->isChecked())//if there is no timestamp in the name the name might be not unique
                     {
                         //find the highest number after name
                         int prev = 0;
@@ -404,7 +404,7 @@ void DialogSnapshot::acquisitionEnd()
                                 fileIndex = prev;
                             }
                         }
-                    }  
+                    }
                 }
 
                 ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
@@ -414,7 +414,7 @@ void DialogSnapshot::acquisitionEnd()
                 SharedParamBasePointer paramBasePointer;
                 for (int i = 0; i < m_acquiredImages.size(); ++i)
                 {
-                    
+
                     QString fileNo = QString("%1").arg(fileIndex++, 3, 10, QLatin1Char('0'));
                     if (ui.checkFilename->isEnabled() && ui.checkFilename->isChecked())
                     {
@@ -449,7 +449,7 @@ void DialogSnapshot::acquisitionEnd()
 
             if (list.size() > 0)
             {
-                if (!ui.checkFilename->isChecked())//if there is no timestamp in the name the name might be not unique 
+                if (!ui.checkFilename->isChecked())//if there is no timestamp in the name the name might be not unique
                 {
                     //find the highest number after name
                     int prev = 0;

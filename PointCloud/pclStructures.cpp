@@ -10,7 +10,7 @@
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
-   
+
     In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
@@ -631,7 +631,7 @@ PCLPointCloud::PCLPointCloud (const PCLPointCloud &pc, const std::vector< int > 
     {
         throw pcl::PCLException("indices vector is longer than the number of points in the given point cloud",__FILE__, "PCLPointCloud", __LINE__);
     }
-    
+
     for (size_t i = 0; i < indices.size(); ++i)
     {
         if (indices[i] < 0 || indices[i] >= size)
@@ -803,7 +803,7 @@ PCLMAKEFUNCLIST(GetSizeFunc)
 size_t PCLPointCloud::size() const
 {
     int idx = getFuncListIndex();
-    if(idx >= 0)    
+    if(idx >= 0)
         return fListGetSizeFunc[idx](this);
     return 0;
 }
@@ -1091,7 +1091,7 @@ template<typename _Tp> void PcAddFunc(ito::PCLPointCloud *pc1, const ito::PCLPoi
     pcl::PointCloud<_Tp>* pc1_ = getPointCloudPtrInternal<_Tp >(*pc1);
     const pcl::PointCloud<_Tp>* pc2_ = getPointCloudPtrInternal<_Tp >(*pc2);
     pcl::PointCloud<_Tp>* pcRes_ = getPointCloudPtrInternal<_Tp >(*pcRes);
-   
+
     if(pc1_ == NULL || pc2_ == NULL || pcRes_ == NULL)
     {
         throw pcl::PCLException("shared pointer is NULL",__FILE__, "PcAddFunc", __LINE__);
@@ -1104,7 +1104,7 @@ PCLMAKEFUNCLIST(PcAddFunc)
 
 PCLPointCloud & PCLPointCloud::operator+= (const PCLPointCloud &rhs)
 {
-    if(getType() == ito::pclInvalid) 
+    if(getType() == ito::pclInvalid)
     {
         createEmptyPointCloud(rhs.getType());
     }
@@ -1222,49 +1222,49 @@ const ito::PCLPoint PCLPointCloud::at (size_t n) const
 //----------------------------------------------------------------------------------------------------------------------------------
 template<typename _Tp> void SetItemFunc(ito::PCLPointCloud * /*pc*/, size_t /*n*/, ito::PCLPoint & /*point*/)
 {
-    throw pcl::PCLException("not implemented",__FILE__,"SetItemFunc",__LINE__); 
+    throw pcl::PCLException("not implemented",__FILE__,"SetItemFunc",__LINE__);
 }
 
 template<> void SetItemFunc<pcl::PointXYZ>(ito::PCLPointCloud *pc, size_t n, ito::PCLPoint &point)
 {
     pcl::PointCloud<pcl::PointXYZ>::Ptr a = pc->m_pcXYZ;
-    a->at(n) = point.getPointXYZ(); 
+    a->at(n) = point.getPointXYZ();
 }
 
 template<> void SetItemFunc<pcl::PointXYZI>(ito::PCLPointCloud *pc, size_t n, ito::PCLPoint &point)
 {
     pcl::PointCloud<pcl::PointXYZI>::Ptr a = pc->m_pcXYZI;
-    a->at(n) = point.getPointXYZI(); 
+    a->at(n) = point.getPointXYZI();
 }
 
 template<> void SetItemFunc<pcl::PointXYZRGBA>(ito::PCLPointCloud *pc, size_t n, ito::PCLPoint &point)
 {
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr a = pc->m_pcXYZRGBA;
-    a->at(n) = point.getPointXYZRGBA(); 
+    a->at(n) = point.getPointXYZRGBA();
 }
 
 template<> void SetItemFunc<pcl::PointNormal>(ito::PCLPointCloud *pc, size_t n, ito::PCLPoint &point)
 {
     pcl::PointCloud<pcl::PointNormal>::Ptr a = pc->m_pcXYZNormal;
-    a->at(n) = point.getPointXYZNormal(); 
+    a->at(n) = point.getPointXYZNormal();
 }
 
 template<> void SetItemFunc<pcl::PointXYZINormal>(ito::PCLPointCloud *pc, size_t n, ito::PCLPoint &point)
 {
     pcl::PointCloud<pcl::PointXYZINormal>::Ptr a = pc->m_pcXYZINormal;
-    a->at(n) = point.getPointXYZINormal(); 
+    a->at(n) = point.getPointXYZINormal();
 }
 
 template<> void SetItemFunc<pcl::PointXYZRGBNormal>(ito::PCLPointCloud *pc, size_t n, ito::PCLPoint &point)
 {
     pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr a = pc->m_pcXYZRGBNormal;
-    a->at(n) = point.getPointXYZRGBNormal(); 
+    a->at(n) = point.getPointXYZRGBNormal();
 }
 
 typedef void (*tSetItemFunc)(ito::PCLPointCloud *pc, size_t n, ito::PCLPoint &point);
 PCLMAKEFUNCLIST(SetItemFunc)
 
-    
+
 void PCLPointCloud::set_item(size_t n, PCLPoint &point)
 {
     if(getType() != point.getType())
@@ -1273,7 +1273,7 @@ void PCLPointCloud::set_item(size_t n, PCLPoint &point)
     }
 
     int idx = getFuncListIndex();
-    if(idx >= 0)  
+    if(idx >= 0)
     {
         fListSetItemFunc[idx](this, n, point);
         return;
@@ -1284,43 +1284,43 @@ void PCLPointCloud::set_item(size_t n, PCLPoint &point)
 //----------------------------------------------------------------------------------------------------------------------------------
 template<typename _Tp> void PushBackFunc(ito::PCLPointCloud * /*pc*/, const ito::PCLPoint & /*point*/)
 {
-    throw pcl::PCLException("not implemented",__FILE__,"PushBackFunc",__LINE__); 
+    throw pcl::PCLException("not implemented",__FILE__,"PushBackFunc",__LINE__);
 }
 
 template<> void PushBackFunc<pcl::PointXYZ>(ito::PCLPointCloud *pc, const ito::PCLPoint &point)
 {
     pcl::PointCloud<pcl::PointXYZ>::Ptr a = pc->m_pcXYZ;
-    a->push_back(point.getPointXYZ()); 
+    a->push_back(point.getPointXYZ());
 }
 
 template<> void PushBackFunc<pcl::PointXYZI>(ito::PCLPointCloud *pc, const ito::PCLPoint &point)
 {
     pcl::PointCloud<pcl::PointXYZI>::Ptr a = pc->m_pcXYZI;
-    a->push_back(point.getPointXYZI()); 
+    a->push_back(point.getPointXYZI());
 }
 
 template<> void PushBackFunc<pcl::PointXYZRGBA>(ito::PCLPointCloud *pc, const ito::PCLPoint &point)
 {
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr a = pc->m_pcXYZRGBA;
-    a->push_back(point.getPointXYZRGBA()); 
+    a->push_back(point.getPointXYZRGBA());
 }
 
 template<> void PushBackFunc<pcl::PointNormal>(ito::PCLPointCloud *pc, const ito::PCLPoint &point)
 {
     pcl::PointCloud<pcl::PointNormal>::Ptr a = pc->m_pcXYZNormal;
-    a->push_back(point.getPointXYZNormal()); 
+    a->push_back(point.getPointXYZNormal());
 }
 
 template<> void PushBackFunc<pcl::PointXYZINormal>(ito::PCLPointCloud *pc, const ito::PCLPoint &point)
 {
     pcl::PointCloud<pcl::PointXYZINormal>::Ptr a = pc->m_pcXYZINormal;
-    a->push_back(point.getPointXYZINormal()); 
+    a->push_back(point.getPointXYZINormal());
 }
 
 template<> void PushBackFunc<pcl::PointXYZRGBNormal>(ito::PCLPointCloud *pc, const ito::PCLPoint &point)
 {
     pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr a = pc->m_pcXYZRGBNormal;
-    a->push_back(point.getPointXYZRGBNormal()); 
+    a->push_back(point.getPointXYZRGBNormal());
 }
 
 typedef void (*tPushBackFunc)(ito::PCLPointCloud *pc, const ito::PCLPoint &point);
@@ -1335,7 +1335,7 @@ void PCLPointCloud::push_back(const ito::PCLPoint &pt)
     }
 
     int idx = getFuncListIndex();
-    if(idx >= 0)  
+    if(idx >= 0)
     {
         fListPushBackFunc[idx](this, pt);
         return;
@@ -1431,7 +1431,7 @@ template<typename _Tp> void EraseFunc(ito::PCLPointCloud *pc, uint32_t startInde
 
 //    if(startIndex < 0) startIndex = 0; // gcc complains startIndex is unsigned, so this line is sensless
     if(endIndex > pc_->size()) endIndex = pc_->size();
-    
+
     pc_->erase( pc_->points.begin() + startIndex, pc_->points.begin() + endIndex);
 }
 
@@ -1450,7 +1450,7 @@ void PCLPointCloud::erase(uint32_t startIndex, uint32_t endIndex)
 
 template<typename _Tp> void InsertFunc(ito::PCLPointCloud * /*pc*/, uint32_t /*index*/, const ito::PCLPoint& /*point*/)
 {
-    throw pcl::PCLException("not implemented",__FILE__,"InsertFunc",__LINE__); 
+    throw pcl::PCLException("not implemented",__FILE__,"InsertFunc",__LINE__);
 }
 
 template<> void InsertFunc<pcl::PointXYZ>(ito::PCLPointCloud *pc, uint32_t index, const ito::PCLPoint& point)
@@ -1461,7 +1461,7 @@ template<> void InsertFunc<pcl::PointXYZ>(ito::PCLPointCloud *pc, uint32_t index
     {
         throw pcl::PCLException("index is out of bounds",__FILE__, "InsertFunc", __LINE__);
     }
-    a->insert(a->points.begin() + index, point.getPointXYZ()); 
+    a->insert(a->points.begin() + index, point.getPointXYZ());
 }
 
 template<> void InsertFunc<pcl::PointXYZI>(ito::PCLPointCloud *pc, uint32_t index, const ito::PCLPoint& point)
@@ -1472,7 +1472,7 @@ template<> void InsertFunc<pcl::PointXYZI>(ito::PCLPointCloud *pc, uint32_t inde
     {
         throw pcl::PCLException("index is out of bounds",__FILE__, "InsertFunc", __LINE__);
     }
-    a->insert(a->points.begin() + index, point.getPointXYZI());  
+    a->insert(a->points.begin() + index, point.getPointXYZI());
 }
 
 template<> void InsertFunc<pcl::PointXYZRGBA>(ito::PCLPointCloud *pc, uint32_t index, const ito::PCLPoint& point)
@@ -1483,7 +1483,7 @@ template<> void InsertFunc<pcl::PointXYZRGBA>(ito::PCLPointCloud *pc, uint32_t i
     {
         throw pcl::PCLException("index is out of bounds",__FILE__, "InsertFunc", __LINE__);
     }
-    a->insert(a->points.begin() + index, point.getPointXYZRGBA());  
+    a->insert(a->points.begin() + index, point.getPointXYZRGBA());
 }
 
 template<> void InsertFunc<pcl::PointNormal>(ito::PCLPointCloud *pc, uint32_t index, const ito::PCLPoint& point)
@@ -1494,7 +1494,7 @@ template<> void InsertFunc<pcl::PointNormal>(ito::PCLPointCloud *pc, uint32_t in
     {
         throw pcl::PCLException("index is out of bounds",__FILE__, "InsertFunc", __LINE__);
     }
-    a->insert(a->points.begin() + index, point.getPointXYZNormal());  
+    a->insert(a->points.begin() + index, point.getPointXYZNormal());
 }
 
 template<> void InsertFunc<pcl::PointXYZINormal>(ito::PCLPointCloud *pc, uint32_t index, const ito::PCLPoint& point)
@@ -1505,7 +1505,7 @@ template<> void InsertFunc<pcl::PointXYZINormal>(ito::PCLPointCloud *pc, uint32_
     {
         throw pcl::PCLException("index is out of bounds",__FILE__, "InsertFunc", __LINE__);
     }
-    a->insert(a->points.begin() + index, point.getPointXYZINormal());  
+    a->insert(a->points.begin() + index, point.getPointXYZINormal());
 }
 
 template<> void InsertFunc<pcl::PointXYZRGBNormal>(ito::PCLPointCloud *pc, uint32_t index, const ito::PCLPoint& point)
@@ -1516,7 +1516,7 @@ template<> void InsertFunc<pcl::PointXYZRGBNormal>(ito::PCLPointCloud *pc, uint3
     {
         throw pcl::PCLException("index is out of bounds",__FILE__, "InsertFunc", __LINE__);
     }
-    a->insert(a->points.begin() + index, point.getPointXYZRGBNormal());  
+    a->insert(a->points.begin() + index, point.getPointXYZRGBNormal());
 }
 
 typedef void (*tInsertFunc)(ito::PCLPointCloud *pc, uint32_t index, const ito::PCLPoint& point);
@@ -1668,9 +1668,9 @@ PCLPolygonMesh::PCLPolygonMesh(const PCLPointCloud &cloud, const std::vector<pcl
     m_polygonMesh->cloud = msg;
 }
 
-PCLPolygonMesh::~PCLPolygonMesh() 
+PCLPolygonMesh::~PCLPolygonMesh()
 {
-    m_polygonMesh.reset(); 
+    m_polygonMesh.reset();
 }
 
 

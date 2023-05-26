@@ -10,7 +10,7 @@
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
-   
+
     In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
@@ -87,7 +87,7 @@ namespace ito
             return true;
     }
 
-    
+
 	//! method returns whether a given variable is finite.
 	/*!
 	For floating point variables, this method considers a variable to be finite if the bitmask
@@ -232,7 +232,7 @@ namespace ito
         unsigned char *chreal = (unsigned char *)&realVal;
         unsigned char *chimag = (unsigned char *)&imagVal;
         return ((chreal[7] & 0x7f) == 0x7f && chreal[6] == 0xf0) || ((chimag[7] & 0x7f) == 0x7f && chimag[6] == 0xf0);
-    }    
+    }
 
 	//! method returns whether a given variable is equal to zero.
 	/*!
@@ -278,7 +278,7 @@ namespace ito
 
     //! method returns whether two given numbers of the same type are equal.
     /*!
-    
+
     */
     template<typename _Tp> inline bool areEqual(_Tp a, _Tp b)
     {

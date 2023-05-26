@@ -6,7 +6,7 @@ Python tutorial
 .. moduleauthor:: PSchau
 .. sectionauthor:: PSchau
 
-The goal of this tutorial is to give prospective itom users a quick overview about the basic |Pythonv3| commands and how to use them within |itom|. 
+The goal of this tutorial is to give prospective itom users a quick overview about the basic |Pythonv3| commands and how to use them within |itom|.
 
 **Content**
 

@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -30,14 +30,14 @@
 #include <qmap.h>
 #include <qsharedpointer.h>
 
-namespace ito 
+namespace ito
 {
     class AddInBase; // forward declaration
     class DataObject; // forward declaration
 
     class ADDINMGR_EXPORT ParamHelper
     {
-    public: 
+    public:
 
         static tCompareResult compareParam(const ito::Param &paramTemplate, const ito::Param &param, ito::RetVal &ret);
         static tCompareResult compareMetaParam(const ito::ParamMeta *metaTemplate, const ito::ParamMeta *meta, const char* nameTemplate, const char *name, ito::RetVal &ret);
@@ -83,7 +83,7 @@ namespace ito
         \sa validateParam, validateAndCastParam
         */
         static ito::RetVal validateDoubleMetaAndRoundToStepSize(const ito::DoubleMeta *meta, ito::ParamBase &doubleParam, bool allowRounding = true, const char* name = nullptr);
-        
+
         //!< validates if the given double value matches a double meta object
         /*
         This method also verifies, if the value fits to an optionally given
@@ -108,13 +108,13 @@ namespace ito
         static ito::RetVal validateDoubleArrayMeta(const ito::ParamMeta *meta, const double* values, size_t len, const char* name = nullptr);
         static ito::RetVal validateStringListMeta(const ito::ParamMeta *meta, const ito::ByteArray* values, size_t len, const char* name = nullptr);
         static ito::RetVal validateHWMeta(const ito::HWMeta *meta, ito::AddInBase *value, bool mandatory = false, const char* name = nullptr);
-        
+
         static ito::RetVal validateParam(const ito::Param &templateParam, const ito::ParamBase &param, bool strict = true, bool mandatory = false);
         static ito::RetVal validateAndCastParam(const ito::Param &templateParam, ito::ParamBase &param, bool strict = true, bool mandatory = false, bool roundToSteps = false);
         static ito::ParamBase convertParam(const ito::ParamBase &source, int destType, bool *ok = nullptr);
-        
+
         static ito::RetVal getParamFromMapByKey( QMap<QString,ito::Param> &paramMap, const QString &key, QMap<QString,ito::Param>::iterator &found, bool errorIfReadOnly);
-        
+
         //!< parses a full parameter name, verifies it and splits it in case of success into its components
         /*
         Valid parameter keys are:
@@ -149,4 +149,3 @@ namespace ito
     };
 
 } //end namespace ito
-

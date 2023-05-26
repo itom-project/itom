@@ -6,15 +6,15 @@ Get sources from Git
 ==========================
 
 GIT is a distributed version and source code management system, that allows several developers to work on the same source code simultaneously. |itom| is hosted under GIT
-at bitbucket.org. 
+at bitbucket.org.
 
 For ease of development the central |itomproject| repository was established, which comprises the the core of |itom|,
 some plugins as well as designer-plugins as submodules, which are otherwise hosted in different Git-repositories on *bitbucket.org*.
 
-To clone from the central |itomproject| and initialize the submodules correctly, please follow these steps: 
+To clone from the central |itomproject| and initialize the submodules correctly, please follow these steps:
 
 .. code-block:: bash
-    
+
     git clone git@bitbucket.org:itom/itomproject.git
     cd itomproject
     git submodule init
@@ -37,8 +37,8 @@ In order to get the sources you want, clone the specific repository to a source-
 account on *bitbucket.org*, where you public *ssh* has been set under your personal settings.
 
 .. code-block:: bash
-    
-    git clone https://bitbucket.org/itom/itom 
+
+    git clone https://bitbucket.org/itom/itom
 
 
 If you are using the the central |itomproject| repository to build the source code, please mind that the submodule are listed as *ssh* repositories.

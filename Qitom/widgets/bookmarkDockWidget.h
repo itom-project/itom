@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -56,9 +56,9 @@ namespace ito
                 \param floatingStyle indicates the window floating style behaviour of this toolbox
                 \param movingStyle indicates if this toolbox might be moved from one dockable area of itom's main window to another one or not.
             */
-            BookmarkDockWidget(const QString &title, const QString &objName, QWidget *parent = NULL, 
-                bool docked = true, bool isDockAvailable = true, 
-                tFloatingStyle floatingStyle = floatingNone, 
+            BookmarkDockWidget(const QString &title, const QString &objName, QWidget *parent = NULL,
+                bool docked = true, bool isDockAvailable = true,
+                tFloatingStyle floatingStyle = floatingNone,
                 tMovingStyle movingStyle = movingEnabled);
 
             //! Destructor for the toolbox

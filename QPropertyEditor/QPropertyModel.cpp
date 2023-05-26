@@ -191,7 +191,7 @@ QVariant QPropertyModel::data(const QModelIndex& index, int role /*= Qt::Display
                 .color();
         break;*/
     };
-    
+
     return QVariant();
 }
 

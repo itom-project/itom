@@ -72,7 +72,7 @@ PyCodeFormatter::PyCodeFormatter(QObject *parent /*= nullptr*/) :
 #else
     connect(&m_processFormatter, &QProcess::finished, this, &PyCodeFormatter::formatterFinished);
 #endif
-    
+
 
     connect(&m_processFormatter, &QProcess::started,
         this, &PyCodeFormatter::formatterStarted);
@@ -93,7 +93,7 @@ PyCodeFormatter::PyCodeFormatter(QObject *parent /*= nullptr*/) :
     connect(&m_processImportSort, &QProcess::finished, this, &PyCodeFormatter::importSortFinished);
 #endif
 
-    
+
 
     connect(&m_processImportSort, &QProcess::started,
         this, &PyCodeFormatter::importSortStarted);
@@ -175,7 +175,7 @@ ito::RetVal PyCodeFormatter::startSortingAndFormatting(const QString& importSort
         m_progressDialog = QSharedPointer<QProgressDialog>(
             new QProgressDialog(
                 "",
-                tr("Cancel"), 
+                tr("Cancel"),
                 0, 100, dialogParent)
             );
         m_progressDialog->setModal(true);
@@ -461,4 +461,3 @@ void PyCodeFormatter::importSortStarted()
     }
 }
 } //end namespace ito
-

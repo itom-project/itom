@@ -8,11 +8,11 @@ class ItomEnumException(Exception):
 class ItomEnum:
     """
     provides a c-like enumeration class
-    
+
     Examples:
     eEx1 = ItomEnum("enumAutoValue",["VALUE1","VALUE2","VALUE3",...])
     eEx2 = ItomEnum("enumUserValue",["VALUE0", ("VALUE100",100), "VALUE101"])
-    
+
     See: http://code.activestate.com/recipes/67107-enums-for-python/
     """
 
@@ -20,11 +20,11 @@ class ItomEnum:
         """Arguments:
         1. name -- the name of the enumeration, safed in __doc__
         2. enumList -- the list with all elements.
-        
-        For the enumList you can either provide a string-list. 
-        Then every element is the key, the corresponding value is 
-        an auto-incremented integer, starting with 0. You can 
-        interrupt the auto-incrementing, by providing elements, 
+
+        For the enumList you can either provide a string-list.
+        Then every element is the key, the corresponding value is
+        an auto-incremented integer, starting with 0. You can
+        interrupt the auto-incrementing, by providing elements,
         which are again a list with (key [string], value [integer]).
         """
         self.__doc__ = name

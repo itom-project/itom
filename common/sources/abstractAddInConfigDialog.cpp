@@ -10,7 +10,7 @@
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
-   
+
     In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
@@ -39,12 +39,12 @@
 namespace ito
 {
 
-class AbstractAddInConfigDialogPrivate 
+class AbstractAddInConfigDialogPrivate
 {
 public:
     AbstractAddInConfigDialogPrivate() : m_pPlugin(NULL)
     {}
-    
+
     ito::AddInBase *m_pPlugin;
 };
 
@@ -88,7 +88,7 @@ ito::RetVal AbstractAddInConfigDialog::setPluginParameter(QSharedPointer<ito::Pa
         QVector<QSharedPointer<ito::ParamBase> > vec(1, param);
         retval += apiUpdateParameters(m_currentParameters, vec);
     }
-    
+
     if (retval.containsError() && (msgLevel & msgLevelErrorOnly))
     {
         QMessageBox msgBox;
@@ -125,7 +125,7 @@ ito::RetVal AbstractAddInConfigDialog::setPluginParameter(QSharedPointer<ito::Pa
         msgBox.setIcon(QMessageBox::Warning);
         msgBox.exec();
     }
-    
+
     return retval;
 }
 
@@ -155,7 +155,7 @@ ito::RetVal AbstractAddInConfigDialog::setPluginParameters(const QVector<QShared
     {
         retval += apiUpdateParameters(m_currentParameters, params);
     }
-    
+
     if (retval.containsError() && (msgLevel & msgLevelErrorOnly))
     {
         QMessageBox msgBox;
@@ -178,7 +178,7 @@ ito::RetVal AbstractAddInConfigDialog::setPluginParameters(const QVector<QShared
         msgBox.setIcon(QMessageBox::Warning);
         msgBox.exec();
     }
-    
+
     return retval;
 }
 
@@ -186,7 +186,7 @@ ito::RetVal AbstractAddInConfigDialog::setPluginParameters(const QVector<QShared
 ito::RetVal AbstractAddInConfigDialog::observeInvocation(ItomSharedSemaphore *waitCond, MessageLevel msgLevel) const
 {
     ito::RetVal retval;
-    
+
     if (d->m_pPlugin)
     {
         bool timeout = false;
@@ -199,12 +199,12 @@ ito::RetVal AbstractAddInConfigDialog::observeInvocation(ItomSharedSemaphore *wa
                 timeout = true;
             }
         }
-        
+
         if (!timeout)
         {
             retval += waitCond->returnValue;
         }
-        
+
         if (retval.containsError() && (msgLevel & msgLevelErrorOnly))
         {
             QMessageBox msgBox;
@@ -228,7 +228,7 @@ ito::RetVal AbstractAddInConfigDialog::observeInvocation(ItomSharedSemaphore *wa
             msgBox.exec();
         }
     }
-    
+
     return retval;
 }
 

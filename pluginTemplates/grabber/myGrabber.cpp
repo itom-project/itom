@@ -1,6 +1,6 @@
 /* ********************************************************************
     Template for a camera / grabber plugin for the software itom
-    
+
     You can use this template, use it in your plugins, modify it,
     copy it and distribute it without any license restrictions.
 *********************************************************************** */
@@ -43,7 +43,7 @@ Put a detailed description about what the plugin is doing, what is needed to get
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("The plugin's license string");
-    m_aboutThis = QObject::tr(GITVERSION); 
+    m_aboutThis = QObject::tr(GITVERSION);
 
     //add mandatory and optional parameters for the initialization here.
     //append them to m_initParamsMand or m_initParamsOpt.
@@ -52,7 +52,7 @@ Put a detailed description about what the plugin is doing, what is needed to get
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Destructor of Interface Class.
 /*!
-    
+
 */
 MyGrabberInterface::~MyGrabberInterface()
 {
@@ -108,13 +108,13 @@ MyGrabber::MyGrabber() : AddInGrabber(), m_isgrabbing(false)
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("integrationTime", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.01, tr("Integrationtime of CCD [0..1] (no unit)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    
+
     //the following lines create and register the plugin's dock widget. Delete these lines if the plugin does not have a dock widget.
     DockWidgetMyGrabber *dw = new DockWidgetMyGrabber(this);
-    
+
     Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
     QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
-    createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dw);   
+    createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dw);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -141,17 +141,17 @@ ito::RetVal MyGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
     // - call checkData() in order to reconfigure the temporary image buffer m_data (or other structures) depending on the current size, image type...
     // - call emit parametersChanged(m_params) in order to propagate the current set of parameters in m_params to connected dock widgets...
     // - call setInitialized(true) to confirm the end of the initialization (even if it failed)
-    
+
     if (!retValue.containsError())
-    {        
+    {
         retValue += checkData();
     }
-    
+
     if (!retValue.containsError())
     {
         emit parametersChanged(m_params);
     }
-    
+
     if (waitCond)
     {
         waitCond->returnValue = retValue;
@@ -171,7 +171,7 @@ ito::RetVal MyGrabber::close(ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
-    
+
     //todo:
     // - disconnect the device if not yet done
     // - this funtion is considered to be the "inverse" of init.
@@ -181,7 +181,7 @@ ito::RetVal MyGrabber::close(ItomSharedSemaphore *waitCond)
         waitCond->returnValue = retValue;
         waitCond->release();
     }
-    
+
     return retValue;
 }
 
@@ -289,14 +289,14 @@ ito::RetVal MyGrabber::startDevice(ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
-    
+
     incGrabberStarted(); //increment a counter to see how many times startDevice has been called
-    
+
     //todo:
     // if this function has been called for the first time (grabberStartedCount() == 1),
     // start the camera, allocate necessary buffers or do other work that is necessary
     // to prepare the camera for image acquisitions.
-    
+
     if (waitCond)
     {
         waitCond->returnValue = retValue;
@@ -304,7 +304,7 @@ ito::RetVal MyGrabber::startDevice(ItomSharedSemaphore *waitCond)
     }
     return retValue;
 }
-         
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal MyGrabber::stopDevice(ItomSharedSemaphore *waitCond)
 {
@@ -318,7 +318,7 @@ ito::RetVal MyGrabber::stopDevice(ItomSharedSemaphore *waitCond)
         retValue += ito::RetVal(ito::retWarning, 0, tr("The grabber has already been stopped.").toLatin1().data());
         setGrabberStarted(0);
     }
-    
+
     //todo:
     // if the counter (obtained by grabberStartedCount()) drops to zero again, stop the camera, free all allocated
     // image buffers of the camera... (it is the opposite from all things that have been started, allocated... in startDevice)
@@ -330,7 +330,7 @@ ito::RetVal MyGrabber::stopDevice(ItomSharedSemaphore *waitCond)
     }
     return ito::retOk;
 }
-         
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal MyGrabber::acquire(const int trigger, ItomSharedSemaphore *waitCond)
 {
@@ -346,23 +346,23 @@ ito::RetVal MyGrabber::acquire(const int trigger, ItomSharedSemaphore *waitCond)
     {
         m_isgrabbing = true;
     }
-    
+
     //todo:
     // trigger the camera for starting the acquisition of a new image (software trigger or make hardware trigger ready (depending on trigger (0: software trigger, default))
-    
+
     //now the wait condition is released, such that itom (caller) stops waiting and continuous with its own execution.
     if (waitCond)
     {
         waitCond->returnValue = retValue;
-        waitCond->release();  
+        waitCond->release();
     }
-    
+
     //todo:
     // it is possible now, to wait here until the acquired image is ready
     // if you want to do this here, wait for the finished image, get it and save it
     // to any accessible buffer, for instance the m_data dataObject that is finally delivered
     // via getVal or copyVal.
-    // 
+    //
     // you can also implement this waiting and obtaining procedure in retrieveImage.
     // If you do it here, the camera thread is blocked until the image is obtained, such that calls to getParam, setParam, stopDevice...
     // are not executed during the waiting operation. They are queued and executed once the image is acquired and transmitted to the plugin.
@@ -381,7 +381,7 @@ ito::RetVal MyGrabber::retrieveData(ito::DataObject *externalDataObject)
 
     bool hasListeners = (m_autoGrabbingListeners.size() > 0);
     bool copyExternal = (externalDataObject != NULL);
-    
+
     const int bufferWidth = m_params["sizex"].getVal<int>();
     const int bufferHeight = m_params["sizey"].getVal<int>();
 
@@ -403,7 +403,7 @@ ito::RetVal MyGrabber::retrieveData(ito::DataObject *externalDataObject)
         {
             retValue += checkData(externalDataObject); //update external object or m_data
         }
-        
+
         if (!retValue.containsError())
         {
             if (m_data.getType() == ito::tUInt8)
@@ -425,7 +425,7 @@ ito::RetVal MyGrabber::retrieveData(ito::DataObject *externalDataObject)
                 }
                 if (!copyExternal || hasListeners)
                 {
-                    retValue += m_data.copyFromData2D<ito::uint16>((ito::uint16*) bufferPtr, bufferWidth, bufferHeight);            
+                    retValue += m_data.copyFromData2D<ito::uint16>((ito::uint16*) bufferPtr, bufferWidth, bufferHeight);
                 }
             }
             else
@@ -461,16 +461,16 @@ ito::RetVal MyGrabber::retrieveData(ito::DataObject *externalDataObject)
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Returns the grabbed camera frame as reference.
 /*!
-    This method returns a reference to the recently acquired image. Therefore this camera size must fit to the data structure of the 
+    This method returns a reference to the recently acquired image. Therefore this camera size must fit to the data structure of the
     DataObject.
-    
+
     This method returns a reference to the internal dataObject m_data of the camera where the currently acquired image data is copied to (either
     in the acquire method or in retrieve data). Please remember, that the reference may directly change if a new image is acquired.
 
     \param [in,out] vpdObj is the pointer to a given dataObject (this pointer should be cast to ito::DataObject*). After the call, the dataObject is a reference to the internal m_data dataObject of the camera.
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
     \return retOk if everything is ok, retError is camera has not been started or no image has been acquired by the method acquire.
-    
+
     \sa retrieveImage, copyVal
 */
 ito::RetVal MyGrabber::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
@@ -478,7 +478,7 @@ ito::RetVal MyGrabber::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
     ito::DataObject *dObj = reinterpret_cast<ito::DataObject *>(vpdObj);
-    
+
     //call retrieveData without argument. Retrieve data should then put the currently acquired image into the dataObject m_data of the camera.
     retValue += retrieveData();
 
@@ -493,7 +493,7 @@ ito::RetVal MyGrabber::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
         }
     }
 
-    if (waitCond) 
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
@@ -505,8 +505,8 @@ ito::RetVal MyGrabber::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Returns the grabbed camera frame as a deep copy.
 /*!
-    This method copies the recently grabbed camera frame to the given DataObject. 
-    
+    This method copies the recently grabbed camera frame to the given DataObject.
+
     The given dataObject must either have an empty size (then it is resized to the size and type of the camera image) or its size or adjusted region of
     interest must exactly fit to the size of the camera. Then, the acquired image is copied inside of the given region of interest (copy into a subpart of
     an image stack is possible then)
@@ -514,7 +514,7 @@ ito::RetVal MyGrabber::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
     \param [in,out] vpdObj is the pointer to a given dataObject (this pointer should be cast to ito::DataObject*) where the acquired image is deep copied to.
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
     \return retOk if everything is ok, retError is camera has not been started or no image has been acquired by the method acquire.
-    
+
     \sa retrieveImage, getVal
 */
 ito::RetVal MyGrabber::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
@@ -522,12 +522,12 @@ ito::RetVal MyGrabber::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
     ito::DataObject *dObj = reinterpret_cast<ito::DataObject *>(vpdObj);
-    
+
     if (!dObj)
     {
         retValue += ito::RetVal(ito::retError, 0, tr("Empty object handle retrieved from caller").toLatin1().data());
     }
-    
+
     if (!retValue.containsError())
     {
         //this method calls retrieveData with the passed dataObject as argument such that retrieveData is able to copy the image obtained
@@ -540,13 +540,13 @@ ito::RetVal MyGrabber::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
         //send newly acquired image to possibly connected live images
         sendDataToListeners(0); //don't wait for live data, since user should get the data as fast as possible.
     }
-    
-    if (waitCond) 
+
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
     }
-    
+
     return retValue;
 }
 
@@ -582,17 +582,17 @@ void MyGrabber::dockWidgetVisibilityChanged(bool visible)
     If the instance of the configuration dialog has been created, its slot 'parametersChanged' is connected to the signal 'parametersChanged'
     of the plugin. By invoking the slot sendParameterRequest of the plugin, the plugin's signal parametersChanged is immediately emitted with
     m_params as argument. Therefore the configuration dialog obtains the current set of parameters and can be adjusted to its values.
-    
+
     The configuration dialog should emit reject() or accept() depending if the user wanted to close the dialog using the ok or cancel button.
     If ok has been clicked (accept()), this method calls applyParameters of the configuration dialog in order to force the dialog to send
     all changed parameters to the plugin. If the user clicks an apply button, the configuration dialog itsself must call applyParameters.
-    
+
     If the configuration dialog is inherited from AbstractAddInConfigDialog, use the api-function apiShowConfigurationDialog that does all
     the things mentioned in this description.
-    
+
     Remember that you need to implement hasConfDialog in your plugin and return 1 in order to signalize itom that the plugin
     has a configuration dialog.
-    
+
     \sa hasConfDialog
 */
 const ito::RetVal MyGrabber::showConfDialog(void)

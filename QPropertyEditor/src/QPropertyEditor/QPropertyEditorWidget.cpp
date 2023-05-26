@@ -32,7 +32,7 @@
 
 QPropertyEditorWidget::QPropertyEditorWidget(QWidget* parent /*= 0*/) : QTreeView(parent)
 {
-    m_model = new QPropertyModel(this);    
+    m_model = new QPropertyModel(this);
 
     setModel(m_model);
 
@@ -69,7 +69,7 @@ void QPropertyEditorWidget::setObject(QObject* propertyObject)
 void QPropertyEditorWidget::updateObject(QObject* propertyObject)
 {
     if (propertyObject)
-        m_model->updateItem(propertyObject);    
+        m_model->updateItem(propertyObject);
 }
 
 void QPropertyEditorWidget::registerCustomPropertyCB(UserTypeCB callback)
@@ -88,16 +88,16 @@ void QPropertyEditorWidget::mousePressEvent(QMouseEvent *event)
     QTreeView::mousePressEvent(event);
     QModelIndex index = indexAt( event->pos() );
 
-    if (index.isValid()) 
+    if (index.isValid())
     {
-        if (/*(item != m_editorPrivate->editedItem()) && */(event->button() == Qt::LeftButton) 
+        if (/*(item != m_editorPrivate->editedItem()) && */(event->button() == Qt::LeftButton)
                 && (header()->logicalIndexAt(event->pos().x()) == 1)
-                && ((m_model->flags(index) & (Qt::ItemIsEditable | Qt::ItemIsEnabled)) == (Qt::ItemIsEditable | Qt::ItemIsEnabled))) 
+                && ((m_model->flags(index) & (Qt::ItemIsEditable | Qt::ItemIsEnabled)) == (Qt::ItemIsEditable | Qt::ItemIsEnabled)))
         {
             //editItem(item, 1);
             edit(index);
-        } 
-        /*else if (!m_editorPrivate->hasValue(item) && m_editorPrivate->markPropertiesWithoutValue() && !rootIsDecorated()) 
+        }
+        /*else if (!m_editorPrivate->hasValue(item) && m_editorPrivate->markPropertiesWithoutValue() && !rootIsDecorated())
         {
             if (event->pos().x() + header()->offset() < 20)
                 item->setExpanded(!item->isExpanded());
@@ -107,7 +107,7 @@ void QPropertyEditorWidget::mousePressEvent(QMouseEvent *event)
 
 void QPropertyEditorWidget::keyPressEvent(QKeyEvent *event)
 {
-    switch (event->key()) 
+    switch (event->key())
     {
     case Qt::Key_Return:
     case Qt::Key_Enter:
@@ -118,11 +118,11 @@ void QPropertyEditorWidget::keyPressEvent(QKeyEvent *event)
 
             if (index.isValid() )
             {
-                if (m_model->columnCount(index) >= 2 && ((m_model->flags(index) & (Qt::ItemIsEditable | Qt::ItemIsEnabled)) == (Qt::ItemIsEditable | Qt::ItemIsEnabled))) 
+                if (m_model->columnCount(index) >= 2 && ((m_model->flags(index) & (Qt::ItemIsEditable | Qt::ItemIsEnabled)) == (Qt::ItemIsEditable | Qt::ItemIsEnabled)))
                 {
                     event->accept();
                     // If the current position is at column 0, move to 1.
-                    if (index.column() == 0) 
+                    if (index.column() == 0)
                     {
                         index = index.sibling(index.row(), 1);
                         setCurrentIndex(index);
@@ -142,7 +142,7 @@ void QPropertyEditorWidget::keyPressEvent(QKeyEvent *event)
 void QPropertyEditorWidget::setSorted(bool value)
 {
     m_model->setSorted(value);
-    
+
     m_sorted = value;
 
     if(m_sorted)

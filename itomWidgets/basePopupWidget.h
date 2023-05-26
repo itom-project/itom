@@ -10,7 +10,7 @@
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
-   
+
     In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
@@ -24,7 +24,7 @@
     You should have received a copy of the GNU Library General Public License
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 
-    This file is a port and modified version of the 
+    This file is a port and modified version of the
     CTK Common Toolkit (http://www.commontk.org)
 *********************************************************************** */
 
@@ -61,12 +61,12 @@ class ITOMWIDGETS_EXPORT BasePopupWidget : public QFrame
   /// To vertically justify, use Qt::AlignTop | Qt::AlignBottom
   /// Qt::AlignJustify | Qt::AlignBottom by default
   Q_PROPERTY( Qt::Alignment alignment READ alignment WRITE setAlignment);
-  
+
   /// Direction of the scrolling effect, can be Qt::Vertical, Qt::Horizontal or
   /// both Qt::Vertical|Qt::Horizontal.
   /// Vertical by default
   Q_PROPERTY( Qt::Orientations orientation READ orientation WRITE setOrientation);
-  
+
   /// Control where the popup opens vertically.
   /// TopToBottom by default
   Q_PROPERTY( BasePopupWidget::VerticalDirection verticalDirection READ verticalDirection WRITE setVerticalDirection);
@@ -111,10 +111,10 @@ public:
 
   Qt::Alignment alignment()const;
   void setAlignment(Qt::Alignment alignment);
-  
+
   Qt::Orientations orientation()const;
   void setOrientation(Qt::Orientations orientation);
-  
+
   enum VerticalDirection{
     TopToBottom = 1,
     BottomToTop = 2
@@ -124,18 +124,18 @@ public:
   //values are always accessible.
   Q_ENUM(AnimationEffect);
   Q_ENUM(VerticalDirection);
-  
+
   VerticalDirection verticalDirection()const;
   void setVerticalDirection(VerticalDirection direction);
-  
+
   Qt::LayoutDirection horizontalDirection()const;
   void setHorizontalDirection(Qt::LayoutDirection direction);
 
 public Q_SLOTS:
-  /// Hide the popup if open or opening. It takes around 300ms 
+  /// Hide the popup if open or opening. It takes around 300ms
   /// for the fading effect to hide the popup.
   virtual void hidePopup();
-  /// Open the popup if closed or closing. It takes around 300ms 
+  /// Open the popup if closed or closing. It takes around 300ms
   /// for the fading effect to open the popup.
   virtual void showPopup();
   /// Show/hide the popup. It can be conveniently linked to a QPushButton

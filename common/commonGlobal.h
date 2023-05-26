@@ -10,7 +10,7 @@
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
-   
+
     In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
@@ -28,10 +28,10 @@
 #ifndef COMMONGLOBAL_H
 #define COMMONGLOBAL_H
 
-#if (defined ITOMLIBS_SHARED && ( defined(_Windows) || defined(_WINDOWS) || defined(WIN32) || defined(_WIN32) || defined(__WIN32__) )) 
-    
+#if (defined ITOMLIBS_SHARED && ( defined(_Windows) || defined(_WINDOWS) || defined(WIN32) || defined(_WIN32) || defined(__WIN32__) ))
+
     #ifndef ITOMCOMMON_EXPORT
-        
+
         /* Borland/Microsoft */
         #if defined(_MSC_VER) || defined(__BORLANDC__)
             #if (_MSC_VER >= 800) || (__BORLANDC__ >= 0x500)
@@ -52,9 +52,9 @@
                 #define ITOMCOMMON_EXPORT __declspec(dllimport)
             #endif
         #endif
-        
+
     #endif //ITOMCOMMON_EXPORT
-    
+
 #endif //windows
 
 #ifndef ITOMCOMMON_EXPORT
@@ -62,10 +62,10 @@
 #endif
 
 
-#if (defined ITOMLIBS_SHARED && ( defined(_Windows) || defined(_WINDOWS) || defined(WIN32) || defined(_WIN32) || defined(__WIN32__) )) 
-    
+#if (defined ITOMLIBS_SHARED && ( defined(_Windows) || defined(_WINDOWS) || defined(WIN32) || defined(_WIN32) || defined(__WIN32__) ))
+
     #ifndef ITOMCOMMONQT_EXPORT
-        
+
         /* Borland/Microsoft */
         #if defined(_MSC_VER) || defined(__BORLANDC__)
             #if (_MSC_VER >= 800) || (__BORLANDC__ >= 0x500)
@@ -86,9 +86,9 @@
                 #define ITOMCOMMONQT_EXPORT __declspec(dllimport)
             #endif
         #endif
-        
+
     #endif //ITOMCOMMONQT_EXPORT
-    
+
 #endif //windows
 
 #ifndef ITOMCOMMONQT_EXPORT
@@ -97,7 +97,7 @@
 
 /////// exchange-add operation for atomic operations on reference counters ///////
     #ifdef __GNUC__
-    
+
       #if __GNUC__*10 + __GNUC_MINOR__ >= 42
 
         #if !defined WIN32 && (defined __i486__ || defined __i586__ || defined __arm64__ ||\
@@ -116,17 +116,16 @@
           #define ITOM_XADD __exchange_and_add
         #endif
       #endif
-    
+
     #elif (defined WIN32 || defined _WIN32)
       #include <intrin.h>
       #define ITOM_XADD(addr,delta) _InterlockedExchangeAdd((long volatile*)(addr), (delta))
     #else
       template<typename _Tp> static inline _Tp ITOM_XADD(_Tp* addr, _Tp delta)
-      { int tmp = *addr; *addr += delta; return tmp; } 
+      { int tmp = *addr; *addr += delta; return tmp; }
     #endif
 
     #define ITOM_INCREF(intvar) ITOM_XADD(intvar,1)
     #define ITOM_DECREF(intvar) ITOM_XADD(intvar,-1)
 
 #endif
-

@@ -5,7 +5,7 @@ List of common **cmake** Variables and Environment Variables used in the |itom| 
 =======================================================================================
 
 This chapter is to hold lots of common CMAKE Variables and System Environment variables,
-used throughout the itom and its plugin's projects, in the hope this will reduce the amount of 
+used throughout the itom and its plugin's projects, in the hope this will reduce the amount of
 try-and error cycles to fill in the right patterns.
 
 Environment Variables are set in the system environment and can be set in
@@ -13,7 +13,7 @@ via the command terminal.
 
 **Linux/MaxOS**:
 .. code-block:: bash
-    
+
    export <VARIABLE_NAME>=<Value>
 
 to change the environment variables permanently the user has to modify the shell profile
@@ -25,7 +25,7 @@ settings. The location of the corresponding file depends on the system.
 
 **Windows**:
 .. code-block:: bash
-    
+
    set <VARIABLE_NAME> <Value>
 
 to change the environment variables permanently use:
@@ -43,21 +43,21 @@ based on Environment variables. They can be set during the command line call
 of the cmake configuration via the -D<Variable name> Flag (e.g. -D OpenCV_DIR),
 or within the CMAKE-GUI.
 
-This list is to be extended, but if you want to compile a certain plugin, best is to check with the 
+This list is to be extended, but if you want to compile a certain plugin, best is to check with the
 doc provided by it.
 
 Environment Variables:
 ----------------------
 
-.. |cmakelist_itom_sdk_root| replace:: 
+.. |cmakelist_itom_sdk_root| replace::
    Path to the build ITOM SDK Path, as created after a succesfull |Itom| build.
    (e.g. <Itom_BuildFolder>/SDK). Should be set manually if ITOM is not build
    outside of the proposed build structure.
 
-.. |cmakelist_qt_root| replace:: 
+.. |cmakelist_qt_root| replace::
    Path to the compiler specific Qt folder (e.g. <QT_BuildFolder>/msvc####_##).
 
-.. |cmakelist_qt_root| replace:: 
+.. |cmakelist_qt_root| replace::
    Path to the Python installation folder (e.g. C:/Python3).
 
 .. |cmakelist_opencv_root| replace:: path to folder containing OpenCVConfig.cmake or
@@ -69,7 +69,7 @@ Environment Variables:
 
 .. |cmakelist_vtk_root| replace:: the folder in the vtk module containing VTKConfig.cmake
    or VTKConfigVersion.cmake, highly depending on the vtk version you are using.
-   On Linux Systems you need to separately install vtk-dev(even if it does not 
+   On Linux Systems you need to separately install vtk-dev(even if it does not
    fit the version you want to use) for one or two headers that are missing otherwise...
 
 .. |cmakelist_eigen_root| replace:: path to the eigen build folder.
@@ -109,40 +109,40 @@ Environment Variables:
 Cmake Variables:
 ----------------
 
-.. |cmakelist_Itom_SDK_DIR| replace:: 
+.. |cmakelist_Itom_SDK_DIR| replace::
    Path to the build ITOM SDK Path, as created after a succesfull |Itom| build.
    (e.g. <Itom_BuildFolder>/SDK). Should be set manually if ITOM is not build
    outside of the proposed build structure.
 
-.. |cmakelist_Qt_Prefix_DIR| replace:: 
+.. |cmakelist_Qt_Prefix_DIR| replace::
    Path to the compiler specifice Qt build folder (e.g. <QT_BuildFolder>/msvc####_##).
 
-.. |cmakelist_Python_ROOT_DIR| replace:: 
+.. |cmakelist_Python_ROOT_DIR| replace::
    Path to the Python installation folder (e.g. C:/Python3).
 
-.. |cmakelist_build_qtversion| replace:: 
+.. |cmakelist_build_qtversion| replace::
    Selected Qt Version. Currently Qt6 and Qt5 are supported. Qt6 i set to default.
 
 .. |cmakelist_opencv_dir| replace:: path to folder containing OpenCVConfig.cmake or
    OpenCVConfig-version.cmake
 
-.. |cmakelist_boost_dir| replace:: set this to the boost base folder you want to compile 
-   into itom. This folder contains folders "boost" and "lib64-msvc-xxx". If you 
-   set the right one here the boost libraries will get autopoulated... 
+.. |cmakelist_boost_dir| replace:: set this to the boost base folder you want to compile
+   into itom. This folder contains folders "boost" and "lib64-msvc-xxx". If you
+   set the right one here the boost libraries will get autopoulated...
    If not, this entry gets cleared again...
 
-.. |cmakelist_flann_include_dirs| replace:: path to filder named "include" 
+.. |cmakelist_flann_include_dirs| replace:: path to filder named "include"
    which lives in a directory side-by-side with "bin" and "lib" folders.
 
 .. |cmakelist_vtk_dir| replace:: the folder in the vtk module containing VTKConfig.cmake
    or VTKConfigVersion.cmake, highly depending on the vtk version you are using.
-   On Linux Systems you need to separately install vtk-dev(even if it does not 
+   On Linux Systems you need to separately install vtk-dev(even if it does not
    fit the version you want to use) for one or two headers that are missing otherwise...
 
-.. |cmakelist_eigen_dir| replace:: path to folder containing subfolders "build", 
+.. |cmakelist_eigen_dir| replace:: path to folder containing subfolders "build",
    "Eigen", "unsupported"
 
-.. |cmakelist_pcl_dir| replace:: path to folder containing PCLConfig.cmake or 
+.. |cmakelist_pcl_dir| replace:: path to folder containing PCLConfig.cmake or
    PCLConfigVersion.cmake
 
 .. |cmakelist_libusb_dir| replace:: use the libusb version from github. or at least 1.0.22
@@ -151,21 +151,21 @@ Cmake Variables:
    to the git(or downloaded and unpacked folder), named libusb or libusb-master
    or libusb-<branchname-you-checked-out> containing "libusb" subfolder and many more.
 
-.. |cmakelist_fftw_dir| replace:: directory containing all the fftw libraries you 
-   want to use. You might need to compile some of them of you own, 
+.. |cmakelist_fftw_dir| replace:: directory containing all the fftw libraries you
+   want to use. You might need to compile some of them of you own,
    check with http://www.fftw.org/
 
 .. |cmakelist_build_target| replace:: click this checkbox if you want to build itom for 64bit.
    Usually automatically detected depending on chosen compiler
 
-.. |cmakelist_build_type| replace:: sets the output build type. only relevant for 
-   single configuration builds, as makefiles. not relevant for high-end IDEs like 
+.. |cmakelist_build_type| replace:: sets the output build type. only relevant for
+   single configuration builds, as makefiles. not relevant for high-end IDEs like
    Visual Studio. Build Flags are set according to this selection.
-    
-.. |cmakelist_itom_sdk_dir| replace:: path to build/itom/SDK. If you allow you 
-   cmake projects use cached vars/load them from itom project, you can use the 
+
+.. |cmakelist_itom_sdk_dir| replace:: path to build/itom/SDK. If you allow you
+   cmake projects use cached vars/load them from itom project, you can use the
    variables that are set in the itom project.
-   
+
 .. |cmakelist_vld_dir| replace:: you can only set this value if compiling itom
    with Visual Studio in Debug mode. Point it to the directory similar to
    *D:\\itom\trunk\\Visual Leak Detector*. This folder must contain subfolders

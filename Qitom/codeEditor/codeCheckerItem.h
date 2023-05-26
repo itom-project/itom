@@ -75,11 +75,11 @@ namespace ito {
         :param color: Text decoration color
         :param path: file path. Optional
         */
-        explicit CodeCheckerItem(CheckerType messageType, 
+        explicit CodeCheckerItem(CheckerType messageType,
                                 const QString &description,
                                 const QString &messageCode = "",
                                 int lineNumber = -1,
-                                int col = -1,  
+                                int col = -1,
                                 const QString canonicalPath = QString()) :
             m_description(description), //The description of the message, used as a tooltip.
             m_code(messageCode),

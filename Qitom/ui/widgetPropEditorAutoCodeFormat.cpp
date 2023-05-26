@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -75,7 +75,7 @@ void WidgetPropEditorAutoCodeFormat::writeSettings()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("CodeEditor");
-    
+
     settings.setValue("autoCodeFormatEnabled", ui.groupAutoCodeFormat->isChecked());
     settings.setValue("autoCodeFormatCmd", ui.txtCmd->toPlainText());
     settings.setValue("autoCodeFormatImportsSortCmd", ui.txtPreCmd->text());
@@ -94,7 +94,7 @@ void WidgetPropEditorAutoCodeFormat::writeSettings()
 void WidgetPropEditorAutoCodeFormat::on_btnTest_clicked()
 {
     m_pyCodeFormatter = QSharedPointer<PyCodeFormatter>(
-        new PyCodeFormatter(this), 
+        new PyCodeFormatter(this),
         WidgetPropEditorAutoCodeFormat::deleteLater
     );
 
@@ -147,8 +147,8 @@ void WidgetPropEditorAutoCodeFormat::testCodeFormatterDone(bool success, QString
         }
 
         QMessageBox::information(
-            this, 
-            tr("Successful test"), 
+            this,
+            tr("Successful test"),
             tr("The test python code\n\n%1\n\nhas been successful formatted to\n\n%2")
             .arg(codeIn.join("\n"))
             .arg(codeOut.join("\n")));

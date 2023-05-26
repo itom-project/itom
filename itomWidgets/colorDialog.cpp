@@ -60,7 +60,7 @@ void ColorDialogPrivate::init()
   QVBoxLayout* mainLay = qobject_cast<QVBoxLayout*>(q->layout());
   QHBoxLayout* topLay = qobject_cast<QHBoxLayout*>(mainLay->itemAt(0)->layout());
   QVBoxLayout* leftLay = qobject_cast<QVBoxLayout*>(topLay->takeAt(0)->layout());
-  
+
   leftLay->setParent(0);
   this->BasicTab = new QWidget(q);
   this->BasicTab->setLayout(leftLay);
@@ -68,7 +68,7 @@ void ColorDialogPrivate::init()
   this->LeftTabWidget = new QTabWidget(q);
   topLay->insertWidget(0, this->LeftTabWidget);
   this->LeftTabWidget->addTab(this->BasicTab, QObject::tr("Basic"));
-  
+
   // If you use a ColorDialog, it's probably because you have tabs to add
   // into. Which means that you are likely to want to resize the dialog as
   // well.

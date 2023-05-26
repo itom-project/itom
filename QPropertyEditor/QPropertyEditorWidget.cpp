@@ -307,7 +307,7 @@ QString QPropertyEditorWidget::nameFilterPattern() const
 {
     const auto proxyModel = qobject_cast<QSortFilterProxyModel*>(model());
     QString pattern;
-    
+
     if (proxyModel)
     {
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
@@ -360,7 +360,7 @@ void QPropertyEditorWidget::sortedAction(bool checked)
         sortByColumn(0, Qt::AscendingOrder);
     }
 #endif
-    
+
     QAction *action = actions()[0];
     action->blockSignals(true);
     action->setChecked(checked);
@@ -373,7 +373,7 @@ void QPropertyEditorWidget::dataChanged()
     //this slot is only necessary until the span-method of AbstractItemModel will be automatically considered and changes the column span.
     // added if due to crash on itom startup ck 26/01/2018
     const QAbstractItemModel *m = model();
-    
+
     if (m)
     {
         for (int row = 0; row < m->rowCount(); row++)

@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -27,10 +27,10 @@ namespace ito
 {
 
     UserInteractionWatcher::UserInteractionWatcher(QWidget *plotWidget, ito::Shape::ShapeType type, int maxNrOfPoints, QSharedPointer<QVector<ito::Shape> > shapes, ItomSharedSemaphore *semaphore, QObject *parent) :
-    QObject(parent), 
-    m_pPlotWidget(plotWidget), 
-    m_pSemaphore(semaphore), 
-    m_maxNrOfPoints(maxNrOfPoints), 
+    QObject(parent),
+    m_pPlotWidget(plotWidget),
+    m_pSemaphore(semaphore),
+    m_maxNrOfPoints(maxNrOfPoints),
     m_shapes(shapes),
     m_waiting(true)
 {
@@ -61,7 +61,7 @@ namespace ito
         emit finished();
         return;
     }
-        
+
     if (!connect(m_pPlotWidget, SIGNAL(userInteractionDone(int, bool, QVector<ito::Shape>)), this, SLOT(userInteractionDone(int, bool, QVector<ito::Shape>))))
     {
         if (m_pSemaphore)

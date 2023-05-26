@@ -125,8 +125,8 @@
         <item>
          <widget class="QCheckBox" name="checkKeepIndentationOnPaste">
           <property name="text">
-           <string>If code is pasted to a script, remove the identation level of the first line 
-from all lines and add all spaces and tabs from the beginning of the 
+           <string>If code is pasted to a script, remove the identation level of the first line
+from all lines and add all spaces and tabs from the beginning of the
 current line until the current cursor position.</string>
           </property>
          </widget>
@@ -149,7 +149,7 @@ current line until the current cursor position.</string>
         <item>
          <widget class="QCheckBox" name="checkAutoDetectEncoding">
           <property name="text">
-           <string>Auto guess the character set encoding when opening a file 
+           <string>Auto guess the character set encoding when opening a file
 (e.g. from coding line at the start of a Python script).</string>
           </property>
          </widget>
@@ -171,7 +171,7 @@ current line until the current cursor position.</string>
         <item>
          <widget class="QLabel" name="label_3">
           <property name="text">
-           <string>The default character set encoding is used for reading or writing files. 
+           <string>The default character set encoding is used for reading or writing files.
 It can be overwritten individually if auto guess is enabled (see above).</string>
           </property>
          </widget>

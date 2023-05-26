@@ -2609,11 +2609,11 @@ void DataObject::create(
 \detail Function returns the not rounded pixel index of a physical coordinate (Unit-Coordinate = (
 px-Coordinate - Offset)* Scale). If the pixel is outside of the image, the isInsideImage-flag is set
 to false else it is set to true. To avoid memory access-error, the returnvalue is clipped within the
-range of the image ([0...imagesize-1]) 
+range of the image ([0...imagesize-1])
 
-\param[in] dim  Axis-dimension for which the physical coordinate is calculated 
-\param[in] pix  Pixel-index as double 
-\param[out] isInsideImage   flag which is set to true if coordinate is within range of the image. 
+\param[in] dim  Axis-dimension for which the physical coordinate is calculated
+\param[in] pix  Pixel-index as double
+\param[out] isInsideImage   flag which is set to true if coordinate is within range of the image.
 \return (double)( phys / AxisScale + AxisOffset) & [0..imagesize-1]
 */
 double DataObject::getPhysToPix(
@@ -2669,9 +2669,9 @@ double DataObject::getPhysToPix(
 \brief Function returns the not rounded pixel index of a physical coordinate
 \detail Function returns the not rounded pixel index of a physical coordinate (Unit-Coordinate = (
 px-Coordinate - Offset)* Scale). To avoid memory access-error, the return value is clipped within
-the range of the image ([0...imagesize-1]) 
+the range of the image ([0...imagesize-1])
 
-\param[in] dim  Axis-dimension for which the physical coordinate is calculated 
+\param[in] dim  Axis-dimension for which the physical coordinate is calculated
 \param[in] pix  Pixel-index as double \return (double)( phys / AxisScale + AxisOffset) & [0..imagesize-1]
 */
 double DataObject::getPhysToPix(const unsigned int dim, const double phys) const
@@ -5805,7 +5805,7 @@ RetVal SubFunc<ito::TimeDelta>(const DataObject* dObj1, const DataObject* dObj2,
             for (int col = 0; col < cvDstTmat->cols; ++col)
             {
                 dstRowPtr[col].delta = src1RowPtr[col].delta - src2RowPtr[col].delta;
-                
+
             }
         }
     }
@@ -14374,10 +14374,10 @@ template <> void coutValue(const ito::DateTime* val, char* buf, size_t bufsize)
         {
             sprintf_s(buf, bufsize, "datetime(%d, %d, %d%s)", ptm->tm_year + 1900, ptm->tm_mon + 1, ptm->tm_mday, tz);
         }
-        
+
     }
 
-    
+
 }
 
 template <> void coutValue(const ito::TimeDelta* val, char* buf, size_t bufsize)
@@ -14399,7 +14399,7 @@ template <> void coutValue(const ito::TimeDelta* val, char* buf, size_t bufsize)
     {
         sprintf_s(buf, bufsize, "timedelta(days = %d, seconds = %d, microseconds = %d)", days, seconds, useconds);
     }
-    
+
 }
 
 

@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -63,7 +63,7 @@ namespace ito
     class QPropertyHelper
     {
     public:
-        
+
         static QVariant QVariantCast(const QVariant &item, int QVariantCast, ito::RetVal &retval);
         static QVariant QVariantToEnumCast(const QVariant &item, const QMetaEnum &enumerator, ito::RetVal &retval);
         static RetVal readProperty(const QObject *object, const char* propName, QVariant &value);

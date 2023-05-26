@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -50,7 +50,7 @@ namespace ito
     that is called by the thread pool (with one thread only) of the PythonJediRunner
     class. By this run method, a specific request to the Python library Jedi is
     executed. Since the thread pool only has one thread, Jedi is never called
-    in parallel. 
+    in parallel.
 
     However, the thread can be run in parallel to any other Python code execution.
     Therefore, every run method of a runnable has to lock the GIL before starting
@@ -72,10 +72,10 @@ public:
     };
 
     JediRunnable(
-        const Type &type, 
+        const Type &type,
         PyObject *pPyModJedi,
         const QString &additionalImportString
-    ) : 
+    ) :
         m_type(type),
         m_pPyModJedi(pPyModJedi),
         m_additionalImportString(additionalImportString)
@@ -85,7 +85,7 @@ public:
 
     virtual ~JediRunnable() {};
 
-    virtual unsigned char getCurrentId() const 
+    virtual unsigned char getCurrentId() const
     {
         return m_currentId;
     }
@@ -114,7 +114,7 @@ public:
         const QString &additionalImportString,
         PyObject *pPyModJedi,
         const JediCompletionRequest &request
-    ) : 
+    ) :
         JediRunnable(JediRunnable::RunnableCompletion, pPyModJedi, additionalImportString),
         m_request(request)
     {
@@ -201,7 +201,7 @@ public:
         const QString &additionalImportString,
         PyObject *pPyModJedi,
         const JediCalltipRequest &request
-    ) : 
+    ) :
         JediRunnable(JediRunnable::RunnableCalltip, pPyModJedi, additionalImportString) ,
         m_request(request)
     {
@@ -330,7 +330,7 @@ public:
 
 private:
     QString additionalImportString() const {
-        return 
+        return
             (m_includeItomImportBeforeCodeAnalysis ?
             m_includeItomImportString : "");
     }
@@ -341,7 +341,7 @@ private:
     PyObject *m_pyModJedi;
 
     //!< defines, if it is already checked if Jedi could be loaded on this computer.
-    bool  m_pyModJediChecked;  
+    bool  m_pyModJediChecked;
 
     //!< decides if itom is automatically included in every source file before it is handed to the syntax checker
     bool m_includeItomImportBeforeCodeAnalysis;

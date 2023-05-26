@@ -26,11 +26,11 @@
 cmake_minimum_required(VERSION 3.1)
 
 set(target_name pointcloud)
-project(${target_name}) 
+project(${target_name})
 
 message(STATUS "--------------- LIBRARY ${target_name} -----------------")
 
-# include commonly used itom CMake macros (internal can only be used within the core projects) 
+# include commonly used itom CMake macros (internal can only be used within the core projects)
 include("../cmake/ItomBuildMacros.cmake")
 include("../cmake/ItomBuildMacrosInternal.cmake")
 
@@ -52,11 +52,11 @@ endif(WIN32)
 # set some preprocessor directives
 add_definitions(-DPOINTCLOUD_DLL -D_POINTCLOUD_DLL)
 
-include_directories( 
+include_directories(
     ${PCL_INCLUDE_DIRS}
 )
 
-set(libSrcs 
+set(libSrcs
     ${CMAKE_CURRENT_SOURCE_DIR}/pclVersion.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pclDefines.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pclStructures.h

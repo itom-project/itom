@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -161,7 +161,7 @@ void WidgetPropEditorStyles::writeSettingsInternal(const QString &filename)
     settings.setValue("selectionBackgroundColor", m_selectionBgcolor);
     settings.setValue("selectionForegroundColor", m_selectionFgcolor);
     settings.setValue("markerSameStringBackgroundColor", m_markerSameStringBgcolor);
-    
+
 
     settings.endGroup();
 }
@@ -179,9 +179,9 @@ void WidgetPropEditorStyles::readSettingsInternal(const QString &filename)
         m_styles[i].m_foregroundColor = QColor(settings.value("foregroundColor", m_styles[i].m_foregroundColor.name()).toString());
         m_styles[i].m_foregroundColor.setAlpha(settings.value("foregroundColorAlpha", m_styles[i].m_foregroundColor.alpha()).toInt());
         m_styles[i].m_font = QFont(
-            settings.value("fontFamily", m_styles[i].m_font.family()).toString(), 
-            settings.value("pointSize", m_styles[i].m_font.pointSize()).toInt(), 
-            settings.value("weight", m_styles[i].m_font.weight()).toInt(), 
+            settings.value("fontFamily", m_styles[i].m_font.family()).toString(),
+            settings.value("pointSize", m_styles[i].m_font.pointSize()).toInt(),
+            settings.value("weight", m_styles[i].m_font.weight()).toInt(),
             settings.value("italic", m_styles[i].m_font.italic()).toBool()
         );
         settings.endGroup();
@@ -279,9 +279,9 @@ void WidgetPropEditorStyles::on_listWidget_currentItemChanged(QListWidgetItem *c
 
             ui.lblSampleText->setStyleSheet(QString("color: %1; background-color: %2;"). \
                     arg(fgColor.name()).arg(colorStringMixedWithPaperBgColor(bgColor)));
-            
+
             ui.lblSampleText->repaint();
-            
+
             ui.btnForegroundColor->setEnabled(true);
             ui.btnBackgroundColor->setEnabled(true);
             ui.btnFont->setEnabled(true);
@@ -491,9 +491,9 @@ void WidgetPropEditorStyles::on_btnFont_clicked()
     if (index >= 0 && index < m_styles.size())
     {
         QFont font = m_styles[index].m_font;
-        
+
         /* workaround:
-        
+
         If the current language of itom does not correspond to the OS language (see with Windows),
         the style list in the dialog is translated to the OS language, however the styleName of the
         font is in the itom language (e.g. english). Then, the styles are not correctly selected.
@@ -669,7 +669,7 @@ void WidgetPropEditorStyles::on_btnImport_clicked()
                                 if (xml.name() == QLatin1String("LexerStyles"))
                                 {
                                     LexerStylesFound = true;
-                                    
+
                                     while (xml.readNextStartElement())
                                     {
                                         if (xml.name() == QLatin1String("LexerType") && xml.attributes().value("name") == QLatin1String("python"))
@@ -761,7 +761,7 @@ void WidgetPropEditorStyles::on_btnImport_clicked()
                             if (attr.hasAttribute("name") && attr.value("name") == QLatin1String("Global override"))
                             {
                                 globalForegroundColor = QColor(QString("#%1").arg(attr.value("fgColor").toString()));
-                                
+
                                 if (attr.hasAttribute("fontStyle"))
                                 {
                                     globalOverrideFont.setBold(attr.value("fontStyle").toString().toInt() & 1);
@@ -824,26 +824,26 @@ void WidgetPropEditorStyles::on_btnImport_clicked()
                             else if (attr.hasAttribute("name") && attr.value("name") == QLatin1String("Selected text colour"))
                             {
                                 m_selectionBgcolor = QColor(QString("#%1").arg(attr.value("bgColor").toString()));
-                            } 
+                            }
                         }
 
                         QMap<StyleItem::StyleType, int> mapIdx;
-                        //Default = 0, 
-                        //Comment = 1, 
+                        //Default = 0,
+                        //Comment = 1,
                         //Number = 2,
-                        //DoubleQuotedString = 3, 
-                        //SingleQuotedString = 4, 
+                        //DoubleQuotedString = 3,
+                        //SingleQuotedString = 4,
                         //Keyword = 5,
-                        //TripleSingleQuotedString = 6, 
-                        //TripleDoubleQuotedString = 7, 
+                        //TripleSingleQuotedString = 6,
+                        //TripleDoubleQuotedString = 7,
                         //ClassName = 8,
-                        //FunctionMethodName = 9, 
-                        //Operator = 10, 
+                        //FunctionMethodName = 9,
+                        //Operator = 10,
                         //Identifier = 11,
-                        //CommentBlock = 12, 
-                        //UnclosedString = 13, 
+                        //CommentBlock = 12,
+                        //UnclosedString = 13,
                         //HighlightedIdentifier = 14,
-                        //Decorator = 15 
+                        //Decorator = 15
 
 
                         //the numbers are the lexer style ids of QScintilla, python lexer
@@ -864,7 +864,7 @@ void WidgetPropEditorStyles::on_btnImport_clicked()
                         mapIdx[StyleItem::KeyDefinition] = 9; //FunctionMethodName
                         mapIdx[StyleItem::KeyInstance] = 0; //Default
                         mapIdx[StyleItem::KeyTag] = 0; //Default
-                        mapIdx[StyleItem::KeySelf] = 11; //Identifier  
+                        mapIdx[StyleItem::KeySelf] = 11; //Identifier
                         mapIdx[StyleItem::KeyPunctuation] = 10; //Operator
                         mapIdx[StyleItem::KeyConstant] = 9; //FunctionMethodName
                         mapIdx[StyleItem::KeyOperatorWord] = 10; //Operator
@@ -946,7 +946,7 @@ void WidgetPropEditorStyles::on_btnImport_clicked()
                 }
 
                 file.close();
-            } 
+            }
         }
 
         importFilePath = QFileInfo(filename).canonicalPath();

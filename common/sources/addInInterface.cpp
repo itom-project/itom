@@ -10,7 +10,7 @@
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
-   
+
     In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
@@ -64,36 +64,36 @@ namespace ito
 
     //----------------------------------------------------------------------------------------------------------------------------------
     AddInInterfaceBase::AddInInterfaceBase() :
-        m_type(0), 
-        m_version(CREATEVERSION(0, 0, 0)), 
+        m_type(0),
+        m_version(CREATEVERSION(0, 0, 0)),
         m_filename(""),
-        m_maxItomVer(MAXVERSION), 
+        m_maxItomVer(MAXVERSION),
         m_minItomVer(MINVERSION),
-        m_author(""), 
-        m_description(""), 
-        m_detaildescription(""), 
-        m_license("LGPL with ITO itom-exception"), 
+        m_author(""),
+        m_description(""),
+        m_detaildescription(""),
+        m_license("LGPL with ITO itom-exception"),
         m_aboutThis(""),
-        /*m_enableAutoLoad(false),*/ 
+        /*m_enableAutoLoad(false),*/
         m_autoLoadPolicy(ito::autoLoadNever),
-        m_autoSavePolicy(ito::autoSaveNever), 
+        m_autoSavePolicy(ito::autoSaveNever),
         m_callInitInNewThread(true),
-        m_apiFunctionsBasePtr(NULL), 
+        m_apiFunctionsBasePtr(NULL),
         m_apiFunctionsGraphBasePtr(NULL),
         d_ptr(new AddInInterfaceBasePrivate())
     { }
 
     //----------------------------------------------------------------------------------------------------------------------------------
     AddInInterfaceBase::~AddInInterfaceBase()
-    { 
+    {
         m_initParamsMand.clear();
         m_initParamsOpt.clear();
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
-    ito::RetVal AddInInterfaceBase::closeInst(ito::AddInBase **addInInst) 
-    { 
-        ito::RetVal ret = closeThisInst(addInInst); 
+    ito::RetVal AddInInterfaceBase::closeInst(ito::AddInBase **addInInst)
+    {
+        ito::RetVal ret = closeThisInst(addInInst);
         return ret;
     }
 
@@ -104,21 +104,21 @@ namespace ito
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
-    void AddInInterfaceBase::decRef(ito::AddInBase *addIn) 
-    { 
+    void AddInInterfaceBase::decRef(ito::AddInBase *addIn)
+    {
         addIn->decRefCount();
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
-    int AddInInterfaceBase::getRef(ito::AddInBase *addIn) 
-    { 
+    int AddInInterfaceBase::getRef(ito::AddInBase *addIn)
+    {
         return addIn->getRefCount();
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
     //! set api function pointer
-    void AddInInterfaceBase::setApiFunctions(void **apiFunctions) 
-    { 
+    void AddInInterfaceBase::setApiFunctions(void **apiFunctions)
+    {
         m_apiFunctionsBasePtr = apiFunctions;
         this->importItomApi(apiFunctions); //this is the virtual function call in order to also propagate the api pointer to the plugin dll
         ito::ITOM_API_FUNCS = apiFunctions; //this propagates the api pointer to the itomCommonQt dll where this source file has been compiled
@@ -126,7 +126,7 @@ namespace ito
 
     //----------------------------------------------------------------------------------------------------------------------------------
     void AddInInterfaceBase::setApiFunctionsGraph(void ** apiFunctionsGraph)
-    { 
+    {
         m_apiFunctionsGraphBasePtr = apiFunctionsGraph;
         this->importItomApiGraph(apiFunctionsGraph); //this is the virtual function call in order to also propagate the api pointer to the plugin dll
         ito::ITOM_API_FUNCS_GRAPH = apiFunctionsGraph; //this propagates the api pointer to the itomCommonQt dll where this source file has been compiled
@@ -136,7 +136,7 @@ namespace ito
     bool AddInInterfaceBase::event(QEvent *e)
     {
         //the event User+123 is emitted by AddInManager, if the API has been prepared and can
-        //transmitted to the plugin. This assignment cannot be done directly, since 
+        //transmitted to the plugin. This assignment cannot be done directly, since
         //the array ITOM_API_FUNCS is in another scope if called from itom. By sending an
         //event from itom to the plugin, this method is called and ITOM_API_FUNCS is in the
         //right scope. The methods above only set the pointers in the "wrong"-itom-scope (which
@@ -145,23 +145,23 @@ namespace ito
         {
             this->importItomApi(m_apiFunctionsBasePtr);
             this->importItomApiGraph(m_apiFunctionsGraphBasePtr);
-        } 
+        }
 
         return QObject::event(e);
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
-    void AddInInterfaceBase::setLoader(QPluginLoader *loader) 
-    { 
+    void AddInInterfaceBase::setLoader(QPluginLoader *loader)
+    {
         Q_D(AddInInterfaceBase);
-        d_ptr->m_pLoader = loader; 
+        d_ptr->m_pLoader = loader;
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
     QPluginLoader * AddInInterfaceBase::getLoader(void) const
-    { 
+    {
         Q_D(const AddInInterfaceBase);
-        return d->m_pLoader; 
+        return d->m_pLoader;
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
@@ -186,7 +186,7 @@ namespace ito
         QMutex m_refCountMutex;                 //!< mutex for making the reference counting mechanism thread-safe.
         int m_refCount;                         //!< reference counter, used to avoid early deletes (0 means that one instance is holding one reference, 1 that two participants hold the reference...)
         int m_alive;                            //!< member to check if thread is still responsive
-        
+
         //!< this user defined mutex can be accessed via C++ oder Python by the user code.
         /* This mutex has no designed task in the plugin, however it can be used by
         the user to for instance protect a sequence of different calls to this plugin.
@@ -252,10 +252,10 @@ namespace ito
 
     //----------------------------------------------------------------------------------------------------------------------------------
     //! retrieve the uniqueID of this instance
-    int AddInBase::getID() const 
-    { 
+    int AddInBase::getID() const
+    {
         Q_D(const AddInBase);
-        return d->m_uniqueID; 
+        return d->m_uniqueID;
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
@@ -284,16 +284,16 @@ namespace ito
 
     //----------------------------------------------------------------------------------------------------------------------------------
     //! returns true if this instance has firstly been created by the GUI
-    int AddInBase::createdByGUI() const 
-    { 
+    int AddInBase::createdByGUI() const
+    {
         Q_D(const AddInBase);
         return d->m_createdByGUI;
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
     //! method to set whether this instance has been firstly created by the GUI (true) or by any other component (Python, C++, other plugin,..) (false)
-    void AddInBase::setCreatedByGUI(int value) 
-    { 
+    void AddInBase::setCreatedByGUI(int value)
+    {
         Q_D(AddInBase);
         d->m_createdByGUI = value;
     }
@@ -426,7 +426,7 @@ namespace ito
         moveToThread(d->m_pThread);
         d->m_pThread->start();
 
-		/*set new seed for random generator of OpenCV. 
+		/*set new seed for random generator of OpenCV.
 		This is required to have real random values for any randn or randu command.
 		The seed must be set in every thread. This is for the main thread.
 		*/
@@ -521,10 +521,10 @@ namespace ito
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
-    bool AddInBase::hasDockWidget(void) const 
-    { 
+    bool AddInBase::hasDockWidget(void) const
+    {
         Q_D(const AddInBase);
-        return !d->m_dockWidget.isNull(); 
+        return !d->m_dockWidget.isNull();
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
@@ -532,10 +532,10 @@ namespace ito
     /*
     \sa hasDockWidget
     */
-    QDockWidget* AddInBase::getDockWidget(void) const 
-    { 
+    QDockWidget* AddInBase::getDockWidget(void) const
+    {
         Q_D(const AddInBase);
-        return d->m_dockWidget; 
+        return d->m_dockWidget;
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
@@ -568,7 +568,7 @@ namespace ito
         d->m_dockWidget->setFeatures(features);
         d->m_dockWidget->setAllowedAreas(allowedAreas);
 
-        if (content) 
+        if (content)
         {
             d->m_dockWidget->setWidget(content);
             content->setParent(d->m_dockWidget);
@@ -597,10 +597,10 @@ namespace ito
 
     //----------------------------------------------------------------------------------------------------------------------------------
     //! sets the interface of this instance to base. \sa AddInInterfaceBase
-    void AddInBase::setBasePlugin(AddInInterfaceBase *base) 
-    { 
+    void AddInBase::setBasePlugin(AddInInterfaceBase *base)
+    {
         Q_D(AddInBase);
-        d->m_pBasePlugin = base; 
+        d->m_pBasePlugin = base;
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
@@ -633,8 +633,8 @@ namespace ito
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
-    AddInInterfaceBase* AddInBase::getBasePlugin(void) const 
-    { 
+    AddInInterfaceBase* AddInBase::getBasePlugin(void) const
+    {
         Q_D(const AddInBase);
         return d->m_pBasePlugin;
     }
@@ -823,7 +823,7 @@ namespace ito
     };
 
     //----------------------------------------------------------------------------------------------------------------------------------
-    AddInDataIO::AddInDataIO() : 
+    AddInDataIO::AddInDataIO() :
         AddInBase(),
         m_timerID(0),
         m_timerIntervalMS(20),
@@ -1015,7 +1015,7 @@ namespace ito
     //----------------------------------------------------------------------------------------------------------------------------------
     void AddInDataIO::runStatusChanged(bool deviceStarted)
     {
-        if (deviceStarted && m_autoGrabbingEnabled) 
+        if (deviceStarted && m_autoGrabbingEnabled)
         {
             //auto grabbing flag is set, the device has probably been stopped as is now restarted -> restart auto-grabbing timer as well
             if (m_autoGrabbingListeners.size() > 0 && m_timerID == 0)
@@ -1023,7 +1023,7 @@ namespace ito
                 m_timerID = startTimer(m_timerIntervalMS);
             }
         }
-        else 
+        else
         {
             //device is stopped -> also stop the live grabbing timer, if set. The auto grabbing flag is not changed by this method
             if (m_timerID)
@@ -1045,7 +1045,7 @@ namespace ito
         {
             waitCond->returnValue += ito::RetVal(ito::retError, 0, tr("method startDevice() is not implemented in this plugin").toLatin1().data());
             waitCond->release();
-            
+
             return waitCond->returnValue;
         }
         else
@@ -1063,7 +1063,7 @@ namespace ito
         {
             waitCond->returnValue += ito::RetVal(ito::retError, 0, tr("method stopDevice() is not implemented in this plugin").toLatin1().data());
             waitCond->release();
-            
+
             return waitCond->returnValue;
         }
         else
@@ -1081,7 +1081,7 @@ namespace ito
         {
             waitCond->returnValue += ito::RetVal(ito::retError, 0, tr("method acquire() is not implemented in this plugin").toLatin1().data());
             waitCond->release();
-            
+
             return waitCond->returnValue;
         }
         else
@@ -1089,7 +1089,7 @@ namespace ito
             return ito::retError;
         }
     }
-    
+
     //----------------------------------------------------------------------------------------------------------------------------------
     ito::RetVal AddInDataIO::stop(ItomSharedSemaphore *waitCond)
     {
@@ -1099,7 +1099,7 @@ namespace ito
         {
             waitCond->returnValue += ito::RetVal(ito::retError, 0, tr("method stop() is not implemented in this plugin").toLatin1().data());
             waitCond->release();
-            
+
             return waitCond->returnValue;
         }
         else
@@ -1117,7 +1117,7 @@ namespace ito
         {
             waitCond->returnValue += ito::RetVal(ito::retError, 0, tr("method getVal(void*, ItomSharedSemaphore*) is not implemented in this plugin").toLatin1().data());
             waitCond->release();
-            
+
             return waitCond->returnValue;
         }
         else
@@ -1135,7 +1135,7 @@ namespace ito
         {
             waitCond->returnValue += ito::RetVal(ito::retError, 0, tr("method getVal(QSharedPointer<char>, QSharedPointer<int>, ItomSharedSemaphore*) is not implemented in this plugin").toLatin1().data());
             waitCond->release();
-            
+
             return waitCond->returnValue;
         }
         else
@@ -1153,7 +1153,7 @@ namespace ito
         {
             waitCond->returnValue += ito::RetVal(ito::retError, 0, tr("method copyVal(void*,ItomSharedSemaphore*) is not implemented in this plugin").toLatin1().data());
             waitCond->release();
-            
+
             return waitCond->returnValue;
         }
         else
@@ -1171,7 +1171,7 @@ namespace ito
         {
             waitCond->returnValue += ito::RetVal(ito::retError, 0, tr("method setVal(const char*, const int, ItomSharedSemaphore*) is not implemented in this plugin").toLatin1().data());
             waitCond->release();
-            
+
             return waitCond->returnValue;
         }
         else
@@ -1197,11 +1197,11 @@ namespace ito
         QVector<double> m_lastSignalledTargetPos;   /*!< vector (same length than number of axes) containing the target position (mm or degree) of every axis */
         bool m_lastSignalledInitialized;            /*!< set to true if the m_lastSignalled...-vectors are set for the first time */
     };
-    
+
 
     //----------------------------------------------------------------------------------------------------------------------------------
-    AddInActuator::AddInActuator() 
-        : AddInBase(), 
+    AddInActuator::AddInActuator()
+        : AddInBase(),
         d_ptr(new AddInActuatorPrivate())
     {
     }
@@ -1209,7 +1209,7 @@ namespace ito
     //----------------------------------------------------------------------------------------------------------------------------------
     AddInActuator::~AddInActuator()
     {
-    }   
+    }
 
     //----------------------------------------------------------------------------------------------------------------------------------
     //! method emits the actuatorStatusChanged signal if any slot is connected to this signal.
@@ -1305,9 +1305,9 @@ namespace ito
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
-    void AddInActuator::setStatus(int &status, const int newFlags, const int keepMask /*= 0*/) 
-    { 
-        status = (status & keepMask) | newFlags; 
+    void AddInActuator::setStatus(int &status, const int newFlags, const int keepMask /*= 0*/)
+    {
+        status = (status & keepMask) | newFlags;
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
@@ -1330,11 +1330,11 @@ namespace ito
 
     //----------------------------------------------------------------------------------------------------------------------------------
     void AddInActuator::replaceStatus(int &status, const int existingFlag, const int replaceFlag)
-    { 
-        if (status & existingFlag) 
-        { 
-            status = (status ^ existingFlag) | replaceFlag; 
-        } 
+    {
+        if (status & existingFlag)
+        {
+            status = (status ^ existingFlag) | replaceFlag;
+        }
     }
 
     //! initializes the current status, current position and target position vectors to the same size and the given start values

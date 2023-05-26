@@ -1912,9 +1912,9 @@ li.checked::marker { content: &quot;\2612&quot;; }
     </message>
     <message>
         <location line="+40"/>
-        <source>%s with message: 
+        <source>%s with message:
 %s</source>
-        <translation type="unfinished">%s mit Meldung: 
+        <translation type="unfinished">%s mit Meldung:
 %s</translation>
     </message>
     <message>
@@ -1924,7 +1924,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
     </message>
     <message>
         <location line="+3"/>
-        <source>Could not load plugin %s with error message: 
+        <source>Could not load plugin %s with error message:
 %s</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1935,7 +1935,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
     </message>
     <message>
         <location line="+3"/>
-        <source>Error executing function %s with error message: 
+        <source>Error executing function %s with error message:
 %s</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1946,7 +1946,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
     </message>
     <message>
         <location line="+3"/>
-        <source>Error invoking function %s with error message: 
+        <source>Error invoking function %s with error message:
 %s</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1957,7 +1957,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
     </message>
     <message>
         <location line="+3"/>
-        <source>Error while getting property info %s with error message: 
+        <source>Error while getting property info %s with error message:
 %s</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1968,7 +1968,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
     </message>
     <message>
         <location line="+3"/>
-        <source>Error invoking exec-function %s with error message: 
+        <source>Error invoking exec-function %s with error message:
 %s</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1979,7 +1979,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
     </message>
     <message>
         <location line="+20"/>
-        <source>Warning while %s: 
+        <source>Warning while %s:
 %s</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1990,7 +1990,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
     </message>
     <message>
         <location line="+3"/>
-        <source>Warning while loading plugin %s: 
+        <source>Warning while loading plugin %s:
 %s</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2001,7 +2001,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
     </message>
     <message>
         <location line="+3"/>
-        <source>Warning while executing function %s: 
+        <source>Warning while executing function %s:
 %s</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2012,7 +2012,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
     </message>
     <message>
         <location line="+3"/>
-        <source>Warning while invoking function %s: 
+        <source>Warning while invoking function %s:
 %s</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2023,7 +2023,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
     </message>
     <message>
         <location line="+3"/>
-        <source>Warning while getting property info %s: 
+        <source>Warning while getting property info %s:
 %s</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2034,7 +2034,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
     </message>
     <message>
         <location line="+3"/>
-        <source>Warning while invoking exec-function %s: 
+        <source>Warning while invoking exec-function %s:
 %s</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3391,8 +3391,8 @@ Return oder Enter gedrückt wurde.</translation>
     </message>
     <message>
         <location line="+7"/>
-        <source>If code is pasted to a script, remove the identation level of the first line 
-from all lines and add all spaces and tabs from the beginning of the 
+        <source>If code is pasted to a script, remove the identation level of the first line
+from all lines and add all spaces and tabs from the beginning of the
 current line until the current cursor position.</source>
         <translation type="unfinished">Beim Einfügen in ein Skript den Einzug (vorangestellte Tabs oder Leerzeichen)
 der einzelnen Zeilen an die aktuelle Cursor-Position anpassen.</translation>
@@ -3404,9 +3404,9 @@ der einzelnen Zeilen an die aktuelle Cursor-Position anpassen.</translation>
     </message>
     <message>
         <location line="+6"/>
-        <source>Auto guess the character set encoding when opening a file 
+        <source>Auto guess the character set encoding when opening a file
 (e.g. from coding line at the start of a Python script).</source>
-        <translation>Die Zeichenkettenkodierung automatisch ermitteln wenn die Datei 
+        <translation>Die Zeichenkettenkodierung automatisch ermitteln wenn die Datei
 geöffnet wird (z.B. anhand einer &apos;coding&apos; Zeile zu Beginn des Python Skripts.</translation>
     </message>
     <message>
@@ -3416,7 +3416,7 @@ geöffnet wird (z.B. anhand einer &apos;coding&apos; Zeile zu Beginn des Python 
     </message>
     <message>
         <location line="+12"/>
-        <source>The default character set encoding is used for reading or writing files. 
+        <source>The default character set encoding is used for reading or writing files.
 It can be overwritten individually if auto guess is enabled (see above).</source>
         <translation>Die Standard Zeichenkettenkodierung wird zur Lesen oder Schreiben von Dateien genutzt.
 Sie kann individuell überschrieben werden, wenn die automatische Ermittlung aktiviert ist (siehe oben).</translation>
@@ -4641,7 +4641,7 @@ transparent anzeigen</translation>
     </message>
     <message>
         <location line="+103"/>
-        <source>Error while creating new instance. 
+        <source>Error while creating new instance.
 Message: %1</source>
         <translation>Fehler beim Erzeugen einer neuen Instanz.
 Meldung: &apos;%1&apos;</translation>
@@ -5431,18 +5431,18 @@ Meldung: &apos;%1&apos;</translation>
     </message>
     <message>
         <location line="+1"/>
-        <source>If you try to install / upgrade Numpy if itom is already running, a file access error might occur, since itom already uses parts of Numpy. 
+        <source>If you try to install / upgrade Numpy if itom is already running, a file access error might occur, since itom already uses parts of Numpy.
 
-You have now three possibilities: 
-1. Try to continue the installation in spite of possible problems by clicking &apos;Ignore&apos; 
-2. Click &apos;OK&apos;, close and restart itom. Then this package manager is opened as standalone application and you can install or upgrade Numpy and other packages. After another restart, itom is restarted as usual. 
-3. Click &apos;Cancel&apos; to cancel the installation process without any changes. 
+You have now three possibilities:
+1. Try to continue the installation in spite of possible problems by clicking &apos;Ignore&apos;
+2. Click &apos;OK&apos;, close and restart itom. Then this package manager is opened as standalone application and you can install or upgrade Numpy and other packages. After another restart, itom is restarted as usual.
+3. Click &apos;Cancel&apos; to cancel the installation process without any changes.
 
-Information: 
-If the case of the restart (&apos;OK&apos;), an empty file &apos;restart_itom_with_pip_manager.txt&apos; is created in the directory &apos;%1&apos;. If itom locates this file at startup, the pip manager is directly started. 
+Information:
+If the case of the restart (&apos;OK&apos;), an empty file &apos;restart_itom_with_pip_manager.txt&apos; is created in the directory &apos;%1&apos;. If itom locates this file at startup, the pip manager is directly started.
 
 It is also possible to directly start the package manager by calling the itom application with the argument &apos;pipManager&apos;.</source>
-        <translation>Die Installation oder das Updaten von Numpy im laufenden itom könnte einen Fehler verursachen, wenn Teile von Numby bereits verwendet werden. 
+        <translation>Die Installation oder das Updaten von Numpy im laufenden itom könnte einen Fehler verursachen, wenn Teile von Numby bereits verwendet werden.
 
 Es gibt nun drei Möglichkeiten:
 1.Durch Klick auf &apos;Ignorieren&apos; versuchen die Installation fortzusetzen.
@@ -5573,7 +5573,7 @@ Es ist ebenfalls möglich über das Argument &apos;pipManager&apos; beim Program
     <name>ito::DialogPluginPicker</name>
     <message>
         <location filename="../ui/dialogPluginPicker.cpp" line="+178"/>
-        <source>Error while creating new instance. 
+        <source>Error while creating new instance.
 Message: %1</source>
         <translation>Fehler beim Erzeugen einer neuen Instanz.
 Meldung: &apos;%1&apos;</translation>
@@ -6936,7 +6936,7 @@ Sind Sie sicher?</translation>
     </message>
     <message>
         <location line="-386"/>
-        <source>Please indicate a variable name for the dictionary in file &apos;%1&apos; 
+        <source>Please indicate a variable name for the dictionary in file &apos;%1&apos;
 (name must start with a letter followed by numbers or letters).</source>
         <translation>Bitte einen Variablenname für das &apos;Dictionary&apos; der Datei &apos;%1&apos; eingeben
 (Der Name muss mit einem Buchstaben beginnen und darf nur Zahlen und Buchstaben enthalten).</translation>
@@ -7258,7 +7258,7 @@ Sind Sie sicher?</translation>
     </message>
     <message>
         <location line="+1"/>
-        <source>The &apos;designer&apos; folder contains incompatible designer plugins. The load of itom or subsequent ui&apos;s might fail if these files are not removed or updated: 
+        <source>The &apos;designer&apos; folder contains incompatible designer plugins. The load of itom or subsequent ui&apos;s might fail if these files are not removed or updated:
 
 %1</source>
         <translation>Der Ordner &apos;designer&apos; enthält nicht kompatible Designer-Plugins. Beim Öffnen von itom oder dazugehörigen ui-Dateien können diese zu Problemen führen wenn sie nicht gelöscht oder aktualisiert werden:
@@ -7505,7 +7505,7 @@ Sind Sie sicher?</translation>
     </message>
     <message>
         <location line="+175"/>
-        <source>Python could not be started. itom cannot be used in the desired way. 
+        <source>Python could not be started. itom cannot be used in the desired way.
 Start itom again with the argument &apos;log&apos; and look-up the error message in the file itomlog.txt.</source>
         <translation>Python konnte nicht gestartet werden. itom kann ohne Python nicht genutzt werden.
 Bitte itom mit dem Argument &apos;log&apos; erneut starten und die Fehlermeldungen in der Datei &apos;itomlog.txt&apos; auswerten.</translation>
@@ -8104,7 +8104,7 @@ Bitte das Python Hauptverzeichnis im itom Eigenschaftendialog überprüfen und i
     <message>
         <location line="+34"/>
         <source>The home directory of Python is currently set to the non-existing directory &apos;%s&apos;
-Python cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python 
+Python cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python
 or correct the base directory in the property dialog of itom.</source>
         <translation type="unfinished">Das Stammverzeichnis von Python ist aktuell auf ein nicht existierendes Verzeichnis gesetzt (&apos;%s&apos;)
 Python kann nicht gestartet werden. Bitte entweder im System die Umgebungsvariable &apos;PYTHONHOME&apos; mit dem Stammverzeichnis von Python setzen
@@ -8113,7 +8113,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
     <message>
         <location line="+22"/>
         <source>The built-in library path of Python could not be found. The current home directory is &apos;%s&apos;
-Python cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python 
+Python cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python
 or correct the base directory in the preferences dialog of itom.</source>
         <translation type="unfinished">Das Verzeichnis zur &apos;built-in library&apos; von Python wurde nicht gefunden. Der aktuelle Pfad des Python-Stammverzeichnisses lautet &apos;%s&apos;
 Python kann nicht gestartet werden. Bitte entweder im System die Umgebungsvariable &apos;PYTHONHOME&apos; mit dem Stammverzeichnis von Python setzen
@@ -8396,7 +8396,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
     <message>
         <location line="+130"/>
         <source>The home directory of Python is currently set to the non-existing directory &apos;%s&apos;
-Python cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python 
+Python cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python
 or correct the base directory in the property dialog of itom.</source>
         <translation type="unfinished">Das Stammverzeichnis von Python ist aktuell auf ein nicht existierendes Verzeichnis gesetzt (&apos;%s&apos;)
 Python kann nicht gestartet werden. Bitte entweder im System die Umgebungsvariable &apos;PYTHONHOME&apos; mit dem Stammverzeichnis von Python setzen
@@ -8405,7 +8405,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
     <message>
         <location line="+22"/>
         <source>The built-in library path of Python could not be found. The current home directory is &apos;%s&apos;
-Python cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python 
+Python cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python
 or correct the base directory in the preferences dialog of itom.</source>
         <translation type="unfinished">Das Verzeichnis zur &apos;built-in library&apos; von Python wurde nicht gefunden. Der aktuelle Pfad des Python-Stammverzeichnisses lautet &apos;%s&apos;
 Python kann nicht gestartet werden. Bitte entweder im System die Umgebungsvariable &apos;PYTHONHOME&apos; mit dem Stammverzeichnis von Python setzen

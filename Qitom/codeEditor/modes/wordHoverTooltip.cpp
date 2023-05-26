@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -23,15 +23,15 @@
     ------------------------
 
     This file belongs to the code editor of itom. The code editor is
-    in major parts a fork / rewritten version of the python-based source 
-    code editor PyQode from Colin Duquesnoy and others 
-    (see https://github.com/pyQode). PyQode itself is licensed under 
+    in major parts a fork / rewritten version of the python-based source
+    code editor PyQode from Colin Duquesnoy and others
+    (see https://github.com/pyQode). PyQode itself is licensed under
     the MIT License (MIT).
 
     Some parts of the code editor of itom are also inspired by the
     source code editor of the Spyder IDE (https://github.com/spyder-ide),
     also licensed under the MIT License and developed by the Spyder Project
-    Contributors. 
+    Contributors.
 
 *********************************************************************** */
 
@@ -57,8 +57,8 @@ namespace ito {
 //-------------------------------------------------------------------------------------
 /*
 */
-WordHoverTooltipMode::WordHoverTooltipMode(const QString &name /*="WordHoverTooltipMode"*/, 
-                                           const QString &description /*= ""*/, 
+WordHoverTooltipMode::WordHoverTooltipMode(const QString &name /*="WordHoverTooltipMode"*/,
+                                           const QString &description /*= ""*/,
                                            QObject *parent /*= nullptr*/) :
     QObject(parent),
     Mode(name, description),
@@ -165,7 +165,7 @@ void WordHoverTooltipMode::onMouseMoved(QMouseEvent *e)
 
     QPoint mousePos = e->pos();
     QTextCursor textCursor;
-    
+
     if (e->modifiers() == Qt::NoModifier && hasFocus)
     {
         textCursor = editor()->cursorForPosition(mousePos);
@@ -196,7 +196,7 @@ void WordHoverTooltipMode::onMouseMoved(QMouseEvent *e)
     if (textCursor.isNull())
     {
         m_pTimer->cancelRequests();
-        
+
         if (m_tooltipVisible)
         {
             ToolTip::hideText();
@@ -206,8 +206,8 @@ void WordHoverTooltipMode::onMouseMoved(QMouseEvent *e)
     else if ((m_cursor.isNull() || textCursor.position() != m_cursor.position()))
     {
         DELAY_JOB_RUNNER_ARGTEXTCURSOR(
-            m_pTimer, 
-            WordHoverTooltipMode, 
+            m_pTimer,
+            WordHoverTooltipMode,
             void(WordHoverTooltipMode::*)(QTextCursor)
         )->requestJob(this, &WordHoverTooltipMode::emitWordHover, textCursor);
     }
@@ -222,7 +222,7 @@ void WordHoverTooltipMode::emitWordHover(QTextCursor cursor)
     QRect cursorRect = editor()->cursorRect(cursor);
     QPoint position(
         cursorRect.x() + editor()->panels()->marginSize(ito::Panel::Left),
-        cursorRect.y() + 
+        cursorRect.y() +
         editor()->panels()->marginSize(ito::Panel::Top));
     position = editor()->mapToGlobal(position);
 
@@ -357,7 +357,7 @@ void WordHoverTooltipMode::onJediGetHelpResultAvailable(QVector<ito::JediGetHelp
     foreach(const auto &tip, tooltips)
     {
         // the signature is represented as <code> monospace section.
-        // this requires much more space than ordinary letters. 
+        // this requires much more space than ordinary letters.
         // Therefore reduce the maximum line length to 88/2.
         styledTooltips << Utils::parseStyledTooltipsFromSignature(
             tip.first,

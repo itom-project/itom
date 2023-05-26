@@ -264,18 +264,18 @@ QPixmap MainApplication::getSplashScreenPixmap() const
     QString revisionText = "";
     QString editionText = "";
     QString dateText;
-    
+
     // 30% of screen size
     int pimaryScreenWidth = QGuiApplication::primaryScreen()->geometry().width();
 
     if (pimaryScreenWidth < 1280) // HDReady screen
     {
-        pixmap = pixmap.scaledToWidth(550, Qt::SmoothTransformation); 
+        pixmap = pixmap.scaledToWidth(550, Qt::SmoothTransformation);
     }
     else if (pimaryScreenWidth <= 3840) // 30% of screen width
     {
         pixmap = pixmap.scaledToWidth(pimaryScreenWidth * 0.3, Qt::SmoothTransformation);
-    } 
+    }
 
     QPainter p;
     p.begin(&pixmap);
@@ -299,13 +299,13 @@ QPixmap MainApplication::getSplashScreenPixmap() const
 #endif
 
     editionText = QString::fromLatin1(ITOM_ADDITIONAL_EDITION_NAME);
-     
- 
+
+
 #if ITOM_ADDITIONAL_BUILD_DATE
     dateText = QString("%1 %2").arg(__DATE__, __TIME__);
 #else
     dateText = "";
-#endif  
+#endif
 
     if (editionText != "")
     {
@@ -317,7 +317,7 @@ QPixmap MainApplication::getSplashScreenPixmap() const
         else
         {
             buildText = QString("%1\n%2\n%3").arg(editionText, bitTextLong, dateText);
-        } 
+        }
     }
     else
     {
@@ -345,7 +345,7 @@ QPixmap MainApplication::getSplashScreenPixmap() const
 
     QRectF rectBuild(
         textLeftPos,
-        rectVersion.top() * 1.08, 
+        rectVersion.top() * 1.08,
         pixmap.width() - textLeftPos,
         pixmap.height() * 0.2);
     QFont fontBuild;
@@ -470,7 +470,7 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
     bool setCodecForLocal = settings->value("setCodecForLocale", false).toBool();
 
     // allowed are en_EN, de_DE, de, en, "c" for the locale C standard or "operatingSystem" for the QLocale::system()
-    QString numberStringConversionStandard = settings->value("numberStringConversionStandard", "operatingsystem").toString(); 
+    QString numberStringConversionStandard = settings->value("numberStringConversionStandard", "operatingsystem").toString();
     bool omitGroupSeparators = settings->value("numberFormatOmitGroupSeparator", false).toBool();
 
     QLocale defaultLocale;
@@ -521,7 +521,7 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
     m_qtTranslator.load(
         "qt_" + local.name(), QLibraryInfo::location(QLibraryInfo::TranslationsPath));
 #endif
-    
+
     if (m_qtTranslator.isEmpty())
     {
         //qt-folder is not available, then try itom translation folder
@@ -574,7 +574,7 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
     }
 
     textCodec = QStringConverter::Utf8;
-    
+
     //AppManagement::setScriptTextCodec(textCodec.value());
 
     // None of these two is available in Qt5 and according to
@@ -672,7 +672,7 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
             }
         }
 
-        // test the base color of a widget 
+        // test the base color of a widget
         QString iconThemeFile = "iconThemeBright.rcc";
 
         if (iconTheme.compare("auto", Qt::CaseInsensitive) == 0)
@@ -1173,7 +1173,7 @@ void MainApplication::mainWindowCloseRequest()
 
             if (retValue.containsError())
             {
-                // The user was asked how to proceed with unsaved scripts. 
+                // The user was asked how to proceed with unsaved scripts.
                 // In this case, the user cancelled this request... do not close itom!
                 return;
             }

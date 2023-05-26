@@ -1,25 +1,25 @@
 ﻿itom measurement system
 URL: http://www.uni-stuttgart.de/ito
-Copyright (C) 2022, Institut für Technische Optik (ITO), 
+Copyright (C) 2022, Institut für Technische Optik (ITO),
 Universität Stuttgart, Germany
 
-itom is free software and is provided under the terms of the 
+itom is free software and is provided under the terms of the
 GNU LIBRARY GENERAL PUBLIC LICENSE (LGPL).
 
 In addition, as a special exception, the Institut für Technische
 Optik (ITO) gives you certain additional rights for components,
 that are also part of the software development toolkit (SDK) of
-itom. These rights are described in the ITO LGPL 
+itom. These rights are described in the ITO LGPL
 Exception version 1.0, which can be found below or in the file
 LGPL_EXCEPTION.txt in this package. This special exception applies
-only to files that state this exception in their respective file 
-based license note. All files that do not state this exception 
+only to files that state this exception in their respective file
+based license note. All files that do not state this exception
 fall under the GNU Library General Public Licence and must be
 handled accordingly.
 
 itom is distributed in the hope that it will be useful, but
 WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU Library General Public Licence for more details.
 
 
@@ -159,7 +159,7 @@ such a program is covered only if its contents constitute a work based
 on the Library (independent of the use of the Library in a tool for
 writing it).  Whether that is true depends on what the Library does
 and what the program that uses the Library does.
-  
+
   1. You may copy and distribute verbatim copies of the Library's
 complete source code as you receive it, in any medium, provided that
 you conspicuously and appropriately publish on each copy an
@@ -461,9 +461,9 @@ SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH
 DAMAGES.
 
                      END OF TERMS AND CONDITIONS
-					 
-					 
-					 
+
+
+
 -----------------------------------------------------------------------
                 ITO LGPL Exception version 1.0
                ===================================
@@ -490,7 +490,7 @@ Software that imports the Licensed Software.
 the Licensed Software: You may link applications with binary pre-installed
 versions of the Licensed Software.
 
-3) The right to subclass from classes of the licensed software: Classes that are 
+3) The right to subclass from classes of the licensed software: Classes that are
 subclassed from classes of the licensed software are not considered to be
-constituting derivative work and therefore the author of such classes does 
+constituting derivative work and therefore the author of such classes does
 not need to provide source code for this classes.

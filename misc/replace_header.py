@@ -27,7 +27,7 @@ def update_source(filename, oldcopyright, copyright):
             #file(filename,"w").write(fdata)
             with open(filename,'w') as f:
                 f.write(fdata)
-       
+
 
 def recursive_traversal(dir,  oldcopyright, copyright):
     global excludedir

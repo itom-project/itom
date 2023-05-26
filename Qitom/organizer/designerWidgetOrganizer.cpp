@@ -206,8 +206,8 @@ RetVal DesignerWidgetOrganizer::scanDesignerPlugins()
                 QJsonValue metaDataUser = metaData["MetaData"];
                 QStringList keys = metaData.keys();
 
-                if (metaData.isEmpty() || 
-                    metaDataDebug.isUndefined() || 
+                if (metaData.isEmpty() ||
+                    metaDataDebug.isUndefined() ||
                     metaDataIid.isUndefined())
                 {
                     message = QString("Could not load meta data or mandatory items for the library '%1'. This file is probably no valid plugin.").\

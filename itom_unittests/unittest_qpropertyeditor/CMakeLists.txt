@@ -1,5 +1,5 @@
 set(target_name unittest_qpropertyeditor)
- 
+
 project(${target_name})
 
 cmake_minimum_required(VERSION 3.0.2)
@@ -7,10 +7,10 @@ cmake_minimum_required(VERSION 3.0.2)
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
 option(BUILD_UNITTEST_INTERNAL_ENABLE "If set, some libraries are compiled to export some internal methods, too. These can be tested then in unittests." OFF)
 
-set(CMAKE_MODULE_PATH 
-    ${CMAKE_MODULE_PATH} 
-    ${PROJECT_SOURCE_DIR} 
-    ${PROJECT_SOURCE_DIR}/../.. 
+set(CMAKE_MODULE_PATH
+    ${CMAKE_MODULE_PATH}
+    ${PROJECT_SOURCE_DIR}
+    ${PROJECT_SOURCE_DIR}/../..
     ${PROJECT_SOURCE_DIR}/../../gtest-1.10.0/googletest/
 )
 
@@ -47,7 +47,7 @@ set(unittest_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/unittest_qpropertyeditor.cc
 )
 
-set(unittest_SOURCES 
+set(unittest_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/qpropertyEditorTest.cpp
 )
 
@@ -61,7 +61,3 @@ set_target_properties( ${target_name}
 )
 
 set_target_properties(${target_name} PROPERTIES DEBUG_POSTFIX "d")
-
-
-
-

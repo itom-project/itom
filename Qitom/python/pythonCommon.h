@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -101,10 +101,10 @@ namespace ito
             static bool setReturnValueMessage(ito::RetVal &retVal, const QString &objName, const tErrMsg &errorMSG, PyObject *exceptionIfError = PyExc_RuntimeError, PyObject *exceptionIfWarning = PyExc_RuntimeWarning);
             static bool setReturnValueMessage(ito::RetVal &retVal, const char *objName, const tErrMsg &errorMSG, PyObject *exceptionIfError = PyExc_RuntimeError, PyObject *exceptionIfWarning = PyExc_RuntimeWarning);
 
-            //!> checks if a Python exception is currently set and returns ito::retError with the corresponding error message, 
+            //!> checks if a Python exception is currently set and returns ito::retError with the corresponding error message,
             //!> if this is the case (else retOk). The python exception is only cleared, if clearError is true (default)
             //!> The caller of this method must already hold the GIL!
-            static ito::RetVal checkForPyExceptions(bool clearError = true); 
+            static ito::RetVal checkForPyExceptions(bool clearError = true);
     };
 
 } //end namespace ito

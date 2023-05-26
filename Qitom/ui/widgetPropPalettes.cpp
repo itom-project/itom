@@ -301,7 +301,7 @@ WidgetPropPalettes::WidgetPropPalettes(QWidget *parent) :
     ui.gvCurPalette->installEventFilter(this);
     m_pSceneCurPalette = new QGraphicsScene();
     ui.gvCurPalette->setScene(m_pSceneCurPalette);
-    
+
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------
@@ -352,7 +352,7 @@ void WidgetPropPalettes::updatePaletteList()
     for (int nc = 0; nc < m_palettes.size(); nc++)
     {
         const ito::ItomPaletteBase &pal = m_palettes[nc];
-        
+
         QVector<uint> cols = pal.get256Colors();
         QImage img(width, height - 2 * borderVertical, QImage::Format_RGB32);
 
@@ -412,7 +412,7 @@ void WidgetPropPalettes::updateOptionPalette()
             width,
             height)));
     item->setOffset(0, 0);
-    
+
     m_pSceneCurPalette->addItem(item);
 
     ui.gvCurPalette->setSceneRect(-m_gvSceneMarginLeftRight, -m_gvPaletteSceneMarginTopBottom, ui.gvCurPalette->width(), ui.gvCurPalette->height());
@@ -429,7 +429,7 @@ void WidgetPropPalettes::drawPalCurves(int selPt)
     QGraphicsScene* sceneCurves = m_pScenePalCurves;
     double sceneHeight = ui.gvPalCurves->height() - 2 * m_gvCurveSceneMarginTopBottom;
     double sceneWidth = ui.gvPalCurves->width() - 2 * m_gvSceneMarginLeftRight;
-    
+
     QList<QGraphicsItem*> items = sceneCurves->items();
     ColCurve *curveR, *curveG, *curveB;
     bool editable = (m_curPaletteIndex >= 0) && !m_currentPalette.isWriteProtected();
@@ -441,9 +441,9 @@ void WidgetPropPalettes::drawPalCurves(int selPt)
         curveR->setActiveSceneSize(QSizeF(sceneWidth, sceneHeight));
         curveG = new ColCurve(this, 1, ui.gvPalCurves);
         curveG->setActiveSceneSize(QSizeF(sceneWidth, sceneHeight));
-        curveB = new ColCurve(this, 2, ui.gvPalCurves); 
+        curveB = new ColCurve(this, 2, ui.gvPalCurves);
         curveB->setActiveSceneSize(QSizeF(sceneWidth, sceneHeight));
-        
+
         QPen rPen(Qt::red, 2);
         QPen gPen(Qt::green, 2);
         QPen bPen(Qt::blue, 2);
@@ -494,7 +494,7 @@ void WidgetPropPalettes::drawPalCurves(int selPt)
         rval = curPalData[cs].second.red();
         bval = curPalData[cs].second.blue();
         x0 = curPalData[cs].first * sceneWidth;
-        
+
         if (ui.pbR->isChecked())
         {
             y0 = sceneHeight * (255.0 - rval) / 255.0;
@@ -534,8 +534,8 @@ void WidgetPropPalettes::drawPalCurves(int selPt)
         {
             markerPath.addRect(
                 (int)(curPalData[selPt].first * sceneWidth - 4),
-                sceneHeight * (255.0 - curPalData[selPt].second.red()) / 255.0 - 5, 
-                9, 
+                sceneHeight * (255.0 - curPalData[selPt].second.red()) / 255.0 - 5,
+                9,
                 9);
         }
         if (ui.pbG->isChecked())
@@ -563,7 +563,7 @@ void WidgetPropPalettes::drawPalCurves(int selPt)
         ui.sbG->setValue(curPalData[m_selectedColorStop].second.green());
         ui.sbB->setValue(curPalData[m_selectedColorStop].second.blue());
         setColorButton(curPalData[m_selectedColorStop].second, ui.btnColor, ui.lblColor, ui.icoColor);
-        
+
         double minimum = 0.0;
         double maximum = 1.0;
 
@@ -790,7 +790,7 @@ void WidgetPropPalettes::lwCurrentRowChanged(int row)
 
     drawPalCurves(m_selectedColorStop);
     updateOptionPalette();
-    
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -878,7 +878,7 @@ void WidgetPropPalettes::on_pbDuplicate_clicked()
     }
     newPalName = tmpPalName;
 
-    
+
     m_currentPalette = ito::ItomPaletteBase(newPalName, pal.getType() & (~ito::tPaletteReadOnly), pal.getInverseColorOne(), \
         pal.getInverseColorTwo(), pal.getInvalidColor(), pal.getColorStops());
 
@@ -910,7 +910,7 @@ void WidgetPropPalettes::on_pbRemove_clicked()
 
         ui.lwPalettes->takeItem(idx);
         m_palettes.takeAt(idx);
-        
+
         ui.pbPalSave->setEnabled(false);
     }
 }
@@ -962,7 +962,7 @@ ito::RetVal WidgetPropPalettes::saveCurrentPalette()
         {
             m_palettes[m_curPaletteIndex] = m_currentPalette;
         }
-    
+
         m_isDirty = 0;
         ui.pbPalSave->setEnabled(false);
         updatePaletteList();
@@ -1044,7 +1044,7 @@ void WidgetPropPalettes::writeSettings()
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
 
     settings.beginGroup("ColorPalettes");
-    
+
     foreach(QString child, settings.childGroups())
     {
         // check for left over user palettes and removed them
@@ -1117,7 +1117,7 @@ void WidgetPropPalettes::removeColorStop(int index)
             ito::ItomPaletteBase palette(m_currentPalette.getName(), m_currentPalette.getType(),
                 ui.btnInvColor1->color(), ui.btnInvColor2->color(), ui.btnInvColor->color(), pts);
             m_currentPalette = palette;
-            
+
             changeSelectedColorStop(-1);
 
             updateOptionPalette();
@@ -1149,7 +1149,7 @@ void WidgetPropPalettes::addColorStop(int index_before, float percent_to_next /*
 
         QColor col1 = pts[first].second;
         QColor col2 = pts[first < pts.length() - 1 ? first + 1 : first].second;
-        pts.insert(first + 1, QGradientStop(xpos, QColor(col1.red() + (col2.red() - col1.red()) * percent_to_next, 
+        pts.insert(first + 1, QGradientStop(xpos, QColor(col1.red() + (col2.red() - col1.red()) * percent_to_next,
             col1.green() + (col2.green() - col1.green()) * percent_to_next,
             col1.blue() + (col2.blue() - col1.blue()) * percent_to_next)));
 

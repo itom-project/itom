@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -154,7 +154,7 @@ RetVal UserUiDialog::init(QWidget *contentWidget, tButtonBarType buttonBarType, 
 
     contentWidget->setWindowFlags(Qt::Widget);
     m_uiWidget = contentWidget;
-    
+
 
     if (m_uiWidget == NULL)
     {
@@ -199,7 +199,7 @@ RetVal UserUiDialog::init(QWidget *contentWidget, tButtonBarType buttonBarType, 
             uiWidgetSize.rwidth() += m_boxLayout->spacing();
         }
 
-        
+
 
         if (m_uiWidget)
         {

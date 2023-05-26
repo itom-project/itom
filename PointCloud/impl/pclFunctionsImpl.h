@@ -10,7 +10,7 @@
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
-   
+
     In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
@@ -33,7 +33,7 @@
 #include "../../common/typeDefs.h"
 #include "../../DataObject/dataobj.h"
 
-namespace ito 
+namespace ito
 {
 
 class DataObject; //forward declaration
@@ -111,7 +111,7 @@ namespace pclHelper
             ito::DataObject dobj;
             retval += dataobj.convertTo(dobj, type);
         }
-        
+
         if (dataobj.getDims() != 2 || dataobj.getSize(0) != _Rows || dataobj.getSize(1) != _Cols)
         {
             retval += ito::RetVal(ito::retError, 0, "size of dataobj does not fit to requested Eigen::Matrix size");

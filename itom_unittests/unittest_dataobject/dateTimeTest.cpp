@@ -48,7 +48,7 @@ TEST(DateTimeTest, dateTimeSetToTest)
     ito::DataObject dObjDateTime(10, 10, ito::tDateTime);
 
     EXPECT_THROW(dObjDateTime.setTo(ito::TimeDelta(100)), cv::Exception);
-    
+
     dObjDateTime.setTo(ito::DateTime(9500005));
     const auto dt = dObjDateTime.at<ito::DateTime>(5, 5);
     EXPECT_EQ(dt.utcOffset, 0);
@@ -57,10 +57,9 @@ TEST(DateTimeTest, dateTimeSetToTest)
     ito::DataObject dObjTimeDelta(10, 10, ito::tTimeDelta);
 
     EXPECT_THROW(dObjTimeDelta.setTo(ito::DateTime(100)), cv::Exception);
-    
+
     dObjDateTime.setTo(ito::DateTime(1234));
     const auto td = dObjDateTime.at<ito::DateTime>(5, 5);
     EXPECT_EQ(td.utcOffset, 0);
     EXPECT_EQ(td.datetime, 1234);
 }
-

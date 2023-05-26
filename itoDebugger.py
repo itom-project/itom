@@ -5,7 +5,7 @@
 #    Universitaet Stuttgart, Germany#
 #
 #    This file is part of itom.
-#  
+#
 #    itom is free software; you can redistribute it and/or modify it
 #    under the terms of the GNU Library General Public Licence as published by
 #    the Free Software Foundation; either version 2 of the Licence, or (at
@@ -88,7 +88,7 @@ class itoDebugger(bdb.Bdb):
         self._come_back_from_mainpyfile = False
         self.minStackIndexToDebug = 4
         self.debug = 0
-        
+
         self.tb_lineno = {}
 
     def reset(self):
@@ -121,7 +121,7 @@ class itoDebugger(bdb.Bdb):
         return
 
     def checkFrameForDebugging(self, frame):
-        #checks the frame-stack to the bottom and verifies, 
+        #checks the frame-stack to the bottom and verifies,
         #that the current stack-number is higher or equal to self.minStackIndexToDebug
         if(frame):
             count = 0
@@ -129,18 +129,18 @@ class itoDebugger(bdb.Bdb):
             while temp_frame:
                 count = count +1
                 temp_frame = temp_frame.f_back
-            
+
             if count >= self.minStackIndexToDebug :
                 return True
             else:
                 return False
-                
+
         else:
             return False
-            
+
 
     # Override Bdb methods
-    
+
 
     def user_call(self, frame, argument_list):
         """This method is called when there is the remote possibility
@@ -152,7 +152,7 @@ class itoDebugger(bdb.Bdb):
         if self.stop_here(frame):
             #self.message('--Call--')
             self.interaction(frame, None)
-            
+
 
     def user_line(self, frame):
         """This function is called when we stop or break at this line."""
@@ -160,24 +160,24 @@ class itoDebugger(bdb.Bdb):
         if(self.debug >= 1):
             print("user_line: I am in line %d of file %s" % (frame.f_lineno, frame.f_code.co_filename))
         #print("checkFrameForDebugging:", self.checkFrameForDebugging(frame))
-        
+
         if not(self.checkFrameForDebugging(frame)):
             return
-            
+
         if self._wait_for_mainpyfile:
             if (self.mainpyfile != self.canonic(frame.f_code.co_filename) or frame.f_lineno <= 0):
                 return
             self._wait_for_mainpyfile = False
         #else:
             #print("user_line: I am in line %d of file %s, wait: %d" % (frame.f_lineno, frame.f_code.co_filename,  self._wait_for_mainpyfile))
-        
+
         if(self.get_break(self.canonic(frame.f_code.co_filename),  frame.f_lineno)):
             #print("interaction due to breakpoint in line %d" % frame.f_lineno)
             self.interaction(frame, None)
         else:
             #print("interaction due to step in line %d" % frame.f_lineno)
             self.interaction(frame, None)
-        
+
 
 
 
@@ -189,7 +189,7 @@ class itoDebugger(bdb.Bdb):
         #print(frame)
         if self._wait_for_mainpyfile:
             return
-        
+
         if(self.checkFrameForDebugging(frame)):
             #self._come_back_from_mainpyfile = True
             frame.f_locals['__return__'] = return_value
@@ -198,26 +198,26 @@ class itoDebugger(bdb.Bdb):
         else:
             frame.f_locals['__return__'] = return_value
             #print('--Return--')
-            
+
 
     def user_exception(self, frame, exc_info):
         """This function is called if an exception occurs,
         but only if we are to stop at or just below this level."""
         if self._wait_for_mainpyfile:
             return
-        
+
         #in case of an exception, you can directly stop...
         #return
         #... or you can print the traceback while passing the exception through the whole traceback-stack
 
         exc_type, exc_value, exc_traceback = exc_info
         frame.f_locals['__exception__'] = exc_type, exc_value, exc_traceback
-        
+
         #if issubclass(exc_type, SyntaxError):
             #this is a hack, since exc_value is no instance of an error, but only a tuple with the arguments
             #However, in case of a SyntaxError, format_exception_only below needs an instance of SyntaxError
             #exc_value = SyntaxError(exc_value[0], exc_value[1])
-        
+
         if(not exc_traceback is None):
             print("exception raised in method '" + exc_traceback.tb_frame.f_code.co_name + "', line " + str(exc_traceback.tb_frame.f_lineno))
         print(traceback.format_exception_only(exc_type, exc_value)[-1].strip())
@@ -242,7 +242,7 @@ class itoDebugger(bdb.Bdb):
         self._cmdloop(frame)
         self.forget() #delete frame parameters
 
-    
+
 
     # interface abstraction functions
 
@@ -263,19 +263,19 @@ class itoDebugger(bdb.Bdb):
         if filename == '<string>' and self.mainpyfile:
             filename = self.mainpyfile
         return filename
-    
+
     def addNewBreakPoint(self,  filename,  lineno,  enabled,  temporary,  condition,  ignoreCount):
         """Adds breakpoint to list of breakpoints.
-        
+
         Return breakpoint ID (int) or error string (str).
-        
+
         This method should not raise an exception.
         """
         if not filename:
             filename = self.defaultFile()
         else:
             filename = self.canonic(filename)
-        
+
         # Check for reasonable breakpoint
         try:
             line = self._checkline(filename, lineno) #may raise an UnicodeDecodeError or IndexError
@@ -284,7 +284,7 @@ class itoDebugger(bdb.Bdb):
         except UnicodeDecodeError as err:
             # The _ in the error string indicates to not delete the break point.
             return "_Cannot add breakpoint: " + str(err)
-        
+
         if line > 0:
             # now set the break point
             err = self.set_break(filename, line, temporary, condition, None) #returns None if ok, else an error string
@@ -295,18 +295,18 @@ class itoDebugger(bdb.Bdb):
                 return int(bp.number)
             else:
                 return "Cannot add breakpoint (file '%s', line %i): " % (filename, lineno) + str(err)
-    
+
     def editBreakPoint(self,  bpNumber,  filename,  lineno,  enabled,  temporary,  condition,  ignoreCount):
         """
         Edit breakpoint given by bpNumber.
-        
+
         Return 0 if successful, else str with error information
         """
         if not filename:
             filename = self.defaultFile()
         else:
             filename = self.canonic(filename) # This better be in canonical form!
-        
+
         # Check for reasonable breakpoint
         try:
             line = self._checkline(filename, lineno) #may raise an UnicodeDecodeError or IndexError
@@ -315,7 +315,7 @@ class itoDebugger(bdb.Bdb):
         except UnicodeDecodeError as err:
             # The _ in the error string indicates to not delete the break point.
             return "_Cannot edit breakpoint: " + str(err)
-            
+
         if line > 0:
             #input values are ok, break point can be edited
             try:
@@ -332,10 +332,10 @@ class itoDebugger(bdb.Bdb):
                 return 0
         else:
             return "Cannot edit breakpoint: Line %i in file \"%s\" is an invalid line number, a blank or comment line"  % (lineno, filename)
-    
+
     def clearBreakPoint(self, bpNumber):
         """Clears breakpoint with given bpNumber.
-        
+
         return 0 if done, else str with error
         """
         try:
@@ -357,7 +357,7 @@ class itoDebugger(bdb.Bdb):
             globs = self.curframe.f_globals
         else:
             globs = None
-        
+
         linecache.checkcache(filename) #force linecache to check if file has been update since last getline
         #globs = self.curframe.f_globals if hasattr(self, 'curframe') else None
         try:
@@ -365,7 +365,7 @@ class itoDebugger(bdb.Bdb):
         except UnicodeDecodeError as E:
             E.reason = "{0}. File '{1}', line {2}".format(E.reason,filename,lineno)
             raise #reraise modified error
-            
+
         if(line == ''):
             raise IndexError("Line %d in file \"%s\" is blank or does not exist." % (lineno, filename))
         else:
@@ -373,7 +373,7 @@ class itoDebugger(bdb.Bdb):
             # Don't allow setting breakpoint at a blank line
             if (not line or (line[0] == '#') or (line[:3] == '"""') or line[:3] == "'''"):
                 raise IndexError("Line %d in file \"%s\" is blank or is a comment." % (lineno, filename))
-        
+
         return lineno
 
     def do_where(self, arg):
@@ -660,62 +660,62 @@ class itoDebugger(bdb.Bdb):
             if os.path.exists(fullname):
                 return fullname
         return None
-        
-        
+
+
     def checkSysPath(self,canonicFilename):
         [dir,file] = os.path.split(canonicFilename)
         if( (dir in sys.path) == False):
             sys.path.append(dir)
-    
+
     def debugString(self, codeString):
         # The script has to run in __main__ namespace (or imports from
         # __main__ will break).
         import __main__
         self.minStackIndexToDebug = 4
-        
+
         tempFilename = ""
         if(hasattr(__main__.__dict__ ,  "__file__")):
             tempFilename = __main__.__dict__.__file__
-            
+
         __main__.__dict__.update({"__file__" : "<string>"})
-        
+
         self._wait_for_mainpyfile = False #must be false, otherwise the debugger will not start since there is no function-stack by compiler and exec command, which forces us to check when the real function is finally reached.
         self._wait_for_first_stop = True #if True we are waiting for the first stop (first line), where the debugger is forced to directly continue, if False the debugger is forced to also stop in the first possible line
         self._come_back_from_mainpyfile = False
         self.mainpyfile = "<string>"
         self._user_requested_quit = False
-        
+
         self.reset()
         try:
             compiledCode = compile(codeString, "<string>", mode = "single") #mode = 'single' forces statements that evaluate to something other than None will be printed
             self.runeval(compiledCode)
-        finally: 
+        finally:
             self.clear_all_breaks()
             self.reset()
-            
+
             if(tempFilename != ""):
                 __main__.__dict__.update({"__file__" : tempFilename})
             else:
                 del(__main__.__dict__["__file__"])
-    
+
     def debugFunction(self, fctPointer, args, kwargs = None):
         # The script has to run in __main__ namespace (or imports from
         # __main__ will break).
         import __main__
         self.minStackIndexToDebug = 3
-        
+
         tempFilename = ""
         if(hasattr(__main__.__dict__ ,  "__file__")):
             tempFilename = __main__.__dict__.__file__
-            
+
         __main__.__dict__.update({"__file__" : "<string>"})
-        
+
         self._wait_for_mainpyfile = False #must be false, otherwise the debugger will not start since there is no function-stack by compiler and exec command, which forces us to check when the real function is finally reached.
         self._wait_for_first_stop = True #if True we are waiting for the first stop (first line), where the debugger is forced to directly continue, if False the debugger is forced to also stop in the first possible line
         self._come_back_from_mainpyfile = False
         self.mainpyfile = "<string>"
         self._user_requested_quit = False
-        
+
         self.reset()
         try:
             #for arg in args:
@@ -728,12 +728,12 @@ class itoDebugger(bdb.Bdb):
                 self.runcall(fctPointer,*args,**kwargs)
             self.clear_all_breaks()
             self.reset()
-        finally:    
+        finally:
             if(tempFilename != ""):
                 __main__.__dict__.update({"__file__" : tempFilename})
             else:
                 del(__main__.__dict__["__file__"])
-    
+
     def parseUnicodeError(self, err):
         import re
         m = re.match(r"\(unicode error\) (.*) can't decode byte (0x[0-9a-zA-Z]{1,2}) in position (\d+): (.*)", err.msg)
@@ -756,28 +756,28 @@ class itoDebugger(bdb.Bdb):
             raise #reraise exception
         else:
             raise #reraise exception
-        
+
     def debugScript(self, filename):
         # The script has to run in __main__ namespace (or imports from
         # __main__ will break).
         #
         import __main__
         self.minStackIndexToDebug = 4
-        
+
         tempFilename = ""
         if(hasattr(__main__.__dict__ ,  "__file__")):
             tempFilename = __main__.__dict__.__file__
-            
+
         __main__.__dict__.update({"__file__" : filename})
-        
+
         self._wait_for_mainpyfile = True
         self._wait_for_first_stop = False #if True we are waiting for the first stop (first line), where the debugger is forced to directly continue
         self._come_back_from_mainpyfile = False
         self.mainpyfile = self.canonic(filename)
         self._user_requested_quit = False
-        
+
         self.checkSysPath(self.mainpyfile)
-        
+
         self.reset()
 
         with open(filename, "rb") as fp:
@@ -792,24 +792,24 @@ class itoDebugger(bdb.Bdb):
                 self.parseUnicodeError(err)
             else:
                 raise
-        finally:    
+        finally:
             if(tempFilename != ""):
                 __main__.__dict__.update({"__file__" : tempFilename})
             else:
                 del(__main__.__dict__["__file__"])
-        
-        
+
+
     def runScript(self,  filename):
-        
+
         import __main__
         self.minStackIndexToDebug = 4
-        
+
         tempFilename = ""
         if(hasattr(__main__.__dict__ ,  "__file__")):
             tempFilename = __main__.__dict__.__file__
-            
+
         __main__.__dict__.update({"__file__" : filename})
-        
+
         self.mainpyfile = self.canonic(filename)
         self.checkSysPath(self.mainpyfile)
 
@@ -823,30 +823,29 @@ class itoDebugger(bdb.Bdb):
                 self.parseUnicodeError(err)
             else:
                 raise
-        finally:    
+        finally:
             if(tempFilename != ""):
                 __main__.__dict__.update({"__file__" : tempFilename})
             else:
                 del(__main__.__dict__["__file__"])
-        
+
     def compileScript(self,  filename):
-        
+
         import __main__
         self.minStackIndexToDebug = 4
-        
+
         tempFilename = ""
         if(hasattr(__main__.__dict__ ,  "__file__")):
             tempFilename = __main__.__dict__.__file__
-            
+
         __main__.__dict__.update({"__file__" : filename})
-        
+
         with open(filename, "rb") as fp:
             statement = "compile(%r,%r,'exec')" % \
                         (fp.read(), self.mainpyfile)
         exec(statement,  __main__.__dict__)
-        
+
         if(tempFilename != ""):
             __main__.__dict__.update({"__file__" : tempFilename})
         else:
             del(__main__.__dict__["__file__"])
-

@@ -19,8 +19,8 @@ Displaying geometric shapes or markers onto Qwt-plots can be done by three diffe
 Drawing items into a Qwt-plot
 ==================================
 
-The plot functionality can be accessed by three different ways. The first way is the GUI based approach where the user presses the 
-"switch draw mode"-button in the button-bar of the plot. The button represents the current item to be plotted. 
+The plot functionality can be accessed by three different ways. The first way is the GUI based approach where the user presses the
+"switch draw mode"-button in the button-bar of the plot. The button represents the current item to be plotted.
 The red X ("clear button") will delete all geometric elements within the plot either drawn by hand or by script.
 
 .. figure:: images/drawInto2DToolbarIcons.png
@@ -37,16 +37,16 @@ At the moment "itom" supports the following shapes:
 To draw an item, select the right shape from the **tools >> switch draw mode** menu. The button is then in an active, toggled state and you can start
 by clicking the canvas. For lines, rectangles and ellipses, you have to click once for the first point of the item and another time for the second time.
 During the design mode, a green line indicates the current position and size of the draft, after the last necessary mouse click, the shape design
-is finished and its color turns to the corresponding inverse color of the current color palette. 
-    
+is finished and its color turns to the corresponding inverse color of the current color palette.
+
 .. figure:: images/drawInto2D.png
     :width: 893
     :align: center
 
 By clicking the **tools >> clear marker** menu, all current shapes are deleted. After creation the geometric elements can be edited by left-clicking one of the element handles which becomes high-lighted (squares) and moving the mouse.
-By pressing the "ctrl"-button during mouse-movement the element resize behaviour will be changed depending on the element type. 
+By pressing the "ctrl"-button during mouse-movement the element resize behaviour will be changed depending on the element type.
 Lines will be changed to horizontal or vertical alignment.
-Rectangles and ellipses will be become squares or circles according to plot coordinates (x/y-space) and not pixel coordinates. 
+Rectangles and ellipses will be become squares or circles according to plot coordinates (x/y-space) and not pixel coordinates.
 To avoid confusion with plot aspect, a button for fixed axis aspect ratio ("1:1") was added to the plot bar.
 
 Script based pick and plot from / to a Qwt-widget
@@ -55,23 +55,23 @@ Script based pick and plot from / to a Qwt-widget
 To allow more complex user interaction with scripts, e.g. script based element picking, the plot functionality can be started by script either blocking or non-blocking.
 
 .. code-block:: python
-    
-    myImage = dataObject.randN([200, 200], 'float32')    
+
+    myImage = dataObject.randN([200, 200], 'float32')
     [number, handle] = plot(myImage, "itom2dQwtPlot")
-    
+
     # Blocking access which return the values for a single point in myElement
     shape = handle.drawAndPickElements(plotItem.PrimitivePoint, 1)
     # get center of shape
     shape[0].center
-    
+
     # None blocking plot
     # Structure will be dataObject([1, 11], 'float32') with [idx, type, x, y, 0, 0, 0, 0]
     handle.call("userInteractionStart", plotItem.PrimitivePoint, True, 1)
-    
+
     # --> Read out later after plot is finished
     myGeometry = handle["geometricShapes"]
-    
-    
+
+
 The blocking code will wait until the selection is done or the selection was aborted by user and will than return the corresponding object.
 The non-blocking code will return directly. To access the geometric elements the corresponding "signal" for userInteractionDone should be used to noticed
 the end of the user interaction.
@@ -79,7 +79,7 @@ the end of the user interaction.
 The geometric elements can also be set by script by calling the corresponding slot.
 
 .. code-block:: python
-    
+
     obj = dataObject.zeros([1000,1000])
     [nr,h] = plot(obj, "itom2dqwtplot")
     element=shape(shape.Point,[50,50])
@@ -90,7 +90,7 @@ For more informations see also :ref:`plot-markers`
 The geometric elements can be read any time using the property "geometricShapes".
 
 .. code-block:: python
-    
+
     # Reading geometric elements
     myGeometry = handle["geometricShapes"]
 
@@ -122,25 +122,25 @@ To register changes in the plot elements and finished user interactions, the fol
 *  "plotItemsDeleted",          Emitted, when all plot items are deleted
 *  "plotItemsFinished",         Emitted, when the plotting function is finished, similar to userInteractionDone
 
-For the blocking connection the plotItem-class got the additional function drawAndPickElements(type, dataObject, count), see :py:class:`~itom.plotItem`. 
+For the blocking connection the plotItem-class got the additional function drawAndPickElements(type, dataObject, count), see :py:class:`~itom.plotItem`.
 
 .. note::
-    
-    If the plot is embedded in a graphical user interface, the python based access to the plot via its object name returns an instance of :py:class:`~itom.uiItem`. 
+
+    If the plot is embedded in a graphical user interface, the python based access to the plot via its object name returns an instance of :py:class:`~itom.uiItem`.
     However, you can cast this instance to :py:class:`~itom.plotItem` using a python cast operator:
-    
+
     .. code-block:: python
-        
+
         import itom
         plot = itom.plotItem(myGui.plotObjectName)
-        
+
     If *myGui.plotObjectName* is not an instance of :py:class:`~itom.plotItem` a runtime error is thrown. This cast is only available for itom > 1.4.0.
 
 Indexing for Geometric Elements
 ==================================
 
 The definition of the geometric elements depends on the implementation. The "plotMarker" and its corresponding getter- / setter-function uses a Matlab orientated structure.
-The structure a dataObject with 8 rows and n columns where n depends on the number of elements. 
+The structure a dataObject with 8 rows and n columns where n depends on the number of elements.
 Points are defined by their location, while ellipses and rectangles are defined by their diagonal edges.
 
 The "geometricElements"-property uses geometric elements in a more mathematical orientated description. The dataObject structure is defined as "float32" with n by 11 elements.
@@ -162,7 +162,7 @@ The cells contain:
 4. First coordinate with y value
 
 5. First coordinate with z value
-    
+
 
 All other values depends on the element type and may change between each type.
 
@@ -180,23 +180,22 @@ All other values depends on the element type and may change between each type.
 .. doxygenclass:: ito::Shape::ShapeType
     :project: itom
     :members:
-    
-    
-Evaluation of Geometric Elements 
+
+
+Evaluation of Geometric Elements
 ==================================
 
 The evaluateGeomtrics-widget is designed to load geometric definition stored in a float32 dataObject with a column-size of >10 elements and a row for each geometric element to display.
 Further more it allows the evaluation of geometric relations between the geometric primitives. See section :ref:`listCustomDesignerWidgets` for the widget description.
 
 
-Demo Scripts and Examples 
+Demo Scripts and Examples
 ==================================
 
 - **uiMeasureToolMain.py**
-  
+
   | *Description*: Advanced GUI which enables geometric plotting and measurements within a 2D-QWT-Plot. This file shows how to auto-connect to signals and how to use buttons. The corresponding ui-file is uiMeasureToolMain.ui.
 
 - **demoPickPointsAndMarkers.py**
-  
-  | *Description*: Demo for picking & plotting points and picking & plotting ellipses.
 
+  | *Description*: Demo for picking & plotting points and picking & plotting ellipses.

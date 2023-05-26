@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -23,15 +23,15 @@
     ------------------------
 
     This file belongs to the code editor of itom. The code editor is
-    in major parts a fork / rewritten version of the python-based source 
-    code editor PyQode from Colin Duquesnoy and others 
-    (see https://github.com/pyQode). PyQode itself is licensed under 
+    in major parts a fork / rewritten version of the python-based source
+    code editor PyQode from Colin Duquesnoy and others
+    (see https://github.com/pyQode). PyQode itself is licensed under
     the MIT License (MIT).
 
     Some parts of the code editor of itom are also inspired by the
     source code editor of the Spyder IDE (https://github.com/spyder-ide),
     also licensed under the MIT License and developed by the Spyder Project
-    Contributors. 
+    Contributors.
 
 *********************************************************************** */
 
@@ -94,7 +94,7 @@ void PyCalltipsMode::onStateChanged(bool state)
         else
         {
             disconnect(editor(), SIGNAL(keyReleased(QKeyEvent*)), this, SLOT(onKeyReleased(QKeyEvent*)));
-        }   
+        }
     }
 }
 
@@ -142,7 +142,7 @@ void PyCalltipsMode::onKeyReleased(QKeyEvent *e)
         source = lines.join("\n");
         requestCalltip(source, line, col, encoding);
     }
-    else if (m_disablingKeys.contains(e->key())) 
+    else if (m_disablingKeys.contains(e->key()))
     {
         //QToolTip::hideText();
         ToolTip::hideText();
@@ -303,8 +303,8 @@ void PyCalltipsMode::onJediCalltipResultAvailable(QVector<ito::JediCalltip> call
     QString text;
 
     if (calltips.size() > 0)
-    {       
-        // estimate the number of lines if every argument will be 
+    {
+        // estimate the number of lines if every argument will be
         // in a new line
         int noLines = calltips.size();
 
@@ -325,7 +325,7 @@ void PyCalltipsMode::onJediCalltipResultAvailable(QVector<ito::JediCalltip> call
     }
 
     // set tool tip position at the start of the bracket
-    
+
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 11, 0))
     int char_width = editor()->fontMetrics().horizontalAdvance('A');
 #else
@@ -335,7 +335,7 @@ void PyCalltipsMode::onJediCalltipResultAvailable(QVector<ito::JediCalltip> call
     QRect cursorRect = editor()->cursorRect();
     QPoint position(
         cursorRect.x() - w_offset + editor()->panels()->marginSize(ito::Panel::Left),
-        cursorRect.y() + char_width + //cursorRect.height() + 
+        cursorRect.y() + char_width + //cursorRect.height() +
         editor()->panels()->marginSize(ito::Panel::Top));
     position = editor()->mapToGlobal(position);
 
