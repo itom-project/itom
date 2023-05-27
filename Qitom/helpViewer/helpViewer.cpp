@@ -67,7 +67,7 @@ HelpViewer::HelpViewer(QWidget *parent /*= NULL*/) :
 {
 	this->setWindowTitle(tr("itom documentation"));
     m_pView = new QWebEngineView(this);
-    //m_pView->load(QUrl("http://itom.bitbucket.org"));
+    //m_pView->load(QUrl("https://github.com/itom-project"));
 	m_pFindWord = new WidgetFindWord(this);
 	m_pFindWord->setVisible(false);
 	m_pFindWord->setFindBarEnabled(true, true);

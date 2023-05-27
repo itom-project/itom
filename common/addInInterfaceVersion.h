@@ -100,7 +100,7 @@ static const char* ito_AddInInterface_OldVersions[] = {
     "ito.AddIn.InterfaceBase/4.0.2", //outdated on 2020-09-15 due to additional property 'popupSlider' of 'ParamEditorWidget'
     "ito.AddIn.InterfaceBase/4.1.0", //outdated on 2020-12-14 due to new userMutex in AddInBase
     "ito.AddIn.InterfaceBase/4.2.0", //outdated on 2021-05-19 due to rework of ParamBase, Param, ParamMeta including the new StringList parameter type. Further changes in RetVal interface and bool operator of itom.dataObject.
-    "ito.AddIn.InterfaceBase/5.0.0", //outdated on 2022-05-07 due to bugfix of DObjMeta class (see https://bitbucket.org/itom/itom/issues/197/ito-dobjmeta-allowedtypes-is-wrongly)
+    "ito.AddIn.InterfaceBase/5.0.0", //outdated on 2022-05-07 due to bugfix of DObjMeta class (see https://github.com/itom-project/itom/issues/187)
     NULL
 };
 

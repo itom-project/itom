@@ -5,7 +5,7 @@ Installation from setup
 
 There is a *64bit* setup version of |itom| available (Windows only). For linux users there is no pre-compiled package available.
 The use of the setup version is recommended for users that mainly want to work with |itom| without developing new algorithms or plugins. The setup
-can be downloaded from https://bitbucket.org/itom/itom/downloads. The setup installs the core application, a number of useful hardware plugins and the designer plugins which provide plotting functionalities to |itom|.
+can be downloaded from https://sourceforge.net/projects/itom/files/. The setup installs the core application, a number of useful hardware plugins and the designer plugins which provide plotting functionalities to |itom|.
 
 In the course of installation, a large number of third-party components will be installed along with |itom|. The most important ones are listed in the following:
 

@@ -12,12 +12,12 @@ Build from Sources
     <install-all-in-one-dev-setup>` below for more information.
 
 Alternatively, it is possible to get the sources of |itomproject| (e.g. clone the latest
-Git repository from git@bitbucket.org:itom/itomproject.git), initialize and update the
+Git repository from git@github.com:itom-project/itomProject.git), initialize and update the
 submodules **itom**, **plugins** and **designerplugins**.
 
 .. code-block:: bash
 
-    git clone git@bitbucket.org:itom/itomproject.git
+    git clone git@github.com:itom-project/itomProject.git
     cd itomproject
     git submodule init
     git submodule update

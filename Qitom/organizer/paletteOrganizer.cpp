@@ -378,7 +378,7 @@ PaletteOrganizer::PaletteOrganizer()
     //declare "grayMarked"
     newPalette = ItomPaletteBase("grayMarked", ito::tPaletteGray | ito::tPaletteLinear | ito::tPaletteIndexed);
 
-    // https://bitbucket.org/itom/designerplugins/issues/39/gray-marked-colormap-not-showing
+    // https://github.com/itom-project/designerPlugins/issues/39
     const double tol = 0.0000; //5;
     const double eps = std::numeric_limits<double>::epsilon();
     newPalette.insertColorStop(0.0, Qt::magenta);

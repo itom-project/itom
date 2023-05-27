@@ -164,7 +164,7 @@ Obtain the sources
 
 .. code-block:: bash
 
-git clone git clone git@bitbucket.org:itom/itomproject.git
+git clone git clone git@github.com:itom-project/itomProject.git
     cd itomproject
     git submodule init
     git submodule update

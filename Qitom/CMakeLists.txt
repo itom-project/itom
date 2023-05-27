@@ -742,11 +742,11 @@ if(APPLE)
     set(MACOSX_BUNDLE TRUE)
     set(MACOSX_BUNDLE_BUNDLE_NAME "itom")
     set(MACOSX_BUNDLE_GUI_IDENTIFIER "ITO.itom")
-    set(MACOSX_BUNDLE_INFO_STRING "itom - an Open Source Measurement, Automation and Evaluation Software\nhttp://itom.bitbucket.org")
+    set(MACOSX_BUNDLE_INFO_STRING "itom - an Open Source Measurement, Automation and Evaluation Software\nhttps://github.com/itom-project")
     set(MACOSX_BUNDLE_LONG_VERSION_STRING "${ITOM_VERSION_STRING}")
     set(MACOSX_BUNDLE_SHORT_VERSION_STRING "${ITOM_VERSION_STRING}")
     set(MACOSX_BUNDLE_BUNDLE_VERSION ${ITOM_VERSION_STRING})
-    set(MACOSX_BUNDLE_COPYRIGHT "GNU LGPL with itom exception. Used plugins and libraries might differ. http://itom.bitbucket.org/latest/docs/01_introduction/introduction.html#licensing.")
+    set(MACOSX_BUNDLE_COPYRIGHT "GNU LGPL with itom exception. Used plugins and libraries might differ. https://itom-project.github.io/latest/docs/01_introduction/introduction.html#licensing.")
 
     # Setting icon for OS X
     set(target_icon itomicon.icns)

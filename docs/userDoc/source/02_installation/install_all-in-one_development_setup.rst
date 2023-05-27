@@ -147,7 +147,7 @@ Then execute the following steps:
     3. Setup: clone git directories
 
         This command clones the **itom**, **plugins** and **designerPlugins**
-        repositories from https://bitbucket.org/itom and creates the folders:
+        repositories from https://github.com/itom-project and creates the folders:
 
             * sources/itom
             * sources/plugins

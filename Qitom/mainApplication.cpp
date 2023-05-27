@@ -989,7 +989,7 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
     qDebug("MainApplication::setupApplication .. done");
 
     //std::cout << "\n    Welcome to itom program!\n\n";
-    //std::cout << "    Please report bugs under:\n        https://bitbucket.org/itom/itom/issues\n    Cheers your itom team\n" << std::endl;
+    //std::cout << "    Please report bugs under:\n        https://github.com/itom-project/itom/issues\n    Cheers your itom team\n" << std::endl;
 
     if (m_mainWin)
     {

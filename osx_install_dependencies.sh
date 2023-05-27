@@ -277,9 +277,9 @@ if [[ "$unamestr" == 'Darwin' ]]; then
 		mkdir ~/itom/build_release/plugins
 		mkdir ~/itom/build_release/designerPlugins
 		cd ~/itom/sources
-		git clone https://bitbucket.org/itom/itom.git
-		git clone https://bitbucket.org/itom/plugins.git
-		git clone https://bitbucket.org/itom/designerplugins.git
+		git clone https://github.com/itom-project/itom.git
+		git clone https://github.com/itom-project/plugins.git
+		git clone https://github.com/itom-project/designerPlugins.git
 	fi
 
 	echo " "

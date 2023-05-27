@@ -103,7 +103,7 @@ comma_index = compile_datetime.index(",")
 compile_year = compile_datetime[comma_index - 4 : comma_index]
 copyright = (
     f"2011-{compile_year}, Institut fuer Technische Optik (ITO), "
-    "University Stuttgart. Bug report: https://bitbucket.org/itom/itom/issues"
+    "University Stuttgart. Bug report: https://github.com/itom-project/itom/issues"
 )
 
 
@@ -150,7 +150,7 @@ pygments_style = "sphinx"
 
 # get Qt version. Qt 5.6.0 only has a reduced subset of css commands in the assistant.
 # Therefore, a reduced style theme has to be used (theme quark_spinx_theme
-# from https://bitbucket.org/fk/quark-sphinx-theme)
+# from https://gitlab.com/fkrull/quark-sphinx-theme)
 # This theme was locally copied to the itom-packages folder.
 qt_version = itomVersionInfo["QT_Version"]
 
