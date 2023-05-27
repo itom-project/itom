@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -80,8 +80,8 @@ QMimeData* LastCommandTreeWidget::mimeData(const QList<QTreeWidgetItem*>& items)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-LastCommandDockWidget::LastCommandDockWidget(const QString &title, const QString &objName, 
-        QWidget *parent, bool docked, bool isDockAvailable, 
+LastCommandDockWidget::LastCommandDockWidget(const QString &title, const QString &objName,
+        QWidget *parent, bool docked, bool isDockAvailable,
         tFloatingStyle floatingStyle, tMovingStyle movingStyle) :
     AbstractDockWidget(docked, isDockAvailable, floatingStyle, movingStyle, title, objName, parent),
     m_lastCommandTreeWidget(NULL),
@@ -136,14 +136,14 @@ LastCommandDockWidget::LastCommandDockWidget(const QString &title, const QString
 
         settings.endArray();
     }
-    
+
     settings.endGroup();
 
     m_lastCommandTreeWidget->setItemsExpandable(true);
     m_lastCommandTreeWidget->setExpandsOnDoubleClick(false);
     m_lastCommandTreeWidget->expandAll();
     m_lastCommandTreeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(m_lastCommandTreeWidget, SIGNAL(customContextMenuRequested(const QPoint&)), 
+    connect(m_lastCommandTreeWidget, SIGNAL(customContextMenuRequested(const QPoint&)),
         this, SLOT(treeWidgetContextMenuRequested(const QPoint &)));
 
     if (childItem)
@@ -189,7 +189,7 @@ LastCommandDockWidget::~LastCommandDockWidget()
 
     disconnect(m_lastCommandTreeWidget, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), this, SLOT(itemDoubleClicked(QTreeWidgetItem*, int)));
     disconnect(AppManagement::getMainApplication(), SIGNAL(propertiesChanged()), this, SLOT(propertiesChanged()));
-    
+
     DELETE_AND_SET_NULL(m_lastCommandTreeWidget);
 }
 
@@ -234,7 +234,7 @@ void LastCommandDockWidget::addLastCommand(QString cmd)
         if (m_lastCommandTreeWidget->topLevelItemCount() > 0)
         {
             lastDateItem = m_lastCommandTreeWidget->topLevelItem(m_lastCommandTreeWidget->topLevelItemCount() - 1);
-            
+
             if (lastDateItem->childCount() > 0)
             {
                 lastSavedCommand = lastDateItem->child(lastDateItem->childCount() - 1)->text(0);

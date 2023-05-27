@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -117,7 +117,7 @@ public:
     static ito::PCLPoint PyObjGetPoint(PyObject *val, bool strict, bool &ok);
     static ito::PCLPolygonMesh PyObjGetPolygonMesh(PyObject *val, bool strict, bool &ok);
 
-    
+
     static ito::PCLPointCloud* PyObjGetPointCloudNewPtr(PyObject *val, bool strict, bool &ok);
     static ito::PCLPolygonMesh* PyObjGetPolygonMeshNewPtr(PyObject *val, bool strict, bool &ok);
 #endif
@@ -158,7 +158,7 @@ public:
     static PyObject* DataObjectToPyObject(const ito::DataObject& dObj);
     static PyObject* AddInBaseToPyObject(ito::AddInBase* aib);
 
-    static PyObject* ConvertQtValueToPythonInternal(int type, const void* data); 
+    static PyObject* ConvertQtValueToPythonInternal(int type, const void* data);
 
     static PyObject* QByteArrayToPyUnicode(const QByteArray &ba, const char *errors = "replace");
     static PyObject* QByteArrayToPyUnicodeSecure(const QByteArray &ba, const char *errors = "replace");
@@ -180,11 +180,11 @@ private:
     if any PyObject is converted into a QVariant-object, dataObject or any other class, and if this
     PyObject has a base-pointer unequal to None, this base pointer is incremented during the lifetime of the
     dataObject, passed to QVariant. If this dataObject is destroyed, the baseObjectDeleterDataObject deleter method
-    is called and decrements the base PyObject. 
+    is called and decrements the base PyObject.
 
     Be careful: For decrementing the refcount, the GIL must be hold by this deleter!
     */
-    static QHash<char*,PyObject*> m_pyBaseObjectStorage; 
+    static QHash<char*,PyObject*> m_pyBaseObjectStorage;
     static void baseObjectDeleterDataObject(ito::DataObject *sharedObject);
 };
 

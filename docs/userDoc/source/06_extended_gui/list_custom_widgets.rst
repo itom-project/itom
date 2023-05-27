@@ -14,7 +14,7 @@ These widgets can be used like any other type of widget within an ui-dialog with
 
 2. Some properties are not accessible in the QtDesigner (e.g. actuator-handles or dataObjects) and must be set or read in the script. (They are marked with **DESIGNABLE false** in the **Q_PROPERTY** macro in their header file).
 
-To add such a widget to your ui-file, you can drag&drop them in the QtDesigner like any other widget.  
+To add such a widget to your ui-file, you can drag&drop them in the QtDesigner like any other widget.
 
 The following sub-sections give an overview about some additional itom widgets:
 
@@ -28,18 +28,18 @@ If the read-only property of the table is not set, the user can modify the conte
 to a direct modification of the values in the origin object. It is not possible to change the
 size or type of the displayed dataObject.
 
-.. figure:: images/dataObjectTable.png    
+.. figure:: images/dataObjectTable.png
     :scale: 100%
     :align: center
-    
+
 The figure is taken from the example **dataObjectTableDemo** (demo subfolder **ui/customItomWidgets**).
 In this example, the **dataObjectTable** widget has the object name **table**. You can then assign an
 arbitrary data object to the widget using the following code snippet:
 
 .. code-block:: python
-    
+
     myGui.table["data"] = dataObject.randN([3,4], 'complex64')
-    
+
 Vice-versa, the current dataObject is also obtained by the property **data**.
 
 Properties
@@ -63,7 +63,7 @@ The following properties are often used properties of **dataObjectTable**:
     changes the alignment of the text cells (e.g. "AlignLeft", "AlignCenter", "AlignTop" - see Qt::Alignment)
 * verticalResizeMode : {enumeration: int or str}
     defines the mode how the columns can be resized or are stretched over the available space (ResizeToContents, Interactive, Stretch, Fixed, Custom -> see QHeaderView::ResizeMode).
-* horizontalResizeMode : {seq. of str} 
+* horizontalResizeMode : {seq. of str}
     defines the mode how the rows can be resized or are stretched over the available space (ResizeToContents, Interactive, Stretch, Fixed, Custom -> see QHeaderView::ResizeMode).
 * suffixes : {seq. of str}
     list with suffixes for each column. If less suffixes than columns are indicated, the last suffix is repeated.
@@ -71,11 +71,11 @@ The following properties are often used properties of **dataObjectTable**:
     list with labels for each shown row (if more rows are shown than labels, a default numbering is used for additional rows)
 * horizontalLabels : {seq. of str}
     list with labels for each shown column (if more columns are shown than labels, a default numbering is used for additional columns)
-* defaultRows : {int} 
+* defaultRows : {int}
     number of rows to be shown
-* defaultCols : {int} 
+* defaultCols : {int}
     number of column to be shown
-* editorDecimals : {int} 
+* editorDecimals : {int}
     number of possible decimals during the edit of floating point numbers
 * decimals : {int}
     number of visible decimals for floating point numbers
@@ -102,11 +102,11 @@ Besides the default signals from the base classes of the widget **dataObjectTabl
 In the following example, a python method is connected to the clicked signal such that the coordinates of the current cell
 all printed to the command line (see also example **dataObjectTableDemo**):
 
-.. code-block:: python 
-    
+.. code-block:: python
+
     def cellClicked(row, column):
         print("cell clicked. row:" + str(row) + ", col:" + str(column))
-        
+
     myGui.table.connect("clicked(int,int)", cellClicked)
 
 Copy the table to the clipboard
@@ -114,16 +114,16 @@ Copy the table to the clipboard
 
 It is possible to copy a subpart or the entire table to the clipboard in a csv-ready format. In order to do this
 select a part or the entire table and choose **copy selection** or **copy all** from the context menu (right click
-on the table). 
+on the table).
 
-.. figure:: images/dataObjectTableClipboard.png    
+.. figure:: images/dataObjectTableClipboard.png
     :scale: 100%
     :align: center
-    
+
 The result will look like this (copy selection):
 
 .. code-block:: python
-    
+
     72;113;157;75;78;150;75
     143;83;98;99;170;128;175
     78;89;111;138;73;193;194
@@ -173,7 +173,7 @@ Properties
 **valueUnit**: *QString, DESIGNABLE*, The value unit for the metrical calculations that is used within the plot.
 **titleFont**: *QFont, DESIGNABLE*, Font for title. *Not implemented yet*
 **labelFont**: *QFont, DESIGNABLE*, Font for labels. *Not implemented yet*
-**relations**: *ito::DataObject*, Get or set N geometric elements via N x 11 dataObject of type float32. 
+**relations**: *ito::DataObject*, Get or set N geometric elements via N x 11 dataObject of type float32.
 **relationNames**: *QStringList, DESIGNABLE*, A string list with the names of possible relation. The first elements [N.A., radius, angle to, distance to, intersection with, length and area] are read only and are calculated with these widget. For external calculated values you can define custom names e.g. roughness..
 **destinationFolder**: *QString, DESIGNABLE*, Set a default export directory.
 **lastAddedRelation**: *int, DESIGNABLE*, Get the index of the last added relation.
@@ -182,52 +182,52 @@ Properties
 Slots
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-**ito::RetVal addRelation(ito::DataObject importedData)** 
- 
- Add a relation to the current context. The relation must be 
- 
- *importedData, ito::DataObject*: geometric element expressed by 1 x 4 dataObject of type float32. 
- 
- 
+**ito::RetVal addRelation(ito::DataObject importedData)**
+
+ Add a relation to the current context. The relation must be
+
+ *importedData, ito::DataObject*: geometric element expressed by 1 x 4 dataObject of type float32.
+
+
 **ito::RetVal modifyRelation(const int idx, ito::DataObject relation)**
 
  Modify an existing relation addressed by the idx.
 
  *idx, int*: Index of relation to modify
- 
- *relation, ito::DataObject*: geometric element expressed by 1 x 4 dataObject of type float32. 
 
- 
+ *relation, ito::DataObject*: geometric element expressed by 1 x 4 dataObject of type float32.
+
+
 **ito::RetVal addRelationName(const QString newName)**
- 
+
  Add a new relation name to the relationNameList.
 
  *newName, QString*: new relation name to be appended
- 
- 
+
+
 **ito::RetVal exportData(QString fileName, ito::uint8 exportFlag)**
- 
+
  Export data to csv or xml
 
  *fileName, QString*: Destination file name
- 
+
  *exportFlag, int*: Export flag, exportCSVTree  = 0x00, exportCSVTable = 0x01, exportXMLTree  = 0x02, exportCSVList  = 0x03, showExportWindow = 0x10
- 
- 
+
+
 **ito::RetVal plotItemChanged(ito::int32 idx, ito::int32 flags, QVector<ito::float32> values)**
 
  Slot for direct connection between this widget and a plot (e.g. itom2dQwtPlot) to notify changes within the plotted geometry. Internal relations are automatically updated. External relation values (e.g. roughness) can not be updated automatically.
- 
+
  *idx, int*: Index of the modified geometric element
- 
+
  *flags, int*: Type (and meta properties) of geometric elements which was changed. If type differs from original type clear and refill is necessary.
- 
+
  *values, QVector<ito::float32>*: Geometric parameters of the modified geometric item.
- 
- 
+
+
 **ito::RetVal clearAll(void)**
- 
- Clear all elements and relations in this plot. 
+
+ Clear all elements and relations in this plot.
 
 
 Signals
@@ -272,26 +272,26 @@ Slots
 **void triggerActuatorStep(const int axisNo, const bool smallBig, const bool forward)**
 
  Trigger a step of axis *axisNo* with a distance either *bigStep (true)* or *smallStep (false)* and either *forward (true)* or *backwards (false)*
- 
- 
+
+
 **void actuatorStatusChanged(QVector<int> status, QVector<double> actPosition)**
 
  Internal slot for c++-Code connected to the corresponding signal of the actuator. Do not call this from python.
 
- 
+
 **void triggerUpdatePosition(void)**
- 
+
  Usually called by the internal timer, the context-menu or python to update the current motor position. Uses either Signal-/Slot-communication or invokes getPos blocking.
- 
+
 **void guiChangedSmallStep(double value)**
 
  Internal slot if the small step size is changed within the GUI (spinbox)
- 
+
 
 **void guiChangedLargeStep(double value)**
 
  Internal slot if the large step size is changed within the GUI (spinbox)
- 
+
 
 Signals
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

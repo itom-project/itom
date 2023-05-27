@@ -1,6 +1,6 @@
 //#include <windows.h>
 #include "varray.h"
-#include <stdlib.h> 
+#include <stdlib.h>
 #include <string.h>
 
 void varray_init(struct varray *p_pos,int element_size)

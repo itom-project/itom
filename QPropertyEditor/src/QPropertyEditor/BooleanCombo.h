@@ -43,7 +43,7 @@ signals:
     void boolChanged(bool c);
 
 private slots:
-    void currentChanged(int index);    
+    void currentChanged(int index);
 
 };
 #endif

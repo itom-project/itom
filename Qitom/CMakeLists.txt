@@ -19,13 +19,13 @@
 # along with itom. If not, see <http://www.gnu.org/licenses/>.
 
 cmake_minimum_required(VERSION 3.1)
- 
-set(target_name qitom) 
+
+set(target_name qitom)
 project(${target_name})
- 
+
 message(STATUS "--------------- EXECUTABLE ${target_name} -----------------")
 
-# include commonly used itom CMake macros (internal can only be used within the core projects) 
+# include commonly used itom CMake macros (internal can only be used within the core projects)
 include("../cmake/ItomBuildMacros.cmake")
 include("../cmake/ItomBuildMacrosInternal.cmake")
 
@@ -54,7 +54,7 @@ if(${BUILD_WITH_HELPVIEWER})
     #HELPVIEWER is only available for Qt >= 5.6.0
     #at first, get the available Qt version
     itom_find_package_qt(ON Core)
-    
+
     if (QT5_FOUND AND (Qt5_VERSION VERSION_LESS 5.6.0))
         message(WARNING "BUILD_WITH_HELPVIEWER is set to FALSE, since it is only possible for Qt >= 5.6.0")
         set(BUILD_WITH_HELPVIEWER FALSE)
@@ -64,7 +64,7 @@ endif()
 if(${BUILD_WITH_HELPVIEWER})
     #requires Qt5 and Qt5WebEngine in order to built a built-in help viewer, since QtAssistant only has a limited set of rendering options since Qt5.6.
     itom_find_package_qt(ON Core Widgets UiTools PrintSupport Network Sql Xml OpenGL Svg WebEngineWidgets Help Designer LinguistTools)
-    
+
     if(Qt5WebEngineWidgets_FOUND OR Qt6WebEngineWidgets_FOUND)
         add_definitions(-DUSEHELPVIEWER -D_USEHELPVIEWER)
     else()
@@ -90,15 +90,15 @@ if(BUILD_WITH_PCL)
     else(WIN32)
         find_package(PCL 1.5.1 QUIET REQUIRED COMPONENTS common)
     endif(WIN32)
-    
-    # actually we need this only to configure the itom.bat including vtk, otherwise 
+
+    # actually we need this only to configure the itom.bat including vtk, otherwise
     # eventually pcl-tools plugin will not be loaded
-    find_package(VTK QUIET)    
+    find_package(VTK QUIET)
 endif()
 
 find_package(VisualLeakDetector QUIET)
 find_package(HTMLHelp)
-find_package(LATEX QUIET) 
+find_package(LATEX QUIET)
 
 # set some preprocessor directives
 add_definitions(${Qt5Widgets_DEFINITIONS})
@@ -121,7 +121,7 @@ endif()
 # of itom (e.g. in order to indicate a special combination of plugins,
 # build settings etc.). This optional name is shown in both the startup
 # splashscreen as well as the about dialog of itom.
-set(ITOM_ADDITIONAL_EDITION_NAME "" CACHE 
+set(ITOM_ADDITIONAL_EDITION_NAME "" CACHE
     STRING "Optional, additional name of this itom edition (shown in splashscreen and about dialog)")
 add_definitions( "-DITOM_ADDITIONAL_EDITION_NAME=\"${ITOM_ADDITIONAL_EDITION_NAME}\"")
 
@@ -155,7 +155,7 @@ if(BUILD_WITH_PYMATLAB)
             "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\R2020a;MATLABROOT]"
             "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\R2020b;MATLABROOT]"
         )
-        
+
         if(BUILD_TARGET64)
             set(MATLAB_LIB_SUFFIXES
                 "lib/win64"
@@ -174,7 +174,7 @@ if(BUILD_WITH_PYMATLAB)
     else()
         set(MATLAB_LIB_SUFFIXES)
     endif()
-  
+
     find_path(PYMATLAB_INCLUDE_DIR "engine.h" PATHS ${MATLAB_ROOT_PATH}/extern/include)
     if(NOT PYMATLAB_INCLUDE_DIR)
         message(FATAL_ERROR "BUILD_WITH_PYMATLAB is checked, but PYMATLAB_INCLUDE_DIR could not be found")
@@ -240,7 +240,7 @@ link_directories(
     ${CMAKE_CURRENT_BINARY_DIR}/../AddInManager
     ${CMAKE_CURRENT_BINARY_DIR}/../itomWidgets
 )
- 
+
 set(qitom_HEADERS_NOMOC
     ${CMAKE_CURRENT_SOURCE_DIR}/benchmarks.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInGrabber.h
@@ -520,7 +520,7 @@ set(qitom_RCC
     ${CMAKE_CURRENT_SOURCE_DIR}/qitom.qrc
 )
 
-set(qitom_SOURCES 
+set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/AppManagement.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/global.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
@@ -801,13 +801,13 @@ find_package(Git)
 if(CONSIDER_GIT_SVN AND GIT_FOUND)
     message(STATUS "Using GIT as repository information")
     configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pyGit2Header.py.in ${CMAKE_CURRENT_BINARY_DIR}/pyGit2Header.py )
-    
+
     add_custom_target(
         ${target_name}_versionCheck
         COMMAND    ${Python_EXECUTABLE}
         "${CMAKE_CURRENT_BINARY_DIR}/pyGit2Header.py"
     )
-    
+
     add_dependencies(${target_name} ${target_name}_versionCheck)
 else()
     message(STATUS "Git versioning was not enabled (CONSIDER_GIT_SVN OFF) or git could not be found. Default version.h file is generated")
@@ -917,10 +917,10 @@ if(MSVC)
         target_compile_options(${target_name} PUBLIC "/Zc:__cplusplus") #  "permissive-")
     endif()
 endif()
- 
+
 itom_build_parallel_linux(${target_name})
 
-# for backward compatiblity: enum.py is a default python library from Python 3.4 on. In order to 
+# for backward compatiblity: enum.py is a default python library from Python 3.4 on. In order to
 # also support earlier versoins, enum.py was also part of the itom-packages folder. However, this
 # version is old and creates conflicts with newer versions required by further modern python packages.
 # Therefore, enum.py was removed from itom-packages. If one uses Python 3.3 or earlier, the packages enum34
@@ -1019,17 +1019,17 @@ else(ITOM_BUILD_PACKAGE)
     cmake_path(GET Python_EXECUTABLE PARENT_PATH Python_Itom_Build_Dir)
     configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonBuildDir.h.in ${CMAKE_CURRENT_BINARY_DIR}/python/pythonBuildDir.h)
 endif(ITOM_BUILD_PACKAGE)
- 
+
 #ADD symbols/lib directory in application directory where pdb files will be loaded for debugging (MSVC only)
 if(MSVC)
     file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../symbols/dll )
 endif()
 
-#ADD a batch file for itom-release 
+#ADD a batch file for itom-release
 if(MSVC)
     configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/../itom.bat.in ${CMAKE_CURRENT_BINARY_DIR}/../itom.bat )
     configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/../itomd.bat.in ${CMAKE_CURRENT_BINARY_DIR}/../itomd.bat )
-    
+
     # configuration file for the Google Test Adapter as Visual Studio Extension
     configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/../itom.gta.runsettings.in ${CMAKE_CURRENT_BINARY_DIR}/../itom.gta.runsettings )
 endif()
@@ -1038,12 +1038,10 @@ endif()
 if(MSVC)
     message(STATUS "Using rc-File for version information under windows")
     configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/version.rc.in ${CMAKE_CURRENT_BINARY_DIR}/version.rc )
-    
+
 endif()
 
 # Copying scripts for OS X build process
 if(APPLE)
     file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../osx_install_dependencies.sh DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/..)
 endif(APPLE)
-
-

@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -48,9 +48,9 @@ public:
     struct PropertyPage
     {
         PropertyPage() : m_widget(NULL), m_icon(), m_visited(false) {}
-        PropertyPage(QString name, QString title, QString fullname, 
-            AbstractPropertyPageWidget* widget, QIcon icon) : m_title(title), 
-            m_name(name), m_fullname(fullname), m_widget(widget), 
+        PropertyPage(QString name, QString title, QString fullname,
+            AbstractPropertyPageWidget* widget, QIcon icon) : m_title(title),
+            m_name(name), m_fullname(fullname), m_widget(widget),
             m_icon(icon), m_visited(false) {}
         QString m_title;
         QString m_name;

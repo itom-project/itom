@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -23,15 +23,15 @@
     ------------------------
 
     This file belongs to the code editor of itom. The code editor is
-    in major parts a fork / rewritten version of the python-based source 
-    code editor PyQode from Colin Duquesnoy and others 
-    (see https://github.com/pyQode). PyQode itself is licensed under 
+    in major parts a fork / rewritten version of the python-based source
+    code editor PyQode from Colin Duquesnoy and others
+    (see https://github.com/pyQode). PyQode itself is licensed under
     the MIT License (MIT).
 
     Some parts of the code editor of itom are also inspired by the
     source code editor of the Spyder IDE (https://github.com/spyder-ide),
     also licensed under the MIT License and developed by the Spyder Project
-    Contributors. 
+    Contributors.
 
 *********************************************************************** */
 
@@ -68,14 +68,14 @@ namespace Utils
 
     /*
     Helps retrieving the various part of the user state bitmask.
-   
+
     This helper should be used to replace calls to
-    
+
     ``QTextBlock.setUserState``/``QTextBlock.getUserState`` as well as
     ``QSyntaxHighlighter.setCurrentBlockState``/
     ``QSyntaxHighlighter.currentBlockState`` and
     ``QSyntaxHighlighter.previousBlockState``.
-    
+
     The bitmask is made up of the following fields:
 
         - bit0 -> bit26: User state (for syntax highlighting)
@@ -114,7 +114,7 @@ namespace Utils
     int numlines(const QString &string);
     QStringList splitlines(const QString &string);
     QString signatureWordWrap(QString signature, int width, int totalMaxLineWidth = -1);
-    QStringList parseStyledTooltipsFromSignature(const QStringList &signatures, const QString &docstring, int maxLineLength = 44, int maxDocStrLength = -1);    
+    QStringList parseStyledTooltipsFromSignature(const QStringList &signatures, const QString &docstring, int maxLineLength = 44, int maxDocStrLength = -1);
 };
 
 } //end namespace ito

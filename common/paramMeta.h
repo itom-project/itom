@@ -111,7 +111,7 @@ public:
     explicit ParamMeta(ito::ByteArray category = ito::ByteArray());
 
     //!< constructor used by derived classes to indicate their real type
-    explicit ParamMeta(MetaRtti type, ito::ByteArray category = ito::ByteArray()); 
+    explicit ParamMeta(MetaRtti type, ito::ByteArray category = ito::ByteArray());
 
     ParamMeta(const ParamMeta &copy);
 
@@ -124,13 +124,13 @@ public:
     inline MetaRtti getType() const
     {
         return m_type;
-    } 
+    }
 
     //!< returns category name of this parameter (default: empty ByteArray)
     inline ito::ByteArray getCategory() const
     {
         return m_category;
-    } 
+    }
 
     void setCategory(const ito::ByteArray &category);
 
@@ -162,7 +162,7 @@ public:
     //!< constructor with minimum and maximum value as
     //!< well as optional step size (default: 1)
     explicit CharMeta(char minVal, char maxVal, char stepSize = 1,
-                      ito::ByteArray category = ito::ByteArray()); 
+                      ito::ByteArray category = ito::ByteArray());
 
     CharMeta(const CharMeta &copy);
 
@@ -172,31 +172,31 @@ public:
 
     //!< returns a new instance of CharMeta, where the min and max are set to the full range
     //!< available for char. The caller has to take care of memory.
-    static CharMeta *all(ito::ByteArray category = ito::ByteArray()); 
+    static CharMeta *all(ito::ByteArray category = ito::ByteArray());
 
     //!< returns minimum value
     inline char getMin() const
     {
         return m_minVal;
-    } 
+    }
 
     //!< returns maximum value
     inline char getMax() const
     {
         return m_maxVal;
-    } 
+    }
 
     //!< returns step size
     inline char getStepSize() const
     {
         return m_stepSize;
-    } 
+    }
 
     //!< returns unit
     inline ito::ByteArray getUnit() const
     {
         return m_unit;
-    } 
+    }
 
     //!< sets unit string of this parameter
     void setUnit(const ito::ByteArray &unit);
@@ -205,10 +205,10 @@ public:
     inline ParamMeta::tRepresentation getRepresentation() const
     {
         return m_representation;
-    }                   
-    
+    }
+
     //!< sets display representation
-    void setRepresentation(ParamMeta::tRepresentation representation); 
+    void setRepresentation(ParamMeta::tRepresentation representation);
 
     //! sets the minimum value
     /*!
@@ -255,7 +255,7 @@ class ITOMCOMMON_EXPORT IntMeta : public ParamMeta
     //!< constructor with minimum and maximum value as
     //!< well as optional step size (default: 1)
     explicit IntMeta(int32 minVal, int32 maxVal, int32 stepSize = 1,
-                     ito::ByteArray category = ito::ByteArray()); 
+                     ito::ByteArray category = ito::ByteArray());
 
     IntMeta(const IntMeta &copy);
 
@@ -265,7 +265,7 @@ class ITOMCOMMON_EXPORT IntMeta : public ParamMeta
 
     //!< returns a new instance of IntMeta, where the min and max are set to the full range
     //!< available for integers. The caller has to take care of memory.
-    static IntMeta *all(ito::ByteArray category = ito::ByteArray()); 
+    static IntMeta *all(ito::ByteArray category = ito::ByteArray());
 
     //!< returns minimum value
     inline int32 getMin() const
@@ -289,7 +289,7 @@ class ITOMCOMMON_EXPORT IntMeta : public ParamMeta
     inline ito::ByteArray getUnit() const
     {
         return m_unit;
-    } 
+    }
 
     //!< sets unit string of this parameter
     void setUnit(const ito::ByteArray &unit);
@@ -298,10 +298,10 @@ class ITOMCOMMON_EXPORT IntMeta : public ParamMeta
     inline ParamMeta::tRepresentation getRepresentation() const
     {
         return m_representation;
-    }                                                             
+    }
 
     //!< sets display representation
-    void setRepresentation(ParamMeta::tRepresentation behaviour); 
+    void setRepresentation(ParamMeta::tRepresentation behaviour);
 
     //! sets the minimum value
     /*!
@@ -367,31 +367,31 @@ class ITOMCOMMON_EXPORT DoubleMeta : public ParamMeta
 
     //!< returns a new instance of DoubleMeta, where the min and max are set to the full
     //!< range available for double. The caller has to take care of memory.
-    static DoubleMeta *all(ito::ByteArray category = ito::ByteArray()); 
-    
+    static DoubleMeta *all(ito::ByteArray category = ito::ByteArray());
+
     //!< returns minimum value
     inline float64 getMin() const
     {
         return m_minVal;
-    } 
+    }
 
     //!< returns maximum value
     inline float64 getMax() const
     {
         return m_maxVal;
-    } 
+    }
 
     //!< returns step size
     inline float64 getStepSize() const
     {
         return m_stepSize;
-    } 
+    }
 
     //!< returns unit
     inline ito::ByteArray getUnit() const
     {
         return m_unit;
-    } 
+    }
 
     //!< sets unit string of this parameter
     void setUnit(const ito::ByteArray &unit);
@@ -400,7 +400,7 @@ class ITOMCOMMON_EXPORT DoubleMeta : public ParamMeta
     inline int getDisplayPrecision() const
     {
         return m_displayPrecision;
-    } 
+    }
 
     //!< sets display precision
     void setDisplayPrecision(int displayPrecision);
@@ -421,7 +421,7 @@ class ITOMCOMMON_EXPORT DoubleMeta : public ParamMeta
     }
 
     //!< sets display representation
-    void setRepresentation(ParamMeta::tRepresentation representation); 
+    void setRepresentation(ParamMeta::tRepresentation representation);
 
     //! sets the minimum value
     /*!
@@ -497,13 +497,13 @@ class ITOMCOMMON_EXPORT HWMeta : public ParamMeta
     inline uint32 getMinType() const
     {
         return m_minType;
-    } 
+    }
 
     //!< returns name of specific hardware plugin
     inline ito::ByteArray getHWAddInName() const
     {
         return m_HWName;
-    } 
+    }
 
   private:
     uint32 m_minType;        //!< type-bitmask which is minimally required. default: 0
@@ -741,7 +741,7 @@ class ITOMCOMMON_EXPORT CharArrayMeta : public CharMeta, public ListMeta
 
     //!< assignment operator
     CharArrayMeta &operator=(const CharArrayMeta &rhs);
-    
+
     virtual bool operator==(const ParamMeta &other) const;
 };
 
@@ -828,24 +828,24 @@ class ITOMCOMMON_EXPORT DoubleIntervalMeta : public DoubleMeta
 
     //!< assignment operator
     DoubleIntervalMeta &operator=(const DoubleIntervalMeta &rhs);
-    
+
     //!< returns minimum size of range
     inline float64 getSizeMin() const
     {
         return m_sizeMin;
-    } 
+    }
 
     //!< returns maximum size of range
     inline float64 getSizeMax() const
     {
         return m_sizeMax;
-    } 
+    }
 
     //!< returns step size of size of range
     inline float64 getSizeStepSize() const
     {
         return m_sizeStep;
-    } 
+    }
 
     //! sets the minimum size of the interval (= max-min)
     /*!
@@ -967,24 +967,24 @@ class ITOMCOMMON_EXPORT IntervalMeta : public IntMeta
     IntervalMeta &operator=(const IntervalMeta &rhs);
 
     virtual bool operator==(const ParamMeta &other) const;
-    
+
     //!< returns minimum size of interval or range
     inline int getSizeMin() const
     {
         return m_sizeMin;
-    } 
+    }
 
     //!< returns maximum size of interval or range
     inline int getSizeMax() const
     {
         return m_sizeMax;
-    } 
+    }
 
     //!< returns step size of size of interval or range
     inline int getSizeStepSize() const
     {
         return m_sizeStep;
-    } 
+    }
 
     inline bool isIntervalNotRange() const
     {
@@ -1093,7 +1093,7 @@ class ITOMCOMMON_EXPORT RectMeta : public ParamMeta
     inline ito::ByteArray getUnit() const
     {
         return m_heightMeta.getUnit();
-    } 
+    }
 
     //!< sets unit string of this parameter
     void setUnit(const ito::ByteArray &unit);

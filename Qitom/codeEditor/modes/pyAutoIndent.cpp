@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -23,15 +23,15 @@
     ------------------------
 
     This file belongs to the code editor of itom. The code editor is
-    in major parts a fork / rewritten version of the python-based source 
-    code editor PyQode from Colin Duquesnoy and others 
-    (see https://github.com/pyQode). PyQode itself is licensed under 
+    in major parts a fork / rewritten version of the python-based source
+    code editor PyQode from Colin Duquesnoy and others
+    (see https://github.com/pyQode). PyQode itself is licensed under
     the MIT License (MIT).
 
     Some parts of the code editor of itom are also inspired by the
     source code editor of the Spyder IDE (https://github.com/spyder-ide),
     also licensed under the MIT License and developed by the Spyder Project
-    Contributors. 
+    Contributors.
 
 *********************************************************************** */
 
@@ -75,7 +75,7 @@ PyAutoIndentMode::~PyAutoIndentMode()
 */
 void PyAutoIndentMode::onInstall(CodeEditor *editor)
 {
-    AutoIndentMode::onInstall(editor);   
+    AutoIndentMode::onInstall(editor);
 }
 
 //----------------------------------------------------------
@@ -93,7 +93,7 @@ QPair<QString, QString> PyAutoIndentMode::getIndent(const QTextCursor &cursor) c
     QString fullline = Utils::rstrip(getFullLine(cursor));
     QString line = fullline.left(column);
     QPair<QString, QString> pre_post =AutoIndentMode::getIndent(cursor);
-    
+
     if (atBlockStart(cursor, line))
     {
         return pre_post;
@@ -124,11 +124,11 @@ QPair<QString, QString> PyAutoIndentMode::getIndent(const QTextCursor &cursor) c
     else if (betweenParen(cursor, column))
     {
         return handleIndentBetweenParen(column, line, QPair<QString, QString>(pre, post), cursor);
-    } 
-    else 
+    }
+    else
     {
         QString lastword = getLastWord(cursor);
-        
+
         //hint: the original pyqode checked here the fullline, in itom this was changed to line.
         QString line_rstrip = Utils::rstrip(line);
         bool end_with_op = line_rstrip.endsWith("+") || \
@@ -165,7 +165,7 @@ QPair<QString, QString> PyAutoIndentMode::getIndent(const QTextCursor &cursor) c
         {
             handleIndentAfterParen(cursor, post);
         }
-        else if (!fullline.endsWith("\\") && !fullline.replace(" ", "").endsWith("import*") && 
+        else if (!fullline.endsWith("\\") && !fullline.replace(" ", "").endsWith("import*") &&
                 (end_with_op || !atBlockEnd(cursor, fullline)))
         {
             QString lastwordu = getLastWordUnstripped(cursor);
@@ -184,7 +184,7 @@ QPair<QString, QString> PyAutoIndentMode::getIndent(const QTextCursor &cursor) c
             {
                 post.chop(1); //remove one tab character to go one indent level higher
             }
-            
+
         }
     }
     return QPair<QString, QString>(pre, post);
@@ -194,7 +194,7 @@ QPair<QString, QString> PyAutoIndentMode::getIndent(const QTextCursor &cursor) c
 void PyAutoIndentMode::parensCountForBlock(int column, const QTextBlock &block, int &numOpenParentheses, int &numClosedParentheses) const
 {
     QList<Utils::ParenthesisInfo> parentheses, squareBrackets, braces, all;
-    
+
     Utils::getBlockSymbolData(editor(), block, parentheses, squareBrackets, braces);
     all = parentheses + squareBrackets + braces;
 
@@ -262,7 +262,7 @@ int PyAutoIndentMode::getIndentOfOpeningParen(const QTextCursor &cursor) const
     mapping[')'] = QPair<SymbolMatcherMode::CharType, SymbolMatcherMode::Symbols>(SymbolMatcherMode::Open, SymbolMatcherMode::Paren);
     mapping[']'] = QPair<SymbolMatcherMode::CharType, SymbolMatcherMode::Symbols>(SymbolMatcherMode::Open, SymbolMatcherMode::Square);
     mapping['}'] = QPair<SymbolMatcherMode::CharType, SymbolMatcherMode::Symbols>(SymbolMatcherMode::Open, SymbolMatcherMode::Brace);
-    
+
     if (mapping.contains(character))
     {
         Mode::Ptr symMatcherModePtr = editor()->modes()->get("SymbolMatcherMode");
@@ -334,8 +334,8 @@ QPair<int, QChar> PyAutoIndentMode::getFirstOpenParen(const QTextCursor &cursor,
                     if (paren.position > column)
                     {
                         continue;
-                    } 
-                    else 
+                    }
+                    else
                     {
                         pos = tc_trav.position() + paren.position;
                         character = paren.character;
@@ -437,7 +437,7 @@ QPair<QString, QString> PyAutoIndentMode::handleIndentBetweenParen(int column, c
             // When using tab indents, we indent by one level
             post = QString(open_line_indent + 1, indentChar());
         }
-        
+
     }
 
     // adapt indent if cursor on closing line and next line have same
@@ -486,7 +486,7 @@ QPair<QString, QString> PyAutoIndentMode::handleIndentBetweenParen(int column, c
     if (is_string)
     {
         QTextCursor trav = QTextCursor(cursor);
-        
+
         while (editor()->isCommentOrString(trav, formats))
         {
             trav.movePosition(QTextCursor::Left);
@@ -584,7 +584,7 @@ void PyAutoIndentMode::handleIndentInStatement(const QString &fullline, const QS
             pre += '\\';
         }
     }
-    
+
     post += singleIndent();
 
     if (fullline.endsWith(':'))

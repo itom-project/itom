@@ -12,7 +12,7 @@ and can therefore be integrated in user-defined user interfaces.
 
 itom designer plugins are located in the **designer** subfolder of itom. This folder will also be added as additional
 search directory, if the Qt Designer application is started from itom (only in this case). Then the Qt designer also
-scans this directory for compatible libraries, implemented the Qt designer plugin interface and - in the case of success - 
+scans this directory for compatible libraries, implemented the Qt designer plugin interface and - in the case of success -
 makes the contained widgets available in the list of available widgets.
 
 
@@ -44,14 +44,14 @@ To assure this, the basic interfaces to plot plugins, designer plugins as well a
 version numbers, that following the schematic of semantic versioning (semver.org). While the interface to general itom
 plugins is versioned by the **addInInterface version number** (see the file **SDK/include/common/addInInterfaceVersion.h**),
 the specific interface class to itom plot designer plugins, is versioned by the **itom designerplugin interface number**
-(see the file **SDK/include/plot/designerPluginInterfaceVersion.h**). 
+(see the file **SDK/include/plot/designerPluginInterfaceVersion.h**).
 
 In order to also cover the 2nd point of the binary compatibility list above, the **addInInterface version number** is
 also incremented (following semantic versioning), if one of the libraries of the SDK are changed. Plot specific things
 are covered by the **itom designerplugin interface number**.
 
 .. note::
-    
+
     itom will only load a designer plugin, if the two version numbers, readout from the library, are compatible to the
     required version numbers of the core application of itom. However, problems might occur if an incompatible designer
     widget library is located in the designer folder. Therefore, a message will be shown at startup of itom, that informs
@@ -72,17 +72,17 @@ The header file of this factory class then looks like this:
 
 .. code-block:: c++
     :linenos:
-    
+
     #include "plot/AbstractItomDesignerPlugin.h"
-    
+
     class YourPluginPlotFactory : public ito::AbstractItomDesignerPlugin
     {
         Q_OBJECT
         Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QDesignerCustomWidgetInterface" FILE "pluginMetaData.json")
-    
+
     public:
         YourPluginPlotFactory(QObject *parent = 0);
-        
+
         bool isContainer() const;
         bool isInitialized() const;
         QIcon icon() const;
@@ -95,7 +95,7 @@ The header file of this factory class then looks like this:
         QWidget *createWidget(QWidget *parent);
         QWidget *createWidgetWithMode(ito::AbstractFigure::WindowMode winMode, QWidget* parent);
         void initialize(QDesignerFormEditorInterface *core);
-    
+
     private:
         bool initialized;
     };

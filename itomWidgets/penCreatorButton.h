@@ -46,7 +46,7 @@ public:
     QSize sizeHint() const;
     QPen getPen() const;
     bool getColorState() const;
-     
+
 protected:
     virtual void paintEvent(QPaintEvent* event);
     void changePen();
@@ -60,7 +60,7 @@ public slots:
     void setPen(const QPen &pen);
     void setColorState(const bool &val);
 private:
-        
+
        Q_DECLARE_PRIVATE(PenCreatorButton);
        Q_DISABLE_COPY(PenCreatorButton);
    signals:

@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -23,15 +23,15 @@
     ------------------------
 
     This file belongs to the code editor of itom. The code editor is
-    in major parts a fork / rewritten version of the python-based source 
-    code editor PyQode from Colin Duquesnoy and others 
-    (see https://github.com/pyQode). PyQode itself is licensed under 
+    in major parts a fork / rewritten version of the python-based source
+    code editor PyQode from Colin Duquesnoy and others
+    (see https://github.com/pyQode). PyQode itself is licensed under
     the MIT License (MIT).
 
     Some parts of the code editor of itom are also inspired by the
     source code editor of the Spyder IDE (https://github.com/spyder-ide),
     also licensed under the MIT License and developed by the Spyder Project
-    Contributors. 
+    Contributors.
 
 *********************************************************************** */
 
@@ -46,10 +46,10 @@
 namespace ito {
 
 //---------------------------------------------------------------------
-void PanelsManager::ZoneItems::add(Panel::Ptr p, const QString &name) 
-{ 
-    panels.append(p); 
-    names.append(name); 
+void PanelsManager::ZoneItems::add(Panel::Ptr p, const QString &name)
+{
+    panels.append(p);
+    names.append(name);
 }
 
 //---------------------------------------------------------------------
@@ -84,7 +84,7 @@ Panel::Ptr PanelsManager::ZoneItems::get(const QString &name) const
 
 //---------------------------------------------------------------------
 //---------------------------------------------------------------------
-PanelsManager::PanelsManager(CodeEditor *editor, QObject *parent /*= NULL*/) : 
+PanelsManager::PanelsManager(CodeEditor *editor, QObject *parent /*= NULL*/) :
     Manager(editor, parent),
     m_cachedCursorPos(-1,-1),
     m_top(-1),
@@ -98,7 +98,7 @@ PanelsManager::PanelsManager(CodeEditor *editor, QObject *parent /*= NULL*/) :
 
     connect(this->editor(), SIGNAL(blockCountChanged(int)), this, SLOT(updateViewportMargins()));
     connect(this->editor(), SIGNAL(updateRequest(QRect,int)), this, SLOT(update(QRect,int)));
-    
+
 }
 
 
@@ -132,7 +132,7 @@ QList<Panel::Ptr> PanelsManager::panelsForZoneSortedByOrderReverse(Panel::Positi
 
     QList<Panel::Ptr> panelsOut;
     panelsOut.reserve((int)sortlist.size());
-    
+
     for (size_t i = 0; i < sortlist.size(); ++i)
     {
         panelsOut << sortlist[i].first;
@@ -160,7 +160,7 @@ void PanelsManager::updateViewportMargins()
                 left += width;
             }
         }
-        
+
         foreach (const Panel::Ptr &p, panelsForZone(Panel::Right))
         {
             if (p->isVisible())
@@ -169,7 +169,7 @@ void PanelsManager::updateViewportMargins()
                 right += width;
             }
         }
-        
+
         foreach (const Panel::Ptr &p, panelsForZone(Panel::Top))
         {
             if (p->isVisible())
@@ -178,7 +178,7 @@ void PanelsManager::updateViewportMargins()
                 top += height;
             }
         }
-        
+
         foreach (const Panel::Ptr &p, panelsForZone(Panel::Bottom))
         {
             if (p->isVisible())
@@ -238,7 +238,7 @@ void PanelsManager::update(const QRect & rect, int dy, bool forceUpdateMargins /
             m_cachedCursorPos = QPoint(line, column);
         }
     }
-    
+
     if (rect.contains(e->viewport()->rect()) || \
             forceUpdateMargins)
     {
@@ -303,7 +303,7 @@ Panel::Ptr PanelsManager::get(const QString &nameOrClass)
             return p;
         }
     }
-    
+
     return p;
 }
 
@@ -418,11 +418,11 @@ void PanelsManager::resize()
     int w_offset = crect.width() - (view_crect.width() + tw);
     int h_offset = crect.height() - (view_crect.height() + th);
     QSize size_hint;
-    
+
     //Left
     int left = 0;
     QList<Panel::Ptr> panels = panelsForZoneSortedByOrderReverse(Panel::Left);
-    
+
     foreach(Panel::Ptr p, panels)
     {
         if (p->isVisible())
@@ -440,7 +440,7 @@ void PanelsManager::resize()
     //Right
     int right = 0;
     panels = panelsForZoneSortedByOrderReverse(Panel::Right);
-    
+
     foreach(Panel::Ptr p, panels)
     {
         if (p->isVisible())
@@ -453,7 +453,7 @@ void PanelsManager::resize()
             right += size_hint.width();
         }
     }
-        
+
     //Top
     int top = 0;
     panels = panelsForZoneSortedByOrderReverse(Panel::Top);
@@ -474,7 +474,7 @@ void PanelsManager::resize()
     //Bottom
     int bottom = 0;
     panels = panelsForZoneSortedByOrderReverse(Panel::Bottom);
-    
+
     foreach(Panel::Ptr p, panels)
     {
         if (p->isVisible())

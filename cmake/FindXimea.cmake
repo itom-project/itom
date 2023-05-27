@@ -2,13 +2,13 @@
 #                  Find XIMEA SDK
 #----------------------------------------------------------
 # Applicable for SDK Versions > v4.15.05
-# 
+#
 # The following variables are optionally searched for defaults
 #  XIMEA_SDK ROOT:            Base directory of Ximea SDK tree to use.
 #
 ## 2: Variable
-# The following are set after configuration is done: 
-#  
+# The following are set after configuration is done:
+#
 #  XIMEA_SDK_FOUND		 -> Indicates if SDK has been found
 #  XIMAE_SDK_LIBRARY	 -> list of all necessary libraries to link against. This list also contains
 #  XIMEA_SDK_INCLUDE_DIR -> include directory of Ximea SDK
@@ -33,7 +33,7 @@ SET( XIMEA_LIBRARY_SEARCH_PATH
     /opt/XIMEA/lib
     /usr/lib
     /usr/local/lib
-    /Library/Frameworks/m3api.framework/Libraries	
+    /Library/Frameworks/m3api.framework/Libraries
 	${XIMEA_APIDIR}
 )
 
@@ -41,7 +41,7 @@ SET( XIMEA_BINARY_SEARCH_PATH
     /opt/XIMEA/bin
     /usr/bin
     /usr/local/bin
-    /Library/Frameworks/m3api.framework/Libraries	
+    /Library/Frameworks/m3api.framework/Libraries
 	${XIMEA_APIDIR}
 )
 

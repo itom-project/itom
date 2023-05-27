@@ -89,7 +89,7 @@ TEST(ParamHelperTest, CompareMetaDObjMeta)
 
     DObjMeta dObjMeta6(1, 5, "category4");
     dObjMeta6.appendAllowedDataType(ito::tComplex128);
-    
+
     RetVal ret = retOk;
     auto result = ParamHelper::compareMetaParam(&dObjMeta1, &dObjMeta1, "tmpl", "real", ret);
     EXPECT_EQ(result, tCmpEqual);

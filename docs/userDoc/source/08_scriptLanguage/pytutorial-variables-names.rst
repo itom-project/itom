@@ -2,7 +2,7 @@
 
 .. include:: ../include/global.inc
 
-Variables and names 
+Variables and names
 ====================
 
 .. moduleauthor:: PSchau
@@ -16,17 +16,17 @@ Now you can output things with :py:func:`print` and you can do math. The next st
 
 .. code-block:: python
     :linenos:
-        
+
     width = 10
     depth = 5
     height = 20
-    
+
     area_size = width * depth
     volume = area_size * height
-    
+
     # Variables can be output with print()
     print(area_size)
-    
+
     # The output of strings and variables can be combined
     print("Volume:", volume)
 
@@ -39,9 +39,9 @@ A value can be assigned to several variables simultaneously as seen below. Addit
 
 .. code-block:: python
     :linenos:
-        
+
     width = depth = height = 10
-    
+
     print("The edge lengths of the cube are %d, %d and %d, respectively." % (width, depth, height))
     print("Still the same volume: %d" % (width * depth * height))
 

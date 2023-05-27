@@ -54,7 +54,7 @@ This file usually already contains a lot of subdirectories, added by the CMake-c
     endif(NOT EXISTS ${ITOM_SDK_DIR})
 
     # Insert the following section for your plugin
-    
+
     # by this option, the plugin can be unchecked in order to
     # avoid its generation in cmake.
     OPTION(PLUGIN_YOURNAME "Build with this plugin." ON)
@@ -73,24 +73,24 @@ and project files are then generated in this build directory.
     :align: center
 
 Then click the configure button to start the configuration. At first, you will be asked for a generator. See :ref:`install-cmake` for more information about generators.
-    
+
 .. figure:: images/CMakePlugin2.png
     :scale: 100%
     :align: center
-    
+
 Then, another configuration process is started. Usually, it is now necessary to set the variable **ITOM_SDK_DIR** to the directory of |itom|'s SDK, usually located in |itom|'s build directory. Then click **configure**
 again.
-    
+
 .. figure:: images/CMakePlugin3.png
     :scale: 100%
     :align: center
 
 Next, you probably need to indicate the location of the build-directory of **OpenCV** on your harddrive (variable **OpenCV_DIR** in the group **OpenCV** or **Ungrouped Entries** if you activated the **Grouped** checkbox).
-    
+
 .. figure:: images/CMakePlugin4.png
     :scale: 100%
     :align: center
-    
+
 Continue clicking **configure** until there are no more warnings. Then you can press **Generate** in order to build the project files.
 Change then to the build-directory and open the recently build solution file. In you afterwards change the **CMakeLists.txt**-file, you don't need to explicitly run the CMake-GUI again, since Visual Studio is also
 able to directly run CMake and update its project files.

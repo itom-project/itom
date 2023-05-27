@@ -20,55 +20,55 @@ There are different possibilities to force Python to reload such a changed modul
 At first, let us denote several issues that may happen due to the caching mechanism of |itom|. Consider the following three script files:
 
 .. code-block:: python
-    
+
     #script1.py
     import mod2
-    
+
     print("version 1")
     mod2.func2()
-    
+
 .. code-block:: python
-    
+
     #mod2.py
     import mod3
-    
+
     def func2():
         print("func2, version 1")
         mod3.func3()
-    
+
 .. code-block:: python
-    
+
     #mod3.py
-    
+
     def func3():
         print("func3, version 1")
-        
+
 If *script1.py* is now executed, the modules *mod2* and *mod3* are imported and cached. The output at the first run is::
-    
+
     'version 1'
     'func2, version 1'
     'func3, version 1'
 
 If we change now the strings 'version 1' to 'version 2' in all three files and execute *script1.py* again, the output will be as follows::
-    
+
     'version 2'
     'func2, version 1'
     'func3, version 1'
 
 Only the first line changed, the other two stayed unchanged since *mod2* and *mod3* are still cached. Of course a restart of |itom| would lead to the
 right result::
-    
+
     'version 2'
     'func2, version 2'
     'func3, version 2'
 
 Another possibility would be to reload *mod2* using the Python builtin-module *imp*, since *mod2* is imported by *script1.py*::
-    
+
     import imp
     imp.reload(mod2)
 
 Another execution of *script1.py* will now lead to the following result::
-    
+
     'version 2'
     'func2, version 2'
     'func3, version 1'
@@ -89,7 +89,7 @@ This is controlled by the further options in the submenu **Script >> reload modu
 * autoreload before events and function calls: The check is executed if any python code or function is executed due to an event or signal (e.g. button click in a GUI)
 
 Try to enable the autoreload tool and enable at least the option *autoreload before script execution*. Then change the version strings in all files to 'version 3' and execute script3::
-    
+
     'version 3'
     'func2, version 3'
     'func3, version 3'
@@ -98,36 +98,36 @@ Using this tool, you do not need to worry about reloading any changed modules. T
 The autoreload tool can also be enabled and configured using the command :py:func:`itom.autoReloader`.
 
 Sometimes, you will notice that reloading a module using the *imp* module will fail or not work. Consider the following script::
-    
+
     #mod4.py
-    
+
     class MyRect():
         def __init__(self, height, width):
             self.sizes = [height, width]
-        
+
         def getSizes(self):
             print("size of MyRect", self.sizes)
 
 Now type into the command line::
-    
+
     import mod4
     rect = mod4.MyRect(4,5)
     rect.getSizes()
 
 You will obtain::
-    
+
     'size of MyRect: [4,5]'
 
 If you change now the print-command in the method 'getSizes' of class 'MyRect' to::
-    
+
     print("width:", self.sizes[1], ",height:", self.sizes[0])
 
 and call::
-    
+
     imp.reload(mod4)
 
 in order to reload *mod4.py* again, a call to::
-    
+
     rect.getSizes()
 
 in the command line will still lead to the old result. This is due to the fact, that the *imp* module cannot reload objects that are still referenced by another variable. In this case,
@@ -137,7 +137,7 @@ even if there are already active instances of this class.
 
 The autoreload tool is a way more powerful than the native *imp* implementation. However there are still some limitations:
 
-Reloading Python modules in a reliable way is in general difficult, and unexpected things may occur. 'autoreload' tries to work 
+Reloading Python modules in a reliable way is in general difficult, and unexpected things may occur. 'autoreload' tries to work
 around common pitfalls by replacing function code objects and parts of classes previously in the module with new versions. This makes the following things to work:
 
 * Functions and classes imported via 'from xxx import foo' are upgraded to new versions when 'xxx' is reloaded.

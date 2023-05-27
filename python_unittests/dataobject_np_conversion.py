@@ -260,6 +260,6 @@ class DataObjectNpConversion(unittest.TestCase):
         self.assertEqual(dObj.tags["_orgNpShape"], "[{}]".format(npArray.shape[0]))
         self.assertEqual(dObj.tags["_orgNpDType"], "complex128")
 
-        
+
 if __name__ == "__main__":
     unittest.main(module="dataobject_np_conversion", exit=False)

@@ -7,7 +7,7 @@ ui-elements (ui, uiItem)
 
 uiItem-Class
 ==============
- 
+
 .. autoclass:: itom.uiItem
     :member-order: groupwise
     :members:

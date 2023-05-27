@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -23,15 +23,15 @@
     ------------------------
 
     This file belongs to the code editor of itom. The code editor is
-    in major parts a fork / rewritten version of the python-based source 
-    code editor PyQode from Colin Duquesnoy and others 
-    (see https://github.com/pyQode). PyQode itself is licensed under 
+    in major parts a fork / rewritten version of the python-based source
+    code editor PyQode from Colin Duquesnoy and others
+    (see https://github.com/pyQode). PyQode itself is licensed under
     the MIT License (MIT).
 
     Some parts of the code editor of itom are also inspired by the
     source code editor of the Spyder IDE (https://github.com/spyder-ide),
     also licensed under the MIT License and developed by the Spyder Project
-    Contributors. 
+    Contributors.
 
 *********************************************************************** */
 
@@ -369,9 +369,9 @@ namespace Utils
     {
         //remove whitespaces from the end
         int n = string.size() - 1;
-        for (; n >= 0; --n) 
+        for (; n >= 0; --n)
         {
-            if (!string.at(n).isSpace()) 
+            if (!string.at(n).isSpace())
             {
                 return string.left(n + 1);
             }
@@ -424,7 +424,7 @@ namespace Utils
 
     //---------------------------------------------------------------------------
     /* Wraps a signature by its arguments, separated by ', ' into
-    multiple lines, where each line has a maximum length of 'width'. 
+    multiple lines, where each line has a maximum length of 'width'.
     Each following line is indented by four spaces.*/
     QString signatureWordWrap(QString signature, int width, int totalMaxLineWidth /*= -1*/)
     {
@@ -471,11 +471,11 @@ namespace Utils
     //---------------------------------------------------------------------------
     /*
     the signature is represented as <code> monospace section.
-    this requires much more space than ordinary letters. 
+    this requires much more space than ordinary letters.
     Therefore reduce the maximum line length to 88/2.
     */
     QStringList parseStyledTooltipsFromSignature(
-        const QStringList &signatures, 
+        const QStringList &signatures,
         const QString &docstring,
         int maxLineLength /*= 44*/,
         int maxDocStrLength /*= -1*/)

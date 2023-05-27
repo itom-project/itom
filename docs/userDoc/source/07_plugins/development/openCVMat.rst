@@ -1,4 +1,4 @@
-.. |pt| replace:: Python   
+.. |pt| replace:: Python
 
 OpenCV matrices **cv::Mat** and **cv::Mat_**
 ============================================
@@ -20,7 +20,7 @@ Lets start with two-dimensional matrices
 
 .. code-block:: c++
     :linenos:
-    
+
     cv::Mat A = cv::Mat(int rows, int cols, int type);
     cv::Mat A = cv::Mat(3, 3, CV_32FC2);
 
@@ -37,11 +37,11 @@ Create a multi-dimensional array: create a 100x100x100 8-bit array
 
 .. code-block:: c++
     :linenos:
-    
+
     cv::Mat A = cv::Mat(int ndims, const int* sizes, int type)
-    int Sz[] = {100, 100, 100}; 
-    cv::Mat A = cv::Mat(3, Sz, CV_8U, cv::Scalar::all(0)); 
-    
+    int Sz[] = {100, 100, 100};
+    cv::Mat A = cv::Mat(3, Sz, CV_8U, cv::Scalar::all(0));
+
 It passes the number of dimensions =1 to the Mat constructor but the created array will be 2-dimensional with the number of columns set to 1. So, Mat::dimsis always >= 2 (can also be 0 when the array is empty).
 Use a copy constructor or assignment operator where there can be an array or expression on the right side (seebelow). As noted in the introduction, the array assignment is an O(1) operation because it only copies the headerand increases the reference counter. The Mat::clone() method can be used to get a full (deep) copy of the array when you need it.
 
@@ -56,7 +56,7 @@ Another approach
 rowRange - Range of the m rows to take. As usual, the range start is inclusive and the range end is exclusive. Use Range::all() to take all the rows.
 colRange - Range of the m columns to take. Use Range::all() to take all the columns.
 ranges - Array of selected ranges of m along each dimensionality.
- 
+
 Possible parameter names for matrix **cv::Mat**
 -------------------------------------------------
 
@@ -66,13 +66,13 @@ The parameters which you add to the **cv::Mat**, must have a name which fits to 
 * The first character of the name can be followed by an infinite number of alpha-numerical characters (including characters like *_* or *-*).
 * To create Mat object.
     using create (nrows, ncols, type)
-    where    
-    
+    where
+
     * nrows is number of rows
     * ncols is number of columns
-    
-    type is specified value such as 
-    
+
+    type is specified value such as
+
     #. CV_8UC1 means 8-bit single-channel array,
     #. CV_32FC2 means 2-channel(i.e. complex) floating-point array
     #. CV_8U - 8-bit unsigned integers (0..255)
@@ -90,23 +90,23 @@ The parameters which you add to the **cv::Mat**, must have a name which fits to 
 
     // make 7x7 complex matrix having type of 2-channel floating point array.
     cv::Mat M(7, 7, CV_32FC2);
-    
+
 If the user tries to type same rows and columns for multiplication then,
 
 .. code-block:: c++
     :linenos:
-    
+
     cv::Mat(int rows, int cols, int type)
     cv::Mat A = cv::Mat(3, 3, CV_64FC1);
     cv::Mat B = cv::Mat(3, 3, CV_64FC1);
     cv::Mat C = A.mul(B);
-    
+
 The above example's answer will show in 3*3 matrix according to the types.
 But if the user types
 
 .. code-block:: c++
     :linenos:
-    
+
     cv::Mat(int rows, int cols, int type)
     cv::Mat A = cv::Mat(4, 3, CV_64FC1);
     cv::Mat B = cv::Mat(4, 3, CV_64FC1);
@@ -120,7 +120,7 @@ If the user tries to type different types like CV_64FC1 or CV_32FC1 in matrix th
 
 .. code-block:: c++
     :linenos:
-    
+
     cv::Mat(int rows, int cols, int type)
     cv::Mat A = cv::Mat(4, 3, CV_64FC1 or CV_32FC1);
 
@@ -129,7 +129,7 @@ If the user tries to type different rows and columns for multiplication then the
 
 .. code-block:: c++
     :linenos:
-    
+
     cv::Mat(int rows, int cols, int type)
     cv::Mat A = cv::Mat(3, 4, CV_64FC1);
     cv::Mat B = cv::Mat(4, 3, CV_64FC1);
@@ -139,12 +139,12 @@ The above example's answer will show in 4*3 matrix according to the types.
 Also if the user tries to type different types while performing multiplication then the error:the input arrays in functions have different types, the output array type must be explicitly specified.
 
 
-    
+
 If the user uses ones command then all the elements of matrix will have value 1 and by multiplying it with any number the user will get the multiplied value.
 
 .. code-block:: c++
     :linenos:
-    
+
     cv::Mat F = cv::Mat::ones(3, 4, CV_32FC1) * 3;
 
 
@@ -152,7 +152,7 @@ If the user uses eye command then it will form identity matrix and by multiplyin
 
 .. code-block:: c++
     :linenos:
-    
+
     cv::Mat F = cv::Mat::eye(3, 4, CV_32FC1) * 6;
 
 
@@ -160,45 +160,45 @@ If the user uses zeros command then all the elements of matrix will have value 0
 
 .. code-block:: c++
     :linenos:
-    
+
     cv::Mat F = cv::Mat::zeros(3, 3, CV_32FC1) * 3;
-    
+
 Adressing values in a matrix
 ----------------------------
 Creating a big Matrix
 
 .. code-block:: c++
     :linenos:
-    
+
     cv::Mat W = cv::Mat(100, 100, CV_32FC1);
 
 Creating another header for the same matrix, this is an instant operation regardless of the matrix size.
 
 .. code-block:: c++
     :linenos:
-    
+
     cv::Mat X = W;
 
 Create another header for the 3-rd row of W, no data is copied either and also created separate matrix
 
 .. code-block:: c++
     :linenos:
-    
+
     cv::Mat Y = X.row(3);
     cv::Mat Z = X.clone();
-    
+
 Copying the 2-nd row of X to Y, that is, copy the 2-nd row of to the 3-rd row of W.
 
 .. code-block:: c++
     :linenos:
-    
+
     X.row(2).copyTo(Y);
 
 Now let W and Z share the data; after that the modified version of W is still referenced by X and Y. now make X an empty matrix (which references no memory buffers) but the modified version of W will still be referenced by Y, despite that Y is just a single row of the original W
 
 .. code-block:: c++
     :linenos:
-    
+
     W = Z;
     X.release();
 
@@ -206,13 +206,13 @@ Finally, make a full copy of Y. As a result, the big modified matrix will be dea
 
 .. code-block:: c++
     :linenos:
-    
+
     Y = Y.clone();
 
-    
-    
-    
-    
+
+
+
+
 Shallow copy vs. deep copy
 --------------------------
 
@@ -225,12 +225,12 @@ Locates the matrix header within a parent matrix.
 
 .. code-block:: c++
     :linenos:
-    
-    cv::Mat::locateROI(Size &wholeSize, cv::Point &ofs) const 
+
+    cv::Mat::locateROI(Size &wholeSize, cv::Point &ofs) const
 
 Parameters: * wholeSize - Output parameter that contains the size of the whole matrix containing *this* as a part.
             * ofs - Output parameter that contains an offset of *this* inside the whole matrix.
- 
+
 After you extracted a submatrix from a matrix using Mat::row(), Mat::col(), Mat::rowRange(), Mat::colRange() , and others, the resultant submatrix points just to the part of the original big matrix. However, each submatrix contains information (represented by datastart and dataend fields) that helps reconstruct the original matrix size and the position of the extracted submatrix within the original matrix. The method locateROI does exactly that.
 
 #. cv::Mat::adjustROI
@@ -238,20 +238,20 @@ Adjusts a submatrix size and position within the parent matrix.
 
 .. code-block:: c++
     :linenos:
-    
-    cv::Mat::adjustROI(int dtop, int dbottom, int dleft, int dright) 
+
+    cv::Mat::adjustROI(int dtop, int dbottom, int dleft, int dright)
 
 Parameters: * dtop - Shift of the top submatrix boundary upwards.
             * dbottom - Shift of the bottom submatrix boundary downwards.
             * dleft - Shift of the left submatrix boundary to the left.
             * dright - Shift of the right submatrix boundary to the right.
- 
+
 The method is complimentary to Mat::locateROI() . The typical use of these functions is to determine the submatrix position within the parent matrix and then shift the position somehow. Typically, it can be required for filtering operations when pixels outside of the ROI should be taken into account. When all the method parameters are positive, the ROI needs to grow in all directions by the specified amount,
 for example:
 
 .. code-block:: c++
     :linenos:
-    
+
     A.adjustROI(2, 2, 2, 2);
 
 In this example, the matrix size is increased by 4 elements in each direction. The matrix is shifted by 2 elements to the left and 2 elements up, which brings in all the necessary pixels for the filtering with the 5x5 kernel.
@@ -275,5 +275,3 @@ Advanced operations and functions
 ---------------------------------
 
 filtering (low-pass filter), mean-value, max-value, min-value, median-filter, fourier-transform
-
-

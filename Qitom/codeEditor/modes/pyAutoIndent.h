@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -23,15 +23,15 @@
     ------------------------
 
     This file belongs to the code editor of itom. The code editor is
-    in major parts a fork / rewritten version of the python-based source 
-    code editor PyQode from Colin Duquesnoy and others 
-    (see https://github.com/pyQode). PyQode itself is licensed under 
+    in major parts a fork / rewritten version of the python-based source
+    code editor PyQode from Colin Duquesnoy and others
+    (see https://github.com/pyQode). PyQode itself is licensed under
     the MIT License (MIT).
 
     Some parts of the code editor of itom are also inspired by the
     source code editor of the Spyder IDE (https://github.com/spyder-ide),
     also licensed under the MIT License and developed by the Spyder Project
-    Contributors. 
+    Contributors.
 
 *********************************************************************** */
 
@@ -76,7 +76,7 @@ protected:
     void handleIndentInsideString(const QChar &c, const QTextCursor &cursor, const QString &fullline, QString &post, QString &pre) const;
     QString handleNewScopeIndentation(const QTextCursor &cursor, const QString &fullline) const;
     void handleIndentInStatement(const QString &fullline, const QString &lastword, QString &post, QString &pre) const;
-    void handleIndentAfterParen(const QTextCursor &cursor, QString &post) const; 
+    void handleIndentAfterParen(const QTextCursor &cursor, QString &post) const;
     bool betweenParen(const QTextCursor &cursor, int column) const;
     QPair<int, QChar> getFirstOpenParen(const QTextCursor &tc, int column) const;
     void getParenPos(const QTextCursor &cursor, int column, int &ol, int &oc, int &cl, int &cc) const;

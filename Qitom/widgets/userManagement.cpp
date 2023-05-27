@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -46,7 +46,7 @@ void DialogUserManagement::readModel(const QModelIndex &index)
 
         ito::UserRole role = m_userModel->index(index.row(), UserModel::umiRole).data().value<ito::UserRole>();
         UserFeatures features = m_userModel->index(index.row(), UserModel::umiFeatures).data().value<UserFeatures>();
-            
+
         ui.permissionList->addItem(tr("Role") + ": " + m_userModel->getRoleName(role));
 
         if (features & featDeveloper)
@@ -184,7 +184,7 @@ void DialogUserManagement::on_pushButton_delUser_clicked()
 
     if (uidList.isEmpty())
     {
-        QMessageBox::warning(this, tr("Warning"), 
+        QMessageBox::warning(this, tr("Warning"),
             tr("User ID not found, aborting!"), QMessageBox::Ok);
         return;
     }
@@ -193,7 +193,7 @@ void DialogUserManagement::on_pushButton_delUser_clicked()
 
     if (iniFile != tempPath)
     {
-        QMessageBox::warning(this, tr("Warning"), 
+        QMessageBox::warning(this, tr("Warning"),
             tr("User ID and ini file name mismatch, aborting!"), QMessageBox::Ok);
         return;
     }
@@ -201,14 +201,14 @@ void DialogUserManagement::on_pushButton_delUser_clicked()
     QSettings settings(iniFile, QSettings::IniFormat);
     if (settings.value("ITOMIniFile/name").toString() != name)
     {
-        QMessageBox::warning(this, tr("Warning"), 
+        QMessageBox::warning(this, tr("Warning"),
             tr("User name and ini file user name mismatch, aborting!"), QMessageBox::Ok);
         return;
     }
 
     if (uid == ((ito::UserOrganizer*)AppManagement::getUserOrganizer())->getCurrentUserId())
     {
-        QMessageBox::warning(this, tr("Warning"), 
+        QMessageBox::warning(this, tr("Warning"),
             tr("Cannot delete current user, aborting!"), QMessageBox::Ok);
         return;
     }
@@ -232,7 +232,7 @@ void DialogUserManagement::on_pushButton_delUser_clicked()
         }
 
         loadUserList();
-		
+
         QModelIndex newIndex = m_userModel->index(ui.userList->currentIndex().row(), 0);
 
         if (newIndex.isValid())
@@ -255,12 +255,12 @@ void DialogUserManagement::on_userList_doubleClicked(const QModelIndex & index)
     if (index.isValid() && ui.pushButton_editUser->isEnabled())
     {
         DialogUserManagementEdit *dlg = new DialogUserManagementEdit(
-            m_userModel->index(index.row(), UserModel::umiIniFile).data().toString(), 
-            m_userModel, 
-            nullptr, 
-            Qt::WindowFlags(), 
+            m_userModel->index(index.row(), UserModel::umiIniFile).data().toString(),
+            m_userModel,
+            nullptr,
+            Qt::WindowFlags(),
             !m_userModel->data(index, Qt::EditRole).isValid());
-        
+
         if (dlg->exec() == QDialog::Accepted)
         {
             loadUserList();

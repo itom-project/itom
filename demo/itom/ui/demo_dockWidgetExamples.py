@@ -4,7 +4,7 @@
 Create a dockWidget form the main window at the bottom dock widget area
 The dock widget can be destroyed by deleting the variable, that references to it.
 
-If the dock widget is hidden by clicking the close button, it is hidden and can 
+If the dock widget is hidden by clicking the close button, it is hidden and can
 be re-shown e.g. by the context menu of the toolbar of ``itom``."""
 from itom import ui
 

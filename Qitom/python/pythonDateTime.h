@@ -26,7 +26,7 @@
 #ifndef Q_MOC_RUN
     // see numpy help ::array api :: Miscellaneous :: Importing the api (this line
     // must before include global.h)
-    #define PY_ARRAY_UNIQUE_SYMBOL itom_ARRAY_API 
+    #define PY_ARRAY_UNIQUE_SYMBOL itom_ARRAY_API
     #define NO_IMPORT_ARRAY
 
     #include "python/pythonWrapper.h"

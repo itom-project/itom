@@ -5,7 +5,7 @@
 #    Universitaet Stuttgart, Germany#
 #
 #    This file is part of itom.
-#  
+#
 #    itom is free software; you can redistribute it and/or modify it
 #    under the terms of the GNU Library General Public Licence as published by
 #    the Free Software Foundation; either version 2 of the Licence, or (at
@@ -31,7 +31,7 @@ def getModules():
     result = [ [key] + getModuleFile(value) for key,value in mods.items() ]
     result = sorted(result, key=lambda item: item[0])
     return result
-    
+
 def getModuleFile(mod):
     try:
         #print(mod)
@@ -44,7 +44,7 @@ def getModuleFile(mod):
     except Exception as e:
         #print("Error:", e)
         return ["<build-in>",1]
-        
+
 def reloadModules(modNames):
     import imp
     res = []
@@ -76,33 +76,33 @@ def at(addr):
         if id(o) == addr:
             return o
     return None
-        
+
 def importMatlabMatAsDataObject(value):
     """
     This method is called by loadMatlabMat if the containing element is a numpy-array with a field itomMetaInformation
-    
+
     Then the fields are analyzed and assumed to be tags and additional information for the dataObject.
     """
     import numpy as np
     import itom
-    
+
     if(type(value) is np.ndarray):
         fields = value.dtype.fields
         itomMetaInformation = value["itomMetaInformation"] #str( value.getfield( *(fields["itomMetaInformation"]) ) )
         if(itomMetaInformation == "dataObject"):
             res = itom.dataObject( value["dataObject"].flat[0] )
-            
+
             #res.valueUnit = float(value["valueUnit"])
-            
+
         elif(itomMetaInformation == "npDataObject"):
             res = itom.npDataObject( value["dataObject"].flat[0] )
         else:
             raise RuntimeError('itomMetaInformation unknown')
     else:
         raise RuntimeError('value must be a numpy ndarray')
-    
+
     return res
-    
+
 def clearAll():
     '''
     Clears all the global variables from the workspace except for all function, modules, classes, itom variables and items stored in clearAllState...
@@ -112,14 +112,14 @@ def clearAll():
         return
     else:
         deleted_keywords = []
-        
+
         for var in __main__.__dict__:
             if var[0] == '_':
                 continue
             #ignore the three constants defined by the itom module
             if var in ['BUTTON', 'MENU', 'SEPARATOR'] or var in clearAllState:
                 continue
-                
+
             item = __main__.__dict__[var]
             if isinstance(item, ModuleType) or \
             isinstance(item, FunctionType) or \
@@ -128,14 +128,14 @@ def clearAll():
             isinstance(item, BuiltinFunctionType) or \
             isinstance(item, type):
                 continue
-               
+
             deleted_keywords.append(var)
-           
+
         for key in deleted_keywords:
             del __main__.__dict__[key]
         #call garbage collector to really and immediately remove all flaged variables
         gc.collect()
-        
+
 clearAllState = None
 def getClearAllValues():
     global clearAllState

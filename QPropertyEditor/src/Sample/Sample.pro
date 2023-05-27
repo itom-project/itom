@@ -5,12 +5,12 @@ SOURCES =CustomTypes.cpp \
 		SampleApp.cpp \
         TestClass.cpp \
         TestSubClass.cpp \
-        Vec3fProperty.cpp 
+        Vec3fProperty.cpp
 HEADERS = CustomTypes.h \
 	      SampleApp.h \
 		  TestClass.h \
 		  TestSubClass.h \
-		  Vec3fProperty.h 
+		  Vec3fProperty.h
 FORMS = SampleApp.ui
 
 CONFIG += debug_and_release
@@ -29,7 +29,7 @@ CONFIG(debug, debug|release) {
 	MOC_DIR = ../../Build/Sample/Debug
 }
 
-CONFIG(release, debug|release) { 
+CONFIG(release, debug|release) {
 	LIBS += -lQPropertyEditor
 	TARGET = Sample
 	OBJECTS_DIR = ../../Build/Sample/Release

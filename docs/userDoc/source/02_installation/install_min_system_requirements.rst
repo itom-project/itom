@@ -11,7 +11,7 @@ Before installation, please review the minimum system requirements.
     * Linux based OS (tested with Debian and Ubuntu)
 
 * Processor architectur
-    
+
     * Windows and Linux: 64bit processor architecture, SSE and SSE2 support
     * Mac OS X: All Intel-based Macs with an Intel Core 2 or later
 

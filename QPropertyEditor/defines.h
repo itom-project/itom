@@ -58,7 +58,7 @@
         #define QPROPERTYEDITOR_EXPORT __declspec(dllexport)
         #ifdef ENABLE_INTERNAL_TESTS
             #define QPROPERTYEDITOR_TEST_EXPORT __declspec(dllexport)
-        #endif  
+        #endif
     #else
         #define QPROPERTYEDITOR_EXPORT __declspec(dllimport)
         #ifdef ENABLE_INTERNAL_TESTS

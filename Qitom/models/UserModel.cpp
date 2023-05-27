@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -34,9 +34,9 @@ namespace ito
 */
 UserModel::UserModel()
 {
-    m_headers << tr("Name") << tr("Id") << tr("role") 
+    m_headers << tr("Name") << tr("Id") << tr("role")
               << tr("iniFile") << tr("features") << tr("password");
-    m_alignment << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft) 
+    m_alignment << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft)
                 << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft);
 }
 
@@ -54,7 +54,7 @@ UserModel::~UserModel()
 //-------------------------------------------------------------------------------------
 /** return parent element
 *   @param [in] index   the element's index for which the parent should be returned
-*   @return     the parent element. 
+*   @return     the parent element.
 *
 */
 QModelIndex UserModel::parent(const QModelIndex &index) const
@@ -92,10 +92,10 @@ QVariant UserModel::headerData(int section, Qt::Orientation orientation, int rol
 //-------------------------------------------------------------------------------------
 /** return data elements for a given row
 *   @param [in] index   index for which the data elements should be delivered
-*   @param [in] role    the current role of the model 
+*   @param [in] role    the current role of the model
 *   @return data of the selected element, depending on the element's row and column (passed in index.row and index.column)
 *
-*   This method is actually used to fill the tree view. It returns the data for the selected element, depending as well on the 
+*   This method is actually used to fill the tree view. It returns the data for the selected element, depending as well on the
 *   column of the selected element, passed in index.column. The method here is divded into two parts. The first one handels requests
 *   for root elements (plugins) the second one is used for child elements (instances of plugins).
 */
@@ -107,7 +107,7 @@ QVariant UserModel::data(const QModelIndex &index, int role) const
     {
         return QVariant();
     }
- 
+
     if(role == Qt::DisplayRole)
     {
         switch (index.column())
@@ -183,7 +183,7 @@ QModelIndex UserModel::index(int row, int column, const QModelIndex &parent) con
     {
         return QModelIndex();
     }
-    
+
     return createIndex(row, column);
 }
 
@@ -212,8 +212,8 @@ int UserModel::addUser(const UserInfoStruct &newUser)
 //-------------------------------------------------------------------------------------
 bool UserModel::removeUser(const QModelIndex &index)
 {
-    if (index.row() >= 0 && 
-        index.row() < rowCount() && 
+    if (index.row() >= 0 &&
+        index.row() < rowCount() &&
         index.row() != m_currentUser.row())
     {
         beginRemoveRows(parent(index), index.row(), index.row());
@@ -242,7 +242,7 @@ void UserModel::removeAllUsers()
 }
 
 //-------------------------------------------------------------------------------------
-/* Return the model index to the first column of the user with the given userId. 
+/* Return the model index to the first column of the user with the given userId.
 Returns an invalid QModelIndex if the user could not be found.
 */
 QModelIndex UserModel::getUser(const QString &userId) const
@@ -262,7 +262,7 @@ QModelIndex UserModel::getUser(const QString &userId) const
 
 //-------------------------------------------------------------------------------------
 /*
-Returns true if the user with the given index (the column value of this index 
+Returns true if the user with the given index (the column value of this index
 is ignored) has a password set, else false.
 */
 bool UserModel::hasPassword(const QModelIndex &index) const
@@ -374,7 +374,7 @@ QString UserModel::getRoleName(const UserRole &role) const
     case userRoleAdministrator:
         return tr("Administrator");
     default:
-        return tr("User");   
+        return tr("User");
     }
 }
 

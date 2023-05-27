@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -83,7 +83,7 @@ namespace ito
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------
 ApiFunctions::ApiFunctions() : m_loadFPointer(0)
-{ 
+{
     ITOM_API_FUNCS = ITOM_API_FUNCS_ARR;
 }
 
@@ -325,19 +325,19 @@ ito::RetVal ApiFunctions::mfilterGetFunc(const QString &name, ito::AddInAlgo::Fi
     }
 
     ito::AddInAlgo::FilterDef * fFunc = cfit.value();
-    
+
     //try to cast cfit to FilterDefExt
     ito::AddInAlgo::FilterDefExt *fFuncExt = dynamic_cast<ito::AddInAlgo::FilterDefExt*>(fFunc);
 
     if (fFuncExt == NULL)
     {
         return ito::RetVal::format(
-            ito::retError, 
-            0, 
+            ito::retError,
+            0,
             QObject::tr("Filter '%s' has no progress observer and cancellation interface").toLatin1().data(),
             name.toLatin1().data());
     }
-    
+
     retval += (*(fFuncExt->m_filterFuncExt))(paramsMand, paramsOpt, paramsOut, observer);
 
     return retval;

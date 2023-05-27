@@ -18,7 +18,7 @@ In difference to the optional :ref:`toolboxes <plugin-class-dockWidget>`, the pa
 Usually, the configuration dialog can be opened by the menu or context menu of the plugin toolbox of |itom|. Alternatively, the plugin classes in Python provide the methods:
 
 .. code-block:: python
-    
+
     cam.showConfiguration()
 
 This section describes a possibility to generate such a toolbox.
@@ -45,14 +45,14 @@ The base design of the config dialog is done in **Qt Designer**. The user is ref
     :align: center
 
 it is convenient to realize the OK, Cancel and Apply buttons as widget **QDialogButtonBox**. Click the Ok, Cancel and Apply items of the **standardButtons** property in order to show the desired buttons. It is also allowed to use single buttons for the same behaviour. However, in the following, the dialog button box is used.
-    
+
 Necessary Source Code
 ======================================
 
 After having created the basic user interface in Qt Creator, the config consists of a header and source file. Create the two files in the source directory of the plugin and insert them in the list of header and source files in the plugin's **CMakeLists.txt**. The header file should look like this:
 
 .. code-block:: c++
-    
+
     #ifndef DIALOGYOURPLUGIN_H
     #define DIALOGYOURPLUGIN_H
 
@@ -72,7 +72,7 @@ After having created the basic user interface in Qt Creator, the config consists
         class AddInBase; //forward declaration
     }
 
-    class DialogYourPlugin : public ito::AbstractAddInConfigDialog 
+    class DialogYourPlugin : public ito::AbstractAddInConfigDialog
     {
         Q_OBJECT
 
@@ -92,7 +92,7 @@ After having created the basic user interface in Qt Creator, the config consists
         private slots:
             //auto-connected slot called if ok, apply or cancel is clicked
             void on_buttonBox_clicked(QAbstractButton* btn);
-            
+
             /*Since all parameters are only evaluated and sent
               if one of the buttons are clicked, you usually don't
               need to connect to the specific signals of all widgets.
@@ -106,7 +106,7 @@ After having created the basic user interface in Qt Creator, the config consists
 The header file has an easier structure than the class of a toolbox, since parameters are only evaluated and sent if one of the buttons
 are clicked. Some words about this header file:
 
-* The constructors obtains the pointer to the plugin itself as argument. 
+* The constructors obtains the pointer to the plugin itself as argument.
 * The member **ui** is a reference to the auto-created class of the **ui**-file. By this member you get access to all widgets added in Qt Creator.
 * The member **m_firstRun** can be used to check if the parameters (m_params) of the plugin are send to the config dialog for the first time in order to initialize/configure some widgets at the first run.
 * The slot **parametersChanged** is called if some parameters of the plugin are (externally) changed and is called after the creation of the config dialog (see *firstRun*).
@@ -118,7 +118,7 @@ Now, some hints about the implementation of the different methods in the source 
 The constructor passes the pluginInstance pointer to the constructor of the super class **AbstractAddInDockWidget** and initializes the ui-file:
 
 .. code-block:: c++
-    
+
     DialogYourPlugin::DialogYourPlugin(ito::AddInBase *pluginInstance) :
         AbstractAddInConfigDialog(pluginInstance),
         m_firstRun(true)
@@ -134,33 +134,33 @@ Initialize the widgets depending on the parameters of the plugin and change thei
     {
         //use params (identical to m_params of the plugin)
         //and initialize all widgets (e.g. min, max values, labels, enable some,...)
-        
+
         //if you use two range widgets (class RangeWidget from itomWidgets) for visualizing the ROI,
         //you can directly pass the contraints of the width and height in terms of a ito::RectMeta structure, assigned
         //to the plugin parameter 'roi' to the RangeWidgets:
         /*ito::RectMeta *rm = static_cast<ito::RectMeta*>(params["roi"].getMeta());
         ui.rangeX01->setLimitsFromIntervalMeta(rm->getWidthRangeMeta());
         ui.rangeY01->setLimitsFromIntervalMeta(rm->getHeightRangeMeta());*/
-        
+
         //change the current value of all widgets to the value given in the params map
-        
+
         m_currentParameters = params;
     }
-    
+
 .. note::
-    
+
     In difference to the **parametersChanged** method of the toolboxes, the current set of parameters is saved in the member **m_currentParameters**, defined in **ito::AbstractAddInConfigDialog**. This can then be used to check if a parameter has been changed or not. Only changed parameters should be sent back to the plugin in the **applyParameters** method.
 
 Here is the code for a click on any button of the button box (the objectName of the button box in Qt Designer is **buttonBox**:
 
 .. code-block:: c++
-    
+
     void DialogYourPlugin::on_buttonBox_clicked(QAbstractButton* btn)
     {
         ito::RetVal retValue(ito::retOk);
 
         QDialogButtonBox::ButtonRole role = ui.buttonBox->buttonRole(btn);
-        
+
         //cancel button, emit reject() -> dialog is closed
         if (role == QDialogButtonBox::RejectRole)
         {
@@ -176,7 +176,7 @@ Here is the code for a click on any button of the button box (the objectName of 
             applyParameters(); //ApplyRole
         }
     }
-    
+
 The most important function of these configuration dialogs is the method **applyParameters**. In the following example, these things are mainly done:
 
 * A vector of **QSharedPointer<ito::ParamBase>**, called *values* is created
@@ -185,7 +185,7 @@ The most important function of these configuration dialogs is the method **apply
 * The method usually shows a message box if an error or warning occurs during the *setParam* process (see value *msgLevelWarningAndError*).
 
 .. code-block:: c++
-    
+
     ito::RetVal DialogYourPlugin::applyParameters()
     {
         ito::RetVal retValue(ito::retOk);
@@ -193,14 +193,14 @@ The most important function of these configuration dialogs is the method **apply
         bool success = false;
 
         //only send parameters which are changed
-        
+
         //example for 'colorMode', shown as comboBox in the configDialog
         if (QString::compare(m_currentParameters["colorMode"].getVal<char*>(), ui.comboColorMode->currentText()) != 0)
         {
             values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("colorMode", ito::ParamBase::String, \
                 ui.comboColorMode->currentText().toLatin1().data())));
         }
-        
+
         //check further parameters...
 
         retValue += setPluginParameters(values, msgLevelWarningAndError);
@@ -208,16 +208,16 @@ The most important function of these configuration dialogs is the method **apply
         return retValue;
     }
 
-    
+
 Implement the config dialog in the plugin
 ==========================================
 
 In order to add the configuration dialog in the plugin class, two things need to be done.
 
 1. Overload the method **hasConfDialog** in the public domain of the plugin class (e.g. header file) and return 1 in order to indicate that this plugin has a configuration dialog and define the method **showConfDialog**:
-    
+
     .. code-block:: c++
-        
+
         class YourPlugin : public ...
         {
             ...
@@ -227,9 +227,9 @@ In order to add the configuration dialog in the plugin class, two things need to
         ...
 
 2. Implement **showConfDialog** in the plugin's source file:
-    
+
     .. code-block:: c++
-        
+
         const ito::RetVal YourPlugin::showConfDialog(void)
         {
             return apiShowConfigurationDialog(this, new DockWidgetYourPlugin(this));

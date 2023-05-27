@@ -10,7 +10,7 @@
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
-   
+
     In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
@@ -66,7 +66,7 @@ public:
 
     unsigned int m_type;
 
-    /*!< 
+    /*!<
     * multipoint: like polygons, multiple points
     * point: one point
     * line: start pt, end pt
@@ -74,7 +74,7 @@ public:
     * circle, ellipse: top left, bottom right points of bounding box
     * polygon: polygons
     */
-    QPolygonF m_polygon; 
+    QPolygonF m_polygon;
     QTransform m_transform;
     int m_index; /*!< index of shape, -1: no specific index*/
     QString m_name; /*!< name (label) of shape */
@@ -530,7 +530,7 @@ QPolygonF Shape::contour(bool applyTrafo /*= false*/, qreal tol /*= -1.0*/) cons
                 return poly;
             }
         }
-        break; 
+        break;
     }
     case Ellipse:
     {
@@ -604,7 +604,7 @@ QVector<bool> Shape::contains(const QPolygonF &points) const /*!< repeatedly cal
         QPolygonF pointsInvTrafo = invTrafo.map(points);
         result.resize(pointsInvTrafo.size());
 
-        
+
         switch (type())
         {
             case Point:
@@ -739,7 +739,7 @@ QPolygonF Shape::ramerDouglasPeucker(qreal tol) const
         {
             tol = 0.01 * std::min(rect.width(), rect.height());
         }
-        
+
         if (!rect.isEmpty())
         {
             //move the shape such that the center is the origin, afterwards translate all points back to the real center
@@ -748,7 +748,7 @@ QPolygonF Shape::ramerDouglasPeucker(qreal tol) const
             QPointF p_top(0.0, rect.height() / 2);
             QPointF p_bottom(0.0, -rect.height() / 2);
             QPointF p_center((rect.left() + rect.right()) / 2, (rect.top() + rect.bottom()) / 2);
-            
+
             int next_index = 0;
             RamerDouglasPeuckerData data;
             data.edges << QLineF(p_left, p_bottom) << QLineF(p_bottom, p_right) << QLineF(p_right, p_top) << QLineF(p_top, p_left);
@@ -865,7 +865,7 @@ QPointF Shape::baseCenterPoint() const
 {
 	switch (type())
 	{
-	
+
 	case Point:
 		return d->m_polygon[0];
 	case Polygon:
@@ -1168,7 +1168,7 @@ double Shape::distanceLine2Line2D(const Shape &line1, const Shape &line2)
 
 	double result = 0.0;
 	QPointF dirVec1 = line1.d->m_polygon[1] - line1.d->m_polygon[0];
-	dirVec1 /= std::sqrt(std::pow(dirVec1.x(), 2) + pow(dirVec1.y(), 2)); 	
+	dirVec1 /= std::sqrt(std::pow(dirVec1.x(), 2) + pow(dirVec1.y(), 2));
 	QPointF baseVec1 = line1.d->m_polygon[0];
 
 	QPointF dirVec2 = line2.d->m_polygon[1] - line2.d->m_polygon[0];
@@ -1229,7 +1229,7 @@ double Shape::distanceLine2Line2D(const Shape &line1, const Shape &line2)
 			result = 0.0;
 		}
 	}
-	
+
 	return result;
 }
 
@@ -1468,7 +1468,7 @@ Shape Shape::normalized() const
 ///*static*/ ito::DataObject Shape::maskFromMultipleShapes(const ito::DataObject &dataObject, const QVector<ito::Shape> &shapes, bool inverse /*= false*/)
 //{
 //    ito::DataObject mask;
-//    
+//
 //    if (dataObject.getTotal() > 0)
 //    {
 //        mask.zeros(dataObject.getDims(), dataObject.getSize(), ito::tUInt8);

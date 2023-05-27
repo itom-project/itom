@@ -375,7 +375,7 @@ TYPED_TEST(miscellaneousTests, getXYRotationalMatrix_Test)
 TYPED_TEST(miscellaneousTests, openCVNanMask_Test)
 {
     cv::Mat arr = cv::Mat::zeros(9, 10, CV_32FC1);
-    
+
     for (int r = 3; r< 7; ++r)
     {
         for (int c = 4; c < 8; ++c)
@@ -405,7 +405,7 @@ TYPED_TEST(miscellaneousTests, openCVNanMask_Test)
 //!< similar test than above, taken from https://github.com/opencv/opencv/issues/16465
 //! It is indeed true to compare to matrices with an equal operator, however
 //! if the != operator would be used, the result is undefined!
-int count_NaNs_in_image(int rows, int cols) 
+int count_NaNs_in_image(int rows, int cols)
 {
     cv::Mat1f test(rows, cols);
     test.setTo(std::numeric_limits<float>::quiet_NaN());

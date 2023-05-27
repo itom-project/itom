@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -54,14 +54,14 @@ public:
 
     //-------------------------------------------------------------------------------------------------
     // constructor, deconstructor, alloc, dellaoc
-    //------------------------------------------------------------------------------------------------- 
+    //-------------------------------------------------------------------------------------------------
     static void PyProgressObserver_dealloc(PyProgressObserver *self);
     static PyObject* PyProgressObserver_new(PyTypeObject *type, PyObject *args, PyObject *kwds);
     static int PyProgressObserver_init(PyProgressObserver *self, PyObject *args, PyObject *kwds);
 
     //-------------------------------------------------------------------------------------------------
     // general members
-    //------------------------------------------------------------------------------------------------- 
+    //-------------------------------------------------------------------------------------------------
     static PyObject* PyProgressObserver_repr(PyProgressObserver *self);
     static PyObject* PyProgressObserver_requestCancellation(PyProgressObserver *self);
     static PyObject* PyProgressObserver_reset(PyProgressObserver *self);
@@ -72,7 +72,7 @@ public:
 
     //-------------------------------------------------------------------------------------------------
     // getter / setter
-    //------------------------------------------------------------------------------------------------- 
+    //-------------------------------------------------------------------------------------------------
     static PyObject* PyProgressObserver_getProgressMinimum(PyProgressObserver *self, void *closure);
     static int PyProgressObserver_setProgressMinimum(PyProgressObserver *self, PyObject *value, void *closure);
 
@@ -89,7 +89,7 @@ public:
 
     //-------------------------------------------------------------------------------------------------
     // type structures
-    //------------------------------------------------------------------------------------------------- 
+    //-------------------------------------------------------------------------------------------------
     //static PyMemberDef PyProgressObserver_members[];
     static PyMethodDef PyProgressObserver_methods[];
     static PyGetSetDef PyProgressObserver_getseters[];

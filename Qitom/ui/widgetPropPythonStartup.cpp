@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -56,7 +56,7 @@ void WidgetPropPythonStartup::readSettings()
     settings.beginGroup("Python");
 
     int size = settings.beginReadArray("startupFiles");
-    for (int i = 0; i < size; ++i) 
+    for (int i = 0; i < size; ++i)
     {
         settings.setArrayIndex(i);
 

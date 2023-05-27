@@ -3,7 +3,7 @@
 
 This demo shows how you can set and change the theme of your GUI.
 The style can not be entirely removed to the windows, mac or plastique style
-(usually done by ``setStyle(new QWindowsStyle())``). 
+(usually done by ``setStyle(new QWindowsStyle())``).
 It only resets the style sheet to an empty one, such that the native fallbacks to the
 os dependent style is applied. However, ``Qt::WA_StyledBackground`` is still active.
 """

@@ -1,7 +1,7 @@
 """Create array
 ===============
 
-This demo shows the features of ``numpy`` (https://numpy.org/doc/stable/user/quickstart.html). 
+This demo shows the features of ``numpy`` (https://numpy.org/doc/stable/user/quickstart.html).
 """
 
 import numpy as np

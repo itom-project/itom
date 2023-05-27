@@ -24,13 +24,13 @@
 # along with itom. If not, see <http://www.gnu.org/licenses/>.
 
 cmake_minimum_required(VERSION 3.1)
-  
+
 set(target_name dataobject)
-project(${target_name}) 
+project(${target_name})
 
 message(STATUS "--------------- LIBRARY ${target_name} -----------------")
 
-# include commonly used itom CMake macros (internal can only be used within the core projects) 
+# include commonly used itom CMake macros (internal can only be used within the core projects)
 include("../cmake/ItomBuildMacros.cmake")
 include("../cmake/ItomBuildMacrosInternal.cmake")
 
@@ -46,11 +46,11 @@ find_package(OpenCV COMPONENTS core REQUIRED)
 # set some preprocessor directives
 add_definitions(-DDATAOBJECT_DLL -D_DATAOBJECT_DLL)
 
-include_directories( 
+include_directories(
 )
 
 link_directories(
-    
+
 )
 
 set(libSrcs

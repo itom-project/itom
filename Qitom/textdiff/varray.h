@@ -10,4 +10,3 @@ struct varray{
 void varray_init(struct varray *p_pos,int element_size);
 void varray_deinit(struct varray *p_pos);
 void* varray_get(struct varray *p_pos,int i);
-

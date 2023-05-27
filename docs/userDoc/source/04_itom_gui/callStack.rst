@@ -15,10 +15,10 @@ The corresponding call stack is then visible in the toolbox, like depicted below
 .. figure:: images/callstack.png
     :scale: 100%
     :align: center
-    
+
 A call stack shows the current function stack, which is a nested list of method and function calls. Whenever a method
 or function is called from any part of a script and the debugger stops within this called function, a new line
-is added on top of the callstack. Therefore, the bottom row of the callstack shows the outermost entry. Once 
+is added on top of the callstack. Therefore, the bottom row of the callstack shows the outermost entry. Once
 a method or function is finished (e.g. by a return statement), the corresponding line is removed from the callstack.
 
 By double-clicking on any enabled entry of the call stack, the corresponding python script is opened in |itom| and the position of the debugger
@@ -31,7 +31,7 @@ column than the breakpoints:
     :align: center
 
 .. note::
-    
+
     If you think, that the debugger shows another line in the script that does not correspond to the real executed code, you may need to reload this
     or further scripts. Python has an improved caching mechanism for all modules and packages that have been imported at any place of your script.
     Once imported, the modules and packages are translated in an intermediate file that is cached and saved in a **__pycache__** folder. Further changes

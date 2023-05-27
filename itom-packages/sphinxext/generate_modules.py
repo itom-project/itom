@@ -22,7 +22,7 @@
 """
 This script parse a directory tree looking for python modules and packages and
 create ReST files appropriately to create code documentation with Sphinx.
-It also create a modules index. 
+It also create a modules index.
 """
 
 import os
@@ -270,7 +270,7 @@ def check_excludes(root, excludes):
 
 def check_py_file(files):
     """
-    Return a list with only the python scripts (remove all other files). 
+    Return a list with only the python scripts (remove all other files).
     """
     py_files = [fich for fich in files if os.path.splitext(fich)[1] == ".py"]
     return py_files
@@ -282,7 +282,7 @@ def main():
     """
     parser = optparse.OptionParser(
         usage="""usage: %prog [options] <package path> [exclude paths, ...]
-    
+
 Note: By default this script will not overwrite already created files."""
     )
     parser.add_option(

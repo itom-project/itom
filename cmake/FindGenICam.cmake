@@ -41,29 +41,29 @@ if(GENICAM_INCLUDE_DIR)
         endif(UNIX)
     endif(WIN32)
 
-    find_library(GENICAM_GENAPI_LIBRARY 
-        NAMES 
+    find_library(GENICAM_GENAPI_LIBRARY
+        NAMES
         GenApi_gcc40_v2_3 GenApi_MD_VC120_v3_0 GenApi_MD_VC120_v3_1 GenApi_MD_VC141_v3_2 GenApi_MD_VC141_v3_3 GenApi_MD_VC141_v3_4 GenApi_MD_VC100_v2_3
         PATHS
         ${GENICAM_LIBRARY}
     )
 
-    find_library(GENICAM_GCBASE_LIBRARY 
-        NAMES 
+    find_library(GENICAM_GCBASE_LIBRARY
+        NAMES
         GCBase_gcc40_v2_3 GCBase_MD_VC120_v3_0 GCBase_MD_VC120_v3_1 GCBase_MD_VC141_v3_2 GCBase_MD_VC141_v3_3 GCBase_MD_VC141_v3_4 GCBase_MD_VC100_v2_3
         PATHS
         ${GENICAM_LIBRARY}
     )
 
-    find_library(GENICAM_LOG4CPP_LIBRARY 
-        NAMES 
+    find_library(GENICAM_LOG4CPP_LIBRARY
+        NAMES
         log4cpp_gcc40_v2_3 log4cpp_MD_VC120_v3_0 log4cpp_MD_VC120_v3_1 log4cpp_MD_VC141_v3_2 log4cpp_MD_VC141_v3_3 log4cpp_MD_VC141_v3_4 log4cpp_MD_VC100_v2_3
         PATHS
         ${GENICAM_LIBRARY}
     )
 
-    find_library(GENICAM_LOG_GCC_LIBRARY 
-        NAMES 
+    find_library(GENICAM_LOG_GCC_LIBRARY
+        NAMES
         Log_gcc40_v2_3 Log_MD_VC120_v3_0 Log_MD_VC120_v3_1 Log_MD_VC141_v3_2 Log_MD_VC141_v3_3 Log_MD_VC141_v3_4 Log_MD_VC100_v2_3
         PATHS
         ${GENICAM_LIBRARY}

@@ -31,7 +31,7 @@ You are welcome to use and test **itom**. If you want to you are invited to part
 
 > Germany
 
-in co-operation with 
+in co-operation with
 > [twip Optical Solutions GmbH](http://www.twip-os.com)
 
 > Stuttgart

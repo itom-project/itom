@@ -3,7 +3,7 @@
 
 // This file is a dirty litte trick for the automoccer of qt - we MUST include our python stuff before ANY
 // qt stuff so we make this class which is first in the file list and first in alphabet and gets included
-// in the automoccer cpp file first 
+// in the automoccer cpp file first
 
 #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
 

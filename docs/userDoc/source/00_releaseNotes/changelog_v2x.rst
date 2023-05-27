@@ -195,7 +195,7 @@ Designer Plugins
 * itom1dqwtplot, itom2dqwtplot: slots 'modifyGeometricShape' and 'addGeometricShape' added. Shape indices start with 0 per default to have a default corresponding numbering between position in geometricShapes vector and shape index.
 * itom1dqwtplot, itom2dqwtplot: print / print preview added
 * itom1dqwtplot, itom2dqwtplot: menu restructuring
-* itom1dqwtplot, itom2dqwtplot: hint added to interval settings dialogs 
+* itom1dqwtplot, itom2dqwtplot: hint added to interval settings dialogs
 * itom1dQwtPlot, itom2dQwtPlot: left-bottom corner point of y-left and x-bottom axis is connected
 * itom1dQwtPlot, itom2dQwtPlot: squares and circles can now also be created by the gui in qwt based plots
 * itom1dQwtPlot, itom2dQwtPlot: added functionality of markerInfoWidget and shapeInfoWidget, added PickerWidget to 1D-Plot
@@ -259,7 +259,7 @@ itom
 * user documentation enhanced
 * more demo scripts added
 * fix in package manager for pip >= 8.0.0
-* indexing of itom.dataObject works now also with numpy.array as mask, e.g. myDataObj[myNpArray > 0.5] = 2 
+* indexing of itom.dataObject works now also with numpy.array as mask, e.g. myDataObj[myNpArray > 0.5] = 2
 * setVal of ito::Param now also works with const pointers, e.g. const ito::DataObject*.
 * ito::autoInterval and itom.autoInterval (Python) homogenized: The default is always (-inf,+inf) and auto = True!
 * ui-properties of type dataIO and actuator can be read by python.
@@ -524,7 +524,7 @@ itom
 * introduction of Python Package Manager (via module pip). This dialog allows updating and installing python packages and its dependencies from pypi.python.org or wheel files.
 * :py:meth:`~itom.pointCloud.fromXYZRGBA` and :py:meth:`~itom.polygonMesh.fromOrganizedCloud` added.
 * demo about statusbar in main windows added
-* fix in DataObject::mul and DataObject::div: axis tags and tag map from first operand are copied to resulting object. 
+* fix in DataObject::mul and DataObject::div: axis tags and tag map from first operand are copied to resulting object.
 * new api methods *apiSendParamToPyWorkspace* and *apiSendParamsToPyWorkspace* added.
 * removal of unused DataObject::lockRead(), DataObject::unlock(), DataObject::lockWrite() methods.
 * support for Mac OSX, 64bit. The build process is mainly supported by the package *brew*.
@@ -600,7 +600,7 @@ Designer Plugins
 * itom2dqwtplot: z-slice can only be started at positions inside of the object
 * vtk3dvisualizer: camera position and view can now be set, commands 'addText' and 'updateText' added, geometry items can now have properties like specular, specularPower, specularColor
 * vtk3dvisualizer: support for Qt4/5 and VTK5/6
-* itom2dqwtplot: non-finite values are displayed as transparent pixels 
+* itom2dqwtplot: non-finite values are displayed as transparent pixels
 
 
 Version 1.4.0 (2015-02-17)
@@ -651,7 +651,7 @@ itom
 * RangeSlider widgets now have the properties minimumRange, maximumRange, stepSizeRange, stepSizePosition
 * some new widgets added to itomWidgets project
 * IntervalMeta, RangeMeta, DoubleIntervalMeta, CharArrayMeta, IntArrayMeta, DoubleArrayMeta, RectMeta added as inherited classes from paramMeta. AddInInterface incremented to 1.3.1.
-* bugfix in dataObject when creating a huge (1000x500x500, complex128) object (continuous mode). 
+* bugfix in dataObject when creating a huge (1000x500x500, complex128) object (continuous mode).
 * method :py:class:`uiItem.exists` added in order to check if the widget, wrapped by uiItem, still exists.
 * bugfix in squeezeConvertCheck2DDataObject if numberOfAllowedTypes = 0 (all types allowed)
 * Python script navigator added to script editor window (dropdown boxes for classes and methods)
@@ -713,7 +713,7 @@ Designer Plugins
 * itom1dqwtplot: rounding fix in order to show the right data to given z-stack-cut coordinates.
 * improvements in itom2dqwtplot: z-stack picker obtains the general color set including a semi-transparent background box; the z-plane can be selected via a property 'planeIndex'
 * itom2dqwtplot: z-stack and linecut window has an appropriate window title
-* itom1dqwtplot, itom2dqwtplot: Working on an improved geometric element handling (e.g. modes for move, modify points) Adapted type switches and comparisons to handle flagged geometric elements via type ito::PrimitiveContainer::tTypeMask 
+* itom1dqwtplot, itom2dqwtplot: Working on an improved geometric element handling (e.g. modes for move, modify points) Adapted type switches and comparisons to handle flagged geometric elements via type ito::PrimitiveContainer::tTypeMask
 * itom1dqwtplot, itom2dqwtplot: Added new icons for geometric element modification.
 * Added shift and alt modifier to itom2dqwtplot to move / rotate geometric lines with fixed length
 * update to qwt 6.1.2 for compability with Qt 5.4
@@ -783,7 +783,7 @@ itom
 * improvements to reject the insertion of breakpoints in commented or empty lines
 * improved breakpoint toolbox that allows en-/disabling single or all breakpoints, deleting breakpoints... Breakpoints are reloaded at new startup.
 * unused or duplicated code removed and cleaned
-* project *itomWidgets* synchronized to changes in mother project commonCTK 
+* project *itomWidgets* synchronized to changes in mother project commonCTK
 * german translations improved
 * itom and the plugins now support a build with Qt5. The setup is still compiled with Qt4.8.
 * support for CMake 3.0 added
@@ -827,7 +827,7 @@ Designer Plugins
 * Fixes a bug that showed errors when a linecut and a z-stack-cut of *itom2dqwtplot* and a 3d data object is visible at the same time
 * Mode for single and multi row or column display of *itom1dqwtplot* for 2d data objects as input
 * Center marker in *itom2dqwtplot* can be adjusted in size and pen using the general style settings for designer plugins (itom.ini setting file only)
-* improvements and rework of zoomer, panner and magnifier with or without fixed aspect ratio for *itom2dqwtplot* and *itom1dqwtplot* 
+* improvements and rework of zoomer, panner and magnifier with or without fixed aspect ratio for *itom2dqwtplot* and *itom1dqwtplot*
 * magnifier of *itom2dqwtplot* and *itom1dqwtplot* now also works with Ctrl+mousewheel
 * pickPoints event now also works in *itom2dqwtplot* if the zoomed rectangle or the magnification is changed during interaction
 * improved unit switches in GUI in *motorController*
@@ -975,4 +975,3 @@ Version 1.0.14 (2014-09-02)
 ***************************
 
 there is no continuous changelog for these version
-

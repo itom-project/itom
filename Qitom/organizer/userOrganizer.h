@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -63,11 +63,11 @@ class UserOrganizer : public QObject
 		bool currentUserHasFeature(const UserFeature &feature);
 
         inline UserModel* getUserModel() const { return m_userModel; }
-        
-        ito::RetVal readUserDataFromFile(const QString &filename, QString &username, QString &uid, UserFeatures &features, 
+
+        ito::RetVal readUserDataFromFile(const QString &filename, QString &username, QString &uid, UserFeatures &features,
             UserRole &role, QByteArray &password, QDateTime &lastModified);
 
-        ito::RetVal writeUserDataToFile(const QString &username, const QString &uid, const UserFeatures &features, 
+        ito::RetVal writeUserDataToFile(const QString &username, const QString &uid, const UserFeatures &features,
             const UserRole &role, const QByteArray &password, const bool &standardUser = false);
 
         ito::RetVal loadSettings(const QString &userId); //use an empty userId to get the selection dialog of select the standard user
@@ -86,7 +86,7 @@ class UserOrganizer : public QObject
         QString m_lastOpenedUserName;
 
         UserModel *m_userModel;
-        
+
 };
 
 } // namespace ito

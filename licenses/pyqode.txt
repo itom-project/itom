@@ -2,7 +2,7 @@ PyQode
 ---------------------------
 
 The core application of itom has an integrated script editor and command line
-that is a C++ port (realized by itom developers) and modified version of 
+that is a C++ port (realized by itom developers) and modified version of
 the PyQode project (version 2.12.2a4).
 
 The PyQode project is licensed under the MIT license.

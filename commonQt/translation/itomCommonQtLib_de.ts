@@ -19,10 +19,6 @@
         <translation type="unfinished">Der Plugin-Name ist nicht definiert. Es wurde keine XML-Datei geladen</translation>
     </message>
     <message>
-        <source>ParamList not inialized properly</source>
-        <translation type="obsolete">Die ParamList wurde nicht richtig inizialisiert</translation>
-    </message>
-    <message>
         <location filename="../../common/sources/sharedFunctionsQt.cpp" line="239"/>
         <source>ParamList not properly initialized</source>
         <translation>ParamList nicht korrekt initialisiert</translation>
@@ -589,10 +585,6 @@ Typkonflikt für &apos;%1&apos;</translation>
         <location filename="../../common/sources/helperCommon.cpp" line="1148"/>
         <source>RegularExpression</source>
         <translation>Regulärer Ausdruck</translation>
-    </message>
-    <message>
-        <source>RegExp</source>
-        <translation type="vanished">Regulärer Ausdruck</translation>
     </message>
     <message>
         <location filename="../../common/sources/helperCommon.cpp" line="1165"/>

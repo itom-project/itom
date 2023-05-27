@@ -3,7 +3,7 @@
 Miscellaneous
 ###################
 
-Some miscellaneous stuff: 
+Some miscellaneous stuff:
 
 .. toctree::
    :maxdepth: 1

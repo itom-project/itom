@@ -210,7 +210,7 @@ QSize BrushCreatorButton::sizeHint() const
     opt.icon = d->m_icon;
     opt.iconSize = QSize(iconSize, iconSize);
     opt.rect.setSize(opt.iconSize); // PM_MenuButtonIndicator depends on the height
-    
+
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
     d->m_sizeHintCache = this->style()
                              ->sizeFromContents(QStyle::CT_ToolButton, &opt, opt.iconSize, this);
@@ -222,4 +222,3 @@ QSize BrushCreatorButton::sizeHint() const
 
     return d->m_sizeHintCache;
 }
-

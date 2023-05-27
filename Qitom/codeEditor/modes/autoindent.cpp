@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -23,15 +23,15 @@
     ------------------------
 
     This file belongs to the code editor of itom. The code editor is
-    in major parts a fork / rewritten version of the python-based source 
-    code editor PyQode from Colin Duquesnoy and others 
-    (see https://github.com/pyQode). PyQode itself is licensed under 
+    in major parts a fork / rewritten version of the python-based source
+    code editor PyQode from Colin Duquesnoy and others
+    (see https://github.com/pyQode). PyQode itself is licensed under
     the MIT License (MIT).
 
     Some parts of the code editor of itom are also inspired by the
     source code editor of the Spyder IDE (https://github.com/spyder-ide),
     also licensed under the MIT License and developed by the Spyder Project
-    Contributors. 
+    Contributors.
 
 *********************************************************************** */
 
@@ -65,21 +65,21 @@ AutoIndentMode::~AutoIndentMode()
 */
 void AutoIndentMode::onStateChanged(bool state)
 {
-    if (state && 
+    if (state &&
         (m_enableAutoIndent || m_autoStripTrailingSpacesAfterReturn))
     {
         // maybe the connection already exists.
         connect(
-            editor(), &CodeEditor::keyPressed, 
+            editor(), &CodeEditor::keyPressed,
             this, &AutoIndentMode::onKeyPressed,
             Qt::UniqueConnection);
     }
     else
     {
         disconnect(
-            editor(), &CodeEditor::keyPressed, 
+            editor(), &CodeEditor::keyPressed,
             this, &AutoIndentMode::onKeyPressed);
-    }       
+    }
 }
 
 //----------------------------------------------------------
@@ -223,12 +223,12 @@ void AutoIndentMode::onKeyPressed(QKeyEvent *e)
                         cursor.movePosition(QTextCursor::EndOfLine, QTextCursor::KeepAnchor);
                         cursor.removeSelectedText();
                     }
-                    
+
                 }
             }
 
             cursor.endEditBlock();
-            
+
             e->accept();
         }
     }

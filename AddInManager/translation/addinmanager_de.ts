@@ -248,10 +248,6 @@
         <translation type="unfinished">Wildcard-Übereinstimmung: (%1)</translation>
     </message>
     <message>
-        <source>RegExp match: (%1)</source>
-        <translation type="obsolete">Übereinstimmung des regulären Ausdrucks: (%1)</translation>
-    </message>
-    <message>
         <location filename="../paramHelper.cpp" line="878"/>
         <source>String &apos;%s&apos; does not fit to given string-constraints. %1</source>
         <translation type="unfinished">Der String &apos;%s&apos; entspricht nicht der Vorgabe. %1</translation>
@@ -288,10 +284,6 @@
         <location filename="../paramHelper.cpp" line="1191"/>
         <source>AddIn must be of the following plugin: &apos;%s&apos;.</source>
         <translation type="unfinished">Das AddIn muss folgendes Plugin sein: &apos;%s&apos;.</translation>
-    </message>
-    <message>
-        <source>AddIn must not be NULL</source>
-        <translation type="obsolete">Das AddIn darf nicht NULL sein</translation>
     </message>
     <message>
         <location filename="../paramHelper.cpp" line="1225"/>
@@ -727,10 +719,6 @@
         <location filename="../addInManagerPrivate.cpp" line="495"/>
         <source>AddIn &apos;%1&apos; could not be loaded. Error message: %2</source>
         <translation>Das AddIn &apos;%1&apos; konnte nicht geladen werden. Fehlermeldung: %2</translation>
-    </message>
-    <message>
-        <source>Caught exception during loading of plugin: %1</source>
-        <translation type="vanished">Beim Laden des Plugins wurde eine Ausnahme empfangen: %1&apos;</translation>
     </message>
     <message>
         <location filename="../addInManagerPrivate.cpp" line="532"/>

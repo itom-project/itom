@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -77,7 +77,7 @@ void HelpDockWidget::createActions()
 
     m_pActExpand = new QAction(QIcon(":/editor/icons/editSmartIndent.png"), tr("expand tree"), this);
     connect(m_pActExpand, SIGNAL(triggered()), m_pHelpWidget, SLOT(expandTree()));
-    
+
     m_pActCollapse = new QAction(QIcon(":/editor/icons/editUnindent.png"), tr("collapse tree"), this);
     connect(m_pActCollapse, SIGNAL(triggered()), m_pHelpWidget, SLOT(collapseTree()));
 
@@ -100,7 +100,7 @@ void HelpDockWidget::createMenus()
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void HelpDockWidget::createToolBars()
-{        
+{
     m_pMainToolbar = new QToolBar(tr("navigation"), this);
     m_pMainToolbar->setObjectName("toolbarHelp");
     m_pMainToolbar->setContextMenuPolicy(Qt::PreventContextMenu);

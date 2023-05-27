@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -61,7 +61,7 @@ namespace ito
 
         if (currentScreen)
         {
-            dpi = currentScreen->logicalDotsPerInch(); 
+            dpi = currentScreen->logicalDotsPerInch();
             //qDebug() << "logical" << dpi << "physical" << currentScreen->physicalDotsPerInch();
         }
         else
@@ -195,8 +195,8 @@ namespace ito
 
     //-------------------------------------------------------------------------------------
     /* returns a screen dpi scaling factor >= 1. A factor of 1 is related to a default
-       screen resolution of 96dpi. A factor higher than 1 is the factor between 
-       real screen resolution and 96dpi. 
+       screen resolution of 96dpi. A factor higher than 1 is the factor between
+       real screen resolution and 96dpi.
     */
     float GuiHelper::screenDpiFactor(const QPoint* pos /*= nullptr*/)
     {

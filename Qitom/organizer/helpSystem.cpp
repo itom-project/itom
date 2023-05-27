@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -221,7 +221,7 @@ RetVal HelpSystem::scanPluginQhpFiles(quint16 &checksum)
     QString checksumString;
     QFileInfo fileInfo;
     int i;
-    
+
     //plugin base folder
     appPath.setPath(QDir::cleanPath(QCoreApplication::applicationDirPath()));
     i=1;
@@ -412,7 +412,7 @@ RetVal HelpSystem::rebuildHelpCollection(QStringList &qchFiles, quint16 checksum
     }
 
     //copy all qchFiles to m_helpDirectory
-    
+
     foreach(const QString &fileName, qchFiles)
     {
         file.setFileName(fileName);
@@ -484,7 +484,7 @@ RetVal HelpSystem::rebuildHelpCollection(QStringList &qchFiles, quint16 checksum
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) 
     // https://blog.qt.io/blog/2018/11/02/whats-new-qt-help/
 	QString app = ProcessOrganizer::getAbsQtToolPath("qhelpgenerator");
-#else 
+#else
     QString app = ProcessOrganizer::getAbsQtToolPath("qcollectiongenerator");
 #endif
 
@@ -503,7 +503,7 @@ RetVal HelpSystem::rebuildHelpCollection(QStringList &qchFiles, quint16 checksum
         
     }
 
-    
+
 
     return RetVal(retOk);
 }
@@ -558,7 +558,7 @@ RetVal HelpSystem::buildPluginHelp(quint16 checksum)
         {
             retval += ito::RetVal(ito::retWarning,0,QObject::tr("Could not clear folder 'docs/pluginDoc/build'. Plugin documentation will not be built.").toLatin1().data());
         }
-        
+
     }
 
     pluginDir = QDir(QCoreApplication::applicationDirPath());
@@ -686,9 +686,9 @@ RetVal HelpSystem::buildPluginHelp(quint16 checksum)
                     sectionEntries += temp;
                     sectionEntries += "\n";
                 }
-        
-                mainIndexFile.replace("<!--$toctree_item insert$-->", sectionEntries.toLatin1());	
-            }	
+
+                mainIndexFile.replace("<!--$toctree_item insert$-->", sectionEntries.toLatin1());
+            }
         }
 
         if (!retval.containsWarningOrError())
@@ -804,7 +804,7 @@ RetVal HelpSystem::buildSinglePluginHelp(const QString &pluginFolder, QDir &buil
                 {
                     if (copyFile( QFileInfo(sourceDir.absoluteFilePath(fileToCopy)), buildDir))
                     {
-                        if (fileToCopy.endsWith(".html")) 
+                        if (fileToCopy.endsWith(".html"))
                         {
                             modifyHrefInHtmlFile(buildDir.absoluteFilePath(fileToCopy), ".."); //_static folder is one directory up
                         }
@@ -948,7 +948,7 @@ QString HelpSystem::modifyFiles(const QString &in, const QString &hrefPrefix, co
     QString files;
     QRegularExpression regExp("<file>([a-zA-Z0-9#.?%&]*)</file>");
     QString cap;
-    
+
 #ifndef WIN32
     QString delimiter = "/";
 #else
@@ -959,7 +959,7 @@ QString HelpSystem::modifyFiles(const QString &in, const QString &hrefPrefix, co
     bool take;
 
     QRegularExpressionMatch match = regExp.match(in);
-    if (match.hasMatch()) 
+    if (match.hasMatch())
     {
         take = true;
         cap = match.captured(1);
@@ -1025,9 +1025,9 @@ RetVal HelpSystem::modifyHrefInHtmlFile(const QString &htmlFile, const QString &
 {
     bool result = true;
 
-    Q_FOREACH(QFileInfo info, directory.entryInfoList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden  | QDir::AllDirs | QDir::Files, QDir::DirsFirst)) 
+    Q_FOREACH(QFileInfo info, directory.entryInfoList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden  | QDir::AllDirs | QDir::Files, QDir::DirsFirst))
     {
-        if (info.isDir()) 
+        if (info.isDir())
         {
             result = removeDir(info.absoluteFilePath());
             if (result)
@@ -1040,7 +1040,7 @@ RetVal HelpSystem::modifyHrefInHtmlFile(const QString &htmlFile, const QString &
             result = QFile::remove(info.absoluteFilePath());
         }
 
-        if (!result) 
+        if (!result)
         {
             return result;
         }
@@ -1073,24 +1073,24 @@ RetVal HelpSystem::modifyHrefInHtmlFile(const QString &htmlFile, const QString &
             return false;
         }
     }
-    
-    foreach(const QFileInfo &info, src.entryInfoList(QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot)) 
+
+    foreach(const QFileInfo &info, src.entryInfoList(QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot))
     {
         QString srcItemPath = src.filePath(info.fileName());
         QString dstItemPath = dst.filePath(info.fileName());
-        if (info.isDir()) 
+        if (info.isDir())
         {
-            if (!copyDir(srcItemPath, dstItemPath)) 
+            if (!copyDir(srcItemPath, dstItemPath))
             {
                 return false;
             }
-        } else if (info.isFile()) 
+        } else if (info.isFile())
         {
-            if (!QFile::copy(srcItemPath, dstItemPath)) 
+            if (!QFile::copy(srcItemPath, dstItemPath))
             {
                 return false;
             }
-        } else 
+        } else
         {
             qDebug() << "Unhandled item" << info.filePath() << "in cpDir";
         }

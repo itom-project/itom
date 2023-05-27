@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -53,7 +53,7 @@ public:
 
     //-------------------------------------------------------------------------------------------------
     // constructor, deconstructor, alloc, dellaoc
-    //------------------------------------------------------------------------------------------------- 
+    //-------------------------------------------------------------------------------------------------
     static void PyShape_dealloc(PyShape *self);
     static PyObject* PyShape_new(PyTypeObject *type, PyObject *args, PyObject *kwds);
     static int PyShape_init(PyShape *self, PyObject *args, PyObject *kwds);
@@ -62,7 +62,7 @@ public:
 
     //-------------------------------------------------------------------------------------------------
     // general members
-    //------------------------------------------------------------------------------------------------- 
+    //-------------------------------------------------------------------------------------------------
     static PyObject* PyShape_repr(PyShape *self);
     static PyObject* PyShape_rotateDeg(PyShape *self, PyObject *args);
     static PyObject* PyShape_rotateRad(PyShape *self, PyObject *args);
@@ -92,7 +92,7 @@ public:
 
     //-------------------------------------------------------------------------------------------------
     // getter / setter
-    //------------------------------------------------------------------------------------------------- 
+    //-------------------------------------------------------------------------------------------------
     static PyObject* PyShape_getType(PyShape *self, void *closure);
 
     static PyObject* PyShape_getValid(PyShape *self, void *closure);
@@ -142,7 +142,7 @@ public:
 
     //-------------------------------------------------------------------------------------------------
     // type structures
-    //------------------------------------------------------------------------------------------------- 
+    //-------------------------------------------------------------------------------------------------
     //static PyMemberDef PyShape_members[];
     static PyMethodDef PyShape_methods[];
     static PyGetSetDef PyShape_getseters[];

@@ -10,7 +10,7 @@
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
-   
+
     In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
@@ -24,7 +24,7 @@
     You should have received a copy of the GNU Library General Public License
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 
-    This file is a port and modified version of the 
+    This file is a port and modified version of the
     Common framework (http://www.commontk.org)
 *********************************************************************** */
 
@@ -249,7 +249,7 @@ void CheckableModelHelperPrivate
     {
     q->model()->fetchMore(modelIndex);
     }
-  
+
   const int rowCount = q->orientation() == Qt::Horizontal ?
     q->model()->rowCount(modelIndex) : 1;
   const int columnCount = q->orientation() == Qt::Vertical ?
@@ -335,7 +335,7 @@ void CheckableModelHelper::setModel(QAbstractItemModel *newModel)
       current, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
       this, SLOT(onDataChanged(QModelIndex,QModelIndex)));
     this->disconnect(
-      current, SIGNAL(columnsInserted(QModelIndex,int,int)), 
+      current, SIGNAL(columnsInserted(QModelIndex,int,int)),
       this, SLOT(onColumnsInserted(QModelIndex,int,int)));
     this->disconnect(
       current, SIGNAL(rowsInserted(QModelIndex,int,int)),
@@ -491,7 +491,7 @@ void CheckableModelHelper::toggleCheckState(const QModelIndex& modelIndex)
     {
     return;
     }
-  // I've no strong feeling to turn the state checked or unchecked when the 
+  // I've no strong feeling to turn the state checked or unchecked when the
   // state is PartiallyChecked.
   this->setCheckState(modelIndex,
     this->checkState(modelIndex) == Qt::Checked ? Qt::Unchecked : Qt::Checked);
@@ -505,7 +505,7 @@ void CheckableModelHelper::toggleHeaderCheckState(int section)
     {
     return;
     }
-  // I've no strong feeling to turn the state checked or unchecked when the 
+  // I've no strong feeling to turn the state checked or unchecked when the
   // state is PartiallyChecked.
   this->setHeaderCheckState(
     section, this->headerCheckState(section) == Qt::Checked ?
@@ -587,11 +587,11 @@ void CheckableModelHelper::onColumnsInserted(const QModelIndex &parentIndex,
       {
       for (int i = start; i <= end; ++i)
         {
-        QModelIndex index = this->model()->index(0, i, parentIndex); 
+        QModelIndex index = this->model()->index(0, i, parentIndex);
         d->forceCheckability(index);
         }
       }
-    this->onDataChanged(this->model()->index(0, start, parentIndex), 
+    this->onDataChanged(this->model()->index(0, start, parentIndex),
                         this->model()->index(0, end, parentIndex));
     }
 }
@@ -614,11 +614,11 @@ void CheckableModelHelper::onRowsInserted(const QModelIndex &parentIndex,
       {
       for (int i = start; i <= end; ++i)
         {
-        QModelIndex index = this->model()->index(i, 0, parentIndex); 
+        QModelIndex index = this->model()->index(i, 0, parentIndex);
         d->forceCheckability(index);
         }
       }
-    this->onDataChanged(this->model()->index(start, 0, parentIndex), 
+    this->onDataChanged(this->model()->index(start, 0, parentIndex),
                         this->model()->index(end, 0, parentIndex));
     }
 }
@@ -696,4 +696,3 @@ bool CheckableModelHelper::checkState(const QModelIndex& index, Qt::CheckState& 
     this->model()->data(index, Qt::CheckStateRole).toInt(&checkable));
   return checkable;
 }
-    

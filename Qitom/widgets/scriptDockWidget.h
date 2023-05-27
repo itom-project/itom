@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -59,8 +59,8 @@ class ScriptDockWidget : public AbstractDockWidget
 {
     Q_OBJECT
 public:
-    ScriptDockWidget(const QString &title, const QString &objName, bool docked, bool isDockAvailable, 
-        const ScriptEditorActions &commonActions, BookmarkModel *bookmarkModel, 
+    ScriptDockWidget(const QString &title, const QString &objName, bool docked, bool isDockAvailable,
+        const ScriptEditorActions &commonActions, BookmarkModel *bookmarkModel,
         QWidget* parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
     ~ScriptDockWidget();
 
@@ -122,14 +122,14 @@ private:
     QLabel* m_pStatusBarWidget;
 
     static const char* statusBarStatePropertyName;
-    
+
     int m_actTabIndex;                  /*!<  member indicating the tab-index of the active script editor */
 
     //!< indices of the tabs. The most recently activated tab index is at the front.
     /*
     This list is used to initialize the tabSwitcherWidget if Ctrl+Tab is pressed.
     */
-    QList<int> m_stackHistory; 
+    QList<int> m_stackHistory;
 
     QSharedPointer<TabSwitcherWidget> m_tabSwitcherWidget;
     QSharedPointer<OutlineSelectorWidget> m_outlineSelectorWidget;
@@ -175,7 +175,7 @@ private:
     ShortcutAction *m_gotoAction;
     ShortcutAction *m_openIconBrowser;
     ShortcutAction *m_bookmarkToggle;
-    
+
     ShortcutAction *m_insertCodecAct;
     ShortcutAction *m_copyFilename;
     ShortcutAction *m_findSymbols;
@@ -227,9 +227,9 @@ signals:
     void addGoBackNavigationItem(const GoBackNavigationItem &item);
 
     void statusBarInformationChanged(
-        const QPointer<ScriptDockWidget> sourceDockWidget, 
-        const QString &encoding, 
-        int line, 
+        const QPointer<ScriptDockWidget> sourceDockWidget,
+        const QString &encoding,
+        int line,
         int column);
 
 private slots:
@@ -291,7 +291,7 @@ private slots:
     void mnuCopyFilename();
     void mnuPyCodeFormatting();
     void mnuPyDocstringGenerator();
-    
+
 
     void menuLastFilesAboutToShow();
     void lastFileOpen(const QString &path);

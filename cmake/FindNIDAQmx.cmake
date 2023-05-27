@@ -17,7 +17,7 @@ if(WIN32)
 	    "C:/Program Files (x86)/National Instruments/Shared/ExternalCompilerSupport/C"
 		$ENV{NIDAQMX_ROOT}/Shared/ExternalCompilerSupport/C
 		)
-		
+
     if( CMAKE_SIZEOF_VOID_P EQUAL 4 )
       set(SUFFIXES "lib32/msvc")
     else()
@@ -38,7 +38,7 @@ find_path(NIDAQMX_INCLUDE_DIR
 	NAMES "NIDAQmx.h"
 	PATHS ${NIDAQMX_DIR}
 	PATH_SUFFIXES "include")
-	
+
 message(STATUS "NIDAQMX_DIR: " ${NIDAQMX_DIR})
 message(STATUS "NIDAQMX_LIBRARY: " ${NIDAQMX_LIBRARY})
 message(STATUS "NIDAQMX_INCLUDE_DIR: " ${NIDAQMX_INCLUDE_DIR})
@@ -51,4 +51,3 @@ find_package_handle_standard_args(NIDAQmx DEFAULT_MSG NIDAQMX_LIBRARY NIDAQMX_IN
 # #########################################################################
 mark_as_advanced(NIDAQMX_LIBRARY NIDAQMX_INCLUDE_DIR)
 # #########################################################################
-

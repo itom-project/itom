@@ -31,14 +31,14 @@ elementList = [
      ]
 
 for shapeType, numShapes in elementList:
-    
+
     img = dataObject.zeros([100, 150], "float32")
-    
+
     for r in range(img.shape[0]):
         img[r, :] = (r % 20) * 0.02
-    
+
     [i, h] = plot(img)
-    
+
     try:
         polygons: Tuple[shape] = h.drawAndPickElements(shapeType, numShapes)
     except RuntimeError as ex:

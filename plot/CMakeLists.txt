@@ -25,12 +25,12 @@
 
 cmake_minimum_required(VERSION 3.1)
 
-set(target_name itomCommonPlotLib) 
-project(${target_name}) 
+set(target_name itomCommonPlotLib)
+project(${target_name})
 
 message(STATUS "--------------- LIBRARY ${target_name} -----------------")
 
-# include commonly used itom CMake macros (internal can only be used within the core projects) 
+# include commonly used itom CMake macros (internal can only be used within the core projects)
 include("../cmake/ItomBuildMacros.cmake")
 include("../cmake/ItomBuildMacrosInternal.cmake")
 
@@ -66,7 +66,7 @@ else()
     set(POINTCLOUD_LIBRARIES "")
 endif()
 
-include_directories( 
+include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/../shapes
     ${CMAKE_CURRENT_SOURCE_DIR}/../common
     ${CMAKE_CURRENT_SOURCE_DIR}/..
@@ -76,7 +76,7 @@ include_directories(
 link_directories(
     ${CMAKE_CURRENT_BINARY_DIR}/../DataObject
     ${CMAKE_CURRENT_BINARY_DIR}/../PointCloud
-    
+
 )
 
 set(itomCommonPlot_HEADERS
@@ -90,7 +90,7 @@ set(itomCommonPlot_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/designerPluginInterfaceVersion.h
 )
 
-set(itomCommonPlot_SOURCES 
+set(itomCommonPlot_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/AbstractDObjFigure.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/AbstractDObjPCLFigure.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/AbstractFigure.cpp

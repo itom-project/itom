@@ -10,7 +10,7 @@
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
-   
+
     In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
@@ -48,10 +48,10 @@ namespace ito
             return;
         }
 
-        inline void rgb2cmyk(const Rgba32_t &in, float32 &C, float32 &M, float32 &Y, float32 &K) 
+        inline void rgb2cmyk(const Rgba32_t &in, float32 &C, float32 &M, float32 &Y, float32 &K)
         {
             K = (255 - (in.red() > in.blue() ? (in.red() > in.green() ? in.red() : in.green()) : (in.blue() > in.green() ? in.blue() : in.green()))) / 255.0;
-            
+
             if( fabs(K - 1) < std::numeric_limits<float32>::epsilon())
             {
                 C = 0.0;

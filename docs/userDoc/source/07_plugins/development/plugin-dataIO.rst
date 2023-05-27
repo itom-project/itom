@@ -25,19 +25,19 @@ Grabber plugin
 
 This is a subtype of DataIO for camera / framegrabber communication. Plugins of this type are inherited from **ito::AddInGrabber**. The data acquisition is managed as follows:
 
-* The methods **startDevice** and **stopDevice** open and close the capture logic of the devices to reduce CPU-load. For serial ports these functions are unnecessary. 
+* The methods **startDevice** and **stopDevice** open and close the capture logic of the devices to reduce CPU-load. For serial ports these functions are unnecessary.
 * The method **acquire** starts the DataIO grabbing a frame with the current parameters. The function returns after sending the trigger. The function should be callable several times without calling get-/copyVal().
 * The methods **getVal** and **copyVal** are the external interfaces for data grabbing. They call **retrieveData**. The function should not be callable without a previous call of **acquire** and than only once.
 * In **retrieveData** the data transfer is done and frame has to copied. The function blocks until the triggered data is copied. In case retrieveData is called by getVal the frame has to be copied to **m_data**, an internal **dataObject**.
-* The function **getVal** overwrites the IO-**dataObject** by a shallow copy of the internal **dataObject**. Empty objects are allowed. Warning read shallow copy of dataObject before usage.  
+* The function **getVal** overwrites the IO-**dataObject** by a shallow copy of the internal **dataObject**. Empty objects are allowed. Warning read shallow copy of dataObject before usage.
 * The function **copyVal** deeply copies data to the externally given **dataObject**. The **dataObject** must have the right size and type. **dataObject** with ROI must not be overwritten. The ROI should be filled. Empty objects are allowed. In case of empty **dataObject** a new object with right size and type must be allocated.
 * The internal **dataObject** is checked after parameter changes by **checkData** (sizex, sizey and bpp) and, if necessary, reallocated.
 
-A typical sequence in python is 
+A typical sequence in python is
 
 .. code-block:: python
     :linenos:
-    
+
     device.startDevice()
     device.acquire()
     device.getVal(dObj)
@@ -45,7 +45,7 @@ A typical sequence in python is
     device.getVal(dObj)
     device.stopDevice()
 
-    
+
 A sample header file of the DataIO's plugin class might look like the following snippet:
 
 .. code-block:: c++
@@ -66,7 +66,7 @@ A sample header file of the DataIO's plugin class might look like the following 
 
         public:
             friend class MyDataIOInterface;
-            const ito::RetVal showConfDialog(void);    //! Open the config nonmodal dialog to set camera parameters 
+            const ito::RetVal showConfDialog(void);    //! Open the config nonmodal dialog to set camera parameters
             int hasConfDialog(void) { return 1; }; //!< indicates that this plugin has got a configuration dialog
 
         private:
@@ -99,7 +99,7 @@ A sample header file of the DataIO's plugin class might look like the following 
     #endif
         Q_INTERFACES(ito::AddInInterfaceBase)
         PLUGIN_ITOM_API
-        
+
         protected:
 
         public:
@@ -111,7 +111,7 @@ A sample header file of the DataIO's plugin class might look like the following 
             ito::RetVal closeThisInst(ito::AddInBase **addInInst);
     };
 
-Parameters and Unit Conventions 
+Parameters and Unit Conventions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 In order to have a unified behaviour of all camera plugins, respect the following unit conventions. That means, the plugin should store related parameters using these conventions, such that **getParam** and **setParam** returns and obtains values using these units. Internally, it is sometimes
@@ -166,11 +166,11 @@ AD-Converter plugins are directly inherited from **ito::AddInDataIO**. An AD-DA-
 * As counterpart to **startDevice**, the method **stopDevice** disconnects the device. For every call of **startDevice**, **stopDevice** must be called and at the last call, the connection should be interrupted.
 * In difference to a camera dataIO plugin, the method **acquire** can be used to start the acquisition of a serie of input data values at all previously selected input channels. It is also possible to create an empty function here. Then the reading-process of new single data values for each input channel is totally executed in the method **getVal**.
 * The method **copyVal** needs not to be implemented for AD-DA-converters.
-* Method **getVal**: This method registers input values from all previously selected input channels (depending on your implementation and parametrization it is also possible to register multiple values per channel) and returns these values to the user. 
+* Method **getVal**: This method registers input values from all previously selected input channels (depending on your implementation and parametrization it is also possible to register multiple values per channel) and returns these values to the user.
 
     * If you have one or multiple input channels, use the definition **getVal(void \*dObj, ItomSharedSemaphore \*waitCond)**. The parameter dObj is then a pointer to ito::DataObject and can be cast to this class. Return an MxN data object, where M corresponds to the number of read input channels and N corresponds to the data samples per channel. If you want to, you can also force the user to previously allocate the given data object such that you can get a hint how many samples should be registered.
     * For only one input channel, it is also possible to implement the definition **getVal(QSharedPointer<char> data, QSharedPointer<int> length, ItomSharedSemaphore *waitCond = NULL)** where an allocated char-buffer whose size is defined by *length* is given. Fill in the data samples into the buffer (considering the given length) or use the length value to see how many samples are requested.
-    
+
 * Method **setVal**: This method is called if the user wants the plugin to set data to all selected output channels. The definition is **setVal(const char \*data, const int length, ItomSharedSemaphore \*waitCond = NULL)**. In case of AD-DA-converter plugins, length is always 1 and *data* must be cast to **ito::DataObject\***. The given data object must then have a size of MxN where M denotes the number of output channels (must correspond to the number of channels to write data) and N is the number of samples. You can then send all samples to each channel either as fast as possible or using a timer, using the timer of the device. This depends on its abilities.
 
 A sample header file of the DataIO's plugin class for AD-converters might look like the following snippet:
@@ -191,7 +191,7 @@ A sample header file of the DataIO's plugin class for AD-converters might look l
 
         public:
             friend class MyADConverterInterface;
-            const ito::RetVal showConfDialog(void);    //! Open the config nonmodal dialog to set camera parameters 
+            const ito::RetVal showConfDialog(void);    //! Open the config nonmodal dialog to set camera parameters
             int hasConfDialog(void) { return 1; }; //!< indicates that this plugin has got a configuration dialog
 
         private:
@@ -222,7 +222,7 @@ A sample header file of the DataIO's plugin class for AD-converters might look l
     #endif
         Q_INTERFACES(ito::AddInInterfaceBase)
         PLUGIN_ITOM_API
-        
+
         protected:
 
         public:
@@ -238,4 +238,3 @@ RawIO-Plugins
 -------------------------------------
 
 Further IO plugins are directly inherited from **ito::AddInDataIO**.
-

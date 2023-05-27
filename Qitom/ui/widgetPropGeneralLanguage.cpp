@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -215,8 +215,8 @@ void WidgetPropGeneralLanguage::on_comboLocale_currentIndexChanged(int index)
         }
 
         ui.lblDoubleExample->setText(
-            locale.toString(20100400.234) 
-            + " | " + locale.toString(9876.234) 
+            locale.toString(20100400.234)
+            + " | " + locale.toString(9876.234)
             + " | " + locale.toString(-0.023)
         );
 

@@ -3,7 +3,7 @@
 #  http://libusb.sf.net and
 #  http://libusb-win32.sf.net
 #  http://libusb-win32.sf.net
-# 
+#
 # It will use PkgConfig if present and supported, else search
 # it on its own. If the **LIBUSB_ROOT** environment variable
 # is defined, it will be used as base path.
@@ -15,7 +15,7 @@
 include ( CheckLibraryExists )
 include ( CheckIncludeFile )
 
-option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF) 
+option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF)
 
 find_package ( PkgConfig QUIET)
 if( PKG_CONFIG_FOUND )
@@ -39,7 +39,7 @@ if( PKGCONFIG_LIBUSB_FOUND )
     endforeach ( i )
 
 else()
-    
+
     find_path(LibUSB_INCLUDE_DIRS
     NAMES
       libusb.h
@@ -63,13 +63,13 @@ else()
         # Use the lib that got compiled with the same compiler.
         if( MSVC )
             if(BUILD_TARGET64)
-                set( LibUSB_LIBRARY_PATH_SUFFIX 
-                    MS64/static 
+                set( LibUSB_LIBRARY_PATH_SUFFIX
+                    MS64/static
                     x64
                     x64/Release
                     x64/Debug
                     x64/Release/lib
-                    x64/Debug/lib 
+                    x64/Debug/lib
                     x64/Release/dll
                     x64/Debug/dll
 					VS2015-x64/lib
@@ -88,8 +88,8 @@ else()
                     build/v143/x64/Release/dll
 					)
             else (BUILD_TARGET64)
-                set( LibUSB_LIBRARY_PATH_SUFFIX 
-                    MS32/static 
+                set( LibUSB_LIBRARY_PATH_SUFFIX
+                    MS32/static
                     Win32
                     Win32/Release
                     Win32/Debug
@@ -130,9 +130,9 @@ else()
     PATH_SUFFIXES
         ${LibUSB_LIBRARY_PATH_SUFFIX}
     )
-	
+
 	message(STATUS "LibUSB_LIBRARY: " ${LibUSB_LIBRARY})
-	
+
     mark_as_advanced ( LibUSB_LIBRARY )
     if( LibUSB_LIBRARY )
         set( LibUSB_LIBRARIES ${LibUSB_LIBRARY} )
@@ -172,4 +172,3 @@ if( NOT LibUSB_FOUND )
     endif( LibUSB_FIND_REQUIRED )
 endif( NOT LibUSB_FOUND )
 #  message( STATUS "LibUSB: ${LibUSB_FOUND}" )
-

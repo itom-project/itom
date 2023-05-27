@@ -26,13 +26,13 @@ It is best to think of a dictionary as an unordered set of *key: value* pairs, w
 
     d = {"lens":"zoom", "software":"itom"}
     print(d)
-    
+
     # 'lens' is a key and its associated value is 'zoom'. It can be referenced by d["lens"].
     print(d["lens"])
-    
+
     # 'software' is a key and its associated value is 'itom'. It can be referenced by d["software"].
     print(d["software"])
-    
+
     # You can get values by key, but you can't get keys by value.
     # So d["lens"] is 'zoom', but d["zoom"] raises an exception, because 'zoom' is not a key.
     print(d["zoom"])
@@ -57,17 +57,17 @@ You can not have duplicate keys in a dictionary. Assigning a value to an existin
 
     d = {"lens":"zoom", "software":"itom"}
     print(d)
-    
+
     d["software"] = "itom"
     print(d)
-    
+
     d["institute"] = "ITO"
     print(d)
-    
+
     # Dictionary keys can be modified. The old value is simply replaced with a new one.
     d["institute"] = "none"
     print(d)
-    
+
     # Dictionary keys are case-sensitive. Here, a new key-value pair will be created.
     d["Institute"] = "another"
     print(d)
@@ -87,10 +87,10 @@ Dictionaries aren't just for strings. Dictionary values can be any datatype, inc
 
     d = {'lens': 'zoom', 'institute': 'ITO', 'software': 'itom'}
     print(d)
-    
+
     d["version"] = 3
     print(d)
-    
+
     d[42] = "douglas"
     print(d)
 
@@ -107,14 +107,14 @@ Deleting Items From Dictionaries
 
 .. code-block:: python
     :linenos:
-    
+
     d = {'lens': 'zoom', 'institute': 'ITO', 'software': 'itom', 42: 'douglas', 'retrycount': 3}
     print(d)
-    
+
     # delete individual items from a dictionary by key
     del d[42]
     print(d)
-    
+
     # delete all items from a dictionary
     # Note that the set of empty curly braces in the output signifies a dictionary without any items.
     d.clear()
@@ -130,7 +130,7 @@ Deleting Items From Dictionaries
 Lists
 ------
 
-Lists are Python's workhorse datatype. Variables can be named anything, and Python keeps track of the datatype internally. 
+Lists are Python's workhorse datatype. Variables can be named anything, and Python keeps track of the datatype internally.
 
 
 Defining Lists
@@ -144,10 +144,10 @@ A list is an ordered set of elements enclosed in square brackets. It can be used
     # A list of five elements is defined. Note that they retain their original order.
     li = ["a", "b", "zoom", "z", "example"]
     print(li)
-    
+
     # The first element of any non-empty list is always li[0]
     print(li[0])
-    
+
     # The last element of this five-element list is li[4].
     print(li[4])
 
@@ -166,10 +166,10 @@ A negative index accesses elements from the end of the list counting backwards. 
 .. code-block:: python
     :linenos:
 
-    li = ["a", "b", "zoom", "z", "example"] 
+    li = ["a", "b", "zoom", "z", "example"]
     print(li)
     print(li[-1])
-    
+
     # In this list, li[-3] == li[5 - 3] == li[2]
     print(li[-3])
 
@@ -190,27 +190,27 @@ If it helps, you can think of it this way: reading the list from left to right, 
 .. code-block:: python
     :linenos:
 
-    li = ["a", "b", "zoom", "z", "example"] 
+    li = ["a", "b", "zoom", "z", "example"]
     print(li)
-    
+
     # A slice of li[1] up to but not including li[3] will be created
     print(li[1:3])
-    
+
     # Slicing works if one or both of the slice indices is negative.
     print(li[1:-1])
-    
-    # Lists are zero-based, so li[0:3] returns the first three elements of the list, 
+
+    # Lists are zero-based, so li[0:3] returns the first three elements of the list,
     # starting at li[0], up to but not including li[3].
     print(li[0:3])
-    
-    # If the left slice index is 0, you can leave it out, and 0 is implied. So li[:3] 
+
+    # If the left slice index is 0, you can leave it out, and 0 is implied. So li[:3]
     # is the same as li[0:3]
     print(li[:3])
-    
-    # Similarly, if the right slice index is the length of the list, you can leave it 
+
+    # Similarly, if the right slice index is the length of the list, you can leave it
     # out. So li[3:] is the same as li[3:5], because this list has five elements.
     print(li[3:])
-    
+
     # If both slice indices are left out, all elements of the list are included.
     # li[:] is shorthand for making a complete copy of a list.
     print(li[:])
@@ -234,19 +234,19 @@ Adding Elements to Lists
 .. code-block:: python
     :linenos:
 
-    li = ["a", "b", "zoom", "z", "example"] 
+    li = ["a", "b", "zoom", "z", "example"]
     print(li)
-    
+
     # Single elements can be added to the end of the list with append
     li.append("new")
     print(li)
-    
-    # insert inserts a single element into a list. The numeric argument is the index of the 
+
+    # insert inserts a single element into a list. The numeric argument is the index of the
     # first element that gets bumped out of position.
     li.insert(2, "new")
     print(li)
-    
-    # Lists can be concatenated with extend. Note that you do not call extend with multiple 
+
+    # Lists can be concatenated with extend. Note that you do not call extend with multiple
     # arguments; you call it with one argument, a list. In this case, that list has two elements.
     li.extend(["two", "elements"])
     print(li)
@@ -256,7 +256,7 @@ Adding Elements to Lists
     ['a', 'b', 'zoom', 'z', 'example']
     ['a', 'b', 'zoom', 'z', 'example', 'new']
     ['a', 'b', 'new', 'zoom', 'z', 'example', 'new']
-    ['a', 'b', 'new', 'zoom', 'z', 'example', 'new', 'two', 'elements']    
+    ['a', 'b', 'new', 'zoom', 'z', 'example', 'new', 'two', 'elements']
 
 
 Difference between append und extend
@@ -269,21 +269,21 @@ Lists have two methods, :py:func:`extend` and :py:func:`append`, that look like 
 
     # extend method
     li = ['a', 'b', 'c']
-    
-    # li is extended with a list of another three elements ('d', 'e', and 'f'), so you 
+
+    # li is extended with a list of another three elements ('d', 'e', and 'f'), so you
     # now have a list of six elements.
-    li.extend(['d', 'e', 'f']) 
+    li.extend(['d', 'e', 'f'])
     print(li)
     print(len(li))
     print(li[-1])
-    
+
     #append method
     li = ['a', 'b', 'c']
-    
+
     # append method is called with a single argument, which is a list of three elements
-    # Now the list contains four elements because the last element appended is itself a 
+    # Now the list contains four elements because the last element appended is itself a
     # list. Lists can contain any type of data, including other lists.
-    li.append(['d', 'e', 'f']) 
+    li.append(['d', 'e', 'f'])
     print(li)
     print(len(li))
     print(li[-1])
@@ -312,9 +312,9 @@ Searching Lists
     # index finds (only) the first occurrence of a value in the list and returns the index
     print(li.index("example"))
     print(li.index("new"))
-    
+
     # If the value is not found in the list, Python raises an exception.
-    # To test whether a value is in the list, use in, which returns True if the value is 
+    # To test whether a value is in the list, use in, which returns True if the value is
     # found or False if it is not.
     print(li.index("c"))
 
@@ -337,19 +337,19 @@ Deleting List Elements
 
     li = ['a', 'b', 'new', 'zoom', 'z', 'example', 'new', 'two', 'elements']
     print(li)
-    
+
     # remove (only) the first occurrence of a value from a list.
     li.remove("z")
     print(li)
-    
+
     # removes only the first occurrence of a value
     li.remove("new")
     print(li)
-    
+
     # pop removes the last element of the list, and it returns the value that it removed
     li.pop()
     print(li)
-    
+
     # If the value is not found in the list, Python raises an exception.
     li.remove("c")
 
@@ -368,19 +368,19 @@ Using List Operators
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Lists can also be concatenated with the ``+`` operator. ``list = list + otherlist`` has the same result as ``list.extend(otherlist)``. But the ``+`` operator returns a new (concatenated) list as a value, whereas extend only alters an existing list. This means that extend is faster, especially for large lists.
-   
+
 .. code-block:: python
     :linenos:
 
     li = ['a', 'b', 'zoom']
     li = li + ['example', 'new']
     print(li)
-    
+
     # li += ['two'] is equivalent to li.extend(['two'])
     li += ['two']
     print(li)
-    
-    # The * operator works on lists as a repeater: li = [1, 2] * 3 is equivalent to 
+
+    # The * operator works on lists as a repeater: li = [1, 2] * 3 is equivalent to
     # li = [1, 2] + [1, 2] + [1, 2], which concatenates three lists into one.
     li = [1, 2] * 3
     print(li)
@@ -404,13 +404,13 @@ Tuples are faster than lists. If you're defining a constant set of values and al
 
     t = ("a", "b", "mpilgrim", "z", "example")
     print(t)
-    
+
     # The first element of a non-empty tuple is always t[0]
     print(t[0])
-    
+
     # Negative indices count from the end of the tuple, just as with a list.
     print(t[-1])
-    
+
     # Slicing works too, just like a list.
     print(t[1:3])
 
@@ -421,17 +421,17 @@ Tuples are faster than lists. If you're defining a constant set of values and al
     example
     ('b', 'mpilgrim')
 
-Keep in mind that tuples have not methods. 
+Keep in mind that tuples have not methods.
 
 .. code-block:: python
     :linenos:
 
     t = ('a', 'b', 'mpilgrim', 'z', 'example')
-    
+
     # all following examples cause errors
     # t.append("new")
     # t.remove("z")
     # t.index("example")
-    
+
     # You can use "in" to see if an element exists in the tuple.
     "z" in t

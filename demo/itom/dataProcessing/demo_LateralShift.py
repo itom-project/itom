@@ -1,7 +1,7 @@
 """Later shifted image
 ===================
 
-In this demo the lateral image shift is determined. 
+In this demo the lateral image shift is determined.
 """
 import numpy as np
 import scipy

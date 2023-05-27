@@ -318,11 +318,11 @@ void ToolTipLabel::placeTip(
 
     const auto screens = QGuiApplication::screens();
     QRect allScreensRect;
-    
+
     if (screens.size() > 0)
     {
         allScreensRect = screens[0]->geometry();
-    } 
+    }
 
     for (int i = 1; i < screens.size(); ++i)
     {
@@ -341,7 +341,7 @@ void ToolTipLabel::placeTip(
             p.rx() = 2 + alternativeTopRightPos.x() - 4 - this->width();
         }
     }
-    
+
     if (p.y() + this->height() > allScreensRect.y() + allScreensRect.height())
     {
         if (alternativeTopRightPos.isNull())

@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -127,7 +127,7 @@ DialogPipManager::DialogPipManager(QWidget *parent /*= NULL*/, bool standalone /
     }
 
     ui.txtProxy->setText(proxy);
-    
+
     ui.spinTimeout->setValue(settings.value("timeout", 15).toInt());
     ui.spinRetries->setValue(settings.value("retries", 5).toInt());
     ui.checkTrustedHosts->setChecked(settings.value("trustedHostsEnabled", false).toBool());
@@ -162,7 +162,7 @@ DialogPipManager::~DialogPipManager()
         }
         proxy = left + proxy.mid(atidx);
     }
-    
+
     settings.setValue("proxy", proxy);
 
     settings.setValue("isolated", ui.checkIsolated->isChecked());
@@ -271,7 +271,7 @@ void DialogPipManager::outputReceived(const QString &text, bool success)
             m_lastLogEntry = 1;
         }
     }
-    
+
     float factor = GuiHelper::screenDpiFactor();
     QString output;
     output = QString("<html><head><style>body{ font-size:%4pt; font-weight:400; } \
@@ -592,12 +592,12 @@ void DialogPipManager::exportTableToCsv()
     {
         QFile file(fileName);
 
-        if (file.open(QFile::WriteOnly | QFile::Truncate)) 
+        if (file.open(QFile::WriteOnly | QFile::Truncate))
         {
             QTextStream data(&file);
 
             data << exportPackageTableToString();
-            
+
             file.close();
         }
         else
@@ -612,7 +612,7 @@ QString DialogPipManager::exportPackageTableToString() const
 {
     QStringList output;
     QStringList strList;
-    for (int i = 0; i < m_pPipManager->columnCount(); i++) 
+    for (int i = 0; i < m_pPipManager->columnCount(); i++)
     {
         if (m_pPipManager->headerData(i, Qt::Horizontal, Qt::DisplayRole).toString().length() > 0)
         {

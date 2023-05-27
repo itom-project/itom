@@ -1,9 +1,9 @@
 /* ********************************************************************
    itom measurement system
    URL: http://www.uni-stuttgart.de/ito
-   Copyright (C) 2021, Institut fuer Technische Optik (ITO), 
-   Universitaet Stuttgart, Germany 
- 
+   Copyright (C) 2021, Institut fuer Technische Optik (ITO),
+   Universitaet Stuttgart, Germany
+
    This file is part of itom.
 
    itom is free software: you can redistribute it and/or modify
@@ -62,7 +62,7 @@ class ITOMWIDGETS_EXPORT DataObjectTable : public QTableView
     Q_PROPERTY(QHeaderView::ResizeMode verticalResizeMode READ getVerticalResizeMode WRITE setVerticalResizeMode DESIGNABLE true);
     Q_PROPERTY(Qt::Alignment alignment READ getAlignment WRITE setAlignment DESIGNABLE true);
     Q_PROPERTY(NumberFormat numberFormat READ getNumberFormat WRITE setNumberFormat DESIGNABLE true);
-    
+
 
     Q_CLASSINFO("prop://data", "dataObject that is displaye in the table view");
     Q_CLASSINFO("prop://readOnly", "enable write protection");

@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -50,7 +50,7 @@ public:
 
     //-------------------------------------------------------------------------------------------------
     // constructor, deconstructor, alloc, dellaoc
-    //------------------------------------------------------------------------------------------------- 
+    //-------------------------------------------------------------------------------------------------
     static void PyFont_dealloc(PyFont *self);
     static PyObject* PyFont_new(PyTypeObject *type, PyObject *args, PyObject *kwds);
     static int PyFont_init(PyFont *self, PyObject *args, PyObject *kwds);
@@ -59,7 +59,7 @@ public:
 
     //-------------------------------------------------------------------------------------------------
     // general members
-    //------------------------------------------------------------------------------------------------- 
+    //-------------------------------------------------------------------------------------------------
     static PyObject* PyFont_repr(PyFont *self);
 
     //-------------------------------------------------------------------------------------------------
@@ -70,7 +70,7 @@ public:
 
     //-------------------------------------------------------------------------------------------------
     // getter / setter
-    //------------------------------------------------------------------------------------------------- 
+    //-------------------------------------------------------------------------------------------------
     static PyObject* PyFont_getFamily(PyFont *self, void *closure);
     static int PyFont_setFamily(PyFont *self, PyObject *value, void *closure);
 
@@ -97,7 +97,7 @@ public:
 
     //-------------------------------------------------------------------------------------------------
     // type structures
-    //------------------------------------------------------------------------------------------------- 
+    //-------------------------------------------------------------------------------------------------
     //static PyMemberDef PyFont_members[];
     static PyMethodDef PyFont_methods[];
     static PyGetSetDef PyFont_getseters[];
@@ -106,7 +106,7 @@ public:
 
     static void PyFont_addTpDict(PyObject *tp_dict);
 
-    
+
 
 };
 

@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -33,7 +33,7 @@
 #include <qpointer.h>
 #include <qsharedpointer.h>
 
-namespace ito 
+namespace ito
 {
     class apiFunctionsGraph
     {
@@ -51,7 +51,7 @@ namespace ito
             static ito::RetVal mstopLiveData(QObject* liveDataSource, QObject *liveDataView);
             static ito::RetVal mdisconnectLiveData(QObject* liveDataSource, QObject *liveDataView);
             static ito::RetVal mgetColorBarIdxFromName(const QString &name, ito::int32 & index);
-            
+
             static ito::RetVal mgetFigure(const QString &figCategoryName, const QString &figClassName, ito::uint32 &UID, QWidget **figure, QWidget *parent = NULL);
             static QVariant mgetFigureSetting(const QObject *figureClass, const QString &key, const QVariant &defaultValue = QVariant(), ito::RetVal *retval = NULL);
 

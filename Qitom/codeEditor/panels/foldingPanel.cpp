@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -23,15 +23,15 @@
     ------------------------
 
     This file belongs to the code editor of itom. The code editor is
-    in major parts a fork / rewritten version of the python-based source 
-    code editor PyQode from Colin Duquesnoy and others 
-    (see https://github.com/pyQode). PyQode itself is licensed under 
+    in major parts a fork / rewritten version of the python-based source
+    code editor PyQode from Colin Duquesnoy and others
+    (see https://github.com/pyQode). PyQode itself is licensed under
     the MIT License (MIT).
 
     Some parts of the code editor of itom are also inspired by the
     source code editor of the Spyder IDE (https://github.com/spyder-ide),
     also licensed under the MIT License and developed by the Spyder Project
-    Contributors. 
+    Contributors.
 
 *********************************************************************** */
 
@@ -69,7 +69,7 @@ FoldingPanel::FoldingPanel(bool highlightCaretScope /*= false*/, const QString &
             ":/pyqode-icons/rc/arrow_right_on.png" << \
             ":/pyqode-icons/rc/arrow_down_off.png" << \
             ":/pyqode-icons/rc/arrow_down_on.png";
-    
+
     //: the list of deco used to highlight the current fold region (
     //: surrounding regions are darker)
     m_scopeDecos = QList<TextDecoration::Ptr>();
@@ -86,7 +86,7 @@ FoldingPanel::FoldingPanel(bool highlightCaretScope /*= false*/, const QString &
         self.action_collapse_all = None
         self.action_expand_all = None
         self._original_background = None*/
-    
+
 
     m_pHighlightRunner = new DelayJobRunnerArgTextBlock<FoldingPanel, void(FoldingPanel::*)(QTextBlock)>(250);
 }
@@ -182,7 +182,7 @@ void FoldingPanel::setHighlightCaretScope(bool value)
             {
                 m_blockNbr = -1;
                 connect(editor(), SIGNAL(cursorPositionChanged()), this, SLOT(highlightCaretScopeSlot()));
-                
+
             }
         }
     }
@@ -219,7 +219,7 @@ void FoldingPanel::highlightCaretScopeSlot()
         else
         {
             clearScopeDecos();
-        }            
+        }
     }
     m_blockNbr = block_nbr;
 }
@@ -230,7 +230,7 @@ void FoldingPanel::highlightCaretScopeSlot()
 Returns the widget size hint (based on the editor font size)
 */
 QSize FoldingPanel::sizeHint() const
-{       
+{
     QFontMetricsF fm(editor()->font());
     QSize size_hint(fm.height(), fm.height());
     if (size_hint.width() > 16)
@@ -683,7 +683,7 @@ at all, even with a value = 500)
 */
 void FoldingPanel::refreshEditorAndScrollbars()
 {
-    
+
     //editor()->markWholeDocDirty();
     editor()->repaint();
     QSize s = editor()->size();
@@ -709,7 +709,7 @@ void FoldingPanel::addScopeDecorations(const QTextBlock &block, int start, int e
         return;
     }
     QSharedPointer<FoldScope> parent = blockScope.parent();
-    
+
     if (Utils::TextBlockHelper::isFoldTrigger(block))
     {
         QColor base_color = getScopeHighlightColor();
@@ -721,7 +721,7 @@ void FoldingPanel::addScopeDecorations(const QTextBlock &block, int start, int e
             factor_step = 10;
             factor = 70;
         }
-        
+
         QPair<int,int> parent_start_end;
 
         while (!parent.isNull())
@@ -758,7 +758,7 @@ void FoldingPanel::clearScopeDecos()
     {
         editor()->decorations()->remove(deco);
     }
-    
+
     m_scopeDecos.clear();
 }
 
@@ -808,7 +808,7 @@ void FoldingPanel::collapseAll()
         }
         block = block.next();
     }
-    
+
     refreshEditorAndScrollbars();
     QTextCursor tc = editor()->textCursor();
     tc.movePosition(QTextCursor::Start);
@@ -853,7 +853,7 @@ void FoldingPanel::toggleFold(bool topLevelOnly)
             trigger = Utils::TextBlockHelper::isFoldTrigger(block);
             if (lvl == 0 && trigger)
             {
-                toggleFoldTrigger(block, true);     
+                toggleFoldTrigger(block, true);
             }
             block = block.next();
         }
@@ -969,7 +969,7 @@ void FoldingPanel::highlightSurroundingScopes(QTextBlock block)
         return;
     }
 
-    if (!m_currentScope.isValid() || 
+    if (!m_currentScope.isValid() ||
             (m_currentScope.getRange() != scope.getRange()))
     {
         m_currentScope = scope;
@@ -1069,7 +1069,7 @@ to deleted a folded scope (without selecting it).
 void FoldingPanel::onKeyPressed(QKeyEvent *e)
 {
     bool delete_request = (e->key() == Qt::Key_Backspace) || (e->key() == Qt::Key_Delete);
-    
+
     if ((e->text() != "") || delete_request)
     {
         QTextCursor cursor = editor()->textCursor();

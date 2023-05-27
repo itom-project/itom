@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -69,7 +69,7 @@ namespace ito
 
 //! This function is called to get all version numbers that itom contains
 /*!
-    Use this function to get a map of all parts of itom that are used with 
+    Use this function to get a map of all parts of itom that are used with
     their corresponding version.
 
     \return returns a QMap<QString,QString> containing the module and the version of a module.
@@ -99,7 +99,7 @@ QMap<QString, QString> getItomVersionMap()
 
 #ifdef Q_CC_BOR
     items["itom_compiler"] = "Borland/Turbo C++";
-#endif 
+#endif
 #ifdef Q_CC_CLANG
     items["itom_compiler"] = "Clang";
 #endif
@@ -124,7 +124,7 @@ QMap<QString, QString> getItomVersionMap()
 #else
     items["itom_compiler"].append(", Release");
 #endif
-     
+
     items["itom_compileDate"] = __DATE__;
     items["itom_compileDate"].append(", ");
     items["itom_compileDate"].append( __TIME__);
@@ -155,10 +155,10 @@ QMap<QString, QString> getItomVersionMap()
 #else
     items["version_Warnings"] = QObject::tr("This version of itom is not under version control (no GIT or SVN)!\n");
 #endif
-    
+
     //OpenCV
     items["openCV_Version"] = CV_VERSION;
-    
+
     //PCL
 #if ITOM_POINTCLOUDLIBRARY > 0
     items["PCL_Version"] = QString("%1.%2.%3").arg(PCL_MAJOR_VERSION).arg(PCL_MINOR_VERSION).arg(PCL_REVISION_VERSION);
@@ -183,4 +183,3 @@ QMap<QString, QString> getItomVersionMap()
 }
 
 } //end namespace ito
-

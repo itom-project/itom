@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -28,19 +28,19 @@
 #include <qbytearray.h>
 #include <qmetaobject.h>
 
-namespace ito 
+namespace ito
 {
 
     struct PythonQObjectMarshal
     {
         PythonQObjectMarshal() : m_objectID(0), m_object(NULL) {}
-        
-        PythonQObjectMarshal(QByteArray objName, const char* className, QObject *object) : 
-            m_objName(objName), 
-            m_objectID(0), 
-            m_object(object) 
-        { 
-            m_className = QByteArray(className); 
+
+        PythonQObjectMarshal(QByteArray objName, const char* className, QObject *object) :
+            m_objName(objName),
+            m_objectID(0),
+            m_object(object)
+        {
+            m_className = QByteArray(className);
         }
 
         PythonQObjectMarshal(QObject *obj) :
@@ -65,13 +65,13 @@ class MethodDescription
 public:
     MethodDescription();
     MethodDescription(
-        QByteArray &name, 
-        QByteArray &signature, 
-        QMetaMethod::MethodType type, 
-        QMetaMethod::Access access, 
-        int methodIndex, 
-        int retType, 
-        int nrOfArgs, 
+        QByteArray &name,
+        QByteArray &signature,
+        QMetaMethod::MethodType type,
+        QMetaMethod::Access access,
+        int methodIndex,
+        int retType,
+        int nrOfArgs,
         int *argTypes
     );
     MethodDescription(QMetaMethod &method);
@@ -135,13 +135,13 @@ public:
         m_args = new void*[m_sizeArgs];
         m_argTypes = new int[m_sizeArgs];
 
-        for (int i = 0; i < m_sizeArgs; i++) 
+        for (int i = 0; i < m_sizeArgs; i++)
         {
             m_args[i] = nullptr;
             m_argTypes[i] = -1;
         }
     };
-    
+
     //! destructor
     /*!
         Each value in \ref m_args is destroyed using QMetaType::destroy, since this FctCallParamContainer always holds a deep copy of
@@ -149,7 +149,7 @@ public:
     */
     ~FctCallParamContainer()
     {
-        for (int i = 0; i < m_sizeArgs; i++) 
+        for (int i = 0; i < m_sizeArgs; i++)
         {
             QMetaType(m_argTypes[i]).destroy(m_args[i]);
         }
@@ -158,7 +158,7 @@ public:
         DELETE_AND_SET_NULL_ARRAY(m_args);
     }
 
-    inline void** args() { return m_args; };                 /*!< returns \ref m_args */    
+    inline void** args() { return m_args; };                 /*!< returns \ref m_args */
     inline int* argTypes() { return m_argTypes; };           /*!< returns \ref m_argTypes */
     inline int getRetType() const { return m_argTypes[0]; }; /*!< returns type of return value */
 
@@ -170,13 +170,13 @@ public:
         \param type is the desired type-id of the default value which is assumed as return type
     */
     inline void initRetArg(int type)  //reference of ptr is stolen and will be deleted by this class
-    { 
+    {
         if (m_args[0])
         {
             QMetaType(m_argTypes[0]).destroy(m_args[0]);
         }
 
-        m_argTypes[0] = type; 
+        m_argTypes[0] = type;
         m_args[0] = QMetaType(type).create(nullptr);
     };
 
@@ -192,7 +192,7 @@ public:
         \param type is the corresponding type-id with respect to QMetaType
     */
     inline void setParamArg(unsigned int index, void* ptr, int type)  //reference of ptr is stolen and will be deleted by this class
-    { 
+    {
         if ((int)index < 0 || (int)index >= m_nrOfParams)
         {
             return;
@@ -203,8 +203,8 @@ public:
             QMetaType(m_argTypes[index + 1]).destroy(m_args[index + 1]);
         }
 
-        m_args[index+1] = ptr; 
-        m_argTypes[index+1] = type; 
+        m_args[index+1] = ptr;
+        m_argTypes[index+1] = type;
     };
 
 private:

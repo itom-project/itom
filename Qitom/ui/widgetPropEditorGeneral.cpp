@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -75,7 +75,7 @@ void WidgetPropEditorGeneral::readSettings()
     //ui.radioFoldingSquares->setChecked(foldStyle == "squares");
     //ui.radioFoldingSquaresTree->setChecked(foldStyle == "squares_tree");
     //ui.radioFoldingNone->setChecked(foldStyle == "none");
-    
+
     // Indentation
     ui.checkAutoIndent->setChecked(settings.value("autoIndent", true).toBool());
     ui.checkIndentUseTabs->setChecked(settings.value("indentationUseTabs", false).toBool());
@@ -111,10 +111,10 @@ void WidgetPropEditorGeneral::readSettings()
 //----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropEditorGeneral::writeSettings()
 {
-    
+
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("CodeEditor");
-    
+
     // EOL-Mode
     if (ui.radioEOL1->isChecked())
     {
@@ -153,4 +153,3 @@ void WidgetPropEditorGeneral::writeSettings()
 }
 
 } //end namespace ito
-

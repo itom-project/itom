@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -28,14 +28,14 @@
 
 #include "../common/sharedStructures.h"
 
-namespace ito 
+namespace ito
 {
 
 struct PythonPackage
 {
     enum Status {Unknown, Uptodate, Outdated};
     PythonPackage() : m_status(Unknown), m_detailsFetched(false) {};
-    PythonPackage(const QString &name, const QString &version) : 
+    PythonPackage(const QString &name, const QString &version) :
         m_name(name), m_version(version), m_location(""), m_requires(""), m_status(Unknown), m_newVersion(""), m_detailsFetched(false)
     {}
     QString m_name;
@@ -64,10 +64,10 @@ struct PipGeneralOptions
 
 struct PipInstall
 {
-    enum Type 
-    { 
-        typeWhl = 0, 
-        typeTarGz = 1, 
+    enum Type
+    {
+        typeWhl = 0,
+        typeTarGz = 1,
         typeSearchIndex = 2,
         typeRequirements = 3,
         typePackageSource = 4
@@ -91,12 +91,12 @@ class PipManager : public QAbstractItemModel
         ~PipManager();
 
         enum Task {
-            taskNo, 
-            taskCheckAvailable, 
+            taskNo,
+            taskCheckAvailable,
             taskListPackages,
-            taskFetchPackagesDetails, 
-            taskCheckUpdates, 
-            taskInstall, 
+            taskFetchPackagesDetails,
+            taskCheckUpdates,
+            taskInstall,
             taskUninstall,
             taskVerifyInstalledPackages
         };
@@ -105,9 +105,9 @@ class PipManager : public QAbstractItemModel
             //!< directly call pip as process (might cause encoding errors under windows)
             pipModeDirect,
 
-            //!< call pip via runPipUtf8.py module (uses a non-official interface of pip, 
+            //!< call pip via runPipUtf8.py module (uses a non-official interface of pip,
             //!< but sets the cout and cerr streams to UTF8; recommended under Windows)
-            pipModeRunPipUtf8 
+            pipModeRunPipUtf8
         };
 
         QVariant data(const QModelIndex &index, int role) const;
@@ -127,7 +127,7 @@ class PipManager : public QAbstractItemModel
         void checkVerifyInstalledPackages(const PipGeneralOptions &options = PipGeneralOptions());
         void installPackage(const PipInstall &installSettings, const PipGeneralOptions &options = PipGeneralOptions());
         void uninstallPackage(const QString &packageName, bool runAsSudo, const PipGeneralOptions &options = PipGeneralOptions());
-        
+
 
         void interruptPipProcess();
 
@@ -172,7 +172,7 @@ class PipManager : public QAbstractItemModel
         void finalizeTaskVerifyInstalledPackages(const QString& error, const QString& output);
         void finalizeTaskInstall(const QString& error, const QString& output);
         void finalizeTaskUninstall(const QString& error, const QString& output);
-    
+
     private slots:
         void processError(QProcess::ProcessError error);
         void processFinished(int exitCode, QProcess::ExitStatus exitStatus);

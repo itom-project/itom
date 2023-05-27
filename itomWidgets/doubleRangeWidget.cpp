@@ -10,7 +10,7 @@
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
-   
+
     In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
@@ -24,7 +24,7 @@
     You should have received a copy of the GNU Library General Public License
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 
-    This file is a port and modified version of the 
+    This file is a port and modified version of the
     CTK Common Toolkit (http://www.commontk.org)
 *********************************************************************** */
 
@@ -228,14 +228,14 @@ DoubleRangeWidget::DoubleRangeWidget(QWidget* _parent) : Superclass(_parent)
   , d_ptr(new DoubleRangeWidgetPrivate(*this))
 {
   Q_D(DoubleRangeWidget);
-  
+
   d->setupUi(this);
 
   d->MinimumSpinBox->setRange(d->Slider->minimum(), d->Slider->maximum());
   d->MaximumSpinBox->setRange(d->Slider->minimum(), d->Slider->maximum());
   d->MinimumSpinBox->setValue(d->Slider->minimumValue());
   d->MaximumSpinBox->setValue(d->Slider->maximumValue());
-  
+
   d->connectSlider();
 
   d->MinimumSpinBox->installEventFilter(this);
@@ -596,7 +596,7 @@ bool DoubleRangeWidget::eventFilter(QObject *obj, QEvent *event)
        this->startChanging();
        }
      }
-   else if (event->type() == QEvent::MouseButtonRelease) 
+   else if (event->type() == QEvent::MouseButtonRelease)
      {
      QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
      if (mouseEvent->button() & Qt::LeftButton)
@@ -606,7 +606,7 @@ bool DoubleRangeWidget::eventFilter(QObject *obj, QEvent *event)
        // send a valueChanged() after eventFilter() is done.
        this->stopChanging();
        }
-     } 
+     }
    // standard event processing
    return this->Superclass::eventFilter(obj, event);
  }
@@ -655,7 +655,7 @@ void DoubleRangeWidget::setDecimals(int newDecimals)
   d->MaximumSpinBox->setDecimals(newDecimals);
   // The number of decimals can change the range values
   // i.e. 50.55 with 2 decimals -> 51 with 0 decimals
-  // As the SpinBox range change doesn't fire signals, 
+  // As the SpinBox range change doesn't fire signals,
   // we have to do the synchronization manually here
   d->Slider->setRange(d->MinimumSpinBox->minimum(), d->MaximumSpinBox->maximum());
 }
@@ -701,7 +701,7 @@ double DoubleRangeWidget::tickInterval()const
 
 // --------------------------------------------------------------------------
 void DoubleRangeWidget::setTickInterval(double ti)
-{ 
+{
   Q_D(DoubleRangeWidget);
   d->Slider->setTickInterval(ti);
 }

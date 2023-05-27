@@ -115,8 +115,8 @@ This example, as usual, demonstrates some new Python features:
   The method :meth:`append` shown in the example is defined for list objects; it
   adds a new element at the end of the list.  In this example it is equivalent to
   ``result = result + [a]``, but more efficient.
-  
-  
+
+
 More on Defining Functions
 ---------------------------
 

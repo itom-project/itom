@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -33,7 +33,7 @@
 
 
 
-namespace ito 
+namespace ito
 {
 
 /*!
@@ -228,7 +228,7 @@ ito::RetVal UserOrganizer::loadSettings(const QString &userId)
         }
 
 		if (!retval.containsError())
-		{ 
+		{
 			qDebug() << "settingsFile path: " << settingsFile;
             m_userModel->setCurrentUser(getUserIdFromSettingsFilename(settingsFile));
 		}
@@ -267,7 +267,7 @@ ito::RetVal UserOrganizer::scanSettingFilesAndLoadModel()
     QDateTime lastModified;
     QDateTime youngestModificationDate;
 
-    foreach(QString iniFile, iniList) 
+    foreach(QString iniFile, iniList)
     {
         absfile = QDir::cleanPath(appDir.absoluteFilePath(iniFile));
         QSettings settings(absfile, QSettings::IniFormat);
@@ -325,7 +325,7 @@ ito::RetVal UserOrganizer::scanSettingFilesAndLoadModel()
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal UserOrganizer::readUserDataFromFile(
-    const QString &filename, QString &username, QString &uid, UserFeatures &features, 
+    const QString &filename, QString &username, QString &uid, UserFeatures &features,
     UserRole &role, QByteArray &password, QDateTime &lastModified)
 {
     ito::RetVal retval;
@@ -371,7 +371,7 @@ ito::RetVal UserOrganizer::readUserDataFromFile(
             password = "";
         }
 
-        //features        
+        //features
         QByteArray featureSha1;
         QCryptographicHash nameHash(QCryptographicHash::Sha1);
         nameHash.addData(uid.toLatin1().data(), uid.length());
@@ -409,13 +409,13 @@ ito::RetVal UserOrganizer::readUserDataFromFile(
         retval += ito::RetVal::format(ito::retError, 0, tr("file '%s' does not exist").toLatin1().data(), filename.toLatin1().data());
         lastModified = QDateTime();
     }
-    
+
     return retval;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal UserOrganizer::writeUserDataToFile(
-    const QString &username, const QString &uid, const UserFeatures &features, 
+    const QString &username, const QString &uid, const UserFeatures &features,
     const UserRole &role, const QByteArray &password, const bool& standardUser /*false*/)
 {
     ito::RetVal retval;

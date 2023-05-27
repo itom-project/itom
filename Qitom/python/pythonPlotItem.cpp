@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -112,7 +112,7 @@ int PythonPlotItem::PyPlotItem_init(PyPlotItem *self, PyObject *args, PyObject *
     unsigned int subplotIndex = 0;
     ito::RetVal retval;
     unsigned int objectID = 0;
-    
+
 
     const char *kwlist1[] = {"figure", "subplotIdx", NULL};
     const char *kwlist2[] = {"figure", "objectID", NULL};
@@ -137,7 +137,7 @@ int PythonPlotItem::PyPlotItem_init(PyPlotItem *self, PyObject *args, PyObject *
             {
                 //this avoid a crash if plotItem is instantiated without any arguments
                 PyErr_SetString(
-                    PyExc_RuntimeError, 
+                    PyExc_RuntimeError,
                     "PlotItem requires an existing figure as argument and / or a valid subplotIdx or objectID"
                 );
                 return -1;
@@ -159,15 +159,15 @@ int PythonPlotItem::PyPlotItem_init(PyPlotItem *self, PyObject *args, PyObject *
         QSharedPointer<uint> isFigureItem(new uint);
 
         QMetaObject::invokeMethod(
-            uiOrga, 
-            "isFigureItem", 
-            Q_ARG(uint, uiItem->objectID), 
-            Q_ARG(QSharedPointer<uint>, isFigureItem), 
+            uiOrga,
+            "isFigureItem",
+            Q_ARG(uint, uiItem->objectID),
+            Q_ARG(QSharedPointer<uint>, isFigureItem),
             Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())
         );
 
         locker->wait(-1);
-        
+
         if ((*isFigureItem) > 0)
         {
             //copy uiItem to member uiItem
@@ -182,7 +182,7 @@ int PythonPlotItem::PyPlotItem_init(PyPlotItem *self, PyObject *args, PyObject *
         else
         {
             PyErr_SetString(
-                PyExc_RuntimeError, 
+                PyExc_RuntimeError,
                 "given uiItem cannot be cast to plotItem (no valid plot detected)."
             );
 
@@ -200,14 +200,14 @@ int PythonPlotItem::PyPlotItem_init(PyPlotItem *self, PyObject *args, PyObject *
             ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
 
             QMetaObject::invokeMethod(
-                uiOrga, 
-                "getSubplot", 
-                Q_ARG(QSharedPointer<uint>, figure->guardedFigHandle), 
+                uiOrga,
+                "getSubplot",
+                Q_ARG(QSharedPointer<uint>, figure->guardedFigHandle),
                 Q_ARG(uint, subplotIndex), // 'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
-                Q_ARG(QSharedPointer<uint>, objectIDShared), 
-                Q_ARG(QSharedPointer<QByteArray>, objectName), 
-                Q_ARG(QSharedPointer<QByteArray>, widgetClassName), 
-                Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); 
+                Q_ARG(QSharedPointer<uint>, objectIDShared),
+                Q_ARG(QSharedPointer<QByteArray>, objectName),
+                Q_ARG(QSharedPointer<QByteArray>, widgetClassName),
+                Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
 
             locker.getSemaphore()->wait(-1);
             retval += locker.getSemaphore()->returnValue;
@@ -223,11 +223,11 @@ int PythonPlotItem::PyPlotItem_init(PyPlotItem *self, PyObject *args, PyObject *
         {
             ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
             QMetaObject::invokeMethod(
-                uiOrga, 
-                "getObjectAndWidgetName", 
+                uiOrga,
+                "getObjectAndWidgetName",
                 Q_ARG(uint, objectID), // 'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
-                Q_ARG(QSharedPointer<QByteArray>, objectName), 
-                Q_ARG(QSharedPointer<QByteArray>, widgetClassName), 
+                Q_ARG(QSharedPointer<QByteArray>, objectName),
+                Q_ARG(QSharedPointer<QByteArray>, widgetClassName),
                 Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
 
             locker.getSemaphore()->wait(-1);
@@ -330,11 +330,11 @@ RuntimeError \n\
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
 
         QMetaObject::invokeMethod(
-            uiOrga, 
-            "figurePickPoints", 
-            Q_ARG(uint, self->uiItem.objectID), // 'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command 
-            Q_ARG(QSharedPointer<QVector<ito::Shape> >, shapes), 
-            Q_ARG(int, maxNrPoints), 
+            uiOrga,
+            "figurePickPoints",
+            Q_ARG(uint, self->uiItem.objectID), // 'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+            Q_ARG(QSharedPointer<QVector<ito::Shape> >, shapes),
+            Q_ARG(int, maxNrPoints),
             Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
 
         bool finished = false;
@@ -346,8 +346,8 @@ RuntimeError \n\
                 retval += ito::RetVal(ito::retError, 0, QObject::tr("pick points operation interrupted by user").toLatin1().data());
 
                 QMetaObject::invokeMethod(
-                    uiOrga, 
-                    "figurePickPointsInterrupt", 
+                    uiOrga,
+                    "figurePickPointsInterrupt",
                     Q_ARG(uint, self->uiItem.objectID)); // 'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
 
                 finished = locker.getSemaphore()->wait(2000);
@@ -457,11 +457,11 @@ tuple of shape \n\
         return NULL;
     }
 
-    
+
     if (elementType  == ito::Shape::MultiPointPick)
     {
         PyErr_SetString(
-            PyExc_RuntimeError, 
+            PyExc_RuntimeError,
             "elementType 'PrimitiveMultiPointPick' (1) not allowed. Use 'PrimitivePoint' (2) instead or call 'pickPoints'."
         );
 
@@ -472,13 +472,13 @@ tuple of shape \n\
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
 
     QMetaObject::invokeMethod(
-        uiOrga, 
-        "figureDrawGeometricShapes", 
+        uiOrga,
+        "figureDrawGeometricShapes",
         Q_ARG(uint, self->uiItem.objectID), //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
-        Q_ARG(QSharedPointer<QVector<ito::Shape> >, shapes), 
-        Q_ARG(int, elementType), 
-        Q_ARG(int, maxNrElements), 
-        Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); 
+        Q_ARG(QSharedPointer<QVector<ito::Shape> >, shapes),
+        Q_ARG(int, elementType),
+        Q_ARG(int, maxNrElements),
+        Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
 
         bool finished = false;
 
@@ -487,16 +487,16 @@ tuple of shape \n\
             if (PythonEngine::isInterruptQueued())
             {
                 retval += ito::RetVal(
-                    ito::retError, 
-                    0, 
+                    ito::retError,
+                    0,
                     QObject::tr("Draw element operation interrupted by user").toLatin1().data()
                 );
 
                 QMetaObject::invokeMethod(
-                    uiOrga, 
-                    "figurePickPointsInterrupt", 
+                    uiOrga,
+                    "figurePickPointsInterrupt",
                     Q_ARG(uint, self->uiItem.objectID) //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
-                ); 
+                );
 
                 finished = locker.getSemaphore()->wait(2000);
             }
@@ -598,7 +598,7 @@ PyTypeObject PythonPlotItem::PyPlotItemType = {
 void PythonPlotItem::PyPlotItem_addTpDict(PyObject *tp_dict)
 {
     PyObject *value;
-    
+
     value = Py_BuildValue("i",ito::Shape::MultiPointPick);
     PyDict_SetItemString(tp_dict, "PrimitiveMultiPointPick", value);
     Py_DECREF(value);
@@ -634,4 +634,3 @@ void PythonPlotItem::PyPlotItem_addTpDict(PyObject *tp_dict)
 
 
 } //end namespace ito
-

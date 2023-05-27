@@ -288,9 +288,9 @@ RetVal FigureWidget::plot(
 
         * an empty string, then the right category is guessed from the dimension of the polygonMesh
         * 2.5D, or 2.5d -> then the default plot of the corresponding category is used
-        * a className, then the className is searched within the category, guessed from the 
+        * a className, then the className is searched within the category, guessed from the
         *     dimension of the polygonMesh (if not found, a warning is returned and the default of the category is used)
-        * 2.5d:className -> the className is searched within the given category, 
+        * 2.5d:className -> the className is searched within the given category,
         *     if not found, the default class from the category is used
         */
         if (className.compare("2.5d", Qt::CaseInsensitive) == 0)

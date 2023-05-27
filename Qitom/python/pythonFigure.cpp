@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -48,9 +48,9 @@ namespace ito
 //-------------------------------------------------------------------------------------
 void PythonFigure::PyFigure_dealloc(PyFigure* self)
 {
-    // if reference of semaphore drops to zero, the static method threadSafeDeleteUi 
+    // if reference of semaphore drops to zero, the static method threadSafeDeleteUi
     // of UiOrganizer is called that will finally delete the figure
-    self->guardedFigHandle.clear(); 
+    self->guardedFigHandle.clear();
 
     DELETE_AND_SET_NULL(self->signalMapper);
 
@@ -168,22 +168,22 @@ int PythonFigure::PyFigure_init(PyFigure *self, PyObject *args, PyObject *kwds)
     }
 
     QMetaObject::invokeMethod(
-        uiOrga, 
+        uiOrga,
         "createFigure",
-        Q_ARG(QSharedPointer<QSharedPointer<uint> >,guardedFigHandle), 
-        Q_ARG(QSharedPointer<uint>, objectID), 
-        Q_ARG(QSharedPointer<int>,rows_), 
-        Q_ARG(QSharedPointer<int>,cols_), 
-        Q_ARG(QPoint, offset), 
-        Q_ARG(QSize, size), 
+        Q_ARG(QSharedPointer<QSharedPointer<uint> >,guardedFigHandle),
+        Q_ARG(QSharedPointer<uint>, objectID),
+        Q_ARG(QSharedPointer<int>,rows_),
+        Q_ARG(QSharedPointer<int>,cols_),
+        Q_ARG(QPoint, offset),
+        Q_ARG(QSize, size),
         Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
-    
+
     if (!locker.getSemaphore()->wait(60000))
     {
         PyErr_SetString(PyExc_RuntimeError, "timeout while opening figure");
         return -1;
     }
-    
+
     retValue = locker.getSemaphore()->returnValue;
     if (!PythonCommon::transformRetValToPyException(retValue))
     {
@@ -230,12 +230,12 @@ PyObject* PythonFigure::PyFigure_repr(PyFigure *self)
             QSharedPointer<bool> exist(new bool);
 
             QMetaObject::invokeMethod(
-                uiOrga, 
-                "handleExist", 
+                uiOrga,
+                "handleExist",
                 Q_ARG(uint, *(self->guardedFigHandle)), // 'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
-                Q_ARG(QSharedPointer<bool>, exist), 
-                Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()) 
-            ); 
+                Q_ARG(QSharedPointer<bool>, exist),
+                Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())
+            );
 
             if (!locker.getSemaphore()->wait(PLUGINWAIT))
             {
@@ -984,15 +984,15 @@ plotHandle : plotItem \n\
     bool ok = true;
 
     if (!PyArg_ParseTupleAndKeywords(
-        args, 
-        kwds, 
-        "O!|isO!", 
-        const_cast<char**>(kwlist), 
-        &PythonPlugins::PyDataIOPluginType, 
-        &cam, 
-        &areaIndex, 
-        &className, 
-        &PyDict_Type, 
+        args,
+        kwds,
+        "O!|isO!",
+        const_cast<char**>(kwlist),
+        &PythonPlugins::PyDataIOPluginType,
+        &cam,
+        &areaIndex,
+        &className,
+        &PyDict_Type,
         &propDict))
     {
         return NULL;
@@ -1001,10 +1001,10 @@ plotHandle : plotItem \n\
     if (areaIndex >= self->cols * self->rows || areaIndex < 0)
     {
         PyErr_Format(
-            PyExc_RuntimeError, 
-            "areaIndex out of range [0, %i]. The figure has %i rows and %i columns.", 
-            (self->cols * self->rows - 1), 
-            self->rows, 
+            PyExc_RuntimeError,
+            "areaIndex out of range [0, %i]. The figure has %i rows and %i columns.",
+            (self->cols * self->rows - 1),
+            self->rows,
             self->cols);
         return NULL;
     }
@@ -1021,14 +1021,14 @@ plotHandle : plotItem \n\
     }
     QSharedPointer<unsigned int> objectID(new unsigned int);
     QVariantMap properties;
-    
+
     if (propDict)
     {
         PyObject *key, *value;
         Py_ssize_t pos = 0;
         QVariant valueV;
         QString keyS;
-        while (PyDict_Next(propDict, &pos, &key, &value)) 
+        while (PyDict_Next(propDict, &pos, &key, &value))
         {
             keyS = PythonQtConversion::PyObjGetString(key,true,ok);
             valueV = PythonQtConversion::PyObjToQVariant(value);
@@ -1039,7 +1039,7 @@ plotHandle : plotItem \n\
             else
             {
                 PyErr_SetString(
-                    PyExc_RuntimeError, 
+                    PyExc_RuntimeError,
                     "at least one property value could not be parsed to QVariant.");
                 return NULL;
             }
@@ -1047,15 +1047,15 @@ plotHandle : plotItem \n\
     }
 
     QMetaObject::invokeMethod(
-        uiOrg, 
-        "figureLiveImage", 
-        Q_ARG(AddInDataIO*, cam->dataIOObj), 
-        Q_ARG(QSharedPointer<uint>, self->guardedFigHandle), 
-        Q_ARG(QSharedPointer<uint>, objectID), 
-        Q_ARG(int, areaRow), 
-        Q_ARG(int, areaCol), 
-        Q_ARG(QString, defaultPlotClassName), 
-        Q_ARG(QVariantMap, properties), 
+        uiOrg,
+        "figureLiveImage",
+        Q_ARG(AddInDataIO*, cam->dataIOObj),
+        Q_ARG(QSharedPointer<uint>, self->guardedFigHandle),
+        Q_ARG(QSharedPointer<uint>, objectID),
+        Q_ARG(int, areaRow),
+        Q_ARG(int, areaCol),
+        Q_ARG(QString, defaultPlotClassName),
+        Q_ARG(QVariantMap, properties),
         Q_ARG(ItomSharedSemaphore*,locker.getSemaphore())
     );
 
@@ -1069,7 +1069,7 @@ plotHandle : plotItem \n\
     {
         return NULL;
     }
-    
+
     //return new instance of PyUiItem
     PyObject *args2 = PyTuple_New(0); // new ref
     PyObject *kwds2 = PyDict_New(); // new ref
@@ -1130,10 +1130,10 @@ PyObject* PythonFigure::PyFigure_matplotlib(PyFigure *self, PyObject *args, PyOb
     if (areaIndex >= self->cols * self->rows || areaIndex < 0)
     {
         PyErr_Format(
-            PyExc_RuntimeError, 
-            "areaIndex out of range [0, %i]. The figure has %i rows and %i columns.", 
-            (self->cols * self->rows - 1), 
-            self->rows, 
+            PyExc_RuntimeError,
+            "areaIndex out of range [0, %i]. The figure has %i rows and %i columns.",
+            (self->cols * self->rows - 1),
+            self->rows,
             self->cols);
         return NULL;
     }
@@ -1147,14 +1147,14 @@ PyObject* PythonFigure::PyFigure_matplotlib(PyFigure *self, PyObject *args, PyOb
 
     QSharedPointer<unsigned int> objectID(new unsigned int);
     QVariantMap properties;
-    
+
     if (propDict)
     {
         PyObject *key, *value;
         Py_ssize_t pos = 0;
         QVariant valueV;
         QString keyS;
-        while (PyDict_Next(propDict, &pos, &key, &value)) 
+        while (PyDict_Next(propDict, &pos, &key, &value))
         {
             keyS = PythonQtConversion::PyObjGetString(key,true,ok);
             valueV = PythonQtConversion::PyObjToQVariant(value);
@@ -1165,7 +1165,7 @@ PyObject* PythonFigure::PyFigure_matplotlib(PyFigure *self, PyObject *args, PyOb
             else
             {
                 PyErr_SetString(
-                    PyExc_RuntimeError, 
+                    PyExc_RuntimeError,
                     "at least one property value could not be parsed to QVariant.");
                 return NULL;
             }
@@ -1179,14 +1179,14 @@ PyObject* PythonFigure::PyFigure_matplotlib(PyFigure *self, PyObject *args, PyOb
 	}
 
     QMetaObject::invokeMethod(
-        uiOrg, 
-        "figureDesignerWidget", 
-        Q_ARG(QSharedPointer<uint>, self->guardedFigHandle), 
-        Q_ARG(QSharedPointer<uint>, objectID), 
-        Q_ARG(int, areaRow), 
-        Q_ARG(int, areaCol), 
-        Q_ARG(QString, "MatplotlibPlot"), 
-        Q_ARG(QVariantMap, properties), 
+        uiOrg,
+        "figureDesignerWidget",
+        Q_ARG(QSharedPointer<uint>, self->guardedFigHandle),
+        Q_ARG(QSharedPointer<uint>, objectID),
+        Q_ARG(int, areaRow),
+        Q_ARG(int, areaCol),
+        Q_ARG(QString, "MatplotlibPlot"),
+        Q_ARG(QVariantMap, properties),
         Q_ARG(ItomSharedSemaphore*,locker.getSemaphore())
     );
 
@@ -1200,7 +1200,7 @@ PyObject* PythonFigure::PyFigure_matplotlib(PyFigure *self, PyObject *args, PyOb
     {
         return NULL;
     }
-    
+
     //return new instance of PyUiItem
     PyObject *args2 = PyTuple_New(0); //Py_BuildValue("OO", self, name);
     PyObject *kwds2 = PyDict_New();
@@ -1385,13 +1385,13 @@ PyObject* PythonFigure::PyFigure_show(PyFigure *self, PyObject *args)
     ito::RetVal retValue = retOk;
 
     QMetaObject::invokeMethod(uiOrga, "showDialog", Q_ARG(uint, *(self->guardedFigHandle)) , Q_ARG(int,modalLevel), Q_ARG(QSharedPointer<int>, retCodeIfModal), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
-    
+
     if (!locker.getSemaphore()->wait(30000))
     {
         PyErr_SetString(PyExc_RuntimeError, "timeout while showing dialog");
         return NULL;
     }
-    
+
     retValue = locker.getSemaphore()->returnValue;
     if (!PythonCommon::transformRetValToPyException(retValue))
     {
@@ -1431,13 +1431,13 @@ PyObject* PythonFigure::PyFigure_hide(PyFigure *self)
     ito::RetVal retValue = retOk;
 
     QMetaObject::invokeMethod(uiOrga, "hideDialog", Q_ARG(uint, *(self->guardedFigHandle)), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
-    
+
     if (!locker.getSemaphore()->wait(-1))
     {
         PyErr_SetString(PyExc_RuntimeError, "timeout while hiding figure");
         return NULL;
     }
-    
+
     retValue = locker.getSemaphore()->returnValue;
     if (!PythonCommon::transformRetValToPyException(retValue))
     {
@@ -1541,13 +1541,13 @@ figure is integrated into the main window of itom, else it is a independent wind
     QSharedPointer<bool> docked(new bool);
 
     QMetaObject::invokeMethod(uiOrga, "getDockedStatus", Q_ARG(uint, *(self->guardedFigHandle)), Q_ARG(QSharedPointer<bool>, docked), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
-    
+
     if (!locker.getSemaphore()->wait(PLUGINWAIT))
     {
         PyErr_SetString(PyExc_RuntimeError, "timeout while getting dock status");
         return NULL;
     }
-    
+
     retValue = locker.getSemaphore()->returnValue;
     if (!PythonCommon::transformRetValToPyException(retValue))
     {
@@ -1591,13 +1591,13 @@ figure is integrated into the main window of itom, else it is a independent wind
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
 
     QMetaObject::invokeMethod(uiOrga, "setDockedStatus", Q_ARG(uint, *(self->guardedFigHandle)), Q_ARG(bool, docked), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
-    
+
     if (!locker.getSemaphore()->wait(PLUGINWAIT))
     {
         PyErr_SetString(PyExc_RuntimeError, "timeout while getting dock status");
         return -1;
     }
-    
+
     retValue = locker.getSemaphore()->returnValue;
     if (!PythonCommon::transformRetValToPyException(retValue))
     {
@@ -1676,13 +1676,13 @@ itom.close");
     ito::RetVal retValue = retOk;
 
     QMetaObject::invokeMethod(uiOrga, "figureClose", Q_ARG(uint, handle), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
-    
+
     if (!locker.getSemaphore()->waitAndProcessEvents(-1))
     {
         PyErr_SetString(PyExc_RuntimeError, "timeout while closing figures");
         return NULL;
     }
-    
+
     retValue = locker.getSemaphore()->returnValue;
     if (!PythonCommon::transformRetValToPyException(retValue))
     {
@@ -1812,4 +1812,3 @@ void PythonFigure::PyFigure_addTpDict(PyObject *tp_dict)
 }
 
 } //end namespace ito
-

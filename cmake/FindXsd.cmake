@@ -5,7 +5,7 @@
 #  XSD_INCLUDE_DIR - the Xerces-C include directory
 #  XSD_LIBARY_DIR - the Xerces-C include directory
 #  XSD_VERSION - Xerces-C found version
-# 
+#
 if((CMAKE_MAJOR_VERSION GREATER 2) AND (CMAKE_MAJOR_VERSION LESS 4) AND (CMAKE_MINOR_VERSION GREATER 1))
 	cmake_policy(SET CMP0053 NEW)
 endif((CMAKE_MAJOR_VERSION GREATER 2) AND (CMAKE_MAJOR_VERSION LESS 4) AND (CMAKE_MINOR_VERSION GREATER 1))
@@ -42,9 +42,9 @@ set(XSD_POSSIBLE_ROOT_DIRS
   "$ENV{PATH}"
   )
 
- find_path(XSD_ROOT_DIR 
-  NAMES 
-  include/xsd/cxx/parser/elements.hxx     
+ find_path(XSD_ROOT_DIR
+  NAMES
+  include/xsd/cxx/parser/elements.hxx
   PATHS ${XSD_POSSIBLE_ROOT_DIRS}
   )
 
@@ -71,24 +71,24 @@ find_path(XSD_INCLUDE_DIR xsd/cxx/parser/elements.hxx
   "$ENV{ProgramW6432}/CodeSynthesis XSD 3.3/include"
   "$ENV{ProgramFiles}/CodeSynthesis XSD 4.0/include"
   "$ENV{ProgramFiles}(x86)/CodeSynthesis XSD 4.0/include"
-  "$ENV{ProgramW6432}/CodeSynthesis XSD 4.0/include"  
+  "$ENV{ProgramW6432}/CodeSynthesis XSD 4.0/include"
   ${CMAKE_SOURCE_DIR}/../xsd/libxsd
   "${XSD_ROOT_DIR}/include"
   "${XSD_ROOT_DIR}/libxsd"
   "${XSD_ROOT_DIR}"
 )
 
-find_program(XSD_EXECUTABLE 
+find_program(XSD_EXECUTABLE
   NAMES xsdcxx xsd
   PATHS "${XSD_ROOT_DIR}"
   "${XSD_ROOT_DIR}/bin"
-  "[HKEY_CURRENT_USER\\software\\xsd\\bin]" 
+  "[HKEY_CURRENT_USER\\software\\xsd\\bin]"
   "$ENV{ProgramFiles}/CodeSynthesis XSD 3.3/bin"
   "$ENV{ProgramFiles}(x86)/CodeSynthesis XSD 3.3/bin"
   "$ENV{ProgramW6432}/CodeSynthesis XSD 3.3/bin"
   "$ENV{ProgramFiles}/CodeSynthesis XSD 4.0/bin$POSTFIX"
   "$ENV{ProgramFiles}(x86)/CodeSynthesis XSD 4.0/bin$POSTFIX"
-  "$ENV{ProgramW6432}/CodeSynthesis XSD 4.0/bin$POSTFIX"  
+  "$ENV{ProgramW6432}/CodeSynthesis XSD 4.0/bin$POSTFIX"
   "$ENV{PATH}"
   "$ENV{XSDDIR}/bin$POSTFIX"
 )
@@ -111,13 +111,13 @@ if(DEFINED MSVC_VERSION)
 		unset(XERCES_LIB_PATH_POSTFIX)
     elseif(MSVC_VERSION EQUAL 1400)
         set(XSD_LIB_POSTFIX "_vc80")
-        set(XSD_LIBPATH_VERS_POSTFIX "vc-8.0/")  
+        set(XSD_LIBPATH_VERS_POSTFIX "vc-8.0/")
     elseif(MSVC_VERSION EQUAL 1500)
         set(XSD_LIB_POSTFIX "_vc90")
-        set(XSD_LIBPATH_VERS_POSTFIX "vc-9.0/")  
+        set(XSD_LIBPATH_VERS_POSTFIX "vc-9.0/")
     elseif(MSVC_VERSION EQUAL 1600)
         set(XSD_LIB_POSTFIX "_vc100")
-        set(XSD_LIBPATH_VERS_POSTFIX "vc-10.0/")  
+        set(XSD_LIBPATH_VERS_POSTFIX "vc-10.0/")
 	elseif(MSVC_VERSION EQUAL 1800)
 		if(XSD_VERSION EQUAL "4000000L")
 			set(XSD_LIB_POSTFIX "_vc120")
@@ -137,13 +137,13 @@ if(DEFINED MSVC_VERSION)
 		endif(XSD_VERSION EQUAL "4000000L")
 	endif(MSVC_VERSION EQUAL 1300)
 
-	# Wiora: Set 64 bit target dir (currently this is windows only. How does this work on linux/mac?) 
+	# Wiora: Set 64 bit target dir (currently this is windows only. How does this work on linux/mac?)
     if(CMAKE_CL_64)
         set(XSD_LIBPATH_POSTFIX lib64/)
     else(CMAKE_CL_64)
         set(XSD_LIBPATH_POSTFIX lib/)
     endif(CMAKE_CL_64)
-        
+
     set(XSD_LIBPATH_POSTFIX ${XSD_LIBPATH_POSTFIX} ${XSD_LIBPATH_VERS_POSTFIX})
 
 else(DEFINED MSVC_VERSION)
@@ -204,7 +204,7 @@ FIND_PACKAGE_HANDLE_STANDARD_ARGS( XSD DEFAULT_MSG XSD_EXECUTABLE XSD_INCLUDE_DI
 
 mark_as_advanced( XSD_INCLUDE_DIR XSD_EXECUTABLE )
 
-# 
+#
 # Macro that attempts to generate C++ files from an XML schema. The NAME
 # argument is the name of the CMake variable to use to store paths to the
 # derived C++ source file. The FILE argument is the path of the schema file to
@@ -222,7 +222,7 @@ MACRO( XSD_SCHEMA NAME FILE )
   #
   set( xs_SRC "${FILE}" )
 
-  # 
+  #
   # XSD will generate two or three C++ files (*.cxx,*.hxx,*.ixx). Get the
   # destination file path sans any extension and then build paths to the
   # generated files.

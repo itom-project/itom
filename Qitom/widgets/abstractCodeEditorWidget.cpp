@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -129,14 +129,14 @@ void AbstractCodeEditorWidget::loadSettings()
 
     if (pyAutoIndentMode)
     {
-        //always enable=true, control the two functionalities via 
+        //always enable=true, control the two functionalities via
         //enableAutoIndent and setAutoStripTrailingSpacesAfterReturn
-        pyAutoIndentMode->setEnabled(true); 
+        pyAutoIndentMode->setEnabled(true);
         pyAutoIndentMode->enableAutoIndent(settings.value("autoIndent", true).toBool()); //auto indentation
     }
 
     setUseSpacesInsteadOfTabs(!settings.value("indentationUseTabs", false).toBool()); //tabs (true) or whitespace (false)
-    setTabLength(settings.value("indentationWidth", 4).toInt()); //numbers of whitespaces   
+    setTabLength(settings.value("indentationWidth", 4).toInt()); //numbers of whitespaces
     setShowIndentationGuides(settings.value("showIndentationGuides", true).toBool());
 
     // ------------ calltips --------------------------------------------------------
@@ -208,7 +208,7 @@ void AbstractCodeEditorWidget::loadSettings()
 
     QTextCharFormat defaultFormat;
     QTextCharFormat currentFormat;
-    
+
 
     foreach (StyleItem::StyleType styleType, StyleItem::availableStyleTypes())
     {
@@ -240,12 +240,12 @@ void AbstractCodeEditorWidget::loadSettings()
             if (fgColor.isValid())
             {
                 fgColor.setAlpha(settings.value("foregroundColorAlpha", 255).toInt());
-                
+
                 if (currentFormat.foreground().color() != fgColor)
                 {
                     item.rformat().setForeground(fgColor);
                     updateSyntaxHighlighter = true;
-                }                
+                }
             }
 
             QString fontFamily = settings.value("fontFamily", "").toString();
@@ -384,13 +384,13 @@ If the given or returned text is empty, an empty string is returned and lineCoun
 If the given text contains only one line, it is returned (trimmed if ``trimText`` is true)
 and ``lineCount`` is 1.
 
-Else, the current indentation level of each non-empty line is checked and the minimum 
-indentation level is denoted as minIndentLevel. Afterwards every line is tried to be 
+Else, the current indentation level of each non-empty line is checked and the minimum
+indentation level is denoted as minIndentLevel. Afterwards every line is tried to be
 unindented by minIndentLevel.
 
 \param text is the original text
 \param lineCount contains the number of lines in the given text after having called this method
-\param trimText defines if the returned text should be trimmed (leading and trailing 
+\param trimText defines if the returned text should be trimmed (leading and trailing
     spaces and tabs are removed) or if not.
 
 \returns the modified string
@@ -578,8 +578,8 @@ void AbstractCodeEditorWidget::copy()
             // delay, however the event loop has to be run at least one time.
             // Therefore, a simple sleep / delay does not work.
 #ifdef _WIN32
-            QTimer::singleShot(25, [=]() 
-            { 
+            QTimer::singleShot(25, [=]()
+            {
                 clipboard->setText(modifiedText);
             });
 #else
@@ -644,7 +644,7 @@ void AbstractCodeEditorWidget::paste()
             // if this is a console widget and the current line starts with >>,
             // the column should be subtracted by the length of this special start string.
             column -= std::max(0, startLineOffset(lineIdx));
-            
+
             if (useSpacesInsteadOfTabs())
             {
                 indent = QString(column, ' ');
@@ -716,7 +716,7 @@ void AbstractCodeEditorWidget::cut()
             {
                 getCursorPosition(&lineFrom, &columnFrom);
             }
-            
+
             QString prependText;
 
             if (lineFrom >= 0 && columnFrom >= 0)

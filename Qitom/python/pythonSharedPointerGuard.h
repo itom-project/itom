@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -98,14 +98,13 @@ public:
 
 private:
 
-    /* elements in this hash-table are pyObjects (type byteArray, unicode...), 
-    whose inlying char*-pointer is given to a QSharedPointer<char>. Before giving 
-    it to the shared pointer, the reference of the pyObject is incremented. 
-    If the deleter of the sharedPointer is called, it does not delete the char-array, 
+    /* elements in this hash-table are pyObjects (type byteArray, unicode...),
+    whose inlying char*-pointer is given to a QSharedPointer<char>. Before giving
+    it to the shared pointer, the reference of the pyObject is incremented.
+    If the deleter of the sharedPointer is called, it does not delete the char-array,
     but decrements the PyObject and deletes it from this hash-table (used in getVal) */
-    static QHash<void* /*sharedPointerData*/, PyObject* /*pyObjOwner*/> m_hashTable;  
+    static QHash<void* /*sharedPointerData*/, PyObject* /*pyObjOwner*/> m_hashTable;
 
 };
 
 } //namespace ito
-

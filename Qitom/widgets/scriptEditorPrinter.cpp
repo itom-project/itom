@@ -1,11 +1,11 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO), 
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -36,7 +36,7 @@ namespace ito
 {
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ScriptEditorPrinter::ScriptEditorPrinter(QPrinter::PrinterMode mode /*= QPrinter::ScreenResolution*/) 
+ScriptEditorPrinter::ScriptEditorPrinter(QPrinter::PrinterMode mode /*= QPrinter::ScreenResolution*/)
     : QPrinter(mode),
         m_magnification(0),
         m_alphaLevel(0)
@@ -55,7 +55,7 @@ QRect ScriptEditorPrinter::formatPage(QPainter &painter, bool drawing, const QRe
 {
     painter.save();
     painter.setFont(QFont("Verdana", 10, QFont::Normal, false));
-    painter.setPen(QColor(Qt::black)); 
+    painter.setPen(QColor(Qt::black));
 
     QString filename = this->docName();
     QString date = QDateTime::currentDateTime().toString(QLocale::system().dateFormat(QLocale::ShortFormat));
@@ -68,7 +68,7 @@ QRect ScriptEditorPrinter::formatPage(QPainter &painter, bool drawing, const QRe
 
     int dateWidth = painter.fontMetrics().width(date);
 #endif
-    
+
     filename = painter.fontMetrics().elidedText(filename, Qt::ElideMiddle, 0.8 * (width - dateWidth));
 
     if (drawing)
@@ -86,7 +86,7 @@ QRect ScriptEditorPrinter::formatPage(QPainter &painter, bool drawing, const QRe
             area.top() + painter.fontMetrics().ascent(),
             date);
 #endif
-                
+
         painter.drawText((area.left() + area.right())*0.5, area.bottom() - painter.fontMetrics().ascent(), page);
     }
 

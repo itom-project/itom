@@ -5,28 +5,28 @@ import numpy as np
 from numpy import testing as nptesting
 
 class DataObjectMapping(unittest.TestCase):
-    
+
     @classmethod
     def setUpClass(cls):
         pass
-    
+
     def test_mappingSetArrayLike(self):
         a = dataObject.zeros([10,10],'uint8')
         a[2:4,2:4] = [[11,12],[13,14]]
         self.assertEqual(np.sum(a), 11+12+13+14)
-        
+
         a = dataObject.zeros([3,3],'uint8')
         a[0,:] = (100,101,102)
         self.assertEqual(np.sum(a), 100+101+102)
-        
+
         a = dataObject.zeros([3,3],'uint8')
         a[:,0] = (100,101,102)
         self.assertEqual(np.sum(a), 100+101+102)
-        
+
         a = dataObject.zeros([2,3,3],'uint8')
         a[1,:,2] = [100,101,102]
         self.assertEqual(np.sum(a), 100+101+102)
-        
+
         a = dataObject.zeros([2,3,3],'uint8')
         a[:,0,:] = [[11,12,13],[110,120,130]]
         self.assertEqual(np.sum(a), 11+12+13+110+120+130)
@@ -46,7 +46,7 @@ class DataObjectMapping(unittest.TestCase):
 
         # float
         values = [-45.5, 13.3, 0.0, 799.9994]
-        
+
         for dtype in ['float64', 'float32']:
             d = dataObject([1, 4], dtype, data = 0)
             nptesting.assert_array_almost_equal(d.value, 0)
@@ -55,7 +55,7 @@ class DataObjectMapping(unittest.TestCase):
 
         # complex
         values = [-45.5+2j, 13.3-13.3j, 0.0+0j, 799.9994+0.0001j]
-        
+
         for dtype in ['complex128', 'complex64']:
             d = dataObject([1, 4], dtype, data = 0)
             nptesting.assert_array_almost_equal(d.value, 0)

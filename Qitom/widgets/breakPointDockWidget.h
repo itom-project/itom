@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -58,7 +58,7 @@ namespace ito
             QToolBar    *m_pMainToolbar;            /*!< Toolbar with QActions */
 
             QMenu *m_pContextMenu;                  /*!< Contextmenu with the same actions as the toolbar */
-            
+
             bool m_enOrDisAbleAllBreakpoints;        /*!< This is a flag used to signalize the enableBP method that it has to select all entries or just the ones the user selected  */
 
             ShortcutAction* m_pActDelBP;
@@ -67,7 +67,7 @@ namespace ito
             ShortcutAction* m_pActToggleBP;
             ShortcutAction* m_pActToggleAllBPs;
 
-            
+
         signals:
 
         private slots:

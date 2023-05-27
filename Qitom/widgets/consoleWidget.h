@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -99,7 +99,7 @@ protected:
     void mouseDoubleClickEvent(QMouseEvent *e);
 
 private slots:
-    void selChanged(); 
+    void selChanged();
     void textDoubleClicked(int position, int line, int modifiers);
     void clearAndStartNewCommand();
     void toggleAutoWheel(bool enable);
@@ -107,7 +107,7 @@ private slots:
 
 private:
     struct CmdQueueItem
-    { 
+    {
         CmdQueueItem() :
             m_lineBegin(-1),
             m_nrOfLines(1)
@@ -153,10 +153,10 @@ private:
 
     void enableInputTextMode();
     void disableInputTextMode();
-    
+
     int m_startLineBeginCmd; //!< zero-based, first-line of actual (not evaluated command), last line which starts with ">>", -1: no command active
-    
-    DequeCommandList *m_pCmdList; 
+
+    DequeCommandList *m_pCmdList;
 
     std::queue<CmdQueueItem> m_cmdQueue; //!< upcoming events to handle
 

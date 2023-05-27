@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
 
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
@@ -92,7 +92,7 @@ QByteArray QtHelpUrlSchemeHandler::mimeFromUrl(const QUrl &url)
 	const QByteArray &ext = path.mid(index).toUtf8().toLower();
 
 	const ExtensionMap *e = extensionMap;
-	while (e->extension) 
+	while (e->extension)
 	{
 		if (ext == e->extension)
 		{
@@ -121,4 +121,3 @@ void QtHelpUrlSchemeHandler::requestStarted(QWebEngineUrlRequestJob* request)
 } //end namespace ito
 
 #endif
-

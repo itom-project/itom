@@ -1,4 +1,4 @@
-"""This module builds a bridge between the 
+"""This module builds a bridge between the
 autocompletion and static analysis package jedi
 and the GUI of itom.
 
@@ -199,7 +199,7 @@ def calltips(code, line, column, path=None):
         with warnings.catch_warnings():
             # avoid UserWarnings if an imported C-Module could not be loaded yet
             warnings.simplefilter("ignore")
-            
+
             if jedi.__version__ >= "0.17.0":
                 script = jedi.Script(code=code, path=path, environment=jedienv)
                 signatures = script.get_signatures(line=line + 1, column=column)
@@ -221,7 +221,7 @@ def calltips(code, line, column, path=None):
                 else:
                     script = jedi.Script(code, line + 1, column, path, encoding="utf-8")
                 signatures = script.call_signatures()
-    
+
             result = []
 
         for sig in signatures:
@@ -275,7 +275,7 @@ def completions(code, line, column, path, prefix):
         with warnings.catch_warnings():
             # avoid UserWarnings if an imported C-Module could not be loaded yet
             warnings.simplefilter("ignore")
-            
+
             if jedi.__version__ >= "0.17.0":
                 script = jedi.Script(code=code, path=path, environment=jedienv)
                 completions = script.complete(line=line + 1, column=column)
@@ -430,7 +430,7 @@ def goto_assignments(code, line, column, path, mode=0, encoding="utf-8"):
         with warnings.catch_warnings():
             # avoid UserWarnings if an imported C-Module could not be loaded yet
             warnings.simplefilter("ignore")
-            
+
             if jedi.__version__ >= "0.16.0":
                 if jedi.__version__ >= "0.17.0":
                     script = jedi.Script(code=code, path=path, environment=jedienv)
@@ -438,7 +438,7 @@ def goto_assignments(code, line, column, path, mode=0, encoding="utf-8"):
                     script = jedi.Script(
                         source=code, path=path, encoding="utf-8", environment=jedienv
                     )
-    
+
                 try:
                     if mode == 0:
                         assignments = script.infer(
@@ -460,7 +460,7 @@ def goto_assignments(code, line, column, path, mode=0, encoding="utf-8"):
                         )
                 except Exception:
                     assignments = []
-    
+
             else:
                 if jedi.__version__ >= "0.12.0":
                     script = jedi.Script(
@@ -473,7 +473,7 @@ def goto_assignments(code, line, column, path, mode=0, encoding="utf-8"):
                     )
                 else:
                     script = jedi.Script(code, line + 1, column, path, encoding="utf-8")
-    
+
                 try:
                     if mode == 0:
                         assignments = script.goto_definitions()
@@ -758,7 +758,7 @@ def get_help(code, line, column, path):
         with warnings.catch_warnings():
             # avoid UserWarnings if an imported C-Module could not be loaded yet
             warnings.simplefilter("ignore")
-            
+
             if jedi.__version__ >= "0.17.0":
                 script = jedi.Script(code=code, path=path, environment=jedienv)
                 helps = script.help(line=line + 1, column=column)

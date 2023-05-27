@@ -778,7 +778,7 @@ py_decodelzw(PyObject *obj, PyObject *args)
     PyEval_RestoreThread(_save);
 
     if (code != 257) {
-        PyErr_WarnEx(NULL, 
+        PyErr_WarnEx(NULL,
             "py_decodelzw encountered unexpected end of stream", 1);
     }
 
@@ -960,4 +960,3 @@ init_tifffile(void)
     return module;
 #endif
 }
-

@@ -16,7 +16,7 @@ must be clicked to apply all recent changes.
 In the second tab, we have a DummyMotor with 3 axes. There is one
 read-only ParamEditorWidget and one standard one, that only shows
 a subset of parameters (depending on their category). The category
-of a parameter is an optional meta information and is part of the 
+of a parameter is an optional meta information and is part of the
 plugin.
 """
 from itom import dataIO

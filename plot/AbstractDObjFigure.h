@@ -10,7 +10,7 @@
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
-   
+
     In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
@@ -62,7 +62,7 @@ class ITOMCOMMONPLOT_EXPORT AbstractDObjFigure : public AbstractFigure
     Q_CLASSINFO("prop://yAxisInterval", "Sets the visible range of the displayed y-axis (in coordinates of the data object). Set it to 'auto' if range should be automatically set [default].")
     Q_CLASSINFO("prop://zAxisInterval", "Sets the visible range of the displayed z-axis (in coordinates of the data object). Set it to 'auto' if range should be automatically set [default].")
     Q_CLASSINFO("prop://colorMap", "Color map (string) that should be used to colorize a non-color data object.")
-    
+
     Q_CLASSINFO("slot://setSource", "This slot can be implemented by any plot plugin to send a dataObject to the plot. Here it is not required and therefore not implemented.")
     Q_CLASSINFO("slot://setLinePlot", "This slot can be implemented by any plot plugin to force the plot to open a line plot. Here it is not required and therefore not implemented.")
 
@@ -87,13 +87,13 @@ public:
 
     virtual ito::AutoInterval getXAxisInterval(void) const;
     virtual void setXAxisInterval(ito::AutoInterval);
-        
+
     virtual ito::AutoInterval getYAxisInterval(void) const;
     virtual void setYAxisInterval(ito::AutoInterval);
-        
+
     virtual ito::AutoInterval getZAxisInterval(void) const;
     virtual void setZAxisInterval(ito::AutoInterval);
-        
+
     virtual QString getColorMap(void) const;
     virtual void setColorMap(QString);
 

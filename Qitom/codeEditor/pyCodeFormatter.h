@@ -18,7 +18,7 @@
 
     You should have received a copy of the GNU Library General Public License
     along with itom. If not, see <http://www.gnu.org/licenses/>.
-    
+
 *********************************************************************** */
 
 #pragma once
