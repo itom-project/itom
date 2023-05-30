@@ -49,11 +49,9 @@ to adjust some pathes below. Currently, Qt5 is still built without webkit-suppor
 Therefore, the built-in helpviewer of itom has to be disabled. For building itom **without** point cloud support use:
 
 .. code-block:: bash
-
-    git clone git clone git@github.com:itom-project/itomProject.git
+    git clone --recursive git@github.com:itom-project/itomProject.git
     cd itomproject
-    git submodule init
-    git submodule update
+    git submodule foreach --recursive git checkout master
     mkdir -p ./{build_debug,build_release}
     cd ./build_release
     cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=OFF -PYTHON_LIBRARY=/usr/lib64/libpython3.5m.so -PYTHON_INCLUDE_DIR=/usr/include/python3.5m -DQt_Prefix_DIR=/usr/lib64 -BUILD_WITH_HELPVIEWER=OFF ../
@@ -64,28 +62,12 @@ Therefore, the built-in helpviewer of itom has to be disabled. For building itom
 For these versions, CMake is able to detect Qt5 and Python automatically. Additionally, the qt5 webengine is available:
 
 .. code-block:: bash
-
-    git clone git clone git@github.com:itom-project/itomProject.git
-    cd itomproject
-    git submodule init
-    git submodule update
-    mkdir -p ./{build_debug,build_release}
-    cd ./build_release
     cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=OFF ../
-    make -j4
 
 **With** point cloud support use:
 
 .. code-block:: bash
-
-    git clone git clone git@github.com:itom-project/itomProject.git
-    cd itomproject
-    git submodule init
-    git submodule update
-    mkdir -p ./{build_debug,build_release}
-    cd ./build_release
     cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=ON -DPYTHON_LIBRARY=/usr/lib64/libpython3.5m.so -DPYTHON_INCLUDE_DIR=/usr/include/python3.5m -DQt_Prefix_DIR=/usr/lib64 -DBUILD_WITH_HELPVIEWER=OFF -DPCL_DIR=/usr/lib64/cmake/pcl -DBOOST_INCLUDEDIR=/usr/include -DBOOST_LIBRARYDIR=/usr/lib64 -DITOM_SDK_DIR=../itom/SDK ../
-    make -j4
 
 Hints
 --------------

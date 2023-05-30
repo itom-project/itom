@@ -15,10 +15,9 @@ To clone from the central |itomproject| and initialize the submodules correctly,
 
 .. code-block:: bash
 
-    git clone git@github.com:itom-project/itomProject.git
+    git clone --recursive git@github.com:itom-project/itomProject.git
     cd itomproject
-    git submodule init
-    git submodule update
+    git submodule foreach --recursive git checkout master
 
 This will automatically clone the related submodules |itom| (core), |plugins| and |designerplugins|.
 
