@@ -49,7 +49,7 @@ to adjust some pathes below. Currently, Qt5 is still built without webkit-suppor
 Therefore, the built-in helpviewer of itom has to be disabled. For building itom **without** point cloud support use:
 
 .. code-block:: bash
-    git clone --recursive git@github.com:itom-project/itomProject.git
+    git clone --recursive --remote git@github.com:itom-project/itomProject.git
     cd itomproject
     git submodule foreach --recursive git checkout master
     mkdir -p ./{build_debug,build_release}

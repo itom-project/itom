@@ -15,7 +15,7 @@ To clone from the central |itomproject| and initialize the submodules correctly,
 
 .. code-block:: bash
 
-    git clone --recursive git@github.com:itom-project/itomProject.git
+    git clone --recursive --remote git@github.com:itom-project/itomProject.git
     cd itomproject
     git submodule foreach --recursive git checkout master
 

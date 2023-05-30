@@ -34,7 +34,7 @@ Therefore, the built-in helpviewer of itom has to be disabled. For building itom
 
 .. code-block:: bash
 
-    git clone --recursive git@github.com:itom-project/itomProject.git
+    git clone --recursive --remote git@github.com:itom-project/itomProject.git
     cd itomproject
     git submodule foreach --recursive git checkout master
     mkdir -p ./{build_debug,build_release}

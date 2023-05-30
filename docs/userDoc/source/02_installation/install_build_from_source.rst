@@ -16,11 +16,9 @@ Git repository from git@github.com:itom-project/itomProject.git), initialize and
 submodules **itom**, **plugins** and **designerplugins**.
 
 .. code-block:: bash
-
-    git clone git@github.com:itom-project/itomProject.git
+    git clone --recursive --remote git@github.com:itom-project/itomProject.git
     cd itomproject
-    git submodule init
-    git submodule update
+    git submodule foreach --recursive git checkout master
 
 Then you can compile an up-to-date version of |itomproject|. This is recommended for developers
 (e.g. plugin developers) and required for linux users. Before getting the source files,
