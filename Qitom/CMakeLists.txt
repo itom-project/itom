@@ -29,11 +29,12 @@ message(STATUS "--------------- EXECUTABLE ${target_name} -----------------")
 include("../cmake/ItomBuildMacros.cmake")
 include("../cmake/ItomBuildMacrosInternal.cmake")
 
-if(${BUILD_QTVERSION} STREQUAL "Qt6")
+if(BUILD_QTVERSION STREQUAL "Qt6")
     set(CMAKE_CXX_STANDARD 17)
-else()
+elseif(BUILD_QTVERSION STREQUAL "Qt5")
     set(CMAKE_CXX_STANDARD 11)
-endif()
+endif(BUILD_QTVERSION STREQUAL "Qt6")
+
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 itom_init_cmake_policy(3.12)

@@ -35,6 +35,7 @@
 #include <qlayout.h>
 #include <qtimer.h>
 #include <qsettings.h>
+#include <QScreen>
 
 #include <qapplication.h>
 
@@ -572,57 +573,6 @@ RetVal AbstractDockWidget::setAdvancedWindowTitle(QString newCompleteTitle, bool
     return RetVal(retOk);
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-////! ands given toolbar and register it with given key-string in toolbar-map (m_toolBars)
-///*!
-//    long description
-//
-//    \param tb reference to toolbar of type QToolBar
-//    \param key string containing key for this toolbar
-//    \return retOk, if toolbar could be added, retError, if key already exists in map
-//*/
-//RetVal AbstractDockWidget::addAndRegisterToolBar(QToolBar* tb, QString key)
-//{
-//    QMap<QString, QToolBar*>::iterator it = m_toolBars.find(key);
-//
-//    if (it == m_toolBars.end())
-//    {
-//        m_pWindow->insertToolBar(m_dockToolbar, tb);
-//
-//        if (!m_docked && m_floatingStyle == floatingWindow)
-//        {
-//            tb->setIconSize(QSize(style()->pixelMetric(QStyle::PM_ToolBarIconSize), style()->pixelMetric(QStyle::PM_ToolBarIconSize)));
-//        }
-//        else
-//        {
-//            tb->setIconSize(QSize(16, 16));
-//        }
-//
-//        m_toolBars.insert(key, tb);
-//        return RetVal(retOk);
-//    }
-//    return RetVal(retError);
-//}
-
-////! remove toolbar with given key from m_toolBars
-///*!
-//    \param key key-string to toolbar which should be removed
-//    \return retOk, if toolbar could be removed, retError, if key has not been found in toolbar-map
-//*/
-//RetVal AbstractDockWidget::unregisterToolBar(QString key)
-//{
-//    int nr = m_toolBars.remove(key);
-//
-//
-//    if (nr == 0)
-//    {
-//        return RetVal(retError);
-//    }
-//    else
-//    {
-//        return RetVal(retOk);
-//    }
-//}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal AbstractDockWidget::addToolBar(QToolBar *tb, const QString &key, Qt::ToolBarArea area /*= Qt::TopToolBarArea*/, int section /*= 1*/)
@@ -796,20 +746,6 @@ void AbstractDockWidget::closeEvent (QCloseEvent * event)
     event->accept();
 }
 
-
-////----------------------------------------------------------------------------------------------------------------------------------
-//void AbstractDockWidget::showEvent(QShowEvent * event)
-//{
-//    if (m_floatingStyle == floatingWindow)
-//    {
-//        m_pWindow->settername(__VA_ARGS__);
-//        QDockWidget::settername(__VA_ARGS__);
-//    }
-//    else
-//    {
-//        QDockWidget::settername(__VA_ARGS__);
-//    }
-//}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! slot invoked if python state changed. Sets the specific member variables according to the python transition.
@@ -1006,11 +942,13 @@ void AbstractDockWidget::undockWidget(bool show_it /*= true*/)
     //center of the current main window.
     if (m_lastUndockedSize.isEmpty())
     {
-      QScreen *ps = QGuiApplication::primaryScreen();
-      QRect overallRect = ps->availableGeometry();
-      QPoint centerPoint = overallRect.center();
-      m_pWindow->adjustSize();
-      m_pWindow->move(centerPoint - m_pWindow->rect().center());
+
+        QScreen *ps = QGuiApplication::primaryScreen();
+        QRect overallRect = ps->availableGeometry();
+        QPoint centerPoint = overallRect.center();
+        m_pWindow->adjustSize();
+        m_pWindow->move(centerPoint - m_pWindow->rect().center());
+
     }
 #endif
 
