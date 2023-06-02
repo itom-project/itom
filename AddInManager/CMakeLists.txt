@@ -106,4 +106,4 @@ foreach(_qm ${QM_FILES})
 endforeach()
 
 itom_add_library_to_appdir_and_sdk(${target_name} COPY_SOURCES COPY_DESTINATIONS)
-itom_post_build_copy_files(addinmanager COPY_SOURCES COPY_DESTINATIONS)
+itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)

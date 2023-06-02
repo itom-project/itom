@@ -818,7 +818,7 @@ else()
 endif()
 # END HANDLE VERSION
 
-add_dependencies(${target_name} itomWidgets)
+add_dependencies(${target_name} itomWidgets iconThemeBright iconThemeDark)
 
 set( WINICONRES "" )
 
@@ -860,13 +860,15 @@ if(WIN32)
         ${POINTCLOUD_LIBRARIES}
         ${VISUALLEAKDETECTOR_LIBRARIES}
         ${QT5_LIBRARIES}
-        dataobject
         addinmanager
-        qpropertyeditor
         itomCommonLib
         itomCommonQtLib
+        dataobject
         itomWidgets
         itomCommonPlotLib
+        pointcloud
+        qpropertyeditor
+        itomShapeLib
         ${PYMATLAB_LIBRARIES}
         shell32)
 else()
@@ -877,13 +879,15 @@ else()
         ${POINTCLOUD_LIBRARIES}
         ${VISUALLEAKDETECTOR_LIBRARIES}
         ${QT5_LIBRARIES}
-        dataobject
         addinmanager
-        qpropertyeditor
         itomCommonLib
         itomCommonQtLib
+        dataobject
         itomWidgets
         itomCommonPlotLib
+        pointcloud
+        qpropertyeditor
+        itomShapeLib
         ${PYMATLAB_LIBRARIES})
 endif()
 

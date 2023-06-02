@@ -95,6 +95,8 @@ if(BUILD_UNITTEST)
     add_subdirectory(itom_unittests)
 endif()
 
+itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)
+
 if(SETUP_ISSCONFIG)
     set(InnoSetupPath CACHE PATH "base path to inno setup")
 endif()
