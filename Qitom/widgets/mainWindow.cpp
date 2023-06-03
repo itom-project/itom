@@ -1672,6 +1672,7 @@ void MainWindow::showAssistant(
         {
             m_helpViewer = QPointer<HelpViewer>(new HelpViewer(NULL));
             // m_helpViewer->setAttribute(Qt::WA_DeleteOnClose, true);
+            // reopening help leads to empty help site
         }
         m_helpViewer->setCollectionFile(collectionFile_);
         if (!showUrl.isEmpty())
