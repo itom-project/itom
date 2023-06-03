@@ -848,6 +848,7 @@ endif()
 
 if(BUILD_WITH_PCL)
     set(POINTCLOUD_LIBRARIES pointcloud)
+    target_link_libraries(pointcloud)
 else()
     set(POINTCLOUD_LIBRARIES "")
 endif()
@@ -866,7 +867,6 @@ if(WIN32)
         dataobject
         itomWidgets
         itomCommonPlotLib
-        pointcloud
         qpropertyeditor
         itomShapeLib
         ${PYMATLAB_LIBRARIES}
@@ -885,7 +885,6 @@ else()
         dataobject
         itomWidgets
         itomCommonPlotLib
-        pointcloud
         qpropertyeditor
         itomShapeLib
         ${PYMATLAB_LIBRARIES})
