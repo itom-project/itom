@@ -59,13 +59,16 @@ All plugins and designer-plugins that can be integrated into itom can have their
 [``itom``](https://itom-project.github.io/ "``itom``") is being developed since 2011 by
 
 > [Institut für Technische Optik](http://www.uni-stuttgart.de/ito)
+
 > University of Stuttgart
+
 > Stuttgart
 
 > Germany
 
 in co-operation with 
 > [twip Optical Solutions GmbH](http://www.twip-os.com)
+
 > Stuttgart
 
 > Germany
