@@ -481,7 +481,7 @@ RetVal HelpSystem::rebuildHelpCollection(QStringList &qchFiles, quint16 checksum
     args << file.fileName();
     qDebug() << args;
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) 
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
     // https://blog.qt.io/blog/2018/11/02/whats-new-qt-help/
 	QString app = ProcessOrganizer::getAbsQtToolPath("qhelpgenerator");
 #else
@@ -500,7 +500,7 @@ RetVal HelpSystem::rebuildHelpCollection(QStringList &qchFiles, quint16 checksum
         return RetVal(
             retError, 0, QObject::tr("Error calling qcollectiongenerator").toLatin1().data());
 #endif
-        
+
     }
 
 

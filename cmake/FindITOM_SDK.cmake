@@ -83,7 +83,7 @@ if(EXISTS ${ITOM_SDK_CONFIG_FILE})
     find_path(ITOM_APP_DIR "CMakeCache.txt" PATHS ${ITOM_SDK_DIR} PATH_SUFFIXES .. ../.. DOC "")
 
     if(${CMAKE_PROJECT_NAME}  MATCHES "itomproject")
-        message(STATUS  "Subproject - Skipped loading ITOM SDK CACHE ")  
+        message(STATUS  "Subproject - Skipped loading ITOM SDK CACHE ")
     else(${CMAKE_PROJECT_NAME}  MATCHES "itomproject")
         if(EXISTS "${ITOM_APP_DIR}")
             #try to load the CMakeCache file from itom and extract some useful variables.

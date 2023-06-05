@@ -369,7 +369,7 @@ macro(itom_init_designerplugin_library target)
     elseif(BUILD_QTVERSION STREQUAL "Qt5")
         set(CMAKE_CXX_STANDARD 11)
     endif(BUILD_QTVERSION STREQUAL "Qt6")
-    
+
     set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
     project(${target})
