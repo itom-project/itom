@@ -1,8 +1,8 @@
+cmake_minimum_required(VERSION 3.12)
+
 set(target_name unittest_addinmanager)
 
 project(${target_name})
-
-cmake_minimum_required(VERSION 3.0.2)
 
 option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
 
