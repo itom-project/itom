@@ -16,7 +16,7 @@ For programming plugins, you can and should use basic structures, offered by |it
 
 .. toctree::
     :maxdepth: 1
-    
+
     plugin-RetVal.rst
     plugin-sharedSemaphore.rst
     plugin-dataObject.rst
@@ -42,6 +42,3 @@ The real documentation about the structure of plugins is organized as follows:
    projectSettings.rst
    plugin-dockWidget.rst
    plugin-configDialog.rst
-
-
-

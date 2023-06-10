@@ -71,7 +71,7 @@ for k in range(1,7):
     mainWin.comBox_MO.call('addItem',(str(k)+': '+AxioMO[k]['name'])) # index 0-5 = MO 1-6
 
 def changeMO(ind):
-    mo_setNum(Mikro,ind+1,1)    
+    mo_setNum(Mikro,ind+1,1)
     SynchronizeMO()
     SynchronizeFocus()
 
@@ -147,7 +147,7 @@ mainWin.btn500minus.connect('clicked()', focusMinus500)
 # Halogen Lamp 1-255
 def changeInt():
     halogen_setInt(Mikro,mainWin.spinInt['value'])
-    time.sleep(0.5)    
+    time.sleep(0.5)
     SynchronizeInt()
 def SynchronizeInt():
     mainWin.spinInt['value']=halogen_getInt(Mikro)
@@ -174,9 +174,3 @@ if do_init[1]=='Yes':
     AxioInit(Mikro)
 
 # Test Area...
-
-
-
-
-
-

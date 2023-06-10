@@ -4,7 +4,7 @@
 This demo opens the Roughness Evaluator app.
 
 This app is contained in the apps.roughnessEvaluator module
-of the itom-packages folder of ``itom``. 
+of the itom-packages folder of ``itom``.
 The usage of this demo requires the algorithm plugin ``Roughness``.
 """
 

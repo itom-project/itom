@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -36,8 +36,8 @@
 namespace ito {
 
 //! item of BreakPointModel
-/*! 
-    this struct corresponds to one item in the BreakPointModel 
+/*!
+    this struct corresponds to one item in the BreakPointModel
 */
 struct BreakPointItem
 {
@@ -61,7 +61,7 @@ namespace ito
 {
 
 QDataStream &operator<<(QDataStream &out, const BreakPointItem &obj);
-    
+
 
 QDataStream &operator>>(QDataStream &in, BreakPointItem &obj);
 
@@ -119,7 +119,7 @@ private:
     int getFileIndexFromInternalPtr(const void* ptr) const;
 
     //! helper-method for sorting different breakpoints with respect to row-index of both given QModelIndex
-    static inline bool compareRow(QModelIndex a, QModelIndex b) { return a.row()>b.row(); };    
+    static inline bool compareRow(QModelIndex a, QModelIndex b) { return a.row()>b.row(); };
 
     QList<BreakPointItem> m_breakpoints;    /*!<  list of breakpoints (BreakPointItem) which are currently available in this application */
     QList<QString> m_headers;               /*!<  string list of names of column headers */
@@ -131,12 +131,12 @@ signals:
     /*!<  emitted if breakpoint has been added to model at position row */
     void breakPointAdded(BreakPointItem bp, int row);
 
-    /*!<  emitted if breakpoint in file filename at line lineIdx with python 
+    /*!<  emitted if breakpoint in file filename at line lineIdx with python
     internal debugger number has been deleted from model */
-    void breakPointDeleted(QString filename, int lineIdx, int pyBpNumber);  
-    
+    void breakPointDeleted(QString filename, int lineIdx, int pyBpNumber);
+
     /*!<  emitted if breakpoint oldBp has been changed to newBp */
-    void breakPointChanged(BreakPointItem oldBp, BreakPointItem newBp);     
+    void breakPointChanged(BreakPointItem oldBp, BreakPointItem newBp);
 };
 
 } //end namespace ito

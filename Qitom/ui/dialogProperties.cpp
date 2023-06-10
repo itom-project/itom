@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -67,7 +67,7 @@ DialogProperties::DialogProperties(QWidget* parent, Qt::WindowFlags f) :
     m_pStackedWidget = new QStackedWidget();
     m_pEmptyPage = new QWidget(m_pStackedWidget);
     m_pStackedWidget->addWidget(m_pEmptyPage);
-    
+
     m_pCategories = new QTreeWidget();
     m_pCategories->setColumnCount(1);
     m_pCategories->setHeaderHidden(true);
@@ -78,7 +78,7 @@ DialogProperties::DialogProperties(QWidget* parent, Qt::WindowFlags f) :
     m_pCategories->setMinimumWidth(200 * screenFactorDpi);
 
     connect(
-        m_pCategories, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)), 
+        m_pCategories, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)),
         this, SLOT(categoryChanged(QTreeWidgetItem*, QTreeWidgetItem*)));
 
     m_pButtonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel | QDialogButtonBox::Apply , Qt::Horizontal);
@@ -102,7 +102,7 @@ DialogProperties::DialogProperties(QWidget* parent, Qt::WindowFlags f) :
     m_pVerticalLayoutRight->addWidget(m_pLine);
 
     m_pVerticalLayoutRight->addWidget(m_pStackedWidget);
-    
+
     m_pSplitterRightWidget->setLayout(m_pVerticalLayoutRight);
     m_pSplitterRightWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
@@ -153,7 +153,7 @@ void DialogProperties::initPages()
 {
     //-----------------------------------------------------------------------------------------------------
     // Please insert property pages here:
-    // 
+    //
     // Step 1: #include PropertyWidget at the top of this file
     // Step 2: if necessary, add parent page to the m_pages-map below
     // Step 3: add property page to the m_pages -map
@@ -245,7 +245,7 @@ void DialogProperties::addPage(PropertyPage page, QTreeWidgetItem *parent, QStri
             {
                 remainingPathes.pop_front();
                 addPage(page, parent->child(i), remainingPathes);
-                
+
                 found = true;
                 break;
             }
@@ -287,7 +287,7 @@ bool DialogProperties::selectTabByKey(QString &key, QTreeWidgetItem *parent /*= 
         for(int i = 0; i < parent->childCount(); ++i)
         {
             found = selectTabByKey(key, parent->child(i));
-            if (found) 
+            if (found)
             {
                 break;
             }

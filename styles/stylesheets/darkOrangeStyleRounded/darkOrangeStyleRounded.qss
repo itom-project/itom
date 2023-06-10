@@ -856,8 +856,8 @@ QToolBar QAbstractSpinBox::up-arrow:hover {
   image: url(":/qss_icons/rc/arrow_up_focus.png");
 }
 
-QToolBar QAbstractSpinBox::down-arrow, 
-QToolBar QAbstractSpinBox::down-arrow:disabled, 
+QToolBar QAbstractSpinBox::down-arrow,
+QToolBar QAbstractSpinBox::down-arrow:disabled,
 QToolBar QAbstractSpinBox::down-arrow:off {
   image: url(":/qss_icons/rc/arrow_down.png");
   height: 8px;
@@ -1907,13 +1907,13 @@ QTableView::indicator:checked {
   image: url(":/qss_icons/rc/checkbox_checked.png");
 }
 
-QTreeView::indicator:checked:focus, 
+QTreeView::indicator:checked:focus,
 QListView::indicator:checked:focus,
 QTableView::indicator:checked:focus {
   image: url(":/qss_icons/rc/checkbox_checked_focus.png");
 }
 
-QTreeView::indicator:checked:hover, 
+QTreeView::indicator:checked:hover,
 QTreeView::indicator:checked:pressed,
 QListView::indicator:checked:hover,
 QListView::indicator:checked:pressed,
@@ -1928,13 +1928,13 @@ QTableView::indicator::unchecked {
   image: url(":/qss_icons/rc/checkbox_unchecked.png");
 }
 
-QTreeView::indicator:unchecked:focus, 
+QTreeView::indicator:unchecked:focus,
 QListView::indicator:unchecked:focus,
 QTableView::indicator:unchecked:focus {
   image: url(":/qss_icons/rc/checkbox_unchecked_focus.png");
 }
 
-QTreeView::indicator:unchecked:hover, 
+QTreeView::indicator:unchecked:hover,
 QTreeView::indicator:unchecked:pressed,
 QListView::indicator:unchecked:hover,
 QListView::indicator:unchecked:pressed,
@@ -1949,13 +1949,13 @@ QTableView::indicator::indeterminate {
   image: url(":/qss_icons/rc/checkbox_indeterminate.png");
 }
 
-QTreeView::indicator:indeterminate:focus, 
+QTreeView::indicator:indeterminate:focus,
 QListView::indicator:indeterminate:focus,
 QTableView::indicator:indeterminate:focus {
   image: url(":/qss_icons/rc/checkbox_indeterminate_focus.png");
 }
 
-QTreeView::indicator:indeterminate:hover, 
+QTreeView::indicator:indeterminate:hover,
 QTreeView::indicator:indeterminate:pressed,
 QListView::indicator:indeterminate:hover,
 QListView::indicator:indeterminate:pressed,
@@ -2379,7 +2379,7 @@ ito--FigureWidget {
   qproperty-currentBorderColor: #FFFFFF;
 }
 
-ito--ScriptDockWidget QTabWidget::pane { 
+ito--ScriptDockWidget QTabWidget::pane {
   /* The tab widget frame */
   border: none;
 }

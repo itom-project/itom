@@ -180,10 +180,10 @@ class quickPlotToolBar(abstractObjInteractionToolBar):
         """
         showHist([skipBox [, defaultVarName]) -> plot the histogramm of a given dataObject
         Parameters:
-            - skipBox             If True, the dialog will be skipped and 
+            - skipBox             If True, the dialog will be skipped and
             - defaultVarName  The name of the variable to calc the histogramm
         Return parameters:
-            - check:       True finishied correctly 
+            - check:       True finishied correctly
             - plotHandle: Handle to the figure (0 if failed)
         """
         if self.hasMCPP == False:
@@ -237,11 +237,11 @@ class quickPlotToolBar(abstractObjInteractionToolBar):
         """
         show2D([skipBox [, defaultVarName]) -> give a list with all 2D-objects an plot one of this
         Parameters:
-            - skipBox         If True, the dialog will be skipped and 
+            - skipBox         If True, the dialog will be skipped and
             - defaultVarName  The name of the variable to plot
             - typeFilter      BitMask of allowed dataTypes (1: DataObjects, 2: numpyArrays / npObjects, 3:pointclouds)
         Return parameters:
-            - check:       True finishied correctly 
+            - check:       True finishied correctly
             - plotHandle: Handle to the figure (0 if failed)
         """
         if defaultVarName == None:
@@ -287,7 +287,7 @@ class quickPlotToolBar(abstractObjInteractionToolBar):
         Parameters:
             - defaultVarName  The name of the variable to plot
         Return parameters:
-            - check:       True finishied correctly 
+            - check:       True finishied correctly
             - plotHandle: Handle to the figure (0 if failed)
         """
         check = True
@@ -313,7 +313,7 @@ class quickPlotToolBar(abstractObjInteractionToolBar):
         Parameters:
             - defaultVarName  The name of the variable to plot
         Return parameters:
-            - check:       True finishied correctly 
+            - check:       True finishied correctly
             - plotHandle: Handle to the figure (0 if failed)
         """
         check = True
@@ -397,10 +397,10 @@ class quickPlotToolBar(abstractObjInteractionToolBar):
         """
         show25D([skipBox [, defaultVarName])  -> give a list with all 2D-objects an plot one of this either via ITOM-Filters 3DPlot-Widget or MatplotLib
         Parameters:
-            - skipBox             If True, the dialog will be skipped and 
+            - skipBox             If True, the dialog will be skipped and
             - defaultVarName  The name of the variable to plot
         Return parameters:
-            - check:       True finishied correctly 
+            - check:       True finishied correctly
             - plotHandle: Handle to the figure (0 if failed)
         """
         if defaultVarName == None:
@@ -440,11 +440,11 @@ class quickPlotToolBar(abstractObjInteractionToolBar):
         """
         show1D([skipBox [, defaultVarName]) -> give a list with all 1D-objects an plot one of this
         Parameters:
-            - skipBox             If True, the dialog will be skipped and 
+            - skipBox             If True, the dialog will be skipped and
             - defaultVarName  The name of the variable to plot
             - typeFilter      BitMask of allowed dataTypes (1: DataObjects, 2: numpyArrays / npObjects, 3:pointclouds)
         Return parameters:
-            - check:       True finishied correctly 
+            - check:       True finishied correctly
             - plotHandle: Handle to the figure (0 if failed)
         """
         if defaultVarName == None:

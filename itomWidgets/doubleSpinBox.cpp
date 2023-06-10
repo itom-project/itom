@@ -10,7 +10,7 @@
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
-   
+
     In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
@@ -24,7 +24,7 @@
     You should have received a copy of the GNU Library General Public License
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 
-    This file is a port and modified version of the 
+    This file is a port and modified version of the
     CTK Common Toolkit (http://www.commontk.org)
 *********************************************************************** */
 
@@ -422,7 +422,7 @@ double DoubleSpinBoxPrivate
       {
           groupSeparator = q->locale().groupSeparator()[0];
       }
-      // else: group separator does not necessarily fit into a QChar (https://bugreports.qt.io/browse/QTBUG-69324) 
+      // else: group separator does not necessarily fit into a QChar (https://bugreports.qt.io/browse/QTBUG-69324)
       // but CTK only support group separators if they fit into a QChar
 #else
       QChar groupSeparator = q->locale().groupSeparator();
@@ -1183,7 +1183,7 @@ QSize DoubleSpinBox::minimumSizeHint() const
     d->CachedMinimumSizeHint = this->style()
                                    ->sizeFromContents(QStyle::CT_SpinBox, &opt, newSizeHint, this)
                                    .expandedTo(QApplication::globalStrut());
-#endif    
+#endif
     return d->CachedMinimumSizeHint;
 }
 

@@ -10,7 +10,7 @@
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
-   
+
     In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
@@ -36,20 +36,20 @@
 #include <QtUiPlugin/QDesignerCustomWidgetInterface>
 
 #if !defined(Q_MOC_RUN) || defined(ITOMCOMMONPLOT_MOC) //only moc this file in itomCommonQtLib but not in other libraries or executables linking against this itomCommonQtLib
-    
+
 namespace ito {
 
     class ITOMCOMMONPLOT_EXPORT AbstractItomDesignerPlugin : public QObject, public QDesignerCustomWidgetInterface
     {
         Q_OBJECT
-        
+
         Q_INTERFACES(QDesignerCustomWidgetInterface)
 
         public:
             AbstractItomDesignerPlugin(QObject *parent) :
                 QObject(parent),
                 QDesignerCustomWidgetInterface(),
-                m_plotFeatures(ito::Static), 
+                m_plotFeatures(ito::Static),
                 m_version(0),
                 m_author(""),
                 m_description(""),
@@ -84,7 +84,7 @@ namespace ito {
             ito::PlotDataTypes   m_plotDataTypes;
             ito::PlotDataFormats m_plotDataFormats;
             ito::PlotFeatures    m_plotFeatures;
-            
+
             int m_version;                        //!< plugin version
             QString m_author;                     //!< the plugin author
             QString m_description;                //!< a brief descrition of the plugin

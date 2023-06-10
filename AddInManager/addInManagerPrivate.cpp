@@ -5,7 +5,7 @@ Copyright (C) 2020, Institut fuer Technische Optik (ITO),
 Universitaet Stuttgart, Germany
 
 This file is part of itom.
-  
+
 itom is free software; you can redistribute it and/or modify it
 under the terms of the GNU Library General Public Licence as published by
 the Free Software Foundation; either version 2 of the Licence, or (at
@@ -107,7 +107,7 @@ void AddInManagerPrivate::incRefParamPlugins(ito::AddInBase *ai, QVector<ito::Pa
         for (int n = 0; n < paramsMand->size(); n++)
         {
             ito::ParamBase *param = &((*paramsMand)[n]);
-                
+
             if (param->getType() == ParamBase::HWRef)
             {
                 hwRefPtr = param->getVal<void *>();
@@ -215,8 +215,8 @@ int AddInManagerPrivate::getItemNum(const void *item)
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/** 
-*   @return RetVal    
+/**
+*   @return RetVal
 */
 RetVal AddInManagerPrivate::closeDeadPlugins()
 {
@@ -249,8 +249,8 @@ RetVal AddInManagerPrivate::closeDeadPlugins()
     }
     else if (m_deadPluginTimer.interval() < 30000)
     {
-        //the interval is incremented by 2000ms after each run until a max-value of 30secs. 
-        //This gives the chance to delete newly added dead plugins fast and decrease the 
+        //the interval is incremented by 2000ms after each run until a max-value of 30secs.
+        //This gives the chance to delete newly added dead plugins fast and decrease the
         //intents the longer it did not work.
         m_deadPluginTimer.setInterval(m_deadPluginTimer.interval() + 2000);
     }
@@ -259,9 +259,9 @@ RetVal AddInManagerPrivate::closeDeadPlugins()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/** 
-*   @param addIn 
-*   @return RetVal    
+/**
+*   @param addIn
+*   @return RetVal
 */
 RetVal AddInManagerPrivate::registerPluginAsDeadPlugin(ito::AddInBase *addIn)
 {
@@ -376,7 +376,7 @@ RetVal AddInManagerPrivate::loadAddIn(QString &filename)
                     ain->setApiFunctionsGraph(ITOM_API_FUNCS_GRAPH);
                     ain->setLoader(loader);
                     //the event User+123 is emitted by AddInManager, if the API has been prepared and can
-                    //transmitted to the plugin. This assignment cannot be done directly, since 
+                    //transmitted to the plugin. This assignment cannot be done directly, since
                     //the array ITOM_API_FUNCS is in another scope if called from itom. By sending an
                     //event from itom to the plugin, this method is called and ITOM_API_FUNCS is in the
                     //right scope. The methods above only set the pointers in the "wrong"-itom-scope (which
@@ -398,7 +398,7 @@ RetVal AddInManagerPrivate::loadAddIn(QString &filename)
                         {
                             retValue += loadAddInDataIO(plugin, pls);
                         }
-                        
+
                         break;
 
                     case typeActuator:
@@ -412,7 +412,7 @@ RetVal AddInManagerPrivate::loadAddIn(QString &filename)
                     default:
                         message = tr("Plugin with filename '%1' is unknown.").arg(filename);
                         qDebug() << message;
-                        
+
                         pls.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(plsfError, message));
                         break;
                     }
@@ -453,7 +453,7 @@ RetVal AddInManagerPrivate::loadAddIn(QString &filename)
                         message = tr("AddIn '%1' is not derived from class QObject.").arg(filename).arg(loader->errorString());
                     }
                     qDebug() << message;
-                    
+
                     pls.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(plsfError, message));
                     m_pluginLoadStatus.append(pls);
 
@@ -494,7 +494,7 @@ RetVal AddInManagerPrivate::loadAddIn(QString &filename)
                     {
                         message = tr("AddIn '%1' could not be loaded. Error message: %2").arg(filename).arg(loader->errorString());
                         qDebug() << message;
-                        
+
                         pls.filename = filename;
                         pls.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(plsfError, message));
                         m_pluginLoadStatus.append(pls);
@@ -781,12 +781,12 @@ RetVal AddInManagerPrivate::loadAddInAlgo(QObject *plugin, ito::PluginLoadStatus
 *   As a last step the plugins parameters are loaded from the plugins parameters xml file \ref loadParamVals.
 */
 const ito::RetVal AddInManagerPrivate::initAddInAlgo(
-    const int pluginNum, 
-    const QString &name, 
-    ito::AddInAlgo **addIn, 
-    QVector<ito::ParamBase> *paramsMand, 
-    QVector<ito::ParamBase> *paramsOpt, 
-    bool autoLoadPluginParams, 
+    const int pluginNum,
+    const QString &name,
+    ito::AddInAlgo **addIn,
+    QVector<ito::ParamBase> *paramsMand,
+    QVector<ito::ParamBase> *paramsOpt,
+    bool autoLoadPluginParams,
     ItomSharedSemaphore *aimWait)
 {
     ItomSharedSemaphoreLocker locker(aimWait);
@@ -924,7 +924,7 @@ template<typename _Tp> const ito::RetVal AddInManagerPrivate::initAddInActuatorO
         //ref-count of plugin must be zero (that means one instance is holder a single reference), this is rechecked in the following line
         if (aib->getRef((*addIn)) != 0)
         {
-            retval += ito::RetVal(ito::retWarning, 0, 
+            retval += ito::RetVal(ito::retWarning, 0,
                 tr("Reference counter of plugin has to be initialized with zero. "
                     "This is not the case for this plugin (Please contact the plugin developer).").toLatin1().data());
         }
@@ -950,10 +950,10 @@ template<typename _Tp> const ito::RetVal AddInManagerPrivate::initAddInActuatorO
 
         QMetaObject::invokeMethod(
             (*addIn),
-            "init", 
-            conType, 
-            Q_ARG(QVector<ito::ParamBase>*, paramsMand), 
-            Q_ARG(QVector<ito::ParamBase>*, paramsOpt), 
+            "init",
+            conType,
+            Q_ARG(QVector<ito::ParamBase>*, paramsMand),
+            Q_ARG(QVector<ito::ParamBase>*, paramsOpt),
             Q_ARG(ItomSharedSemaphore*, waitCond));
 
         //this gives the plugin's init method to invoke a slot of any gui instance of the plugin within its init method. Else this slot is called after
@@ -997,7 +997,7 @@ template<typename _Tp> const ito::RetVal AddInManagerPrivate::initAddInActuatorO
                     m_plugInModel->insertInstance(aib, false); //end insert, since closeAddIn will call beginRemoveRows...
                     modelInsertAnnounced = false;
                 }
-                    
+
                 retval += closeAddIn((*addIn));
 
                 (*addIn) = NULL;
@@ -1035,7 +1035,7 @@ template<typename _Tp> const ito::RetVal AddInManagerPrivate::initAddInActuatorO
 *   @param [in]  addIn  the addIn to close
 *   @return      on success ito::retOk, ito::retError otherwise
 *
-*   At first the close method of the plugin class is invoked. 
+*   At first the close method of the plugin class is invoked.
 *   Then the \ref closeInst method of the addInInterfaceBase is called.
 */
 const ito::RetVal AddInManagerPrivate::closeAddIn(AddInBase *addIn, ItomSharedSemaphore *aimWait)
@@ -1062,7 +1062,7 @@ const ito::RetVal AddInManagerPrivate::closeAddIn(AddInBase *addIn, ItomSharedSe
 
         if (QApplication::instance())
         {
-            //we always promised that if the init-method is called in the main thread, 
+            //we always promised that if the init-method is called in the main thread,
             // the close method is called in the main thread, too.
             //Therefore pull it to the main thread, if necessary.
             if (!aib->getCallInitInNewThread())
@@ -1070,21 +1070,21 @@ const ito::RetVal AddInManagerPrivate::closeAddIn(AddInBase *addIn, ItomSharedSe
                 ItomSharedSemaphoreLocker moveToThreadLocker(new ItomSharedSemaphore());
 
                 if (QMetaObject::invokeMethod(
-                        addIn, 
-                        "moveBackToApplicationThread", 
-                        Q_ARG(ItomSharedSemaphore*, 
+                        addIn,
+                        "moveBackToApplicationThread",
+                        Q_ARG(ItomSharedSemaphore*,
                         moveToThreadLocker.getSemaphore())))
                 {
                     if (moveToThreadLocker->wait(m_timeOutInitClose) == false)
                     {
-                        retval += ito::RetVal(ito::retWarning, 0, 
+                        retval += ito::RetVal(ito::retWarning, 0,
                             tr("Timeout while pulling plugin back to main thread.").toLatin1().data());
                     }
                 }
                 else
                 {
                     moveToThreadLocker->deleteSemaphore();
-                    retval += ito::RetVal(ito::retWarning, 0, 
+                    retval += ito::RetVal(ito::retWarning, 0,
                         tr("Error invoking method 'moveBackToApplicationThread' of plugin.").toLatin1().data());
                 }
             }

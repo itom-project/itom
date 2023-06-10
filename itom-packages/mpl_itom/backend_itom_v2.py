@@ -206,7 +206,7 @@ class FigureCanvasItom(FigureCanvasBase):
     def __init__(self, figure, num, matplotlibplotUiItem, embeddedWidget):
         """
         embeddedWidget: bool
-            True, if matplotlib widget is embedded into a loaded ui file, 
+            True, if matplotlib widget is embedded into a loaded ui file,
             False: matplotlib widget is displayed in figure window
         """
         ##_create_qApp()
@@ -344,7 +344,7 @@ class FigureCanvasItom(FigureCanvasBase):
             return 0, 0
 
     def leaveEnterEvent(self, enter):
-        """itom specific: 
+        """itom specific:
         replacement of enterEvent and leaveEvent of Qt5 backend
         """
         if enter:
@@ -644,12 +644,12 @@ class FigureManagerItom(FigureManagerBase):
 
         """self.windowUi.closing.connect(canvas.close_event)
         self.windowUi.closing.connect(self._widgetclosed)
-        
+
         self.windowUi.setWindowTitle("Figure %d" % num)
         image = os.path.join(matplotlib.rcParams['datapath'],
                              'images', 'matplotlib.svg')
         self.windowUi.setWindowIcon(QtGui.QIcon(image))
-        
+
         # Give the keyboard focus to the figure instead of the
         # manager; StrongFocus accepts both tab and click to focus and
         # will enable the canvas to process event w/o clicking.
@@ -694,7 +694,7 @@ class FigureManagerItom(FigureManagerBase):
         self._status_and_tool_height = tbs_height + sbs.height()
         height = cs.height() + self._status_and_tool_height
         self.windowUi.resize(cs.width(), height)
-        
+
         self.windowUi.setCentralWidget(self.canvas)"""
 
         if matplotlib.is_interactive():

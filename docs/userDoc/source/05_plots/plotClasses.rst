@@ -3,7 +3,7 @@
 Plot classes and default plots
 *******************************
 
-Per default, itom comes with a set of various plot types allowing to show data as 1D line plot, 2D image plot with scaled colors, 
+Per default, itom comes with a set of various plot types allowing to show data as 1D line plot, 2D image plot with scaled colors,
 2.5D isometric plot, 3D plot of point clouds and polygon meshes among others. However, itom is designed such that arbitrary plot
 plugins can be created and integrated. Every plot plugin is programmed in a similar way than other itom plugins, but follows the
 rules of a Qt designer plugin, such that the plot can also be integrated in user defined GUIs.
@@ -20,11 +20,11 @@ of itom.
 .. figure:: images/plotClasses.png
     :width: 100%
     :align: center
-    
+
 The list **Installed Figure and Plot Plugins** list all plot plugins (library files within the folder **designer** of the itom build or
 installation directory). Every row stands for one detected plot plugin with the following meaning:
 
-* class name: This is the class name of the plot which can be used for instance in the commands :py:meth:`~itom.plot` or :py:meth:`~itom.liveImage` to select 
+* class name: This is the class name of the plot which can be used for instance in the commands :py:meth:`~itom.plot` or :py:meth:`~itom.liveImage` to select
    this plot plugin for visualizing the required data (if the plot plugin supports the given input data)
 * data types: Data types, the plot plugin supports (e.g. *DataObject - Line*, *DataObject - Plane*, *Point Cloud* ...)
 * data formats: The point type of a dataObject or pointCloud that is supported by the plot
@@ -36,7 +36,7 @@ If a library file in the **designer** folder does not appear in this list, it ca
    user defined GUIs, but not as plot class.
 2. There might be any load issue (for instance, the plot plugin depends on other libraries that could not be found...). In this case, see
    the load state in the dialog **Loaded plugins** (menu **file** in the main window of itom).
-   
+
 In the second table (**Default figures**), there are six different categories together with the current default plot class that is used if input
 data, that fits to a certain category, should be displayed and no specific plot class is indicated. To change the default plot class of any category, click the cell
 in the last column and select a plot class from the displayed combo box. If no entry is visible in the combo box, no plot plugin is available, that pretends to support
@@ -62,7 +62,7 @@ in an image (plane) representation.
 
 .. code-block:: python
     :linenos:
-    
+
     data = dataObject.randN([124,124],'float32')
     plot(data, 'itom2dqwtplot')
     #the class name is case insensitive
@@ -81,8 +81,6 @@ the keyword '1d' forces itom to use the default from the category **DObjStaticLi
 
 .. code-block:: python
     :linenos:
-    
+
     data = dataObject.randN([2,200],'float32')
     plot(data, '1d')
-    
-

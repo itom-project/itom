@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -231,7 +231,7 @@ DialogUserManagementEdit::DialogUserManagementEdit(
 
 		enableWidgetsByUserRole(uio->getCurrentUserRole(), uio->getCurrentUserFeatures(),
                                 uio->getCurrentUserRole(), uio->getCurrentUserFeatures());
-	
+
     }
     else
     {
@@ -249,7 +249,7 @@ DialogUserManagementEdit::DialogUserManagementEdit(
             if (uio->readUserDataFromFile(filename, username, uid, features, role, password, modified) == ito::retOk)
             {
                 ui.lineEdit_name->setText(username);
-                
+
                 ui.lineEdit_id->setText(uid);
                 ui.lineEdit_id->setEnabled(false);
                 m_oldPassword = password;
@@ -293,9 +293,9 @@ DialogUserManagementEdit::DialogUserManagementEdit(
     \param features is the current feature set of the user, that is edited.
 */
 void DialogUserManagementEdit::enableWidgetsByUserRole(
-    const UserRole currentUserRole, 
+    const UserRole currentUserRole,
     const UserFeatures &currentFeatures,
-    const UserRole userRole, 
+    const UserRole userRole,
     const UserFeatures &features)
 {
     // set the state of the role radio buttons
@@ -346,8 +346,8 @@ void DialogUserManagementEdit::enableWidgetsByUserRole(
 
     // set the enable state of all features depending on the user role
     // and the features of the currently logged-in user
-    char rightCmp = 0; 
-    
+    char rightCmp = 0;
+
     // 1: current user has higher rights than edited user
     // -1: current user has less rights than edited user (can edit nothing)
     // 0: both users have the same rights
@@ -416,7 +416,7 @@ void DialogUserManagementEdit::enableWidgetsByUserRole(
         ui.radioButton_consoleRO->setEnabled(currentFeatures & (featConsoleReadWrite | featConsoleRead));
         ui.radioButton_consoleOff->setEnabled(true);
     }
-    
+
     // the startup scripts can only be edited if the currently logged-in user
     // has the featProperties
     ui.groupStartupScripts->setEnabled(currentFeatures & featProperties);
@@ -493,7 +493,7 @@ void DialogUserManagementEdit::on_pb_downScript_clicked()
 void DialogUserManagementEdit::on_pb_upScript_clicked()
 {
     int currentRow = ui.lv_startUpScripts->currentRow();
-    
+
     if (currentRow > 0)
     {
         QListWidgetItem *item = ui.lv_startUpScripts->item(currentRow);

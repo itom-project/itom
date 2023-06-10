@@ -10,7 +10,7 @@
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
-   
+
     In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
@@ -38,12 +38,12 @@
 namespace ito
 {
 
-class AbstractAddInDockWidgetPrivate 
+class AbstractAddInDockWidgetPrivate
 {
 public:
     AbstractAddInDockWidgetPrivate() : m_pPlugin(NULL)
     {}
-    
+
     ito::AddInBase *m_pPlugin;
 };
 
@@ -81,7 +81,7 @@ ito::RetVal AbstractAddInDockWidget::setPluginParameter(QSharedPointer<ito::Para
     {
         retval += ito::RetVal(ito::retError, 0, tr("pointer to plugin is invalid.").toLatin1().data());
     }
-    
+
     if (retval.containsError() && (msgLevel & msgLevelErrorOnly))
     {
         QMessageBox msgBox;
@@ -104,7 +104,7 @@ ito::RetVal AbstractAddInDockWidget::setPluginParameter(QSharedPointer<ito::Para
         msgBox.setIcon(QMessageBox::Warning);
         msgBox.exec();
     }
-    
+
     return retval;
 }
 
@@ -129,7 +129,7 @@ ito::RetVal AbstractAddInDockWidget::setPluginParameters(const QVector<QSharedPo
     {
         retval += ito::RetVal(ito::retError, 0, tr("pointer to plugin is invalid.").toLatin1().data());
     }
-    
+
     if (retval.containsError() && (msgLevel & msgLevelErrorOnly))
     {
         QMessageBox msgBox;
@@ -152,7 +152,7 @@ ito::RetVal AbstractAddInDockWidget::setPluginParameters(const QVector<QSharedPo
         msgBox.setIcon(QMessageBox::Warning);
         msgBox.exec();
     }
-    
+
     return retval;
 }
 
@@ -160,7 +160,7 @@ ito::RetVal AbstractAddInDockWidget::setPluginParameters(const QVector<QSharedPo
 ito::RetVal AbstractAddInDockWidget::observeInvocation(ItomSharedSemaphore *waitCond, MessageLevel msgLevel) const
 {
     ito::RetVal retval;
-    
+
     if (d->m_pPlugin)
     {
         bool timeout = false;
@@ -173,12 +173,12 @@ ito::RetVal AbstractAddInDockWidget::observeInvocation(ItomSharedSemaphore *wait
                 timeout = true;
             }
         }
-        
+
         if (!timeout)
         {
             retval += waitCond->returnValue;
         }
-        
+
         if (retval.containsError() && (msgLevel & msgLevelErrorOnly))
         {
             QMessageBox msgBox;
@@ -202,7 +202,7 @@ ito::RetVal AbstractAddInDockWidget::observeInvocation(ItomSharedSemaphore *wait
             msgBox.exec();
         }
     }
-    
+
     return retval;
 }
 
@@ -237,7 +237,7 @@ ito::RetVal AbstractAddInDockWidget::setActuatorPosition(QVector<int> axes, QVec
     {
         retval += ito::RetVal(ito::retError, 0, tr("pointer to plugin is invalid.").toLatin1().data());
     }
-    
+
     if (retval.containsError() && (msgLevel & msgLevelErrorOnly))
     {
         QMessageBox msgBox;
@@ -260,7 +260,7 @@ ito::RetVal AbstractAddInDockWidget::setActuatorPosition(QVector<int> axes, QVec
         msgBox.setIcon(QMessageBox::Warning);
         msgBox.exec();
     }
-    
+
     return retval;
 }
 
@@ -295,7 +295,7 @@ ito::RetVal AbstractAddInDockWidget::setActuatorPosition(int axis, double positi
     {
         retval += ito::RetVal(ito::retError, 0, tr("pointer to plugin is invalid.").toLatin1().data());
     }
-    
+
     if (retval.containsError() && (msgLevel & msgLevelErrorOnly))
     {
         QMessageBox msgBox;
@@ -318,7 +318,7 @@ ito::RetVal AbstractAddInDockWidget::setActuatorPosition(int axis, double positi
         msgBox.setIcon(QMessageBox::Warning);
         msgBox.exec();
     }
-    
+
     return retval;
 }
 
@@ -345,7 +345,7 @@ ito::RetVal AbstractAddInDockWidget::requestActuatorStatusAndPositions(bool send
     {
         retval += ito::RetVal(ito::retError, 0, tr("pointer to plugin is invalid.").toLatin1().data());
     }
-    
+
     if (retval.containsError() && (msgLevel & msgLevelErrorOnly))
     {
         QMessageBox msgBox;
@@ -368,7 +368,7 @@ ito::RetVal AbstractAddInDockWidget::requestActuatorStatusAndPositions(bool send
         msgBox.setIcon(QMessageBox::Warning);
         msgBox.exec();
     }
-    
+
     return retval;
 }
 
@@ -392,7 +392,7 @@ ito::RetVal AbstractAddInDockWidget::setActuatorInterrupt() const
     {
         retval += ito::RetVal(ito::retError, 0, tr("pointer to plugin is invalid.").toLatin1().data());
     }
-    
+
     return retval;
 }
 

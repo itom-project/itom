@@ -29,7 +29,7 @@
 #include <qdebug.h>
 
 BooleanCombo::BooleanCombo(QWidget* parent /*= 0*/) : QComboBox(parent)
-{    
+{
     addItem("true");
     addItem("false");
     connect(this, SIGNAL(currentIndexChanged(int)), this, SLOT(currentChanged(int)));

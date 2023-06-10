@@ -5,8 +5,8 @@ Python-Module |itom|
 
 The main purpose of the embedded |python| interpreter in |itom| is to access the specific functionalities provided by |itom|. This is done by the |python|-module :py:mod:`itom`, that
 is importable only in the embedded |python| interpreter in |itom|. This module includes interfaces for hardware and algorithm plugins of |itom| (see :ref:`here for more information <getStartHardware>`) as well as classes that wrap the
-most important internal data structures of |itom|, like matrices (class :py:class:`~itom.dataObject`, :ref:`link to documentation <itomDataObject>`), point clouds (class :py:class:`~itom.pointCloud`) 
-or polygon meshes (class :py:class:`~itom.polygonMesh`). Additionally the module provides functions to manipulate or extend the graphical user interface of |itom| as well as to 
+most important internal data structures of |itom|, like matrices (class :py:class:`~itom.dataObject`, :ref:`link to documentation <itomDataObject>`), point clouds (class :py:class:`~itom.pointCloud`)
+or polygon meshes (class :py:class:`~itom.polygonMesh`). Additionally the module provides functions to manipulate or extend the graphical user interface of |itom| as well as to
 create own dialogs or windows (provided by the class :py:class:`~itom.ui` and :py:class:`~itom.uiItem`).
 
 The full script reference of the module :py:mod:`itom` can be found in the help of itom.
@@ -19,15 +19,15 @@ is shown how the method **filterHelp** of the module |pyItom| can be called with
 
 .. code-block:: python
     :linenos:
-    
+
     #1. import the whole module. Any method is then directly accessible
     from itom import *
     filterHelp("...")
-    
+
     #2. import the itom module without the global access to its methods
     import itom
     itom.filterHelp("...")
-    
+
     #3. only import certain methods or classes of the module itom
     from itom import filterHelp as anyAlias
     anyAlias("...")
@@ -37,10 +37,10 @@ any script at the top level, you don't need import the module |pyItom|, since th
 already has been imported at startup of |itom| with
 
 .. code-block:: python
-    
+
     from itom import *
 
-However, if you import another script file in your main script file and you want to access any methods of |pyItom| in this secondary script, 
+However, if you import another script file in your main script file and you want to access any methods of |pyItom| in this secondary script,
 then you need to import |pyItom| in this script using one of the methods shown above.
 
 Content of |pyItom|
@@ -57,8 +57,5 @@ Content of |pyItom|
     * get help about plugins and their functionality
     * call any algorithm or filter, provided by a plugin of type **algo**
     * directly plot matrices like dataObjects.
-    
+
 See :ref:`the itom script reference <itom-Script-Reference>` for a full reference to all classes and methods provided by the module |pyItom|.
-
-
-

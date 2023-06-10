@@ -4,7 +4,7 @@
 
 .. _pytut_strings_text:
 
-Strings and text 
+Strings and text
 =================
 .. moduleauthor:: PSchau
 .. sectionauthor:: PSchau
@@ -17,7 +17,7 @@ Besides numbers, |Python| can also manipulate strings, which can be expressed in
 
 .. code-block:: python
     :linenos:
-    
+
     print('It works.')
     print('It doesn\'t matter.')
     print("It doesn't matter.")
@@ -62,7 +62,7 @@ Here are some examples to try for yourself:
 
 .. code-block:: python
     :linenos:
-    
+
     x = "There are %d types of people." % 10
     binary = "binary"
     do_not = "don't"
@@ -70,7 +70,7 @@ Here are some examples to try for yourself:
 
     print(x)
     print(y)
-    
+
     print("I said: %r." % x)
     print("I also said: '%s'." % y)
 
@@ -89,12 +89,12 @@ String literals can span multiple lines in several ways. Continuation lines can 
 
 .. code-block:: python
     :linenos:
-    
+
     hello = "This is a rather long string containing\n\
     several lines of text just as you would do in C.\n\
         Note that whitespace at the beginning of the line is \
     significant."
-    
+
     print(hello)
 
 ::
@@ -107,7 +107,7 @@ Or, strings can be surrounded in a pair of matching triple-quotes: ``"""`` or ``
 
 .. code-block:: python
     :linenos:
-    
+
     print("""\
     Usage: thingy [OPTIONS]
         -h                        Display this usage message
@@ -124,14 +124,14 @@ If we make the string literal a "raw" string, \n sequences are not converted to 
 
     hello = r"This is a rather long string containing\n\
     several lines of text much as you would do in C."
-    
+
     print(hello)
 
 ::
-    
+
     "This is a rather long string containing\n\several lines of text much as you would do in C."
-    
-    
+
+
 Byte array....
 ---------------
 

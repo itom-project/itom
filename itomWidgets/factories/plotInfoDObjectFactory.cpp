@@ -1,9 +1,9 @@
 /* ********************************************************************
    itom measurement system
    URL: http://www.uni-stuttgart.de/ito
-   Copyright (C) 2020, Institut fuer Technische Optik (ITO), 
-   Universitaet Stuttgart, Germany 
- 
+   Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+   Universitaet Stuttgart, Germany
+
    This file is part of itom.
 
    itom is free software: you can redistribute it and/or modify
@@ -72,20 +72,20 @@ QString PlotInfoDObjectFactory::name() const
 
 //-----------------------------------------------------------------------------
 QString PlotInfoDObjectFactory::group() const
-{ 
+{
     return "itom [widgets]";
 }
 
 //-----------------------------------------------------------------------------
 QString PlotInfoDObjectFactory::toolTip() const
-{ 
-    return QString(); 
+{
+    return QString();
 }
 
 //-----------------------------------------------------------------------------
 QString PlotInfoDObjectFactory::whatsThis() const
 {
-    return QString(); 
+    return QString();
 }
 
 //-----------------------------------------------------------------------------

@@ -10,7 +10,7 @@
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
-   
+
     In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
@@ -24,7 +24,7 @@
     You should have received a copy of the GNU Library General Public License
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 
-    This file is a port and modified version of the 
+    This file is a port and modified version of the
     Common framework (http://www.commontk.org)
 *********************************************************************** */
 
@@ -74,7 +74,7 @@ public:
   virtual bool eventFilter(QObject* object, QEvent* event);
   virtual void showPopup();
   virtual void hidePopup();
-  
+
   /// TreeComboBox uses a QTreeView for its model view. treeView() is a
   /// utility function that cast QComboBox::view() into a QTreeView.
   /// \sa view()
@@ -82,10 +82,10 @@ public:
 
 protected:
   virtual void paintEvent(QPaintEvent*);
-  
+
 protected Q_SLOTS:
   void resizePopup();
-  
+
 signals:
   void popupShow();
   void popupHide();

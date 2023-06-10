@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -23,15 +23,15 @@
     ------------------------
 
     This file belongs to the code editor of itom. The code editor is
-    in major parts a fork / rewritten version of the python-based source 
-    code editor PyQode from Colin Duquesnoy and others 
-    (see https://github.com/pyQode). PyQode itself is licensed under 
+    in major parts a fork / rewritten version of the python-based source
+    code editor PyQode from Colin Duquesnoy and others
+    (see https://github.com/pyQode). PyQode itself is licensed under
     the MIT License (MIT).
 
     Some parts of the code editor of itom are also inspired by the
     source code editor of the Spyder IDE (https://github.com/spyder-ide),
     also licensed under the MIT License and developed by the Spyder Project
-    Contributors. 
+    Contributors.
 
 *********************************************************************** */
 
@@ -74,16 +74,16 @@ void PyDocstringGeneratorMode::onStateChanged(bool state)
     {
         // maybe the connection already exists.
         connect(
-            editor(), &CodeEditor::keyPressed, 
+            editor(), &CodeEditor::keyPressed,
             this, &PyDocstringGeneratorMode::onKeyPressed,
             Qt::UniqueConnection);
     }
     else
     {
         disconnect(
-            editor(), &CodeEditor::keyPressed, 
+            editor(), &CodeEditor::keyPressed,
             this, &PyDocstringGeneratorMode::onKeyPressed);
-    }       
+    }
 }
 
 //-------------------------------------------------------------------------------------
@@ -118,7 +118,7 @@ void PyDocstringGeneratorMode::onKeyPressed(QKeyEvent *e)
 
                         if (lastLineIdxOfDefinition(item) == lineIdx - 1)
                         {
-                            // the first """ sign in the line right after the 
+                            // the first """ sign in the line right after the
                             // definition.
                             QPoint pt = ed->cursorRect().bottomRight();
                             pt.rx() += ed->panels()->marginSize(ito::Panel::Left);
@@ -128,8 +128,8 @@ void PyDocstringGeneratorMode::onKeyPressed(QKeyEvent *e)
                             m_popupMenu = QSharedPointer<QMenu>(new MenuOnlyForEnter(ed));
                             QAction *a = m_popupMenu->addAction(
                                 QIcon(":/arrows/icons/plus.png"),
-                                tr("Generate docstring"), 
-                                this, 
+                                tr("Generate docstring"),
+                                this,
                                 &PyDocstringGeneratorMode::mnuInsertDocstring
                             );
                             m_popupMenu->setActiveAction(a);
@@ -229,8 +229,8 @@ overwriteEndLineIdx : If this method is called by the popup menu, the method
     the last line of the outline can be overwritten by this value (if != -1).
 */
 void PyDocstringGeneratorMode::insertDocstring(
-    const QTextCursor &cursor, 
-    const QString &quotes /*= "\"\"\""*/, 
+    const QTextCursor &cursor,
+    const QString &quotes /*= "\"\"\""*/,
     bool insertOpeningQuotes /*= true*/,
     int overwriteEndLineIdx /*= -1*/) const
 {
@@ -293,15 +293,15 @@ void PyDocstringGeneratorMode::insertDocstring(
 
     // get the indentation for the new docstring
     int initIndent = e->lineIndent(outline->m_startLineIdx);
-    QString indent = editor()->useSpacesInsteadOfTabs() ? 
-        QString(initIndent + editor()->tabLength(), ' ') : 
+    QString indent = editor()->useSpacesInsteadOfTabs() ?
+        QString(initIndent + editor()->tabLength(), ' ') :
         QString(initIndent + 1, '\t');
-    
+
     FunctionInfo finfo = parseFunctionInfo(outline, lineIdx);
     int cursorPos = 0;
 
     QString docstring;
-    
+
     if (m_docstringStyle == GoogleStyle)
     {
         docstring = generateGoogleDoc(outline, finfo, cursorPos);
@@ -327,7 +327,7 @@ void PyDocstringGeneratorMode::insertDocstring(
     {
         if (!insertOpeningQuotes && i == 0)
         {
-            // do not indent the first line, since it is already 
+            // do not indent the first line, since it is already
             // right after the existing opening quotes
             continue;
         }
@@ -405,7 +405,7 @@ PyDocstringGeneratorMode::FunctionInfo PyDocstringGeneratorMode::parseFunctionIn
         QRegularExpressionMatch match = reIter.next();
         info.m_raises.append(match.captured(1));
     }
-    
+
     info.m_hasYield = false;
 
     // generic return type
@@ -449,8 +449,8 @@ PyDocstringGeneratorMode::FunctionInfo PyDocstringGeneratorMode::parseFunctionIn
 void PyDocstringGeneratorMode::parseArgList(
     const QSharedPointer<OutlineItem> &item, FunctionInfo &info) const
 {
-    bool expectSelfOrCls = 
-        item->m_type == OutlineItem::typeClassMethod || 
+    bool expectSelfOrCls =
+        item->m_type == OutlineItem::typeClassMethod ||
         item->m_type == OutlineItem::typeMethod ||
         item->m_type == OutlineItem::typePropertyGet ||
         item->m_type == OutlineItem::typePropertySet;

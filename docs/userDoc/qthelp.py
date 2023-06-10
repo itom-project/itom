@@ -273,7 +273,7 @@ class QtHelpBuilder(StandaloneHTMLBuilder):
 
     def build_keywords(self, title, refs, subitems):
         keywords = []
-        
+
         title = escape(title)
 #        if len(refs) == 0: # XXX
 #            write_param('See Also', title)
@@ -281,7 +281,7 @@ class QtHelpBuilder(StandaloneHTMLBuilder):
             refs = refs[0]
             if(len(refs) > 1 and refs[0]==''):
                 refs = refs[1:]
-        	
+
         if len(refs) == 1:
             keywords.append(self.keyword_item(title, refs[0]))
         elif len(refs) > 1:

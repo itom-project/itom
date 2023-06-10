@@ -10,7 +10,7 @@
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
-   
+
     In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
@@ -23,12 +23,12 @@
 
     You should have received a copy of the GNU Library General Public License
     along with itom. If not, see <http://www.gnu.org/licenses/>.
-*********************************************************************** */   
+*********************************************************************** */
 
-#if (defined ITOMLIBS_SHARED && ( defined(_Windows) || defined(_WINDOWS) || defined(WIN32) || defined(_WIN32) || defined(__WIN32__) )) 
-    
+#if (defined ITOMLIBS_SHARED && ( defined(_Windows) || defined(_WINDOWS) || defined(WIN32) || defined(_WIN32) || defined(__WIN32__) ))
+
     #ifndef POINTCLOUD_EXPORT
-        
+
         /* Borland/Microsoft */
         #if defined(_MSC_VER) || defined(__BORLANDC__)
             #if (_MSC_VER >= 800) || (__BORLANDC__ >= 0x500)
@@ -49,9 +49,9 @@
                 #define POINTCLOUD_EXPORT __declspec(dllimport)
             #endif
         #endif
-        
+
     #endif //POINTCLOUD_EXPORT
-    
+
 #endif //windows
 
 #ifndef POINTCLOUD_EXPORT

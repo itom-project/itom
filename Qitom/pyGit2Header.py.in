@@ -11,7 +11,7 @@
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
-   
+
     In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
@@ -69,12 +69,12 @@ for gitLoc in gitLocation:
     if fullpath:
         try:
             pr = subprocess.Popen(
-                [fullpath, 
-                 '--git-dir='+repositoryPath+'/.git', 
-                 '--work-tree='+repositoryPath , 
-                 'status', 
-                 '--porcelain'], 
-                 cwd = os.path.dirname(fullpath), 
+                [fullpath,
+                 '--git-dir='+repositoryPath+'/.git',
+                 '--work-tree='+repositoryPath ,
+                 'status',
+                 '--porcelain'],
+                 cwd = os.path.dirname(fullpath),
                  stdout=subprocess.PIPE,
                  stderr=subprocess.PIPE,
                  shell=False
@@ -110,7 +110,7 @@ pr = subprocess.Popen(
      '--git-dir='+repositoryPath+'/.git',
      '--work-tree='+repositoryPath ,
      'log',
-     '--max-count=1'], 
+     '--max-count=1'],
     cwd=os.path.dirname(gitLocation),
     stdout=subprocess.PIPE,
     stderr=subprocess.PIPE,
@@ -205,7 +205,7 @@ else:
     if first > -1:
         url = url[0:first]
     repURL = url.decode("utf-8")
-    
+
     # remove user name from repURL
     atIndex = repURL.find("@")
     if atIndex >= 0:
@@ -234,9 +234,3 @@ try:
     outputFile.close()
 except:
     raise RuntimeError("Writing new version.h failed")
-
-
-
-
-
-

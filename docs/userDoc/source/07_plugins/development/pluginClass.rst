@@ -2,7 +2,7 @@
 
 .. toctree::
     :hidden:
-    
+
     plugin-AddInBase-Ref.rst
 
 .. _plugin-class:
@@ -55,12 +55,12 @@ Finally, if the plugin should be closed, the inverse function calls with respect
 .. _plugin-class-callInitThread:
 
 .. note::
-    
+
     In some cases, it is not possible to initialize the hardware (some cameras) in another thread than the main thread. Since this initialization should be done in the **init** method of the plugin, |itom| provides a
     possibility to call **init** before moving the plugin to the new thread. Hence, those both steps in :ref:`this scheme <plugin-plugincall-scheme1>` are switched. This can be done by setting the member **m_callInitInNewThread**
     of the plugin interface class from its default value **true** to **false**. However, only use this possibility if there is no other chance, since the GUI is completely blocked during an initialization executed in the
     main thread (see also :ref:`plugin-interface-class`).
-    
+
 Plugin-Framework
 ----------------
 
@@ -68,10 +68,10 @@ The bare framework of any plugin-class of type **DataIO**, **Actuator**, ... (bu
 
 .. code-block:: c++
     :linenos:
-    
+
     #include "common/addInInterface.h"
-    
-    class MyPlugin : public ito::AddInActuator OR public ito::AddInDataIO OR public ito::AddInGrabber 
+
+    class MyPlugin : public ito::AddInActuator OR public ito::AddInDataIO OR public ito::AddInGrabber
     {
         Q_OBJECT
 
@@ -85,10 +85,10 @@ The bare framework of any plugin-class of type **DataIO**, **Actuator**, ... (bu
         public slots:
             ito::RetVal init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond = NULL);
             ito::RetVal close(ItomSharedSemaphore *waitCond);
-            
+
             ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond = NULL);
             ito::RetVal setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond = NULL);
-            
+
             ito::RetVal execFunc(const QString funcName, QSharedPointer<QVector<ito::ParamBase> > paramsMand, ...
                 ... QSharedPointer<QVector<ito::ParamBase> > paramsOpt, QSharedPointer<QVector<ito::ParamBase> > paramsOut, ...
                 ... ItomSharedSemaphore *waitCond = NULL);
@@ -101,12 +101,12 @@ In the corresponding source file you need to write two defines before including 
 
 .. code-block:: c++
     :linenos:
-    
+
     #define ITOM_IMPORT_API
     #define ITOM_IMPORT_PLOTAPI
-    
+
     #include "myPluginHeaderFromAbove.h"
-    
+
     //implement your code here
 
 In this chapter, hints about implementing the methods in the definitions above are given. In the detailed chapters about every type of plugin, these class definitions will then be extended by the type-specific methods.
@@ -134,26 +134,26 @@ The constructor is a protected member method and should usually only be called b
 
 .. code-block:: c++
     :linenos:
-    
-    MyPlugin::MyPlugin(... further parameters ...) : 
+
+    MyPlugin::MyPlugin(... further parameters ...) :
         AddInActuator()
     {
         //create internal parameter map
         ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "MyPluginName", NULL);
         m_params.insert(paramVal.getName(), paramVal);
-        //... add further parameters to map   
+        //... add further parameters to map
 
         //now create dock widget for this plugin (if available)
         MyPluginDockWidget *myDockWidget = new MyPluginDockWidget(this);
-        
+
         //here: connect signals from the dock widget to the plugin
         // connections that inform the dock widget about changes in parameters, status... should be created
         // and destroyed in the method 'dockWidgetVisibilityChanged'.
-        
+
         //if you can and want, you can assign the unique identification string for this plugin here:
         //m_identifier = QString("my unique plugin nr: %1").arg(yourSerialNumber)
         //you can also set this in the init-method.
-        
+
         Qt::DockWidgetAreas areas = Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea;
         QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
         createDockWidget("MyDockWidgetName", features, areas, myDockWidget);
@@ -177,9 +177,9 @@ Destructor
 Use the destructor (executed in main thread) for some final deletion work. Usually an empty body of the destructor is sufficient.
 
 .. code-block:: c++
-    
+
     MyPlugin::~MyPlugin() {}
-    
+
 
 Init
 ++++
@@ -188,30 +188,30 @@ The method **init** has the following bare framework:
 
 .. code-block:: c++
     :linenos:
-    
+
     ito::RetVal MyPlugin::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond)
     {
         ItomSharedSemaphoreLocker locker(waitCond);
         ito::RetVal retValue;
-        
+
         //use the content of paramsMand and paramsOpt (order and type
         // with respect to m_initParamsMand and m_initParamsOpt of
         // interface class) in order to initialize the hardware and
         // change values of the m_params-map if necessary.
-        
+
         //if you want you can set the unique identification string here:
         //m_identifier = QString("IAmAUniqueStringDescribingThisPlugin")
-        
+
         // emit signal about changed parameters
-        emit parametersChanged(m_params);     
-        
+        emit parametersChanged(m_params);
+
         //release the wait condition and set its returnValue before
         if (waitCond)
         {
             waitCond->returnValue = retValue;
             waitCond->release();
         }
-            
+
         setInitialized(true); //plugin is initialized
         return retValue;
     }
@@ -235,12 +235,12 @@ The method **close** is always executed as last method in the plugin thread. Dis
 
 .. code-block:: c++
     :linenos:
-    
+
     ito::RetVal MyPlugin::close(ItomSharedSemaphore *waitCond)
     {
         ItomSharedSemaphoreLocker locker(waitCond);
         ito::RetVal retValue;
-        
+
         //your code comes here
 
         if (waitCond)
@@ -258,14 +258,14 @@ This method is the getter-method for reading the current value of internal param
 method (like in others, too) methods provided by the |itom| API are used. Therefore, you need to include the API header in your source file, e.g. by
 
 .. code-block:: c++
-    
+
     #include "common/apiFunctionsInc.h"
 
 The prototype for the method *getParam* then looks like this:
 
 .. code-block:: c++
     :linenos:
-    
+
     ito::RetVal MyPlugin::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond)
     {
         ItomSharedSemaphoreLocker locker(waitCond);
@@ -275,10 +275,10 @@ The prototype for the method *getParam* then looks like this:
         int index;
         QString suffix;
         ParamMapIterator it;
-        
+
         //parse the given parameter-name (if you support indexed or suffix-based parameters)
         retValue += apiParseParamName(val->getName(), key, hasIndex, index, suffix);
-        
+
         if (retValue == ito::retOk)
         {
             //gets the parameter key from m_params map (read-only is allowed, since we only want to get the value).
@@ -288,7 +288,7 @@ The prototype for the method *getParam* then looks like this:
         if (!retValue.containsError())
         {
             //put your switch-case.. for getting the right value here
-            
+
             //finally, save the desired value in the argument val (this is a shared pointer!)
             //if the requested parameter name has an index, e.g. roi[0], then the sub-value of the
             //array is split and returned using the api-function apiGetParam
@@ -301,8 +301,8 @@ The prototype for the method *getParam* then looks like this:
                 *val = *it;
             }
         }
-        
-        if (waitCond) 
+
+        if (waitCond)
         {
             waitCond->returnValue = retValue;
             waitCond->release();
@@ -314,7 +314,7 @@ The prototype for the method *getParam* then looks like this:
 The **getParam** is either called directly, by changing the thread or by the |Python| script execution, if the appropriate method
 **getParam** in |Python| is called. For guaranteeing a thread-safe implementation, the first argument is a shared pointer to a
 value of class **ito::Param**. In case of success, the requested value must be saved into this given parameter. The second argument
-is a string containing the parameter name. 
+is a string containing the parameter name.
 
 It is possible to pass a single parameter name or to follow a given string-syntax in order to
 also give a certain array index as well as an additional suffix string. Rules for this syntax are given in the section :ref:`plugin-class-paramname`.
@@ -340,7 +340,7 @@ Finally, an exemplary (simplified) version for the method **setParam** is:
 
 .. code-block:: c++
     :linenos:
-    
+
     ito::RetVal MyPlugin::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond)
     {
         ItomSharedSemaphoreLocker locker(waitCond);
@@ -350,15 +350,15 @@ Finally, an exemplary (simplified) version for the method **setParam** is:
         int index;
         QString suffix;
         ParamMapIterator it;
-        
+
         //parse the given parameter-name (if you support indexed or suffix-based parameters)
         retValue += apiParseParamName( val->getName(), key, hasIndex, index, suffix );
-        
+
         if (isMotorMoving()) //this if-case is for actuators only.
         {
             retValue += ito::RetVal(ito::retError, 0, tr("any axis is moving. Parameters cannot be set").toLatin1().data());
         }
-        
+
         if (!retValue.containsError())
         {
             //gets the parameter key from m_params map (read-only is not allowed and leads to ito::retError).
@@ -372,18 +372,18 @@ Finally, an exemplary (simplified) version for the method **setParam** is:
             // value in m_params and whether the new type fits to the requirements of any possible
             // meta structure.
             retValue += apiValidateParam(*it, *val, false, true);
-            
+
             //OPTION 2 (recommended):
             //if you program for itom 1.4.0 or higher (Interface version >= 1.3.1) you should use this
             //API method instead of the one above: The difference is, that incoming parameters that are
             //compatible but do not have the same type than the corresponding m_params value are cast
-            //to the type of the internal parameter and incoming double values are rounded to the 
+            //to the type of the internal parameter and incoming double values are rounded to the
             //next value (depending on a possible step size, if different than 0.0)
             retValue += apiValidateAndCastParam(*it, *val, false, true, true);
         }
-        
+
         if (!retValue.containsError())
-        { 
+        {
             if (key == "async")
             {
                 //check the new value and if ok, assign it to the internal parameter
@@ -401,13 +401,13 @@ Finally, an exemplary (simplified) version for the method **setParam** is:
                 retValue += it->copyValueFrom( &(*val) );
             }
         }
-        
+
         if (!retValue.containsError())
         {
             emit parametersChanged(m_params); //send changed parameters to any connected dialogs or dock-widgets
         }
 
-        if (waitCond) 
+        if (waitCond)
         {
             waitCond->returnValue = retValue;
             waitCond->release();
@@ -415,10 +415,10 @@ Finally, an exemplary (simplified) version for the method **setParam** is:
 
         return retValue;
     }
-    
+
 In this base implementation, the parametername is firstly searched in the **m_params**-map. If found, the internal parameter is checked for the
 **read-onlyness**. Next, the method distinguishes between numeric and non-numeric parameters, since the numeric-ones can possibly be casted from one
-numeric type to another one. If these pre-requisites are met, you should then check the new value for certain restrictions and if this is met, too, 
+numeric type to another one. If these pre-requisites are met, you should then check the new value for certain restrictions and if this is met, too,
 the internal parameter can be filled with the content of the given, new value. Else, appropriate error messages should be returned and the semaphore **waitCond**
 must finally be released.
 
@@ -447,7 +447,7 @@ An exemplary implementation of the method **execFunc** is
 
 .. code-block:: c++
     :linenos:
-    
+
     ito::RetVal MyPlugin::execFunc(const QString funcName, QSharedPointer<QVector<ito::ParamBase> > paramsMand, ...
         ...QSharedPointer<QVector<ito::ParamBase> > paramsOpt, QSharedPointer<QVector<ito::ParamBase> > paramsOut, ItomSharedSemaphore *waitCond)
     {
@@ -486,7 +486,7 @@ output parameter. The corresponding registration of this method is integrated in
 
 .. code-block:: c++
     :linenos:
-    
+
     //register exec functions
     QVector<ito::Param> pMand;
     pMand << ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("absolute filename to xml-parameter file").toLatin1().data());
@@ -494,7 +494,7 @@ output parameter. The corresponding registration of this method is integrated in
     pOpt << ito::Param("overwriteIfExists", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, tr("parameter description").toLatin1().data());
     QVector<ito::Param> pOut;
     registerExecFunc("saveXMLParams", pMand, pOpt, pOut, tr("description"));
-    
+
 Please consider that only the following parameter types are allowed as output parameters. It is therefore not allowed to use dataObjects as output parameters.
 In this case, pass a dataObject as optional or mandatory parameter and mark their type with the flags **ito::ParamBase::In** combined with **ito::ParamBase::Out** (by-reference):
 
@@ -520,7 +520,7 @@ If the user tries to get or set a parameter e.g. using the python-commands **set
 
 Sometimes it is useful to create a parameter as integer or double array, e.g. for the speed values of every single axis. In this case you will create a parameter with the name **speed** having a type **typeDoubleArray**. Then the user can either access the whole array using the real parameter name **speed**, or the user can access one single value of the array by appending the index within brackets at the parameter name. In this case, it is the programmers task to parse the given parameter string and separate the parameter's real name (here: speed) and the index. Then the index has to be checked with respect to its lower and upper bound.
 
-As further possibility, it is also allowed to append further information to a parameter. This is done by appending a colon-character to the parameter name followed by any string, which is the additional information string. 
+As further possibility, it is also allowed to append further information to a parameter. This is done by appending a colon-character to the parameter name followed by any string, which is the additional information string.
 
 To sum this description up, let us assume that the parameter in **m_params** has the name **PARAMNAME**, which fits to the rules above. Then |itom| will accept parameter names, which correspond to the following rules:
 
@@ -536,16 +536,16 @@ It is the programmer's responsibility to split the given parameter name in the t
 In order to execute this split you can use the api-method
 
 .. code-block:: c++
-    
+
     ito::RetVal apiParseParamName(const QString &name, QString &paramName, bool &hasIndex, int &index, QString &additionalTag)
-    
+
 defined in **apiFunctionsInc.h**.
 
 As an alternative you can use the following regular expression:
 
 .. code-block:: c++
     :linenos:
-    
+
     QString regularExpression = "^([a-zA-Z]+\\w*)(\\[(\\d+)\\]){0,1}(:(.*)){0,1}$";
     QRegExp rx(regularExpression)
     if (rx.indexIn(yourString) == -1)
@@ -565,6 +565,3 @@ As an alternative you can use the following regular expression:
         [5] ADDITIONALTAG or empty-string if no tag is given
         */
     }
-
-
-

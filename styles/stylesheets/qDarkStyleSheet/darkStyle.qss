@@ -842,8 +842,8 @@ QToolBar QAbstractSpinBox::up-arrow:hover {
   image: url(":/qss_icons/rc/arrow_up_focus.png");
 }
 
-QToolBar QAbstractSpinBox::down-arrow, 
-QToolBar QAbstractSpinBox::down-arrow:disabled, 
+QToolBar QAbstractSpinBox::down-arrow,
+QToolBar QAbstractSpinBox::down-arrow:disabled,
 QToolBar QAbstractSpinBox::down-arrow:off {
   image: url(":/qss_icons/rc/arrow_down.png");
   height: 8px;
@@ -1881,8 +1881,8 @@ QTableView::indicator:checked {
   image: url(":/qss_icons/rc/checkbox_checked.png");
 }
 
-QTreeView::indicator:checked:hover, 
-QTreeView::indicator:checked:focus, 
+QTreeView::indicator:checked:hover,
+QTreeView::indicator:checked:focus,
 QTreeView::indicator:checked:pressed,
 QListView::indicator:checked:hover,
 QListView::indicator:checked:focus,
@@ -1899,8 +1899,8 @@ QTableView::indicator::unchecked {
   image: url(":/qss_icons/rc/checkbox_unchecked.png");
 }
 
-QTreeView::indicator:unchecked:hover, 
-QTreeView::indicator:unchecked:focus, 
+QTreeView::indicator:unchecked:hover,
+QTreeView::indicator:unchecked:focus,
 QTreeView::indicator:unchecked:pressed,
 QListView::indicator:unchecked:hover,
 QListView::indicator:unchecked:focus,
@@ -1917,8 +1917,8 @@ QTableView::indicator::indeterminate {
   image: url(":/qss_icons/rc/checkbox_indeterminate.png");
 }
 
-QTreeView::indicator:indeterminate:hover, 
-QTreeView::indicator:indeterminate:focus, 
+QTreeView::indicator:indeterminate:hover,
+QTreeView::indicator:indeterminate:focus,
 QTreeView::indicator:indeterminate:pressed,
 QListView::indicator:indeterminate:hover,
 QListView::indicator:indeterminate:focus,
@@ -2343,7 +2343,7 @@ ito--FigureWidget {
   qproperty-currentBorderColor: #fffff;
 }
 
-ito--ScriptDockWidget QTabWidget::pane { 
+ito--ScriptDockWidget QTabWidget::pane {
   /* The tab widget frame */
   border: none;
 }

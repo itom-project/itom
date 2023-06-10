@@ -73,7 +73,7 @@ class DataObjectComparison(unittest.TestCase):
             nptesting.assert_array_equal(c, 255)
 
         number_values = [1, -2.75, 1+2j]
-        
+
         # datetime
         a = dataObject([100, 100], "datetime")
         b = dataObject([100, 100], "datetime")
@@ -124,7 +124,7 @@ class DataObjectComparison(unittest.TestCase):
         for nv in number_values:
             with self.assertRaises(TypeError):
                 a == nv
-        
+
 
     def test_comparison_notequal(self):
         dtypes = [
@@ -261,7 +261,7 @@ class DataObjectComparison(unittest.TestCase):
         a[:, :] = datetime(2000, 3, 12, 2, 3, 5, tzinfo=timezone(timedelta(0, 1800)))
         c = a <= b
         nptesting.assert_array_equal(c, 0)
-    
+
         # timedelta
         a = dataObject([100, 100], "timedelta")
         b = dataObject([100, 100], "timedelta")
@@ -273,7 +273,7 @@ class DataObjectComparison(unittest.TestCase):
         a[:, :] = timedelta(2000, 3, 12, 2, 3, 5)
         c = b <= a
         nptesting.assert_array_equal(c, 255)
-    
+
         # rgba
         a = dataObject([2, 1], "rgba32")
         b = dataObject([2, 1], "rgba32")

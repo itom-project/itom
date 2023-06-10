@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -46,7 +46,7 @@ DialogPluginPicker::DialogPluginPicker(bool allowNewInstances, ito::AddInBase *c
 
     ui.cmdNewInstance->setVisible(allowNewInstances);
     ui.cmdNewInstance->setEnabled(false);
-    
+
     ui.treeView->setSortingEnabled(true);
     ui.treeView->setModel(m_pFilterModel);
 
@@ -170,7 +170,7 @@ void DialogPluginPicker::createNewInstance(bool /*checked*/)
 
                 retValue += dialog->getFilledMandParams(paramsMandNew);
                 retValue += dialog->getFilledOptParams(paramsOptNew);
-                    
+
                 DELETE_AND_SET_NULL(dialog);
 
                 if (retValue.containsError())
@@ -187,7 +187,7 @@ void DialogPluginPicker::createNewInstance(bool /*checked*/)
                 }
 
                 QApplication::setOverrideCursor (QCursor(Qt::WaitCursor));
-                QApplication::processEvents(QEventLoop::ExcludeSocketNotifiers); //the WaitCursor only becomes visible if the event loop of the main thread is called once. 
+                QApplication::processEvents(QEventLoop::ExcludeSocketNotifiers); //the WaitCursor only becomes visible if the event loop of the main thread is called once.
                                                                                  //(it is not allowed to filter  QEventLoop::ExcludeUserInputEvents here out, since mouse events
                                                                                  //have to be passed to the operating system. Else the cursor is not changed. - at least with Windows)
 
@@ -205,7 +205,7 @@ void DialogPluginPicker::createNewInstance(bool /*checked*/)
                     basePlugin = (ito::AddInBase*)(plugin);
                 }
 
-                QApplication::restoreOverrideCursor();                    
+                QApplication::restoreOverrideCursor();
 
                 if (retValue.containsWarning())
                 {
@@ -220,7 +220,7 @@ void DialogPluginPicker::createNewInstance(bool /*checked*/)
 
                 if (basePlugin != NULL)
                 {
-                    basePlugin->setCreatedByGUI(1); 
+                    basePlugin->setCreatedByGUI(1);
                 }
 
                 m_pFilterModel->invalidate();

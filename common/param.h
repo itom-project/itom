@@ -328,7 +328,7 @@ public:
     /* The return value of this method depends on the type of parameter:
 
     For scalar parameters, like Char, Int, Double, Complex, 1 is always returned.
-    
+
     For number array parameters (CharArray, IntArray, DoubleArray, ComplexArray, the
     number of values in the array is returned. Even if the array is a nullptr,
     0 is returned. This changed from itom 5.0 on. Before -1 was returned
@@ -1050,7 +1050,7 @@ template <typename _Tp> struct ItomParamHelper
     static ito::RetVal setVal(ito::ParamBase* param, const _Tp val, int len = 0)
     {
         static_assert(std::is_pointer<_Tp>::value, "unsupported template type.");
-        
+
         switch (param->d->type)
         {
         case ito::ParamBase::HWRef:

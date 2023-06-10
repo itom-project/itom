@@ -5,7 +5,7 @@ Copyright (C) 2020, Institut fuer Technische Optik (ITO),
 Universitaet Stuttgart, Germany
 
 This file is part of itom.
-  
+
 itom is free software; you can redistribute it and/or modify it
 under the terms of the GNU Library General Public Licence as published by
 the Free Software Foundation; either version 2 of the Licence, or (at
@@ -62,7 +62,7 @@ class AddInManagerPrivate : public QObject
         // two helper methods for Qt < 5.12. They can be removed once the minimum Qt version is 5.12.
         static QString regExpAnchoredPattern(const QString& expression);
         static QString wildcardToRegularExpression(const QString &pattern);
-    
+
     protected:
         AddInManager* const q_ptr;
 
@@ -101,13 +101,13 @@ class AddInManagerPrivate : public QObject
         template<typename _Tp> const RetVal initAddInActuatorOrDataIO(
             bool actuatorNotDataIO,
             const int pluginNum, const QString &name,
-            _Tp** addIn, QVector<ito::ParamBase> *paramsMand, 
-            QVector<ito::ParamBase> *paramsOpt, bool autoLoadPluginParams, 
+            _Tp** addIn, QVector<ito::ParamBase> *paramsMand,
+            QVector<ito::ParamBase> *paramsOpt, bool autoLoadPluginParams,
             ItomSharedSemaphore *aimWait = NULL);
 
         const RetVal initAddInAlgo(
-            const int pluginNum, const QString &name, ito::AddInAlgo **addIn, 
-            QVector<ito::ParamBase> * paramsMand, QVector<ito::ParamBase> * paramsOpt, 
+            const int pluginNum, const QString &name, ito::AddInAlgo **addIn,
+            QVector<ito::ParamBase> * paramsMand, QVector<ito::ParamBase> * paramsOpt,
             bool autoLoadPluginParams, ItomSharedSemaphore *aimWait = NULL);
 
     protected:

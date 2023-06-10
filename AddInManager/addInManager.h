@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -49,7 +49,7 @@ namespace ito
 {
     // forward declaration for private AddInManager functions, declared and implemented
     // in addInManagerPrivate.cpp
-    class AddInManagerPrivate; 
+    class AddInManagerPrivate;
 
     class PlugInModel; //forward declaration
     class AlgoInterfaceValidator; //forward declaration
@@ -78,7 +78,7 @@ namespace ito
             static AddInManager* instance() { return staticInstance; }
 
             //!> scan directory at path for loadable plugins, if checkQCoreApp is 1 it is checked wether an instance of Q(Core)Application
-            //!> is already running, which is necessary for multithreading, i.e. asyncronous use of plugins. If no instance is found a new 
+            //!> is already running, which is necessary for multithreading, i.e. asyncronous use of plugins. If no instance is found a new
             //!> one is created
             const RetVal scanAddInDir(const QString &path, const int checkQCoreApp = 1);
 
@@ -103,10 +103,10 @@ namespace ito
             //!> return status of all plugins
             const QList<struct PluginLoadStatus> getPluginLoadStatus() const;
 
-            //!> 
+            //!>
             const AlgoInterfaceValidator * getAlgoInterfaceValidator(void) const;
 
-            //!> 
+            //!>
             const ito::AddInAlgo::AlgoWidgetDef * getAlgoWidgetDef( QString algoWidgetName, QString algoPluginName = QString() );
 
             //!> returns pointer to plugin model, usable in a model/view relationship
@@ -136,7 +136,7 @@ namespace ito
             //!> return plugin information based on plugin number and type
             const RetVal getPluginInfo(const QString &name, int &pluginType, int &pluginNum, int &version, QString &typeString, QString &author, QString &description, QString &detaildescription, QString &license, QString &about);
 
-            //!> increment plugin reference counter, use e.g. when making a copy of the plugin pointer to avoid plugin being closed while still holding a reference 
+            //!> increment plugin reference counter, use e.g. when making a copy of the plugin pointer to avoid plugin being closed while still holding a reference
             const RetVal incRef(ito::AddInBase *plugin);
 
             //!> decrement plugin reference counter, use to ensure proper closing / deletion of plugin after incrementing reference counter
@@ -200,6 +200,6 @@ namespace ito
             //!> interrupts all active actuator instances
             ito::RetVal interruptAllActuatorInstances(ItomSharedSemaphore *aimWait = NULL);
     };
-} //namespace ito   
-#endif // #if !defined(Q_MOC_RUN) || defined(ADDINMGR_DLL) 
+} //namespace ito
+#endif // #if !defined(Q_MOC_RUN) || defined(ADDINMGR_DLL)
 #endif // #if ADDINMANAGER_H

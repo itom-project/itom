@@ -1,8 +1,8 @@
 """2D animation
 ===============
 
-This example demonstrates how matplotlib can be used to create 
-animated movie and export these in the mp4 movie format. 
+This example demonstrates how matplotlib can be used to create
+animated movie and export these in the mp4 movie format.
 
 """
 
@@ -38,13 +38,13 @@ ani = animation.ArtistAnimation(fig, ims, interval=50, blit=True, repeat_delay=1
 # To save the animation, use e.g.
 #
 # .. code-block:: python
-# 
+#
 #     ani.save("movie.mp4")
 #
 # or
 #
 # .. code-block:: python
-# 
+#
 #     writer = animation.FFMpegWriter(
 #     fps=15, metadata=dict(artist='Me'), bitrate=1800)
 #     ani.save("movie.mp4", writer=writer)

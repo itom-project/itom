@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -38,15 +38,15 @@ namespace ito
 class ItomPaletteBase
 {
     public:
-        ItomPaletteBase() 
+        ItomPaletteBase()
         {
-            m_paletteData.name = ""; 
-            m_paletteData.type = 0; 
-            m_paletteData.inverseColorOne = QColor();         
+            m_paletteData.name = "";
+            m_paletteData.type = 0;
+            m_paletteData.inverseColorOne = QColor();
             m_paletteData.inverseColorTwo = QColor();
             m_paletteData.invalidColor = QColor();
         }
-        ItomPaletteBase(const QString &name, const char type) 
+        ItomPaletteBase(const QString &name, const char type)
         {
             m_paletteData.name = name;
             m_paletteData.type = type;
@@ -54,8 +54,8 @@ class ItomPaletteBase
             m_paletteData.inverseColorTwo = QColor();
             m_paletteData.invalidColor = QColor();
         }
-        ItomPaletteBase(const QString &name, const char type, const QColor &invCol1, const QColor &invCol2,  const QColor &invalCol,  const QVector<QGradientStop> &colStops) 
-        { 
+        ItomPaletteBase(const QString &name, const char type, const QColor &invCol1, const QColor &invCol2,  const QColor &invalCol,  const QVector<QGradientStop> &colStops)
+        {
             m_paletteData.name = name;
             m_paletteData.type = type;
             m_paletteData.inverseColorOne = invCol1;
@@ -74,7 +74,7 @@ class ItomPaletteBase
         ItomPaletteBase(const ItomPaletteBase & src) : m_paletteData(src.m_paletteData)
         { }
 
-        ~ItomPaletteBase() { 
+        ~ItomPaletteBase() {
             m_paletteData.colorStops.clear();
         }
 
@@ -91,7 +91,7 @@ class ItomPaletteBase
         QColor getInverseColorOne() const { return m_paletteData.inverseColorOne; }
         bool   setInverseColorTwo(const QColor &color);
         QColor getInverseColorTwo() const { return m_paletteData.inverseColorTwo; }
-        
+
         bool setInvalidColor(const QColor &color);
         QColor getInvalidColor() const;
 
@@ -122,24 +122,24 @@ class PaletteOrganizer : public QObject
         PaletteOrganizer();
         ~PaletteOrganizer(){};
 
-        /* save the given color palette to the settings. Settings must already be opened in the group, 
+        /* save the given color palette to the settings. Settings must already be opened in the group,
         where the palette should be saved. Each palette is stored as a subgroup of the current group. */
-        ito::RetVal saveColorPaletteToSettings(const ItomPaletteBase &palette, QSettings &settings) const; 
+        ito::RetVal saveColorPaletteToSettings(const ItomPaletteBase &palette, QSettings &settings) const;
 
-        /* load a color palette from the settings. Settings must already be opened in the group, 
+        /* load a color palette from the settings. Settings must already be opened in the group,
         where the palette should be loaded from. The current group must hereby consist of a subgroup with the group name 'name'. */
-        ito::RetVal loadColorPaletteFromSettings(const QString &paletteName, ItomPaletteBase &palette, QSettings &settings) const; 
+        ito::RetVal loadColorPaletteFromSettings(const QString &paletteName, ItomPaletteBase &palette, QSettings &settings) const;
 
         ItomPaletteBase getColorPalette(const int index) const;
         ItomPaletteBase getColorPalette(const QString &name, bool *found = NULL) const;
         int getColorBarIndex(const QString& name, bool *found = NULL) const;
-        
+
         QList<QString> getColorPaletteList(const int type = ito::tPaletteNoType) const;
         QList<QString> getBuiltInPaletteNames() const { return m_builtInPalettes; }
         int numberOfColorPalettes() const { return m_colorPalettes.length(); }
         bool removeColorPalette(const int index);
 
-    private:        
+    private:
         void calcColorPaletteLut();
 
         QList<QString>         m_restrictedKeyWords;
@@ -153,6 +153,6 @@ class PaletteOrganizer : public QObject
         ito::RetVal setColorBarThreaded(QString name, ito::ItomPaletteBase newPalette, ItomSharedSemaphore *waitCond = NULL);
         ito::RetVal getColorBarThreaded(QString name, QSharedPointer<ito::ItomPaletteBase> palette, ItomSharedSemaphore *waitCond = NULL);
         ito::RetVal getColorBarListThreaded(QSharedPointer<QStringList> palettes, ItomSharedSemaphore *waitCond = NULL);
-}; 
+};
 } //namespace ito
 #endif

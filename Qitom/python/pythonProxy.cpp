@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -78,7 +78,7 @@ int PythonProxy::PyProxy_init(PyProxy *self, PyObject *args, PyObject * /*kwds*/
     if (!PyArg_ParseTuple(args, "O", &method))
     {
         PyErr_SetString(
-            PyExc_RuntimeError, 
+            PyExc_RuntimeError,
             "argument must be a bounded or unbounded method or function");
         return -1;
     }
@@ -88,7 +88,7 @@ int PythonProxy::PyProxy_init(PyProxy *self, PyObject *args, PyObject * /*kwds*/
         !PyCallable_Check(method))
     {
         PyErr_SetString(
-            PyExc_RuntimeError, 
+            PyExc_RuntimeError,
             "argument must be a bounded or unbounded method or function");
         return -1;
     }
@@ -98,7 +98,7 @@ int PythonProxy::PyProxy_init(PyProxy *self, PyObject *args, PyObject * /*kwds*/
         PyObject *temp = PyObject_GetAttrString(method, "__self__"); //new reference
         self->inst = PyWeakref_NewRef(temp, nullptr); //new ref
         Py_DECREF(temp);
-        
+
     }
     else
     {
@@ -143,7 +143,7 @@ PyObject* PythonProxy::PyProxy_richcompare(PyObject *v, PyObject *w, int op)
         if (v2 == nullptr || w2 == nullptr)
         {
             PyErr_SetString(
-                PyExc_RuntimeError, 
+                PyExc_RuntimeError,
                 "both elements of the comparison must be of type PyProxy."
             );
             return nullptr;
@@ -175,7 +175,7 @@ PyObject* PythonProxy::PyProxy_richcompare(PyObject *v, PyObject *w, int op)
     else
     {
         PyErr_SetString(
-            PyExc_RuntimeError, 
+            PyExc_RuntimeError,
             "For the proxy-object, only the comparison operators == and != are allowed."
         );
         return nullptr;
@@ -202,7 +202,7 @@ PyObject* PythonProxy::PyProxy_call(PyProxy *self, PyObject *args, PyObject *kwd
         if (wr == Py_None)
         {
             PyErr_SetString(
-                PyExc_ReferenceError, 
+                PyExc_ReferenceError,
                 "The reference to the instance of the proxy object is dead"
             );
             return nullptr;

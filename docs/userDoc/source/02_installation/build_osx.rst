@@ -69,7 +69,7 @@ Recommended Pyton packages:
 * **frosted**
 
 .. note::
-    
+
     You will find the script *osx_install_dependencies.sh* in the source directory. This script allows to install all dependencies in one rush. To use it run the command *sh osx_install_dependencies.sh* in a Terminal.
 
 To install all in one rush run the follwing list of commands. This might take a whole lot of time (we might talk about hours).
@@ -135,7 +135,7 @@ We need some more python packages. Just run the following command:
 
 .. code-block:: bash
 
-    pip install ipython mpmath sphinx 
+    pip install ipython mpmath sphinx
 
 Recommended folder structure
 -----------------------------
@@ -143,37 +143,61 @@ Recommended folder structure
 Similar to Windows, the following folder structure is recommended:
 
 .. code-block:: python
-    
-    ./sources
+
+    ./itomproject
         ./itom    # cloned repository of core
         ./plugins # cloned sources of plugins
-        ./designerPlugins # cloned sources of designerPlugins
+        ./designerplugins # cloned sources of designerPlugins
         ...
-    ./build_debug # build folder for debug makefiles of...
-        ./itom    # ...core
-        ./plugins # ...plugins
-        ...
-    ./build_release # build folder for release makefiles of...
-        ./itom      # ...core
-        ...
+    # base folder for compilation. The makefiles should
+    # be stored in the following subfolders (depending on project):
+    ./itomproject
+        ./build
+            ./itom    # ...core
+            ./plugins # ...plugins
+            ./designerplugins # ...designerPlugins
+            ...
+    #Optionally, if you want to do debug and release builds separately:
+    # base folder for debug compilation (if desired). The makefiles
+    # should be stored in the following subfolders (depending on project):
+    ./itomproject
+        ./build_debug
+            ./itom    # ...core
+            ./plugins # ...plugins
+            ./designerplugins # ...designerPlugins
+            ...
+    # base folder for release compilation (if desired). The makefiles should
+    # be stored in the following subfolders (depending on project):
+    ./itomproject
+        ./build_release
+            ./itom      # ...core
+            ./plugins   # ...plugins
+            ./designerplugins # ...designerPlugins
+            ...
 
 To create all folders in your user directory in one step, call the following bash commands:
 
 .. code-block:: bash
-    
-    mkdir ~/itom; cd ~/itom; mkdir ./sources; mkdir ./build_debug; mkdir ./build_debug/itom; mkdir ./build_debug/plugins; mkdir ./build_debug/designerPlugins; mkdir ./build_release; mkdir ./build_release/itom; mkdir ./build_release/plugins; mkdir ./build_release/designerPlugins
 
-Obtain the sources
---------------------
+    cd ~/itomprojetc; mkdir ./build_debug; mkdir ./build_release
 
-Clone at least the core repository of |itom| (bitbucket.org/itom/itom) as well as the open source plugin and designerPlugin repository into the corresponding subfolders of the **sources** folder. You can do this by using any git client or the command 
+Obtain and build the sources
+-----------------------------
+
+Clone the central projetc repository of |itom| (git clone git@github.com:itom-project/itomProject.git)
+and initialize and update the subsequent submodules. This should load the necessary **itom** core,
+**plugin** and **designerplugin** submodules.
+You can do this by using any git client or the command shell.
 
 .. code-block:: bash
-    
-    cd sources
-    git clone https://bitbucket.org/itom/itom.git
-    git clone https://bitbucket.org/itom/plugins.git
-    git clone https://bitbucket.org/itom/designerplugins.git
+
+    git clone --recursive --remote  git@github.com:itom-project/itomProject.git
+    cd itomproject
+    git submodule foreach --recursive git checkout master
+    mkdir -p ./{build_debug,build_release}
+    cd ./build_release
+    cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=OFF -DCMAKE_BUILD_TYPE=Release ../  #If PCL-support should be enabled, replace OFF by ON
+    make -j4
 
 Configuration process
 ----------------------
@@ -188,20 +212,20 @@ Use **CMake** to create the necessary makefiles for debug and/or release:
     * **Itom Parameter**:
         * **BUILD_TARGET64** to ON.
         * **BUILD_WITH_PCL** to ON if you have the point cloud library available on your computer and want to compile |itom| with support for point clouds and polygon meshes.
-    
+
     * **System Parameter**:
         * **CMAKE_BUILD_TYPE** to either **debug** or **release**
         * **CMAKE_OSX_ARCHITECTURES**: *x86_64*
         * **CMAKE_OSX_SYSROOT**: */Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk*
-        
+
         The suffix SDK version might also be different as well as the path.
 
 5.  Push the configure button
 6.  Usually, CMake should find most of the necessary third-party libraries, however you should check the following things:
-  
+
     * **OpenMP**: OpenMP is not available when using the default compiler clang. If your setup includes OpenMP set *-fopenmp* to *OpenMP_CXX_FLAGS* and *OpenMP_C_FLAGS*.
 
-    * **Python3**: On OS X CMake always finds the Python version 2 as default version. This is wrong. Therefore set the following variables to the right pathes: 
+    * **Python3**: On OS X CMake always finds the Python version 2 as default version. This is wrong. Therefore set the following variables to the right pathes:
 
         * **PYTHON_EXECUTABLE**: /usr/local/bin/python3.4
         * **PYTHON_INCLUDE_DIR**: /usr/local/Cellar/python3/3.4.3/Frameworks/Python.framework/Versions/3.4/include/python3.4m
@@ -225,20 +249,11 @@ Use **CMake** to create the necessary makefiles for debug and/or release:
 
 7.  Push the generate button.
 8.  Now you can build |itom| by the **make** or using **Xcode** command:
-    
+
     * **make**: Open a command line and switch to the **build_debug/itom** or **build_release/itom** directory. Simply call **make** such that the file **qitom** or **qitomd** (debug) is built. Start this application by calling **./qitom** or **./qitomd** in order to run |itom|.
 
     * **Xcode**: If you plan to change something in the source code it is recommended to use Xcode. Just open the **itom.xcodeproj** with Xcode and compile the project.
 
-Build plugins
----------------
-
-Build the plugins, designerPlugins... in the same way than |itom| but make sure that you compiled |itom| at least once before you start configuring and compiling any plugin. In CMake, you need to indicate the same variables 
-than above, but you also need to set the variable **ITOM_SDK_DIR** to the **sdk** folder in **build_debug/itom/sdk** or **build_release/itom/sdk** depending whether you want to compile a debug or release version (please don't forget to set **CMAKE_BUILD_TYPE**. 
-
-If you don't want to have some of the plugins, simply uncheck them in CMake under the group **Plugin**.
-
-The plugins and designerPlugins will finally be compiled and then copy their resulting library files into the **designer** and **plugins** subfolder of |itom|. Restart |itom| and you the plugin will be loaded.
 
 Known Problems
 --------------
@@ -249,7 +264,7 @@ PyPort bug
 If you get build errors that trace back to an error like
 
 .. code-block:: bash
-    
+
     ... /__locale:436:15: error: C++ requires a type specifier for all declarations
         char_type toupper(char_type __c) const
                         ^~~~~~~~~~~~~~~~~~~~~~
@@ -326,14 +341,14 @@ Be sure to adapt the path as necessary. Especially be use to change the version 
 pip install fails with *TypeError: unorderable types: str() < NoneType()*
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Open /usr/local/Cellar/python3/3.4.3/libexec/setuptools/__init__.py and change 
+Open /usr/local/Cellar/python3/3.4.3/libexec/setuptools/__init__.py and change
 
 .. code-block:: python
 
     self.py_version,
     self.platform,
 
-for 
+for
 
 .. code-block:: python
 

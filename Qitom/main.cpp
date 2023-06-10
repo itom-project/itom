@@ -71,7 +71,6 @@
 #endif /*DOXYGEN_SHOULD_SKIP_THIS*/
 
 
-
 QTextStream *messageStream = NULL;
 QMutex msgOutputProtection;
 
@@ -141,10 +140,10 @@ DWORDLONG GetWindowsBuildAndServicePackVersion(bool onlyVersion = true)
         osInfo.dwOSVersionInfoSize = sizeof(osInfo);
         RtlGetVersion(&osInfo);
     }
-    
+
     if (onlyVersion)
     {
-        return osInfo.dwMajorVersion | osInfo.dwMinorVersion | 
+        return osInfo.dwMajorVersion | osInfo.dwMinorVersion |
             osInfo.wServicePackMajor | osInfo.wServicePackMinor;
     }
     else
@@ -299,7 +298,7 @@ int main(int argc, char *argv[])
     //in debug mode uncaught exceptions as well as uncaught
     //cv::Exceptions will be parsed and also passed to qWarning and qFatal.
     cv::redirectError(itomCvError);
-   
+
 
     QItomApplication itomApplication(argc, argv);
 

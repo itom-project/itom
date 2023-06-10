@@ -1,4 +1,4 @@
-"""PointCloud 
+"""PointCloud
 =============
 
 This demo is a very short introduction to basic point clouds

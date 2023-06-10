@@ -1,6 +1,6 @@
 # coding=iso-8859-15
 """
-This file contains a template class for measurement systems used under itom. 
+This file contains a template class for measurement systems used under itom.
 By using this template further packages, e.g. unified stitching shall be implemented.
 
 This system has been developed by Institut fuer Technische Optik (ITO), Universitaet Stuttgart
@@ -47,7 +47,7 @@ class ProbingSystemType:
 class MeasurementSystemBase:
     """
     This class is a base class for any 1d, 2d, 2.5d or 3d measurement system.
-    
+
     Let your system class inherit from this class and implement the functions to let your
     system be compatible to other generic interfaces that can access such systems.
     """

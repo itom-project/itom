@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -66,7 +66,7 @@ namespace ito
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------
 apiFunctionsGraph::apiFunctionsGraph()
-{ 
+{
     ITOM_API_FUNCS_GRAPH = ITOM_API_FUNCS_GRAPH_ARR;
 }
 
@@ -170,7 +170,7 @@ ito::RetVal apiFunctionsGraph::mgetFigure(const QString &figCategoryName, const 
     {
         if(UID > 0)
         {
-            
+
             *figure = qobject_cast<QWidget*>(uiOrg->getPluginReference(UID));
 
             if(*figure && parent && !(*figure)->parent())
@@ -232,7 +232,7 @@ ito::RetVal apiFunctionsGraph::mgetPluginList(const ito::PluginInfo &requirement
     //    int temp1, temp2;
 
     //    QHashIterator<QString, ito::PluginInfo> i(itomPluginList);
-    //    while (i.hasNext()) 
+    //    while (i.hasNext())
     //    {
     //        i.next();
     //        //check whether all flags set in requirements are set in PluginInfo of any plugin. If so, append it to pluginList
@@ -380,7 +380,7 @@ QVariant apiFunctionsGraph::mgetFigureSetting(const QObject *figureClass, const 
     if (!found) //check ini setting file
     {
         const QMetaObject *mo = figureClass->metaObject();
-        
+
         QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
         settings.beginGroup("DesignerPlugins");
 
@@ -399,7 +399,7 @@ QVariant apiFunctionsGraph::mgetFigureSetting(const QObject *figureClass, const 
 
         settings.endGroup();
     }
-    
+
     return value;
 }
 
@@ -438,7 +438,7 @@ ito::RetVal apiFunctionsGraph::mgetPluginWidget(char* algoWidgetFunc, QVector<it
             retval += ito::RetVal(ito::retError, 0, QObject::tr("Error retrieving widget pointer").toLatin1().data());
             ItomSharedSemaphoreLocker locker2(new ItomSharedSemaphore());
             QMetaObject::invokeMethod(uiOrg, "deleteDialog", Q_ARG(uint, static_cast<unsigned int>(*dialogHandle)), Q_ARG(ItomSharedSemaphore*, locker2.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
-    
+
             if (!locker2.getSemaphore()->wait(AppManagement::timeouts.pluginGeneral))
             {
                 retval += ito::RetVal(ito::retError, 0, QObject::tr("Error closing dialog").toLatin1().data());
@@ -581,7 +581,7 @@ ito::RetVal apiFunctionsGraph::mConnectToOutputAndErrorStream(const QObject *rec
     else
     {
         QMetaObject::Connection conn = QObject::connect(sender, SIGNAL(flushStream(QString, ito::tStreamMessageType)), receiver, method);
-        
+
         if (!conn)
         {
             retval += ito::RetVal(ito::retError, 0, "connection cannot be established");
@@ -590,7 +590,7 @@ ito::RetVal apiFunctionsGraph::mConnectToOutputAndErrorStream(const QObject *rec
 
     return retval;
 }
-            
+
 //------------------------------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal apiFunctionsGraph::mDisconnectFromOutputAndErrorStream(const QObject *receiver, const char *method, ito::tStreamMessageType messageType)
 {

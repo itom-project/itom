@@ -18,9 +18,9 @@ vergeben.
 Überprüfung der AddInInterface- und DesignerPluginInterface-Versionsnummer:
 ----------------------------------------------------------------------------
 
-Prüfen, ob seit dem letzten Setup eine Änderung im AddInInterface und / oder 
+Prüfen, ob seit dem letzten Setup eine Änderung im AddInInterface und / oder
 DesignerPluginInterface vorkam. Dies führt zu einer Inkrementierung der Versionsnummer(n)
-nach dem Prinzip von Semantic Versioning, die in den Dateien addInInterfaceVersion.h und 
+nach dem Prinzip von Semantic Versioning, die in den Dateien addInInterfaceVersion.h und
 designerPluginInterfaceVersion.h vergeben werden.
 
 itom, designer plugins und dann alle plugins kompilieren
@@ -34,7 +34,7 @@ Doku erstellen:
 1. \Build\itom\docs\doxygen\itom_doxygen.dox per Doppelklick starten
 2. itom starten
 3. in \Build\itom\docs\userDoc die python-Datei "create_doc.py" ausführen und Hilfe starten
-4. in \Build\itom\docs\pluginDoc die python-Datei "create_all_plugin_docs.py" ausführen, 
+4. in \Build\itom\docs\pluginDoc die python-Datei "create_all_plugin_docs.py" ausführen,
    Build-Verzeichnis der freien Plugins wählen und Hilfe starten
 
 

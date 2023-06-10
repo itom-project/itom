@@ -29,7 +29,7 @@
 #include <qmetaobject.h>
 #include <qspinbox.h>
 
-Property::Property(const QString& name /*= QString()*/, QObject* propertyObject /*= 0*/, QObject* parent /*= 0*/) : QObject(parent), 
+Property::Property(const QString& name /*= QString()*/, QObject* propertyObject /*= 0*/, QObject* parent /*= 0*/) : QObject(parent),
 m_propertyObject(propertyObject)
 {
     setObjectName(name);

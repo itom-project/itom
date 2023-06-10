@@ -46,10 +46,10 @@ public:
      *
      * @param name the name of the property within the propertyObject (will be used in the QPropertyEditorWidget view too)
      * @param propertyObject the object that contains the property
-     * @param parent optional parent object 
+     * @param parent optional parent object
      */
     Property(const QString& name = QString(), QObject* propertyObject = 0, QObject* parent = 0);
-    
+
     /**
      * The value stored by this property
      * @return QVariant the data converted to a QVariant
@@ -72,7 +72,7 @@ public:
      * @return bool true if this property is only used to display a category in the QPropertyEditorWidget
      */
     bool isRoot() {return m_propertyObject == 0;}
-    
+
     /**
      * Flag if the property can be set
      * @return bool true if this property has no set method
@@ -84,19 +84,19 @@ public:
      * @return int row within the QPropertyModel
      */
     int row() {return parent()->children().indexOf(this);}
-    
+
     /**
      * returns optional settings for the editor widget that is used to manipulate the properties value
      * @return QString a string that contains property settings for the editor widget (e.g. "minimum=1.0;maximum=10.0;")
      */
     QString editorHints() {return m_hints;}
-    
+
     /**
      * Sets properties for the editor widget that is used to manipulate the data value managed by this instance
      * @param hints a string containing property settings for the editor widget that manipulates this property
      */
     virtual void setEditorHints(const QString& hints) {m_hints = hints;}
-    
+
     /**
      * Creates an editor for the data managed by this instance
      * @param parent widget the newly created editor widget will be child of
@@ -104,13 +104,13 @@ public:
      * @return QWidget* pointer to the editor widget
      */
     virtual QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem& option);
-    
+
     /**
      * Returns the data of the editor widget used to manipulate this instance
      * @return QVariant the data converted to a QVariant
      */
     virtual QVariant editorData(QWidget *editor);
-    
+
     /**
      * Changes the editor widget's data to a specific value
      * @param editor the editor widget
@@ -128,7 +128,7 @@ public:
 
 private slots:
     /**
-     * This slot is used to immediately set the properties when the editor widget's value of a double or float 
+     * This slot is used to immediately set the properties when the editor widget's value of a double or float
      * property has changed
      * @param value the new value
      */
@@ -146,7 +146,7 @@ private slots:
 
 protected:
     QObject*    m_propertyObject;
-    QString        m_hints;    
+    QString        m_hints;
 
 };
 

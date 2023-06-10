@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -89,7 +89,7 @@ void WidgetPropEditorCodeCheckers::readSettings()
     }
 
     QVariantMap syntaxCheckerParams = settings.value("codeCheckerProperties").toMap();
-    
+
     //Basic Options (PyFlakes)
     switch (syntaxCheckerParams.value("codeCheckerPyFlakesCategory",
         PythonCommon::TypeError).toInt())
@@ -236,4 +236,3 @@ void WidgetPropEditorCodeCheckers::writeSettings()
 }
 
 } //end namespace ito
-

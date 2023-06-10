@@ -103,7 +103,7 @@ void DoubleSliderPrivate::init()
   QHBoxLayout* l = new QHBoxLayout(q);
   l->addWidget(this->slider);
   l->setContentsMargins(0,0,0,0);
-  
+
   this->Minimum = this->slider->minimum();
   this->Maximum = this->slider->maximum();
   // this->slider->singleStep is always 1
@@ -121,7 +121,7 @@ void DoubleSliderPrivate::init()
   q->setSizePolicy(this->slider->sizePolicy());
   q->setAttribute(Qt::WA_WState_OwnSizePolicy, false);
 }
-  
+
 // --------------------------------------------------------------------------
 int DoubleSliderPrivate::toInt(double doubleValue)const
 {
@@ -333,7 +333,7 @@ void DoubleSlider::setValue(double newValue)
     {
     double oldValue = d->Value;
     d->Value = newValue;
-    // don't emit a valuechanged signal if the new value is quite 
+    // don't emit a valuechanged signal if the new value is quite
     // similar to the old value.
     if (qAbs(newValue - oldValue) > (d->SingleStep * 0.000000001))
       {
@@ -528,8 +528,8 @@ void DoubleSlider::onValueChanged(int newValue)
   Q_D(DoubleSlider);
   double doubleNewValue = d->safeFromInt(newValue);
 /*
-  qDebug() << "onValueChanged: " << newValue << "->"<< d->fromInt(newValue+d->Offset) 
-           << " old: " << d->Value << "->" << d->toInt(d->Value) 
+  qDebug() << "onValueChanged: " << newValue << "->"<< d->fromInt(newValue+d->Offset)
+           << " old: " << d->Value << "->" << d->toInt(d->Value)
            << "offset:" << d->Offset << doubleNewValue;
 */
   if (d->Value == doubleNewValue)
@@ -654,4 +654,3 @@ void DoubleSlider::onValueProxyModified()
   this->setValue(d->slider->property("inputValue").toDouble());
   this->blockSignals(wasBlockingSignals);
 }
-

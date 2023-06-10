@@ -42,8 +42,8 @@ public:
         Qt::WindowFlags flags = Qt::WindowFlags());
     ~HelpTreeDockWidget();
 
-    enum HelpItemType 
-    {  
+    enum HelpItemType
+    {
         typeFilter = 2,   /* a filter method from an algorithm plugin */
         typeWidget = 3,   /* a widget method from an algorithm plugin */
         typeFPlugin = 4,  /* an algorithm plugin in the filter section */
@@ -53,9 +53,9 @@ public:
         typeActuator = 8  /* an actuator plugin */
     };
 
-    enum IconType 
+    enum IconType
     {
-        iconFilter = 100, 
+        iconFilter = 100,
         iconPluginAlgo = 101,
         iconPluginFilter = 102,
         iconWidget = 103,
@@ -89,11 +89,11 @@ public:
 
     QColor linkColor() const;
     void setLinkColor(const QColor &color);
-    
+
     QColor backgroundParamName() const;
     void setBackgroundParamName(const QColor &color);
-    
-        
+
+
 
 public slots:
     void navigateBackwards();
@@ -138,16 +138,16 @@ private:
     static const int rolePath = Qt::UserRole + 1;
     static const int roleType = Qt::UserRole + 2;
     static const int roleFilename = Qt::UserRole + 3;
-    
+
     // Variables
-    Ui::HelpTreeDockWidget   ui;                
+    Ui::HelpTreeDockWidget   ui;
     QStandardItemModel      *m_pMainModel;          /*!< Model to store the tree with all database entries*/
     LeafFilterProxyModel    *m_pMainFilterModel;    /*!< Filtered Tree Model (between the model and the tree*/
     ito::AbstractDockWidget *m_pParent;             /*!< pointer to helpDockWidget with Toolbar*/
     QList<QModelIndex>       m_history;             /*!< List to store the adresses of the last visited pages */
-    QMovie                  *m_previewMovie;        /*!< turning circle to show "wait" status*/    
+    QMovie                  *m_previewMovie;        /*!< turning circle to show "wait" status*/
     QMap<int, QIcon>         m_iconGallery;
-    int                      m_historyIndex;        
+    int                      m_historyIndex;
     int                      m_autoCollTime;        /*!< after this time the tree automatically becomes smaller*/
     double                   m_treeWidthVisible;    /*!< width of tree while visible (in percent of the total width)*/
     double                   m_treeWidthInvisible;  /*!< width of tree while small (in percent of the total width)*/

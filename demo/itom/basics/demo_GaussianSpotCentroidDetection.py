@@ -5,7 +5,7 @@
 
 This demo shows how the ``itom.algorithms`` can be used.
 In this example a camera ``DummyGrabber`` is used to acquire a moving gaussian spot.
-For the centroid detection the ``itom.algorithms.centroidxy`` function is used. 
+For the centroid detection the ``itom.algorithms.centroidxy`` function is used.
 Finally, this examples shows how a centroid position marker is added to the gaussian spot image.
 
 .. note::

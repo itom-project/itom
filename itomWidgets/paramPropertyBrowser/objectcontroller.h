@@ -52,7 +52,7 @@ class ObjectController : public QWidget
 public:
 	ObjectController(QWidget *parent = 0);
 	~ObjectController();
-	
+
 	const QString getDisplayName(const QString &propertyName) const;
 	void setDisplayName(const QString &propertyName, const QString &displayName);
 
@@ -61,7 +61,7 @@ public:
 
 	void setObject(QObject *object);
 	QObject *object() const;
-		
+
 	void updateObject();
 
 private:

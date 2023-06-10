@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -52,7 +52,7 @@ DialogReloadModule::DialogReloadModule(QWidget* parent) :
     enableUI(false);
 
     QTimer::singleShot(0, this, SLOT(loadModules()));
-    
+
 }
 
 void DialogReloadModule::loadModules()
@@ -113,7 +113,7 @@ void DialogReloadModule::loadModules()
                     twi = new QTreeWidgetItem(m_items[part1]);
                     twi->setText(0, part2);
                     twi->setData(0, Qt::UserRole + 1, (*modFilenames)[i]);
-                    twi->setData(0, Qt::UserRole + 2, key); 
+                    twi->setData(0, Qt::UserRole + 2, key);
                     twi->setData(0, Qt::UserRole + 3, (*modTypes)[i]);
                     m_items[key] = twi;
                 }
@@ -122,7 +122,7 @@ void DialogReloadModule::loadModules()
                     twi = new QTreeWidgetItem(ui.treeWidget);
                     twi->setText(0, key);
                     twi->setData(0, Qt::UserRole + 1, (*modFilenames)[i]);
-                    twi->setData(0, Qt::UserRole + 2, key); 
+                    twi->setData(0, Qt::UserRole + 2, key);
                     twi->setData(0, Qt::UserRole + 3, (*modTypes)[i]);
                     m_items[key] = twi;
                 }

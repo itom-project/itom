@@ -20,7 +20,7 @@ def checkEnableDrawingClicked(checked: bool):
     gui.plot["geometricShapesDrawingEnabled"] = checked
 
 ###############################################################################
-# Clear all existing shapes by calling the slot ``clearGeometricShapes`` 
+# Clear all existing shapes by calling the slot ``clearGeometricShapes``
 def clearShapes():
     gui.plot.call("clearGeometricShapes")
 

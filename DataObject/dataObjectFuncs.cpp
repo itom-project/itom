@@ -3341,7 +3341,7 @@ ito::RetVal dObjSetScaleRectangle(
         {
             return ito::RetVal(ito::retError, 0, "x0 and x1 must not be equal if the number of columns is > 1.");
         }
-        
+
         scaleX /= (dataObj.getSize(dims - 1) - 1);
     }
     else

@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -20,7 +20,7 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#include "dialogAbout.h" 
+#include "dialogAbout.h"
 
 #include "../global.h"
 
@@ -40,7 +40,7 @@ DialogAboutQItom::DialogAboutQItom(const QMap<QString, QString> &versionMap, QWi
 
     m_VersionString.clear();
     QFile file(":/license/about.html"); //:/license/about.html");
-    if (!file.open(QIODevice::ReadOnly)) 
+    if (!file.open(QIODevice::ReadOnly))
     {
         m_aboutText = tr("Could not load file %1. Reason: %2.").arg("about.html").arg(file.errorString());
     }
@@ -59,13 +59,13 @@ DialogAboutQItom::DialogAboutQItom(const QMap<QString, QString> &versionMap, QWi
     ui.ITOLogo->setPixmap(QPixmap(QString::fromUtf8(":/application/icons/itomicon/itologo64.png")));
 
     QMapIterator<QString, QString> i(versionMap);
-    while (i.hasNext()) 
+    while (i.hasNext())
     {
         i.next();
 
         m_VersionString.append(QString("%1: %2\n").arg(i.key(), i.value()));
         QString keyWord = QString("$%1$").arg(i.key());
-        
+
         if (m_aboutText.contains(keyWord))
         {
             m_aboutText = m_aboutText.replace(keyWord, QString(i.value()).replace('\n', "<p>"));
@@ -122,7 +122,7 @@ DialogAboutQItom::DialogAboutQItom(const QMap<QString, QString> &versionMap, QWi
 
     //contributors
     file.setFileName(":/license/contributors.html");
-    if (!file.open(QIODevice::ReadOnly)) 
+    if (!file.open(QIODevice::ReadOnly))
     {
         m_contributorsText = tr("Could not load file %1. Reason: %2.").arg("contributors.html").arg(file.errorString());
     }
@@ -137,7 +137,7 @@ DialogAboutQItom::DialogAboutQItom(const QMap<QString, QString> &versionMap, QWi
     QString licenseText;
     //license
     file.setFileName(":/license/COPYING.txt");
-    if (!file.open(QIODevice::ReadOnly)) 
+    if (!file.open(QIODevice::ReadOnly))
     {
         licenseText = tr("Could not load file %1. Reason: %2.").arg("COPYING.txt").arg(file.errorString());
     }
@@ -181,7 +181,7 @@ void DialogAboutQItom::styleTexts()
     temp.replace("#textColor", m_textColor.name());
     temp.replace("#linkColor", m_linkColor.name());
     ui.txtContributors->setHtml(temp);
-    
+
     temp = m_addressText;
     temp.replace("#textColor", m_textColor.name());
     temp.replace("#linkColor", m_linkColor.name());

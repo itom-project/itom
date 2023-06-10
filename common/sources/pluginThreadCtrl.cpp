@@ -10,7 +10,7 @@
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
-   
+
     In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
@@ -66,7 +66,7 @@ PluginThreadCtrl::PluginThreadCtrl(const ito::ParamBase &pluginParameter, ito::R
         return;
     }
 }
-    
+
 //----------------------------------------------------------------------------------------------------------------------------------
 PluginThreadCtrl::PluginThreadCtrl(ito::AddInBase *plugin, ito::RetVal *retval /*= NULL*/) :
     m_pPlugin(plugin)
@@ -178,7 +178,7 @@ ito::RetVal PluginThreadCtrl::waitForSemaphore(int timeOutMS /*= PLUGINWAIT*/)
                 }
             }
         }
-        
+
         if (!timeout)
         {
             retval += waitCond->returnValue;
@@ -244,7 +244,7 @@ ito::RetVal PluginThreadCtrl::setParam(ito::ParamBase val, int timeOutMS /*= PLU
         return ito::RetVal(ito::retError, 0, QObject::tr("no camera available").toLatin1().data());
     }
 
-    QSharedPointer<ito::ParamBase> qsParam(new ito::ParamBase(val));    
+    QSharedPointer<ito::ParamBase> qsParam(new ito::ParamBase(val));
     Qt::ConnectionType conType = (QApplication::instance() != NULL) ? Qt::AutoConnection : Qt::DirectConnection;
     m_semaphoreLocker = new ItomSharedSemaphore();
     if (!QMetaObject::invokeMethod(m_pPlugin, "setParam", conType, Q_ARG(QSharedPointer<ito::ParamBase>, qsParam), Q_ARG(ItomSharedSemaphore*, m_semaphoreLocker.getSemaphore())))
@@ -274,7 +274,7 @@ DataIOThreadCtrl::DataIOThreadCtrl(ito::AddInDataIO *plugin, ito::RetVal *retval
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-DataIOThreadCtrl::DataIOThreadCtrl(const DataIOThreadCtrl &other) : 
+DataIOThreadCtrl::DataIOThreadCtrl(const DataIOThreadCtrl &other) :
     PluginThreadCtrl(other)
 {
 
@@ -448,7 +448,7 @@ ito::RetVal DataIOThreadCtrl::disableAutoGrabbing(int timeOutMS /*= PLUGINWAIT*/
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
-\detail Sets a new interval for the auto-grabbing timer (in ms). If interval <= 0 is passed, nothing is changed, 
+\detail Sets a new interval for the auto-grabbing timer (in ms). If interval <= 0 is passed, nothing is changed,
         but the current interval is returned. This method does not enable or disable the timer.
 
 \param [in] interval    Timer (in ms)
@@ -554,7 +554,7 @@ ito::RetVal DataIOThreadCtrl::getImageParams(int &bpp, int &sizex, int &sizey, i
     {
         return ito::RetVal(ito::retError, 0, QObject::tr("No camera available").toLatin1().data());
     }
-    
+
     QSharedPointer<ito::Param> param1(new ito::Param("bpp", ito::ParamBase::Int));
     QSharedPointer<ito::Param> param2(new ito::Param("sizex", ito::ParamBase::Int));
     QSharedPointer<ito::Param> param3(new ito::Param("sizey", ito::ParamBase::Int));
@@ -606,7 +606,7 @@ ActuatorThreadCtrl::ActuatorThreadCtrl(ito::AddInActuator *plugin, ito::RetVal *
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ActuatorThreadCtrl::ActuatorThreadCtrl(const ActuatorThreadCtrl &other) : 
+ActuatorThreadCtrl::ActuatorThreadCtrl(const ActuatorThreadCtrl &other) :
     PluginThreadCtrl(other)
 {
     m_numAxes = other.m_numAxes;
@@ -879,4 +879,3 @@ ito::RetVal ActuatorThreadCtrl::checkAxis(int axisNum)
 
 
 } //end namespace ito
-

@@ -2,7 +2,7 @@
 REM Set the following variables by a CMake configure_file command and
 REM replace placeholders by absolute pathes
 SET QT_DEPLOYMENT_FOLDER="@CMAKE_CURRENT_BINARY_DIR@/setup/qt_deployment"
-SET QT_BIN="@QT_QMAKE_EXECUTABLE@"
+SET QT_BIN="@QT_BINARY_DIR@"
 SET ITOM_BIN="@CMAKE_CURRENT_BINARY_DIR@"
 
 REM Clear the qt_deployment directory or creates it, if it does not exist, yet.
@@ -20,9 +20,9 @@ IF EXIST %QT_DEPLOYMENT_FOLDER% (
 REM Temporarily insertes QT_BIN to the path variable...
 SET PATH=%QT_BIN%;%PATH%
 
-REM ... and start the windeployqt.exe tool to add all relevant qt files to the deployment folder 
+REM ... and start the windeployqt.exe tool to add all relevant qt files to the deployment folder
 
-windeployqt.exe --dir %QT_DEPLOYMENT_FOLDER% %ITOM_BIN%\qitom.exe 
+windeployqt.exe --dir %QT_DEPLOYMENT_FOLDER% %ITOM_BIN%\qitom.exe
 
 windeployqt.exe --dir %QT_DEPLOYMENT_FOLDER% %QT_BIN%\assistant.exe
 windeployqt.exe --dir %QT_DEPLOYMENT_FOLDER% %QT_BIN%\linguist.exe

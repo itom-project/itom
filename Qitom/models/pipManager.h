@@ -1,11 +1,11 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2023, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -28,15 +28,15 @@
 
 #include "../common/sharedStructures.h"
 
-namespace ito 
+namespace ito
 {
 
 struct PythonPackage
 {
     enum Status {Unknown, Uptodate, Outdated};
-    PythonPackage() : m_status(Unknown) {};
-    PythonPackage(const QString &name, const QString &version, const QString &location, const QString &requires) : 
-        m_name(name), m_version(version), m_location(location), m_requires(requires), m_status(Unknown), m_newVersion("") 
+    PythonPackage() : m_status(Unknown), m_detailsFetched(false) {};
+    PythonPackage(const QString &name, const QString &version) :
+        m_name(name), m_version(version), m_location(""), m_requires(""), m_status(Unknown), m_newVersion(""), m_detailsFetched(false)
     {}
     QString m_name;
     QString m_version;
@@ -47,6 +47,7 @@ struct PythonPackage
     QString m_summary;
     QString m_homepage;
     QString m_license;
+    bool m_detailsFetched;
 };
 
 struct PipGeneralOptions
@@ -63,10 +64,10 @@ struct PipGeneralOptions
 
 struct PipInstall
 {
-    enum Type 
-    { 
-        typeWhl = 0, 
-        typeTarGz = 1, 
+    enum Type
+    {
+        typeWhl = 0,
+        typeTarGz = 1,
         typeSearchIndex = 2,
         typeRequirements = 3,
         typePackageSource = 4
@@ -90,12 +91,12 @@ class PipManager : public QAbstractItemModel
         ~PipManager();
 
         enum Task {
-            taskNo, 
-            taskCheckAvailable, 
-            taskListPackages1,
-            taskListPackages2, 
-            taskCheckUpdates, 
-            taskInstall, 
+            taskNo,
+            taskCheckAvailable,
+            taskListPackages,
+            taskFetchPackagesDetails,
+            taskCheckUpdates,
+            taskInstall,
             taskUninstall,
             taskVerifyInstalledPackages
         };
@@ -104,9 +105,9 @@ class PipManager : public QAbstractItemModel
             //!< directly call pip as process (might cause encoding errors under windows)
             pipModeDirect,
 
-            //!< call pip via runPipUtf8.py module (uses a non-official interface of pip, 
+            //!< call pip via runPipUtf8.py module (uses a non-official interface of pip,
             //!< but sets the cout and cerr streams to UTF8; recommended under Windows)
-            pipModeRunPipUtf8 
+            pipModeRunPipUtf8
         };
 
         QVariant data(const QModelIndex &index, int role) const;
@@ -121,13 +122,12 @@ class PipManager : public QAbstractItemModel
         inline int getPipVersion() const { return m_pipVersion; }
 
         void checkPipAvailable(const PipGeneralOptions &options = PipGeneralOptions());
-        void listAvailablePackages(const PipGeneralOptions &options = PipGeneralOptions());
-        void listAvailablePackages2(const QStringList &names);
+        void listAvailablePackages(const PipGeneralOptions &options = PipGeneralOptions(), bool forceReloadDetails = false);
         void checkPackageUpdates(const PipGeneralOptions &options = PipGeneralOptions());
         void checkVerifyInstalledPackages(const PipGeneralOptions &options = PipGeneralOptions());
         void installPackage(const PipInstall &installSettings, const PipGeneralOptions &options = PipGeneralOptions());
         void uninstallPackage(const QString &packageName, bool runAsSudo, const PipGeneralOptions &options = PipGeneralOptions());
-        void finalizeTask(int exitCode = 0);
+
 
         void interruptPipProcess();
 
@@ -155,7 +155,24 @@ class PipManager : public QAbstractItemModel
         wchar_t *m_pUserDefinedPythonHome; //only used for standalone usage
         PipMode m_pipCallMode;
         QString m_runPipUtf8Path; //!< only valid if m_pipCallMode == pipModeRunPipUtf8
-    
+
+        int m_numberOfUnfetchedPackageDetails;
+        int m_numberOfNewlyObtainedPackageDetails;
+        bool m_fetchDetailCancelRequested;
+
+        void fetchPackageDetails(const QStringList& names, int totalNumberOfUnfetchedDetails, bool firstCall);
+        void updatePythonPackageDetails(const PythonPackage& details);
+        bool triggerFetchDetailsForOpenPackages(bool firstCall);
+
+        void finalizeTask(int exitCode = 0);
+        void finalizeTaskCheckAvailable(const QString& error, const QString& output, int exitCode);
+        void finalizeTaskListPackages(const QString& error, const QString& output);
+        void finalizeTaskFetchPackagesDetails(const QString& error, const QString& output);
+        void finalizeTaskCheckUpdates(const QString& error, const QString& output);
+        void finalizeTaskVerifyInstalledPackages(const QString& error, const QString& output);
+        void finalizeTaskInstall(const QString& error, const QString& output);
+        void finalizeTaskUninstall(const QString& error, const QString& output);
+
     private slots:
         void processError(QProcess::ProcessError error);
         void processFinished(int exitCode, QProcess::ExitStatus exitStatus);
@@ -168,6 +185,7 @@ class PipManager : public QAbstractItemModel
         void pipVersion(const QString &version);
         void pipRequestStarted(const PipManager::Task &task, const QString &text, bool outputSilent = false);
         void pipRequestFinished(const PipManager::Task &task, const QString &text, bool success);
+        void pipFetchDetailsProgress(int totalNumberOfUnfetchedDetails, int recentlyFetchedDetails, bool finished);
 };
 
 }

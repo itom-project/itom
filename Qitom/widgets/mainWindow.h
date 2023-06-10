@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -64,7 +64,7 @@ public:
 	ito::RetVal addCentralWidget(QWidget *widget);
 
     void scriptEditorOrganizerAvailable();
-    
+
 protected:
     void closeEvent(QCloseEvent *event);
     void resizeEvent(QResizeEvent * event);
@@ -89,7 +89,7 @@ private:
 
     QVBoxLayout *m_contentLayout;
 	QSplitter *m_contentSplitter;
-    
+
     BreakPointDockWidget  *m_breakPointDock;
     BookmarkDockWidget    *m_bookmarkDock;
     LastCommandDockWidget *m_lastCommandDock;
@@ -127,7 +127,7 @@ private:
     QLabel *m_pStatusLblCurrentDir;
 
     //!< label for showing the busy status of python (hidden, if python is currently not working) in the status bar
-	QLabel *m_pStatusLblPythonBusy; 
+	QLabel *m_pStatusLblPythonBusy;
 
     //!< label for showing basic information about the script, that has currently the focus, in the status bar
     QLabel *m_pStatusLblScriptInfo;
@@ -220,7 +220,7 @@ private slots:
     void menuLastFilesAboutToShow();
     void lastFileOpen(const QString &path);
     void openScript(const QString &filename);
-    
+
     void mnuViewAboutToShow();
     void mnuFigureAboutToShow();
     void raiseFigureByHandle(int handle);

@@ -10,7 +10,7 @@
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
-   
+
     In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
@@ -48,7 +48,7 @@
 #include <qscreen.h>
 
 
-namespace ito 
+namespace ito
 {
 
 class PropertyEditorWindow : public QMainWindow
@@ -68,7 +68,7 @@ private:
 };
 
 //-------------------------------------------------------------------------------------
-PropertyEditorWindow::PropertyEditorWindow(QWidget *parent /*= nullptr*/) : 
+PropertyEditorWindow::PropertyEditorWindow(QWidget *parent /*= nullptr*/) :
     QMainWindow(parent)
 {
     Qt::WindowFlags flags = windowFlags();
@@ -113,7 +113,7 @@ float PropertyEditorWindow::screenDpiFactor()
     // this is a copy of the future implementation of the screenAt method.
     QVarLengthArray<const QScreen*, 8> visitedScreens;
 
-    for (const QScreen *scr : QGuiApplication::screens()) 
+    for (const QScreen *scr : QGuiApplication::screens())
     {
         if (visitedScreens.contains(scr))
         {
@@ -121,7 +121,7 @@ float PropertyEditorWindow::screenDpiFactor()
         }
 
         // The virtual siblings include the screen itself, so iterate directly
-        for (QScreen *sibling : scr->virtualSiblings()) 
+        for (QScreen *sibling : scr->virtualSiblings())
         {
             if (sibling->geometry().contains(point))
             {
@@ -173,7 +173,7 @@ public:
 
     QDockWidget *propertyDock;
     QPropertyEditorWidget *propertyEditorWidget;
-	
+
 	QObject *propertyObservedObject;
     bool toolbarsVisible;
 	QString windowTitleSuffix; //cache of current window title suffix (e.g. Figure 102 - Suffix)
@@ -184,7 +184,7 @@ public:
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
-AbstractFigure::AbstractFigure(const QString &itomSettingsFile, WindowMode windowMode, QWidget *parent) : 
+AbstractFigure::AbstractFigure(const QString &itomSettingsFile, WindowMode windowMode, QWidget *parent) :
     QMainWindow(parent),
     AbstractNode(),
     d_ptr(new AbstractFigurePrivate()),
@@ -207,8 +207,8 @@ AbstractFigure::~AbstractFigure()
 
     if (d->propertyEditorWidget)
     {
-        //unregister object in order to prevent a possible crash, if 
-        //the object is currently being deleted and the property editor 
+        //unregister object in order to prevent a possible crash, if
+        //the object is currently being deleted and the property editor
         //tries to update its representation.
         d->propertyEditorWidget->setObject(NULL);
         d->propertyEditorWidget->deleteLater();
@@ -228,7 +228,7 @@ AbstractFigure::~AbstractFigure()
 			}
 		}
 	}
-        
+
 	if (d->windowMode == ModeInItomFigure)
 	{
         foreach(ToolboxItem t, d->toolboxes)
@@ -389,7 +389,7 @@ void AbstractFigure::addToolBar(QToolBar *toolbar, const QString &key, Qt::ToolB
         }
     }
 	//this signal is established in order to check if the toolbar war already destroyed
-	bool test = connect(toolbar, SIGNAL(destroyed(QObject*)), this, SLOT(toolBarDestroyed(QObject*))); 
+	bool test = connect(toolbar, SIGNAL(destroyed(QObject*)), this, SLOT(toolBarDestroyed(QObject*)));
 
     d->toolbars.append(item);
 
@@ -439,7 +439,7 @@ void AbstractFigure::showToolBar(const QString &key)
     Q_D(AbstractFigure);
 
     QList<AbstractFigure::ToolBarItem>::iterator i;
-    
+
     for (i = d->toolbars.begin(); i != d->toolbars.end(); ++i)
     {
         if (i->key == key)
@@ -456,7 +456,7 @@ void AbstractFigure::hideToolBar(const QString &key)
     Q_D(AbstractFigure);
 
     QList<AbstractFigure::ToolBarItem>::iterator i;
-    
+
     for (i = d->toolbars.begin(); i != d->toolbars.end(); ++i)
     {
         if (i->key == key)
@@ -469,17 +469,17 @@ void AbstractFigure::hideToolBar(const QString &key)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void AbstractFigure::setApiFunctionGraphBasePtr(void **apiFunctionGraphBasePtr)
-{ 
+{
     this->importItomApiGraph(apiFunctionGraphBasePtr);
-    m_apiFunctionsGraphBasePtr = apiFunctionGraphBasePtr; 
+    m_apiFunctionsGraphBasePtr = apiFunctionGraphBasePtr;
     ito::ITOM_API_FUNCS_GRAPH = apiFunctionGraphBasePtr;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void AbstractFigure::setApiFunctionBasePtr(void **apiFunctionBasePtr)
-{ 
+{
     this->importItomApi(apiFunctionBasePtr);
-    m_apiFunctionsBasePtr = apiFunctionBasePtr; 
+    m_apiFunctionsBasePtr = apiFunctionBasePtr;
     ito::ITOM_API_FUNCS = apiFunctionBasePtr;
 }
 
@@ -487,7 +487,7 @@ void AbstractFigure::setApiFunctionBasePtr(void **apiFunctionBasePtr)
 bool AbstractFigure::event(QEvent *e)
 {
     //the event User+123 is emitted by UiOrganizer, if the API has been prepared and can
-    //transmitted to the plugin. This assignment cannot be done directly, since 
+    //transmitted to the plugin. This assignment cannot be done directly, since
     //the array ITOM_API_FUNCS is in another scope if called from itom. By sending an
     //event from itom to the plugin, this method is called and ITOM_API_FUNCS is in the
     //right scope. The methods above only set the pointers in the "wrong"-itom-scope (which
@@ -497,7 +497,7 @@ bool AbstractFigure::event(QEvent *e)
         //importItomApi(m_apiFunctionsBasePtr);
         //importItomPlotApi(m_apiFunctionsGraphBasePtr);
         init();
-    }   
+    }
 
     return QMainWindow::event(e);
 }
@@ -508,7 +508,7 @@ void AbstractFigure::setToolbarVisible(bool visible)
     Q_D(AbstractFigure);
 
     QList<AbstractFigure::ToolBarItem>::iterator i;
-    
+
     for (i = d->toolbars.begin(); i != d->toolbars.end(); ++i)
     {
         if (i->toolbar)
@@ -522,19 +522,19 @@ void AbstractFigure::setToolbarVisible(bool visible)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-bool AbstractFigure::getToolbarVisible() const 
-{ 
+bool AbstractFigure::getToolbarVisible() const
+{
     Q_D(const AbstractFigure);
 
     return d->toolbarsVisible;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-QDockWidget* AbstractFigure::getPropertyDockWidget() const 
-{ 
+QDockWidget* AbstractFigure::getPropertyDockWidget() const
+{
     Q_D(const AbstractFigure);
 
-    return d->propertyDock; 
+    return d->propertyDock;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -564,7 +564,7 @@ void AbstractFigure::addToolbox(QDockWidget *toolbox, const QString &key, Qt::Do
     item.toolbox = toolbox;
     d->toolboxes.append(item);
 	//this signal is established in order to check if the docking widget already has been deleted while destruction of mainWindows
-	bool test = connect(toolbox, SIGNAL(destroyed(QObject*)), this, SLOT(toolBoxDestroyed(QObject*))); 
+	bool test = connect(toolbox, SIGNAL(destroyed(QObject*)), this, SLOT(toolBoxDestroyed(QObject*)));
 
     switch (d->windowMode)
     {
@@ -593,7 +593,7 @@ bool AbstractFigure::removeToolbox(const QString &key)
 	bool state = false;
 	bool found = true;
 	while (found == true)
-	{ 
+	{
 		int index = 0;
 		found = false;
 		foreach (ToolboxItem item, d->toolboxes)
@@ -603,7 +603,7 @@ bool AbstractFigure::removeToolbox(const QString &key)
 				continue;
 			}
 			if (item.key == key)
-			{ 
+			{
 				if (item.toolbox->isVisible())
 				{
 					item.toolbox->hide();
@@ -625,14 +625,14 @@ bool AbstractFigure::removeToolbox(const QString &key)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void AbstractFigure::mnuShowProperties(bool checked) 
-{ 
+void AbstractFigure::mnuShowProperties(bool checked)
+{
     Q_D(AbstractFigure);
 
-    if (d->propertyDock) 
-    { 
+    if (d->propertyDock)
+    {
         d->propertyDock->setVisible(checked);
-    } 
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -688,7 +688,7 @@ RetVal AbstractFigure::registerShortcutActions()
     foreach(QObject *o, children())
     {
         a = qobject_cast<QAction*>(o);
-        
+
         if (a && d->shortcutActions.contains(a))
         {
             d->shortcutActions[a]->deleteLater(); //delete a previous shortcut

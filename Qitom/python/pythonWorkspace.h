@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -70,8 +70,8 @@ public:
     ~PyWorkspaceItem();
     PyWorkspaceItem(const PyWorkspaceItem &other);
 
-    enum ChildState 
-    { 
+    enum ChildState
+    {
         stateNoChilds = 0x00, /*!< this variable has no children (no list items, no attributes, no dict items). Therefore no expand indicators are displayed in the tree view. */
         stateChilds = 0x01    /*!< this variable can have children. An expand indicator is shown in the tree view. */
     };

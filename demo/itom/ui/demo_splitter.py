@@ -6,7 +6,7 @@ This demo shows how to manipulate a splitter, set as layout in QtDesigner.
 .. hint::
 
     This demo uses specially wrapped methods of QSplitter. For more information see
-    section ``Calling slots`` in https://itom.bitbucket.io/latest/docs/06_extended_gui/qtdesigner.html)
+    section ``Calling slots`` in https://itom-project.github.io/latest/docs/06_extended_gui/qtdesigner.html)
     These methods are indiciated by #-> special method call
 """
 from itomUi import (

@@ -39,10 +39,10 @@ def _pseudo_parse_arglist(signode, filtername, arglist):
     paramlist = addnodes.desc_parameterlist()
     strname = "\"%s\"" % filtername
     paramlist += addnodes.desc_name(strname, strname)
-    
+
     if (not arglist is None and len(arglist) > 0):
         paramlist += addnodes.desc_annotation(",", ",")
-    
+
     stack = [paramlist]
     try:
         for argument in arglist.split(','):
@@ -108,7 +108,7 @@ class PyItomObject(ObjectDescription):
         #Field('returntype', label=l_('Return type'), has_arg=False,
               #names=('rtype',)),
     #]
-    
+
     doc_field_types = [
         TypedField('paramsmand', label=_('Mandatory parameters'),
                    names=('parammand', 'param'),
@@ -173,7 +173,7 @@ class PyItomObject(ObjectDescription):
         #signode += addnodes.desc_addname(name_prefix, name_prefix)
 
         anno = self.options.get('annotation')
-        
+
         name2 = "\"%s\"" % name
         #signode += addnodes.desc_name(name2, name2)
         #if not arglist:
@@ -262,11 +262,11 @@ class PyItomXRefRole(XRefRole):
         if target[0:1] == '.':
             target = target[1:]
             refnode['refspecific'] = True
-        
+
         # skip parens
         if title[-2:] == '()':
             title = title[:-2]
-            
+
         return title, target
 
 
@@ -342,7 +342,7 @@ class PyItomDomain(Domain):
                 '%r: %s' % (target, ', '.join(match[0] for match in matches)),
                 node)
         name, obj = matches[0]
-        
+
         return make_refnode(builder, fromdocname, obj[0], name,
                                 contnode, name)
 

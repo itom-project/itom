@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -49,7 +49,7 @@ class PythonEngine;
          signalled by this class. This only holds for this transition. All other
          python state transitions are immediately reported to all connected
          classes.
-    
+
     If the PythonEngine emits the signal pythonStateChanged with immediate = true,
     this transition is directly reported (e.g. necessary for commands, executed
     in the command line).
@@ -75,7 +75,7 @@ private:
     };
 
     DelayedTransition m_delayedTrans;
-    int m_delayMs; //!< delay time of non-immediate state changes in ms 
+    int m_delayMs; //!< delay time of non-immediate state changes in ms
 
 private Q_SLOTS:
     void onPythonStateChanged(tPythonTransitions pyTransition, bool immediate);
@@ -87,4 +87,3 @@ Q_SIGNALS:
 };
 
 } //end namespace ito
-

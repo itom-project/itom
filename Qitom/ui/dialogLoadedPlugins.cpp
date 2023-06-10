@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -60,7 +60,7 @@ DialogLoadedPlugins::DialogLoadedPlugins(QWidget *parent) :
 
     ui.tree->setSortingEnabled(true);
     ui.tree->sortByColumn(5, Qt::AscendingOrder);
-    
+
     ui.tree->collapseAll();
 }
 
@@ -116,7 +116,7 @@ void DialogLoadedPlugins::init()
         plugin->setData(5, Qt::DisplayRole, info.fileName());
         plugin->setData(5, Qt::ToolTipRole, info.absoluteFilePath());
         plugin->setData(0, Qt::DecorationRole, m_fileIconProvider->icon(info));
-        
+
         plugin->setBackground(0, m_pluginBackgroundColor);
         plugin->setBackground(1, m_pluginBackgroundColor);
         plugin->setBackground(2, m_pluginBackgroundColor);
@@ -130,7 +130,7 @@ void DialogLoadedPlugins::init()
         for (int i = 0; i < item.messages.size(); i++)
         {
             message = &(item.messages[i]);
-            
+
             overallStatus |= message->first;
 
             child = new QTreeWidgetItem(plugin);
@@ -211,8 +211,8 @@ void DialogLoadedPlugins::setPluginBackgroundColor(const QColor &color)
 //----------------------------------------------------------------------------------------------------------------------------------
 void DialogLoadedPlugins::setSortChar(int column, QTreeWidgetItem &item)
 {
-    // This is a little workaround to use the standard sort functions 
-    // of QTreeWidget. The sort-function normally does not sort icons. 
+    // This is a little workaround to use the standard sort functions
+    // of QTreeWidget. The sort-function normally does not sort icons.
     // By adding a space character to all columns without an icon
     // the column with an icon is above the ones with spaces.
     QChar sortElement = ' ';
@@ -270,11 +270,11 @@ void DialogLoadedPlugins::filter()
         int first = m_items[i].first;
 
         // check if button is active for this type of message
-        bool show = (first & flag) != 0; 
+        bool show = (first & flag) != 0;
         // Isn't compability checkbox set OR if reldgb flag is set it's incompatibel, if 0 it's compatible
         show &= (!ui.onlyCompatibleCheck->checkState() || (first & ito::plsfRelDbg) == 0);
         // has no child OR filter text is empty OR filter text matches node text
-        show &= ((m_items[i].second->childCount() == 0) || ui.filterEdit->text() == "" || rx.match(m_items[i].second->text(5)).hasMatch()); 
+        show &= ((m_items[i].second->childCount() == 0) || ui.filterEdit->text() == "" || rx.match(m_items[i].second->text(5)).hasMatch());
 
         m_items[i].second->setHidden(!show);
     }

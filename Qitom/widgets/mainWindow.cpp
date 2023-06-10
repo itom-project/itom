@@ -744,9 +744,9 @@ void MainWindow::addAbstractDock(
                     if (docked)
                     {
                         connect(
-                            sdw, 
-                            &ScriptDockWidget::statusBarInformationChanged, 
-                            this, 
+                            sdw,
+                            &ScriptDockWidget::statusBarInformationChanged,
+                            this,
                             &MainWindow::scriptStatusBarInformationChanged
                         );
                     }
@@ -757,7 +757,7 @@ void MainWindow::addAbstractDock(
                 }
             );
 
-            
+
         }
 
         if (area == Qt::NoDockWidgetArea)
@@ -822,7 +822,7 @@ void MainWindow::scriptStatusBarInformationChanged(
     if (m_pStatusLblScriptInfo)
     {
         QObject* widget = QApplication::focusWidget();
-        ScriptDockWidget *focussedDockWidget = nullptr;  
+        ScriptDockWidget *focussedDockWidget = nullptr;
 
         while (widget)
         {
@@ -1672,6 +1672,7 @@ void MainWindow::showAssistant(
         {
             m_helpViewer = QPointer<HelpViewer>(new HelpViewer(NULL));
             // m_helpViewer->setAttribute(Qt::WA_DeleteOnClose, true);
+            // reopening help leads to empty help site
         }
         m_helpViewer->setCollectionFile(collectionFile_);
         if (!showUrl.isEmpty())
@@ -1713,11 +1714,7 @@ void MainWindow::showAssistant(
 
                 process->start(app, args);
 
-                connect(
-                    process,
-                    SIGNAL(error(QProcess::ProcessError)),
-                    this,
-                    SLOT(helpAssistantError(QProcess::ProcessError)));
+                connect(process, &QProcess::errorOccurred, this, &MainWindow::helpAssistantError);
             }
         }
         else
@@ -2662,11 +2659,7 @@ void MainWindow::mnuShowDesigner()
 
             process->setProcessEnvironment(env);
 
-            connect(
-                process,
-                SIGNAL(error(QProcess::ProcessError)),
-                this,
-                SLOT(designerError(QProcess::ProcessError)));
+            connect(process, &QProcess::errorOccurred, this, &MainWindow::designerError);
 
             po->clearStandardOutputBuffer(appName);
 

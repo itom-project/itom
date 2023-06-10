@@ -6,23 +6,23 @@ def lineFit3D(pointArray):
     Calculates the best fit line into a given set of points (3D).
     This line would minimize the squared distance between the real
     point and its projection.
-    
+
     This method uses for this the principal component analysis.
-    One way to define it is the line whose direction vector is the eigenvector of 
-    the covariance matrix corresponding to the largest eigenvalue, that passes 
-    through the mean of your data. That said, eig(cov(data)) is a really bad way to 
-    calculate it, since it does a lot of needless computation and copying and is 
+    One way to define it is the line whose direction vector is the eigenvector of
+    the covariance matrix corresponding to the largest eigenvalue, that passes
+    through the mean of your data. That said, eig(cov(data)) is a really bad way to
+    calculate it, since it does a lot of needless computation and copying and is
     potentially less accurate than using svd.
-    
+
     Input
     -----
     - 3xN pointArray (numpy array)
-    
+
     Output
     ------
     - centre of gravity (mean value) of the point cloud [3x1]
     - fitted unit vector [3x1]
-    
+
     http://stackoverflow.com/questions/2298390/fitting-a-line-in-3d
     """
 

@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -33,13 +33,13 @@
 
 namespace ito {
 
-class DialogSelectUser : public QDialog 
+class DialogSelectUser : public QDialog
 {
     Q_OBJECT
 
 public:
     DialogSelectUser(UserModel *model, QWidget *parent = NULL);
-    ~DialogSelectUser();    
+    ~DialogSelectUser();
 
     bool selectUser(const QString &id);
     QModelIndex selectedIndex() const { return ui.userList->currentIndex(); }

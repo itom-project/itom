@@ -10,7 +10,7 @@
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
-   
+
     In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
@@ -106,38 +106,38 @@ namespace ito
             \return retOk if copy operation was successfull, else retWarning or retError
             \sa getVal, timerEvent
         */
-        virtual ito::RetVal retrieveData(ito::DataObject *externalDataObject = NULL) = 0; 
+        virtual ito::RetVal retrieveData(ito::DataObject *externalDataObject = NULL) = 0;
 
         virtual ito::RetVal sendDataToListeners(int waitMS) = 0; /*!< sends m_data to all registered listeners. */
 
         inline int grabberStartedCount() { return m_started; }  /*!< returns the number of started devices \see m_started */
-        
+
         /*!< increments the number of started devices \see m_started */
-        inline void incGrabberStarted() 
-        { 
-            m_started++; 
+        inline void incGrabberStarted()
+        {
+            m_started++;
             if(m_started == 1)
             {
                 runStatusChanged(true); //now, the device is started -> check if any listener is connected and if so start the auto grabbing timer (if flag is true, too)
             }
-        }  
+        }
 
         /*!< decrements the number of started devices \see m_started */
-        inline void decGrabberStarted() 
-        { 
-            m_started--; 
+        inline void decGrabberStarted()
+        {
+            m_started--;
             if(m_started == 0)
             {
                 runStatusChanged(false); //now, the device is stopped -> stop any possibly started auto grabbing listener
             }
-        } 
+        }
 
         /*!< sets the number of started devices to a given value \see m_started */
-        inline void setGrabberStarted(int value) 
-        { 
-            m_started = value; 
+        inline void setGrabberStarted(int value)
+        {
+            m_started = value;
             runStatusChanged( value > 0 );
-        }  
+        }
 
     public:
         static void integerPixelFormatStringToMinMaxValue(

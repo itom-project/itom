@@ -9,7 +9,7 @@ itom plugins are dynamically linked libraries (Windows: DLL files, Linux: SO fil
 mechanism (see :ref:`the plugin programming section <plugins-dev>` of this documentation for more information).
 
 At startup of |itom|, the subdirectory **plugins** of the |itom| root directory is recursively scanned for all
-available library files. Usually the folder structure of the **plugins** directory is like the following example 
+available library files. Usually the folder structure of the **plugins** directory is like the following example
 (Windows):
 
 .. figure:: images/folderStructure.png
@@ -34,19 +34,19 @@ with a version number, following the scheme of semantic versioning (semver.org).
 if at least one of the commonly used libraries are changed in a binary-incompatible way. If methods are
 added to one of these libraries, the minor version number of the add-in interface has to be incremented...
 
-At the startup of |itom|, the application recursively scans the **plugins** folder and looks for any *DLL*-file on 
-Windows machines or *so*-file on a Linux operating system. Then each DLL is tried to be loaded using the plugin 
+At the startup of |itom|, the application recursively scans the **plugins** folder and looks for any *DLL*-file on
+Windows machines or *so*-file on a Linux operating system. Then each DLL is tried to be loaded using the plugin
 system provided by the |Qt|-framework. The *DLL* can successfully be loaded if the following prerequisites are fulfilled:
 
 * The plugin is a release version if |itom| is started in release mode OR
 * The plugin is a debug version (this can for example be seen if the DLL-name ends with *...d.dll*) if |itom| is started in debug mode
-* The plugin is compiled using the same major and minor version of |Qt| than |itom| 
+* The plugin is compiled using the same major and minor version of |Qt| than |itom|
   (it is possible to load a plugin compiled with |Qt| 5.9.6 with |itom| compiled with 5.9.3)
 * The plugin is compiled with the same compiler and the same bitness level (x86/x64) than |itom| (e.g. MSVC 2015, x64)
-* If the plugin is dependent on other shared libraries which are not linked using a delay-load mechanism, the plugin 
-  can only be loaded if every necessary shared library can be found and successfully be loaded. If the dependency 
+* If the plugin is dependent on other shared libraries which are not linked using a delay-load mechanism, the plugin
+  can only be loaded if every necessary shared library can be found and successfully be loaded. If the dependency
   could not be loaded, the plugin-load fails with an error message *module could not be loaded*.
-* The remarks contained in the plugin with respect to a minimum and maximum version number of |itom| must correspond 
+* The remarks contained in the plugin with respect to a minimum and maximum version number of |itom| must correspond
   to the version number of your |itom|
 * The add-in interface number, that was used to compile a plugin, has to be compatible to the current add-in interface
   number of |itom|. The compatibility is given if the major part of the version number is equal and if the minor
@@ -55,7 +55,7 @@ system provided by the |Qt|-framework. The *DLL* can successfully be loaded if t
 Finally, every successfully loaded plugin is included in the :ref:`plugins toolbox <gui-plugins>` of |itom|.
 
 .. note::
-    
+
     The version number of the add-in interface has nothing to do with the version number of |itom|. This
     add-in interface version number is contained in the file **common/addInInterfaceVersion.h** and can also
     be seen in the property dialog of any plugin library (under Windows).
@@ -78,7 +78,7 @@ Here is a list of common error messages in this dialog:
 2. **AddIn '...' fits to the obsolete interface 3.3.2. The AddIn interface of this version of 'itom' is 4.0.0.**: This
    indicates that the plugin is compiled with an older version of the itom SDK. Please re-compile the plugin with the
    current version of the SDK.
-3. **AddIn '...' fits to a new addIn-interface, which is not supported by this version of itom. 
+3. **AddIn '...' fits to a new addIn-interface, which is not supported by this version of itom.
    The AddIn interface of this version of 'itom' is 4.0.0.**: The plugin is likely to be compiled with a newer version
    of the itom SDK than used by this version of |itom|.
 4. **The plugin '...' uses an incompatible Qt library**: The plugin has been compiled with an incompatible version of
@@ -88,8 +88,7 @@ Here is a list of common error messages in this dialog:
 6. **AddIn '...' does not fit to the general interface AddInInterfaceBase**: This library seems to be a Qt library,
    but does not implement the required interface of |itom| plugins (*ito.AddIn.InterfaceBase/major-version-number*).
 
-Please consider, that the loaded plugins dialog also displays the load status of additional designer plugins 
+Please consider, that the loaded plugins dialog also displays the load status of additional designer plugins
 (located in the subfolder *designer* of |itom|). These designer plugins contain plots or additional widgets, that
 can be included in user defined GUIs of |itom|. They follow another interface system. For more information see
 :ref:`PlotsAndFigures` or :ref:`listCustomDesignerWidgets`.
-

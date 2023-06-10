@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -23,15 +23,15 @@
     ------------------------
 
     This file belongs to the code editor of itom. The code editor is
-    in major parts a fork / rewritten version of the python-based source 
-    code editor PyQode from Colin Duquesnoy and others 
-    (see https://github.com/pyQode). PyQode itself is licensed under 
+    in major parts a fork / rewritten version of the python-based source
+    code editor PyQode from Colin Duquesnoy and others
+    (see https://github.com/pyQode). PyQode itself is licensed under
     the MIT License (MIT).
 
     Some parts of the code editor of itom are also inspired by the
     source code editor of the Spyder IDE (https://github.com/spyder-ide),
     also licensed under the MIT License and developed by the Spyder Project
-    Contributors. 
+    Contributors.
 
 *********************************************************************** */
 
@@ -74,7 +74,7 @@ void SubsequenceSortFilterProxyModel::setPrefix(const QString &prefix)
     m_sortPatterns.clear();
 
     QString ptrn;
-    
+
     for (int i = prefix.size(); i >= 1; --i)
     {
         ptrn = CompatHelper::regExpAnchoredPattern(QString(".*%1.*%2").arg(prefix.left(i), prefix.mid(i)));
@@ -87,7 +87,7 @@ void SubsequenceSortFilterProxyModel::setPrefix(const QString &prefix)
         }
 
         m_filterPatterns.append(regExp);
-        
+
         ptrn = QString("%1.*%1").arg(prefix.left(i), prefix.mid(i));
         regExp.setPattern(ptrn);
 
@@ -100,7 +100,7 @@ void SubsequenceSortFilterProxyModel::setPrefix(const QString &prefix)
             regExp.setPatternOptions(QRegularExpression::CaseInsensitiveOption);
         }
 
-        m_sortPatterns.append(regExp);       
+        m_sortPatterns.append(regExp);
     }
     m_prefix = prefix;
 }
@@ -171,7 +171,7 @@ bool SubsequenceSortFilterProxyModel::filterAcceptsRow(int source_row, const QMo
 //--------------------------------------------------------------------
 /*
 */
-SubsequenceCompleter::SubsequenceCompleter(QObject *parent /*= NULL*/) : 
+SubsequenceCompleter::SubsequenceCompleter(QObject *parent /*= NULL*/) :
     QCompleter(parent),
     m_pFilterProxyModel(NULL)
 {
@@ -268,7 +268,7 @@ void CodeCompletionMode::createCompleter()
     if (m_filterMode != FilterFuzzy)
     {
         m_pCompleter = new QCompleter(QStringList() << "", editor());
-        
+
         if (m_filterMode == FilterContains)
         {
             m_pCompleter->setFilterMode(Qt::MatchContains);
@@ -408,7 +408,7 @@ void CodeCompletionMode::onKeyReleased(QKeyEvent *e)
         QTextCursor cursor = editor()->wordUnderCursor(true);
         QString word = cursor.selectedText();
         QTextCursor current_cursor = editor()->textCursor();
-        
+
         //debug('word: %s' % word)
         if (e->text() != "" && !editor()->isCommentOrString(current_cursor) && !editor()->isNumber(current_cursor))
         {
@@ -682,7 +682,7 @@ bool CodeCompletionMode::requestCompletion()
             QString filename;
 
             ScriptEditorWidget *sew = qobject_cast<ScriptEditorWidget*>(editor());
-            
+
             if (sew)
             {
                 filename = sew->getFilename();
@@ -692,7 +692,7 @@ bool CodeCompletionMode::requestCompletion()
             {
                 filename = QDir::cleanPath(QDir::current().absoluteFilePath("__temporaryfile__.py"));
             }
-            
+
             if (pyEng->tryToLoadJediIfNotYetDone())
             {
                 // line and col might be changed if code is a virtual code (e.g. for command line, containing all its history)
@@ -792,7 +792,7 @@ QRect CodeCompletionMode::getPopupRect() const
 #else
     int char_width = editor()->fontMetrics().width('A');
 #endif
-    
+
     int prefix_len = (m_completionPrefix.size() * char_width);
     cursor_rec.translate(
         editor()->panels()->marginSize() - prefix_len,
@@ -945,7 +945,7 @@ QStandardItemModel* CodeCompletionMode::updateModel(const QVector<JediCompletion
                 }
             }
         }
-        
+
         if (tooltips.size() == 0 && completion.m_description != "")
         {
             tooltips.append(parseTooltipDocstring(completion.m_description));
@@ -969,7 +969,7 @@ QStandardItemModel* CodeCompletionMode::updateModel(const QVector<JediCompletion
     {
         createCompleter();
     }
-    
+
     m_pCompleter->setModel(cc_model);
 
     return cc_model;
@@ -994,7 +994,7 @@ void CodeCompletionMode::displayCompletionTooltip(const QString &completion) con
 
     auto tooltips = m_tooltips[completion];
 
-    /* tasks: convert tooltip to html, check for the first 
+    /* tasks: convert tooltip to html, check for the first
     section with the definitions and wrap after maximum line length.
     Make a <hr> after the first section
     */
@@ -1003,7 +1003,7 @@ void CodeCompletionMode::displayCompletionTooltip(const QString &completion) con
     foreach(const auto &tip, tooltips)
     {
         // the signature is represented as <code> monospace section.
-        // this requires much more space than ordinary letters. 
+        // this requires much more space than ordinary letters.
         // Therefore reduce the maximum line length to 88/2.
         styledTooltips << Utils::parseStyledTooltipsFromSignature(
             tip.first,

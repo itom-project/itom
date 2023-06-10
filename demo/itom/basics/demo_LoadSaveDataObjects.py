@@ -41,9 +41,9 @@ algorithms.loadAnyImage(reload_tiff_rgba, "pic_rgba.tiff", "asIs")
 
 ###############################################################################
 # Save the ``dataObject`` as a *.tiff file with a rgb color palette,
-# which causes that the transparency of the bars will be ignored. 
+# which causes that the transparency of the bars will be ignored.
 # If ``gray`` or ``gray16`` is choosen as color palette the colored
-# ``dataObject`` will be converted to a gray image 
+# ``dataObject`` will be converted to a gray image
 algorithms.saveTiff(rgba32, "pic_rgb.tiff", "rgb")
 
 ###############################################################################
@@ -58,7 +58,7 @@ algorithms.loadAnyImage(reload_tiff_rgb, "pic_rgb.tiff", "asIs")
 algorithms.savePNG(rgba32, "pic_gray.png", "gray")
 
 ###############################################################################
-# Reload the picture as it was, that is of type ``gray`` (type ``uint8``) 
+# Reload the picture as it was, that is of type ``gray`` (type ``uint8``)
 reload_png_gray = dataObject()
 algorithms.loadAnyImage(reload_png_gray, "pic_gray.png", "asIs")
 
@@ -69,7 +69,7 @@ algorithms.savePGM(rgba32, "pic_gray.pgm", "gray16")
 
 ###############################################################################
 # Load the *.pgm file as it was, that is of type ``gray``
-# (type ``uint16`` due to the 16bit gray color palette) 
+# (type ``uint16`` due to the 16bit gray color palette)
 reload_pgm_gray16 = dataObject()
 algorithms.loadAnyImage(reload_pgm_gray16, "pic_gray.pgm", "asIs")
 

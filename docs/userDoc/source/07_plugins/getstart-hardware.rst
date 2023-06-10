@@ -16,8 +16,8 @@ In this section you will learn how to create one instance of any hardware plugin
 
 Hardware plugins are mainly divided into the following main categories:
 
-* :py:class:`itom.dataIO` contains all plugins that are related with any data input/output operation. Short, these are mainly 
-    
+* :py:class:`itom.dataIO` contains all plugins that are related with any data input/output operation. Short, these are mainly
+
     * cameras and framegrabbers (organized in the subcategory **Grabber**),
     * AD or DA converters (subcategory **ADDA**) or
     * further input / output devices (subcategory **Raw IO**) like the serial port plugin
@@ -34,21 +34,21 @@ Many steps below can be done via |python| scripting, or by GUI interaction.
 
 
 .. note::
-    
+
     This tutorial is similar to the corresponding sections of the :ref:`getting started tutorial <gettingStarted>`, but describes the use of hardware plugins (:py:class:`~itom.actuator` and :py:class:`~itom.dataIO`) in more detail.
 
 
 Getting informations on plugins
 ========================================
 In order to start a new instance of any hardware plugin using the python scripting language, search the plugin toolbox for the desired plugin and remember its plugin-name (case insensitive).
-Before we can start using a hardware plugin, we need to know how to use it. 
+Before we can start using a hardware plugin, we need to know how to use it.
 You can use the :py:func:`itom.pluginHelp` command in |python| to get the neccessary information:
 
 .. code-block:: python
     :linenos:
-    
+
     pluginHelp("[your plugin name]") # e.g. "dummyGrabber"
-    
+
 Or you can use the GUI. Therefore, select **Info...** from the context menu of your plugin in order to show the help page about the plugin:
 
 .. figure:: ./images/dummyGrabberHelp.png
@@ -56,18 +56,18 @@ Or you can use the GUI. Therefore, select **Info...** from the context menu of y
     :scale: 100%
 
 .. note::
-    
+
     If you don't see the help page, go to the properties dialog of |itom| (menu **File >> Properties**) and select the checkbox **Show DataIO and Actuator** in the tab **General >> Help Viewer**.
 
 Here, most important for us is to learn about the init paramaters, especially the mandatory ones.
-A more detailed description of the plugin may be found in the plugin documentation. 
+A more detailed description of the plugin may be found in the plugin documentation.
 The fastest way to obtain the command used for initialisation is to drag the plugin into the command line or into the script editor.
 
 Once you got an instance of your plugin running, you can get an even more detailed class description including all member functions via |python|:
 
 .. code-block:: python
     :linenos:
-    
+
     mygrabber = ("dummyGrabber")
     help(mygrabber)
 
@@ -77,15 +77,15 @@ Once you got an instance of your plugin running, you can get an even more detail
 Initializing hardware plugins
 ========================================
 
-Instances of :py:class:`~itom.dataIO` or :py:class:`~itom.actuator` can be initialized either by calling the constructor in |python| or through GUI interaction. You may have multiple instances of the same plugin running. 
+Instances of :py:class:`~itom.dataIO` or :py:class:`~itom.actuator` can be initialized either by calling the constructor in |python| or through GUI interaction. You may have multiple instances of the same plugin running.
 
 .. note::
-    
-    If you want to access an instance in |python|, you have to assign a handle. This can be done later, too. 
+
+    If you want to access an instance in |python|, you have to assign a handle. This can be done later, too.
 
 .. note::
-    
-    Most plugins can be initialized with paramaters, some of them may be mandatory (just place one value after the other one separated by commas). 
+
+    Most plugins can be initialized with paramaters, some of them may be mandatory (just place one value after the other one separated by commas).
     Optional parameter follow after the mandatory ones. Parameters can be assigned in designated order or using keyword notation.
 
 The pythonic way
@@ -93,15 +93,15 @@ The pythonic way
 
 .. code-block:: python
     :linenos:
-    
+
     firstgrabber = dataIO("dummyGrabber", bpp = 8)   # open first instance of plugin, bpp is assigned using keyword notation
     secondgrabber = dataIO("dummyGrabber", 100, 1, 16)  # open second instance of same plugin using all mandatory parameters in designated order
 
 
-    
+
 The GUI way
--------------------------------------  
- 
+-------------------------------------
+
 First, select **New Instance** from the context menu of your plugin.
 
 .. figure:: ./images/openDummyGrabber.png
@@ -120,13 +120,13 @@ This window also gains access to the mandatory and optional parameters. Detailed
     :align: center
     :scale: 100%
 
-If you first initialised your plugin without assigning a |python| handle, but decide to do so later, select *Send to Python* from the context menu and choose the variable name. 
-    
+If you first initialised your plugin without assigning a |python| handle, but decide to do so later, select *Send to Python* from the context menu and choose the variable name.
+
 .. figure:: ./images/sendtopython.png
     :align: center
     :scale: 100%
 
-    
+
 Deleting a plugin instance
 -------------------------------------
 
@@ -141,16 +141,16 @@ In order to close/delete an instance of a plugin you need to delete all variable
 
 .. code-block:: python
     :linenos:
-    
+
     del serial
-    
+
 Additionally, if the instance has been created by the GUI, you need to call the **Close Instance** option from the context menu of the instance entry in the plugins toolbox.
 
 .. note::
-    
+
     Since |python| has a garbage collection mechanism it is not assured that any object is immediately deleted once you delete the corresponding variable(s) in the |python| workspace. It is
     really done if the garbage collection process is started which happens in periodical steps. You can force it using the method :py:func:`gc.collect` from the builtin module :py:mod:`gc`.
-    
+
 
 Configuration dialog and dock widget
 ========================================
@@ -172,7 +172,7 @@ Most plugins should provide configuration dialogs. The modal dialogs give access
 Usage of hardware plugins
 ========================================
 
-As a major advantage of the plugin concept, different actual devices can be interchanged easily. The class :py:class:`~itom.dataIO` can be of type **rawIO**, **grabber** and **adda**. 
+As a major advantage of the plugin concept, different actual devices can be interchanged easily. The class :py:class:`~itom.dataIO` can be of type **rawIO**, **grabber** and **adda**.
 You can get the type of the plugin by the command **getType()**, which returns the c++ enumeration value. If different types are true at the same time, their enum vaule is linked via bitwise and:
 
     +----------------+---------------------+---------------+----------------+
@@ -191,31 +191,31 @@ You can get the type of the plugin by the command **getType()**, which returns t
     |rawIO           |513 = (512+1)        |0x200 + 0x1    |also dataIO     |
     +----------------+---------------------+---------------+----------------+
 
-:py:class:`~itom.actuator` is the class to use actuator plugins. Each provides a destinctive set of member functions and parameters, which are described in the respective sections below. 
+:py:class:`~itom.actuator` is the class to use actuator plugins. Each provides a destinctive set of member functions and parameters, which are described in the respective sections below.
 Special hardware funtionality that is not easily mapped to these member functions and parameters, may be called by the **exec()** member functions.
 
 While you get a detailed class description using the **help()** command (see above), the functions **getParamList()** and **getParamListInfo()** give access to a detailed description of the plugin's parameters.
 
 .. code-block:: python
     :linenos:
-    
-    mygrabber = dataIO("dummyGrabber") 
+
+    mygrabber = dataIO("dummyGrabber")
     mygrabber.getParamListInfo()
 
 Once you know the name of the desired parameter, the function **getParam()** tells you the actual state and **setParam()** changes it.
 
 .. code-block:: python
     :linenos:
-    
+
     mygrabber = dataIO("dummyGrabber")
     mygrabber.setParam('integration_time', 0.1)
     mygrabber.getParam('integration_time')
-    
+
 For more information about possible additional functions, call the member method :py:meth:`~itom.dataIO.getExecFuncsInfo` or :py:meth:`~itom.actuator.getExecFuncsInfo` and optionally pass
 the name or a part of the name of an **exec**-function. These functions are then called based on mandatory and optional parameters using the methods :py:meth:`~itom.dataIO.exec` or :py:meth:`~itom.actuator.exec`.
 
 The most important functions and parameters of :py:class:`~itom.dataIO` grabber, adda and :py:class:`~itom.actuator` are described in the sections below:
-    
+
 * :ref:`getStartGrabber`
 * :ref:`getStartADDA`
 * :ref:`getStartActuator`

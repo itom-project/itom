@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -59,7 +59,7 @@ QT_BEGIN_NAMESPACE
 
 QT_END_NAMESPACE
 
-  
+
 
 namespace ito
 {
@@ -171,7 +171,7 @@ protected:
 
 private:
     enum markerType
-    {   
+    {
         markerBookmark = 1,
         markerPyBug = 2,
         markerBookmarkAndPyBug = markerBookmark | markerPyBug
@@ -179,7 +179,7 @@ private:
 
     RetVal initEditor();
     void initMenus();
-    
+
     bool lineAcceptsBPs(int line);
 
     RetVal changeFilename(const QString &newFilename);
@@ -210,16 +210,21 @@ private:
     bool m_pythonBusy; //!< true: python is executing or debugging a script, a command...
     bool m_pythonExecutable;
 
-    //!< to accept drop events of other files dropped onto this file, the script 
+    //!< to accept drop events of other files dropped onto this file, the script
     //!< must not be readonly. Therefore a readonly script will be temporary set in a read/write mode
-    bool m_wasReadonly; 
+    bool m_wasReadonly;
     bool m_canCopy;
     bool m_keepIndentationOnPaste;
     int m_textBlockLineIdxAboutToBeDeleted; //!< if != -1, a TextBlockUserData in the line index is about to be removed.
     BookmarkModel *m_pBookmarkModel; //! borrowed reference to the bookmark model. The owner of this model is the ScriptEditorOrganizer.
 
     QSharedPointer<PyCodeFormatter> m_pyCodeFormatter;
-    QString m_autoCodeFormatCmd; //!< the current command string for the python auto code formatting.
+
+    //!< the current command string for the python auto code formatting.
+    QString m_autoCodeFormatCmd;
+
+    //!< the current command string for the python imports sorting (or empty, if this pre-step is not enabled)
+    QString m_autoCodeFormatPreCmd;
 
     //!< this is the encoding of this script, hence,
     //!< the encoding that was used to load this script from
@@ -307,9 +312,9 @@ public slots:
 
 private slots:
     void toggleBookmarkRequested(int line);
-    void onBookmarkAdded(const BookmarkItem &item);  
+    void onBookmarkAdded(const BookmarkItem &item);
     void onBookmarkDeleted(const BookmarkItem &item);
-    
+
     RetVal toggleBreakpoint(int line);
     RetVal toggleEnableBreakpoint(int line);
     RetVal editBreakpoint(int line);

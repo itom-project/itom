@@ -1,9 +1,9 @@
 .. include:: /include/global.inc
-   
+
 |logo| itom documentation for version |version|
 ##################################################
 
-.. |logo| image:: itomLogo3_64.png  
+.. |logo| image:: itomLogo3_64.png
 
 .. toctree::
     :numbered:
@@ -28,4 +28,4 @@
 Indices and tables
 ###################
 
-* :ref:`genindex` 
+* :ref:`genindex`

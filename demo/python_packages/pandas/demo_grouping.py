@@ -9,7 +9,7 @@ import numpy as np
 
 ###############################################################################
 # **Concat**
-# 
+#
 # Create a dataFrame
 dataFrame = pd.DataFrame(np.random.randn(10, 4))
 

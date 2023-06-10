@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -44,7 +44,7 @@ QList<QTreeWidgetItem*> AbstractFilterDialog::renderAutoMandAndOutResult() const
     {
         if(p.getFlags() & ito::ParamBase::Out)
         {
-            items << renderParam(p); 
+            items << renderParam(p);
         }
     }
 
@@ -52,7 +52,7 @@ QList<QTreeWidgetItem*> AbstractFilterDialog::renderAutoMandAndOutResult() const
     {
         if(p.getFlags() & ito::ParamBase::Out)
         {
-            items << renderParam(p); 
+            items << renderParam(p);
         }
     }
 
@@ -134,7 +134,7 @@ QTreeWidgetItem* AbstractFilterDialog::renderParam( const ito::ParamBase &p ) co
 
     case ito::ParamBase::DObjPtr:
         {
-            
+
             static const char* types[] = { "Int8", "UInt8", "Int16", "UInt16", "Int32", "UInt32", "Float32", "Float64", "Complex64", "Complex128", "Rgba32" };
 
             root->setData(0, Qt::DisplayRole, "DataObject");
@@ -176,7 +176,7 @@ QTreeWidgetItem* AbstractFilterDialog::renderParam( const ito::ParamBase &p ) co
                 root->setData(1, Qt::DisplayRole, "<NULL>");
             }
 
-            
+
         }
         break;
 
@@ -217,7 +217,7 @@ QTreeWidgetItem* AbstractFilterDialog::renderParam( const ito::ParamBase &p ) co
     return root;
 }
 
-    
+
 
 
 } //end namespace ito

@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -34,9 +34,9 @@
 namespace ito
 {
 
-QDataStream &operator<<(QDataStream &out, const ito::ScriptEditorStorage &obj); 
+QDataStream &operator<<(QDataStream &out, const ito::ScriptEditorStorage &obj);
 
-QDataStream &operator>>(QDataStream &in, ito::ScriptEditorStorage &obj); 
+QDataStream &operator>>(QDataStream &in, ito::ScriptEditorStorage &obj);
 
 class ScriptEditorOrganizer : public QObject
 {
@@ -57,10 +57,10 @@ public:
     inline const ScriptEditorActions& getScriptEditorActions() const { return m_commonScriptEditorActions; }
 
     QStringList openedScripts() const;
-    
-    inline BookmarkModel* getBookmarkModel() const 
-    { 
-        return m_pBookmarkModel; 
+
+    inline BookmarkModel* getBookmarkModel() const
+    {
+        return m_pBookmarkModel;
     }
 
     ScriptDockWidget* activateOpenedScriptByFilename(const QString &filename, int currentDebugLine = -1, int UID = -1);

@@ -104,11 +104,11 @@ _CONFIG_DEFAULTS = {
 
 
 class TimeIt(object):
-    """Time measurement for a code block. 
-    
-    This class is only necessary for debug purposes and 
+    """Time measurement for a code block.
+
+    This class is only necessary for debug purposes and
     provides a context manager.
-    
+
     Example:
         with TimeIt("Step1"):
             doSomething(...)
@@ -129,18 +129,18 @@ class TimeIt(object):
 
 def _checkErrorCodeStringList(text: str):
     """Checks the given text for a valid code string list format.
-    
+
     Every single code string must be a letter a-z or A-Z
     followed by 0-4 numbers (e.g. E999).
-    
+
     The text can be zero, one or multiple code strings, joint
     by a comma (surrounding spaces are allowed). E.g:
-    
+
     W921, e23,F
-    
+
     Args:
         text (str): the given error code string
-    
+
     Returns:
         Optional[str]: None if the text does not fit or the corrected
             text where all letters are turned to capital letters
@@ -172,14 +172,14 @@ class CheckerWarning(Warning):
 
 class ItomFlakesReporter:
     """Formats the results of pyflakes checks to be consumed by itom.
-    
+
     This class provides the interface such that itom (pythonEngine) can
     read the results from a pyflakes file check.
     """
 
     def __init__(self, filename, lineOffset=0, defaultMsgType=2):
         """Constructor.
-        
+
         Args:
             filename (str): the filename that has been checked.
             lineOffset (int): if a message is reported, the lineOffset is subtracted to the line
@@ -200,13 +200,13 @@ class ItomFlakesReporter:
 
     def _addItem(self, msgType, filename, msgCode, description, lineNo=-1, column=-1):
         """Internal method to add a new item to the list of items.
-        
+
         Args:
             type (int): the type of the message (0: info, 1: warning, 2: error)
             filename (str): the filename of the message
             msgCode (str): the pyflakes message code (usually an empty string)
             description (str): the message text
-            lineNo (int): the line number in the checked file that is the 
+            lineNo (int): the line number in the checked file that is the
                 reason for the message
             column (int): the column index of the start of the error or -1 if unknown
         """
@@ -229,9 +229,9 @@ class ItomFlakesReporter:
 
     def unexpectedError(self, filename, msg):
         """An unexpected error occurred trying to process C{filename}.
-        
+
         This method is called by pyflakes
-        
+
         Args:
             filename (str): The path to a file that we could not process.
             msg (str): A message explaining the problem.
@@ -248,14 +248,14 @@ class ItomFlakesReporter:
     def syntaxError(self, filename, msg, lineno, offset, text):
         """
         There was a syntax error in C{filename}.
-        
+
         Args:
            filename (str): The path to the file with the syntax error.
            msg (str): An explanation of the syntax error.
            lineno (int): The line number where the syntax error occurred.
            offset (Optional[int]): The column on which the syntax error occurred, or None.
            text (str): The source code containing the syntax error.
-        
+
         This method is called by pyflakes
         """
         line = text.splitlines()[-1]
@@ -282,8 +282,8 @@ class ItomFlakesReporter:
 
     def flake(self, message):
         """pyflakes found something wrong with the code.
-        
-        Arg: A messages.Message. message.col is the index of the column, 
+
+        Arg: A messages.Message. message.col is the index of the column,
             where the indication of an error etc. starts. message.lineno
             is the line number of the indication
             (starting with 1 for the first line).
@@ -301,10 +301,10 @@ class ItomFlakesReporter:
     def results(self):
         """Called by pythonEngine in itom to obtain the
         current list of reported items.
-        
+
         Every item is a string that can be separated by '::' into 6 parts.
-        The parts are: 
-        
+        The parts are:
+
         1. type (int): 0: Info, 1: Warning, 2: Error
         2. filename (str): filename of tested file
         3. lineNo (int): line number or -1 if no line number
@@ -320,11 +320,11 @@ if _HAS_FLAKE8:
 
     class ItomFlake8Formatter(base.BaseFormatter):
         """Special formatter class to flake8 for itom.
-        
+
         This class prevents any printed output of flake8
         observations. Instead all messages are collected
         in a list of serialized message information. This list
-        is the read by itom in order to visualize it in the 
+        is the read by itom in order to visualize it in the
         editor windows.
         """
 
@@ -342,9 +342,9 @@ if _HAS_FLAKE8:
             Args:
                 codes (str) :
                 error (bool) :
-            
+
             Returns:
-                List[str] : 
+                List[str] :
             """
             codeCorrected = _checkErrorCodeStringList(codes)
 
@@ -377,7 +377,7 @@ if _HAS_FLAKE8:
             """
                type: the type of message (0: Info, 1: Warning, 2: Error)
             @ptype type: C{int}
-            
+
             Args:
                 errorType (int) :
                 filename (str) :
@@ -396,7 +396,7 @@ if _HAS_FLAKE8:
             """
             returns a list of reported items.
             Every item is a string that can be separated by :: into 6 parts.
-            The parts are: 
+            The parts are:
             1. type (int): 0: Info, 1: Warning, 2: Error
             2. filename (str): filename of tested file
             3. lineNo (int): line number or -1 if no line number
@@ -412,7 +412,7 @@ if _HAS_FLAKE8:
 
         def beginning(self, filename):  # type: (str) -> None
             """Notify the formatter that we're starting to process a file.
-    
+
             :param str filename:
                 The name of the file that Flake8 is beginning to report results
                 from.
@@ -421,7 +421,7 @@ if _HAS_FLAKE8:
 
         def finished(self, filename):  # type: (str) -> None
             """Notify the formatter that we've finished processing a file.
-    
+
             :param str filename:
                 The name of the file that Flake8 has finished reporting results
                 from.
@@ -430,24 +430,24 @@ if _HAS_FLAKE8:
 
         def start(self):  # type: () -> None
             """Prepare the formatter to receive input.
-    
+
             This defaults to initializing :attr:`output_fd` if :attr:`filename`
             """
             pass
 
         def handle(self, error):  # type: (Violation) -> None
             """Handle an error reported by Flake8.
-    
+
             This defaults to calling :meth:`format`, :meth:`show_source`, and
             then :meth:`write`. To extend how errors are handled, override this
             method.
-    
+
             :param error:
                 This will be an instance of
                 :class:`~flake8.style_guide.Violation`.
             :type error:
                 flake8.style_guide.Violation
-            
+
             1. type (int): 0: Info, 1: Warning, 2: Error
             2. filename (str): filename of tested file
             3. lineNo (int): line number or -1 if no line number
@@ -479,22 +479,22 @@ if _HAS_FLAKE8:
 
     def flake8GetStyleGuideItom(base_directory, **kwargs):
         r"""Provision a StyleGuide for use.
-        
+
         This is a rewritten method of flake8/api/legacy.py.
-        
+
         Originally, in flake8, the option overload order is (the latter wins):
-        
+
         1. flake8 defaults
         2. optional tox.ini, .flake8 etc. configuration files
         3. arguments passed in kwargs (which are the settings from the itom
                 property dialog)
-        
+
         However, the desired behaviour is:
-        
+
         1. flake8 defaults
         2. arguments passed in kwargs
         3. optional tox.ini, .flake8 etc. configuration files.
-        
+
         :param base_directory:
             locally change the current working dir to base_directory, such that
             local config files are properly found. Reset it afterwards.
@@ -535,14 +535,14 @@ if _HAS_FLAKE8:
             for item in kwargs:
                 val = kwargs[item]
                 item = item.replace("_", "-")
-                
+
                 if type(val) is list:
                     kwargs_parsed.append(
                         "--%s=%s" % (item, ",".join([str(ii) for ii in val]))
                         )
                 else:
                     kwargs_parsed.append("--%s=%s" % (item, val))
-            
+
             application.plugins, application.options = parse_args(kwargs_parsed)
 
             # reset kwargs, since already handled.
@@ -557,14 +557,14 @@ if _HAS_FLAKE8:
                 extra=prelim_opts.append_config,
                 isolated=prelim_opts.isolated,
             )
-            
+
             application.find_plugins(
                 cfg,
                 cfg_dir,
                 enable_extensions=prelim_opts.enable_extensions,
                 require_plugins=prelim_opts.require_plugins,
             )
-            
+
             application.register_plugin_options()
             application.parse_configuration_and_cli(cfg, cfg_dir, remaining_args)
 
@@ -573,7 +573,7 @@ if _HAS_FLAKE8:
 
             if "flake8" in cfg:
                 local_config = dict(cfg["flake8"])
-            
+
         elif not hasattr(
             application, "parse_preliminary_options_and_args"
         ):  # flake8 >= 3.8
@@ -661,7 +661,7 @@ if _HAS_FLAKE8:
 
             if flake8.__version__ < "5.0":
                 options._running_from_vcs = False
-    
+
                 application.check_plugins.provide_options(
                     application.option_manager, options, application.args
                 )
@@ -673,7 +673,7 @@ if _HAS_FLAKE8:
                     parse_options = getattr(loaded.obj, "parse_options", None)
                     if parse_options is None:
                         continue
-        
+
                     # XXX: ideally we wouldn't have two forms of parse_options
                     try:
                         parse_options(
@@ -696,12 +696,12 @@ if _HAS_FLAKE8:
     def createFlake8OptionsFromProperties(props):
         """converts properties, obtained from itom, to a options dict,
         that can be passed to flake8.
-        
+
         Args:
             props (dict) :
-        
+
         Returns:
-            dict : 
+            dict :
         """
         options = {}
         errors = []
@@ -814,10 +814,10 @@ else:  # no flake8
 
     def createFlake8OptionsFromProperties(props):
         """This is a dummy method if flake8 not available.
-        
+
         Args:
             props (dict) :
-        
+
         Returns:
             dict :
         """
@@ -843,34 +843,34 @@ def check(
     furtherPropertiesJson={},
 ):
     """Run the test for a single file.
-    
+
     Args:
-        codestring (str): is the code to be checked. 
+        codestring (str): is the code to be checked.
             This code can be different from the current code in filename.
         filename (str): the filename of the code
             (must only exist if fileSaved is True)
         fileSaved (bool): True if the filename contains the real code
             to be checked, else False
-        mode (int): if 0: no code check is executed, if 1: only pyflakes 
+        mode (int): if 0: no code check is executed, if 1: only pyflakes
             is called, if 2: flake8 is called.
-            The mode value must be equal to the enumeration 
+            The mode value must be equal to the enumeration
             ito::PythonCommon::CodeCheckerMode in the C++ code.
         autoImportItom (bool): If True, a line 'from itom import dataObject, plot1, ...' is
             hiddenly added before the first line of the script.
         furtherPropertiesJson (str): further properties for the called
             modules as json string.
-    
+
     Returns:
-        List[str]: This is a list of errors or other observations. 
+        List[str]: This is a list of errors or other observations.
             Each error has the following format: <type:int>::<filename:str>::
                 <lineNo::int>::<column:int>::<code::str>::<description::str>
-            
-            where <name:type> is a replacement for one value 
-            (with the given type). 
+
+            where <name:type> is a replacement for one value
+            (with the given type).
             The type is 0: information, 1: warning, 2: error
             The filename is equal to the given filename for this file.
             The lineNo starts with 1 for the first line.
-            The code are the original flake8 codes (e.g. W804) or an empty 
+            The code are the original flake8 codes (e.g. W804) or an empty
             string for pyflakes calls.
     """
     global _CHECKER_CACHE
@@ -1005,10 +1005,10 @@ if __name__ == "__main__":
 
     codestring = """def test(i : str , b) :
     a=2*3
-    
+
     p = getCurrentPath()
     assert(1, 1)
-    
+
     return a"""
 
     filename = "temp.py"

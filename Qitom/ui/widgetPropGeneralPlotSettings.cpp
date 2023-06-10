@@ -39,7 +39,7 @@ namespace ito
         {
             ui.comboDefaultColorMap->addItem(name);
         }
-        ui.comboDefaultColorMap->setCurrentIndex(0); 
+        ui.comboDefaultColorMap->setCurrentIndex(0);
 
     }
 

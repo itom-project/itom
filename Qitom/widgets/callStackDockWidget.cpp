@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -69,7 +69,7 @@ CallStackDockWidget::CallStackDockWidget(const QString &title, const QString &ob
     m_table->setHorizontalHeaderLabels(m_headers);
 
     connect(m_table, SIGNAL(itemDoubleClicked(QTableWidgetItem*)), this, SLOT(itemDoubleClicked(QTableWidgetItem*)));
-    
+
     setContentWidget(m_table);
 
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
@@ -81,11 +81,11 @@ CallStackDockWidget::CallStackDockWidget(const QString &title, const QString &ob
         m_table->setColumnWidth(i, settings.value("width", 100).toInt());
         m_table->setColumnHidden(i, m_table->columnWidth(i) == 0);
     }
-    settings.endArray();    
+    settings.endArray();
     settings.endGroup();
 
     PythonEngine* eng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
-    
+
     if (eng)
     {
         connect(eng, SIGNAL(updateCallStack(QStringList,IntList,QStringList)), this, SLOT(updateCallStack(QStringList,IntList,QStringList)));
@@ -191,7 +191,7 @@ void CallStackDockWidget::updateCallStack(QStringList filenames, IntList lines, 
         {
             item->setIcon(m_emptyIcon);
         }
-        
+
         item->setFlags(flags);
         item->setData(Qt::ToolTipRole, info.canonicalFilePath());
         m_table->setItem(i, ColFilename, item);
@@ -242,7 +242,7 @@ void CallStackDockWidget::itemDoubleClicked(QTableWidgetItem *item)
         if (item2)
         {
             m_currentRow = item->row();
-            
+
             if (m_currentRow > 0)
             {
                 item2->setIcon(m_selectedIcon);

@@ -46,7 +46,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 //
 // This helps, that deprecated or "future" plugins, which fit not to the current implementation of the interface will not be loaded
 // but a sophisticated error message is shown.
-// 
+//
 // From version 4.0.0 on, the version numbers follow the schematic of semantic versioning (semver.org).
 // In general, any plugin can be loaded whose interface is based on the CREATE_ADDININTERFACE_MAJOR_VERSION_STR (major version number must fit).
 // itom loads such a plugin if its minor version number is lower or equal than the minor version number, defined in the compiled version of the core
@@ -92,7 +92,7 @@ static const char* ito_AddInInterface_OldVersions[] = {
     "ito.AddIn.InterfaceBase/2.5.0", //outdated on 2017-02-05 due to changes in ParamMeta classes
     "ito.AddIn.InterfaceBase/2.6.0", //outdated on 2017-02-05 since the AddInManager has been separated into its own shared library
     "ito.AddIn.InterfaceBase/3.0.0", //outdated on 2017-12-06 due to change of type (float to double) in ito::AutoInterval
-    "ito.AddIn.InterfaceBase/3.1.0", //outdated on 2018-01-10 due to introduction of xData feature in plots  
+    "ito.AddIn.InterfaceBase/3.1.0", //outdated on 2018-01-10 due to introduction of xData feature in plots
     "ito.AddIn.InterfaceBase/3.2.0", //outdated on 2019-03-03 due to cleanup in AddInInterface including Private-classes for all AddIn classes and the ability to return the last reported state and position of axes (even while the axis is currently moving)
     "ito.AddIn.InterfaceBase/3.3.0", //outdated on 2019-11-19 due to new FilterDefExt class and semver based interface numbering
     "ito.AddIn.InterfaceBase/4.0.0", //outdated on 2020-01-01 due to removal of Qt4 support and removal of #precompiler checks that differ between Qt4 and Qt5.
@@ -100,7 +100,7 @@ static const char* ito_AddInInterface_OldVersions[] = {
     "ito.AddIn.InterfaceBase/4.0.2", //outdated on 2020-09-15 due to additional property 'popupSlider' of 'ParamEditorWidget'
     "ito.AddIn.InterfaceBase/4.1.0", //outdated on 2020-12-14 due to new userMutex in AddInBase
     "ito.AddIn.InterfaceBase/4.2.0", //outdated on 2021-05-19 due to rework of ParamBase, Param, ParamMeta including the new StringList parameter type. Further changes in RetVal interface and bool operator of itom.dataObject.
-    "ito.AddIn.InterfaceBase/5.0.0", //outdated on 2022-05-07 due to bugfix of DObjMeta class (see https://bitbucket.org/itom/itom/issues/197/ito-dobjmeta-allowedtypes-is-wrongly)
+    "ito.AddIn.InterfaceBase/5.0.0", //outdated on 2022-05-07 due to bugfix of DObjMeta class (see https://github.com/itom-project/itom/issues/187)
     NULL
 };
 
@@ -116,6 +116,6 @@ static const char* ito_AddInInterface_OldVersions[] = {
 #define ITOM_ADDININTERFACE_PATCH 0
 #define ITOM_ADDININTERFACE_VERSION CREATEVERSION(ITOM_ADDININTERFACE_MAJOR,ITOM_ADDININTERFACE_MINOR,ITOM_ADDININTERFACE_PATCH)
 #define ITOM_ADDININTERFACE_VERSION_STR CREATE_ADDININTERFACE_VERSION_STR(6,0,0)
-static const char* ito_AddInInterface_CurrentVersion = CREATE_ADDININTERFACE_MAJOR_VERSION_STR(6); //results in "ito.AddIn.InterfaceBase/x"; (the major version number 5 can not be replaced by the macros above. Does not work properly)
+static constexpr const char* ito_AddInInterface_CurrentVersion = CREATE_ADDININTERFACE_MAJOR_VERSION_STR(6); //results in "ito.AddIn.InterfaceBase/x"; (the major version number 5 can not be replaced by the macros above. Does not work properly)
 
 #endif

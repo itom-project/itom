@@ -7,7 +7,7 @@ def scriptDirectory(frame=None):
     returns absolute path of the script that calls this method.
     Raises exception if this method is directly called from
     command line
-    
+
     If you provide an inspect-frame, the absolute path of this frame
     is returned.
     """

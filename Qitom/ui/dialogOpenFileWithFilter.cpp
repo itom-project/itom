@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -101,7 +101,7 @@ namespace ito {
     ui.lblProcessText->setVisible(false);
 
     connect(&filterCallWatcher, SIGNAL(finished()), this, SLOT(filterCallFinished()));
-    
+
 
     if(userMand.size() == 0 && userOpt.size() == 0)
     {
@@ -176,7 +176,7 @@ void DialogOpenFileWithFilter::on_buttonBox_accepted()
             }
         }
     }
-    
+
     if (success)
     {
         if(m_filterExecuted == false)
@@ -264,7 +264,7 @@ ito::RetVal DialogOpenFileWithFilter::executeFilter()
             ui.scrollParamsOpt->setEnabled(false);
 
             QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-            QApplication::processEvents(QEventLoop::ExcludeSocketNotifiers); //the WaitCursor only becomes visible if the event loop of the main thread is called once. 
+            QApplication::processEvents(QEventLoop::ExcludeSocketNotifiers); //the WaitCursor only becomes visible if the event loop of the main thread is called once.
                                                                              //(it is not allowed to filter  QEventLoop::ExcludeUserInputEvents here out, since mouse events
                                                                              //have to be passed to the operating system. Else the cursor is not changed. - at least with Windows)
 
@@ -281,7 +281,7 @@ ito::RetVal DialogOpenFileWithFilter::executeFilter()
                 //starts loading the file in another thread. If this is done, filterCallFinished is executed
                 filterCall = QtConcurrent::run(m_filter->m_filterFunc, &m_paramsMand, &m_paramsOpt, &m_autoOut);
             }
-            
+
             filterCallWatcher.setFuture(filterCall);
         }
     }

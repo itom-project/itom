@@ -1,6 +1,6 @@
 /* ********************************************************************
     Template for an actuator plugin for the software itom
-    
+
     You can use this template, use it in your plugins, modify it,
     copy it and distribute it without any license restrictions.
 *********************************************************************** */
@@ -30,7 +30,7 @@ void DialogMyActuator::parametersChanged(QMap<QString, ito::Param> params)
 {
     //save the currently set parameters to m_currentParameters
     m_currentParameters = params;
-    
+
     if (m_firstRun)
     {
         setWindowTitle(QString((params)["name"].getVal<char*>()) + " - " + tr("Configuration Dialog"));
@@ -38,7 +38,7 @@ void DialogMyActuator::parametersChanged(QMap<QString, ito::Param> params)
         //this is the first time that parameters are sent to this dialog,
         //therefore you can add some initialization work here
         m_firstRun = false;
-        
+
         //now activate group boxes, since information is available now (at startup, information is not available, since parameters are sent by a signal)
         enableDialog(true);
     }

@@ -1,4 +1,4 @@
-#!/bin/bash   
+#!/bin/bash
 
 # Text colors
 # E.g. printf "${bldred}Hello World{txtrst}\n"
@@ -101,7 +101,7 @@ brew_install_smart() {
 				INSTALLED=true
 				IFS=$'\n' read -rd '' -a lines <<< "$INFO"
 				for line in "${lines[@]}" ; do
-					if [[ $line == *"Built from source with"* ]] ; then		    	
+					if [[ $line == *"Built from source with"* ]] ; then
 				    	IFS=$':' read -rd '' -a line <<< "$line"
 				    	if (( ${#line[@]} >= 2 )) ; then
 					    	IFS=$', ' read -rd '' -a options <<< "${line[1]}"
@@ -139,7 +139,7 @@ brew_install_smart() {
 				brew linkapps
 			else
 				printf "${txtgrn}$1 already installed${txtrst}\n"
-			fi	
+			fi
 		fi
 	fi
 }
@@ -206,7 +206,7 @@ if [[ "$unamestr" == 'Darwin' ]]; then
 	printf "${txtylw}Installing kegs${txtrst}\n"
 	echo "+++++++++++++++"
 	brew_install_smart git
-	brew_install_smart gcc 
+	brew_install_smart gcc
 	brew_install_smart python3 --devel
 
 	if echo "$answer2" | grep -iq "^y" ;then
@@ -246,8 +246,8 @@ if [[ "$unamestr" == 'Darwin' ]]; then
 	brew_install_smart matplotlib --with-python3 --with-pyqt
 	brew_install_smart matplotlib-basemap --with-python3
 	brew_install_smart scipy --with-python3
-	brew_install_smart opencv 
-	brew_install_smart pcl 
+	brew_install_smart opencv
+	brew_install_smart pcl
 	brew_install_smart caskroom/cask/brew-cask
 	brew cask install qt-creator
 	brew linkapps
@@ -275,11 +275,11 @@ if [[ "$unamestr" == 'Darwin' ]]; then
 		mkdir ~/itom/build_release
 		mkdir ~/itom/build_release/itom
 		mkdir ~/itom/build_release/plugins
-		mkdir ~/itom/build_release/designerPlugins	
+		mkdir ~/itom/build_release/designerPlugins
 		cd ~/itom/sources
-		git clone https://bitbucket.org/itom/itom.git
-		git clone https://bitbucket.org/itom/plugins.git
-		git clone https://bitbucket.org/itom/designerplugins.git	
+		git clone https://github.com/itom-project/itom.git
+		git clone https://github.com/itom-project/plugins.git
+		git clone https://github.com/itom-project/designerPlugins.git
 	fi
 
 	echo " "

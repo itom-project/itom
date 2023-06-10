@@ -1,11 +1,11 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2023, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -46,18 +46,31 @@ namespace ito
         m_currentTask(taskNo),
         m_pipAvailable(false),
         m_pipVersion(0x000000),
-        m_pUserDefinedPythonHome(NULL),
-        m_pipCallMode(PipMode::pipModeDirect)
+        m_pUserDefinedPythonHome(nullptr),
+        m_pipCallMode(PipMode::pipModeDirect),
+        m_numberOfUnfetchedPackageDetails(0),
+        m_numberOfNewlyObtainedPackageDetails(0),
+        m_fetchDetailCancelRequested(false)
     {
         m_headers << tr("Name") << tr("Version") << tr("Location") << tr("Requires") << tr("Updates") << tr("Summary") << tr("Homepage") << tr("License");
         m_alignment << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft);
 
-        connect(&m_pipProcess, SIGNAL(error(QProcess::ProcessError)), this, SLOT(processError(QProcess::ProcessError)));
-        connect(&m_pipProcess, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(processFinished(int, QProcess::ExitStatus)));
-        connect(&m_pipProcess, SIGNAL(readyReadStandardError()), this, SLOT(processReadyReadStandardError()));
-        connect(&m_pipProcess, SIGNAL(readyReadStandardOutput()), this, SLOT(processReadyReadStandardOutput()));
+        connect(&m_pipProcess, &QProcess::errorOccurred, this, &PipManager::processError);
+
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+        connect(
+            &m_pipProcess,
+            SIGNAL(finished(int, QProcess::ExitStatus)),
+            this,
+            SLOT(processFinished(int, QProcess::ExitStatus)));
+#else
+        connect(&m_pipProcess, &QProcess::finished, this, &PipManager::processFinished);
+#endif
+        connect(&m_pipProcess, &QProcess::readyReadStandardError, this, &PipManager::processReadyReadStandardError);
+        connect(&m_pipProcess, &QProcess::readyReadStandardOutput, this, &PipManager::processReadyReadStandardOutput);
 
         const PythonEngine *pyeng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
+
         if (pyeng)
         {
             m_pythonPath = pyeng->getPythonExecutable();
@@ -78,9 +91,11 @@ namespace ito
                     {
                         bool ok;
                         m_pythonPath = PythonQtConversion::PyObjGetString(python_path_prefix, true, ok);
+
                         if (ok)
                         {
                             QDir pythonPath(m_pythonPath);
+
                             if (pythonPath.exists())
                             {
                                 m_pythonPath = pythonPath.absoluteFilePath("python.exe");
@@ -98,6 +113,7 @@ namespace ito
 #elif defined linux
                     //on linux, sys.executable returns the absolute path to the python application, even in an embedded mode.
                     PyObject *python_executable = PySys_GetObject("executable"); //borrowed reference
+
                     if (python_executable)
                     {
                         bool ok;
@@ -110,6 +126,7 @@ namespace ito
 #else //APPLE
                     //on apple, sys.executable returns the absolute path to the python application, even in an embedded mode. (TODO: Check this assumption)
                     PyObject *python_executable = PySys_GetObject("executable"); //borrowed reference
+
                     if (python_executable)
                     {
                         bool ok;
@@ -128,15 +145,16 @@ namespace ito
         if (!retval.containsError())
         {
             QString pythonHome = QString::fromWCharArray(Py_GetPythonHome());
+
             if (pythonHome != "")
             {
                 QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
                 env.insert("PYTHONHOME", pythonHome); // Add an environment variable
                 m_pipProcess.setProcessEnvironment(env);
             }
-            
+
         }
-        
+
         if (!retval.containsError())
         {
             checkCallMode();
@@ -172,16 +190,19 @@ ito::RetVal PipManager::initPythonIfStandalone()
     settings.beginGroup("Python");
     QString pythonHomeFromSettings = settings.value("pyHome", "").toString();
     int pythonDirState = settings.value("pyDirState", -1).toInt();
+
     if (pythonDirState == -1) //not yet decided
     {
 #ifdef WIN32
+        const QString pythonExe = QString("/python%1%2.dll").arg(PY_MAJOR_VERSION).arg(PY_MINOR_VERSION);
+
         if (QDir(pythonSubDir).exists() && \
-            QFileInfo(pythonSubDir + QString("/python%1%2.dll").arg(PY_MAJOR_VERSION).arg(PY_MINOR_VERSION)).exists())
+            QFileInfo(pythonSubDir + pythonExe).exists())
         {
             pythonDirState = 0; //use pythonXX subdirectory of itom as python home path
-    }
+        }
         else if (QDir(pythonAllInOneDir).exists() && \
-            QFileInfo(pythonAllInOneDir + QString("/python%1%2.dll").arg(PY_MAJOR_VERSION).arg(PY_MINOR_VERSION)).exists())
+            QFileInfo(pythonAllInOneDir + pythonExe).exists())
         {
             pythonDirState = 2;
             pythonHomeFromSettings = pythonAllInOneDir;
@@ -230,14 +251,89 @@ ito::RetVal PipManager::initPythonIfStandalone()
         }
     }
 
+#if (PY_VERSION_HEX >= 0x030B0000)
+    // from Python 3.11 on, the pre-init config is used to
+    // configure Python to a local configuration with UTF8 mode.
+    PyStatus status;
+    PyPreConfig preconfig;
+
+    PyPreConfig_InitIsolatedConfig(&preconfig);
+
+    preconfig.utf8_mode = 1;
+    preconfig.use_environment = 0;
+    preconfig.parse_argv = 0;
+
+    status = Py_PreInitialize(&preconfig);
+
+    if (PyStatus_Exception(status))
+    {
+        return RetVal::format(retError, 0, tr("Error pre-initializing Python in isolated mode:  %s").toLatin1().data(),
+            status.err_msg);
+    }
+#endif
+
     if (pythonDir != "")
     {
         //the python home path given to Py_SetPythonHome must be persistent for the whole Python session
         m_pUserDefinedPythonHome = Py_DecodeLocale(pythonDir.toLatin1().data(), NULL);
+    }
+
+#if (PY_VERSION_HEX >= 0x030B0000)
+    // from Python 3.11 on, the init config is used to
+    // configure Python.
+    PyConfig config;
+
+    PyConfig_InitIsolatedConfig(&config);
+
+    /* Set the program name before reading the configuration
+       (decode byte string from the locale encoding).
+
+       Implicitly preinitialize Python. */
+       /*status = PyConfig_SetBytesString(&config, &config.program_name,
+           program_name);
+       if (PyStatus_Exception(status)) {
+           goto done;
+       }*/
+
+    if (m_pUserDefinedPythonHome)
+    {
+        status = PyConfig_SetString(&config, &config.home, m_pUserDefinedPythonHome);
+        if (PyStatus_Exception(status))
+        {
+            PyConfig_Clear(&config);
+            return RetVal::format(retError, 0, tr("Error setting custom Python home path:  %s").toLatin1().data(),
+                status.err_msg);
+        }
+    }
+
+    /* Read all configuration at once */
+    status = PyConfig_Read(&config);
+
+    if (PyStatus_Exception(status))
+    {
+        PyConfig_Clear(&config);
+        return RetVal::format(retError, 0, tr("Error reading the Python configuration: %s").toLatin1().data(),
+            status.err_msg);
+    }
+
+    status = Py_InitializeFromConfig(&config);
+    PyConfig_Clear(&config);
+
+    if (PyStatus_Exception(status))
+    {
+        return RetVal::format(retError, 0, tr("Error initializing Python: %s.\nVerify the Python base directory in the itom property dialog and restart itom.").toLatin1().data(),
+            status.err_msg);
+    }
+
+#else
+    if (m_pUserDefinedPythonHome)
+    {
         Py_SetPythonHome(m_pUserDefinedPythonHome);
     }
 
+    //!< must be called after any PyImport_AppendInittab-call
     Py_Initialize();
+#endif
 
     //read directory values from Python
     qDebug() << "Py_GetPythonHome:" << QString::fromWCharArray(Py_GetPythonHome());
@@ -253,10 +349,16 @@ ito::RetVal PipManager::initPythonIfStandalone()
 #endif
     QDir pythonHomeDir(pythonHome);
     bool pythonPathValid = false;
+
     if (!pythonHomeDir.exists() && pythonHome != "")
     {
-        retval += RetVal::format(retError, 0, tr("The home directory of Python is currently set to the non-existing directory '%s'\nPython cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python \nor correct the base directory in the property dialog of itom.").toLatin1().data(),
-            pythonHomeDir.absolutePath().toLatin1().data());
+        retval += RetVal::format(
+            retError,
+            0,
+            tr("The home directory of Python is currently set to the non-existing directory '%s'\nPython cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python \nor correct the base directory in the property dialog of itom.").toLatin1().data(),
+            pythonHomeDir.absolutePath().toLatin1().data()
+        );
+
         return retval;
     }
 
@@ -272,8 +374,13 @@ ito::RetVal PipManager::initPythonIfStandalone()
 
     if (!pythonPathValid)
     {
-        retval += RetVal::format(retError, 0, tr("The built-in library path of Python could not be found. The current home directory is '%s'\nPython cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python \nor correct the base directory in the preferences dialog of itom.").toLatin1().data(),
-            pythonHomeDir.absolutePath().toLatin1().data());
+        retval += RetVal::format(
+            retError,
+            0,
+            tr("The built-in library path of Python could not be found. The current home directory is '%s'\nPython cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python \nor correct the base directory in the preferences dialog of itom.").toLatin1().data(),
+            pythonHomeDir.absolutePath().toLatin1().data()
+        );
+
         return retval;
     }
 
@@ -300,24 +407,22 @@ is used for all calls to pip, else the direct call is used.
 */
 ito::RetVal PipManager::checkCallMode()
 {
-
-
 #ifdef WIN32
     QProcess process;
-
     QStringList args;
     QDir pipProcessDir = QCoreApplication::applicationDirPath();
+
     pipProcessDir.cd("itom-packages");
     pipProcessDir.cd("pipProcess");
 
     QFileInfo runPipUtf8(pipProcessDir, "runPipUtf8.py");
-    
+
     if (runPipUtf8.exists())
     {
         m_runPipUtf8Path = runPipUtf8.absoluteFilePath();
         args << m_runPipUtf8Path << "pip" << "-V";  // get version
         int exitCode = QProcess::execute(m_pythonPath, args); // 0: ok, 1: any error
-        
+
         if (exitCode == 0)
         {
             m_pipCallMode = PipMode::pipModeRunPipUtf8;
@@ -332,7 +437,7 @@ ito::RetVal PipManager::checkCallMode()
 //----------------------------------------------------------------------------------------------------------------------------------
 /** return parent element
 *   @param [in] index   the element's index for which the parent should be returned
-*   @return     the parent element. 
+*   @return     the parent element.
 *
 */
 QModelIndex PipManager::parent(const QModelIndex &index) const
@@ -362,15 +467,17 @@ QVariant PipManager::headerData(int section, Qt::Orientation orientation, int ro
         {
             return m_headers.at(section);
         }
+
         return QVariant();
     }
+
     return QVariant();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /** return data elements for a given row
 *   @param [in] index   index for which the data elements should be delivered
-*   @param [in] role    the current role of the model 
+*   @param [in] role    the current role of the model
 *   @return data of the selected element, depending on the element's row and column (passed in index.row and index.column)
 *
 */
@@ -380,10 +487,11 @@ QVariant PipManager::data(const QModelIndex &index, int role) const
     {
         return QVariant();
     }
- 
+
     if(role == Qt::DisplayRole || role == Qt::ToolTipRole)
     {
         const PythonPackage &package = m_pythonPackages[index.row()];
+
         switch (index.column())
         {
             case 0:
@@ -424,7 +532,7 @@ QVariant PipManager::data(const QModelIndex &index, int role) const
         const PythonPackage &package = m_pythonPackages[index.row()];
         return (package.m_status == PythonPackage::Outdated);
     }
-    
+
     return QVariant();
 }
 
@@ -449,11 +557,11 @@ int PipManager::columnCount(const QModelIndex & /*parent*/) const
 */
 QModelIndex PipManager::index(int row, int column, const QModelIndex &parent) const
 {
-    if(parent.isValid() || row < 0 || row >= m_pythonPackages.length() || column < 0 || column >= m_headers.size())
+    if (parent.isValid() || row < 0 || row >= m_pythonPackages.length() || column < 0 || column >= m_headers.size())
     {
         return QModelIndex();
     }
-    
+
     return createIndex(row, column);
 }
 
@@ -466,6 +574,8 @@ bool PipManager::isPipStarted() const
 //----------------------------------------------------------------------------------------------------------------------------------
 void PipManager::startProcess(const QStringList &arguments)
 {
+    m_fetchDetailCancelRequested = false;
+
     if (m_pipCallMode == PipMode::pipModeDirect)
     {
         QStringList args;
@@ -492,18 +602,25 @@ void PipManager::checkPipAvailable(const PipGeneralOptions &options /*= PipGener
     if (m_currentTask == taskNo)
     {
 #if WIN32
-        if (PY_VERSION_HEX >= 0x03050000)
+        if (PY_VERSION_HEX >= 0x03050000 && PY_VERSION_HEX < 0x03090000)
         {
-            emit pipRequestStarted(taskCheckAvailable, "For Python 3.5 or higher, some packages (e.g. Scipy or OpenCV) might depend on the Microsoft Visual C++ 2015 redistributable package. Please install it if not yet done.\n\nCheck connection to pip and get version...\n");
+            emit pipRequestStarted(taskCheckAvailable,
+                "For Python 3.5 or higher, some packages (e.g. Scipy or OpenCV) \
+might depend on the Microsoft Visual C++ 2015 redistributable package. Please \
+install it if not yet done.\n\nCheck connection to pip and get version...\n");
         }
         else
         {
-            emit pipRequestStarted(taskCheckAvailable, "Check connection to pip and get version...\n");
+            emit pipRequestStarted(taskCheckAvailable,
+                QString("Python %1.\nCheck connection to pip and get version...\n").arg(PY_VERSION)
+            );
         }
 #else
-        emit pipRequestStarted(taskCheckAvailable, "Check connection to pip and get version...\n");
+        emit pipRequestStarted(taskCheckAvailable,
+            QString("Python %1.\nCheck connection to pip and get version...\n").arg(PY_VERSION)
+        );
 #endif
-        
+
         clearBuffers();
         m_currentTask = taskCheckAvailable;
 
@@ -515,7 +632,7 @@ void PipManager::checkPipAvailable(const PipGeneralOptions &options /*= PipGener
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void PipManager::listAvailablePackages(const PipGeneralOptions &options /*= PipGeneralOptions()*/)
+void PipManager::listAvailablePackages(const PipGeneralOptions &options /*= PipGeneralOptions()*/, bool forceReloadDetails /*= false*/)
 {
     if (m_pythonPath == "")
     {
@@ -535,10 +652,17 @@ void PipManager::listAvailablePackages(const PipGeneralOptions &options /*= PipG
     //2. get more information using show package1 package2 ...
     if (m_currentTask == taskNo)
     {
-        emit pipRequestStarted(taskListPackages1, "Get list of installed packages... (step 1)\n", true);
+        emit pipRequestStarted(taskListPackages, "Step 1: Get list of names and versions of installed packages...\n", true);
         clearBuffers();
-        m_currentTask = taskListPackages1;
+        m_currentTask = taskListPackages;
         m_generalOptionsCache = options;
+
+        if (forceReloadDetails)
+        {
+            beginResetModel();
+            m_pythonPackages.clear();
+            endResetModel();
+        }
 
         QStringList arguments;
         arguments << "pip" << "list"; //here the pip version check is done
@@ -551,13 +675,14 @@ void PipManager::listAvailablePackages(const PipGeneralOptions &options /*= PipG
         {
             arguments << "--format=legacy";
         }
+
         arguments << parseGeneralOptions(options, false, true);
         startProcess(arguments);
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-void PipManager::listAvailablePackages2(const QStringList &names)
+//-------------------------------------------------------------------------------------
+void PipManager::fetchPackageDetails(const QStringList &names, int totalNumberOfUnfetchedDetails, bool firstCall)
 {
     if (m_pythonPath == "")
     {
@@ -572,13 +697,23 @@ void PipManager::listAvailablePackages2(const QStringList &names)
     }
 
     //list consists of two steps:
-    //1. get package names using freeze
+    //1. get package names using list
     //2. get more information using show package1 package2 ...
     if (m_currentTask == taskNo)
     {
-        emit pipRequestStarted(taskListPackages2, "Get list of installed packages... (step 2)\n", true);
+        QString text;
+
+        if (firstCall)
+        {
+            text = QString("Step 2: Fetch details of %1 out of %2 installed packages...\n").arg(totalNumberOfUnfetchedDetails).arg(m_pythonPackages.size());
+            m_numberOfUnfetchedPackageDetails = totalNumberOfUnfetchedDetails;
+            m_numberOfNewlyObtainedPackageDetails = 0;
+            emit pipFetchDetailsProgress(totalNumberOfUnfetchedDetails, 0, false);
+        }
+
+        emit pipRequestStarted(taskFetchPackagesDetails, text, true);
         clearBuffers();
-        m_currentTask = taskListPackages2;
+        m_currentTask = taskFetchPackagesDetails;
 
         QStringList arguments;
         arguments << "pip" << "show" << names;
@@ -587,7 +722,7 @@ void PipManager::listAvailablePackages2(const QStringList &names)
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void PipManager::checkPackageUpdates(const PipGeneralOptions &options /*= PipGeneralOptions()*/)
 {
     if (m_pythonPath == "")
@@ -610,7 +745,7 @@ void PipManager::checkPackageUpdates(const PipGeneralOptions &options /*= PipGen
 
         QStringList arguments;
         arguments << "pip" << "list" << "--outdated"; //version has already been checked in listAvailablePackages. This is sufficient.
-        
+
         if (m_pipVersion >= 0x120000) // >= 18.0
         {
             arguments << "--format=columns";
@@ -625,7 +760,7 @@ void PipManager::checkPackageUpdates(const PipGeneralOptions &options /*= PipGen
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void PipManager::checkVerifyInstalledPackages(const PipGeneralOptions &options /*= PipGeneralOptions()*/)
 {
     if (m_pythonPath == "")
@@ -653,7 +788,7 @@ void PipManager::checkVerifyInstalledPackages(const PipGeneralOptions &options /
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void PipManager::installPackage(const PipInstall &installSettings, const PipGeneralOptions &options /*= PipGeneralOptions()*/)
 {
     if (m_pythonPath == "")
@@ -732,11 +867,11 @@ void PipManager::installPackage(const PipInstall &installSettings, const PipGene
         {
             arguments << "-e";
         }
-        
-        
+
+
         // if typeSearchIndex, multiple packages can be installed. They
         // are separated by spaces
-        
+
         if (installSettings.type == PipInstall::typeSearchIndex)
         {
             auto packageNames = installSettings.packageName.split(" ");
@@ -769,7 +904,7 @@ void PipManager::installPackage(const PipInstall &installSettings, const PipGene
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void PipManager::uninstallPackage(const QString &packageName, bool runAsSudo, const PipGeneralOptions &options /*= PipGeneralOptions()*/)
 {
     if (m_pythonPath == "")
@@ -810,7 +945,7 @@ void PipManager::uninstallPackage(const QString &packageName, bool runAsSudo, co
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void PipManager::processError(QProcess::ProcessError error)
 {
     if (m_currentTask != taskNo)
@@ -823,16 +958,27 @@ void PipManager::processError(QProcess::ProcessError error)
         case QProcess::ReadError:
             emit outputAvailable(tr("An error occurred when attempting to read from the process.\n"), false);
             break;
-        default:
-            emit outputAvailable(tr("other error"), false);
+        case QProcess::Crashed:
+            if (!m_fetchDetailCancelRequested)
+            {
+                emit outputAvailable(tr("Process crashed.\n"), false);
+            }
             break;
+        default:
+            emit outputAvailable(tr("other error\n"), false);
+            break;
+        }
+
+        if (m_currentTask == taskFetchPackagesDetails)
+        {
+            emit pipFetchDetailsProgress(m_numberOfUnfetchedPackageDetails, m_numberOfUnfetchedPackageDetails, true);
         }
     }
 
     finalizeTask();
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void PipManager::processFinished(int exitCode, QProcess::ExitStatus exitStatus)
 {
     if (exitStatus == QProcess::CrashExit)
@@ -840,7 +986,10 @@ void PipManager::processFinished(int exitCode, QProcess::ExitStatus exitStatus)
         Task temp = m_currentTask;
         m_currentTask = taskNo;
 
-        emit pipRequestFinished(temp, tr("Python pip crashed during execution\n"), false);
+        if (!m_fetchDetailCancelRequested)
+        {
+            emit pipRequestFinished(temp, tr("Python pip crashed during execution\n"), false);
+        }
 
         if (temp != taskNo)
         {
@@ -857,10 +1006,11 @@ void PipManager::processFinished(int exitCode, QProcess::ExitStatus exitStatus)
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void PipManager::processReadyReadStandardError()
 {
     QByteArray str = m_pipProcess.readAllStandardError();
+
     if (str.length() > 0)
     {
         m_standardErrorBuffer += str;
@@ -872,6 +1022,7 @@ void PipManager::processReadyReadStandardError()
 void PipManager::processReadyReadStandardOutput()
 {
     QByteArray str = m_pipProcess.readAllStandardOutput();
+
     if (str.length() > 0)
     {
         m_standardOutputBuffer += str;
@@ -895,367 +1046,528 @@ void PipManager::finalizeTask(int exitCode /*= 0*/)
 
         if (temp == taskCheckAvailable)
         {
-            if (exitCode == 0)
-            {
-                QRegularExpression reg("pip ((\\d+)\\.(\\d+)\\.(\\d+)) from(.*)");
-                QRegularExpressionMatch match = reg.match(output);
-                if (match.hasMatch())
-                {
-                    m_pipVersion = CREATEVERSION(
-                        match.captured(2).toInt(),
-                        match.captured(3).toInt(),
-                        match.captured(4).toInt());
-                    QString version = match.captured(1);
-                    emit pipVersion(version);
-                    m_pipAvailable = true;
-                    emit pipRequestFinished(temp, "", true);
-                }
-                else
-                {
-                    QRegularExpression reg("pip ((\\d+)\\.(\\d+)) from(.*)");
-                    QRegularExpressionMatch match = reg.match(output);
-                    if (match.hasMatch())
-                    {
-                        m_pipVersion = CREATEVERSION(match.captured(2).toInt(), match.captured(3).toInt(), 0);
-                        QString version = match.captured(1);
-                        emit pipVersion(version);
-                        m_pipAvailable = true;
-                        emit pipRequestFinished(temp, "", true);
-                    }
-                    else
-                    {
-                        m_pipAvailable = false;
-                        emit pipRequestFinished(temp, "Package pip is not available. Install Python pip first (see https://pip.pypa.io/en/latest/installing.html).\n", false);
-                    }
-                }
-            }
-            else if (exitCode == 3)
-            {
-                m_pipAvailable = false;
-                emit pipRequestFinished(temp, "Python returned with the error code 3 (no such process). Possibly, the PYTHONHOME environment variable or the corresponding setting in the property dialog of itom is not correctly set to the base directory of Python. Please correct this.", false);
-            }
-            else
-            {
-                m_pipAvailable = false;
-                emit pipRequestFinished(temp, QString("Python returned with the exit code %1. Please see the module 'errno' for error codes.").arg(exitCode), false);
-            }
+            finalizeTaskCheckAvailable(error, output, exitCode);
         }
-        else if (temp == taskListPackages1)
+        else if (temp == taskListPackages)
         {
-            if (error != "" && output == "")
-            {
-                emit pipRequestFinished(temp, "Error obtaining list of packages (list)\n", false);
-            }
-            else
-            {
-                QStringList packages_out;
-                int idx;
-                QStringList packages = output.split("\n");
-
-                if (m_pipVersion >= 0x120000) //>= 18.0
-                {
-                    //format columns (first line are headings, then one line with dashes)
-                    for (int idx = 2; idx < packages.size(); ++idx)
-                    {
-                        QStringList items = packages[idx].split(" ");
-                        if (items.size() > 0 && items[0].trimmed() != "")
-                        {
-                            packages_out.append(items[0].trimmed());
-                        }
-                    }
-                }
-                else
-                {
-                    //format legacy
-                    foreach(const QString &p, packages)
-                    {
-                        idx = p.indexOf(" (");
-                        if (idx != -1)
-                        {
-                            packages_out.append(p.left(idx));
-                        }
-                    }
-                }
-
-                //in rare cases, there are temporary, backup directories, starting with '-'.
-                //they have to be removed here.
-                QStringList::iterator it = packages_out.begin();
-
-                while (it != packages_out.end())
-                {
-                    if (it->startsWith("-"))
-                    {
-                        it = packages_out.erase(it);
-                    }
-                    else
-                    {
-                        it++;
-                    }
-                }
-
-                if (packages_out.length() > 0)
-                {
-                    listAvailablePackages2(packages_out);
-                }
-            }
+            finalizeTaskListPackages(error, output);
         }
-        else if (temp == taskListPackages2)
+        else if (temp == taskFetchPackagesDetails)
         {
-            if (error != "" && output == "")
-            {
-                emit pipRequestFinished(temp, "Error obtaining list of packages (show)\n", false);
-            }
-            else
-            {
-                beginResetModel();
-                m_pythonPackages.clear();
-
-                QStringList lines = output.split("\r\n");
-                if (lines.length() == 1) //nothing found (e.g. older pip or linux)
-                {
-                    lines = output.split("\n");
-                }
-
-                //The "python.exe - m pip show numpy pip setuptools" request returns a stream in the following way:
-                /*
-                ---
-                Name: numpy
-                Version: 1.11.0
-                Summary: NumPy: array processing for numbers, strings, records, and objects.
-                Home-page: http://www.numpy.org
-                Author: NumPy Developers
-                Author-email: numpy-discussion@scipy.org
-                License: BSD
-                Location: c:\program files\python35\lib\site-packages
-                Requires:
-                ---
-                Name: pip
-                Version: 9.0.1
-                Summary: The PyPA recommended tool for installing Python packages.
-                Home-page: https://pip.pypa.io/
-                Author: The pip developers
-                Author-email: python-virtualenv@groups.google.com
-                License: MIT
-                Location: c:\program files\python35\lib\site-packages
-                Requires:
-                ---
-                Name: setuptools
-                Version: 18.2
-                Summary: Easily download, build, install, upgrade, and uninstall Python packages
-
-                Home-page: https://bitbucket.org/pypa/setuptools
-                Author: Python Packaging Authority
-                Author-email: distutils-sig@python.org
-                License: PSF or ZPL
-                Location: c:\program files\python35\lib\site-packages
-                Requires:
-                */
-
-                //The following code puts every package into the PythonPackage struct.
-                //Once the next ---line is found, the previous package struct is appended to m_pythonPackages
-                //and a new package struct is created.
-
-                //Starting from pip 9.0.0, the response does not start with a --- line, therefore
-                // package_started has to be set to true in this case, while it was false for pip < 9.0.0
-
-                PythonPackage package;
-                bool package_started = false;
-                if (m_pipVersion >= 0x090000)
-                {
-                    package_started = true;
-                }
-                int pos;
-                QString key, value;
-                QStringList keys;
-                keys << "Name" << "Version" << "Summary" << "Home-page" << "License" << "Location" << "Requires";
-
-                foreach (const QString &line, lines)
-                {
-                    if (line == "---")
-                    {
-                        if (package_started)
-                        {
-                            m_pythonPackages << package;
-                        }
-
-                        package_started = true;
-                        package = PythonPackage(); //start new, empty package structure
-                    }
-                    else if (line != "")
-                    {
-                        //check if line consists of key: value
-                        pos = line.indexOf(": ");
-                        if (pos != -1)
-                        {
-                            key = line.left(pos);
-                            value = line.mid(pos+2);
-
-                            switch (keys.indexOf(key))
-                            {
-                            case 0: //Name
-                                package.m_name = value;
-                                break;
-                            case 1: //Version
-                                package.m_version = value;
-                                break;
-                            case 2: //Summary
-                                package.m_summary = value;
-                                break;
-                            case 3: //Home-page
-                                package.m_homepage = value;
-                                break;
-                            case 4: //License
-                                package.m_license = value;
-                                break;
-                            case 5: //Location
-                                package.m_location = value;
-                                break;
-                            case 6: //Requires
-                                package.m_requires = value;
-                                break;
-                            }
-                        }
-                    }
-                }
-
-                if (package_started)
-                {
-                    m_pythonPackages << package;
-                }
-
-                endResetModel();
-                emit pipRequestFinished(temp, "List of packages obtained.\n", true);
-            }
+            finalizeTaskFetchPackagesDetails(error, output);
         }
         else if (temp == taskCheckUpdates)
         {
-            if (error != "" && output == "")
-            {
-                emit pipRequestFinished(temp, "Error obtaining list of outdated packages (list)\n", false);
-            }
-            else
-            {
-                QMap<QString, QString> outdated;
-                QMap<QString, QString> unknown;
-
-                if (m_pipVersion >= 0x120000)
-                {
-                    QStringList lines = output.split("\n");
-                    for (int idx = 2; idx < lines.size(); ++idx)
-                    {
-
-                        #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)) 
-                            QStringList items = lines[idx].split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
-                        #else 
-                            QStringList items = lines[idx].split(QRegularExpression("\\s+"), QString::SkipEmptyParts);
-                        #endif
-                        
-                        if (items.size() >= 4)
-                        {
-                            outdated[items[0]] = items[2];
-                        }
-                    }
-                }
-                else
-                {
-                    QRegularExpression rx("(\\S+) \\(Current: (\\S+) Latest: (\\S+)( \\[\\S+\\])?\\)"); //the style is "scipy (Current: 0.16.1 Latest: 0.17.0 [sdist])"
-                    QRegularExpressionMatchIterator matchIterator = rx.globalMatch(output);
-
-                    while (matchIterator.hasNext())
-                    {
-                        QRegularExpressionMatch match = matchIterator.next();
-                        outdated[match.captured(1)] = match.captured(3);
-                    }
-
-                    //check for style of pip >= 8.0.0
-                    rx.setPattern("(\\S+) \\((\\S+)(, \\S+)?\\) - Latest: (\\S+)( \\[\\S+\\])?"); //the style is "scipy (0.16.1) - Latest: 0.17.0 [sdist]" or "scipy (0.16.1, path-to-location) - Latest: 0.17.0 [sdist]"
-                    matchIterator = rx.globalMatch(output);
-                    
-                    while (matchIterator.hasNext())
-                    {
-                        QRegularExpressionMatch match = matchIterator.next();
-                        outdated[match.captured(1)] = match.captured(4);
-                    }
-
-                    //check for unknown (that could not been fetched)
-
-                    rx.setPattern("Could not find any downloads that satisfy the requirement (\\S+)");
-                    matchIterator = rx.globalMatch(output);
-
-                    while (matchIterator.hasNext())
-                    {
-                        QRegularExpressionMatch match = matchIterator.next();
-                        unknown[match.captured(1)] = "unknown";
-                    }
-                }
-
-                for (int i = 0; i < m_pythonPackages.length(); ++i)
-                {
-                    if (outdated.contains(m_pythonPackages[i].m_name))
-                    {
-                        m_pythonPackages[i].m_newVersion = outdated[m_pythonPackages[i].m_name];
-                        m_pythonPackages[i].m_status = PythonPackage::Outdated;
-                    }
-                    else if (unknown.contains(m_pythonPackages[i].m_name))
-                    {
-                      m_pythonPackages[i].m_status = PythonPackage::Unknown;
-                    }
-                    else
-                    {
-                        m_pythonPackages[i].m_status = PythonPackage::Uptodate;
-                    }
-                }
-
-                emit dataChanged(createIndex(0,4), createIndex(m_pythonPackages.length()-1, 4));
-
-                emit pipRequestFinished(temp, "Packages checked.\n", true);
-            }
+            finalizeTaskCheckUpdates(error, output);
         }
         else if (temp == taskVerifyInstalledPackages)
         {
-            if (error != "" && output == "")
-            {
-                emit pipRequestFinished(temp, "Error verifying if installed packages have compatible dependencies. (check)\n", false);
-            }
-            else
-            {
-                emit pipRequestFinished(temp, "Finished.\n", true);
-            }
+            finalizeTaskVerifyInstalledPackages(error, output);
         }
         else if (temp == taskInstall)
         {
-            if (error != "" && output == "")
-            {
-                emit pipRequestFinished(temp, "Error installing package\n", false);
-            }
-            else
-            {
-                listAvailablePackages();
-            }
+            finalizeTaskInstall(error, output);
         }
         else if (temp == taskUninstall)
         {
-            if (error != "" && output == "")
-            {
-                emit pipRequestFinished(temp, "Error uninstalling package\n", false);
-            }
-            else
-            {
-                listAvailablePackages();
-            }
+            finalizeTaskUninstall(error, output);
         }
     }
 
     clearBuffers();
 }
 
-//-----------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
+void PipManager::finalizeTaskCheckAvailable(const QString& error, const QString& output, int exitCode)
+{
+    if (exitCode == 0)
+    {
+        QRegularExpression reg("pip ((\\d+)\\.(\\d+)\\.(\\d+)) from(.*)");
+        QRegularExpressionMatch match = reg.match(output);
+        if (match.hasMatch())
+        {
+            m_pipVersion = CREATEVERSION(
+                match.captured(2).toInt(),
+                match.captured(3).toInt(),
+                match.captured(4).toInt());
+            QString version = match.captured(1);
+            emit pipVersion(version);
+            m_pipAvailable = true;
+            emit pipRequestFinished(taskCheckAvailable, "", true);
+        }
+        else
+        {
+            QRegularExpression reg("pip ((\\d+)\\.(\\d+)) from(.*)");
+            QRegularExpressionMatch match = reg.match(output);
+            if (match.hasMatch())
+            {
+                m_pipVersion = CREATEVERSION(match.captured(2).toInt(), match.captured(3).toInt(), 0);
+                QString version = match.captured(1);
+                emit pipVersion(version);
+                m_pipAvailable = true;
+                emit pipRequestFinished(taskCheckAvailable, "", true);
+            }
+            else
+            {
+                m_pipAvailable = false;
+                emit pipRequestFinished(taskCheckAvailable, "Package pip is not available. Install Python pip first (see https://pip.pypa.io/en/latest/installing.html).\n", false);
+            }
+        }
+    }
+    else if (exitCode == 3)
+    {
+        m_pipAvailable = false;
+        emit pipRequestFinished(taskCheckAvailable, "Python returned with the error code 3 (no such process). Possibly, the PYTHONHOME environment variable or the corresponding setting in the property dialog of itom is not correctly set to the base directory of Python. Please correct this.", false);
+    }
+    else
+    {
+        m_pipAvailable = false;
+        emit pipRequestFinished(taskCheckAvailable, QString("Python returned with the exit code %1. Please see the module 'errno' for error codes.").arg(exitCode), false);
+    }
+}
+
+//-------------------------------------------------------------------------------------
+void PipManager::finalizeTaskListPackages(const QString& error, const QString& output)
+{
+    if (error != "" && output == "")
+    {
+        emit pipRequestFinished(taskListPackages, "Error obtaining list of packages (list)\n", false);
+    }
+    else
+    {
+        int idx;
+        QStringList packages = output.split("\n");
+
+        // map of new packages (name -> version, version can also be an empty string for older pip versions)
+        QMap<QString, QString> listedPackages;
+
+        beginResetModel();
+
+        if (m_pipVersion >= 0x120000) //>= 18.0
+        {
+            //format columns (first line are headings, then one line with dashes)
+            for (int idx = 2; idx < packages.size(); ++idx)
+            {
+                QStringList items = packages[idx].split(QRegularExpression("\\s+"));
+
+                if (items.size() > 0 && items[0].trimmed() != "")
+                {
+                    listedPackages[items[0].trimmed()] = items[1].trimmed();
+                }
+            }
+        }
+        else
+        {
+            //format legacy
+            foreach(const QString & p, packages)
+            {
+                idx = p.indexOf(" (");
+
+                if (idx != -1)
+                {
+                    listedPackages[p.left(idx)] = ""; // no version tag
+                }
+            }
+        }
+
+        // remove all packages from current list that are not in listedPackages any more
+        // or update an existing item by the new version
+        for (auto it = m_pythonPackages.begin(); it != m_pythonPackages.end(); /* noop */)
+        {
+            if (!listedPackages.contains(it->m_name))
+            {
+                // package does not exist any more
+                it = m_pythonPackages.erase(it);
+            }
+            else
+            {
+                if (listedPackages[it->m_name] != it->m_version)
+                {
+                    // version has changed -> update version and reset details
+                    it->m_version = listedPackages[it->m_name];
+                    it->m_homepage = "";
+                    it->m_detailsFetched = false;
+                    it->m_license = "";
+                    it->m_location = "";
+                    it->m_newVersion = "";
+                    it->m_requires = "";
+                    it->m_status = PythonPackage::Unknown;
+                    it->m_summary = "";
+                }
+
+                // remove package from "new list", since it has been handled
+                listedPackages.remove(it->m_name);
+                it++;
+            }
+        }
+
+        // add all new packages to the m_pythonPackages list
+        for (auto it = listedPackages.constBegin(); it != listedPackages.constEnd(); it++)
+        {
+            PythonPackage item(it.key(), it.value());
+            item.m_detailsFetched = false;
+            m_pythonPackages.append(item);
+        }
+
+        // sort packages by name
+        std::sort(m_pythonPackages.begin(), m_pythonPackages.end(),
+            [](const ito::PythonPackage& a, const ito::PythonPackage& b) -> bool
+            {
+                return QString::compare(a.m_name, b.m_name, Qt::CaseInsensitive) <= 0;
+            }
+        );
+
+        endResetModel();
+
+        if (!triggerFetchDetailsForOpenPackages(true))
+        {
+            emit pipRequestFinished(taskFetchPackagesDetails, "List of packages obtained.\n", true);
+        }
+    }
+}
+
+//-------------------------------------------------------------------------------------
+bool PipManager::triggerFetchDetailsForOpenPackages(bool firstCall)
+{
+    // fetch all details from packages, that have not been updated yet
+    QStringList packages_out;
+
+    foreach(const auto & pckg, m_pythonPackages)
+    {
+        //in rare cases, there are temporary, backup directories, starting with '-'.
+        //they have to be removed here.
+        if (!pckg.m_detailsFetched && !pckg.m_name.startsWith("-"))
+        {
+            packages_out << pckg.m_name;
+        }
+    }
+
+    if (packages_out.size() > 0)
+    {
+        fetchPackageDetails(packages_out.mid(0, 5), packages_out.size(), firstCall);
+        return true;
+    }
+
+    // nothing to trigger
+    return false;
+}
+
+//-------------------------------------------------------------------------------------
+void PipManager::updatePythonPackageDetails(const PythonPackage& details)
+{
+    for (auto it = m_pythonPackages.begin(); it != m_pythonPackages.end(); ++it)
+    {
+        if (it->m_name == details.m_name)
+        {
+            *it = details;
+            it->m_detailsFetched = true;
+        }
+    }
+}
+
+//-------------------------------------------------------------------------------------
+void PipManager::finalizeTaskFetchPackagesDetails(const QString& error, const QString& output)
+{
+    if (error != "" && output == "")
+    {
+        emit pipRequestFinished(taskFetchPackagesDetails, "Error obtaining list of packages (show)\n", false);
+    }
+    else
+    {
+        beginResetModel();
+
+        QStringList lines = output.split("\r\n");
+
+        if (lines.size() == 1) //nothing found (e.g. older pip or linux)
+        {
+            lines = output.split("\n");
+        }
+
+        //The "python.exe - m pip show numpy pip setuptools" request returns a stream in the following way:
+        /*
+        ---
+        Name: numpy
+        Version: 1.11.0
+        Summary: NumPy: array processing for numbers, strings, records, and objects.
+        Home-page: http://www.numpy.org
+        Author: NumPy Developers
+        Author-email: numpy-discussion@scipy.org
+        License: BSD
+        Location: c:\program files\python35\lib\site-packages
+        Requires:
+        ---
+        Name: pip
+        Version: 9.0.1
+        Summary: The PyPA recommended tool for installing Python packages.
+        Home-page: https://pip.pypa.io/
+        Author: The pip developers
+        Author-email: python-virtualenv@groups.google.com
+        License: MIT
+        Location: c:\program files\python35\lib\site-packages
+        Requires:
+        ---
+        Name: setuptools
+        Version: 18.2
+        Summary: Easily download, build, install, upgrade, and uninstall Python packages
+
+        Home-page: https://bitbucket.org/pypa/setuptools
+        Author: Python Packaging Authority
+        Author-email: distutils-sig@python.org
+        License: PSF or ZPL
+        Location: c:\program files\python35\lib\site-packages
+        Requires:
+        */
+
+        //The following code puts every package into the PythonPackage struct.
+        //Once the next ---line is found, the previous package struct is appended to m_pythonPackages
+        //and a new package struct is created.
+
+        //Starting from pip 9.0.0, the response does not start with a --- line, therefore
+        // package_started has to be set to true in this case, while it was false for pip < 9.0.0
+
+        PythonPackage package;
+        bool package_started = false;
+
+        if (m_pipVersion >= 0x090000)
+        {
+            package_started = true;
+        }
+
+        int pos;
+        QString key, value;
+        QStringList keys;
+        keys << "Name" << "Version" << "Summary" << "Home-page" << "License" << "Location" << "Requires";
+
+        foreach(const QString & line, lines)
+        {
+            if (line == "---")
+            {
+                if (package_started)
+                {
+                    updatePythonPackageDetails(package);
+                    m_numberOfNewlyObtainedPackageDetails++;
+                }
+
+                package_started = true;
+                package = PythonPackage(); //start new, empty package structure
+            }
+            else if (line != "")
+            {
+                //check if line consists of key: value
+                pos = line.indexOf(": ");
+
+                if (pos != -1)
+                {
+                    key = line.left(pos);
+                    value = line.mid(pos + 2);
+
+                    switch (keys.indexOf(key))
+                    {
+                    case 0: //Name
+                        if (package.m_name == "")
+                        {
+                            package.m_name = value;
+                        }
+                        break;
+                    case 1: //Version
+                        if (package.m_version == "")
+                        {
+                            package.m_version = value;
+                        }
+                        break;
+                    case 2: //Summary
+                        if (package.m_summary == "")
+                        {
+                            package.m_summary = value;
+                        }
+                        break;
+                    case 3: //Home-page
+                        if (package.m_homepage == "")
+                        {
+                            package.m_homepage = value;
+                        }
+                        break;
+                    case 4: //License
+                        if (package.m_license == "")
+                        {
+                            package.m_license = value;
+                        }
+                        break;
+                    case 5: //Location
+                        if (package.m_location == "")
+                        {
+                            package.m_location = value;
+                        }
+                        break;
+                    case 6: //Requires
+                        if (package.m_requires == "")
+                        {
+                            package.m_requires = value;
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (package_started)
+        {
+            updatePythonPackageDetails(package);
+            m_numberOfNewlyObtainedPackageDetails++;
+        }
+
+        endResetModel();
+
+        emit pipFetchDetailsProgress(m_numberOfUnfetchedPackageDetails, m_numberOfNewlyObtainedPackageDetails, false);
+
+        if (!m_fetchDetailCancelRequested)
+        {
+            if (!triggerFetchDetailsForOpenPackages(false))
+            {
+                emit pipRequestFinished(taskFetchPackagesDetails, "List of packages obtained.\n", true);
+                emit pipFetchDetailsProgress(m_numberOfUnfetchedPackageDetails, m_numberOfUnfetchedPackageDetails, true);
+            }
+        }
+        else
+        {
+            emit pipRequestFinished(taskFetchPackagesDetails, "List of packages obtained (details only partially available).\n", true);
+            emit pipFetchDetailsProgress(m_numberOfUnfetchedPackageDetails, m_numberOfUnfetchedPackageDetails, true);
+        }
+    }
+}
+
+//-------------------------------------------------------------------------------------
+void PipManager::finalizeTaskCheckUpdates(const QString& error, const QString& output)
+{
+    if (error != "" && output == "")
+    {
+        emit pipRequestFinished(taskCheckUpdates, "Error obtaining list of outdated packages (list)\n", false);
+    }
+    else
+    {
+        QMap<QString, QString> outdated;
+        QMap<QString, QString> unknown;
+
+        if (m_pipVersion >= 0x120000)
+        {
+            QStringList lines = output.split("\n");
+
+            for (int idx = 2; idx < lines.size(); ++idx)
+            {
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+                QStringList items = lines[idx].split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
+#else
+                QStringList items = lines[idx].split(QRegularExpression("\\s+"), QString::SkipEmptyParts);
+#endif
+
+                if (items.size() >= 4)
+                {
+                    outdated[items[0]] = items[2];
+                }
+            }
+        }
+        else
+        {
+            QRegularExpression rx("(\\S+) \\(Current: (\\S+) Latest: (\\S+)( \\[\\S+\\])?\\)"); //the style is "scipy (Current: 0.16.1 Latest: 0.17.0 [sdist])"
+            QRegularExpressionMatchIterator matchIterator = rx.globalMatch(output);
+
+            while (matchIterator.hasNext())
+            {
+                QRegularExpressionMatch match = matchIterator.next();
+                outdated[match.captured(1)] = match.captured(3);
+            }
+
+            //check for style of pip >= 8.0.0
+            rx.setPattern("(\\S+) \\((\\S+)(, \\S+)?\\) - Latest: (\\S+)( \\[\\S+\\])?"); //the style is "scipy (0.16.1) - Latest: 0.17.0 [sdist]" or "scipy (0.16.1, path-to-location) - Latest: 0.17.0 [sdist]"
+            matchIterator = rx.globalMatch(output);
+
+            while (matchIterator.hasNext())
+            {
+                QRegularExpressionMatch match = matchIterator.next();
+                outdated[match.captured(1)] = match.captured(4);
+            }
+
+            //check for unknown (that could not been fetched)
+
+            rx.setPattern("Could not find any downloads that satisfy the requirement (\\S+)");
+            matchIterator = rx.globalMatch(output);
+
+            while (matchIterator.hasNext())
+            {
+                QRegularExpressionMatch match = matchIterator.next();
+                unknown[match.captured(1)] = "unknown";
+            }
+        }
+
+        for (int i = 0; i < m_pythonPackages.length(); ++i)
+        {
+            if (outdated.contains(m_pythonPackages[i].m_name))
+            {
+                m_pythonPackages[i].m_newVersion = outdated[m_pythonPackages[i].m_name];
+                m_pythonPackages[i].m_status = PythonPackage::Outdated;
+            }
+            else if (unknown.contains(m_pythonPackages[i].m_name))
+            {
+                m_pythonPackages[i].m_status = PythonPackage::Unknown;
+            }
+            else
+            {
+                m_pythonPackages[i].m_status = PythonPackage::Uptodate;
+            }
+        }
+
+        emit dataChanged(createIndex(0, 4), createIndex(m_pythonPackages.length() - 1, 4));
+
+        emit pipRequestFinished(taskCheckUpdates, "Packages checked.\n", true);
+    }
+}
+
+//-------------------------------------------------------------------------------------
+void PipManager::finalizeTaskVerifyInstalledPackages(const QString& error, const QString& output)
+{
+    if (error != "" && output == "")
+    {
+        emit pipRequestFinished(taskVerifyInstalledPackages, "Error verifying if installed packages have compatible dependencies. (check)\n", false);
+    }
+    else
+    {
+        emit pipRequestFinished(taskVerifyInstalledPackages, "Finished.\n", true);
+    }
+}
+
+//-------------------------------------------------------------------------------------
+void PipManager::finalizeTaskInstall(const QString& error, const QString& output)
+{
+    if (error != "" && output == "")
+    {
+        emit pipRequestFinished(taskInstall, "Error installing package\n", false);
+    }
+    else
+    {
+        listAvailablePackages();
+    }
+}
+
+//-------------------------------------------------------------------------------------
+void PipManager::finalizeTaskUninstall(const QString& error, const QString& output)
+{
+    if (error != "" && output == "")
+    {
+        emit pipRequestFinished(taskUninstall, "Error uninstalling package\n", false);
+    }
+    else
+    {
+        listAvailablePackages();
+    }
+}
+
+//-------------------------------------------------------------------------------------
 QStringList PipManager::parseGeneralOptions(const PipGeneralOptions &options, bool ignoreRetries /*= false*/, bool ignoreVersionCheck /*= true*/) const
 {
     QStringList output;
 
     if (options.isolated)
-    {   
+    {
         output << "--isolated";
     }
 
@@ -1305,10 +1617,17 @@ void PipManager::clearBuffers()
 //-----------------------------------------------------------------------------------------
 void PipManager::interruptPipProcess()
 {
+    if (m_currentTask == taskFetchPackagesDetails)
+    {
+        m_fetchDetailCancelRequested = true;
+    }
+
     if (m_pipProcess.state() == QProcess::Running || m_pipProcess.state() == QProcess::Starting)
     {
         m_pipProcess.kill();
     }
+
+
 }
 
 //-----------------------------------------------------------------------------------------

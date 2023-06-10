@@ -1,8 +1,8 @@
 """Selection of data
 ====================
 """
-import pandas as pd
 import numpy as np
+import pandas as pd
 
 # sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoPandas.png'
 
@@ -20,7 +20,7 @@ dataFrame[0:3]
 dataFrame["20220501":"20220502"]
 
 ###############################################################################
-# **Selection by label **
+# **Selection by label**
 dataFrame.loc[dates[0]]
 
 ###############################################################################

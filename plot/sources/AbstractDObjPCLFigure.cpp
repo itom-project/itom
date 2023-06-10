@@ -10,7 +10,7 @@
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
-   
+
     In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
@@ -61,26 +61,26 @@ AbstractDObjPclFigure::~AbstractDObjPclFigure()
 ito::RetVal AbstractDObjPclFigure::update(void)
 {
     //!> do the real update work, here the transformation from source to displayed takes place
-    return applyUpdate();  
+    return applyUpdate();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-QSharedPointer<ito::DataObject> AbstractDObjPclFigure::getDataObject(void) const 
+QSharedPointer<ito::DataObject> AbstractDObjPclFigure::getDataObject(void) const
 {
     const ito::Param *p = getInputParam("dataObject");
     const ito::DataObject *dObj = p ? p->getVal<const ito::DataObject*>() : NULL;
 
     if (dObj)
     {
-        return QSharedPointer<ito::DataObject>(new ito::DataObject(*dObj)); 
+        return QSharedPointer<ito::DataObject>(new ito::DataObject(*dObj));
     }
 
     return QSharedPointer<ito::DataObject>();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal AbstractDObjPclFigure::setDataObject(QSharedPointer<ito::DataObject> source) 
-{ 
+ito::RetVal AbstractDObjPclFigure::setDataObject(QSharedPointer<ito::DataObject> source)
+{
     ito::RetVal retval = ito::retOk;
     QSharedPointer<ito::DataObject> oldSource; //possible backup for previous source, this backup must be alive until updateParam with the new one has been completely propagated
 
@@ -92,13 +92,13 @@ ito::RetVal AbstractDObjPclFigure::setDataObject(QSharedPointer<ito::DataObject>
         {
             oldSource = m_dataPointerDObj["dataObject"];
             m_dataPointerDObj["dataObject"] = source;
-        }  
+        }
     }
     else
     {
         m_dataPointerDObj["dataObject"] = source;
     }
-            
+
     ito::ParamBase thisParam("dataObject", ito::ParamBase::DObjPtr, (const char*)source.data());
     m_inpType = ito::ParamBase::DObjPtr;
     retval += inputParamChanged(&thisParam);
@@ -110,22 +110,22 @@ ito::RetVal AbstractDObjPclFigure::setDataObject(QSharedPointer<ito::DataObject>
 
 #ifdef USEPCL
 //----------------------------------------------------------------------------------------------------------------------------------
-QSharedPointer<ito::PCLPointCloud> AbstractDObjPclFigure::getPointCloud(void) const 
+QSharedPointer<ito::PCLPointCloud> AbstractDObjPclFigure::getPointCloud(void) const
 {
     const ito::Param *p = getInputParam("pointCloud");
     const ito::PCLPointCloud *pc = p ? p->getVal<const ito::PCLPointCloud*>() : NULL;
 
     if (pc)
     {
-        return QSharedPointer<ito::PCLPointCloud>(new ito::PCLPointCloud(*pc)); 
+        return QSharedPointer<ito::PCLPointCloud>(new ito::PCLPointCloud(*pc));
     }
 
     return QSharedPointer<ito::PCLPointCloud>();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal AbstractDObjPclFigure::setPointCloud(QSharedPointer<ito::PCLPointCloud> source) 
-{ 
+ito::RetVal AbstractDObjPclFigure::setPointCloud(QSharedPointer<ito::PCLPointCloud> source)
+{
     ito::RetVal retval = ito::retOk;
     QSharedPointer<ito::PCLPointCloud> oldSource; //possible backup for previous source, this backup must be alive until updateParam with the new one has been completely propagated
 
@@ -137,13 +137,13 @@ ito::RetVal AbstractDObjPclFigure::setPointCloud(QSharedPointer<ito::PCLPointClo
         {
             oldSource = m_dataPointerPC["pointCloud"];
             m_dataPointerPC["pointCloud"] = source;
-        }  
+        }
     }
     else
     {
         m_dataPointerPC["pointCloud"] = source;
     }
-            
+
     ito::ParamBase thisParam("pointCloud", ito::ParamBase::PointCloudPtr, (const char*)source.data());
     m_inpType = ito::ParamBase::PointCloudPtr;
     retval += inputParamChanged(&thisParam);
@@ -154,22 +154,22 @@ ito::RetVal AbstractDObjPclFigure::setPointCloud(QSharedPointer<ito::PCLPointClo
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-QSharedPointer<ito::PCLPolygonMesh> AbstractDObjPclFigure::getPolygonMesh(void) const 
+QSharedPointer<ito::PCLPolygonMesh> AbstractDObjPclFigure::getPolygonMesh(void) const
 {
     const ito::Param *p = getInputParam("polygonMesh");
     const ito::PCLPolygonMesh *pm = p ? p->getVal<const ito::PCLPolygonMesh*>() : NULL;
 
     if (pm)
     {
-        return QSharedPointer<ito::PCLPolygonMesh>(new ito::PCLPolygonMesh(*pm)); 
+        return QSharedPointer<ito::PCLPolygonMesh>(new ito::PCLPolygonMesh(*pm));
     }
 
     return QSharedPointer<ito::PCLPolygonMesh>();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal AbstractDObjPclFigure::setPolygonMesh(QSharedPointer<ito::PCLPolygonMesh> source) 
-{ 
+ito::RetVal AbstractDObjPclFigure::setPolygonMesh(QSharedPointer<ito::PCLPolygonMesh> source)
+{
     ito::RetVal retval = ito::retOk;
     QSharedPointer<ito::PCLPolygonMesh> oldSource; //possible backup for previous source, this backup must be alive until updateParam with the new one has been completely propagated
 
@@ -182,13 +182,13 @@ ito::RetVal AbstractDObjPclFigure::setPolygonMesh(QSharedPointer<ito::PCLPolygon
             oldSource = m_dataPointerPM["polygonMesh"];
             m_dataPointerPM["polygonMesh"] = source;
 
-        }  
+        }
     }
     else
     {
         m_dataPointerPM["polygonMesh"] = source;
     }
-            
+
     ito::ParamBase thisParam("polygonMesh", ito::ParamBase::PolygonMeshPtr, (const char*)source.data());
     m_inpType = ito::ParamBase::PolygonMeshPtr;
     retval += inputParamChanged(&thisParam);

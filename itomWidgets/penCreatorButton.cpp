@@ -71,7 +71,7 @@ PenCreatorButton::PenCreatorButton(QWidget* _parent)
     Q_D(PenCreatorButton);
     d->init();
 
-        
+
 };
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
 PenCreatorButton::PenCreatorButton(QPen pen, QWidget* parent) :
@@ -103,7 +103,7 @@ void PenCreatorButton::paintEvent(QPaintEvent* event)
         QPainter p(&pix);
         p.setPen(d->pen);
 
-       
+
         p.drawLine(2, 2 + ((pix.height() - 5) / 2), pix.width()-2, 2 + ((pix.height() - 5) / 2));
         d->m_icon = QIcon(pix);
         d->m_iconSizeCache = desiredIconSize;
@@ -153,12 +153,12 @@ void PenCreatorButton::changePen()
     if (d->dialog->exec())
     {
         d->m_icon = QIcon();
-       
+
     }
     delete d->dialog;
     d->dialog = NULL;
 
-    
+
 
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -181,7 +181,7 @@ QSize PenCreatorButton::sizeHint() const
     opt.arrowType = Qt::NoArrow;
     opt.icon = d->m_icon;
     opt.iconSize = QSize(iconSize, iconSize);
-    opt.rect.setSize(opt.iconSize); // PM_MenuButtonIndicator depends on the height  
+    opt.rect.setSize(opt.iconSize); // PM_MenuButtonIndicator depends on the height
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
     d->m_sizeHintCache = this->style()
                              ->sizeFromContents(QStyle::CT_ToolButton, &opt, opt.iconSize, this);

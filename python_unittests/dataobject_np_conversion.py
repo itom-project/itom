@@ -60,7 +60,7 @@ class DataObjectNpConversion(unittest.TestCase):
         value is 0. Usually a value != 0 is required. This has to be considered
         by the itom conversion.
 
-        This test is related to issue https://bitbucket.org/itom/itom/issues/176
+        This test is related to issue https://github.com/itom-project/itom/issues/166
         """
         arr = (np.random.rand(512, 512) * 10000).astype("int32")
         arr1 = arr[:, 0]  # 1 dim, strides  (2048,) --> ok
@@ -167,7 +167,7 @@ class DataObjectNpConversion(unittest.TestCase):
 
     def test_createEmptyDataObjectFromEmptyNpArray(self):
         """this test reproduces the issue
-        https://bitbucket.org/itom/itom/issues/114/systemerror-when-converting-an-empty
+        https://github.com/itom-project/itom/issues/114
         """
         dtypes = [
             "uint8",
@@ -260,6 +260,6 @@ class DataObjectNpConversion(unittest.TestCase):
         self.assertEqual(dObj.tags["_orgNpShape"], "[{}]".format(npArray.shape[0]))
         self.assertEqual(dObj.tags["_orgNpDType"], "complex128")
 
-        
+
 if __name__ == "__main__":
     unittest.main(module="dataobject_np_conversion", exit=False)

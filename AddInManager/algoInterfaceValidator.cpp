@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -102,7 +102,7 @@ namespace ito
             {
                 outParams << ito::ParamBase( outs[i] );
             }
-            
+
             return ito::retOk;
         }
 
@@ -192,7 +192,7 @@ namespace ito
     //----------------------------------------------------------------------------------------------------------------------------------
     //! verifies and parses the meta information string of any filter or algoWidget
     /*!
-        Sometimes a certain algorithm interface needs that the user gives additional information about the 
+        Sometimes a certain algorithm interface needs that the user gives additional information about the
         filter when creating this filter in the plugin. This additional information can be given by the meta information
         string in the structs FilterDef and AlgoWidgetDef. In the filter or algoWidget pretends to fit to a certain
         algorithm interface, this method is called with the interface number and the meta information string. Then, this
@@ -261,7 +261,7 @@ namespace ito
 
         \param [in] iface is the interface enumeration value whose requirements should be registered
         \param [in] mandParams is a vector indicating the first m mandatory parameters every filter that implements this interface must provide, too.
-        \param [in] outParams is a vector indicating the fist n output parameters every filter that implements this interface must provide, too. 
+        \param [in] outParams is a vector indicating the fist n output parameters every filter that implements this interface must provide, too.
                     Remember that every parameter in this vector must have the Out-flag set and no In-flag.
         \param [in] maxNumMand is the maximum number of mandatory parameters
         \param [in] maxNumOpt is the maximum number of optional parameters
@@ -401,7 +401,7 @@ namespace ito
             }
 
             ito::tCompareResult result;
-            
+
             // checking if the number of parameters is equal, otherwise this might crash
             if (paramsMand.size() < it->mandParams.size())
                 return false;

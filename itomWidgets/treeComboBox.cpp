@@ -10,7 +10,7 @@
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
-   
+
     In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
@@ -24,7 +24,7 @@
     You should have received a copy of the GNU Library General Public License
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 
-    This file is a port and modified version of the 
+    This file is a port and modified version of the
     Common framework (http://www.commontk.org)
 *********************************************************************** */
 
@@ -139,27 +139,27 @@ bool TreeComboBox::eventFilter(QObject* object, QEvent* _event)
         }
       break;
     case QEvent::MouseButtonRelease:
-      QMouseEvent* mouseEvent = dynamic_cast<QMouseEvent*>(_event); 
+      QMouseEvent* mouseEvent = dynamic_cast<QMouseEvent*>(_event);
       QModelIndex index = this->view()->indexAt(mouseEvent->pos());
       // do we click the branch (+ or -) or the item itself ?
-      if (this->view()->model()->hasChildren(index) && 
+      if (this->view()->model()->hasChildren(index) &&
           (index.flags() & Qt::ItemIsSelectable) &&
           !this->view()->visualRect(index).contains(mouseEvent->pos()))
         {//qDebug() << "Set skip on";
-        // if the branch is clicked, then we don't want to close the 
+        // if the branch is clicked, then we don't want to close the
         // popup. (we don't want to select the item, just expand it.)
         // of course, all that doesn't apply with unselectable items, as
         // they won't close the popup.
         d->SkipNextHide = true;
         }
 
-      // we want to get rid of an odd behavior. 
-      // If the user highlight a selectable item and then 
-      // click on the branch of an unselectable item while keeping the 
+      // we want to get rid of an odd behavior.
+      // If the user highlight a selectable item and then
+      // click on the branch of an unselectable item while keeping the
       // previous selection. The popup would be normally closed in that
       // case. We don't want that.
-      if ( this->view()->model()->hasChildren(index) && 
-           !(index.flags() & Qt::ItemIsSelectable) &&         
+      if ( this->view()->model()->hasChildren(index) &&
+           !(index.flags() & Qt::ItemIsSelectable) &&
            !this->view()->visualRect(index).contains(mouseEvent->pos()))
         {//qDebug() << "eat";
         // eat the event, don't go to the QComboBox event filters.
@@ -193,7 +193,7 @@ void TreeComboBox::showPopup()
 void TreeComboBox::hidePopup()
 {
   Q_D(TreeComboBox);
-  
+
   if (d->SkipNextHide)
     {// don't hide the popup if the selected item is a parent.
     d->SkipNextHide = false;

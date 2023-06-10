@@ -19,7 +19,7 @@ contains a huge tutorial about |python| which is good for newbies. This section 
 
 .. toctree::
     :maxdepth: 1
-    
+
     pymod-itom.rst
     pymod-dataObject.rst
     pymod-load-save-files.rst

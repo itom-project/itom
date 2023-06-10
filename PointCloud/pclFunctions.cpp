@@ -10,7 +10,7 @@
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
-   
+
     In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
@@ -39,7 +39,7 @@
     #include <pcl/ros/conversions.h>
 #endif
 
-namespace ito 
+namespace ito
 {
 
 namespace pclHelper
@@ -191,7 +191,7 @@ ito::RetVal pointCloud2ToPCLPointCloud(const sensor_msgs::PointCloud2 &msg, PCLP
 ito::RetVal pclPointCloudToPointCloud2(const PCLPointCloud &pc, pcl::PCLPointCloud2 &msg)
 {
     RetVal retval = retOk;
-    
+
     ito::tPCLPointType pointType = pc.getType();
     pcl::MsgFieldMap field_map;
 
@@ -229,7 +229,7 @@ ito::RetVal pclPointCloudToPointCloud2(const PCLPointCloud &pc, pcl::PCLPointClo
 ito::RetVal pclPointCloudToPointCloud2(const PCLPointCloud &pc, sensor_msgs::PointCloud2 &msg)
 {
     RetVal retval = retOk;
-    
+
     ito::tPCLPointType pointType = pc.getType();
     pcl::MsgFieldMap field_map;
 
@@ -312,7 +312,7 @@ ito::tPCLPointType guessPointType(const sensor_msgs::PointCloud2 &msg)
         else if ((rgb || rgba) && normal && !intensity)
         {
             return ito::pclXYZRGBNormal;
-        } 
+        }
     }
 
     return ito::pclInvalid;
@@ -392,7 +392,7 @@ ito::RetVal POINTCLOUD_EXPORT normalsAtCogFromPolygonMesh(const PCLPolygonMesh &
 #endif
                     has_next = indexed_mode ? (indices.size() > next_index) : (nrPolygons > next_index);
                     out_points->reserve(indices.size() > 0 ? indices.size() : nrPolygons);
-                    
+
                     while (has_next)
                     {
                         index = indexed_mode ? indices[next_index] : next_index;
@@ -409,7 +409,7 @@ ito::RetVal POINTCLOUD_EXPORT normalsAtCogFromPolygonMesh(const PCLPolygonMesh &
                             }
                             v_ = &(v->vertices.front());
                             a = points_->points[*(v_+1)].getVector3fMap() - points_->points[*v_].getVector3fMap();
-                            b = points_->points[*(v_+2)].getVector3fMap() - points_->points[*v_].getVector3fMap(); 
+                            b = points_->points[*(v_+2)].getVector3fMap() - points_->points[*v_].getVector3fMap();
                             //     P1
                             //    /  \
                             //   P0 - P2
@@ -448,7 +448,7 @@ ito::RetVal POINTCLOUD_EXPORT normalsAtCogFromPolygonMesh(const PCLPolygonMesh &
 #endif
                     has_next = indexed_mode ? (indices.size() > next_index) : (nrPolygons > next_index);
                     out_points->reserve(indices.size() > 0 ? indices.size() : nrPolygons);
-                    
+
                     while (has_next)
                     {
                         index = indexed_mode ? indices[next_index] : next_index;
@@ -467,7 +467,7 @@ ito::RetVal POINTCLOUD_EXPORT normalsAtCogFromPolygonMesh(const PCLPolygonMesh &
                             }
                             v_ = &(v->vertices.front());
                             a = points_->points[*(v_+1)].getVector3fMap() - points_->points[*v_].getVector3fMap();
-                            b = points_->points[*(v_+2)].getVector3fMap() - points_->points[*v_].getVector3fMap(); 
+                            b = points_->points[*(v_+2)].getVector3fMap() - points_->points[*v_].getVector3fMap();
                             //     P1
                             //    /  \
                             //   P0 - P2
@@ -512,7 +512,7 @@ ito::RetVal POINTCLOUD_EXPORT normalsAtCogFromPolygonMesh(const PCLPolygonMesh &
                     out_points->reserve(indices.size() > 0 ? indices.size() : nrPolygons);
 
                     float intensity;
-                    
+
                     while (has_next)
                     {
                         index = indexed_mode ? indices[next_index] : next_index;
@@ -531,7 +531,7 @@ ito::RetVal POINTCLOUD_EXPORT normalsAtCogFromPolygonMesh(const PCLPolygonMesh &
                             }
                             v_ = &(v->vertices.front());
                             a = points_->points[*(v_+1)].getVector3fMap() - points_->points[*v_].getVector3fMap();
-                            b = points_->points[*(v_+2)].getVector3fMap() - points_->points[*v_].getVector3fMap(); 
+                            b = points_->points[*(v_+2)].getVector3fMap() - points_->points[*v_].getVector3fMap();
                             //     P1
                             //    /  \
                             //   P0 - P2
@@ -573,7 +573,7 @@ ito::RetVal POINTCLOUD_EXPORT normalsAtCogFromPolygonMesh(const PCLPolygonMesh &
                     out_points->reserve(indices.size() > 0 ? indices.size() : nrPolygons);
 
                     float intensity;
-                    
+
                     while (has_next)
                     {
                         index = indexed_mode ? indices[next_index] : next_index;
@@ -594,7 +594,7 @@ ito::RetVal POINTCLOUD_EXPORT normalsAtCogFromPolygonMesh(const PCLPolygonMesh &
                             }
                             v_ = &(v->vertices.front());
                             a = points_->points[*(v_+1)].getVector3fMap() - points_->points[*v_].getVector3fMap();
-                            b = points_->points[*(v_+2)].getVector3fMap() - points_->points[*v_].getVector3fMap(); 
+                            b = points_->points[*(v_+2)].getVector3fMap() - points_->points[*v_].getVector3fMap();
                             //     P1
                             //    /  \
                             //   P0 - P2
@@ -640,7 +640,7 @@ ito::RetVal POINTCLOUD_EXPORT normalsAtCogFromPolygonMesh(const PCLPolygonMesh &
                     out_points->reserve(indices.size() > 0 ? indices.size() : nrPolygons);
 
                     float red,green,blue,alpha;
-                    
+
                     while (has_next)
                     {
                         index = indexed_mode ? indices[next_index] : next_index;
@@ -662,7 +662,7 @@ ito::RetVal POINTCLOUD_EXPORT normalsAtCogFromPolygonMesh(const PCLPolygonMesh &
                             }
                             v_ = &(v->vertices.front());
                             a = points_->points[*(v_+1)].getVector3fMap() - points_->points[*v_].getVector3fMap();
-                            b = points_->points[*(v_+2)].getVector3fMap() - points_->points[*v_].getVector3fMap(); 
+                            b = points_->points[*(v_+2)].getVector3fMap() - points_->points[*v_].getVector3fMap();
                             //     P1
                             //    /  \
                             //   P0 - P2
@@ -707,7 +707,7 @@ ito::RetVal POINTCLOUD_EXPORT normalsAtCogFromPolygonMesh(const PCLPolygonMesh &
                     out_points->reserve(indices.size() > 0 ? indices.size() : nrPolygons);
 
                     float red,green,blue,alpha;
-                    
+
                     while (has_next)
                     {
                         index = indexed_mode ? indices[next_index] : next_index;
@@ -731,7 +731,7 @@ ito::RetVal POINTCLOUD_EXPORT normalsAtCogFromPolygonMesh(const PCLPolygonMesh &
                             }
                             v_ = &(v->vertices.front());
                             a = points_->points[*(v_+1)].getVector3fMap() - points_->points[*v_].getVector3fMap();
-                            b = points_->points[*(v_+2)].getVector3fMap() - points_->points[*v_].getVector3fMap(); 
+                            b = points_->points[*(v_+2)].getVector3fMap() - points_->points[*v_].getVector3fMap();
                             //     P1
                             //    /  \
                             //   P0 - P2
@@ -763,7 +763,7 @@ ito::RetVal POINTCLOUD_EXPORT normalsAtCogFromPolygonMesh(const PCLPolygonMesh &
                     out_points->width = count;
                 }
             }
-            
+
         }
         else
         {
@@ -929,7 +929,7 @@ template<typename _Tp> ito::RetVal readXYZIData(const cv::Mat *x, const cv::Mat 
             }
         }
     }
-    
+
 	if (organized)
 	{
 		cloud->width = width;
@@ -984,7 +984,7 @@ template<typename _Tp> ito::RetVal readXYZRGBAData(const cv::Mat *x, const cv::M
                 }
             }
         }
-        
+
         cloud->resize(counter);
     }
     else
@@ -1016,7 +1016,7 @@ template<typename _Tp> ito::RetVal readXYZRGBAData(const cv::Mat *x, const cv::M
             }
         }
     }
-    
+
 
 	if ((counter == (width * height)) && organized)
 	{
@@ -1144,14 +1144,14 @@ ito::RetVal pointCloudFromDisparity(const DataObject* mapDisp, PCLPointCloud &ou
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-template<typename _TpM, typename _TpI> void fromDataObj(const cv::Mat *mapDisp, const cv::Mat *mapInt, const ito::float32 firstX, const ito::float32 stepX, 
-    const ito::float32 firstY, const ito::float32 stepY, 
+template<typename _TpM, typename _TpI> void fromDataObj(const cv::Mat *mapDisp, const cv::Mat *mapInt, const ito::float32 firstX, const ito::float32 stepX,
+    const ito::float32 firstY, const ito::float32 stepY,
     const ito::float32 minI, const ito::float32 scaleI,
     const bool deleteNaNorInf, ito::PCLPointCloud &out)
 {
     pcl::PointCloud<pcl::PointXYZI>::Ptr cloud;
     pcl::PointXYZI point;
-            
+
     int width = mapDisp->cols;
     int height = mapDisp->rows;
 
@@ -1239,7 +1239,7 @@ template<typename _TpM> ito::RetVal fromDataObj1(const cv::Mat *mapDisp, const i
 {
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud;
     pcl::PointXYZ point;
-            
+
     int width = mapDisp->cols;
     int height = mapDisp->rows;
 
@@ -1429,11 +1429,11 @@ ito::RetVal pointCloudFromDisparityI(const DataObject* mapDisp, const DataObject
     float firstY = 0.0;
     float stepY = 1.0;
 
-    retval += ito::dObjHelper::verify2DDataObject(mapDisp, "disparityMap", 1, std::numeric_limits<int>::max(), 1, std::numeric_limits<int>::max(), 8, ito::tInt8, ito::tUInt8, ito::tInt16, ito::tUInt16, 
+    retval += ito::dObjHelper::verify2DDataObject(mapDisp, "disparityMap", 1, std::numeric_limits<int>::max(), 1, std::numeric_limits<int>::max(), 8, ito::tInt8, ito::tUInt8, ito::tInt16, ito::tUInt16,
         ito::tInt32, ito::tUInt32, ito::tFloat32, ito::tFloat64);
     if (mapI)
     {
-        retval += ito::dObjHelper::verify2DDataObject(mapI, "intensityMap", 1, std::numeric_limits<int>::max(), 1, std::numeric_limits<int>::max(), 8, ito::tInt8, ito::tUInt8, ito::tInt16, ito::tUInt16, 
+        retval += ito::dObjHelper::verify2DDataObject(mapI, "intensityMap", 1, std::numeric_limits<int>::max(), 1, std::numeric_limits<int>::max(), 8, ito::tInt8, ito::tUInt8, ito::tInt16, ito::tUInt16,
         ito::tInt32, ito::tUInt32, ito::tFloat32, ito::tFloat64);
 
         if (mapI->getSize(0) != mapDisp->getSize(0) || mapI->getSize(1) != mapDisp->getSize(1))
@@ -1601,7 +1601,7 @@ ito::RetVal pointCloudFromDisparityRGBA(const DataObject* mapDisp, const DataObj
         {
             pcl::PointCloud<pcl::PointXYZ>::Ptr cloud;
             pcl::PointXYZ point;
-            
+
             width = mapDisp->getSize(1);
             height = mapDisp->getSize(0);
 
@@ -1680,7 +1680,7 @@ ito::RetVal pointCloudFromDisparityRGBA(const DataObject* mapDisp, const DataObj
 
             pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud;
             pcl::PointXYZRGBA point;
-            
+
             width = mapDisp->getSize(1);
             height = mapDisp->getSize(0);
 
@@ -1769,7 +1769,7 @@ ito::RetVal pointCloudToDObj(const PCLPointCloud *pc, DataObject &out)
     {
         return RetVal(retError, 0, "PCLPointCloud is NULL");
     }
-    
+
     if (pc->getType() == ito::pclXYZ)
     {
         pcl::PointCloud<pcl::PointXYZ>::Ptr cloud = pc->toPointXYZ();
@@ -1891,7 +1891,7 @@ ito::RetVal pointCloudToDObj(const PCLPointCloud *pc, DataObject &out)
             nzRow[i] = point->normal_z;
             ncurvRow[i] = point->curvature;
             iRow[i] = point->intensity;
-            
+
         }
     }
     else if (pc->getType() == ito::pclXYZRGBNormal)
@@ -1927,7 +1927,7 @@ ito::RetVal pointCloudToDObj(const PCLPointCloud *pc, DataObject &out)
             gRow[i] = point->g;
             bRow[i] = point->b;
             aRow[i] = point->a;
-            
+
         }
     }
     else if (pc->getType() == ito::pclInvalid)
@@ -1950,7 +1950,7 @@ ito::RetVal dataObj4x4ToEigenAffine3f(const DataObject *in, Eigen::Affine3f &out
     if (in)
     {
         ito::DataObject in2 = ito::dObjHelper::squeezeConvertCheck2DDataObject(in, "transform", ito::Range(4, 4), ito::Range(4, 4), retval, ito::tFloat32, 8, ito::tInt8, ito::tUInt8, ito::tInt16, ito::tUInt16, ito::tInt32, ito::tUInt32, ito::tFloat32, ito::tFloat64);
-        
+
         if (!retval.containsError())
         {
             const ito::float32* r0 = in2.rowPtr<ito::float32>(0, 0);

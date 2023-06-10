@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -40,7 +40,7 @@ DialogCloseItom::DialogCloseItom(QWidget *parent) :
 	m_timerID(-1)
 {
     ui.setupUi(this);
-	
+
     setWindowModality(Qt::WindowModal);
     ui.btnInterrupt->setDefault(true);
 
@@ -66,18 +66,18 @@ void DialogCloseItom::on_btnInterrupt_clicked()
 		loadGif->start();
 
         ui.lbl2->setText(tr("Try to interrupt Python..."));
-		
+
 		pyEngine->pythonInterruptExecutionThreadSafe(); // close python
-		
+
         ui.btnInterrupt->setEnabled(false);
         ui.btnCancel->setEnabled(false);
         ui.progressBarClose->setMaximum(m_secondsToWait);
         ui.progressBarClose->setValue(0);
 		ui.progressBarClose->setVisible(true);
-        
+
 		m_secondsElapsed = 0.0;
 		m_timerID = startTimer(1000);
-	}	
+	}
 
 }
 
@@ -91,7 +91,7 @@ void DialogCloseItom::on_btnCancel_clicked()
 void DialogCloseItom::timerEvent(QTimerEvent *event)
 {
 	m_secondsElapsed += 1;
-	
+
 	ui.progressBarClose->setValue(m_secondsElapsed);
 	PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
 	if (!pyEngine->isPythonBusy())

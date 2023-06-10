@@ -51,7 +51,7 @@ BreakPointDockWidget::BreakPointDockWidget(const QString &title, const QString &
     connect(m_breakPointView, SIGNAL(doubleClicked(const QModelIndex &)), this, SLOT(doubleClicked(const QModelIndex &)));
     connect(m_breakPointView, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(treeViewContextMenuRequested(const QPoint &)));
     connect(m_breakPointView, SIGNAL(selectedItemsChanged(QItemSelection,QItemSelection)), this, SLOT(treeViewSelectionChanged(QItemSelection,QItemSelection)));
-    
+
     m_breakPointView->setTextElideMode(Qt::ElideLeft);
     m_breakPointView->sortByColumn(0, Qt::AscendingOrder);
     m_breakPointView->setExpandsOnDoubleClick(false);       // to avoid collapse of item while trying to open it

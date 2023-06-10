@@ -54,7 +54,7 @@ obj2dim[5:10, 20:100] = -2.0
 # fill the entire 3d object with zero
 obj3dim[:, :, :] = 0
 # replace the 2nd plane of the 3d object by the random values of the casted object
-obj3dim[1, :, :] = objRand.astype(obj3dim.dtype)  
+obj3dim[1, :, :] = objRand.astype(obj3dim.dtype)
 
 ###############################################################################
 # Delete objects

@@ -153,7 +153,7 @@ public:
 };
 
 //-----------------------------------------------------------------------
-ParamEditorWidget::ParamEditorWidget(QWidget* parent /*= 0*/) : 
+ParamEditorWidget::ParamEditorWidget(QWidget* parent /*= 0*/) :
 	QWidget(parent),
 	d_ptr(new ParamEditorWidgetPrivate())
 {
@@ -198,7 +198,7 @@ ParamEditorWidget::ParamEditorWidget(QWidget* parent /*= 0*/) :
     );
     d->m_pIntervalFactory = new ito::ParamIntervalPropertyFactory(this);
 
-    d->m_pRectManager = new ito::ParamRectPropertyManager(this); 
+    d->m_pRectManager = new ito::ParamRectPropertyManager(this);
     connect(
         d->m_pRectManager, &ito::ParamRectPropertyManager::valueChanged,
         this, static_cast<void (ParamEditorWidget::*)(QtProperty*, int, int, int, int)>(&ParamEditorWidget::valueChanged)
@@ -209,7 +209,7 @@ ParamEditorWidget::ParamEditorWidget(QWidget* parent /*= 0*/) :
         d->m_pCharArrayManager, &ito::ParamCharArrayPropertyManager::valueChanged,
         this, static_cast<void (ParamEditorWidget::*)(QtProperty*, int, const char*)>(&ParamEditorWidget::valueChanged)
     );
-    
+
     d->m_pIntArrayManager = new ito::ParamIntArrayPropertyManager(this);
     connect(
         d->m_pIntArrayManager, &ito::ParamIntArrayPropertyManager::valueChanged,
@@ -227,8 +227,8 @@ ParamEditorWidget::ParamEditorWidget(QWidget* parent /*= 0*/) :
         d->m_pStringListManager, &ito::ParamStringListPropertyManager::valueChanged,
         this, static_cast<void (ParamEditorWidget::*)(QtProperty*, int, const ito::ByteArray*)>(&ParamEditorWidget::valueChanged)
     );
-    
-    d->m_pOtherManager = new ito::ParamOtherPropertyManager(this);    
+
+    d->m_pOtherManager = new ito::ParamOtherPropertyManager(this);
 
     //the following command set all factories for the managers
     d_ptr->m_readonly = true;
@@ -255,7 +255,7 @@ ParamEditorWidget::ParamEditorWidget(QWidget* parent /*= 0*/) :
     d->m_pInfoBox->setTitle("Information");
     d->m_pInfoBox->setFlat(true);
     vboxLayout->addWidget(d->m_pInfoBox);
-    
+
     QVBoxLayout *vboxLayout2 = new QVBoxLayout();
     vboxLayout2->addWidget(d->m_pTextEdit);
     vboxLayout2->setContentsMargins(0, 3, 0, 0);
@@ -582,7 +582,7 @@ void ParamEditorWidget::setImmediatelyModifyPluginParamsAfterChange(bool immedia
     if (d_ptr->m_immediatelyModifyPluginParametersAfterChange != immediateChange)
     {
         d_ptr->m_immediatelyModifyPluginParametersAfterChange = immediateChange;
-        
+
         if (immediateChange)
         {
             if (d_ptr->m_timerID == -1 && d_ptr->m_changedParameters.size() > 0)
@@ -1190,7 +1190,7 @@ ito::RetVal ParamEditorWidget::setPluginParameter(QSharedPointer<ito::ParamBase>
     {
         retval += ito::RetVal(ito::retError, 0, tr("pointer to plugin is invalid.").toLatin1().data());
     }
-    
+
     if (retval.containsError() && (msgLevel & msgLevelErrorOnly))
     {
         QMessageBox msgBox;
@@ -1213,7 +1213,7 @@ ito::RetVal ParamEditorWidget::setPluginParameter(QSharedPointer<ito::ParamBase>
         msgBox.setIcon(QMessageBox::Warning);
         msgBox.exec();
     }
-    
+
     return retval;
 }
 
@@ -1248,7 +1248,7 @@ ito::RetVal ParamEditorWidget::setPluginParameters(const QVector<QSharedPointer<
     {
         retval += ito::RetVal(ito::retError, 0, tr("pointer to plugin is invalid.").toLatin1().data());
     }
-    
+
     if (retval.containsError() && (msgLevel & msgLevelErrorOnly))
     {
         QMessageBox msgBox;
@@ -1271,7 +1271,7 @@ ito::RetVal ParamEditorWidget::setPluginParameters(const QVector<QSharedPointer<
         msgBox.setIcon(QMessageBox::Warning);
         msgBox.exec();
     }
-    
+
     return retval;
 }
 
@@ -1280,7 +1280,7 @@ ito::RetVal ParamEditorWidget::observeInvocation(ItomSharedSemaphore *waitCond, 
 {
     Q_D(const ParamEditorWidget);
     ito::RetVal retval;
-    
+
     if (d->m_plugin)
     {
         bool timeout = false;
@@ -1293,12 +1293,12 @@ ito::RetVal ParamEditorWidget::observeInvocation(ItomSharedSemaphore *waitCond, 
                 timeout = true;
             }
         }
-        
+
         if (!timeout)
         {
             retval += waitCond->returnValue;
         }
-        
+
         if (retval.containsError() && (msgLevel & msgLevelErrorOnly))
         {
             QMessageBox msgBox;
@@ -1322,7 +1322,7 @@ ito::RetVal ParamEditorWidget::observeInvocation(ItomSharedSemaphore *waitCond, 
             msgBox.exec();
         }
     }
-    
+
     return retval;
 }
 

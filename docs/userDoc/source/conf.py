@@ -17,6 +17,7 @@ import sphinx
 import itom as itomFuncs
 import __main__
 import inspect
+from sphinx_gallery.sorting import FileNameSortKey
 
 try:
     import plotly.io as pio
@@ -102,7 +103,7 @@ comma_index = compile_datetime.index(",")
 compile_year = compile_datetime[comma_index - 4 : comma_index]
 copyright = (
     f"2011-{compile_year}, Institut fuer Technische Optik (ITO), "
-    "University Stuttgart. Bug report: https://bitbucket.org/itom/itom/issues"
+    "University Stuttgart. Bug report: https://github.com/itom-project/itom/issues"
 )
 
 
@@ -149,12 +150,12 @@ pygments_style = "sphinx"
 
 # get Qt version. Qt 5.6.0 only has a reduced subset of css commands in the assistant.
 # Therefore, a reduced style theme has to be used (theme quark_spinx_theme
-# from https://bitbucket.org/fk/quark-sphinx-theme)
+# from https://gitlab.com/fkrull/quark-sphinx-theme)
 # This theme was locally copied to the itom-packages folder.
 qt_version = itomVersionInfo["QT_Version"]
 
 # choose itom theme as main theme
-html_theme = "itom"
+# html_theme = "itom"
 qthelp_theme = "itom"  # theme for QtHelp only (available since Sphinx 1.5.3)
 html_theme_path = ["_themes"]
 
@@ -208,13 +209,14 @@ sphinx_gallery_conf = {
         "11_demos/python_packages"],
     "doc_module": ("matplotlib", "numpy", "pandas", "itom"),
     "reference_url": {"matplotlib": None, "numpy": None, "pandas": None, "itom": None},
-    "show_memory": True,
+    "show_memory": False,
     "show_signature": False,
     "remove_config_comments": True,
     "download_all_examples": False,
     "min_reported_time": 0.0001,
     "filename_pattern": "demo_",
     "matplotlib_animations": True,
+    "within_subsection_order": FileNameSortKey,
 }
 
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,

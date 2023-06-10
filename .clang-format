@@ -7,7 +7,7 @@ AlignOperands: false
 AlignTrailingComments: false
 BinPackArguments: false
 BinPackParameters: false
-BraceWrapping: 
+BraceWrapping:
   AfterNamespace: false
 BreakConstructorInitializersBeforeComma: true
 BreakConstructorInitializers: AfterColon

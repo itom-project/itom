@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -64,7 +64,7 @@ namespace ito
     CREATE_MATLABDEF(const mwSize*, mxGetDimensions_730, const mxArray *)
     CREATE_MATLABDEF(mxClassID, mxGetClassID, const mxArray *)
     CREATE_MATLABDEF(bool, mxIsComplex, const mxArray *)
-    
+
 
     bool PythonMatlab::initialized = false;
     QLibrary PythonMatlab::engineLibrary;
@@ -212,7 +212,7 @@ mxClassID npytomx[27]={ mxLOGICAL_CLASS, /*NPY_BOOL (0)*/
     char *startstr=NULL;
     if (!PyArg_ParseTuple(args,"|s",&startstr))
         return -1;
-    if (!(self->ep = func_engOpen(startstr))) 
+    if (!(self->ep = func_engOpen(startstr)))
     {
         PyErr_SetString(PyExc_RuntimeError, "Can't start MATLAB engine. Maybe you have to properly register Matlab in the registry.");
         return -1;
@@ -361,9 +361,9 @@ mxClassID npytomx[27]={ mxLOGICAL_CLASS, /*NPY_BOOL (0)*/
             memcpy(mx, nd, PyArray_NBYTES(cont_ndarray));
             /*for (i=0;i<j;i++)
                 mx[i]=nd[i];*/
-        
 
-        } 
+
+        }
         else //else complex
         {
             if (!(mxarray = func_mxCreateNumericArray_730((mwSize)PyArray_NDIM(cont_ndarray),
@@ -374,7 +374,7 @@ mxClassID npytomx[27]={ mxLOGICAL_CLASS, /*NPY_BOOL (0)*/
                 return PyErr_Format(PyExc_RuntimeError, "Couldn't create mxarray: NPYTYPE:%i - mxtype:%i", PyArray_TYPE(cont_ndarray), npytomx[PyArray_TYPE(cont_ndarray)]);
             }
 
-        
+
             j=PyArray_SIZE(cont_ndarray);
 
             switch(PyArray_TYPE(cont_ndarray))
@@ -403,7 +403,7 @@ mxClassID npytomx[27]={ mxLOGICAL_CLASS, /*NPY_BOOL (0)*/
                 PyErr_SetString(PyExc_RuntimeError,"matrix of type complex long double cannot be sent to Matlab");
                 return NULL;
             }
-                
+
         }
     }
 
@@ -566,7 +566,7 @@ mxClassID npytomx[27]={ mxLOGICAL_CLASS, /*NPY_BOOL (0)*/
     else
     {
         /*   This is how we could make it own data to avoid memory leak: (set OWN_DATA)
-        *    data = malloc(sizeof(double[n*m])); 
+        *    data = malloc(sizeof(double[n*m]));
         *    memcpy((void * )data,(void *)func_mxGetPr(mx),sizeof(double[n*m]));
         */
 #if (NPY_FEATURE_VERSION < NPY_1_7_API_VERSION)
@@ -584,7 +584,7 @@ mxClassID npytomx[27]={ mxLOGICAL_CLASS, /*NPY_BOOL (0)*/
             imag = func_mxGetImagData(mx);
             mxClassID classID = func_mxGetClassID(mx);
 
-            if (!(result = PyArray_New(&PyArray_Type,(int) numDim, 
+            if (!(result = PyArray_New(&PyArray_Type,(int) numDim,
                             (npy_intp*) dims, classID == mxSINGLE_CLASS ? NPY_CFLOAT : NPY_CDOUBLE,
                             NULL, NULL, NULL, flag, NULL)))
             {
@@ -620,7 +620,7 @@ mxClassID npytomx[27]={ mxLOGICAL_CLASS, /*NPY_BOOL (0)*/
         else
         {
             //result share the values with the matlab data, however the PyArray_GETCONTIGUOUS method below will make a deep copy!
-            if (!(result = PyArray_New(&PyArray_Type,(int) numDim, 
+            if (!(result = PyArray_New(&PyArray_Type,(int) numDim,
                             (npy_intp*) dims, mxtonpy[func_mxGetClassID(mx)],
                             NULL, real, NULL, flag, NULL)))
             {
@@ -708,13 +708,13 @@ PyDoc_STRVAR(module_doc, "A wrapper for executing matlab commands.");
     PyMatlabSessionObject_new,                                  /*tp_new*/
     };
 
-//static PyMethodDef matlab_methods[] = 
+//static PyMethodDef matlab_methods[] =
 //{
 //    { NULL }
 //};
 
 /*static*/ PyModuleDef PythonMatlab::PyMatlabSessionObject_Module = {
-    PyModuleDef_HEAD_INIT, "matlab", NULL, -1, 
+    PyModuleDef_HEAD_INIT, "matlab", NULL, -1,
     NULL, NULL, NULL, NULL
 };
 
@@ -723,7 +723,7 @@ PyDoc_STRVAR(module_doc, "A wrapper for executing matlab commands.");
 /*static*/ PyObject* PythonMatlab::PyInit_matlab(void)
 {
     PyObject *module;
-    
+
     module = PyModule_Create(&PyMatlabSessionObject_Module);
 
     if (module == NULL)
@@ -741,7 +741,7 @@ PyDoc_STRVAR(module_doc, "A wrapper for executing matlab commands.");
     }
     Py_INCREF(&PyMatlabSessionObjectType);
     PyModule_AddObject(module, "MatlabSession", (PyObject*)&PyMatlabSessionObjectType);
-    
+
     PyModule_AddStringConstant(module, "__version__", PYMATLAB_VERSION);
     PyModule_AddStringConstant(module, "__author__", AUTHOR);
 

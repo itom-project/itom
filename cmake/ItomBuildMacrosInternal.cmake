@@ -28,7 +28,7 @@ endif()
 # These vars are widely used, should be available whenever cmake is issued on individual
 # itom project parts.
 #
-# This macro is automatically called from itom_init_plugin_library and 
+# This macro is automatically called from itom_init_plugin_library and
 # itom_init_designerplugin_library.
 macro(itom_init_core_common_vars)
     set(BUILD_QTVERSION "auto" CACHE STRING "currently only Qt5 is supported. Set this value to 'auto' in order to auto-detect the correct Qt version or set it to 'Qt5' to hardly select Qt5.")
@@ -36,19 +36,21 @@ macro(itom_init_core_common_vars)
     option(BUILD_UNITTEST_INTERNAL_ENABLE "If set, some libraries are compiled to export some internal methods, too. These can be tested then in unittests." OFF)
 
     if(CMAKE_SIZEOF_VOID_P GREATER 4)
-        option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON) 
+        option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
     else()
-        option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF) 
+        option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF)
     endif()
-    
+
     option(BUILD_WITH_PCL "Build itom with PointCloudLibrary support (pointCloud, polygonMesh, point...)" ON)
     set(ITOM_APP_DIR ${CMAKE_CURRENT_BINARY_DIR} CACHE PATH "base path to itom")
-    set(ITOM_SDK_DIR ${CMAKE_CURRENT_BINARY_DIR}/SDK CACHE PATH "base path to itom_sdk")
+
+    set(ITOM_SDK_DIR ${CMAKE_CURRENT_BINARY_DIR}/SDK CACHE PATH "Base path of SDK subfolder")
+
     set(CMAKE_DEBUG_POSTFIX d CACHE STRING "Adds a postfix for debug-built libraries.")
     set(BUILD_QT_DISABLE_DEPRECATED_BEFORE "" CACHE STRING "indicate a Qt version number as hex \
         string, if all methods that have been deprecated before this version, \
         should raise a compiler error.")
-    
+
     # Determined by try-compile from cmake 3.0.2 onwards. Not sure if it's a good idea to set this manually...
     if(BUILD_TARGET64)
         if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
@@ -59,7 +61,7 @@ macro(itom_init_core_common_vars)
             message(FATAL_ERROR "BUILD_TARGET64 is OFF, but CMAKE_SIZEOF_VOID_P is unequal to 4 bytes. Maybe change the compiler.")
         endif()
     endif()
-    
+
     if(NOT CMAKE_CONFIGURATION_TYPES)
         # Set a default build type if none was specified
         set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build.")
@@ -68,17 +70,17 @@ macro(itom_init_core_common_vars)
         set_property(CACHE CMAKE_BUILD_TYPE PROPERTY
             STRINGS Debug Release MinSizeRel RelWithDebInfo)
     endif()
-    
+
     add_definitions(-DITOMLIBS_SHARED -D_ITOMLIBS_SHARED) #build all core libraries as shared libraries
-    
+
     if (BUILD_QT_DISABLE_DEPRECATED_BEFORE)
         add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=${BUILD_QT_DISABLE_DEPRECATED_BEFORE})
     endif()
-    
+
     if(BUILD_UNITTEST_INTERNAL_ENABLE)
         add_definitions(-DENABLE_INTERNAL_TESTS -D_ENABLE_INTERNAL_TESTS)
     endif()
-    
+
     #try to enable OpenMP (e.g. not available with VS Express)
     find_package(OpenMP QUIET)
 
@@ -94,7 +96,7 @@ macro(itom_init_core_common_vars)
     else()
         message(STATUS "OpenMP not found.")
     endif()
-    
+
     #These are the overall pre-compiler directives for itom and its plugins:
     #
     #Windows:
@@ -117,7 +119,7 @@ macro(itom_init_core_common_vars)
             if(NOT ${_index} GREATER -1)
                 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /DWIN32")
             endif()
-            
+
             string(FIND ${CMAKE_CXX_FLAGS} "/D_WIN32" _index)
             if(NOT ${_index} GREATER -1)
                 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D_WIN32")
@@ -133,20 +135,20 @@ macro(itom_init_core_common_vars)
                 if(NOT ${_index} GREATER -1)
                     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D_WIN64")
                 endif()
-            endif()       
-            
+            endif()
+
             set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" CACHE STRING "common C++ build flags" FORCE)
-        endif()    
+        endif()
     elseif(CMAKE_HOST_APPLE)
         add_definitions(-D__APPLE__)
     elseif(CMAKE_HOST_UNIX) #this also includes apple, which is however already handled above
         add_definitions(-DLinux -Dlinux)
     endif()
-    
+
     if(APPLE)
         set(CMAKE_OSX_ARCHITECTURES "arm64")
     endif()
-    
+
     if(MSVC)
         # ck 15/11/2017 changed, as adding /MP to definitions breaks cuda builds with e.g. enable_language(CUDA), i.e. better
         # msvs integration of cuda build
@@ -164,12 +166,12 @@ macro(itom_init_core_common_vars)
         set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Oi /Ot /Oy /GL" )
         set(CMAKE_C_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Oi /Ot /Oy /GL" )
         set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /LTCG")
-        
+
         # add /LTCG flag to remove MSVC linker warning in release build
         set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /LTCG")
         set(CMAKE_STATIC_LINKER_FLAGS_RELEASE "${CMAKE_STATIC_LINKER_FLAGS_RELEASE} /LTCG")
         set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /LTCG")
-        
+
         if(NOT BUILD_TARGET64)
             #Disable safe SEH for Visual Studio, 32bit (this is necessary since some 3rd party libraries are compiled without /SAFESEH)
             set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} /SAFESEH:NO")
@@ -186,7 +188,7 @@ macro(itom_init_core_common_vars)
             set(CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO "${CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO} /SAFESEH:NO")
         endif()
     endif()
-    
+
     # Begin: Remove duplicates compilation flags
     separate_arguments(CMAKE_CXX_FLAGS)
     list(REMOVE_DUPLICATES CMAKE_CXX_FLAGS)
@@ -202,10 +204,60 @@ macro(itom_init_core_common_vars)
     # End: Remove duplicates compilation flags
 endmacro()
 
+
+# Sets the ITOM SDK Platform to either x86 or x64.
+macro(itom_define_sdk_platform)
+    if(CMAKE_SIZEOF_VOID_P EQUAL 4)
+    set(SDK_PLATFORM "x86")
+    else()
+    set(SDK_PLATFORM "x64")
+    endif()
+    message(STATUS "Compiler: ${CMAKE_CXX_COMPILER_ID}")
+endmacro()
+
+# Sets the ITOM SDK Compiler name used for building ITOM.
+# The following list has to be consistent with FindITOM_SDK.cmake!
+# From VS higher than 1900, the default case vc${MSVC_VERSION} is used.
+macro(itom_define_sdk_compiler)
+    if(APPLE)
+    set(SDK_COMPILER "osx_default")
+    elseif(MSVC_VERSION LESS 1940 AND MSVC_VERSION GREATER 1929)
+    set(SDK_COMPILER "vc17")
+    elseif(MSVC_VERSION LESS 1930 AND MSVC_VERSION GREATER 1919)
+    set(SDK_COMPILER "vc16")
+    elseif(MSVC_VERSION LESS 1920 AND MSVC_VERSION GREATER 1909)
+    set(SDK_COMPILER "vc15")
+    elseif(MSVC_VERSION EQUAL 1900)
+    set(SDK_COMPILER "vc14")
+    elseif(MSVC_VERSION EQUAL 1800)
+    set(SDK_COMPILER "vc12")
+    elseif(MSVC_VERSION EQUAL 1700)
+    set(SDK_COMPILER "vc11")
+    elseif(MSVC_VERSION EQUAL 1600)
+    set(SDK_COMPILER "vc10")
+    elseif(MSVC_VERSION EQUAL 1500)
+    set(SDK_COMPILER "vc9")
+    elseif(MSVC_VERSION EQUAL 1400)
+    set(SDK_COMPILER "vc8")
+    elseif(MSVC)
+    set(SDK_COMPILER "vc${MSVC_VERSION}")
+    elseif(CMAKE_COMPILER_IS_GNUCXX)
+    set(SDK_COMPILER "gnucxx")
+    elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    set(SDK_COMPILER "clang")
+    elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    set(SDK_COMPILER "gnucxx")
+    elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
+    set(SDK_COMPILER "intel")
+    else()
+    set(SDK_COMPILER "unknown")
+    endif()
+endmacro()
+
 # - appends two entries to sources and destinations in order to copy
 # the linker file of the given target both to the root directory of itom (ITOM_APP_DIR)
 # as well as to the SDK directory of itom (ITOM_SDK_DIR).
-# 
+#
 # The copy operation itself is only created if the modified lists 'sources'
 # and 'destinations' are passed to the macro 'itom_post_build_copy_files'.
 #
@@ -216,53 +268,21 @@ endmacro()
 # itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 # .
 macro(itom_add_library_to_appdir_and_sdk target sources destinations)
-    
+
     if(${ITOM_SDK_DIR} STREQUAL "")
         message(SEND_ERROR "ITOM_SDK_DIR is not indicated")
     endif()
-    
+
     if(${ITOM_APP_DIR} STREQUAL "")
         message(SEND_ERROR "ITOM_APP_DIR is not indicated")
     endif()
-    
-    if(CMAKE_SIZEOF_VOID_P EQUAL 4)
-        set(SDK_PLATFORM "x86")
-    else()
-        set(SDK_PLATFORM "x64")
-    endif()
-    message(STATUS "Compiler: ${CMAKE_CXX_COMPILER_ID}")
-    # The following list has to be consistent with FindITOM_SDK.cmake! 
-    # From VS higher than 1900, the default case vc${MSVC_VERSION} is used.
-    if(APPLE)
-        set(SDK_COMPILER "osx_default")
-	elseif(MSVC_VERSION EQUAL 1900)
-        set(SDK_COMPILER "vc14")
-    elseif(MSVC_VERSION EQUAL 1800)
-        set(SDK_COMPILER "vc12")
-    elseif(MSVC_VERSION EQUAL 1700)
-        set(SDK_COMPILER "vc11")
-    elseif(MSVC_VERSION EQUAL 1600)
-        set(SDK_COMPILER "vc10")
-    elseif(MSVC_VERSION EQUAL 1500)
-        set(SDK_COMPILER "vc9")
-    elseif(MSVC_VERSION EQUAL 1400)
-        set(SDK_COMPILER "vc8")
-    elseif(MSVC)
-        set(SDK_COMPILER "vc${MSVC_VERSION}")
-    elseif(CMAKE_COMPILER_IS_GNUCXX)
-        set(SDK_COMPILER "gnucxx")
-    elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-        set(SDK_COMPILER "clang")
-    elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-        set(SDK_COMPILER "gnucxx")
-    elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
-        set(SDK_COMPILER "intel")
-    else()
-        set(SDK_COMPILER "unknown")
-    endif()
-    
+
+
+    itom_define_sdk_platform()
+    itom_define_sdk_compiler()
+
     set(SDK_DESTINATION "${ITOM_SDK_DIR}/lib/${SDK_COMPILER}_${SDK_PLATFORM}" )
-    
+
     #copy library (dll) to app-directory and linker library (lib) to sdk_destination
     list(APPEND ${sources} "$<TARGET_LINKER_FILE:${target}>")
     list(APPEND ${destinations} ${SDK_DESTINATION})
@@ -284,7 +304,7 @@ if(APPLE)
             endif(NOT IS_DIRECTORY ${srcTemplatePath})
         endforeach(templateFile)
     endmacro()
-    
+
     # OSX ONLY: Copy files of certain type from source directory to destination directory in app bundle, substituting any
     # variables (NON-RECURSIVE). Create destination directory if it does not exist. destDir append ../abc.app/MacOS
     macro(itom_copy_type_to_bundle_nonrec target srcDir destDir type)
