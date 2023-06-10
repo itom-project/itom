@@ -454,7 +454,7 @@ ito::RetVal AbstractDObjFigure::setDisplayedCameraChannel(const QString& channel
 
 
     }
-    
+
     return retValue;
 }
 //-------------------------------------------------------------------------------------

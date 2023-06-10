@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -165,7 +165,7 @@ AIManagerWidget::AIManagerWidget(
             m_pAIManagerView->setColumnHidden(i, m_pAIManagerView->columnWidth(i) == 0);
         }
         settings->endArray();
-    
+
         m_pColumnWidth = new int[m_pPlugInModel->columnCount()];
         size = settings->beginReadArray("StandardColWidth");
 
@@ -213,7 +213,7 @@ AIManagerWidget::~AIManagerWidget()
         QSettings *settings = new QSettings(setFile, QSettings::IniFormat);
 
         settings->beginGroup("itomPluginsDockWidget");
-    
+
     //    QByteArray state = m_pMainToolbar->saveGeometry();
     //    settings->setValue("stateToolBar", state);
 
@@ -227,7 +227,7 @@ AIManagerWidget::~AIManagerWidget()
 
         settings->endArray();
         settings->sync();
-    
+
         settings->beginWriteArray("StandardColWidth");
 
         for (int i = 0; i < plugInModel->columnCount(); i++)
@@ -595,7 +595,7 @@ void AIManagerWidget::mnuShowConfdialog()
             ais->hasConfDialog())
         {
             ito::RetVal retValue = ais->showConfDialog();
-            
+
             if (retValue.containsWarning())
             {
                 QString message = tr("Warning while showing configuration dialog. Message: %1")
@@ -930,7 +930,7 @@ void AIManagerWidget::mnuOpenWidget()
 void AIManagerWidget::mnuShowAlgoWidget(ito::AddInAlgo::AlgoWidgetDef* awd)
 {
     QMessageBox msgBox;
-    
+
     ito::RetVal retValue(retOk);
 
     QVector<ito::Param> paramsMand;
@@ -965,7 +965,7 @@ void AIManagerWidget::mnuShowAlgoWidget(ito::AddInAlgo::AlgoWidgetDef* awd)
                 return;
             }
         }
-            
+
         UiOrganizer *uiOrganizer = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
         QSharedPointer<unsigned int> dialogHandle(new unsigned int);
         QSharedPointer<int> retCodeIfModal(new int);
@@ -1026,7 +1026,7 @@ void AIManagerWidget::mnuShowAlgoWidget(ito::AddInAlgo::AlgoWidgetDef* awd)
                 ito::retError, 0, tr("Could not find instance of UiOrganizer").toLatin1().data());
         }
     }
-     
+
     if (retValue.containsError())
     {
         msgBox.setText(tr("Error while opening user interface from plugin."));
@@ -1194,7 +1194,7 @@ void AIManagerWidget::mnuToggleAutoGrabbing()
 //-------------------------------------------------------------------------------------
 void AIManagerWidget::setTreeViewHideColumns(const bool &hide, const int colCount)
 {
-    for (int i = 1; i < colCount; ++i) 
+    for (int i = 1; i < colCount; ++i)
     {
         m_pAIManagerView->setColumnHidden(i, hide);
     }
@@ -1252,7 +1252,7 @@ void AIManagerWidget::showDetails()
 
     if (isList)
     {
-        for (int i = 0; i < plugInModel->columnCount(); ++i) 
+        for (int i = 0; i < plugInModel->columnCount(); ++i)
         {
             m_pAIManagerView->setColumnWidth(i, m_pColumnWidth[i]);
         }
@@ -1275,18 +1275,18 @@ void AIManagerWidget::mnuShowInfo()
         PlugInModel::tItemType itemType;
         size_t itemInternalData;
         PlugInModel* plugInModel = (PlugInModel*)(index.model());
-        
+
         if (plugInModel->getModelIndexInfo(index, itemType, itemInternalData))
         {
             if (itemType & PlugInModel::itemFilter)
-            { // Filter 
+            { // Filter
                 ito::AddInAlgo::FilterDef *awd = (ito::AddInAlgo::FilterDef*)itemInternalData;
                 emit showPluginInfo(
                     "Algorithms." + awd->m_pBasePlugin->objectName() + "." + awd->m_name,
                     HelpTreeDockWidget::typeFilter);
             }
             else if(itemType & PlugInModel::itemWidget)
-            { // Widget 
+            { // Widget
                 ito::AddInAlgo::AlgoWidgetDef* awd =
                     (ito::AddInAlgo::AlgoWidgetDef*)itemInternalData;
                 emit showPluginInfo(
@@ -1318,12 +1318,12 @@ void AIManagerWidget::mnuShowInfo()
                         emit showPluginInfo(
                             "DataIO.Raw IO." + aib->objectName(), HelpTreeDockWidget::typeDataIO);
                     }
-                }  
+                }
                 else if (aib->getType() & ito::typeAlgo)
                 {
                     emit showPluginInfo(
                         "Algorithms." + aib->objectName(), HelpTreeDockWidget::typeFPlugin);
-                }         
+                }
             }
         }
     }

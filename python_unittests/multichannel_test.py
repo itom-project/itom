@@ -36,7 +36,7 @@ class MultiChannelDummyGrabberTest(unittest.TestCase):
 
     def test_invalidDefaultChannelErrorTest(self):
         self.assertRaises(RuntimeError, test_invalidDefaultChannelErrorFunc)
-        
+
     def test_invalidDefaultChannelTest(self):
         cam = dataIO("DummyMultiChannelGrabber")
         paramList = cam.getParamList()
@@ -89,7 +89,7 @@ class MultiChannelDummyGrabberTest(unittest.TestCase):
     def test_channelSpecific(self):
         self.assertRaises(RuntimeError, channelSpecificFunc1)
 
-        
-        
+
+
     if __name__ == '__main__':
         unittest.main(module='multichannel_test', exit=False)

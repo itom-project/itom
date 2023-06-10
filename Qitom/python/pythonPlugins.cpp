@@ -4138,7 +4138,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_getVal(PyDataIOPlugin *self, PyObject *a
     {
         PyErr_Clear();
         PyErr_SetString(
-            PyExc_RuntimeError, 
+            PyExc_RuntimeError,
             "arguments of method must be either one data object, a dictionary containing data objects, a byte array or a "
             "byte object.");
         return NULL;

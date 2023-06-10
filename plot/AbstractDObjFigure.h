@@ -64,7 +64,7 @@ class ITOMCOMMONPLOT_EXPORT AbstractDObjFigure : public AbstractFigure
     Q_CLASSINFO("prop://zAxisInterval", "Sets the visible range of the displayed z-axis (in coordinates of the data object). Set it to 'auto' if range should be automatically set [default].")
     Q_CLASSINFO("prop://colorMap", "Color map (string) that should be used to colorize a non-color data object.")
     Q_CLASSINFO("prop://cameraChannel", "If a multi channel device (MultiChannelGrabber) is connected to this plot, the currently displayed channel of the device can be set. To obtain a list of the available channels see the parameter channelList of the device")
-    
+
     Q_CLASSINFO("slot://setSource", "This slot can be implemented by any plot plugin to send a dataObject to the plot. Here it is not required and therefore not implemented.")
     Q_CLASSINFO("slot://setLinePlot", "This slot can be implemented by any plot plugin to force the plot to open a line plot. Here it is not required and therefore not implemented.")
 private:

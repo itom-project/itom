@@ -427,7 +427,7 @@ namespace ito
         moveToThread(d->m_pThread);
         d->m_pThread->start();
 
-        /*set new seed for random generator of OpenCV. 
+        /*set new seed for random generator of OpenCV.
         This is required to have real random values for any randn or randu command.
         The seed must be set in every thread. This is for the main thread.
         */
@@ -886,7 +886,7 @@ namespace ito
                 {
                     m_autoGrabbingListeners.insert("",obj);
                 }
-                else 
+                else
                 {
                     m_autoGrabbingListeners.insert(defaultChannel, obj);
                 }

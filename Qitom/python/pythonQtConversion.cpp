@@ -3473,7 +3473,7 @@ PyObject* PythonQtConversion::ConvertQtValueToPythonInternal(int type, const voi
             {
                 return QMapToPyObject(**sharedPtr);
             }
-            
+
         }
         else if (strcmp(name, "QPointer<ito::AddInDataIO>") == 0 || \
             strcmp(name, "QPointer<ito::AddInActuator>") == 0 || \

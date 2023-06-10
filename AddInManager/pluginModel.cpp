@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -128,9 +128,9 @@ QModelIndex PlugInModel::getTypeNode(const int type) const
 }
 
 //-------------------------------------------------------------------------------------
-/** 
+/**
 *   @param
-*   @return     
+*   @return
 */
 Qt::ItemFlags PlugInModel::flags(const QModelIndex &index) const
 {
@@ -140,7 +140,7 @@ Qt::ItemFlags PlugInModel::flags(const QModelIndex &index) const
     {
         return Qt::NoItemFlags;
     }
-    
+
     tItemType itemType;
     size_t itemInternalData;
 
@@ -148,7 +148,7 @@ Qt::ItemFlags PlugInModel::flags(const QModelIndex &index) const
     {
         return Qt::NoItemFlags;
     }
-    
+
     if(itemType == itemInstance)
     {
         ito::AddInBase *aib = (ito::AddInBase*)(itemInternalData);
@@ -175,7 +175,7 @@ Qt::ItemFlags PlugInModel::flags(const QModelIndex &index) const
 //-------------------------------------------------------------------------------------
 /** return parent element
 *   @param [in] index   the element's index for which the parent should be returned
-*   @return     the parent element. 
+*   @return     the parent element.
 *
 */
 QModelIndex PlugInModel::parent(const QModelIndex &index) const
@@ -186,7 +186,7 @@ QModelIndex PlugInModel::parent(const QModelIndex &index) const
     {
         return QModelIndex();
     }
-    
+
     tItemType itemType;
     size_t itemInternalData;
 
@@ -194,7 +194,7 @@ QModelIndex PlugInModel::parent(const QModelIndex &index) const
     {
         return QModelIndex();
     }
-    
+
     switch (itemType)
     {
         case itemCatDataIO:
@@ -214,14 +214,14 @@ QModelIndex PlugInModel::parent(const QModelIndex &index) const
             {
                 if (aiib->getType() == m_treeFixNodes[i])
                 {
-                    return m_treeFixIndizes[i]; 
+                    return m_treeFixIndizes[i];
                 }
             }*/
         }
     case itemInstance: {
             ito::AddInBase *aib = (ito::AddInBase*)(itemInternalData);
             ito::AddInInterfaceBase *aiib = aib->getBasePlugin();
-        
+
             if (aiib->getType() & ito::typeActuator)
             {
                 for (int i = 0; i < d->m_pAIM->getActList()->count(); i++)
@@ -406,7 +406,7 @@ QModelIndex PlugInModel::index(int row, int column, const QModelIndex &parent) c
     {
         return QModelIndex();
     }
-    
+
     if (parent.isValid() == false)
     {
         if (row >= 0 && row <= 2)
@@ -538,11 +538,11 @@ void PlugInModel::setBackgroundColorInstancesWithPythonRef(const QColor &bgColor
 }
 
 //-------------------------------------------------------------------------------------
-/** 
+/**
 *   @param index
 *   @param type
 *   @param internalData
-*   @return bool  
+*   @return bool
 *
 *
 */
@@ -625,7 +625,7 @@ bool PlugInModel::getModelIndexInfo(
         //check type of element
         const QHash<QString, ito::AddInAlgo::FilterDef *> *filters = d->m_pAIM->getFilterList();
         QHash<QString, ito::AddInAlgo::FilterDef *>::const_iterator i = filters->constBegin();
-        while (i != filters->constEnd()) 
+        while (i != filters->constEnd())
         {
             //check if index corresponds to this filter
             if ((void*)i.value() == internalPtr)
@@ -641,7 +641,7 @@ bool PlugInModel::getModelIndexInfo(
         const QHash<QString, ito::AddInAlgo::AlgoWidgetDef*>* widgets =
             d->m_pAIM->getAlgoWidgetList();
         QHash<QString, ito::AddInAlgo::AlgoWidgetDef *>::const_iterator j = widgets->constBegin();
-        while (j != widgets->constEnd()) 
+        while (j != widgets->constEnd())
         {
             //check if index corresponds to this widget
             if ((void*)j.value() == internalPtr)
@@ -681,13 +681,13 @@ bool PlugInModel::getModelIndexInfo(
 }
 
 //-------------------------------------------------------------------------------------
-/** 
+/**
 *   @param index
 *   @param name
 *   @param itemType
 *   @param role
 *   @param icon
-*   @return QVariant  
+*   @return QVariant
 *
 *
 */
@@ -787,10 +787,10 @@ QVariant PlugInModel::getFixedNodeInfo(
 }
 
 //-------------------------------------------------------------------------------------
-/** 
+/**
 *   @param index
 *   @param role
-*   @return QVariant  
+*   @return QVariant
 *
 *
 */
@@ -945,10 +945,10 @@ QVariant PlugInModel::getPluginNodeInfo(const QModelIndex &index, const int &rol
 }
 
 //-------------------------------------------------------------------------------------
-/** 
+/**
 *   @param index
 *   @param role
-*   @return QVariant  
+*   @return QVariant
 *
 *
 */
@@ -1044,11 +1044,11 @@ QVariant PlugInModel::getInstanceNodeInfo(const QModelIndex &index, const int &r
 }
 
 //-------------------------------------------------------------------------------------
-/** 
+/**
 *   @param index
 *   @param role
 *   @param filterNotWidget
-*   @return QVariant  
+*   @return QVariant
 *
 *
 */
@@ -1073,7 +1073,7 @@ QVariant PlugInModel::getFilterOrWidgetNodeInfo(
         name = &(widgetDef->m_name);
         description = &(widgetDef->m_description);
     }
-    
+
     if (role == Qt::DisplayRole)
     {
         switch (index.column())
@@ -1213,7 +1213,7 @@ QVariant PlugInModel::getFilterOrWidgetNodeInfo(
 //-------------------------------------------------------------------------------------
 /** return data elements for a given row
 *   @param [in] index   index for which the data elements should be delivered
-*   @param [in] role    the current role of the model 
+*   @param [in] role    the current role of the model
  *   @return data of the selected element, depending on the element's row and column (passed in
  * index.row and index.column)
 *
@@ -1233,7 +1233,7 @@ QVariant PlugInModel::data(const QModelIndex &index, int role) const
     {
         return QVariant();
     }
-    
+
     switch (itemType)
     {
     case itemCatDataIO: {
@@ -1312,9 +1312,9 @@ QVariant PlugInModel::data(const QModelIndex &index, int role) const
 }
 
 //-------------------------------------------------------------------------------------
-/** 
+/**
 *   @param ai
-*   @return QModelIndex  
+*   @return QModelIndex
 *
 *
 */
@@ -1348,9 +1348,9 @@ QModelIndex PlugInModel::getIndexByAddIn(ito::AddInBase *ai) const
 }
 
 //-------------------------------------------------------------------------------------
-/** 
+/**
 *   @param aib
-*   @return QModelIndex  
+*   @return QModelIndex
 *
 *
 */
@@ -1439,16 +1439,16 @@ QModelIndex PlugInModel::getIndexByAddInInterface(AddInInterfaceBase *aib) const
                 }
                 break;
         }
-    }        
-        
+    }
+
     return QModelIndex();
 }
 
 //-------------------------------------------------------------------------------------
-/** 
+/**
 *   @param itemType
 *   @param internalData
-*   @return bool  
+*   @return bool
 *
 *
 */
@@ -1466,10 +1466,10 @@ bool PlugInModel::getIsAlgoPlugIn(tItemType &itemType, size_t &internalData) con
 }
 
 //-------------------------------------------------------------------------------------
-/** 
+/**
 *   @param itemType
 *   @param internalData
-*   @return bool  
+*   @return bool
 *
 *
 */
@@ -1487,10 +1487,10 @@ bool PlugInModel::getIsGrabberInstance(tItemType &itemType, size_t &internalData
 }
 
 //-------------------------------------------------------------------------------------
-/** 
+/**
 *   @param addInInterface
 *   @param beginOperation
-*   @return bool  
+*   @return bool
 *
 *
 */
@@ -1517,11 +1517,11 @@ bool PlugInModel::insertInstance(ito::AddInInterfaceBase* addInInterface, bool b
 }
 
 //-------------------------------------------------------------------------------------
-/** 
+/**
 *   @param addInInterface
 *   @param addInInstance
 *   @param beginOperation
-*   @return bool  
+*   @return bool
 *
 *
 */
@@ -1549,9 +1549,9 @@ bool PlugInModel::deleteInstance(ito::AddInBase *addInInstance, const bool begin
 }
 
 //-------------------------------------------------------------------------------------
-/** 
+/**
 *   @param beginOperation
-*   @return bool  
+*   @return bool
 *
 *
 */
@@ -1635,7 +1635,7 @@ QString PlugInModel::getInitCommand(const QModelIndex &item) const
            QVector<ito::Param> optParams;
            QVector<ito::Param> outParams;
            paramFunc(&mandParams, &optParams, &outParams);
-                
+
         foreach (const auto& item, mandParams)
             {
                 listParam.append(item.getName());

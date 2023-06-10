@@ -859,7 +859,7 @@ class ITOMCOMMONQT_EXPORT AddInDataIO : public AddInBase
     //! dataObjects for different channels. Output is a shallow-copy to the grabber internal buffer-object.
     virtual ito::RetVal getVal(QSharedPointer<QMap<QString, ito::DataObject *>> dataObjMap,
                                ItomSharedSemaphore *waitCond = NULL);
-    
+
     virtual ito::RetVal getVal(ItomSharedSemaphore* waitCond = NULL);
     //! read data from the device into a dataObject (which is passed as void pointer actually). Output is a deep-copy to
     //! the grabber internal object.

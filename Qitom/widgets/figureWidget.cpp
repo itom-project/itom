@@ -497,7 +497,7 @@ RetVal FigureWidget::liveImage(
 		{
 			QSharedPointer<ito::Param> paramFormat = getParamByInvoke(cam.data(), "pixelFormat", retval);
 			const char * pixelFormat = paramFormat->getVal<const char*>();
-            int min, max = 0; 
+            int min, max = 0;
             bool ok = false;
             AddInAbstractGrabber::integerPixelFormatStringToMinMaxValue(pixelFormat, min, max, ok);
             if (ok)

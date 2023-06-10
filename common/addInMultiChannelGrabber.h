@@ -105,7 +105,7 @@ namespace ito
         virtual ito::RetVal switchDefaultChannel();/*!< synchronizes m_params with the params of default channel container */
         virtual ito::RetVal applyParamsToChannelParams(const QStringList& keyList = QStringList());
         void initializeDefaultConfiguration(const QMap<QString, ChannelContainer>& channelContainerMap, const QMap<QString, ito::Param>& nonChannelSpecificParams = QMap<QString, ito::Param>());/*!< sets the channel parameters.*/
-        
+
         ito::RetVal setParamMeta(const QByteArray& paramName, ito::ParamMeta* meta, bool takeOwnerShip, const QList<QByteArray>& channelList = QList<QByteArray>());
         ito::RetVal setParamFlags(const QByteArray& paramName, const unsigned int& flags, const QList<QByteArray>& channelList = QList<QByteArray>());
 
@@ -122,7 +122,7 @@ namespace ito
         //\param [in] index of the parameter
         //\param [in] hasIndex is set to true if parameter has an index
         //\param [in] set ok to true if parameter was processed
-        //\param [in] add key of changed channel specific parameters to pendingUpdate. 
+        //\param [in] add key of changed channel specific parameters to pendingUpdate.
         //\return retOk if everything was ok, else retError
         //*/
         virtual ito::RetVal setParameter(QSharedPointer<ito::ParamBase>& val, const ParamMapIterator& it, const QString& suffix, const QString& key, int index, bool hasIndex, bool &ok, QStringList &pendingUpdate) = 0;

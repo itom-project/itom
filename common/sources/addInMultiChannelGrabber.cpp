@@ -100,7 +100,7 @@ namespace ito
             QMapIterator<QString, ChannelContainer> channel(channelContainerMap);
             QVector<ByteArray> channelList;
             QMap<QString, ito::Param>initialParams = m_params;
-            while (channel.hasNext()) 
+            while (channel.hasNext())
             {
                 channel.next();
                 QMapIterator<QString, ito::Param> channelParamIterator(channel.value().m_channelParam);
@@ -119,7 +119,7 @@ namespace ito
                     {
                         m_paramChannelAvailabilityMap[channelParamIterator.key()].append(channel.key());
                     }
-                    
+
                 }
                 channelList.append(channel.key().toLatin1().data());
             }
@@ -135,7 +135,7 @@ namespace ito
                 assert(!m_paramChannelAvailabilityMap.contains(nonChannelSpecificParamsIt.key()));
                 m_paramChannelAvailabilityMap.insert(nonChannelSpecificParamsIt.key(), QStringList());
                 m_params.insert(nonChannelSpecificParamsIt.key(), nonChannelSpecificParamsIt.value());
-                
+
             }
             QMapIterator<QString, ito::Param> initialParamsIt(initialParams);
             while (initialParamsIt.hasNext())
@@ -146,7 +146,7 @@ namespace ito
             }
             m_defaultConfigReady = true;
             switchDefaultChannel();
-            
+
 
         }
     }
@@ -188,7 +188,7 @@ namespace ito
                 {
                     retValue += ito::RetVal(ito::retWarning, 1001, tr("could not set axis scale or axis offset since the array length of at least one parameter does not fit to the dataObject size.").toLatin1().data());
                 }
-                
+
                 if (!QMetaObject::invokeMethod(it.value(), "setSource", Q_ARG(QSharedPointer<ito::DataObject>, pDObj), Q_ARG(ItomSharedSemaphore*, NULL)))
                 {
                     retValue += ito::RetVal(ito::retWarning, 1001, tr("slot 'setSource' of live source node could not be invoked").toLatin1().data());
@@ -429,7 +429,7 @@ namespace ito
     // This function parses the given parameter and calls setParameter. If the bool parameter ok in the setParameter (to be implemented in the individual plugins)
     // function returns false, it gets assumed that the plugin didn't process the parameter. In this case the value of the parameter gets copied here.
     // If the parameter name is "roi" sizex and sizey gets updated by setParam. If the key of the parameter is "defaultChannel" the function "switchDefaultChannel" gets called.
-    // Both happens also if the "ok" value of setParameter is true. 
+    // Both happens also if the "ok" value of setParameter is true.
     // "applyParamsToChannelParams" is called to synchronize the parameters of the channel container follwed by a call of checkData.
 
     //\param [in] val is a QSharedPOinter of type ParamBase containing the paremeter to be set.
@@ -453,7 +453,7 @@ namespace ito
         if (!retValue.containsError())
         {
             retValue += setParameter(val, it, suffix, key, index, hasIndex, ok, paramUpdateList);
-            if (ok && !paramUpdateList.contains(val->getName())) 
+            if (ok && !paramUpdateList.contains(val->getName()))
             {
                 paramUpdateList << val->getName();
             }
@@ -554,12 +554,12 @@ namespace ito
         return retValue;
     }
     ////----------------------------------------------------------------------------------------------------------------------------------
-    ////! copies value m_params to the channel params of the current default channel 
+    ////! copies value m_params to the channel params of the current default channel
     ///*!
-    //This method copies params of m_params to the params of the channel container if the param is contained in the channel container . This function is usally called after setParam to apply the changed entries of m_params to the corresponding channel container. 
+    //This method copies params of m_params to the params of the channel container if the param is contained in the channel container . This function is usally called after setParam to apply the changed entries of m_params to the corresponding channel container.
     //If a parameter is not found in the channel container nothing happens.
 
-    //\param [in] keyList indicates which params are copied. If the List is empty all Parameters of the current channel are updated.  
+    //\param [in] keyList indicates which params are copied. If the List is empty all Parameters of the current channel are updated.
     //\return retOk if everything was ok, else retError
     //*/
     ito::RetVal AddInMultiChannelGrabber::applyParamsToChannelParams(const QStringList& keyList)
@@ -610,7 +610,7 @@ namespace ito
     ///*!
     //Call this function to update sizex and sizey. If the roi is changed via setParam this function will be called automatically.
     //Note: Do not forget to apply the changes to the channel parameters by calling applyParamsToChannelParams after calling this function.
-  
+
     //\return retOk if everything was ok, else retError
     //*/
     void AddInMultiChannelGrabber::updateSizeXY()
@@ -658,7 +658,7 @@ namespace ito
                 }
                 if (!retValue.containsError())
                 {
-                    //update m_params if the current default channel is listed in channelList or if the current default channel does not support the param (the param in m_params then is set to readonly) 
+                    //update m_params if the current default channel is listed in channelList or if the current default channel does not support the param (the param in m_params then is set to readonly)
                     if (channelList.contains(m_params["defaultChannel"].getVal<const char*>()) || !m_paramChannelAvailabilityMap[paramName].contains(m_params["defaultChannel"].getVal<const char*>()))
                     {
                         m_params[paramName].setMeta(meta, takeOwnerShip);
@@ -674,7 +674,7 @@ namespace ito
 
         return retValue;
     }
-    
+
     ito::RetVal AddInMultiChannelGrabber::setParamFlags(const QByteArray& paramName, const unsigned int& flags, const QList<QByteArray>& channelList/* = QList<QByteArray>()*/)
     {
         assert(m_defaultConfigReady);
@@ -709,7 +709,7 @@ namespace ito
                 }
                 if (!retValue.containsError())
                 {
-                    //update m_params if the current default channel is listed in channelList or if the current default channel does not support the param (the param in m_params then is set to readonly) 
+                    //update m_params if the current default channel is listed in channelList or if the current default channel does not support the param (the param in m_params then is set to readonly)
                     if (channelList.contains(m_params["defaultChannel"].getVal<const char*>()) || !m_paramChannelAvailabilityMap[paramName].contains(m_params["defaultChannel"].getVal<const char*>()))
                     {
                         m_params[paramName].setFlags(flags);

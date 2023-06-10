@@ -88,7 +88,7 @@ namespace ito
         */
         int m_started;
 
-        AddInAbstractGrabberPrivate *dd;        
+        AddInAbstractGrabberPrivate *dd;
 
     protected:
 
@@ -156,7 +156,7 @@ namespace ito
     {
         Q_OBJECT
     private:
-            
+
         AddInGrabberPrivate *dd;
     protected:
         ito::DataObject m_data; /*!< variable for the recently grabbed image*/
