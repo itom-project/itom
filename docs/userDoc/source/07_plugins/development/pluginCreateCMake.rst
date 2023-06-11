@@ -34,7 +34,7 @@ This file usually already contains a lot of subdirectories, added by the CMake-c
 
     project(itom_plugins) #name of the overall project
 
-    cmake_minimum_required(VERSION 3.1...3.15)
+    cmake_minimum_required(VERSION 3.12...3.24)
 
     option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
 
