@@ -17,10 +17,10 @@ Software packages
 
 - IDE (e.g. Visual Studio 2015 Professional, QtCreator...)
 - Compiler: The C++ compiler must support at least the **C++11** standard.
-- CMake (recommended 3.1 or higher)
-- Qt5-framework (>= 5.5 required, >= 5.6 recommended)
+- CMake (recommended 3.12 or higher)
+- Qt5-framework or Qt6-framework (>= 5.5 required, >= 5.6 recommended)
 - OpenCV 3.2 or higher (3.x recommended)
-- Python 3.5 or higher, 3.6 or higher recommended
+- Python 3.5 or higher, 3.7 or higher recommended
 - Git (git-scm.com) + GUI (e.g. TortoiseGit or GitExtensions) for accessing the remote repository
 - Python-Package: NumPy
 
@@ -61,14 +61,14 @@ It is also possible to use the free express edition of Visual Studio.
 
 Download **CMake** from http://www.cmake.org/cmake/resources/software.html and install it.
 Or just download it and use that. no need to install.
-If possible use any version higher than 3.1. CMake reads the platform-independent
+If possible use any version higher than 3.12. CMake reads the platform-independent
 project files of |itom| (CMakeList.txt) and generates the corresponding project
 files for your compiler, IDE and platform.
 
 **Qt-framework** (mandatory)
 ''''''''''''''''''''''''''''''''
 
-Download the **Qt5-framework** (>= 5.5 required, >= 5.6 recommended)
+Download the **Qt5-framework or Qt6-framework** (>= 5.5 required, >= 5.6 recommended)
 from http://qt-project.org/downloads. If you find a setup version for your IDE and compiler,
 you can directly install it. Otherwise, you need to configure and build **Qt**
 on your computer - see box below. Either download the ready-to-use binaries from
@@ -231,7 +231,7 @@ Add the path to the bin-folder of PointCloud-library to the windows environment 
 
 :ref:`build_dependencies_vtk`
 
-**Python** (mandatory, 3.5 or higher, 3.6 or higher is recommended)
+**Python** (mandatory, 3.5 or higher, 3.7 or higher is recommended)
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 Download the installer from http://www.python.org/download/ and install python in
