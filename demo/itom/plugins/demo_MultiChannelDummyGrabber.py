@@ -1,7 +1,7 @@
-"""DummyGrabber
+"""MultiChannelDummyGrabber
 ================
 
-This demo shows with the example of the ``DummyGrabber``
+This demo shows with the example of the ``MultiChannelDummyGrabber``
 how grabber and cameras are used in ``itom``."""
 
 from itom import dataIO
@@ -10,41 +10,27 @@ from itom import plot
 from itom import liveImage
 # sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoDummyGrabber.png'
 
+###############################################################################
+# Start camera (e.g.: ``DummyMultiChannelGrabber``) with a ``noise image`` (default).
+camera = dataIO("DummyMultiChannelGrabber")
 
 ###############################################################################
-# Start camera (e.g.: ``DummyGrabber``) with a ``noise image`` (default).
-camera = dataIO("DummyGrabber")
+# Start camera (e.g.: ``DummyMultiChannelGrabber``) with moving ``Gaussian spot``.
+cameraGaussian = dataIO("DummyMultiChannelGrabber", imageType="gaussianSpot")
 
 ###############################################################################
-# Start camera (e.g.: ``DummyGrabber``) with moving ``Gaussian spot``.
-cameraGaussian = dataIO("DummyGrabber", imageType="gaussianSpot")
-
-###############################################################################
-# Start camera (e.g.: ``DummyGrabber``) with moving ``4 Gaussian spots``.
-cameraGaussianArray = dataIO("DummyGrabber", imageType="gaussianSpotArray")
-
-###############################################################################
-# Set region of interest (ROI) by a tuple.
-#
-# x: [100,499] -> width: 400 (borders are included!)
-#
-# y: [40, 349] -> height: 310
-camera.setParam("roi", [100, 40, 400, 300])
-
-###############################################################################
-# or by explicite roi values.
-camera.setParam("roi[0]", 100)
-camera.setParam("roi[2]", 400)
+# Start camera (e.g.: ``DummyMultiChannelGrabber``) with moving ``4 Gaussian spots``.
+cameraGaussianArray = dataIO("DummyMultiChannelGrabber", imageType="gaussianSpotArray")
 
 print("width:", camera.getParam("sizex"))
 print("height:", camera.getParam("sizey"))
 
 ###############################################################################
-# Set bits per pixel (bpp).
-camera.setParam("bpp", 8)
+# Set pixel format to ``mono8``
+camera.setParam("pixelFormat", "mono8")
 
 # print available parameters of that device
-print("DummyGrabber has the following parameters:")
+print("DummyMultiChannelGrabber has the following parameters:")
 print(camera.getParamList())
 
 # print detailed information about parameters:
@@ -52,8 +38,7 @@ print(camera.getParamListInfo())
 
 ###############################################################################
 # Read parameters from device.
-sizex = camera.getParam("sizex")
-sizey = camera.getParam("sizey")
+roi = camera.getParam("roi")
 ###############################################################################
 # Start camera.
 camera.startDevice()
@@ -96,25 +81,19 @@ camera.stopDevice()
 liveImage(camera)
 
 ###############################################################################
-# .. image:: ../../_static/demoDummyGrabber_1.png
+#
+# .. image:: ../../_static/demoMultiChannelDummyGrabber_1.png
 #    :width: 100%
+
 liveImage(cameraGaussian)
-
-###############################################################################
-# .. image:: ../../_static/demoDummyGrabber_2.png
-#    :width: 100%
 liveImage(cameraGaussianArray)
-
-###############################################################################
-# .. image:: ../../_static/demoDummyGrabber_3.png
-#    :width: 100%
 
 ###############################################################################
 # Acquire an image stack of 10 measurements.
 num = 100
 camera.startDevice()
 image = dataObject()
-imageStack = dataObject([num, sizey, sizex], "uint8")
+imageStack = dataObject([num, roi[2], roi[3]], "uint8")
 
 # stop the auto grabbing of the live image
 camera.disableAutoGrabbing()
