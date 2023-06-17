@@ -229,11 +229,59 @@ AddInGrabber::~AddInGrabber()
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal AddInGrabber::checkData(ito::DataObject *externalDataObject)
 {
-    int futureHeight = m_params["sizey"].getVal<int>();
-    int futureWidth = m_params["sizex"].getVal<int>();
+    const int futureHeight = m_params["sizey"].getVal<int>();
+    const int futureWidth = m_params["sizex"].getVal<int>();
     int futureType;
 
-    int bpp = m_params["bpp"].getVal<int>();
+    const int bpp = m_params["bpp"].getVal<int>();
+
+    ito::float64 axisOffset[] = {0.0, 0.0};
+    ito::float64 axisScale[] = {1.0, 1.0};
+    ito::ByteArray axisUnit[] = {ito::ByteArray("<auto>"), ito::ByteArray("<auto>")};
+    ito::ByteArray axisDescription[] = {ito::ByteArray("<auto>"), ito::ByteArray("<auto>")};
+    QString valueDescription = "<auto>";
+    QString valueUnit = "<auto>";
+
+    // only if exists in plugin
+    if (m_params.contains("axisOffset"))
+    {
+        axisOffset[0] = m_params["axisOffset"].getVal<ito::float64*>()[0];
+        axisOffset[1] = m_params["axisOffset"].getVal<ito::float64*>()[1];
+    }
+
+    // only if exists in plugin
+    if (m_params.contains("axisScale"))
+    {
+        axisScale[0] = m_params["axisScale"].getVal<ito::float64*>()[0];
+        axisScale[1] = m_params["axisScale"].getVal<ito::float64*>()[1];
+    }
+
+    // only if exists in plugin
+    if (m_params.contains("axisDescription"))
+    {
+        axisDescription[0] = m_params["axisDescription"].getVal<ito::ByteArray*>()[0];
+        axisDescription[1] = m_params["axisDescription"].getVal<ito::ByteArray*>()[1];
+    }
+
+    // only if exists in plugin
+    if (m_params.contains("axisUnit"))
+    {
+        axisUnit[0] = m_params["axisUnit"].getVal<ito::ByteArray*>()[0];
+        axisUnit[1] = m_params["axisUnit"].getVal<ito::ByteArray*>()[1];
+    }
+
+    // only if exists in plugin
+    if (m_params.contains("valueDescription"))
+    {
+        valueDescription = m_params["valueDescription"].getVal<char*>();
+    }
+
+    // only if exists in plugin
+    if (m_params.contains("valueUnit"))
+    {
+        valueUnit = m_params["valueUnit"].getVal<char*>();
+    }
+
     if (bpp <= 8)
     {
         futureType = ito::tUInt8;
@@ -259,6 +307,16 @@ ito::RetVal AddInGrabber::checkData(ito::DataObject *externalDataObject)
                 m_data.getSize(1) != (unsigned int)futureWidth || m_data.getType() != futureType)
             {
                 m_data = ito::DataObject(futureHeight, futureWidth, futureType);
+                m_data.setAxisScale(0, axisScale[0]);
+                m_data.setAxisScale(1, axisScale[1]);
+                m_data.setAxisOffset(0, axisOffset[0]);
+                m_data.setAxisOffset(1, axisOffset[1]);
+                m_data.setAxisDescription(0, axisDescription[0].data());
+                m_data.setAxisDescription(1, axisDescription[1].data());
+                m_data.setAxisUnit(0, axisUnit[0].data());
+                m_data.setAxisUnit(1, axisUnit[1].data());
+                m_data.setValueDescription(valueDescription.toUtf8().data());
+                m_data.setValueUnit(valueUnit.toUtf8().data());
             }
         }
         else
@@ -298,6 +356,16 @@ ito::RetVal AddInGrabber::checkData(ito::DataObject *externalDataObject)
                 m_data.getType() != futureType)
             {
                 m_data = ito::DataObject(numChannel, futureHeight, futureWidth, futureType);
+                m_data.setAxisScale(0, axisScale[0]);
+                m_data.setAxisScale(1, axisScale[1]);
+                m_data.setAxisOffset(0, axisOffset[0]);
+                m_data.setAxisOffset(1, axisOffset[1]);
+                m_data.setAxisDescription(0, axisDescription[0].data());
+                m_data.setAxisDescription(1, axisDescription[1].data());
+                m_data.setAxisUnit(0, axisUnit[0].data());
+                m_data.setAxisUnit(1, axisUnit[1].data());
+                m_data.setValueDescription(valueDescription.toUtf8().data());
+                m_data.setValueUnit(valueUnit.toUtf8().data());
             }
         }
         else
@@ -320,6 +388,7 @@ ito::RetVal AddInGrabber::checkData(ito::DataObject *externalDataObject)
             }
         }
     }
+
 
     return ito::retOk;
 }
