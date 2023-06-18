@@ -307,17 +307,17 @@ ito::RetVal AddInGrabber::checkData(ito::DataObject *externalDataObject)
                 m_data.getSize(1) != (unsigned int)futureWidth || m_data.getType() != futureType)
             {
                 m_data = ito::DataObject(futureHeight, futureWidth, futureType);
-                m_data.setAxisScale(0, axisScale[0]);
-                m_data.setAxisScale(1, axisScale[1]);
-                m_data.setAxisOffset(0, axisOffset[0]);
-                m_data.setAxisOffset(1, axisOffset[1]);
-                m_data.setAxisDescription(0, axisDescription[0].data());
-                m_data.setAxisDescription(1, axisDescription[1].data());
-                m_data.setAxisUnit(0, axisUnit[0].data());
-                m_data.setAxisUnit(1, axisUnit[1].data());
-                m_data.setValueDescription(valueDescription.toUtf8().data());
-                m_data.setValueUnit(valueUnit.toUtf8().data());
             }
+            m_data.setAxisScale(0, axisScale[0]);
+            m_data.setAxisScale(1, axisScale[1]);
+            m_data.setAxisOffset(0, axisOffset[0]);
+            m_data.setAxisOffset(1, axisOffset[1]);
+            m_data.setAxisDescription(0, axisDescription[0].data());
+            m_data.setAxisDescription(1, axisDescription[1].data());
+            m_data.setAxisUnit(0, axisUnit[0].data());
+            m_data.setAxisUnit(1, axisUnit[1].data());
+            m_data.setValueDescription(valueDescription.toUtf8().data());
+            m_data.setValueUnit(valueUnit.toUtf8().data());
         }
         else
         {
@@ -356,17 +356,17 @@ ito::RetVal AddInGrabber::checkData(ito::DataObject *externalDataObject)
                 m_data.getType() != futureType)
             {
                 m_data = ito::DataObject(numChannel, futureHeight, futureWidth, futureType);
-                m_data.setAxisScale(0, axisScale[0]);
-                m_data.setAxisScale(1, axisScale[1]);
-                m_data.setAxisOffset(0, axisOffset[0]);
-                m_data.setAxisOffset(1, axisOffset[1]);
-                m_data.setAxisDescription(0, axisDescription[0].data());
-                m_data.setAxisDescription(1, axisDescription[1].data());
-                m_data.setAxisUnit(0, axisUnit[0].data());
-                m_data.setAxisUnit(1, axisUnit[1].data());
-                m_data.setValueDescription(valueDescription.toUtf8().data());
-                m_data.setValueUnit(valueUnit.toUtf8().data());
             }
+            m_data.setAxisScale(0, axisScale[0]);
+            m_data.setAxisScale(1, axisScale[1]);
+            m_data.setAxisOffset(0, axisOffset[0]);
+            m_data.setAxisOffset(1, axisOffset[1]);
+            m_data.setAxisDescription(0, axisDescription[0].data());
+            m_data.setAxisDescription(1, axisDescription[1].data());
+            m_data.setAxisUnit(0, axisUnit[0].data());
+            m_data.setAxisUnit(1, axisUnit[1].data());
+            m_data.setValueDescription(valueDescription.toUtf8().data());
+            m_data.setValueUnit(valueUnit.toUtf8().data());
         }
         else
         {
