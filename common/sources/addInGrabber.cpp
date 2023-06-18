@@ -237,8 +237,8 @@ ito::RetVal AddInGrabber::checkData(ito::DataObject *externalDataObject)
 
     ito::float64 axisOffset[] = {0.0, 0.0};
     ito::float64 axisScale[] = {1.0, 1.0};
-    ito::ByteArray axisUnit[] = {ito::ByteArray("<auto>"), ito::ByteArray("<auto>")};
-    ito::ByteArray axisDescription[] = {ito::ByteArray("<auto>"), ito::ByteArray("<auto>")};
+    QString axisUnit[] = {"<auto>", "<auto>"};
+    QString axisDescription[] = {"<auto>", "<auto>"};
     QString valueDescription = "<auto>";
     QString valueUnit = "<auto>";
 
@@ -259,27 +259,29 @@ ito::RetVal AddInGrabber::checkData(ito::DataObject *externalDataObject)
     // only if exists in plugin
     if (m_params.contains("axisDescription"))
     {
-        axisDescription[0] = m_params["axisDescription"].getVal<ito::ByteArray*>()[0];
-        axisDescription[1] = m_params["axisDescription"].getVal<ito::ByteArray*>()[1];
+        axisDescription[0] =
+            QString::fromUtf8(m_params["axisDescription"].getVal<ito::ByteArray*>()[0].data());
+        axisDescription[1] =
+            QString::fromUtf8(m_params["axisDescription"].getVal<ito::ByteArray*>()[1].data());
     }
 
     // only if exists in plugin
     if (m_params.contains("axisUnit"))
     {
-        axisUnit[0] = m_params["axisUnit"].getVal<ito::ByteArray*>()[0];
-        axisUnit[1] = m_params["axisUnit"].getVal<ito::ByteArray*>()[1];
+        axisUnit[0] = QString::fromUtf8(m_params["axisUnit"].getVal<ito::ByteArray*>()[0].data());
+        axisUnit[1] = QString::fromUtf8(m_params["axisUnit"].getVal<ito::ByteArray*>()[1].data());
     }
 
     // only if exists in plugin
     if (m_params.contains("valueDescription"))
     {
-        valueDescription = m_params["valueDescription"].getVal<char*>();
+        valueDescription = QString::fromLatin1(m_params["valueDescription"].getVal<char*>());
     }
 
     // only if exists in plugin
     if (m_params.contains("valueUnit"))
     {
-        valueUnit = m_params["valueUnit"].getVal<char*>();
+        valueUnit = QString::fromLatin1(m_params["valueUnit"].getVal<char*>());
     }
 
     if (bpp <= 8)
@@ -312,12 +314,12 @@ ito::RetVal AddInGrabber::checkData(ito::DataObject *externalDataObject)
             m_data.setAxisScale(1, axisScale[1]);
             m_data.setAxisOffset(0, axisOffset[0]);
             m_data.setAxisOffset(1, axisOffset[1]);
-            m_data.setAxisDescription(0, axisDescription[0].data());
-            m_data.setAxisDescription(1, axisDescription[1].data());
-            m_data.setAxisUnit(0, axisUnit[0].data());
-            m_data.setAxisUnit(1, axisUnit[1].data());
-            m_data.setValueDescription(valueDescription.toUtf8().data());
-            m_data.setValueUnit(valueUnit.toUtf8().data());
+            m_data.setAxisDescription(0, axisDescription[0].toLatin1().data());
+            m_data.setAxisDescription(1, axisDescription[1].toLatin1().data());
+            m_data.setAxisUnit(0, axisUnit[0].toLatin1().data());
+            m_data.setAxisUnit(1, axisUnit[1].toLatin1().data());
+            m_data.setValueDescription(valueDescription.toLatin1().data());
+            m_data.setValueUnit(valueUnit.toLatin1().data());
         }
         else
         {
@@ -361,12 +363,12 @@ ito::RetVal AddInGrabber::checkData(ito::DataObject *externalDataObject)
             m_data.setAxisScale(1, axisScale[1]);
             m_data.setAxisOffset(0, axisOffset[0]);
             m_data.setAxisOffset(1, axisOffset[1]);
-            m_data.setAxisDescription(0, axisDescription[0].data());
-            m_data.setAxisDescription(1, axisDescription[1].data());
-            m_data.setAxisUnit(0, axisUnit[0].data());
-            m_data.setAxisUnit(1, axisUnit[1].data());
-            m_data.setValueDescription(valueDescription.toUtf8().data());
-            m_data.setValueUnit(valueUnit.toUtf8().data());
+            m_data.setAxisDescription(0, axisDescription[0].toLatin1().data());
+            m_data.setAxisDescription(1, axisDescription[1].toLatin1().data());
+            m_data.setAxisUnit(0, axisUnit[0].toLatin1().data());
+            m_data.setAxisUnit(1, axisUnit[1].toLatin1().data());
+            m_data.setValueDescription(valueDescription.toLatin1().data());
+            m_data.setValueUnit(valueUnit.toLatin1().data());
         }
         else
         {
