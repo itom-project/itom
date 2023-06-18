@@ -2,7 +2,11 @@
 ================
 
 This demo shows with the example of the ``DummyGrabber``
-how grabber and cameras are used in ``itom``."""
+how grabber and cameras are used in ``itom``.
+3 ``DummyGrabber`` instances are created.
+The ``camera`` shows how to set parameter like ``region of interest``.
+Using the ``cameraGaussian`` it is show how to define meta information
+of the image showing axis descriptions, units, ..."""
 
 from itom import dataIO
 from itom import dataObject
@@ -96,18 +100,27 @@ camera.stopDevice()
 liveImage(camera)
 
 ###############################################################################
-# .. image:: ../../_static/demoDummyGrabber_1.png
-#    :width: 100%
-liveImage(cameraGaussian)
+# Set meta information for the gaussianSpot of image for liveImage and return image.
+# The axis properties are set assuming a pixel pitch of 10µm.
+# The offset is set such that origin is in the center.
+cameraGaussian.setParam("axisScale", (10e-6, 10e-6))  # scale 10µm
+cameraGaussian.setParam("axisOffset", ((480-1)/2, (640-1)/2))  # origin on center
+cameraGaussian.setParam("axisDescription", ("y axis", "x axis"))
+cameraGaussian.setParam("axisUnit", ("µm", "µm"))
+cameraGaussian.setParam("valueDescription", "counts")
+cameraGaussian.setParam("valueUnit", "a.u.")
 
 ###############################################################################
+# Start a live image with aspect ratio of 1 and visible colorBar.
+#
 # .. image:: ../../_static/demoDummyGrabber_2.png
 #    :width: 100%
-liveImage(cameraGaussianArray)
+liveImage(cameraGaussian, properties={"colorMap": "falseColorIR", "keepAspectRatio": True, "colorBarVisible": True})
 
 ###############################################################################
 # .. image:: ../../_static/demoDummyGrabber_3.png
 #    :width: 100%
+liveImage(cameraGaussianArray)
 
 ###############################################################################
 # Acquire an image stack of 10 measurements.
