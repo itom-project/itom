@@ -31,10 +31,10 @@ camera.setParam("pixelFormat", "mono8")
 
 # print available parameters of that device
 print("DummyMultiChannelGrabber has the following parameters:")
-print(camera.getParamList())
+camera.getParamList()
 
 # print detailed information about parameters:
-print(camera.getParamListInfo())
+camera.getParamListInfo()
 
 ###############################################################################
 # Read parameters from device.

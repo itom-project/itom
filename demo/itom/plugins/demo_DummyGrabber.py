@@ -42,10 +42,10 @@ camera.setParam("bpp", 8)
 
 # print available parameters of that device
 print("DummyGrabber has the following parameters:")
-print(camera.getParamList())
+camera.getParamList()
 
 # print detailed information about parameters:
-print(camera.getParamListInfo())
+camera.getParamListInfo()
 
 ###############################################################################
 # Read parameters from device.
