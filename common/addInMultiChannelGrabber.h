@@ -55,30 +55,60 @@ namespace ito
         {
             ito::DataObject data;
             QMap<QString, ito::Param> m_channelParam;
+
             ChannelContainer()
             {
                 ito::Param paramVal;
                 int roi[] = { 0, 0, 1, 1 };
                 paramVal = ito::Param("roi", ito::ParamBase::IntArray, 4, roi, "roi");
-                m_channelParam.insert("roi", paramVal);
+                m_channelParam.insert(paramVal.getName(), paramVal);
 
                 paramVal = ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 1, 1, "sizex");
-                m_channelParam.insert("sizex", paramVal);
+                m_channelParam.insert(paramVal.getName(), paramVal);
 
                 paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 1, 1, "sizey");
-                m_channelParam.insert("sizey", paramVal);
+                m_channelParam.insert(paramVal.getName(), paramVal);
 
                 paramVal = ito::Param("pixelFormat", ito::ParamBase::String, "mono8", "pixelFormat");
-                m_channelParam.insert("pixelFormat", paramVal);
+                m_channelParam.insert(paramVal.getName(), paramVal);
 
                 double axisOffset[] = { 0.0, 0.0 };
                 paramVal = ito::Param("axisOffset", ito::ParamBase::DoubleArray, 2, axisOffset, "axis offset");
-                m_channelParam.insert("axisOffset", paramVal);
+                m_channelParam.insert(paramVal.getName(), paramVal);
 
                 double axisScale[] = { 1.0, 1.0 };
                 paramVal = ito::Param("axisScale", ito::ParamBase::DoubleArray, 2, axisScale, "axis scale");
-                m_channelParam.insert("axisScale", paramVal);
+                m_channelParam.insert(paramVal.getName(), paramVal);
+
+                QString axisUnit[] = {"<auto>", "<auto>"};
+                paramVal = ito::Param(
+                    "axisUnit",
+                    ito::ParamBase::StringList,
+                    axisUnit->toLatin1().data(), "axis unit");
+                m_channelParam.insert(paramVal.getName(), paramVal);
+
+                QString axisDescription[] = {"<auto>", "<auto>"};
+                paramVal = ito::Param(
+                    "axisDescription",
+                    ito::ParamBase::StringList,
+                    axisDescription->toLatin1().data(),
+                    "axis description");
+                m_channelParam.insert(paramVal.getName(), paramVal);
+
+                QString valueDescription = "<auto>";
+                paramVal = ito::Param(
+                    "valueDescription",
+                    ito::ParamBase::String,
+                    valueDescription.toLatin1().data(),
+                    "value description");
+                m_channelParam.insert(paramVal.getName(), paramVal);
+
+                QString valueUnit = "<auto>";
+                paramVal = ito::Param(
+                    "valueUnit", ito::ParamBase::String, valueUnit.toLatin1().data(), "value unit");
+                m_channelParam.insert(paramVal.getName(), paramVal);
             };
+
             ~ChannelContainer() = default;
             ChannelContainer(const ChannelContainer&) = default;
             ChannelContainer(ito::Param roi,
@@ -86,7 +116,11 @@ namespace ito
                              ito::Param sizex,
                              ito::Param sizey,
                              ito::Param axisOffset,
-                             ito::Param axisScale)
+                             ito::Param axisScale,
+                             ito::Param axisDescription,
+                             ito::Param axisUnit,
+                             ito::Param valueDescription,
+                             ito::Param valueUnit)
             {
                 m_channelParam.insert("pixelFormat", pixelFormat);
                 m_channelParam.insert("roi", roi);
@@ -94,8 +128,13 @@ namespace ito
                 m_channelParam.insert("sizey", sizey);
                 m_channelParam.insert("axisOffset", axisOffset);
                 m_channelParam.insert("axisScale", axisScale);
+                m_channelParam.insert("axisDescription", axisDescription);
+                m_channelParam.insert("axisUnit", axisUnit);
+                m_channelParam.insert("valueDescription", valueDescription);
+                m_channelParam.insert("valueUnit", valueUnit);
             }
         };
+
         QMap<QString, ChannelContainer> m_channels; /*!< Map for recently grabbed images of various channels*/
         virtual ito::RetVal checkData(ito::DataObject *externalDataObject = NULL);
         virtual ito::RetVal checkData(QMap<QString, ito::DataObject*>& externalDataObject);
@@ -108,8 +147,6 @@ namespace ito
 
         ito::RetVal setParamMeta(const QByteArray& paramName, ito::ParamMeta* meta, bool takeOwnerShip, const QList<QByteArray>& channelList = QList<QByteArray>());
         ito::RetVal setParamFlags(const QByteArray& paramName, const unsigned int& flags, const QList<QByteArray>& channelList = QList<QByteArray>());
-
-
 
         ////! Specific function to set the parameters in the respective plugin class
         ///*!

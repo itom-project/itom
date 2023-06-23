@@ -151,8 +151,6 @@ namespace ito
         }
     }
 
-
-
     ////----------------------------------------------------------------------------------------------------------------------------------
     ////! sends m_image to all registered listeners.
     ///*!
@@ -173,21 +171,6 @@ namespace ito
             {
                 const ChannelContainer& container = m_channels[it.key().toLatin1().data()];
                 QSharedPointer<ito::DataObject> pDObj(new ito::DataObject(container.data));
-                int numAxis = pDObj->getDims();
-                if(container.m_channelParam["axisOffset"].getLen() == numAxis && container.m_channelParam["axisScale"].getLen() == numAxis)
-                {
-                    const double* axisOffset = container.m_channelParam["axisOffset"].getVal<double*>();
-                    const double* axisScale = container.m_channelParam["axisScale"].getVal<double*>();
-                    for (unsigned int i = 0; i < numAxis; ++i)
-                    {
-                        pDObj->setAxisOffset(i, axisOffset[i]);
-                        pDObj->setAxisScale(i, axisScale[i]);
-                    }
-                }
-                else
-                {
-                    retValue += ito::RetVal(ito::retWarning, 1001, tr("could not set axis scale or axis offset since the array length of at least one parameter does not fit to the dataObject size.").toLatin1().data());
-                }
 
                 if (!QMetaObject::invokeMethod(it.value(), "setSource", Q_ARG(QSharedPointer<ito::DataObject>, pDObj), Q_ARG(ItomSharedSemaphore*, NULL)))
                 {
@@ -234,16 +217,80 @@ namespace ito
         return retValue;
     }
 
-
+    //----------------------------------------------------------------------------------------------------------------------------------
     ito::RetVal ito::AddInMultiChannelGrabber::checkData(QMap<QString, ito::DataObject*>& externalDataObject)
     {
         assert(m_defaultConfigReady);
         ito::RetVal retVal(ito::retOk);
         unsigned int futureType = 0;
         bool ok;
+        ito::float64 axisOffset[] = {0.0, 0.0};
+        ito::float64 axisScale[] = {1.0, 1.0};
+        QString axisUnit[] = {"<auto>", "<auto>"};
+        QString axisDescription[] = {"<auto>", "<auto>"};
+        QString valueDescription = "<auto>";
+        QString valueUnit = "<auto>";
+
         QMap<QString, ito::DataObject*>::const_iterator it = externalDataObject.constBegin();
         while (it != externalDataObject.constEnd())
         {
+            // only if exists in plugin
+            if (m_channels[it.key()].m_channelParam.contains("axisOffset"))
+            {
+                axisOffset[0] = m_channels[it.key()].m_channelParam["axisOffset"].getVal<ito::float64*>()[0];
+                axisOffset[1] =
+                    m_channels[it.key()].m_channelParam["axisOffset"].getVal<ito::float64*>()[1];
+            }
+
+            // only if exists in plugin
+            if (m_channels[it.key()].m_channelParam.contains("axisScale"))
+            {
+                axisScale[0] =
+                    m_channels[it.key()].m_channelParam["axisScale"].getVal<ito::float64*>()[0];
+                axisScale[1] =
+                    m_channels[it.key()].m_channelParam["axisScale"].getVal<ito::float64*>()[1];
+            }
+
+            // only if exists in plugin
+            if (m_channels[it.key()].m_channelParam.contains("axisDescription"))
+            {
+                axisDescription[0] = QString::fromUtf8(m_channels[it.key()]
+                                                           .m_channelParam["axisDescription"]
+                                                           .getVal<ito::ByteArray*>()[0]
+                                                           .data());
+                axisDescription[1] = QString::fromUtf8(m_channels[it.key()]
+                                                           .m_channelParam["axisDescription"]
+                                                           .getVal<ito::ByteArray*>()[1]
+                                                           .data());
+            }
+
+            // only if exists in plugin
+            if (m_channels[it.key()].m_channelParam.contains("axisUnit"))
+            {
+                axisUnit[0] = QString::fromUtf8(m_channels[it.key()]
+                                                    .m_channelParam["axisUnit"]
+                                                    .getVal<ito::ByteArray*>()[0]
+                                                    .data());
+                axisUnit[1] = QString::fromUtf8(m_channels[it.key()]
+                                                    .m_channelParam["axisUnit"]
+                                                    .getVal<ito::ByteArray*>()[1]
+                                                    .data());
+            }
+
+            // only if exists in plugin
+            if (m_channels[it.key()].m_channelParam.contains("valueDescription"))
+            {
+                valueDescription = QString::fromLatin1(
+                    m_channels[it.key()].m_channelParam["valueDescription"].getVal<char*>());
+            }
+
+            // only if exists in plugin
+            if (m_channels[it.key()].m_channelParam.contains("valueUnit"))
+            {
+                valueUnit = QString::fromLatin1(
+                    m_channels[it.key()].m_channelParam["valueUnit"].getVal<char*>());
+            }
+
             futureType = pixelFormatStringToEnum(m_channels[it.key()].m_channelParam["pixelFormat"].getVal<const char*>(), &ok);
             if (ok)
             {
@@ -253,6 +300,20 @@ namespace ito
                 if (it.value()->getDims() == 0)
                 {
                     *(it.value()) = ito::DataObject(height, width, futureType);
+
+                    m_channels[it.key()].data.setAxisScale(0, axisScale[0]);
+                    m_channels[it.key()].data.setAxisScale(1, axisScale[1]);
+                    m_channels[it.key()].data.setAxisOffset(0, axisOffset[0]);
+                    m_channels[it.key()].data.setAxisOffset(1, axisOffset[1]);
+                    m_channels[it.key()].data.setAxisDescription(
+                        0, axisDescription[0].toLatin1().data());
+                    m_channels[it.key()].data.setAxisDescription(
+                        1, axisDescription[1].toLatin1().data());
+                    m_channels[it.key()].data.setAxisUnit(0, axisUnit[0].toLatin1().data());
+                    m_channels[it.key()].data.setAxisUnit(1, axisUnit[1].toLatin1().data());
+                    m_channels[it.key()].data.setValueDescription(
+                        valueDescription.toLatin1().data());
+                    m_channels[it.key()].data.setValueUnit(valueUnit.toLatin1().data());
                 }
                 else if (it.value()->calcNumMats() != 1)
                 {
@@ -266,30 +327,108 @@ namespace ito
             ++it;
         }
         return retVal;
-
     }
+
+    //----------------------------------------------------------------------------------------------------------------------------------
     ito::RetVal ito::AddInMultiChannelGrabber::checkData(ito::DataObject *externalDataObject)
     {
         assert(m_defaultConfigReady);
         ito::RetVal retVal(ito::retOk);
         bool ok;
+        ito::float64 axisOffset[] = {0.0, 0.0};
+        ito::float64 axisScale[] = {1.0, 1.0};
+        QString axisUnit[] = {"<auto>", "<auto>"};
+        QString axisDescription[] = {"<auto>", "<auto>"};
+        QString valueDescription = "<auto>";
+        QString valueUnit = "<auto>";
+
         unsigned int futureType;
         PixelFormat format;
         if (!externalDataObject)
         {
+            QMutableMapIterator<QString, ChannelContainer> it(m_channels);
+            while (it.hasNext()) {
+                it.next();
 
-            QMutableMapIterator<QString, ChannelContainer> i(m_channels);
-            while (i.hasNext()) {
-                i.next();
-                futureType = pixelFormatStringToEnum(i.value().m_channelParam["pixelFormat"].getVal<const char*>(), &ok);
+                // only if exists in plugin
+                if (m_channels[it.key()].m_channelParam.contains("axisOffset"))
+                {
+                    axisOffset[0] = m_channels[it.key()]
+                                        .m_channelParam["axisOffset"]
+                                        .getVal<ito::float64*>()[0];
+                    axisOffset[1] = m_channels[it.key()]
+                                        .m_channelParam["axisOffset"]
+                                        .getVal<ito::float64*>()[1];
+                }
+
+                // only if exists in plugin
+                if (m_channels[it.key()].m_channelParam.contains("axisScale"))
+                {
+                    axisScale[0] =
+                        m_channels[it.key()].m_channelParam["axisScale"].getVal<ito::float64*>()[0];
+                    axisScale[1] =
+                        m_channels[it.key()].m_channelParam["axisScale"].getVal<ito::float64*>()[1];
+                }
+
+                // only if exists in plugin
+                if (m_channels[it.key()].m_channelParam.contains("axisDescription"))
+                {
+                    axisDescription[0] = QString::fromUtf8(m_channels[it.key()]
+                                                               .m_channelParam["axisDescription"]
+                                                               .getVal<ito::ByteArray*>()[0]
+                                                               .data());
+                    axisDescription[1] = QString::fromUtf8(m_channels[it.key()]
+                                                               .m_channelParam["axisDescription"]
+                                                               .getVal<ito::ByteArray*>()[1]
+                                                               .data());
+                }
+
+                // only if exists in plugin
+                if (m_channels[it.key()].m_channelParam.contains("axisUnit"))
+                {
+                    axisUnit[0] = QString::fromUtf8(m_channels[it.key()]
+                                                        .m_channelParam["axisUnit"]
+                                                        .getVal<ito::ByteArray*>()[0]
+                                                        .data());
+                    axisUnit[1] = QString::fromUtf8(m_channels[it.key()]
+                                                        .m_channelParam["axisUnit"]
+                                                        .getVal<ito::ByteArray*>()[1]
+                                                        .data());
+                }
+
+                // only if exists in plugin
+                if (m_channels[it.key()].m_channelParam.contains("valueDescription"))
+                {
+                    valueDescription = QString::fromLatin1(
+                        m_channels[it.key()].m_channelParam["valueDescription"].getVal<char*>());
+                }
+
+                // only if exists in plugin
+                if (m_channels[it.key()].m_channelParam.contains("valueUnit"))
+                {
+                    valueUnit = QString::fromLatin1(
+                        m_channels[it.key()].m_channelParam["valueUnit"].getVal<char*>());
+                }
+
+                futureType = pixelFormatStringToEnum(it.value().m_channelParam["pixelFormat"].getVal<const char*>(), &ok);
                 if (ok)
                 {
-                    int* roi = i.value().m_channelParam["roi"].getVal<int*>();
+                    int* roi = it.value().m_channelParam["roi"].getVal<int*>();
                     int height = roi[3];
                     int width = roi[2];
-                    if (i.value().data.getDims() < 2 || i.value().data.getSize(0) != height || i.value().data.getSize(1) != width || i.value().data.getType() != futureType)
+                    if (it.value().data.getDims() < 2 || it.value().data.getSize(0) != height || it.value().data.getSize(1) != width || it.value().data.getType() != futureType)
                     {
-                        i.value().data = ito::DataObject(height, width, futureType);
+                        it.value().data = ito::DataObject(height, width, futureType);
+                        it.value().data.setAxisScale(0, axisScale[0]);
+                        it.value().data.setAxisScale(1, axisScale[1]);
+                        it.value().data.setAxisOffset(0, axisOffset[0]);
+                        it.value().data.setAxisOffset(1, axisOffset[1]);
+                        it.value().data.setAxisDescription(0, axisDescription[0].toLatin1().data());
+                        it.value().data.setAxisDescription(1, axisDescription[1].toLatin1().data());
+                        it.value().data.setAxisUnit(0, axisUnit[0].toLatin1().data());
+                        it.value().data.setAxisUnit(1, axisUnit[1].toLatin1().data());
+                        it.value().data.setValueDescription(valueDescription.toLatin1().data());
+                        it.value().data.setValueUnit(valueUnit.toLatin1().data());
                     }
                 }
                 else
@@ -332,10 +471,21 @@ namespace ito
         return retVal;
     }
 
+    //----------------------------------------------------------------------------------------------------------------------------------
     void AddInMultiChannelGrabber::addChannel(QString name)
     {
-        ChannelContainer a(m_params["roi"], m_params["pixelFormat"], m_params["sizex"], m_params["sizey"], m_params["axisOffset"], m_params["axisScale"]);
-        m_channels[name] = a;
+        ChannelContainer container(
+            m_params["roi"],
+            m_params["pixelFormat"],
+            m_params["sizex"],
+            m_params["sizey"],
+            m_params["axisOffset"],
+            m_params["axisScale"],
+            m_params["axisDescription"],
+            m_params["axisUnit"],
+            m_params["valueDescription"],
+            m_params["valueUnit"]);
+        m_channels[name] = container;
         const ByteArray* channelList = m_params["channelList"].getVal<const ByteArray*>();
         int len = 0;
         m_params["channelList"].getVal<const ByteArray*>(len);
@@ -343,18 +493,17 @@ namespace ito
         QVector<ByteArray> qVectorList(len, *channelList);
         qVectorList.append(ByteArray(name.toLatin1().data()));
         m_params["channelList"].setVal<ByteArray*>(qVectorList.data(), qVectorList.length());
-
     }
 
+    //----------------------------------------------------------------------------------------------------------------------------------
     ito::RetVal AddInMultiChannelGrabber::adaptDefaultChannelParams()
     {
         ito::RetVal retVal(ito::retOk);
         char* channel = m_params["defaultChannel"].getVal<char*>();
         return retVal;
-
-
     }
 
+    //----------------------------------------------------------------------------------------------------------------------------------
     ito::RetVal AddInMultiChannelGrabber::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond)
     {
         assert(m_defaultConfigReady);
@@ -392,6 +541,7 @@ namespace ito
         return retValue;
     }
 
+    //----------------------------------------------------------------------------------------------------------------------------------
     ito::RetVal AddInMultiChannelGrabber::changeChannelForListerners(const QString& newChannel, QObject* obj)
     {
         assert(m_defaultConfigReady);
@@ -423,6 +573,7 @@ namespace ito
         }
         return retValue;
     }
+
     ////----------------------------------------------------------------------------------------------------------------------------------
     ////! Sets a new value to a parameter.
     ///*!
@@ -516,6 +667,7 @@ namespace ito
         }
         return retValue;
     }
+
     ////----------------------------------------------------------------------------------------------------------------------------------
     ////! synchronizes m_params with the params of default channel container
     ///*!
@@ -553,6 +705,7 @@ namespace ito
         }
         return retValue;
     }
+
     ////----------------------------------------------------------------------------------------------------------------------------------
     ////! copies value m_params to the channel params of the current default channel
     ///*!
@@ -605,6 +758,7 @@ namespace ito
         }
         return retVal;
     }
+
     ////----------------------------------------------------------------------------------------------------------------------------------
     ////! updates sizex and sizey
     ///*!
@@ -623,7 +777,7 @@ namespace ito
         m_params["sizey"].setVal<int>(height);
     }
 
-
+    //----------------------------------------------------------------------------------------------------------------------------------
     ito::RetVal AddInMultiChannelGrabber::setParamMeta(const QByteArray& paramName, ito::ParamMeta* meta, bool takeOwnerShip ,const QList<QByteArray>& channelList/* = QList<ByteArray>()*/)
     {
         assert(m_defaultConfigReady);
@@ -675,6 +829,7 @@ namespace ito
         return retValue;
     }
 
+    //----------------------------------------------------------------------------------------------------------------------------------
     ito::RetVal AddInMultiChannelGrabber::setParamFlags(const QByteArray& paramName, const unsigned int& flags, const QList<QByteArray>& channelList/* = QList<QByteArray>()*/)
     {
         assert(m_defaultConfigReady);
@@ -725,6 +880,8 @@ namespace ito
 
         return retValue;
     }
+
+    //----------------------------------------------------------------------------------------------------------------------------------
     ito::RetVal AddInMultiChannelGrabber::getVal(QSharedPointer<QMap<QString, ito::DataObject*>> dataObjMap, ItomSharedSemaphore* waitCond)
     {
 
@@ -751,6 +908,8 @@ namespace ito
         }
         return retval;
     }
+
+    //----------------------------------------------------------------------------------------------------------------------------------
     ito::RetVal AddInMultiChannelGrabber::copyVal(QSharedPointer<QMap<QString, ito::DataObject*>> dataObjMap, ItomSharedSemaphore* waitCond)
     {
 
