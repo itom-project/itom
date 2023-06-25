@@ -816,9 +816,9 @@ class ITOMCOMMONQT_EXPORT AddInDataIO : public AddInBase
     // void timerEvent (QTimerEvent *event) = 0; //implement this event in your plugin, if you are a device, which is
     // accessible by any liveImage!!!
 
-    QMultiMap<QString, QObject *>
-        m_autoGrabbingListeners; /*!< MultiMap of listeners (live image source nodes), which want to have updates from
-                                    this camera. The String indicates the channel. */
+    /*!< MultiMap of listeners (live image source nodes), which want to have updates from
+    this camera. The String indicates the channel (for multigrabber sources), else the channel is an empty string. */
+    QMultiMap<QString, QObject*> m_autoGrabbingListeners;
     int m_timerID;               /*!< internal ID of the timer, which acquires images for any live view (if allowed) */
     int m_timerIntervalMS;       /*!<  timer interval (in ms)*/
     bool m_autoGrabbingEnabled;  /*!<  defines, whether the auto-grabbing timer for any live image can be activated. If

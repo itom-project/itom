@@ -546,21 +546,28 @@ namespace ito
         assert(m_defaultConfigReady);
         ito::RetVal retValue(ito::retOk);
         bool found = false;
+
         if (obj)
         {
-
             QMultiMap<QString, QObject*>::iterator i = m_autoGrabbingListeners.begin();
+
             while (i != m_autoGrabbingListeners.end())
             {
                 if (i.value() == obj)
                 {
                     found = true;
-                    m_autoGrabbingListeners.remove(i.key(), i.value());
-                    m_autoGrabbingListeners.insert(newChannel, obj);
+
+                    if (i.key() != newChannel)
+                    {
+                        // the channel has changed
+                        m_autoGrabbingListeners.remove(i.key(), obj);
+                        m_autoGrabbingListeners.insert(newChannel, obj);
+                    }
+
                     break;
                 }
-
             }
+
             if (!found)
             {
                 retValue += ito::RetVal(ito::retError, 0, tr("Could not find plot in m_autoGrabbingListeners").toLatin1().data());
@@ -679,18 +686,21 @@ namespace ito
         assert(m_defaultConfigReady);
         ito::RetVal retValue(ito::retOk);
         unsigned int flag = 0;
-        const char* selectedChannel = m_params["defaultChannel"].getVal<const char*>();
+        QString selectedChannel = QLatin1String(m_params["defaultChannel"].getVal<const char*>());
+
         if (m_channels.contains(selectedChannel))
         {
             QMutableMapIterator<QString, ito::Param> itParam(m_params);
+
             while (itParam.hasNext())
             {
                 itParam.next();
+
                 if (m_paramChannelAvailabilityMap[itParam.key()].contains(selectedChannel))
                 {
                     itParam.value() = m_channels[selectedChannel].m_channelParam[itParam.key()];
                 }
-                else if(!m_paramChannelAvailabilityMap[itParam.key()].isEmpty())
+                else if (!m_paramChannelAvailabilityMap[itParam.key()].isEmpty())
                 {
                     flag = itParam.value().getFlags();
                     flag |= ito::ParamBase::Readonly;
@@ -718,7 +728,8 @@ namespace ito
     {
         assert(m_defaultConfigReady);
         ito::RetVal retVal(ito::retOk);
-        QString currentChannel = m_params["defaultChannel"].getVal<char*>();
+        QString currentChannel = QLatin1String(m_params["defaultChannel"].getVal<const char*>());
+
         if (!keyList.isEmpty())
         {
             if (m_channels.contains(currentChannel))

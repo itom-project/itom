@@ -402,19 +402,23 @@ QPixmap AbstractDObjFigure::renderToPixMap(const int xsize, const int ysize, con
     emptyMap.fill(Qt::green);
     return emptyMap;
 }
+
 //-------------------------------------------------------------------------------------
 ito::RetVal AbstractDObjFigure::setDisplayedCameraChannel(const QString& channel)
 {
     ito::RetVal retValue(ito::retOk);
     QPointer<ito::AddInDataIO> liveSource = getCamera();
+
     if (liveSource)
     {
         bool isMultiChannel = false;
         isMultiChannel = liveSource->inherits("ito::AddInMultiChannelGrabber");
+
         if (isMultiChannel)
         {
             ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
             QSharedPointer<ito::Param> channelListParam(new ito::Param("channelList", ito::ParamBase::StringList));
+
             if (QMetaObject::invokeMethod(liveSource, "getParam", Q_ARG(QSharedPointer<ito::Param>, channelListParam), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
             {
                 bool timeout = false;
@@ -424,14 +428,16 @@ ito::RetVal AbstractDObjFigure::setDisplayedCameraChannel(const QString& channel
                     retValue += ito::RetVal(ito::retError, 0, tr("timeout while getting channelList parameter").toLatin1().data());
                     break;
                 }
+
                 if (!retValue.containsError())
                 {
                     int len = 0;
                     const ito::ByteArray* channelList = channelListParam->getVal<const ito::ByteArray*>(len);
                     bool found = false;
+
                     for (int i = 0; i < len; i++)
                     {
-                        if (QString(channelList[i].data()).compare(channel) == 0)
+                        if (QLatin1String(channelList[i].data()).compare(channel) == 0)
                         {
                             found = true;
                             m_currentDisplayedCameraChannel = channel;
@@ -439,9 +445,10 @@ ito::RetVal AbstractDObjFigure::setDisplayedCameraChannel(const QString& channel
                             break;
                         }
                     }
+
                     if (!found)
                     {
-                        retValue += ito::RetVal(ito::retError, 0, tr("the connected camera does not contain a channel called %1.").arg(channel).toLatin1().data());
+                        retValue += ito::RetVal(ito::retError, 0, tr("the connected camera does not provide the channel '%1'.").arg(channel).toLatin1().data());
                     }
                 }
             }

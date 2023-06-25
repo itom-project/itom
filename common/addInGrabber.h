@@ -91,12 +91,8 @@ namespace ito
         AddInAbstractGrabberPrivate *dd;
 
     protected:
-
-
-
-        void timerEvent (QTimerEvent *event);  /*!< this method is called every time when the auto-grabbing-timer is fired. Usually you don't have to overwrite this method. */
-
-
+        /*!< this method is called every time when the auto-grabbing-timer is fired. Usually you don't have to overwrite this method. */
+        void timerEvent (QTimerEvent *event);
 
         //! implement this method in your camera plugin. In this method the image is grabbed and stored in the m_image variable.
         /*!
