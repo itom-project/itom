@@ -170,7 +170,7 @@ namespace ito
             while (it != m_autoGrabbingListeners.end())
             {
                 const ChannelContainer& container = m_channels[it.key().toLatin1().data()];
-                QSharedPointer<ito::DataObject> pDObj(new ito::DataObject(container.data));
+                QSharedPointer<ito::DataObject> pDObj(new ito::DataObject(container.m_data));
 
                 if (!QMetaObject::invokeMethod(it.value(), "setSource", Q_ARG(QSharedPointer<ito::DataObject>, pDObj), Q_ARG(ItomSharedSemaphore*, NULL)))
                 {
@@ -190,7 +190,7 @@ namespace ito
                 // \todo On Linux a crash occurs here when closing the liveImage ... maybe the same reason why we get an error message on windows?
                 if (it.value())
                 {
-                    if (!QMetaObject::invokeMethod(it.value(), "setSource", Q_ARG(QSharedPointer<ito::DataObject>, QSharedPointer<ito::DataObject>(new ito::DataObject(m_channels[it.key().toLatin1().data()].data))), Q_ARG(ItomSharedSemaphore*, waitConds[i])))
+                    if (!QMetaObject::invokeMethod(it.value(), "setSource", Q_ARG(QSharedPointer<ito::DataObject>, QSharedPointer<ito::DataObject>(new ito::DataObject(m_channels[it.key().toLatin1().data()].m_data))), Q_ARG(ItomSharedSemaphore*, waitConds[i])))
                     {
                         retValue += ito::RetVal(ito::retWarning, 1001, tr("slot 'setSource' of live source node could not be invoked").toLatin1().data());
                     }
@@ -301,19 +301,19 @@ namespace ito
                 {
                     *(it.value()) = ito::DataObject(height, width, futureType);
 
-                    m_channels[it.key()].data.setAxisScale(0, axisScale[0]);
-                    m_channels[it.key()].data.setAxisScale(1, axisScale[1]);
-                    m_channels[it.key()].data.setAxisOffset(0, axisOffset[0]);
-                    m_channels[it.key()].data.setAxisOffset(1, axisOffset[1]);
-                    m_channels[it.key()].data.setAxisDescription(
+                    m_channels[it.key()].m_data.setAxisScale(0, axisScale[0]);
+                    m_channels[it.key()].m_data.setAxisScale(1, axisScale[1]);
+                    m_channels[it.key()].m_data.setAxisOffset(0, axisOffset[0]);
+                    m_channels[it.key()].m_data.setAxisOffset(1, axisOffset[1]);
+                    m_channels[it.key()].m_data.setAxisDescription(
                         0, axisDescription[0].toLatin1().data());
-                    m_channels[it.key()].data.setAxisDescription(
+                    m_channels[it.key()].m_data.setAxisDescription(
                         1, axisDescription[1].toLatin1().data());
-                    m_channels[it.key()].data.setAxisUnit(0, axisUnit[0].toLatin1().data());
-                    m_channels[it.key()].data.setAxisUnit(1, axisUnit[1].toLatin1().data());
-                    m_channels[it.key()].data.setValueDescription(
+                    m_channels[it.key()].m_data.setAxisUnit(0, axisUnit[0].toLatin1().data());
+                    m_channels[it.key()].m_data.setAxisUnit(1, axisUnit[1].toLatin1().data());
+                    m_channels[it.key()].m_data.setValueDescription(
                         valueDescription.toLatin1().data());
-                    m_channels[it.key()].data.setValueUnit(valueUnit.toLatin1().data());
+                    m_channels[it.key()].m_data.setValueUnit(valueUnit.toLatin1().data());
                 }
                 else if (it.value()->calcNumMats() != 1)
                 {
@@ -341,9 +341,8 @@ namespace ito
         QString axisDescription[] = {"<auto>", "<auto>"};
         QString valueDescription = "<auto>";
         QString valueUnit = "<auto>";
-
         unsigned int futureType;
-        PixelFormat format;
+
         if (!externalDataObject)
         {
             QMutableMapIterator<QString, ChannelContainer> it(m_channels);
@@ -416,19 +415,19 @@ namespace ito
                     int* roi = it.value().m_channelParam["roi"].getVal<int*>();
                     int height = roi[3];
                     int width = roi[2];
-                    if (it.value().data.getDims() < 2 || it.value().data.getSize(0) != height || it.value().data.getSize(1) != width || it.value().data.getType() != futureType)
+                    if (it.value().m_data.getDims() < 2 || it.value().m_data.getSize(0) != height || it.value().m_data.getSize(1) != width || it.value().m_data.getType() != futureType)
                     {
-                        it.value().data = ito::DataObject(height, width, futureType);
-                        it.value().data.setAxisScale(0, axisScale[0]);
-                        it.value().data.setAxisScale(1, axisScale[1]);
-                        it.value().data.setAxisOffset(0, axisOffset[0]);
-                        it.value().data.setAxisOffset(1, axisOffset[1]);
-                        it.value().data.setAxisDescription(0, axisDescription[0].toLatin1().data());
-                        it.value().data.setAxisDescription(1, axisDescription[1].toLatin1().data());
-                        it.value().data.setAxisUnit(0, axisUnit[0].toLatin1().data());
-                        it.value().data.setAxisUnit(1, axisUnit[1].toLatin1().data());
-                        it.value().data.setValueDescription(valueDescription.toLatin1().data());
-                        it.value().data.setValueUnit(valueUnit.toLatin1().data());
+                        it.value().m_data = ito::DataObject(height, width, futureType);
+                        it.value().m_data.setAxisScale(0, axisScale[0]);
+                        it.value().m_data.setAxisScale(1, axisScale[1]);
+                        it.value().m_data.setAxisOffset(0, axisOffset[0]);
+                        it.value().m_data.setAxisOffset(1, axisOffset[1]);
+                        it.value().m_data.setAxisDescription(0, axisDescription[0].toLatin1().data());
+                        it.value().m_data.setAxisDescription(1, axisDescription[1].toLatin1().data());
+                        it.value().m_data.setAxisUnit(0, axisUnit[0].toLatin1().data());
+                        it.value().m_data.setAxisUnit(1, axisUnit[1].toLatin1().data());
+                        it.value().m_data.setValueDescription(valueDescription.toLatin1().data());
+                        it.value().m_data.setValueUnit(valueUnit.toLatin1().data());
                     }
                 }
                 else

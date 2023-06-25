@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2023, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
@@ -25,8 +25,7 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef ADDINMULTICHANNELGRABBER_H
-#define ADDINMULTICHANNELGRABBER_H
+#pragma once
 
 #include "addInInterface.h"
 #include "addInGrabber.h"
@@ -53,7 +52,7 @@ namespace ito
 
         struct ChannelContainer
         {
-            ito::DataObject data;
+            ito::DataObject m_data;
             QMap<QString, ito::Param> m_channelParam;
 
             ChannelContainer()
@@ -111,16 +110,17 @@ namespace ito
 
             ~ChannelContainer() = default;
             ChannelContainer(const ChannelContainer&) = default;
-            ChannelContainer(ito::Param roi,
-                             ito::Param pixelFormat,
-                             ito::Param sizex,
-                             ito::Param sizey,
-                             ito::Param axisOffset,
-                             ito::Param axisScale,
-                             ito::Param axisDescription,
-                             ito::Param axisUnit,
-                             ito::Param valueDescription,
-                             ito::Param valueUnit)
+            ChannelContainer(
+                const ito::Param &roi,
+                const ito::Param& pixelFormat,
+                const ito::Param& sizex,
+                const ito::Param& sizey,
+                const ito::Param& axisOffset,
+                const ito::Param& axisScale,
+                const ito::Param& axisDescription,
+                const ito::Param& axisUnit,
+                const ito::Param& valueDescription,
+                const ito::Param& valueUnit)
             {
                 m_channelParam.insert("pixelFormat", pixelFormat);
                 m_channelParam.insert("roi", roi);
@@ -183,5 +183,4 @@ namespace ito
         void newData(QSharedPointer<QMap<QString, ito::DataObject> > dataObjMap); /*!<Signals that a new image or set of images is available. Connect to this signal to obtain a shallow copy of the new images*/
     };
 }
-#endif
 #endif
