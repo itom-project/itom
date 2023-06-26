@@ -1,11 +1,11 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2023, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -31,11 +31,12 @@
 #include <qdir.h>
 #include <qfileinfo.h>
 #include <qlocale.h>
+#include <qdatetime.h>
 
 namespace ito
 {
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 WidgetPropGeneralLanguage::WidgetPropGeneralLanguage(QWidget *parent) :
     AbstractPropertyPageWidget(parent)
 {
@@ -49,6 +50,8 @@ WidgetPropGeneralLanguage::WidgetPropGeneralLanguage(QWidget *parent) :
     QString langID;
     QFileInfo finfo;
     QString baseName;
+
+    m_operatingSystemLocale = tr("Operating System");
 
     //add default language
     loc = QLocale(QLocale::English, QLocale::UnitedStates); //English/United States
@@ -73,14 +76,44 @@ WidgetPropGeneralLanguage::WidgetPropGeneralLanguage(QWidget *parent) :
         lwi = new QListWidgetItem(lang, ui.listWidget);
         lwi->setData(Qt::UserRole + 1, loc.name());
     }
+
+    QString locEnStr = textFromLocale(QLocale("en_EN"));
+    QString locDeStr = textFromLocale(QLocale("de_DE"));
+    QString locDeEnStr = textFromLocale(QLocale("en_DE"));
+    QList<QLocale> allLocales =
+        QLocale::matchingLocales(QLocale::AnyLanguage, QLocale::AnyScript, QLocale::AnyCountry);
+    QStringList languageCodes;
+
+    for (const QLocale& locale : allLocales)
+    {
+        languageCodes.append(textFromLocale(locale));
+    }
+
+    languageCodes.sort();
+    languageCodes.removeAll(locEnStr);
+    languageCodes.removeAll(locDeStr);
+    languageCodes.removeAll(locDeEnStr);
+
+    languageCodes.prepend(locDeEnStr);
+    languageCodes.prepend(locEnStr);
+    languageCodes.prepend(locDeStr);
+    languageCodes.prepend(m_operatingSystemLocale);
+
+    ui.comboLocale->addItems(languageCodes);
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 WidgetPropGeneralLanguage::~WidgetPropGeneralLanguage()
 {
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
+QString WidgetPropGeneralLanguage::textFromLocale(const QLocale& locale) const
+{
+    return locale.name() + " / " + locale.bcp47Name();
+}
+
+//-------------------------------------------------------------------------------------
 void WidgetPropGeneralLanguage::readSettings()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
@@ -94,17 +127,6 @@ void WidgetPropGeneralLanguage::readSettings()
         loc = QLocale(QLocale::English, QLocale::UnitedStates);
     }
 
-    //foreach(const QListWidgetItem &item, ui.listWidget->items())
-    //{
-    //    if(item->data(Qt::UserRole+1).toString() == loc.name())
-    //    {
-    //        ui.listWidget->setCurrentIndex(item);
-
-    //        ui.lblCurrentLanguage->setText(tr("Current Language: ") + loc.name());
-    //        break;
-    //    }
-    //}
-
     for (int i = 0; i < ui.listWidget->count(); i++)
     {
         if (ui.listWidget->item(i)->data(Qt::UserRole + 1).toString() == loc.name())
@@ -116,23 +138,99 @@ void WidgetPropGeneralLanguage::readSettings()
         }
     }
 
+    QString locale = settings.value("numberStringConversionStandard", "operatingsystem").toString();
+
+    if (locale.toLower() == "operatingsystem")
+    {
+        ui.comboLocale->setCurrentText(m_operatingSystemLocale);
+    }
+    else
+    {
+        QLocale loc(locale);
+        ui.comboLocale->setCurrentText(textFromLocale(loc));
+    }
+
+    ui.checkOmitGroupSeparator->setChecked(settings.value("numberFormatOmitGroupSeparator", false).toBool());
+
+    on_comboLocale_currentIndexChanged(ui.comboLocale->currentIndex());
+
     settings.endGroup();
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void WidgetPropGeneralLanguage::writeSettings()
 {
+    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+    settings.beginGroup("Language");
+
     if (ui.listWidget->currentItem())
     {
-        QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-        settings.beginGroup("Language");
-
         settings.setValue("language", ui.listWidget->currentItem()->data(Qt::UserRole + 1).toString());
-
-        settings.endGroup();
 
         ui.lblCurrentLanguage->setText(tr("Current Language: ") + ui.listWidget->currentItem()->text());
     }
+
+    QString locale = ui.comboLocale->currentText();
+
+    if (locale.toLower() == m_operatingSystemLocale)
+    {
+        settings.setValue("numberStringConversionStandard", "operatingsystem");
+    }
+    else
+    {
+        QLocale loc(locale.split(" / ")[0].trimmed());
+        settings.setValue("numberStringConversionStandard", loc.name());
+    }
+
+    settings.setValue("numberFormatOmitGroupSeparator", ui.checkOmitGroupSeparator->isChecked());
+
+    settings.endGroup();
 }
+
+//-------------------------------------------------------------------------------------
+void WidgetPropGeneralLanguage::on_comboLocale_currentIndexChanged(int index)
+{
+    if (index < 0)
+    {
+        ui.lblDoubleExample->setText("");
+        ui.lblDatetimeExample->setText("");
+    }
+    else
+    {
+        QString itemText = ui.comboLocale->itemText(index);
+        QLocale locale;
+
+        if (itemText == m_operatingSystemLocale)
+        {
+            locale = QLocale::system();
+        }
+        else
+        {
+            locale = QLocale(itemText);
+        }
+
+        if (ui.checkOmitGroupSeparator->isChecked())
+        {
+            locale.setNumberOptions(locale.numberOptions() | QLocale::OmitGroupSeparator);
+        }
+
+        ui.lblDoubleExample->setText(
+            locale.toString(20100400.234)
+            + " | " + locale.toString(9876.234)
+            + " | " + locale.toString(-0.023)
+        );
+
+        QDateTime dt(QDate(2020, 05, 02), QTime(21, 10, 21));
+        ui.lblDatetimeExample->setText(locale.toString(dt, QLocale::ShortFormat));
+    }
+}
+
+
+//-------------------------------------------------------------------------------------
+void WidgetPropGeneralLanguage::on_checkOmitGroupSeparator_toggled(bool checked)
+{
+    on_comboLocale_currentIndexChanged(ui.comboLocale->currentIndex());
+}
+
 
 } //end namespace ito

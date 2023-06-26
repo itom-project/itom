@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -36,7 +36,7 @@ namespace ito
 {
 
 class AbstractDockWidget; //forward declaration
-    
+
 class ShortcutAction : public QObject
 {
 public:
@@ -47,12 +47,12 @@ public:
     ShortcutAction(const QIcon &icon, const QString &text, AbstractDockWidget *parent);
 
     //!< simple action with text, icon and shortcut (context is the same in docked and undocked state)
-    ShortcutAction(const QIcon &icon, const QString &text, AbstractDockWidget *parent, 
+    ShortcutAction(const QIcon &icon, const QString &text, AbstractDockWidget *parent,
         const QKeySequence &key, Qt::ShortcutContext context = Qt::WindowShortcut);
 
     //!< simple action with text, icon and shortcut (different contexts for docked and undocked state)
     ShortcutAction(const QIcon &icon, const QString &text, AbstractDockWidget *parent,
-        const QKeySequence &key, Qt::ShortcutContext dockedContext, 
+        const QKeySequence &key, Qt::ShortcutContext dockedContext,
         Qt::ShortcutContext undockedContext);
 
     ~ShortcutAction();
@@ -77,7 +77,7 @@ private:
 
 private Q_SLOTS:
     void parentDockStateChanged(bool docked);
-    
+
 };
 
 } //end namespace ito

@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -35,7 +35,7 @@
 #include "structmember.h"
 #include <qobject.h>
 
-namespace ito 
+namespace ito
 {
 class PythonRgba
     {
@@ -44,7 +44,7 @@ class PythonRgba
 
         //-------------------------------------------------------------------------------------------------
         // typedefs
-        //------------------------------------------------------------------------------------------------- 
+        //-------------------------------------------------------------------------------------------------
         typedef struct
         {
             PyObject_HEAD
@@ -55,10 +55,10 @@ class PythonRgba
 
         #define PyRgba_Check(op) PyObject_TypeCheck(op, &ito::PythonRgba::PyRgbaType)
 
-        
+
         //-------------------------------------------------------------------------------------------------
         // constructor, deconstructor, alloc, dellaoc
-        //------------------------------------------------------------------------------------------------- 
+        //-------------------------------------------------------------------------------------------------
 
         static void PyRgba_dealloc(PyRgba *self);
         static PyObject *PyRgba_new(PyTypeObject *type, PyObject *args, PyObject *kwds);
@@ -70,7 +70,7 @@ class PythonRgba
 
         //-------------------------------------------------------------------------------------------------
         // general members
-        //------------------------------------------------------------------------------------------------- 
+        //-------------------------------------------------------------------------------------------------
         static PyObject *PyRgba_name(PyRgba *self);
 
         static PyObject* PyRgba_repr(PyRgba *self);
@@ -92,11 +92,11 @@ class PythonRgba
         //-------------------------------------------------------------------------------------------------
         // number protocol
         //
-        // python note: Binary and ternary functions must check the type of all their operands, and implement 
-        //    the necessary conversions (at least one of the operands is an instance of the defined type). 
-        //    If the operation is not defined for the given operands, binary and ternary functions must return 
+        // python note: Binary and ternary functions must check the type of all their operands, and implement
+        //    the necessary conversions (at least one of the operands is an instance of the defined type).
+        //    If the operation is not defined for the given operands, binary and ternary functions must return
         //    Py_NotImplemented, if another error occurred they must return NULL and set an exception.
-        //------------------------------------------------------------------------------------------------- 
+        //-------------------------------------------------------------------------------------------------
         static PyObject* PyRgba_nbAdd(PyObject* o1, PyObject* o2);
         static PyObject* PyRgba_nbSubtract(PyObject* o1, PyObject* o2);
         static PyObject* PyRgba_nbMultiply(PyObject* o1, PyObject* o2);
@@ -118,10 +118,10 @@ class PythonRgba
         static PyObject* PyRgba_nbInplaceXor(PyObject* o1, PyObject* o2);
         static PyObject* PyRgba_nbInplaceOr(PyObject* o1, PyObject* o2);
 
-        
+
         //-------------------------------------------------------------------------------------------------
         // type structures
-        //------------------------------------------------------------------------------------------------- 
+        //-------------------------------------------------------------------------------------------------
         static PyMemberDef PyRgba_members[];
         static PyMethodDef PyRgba_methods[];
         static PyTypeObject PyRgbaType;
@@ -131,7 +131,7 @@ class PythonRgba
 
         //-------------------------------------------------------------------------------------------------
         // helper methods
-        //-------------------------------------------------------------------------------------------------    
+        //-------------------------------------------------------------------------------------------------
 
         //-------------------------------------------------------------------------------------------------
         // static type methods

@@ -23,14 +23,14 @@
 # You should have received a copy of the GNU Library General Public License
 # along with itom. If not, see <http://www.gnu.org/licenses/>.
 
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.12...3.24)
 
-set(target_name itomCommonPlotLib) 
-project(${target_name}) 
+set(target_name itomCommonPlotLib)
+project(${target_name})
 
 message(STATUS "--------------- LIBRARY ${target_name} -----------------")
 
-# include commonly used itom CMake macros (internal can only be used within the core projects) 
+# include commonly used itom CMake macros (internal can only be used within the core projects)
 include("../cmake/ItomBuildMacros.cmake")
 include("../cmake/ItomBuildMacrosInternal.cmake")
 
@@ -51,7 +51,12 @@ add_definitions(-DUNICODE -D_UNICODE)
 add_definitions(-DITOMCOMMONPLOT_MOC)
 
 if(BUILD_WITH_PCL)
-    find_package(PCL 1.5.1 REQUIRED COMPONENTS common)
+    include(Setup_PCL_Itom)
+    if(WIN32)
+        find_package(PCL 1.5.1 REQUIRED COMPONENTS common PATHS ${PCL_CMAKE_DIR} NO_DEFAULT_PATH)
+    else(WIN32)
+        find_package(PCL 1.5.1 REQUIRED COMPONENTS common)
+    endif(WIN32)
     add_definitions(-DUSEPCL -D_USEPCL)
 endif(BUILD_WITH_PCL)
 
@@ -61,7 +66,7 @@ else()
     set(POINTCLOUD_LIBRARIES "")
 endif()
 
-include_directories( 
+include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/../shapes
     ${CMAKE_CURRENT_SOURCE_DIR}/../common
     ${CMAKE_CURRENT_SOURCE_DIR}/..
@@ -71,7 +76,7 @@ include_directories(
 link_directories(
     ${CMAKE_CURRENT_BINARY_DIR}/../DataObject
     ${CMAKE_CURRENT_BINARY_DIR}/../PointCloud
-    
+
 )
 
 set(itomCommonPlot_HEADERS
@@ -85,7 +90,7 @@ set(itomCommonPlot_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/designerPluginInterfaceVersion.h
 )
 
-set(itomCommonPlot_SOURCES 
+set(itomCommonPlot_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/AbstractDObjFigure.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/AbstractDObjPCLFigure.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/AbstractFigure.cpp

@@ -84,7 +84,7 @@ class MatplotGuiAutoUpdate(ItomUi):
             # reuse the existing first subplot
             ax = fig.axes[0]
             ax.clear()
-        
+
         ax.imshow(dataObject.randN([100, 100], "uint8"), cmap=plt.cm.gray)
         ax.set_title("title of plot [%i]" % self.counter)
         self.counter += 1

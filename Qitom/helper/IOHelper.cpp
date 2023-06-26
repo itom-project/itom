@@ -1,11 +1,11 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2022, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -52,6 +52,12 @@
 #include <qsettings.h>
 #include <qregularexpression.h>
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    #include <qtextcodec.h>
+#else
+    #include <QStringDecoder>
+#endif
+
 namespace ito {
 
 /*!
@@ -69,6 +75,10 @@ namespace ito {
 
 //! name of set of all itom files (used in file open dialog or file system dialog)
 QString IOHelper::allItomFilesName = QObject::tr("Itom Files");
+
+//! the list of all officially supported encodings for Python scripts
+//! This will be filled by the first call to IOHelper::getSupportedScriptEncodings
+QList<IOHelper::CharsetEncodingItem> IOHelper::supportedScriptEncodings;
 
 //------------------------------------------------------------------------------------------------------------------------------------------------
 //! method to load any supported file
@@ -88,13 +98,13 @@ QString IOHelper::allItomFilesName = QObject::tr("Itom Files");
     If two or more algorithms pretend to be able to load the file format, a dialog appears where the user can select the desired filter.
 
     \param generalFileName is the file name to load. If the file name is not absolute, it is considered to be relative to the current directory.
-    \param openUnknownsWithExternalApp is a boolean variable that indicates if an unsupported or unknown file format is opened with the external 
+    \param openUnknownsWithExternalApp is a boolean variable that indicates if an unsupported or unknown file format is opened with the external
                application that is officially connected with this file format
     \param showMessages if true, an error or warning during the execution of this method will be displayed in a message box.
     \param parent is the widget this method should be related to. Dialogs or messages are then displayed using this parent.
-    \param errorSlotMemberOfParent is only considered for ui-files. Pass a SLOT(myMethod(QProcess::ProcessError)) description such that errors 
+    \param errorSlotMemberOfParent is only considered for ui-files. Pass a SLOT(myMethod(QProcess::ProcessError)) description such that errors
                occurred in the QtDesigner will call the given slot. Else pass NULL.
-    \param globalNotLocalWorkspace is only considered when files are opened that load data objects, point clouds or polygonal meshes to the Python 
+    \param globalNotLocalWorkspace is only considered when files are opened that load data objects, point clouds or polygonal meshes to the Python
                workspace. If true, the object is loaded to the global workspace, else to the local (only allowed if a local workspace is currently available)
     \return success of loading as RetVal
     \sa openPythonScript, importPyWorkspaceVars, openUIFile, uiOpenFileWithFilter
@@ -341,7 +351,7 @@ end:
             {
                 retVal += locker.getSemaphore()->returnValue;
             }
-            
+
             if (values->size() != varNames.size())
             {
                 retVal += RetVal(retError, 0, tr("The number of values returned from workspace does not correspond to requested number").toLatin1().data());
@@ -404,7 +414,7 @@ end:
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore(1));
 
         QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-        QApplication::processEvents(QEventLoop::ExcludeSocketNotifiers); //the WaitCursor only becomes visible if the event loop of the main thread is called once. 
+        QApplication::processEvents(QEventLoop::ExcludeSocketNotifiers); //the WaitCursor only becomes visible if the event loop of the main thread is called once.
                                                                          //(it is not allowed to filter  QEventLoop::ExcludeUserInputEvents here out, since mouse events
                                                                          //have to be passed to the operating system. Else the cursor is not changed. - at least with Windows)
 
@@ -426,7 +436,7 @@ end:
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore(1));
 
         QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-        QApplication::processEvents(QEventLoop::ExcludeSocketNotifiers); //the WaitCursor only becomes visible if the event loop of the main thread is called once. 
+        QApplication::processEvents(QEventLoop::ExcludeSocketNotifiers); //the WaitCursor only becomes visible if the event loop of the main thread is called once.
                                                                          //(it is not allowed to filter  QEventLoop::ExcludeUserInputEvents here out, since mouse events
                                                                          //have to be passed to the operating system. Else the cursor is not changed. - at least with Windows)
 
@@ -583,7 +593,7 @@ end:
         }
 
         packedVarname = QInputDialog::getText(parent, tr("Variable name of imported dictionary"), tr("Please indicate a variable name for the dictionary in file '%1' \n(name must start with a letter followed by numbers or letters).").arg(info.fileName()), QLineEdit::Normal, defaultName, &ok);
-        
+
         if (!ok)
         {
             return ito::retOk;
@@ -600,7 +610,7 @@ end:
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore(1));
 
         QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-        QApplication::processEvents(QEventLoop::ExcludeSocketNotifiers); //the WaitCursor only becomes visible if the event loop of the main thread is called once. 
+        QApplication::processEvents(QEventLoop::ExcludeSocketNotifiers); //the WaitCursor only becomes visible if the event loop of the main thread is called once.
                                                                          //(it is not allowed to filter  QEventLoop::ExcludeUserInputEvents here out, since mouse events
                                                                          //have to be passed to the operating system. Else the cursor is not changed. - at least with Windows)
 
@@ -621,12 +631,12 @@ end:
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore(1));
 
         QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-        QApplication::processEvents(QEventLoop::ExcludeSocketNotifiers); //the WaitCursor only becomes visible if the event loop of the main thread is called once. 
+        QApplication::processEvents(QEventLoop::ExcludeSocketNotifiers); //the WaitCursor only becomes visible if the event loop of the main thread is called once.
                                                                          //(it is not allowed to filter  QEventLoop::ExcludeUserInputEvents here out, since mouse events
                                                                         //have to be passed to the operating system. Else the cursor is not changed. - at least with Windows)
 
         QMetaObject::invokeMethod(eng, "loadMatlabVariables", Q_ARG(bool, globalNotLocal), Q_ARG(QString, filename), Q_ARG(QString, packedVarname), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
-        
+
         if (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginFileSaveLoad))
         {
             retValue += RetVal(retError, 2, tr("Timeout while loading matlab variables").toLatin1().data());
@@ -670,7 +680,7 @@ end:
             ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore(1));
 
             QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-            QApplication::processEvents(QEventLoop::ExcludeSocketNotifiers); //the WaitCursor only becomes visible if the event loop of the main thread is called once. 
+            QApplication::processEvents(QEventLoop::ExcludeSocketNotifiers); //the WaitCursor only becomes visible if the event loop of the main thread is called once.
                                                                              //(it is not allowed to filter  QEventLoop::ExcludeUserInputEvents here out, since mouse events
                                                                              //have to be passed to the operating system. Else the cursor is not changed. - at least with Windows)
 
@@ -705,7 +715,7 @@ end:
 
     \param filename is the filename to the ui file
     \param parent is the widget where the slot given by errorSlotMemberOfParent is defined
-    \param errorSlotMemberOfParent is SLOT(myMethod(QProcess::ProcessError)) description such that errors 
+    \param errorSlotMemberOfParent is SLOT(myMethod(QProcess::ProcessError)) description such that errors
                occurred in the QtDesigner will call the given slot. Else pass NULL.
     \return retOk in case of success and retError in case of an error or timeout.
 */
@@ -763,9 +773,9 @@ end:
 
                 process->setProcessEnvironment(env);
 
-                if (errorSlotMemberOfParent != NULL)
+                if (errorSlotMemberOfParent != nullptr)
                 {
-                    connect(process, SIGNAL(error(QProcess::ProcessError)), parent, errorSlotMemberOfParent);
+                    connect(process, SIGNAL(errorOccurred(QProcess::ProcessError)), parent, errorSlotMemberOfParent);
                 }
 
                 po->clearStandardOutputBuffer("designer");
@@ -795,9 +805,9 @@ end:
 
             process->setProcessEnvironment(env);
 
-            if (errorSlotMemberOfParent != NULL)
+            if (errorSlotMemberOfParent != nullptr)
             {
-                connect(process, SIGNAL(error(QProcess::ProcessError)), parent, errorSlotMemberOfParent);
+                connect(process, SIGNAL(errorOccurred(QProcess::ProcessError)), parent, errorSlotMemberOfParent);
             }
 
             po->clearStandardOutputBuffer("designer");
@@ -951,7 +961,7 @@ end:
             if (!retval.containsError() && putParamsToWorkspace)
             {
                 ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-                        
+
                 QMetaObject::invokeMethod(pyEng, "putParamsToWorkspace", Q_ARG(bool, globalNotLocal), Q_ARG(QStringList, pythonVarNames), Q_ARG(QVector<SharedParamBasePointer>, values), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
                 if (locker.getSemaphore()->wait(AppManagement::timeouts.pluginFileSaveLoad) == false)
                 {
@@ -988,14 +998,14 @@ end:
 
         if (!retval.containsError())
         {
-            
+
         }
     }
     else
     {
         retval += RetVal(retError, 0, tr("AddInManager or PythonEngine not available").toLatin1().data());
     }
-    
+
     return retval;
 }
 
@@ -1003,13 +1013,13 @@ end:
 //! save a file using a filter method from an algorithm plugin and shows an export dialog
 /*!
     This method tries to save a given data object, point cloud or polygonal mesh using a given filter method from an algorithm plugin.
-    The given filter method must support one of the filter interfaces ito::AddInAlgo::iWriteDataObject, 
+    The given filter method must support one of the filter interfaces ito::AddInAlgo::iWriteDataObject,
     ito::AddInAlgo::iWritePointCloud or ito::AddInAlgo::iWritePolygonMesh.
 
     If the export requires further mandatory or optional parameters, an export dialog (class DialogSaveFileWithFilter)
     is shown.
 
-    \param value is the export object as shared pointer of ParamBase. Only the types ito::ParamBase::DObjPtr, ito::ParamBase::PointCloudPtr 
+    \param value is the export object as shared pointer of ParamBase. Only the types ito::ParamBase::DObjPtr, ito::ParamBase::PointCloudPtr
                and ito::ParamBase::PolygonMeshPtr are supported.
     \param filename is the name of the file
     \param parent is the parent widget of the possible export dialog.
@@ -1107,7 +1117,7 @@ end:
                         if (dialog->exec() == QDialog::Accepted)
                         {
                             QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-                            QApplication::processEvents(QEventLoop::ExcludeSocketNotifiers); //the WaitCursor only becomes visible if the event loop of the main thread is called once. 
+                            QApplication::processEvents(QEventLoop::ExcludeSocketNotifiers); //the WaitCursor only becomes visible if the event loop of the main thread is called once.
                                                                                              //(it is not allowed to filter  QEventLoop::ExcludeUserInputEvents here out, since mouse events
                                                                                              //have to be passed to the operating system. Else the cursor is not changed. - at least with Windows)
 
@@ -1131,7 +1141,7 @@ end:
                     else
                     {
                         QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-                        QApplication::processEvents(QEventLoop::ExcludeSocketNotifiers); //the WaitCursor only becomes visible if the event loop of the main thread is called once. 
+                        QApplication::processEvents(QEventLoop::ExcludeSocketNotifiers); //the WaitCursor only becomes visible if the event loop of the main thread is called once.
                                                                                          //(it is not allowed to filter  QEventLoop::ExcludeUserInputEvents here out, since mouse events
                                                                                          //have to be passed to the operating system. Else the cursor is not changed. - at least with Windows)
 
@@ -1307,7 +1317,7 @@ end:
     foreach(const QString &pat, allPatterns)
     {
         reg.setPattern(CompatHelper::regExpAnchoredPattern(CompatHelper::wildcardToRegularExpression(pat)));
-        
+
         if(filename.indexOf(reg) >= 0)
         {
             return true;
@@ -1323,7 +1333,7 @@ end:
     This functio is used to shorten paths so they fit into a menu or something
     compareable.
 
-    Example: 
+    Example:
     D:/testdir1/testdir2/file.py
     becomes D:/...ir2/file.py
 
@@ -1341,10 +1351,10 @@ end:
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 11, 0))
         int width = fontm.horizontalAdvance(path);
-#else 
+#else
         int width = fontm.width(path);
 #endif
-    
+
     if (width > pixelLength)
     {
         bool end = false;
@@ -1353,7 +1363,7 @@ end:
         while (width > pixelLength - fontm.horizontalAdvance("...") && end == false)
 #else
         while (width > pixelLength - fontm.width("...") && end == false)
-#endif        
+#endif
         {
             int index = path.indexOf(QDir::separator(), 0)+1;
             if (index == 0 || index == path.lastIndexOf(QDir::separator()))
@@ -1460,6 +1470,222 @@ end:
     }
 
     return icon;
+}
+
+//-------------------------------------------------------------------------------------
+//! return a list of default encodings, that are officially supported by Qt (as well as Python).
+/*
+    \return a map with the official name as key and a string list of aliases as value. The
+        aliases are only in small letters, one has to convert a comparison string to small
+        letters first. The aliases are mostly aliases used in Python scripts (e.g. #coding=... line).
+*/
+/*static*/ QList<IOHelper::CharsetEncodingItem> IOHelper::getSupportedScriptEncodings()
+{
+    if (supportedScriptEncodings.size() > 0)
+    {
+        return supportedScriptEncodings;
+    }
+
+    // aliases contain the name as well as all aliases
+    // from https://docs.python.org/3.11/library/codecs.html#standard-encodings
+
+    auto item = CharsetEncodingItem();
+    item.aliases = QStringList() << "latin-1" << "latin1" << "latin_1" << "iso-8859-15" << "iso8859-1" << "8859" << "cp819" << "latin" << "L1";
+    item.bom = "";
+    item.encodingName = "Latin1";
+    item.displayName = "Latin 1";
+    item.displayNameShort = "Latin 1";
+    supportedScriptEncodings.append(item);
+
+    item = CharsetEncodingItem();
+    item.aliases = QStringList() << "utf8" << "utf-8" << "utf_8" << "u8" << "utf" << "cp650001";
+    item.bom = "";
+    item.encodingName = "UTF-8";
+    item.displayName = "UTF-8";
+    item.displayNameShort = "UTF-8";
+    supportedScriptEncodings.append(item);
+
+    item = CharsetEncodingItem();
+    item.aliases = QStringList() << "utf_8_sig";
+    item.bom = QByteArray::fromHex("EFBBBF");
+    item.encodingName = "UTF-8"; //do not change or remove, see getDefaultScriptEncoding
+    item.displayName = "UTF-8 with BOM";
+    item.displayNameShort = "UTF-8 BOM";
+    supportedScriptEncodings.append(item);
+
+#if 0
+#if Q_BYTE_ORDER == Q_LITTLE_ENDIAN
+    item = CharsetEncodingItem();
+    item.aliases = QStringList() << "utf-16be" << "utf_16_be";
+    item.bom = "";
+    item.encodingName = "UTF-16BE";
+    item.displayName = tr("UTF-16BE (not recommended for Python scripts)");
+    item.displayNameShort = "UTF-16BE";
+    supportedScriptEncodings.append(item);
+
+    item = CharsetEncodingItem();
+    item.aliases = QStringList() << "utf-16le" << "utf_16_le" << "utf16" << "utf-16" << "utf_16" << "u16";
+    item.bom = "";
+    item.encodingName = "UTF-16LE";
+    item.displayName = tr("UTF-16LE (not recommended for Python scripts)");
+    item.displayNameShort = "UTF-16LE";
+    supportedScriptEncodings.append(item);
+
+    item = CharsetEncodingItem();
+    item.aliases = QStringList() << "utf-32be" << "utf_32_be";
+    item.bom = "";
+    item.encodingName = "UTF-32BE";
+    item.displayName = tr("UTF-32BE (not recommended for Python scripts)");
+    item.displayNameShort = "UTF-32BE";
+    supportedScriptEncodings.append(item);
+
+    item = CharsetEncodingItem();
+    item.aliases = QStringList() << "utf-32le" << "utf_32_le" << "utf32" << "utf-32" << "utf_32" << "u32";
+    item.bom = "";
+    item.encodingName = "UTF-32LE";
+    item.displayName = tr("UTF-32LE (not recommended for Python scripts)");
+    item.displayNameShort = "UTF-32LE";
+    supportedScriptEncodings.append(item);
+#else
+    item = CharsetEncodingItem();
+    item.aliases = QStringList() << "utf-16be" << "utf_16_be" << "utf16" << "utf-16" << "utf_16" << "u16";
+    item.bom = "";
+    item.encodingName = "UTF-16BE";
+    item.displayName = tr("UTF-16BE (not recommended for Python scripts)");
+    item.displayNameShort = "UTF-16BE";
+    supportedScriptEncodings.append(item);
+
+    item = CharsetEncodingItem();
+    item.aliases = QStringList() << "utf-16le" << "utf_16_le";
+    item.bom = "";
+    item.encodingName = "UTF-16LE";
+    item.displayName = tr("UTF-16LE (not recommended for Python scripts)");
+    item.displayNameShort = "UTF-16LE";
+    supportedScriptEncodings.append(item);
+
+    item = CharsetEncodingItem();
+    item.aliases = QStringList() << "utf-32be" << "utf_32_be" << "utf32" << "utf-32" << "utf_32" << "u32";
+    item.bom = "";
+    item.encodingName = "UTF-32BE";
+    item.displayName = tr("UTF-32BE (not recommended for Python scripts)");
+    item.displayNameShort = "UTF-32BE";
+    supportedScriptEncodings.append(item);
+
+    item = CharsetEncodingItem();
+    item.aliases = QStringList() << "utf-32le" << "utf_32_le";
+    item.bom = "";
+    item.encodingName = "UTF-32LE";
+    item.displayName = tr("UTF-32LE (not recommended for Python scripts)");
+    item.displayNameShort = "UTF-32LE";
+    supportedScriptEncodings.append(item);
+#endif
+
+    item = CharsetEncodingItem();
+    item.aliases = QStringList();
+    item.bom = QByteArray::fromHex("FEFF");
+    item.encodingName = "UTF-16BE";
+    item.displayName = "UTF-16BE with BOM (not recommended for Python scripts)";
+    item.displayNameShort = tr("UTF-16BE BOM");
+    supportedScriptEncodings.append(item);
+
+    item = CharsetEncodingItem();
+    item.aliases = QStringList();
+    item.bom = QByteArray::fromHex("FFFE");
+    item.encodingName = "UTF-16LE";
+    item.displayName = "UTF-16LE with BOM (not recommended for Python scripts)";
+    item.displayNameShort = tr("UTF-16LE BOM");
+    supportedScriptEncodings.append(item);
+
+    item = CharsetEncodingItem();
+    item.aliases = QStringList();
+    item.bom = QByteArray::fromHex("0000FEFF");
+    item.encodingName = "UTF-32BE";
+    item.displayName = tr("UTF-32BE with BOM (not recommended for Python scripts)");
+    item.displayNameShort = tr("UTF-32BE BOM");
+    supportedScriptEncodings.append(item);
+
+    item = CharsetEncodingItem();
+    item.aliases = QStringList();
+    item.bom = QByteArray::fromHex("FFFE0000");
+    item.encodingName = "UTF-32LE";
+    item.displayName = tr("UTF-32LE with BOM (not recommended for Python scripts)");
+    item.displayNameShort = tr("UTF-32LE BOM");
+    supportedScriptEncodings.append(item);
+#endif
+
+    return supportedScriptEncodings;
+}
+
+//-------------------------------------------------------------------------------------
+/*static*/ IOHelper::CharsetEncodingItem IOHelper::getDefaultScriptEncoding()
+{
+    auto encodings = getSupportedScriptEncodings();
+
+    foreach(const auto &enc, encodings)
+    {
+        if (enc.encodingName == "UTF-8" && enc.bom == "")
+        {
+            return enc;
+        }
+    }
+
+    return CharsetEncodingItem();
+}
+
+//-------------------------------------------------------------------------------------
+/*static*/ IOHelper::CharsetEncodingItem IOHelper::getEncodingFromAlias(const QString &alias, bool* found /*= nullptr*/)
+{
+    auto defaultEncodings = getSupportedScriptEncodings();
+    auto it = defaultEncodings.constBegin();
+
+    while (!found && it != defaultEncodings.constEnd())
+    {
+        foreach(const QString &s, it->aliases)
+        {
+            if (QString::compare(alias, s, Qt::CaseInsensitive) == 0)
+            {
+                if (found)
+                {
+                    *found = true;
+                }
+
+                return *it;
+            }
+        }
+
+        ++it;
+    }
+
+    // alias not found, create a user defined one, as long as QTextCodec supports it.
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    QTextCodec *tc = QTextCodec::codecForName(alias.toLatin1());
+
+    if (tc)
+#else
+    QStringDecoder decoder(alias.toLatin1());
+
+    if (decoder.isValid())
+#endif
+    {
+        CharsetEncodingItem item;
+        item.encodingName = alias;
+        item.displayName = item.displayNameShort = alias;
+        item.userDefined = true;
+
+        if (found)
+        {
+            *found = true;
+        }
+
+        return item;
+    }
+
+    if (found)
+    {
+        *found = false;
+    }
+
+    return CharsetEncodingItem();
 }
 
 } //end namespace ito

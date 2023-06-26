@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -37,7 +37,7 @@ namespace ito
 void PythonFont::PyFont_addTpDict(PyObject * tp_dict)
 {
     PyObject *value;
-    
+
     value = Py_BuildValue("i",QFont::Light);
     PyDict_SetItemString(tp_dict, "Light", value);
     Py_DECREF(value);
@@ -173,7 +173,7 @@ int PythonFont::PyFont_init(PyFont *self, PyObject *args, PyObject * kwds)
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
             ((int)self->font->weight()) / 10
 #else
-            self->font->weight() 
+            self->font->weight()
 #endif
         );
     }
@@ -198,9 +198,9 @@ int PythonFont::PyFont_init(PyFont *self, PyObject *args, PyObject * kwds)
 
     //the stateTuple is simply a byte array with the stream data of the QRegion.
     PyObject *tempOut = Py_BuildValue(
-        "(O(s)O)", 
-        Py_TYPE(self), 
-        self->font ? self->font->family().toLatin1().data() : "", 
+        "(O(s)O)",
+        Py_TYPE(self),
+        self->font ? self->font->family().toLatin1().data() : "",
         stateTuple
     );
     Py_XDECREF(stateTuple);
@@ -235,7 +235,7 @@ int PythonFont::PyFont_init(PyFont *self, PyObject *args, PyObject * kwds)
 }
 
 //-----------------------------------------------------------------------------
-PyDoc_STRVAR(font_getFamily_doc, 
+PyDoc_STRVAR(font_getFamily_doc,
 "str : gets / sets the family name of the font. \n\
 \n\
 The name is case insensitive. It may optionally also include a foundry name, \n\
@@ -273,7 +273,7 @@ int PythonFont::PyFont_setFamily(PyFont *self, PyObject *value, void * /*closure
 }
 
 //-----------------------------------------------------------------------------
-PyDoc_STRVAR(font_getWeight_doc,  
+PyDoc_STRVAR(font_getWeight_doc,
 "int : gets or sets the weight of the font. \n\
 \n\
 This should be one of the constant values ``font.Light``, ``font.Normal``, \n\
@@ -376,7 +376,7 @@ int PythonFont::PyFont_setWeight(PyFont *self, PyObject *value, void * /*closure
 }
 
 //-----------------------------------------------------------------------------
-PyDoc_STRVAR(font_getPointSize_doc,  
+PyDoc_STRVAR(font_getPointSize_doc,
 "int : gets or sets the point size (> 0) of the font.");
 PyObject* PythonFont::PyFont_getPointSize(PyFont *self, void * /*closure*/)
 {
@@ -410,7 +410,7 @@ int PythonFont::PyFont_setPointSize(PyFont *self, PyObject *value, void * /*clos
 }
 
 //-----------------------------------------------------------------------------
-PyDoc_STRVAR(font_getItalic_doc,  
+PyDoc_STRVAR(font_getItalic_doc,
 "bool : gets or sets the italic attribute of the font.");
 PyObject* PythonFont::PyFont_getItalic(PyFont *self, void * /*closure*/)
 {

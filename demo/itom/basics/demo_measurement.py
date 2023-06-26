@@ -7,7 +7,7 @@ Let's say a laser beam is detected by a camera. Different positions are to be ap
 with a actuator stage and camera images are to be recorded.
 Afterwards the centroid position distribution of the beam is evaluated.
 Finally the result is plotted in three different ways using the ``itom.plot1``, ``matplotlib``
-and ``plotly`` plot engine. 
+and ``plotly`` plot engine.
 """
 from itom import actuator
 from itom import dataIO

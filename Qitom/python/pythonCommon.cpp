@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -137,7 +137,7 @@ ito::RetVal checkAndSetParamVal(PyObject *pyObj, const ito::Param *defaultParam,
         {
             bool ok;
             QVector<double> v = PythonQtConversion::PyObjGetDoubleArray(pyObj, false, ok);
-            
+
             if (ok)
             {
                 *set = 1;
@@ -154,7 +154,7 @@ ito::RetVal checkAndSetParamVal(PyObject *pyObj, const ito::Param *defaultParam,
         {
             bool ok;
             QVector<int> v = PythonQtConversion::PyObjGetIntArray(pyObj, false, ok);
-            
+
             if (ok)
             {
                 *set = 1;
@@ -171,7 +171,7 @@ ito::RetVal checkAndSetParamVal(PyObject *pyObj, const ito::Param *defaultParam,
         {
             bool ok;
             QVector<ito::complex128> v = PythonQtConversion::PyObjGetComplexArray(pyObj, false, ok);
-            
+
             if (ok)
             {
                 *set = 1;
@@ -376,8 +376,8 @@ QStringList renderDescriptionOutput(const QString &description, bool splitLongLi
     }
 
     return output;
-    
-    
+
+
 }
 
 
@@ -947,7 +947,7 @@ PyObject* printOutParams(const QVector<ito::Param> *params, bool asErr, bool add
                 PyDict_SetItemString(p_pyLine, "info", item);
                 Py_DECREF(item);
             }
-            
+
             PyTuple_SetItem(pVector, n, p_pyLine); //steals reference to p_pyLine
         }
 		else
@@ -1213,7 +1213,7 @@ ito::RetVal parseInitParams(const QVector<ito::Param> *defaultParamListMand, con
         errOutInitParams(defaultParamListMand, -1, QObject::tr("Wrong number of parameters. Mandatory parameters are:").toLatin1().data());
         errOutInitParams(defaultParamListOpt, -1, QObject::tr("Optional parameters are:").toLatin1().data());
 
-        return ito::RetVal::format(ito::retError, 0, QObject::tr("Wrong number of parameters (%i given, %i mandatory and %i optional required)").toLatin1().data(), 
+        return ito::RetVal::format(ito::retError, 0, QObject::tr("Wrong number of parameters (%i given, %i mandatory and %i optional required)").toLatin1().data(),
             argsLen + kwdsLen, numMandParams, numOptParams);
     }
 
@@ -1295,7 +1295,7 @@ ito::RetVal parseInitParams(const QVector<ito::Param> *defaultParamListMand, con
         if ((argsLen + mandKwd) < numMandParams)
         {
             errOutInitParams(defaultParamListMand, -1, QObject::tr("Wrong number of parameters\n Mandatory parameters are:\n").toLatin1().data());
-            return ito::RetVal::format(ito::retError, 0, QObject::tr("Wrong number of parameters (%i given, %i mandatory and %i optional required)").toLatin1().data(), 
+            return ito::RetVal::format(ito::retError, 0, QObject::tr("Wrong number of parameters (%i given, %i mandatory and %i optional required)").toLatin1().data(),
                 argsLen + kwdsLen, numMandParams, numOptParams);
         }
     }
@@ -1330,7 +1330,7 @@ ito::RetVal parseInitParams(const QVector<ito::Param> *defaultParamListMand, con
     {
         const char *tkey = (*defaultParamListMand)[len + n].getName();
         tempObj = PyDict_GetItemString(kwds, tkey);
-        
+
         retval = checkAndSetParamVal(tempObj, &((*defaultParamListMand)[n + len]), paramListMandOut[n + len], &_set);
 
         if (retval.containsError())
@@ -1378,7 +1378,7 @@ ito::RetVal parseInitParams(const QVector<ito::Param> *defaultParamListMand, con
 
             if (tempObj)
             {
-                retval = checkAndSetParamVal(tempObj, &((*defaultParamListOpt)[n]), paramListOptOut[n], &_set); 
+                retval = checkAndSetParamVal(tempObj, &((*defaultParamListOpt)[n]), paramListOptOut[n], &_set);
 
                 if (retval.containsError())
                 {
@@ -1402,7 +1402,7 @@ ito::RetVal parseInitParams(const QVector<ito::Param> *defaultParamListMand, con
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /** makes a deep copy of a vector with values of type ParamBase
-*   
+*
 *   @param [in]     paramVecIn is a pointer to a vector of ParamBase-values
 *   @param [out]    paramVecOut is a reference to a vector which is first cleared and then filled with a deep copy of every element of paramVecIn
 */
@@ -1423,7 +1423,7 @@ ito::RetVal copyParamVector(const QVector<ito::ParamBase> *paramVecIn, QVector<i
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /** makes a deep copy of a vector with values of type Param
-*   
+*
 *   @param [in]     paramVecIn is a pointer to a vector of Param-values
 *   @param [out]    paramVecOut is a reference to a vector which is first cleared and then filled with a deep copy of every element of paramVecIn
 */
@@ -1444,7 +1444,7 @@ ito::RetVal copyParamVector(const QVector<ito::Param> *paramVecIn, QVector<ito::
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /** makes a deep copy of a vector with values of type Param
-*   
+*
 *   @param [in]     paramVecIn is a pointer to a vector of Param-values
 *   @param [out]    paramVecOut is a reference to a vector which is first cleared and then filled with a deep copy of every element of paramVecIn (casted to ito::ParamBase)
 */
@@ -1701,7 +1701,7 @@ PyObject *parseParamMetaAsDict(const ito::ParamMeta *meta, const ito::Param* par
                 {
                     if (cm->isDataTypeAllowed((ito::tDataType)typeno))
                     {
-                        PyTuple_SetItem(temp, idx, 
+                        PyTuple_SetItem(temp, idx,
                             PythonQtConversion::QByteArrayToPyUnicodeSecure(PythonDataObject::typeNumberToName(typeno))
                         ); //steals reference
                         idx++;
@@ -2046,7 +2046,7 @@ PyObject *parseParamMetaAsDict(const ito::ParamMeta *meta, const ito::Param* par
 
 //------------------------------------------------------------------------------------------------------------------
 /* transforms a possible warning or error in retVal into a Python exception or warning
-    
+
    returns true if retVal contained no error or if a warning became "only" a warning in Python.
    returns false if a Python exception was created or if the warning level in Python was set such that the
           warning contained in retVal also raised a Python exception.
@@ -2075,7 +2075,7 @@ bool PythonCommon::transformRetValToPyException(ito::RetVal &retVal, PyObject *e
         {
             if (PyErr_WarnEx(exceptionIfWarning, msg.data(), 1) == -1)
             {
-                return false; //warning was turned into a real exception, 
+                return false; //warning was turned into a real exception,
             }
             else
             {

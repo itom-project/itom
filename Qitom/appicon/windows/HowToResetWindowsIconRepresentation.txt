@@ -1,10 +1,10 @@
 I found a solution for this. At least it worked for me (win 7 x64).
 
- 
+
 
 First, open Notepad and paste the below code:
 
- 
+
 
 taskkill /F /IM explorer.exe
 cd /d %userprofile%\AppData\Local
@@ -15,7 +15,7 @@ start explorer
 save the file as a .bat file on your desktop.
 Then open explorer and navigate to C:\users\username\appdata\local\ (make sure you've select to view hidden folders) and delete IconCache.db.
 
- 
+
 
 Lastly, double click on the .bat file that you saved on your desktop and all icons should be restored.
 

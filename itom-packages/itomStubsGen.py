@@ -27,7 +27,7 @@ __version__ = "1.0.0"
 
 class Arg:
     """Argument object for one parsed argument of a signature or docstring.
-    
+
     One argument can either be a parameter or a return or yield value.
     """
 
@@ -59,7 +59,7 @@ class Arg:
 
 class Signature:
     """This objects stands for the signature of one method.
-    
+
     Args:
         name: is the name of the signature
         args: is a list of arguments, used to call the method
@@ -163,14 +163,14 @@ def parse_stubs(overwrite: bool = False):
 
 def _get_direct_members(obj) -> Tuple[str, object, object]:
     """Generator for all direct members of `obj`.
-    
+
     This generator returns one tuple for each direct member of the given `obj`.
     A direct member is one, that is defined in the given obj and not in potential
     base classes.
-    
+
     Args:
         obj: is the parent object
-    
+
     Yields:
         a tuple with the name, the object and again the object.
         The first returned object is obtained by ``getattr(obj, itemname)``,
@@ -185,11 +185,11 @@ def _get_direct_members(obj) -> Tuple[str, object, object]:
 
 def _parse_object(obj, indent: int = 0) -> str:
     """Parses one object and its children and returns the stubs docstring.
-    
+
     Args:
         obj: is the parent object to parse
         indent: is the base identation level for the entire object and its children.
-    
+
     Returns:
         the stubs docstring for this entire object and its children.
     """
@@ -268,13 +268,13 @@ def _parse_object(obj, indent: int = 0) -> str:
 
 def _get_class_signature(classobj: type, indent: int) -> str:
     """Parses the docstring of a class object and its __init__ method.
-    
+
     Args:
         classobj: is the class object
         indent: is the base indentation level.
-    
+
     Returns:
-        The entire signature, including inheritance, docstring and __init__ 
+        The entire signature, including inheritance, docstring and __init__
         signature for the given classobj.
     """
     if not inspect.isclass(classobj):
@@ -324,14 +324,14 @@ def _get_class_signature(classobj: type, indent: int) -> str:
 
 
 def _parse_args_string(argstring: str) -> List[Arg]:
-    """Parses the argstring from a signature. 
-    
+    """Parses the argstring from a signature.
+
     The argstring is the string within the top-level rounded brackets of
     a method in its signature string. It must not contain any type hints.
-    
+
     Returns:
         the parsed arguments as list of ``Arg``.
-    
+
     Raises:
         RuntimeWarning: if the argstring has no proper format.
     """
@@ -391,7 +391,7 @@ def _parse_args_string(argstring: str) -> List[Arg]:
 
 def _ismethod(obj) -> bool:
     """Returns True if ``obj`` is a method, otherwise ``False``.
-    
+
     inspect.ismethod only returns True for methods, defined in a Python script,
     whereas methods in C-modules are ``methoddescriptors``.
     """
@@ -402,19 +402,19 @@ def _parse_npdoc_argsection(
     doc_str: str, section_name: str
 ) -> Optional[List[Arg]]:
     """Searchs and parses a given doc_str for a numpydoc section.
-    
+
     This method searchs a doc_str for one of the numpydoc sections ``Parameters``,
     ``Returns`` or ``Yields``. If the desired section is found, parses its content
     and extracts all found arguments as list of Arg.
-    
+
     Args:
         doc_str: is the doc string of the entire method
-        section_name: is the desired section name, must be one of 
+        section_name: is the desired section name, must be one of
             [Parameters, Returns, Yields]
-    
+
     Returns:
         an optional list of Arg, that contains all parsed arguments of the section.
-    
+
     Raises:
         RuntimeWarning: if the section title without underline in the next line
             is available.
@@ -509,10 +509,10 @@ def _parse_npdoc_argsection(
 
 def _get_rettype_from_npdocstring(doc_str: str) -> Optional[str]:
     """Try to parse a return type from a numpy docstring in doc_str.
-    
+
     The return type (following the rules of the Python typing module)
     is either found in a Returns or a Yields section.
-    
+
     For more information see: https://numpydoc.readthedocs.io/en/latest/format.html
     """
     args: Optional[List[Arg]] = _parse_npdoc_argsection(doc_str, "Returns")
@@ -533,7 +533,7 @@ def _get_rettype_from_npdocstring(doc_str: str) -> Optional[str]:
 
 def _get_parameters_from_npdocstring(doc_str: str) -> Optional[List[Arg]]:
     """Parses a Parameters section from a numpydoc string.
-    
+
     This is equal to _parse_npdoc_argsection(doc_str, "Parameters").
     """
     return _parse_npdoc_argsection(doc_str, "Parameters")
@@ -541,21 +541,21 @@ def _get_parameters_from_npdocstring(doc_str: str) -> Optional[List[Arg]]:
 
 def _parse_signature_from_first_line(obj, first_line: str) -> Signature:
     """Parses the entire signature from the first line of a docstring.
-    
+
     A signature must look like:
-    
+
     * methname(arg1: type1, arg2, arg3: type3, *args) -> return type:
-    
+
     The ``self`` argument of bound methods must not be included in the
     string signature. It will be automatically added in the returned Signature.
-    
+
     Args:
         obj: is the method, function etc.
         first_line: is the signature line of its docstring.
-    
+
     Returns:
         the signature as ``Signature`` object.
-    
+
     Raises:
         RuntimeWarning: if the ``methname`` in the string signature does
             not correspond to the qualified name of the given ``obj``.
@@ -643,7 +643,7 @@ def _parse_signature_from_first_line(obj, first_line: str) -> Signature:
 def _get_signatures_and_docstring(obj) -> Tuple[List[Signature], List[str]]:
     """
     Raises:
-        RuntimeWarning: if the ``obj`` has no docstring or an empty first 
+        RuntimeWarning: if the ``obj`` has no docstring or an empty first
             signature line.
     """
     try:
@@ -778,7 +778,7 @@ def _parse_staticmeth_docstring(obj, indent: int):
 
 def _nptype2typing(nptypestr: str) -> str:
     """tries to convert a nptypestr to a valid typestring with the typing module.
-    
+
     E.g. `list of int` should become List[int]."""
     nptypestr = nptypestr.strip()  # trim spaces etc.
 
@@ -849,14 +849,14 @@ def _nptype2typing(nptypestr: str) -> str:
 
 def _parse_property_docstring(obj, indent: int) -> str:
     """Parses the docstring of a property and returns the full text for the stubs file.
-    
+
     Args:
         obj: is the property object to parse
         indent: is the base indentation level
-    
+
     Returns:
         full property for stubs file including body, decorator and docstring
-    
+
     Raises:
         RuntimeWarning: if not docstring is given.
     """

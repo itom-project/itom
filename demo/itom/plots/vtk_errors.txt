@@ -1,0 +1,3 @@
+ERROR: In vtkGenericOpenGLRenderWindow.cxx, line 205
+vtkGenericOpenGLRenderWindow (0000026BF3A4F230): error before running VTK rendering code 1 OpenGL errors detected
+  0 : (1280) Invalid enum

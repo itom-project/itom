@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>487</width>
-    <height>372</height>
+    <width>452</width>
+    <height>503</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -125,9 +125,54 @@
         <item>
          <widget class="QCheckBox" name="checkKeepIndentationOnPaste">
           <property name="text">
-           <string>If code is pasted to a script, remove the identation level of the first line 
-from all lines and add all spaces and tabs from the beginning of the 
+           <string>If code is pasted to a script, remove the identation level of the first line
+from all lines and add all spaces and tabs from the beginning of the
 current line until the current cursor position.</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QGroupBox" name="groupBox_2">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="title">
+        <string>Files</string>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <item>
+         <widget class="QCheckBox" name="checkAutoDetectEncoding">
+          <property name="text">
+           <string>Auto guess the character set encoding when opening a file
+(e.g. from coding line at the start of a Python script).</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="1,6">
+          <item>
+           <widget class="QLabel" name="label_2">
+            <property name="text">
+             <string>Default character set encoding</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QComboBox" name="comboEncoding"/>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_3">
+          <property name="text">
+           <string>The default character set encoding is used for reading or writing files.
+It can be overwritten individually if auto guess is enabled (see above).</string>
           </property>
          </widget>
         </item>

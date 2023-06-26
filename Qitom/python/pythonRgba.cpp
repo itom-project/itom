@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -151,7 +151,7 @@ PyObject* PythonRgba::PyRgba_nbAdd(PyObject* o1, PyObject* o2)
 {
     PyRgba *rgba1 = NULL;
     PyRgba *rgba2 = NULL;
-    
+
     if (PyRgba_Check(o1) && PyRgba_Check(o2))
     {
         rgba1 = (PyRgba*)o1;
@@ -174,7 +174,7 @@ PyObject* PythonRgba::PyRgba_nbSubtract(PyObject* o1, PyObject* o2)
 {
     PyRgba *rgba1 = NULL;
     PyRgba *rgba2 = NULL;
-    
+
     if (PyRgba_Check(o1) && PyRgba_Check(o2))
     {
         rgba1 = (PyRgba*)o1;
@@ -221,7 +221,7 @@ PyObject* PythonRgba::PyRgba_nbMultiply(PyObject* o1, PyObject* o2)
         PyErr_SetString(PyExc_RuntimeError, "both operands must be of type rgba");
         return NULL;
     }
-    
+
     return NULL;
 }
 
@@ -550,7 +550,7 @@ PyObject* PythonRgba::PyRgba_RichCompare(PyRgba *self, PyObject *other, int cmp_
         //case Py_GT: resultRgba->rgba = self->rgba > otherRgba->rgba; break;
         //case Py_GE: resultRgba->rgba = self->rgba >= otherRgba->rgba; break;
         }
-        
+
         PyErr_SetString(PyExc_TypeError, "rgba can only be compared for equality or inequality.");
         return NULL;
 
@@ -564,7 +564,7 @@ PyObject* PythonRgba::PyRgba_RichCompare(PyRgba *self, PyObject *other, int cmp_
 
 
 PyMethodDef PythonRgba::PyRgba_methods[] = {
-    {"name", (PyCFunction)PythonRgba::PyRgba_name, METH_NOARGS, PyRgba_name_doc}, 
+    {"name", (PyCFunction)PythonRgba::PyRgba_name, METH_NOARGS, PyRgba_name_doc},
     {"__reduce__", (PyCFunction)PythonRgba::PyRgba_Reduce, METH_VARARGS, "__reduce__ method for handle pickling commands"},
     {"__setstate__", (PyCFunction)PythonRgba::PyRgba_SetState, METH_VARARGS, "__setstate__ method for handle unpickling commands"},
     { "toGray", (PyCFunction)PythonRgba::PyRgba_toGray, METH_NOARGS, PyRgba_toGray_doc},

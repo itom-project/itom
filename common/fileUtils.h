@@ -10,7 +10,7 @@
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
-   
+
     In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
@@ -57,19 +57,19 @@ namespace ito
     inline ito::float32 getFloat32BE(const uchar **ppval);
     inline ito::float64 getFloat64LE(const uchar **ppval);
     inline ito::float64 getFloat64BE(const uchar **ppval);
-    
+
     inline ito::int16 swapInt16(ito::int16 val);
     inline ito::uint16 swapUInt16(ito::uint16 val);
     inline ito::int32 swapInt32(ito::int32 val);
     inline ito::uint32 swapUInt32(ito::uint32 val);
     inline ito::float32 swapFloat32(ito::float32 val);
     inline ito::float64 swapFloat64(ito::float64 val);
-    
+
     //!< reads exactly numBytes from device into data and returns an error if less or no data is available
     ito::RetVal ITOMCOMMONQT_EXPORT readFromDevice(QIODevice *device, char *data, qint64 numBytes);
-    
+
     //sources
-    
+
     //--------------------------------------------------------------------------------------------
     inline ito::int8 getInt8(const uchar **ppval)
     {
@@ -78,7 +78,7 @@ namespace ito
         *ppval += sizeof(ito::uint8);
         return v;
     }
-    
+
     //--------------------------------------------------------------------------------------------
     inline ito::uint8 getUInt8(const uchar **ppval)
     {
@@ -87,7 +87,7 @@ namespace ito
         *ppval += sizeof(ito::uint8);
         return v;
     }
-    
+
     //--------------------------------------------------------------------------------------------
     inline ito::int16 getInt16LE(const uchar **ppval)
     {
@@ -96,7 +96,7 @@ namespace ito
         *ppval += sizeof(ito::int16);
         return v;
     }
-    
+
     //--------------------------------------------------------------------------------------------
     inline ito::int16 getInt16BE(const uchar **ppval)
     {
@@ -105,7 +105,7 @@ namespace ito
         *ppval += sizeof(ito::int16);
         return v;
     }
-    
+
     //--------------------------------------------------------------------------------------------
     inline ito::uint16 getUInt16LE(const uchar **ppval)
     {
@@ -114,7 +114,7 @@ namespace ito
         *ppval += sizeof(ito::uint16);
         return v;
     }
-    
+
     //--------------------------------------------------------------------------------------------
     inline ito::uint16 getUInt16BE(const uchar **ppval)
     {
@@ -123,7 +123,7 @@ namespace ito
         *ppval += sizeof(ito::uint16);
         return v;
     }
-    
+
     //--------------------------------------------------------------------------------------------
     inline ito::int32 getInt32LE(const uchar **ppval)
     {
@@ -132,7 +132,7 @@ namespace ito
         *ppval += sizeof(ito::int32);
         return v;
     }
-    
+
     //--------------------------------------------------------------------------------------------
     inline ito::int32 getInt32BE(const uchar **ppval)
     {
@@ -141,7 +141,7 @@ namespace ito
         *ppval += sizeof(ito::int32);
         return v;
     }
-    
+
     //--------------------------------------------------------------------------------------------
     inline ito::uint32 getUInt32LE(const uchar **ppval)
     {
@@ -150,7 +150,7 @@ namespace ito
         *ppval += sizeof(ito::uint32);
         return v;
     }
-    
+
     //--------------------------------------------------------------------------------------------
     inline ito::uint32 getUInt32BE(const uchar **ppval)
     {
@@ -159,7 +159,7 @@ namespace ito
         *ppval += sizeof(ito::uint32);
         return v;
     }
-    
+
     //--------------------------------------------------------------------------------------------
     inline qint64 getInt64LE(const uchar **ppval)
     {
@@ -168,7 +168,7 @@ namespace ito
         *ppval += sizeof(qint64);
         return v;
     }
-    
+
     //--------------------------------------------------------------------------------------------
     inline qint64 getInt64BE(const uchar **ppval)
     {
@@ -177,7 +177,7 @@ namespace ito
         *ppval += sizeof(qint64);
         return v;
     }
-    
+
     //--------------------------------------------------------------------------------------------
     inline quint64 getUInt64LE(const uchar **ppval)
     {
@@ -186,7 +186,7 @@ namespace ito
         *ppval += sizeof(quint64);
         return v;
     }
-    
+
     //--------------------------------------------------------------------------------------------
     inline quint64 getUInt64BE(const uchar **ppval)
     {
@@ -195,14 +195,14 @@ namespace ito
         *ppval += sizeof(quint64);
         return v;
     }
-    
+
     //--------------------------------------------------------------------------------------------
     inline ito::float32 getFloat32LE(const uchar **ppval)
     {
-        union 
-        { 
-            ito::uint8 pp[4]; 
-            ito::float32 f; 
+        union
+        {
+            ito::uint8 pp[4];
+            ito::float32 f;
         } z;
 
 #if (Q_BYTE_ORDER == Q_LITTLE_ENDIAN)
@@ -216,14 +216,14 @@ namespace ito
         *ppval += sizeof(ito::float32);
         return z.f;
     }
-    
+
     //--------------------------------------------------------------------------------------------
     inline ito::float32 getFloat32BE(const uchar **ppval)
     {
-        union 
-        { 
-            ito::uint8 pp[4]; 
-            ito::float32 f; 
+        union
+        {
+            ito::uint8 pp[4];
+            ito::float32 f;
         } z;
 
 #if (Q_BYTE_ORDER == Q_BIG_ENDIAN)
@@ -237,14 +237,14 @@ namespace ito
         *ppval += sizeof(ito::float32);
         return z.f;
     }
-    
+
     //--------------------------------------------------------------------------------------------
     inline ito::float64 getFloat64LE(const uchar **ppval)
     {
-        union 
-        { 
-            ito::uint8 pp[8]; 
-            ito::float64 d; 
+        union
+        {
+            ito::uint8 pp[8];
+            ito::float64 d;
         } z;
 
 #if (Q_BYTE_ORDER == Q_LITTLE_ENDIAN)
@@ -262,14 +262,14 @@ namespace ito
         *ppval += sizeof(ito::float64);
         return z.d;
     }
-    
+
     //--------------------------------------------------------------------------------------------
     inline ito::float64 getFloat64BE(const uchar **ppval)
     {
-        union 
-        { 
-            ito::uint8 pp[8]; 
-            ito::float64 d; 
+        union
+        {
+            ito::uint8 pp[8];
+            ito::float64 d;
         } z;
 
 #if (Q_BYTE_ORDER == Q_BIG_ENDIAN)
@@ -288,9 +288,9 @@ namespace ito
         return z.d;
     }
 
-    
-    
-    
+
+
+
 
     //--------------------------------------------------------------------------------------------
     inline ito::uint16 swapUInt16(ito::uint16 val)
@@ -323,7 +323,7 @@ namespace ito
         }
         return int16out.res;
     }
-    
+
     //--------------------------------------------------------------------------------------------
     inline ito::uint32 swapUInt32(ito::uint32 val)
     {
@@ -360,8 +360,8 @@ namespace ito
     inline ito::float32 swapFloat32(ito::float32 val)
     {
         union s
-        { 
-            char pp[4]; 
+        {
+            char pp[4];
             ito::float32 f;
         } temp;
 
@@ -373,13 +373,13 @@ namespace ito
         float32out.pp[3] = temp.pp[0];
         return float32out.f;
     }
-    
+
     //--------------------------------------------------------------------------------------------
     inline ito::float64 swapFloat64(ito::float64 val)
     {
         union s
-        { 
-            char pp[8]; 
+        {
+            char pp[8];
             ito::float64 f;
         } temp;
 

@@ -48,7 +48,7 @@ class DataObjectModel : public QAbstractItemModel
     Q_OBJECT
 
 public:
-    
+
 
     DataObjectModel();
     ~DataObjectModel();

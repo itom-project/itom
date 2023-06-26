@@ -18,24 +18,24 @@
 # You should have received a copy of the GNU Library General Public License
 # along with itom. If not, see <http://www.gnu.org/licenses/>.
 
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.12...3.24)
 
 set(target_name unittest_dataobject)
 project(${target_name})
 
 message(STATUS "--------------- UNITTEST ${target_name} -----------------")
 
-# include commonly used itom CMake macros (internal can only be used within the core projects) 
+# include commonly used itom CMake macros (internal can only be used within the core projects)
 include("../../cmake/ItomBuildMacros.cmake")
 include("../../cmake/ItomBuildMacrosInternal.cmake")
 
 itom_init_cmake_policy(3.12)
 itom_init_core_common_vars()
 
-set(CMAKE_MODULE_PATH 
-    ${CMAKE_MODULE_PATH} 
-    ${PROJECT_SOURCE_DIR} 
-    ${PROJECT_SOURCE_DIR}/../../cmake 
+set(CMAKE_MODULE_PATH
+    ${CMAKE_MODULE_PATH}
+    ${PROJECT_SOURCE_DIR}
+    ${PROJECT_SOURCE_DIR}/../../cmake
     ${PROJECT_SOURCE_DIR}/../../gtest-1.10.0/googletest/
 )
 
@@ -56,12 +56,12 @@ include_directories(
 )
 
 set(unittest_dataobject_HEADERS
-    ${CMAKE_CURRENT_SOURCE_DIR}/commonChannel.h    
+    ${CMAKE_CURRENT_SOURCE_DIR}/commonChannel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/operatorComplexTest.h
     ${CMAKE_CURRENT_SOURCE_DIR}/test_global.h
 )
 
-set(unittest_dataobject_SOURCES 
+set(unittest_dataobject_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/assignTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/addressTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/adjustROI_func_test.cpp
@@ -106,7 +106,3 @@ set_target_properties( ${target_name}
 )
 
 set_target_properties(${target_name} PROPERTIES DEBUG_POSTFIX "d")
-
-
-
-

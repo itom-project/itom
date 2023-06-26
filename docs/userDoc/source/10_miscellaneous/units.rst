@@ -10,9 +10,9 @@ Parameters have to be expressed in their unified base unit.
 General
 =======
 * Indexing starts with 0
-* The names of PlugIns starts with a capital letter 
+* The names of PlugIns starts with a capital letter
 
 Physical Units
 ===============
 * Physical Base Units have to be in [mm; s; kg]
-* Electrical Base Units have to be in [V; A; W] 
+* Electrical Base Units have to be in [V; A; W]

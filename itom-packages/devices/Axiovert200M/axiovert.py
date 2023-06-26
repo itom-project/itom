@@ -61,7 +61,7 @@ def AxioInit(serial):
     mo_setNum(serial,actMO,1)
     halogen_setInt(serial,50)
     initializing=0
-        
+
 
 # IMPORTANT Calibration of the Microscope (depend on the MOs in the turret and the stageadapter)
 AxioMO={1:{'min':-10000, 'max':9450, 'best':5290, 'name':'Name1'}}
@@ -180,7 +180,7 @@ def focus_down(serial):
 def focus_up(serial):
     serial.setVal('FPZW1')
     focus_busy(serial)
-    
+
 # Check Load Position
 def focus_checkLoad(serial):
     serial.setVal('FPZw')
@@ -293,7 +293,7 @@ def shutter_getState(serial):
         print('close')
     if state=='2':
         print('open')
-    return state 
+    return state
 
 # Shutter switch
 def shutter_switch(serial):
@@ -310,4 +310,3 @@ def shutter_open(serial):
 # Shutter Close
 def shutter_close(serial):
     serial.setVal('HPCK1,1')
-

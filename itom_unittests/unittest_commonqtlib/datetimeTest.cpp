@@ -83,7 +83,7 @@ TEST_F(DatetimeTest, DateTimeFromTo)
         {
             EXPECT_EQ(components[j], desired[i][j]);
         }
-        
+
         EXPECT_EQ(desired[i][7], date1.utcOffset);
     }
 }

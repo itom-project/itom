@@ -66,7 +66,7 @@ namespace ito
             Square = 0x00000010,            /**! Element is square in order to pick squares*/
             Ellipse = 0x00000020,           /**! Element is ellipse in order to pick ellipses*/
             Circle = 0x00000040,            /**! Element is circle in order to pick circles*/
-            Polygon = 0x00000080,           /**! Element is polygon in order to pick polygon*/  
+            Polygon = 0x00000080,           /**! Element is polygon in order to pick polygon*/
 
             //REMARK: If this enumeration is changed, please identically change ItomQwtPlotEnums::ShapeType in the designer plugins!
         };
@@ -93,9 +93,9 @@ namespace ito
         virtual ~Shape();
 
         Shape& operator =(const Shape &other);
-        
+
         /* Returns a normalized shape; i.e., a rectangle, square, circle or ellipse that has a non-negative width and height. */
-        Shape normalized() const; 
+        Shape normalized() const;
 
         bool isValid() const;
 
@@ -143,7 +143,7 @@ namespace ito
         const QPolygonF &rbasePoints() const;
         QPolygonF contour(bool applyTrafo = true, qreal tol = -1.0) const; /*!< returns the enclosing contour as polygon. If the shape is elliptic, an approximation is applied, where tol is the maximum distance between real contour and a line segment of the polygon (if -1.0, the tolerance is defined to be 1% of the smaller diameter of the ellise*/
         QRegion   region() const;
-        
+
 
         void point1MoveTo(const QPointF &newPoint1);
 

@@ -28,7 +28,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include "ui_widgetPropGeneralPlotSettings.h"
 
 namespace ito
-{  
+{
     class WidgetPropGeneralPlotSettings : public AbstractPropertyPageWidget
     {
         Q_OBJECT

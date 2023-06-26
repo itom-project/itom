@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -92,7 +92,7 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
     size = settings.beginReadArray("lastUsedDirs");
     int count = 0;
 
-    for (int i = 0; i < size; ++i) 
+    for (int i = 0; i < size; ++i)
     {
         settings.setArrayIndex(i);
         QString dir = settings.value("dir", QString()).toString();
@@ -167,7 +167,7 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
     m_pTreeView->setSortingEnabled(true);
     m_pTreeView->setDefaultDropAction(Qt::MoveAction);
 
-    //TODO save to ini-file 
+    //TODO save to ini-file
 
     int column = settings.value("sortColumn", 0).toInt();
 
@@ -178,7 +178,7 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
     else
     {
         m_pTreeView->sortByColumn(column, Qt::AscendingOrder);
-    }    
+    }
 
     m_pTreeView->setContextMenuPolicy(Qt::CustomContextMenu);
     m_pTreeView->setSelectionMode(QAbstractItemView::ExtendedSelection);
@@ -189,7 +189,7 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
 
     size = settings.beginReadArray("ColWidth");
 
-    for (int i = 0; i < size; ++i) 
+    for (int i = 0; i < size; ++i)
     {
         settings.setArrayIndex(i);
         m_pTreeView->setColumnWidth(i, settings.value("width", 100).toInt());
@@ -202,13 +202,13 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
 
     if (size != m_pFileSystemModel->columnCount())
     {
-        for (int i = 0; i < m_pFileSystemModel->columnCount(); ++i) 
+        for (int i = 0; i < m_pFileSystemModel->columnCount(); ++i)
         {
             m_pColumnWidth[i] = 120;
         }
     }
 
-    for (int i = 0; i < size; ++i) 
+    for (int i = 0; i < size; ++i)
     {
         settings.setArrayIndex(i);
         m_pColumnWidth[i] = settings.value("width", 100).toInt();
@@ -699,7 +699,7 @@ RetVal FileSystemDockWidget::changeBaseDirectory(QString dir)
             removeActionFromDirList(i);
         }
     }
-    
+
     // renew numbering
     for (int x = 0; x < m_pShowDirListMenu->actions().count(); x++)
     {
@@ -850,7 +850,7 @@ void FileSystemDockWidget::mnuOpenFile()
     foreach (const QModelIndex &idx, indexList)
     {
         openFile(idx);
-    }  
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1037,7 +1037,7 @@ void FileSystemDockWidget::mnuPasteItems()
     QClipboard *clipboard = QApplication::clipboard();
     const QMimeData *mimeData = clipboard->mimeData(QClipboard::Clipboard);
     bool result = false;
-    
+
     if (mimeData->hasUrls())
     {
         if (m_pTreeView->selectedIndexes().count() == 0)
@@ -1109,7 +1109,7 @@ void FileSystemDockWidget::mnuNewDir()
         }
         folderName = folderName + " (" + QString::number(i) + ")";
     }
-    
+
     index = m_pFileSystemModel->mkdir(index, folderName);
     if (index.isValid())
     {
@@ -1156,7 +1156,7 @@ void FileSystemDockWidget::mnuNewPyFile()
             done = !file.exists();
         }
     }
-    
+
     if (file.open(QIODevice::WriteOnly))
     {
         file.close();
@@ -1255,7 +1255,7 @@ void FileSystemDockWidget::showInGraphicalShell(const QString & filePath)
 //----------------------------------------------------------------------------------------------------------------------------------
 void FileSystemDockWidget::setTreeViewHideColumns(const bool &hide)
 {
-    for (int i = 1; i < m_pFileSystemModel->columnCount(); ++i) 
+    for (int i = 1; i < m_pFileSystemModel->columnCount(); ++i)
     {
         m_pTreeView->setColumnHidden(i, hide);
     }
@@ -1296,7 +1296,7 @@ void FileSystemDockWidget::showDetails()
 
     if (isList)
     {
-        for (int i = 0; i < m_pFileSystemModel->columnCount(); ++i) 
+        for (int i = 0; i < m_pFileSystemModel->columnCount(); ++i)
         {
             m_pTreeView->setColumnWidth(i, m_pColumnWidth[i]);
         }
@@ -1395,7 +1395,7 @@ a { color: %1; }\n\
 //----------------------------------------------------------------------------------------------------------------------------------
 bool FileSystemDockWidget::eventFilter(QObject *obj, QEvent *event)
 {
-    if (event->type() == QEvent::MouseMove) 
+    if (event->type() == QEvent::MouseMove)
     {
         QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
         QAction *actionUnderMouse = m_pShowDirListMenu->actionAt(mouseEvent->pos());
@@ -1419,7 +1419,7 @@ bool FileSystemDockWidget::eventFilter(QObject *obj, QEvent *event)
                 actionUnderMouse->setIcon(QIcon(":/application/icons/empty.png"));
             }
         }
-    } 
+    }
     else if (event->type() == QEvent::MouseButtonPress)
     {
         QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);

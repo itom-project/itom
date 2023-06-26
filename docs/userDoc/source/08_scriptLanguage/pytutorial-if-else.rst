@@ -16,9 +16,9 @@ Perhaps the most well-known statement type is the `if` statement. For example:
 
 .. code-block:: python
     :linenos:
-    
+
     x = int(input("Please enter an integer: "))
-    
+
     if x < 0:
         print('Negative')
     elif x == 0:

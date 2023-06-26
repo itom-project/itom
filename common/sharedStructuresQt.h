@@ -10,7 +10,7 @@
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
-   
+
     In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
@@ -41,7 +41,7 @@
 //definition of some tags for signals and slots
 #ifndef Q_MOC_RUN
     //the following tags can be placed before the definition of slots and signals, they are then obtainable via the tag() method of QMetaMethod.
-    
+
     //place ITOM_PYNOTACCESSIBLE before the definition of a method to not show this method in auto-parsed listings that are dedicated to python usage.
     #define ITOM_PYNOTACCESSIBLE
 #endif
@@ -70,15 +70,15 @@ class ITOMCOMMONQT_EXPORT ItomSharedSemaphore
             A new ItomSharedSemaphore is created and the underlying semaphore is already locked with a certain number.
             This number depends on the number of listeners (usually: 1). A listener is a method which is called in another
             thread. The caller creates the ItomSharedSemaphore in order to wait until the listener decreases the lock level
-            of the semaphore by one or a certain timout time has been reached. 
+            of the semaphore by one or a certain timout time has been reached.
 
             \param [in] numberOfListeners (default: 1) are the number of different methods in other threads which should release this semaphore before the caller can go on.
         */
-        inline ItomSharedSemaphore(int numberOfListeners = 1) : 
-                m_numOfListeners(numberOfListeners), 
-                m_instCounter(numberOfListeners + 1), 
-                m_enableDelete(false), 
-                m_callerStillWaiting(true), 
+        inline ItomSharedSemaphore(int numberOfListeners = 1) :
+                m_numOfListeners(numberOfListeners),
+                m_instCounter(numberOfListeners + 1),
+                m_enableDelete(false),
+                m_callerStillWaiting(true),
                 returnValue(ito::retOk)
         {
             QMutexLocker mutexLocker(&internalMutex);
@@ -169,7 +169,7 @@ class ITOMCOMMONQT_EXPORT ItomSharedSemaphore
 
         //! decreases the number of locks by one
         /*
-            the called method in another thread must release the semaphore as soon as possible such that the caller can continue 
+            the called method in another thread must release the semaphore as soon as possible such that the caller can continue
         */
         inline void release() { /*qDebug() << "semaphore release";*/ m_pSemaphore->release(1); }
 
@@ -183,7 +183,7 @@ class ITOMCOMMONQT_EXPORT ItomSharedSemaphore
         /*
             this method is not 100% thread-safe, that means it might occure, that the wait-method of the caller drops into the timeout
             during the call to the method isCallerStillWaiting. Therefore consider this method as pure information.
-            
+
             @return true if caller-method is still waiting (in \sa wait-method) that all listeners are calling the release method
             in order to free the lock of the semaphore. else: false
         */
@@ -254,7 +254,7 @@ class ItomSharedSemaphoreLocker
         //! returns the pointer to the guarded ItomSharedSemaphore.
         ItomSharedSemaphore* operator ->() const { return m_semaphore; }
 
-        //! assigns another ItomSharedSemaphore to this locker. 
+        //! assigns another ItomSharedSemaphore to this locker.
         /*
             If this locker already guards an instance of ItomSharedSemaphore its reference counter is decremented first. \sa ItomSharedSemaphore::deleteSemaphore.
         */

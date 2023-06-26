@@ -6,8 +6,8 @@
 }
 
 
-#Sections, h2 { 
-  background-color: $backgroundColorSection$; 
+#Sections, h2 {
+  background-color: $backgroundColorSection$;
   font-size: large;
   color: $textColorSection$;
 }
@@ -47,7 +47,7 @@ table.borderless td, table.borderless th {
   margin-bottom: 0 ! important }
 
 .hidden {
-  display: none; 
+  display: none;
   }
 
 a.toc-backref {
@@ -94,11 +94,11 @@ div.warning p.admonition-title, .code .error {
   color: red;
   font-weight: bold;
   font-family: sans-serif }
-  
+
 div.meta{
   font-style: italic;
   margin-top: 1em;
-}  
+}
 
 /* Uncomment (and remove this text!) to get reduced vertical space in
    compound paragraphs.
@@ -248,14 +248,14 @@ p.rubric {
   font-weight: bold;
   font-size: larger;
   color: $textColorHeading$;
-  background-color: $backgroundColorHeading$; 
+  background-color: $backgroundColorHeading$;
 }
 
 p.admonition-title {
   font-weight: bold;
   font-size: larger;
   color: $textColorHeading$;
-  background-color: $backgroundColorHeading$; 
+  background-color: $backgroundColorHeading$;
 }
 
 p.sidebar-title {

@@ -39,7 +39,7 @@ def detectEyes(img, cascade):
 
 
 ###############################################################################
-# Draw detected rectangle method. 
+# Draw detected rectangle method.
 def drawRects(img, faces, color):
     for x1, y1, x2, y2 in faces:
         rect = shape.createRectangle((x1, y1), (x2, y2), index=11)
@@ -84,7 +84,7 @@ def snap():
     drawEyes(img, eyes, rgba(0, 255, 0, 255))  # in color green
 
 ###############################################################################
-# Close GUI and stop webcam. 
+# Close GUI and stop webcam.
 def guiClosed():
     tDetect.stop()
     global cam, win
@@ -93,7 +93,7 @@ def guiClosed():
     gc.collect()
 
 ###############################################################################
-# Open a simple ``GUI``, connect the webcam and starte the live face detection. 
+# Open a simple ``GUI``, connect the webcam and starte the live face detection.
 win = ui(
     "FaceDetect.ui",
     ui.TYPEWINDOW,

@@ -1,8 +1,8 @@
 Qwt library
 ---------------
 
-Some designer plugins of itom (e.g. the libraries itom1dqwtplot, 
-itom2dqwtplot and their base library itomQwtPlotBase) are based 
+Some designer plugins of itom (e.g. the libraries itom1dqwtplot,
+itom2dqwtplot and their base library itomQwtPlotBase) are based
 on the Qwt library, licensed under the Qwt license 1.0.
 
 The Qwt library has the following copyright statement:
@@ -31,7 +31,7 @@ exceptions:
        widgets against a user-supplied version of Qwt.
 
        If you link the application or widget to a modified
-       version of Qwt, then the changes to Qwt must be 
+       version of Qwt, then the changes to Qwt must be
        provided under the terms of the LGPL in sections
        1, 2, and 4.
 

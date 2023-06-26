@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -36,7 +36,7 @@
 #include <qsharedpointer.h>
 #include <qpointer.h>
 
-namespace ito 
+namespace ito
 {
 
 class PythonFigure
@@ -45,11 +45,11 @@ public:
 
     //#################################################################################################
     // Figure
-    //################################################################################################# 
-    
+    //#################################################################################################
+
     //-------------------------------------------------------------------------------------------------
     // typedefs
-    //------------------------------------------------------------------------------------------------- 
+    //-------------------------------------------------------------------------------------------------
 
     typedef struct
     {
@@ -64,19 +64,19 @@ public:
 
     //-------------------------------------------------------------------------------------------------
     // macros
-    //------------------------------------------------------------------------------------------------- 
+    //-------------------------------------------------------------------------------------------------
     #define PyFigure_Check(op) PyObject_TypeCheck(op, &ito::PythonFigure::PyFigureType)
 
     //-------------------------------------------------------------------------------------------------
     // constructor, deconstructor, alloc, dellaoc
-    //------------------------------------------------------------------------------------------------- 
+    //-------------------------------------------------------------------------------------------------
     static void PyFigure_dealloc(PyFigure *self);
     static PyObject *PyFigure_new(PyTypeObject *type, PyObject *args, PyObject *kwds);
     static int PyFigure_init(PyFigure *self, PyObject *args, PyObject *kwds);
 
     //-------------------------------------------------------------------------------------------------
     // general members
-    //------------------------------------------------------------------------------------------------- 
+    //-------------------------------------------------------------------------------------------------
     static PyObject* PyFigure_repr(PyFigure *self);
     static PyObject* PyFigure_show(PyFigure *self, PyObject *args);
     static PyObject* PyFigure_hide(PyFigure *self);
@@ -92,7 +92,7 @@ public:
 
     //-------------------------------------------------------------------------------------------------
     // getter / setter
-    //------------------------------------------------------------------------------------------------- 
+    //-------------------------------------------------------------------------------------------------
     static PyObject* PyFigure_getHandle(PyFigure *self, void *closure);
     static PyObject* PyFigure_getDocked(PyFigure *self, void *closure);
     static int       PyFigure_setDocked(PyFigure *self, PyObject *value, void *closure);
@@ -104,7 +104,7 @@ public:
 
     //-------------------------------------------------------------------------------------------------
     // type structures
-    //------------------------------------------------------------------------------------------------- 
+    //-------------------------------------------------------------------------------------------------
     static PyGetSetDef  PyFigure_getseters[];
     static PyMemberDef  PyFigure_members[];
     static PyMethodDef  PyFigure_methods[];

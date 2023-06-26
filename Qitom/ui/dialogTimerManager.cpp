@@ -34,7 +34,7 @@ DialogTimerManager::DialogTimerManager(QWidget *parent /*= nullptr*/) :
     m_pModel(nullptr)
 {
 	ui.setupUi(this);
-    
+
     UiOrganizer *uiOrg = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
 
     if (uiOrg)
@@ -49,7 +49,7 @@ DialogTimerManager::DialogTimerManager(QWidget *parent /*= nullptr*/) :
         connect(m_pModel, &QAbstractItemModel::dataChanged,
             this, &DialogTimerManager::listView_dataChanged);
     }
-    
+
     ui.btnStart->setEnabled(false);
     ui.btnStop->setEnabled(false);
     ui.btnStopAll->setEnabled(false);
@@ -115,6 +115,5 @@ void DialogTimerManager::listView_dataChanged(const QModelIndex &/*topLeft*/, co
     QModelIndex idx = ui.listView->currentIndex();
     listView_currentChanged(idx, QModelIndex());
 }
-	
-} //end namespace ito
 
+} //end namespace ito

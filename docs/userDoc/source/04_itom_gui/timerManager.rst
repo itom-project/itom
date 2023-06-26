@@ -14,7 +14,7 @@ or control the timer. Therefore, |itom| provides a timer manager, that is access
 .. figure:: images/timerManager.png
     :scale: 80%
     :align: center
-    
+
 This dialog lists all current timer instances and gives information about the current state of the timer (active, disabled,
 continuous function call, single shot timer...). The buttons allow stopping or re-starting a single timer instances or stopping
 all active timers with one click.

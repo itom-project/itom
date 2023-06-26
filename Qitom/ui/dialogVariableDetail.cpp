@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -40,13 +40,13 @@ DialogVariableDetail::DialogVariableDetail(const QString &name, const QString &t
         Qt::WindowCloseButtonHint);
 
     ui.setupUi(this);
-    
+
     // get a default monospace font for the fields
     const QFont fixedFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
     ui.txtName->setFont(fixedFont);
     ui.txtType->setFont(fixedFont);
     ui.txtValue->setFont(fixedFont);
-    
+
     ui.txtName->setText(name);
     ui.txtType->setText(type);
 

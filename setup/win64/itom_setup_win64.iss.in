@@ -11,9 +11,11 @@
 #define SourceDirItomBuild "${CMAKE_CURRENT_BINARY_DIR}"
 #define SourceDirQT "${QT_BINARY_DIR}"
 #define SourceDirOpenCV "${OpenCV_BIN_DIR}"
+#define SourceQTVersion "${BUILD_QTVERSION}"
 #define SourceDirPCL "${PCL_DIR}/.."
 #define SourceDirVTK "${VTK_DIR}/../../.."
 #define SourcePythonPackDir "${CMAKE_CURRENT_BINARY_DIR}/setup/win64/PythonRequirements"
+#define BuildPlatform "${SDK_COMPILER}_${SDK_PLATFORM}"
 
 ; You should change...
 #define SourceDirSys32 "C:\Windows\System32"
@@ -23,7 +25,6 @@
 #define SourceRedistributable2017 "W:\m\ITOM\Software\MS VisualStudio\Redistributable\64 bit"
 #define SourcePythonDir "W:\m\ITOM\Software\Python\Python 3.8.10"
 #define SourceRedistributableDir "W:\m\ITOM\Software\MS VisualStudio\Redistributable\DLLs"
-
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
@@ -66,7 +67,6 @@ Name: "{app}\SDK"; Permissions: everyone-modify
 ; EXEs
 Source: "{#SourceRedistributable2017}\Microsoft Visual C++ 2017 Redistributable (x64) - 14.16.27027.1.exe"; DestDir: "{tmp}"
 Source: "{#SourcePythonPackDir}\*"; DestDir: "{tmp}\pythonPackages"
-
 
 [Languages]
 Name: "Deutsch"; MessagesFile: "compiler:Languages\German.isl"
@@ -118,7 +118,7 @@ Source: "{#SourceDirItomBuild}\iconThemeDark.rcc"; DestDir: "{app}"; Flags: igno
 
 ; QT Files
 Source: "{#SourceDirItomBuild}\setup\qt_deployment\*.*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs
-Source: "{#SourceDirQT}\Qt5OpenGL.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirQT}\{#SourceQTVersion}OpenGL.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirQT}\..\plugins\platforms\qminimal.dll"; DestDir: "{app}\platforms"; Flags: ignoreversion
 
 ; Help Files
@@ -126,7 +126,9 @@ Source: "{#SourceDirItomBuild}\docs\userDoc\build\qthelp\*.qch"; DestDir: "{app}
 Source: "{#SourceDirItomBuild}\docs\pluginDoc\build\*.qch"; DestDir: "{app}\docs\pluginDoc\build"; Flags: ignoreversion
 Source: "{#SourceDirQT}\assistant.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirQT}\qhelpgenerator.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SourceDirQT}\qcollectiongenerator.exe"; DestDir: "{app}"; Flags: ignoreversion
+#if "Qt5" == SourceQTVersion
+    Source: "{#SourceDirQT}\qcollectiongenerator.exe"; DestDir: "{app}"; Flags: ignoreversion
+#endif
 
 ; Languages
 Source: "{#SourceDirItomBuild}\translation\*.qm"; DestDir: "{app}\translation"; Flags: ignoreversion
@@ -137,11 +139,11 @@ Source: "{#SourceDirQT}\designer.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirQT}\linguist.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirQT}\lrelease.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirQT}\lupdate.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SourceDirQT}\uic.exe"; DestDir: "{app}"; Flags: ignoreversion  
-Source: "{#SourceDirQT}\rcc.exe"; DestDir: "{app}"; Flags: ignoreversion 
+Source: "{#SourceDirQT}\uic.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirQT}\rcc.exe"; DestDir: "{app}"; Flags: ignoreversion
 
 ; Default INI
-Source: "{#SourceDirItomBuild}\itomSettings\itomDefault.ini"; DestDir: "{app}\itomSettings"; Flags: ignoreversion  
+Source: "{#SourceDirItomBuild}\itomSettings\itomDefault.ini"; DestDir: "{app}\itomSettings"; Flags: ignoreversion
 
 ; Licensing files
 Source: "{#SourceDirItomSource}\Qitom\COPYING.txt"; DestDir: "{app}"; Flags: ignoreversion
@@ -171,7 +173,7 @@ Source: "{#SourceDirItomBuild}\SDK\*.*"; DestDir: "{app}\SDK"; Flags: ignorevers
 Source: "{#SourceDirItomBuild}\SDK\docs\*.*"; DestDir: "{app}\SDK\docs"; Flags: ignoreversion recursesubdirs; Components: SDK
 Source: "{#SourceDirItomBuild}\SDK\include\*.*"; DestDir: "{app}\SDK\include"; Flags: ignoreversion recursesubdirs; Components: SDK
 Source: "{#SourceDirItomBuild}\SDK\pluginTemplates\*.*"; DestDir: "{app}\SDK\pluginTemplates"; Flags: ignoreversion recursesubdirs; Components: SDK
-Source: "{#SourceDirItomBuild}\SDK\lib\vc1916_x64\*.*"; DestDir: "{app}\SDK\lib\vc14_x64"; Flags: ignoreversion; Components: SDK
+Source: "{#SourceDirItomBuild}\SDK\lib\{#BuildPlatform}\*.*"; DestDir: "{app}\SDK\lib\{#BuildPlatform}"; Flags: ignoreversion; Components: SDK
 
 ; Python
 Source: "{#SourcePythonDir}\*.*"; DestDir: "{app}\python3"; Flags: ignoreversion recursesubdirs
@@ -192,8 +194,10 @@ Source: "{#SourceDirItomBuild}\designer\vtk3dVisualizer.dll"; DestDir: "{app}\de
 Source: "{#SourceDirItomBuild}\designer\translation\*.qm"; DestDir: "{app}\designer\translation"; Flags: ignoreversion recursesubdirs
 
 ; Plugins
-Source: "{#SourceDirItomBuild}\plugins\AerotechEnsemble\*.*"; DestDir: "{app}\plugins\AerotechEnsemble"; Flags: ignoreversion recursesubdirs
-Source: "{#SourceDirItomBuild}\plugins\AndorSDK3\*.*"; DestDir: "{app}\plugins\AndorSDK3"; Flags: ignoreversion recursesubdirs
+#if "Qt5" == SourceQTVersion
+    Source: "{#SourceDirItomBuild}\plugins\AerotechEnsemble\*.*"; DestDir: "{app}\plugins\AerotechEnsemble"; Flags: ignoreversion recursesubdirs
+    Source: "{#SourceDirItomBuild}\plugins\AndorSDK3\*.*"; DestDir: "{app}\plugins\AndorSDK3"; Flags: ignoreversion recursesubdirs
+#endif
 Source: "{#SourceDirItomBuild}\plugins\AvantesAvaSpec\*.*"; DestDir: "{app}\plugins\AvantesAvaSpec"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\AVTVimba\*.*"; DestDir: "{app}\plugins\AVTVimba"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\BasicFilters\*.*"; DestDir: "{app}\plugins\BasicFilters"; Flags: ignoreversion recursesubdirs
@@ -237,7 +241,9 @@ Source: "{#SourceDirItomBuild}\plugins\OphirPowermeter\*.*"; DestDir: "{app}\plu
 Source: "{#SourceDirItomBuild}\plugins\PclTools\*.*"; DestDir: "{app}\plugins\PclTools"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\PCOCamera\*.*"; DestDir: "{app}\plugins\PCOCamera"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\PCOPixelFly\*.*"; DestDir: "{app}\plugins\PCOPixelFly"; Flags: ignoreversion recursesubdirs
-Source: "{#SourceDirItomBuild}\plugins\PCOSensicam\*.*"; DestDir: "{app}\plugins\PCOSensicam"; Flags: ignoreversion recursesubdirs
+#if "Qt5" == SourceQTVersion
+    Source: "{#SourceDirItomBuild}\plugins\PCOSensicam\*.*"; DestDir: "{app}\plugins\PCOSensicam"; Flags: ignoreversion recursesubdirs
+#endif
 Source: "{#SourceDirItomBuild}\plugins\PGRFlyCapture\*.*"; DestDir: "{app}\plugins\PGRFlyCapture"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\PI_GCS2\*.*"; DestDir: "{app}\plugins\PI_GCS2"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\PIHexapodCtrl\*.*"; DestDir: "{app}\plugins\PIHexapodCtrl"; Flags: ignoreversion recursesubdirs
@@ -280,42 +286,59 @@ Source: "{#SourceDirItomBuild}\plugins\Ximea\*.*"; DestDir: "{app}\plugins\Ximea
 
 ; Libs Plugins
 Source: "{#SourceDirItomBuild}\lib\1394camera.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirItomBuild}\lib\AeroBasic64.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirItomBuild}\lib\atcl_bitflow.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirItomBuild}\lib\atcore.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirItomBuild}\lib\atdevregcam.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+#if "Qt5" == SourceQTVersion
+    Source: "{#SourceDirItomBuild}\lib\AeroBasic64.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+    Source: "{#SourceDirItomBuild}\lib\atcl_bitflow.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+    Source: "{#SourceDirItomBuild}\lib\atcore.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+    Source: "{#SourceDirItomBuild}\lib\atdevregcam.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+#endif
 Source: "{#SourceDirItomBuild}\lib\bindy.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\cbw64.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirItomBuild}\lib\CLAllSerial_MD_VC141_v3_3.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirItomBuild}\lib\CLProtocol_MD_VC141_v3_3.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+#if "Qt5" == SourceQTVersion
+    Source: "{#SourceDirItomBuild}\lib\CLAllSerial_MD_VC141_v3_4.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+    Source: "{#SourceDirItomBuild}\lib\CLProtocol_MD_VC141_v3_4.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+#endif
 Source: "{#SourceDirItomBuild}\lib\clsercom.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirItomBuild}\lib\EnsembleC64.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirItomBuild}\lib\EnsembleCore64.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirItomBuild}\lib\FlyCapture2_v140.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirItomBuild}\lib\GCBase_MD_VC141_v3_3.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirItomBuild}\lib\GenApi_MD_VC141_v3_3.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirItomBuild}\lib\GenCP_MD_VC141_v3_3.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+#if "Qt5" == SourceQTVersion
+    Source: "{#SourceDirItomBuild}\lib\EnsembleC64.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+    Source: "{#SourceDirItomBuild}\lib\EnsembleCore64.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+    Source: "{#SourceDirItomBuild}\lib\FlyCapture2_v140.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+#endif
+Source: "{#SourceDirItomBuild}\lib\GCBase_MD_VC141_v3_4.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\GenApi_MD_VC141_v3_4.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+#if "Qt5" == SourceQTVersion
+    Source: "{#SourceDirItomBuild}\lib\GenCP_MD_VC141_v3_4.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+#endif
 Source: "{#SourceDirItomBuild}\lib\iso5436-2-xml64.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirItomBuild}\lib\libblas.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+#if "Qt5" == SourceQTVersion
+    Source: "{#SourceDirItomBuild}\lib\libblas.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+#endif
 Source: "{#SourceDirItomBuild}\lib\libfftw3-3.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\libfftw3f-3.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirItomBuild}\lib\libgcc_s_seh-1.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirItomBuild}\lib\libgfortran-3.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+#if "Qt5" == SourceQTVersion
+    Source: "{#SourceDirItomBuild}\lib\libgcc_s_seh-1.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+    Source: "{#SourceDirItomBuild}\lib\libgfortran-3.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+#endif
 Source: "{#SourceDirItomBuild}\lib\libiomp5md.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirItomBuild}\lib\liblapack.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirItomBuild}\lib\liblapacke.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirItomBuild}\lib\libquadmath-0.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirItomBuild}\lib\libtmglib.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirItomBuild}\lib\libwinpthread-1.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+#if "Qt5" == SourceQTVersion
+    Source: "{#SourceDirItomBuild}\lib\liblapack.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+    Source: "{#SourceDirItomBuild}\lib\liblapacke.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+    Source: "{#SourceDirItomBuild}\lib\libquadmath-0.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+    Source: "{#SourceDirItomBuild}\lib\libtmglib.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+    Source: "{#SourceDirItomBuild}\lib\libwinpthread-1.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+#endif
+
 Source: "{#SourceDirItomBuild}\lib\libjximc.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\libximc.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirItomBuild}\lib\Log_MD_VC141_v3_3.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirItomBuild}\lib\log4cpp_MD_VC141_v3_3.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirItomBuild}\lib\MathParser_MD_VC141_v3_3.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirItomBuild}\lib\MathParser_MD_VC141_v3_3.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirItomBuild}\lib\msvcp140.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirItomBuild}\lib\NITLibrary_x64.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirItomBuild}\lib\NodeMapData_MD_VC141_v3_3.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\Log_MD_VC141_v3_4.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\log4cpp_MD_VC141_v3_4.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\MathParser_MD_VC141_v3_4.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\MathParser_MD_VC141_v3_4.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+#if "Qt5" == SourceQTVersion
+  Source: "{#SourceDirItomBuild}\lib\msvcp140.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+  Source: "{#SourceDirItomBuild}\lib\NITLibrary_x64.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+#endif
+Source: "{#SourceDirItomBuild}\lib\NodeMapData_MD_VC141_v3_4.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\PI_GCS2_DLL_x64.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\SC2_Cam.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\SVGigE.x64.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
@@ -332,14 +355,16 @@ Source: "{#SourceDirItomBuild}\lib\Thorlabs.MotionControl.KCube.DCServo.dll"; De
 Source: "{#SourceDirItomBuild}\lib\Thorlabs.MotionControl.TCube.Quad.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\Thorlabs.MotionControl.TCube.TEC.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\ftd2xx.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirItomBuild}\lib\vcruntime140.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+#if "Qt5" == SourceQTVersion
+    Source: "{#SourceDirItomBuild}\lib\vcruntime140.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+#endif
 Source: "{#SourceDirItomBuild}\lib\VimbaC.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\VimbaCPP.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\vrmusbcam2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\xerces-c_3_1_vc120.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\xiapi64.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\xiwrapper.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirItomBuild}\lib\XmlParser_MD_VC141_v3_3.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\XmlParser_MD_VC141_v3_4.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\dcraw.exe"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\exiftool.exe"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\iso5436_2.xsd"; DestDir: "{app}\lib"; Flags: ignoreversion
@@ -360,65 +385,65 @@ Source: "{#SourceDirPCL}\bin\pcl_surface.dll"; DestDir: "{app}\lib"; Flags: igno
 Source: "{#SourceDirPCL}\bin\pcl_visualization.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 
 ; app VTK
-Source: "{#SourceDirVTK}\bin\vtkChartsCore-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirVTK}\bin\vtkCommonColor-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirVTK}\bin\vtkCommonComputationalGeometry-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirVTK}\bin\vtkCommonCore-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirVTK}\bin\vtkCommonDataModel-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirVTK}\bin\vtkCommonExecutionModel-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirVTK}\bin\vtkCommonMath-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirVTK}\bin\vtkCommonMisc-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirVTK}\bin\vtkCommonSystem-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirVTK}\bin\vtkCommonTransforms-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirVTK}\bin\vtkDICOMParser-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirVTK}\bin\vtkdoubleconversion-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirVTK}\bin\vtkexpat-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirVTK}\bin\vtkFiltersCore-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirVTK}\bin\vtkFiltersExtraction-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirVTK}\bin\vtkFiltersGeneral-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirVTK}\bin\vtkFiltersGeometry-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirVTK}\bin\vtkFiltersHybrid-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirVTK}\bin\vtkFiltersModeling-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirVTK}\bin\vtkFiltersSources-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirVTK}\bin\vtkFiltersStatistics-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirVTK}\bin\vtkfreetype-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirVTK}\bin\vtkgl2ps-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirVTK}\bin\vtkglew-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirVTK}\bin\vtkGUISupportQt-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirVTK}\bin\vtkImagingColor-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirVTK}\bin\vtkImagingCore-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirVTK}\bin\vtkImagingFourier-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirVTK}\bin\vtkImagingGeneral-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirVTK}\bin\vtkImagingHybrid-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirVTK}\bin\vtkImagingSources-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirVTK}\bin\vtkInfovisCore-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirVTK}\bin\vtkInteractionStyle-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirVTK}\bin\vtkInteractionWidgets-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirVTK}\bin\vtkIOCore-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirVTK}\bin\vtkIOGeometry-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirVTK}\bin\vtkIOImage-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirVTK}\bin\vtkIOLegacy-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirVTK}\bin\vtkIOPLY-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirVTK}\bin\vtkIOXML-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirVTK}\bin\vtkIOXMLParser-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirVTK}\bin\vtkjpeg-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirVTK}\bin\vtklz4-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirVTK}\bin\vtklzma-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirVTK}\bin\vtkmetaio-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirVTK}\bin\vtkpng-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirVTK}\bin\vtkRenderingAnnotation-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirVTK}\bin\vtkRenderingContext2D-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirVTK}\bin\vtkRenderingContextOpenGL2-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirVTK}\bin\vtkRenderingCore-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirVTK}\bin\vtkRenderingFreeType-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirVTK}\bin\vtkRenderingGL2PSOpenGL2-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirVTK}\bin\vtkRenderingLOD-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirVTK}\bin\vtkRenderingOpenGL2-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirVTK}\bin\vtksys-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirVTK}\bin\vtktiff-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirVTK}\bin\vtkViewsContext2D-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirVTK}\bin\vtkViewsCore-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "{#SourceDirVTK}\bin\vtkzlib-8.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkChartsCore-9.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkCommonColor-9.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkCommonComputationalGeometry-9.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkCommonCore-9.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkCommonDataModel-9.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkCommonExecutionModel-9.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkCommonMath-9.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkCommonMisc-9.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkCommonSystem-9.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkCommonTransforms-9.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkDICOMParser-9.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkdoubleconversion-9.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkexpat-9.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkFiltersCore-9.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkFiltersExtraction-9.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkFiltersGeneral-9.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkFiltersGeometry-9.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkFiltersHybrid-9.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkFiltersModeling-9.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkFiltersSources-9.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkFiltersStatistics-9.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkfreetype-9.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkgl2ps-9.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkglew-9.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkGUISupportQt-9.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkImagingColor-9.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkImagingCore-9.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkImagingFourier-9.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkImagingGeneral-9.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkImagingHybrid-9.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkImagingSources-9.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkInfovisCore-9.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkInteractionStyle-9.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkInteractionWidgets-9.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkIOCore-9.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkIOGeometry-9.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkIOImage-9.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkIOLegacy-9.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkIOPLY-9.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkIOXML-9.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkIOXMLParser-9.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkjpeg-9.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtklz4-9.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtklzma-9.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkmetaio-9.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkpng-9.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkRenderingAnnotation-9.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkRenderingContext2D-9.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkRenderingContextOpenGL2-9.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkRenderingCore-9.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkRenderingFreeType-9.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkRenderingGL2PSOpenGL2-9.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkRenderingLOD-9.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkRenderingOpenGL2-9.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtksys-9.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtktiff-9.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkViewsContext2D-9.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkViewsCore-9.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkzlib-9.2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 
 [Run]
 Filename: "{tmp}\Microsoft Visual C++ 2017 Redistributable (x64) - 14.16.27027.1.exe"; Parameters: "/install /quiet /norestart"; Flags: shellexec waituntilterminated; StatusMsg: "Microsoft Visual C++ 2017 Redistributable (x64) - 14.16.27027.1..."; Components: CREDPACK2017;

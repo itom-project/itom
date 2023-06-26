@@ -11,11 +11,13 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-import sys, os
-import sphinx
-import itom as itomFuncs
+import os
+import sys
+
 import __main__
-from sphinx_gallery.sorting import ExplicitOrder
+import itom as itomFuncs
+import sphinx
+from sphinx_gallery.sorting import FileNameSortKey
 
 try:
     import plotly.io as pio
@@ -23,6 +25,8 @@ try:
     pio.renderers.default = "sphinx_gallery"
 except ModuleNotFoundError:
     print("plotly is not installed. Plots will not be added to the sphinx_gallery")
+
+logo = "../../../../Qitom/icons/itomicon/itomLogo3_128.png"
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -48,7 +52,7 @@ extensions = [
     "itomext.designerplugindoc",
     "sphinx_gallery.gen_gallery",
     "sphinxcontrib.moderncmakedomain",
-    "sphinx_rtd_dark_mode"
+    "sphinx_favicon",
 ]
 
 if [sys.version_info.major, sys.version_info.minor] >= [3, 6]:
@@ -80,7 +84,7 @@ master_doc = "index"
 
 # General information about the project.
 project = "itom Documentation"
-# copyright = '2011-2016, Institut fuer Technische Optik (ITO), University Stuttgart. Bug report: https://bitbucket.org/itom/itom/issues'
+# copyright = '2011-2016, Institut fuer Technische Optik (ITO), University Stuttgart. Bug report: https://github.com/itom-project/itom/issues'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -104,7 +108,7 @@ comma_index = compile_datetime.index(",")
 compile_year = compile_datetime[comma_index - 4 : comma_index]
 copyright = (
     f"2011-{compile_year}, Institut fuer Technische Optik (ITO), "
-    "University Stuttgart. Bug report: https://bitbucket.org/itom/itom/issues"
+    "University Stuttgart. Bug report: https://github.com/itom-project/itom/issues"
 )
 
 
@@ -137,9 +141,6 @@ default_role = "autolink"
 # output. They are ignored by default.
 show_authors = False
 
-# The name of the Pygments (syntax highlighting) style to use.
-pygments_style = "sphinx"
-
 # A list of ignored prefixes for module index sorting.
 # modindex_common_prefix = []
 
@@ -149,31 +150,41 @@ autoclass_content = "both"
 autodoc_member_order = "groupwise"
 autodoc_docstring_signature = True
 
+# show table of content entries for domain objects (functions, classes, ... )
+toc_object_entries = True
 
 # -- Options for HTML output ---------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
-# a list of builtin themes.
-# html_theme = 'default'
-html_theme = "agogo"
-# html_theme = 'sphinxdoc'
-# html_theme = 'haiku'
-# html_theme = 'itom_html'
-
-import sphinx_rtd_theme  # obtain this package from the python package index using the itom package manager
-
-html_theme = "sphinx_rtd_theme"
+html_theme = "pydata_sphinx_theme"
 
 # Theme options are theme-specific and customize the look and feel of a theme
-# further.  For a list of options available for each theme, see the
+# further. For a list of options available for each theme, see the
 # documentation.
-# html_theme_options = {}
+html_theme_options = {
+    "show_nav_level": 4,
+    "navigation_depth": 4,
+    "show_toc_level": 5,
+    "collapse_navigation": True,
+    "pygment_light_style": "vs",
+    "pygment_dark_style": "monokai",
+    "icon_links": [
+        {
+            "name": "GitHub",
+            "url": "https://github.com/itom-project",
+            "icon": "fa-brands fa-github",
+        },
+        {
+            "name": "ITO",
+            "url": "https://www.ito.uni-stuttgart.de/",
+            "icon": "_static/ITO_Logo_neu_II.png",
+            "type": "local",
+        },
+    ],
+}
 
-# Add any paths that contain custom themes here, relative to this directory.
-html_theme_path = ["..\\_themes"]
-
-# for sphinx_rtd_theme only
-html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+# html_context = {"default_mode": "light"}
+html_show_sourcelink = True
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
@@ -184,12 +195,12 @@ html_short_title = "itom"
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-# html_logo = None
+html_logo = logo
 
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
 # pixels large.
-# html_favicon = None
+html_favicon = logo
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -204,19 +215,17 @@ sphinx_gallery_conf = {
         "../../../demo/python",
         "../../../demo/python_packages",
     ],
-    "gallery_dirs": [
-        "11_demos/itom",
-        "11_demos/python",
-        "11_demos/python_packages"],
+    "gallery_dirs": ["11_demos/itom", "11_demos/python", "11_demos/python_packages"],
     "doc_module": ("matplotlib", "numpy", "pandas", "itom"),
     "reference_url": {"matplotlib": None, "numpy": None, "pandas": None, "itom": None},
-    "show_memory": True,
+    "show_memory": False,
     "show_signature": False,
     "remove_config_comments": True,
     "download_all_examples": False,
     "min_reported_time": 0.0001,
     "filename_pattern": "demo_",
     "matplotlib_animations": True,
+    "within_subsection_order": FileNameSortKey,
 }
 
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
@@ -246,10 +255,10 @@ html_use_index = True
 # html_split_index = False
 
 # If true, links to the reST sources are added to the pages.
-# html_show_sourcelink = True
+html_show_sourcelink = True
 
 # If true, "Created using Sphinx" is shown in the HTML footer. Default is True.
-# html_show_sphinx = True
+html_show_sphinx = True
 
 # If true, "(C) Copyright ..." is shown in the HTML footer. Default is True.
 # html_show_copyright = True
@@ -265,117 +274,8 @@ html_use_index = True
 # Output file base name for HTML help builder.
 htmlhelp_basename = "itom_doc"
 
-# user starts in light mode
-default_dark_mode = False
-
-# -- Options for LaTeX output --------------------------------------------------
-
-# The paper size ('letter' or 'a4').
-# latex_paper_size = 'a4'
-
-# The font size ('10pt', '11pt' or '12pt').
-# latex_font_size = '10pt'
-
-# Grouping the document tree into LaTeX files. List of tuples
-# (source start file, target name, title, author, documentclass [howto/manual]).
-
-latex_documents = [
-    # Gesam: FEHLER
-    (
-        "index",
-        "itom_doc.tex",
-        "itom Documentation",
-        "Institut for Technical Optics (ITO), University Stuttgart",
-        "manual",
-    ),
-    # script-language: FEHLER
-    # ('script-language/script-language', 'itom_scriptLanguage.tex', u'itom Documentation', u'Institut for Technical Optics (ITO), University Stuttgart', 'manual'),
-    # Reference: FEHLER
-    # ('reference/reference', 'itom_reference.tex', u'itom Documentation', u'Institut for Technical Optics (ITO), University Stuttgart', 'manual'),
-    # Installation: viele FEHLER
-    # ('02_installation/install', 'install.tex', u'itom Documentation', u'Institut for Technical Optics (ITO), University Stuttgart', 'manual'),
-    # AboutItom: OK
-    # ('AboutItom/aboutItom','AbouItom.tex', u'itom Documentation', u'Institut for Technical Optics (ITO), University Stuttgart', 'manual'),
-    # getting-Started: OK
-    # ('getting-started/getting-started', 'getting-started.tex', u'itom Documentation', u'Institut for Technical Optics (ITO), University Stuttgart', 'manual'),
-    # gui: OK
-    # ('gui/gui', 'gui.tex', u'itom Documentation', u'Institut for Technical Optics (ITO), University Stuttgart', 'manual'),
-    # miscellaneous: OK
-    # ('miscellaneous/miscellaneous', 'miscellaneous.tex', u'itom Documentation', u'Institut for Technical Optics (ITO), University Stuttgart', 'manual'),
-    # test-scripts: OK
-    # ('test-scripts/test-scripts', 'test-scripts.tex', u'itom Documentation', u'Institut for Technical Optics (ITO), University Stuttgart', 'manual'),
-    # whats-new: OK (leer)
-    # ('whats-new/whats-new', 'whats-new.tex', u'itom Documentation', u'Institut for Technical Optics (ITO), University Stuttgart', 'manual'),
-]
-
-# latex_documents = [
-#  ('index', 'itom_doc.tex', u'ITOM Documentation', u'Institut für Technische Optik (ITO), Universität Stuttgart', 'manual'),
-#  ('plugins/plugins', 'plugins.tex', u'ITOM Documentation', u'Institut für Technische Optik (ITO), Universität Stuttgart', 'manual'),
-#  ('getting-started/getting-started', 'getting-started.tex', u'ITOM Documentation', u'Institut für Technische Optik (ITO), Universität Stuttgart', 'manual'),
-# ]
-
-# The name of an image file (relative to this directory) to place at the top of
-# the title page.
-latex_logo = "ITO_Logo.pdf"
-
-# For "manual" documents, if this is true, then toplevel headings are parts,
-# not chapters.
-# latex_use_parts = False
-
-# If true, show page references after internal links.
-# latex_show_pagerefs = False
-
-# If true, show URL addresses after external links.
-# latex_show_urls = False
-
-# Additional stuff for the LaTeX preamble.
-# latex_preamble = ''
-
-# Documents to append as an appendix to all manuals.
-# latex_appendices = []
-
-# If false, no module index is generated.
-# latex_domain_indices = True
-
-
-# -- Options for manual page output --------------------------------------------
-
-# One entry per manual page. List of tuples
-# (source start file, name, description, authors, manual section).
-man_pages = [
-    ("index", "itom", "itom Documentation", ["Institut f�r Technische Optik (ITO), Universit�t Stuttgart"], 1)
-]
-
-# If true, show URL addresses after external links.
-# man_show_urls = False
-
-
-# -- Options for Texinfo output ------------------------------------------------
-
-# Grouping the document tree into Texinfo files. List of tuples
-# (source start file, target name, title, author,
-#  dir menu entry, description, category)
-texinfo_documents = [
-    (
-        "index",
-        "itom",
-        "itom Documentation",
-        "ITO, Universit�t Stuttgart",
-        "itom",
-        "One line description of project.",
-        "Miscellaneous",
-    ),
-]
-
-# Documents to append as an appendix to all manuals.
-# texinfo_appendices = []
-
-# If false, no module index is generated.
-# texinfo_domain_indices = True
-
-# How to display URL addresses: 'footnote', 'no', or 'inline'.
-# texinfo_show_urls = 'footnote'
-
+# The name of the Pygments (syntax highlighting) style to use.
+pygments_style = "sphinx"
 
 # -----------------------------------------------------------------------------
 # Autosummary

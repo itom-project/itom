@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -93,7 +93,7 @@ BreakPointModel::~BreakPointModel()
 //-------------------------------------------------------------------------------------------------------
 //! Saves the breakpoint model into the settings
 /*!
-    
+
 */
 RetVal BreakPointModel::saveState()
 {
@@ -131,7 +131,7 @@ RetVal BreakPointModel::restoreState()
     settings.beginGroup("BreakPointModel");
 
     int size = settings.beginReadArray("breakPointStorage");
-    for (int i = 0; i < size; ++i) 
+    for (int i = 0; i < size; ++i)
     {
         settings.setArrayIndex(i);
         QVariant v = settings.value("item");
@@ -183,7 +183,7 @@ RetVal BreakPointModel::addBreakPoint(BreakPointItem bp)
 #endif
 
     if (!m_scriptFiles.contains(bp.filename, m_filenameCaseSensitivity))
-    { 
+    {
         // Parent does not exist yet, so create it
         beginInsertRows(QModelIndex(), m_scriptFiles.size(), m_scriptFiles.size() + 1);
         m_scriptFiles.append(bp.filename);
@@ -234,7 +234,7 @@ RetVal BreakPointModel::deleteBreakPoint(const QModelIndex &index)
                 endRemoveRows();
 
                 if (nrOfBreakpointsInFile(fileIndex) <= 0)
-                { 
+                {
                     // this file has no breakpoints any more. Delete the entire file...
                     QModelIndex root = fileItem.parent();
                     beginRemoveRows(root, fileIndex, fileIndex);
@@ -272,7 +272,7 @@ RetVal BreakPointModel::deleteBreakPoints(const QModelIndexList &indizes)
 
     QModelIndexList indizes_sorted = indizes;
     std::sort(indizes_sorted.begin(), indizes_sorted.end(), &BreakPointModel::compareRow);
-    
+
     QModelIndexList::ConstIterator it;
 
     for(it = indizes_sorted.constBegin() ; it != indizes_sorted.constEnd() ; ++it)
@@ -304,7 +304,7 @@ RetVal BreakPointModel::deleteAllBreakPoints()
     m_breakpoints.clear();
     m_scriptFiles.clear();
     endResetModel();
-    
+
     return retOk;
 }
 
@@ -323,7 +323,7 @@ int BreakPointModel::rowCount(const QModelIndex &parent) const
     {
         return nrOfBreakpointsInFile(parent.row());
     }
-    else 
+    else
     {
         return 0;
     }
@@ -353,7 +353,7 @@ QVariant BreakPointModel::data(const QModelIndex &index, int role) const
     {
         return QVariant();
     }
-    
+
     if (!index.parent().isValid()) // toplevel-item
     {
         if (index.column() == 0)
@@ -387,7 +387,7 @@ QVariant BreakPointModel::data(const QModelIndex &index, int role) const
         int breakPointIndex = getBreakPointIndex(index);
 
         //security check (the case already occurred that breakPointIndex returned -1)
-        if (breakPointIndex < 0 || breakPointIndex >= m_breakpoints.size()) 
+        if (breakPointIndex < 0 || breakPointIndex >= m_breakpoints.size())
         {
             return QVariant();
         }
@@ -418,7 +418,7 @@ QVariant BreakPointModel::data(const QModelIndex &index, int role) const
                 {
                     return QIcon(":/breakpoints/icons/itomcBreak.png");
                 }
-                else 
+                else
                 {
                     return QIcon(":/breakpoints/icons/itomCBreakDisabled.png");
                 }
@@ -429,7 +429,7 @@ QVariant BreakPointModel::data(const QModelIndex &index, int role) const
                 {
                     return QIcon(":/breakpoints/icons/itomBreak.png");
                 }
-                else 
+                else
                 {
                     return QIcon(":/breakpoints/icons/itomBreakDisabled.png");
                 }
@@ -609,7 +609,7 @@ int BreakPointModel::nrOfBreakpointsInFile(const int fileIdx) const
     {
         QString filename = m_scriptFiles[fileIdx];
         int count = 0;
-        
+
         for (int i = 0; i < m_breakpoints.size(); ++i)
         {
             if (QString::compare(m_breakpoints[i].filename, filename, m_filenameCaseSensitivity) == 0)
@@ -774,8 +774,8 @@ BreakPointItem BreakPointModel::getBreakPoint(const QModelIndex &index) const
 
                 for (int j = 0; j < m_breakpoints.size(); ++j)
                 {
-                    if (QString::compare(m_breakpoints[j].filename, filename, m_filenameCaseSensitivity) == 0) 
-                    { 
+                    if (QString::compare(m_breakpoints[j].filename, filename, m_filenameCaseSensitivity) == 0)
+                    {
                         count++;
                     }
 
@@ -892,7 +892,7 @@ RetVal BreakPointModel::changeBreakPoint(const QModelIndex index, BreakPointItem
     {
         retval += ito::RetVal(ito::retError, 0, tr("Given modelIndex is no model index of a breakpoint").toLatin1().data());
     }
-    
+
     return retval;
 }
 
@@ -951,7 +951,7 @@ QList<BreakPointItem> BreakPointModel::getBreakPoints(const QModelIndexList &ind
             bps.append(getBreakPoint(idx));
         }
     }
-    
+
     return bps;
 }
 
@@ -1023,7 +1023,7 @@ RetVal BreakPointModel::setPyBpNumber(const BreakPointItem &item, int pyBpNumber
         return changeBreakPoint(index,bp,false);
     }
 
-    return ito::retError;    
+    return ito::retError;
 }
 
 } //end namespace ito

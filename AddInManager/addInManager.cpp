@@ -5,7 +5,7 @@ Copyright (C) 2020, Institut fuer Technische Optik (ITO),
 Universitaet Stuttgart, Germany
 
 This file is part of itom.
-  
+
 itom is free software; you can redistribute it and/or modify it
 under the terms of the GNU Library General Public Licence as published by
 the Free Software Foundation; either version 2 of the Licence, or (at
@@ -128,64 +128,64 @@ void **AddInManager::getItomApiFuncsPtr(void)
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-const QList<QObject *> * AddInManager::getDataIOList(void) const 
-{ 
+const QList<QObject *> * AddInManager::getDataIOList(void) const
+{
     Q_D(const AddInManager);
     return &d->m_addInListDataIO;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-const QList<QObject *> * AddInManager::getActList(void) const 
-{ 
+const QList<QObject *> * AddInManager::getActList(void) const
+{
     Q_D(const AddInManager);
     return &d->m_addInListAct;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-const QList<QObject *> * AddInManager::getAlgList(void) const 
-{ 
+const QList<QObject *> * AddInManager::getAlgList(void) const
+{
     Q_D(const AddInManager);
     return &d->m_addInListAlgo;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-const QHash<QString, ito::AddInAlgo::FilterDef *> * AddInManager::getFilterList(void) const 
-{ 
+const QHash<QString, ito::AddInAlgo::FilterDef *> * AddInManager::getFilterList(void) const
+{
     Q_D(const AddInManager);
     return &d->m_filterList;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-const QHash<QString, ito::AddInAlgo::AlgoWidgetDef *> * AddInManager::getAlgoWidgetList(void) const 
-{ 
+const QHash<QString, ito::AddInAlgo::AlgoWidgetDef *> * AddInManager::getAlgoWidgetList(void) const
+{
     Q_D(const AddInManager);
     return &d->m_algoWidgetList;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-const QList<PluginLoadStatus> AddInManager::getPluginLoadStatus() const 
-{ 
+const QList<PluginLoadStatus> AddInManager::getPluginLoadStatus() const
+{
     Q_D(const AddInManager);
     return d->m_pluginLoadStatus;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-const AlgoInterfaceValidator * AddInManager::getAlgoInterfaceValidator(void) const 
-{ 
+const AlgoInterfaceValidator * AddInManager::getAlgoInterfaceValidator(void) const
+{
     Q_D(const AddInManager);
     return d->m_algoInterfaceValidator;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PlugInModel * AddInManager::getPluginModel(void) 
+PlugInModel * AddInManager::getPluginModel(void)
 {
     Q_D(AddInManager);
     return d->m_plugInModel;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-int AddInManager::getTotalNumAddIns(void) const 
-{ 
+int AddInManager::getTotalNumAddIns(void) const
+{
     Q_D(const AddInManager);
     return d->m_addInListDataIO.size()
         + d->m_addInListAct.size()
@@ -244,8 +244,8 @@ int AddInManager::getItemIndexInList(const void *item)
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void AddInManager::updateModel(void) 
-{ 
+void AddInManager::updateModel(void)
+{
     Q_D(AddInManager);
     d->m_plugInModel->update();
 }
@@ -269,7 +269,7 @@ const RetVal AddInManager::scanAddInDir(const QString &path, const int checkQCor
     bool firstStart = false;
     bool pluginsFolderExists = true;
     QDir pluginsDir;
-    
+
     // first we check if there exists any sort of QCoreApplication, which is required for qt event loop.
     // if not we start a QCoreApplication which is preferred for gui less systems. If the AddInManager has
     // been started via itom a QCoreApplication should (must) already exist here and nothing will happen
@@ -335,10 +335,10 @@ const RetVal AddInManager::scanAddInDir(const QString &path, const int checkQCor
 #ifdef linux
         filters << "*.a" << "*.so";
 #elif (defined __APPLE__)
-        filters << "*.a" << "*.dylib";            
+        filters << "*.a" << "*.dylib";
 #else
         filters << "*.dll";
-#endif 
+#endif
 
         foreach (const QString &fileName, pluginsDir.entryList(filters, QDir::Files))
         {
@@ -602,7 +602,7 @@ const RetVal AddInManager::getPluginInfo(const QString &name, int &pluginType,
 
     return ret;
 }
-    
+
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -621,9 +621,9 @@ const RetVal AddInManager::getPluginInfo(const QString &name, int &pluginType,
 *   the passed mandatory and optional parameters. As a last step the plugins parameters are loaded from the plugins parameters xml file \ref loadParamVals.
 */
 ito::RetVal AddInManager::initAddIn(
-    const int pluginNum, const QString &name, 
-    ito::AddInDataIO **addIn, QVector<ito::ParamBase> *paramsMand, 
-    QVector<ito::ParamBase> *paramsOpt, bool autoLoadPluginParams, 
+    const int pluginNum, const QString &name,
+    ito::AddInDataIO **addIn, QVector<ito::ParamBase> *paramsMand,
+    QVector<ito::ParamBase> *paramsOpt, bool autoLoadPluginParams,
     ItomSharedSemaphore *aimWait)
 {
     Q_D(AddInManager);
@@ -658,14 +658,14 @@ ito::RetVal AddInManager::initAddIn(
 *   the passed mandatory and optional parameters. As a last step the plugins parameters are loaded from the plugins parameters xml file \ref loadParamVals.
 */
 ito::RetVal AddInManager::initAddIn(
-    const int pluginNum, const QString &name, 
-    ito::AddInActuator **addIn, QVector<ito::ParamBase> *paramsMand, 
-    QVector<ito::ParamBase> *paramsOpt, bool autoLoadPluginParams, 
+    const int pluginNum, const QString &name,
+    ito::AddInActuator **addIn, QVector<ito::ParamBase> *paramsMand,
+    QVector<ito::ParamBase> *paramsOpt, bool autoLoadPluginParams,
     ItomSharedSemaphore *aimWait)
 {
     Q_D(AddInManager);
 
-    try 
+    try
     {
         return d->initAddInActuatorOrDataIO<ito::AddInActuator>(true, pluginNum, name, addIn, paramsMand, paramsOpt, autoLoadPluginParams, aimWait);
     }
@@ -694,8 +694,8 @@ ito::RetVal AddInManager::initAddIn(
 *   As a last step the plugins parameters are loaded from the plugins parameters xml file \ref loadParamVals.
 */
 ito::RetVal AddInManager::initAddIn(
-    const int pluginNum, const QString &name, 
-    ito::AddInAlgo **addIn, QVector<ito::ParamBase> * paramsMand, 
+    const int pluginNum, const QString &name,
+    ito::AddInAlgo **addIn, QVector<ito::ParamBase> * paramsMand,
     QVector<ito::ParamBase> * paramsOpt, bool autoLoadPluginParams,
     ItomSharedSemaphore *aimWait)
 {
@@ -726,7 +726,7 @@ ito::RetVal AddInManager::closeAddIn(AddInBase *addIn, ItomSharedSemaphore *aimW
 {
     Q_D(AddInManager);
 
-    try 
+    try
     {
         return d->closeAddIn(addIn, aimWait);
     }
@@ -830,7 +830,7 @@ AddInManager::AddInManager(QString itomSettingsFile, void **apiFuncsGraph, QObje
     qRegisterMetaType<QSharedPointer<QVector<ito::ParamBase> > >("QSharedPointer<QVector<ito::ParamBase> >");
     qRegisterMetaType<QVector<QSharedPointer<ito::ParamBase> > >("QVector<QSharedPointer<ito::ParamBase> >");
 
-#if ITOM_POINTCLOUDLIBRARY > 0    
+#if ITOM_POINTCLOUDLIBRARY > 0
     qRegisterMetaType<ito::PCLPointCloud >("ito::PCLPointCloud");
     qRegisterMetaType<ito::PCLPolygonMesh >("ito::PCLPolygonMesh");
     qRegisterMetaType<ito::PCLPoint >("ito::PCLPoint");
@@ -849,7 +849,7 @@ AddInManager::AddInManager(QString itomSettingsFile, void **apiFuncsGraph, QObje
     if (mainApplication)
     {
         connect(d->m_pMainApplication, SIGNAL(propertiesChanged()), d, SLOT(propertiesChanged()));
-    
+
     }
     d->m_pMainWindow = mainWindow;
 }
@@ -922,7 +922,7 @@ AddInManager::~AddInManager(void)
 
     //try to close all remaining opened instances, whose ref count is still >= 0:
     QMapIterator<ito::AddInBase*, int> iter(openedInstances);
-    while (iter.hasNext()) 
+    while (iter.hasNext())
     {
         iter.next();
         if (iter.value() >= 0)
@@ -971,7 +971,7 @@ AddInManager::~AddInManager(void)
 
 
     QHashIterator<void*, ito::FilterParams*> i(d->filterParamHash);
-    while (i.hasNext()) 
+    while (i.hasNext())
     {
         i.next();
         delete i.value();
@@ -1032,9 +1032,9 @@ const ito::RetVal AddInManager::setMainWindow(QObject *mainWindow)
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/** 
-*   @param name 
-*   @return ito::RetVal    
+/**
+*   @param name
+*   @return ito::RetVal
 */
 const ito::RetVal AddInManager::reloadAddIn(const QString &name)
 {
@@ -1051,7 +1051,7 @@ const ito::RetVal AddInManager::reloadAddIn(const QString &name)
     {
         return ito::RetVal(ito::retError, 0, tr("Reference counter not zero. Only unused plugins can be reloaded.").toLatin1().data());
     }
-        
+
     switch (aib->getType())
     {
         case ito::typeActuator:
@@ -1071,7 +1071,7 @@ const ito::RetVal AddInManager::reloadAddIn(const QString &name)
             }
             d->m_addInListAlgo.removeAt(pluginNum);
         break;
-    } 
+    }
 
     delete aib;
     d->loadAddIn(filename);
@@ -1084,7 +1084,7 @@ const ito::RetVal AddInManager::reloadAddIn(const QString &name)
 *   @param [in] addin   addin from which the dialog should be called
 *
 *   This method opens the configuration dialog of a plugin. The dialog can be opened using a right click on an instance of the plugin
-*   in the addInModel list or using showConfiguration command in python. An implementation of a configuration dialog is not mandatory, 
+*   in the addInModel list or using showConfiguration command in python. An implementation of a configuration dialog is not mandatory,
 *   so in case there is no dialog implemented nothing happens.
 */
 ito::RetVal AddInManager::showConfigDialog(ito::AddInBase *addin, ItomSharedSemaphore *waitCond /*= NULL*/)
@@ -1185,10 +1185,10 @@ ito::RetVal AddInManager::showDockWidget(ito::AddInBase *addin, int visible, Ito
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/** 
+/**
 *   @param algoWidgetName algoPluginName
 *   @param algoPluginName
-*   @return ito::AddInAlgo::AlgoWidgetDef    
+*   @return ito::AddInAlgo::AlgoWidgetDef
 */
 const ito::AddInAlgo::AlgoWidgetDef * AddInManager::getAlgoWidgetDef(QString algoWidgetName, QString algoPluginName)
 {
@@ -1217,9 +1217,9 @@ const ito::AddInAlgo::AlgoWidgetDef * AddInManager::getAlgoWidgetDef(QString alg
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/** 
+/**
 *   @param filterParam filterParam
-*   @return ito::FilterParams    
+*   @return ito::FilterParams
 */
 const ito::FilterParams* AddInManager::getHashedFilterParams(ito::AddInAlgo::t_filterParam filterParam) const
 {
@@ -1236,9 +1236,9 @@ const ito::FilterParams* AddInManager::getHashedFilterParams(ito::AddInAlgo::t_f
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/** 
-*   @param plugin 
-*   @return bool    
+/**
+*   @param plugin
+*   @return bool
 */
 bool AddInManager::isPluginInstanceDead(const ito::AddInBase *plugin) const
 {
@@ -1255,10 +1255,10 @@ bool AddInManager::isPluginInstanceDead(const ito::AddInBase *plugin) const
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/** 
-*   @param iface 
-*   @param tag 
-*   @return QList<ito::AddInAlgo::FilterDef *>    
+/**
+*   @param iface
+*   @param tag
+*   @return QList<ito::AddInAlgo::FilterDef *>
 */
 const QList<ito::AddInAlgo::FilterDef *> AddInManager::getFilterByInterface(ito::AddInAlgo::tAlgoInterface iface, const QString tag) const
 {
@@ -1283,9 +1283,9 @@ const QList<ito::AddInAlgo::FilterDef *> AddInManager::getFilterByInterface(ito:
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/** 
-*   @param cat 
-*   @return QList<ito::AddInAlgo::FilterDef *>   
+/**
+*   @param cat
+*   @return QList<ito::AddInAlgo::FilterDef *>
 */
 const QList<ito::AddInAlgo::FilterDef *> AddInManager::getFiltersByCategory(ito::AddInAlgo::tAlgoCategory cat) const
 {
@@ -1305,11 +1305,11 @@ const QList<ito::AddInAlgo::FilterDef *> AddInManager::getFiltersByCategory(ito:
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/** 
-*   @param iface 
-*   @param cat 
-*   @param tag 
-*   @return QList<ito::AddInAlgo::FilterDef    
+/**
+*   @param iface
+*   @param cat
+*   @param tag
+*   @return QList<ito::AddInAlgo::FilterDef
 */
 const QList<ito::AddInAlgo::FilterDef *> AddInManager::getFilterByInterfaceAndCategory(ito::AddInAlgo::tAlgoInterface iface, ito::AddInAlgo::tAlgoCategory cat, const QString tag) const
 {

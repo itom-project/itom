@@ -45,7 +45,7 @@ class PlotlyGuiDemo(ItomUi):
         """
         with self.disableGui(disableItems=[self.gui.groupActions]):
             long_df = px.data.medals_long()
-    
+
             fig = px.bar(long_df, x="nation", y="count", color="medal", title="Long-Form Input")
             fig.show(plotHandle=self.plotlyPlot)
 
@@ -68,7 +68,7 @@ class PlotlyGuiDemo(ItomUi):
         """
         with self.disableGui(disableItems=[self.gui.groupActions]):
             df = px.data.gapminder()
-    
+
             fig = px.bar(
                 df,
                 x="continent",
@@ -102,8 +102,8 @@ class PlotlyGuiDemo(ItomUi):
                 color_continuous_midpoint=2,
             )
             fig.show(plotHandle=self.plotlyPlot)
-    
-    
+
+
 if __name__ == "__main__":
     win = PlotlyGuiDemo()
     win.show()

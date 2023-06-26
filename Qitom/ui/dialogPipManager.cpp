@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -63,17 +63,21 @@ DialogPipManager::DialogPipManager(QWidget *parent /*= NULL*/, bool standalone /
     ui.btnStartItom->setVisible(standalone);
     ui.btnOk->setVisible(!standalone);
 
+    ui.progressCancelFetchDetails->setVisible(false);
+    ui.btnCancelFetchDetails->setVisible(false);
+
     ito::RetVal retval;
     m_pPipManager = new PipManager(retval, this);
 
     if (!retval.containsError())
     {
-        connect(m_pPipManager, SIGNAL(pipVersion(QString)), this, SLOT(pipVersion(QString)));
-        connect(m_pPipManager, SIGNAL(outputAvailable(QString, bool)), this, SLOT(outputReceived(QString, bool)));
+        connect(m_pPipManager, &PipManager::pipVersion, this, &DialogPipManager::pipVersion);
+        connect(m_pPipManager, &PipManager::outputAvailable, this, &DialogPipManager::outputReceived);
         connect(m_pPipManager, SIGNAL(pipRequestStarted(PipManager::Task, QString, bool)), this, SLOT(pipRequestStarted(PipManager::Task, QString, bool)));
         connect(m_pPipManager, SIGNAL(pipRequestFinished(PipManager::Task, QString, bool)), this, SLOT(pipRequestFinished(PipManager::Task, QString, bool)));
         connect(ui.tablePackages, SIGNAL(selectedItemsChanged(QItemSelection, QItemSelection)), this, SLOT(treeViewSelectionChanged(QItemSelection, QItemSelection)));
         connect(ui.tablePackages, SIGNAL(customContextMenuRequested(QPoint)),this, SLOT(tableCustomContextMenuRequested(QPoint)));
+        connect(m_pPipManager, &PipManager::pipFetchDetailsProgress, this, &DialogPipManager::pipFetchDetailsProgress);
 
         m_pPipManager->checkPipAvailable(createOptions());
 
@@ -123,7 +127,7 @@ DialogPipManager::DialogPipManager(QWidget *parent /*= NULL*/, bool standalone /
     }
 
     ui.txtProxy->setText(proxy);
-    
+
     ui.spinTimeout->setValue(settings.value("timeout", 15).toInt());
     ui.spinRetries->setValue(settings.value("retries", 5).toInt());
     ui.checkTrustedHosts->setChecked(settings.value("trustedHostsEnabled", false).toBool());
@@ -158,7 +162,7 @@ DialogPipManager::~DialogPipManager()
         }
         proxy = left + proxy.mid(atidx);
     }
-    
+
     settings.setValue("proxy", proxy);
 
     settings.setValue("isolated", ui.checkIsolated->isChecked());
@@ -267,7 +271,7 @@ void DialogPipManager::outputReceived(const QString &text, bool success)
             m_lastLogEntry = 1;
         }
     }
-    
+
     float factor = GuiHelper::screenDpiFactor();
     QString output;
     output = QString("<html><head><style>body{ font-size:%4pt; font-weight:400; } \
@@ -283,6 +287,8 @@ void DialogPipManager::outputReceived(const QString &text, bool success)
 //--------------------------------------------------------------------------------
 void DialogPipManager::pipRequestStarted(const PipManager::Task &task, const QString &text, bool outputSilent)
 {
+    m_outputSilent = false;
+
     outputReceived(text, true);
 
     m_outputSilent = outputSilent;
@@ -331,6 +337,15 @@ void DialogPipManager::pipRequestFinished(const PipManager::Task &task, const QS
     }
 }
 
+//-------------------------------------------------------------------------------------
+void DialogPipManager::pipFetchDetailsProgress(int totalNumberOfUnfetchedDetails, int recentlyFetchedDetails, bool finished)
+{
+    ui.progressCancelFetchDetails->setVisible(!finished);
+    ui.btnCancelFetchDetails->setVisible(!finished);
+    ui.progressCancelFetchDetails->setMaximum(totalNumberOfUnfetchedDetails);
+    ui.progressCancelFetchDetails->setValue(recentlyFetchedDetails);
+}
+
 //--------------------------------------------------------------------------------
 void DialogPipManager::closeEvent(QCloseEvent *e)
 {
@@ -351,13 +366,21 @@ void DialogPipManager::closeEvent(QCloseEvent *e)
 //--------------------------------------------------------------------------------
 void DialogPipManager::on_btnReload_clicked()
 {
-    m_pPipManager->listAvailablePackages(createOptions());
+    m_pPipManager->listAvailablePackages(createOptions(), true);
 }
 
 //--------------------------------------------------------------------------------
 void DialogPipManager::on_btnVerifyInstalledPackages_clicked()
 {
     m_pPipManager->checkVerifyInstalledPackages(createOptions());
+}
+
+//-------------------------------------------------------------------------------------
+void DialogPipManager::on_btnCancelFetchDetails_clicked()
+{
+    m_pPipManager->interruptPipProcess();
+    ui.progressCancelFetchDetails->setVisible(false);
+    ui.btnCancelFetchDetails->setVisible(false);
 }
 
 //--------------------------------------------------------------------------------
@@ -463,6 +486,7 @@ It is also possible to directly start the package manager by calling the itom ap
 void DialogPipManager::on_btnUninstall_clicked()
 {
     QModelIndex mi = ui.tablePackages->currentIndex();
+
     if (mi.isValid())
     {
         QString packageName = m_pPipManager->data(m_pPipManager->index(mi.row(), 0), Qt::DisplayRole).toString();
@@ -524,22 +548,16 @@ void DialogPipManager::on_btnSudoUninstall_clicked()
 //---------------------------------------------------------------------------------
 void DialogPipManager::treeViewSelectionChanged(const QItemSelection & selected, const QItemSelection & deselected)
 {
-    bool updateAvailabe = false;
+    bool updateAvailable = false;
 
     if (selected.size() > 0)
     {
-        updateAvailabe = true;
+        updateAvailable = true;
     }
 
-    /*foreach (const QModelIndex &mi, selected.indexes())
-    {
-        if (mi.column() == 0)
-        {
-            updateAvailabe = m_pPipManager->data(mi, Qt::UserRole + 1).toBool();
-        }
-    }*/
-
-    ui.btnUpdate->setEnabled(updateAvailabe && ui.btnInstall->isEnabled());
+    ui.btnUpdate->setEnabled(updateAvailable && ui.btnInstall->isEnabled());
+    ui.btnUninstall->setEnabled(updateAvailable && ui.btnInstall->isEnabled());
+    ui.btnSudoUninstall->setEnabled(updateAvailable && ui.btnInstall->isEnabled());
 }
 
 //---------------------------------------------------------------------------------
@@ -574,12 +592,12 @@ void DialogPipManager::exportTableToCsv()
     {
         QFile file(fileName);
 
-        if (file.open(QFile::WriteOnly | QFile::Truncate)) 
+        if (file.open(QFile::WriteOnly | QFile::Truncate))
         {
             QTextStream data(&file);
 
             data << exportPackageTableToString();
-            
+
             file.close();
         }
         else
@@ -594,7 +612,7 @@ QString DialogPipManager::exportPackageTableToString() const
 {
     QStringList output;
     QStringList strList;
-    for (int i = 0; i < m_pPipManager->columnCount(); i++) 
+    for (int i = 0; i < m_pPipManager->columnCount(); i++)
     {
         if (m_pPipManager->headerData(i, Qt::Horizontal, Qt::DisplayRole).toString().length() > 0)
         {

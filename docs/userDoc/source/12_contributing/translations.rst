@@ -6,7 +6,7 @@ Translations
 General
 ============
 
-The basic language of itom or its plugins is English. All strings in the source code should be 
+The basic language of itom or its plugins is English. All strings in the source code should be
 written in English.
 
 itom and its plugins can be translated to different other languages using the `translation system
@@ -14,7 +14,7 @@ of Qt <https://doc.qt.io/qt-5/i18n-source-translation.html>`.
 
 The source translation strings of the core project of itom, its libraries (part of the itom SDK), designer plugins or
 plugins are stored in different ts files whose filename should follow the pattern: **libraryname_langid.ts**,
-where **libraryname** is a placeholder for the corresponding library or plugin and **langid** is a 
+where **libraryname** is a placeholder for the corresponding library or plugin and **langid** is a
 placeholder for the particular language.
 
 The language can have the following format:
@@ -24,7 +24,7 @@ The language can have the following format:
 * **de_CH** for German / Switzerland
 * **ko** for Korean
 
-For language codes (small letters) and / or country codes (capital letters) 
+For language codes (small letters) and / or country codes (capital letters)
 see https://docs.oracle.com/cd/E13214_01/wli/docs92/xref/xqisocodes.html.
 
 Usually the source strings (in English) of the **ts** files are automatically created or updated by Qt's tool **lupdate**. This tool
@@ -47,13 +47,13 @@ Adding new or existing translations for different languages to the itom core pro
 of its plugins or designerplugins is usually done
 in the CMake configuration process.
 
-Select the desired language codes (see above) as semicolon-separated string to the CMake variable 
+Select the desired language codes (see above) as semicolon-separated string to the CMake variable
 **ITOM_LANGUAGES**. Since English is the default language, never add **en** to this string.
 
 Example:
 
 .. code-block:: cmake
-    
+
     ITOM_LANGUAGES = de;fr
     #this includes translations for German and French (in addition to English)
 
@@ -66,7 +66,7 @@ There is one common CMake error message, that might occur when setting new langu
 Error (ITOM_LANGUAGES = it):
 
 .. code-block:: cmake
-    
+
     CMake Error at cmake/ItomBuildMacros.cmake:664 (MESSAGE):
       Source translation file
       'C:/itom/sources/itom/Qitom/translation/qitom_it.ts' for language 'it is
@@ -85,7 +85,7 @@ building each library. This also affects all existing **ts** file, such that the
 translatable strings in the source code.
 
 .. note::
-    
+
     It is not recommended to manually create a new ts-file for a new language by copying an existing ts-file
     from another language, since each ts-file contains xml-content with the language ID as subcontent. If this
     language ID does not fit to the suffix of the filename, the **lupdate** process to update the translatable
@@ -100,7 +100,7 @@ are not updated nor new ts-files for new languages in the CMake variable **ITOM_
 the binary compilation of qm-files from existing ts-files is always started when building the particular
 library.
 
-The source translation update process can be triggered and controlled by the two boolean CMake variables 
+The source translation update process can be triggered and controlled by the two boolean CMake variables
 **ITOM_UPDATE_TRANSLATIONS** and **ITOM_UPDATE_TRANSLATIONS_REMOVE_UNUSED_STRINGS**.
 
 Set **ITOM_UPDATE_TRANSLATIONS** to force the itom (or plugins) build process to always update or
@@ -121,7 +121,7 @@ If **ITOM_UPDATE_TRANSLATIONS** is **ON** and a **ts** file has a wrong format, 
 error might occur:
 
 .. code-block:: cmake
-    
+
     CMake Warning at cmake/ItomBuildMacros.cmake:745 (message):
       - The existing ts-file
       C:/itom/sources/itom/AddInManager/translation/addinmanager_fr.ts does not
@@ -133,7 +133,7 @@ error might occur:
       AddInManager/CMakeLists.txt:96 (itom_library_translation)
 
 In this case, the translation system expected a french translation file **addinmanager_fr.ts**, however the
-file was a copy from the german version **addinmanager_de.ts**, such that the internal xml content of the 
+file was a copy from the german version **addinmanager_de.ts**, such that the internal xml content of the
 file was invalid. If this happens, **lupdate** will fail later. To fix this, remove the file and run CMake
 again or fix the content of the file.
 
@@ -144,11 +144,11 @@ Usually the ts-files are always located in a **translation** subfolder of the so
 of the wrapped library. These are for the itom core project:
 
 * sources/itom/AddInManager/translation
-* sources/itom/itomCommonQt/translation 
+* sources/itom/itomCommonQt/translation
 * sources/itom/itomWidgets/translation
-* sources/itom/plot/translation 
-* sources/itom/shape/translation 
-* sources/itom/qitom/translation 
+* sources/itom/plot/translation
+* sources/itom/shape/translation
+* sources/itom/qitom/translation
 
 The translation files for plugins are always located in a subfolder **translation** of
 the particular plugin sources. The same holds for designerplugins.
@@ -170,7 +170,7 @@ Besides configuring the mentioned CMake variables, you also have to set the foll
 lines into the CMakeLists.txt file of the particular plugin:
 
 .. code-block:: cmake
-    
+
     #translation
     set(FILES_TO_TRANSLATE ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI})
     itom_library_translation(QM_FILES TARGET ${target_name} FILES_TO_TRANSLATE ${FILES_TO_TRANSLATE})
@@ -180,4 +180,4 @@ that should be parsed for new files. The translation project itself will be crea
 **itom_library_translation**, provided by **ItomBuildMacros.cmake**. This will then create ts
 files in a **translation** subfolder of the plugin source folder whose particular names are **targetname_langid.ts**,
 where **targetname** corresponds to the project name of the plugin and **langid** is each language ID, contained
-in the semicolon-separated list **ITOM_LANGUAGES**. 
+in the semicolon-separated list **ITOM_LANGUAGES**.

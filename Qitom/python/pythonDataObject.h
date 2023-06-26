@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -36,14 +36,14 @@
 #include "../../DataObject/dataobj.h"
 //#include <qobject.h>
 
-namespace ito 
+namespace ito
 {
 class PythonDataObject
 {
     public:
         //-------------------------------------------------------------------------------------------------
         // typedefs
-        //------------------------------------------------------------------------------------------------- 
+        //-------------------------------------------------------------------------------------------------
         typedef struct
         {
             PyObject_HEAD
@@ -63,15 +63,15 @@ class PythonDataObject
 
         static inline void PyDataObject_SetBase( PyDataObject *op, PyObject *base )
         {
-            PyObject* x = op->base; 
-            Py_XINCREF(base); 
-            op->base = base; 
+            PyObject* x = op->base;
+            Py_XINCREF(base);
+            op->base = base;
             Py_XDECREF(x);
         }
-        
+
         //-------------------------------------------------------------------------------------------------
         // constructor, deconstructor, alloc, dellaoc
-        //------------------------------------------------------------------------------------------------- 
+        //-------------------------------------------------------------------------------------------------
 
         static void PyDataObject_dealloc(PyDataObject *self);
         static PyObject *PyDataObject_new(PyTypeObject *type, PyObject *args, PyObject *kwds);
@@ -79,7 +79,7 @@ class PythonDataObject
 
         //-------------------------------------------------------------------------------------------------
         // general members
-        //------------------------------------------------------------------------------------------------- 
+        //-------------------------------------------------------------------------------------------------
         static PyObject *PyDataObject_name(PyDataObject *self);
 
         static PyObject* PyDataObject_repr(PyDataObject *self);
@@ -105,7 +105,7 @@ class PythonDataObject
         static PyObject* PyDataObject_reshape(PyDataObject *self, PyObject *args, PyObject *kwds);
 
         static PyObject* PyDataObject_createMask(PyDataObject *self, PyObject *args, PyObject* kwds);
-    
+
         // Get / Set metadata / objecttags
         static PyObject* PyDataObj_SetAxisOffset(PyDataObject *self, PyObject *args);
         static PyObject* PyDataObj_SetAxisScale(PyDataObject *self, PyObject *args);
@@ -166,8 +166,8 @@ class PythonDataObject
 
 		static PyObject* PyDataObject_abs(PyDataObject *self, void *closure);
 		static PyObject* PyDataObject_arg(PyDataObject *self, void *closure);
-        
-        static int PyDataObject_setXYRotationalMatrix(PyDataObject *self, PyObject *value, void *closure);        
+
+        static int PyDataObject_setXYRotationalMatrix(PyDataObject *self, PyObject *value, void *closure);
         static PyObject* PyDataObject_getXYRotationalMatrix(PyDataObject *self, void *closure);
 
         static PyObject* PyDataObject_getValue(PyDataObject *self, void *closure);
@@ -177,7 +177,7 @@ class PythonDataObject
 
         static PyObject* PyDataObj_Array_StructGet(PyDataObject *self);
         static PyObject* PyDataObj_Array_Interface(PyDataObject *self);
-        static PyObject* PyDataObj_Array_(PyDataObject *self, PyObject *args);        
+        static PyObject* PyDataObj_Array_(PyDataObject *self, PyObject *args);
 
         static PyObject* PyDataObject_real(PyDataObject *self);
         static PyObject* PyDataObject_imag(PyDataObject *self);
@@ -200,11 +200,11 @@ class PythonDataObject
         //-------------------------------------------------------------------------------------------------
         // number protocol
         //
-        // python note: Binary and ternary functions must check the type of all their operands, and implement 
-        //    the necessary conversions (at least one of the operands is an instance of the defined type). 
-        //    If the operation is not defined for the given operands, binary and ternary functions must return 
+        // python note: Binary and ternary functions must check the type of all their operands, and implement
+        //    the necessary conversions (at least one of the operands is an instance of the defined type).
+        //    If the operation is not defined for the given operands, binary and ternary functions must return
         //    Py_NotImplemented, if another error occurred they must return NULL and set an exception.
-        //------------------------------------------------------------------------------------------------- 
+        //-------------------------------------------------------------------------------------------------
         static PyObject* PyDataObj_nbAdd(PyObject* o1, PyObject* o2);
         static PyObject* PyDataObj_nbSubtract(PyObject* o1, PyObject* o2);
         static PyObject* PyDataObj_nbMultiply(PyObject* o1, PyObject* o2);
@@ -243,14 +243,14 @@ class PythonDataObject
 
         //-------------------------------------------------------------------------------------------------
         // mapping protocol
-        //------------------------------------------------------------------------------------------------- 
+        //-------------------------------------------------------------------------------------------------
         static int PyDataObj_mappingLength(PyDataObject* self);
         static PyObject* PyDataObj_mappingGetElem(PyDataObject* self, PyObject* key);
         static int PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key, PyObject* value);
 
         //-------------------------------------------------------------------------------------------------
         // type structures
-        //------------------------------------------------------------------------------------------------- 
+        //-------------------------------------------------------------------------------------------------
         static PyMemberDef PyDataObject_members[];
         static PyMethodDef PyDataObject_methods[];
         static PyTypeObject PyDataObjectType;
@@ -261,7 +261,7 @@ class PythonDataObject
 
         //-------------------------------------------------------------------------------------------------
         // helper methods
-        //-------------------------------------------------------------------------------------------------    
+        //-------------------------------------------------------------------------------------------------
         static RetVal PyDataObj_ParseCreateArgs(PyObject *args, PyObject *kwds, int &typeno, std::vector<unsigned int> &dims, unsigned char &continuous);
 
         static PyDataObjectTypes PyDataObject_types[];
@@ -299,7 +299,7 @@ class PythonDataObject
         static PyObject* PyDataObj_StaticEye(PyObject *self, PyObject *args, PyObject *kwds);
         static PyObject* PyDataObj_StaticFromNumpyColor(PyObject *self, PyObject *args, PyObject *kwds);
 		static PyObject* PyDataObj_dstack(PyObject *self, PyObject *args, PyObject *kwds);
-		
+
 
 
         //#################################################################################################
@@ -318,7 +318,7 @@ class PythonDataObject
 
         //-------------------------------------------------------------------------------------------------
         // constructor, deconstructor, alloc, dellaoc
-        //------------------------------------------------------------------------------------------------- 
+        //-------------------------------------------------------------------------------------------------
 
         static void PyDataObjectIter_dealloc(PyDataObjectIter *self);
         static PyObject *PyDataObjectIter_new(PyTypeObject *type, PyObject *args, PyObject *kwds);
@@ -329,7 +329,7 @@ class PythonDataObject
 
         //-------------------------------------------------------------------------------------------------
         // type structures
-        //------------------------------------------------------------------------------------------------- 
+        //-------------------------------------------------------------------------------------------------
         static PyMethodDef PyDataObjectIter_methods[];
         static PyTypeObject PyDataObjectIterType;
 

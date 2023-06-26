@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -134,9 +134,9 @@ int PythonProgressObserver::PyProgressObserver_init(PyProgressObserver *self, Py
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
 
 
-    QMetaObject::invokeMethod(uiOrg, "connectWidgetsToProgressObserver", Q_ARG(bool, p != NULL), Q_ARG(unsigned int, p ? p->objectID : 0), 
-        Q_ARG(bool, l != NULL), Q_ARG(unsigned int, l ? l->objectID : 0), 
-        Q_ARG(QSharedPointer<ito::FunctionCancellationAndObserver>, *(self->progressObserver)), 
+    QMetaObject::invokeMethod(uiOrg, "connectWidgetsToProgressObserver", Q_ARG(bool, p != NULL), Q_ARG(unsigned int, p ? p->objectID : 0),
+        Q_ARG(bool, l != NULL), Q_ARG(unsigned int, l ? l->objectID : 0),
+        Q_ARG(QSharedPointer<ito::FunctionCancellationAndObserver>, *(self->progressObserver)),
         Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
 
     if (!locker.getSemaphore()->wait(PLUGINWAIT))
@@ -160,12 +160,12 @@ int PythonProgressObserver::PyProgressObserver_init(PyProgressObserver *self, Py
 /*static*/ PyObject* PythonProgressObserver::PyProgressObserver_repr(PyProgressObserver *self)
 {
     PyObject *result = PyUnicode_FromFormat("progressObserver()");
-    
+
     return result;
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(progressObserver_getProgressMinimum_doc, 
+PyDoc_STRVAR(progressObserver_getProgressMinimum_doc,
 "int : Gets the minimum value of the progress. \n\
 \n\
 The minimum progress value is the minimum scalar value that the observed \n\
@@ -182,7 +182,7 @@ PyObject* PythonProgressObserver::PyProgressObserver_getProgressMinimum(PyProgre
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(progressObserver_getProgressMaximum_doc, 
+PyDoc_STRVAR(progressObserver_getProgressMaximum_doc,
 "int : Gets the maximum value of the progress. \n\
 \n\
 The maximum progress value is the maximum scalar value that the observed \n\
@@ -282,7 +282,7 @@ int PythonProgressObserver::PyProgressObserver_setProgressText(PyProgressObserve
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(progressObserver_isCancelled_doc, 
+PyDoc_STRVAR(progressObserver_isCancelled_doc,
 "bool : returns ``True`` if a cancellation request has been signalled, otherwise ``False``.");
 PyObject* PythonProgressObserver::PyProgressObserver_isCancelled(PyProgressObserver *self, void * /*closure*/)
 {
@@ -476,7 +476,7 @@ PyObject* PythonProgressObserver::PyProgressObserver_disconnect(PyProgressObserv
         PyErr_SetString(PyExc_TypeError, "given method reference is not callable.");
         return NULL;
     }
-    
+
     if (!self || self->progressObserver == NULL || self->progressObserver->isNull())
     {
         PyErr_SetString(PyExc_RuntimeError, "progressObserver is not available");
@@ -568,13 +568,13 @@ PyObject* PythonProgressObserver::PyProgressObserver_info(PyProgressObserver* se
     else
     {
         PyErr_SetString(
-            PyExc_RuntimeError, 
+            PyExc_RuntimeError,
             "Invalid verbose level. Use level 0 to display all signals defined "
             "by the progressObserver itself. Level 1 also displays all inherited signals.");
         return NULL;
     }
     signalSignatureList.sort();
-    
+
     if (signalSignatureList.length() > 0)
     {
         //QByteArray val;

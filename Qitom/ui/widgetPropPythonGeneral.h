@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -49,7 +49,7 @@ protected:
 
 private:
     Ui::WidgetPropPythonGeneral ui;
-    
+
     //holds presets for common 3rd party textviewers...
     QMap<QString,QString> pyExtHelpers;
 
@@ -61,9 +61,9 @@ private slots:
     void on_rbPyHomeSub_clicked();
     void on_rbPyHomeSys_clicked();
     void on_rbPyHomeUse_clicked();
-    
+
     //3rd Party HelpViewer Buttons
-    void on_cbbPyUse3rdPartyPresets_currentIndexChanged(QString caption);
+    void on_cbbPyUse3rdPartyPresets_currentTextChanged(QString caption);
     void on_cbPyUse3rdPartyHelp_stateChanged(int checked);
     void on_pbApplyPyUse3rdPartyHelpViewer_clicked();
 

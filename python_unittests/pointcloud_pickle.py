@@ -11,11 +11,11 @@ except (ModuleNotFoundError, ImportError):
 
 if hasPCL:
     class PointCloudPickle(unittest.TestCase):
-        
+
         @classmethod
         def setUpClass(cls):
             pass
-        
+
         def test_picklePointCloud(self):
             """dumps and reloads a point cloud and compare both.
 
@@ -27,7 +27,7 @@ if hasPCL:
 
             # move ptr in buffer to start again
             bytes_io.seek(0)
-            
+
             cloud2 = pickle.load(bytes_io)
 
             self.assertEqual(cloud.size, cloud2.size)
@@ -40,12 +40,12 @@ if hasPCL:
             bytes_io = io.BytesIO()
             # should pass
             pickle.dump(mesh, bytes_io)
-        
+
             # move ptr in buffer to start again
             bytes_io.seek(0)
-            
+
             mesh2 = pickle.load(bytes_io)
-        
+
             self.assertTrue(np.all(mesh.getPolygons()==mesh2.getPolygons()))
 
 else:

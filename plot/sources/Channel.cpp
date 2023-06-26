@@ -10,7 +10,7 @@
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
-   
+
     In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
@@ -135,15 +135,15 @@ ito::RetVal Channel::propagateUpdatePending()
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-AbstractNode* Channel::getSender() const 
-{ 
-    Q_D(const Channel); 
-    
-    return d->m_pSender; 
+AbstractNode* Channel::getSender() const
+{
+    Q_D(const Channel);
+
+    return d->m_pSender;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-AbstractNode* Channel::getReceiver() const 
+AbstractNode* Channel::getReceiver() const
 {
     Q_D(const Channel);
 
@@ -191,23 +191,23 @@ QString Channel::getReceiverParamName() const
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!> The hash identifying this channel in the connection list of the participating nodes*/
 uint Channel::getHash() const
-{ 
+{
     Q_D(const Channel);
 
-    return d->m_hashVal; 
+    return d->m_hashVal;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::Param* Channel::getSenderParam() const 
-{ 
+ito::Param* Channel::getSenderParam() const
+{
     Q_D(const Channel);
 
     return d->m_pSenderParam;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::Param* Channel::getReceiverParam() const 
-{ 
+ito::Param* Channel::getReceiverParam() const
+{
     Q_D(const Channel);
 
     return d->m_pReceiverParam;
@@ -216,7 +216,7 @@ ito::Param* Channel::getReceiverParam() const
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!> Sets the updatePending flag of this channel back to false. Note: This reset is NOT propagated down the node tree*/
 void Channel::resetUpdateState(void)
-{ 
+{
     Q_D(Channel);
 
     d->m_updateState = StateIdle;

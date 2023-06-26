@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -23,9 +23,6 @@
 #include "AppManagement.h"
 #include "organizer/userOrganizer.h"
 
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-    #include <qtextcodec.h>
-#endif
 
 namespace ito
 {
@@ -52,63 +49,11 @@ QObject* AppManagement::m_coutStream = nullptr;
 QMutex AppManagement::m_mutex;
 AppManagement::Timeouts AppManagement::timeouts;
 
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-QTextCodec* AppManagement::m_scriptTextCodec = nullptr;
-#else
-QStringEncoder AppManagement::m_scriptTextCodecEncoder;
-QStringDecoder AppManagement::m_scriptTextCodecDecoder;
-#endif
-
 //-------------------------------------------------------------------------------------------
 /*static*/ QString AppManagement::getSettingsFile(void)
 {
     QMutexLocker locker(&m_mutex);
     return ((ito::UserOrganizer*)m_userOrganizer)->getCurrentUserSettingsFile();
 }
-
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-//-------------------------------------------------------------------------------------------
-/*static*/ QTextCodec* AppManagement::getScriptTextCodec()
-{
-    QMutexLocker locker(&m_mutex);
-    if (m_scriptTextCodec)
-    {
-        return m_scriptTextCodec;
-    }
-    else
-    {
-        return QTextCodec::codecForLocale();
-    }
-}
-
-//-------------------------------------------------------------------------------------------
-/*static*/ void AppManagement::setScriptTextCodec(QTextCodec *codec)
-{
-    QMutexLocker locker(&m_mutex);
-    m_scriptTextCodec = codec;
-}
-
-#else
-
-//-------------------------------------------------------------------------------------------
-/*static*/ QByteArray AppManagement::encodeStringFromDefaultCodec(const QString& string)
-{
-    return m_scriptTextCodecEncoder(string);
-}
-
-//-------------------------------------------------------------------------------------------
-/*static*/ QString AppManagement::decodeByteArrayToDefaultCodec(const QByteArray& ba)
-{
-    return m_scriptTextCodecDecoder(ba);
-}
-
-//-------------------------------------------------------------------------------------------
-/*static*/ void AppManagement::setScriptTextCodec(QStringConverter::Encoding& encoding)
-{
-    m_scriptTextCodecDecoder = QStringDecoder(encoding);
-    m_scriptTextCodecEncoder = QStringEncoder(encoding);
-}
-
-#endif
 
 } //end namespace ito

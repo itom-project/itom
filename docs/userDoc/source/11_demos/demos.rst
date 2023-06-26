@@ -5,12 +5,12 @@
 Demo scripts
 ############
 
-This chapter contains demo scripts of Python basics, Python packages and the itom features based on them. 
+This chapter contains demo scripts of Python basics, Python packages and the itom features based on them.
 
 .. only:: html
 
     .. note::
-        
+
         Only for html documentation: Each code-block can be copied
         to clipboard by moving the mouse in the upper right corner of it.
 
@@ -28,7 +28,7 @@ This chapter contains demo scripts of Python basics, Python packages and the ito
 .. toctree::
     :maxdepth: 2
     :includehidden:
-    
+
     itom/index.rst
     python/index.rst
     python_packages/index.rst

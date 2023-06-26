@@ -99,13 +99,13 @@ public:
     Q_ENUM(ResizeMode)
 
     /**
-     * \brief Constructor 
+     * \brief Constructor
      *
      * Creates a new editor widget based on QTreeView
      * @param parent optional parent widget
      */
 	ParamEditorWidget(QWidget* parent = 0);
-    
+
     /// Destructor
 	virtual ~ParamEditorWidget();
 
@@ -162,7 +162,7 @@ protected:
     * MessageLevel enumeration
     * defines whether warnings and/or errors that might occur during some executions should be displayed with a message box.
     */
-    enum MessageLevel 
+    enum MessageLevel
     {
         msgLevelNo = 0,          /*!< no messagebox should information about warnings or errors */
         msgLevelErrorOnly = 1,   /*!< a message box should only inform about errors */

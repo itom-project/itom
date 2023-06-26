@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -96,7 +96,7 @@ void WidgetPropFigurePlugins::init()
             sl = dwo->getPlotDataFormats(f.plotDataFormats);
             i = new QStandardItem(sl.join(", "));
             m_loadedFiguresModel->setItem(row, 2, i);
-            
+
             sl.clear();
             sl = dwo->getPlotFeatures(f.plotFeatures);
             i = new QStandardItem(sl.join(", "));
@@ -107,7 +107,7 @@ void WidgetPropFigurePlugins::init()
             i = new QStandardItem(sl.join(", "));
             m_loadedFiguresModel->setItem(row, 4, i);
 
-            fi = QFileInfo(f.filename); 
+            fi = QFileInfo(f.filename);
             i = new QStandardItem(fi.completeBaseName());
             i->setToolTip(f.filename);
             m_loadedFiguresModel->setItem(row, 5, i);
@@ -117,7 +117,7 @@ void WidgetPropFigurePlugins::init()
         const QMap<QString, FigureCategory> figureCategories = dwo->getFigureCategories();
 
         m_delegate = new FigurePluginDelegate(this);
-        
+
         m_figureCategoryModel = new QStandardItemModel(figureCategories.size(), 3);
         m_figureCategoryModel->setHeaderData(0, Qt::Horizontal, tr("category"), Qt::DisplayRole);
         m_figureCategoryModel->setHeaderData(1, Qt::Horizontal, tr("description"), Qt::DisplayRole);
@@ -128,12 +128,12 @@ void WidgetPropFigurePlugins::init()
         row = 0;
         ito::RetVal retVal;
 
-        while (j != figureCategories.constEnd()) 
+        while (j != figureCategories.constEnd())
         {
             i = new QStandardItem(j.key());
             i->setEditable(false);
             m_figureCategoryModel->setItem(row,0,i);
-            
+
             i = new QStandardItem(j->m_description);
             i->setEditable(false);
             m_figureCategoryModel->setItem(row,1,i);
@@ -163,7 +163,7 @@ void WidgetPropFigurePlugins::readSettings()
         int row = 0;
         ito::RetVal retVal;
 
-        while (j != figureCategories.constEnd()) 
+        while (j != figureCategories.constEnd())
         {
             defaultClassName = "";
             defaultClassName = dwo->getFigureClass(j.key(), defaultClassName, retVal);
@@ -187,7 +187,7 @@ void WidgetPropFigurePlugins::writeSettings()
         QStandardItem *item;
         int row = 0;
 
-        while (j != figureCategories.constEnd()) 
+        while (j != figureCategories.constEnd())
         {
             item = m_figureCategoryModel->item(row, 2);
             dwo->setFigureDefaultClass(j.key(), item->data(Qt::DisplayRole).toString());
@@ -210,7 +210,7 @@ void WidgetPropFigurePlugins::on_btnResetDefaultFigures_clicked()
         int row = 0;
         ito::RetVal retVal;
 
-        while (j != figureCategories.constEnd()) 
+        while (j != figureCategories.constEnd())
         {
             defaultClassName = j->m_defaultClassName;
             item = m_figureCategoryModel->item(row, 2);
@@ -227,7 +227,7 @@ FigurePluginDelegate::FigurePluginDelegate(QObject *parent /*= 0*/) :
 {
 
 }
-    
+
 //----------------------------------------------------------------------------------------------------------------------------------
 QWidget *FigurePluginDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
@@ -263,7 +263,7 @@ void FigurePluginDelegate::setEditorData(QWidget *editor, const QModelIndex &ind
             idx = m_possibleClassNames[index.row()].indexOf(figurePluginClassName);
         }
 
-        combo->setCurrentIndex(idx);   
+        combo->setCurrentIndex(idx);
     }
     else
     {
@@ -336,4 +336,3 @@ void FigurePluginDelegate::append(int rowIndex, const FigureCategory &figureCate
 }
 
 } //end namespace ito
-

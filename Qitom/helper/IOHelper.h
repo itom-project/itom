@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -31,6 +31,7 @@
 #include <qstring.h>
 #include <qobject.h>
 #include <qicon.h>
+#include <qlist.h>
 
 namespace ito {
 
@@ -58,7 +59,7 @@ public:
         IOMimeAll = IOMimeDataObject | IOMimePointCloud | IOMimePolygonMesh /*!< or-combination of IOMimeDataObject, IOMimePointCloud and IOMimePolygonMesh */
     };
     Q_DECLARE_FLAGS(IOFilters, IOFilter)
-    
+
     /**
     * SearchFolder enumeration
     * This enumeration contains values to describe specific directories that are searched for files (e.g. icons)
@@ -73,6 +74,34 @@ public:
         SFAll = SFResources | SFDirect | SFCurrent | SFAppDir | SFAppDirQItom /*!< or-combination of all available search folders */
     };
     Q_DECLARE_FLAGS(SearchFolders, SearchFolder)
+
+    /** This struct defines all necessary information for a possible charset encoding.
+    */
+    struct CharsetEncodingItem
+    {
+        CharsetEncodingItem() :
+            encodingName(""), displayName(""), displayNameShort(""), bom(""), userDefined(false)
+        {}
+
+        //!< the name that is accepted by QTextCodec or QStringConverter.
+        //!< This is also used as value in the itom settings.
+        QString encodingName;
+
+        //!< the name used as display name in a config dialog
+        QString displayName;
+
+        //!< the short version, e.g. for a status bar
+        QString displayNameShort;
+
+        //!< all possible aliases, e.g. in Python scripts (coding=...)
+        QStringList aliases;
+
+        //!< the Byte-Order-Mark used to automatically detect this encoding (or empty, if not used)
+        QByteArray bom;
+
+        //!< false if part of the officially supported list of encodings, else true
+        bool userDefined;
+    };
 
 
     static RetVal openGeneralFile(const QString &generalFileName, bool openUnknownsWithExternalApp = true, bool showMessages = false, QWidget* parent = NULL, const char* errorSlotMemberOfParent = NULL, bool globalNotLocalWorkspace = true);
@@ -100,17 +129,23 @@ public:
 
     static QString getAllItomFilesName() { return allItomFilesName; } /*!< name of file filter that bundles are readable files of itom, usually 'Itom Files'. */
 
+    static QList<CharsetEncodingItem> getSupportedScriptEncodings();
+    static CharsetEncodingItem getDefaultScriptEncoding();
+    static CharsetEncodingItem getEncodingFromAlias(const QString &alias, bool* found = nullptr);
+
 private:
     IOHelper() {}; /*!< private constructor since this class only contains static method and no instance must be created */
     ~IOHelper() {}; /*!< private destructor */
     IOHelper(const IOHelper &) : QObject() {};
 
     static QString allItomFilesName;
+    static QList<CharsetEncodingItem> supportedScriptEncodings;
 
 };
 
 } //end namespace ito
 
+Q_DECLARE_METATYPE(ito::IOHelper::CharsetEncodingItem)
 Q_DECLARE_OPERATORS_FOR_FLAGS(ito::IOHelper::IOFilters)
 
 #endif

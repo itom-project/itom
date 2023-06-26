@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -61,7 +61,7 @@ bool DialogSelectUser::selectUser(const QString &id)
                 ui.userList->setCurrentIndex(actIdx);
                 return true;
             }
-        }			
+        }
     }
 
 	ui.userList->setCurrentIndex(m_userModel->index(0,0));
@@ -102,9 +102,9 @@ void DialogSelectUser::userListCurrentChanged(const QModelIndex &current, const 
                 ui.lineEdit_password->setEnabled(false);
                 ui.label_password->setEnabled(false);
             }
-            
+
             ui.permissionList->addItem(tr("Role") + ": " + m_userModel->getRoleName(role));
-            
+
             if (features & featDeveloper)
             {
                 ui.permissionList->addItem(m_userModel->getFeatureName(featDeveloper));

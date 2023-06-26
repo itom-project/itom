@@ -2,11 +2,11 @@ QPropertyEditor
 ------------------------
 
 itom as well as some designer plugins use a modified version of the QPropertyEditor project.
-This project is licensed under the LGPLv2 version. 
+This project is licensed under the LGPLv2 version.
 
 For more information see https://store.kde.org/p/1132202/.
 
-The comments of the website above mentions, that there was a license discrepancy between 
+The comments of the website above mentions, that there was a license discrepancy between
 the license stated at the website and information, contained in some header files.
 
 A reader 'jacmoe' has written that he proposes the following license information:
@@ -14,7 +14,7 @@ A reader 'jacmoe' has written that he proposes the following license information
 // *************************************************************************************************
 //
 // QPropertyEditor v 0.3
-// 
+//
 // --------------------------------------
 // Copyright (C) 2007 Volker Wiendl
 // Acknowledgements to Roman alias banal from qt-apps.org for the Enum enhancement

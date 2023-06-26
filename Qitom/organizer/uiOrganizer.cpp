@@ -670,14 +670,14 @@ QWidget* UiOrganizer::loadUiFile(const QString &filename, RetVal &retValue, QWid
 
     if (file.exists())
     {
-        // set the working directory if QLoader to the directory where the ui-file is stored. 
-        // Then icons, assigned to the user-interface may be properly loaded, since their 
+        // set the working directory if QLoader to the directory where the ui-file is stored.
+        // Then icons, assigned to the user-interface may be properly loaded, since their
         // path is always saved relatively to the ui-file,too.
         file.open(QFile::ReadOnly);
         QFileInfo fileinfo(filename);
         QDir workingDirectory = fileinfo.absoluteDir();
 
-        // try to load translation file with the same basename than the ui-file and the suffix .qm. 
+        // try to load translation file with the same basename than the ui-file and the suffix .qm.
         // After the basename the location string can be added using _ as delimiter.
         QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
 
@@ -746,7 +746,7 @@ QWidget* UiOrganizer::loadUiFile(const QString &filename, RetVal &retValue, QWid
                 wid->setObjectName(wid->objectName() + objectNameSuffix);
 
                 wid->setParent(parent);
-            }  
+            }
         }
     }
     else
@@ -775,8 +775,8 @@ RetVal UiOrganizer::createNewDialog(
 
     if (filename.indexOf("itom://") == 0)
     {
-        if (filename.toLower() == "itom://matplotlib" || 
-            filename.toLower() == "itom://matplotlibfigure" || 
+        if (filename.toLower() == "itom://matplotlib" ||
+            filename.toLower() == "itom://matplotlibfigure" ||
             filename.toLower() == "itom://matplotlibplot")
         {
             pluginClassName = "MatplotlibPlot";
@@ -819,7 +819,7 @@ RetVal UiOrganizer::createNewDialog(
                     }
                     else
                     {
-                        retValue += RetVal::format(retError, 0, 
+                        retValue += RetVal::format(retError, 0,
                             tr("figHandle %i is no handle for a figure window.").toLatin1().data(), *dialogHandle);
                     }
                 }
@@ -842,7 +842,7 @@ RetVal UiOrganizer::createNewDialog(
         QMainWindow *mainWin = childOfMainWindow ? qobject_cast<QMainWindow*>(AppManagement::getMainWindow()) : NULL;
 
         wid = loadUiFile(filename, retValue, mainWin, "");
-        
+
         if (!retValue.containsError())
         {
             retValue += addWidgetToOrganizer(wid, uiDescription, dialogButtons, dialogHandle, objectID, className);
@@ -2540,7 +2540,7 @@ RetVal UiOrganizer::connectProgressObserverInterrupt(unsigned int objectID, cons
             //it is important to make a direct connection, since the progressObserver can also be created in the Python
             //thread, however we want the cancellation flag to be set immediately if the signal is emitted, hence, in
             //the thread of the caller (e.g. a button)
-            if (!QMetaObject::connect(obj, signalIndex, progressObserver, 
+            if (!QMetaObject::connect(obj, signalIndex, progressObserver,
                 progressObserver->metaObject()->indexOfSlot(QMetaObject::normalizedSignature("requestCancellation()")), Qt::DirectConnection))
             {
                 retValue += RetVal(retError, errorConnectionError, tr("signal could not be connected to slot requesting the cancellation of the observed function call.").toLatin1().data());
@@ -2564,10 +2564,10 @@ RetVal UiOrganizer::connectProgressObserverInterrupt(unsigned int objectID, cons
 
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal UiOrganizer::callSlotOrMethod(
-    bool slotNotMethod, 
-    unsigned int objectID, 
-    int slotOrMethodIndex, 
-    QSharedPointer<FctCallParamContainer> args, 
+    bool slotNotMethod,
+    unsigned int objectID,
+    int slotOrMethodIndex,
+    QSharedPointer<FctCallParamContainer> args,
     ItomSharedSemaphore *semaphore)
 {
     RetVal retValue(retOk);
@@ -2590,16 +2590,16 @@ RetVal UiOrganizer::callSlotOrMethod(
         else
         {
             // ck 07.03.17
-            // changed call of widgetWrapper to already return ito::RetVal with 
+            // changed call of widgetWrapper to already return ito::RetVal with
             // calls obj functions without changing threads
             retValue += m_widgetWrapper->call(obj, slotOrMethodIndex, args->args());
         }
 
-        //check if arguments have to be marshalled (e.g. QObject* must be transformed to objectID 
+        //check if arguments have to be marshalled (e.g. QObject* must be transformed to objectID
         //before passed to python in other thread)
         if (args->getRetType() == QMetaType::type("ito::PythonQObjectMarshal"))
         {
-            //add m_object to weakObject-List and pass its ID to python. TODO: right now, 
+            //add m_object to weakObject-List and pass its ID to python. TODO: right now,
             //we do not check if the object is a child of obj
             ito::PythonQObjectMarshal* m = (ito::PythonQObjectMarshal*)args->args()[0];
             if (m->m_object)
@@ -2636,8 +2636,8 @@ RetVal UiOrganizer::callSlotOrMethod(
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::getMethodDescriptions(unsigned int objectID, 
-    QSharedPointer<MethodDescriptionList> methodList, 
+RetVal UiOrganizer::getMethodDescriptions(unsigned int objectID,
+    QSharedPointer<MethodDescriptionList> methodList,
     ItomSharedSemaphore *semaphore
 )
 {
@@ -2656,7 +2656,7 @@ RetVal UiOrganizer::getMethodDescriptions(unsigned int objectID,
         {
             metaMethod = mo->method(i);
             ok = true;
-            
+
             if (metaMethod.access() == QMetaMethod::Public && (metaMethod.methodType() == QMetaMethod::Slot || metaMethod.methodType() == QMetaMethod::Method))
             {
                 //check if args can be interpreted by QMetaType:
@@ -4111,7 +4111,7 @@ RetVal UiOrganizer::connectWidgetsToProgressObserver(bool hasProgressBar, unsign
         if (hasProgressBar)
         {
             QObject *progressBar = getWeakObjectReference(progressBarObjectID);
-            
+
             if (!progressBar)
             {
                 retval += ito::RetVal(ito::retError, 0, "progressBar widget does not exist.");
@@ -4250,7 +4250,7 @@ RetVal UiOrganizer::getAllAvailableHandles(QSharedPointer<QList<unsigned int> > 
         {
             list->append(it.key());
         }
-        
+
         ++it;
     }
 

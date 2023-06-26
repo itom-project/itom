@@ -10,7 +10,7 @@
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
-   
+
     In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
@@ -58,7 +58,7 @@ namespace ito
 /*!
     \class PCLPoint
     \brief generic class that covers one single point of different possible types provided by the Point Cloud Library (PCL).
-     
+
     The possible types are compatible to PCLPointCloud and described in ito::tPCLPointType:
 
     * ito::pclXYZ: x, y, z
@@ -109,38 +109,38 @@ public:
     void copyFromVoidPtrAndType(void* ptr, ito::tPCLPointType type);
 
     //! copy constructor from point of PCL type pcl::PointXYZ
-    PCLPoint(const pcl::PointXYZ &point) : m_genericPoint(NULL), m_type(ito::pclXYZ) 
-    { 
+    PCLPoint(const pcl::PointXYZ &point) : m_genericPoint(NULL), m_type(ito::pclXYZ)
+    {
         m_genericPoint = reinterpret_cast<void*>(new pcl::PointXYZ(point));
     }
 
     //! copy constructor from point of PCL type pcl::PointXYZI
-    PCLPoint(const pcl::PointXYZI &point) : m_genericPoint(NULL), m_type(ito::pclXYZI) 
-    { 
+    PCLPoint(const pcl::PointXYZI &point) : m_genericPoint(NULL), m_type(ito::pclXYZI)
+    {
         m_genericPoint = reinterpret_cast<void*>(new pcl::PointXYZI(point));
     }
 
     //! copy constructor from point of PCL type pcl::PointXYZRGBA
-    PCLPoint(const pcl::PointXYZRGBA &point) : m_genericPoint(NULL), m_type(ito::pclXYZRGBA) 
-    { 
+    PCLPoint(const pcl::PointXYZRGBA &point) : m_genericPoint(NULL), m_type(ito::pclXYZRGBA)
+    {
         m_genericPoint = reinterpret_cast<void*>(new pcl::PointXYZRGBA(point));
     }
 
     //! copy constructor from point of PCL type pcl::PointNormal
-    PCLPoint(const pcl::PointNormal &point) : m_genericPoint(NULL), m_type(ito::pclXYZNormal) 
-    { 
+    PCLPoint(const pcl::PointNormal &point) : m_genericPoint(NULL), m_type(ito::pclXYZNormal)
+    {
         m_genericPoint = reinterpret_cast<void*>(new pcl::PointNormal(point));
     }
 
     //! copy constructor from point of PCL type pcl::PointXYZINormal
-    PCLPoint(const pcl::PointXYZINormal &point) : m_genericPoint(NULL), m_type(ito::pclXYZINormal) 
-    { 
+    PCLPoint(const pcl::PointXYZINormal &point) : m_genericPoint(NULL), m_type(ito::pclXYZINormal)
+    {
         m_genericPoint = reinterpret_cast<void*>(new pcl::PointXYZINormal(point));
     }
 
     //! copy constructor from point of PCL type pcl::PointXYZRGBNormal
-    PCLPoint(const pcl::PointXYZRGBNormal &point) : m_genericPoint(NULL), m_type(ito::pclXYZRGBNormal) 
-    { 
+    PCLPoint(const pcl::PointXYZRGBNormal &point) : m_genericPoint(NULL), m_type(ito::pclXYZRGBNormal)
+    {
         m_genericPoint = reinterpret_cast<void*>(new pcl::PointXYZRGBNormal(point));
     }
 
@@ -158,7 +158,7 @@ public:
     }
 
     //! destructor
-    ~PCLPoint() 
+    ~PCLPoint()
     {
         if(m_genericPoint)
         {
@@ -233,7 +233,7 @@ public:
     bool getCurvature(float &curvature);
     bool setCurvature(float curvature);
 
-    
+
 private:
     template<typename _Tp> friend _Tp* getPointPtrInternal(ito::PCLPoint &point);
     template<typename _Tp> friend const _Tp* getPointPtrInternal(const ito::PCLPoint &point);
@@ -247,7 +247,7 @@ private:
     class PCLPointCloud;
     template<typename _Tp> pcl::PointCloud<_Tp>* getPointCloudPtrInternal(ito::PCLPointCloud &pc);
     template<typename _Tp> const pcl::PointCloud<_Tp>* getPointCloudPtrInternal(const ito::PCLPointCloud &pc);
-    
+
 #if PCL_VERSION_COMPARE(>=,1,7,0)
     template<typename _Tp> pcl::PCLHeader GetHeaderFunc(ito::PCLPointCloud &pc);
     template<typename _Tp> pcl::PCLHeader GetHeaderFunc(const ito::PCLPointCloud *pc);
@@ -276,7 +276,7 @@ private:
 /*!
     \class PCLPointCloud
     \brief generic class that covers one single point cloud of different possible types provided by the Point Cloud Library (PCL).
-     
+
     The possible types are compatible to PCLPoint and described in ito::tPCLPointType:
 
     * ito::pclXYZ: x, y, z
@@ -286,7 +286,7 @@ private:
     * ito::pclXYZINormal
     * ito::pclXYZRGBNormal
 
-    The specific type is saved in the member m_type whereas different members are available each one holding a shared pointer to 
+    The specific type is saved in the member m_type whereas different members are available each one holding a shared pointer to
     the point cloud of one specific type. Only one of those shared pointers can contain a valid point cloud.
 */
 class POINTCLOUD_EXPORT PCLPointCloud
@@ -296,7 +296,7 @@ public:
     PCLPointCloud() : m_type(ito::pclInvalid) {};
 
     //! constructor for an empty point cloud of the desired type
-    PCLPointCloud(ito::tPCLPointType type) : m_type(type) 
+    PCLPointCloud(ito::tPCLPointType type) : m_type(type)
     {
         createEmptyPointCloud(type);
     };
@@ -323,7 +323,7 @@ public:
     \throws pcl::PCLException if type of value_ is not invalid but does not fit to desired type_
     */
     PCLPointCloud(uint32_t width_, uint32_t height_, ito::tPCLPointType type_, const PCLPoint &value_ = PCLPoint());
-    
+
     //! copy constructor
     PCLPointCloud(PCLPointCloud &pc);
 
@@ -340,9 +340,9 @@ public:
     ~PCLPointCloud(){};
 
     //! returns type of covered point cloud or ito::pclInvalid if invalid point cloud.
-    inline ito::tPCLPointType getType() const 
-    { 
-        return m_type; 
+    inline ito::tPCLPointType getType() const
+    {
+        return m_type;
     };
 
     //! if this cloud has color components returns != 0, else 0
@@ -361,8 +361,8 @@ public:
     /*!
     \throws pcl::PCLException if this point cloud does not contain the cloud of the desired type.
     */
-    inline pcl::PointCloud<pcl::PointXYZ>::Ptr toPointXYZ() const                   
-    { 
+    inline pcl::PointCloud<pcl::PointXYZ>::Ptr toPointXYZ() const
+    {
         if(m_type == ito::pclXYZ) return m_pcXYZ;
         throw pcl::PCLException("point cloud has not the desired type PointXYZ",__FILE__, "toPointXYZ", __LINE__);
     };
@@ -371,8 +371,8 @@ public:
     /*!
     \throws pcl::PCLException if this point cloud does not contain the cloud of the desired type.
     */
-    inline pcl::PointCloud<pcl::PointXYZI>::Ptr toPointXYZI() const                 
-    { 
+    inline pcl::PointCloud<pcl::PointXYZI>::Ptr toPointXYZI() const
+    {
         if(m_type == ito::pclXYZI) return m_pcXYZI;
         throw pcl::PCLException("point cloud has not the desired type PointXYZI",__FILE__, "toPointXYZI", __LINE__);
     };
@@ -381,8 +381,8 @@ public:
     /*!
     \throws pcl::PCLException if this point cloud does not contain the cloud of the desired type.
     */
-    inline pcl::PointCloud<pcl::PointXYZRGBA>::Ptr toPointXYZRGBA() const           
-    { 
+    inline pcl::PointCloud<pcl::PointXYZRGBA>::Ptr toPointXYZRGBA() const
+    {
         if(m_type == ito::pclXYZRGBA) return m_pcXYZRGBA;
         throw pcl::PCLException("point cloud has not the desired type PointXYZRGBA",__FILE__, "toPointXYZRGBA", __LINE__);
     };
@@ -391,8 +391,8 @@ public:
     /*!
     \throws pcl::PCLException if this point cloud does not contain the cloud of the desired type.
     */
-    inline pcl::PointCloud<pcl::PointNormal>::Ptr toPointXYZNormal() const          
-    { 
+    inline pcl::PointCloud<pcl::PointNormal>::Ptr toPointXYZNormal() const
+    {
         if(m_type == ito::pclXYZNormal) return m_pcXYZNormal;
         throw pcl::PCLException("point cloud has not the desired type PointXYZNormal",__FILE__, "toPointXYZNormal", __LINE__);
     };
@@ -401,8 +401,8 @@ public:
     /*!
     \throws pcl::PCLException if this point cloud does not contain the cloud of the desired type.
     */
-    inline pcl::PointCloud<pcl::PointXYZINormal>::Ptr toPointXYZINormal() const     
-    { 
+    inline pcl::PointCloud<pcl::PointXYZINormal>::Ptr toPointXYZINormal() const
+    {
         if(m_type == ito::pclXYZINormal) return m_pcXYZINormal;
         throw pcl::PCLException("point cloud has not the desired type PointXYZINormal",__FILE__, "toPointXYZINormal", __LINE__);
     };
@@ -411,8 +411,8 @@ public:
     /*!
     \throws pcl::PCLException if this point cloud does not contain the cloud of the desired type.
     */
-    inline pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr toPointXYZRGBNormal() const 
-    { 
+    inline pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr toPointXYZRGBNormal() const
+    {
         if(m_type == ito::pclXYZRGBNormal) return m_pcXYZRGBNormal;
         throw pcl::PCLException("point cloud has not the desired type PointXYZRGBNormal",__FILE__, "toPointXYZRGBNormal", __LINE__);
     };
@@ -421,8 +421,8 @@ public:
     /*!
     \throws pcl::PCLException if this point cloud does not contain the cloud of the desired type.
     */
-    inline pcl::PointCloud<pcl::PointXYZ>::ConstPtr toPointXYZConst() const                   
-    { 
+    inline pcl::PointCloud<pcl::PointXYZ>::ConstPtr toPointXYZConst() const
+    {
         if(m_type == ito::pclXYZ) return m_pcXYZ;
         throw pcl::PCLException("point cloud has not the desired type PointXYZ",__FILE__, "toPointXYZ", __LINE__);
     };
@@ -431,8 +431,8 @@ public:
     /*!
     \throws pcl::PCLException if this point cloud does not contain the cloud of the desired type.
     */
-    inline pcl::PointCloud<pcl::PointXYZI>::ConstPtr toPointXYZIConst() const                 
-    { 
+    inline pcl::PointCloud<pcl::PointXYZI>::ConstPtr toPointXYZIConst() const
+    {
         if(m_type == ito::pclXYZI) return m_pcXYZI;
         throw pcl::PCLException("point cloud has not the desired type PointXYZI",__FILE__, "toPointXYZI", __LINE__);
     };
@@ -441,8 +441,8 @@ public:
     /*!
     \throws pcl::PCLException if this point cloud does not contain the cloud of the desired type.
     */
-    inline pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr toPointXYZRGBAConst() const           
-    { 
+    inline pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr toPointXYZRGBAConst() const
+    {
         if(m_type == ito::pclXYZRGBA) return m_pcXYZRGBA;
         throw pcl::PCLException("point cloud has not the desired type PointXYZRGBA",__FILE__, "toPointXYZRGBA", __LINE__);
     };
@@ -451,8 +451,8 @@ public:
     /*!
     \throws pcl::PCLException if this point cloud does not contain the cloud of the desired type.
     */
-    inline pcl::PointCloud<pcl::PointNormal>::ConstPtr toPointXYZNormalConst() const          
-    { 
+    inline pcl::PointCloud<pcl::PointNormal>::ConstPtr toPointXYZNormalConst() const
+    {
         if(m_type == ito::pclXYZNormal) return m_pcXYZNormal;
         throw pcl::PCLException("point cloud has not the desired type PointXYZNormal",__FILE__, "toPointXYZNormal", __LINE__);
     };
@@ -461,8 +461,8 @@ public:
     /*!
     \throws pcl::PCLException if this point cloud does not contain the cloud of the desired type.
     */
-    inline pcl::PointCloud<pcl::PointXYZINormal>::ConstPtr toPointXYZINormalConst() const     
-    { 
+    inline pcl::PointCloud<pcl::PointXYZINormal>::ConstPtr toPointXYZINormalConst() const
+    {
         if(m_type == ito::pclXYZINormal) return m_pcXYZINormal;
         throw pcl::PCLException("point cloud has not the desired type PointXYZINormal",__FILE__, "toPointXYZINormal", __LINE__);
     };
@@ -471,8 +471,8 @@ public:
     /*!
     \throws pcl::PCLException if this point cloud does not contain the cloud of the desired type.
     */
-    inline pcl::PointCloud<pcl::PointXYZRGBNormal>::ConstPtr toPointXYZRGBNormalConst() const 
-    { 
+    inline pcl::PointCloud<pcl::PointXYZRGBNormal>::ConstPtr toPointXYZRGBNormalConst() const
+    {
         if(m_type == ito::pclXYZRGBNormal) return m_pcXYZRGBNormal;
         throw pcl::PCLException("point cloud has not the desired type PointXYZRGBNormal",__FILE__, "toPointXYZRGBNormal", __LINE__);
     };
@@ -493,7 +493,7 @@ public:
     PCLPointCloud & operator= (const PCLPointCloud &copy);
 
     //! make a deep copy of this point cloud
-    PCLPointCloud copy() const; 
+    PCLPointCloud copy() const;
 
     //! returns point at given position n.
     /*!
@@ -506,7 +506,7 @@ public:
     \throws pcl::PCLException if cloud is invalid or n is out of bounds
     */
     const PCLPoint at (size_t n) const;
-    
+
     //! sets the point at position n to the value given by point.
     /*!
     \throws pcl::PCLException if cloud is invalid, n is out of bounds or the type of point does not fit to this point cloud.
@@ -590,7 +590,7 @@ protected:
 
     //! creates an empty point cloud of given type. An existing point cloud is implicitely deleted.
     void createEmptyPointCloud(ito::tPCLPointType type);
-    
+
 private:
 
     inline int getFuncListIndex() const
@@ -688,7 +688,7 @@ public:
     std::string getFieldsList() const;
 
     std::ostream& streamOut(std::ostream& out);
-    
+
 protected:
 
 private:

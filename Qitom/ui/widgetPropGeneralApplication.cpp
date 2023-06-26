@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -53,7 +53,7 @@ void WidgetPropGeneralApplication::readSettings()
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("MainWindow");
 	ui.checkAskBeforeExit->setChecked(settings.value("askBeforeClose", true).toBool());
-    
+
     settings.endGroup();
 
     settings.beginGroup("Application");
@@ -68,7 +68,7 @@ void WidgetPropGeneralApplication::readSettings()
     QStringList append;
 
     int size = settings.beginReadArray("searchPathes");
-    for (int i = 0; i < size; ++i) 
+    for (int i = 0; i < size; ++i)
     {
         settings.setArrayIndex(i);
         if (settings.value("prepend", true).toBool())

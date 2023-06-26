@@ -10,7 +10,7 @@
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
-   
+
     In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
@@ -49,7 +49,7 @@ namespace ito {
     class ITOMCOMMONPLOT_EXPORT AbstractDObjPclFigure : public AbstractFigure
 {
     Q_OBJECT
-    Q_PROPERTY(QSharedPointer<ito::DataObject> dataObject READ getDataObject WRITE setDataObject DESIGNABLE false USER false)   
+    Q_PROPERTY(QSharedPointer<ito::DataObject> dataObject READ getDataObject WRITE setDataObject DESIGNABLE false USER false)
 #ifdef USEPCL //this symbol is automatically defined if the itom SDK is compiled with PCL support (set in itom_sdk.cmake)
     Q_PROPERTY(QSharedPointer<ito::PCLPointCloud> pointCloud READ getPointCloud WRITE setPointCloud DESIGNABLE false USER false)
     Q_PROPERTY(QSharedPointer<ito::PCLPolygonMesh> polygonMesh READ getPolygonMesh WRITE setPolygonMesh DESIGNABLE false USER false)
@@ -68,14 +68,14 @@ namespace ito {
     Q_CLASSINFO("prop://yAxisInterval", "Sets the visible range of the displayed y-axis (in coordinates of the data object) or (0.0, 0.0) if range should be automatically set [default].")
     Q_CLASSINFO("prop://zAxisInterval", "Sets the visible range of the displayed z-axis (in coordinates of the data object) or (0.0, 0.0) if range should be automatically set [default].")
     Q_CLASSINFO("prop://colorMap", "Color map (string) that should be used to colorize a non-color data object.")
-    
+
     Q_CLASSINFO("slot://setLinePlot", "This (virtual) slot can be invoked by python to trigger a lineplot.")
 
 public:
     AbstractDObjPclFigure(const QString &itomSettingsFile, const ito::ParamBase::Type inpType, AbstractFigure::WindowMode windowMode = AbstractFigure::ModeStandaloneInUi, QWidget *parent = 0);
 
     AbstractDObjPclFigure(const QString &itomSettingsFile, AbstractFigure::WindowMode windowMode = AbstractFigure::ModeStandaloneInUi, QWidget *parent = 0);
-    
+
     virtual ~AbstractDObjPclFigure();
 
     //! overload of AbstractNode::update

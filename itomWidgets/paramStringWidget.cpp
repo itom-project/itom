@@ -10,7 +10,7 @@
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
-   
+
     In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
@@ -47,7 +47,7 @@ public:
     ito::Param m_param;
 
     //--------------------------------------------------
-    void slotValueChanged(const QString &value) 
+    void slotValueChanged(const QString &value)
     {
         //value changed signal from checkbox
         emit q_ptr->valueChanged(value.toLatin1());
@@ -245,7 +245,7 @@ void ParamStringWidget::setParam(const ito::Param &param, bool forceValueChanged
 				{
 					d->m_pLineEdit->setValidator(nullptr);
 				}
-                
+
                 if (valChanged)
                 {
                     d->m_pLineEdit->blockSignals(true);

@@ -1,11 +1,11 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO), 
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -47,11 +47,14 @@
 #include <qregularexpression.h>
 
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-#include <qtextcodec.h>
+    #include <qtextcodec.h>
+#else
+    #include <QStringDecoder>
 #endif
 
 #include "../codeEditor/managers/panelsManager.h"
 #include "../codeEditor/managers/modesManager.h"
+#include "../codeEditor/panels/globalCheckerPanel.h"
 #include "../codeEditor/textBlockUserData.h"
 #include "scriptEditorPrinter.h"
 #include "../organizer/userOrganizer.h"
@@ -60,7 +63,7 @@
 
 #include "textdiff/diff.h"
 
-namespace ito 
+namespace ito
 {
 
 //!< static variable initialization
@@ -72,10 +75,10 @@ int ScriptEditorWidget::currentMaximumUID = 1;
 //----------------------------------------------------------------------------------------------------------------------------------
 ScriptEditorWidget::ScriptEditorWidget(BookmarkModel *bookmarkModel, QWidget* parent /*= nullptr*/) :
     AbstractCodeEditorWidget(parent),
-    m_pFileSysWatcher(NULL), 
+    m_pFileSysWatcher(NULL),
     m_filename(QString()),
     m_uid(ScriptEditorWidget::currentMaximumUID++),
-    m_pythonBusy(false), 
+    m_pythonBusy(false),
     m_pythonExecutable(true),
     m_canCopy(false),
     m_codeCheckerCallTimer(NULL),
@@ -86,9 +89,14 @@ ScriptEditorWidget::ScriptEditorWidget(BookmarkModel *bookmarkModel, QWidget* pa
     m_currentLineIndex(-1),
     m_textBlockLineIdxAboutToBeDeleted(-1),
     m_outlineDirty(true),
-    m_wasReadonly(false)
+    m_wasReadonly(false),
+    m_charsetEncodingAutoGuess(true),
+    m_charsetDefined(false)
 {
     qRegisterMetaType<QList<ito::CodeCheckerItem> >("QList<ito::CodeCheckerItem>");
+    qRegisterMetaType<IOHelper::CharsetEncodingItem>("IOHelper::CharsetEncodingItem");
+
+    m_charsetEncoding = IOHelper::getDefaultScriptEncoding();
 
     m_codeCheckerCallTimer = new QTimer(this);
     connect(m_codeCheckerCallTimer, SIGNAL(timeout()), this, SLOT(updateSyntaxCheck()));
@@ -171,13 +179,13 @@ ScriptEditorWidget::ScriptEditorWidget(BookmarkModel *bookmarkModel, QWidget* pa
     m_outlineTimer->setInterval(500);
 
     m_cursorBeforeMouseClick.invalidate();
-    
+
     initEditor();
     initMenus();
     loadSettings();
 
     m_pFileSysWatcher = new QFileSystemWatcher(this);
-    connect(m_pFileSysWatcher, &QFileSystemWatcher::fileChanged, 
+    connect(m_pFileSysWatcher, &QFileSystemWatcher::fileChanged,
         this, &ScriptEditorWidget::fileSysWatcherFileChanged);
 
     PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
@@ -190,11 +198,11 @@ ScriptEditorWidget::ScriptEditorWidget(BookmarkModel *bookmarkModel, QWidget* pa
             this, &ScriptEditorWidget::pythonStateChanged);
     }
 
-    if (pyEngine) 
+    if (pyEngine)
     {
         m_pythonBusy = pyEngine->isPythonBusy();
         connect(pyEngine, SIGNAL(pythonDebugPositionChanged(QString, int)), this, SLOT(pythonDebugPositionChanged(QString, int)));
-    
+
         connect(this, SIGNAL(pythonRunFile(QString)), pyEngine, SLOT(pythonRunFile(QString)));
         connect(this, SIGNAL(pythonDebugFile(QString)), pyEngine, SLOT(pythonDebugFile(QString)));
 
@@ -217,7 +225,7 @@ ScriptEditorWidget::ScriptEditorWidget(BookmarkModel *bookmarkModel, QWidget* pa
                 breakPointAdd(bpItems.at(i), i);
             }
         }
-    }    
+    }
 
     connect(this, SIGNAL(blockCountChanged(int)), this, SLOT(nrOfLinesChanged()));
     connect(this, SIGNAL(copyAvailable(bool)), this, SLOT(copyAvailable(bool)));
@@ -268,7 +276,7 @@ ScriptEditorWidget::~ScriptEditorWidget()
         disconnect(bpModel, SIGNAL(breakPointAdded(BreakPointItem, int)), this, SLOT(breakPointAdd(BreakPointItem, int)));
         disconnect(bpModel, SIGNAL(breakPointDeleted(QString, int, int)), this, SLOT(breakPointDelete(QString, int, int)));
         disconnect(bpModel, SIGNAL(breakPointChanged(BreakPointItem, BreakPointItem)), this, SLOT(breakPointChange(BreakPointItem, BreakPointItem)));
-    }   
+    }
 
     disconnect(this, SIGNAL(blockCountChanged(int)), this, SLOT(nrOfLinesChanged()));
     disconnect(this, SIGNAL(copyAvailable(bool)), this, SLOT(copyAvailable(bool)));
@@ -303,6 +311,9 @@ RetVal ScriptEditorWidget::initEditor()
     panels()->append(m_lineNumberPanel.dynamicCast<ito::Panel>());
     m_lineNumberPanel->setOrderInZone(3);
 
+    auto p = QSharedPointer<GlobalCheckerPanel>(new GlobalCheckerPanel("GlobalCheckerPanel"));
+    panels()->append(p.dynamicCast<ito::Panel>(), ito::Panel::Right);
+
     m_pyGotoAssignmentMode = QSharedPointer<PyGotoAssignmentMode>(new PyGotoAssignmentMode("PyGotoAssignmentMode"));
     connect(m_pyGotoAssignmentMode.data(), SIGNAL(outOfDoc(PyAssignment)), this, SLOT(gotoAssignmentOutOfDoc(PyAssignment)));
     modes()->append(m_pyGotoAssignmentMode.dynamicCast<ito::Mode>());
@@ -320,7 +331,7 @@ RetVal ScriptEditorWidget::initEditor()
     }
 
     connect(m_checkerBookmarkPanel.data(), SIGNAL(toggleBookmarkRequested(int)), this, SLOT(toggleBookmarkRequested(int)));
-    
+
     connect(m_breakpointPanel.data(), SIGNAL(toggleBreakpointRequested(int)), this, SLOT(toggleBreakpoint(int)));
     connect(m_breakpointPanel.data(), SIGNAL(toggleEnableBreakpointRequested(int)), this, SLOT(toggleEnableBreakpoint(int)));
     connect(m_breakpointPanel.data(), SIGNAL(editBreakpointRequested(int)), this, SLOT(editBreakpoint(int)));
@@ -347,8 +358,8 @@ void ScriptEditorWidget::loadSettings()
     }
 
     // Code Checker
-    m_codeCheckerEnabled = settings.value("codeCheckerMode", 
-                            PythonCommon::CodeCheckerPyFlakes).toInt() 
+    m_codeCheckerEnabled = settings.value("codeCheckerMode",
+                            PythonCommon::CodeCheckerPyFlakes).toInt()
                             != PythonCommon::NoCodeChecker;
     m_codeCheckerInterval = (int)(settings.value("codeCheckerInterval", 1).toDouble()*1000);
 
@@ -375,7 +386,7 @@ void ScriptEditorWidget::loadSettings()
     //todo
     // Fold Style
     QByteArray foldStyle = settings.value("foldStyle", "plus_minus").toByteArray();
-    if (foldStyle == "") 
+    if (foldStyle == "")
     {
         foldStyle = "none";
     }
@@ -434,6 +445,13 @@ void ScriptEditorWidget::loadSettings()
 
     bool pyCodeFormatEnabled = settings.value("autoCodeFormatEnabled", true).toBool();
     m_autoCodeFormatCmd = settings.value("autoCodeFormatCmd", "black --line-length 88 --quiet -").toString();
+    m_autoCodeFormatPreCmd = settings.value("autoCodeFormatImportsSortCmd", "isort --py 3 --profile black").toString();
+
+    if (!settings.value("autoCodeFormatEnableImportsSort", false).toBool())
+    {
+        m_autoCodeFormatPreCmd = "";
+    }
+
     auto pyCodeFormatAction = m_editorMenuActions.find("formatFile");
 
     if (pyCodeFormatAction != m_editorMenuActions.end())
@@ -453,6 +471,25 @@ void ScriptEditorWidget::loadSettings()
         m_pyDocstringGeneratorMode->setDocstringStyle(PyDocstringGeneratorMode::GoogleStyle);
     }
 
+    if (!m_charsetDefined)
+    {
+        // charset encoding
+        QString encodingName = settings.value("characterSetEncoding", "").toString();
+
+        if (encodingName != "")
+        {
+            m_charsetEncoding = IOHelper::getEncodingFromAlias(encodingName, nullptr);
+        }
+        else
+        {
+            m_charsetEncoding = IOHelper::getDefaultScriptEncoding();
+        }
+
+        m_charsetDefined = true;
+    }
+
+    m_charsetEncodingAutoGuess = settings.value("characterSetEncodingAutoGuess", true).toBool();
+
     settings.endGroup();
 
     AbstractCodeEditorWidget::loadSettings();
@@ -463,54 +500,54 @@ void ScriptEditorWidget::initMenus()
 {
     QMenu *editorMenu = contextMenu();
 
-    m_editorMenuActions["cut"] = 
+    m_editorMenuActions["cut"] =
         editorMenu->addAction(
-            QIcon(":/editor/icons/editCut.png"), tr("Cut"), 
+            QIcon(":/editor/icons/editCut.png"), tr("Cut"),
             this, SLOT(menuCut()), QKeySequence::Cut
         );
 
 
-    m_editorMenuActions["copy"] = 
+    m_editorMenuActions["copy"] =
         editorMenu->addAction(
-            QIcon(":/editor/icons/editCopy.png"), tr("Copy"), 
+            QIcon(":/editor/icons/editCopy.png"), tr("Copy"),
             this, SLOT(menuCopy()), QKeySequence::Copy
         );
 
-    m_editorMenuActions["paste"] = 
+    m_editorMenuActions["paste"] =
         editorMenu->addAction(
-            QIcon(":/editor/icons/editPaste.png"), tr("Paste"), 
+            QIcon(":/editor/icons/editPaste.png"), tr("Paste"),
             this, SLOT(menuPaste()), QKeySequence::Paste
         );
 
     editorMenu->addSeparator();
 
-    m_editorMenuActions["indent"] = 
+    m_editorMenuActions["indent"] =
         editorMenu->addAction(
-            QIcon(":/editor/icons/editIndent.png"), tr("Indent"), 
+            QIcon(":/editor/icons/editIndent.png"), tr("Indent"),
             this, SLOT(menuIndent()), QKeySequence(tr("Tab", "QShortcut"))
         );
-    
-    m_editorMenuActions["unindent"] = 
+
+    m_editorMenuActions["unindent"] =
         editorMenu->addAction(
-            QIcon(":/editor/icons/editUnindent.png"), tr("Unindent"), 
+            QIcon(":/editor/icons/editUnindent.png"), tr("Unindent"),
             this, SLOT(menuUnindent()), QKeySequence(tr("Shift+Tab", "QShortcut"))
         );
-    
-    m_editorMenuActions["comment"] = 
+
+    m_editorMenuActions["comment"] =
         editorMenu->addAction(
-            QIcon(":/editor/icons/editComment.png"), tr("Comment"), this, 
+            QIcon(":/editor/icons/editComment.png"), tr("Comment"), this,
             SLOT(menuComment()), QKeySequence(tr("Ctrl+R", "QShortcut"))
         );
-    
-    m_editorMenuActions["uncomment"] = 
+
+    m_editorMenuActions["uncomment"] =
         editorMenu->addAction(
-            QIcon(":/editor/icons/editUncomment.png"), tr("Uncomment"), this, 
+            QIcon(":/editor/icons/editUncomment.png"), tr("Uncomment"), this,
             SLOT(menuUncomment()), QKeySequence(tr("Ctrl+Shift+R", "QShortcut"))
         );
-    
-    m_editorMenuActions["formatFile"] = 
+
+    m_editorMenuActions["formatFile"] =
         editorMenu->addAction(
-            QIcon(":/editor/icons/leftAlign.png"), tr("Auto Format File"), 
+            QIcon(":/editor/icons/leftAlign.png"), tr("Auto Format File"),
             this, SLOT(menuPyCodeFormatting()), QKeySequence(tr("Ctrl+Alt+I", "QShortcut"))
         );
     m_editorMenuActions["formatFile"]->setVisible(false);
@@ -520,33 +557,33 @@ void ScriptEditorWidget::initMenus()
             QIcon(), tr("Generate Docstring"),
             this, SLOT(menuGenerateDocstring()), QKeySequence(tr("Ctrl+Alt+D", "QShortcut"))
         );
-    
+
     editorMenu->addSeparator();
-    
-    m_editorMenuActions["runScript"] = 
+
+    m_editorMenuActions["runScript"] =
         editorMenu->addAction(
-            QIcon(":/script/icons/runScript.png"), tr("Run Script"), this, 
+            QIcon(":/script/icons/runScript.png"), tr("Run Script"), this,
             SLOT(menuRunScript()), QKeySequence(tr("F5", "QShortcut"))
         );
-    
-    m_editorMenuActions["runSelection"] = 
+
+    m_editorMenuActions["runSelection"] =
         editorMenu->addAction(
-            QIcon(":/script/icons/runScript.png"), tr("Run Selection"), this, 
+            QIcon(":/script/icons/runScript.png"), tr("Run Selection"), this,
             SLOT(menuRunSelection()), QKeySequence(tr("F9", "QShortcut"))
         );
-    
-    m_editorMenuActions["debugScript"] = 
+
+    m_editorMenuActions["debugScript"] =
         editorMenu->addAction(
-            QIcon(":/script/icons/debugScript.png"), tr("Debug Script"), this, 
+            QIcon(":/script/icons/debugScript.png"), tr("Debug Script"), this,
             SLOT(menuDebugScript()), QKeySequence(tr("F6", "QShortcut"))
         );
-    
-    m_editorMenuActions["stopScript"] = 
+
+    m_editorMenuActions["stopScript"] =
         editorMenu->addAction(
-            QIcon(":/script/icons/stopScript.png"), tr("Stop Script"), this, 
+            QIcon(":/script/icons/stopScript.png"), tr("Stop Script"), this,
             SLOT(menuStopScript()), QKeySequence(tr("Shift+F5", "QShortcut"))
         );
-    
+
     editorMenu->addSeparator();
 
     QShortcut *tabChangedShortcut  = new QShortcut(QKeySequence(tr("Ctrl+Tab", "QShortcut")), this);
@@ -556,29 +593,29 @@ void ScriptEditorWidget::initMenus()
     editorMenu->addActions(m_pyGotoAssignmentMode->actions());
 
     editorMenu->addSeparator();
-    
+
     QMenu *foldMenu = editorMenu->addMenu(tr("Folding"));
-    m_editorMenuActions["foldUnfoldToplevel"] = 
+    m_editorMenuActions["foldUnfoldToplevel"] =
         foldMenu->addAction(tr("Fold/Unfold &Toplevel"), this, SLOT(menuFoldUnfoldToplevel()));
-    
-    m_editorMenuActions["foldUnfoldAll"] = 
+
+    m_editorMenuActions["foldUnfoldAll"] =
         foldMenu->addAction(tr("Fold/Unfold &All"), this, SLOT(menuFoldUnfoldAll()));
-    
-    m_editorMenuActions["unfoldAll"] = 
+
+    m_editorMenuActions["unfoldAll"] =
         foldMenu->addAction(tr("&Unfold All"), this, SLOT(menuUnfoldAll()));
-    
-    m_editorMenuActions["foldAll"] = 
+
+    m_editorMenuActions["foldAll"] =
         foldMenu->addAction(tr("&Fold All"), this, SLOT(menuFoldAll()));
-    
+
     editorMenu->addSeparator();
 
     m_editorMenuActions["findSymbols"] =
-        editorMenu->addAction(QIcon(":/classNavigator/icons/at.png"), tr("Fast symbol search..."),
-            this, SIGNAL(findSymbolsShowRequested()), 
+        editorMenu->addAction(QIcon(":/classNavigator/icons/at.png"), tr("Fast Symbol Search..."),
+            this, SIGNAL(findSymbolsShowRequested()),
             QKeySequence(tr("Ctrl+D", "QShortcut")));
-    
-    m_editorMenuActions["insertCodec"] = 
-        editorMenu->addAction(tr("&Insert Codec..."), this, SLOT(menuInsertCodec()));
+
+    m_editorMenuActions["charsetEncoding"] =
+        editorMenu->addAction(tr("&Charset Encoding..."), this, SLOT(menuScriptCharsetEncoding()));
 
 #if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
 #if QT_VERSION < QT_VERSION_CHECK(5, 11, 0)
@@ -610,7 +647,7 @@ RetVal ScriptEditorWidget::restoreState(const ScriptEditorStorage &data)
     {
         setFirstVisibleLine(data.firstVisibleLine);
     }
-    
+
     return retVal;
 }
 
@@ -669,13 +706,13 @@ void ScriptEditorWidget::contextMenuAboutToShow(int contextMenuLine)
     m_editorMenuActions["copy"]->setEnabled(lineFrom != -1 || selectLineOnCopyEmpty());
     m_editorMenuActions["paste"]->setEnabled(!m_pythonBusy && contextMenuLine >= 0 && canPaste());
     m_editorMenuActions["runScript"]->setEnabled(!m_pythonBusy);
-    m_editorMenuActions["runSelection"]->setEnabled(lineFrom != -1 && pyEngine && (!m_pythonBusy || pyEngine->isPythonDebuggingAndWaiting()));
+    m_editorMenuActions["runSelection"]->setEnabled(pyEngine && (!m_pythonBusy || pyEngine->isPythonDebuggingAndWaiting()));
     m_editorMenuActions["debugScript"]->setEnabled(!m_pythonBusy);
     m_editorMenuActions["stopScript"]->setEnabled(m_pythonBusy);
-    m_editorMenuActions["insertCodec"]->setEnabled(!m_pythonBusy); 
+    m_editorMenuActions["charsetEncoding"]->setEnabled(!m_pythonBusy);
     m_editorMenuActions["formatFile"]->setEnabled(!m_pythonBusy);
     m_editorMenuActions["generateDocstring"]->setEnabled(
-        !m_pythonBusy && 
+        !m_pythonBusy &&
         currentLineCanHaveDocstring()
     );
 
@@ -841,7 +878,7 @@ void ScriptEditorWidget::dropEvent(QDropEvent *event)
                 for (int i = 0; i < list.length(); ++i)
                 {
                     QMetaObject::invokeMethod(sew, "openScript", Q_ARG(QString, list[i].toLocalFile()), Q_ARG(ItomSharedSemaphore*, NULL));
-                    
+
                 }
 
                 event->accept();
@@ -849,7 +886,7 @@ void ScriptEditorWidget::dropEvent(QDropEvent *event)
 
             if (event->isAccepted())
             {
-                //fix in order not to freeze the cursor after dropping 
+                //fix in order not to freeze the cursor after dropping
                 //see: https://stackoverflow.com/questions/29456366/qtextedit-cursor-becomes-frozen-after-overriding-its-dropevent
                 QMimeData mimeData;
                 mimeData.setText("");
@@ -866,7 +903,7 @@ void ScriptEditorWidget::dropEvent(QDropEvent *event)
             AbstractCodeEditorWidget::dropEvent(event);
 
             QObject *parent = event->source() ? event->source()->parent() : NULL;
-            
+
             //this snipped is based on a QScintilla mailing list thread:
             //http://www.riverbankcomputing.com/pipermail/qscintilla/2014-September/000996.html
             if (parent && qobject_cast<ito::ConsoleWidget*>(parent))
@@ -896,7 +933,7 @@ void ScriptEditorWidget::copyAvailable(const bool yes)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 bool ScriptEditorWidget::getCanCopy() const
-{ 
+{
     return m_canCopy || selectLineOnCopyEmpty();
 }
 
@@ -922,7 +959,7 @@ RetVal ScriptEditorWidget::setCursorPosAndEnsureVisible(const int line, bool err
         }
     }
 
-    
+
 
     if (errorMessageClick)
     {
@@ -950,7 +987,7 @@ void ScriptEditorWidget::removeCurrentCallstackLine()
 RetVal ScriptEditorWidget::showLineAndHighlightWord(const int line, const QString &highlightedText, Qt::CaseSensitivity caseSensitivity)
 {
     ito::RetVal retval;
-    
+
     if (line >= 0)
     {
         retval += setCursorPosAndEnsureVisible(line);
@@ -1126,7 +1163,7 @@ void ScriptEditorWidget::menuUncomment()
                     }
                 }
             }
-            
+
         }
 
         if (lineFrom != indexFrom || lineTo != indexTo)
@@ -1168,6 +1205,7 @@ void ScriptEditorWidget::menuRunSelection()
 
     //check whether text has been marked
     getSelection(&lineFrom, &indexFrom, &lineTo, &indexTo);
+
     if (lineFrom >= 0)
     {
         QString defaultText = selectedText();
@@ -1176,16 +1214,32 @@ void ScriptEditorWidget::menuRunSelection()
         const QChar *data = defaultText.constData();
         int signsToRemove = 0;
         int len = defaultText.size() - 1;
-        
+
         while (defaultText[len-signsToRemove] == '\n' || defaultText[len-signsToRemove] == '\r' || defaultText[len-signsToRemove] == ' ')
         {
             signsToRemove++;
         }
 
         defaultText.truncate(len - signsToRemove + 1);
-        
+
 
         emit pythonRunSelection(defaultText);
+    }
+    else
+    {
+        // single line
+        getCursorPosition(&lineFrom, &indexFrom);
+
+        QString defaultText = lineText(lineFrom).trimmed();
+
+        if (lineCount() > lineFrom + 1)
+        {
+            setCursorPosAndEnsureVisible(lineFrom + 1);
+            setCursorPosition(lineFrom + 1, indexFrom);
+        }
+
+        emit pythonRunSelection(defaultText);
+
     }
 }
 
@@ -1221,38 +1275,60 @@ void ScriptEditorWidget::menuStopScript()
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-void ScriptEditorWidget::menuInsertCodec()
+//-------------------------------------------------------------------------------------
+void ScriptEditorWidget::changeFileSaveEncoding(const IOHelper::CharsetEncodingItem &encoding)
 {
-    QStringList items;
-    bool ok;
-    items << "ascii (English, us-ascii)" << "latin1 (West Europe, iso-8859-1)" 
-          << "iso-8859-15 (Western Europe)" << "utf8 (all languages)";
+    m_charsetEncoding = encoding;
+    setModified(true);
+    onTextChanged();
+    emit cursorPositionChanged();
+}
 
-    QString codec = QInputDialog::getItem(
-        this, 
-        tr("Insert Codec"), 
-        tr("Choose an encoding of the file which is added to the first line of the script"), 
-        items, 
-        2, 
-        false, 
-        &ok
+//-------------------------------------------------------------------------------------
+void ScriptEditorWidget::menuScriptCharsetEncoding()
+{
+    DialogScriptCharsetEncoding *dialog = new DialogScriptCharsetEncoding(charsetEncoding(), !hasNoFilename(), this);
+
+    connect(dialog, &DialogScriptCharsetEncoding::accepted, [=]()
+        {
+            this->changeFileSaveEncoding(dialog->getSaveCharsetEncoding());
+        }
     );
 
-    if (codec != "" && ok)
-    {
-        items = codec.split(" ");
-
-        if (items.size() > 0)
+    connect(dialog, &DialogScriptCharsetEncoding::reloadWithEncoding, [=](const IOHelper::CharsetEncodingItem &item)
         {
-            QString newText = QString("# coding=%1\n").arg(items[0]);
-            QTextCursor currentCursor = textCursor();
-            currentCursor.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
-            currentCursor.insertText(newText);
-            setModified(true);
-            onTextChanged();
+            bool oldGuess = m_charsetEncodingAutoGuess;
+            m_charsetEncodingAutoGuess = false;
+            m_charsetEncoding = item;
+
+            openFile(getFilename(), false, dialog);
+
+            m_charsetEncodingAutoGuess = oldGuess;
+        }
+    );
+
+    connect(dialog, &DialogScriptCharsetEncoding::addPythonEncodingComment, [=](const QString &encoding)
+    {
+        if (encoding != "")
+        {
+            auto items = encoding.split(" ");
+
+            if (encoding.size() > 0)
+            {
+                QString newText = QString("# coding=%1\n").arg(items[0]);
+                QTextCursor currentCursor = textCursor();
+                currentCursor.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
+                currentCursor.insertText(newText);
+                setModified(true);
+                onTextChanged();
+            }
         }
     }
+    );
+
+    dialog->show();
+    dialog->raise();
+    dialog->activateWindow();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1300,14 +1376,19 @@ void ScriptEditorWidget::menuPyCodeFormatting()
     }
 
     // the PyCodeFormatter should be destroyed using deleteLater
-    // since the cancel button event will indirectly lead to 
+    // since the cancel button event will indirectly lead to
     // a clear command of m_pyCodeFormatter (via the method pyCodeFormatterDone).
     // This would then destroy the QProgressDialog before the mouseRelease event
     // of the cancel button has been fully terminated.
     m_pyCodeFormatter = QSharedPointer<PyCodeFormatter>(new PyCodeFormatter(this), doDeleteLater);
     connect(m_pyCodeFormatter.data(), &PyCodeFormatter::formattingDone,
         this, &ScriptEditorWidget::pyCodeFormatterDone);
-    ito::RetVal retval = m_pyCodeFormatter->startFormatting(m_autoCodeFormatCmd, toPlainText(), this);
+    ito::RetVal retval = m_pyCodeFormatter->startSortingAndFormatting(
+        m_autoCodeFormatPreCmd,
+        m_autoCodeFormatCmd,
+        toPlainText(),
+        this
+    );
 
     if (retval.containsError())
     {
@@ -1389,7 +1470,7 @@ void ScriptEditorWidget::startUndoRedo(bool undoNotRedo)
     QList<BreakPointItem> breakpointsCache;
     int numLines = lineCount();
 
-    // get all current bookmarks in this file, store them in cache and 
+    // get all current bookmarks in this file, store them in cache and
     // temporarily remove them from this file.
     auto bookmarks = m_pBookmarkModel->getBookmarks(bmFilename);
 
@@ -1405,7 +1486,7 @@ void ScriptEditorWidget::startUndoRedo(bool undoNotRedo)
 
     if (bpModel)
     {
-        // get all current breakpoints in this file, store them in cache and 
+        // get all current breakpoints in this file, store them in cache and
         // temporarily remove them from this file.
         QModelIndexList idxList = bpModel->getBreakPointIndizes(bmFilename);
         auto allBreakpoints = bpModel->getBreakPoints(idxList);
@@ -1483,7 +1564,7 @@ QVector<int> ScriptEditorWidget::compareTexts(const QString &oldText, const QStr
     if (result)
     {
         // if lines have been removed from oldText, it is
-        // smarter if they would be mapped to the next valid 
+        // smarter if they would be mapped to the next valid
         // line in newText
         int last = -1;
 
@@ -1559,7 +1640,7 @@ void ScriptEditorWidget::replaceSelectionAndKeepBookmarksAndBreakpoints(
             QList<BookmarkItem> bookmarks;
             QList<BreakPointItem> breakpoints;
             int maxLineIdx = newString.split("\n").count();
-            
+
             foreach(const BookmarkItem &item, m_pBookmarkModel->getBookmarks(bmFilename))
             {
                 if (item.isValid() &&
@@ -1632,7 +1713,7 @@ void ScriptEditorWidget::pyCodeFormatterDone(bool success, QString code)
         QTextCursor cursor = textCursor();
         cursor.movePosition(QTextCursor::Start);
         cursor.movePosition(QTextCursor::End, QTextCursor::KeepAnchor);
-        
+
         replaceSelectionAndKeepBookmarksAndBreakpoints(cursor, code);
     }
     else if (!success && code.trimmed() != "")
@@ -1691,18 +1772,74 @@ void ScriptEditorWidget::pyCodeFormatterDone(bool success, QString code)
     m_pyCodeFormatter.clear();
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-RetVal ScriptEditorWidget::openFile(QString fileName, bool ignorePresentDocument)
+//-------------------------------------------------------------------------------------
+IOHelper::CharsetEncodingItem ScriptEditorWidget::guessEncoding(const QByteArray &content) const
 {
+    auto encodings = IOHelper::getSupportedScriptEncodings();
+
+    // check for BOMs first.
+    auto it = encodings.constBegin();
+
+    while (it != encodings.constEnd())
+    {
+        if (it->bom != "" && content.startsWith(it->bom))
+        {
+            return *it;
+        }
+
+        ++it;
+    }
+
+    QList<QByteArray> firstLines;
+
+    int from = 0;
+    int idx = content.indexOf("\n", from);
+
+    if (idx >= 0)
+    {
+        firstLines << content.mid(from, idx - from).trimmed();
+        from = idx + 1;
+
+        idx = content.indexOf("\n", from);
+
+        if (idx >= from)
+        {
+            firstLines << content.mid(from, idx - from).trimmed();
+        }
+    }
+
+    QRegularExpression re("#.*?coding[:=][ \\t]*([-_.a-zA-Z0-9]+)");
+
+    foreach(const QByteArray &ba, firstLines)
+    {
+        auto match = re.match(QString::fromUtf8(ba));
+
+        if (match.hasMatch())
+        {
+            return IOHelper::getEncodingFromAlias(match.captured(1));
+        }
+    }
+
+    return m_charsetEncoding;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+RetVal ScriptEditorWidget::openFile(const QString &fileName, bool ignorePresentDocument, QWidget *parent /*= nullptr*/)
+{
+    if (parent == nullptr)
+    {
+        parent = this;
+    }
+
     //!< check for modifications in the present document first
     if (!ignorePresentDocument)
     {
         if (isModified())
         {
             int ret = QMessageBox::information(
-                this, 
-                tr("Unsaved Changes"), 
-                tr("There are unsaved changes in the current document. Do you want to save it first?"), 
+                parent,
+                tr("Unsaved Changes"),
+                tr("There are unsaved changes in the current document. Do you want to save it first?"),
                 QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Yes
             );
 
@@ -1719,9 +1856,10 @@ RetVal ScriptEditorWidget::openFile(QString fileName, bool ignorePresentDocument
     }
 
     QFile file(fileName);
+
     if (! file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-        QMessageBox::warning(this, tr("Error while opening file"), tr("File %1 could not be loaded").arg(fileName));
+        QMessageBox::warning(parent, tr("Error while opening file"), tr("File %1 could not be loaded").arg(fileName));
     }
     else
     {
@@ -1729,12 +1867,34 @@ RetVal ScriptEditorWidget::openFile(QString fileName, bool ignorePresentDocument
         //therefore there is a setting property telling the encoding of saved python files and the files are loaded assuming
         //this special encoding. If no encoding is given, latin1 is always assumed.
         QByteArray content = file.readAll();
-
         QString text;
+
+        if (m_charsetEncodingAutoGuess)
+        {
+            m_charsetEncoding = guessEncoding(content);
+        }
+
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-        text = AppManagement::getScriptTextCodec()->toUnicode(content);
+        QTextCodec *tc = QTextCodec::codecForName(m_charsetEncoding.encodingName.toLatin1());
+
+        if (!tc)
+        {
+            qDebug() << "unknown encoding " << m_charsetEncoding.encodingName << ". Assume UTF_8";
+            tc = QTextCodec::codecForName(IOHelper::getDefaultScriptEncoding().encodingName.toLatin1());
+        }
+
+        text = tc->toUnicode(content);
 #else
-        text = AppManagement::decodeByteArrayToDefaultCodec(content);
+        QStringDecoder decoder(m_charsetEncoding.encodingName.toLatin1());
+
+        if (!decoder.isValid())
+        {
+            qDebug() << "unknown encoding " << m_charsetEncoding.encodingName << ". Assume UTF_8";
+            decoder = QStringDecoder(
+                IOHelper::getDefaultScriptEncoding().encodingName.toLatin1());
+        }
+
+        text = decoder(content);
 #endif
 
         file.close();
@@ -1809,8 +1969,8 @@ RetVal ScriptEditorWidget::saveFile(bool askFirst)
     if (askFirst)
     {
         int ret = QMessageBox::information(
-            this, 
-            tr("Unsaved Changes"), 
+            this,
+            tr("Unsaved Changes"),
             tr("There are unsaved changes in the document '%1'. Do you want to save it first?").arg(getFilename()),
             QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Yes
         );
@@ -1825,27 +1985,73 @@ RetVal ScriptEditorWidget::saveFile(bool askFirst)
         }
     }
 
-    m_pFileSysWatcher->removePath(getFilename());
-
     QFile file(getFilename());
 
-    if (! file.open(QIODevice::WriteOnly | QIODevice::Text))
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
         QMessageBox::warning(this, tr("Error while accessing file"), tr("File %1 could not be accessed").arg(getFilename()));
-        return RetVal(retError);
+        return false;
     }
+
+    m_pFileSysWatcher->removePath(getFilename());
 
     //todo
     //convertEols(QsciScintilla::EolUnix);
-    
+
     QString t = toPlainText();
+    QByteArray text;
+
+    if (m_charsetEncodingAutoGuess)
+    {
+        auto encoding = guessEncoding(t.toUtf8());
+
+        if (encoding.encodingName != m_charsetEncoding.encodingName)
+        {
+            int ret = QMessageBox::question(
+                this,
+                tr("Inconsistent encoding"),
+                tr("The coding tag %1 does not correspond to the file encoding %2. Use %1 as new file encoding?").arg(encoding.encodingName).arg(m_charsetEncoding.encodingName),
+                QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes
+            );
+
+            if (ret & QMessageBox::Yes)
+            {
+                m_charsetEncoding = encoding;
+            }
+        }
+    }
 
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-    file.write(AppManagement::getScriptTextCodec()->fromUnicode(t));
+    QTextCodec *tc = QTextCodec::codecForName(m_charsetEncoding.encodingName.toLatin1());
+
+    if (!tc)
+    {
+        QMessageBox::warning(this, tr("Unsupported encoding"),
+            tr("The encoding %s is unsupported on this computer. Switch to the default encoding UTF-8").arg(m_charsetEncoding.encodingName));
+        m_charsetEncoding = IOHelper::getEncodingFromAlias("UTF-8");
+        tc = QTextCodec::codecForName(m_charsetEncoding.encodingName.toUtf8());
+    }
+
+    text = tc->fromUnicode(t);
 #else
-    file.write(AppManagement::encodeStringFromDefaultCodec(t));
+    QStringEncoder encoder(m_charsetEncoding.encodingName.toLatin1());
+
+    if (!encoder.isValid())
+    {
+        QMessageBox::warning(
+            this,
+            tr("Unsupported encoding"),
+            tr("The encoding %s is unsupported on this computer. Switch to the default encoding "
+               "UTF-8")
+                .arg(m_charsetEncoding.encodingName));
+        m_charsetEncoding = IOHelper::getEncodingFromAlias("UTF-8");
+        encoder = QStringEncoder(m_charsetEncoding.encodingName.toUtf8());
+    }
+
+    text = encoder(t);
 #endif
-    
+
+    file.write(text);
     file.close();
     QFileInfo fi(getFilename());
 
@@ -1885,9 +2091,9 @@ RetVal ScriptEditorWidget::saveAsFile(bool askFirst)
     QString defaultPath = QDir::currentPath();
     QFile file;
 
-    //we need to block the signals from the file system watcher, since a crash will occur if this file is renamed 
+    //we need to block the signals from the file system watcher, since a crash will occur if this file is renamed
     //during the save as process (the 'remove file due to rename' dialog will appear during the save-as dialog if the signal is not blocked)
-    m_pFileSysWatcher->blockSignals(true); 
+    m_pFileSysWatcher->blockSignals(true);
     QString tempFileName = QFileDialog::getSaveFileName(this, tr("Save As..."), defaultPath, "Python (*.py)");
     m_pFileSysWatcher->blockSignals(false);
     if (!tempFileName.isEmpty())
@@ -1900,7 +2106,7 @@ RetVal ScriptEditorWidget::saveAsFile(bool askFirst)
         return RetVal(retError);
     }
 
-    if (! file.open(QIODevice::WriteOnly | QIODevice::Text))
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
         QMessageBox::warning(this, tr("Error while accessing file"), tr("File %1 could not be accessed").arg(getFilename()));
         return RetVal(retError);
@@ -1910,15 +2116,60 @@ RetVal ScriptEditorWidget::saveAsFile(bool askFirst)
 
     //todo
     //convertEols(QsciScintilla::EolUnix);
-    
+
     QString t = toPlainText();
+    QByteArray text;
+
+    if (m_charsetEncodingAutoGuess)
+    {
+        auto encoding = guessEncoding(t.toUtf8());
+
+        if (encoding.encodingName != m_charsetEncoding.encodingName)
+        {
+            int ret = QMessageBox::question(
+                this,
+                tr("Inconsistent encoding"),
+                tr("The coding tag %1 does not correspond to the file encoding %2. Use %1 as new file encoding?").arg(encoding.encodingName).arg(m_charsetEncoding.encodingName),
+                QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes
+            );
+
+            if (ret & QMessageBox::Yes)
+            {
+                m_charsetEncoding = encoding;
+            }
+        }
+    }
 
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-    file.write(AppManagement::getScriptTextCodec()->fromUnicode(t));
-#else
-    file.write(AppManagement::encodeStringFromDefaultCodec(t));
-#endif
+    QTextCodec *tc = QTextCodec::codecForName(m_charsetEncoding.encodingName.toLatin1());
 
+    if (!tc)
+    {
+        QMessageBox::warning(this, tr("Unsupported encoding"),
+            tr("The encoding %s is unsupported on this computer. Switch to the default encoding UTF-8").arg(m_charsetEncoding.encodingName));
+        m_charsetEncoding = IOHelper::getEncodingFromAlias("UTF-8");
+        tc = QTextCodec::codecForName(m_charsetEncoding.encodingName.toUtf8());
+    }
+
+    text = tc->fromUnicode(t);
+#else
+    QStringEncoder encoder(m_charsetEncoding.encodingName.toLatin1());
+
+    if (!encoder.isValid())
+    {
+        QMessageBox::warning(
+            this,
+            tr("Unsupported encoding"),
+            tr("The encoding %s is unsupported on this computer. Switch to the default encoding "
+               "UTF-8")
+                .arg(m_charsetEncoding.encodingName));
+        m_charsetEncoding = IOHelper::getEncodingFromAlias("UTF-8");
+        encoder = QStringEncoder(m_charsetEncoding.encodingName.toUtf8());
+    }
+
+    text = encoder(t);
+#endif
+    file.write(text);
     file.close();
 
     changeFilename(tempFileName);
@@ -1948,7 +2199,7 @@ RetVal ScriptEditorWidget::saveAsFile(bool askFirst)
     \sa triggerCodeChecker
 */
 void ScriptEditorWidget::codeCheckResultsReady(QList<ito::CodeCheckerItem> codeCheckerItems)
-{ 
+{
     codeCheckerResultsChanged(codeCheckerItems);
 }
 
@@ -1958,7 +2209,7 @@ void ScriptEditorWidget::codeCheckResultsReady(QList<ito::CodeCheckerItem> codeC
     \param codeCheckerItems list of all current code checker result messages for this file
 */
 void ScriptEditorWidget::codeCheckerResultsChanged(const QList<ito::CodeCheckerItem> &codeCheckerItems)
-{ 
+{
     //at first: remove all errors... from existing blocks
     foreach (TextBlockUserData *userData, textBlockUserDataList())
     {
@@ -2001,11 +2252,11 @@ void ScriptEditorWidget::triggerCodeChecker()
     {
         QString filename = getFilename();
         bool savedFile = (isModified() == false) && filename != "";
-        QMetaObject::invokeMethod(pyEng, "pythonCodeCheck", 
-            Q_ARG(QString, this->toPlainText()), 
+        QMetaObject::invokeMethod(pyEng, "pythonCodeCheck",
+            Q_ARG(QString, this->toPlainText()),
             Q_ARG(QString, filename),
             Q_ARG(bool, savedFile),
-            Q_ARG(QPointer<QObject>, QPointer<QObject>(this)), 
+            Q_ARG(QPointer<QObject>, QPointer<QObject>(this)),
             Q_ARG(QByteArray, "codeCheckResultsReady"));
     }
 }
@@ -2027,10 +2278,10 @@ void ScriptEditorWidget::updateSyntaxCheck()
 
 //----------------------------------------------------------------------------------------------------------------------------------
 bool ScriptEditorWidget::event(QEvent *event)
-{ 
+{
     if (event->type() == QEvent::KeyRelease)
     {
-        // SyntaxCheck   
+        // SyntaxCheck
         if (m_pythonExecutable && m_codeCheckerEnabled)
         {
             if (m_codeCheckerCallTimer)
@@ -2040,7 +2291,7 @@ bool ScriptEditorWidget::event(QEvent *event)
         }
 
         if (m_outlineTimerEnabled)
-        {   
+        {
             // Class Navigator if Timer is active
             m_outlineTimer->start();
         }
@@ -2049,8 +2300,8 @@ bool ScriptEditorWidget::event(QEvent *event)
 
         //check if a go back navigation item should be signalled
         //here: the cursor was moved by a mouse click, followed by a destructive action (backspace, delete...)
-        if (m_cursorJumpLastAction && 
-            !textCursor().isNull() && 
+        if (m_cursorJumpLastAction &&
+            !textCursor().isNull() &&
             ((keyEvent->key() == Qt::Key_Backspace) ||
                 (keyEvent->key() == Qt::Key_Delete))
             )
@@ -2134,7 +2385,7 @@ void ScriptEditorWidget::keyPressEvent(QKeyEvent *event)
 void ScriptEditorWidget::mousePressEvent(QMouseEvent *event)
 {
     //make a local copy, since the global editor cursor pos is already changed before the release event
-    m_cursorBeforeMouseClick = currentGlobalEditorCursorPos; 
+    m_cursorBeforeMouseClick = currentGlobalEditorCursorPos;
 
     AbstractCodeEditorWidget::mousePressEvent(event);
 }
@@ -2171,8 +2422,8 @@ void ScriptEditorWidget::toggleBookmarkRequested(int line)
     {
         m_pBookmarkModel->addBookmark(item);
     }
-    
-    
+
+
 }
 
 //-------------------------------------------------------------------------------------
@@ -2220,7 +2471,7 @@ void ScriptEditorWidget::onBookmarkDeleted(const BookmarkItem &item)
 //-------------------------------------------------------------------------------------
 bool ScriptEditorWidget::lineAcceptsBPs(int line)
 {
-    // Check if it's a blank or comment line 
+    // Check if it's a blank or comment line
     for (int i = 0; i < this->lineLength(line); ++i)
     {
         QChar c = this->lineText(line).at(i);
@@ -2229,8 +2480,8 @@ bool ScriptEditorWidget::lineAcceptsBPs(int line)
             return true;
         }
         else if (this->lineText(line)[i] == '#' || i == this->lineLength(line)-1)
-        { 
-            // up to now there have only been '\t'or' ' if there is a '#' now, 
+        {
+            // up to now there have only been '\t'or' ' if there is a '#' now,
             // return ORend of line reached an nothing found
             return false;
         }
@@ -2268,7 +2519,7 @@ RetVal ScriptEditorWidget::toggleBreakpoint(int line)
             bpModel->addBreakPoint(bp);
         }
 
-        m_breakpointPanel->update();
+        panels()->refresh();
 
         return RetVal(retOk);
     }
@@ -2300,7 +2551,7 @@ RetVal ScriptEditorWidget::toggleEnableBreakpoint(int line)
                 bpModel->changeBreakPoint(indexList.at(i), item);
             }
 
-            m_breakpointPanel->update();
+            panels()->refresh();
             return RetVal(retOk);
         }
     }
@@ -2336,7 +2587,7 @@ RetVal ScriptEditorWidget::editBreakpoint(int line)
                 item = bpModel->getBreakPoint(index);
 
                 DialogEditBreakpoint *dlg = new DialogEditBreakpoint(
-                    item.filename, line + 1, item.enabled, item.temporary, 
+                    item.filename, line + 1, item.enabled, item.temporary,
                     item.ignoreCount, item.condition, this
                 );
                 dlg->setModal(true);
@@ -2350,7 +2601,7 @@ RetVal ScriptEditorWidget::editBreakpoint(int line)
                 }
 
                 DELETE_AND_SET_NULL(dlg);
-                m_breakpointPanel->update();
+                panels()->refresh();
                 return RetVal(retOk);
             }
         }
@@ -2362,7 +2613,7 @@ RetVal ScriptEditorWidget::editBreakpoint(int line)
 //-------------------------------------------------------------------------------------
 RetVal ScriptEditorWidget::clearAllBreakpoints()
 {
-    if (getFilename() == "") 
+    if (getFilename() == "")
     {
         return RetVal(retError);
     }
@@ -2374,7 +2625,7 @@ RetVal ScriptEditorWidget::clearAllBreakpoints()
         bpModel->deleteBreakPoints(bpModel->getBreakPointIndizes(getFilename()));
     }
 
-    m_breakpointPanel->update();
+    panels()->refresh();
 
     return RetVal(retOk);
 }
@@ -2645,7 +2896,7 @@ void ScriptEditorWidget::printPreviewRequested(QPrinter *printer)
 RetVal ScriptEditorWidget::changeFilename(const QString &newFilename)
 {
     QString oldFilename = getFilename();
-    
+
     if (oldFilename.isNull())
     {
         if (newFilename == "" || newFilename.isNull())
@@ -2822,7 +3073,7 @@ void ScriptEditorWidget::nrOfLinesChanged()
         ++bmLUTit;
     }
 
-    // SyntaxCheck   
+    // SyntaxCheck
     if (m_pythonExecutable && m_codeCheckerEnabled)
     {
         if (m_codeCheckerCallTimer)
@@ -2886,7 +3137,7 @@ void ScriptEditorWidget::pythonStateChanged(tPythonTransitions pyTransition)
 
 //-------------------------------------------------------------------------------------
 //this signal may be emitted multiple times at once for the same file, therefore the mutex protection is introduced
-void ScriptEditorWidget::fileSysWatcherFileChanged(const QString &path) 
+void ScriptEditorWidget::fileSysWatcherFileChanged(const QString &path)
 {
     if (path == getFilename())
     {
@@ -2910,7 +3161,7 @@ void ScriptEditorWidget::fileSysWatcherFileChanged(const QString &path)
             );
         }
         else //file changed
-        {    
+        {
             QTimer::singleShot(100, this, std::bind(
                 &ScriptEditorWidget::fileSysWatcherFileChangedStep2,
                 this,
@@ -2954,12 +3205,37 @@ void ScriptEditorWidget::fileSysWatcherFileChangedStep2(const QString &path)
         }
         else //file changed
         {
+            // compare the content of the file with the content of this script...
             QCryptographicHash fileHash(QCryptographicHash::Sha1);
             file.open(QIODevice::ReadOnly | QIODevice::Text);
             fileHash.addData(file.readAll());
 
+            QByteArray currentByteArray;
+
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+            QTextCodec* tc = QTextCodec::codecForName(m_charsetEncoding.encodingName.toLatin1());
+
+            if (!tc)
+            {
+                // fallback to utf8
+                tc = QTextCodec::codecForName("UTF-8");
+            }
+
+            currentByteArray = tc->fromUnicode(toPlainText());
+#else
+            QStringEncoder encoder(m_charsetEncoding.encodingName.toLatin1());
+
+            if (!encoder.isValid())
+            {
+                // fallback to utf8
+                encoder = QStringEncoder("UTF-8");
+            }
+
+            currentByteArray = encoder(toPlainText());
+#endif
+
             QCryptographicHash fileHash2(QCryptographicHash::Sha1);
-            fileHash2.addData(toPlainText().toLatin1());
+            fileHash2.addData(currentByteArray);
 
             if (!(fileHash.result() == fileHash2.result())) //does not ask user in the case of same texts
             {
@@ -2973,7 +3249,14 @@ void ScriptEditorWidget::fileSysWatcherFileChangedStep2(const QString &path)
 
                 if (ret == QMessageBox::Yes)
                 {
+                    int line, col;
+                    cursorPosition(line, col);
+
                     openFile(path, true);
+
+                    // try to apply the cursor position again
+                    setCursorPosAndEnsureVisible(line);
+                    setCursorPosition(line, col);
                 }
                 else
                 {
@@ -2993,7 +3276,7 @@ void ScriptEditorWidget::fileSysWatcherFileChangedStep2(const QString &path)
 
 //-------------------------------------------------------------------------------------
 QSharedPointer<OutlineItem> ScriptEditorWidget::checkBlockForOutlineItem(
-    int startLineIdx, 
+    int startLineIdx,
     int endLineIdx) const
 {
     int lineIndex = startLineIdx;
@@ -3015,7 +3298,7 @@ QSharedPointer<OutlineItem> ScriptEditorWidget::checkBlockForOutlineItem(
 
     //auto classMatch = m_regExpClass.match("class MyClass:  # comment");
     //qDebug() << classMatch.hasMatch() << classMatch.hasPartialMatch() << classMatch.capturedTexts();
-        
+
     auto classMatch = m_regExpClass.match(line);
 
     if (classMatch.hasMatch())
@@ -3050,7 +3333,7 @@ QSharedPointer<OutlineItem> ScriptEditorWidget::checkBlockForOutlineItem(
         //it again (max. 30 lines).
         methodMatch = m_regExpMethod.match(line);
 
-        
+
 
         while (!methodMatch.hasMatch() &&
             lineIndex <= endLineIdx)
@@ -3078,7 +3361,7 @@ QSharedPointer<OutlineItem> ScriptEditorWidget::checkBlockForOutlineItem(
             item->m_endLineIdx = endLineIdx;
             item->m_async = methodMatch.captured("async")
                 .trimmed()
-                .startsWith("async", Qt::CaseInsensitive) 
+                .startsWith("async", Qt::CaseInsensitive)
                 ? true : false;
 
             // check for decorator
@@ -3208,7 +3491,7 @@ QSharedPointer<OutlineItem> ScriptEditorWidget::parseOutline(bool forceParsing /
 //-------------------------------------------------------------------------------------
 /* slot called if the outline timer expired. This is the case if the document has
 been changed a very short time ago. Therefore, the outline has to be parsed again
-and sent to the script dock widget. 
+and sent to the script dock widget.
 
 This method is also directly called if a new file is opened in this editor.
 */
@@ -3240,7 +3523,7 @@ void ScriptEditorWidget::dumpFoldsToConsole(bool)
 
         if (1 || trigger)
         {
-            std::cout << QString(4 * lvl, ' ').toLatin1().constData() << "Block " << block.blockNumber() + 1 << ": lvl " << lvl << ", trigger: " << trigger << 
+            std::cout << QString(4 * lvl, ' ').toLatin1().constData() << "Block " << block.blockNumber() + 1 << ": lvl " << lvl << ", trigger: " << trigger <<
                 " parent: valid: " << tb.isValid() << ", nr: " << tb.blockNumber() + 1 << "\n" << std::endl;
         }
 
@@ -3248,16 +3531,16 @@ void ScriptEditorWidget::dumpFoldsToConsole(bool)
         {
             FoldScope scope(block, valid);
             QPair<int,int> range = scope.getRange();
-            
 
-            std::cout << QString(4 * lvl, ' ').toLatin1().constData() << " --> [" << range.first+1 << 
-                "-" << range.second+1 << "] << ," << scope.scopeLevel() << ", " << scope.triggerLevel() << 
+
+            std::cout << QString(4 * lvl, ' ').toLatin1().constData() << " --> [" << range.first+1 <<
+                "-" << range.second+1 << "] << ," << scope.scopeLevel() << ", " << scope.triggerLevel() <<
                 " parent: valid: " << tb.isValid() << ", nr: " << tb.blockNumber() + 1 << "\n" << std::endl;
 
         }
-        
+
         block = block.next();
-    }  
+    }
 }
 
 //-----------------------------------------------------------
@@ -3285,7 +3568,7 @@ void ScriptEditorWidget::reportGoBackNavigationCursorMovement(const CursorPositi
         if (editor)
         {
             item.filename = editor->getFilename();
-            
+
             QString shortText = editor->lineText(lineIndex).trimmed();
 
             if (shortText.size() > 40)
@@ -3302,7 +3585,7 @@ void ScriptEditorWidget::reportGoBackNavigationCursorMovement(const CursorPositi
 
         /*if (item.filename != "")
         {
-            std::cout << "addGoBackNavigationItem: " << item.origin.toLatin1().data() << "::" << 
+            std::cout << "addGoBackNavigationItem: " << item.origin.toLatin1().data() << "::" <<
                 item.filename.toLatin1().data() << "(" << lineIndex + 1 << ":" << item.column << ")\n" << std::endl;
         }
         else

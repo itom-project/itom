@@ -1802,9 +1802,9 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location line="+782"/>
-        <source>%s with message: 
+        <source>%s with message:
 %s</source>
-        <translation>%s 指定消息: 
+        <translation>%s 指定消息:
 %s</translation>
     </message>
     <message>
@@ -1814,7 +1814,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location line="+3"/>
-        <source>Could not load plugin %s with error message: 
+        <source>Could not load plugin %s with error message:
 %s</source>
         <translation>无法加载插件%s，错误信息是%s</translation>
     </message>
@@ -1825,7 +1825,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location line="+3"/>
-        <source>Error executing function %s with error message: 
+        <source>Error executing function %s with error message:
 %s</source>
         <translation>无法执行函数%s，错误信息是%s</translation>
     </message>
@@ -1836,7 +1836,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location line="+3"/>
-        <source>Error invoking function %s with error message: 
+        <source>Error invoking function %s with error message:
 %s</source>
         <translation>无法调用函数%s，错误信息是%s</translation>
     </message>
@@ -1847,7 +1847,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location line="+3"/>
-        <source>Error while getting property info %s with error message: 
+        <source>Error while getting property info %s with error message:
 %s</source>
         <translation>获取属性%s错误，错误信息是%s</translation>
     </message>
@@ -1858,7 +1858,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location line="+3"/>
-        <source>Error invoking exec-function %s with error message: 
+        <source>Error invoking exec-function %s with error message:
 %s</source>
         <translation>无法执行函数%s，错误信息是%s</translation>
     </message>
@@ -1869,9 +1869,9 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location line="+20"/>
-        <source>Warning while %s: 
+        <source>Warning while %s:
 %s</source>
-        <translation>当%s: 
+        <translation>当%s:
 %s时出现警告</translation>
     </message>
     <message>
@@ -1881,7 +1881,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location line="+3"/>
-        <source>Warning while loading plugin %s: 
+        <source>Warning while loading plugin %s:
 %s</source>
         <translation>加载插件%s时有警告: %s</translation>
     </message>
@@ -1892,7 +1892,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location line="+3"/>
-        <source>Warning while executing function %s: 
+        <source>Warning while executing function %s:
 %s</source>
         <translation>&gt;执行函数%s时有警告: %s</translation>
     </message>
@@ -1903,7 +1903,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location line="+3"/>
-        <source>Warning while invoking function %s: 
+        <source>Warning while invoking function %s:
 %s</source>
         <translation>调用函数%s时有警告: %s</translation>
     </message>
@@ -1914,7 +1914,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location line="+3"/>
-        <source>Warning while getting property info %s: 
+        <source>Warning while getting property info %s:
 %s</source>
         <translation>当获取属性信息%s时有警告: %s</translation>
     </message>
@@ -1925,7 +1925,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location line="+3"/>
-        <source>Warning while invoking exec-function %s: 
+        <source>Warning while invoking exec-function %s:
 %s</source>
         <translation>当执行函数%s时有警告: %s</translation>
     </message>
@@ -3993,7 +3993,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location line="+95"/>
-        <source>Error while creating new instance. 
+        <source>Error while creating new instance.
 Message: %1</source>
         <translation>创建新实例时出错。消息: &apos;%1&apos;</translation>
     </message>
@@ -4683,15 +4683,15 @@ Message: %1</source>
     </message>
     <message>
         <location line="+1"/>
-        <source>If you try to install / upgrade Numpy if itom is already running, a file access error might occur, since itom already uses parts of Numpy. 
+        <source>If you try to install / upgrade Numpy if itom is already running, a file access error might occur, since itom already uses parts of Numpy.
 
-You have now three possibilities: 
-1. Try to continue the installation in spite of possible problems by clicking &apos;Ignore&apos; 
-2. Click &apos;OK&apos;, close and restart itom. Then this package manager is opened as standalone application and you can install or upgrade Numpy and other packages. After another restart, itom is restarted as usual. 
-3. Click &apos;Cancel&apos; to cancel the installation process without any changes. 
+You have now three possibilities:
+1. Try to continue the installation in spite of possible problems by clicking &apos;Ignore&apos;
+2. Click &apos;OK&apos;, close and restart itom. Then this package manager is opened as standalone application and you can install or upgrade Numpy and other packages. After another restart, itom is restarted as usual.
+3. Click &apos;Cancel&apos; to cancel the installation process without any changes.
 
-Information: 
-If the case of the restart (&apos;OK&apos;), an empty file &apos;restart_itom_with_pip_manager.txt&apos; is created in the directory &apos;%1&apos;. If itom locates this file at startup, the pip manager is directly started. 
+Information:
+If the case of the restart (&apos;OK&apos;), an empty file &apos;restart_itom_with_pip_manager.txt&apos; is created in the directory &apos;%1&apos;. If itom locates this file at startup, the pip manager is directly started.
 
 It is also possible to directly start the package manager by calling the itom application with the argument &apos;pipManager&apos;.</source>
         <translation></translation>
@@ -4769,7 +4769,7 @@ It is also possible to directly start the package manager by calling the itom ap
     <name>ito::DialogPluginPicker</name>
     <message>
         <location filename="../ui/dialogPluginPicker.cpp" line="+178"/>
-        <source>Error while creating new instance. 
+        <source>Error while creating new instance.
 Message: %1</source>
         <translation>创建新实例时出错。消息: &apos;%1&apos;</translation>
     </message>
@@ -5947,7 +5947,7 @@ Message: %1</source>
     </message>
     <message>
         <location line="+51"/>
-        <source>No help database available! 
+        <source>No help database available!
  go to Properties File -&gt; General -&gt; Helpviewer and check the selection</source>
         <translation>无帮助数据库!到属性文件&gt;General&gt;中，查看帮助浏览器检查选项</translation>
     </message>
@@ -6124,7 +6124,7 @@ Message: %1</source>
     </message>
     <message>
         <location line="-385"/>
-        <source>Please indicate a variable name for the dictionary in file &apos;%1&apos; 
+        <source>Please indicate a variable name for the dictionary in file &apos;%1&apos;
 (name must start with a letter followed by numbers or letters).</source>
         <translation>请为文件&apos;%1&apos;中的字典指定一变量名称，名称必须以字符开始后接数字或字符</translation>
     </message>
@@ -6605,7 +6605,7 @@ Message: %1</source>
     </message>
     <message>
         <location line="+79"/>
-        <source>Python could not be started. itom cannot be used in the desired way. 
+        <source>Python could not be started. itom cannot be used in the desired way.
 Start itom again with the argument &apos;log&apos; and look-up the error message in the file itomlog.txt.</source>
         <translation>Python不能启动， itom不能按照预期运行，
 使用参数&apos;log&apos;重新启动itom，在文件&apos;itomlog.txt&apos;中查看错误信息.</translation>
@@ -7118,7 +7118,7 @@ Please change setting in the property dialog of itom.</source>
     <message>
         <location line="+35"/>
         <source>The home directory of Python is currently set to the non-existing directory &apos;%s&apos;
-Python cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python 
+Python cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python
 or correct the base directory in the property dialog of itom.</source>
         <translation>设置的Python主目录(&apos;%s&apos;)不存在；Python无法启动。
 请在itom属性对话框中，将环境变量PYTHONHOME设置为python基目录或其它正确的目录。</translation>
@@ -7126,7 +7126,7 @@ or correct the base directory in the property dialog of itom.</source>
     <message>
         <location line="+17"/>
         <source>The built-in library path of Python could not be found. The current home directory is &apos;%s&apos;
-Python cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python 
+Python cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python
 or correct the base directory in the preferences dialog of itom.</source>
         <translation>无法找到python内置库路径。当前主目录是&apos;%s&apos;Python无法启动。
 请在itom首选对话框中，将环境变量PYTHONHOME设置为python基目录或其它正确的目录。</translation>
@@ -7285,7 +7285,7 @@ Please change setting in the property dialog of itom.</source>
     <message>
         <location line="+35"/>
         <source>The home directory of Python is currently set to the non-existing directory &apos;%s&apos;
-Python cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python 
+Python cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python
 or correct the base directory in the property dialog of itom.</source>
         <translation>设置的Python主目录(&apos;%s&apos;)不存在；Python无法启动。
 请在itom属性对话框中，将环境变量PYTHONHOME设置为python基目录或其它正确的目录。</translation>
@@ -7293,7 +7293,7 @@ or correct the base directory in the property dialog of itom.</source>
     <message>
         <location line="+17"/>
         <source>The built-in library path of Python could not be found. The current home directory is &apos;%s&apos;
-Python cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python 
+Python cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python
 or correct the base directory in the preferences dialog of itom.</source>
         <translation>Python&apos;内置库&apos;路径未找到。 当前主目录是&apos;%s&apos;，Python无法启动。
         请在itom首选对话框中，将环境变量PYTHONHOME设置为python基目录或其它正确的目录。</translation>

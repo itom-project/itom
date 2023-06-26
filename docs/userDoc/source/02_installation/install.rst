@@ -7,7 +7,7 @@ In this section we want to show you how to get and install |itom| on your comput
 
 .. toctree::
     :maxdepth: 2
-    
+
     install_min_system_requirements.rst
     install_installation_from_setup.rst
     install_build_from_source.rst

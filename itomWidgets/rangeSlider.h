@@ -10,7 +10,7 @@
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
-   
+
     In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
@@ -24,7 +24,7 @@
     You should have received a copy of the GNU Library General Public License
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 
-    This file is a port and modified version of the 
+    This file is a port and modified version of the
     Common framework (http://www.commontk.org)
 *********************************************************************** */
 
@@ -47,8 +47,8 @@ namespace ito {
 ///
 /// A RangeSlider is a slider that lets you input 2 values instead of one
 /// (see QSlider). These values are typically a lower and upper bound.
-/// Values are comprised between the range of the slider. See setRange(), 
-/// minimum() and maximum(). The upper bound can't be smaller than the 
+/// Values are comprised between the range of the slider. See setRange(),
+/// minimum() and maximum(). The upper bound can't be smaller than the
 /// lower bound and vice-versa.
 /// When setting new values (setMinimumValue(), setMaximumValue() or
 /// setValues()), make sure they lie between the range (minimum(), maximum())
@@ -73,7 +73,7 @@ class ITOMWIDGETS_EXPORT RangeSlider : public QSlider
   Q_PROPERTY(bool symmetricMoves READ symmetricMoves WRITE setSymmetricMoves)
   Q_PROPERTY(QString handleToolTip READ handleToolTip WRITE setHandleToolTip)
   Q_PROPERTY(bool useStyleSheets READ useStyleSheets WRITE setUseStyleSheets) // special property to allow a basic support for style sheets (else one handle is not displayed among others)
-  Q_PROPERTY(float handleBorderRadius READ handleBorderRadius WRITE setHandleBorderRadius) // special property to indicate the border radius of the handles (only if useStyleSheets is true) 
+  Q_PROPERTY(float handleBorderRadius READ handleBorderRadius WRITE setHandleBorderRadius) // special property to indicate the border radius of the handles (only if useStyleSheets is true)
 
 public:
   // Superclass typedef
@@ -85,57 +85,57 @@ public:
   explicit RangeSlider( QWidget* par = 0 );
   virtual ~RangeSlider();
 
-  /// 
+  ///
   /// This property holds the slider's current minimum value.
-  /// The slider silently forces minimumValue to be within the legal range: 
+  /// The slider silently forces minimumValue to be within the legal range:
   /// minimum() <= minimumValue() <= maximumValue() <= maximum().
   /// Changing the minimumValue also changes the minimumPosition.
   int minimumValue() const;
 
-  /// 
+  ///
   /// This property holds the slider's current maximum value.
-  /// The slider forces the maximum value to be within the legal range: 
-  /// The slider silently forces maximumValue to be within the legal range: 
+  /// The slider forces the maximum value to be within the legal range:
+  /// The slider silently forces maximumValue to be within the legal range:
   /// Changing the maximumValue also changes the maximumPosition.
   int maximumValue() const;
 
-  /// 
+  ///
   /// This property holds the current slider minimum position.
   /// If tracking is enabled (the default), this is identical to minimumValue.
   int minimumPosition() const;
   void setMinimumPosition(int min);
 
-  /// 
+  ///
   /// This property holds the current slider maximum position.
   /// If tracking is enabled (the default), this is identical to maximumValue.
   int maximumPosition() const;
   void setMaximumPosition(int max);
 
-  /// 
+  ///
   /// This property holds the step size for the left or right slider position.
   /// If the stepSize is equal to 1, this property has no impact.
   uint stepSizePosition() const;
   void setStepSizePosition(uint stepSize);
-  
-  /// 
+
+  ///
   /// This property holds the minimum allowed range.
   /// The range is (1+maximumRange-minimumRange) if rangeIncludeLimits is true, else (maximumRange-minimumRange)
   uint minimumRange() const;
   void setMinimumRange(uint min);
-  
-  /// 
+
+  ///
   /// This property holds the maximum allowed range.
   /// The range is (1+maximumRange-minimumRange) if rangeIncludeLimits is true, else (maximumRange-minimumRange)
   uint maximumRange() const;
   void setMaximumRange(uint max);
-  
-  /// 
+
+  ///
   /// This property holds the step size of the allowed range.
   /// The range is (1+maximumRange-minimumRange) if rangeIncludeLimits is true, else (maximumRange-minimumRange)
   uint stepSizeRange() const;
   void setStepSizeRange(uint stepSize);
-  
-  /// 
+
+  ///
   /// This property indicates if the range is assumed to be (1+maximumRange-minimumRange) (true)
   /// or (maximumRange-minimumRange) (false). The first case is important if the rangeSlider
   /// is used for ROIs of cameras, where the first and last value are inside of the ROI.
@@ -146,11 +146,11 @@ public:
   /// Utility function that set the minimum position and
   /// maximum position at once.
   void setPositions(int min, int max);
-  
+
   ///
   /// When symmetricMoves is true, moving a handle will move the other handle
   /// symmetrically, otherwise the handles are independent. False by default
-  bool symmetricMoves()const; 
+  bool symmetricMoves()const;
   void setSymmetricMoves(bool symmetry);
 
   ///
@@ -168,7 +168,7 @@ public:
   /// Qt QStyleSheetStyle is not able to properly render two handles and a colored groove.
   float handleBorderRadius()const;
   void setHandleBorderRadius(float radius);
-  
+
   ///
   /// Controls the text to display for the handle tooltip. It is in addition
   /// to the widget tooltip.
@@ -192,11 +192,11 @@ public:
 
 signals:
   ///
-  /// This signal is emitted when the slider minimum value has changed, 
+  /// This signal is emitted when the slider minimum value has changed,
   /// with the new slider value as argument.
   void minimumValueChanged(int min);
   ///
-  /// This signal is emitted when the slider maximum value has changed, 
+  /// This signal is emitted when the slider maximum value has changed,
   /// with the new slider value as argument.
   void maximumValueChanged(int max);
   ///
@@ -204,36 +204,36 @@ signals:
   void valuesChanged(int min, int max);
 
   ///
-  /// This signal is emitted when sliderDown is true and the slider moves. 
-  /// This usually happens when the user is dragging the minimum slider. 
+  /// This signal is emitted when sliderDown is true and the slider moves.
+  /// This usually happens when the user is dragging the minimum slider.
   /// The value is the new slider minimum position.
   /// This signal is emitted even when tracking is turned off.
   void minimumPositionChanged(int min);
 
   ///
-  /// This signal is emitted when sliderDown is true and the slider moves. 
-  /// This usually happens when the user is dragging the maximum slider. 
+  /// This signal is emitted when sliderDown is true and the slider moves.
+  /// This usually happens when the user is dragging the maximum slider.
   /// The value is the new slider maximum position.
   /// This signal is emitted even when tracking is turned off.
   void maximumPositionChanged(int max);
 
   ///
-  /// Utility signal that is fired when minimum or maximum positions 
+  /// Utility signal that is fired when minimum or maximum positions
   /// have changed.
   void positionsChanged(int min, int max);
 
 public slots:
-  /// 
+  ///
   /// This property holds the slider's current minimum value.
-  /// The slider silently forces min to be within the legal range: 
+  /// The slider silently forces min to be within the legal range:
   /// minimum() <= min <= maximumValue() <= maximum().
   /// Note: Changing the minimumValue also changes the minimumPosition.
   /// \sa stMaximumValue, setValues, setMinimum, setMaximum, setRange
   void setMinimumValue(int min);
 
-  /// 
+  ///
   /// This property holds the slider's current maximum value.
-  /// The slider silently forces max to be within the legal range: 
+  /// The slider silently forces max to be within the legal range:
   /// minimum() <= minimumValue() <= max <= maximum().
   /// Note: Changing the maximumValue also changes the maximumPosition.
   /// \sa stMinimumValue, setValues, setMinimum, setMaximum, setRange
@@ -241,9 +241,9 @@ public slots:
 
   ///
   /// Utility function that set the minimum value and maximum value at once.
-  /// The slider silently forces min and max to be within the legal range: 
+  /// The slider silently forces min and max to be within the legal range:
   /// minimum() <= min <= max <= maximum().
-  /// Note: Changing the minimumValue and maximumValue also changes the 
+  /// Note: Changing the minimumValue and maximumValue also changes the
   /// minimumPosition and maximumPosition.
   /// \sa setMinimumValue, setMaximumValue, setMinimum, setMaximum, setRange
   void setValues(int min, int max);
@@ -282,4 +282,3 @@ private:
 };
 
 #endif
-

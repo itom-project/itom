@@ -30,7 +30,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include "../organizer/paletteOrganizer.h"
 
 namespace ito
-{  
+{
 
 class WidgetPropPalettes; //!> forward declaration
 
@@ -40,11 +40,11 @@ class ColCurve : public QObject, public QGraphicsPathItem
     Q_OBJECT
 
     public:
-        ColCurve(WidgetPropPalettes *parentWidget, int colChannel, QObject *parent = NULL) 
-            : QObject(parent), QGraphicsPathItem(), 
+        ColCurve(WidgetPropPalettes *parentWidget, int colChannel, QObject *parent = NULL)
+            : QObject(parent), QGraphicsPathItem(),
             m_parentWidget(parentWidget), m_colChannel(colChannel),
             m_editable(true)
-        { 
+        {
         }
 
         int getColChannel() const { return m_colChannel; }
@@ -123,7 +123,7 @@ class WidgetPropPalettes : public AbstractPropertyPageWidget
         void lwCurrentRowChanged(int row);
         void colorComponentChanged(int value);
         void colorComponentVisibilityChanged(bool);
-        
+
         void palSpecialColorChanged(QColor color);
 
     private slots:

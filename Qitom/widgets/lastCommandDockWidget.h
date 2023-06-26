@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -41,7 +41,7 @@ namespace ito
     public:
         LastCommandTreeWidget(QWidget * parent = 0) : QTreeWidget(parent) {};
         virtual ~LastCommandTreeWidget() {};
-    
+
     protected:
         QStringList mimeTypes() const;
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)

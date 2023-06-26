@@ -33,7 +33,7 @@ If you need to modify the sequence you are iterating over while inside the loop 
 
 .. code-block:: python
     :linenos:
-    
+
     for w in words[:]:      # Loop over a slice copy of the entire list.
         if len(w) > 6:
             words.insert(0, w)
@@ -60,7 +60,7 @@ The given end point is never part of the generated sequence; ``range(10)`` gener
 
 .. code-block:: python
     :linenos:
-    
+
     range(5, 10)                # 5 through 9
     range(0, 10, 3)             # 0, 3, 6, 9
     range(-10, -100, -30)       # -10, -40, -70
@@ -69,7 +69,7 @@ To iterate over the indices of a sequence, you can combine :py:func:`range` and 
 
 .. code-block:: python
     :linenos:
-    
+
     a = ['Mary', 'had', 'a', 'little', 'lamb']
     for i in range(len(a)):
         print(i, a[i])
@@ -121,7 +121,7 @@ The `continue` statement continues with the next iteration of the loop:
 
 .. code-block:: python
     :linenos:
-    
+
     for num in range(2, 10):
         if num % 2 == 0:
             print("Found an even number", num)

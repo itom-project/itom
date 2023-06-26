@@ -289,7 +289,11 @@ int ToolTipLabel::getTipScreen(const QPoint& pos, QWidget* w)
 }
 #endif
 
-void ToolTipLabel::placeTip(const QPoint &pos, QWidget *w, const QPoint &alternativeTopRightPos /*= QPoint()*/)
+void ToolTipLabel::placeTip(
+    const QPoint& pos,
+    QWidget* w,
+    const QPoint& alternativeTopRightPos /*= QPoint()*/,
+    bool doNotForceYToBeWithinScreen /*= false*/)
 {
 #ifndef QT_NO_STYLE_STYLESHEET
     if (testAttribute(Qt::WA_StyleSheet) || (w)) { // && qt_styleSheet(w->style()))) {
@@ -314,11 +318,11 @@ void ToolTipLabel::placeTip(const QPoint &pos, QWidget *w, const QPoint &alterna
 
     const auto screens = QGuiApplication::screens();
     QRect allScreensRect;
-    
+
     if (screens.size() > 0)
     {
         allScreensRect = screens[0]->geometry();
-    } 
+    }
 
     for (int i = 1; i < screens.size(); ++i)
     {
@@ -337,7 +341,7 @@ void ToolTipLabel::placeTip(const QPoint &pos, QWidget *w, const QPoint &alterna
             p.rx() = 2 + alternativeTopRightPos.x() - 4 - this->width();
         }
     }
-    
+
     if (p.y() + this->height() > allScreensRect.y() + allScreensRect.height())
     {
         if (alternativeTopRightPos.isNull())
@@ -350,7 +354,7 @@ void ToolTipLabel::placeTip(const QPoint &pos, QWidget *w, const QPoint &alterna
         }
     }
 
-    if (p.y() < allScreensRect.y())
+    if ((p.y() < allScreensRect.y()) && !doNotForceYToBeWithinScreen)
     {
         p.setY(allScreensRect.y());
     }
@@ -365,7 +369,8 @@ void ToolTipLabel::placeTip(const QPoint &pos, QWidget *w, const QPoint &alterna
         p.setX(allScreensRect.x());
     }
 
-    if (p.y() + this->height() > allScreensRect.y() + allScreensRect.height())
+    if ((p.y() + this->height() > allScreensRect.y() + allScreensRect.height()) &&
+        !doNotForceYToBeWithinScreen)
     {
         p.setY(allScreensRect.y() + allScreensRect.height() - this->height());
     }
@@ -397,18 +402,44 @@ bool ToolTipLabel::tipChanged(const QPoint &pos, const QString &text, QObject *o
     same as the currently shown tooltip, the tip will \e not move.
     You can force moving by first hiding the tip with an empty text,
     and then showing the new tip at the new position.
+
+    \param doNotForceYToBeWithinScreen usually the tooltip is either
+        below or above the desired position. However, if the tooltip is
+        to big in height, it will be vertically moved to not exceed the
+        screen limits. For code completions, this might lead to the
+        situation, that the tooltip overlaps the current cursor position.
+        If this is not desired, set this value to true.
 */
-void ToolTip::showText(const QPoint &pos, const QString &text, QWidget *w, const QRect &rect)
+void ToolTip::showText(
+    const QPoint& pos,
+    const QString& text,
+    QWidget* w,
+    const QRect& rect,
+    bool doNotForceYToBeWithinScreen /*= false*/)
 {
-    showText(pos, text, w, rect, -1);
+    showText(pos, text, w, rect, -1, QPoint(), doNotForceYToBeWithinScreen);
 }
 /*!
    \since 5.2
    \overload
    This is similar to ItomToolTip::showText(\a pos, \a text, \a w, \a rect) but with an extra parameter \a msecDisplayTime
    that specifies how long the tool tip will be displayed, in milliseconds.
+
+   \param doNotForceYToBeWithinScreen usually the tooltip is either
+        below or above the desired position. However, if the tooltip is
+        to big in height, it will be vertically moved to not exceed the
+        screen limits. For code completions, this might lead to the
+        situation, that the tooltip overlaps the current cursor position.
+        If this is not desired, set this value to true.
 */
-void ToolTip::showText(const QPoint &pos, const QString &text, QWidget *w, const QRect &rect, int msecDisplayTime, const QPoint &alternativeTopRightPos /* = QPoint()*/)
+void ToolTip::showText(
+    const QPoint& pos,
+    const QString& text,
+    QWidget* w,
+    const QRect& rect,
+    int msecDisplayTime,
+    const QPoint& alternativeTopRightPos /* = QPoint()*/,
+    bool doNotForceYToBeWithinScreen /*= false*/)
 {
     if (ToolTipLabel::instance && ToolTipLabel::instance->isVisible()) { // a tip does already exist
         if (text.isEmpty()) { // empty text means hide current tip
@@ -424,7 +455,8 @@ void ToolTip::showText(const QPoint &pos, const QString &text, QWidget *w, const
             if (ToolTipLabel::instance->tipChanged(localPos, text, w)) {
                 ToolTipLabel::instance->reuseTip(text, msecDisplayTime, pos);
                 ToolTipLabel::instance->setTipRect(w, rect);
-                ToolTipLabel::instance->placeTip(pos, w, alternativeTopRightPos);
+                ToolTipLabel::instance->placeTip(
+                    pos, w, alternativeTopRightPos, doNotForceYToBeWithinScreen);
             }
             return;
         }
@@ -442,7 +474,8 @@ void ToolTip::showText(const QPoint &pos, const QString &text, QWidget *w, const
         }();
         new ToolTipLabel(text, pos, tipLabelParent, msecDisplayTime);
         ToolTipLabel::instance->setTipRect(w, rect);
-        ToolTipLabel::instance->placeTip(pos, w, alternativeTopRightPos);
+        ToolTipLabel::instance->placeTip(
+            pos, w, alternativeTopRightPos, doNotForceYToBeWithinScreen);
         ToolTipLabel::instance->setObjectName(QLatin1String("ToolTip_label"));
         ToolTipLabel::instance->showNormal();
     }
@@ -451,9 +484,15 @@ void ToolTip::showText(const QPoint &pos, const QString &text, QWidget *w, const
     \overload
     This is analogous to calling ItomToolTip::showText(\a pos, \a text, \a w, QRect())
 */
-void ToolTip::showText(const QPoint &pos, const QString &text, QWidget *w, const QPoint &alternativeTopRightPos /*= QPoint()*/)
+void ToolTip::showText(
+    const QPoint& pos,
+    const QString& text,
+    QWidget* w,
+    const QPoint& alternativeTopRightPos /*= QPoint()*/,
+    bool doNotForceYToBeWithinScreen /*= false*/)
 {
-    ToolTip::showText(pos, text, w, QRect(), -1, alternativeTopRightPos);
+    ToolTip::showText(
+        pos, text, w, QRect(), -1, alternativeTopRightPos, doNotForceYToBeWithinScreen);
 }
 /*!
     \fn void ItomToolTip::hideText()

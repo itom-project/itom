@@ -418,7 +418,7 @@ void DataObjectMetaWidget::setData(QSharedPointer<ito::DataObject> dataObj)
         QStringList tempList = temp.split('\n', Qt::SkipEmptyParts);
 #else
         QStringList tempList = temp.split('\n', QString::SkipEmptyParts);
-#endif        
+#endif
         for (int i = 0; i < tempList.size(); i++)
         {
             data[0] = "";

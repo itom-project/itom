@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -44,7 +44,7 @@ class QTabWidgetItom : public QTabWidget
 
     public:
         QTabWidgetItom(QWidget * parent = 0) : QTabWidget(parent) {};
- 
+
         inline QTabBar* getTabBar() {return tabBar(); };
 
     protected:
@@ -68,7 +68,7 @@ class QTreeViewItom : public QTreeView
         ~QTreeViewItom () {}
 
         QModelIndexList selectedIndexes() const
-        { 
+        {
             QModelIndexList retList;
             for (int i = 0; i < QTreeView::selectedIndexes().length(); ++i)
             {
@@ -101,7 +101,7 @@ class QListViewItom : public QListView
         ~QListViewItom () {}
 
         QModelIndexList selectedIndexes() const
-        { 
+        {
             QModelIndexList retList;
             for (int i = 0; i < QListView::selectedIndexes().length(); ++i)
             {
@@ -134,7 +134,7 @@ class QTableViewItom : public QTableView
         ~QTableViewItom () {}
 
         QModelIndexList selectedIndexes() const
-        { 
+        {
             QModelIndexList retList;
             for (int i = 0; i < QTableView::selectedIndexes().length(); ++i)
             {

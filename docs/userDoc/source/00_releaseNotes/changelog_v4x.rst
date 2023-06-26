@@ -39,7 +39,7 @@ itom
   Both have an accuracy of microseconds. The ``datetime`` data type can also have a timezone (for Python >= 3.7 only) as difference to UTC.
   These data types are compatible to the Python types :py:class:`datetime.datetime` and :py:class:`datetime.timedelta` as
   well to the corresponding numpy data types. It is also possible to plot a XY-plot (plugin: itom1dqwtplot), whose x-data
-  is a ``datetime`` dataObject. The variable detail dialog (double click on corresponding workspace items) can also 
+  is a ``datetime`` dataObject. The variable detail dialog (double click on corresponding workspace items) can also
   visualize dataObjects or numpy arrays of these types. (`pull request 77 <https://bitbucket.org/itom/itom/pull-requests/77>`_)
 * Complete redesigned variable detail dialog for items in the workspace widgets, especially for variables of type
   dataObject or numpy.ndarray. In this case a table preview is shown for the array, including some basic information,
@@ -48,10 +48,10 @@ itom
   (`pull request 71 <https://bitbucket.org/itom/itom/pull-requests/71>`_)
 * Algorithms in algorithm plugins can now not only be called by the method :py:meth:`itom.filter` but also by the
   wrapper module :py:meth:`itom.algorithms`. This module is automatically generated at startup of itom and contains
-  all methods that are available in the current instance of itom. Due to auto-generated stub files, complete calltips 
+  all methods that are available in the current instance of itom. Due to auto-generated stub files, complete calltips
   and auto completions are available in the Python script editor if one starts typing the desired command. This means
   that a previous call of ``itom.filter("findMultiSpots", obj1, arg2,...)`` is now called by ``itom.algorithms.findMultiSpots(obj1, arg2, ...)``.
-* drag&drop of algorithm into script or console will now paste the new 
+* drag&drop of algorithm into script or console will now paste the new
   ``algorithms.myAlgo(...)`` formalism instead of ``filter("myAlgo", args)``.
 * Plugin Help Viewer shows algorithms and widgets in an alphabetic list
 * The properties ``yAxisFlipped`` and ``keepAspectRatio`` as well as the default color map of plots can now be set as default
@@ -69,7 +69,7 @@ itom
   supports ``rgba`` and ``datetime`` values. The widget also provides a new export-to-csv feature and a copy-to-clipboard
   feature, that can both provide a raw-text mime type as well as an html mime type, where the background color of the selected
   cells is exported, too.
-* Support for the Python plot package `plotly <https://pypi.org/project/plotly/>`_ is provided (also by a new plotly designer plugin). 
+* Support for the Python plot package `plotly <https://pypi.org/project/plotly/>`_ is provided (also by a new plotly designer plugin).
   See also `pull request 74 <https://bitbucket.org/itom/itom/pull-requests/74>`_.
 * If a :py:class:`numpy.ndarray` is converted to a :py:class:`itom.dataObject`, the original type and shape of the numpy array
   is stored in the special tags ``_orgNpShape`` and ``_orgNpDType``. This is for instance used to show the original type
@@ -84,14 +84,14 @@ itom
   to the last two dimension of the source dataObject instead of an object, whose number of dimension is equal to the dimensions
   of the source object.
 * Updated splash screen of itom (`pull request 78 <https://bitbucket.org/itom/itom/pull-requests/78>`_)
-* removed the deprecated method :py:meth:`itom.pointCloud.fromDisparity`. This method is equivalent to the 
-  already existing method :py:meth:`itom.pointCloud.fromTopography`. A warning was already set since 
+* removed the deprecated method :py:meth:`itom.pointCloud.fromDisparity`. This method is equivalent to the
+  already existing method :py:meth:`itom.pointCloud.fromTopography`. A warning was already set since
   a long time if the deprecated method has been used.
-* QPropertyEditorWidget: removed deprecated members and added a QPropertyEditorWidgetPrivate class for better 
+* QPropertyEditorWidget: removed deprecated members and added a QPropertyEditorWidgetPrivate class for better
   future improvements. This is an incompatible change and is therefore part of the AddInInterface version change to 6.0.0.
-* adapted colormap ``grayMarked`` to support a more robust visibility of red and violet extreme values, 
+* adapted colormap ``grayMarked`` to support a more robust visibility of red and violet extreme values,
   also in case of numerical calculation uncertainties
-* dataObject: ``getPhysToPix``: isInsideImage is set to true if the rounded pixel value, 
+* dataObject: ``getPhysToPix``: isInsideImage is set to true if the rounded pixel value,
   obtained from the given physical value, is inside the bounds of the dataObject.
 * default encoding of rst documentation files is utf-8
 
@@ -101,19 +101,19 @@ itom
 * Totally renewed demo section in the user documentation. All demo scripts are now added to a gallery view including the
   demo code snippets as well as plot outputs or other results (using the python package `Sphinx gallery <https://sphinx-gallery.github.io>`_).
 * Support for Python 3.10
-* `Pull request 73 <https://bitbucket.org/itom/itom/pull-requests/73>`_: changes in PythonEngine such that updates of the 
+* `Pull request 73 <https://bitbucket.org/itom/itom/pull-requests/73>`_: changes in PythonEngine such that updates of the
   workspaces will be delayed for several intermediate steps of minor importance, such that the total amount of time for all the updates will be reduced.
 * **parse_plugin_parameters_for_rst_files.py**: sort alphabetically and copy the resulting string to the clipboard
-* The **new plugin instance** dialog shows now a Hex-based spin box for char and integer parameters, 
+* The **new plugin instance** dialog shows now a Hex-based spin box for char and integer parameters,
   if their minimum value is >= 0 and their representation is set to HexNumber.
 * improved parameter representation, including meta information, in help viewer, documentation generation, ...
-* The widget ``dataObjectTable`` emits a signal ``selectionInformationChanged`` with basic math information about the current 
+* The widget ``dataObjectTable`` emits a signal ``selectionInformationChanged`` with basic math information about the current
   selection (min, max, mean, std). This is displayed in a label of the **variable detail** dialog for dataObjects and
   numpy.ndarrays.
 * better handling of previous and new indentation levels of copied, cut, pasted, drag&dropped texts.
 * script editor: F12 shortcut for goto assignment is now displayed in context menu
 * script editor: comments (Ctrl+R) are only added to non-empty lines
-* adaptions and fixes to support Python 3.10 and flake8 4.0. Still missing: stubs generator 
+* adaptions and fixes to support Python 3.10 and flake8 4.0. Still missing: stubs generator
   should support new | operator as alias for typing.Union
 * :py:meth:`itom.setCurrentPath` accepts both a path to a folder or a file in this folder. In both cases, the folder is used as current directory.
   Returns ``False`` if the path does not exist or could not be set.
@@ -121,25 +121,25 @@ itom
 * faster and more robust parsing of Python variables in the workspace widgets
 * update of plotInfoMarker to support a checkbox in front of the top level items including the interaction if these checkboxes are checked / unchecked.
   plotInfoMarker of itom1dqwtplot and itom2dqwtplot: marker group names will now span the entire row
-* :py:meth:`dataObject.dstack` has now keyboard based arguments including the new optional argument ``copyAxisInfo``. 
+* :py:meth:`dataObject.dstack` has now keyboard based arguments including the new optional argument ``copyAxisInfo``.
   If True (default: False), axis information of the first given object is copied to the last dimensions of the returned object.
 * Attribute :py:attr:`dataObject.T` added as synonym to :py:meth:`dataObject.trans`, to be more compatible to the Numpy syntax.
-* From python 3.7 on, the deprecated method PyParser_SimpleParseString is not used any more to split a multiline 
+* From python 3.7 on, the deprecated method PyParser_SimpleParseString is not used any more to split a multiline
   command into major blocks. Instead, the AST is directly parsed using Py_CompileStringFlags.
-* scalar numpy types, like np.int, np.float, np.complex... are now implicitly converted to ParamBase::Int, ::Double, ::Complex 
+* scalar numpy types, like np.int, np.float, np.complex... are now implicitly converted to ParamBase::Int, ::Double, ::Complex
   if a plugin is called, or to suitable Qt types if any slot or property of a widget is called
   `Pull request 67 <https://bitbucket.org/itom/itom/pull-requests/67>`_.
-* new optional CMake variable ``BUILD_QT_DISABLE_DEPRECATED_BEFORE`` added for itom, designerplugins and plugins. 
+* new optional CMake variable ``BUILD_QT_DISABLE_DEPRECATED_BEFORE`` added for itom, designerplugins and plugins.
   You can set it to a hex Qt version number. The compiler raises an exception if a method should be used, that
   was deprecated in an earlier version that the one set in this variable.
-* increase the stack size of the Python thread to 5MB, such that the maximum recursion depth, e.g. for Jedi, 
-  can be increased. The maximum recursion limit of Jedi calls is no limited to 1800, independent on other limits. 
+* increase the stack size of the Python thread to 5MB, such that the maximum recursion depth, e.g. for Jedi,
+  can be increased. The maximum recursion limit of Jedi calls is no limited to 1800, independent on other limits.
   The jedi unittest is extended to also verify a recursive call with a similar recursion depth limit.
-* Since the stack size of a QThreadPool, e.g. used to call Python jedi, cannot be locally increased for Qt < 5.10, 
-  the overall stack size of all threads is set to 4MB for MSVC builts using the Linker flag /STACK 
+* Since the stack size of a QThreadPool, e.g. used to call Python jedi, cannot be locally increased for Qt < 5.10,
+  the overall stack size of all threads is set to 4MB for MSVC builts using the Linker flag /STACK
   (only for Qt < 5.10). Else only the Python and Jedi worker threads get an increased stack size of 5MB.
   Increase stack size of Jedi worker threads (only for Qt >= 5.10).
-* fixes and improvements in figure widget (base window for plots): better handling of default plot class for pointCloud 
+* fixes and improvements in figure widget (base window for plots): better handling of default plot class for pointCloud
   and polygonMesh plots. Title is also exposed to the window title for liveImages and pointCloud/polygonMesh plots.
 
 **Refactorings and bugfixes**
@@ -151,7 +151,7 @@ itom
 * `Pull request 84 <https://bitbucket.org/itom/itom/pull-requests/84>`_: AddInInterface version altered to ``6.0.0`` due to an incompatible
   fix / redefinition of the dataObject meta class ``ito::DObjMeta``, that can be used to further describe parameters (ito::ParamBase) of
   type dataObject. Unittests extended for several parameter meta classes.
-* bugfix in inno setup: python38.dll and python3.dll needs to be copied to root directory, such that newer opencv-python packages 
+* bugfix in inno setup: python38.dll and python3.dll needs to be copied to root directory, such that newer opencv-python packages
   can be loaded. They require a detectable python3.dll, too.
 * Code refactored to better support Qt 5.15 or Qt 6.x, to remove compiler warnings with modern compilers... Replaced some string-based
   signal-slot-connections or signal mappers by lambda functions.
@@ -161,34 +161,34 @@ itom
 * fixes `issue 179 <https://bitbucket.org/itom/itom/issues/179>`_: fixes ValueError if right click in matplotlib canvas
 * added .lang-format style configuration file to allow the clang formatting for source code files
 * more work to better support high-dpi screens and mixed screen resolutions (`pull request 76 <https://bitbucket.org/itom/itom/pull-requests/76>`_ among others)
-* fixes `issue 200 <https://bitbucket.org/itom/itom/issues/200>`_: error in ``dataObject.createMask`` if the bounding box of the shape is not fully 
+* fixes `issue 200 <https://bitbucket.org/itom/itom/issues/200>`_: error in ``dataObject.createMask`` if the bounding box of the shape is not fully
   contained in the area of the given dataObject. This is fixed now by means of the new method ``dataObject::getPhysToPixUnclipped``.
-* fixes for shapes. shape unittest extended to verify all these fixes. Most fixes are related to rotated shapes and 
+* fixes for shapes. shape unittest extended to verify all these fixes. Most fixes are related to rotated shapes and
   shapes with a "negative" side length (rectangle and ellipse)
 * bugfix in PythonQtConversion::PyObjGetRepresentation
 * fixes `issue 165 <https://bitbucket.org/itom/itom/issues/165>`_ about the correction of the indentation level when pasting a text to a script
 * Python workspace can now also handle inherited classes, with mixups of __dict__ and __slots__. Keys of nested objects can now have
   other data types than strings or integers.
   (`pull request 75 <https://bitbucket.org/itom/itom/pull-requests/75>`_)
-* fixes `issue 193 <https://bitbucket.org/itom/itom/issues/193>`_: the QPropertyModel does not crash any more if the propertyObject 
+* fixes `issue 193 <https://bitbucket.org/itom/itom/issues/193>`_: the QPropertyModel does not crash any more if the propertyObject
   is updated with dynamic properties, too.
-* fixes `issue 188 <https://bitbucket.org/itom/itom/issues/188>`_: crash if a key of a dict contains a slash (internal delimiter) 
+* fixes `issue 188 <https://bitbucket.org/itom/itom/issues/188>`_: crash if a key of a dict contains a slash (internal delimiter)
   and is clicked in the workspace widget
-* fixes another issue: loadIDC will not change any keys of the loaded dict any more. The same holds if an idc is load into the 
-  workspace using the "packed" version. However, if the content of the IDC file should be unpacked into the workspace, keys are 
+* fixes another issue: loadIDC will not change any keys of the loaded dict any more. The same holds if an idc is load into the
+  workspace using the "packed" version. However, if the content of the IDC file should be unpacked into the workspace, keys are
   checked to be valid Python identifiers. If this is not the case, they will be renamed and a list of all changes will be shown as warning message box.
-* fixes `issue 189 <https://bitbucket.org/itom/itom/issues/189>`_: the Qt designer, opened within itom, will be closed if itom is closed. 
+* fixes `issue 189 <https://bitbucket.org/itom/itom/issues/189>`_: the Qt designer, opened within itom, will be closed if itom is closed.
   If Qt designer is already opened and the user clicks the button again, the first instance is activated and brought to the front.
-* fixes `issue 185 <https://bitbucket.org/itom/itom/issues/185>`_ and prevents an error if a docstring is automatically generated for 
+* fixes `issue 185 <https://bitbucket.org/itom/itom/issues/185>`_ and prevents an error if a docstring is automatically generated for
   a method within a specific class / function constellation.
-* fixes `issue 181 <https://bitbucket.org/itom/itom/issues/181>`_: from Python 3.8 on, Py_CompileStringFlags requires knowledge about the supported 
-  Python feature set (which features from which minimum Python version should be used). Else, underscores in numbers will 
+* fixes `issue 181 <https://bitbucket.org/itom/itom/issues/181>`_: from Python 3.8 on, Py_CompileStringFlags requires knowledge about the supported
+  Python feature set (which features from which minimum Python version should be used). Else, underscores in numbers will
   for instance be blocked, since they are only supported from Python 3.6 on.
-* fixes `issue 180 <https://bitbucket.org/itom/itom/issues/180>`_:  workaround to provide a correct (but not very efficient) implementation 
+* fixes `issue 180 <https://bitbucket.org/itom/itom/issues/180>`_:  workaround to provide a correct (but not very efficient) implementation
   for dataObject.rand(...,"int32"). This only affects the ``int32`` datatype both in Python and C++.
-* fixes `issue 176 <https://bitbucket.org/itom/itom/issues/176>`_: fixes a bug when creating a dataObject from a numpy.ndarray, whose 
+* fixes `issue 176 <https://bitbucket.org/itom/itom/issues/176>`_: fixes a bug when creating a dataObject from a numpy.ndarray, whose
   stride can be 0 in specific cases. Additionally, less deep copies are created in this constructor, compared to the previous version.
-* fixes `issue 170 <https://bitbucket.org/itom/itom/issues/170>`_: prevent Python error if an expanded dictionary in the workspace 
+* fixes `issue 170 <https://bitbucket.org/itom/itom/issues/170>`_: prevent Python error if an expanded dictionary in the workspace
   is replaced by a dataObject (among others)
 * fixes `issue 164 <https://bitbucket.org/itom/itom/issues/164>`_: If PyErr_Occurred() is called, the Python GIL must be hold for Python >= 3.9.
 * :py:meth:`itom.filterHelp` properly displays parameters whose description contains newline characters.
@@ -287,11 +287,11 @@ Designer Plugins
 
 **vtk3dVisualizer**
 
-* `Pull request 14 <https://bitbucket.org/itom/designerplugins/pull-requests/14>`_: for VTK < 8.2 this plugin is still based on the 
+* `Pull request 14 <https://bitbucket.org/itom/designerplugins/pull-requests/14>`_: for VTK < 8.2 this plugin is still based on the
   legacy Qt class QVTKWidget. For other versions, the new QVTKOpenGLNativeWidget class is used as base class.
   The legacy class can also be used if the CMAKE variable **VTK3DVISUALIZER_FORCE_LEGACY_VTK** is set.
 * bugfixes in geometry item: some properties can only be adjusted in the range [0,1]. The opacity is set to [0,100] in order to have the same range than for point clouds and meshes.
-* prevent crash if an empty mesh should be displayed 
+* prevent crash if an empty mesh should be displayed
 * title property added, order of icons in toolbar improved
 * It is not allowed to add an item in another base group (meshes, clouds, geometries) that has the same name than another existing item in another group.
 
@@ -303,7 +303,7 @@ Designer Plugins
 
 **twipoglfigure**
 
-* `Pull request 17 <https://bitbucket.org/itom/designerplugins/pull-requests/17>`_: The 3D plot plugin "twipoglfigure" is integrated 
+* `Pull request 17 <https://bitbucket.org/itom/designerplugins/pull-requests/17>`_: The 3D plot plugin "twipoglfigure" is integrated
   in the official designer plugin repository as a fork from https://bitbucket.org/twipOS/itomplugins (origin by twip optical solutions GmbH). This plugin
   was slightly modified to better fit to other itom designer plugins.
 
@@ -313,34 +313,34 @@ Designer Plugins
 * better synchronization between grid style property and its corresponding menu and actions.
 * menu for all toolboxes available in menu view
 * redesign of markerInfoWidget. The widget is now directly included in itomQwtPlotBase, and consists of a view and model. It can be extended by a toolbar.
-* marker groups in marker widget have now a checkbox, such that all markers of a group can be hidden or shown. 
+* marker groups in marker widget have now a checkbox, such that all markers of a group can be hidden or shown.
   This is also possible by the new slot "showMarkers" and "hideMarkers"
 * minor fix in ItomColorMap::colorTable256()
 * bugfix for 1xN or Nx1 dataObjects, plotted with an 2d plot. Fixes bugs for the value picker and for the rendering outside of the boundaries of the dataObject.
 * improved position for optional labels of geometric shapes of types circle or ellipse
 * horizontal zoom with mouse wheel fixed
-* `Issue 31 <https://bitbucket.org/itom/designerplugins/issues/31>`_: slot 'setLinePlot' of itom2dqwtplot also plots a line plot, if a 
-  camera has recently be assigned to this 2d plot. However, the latest displayed object of the plot must be bigger than the extent of the 
+* `Issue 31 <https://bitbucket.org/itom/designerplugins/issues/31>`_: slot 'setLinePlot' of itom2dqwtplot also plots a line plot, if a
+  camera has recently be assigned to this 2d plot. However, the latest displayed object of the plot must be bigger than the extent of the
   new line cut, else the line cut will be reduced to the size of the latest data object.
 * fixes to prevent plotting dateTime or timeDelta dataObjects
 * bug fix while copy complex dataObject from 2dPlot via right click
 * zoom direction with Ctrl + mouse wheel is inverted, such that two finger mouse gestures on the mousepad have the intuitive direction.
 * bugfix in color map base classes of itom1dqwtplot and itom2dqwtplot, when using logarithmic scales. This fix came also when moving to Qwt 6.2.
-* Fixes the `issue 186 <https://bitbucket.org/itom/itom/issues/186>`_ concerning the "send-current-view-to-workspace" method with an 
-  inverted y-axis. Since the minValue is bigger than the maxValue of the yAxisInterval in this case, 
+* Fixes the `issue 186 <https://bitbucket.org/itom/itom/issues/186>`_ concerning the "send-current-view-to-workspace" method with an
+  inverted y-axis. Since the minValue is bigger than the maxValue of the yAxisInterval in this case,
   this interval has to be normalized before getting the current zoom rectangle.
 
 **itom1dqwtplot**
 
-* improved number representation of the value picker and the coordinates in the toolbar. Numbers < 100000 will be displayed with three decimal 
+* improved number representation of the value picker and the coordinates in the toolbar. Numbers < 100000 will be displayed with three decimal
   digits, other values will be displayed using the +-9.99E100 representation. This fixes issue `issue 36 <https://bitbucket.org/itom/designerplugins/issues/36>`_.
-* XY-plot: fixes a bug if the x-obj is a floating point object with partial NaN values and the y-obj is an integer object. 
+* XY-plot: fixes a bug if the x-obj is a floating point object with partial NaN values and the y-obj is an integer object.
   Before, the NaN value was plotted as point in the top-left-corner of the plot.
 * color of point and multipoint shapes is now equal to the line color of all other shapes, and not equal to the drag&drop indicators.
 * better synchronization between grid style property and its corresponding menu and actions.
 * menu for all toolboxes available in menu view
 * redesign of markerInfoWidget. The widget is now directly included in itomQwtPlotBase, and consists of a view and model. It can be extended by a toolbar.
-* marker groups in marker widget have now a checkbox, such that all markers of a group can be hidden or shown. 
+* marker groups in marker widget have now a checkbox, such that all markers of a group can be hidden or shown.
   This is also possible by the new slot "showMarkers" and "hideMarkers"
 * minor fix in ItomColorMap::colorTable256()
 * improved position for optional labels of geometric shapes of types circle or ellipse
@@ -384,21 +384,21 @@ itom
   automatically chosen based on the gray-level of the background color of the selected style. There is a
   new demo script **demo/ui/stylesheetEditor/stylesheetEditor.py**, that can be used to implement your own
   style. The stylesheets are now adapted to work with all special widgets and plots of itom:
-  
+
   .. image:: images/410/stylesheets.png
       :width: 893
-  
+
 * The Qt tool rcc.exe is now shipped with future setups to allow user-defined compilations of resource files,
   e.g. for custom style sheets with custom icons. Custom resource files can now be loaded at runtime via the
   the command :py:meth:`itom.registerResource` and unloaded via :py:meth:`itom.unregisterResource`. For more
   information, see the demo scripts in **demo/ui/gui_icons_images**.
-* `Pull request 59 <https://bitbucket.org/itom/itom/pull-requests/59>`_: A mouse-over tooltip with 
+* `Pull request 59 <https://bitbucket.org/itom/itom/pull-requests/59>`_: A mouse-over tooltip with
   information about the word under the cursor in a script editor is shown. The content is rendered
   by the Python package `Jedi <https://pypi.org/project/jedi/>`_
-  
+
   .. image:: images/410/pythonHelpPopup.png
       :width: 511
-  
+
 * `Pull request 62 <https://bitbucket.org/itom/itom/pull-requests/62>`_: Based on the current foldings of
   a script, a detailed outline structure is created in the background. The navigation combo boxes on top
   of the script are updated based on this outline and the method / class of the current cursor position
@@ -406,37 +406,37 @@ itom
   possible via a new outline popup. This popup is accessible by the an icon in the toolbar as well as
   by the **Ctrl+D** shortcut. Remove the @-sign in the search box to find methods and classes in all
   opened scripts:
-  
+
   .. image:: images/410/outlinePopup.png
       :width: 736
-  
-* `Pull request 64 <https://bitbucket.org/itom/itom/pull-requests/64>`_: A new docstring generator was 
+
+* `Pull request 64 <https://bitbucket.org/itom/itom/pull-requests/64>`_: A new docstring generator was
   added to the script editor. It produces an pre-configured method or
   function docstring below the signature of a method. You can select in the property dialog of itom, if
   the docstring should follow the numpy or google docstring style. Insert the docstring either by the
   shortcut **Ctrl+Alt+D** or by the (context) menu of the script editor. Alternatively, start typing three
   apostrophes or double quotes right after the end of the signature. Then, a popup appears. Press enter to
   execute the docstring generation.
-  
+
   .. image:: images/410/docstringGenerator.png
       :width: 565
-  
-* **Ctrl+Tab** in a script editor opens now the new tab switcher popup, where another 
+
+* **Ctrl+Tab** in a script editor opens now the new tab switcher popup, where another
   script can be selected from a list. The most recently used tab is always on top of the list.
-  
+
   .. image:: images/410/tabSwitcher.png
       :width: 653
-  
-* `Pull request 61 <https://bitbucket.org/itom/itom/pull-requests/61>`_: An automatic Python code formatter 
+
+* `Pull request 61 <https://bitbucket.org/itom/itom/pull-requests/61>`_: An automatic Python code formatter
   has been added to the script editor. This is mainly a button in the toolbar
-  or an action in the edit or context menu. If this button is pressed, a customizable Python module is called 
+  or an action in the edit or context menu. If this button is pressed, a customizable Python module is called
   and the current script is passed to this module. The module then formats the code, e.g. following the rules
   of Python PEP8 and returns the formatted code. Using the undo button (Ctrl+Z), this operation can be undone.
-  itom comes pre-configured to work with the module `black <https://pypi.org/project/black/>`_. However, 
-  call commands for `yapf <https://pypi.org/project/yapf/>`_ and `autopep8 <https://pypi.org/project/autopep8/>`_ 
+  itom comes pre-configured to work with the module `black <https://pypi.org/project/black/>`_. However,
+  call commands for `yapf <https://pypi.org/project/yapf/>`_ and `autopep8 <https://pypi.org/project/autopep8/>`_
   can also be selected in the property dialog of itom. Furthermore,
   it is possible to define custom commands for other code formatter modules.
-* `Pull request 45 <https://bitbucket.org/itom/itom/pull-requests/45>`_: Layouts of custom user interface can 
+* `Pull request 45 <https://bitbucket.org/itom/itom/pull-requests/45>`_: Layouts of custom user interface can
   also be configured and its containing widgets can be added or removed
   via Python at runtime. To do this, layouts, derived from *QLayout*, can also be addressed via its ``objectName``
   and are referenced as instances of the class :py:class:`uiItem`. Many methods of these layouts can be called
@@ -444,7 +444,7 @@ itom
   For a complete list, see also :ref:`qtdesigner-wrappedslots`. Examples can also be found in the demo scripts
   folder **demo/ui/dynamicLayouts**. The user documentation about custom user interfaces has been extended
   and improved (see :ref:`qtdesigner`).
-* `Pull request 51 <https://bitbucket.org/itom/itom/pull-requests/51>`_: Calls to the 
+* `Pull request 51 <https://bitbucket.org/itom/itom/pull-requests/51>`_: Calls to the
   `Python Jedi library <https://pypi.org/project/jedi/>`_ for auto completion, calltips, help tooltips etc.
   are now handled by a background thread, that tries to get the Python interpreter lock (GIL). This allows
   getting help information via Jedi while another Python script is running. itom supports Jedi >= 0.16 and
@@ -457,8 +457,8 @@ itom
 
 * Complete check, correction and re-formatting of all docstrings in the :py:mod:`itom` module. All these
   docstrings following the rules of numpydoc.
-* `Pull request 55 <https://bitbucket.org/itom/itom/pull-requests/55>`_: Whenever itom is newly 
-  started or recompiled, a **pyi** stubs file is generated for all methods in the :py:mod:`itom` module. 
+* `Pull request 55 <https://bitbucket.org/itom/itom/pull-requests/55>`_: Whenever itom is newly
+  started or recompiled, a **pyi** stubs file is generated for all methods in the :py:mod:`itom` module.
   This allows showing the docstrings during auto completion, calltips and tooltips.
 * Improved user management: A user can only create users with the same or less rights than himself, e.g. a
   developer cannot create an administrator, but another developer or user. The same holds for specific rights
@@ -468,8 +468,8 @@ itom
   :py:meth:`ItomUi.disableGui`, used to temporarily disable, hide, show or enable widgets during
   a long operation, and :py:meth:`ItomUi.blockSignals`, used to temporarily block all signals from
   one or multiple widgets. For more information, see also the demo script **demo/ui/itomUiClassDemo.py**.
-* `Pull request 43 <https://bitbucket.org/itom/itom/pull-requests/43>`_: Set the CMake variable 
-  **ITOM_ADDITIONAL_EDITION_NAME** to an arbitrary string, to define a certain edition of itom. This edition 
+* `Pull request 43 <https://bitbucket.org/itom/itom/pull-requests/43>`_: Set the CMake variable
+  **ITOM_ADDITIONAL_EDITION_NAME** to an arbitrary string, to define a certain edition of itom. This edition
   text is also shown in the splash screen, as well as in the about >> info dialog.
 * If comments are added via Ctrl+R in a script editor, a space is inserted after the # character. This
   considers the PEP8 style guide of Python.
@@ -487,44 +487,44 @@ itom
   method (e.g. via :py:meth:`dataIO.connect`, :py:meth:`actuator.connect` or :py:meth:`itomUi.connect`, a
   reference to unbound callback methods is kept. If the callback method is bound to a class, only a weak
   reference is kept to avoid cyclic garbage collections of the class instances.
-* `Pull request 56 <https://bitbucket.org/itom/itom/pull-requests/56>`_: ``DataIO`` and ``actuator`` 
-  plugins now have a user mutex, that can be accessed both by the 
-  C++ interface as well as by the Python methods py:meth:`dataIO.userMutexTryLock`, 
-  py:meth:`dataIO.userMutexUnlock`, py:meth:`actuator.userMutexTryLock`, 
-  py:meth:`actuator.userMutexUnlock`. Plugins must be compiled against the 
+* `Pull request 56 <https://bitbucket.org/itom/itom/pull-requests/56>`_: ``DataIO`` and ``actuator``
+  plugins now have a user mutex, that can be accessed both by the
+  C++ interface as well as by the Python methods py:meth:`dataIO.userMutexTryLock`,
+  py:meth:`dataIO.userMutexUnlock`, py:meth:`actuator.userMutexTryLock`,
+  py:meth:`actuator.userMutexUnlock`. Plugins must be compiled against the
   AddInInterface >= 4.2.0 to support this mutex.
 * added new editorTheme ``VSDarkStyle.ini`` to *styles/editorThemes*  which looks like Visual Studio.
-* **ParamEditorWidget** can now display the slider widget as editor for floating point values 
+* **ParamEditorWidget** can now display the slider widget as editor for floating point values
   using a popup slider. This feature can be enabled or disabled via the new property ``popupSlider``.
   The ``AddInInterface`` version was therefore altered to **4.1.0**.
-* `Pull request 48 <https://bitbucket.org/itom/itom/pull-requests/48>`_: The attribute :py:attr:`~itom.dataObject.metaDict` 
+* `Pull request 48 <https://bitbucket.org/itom/itom/pull-requests/48>`_: The attribute :py:attr:`~itom.dataObject.metaDict`
   is now also settable and can be set to a dictionary with several optional and mandatory meta values
   for this dataObject.
-* `Pull request 54 <https://bitbucket.org/itom/itom/pull-requests/54>`_: Implementation of the matmul (@) 
-  operator for the class :py:class:`itom.dataObject`. This is the preferred way for a matrix 
+* `Pull request 54 <https://bitbucket.org/itom/itom/pull-requests/54>`_: Implementation of the matmul (@)
+  operator for the class :py:class:`itom.dataObject`. This is the preferred way for a matrix
   multiplication of two dataObjects. This is only available from Python 3.5 on. This fixes the issue #142.
 * Improvements in fold detection, e.g. concerning multiline comments etc.
-* itom plugin C-API: Api Function **apiFilterCallExt** added to call functions with progress 
+* itom plugin C-API: Api Function **apiFilterCallExt** added to call functions with progress
   observer from other plugins.
-* If a Python method or function is run, the python state changed is published with a certain delay, 
-  such that very fast executions (< 100ms) will not propagate the begin/end state change to increase 
+* If a Python method or function is run, the python state changed is published with a certain delay,
+  such that very fast executions (< 100ms) will not propagate the begin/end state change to increase
   speed and avoid GUI flickering.
-* code editor feature: strip trailing whitespaces and tabs in the current line after pressed return 
-  or enter. This feature can be disabled in the properties (editor >> General). However, they are 
+* code editor feature: strip trailing whitespaces and tabs in the current line after pressed return
+  or enter. This feature can be disabled in the properties (editor >> General). However, they are
   recommended to follow the Python PEP8 style guide advises.
-* The constructor of :py:class:`itom.timer` has a new optional argument ``startAfterInit`` 
+* The constructor of :py:class:`itom.timer` has a new optional argument ``startAfterInit``
   (default: ``True``). If set, the timer is automatically started.
-* py:class:`itom.timer`, py:meth:`itom.addMenu` and py:meth:`itom.addButton` accept now 
-  lambda and partialfunc callback functions. Redesign of the 
-  timer manager dialog (class DialogTimerManager) to avoid race conditions if the timers are 
-  deleted or changed by Python while the dialog is opened. While the dialog is opened, all timers 
+* py:class:`itom.timer`, py:meth:`itom.addMenu` and py:meth:`itom.addButton` accept now
+  lambda and partialfunc callback functions. Redesign of the
+  timer manager dialog (class DialogTimerManager) to avoid race conditions if the timers are
+  deleted or changed by Python while the dialog is opened. While the dialog is opened, all timers
   are continuously monitored to updated their activity state and timerID.
-* connect/disconnect methods added to :py:class:`itom.progressObserver`, such that one can bind 
-  to ``progressTextChanged``, ``progressValueChanged``, ``cancellationRequested`` or ``resetDone`` 
+* connect/disconnect methods added to :py:class:`itom.progressObserver`, such that one can bind
+  to ``progressTextChanged``, ``progressValueChanged``, ``cancellationRequested`` or ``resetDone``
   signals. Demo script added (demo/ui/observedParallelFunctions.py).
-  :py:meth:`~itom.progressObserver.info` added to show possible signals, one can connect 
+  :py:meth:`~itom.progressObserver.info` added to show possible signals, one can connect
   to (using :py:meth:`~itom.progressObserver.connect`).
-* some signals added to class ``FunctionCancellationAndObserver`` 
+* some signals added to class ``FunctionCancellationAndObserver``
   (``cancellationRequested`` and ``resetDone``)
 * Reduced default font size of plot labels from 12 to 10 and font from Helvetica to Verdana.
 * Script editor: insert codec feature improved, such that it can be reverted by the undo button.
@@ -534,61 +534,61 @@ itom
 
 **Bugfixes:**
 
-* `Pull request 42 <https://bitbucket.org/itom/itom/pull-requests/42>`_: Bugfix in option 
+* `Pull request 42 <https://bitbucket.org/itom/itom/pull-requests/42>`_: Bugfix in option
   **run selection** of the script editor.
 * `Pull request 46 <https://bitbucket.org/itom/itom/pull-requests/46>`_: fixes and enhancement of
   :py:class:`pythonProgressObserver`. The methods ``progressText`` and ``reset`` are now also
   accessible via Python.
 * `Issue 126 <https://bitbucket.org/itom/itom/issues/126>`_: improved python syntax highlighting:
   numbers with underscores are correctly parsed as well as the new @ operator for element-wise multiplication.
-* `Issue 129 <https://bitbucket.org/itom/itom/issues/129>`_: dataIO plugins, that don't have a defined 
-  subtype (Grabber, RawIO, ADDA), will not be loaded any more and an error is added to the loaded 
+* `Issue 129 <https://bitbucket.org/itom/itom/issues/129>`_: dataIO plugins, that don't have a defined
+  subtype (Grabber, RawIO, ADDA), will not be loaded any more and an error is added to the loaded
   plugins dialog.
 * `Issue 130 <https://bitbucket.org/itom/itom/issues/130>`_: The itom matplotlib backend is now
   compatible with **Matplotlib <= 3.3.0**.
-* `Issue 133 <https://bitbucket.org/itom/itom/issues/133>`_: Drag&drop of filter into console 
+* `Issue 133 <https://bitbucket.org/itom/itom/issues/133>`_: Drag&drop of filter into console
   leads to wrong texts in German version.
-* `Issue 135 <https://bitbucket.org/itom/itom/issues/135>`_: correct typeset of example 
+* `Issue 135 <https://bitbucket.org/itom/itom/issues/135>`_: correct typeset of example
   strings in helpTreeDockWidget.
 * `Issue 139 <https://bitbucket.org/itom/itom/issues/139>`_: itom is now compatible with PCL 1.10 and 1.11.
 * `Issue 143 <https://bitbucket.org/itom/itom/issues/143>`_: CRC errors in some PNG icon files.
-* `Issue 154 <https://bitbucket.org/itom/itom/issues/154>`_: The implicit conversion of a 
-  non-continuous dataObject to a numpy array is working again, without the need to convert the 
-  dataObject to a continuous one before. This conversion is done again in the background. This 
-  fix is necessary due to a minor implementation change from Numpy 1.18 on. 
+* `Issue 154 <https://bitbucket.org/itom/itom/issues/154>`_: The implicit conversion of a
+  non-continuous dataObject to a numpy array is working again, without the need to convert the
+  dataObject to a continuous one before. This conversion is done again in the background. This
+  fix is necessary due to a minor implementation change from Numpy 1.18 on.
 * bugfix in mapping set of itom.dataObject for scalar assignment (bug occured in GCC 6)
-* `Issue 157 <https://bitbucket.org/itom/itom/issues/157>`_: clean GIT URL in version 
+* `Issue 157 <https://bitbucket.org/itom/itom/issues/157>`_: clean GIT URL in version
   information (without username from https synchronization)
-* improvements in some widgets of itomWidgets library (statusLed and rangeSlider), especially to 
+* improvements in some widgets of itomWidgets library (statusLed and rangeSlider), especially to
   support better styling, e.g. with the dark theme of itom
-* bugfixes and improvements in color palette editor of property dialog of itom: the colors can now also 
-  be chosen via a color picker, the dark theme is improved and the position spin box has a better range 
+* bugfixes and improvements in color palette editor of property dialog of itom: the colors can now also
+  be chosen via a color picker, the dark theme is improved and the position spin box has a better range
   handling.
-* itomSyntaxCheck.py: disable more logger warnings from flake8 (e.g. due to deprecated 
+* itomSyntaxCheck.py: disable more logger warnings from flake8 (e.g. due to deprecated
   methods between mccabe and flake8)
 * bugfix when drawing a vertical line at a certain column position in the script editor.
-* bugfix in pip manager: if installing a package failed, it might be that temporary folders, starting 
-  with tilde, are still available in the site-packages directory. Ignore these directories during 
+* bugfix in pip manager: if installing a package failed, it might be that temporary folders, starting
+  with tilde, are still available in the site-packages directory. Ignore these directories during
   pip show ...
-* If an actuator is closed (either by GUI or Python), its interrupt flag is raised. This would stop 
-  a possible movement as fast as possible (if implemented). The motor axis controller will not display 
+* If an actuator is closed (either by GUI or Python), its interrupt flag is raised. This would stop
+  a possible movement as fast as possible (if implemented). The motor axis controller will not display
   any errors or warnings any more if an actuator is about to be deleted.
-* macro REMOVE_PLUGININSTANCE in addInInterface modified: if a plugin object should be deleted, it is 
-  now deleted by deleteLater() instead of a hard object deletion. This is necessary if for instance the 
+* macro REMOVE_PLUGININSTANCE in addInInterface modified: if a plugin object should be deleted, it is
+  now deleted by deleteLater() instead of a hard object deletion. This is necessary if for instance the
   dock widget of the plugin is still handling pending events. Else a crash is likely to occur.
-* MotorAxisController widget: added three properties to set the background color of input fields of 
-  axes, depending on their current state. This can be used to color axes, that are currently moved, 
-  that have been interrupted or run into a timeout. Adapted the dark styles to properly set these 
+* MotorAxisController widget: added three properties to set the background color of input fields of
+  axes, depending on their current state. This can be used to color axes, that are currently moved,
+  that have been interrupted or run into a timeout. Adapted the dark styles to properly set these
   property depending on their color scheme.
 * itomWidgets: more widgets adapted to the current state of their mother project ``ctk widgets``
 * define the error code "E902" (TokenError: EOF in multi-line statement) as a real syntax error.
 * Maximum recursion limit of calls to Jedi (via *itomJediLib.py*) is set to 1100 to avoid uncatchable stack
   overflow exceptions.
-* `Issue 147 <https://bitbucket.org/itom/itom/issues/147>`_: Pip Manager calls pip via *runPipUtf8.py* 
-  module to force the stdcout and stderr stream to UTF-8 (under Windows). If this fails, pip is 
-  directly called in a process as fallback solution. The fix prevents Python to raise a 
+* `Issue 147 <https://bitbucket.org/itom/itom/issues/147>`_: Pip Manager calls pip via *runPipUtf8.py*
+  module to force the stdcout and stderr stream to UTF-8 (under Windows). If this fails, pip is
+  directly called in a process as fallback solution. The fix prevents Python to raise a
   ``UnicodeEncodeError`` if any package contains special characters in its meta information.
-* fixes a bug where the active line background in the console is enabled after an input command, 
+* fixes a bug where the active line background in the console is enabled after an input command,
   even if the active line background is deactivated in the itom properties.
 * Bugfix with ``save all`` function of scripts. If a modified script was saved, that was not
   the current script, the window title and internal current tab index was wrongly set afterwards.
@@ -702,7 +702,7 @@ itom
 * `Issue 114 <https://bitbucket.org/itom/itom/issues/114>`_: SystemError when converting an empty np.ndarray to an itom.dataObject (python unittest added to reproduce this error)
 * `Issue 120 <https://bitbucket.org/itom/itom/issues/120>`_: bugfix in shape.createPoint, unittest added to verify this bug.
 * `Issue 121 <https://bitbucket.org/itom/itom/issues/121>`_: The dialog, displaying the content of a variable in the workspace, will now be displayed as non-modal dialog on top of the workspace widget.
-* Matplotlib backend: fixes several bugs in matplotlib backen (e.g. due to deprecated arguments in matplotlib 3.x) 
+* Matplotlib backend: fixes several bugs in matplotlib backen (e.g. due to deprecated arguments in matplotlib 3.x)
 * Redo button in script editor is now working properly
 * Workaround in font selection of WidgetPropEditorStyles
 * Bugfix: memory leak for copy constructor **itom.dataObject(cpy: np.ndarray)**
@@ -728,7 +728,7 @@ itom
 * more unittests added
 * many smaller improvements when using auto completion, calltips etc. from the python package jedi. Adaptions to support jedi 0.15, 0.16 and 0.17.
 * templates for plugins adapted to the current state of the art
-* replace unknown NULL macro by nullptr if the compiler is configured to C++11 e.g. via CMake: set(CMAKE_CXX_STANDARD 11) set(CMAKE_CXX_STANDARD_REQUIRED ON)
+* replace unknown NULL macro by nullptr if the compiler is configured to C++11 e.g. via CMake: set(CMAKE_CXX_STANDARD 17) set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 **Internal changes and improvements:**
 
@@ -743,14 +743,14 @@ Plugins
 
 (136 commits in plugins repository)
 
-* all plugins: 
+* all plugins:
     - adaptations for OpenCV 4
-    - ``CMakeLists.txt`` and ``\*.cmake`` files adapted to (new) cmake style guide of itom 
-      (see documentation/12_contributing/cmake_style_guide.rst). General settings 
-      of itom libraries as well as plugin and   designer plugin libraries are now 
-      added in the INIT_ITOM_LIBRARY() macro of ItomBuildMacros.cmake. Include 
-      ItomBuildMacros.cmake at the beginning of the file and call INIT_ITOM_LIBRARY, 
-      such that also CMake policies are globally set. ITOM_SDK_DIR is now 
+    - ``CMakeLists.txt`` and ``\*.cmake`` files adapted to (new) cmake style guide of itom
+      (see documentation/12_contributing/cmake_style_guide.rst). General settings
+      of itom libraries as well as plugin and   designer plugin libraries are now
+      added in the INIT_ITOM_LIBRARY() macro of ItomBuildMacros.cmake. Include
+      ItomBuildMacros.cmake at the beginning of the file and call INIT_ITOM_LIBRARY,
+      such that also CMake policies are globally set. ITOM_SDK_DIR is now
       "auto"-detected in the overall CMakeLists.txt file.
     - adapted to new CMake macros / structure of itom SDK
     - Qt4 support removed
@@ -789,12 +789,12 @@ Designer Plugins
 
 (more than 58 commits in designerPlugins repository)
 
-* general: ``CMakeLists.txt`` and ``\*.cmake`` files adapted to (new) cmake style 
-  guide of itom (see documentation/12_contributing/cmake_style_guide.rst). 
-  General settings of itom libraries as well as plugin and designer plugin libraries 
-  are now added in the INIT_ITOM_LIBRARY() macro of ItomBuildMacros.cmake. Include 
-  ItomBuildMacros.cmake at the beginning of the file and call INIT_ITOM_LIBRARY, 
-  such that also CMake policies are globally set. ITOM_SDK_DIR is now 
+* general: ``CMakeLists.txt`` and ``\*.cmake`` files adapted to (new) cmake style
+  guide of itom (see documentation/12_contributing/cmake_style_guide.rst).
+  General settings of itom libraries as well as plugin and designer plugin libraries
+  are now added in the INIT_ITOM_LIBRARY() macro of ItomBuildMacros.cmake. Include
+  ItomBuildMacros.cmake at the beginning of the file and call INIT_ITOM_LIBRARY,
+  such that also CMake policies are globally set. ITOM_SDK_DIR is now
   "auto"-detected in the overall CMakeLists.txt file.
 * general: Remove Qt4 support and compiler switches within CMake scripts and source code
 * general: Merged in algorithmInterrupt (pull request #8)

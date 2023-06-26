@@ -10,7 +10,7 @@
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
-   
+
     In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
@@ -49,14 +49,14 @@ class FunctionCancellationAndObserverPrivate; //forward declaration
         progress are then signalled using specific signals.
      2. The caller of the long running method can set a cancellation request. The method itself should then check
         for the existence of this request and stop its calculation. The method should then return with an error message.
-    
+
     This method is fully thread-safe such that read and write methods for progress as well as cancellation status
     can be called from different threads.
 */
 class ITOMCOMMONQT_EXPORT FunctionCancellationAndObserver : public QObject
 {
     Q_OBJECT
-    
+
 public:
     enum CancellationReason
     {

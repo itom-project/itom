@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -48,7 +48,7 @@ namespace ito
 /*!
     \class WidgetWrapper
     \brief One instance of this class acts as wrapper for several import public methods of classes, derived from QObject,
-    which should be made available by the call-method in python. 
+    which should be made available by the call-method in python.
 
     Usually, the huge meta system, provided by QMetaObject, of Qt gives the possibility to call slots and changes properties
     of all classes, derived from QObject, at runtime. Other public methods of these classes however can not be accessed by this
@@ -61,12 +61,12 @@ namespace ito
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 //! constructor
 /*!
-    initializes a hash table containing information about all public-methods which should be wrapped and therefore accessed 
+    initializes a hash table containing information about all public-methods which should be wrapped and therefore accessed
     for instance from the python-method "call".
 
     \sa UiOrganizer
 */
-WidgetWrapper::WidgetWrapper(UiOrganizer *uiOrganizer) : 
+WidgetWrapper::WidgetWrapper(UiOrganizer *uiOrganizer) :
     m_initialized(false),
     m_pUiOrganizer(uiOrganizer),
     m_methodIndexNotFound(0xffff)
@@ -109,7 +109,7 @@ void WidgetWrapper::initMethodHash()
         qObjectList << buildMethodDescription(QMetaObject::normalizedSignature("blockSignals(bool)"), "void", 1, ok);
         qObjectList << buildMethodDescription(QMetaObject::normalizedSignature("signalsBlocked()"), "bool", 2, ok);
         m_methodHash["QObject"] = qObjectList;
-        
+
         //QWidget
         MethodDescriptionList qWidgetList;
         qWidgetList << buildMethodDescription(QMetaObject::normalizedSignature("resize(int,int)"), "void", 1001, ok );
@@ -689,7 +689,7 @@ ito::RetVal WidgetWrapper::callListWidget(QListWidget *listWidget, int methodInd
 //-------------------------------------------------------------------------------------
 ito::RetVal WidgetWrapper::callComboBox(QComboBox *comboBox, int methodIndex, void **_a)
 {
-    if (comboBox == NULL) 
+    if (comboBox == NULL)
         return ito::RetVal(ito::retError, 0, QObject::tr("ComboBox object is null").toLatin1().data());
 
     switch (methodIndex)
@@ -738,7 +738,7 @@ ito::RetVal WidgetWrapper::callComboBox(QComboBox *comboBox, int methodIndex, vo
 //-------------------------------------------------------------------------------------
 ito::RetVal WidgetWrapper::callTabWidget(QTabWidget *tabWidget, int methodIndex, void **_a)
 {
-    if (tabWidget == NULL) 
+    if (tabWidget == NULL)
         return ito::RetVal(ito::retError, 0, QObject::tr("QTabWidget object is null").toLatin1().data());
 
     switch (methodIndex)
@@ -763,7 +763,7 @@ ito::RetVal WidgetWrapper::callTabWidget(QTabWidget *tabWidget, int methodIndex,
 //-------------------------------------------------------------------------------------
 ito::RetVal WidgetWrapper::callTableView(QTableView *tableView, int methodIndex, void **_a)
 {
-    if (tableView == NULL) 
+    if (tableView == NULL)
         return ito::RetVal(ito::retError, 0, QObject::tr("QTableView object is null").toLatin1().data());
 
     switch (methodIndex)
@@ -788,7 +788,7 @@ ito::RetVal WidgetWrapper::callTableView(QTableView *tableView, int methodIndex,
 //-------------------------------------------------------------------------------------
 ito::RetVal WidgetWrapper::callSplitter(QSplitter *splitter, int methodIndex, void **_a)
 {
-    if (splitter == NULL) 
+    if (splitter == NULL)
         return ito::RetVal(ito::retError, 0, QObject::tr("QTableView object is null").toLatin1().data());
 
     switch (methodIndex)
@@ -858,7 +858,7 @@ ito::RetVal WidgetWrapper::callStatusBar(QStatusBar *statusBar, int methodIndex,
 //-------------------------------------------------------------------------------------
 ito::RetVal WidgetWrapper::callMainWindow(QMainWindow *mainWindow, int methodIndex, void **_a)
 {
-    if (mainWindow == NULL) 
+    if (mainWindow == NULL)
         return ito::RetVal(ito::retError, 0, QObject::tr("QMainWindow object is null").toLatin1().data());
 
     switch (methodIndex)
@@ -894,7 +894,7 @@ ito::RetVal WidgetWrapper::callMainWindow(QMainWindow *mainWindow, int methodInd
 //-------------------------------------------------------------------------------------
 ito::RetVal WidgetWrapper::callWidget(QWidget *widget, int methodIndex, void **_a)
 {
-    if (widget == NULL) 
+    if (widget == NULL)
         return ito::RetVal(ito::retError, 0, QObject::tr("QWidget object is null").toLatin1().data());
 
     switch (methodIndex)
@@ -907,7 +907,7 @@ ito::RetVal WidgetWrapper::callWidget(QWidget *widget, int methodIndex, void **_
     }
     case 1002: //setGeometry
     {
-        widget->setGeometry((*reinterpret_cast<const int(*)>(_a[1])), (*reinterpret_cast<const int(*)>(_a[2])), 
+        widget->setGeometry((*reinterpret_cast<const int(*)>(_a[1])), (*reinterpret_cast<const int(*)>(_a[2])),
             (*reinterpret_cast<const int(*)>(_a[3])), (*reinterpret_cast<const int(*)>(_a[4])));
         //(*reinterpret_cast< bool*>(_a[0])) = _r;
         return ito::retOk;
@@ -979,7 +979,7 @@ ito::RetVal WidgetWrapper::callTableWidget(QTableWidget *tableWidget, int method
     {
         int row = (*reinterpret_cast<const int(*)>(_a[1]));
         int col = (*reinterpret_cast<const int(*)>(_a[2]));
-        
+
         if (row < 0 || row >= tableWidget->rowCount())
         {
             return ito::RetVal(ito::retError, 0, "row index if out of range.");
@@ -993,7 +993,7 @@ ito::RetVal WidgetWrapper::callTableWidget(QTableWidget *tableWidget, int method
         QTableWidgetItem *item = new QTableWidgetItem();
         item->setData(Qt::DisplayRole, (*reinterpret_cast<const QVariant(*)>(_a[3])));
         tableWidget->setItem(row, col, item);
-        
+
         return ito::retOk;
     }
     case 6005: //currentColumn
@@ -1172,7 +1172,7 @@ ito::RetVal WidgetWrapper::callToolBar(QToolBar *toolbar, int methodIndex, void 
 //-------------------------------------------------------------------------------------
 ito::RetVal WidgetWrapper::callAction(QAction *action, int methodIndex, void **_a)
 {
-    if (action == NULL) 
+    if (action == NULL)
         return ito::RetVal(ito::retError, 0, QObject::tr("QAction object is null").toLatin1().data());
 
     switch (methodIndex)
@@ -1367,7 +1367,7 @@ ito::RetVal WidgetWrapper::callLayout(QLayout *layout, int methodIndex, void **_
 //-------------------------------------------------------------------------------------
 ito::RetVal WidgetWrapper::callFormLayout(QFormLayout *layout, int methodIndex, void **_a)
 {
-    if (layout == NULL) 
+    if (layout == NULL)
         return ito::RetVal(ito::retError, 0, QObject::tr("QLayout object is null").toLatin1().data());
 
     switch (methodIndex)
@@ -1526,7 +1526,7 @@ ito::RetVal WidgetWrapper::callFormLayout(QFormLayout *layout, int methodIndex, 
                 removeAndDeleteLayoutItem(layout, layoutItem);
                 break;
             }
-            
+
             layout->setWidget(row, (QFormLayout::ItemRole)role, widget);
 
             (*reinterpret_cast<ito::PythonQObjectMarshal*>(_a[0])) = ito::PythonQObjectMarshal(widget);
@@ -1588,7 +1588,7 @@ ito::RetVal WidgetWrapper::callFormLayout(QFormLayout *layout, int methodIndex, 
 //-------------------------------------------------------------------------------------
 ito::RetVal WidgetWrapper::callGridLayout(QGridLayout *layout, int methodIndex, void **_a)
 {
-    if (layout == NULL) 
+    if (layout == NULL)
         return ito::RetVal(ito::retError, 0, QObject::tr("QLayout object is null").toLatin1().data());
 
     switch (methodIndex)
@@ -2008,7 +2008,7 @@ QMetaProperty WidgetWrapper::fakeProperty(const QObject *baseObject, const QStri
     while( tempMetaObject != NULL )
     {
         className = tempMetaObject->className();
-        if(QString::compare(className, "QTreeView", Qt::CaseInsensitive) == 0) 
+        if(QString::compare(className, "QTreeView", Qt::CaseInsensitive) == 0)
         {
             QHeaderView *header = NULL;
 

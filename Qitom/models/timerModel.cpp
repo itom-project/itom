@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -26,10 +26,10 @@
 
 namespace ito
 {
-    
+
 /*!
     \class TimerModel
-    \brief model for management of all timer objects. 
+    \brief model for management of all timer objects.
     This model will be is used as model for the view in the timer manager.
 */
 
@@ -38,7 +38,7 @@ namespace ito
 /*!
     initializes headers and its alignment
 */
-TimerModel::TimerModel() : 
+TimerModel::TimerModel() :
     QAbstractItemModel(),
     m_iconRunning(QIcon(":/application/icons/timerRun.png")),
     m_iconStopped(QIcon(":/application/icons/timerStop.png")),
@@ -87,7 +87,7 @@ QVariant TimerModel::data(const QModelIndex &index, int role) const
     {
         return QVariant();
     }
-    
+
     const TimerItem& item = m_timers[index.row()];
     auto strongTimer = item.timer.toStrongRef();
 
@@ -144,9 +144,9 @@ QVariant TimerModel::data(const QModelIndex &index, int role) const
 /*!
     \param row row of desired entry, corresponds to index in m_bookmarks list
     \param column column of desired entry
-    \param parent since this model is no tree model, parent always points to a 
+    \param parent since this model is no tree model, parent always points to a
         "virtual" root element
-    \return empty QModelIndex if row or column are out of bound, else returns new 
+    \return empty QModelIndex if row or column are out of bound, else returns new
         valid QModelIndex for that combination of row and column
 */
 QModelIndex TimerModel::index(int row, int column, const QModelIndex &parent) const

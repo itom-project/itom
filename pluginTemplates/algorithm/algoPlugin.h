@@ -1,6 +1,6 @@
 /* ********************************************************************
     Template for an algorithm plugin for the software itom
-    
+
     You can use this template, use it in your plugins, modify it,
     copy it and distribute it without any license restrictions.
 *********************************************************************** */
@@ -54,7 +54,7 @@ class AlgoPlugin : public ito::AddInAlgo
 
     public:
         friend class AlgoPluginInterface;
-        
+
         //for each algorithm copy and adjust the following doc-string and the following two functions
         static const char* algo1doc;
         static ito::RetVal algo1(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
@@ -62,7 +62,7 @@ class AlgoPlugin : public ito::AddInAlgo
 
     public slots:
         ito::RetVal init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond = NULL);
-        ito::RetVal close(ItomSharedSemaphore *waitCond);      
+        ito::RetVal close(ItomSharedSemaphore *waitCond);
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------

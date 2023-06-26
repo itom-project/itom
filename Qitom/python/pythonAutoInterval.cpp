@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -158,7 +158,7 @@ PyObject* PythonAutoInterval::PyAutoInterval_repr(PyAutoInterval *self)
     {
         str = QString("autoInterval([%1,%2], auto: %3)").arg(self->interval.minimum()).arg(self->interval.maximum()).arg(self->interval.isAuto());
     }
-    
+
     PyObject *result = PyUnicode_FromFormat("%s", str.toLatin1().data());
     return result;
 };
@@ -239,7 +239,7 @@ PyObject* PythonAutoInterval::PyAutoInterval_RichCompare(PyAutoInterval *self, P
 }
 
 //---------------------------------------------------------------------------------------
-PyDoc_STRVAR(autoInterval_min_doc, 
+PyDoc_STRVAR(autoInterval_min_doc,
 "float : Gets or sets the minimum value of the interval.");
 
 PyObject* PythonAutoInterval::PyAutoInterval_getMin(PyAutoInterval *self, void *closure)
@@ -287,7 +287,7 @@ int PythonAutoInterval::PyAutoInterval_setMax(PyAutoInterval *self, PyObject *va
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(autoInterval_auto_doc, 
+PyDoc_STRVAR(autoInterval_auto_doc,
 "bool : Gets or sets if this interval has an automatic range.");
 
 PyObject* PythonAutoInterval::PyAutoInterval_getAuto(PyAutoInterval *self, void *closure)
@@ -314,10 +314,10 @@ int PythonAutoInterval::PyAutoInterval_setAuto(PyAutoInterval *self, PyObject *v
 //-------------------------------------------------------------------------------------
 PyMethodDef PythonAutoInterval::PyAutoInterval_methods[] = {
         {"name", (PyCFunction)PythonAutoInterval::PyAutoInterval_name, METH_NOARGS, autoInterval_name_doc},
-        
+
         {"__reduce__", (PyCFunction)PythonAutoInterval::PyAutoInterval_Reduce, METH_VARARGS, "__reduce__ method for handle pickling commands"},
         {"__setstate__", (PyCFunction)PythonAutoInterval::PyAutoInterval_SetState, METH_VARARGS, "__setstate__ method for handle unpickling commands"},
-        
+
         {NULL}  /* Sentinel */
     };
 

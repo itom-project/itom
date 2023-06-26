@@ -1,8 +1,8 @@
 # coding=iso-8859-15
 """
 This file contains an abstract toolbar with basic functions for ToolBar / Menu Interaction.
-This contains parser for the global workspace to find DataObjects. 
-By Wolfram Lyda, ITO, 2012 
+This contains parser for the global workspace to find DataObjects.
+By Wolfram Lyda, ITO, 2012
 """
 import itom
 from itom import ui
@@ -22,18 +22,18 @@ class abstractObjInteractionToolBar:
     def __init__(self, myName, defaultVar):
         """
         __init__(myName , defaultVar) -> set up the basic variable, this means the default dObject
-        
-        Parameters 
+
+        Parameters
         ------------
-        myName : {str} 
+        myName : {str}
             Name of this toolBar. Nessecary for the deleter function to kill the b-bar.
         defaultVar :  {str}
             default variable name.
-        
+
         Returns
         -------
         None
-        
+
         Notes
         -------
         This function initializes an abstract toolbar. You can derive toolBars with object variable selection from this class.
@@ -56,8 +56,8 @@ class abstractObjInteractionToolBar:
     ):
         """
         getVarName(title, VarName, workSpace [, objType]) -> opens a drop down window with suitable DataObjects / npOjects / PointClouds and returns selected variable
-        
-        Parameters 
+
+        Parameters
         ------------
         title : {str}
             Title of the dialog.
@@ -65,19 +65,19 @@ class abstractObjInteractionToolBar:
             default variable name.
         VarName :  {PythonDict}
             Kontent of the global workspace of caller (use globals())
-        objType : {str}, optinal 
+        objType : {str}, optinal
             ObjectTypes to filter. Can be ' line', 'plane' , ' empty' or 'ND'
         acceptedObjectType: {int}, optional
             BitSet 1 = DataObjects, 2 = NumPy-Array, 4 = PointClouds accepted
-        
-        
+
+
         Returns
         -------
         varname: {str}
             string value of the variable
         done:  {bool}
             Check, if dialog was closed with 'ok' or 'cancel'
-        
+
         Notes
         -------
         This function opens a drop down window with suitable DataObject according to 'objType'.

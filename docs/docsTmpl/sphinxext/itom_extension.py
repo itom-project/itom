@@ -414,7 +414,7 @@ class PluginFilterList(Directive):
                     textlist.append("#. :py:meth:`~itom.algorithms.%s`" % f)
             else:
                 textlist.append(".. py:currentmodule:: itom.algorithms\n\n")
-                
+
                 for f in pluginInfo["filter"]:
                     [signature, description, parameters] = self.analyzeFilter(f)
                     t = ".. py:function:: %s(%s)" % (f, signature)
@@ -477,7 +477,7 @@ class PluginFilterList(Directive):
             mandSignature = ", ".join([i["name"] for i in mandParams])
             optSignature = ", ".join([i["name"] for i in optParams])
             signature = mandSignature
-            
+
             if signature != "" and optSignature != "":
                 signature += "[, " + optSignature + "]"
             elif optSignature != "":
@@ -485,7 +485,7 @@ class PluginFilterList(Directive):
 
             description = data["description"]
             parameters = []
-            
+
             if signature != "":
                 for i in mandParams:
                     parameters.append(

@@ -1,9 +1,9 @@
 /* ********************************************************************
    itom measurement system
    URL: http://www.uni-stuttgart.de/ito
-   Copyright (C) 2020, Institut fuer Technische Optik (ITO), 
-   Universitaet Stuttgart, Germany 
- 
+   Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+   Universitaet Stuttgart, Germany
+
    This file is part of itom.
 
    itom is free software: you can redistribute it and/or modify
@@ -73,20 +73,20 @@ QString ComboBoxFactory::name() const
 
 //-----------------------------------------------------------------------------
 QString ComboBoxFactory::group() const
-{ 
+{
     return "itom [widgets]";
 }
 
 //-----------------------------------------------------------------------------
 QString ComboBoxFactory::toolTip() const
-{ 
-    return QString(); 
+{
+    return QString();
 }
 
 //-----------------------------------------------------------------------------
 QString ComboBoxFactory::whatsThis() const
 {
-    return QString(); 
+    return QString();
 }
 
 //-----------------------------------------------------------------------------
@@ -99,4 +99,3 @@ void ComboBoxFactory::initialize(QDesignerFormEditorInterface *formEditor)
     }
     initialized = true;
 }
-

@@ -14,16 +14,16 @@ The folder structure is chosen to be equal than the one from the linux instructi
 Please execute the following commands in the command line to get the dependencies for |itom| (comments after the hash-tag should not be copied to the command line):
 
 .. code-block:: bash
-    
+
     sudo yum install epel-release
-    sudo yum install cmake3 cmake3-gui 
-    sudo yum install git gcc gcc-c++ 
+    sudo yum install cmake3 cmake3-gui
+    sudo yum install git gcc gcc-c++
     sudo yum install python36 python36-devel python36-numpy
     sudo yum install opencv opencv-devel libv4l libv4l-devel
     sudo yum install qt5-qtbase-gui qt5-qtwebkit qt5-qtwebkit-devel
     sudo yum install qt5-qtsvg qt5-qtsvg-devel qt5-designer qt5-qttools-static qt5-qttools-devel
-    
-These dependencies does not include support for point cloud libraries. To enable this support, you have to 
+
+These dependencies does not include support for point cloud libraries. To enable this support, you have to
 get further packages. Please see :ref:`build on fedora <build-fedora>` for more hints.
 
 Now, change to the base directory, where the sources and builds of itom and its plugins should be placed. The following commands are not executed
@@ -33,17 +33,13 @@ to adjust some pathes below. Currently, Qt5 is still built with webkit-support u
 Therefore, the built-in helpviewer of itom has to be disabled. For building itom **without** point cloud support use:
 
 .. code-block:: bash
-    
-    git clone https://bitbucket.org/itom/itom.git ./itom/sources/itom
-    git clone https://bitbucket.org/itom/plugins.git ./itom/sources/plugins
-    git clone https://bitbucket.org/itom/designerplugins.git ./itom/sources/designerplugins
-    mkdir -p build/itom build/designerPlugins build/plugins
-    cd ./itom/build/itom
-    cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=OFF -PYTHON_LIBRARY=/usr/lib64/libpython3.6m.so -PYTHON_INCLUDE_DIR=/usr/include/python3.6m -BUILD_QTVERSION=Qt5 -Qt5_DIR=/usr/lib64/cmake/Qt5 -Qt5Core_DIR=/usr/lib64/cmake/Qt5Core -BUILD_WITH_HELPVIEWER=OFF ../../sources/itom
-    make
-    cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=OFF -PYTHON_LIBRARY=/usr/lib64/libpython3.6m.so -PYTHON_INCLUDE_DIR=/usr/include/python3.6m -BUILD_QTVERSION=Qt5 -Qt5_DIR=/usr/lib64/cmake/Qt5 -Qt5Core_DIR=/usr/lib64/cmake/Qt5Core -BUILD_WITH_HELPVIEWER=OFF -DITOM_SDK_DIR=../itom/SDK ../../sources/designerPlugins
-    make
-    cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=OFF -PYTHON_LIBRARY=/usr/lib64/libpython3.6m.so -PYTHON_INCLUDE_DIR=/usr/include/python3.6m -BUILD_QTVERSION=Qt5 -Qt5_DIR=/usr/lib64/cmake/Qt5 -Qt5Core_DIR=/usr/lib64/cmake/Qt5Core -BUILD_WITH_HELPVIEWER=OFF -DITOM_SDK_DIR=../itom/SDK ../../sources/plugins
-    make
-    
+
+    git clone --recursive --remote git@github.com:itom-project/itomProject.git
+    cd itomproject
+    git submodule foreach --recursive git checkout master
+    mkdir -p ./{build_debug,build_release}
+    cd ./build_release
+    cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=OFF -PYTHON_LIBRARY=/usr/lib64/libpython3.6m.so -PYTHON_INCLUDE_DIR=/usr/include/python3.6m -Qt_Prefix_DIR=/usr/lib64 -BUILD_WITH_HELPVIEWER=OFF ../
+    make -j4
+
 Errors in cmake configuration process can be fixed using ccmake or cmake-gui

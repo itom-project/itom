@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -90,8 +90,8 @@ public:
 
         \param uiDialog is the dialog-instance which should be guarded by the instance of UiDialogSet
     */
-    UiContainer(UserUiDialog *uiDialog) : 
-        m_type(uiTypeUiDialog) 
+    UiContainer(UserUiDialog *uiDialog) :
+        m_type(uiTypeUiDialog)
     {
         m_weakDialog = QPointer<QWidget>(uiDialog);
     }
@@ -102,20 +102,20 @@ public:
 
         \param dialog is an instance of QDialog or inherited from it which should be guarded by the instance of UiDialogSet
     */
-    UiContainer(QDialog *dialog) : 
-        m_type(uiTypeQDialog) 
+    UiContainer(QDialog *dialog) :
+        m_type(uiTypeQDialog)
     {
         m_weakDialog = QPointer<QDialog>(dialog);
     }
-    
+
     //! creates new UiContainer from instance of QMainWindow
     /*!
         The weak reference to mainWindow together with the type uiTypeMainWindow is saved as member variable in UiDialogSet.
 
         \param mainWindow is the window-instance which should be guarded by the instance of UiDialogSet
     */
-    UiContainer(QMainWindow *mainWindow) : 
-        m_type(uiTypeQMainWindow) 
+    UiContainer(QMainWindow *mainWindow) :
+        m_type(uiTypeQMainWindow)
     {
         m_weakDialog = QPointer<QWidget>(mainWindow);
     }
@@ -126,8 +126,8 @@ public:
 
         \param mainWindow is the window-instance which should be guarded by the instance of UiDialogSet
     */
-    UiContainer(FigureWidget *figureWidget) : 
-        m_type(uiTypeFigure) 
+    UiContainer(FigureWidget *figureWidget) :
+        m_type(uiTypeFigure)
     {
         m_weakDialog = QPointer<QWidget>(figureWidget);
     }
@@ -138,12 +138,12 @@ public:
 
         \param dockWidget is the dockWidget-instance which should be guarded by the instance of UiDialogSet
     */
-    UiContainer(QDockWidget *dockWidget) : 
-        m_type(uiTypeQDockWidget) 
+    UiContainer(QDockWidget *dockWidget) :
+        m_type(uiTypeQDockWidget)
     {
         m_weakDialog = QPointer<QWidget>(dockWidget);
     }
-    
+
     //! general constructor to create an instance of UiContainer from given QWidget*-pointer and type
     /*!
         The weak reference to widget together with the type-parameter is saved as member variable in this instance of UiDialogSet
@@ -151,30 +151,30 @@ public:
         \param widget is the pointer to QWidget
         \param type is the corresponding type of widget \sa tUiType
     */
-    UiContainer(QWidget *widget, tUiType type) : 
+    UiContainer(QWidget *widget, tUiType type) :
         m_type(type)
     {
         m_weakDialog = QPointer<QWidget>(widget);
     }
-    
+
     //! copy constructor
     UiContainer(const UiContainer &cpy)
     {
         m_weakDialog = QPointer<QWidget>(cpy.getUiWidget());
         m_type = cpy.m_type;
     }
-    
+
 
     ~UiContainer(); //comment in source file
 
 
     //! returns instance of UiDialog or NULL, if the widget is not longer available of the type is not uiTypeUiDialog
-    inline UserUiDialog *getUiDialog() const 
-    { 
+    inline UserUiDialog *getUiDialog() const
+    {
         if(m_type == uiTypeUiDialog)
         {
             if(m_weakDialog.isNull()) return NULL;
-            return qobject_cast<UserUiDialog*>(m_weakDialog.data()); 
+            return qobject_cast<UserUiDialog*>(m_weakDialog.data());
         }
         return NULL;
     }
@@ -184,12 +184,12 @@ public:
         Internally, even a dialog or main windows are casted to QWidget. Therefore, this getter method always
         returns this casted QWidget and NULL, if the QWidget has been deleted before.
     */
-    inline QWidget *getUiWidget() const 
-    { 
+    inline QWidget *getUiWidget() const
+    {
         if(m_weakDialog.isNull()) return NULL;
         return m_weakDialog.data();
     }
-    
+
     //! returns type of the guarded user interface
     inline tUiType getType() const { return m_type; }
 
@@ -202,7 +202,7 @@ struct UiContainerItem
 {
 public:
     UiContainerItem() : container(NULL) {}
-    
+
     UiContainerItem(const UiContainerItem &cpy)
     {
         guardedHandle = cpy.guardedHandle;
@@ -213,7 +213,7 @@ public:
     UiContainer *container;
 };
 
-class UiDataContainer 
+class UiDataContainer
 {
 private:
     ito::ParamBase::Type m_dataType;
@@ -347,18 +347,18 @@ public:
         if(uiType) *uiType =                        (uiDescription & 0x000000FF);        //bits 1-8
         if(buttonBarType) *buttonBarType =         ((uiDescription & 0x0000FF00) >> 8);  //bits 9-16
         if(childOfMainWindow) *childOfMainWindow = ((uiDescription & 0x000F0000) > 0);   //bits 17-20
-        if(deleteOnClose) *deleteOnClose =         ((uiDescription & 0x00F00000) > 0);   //bits 21-24 
+        if(deleteOnClose) *deleteOnClose =         ((uiDescription & 0x00F00000) > 0);   //bits 21-24
         if(dockWidgetArea) *dockWidgetArea =       ((uiDescription & 0xFF000000) >> 24); //bits 25-32
     }
 
-    static inline int createUiDescription(int uiType, int buttonBarType, bool childOfMainWindow, bool deleteOnClose, int dockWidgetArea) 
-    { 
+    static inline int createUiDescription(int uiType, int buttonBarType, bool childOfMainWindow, bool deleteOnClose, int dockWidgetArea)
+    {
         int v = uiType & 0x000000FF; //bits 1-8
         v += (buttonBarType << 8); //bits 9-16
         if(childOfMainWindow) v += (1 << 16); //bits 17-24
         if(deleteOnClose) v+= (1 << 20); //bits 21-24
         v += (dockWidgetArea << 24); //bits 25-32
-        
+
         return v;
     }
 
@@ -379,9 +379,9 @@ protected:
 
     void startGarbageCollectorTimer();
 
-    RetVal addWidgetToOrganizer(QWidget *widget, int uiDescription, const StringMap &dialogButtons, 
-                                QSharedPointer<unsigned int>dialogHandle, 
-                                QSharedPointer<unsigned int> objectID, 
+    RetVal addWidgetToOrganizer(QWidget *widget, int uiDescription, const StringMap &dialogButtons,
+                                QSharedPointer<unsigned int>dialogHandle,
+                                QSharedPointer<unsigned int> objectID,
                                 QSharedPointer<QByteArray> className);
 
 private:
@@ -426,7 +426,7 @@ public slots:
     RetVal setAttribute(unsigned int handle, Qt::WidgetAttribute attribute, bool on = true, ItomSharedSemaphore *semaphore = NULL);
     RetVal isVisible(unsigned int handle, QSharedPointer<bool> visible, ItomSharedSemaphore *semaphore = NULL);
     RetVal handleExist(unsigned int handle, QSharedPointer<bool> exist, ItomSharedSemaphore *semaphore = NULL);
-    
+
     UiContainer* getUiDialogByHandle(unsigned int uiHandle);
 
     RetVal getDockedStatus(unsigned int uiHandle, QSharedPointer<bool> docked, ItomSharedSemaphore *semaphore = NULL);

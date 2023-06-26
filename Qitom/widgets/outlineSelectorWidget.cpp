@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -45,9 +45,9 @@ namespace ito
 
 //-------------------------------------------------------------------------------------
 OutlineSelectorWidget::OutlineSelectorWidget(
-        const QList<EditorOutline> &outlines, 
+        const QList<EditorOutline> &outlines,
         int currentOutlineIndex,
-        ScriptDockWidget *scriptDockWidget, 
+        ScriptDockWidget *scriptDockWidget,
         QWidget *parent /*= nullptr*/) :
     QDialog(parent),
     m_pScriptDockWidget(scriptDockWidget),
@@ -71,7 +71,7 @@ OutlineSelectorWidget::OutlineSelectorWidget(
 
     QToolBar *toolBar = new QToolBar(this);
 
-    // adjust the height of the toolbar in to 16 px with 
+    // adjust the height of the toolbar in to 16 px with
     // a 96dpi screen and scale it to other pixels for higher resolving screens.
     toolBar->setIconSize(QSize(16 * f, 16 * f));
 
@@ -79,8 +79,8 @@ OutlineSelectorWidget::OutlineSelectorWidget(
     layout->setContentsMargins(f * 4, f*4, f*4, f*4);
 
     QAction *act = toolBar->addAction(
-        QIcon(":/classNavigator/icons/sortAZAsc.png"), 
-        tr("Sort alphabetically"), 
+        QIcon(":/classNavigator/icons/sortAZAsc.png"),
+        tr("Sort alphabetically"),
         this, SLOT(actSort(bool))
     );
     act->setCheckable(true);
@@ -118,7 +118,7 @@ OutlineSelectorWidget::OutlineSelectorWidget(
 
     setContentsMargins(0,0,0,0);
 
-    
+
     //int maxWidth = loadData() * 1.1 + f * 80;  // additional for icon...
     int width = qBound((int)(200 * f), (int)(f * 400), (int)(scriptDockWidget->geometry().width() / 1.2));
     int height = qBound((int)(300 * f), (int)(f * 400), (int)(scriptDockWidget->geometry().height() * 1.6));
@@ -167,7 +167,7 @@ void OutlineSelectorWidget::fillContent()
                 toplevel->setData(0, Qt::UserRole, "");
             }
 
-            
+
             toplevel->setData(0, Qt::UserRole + 1, eo.editorUID);
             toplevel->setData(0, Qt::UserRole + 2, -1);
             toplevel->setData(0, Qt::UserRole + 3, "");
@@ -306,7 +306,7 @@ QString OutlineSelectorWidget::renderTooltipText(const QSharedPointer<OutlineIte
     if (fullSig.size() > maxLength)
     {
         QString methArgsWrapped = argsWordWrap(item->m_args, 100);
-        
+
         if (item->m_returnType == "")
         {
             fullSig = QString("%1(\n    %2\n)").arg(name, methArgsWrapped);
@@ -314,7 +314,7 @@ QString OutlineSelectorWidget::renderTooltipText(const QSharedPointer<OutlineIte
         else
         {
             fullSig = QString("%1(\n    %2\n) -> %3").arg(name, methArgsWrapped, item->m_returnType);
-        }     
+        }
     }
 
     return fullSig;
@@ -509,7 +509,7 @@ void OutlineSelectorWidget::keyPressEvent(QKeyEvent* ev)
     else if (ev->key() == Qt::Key_Down ||
         ev->key() == Qt::Key_Up)
     {
-        ev->accept();        
+        ev->accept();
     }
     else if (ev->key() == Qt::Key_Return ||
         ev->key() == Qt::Key_Enter)
@@ -553,7 +553,7 @@ bool OutlineSelectorWidget::filterItemRec(QTreeWidgetItem *root, const QString &
 
         return true; // all visible
     }
-    
+
     bool childsVisible = false;
 
     for (int i = 0; i < root->childCount(); ++i)
@@ -625,7 +625,7 @@ void OutlineSelectorWidget::filterTextChanged(const QString &text)
         for (int i = 0; i < m_pTreeWidget->topLevelItemCount(); ++i)
         {
             item = m_pTreeWidget->topLevelItem(i);
-            
+
             if (!item->isHidden())
             {
                 if (!selectFirstVisibleChild(item))
@@ -682,7 +682,7 @@ void OutlineSelectorWidget::itemActivated(QTreeWidgetItem *item, int column)
 
         if (seo)
         {
-            ScriptDockWidget* scriptDockWidget = 
+            ScriptDockWidget* scriptDockWidget =
                 seo->activateOpenedScriptByFilename(filename, -1, editorUID);
 
             if (scriptDockWidget && startLineIdx >= 0)
@@ -729,7 +729,7 @@ void OutlineSelectorWidget::actScopeChanged(bool triggered)
         //m_currentScope is changed by text change of m_pLineEdit!
 
         QString txt = m_pLineEdit->text();
-        
+
         if (txt.startsWith("@"))
         {
             m_pLineEdit->setText(txt.mid(1).trimmed());
@@ -740,7 +740,7 @@ void OutlineSelectorWidget::actScopeChanged(bool triggered)
         //m_currentScope is changed by text change of m_pLineEdit!
 
         QString txt = m_pLineEdit->text();
-        
+
         if (!txt.startsWith("@"))
         {
             m_pLineEdit->setText("@" + txt);

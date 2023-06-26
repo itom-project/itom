@@ -22,15 +22,15 @@
 #
 # You should have received a copy of the GNU Library General Public License
 # along with itom. If not, see <http://www.gnu.org/licenses/>.
-  
-cmake_minimum_required(VERSION 3.1)
-  
-set(target_name itomCommonLib)  
-project(${target_name}) 
-   
+
+cmake_minimum_required(VERSION 3.12...3.24)
+
+set(target_name itomCommonLib)
+project(${target_name})
+
 message(STATUS "--------------- LIBRARY ${target_name} -----------------")
-  
-# include commonly used itom CMake macros (internal can only be used within the core projects) 
+
+# include commonly used itom CMake macros (internal can only be used within the core projects)
 include("../cmake/ItomBuildMacros.cmake")
 include("../cmake/ItomBuildMacrosInternal.cmake")
 
@@ -58,7 +58,7 @@ set(ITOMCOMMON_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/sharedStructures.h
 )
 
-set(ITOMCOMMON_SOURCES 
+set(ITOMCOMMON_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/retVal.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/byteArray.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/param.cpp

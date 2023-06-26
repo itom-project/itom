@@ -10,7 +10,7 @@
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
-   
+
     In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
@@ -44,7 +44,7 @@ namespace ito
     /**
     * \defgroup ITOM_API_GRAPH itom figure and plot API
     *
-    * \brief The itom plot and figure API contains a bunch of functions that can be called by the core application itom as 
+    * \brief The itom plot and figure API contains a bunch of functions that can be called by the core application itom as
     * well as by every designer plugin.
     *
     * Every function is given by a certain preprocessor definition that describes
@@ -154,7 +154,7 @@ namespace ito
     */
     #define apiQObjectPropertyWrite \
                 (* (ito::RetVal (*)(QObject *object, const char* propName, const QVariant &value)) ito::ITOM_API_FUNCS_GRAPH[17])
-    
+
     //! connect a slot of a receiver object to the signal flushStream of the std::cout or std::cerr stream
     /*!
     \param receiver is the receiver object
@@ -165,7 +165,7 @@ namespace ito
     */
     #define apiConnectToOutputAndErrorStream \
                 (* (ito::RetVal (*)(const QObject *receiver, const char *method, ito::tStreamMessageType messageType)) ito::ITOM_API_FUNCS_GRAPH[18])
-    
+
     //! disconnect a slot of a receiver object from the signal flushStream of the std::cout or std::cerr stream
     /*!
     \param receiver is the receiver object

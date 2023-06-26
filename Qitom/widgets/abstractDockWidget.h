@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -54,7 +54,7 @@ namespace ito
     class AbstractDockWidget : public QDockWidget
     {
         Q_OBJECT
-        
+
         //these properties are taken from QWidget in order to redirect them either to the QDockWidget or to the main window (depending on dock status)
         Q_PROPERTY(bool visible READ isVisible WRITE setVisible DESIGNABLE false)
         Q_PROPERTY(bool enabled READ isEnabled WRITE setEnabled)
@@ -85,32 +85,32 @@ namespace ito
                 2. An AbstractDockWidget can behave like a dock widget and can be undocked and be a floating toolbox
                 3. An AbstractDockWidget can behave like a default window and can then be maximized, minimized and moved at any location
             */
-            enum tFloatingStyle 
-            { 
+            enum tFloatingStyle
+            {
                 floatingNone,      /*!< the widget can not be undocked. It can only behave like a dock widget */
                 floatingStandard,  /*!< the widget behaves always like a dock widget and can both be docked and undocked */
                 floatingWindow     /*!< the widget can both behave like a dock widget if it is docked or like a window if it is undocked */
             };
-            
+
             //! The configuration if a docked AbstractDockWidget can be moved from one docking area to another one.
-            enum tMovingStyle 
-            { 
+            enum tMovingStyle
+            {
                 movingDisabled, /*!<  The dock widget must not be moved from one docking area to another one */
                 movingEnabled   /*!<  The dock widget can be moved from one docking area to another one */
-            };    
-            
+            };
+
             //! The top level style of a widget, derived from AbstractDockWidget
-            /*! 
+            /*!
                 The top level style is only relevant if the widget is currently
                 undocked and has a window representation. Then the window can behave
                 like a normal window, or it can always stay on top of its parent window
                 or it can stay on top of all itom windows, dialogs...
             */
-            enum tTopLevelStyle 
-            { 
-                topLevelOverall,    /*!< Window stays on top of everything */ 
-                topLevelParentOnly, /*!< Window stays on top of its parent window only */ 
-                topLevelNothing     /*!< Window has no specific top level behaviour (default) */ 
+            enum tTopLevelStyle
+            {
+                topLevelOverall,    /*!< Window stays on top of everything */
+                topLevelParentOnly, /*!< Window stays on top of its parent window only */
+                topLevelNothing     /*!< Window has no specific top level behaviour (default) */
             };
 
             struct Toolbar
@@ -130,8 +130,8 @@ namespace ito
 
             void setParent ( QWidget * parent ) { m_overallParent = parent; QDockWidget::setParent(parent); }
 
-            QWidget *getActiveInstance() 
-            { 
+            QWidget *getActiveInstance()
+            {
                 if(!m_docked && m_floatingStyle == floatingWindow)
                 {
                     return m_pWindow;
@@ -212,7 +212,7 @@ namespace ito
 
             virtual QSize sizeHint() const;
             virtual QSize minimumSizeHint() const;
-   
+
         protected:
 
             friend class ShortcutAction; //to access canvas of this dock widget
@@ -232,7 +232,7 @@ namespace ito
                     {
                        deleteLater();
                     }
-                    
+
                     return true;
                 }
                 else
@@ -251,7 +251,7 @@ namespace ito
             virtual void createStatusBar() = 0;
             virtual void updateActions() {}
             virtual void updatePythonActions() = 0;
-        
+
             Qt::WindowFlags modifyFlags(const Qt::WindowFlags &flags, const Qt::WindowFlags &setFlags, const Qt::WindowFlags &unsetFlags);
 
             virtual void windowStateChanged( bool /*windowNotToolbox*/ ) {}

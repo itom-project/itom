@@ -32,9 +32,9 @@
 #include "Property.h"
 
 /**
-    The Enum Property Class extends a Property to add enum functionality to the 
+    The Enum Property Class extends a Property to add enum functionality to the
     QPropertyEditor.
-    Enum Properties are automatically created in the QPropertyModel for objects that 
+    Enum Properties are automatically created in the QPropertyModel for objects that
     have an enum as property value.
 
     @author Roman Schmid

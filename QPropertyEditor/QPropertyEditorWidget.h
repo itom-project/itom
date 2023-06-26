@@ -66,7 +66,7 @@ extern "C++"
     class QPROPERTYEDITOR_EXPORT QPropertyEditorWidget : public QTreeView
     {
         Q_OBJECT
-        
+
         Q_PROPERTY(bool groupByInheritance READ groupByInheritance WRITE setGroupByInheritance DESIGNABLE true USER true)
         Q_PROPERTY(QString nameFilterPattern READ nameFilterPattern WRITE setNameFilterPattern DESIGNABLE true USER true)
 
@@ -142,10 +142,10 @@ extern "C++"
         void keyPressEvent(QKeyEvent* event);
 
     private:
-        //!< self-managed pointer to the private class container (deletes itself if d_ptr is destroyed). 
-        //!< pointer to private class of AddInBase defined in AddInInterface.cpp. This container is used 
+        //!< self-managed pointer to the private class container (deletes itself if d_ptr is destroyed).
+        //!< pointer to private class of AddInBase defined in AddInInterface.cpp. This container is used
         //!< to allow flexible changes in the interface without destroying the binary compatibility
-        QScopedPointer<QPropertyEditorWidgetPrivate> d_ptr; 
+        QScopedPointer<QPropertyEditorWidgetPrivate> d_ptr;
         Q_DECLARE_PRIVATE(QPropertyEditorWidget);
 
     signals:

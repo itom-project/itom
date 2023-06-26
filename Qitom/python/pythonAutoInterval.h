@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -36,7 +36,7 @@
 #include "structmember.h"
 #include <qobject.h>
 
-namespace ito 
+namespace ito
 {
 class PythonAutoInterval
     {
@@ -45,7 +45,7 @@ class PythonAutoInterval
 
         //-------------------------------------------------------------------------------------------------
         // typedefs
-        //------------------------------------------------------------------------------------------------- 
+        //-------------------------------------------------------------------------------------------------
         typedef struct
         {
             PyObject_HEAD
@@ -56,10 +56,10 @@ class PythonAutoInterval
 
         #define PyAutoInterval_Check(op) PyObject_TypeCheck(op, &ito::PythonAutoInterval::PyAutoIntervalType)
 
-        
+
         //-------------------------------------------------------------------------------------------------
         // constructor, deconstructor, alloc, dellaoc
-        //------------------------------------------------------------------------------------------------- 
+        //-------------------------------------------------------------------------------------------------
 
         static void PyAutoInterval_dealloc(PyAutoInterval *self);
         static PyObject *PyAutoInterval_new(PyTypeObject *type, PyObject *args, PyObject *kwds);
@@ -70,7 +70,7 @@ class PythonAutoInterval
 
         //-------------------------------------------------------------------------------------------------
         // general members
-        //------------------------------------------------------------------------------------------------- 
+        //-------------------------------------------------------------------------------------------------
         static PyObject *PyAutoInterval_name(PyAutoInterval *self);
 
         static PyObject* PyAutoInterval_repr(PyAutoInterval *self);
@@ -87,7 +87,7 @@ class PythonAutoInterval
 
 		//-------------------------------------------------------------------------------------------------
 		// getter / setter
-		//------------------------------------------------------------------------------------------------- 
+		//-------------------------------------------------------------------------------------------------
 		static PyObject* PyAutoInterval_getMin(PyAutoInterval *self, void *closure);
 		static int PyAutoInterval_setMin(PyAutoInterval *self, PyObject *value, void *closure);
 
@@ -97,10 +97,10 @@ class PythonAutoInterval
 		static PyObject* PyAutoInterval_getAuto(PyAutoInterval *self, void *closure);
 		static int PyAutoInterval_setAuto(PyAutoInterval *self, PyObject *value, void *closure);
 
-        
+
         //-------------------------------------------------------------------------------------------------
         // type structures
-        //------------------------------------------------------------------------------------------------- 
+        //-------------------------------------------------------------------------------------------------
         static PyMemberDef PyAutoInterval_members[];
         static PyMethodDef PyAutoInterval_methods[];
         static PyTypeObject PyAutoIntervalType;
@@ -108,7 +108,7 @@ class PythonAutoInterval
 
         //-------------------------------------------------------------------------------------------------
         // helper methods
-        //-------------------------------------------------------------------------------------------------    
+        //-------------------------------------------------------------------------------------------------
 
         //-------------------------------------------------------------------------------------------------
         // static type methods

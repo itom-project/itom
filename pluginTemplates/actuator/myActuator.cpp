@@ -1,6 +1,6 @@
 /* ********************************************************************
     Template for an actuator plugin for the software itom
-    
+
     You can use this template, use it in your plugins, modify it,
     copy it and distribute it without any license restrictions.
 *********************************************************************** */
@@ -45,7 +45,7 @@ Put a detailed description about what the plugin is doing, what is needed to get
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("The plugin's license string");
-    m_aboutThis = QObject::tr(GITVERSION); 
+    m_aboutThis = QObject::tr(GITVERSION);
 
     //add mandatory and optional parameters for the initialization here.
     //append them to m_initParamsMand or m_initParamsOpt.
@@ -54,7 +54,7 @@ Put a detailed description about what the plugin is doing, what is needed to get
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Destructor of Interface Class.
 /*!
-    
+
 */
 MyActuatorInterface::~MyActuatorInterface()
 {
@@ -94,18 +94,18 @@ MyActuator::MyActuator() : AddInActuator(), m_async(0), m_nrOfAxes(3)
     m_params.insert(paramVal.getName(), paramVal);
 
     m_params.insert( "async", ito::Param("async", ito::ParamBase::Int, 0, 1, m_async, tr("asynchronous move (1), synchronous (0) [default]").toLatin1().data()));
-    
+
     //initialize the current position vector, the status vector and the target position vector
     m_currentPos.fill(0.0,m_nrOfAxes);
     m_currentStatus.fill(0,m_nrOfAxes);
     m_targetPos.fill(0.0,m_nrOfAxes);
-    
+
     //the following lines create and register the plugin's dock widget. Delete these lines if the plugin does not have a dock widget.
     DockWidgetMyActuator *dw = new DockWidgetMyActuator(this);
-    
+
     Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
     QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
-    createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dw);   
+    createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dw);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -133,13 +133,13 @@ ito::RetVal MyActuator::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::P
     // - resize and refill m_currentStatus, m_currentPos and m_targetPos with the corresponding values
     // - call emit parametersChanged(m_params) in order to propagate the current set of parameters in m_params to connected dock widgets...
     // - call setInitialized(true) to confirm the end of the initialization (even if it failed)
-    
-    
+
+
     if (!retValue.containsError())
     {
         emit parametersChanged(m_params);
     }
-    
+
     if (waitCond)
     {
         waitCond->returnValue = retValue;
@@ -159,7 +159,7 @@ ito::RetVal MyActuator::close(ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
-    
+
     //todo:
     // - disconnect the device if not yet done
     // - this funtion is considered to be the "inverse" of init.
@@ -169,7 +169,7 @@ ito::RetVal MyActuator::close(ItomSharedSemaphore *waitCond)
         waitCond->returnValue = retValue;
         waitCond->release();
     }
-    
+
     return retValue;
 }
 
@@ -302,7 +302,7 @@ ito::RetVal MyActuator::calib(const QVector<int> axis, ItomSharedSemaphore *wait
     {
         retValue += ito::RetVal(ito::retError, 0, tr("motor is running. Further action is not possible").toLatin1().data());
     }
-    
+
     if (!retValue.containsError())
     {
         //todo:
@@ -315,7 +315,7 @@ ito::RetVal MyActuator::calib(const QVector<int> axis, ItomSharedSemaphore *wait
     {
         waitCond->returnValue = retValue;
         waitCond->release();
-        
+
     }
 
     return retValue;
@@ -426,7 +426,7 @@ ito::RetVal MyActuator::getPos(QVector<int> axis, QSharedPointer<QVector<double>
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
-    
+
     foreach (const int i, axis)
     {
         if (i >= 0 && i < m_nrOfAxes)
@@ -454,10 +454,10 @@ ito::RetVal MyActuator::getPos(QVector<int> axis, QSharedPointer<QVector<double>
 //! setPosAbs
 /*!
     starts moving the given axis to the desired absolute target position
-    
+
     depending on m_async this method directly returns after starting the movement (async = 1) or
     only returns if the axis reached the given target position (async = 0)
-    
+
     In some cases only relative movements are possible, then get the current position, determine the
     relative movement and call the method relatively move the axis.
 */
@@ -470,10 +470,10 @@ ito::RetVal MyActuator::setPosAbs(const int axis, const double pos, ItomSharedSe
 //! setPosAbs
 /*!
     starts moving all given axes to the desired absolute target positions
-    
+
     depending on m_async this method directly returns after starting the movement (async = 1) or
     only returns if all axes reached their given target positions (async = 0)
-    
+
     In some cases only relative movements are possible, then get the current position, determine the
     relative movement and call the method relatively move the axis.
 */
@@ -505,15 +505,15 @@ ito::RetVal MyActuator::setPosAbs(QVector<int> axis, QVector<double> pos, ItomSh
         {
             //set status of all given axes to moving and keep all flags related to the status and switches
             setStatus(axis, ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
-            
+
             //todo: start the movement
-            
+
             //emit the signal targetChanged with m_targetPos as argument, such that all connected slots gets informed about new targets
             sendTargetUpdate();
-            
+
             //emit the signal sendStatusUpdate such that all connected slots gets informed about changes in m_currentStatus and m_currentPos.
             sendStatusUpdate();
-            
+
             //release the wait condition now, if async is true (itom considers this method to be finished now due to the threaded call)
             if(m_async && waitCond && !released)
             {
@@ -521,11 +521,11 @@ ito::RetVal MyActuator::setPosAbs(QVector<int> axis, QVector<double> pos, ItomSh
                 waitCond->release();
                 released = true;
             }
-            
+
             //call waitForDone in order to wait until all axes reached their target or a given timeout expired
             //the m_currentPos and m_currentStatus vectors are updated within this function
             retValue += waitForDone(60000, axis); //WaitForAnswer(60000, axis);
-            
+
             //release the wait condition now, if async is false (itom waits until now if async is false, hence in the synchronous mode)
             if(!m_async && waitCond && !released)
             {
@@ -535,7 +535,7 @@ ito::RetVal MyActuator::setPosAbs(QVector<int> axis, QVector<double> pos, ItomSh
             }
         }
     }
-    
+
     //if the wait condition has not been released yet, do it now
     if (waitCond && !released)
     {
@@ -550,10 +550,10 @@ ito::RetVal MyActuator::setPosAbs(QVector<int> axis, QVector<double> pos, ItomSh
 //! setPosRel
 /*!
     starts moving the given axis by the given relative distance
-    
+
     depending on m_async this method directly returns after starting the movement (async = 1) or
     only returns if the axis reached the given target position (async = 0)
-    
+
     In some cases only absolute movements are possible, then get the current position, determine the
     new absolute target position and call setPosAbs with this absolute target position.
 */
@@ -566,10 +566,10 @@ ito::RetVal MyActuator::setPosRel(const int axis, const double pos, ItomSharedSe
 //! setPosRel
 /*!
     starts moving the given axes by the given relative distances
-    
+
     depending on m_async this method directly returns after starting the movement (async = 1) or
     only returns if all axes reached the given target positions (async = 0)
-    
+
     In some cases only absolute movements are possible, then get the current positions, determine the
     new absolute target positions and call setPosAbs with these absolute target positions.
 */
@@ -593,7 +593,7 @@ ito::RetVal MyActuator::setPosRel(QVector<int> axis, QVector<double> pos, ItomSh
             }
             else
             {
-                m_targetPos[i] = 0.0; //todo: set the absolute target position to the desired value in mm or degree 
+                m_targetPos[i] = 0.0; //todo: set the absolute target position to the desired value in mm or degree
                                       //(obtain the absolute position with respect to the given relative distances)
             }
         }
@@ -602,15 +602,15 @@ ito::RetVal MyActuator::setPosRel(QVector<int> axis, QVector<double> pos, ItomSh
         {
             //set status of all given axes to moving and keep all flags related to the status and switches
             setStatus(axis, ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
-            
+
             //todo: start the movement
-            
+
             //emit the signal targetChanged with m_targetPos as argument, such that all connected slots gets informed about new targets
             sendTargetUpdate();
-            
+
             //emit the signal sendStatusUpdate such that all connected slots gets informed about changes in m_currentStatus and m_currentPos.
             sendStatusUpdate();
-            
+
             //release the wait condition now, if async is true (itom considers this method to be finished now due to the threaded call)
             if(m_async && waitCond && !released)
             {
@@ -618,11 +618,11 @@ ito::RetVal MyActuator::setPosRel(QVector<int> axis, QVector<double> pos, ItomSh
                 waitCond->release();
                 released = true;
             }
-            
+
             //call waitForDone in order to wait until all axes reached their target or a given timeout expired
             //the m_currentPos and m_currentStatus vectors are updated within this function
             retValue += waitForDone(60000, axis); //WaitForAnswer(60000, axis);
-            
+
             //release the wait condition now, if async is false (itom waits until now if async is false, hence in the synchronous mode)
             if(!m_async && waitCond && !released)
             {
@@ -632,7 +632,7 @@ ito::RetVal MyActuator::setPosRel(QVector<int> axis, QVector<double> pos, ItomSh
             }
         }
     }
-    
+
     //if the wait condition has not been released yet, do it now
     if (waitCond && !released)
     {
@@ -643,7 +643,7 @@ ito::RetVal MyActuator::setPosRel(QVector<int> axis, QVector<double> pos, ItomSh
     return retValue;
 }
 
-//---------------------------------------------------------------------------------------------------------------------------------- 
+//----------------------------------------------------------------------------------------------------------------------------------
 //! method must be overwritten from ito::AddInActuator
 /*!
     WaitForDone should wait for a moving motor until the indicated axes (or all axes of nothing is indicated) have stopped or a timeout or user interruption
@@ -661,12 +661,12 @@ ito::RetVal MyActuator::waitForDone(const int timeoutMS, const QVector<int> axis
     long delay = 100; //[ms]
 
     timer.start();
-    
+
     //if axis is empty, all axes should be observed by this method
     QVector<int> _axis = axis;
     if (_axis.size() == 0) //all axis
     {
-        for (int i=0;i<m_nrOfAxes;i++) 
+        for (int i=0;i<m_nrOfAxes;i++)
         {
             _axis.append(i);
         }
@@ -681,7 +681,7 @@ ito::RetVal MyActuator::waitForDone(const int timeoutMS, const QVector<int> axis
         foreach(const int &i,axis)
         {
             m_currentPos[i] = 0.0; //todo: if possible, set the current position if axis i to its current position
-            
+
             if (1 /*axis i is still moving*/)
             {
                 setStatus(m_currentStatus[i], ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
@@ -696,16 +696,16 @@ ito::RetVal MyActuator::waitForDone(const int timeoutMS, const QVector<int> axis
 
         //emit actuatorStatusChanged with both m_currentStatus and m_currentPos as arguments
         sendStatusUpdate(false);
-        
+
         //now check if the interrupt flag has been set (e.g. by a button click on its dock widget)
         if (!done && isInterrupted())
         {
             //todo: force all axes to stop
-            
+
             //set the status of all axes from moving to interrupted (only if moving was set before)
             replaceStatus(_axis, ito::actuatorMoving, ito::actuatorInterrupted);
             sendStatusUpdate(true);
-            
+
             retVal += ito::RetVal(ito::retError,0,"interrupt occurred");
             done = true;
             return retVal;
@@ -715,7 +715,7 @@ ito::RetVal MyActuator::waitForDone(const int timeoutMS, const QVector<int> axis
         waitMutex.lock();
         waitCondition.wait(&waitMutex, delay);
         waitMutex.unlock();
-        
+
         //raise the alive flag again, this is necessary such that itom does not drop into a timeout if the
         //positioning needs more time than the allowed timeout time.
         setAlive();
@@ -733,7 +733,7 @@ ito::RetVal MyActuator::waitForDone(const int timeoutMS, const QVector<int> axis
         retVal += ito::RetVal(ito::retError,9999,"timeout occurred");
         sendStatusUpdate(true);
     }
-    
+
     return retVal;
 }
 
@@ -750,16 +750,16 @@ ito::RetVal MyActuator::updateStatus()
         //m_currentStatus[i] = m_currentStatus[i] ^ ito::actuatorAvailable;
 
         m_currentPos[i] = 0.0; //todo fill in here the current position of axis i in mm or degree
-        
+
         //if you know that the axis i is at its target position, change from moving to target if moving has been set, therefore:
-        replaceStatus(m_currentStatus[i], ito::actuatorMoving, ito::actuatorAtTarget); 
-        
+        replaceStatus(m_currentStatus[i], ito::actuatorMoving, ito::actuatorAtTarget);
+
         //if you know that the axis i is still moving, set this bit (all other moving-related bits are unchecked, but the status bits and switches bits
         //kept unchanged
-        setStatus(m_currentStatus[i], ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask); 
+        setStatus(m_currentStatus[i], ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
     }
 
-    //emit actuatorStatusChanged with m_currentStatus and m_currentPos in order to inform connected slots about the current status and position 
+    //emit actuatorStatusChanged with m_currentStatus and m_currentPos in order to inform connected slots about the current status and position
     sendStatusUpdate();
 
     return ito::retOk;
@@ -803,17 +803,17 @@ void MyActuator::dockWidgetVisibilityChanged(bool visible)
     If the instance of the configuration dialog has been created, its slot 'parametersChanged' is connected to the signal 'parametersChanged'
     of the plugin. By invoking the slot sendParameterRequest of the plugin, the plugin's signal parametersChanged is immediately emitted with
     m_params as argument. Therefore the configuration dialog obtains the current set of parameters and can be adjusted to its values.
-    
+
     The configuration dialog should emit reject() or accept() depending if the user wanted to close the dialog using the ok or cancel button.
     If ok has been clicked (accept()), this method calls applyParameters of the configuration dialog in order to force the dialog to send
     all changed parameters to the plugin. If the user clicks an apply button, the configuration dialog itsself must call applyParameters.
-    
+
     If the configuration dialog is inherited from AbstractAddInConfigDialog, use the api-function apiShowConfigurationDialog that does all
     the things mentioned in this description.
-    
+
     Remember that you need to implement hasConfDialog in your plugin and return 1 in order to signalize itom that the plugin
     has a configuration dialog.
-    
+
     \sa hasConfDialog
 */
 const ito::RetVal MyActuator::showConfDialog(void)

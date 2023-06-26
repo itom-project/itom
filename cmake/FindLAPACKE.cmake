@@ -26,22 +26,22 @@ set(LAPACKE_LIBRARIES "")
 
 #Remove the cache value
 set(LAPACKE_RUNTIME_LIBRARIES "" CACHE STRING "" FORCE)
-	
+
 set(LAPACKE_COMPONENTS blas lapack lapacke gfortran-3 gcc_s_seh-1 gcc_s_dw2-1 quadmath-0 tmglib winpthread-1) #blas must be first, since it should be added first to the linker
 set(LAPACKE_FOUND true)
 ## Loop over each components
 foreach(__LIB ${LAPACKE_COMPONENTS})
-		
+
 		find_library(LAPACKE_${__LIB}_LIBRARY NAMES lib${__LIB} ${__LIB} PATHS ${LAPACKE_DIR}/lib/${LAPACKE_LIBSUFFIX} NO_DEFAULT_PATH)
-		
+
 		#Add to the general list
 		if(LAPACKE_${__LIB}_LIBRARY)
 			set(LAPACKE_LIBRARIES ${LAPACKE_LIBRARIES} ${LAPACKE_${__LIB}_LIBRARY})
 		endif(LAPACKE_${__LIB}_LIBRARY)
-		
+
 		if(WIN32)
 			find_file(LAPACKE_${__LIB}_RUNTIME NAMES lib${__LIB}.dll ${__LIB}.dll PATHS ${LAPACKE_DIR}/bin/${LAPACKE_LIBSUFFIX} NO_DEFAULT_PATH)
-			
+
 			if(LAPACKE_${__LIB}_RUNTIME)
 				set(LAPACKE_RUNTIME_LIBRARIES ${LAPACKE_RUNTIME_LIBRARIES} ${LAPACKE_${__LIB}_RUNTIME})
 			endif(LAPACKE_${__LIB}_RUNTIME)

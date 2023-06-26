@@ -174,7 +174,7 @@ PyObject* PythonDateTime::GetPyDateTime(const DateTime& datetime)
         if (PyErr_WarnEx(PyExc_RuntimeWarning, "timezone offset not supported via C-API for Python < 3.7", 1) == -1)
         {
             Py_XDECREF(d);
-            return nullptr; //warning was turned into a real exception, 
+            return nullptr; //warning was turned into a real exception,
         }
 #endif
     }

@@ -22,7 +22,7 @@ Plugins
 -------
 
 * MSMediaFoundation: major improvements concerning necessary CPU consumption (tiny sleeps inserted in while(1) loops)
-* GenICam: there exists devices which cannot report the real access state. Instead they report changed the accessStatus DEVICE_ACCESS_STATUS_UNKNOWN. If this is the case, the plugin assumes a read/write access state and tries to open this device though. 
+* GenICam: there exists devices which cannot report the real access state. Instead they report changed the accessStatus DEVICE_ACCESS_STATUS_UNKNOWN. If this is the case, the plugin assumes a read/write access state and tries to open this device though.
 * GenICam: Start to support color cameras with the exemplary YCbCr422_8 encoding (tested with Basler puA1280-54uc)
 * FittingFilters: small bug-fix in method **fillInvalidAreas**
 
@@ -45,7 +45,7 @@ itom
 * complete rework of the script editor and the console. The previously used 3rd party component QScintilla has been removed and replaced by a
   new code editor component. This component is inspired by and ported from the Python editor project **PyQode** (https://github.com/pyQode/pyQode, MIT license).
   It has the following main features:
-  
+
     * syntax highlighting of Python code
     * code folding
     * auto indentation
@@ -54,7 +54,7 @@ itom
     * goto definition and assignment of any python method, function, variable or class (also requires the optional Python package **jedi**)
     * on the fly code checkers (requires the optional Python packages **pyflakes** or **frosted** [legacy])
     * most features of the previous editor component have been preserved
-    
+
 * new matplotlib backend (*itom-packages/mpl_itom*): The backend is now compatible with Matplotlib 1.x (legacy), 2.x and 3.x. The user can now change the properties of axes, lines or images via a specific setting dialog.
 * improved dark style sheet (*itom/styles/stylesheets/darkStyle*)
 * user management: improved documentation, bugfixes and improvements of the user management dialog and better classification of itom features with respect to the appropriate user roles.
@@ -63,7 +63,7 @@ itom
 * added or changed demo scripts to the **demo** folder (e.g. *demoDummyMotor.py*, *cloudDemo.py*, *demoContourLines2dPlot.py*, *listWidgetDemo.py*)
 * :py:meth:`itom.uiItem.connect`, :py:meth:`itom.dataIO.connect`, :py:meth:`itom.actuator.connect` have an additional optional argument 'minRepeatInterval'. If given (in ms), a python slot is not called more often than this timeout interval. All intermediate calls are blocked.
 * point cloud library: replaced deprecated pcl_isnan, pcl_isfinite by std::isnan / std::isfinite
-* auto column-size adjustment of docked help widget has been removed (fixes `issue #77 <https://bitbucket.org/itom/itom/issues/77/>`_) 
+* auto column-size adjustment of docked help widget has been removed (fixes `issue #77 <https://bitbucket.org/itom/itom/issues/77/>`_)
 * attributes :py:attr:`~itom.actuator.currentPositions` and :py:attr:`~itom.actuator.targetPositions` added (read-only): They can be used to always obtain the latest reported axes positions of an actuator, even if the actuator plugin is currently executing any method in its own thread.
 * avoid deadlock between GUI and python if many plots are closed via the menu or :py:meth:`itom.close`
 * dependency check added to pipManager; update button is always enabled, independent if an update is pretended to be available or not
@@ -125,7 +125,7 @@ itom
 * callstack widget: changed column order for a better usability
 * the script command for a specific plugin initialization can be obtained via drag and drop from the plugin toolbox to the script or console
 * many other bugfixes, for instance:
-    
+
     * fix to avoid a call for QAbstractItemModel::beginRemoveRows if no rows are currently available in the model (avoids 'new' assertion in beginRemoveRows, added with Qt 5.11
     * linux compiler fixes (e.g. `issue #69 <https://bitbucket.org/itom/itom/issues/69/>`_)
     * fix `issue #67 <https://bitbucket.org/itom/itom/issues/67/>`_
@@ -170,7 +170,7 @@ Designer Plugins
 
 (more than 89 commits in designerPlugins repository)
 
-New features: support matplotlib 3.x including new *edit parameters* dialog, volumeCut in itom2dqwtplot, color of shapes can be assigned indivually (in script) 
+New features: support matplotlib 3.x including new *edit parameters* dialog, volumeCut in itom2dqwtplot, color of shapes can be assigned indivually (in script)
 
 * itom1dqwtplot: dataObjectSeriesData: adapted boundingRect for objects of type ito::Rgba32. Autointerval works now also for rbgba32 objects
 * itom1dqwtplot: line cuts in pure x or y direction are now displayed with regard to their start and endpoint. Until now the x-vector was always displayed in positive direction.
@@ -179,10 +179,10 @@ New features: support matplotlib 3.x including new *edit parameters* dialog, vol
 * itom1dqwtplot: legend titles from previous object are re-used if no new lines are added to the plot
 * itom1dqwtplot: reducePoints is not called for X/Y plots, since this might lead to strange artifacts, depending on the current 'zoom' level or pixel size.
 * itom1dqwtplot: set property *pickerType* to Default at startup (was uninitialized before!)
-* itom2dqwtplot: adapted since m_lineCutType, m_zSliceType, m_zoomCutType and m_volumeCutType is deprecated and replaced by QMap subplotStates. 
+* itom2dqwtplot: adapted since m_lineCutType, m_zSliceType, m_zoomCutType and m_volumeCutType is deprecated and replaced by QMap subplotStates.
 * itom2dqwtplot: contour lines will only be printed if at least one level is given
 * itom2dqwtplot: added new volume cut feature (similar than line cut):
-    
+
     * this feature is usable to 3d dataObjects only
     * draw a line, which opens a new itom2dqwtplot, where the vertical planar cut along the line in z-direction is plot as image
     * use the 'h' and 'v' hotkey for a x-z or y-z volume cut
@@ -365,7 +365,7 @@ Plugins
 * Holography: more sanity checks on input objects in holography filter
 * OpenCVFilters: adapted possible input parameters of cvMedianBlur to cv 3.3
 * PCLTools: fix for crashes if pointClouds or polygonMeshes are loaded from filenames containing special characters
-* PCLTools: savePolygonMesh: binary or ascii mode can now be chosen and for obj-types the decimal precision 
+* PCLTools: savePolygonMesh: binary or ascii mode can now be chosen and for obj-types the decimal precision
 * PGRFlyCapture: changed MSVC version detection in ptgrey plugin to be equal to the version used within itom, avoiding potential problems with MSVC 2017+
 * PGRFlyCapture: Implemented grab_mode for PtGrey CameraInfo
 * PGRFlyCapture: parameter 'num_idle_grabs_after_param_change' added to optionally grab X dump images after parameter changes in order to get a clean new image with the new properties

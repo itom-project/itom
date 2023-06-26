@@ -23,14 +23,14 @@
 # You should have received a copy of the GNU Library General Public License
 # along with itom. If not, see <http://www.gnu.org/licenses/>.
 
-cmake_minimum_required(VERSION 3.1)
-  
+cmake_minimum_required(VERSION 3.12...3.24)
+
 set(target_name dataobject)
-project(${target_name}) 
+project(${target_name})
 
 message(STATUS "--------------- LIBRARY ${target_name} -----------------")
 
-# include commonly used itom CMake macros (internal can only be used within the core projects) 
+# include commonly used itom CMake macros (internal can only be used within the core projects)
 include("../cmake/ItomBuildMacros.cmake")
 include("../cmake/ItomBuildMacrosInternal.cmake")
 
@@ -46,11 +46,11 @@ find_package(OpenCV COMPONENTS core REQUIRED)
 # set some preprocessor directives
 add_definitions(-DDATAOBJECT_DLL -D_DATAOBJECT_DLL)
 
-include_directories( 
+include_directories(
 )
 
 link_directories(
-    
+
 )
 
 set(libSrcs
@@ -84,4 +84,4 @@ endif()
 set(COPY_SOURCES "")
 set(COPY_DESTINATIONS "")
 itom_add_library_to_appdir_and_sdk(${target_name} COPY_SOURCES COPY_DESTINATIONS)
-itom_post_build_copy_files(dataobject COPY_SOURCES COPY_DESTINATIONS)
+itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)

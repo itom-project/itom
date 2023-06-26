@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -57,15 +57,15 @@ public:
 
     //-------------------------------------------------------------------------------------------------
     // constructor, deconstructor, alloc, dellaoc
-    //------------------------------------------------------------------------------------------------- 
+    //-------------------------------------------------------------------------------------------------
     static void PyPointCloud_dealloc(PyPointCloud *self);
     static PyObject* PyPointCloud_new(PyTypeObject *type, PyObject *args, PyObject *kwds);
     static int PyPointCloud_init(PyPointCloud *self, PyObject *args, PyObject *kwds);
 
-       
+
     //-------------------------------------------------------------------------------------------------
     // general members
-    //------------------------------------------------------------------------------------------------- 
+    //-------------------------------------------------------------------------------------------------
     static PyObject *PyPointCloud_name(PyPointCloud *self);
     static PyObject *PyPointCloud_repr(PyPointCloud *self);
     static PyObject *PyPointCloud_append(PyPointCloud *self, PyObject *args, PyObject *kwds);
@@ -88,7 +88,7 @@ public:
     static PyObject *PyPointCloud_XYZRGBNormal_append(PyPointCloud *self, PyObject *xyz_i_nxnynz_curvObj, PyObject *rgbaObj);
 
     static PyPointCloud* createEmptyPyPointCloud();
-    
+
     //-------------------------------------------------------------------------------------------------
     // getter / setter
     //-------------------------------------------------------------------------------------------------
@@ -136,7 +136,7 @@ public:
 
     //-------------------------------------------------------------------------------------------------
     // type structures
-    //------------------------------------------------------------------------------------------------- 
+    //-------------------------------------------------------------------------------------------------
     //static PyMemberDef PyNpDataObject_members[];
     static PyMethodDef PyPointCloud_methods[];
     static PyTypeObject PyPointCloudType;
@@ -160,18 +160,18 @@ public:
 
     //-------------------------------------------------------------------------------------------------
     // constructor, deconstructor, alloc, dellaoc
-    //------------------------------------------------------------------------------------------------- 
+    //-------------------------------------------------------------------------------------------------
     static void PyPoint_dealloc(PyPoint *self);
     static PyObject* PyPoint_new(PyTypeObject *type, PyObject *args, PyObject *kwds);
     static int PyPoint_init(PyPoint *self, PyObject *args, PyObject *kwds);
 
-       
+
     //-------------------------------------------------------------------------------------------------
     // general members
-    //------------------------------------------------------------------------------------------------- 
+    //-------------------------------------------------------------------------------------------------
     static PyObject *PyPoint_name(PyPoint *self);
     static PyObject *PyPoint_repr(PyPoint *self);
-    
+
     //-------------------------------------------------------------------------------------------------
     // getter / setter
     //-------------------------------------------------------------------------------------------------
@@ -203,7 +203,7 @@ public:
 
     //-------------------------------------------------------------------------------------------------
     // type structures
-    //------------------------------------------------------------------------------------------------- 
+    //-------------------------------------------------------------------------------------------------
     //static PyMemberDef PyNpDataObject_members[];
     static PyMethodDef PyPoint_methods[];
     static PyTypeObject PyPointType;
@@ -233,15 +233,15 @@ public:
 
     //-------------------------------------------------------------------------------------------------
     // constructor, deconstructor, alloc, dellaoc
-    //------------------------------------------------------------------------------------------------- 
+    //-------------------------------------------------------------------------------------------------
     static void PyPolygonMesh_dealloc(PyPolygonMesh *self);
     static PyObject* PyPolygonMesh_new(PyTypeObject *type, PyObject *args, PyObject *kwds);
     static int PyPolygonMesh_init(PyPolygonMesh *self, PyObject *args, PyObject *kwds);
 
-       
+
     //-------------------------------------------------------------------------------------------------
     // general members
-    //------------------------------------------------------------------------------------------------- 
+    //-------------------------------------------------------------------------------------------------
     static PyObject *PyPolygonMesh_name(PyPolygonMesh *self);
     static PyObject *PyPolygonMesh_repr(PyPolygonMesh *self);
     static PyObject *PyPolygonMesh_data(PyPolygonMesh *self);
@@ -276,7 +276,7 @@ public:
 
     //-------------------------------------------------------------------------------------------------
     // type structures
-    //------------------------------------------------------------------------------------------------- 
+    //-------------------------------------------------------------------------------------------------
     //static PyMemberDef PyNpDataObject_members[];
     static PyMethodDef PyPolygonMesh_methods[];
     static PyTypeObject PyPolygonMeshType;
@@ -300,6 +300,6 @@ private:
 }; //end namespace ito
 
 
-#endif //#if ITOM_POINTCLOUDLIBRARY > 0 
+#endif //#if ITOM_POINTCLOUDLIBRARY > 0
 
 #endif

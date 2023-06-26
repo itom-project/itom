@@ -42,7 +42,7 @@ TEST(QPropertyEditorTest, CheckVector2DSetValue)
 
     ASSERT_EQ(vecProperty.x(), 0.0);
     ASSERT_EQ(vecProperty.y(), 0.0);
-    
+
     vecProperty.setValue("-2.756;4.5e-7");
 
     auto data = vecProperty.value().value<QVector2D>();

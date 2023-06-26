@@ -1,6 +1,6 @@
 /* ********************************************************************
     Template for an actuator plugin for the software itom
-    
+
     You can use this template, use it in your plugins, modify it,
     copy it and distribute it without any license restrictions.
 *********************************************************************** */
@@ -23,7 +23,7 @@ namespace ito
     class AddInBase; //forward declaration
 }
 
-class DialogMyActuator : public ito::AbstractAddInConfigDialog 
+class DialogMyActuator : public ito::AbstractAddInConfigDialog
 {
     Q_OBJECT
 

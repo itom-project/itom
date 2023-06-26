@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -26,7 +26,7 @@
 
 //----------------------------------------------------------------------------------------------------------------------------------
 inline uchar saturate_cast(float v)
-{ 
+{
     int iv = (int)(v + (v >= 0 ? 0.5 : -0.5));
     return (uchar)((unsigned)iv <= UCHAR_MAX ? iv : iv > 0 ? UCHAR_MAX : 0);
 }
@@ -38,11 +38,11 @@ namespace ito
 //----------------------------------------------------------------------------------------------------------------------------------
 //! \brief      Find the next color stop and its values within this palette
 
-/*! \detail     The palette itself is based on a small set of color stops. 
+/*! \detail     The palette itself is based on a small set of color stops.
                 Between this stops, the color is linear interpolated.
                 This function is used to give the next valid color stop for a position to allow such an interpolation.
 
-    \param      pos     the position within the palette 
+    \param      pos     the position within the palette
     \return     int     the index of the next color stop
 */
 inline int ItomPaletteBase::findUpper( double pos ) const
@@ -150,18 +150,18 @@ bool ItomPaletteBase::setInvalidColor(const QColor &color)
     \param      color   new color as QColor value
     \return     bool    the invalid color or if not defined the first colorStop or else black
 */
-QColor ItomPaletteBase::getInvalidColor() const 
+QColor ItomPaletteBase::getInvalidColor() const
 {
-    return m_paletteData.invalidColor.isValid() ? m_paletteData.invalidColor : 
+    return m_paletteData.invalidColor.isValid() ? m_paletteData.invalidColor :
         (m_paletteData.colorStops.size() > 0 ? QColor(m_paletteData.colorStops[0].second) : QColor(0, 0, 0));
 }
 //----------------------------------------------------------------------------------------------------------------------------------
 //! \brief      Insert a new color stop into the palette defined by color and position
 
-/*! \detail     The palette itself is based on a small set of color stops. 
+/*! \detail     The palette itself is based on a small set of color stops.
                 Between this stops, the color is linear interpolated.
 
-    \param      pos     the position within the palette 
+    \param      pos     the position within the palette
     \param      color   new color as QColor value
     \return     bool    true if success
 */
@@ -182,7 +182,7 @@ bool ItomPaletteBase::insertColorStop( double pos, const QColor &color )
     int index;
     if (m_paletteData.colorStops.size() == 0 )
     {
-        index = 0; 
+        index = 0;
         m_paletteData.colorStops.resize(1);
     }
     else
@@ -195,7 +195,7 @@ bool ItomPaletteBase::insertColorStop( double pos, const QColor &color )
             {
                 m_paletteData.colorStops[i] = m_paletteData.colorStops[i-1];
             }
-        }   
+        }
     }
     m_paletteData.colorStops[index].first = pos;
     m_paletteData.colorStops[index].second = color;
@@ -223,7 +223,7 @@ bool ItomPaletteBase::setColorStops(const QVector<QPair<double, QColor> > &color
 */
 double ItomPaletteBase::getPos(unsigned int color) const
 {
-    if(color > (unsigned int) (m_paletteData.colorStops.size() - 1)) 
+    if(color > (unsigned int) (m_paletteData.colorStops.size() - 1))
         return m_paletteData.colorStops[m_paletteData.colorStops.size() - 1].first;
     return m_paletteData.colorStops[color].first;
 }
@@ -237,7 +237,7 @@ double ItomPaletteBase::getPos(unsigned int color) const
 */
 QColor ItomPaletteBase::getColor(unsigned int index) const
 {
-    if(index > (unsigned int)(m_paletteData.colorStops.size() - 1)) 
+    if(index > (unsigned int)(m_paletteData.colorStops.size() - 1))
         return m_paletteData.colorStops[m_paletteData.colorStops.size() - 1].second;
     return m_paletteData.colorStops[index].second;
 }
@@ -247,7 +247,7 @@ QColor ItomPaletteBase::getColor(unsigned int index) const
 /*! \detail     This function returns the internal structur of the palette
 */
 ItomPalette ItomPaletteBase::getPalette() const
-{    
+{
     ItomPalette paletteOut = m_paletteData;
     paletteOut.colorVector256 = QVector<ito::uint32>(get256Colors());
     return paletteOut;
@@ -263,7 +263,7 @@ QVector<ito::uint32> ItomPaletteBase::get256Colors(bool includeAlpha) const
 {
     QVector<ito::uint32> colors(256);
     //colors are defined like QRgb
-    
+
     int curIdx = 0;
     float pos = 0.0;
 
@@ -305,25 +305,25 @@ QVector<ito::uint32> ItomPaletteBase::get256Colors(bool includeAlpha) const
                 offsetA = m_paletteData.colorStops[curIdx].second.alpha();
             }
 
-            bVal = saturate_cast(((float)m_paletteData.colorStops[curIdx+1].second.blue() 
+            bVal = saturate_cast(((float)m_paletteData.colorStops[curIdx+1].second.blue()
                 - (float)m_paletteData.colorStops[curIdx].second.blue())
-                / (m_paletteData.colorStops[curIdx+1].first - m_paletteData.colorStops[curIdx].first) 
+                / (m_paletteData.colorStops[curIdx+1].first - m_paletteData.colorStops[curIdx].first)
                 * (pos - m_paletteData.colorStops[curIdx].first) + offsetB);
-            gVal = saturate_cast(((float)m_paletteData.colorStops[curIdx+1].second.green() 
-                - (float)m_paletteData.colorStops[curIdx].second.green()) 
-                / (m_paletteData.colorStops[curIdx+1].first 
-                - m_paletteData.colorStops[curIdx].first) 
+            gVal = saturate_cast(((float)m_paletteData.colorStops[curIdx+1].second.green()
+                - (float)m_paletteData.colorStops[curIdx].second.green())
+                / (m_paletteData.colorStops[curIdx+1].first
+                - m_paletteData.colorStops[curIdx].first)
                 * (pos - m_paletteData.colorStops[curIdx].first) + offsetG);
-            rVal = saturate_cast(((float)m_paletteData.colorStops[curIdx+1].second.red() 
+            rVal = saturate_cast(((float)m_paletteData.colorStops[curIdx+1].second.red()
                 - (float)m_paletteData.colorStops[curIdx].second.red())
-                / (m_paletteData.colorStops[curIdx+1].first 
-                - m_paletteData.colorStops[curIdx].first) 
+                / (m_paletteData.colorStops[curIdx+1].first
+                - m_paletteData.colorStops[curIdx].first)
                 * (pos - m_paletteData.colorStops[curIdx].first) + offsetR);
 
-            alphaVal = saturate_cast(((float)m_paletteData.colorStops[curIdx+1].second.alpha() 
+            alphaVal = saturate_cast(((float)m_paletteData.colorStops[curIdx+1].second.alpha()
                 - (float)m_paletteData.colorStops[curIdx].second.alpha())
-                / (m_paletteData.colorStops[curIdx+1].first 
-                - m_paletteData.colorStops[curIdx].first) 
+                / (m_paletteData.colorStops[curIdx+1].first
+                - m_paletteData.colorStops[curIdx].first)
                 * (pos - m_paletteData.colorStops[curIdx].first) + offsetA);
 
             colors[i] = ((unsigned int)bVal);
@@ -360,7 +360,7 @@ PaletteOrganizer::PaletteOrganizer()
     m_restrictedKeyWords.append("");
     m_restrictedKeyWords.append("none");
 
-    noPalette = ItomPaletteBase("none", 0); 
+    noPalette = ItomPaletteBase("none", 0);
 
     ItomPaletteBase newPalette;
     //QColor inv1, inv2;
@@ -378,7 +378,7 @@ PaletteOrganizer::PaletteOrganizer()
     //declare "grayMarked"
     newPalette = ItomPaletteBase("grayMarked", ito::tPaletteGray | ito::tPaletteLinear | ito::tPaletteIndexed);
 
-    // https://bitbucket.org/itom/designerplugins/issues/39/gray-marked-colormap-not-showing
+    // https://github.com/itom-project/designerPlugins/issues/39
     const double tol = 0.0000; //5;
     const double eps = std::numeric_limits<double>::epsilon();
     newPalette.insertColorStop(0.0, Qt::magenta);
@@ -527,7 +527,7 @@ PaletteOrganizer::PaletteOrganizer()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/* save the given color palette to the settings. Settings must already be opened in the group, 
+/* save the given color palette to the settings. Settings must already be opened in the group,
 where the palette should be saved. Each palette is stored as a subgroup of the current group. */
 ito::RetVal PaletteOrganizer::saveColorPaletteToSettings(const ItomPaletteBase &palette, QSettings &settings) const
 {
@@ -545,14 +545,14 @@ ito::RetVal PaletteOrganizer::saveColorPaletteToSettings(const ItomPaletteBase &
         settings.setValue(QString("cs%1_1").arg(idx), colorStops[idx].first);
         settings.setValue(QString("cs%1_2").arg(idx), colorStops[idx].second);
     }
-    
+
     settings.endGroup();
 
     return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/* load a color palette from the settings. Settings must already be opened in the group, 
+/* load a color palette from the settings. Settings must already be opened in the group,
 where the palette should be loaded from. The current group must hereby consist of a subgroup with the group name 'paletteName'. */
 ito::RetVal PaletteOrganizer::loadColorPaletteFromSettings(const QString &paletteName, ItomPaletteBase &palette, QSettings &settings) const
 {
@@ -616,7 +616,7 @@ ItomPaletteBase PaletteOrganizer::getColorPalette(const QString &name, bool *fou
         if(!m_colorPalettes[i].getName().compare(name, Qt::CaseSensitive))
         {
             if (found) *found = true;
-            return m_colorPalettes[i]; 
+            return m_colorPalettes[i];
         }
     }
     if (found) *found = false;
@@ -768,7 +768,7 @@ ito::RetVal PaletteOrganizer::getColorBarListThreaded(QSharedPointer<QStringList
         {
             palettes->append(curList[i]);
         }
-        
+
     }
     else
     {

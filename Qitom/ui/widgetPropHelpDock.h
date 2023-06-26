@@ -48,7 +48,7 @@ private:
     // Functions
     void readSettings();
     void writeSettings();
-   
+
 };
 
 } //end namespace ito

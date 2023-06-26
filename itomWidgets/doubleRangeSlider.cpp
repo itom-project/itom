@@ -10,7 +10,7 @@
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
-   
+
     In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
@@ -24,7 +24,7 @@
     You should have received a copy of the GNU Library General Public License
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 
-    This file is a port and modified version of the 
+    This file is a port and modified version of the
     CTK Common Toolkit (http://www.commontk.org)
 *********************************************************************** */
 
@@ -51,13 +51,13 @@ protected:
   DoubleRangeSlider* const q_ptr;
 public:
   DoubleRangeSliderPrivate(DoubleRangeSlider& object);
-  
+
   int toInt(double _value)const;
   double minFromInt(int _value)const;
   double maxFromInt(int _value)const;
   double safeMinFromInt(int _value)const;
   double safeMaxFromInt(int _value)const;
-  
+
   void init();
   void connectSlider();
   void updateMinOffset(double value);
@@ -98,7 +98,7 @@ DoubleRangeSliderPrivate::DoubleRangeSliderPrivate(DoubleRangeSlider& object)
   this->MinValue = 0.;
   this->MaxValue = 99.;
 }
- 
+
 // --------------------------------------------------------------------------
 void DoubleRangeSliderPrivate::init()
 {
@@ -110,7 +110,7 @@ void DoubleRangeSliderPrivate::init()
   QHBoxLayout* l = new QHBoxLayout(q);
   l->addWidget(this->Slider);
   l->setContentsMargins(0,0,0,0);
-  
+
   this->Minimum = this->Slider->minimum();
   this->Maximum = this->Slider->maximum();
   this->MinValue = this->Slider->minimumValue();
@@ -461,7 +461,7 @@ void DoubleRangeSlider::setMinimumValue(double newMinValue)
     {
     double oldValue = d->MinValue;
     d->MinValue = newMinValue;
-    // don't emit a valuechanged signal if the new value is quite 
+    // don't emit a valuechanged signal if the new value is quite
     // similar to the old value.
     if (qAbs(newMinValue - oldValue) > (d->SingleStep * 0.000000001))
       {
@@ -510,7 +510,7 @@ void DoubleRangeSlider::setMaximumValue(double newMaxValue)
     {
     double oldValue = d->MaxValue;
     d->MaxValue = newMaxValue;
-    // don't emit a valuechanged signal if the new value is quite 
+    // don't emit a valuechanged signal if the new value is quite
     // similar to the old value.
     if (qAbs(newMaxValue - oldValue) > (d->SingleStep * 0.000000001))
       {

@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -36,7 +36,7 @@
 
 #ifndef Q_MOC_RUN
     #include "pythonWrapper.h"
-    
+
     //python
     // see http://vtk.org/gitweb?p=VTK.git;a=commitdiff;h=7f3f750596a105d48ea84ebfe1b1c4ca03e0bab3
     #if (defined _DEBUG) && (defined WIN32)
@@ -79,6 +79,7 @@
 #include <qatomic.h>
 #include <qelapsedtimer.h>
 #include <qtimer.h>
+#include <qsettings.h>
 
 /* definition and macros */
 
@@ -123,6 +124,7 @@ public:
     ~PythonEngine();                                //destructor
 
     Q_INVOKABLE void pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap> infoMessages);               //setup
+
     Q_INVOKABLE ito::RetVal scanAndRunAutostartFolder(QString currentDirAfterScan = QString() );
     Q_INVOKABLE ito::RetVal pythonShutdown(ItomSharedSemaphore *aimWait = NULL);            //shutdown
     Q_INVOKABLE ito::RetVal stringEncodingChanged();
@@ -135,7 +137,7 @@ public:
     inline void setExecInternalCodeByDebugger(bool value) { m_executeInternalPythonCodeInDebugMode = value; }
     void printPythonErrorWithoutTraceback();
     void pythonDebugFunction(PyObject *callable, PyObject *argTuple, bool gilExternal = false);
-    void pythonRunFunction(PyObject *callable, PyObject *argTuple, bool gilExternal = false);    
+    void pythonRunFunction(PyObject *callable, PyObject *argTuple, bool gilExternal = false);
     inline PyObject *getGlobalDictionary()  const { return m_pGlobalDictionary;  }  /*!< returns reference to main dictionary (main workspace) */
     inline bool pySyntaxCheckAvailable() const { return (m_pyModCodeChecker != NULL); }
     bool tryToLoadJediIfNotYetDone(); //returns true, if Jedi is already loaded or could be loaded; else false
@@ -170,7 +172,7 @@ public:
     void addFunctionCancellationAndObserver(QWeakPointer<ito::FunctionCancellationAndObserver> observer);
 
     //!< will remove the given observer from the list of function cancellations and observers. Even if observer is NULL, the list of current observers will be cleanup from deleted instances
-    void removeFunctionCancellationAndObserver(ito::FunctionCancellationAndObserver* observer = NULL); 
+    void removeFunctionCancellationAndObserver(ito::FunctionCancellationAndObserver* observer = NULL);
 
 protected:
     ito::RetVal runPyFile(const QString &pythonFileName);         // run file pythonFileName
@@ -183,7 +185,10 @@ protected:
     ito::RetVal modifyTracebackDepth(int NrOfLevelsToPopAtFront = -1, bool showTraceback = true);
 
     PyObject* setPyErrFromException(const std::exception &exc);
-
+    void startupInitPythonWorkspaceUpdateQueue();
+    ito::RetVal startupInitPythonHelpStreamConsumer(QSettings& settings);
+    ito::RetVal startupAddModulesToItomModule();
+    ito::RetVal startupLoadAndImportAdditionalModules(QSharedPointer<QVariantMap>& infoMessages);
     void connectNotify(const QMetaMethod &signal);
 
     enum DebuggerErrorCode
@@ -233,9 +238,9 @@ private:
 
     static PythonEngine *getInstanceInternal();
 
-    /*!< returns reference to local dictionary (workspace of method, 
+    /*!< returns reference to local dictionary (workspace of method,
     which is handled right now). Is NULL if no method is executed right now. */
-    inline PyObject *getLocalDictionary() { return m_pLocalDictionary; } 
+    inline PyObject *getLocalDictionary() { return m_pLocalDictionary; }
 
     PyObject *getPyObjectByFullName(bool globalNotLocal, const QStringList &fullNameSplittedByDelimiter, QString *validVariableName = NULL); //Python GIL must be locked when calling this function!
     PyObject *getPyObjectByFullName(bool globalNotLocal, const QString &fullName, QString *validVariableName = NULL); //Python GIL must be locked when calling this function!
@@ -270,7 +275,7 @@ private:
 
     ito::RetVal autoReloaderCheck();
 
-    static int queuedInterrupt(void *arg); 
+    static int queuedInterrupt(void *arg);
 
     PyObject* getAndCheckIdentifier(const QString &identifier, ito::RetVal &retval) const;
 
@@ -283,7 +288,7 @@ private:
         PythonCommon::CodeCheckerMessageType minVisibleMessageTypeLevel; //!< minimum message class that should be shown in editor margin
         QByteArray furtherPropertiesJson; //!< these parameters are parsed from a QVariantMap to json and will be passed to itomSyntaxCheck.py
 	};
-    
+
     //member variables
     bool m_started;
 	CodeCheckerOptions m_codeCheckerOptions;
@@ -291,9 +296,9 @@ private:
     QMutex m_dbgCmdMutex;
     QMutex m_pythonStateChangeMutex;
     QQueue<ito::tPythonDbgCmd> m_debugCommandQueue;
-    
+
     ito::tPythonState m_pythonState;
-    
+
     ito::BreakPointModel *m_bpModel;
 
     PyObject* m_mainModule;          //!< main module of python (builtin) [borrowed]
@@ -308,7 +313,7 @@ private:
     PyObject *m_pyModCodeChecker;
 	bool m_pyModCodeCheckerHasPyFlakes; //!< true if m_pyModCodeChecker could be loaded and pretends to have the syntax check feature (package: pyflakes)
 	bool m_pyModCodeCheckerHasFlake8; //!< true if m_pyModCodeChecker could be loaded and pretends to have the syntax and style check feature (package: flake8)
-    
+
     QSharedPointer<PythonJediRunner> m_jediRunner;
     Qt::HANDLE m_pythonThreadId;
     PyObject *m_dictUnicode;
@@ -329,7 +334,7 @@ private:
     bool m_includeItomImportBeforeCodeAnalysis;
 
     //!< string that is prepended to each script before syntax check (if m_includeItomImportBeforeCodeAnalysis is true)
-    QString m_includeItomImportString; 
+    QString m_includeItomImportString;
 
     wchar_t *m_pUserDefinedPythonHome;
 

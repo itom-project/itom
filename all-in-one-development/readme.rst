@@ -5,8 +5,8 @@ This folder contain zip-archives with all required tools and libraries to compil
 for various development environments.
 
 More information how to get your computer ready to compile itom and its plugins
-using these all-in-one development environments can be found here: 
-http://itom.bitbucket.org/latest/docs/02_installation/install_all-in-one_development_setup.html
+using these all-in-one development environments can be found here:
+https://itom-project.github.io/latest/docs/02_installation/install_all-in-one_development_setup.html
 
 Available editions
 -----------------------------
@@ -105,7 +105,7 @@ Added Boost_LIBRARY_DIR to CMake to enable a more robust search for boost.
 
 2015-04-01
 ~~~~~~~~~~~~~~~~~~
-CONSIDER_GIT_SVN in CMake of itom is set to True in order to check the git version numbers. 
+CONSIDER_GIT_SVN in CMake of itom is set to True in order to check the git version numbers.
 PAUSE command after each build is removed such that an automatic run without user interaction using option 7 is possible.
 
 2015-03-19
@@ -119,7 +119,7 @@ A syntax error has been fixed in the 64bit setup.py Python script (missing inden
 2015-01-16
 ~~~~~~~~~~~~~~~~~~
 A bug is fixed in the setup.py Python script, such that the source directory is automatically created if it doesn't exist yet.
-With the old version, the clone process of git for itom, the plugins or designer-plugins might fail if the source directory, as 
+With the old version, the clone process of git for itom, the plugins or designer-plugins might fail if the source directory, as
 parent of the specific sub-directories, didn't exist.
 
 2015-01-02
@@ -153,7 +153,7 @@ QHull 2011.1
 
 Known Problems
 ~~~~~~~~~~~~~~~~~~
-If the Visual Studio Qt AddIn does not start (error: couldn't register all qt4vsaddin commands...), try to open the 
+If the Visual Studio Qt AddIn does not start (error: couldn't register all qt4vsaddin commands...), try to open the
 Microsoft Visual Studio command line (x86 or x64 depending on your build) and run:
 
 gacutil.exe -i "C:\Program Files (x86)\Common Files\microsoft shared\MSEnv\PublicAssemblies\stdole.dll"

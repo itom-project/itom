@@ -31,6 +31,7 @@
 #include <qregularexpression.h>
 #include <qregularexpression.h>
 #include <qvector2d.h>
+#include <qlocale.h>
 
 namespace ito {
 
@@ -49,14 +50,18 @@ QVector2DProperty::QVector2DProperty(
 QVariant QVector2DProperty::value(int role) const
 {
     QVariant data = Property::value();
+    QLocale defaultLocale;
+    QString xStr = defaultLocale.toString(data.value<QVector2D>().x());
+    QString yStr = defaultLocale.toString(data.value<QVector2D>().y());
+
     if (data.isValid() && role != Qt::UserRole)
     {
         switch (role)
         {
         case Qt::DisplayRole:
-            return tr("[%1, %2]").arg(data.value<QVector2D>().x()).arg(data.value<QVector2D>().y());
+            return tr("[%1, %2]").arg(xStr).arg(yStr);
         case Qt::EditRole:
-            return tr("%1, %2").arg(data.value<QVector2D>().x()).arg(data.value<QVector2D>().y());
+            return tr("%1, %2").arg(xStr).arg(yStr);
         };
     }
     return data;
@@ -69,7 +74,7 @@ void QVector2DProperty::setValue(const QVariant& value)
     {
         QString v = value.toString();
         QRegularExpression rx("([+-]?([0-9]*[\\.,])?[0-9]+(e[+-]?[0-9]+)?)", QRegularExpression::CaseInsensitiveOption);
-
+        QLocale defaultLocale;
         int count = 0;
         int pos = 0;
         float x = 0.0f, y = 0.0f;
@@ -79,11 +84,11 @@ void QVector2DProperty::setValue(const QVariant& value)
         {
             if (count == 0)
             {
-                x = match.captured(1).toDouble();
+                x = defaultLocale.toDouble(match.captured(1));
             }
             else if (count == 1)
             {
-                y = match.captured(1).toDouble();
+                y = defaultLocale.toDouble(match.captured(1));
             }
             else if (count > 1)
             {

@@ -10,7 +10,7 @@
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
-   
+
     In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
@@ -37,7 +37,7 @@
 *    \brief semaphore which can be used for asychronous thread communication. By using this class it is possible to realize timeouts.
 
         This semaphore is usually applied if any method invokes another method in another thread and should wait for the called
-        method being terminated or the waiting routine drops into a possible timeout. Therefore, the calling method 
+        method being terminated or the waiting routine drops into a possible timeout. Therefore, the calling method
         must create an instance of ItomSharedSemaphore with a number of listeners equal to one. Then, the pointer to ItomSharedSemaphore
         is transmitted to the called method (usually as last argument). If the called method is done or wants the caller to continue
         the release-method of ItomSharedSemaphore is called. The calling method calls the wait-method of the semaphore which blocks

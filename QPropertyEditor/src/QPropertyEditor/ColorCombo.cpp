@@ -29,7 +29,7 @@
 #include <qdebug.h>
 
 ColorCombo::ColorCombo(QWidget* parent /*= 0*/) : QComboBox(parent)
-{    
+{
     QStringList colorNames = QColor::colorNames();
     for (int i = 0; i < colorNames.size(); ++i) {
         QColor color(colorNames[i]);
@@ -68,7 +68,7 @@ void ColorCombo::currentChanged(int index)
     qDebug() << "currentChanged: " << index;
     if (itemData(index).isValid() && itemData(index) == QVariant((int)QVariant::UserType))
     {
-        QColor color = QColorDialog::getColor(m_init, this);        
+        QColor color = QColorDialog::getColor(m_init, this);
         if (color.isValid())
         {
             if (findData(color, int(Qt::DecorationRole)) == -1)

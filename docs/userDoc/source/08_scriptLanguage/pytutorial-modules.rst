@@ -146,7 +146,7 @@ use it to save typing in interactive sessions.
 Executing modules as scripts
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-When you run a Python module by executing the corresponding python script 
+When you run a Python module by executing the corresponding python script
 the code in the module will be executed, just as if you imported it, but with
 the variable ``__name__`` set to ``"__main__"``.  That means that by adding this code at
 the end of your module::
@@ -191,10 +191,10 @@ named *spam.py* in a list of directories given by the variable
 After initialization, Python programs can modify :data:`sys.path`:
 
 .. code-block:: python
-    
+
     import sys
     sys.path.append("C:/myNewPath")
-    
+
 The directory containing the script being run is placed at the beginning of the
 search path, ahead of the standard library path. This means that scripts in that
 directory will be loaded instead of modules of the same name in the library

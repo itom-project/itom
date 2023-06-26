@@ -71,7 +71,7 @@ public:
     ~ParamInputDialog();
 
     Param getItems(RetVal &retValue) const;
-    
+
 private slots:
     void on_newListItemButton_clicked();
     void on_deleteListItemButton_clicked();
