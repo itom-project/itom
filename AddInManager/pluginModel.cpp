@@ -1478,7 +1478,7 @@ bool PlugInModel::getIsGrabberInstance(tItemType &itemType, size_t &internalData
     if(itemType == PlugInModel::itemInstance) //internalData can be casted to AddInBase
     {
         ito::AddInBase *aib = (ito::AddInBase*)(internalData);
-        if(aib->inherits("ito::AddInAbstractGrabber"))
+        if(aib->inherits("ito::AbstractAddInGrabber"))
         {
             return true;
         }

@@ -499,7 +499,7 @@ RetVal FigureWidget::liveImage(
 			const char * pixelFormat = paramFormat->getVal<const char*>();
             int min, max = 0;
             bool ok = false;
-            AddInAbstractGrabber::integerPixelFormatStringToMinMaxValue(pixelFormat, min, max, ok);
+            AbstractAddInGrabber::minMaxBoundariesFromIntegerPixelFormat(pixelFormat, min, max, ok);
             if (ok)
             {
                 bitRange.setMaximum(max);

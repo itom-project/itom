@@ -69,8 +69,9 @@ link_directories(
 
 set(ITOMCOMMONQT_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/commonQtVersion.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/abstractAddInGrabber.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInGrabber.h
-	${CMAKE_CURRENT_SOURCE_DIR}/../common/addInMultiChannelGrabber.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInMultiChannelGrabber.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInInterface.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInInterfaceVersion.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/abstractAddInDockWidget.h
@@ -90,6 +91,7 @@ set(ITOMCOMMONQT_HEADERS
 )
 
 set(ITOMCOMMONQT_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/abstractAddInGrabber.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/addInGrabber.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/addInMultiChannelGrabber.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/addInInterface.cpp

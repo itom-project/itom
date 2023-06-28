@@ -43,7 +43,7 @@ namespace ito
     //----------------------------------------------------------------------------------------------------------------------------------
      //! constructor
     AddInMultiChannelGrabber::AddInMultiChannelGrabber(const QByteArray &grabberName) :
-        AddInAbstractGrabber(),
+        AbstractAddInGrabber(),
         m_defaultConfigReady(false)
     {
         dd = new AddInMultiChannelGrabberPrivate();
@@ -291,7 +291,8 @@ namespace ito
                     m_channels[it.key()].m_channelParam["valueUnit"].getVal<char*>());
             }
 
-            futureType = pixelFormatStringToEnum(m_channels[it.key()].m_channelParam["pixelFormat"].getVal<const char*>(), &ok);
+            futureType = itoDataTypeFromPixelFormat(m_channels[it.key()].m_channelParam["pixelFormat"].getVal<const char*>(), &ok);
+
             if (ok)
             {
                 int* roi = m_channels[it.key()].m_channelParam["roi"].getVal<int*>();
@@ -409,7 +410,7 @@ namespace ito
                         m_channels[it.key()].m_channelParam["valueUnit"].getVal<char*>());
                 }
 
-                futureType = pixelFormatStringToEnum(it.value().m_channelParam["pixelFormat"].getVal<const char*>(), &ok);
+                futureType = itoDataTypeFromPixelFormat(it.value().m_channelParam["pixelFormat"].getVal<const char*>(), &ok);
                 if (ok)
                 {
                     int* roi = it.value().m_channelParam["roi"].getVal<int*>();
@@ -442,7 +443,7 @@ namespace ito
             char* channel = m_params["defaultChannel"].getVal<char*>();
             if (m_channels.contains(channel))
             {
-                futureType = pixelFormatStringToEnum(m_channels[channel].m_channelParam["pixelFormat"].getVal<const char*>(), &ok);
+                futureType = itoDataTypeFromPixelFormat(m_channels[channel].m_channelParam["pixelFormat"].getVal<const char*>(), &ok);
                 if (ok)
                 {
                     int* roi = m_channels[channel].m_channelParam["roi"].getVal<int*>();
@@ -541,7 +542,7 @@ namespace ito
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
-    ito::RetVal AddInMultiChannelGrabber::changeChannelForListerners(const QString& newChannel, QObject* obj)
+    ito::RetVal AddInMultiChannelGrabber::changeChannelForListeners(const QString& newChannel, QObject* obj)
     {
         assert(m_defaultConfigReady);
         ito::RetVal retValue(ito::retOk);

@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2023, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
@@ -25,7 +25,7 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#include "AddInGrabber.h"
+#include "addInGrabber.h"
 
 #include "common/helperCommon.h"
 #include <qcoreapplication.h>
@@ -33,200 +33,28 @@
 #include <qmetaobject.h>
 #include <qmetatype.h>
 
+
 namespace ito
 {
-class AddInAbstractGrabberPrivate
-{
-  public:
-    int m_nrLiveImageErrors; // number of consecutive errors when automatically grabbing the next image. If this number
-                             // becomes bigger than a threshold, auto grabbing will be disabled.
-};
+//-------------------------------------------------------------------------------------
 class AddInGrabberPrivate
 {
 };
-class AddInMultiChannelGrabberPrivate
-{
-};
 
-/*!
-\class AddInAbstractGrabber
-\brief Inherit from AddInAbstractGrabber if you write a camera/grabber plugin. Please call the constructor of
-AddInAbstractGrabber within your plugin constructor.
-
-This class contains important variables and helper methods which simplify the creation of a camera plugin. Please
-consider that you should implement the methods checkImage() and retriveImage() (pure virtual in this class) in your own
-class.
-
-\see checkImage(), retrieveImage()
-*/
-
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! constructor
-AddInAbstractGrabber::AddInAbstractGrabber() : AddInDataIO(), m_started(0)
-{
-    dd = new AddInAbstractGrabberPrivate();
-    dd->m_nrLiveImageErrors = 0;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-//! destructor
-AddInAbstractGrabber::~AddInAbstractGrabber()
-{
-    DELETE_AND_SET_NULL(dd);
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-//! this method gives the value range pixel for a given integer pixelFormat.
-void AddInAbstractGrabber::integerPixelFormatStringToMinMaxValue(const char *val, int &min, int &max, bool &ok)
-{
-    ok = false;
-    const QByteArray formatString(val);
-    QByteArray lowerByteArray = formatString.toLower();
-    if (lowerByteArray == "mono8" || lowerByteArray == "rgb8" || lowerByteArray == "rgba8" ||
-        lowerByteArray == "rgb8planar" || lowerByteArray == "rg8" || lowerByteArray == "rg8packed" ||
-        lowerByteArray == "gb8")
-    {
-        min = 0.0;
-        max = 255.0;
-        ok = true;
-    }
-    else if (lowerByteArray == "mono8s")
-    {
-        min = -128.0;
-        max = 127.0;
-        ok = true;
-    }
-    else if (lowerByteArray == "mono10" || lowerByteArray == "mono10packed" || lowerByteArray == "rgb10planar")
-    {
-        min = 0.0;
-        max = 1023.0;
-        ok = true;
-    }
-    else if (lowerByteArray == "mono12" || lowerByteArray == "mono12packed" || lowerByteArray == "rgb12planar")
-    {
-        min = 0.0;
-        max = 4095.0;
-        ok = true;
-    }
-    else if (lowerByteArray == "mono14" || lowerByteArray == "mono14packed")
-    {
-        min = 0.0;
-        max = 16383.0;
-        ok = true;
-    }
-    else if (lowerByteArray == "mono16" || lowerByteArray == "rgb16planar")
-    {
-        min = 0.0;
-        max = 65535.0;
-        ok = true;
-    }
-}
-//----------------------------------------------------------------------------------------------------------------------------------
-/*!
-\class AddInAbstractGrabber
-\brief This method maps a string to a value of pixelFormat.
-
-This function maps a string to a pixel format by using QMetaType.
-*/
-
-int AddInAbstractGrabber::pixelFormatStringToEnum(const QByteArray &val, bool *ok)
-{
-#if QT_VERSION >= 0x050500
-    const QMetaObject mo = staticMetaObject;
-#else
-    const QMetaObject mo = StaticQtMetaObject::get();
-#endif
-    const QByteArray lowerByte = val.toLower();
-    const char *val_ = lowerByte.data();
-    QMetaEnum me = mo.enumerator(mo.indexOfEnumerator("PixelFormat"));
-    int pixelFormat = me.keyToValue(val_, ok);
-    return pixelFormat;
-}
-//----------------------------------------------------------------------------------------------------------------------------------
-//! if any live image has been connected to this camera, this event will be regularly fired.
-/*!
-    This event is continoulsy fired if auto grabbing is enabled. At first, the image is acquired (method acquire). Then
-    the image is retrieved (retrieveImage) and finally the newly grabbed image is send to all registered listeners
-   (sendImagetoListeners)
-*/
-void AddInAbstractGrabber::timerEvent(QTimerEvent * /*event*/)
-{
-    QCoreApplication::sendPostedEvents(this, 0);
-    ito::RetVal retValue = ito::retOk;
-
-    if (m_autoGrabbingListeners.size() > 0) // verify that any liveImage is listening
-    {
-        retValue += acquire(0, NULL);
-
-        if (!retValue.containsError())
-        {
-            retValue += retrieveData();
-        }
-
-        if (!retValue.containsError())
-        {
-            retValue += sendDataToListeners(200);
-        }
-
-        if (retValue.containsWarning())
-        {
-            if (retValue.hasErrorMessage())
-            {
-                std::cout << "warning while sending live image: " << retValue.errorMessage() << "\n" << std::endl;
-            }
-            else
-            {
-                std::cout << "warning while sending live image."
-                          << "\n"
-                          << std::endl;
-            }
-
-            dd->m_nrLiveImageErrors = 0;
-        }
-        else if (retValue.containsError())
-        {
-            if (retValue.hasErrorMessage())
-            {
-                std::cout << "error while sending live image: " << retValue.errorMessage() << "\n" << std::endl;
-            }
-            else
-            {
-                std::cout << "error while sending live image."
-                          << "\n"
-                          << std::endl;
-            }
-
-            dd->m_nrLiveImageErrors++;
-
-            if (dd->m_nrLiveImageErrors > 10)
-            {
-                disableAutoGrabbing();
-                dd->m_nrLiveImageErrors = 0;
-                std::cout << "Auto grabbing of grabber " << this->getIdentifier().toLatin1().data()
-                          << " was stopped due to consecutive errors in the previous tries\n"
-                          << std::endl;
-            }
-        }
-        else
-        {
-            dd->m_nrLiveImageErrors = 0;
-        }
-    }
-}
-//----------------------------------------------------------------------------------------------------------------------------------
-//! constructor
-AddInGrabber::AddInGrabber() : AddInAbstractGrabber()
+AddInGrabber::AddInGrabber() : AbstractAddInGrabber()
 {
     dd = new AddInGrabberPrivate();
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! destructor
 AddInGrabber::~AddInGrabber()
 {
     DELETE_AND_SET_NULL(dd);
 }
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 ito::RetVal AddInGrabber::checkData(ito::DataObject *externalDataObject)
 {
     const int futureHeight = m_params["sizey"].getVal<int>();
@@ -394,7 +222,7 @@ ito::RetVal AddInGrabber::checkData(ito::DataObject *externalDataObject)
 
     return ito::retOk;
 }
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! sends m_image to all registered listeners.
 /*!
 This method is continuously called from timerEvent. Also call this method from your getVal-Method (usually with

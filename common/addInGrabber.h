@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2023, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
@@ -25,10 +25,9 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef ADDINGRABBER_H
-#define ADDINGRABBER_H
+#pragma once
 
-#include "addInInterface.h"
+#include "abstractAddInGrabber.h"
 
 #include "../DataObject/dataobj.h"
 #include "sharedStructuresQt.h"
@@ -38,117 +37,9 @@
 
 namespace ito
 {
-    class AddInAbstractGrabberPrivate;
     class AddInGrabberPrivate;
 
-    class ITOMCOMMONQT_EXPORT AddInAbstractGrabber : public ito::AddInDataIO
-    {
-        Q_OBJECT
-    public:
-
-        // all items must be lowercase!
-        enum PixelFormat
-        {
-            mono8 = ito::tUInt8,
-            mono8s = ito::tInt8,
-            mono10 = ito::tUInt16,
-            mono10Packed = ito::tUInt16,
-            mono12 = ito::tUInt16,
-            mono12Packed = ito::tUInt16,
-            mono14 = ito::tUInt16,
-            mono14Packed = ito::tUInt16,
-            mono16 = ito::tUInt16,
-            rgb8 = ito::tRGBA32,
-            rgba8 = ito::tRGBA32,
-            rgb8Planar = ito::tUInt8,
-            rgb10Planar = ito::tUInt16,
-            rgb12Planar = ito::tUInt16,
-            rgb16Planar = ito::tUInt16,
-            rg8 = ito::tRGBA32,
-            rg8Packed = ito::tRGBA32,
-            gb8 = ito::tRGBA32,
-            float32 = ito::tFloat32,
-            float64 = ito::tFloat64,
-            complex64 = ito::tComplex64,
-            complex128 = ito::tComplex128,
-        };
-#if QT_VERSION < 0x050500
-        //for >= Qt 5.5.0 see Q_ENUM definition below
-        Q_ENUMS(PixelFormat)
-#else
-        Q_ENUM(PixelFormat)
-#endif
-    private:
-        //! counter indicating how many times startDevice has been called
-        /*!
-            increment this variable every time startDevice is called (by incGrabberStarted())
-            decrement this variable every time stopDevice is called (by decGrabberStarted())
-
-            \sa grabberStartedCount, incGrabberStarted, decGrabberStarted, setGrabberStarted
-        */
-        int m_started;
-
-        AddInAbstractGrabberPrivate *dd;
-
-    protected:
-        /*!< this method is called every time when the auto-grabbing-timer is fired. Usually you don't have to overwrite this method. */
-        void timerEvent (QTimerEvent *event);
-
-        //! implement this method in your camera plugin. In this method the image is grabbed and stored in the m_image variable.
-        /*!
-            Call this method in getVal(...) in order to get the image from the camera and deeply copy it the the m_image variable.
-            This method is equally called from timerEvent.
-
-            \return retOk if copy operation was successfull, else retWarning or retError
-            \sa getVal, timerEvent
-        */
-        virtual ito::RetVal retrieveData(ito::DataObject *externalDataObject = NULL) = 0;
-
-        virtual ito::RetVal sendDataToListeners(int waitMS) = 0; /*!< sends m_data to all registered listeners. */
-
-        inline int grabberStartedCount() { return m_started; }  /*!< returns the number of started devices \see m_started */
-
-        /*!< increments the number of started devices \see m_started */
-        inline void incGrabberStarted()
-        {
-            m_started++;
-            if(m_started == 1)
-            {
-                runStatusChanged(true); //now, the device is started -> check if any listener is connected and if so start the auto grabbing timer (if flag is true, too)
-            }
-        }
-
-        /*!< decrements the number of started devices \see m_started */
-        inline void decGrabberStarted()
-        {
-            m_started--;
-            if(m_started == 0)
-            {
-                runStatusChanged(false); //now, the device is stopped -> stop any possibly started auto grabbing listener
-            }
-        }
-
-        /*!< sets the number of started devices to a given value \see m_started */
-        inline void setGrabberStarted(int value)
-        {
-            m_started = value;
-            runStatusChanged( value > 0 );
-        }
-
-    public:
-        static void integerPixelFormatStringToMinMaxValue(
-            const char* val,
-            int& min,
-            int& max,
-            bool& ok); /*!< this method gives the value range pixel for a given integer pixelFormat */
-        static int pixelFormatStringToEnum(const QByteArray &val, bool* ok); /*!< this method maps a string to a value of pixelFormat  */
-        AddInAbstractGrabber();
-        ~AddInAbstractGrabber();
-
-
-    };
-
-    class ITOMCOMMONQT_EXPORT AddInGrabber : public AddInAbstractGrabber
+    class ITOMCOMMONQT_EXPORT AddInGrabber : public AbstractAddInGrabber
     {
         Q_OBJECT
     private:
@@ -167,7 +58,7 @@ namespace ito
 
         \see m_image
         */
-        virtual ito::RetVal checkData(ito::DataObject *externalDataObject = NULL);
+        virtual ito::RetVal checkData(ito::DataObject *externalDataObject = nullptr);
 
         virtual ito::RetVal sendDataToListeners(int waitMS); /*!< sends m_data to all registered listeners. */
     public:
@@ -176,12 +67,6 @@ namespace ito
 
     };
 
-
-
-
-
 } //end namespace ito
 
 #endif //#if !defined(Q_MOC_RUN) || defined(ITOMCOMMONQT_MOC)
-
-#endif

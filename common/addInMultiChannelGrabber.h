@@ -28,7 +28,7 @@
 #pragma once
 
 #include "addInInterface.h"
-#include "addInGrabber.h"
+#include "abstractAddInGrabber.h"
 
 #include "../DataObject/dataobj.h"
 #include "sharedStructuresQt.h"
@@ -40,7 +40,7 @@ namespace ito
 {
     class AddInMultiChannelGrabberPrivate;
 
-    class ITOMCOMMONQT_EXPORT AddInMultiChannelGrabber : public AddInAbstractGrabber
+    class ITOMCOMMONQT_EXPORT AddInMultiChannelGrabber : public AbstractAddInGrabber
     {
         Q_OBJECT
     private:
@@ -171,10 +171,11 @@ namespace ito
     public:
         AddInMultiChannelGrabber(const QByteArray &grabberName);
         ~AddInMultiChannelGrabber();
+
     public slots:
-        ito::RetVal setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond = NULL) final;
+        ito::RetVal setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond = nullptr) final;
         ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond) final;
-        ito::RetVal changeChannelForListerners(const QString& newChannel, QObject* obj);
+        ito::RetVal changeChannelForListeners(const QString& newChannel, QObject* obj);
         ito::RetVal getVal(QSharedPointer<QMap<QString, ito::DataObject*> > dataObjMap, ItomSharedSemaphore* waitCond);
         ito::RetVal copyVal(QSharedPointer<QMap<QString, ito::DataObject*> > dataObjMap, ItomSharedSemaphore* waitCond);
 
