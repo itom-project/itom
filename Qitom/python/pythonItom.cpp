@@ -161,6 +161,75 @@ PyObject* PythonItom::PyNewScript(PyObject* /*pSelf*/, PyObject* /*pArgs*/)
     }
 }
 
+
+//-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyLog_doc, "log(msg) \n\
+\n\
+TODO.\n\
+\n\
+Open the python script indicated by *filename* in a new tab in the current, \n\
+latest opened editor window. Filename can be either a string with a relative \n\
+or absolute filename to the script to open or any object with a ``__file__`` \n\
+attribute. This attribute is then read and used as path. \n\
+\n\
+The relative filename is relative with respect to the current directory. \n\
+\n\
+Parameters \n\
+---------- \n\
+filename : str or Any \n\
+    Relative or absolute filename to a python script that is then opened \n\
+    (in the current editor window). Alternatively an object with a \n\
+    ``__file__`` attribute is allowed. \n\
+\n\
+Raises \n\
+------ \n\
+RuntimeError \n\
+    if the current user has no permission to open a script.");
+PyObject* PythonItom::PyLog(PyObject* /*pSelf*/, PyObject* pArgs)
+{
+    ito::RetVal retVal(ito::retOk);
+
+    if (PyTuple_Size(pArgs) != 1)
+    {
+        retVal += ito::RetVal(ito::retError, 0, "Wrong number of arguments");
+    }
+    QString text;
+    if (!retVal.containsWarningOrError())
+    {
+        PyObject* tempObj = PyTuple_GetItem(pArgs, 0);
+        if (PyUnicode_Check(tempObj))
+        {
+            bool ok = false;
+            text = PythonQtConversion::PyObjGetString(tempObj, false, ok);
+        }
+        else
+        {
+            retVal +=
+                ito::RetVal(ito::retError, 0, "Argument has to be a string! Wrong argument type!");
+        }
+    }
+    QObject* logger;
+    if (!retVal.containsWarningOrError())
+    {
+        logger = AppManagement::getLogger();
+        if (logger == nullptr)
+        {
+            retVal += ito::RetVal(ito::retWarning, 0, "Logger not available");
+            return NULL; // TODO warning or nothing?
+        }
+    }
+    if (!retVal.containsWarningOrError())
+    {
+        QMetaObject::invokeMethod(logger, "writePythonLog", Q_ARG(QString, text));
+    }
+
+    if (!PythonCommon::transformRetValToPyException(retVal))
+    {
+        return NULL;
+    }
+    Py_RETURN_NONE;
+}
+
 //-------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyOpenScript_doc, "openScript(filename) \n\
 \n\
@@ -6639,6 +6708,7 @@ PyMethodDef PythonItom::PythonMethodItom[] = {
      pyOpenEmptyScriptEditor_doc},
     {"newScript", (PyCFunction)PythonItom::PyNewScript, METH_NOARGS, pyNewScript_doc},
     {"openScript", (PyCFunction)PythonItom::PyOpenScript, METH_VARARGS, pyOpenScript_doc},
+    {"log", (PyCFunction)PythonItom::PyLog, METH_VARARGS, pyLog_doc},
     {"showHelpViewer",
      (PyCFunction)PythonItom::PyShowHelpViewer,
      METH_VARARGS | METH_KEYWORDS,

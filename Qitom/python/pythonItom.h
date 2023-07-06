@@ -52,6 +52,7 @@ public:
     //!< methods of module itom
     static PyObject* PyOpenEmptyScriptEditor(PyObject *pSelf, PyObject *pArgs);
     static PyObject* PyNewScript(PyObject *pSelf, PyObject *pArgs);
+    static PyObject* PyLog(PyObject* pSelf, PyObject* pArgs);
     static PyObject* PyOpenScript(PyObject *pSelf, PyObject *pArgs);
     static PyObject* PyClearCommandLine(PyObject *pSelf);
     static PyObject* PyShowHelpViewer(PyObject* pSelf, PyObject* pArgs, PyObject* pKwds);
