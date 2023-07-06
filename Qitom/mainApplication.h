@@ -25,7 +25,7 @@
 
 #include "python/pythonEngineInc.h"
 #include "python/qDebugStream.h"
-#include "python/pythonLog.h"
+#include "python/pythonLogger.h"
 #include "organizer/scriptEditorOrganizer.h"
 #include "organizer/paletteOrganizer.h"
 #include "organizer/uiOrganizer.h"
