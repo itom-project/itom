@@ -23,7 +23,7 @@ class ITOMCOMMONQT_EXPORT Logger : QObject
     Q_OBJECT
 
 public:
-    Logger(QString logFile);
+    Logger(QString logFile, int fileSizeBytes = 0, int backupCount = 0);
     ~Logger();
 
 public slots:
@@ -39,6 +39,9 @@ private:
     static void s_messageHandler(
         QtMsgType type, const QMessageLogContext& context, const QString& msg);
 
+    void initFiles(int fileSize, int backupCount);
+    void deleteOldBackups(int backupCount);
+    void storeBackupFile();
     void handleMessage(QtMsgType type, const QMessageLogContext& context, const QString& msg);
 };
 

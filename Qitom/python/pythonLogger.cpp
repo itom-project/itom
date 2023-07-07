@@ -1,4 +1,4 @@
-#include "pythonLog.h"
+#include "pythonLogger.h"
 #include "AppManagement.h"
 #include "qDebugStream.h"
 
