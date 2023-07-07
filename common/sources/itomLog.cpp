@@ -144,7 +144,7 @@ void Logger::storeBackupFile()
             .arg(QDate::currentDate().toString("yyyy_MM_dd"))
             .arg(QTime::currentTime().toString("hh_mm_ss"));
     this->m_logFile.rename(backupName);
-    this->m_logFile.setFileName(info.fileName());
+    this->m_logFile.setFileName(info.absoluteFilePath());
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
