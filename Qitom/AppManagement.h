@@ -26,7 +26,6 @@
 //#include <qstring.h>
 #include <qobject.h>
 #include <qmutex.h>
-#include "common/itomLog.h"
 
 namespace ito
 {
@@ -160,7 +159,7 @@ class AppManagement
         static QObject *m_userOrganizer;    /*!< static pointer to UserOrganizer (default: NULL) */
         static QObject* m_coutStream; /*!< static pointer to QDebugStream for std::cout redirection */
         static QObject* m_cerrStream; /*!< static pointer to QDebugStream for std::cerr redirection */
-        static QObject* m_logger; /*!< static pointer to logger (default: nullptr) */
+        static QObject* m_logger; /*!< static pointer to Logger (default: nullptr) */
 
         static QMutex m_mutex;  /*!< static mutex, protecting every read and write operation in class AppManagement */
 

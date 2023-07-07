@@ -161,30 +161,22 @@ PyObject* PythonItom::PyNewScript(PyObject* /*pSelf*/, PyObject* /*pArgs*/)
     }
 }
 
-
 //-------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyLog_doc, "log(msg) \n\
 \n\
-TODO.\n\
+Writes a message to the log file if itom was started with the \"log\" option.\n\
 \n\
-Open the python script indicated by *filename* in a new tab in the current, \n\
-latest opened editor window. Filename can be either a string with a relative \n\
-or absolute filename to the script to open or any object with a ``__file__`` \n\
-attribute. This attribute is then read and used as path. \n\
-\n\
-The relative filename is relative with respect to the current directory. \n\
+The message will be prepended with [Python  <date>].\n\
 \n\
 Parameters \n\
 ---------- \n\
-filename : str or Any \n\
-    Relative or absolute filename to a python script that is then opened \n\
-    (in the current editor window). Alternatively an object with a \n\
-    ``__file__`` attribute is allowed. \n\
+msg : str \n\
+    The message to be written to the log file. \n\
 \n\
 Raises \n\
 ------ \n\
-RuntimeError \n\
-    if the current user has no permission to open a script.");
+RuntimeWarning \n\
+    if itom was not started with the \"log\" option.");
 PyObject* PythonItom::PyLog(PyObject* /*pSelf*/, PyObject* pArgs)
 {
     ito::RetVal retVal(ito::retOk);
@@ -215,7 +207,6 @@ PyObject* PythonItom::PyLog(PyObject* /*pSelf*/, PyObject* pArgs)
         if (logger == nullptr)
         {
             retVal += ito::RetVal(ito::retWarning, 0, "Logger not available");
-            return NULL; // TODO warning or nothing?
         }
     }
     if (!retVal.containsWarningOrError())

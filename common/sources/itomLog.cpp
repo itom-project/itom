@@ -19,14 +19,12 @@ Logger::Logger(QString logFile, int fileSizeBytes, int backupCount)
     this->m_logFile.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text);
 
     // first lines in log file
-    this->m_logFile.write(
-        "------------------------------------------------------------------------------------------\n");
+    this->m_logFile.write("------------------------------------------------------------------------------------------\n");
     this->m_logFile.write(
         QString(QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss") + " Starting itom... \n")
             .toLatin1()
             .constData());
-    this->m_logFile.write(
-        "------------------------------------------------------------------------------------------\n");
+    this->m_logFile.write("------------------------------------------------------------------------------------------\n");
 
     this->m_messageStream = new QTextStream(&this->m_logFile);
     if (!s_handlerRegistered)
@@ -52,6 +50,12 @@ Logger::~Logger()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+/**
+ * @brief a static message handler to be registered with qInstallMessageHandler
+ *
+ * qInstallMessageHandler can only register a static method so this is used to call handleMessage on
+ * every Logger instance.
+ */
 void Logger::s_messageHandler(QtMsgType type, const QMessageLogContext& context, const QString& msg)
 {
     QVectorIterator<Logger*> i(s_instances);
@@ -62,6 +66,14 @@ void Logger::s_messageHandler(QtMsgType type, const QMessageLogContext& context,
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+/**
+ * @brief Initializes the log files
+ *
+ * Prepares m_logFile for usage by performing a backup and deleting old backups if required.
+ *
+ * @param fileSizeBytes the file size in bytes above which a new file will be created
+ * @param backupCount the number of old log files to be kept
+ */
 void Logger::initFiles(int fileSizeBytes, int backupCount)
 {
     QFileInfo info(this->m_logFile.fileName());
@@ -69,22 +81,28 @@ void Logger::initFiles(int fileSizeBytes, int backupCount)
     if (!dir.exists())
     {
         dir.mkpath(dir.absolutePath());
-        return;
+        return; // there is no old log file yet
     }
     if (!this->m_logFile.exists() || fileSizeBytes < 1 || backupCount < 1)
     {
-        return;
+        return; // there is no log file or only one log file should be used
     }
     if (info.size() < fileSizeBytes)
     {
-        return;
+        return; // the log file is too small to start a new one
     }
 
+    // delete one more backup file because a new one will be created afterwards
     this->deleteOldBackups(backupCount - 1);
     this->storeBackupFile();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+/**
+ * @brief Deletes the excess backup files
+ *
+ * @param backupCount the number of backup files to be kept
+ */
 void Logger::deleteOldBackups(int backupCount)
 {
     QFileInfo info(this->m_logFile.fileName());
@@ -92,15 +110,15 @@ void Logger::deleteOldBackups(int backupCount)
 
     // list backup files in the form <logFile>_<date>.<suffix>
     dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
-    QStringList filters;
-    filters << info.baseName() + "_????_??_??__??_??_??." + info.suffix();
-    dir.setNameFilters(filters);
-    dir.setSorting(QDir::Name);
+    QStringList nameFilters;
+    nameFilters << info.baseName() + "_????_??_??__??_??_??." + info.suffix();
+    dir.setNameFilters(nameFilters);
+    dir.setSorting(QDir::Name); // sorting by name means sorting by date with this file names
     QFileInfoList list = dir.entryInfoList();
 
     if (list.length() < backupCount)
     {
-        return;
+        return; // no backups have to be deleted
     }
 
     for (int i = 0; i < (list.size() - backupCount); ++i)
@@ -111,6 +129,12 @@ void Logger::deleteOldBackups(int backupCount)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+/**
+ * @brief Creates a backup of m_logFile.
+ * 
+ * m_logFile is renamed by prepending the current date and afterward m_log file is set to the old
+ * name again to create a new log file.
+ */
 void Logger::storeBackupFile()
 {
     QFileInfo info(this->m_logFile.fileName());
@@ -124,8 +148,12 @@ void Logger::storeBackupFile()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void Logger::handleMessage(
-    QtMsgType type, const QMessageLogContext& context, const QString& msg)
+/**
+ * @brief Handles a qDebug message
+ *
+ * The incoming message will be parsed and stored to the log file in a specific format.
+ */
+void Logger::handleMessage(QtMsgType type, const QMessageLogContext& context, const QString& msg)
 {
     this->m_msgOutputProtection.lock();
 
@@ -133,27 +161,31 @@ void Logger::handleMessage(
     {
     case QtDebugMsg:
         (*this->m_messageStream) << "[qDebug    "
-                         << QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss") << "] - "
-                         << msg << "     (File: " << context.file << " Line: " << context.line
-                         << " Function: " << context.function << ")\n";
+                                 << QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss")
+                                 << "] - " << msg << "     (File: " << context.file
+                                 << " Line: " << context.line << " Function: " << context.function
+                                 << ")\n";
         break;
     case QtWarningMsg:
         (*this->m_messageStream) << "[qWarning  "
-                         << QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss") << "] - "
-                         << msg << "     (File: " << context.file << " Line: " << context.line
-                         << " Function: " << context.function << ")\n";
+                                 << QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss")
+                                 << "] - " << msg << "     (File: " << context.file
+                                 << " Line: " << context.line << " Function: " << context.function
+                                 << ")\n";
         break;
     case QtCriticalMsg:
         (*this->m_messageStream) << "[qCritical "
-                         << QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss") << "] - "
-                         << msg << "     (File: " << context.file << " Line: " << context.line
-                         << " Function: " << context.function << ")\n";
+                                 << QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss")
+                                 << "] - " << msg << "     (File: " << context.file
+                                 << " Line: " << context.line << " Function: " << context.function
+                                 << ")\n";
         break;
     case QtFatalMsg:
         (*this->m_messageStream) << "[qFatal    "
-                         << QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss") << "] - "
-                         << msg << "     (File: " << context.file << " Line: " << context.line
-                         << " Function: " << context.function << ")\n";
+                                 << QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss")
+                                 << "] - " << msg << "     (File: " << context.file
+                                 << " Line: " << context.line << " Function: " << context.function
+                                 << ")\n";
         abort();
     }
 
@@ -168,12 +200,12 @@ void Logger::writePythonLog(QString msg)
     QString indentMsg = "    " + msg.trimmed();
     indentMsg.replace('\n', "\n    ");
     (*this->m_messageStream) << "[Python    "
-                             << QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss")
-                     << "]\n"
-                     << indentMsg << "\n";
+                             << QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss") << "]\n"
+                             << indentMsg << "\n";
 
     this->m_messageStream->flush();
     this->m_msgOutputProtection.unlock();
 }
+
 
 } // namespace ito

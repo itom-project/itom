@@ -96,7 +96,7 @@ class MainApplication : public QObject
 
         QDebugStream *m_pQout;                                /*!< std::cout is redirected to this instance*/
         QDebugStream *m_pQerr;                                /*!< std::cerr is redirected to this instance*/
-        PythonLogger m_pythonLogger;
+        PythonLogger m_pythonLogger;                          /*!< copies std::cerr to log*/
 
         QString getSplashScreenFileName() const;
         QPixmap getSplashScreenPixmap() const;

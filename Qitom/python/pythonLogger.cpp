@@ -5,10 +5,13 @@
 
 namespace ito {
 
+
+//-------------------------------------------------------------------------------------
 PythonLogger::PythonLogger() : m_logger(nullptr)
 {
 }
 
+//-------------------------------------------------------------------------------------
 void PythonLogger::init()
 {
     this->m_logger = qobject_cast<Logger*>(AppManagement::getLogger());
@@ -22,15 +25,12 @@ void PythonLogger::init()
         return;
     }
 
-
     connect(
-        &m_receiveStreamBufferTimer, &QTimer::timeout,
-        this, &PythonLogger::processStreamBuffer);
+        &m_receiveStreamBufferTimer, &QTimer::timeout, this, &PythonLogger::processStreamBuffer);
     m_receiveStreamBufferTimer.setInterval(50);
     m_receiveStreamBufferTimer.start();
 
-    connect(cErrStream, &QDebugStream::flushStream,
-        this, &PythonLogger::receiveStream);
+    connect(cErrStream, &QDebugStream::flushStream, this, &PythonLogger::receiveStream);
 }
 
 //-------------------------------------------------------------------------------------
@@ -56,5 +56,6 @@ void PythonLogger::processStreamBuffer()
     this->m_logger->writePythonLog(m_receiveStreamBuffer);
     m_receiveStreamBuffer = "";
 }
+
 
 } // namespace ito

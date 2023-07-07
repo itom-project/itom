@@ -2,8 +2,9 @@
 #define PYTHON_LOG_H
 
 
-#include "common/typeDefs.h"
 #include "common/itomLog.h"
+#include "common/typeDefs.h"
+
 #include <qobject.h>
 #include <qtimer.h>
 
@@ -11,12 +12,26 @@
 namespace ito {
 
 
+/**
+ * @class PythonLogger
+ * @brief Copies python errors to the logger.
+ *
+ * This gets the logger and the python error stream from AppManagement and copies any error to
+ * the logger.
+ */
 class PythonLogger : public QObject
 {
     Q_OBJECT
 
 public:
     PythonLogger();
+
+    /**
+     * @brief initializes the PythonLogger
+     *
+     * This has to be called after the logger and the python error stream are registered in the
+     * AppManagement. If not logger or error stream can be retrieved nothing happens.
+     */
     void init();
 
 private:
