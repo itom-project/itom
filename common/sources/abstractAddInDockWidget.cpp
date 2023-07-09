@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2023, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
@@ -41,29 +41,30 @@ namespace ito
 class AbstractAddInDockWidgetPrivate
 {
 public:
-    AbstractAddInDockWidgetPrivate() : m_pPlugin(NULL)
+    AbstractAddInDockWidgetPrivate() : m_pPlugin(nullptr)
     {}
 
     ito::AddInBase *m_pPlugin;
 };
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-AbstractAddInDockWidget::AbstractAddInDockWidget(ito::AddInBase *plugin) : d(NULL)
+AbstractAddInDockWidget::AbstractAddInDockWidget(ito::AddInBase *plugin) : d_ptr(new AbstractAddInDockWidgetPrivate())
 {
-    d = new AbstractAddInDockWidgetPrivate();
+    Q_D(AbstractAddInDockWidget);
+
     d->m_pPlugin = plugin;
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 AbstractAddInDockWidget::~AbstractAddInDockWidget()
 {
-    delete d;
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal AbstractAddInDockWidget::setPluginParameter(QSharedPointer<ito::ParamBase> param, MessageLevel msgLevel /*= msgLevelWarningAndError*/) const
 {
     ito::RetVal retval;
+    Q_D(const AbstractAddInDockWidget);
 
     if (d->m_pPlugin)
     {
@@ -112,6 +113,7 @@ ito::RetVal AbstractAddInDockWidget::setPluginParameter(QSharedPointer<ito::Para
 ito::RetVal AbstractAddInDockWidget::setPluginParameters(const QVector<QSharedPointer<ito::ParamBase> > params, MessageLevel msgLevel /*= msgLevelWarningAndError*/) const
 {
     ito::RetVal retval;
+    Q_D(const AbstractAddInDockWidget);
 
     if (d->m_pPlugin)
     {
@@ -160,6 +162,7 @@ ito::RetVal AbstractAddInDockWidget::setPluginParameters(const QVector<QSharedPo
 ito::RetVal AbstractAddInDockWidget::observeInvocation(ItomSharedSemaphore *waitCond, MessageLevel msgLevel) const
 {
     ito::RetVal retval;
+    Q_D(const AbstractAddInDockWidget);
 
     if (d->m_pPlugin)
     {
@@ -210,6 +213,7 @@ ito::RetVal AbstractAddInDockWidget::observeInvocation(ItomSharedSemaphore *wait
 ito::RetVal AbstractAddInDockWidget::setActuatorPosition(QVector<int> axes, QVector<double> positions, bool relNotAbs, MessageLevel msgLevel) const
 {
     ito::RetVal retval;
+    Q_D(const AbstractAddInDockWidget);
 
     QByteArray funcName = relNotAbs ? "setPosRel" : "setPosAbs";
 
@@ -268,6 +272,7 @@ ito::RetVal AbstractAddInDockWidget::setActuatorPosition(QVector<int> axes, QVec
 ito::RetVal AbstractAddInDockWidget::setActuatorPosition(int axis, double position, bool relNotAbs, MessageLevel msgLevel) const
 {
     ito::RetVal retval;
+    Q_D(const AbstractAddInDockWidget);
 
     QByteArray funcName = relNotAbs ? "setPosRel" : "setPosAbs";
 
@@ -326,6 +331,7 @@ ito::RetVal AbstractAddInDockWidget::setActuatorPosition(int axis, double positi
 ito::RetVal AbstractAddInDockWidget::requestActuatorStatusAndPositions(bool sendCurrentPos, bool sendTargetPos, MessageLevel msgLevel) const
 {
     ito::RetVal retval;
+    Q_D(const AbstractAddInDockWidget);
 
     if (d->m_pPlugin)
     {
@@ -376,6 +382,7 @@ ito::RetVal AbstractAddInDockWidget::requestActuatorStatusAndPositions(bool send
 ito::RetVal AbstractAddInDockWidget::setActuatorInterrupt() const
 {
     ito::RetVal retval;
+    Q_D(const AbstractAddInDockWidget);
 
     if (d->m_pPlugin)
     {

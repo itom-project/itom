@@ -3949,7 +3949,6 @@ PyObject* PythonPlugins::PyDataIOPlugin_stop(PyDataIOPlugin *self)
 
     Py_RETURN_NONE;
 }
-
 //-------------------------------------------------------------------------------------
 PyDoc_STRVAR(PyDataIOPlugin_getVal_doc,"getVal(dataObj) -> None \\\n\
 getVal(buffer, length = INT_MAX) -> int \n\
@@ -4040,6 +4039,61 @@ PyObject* PythonPlugins::PyDataIOPlugin_getVal(PyDataIOPlugin *self, PyObject *a
 
         invokeMethod = 1;
     }
+    else if (PyErr_Clear(), PyArg_ParseTuple(args, "O!", &PyDict_Type, &bufferObj))
+    {
+        PyObject *key, *value, *repr, *str;
+        Py_ssize_t pos = 0;
+        ito::DataObject* channelDataObj;
+        QSharedPointer<QMap<QString, ito::DataObject*>> channelMap(new QMap<QString, ito::DataObject*>);
+        while (PyDict_Next(bufferObj, &pos, &key, &value))
+        {
+            if (PyUnicode_Check(key))
+            {
+
+                if ((Py_TYPE(value) == &PythonDataObject::PyDataObjectType))
+                {
+                    repr = PyObject_Repr(key);
+                    str = PyUnicode_AsEncodedString(repr, "utf-8", "strict");
+                    if (((PythonDataObject::PyDataObject*)value)->dataObject)
+                    {
+                        QString key = QString(PyBytes_AS_STRING(str));
+                        if (key[0] == '\'' && key[key.length() - 1] == '\'')
+                        {
+                            key = key.mid(1, key.length() - 2);
+                        }
+                        (*channelMap)[key] =
+                            ((PythonDataObject::PyDataObject*)value)->dataObject;
+                    }
+                    else
+                    {
+                        Py_XDECREF(repr);
+                        Py_XDECREF(str);
+                        PyErr_SetString(
+                            PyExc_RuntimeError,
+                            "given data object of at least one data object is empty (internal dataObject-pointer is NULL)");
+                        return NULL;
+                    }
+                }
+                else
+                {
+                    PyErr_SetString(
+                        PyExc_RuntimeError, "The value of at least one item isn't a data object");
+                    return NULL;
+                }
+            }
+            else
+            {
+                PyErr_SetString(PyExc_RuntimeError, "The key of at least one item isn't a string");
+                return NULL;
+            }
+        }
+        locker = (new ItomSharedSemaphore());
+        QMetaObject::invokeMethod(
+            self->dataIOObj, "getVal",
+            QArgument<QSharedPointer<QMap<QString, ito::DataObject*> > >("QSharedPointer<QMap<QString, ito::DataObject*> >",channelMap),
+            Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+
+    }
     else if (PyErr_Clear(), PyArg_ParseTuple(args, "O|i", &bufferObj, &length))
     {
         if (PyByteArray_Check(bufferObj))
@@ -4085,7 +4139,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_getVal(PyDataIOPlugin *self, PyObject *a
         PyErr_Clear();
         PyErr_SetString(
             PyExc_RuntimeError,
-            "arguments of method must be either one data object, byte array or "
+            "arguments of method must be either one data object, a dictionary containing data objects, a byte array or a "
             "byte object.");
         return NULL;
     }
@@ -4167,6 +4221,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_copyVal(PyDataIOPlugin *self, PyObject *
 {
     int length = PyTuple_Size(args);
     PyObject *tempObj = NULL;
+    PyObject* bufferObj = NULL;
     ito::RetVal ret = ito::retOk;
 
     if (self->dataIOObj->getBasePlugin()->getType() & ito::typeGrabber)
@@ -4183,45 +4238,121 @@ PyObject* PythonPlugins::PyDataIOPlugin_copyVal(PyDataIOPlugin *self, PyObject *
         if ((Py_TYPE(tempObj) == &PythonDataObject::PyDataObjectType))
         {
             dObj = ((PythonDataObject::PyDataObject *)tempObj)->dataObject;
-        }
-        else
-        {
-            PyErr_SetString(PyExc_TypeError, "argument must be of type itom.dataObject.");
-            return NULL;
-        }
-
-        if (dObj == NULL)
-        {
-            PyErr_SetString(PyExc_ValueError, "invalid dataObject");
-            return NULL;
-        }
-
-        ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-
-        if (QMetaObject::invokeMethod(self->dataIOObj, "copyVal", Q_ARG(void*, (void *)dObj), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
-        {
-            bool timeout = false;
-
-            while (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginGeneral))
+            if (dObj == NULL)
             {
-                if (!self->dataIOObj->isAlive())
+                PyErr_SetString(PyExc_ValueError, "invalid dataObject");
+                return NULL;
+            }
+
+            ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+
+            if (QMetaObject::invokeMethod(self->dataIOObj, "copyVal", Q_ARG(void*, (void*)dObj), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
+            {
+                bool timeout = false;
+
+                while (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginGeneral))
                 {
-                    timeout = true;
-                    ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout while calling 'copyVal'").toLatin1().data());
-                    break;
+                    if (!self->dataIOObj->isAlive())
+                    {
+                        timeout = true;
+                        ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout while calling 'copyVal'").toLatin1().data());
+                        break;
+                    }
+                }
+
+                if (!timeout)
+                {
+                    ret += locker.getSemaphore()->returnValue;
                 }
             }
-
-            if (!timeout)
+            else
             {
-                ret += locker.getSemaphore()->returnValue;
+                ret += ito::RetVal(ito::retError, 0, QObject::tr("Member 'copyVal' of plugin could not be invoked (error in signal/slot connection).").toLatin1().data());
             }
+        }
+        else if (PyArg_ParseTuple(args, "O!", &PyDict_Type, &bufferObj))
+        {
+            PyObject* key, * value, * repr, * str;
+            Py_ssize_t pos = 0;
+            ito::DataObject* channelDataObj;
+            QSharedPointer<QMap<QString, ito::DataObject*>> channelMap(new QMap<QString, ito::DataObject*>);
+            while (PyDict_Next(bufferObj, &pos, &key, &value))
+            {
+                if (PyUnicode_Check(key))
+                {
+
+                    if ((Py_TYPE(value) == &PythonDataObject::PyDataObjectType))
+                    {
+                        repr = PyObject_Repr(key);
+                        str = PyUnicode_AsEncodedString(repr, "utf-8", "strict");
+                        if (((PythonDataObject::PyDataObject*)value)->dataObject)
+                        {
+                            QString key = QString(PyBytes_AS_STRING(str));
+                            if (key[0] == '\'' && key[key.length() - 1] == '\'')
+                            {
+                                key = key.mid(1, key.length() - 2);
+                            }
+                            (*channelMap)[key] =
+                                ((PythonDataObject::PyDataObject*)value)->dataObject;
+                        }
+                        else
+                        {
+                            Py_XDECREF(repr);
+                            Py_XDECREF(str);
+                            PyErr_SetString(
+                                PyExc_RuntimeError,
+                                "given data object of at least one data object is empty (internal dataObject-pointer is NULL)");
+                            return NULL;
+                        }
+                    }
+                    else
+                    {
+                        PyErr_SetString(
+                            PyExc_RuntimeError, "The value of at least one item isn't a data object");
+                        return NULL;
+                    }
+                }
+                else
+                {
+                    PyErr_SetString(PyExc_RuntimeError, "The key of at least one item isn't a string");
+                    return NULL;
+                }
+            }
+            ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+
+            if (QMetaObject::invokeMethod(
+                self->dataIOObj, "copyVal",
+                QArgument<QSharedPointer<QMap<QString, ito::DataObject*> > >("QSharedPointer<QMap<QString, ito::DataObject*> >", channelMap),
+                Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
+            {
+                bool timeout = false;
+
+                while (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginGeneral))
+                {
+                    if (!self->dataIOObj->isAlive())
+                    {
+                        timeout = true;
+                        ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout while calling 'copyVal'").toLatin1().data());
+                        break;
+                    }
+                }
+
+                if (!timeout)
+                {
+                    ret += locker.getSemaphore()->returnValue;
+                }
+            }
+            else
+            {
+                ret += ito::RetVal(ito::retError, 0, QObject::tr("Member 'copyVal' of plugin could not be invoked (error in signal/slot connection).").toLatin1().data());
+            }
+
         }
         else
         {
-            ret += ito::RetVal(ito::retError, 0, QObject::tr("Member 'copyVal' of plugin could not be invoked (error in signal/slot connection).").toLatin1().data());
+            PyErr_SetString(PyExc_TypeError, "argument must be of type itom.dataObject or dict.");
+            return NULL;
         }
-
     }
     else if (self->dataIOObj->getBasePlugin()->getType() & ito::typeADDA)
     {

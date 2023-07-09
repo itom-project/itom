@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2023, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
@@ -42,29 +42,30 @@ namespace ito
 class AbstractAddInConfigDialogPrivate
 {
 public:
-    AbstractAddInConfigDialogPrivate() : m_pPlugin(NULL)
+    AbstractAddInConfigDialogPrivate() : m_pPlugin(nullptr)
     {}
 
     ito::AddInBase *m_pPlugin;
 };
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-AbstractAddInConfigDialog::AbstractAddInConfigDialog(ito::AddInBase *plugin) : QDialog(), d(NULL)
+AbstractAddInConfigDialog::AbstractAddInConfigDialog(ito::AddInBase *plugin) : QDialog(), d_ptr(new AbstractAddInConfigDialogPrivate())
 {
-    d = new AbstractAddInConfigDialogPrivate();
+    Q_D(AbstractAddInConfigDialog);
+
     d->m_pPlugin = plugin;
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 AbstractAddInConfigDialog::~AbstractAddInConfigDialog()
 {
-    delete d;
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal AbstractAddInConfigDialog::setPluginParameter(QSharedPointer<ito::ParamBase> param, MessageLevel msgLevel /*= msgLevelWarningAndError*/)
 {
     ito::RetVal retval;
+    Q_D(AbstractAddInConfigDialog);
 
     if (d->m_pPlugin)
     {
@@ -133,6 +134,7 @@ ito::RetVal AbstractAddInConfigDialog::setPluginParameter(QSharedPointer<ito::Pa
 ito::RetVal AbstractAddInConfigDialog::setPluginParameters(const QVector<QSharedPointer<ito::ParamBase> > params, MessageLevel msgLevel /*= msgLevelWarningAndError*/)
 {
     ito::RetVal retval;
+    Q_D(AbstractAddInConfigDialog);
 
     if (d->m_pPlugin)
     {
@@ -186,6 +188,7 @@ ito::RetVal AbstractAddInConfigDialog::setPluginParameters(const QVector<QShared
 ito::RetVal AbstractAddInConfigDialog::observeInvocation(ItomSharedSemaphore *waitCond, MessageLevel msgLevel) const
 {
     ito::RetVal retval;
+    Q_D(const AbstractAddInConfigDialog);
 
     if (d->m_pPlugin)
     {
