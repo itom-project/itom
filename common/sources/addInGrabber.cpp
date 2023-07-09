@@ -43,16 +43,15 @@ class AddInGrabberPrivate
 
 //-------------------------------------------------------------------------------------
 //! constructor
-AddInGrabber::AddInGrabber() : AbstractAddInGrabber()
+AddInGrabber::AddInGrabber() : AbstractAddInGrabber(), d_ptr(new AddInGrabberPrivate())
 {
-    dd = new AddInGrabberPrivate();
 }
 
 //-------------------------------------------------------------------------------------
 //! destructor
 AddInGrabber::~AddInGrabber()
 {
-    DELETE_AND_SET_NULL(dd);
+
 }
 //-------------------------------------------------------------------------------------
 ito::RetVal AddInGrabber::checkData(ito::DataObject *externalDataObject)

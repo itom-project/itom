@@ -38,9 +38,23 @@ namespace ito
 class AbstractAddInGrabberPrivate
 {
     public:
+        AbstractAddInGrabberPrivate() : m_nrLiveImageErrors(0), m_started(0)
+        {
+
+        }
+
         // number of consecutive errors when automatically grabbing the next image. If this number
         // becomes bigger than a threshold, auto grabbing will be disabled.
         int m_nrLiveImageErrors;
+
+        //! counter indicating how many times startDevice has been called
+        /*!
+            increment this variable every time startDevice is called (by incGrabberStarted())
+            decrement this variable every time stopDevice is called (by decGrabberStarted())
+
+            \sa grabberStartedCount, incGrabberStarted, decGrabberStarted, setGrabberStarted
+        */
+        int m_started;
 };
 
 
@@ -58,17 +72,14 @@ class.
 
 //-------------------------------------------------------------------------------------
 //! constructor
-AbstractAddInGrabber::AbstractAddInGrabber() : AddInDataIO(), m_started(0)
+AbstractAddInGrabber::AbstractAddInGrabber() : AddInDataIO(), d_ptr(new AbstractAddInGrabberPrivate())
 {
-    dd = new AbstractAddInGrabberPrivate();
-    dd->m_nrLiveImageErrors = 0;
 }
 
 //-------------------------------------------------------------------------------------
 //! destructor
 AbstractAddInGrabber::~AbstractAddInGrabber()
 {
-    DELETE_AND_SET_NULL(dd);
 }
 
 //-------------------------------------------------------------------------------------
@@ -148,6 +159,8 @@ int AbstractAddInGrabber::itoDataTypeFromPixelFormat(const QByteArray &pixelForm
 */
 void AbstractAddInGrabber::timerEvent(QTimerEvent * /*event*/)
 {
+    Q_D(AbstractAddInGrabber);
+
     QCoreApplication::sendPostedEvents(this, 0);
     ito::RetVal retValue = ito::retOk;
 
@@ -178,7 +191,7 @@ void AbstractAddInGrabber::timerEvent(QTimerEvent * /*event*/)
                           << std::endl;
             }
 
-            dd->m_nrLiveImageErrors = 0;
+            d->m_nrLiveImageErrors = 0;
         }
         else if (retValue.containsError())
         {
@@ -193,12 +206,12 @@ void AbstractAddInGrabber::timerEvent(QTimerEvent * /*event*/)
                           << std::endl;
             }
 
-            dd->m_nrLiveImageErrors++;
+            d->m_nrLiveImageErrors++;
 
-            if (dd->m_nrLiveImageErrors > 10)
+            if (d->m_nrLiveImageErrors > 10)
             {
                 disableAutoGrabbing();
-                dd->m_nrLiveImageErrors = 0;
+                d->m_nrLiveImageErrors = 0;
                 std::cout << "Auto grabbing of grabber " << this->getIdentifier().toLatin1().data()
                           << " was stopped due to consecutive errors in the previous tries\n"
                           << std::endl;
@@ -206,9 +219,52 @@ void AbstractAddInGrabber::timerEvent(QTimerEvent * /*event*/)
         }
         else
         {
-            dd->m_nrLiveImageErrors = 0;
+            d->m_nrLiveImageErrors = 0;
         }
     }
+}
+
+//-------------------------------------------------------------------------------------
+/*!< returns the number of started devices \see m_started */
+int AbstractAddInGrabber::grabberStartedCount() const
+{
+    Q_D(const AbstractAddInGrabber);
+    return d->m_started;
+}
+
+//-------------------------------------------------------------------------------------
+/*!< increments the number of started devices \see m_started */
+void AbstractAddInGrabber::incGrabberStarted()
+{
+    Q_D(AbstractAddInGrabber);
+    d->m_started++;
+
+    if (d->m_started == 1)
+    {
+        runStatusChanged(true); //now, the device is started -> check if any listener is connected and if so start the auto grabbing timer (if flag is true, too)
+    }
+}
+
+//-------------------------------------------------------------------------------------
+/*!< decrements the number of started devices \see m_started */
+void AbstractAddInGrabber::decGrabberStarted()
+{
+    Q_D(AbstractAddInGrabber);
+    d->m_started--;
+
+    if (d->m_started == 0)
+    {
+        runStatusChanged(false); //now, the device is stopped -> stop any possibly started auto grabbing listener
+    }
+}
+
+//-------------------------------------------------------------------------------------
+/*!< sets the number of started devices to a given value \see m_started */
+void AbstractAddInGrabber::setGrabberStarted(int value)
+{
+    Q_D(AbstractAddInGrabber);
+    d->m_started = value;
+    runStatusChanged(value > 0);
 }
 
 } // end namespace ito

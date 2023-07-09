@@ -1,7 +1,7 @@
 /* ********************************************************************
 itom software
 URL: http://www.uni-stuttgart.de/ito
-Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+Copyright (C) 2023, Institut fuer Technische Optik (ITO),
 Universitaet Stuttgart, Germany
 
 This file is part of itom and its software development toolkit (SDK).
@@ -25,8 +25,7 @@ You should have received a copy of the GNU Library General Public License
 along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef ADDININTERFACE_H
-#define ADDININTERFACE_H
+#pragma once
 
 #include "commonGlobal.h"
 
@@ -272,8 +271,8 @@ class ITOMCOMMONQT_EXPORT AddInInterfaceBase : public QObject
     //!< internal function used within the closing process
     virtual ito::RetVal closeThisInst(ito::AddInBase **addInInst) = 0;
 
-    QScopedPointer<AddInInterfaceBasePrivate>
-        d_ptr; //!> self-managed pointer to the private class container (deletes itself if d_ptr is destroyed)
+    //!> self-managed pointer to the private class container (deletes itself if d_ptr is destroyed)
+    QScopedPointer<AddInInterfaceBasePrivate> d_ptr;
     Q_DECLARE_PRIVATE(AddInInterfaceBase);
 
   protected:
@@ -649,6 +648,12 @@ class ITOMCOMMONQT_EXPORT AddInBase : public QObject
     //! sets the interface of this instance to base. \sa AddInInterfaceBase
     void setBasePlugin(AddInInterfaceBase *base);
 
+    //! inserts the given param to the m_params map.
+    /*
+    equivalent to: m_params.insert(param.getName(), param);
+    */
+    void insertParam(const Param& param);
+
     QMap<QString, Param> m_params; //!< map of the available parameters
 
     QString m_identifier; //!< unique identifier (serial number, com-port...)
@@ -675,25 +680,31 @@ class ITOMCOMMONQT_EXPORT AddInBase : public QObject
     //! decrements reference counter of this plugin (thread-safe)
     void decRefCount(void);
 
-    QVector<ito::AddInBase::AddInRef *> m_hwDecList; //!< list of hardware that was passed to the plugin on
-                                                     //!< initialisation and whose refcounter was incremented
-    QMap<QString, ExecFuncParams>
-        m_execFuncList; //!< map with registered additional functions. funcExec-name -> (default mandParams, default
-                        //!< optParams, default outParams, infoString)
+    //!< list of hardware that was passed to the plugin on
+    //!< initialisation and whose refcounter was incremented
+    QVector<ito::AddInBase::AddInRef *> m_hwDecList;
 
-    QScopedPointer<AddInBasePrivate>
-        d_ptr; //!> self-managed pointer to the private class container (deletes itself if d_ptr is destroyed). pointer
-               //!to private class of AddInBase defined in AddInInterface.cpp. This container is used to allow flexible
-               //!changes in the interface without destroying the binary compatibility
+    //!< map with registered additional functions. funcExec-name -> (default mandParams, default
+    //!< optParams, default outParams, infoString)
+    QMap<QString, ExecFuncParams>
+        m_execFuncList;
+
+    //!> self-managed pointer to the private class container (deletes itself if d_ptr is destroyed). pointer
+    //!to private class of AddInBase defined in AddInInterface.cpp. This container is used to allow flexible
+    //!changes in the interface without destroying the binary compatibility
+    QScopedPointer<AddInBasePrivate> d_ptr;
     Q_DECLARE_PRIVATE(AddInBase);
 
-    friend class AddInInterfaceBase; //!< AddInBase is friend with AddInInterfaceBase, such that the interface can
-                                     //!< access methods like the protected constructor or destructor of this plugin
-                                     //!< class.
+    //!< AddInBase is friend with AddInInterfaceBase, such that the interface can
+    //!< access methods like the protected constructor or destructor of this plugin
+    //!< class.
+    friend class AddInInterfaceBase;
 
     static int m_instCounter;
-    static int maxThreadCount; //!< maximum number of threads algorithms can use e.g. with OpenMP parallelization. This
-                               //!< is a number between 1 and QThread::idealThreadCount()
+
+    //!< maximum number of threads algorithms can use e.g. with OpenMP parallelization. This
+    //!< is a number between 1 and QThread::idealThreadCount()
+    static int maxThreadCount;
 
   Q_SIGNALS:
     //! This signal usually is emitted if the vector m_params is changed.
@@ -1309,5 +1320,3 @@ class ITOMCOMMONQT_EXPORT AddInAlgo : public AddInBase
 
 //! must be out of namespace ito, otherwise it results in a strange compiler error (template ...)
 Q_DECLARE_INTERFACE(ito::AddInInterfaceBase, ito_AddInInterface_CurrentVersion /*"ito.AddIn.InterfaceBase/4"*/)
-
-#endif

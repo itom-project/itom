@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2023, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
@@ -25,8 +25,7 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef ABSTRACTADDINDOCKWIDGET_H
-#define ABSTRACTADDINDOCKWIDGET_H
+#pragma once
 
 #include "retVal.h"
 #include "typeDefs.h"
@@ -183,7 +182,9 @@ namespace ito
             ito::RetVal requestActuatorStatusAndPositions(bool sendCurrentPos, bool sendTargetPos, MessageLevel msgLevel = msgLevelWarningAndError) const;
 
         private:
-            AbstractAddInDockWidgetPrivate* d; /*! private data pointer of this class. */
+            /*! private data pointer of this class. */
+            QScopedPointer<AbstractAddInDockWidgetPrivate> d_ptr;
+            Q_DECLARE_PRIVATE(AbstractAddInDockWidget);
 
         public slots:
             //! slot invoked if any parameter of the plugin has been changed.
@@ -231,5 +232,3 @@ namespace ito
             virtual void targetChanged(QVector<double> targetPositions);
     };
 } //end namespace ito
-
-#endif //ABSTRACTADDINDOCKWIDGET_H

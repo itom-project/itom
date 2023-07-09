@@ -70,23 +70,12 @@ namespace ito
             complex64 = ito::tComplex64,
             complex128 = ito::tComplex128,
         };
-#if QT_VERSION < 0x050500
-        //for >= Qt 5.5.0 see Q_ENUM definition below
-        Q_ENUMS(PixelFormat)
-#else
+
         Q_ENUM(PixelFormat)
-#endif
+
     private:
-        //! counter indicating how many times startDevice has been called
-        /*!
-            increment this variable every time startDevice is called (by incGrabberStarted())
-            decrement this variable every time stopDevice is called (by decGrabberStarted())
-
-            \sa grabberStartedCount, incGrabberStarted, decGrabberStarted, setGrabberStarted
-        */
-        int m_started;
-
-        AbstractAddInGrabberPrivate *dd;
+        QScopedPointer<AbstractAddInGrabberPrivate> d_ptr;
+        Q_DECLARE_PRIVATE(AbstractAddInGrabber);
 
     protected:
         /*!< this method is called every time when the auto-grabbing-timer is fired. Usually you don't have to overwrite this method. */
@@ -104,35 +93,17 @@ namespace ito
 
         virtual ito::RetVal sendDataToListeners(int waitMS) = 0; /*!< sends m_data to all registered listeners. */
 
-        inline int grabberStartedCount() { return m_started; }  /*!< returns the number of started devices \see m_started */
+        /*!< returns the number of started devices \see m_started */
+        int grabberStartedCount() const;
 
         /*!< increments the number of started devices \see m_started */
-        inline void incGrabberStarted()
-        {
-            m_started++;
-
-            if(m_started == 1)
-            {
-                runStatusChanged(true); //now, the device is started -> check if any listener is connected and if so start the auto grabbing timer (if flag is true, too)
-            }
-        }
+        void incGrabberStarted();
 
         /*!< decrements the number of started devices \see m_started */
-        inline void decGrabberStarted()
-        {
-            m_started--;
-            if(m_started == 0)
-            {
-                runStatusChanged(false); //now, the device is stopped -> stop any possibly started auto grabbing listener
-            }
-        }
+        void decGrabberStarted();
 
         /*!< sets the number of started devices to a given value \see m_started */
-        inline void setGrabberStarted(int value)
-        {
-            m_started = value;
-            runStatusChanged( value > 0 );
-        }
+        void setGrabberStarted(int value);
 
     public:
         /*!< this method gives the value range pixel for a given integer pixelFormat */

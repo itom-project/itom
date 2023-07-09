@@ -43,8 +43,9 @@ namespace ito
     {
         Q_OBJECT
     private:
+        QScopedPointer<AddInGrabberPrivate> d_ptr;
+        Q_DECLARE_PRIVATE(AddInGrabber);
 
-        AddInGrabberPrivate *dd;
     protected:
         ito::DataObject m_data; /*!< variable for the recently grabbed image*/
 

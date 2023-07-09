@@ -43,105 +43,57 @@ namespace ito
     class ITOMCOMMONQT_EXPORT AddInMultiChannelGrabber : public AbstractAddInGrabber
     {
         Q_OBJECT
-    private:
-        AddInMultiChannelGrabberPrivate *dd;
-        bool m_defaultConfigReady;
-        QMap<QString, QStringList> m_paramChannelAvailabilityMap;
 
     protected:
 
-        struct ChannelContainer
+        class ChannelContainer
         {
-            ito::DataObject m_data;
-            QMap<QString, ito::Param> m_channelParam;
-
-            ChannelContainer()
-            {
-                ito::Param paramVal;
-                int roi[] = { 0, 0, 1, 1 };
-                paramVal = ito::Param("roi", ito::ParamBase::IntArray, 4, roi, "roi");
-                m_channelParam.insert(paramVal.getName(), paramVal);
-
-                paramVal = ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 1, 1, "sizex");
-                m_channelParam.insert(paramVal.getName(), paramVal);
-
-                paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 1, 1, "sizey");
-                m_channelParam.insert(paramVal.getName(), paramVal);
-
-                paramVal = ito::Param("pixelFormat", ito::ParamBase::String, "mono8", "pixelFormat");
-                m_channelParam.insert(paramVal.getName(), paramVal);
-
-                double axisOffset[] = { 0.0, 0.0 };
-                paramVal = ito::Param("axisOffset", ito::ParamBase::DoubleArray, 2, axisOffset, "axis offset");
-                m_channelParam.insert(paramVal.getName(), paramVal);
-
-                double axisScale[] = { 1.0, 1.0 };
-                paramVal = ito::Param("axisScale", ito::ParamBase::DoubleArray, 2, axisScale, "axis scale");
-                m_channelParam.insert(paramVal.getName(), paramVal);
-
-                QString axisUnit[] = {"<auto>", "<auto>"};
-                paramVal = ito::Param(
-                    "axisUnit",
-                    ito::ParamBase::StringList,
-                    axisUnit->toLatin1().data(), "axis unit");
-                m_channelParam.insert(paramVal.getName(), paramVal);
-
-                QString axisDescription[] = {"<auto>", "<auto>"};
-                paramVal = ito::Param(
-                    "axisDescription",
-                    ito::ParamBase::StringList,
-                    axisDescription->toLatin1().data(),
-                    "axis description");
-                m_channelParam.insert(paramVal.getName(), paramVal);
-
-                QString valueDescription = "<auto>";
-                paramVal = ito::Param(
-                    "valueDescription",
-                    ito::ParamBase::String,
-                    valueDescription.toLatin1().data(),
-                    "value description");
-                m_channelParam.insert(paramVal.getName(), paramVal);
-
-                QString valueUnit = "<auto>";
-                paramVal = ito::Param(
-                    "valueUnit", ito::ParamBase::String, valueUnit.toLatin1().data(), "value unit");
-                m_channelParam.insert(paramVal.getName(), paramVal);
-            };
-
+        public:
+            ChannelContainer();
             ~ChannelContainer() = default;
             ChannelContainer(const ChannelContainer&) = default;
             ChannelContainer(
-                const ito::Param &roi,
+                const ito::Param& roi,
                 const ito::Param& pixelFormat,
                 const ito::Param& sizex,
                 const ito::Param& sizey,
-                const ito::Param& axisOffset,
-                const ito::Param& axisScale,
-                const ito::Param& axisDescription,
-                const ito::Param& axisUnit,
+                const ito::Param& axisOffsets,
+                const ito::Param& axisScales,
+                const ito::Param& axisDescriptions,
+                const ito::Param& axisUnits,
                 const ito::Param& valueDescription,
-                const ito::Param& valueUnit)
-            {
-                m_channelParam.insert("pixelFormat", pixelFormat);
-                m_channelParam.insert("roi", roi);
-                m_channelParam.insert("sizex", sizex);
-                m_channelParam.insert("sizey", sizey);
-                m_channelParam.insert("axisOffset", axisOffset);
-                m_channelParam.insert("axisScale", axisScale);
-                m_channelParam.insert("axisDescription", axisDescription);
-                m_channelParam.insert("axisUnit", axisUnit);
-                m_channelParam.insert("valueDescription", valueDescription);
-                m_channelParam.insert("valueUnit", valueUnit);
-            }
+                const ito::Param& valueUnit);
+            ChannelContainer(
+                const ito::Param& roi,
+                const ito::Param& pixelFormat,
+                const ito::Param& sizex,
+                const ito::Param& sizey);
+
+            void addChannelParam(const ito::Param& param);
+
+            //!< dataObject container with currently acquired data for this channel
+            ito::DataObject m_data;
+
+            //!< map of individual parameters for this channel. Every channel has a set
+            //! of default parameters, namely: pixelFormat, roi, sizex, sizey, axisOffset, axisScale.
+            //! axisDescription, axisUnit, valueDescription, valueUnit. Further parameters
+            //! can be added. It is recommended to have the same parameter types and names
+            //! in every channel, since they are mirrored to the m_params map of the main
+            //! plugin class.
+            ParamMap m_channelParam;
+
+        protected:
+            void addDefaultMetaParams();
         };
 
-        QMap<QString, ChannelContainer> m_channels; /*!< Map for recently grabbed images of various channels*/
-        virtual ito::RetVal checkData(ito::DataObject *externalDataObject = NULL);
+        QMap<QString, ChannelContainer> m_channels; /*!< Map for recently grabbed images of various channels */
+
+        virtual ito::RetVal checkData(ito::DataObject *externalDataObject = nullptr);
         virtual ito::RetVal checkData(QMap<QString, ito::DataObject*>& externalDataObject);
         virtual ito::RetVal sendDataToListeners(int waitMS); /*!< sends m_data to all registered listeners. */
         ito::RetVal adaptDefaultChannelParams(); /*!< adaptes the params after changing the defaultChannel param*/
         void addChannel(QString name);
-        virtual ito::RetVal switchDefaultChannel();/*!< synchronizes m_params with the params of default channel container */
+        virtual ito::RetVal switchChannelSelector();/*!< synchronizes m_params with the params of default channel container */
         virtual ito::RetVal applyParamsToChannelParams(const QStringList& keyList = QStringList());
         void initializeDefaultConfiguration(const QMap<QString, ChannelContainer>& channelContainerMap, const QMap<QString, ito::Param>& nonChannelSpecificParams = QMap<QString, ito::Param>());/*!< sets the channel parameters.*/
 
@@ -172,6 +124,10 @@ namespace ito
         AddInMultiChannelGrabber(const QByteArray &grabberName);
         ~AddInMultiChannelGrabber();
 
+    private:
+        QScopedPointer<AddInMultiChannelGrabberPrivate> d_ptr;
+        Q_DECLARE_PRIVATE(AddInMultiChannelGrabber);
+
     public slots:
         ito::RetVal setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond = nullptr) final;
         ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond) final;
@@ -180,8 +136,8 @@ namespace ito
         ito::RetVal copyVal(QSharedPointer<QMap<QString, ito::DataObject*> > dataObjMap, ItomSharedSemaphore* waitCond);
 
     signals:
-
-        void newData(QSharedPointer<QMap<QString, ito::DataObject> > dataObjMap); /*!<Signals that a new image or set of images is available. Connect to this signal to obtain a shallow copy of the new images*/
+        /*!< Signals that a new image or set of images is available. Connect to this signal to obtain a shallow copy of the new images */
+        void newData(QSharedPointer<QMap<QString, ito::DataObject> > dataObjMap);
     };
 }
 #endif

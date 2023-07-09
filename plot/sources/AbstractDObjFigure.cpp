@@ -417,7 +417,7 @@ ito::RetVal AbstractDObjFigure::setDisplayedCameraChannel(const QString& channel
         if (isMultiChannel)
         {
             ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-            QSharedPointer<ito::Param> channelListParam(new ito::Param("channelList", ito::ParamBase::StringList));
+            QSharedPointer<ito::Param> channelListParam(new ito::Param("availableChannels", ito::ParamBase::StringList));
 
             if (QMetaObject::invokeMethod(liveSource, "getParam", Q_ARG(QSharedPointer<ito::Param>, channelListParam), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
             {
