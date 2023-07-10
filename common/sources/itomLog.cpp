@@ -131,7 +131,7 @@ void Logger::deleteOldBackups(int backupCount)
 //----------------------------------------------------------------------------------------------------------------------------------
 /**
  * @brief Creates a backup of m_logFile.
- * 
+ *
  * m_logFile is renamed by prepending the current date and afterward m_log file is set to the old
  * name again to create a new log file.
  */
