@@ -24,7 +24,7 @@ namespace ito {
  * opened on instantiation if the old file is bigger than a given size. The number of old log files
  * to be kept is configurable.
  */
-class ITOMCOMMONQT_EXPORT Logger : QObject
+class ITOMCOMMONQT_EXPORT Logger : public QObject
 {
     Q_OBJECT
 
