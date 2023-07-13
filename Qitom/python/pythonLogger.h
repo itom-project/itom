@@ -5,6 +5,7 @@
 #include "common/itomLog.h"
 #include "common/typeDefs.h"
 
+#include <qpointer.h>
 #include <qobject.h>
 #include <qtimer.h>
 
@@ -37,7 +38,7 @@ public:
 private:
     QString m_receiveStreamBuffer;
     QTimer m_receiveStreamBufferTimer;
-    Logger* m_logger;
+    QPointer<Logger> m_logger;
 
     void processStreamBuffer();
 

@@ -181,32 +181,19 @@ PyObject* PythonItom::PyLog(PyObject* /*pSelf*/, PyObject* pArgs)
 {
     ito::RetVal retVal(ito::retOk);
 
-    if (PyTuple_Size(pArgs) != 1)
+    const char* text = NULL;
+    if (!PyArg_ParseTuple(pArgs, "s", &text))
     {
-        retVal += ito::RetVal(ito::retError, 0, "Wrong number of arguments");
+        return NULL;
     }
-    QString text;
-    if (!retVal.containsWarningOrError())
-    {
-        PyObject* tempObj = PyTuple_GetItem(pArgs, 0);
-        if (PyUnicode_Check(tempObj))
-        {
-            bool ok = false;
-            text = PythonQtConversion::PyObjGetString(tempObj, false, ok);
-        }
-        else
-        {
-            retVal +=
-                ito::RetVal(ito::retError, 0, "Argument has to be a string! Wrong argument type!");
-        }
-    }
+    
     QObject* logger;
     if (!retVal.containsWarningOrError())
     {
         logger = AppManagement::getLogger();
         if (logger == nullptr)
         {
-            retVal += ito::RetVal(ito::retWarning, 0, "Logger not available");
+            Py_RETURN_NONE;
         }
     }
     if (!retVal.containsWarningOrError())
