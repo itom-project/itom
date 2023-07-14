@@ -4,8 +4,10 @@
 
 
 #include "retVal.h"
+#include "sharedStructuresQt.h"
 
 #include <qfile.h>
+#include <qfileinfo.h>
 #include <qmutex.h>
 #include <qobject.h>
 #include <qtextstream.h>
@@ -49,6 +51,11 @@ public slots:
      */
     void writePythonLog(QString msg);
 
+    /**
+     * @brief Copies all log files to the given directory.
+     */
+    RetVal copyLog(QString directory, ItomSharedSemaphore* waitCond = nullptr);
+
 private:
     static bool s_handlerRegistered;
     static QVector<Logger*> s_instances;
@@ -60,6 +67,7 @@ private:
         QtMsgType type, const QMessageLogContext& context, const QString& msg);
 
     void initFiles(int fileSize, int backupCount);
+    QFileInfoList listBackups();
     void deleteOldBackups(int backupCount);
     void storeBackupFile();
     void handleMessage(QtMsgType type, const QMessageLogContext& context, const QString& msg);

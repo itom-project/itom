@@ -5,8 +5,8 @@
 #include "common/itomLog.h"
 #include "common/typeDefs.h"
 
-#include <qpointer.h>
 #include <qobject.h>
+#include <qpointer.h>
 #include <qtimer.h>
 
 

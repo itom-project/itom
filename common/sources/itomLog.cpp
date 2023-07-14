@@ -1,7 +1,6 @@
 #include "../itomLog.h"
 #include <qdatetime.h>
 #include <qdir.h>
-#include <qfileinfo.h>
 
 
 namespace ito {
@@ -50,6 +49,39 @@ Logger::~Logger()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+RetVal Logger::copyLog(QString directory, ItomSharedSemaphore* waitCond)
+{
+    ItomSharedSemaphoreLocker locker(waitCond);
+    RetVal retVal(ito::retOk);
+
+    QFileInfoList list = this->listBackups();
+    list.append(QFileInfo(this->m_logFile.fileName()));
+    QListIterator<QFileInfo> i(list);
+    while (i.hasNext())
+    {
+        QFileInfo info = i.next();
+        QFile file(info.absoluteFilePath());
+        QString targetFileName = directory + "/" + info.fileName();
+        if (QFile::exists(targetFileName))
+        {
+            retVal += ito::RetVal(
+                ito::retError,
+                0,
+                tr("The file already exists: %1").arg(targetFileName).toLatin1().data());
+            continue;
+        }
+        file.copy(directory + "/" + info.fileName());
+    }
+    if (waitCond)
+    {
+        waitCond->returnValue = retVal;
+        waitCond->release();
+    }
+
+    return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 /**
  * @brief a static message handler to be registered with qInstallMessageHandler
  *
@@ -78,6 +110,7 @@ void Logger::initFiles(int fileSizeBytes, int backupCount)
 {
     QFileInfo info(this->m_logFile.fileName());
     QDir dir = info.absoluteDir();
+    this->m_logFile.setFileName(info.absoluteFilePath()); // ensure that the path is absolute
     if (!dir.exists())
     {
         dir.mkpath(dir.absolutePath());
@@ -99,23 +132,32 @@ void Logger::initFiles(int fileSizeBytes, int backupCount)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /**
+ * @brief Lists all existing backup files whit the form <logFile>_<date>.<suffix>
+ */
+QFileInfoList Logger::listBackups()
+{
+    QFileInfo info(this->m_logFile.fileName());
+    QDir dir = info.absoluteDir();
+    QString test = info.absolutePath();
+
+    dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
+    QStringList nameFilters;
+    nameFilters << info.baseName() + "_????_??_??__??_??_??." + info.suffix();
+    dir.setNameFilters(nameFilters);
+    dir.setSorting(QDir::Name); // sorting by name means sorting by date with this file names
+
+    return dir.entryInfoList();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/**
  * @brief Deletes the excess backup files
  *
  * @param backupCount the number of backup files to be kept
  */
 void Logger::deleteOldBackups(int backupCount)
 {
-    QFileInfo info(this->m_logFile.fileName());
-    QDir dir = info.absoluteDir();
-
-    // list backup files in the form <logFile>_<date>.<suffix>
-    dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
-    QStringList nameFilters;
-    nameFilters << info.baseName() + "_????_??_??__??_??_??." + info.suffix();
-    dir.setNameFilters(nameFilters);
-    dir.setSorting(QDir::Name); // sorting by name means sorting by date with this file names
-    QFileInfoList list = dir.entryInfoList();
-
+    QFileInfoList list = this->listBackups();
     if (list.length() < backupCount)
     {
         return; // no backups have to be deleted
