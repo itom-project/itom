@@ -109,6 +109,7 @@ private:
     QAction *m_appFileOpen;
     QAction *m_aboutQt;
     QAction *m_aboutQitom;
+    QAction* m_copyLog;
 
     QMap<QString, QAction*> m_actions;
 
@@ -184,6 +185,7 @@ public slots:
 
 private slots:
     void mnuAboutQitom();
+    void mnuCopyLog();
     void mnuExitApplication();
 
     void mnuNewScript();

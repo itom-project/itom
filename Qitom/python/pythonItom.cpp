@@ -162,6 +162,53 @@ PyObject* PythonItom::PyNewScript(PyObject* /*pSelf*/, PyObject* /*pArgs*/)
 }
 
 //-------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyLog_doc, "log(msg) \n\
+\n\
+Writes a message to the log file if itom was started with the \"log\" option.\n\
+\n\
+The message will be prepended with [Python  <date>].\n\
+\n\
+Parameters \n\
+---------- \n\
+msg : str \n\
+    The message to be written to the log file. \n\
+\n\
+Raises \n\
+------ \n\
+RuntimeWarning \n\
+    if itom was not started with the \"log\" option.");
+PyObject* PythonItom::PyLog(PyObject* /*pSelf*/, PyObject* pArgs)
+{
+    ito::RetVal retVal(ito::retOk);
+
+    const char* text = NULL;
+    if (!PyArg_ParseTuple(pArgs, "s", &text))
+    {
+        return NULL;
+    }
+    
+    QObject* logger;
+    if (!retVal.containsWarningOrError())
+    {
+        logger = AppManagement::getLogger();
+        if (logger == nullptr)
+        {
+            Py_RETURN_NONE;
+        }
+    }
+    if (!retVal.containsWarningOrError())
+    {
+        QMetaObject::invokeMethod(logger, "writePythonLog", Q_ARG(QString, text));
+    }
+
+    if (!PythonCommon::transformRetValToPyException(retVal))
+    {
+        return NULL;
+    }
+    Py_RETURN_NONE;
+}
+
+//-------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyOpenScript_doc, "openScript(filename) \n\
 \n\
 Open the given script in current script window.\n\
@@ -6639,6 +6686,7 @@ PyMethodDef PythonItom::PythonMethodItom[] = {
      pyOpenEmptyScriptEditor_doc},
     {"newScript", (PyCFunction)PythonItom::PyNewScript, METH_NOARGS, pyNewScript_doc},
     {"openScript", (PyCFunction)PythonItom::PyOpenScript, METH_VARARGS, pyOpenScript_doc},
+    {"log", (PyCFunction)PythonItom::PyLog, METH_VARARGS, pyLog_doc},
     {"showHelpViewer",
      (PyCFunction)PythonItom::PyShowHelpViewer,
      METH_VARARGS | METH_KEYWORDS,

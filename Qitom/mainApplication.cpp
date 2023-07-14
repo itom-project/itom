@@ -393,6 +393,7 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
     m_pQout = new QDebugStream(std::cout, ito::msgStreamOut);
     m_pQerr = new QDebugStream(std::cerr, ito::msgStreamErr);
     AppManagement::setStdCoutCerrStreamRedirections(m_pQout, m_pQerr);
+    m_pythonLogger.init();
 
     QSettings *settings = new QSettings(AppManagement::getSettingsFile(), QSettings::IniFormat);
 

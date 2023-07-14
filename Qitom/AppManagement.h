@@ -54,6 +54,7 @@ class AppManagement
         inline static QObject* getUserOrganizer() { QMutexLocker locker (&m_mutex); return m_userOrganizer; }
         inline static QObject* getCoutStream() { QMutexLocker locker (&m_mutex); return m_coutStream; }
         inline static QObject* getCerrStream() { QMutexLocker locker (&m_mutex); return m_cerrStream; }
+        inline static QObject* getLogger() { QMutexLocker locker (&m_mutex); return m_logger; }
 
 
         static void setScriptEditorOrganizer(QObject* scriptEditorOrganizer)     /*!< sets ScriptEditorOrganizer instance pointer */
@@ -129,6 +130,12 @@ class AppManagement
             m_cerrStream = cerrStream;
         }
 
+        static void setLogger(QObject* logger)
+        {
+            QMutexLocker locker(&m_mutex);
+            m_logger = logger;
+        }
+
         struct Timeouts
         {
             int pluginInitClose;
@@ -152,6 +159,7 @@ class AppManagement
         static QObject *m_userOrganizer;    /*!< static pointer to UserOrganizer (default: NULL) */
         static QObject* m_coutStream; /*!< static pointer to QDebugStream for std::cout redirection */
         static QObject* m_cerrStream; /*!< static pointer to QDebugStream for std::cerr redirection */
+        static QObject* m_logger; /*!< static pointer to Logger (default: nullptr) */
 
         static QMutex m_mutex;  /*!< static mutex, protecting every read and write operation in class AppManagement */
 
