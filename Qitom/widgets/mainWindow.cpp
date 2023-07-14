@@ -945,8 +945,11 @@ void MainWindow::createActions()
         QIcon(":/application/icons/itomicon/itomLogo3_64.png"), tr("About itom..."), this);
     connect(m_aboutQitom, SIGNAL(triggered()), this, SLOT(mnuAboutQitom()));
 
-    m_copyLog = new QAction(tr("Copy Log..."), this);
-    connect(m_copyLog, SIGNAL(triggered()), this, SLOT(mnuCopyLog()));
+    if (AppManagement::getLogger())
+    {
+        m_copyLog = new QAction(tr("Copy Log..."), this);
+        connect(m_copyLog, SIGNAL(triggered()), this, SLOT(mnuCopyLog()));
+    }
 
     m_actions["show_loaded_plugins"] =
         new QAction(QIcon(":/plugins/icons/plugin.png"), tr("Loaded Plugins..."), this);
@@ -1209,7 +1212,10 @@ void MainWindow::createMenus()
 
     m_pMenuHelp->addAction(m_aboutQt);
     m_pMenuHelp->addAction(m_aboutQitom);
-    m_pMenuHelp->addAction(m_copyLog);
+    if (m_copyLog)
+    {
+        m_pMenuHelp->addAction(m_copyLog);
+    }
 
     // linux: in some linux distributions, the menu bar did not appear if it is displayed
     // on top of the desktop. Therefore, native menu bars (as provided by the OS) are disabled here.
