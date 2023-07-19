@@ -95,7 +95,12 @@ namespace ito
         void addChannel(QString name);
         virtual ito::RetVal switchChannelSelector();/*!< synchronizes m_params with the params of default channel container */
         virtual ito::RetVal applyParamsToChannelParams(const QStringList& keyList = QStringList());
-        void initializeDefaultConfiguration(const QMap<QString, ChannelContainer>& channelContainerMap, const QMap<QString, ito::Param>& nonChannelSpecificParams = QMap<QString, ito::Param>());/*!< sets the channel parameters.*/
+
+        //!< initializes the channels, channel parameters and global parameters.
+        void initChannelsAndGlobalParameters(
+            const QMap<QString, ChannelContainer>& channelContainerMap,
+            const QString &defaultChannelName,
+            const QList<ito::Param>& globalParameters = QList<ito::Param>());
 
         ito::RetVal setParamMeta(const QByteArray& paramName, ito::ParamMeta* meta, bool takeOwnerShip, const QList<QByteArray>& channelList = QList<QByteArray>());
         ito::RetVal setParamFlags(const QByteArray& paramName, const unsigned int& flags, const QList<QByteArray>& channelList = QList<QByteArray>());
