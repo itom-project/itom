@@ -252,9 +252,19 @@ int main(int argc, char *argv[])
     //it is possible to redirect all Qt messages sent via qDebug, qWarning... to the logfile itomlog.txt.
     //This option is enabled via the argument log passed to the executable.
     ito::Logger* logger = nullptr;
-    if (args.contains("log", Qt::CaseInsensitive))
+    if (!args.contains("nolog", Qt::CaseInsensitive))
     {
-        logger = new ito::Logger("itomlog.txt");
+        QString logFileDir = "";
+        QStringListIterator i(args);
+        while (i.hasNext())
+        {
+            QString arg = i.next();
+            if (arg.startsWith("log="))
+            {
+                logFileDir = arg.mid(4);
+            }
+        }
+        logger = new ito::Logger("itomlog.txt", logFileDir, 5 * 1024 * 1024, 2);
         ito::AppManagement::setLogger((QObject*)logger);
     }
 

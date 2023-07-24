@@ -1,6 +1,7 @@
 #include "../itomLog.h"
 #include <qdatetime.h>
 #include <qdir.h>
+#include <qstandardpaths.h>
 
 
 namespace ito {
@@ -11,9 +12,14 @@ QVector<Logger*> Logger::s_instances = QVector<Logger*>();
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-Logger::Logger(QString logFile, int fileSizeBytes, int backupCount)
+Logger::Logger(QString logFileName, QString logFileDir, int fileSizeBytes, int backupCount)
 {
-    this->m_logFile.setFileName(logFile);
+    if (logFileDir.isEmpty())
+    {
+        logFileDir = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
+        logFileDir += "/qitom/log";
+    }
+    this->m_logFile.setFileName(logFileDir + "/" + logFileName);
     this->initFiles(fileSizeBytes, backupCount);
     this->m_logFile.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text);
 

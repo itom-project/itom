@@ -34,11 +34,14 @@ public:
     /**
      * @brief Construct a new Logger object
      *
-     * @param logFile the log will be written to this file
+     * @param logFileName the name of the log file
      * @param fileSizeBytes the file size in bytes above which a new file will be created
      * @param backupCount the number of old log files to be kept
+     * @param logFileDir the log will be written to this directory; a user directory is used if not
+     *          given
      */
-    Logger(QString logFile, int fileSizeBytes = 0, int backupCount = 0);
+    Logger(
+        QString logFileName, QString logFileDir = "", int fileSizeBytes = 0, int backupCount = 0);
     ~Logger();
 
 public slots:
