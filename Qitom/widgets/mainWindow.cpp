@@ -1841,6 +1841,13 @@ void MainWindow::mnuCopyLog()
                     QMessageBox::critical(
                         this, tr("Error while copying log"), retVal.errorMessage());
                 }
+                else
+                {
+                    QMessageBox::information(
+                        this,
+                        tr("Logs copied"),
+                        tr("The log files were copied successfully to %1").arg(directory));
+                }
             }
         }
     }

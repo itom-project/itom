@@ -76,7 +76,14 @@ RetVal Logger::copyLog(QString directory, ItomSharedSemaphore* waitCond)
                 tr("The file already exists: %1").arg(targetFileName).toLatin1().data());
             continue;
         }
-        file.copy(directory + "/" + info.fileName());
+        bool success = file.copy(directory + "/" + info.fileName());
+        if (!success)
+        {
+            retVal += ito::RetVal(
+                ito::retError,
+                0,
+                tr("The file could not be copied to: %1").arg(targetFileName).toLatin1().data());
+        }
     }
     if (waitCond)
     {
