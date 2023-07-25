@@ -501,7 +501,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap
         }
 
         //!< must be called after any PyImport_AppendInittab-call
-        if (pythonDirState > 1)
+        if (pythonDirState >= 0)
         {
             Py_Initialize();
         }
