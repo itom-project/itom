@@ -1,6 +1,6 @@
 .. include:: ../include/global.inc
 
-.. _startup-and-agruments:
+.. _startup-and-arguments:
 
 Startup and Arguments
 ***********************
