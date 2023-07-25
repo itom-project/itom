@@ -1,5 +1,6 @@
 .. include:: ../include/global.inc
 
+.. _startup-and-agruments:
 
 Startup and Arguments
 ***********************
@@ -11,9 +12,11 @@ The following arguments are possible (the order of arguments is unimportant):
 
 1. **<path-to-python-script.py>**: opens the indicated script in the script editor.
    This argument can be appended multiple times.
-2. **log=<path-to-directory>**: Write the log files to the given directory instead of a
-   user directory. All messages sent via qDebug, QWarning, via the itom.log function and
-   all python errors are written to the log.
+2. **log=<path-to-directory>**: By default, logging is enabled. The logfile
+   is saved into the user directory ``C:\Users\<UserName>\AppData\Local\qitom``.
+   The ``log=<path-to-directory>`` argument can be used to define a different path
+   where the log files are saved. All messages sent via qDebug, QWarning,
+   via the ``itom.log`` function and call python errors are written to the log.
 3. **nolog**: Do not write a log file.
 4. **name=<usernameID>**: Pass an additional ID of an available user. If given,
    itom is started with this user and its corresponding setting files.
