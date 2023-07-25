@@ -580,7 +580,7 @@ To make the introduction to |itom| easier, the examples in the
 
 By default, logging is enabled. The logfile is saved into the
 user directory ``C:\Users\<UserName>\AppData\Local\qitom``.
-For more information go to the chapter :ref:`startup-and-agruments`.
+For more information go to the chapter :ref:`startup-and-arguments`.
 
 
 Tutorials
