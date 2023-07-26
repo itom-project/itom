@@ -1,11 +1,11 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO), 
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -35,10 +35,7 @@
 #include <qlayout.h>
 #include <qtimer.h>
 #include <qsettings.h>
-
-#if linux
-#include <qdesktopwidget.h>
-#endif
+#include <QScreen>
 
 #include <qapplication.h>
 
@@ -69,22 +66,22 @@ namespace ito {
 */
 AbstractDockWidget::AbstractDockWidget(bool docked, bool isDockAvailable, tFloatingStyle floatingStyle, tMovingStyle movingStyle, const QString &title, const QString &objName, QWidget *parent) :
     QDockWidget(parent),
-    m_actStayOnTop(NULL), 
-    m_actStayOnTopOfApp(NULL), 
-    m_pWindow(NULL), 
-    m_docked(docked && isDockAvailable), 
-    m_dockAvailable(isDockAvailable), 
-    m_floatingStyle(floatingStyle), 
-    m_movingStyle(movingStyle), 
-    m_basicTitle(title), 
-    m_completeTitle(title), 
-    m_pythonBusy(false), 
-    m_pythonDebugMode(false), 
-    m_pythonInWaitingMode(false), 
-    m_dockToolbar(NULL), 
-    m_actDock(NULL), 
-    m_actUndock(NULL), 
-    m_overallParent(parent), 
+    m_actStayOnTop(NULL),
+    m_actStayOnTopOfApp(NULL),
+    m_pWindow(NULL),
+    m_docked(docked && isDockAvailable),
+    m_dockAvailable(isDockAvailable),
+    m_floatingStyle(floatingStyle),
+    m_movingStyle(movingStyle),
+    m_basicTitle(title),
+    m_completeTitle(title),
+    m_pythonBusy(false),
+    m_pythonDebugMode(false),
+    m_pythonInWaitingMode(false),
+    m_dockToolbar(NULL),
+    m_actDock(NULL),
+    m_actUndock(NULL),
+    m_overallParent(parent),
     m_recentTopLevelStyle(topLevelNothing)
 {
     if (objName != "")
@@ -124,7 +121,7 @@ AbstractDockWidget::AbstractDockWidget(bool docked, bool isDockAvailable, tFloat
     m_actStayOnTopOfApp->setToolTip(tr("Stay on top of main window of itom"));
     m_actStayOnTopOfApp->setCheckable(true);
     connect(m_actStayOnTopOfApp, SIGNAL(triggered(bool)), this, SLOT(mnuStayOnTopOfApp(bool)));
-    
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -157,7 +154,7 @@ void AbstractDockWidget::init()
     m_pWindow = new QMainWindow(this);
     m_pWindow->installEventFilter(this);
     m_pWindow->setWindowFlags(modifyFlags(m_pWindow->windowFlags(), Qt::Widget, Qt::Window));
-    
+
     //m_pWindow->menuBar()->setNativeMenuBar(true);
     //linux: in some linux distributions, the menu bar did not appear if it is displayed
     //on top of the desktop. Therefore, native menu bars (as provided by the OS) are disabled here.
@@ -168,7 +165,7 @@ void AbstractDockWidget::init()
     // OS X: without the native menu bar option, the menu bar is displayed within the window which might be irritating.
     m_pWindow->menuBar()->setNativeMenuBar(true);
 #endif // __APPLE__
-    
+
     setWidget(m_pWindow);
 
     QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable;
@@ -209,7 +206,7 @@ void AbstractDockWidget::init()
         m_dockToolbar->addAction(m_actDock);
         m_dockToolbar->addAction(m_actUndock);
 
-        m_dockToolbar->setVisible(true); 
+        m_dockToolbar->setVisible(true);
         m_dockToolbar->setMovable(false);
 
         m_pWindow->addToolBar(m_dockToolbar);
@@ -420,7 +417,7 @@ void AbstractDockWidget::setVisible(bool visible)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void AbstractDockWidget::saveState(const QString &iniName) const 
+void AbstractDockWidget::saveState(const QString &iniName) const
 {
     if (objectName() != "")
     {
@@ -444,9 +441,9 @@ void AbstractDockWidget::saveState(const QString &iniName) const
             }
             else
             {
-                // invalidate setting 'visible' since it is always false if docked 
+                // invalidate setting 'visible' since it is always false if docked
                 // (saveState is called in destructor, where visible is already false)
-                settings.setValue("visible", QVariant()); 
+                settings.setValue("visible", QVariant());
             }
         }
 
@@ -495,7 +492,7 @@ void AbstractDockWidget::restoreState(const QString &iniName)
                 {
                     setVisible(true);
                     m_pWindow->restoreGeometry(geometry);
-                    //see also bug-report https://bugreports.qt.io/browse/QTBUG-21371 (fixed in >= Qt 5.3.0). 
+                    //see also bug-report https://bugreports.qt.io/browse/QTBUG-21371 (fixed in >= Qt 5.3.0).
                 }
                 else
                 {
@@ -576,57 +573,6 @@ RetVal AbstractDockWidget::setAdvancedWindowTitle(QString newCompleteTitle, bool
     return RetVal(retOk);
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-////! ands given toolbar and register it with given key-string in toolbar-map (m_toolBars)
-///*!
-//    long description
-//
-//    \param tb reference to toolbar of type QToolBar
-//    \param key string containing key for this toolbar
-//    \return retOk, if toolbar could be added, retError, if key already exists in map
-//*/
-//RetVal AbstractDockWidget::addAndRegisterToolBar(QToolBar* tb, QString key)
-//{
-//    QMap<QString, QToolBar*>::iterator it = m_toolBars.find(key);
-//
-//    if (it == m_toolBars.end())
-//    {
-//        m_pWindow->insertToolBar(m_dockToolbar, tb);
-//
-//        if (!m_docked && m_floatingStyle == floatingWindow)
-//        {
-//            tb->setIconSize(QSize(style()->pixelMetric(QStyle::PM_ToolBarIconSize), style()->pixelMetric(QStyle::PM_ToolBarIconSize)));
-//        }
-//        else
-//        {
-//            tb->setIconSize(QSize(16, 16));
-//        }
-//
-//        m_toolBars.insert(key, tb);
-//        return RetVal(retOk);
-//    }
-//    return RetVal(retError);
-//}
-
-////! remove toolbar with given key from m_toolBars
-///*!
-//    \param key key-string to toolbar which should be removed
-//    \return retOk, if toolbar could be removed, retError, if key has not been found in toolbar-map
-//*/
-//RetVal AbstractDockWidget::unregisterToolBar(QString key)
-//{
-//    int nr = m_toolBars.remove(key);
-//    
-//
-//    if (nr == 0)
-//    {
-//        return RetVal(retError);
-//    }
-//    else
-//    {
-//        return RetVal(retOk);
-//    }
-//}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal AbstractDockWidget::addToolBar(QToolBar *tb, const QString &key, Qt::ToolBarArea area /*= Qt::TopToolBarArea*/, int section /*= 1*/)
@@ -707,7 +653,7 @@ RetVal AbstractDockWidget::addToolBar(QToolBar *tb, const QString &key, Qt::Tool
     // OS X hides windows/ dialog after adding a toolbar
     m_pWindow->show();
 #endif // __APPLE__
-    
+
     return retOk;
 }
 
@@ -801,20 +747,6 @@ void AbstractDockWidget::closeEvent (QCloseEvent * event)
 }
 
 
-////----------------------------------------------------------------------------------------------------------------------------------
-//void AbstractDockWidget::showEvent(QShowEvent * event)
-//{
-//    if (m_floatingStyle == floatingWindow)
-//    {
-//        m_pWindow->settername(__VA_ARGS__);
-//        QDockWidget::settername(__VA_ARGS__);
-//    }
-//    else
-//    {
-//        QDockWidget::settername(__VA_ARGS__);
-//    }
-//}
-
 //----------------------------------------------------------------------------------------------------------------------------------
 //! slot invoked if python state changed. Sets the specific member variables according to the python transition.
 /*!
@@ -880,7 +812,7 @@ void AbstractDockWidget::dockWidget()
     // OS X: without the native menu bar option, the menu bar is displayed within the window which might be irritating.
     m_pWindow->menuBar()->setNativeMenuBar(true);
 #endif // __APPLE__
-    
+
     m_docked = true;
 
     Qt::WindowFlags flags = m_pWindow->windowFlags();
@@ -928,7 +860,7 @@ void AbstractDockWidget::dockWidget()
     setAdvancedWindowTitle();
 
     toggleViewAction()->setVisible(true);
-    
+
     emit dockStateChanged(true);
 }
 
@@ -958,7 +890,7 @@ void AbstractDockWidget::undockWidget(bool show_it /*= true*/)
 #endif // __APPLE__
 
         m_pWindow->menuBar()->show();
-        if (m_actDock) 
+        if (m_actDock)
         {
             m_actDock->setVisible(true);
         }
@@ -1003,18 +935,20 @@ void AbstractDockWidget::undockWidget(bool show_it /*= true*/)
             m_pWindow->show();
             m_pWindow->raise();
         }
-    
+
 #if linux
     //in LXDE the window is sometimes positioned out of the window such that
     //the title bar is not visible any more. Therefore it is center in the
     //center of the current main window.
     if (m_lastUndockedSize.isEmpty())
     {
-      QDesktopWidget *dw = QApplication::desktop();
-      QRect overallRect = dw->availableGeometry(-1);
-      QPoint centerPoint = overallRect.center();
-      m_pWindow->adjustSize();
-      m_pWindow->move(centerPoint - m_pWindow->rect().center());
+
+        QScreen *ps = QGuiApplication::primaryScreen();
+        QRect overallRect = ps->availableGeometry();
+        QPoint centerPoint = overallRect.center();
+        m_pWindow->adjustSize();
+        m_pWindow->move(centerPoint - m_pWindow->rect().center());
+
     }
 #endif
 
@@ -1130,7 +1064,7 @@ void AbstractDockWidget::mini()
 //----------------------------------------------------------------------------------------------------------------------------------
 //! activates this dock widget or window and raises it on top of all opened windows
 /*!
-    Depending on the docking-state of this widget and its style (docking-widget or single-window), 
+    Depending on the docking-state of this widget and its style (docking-widget or single-window),
     this widget is activated and if undocked raised on top of the window stack.
 
     \return retOk
@@ -1173,7 +1107,7 @@ void AbstractDockWidget::setDockSize(int newWidth, int newHeight)
     {
         m_oldMaxSize = maximumSize();
         m_oldMinSize = minimumSize();
- 
+
         if (newWidth >= 0)
         {
             if (width() < newWidth)
@@ -1196,7 +1130,7 @@ void AbstractDockWidget::setDockSize(int newWidth, int newHeight)
                 setMaximumHeight(newHeight);
             }
         }
- 
+
         QTimer::singleShot(1, this, SLOT(returnToOldMinMaxSizes()));
     }
     else

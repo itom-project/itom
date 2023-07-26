@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -54,7 +54,7 @@ protected:
 
 private:
     Ui::WidgetPropFigurePlugins ui;
-    
+
     QStandardItemModel *m_loadedFiguresModel;
     QStandardItemModel *m_figureCategoryModel;
     FigurePluginDelegate *m_delegate;
@@ -76,7 +76,7 @@ public:
     FigurePluginDelegate(QObject *parent = 0);
 
     void append(int rowIndex, const FigureCategory &figureCategory);
-    
+
     QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const;
 
      void setEditorData(QWidget *editor, const QModelIndex &index) const;

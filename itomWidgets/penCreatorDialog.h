@@ -37,11 +37,11 @@ public:
     void synchronizeGUI();
     QPen getPen();
 
-    
+
 private:
     Ui::penCreatorDialog ui;
     QPen &pen;
-    
+
     void updatePen();
 
 private slots:

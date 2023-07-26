@@ -1,15 +1,15 @@
+cmake_minimum_required(VERSION 3.12...3.24)
+
 set(target_name unittest_commonqtlib)
- 
+
 project(${target_name})
 
-cmake_minimum_required(VERSION 3.0.2)
+option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
 
-option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON) 
-
-set(CMAKE_MODULE_PATH 
-    ${CMAKE_MODULE_PATH} 
-    ${PROJECT_SOURCE_DIR} 
-    ${PROJECT_SOURCE_DIR}/../.. 
+set(CMAKE_MODULE_PATH
+    ${CMAKE_MODULE_PATH}
+    ${PROJECT_SOURCE_DIR}
+    ${PROJECT_SOURCE_DIR}/../..
     ${PROJECT_SOURCE_DIR}/../../gtest-1.10.0/googletest/
 )
 
@@ -41,7 +41,7 @@ set(unittest_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/unittest_commonqtlib.cc
 )
 
-set(unittest_SOURCES 
+set(unittest_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/helperCommonTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/datetimeTest.cpp
 )
@@ -56,7 +56,3 @@ set_target_properties( ${target_name}
 )
 
 set_target_properties(${target_name} PROPERTIES DEBUG_POSTFIX "d")
-
-
-
-

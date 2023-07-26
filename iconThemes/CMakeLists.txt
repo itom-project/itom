@@ -18,14 +18,14 @@
 # You should have received a copy of the GNU Library General Public License
 # along with itom. If not, see <http://www.gnu.org/licenses/>.
 
-cmake_minimum_required(VERSION 3.1...3.15)
- 
+cmake_minimum_required(VERSION 3.12...3.24)
+
 if(${CMAKE_VERSION} VERSION_LESS 3.12)
     cmake_policy(VERSION ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION})
 endif()
-  
+
 include(CMakeParseArguments)
- 
+
 # _itom_qt5_parse_qrc_file(infile _out_depends _rc_depends)
 # internal
 function(_ITOM_QT5_PARSE_QRC_FILE infile _out_depends _rc_depends)
@@ -97,7 +97,7 @@ endfunction()
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/cmake)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-# include commonly used itom CMake macros (internal can only be used within the core projects) 
+# include commonly used itom CMake macros (internal can only be used within the core projects)
 include("../cmake/ItomBuildMacros.cmake")
 include("../cmake/ItomBuildMacrosInternal.cmake")
 
@@ -116,5 +116,4 @@ if(QT5_FOUND)
 elseif(QT6_FOUND)
     qt6_add_binary_resources(iconThemeBright ${CMAKE_CURRENT_SOURCE_DIR}/../Qitom/iconThemeBright.qrc DESTINATION ${ITOM_APP_DIR}/iconThemeBright.rcc)
     qt6_add_binary_resources(iconThemeDark ${CMAKE_CURRENT_SOURCE_DIR}/../Qitom/iconThemeDark.qrc DESTINATION ${ITOM_APP_DIR}/iconThemeDark.rcc)
-endif() #for Qt4, the bright theme is directly included in the itom application (no choice available) 
-   
+endif() #for Qt4, the bright theme is directly included in the itom application (no choice available)

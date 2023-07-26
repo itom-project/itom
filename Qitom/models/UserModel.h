@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -25,7 +25,7 @@
 
 #include <qabstractitemmodel.h>
 
-namespace ito 
+namespace ito
 {
 
 //! Enumeration that defines some user roles
@@ -34,8 +34,8 @@ enum UserRole
     userRoleBasic = 0,         /* basic user with lowest rights */
     userRoleDeveloper = 1,     /* developer user with many rights */
     userRoleAdministrator = 2, /* most advanced user with all rights. */
-    
-};   
+
+};
 
 //! Enumeration that defines some feature permissions for a user.
 enum UserFeature
@@ -58,7 +58,7 @@ Q_DECLARE_FLAGS(UserFeatures, UserFeature)
 struct UserInfoStruct
 {
     UserInfoStruct() {};
-    UserInfoStruct(const QString &sname, const QString &suid, const QString siniFile, UserRole srole, 
+    UserInfoStruct(const QString &sname, const QString &suid, const QString siniFile, UserRole srole,
         UserFeatures sfeatures, QByteArray &spassword, bool sStandardUser)
         : name(sname), id(suid), iniFile(siniFile), role(srole), password(spassword),
         features(sfeatures), standardUser(sStandardUser) {}
@@ -73,7 +73,7 @@ struct UserInfoStruct
 
 /** @class UserModel
 *   @brief class for for visualizing the available users
-*   
+*
 *   The UserModel is used in the initially shown user list. It contains the userId (which is the user name part of the ini-file name),
 *   the plain text user name and the ini-file.
 */

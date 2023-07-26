@@ -10,7 +10,7 @@
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
-   
+
     In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
@@ -28,10 +28,10 @@
 #ifndef COMMONWIDGETS_H
 #define COMMONWIDGETS_H
 
-#if (defined ITOMLIBS_SHARED && ( defined(_Windows) || defined(_WINDOWS) || defined(WIN32) || defined(_WIN32) || defined(__WIN32__) )) 
-    
+#if (defined ITOMLIBS_SHARED && ( defined(_Windows) || defined(_WINDOWS) || defined(WIN32) || defined(_WIN32) || defined(__WIN32__) ))
+
     #ifndef ITOMWIDGETS_EXPORT
-        
+
         /* Borland/Microsoft */
         #if defined(_MSC_VER) || defined(__BORLANDC__)
             #if (_MSC_VER >= 800) || (__BORLANDC__ >= 0x500)
@@ -52,9 +52,9 @@
                 #define ITOMWIDGETS_EXPORT __declspec(dllimport)
             #endif
         #endif
-        
+
     #endif //ITOMWIDGETS_EXPORT
-    
+
 #endif //windows
 
 #ifndef ITOMWIDGETS_EXPORT
@@ -65,4 +65,3 @@
 
 
 #endif
-

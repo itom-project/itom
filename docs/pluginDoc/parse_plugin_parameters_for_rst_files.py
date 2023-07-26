@@ -20,7 +20,7 @@ clc()
 def parse_parameters(instance):
     results = {}
     info = instance.getParamListInfo(1)
-    
+
     for p in info:
 
         info = textwrap.wrap(p["info"], width=88)

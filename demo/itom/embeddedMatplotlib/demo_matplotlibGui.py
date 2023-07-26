@@ -2,7 +2,7 @@
 =============================
 
 This examples shows how the ``matplotlib`` can be integrated
-into a ``GUI`` based on the ``MatplotlibPlot`` Qt Designer plugin. 
+into a ``GUI`` based on the ``MatplotlibPlot`` Qt Designer plugin.
 """
 
 import numpy as np
@@ -65,7 +65,7 @@ def plotSine():
 
     canvas = gui.plot  # reference to matplotlibPlot widget
     fig = plt.figure(num=3, canvas=canvas)
-    
+
     if len(fig.axes) == 0:
         # create a new subplot in the figure
         ax = fig.add_subplot(111)
@@ -73,7 +73,7 @@ def plotSine():
         # reuse the existing first subplot
         ax = fig.axes[0]
         ax.clear()
-    
+
     ax.plot(t, s)
 
     plt.show()

@@ -34,10 +34,10 @@
 namespace ito {
 
 //----------------------------------------------------------------------------------------------------------------------------------
-BookmarkDockWidget::BookmarkDockWidget(const QString &title, const QString &objName, 
-        QWidget *parent, bool docked, bool isDockAvailable, 
+BookmarkDockWidget::BookmarkDockWidget(const QString &title, const QString &objName,
+        QWidget *parent, bool docked, bool isDockAvailable,
         tFloatingStyle floatingStyle, tMovingStyle movingStyle) :
-    AbstractDockWidget(docked, isDockAvailable, floatingStyle, movingStyle, title, objName, parent), 
+    AbstractDockWidget(docked, isDockAvailable, floatingStyle, movingStyle, title, objName, parent),
     m_pModel(NULL),
     m_pMainToolbar(NULL),
     m_pSpacerAction(NULL),

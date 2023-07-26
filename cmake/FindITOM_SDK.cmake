@@ -4,12 +4,12 @@
 #
 ## 1: Setup:
 # The following variables are optionally searched for defaults
-#  ITOM_SDK_DIR:            Base directory of itom SDK tree to use.
-#  ITOM_DIR:         
+#  ITOM_SDK_DIR: Base directory of itom SDK tree to use.
+#  ITOM_DIR:
 #
 ## 2: Variable
-# The following are set after configuration is done: 
-#  
+# The following are set after configuration is done:
+#
 #  ITOM_SDK_FOUND
 #  ITOM_SDK_LIBRARIES -> list of all necessary libraries to link against. This list also contains
 #                        necessary libraries from dependent packages like OpenCV (dataobject) or PCL (pointcloud)
@@ -27,9 +27,9 @@ if(${CMAKE_VERSION} VERSION_LESS 3.12)
 endif()
 
 if(CMAKE_SIZEOF_VOID_P GREATER 4)
-    option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON) 
+    option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
 else()
-    option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF) 
+    option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF)
 endif()
 
 if (NOT EXISTS ${ITOM_SDK_CONFIG_FILE})
@@ -45,11 +45,11 @@ else()
 endif()
 
 if(EXISTS ${ITOM_SDK_CONFIG_FILE})
-    
+
     include(${ITOM_SDK_CONFIG_FILE})
-    
+
     add_definitions(-DITOMLIBS_SHARED -D_ITOMLIBS_SHARED)
-    
+
     if(ITOM_SDK_PCL_SUPPORT)
         add_definitions(-DUSEPCL -D_USEPCL)
     endif(ITOM_SDK_PCL_SUPPORT)
@@ -66,7 +66,7 @@ if(EXISTS ${ITOM_SDK_CONFIG_FILE})
             set(BUILD_TARGET64 ON CACHE BOOL "Build for 64 bit target if set to ON or 32 bit if set to OFF." FORCE)
         endif()
     endif(BUILD_TARGET64)
-    
+
     if(BUILD_TARGET64)
         if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
             message(FATAL_ERROR "BUILD_TARGET64 is ON, but CMAKE_SIZEOF_VOID_P is unequal to 8 bytes. Maybe change the compiler.")
@@ -79,49 +79,50 @@ if(EXISTS ${ITOM_SDK_CONFIG_FILE})
 
     #find include directory
     find_path(ITOM_SDK_INCLUDE_DIR "itom_sdk.h" PATHS "${ITOM_SDK_DIR}" PATH_SUFFIXES "include" DOC "")
-    
-    find_path(ITOM_APP_DIR "itoDebugger.py" PATHS ${ITOM_SDK_DIR} PATH_SUFFIXES .. DOC "")
-    
+
+    find_path(ITOM_APP_DIR "CMakeCache.txt" PATHS ${ITOM_SDK_DIR} PATH_SUFFIXES .. ../.. DOC "")
 
     if(${CMAKE_PROJECT_NAME}  MATCHES "itomproject")
         message(STATUS  "Subproject - Skipped loading ITOM SDK CACHE ")
     else(${CMAKE_PROJECT_NAME}  MATCHES "itomproject")
         if(EXISTS "${ITOM_APP_DIR}")
-            #try to load the CMakeCache file from itom and extract some useful variables. 
+            #try to load the CMakeCache file from itom and extract some useful variables.
             #The variables must be filepathes or pathes. They are only copied to this project
-            #... if they exist in itom's CMakeCache, 
-            #... if they are valid, 
-            #... if they exist in the file system and 
+            #... if they exist in itom's CMakeCache,
+            #... if they are valid,
+            #... if they exist in the file system and
             #... if they do not exist or are not valid in this project, yet.
             #
             # EIGEN_INCLUDE_DIRS was for PCL 1.9, PCL 1.11 now requires EIGEN_INCLUDE_DIR!
-            set(CACHE_VARIABLES 
-                VTK_DIR 
-                VISUALLEAKDETECTOR_DIR 
-                Qt5_DIR 
-                PCL_DIR 
-                OpenCV_DIR 
-                EIGEN_INCLUDE_DIRS 
+            set(CACHE_VARIABLES
+                Qt_Prefix_DIR
+                BUILD_QTVERSION
+                OpenCV_DIR
+                Boost_INCLUDE_DIR
+                Boost_LIBRARY_DIR
+                FLANN_INCLUDE_DIRS
+                VTK_DIR
+                EIGEN_INCLUDE_DIRS
                 EIGEN_INCLUDE_DIR
-                Boost_LIBRARY_DIR 
-                Boost_INCLUDE_DIR 
+                PCL_DIR
+                VISUALLEAKDETECTOR_DIR
                 GIT_EXECUTABLE
                 )
-            
+
             if(EXISTS "${ITOM_APP_DIR}/CMakeCache.txt")
                 load_cache("${ITOM_APP_DIR}" READ_WITH_PREFIX "ITOMCACHE_" ${CACHE_VARIABLES})
-                
+
                 message(STATUS "Try to load selected CMake variables from CMakeCache of itom project and copy them to this set of variables.")
-                
+
                 foreach(CACHE_VAR ${CACHE_VARIABLES})
-                    
+
                     if(DEFINED "ITOMCACHE_${CACHE_VAR}")
                         message(STATUS "  - Variable ${CACHE_VAR} exists in itom cache: ${ITOMCACHE_${CACHE_VAR}}")
-                        
+
                         if(DEFINED ${CACHE_VAR} AND ${CACHE_VAR})
                             message(STATUS "    -> This variable is not copied since it already is defined and valid in this project: ${${CACHE_VAR}}")
                         else()
-                            if(EXISTS "${ITOMCACHE_${CACHE_VAR}}")
+                        if(EXISTS "${ITOMCACHE_${CACHE_VAR}}" OR ${CACHE_VAR} MATCHES BUILD_QTVERSION OR ${CACHE_VAR} MATCHES Qt_Prefix_DIR)
                                 message(STATUS "    -> This variable is copied to this project.")
                                 set(${CACHE_VAR} "${ITOMCACHE_${CACHE_VAR}}" CACHE PATH "Variable obtained from CMakeCache of itom project." FORCE)
                             else()
@@ -136,7 +137,7 @@ if(EXISTS ${ITOM_SDK_CONFIG_FILE})
         else()
             message(WARNING "ITOM_APP_DIR does not exist. No CMake cache values can be loaded from itom")
         endif()
-    
+
     endif(${CMAKE_PROJECT_NAME}  MATCHES "itomproject")
 
 
@@ -146,12 +147,18 @@ if(EXISTS ${ITOM_SDK_CONFIG_FILE})
       set(SDK_PLATFORM "x86")
     endif()
 
-    
+
     # The following list has to be consistent with the
     # macro itom_add_library_to_appdir_and_sdk of ItomBuildMacroInternal.cmake.
     # From VS higher than 1900, the default case vc${MSVC_VERSION} is used.
     if(APPLE)
         set(SDK_COMPILER "osx_default")
+    elseif(MSVC_VERSION LESS 1940 AND MSVC_VERSION GREATER 1929)
+        set(SDK_COMPILER "vc17")
+    elseif(MSVC_VERSION LESS 1930 AND MSVC_VERSION GREATER 1919)
+        set(SDK_COMPILER "vc16")
+    elseif(MSVC_VERSION LESS 1920 AND MSVC_VERSION GREATER 1909)
+        set(SDK_COMPILER "vc15")
     elseif(MSVC_VERSION EQUAL 1900)
         set(SDK_COMPILER "vc14")
     elseif(MSVC_VERSION EQUAL 1800)
@@ -177,7 +184,7 @@ if(EXISTS ${ITOM_SDK_CONFIG_FILE})
     else()
         set(SDK_COMPILER "unknown")
     endif()
-    
+
     set(ITOM_SDK_LIBSUFFIX "/lib/${SDK_COMPILER}_${SDK_PLATFORM}")
 	message(STATUS "CMAKE_CXX_COMPILER_ID: ${CMAKE_CXX_COMPILER_ID}")
     message(STATUS "ITOM LIB SUFFIX: ${ITOM_SDK_LIBSUFFIX}")
@@ -208,11 +215,11 @@ if(EXISTS ${ITOM_SDK_CONFIG_FILE})
         set(ITOM_SDK_FOUND TRUE CACHE BOOL "" FORCE)
 
     else(${CMAKE_PROJECT_NAME}  MATCHES "itomproject")
-        
+
         #Initiate the variable before the loop
         set(GLOBAL ITOM_SDK_LIBS "")
         set(ITOM_SDK_FOUND_TMP true)
-        
+
         if(NOT ITOM_SDK_FIND_COMPONENTS)
             set(ITOM_SDK_LIB_COMPONENTS ${ITOM_SDK_LIB_COMPONENTS}) #ITOM_SDK_LIB_COMPONENTS is described in itom_sdk.cmake
         else()
@@ -226,10 +233,10 @@ if(EXISTS ${ITOM_SDK_CONFIG_FILE})
 
                 find_library(ITOM_SDK_${__ITOMLIB}_LIBRARY_DEBUG NAMES "${__ITOMLIB}d"  PATHS "${ITOM_SDK_DIR}${ITOM_SDK_LIBSUFFIX}" NO_DEFAULT_PATH)
                 find_library(ITOM_SDK_${__ITOMLIB}_LIBRARY_RELEASE NAMES "${__ITOMLIB}" PATHS "${ITOM_SDK_DIR}${ITOM_SDK_LIBSUFFIX}" NO_DEFAULT_PATH)
-                
+
                 #Remove the cache value
                 set(ITOM_SDK_${__ITOMLIB}_LIBRARY "" CACHE STRING "" FORCE)
-                
+
                 #both debug/release
                 if(ITOM_SDK_${__ITOMLIB}_LIBRARY_DEBUG AND ITOM_SDK_${__ITOMLIB}_LIBRARY_RELEASE)
                         set(ITOM_SDK_${__ITOMLIB}_LIBRARY debug ${ITOM_SDK_${__ITOMLIB}_LIBRARY_DEBUG} optimized ${ITOM_SDK_${__ITOMLIB}_LIBRARY_RELEASE}  CACHE STRING "" FORCE)
@@ -246,35 +253,35 @@ if(EXISTS ${ITOM_SDK_CONFIG_FILE})
                         #message(STATUS "${OpenCV_DIR} -- ${OPENCV_LIB_COMPONENTS} --  ${__ITOMLIB}${CVLIB_SUFFIX}d not found")
                 endif()
                 endif()
-                
+
         endforeach(__ITOMLIB)
-    
+
         set(ITOM_SDK_LIBRARIES)
         foreach(__ITOMLIB ${ITOM_SDK_LIB_COMPONENTS})
-            
+
             if(ITOM_SDK_${__ITOMLIB}_LIBRARY)
                 set(ITOM_SDK_LIBRARIES ${ITOM_SDK_LIBRARIES} ${ITOM_SDK_${__ITOMLIB}_LIBRARY})
             else()
                 message(SEND_ERROR "Required component ${__ITOMLIB} could not be found in itom SDK")
             endif()
-            
+
             #dataobject has a dependency to OpenCV, therefore adapt ITOM_SDK_INCLUDE_DIRS
             #and add the core library of OpenCV to the ITOM_SDK_LIBRARIES
             if(${__ITOMLIB} STREQUAL "dataobject")
-                
-                if(OpenCV_FOUND) 
+
+                if(OpenCV_FOUND)
                     #store the current value of OpenCV_LIBS and reset it afterwards
                     set(__OpenCV_LIBS "${OpenCV_LIBS}")
                 else(OpenCV_FOUND)
                     set(__OpenCV_LIBS "")
                 endif(OpenCV_FOUND)
-                
+
                 if(ITOM_SDK_FIND_QUIETLY)
                     find_package(OpenCV QUIET COMPONENTS core)
                 else(ITOM_SDK_FIND_QUIETLY)
                     find_package(OpenCV COMPONENTS core)
                 endif(ITOM_SDK_FIND_QUIETLY)
-                
+
                 if(OpenCV_FOUND)
                     set(ITOM_SDK_INCLUDE_DIRS ${ITOM_SDK_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS})
                     set(ITOM_SDK_LIBRARIES ${ITOM_SDK_LIBRARIES} ${OpenCV_LIBS})
@@ -282,17 +289,17 @@ if(EXISTS ${ITOM_SDK_CONFIG_FILE})
                     set(ITOM_SDK_FOUND_TMP false)
                     set(ERR_MSG "OpenCV not found. Use OpenCV_DIR to indicate the (build-)folder of OpenCV.")
                 endif(OpenCV_FOUND)
-                
+
                 if(__OpenCV_LIBS)
                     #reset OpenCV_LIBS
                     set(OpenCV_LIBS "${__OpenCV_LIBS}")
                 endif()
             endif()
-            
-            #pointcloud has a dependency to the core component of the point cloud library, 
+
+            #pointcloud has a dependency to the core component of the point cloud library,
             #therefore adapt ITOM_SDK_INCLUDE_DIRS and add the core library of PCL to the ITOM_SDK_LIBRARIES
             if(${__ITOMLIB} STREQUAL "pointcloud")
-            
+
                 if(PCL_FOUND)
                     #store the current value of PCL_INCLUDE_DIRS and PCL_LIBRARY_DIRS and reset it afterwards
                     set(__PCL_INCLUDE_DIRS "${PCL_INCLUDE_DIRS}")
@@ -301,13 +308,13 @@ if(EXISTS ${ITOM_SDK_CONFIG_FILE})
                     set(__PCL_INCLUDE_DIRS "")
                     set(__PCL_LIBRARY_DIRS "")
                 endif(PCL_FOUND)
-                
+
                 if(ITOM_SDK_FIND_QUIETLY)
                     find_package(PCL 1.5.1 QUIET COMPONENTS common)
                 else(ITOM_SDK_FIND_QUIETLY)
                     find_package(PCL 1.5.1 COMPONENTS common)
                 endif(ITOM_SDK_FIND_QUIETLY)
-                    
+
                 if(PCL_FOUND)
                     set(ITOM_SDK_INCLUDE_DIRS ${ITOM_SDK_INCLUDE_DIRS} ${PCL_INCLUDE_DIRS})
                     set(ITOM_SDK_LIBRARIES ${ITOM_SDK_LIBRARIES} ${PCL_LIBRARIES})
@@ -315,27 +322,49 @@ if(EXISTS ${ITOM_SDK_CONFIG_FILE})
                     set(ITOM_SDK_FOUND_TMP false)
                     set(ERR_MSG "PCL not found. Use PCL_DIR to indicate the (install-)folder of PCL.")
                 endif(PCL_FOUND)
-                
+
                 if(__PCL_INCLUDE_DIRS)
                     #reset PCL_INCLUDE_DIRS and PCL_LIBRARY_DIRS
                     set(PCL_INCLUDE_DIRS "${__PCL_INCLUDE_DIRS}")
                     set(PCL_LIBRARY_DIRS "${__PCL_LIBRARY_DIRS}")
                 endif(__PCL_INCLUDE_DIRS)
-                
+
             endif()
-            
+
             #itomWidgets often requires the SDK_INCLUDE_DIR/itomWidgets directory as further include directory
             if(${__ITOMLIB} STREQUAL "itomWidgets")
                 set(ITOM_SDK_INCLUDE_DIRS ${ITOM_SDK_INCLUDE_DIRS} ${ITOM_SDK_INCLUDE_DIR}/itomWidgets)
             endif()
-            
+
+			if(BUILD_WITH_PCL)
+				include(Setup_PCL_Itom)
+
+                if(WIN32)
+                    if(ITOM_SDK_FIND_QUIETLY)
+                        find_package(PCL 1.5.1 QUIET REQUIRED COMPONENTS common PATHS ${PCL_CMAKE_DIR} NO_DEFAULT_PATH)
+                    else(ITOM_SDK_FIND_QUIETLY)
+                        find_package(PCL 1.5.1 REQUIRED COMPONENTS common PATHS ${PCL_CMAKE_DIR} NO_DEFAULT_PATH)
+                    endif(ITOM_SDK_FIND_QUIETLY)
+                else(WIN32)
+                    find_package(PCL 1.5.1 REQUIRED COMPONENTS common)
+                endif(WIN32)
+
+				if(PCL_FOUND)
+					set(ITOM_SDK_INCLUDE_DIRS ${ITOM_SDK_INCLUDE_DIRS} ${PCL_INCLUDE_DIRS})
+					set(ITOM_SDK_LIBRARIES ${ITOM_SDK_LIBRARIES} ${PCL_LIBRARIES})
+				else(PCL_FOUND)
+					set(ITOM_SDK_FOUND_TMP false)
+					set(ERR_MSG "PCL not found. Use PCL_DIR to indicate the (install-)folder of PCL.")
+				endif(PCL_FOUND)
+			endif()
+
         endforeach(__ITOMLIB)
 
         set(ITOM_SDK_FOUND ${ITOM_SDK_FOUND_TMP} CACHE BOOL "" FORCE)
 
     endif(${CMAKE_PROJECT_NAME}  MATCHES "itomproject")
-    
-    
+
+
 else(EXISTS ${ITOM_SDK_CONFIG_FILE})
     set(ERR_MSG "File itom_sdk.cmake could not be found in subdirectory 'cmake' of ITOM_SDK_DIR")
 endif(EXISTS ${ITOM_SDK_CONFIG_FILE})
@@ -357,4 +386,3 @@ if(NOT ITOM_SDK_FOUND)
  endif()
 
 #====================================================
-

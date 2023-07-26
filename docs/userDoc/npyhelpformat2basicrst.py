@@ -379,7 +379,7 @@ class ItomDocString(collections.abc.Mapping):
                     out += [':param %s: %s' % (param, " ".join(desc))]
             out += ['']
         return out
-        
+
     def _str_return_list(self):
         out = []
         name = 'Returns'
@@ -393,7 +393,7 @@ class ItomDocString(collections.abc.Mapping):
                     out += [':return: %s' % (" ".join(desc))]
             out += ['']
         return out
-    
+
     def _str_raises_list(self):
         out = []
         name = 'Raises'
@@ -402,7 +402,7 @@ class ItomDocString(collections.abc.Mapping):
                 out += [':raises %s: %s' % (param, " ".join(desc))]
             out += ['']
         return out
-        
+
     def _str_notes_section(self):
         out = []
         name = 'Notes'
@@ -412,7 +412,7 @@ class ItomDocString(collections.abc.Mapping):
             out += self._str_indent(self[name])
             out += ['']
         return out
-    
+
     def _str_section(self, name):
         out = []
         if self[name]:

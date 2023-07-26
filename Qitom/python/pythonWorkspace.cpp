@@ -563,24 +563,24 @@ void PyWorkspaceContainer::parseSinglePyObject(
         }
         else if (PyUnicode_Check(repr))
         {
-            PyObject* encodedByteArray = PyUnicode_AsLatin1String(repr);
+            PyObject* encodedByteArray = PyUnicode_AsUTF8String(repr);
 
             if (!encodedByteArray)
             {
                 PyErr_Clear();
-                encodedByteArray = PyUnicode_AsASCIIString(repr);
+                encodedByteArray = PyUnicode_AsLatin1String(repr);
 
                 if (!encodedByteArray)
                 {
                     PyErr_Clear();
-                    encodedByteArray = PyUnicode_AsUTF8String(repr);
+                    encodedByteArray = PyUnicode_AsASCIIString(repr);
                 }
             }
 
             if (encodedByteArray)
             {
                 const char* bytes = PyBytes_AS_STRING(encodedByteArray);
-                item->m_extendedValue = item->m_value = QString::fromLatin1(bytes);
+                item->m_extendedValue = item->m_value = QString::fromUtf8(bytes);
 
                 if (item->m_value.length() > 100)
                 {
@@ -747,21 +747,22 @@ void PyWorkspaceContainer::parseSinglePyObject(
                 }
                 else if (PyUnicode_Check(repr))
                 {
-                    PyObject* encodedByteArray = PyUnicode_AsLatin1String(repr);
+                    PyObject* encodedByteArray = PyUnicode_AsUTF8String(repr);
                     if (!encodedByteArray)
                     {
                         PyErr_Clear();
-                        encodedByteArray = PyUnicode_AsASCIIString(repr);
+                        encodedByteArray = PyUnicode_AsLatin1String(repr);
+
                         if (!encodedByteArray)
                         {
                             PyErr_Clear();
-                            encodedByteArray = PyUnicode_AsUTF8String(repr);
+                            encodedByteArray = PyUnicode_AsASCIIString(repr);
                         }
                     }
                     if (encodedByteArray)
                     {
-                        const char* bytesString = PyBytes_AS_STRING(encodedByteArray);
-                        item->m_extendedValue = item->m_value = QLatin1String(bytesString);
+                    	const char* bytesString = PyBytes_AS_STRING(encodedByteArray);
+                        item->m_extendedValue = item->m_value = QString::fromUtf8(bytesString);
 
                         if (item->m_value.length() > 100)
                         {

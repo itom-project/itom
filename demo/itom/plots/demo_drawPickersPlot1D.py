@@ -27,7 +27,7 @@ set ``physicalCoordinates`` to False.
 """
 
 import numpy as np
-from itom import plot 
+from itom import plot
 from itom import dataObject
 # sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoDrawPickers1DPlot.png'
 

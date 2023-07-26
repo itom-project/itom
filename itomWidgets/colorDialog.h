@@ -61,7 +61,7 @@ public:
   /// tab added with an index of 0 will be the first tab open
   void insertTab(int tabIndex, QWidget* widget, const QString& label);
 
-  /// The ownership of widget remains the same. The widget is not deleted, 
+  /// The ownership of widget remains the same. The widget is not deleted,
   /// but simply removed from the widget's stacked layout, causing it to be
   /// hidden.
   void removeTab(int index);

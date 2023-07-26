@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -25,7 +25,7 @@
 /* includes */
 #ifndef Q_MOC_RUN
     //see numpy help ::array api :: Miscellaneous :: Importing the api (this line must before include global.h)
-    #define PY_ARRAY_UNIQUE_SYMBOL itom_ARRAY_API 
+    #define PY_ARRAY_UNIQUE_SYMBOL itom_ARRAY_API
     #define NO_IMPORT_ARRAY
 
     #include "python/pythonWrapper.h"
@@ -64,7 +64,7 @@ private:
 
     itom.filter("lowPassFilter", arg1, arg2, ...)
 
-    or 
+    or
 
     itom.algorithms.lowPassFilter(arg1, arg2, ...)
 
@@ -81,7 +81,7 @@ private:
 
     //-------------------------------------------------------------------------------------------------
     // constructor, destructor, alloc, dellaoc
-    //------------------------------------------------------------------------------------------------- 
+    //-------------------------------------------------------------------------------------------------
     static void PyAlgorithm_dealloc(PyAlgorithm *self);
     static PyObject* PyAlgorithm_new(PyTypeObject *type, PyObject *args, PyObject *kwds);
     static int PyAlgorithm_init(PyAlgorithm *self, PyObject *args, PyObject *kwds);
@@ -93,7 +93,7 @@ private:
 
     //-------------------------------------------------------------------------------------------------
     // type structures
-    //------------------------------------------------------------------------------------------------- 
+    //-------------------------------------------------------------------------------------------------
     static PyTypeObject PyAlgorithmType;
     static PyModuleDef PyAlgorithmModule;
 };

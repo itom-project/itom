@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -35,15 +35,15 @@ PythonStatePublisher::PythonStatePublisher(const PythonEngine *engine) :
     propertiesChanged(); // read real timeout time
 
     connect(
-        engine, 
-        &PythonEngine::pythonStateChanged, 
-        this, 
+        engine,
+        &PythonEngine::pythonStateChanged,
+        this,
         &PythonStatePublisher::onPythonStateChanged);
 
     connect(
-        qobject_cast<MainApplication*>(AppManagement::getMainApplication()), 
+        qobject_cast<MainApplication*>(AppManagement::getMainApplication()),
         &MainApplication::propertiesChanged,
-        this, 
+        this,
         &PythonStatePublisher::propertiesChanged);
 }
 
@@ -106,7 +106,7 @@ void PythonStatePublisher::onPythonStateChanged(tPythonTransitions pyTransition,
             m_delayedTrans.timerId = startTimer(m_delayMs);
             m_delayedTrans.transition = pyTransition;
         }
-        
+
         break;
     }
 }

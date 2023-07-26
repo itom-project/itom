@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -44,10 +44,10 @@ public:
     PickerSortFilterProxyModel(QObject *parent = 0) : QSortFilterProxyModel(parent), m_minimumMask(0x0), m_pluginName(QString()), m_showPluginsWithoutInstance(false) {};
     ~PickerSortFilterProxyModel() {};
 
-    inline void setPluginMinimumMask( const int minimumMask ) 
-    { 
-        m_minimumMask = minimumMask; 
-        invalidateFilter(); 
+    inline void setPluginMinimumMask( const int minimumMask )
+    {
+        m_minimumMask = minimumMask;
+        invalidateFilter();
     };
 
     inline void setPluginName( QString &name )
@@ -56,10 +56,10 @@ public:
         invalidateFilter();
     }
 
-    inline void showPluginsWithoutInstance(bool show) 
-    { 
-        m_showPluginsWithoutInstance = show; 
-        invalidateFilter(); 
+    inline void showPluginsWithoutInstance(bool show)
+    {
+        m_showPluginsWithoutInstance = show;
+        invalidateFilter();
     };
 
 protected:
@@ -73,7 +73,7 @@ protected:
         if(!m_showPluginsWithoutInstance)
         {
             int itemType = sourceModel()->data(idx, Qt::UserRole + 3).toInt();
-            if(itemType == ito::PlugInModel::itemPlugin && sourceModel()->hasChildren(idx) == false) 
+            if(itemType == ito::PlugInModel::itemPlugin && sourceModel()->hasChildren(idx) == false)
             {
                 return false;
             }
@@ -87,7 +87,7 @@ protected:
             }
         }
 
-        if(type == ito::typeAlgo) 
+        if(type == ito::typeAlgo)
         {
             return false; //never allow algorithms or widgets
         }
@@ -106,7 +106,7 @@ private:
 namespace ito {
 
 
-class DialogPluginPicker : public QDialog 
+class DialogPluginPicker : public QDialog
 {
     Q_OBJECT
 
@@ -125,7 +125,7 @@ private:
 
 private slots:
     void itemDblClicked(const QModelIndex &index);
-    void showPluginsWithoutInstance(bool checked); 
+    void showPluginsWithoutInstance(bool checked);
     void createNewInstance(bool checked);
     void selectionChanged(const QItemSelection& newSelection, const QItemSelection& oldSelection);
 

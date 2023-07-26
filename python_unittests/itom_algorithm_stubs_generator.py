@@ -7,11 +7,11 @@ import itom
 
 
 class ItomAlgorithmsStubsGenTest(unittest.TestCase):
-    
+
     @classmethod
     def setUpClass(cls):
         pass
-    
+
     def test_generate_hash(self):
         checksum = algoStubsGen.generateAlgorithmHash()
         self.assertFalse(checksum == b"")
@@ -20,7 +20,7 @@ class ItomAlgorithmsStubsGenTest(unittest.TestCase):
         algos = itom.filterHelp("", dictionary=1, furtherInfos=1)
         algoItems = []
         found = False
-        
+
         for algo in algos:
             if algo == "centroid1D":
                 found = True

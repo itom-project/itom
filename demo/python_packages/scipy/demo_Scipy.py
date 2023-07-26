@@ -38,7 +38,7 @@ img.set_clim(0, 100)
 pylab.title("ascent (FFT), fftshift")
 
 ###############################################################################
-# Calculate the cross-correlation. 
+# Calculate the cross-correlation.
 pylab.figure()
 pylab.subplot(231)
 pylab.imshow(ascent)

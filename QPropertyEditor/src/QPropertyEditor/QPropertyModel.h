@@ -48,7 +48,7 @@ public:
     virtual ~QPropertyModel();
 
     /// QAbstractItemModel implementation
-    QModelIndex index ( int row, int column, const QModelIndex & parent = QModelIndex() ) const;    
+    QModelIndex index ( int row, int column, const QModelIndex & parent = QModelIndex() ) const;
 
     /// QAbstractItemModel implementation
     QModelIndex parent ( const QModelIndex & index ) const;
@@ -66,21 +66,21 @@ public:
 
     /// QAbstractItemModel implementation
     QVariant headerData ( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const;
-    
+
     /// QAbstractItemModel implementation
     QModelIndex buddy ( const QModelIndex & index ) const;
 
     /**
      * Adds the user properties of the given class to the QPropertyModel instance
-     * 
-     * @param propertyObject the class inherited from QObject that contains user properties that should be 
+     *
+     * @param propertyObject the class inherited from QObject that contains user properties that should be
      *        managed by this instance
      */
     void addItem(QObject* propertyObject);
 
     /**
      * Creates a dataChanged signal for the given object
-     * @param propertyObject the instance of a QObject based class that should be updated 
+     * @param propertyObject the instance of a QObject based class that should be updated
      * @param parent optional model index the propertyObject is child of
      */
     void updateItem ( QObject* propertyObject, const QModelIndex& parent = QModelIndex() ) ;
@@ -94,7 +94,7 @@ public:
      * Adds custom callback that will be used to create Property instances for custom datatypes
      */
     void registerCustomPropertyCB(QPropertyEditorWidget::UserTypeCB callback);
-        
+
     /**
      * Adds custom callback that will be used to create Property instances for custom datatypes
      */
@@ -103,7 +103,7 @@ public:
     void setSorted(bool value);
 
     bool sorted() const { return m_sorted; }
-        
+
 
 private:
 
@@ -117,7 +117,7 @@ private:
     QList<QPropertyEditorWidget::UserTypeCB>    m_userCallbacks;
 
     bool m_sorted;
-    
-    
+
+
 };
 #endif

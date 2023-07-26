@@ -23,7 +23,7 @@ Now create a new python file in *C:\\Program Files\\itom\\python_tutorial* and r
 
 .. code-block:: python
     :linenos:
-    
+
     print("Hello World")
 
 To run the code you've just inserted, press *F5* or click on the *run* button.
@@ -36,7 +36,7 @@ Encoding of files
 If your script file contains non ASCII characters (like German special characters), you will probably get an encoding error when trying to run or debug this script. This is due to the fact, that |Python| interprets you script as default utf8 text file. If you used another encoding for your file you need to tell this to |Python|, e.g. by putting
 
 .. code-block:: python
-    
+
     # -- coding: iso-8859-15 --
-    
+
 at the first line of your script file (iso-8859-15 represents the Western Europe charset). For more information see <https://www.python.org/dev/peps/pep-0263/>.

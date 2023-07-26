@@ -38,8 +38,8 @@ QVariantDelegate::QVariantDelegate(QObject* parent) : QItemDelegate(parent), m_f
     m_finishedMapper = new QSignalMapper(this);
 
 #if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
-    connect(m_finishedMapper, &QSignalMapper::mappedObject, this, 
-        [=](QObject* obj) 
+    connect(m_finishedMapper, &QSignalMapper::mappedObject, this,
+        [=](QObject* obj)
         {
             QWidget* wid = qobject_cast<QWidget*>(obj);
             if (wid)

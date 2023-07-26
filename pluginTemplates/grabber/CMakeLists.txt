@@ -1,50 +1,34 @@
 ###################################################################
 ###################################################################
 #    CMake Template for a plugin of itom
-#    
+#
 #    You can use this template, use it in your plugins, modify it,
 #    copy it and distribute it without any license restrictions.
 ###################################################################
 ###################################################################
 
-#here you give your project a unique name (replace MyGrabberPlugin by the desired project name of your plugin)
+# this should be the first line of your project.
+cmake_minimum_required(VERSION 3.12...3.24)
+
+# here you give your project a unique name (replace MyGrabberPlugin by the desired project name of your plugin)
 set(target_name MyGrabberPlugin)
 
-# this should be the first line of your project.
-cmake_minimum_required(VERSION 3.1...3.15)
-
-set(ITOM_SDK_DIR NOTFOUND CACHE PATH "path of SDK subfolder of itom root (build) directory")
-
 #this is to automatically detect the SDK subfolder of the itom build directory.
-find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
-    HINTS "C:/itom/build/itom/SDK"
-          "${CMAKE_CURRENT_BINARY_DIR}/../../itom/SDK"
-    DOC "path of SDK subfolder of itom root (build) directory")
+if(NOT EXISTS ${ITOM_SDK_DIR})
+    find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
+    HINTS "$ENV{ITOM_SDK_ROOT}"
+          "${CMAKE_CURRENT_BINARY_DIR}/../itom/SDK"
+    DOC "Path of SDK subfolder of itom root (build) directory")
+endif(NOT EXISTS ${ITOM_SDK_DIR})
 
-if(NOT ITOM_SDK_DIR)
-    message(SEND_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
-endif()
+if(NOT EXISTS ${ITOM_SDK_DIR})
+    message(FATAL_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
+endif(NOT EXISTS ${ITOM_SDK_DIR})
 
 # ...which contains useful scripts for completing this file
+#  see "Add Additional Scipts" below for further reference
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SDK_DIR}/cmake)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
-# ... for example this one, found in the CMAKE_MODULE_PATH
-include(ItomBuildMacros)
-
-# The CMake policies are assumed to behave like the tested version given as argument.
-itom_init_cmake_policy(3.12)
-
-# and this does some magic for you, as setting some common vars and 
-# passing some switches to your project you can use in sourcecode.
-# If your sources are within a Git repository, it will also parse
-# the current commit hash and store it to gitVersion.h.
-#
-# This macro will also check if the package VisualLeakDetector can
-# be found (Visual Studio only) by calling find_package(VisualLeakDetector). 
-# If so, you can enable this via the CMake option VISUALLEAKDETECTOR_ENABLED. 
-# Add ${VISUALLEAKDETECTOR_LIBRARIES} to target_link_libraries below.
-itom_init_plugin_library(${target_name})
 
 #################################################################
 # Input elements for CMake GUI (Checkboxes, Pathes, Strings...)
@@ -76,9 +60,20 @@ option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to 
 # - pointcloud (pointCloud, point, polygonMesh...) (optional)
 # if no components are indicated, all components above are used
 find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
-#find_package(OpenCV COMPONENTS core REQUIRED) #if you require openCV indicate all components that are required (e.g. core, imgproc...), 
+#find_package(OpenCV COMPONENTS core REQUIRED) #if you require openCV indicate all components that are required (e.g. core, imgproc...),
 #       if the dataobject is included in the ITOM_SDK components, the OpenCV core component is detected there and the necessary include
 #       directories and libraries to link agains are contained in ITOM_SDK_LIBRARIES and ITOM_SDK_INCLUDE_DIRS
+
+#################################################################
+# Add Additional Scipts
+#   add here include commands for searching for adding
+#    useful scripts
+#################################################################
+
+# ... for example this one, found in the CMAKE_MODULE_PATH
+include(ItomBuildMacros)
+# The CMake policies are assumed to behave like the tested version given as argument.
+itom_init_cmake_policy(3.12)
 
 # 'itom_find_package_qt' is a wrapper for find_package(Qt5...) and internally calls
 # this and sets some things more. The component names are wrapped to Qt5_{name}.
@@ -91,6 +86,17 @@ find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWi
 # of settings the properties of this target (see below):
 # set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC ON AUTOUIC ON)
 itom_find_package_qt(ON Core Widgets LinguistTools)
+
+# and this does some magic for you, as setting some common vars and
+# passing some switches to your project you can use in sourcecode.
+# If your sources are within a Git repository, it will also parse
+# the current commit hash and store it to gitVersion.h.
+#
+# This macro will also check if the package VisualLeakDetector can
+# be found (Visual Studio only) by calling find_package(VisualLeakDetector).
+# If so, you can enable this via the CMake option VISUALLEAKDETECTOR_ENABLED.
+# Add ${VISUALLEAKDETECTOR_LIBRARIES} to target_link_libraries below.
+itom_init_plugin_library(${target_name})
 
 #################################################################
 # General settings and preprocessor settings
@@ -177,7 +183,7 @@ set(PLUGIN_RCC
 # Group files in their original folder structure (MSVC only)
 # If you have some header and source files in a specific
 # subfolder, you can even have this subfolder in your
-# IDE (mainly Visual Studio supports this). Then call 
+# IDE (mainly Visual Studio supports this). Then call
 # itom_add_source_group(directoryName) for each subdirectory.
 #
 # HINT: This command does nothing for IDE different than MSVC.
@@ -187,14 +193,14 @@ set(PLUGIN_RCC
 
 #################################################################
 # Compile and link the plugin library
-# 
+#
 #################################################################
 
 #add all (generated) header and source files to the library (these files are compiled then)
-add_library(${target_name} SHARED 
-    ${PLUGIN_SOURCES} 
-    ${PLUGIN_HEADERS} 
-    ${PLUGIN_UI} 
+add_library(${target_name} SHARED
+    ${PLUGIN_SOURCES}
+    ${PLUGIN_HEADERS}
+    ${PLUGIN_UI}
     ${PLUGIN_RCC}
     )
 
@@ -228,34 +234,34 @@ target_link_libraries(${target_name} ${ITOM_SDK_LIBRARIES} ${QT5_LIBRARIES} ${VI
 # projects. Then ts files will be generated in the translation source
 # directory for each language (check it into the Git repository)
 # or existing ts files will be updated. Then use the QtLinguist
-# tool to translate these ts files. After re-building your 
+# tool to translate these ts files. After re-building your
 # solution, the ts-files are compiled into qm-files, which are then
 # put into itom's plugin subdirectory together with the plugin
 # library itself.
 #################################################################
 set(FILES_TO_TRANSLATE ${PLUGIN_SOURCES} ${PLUGIN_HEADERS} ${PLUGIN_UI} ${PLUGIN_RCC})
 itom_library_translation(
-    QM_FILES 
-    TARGET ${target_name} 
+    QM_FILES
+    TARGET ${target_name}
     FILES_TO_TRANSLATE ${FILES_TO_TRANSLATE}
     )
 
 #################################################################
 # Plugin Documentation
-# 
+#
 # In the source directory of the plugin can be a subfolder 'docs'.
 # This folder can contain one or more *.rst files with the docu-
-# mentation of the plugin. CMake organizes the rest if you 
+# mentation of the plugin. CMake organizes the rest if you
 # indicate the name of the main documentation file(without
 # suffix rst) in the following command:
-# 
+#
 # itom_configure_plugin_documentation(${target_name} nameOfTheFile)
 #################################################################
 itom_configure_plugin_documentation(${target_name} myGrabber)
 
 #################################################################
 # Post-Build Copy Operations
-# 
+#
 # itom is able to force a post-build process that copies
 # different files, like the currently created library, to
 # other destination pathes. This is done in this section.
@@ -267,7 +273,7 @@ itom_configure_plugin_documentation(${target_name} myGrabber)
 # The following macros can be used to fill up the source
 # and destination list:
 #
-# itom_add_pluginlibrary_to_copy_list 
+# itom_add_pluginlibrary_to_copy_list
 # - this is necessary for each plugin such that the library
 #   is automatically copied to the plugins folder of
 #   the itom build directory.
@@ -289,4 +295,3 @@ itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 # the itom build directory, use the following macro:
 #
 # itom_post_build_copy_files_to_lib_folder(${target}, ${listOfFiles})
-

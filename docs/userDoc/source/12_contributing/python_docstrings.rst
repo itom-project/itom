@@ -34,7 +34,7 @@ The docstrings are mainly used for three different use cases:
        of the :py:mod:`itom` module.
 
 In order to support these three use cases (mainly no 2 and 3), this guide shows how to
-write docstrings in the **C/C++** source code for methods and classes, that belong 
+write docstrings in the **C/C++** source code for methods and classes, that belong
 to the :py:mod:`itom` module.
 
 General rules
@@ -43,10 +43,10 @@ General rules
 1. Always use the macro ``PyDoc_STRVAR`` to generate the docstring
 2. Do not indent multiline docstrings in **C/C++**, since this identation is kept in the docstring.
    Therefore, always start these multiline docstrings in the first column of the source file!
-3. Avoid long lines in the docstrings. Wrap them with an explicit newline character (\n) after a 
+3. Avoid long lines in the docstrings. Wrap them with an explicit newline character (\n) after a
    maximum number of 88 characters.
 4. Use four spaces as indentation level
-5. Most parts of the docstrings should follow the rules of 
+5. Most parts of the docstrings should follow the rules of
    `Numpydoc <https://pypi.org/project/numpydoc/>`_. For more information see
    `https://numpydoc.readthedocs.io/en/latest/format.html <https://numpydoc.readthedocs.io/en/latest/format.html>`_
    (The Numpydoc package must only be installed if you want to rebuild the Sphinx user documentation).
@@ -57,8 +57,8 @@ Method docstrings
 The docstring of an unbounded method looks like this
 
 .. code-block:: C
-    
-    PyDoc_STRVAR(varname_doc, 
+
+    PyDoc_STRVAR(varname_doc,
     "myMethod(arg1, arg2 = -2, arg3 = None) -> List[int] \n\
     \n\
     short description of this method. \n\
@@ -104,15 +104,15 @@ the rules of the :mod:`typing` module of Python. The type hint is recommended, b
 optional. It can also be obtained from the ``Returns`` section. We recommend both.
 
 After the signature line, write a short description of the method after a separate and empty
-new line. Then, insert another new line and continue with a multiline long 
-description of the method. This long description can also consist of further 
-sections, following the rules of Numpydoc. If the method has at least one 
-argument, it is recommend to describe it in a ``Parameters`` section. If the 
-method has a return value, use the ``Returns`` section. If you want to add a 
+new line. Then, insert another new line and continue with a multiline long
+description of the method. This long description can also consist of further
+sections, following the rules of Numpydoc. If the method has at least one
+argument, it is recommend to describe it in a ``Parameters`` section. If the
+method has a return value, use the ``Returns`` section. If you want to add a
 reference to other methods, use the ``See Also`` section.
 
 .. note::
-    
+
     Please consider, that the underline of the sections must be at least as long as
     the name of the section. Hence, a ``Parameters`` section must be followed by
     the underline line with at least 10 ``-`` characters.
@@ -144,7 +144,7 @@ Please be aware, that this backslash must be written in the C-code by two
 backslashes.
 
 .. note::
-    
+
     If overloaded methods are added, every signature needs to have a return type.
     This is maybe a bug in Sphinx, however with Sphinx 3.3 this was the case.
 
@@ -154,8 +154,8 @@ only used in one of the signatures.
 Here is an example for this:
 
 .. code-block:: C
-    
-    PyDoc_STRVAR(varname_doc, 
+
+    PyDoc_STRVAR(varname_doc,
     "myMethod() -> int \\\n\
     myMethod(number) -> int \\\n\
     myMethod(text) -> int \n\
@@ -192,7 +192,7 @@ end of the first signatures). The method name of the signature is the class
 name, not the literal ``__init__``:
 
 .. code-block: C
-    
+
     PyDoc_STRVAR(pyRegion_doc,"region() -> region \\\n\
     region(otherRegion) -> region \\\n\
     region(x, y, w, h, type = region.RECTANGLE) -> region \n\
@@ -243,15 +243,15 @@ can be added after a newline.
 Examples are:
 
 .. code-block:: C
-    
+
     PyDoc_STRVAR(property1_doc,
     "list of list of int: Short description comes here. \n\
     \n\
     Optional longer description (can be multiline)");
-    
-    
+
+
 .. code-block:: C
-    
+
     PyDoc_STRVAR(property1_doc,
     "str or None: Short description comes here.");
 
@@ -260,7 +260,7 @@ Examples are:
 References
 ==================
 
-This style guide is mainly taken from 
+This style guide is mainly taken from
 
 * Numpydoc (https://numpydoc.readthedocs.io/en/latest/format.html)
 * Napoleon extension of Sphinx (https://www.sphinx-doc.org/en/master/usage/extensions/napoleon.html)

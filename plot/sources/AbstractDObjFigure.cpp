@@ -10,7 +10,7 @@
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
-   
+
     In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
@@ -98,12 +98,12 @@ QSharedPointer<ito::DataObject> AbstractDObjFigure::getAxisData(Qt::Axis axis) c
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-QSharedPointer<ito::DataObject> AbstractDObjFigure::getSource(void) const 
+QSharedPointer<ito::DataObject> AbstractDObjFigure::getSource(void) const
 {
     const ito::DataObject *dObj = getInputParam("source")->getVal<const ito::DataObject*>();
     if (dObj)
     {
-        return QSharedPointer<ito::DataObject>(new ito::DataObject(*dObj)); 
+        return QSharedPointer<ito::DataObject>(new ito::DataObject(*dObj));
     }
     return QSharedPointer<ito::DataObject>();
 }
@@ -140,10 +140,10 @@ ito::RetVal AbstractDObjFigure::setAxisData(QSharedPointer<ito::DataObject> data
     return retval;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal AbstractDObjFigure::setSource(QSharedPointer<ito::DataObject> source) 
-{ 
+ito::RetVal AbstractDObjFigure::setSource(QSharedPointer<ito::DataObject> source)
+{
     ito::RetVal retval = ito::retOk;
-    
+
     if (m_cameraConnected)
     {
         retval += removeLiveSource(); //removes possibly existing live source
@@ -160,13 +160,13 @@ ito::RetVal AbstractDObjFigure::setSource(QSharedPointer<ito::DataObject> source
 
             // sometimes crash here when replacing the source
             m_dataPointer["source"] = source;
-        }  
+        }
     }
     else
     {
         m_dataPointer["source"] = source;
     }
-            
+
     ito::ParamBase thisParam("source", ito::ParamBase::DObjPtr, (const char*)source.data());
     retval += inputParamChanged(&thisParam);
 
@@ -189,7 +189,7 @@ QSharedPointer<ito::DataObject> AbstractDObjFigure::getDisplayed(void)
 
     if (dObj)
     {
-        return QSharedPointer<ito::DataObject>(new ito::DataObject(*dObj)); 
+        return QSharedPointer<ito::DataObject>(new ito::DataObject(*dObj));
     }
 
     return QSharedPointer<ito::DataObject>();
@@ -285,8 +285,8 @@ ito::RetVal AbstractDObjFigure::setCamera(QPointer<ito::AddInDataIO> camera)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //this source is invoked by any connected camera
-void AbstractDObjFigure::setSource(QSharedPointer<ito::DataObject> source, ItomSharedSemaphore *waitCond) 
-{ 
+void AbstractDObjFigure::setSource(QSharedPointer<ito::DataObject> source, ItomSharedSemaphore *waitCond)
+{
     ito::RetVal retval = ito::retOk;
 
     if (m_cameraConnected)
@@ -305,7 +305,7 @@ void AbstractDObjFigure::setSource(QSharedPointer<ito::DataObject> source, ItomS
         {
             m_dataPointer["source"] = source;
         }
-            
+
         ito::ParamBase thisParam("source", ito::ParamBase::DObjPtr, (const char*)source.data());
         retval += inputParamChanged(&thisParam);
     }
@@ -346,51 +346,51 @@ RetVal AbstractDObjFigure::removeLiveSource()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::AutoInterval AbstractDObjFigure::getXAxisInterval(void) const 
-{ 
-    return ito::AutoInterval(); 
+ito::AutoInterval AbstractDObjFigure::getXAxisInterval(void) const
+{
+    return ito::AutoInterval();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void AbstractDObjFigure::setXAxisInterval(ito::AutoInterval) 
-{ 
-    return; 
+void AbstractDObjFigure::setXAxisInterval(ito::AutoInterval)
+{
+    return;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::AutoInterval AbstractDObjFigure::getYAxisInterval(void) const 
-{ 
-    return ito::AutoInterval(); 
+ito::AutoInterval AbstractDObjFigure::getYAxisInterval(void) const
+{
+    return ito::AutoInterval();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void AbstractDObjFigure::setYAxisInterval(ito::AutoInterval) 
-{ 
-    return; 
+void AbstractDObjFigure::setYAxisInterval(ito::AutoInterval)
+{
+    return;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::AutoInterval AbstractDObjFigure::getZAxisInterval(void) const 
-{ 
-    return ito::AutoInterval(); 
+ito::AutoInterval AbstractDObjFigure::getZAxisInterval(void) const
+{
+    return ito::AutoInterval();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void AbstractDObjFigure::setZAxisInterval(ito::AutoInterval) 
-{ 
-    return; 
+void AbstractDObjFigure::setZAxisInterval(ito::AutoInterval)
+{
+    return;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-QString AbstractDObjFigure::getColorMap(void) const 
-{ 
-    return QString(); 
+QString AbstractDObjFigure::getColorMap(void) const
+{
+    return QString();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void AbstractDObjFigure::setColorMap(QString) 
-{ 
-    return; 
+void AbstractDObjFigure::setColorMap(QString)
+{
+    return;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

@@ -1,4 +1,4 @@
-# - itom software - 
+# - itom software -
 # URL: http://www.uni-stuttgart.de/ito
 # Copyright (C) 2022, Institut fuer Technische Optik (ITO),
 # Universitaet Stuttgart, Germany
@@ -17,23 +17,24 @@
 #
 # You should have received a copy of the GNU Library General Public License
 # along with itom. If not, see <http://www.gnu.org/licenses/>.
-     
-cmake_minimum_required(VERSION 3.1)
- 
+
+cmake_minimum_required(VERSION 3.12...3.24)
+
 project(itom)
 
+# set qitom as Visual Studio Startup-Projekt
+set_property( DIRECTORY PROPERTY VS_STARTUP_PROJECT "qitom" )
+
 message(STATUS "--------------- PROJECT itom -----------------")
- 
+
+include(cmake/Setup_Core_Itom.cmake)
+
 if(BUILD_QTVERSION STREQUAL "Qt6")
     set(CMAKE_CXX_STANDARD 17)
-    set(CXXFLAGS "${CXXFLAGS} /permissive-")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /permissive-")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /permissive-")
-
-    add_compile_options(/permissive-)
-else()
+elseif(BUILD_QTVERSION STREQUAL "Qt5")
     set(CMAKE_CXX_STANDARD 11)
-endif()
+endif(BUILD_QTVERSION STREQUAL "Qt6")
+
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 message(STATUS "CMAKE_CXX_STANDARD: ${CMAKE_CXX_STANDARD}")
@@ -59,12 +60,12 @@ option(ITOM_UPDATE_TRANSLATIONS_REMOVE_UNUSED_STRINGS
 
 if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.11.0")
     # add Debug flag if applicable
-    # flag will be available in all subsequent targets and folders 
+    # flag will be available in all subsequent targets and folders
     # from this file
     # https://cmake.org/cmake/help/latest/command/add_compile_definitions.html
     add_compile_definitions($<$<CONFIG:DEBUG>:_DEBUG>)
 endif()
-    
+
 set(CMAKE_MODULE_PATH
     ${CMAKE_MODULE_PATH}
     ${PROJECT_SOURCE_DIR}
@@ -94,6 +95,8 @@ if(BUILD_UNITTEST)
     add_subdirectory(itom_unittests)
 endif()
 
+#itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)
+
 if(SETUP_ISSCONFIG)
     set(InnoSetupPath CACHE PATH "base path to inno setup")
 endif()
@@ -121,7 +124,7 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/docs/pluginDoc
 
 # copy the entire styles folder including subfolders to the binary dir
 # However ignore files with endings svg, png, qrc, py (mainly the source
-# files for Qt style, since these sources should be compiled to a rcc and 
+# files for Qt style, since these sources should be compiled to a rcc and
 # qss file).
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/styles
     DESTINATION ${CMAKE_CURRENT_BINARY_DIR}
@@ -135,6 +138,8 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/licenses
 
 ################################################################################################################
 itom_find_package_qt(ON Core)
+itom_define_sdk_platform()
+itom_define_sdk_compiler()
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win32/itom_setup_win32.iss.in
     ${CMAKE_CURRENT_BINARY_DIR}/setup/win32/itom_setup_win32.iss )
@@ -188,7 +193,7 @@ if(WIN32)
     endif()
 
     if(MSVC)
-        
+
         if(CMAKE_CL_64)
             set(MSVC_BITNESS1 x64)
             set(MSVC_BITNESS2 x64)
@@ -215,14 +220,14 @@ if(WIN32)
     else()
         set(MSVC_COMPILE_TMPL "")
     endif()
-     
+
     if(MSVC_COMPILE_TMPL)
         set(MSVC_REBUILD_TAG "")
         set(MSVC_CONFIGURATION "debug")
         configure_file("${MSVC_COMPILE_TMPL}" "${CMAKE_CURRENT_BINARY_DIR}/compile_debug.bat" @ONLY)
         set(MSVC_CONFIGURATION "release")
         configure_file("${MSVC_COMPILE_TMPL}" "${CMAKE_CURRENT_BINARY_DIR}/compile_release.bat" @ONLY)
-        
+
         set(MSVC_REBUILD_TAG "/t:rebuild")
         set(MSVC_CONFIGURATION "debug")
         configure_file("${MSVC_COMPILE_TMPL}" "${CMAKE_CURRENT_BINARY_DIR}/compile_debug_rebuild.bat" @ONLY)
@@ -241,6 +246,8 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/pluginTemplates               DESTINATION 
 
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/cmake                         DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/SDK FILES_MATCHING PATTERN "Find*.cmake")
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/cmake/ItomBuildMacros.cmake   DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/SDK/cmake)
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Setup_PCL_Itom.cmake   DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/SDK/cmake)
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Setup_PCL_Plugins.cmake   DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/SDK/cmake)
 
 if(MSVC)
     file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/designerPluginLibraryVersion.rc DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/SDK)

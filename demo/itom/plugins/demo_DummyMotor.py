@@ -24,7 +24,7 @@ stage.setParam("speed", 1000)
 speed = stage.getParam("speed")
 
 ###############################################################################
-# **Synchronous movement**: 
+# **Synchronous movement**:
 #    The script waits until the movement has been finished!
 
 # Set pos of 1. axis (index 0) to the absolute value 10.2 mm
@@ -55,7 +55,7 @@ stage.setPosRel(0, 2, 1, 2)
 print("x = " + str(x) + " y = " + str(y) + " z = " + str(z))
 
 ###############################################################################
-# **Asynchronous movement**: 
+# **Asynchronous movement**:
 #    The script continuous its executing during the movement. However,
 #    the actuator is **blocked** until the end of the movement, since the script
 #    will wait before the next ``setParam``, ``setPosAbs``, ``setPosRel``,
@@ -109,6 +109,6 @@ stage.setPosAbs(0, 0.0, 1, 0.0)
 
 ###############################################################################
 # The DummyMotor Toolbox dockWidget will appear below the Plugins dockWidget.
-# 
+#
 # .. image:: ../../_static/demoDummyMotor_1.png
 #    :width: 100%

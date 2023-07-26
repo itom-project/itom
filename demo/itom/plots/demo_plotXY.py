@@ -5,7 +5,7 @@
 This demo shows how to set an optional x-vector to an 1D-plot.
 
 The optional x-vector can be set by passing the optional x-vector as second argument to the ``plot1`` function
-or by setting the property ``xData`` of an existing plot. 
+or by setting the property ``xData`` of an existing plot.
 If you want to add a x-vector to a plot of an ``N x M dataObject``
 your x-vector has to be an ``dataObject`` of shape ``1 x M``.
 Once you add an x-vector with a last dimension greater ``M`` the last points will be ignored."""
@@ -97,8 +97,8 @@ plot1(yPoints, xPoints)
 # This section demonstrates how to draw multiple lines with a common array of x-coordinates.
 
 multipleY = dataObject([2, 4], "float32")
-# it is also possible to use a too long xData set. The last values will be ignored. 
-singleX = dataObject([1, 9], "float32")  
+# it is also possible to use a too long xData set. The last values will be ignored.
+singleX = dataObject([1, 9], "float32")
 
 singleX[0, 0:4] = (0, 1, 0.5, 0)
 multipleY[0, :] = (0, 0, 1, 0)

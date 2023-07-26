@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -18,14 +18,14 @@
 
     You should have received a copy of the GNU Library General Public License
     along with itom. If not, see <http://www.gnu.org/licenses/>.
-*********************************************************************** */   
+*********************************************************************** */
 
 #include "leafFilterProxyModel.h"
 #include <QtDebug>
 
 namespace ito
 {
- 
+
 /*!
     \class LeafFilterProxyModel
     \brief  This class provides a special search function to the help model. The normal filtermodel hides nodes if they don't contain
@@ -48,13 +48,13 @@ LeafFilterProxyModel::LeafFilterProxyModel(QObject *parent) :
     QSortFilterProxyModel(parent)
 {
 }
- 
+
 //----------------------------------------------------------------------------------------------------------------------------------
 bool LeafFilterProxyModel::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const
 {
     if (filterAcceptsRowItself(source_row, source_parent))
         return true;
- 
+
     //accept if any of the parents is accepted on it's own merits
     QModelIndex parent = source_parent;
     while (parent.isValid()) {
@@ -62,21 +62,21 @@ bool LeafFilterProxyModel::filterAcceptsRow(int source_row, const QModelIndex &s
             return true;
         parent = parent.parent();
     }
- 
+
     //accept if any of the children is accepted on it's own merits
     if (hasAcceptedChildren(source_row, source_parent)) {
         return true;
     }
- 
+
     return false;
 }
- 
+
 //----------------------------------------------------------------------------------------------------------------------------------
 bool LeafFilterProxyModel::filterAcceptsRowItself(int source_row, const QModelIndex &source_parent) const
 {
     return QSortFilterProxyModel::filterAcceptsRow(source_row, source_parent);
 }
- 
+
 //----------------------------------------------------------------------------------------------------------------------------------
 bool LeafFilterProxyModel::hasAcceptedChildren(int source_row, const QModelIndex &source_parent) const
 {
@@ -85,12 +85,12 @@ bool LeafFilterProxyModel::hasAcceptedChildren(int source_row, const QModelIndex
         //qDebug() << "item invalid" << source_parent << source_row;
         return false;
     }
- 
+
     //check if there are children
     int childCount = item.model()->rowCount(item);
     if (childCount == 0)
         return false;
- 
+
     for (int i = 0; i < childCount; ++i) {
         if (filterAcceptsRowItself(i, item))
             return true;
@@ -98,7 +98,7 @@ bool LeafFilterProxyModel::hasAcceptedChildren(int source_row, const QModelIndex
         if (hasAcceptedChildren(i, item))
             return true;
     }
- 
+
     return false;
 }
 

@@ -82,7 +82,7 @@ def nullspace(A: ArrayLike, atol: float = 1e-13, rtol: int = 0) -> ArrayLike:
 
 
 ###############################################################################
-# Function to check rank and nullspace of the matrix. 
+# Function to check rank and nullspace of the matrix.
 
 def checkit(mat):
     """This method calculates the rank and nullspace of matrix mat. The results

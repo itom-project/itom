@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -32,7 +32,7 @@
 namespace ito
 {
 
-class WidgetFindWord : public QWidget 
+class WidgetFindWord : public QWidget
 {
     Q_OBJECT
 
@@ -50,7 +50,7 @@ private:
     Ui::WidgetFindWord ui;
 
 private slots:
-    void on_cmdClose_clicked(); 
+    void on_cmdClose_clicked();
     void on_txtFind_returnPressed();
     void on_cmdFindUp_clicked();
     void on_cmdFindDown_clicked();

@@ -2,7 +2,7 @@
 //
 // This code is part of the Sample Application to demonstrate the use of the QPropertyEditor library.
 // It is distributed as public domain and can be modified and used by you without any limitations.
-// 
+//
 // Your feedback is welcome!
 //
 // Author: Volker Wiendl
@@ -16,8 +16,8 @@
 #include <QPropertyEditor/Property.h>
 
 /**
- * A custom property for Vec3f 
- * 
+ * A custom property for Vec3f
+ *
  * This class provides a QLineEdit editor for all three values of a Vec3f struct (x, y, z)
  * and also contains three QDoubleSpinBox instances to manipulate each value separately
  */

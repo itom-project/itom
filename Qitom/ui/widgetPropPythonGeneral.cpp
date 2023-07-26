@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -87,7 +87,7 @@ void WidgetPropPythonGeneral::readSettings()
         ui.pathLineEditPyHome->setCurrentPath(pythonHomeDirectory);
     }
     ui.pathLineEditPyHome->setEnabled(pythonDirState == 2);
-    
+
     //initialize GUI to show current pythonHelpViewer's parameters
     bool python3rdPartyHelperUse = settings.value("python3rdPartyHelperUse",0).toBool();
     QString python3rdPartyHelperCommand = settings.value("python3rdPartyHelperCommand", "notepad").toString();
@@ -95,12 +95,13 @@ void WidgetPropPythonGeneral::readSettings()
     on_cbPyUse3rdPartyHelp_stateChanged(python3rdPartyHelperUse);
     ui.lePyUse3rdPartyCommand->setText(python3rdPartyHelperCommand);
     QMap<QString, QString>::const_iterator it;
+
     for (it = pyExtHelpers.constBegin(); it != pyExtHelpers.constEnd(); ++it)
     {
         if (it.value() == python3rdPartyHelperCommand)
         {
             ui.cbbPyUse3rdPartyPresets->setCurrentText(it.key());
-            on_cbbPyUse3rdPartyPresets_currentIndexChanged(it.key());
+            on_cbbPyUse3rdPartyPresets_currentTextChanged(it.key());
         }
     }
     settings.endGroup();
@@ -131,7 +132,7 @@ void WidgetPropPythonGeneral::writeSettings()
 
     settings.setValue("pyDirState", pythonDirState);
     settings.setValue("pyHome", ui.pathLineEditPyHome->currentPath());
-    
+
     settings.setValue("python3rdPartyHelperUse",ui.cbPyUse3rdPartyHelp->isChecked());
     settings.setValue("python3rdPartyHelperCommand", ui.lePyUse3rdPartyCommand->text());
     settings.endGroup();
@@ -169,12 +170,12 @@ void WidgetPropPythonGeneral::on_cbPyUse3rdPartyHelp_stateChanged(int checked)
     ui.cbbPyUse3rdPartyPresets->setEnabled(checked);
 }
 
-void WidgetPropPythonGeneral::on_cbbPyUse3rdPartyPresets_currentIndexChanged(QString caption)
+void WidgetPropPythonGeneral::on_cbbPyUse3rdPartyPresets_currentTextChanged(QString caption)
 {
     ui.lePyUse3rdPartyCommand->setText(pyExtHelpers[caption]);
 }
 
-//this is a workaround for the external cmd to be opened... and i don't want this to happen everytime 
+//this is a workaround for the external cmd to be opened... and i don't want this to happen everytime
 //the properties dialogue is accepted...
 void WidgetPropPythonGeneral::on_pbApplyPyUse3rdPartyHelpViewer_clicked()
 {
@@ -183,7 +184,7 @@ void WidgetPropPythonGeneral::on_pbApplyPyUse3rdPartyHelpViewer_clicked()
         QString tt = ui.lePyUse3rdPartyCommand->text();
         qputenv("PAGER", tt.toLatin1());
 #if WIN32
-        //better change this to something more appropriate. 
+        //better change this to something more appropriate.
         QString msg = QString("setx PAGER \"%1\"").arg(tt);
         system(msg.toLatin1());
 #endif

@@ -894,7 +894,7 @@ void QtTreePropertyBrowser::setResizeMode(QtTreePropertyBrowser::ResizeMode mode
         case QtTreePropertyBrowser::Stretch:
         default:                                      m = QHeaderView::Stretch;          break;
     }
-    
+
     d_ptr->m_treeWidget->header()->setSectionResizeMode(m);
 }
 

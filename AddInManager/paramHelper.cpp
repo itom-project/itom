@@ -821,7 +821,7 @@ ito::RetVal ParamHelper::validateStringMeta(
             }
             break;
         case ito::StringMeta::Wildcard:
-            
+
             for (int i = 0; i < meta->getLen(); i++)
             {
                 reg.setPattern(AddInManagerPrivate::wildcardToRegularExpression(meta->getString(i)));
@@ -1939,7 +1939,7 @@ ito::RetVal ParamHelper::validateParam(
     bool strict /*= true*/,
     bool mandatory /*= false*/)
 {
-    
+
     bool hasIndex = false;
     int index;
     QString paramName;

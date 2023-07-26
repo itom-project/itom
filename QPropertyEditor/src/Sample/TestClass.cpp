@@ -2,7 +2,7 @@
 //
 // This code is part of the Sample Application to demonstrate the use of the QPropertyEditor library.
 // It is distributed as public domain and can be modified and used by you without any limitations.
-// 
+//
 // Your feedback is welcome!
 //
 // Author: Volker Wiendl
@@ -12,11 +12,11 @@
 #include "TestClass.h"
 
 
-TestClass::TestClass(QObject* parent /*= 0*/) : QObject(parent), 
+TestClass::TestClass(QObject* parent /*= 0*/) : QObject(parent),
 m_name("Test Class"), m_position(10, 10, 10), m_radius(15.0f), m_color(Qt::red), m_someNumber(14),
 m_simpson(HOMER)
 {
-    
+
 }
 
 

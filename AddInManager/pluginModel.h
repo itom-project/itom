@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -32,7 +32,7 @@
 #include <qcolor.h>
 #include <qicon.h>
 
-namespace ito 
+namespace ito
 {
     class AddInBase;
     class AddInManager;
@@ -43,15 +43,15 @@ namespace ito
     */
     enum tPluginLoadStatusFlag
     {
-        plsfOk       = 0x001,  /*!< ok */ 
-        plsfWarning  = 0x002,  /*!< warning */ 
-        plsfError    = 0x004,  /*!< error */ 
+        plsfOk       = 0x001,  /*!< ok */
+        plsfWarning  = 0x002,  /*!< warning */
+        plsfError    = 0x004,  /*!< error */
         plsfIgnored  = 0x008,  /*!< ignored */
         plsfRelDbg   = 0x100,   /*!< is Dbg version */
         plsfIncompatible = 0x200, /*!< incompatible to this itom version */
     };
     Q_DECLARE_FLAGS(PluginLoadStatusFlags, tPluginLoadStatusFlag)
-    
+
 
     /*!
         \class PluginLoadStatus
@@ -68,10 +68,10 @@ namespace ito
 
     /** @class PlugInModel
     *   @brief class for visualizing the available (loaded) plugins
-    *   
+    *
     *   The PlugInModel supplies a widget showing the available plugins (libraries) with their name, filename, version and so on.
     *   In addition below each plugin its running instances are shown and if a plugin offers a configuration dialog it can be opened
-    *   using a right click on the instance and selecting "open configuration dialog" in the context menu. The tree view is 
+    *   using a right click on the instance and selecting "open configuration dialog" in the context menu. The tree view is
     *   automatically updated when a new instance is created or an existing one had been deleted.
     */
     class ADDINMGR_EXPORT PlugInModel : public QAbstractItemModel
@@ -140,6 +140,4 @@ namespace ito
 
 }; // namespace ito
 
-#endif // #if !defined(Q_MOC_RUN) || defined(ADDINMGR_DLL) 
-
-
+#endif // #if !defined(Q_MOC_RUN) || defined(ADDINMGR_DLL)

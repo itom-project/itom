@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -161,7 +161,7 @@ void ScriptEditorOrganizer::saveScriptState()
     foreach(ito::ScriptDockWidget *sdw, m_scriptDockElements)
     {
         settings.setArrayIndex(counter++);
-        
+
         if (mainWin)
         {
             settings.setValue("dockWidgetArea", mainWin->dockWidgetArea(sdw));
@@ -170,7 +170,7 @@ void ScriptEditorOrganizer::saveScriptState()
         {
             settings.setValue("dockWidgetArea", Qt::TopDockWidgetArea);
         }
-        
+
         settings.setValue("objectName", sdw->objectName());
         settings.setValue("docked", sdw->docked());
         settings.setValue("currentIndex", sdw->getCurrentIndex());
@@ -304,7 +304,7 @@ RetVal ScriptEditorOrganizer::restoreScriptState()
 
 //-------------------------------------------------------------------------------------
 QList<OutlineSelectorWidget::EditorOutline> ScriptEditorOrganizer::getAllOutlines(
-    const ScriptDockWidget *currentScriptDockWidget, 
+    const ScriptDockWidget *currentScriptDockWidget,
     int &currentIndex) const
 {
 
@@ -316,7 +316,7 @@ QList<OutlineSelectorWidget::EditorOutline> ScriptEditorOrganizer::getAllOutline
     foreach(const ScriptDockWidget* sdw, m_scriptDockElements)
     {
         outlines << sdw->getAllOutlines(tempActiveIndex);
-        
+
         if (sdw == currentScriptDockWidget)
         {
             currentIndex = count + tempActiveIndex;
@@ -350,8 +350,8 @@ ScriptDockWidget* ScriptEditorOrganizer::activateOpenedScriptByFilename(
 //----------------------------------------------------------------------------------------------------------------------------------
 //! This slot is called if a file is saved or stored in any widget
 /*!
-    This function is used to manage the "last used files" list. It stores all used 
-    files in the list and keeps it up to date. If the list is longer than 10 elements, 
+    This function is used to manage the "last used files" list. It stores all used
+    files in the list and keeps it up to date. If the list is longer than 10 elements,
     the last ones are deleted.
 
     \param filename filename of a saved or loaded file is insert into the list at first position
@@ -362,7 +362,7 @@ void ScriptEditorOrganizer::fileOpenedOrSaved(const QString &filename)
     m_recentlyUsedFiles.removeDuplicates();
     const int maxNumberLastFiles = 10;
 
-    if (m_recentlyUsedFiles.size() > maxNumberLastFiles) 
+    if (m_recentlyUsedFiles.size() > maxNumberLastFiles)
     {
         while (m_recentlyUsedFiles.size() > maxNumberLastFiles)
         {
@@ -383,7 +383,7 @@ void ScriptEditorOrganizer::fileOpenedOrSaved(const QString &filename)
 ScriptDockWidget* ScriptEditorOrganizer::createEmptyScriptDock(bool docked, Qt::DockWidgetArea area /*=Qt::TopDockWidgetArea*/, const QString &objectName /*= QString()*/)
 {
     ScriptDockWidget* newWidget;
-    
+
     //QWidget *mainWin = qobject_cast<QWidget*>(AppManagement::getMainWindow());
 
     docked = docked && m_dockAvailable;
@@ -392,9 +392,9 @@ ScriptDockWidget* ScriptEditorOrganizer::createEmptyScriptDock(bool docked, Qt::
         docked = false;
     }
 
-    newWidget = new ScriptDockWidget(tr("Script Editor"), "", 
-                                    docked, m_dockAvailable, 
-                                    m_commonScriptEditorActions, m_pBookmarkModel, 
+    newWidget = new ScriptDockWidget(tr("Script Editor"), "",
+                                    docked, m_dockAvailable,
+                                    m_commonScriptEditorActions, m_pBookmarkModel,
                                     NULL /*mainWin*/); //parent will be set later by addScriptDockWidgetToMainWindow signal
 
     connect(newWidget, SIGNAL(addGoBackNavigationItem(GoBackNavigationItem)), this, SLOT(onAddGoBackNavigationItem(GoBackNavigationItem)));
@@ -420,7 +420,7 @@ ScriptDockWidget* ScriptEditorOrganizer::createEmptyScriptDock(bool docked, Qt::
         newWidget->setObjectName(objectName);
         m_usedObjectNames.insert(objectName);
     }
-    
+
     m_scriptStackMutex.lock();
     m_scriptDockElements.push_front(newWidget);
     m_scriptStackMutex.unlock();
@@ -435,7 +435,7 @@ ScriptDockWidget* ScriptEditorOrganizer::createEmptyScriptDock(bool docked, Qt::
     connect(newWidget, SIGNAL(pythonDebugFileRequest(QString)), this, SLOT(pythonDebugFileRequested(QString)));
     //!< setup signal/slot-connection to python thread
     qRegisterMetaType<ito::tPythonDbgCmd>("tPythonDbgCmd");
-    
+
     const PythonEngine *pyEngine = PythonEngine::getInstance();
     if (pyEngine)
     {
@@ -592,7 +592,7 @@ RetVal ScriptEditorOrganizer::closeAllScripts(bool saveFirst)
             retValue += (*it)->closeAllScripts(false, false);
         }
     }
-  
+
     return retValue;
 }
 
@@ -636,7 +636,7 @@ ScriptDockWidget* ScriptEditorOrganizer::getActiveDockWidget() const
 }
 
 //-------------------------------------------------------------------------------------
-//! 
+//!
 /*!
     \return ScriptDockWidget
 */
@@ -719,7 +719,7 @@ void ScriptEditorOrganizer::dockScriptTab(ScriptDockWidget* widget, int index, b
         {
             dockedWidget = createEmptyScriptDock(true);
         }
-        
+
         ScriptEditorWidget* editor = widget->removeEditor(index);
         dockedWidget->appendEditor(editor);
 
@@ -1143,10 +1143,10 @@ void ScriptEditorOrganizer::onAddGoBackNavigationItem(const GoBackNavigationItem
         m_goBackNavigationHistory = m_goBackNavigationHistory.mid(1 + size - MaxGoBackNavigationEntries, -1);
     }
 
-    m_goBackNavigationHistory.append(item); 
+    m_goBackNavigationHistory.append(item);
     m_goBackNavigationIndex = m_goBackNavigationHistory.size() - 1;
 
-    updateGoBackNavigationActions();    
+    updateGoBackNavigationActions();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1206,7 +1206,7 @@ void ScriptEditorOrganizer::mnuNavigateBackwardItem(int index)
 
             m_goBackNavigationIndex = qBound(0, m_goBackNavigationIndex, m_goBackNavigationHistory.size() - 1);
         }
-        
+
         updateGoBackNavigationActions();
     }
 }

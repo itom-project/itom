@@ -10,7 +10,7 @@
 **Devices**:    Some words about supported devices
 **Author**:     :pluginauthor:`MyActuator`
 =============== ========================================================================================================
- 
+
 Overview
 ========
 
@@ -19,8 +19,8 @@ Overview
 
 Initialization
 ==============
-  
+
 The following parameters are mandatory or optional for initializing an instance of this plugin:
-    
+
     .. plugininitparams::
         :plugin: MyActuator

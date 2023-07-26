@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
 
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
@@ -67,7 +67,7 @@ HelpViewer::HelpViewer(QWidget *parent /*= NULL*/) :
 {
 	this->setWindowTitle(tr("itom documentation"));
     m_pView = new QWebEngineView(this);
-    //m_pView->load(QUrl("http://itom.bitbucket.org"));
+    //m_pView->load(QUrl("https://github.com/itom-project"));
 	m_pFindWord = new WidgetFindWord(this);
 	m_pFindWord->setVisible(false);
 	m_pFindWord->setFindBarEnabled(true, true);
@@ -77,7 +77,7 @@ HelpViewer::HelpViewer(QWidget *parent /*= NULL*/) :
 	connect(m_pView, SIGNAL(loadFinished(bool)), this, SLOT(loadFinished(bool)));
 	connect(m_pFindWord, SIGNAL(findNext(QString, bool, bool, bool, bool, bool, bool)), this, SLOT(findNextWord(QString, bool, bool, bool, bool, bool, bool)));
 	connect(m_pFindWord, SIGNAL(hideSearchBar()), this, SLOT(hideFindWordBar()));
-	
+
 	QVBoxLayout *layoutCentral = new QVBoxLayout(NULL);
 	layoutCentral->addWidget(m_pView);
 	layoutCentral->addWidget(m_pFindWord);
@@ -95,21 +95,21 @@ HelpViewer::HelpViewer(QWidget *parent /*= NULL*/) :
 	m_pHelpEngine = new QHelpEngine("", this);
 	m_pSchemeHandler = new QtHelpUrlSchemeHandler(m_pHelpEngine, this);
 	profile->installUrlSchemeHandler("qthelp", m_pSchemeHandler);
-    
+
 	//dockWidgetContent
     QHelpContentWidget *hcw = m_pHelpEngine->contentWidget();
     QDockWidget *dockWidgetContent = new QDockWidget(tr("content"), this);
 	dockWidgetContent->setWidget(hcw);
 	addDockWidget(Qt::LeftDockWidgetArea, dockWidgetContent);
-	connect(hcw, SIGNAL(linkActivated(QUrl)), this, SLOT(linkActivated(QUrl)));	
+	connect(hcw, SIGNAL(linkActivated(QUrl)), this, SLOT(linkActivated(QUrl)));
 	connect(hcw, SIGNAL(clicked(QModelIndex)), this, SLOT(clicked(QModelIndex)));
-	connect(m_pView, SIGNAL(urlChanged(QUrl)), this, SLOT(urlChanged(QUrl)));	
+	connect(m_pView, SIGNAL(urlChanged(QUrl)), this, SLOT(urlChanged(QUrl)));
 	connect(m_pHelpEngine, SIGNAL(setupFinished()), this, SLOT(setupFinished()));
 	QHelpContentModel *hcm = m_pHelpEngine->contentModel();
 	connect(hcm, SIGNAL(contentsCreated()), this, SLOT(expandContent()));
-	
+
 	//dockWidgetIndex
-	QVBoxLayout *layoutIndex = new QVBoxLayout(this);  
+	QVBoxLayout *layoutIndex = new QVBoxLayout(this);
 	m_plineEditIndex = new QLineEdit(this);
 	connect(m_plineEditIndex, SIGNAL(textChanged(QString)), this, SLOT(textChanged(QString)));
 	connect(m_plineEditIndex, SIGNAL(returnPressed()), this, SLOT(returnPressed()));
@@ -125,10 +125,10 @@ HelpViewer::HelpViewer(QWidget *parent /*= NULL*/) :
 	indexContent->setLayout(layoutIndex);
 	dockWidgetIndex->setWidget(indexContent);
 	addDockWidget(Qt::LeftDockWidgetArea, dockWidgetIndex);
-	
+
 	//dockWidgetSearch
 	QVBoxLayout *layoutSearch = new QVBoxLayout(this);
-	QHelpSearchEngine *searchEngine = m_pHelpEngine->searchEngine(); 
+	QHelpSearchEngine *searchEngine = m_pHelpEngine->searchEngine();
 	QHelpSearchResultWidget *resultWidget = searchEngine->resultWidget();
 	QHelpSearchQueryWidget *queryWidget = searchEngine->queryWidget();
 	setFocusProxy(queryWidget);
@@ -180,7 +180,7 @@ HelpViewer::HelpViewer(QWidget *parent /*= NULL*/) :
 	QAction *zoomInAction = new QAction(QIcon(":/qt-project.org/dialogs/qprintpreviewdialog/images/zoom-in-24.png"), tr("Zoom in"), this);
 	connect(zoomInAction, SIGNAL(triggered()), this, SLOT(mnuZoomInWindow()));
 	toolbar->addAction(zoomInAction);
-	
+
 	QAction *zoomOutAction = new QAction(QIcon(":/qt-project.org/dialogs/qprintpreviewdialog/images/zoom-out-24.png"), tr("Zoom out"), this);
 	connect(zoomOutAction, SIGNAL(triggered()), this, SLOT(mnuZoomOutWindow()));
 	toolbar->addAction(zoomOutAction);
@@ -191,7 +191,7 @@ HelpViewer::HelpViewer(QWidget *parent /*= NULL*/) :
 
 	toolbar->addSeparator();
 
-	QAction *showFindWordBar = new QAction(QIcon(":/qt-project.org/styles/commonstyle/images/filecontents-32.png"), tr("Search text"), this); 
+	QAction *showFindWordBar = new QAction(QIcon(":/qt-project.org/styles/commonstyle/images/filecontents-32.png"), tr("Search text"), this);
 	connect(showFindWordBar, SIGNAL(triggered()), this, SLOT(showFindWordBar()));
 	toolbar->addAction(showFindWordBar);
 
@@ -200,16 +200,16 @@ HelpViewer::HelpViewer(QWidget *parent /*= NULL*/) :
 	toolbar->addAction(closeHelpAction);
 
 	addToolBar(toolbar);
-	
+
 	//menubar
 	QMenuBar *menuBar = new QMenuBar(this);
 
 	//filemenu
-	QMenu *fileMenu = menuBar->addMenu(tr("File"));	
+	QMenu *fileMenu = menuBar->addMenu(tr("File"));
 	fileMenu->addAction(closeHelpAction);
-	
+
 	//editmenu
-	QMenu *editMenu = menuBar->addMenu(tr("Edit"));	
+	QMenu *editMenu = menuBar->addMenu(tr("Edit"));
 	editMenu->addAction(showFindWordBar);
 
 	//viewmenu
@@ -224,10 +224,15 @@ HelpViewer::HelpViewer(QWidget *parent /*= NULL*/) :
 	goToMenu->addAction(homeAction);
 	goToMenu->addAction(m_pView->pageAction(QWebEnginePage::Back));
 	goToMenu->addAction(m_pView->pageAction(QWebEnginePage::Forward));
-	
+
 	setMenuWidget(menuBar);
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    showMaximized();
+# else
     showFullScreen();
+#endif
+
 }
 
 //----------------------------------------------------------------------------------------
@@ -245,7 +250,7 @@ void HelpViewer::clicked(const QModelIndex &index)
 	QHelpContentWidget *hcw = m_pHelpEngine->contentWidget();
 	QHelpContentItem *item = m_pHelpEngine->contentModel()->contentItemAt(index);
 	QUrl url = item->url();
-	emit linkActivated(url);	
+	emit linkActivated(url);
 }
 
 
@@ -412,7 +417,7 @@ void HelpViewer::findNextWord(QString expr, bool regExpr, bool caseSensitive, bo
 	{
 		m_pView->findText(expr, QWebEnginePage::FindBackward);
 	}
-	
+
 }
 
 //----------------------------------------------------------------------------------------
@@ -474,9 +479,9 @@ void HelpViewer::keyPressEvent(QKeyEvent *event)
 //----------------------------------------------------------------------------------------
 void HelpViewer::mousePressEvent(QMouseEvent *event)
 {
-	//works not, if the mouse is in the QWebEnginePage frame. 
+	//works not, if the mouse is in the QWebEnginePage frame.
 	int key = event->button();
-	
+
 	if (key == Qt::BackButton)
 	{
 		m_pView->back();
@@ -493,7 +498,7 @@ void HelpViewer::visibilityChangedIndexWidget(bool visible)
 {
 	if (visible)
 	{
-		m_plineEditIndex->setFocus();			
+		m_plineEditIndex->setFocus();
 	}
 }
 

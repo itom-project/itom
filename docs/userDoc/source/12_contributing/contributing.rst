@@ -6,13 +6,13 @@ of its plugins. It mainly consists of descriptions of different style guides, th
 to provide a common code representation, as well as an introduction to translations of itom or its plugins.
 
 .. note:
-    
+
     This document will be extended in the future.
 
 
 .. toctree::
     :maxdepth: 2
-   
+
     cmake_style_guide.rst
     translations.rst
     python_docstrings.rst

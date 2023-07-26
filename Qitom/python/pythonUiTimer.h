@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -30,7 +30,7 @@
 
 class QTimer; //forward declaration
 
-namespace ito 
+namespace ito
 {
 
 class TimerCallback : public QObject
@@ -54,7 +54,7 @@ class TimerCallback : public QObject
             Callable_CFunction
         };
 
-        /* If the target is a bounded method, this member holds a Python 
+        /* If the target is a bounded method, this member holds a Python
         weak reference (new ref) to the method, that acts as slot.
         m_boundedInstance is != nullptr then.
 
@@ -63,18 +63,18 @@ class TimerCallback : public QObject
         m_boundedInstance is nullptr then. */
         PyObject *m_function;
 
-        /* weak reference to the python-class instance of the 
+        /* weak reference to the python-class instance of the
         function (if the function is bounded) or nullptr if the function is unbounded*/
-        PyObject *m_boundedInstance;   
+        PyObject *m_boundedInstance;
 
         //!< type of the python callable (see CallableType)
         CallableType m_callableType;
 
         //!< new reference to a (empty) tuple with arguments passed to the callable function
-        PyObject *m_callbackArgs; 
+        PyObject *m_callbackArgs;
 
     public slots:
-        void timeout(); 
+        void timeout();
 };
 
 
@@ -84,7 +84,7 @@ public:
 
     //-------------------------------------------------------------------------------------------------
     // typedefs
-    //------------------------------------------------------------------------------------------------- 
+    //-------------------------------------------------------------------------------------------------
     typedef struct
     {
         PyObject_HEAD
@@ -95,7 +95,7 @@ public:
 
     //-------------------------------------------------------------------------------------------------
     // Timer
-    //------------------------------------------------------------------------------------------------- 
+    //-------------------------------------------------------------------------------------------------
     static void PyTimer_dealloc(PyTimer *self);
     static PyObject *PyTimer_new(PyTypeObject *type, PyObject *args, PyObject *kwds);
     static int PyTimer_init(PyTimer *self, PyObject *args, PyObject *kwds);

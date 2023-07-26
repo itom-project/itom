@@ -1,11 +1,11 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2023, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -24,9 +24,11 @@
 
 #include "../global.h"
 #include "../AppManagement.h"
-#include <qmenu.h>
+#include "../helper/IOHelper.h"
 
+#include <qmenu.h>
 #include <qsettings.h>
+#include <qstringlist.h>
 
 namespace ito
 {
@@ -38,6 +40,14 @@ WidgetPropEditorGeneral::WidgetPropEditorGeneral(QWidget *parent) :
     ui.setupUi(this);
 
     ui.groupEolMode->setVisible(false);
+
+    // file available text codecs
+    auto codecs = IOHelper::getSupportedScriptEncodings();
+
+    foreach(const IOHelper::CharsetEncodingItem &item, codecs)
+    {
+        ui.comboEncoding->addItem(item.displayName, item.encodingName);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -65,7 +75,7 @@ void WidgetPropEditorGeneral::readSettings()
     //ui.radioFoldingSquares->setChecked(foldStyle == "squares");
     //ui.radioFoldingSquaresTree->setChecked(foldStyle == "squares_tree");
     //ui.radioFoldingNone->setChecked(foldStyle == "none");
-    
+
     // Indentation
     ui.checkAutoIndent->setChecked(settings.value("autoIndent", true).toBool());
     ui.checkIndentUseTabs->setChecked(settings.value("indentationUseTabs", false).toBool());
@@ -80,16 +90,31 @@ void WidgetPropEditorGeneral::readSettings()
     ui.checkSelectLineOnCopyEmpty->setChecked(settings.value("selectLineOnCopyEmpty", true).toBool());
     ui.checkKeepIndentationOnPaste->setChecked(settings.value("keepIndentationOnPaste", true).toBool());
 
+    // encoding
+    auto defaultEncodingItem = IOHelper::getDefaultScriptEncoding();
+    QString encoding = settings.value("characterSetEncoding", defaultEncodingItem.encodingName).toString();
+    auto encodingItem = IOHelper::getEncodingFromAlias(encoding, nullptr);
+    int idx = ui.comboEncoding->findData(encodingItem.encodingName, Qt::UserRole);
+
+    if (idx == -1)
+    {
+        idx = ui.comboEncoding->findData(defaultEncodingItem.encodingName, Qt::UserRole);
+    }
+
+    ui.comboEncoding->setCurrentIndex(idx);
+
+    ui.checkAutoDetectEncoding->setChecked(settings.value("characterSetEncodingAutoGuess", true).toBool());
+
     settings.endGroup();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropEditorGeneral::writeSettings()
 {
-    
+
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("CodeEditor");
-    
+
     // EOL-Mode
     if (ui.radioEOL1->isChecked())
     {
@@ -104,7 +129,7 @@ void WidgetPropEditorGeneral::writeSettings()
         settings.setValue("eolMode", "EolMac");
     }
 
-    // Indentation
+    // indentation
     settings.setValue("autoIndent", ui.checkAutoIndent->isChecked());
     settings.setValue("indentationUseTabs", ui.checkIndentUseTabs->isChecked());
     settings.setValue("indentationWidth", ui.spinIndentWidth->value());
@@ -113,12 +138,18 @@ void WidgetPropEditorGeneral::writeSettings()
 
     settings.setValue("autoStripTrailingSpacesAfterReturn", ui.checkStripSpacesAfterReturn->isChecked());
 
-    //cut, copy, paste behaviour
+    // cut, copy, paste behaviour
     settings.setValue("selectLineOnCopyEmpty", ui.checkSelectLineOnCopyEmpty->isChecked());
     settings.setValue("keepIndentationOnPaste", ui.checkKeepIndentationOnPaste->isChecked());
+
+    // character set encoding
+    QString encoding = ui.comboEncoding->currentData(Qt::UserRole).toString();
+    auto encodingItem = IOHelper::getEncodingFromAlias(encoding, nullptr);
+    settings.setValue("characterSetEncoding", encodingItem.encodingName);
+
+    settings.setValue("characterSetEncodingAutoGuess", ui.checkAutoDetectEncoding->isChecked());
 
     settings.endGroup();
 }
 
 } //end namespace ito
-

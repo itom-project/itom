@@ -2,7 +2,7 @@
 //
 // This code is part of the Sample Application to demonstrate the use of the QPropertyEditor library.
 // It is distributed as public domain and can be modified and used by you without any limitations.
-// 
+//
 // Your feedback is welcome!
 //
 // Author: Volker Wiendl
@@ -43,13 +43,13 @@ void Vec3fProperty::setValue(const QVariant& value)
 {
     if (value.type() == QVariant::String)
     {
-        QString v = value.toString();                
+        QString v = value.toString();
         QRegExp rx("([+-]?([0-9]*[\\.,])?[0-9]+(e[+-]?[0-9]+)?)");
         rx.setCaseSensitivity(Qt::CaseInsensitive);
         int count = 0;
         int pos = 0;
         float x = 0.0f, y = 0.0f, z = 0.0f;
-        while ((pos = rx.indexIn(v, pos)) != -1) 
+        while ((pos = rx.indexIn(v, pos)) != -1)
         {
             if (count == 0)
                 x = rx.cap(1).toDouble();
@@ -114,10 +114,10 @@ QString Vec3fProperty::parseHints(const QString& hints, const QChar component )
     rx.setMinimal(true);
     int pos = 0;
     QString componentHints;
-    while ((pos = rx.indexIn(hints, pos)) != -1) 
+    while ((pos = rx.indexIn(hints, pos)) != -1)
     {
         // cut off additional front settings (TODO create correct RegExp for that)
-        if (rx.cap(1).lastIndexOf(';') != -1)            
+        if (rx.cap(1).lastIndexOf(';') != -1)
             componentHints += QString("%1=%2;").arg(rx.cap(1).remove(0, rx.cap(1).lastIndexOf(';')+1)).arg(rx.cap(4));
         else
             componentHints += QString("%1=%2;").arg(rx.cap(1)).arg(rx.cap(4));

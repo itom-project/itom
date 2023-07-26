@@ -1,7 +1,7 @@
 """1D Legend title
 ======================
 
-This demo shows how to define ``dataObject`` tags, which are used 
+This demo shows how to define ``dataObject`` tags, which are used
 as ``legendTitles`` in the 1D plot. You have to set the tags ``legendTitle0``
 ``legendTitle1``, ``legendTitle2``, ..., according to the curve index and
 the legend label text. """

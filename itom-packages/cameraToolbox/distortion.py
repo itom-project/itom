@@ -9,11 +9,11 @@ import warnings
 #######################################################
 def getPointGrid(shape, pitch, center, rotation=0, repr="2d"):
     """creates a dataObject with coordinates of points on a regular grid.
-    
+
     Returns a [m,n,2] array if repr is '3d', else a [m*n,2] array
     with the coordinates, where the last dimensions contains the x- and y-coordinate
     of each point respectively.
-    
+
     * shape = (num_rows, num_cols)
     * pitch = pixels between each point in one row or column (pitchX, pitchY)
     * center = (centerX, centerY)
@@ -40,20 +40,20 @@ def getPointGridDistorted(
     shape, pitch, center, rotation=0, k1=0, k2=0, k3=0, repr="2d"
 ):
     """creates a dataObject with coordinates of distorted points on a regular grid.
-    
+
     Returns a [m,n,2] array if repr is '3d', else a [m*n,2] array
     with the coordinates, where the last dimensions contains the x- and y-coordinate
     of each point respectively.
-    
+
     The relationship between undistorted coordinates (x_u, y_u)
     and their distorted correspondences (x_d, y_d) are given
     by OpenCV:
-    
+
     x_u = x_d * (1 + k1 * r^2 + k2 * r^4 + k3 * r^6)
     y_u = y_d * (1 + k1 * r^2 + k2 * r^4 + k3 * r^6)
-    
+
     where r = sqrt((x_u - center[0])^2 + (y_u - center[1])^2).
-    
+
     * shape = (num_rows, num_cols)
     * pitch = pixels between each point in one row or column
     * center = (centerX, centerY)
@@ -82,11 +82,11 @@ def getPointGridDistorted(
 #######################################################
 def getPointGridRotated(shape, pitch, center, rotation=0, repr="2d"):
     """creates a dataObject with coordinates of shifted, scaled and rotated points on a regular grid.
-    
+
     Returns a [m,n,2] array if repr is '3d', else a [m*n,2] array
     with the coordinates, where the last dimensions contains the x- and y-coordinate
     of each point respectively.
-    
+
     * shape = (num_rows, num_cols)
     * pitch = pixels between each point in one row or column (pitchX, pitchY)
     * center = (centerX, centerY)
@@ -114,19 +114,19 @@ def getPointGridRotated(shape, pitch, center, rotation=0, repr="2d"):
 def undistortPointGrid(pointsDistorted, rows, cols, coeffs, repr="2d"):
     """
     Undistort point coordinates based on the given coefficients 'coeffs'.
-    
+
     This method does not de-rotate or shift the points, but only correct
     the distortion. The relationship between distorted (x_d, y_d) and
     undistorted points (x_u, y_u) is given by the following equation (based on OpenCV
     definition):
-    
+
     x_d = x_u * (1 + k1 * r^2 + k2 * r^4 + k3 * r^6)
     y_d = y_u * (1 + k1 * r^2 + k2 * r^4 + k3 * r^6)
-    
+
     The radius is hereby
-    
+
     r = sqrt((x_u - centerX)^2 + (y_u - centerY)^2).
-    
+
     In order to solve for x_u and y_u, the undistortion is calculated by
     an iterative approach where the radius is estimated based on the
     distorted coordinates and then approaches the real value (see OpenCV:: cvUndistortPoints)
@@ -192,12 +192,12 @@ def undistortPointGrid(pointsDistorted, rows, cols, coeffs, repr="2d"):
 def drawPointGrid(points, rows, cols, canvas=None, scale=1.0):
     """draw the point coordinates in a given canvas (or a newly created canvas if
     canvas == None) using the OpenCV method 'cvDrawChessboardCorners'
-    
+
     * points must be a [m,n,2] or [m*n,2] dataObject
     * rows = m
     * cols = n
     * canvas: rgba32 dataObject or None if a new canvas should be created
-    
+
     Returns the given or newly created canvas as dataObject (type: rgba32)
     """
     if points.ndim == 3:
@@ -268,7 +268,7 @@ def createDistortionMap(coeffs, points, rows, cols):
 #######################################################
 def getMeanDistance(x1, y1, x2, y2):
     """returns the mean distance between all corresponding points.
-    
+
     Each pair of points is given by its (x1,y1) and (x2,y2) value.
     """
     return np.nanmean(np.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2))
@@ -279,7 +279,7 @@ def meritFitGrid(params, xe, ye):
     """merit function for minimize-function that calculates the
     current mean distance between the given grid of points (xe,ye)
     and the calculated one based on the current set of parameters.
-    
+
     This implementation does not consider any distortion, but the rotation.
     """
     pitchX, pitchY, centerX, centerY, rotation = params
@@ -296,7 +296,7 @@ def meritFitGridDistortion(params, xe, ye):
     """merit function for minimize-function that calculates the
     current mean distance between the given grid of points (xe,ye)
     and the calculated one based on the current set of parameters.
-    
+
     This implementation considers shift, scaling and distortion (no rotation).
     """
     pitchX, pitchY, centerX, centerY, k1, k2, k3 = params
@@ -313,7 +313,7 @@ def meritFitGridDistortionRotation(params, xe, ye):
     """merit function for minimize-function that calculates the
     current mean distance between the given grid of points (xe,ye)
     and the calculated one based on the current set of parameters.
-    
+
     This implementation considers shift, scaling, rotation and distortion.
     """
     pitchX, pitchY, centerX, centerY, rotation, k1, k2, k3 = params
@@ -330,7 +330,7 @@ def meritFitGridRotation(params, xe, ye):
     """merit function for minimize-function that calculates the
     current mean distance between the given grid of points (xe,ye)
     and the calculated one based on the current set of parameters.
-    
+
     This implementation considers only shift, scaling and rotation.
     """
     pitchX, pitchY, centerX, centerY, rotation = params
@@ -396,7 +396,7 @@ def guessInitialParameters(
     pointGrid, rows, cols, withDistortion=False, withRotation=True
 ):
     """gives an initial guess for the optimization parameters:
-    
+
     withDistortion == False, withRotation == False:
         x0 = [grid-pitch, centerX, centerY]
     withDistortion == False, withRotation == True:
@@ -443,7 +443,7 @@ def fitGrid(
     """
     main function to start the fit for a regular or distorted grid of points to the
     given set of distorted points.
-    
+
     Parameters
     -------------
     * distortedPointGrid : dataObject, np.array:
@@ -457,7 +457,7 @@ def fitGrid(
         are estimated using the method 'guessInitialParameters'.
     * withDistortion : bool
         defines if radial distortion coefficients should be optimized, too
-    
+
     Returns
     --------
     * list of coefficients:

@@ -6,6 +6,3 @@ Prompting and passing
 ======================
 .. moduleauthor:: PSchau
 .. sectionauthor:: PSchau
-
-
-

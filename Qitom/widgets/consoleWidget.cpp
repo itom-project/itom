@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -142,7 +142,7 @@ ConsoleWidget::~ConsoleWidget()
     settings->beginGroup("ConsoleDequeCommandList");
     settings->beginWriteArray("LastCommandList");
     int i = 0;
-    QString cmd = m_pCmdList->getPrevious(); 
+    QString cmd = m_pCmdList->getPrevious();
     while (cmd != "")
     {
         settings->setArrayIndex(i);
@@ -203,20 +203,20 @@ void ConsoleWidget::loadSettings()
 
     switch (wrapMode)
     {
-        case 0: 
-            setLineWrapMode(QPlainTextEdit::NoWrap); 
+        case 0:
+            setLineWrapMode(QPlainTextEdit::NoWrap);
             break;
-        case 1: 
-            setLineWrapMode(QPlainTextEdit::WidgetWidth); 
+        case 1:
+            setLineWrapMode(QPlainTextEdit::WidgetWidth);
             setWordWrapMode(QTextOption::WrapAtWordBoundaryOrAnywhere);
             break;
-        case 2: 
-            setLineWrapMode(QPlainTextEdit::WidgetWidth); 
+        case 2:
+            setLineWrapMode(QPlainTextEdit::WidgetWidth);
             setWordWrapMode(QTextOption::WrapAnywhere);
             break;
     };
 
-    
+
     m_splitLongLines = settings.value("SplitLongLines", true).toBool();
     m_splitLongLinesMaxLength = qMax(10, settings.value("SplitLongLinesMaxLength", 200).toInt());
 
@@ -510,7 +510,7 @@ bool ConsoleWidget::keyPressInternalEvent(QKeyEvent *event)
             acceptEvent = true;
             forwardEvent = true;
             break;
-        
+
         // clears the current input or interrupts an input
         case Qt::Key_Escape:
             //todo
@@ -550,7 +550,7 @@ bool ConsoleWidget::keyPressInternalEvent(QKeyEvent *event)
                 forwardEvent = true;
             }
             break;
-        
+
         case Qt::Key_Home: //Pos1
             getCursorPosition(&lineFrom, &indexFrom);
 
@@ -618,7 +618,8 @@ bool ConsoleWidget::keyPressInternalEvent(QKeyEvent *event)
                         texts.append(lineText(i));
                     }
 
-                    QByteArray ba = texts.join("").toLatin1().data();
+                    QByteArray ba = texts.join("").toUtf8().data();
+
                     if (m_inputStreamBuffer->size() == 0)
                     {
                         *m_inputStreamBuffer = ba;
@@ -1163,9 +1164,9 @@ RetVal ConsoleWidget::execCommand(int beginLine, int endLine)
         QStringList temp;
         QByteArray encoding;
         singleLine = buffer.join("\n");
-        
+
         //clc command will be accepted and parsed as single command -> this leads to our desired behaviour
-        QList<int> lines = pyEng->parseAndSplitCommandInMainComponents(singleLine, encoding); 
+        QList<int> lines = pyEng->parseAndSplitCommandInMainComponents(singleLine, encoding);
 
         //if lines is empty, a syntax error occurred in the file and the python error indicator is set.
         //This will be checked in subsequent call of run-string or debug-string method.
@@ -1187,7 +1188,7 @@ RetVal ConsoleWidget::execCommand(int beginLine, int endLine)
             {
                 temp = buffer.mid(lines[i] - 1, lines[i + 1] - lines[i]);
 
-                // remove empty (besides whitechars) lines at the end of each block, 
+                // remove empty (besides whitechars) lines at the end of each block,
                 // else an error can occur if the block is indented
                 while (temp.size() > 1)
                 {
@@ -1301,7 +1302,7 @@ void ConsoleWidget::receiveStream(QString text, ito::tStreamMessageType msgType)
 //-------------------------------------------------------------------------------------
 void ConsoleWidget::processStreamBuffer()
 {
-    
+
     if (m_receiveStreamBuffer.text == "")
     {
         return;
@@ -1318,7 +1319,7 @@ void ConsoleWidget::processStreamBuffer()
         int lineStartPos = 0;
         int prevPos;
         QString substr;
-   
+
         foreach(const QString &t, splits)
         {
             if (t.size() > m_splitLongLinesMaxLength)
@@ -1526,7 +1527,7 @@ void ConsoleWidget::dropEvent(QDropEvent * event)
                 {
                     break;
                 }
-            }   
+            }
         }
     }
     else
@@ -1541,7 +1542,7 @@ void ConsoleWidget::dropEvent(QDropEvent * event)
             //!< check, that selections are only in valid area
             getSelection(&lineFrom, &indexFrom, &lineTo, &indexTo);
 
-            if ((lineFrom < m_startLineBeginCmd || 
+            if ((lineFrom < m_startLineBeginCmd ||
                 (lineFrom == m_startLineBeginCmd && indexFrom < ConsoleWidget::newCommandPrefix.size())))
             {
                 event->setDropAction(Qt::CopyAction);
@@ -1551,7 +1552,7 @@ void ConsoleWidget::dropEvent(QDropEvent * event)
 
         CodeEditor::dropEvent(event);
     }
-    
+
     setFocus();
 }
 
@@ -1620,7 +1621,7 @@ void ConsoleWidget::dragMoveEvent(QDragMoveEvent * event)
 
             bool dragFromConsole = (event->source() == this) || (event->source() && event->source()->parent() == this);
 
-            if (dragFromConsole && (lineFrom < m_startLineBeginCmd || 
+            if (dragFromConsole && (lineFrom < m_startLineBeginCmd ||
                 (lineFrom == m_startLineBeginCmd && indexFrom < ConsoleWidget::newCommandPrefix.size())))
             {
                 //turn a move action into a copy action if parts of the read-only section should be dragged.
@@ -1894,7 +1895,7 @@ void ConsoleWidget::autoLineDelete()
 	if (lineCount() > cutoffLine)
 	{
 		setSelection(0, 0, removeLines, lineLength(removeLines));
-		removeSelectedText();	
+		removeSelectedText();
 
         //adapt lines numbers of items in execution queue
         std::queue<CmdQueueItem> newQueue;

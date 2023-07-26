@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -84,22 +84,22 @@ namespace ito {
     * This enumeration is deprecated and will be removed in future versions. It is currently unused. Don't use it again.
     */
     enum tMsgType
-    { 
-        msgReturnInfo, 
-        msgReturnWarning, 
-        msgReturnError, 
+    {
+        msgReturnInfo,
+        msgReturnWarning,
+        msgReturnError,
         msgTextInfo,
-        msgTextWarning, 
+        msgTextWarning,
         msgTextError
     };
 
 
     enum tPythonDbgCmd
-    { 
-        pyDbgNone=0, 
-        pyDbgContinue=1, 
-        pyDbgStep=2, 
-        pyDbgStepOut=4, 
+    {
+        pyDbgNone=0,
+        pyDbgContinue=1,
+        pyDbgStep=2,
+        pyDbgStepOut=4,
         pyDbgStepOver=8,
         pyDbgQuit=16
     };

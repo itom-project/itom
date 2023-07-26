@@ -11,12 +11,12 @@ Message boxes
 =================================
 
 There are three types of message boxes that you can show via a script command. These are divided into the four types **Information**, **Warning**,
-**Question** and **Critical**. 
+**Question** and **Critical**.
 
 .. figure:: images/messageBoxes.png
     :align: center
     :scale: 100%
-    
+
     Appearance of the different message boxes on a Windows 7 operating system. From left to right: *Information*, *Warning*, *Question*, *Critical*
 
 The corresponding commands are the following static methods in the class :py:class:`~itom.ui`:
@@ -29,7 +29,7 @@ The corresponding commands are the following static methods in the class :py:cla
 All these methods have the same syntax:
 
 .. code-block:: python
-    
+
     (button,buttonText) = msgInformation(title, text [,buttons, defaultButton, parent])
 
 The parameters *title* and *text* are the strings for the titlebar and the content area of the message box respectively. The other three parameters
@@ -68,7 +68,7 @@ The return value is a tuple containing two values. The first is the value of the
 An example for a question message box is:
 
 .. code-block:: python
-    
+
     (btn,btnText) = ui.msgQuestion("Silly question","Do you like itom?", \
         ui.MsgBoxYes | ui.MsgBoxNo, ui.MsgBoxYes)
     print("The user pressed the button", btnText, "with ID",btn)
@@ -86,7 +86,7 @@ Integer input box
 Use :py:meth:`~itom.ui.getInt` in order to ask the user for a fixed-point number:
 
 .. code-block:: python
-    
+
     (value, accepted) = ui.getInt(title, label, defaultValue, min, max, step=1)
 
 .. figure:: images/getInt.png
@@ -103,7 +103,7 @@ Double input box
 Use :py:meth:`~itom.ui.getDouble` in order to ask the user for a double-precision floating-point number:
 
 .. code-block:: python
-    
+
     (value, accepted) = ui.getDouble(title, label, defaultValue, min, max, decimals=1)
 
 .. figure:: images/getDouble.png
@@ -120,7 +120,7 @@ Text input box
 Use :py:meth:`~itom.ui.getText` in order to ask the user for a string:
 
 .. code-block:: python
-    
+
     (value, accepted) = ui.getText(title, label, defaultValue)
 
 .. figure:: images/getText.png
@@ -135,7 +135,7 @@ Option selection dialog
 Use :py:meth:`~itom.ui.getItem` in order to let the user select an item from a given list of items:
 
 .. code-block:: python
-    
+
     (value, accepted) = ui.getItem(title, label, stringList [,currentIndex=0, editable=False])
 
 .. figure:: images/getItem.png
@@ -159,7 +159,7 @@ Indicate existing directory
 The dialog is wrapped by the static method :py:meth:`~itom.ui.getExistingDirectory`:
 
 .. code-block:: python
-    
+
     ret = ui.getExistingDirectory(caption, startDirectory [, options = 1, parent])
 
 .. figure:: images/selectDirectory.png
@@ -171,7 +171,7 @@ The parameters are as follows:
 * **caption** is the title of the dialog
 * **startDirectory** is a string containing an absolute path to the default directory
 * **options** is an optional or-combination of one of the following options:
-    
+
     | 1. ShowDirsOnly [default], only directories are shown in the dialog
     | 2. DontResolveSymlinks, if indicated symbolic links are not shown
     | other values can be taken from the Qt-enumeration **QFileDialog::Option**
@@ -186,14 +186,14 @@ Use the static method :py:meth:`~itom.ui.getOpenFileName` to show this dialog. B
 any directory. This is usually taken for opening files.
 
 .. code-block:: python
-    
+
     ret = ui.getOpenFileName([caption="",startDirectory="",filters="", \
         selectedFilterIndex=0,options=0,parent])
 
 The title of the dialog can be assigned by the parameter *caption*. You can choose a default directory by the string *startDirectory*. If this is not
 given or empty, the current working directory is taken. The possible file filters are set by the string **filters**. This is a double-semicolon
 separated list of entries. An example is::
-    
+
     Images(*.png *.jpg)
     Text Files (*.txt);;Itom Data Collection (*.idc);;Scripts (*.py *.pyc)
 
@@ -212,7 +212,7 @@ SaveFileName-Dialog
 Use the static method :py:meth:`~itom.ui.getSaveFileName` to show a dialog, where the user can select a new filename or an existing file in any directory. This is usually taken for saving files.
 
 .. code-block:: python
-    
+
     ret = ui.getSaveFileName([caption, startDirectory="",filters="", \
         selectedFilterIndex=0,options=0,parent])
 
@@ -223,6 +223,3 @@ The parameters are the same than for the open-file-dialog above. However for opt
 * 0x40, HideNameFilterDetails. This only shows the names of the filters, but not the pattern mask.
 
 For combining different options, use the or-operator **|**.
-
-
-

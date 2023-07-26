@@ -1,6 +1,6 @@
 /* ********************************************************************
     Template for an algorithm plugin for the software itom
-    
+
     You can use this template, use it in your plugins, modify it,
     copy it and distribute it without any license restrictions.
 *********************************************************************** */
@@ -59,7 +59,7 @@ Put a detailed description about what the plugin is doing, what is needed to get
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Destructor of Interface Class.
 /*!
-    
+
 */
 AlgoPluginInterface::~AlgoPluginInterface()
 {
@@ -86,7 +86,7 @@ ito::RetVal AlgoPlugin::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<i
 {
     ito::RetVal retval = ito::retOk;
     FilterDef *filter = NULL;
-    
+
     //register each algorithm with the following code snippet
     filter = new FilterDef(AlgoPlugin::algo1, AlgoPlugin::algo1Params, tr(algo1doc));
     m_filterList.insert("algo1Name", filter);
@@ -127,10 +127,10 @@ ito::RetVal AlgoPlugin::algo1Params(QVector<ito::Param> *paramsMand, QVector<ito
 
     paramsMand->clear();
     paramsMand->append( ito::Param("mandParam1", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("description").toLatin1().data()));
-    
+
     paramsOpt->clear();
     paramsOpt->append( ito::Param("optParam1", ito::ParamBase::String | ito::ParamBase::In, "default", tr("description").toLatin1().data()));
-    
+
     paramsOut->append( ito::Param("outParam1", ito::ParamBase::Double | ito::ParamBase::Out, 0.0, ito::DoubleMeta::all(), tr("description").toLatin1().data()));
 
     return retval;
@@ -140,11 +140,11 @@ ito::RetVal AlgoPlugin::algo1Params(QVector<ito::Param> *paramsMand, QVector<ito
 ito::RetVal AlgoPlugin::algo1(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval = ito::retOk;
-    
+
     ito::DataObject *dObj = paramsMand->at(0).getVal<ito::DataObject*>();
     QString str = paramsOpt->at(0).getVal<char*>();
-    
+
     (*paramsOut)[0].setVal<double>(1.0);
-    
+
     return retval;
 }

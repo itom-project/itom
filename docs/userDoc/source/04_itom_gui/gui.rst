@@ -9,11 +9,10 @@ This chapter describes the main functionalities, windows and dialogs that are pr
 
 .. toctree::
    :maxdepth: 2
-   
+
    mainWindow.rst
    editor.rst
    propertyDialog.rst
    userManagement.rst
    pipManager.rst
    timerManager.rst
-   

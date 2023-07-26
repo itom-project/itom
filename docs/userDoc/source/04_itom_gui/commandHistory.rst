@@ -9,8 +9,8 @@ Command History
     :scale: 100%
     :align: center
 
-If the command history option is enabled in the properties of |itom|, every script command that is executed via the command line, 
-is chronologically saved in the command history toolbox. Depending on the properties, all entries can also be grouped by the day 
+If the command history option is enabled in the properties of |itom|, every script command that is executed via the command line,
+is chronologically saved in the command history toolbox. Depending on the properties, all entries can also be grouped by the day
 of their execution. There is a limit of saved commands (default: 100), such that older commands are automatically deleted from
 the toolbox if the maximum number of commands is reached. At shutdown of |itom| the current list of commands is saved and reloaded
 at the next startup.
@@ -24,6 +24,6 @@ It is possible to drag&drop one or multiple commands from the history to either 
 multiple commands, use either the shift-key (adjacent commands) or the ctrl-key for selecting single commands.
 
 .. note::
-    
+
     When dropping one or multiple commands onto the command line, they are not directly executed. Therefore press the return key in order
     to start the execution.

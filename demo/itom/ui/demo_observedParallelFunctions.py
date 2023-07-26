@@ -2,7 +2,7 @@
 =============================
 
 This demo shows how to use a customized progressObserver to observer and
-possibly cancel multiple 'complex' function calls, that are executed in 
+possibly cancel multiple 'complex' function calls, that are executed in
 parallel in four different background threads.
 
 Each single function call has its own progressObserver (member observer of class
@@ -11,7 +11,7 @@ the total state of all coomplex functions call (each lasting for 10 seconds).
 
 In this demo script, we do not only use the pre-defined possibilities of
 the class ``itom.progressObserver`` to show the current progress value and
-text in a given ``itom.uiItem`` of the GUI, but we use the 
+text in a given ``itom.uiItem`` of the GUI, but we use the
 ``itom.progressObserver.connect`` method to connect different callable python
 methods to signals of the progressObserver such that customized actions
 can be done.
@@ -99,17 +99,17 @@ class FunctionCall:
 
     def cancel(self):
         """Method to request a cancellation of the algorithm call as public interface.
-        
+
         This method is usually called if the global abort button is clicked."""
         self.observer.requestCancellation()
 
     def run(self):
         """Run method, executed in a thread.
-        
+
         This method mainly starts the itom algorithm ``demoCancellationFunction``
         and passes the local observer to this function. If this observer should
         be requested to cancel, the algorithm will return with a RuntimeError.
-        
+
         This exception is handled. At the end, the contribution to the global
         progress of this function is set to the maximum of 25% (Even in the case
         of a cancellation).
@@ -153,7 +153,7 @@ class FunctionCall:
 
     def on_progressText_changed(self, text):
         """Callback if the local observer reports a new progress text.
-        
+
         Hint: it makes no real sense to change the toolTip. It is just an example."""
         self.label["toolTip"] = text
 

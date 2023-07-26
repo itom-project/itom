@@ -1,6 +1,6 @@
 /* ********************************************************************
     Template for a camera / grabber plugin for the software itom
-    
+
     You can use this template, use it in your plugins, modify it,
     copy it and distribute it without any license restrictions.
 *********************************************************************** */
@@ -14,7 +14,7 @@
 
 //----------------------------------------------------------------------------------------------------------------------------------
  /**
-  *\class    MyGrabberInterface 
+  *\class    MyGrabberInterface
   *
   *\brief    Interface-Class for MyGrabber-Class
   *
@@ -52,20 +52,20 @@ class MyGrabber : public ito::AddInGrabber
         ~MyGrabber();
         //! Constructor
         MyGrabber();
-        
+
         ito::RetVal retrieveData(ito::DataObject *externalDataObject = NULL); /*!< Wait for acquired picture */
-        
+
     public:
         friend class MyGrabberInterface;
         const ito::RetVal showConfDialog(void);
         int hasConfDialog(void) { return 1; }; //!< indicates that this plugin has got a configuration dialog
-        
+
         char* bufferPtr; //this can be a pointer holding the image array from the camera. This buffer is then copied to the dataObject m_data (defined in AddInGrabber)
 
     private:
         bool m_isgrabbing; /*!< Check if acquire was executed */
 
-        
+
     public slots:
         //!< Get Camera-Parameter
         ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond);
@@ -86,7 +86,7 @@ class MyGrabber : public ito::AddInGrabber
         ito::RetVal getVal(void *vpdObj, ItomSharedSemaphore *waitCond);
 
         ito::RetVal copyVal(void *vpdObj, ItomSharedSemaphore *waitCond);
-        
+
         //checkData usually need not to be overwritten (see comments in source code)
         //ito::RetVal checkData(ito::DataObject *externalDataObject = NULL);
 

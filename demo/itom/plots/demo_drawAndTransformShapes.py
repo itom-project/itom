@@ -98,7 +98,7 @@ for rotated_shape in rotated_shapes:
 all_shapes += rotated_translated_shapes
 
 ###############################################################################
-# Display all shapes on the plot figure. 
+# Display all shapes on the plot figure.
 h["geometricShapes"] = all_shapes
 
 # create a mask object (uint8, masked pixels are set to 255, the rest is 0) from all shapes

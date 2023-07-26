@@ -63,7 +63,7 @@ void BrushCreatorDialog::setBrush(const QBrush &brush)
 void BrushCreatorDialog::setShowAlphaChannel(bool showAlphaChannel)
 {
     ColorPickerButton::ColorDialogOptions options = ui.colorBtn->dialogOptions();
-    
+
     if (showAlphaChannel)
     {
         options |= ColorPickerButton::ShowAlphaChannel;

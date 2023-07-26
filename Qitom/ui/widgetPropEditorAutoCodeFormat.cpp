@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -37,7 +37,7 @@ WidgetPropEditorAutoCodeFormat::WidgetPropEditorAutoCodeFormat(QWidget *parent) 
 {
     ui.setupUi(this);
 
-    m_demoCode = "#comment\nif True:\n  print('test')\n  abc=[1,2,3]";
+    m_demoCode = "import libB\nimport libA\n#comment\nif True:\n  print('test')\n  abc=[1,2,3]";
 }
 
 //-------------------------------------------------------------------------------------
@@ -59,6 +59,14 @@ void WidgetPropEditorAutoCodeFormat::readSettings()
         settings.value("autoCodeFormatCmd", "black --line-length 88 --quiet -").toString()
     );
 
+    ui.txtPreCmd->setText(
+        settings.value("autoCodeFormatImportsSortCmd", "isort --py 3 --profile black").toString()
+    );
+
+    ui.groupImportsSorting->setChecked(
+        settings.value("autoCodeFormatEnableImportsSort", false).toBool()
+    );
+
     settings.endGroup();
 }
 
@@ -67,9 +75,11 @@ void WidgetPropEditorAutoCodeFormat::writeSettings()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("CodeEditor");
-    
+
     settings.setValue("autoCodeFormatEnabled", ui.groupAutoCodeFormat->isChecked());
     settings.setValue("autoCodeFormatCmd", ui.txtCmd->toPlainText());
+    settings.setValue("autoCodeFormatImportsSortCmd", ui.txtPreCmd->text());
+    settings.setValue("autoCodeFormatEnableImportsSort", ui.groupImportsSorting->isChecked());
 
     settings.endGroup();
 }
@@ -84,14 +94,22 @@ void WidgetPropEditorAutoCodeFormat::writeSettings()
 void WidgetPropEditorAutoCodeFormat::on_btnTest_clicked()
 {
     m_pyCodeFormatter = QSharedPointer<PyCodeFormatter>(
-        new PyCodeFormatter(this), 
+        new PyCodeFormatter(this),
         WidgetPropEditorAutoCodeFormat::deleteLater
     );
 
     connect(m_pyCodeFormatter.data(), &PyCodeFormatter::formattingDone,
         this, &WidgetPropEditorAutoCodeFormat::testCodeFormatterDone);
-    ito::RetVal retval = m_pyCodeFormatter->startFormatting(
-        ui.txtCmd->toPlainText(), m_demoCode, this);
+
+    QString importSortCmd = "";
+
+    if (ui.groupImportsSorting->isChecked())
+    {
+        importSortCmd = ui.txtPreCmd->text();
+    }
+
+    ito::RetVal retval = m_pyCodeFormatter->startSortingAndFormatting(
+        importSortCmd, ui.txtCmd->toPlainText(), m_demoCode, this);
 
     if (retval.containsError())
     {
@@ -129,8 +147,8 @@ void WidgetPropEditorAutoCodeFormat::testCodeFormatterDone(bool success, QString
         }
 
         QMessageBox::information(
-            this, 
-            tr("Successful test"), 
+            this,
+            tr("Successful test"),
             tr("The test python code\n\n%1\n\nhas been successful formatted to\n\n%2")
             .arg(codeIn.join("\n"))
             .arg(codeOut.join("\n")));

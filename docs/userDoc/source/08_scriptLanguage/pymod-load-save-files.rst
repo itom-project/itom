@@ -16,16 +16,16 @@ The following formats are natively supported:
 Here are some examples about the natively supported. At first, let us create some exemplary data objects:
 
 .. code-block:: python
-    
+
     #randomly filled matrix of size 100x100, type: uint8
     obj1 = dataObject.randN([100,100],'uint8')
-    
+
     #50x100 matrix filled with float32 values
     obj2 = dataObject([50,100], 'float32')
     obj2[0:25,:] = 0.0
     obj2[25:50,:] = 10.3
     obj2[25:50,50:100] = -5.25
-    
+
     #768x1024 coloured data object (type: rgba32), background: white,
     #left side: transparent, in the middle three horizontal bars in red,
     #green and blue.
@@ -35,42 +35,42 @@ Here are some examples about the natively supported. At first, let us create som
     obj3[100:300,200:800] = rgba(255,0,0,255) #red
     obj3[300:500,200:800] = rgba(0,255,0,255) #green
     obj3[500:700,200:800] = rgba(0,0,255,255) #blue
-        
-Now, we want to save all these three data objects together into one **idc** file using the method :py:meth:`itom.saveIDC`. 
-**idc** files always contain a dictionary where you can save whatever you want to (not only data objects). When loading 
+
+Now, we want to save all these three data objects together into one **idc** file using the method :py:meth:`itom.saveIDC`.
+**idc** files always contain a dictionary where you can save whatever you want to (not only data objects). When loading
 an **idc** file (by :py:meth:`itom.loadIDC`, you get the original dictionary back:
 
 .. code-block:: python
-    
+
     # save idc file
     saveIDC("C:/test.idc", {"mat1":obj1, "mat2":obj2, "mat3":obj3})
     # remember: if you use \ in pathes, replace them by \\
-    
+
     # load the file again
     myDict = loadIDC("C:/test.idc")
     obj1new = myDict["mat1"]
     obj2new = myDict["mat2"]
 
 .. note::
-    
+
     In these examples, the methods and classes from the :py:mod:`itom` are written without the module name as prefix.
     These is possible, since the :py:mod:`itom` is globally imported at startup of itom. However this holds only for the global
-    workspace. 
-    
+    workspace.
+
 If you wish to save the same objects to a Matlab **mat** file, this is also possible via dictionaries. When loaded in Matlab,
-each item in the dictionary is a variable in the workspace whose name is the key of the item. The save and load methods are 
+each item in the dictionary is a variable in the workspace whose name is the key of the item. The save and load methods are
 :py:meth:`itom.saveMatlabMat` and :py:meth:`itom.loadMatlabMat`:
 
 .. code-block:: python
-    
+
     # save matlab file
     saveMatlabMat("C:/test.mat", {"mat1":obj1, "mat2":obj2, "mat3":obj3})
-    
+
     # load the file again
     myDict = loadMatlabMat("C:/test.mat")
     obj1new = myDict["mat1"]
     obj2new = myDict["mat2"]
-    
+
 If a data object is saved in a Matlab **mat** file, Matlab will load this data object as cell array that contains both the matrix data
 itself and all meta information (scaling, offset, tags, ...).
 
@@ -88,7 +88,7 @@ Plugins can provide filters for saving or loading the following objects:
 * point clouds
 * polygon meshes
 
-If any filter indicates to support the corresponding file input or file output interface, this filter is automatically recognized and integrated in the GUI. 
+If any filter indicates to support the corresponding file input or file output interface, this filter is automatically recognized and integrated in the GUI.
 Nevertheless, these filters can be called like any other filter in itom.
 
 Most filters for loading any image formats are included in the plugin **dataObjectIO**. The filter documentation of this plugin gives detailed information
@@ -112,16 +112,16 @@ Among others, the following color formats are supported: bmp, jpg, png, gif (rea
 Loading these files can mainly be achieved by the filter **loadAnyImage**:
 
 .. code-block:: python
-    
+
     reload_tiff_rgba=dataObject()
     filter("loadAnyImage",reload_tiff_rgba, 'pic_rgba.tiff','asIs')
-    
+
 'asIs' means that the data is loaded without further transformations (if possible), hence, a color data format is loaded to a rgba32 data object, a uint8 gray image is loaded to uint8 and so on. However, you can also choose that you want the image to be always converted to gray, you can choose a specific color channel...
 
 For saving to different color formats, there is usually a specific filter for each format. This allows passing further individual parameters like the color map for *png*. This is indicates if fixed- or floating-point data objects should be interpreted with a specific color map. The output is then a color image instead of a gray one:
 
 .. code-block:: python
-    
+
     filter("savePNG", obj1, 'C:/pic_falseColor.png', 'hotIron')
 
 For more examples about saving and loading data, see the demo file **demoLoadSaveDataObjects.py** in the demo-folder.

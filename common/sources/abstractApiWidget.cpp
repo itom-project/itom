@@ -10,7 +10,7 @@
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
-   
+
     In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
@@ -37,7 +37,7 @@
 
 
 
-namespace ito 
+namespace ito
 {
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -48,7 +48,7 @@ public:
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
-AbstractApiWidget::AbstractApiWidget(QWidget *parent) : 
+AbstractApiWidget::AbstractApiWidget(QWidget *parent) :
     QWidget(parent),
     d(NULL)
 {
@@ -64,17 +64,17 @@ AbstractApiWidget::~AbstractApiWidget()
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void AbstractApiWidget::setApiFunctionGraphBasePtr(void **apiFunctionGraphBasePtr)
-{ 
+{
     this->importItomApiGraph(apiFunctionGraphBasePtr);
-    m_apiFunctionsGraphBasePtr = apiFunctionGraphBasePtr; 
+    m_apiFunctionsGraphBasePtr = apiFunctionGraphBasePtr;
     ito::ITOM_API_FUNCS_GRAPH = apiFunctionGraphBasePtr;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void AbstractApiWidget::setApiFunctionBasePtr(void **apiFunctionBasePtr)
-{ 
+{
     this->importItomApi(apiFunctionBasePtr);
-    m_apiFunctionsBasePtr = apiFunctionBasePtr; 
+    m_apiFunctionsBasePtr = apiFunctionBasePtr;
     ito::ITOM_API_FUNCS = apiFunctionBasePtr;
 }
 
@@ -82,7 +82,7 @@ void AbstractApiWidget::setApiFunctionBasePtr(void **apiFunctionBasePtr)
 bool AbstractApiWidget::event(QEvent *e)
 {
     //the event User+123 is emitted by UiOrganizer, if the API has been prepared and can
-    //transmitted to the plugin. This assignment cannot be done directly, since 
+    //transmitted to the plugin. This assignment cannot be done directly, since
     //the array ITOM_API_FUNCS is in another scope if called from itom. By sending an
     //event from itom to the plugin, this method is called and ITOM_API_FUNCS is in the
     //right scope. The methods above only set the pointers in the "wrong"-itom-scope (which
@@ -92,7 +92,7 @@ bool AbstractApiWidget::event(QEvent *e)
         //importItomApi(m_apiFunctionsBasePtr);
         //importItomPlotApi(m_apiFunctionsGraphBasePtr);
         init();
-    }   
+    }
 
     return QWidget::event(e);
 }

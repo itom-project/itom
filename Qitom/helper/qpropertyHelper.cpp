@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -365,7 +365,7 @@ namespace ito {
             ok = true;
             result = QVariant::fromValue<ito::ItomPlotHandle>(ito::ItomPlotHandle());
         }
-#if ITOM_POINTCLOUDLIBRARY > 0   
+#if ITOM_POINTCLOUDLIBRARY > 0
         else if (userDestType == QMetaType::type("QSharedPointer<ito::PCLPointCloud>"))
         {
             ok = true;
@@ -409,7 +409,7 @@ namespace ito {
                 toName = QObject::tr("Unknown");
             }
 
-            retval += ito::RetVal::format(ito::retError, 0, QObject::tr("No conversion from QVariant type '%s' to '%s' is possible").toLatin1().data(), 
+            retval += ito::RetVal::format(ito::retError, 0, QObject::tr("No conversion from QVariant type '%s' to '%s' is possible").toLatin1().data(),
                 fromName.toLatin1().data(), toName.toLatin1().data());
         }
     }
@@ -552,7 +552,7 @@ QString enumValuesText(const QMetaEnum &enumerator)
 RetVal QPropertyHelper::readProperty(const QObject *object, const char* propName, QVariant &value)
 {
     RetVal retValue;
-    
+
     if (object)
     {
         value = object->property(propName);

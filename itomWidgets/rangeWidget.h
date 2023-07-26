@@ -10,7 +10,7 @@
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
-   
+
     In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
@@ -24,7 +24,7 @@
     You should have received a copy of the GNU Library General Public License
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 
-    This file is a port and modified version of the 
+    This file is a port and modified version of the
     Common framework (http://www.commontk.org)
 *********************************************************************** */
 
@@ -80,7 +80,7 @@ public:
   /// If \li parent is null, RangeWidget will be a top-leve widget
   /// \note The \li parent can be set later using QWidget::setParent()
   explicit RangeWidget(QWidget* parent = 0);
-  
+
   /// Destructor
   virtual ~RangeWidget();
 
@@ -131,31 +131,31 @@ public:
   virtual int singleStep()const;
   virtual void setSingleStep(int step);
 
-  /// 
+  ///
   /// This property holds the step size for the left or right slider position.
   /// If the stepSize is equal to 1, this property has no impact.
   uint stepSizeValue() const;
   void setStepSizeValue(uint stepSize);
-  
-  /// 
+
+  ///
   /// This property holds the minimum allowed range.
   /// The range is (1+maximumRange-minimumRange) if rangeIncludeLimits is true, else (maximumRange-minimumRange)
   uint minimumRange() const;
   void setMinimumRange(uint min);
-  
-  /// 
+
+  ///
   /// This property holds the maximum allowed range.
   /// The range is (1+maximumRange-minimumRange) if rangeIncludeLimits is true, else (maximumRange-minimumRange)
   uint maximumRange() const;
   void setMaximumRange(uint max);
-  
-  /// 
+
+  ///
   /// This property holds the step size of the allowed range.
   /// The range is (1+maximumRange-minimumRange) if rangeIncludeLimits is true, else (maximumRange-minimumRange)
   uint stepSizeRange() const;
   void setStepSizeRange(uint stepSize);
-  
-  /// 
+
+  ///
   /// This property indicates if the range is assumed to be (1+maximumRange-minimumRange) (true)
   /// or (maximumRange-minimumRange) (false). The first case is important if the rangeSlider
   /// is used for ROIs of cameras, where the first and last value are inside of the ROI.
@@ -214,7 +214,7 @@ public:
   // RangeWidget siblings.
   virtual bool isAutoSpinBoxWidth()const;
   virtual void setAutoSpinBoxWidth(bool autoWidth);
-  
+
   ///
   /// When symmetricMoves is true, moving a handle will move the other handle
   /// symmetrically, otherwise the handles are independent. False by default

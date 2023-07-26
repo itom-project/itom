@@ -10,7 +10,7 @@
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
-   
+
     In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
@@ -879,9 +879,9 @@ namespace ito
     *   @param [in|out] stream           outgoing xml-stream
     *   @param [in]     dObjOut          The allocated src-Object
     *   @param [in]     doubleAsBinary   Toggle binary export for double
-    *   
+    *
     *   \sa saveDOBJ2XML, saveDOBJSpecificData2XML, DataObjectTags
-    */ 
+    */
 
     inline RetVal writeObjectHeaderToFileV1(QXmlStreamWriter &stream, DataObject *dObjOut, bool doubleAsBinary, int &elementsize)
     {
@@ -943,7 +943,7 @@ namespace ito
         stream.writeAttribute("dataType", type);
         //stream.writeAttribute("isTransposed",  QString::number(dObjOut->isT()));
         stream.writeAttribute("dims", QString::number(dObjOut->getDims()));
-        
+
         int dim = dObjOut->getDims() - 2;
 
         for (int i = 0; i < dim; i++)
@@ -961,7 +961,7 @@ namespace ito
         stream.writeStartElement("metaData");
         {
             bool valid = true;
-                
+
             if (doubleAsBinary)
             {
                 stream.writeAttribute("doubleExport", "d2b");
@@ -976,7 +976,7 @@ namespace ito
                 QString element = "dim";
                 element.append(QString::number(i));
                 stream.writeStartElement(element);
-                {                      
+                {
                     if (doubleAsBinary)
                     {
                         double dtVal = dObjOut->getAxisOffset(i);
@@ -987,13 +987,13 @@ namespace ito
                     else
                     {
                         stream.writeAttribute("offset", QString::number(dObjOut->getAxisOffset(i), 'g', 15));
-                        stream.writeAttribute("scale", QString::number(dObjOut->getAxisScale(i), 'g', 15));                             
+                        stream.writeAttribute("scale", QString::number(dObjOut->getAxisScale(i), 'g', 15));
                     }
                     cvalEncoded = QByteArray(dObjOut->getAxisUnit(i, valid).data()).toPercentEncoding();
                     stream.writeAttribute("unit", cvalEncoded);
                     cvalEncoded = QByteArray(dObjOut->getAxisDescription(i, valid).data()).toPercentEncoding();
                     stream.writeAttribute("description", cvalEncoded);
-                    stream.writeCharacters(" "); 
+                    stream.writeCharacters(" ");
                 }
                 stream.writeEndElement(); // dimN
             }
@@ -1011,13 +1011,13 @@ namespace ito
                 else
                 {
                     stream.writeAttribute("offset", QString::number(dObjOut->getAxisOffset(dim), 'g', 15));
-                    stream.writeAttribute("scale", QString::number(dObjOut->getAxisScale(dim), 'g', 15));                             
+                    stream.writeAttribute("scale", QString::number(dObjOut->getAxisScale(dim), 'g', 15));
                 }
                 cvalEncoded = QByteArray(dObjOut->getAxisUnit(dim, valid).data()).toPercentEncoding();
                 stream.writeAttribute("unit", cvalEncoded);
                 cvalEncoded = QByteArray(dObjOut->getAxisDescription(dim, valid).data()).toPercentEncoding();
                 stream.writeAttribute("description", cvalEncoded);
-                stream.writeCharacters(" "); 
+                stream.writeCharacters(" ");
             }
             dim = dObjOut->getDims() - 2;
             stream.writeEndElement(); // dimX
@@ -1033,7 +1033,7 @@ namespace ito
                 else
                 {
                     stream.writeAttribute("offset", QString::number(dObjOut->getAxisOffset(dim), 'g', 15));
-                    stream.writeAttribute("scale", QString::number(dObjOut->getAxisScale(dim), 'g', 15));                             
+                    stream.writeAttribute("scale", QString::number(dObjOut->getAxisScale(dim), 'g', 15));
                 }
 
                 cvalEncoded = QByteArray(dObjOut->getAxisUnit(dim, valid).data()).toPercentEncoding();
@@ -1041,7 +1041,7 @@ namespace ito
                 cvalEncoded = QByteArray(dObjOut->getAxisDescription(dim, valid).data()).toPercentEncoding();
                 stream.writeAttribute("description", cvalEncoded);
 
-                stream.writeCharacters(" "); 
+                stream.writeCharacters(" ");
             }
             stream.writeEndElement(); // dimY
 
@@ -1057,7 +1057,7 @@ namespace ito
                 else
                 {
                     stream.writeAttribute("offset", QString::number(dObjOut->getValueOffset(), 'g', 15));
-                    stream.writeAttribute("scale", QString::number(dObjOut->getValueScale(), 'g', 15));                    
+                    stream.writeAttribute("scale", QString::number(dObjOut->getValueScale(), 'g', 15));
                 }
 
                 cvalEncoded = QByteArray(dObjOut->getValueUnit().data()).toPercentEncoding();
@@ -1065,7 +1065,7 @@ namespace ito
 
                 cvalEncoded = QByteArray(dObjOut->getValueDescription().data()).toPercentEncoding();
                 stream.writeAttribute("description", cvalEncoded);
-                stream.writeCharacters(" "); 
+                stream.writeCharacters(" ");
             }
             stream.writeEndElement(); // values
 
@@ -1098,7 +1098,7 @@ namespace ito
                     stream.writeAttribute("r33", QString::number(dRotMat[8], 'g', 15));
 
                 }
-                stream.writeCharacters(" ");  
+                stream.writeCharacters(" ");
             }
             stream.writeEndElement(); // Rotation Matrix
         }
@@ -1117,9 +1117,9 @@ namespace ito
     *   @param [in|out] stream           outgoing xml-stream
     *   @param [in]     dObjOut          The allocated src-Object
     *   @param [in]     doubleAsBinary   Toggle binary export for double
-    *   
+    *
     *   \sa saveDOBJ2XML, saveDOBJSpecificData2XML, DataObjectTags
-    */ 
+    */
     inline RetVal writeObjectTagsToFileV1(QXmlStreamWriter &stream, DataObject *dObjOut, bool doubleAsBinary)
     {
         QByteArray cvalEncoded("");
@@ -1135,7 +1135,7 @@ namespace ito
                 cvalEncoded = QByteArray(key.data()).toPercentEncoding();
                 stream.writeStartElement(cvalEncoded);
                 if (value.getType() == DataObjectTagType::typeDouble)
-                { 
+                {
                     double dtval = value.getVal_ToDouble();
                     if (doubleAsBinary)
                     {
@@ -1147,14 +1147,14 @@ namespace ito
                     else
                     {
                         stream.writeAttribute("type", "d2s");
-                        stream.writeCharacters(QString::number(dtval, 'g', 15));                        
+                        stream.writeCharacters(QString::number(dtval, 'g', 15));
                     }
                 }
                 else
                 {
                     stream.writeAttribute("type", "s");
                     cvalEncoded = QByteArray(value.getVal_ToString().data()).toPercentEncoding();
-                    stream.writeCharacters(cvalEncoded);       
+                    stream.writeCharacters(cvalEncoded);
                 }
                 stream.writeEndElement(); // single tag
             }
@@ -1172,9 +1172,9 @@ namespace ito
     *   @param [in|out] stream      outgoing xml-stream
     *   @param [in]     dObjOut     The allocated src-Object
     *   @param [in]     elementsize Size of each matrix element in bytes
-    *   
+    *
     *   \sa saveDOBJ2XML, saveDOBJSpecificData2XML
-    */ 
+    */
     inline RetVal writeObjectDataToFileV1(QXmlStreamWriter &stream, DataObject *dObjOut, int elementsize)
     {
         int z_length = dObjOut->calcNumMats();
@@ -1182,7 +1182,7 @@ namespace ito
         int lines = dObjOut->getSize(dObjOut->getDims()-2);
 
         stream.writeStartElement("data");
-        stream.writeAttribute("planes", QString::number(z_length));        
+        stream.writeAttribute("planes", QString::number(z_length));
 
         for (int i = 0; i < z_length; i++)
         {
@@ -1195,7 +1195,7 @@ namespace ito
             {
                 char* dataptr = (char *)((cv::Mat *)dObjOut->get_mdata()[dObjOut->seekMat(i)])->ptr(y);
                 cval.append(dataptr, lineSize);
-                    
+
             }
             //QByteArray temp = cval.toBase64();
             //cval.fromBase64(temp);
@@ -1220,7 +1220,7 @@ namespace ito
     *   \autor Lyda
     *   \date  04.2012
     *   \sa writeObjectHeaderToFileV1, writeObjectTagsToFileV1, writeObjectDataToFileV1
-    *   
+    *
     */
     RetVal saveDOBJ2XML(DataObject *dObjOut, QString folderFileName, bool onlyHeaderObjectFile, bool doubleAsBinary)
     {
@@ -1280,7 +1280,7 @@ namespace ito
         stream.setAutoFormatting(true);
 
         stream.writeStartDocument();
-        if (onlyHeaderObjectFile) 
+        if (onlyHeaderObjectFile)
         {
             stream.writeStartElement("itomDataObjectHeader");
         }
@@ -1290,10 +1290,10 @@ namespace ito
         }
         {
             stream.writeAttribute("href", "http://www.ito.uni-stuttgart.de");
-            
+
             if (!ret.containsError()) ret += writeObjectHeaderToFileV1(stream, dObjOut, doubleAsBinary, elementsize);
             if (!ret.containsError()) ret += writeObjectTagsToFileV1(stream, dObjOut, doubleAsBinary);
-            if (!onlyHeaderObjectFile) 
+            if (!onlyHeaderObjectFile)
             {
                 if (!ret.containsError()) ret += writeObjectDataToFileV1(stream, dObjOut, elementsize);
             }
@@ -1315,10 +1315,10 @@ namespace ito
     *   @param [in]     stream      incomming xml-stream
     *   @param [in|out] times       Counts of iterations
     *   @param [in]     maxtimes    maximal number of iterations to perform
-    *   
+    *
     *   \sa loadXML2DOBJ, loadXML2EmptyDOBJ
-    */    
-    inline bool readTillNext(QXmlStreamReader &stream, int &times, int maxtimes) 
+    */
+    inline bool readTillNext(QXmlStreamReader &stream, int &times, int maxtimes)
     {
         bool ret = true;
         for (times = 0; times <  maxtimes; times++)
@@ -1343,7 +1343,7 @@ namespace ito
     *   @param [in]     Attrib          name of the attribute to extract
     *   @param [in|out] val             Must be filled with default value and is filled with value from the XML-Stream
     *   @param [in]     isBinary        Must be true if attribute value was stored as binary else false
-    *   
+    *
     *   \sa loadXML2DOBJ, loadXML2EmptyDOBJ, loadObjectHeaderFromXMLV1
     */
     inline RetVal readDoubleFromXML(QXmlStreamAttributes &attrStream, QString &Element, QString &Attrib, double &val, bool isBinary)
@@ -1353,7 +1353,7 @@ namespace ito
             if (!isBinary)
             {
                 QByteArray cval = QByteArray::fromPercentEncoding(attrStream.value(Attrib).toString().toLatin1());
-                val = cval.toDouble();  
+                val = cval.toDouble();
             }
             else
             {
@@ -1378,17 +1378,17 @@ namespace ito
     *   @param [in]     Element         name of the element (only for error msg)
     *   @param [in]     Attrib          name of the attribute to extract
     *   @param [in|out] val             Must be filled with default value and is filled with value from the XML-Stream
-    *   
+    *
     *   \sa loadXML2DOBJ, loadXML2EmptyDOBJ, loadObjectHeaderFromXMLV1
     */
 
     inline RetVal readStdStringFromXML(QXmlStreamAttributes &attrStream, QString &Element, QString &Attrib, std::string &val)
     {
-            
+
         if (attrStream.hasAttribute(Attrib))
         {
             QByteArray cval = QByteArray::fromPercentEncoding(attrStream.value(Attrib).toString().toLatin1());
-            val = cval.data();  
+            val = cval.data();
         }
         else
         {
@@ -1406,18 +1406,18 @@ namespace ito
     *   @param [in|out] stream      The xml-Stream from the xml-file
     *   @param [out] dObjIn         Destination dataContainter of type dataObject with size / dims / type speficied in the input xml
     *   @param [out] elementsize    Byte-Size of the current dataObjekt
-    *   
+    *
     *   \sa loadXML2DOBJ, loadXML2EmptyDOBJ
     */
     RetVal createObjectFromXMLV1(QXmlStreamReader &stream, DataObject &dObjIn, int &elementsize)
     {
         RetVal ret(retOk);
-        
+
         int *sizes= NULL;     /*!< Sizes of the new dataObject. Will be freed at end: */
         QString attrname;
         QString type("");
         QXmlStreamAttributes attrStream = stream.attributes();
- 
+
         char ndims = 0;
         int objType = tUInt8;
         //char isTransposed = 0;
@@ -1430,7 +1430,7 @@ namespace ito
             {
                 ret += RetVal(retError, 0, QObject::tr("Load object failed: Number of dims smaller 2").toLatin1().data());
             }
-        }   
+        }
 
         if (!ret.containsError())
         {
@@ -1474,7 +1474,7 @@ namespace ito
         {
             if (attrStream.hasAttribute("dimY"))
             {
-                sizes[ndims - 2] = attrStream.value("dimY").toString().toInt();              
+                sizes[ndims - 2] = attrStream.value("dimY").toString().toInt();
             }
             else
             {
@@ -1486,7 +1486,7 @@ namespace ito
         {
             if (attrStream.hasAttribute("isTransposed"))
             {
-                isTransposed = attrStream.value("isTransposed").toString().toInt();              
+                isTransposed = attrStream.value("isTransposed").toString().toInt();
             }
             else
             {
@@ -1556,7 +1556,7 @@ namespace ito
                 ret += RetVal(retError, 0, QObject::tr("Load object failed: type not supported").toLatin1().data());
             }
         }
-        
+
         if (!ret.containsError())
         {
             dObjIn = DataObject(ndims, sizes, objType);
@@ -1587,7 +1587,7 @@ namespace ito
     *
     *   @param [in|out] stream      The xml-Stream from the xml-file
     *   @param [in|out] dObjIn      allocated dataObject
-    *   
+    *
     *   \sa loadXML2DOBJ, loadXML2EmptyDOBJ, DataObjectTags, DataObject
     */
     inline RetVal loadObjectHeaderFromXMLV1(QXmlStreamReader &stream, DataObject &dObjIn)
@@ -1629,7 +1629,7 @@ namespace ito
             else if (type.compare("d2b") == 0)
             {
                 doubleAsBinary = true;
-            }    
+            }
             else
             {
                 return RetVal(retWarning, 0, QObject::tr("Load object warning: DoubleExportType for v1.0 invalid").toLatin1().data());
@@ -1651,7 +1651,7 @@ namespace ito
             if (stream.qualifiedName().toString().compare(elementName) == 0)
             {
                 double dVal = 0.0;
-                QString attrName("offset"); 
+                QString attrName("offset");
                 ret += readDoubleFromXML(attrStream, elementName, attrName, dVal, doubleAsBinary);
                 dObjIn.setAxisOffset(i, dVal);
 
@@ -1675,15 +1675,15 @@ namespace ito
                 ret += RetVal(retWarning, 0, warning.toLatin1().data());
             }
         }
-       
+
         done = readTillNext(stream, loops, 10);
-        
+
         elementName = "dimX";
         if (stream.qualifiedName().toString().compare(elementName) == 0)
         {
             attrStream = stream.attributes();
             double dVal = 0.0;
-            QString attrName("offset"); 
+            QString attrName("offset");
             ret += readDoubleFromXML(attrStream, elementName, attrName, dVal, doubleAsBinary);
             dObjIn.setAxisOffset(ndims-1, dVal);
 
@@ -1713,7 +1713,7 @@ namespace ito
         {
             attrStream = stream.attributes();
             double dVal = 0.0;
-            QString attrName("offset"); 
+            QString attrName("offset");
             ret += readDoubleFromXML(attrStream, elementName, attrName, dVal, doubleAsBinary);
             dObjIn.setAxisOffset(ndims-2, dVal);
 
@@ -1730,7 +1730,7 @@ namespace ito
             strVal = "";
             attrName = "description";
             ret += readStdStringFromXML(attrStream, elementName, attrName, strVal);
-            dObjIn.setAxisDescription(ndims-2, strVal);             
+            dObjIn.setAxisDescription(ndims-2, strVal);
         }
         else
         {
@@ -1743,7 +1743,7 @@ namespace ito
         {
             attrStream = stream.attributes();
             double dVal = 0.0;
-            QString attrName("offset"); 
+            QString attrName("offset");
             ret += readDoubleFromXML(attrStream, elementName, attrName, dVal, doubleAsBinary);
             //dObjIn.setValueOffset(dVal);
 
@@ -1760,7 +1760,7 @@ namespace ito
             strVal = "";
             attrName = "description";
             ret += readStdStringFromXML(attrStream, elementName, attrName, strVal);
-            dObjIn.setValueDescription(strVal);             
+            dObjIn.setValueDescription(strVal);
         }
         else
         {
@@ -1807,7 +1807,7 @@ namespace ito
     *
     *   @param [in|out] stream      The xml-Stream from the xml-file
     *   @param [in|out] dObjIn      allocated dataObject
-    *   
+    *
     *   \sa loadXML2DOBJ, loadXML2EmptyDOBJ, DataObjectTags, DataObject
     */
     inline RetVal loadTagSpaceFromXMLV1(QXmlStreamReader &stream, DataObject &dObjIn)
@@ -1836,7 +1836,7 @@ namespace ito
             error = QObject::tr("Load object failed: tag space not at expected position. Got %1 instead").arg(stream.qualifiedName().toString());
             return RetVal(retError, 0, error.toLatin1().data());
         }
-        
+
         //TODO: what should this look like? in case put brackets here!
         if (stream.isStartElement())
         {
@@ -1880,7 +1880,7 @@ namespace ito
                         {
                             cvalDecoded = QByteArray::fromPercentEncoding(tagValue.toLatin1());
                             std::string sVal = cvalDecoded.data();
-                            dObjIn.setTag(tagName, sVal);                  
+                            dObjIn.setTag(tagName, sVal);
                         }
                         else
                         {
@@ -1907,14 +1907,14 @@ namespace ito
     //----------------------------------------------------------------------------------------------------------------------------------
     /**
     *   \brief This function copies the CDATA from the xml-file to the allocated dataObject.
-    *   \detail This function copies the CDATA from the xml-file to the allocated dataObject. 
+    *   \detail This function copies the CDATA from the xml-file to the allocated dataObject.
     *           The data was before packed (substitution of xml-registered characters) during saving and is unpacked here.
     *           The data is stored plane-wise. The function checks if the plane-size if the object is equal to the imported size.
     *
     *   @param [in|out] stream      The xml-Stream from the xml-file
     *   @param [in|out] dObjIn      allocated dataObject
     *   @param [in] elementsize     Size of the each matrix-element
-    *   
+    *
     *   \sa loadXML2DOBJ, loadXML2EmptyDOBJ, DataObjectTags, DataObject
     */
     inline RetVal loadDataFromXMLV1(QXmlStreamReader &stream, DataObject &dObjIn, int elementsize)
@@ -1922,7 +1922,7 @@ namespace ito
         RetVal ret(retOk);
         stream.readNextStartElement();
         int numPlanes = dObjIn.calcNumMats();
-        int dims = dObjIn.getDims(); 
+        int dims = dObjIn.getDims();
         int lineSize = dObjIn.getSize(dims-1) * elementsize;
         int lines = dObjIn.getSize(dims-2);
         int planeSize = lines*lineSize;
@@ -1991,10 +1991,10 @@ namespace ito
     *   @param [in]  folderFileName  Folder and Filename of the Sourcefile
     *
     *   \details This function loads data from a xml-file to a dataObject. The file must be compatible to the file-format describted before.
-    *   There are to possilbe import methods: 
+    *   There are to possilbe import methods:
     *        1. onlyHeaderObjectFile == false tries to import a ido file with a itoDataObject-note/startelement.
     *        1. onlyHeaderObjectFile == true tries to import a idh file with a itoDataObjectHeader-note/startelement. The dataSpace will be ignored
-    *       
+    *
     *   \sa createObjectFromXMLV1, loadObjectHeaderFromXMLV1, loadTagSpaceFromXMLV1, loadDataFromXMLV1
     */
     RetVal loadXML2DOBJ(DataObject *dObjIn, QString folderFileName, bool onlyHeaderObjectFile, bool appendEnding)
@@ -2002,7 +2002,7 @@ namespace ito
         RetVal ret(retOk);    /*!< Returnvalue for the complete function */
         QFile paramFile;     /*!< Handle to the source data */
         QString readSigns;
-        
+
         int elementsize = 1;
 
         DataObject tempObjIn;
@@ -2080,7 +2080,7 @@ namespace ito
         }
 
         stream.readNextStartElement();
-        
+
         QString startNoteName("");
 
         if (onlyHeaderObjectFile)
@@ -2103,7 +2103,7 @@ namespace ito
         if (attrStream.hasAttribute("FormatVersion"))
         {
             if (attrStream.value("FormatVersion").toString().compare("1.0") == 0)
-            {                   
+            {
                 ret += createObjectFromXMLV1(stream, tempObjIn, elementsize);                               // Create the object by xml-parameter
 
                 if (!ret.containsError())

@@ -10,7 +10,7 @@
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
-   
+
     In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
@@ -76,15 +76,15 @@ class ITOMCOMMONPLOT_EXPORT AbstractFigure : public QMainWindow, public Abstract
     Q_CLASSINFO("slot://refreshPlot", "Triggers an update of the current plot window.")
 
     public:
-        enum WindowMode 
-        { 
-            ModeInItomFigure, 
-            ModeStandaloneInUi, 
-            ModeStandaloneWindow 
+        enum WindowMode
+        {
+            ModeInItomFigure,
+            ModeStandaloneInUi,
+            ModeStandaloneWindow
         };
 
-        enum UnitLabelStyle 
-        { 
+        enum UnitLabelStyle
+        {
             UnitLabelSlash,              // x-axis / m  -> corresponds to DIN461
             UnitLabelKeywordIn,          // x-axis in m -> corresponds to DIN461
             UnitLabelSquareBrackets      // x-axis [m]  -> does not correspond to DIN461
@@ -125,7 +125,7 @@ class ITOMCOMMONPLOT_EXPORT AbstractFigure : public QMainWindow, public Abstract
         //properties
         virtual void setToolbarVisible(bool visible);
         virtual bool getToolbarVisible() const;
-        virtual void setContextMenuEnabled(bool show) = 0; 
+        virtual void setContextMenuEnabled(bool show) = 0;
         virtual bool getContextMenuEnabled() const = 0;
 
         QDockWidget *getPropertyDockWidget() const;
@@ -137,7 +137,7 @@ class ITOMCOMMONPLOT_EXPORT AbstractFigure : public QMainWindow, public Abstract
         QList<AbstractFigure::ToolBarItem> getToolbars() const;
         QList<AbstractFigure::ToolboxItem> getToolboxes() const; //the first toolbox is always the property dock widget
         void setWindowTitleExtension(const QString& title); /*< call this method if the window title should be changed. This emits the signal windowTitleChanged which is connected to the plot window.*/
-  
+
     protected:
 
         virtual RetVal init() { return retOk; } //this method is called from after construction and after that the api pointers have been transmitted
@@ -150,7 +150,7 @@ class ITOMCOMMONPLOT_EXPORT AbstractFigure : public QMainWindow, public Abstract
 
         void addToolbox(QDockWidget *toolbox, const QString &key, Qt::DockWidgetArea area = Qt::RightDockWidgetArea); /*!< Every plot widget is automatically equipped with a property toolbox. If you want to add further toolboxes (dock widgets), register and append them using this method. */
 		bool removeToolbox(const QString &key); /*!< If you added further toolboxes (dock widgets), remove them using this method. */
-       
+
 		void showToolBar(const QString &key); /*!< show a toolbar with given key. This toolbar must first be registered using addToolBar. */
         void hideToolBar(const QString &key); /*!< hide a toolbar with given key. This toolbar must first be registered using addToolBar. */
 
@@ -186,7 +186,7 @@ class ITOMCOMMONPLOT_EXPORT AbstractFigure : public QMainWindow, public Abstract
     public slots:
         int getPlotID();
         void refreshPlot() { update(); }
-        
+
     signals:
        void windowTitleModified(QString windowTitleSuffix); /*!< this signal is emitted if the title of the plot has been changed. windowTitleSuffix is the new suffix that should be appended to the base window title*/
 };

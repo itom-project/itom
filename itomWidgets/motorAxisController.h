@@ -10,7 +10,7 @@
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
-   
+
     In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
@@ -50,7 +50,7 @@ class MotorAxisControllerPrivate; //forward declaration
 
 namespace ito {
     class AddInActuator; //forward declaration
-    
+
 };
 
 class ITOMWIDGETS_EXPORT MotorAxisController : public QWidget
@@ -160,7 +160,7 @@ private:
     double unitToBaseUnit(const double &value, const AxisUnit &unit) const;
     ito::RetVal observeInvocation(ItomSharedSemaphore *waitCond) const;
     void moveRelOrAbs(int axis, double value, bool relNotAbs);
-    
+
     MotorAxisControllerPrivate *d;
 
 public slots:

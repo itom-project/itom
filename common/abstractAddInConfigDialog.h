@@ -10,7 +10,7 @@
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
-   
+
     In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
@@ -56,12 +56,12 @@ namespace ito
     *   Inherit your plugin's configuration dialog from this class in order to benefit from many simplified and unified
     *   processes. Since the plugin runs in its own thread while the configuration dialog runs in the main thread, the communication
     *   between the plugin and its configuration dialog needs to be done via signal/slot connections or general invocations.
-    *   
+    *
     *   The methods of this class help in this process.
-    *   
+    *
     *   Communication plugin -> configuration dialog:
     *   - After the construction of the configuration dialog, the plugin automatically invokes the slot parametersChanged with all internal parameters of
-          the plugin. 
+          the plugin.
     *   - overload parametersChanged in order to set all widgets to the current values of the plugin
     *
     *   Communication configuration dialog -> plugin:
@@ -79,17 +79,17 @@ namespace ito
         Q_OBJECT
 
         public:
-            //! constructor. 
+            //! constructor.
             AbstractAddInConfigDialog(ito::AddInBase *plugin);
 
             //! destructor
             virtual ~AbstractAddInConfigDialog();
-            
+
             /**
             * MessageLevel enumeration
             * defines whether warnings and/or errors that might occur during some executions should be displayed with a message box.
             */
-            enum MessageLevel 
+            enum MessageLevel
             {
                 msgLevelNo = 0,          /*!< no messagebox should information about warnings or errors */
                 msgLevelErrorOnly = 1,   /*!< a message box should only inform about errors */
@@ -107,7 +107,7 @@ namespace ito
                 or setPluginParameters. This method needs to be implemented in every single configuration dialog.
             */
             virtual ito::RetVal applyParameters() = 0;
-        
+
         protected:
             //! invokes AddInBase::setParam of plugin in order to set the given parameter
             /*!
@@ -138,12 +138,12 @@ namespace ito
                 \sa observeInvocation
             */
             virtual ito::RetVal setPluginParameters(const QVector<QSharedPointer<ito::ParamBase> > params, MessageLevel msgLevel = msgLevelWarningAndError);
-            
+
             //! observes the status of the given semaphore and returns after the semaphore has been released or a timeout occurred
             /*!
                 This helper method is mainly called by setPluginParameter or setPluginParameters in order to wait until the parameters
                 have been set within the plugin. The corresponding return value is obtained and returned or displayed in a message box (if desired).
-                
+
                 Directly call this method after having invoked any other slot where an instance of ItomSharedSemaphore has been passed as wait condition.
                 This method returns if the wait condition has been released by the receiver, if the invocation failed or if a timeout occurred. For any possible
                 timeout the AddInBase::isAlive flag is continuously evaluated.

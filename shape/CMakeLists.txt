@@ -23,20 +23,20 @@
 # You should have received a copy of the GNU Library General Public License
 # along with itom. If not, see <http://www.gnu.org/licenses/>.
 
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.12...3.24)
 
 set(target_name itomShapeLib)
 project(${target_name})
 
 message(STATUS "--------------- LIBRARY ${target_name} -----------------")
 
-# include commonly used itom CMake macros (internal can only be used within the core projects) 
+# include commonly used itom CMake macros (internal can only be used within the core projects)
 include("../cmake/ItomBuildMacros.cmake")
 include("../cmake/ItomBuildMacrosInternal.cmake")
 
 itom_init_cmake_policy(3.12)
 itom_init_core_common_vars()
- 
+
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/../cmake)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -48,13 +48,13 @@ find_package(OpenCV COMPONENTS core imgproc REQUIRED)
 add_definitions(-DITOMSHAPE_DLL -D_ITOMSHAPE_DLL)
 add_definitions(-DITOMSHAPE_MOC)
 
-include_directories( 
+include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/../common
     ${CMAKE_CURRENT_SOURCE_DIR}/..
 )
 
 link_directories(
-    
+
 )
 
 set(itomShape_HEADERS
@@ -64,7 +64,7 @@ set(itomShape_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/shapeDObject.h
 )
 
-set(itomShape_SOURCES 
+set(itomShape_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/shape.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/shapeDObject.cpp
 )
@@ -97,6 +97,6 @@ endforeach()
 itom_add_library_to_appdir_and_sdk(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 
-foreach(headerFile ${itomShape_HEADERS}) 
+foreach(headerFile ${itomShape_HEADERS})
     file(COPY ${headerFile}    DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/shape FILES_MATCHING PATTERN "*.h")
 endforeach(headerFile)

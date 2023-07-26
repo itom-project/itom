@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -20,8 +20,7 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef DIALOGPIPMANAGER_H
-#define DIALOGPIPMANAGER_H
+#pragma once
 
 #include "../../common/addInInterface.h"
 #include "../../common/sharedStructures.h"
@@ -37,7 +36,7 @@
 
 namespace ito {
 
-class DialogPipManager : public QDialog 
+class DialogPipManager : public QDialog
 {
     Q_OBJECT
 
@@ -88,12 +87,12 @@ private slots:
     void on_btnUpdate_clicked();
     void on_btnSudoUninstall_clicked();
     void on_btnVerifyInstalledPackages_clicked();
+    void on_btnCancelFetchDetails_clicked();
     void treeViewSelectionChanged(const QItemSelection & selected, const QItemSelection & deselected);
     void tableCustomContextMenuRequested(const QPoint &pos);
     void exportTableToClipboard();
     void exportTableToCsv();
+    void pipFetchDetailsProgress(int totalNumberOfUnfetchedDetails, int recentlyFetchedDetails, bool finished);
 };
 
 } //end namespace ito
-
-#endif

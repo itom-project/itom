@@ -10,7 +10,7 @@
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
-   
+
     In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
@@ -38,7 +38,7 @@ namespace ito
     *   \brief  This class implements basic functionality for color handling in itom.
     *   \detail This class implements ARGB32 into itom. In openCV-mat this will be represented by an 4channel uint8-plane.
     *           The functions of this class are inspired by http://virjo.googlecode.com/svn/trunk/SFML_Windows/src/SFML/Graphics/Color.cpp, written by Laurent Gomila (laurent.gom@gmail.com)
-    *            
+    *
     *   \author lyda
     *   \date   2013
     *   \sa     ito::rgba32
@@ -74,7 +74,7 @@ namespace ito
                 Rgba32 temp(255, 0,0,0);
                 return temp;
             }
-            
+
             //! static constructor to create Rgba32 from uint32 containing the values argb
             /*!
              \param val is the uint32 value that is defined as (alpha << 24 + red << 16 + green << 8 + blue)
@@ -93,7 +93,7 @@ namespace ito
                 this->r = r;
                 this->a = a;
             }
-            
+
             //! Constructor which will set color channels to gray uint8 and alpha to 255.
             /*!
              \param gray is the gray value. Alpha is 255, R=G=B are set to this value 'gray'.
@@ -125,7 +125,7 @@ namespace ito
                 rgba = rhs.rgba;
                 return *this;
             }
-        
+
             Rgba32& operator =(const uint32 &rhs)/*! < Implementation of = for uint32 by direct copy*/
             {
                 rgba = rhs;
@@ -140,7 +140,7 @@ namespace ito
                 a = static_cast<uint8>(std::max<int16>(a - rhs.a, 0));
                 return *this;
             }
-            
+
             //! Multiplication by another Rgba32 value.
             /*!
              \param All channels are multiplied by each other and then divided by 255 (integer division leads to a ceil operation in any case)
@@ -235,7 +235,7 @@ namespace ito
             inline float32 gray() const /*! < Return the gray-value of the current RGB-Value*/
 			{
 				return static_cast<float32>(0.299 * r + 0.587 * g + 0.114 * b);
-			} 
+			}
 
             uint8& alpha() {return a;}; /*! < Access to alpha-Channel*/
             uint8& red()   {return r;}; /*! < Access to red-Channel*/
@@ -306,7 +306,7 @@ namespace ito
 
             RGBChannel& operator =(const uint32 &rhs)/*! < Implementation of = for uint32 by direct copy*/
             {
-                items[_COLOR] = ((unsigned char*)&rhs)[_COLOR]; 
+                items[_COLOR] = ((unsigned char*)&rhs)[_COLOR];
                 return *this;
             }
 

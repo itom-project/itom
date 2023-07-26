@@ -2,7 +2,7 @@
 
 .. _itomDataObject:
 
-Array class DataObject 
+Array class DataObject
 =======================
 
 Introduction
@@ -14,7 +14,7 @@ In |itom|, the class :py:class:`~itom.dataObject` is the main array object. Arra
 * each dimension can have an arbitrary size
 * possible data types:
     .. code-block:: python
-        
+
         "uint8"      # unsigned integer, 8 bit [0,255]
         "int8"       # signed integer, 8 bit [-128,127]
         "uint16"     # unsigned integer, 16 bit [0,65536]
@@ -30,20 +30,20 @@ In |itom|, the class :py:class:`~itom.dataObject` is the main array object. Arra
         "timedelta"  # :py:class:`datetime.timedelta` values with a microseconds resolution
 
 Before giving a short tutorial about how to use the class :py:class:`~itom.dataObject`, the base idea and concept of
-the array structure should be explained. If you already now the huge |python| module **Numpy** with its base array 
-class :py:class:`numpy.ndarray`, one will ask why another similar array class is provided by |itom|. The reasons for this 
+the array structure should be explained. If you already now the huge |python| module **Numpy** with its base array
+class :py:class:`numpy.ndarray`, one will ask why another similar array class is provided by |itom|. The reasons for this
 are as follows:
 
-* The python class :py:class:`~itom.dataObject` is just a wrapper for the |itom| internal class **DataObject**, written in C++. 
-  This array structure is used all over |itom| and also passed to any plugin instances of |itom|. Internally, the C++ class 
-  **DataObject** is based on OpenCV matrices (cv::Mat), such that functionalities provided by the open-source 
+* The python class :py:class:`~itom.dataObject` is just a wrapper for the |itom| internal class **DataObject**, written in C++.
+  This array structure is used all over |itom| and also passed to any plugin instances of |itom|. Internally, the C++ class
+  **DataObject** is based on OpenCV matrices (cv::Mat), such that functionalities provided by the open-source
   Computer-Vision Library (OpenCV) can be used by |itom|, too.
-* The class :py:class:`~itom.dataObject` should also be used to store real measurement data. Therefore it is possible to 
+* The class :py:class:`~itom.dataObject` should also be used to store real measurement data. Therefore it is possible to
   add tags and other meta information to every dataObject (like axis descriptions, scale and offset values, protocol entries...).
-* Usually, array classes (like the class :py:class:`numpy.ndarray`) store the whole matrix in one continuous block in memory. 
-  Due to the working principle of every operating system, it is sometimes difficult to allocate a huge block in memory. 
-  Therefore, **dataObject** only stores the sub-matrices of the last two-dimensions in single blocks in memory, while the 
-  first ``N - 2`` dimensions of the array are represented by one vector in memory, where every item points to its corresponding 
+* Usually, array classes (like the class :py:class:`numpy.ndarray`) store the whole matrix in one continuous block in memory.
+  Due to the working principle of every operating system, it is sometimes difficult to allocate a huge block in memory.
+  Therefore, **dataObject** only stores the sub-matrices of the last two-dimensions in single blocks in memory, while the
+  first ``N - 2`` dimensions of the array are represented by one vector in memory, where every item points to its corresponding
   sub-matrix (called plane). Using this concept, huger arrays can be allocated without causing a memory error.
 
 The class :py:class:`~itom.dataObject` is compatible to a :py:class:`numpy.ndarray`, however the dataObject does not support
@@ -58,7 +58,7 @@ For more information about the ``datetime`` and ``timedelta`` data types, see :r
 .. note::
     In order to realize a compatible version with respect to *numpy*, *matlab*... data in a **DataObject** can also be stored *continuously*. The basic structure for
     the data object is the same than in the *non-continuous* (default) version, but the data of each 2dim-matrix is continuously aligned in memory and each data-pointer
-    of each matrix just points to the first element of the corresponding matrix in this big data block in memory. 
+    of each matrix just points to the first element of the corresponding matrix in this big data block in memory.
 
     The non-continuous representation has advantages especially in the case of huge data sets, since it is more difficult to allocate a free, big continuous block in memory without
     reorganizing it compared to multiple smaller blocks of memory, which can be distributed randomly in memory.
@@ -71,29 +71,29 @@ Creating a dataObject
 In general, a :py:class:`~itom.dataObject` is created like any other class instance in |python|, hence the constructor of class :py:class:`~itom.dataObject` is called. For a full reference of the constructor of class **dataObject**, type
 
 .. code-block:: python
-    
+
     help(dataObject)
 
 In the following example, some dataObjects of different size and types are created. Using these constructors, the content of the created array is arbitrary at initialization:
 
 .. code-block:: python
     :linenos:
-    
+
     #1. empty dataObject, dimensions: 0, size: []
     a = dataObject()
-    
+
     #2. one dimensional dataObject
     #  a one dimensional dataObject already is
     #  allocated as an array of size [1 x n]
     b = dataObject([5], "float32") #size [1x5]
-    
+
     #3. 5 x 3 array, type: int8
     c = dataObject([5,3], "int8")
-    
+
     #4. 2 x 5 x 10 array, type: complex128
     #  here two planes of size [5x10] are created and a vector with two items points to them
     d = dataObject([2,5,10], "complex128")
-    
+
     #5. 2 x 5 x 10 array, type: complex128, continuous
     #  This matrix has the same size and type than matrix
     #  'd' above. However, the continuous keyword indicates,
@@ -105,7 +105,7 @@ In the following example, some dataObjects of different size and types are creat
     #  However consider that this is not recommended for huge
     #  matrices.
     e = dataObject([2,5,10], "complex128", continuous = True)
-    
+
     #6. create a 2x3, uint16 dataObject filled with [[1,2,3],[4,5,6]]
     f = dataObject([2,3], "uint16", data = (1,2,3,4,5,6))
 
@@ -116,12 +116,12 @@ is mainly the data block(s)) as long as possible, such that memory and execution
 
 .. code-block:: python
     :linenos:
-    
+
     #1. create dataObject from any array-like object (e.g. Numpy array)
     import numpy as np
     a = np.ndarray([5,7])
     b = dataObject(a) #b has the continuous flag set
-    
+
     #2. create dataObject from a tuple of values
     #  any object, that python can interpret as sequence can be used
     #  in order to initialize the data object. The dataObject can have
@@ -132,14 +132,14 @@ is mainly the data block(s)) as long as possible, such that memory and execution
     #  c-continuous creation.
     c = (2,7,4,3,8,9,6,2) #8 values
     d = dataObject([2,4], data = c)
-    
+
     #3. create a dataObject as shallow copy of another dataObject
     e = dataObject(d)
-    
+
 Static constructors for dataObjects
 ------------------------------------
 
-If a **dataObject** is created using one of the default constructors (without keyword *data*), the matrix is allocated to the right 
+If a **dataObject** is created using one of the default constructors (without keyword *data*), the matrix is allocated to the right
 side but the values usually have no defined content. The values are even not randomly distributed. In order to generate a pre-filled
 **dataObject**, there exist some special static methods. These are:
 
@@ -150,7 +150,7 @@ side but the values usually have no defined content. The values are even not ran
 * :py:meth:`~itom.dataObject.randN` is used to created a n-dimensional dataObject filled with gaussian distributed random values.
 
 .. code-block:: python
-    
+
     a = dataObject.ones([3,4], 'uint8')
     a.data()
     #returns:
@@ -167,31 +167,31 @@ facts of the dataObject are printed in one line. This is the same result than us
 the full content of a **dataObject** in the command line, use the method :py:meth:`~itom.dataObject.data`:
 
 .. code-block:: python
-    
+
     a = dataObject.ones([3,4], 'uint8')
     print(a)
     #returns:
     #dataObject('uint8', [3 x 4], continuous: 1, owndata: 1)
-    
+
     a.data()
     #returns:
     #dataObject(size=[3x4], dtype='uint8'
     #    [[  1,   1,   1,   1],
     #     [  1,   1,   1,   1],
     #     [  1,   1,   1,   1]])
-    
+
 .. note::
-    
+
     The string representation (using the :py:meth:`print` method) of a numpy array will print the full or cropped content of the numpy array
     to the command line (cropped if it is too big). For **dataObjects**, the content is only print using the :py:meth:`~itom.dataObject.data` method.
-    
+
 Accessing values in a dataObject
 -------------------------------------
 
 In order to read or write single values of a dataObject, use the indexing operator:
 
 .. code-block:: python
-    
+
     a = dataObject.ones([2,3], 'uint8')
     print("first element", a[0,0])
     print("last line:", a[1,0], a[2,0], a[3,0])
@@ -203,11 +203,11 @@ The index operator obtains *n* comma separated arguments, one for each axis. Eac
 A dataObject is an iteratible object in Python, like lists, tuples, numpy.arrays, ... Therefore, it is possible to iterate through all values of
 a dataObject, whereas the iterator at first goes along the last axis (x), then along the second axis (y) and so on:
 
-.. code-block:: python 
-    
+.. code-block:: python
+
     a = dataObject([2,3,2], 'uint8', data=(1,2,3,4,5,6,7,8,9,10,11,12))
     a.data()
-    
+
     '''returns:
     dataObject(size=[2x3x2], dtype='uint8'
     [0,:,:]->([[  1,   2],
@@ -217,21 +217,21 @@ a dataObject, whereas the iterator at first goes along the last axis (x), then a
            [  9,  10],
            [ 11,  12]])
     '''
-    
+
     for val in a:
         print(a)
-    
+
     '''returns:
     1,2,3,4,5,6,7,8,9,10,11,12
     '''
-    
+
 All fixed-point data types are represented by the python type *int*, all real floating point data types by *float*, the complex data types by *complex* and
 the color type by :py:class:`~itom.rgba`.
 
 It is not only possible to address single values within a dataObject, but the index (or mapping) operator also allows the usage of slices. Then, sub-regions
 of dataObjects can be returned in terms of another dataObject instance. However, it is very important to mention, that a slice or sub-region shares its data memory
 with the original object. Once you change one value in the original or sliced object, the corresponding value is also changed in all related objects. This is the
-main philosophy of Python and also holds for numpy.arrays. 
+main philosophy of Python and also holds for numpy.arrays.
 
 Considering slices, the index of any axis in the indexing or mapping operator can then have the following forms:
 
@@ -240,13 +240,13 @@ Considering slices, the index of any axis in the indexing or mapping operator ca
 * colon operator (:): All values in this axis are addressed.
 
 .. code-block:: python
-    
+
     a = dataObject.ones([10,20,15])
-    
+
     #get subpart
     b = a[5:10, :, 0]
     #b then has the size [5,20,1]
-    
+
     #set all values in b to 0:
     b[:,:,:] = 0
     print(a[4,0,0]) #-> 1
@@ -267,7 +267,7 @@ Any created **dataObject** provides some basic attributes that describe the corr
 Examples:
 
 .. code-block:: python
-    
+
     a = dataObject.ones([5,4,3,2], 'uint16')
     print("dims:", a.ndim, "shape:", a.shape, "type:", a.dtype)
     #returns:
@@ -279,8 +279,8 @@ Value and axes descriptions, units, scaling and offset
 Usually, **dataObjects** and numpy arrays are quite similar and very compatible to each other. They can even share memory (if continuous) and dataObjects can usually be
 used whenever a function requires an **array-like** input type (the class :py:class:`~itom.dataObject` implements the **array-like** interface definitions). However, the
 **dataObject** has been made in order to also save protocol information, meta information as well as the physical meaning of the matrix. As one powerful feature, it is possible
-to set an arbitrary description, unit, scaling and offset to all axes as well as a description and unit to the values. If a **dataObject** is plot (e.g. by :py:meth:`itom.plot`), 
-these properties are read and considered in the plot. 
+to set an arbitrary description, unit, scaling and offset to all axes as well as a description and unit to the values. If a **dataObject** is plot (e.g. by :py:meth:`itom.plot`),
+these properties are read and considered in the plot.
 
 In detail:
 
@@ -297,10 +297,10 @@ Lets assume that a white-light interferometer records a 2.5D topography of an ob
 start position of the x-y-stage is (20.5 mm and 47.7 mm in x and y direction, respectively). These values can then be considered in the obtained **dataObject** by the following code:
 
 .. code-block:: python
-    
+
     # coding=iso-8859-15
     # the coding is important due to the micron sign below
-    
+
     record = dataObject.randN([768, 1024], 'float32')
     #record is assumed to be a dataObject
     record.axisScales = (0.0025, 0.0025)
@@ -310,13 +310,13 @@ start position of the x-y-stage is (20.5 mm and 47.7 mm in x and y direction, re
     record.valueUnit = ('µm')
     record.valueDescription = 'height'
     plot(record)
-    
+
 The output is then:
 
 .. figure:: images/plotDataObjectScaleOffset.png
     :scale: 100%
     :align: center
-    
+
 The relation between pixel coordinates and the physical coordinates is:
 
 phys = (pix - offset) * scaling
@@ -324,8 +324,8 @@ phys = (pix - offset) * scaling
 pix = phys / scaling + offset
 
 These transformations can be done using the methods :py:meth:`~itom.dataObject.physToPix` and :py:meth:`~itom.dataObject.pixToPhys`.
-    
-    
+
+
 Meta tags and protocol
 ----------------------------------
 
@@ -338,51 +338,51 @@ to set or read tags:
 
 .. code-block:: python
     :linenos:
-    
+
     obj = dataObject([10,10], 'float32')
     #add new tags:
     obj.setTag("sensor", "confocal sensor v1.0")
     obj.setTag("aperture", 0.6)
-    
+
     #get tags:
     print("aperture:", obj.tags["aperture"])
     print("sensor:", obj.tags["sensor"])
     print("num tags:", len(obj.tags))
-    
+
     if obj.existTag("manufacturer"):
         print("The tag 'manufacturer' exists")
     else:
         print("The tag 'manufacturer' does not exist")
-    
+
     #delete tag
     success = obj.deleteTag("aperture")
     print("success:", success)
-    
+
 The output will be:
 
 .. code-block:: python
-    
+
     aperture: 0.6
     sensor: confocal sensor v1.0
     num tags: 2
     success: True
-    
+
 One special tag is the 'title'-tag. If you plot a dataObject with a string-based 'title'-tag (e.g. with *itom1dqwtplot* or *itom2dqwtplot*), the title tag
 will be used as title for the plot (if the property *title* of the plot is set to **<auto>**):
 
 .. code-block:: python
     :linenos:
-    
+
     obj.setTag("title", "User-defined title")
     plot(obj, "2D")
-    
+
 This code will lead to the following plot (under the assumption, that the designer plugin **itom2dqwtplot** is set as default 2D plot in the :ref:`properties dialog <gui-default-plots>`
 of |itom|):
 
 .. figure:: images/plotDataObjectTitle.png
     :scale: 100%
     :align: center
-    
+
 
 Another special tag is only important for 1D-plots (using the designer plugin **itom1dqwtplot**). You can then set the legend titles for every single curve.
 This is done by the tag **legendTitleX** where X is a continuous line index starting with 0. The following example shows how to create a 2D dataObject
@@ -390,7 +390,7 @@ with two rows and 100 columns. In the first line (row 0), a sine with an amplitu
 Then, the dataObject is plot as 1D plot (indicated by "1D") and the property **legendPosition** is set to **Right** (per default, no legend is shown):
 
 .. code-block:: python
-    
+
     import math
     a = dataObject.zeros([2,100],'int8')
     a[0,:] = [127 * math.sin(x * math.pi / 20) for x in range(0,100)]
@@ -398,7 +398,7 @@ Then, the dataObject is plot as 1D plot (indicated by "1D") and the property **l
     a.setTag("legendTitle0", "first line")
     a.setTag("legendTitle1", "second line")
     plot(a, "1D", properties = {"legendPosition":"Right"})
-    
+
 The result looks like this:
 
 .. figure:: images/plotDataObjectLegend.png
@@ -410,13 +410,13 @@ or changed. However, it is possible to assign a new dictionary to this attribute
 
 The protocol of a dataObject is a list of strings. Use the method :py:meth:`~itom.dataObject.addToProtocol` in order to add a new entry to the protocol. If the dataObject is
 a slice of another object, the string **ROI[...]** with the current slice parameters is prepended to each new protocol entry. Finally, the protocol is stored as tag **protocol**
-and can be requested and deleted using the methods described above.    
+and can be requested and deleted using the methods described above.
 
 .. note::
-    
+
     It is not possible to set tags or protocol entries for empty dataObjects. Tags and the protocol is shared between two shallow copies, hence, if two dataObjects share the same
     data, they also share their tags and protocol.
-    
+
 .. _itomDataObjectVsNumpyArray:
 
 DataObject vs. numpy.array
@@ -438,22 +438,22 @@ They can directly be converted to and from ``numpy.arrays`` even as shallow copy
 Examples for these conversions are:
 
 .. code-block:: python
-    
+
     import numpy as np
-    
+
     dobj2d = dataObject([10,5], 'uint8')
     np2d = np.array(dobj2d) #deep copy
     np2d_v2 = np.array(dobj2d, copy = False) #shallow copy
     dobj2d_v2 = dataObject(np2d) #shallow copy
-    
+
     dobj3d = dataObject([10,20,30], 'uint8') #non-continuous
     np3d = np.array(dobj3d, copy = False) #deep copy, since implicit continuous conversion
     dobj3d_v2 = dataObject(np3d) #shallow copy of np3d
-    
+
     dobj3d2 = dataObject([10,20,30], 'uint8', continuous = True)
     np3d2 = np.array(dobj3d2, copy = False) #shallow copy
     dobj3d2_v2 = dataObject(np3d2)
-    
+
 In order to understand these examples, the following things have to be mentioned or repeated: Per default, a *dataObject* with more than two dimensions is created as non-continuous
 dataObject, hence various planes (the 2d matrix spanned by the last two axes) are distributed at different locations in memory. If passing a dataObject to the constructor of a numpy.array
 a deep copy is created per default. Deep copy means, that the array data is entirely copied to another location in memory, such that both arrays are completely de-coupled. This is
@@ -468,14 +468,14 @@ can implicitely obtain a Numpy array out of them. This is also what *dataObject*
 a numpy array.
 
 On the other side, |itom| often supports numpy arrays without conversion to dataObject. This is for instance the case for the method :py:meth:`itom.plot`. Only, when passing arrays
-to algorithm or hardware plugins (classes :py:class:`~itom.dataIO` or :py:class:`~itom.actuator`, method :py:meth:`~itom.filter`), usually numpy.arrays have to be converted to 
+to algorithm or hardware plugins (classes :py:class:`~itom.dataIO` or :py:class:`~itom.actuator`, method :py:meth:`~itom.filter`), usually numpy.arrays have to be converted to
 dataObjects:
 
 .. code-block:: python
-    
+
     import numpy a np
     import itom
-    
+
     a = np.array([[1,2,3],[4,5,6]])
     itom.plot(a) #works
     itom.filter("minValue", a) #raises an error
@@ -487,7 +487,7 @@ Datetime and timedelta types
 ---------------------------------
 
 A ``dataObject`` can also contain values, that represent either a certain date and time (``datetime``)
-or a time span, denoted as ``timedelta``. Both the Python core implementation and Numpy have their own 
+or a time span, denoted as ``timedelta``. Both the Python core implementation and Numpy have their own
 data types to represent datetimes and time spans and both representations are slightly different. The
 data types used in ``dataObject`` are fully compatible to the Python core types and compatible as close
 as possible to the Numpy data types:
@@ -513,22 +513,22 @@ class :py:class:`datetime.timedelta`. The Numpy class :py:class:`numpy.timedelta
 directly connected to the minimum relative and absolute time spans.
 
 .. note::
-    
+
     A numpy ``NaT`` (not a time) value is not supported by the itom date and time data types.
 
 Examples for constructing such ``dataObjects`` are:
 
 .. code-block:: python
-    
+
     from datetime import datetime, timedelta, timezone
-    
+
     # constructs an arbitrarily filled 2x3 datetime dataObject
     dt1 = dataObject([2,3], 'datetime')
-    
-    # constructs a 2x3 datetime dataObject, where 
+
+    # constructs a 2x3 datetime dataObject, where
     # are values are set to 1970-01-01 00:00 (epoch)
     td2 = dataObject.zeros([2,3], 'datetime')
-    
+
     # constructs a 1x2 datetime dataObject with two dates
     # one value is in UTC time, the other one +1h from UTC
     tz = timezone(timedelta(0, 3600))
@@ -537,14 +537,14 @@ Examples for constructing such ``dataObjects`` are:
         datetime(1999,12,31,23,59, tzinfo = tz)
     )
     td3 = dataObject([1,2], 'datetime', data=values)
-    
+
     # constructs an arbitrarily filled 2x3 timedelta dataObject
     td1 = dataObject([2,3], 'timedelta')
-    
-    # constructs a 2x3 timedelta dataObject, where 
+
+    # constructs a 2x3 timedelta dataObject, where
     # are values are set to a 0 time span.
     td2 = dataObject.zeros([2,3], 'timedelta')
-    
+
     # constructs a 1x2 timedelta dataObject with two time spans
     values = (
         timedelta(days=0, seconds=20, microseconds=44000),
@@ -564,19 +564,19 @@ classes :py:class:`numpy.datetime64` or :py:class:`numpy.timedelta64` (as long a
 valid at all):
 
 .. code-block:: python
-    
+
     from datetime import datetime, timedelta, timezone
     import numpy as np
-    
+
     td1 = dataObject.zeros([2,3], 'datetime')
     td1 += timedelta(days=2)
     print(td1[1,1])
     # >> 1970-01-03 00:00:00
-    
+
     td1[:,:] = datetime(2023, 4, 5, 23, 4, 5)
     print(td1[1,1])
     # >> 2023-04-05 23:04:05
-    
+
     td1[0,0] = np.datetime64('2005-02-25T03:30')
     print(td1[0,0])
     # >> 2005-02-25 03:30:00
@@ -585,20 +585,20 @@ A ``datetime`` dataObject can be used as x-axis for a line plot. See :ref:`itom1
 If you want to create a linearly distributed datetime x-axis, the numpy method ``arange`` can help, e.g.:
 
 .. code-block:: python
-    
+
     import numpy as np
-    
+
     # pass this numpy ndarray as xData property to a 1d plot
     # here, a range with a step size of 1 day is created
     dateScale = np.arange('2005-02', '2005-03', dtype='datetime64[D]')
-    
+
     # or convert it to a dataObject
     dateScale2 = dataObject(dateScale)
 
 Main operations on numpy.arrays and itom.dataObjects
 ----------------------------------------------------------
 
-The following list in an extract of the itom cheatsheet (http://itom.bitbucket.io/media.html) and shows major operations on numpy.arrays and itom.dataObjects:
+The following list in an extract of the itom cheatsheet (https://itom.bitbucket.io/documents/itom_cheatsheet.pdf) and shows major operations on numpy.arrays and itom.dataObjects:
 
 ======================================= ============================================= ===========================================================================================
 np.array (import numpy as np)           itom.dataObject (import itom)
@@ -611,7 +611,7 @@ arr.shape                               dObj.shape                              
 arr.shape[0]                            dObj.shape[0]                                 Returns size of first dimensions (here: y-axis)
 c=arr[0,1]; arr[0,1]=7                  dObj[0,1]; b[0,1]=7                           Gets or sets the element in the 1st row, 2nd col
 c=arr[:,1:3] or                         c=dObj[:,1:3] or                              Returns shallow copy of array containing the 2nd and 3rd columns
-c=arr[0:2,1:3]                          c= dObj [0:2,1:3]                             
+c=arr[0:2,1:3]                          c= dObj [0:2,1:3]
 arr[:,:]=7                              dObj[:,:]=7                                   sets all values of array to value 7
 arr.transpose() (shallow copy)          dObj.trans() (deep copy)                      transpose of array
 np.dot(arr1,arr2)                       dObj1 * dObj2 (float only)                    matrix multiplication
@@ -637,6 +637,6 @@ a[a>0]=5                                a[a>0] = 5                              
 a[np.isnan(a)]=0                        a[np.isnan(a)]=5                              sets all NaN values of a to 5
 arr2 = arr1.reshape([3,2])              dObj2 = dObj1.reshape([3,2])                  reshapes arr1 to new size (equal number of items)
 ======================================= ============================================= ===========================================================================================
-    
+
 
 For a detailed methods-summery of the *dataObject* see :ref:`ITOM-Script-Reference`.

@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -44,7 +44,7 @@ TimerCallback::TimerCallback() :
 }
 
 //-------------------------------------------------------------------------------------
-TimerCallback::~TimerCallback() 
+TimerCallback::~TimerCallback()
 {
     Py_XDECREF(m_function);
     Py_XDECREF(m_boundedInstance);
@@ -238,10 +238,10 @@ int PythonTimer::PyTimer_init(PyTimer *self, PyObject *args, PyObject *kwds)
     const char* name = nullptr;
     unsigned char startAfterInit = 1;
 
-    if(!PyArg_ParseTupleAndKeywords(args, kwds, "iO|O!bsb", const_cast<char**>(kwlist), 
+    if(!PyArg_ParseTupleAndKeywords(args, kwds, "iO|O!bsb", const_cast<char**>(kwlist),
         &timeOut,
         &callable,
-        &PyTuple_Type, &self->callbackFunc->m_callbackArgs, 
+        &PyTuple_Type, &self->callbackFunc->m_callbackArgs,
         &singleShot,
         &name,
         &startAfterInit))
@@ -261,9 +261,9 @@ int PythonTimer::PyTimer_init(PyTimer *self, PyObject *args, PyObject *kwds)
     }
     else
     {
-        // if the callback function of the timeout event is debugged, 
+        // if the callback function of the timeout event is debugged,
         // it must not get a NULL object but at least an empty tuple!
-        self->callbackFunc->m_callbackArgs = PyTuple_New(0); 
+        self->callbackFunc->m_callbackArgs = PyTuple_New(0);
     }
 
     PyObject *temp = nullptr;
@@ -297,29 +297,29 @@ int PythonTimer::PyTimer_init(PyTimer *self, PyObject *args, PyObject *kwds)
 
     self->timer = QSharedPointer<QTimer>(new QTimer());
     self->timer->setInterval(timeOut);
-    
+
     QMetaObject::Connection conn = QObject::connect(
         self->timer.data(), &QTimer::timeout,
         self->callbackFunc.data(), &TimerCallback::timeout);
-    
+
     if (!conn)
     {
         PyErr_SetString(PyExc_TypeError, "error connecting timeout signal/slot");
         return -1;
     }
 
-    self->timer->setSingleShot(singleShot > 0); 
+    self->timer->setSingleShot(singleShot > 0);
     self->timer->start();
 
     if (self->timer->timerId() < 0 )
     {
         if (PyErr_WarnEx(
-                PyExc_RuntimeWarning, 
+                PyExc_RuntimeWarning,
                 "timer object could not be created (e.g. negative interval, timer can only "
                 "be used in threads started with QThread or timers cannot be started "
-                "from another thread)", 
+                "from another thread)",
                 1) == -1
-            ) 
+            )
         {
             // exception is raised instead of warning (depending on user defined warning levels)
             return -1;
@@ -338,8 +338,8 @@ int PythonTimer::PyTimer_init(PyTimer *self, PyObject *args, PyObject *kwds)
         }
 
         QMetaObject::invokeMethod(
-            uiOrg, 
-            "registerActiveTimer", 
+            uiOrg,
+            "registerActiveTimer",
             Q_ARG(QWeakPointer<QTimer>, qTimerPtr),
             Q_ARG(QString, nameStr)
         );
@@ -388,14 +388,14 @@ If the timer is already running, it will be stopped and restarted. \n\
 See Also \n\
 -------- \n\
 isActive, stop");
-PyObject* PythonTimer::PyTimer_start(PyTimer *self) 
-{ 
+PyObject* PythonTimer::PyTimer_start(PyTimer *self)
+{
     if (self->timer)
     {
         self->timer->start();
     }
 
-    Py_RETURN_NONE; 
+    Py_RETURN_NONE;
 }
 
 //-------------------------------------------------------------------------------------
@@ -408,14 +408,14 @@ This method stop the timer (if currently active). \n\
 See Also \n\
 -------- \n\
 isActive, start");
-PyObject* PythonTimer::PyTimer_stop(PyTimer *self) 
-{ 
+PyObject* PythonTimer::PyTimer_stop(PyTimer *self)
+{
     if (self->timer)
     {
         self->timer->stop();
     }
 
-    Py_RETURN_NONE; 
+    Py_RETURN_NONE;
 }
 
 //-------------------------------------------------------------------------------------
@@ -428,8 +428,8 @@ Returns \n\
 bool \n\
     ``True`` if the timer is running, otherwise ``False``.");
 PyObject* PythonTimer::PyTimer_isActive(PyTimer *self)
-{ 
-    if (self->timer) 
+{
+    if (self->timer)
     {
         if(self->timer->isActive())
         {
@@ -466,17 +466,17 @@ Notes \n\
 If Python is currently busy, a timer event can also be triggered at a later time, \n\
 if the same trigger event is not already in the execution queue.");
 PyObject* PythonTimer::PyTimer_setInterval(PyTimer *self, PyObject *args)
-{ 
+{
     int timeout;
 
     if(!PyArg_ParseTuple(args, "i", &timeout))
     {
         return nullptr;
-    } 
+    }
 
-    if (self->timer) 
-    { 
-        self->timer->setInterval(timeout); 
+    if (self->timer)
+    {
+        self->timer->setInterval(timeout);
     }
 
     Py_RETURN_NONE;

@@ -10,7 +10,7 @@
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
-   
+
     In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
@@ -60,7 +60,7 @@ public:
         autoScroll(true)
     {
     }
-    
+
     QPlainTextEdit *textEdit;
     QString tempText;
     ito::tStreamMessageType tempType;
@@ -89,7 +89,7 @@ PythonLogWidget::PythonLogWidget(QWidget* parent /*= NULL*/) :
     d->textEdit->setFont(f);
 
     //this is for the QtDesigner only (to have something like a preview)
-    d->textEdit->appendHtml(tr("This widget automatically display the selected type of python output or error messages.") + 
+    d->textEdit->appendHtml(tr("This widget automatically display the selected type of python output or error messages.") +
         "<br><font color=\"red\">" + tr("Errors are displayed in red.") + "</font>");
 
     QHBoxLayout *layout = new QHBoxLayout();
@@ -255,7 +255,7 @@ ito::RetVal PythonLogWidget::init()
         Q_D(const PythonLogWidget);
 
         ito::RetVal retval;
-        
+
         if (d->errorStream)
             retval += apiConnectToOutputAndErrorStream(this, SLOT(messageReceived(QString,ito::tStreamMessageType)), ito::msgStreamErr);
         if (d->outputStream)
@@ -289,7 +289,7 @@ void PythonLogWidget::messageReceived(QString message, ito::tStreamMessageType m
         }
         else
         {
-            
+
             foreach (const QString &t, sl)
             {
                 d->textEdit->appendHtml("<font color=\"red\">" + t.toHtmlEscaped().replace(" ", "&nbsp;") + "</font>");
@@ -300,7 +300,7 @@ void PythonLogWidget::messageReceived(QString message, ito::tStreamMessageType m
         {
             d->textEdit->verticalScrollBar()->setValue(d->textEdit->verticalScrollBar()->maximum());
         }
-        
+
         d->tempText = "";
     }
 
@@ -321,7 +321,7 @@ void PythonLogWidget::messageReceived(QString message, ito::tStreamMessageType m
         }
         else
         {
-            
+
             foreach (const QString &t, sl)
             {
                 d->textEdit->appendHtml("<font color=\"red\">" + t.toHtmlEscaped().replace(" ", "&nbsp;") + "</font>");
@@ -332,7 +332,7 @@ void PythonLogWidget::messageReceived(QString message, ito::tStreamMessageType m
         {
             d->textEdit->verticalScrollBar()->setValue(d->textEdit->verticalScrollBar()->maximum());
         }
-        
+
         d->tempText = message.mid(lastIndex+1);
         d->tempType = messageType;
     }
@@ -364,7 +364,7 @@ void PythonLogWidget::showContextMenu(const QPoint &pt)
     menu->addAction(actionAutoScroll);
 
     menu->exec(d->textEdit->mapToGlobal(pt));
-    
+
     DELETE_AND_SET_NULL(menu);
 
 

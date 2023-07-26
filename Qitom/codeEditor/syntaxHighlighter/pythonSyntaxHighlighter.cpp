@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -23,19 +23,22 @@
     ------------------------
 
     This file belongs to the code editor of itom. The code editor is
-    in major parts a fork / rewritten version of the python-based source 
-    code editor PyQode from Colin Duquesnoy and others 
-    (see https://github.com/pyQode). PyQode itself is licensed under 
+    in major parts a fork / rewritten version of the python-based source
+    code editor PyQode from Colin Duquesnoy and others
+    (see https://github.com/pyQode). PyQode itself is licensed under
     the MIT License (MIT).
 
     Some parts of the code editor of itom are also inspired by the
     source code editor of the Spyder IDE (https://github.com/spyder-ide),
     also licensed under the MIT License and developed by the Spyder Project
-    Contributors. 
+    Contributors.
 
 *********************************************************************** */
 
 #include "pythonSyntaxHighlighter.h"
+
+// for Python version check
+#include "patchlevel.h"
 
 #include "../codeEditor.h"
 #include <qapplication.h>
@@ -175,7 +178,7 @@ void PythonSyntaxHighlighter::highlight_block(const QString &text, QTextBlock &b
 
     State state = Normal;
 
-    
+
     QString key;
     int pos = 0;
     int length;
@@ -200,7 +203,7 @@ void PythonSyntaxHighlighter::highlight_block(const QString &text, QTextBlock &b
         std::cerr << "Stack overflow in regular expression (syntax highlighter).\n" << std::endl;
         return;
     }
-    
+
     while ((match_iter = hasNextMatch(matches, key)) != matches.constEnd())
     {
         {
@@ -310,7 +313,7 @@ void PythonSyntaxHighlighter::highlight_block(const QString &text, QTextBlock &b
                 if (key == "keyword")
                 {
                     if (value == "def" || value == "class")
-                    {   
+                    {
                         auto match = PythonSyntaxHighlighter::regExpIdProg.match(text2, end);
 
                         if (match.hasMatch())
@@ -402,11 +405,39 @@ QString any(const QString &name, const QStringList &alternates)
 {
     QList<NamedRegExp> regExpressions;
 
-    QStringList kwlist = QStringList() << "self" << "False" << "None" << "True" << "assert" << "break" \
-        << "class" << "continue" << "def" << "del" << "elif" << "else" << "except" << "finally" << "for" \
-        << "global" << "if" << "lambda" << "nonlocal" << "pass" << "raise" << "return" << "try" \
-        << "while" << "with" << "yield" << "async" << "await" \
-        << "match";  // match is new in Python 3.10
+    QStringList kwlist = QStringList() << "self"
+                                       << "False"
+                                       << "None"
+                                       << "True"
+                                       << "assert"
+                                       << "break"
+                                       << "class"
+                                       << "continue"
+                                       << "def"
+                                       << "del"
+                                       << "elif"
+                                       << "else"
+                                       << "except"
+                                       << "finally"
+                                       << "for"
+                                       << "global"
+                                       << "if"
+                                       << "lambda"
+                                       << "nonlocal"
+                                       << "pass"
+                                       << "raise"
+                                       << "return"
+                                       << "try"
+                                       << "while"
+                                       << "with"
+                                       << "yield"
+                                       << "async"
+                                       << "await";
+
+#if (PY_VERSION_HEX >= 0x030A0000)
+    kwlist << "match"
+           << "case"; // match/case is new in Python 3.10
+#endif
 
     QStringList kwNamespaceList = QStringList() << "from" << "import" << "as";
     QStringList wordopList = QStringList() << "and" << "or" << "not" << "in" << "is";
@@ -421,7 +452,7 @@ QString any(const QString &name, const QStringList &alternates)
 
     // ... and for text operators
     QString word_operators = "\\b" + any("operator_word", wordopList) + "\\b";
-    
+
     //TODO: obtain the following list by the following python script:
     /*
     import builtins
@@ -430,7 +461,7 @@ QString any(const QString &name, const QStringList &alternates)
     */
     //The following builtins are based on Python 3.7
     QStringList builtinlist = QStringList() << "ArithmeticError" << "AssertionError" << "AttributeError" << \
-        "BaseException" << "BlockingIOError" << "BrokenPipeError" << "BufferError" << "BytesWarning" << 
+        "BaseException" << "BlockingIOError" << "BrokenPipeError" << "BufferError" << "BytesWarning" <<
         "ChildProcessError" << "ConnectionAbortedError" << "ConnectionError" << "ConnectionRefusedError" << \
         "ConnectionResetError" << "DeprecationWarning" << "EOFError" << "Ellipsis" << "EnvironmentError" << \
         "Exception" << "False" << "FileExistsError" << "FileNotFoundError" << "FloatingPointError" << "FutureWarning" << \
@@ -466,7 +497,7 @@ QString any(const QString &name, const QStringList &alternates)
     QString instance = any("instance", QStringList("\\bself\\b") << "\\bcls\\b");
 
     /* decorators:
-    
+
     - each decorator is in its own line
     - there can be an arbitrary number of spaces (or tabs) at the beginning
     - then the @ (at) sign follows
@@ -494,7 +525,7 @@ QString any(const QString &name, const QStringList &alternates)
             "\\b[1-9](?:_?[0-9])*" <<       // decimal integer (non-zero)
             "\\b0(?:_?0)*")                 // decimal integer (zero)
         + "\\b";
-                
+
     QString prefix = "r|u|R|U|f|F|fr|Fr|fR|FR|rf|rF|Rf|RF|b|B|br|Br|bR|BR|rb|rB|Rb|RB";
                                                                               //"(\\b(b|u))?'[^'\\\\\\n]*(\\\\.[^'\\\\\\n]*)*'?"
     QString sqstring =     QString("(\\b(%1))?'[^'\\\\\\n]*(\\\\.[^'\\\\\\n]*)*'?").arg(prefix); //"(\\b(%1))?'[^'\\\\\\n]*(\\\\.[^'\\\\\\n]*)*'?";

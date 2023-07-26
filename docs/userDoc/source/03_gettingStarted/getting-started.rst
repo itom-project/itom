@@ -20,6 +20,6 @@ This chapter is structured as follows:
 
 .. toctree::
     :maxdepth: 2
-   
+
     getting-started-lvl2.rst
     startup-arguments.rst

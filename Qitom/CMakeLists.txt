@@ -18,22 +18,23 @@
 # You should have received a copy of the GNU Library General Public License
 # along with itom. If not, see <http://www.gnu.org/licenses/>.
 
-cmake_minimum_required(VERSION 3.1)
- 
-set(target_name qitom) 
+cmake_minimum_required(VERSION 3.12...3.24)
+
+set(target_name qitom)
 project(${target_name})
- 
+
 message(STATUS "--------------- EXECUTABLE ${target_name} -----------------")
 
-# include commonly used itom CMake macros (internal can only be used within the core projects) 
+# include commonly used itom CMake macros (internal can only be used within the core projects)
 include("../cmake/ItomBuildMacros.cmake")
 include("../cmake/ItomBuildMacrosInternal.cmake")
 
-if(${BUILD_QTVERSION} STREQUAL "Qt6")
+if(BUILD_QTVERSION STREQUAL "Qt6")
     set(CMAKE_CXX_STANDARD 17)
-else()
+elseif(BUILD_QTVERSION STREQUAL "Qt5")
     set(CMAKE_CXX_STANDARD 11)
-endif()
+endif(BUILD_QTVERSION STREQUAL "Qt6")
+
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 itom_init_cmake_policy(3.12)
@@ -54,7 +55,7 @@ if(${BUILD_WITH_HELPVIEWER})
     #HELPVIEWER is only available for Qt >= 5.6.0
     #at first, get the available Qt version
     itom_find_package_qt(ON Core)
-    
+
     if (QT5_FOUND AND (Qt5_VERSION VERSION_LESS 5.6.0))
         message(WARNING "BUILD_WITH_HELPVIEWER is set to FALSE, since it is only possible for Qt >= 5.6.0")
         set(BUILD_WITH_HELPVIEWER FALSE)
@@ -64,7 +65,7 @@ endif()
 if(${BUILD_WITH_HELPVIEWER})
     #requires Qt5 and Qt5WebEngine in order to built a built-in help viewer, since QtAssistant only has a limited set of rendering options since Qt5.6.
     itom_find_package_qt(ON Core Widgets UiTools PrintSupport Network Sql Xml OpenGL Svg WebEngineWidgets Help Designer LinguistTools)
-    
+
     if(Qt5WebEngineWidgets_FOUND OR Qt6WebEngineWidgets_FOUND)
         add_definitions(-DUSEHELPVIEWER -D_USEHELPVIEWER)
     else()
@@ -75,35 +76,30 @@ else()
     itom_find_package_qt(ON Core Widgets UiTools PrintSupport Network Sql Xml OpenGL Svg Designer LinguistTools)
 endif()
 
-find_package(PythonLibs 3.0 REQUIRED)
-# can be used from 3.12 onwards
-# find_package(Python 3.0 COMPONENTS Interpreter Development REQUIRED )
-# FIND_PACKAGE (Python3 COMPONENTS Interpreter Development)
+find_package(Python 3.7 REQUIRED COMPONENTS Interpreter Development NumPy)
 
-find_package(NumPy REQUIRED)
-
-message(STATUS "Detected Python version: ${PYTHONLIBS_VERSION_STRING}")
-message(STATUS "Python include directory: ${PYTHON_INCLUDE_DIR}")
-message(STATUS "Python executable: ${PYTHON_EXECUTABLE}")
-message(STATUS "Numpy include directory: ${NUMPY_INCLUDE_DIRS}")
-
-if (${PYTHONLIBS_VERSION_STRING} VERSION_LESS "3.5.0")
+if (${Python_VERSION} VERSION_LESS "3.5.0")
     message(FATAL_ERROR "The minimum required Python version is 3.5.0")
 endif()
 
 find_package(OpenCV COMPONENTS core REQUIRED)
 
 if(BUILD_WITH_PCL)
-    find_package(PCL 1.5.1 REQUIRED COMPONENTS common)
-    
-    # actually we need this only to configure the itom.bat including vtk, otherwise 
+    include(Setup_PCL_Itom)
+    if(WIN32)
+        find_package(PCL 1.5.1 QUIET REQUIRED COMPONENTS common PATHS ${PCL_CMAKE_DIR} NO_DEFAULT_PATH)
+    else(WIN32)
+        find_package(PCL 1.5.1 QUIET REQUIRED COMPONENTS common)
+    endif(WIN32)
+
+    # actually we need this only to configure the itom.bat including vtk, otherwise
     # eventually pcl-tools plugin will not be loaded
-    find_package(VTK QUIET)    
+    find_package(VTK QUIET)
 endif()
 
 find_package(VisualLeakDetector QUIET)
 find_package(HTMLHelp)
-find_package(LATEX QUIET) 
+find_package(LATEX QUIET)
 
 # set some preprocessor directives
 add_definitions(${Qt5Widgets_DEFINITIONS})
@@ -126,7 +122,7 @@ endif()
 # of itom (e.g. in order to indicate a special combination of plugins,
 # build settings etc.). This optional name is shown in both the startup
 # splashscreen as well as the about dialog of itom.
-set(ITOM_ADDITIONAL_EDITION_NAME "" CACHE 
+set(ITOM_ADDITIONAL_EDITION_NAME "" CACHE
     STRING "Optional, additional name of this itom edition (shown in splashscreen and about dialog)")
 add_definitions( "-DITOM_ADDITIONAL_EDITION_NAME=\"${ITOM_ADDITIONAL_EDITION_NAME}\"")
 
@@ -160,7 +156,7 @@ if(BUILD_WITH_PYMATLAB)
             "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\R2020a;MATLABROOT]"
             "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\R2020b;MATLABROOT]"
         )
-        
+
         if(BUILD_TARGET64)
             set(MATLAB_LIB_SUFFIXES
                 "lib/win64"
@@ -179,7 +175,7 @@ if(BUILD_WITH_PYMATLAB)
     else()
         set(MATLAB_LIB_SUFFIXES)
     endif()
-  
+
     find_path(PYMATLAB_INCLUDE_DIR "engine.h" PATHS ${MATLAB_ROOT_PATH}/extern/include)
     if(NOT PYMATLAB_INCLUDE_DIR)
         message(FATAL_ERROR "BUILD_WITH_PYMATLAB is checked, but PYMATLAB_INCLUDE_DIR could not be found")
@@ -213,9 +209,9 @@ foreach( OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES} )
     set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${ITOMOUTPUTDIR} )
 endforeach()
 
-
 include_directories(
     ${CMAKE_CURRENT_BINARY_DIR}
+    ${CMAKE_CURRENT_BINARY_DIR}/python
     ${CMAKE_CURRENT_BINARY_DIR}/GeneratedFiles
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/..
@@ -227,8 +223,8 @@ include_directories(
     ${Qt6WebEngineWidgets_INCLUDE_DIRS}
     ${Qt6Help_INCLUDE_DIRS}
     ${Qt6Network_INCLUDE_DIRS}
-    ${PYTHON_INCLUDE_DIR}
-    ${NUMPY_INCLUDE_DIRS}
+    ${Python_INCLUDE_DIRS}
+    ${Python_NumPy_INCLUDE_DIRS}
     ${PCL_INCLUDE_DIRS}
     ${PYMATLAB_INCLUDE_DIR}
     ${VISUALLEAKDETECTOR_INCLUDE_DIR}
@@ -245,7 +241,7 @@ link_directories(
     ${CMAKE_CURRENT_BINARY_DIR}/../AddInManager
     ${CMAKE_CURRENT_BINARY_DIR}/../itomWidgets
 )
- 
+
 set(qitom_HEADERS_NOMOC
     ${CMAKE_CURRENT_SOURCE_DIR}/benchmarks.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInGrabber.h
@@ -349,6 +345,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSaveFileWithFilter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSelectUser.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSnapshot.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogScriptCharsetEncoding.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogTimerManager.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogVariableDetail.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogVariableDetailDataObject.h
@@ -448,6 +445,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panels/breakpointPanel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panels/foldingPanel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panels/lineNumber.h
+	${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panels/globalCheckerPanel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/syntaxHighlighter/pythonSyntaxHighlighter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/syntaxHighlighter/syntaxHighlighterBase.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/syntaxHighlighter/codeEditorStyle.h
@@ -479,6 +477,7 @@ set(qitom_UI
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogReplace.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSaveFileWithFilter.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSelectUser.ui
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogScriptCharsetEncoding.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSnapshot.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogTimerManager.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogVariableDetail.ui
@@ -522,7 +521,7 @@ set(qitom_RCC
     ${CMAKE_CURRENT_SOURCE_DIR}/qitom.qrc
 )
 
-set(qitom_SOURCES 
+set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/AppManagement.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/global.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
@@ -599,6 +598,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogReplace.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSaveFileWithFilter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSelectUser.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogScriptCharsetEncoding.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSnapshot.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogTimerManager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogVariableDetail.cpp
@@ -644,7 +644,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/helpDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/lastCommandDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/mainWindow.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/widgets/outlineSelectorWidget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/outlineSelectorWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptEditorWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptEditorPrinter.cpp
@@ -690,6 +690,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panels/breakpointPanel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panels/foldingPanel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panels/lineNumber.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panels/globalCheckerPanel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/syntaxHighlighter/pythonSyntaxHighlighter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/syntaxHighlighter/syntaxHighlighterBase.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/syntaxHighlighter/codeEditorStyle.cpp
@@ -742,11 +743,11 @@ if(APPLE)
     set(MACOSX_BUNDLE TRUE)
     set(MACOSX_BUNDLE_BUNDLE_NAME "itom")
     set(MACOSX_BUNDLE_GUI_IDENTIFIER "ITO.itom")
-    set(MACOSX_BUNDLE_INFO_STRING "itom - an Open Source Measurement, Automation and Evaluation Software\nhttp://itom.bitbucket.org")
+    set(MACOSX_BUNDLE_INFO_STRING "itom - an Open Source Measurement, Automation and Evaluation Software\nhttps://github.com/itom-project")
     set(MACOSX_BUNDLE_LONG_VERSION_STRING "${ITOM_VERSION_STRING}")
     set(MACOSX_BUNDLE_SHORT_VERSION_STRING "${ITOM_VERSION_STRING}")
     set(MACOSX_BUNDLE_BUNDLE_VERSION ${ITOM_VERSION_STRING})
-    set(MACOSX_BUNDLE_COPYRIGHT "GNU LGPL with itom exception. Used plugins and libraries might differ. http://itom.bitbucket.org/latest/docs/01_introduction/introduction.html#licensing.")
+    set(MACOSX_BUNDLE_COPYRIGHT "GNU LGPL with itom exception. Used plugins and libraries might differ. https://itom-project.github.io/latest/docs/01_introduction/introduction.html#licensing.")
 
     # Setting icon for OS X
     set(target_icon itomicon.icns)
@@ -801,13 +802,13 @@ find_package(Git)
 if(CONSIDER_GIT_SVN AND GIT_FOUND)
     message(STATUS "Using GIT as repository information")
     configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pyGit2Header.py.in ${CMAKE_CURRENT_BINARY_DIR}/pyGit2Header.py )
-    
+
     add_custom_target(
         ${target_name}_versionCheck
-        COMMAND    ${PYTHON_EXECUTABLE}
+        COMMAND    ${Python_EXECUTABLE}
         "${CMAKE_CURRENT_BINARY_DIR}/pyGit2Header.py"
     )
-    
+
     add_dependencies(${target_name} ${target_name}_versionCheck)
 else()
     message(STATUS "Git versioning was not enabled (CONSIDER_GIT_SVN OFF) or git could not be found. Default version.h file is generated")
@@ -817,7 +818,7 @@ else()
 endif()
 # END HANDLE VERSION
 
-add_dependencies(${target_name} itomWidgets)
+add_dependencies(${target_name} itomWidgets iconThemeBright iconThemeDark)
 
 set( WINICONRES "" )
 
@@ -830,16 +831,16 @@ if(MSVC)
     endif()
 endif()
 
-if(PYTHON_LIBRARY_DEBUG AND PYTHON_LIBRARY_RELEASE)
-    set(PYTHON_LIBRARY_ITOM ${PYTHON_LIBRARY_RELEASE})
+if(Python_LIBRARY_DEBUG AND Python_LIBRARY_RELEASE)
+    set(PYTHON_LIBRARY_ITOM ${Python_LIBRARY_RELEASE})
 #only debug
-elseif(PYTHON_LIBRARY_DEBUG)
+elseif(Python_LIBRARY_DEBUG)
     message(STATUS "Python is always linked as release version to itom, therefore indicate the release library of python")
 #only release
-elseif(PYTHON_LIBRARY_RELEASE)
-    set(PYTHON_LIBRARY_ITOM ${PYTHON_LIBRARY_RELEASE})
-elseif(PYTHON_LIBRARY)
-    set(PYTHON_LIBRARY_ITOM ${PYTHON_LIBRARY})
+elseif(Python_LIBRARY_RELEASE)
+    set(PYTHON_LIBRARY_ITOM ${Python_LIBRARY_RELEASE})
+elseif(Python_LIBRARY)
+    set(PYTHON_LIBRARY_ITOM ${Python_LIBRARY})
 #no library found
 else()
     message(STATUS "Python could not be found")
@@ -847,6 +848,7 @@ endif()
 
 if(BUILD_WITH_PCL)
     set(POINTCLOUD_LIBRARIES pointcloud)
+    target_link_libraries(pointcloud)
 else()
     set(POINTCLOUD_LIBRARIES "")
 endif()
@@ -859,13 +861,14 @@ if(WIN32)
         ${POINTCLOUD_LIBRARIES}
         ${VISUALLEAKDETECTOR_LIBRARIES}
         ${QT5_LIBRARIES}
-        dataobject
         addinmanager
-        qpropertyeditor
         itomCommonLib
         itomCommonQtLib
+        dataobject
         itomWidgets
         itomCommonPlotLib
+        qpropertyeditor
+        itomShapeLib
         ${PYMATLAB_LIBRARIES}
         shell32)
 else()
@@ -876,13 +879,14 @@ else()
         ${POINTCLOUD_LIBRARIES}
         ${VISUALLEAKDETECTOR_LIBRARIES}
         ${QT5_LIBRARIES}
-        dataobject
         addinmanager
-        qpropertyeditor
         itomCommonLib
         itomCommonQtLib
+        dataobject
         itomWidgets
         itomCommonPlotLib
+        qpropertyeditor
+        itomShapeLib
         ${PYMATLAB_LIBRARIES})
 endif()
 
@@ -917,10 +921,10 @@ if(MSVC)
         target_compile_options(${target_name} PUBLIC "/Zc:__cplusplus") #  "permissive-")
     endif()
 endif()
- 
+
 itom_build_parallel_linux(${target_name})
 
-# for backward compatiblity: enum.py is a default python library from Python 3.4 on. In order to 
+# for backward compatiblity: enum.py is a default python library from Python 3.4 on. In order to
 # also support earlier versoins, enum.py was also part of the itom-packages folder. However, this
 # version is old and creates conflicts with newer versions required by further modern python packages.
 # Therefore, enum.py was removed from itom-packages. If one uses Python 3.3 or earlier, the packages enum34
@@ -1010,17 +1014,26 @@ configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/../pluginMetaData.json.in ${CMAKE_CU
 
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../translation )
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../lib )
- 
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/python)
+
+if(ITOM_BUILD_PACKAGE)
+    set(Python_Itom_Build_Dir "./python3" )
+    configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonBuildDir.h.in ${CMAKE_CURRENT_BINARY_DIR}/python/pythonBuildDir.h)
+else(ITOM_BUILD_PACKAGE)
+    cmake_path(GET Python_EXECUTABLE PARENT_PATH Python_Itom_Build_Dir)
+    configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonBuildDir.h.in ${CMAKE_CURRENT_BINARY_DIR}/python/pythonBuildDir.h)
+endif(ITOM_BUILD_PACKAGE)
+
 #ADD symbols/lib directory in application directory where pdb files will be loaded for debugging (MSVC only)
 if(MSVC)
     file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../symbols/dll )
 endif()
 
-#ADD a batch file for itom-release 
+#ADD a batch file for itom-release
 if(MSVC)
     configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/../itom.bat.in ${CMAKE_CURRENT_BINARY_DIR}/../itom.bat )
     configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/../itomd.bat.in ${CMAKE_CURRENT_BINARY_DIR}/../itomd.bat )
-    
+
     # configuration file for the Google Test Adapter as Visual Studio Extension
     configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/../itom.gta.runsettings.in ${CMAKE_CURRENT_BINARY_DIR}/../itom.gta.runsettings )
 endif()
@@ -1029,12 +1042,10 @@ endif()
 if(MSVC)
     message(STATUS "Using rc-File for version information under windows")
     configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/version.rc.in ${CMAKE_CURRENT_BINARY_DIR}/version.rc )
-    
+
 endif()
 
 # Copying scripts for OS X build process
 if(APPLE)
     file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../osx_install_dependencies.sh DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/..)
 endif(APPLE)
-
-

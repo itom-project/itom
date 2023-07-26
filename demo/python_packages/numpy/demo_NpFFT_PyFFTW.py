@@ -17,7 +17,7 @@ myifft2 = np.fft.ifft2  # default: ifft2 from numpy
 # sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoNumpy.png'
 
 ###############################################################################
-# Define function and overwrite it when ``pyfftw`` is available. 
+# Define function and overwrite it when ``pyfftw`` is available.
 
 def getAlignNdArray(image):
     return np.array(image)

@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -49,18 +49,18 @@ public:
 
     //-------------------------------------------------------------------------------------------------
     // constructor, deconstructor, alloc, dellaoc
-    //------------------------------------------------------------------------------------------------- 
+    //-------------------------------------------------------------------------------------------------
     static void PyProxy_dealloc(PyProxy *self);
     static PyObject* PyProxy_new(PyTypeObject *type, PyObject *args, PyObject *kwds);
     static int PyProxy_init(PyProxy *self, PyObject *args, PyObject *kwds);
 
-       
+
     static PyObject *PyProxy_richcompare(PyObject *v, PyObject *w, int op);
     static PyObject *PyProxy_call(PyProxy *self, PyObject *args, PyObject *kwds);
 
     //-------------------------------------------------------------------------------------------------
     // type structures
-    //------------------------------------------------------------------------------------------------- 
+    //-------------------------------------------------------------------------------------------------
     static PyTypeObject PyProxyType;
     static PyModuleDef PyProxyModule;
 

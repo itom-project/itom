@@ -9,7 +9,7 @@ The figure does not support z-stack sectioning. The "ItomIsoGLWidget" does suppo
 
 Properties
 =================
- 
+
 **colorMap** : *QString*, Defines which color map should be used [e.g. grayMarked, hotIron].
 
 **zAxisInterval** : *QPointF*, Sets the visible range of the displayed z-axis (in coordinates of the data object) or (0.0, 0.0) if range should be automatically set [default]. **Not implemented yet**
@@ -27,7 +27,7 @@ Properties
 **contextMenuEnabled** : *bool*, Defines whether the context menu of the plot should be enabled or not. **Not implemented yet**
 
 **toolbarVisible** : *bool*, Toggles the visibility of the toolbar of the plot.  **Not implemented yet**
- 
+
 Slots
 =================
 
@@ -36,31 +36,31 @@ Slots
  this can be invoked by python to trigger a line plot, inherited from *class AbstractDObjFigure*, **not implemented at the moment**
 
  *x0, double*: first position of line plot in x-Direction
- 
+
  *y0, double*: first position of line plot in y-Direction
- 
+
  *x1, double*: second position of line plot in x-Direction
- 
+
  *y1, double*: second position of line plot in x-Direction
- 
+
 
 **ito::RetVal setSource( ito::DataObject source, ItomSharedSemaphore* )**
- 
- Set new source object to this plot. Usually invoked by any camera if used as a live image from **internal C++-Code**.  
+
+ Set new source object to this plot. Usually invoked by any camera if used as a live image from **internal C++-Code**.
 
  *source, ito::DataObject*: The new dataObject to display
- 
+
  *semaphore, ItomSharedSemaphore*: A semaphore to handle the multi-threading.
 
- 
-**refreshPlot( )**: 
 
- Refresh / redraw current plot 
+**refreshPlot( )**:
 
-**triggerReplot( )**: 
+ Refresh / redraw current plot
 
- Refresh / redraw current plot  
- 
+**triggerReplot( )**:
+
+ Refresh / redraw current plot
+
 Deprecated figures
 ==========================
 

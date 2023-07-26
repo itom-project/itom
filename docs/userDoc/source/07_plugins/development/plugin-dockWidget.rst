@@ -16,7 +16,7 @@ Every hardware plugin (actuator, dataIO) can provide one toolbox (alternatively 
 Usually, the toolbox can be opened by the menu or context menu of the plugin toolbox of |itom|. Alternatively, the plugin classes in Python provide the methods:
 
 .. code-block:: python
-    
+
     cam.showToolbox()
     motor.hideToolbox()
 
@@ -47,30 +47,30 @@ The following image shows the example of the toolbox from the **MSMediaFoundatio
     :scale: 100%
     :align: center
 
-Don't forget to give all widgets a suitable object name and configure their properties as far as you can do this at that moment. The final configuration is done later in the C++ class and can therefore be adjusted at runtime, e.g. depending on the specific device. One last thing to remember is to give the overall widget a suitable object name as well (like **DockWidgetMSMediaFoundation** in the example). Then save the **ui**-file in the source folder of your plugin. In the example the filename is **dockWidgetMSMediaFoundation.ui**. 
+Don't forget to give all widgets a suitable object name and configure their properties as far as you can do this at that moment. The final configuration is done later in the C++ class and can therefore be adjusted at runtime, e.g. depending on the specific device. One last thing to remember is to give the overall widget a suitable object name as well (like **DockWidgetMSMediaFoundation** in the example). Then save the **ui**-file in the source folder of your plugin. In the example the filename is **dockWidgetMSMediaFoundation.ui**.
 
 The **ui**-file can only be used and interpreted in your plugin source code if it is inserted into the **CMakeLists.txt** file of the plugin in the right way. The most important things, that are necessary therefore are contained in the following CMake snippet. For more information see the documented template **CMakeLists.txt** files in the *pluginTemplates* folder of the itom source code.
 
 .. code-block:: cmake
-    
+
     #... somewhere in the area where the header and source files are inserted
-    
+
     set(plugin_UI
         #add absolute pathes to any *.ui files
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetMSMediaFoundation.ui
     )
-    
+
     #parses the ui-file and generates the corresponding C++ moc-file
     if (QT5_FOUND)
         QT5_WRAP_UI(plugin_UI_MOC ${plugin_UI})
     else (QT5_FOUND)
         QT4_WRAP_UI_ITOM(plugin_UI_MOC ${plugin_UI})
     endif (QT5_FOUND)
-    
+
     #...
-    
+
     ADD_LIBRARY(${target_name} ... ${plugin_UI_MOC} ...)
-    
+
 Necessary Source Code
 ======================================
 
@@ -78,7 +78,7 @@ After having created the basic user interface in Qt Creator, the toolbox now con
 and source files in the plugin's **CMakeLists.txt**. The header file should look like this:
 
 .. code-block:: c++
-    
+
     #ifndef DOCKWIDGETYOURPLUGIN_H
     #define DOCKWIDGETYOURPLUGIN_H
 
@@ -106,7 +106,7 @@ and source files in the plugin's **CMakeLists.txt**. The header file should look
         public slots:
             void parametersChanged(QMap<QString, ito::Param> params);
             void identifierChanged(const QString &identifier);
-            
+
             //!< for actuators add the following two lines
             //void actuatorStatusChanged(QVector<int> status, QVector<double> actPosition);
             //void targetChanged(QVector<double> targetPositions);
@@ -116,18 +116,18 @@ and source files in the plugin's **CMakeLists.txt**. The header file should look
               are changed. The connection of the valueChanged, clicked...
               signals to these slots can automatically be done using the
               Qt's auto-connection syntax.
-            
+
               Example for a slot invoked if the value of the slider sW_Brightness
               changed:
             */
-            //  void on_sW_Brightness_valueChanged(double d); 
+            //  void on_sW_Brightness_valueChanged(double d);
     };
 
     #endif
 
 Some words about this header file:
 
-* The constructors obtains the pointer to the plugin itself as argument. 
+* The constructors obtains the pointer to the plugin itself as argument.
 * The member **ui** is a reference to the auto-created class of the **ui**-file. By this member you get access to all widgets added in Qt Creator.
 * The member **m_inEditing** is used to avoid a never ending ring of "widget value changed" -> "change parameter in plugin" -> "inform toolbox about change" -> "change widget"...
 * The member **m_firstRun** can be used to check if the parameters (m_params) of the plugin are send to the toolbox for the first time in order to initialize/configure some widgets at the first run.
@@ -141,14 +141,14 @@ Now, some hints about the implementation of the different methods in the source 
 The constructor passes the pluginInstance pointer to the constructor of the super class **AbstractAddInDockWidget** and initializes the ui-file:
 
 .. code-block:: c++
-    
+
     DockWidgetYourPlugin::DockWidgetYourPlugin(ito::AddInBase *pluginInstance) :
         AbstractAddInDockWidget(pluginInstance),
         m_inEditing(false),
         m_firstRun(true)
     {
         ui.setupUi(this); //initialize ui-file and auto-connect slots
-        
+
         //for slider widgets it is convenient to set their
         //tracking property to false, such that valueChanged
         //is only emitted if the input ends and not after every
@@ -169,13 +169,13 @@ Initialize the widgets depending on the parameters of the plugin and change thei
             //and initialize all widgets (e.g. min, max values, labels, enable some,...)
             m_firstRun = false;
         }
-        
+
         if (!m_inEditing)
         {
             m_inEditing = true;
-            
+
             //change the current value of all widgets to the value given in the params map
-            
+
             m_inEditing = false;
         }
     }
@@ -184,21 +184,21 @@ In the **identifierChanged** slot, the current string identifier of the plugin i
 adjust the text property of this label widget to the given string. Example:
 
 .. code-block:: c++
-    
+
     void DockWidgetYourPlugin::identifierChanged(const QString &identifier)
     {
         ui.lblIdentifier->setText(identifier);
     }
-    
+
 Finally, you only need to implement the slots invoked if the user changes any values of the widgets. In a toolbox, there is no Apply or OK button like in a configuration dialog.
 Therefore, the plugin should immediately react on changes of the widgets. An example for the brightness slider is:
 
 .. code-block:: c++
-    
+
     void DockWidgetYourPlugin::on_sW_Brightness_valueChanged(double d)
     {
         //d is the new value
-        
+
         if (!m_inEditing) //only send the value to the plugin if not inEditing mode
         {
             m_inEditing = true;
@@ -233,7 +233,7 @@ In difference to the implementation given above, you need to learn
 Lets start with interrupting the movement of all active axes. Simply call the method
 
 .. code-block:: c++
-    
+
     setActuatorInterrupt();
 
 defined in **AbstractAddInDockWidget**.
@@ -241,7 +241,7 @@ defined in **AbstractAddInDockWidget**.
 For relatively or absolutly moving one or multiple axes, directly call the method
 
 .. code-block:: c++
-    
+
     setActuatorPosition(QVector<int> axes, QVector<double> positions, \
         bool relNotAbs, MessageLevel msgLevel = msgLevelWarningAndError)
     //or
@@ -257,7 +257,7 @@ interface to the new target values (in *mm* or *degree*). The slot **actuatorSta
 A dummy implementation changes the background color of the current-value spin boxes for all axes depending on their state. It looks somehow like this:
 
 .. code-block:: c++
-    
+
     void DockWidgetYourPlugin::actuatorStatusChanged(QVector<int> status, QVector<double> positions)
     {
         bool running = false;
@@ -274,7 +274,7 @@ A dummy implementation changes the background color of the current-value spin bo
             {
                 style = "background-color: red";
             }
-            /*else if (status[i] & ito::actuatorTimeout) 
+            /*else if (status[i] & ito::actuatorTimeout)
             {
                 style = "background-color: green";
             }*/
@@ -282,13 +282,13 @@ A dummy implementation changes the background color of the current-value spin bo
             {
                 style = "background-color: ";
             }
-            
+
             //here: m_spinCurrentPos is a member pointing to different spin boxes
             // displaying the current position of a specific axis. Do it like it is
             // convenient for you
             m_spinCurrentPos[i]->setStyleSheet(style);
         }
-        
+
         //in the demo plugin, a method 'enableWidget' with a boolean
         //argument is implemented to en/disable all moving related widgets
         //depending if the motor is running or not (and hides/shows the
@@ -300,7 +300,7 @@ A dummy implementation changes the background color of the current-value spin bo
             m_spinCurrentPos[i]->setValue(positions[i]);
         }
     }
-    
+
 Prepare the plugin for the toolbox
 =======================================
 
@@ -310,25 +310,25 @@ At first, insert the following lines at the end of the constructor of the plugin
 within a dockable toolbox of the main window of itom:
 
 .. code-block:: c++
-    
+
     DockWidgetYourPlugin *toolbox = new DockWidgetYourPlugin(this);
 
     Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas; //areas where the toolbox can be positioned (see Qt documentation)
-    
+
     //define some features, saying if the toolbox can be closed, can be undocked (floatable) and moved...
     QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | \
         QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
-    
+
     //register the toolbox
     createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, toolbox);
-    
+
 The last thing: Overload and implement the slot **dockWidgetVisibilityChanged** of the plugin, originally defined in **ito::AddInBase**. This is called whenever
 the plugin gets visible or is hidden. If it is visible, connect the signal/slot **parametersChanged** as well as **targetChanged** and **actuatorStatusChanged** in case of an actuator.
 This reduced the things to do if the toolbox is not connected. If it gets connected again, forces the resubmission of the current set of parameters, target positions... See the
 following example how to do this:
 
 .. code-block:: c++
-    
+
     void YourPlugin::dockWidgetVisibilityChanged(bool visible)
     {
         if (getDockWidget())
@@ -339,7 +339,7 @@ following example how to do this:
                 QObject::connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), w, \
                     SLOT(parametersChanged(QMap<QString, ito::Param>)));
                 emit parametersChanged(m_params); //send current parameters
-                
+
                 //actuators only
                 QObject::connect(this, SIGNAL(actuatorStatusChanged(QVector<int>,QVector<double>)), w, \
                     SLOT(actuatorStatusChanged(QVector<int>,QVector<double>)));
@@ -351,7 +351,7 @@ following example how to do this:
             {
                 QObject::disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), w, \
                     SLOT(parametersChanged(QMap<QString, ito::Param>)));
-                
+
                 //actuators only
                 QObject::disconnect(this, SIGNAL(actuatorStatusChanged(QVector<int>,QVector<double>)), w, \
                     SLOT(actuatorStatusChanged(QVector<int>,QVector<double>)));
@@ -360,5 +360,3 @@ following example how to do this:
             }
         }
     }
-        
-    

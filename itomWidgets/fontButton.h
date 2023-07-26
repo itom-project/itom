@@ -66,7 +66,7 @@ public:
   /// Constructor
   /// Creates a FontButton with a given font
   FontButton(const QFont& currentFont, QWidget * parent = 0);
-  
+
   /// Destructor
   virtual ~FontButton();
 
@@ -89,7 +89,7 @@ public Q_SLOTS:
 
 Q_SIGNALS:
   /// Fired anytime the current font changed.
-  /// Programatically or by the user via the file dialog that pop up when 
+  /// Programatically or by the user via the file dialog that pop up when
   /// clicking on the button.
   void currentFontChanged(const QFont&);
 protected:

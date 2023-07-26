@@ -22,13 +22,13 @@
 #
 # You should have received a copy of the GNU Library General Public License
 # along with itom. If not, see <http://www.gnu.org/licenses/>.
- 
-cmake_minimum_required(VERSION 3.1)
+
+cmake_minimum_required(VERSION 3.12...3.24)
 
 set(target_name addinmanager)
-project(${target_name}) 
- 
-# include commonly used itom CMake macros (internal can only be used within the core projects) 
+project(${target_name})
+
+# include commonly used itom CMake macros (internal can only be used within the core projects)
 include("../cmake/ItomBuildMacros.cmake")
 include("../cmake/ItomBuildMacrosInternal.cmake")
 
@@ -49,7 +49,7 @@ if(BUILD_WITH_PCL)
     add_definitions(-DUSEPCL)
 endif()
 
-include_directories( 
+include_directories(
     ${CMAKE_CURRENT_BINARY_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${Qt5Widgets_INCLUDE_DIRS}
@@ -106,4 +106,4 @@ foreach(_qm ${QM_FILES})
 endforeach()
 
 itom_add_library_to_appdir_and_sdk(${target_name} COPY_SOURCES COPY_DESTINATIONS)
-itom_post_build_copy_files(addinmanager COPY_SOURCES COPY_DESTINATIONS)
+itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)

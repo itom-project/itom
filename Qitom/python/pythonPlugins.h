@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -71,7 +71,7 @@ class PythonPlugins
            bool userMutexLocked; //!< true if the user mutex has been recently locked by Python
        }
        PyDataIOPlugin;
-       
+
        // Actuator
        static void PyActuatorPlugin_dealloc(PyActuatorPlugin *self);
        static PyObject *PyActuatorPlugin_new(PyTypeObject *type, PyObject *args, PyObject *kwds);
@@ -161,7 +161,7 @@ class PythonPlugins
 
        static PyObject *PyDataIOPlugin_userMutex_tryLock(PyDataIOPlugin* self, PyObject* args, PyObject* kwds);
        static PyObject *PyDataIOPlugin_userMutex_unlock(PyDataIOPlugin* self);
-       
+
        static PyMemberDef  PyDataIOPlugin_members[];
        static PyMethodDef  PyDataIOPlugin_methods[];
        static PyTypeObject PyDataIOPluginType;

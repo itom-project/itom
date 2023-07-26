@@ -14,7 +14,7 @@ from itom import liveImage
 ###############################################################################
 # Start camera (e.g.: ``DummyGrabber``)
 camera = dataIO("DummyGrabber")  # noise camera
-cameraGaussian = dataIO("DummyGrabber", imageType="gaussianSpot")  # moving Gaussian spot 
+cameraGaussian = dataIO("DummyGrabber", imageType="gaussianSpot")  # moving Gaussian spot
 cameraGaussianArray = dataIO("DummyGrabber", imageType="gaussianSpotArray")  # moving 4 Gaussian spots
 
 ###############################################################################
@@ -30,7 +30,7 @@ print("width:", camera.getParam("sizex"))
 print("height:", camera.getParam("sizey"))
 
 ###############################################################################
-# Set bits per pixel (bpp). 
+# Set bits per pixel (bpp).
 camera.setParam("bpp", 8)
 
 # print available parameters of that device
@@ -61,15 +61,15 @@ camera.getVal(data)
 
 ###############################################################################
 # .. warning::
-#     
+#
 #     The method **getVal** returns only a shallow copy of the plugin internal memory.
 #     Therefore, the content of data will change when the next image is acquired.
 #     In order to create a deep copy of data, type:
-#     
+#
 #     .. code-block:: python
-#         
+#
 #         camera.copyVal(data)
-#    
+#
 
 # You can also convert the data afterwards to a deep copy by typing:
 dataCopy = data.copy()

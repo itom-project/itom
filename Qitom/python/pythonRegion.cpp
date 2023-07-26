@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -39,7 +39,7 @@ namespace ito
 void PythonRegion::PyRegion_addTpDict(PyObject * tp_dict)
 {
     PyObject *value;
-    
+
     value = Py_BuildValue("i",QRegion::Rectangle);
     PyDict_SetItemString(tp_dict, "RECTANGLE", value);
     Py_DECREF(value);
@@ -654,7 +654,7 @@ Each rectangle is given by a list of (x, y, width, height).");
 }
 
 //-----------------------------------------------------------------------------
-PyDoc_STRVAR(pyRegion_getBoundingRect_doc, 
+PyDoc_STRVAR(pyRegion_getBoundingRect_doc,
 "list of int or None: Returns the bounding rectangle of this region or None if it is empty. \n\
 \n\
 The bounding rectangle is given by a list (x, y, width, height).");
@@ -737,7 +737,7 @@ mask : dataObject");
     int h = bounds.height();
     int x = bounds.x();
     int y = bounds.y();
-    
+
 
     ito::DataObject *d = new ito::DataObject();
     d->zeros(h, w, ito::tUInt8);

@@ -160,7 +160,7 @@ namespace ito
         if(dObj)
         {
             ito::PythonDataObject::PyDataObject *pyDataObj = ito::PythonDataObject::createEmptyPyDataObject();
-            if (pyDataObj)            
+            if (pyDataObj)
             {
                 pyDataObj->dataObject = new ito::DataObject(*dObj);
                 result = (PyObject *)pyDataObj;
@@ -181,10 +181,10 @@ namespace ito
 #if ITOM_POINTCLOUDLIBRARY > 0
     case (ito::ParamBase::PointCloudPtr): {
         ito::PCLPointCloud* pointCloud = param.getVal<ito::PCLPointCloud*>();
-        if(pointCloud)            
+        if(pointCloud)
         {
             ito::PythonPCL::PyPointCloud *pyPointCloud = ito::PythonPCL::createEmptyPyPointCloud();
-            if (pyPointCloud)            
+            if (pyPointCloud)
             {
                 pyPointCloud->data = new ito::PCLPointCloud(*pointCloud);
                 result = (PyObject *)pyPointCloud;
@@ -208,7 +208,7 @@ namespace ito
         if (polygonMesh)
         {
             ito::PythonPCL::PyPolygonMesh *pyPolygonMesh = ito::PythonPCL::createEmptyPyPolygonMesh();
-            if (pyPolygonMesh)            
+            if (pyPolygonMesh)
             {
                 pyPolygonMesh->polygonMesh = new ito::PCLPolygonMesh(*polygonMesh);
                 result = (PyObject *)pyPolygonMesh;
@@ -324,7 +324,7 @@ namespace ito
     \param paramBaseType is the desired type of the returned ParamBase, or
         0, if the most appropriate type should be guessed (only implemented
         for some conversions / types).
-    \param strict if true, the conversion is only done if the given 
+    \param strict if true, the conversion is only done if the given
         obj can be directly converted to the desired paramBaseType, else
         implicit conversions (e.g. from integer to string) are allowed, too.
     \sa PyObjectToParamBaseDeleter

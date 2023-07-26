@@ -20,10 +20,10 @@ from matplotlib.backend_bases import (
     ToolContainerBase,
     _Mode,
     MouseButton,
-    CloseEvent, 
-    KeyEvent, 
-    LocationEvent, 
-    MouseEvent, 
+    CloseEvent,
+    KeyEvent,
+    LocationEvent,
+    MouseEvent,
     ResizeEvent
 )
 
@@ -342,7 +342,7 @@ class FigureCanvasItom(FigureCanvasBase):
         self.matplotlibWidgetUiItem.call("setCursor", cursord[cursor])
 
     def enterEvent(self, x, y):
-        """itom specific: 
+        """itom specific:
         replacement of enterEvent and leaveEvent of Qt5 backend
         """
         x_, y_ = self.mouseEventCoords(x, y)
@@ -351,7 +351,7 @@ class FigureCanvasItom(FigureCanvasBase):
                       guiEvent=None)._process()
 
     def leaveEvent(self):
-        """itom specific: 
+        """itom specific:
         replacement of enterEvent and leaveEvent of Qt5 backend
         """
         itom.setApplicationCursor(-1)
@@ -388,16 +388,16 @@ class FigureCanvasItom(FigureCanvasBase):
         try:
             # button: left 1, middle 2, right 3
             if eventType == 0:  # mousePressEvent
-                MouseEvent("button_press_event", 
+                MouseEvent("button_press_event",
                            self, x, y, button,
                            guiEvent=None)._process()
             elif eventType == 1:  # mouseDoubleClickEvent
-                MouseEvent("button_press_event", 
+                MouseEvent("button_press_event",
                            self, x, y, button, dblclick=True,
                            guiEvent=None)._process()
             elif eventType == 2:  # mouseMoveEvent
-                if button == 0:  
-                    # if move without button press, reset timer since no other 
+                if button == 0:
+                    # if move without button press, reset timer since no other
                     # visualization is given to Qt, which could then reset the timer
                     self.matplotlibWidgetUiItem.call("stopTimer")
                 MouseEvent("motion_notify_event", self,
@@ -637,7 +637,7 @@ class FigureManagerItom(FigureManagerBase):
     """
 
     def __init__(self, canvas, num, matplotlibplotUiItem, windowUi, embeddedWidget):
-        
+
         self.canvas = canvas
         self.windowUi = windowUi  # can also be None if embeddedWidget is True
         self.matplotlibplotUiItem = matplotlibplotUiItem
@@ -656,12 +656,12 @@ class FigureManagerItom(FigureManagerBase):
 
         """self.windowUi.closing.connect(canvas.close_event)
         self.windowUi.closing.connect(self._widgetclosed)
-        
+
         self.windowUi.setWindowTitle("Figure %d" % num)
         image = os.path.join(matplotlib.rcParams['datapath'],
                              'images', 'matplotlib.svg')
         self.windowUi.setWindowIcon(QtGui.QIcon(image))
-        
+
         # Give the keyboard focus to the figure instead of the
         # manager; StrongFocus accepts both tab and click to focus and
         # will enable the canvas to process event w/o clicking.
@@ -704,7 +704,7 @@ class FigureManagerItom(FigureManagerBase):
         self._status_and_tool_height = tbs_height + sbs.height()
         height = cs.height() + self._status_and_tool_height
         self.windowUi.resize(cs.width(), height)
-        
+
         self.windowUi.setCentralWidget(self.canvas)"""
 
         if matplotlib.is_interactive():
@@ -1282,7 +1282,7 @@ class ToolbarItom(ToolContainerBase):
     def set_message(self, s):
         """
         Display a message on the toolbar (here: statusbar).
-    
+
         Parameters
         ----------
         s : str
@@ -1350,11 +1350,16 @@ class SaveFigureItom(backend_tools.SaveFigureBase):
             except Exception as e:
                 itom.ui.msgCritical("Error saving file", str(e), parent=parent)
 
-
-@backend_tools._register_tool_class(FigureCanvasItom)
-class SetCursorItom(backend_tools.SetCursorBase):
-    def set_cursor(self, cursor):
-        self.canvas.matplotlibWidgetUiItem.call("setCursor", cursord[cursor])
+if matplotlib.__version__ < "3.7.0":
+    @backend_tools._register_tool_class(FigureCanvasItom)
+    class SetCursorItom(backend_tools.SetCursorBase):
+        def set_cursor(self, cursor):
+            self.canvas.matplotlibWidgetUiItem.call("setCursor", cursord[cursor])
+else:
+    @backend_tools._register_tool_class(FigureCanvasItom)
+    class SetCursorItom(backend_tools.ToolSetCursor):
+        def set_cursor(self, cursor):
+            self.canvas.matplotlibWidgetUiItem.call("setCursor", cursord[cursor])
 
 
 @backend_tools._register_tool_class(FigureCanvasItom)

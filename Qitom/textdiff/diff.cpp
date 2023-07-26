@@ -2,17 +2,17 @@
  * Copyright(c) 2004 Michael B. Allen <mba2000 ioplex.com>
  *
  * The MIT License
- * 
+ *
  * Permission is hereby granted,free of charge,to any person obtaining a
  * copy of this software and associated documentation files(the "Software"),
  * to deal in the Software without restriction,including without limitation
  * the rights to use,copy,modify,merge,publish,distribute,sublicense,
  * and/or sell copies of the Software,and to permit persons to whom the
  * Software is furnished to do so,subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included
  * in all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS",WITHOUT WARRANTY OF ANY KIND,EXPRESS OR
  * IMPLIED,INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -168,10 +168,10 @@ static void AddEdit(MatchContext *ctx,int op,int off,int len)
 {
     DiffEdit *e;
 
-    if(len==0 || ctx->DiffEditArray==NULL) 
+    if(len==0 || ctx->DiffEditArray==NULL)
     {
         return;
-    }               
+    }
     /* Add an edit to the SES(or
     * coalesce if the op is the same)
     */
@@ -356,7 +356,7 @@ int GetStringSimilarity(const char *a,const char *b)
     if ((d=DiffArray(
         a,0,n,
         b,0,m,
-        NULL,0,&ses,&sn,NULL)) == -1) 
+        NULL,0,&ses,&sn,NULL)) == -1)
     {
         varray_deinit(&ses);
         return 0;
@@ -433,7 +433,7 @@ QVector<int> FillLineIdxs(const QByteArray &text)
 /* This method returns the difference between two texts on a line-based level.
 
 The mapping returns a vector, whose size corresponds to the number of lines in oldText.
-Every line is set to -1, if this line is not found any more in newText, else to 
+Every line is set to -1, if this line is not found any more in newText, else to
 the new line index [0..] in newText. mapping is only valid if this method returns true.
 In case of false, no mapping could be found.
 
@@ -471,7 +471,7 @@ bool GetLineMapping(const QByteArray &oldText, const QByteArray &newText, QVecto
     mapping.clear();
     mapping.fill(-1, oldLines.size());
 
-    for (i = 0; i < sn; i++) 
+    for (i = 0; i < sn; i++)
     {
         DiffEdit *e = (DiffEdit *)varray_get(&ses, i);
 

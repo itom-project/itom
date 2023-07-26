@@ -25,13 +25,13 @@ __all__ = [
 def norm(x, pnorm="2"):
     """
     2-norm of a vector
-    
+
     Parameters
     ----------
     x : array_like
         Vector of complex or real values
-    
-    pnorm : 
+
+    pnorm :
 
     Returns
     -------
@@ -64,18 +64,18 @@ def norm(x, pnorm="2"):
 
 def infinity_norm(A):
     """
-    Infinity norm of a matrix (maximum absolute row sum).  
+    Infinity norm of a matrix (maximum absolute row sum).
 
     Parameters
     ----------
     A : csr_matrix, csc_matrix, sparse, or numpy matrix
         Sparse or dense matrix
-    
+
     Returns
     -------
     n : float
         Infinity norm of the matrix
-    
+
     Notes
     -----
     - This serves as an upper bound on spectral radius.
@@ -343,9 +343,9 @@ def condest(A, tol=0.1, maxiter=25, symmetric=False):
 
     Notes
     -----
-    The condition number measures how large of a change in the 
+    The condition number measures how large of a change in the
     the problems solution is caused by a change in problem's input.
-    Large condition numbers indicate that small perturbations 
+    Large condition numbers indicate that small perturbations
     and numerical errors are magnified greatly when solving the system.
 
     Examples
@@ -354,7 +354,7 @@ def condest(A, tol=0.1, maxiter=25, symmetric=False):
     >>> from pyamg.util.linalg import condest
     >>> condest(numpy.array([[1,0],[0,2]]))
     1.0
-    
+
     """
 
     ev = _approximate_eigenvalues(A, tol, maxiter, symmetric)
@@ -369,18 +369,18 @@ def cond(A):
     ----------
     A   : {dense or sparse matrix}
         e.g. array, matrix, csr_matrix, ...
-    
+
     Returns
     -------
-    2-norm condition number through use of the SVD 
-    Use for small to moderate sized dense matrices.  
+    2-norm condition number through use of the SVD
+    Use for small to moderate sized dense matrices.
     For large sparse matrices, use condest.
 
     Notes
     -----
-    The condition number measures how large of a change in the 
+    The condition number measures how large of a change in the
     the problems solution is caused by a change in problem's input.
-    Large condition numbers indicate that small perturbations 
+    Large condition numbers indicate that small perturbations
     and numerical errors are magnified greatly when solving the system.
 
     Examples
@@ -435,7 +435,7 @@ def issymm(A, fast_check=True, tol=1e-6):
     >>> from pyamg.util.linalg import issymm
     >>> issymm(numpy.array([[1,2],[1,1]]))
     1
-    
+
     >>> from pyamg.gallery import poisson
     >>> issymm(poisson((10,10)))
     0
@@ -476,7 +476,7 @@ def issymm(A, fast_check=True, tol=1e-6):
 
 
 def pinv_array(a, cond=None):
-    """Calculate the Moore-Penrose pseudo inverse of each block of 
+    """Calculate the Moore-Penrose pseudo inverse of each block of
         the three dimensional array a.
 
     Parameters
@@ -491,7 +491,7 @@ def pinv_array(a, cond=None):
     -------
     Nothing, a is modified in place so that a[k] holds the pseudoinverse
     of that block.
-    
+
     Notes
     -----
     By using lapack wrappers, this can be much faster for large n, than
@@ -510,7 +510,7 @@ def pinv_array(a, cond=None):
 
     >>>print(numpy.dot(a[1], ac[1]))
     [[ 0.5  0.5]
-     [ 0.5  0.5]]  
+     [ 0.5  0.5]]
 
     """
 

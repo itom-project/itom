@@ -11,7 +11,7 @@ Content:
 
 .. toctree::
    :maxdepth: 1
-   
+
    itom_general.rst
    actuator.rst
    algo.rst
@@ -37,4 +37,3 @@ For an alphabetic index see:
 
 If you need help about other important |python| modules, like **Numpy**, **Scipy**, **Matplotlib**, see the corresponding
 references in the internet.
-

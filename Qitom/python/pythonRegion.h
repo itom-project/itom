@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -50,7 +50,7 @@ public:
 
     //-------------------------------------------------------------------------------------------------
     // constructor, deconstructor, alloc, dellaoc
-    //------------------------------------------------------------------------------------------------- 
+    //-------------------------------------------------------------------------------------------------
     static void PyRegion_dealloc(PyRegion *self);
     static PyObject* PyRegion_new(PyTypeObject *type, PyObject *args, PyObject *kwds);
     static int PyRegion_init(PyRegion *self, PyObject *args, PyObject *kwds);
@@ -59,7 +59,7 @@ public:
 
     //-------------------------------------------------------------------------------------------------
     // general members
-    //------------------------------------------------------------------------------------------------- 
+    //-------------------------------------------------------------------------------------------------
     static PyObject* PyRegion_repr(PyRegion *self);
 
     static PyObject* PyRegion_contains(PyRegion *self, PyObject *args, PyObject *kwds);
@@ -81,7 +81,7 @@ public:
 
     //-------------------------------------------------------------------------------------------------
     // number protocol
-    //------------------------------------------------------------------------------------------------- 
+    //-------------------------------------------------------------------------------------------------
     static PyObject* PyRegion_nbAdd(PyRegion* o1, PyRegion* o2);
     static PyObject* PyRegion_nbSubtract(PyRegion* o1, PyRegion* o2);
     static PyObject* PyRegion_nbAnd(PyRegion* o1, PyRegion* o2);
@@ -95,7 +95,7 @@ public:
 
     //-------------------------------------------------------------------------------------------------
     // getter / setter
-    //------------------------------------------------------------------------------------------------- 
+    //-------------------------------------------------------------------------------------------------
     static PyObject* PyRegion_getEmpty(PyRegion *self, void *closure);
     static PyObject* PyRegion_getRectCount(PyRegion *self, void *closure);
     static PyObject* PyRegion_getRects(PyRegion *self, void *closure);
@@ -103,7 +103,7 @@ public:
 
     //-------------------------------------------------------------------------------------------------
     // type structures
-    //------------------------------------------------------------------------------------------------- 
+    //-------------------------------------------------------------------------------------------------
     //static PyMemberDef PyRegion_members[];
     static PyMethodDef PyRegion_methods[];
     static PyGetSetDef PyRegion_getseters[];
@@ -113,7 +113,7 @@ public:
 
     static void PyRegion_addTpDict(PyObject *tp_dict);
 
-    
+
 
 };
 

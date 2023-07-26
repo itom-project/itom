@@ -23,7 +23,7 @@ In order to use this **matlab** module, the following requirements have to be fu
 The following example is also included in the demo folder (**demoMatlabEngine.py**) and shows how to remotely control Matlab via itom:
 
 .. code-block:: python
-    
+
     try:
         import matlab
     except Exception as ex:
@@ -36,7 +36,7 @@ The following example is also included in the demo folder (**demoMatlabEngine.py
     print("myString:", session.getString("myString")) #returns 'test' as answer in itom
     session.setValue("myArray", dataObject.randN([2,3],'int16')) #creates a 2x3 random matrix in Matlab (name: myArray)
     arr = session.getValue("myArray") #returns the 2x3 array 'myArray' from Matlab as Numpy array
-    print(arr) 
+    print(arr)
 
     #read the current working directory of matlab
     session.run("curDir = cd")
@@ -49,13 +49,13 @@ The following example is also included in the demo folder (**demoMatlabEngine.py
     del session #closes the session and deletes the instance
 
     #session.close() only closes the session
-    
-.. note::
-    
-    If Matlab is not properly installed, the opening of the MatlabSession will fail.
-    
+
 .. note::
 
-    If the command **matlab.MatlabSesseion()** returns the **RuntimeError: error loading matlab engine: Cannot load library libeng.dll: The specified procedure could not be found.**, there is a version conflict between librarys loaded by itom/MatlabSession.     
-    One known conflict happens (Matlab version 2015), while the libraries **icuio54.dll, icule54.dll, icuuc54.dll, icuin54.dll** are loaded by the **libeng.dll**.     
-    One possible workaround is to copy the library files **icuio54.dll, icule54.dll, icuuc54.dll, icuin54.dll** from the **{MatlabRoot}/bin/win64** folder into the **{itomRoot}/lib** folder. 
+    If Matlab is not properly installed, the opening of the MatlabSession will fail.
+
+.. note::
+
+    If the command **matlab.MatlabSesseion()** returns the **RuntimeError: error loading matlab engine: Cannot load library libeng.dll: The specified procedure could not be found.**, there is a version conflict between librarys loaded by itom/MatlabSession.
+    One known conflict happens (Matlab version 2015), while the libraries **icuio54.dll, icule54.dll, icuuc54.dll, icuin54.dll** are loaded by the **libeng.dll**.
+    One possible workaround is to copy the library files **icuio54.dll, icule54.dll, icuuc54.dll, icuin54.dll** from the **{MatlabRoot}/bin/win64** folder into the **{itomRoot}/lib** folder.

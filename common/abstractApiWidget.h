@@ -10,7 +10,7 @@
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
-   
+
     In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
@@ -67,7 +67,7 @@ public:
     void setApiFunctionBasePtr(void **apiFunctionBasePtr);
     void ** getApiFunctionGraphBasePtr(void) { return m_apiFunctionsGraphBasePtr; }
     void ** getApiFunctionBasePtr(void) { return m_apiFunctionsBasePtr; }
-    
+
 protected:
     virtual RetVal init() { return retOk; } //this method is called from after construction and after that the api pointers have been transmitted
 

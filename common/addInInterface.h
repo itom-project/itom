@@ -84,7 +84,7 @@ This macro is the opposite of NEW_PLUGININSTANCE
       { \
       (*addInInst)->deleteLater(); \
       m_InstList.removeOne(*addInInst); \
-      } 
+      }
 
 //! macro to set the pointer of the plugin to all its defined filters and widgets
 /*!
@@ -125,7 +125,7 @@ namespace ito
     used to describe the plugin type and subtype (in case of DataIO main type)
     e.g. typeDataIO|typeGrabber for a frame grabber
     */
-    enum tPluginType 
+    enum tPluginType
     {
         typeDataIO = 0x1,     /*!< base type for data input and output (cameras, AD-converter, display windows...) */
         typeActuator = 0x2,     /*!< base type for actuators and motors */
@@ -145,7 +145,7 @@ namespace ito
 
     The bitmask is divided into different topical areas (moving flags, switches, general status).
     */
-    enum tActuatorStatus 
+    enum tActuatorStatus
     {
         //moving flags
         actuatorUnknown = 0x0001, /*!< moving status of axis is unknown */
@@ -164,34 +164,34 @@ namespace ito
         actuatorRightRefSwitch = 0x2000, /*!< axis reached the specified right reference switch (if set, also set actuatorRefSwitch), deprecated */
         actuatorRefSwitch1 = 0x1000,/*!< axis reached the specified right reference switch (if set, also set actuatorRefSwitch)*/
         actuatorRefSwitch2 = 0x2000,/*!< axis reached the specified right reference switch (if set, also set actuatorRefSwitch)*/
-                                         
+
         //status flags
         actuatorAvailable = 0x4000, /*!< axis is generally available */
         actuatorEnabled = 0x8000, /*!< axis is enabled for movements */
         actuatorError = 0x10000,/*axis has encountered error/reports error*/
 
         actMovingMask = actuatorUnknown | actuatorInterrupted | actuatorMoving | actuatorAtTarget | actuatorTimeout, /*!< bitmask that marks all bits related to the movement */
-        
+
         actEndSwitchMask = actuatorEndSwitch \
         | actuatorEndSwitch1 | actuatorEndSwitch2, /*!< bitmask that marks all bits related to end switches */
-        
+
         actRefSwitchMask = \
         actuatorRefSwitch \
         | actuatorRefSwitch1 | actuatorRefSwitch2, /*!< bitmask that marks all bits related to reference switches */
-        
+
         actSwitchesMask = actEndSwitchMask | actRefSwitchMask,                                /*!< bitmask that marks all bits related to reference and end switches */
-        
+
         actStatusMask = actuatorAvailable | actuatorEnabled | actuatorError                     /*!< bitmask that marks all status flags */
     };
 
-    enum tAutoLoadPolicy 
+    enum tAutoLoadPolicy
     {
         autoLoadAlways = 0x1, /*!< always loads xml file by addInManager */
         autoLoadNever = 0x2, /*!< never automatically loads parameters from xml-file (default) */
         autoLoadKeywordDefined = 0x4  /*!< only loads parameters if keyword autoLoadParams=1 exists in python-constructor */
     };
 
-    enum tAutoSavePolicy 
+    enum tAutoSavePolicy
     {
         autoSaveAlways = 0x1, /*!< always saves parameters to xml-file at shutdown */
         autoSaveNever = 0x2  /*!< never saves parameters to xml-file at shutdown (default) */
@@ -206,7 +206,7 @@ namespace ito
         QString infoString;
     };
 
-    struct FilterParams 
+    struct FilterParams
     {
         QVector<Param> paramsMand;
         QVector<Param> paramsOpt;
@@ -273,11 +273,11 @@ namespace ito
         tAutoLoadPolicy m_autoLoadPolicy;               /*!< defines the auto-load policy for automatic loading of parameters from xml-file at startup of any instance */
         tAutoSavePolicy m_autoSavePolicy;               /*!< defines the auto-save policy for automatic saving of parameters in xml-file at shutdown of any instance */
         bool m_callInitInNewThread;                     /*!< true (default): the init-method of addIn will be called after that the plugin-instance has been moved to new thread (my addInManager). false: the init-method is called in main(gui)-thread, and will be moved to new thread afterwards (this should only be chosen, if not otherwise feasible) */
-        
+
 
         virtual void importItomApi(void** apiPtr) = 0; //this methods are implemented in the plugin itsself. Therefore place ITOM_API right after Q_INTERFACE in the header file and replace Q_EXPORT_PLUGIN2 by Q_EXPORT_PLUGIN2_ITOM in the source file.
         virtual void importItomApiGraph(void** apiPtr) = 0;
-        
+
         //!> check if we have gui support
         inline bool hasGuiSupport()
         {
@@ -439,7 +439,7 @@ namespace ito
         //! method to set whether this instance has been firstly created by the GUI (true) or by any other component (Python, C++, other plugin,..) (false)
         void setCreatedByGUI(int value);
 
-        //! Returns the reference counter of this instance. 
+        //! Returns the reference counter of this instance.
         /*
         The reference counter is zero-based, hence, the value zero means that one reference is pointing to this instance
         */
@@ -563,7 +563,7 @@ namespace ito
 
         QVector<ito::AddInBase::AddInRef *> m_hwDecList;  //!< list of hardware that was passed to the plugin on initialisation and whose refcounter was incremented
         QMap<QString, ExecFuncParams> m_execFuncList;     //!< map with registered additional functions. funcExec-name -> (default mandParams, default optParams, default outParams, infoString)
-        
+
         QScopedPointer<AddInBasePrivate> d_ptr; //!> self-managed pointer to the private class container (deletes itself if d_ptr is destroyed). pointer to private class of AddInBase defined in AddInInterface.cpp. This container is used to allow flexible changes in the interface without destroying the binary compatibility
         Q_DECLARE_PRIVATE(AddInBase);
 
@@ -983,9 +983,9 @@ namespace ito
             {}
 
             //!< constructor with all necessary arguments.
-            FilterDef(AddInAlgo::t_filter filterFunc, AddInAlgo::t_filterParam filterParamFunc, 
-                    QString description = QString(), ito::AddInAlgo::tAlgoCategory category = ito::AddInAlgo::catNone, 
-                    ito::AddInAlgo::tAlgoInterface interf = ito::AddInAlgo::iNotSpecified, 
+            FilterDef(AddInAlgo::t_filter filterFunc, AddInAlgo::t_filterParam filterParamFunc,
+                    QString description = QString(), ito::AddInAlgo::tAlgoCategory category = ito::AddInAlgo::catNone,
+                    ito::AddInAlgo::tAlgoInterface interf = ito::AddInAlgo::iNotSpecified,
                     QString interfaceMeta = QString()) :
                 m_filterFunc(filterFunc),
                 m_paramFunc(filterParamFunc),
@@ -1005,7 +1005,7 @@ namespace ito
             QString m_description;                      //!< description of filter
             ito::AddInAlgo::tAlgoCategory m_category;   //!< category, filter belongs to (default: catNone)
             ito::AddInAlgo::tAlgoInterface m_interface; //!< algorithm interface, filter fits to (default: iNotSpecified)
-            QString m_interfaceMeta;                    //!< meta information if required by algorithm interface 
+            QString m_interfaceMeta;                    //!< meta information if required by algorithm interface
         private:
             FilterDef(const FilterDef & /*p*/); //disable copy constructor
         };
@@ -1021,9 +1021,9 @@ namespace ito
             {}
 
             //!< constructor with all necessary arguments.
-            FilterDefExt(AddInAlgo::t_filterExt filterFuncExt, AddInAlgo::t_filterParam filterParamFunc, 
-                    QString description = QString(), ito::AddInAlgo::tAlgoCategory category = ito::AddInAlgo::catNone, 
-                    ito::AddInAlgo::tAlgoInterface interf = ito::AddInAlgo::iNotSpecified, 
+            FilterDefExt(AddInAlgo::t_filterExt filterFuncExt, AddInAlgo::t_filterParam filterParamFunc,
+                    QString description = QString(), ito::AddInAlgo::tAlgoCategory category = ito::AddInAlgo::catNone,
+                    ito::AddInAlgo::tAlgoInterface interf = ito::AddInAlgo::iNotSpecified,
                     QString interfaceMeta = QString(), bool hasStatusInfo = true, bool isCancellable = true) :
                 FilterDef(NULL, filterParamFunc, description, category, interf, interfaceMeta),
                 m_filterFuncExt(filterFuncExt),
@@ -1074,7 +1074,7 @@ namespace ito
             QString m_description;        //!< description of widget
             ito::AddInAlgo::tAlgoCategory m_category;    //!< category, widget belongs to (default: catNone)
             ito::AddInAlgo::tAlgoInterface m_interface; //!< algorithm interface, widget fits to (default: iNotSpecified)
-            QString m_interfaceMeta;    //!< meta information if required by algorithm interface 
+            QString m_interfaceMeta;    //!< meta information if required by algorithm interface
 
         private:
             AlgoWidgetDef(const AlgoWidgetDef & /*p*/); //disable copy constructor

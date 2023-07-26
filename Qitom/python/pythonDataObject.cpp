@@ -2442,7 +2442,7 @@ PyObject* PythonDataObject::PyDataObject_getValue(PyDataObject* self, void* /*cl
         {
             value = (const TimeDelta*)(*it);
             obj = PythonDateTime::GetPyTimeDelta(*value);
-            
+
             if (obj)
             {
                 // steals a reference
@@ -8098,7 +8098,7 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
                                 {
                                     // d.th dimension of dataObj is not
                                     // available in np-array (squeezed)
-                                    map_dims_to_npdims[d] = -1; 
+                                    map_dims_to_npdims[d] = -1;
                                 }
                                 else
                                 {
@@ -8394,7 +8394,7 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
                 fromType = ito::tDateTime;
                 valuePtr = static_cast<void*>(&value5);
 
-                if (!ok) 
+                if (!ok)
                 {
                     error = true;
                 }

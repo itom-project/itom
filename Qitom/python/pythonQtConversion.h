@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -53,7 +53,7 @@ namespace ito
 class PythonQtConversion
 {
 public:
-    enum unicodeEncodings { utf_8, latin_1, iso_8859_1, mbcs, ascii, utf_16, utf_16_LE, utf_16_BE, utf_32, utf_32_BE, utf_32_LE, other };
+    enum UnicodeEncodings { utf_8, latin_1, iso_8859_1, mbcs, ascii, utf_16, utf_16_LE, utf_16_BE, utf_32, utf_32_BE, utf_32_LE, other };
 
     //! converts QString to Python string (unicode!)
     static PyObject* QStringToPyObject(const QString& str);
@@ -117,7 +117,7 @@ public:
     static ito::PCLPoint PyObjGetPoint(PyObject *val, bool strict, bool &ok);
     static ito::PCLPolygonMesh PyObjGetPolygonMesh(PyObject *val, bool strict, bool &ok);
 
-    
+
     static ito::PCLPointCloud* PyObjGetPointCloudNewPtr(PyObject *val, bool strict, bool &ok);
     static ito::PCLPolygonMesh* PyObjGetPolygonMeshNewPtr(PyObject *val, bool strict, bool &ok);
 #endif
@@ -158,10 +158,12 @@ public:
     static PyObject* DataObjectToPyObject(const ito::DataObject& dObj);
     static PyObject* AddInBaseToPyObject(ito::AddInBase* aib);
 
-    static PyObject* ConvertQtValueToPythonInternal(int type, const void* data); 
+    static PyObject* ConvertQtValueToPythonInternal(int type, const void* data);
 
     static PyObject* QByteArrayToPyUnicode(const QByteArray &ba, const char *errors = "replace");
     static PyObject* QByteArrayToPyUnicodeSecure(const QByteArray &ba, const char *errors = "replace");
+    static PyObject* QByteArrayUtf8ToPyUnicode(const QByteArray &ba, const char *errors = "replace");
+    static PyObject* QByteArrayUtf8ToPyUnicodeSecure(const QByteArray &ba, const char *errors = "replace");
     static PyObject* ByteArrayToPyUnicode(const char* byteArray, Py_ssize_t len = 0, const char *errors = "replace");
 
     static PyObject* PyUnicodeToPyByteObject(PyObject *unicode, const char *errors = "replace");
@@ -169,7 +171,7 @@ public:
     friend class PythonEngine; //such that the pythonEngine can set the encoding values below
 
 private:
-    static unicodeEncodings textEncoding;
+    static UnicodeEncodings textEncoding;
     static QByteArray textEncodingName;
 
     static int guessQMetaTypeFromPyObject(PyObject* val);
@@ -178,11 +180,11 @@ private:
     if any PyObject is converted into a QVariant-object, dataObject or any other class, and if this
     PyObject has a base-pointer unequal to None, this base pointer is incremented during the lifetime of the
     dataObject, passed to QVariant. If this dataObject is destroyed, the baseObjectDeleterDataObject deleter method
-    is called and decrements the base PyObject. 
+    is called and decrements the base PyObject.
 
     Be careful: For decrementing the refcount, the GIL must be hold by this deleter!
     */
-    static QHash<char*,PyObject*> m_pyBaseObjectStorage; 
+    static QHash<char*,PyObject*> m_pyBaseObjectStorage;
     static void baseObjectDeleterDataObject(ito::DataObject *sharedObject);
 };
 

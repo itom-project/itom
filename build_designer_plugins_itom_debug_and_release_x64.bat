@@ -26,7 +26,7 @@ CALL "%VS120COMNTOOLS%\vsvars32.bat" x86
 msbuild.exe itom\ALL_BUILD.vcxproj /p:configuration=release /p:platform=x64
 msbuild.exe designerplugins\ALL_BUILD.vcxproj /p:configuration=release /p:platform=x64
 msbuild.exe plugins\ALL_BUILD.vcxproj /p:configuration=release /p:platform=x64
-goto :end 
+goto :end
 
 :end
 echo Compilation finished

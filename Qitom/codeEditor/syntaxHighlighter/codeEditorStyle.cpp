@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -23,15 +23,15 @@
     ------------------------
 
     This file belongs to the code editor of itom. The code editor is
-    in major parts a fork / rewritten version of the python-based source 
-    code editor PyQode from Colin Duquesnoy and others 
-    (see https://github.com/pyQode). PyQode itself is licensed under 
+    in major parts a fork / rewritten version of the python-based source
+    code editor PyQode from Colin Duquesnoy and others
+    (see https://github.com/pyQode). PyQode itself is licensed under
     the MIT License (MIT).
 
     Some parts of the code editor of itom are also inspired by the
     source code editor of the Spyder IDE (https://github.com/spyder-ide),
     also licensed under the MIT License and developed by the Spyder Project
-    Contributors. 
+    Contributors.
 
 *********************************************************************** */
 
@@ -243,7 +243,7 @@ CodeEditorStyle::CodeEditorStyle()
     m_formats[StyleItem::KeyOperator] = StyleItem(StyleItem::KeyOperator, StyleItem::createFormat(defaultFontName, defaultPointSize, Qt::black, Qt::white, true));
     m_formats[StyleItem::KeyConstant] = StyleItem(StyleItem::KeyConstant, StyleItem::createFormat(defaultFontName, defaultPointSize, "#0000ff", Qt::white, true)); //pygments, vs style
     m_formats[StyleItem::KeyNamespace] = StyleItem(StyleItem::KeyNamespace, StyleItem::createFormat(defaultFontName, defaultPointSize, "#0000ff", Qt::white, true)); //pygments, vs style
-    
+
     m_formats[StyleItem::KeyClass] = StyleItem(StyleItem::KeyClass, StyleItem::createFormat(defaultFontName, defaultPointSize, "#5aaac1", Qt::white, true)); //pygments, vs style
     m_formats[StyleItem::KeyString] = StyleItem(StyleItem::KeyString, StyleItem::createFormat("Courier New", defaultPointSize, "#7f007f", Qt::white, false));
     m_formats[StyleItem::KeyComment] = StyleItem(StyleItem::KeyComment, StyleItem::createFormat(defaultFontName, defaultPointSize, "#007f00", Qt::white, false)); //pygments, vs style
@@ -260,7 +260,7 @@ CodeEditorStyle::CodeEditorStyle()
 
     m_formats[StyleItem::KeyStreamOutput] = StyleItem(StyleItem::KeyStreamOutput, StyleItem::createFormat("Courier New", defaultPointSize, "#000000", Qt::white, false));
     m_formats[StyleItem::KeyStreamError] = StyleItem(StyleItem::KeyStreamError, StyleItem::createFormat("Courier New", defaultPointSize, "#000000", Qt::white, false));
-    
+
 }
 
 

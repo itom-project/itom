@@ -10,7 +10,7 @@
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
-   
+
     In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
@@ -68,7 +68,7 @@ void PlotInfoShapes::setItem2Point(QTreeWidgetItem* curItem, const ito::Shape &e
     {
         curItem->setData(1, Qt::DisplayRole, element.name());
     }
-    
+
 	curItem->setData(1, Qt::UserRole, element.rbasePoints());
 
     adjustNumberOfChildItems(curItem, 1);
@@ -86,7 +86,7 @@ void PlotInfoShapes::setItem2Line(QTreeWidgetItem* curItem, const ito::Shape &el
     {
         curItem->setData(1, Qt::DisplayRole, element.name());
     }
-    
+
 	curItem->setData(1, Qt::UserRole, element.rbasePoints());
 
     adjustNumberOfChildItems(curItem, 3);
@@ -109,7 +109,7 @@ void PlotInfoShapes::setItem2Circle(QTreeWidgetItem* curItem, const ito::Shape &
     {
         curItem->setData(1, Qt::DisplayRole, element.name());
     }
-    
+
 	curItem->setData(1, Qt::UserRole, element.rbasePoints());
 
     adjustNumberOfChildItems(curItem, 3);
@@ -132,7 +132,7 @@ void PlotInfoShapes::setItem2Ellipse(QTreeWidgetItem* curItem, const ito::Shape 
     {
         curItem->setData(1, Qt::DisplayRole, element.name());
     }
-    
+
 	curItem->setData(1, Qt::UserRole, element.rbasePoints());
 
     adjustNumberOfChildItems(curItem, 4);
@@ -158,7 +158,7 @@ void PlotInfoShapes::setItem2Square(QTreeWidgetItem* curItem, const ito::Shape &
     {
         curItem->setData(1, Qt::DisplayRole, element.name());
     }
-    
+
 	curItem->setData(1, Qt::UserRole, element.rbasePoints());
 
     adjustNumberOfChildItems(curItem, 3);
@@ -181,7 +181,7 @@ void PlotInfoShapes::setItem2Rect(QTreeWidgetItem* curItem, const ito::Shape &el
     {
         curItem->setData(1, Qt::DisplayRole, element.name());
     }
-    
+
 	curItem->setData(1, Qt::UserRole, element.rbasePoints());
 
     adjustNumberOfChildItems(curItem, 4);
@@ -207,7 +207,7 @@ void PlotInfoShapes::setItem2Poly(QTreeWidgetItem* curItem, const ito::Shape &el
     {
         curItem->setData(1, Qt::DisplayRole, element.name());
     }
-    
+
 	curItem->setData(1, Qt::UserRole, element.rbasePoints());
 
     adjustNumberOfChildItems(curItem, 3);
@@ -294,7 +294,7 @@ void PlotInfoShapes::updateShape(const ito::Shape element)
 
 	}
 
-	
+
 	return;
 }
 //---------------------------------------------------------------------------------------------------------
@@ -366,7 +366,7 @@ void PlotInfoShapes::updateShapes(const QVector< ito::Shape > elements)
 				delete curItem;
 				curItem = NULL;
 				break;
-			}	
+			}
 		}
 	}
 	return;

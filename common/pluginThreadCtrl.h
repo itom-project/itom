@@ -10,7 +10,7 @@
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
-   
+
     In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
@@ -40,7 +40,7 @@ namespace ito
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
 \class PluginThreadCtrl
-\brief Base class for DataIOThreadCtrl and ActuatorThreadCtrl. 
+\brief Base class for DataIOThreadCtrl and ActuatorThreadCtrl.
 
 This base class only provides access to setParam and getParam of the covered plugin
 in order to get or set internal parameters of the plugin. This is common for actuators
@@ -50,7 +50,7 @@ class ITOMCOMMONQT_EXPORT PluginThreadCtrl
 {
 protected:
     ito::AddInBase *m_pPlugin;                   /*!< Handle to the plugin */
-    ItomSharedSemaphoreLocker m_semaphoreLocker; /*!< Handle to the semaphore needed for thread save communication. Allocated in constructor, deleted in destructor*/    
+    ItomSharedSemaphoreLocker m_semaphoreLocker; /*!< Handle to the semaphore needed for thread save communication. Allocated in constructor, deleted in destructor*/
 
 public:
     //! default constructor. No plugin instance is currently under control.
@@ -99,7 +99,7 @@ public:
 
 
 //-----------------------------------------------------------------------------------
-/*! 
+/*!
 \class DataIOThreadCtrl
 \brief Helper class to give plugin developers an easy access to cameras in other threads.
 
@@ -198,7 +198,7 @@ public:
 };
 
 //-----------------------------------------------------------------------------------
-/*! 
+/*!
 \class ActuatorThreadCtrl
 \brief Helper class to give plugin developers an easy access to actuators in other threads.
 
@@ -243,7 +243,7 @@ protected:
 
 public:
     //! default constructor. No actuator instance is currently under control.
-    ActuatorThreadCtrl();            
+    ActuatorThreadCtrl();
 
     //! Creates the control object for an actuator plugin instance
     /*!

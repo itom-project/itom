@@ -24,14 +24,14 @@
 # You should have received a copy of the GNU Library General Public License
 # along with itom. If not, see <http://www.gnu.org/licenses/>.
 
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.12...3.24)
 
 set(target_name itomWidgets)
 project(${target_name})
 
 message(STATUS "--------------- LIBRARY ${target_name} -----------------")
 
-# include commonly used itom CMake macros (internal can only be used within the core projects) 
+# include commonly used itom CMake macros (internal can only be used within the core projects)
 include("../cmake/ItomBuildMacros.cmake")
 include("../cmake/ItomBuildMacrosInternal.cmake")
 
@@ -43,15 +43,15 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 # add 3rd party packages
 itom_find_package_qt(OFF #no automoc for Qt5, aber unten wird er angeschalten?! ?!?!?
-        UiTools 
-        Widgets 
-        Svg 
-        Xml 
-        Designer 
-        PrintSupport 
+        UiTools
+        Widgets
+        Svg
+        Xml
+        Designer
+        PrintSupport
         LinguistTools
-        ) 
-        
+        )
+
 find_package(VisualLeakDetector QUIET)
 find_package(OpenCV COMPONENTS core REQUIRED)
 
@@ -293,7 +293,7 @@ set(itomWidgets_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/brushCreatorButtonFactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/collapsibleGroupBoxFactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/colorPickerButtonFactory.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/factories/penCreatorButtonFactory.cpp    
+    ${CMAKE_CURRENT_SOURCE_DIR}/factories/penCreatorButtonFactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/doubleRangeSliderFactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/doubleSpinBoxFactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/doubleSliderFactory.cpp
@@ -392,43 +392,43 @@ itom_add_source_group(paramPropertyBrowser)
 #end add filters to visual studio
 
 add_library(${target_name} SHARED
-    ${itomWidgets_SOURCES} 
-    ${itomWidgets_HEADERS} 
-    ${itomWidgets_HEADERS_MOC} 
-    ${itomWidgets_Factory_HEADERS} 
-    ${itomWidgets_Factory_HEADERS_MOC} 
-    ${itomWidgets_UI_MOC} 
-    ${itomWidgets_RCC_MOC} 
+    ${itomWidgets_SOURCES}
+    ${itomWidgets_HEADERS}
+    ${itomWidgets_HEADERS_MOC}
+    ${itomWidgets_Factory_HEADERS}
+    ${itomWidgets_Factory_HEADERS_MOC}
+    ${itomWidgets_UI_MOC}
+    ${itomWidgets_RCC_MOC}
     ${paramPropertyBrowser_SOURCES}
     ${paramPropertyBrowser_MOC})
 
-target_link_libraries(${target_name} 
-    ${VISUALLEAKDETECTOR_LIBRARIES} 
-    ${OpenCV_LIBS} 
-    ${QT5_LIBRARIES} 
-    itomCommonLib 
-    itomShapeLib 
+target_link_libraries(${target_name}
+    ${VISUALLEAKDETECTOR_LIBRARIES}
+    ${OpenCV_LIBS}
+    ${QT5_LIBRARIES}
+    itomCommonLib
+    itomShapeLib
     itomCommonQtLib
     )
 
-# Qt: enable all automoc, autouic and autorcc. 
-# Autouic file will be disabled for all files that are 
+# Qt: enable all automoc, autouic and autorcc.
+# Autouic file will be disabled for all files that are
 # processed manually by itom_qt_wrap_ui.
-set_target_properties(${target_name} PROPERTIES 
-        AUTOMOC OFF 
-        AUTORCC OFF 
+set_target_properties(${target_name} PROPERTIES
+        AUTOMOC OFF
+        AUTORCC OFF
         AUTOUIC OFF
         )
 
 #translation
-itom_library_translation(QM_FILES TARGET ${target_name} 
-    FILES_TO_TRANSLATE 
-    ${itomWidgets_SOURCES} 
-    ${itomWidgets_HEADERS} 
+itom_library_translation(QM_FILES TARGET ${target_name}
+    FILES_TO_TRANSLATE
+    ${itomWidgets_SOURCES}
+    ${itomWidgets_HEADERS}
     ${itomWidgets_UI}
     )
 
-# this is a dummy project to force some moc-files to be generated before 
+# this is a dummy project to force some moc-files to be generated before
 # they are directly included in some cpp files (qtpropertybrowser only)
 add_custom_target(${target_name}GenerateMoc
     DEPENDS ${paramPropertyBrowser_MOC_CPP}
@@ -449,13 +449,13 @@ endforeach()
 itom_add_library_to_appdir_and_sdk(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 
 if(WIN32)
-    #For Windows, the resulting library is copied to the designer-folder, 
+    #For Windows, the resulting library is copied to the designer-folder,
     # such that the widgets are listed in the widget library of QtDesigner
     itom_add_designerlibrary_to_copy_list(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 else()
-   #Under linux, copying the library (like under Windows) will result in a strange 
+   #Under linux, copying the library (like under Windows) will result in a strange
    # double-linked-list error, since two libraries with the
-   #same content will then be loaded by itom. Therefore, a symbolic link to the 
+   #same content will then be loaded by itom. Therefore, a symbolic link to the
    # original library is created in the designer-folder.
     file(MAKE_DIRECTORY "${ITOM_APP_DIR}/designer")
     add_custom_command(TARGET ${target_name} POST_BUILD                                  # Adds a post-build event to this target
@@ -467,6 +467,6 @@ endif()
 
 itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 
-foreach(headerFile ${itomWidgets_HEADERS}) 
+foreach(headerFile ${itomWidgets_HEADERS})
     file(COPY ${headerFile}    DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/itomWidgets FILES_MATCHING PATTERN "*.h")
 endforeach(headerFile)

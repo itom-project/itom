@@ -12,9 +12,9 @@ SET ITOM_BIN="${ITOM_BIN}"
 REM Temporarily insertes QT_BIN to the path variable...
 SET PATH=%QT_BIN%;%PATH%
 
-REM ... and start the windeployqt.exe tool to add all relevant qt files to the deployment folder 
+REM ... and start the windeployqt.exe tool to add all relevant qt files to the deployment folder
 
-windeployqt.exe --dir %QT_DEPLOYMENT_FOLDER% %ITOM_BIN%\qitom.exe 
+windeployqt.exe --dir %QT_DEPLOYMENT_FOLDER% %ITOM_BIN%\qitom.exe
 
 windeployqt.exe --dir %QT_DEPLOYMENT_FOLDER% %QT_BIN%\assistant.exe
 windeployqt.exe --dir %QT_DEPLOYMENT_FOLDER% %QT_BIN%\linguist.exe

@@ -10,7 +10,7 @@
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
-   
+
     In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
@@ -62,7 +62,7 @@ way to handle const char* types. ByteArray is a leightweight class without any d
 and is used in many itom libraries e.g. the Qt-free itomCommonLib library.
 */
 class ITOMCOMMON_EXPORT ByteArray
-{       
+{
     private:
         /*!
         \struct Data
@@ -88,24 +88,24 @@ class ITOMCOMMON_EXPORT ByteArray
     public:
         //! default constructor. The ByteArray is empty.
         inline ByteArray() : d(NULL) {}
-        
+
         //! constructor that copies the content of str ('\0'-terminated) to this ByteArray.
         ByteArray(const char *str);
-        
+
         //! copy constructor: the given byte array is implicitely shared between both instances until its content is changed by one of both participating instances.
-        inline ByteArray(const ByteArray& copyConstr) : d(copyConstr.d) 
-        { 
-            if (d) 
+        inline ByteArray(const ByteArray& copyConstr) : d(copyConstr.d)
+        {
+            if (d)
             {
                 BYTEARRAY_INCCREF(d);
-            } 
+            }
         }
 
-        inline ByteArray(ByteArray&& other) : d(other.d) 
-        { 
-            other.d = nullptr; 
+        inline ByteArray(ByteArray&& other) : d(other.d)
+        {
+            other.d = nullptr;
         }
-        
+
         //! destructor: the internal data is deleted if no other instance needs it.
         inline ~ByteArray() { decAndFree(d); }
 
@@ -117,13 +117,13 @@ class ITOMCOMMON_EXPORT ByteArray
         //! a zero-terminated string is assigned to this ByteArray. The given char* is copied.
         ByteArray &operator=(const char *str);
 
-        /*! a zero-terminated string is appended to this ByteArray. 
-        If the ByteArray implictely shared its content with another one, 
+        /*! a zero-terminated string is appended to this ByteArray.
+        If the ByteArray implictely shared its content with another one,
         the contents are duplicated before appending the new string.*/
         ByteArray &append(const char *str);
 
-        /*! the content of another ByteArray is appended to this ByteArray. 
-        If the ByteArray implictely shared its content with another one, 
+        /*! the content of another ByteArray is appended to this ByteArray.
+        If the ByteArray implictely shared its content with another one,
         the contents are duplicated before appending the new ByteArray. */
         ByteArray &append(const ByteArray &str);
 
@@ -177,16 +177,16 @@ class ITOMCOMMON_EXPORT ByteArray
         bool operator==(const ByteArray &a) const;
 
         //! return false, if the content of this ByteArray is equal to the given ByteArray a.
-        inline bool operator!=(const ByteArray &a) const { return !(operator==(a)); }       
-        
+        inline bool operator!=(const ByteArray &a) const { return !(operator==(a)); }
+
 
     private:
         Data *d;  /*!< pointer to Data container */
 
-        inline void decAndFree(Data *x) 
-        { 
-            if (x && !(BYTEARRAY_DECREF(x))) 
-            { 
+        inline void decAndFree(Data *x)
+        {
+            if (x && !(BYTEARRAY_DECREF(x)))
+            {
                 free(x);
             }
         }
@@ -196,26 +196,26 @@ class ITOMCOMMON_EXPORT ByteArray
 
 //! comparison operator that returns true if the content of a1 is equal to the given zero-terminated string a2.
 inline bool operator==(const ByteArray &a1, const char *a2)
-{ 
-    return a2 ? strcmp(a1.data(),a2) == 0 : (a1.size() == 0);  
+{
+    return a2 ? strcmp(a1.data(),a2) == 0 : (a1.size() == 0);
 }
 
 //! comparison operator that returns true if the content of a2 is equal to the given zero-terminated string a1.
 inline bool operator==(const char *a1, const ByteArray &a2)
-{ 
+{
     return a1 ? strcmp(a1,a2.data()) == 0 : (a2.size() == 0);
 }
 
 //! comparison operator that returns true if the content of a1 is not equal to the given zero-terminated string a2.
 inline bool operator!=(const ByteArray &a1, const char *a2)
-{ 
-    return a2 ? strcmp(a1.data(),a2) != 0 : (a1.size() > 0); 
+{
+    return a2 ? strcmp(a1.data(),a2) != 0 : (a1.size() > 0);
 }
 
 //! comparison operator that returns true if the content of a2 is not equal to the given zero-terminated string a1.
 inline bool operator!=(const char *a1, const ByteArray &a2)
-{ 
-    return a1 ? strcmp(a1,a2.data()) != 0 : (a2.size() > 0); 
+{
+    return a1 ? strcmp(a1,a2.data()) != 0 : (a2.size() > 0);
 }
 
 

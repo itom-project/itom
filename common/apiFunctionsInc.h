@@ -10,7 +10,7 @@
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
-   
+
     In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
@@ -29,7 +29,7 @@
 #define APIFUNCTIONSINC_H
 
 #ifndef Q_MOC_RUN
-namespace ito 
+namespace ito
 {
     #if defined(ITOM_IMPORT_API) //&& !defined(ITOM_CORE)
         void **ITOM_API_FUNCS;
@@ -41,7 +41,7 @@ namespace ito
     * \defgroup ITOM_API itom Standard API
     *
     * \brief The itom standard API contains a bunch of functions that can be called by the core application itom as well as by
-    * every plugin or designer plugin. 
+    * every plugin or designer plugin.
     *
     * Every function is given by a certain preprocessor definition that describes
     * the return value, parameters and function name of the method to call. Each preprocessor definition is redirected
@@ -56,18 +56,18 @@ namespace ito
     *
     * \{
     */
-    
+
     //! looks for a given filter (algorithm) defined in any algo plugin.
     /*!
         \param name is the name of the desired filter or algorithm
-        \param filterDef reference to a ito::AddInAlgo::FilterDef struct pointer. 
+        \param filterDef reference to a ito::AddInAlgo::FilterDef struct pointer.
                If the filter is found, this reference points to the struct defined by the plugin.
         \return ito::RetVal (ito::retOk if filter has been found, else ito::retError)
         \sa apiFilterCall, apiFilterParam
     */
     #define apiFilterGetFunc \
         (*(ito::RetVal (*)(const QString &name, ito::AddInAlgo::FilterDef *&filterDef)) ito::ITOM_API_FUNCS[0])
-    
+
     //! calls a filter (algorithm) defined in any algo plugin.
     /*!
         This api method calls another filter given by its specific name in any other plugin.
@@ -126,7 +126,7 @@ namespace ito
 
     #define apiFilterPluginName \
         (*(ito::RetVal (*)(const QString &name, QString &pluginName)) ito::ITOM_API_FUNCS[37])
-    
+
     //! checks if a specific plugin is available and returns its default mandatory and optional parameter set for the initialization
     /*!
         This method checks if a specific plugin from a given plugin type is available. If so, retOk is returned and the arguments
@@ -135,9 +135,9 @@ namespace ito
         \param name is the plugin name
         \param pluginType is the base type of the plugin (ito::tPluginType, e.g. ito::typeDataIO, ito::typeActuator...)
         \param pluginIdx is the index of the found plugin that can be passed apiAddInOpenDataIO, apiAddInActuator
-        \param paramsMand are the templates for the mandatory parameters for initializing the plugin. 
+        \param paramsMand are the templates for the mandatory parameters for initializing the plugin.
                Please copy all values to QVector<ito::ParamBase> before editing the values and passing them to the initialization.
-        \param paramsOpt are the templates for the optional parameters for initializing the plugin. 
+        \param paramsOpt are the templates for the optional parameters for initializing the plugin.
                Please copy all values to QVector<ito::ParamBase> before editing the values and passing them to the initialization.
     */
     #define apiAddInGetInitParams \
@@ -278,7 +278,7 @@ namespace ito
 
     #define apiCompareParam \
         (*(ito::tCompareResult (*)(const ito::Param &paramTemplate, const ito::Param &param, ito::RetVal &ret)) ito::ITOM_API_FUNCS[12])
-    
+
     //! checks whether a given parameter fits to a template parameter.
     /*!
         This method checks whether a parameter param fits to the requirements of a template parameter.
@@ -321,7 +321,7 @@ namespace ito
     */
     #define apiValidateAndCastParam \
         (*(ito::RetVal (*)(const ito::Param &templateParam, const ito::ParamBase &param, bool strict, bool mandatory, bool roundToStep)) ito::ITOM_API_FUNCS[25])
-    
+
     //! Finds reference to desired parameter in parameter map of any plugin
     /*!
         The parameters of all plugins are contained in the map ito::AddInBase::m_params that
@@ -336,7 +336,7 @@ namespace ito
     */
     #define apiGetParamFromMapByKey \
         (*(ito::RetVal (*)(QMap<QString,ito::Param> &paramMap, const QString &key, QMap<QString,ito::Param>::iterator &found, bool errorIfReadOnly)) ito::ITOM_API_FUNCS[14])
-    
+
     //! parses a parameter name and splits it into specific parts
     /*!
         When reading or writing a parameter of any plugin instance, the parameter name must have a specific form:
@@ -364,7 +364,7 @@ namespace ito
 
     #define apiGetParam \
         (*(ito::Param (*)(const ito::Param &param, const bool hasIndex, const int index, ito::RetVal &ret)) ito::ITOM_API_FUNCS[20])
-    
+
     //! update all values in paramMap
     /*!
         For each value in vector values, their corresponding entry in paramMap is searched and if available set to the value given in the
@@ -382,7 +382,7 @@ namespace ito
 
     #define apiLoadXML2QLIST \
         (*(ito::RetVal (*)(QMap<QString, ito::Param> *paramList , QString id, QFile &paramFile)) ito::ITOM_API_FUNCS[18])
-    
+
     //! returns a shallow or deep copy of a given data object that fits to given requirements
     /*!
         Use this simple api method to test a given data object if it fits some requirements.
@@ -423,7 +423,7 @@ namespace ito
     */
     #define apiCreateFromNamedDataObject \
         (* (ito::DataObject* (*)(const ito::DataObject *dObj, int nrDims, ito::tDataType type, const char *name, int *sizeLimits, ito::RetVal *retval)) ito::ITOM_API_FUNCS[24])
-    
+
     //! returns the current working directory of itom
     /*!
         The current working directory is the current working directory of both python and itom itself. Its absolute path is returned as string.
@@ -432,7 +432,7 @@ namespace ito
     */
     #define apiGetCurrentWorkingDir \
         (* (QString (*)(void)) ito::ITOM_API_FUNCS[21])
-    
+
     //! helper function to show and process a configuration dialog of a plugin
     /*!
         Use this simple api method in the method showConfDialog of a plugin to show and process

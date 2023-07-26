@@ -23,14 +23,14 @@
 # You should have received a copy of the GNU Library General Public License
 # along with itom. If not, see <http://www.gnu.org/licenses/>.
 
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.12...3.24)
 
 set(target_name pointcloud)
-project(${target_name}) 
+project(${target_name})
 
 message(STATUS "--------------- LIBRARY ${target_name} -----------------")
 
-# include commonly used itom CMake macros (internal can only be used within the core projects) 
+# include commonly used itom CMake macros (internal can only be used within the core projects)
 include("../cmake/ItomBuildMacros.cmake")
 include("../cmake/ItomBuildMacrosInternal.cmake")
 
@@ -40,22 +40,23 @@ itom_init_core_common_vars()
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/../cmake)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-#pre-create the necessary CMake variables for PCL to simplify the creation in the CMake GUI
-set(Boost_INCLUDE_DIR "" CACHE PATH "include directory of Boost (Windows: usually the root directory of Boost)")
-set(Boost_LIBRARY_DIR "" CACHE PATH "library directory of Boost (Windows: usually a lib subdirectory of Boost)")
-
 # add 3rd party packages
 find_package(OpenCV COMPONENTS core REQUIRED)
-find_package(PCL 1.5.1 REQUIRED COMPONENTS common)
+include(Setup_PCL_Itom)
+if(WIN32)
+    find_package(PCL 1.5.1 QUIET REQUIRED COMPONENTS common PATHS ${PCL_CMAKE_DIR} NO_DEFAULT_PATH)
+else(WIN32)
+    find_package(PCL 1.5.1 QUIET REQUIRED COMPONENTS common)
+endif(WIN32)
 
 # set some preprocessor directives
 add_definitions(-DPOINTCLOUD_DLL -D_POINTCLOUD_DLL)
 
-include_directories( 
+include_directories(
     ${PCL_INCLUDE_DIRS}
 )
 
-set(libSrcs 
+set(libSrcs
     ${CMAKE_CURRENT_SOURCE_DIR}/pclVersion.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pclDefines.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pclStructures.h
