@@ -40,6 +40,8 @@ namespace ito
 {
     class AddInMultiChannelGrabberPrivate;
 
+
+
     class ITOMCOMMONQT_EXPORT AddInMultiChannelGrabber : public AbstractAddInGrabber
     {
         Q_OBJECT
@@ -86,9 +88,13 @@ namespace ito
             void addDefaultMetaParams();
         };
 
-        QMap<QString, ChannelContainer> m_channels; /*!< Map for recently grabbed images of various channels */
+        typedef QMap<QString, ChannelContainer> ChannelContainerMap;
+        typedef ChannelContainerMap::iterator ChannelContainerMapIterator;
+        typedef ChannelContainerMap::const_iterator ChannelContainerMapConstIterator;
 
-        virtual ito::RetVal checkData(ito::DataObject *externalDataObject = nullptr);
+        ChannelContainerMap m_channels; /*!< Map for recently grabbed images of various channels */
+
+        virtual ito::RetVal checkData(ito::DataObject* externalDataObject = nullptr);
         virtual ito::RetVal checkData(QMap<QString, ito::DataObject*>& externalDataObject);
         virtual ito::RetVal sendDataToListeners(int waitMS); /*!< sends m_data to all registered listeners. */
         ito::RetVal adaptDefaultChannelParams(); /*!< adaptes the params after changing the defaultChannel param*/
@@ -96,10 +102,10 @@ namespace ito
         virtual ito::RetVal switchChannelSelector();/*!< synchronizes m_params with the params of default channel container */
         virtual ito::RetVal applyParamsToChannelParams(const QStringList& keyList = QStringList());
 
-        //!< initializes the channels, channel parameters and global parameters.
+        //! registers all channel containers, initializes their parameters as well as all common, global parameters
         void initChannelsAndGlobalParameters(
-            const QMap<QString, ChannelContainer>& channelContainerMap,
-            const QString &defaultChannelName,
+            const ChannelContainerMap& channelContainerMap,
+            const QString& defaultChannelName,
             const QList<ito::Param>& globalParameters = QList<ito::Param>());
 
         ito::RetVal setParamMeta(const QByteArray& paramName, ito::ParamMeta* meta, bool takeOwnerShip, const QList<QByteArray>& channelList = QList<QByteArray>());
@@ -119,14 +125,14 @@ namespace ito
         //\param [in] add key of changed channel specific parameters to pendingUpdate.
         //\return retOk if everything was ok, else retError
         //*/
-        virtual ito::RetVal setParameter(QSharedPointer<ito::ParamBase>& val, const ParamMapIterator& it, const QString& suffix, const QString& key, int index, bool hasIndex, bool &ok, QStringList &pendingUpdate) = 0;
-        virtual ito::RetVal getParameter(QSharedPointer<ito::Param> val, const ParamMapIterator& it, const QString& suffix, const QString& key, int index, bool hasIndex, bool &ok) = 0;
+        virtual ito::RetVal setParameter(QSharedPointer<ito::ParamBase>& val, const ParamMapIterator& it, const QString& suffix, const QString& key, int index, bool hasIndex, bool& ok, QStringList& pendingUpdate) = 0;
+        virtual ito::RetVal getParameter(QSharedPointer<ito::Param> val, const ParamMapIterator& it, const QString& suffix, const QString& key, int index, bool hasIndex, bool& ok) = 0;
         virtual ito::RetVal getValByMap(QSharedPointer<QMap<QString, ito::DataObject*>> dataObjMap) = 0;
         virtual ito::RetVal copyValByMap(QSharedPointer<QMap<QString, ito::DataObject*>> dataObjMap) = 0;
         void updateSizeXY(); /*!< updates sizex und sizey*/
 
     public:
-        AddInMultiChannelGrabber(const QByteArray &grabberName);
+        AddInMultiChannelGrabber(const QByteArray& grabberName);
         ~AddInMultiChannelGrabber();
 
     private:
@@ -134,8 +140,8 @@ namespace ito
         Q_DECLARE_PRIVATE(AddInMultiChannelGrabber);
 
     public slots:
-        ito::RetVal setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond = nullptr) final;
-        ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond) final;
+        ito::RetVal setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore* waitCond = nullptr) final;
+        ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore* waitCond) final;
         ito::RetVal changeChannelForListeners(const QString& newChannel, QObject* obj);
         ito::RetVal getVal(QSharedPointer<QMap<QString, ito::DataObject*> > dataObjMap, ItomSharedSemaphore* waitCond);
         ito::RetVal copyVal(QSharedPointer<QMap<QString, ito::DataObject*> > dataObjMap, ItomSharedSemaphore* waitCond);

@@ -51,7 +51,10 @@ namespace ito
         //! proxy for the currently selected channel.
         bool m_channelParamsProxyInitialized;
 
-
+        //!< this map contains all parameter names in m_param, that belong to a
+        //! channel parameter. The value string list contains all channel names,
+        //! where this parameter is explicitely contained. Global parameters,
+        //! that are independent on channels, are not listed here.
         QMap<QString, QStringList> m_paramChannelAvailabilityMap;
     };
 
@@ -210,7 +213,7 @@ namespace ito
 
     //---------------------------------------------------------------------------------
     void AddInMultiChannelGrabber::initChannelsAndGlobalParameters(
-        const QMap<QString, ChannelContainer>& channelContainerMap,
+        const ChannelContainerMap& channelContainerMap,
         const QString& defaultChannelName,
         const QList<ito::Param>& globalParameters /*= QList<ito::Param>()*/)
     {
@@ -227,6 +230,10 @@ namespace ito
             "initChannelsAndGlobalParameters",
             "channels and global parameters must not be initialized yet");
 
+        Q_ASSERT_X(channelContainerMap.size() > 0,
+            "initChannelsAndGlobalParameters",
+            "at least one channel container must be given");
+
         // initialize default global parameters
         m_params["channelName"].setVal<const char*>(defaultChannelName.toLatin1().constData());
         m_params["channelSelector"].setVal<const char*>(defaultChannelName.toLatin1().constData());
@@ -240,83 +247,82 @@ namespace ito
 
         m_params["availableChannels"].setVal<ito::ByteArray*>(channelNames.data(), channelNames.size());
 
-        /*
-        * todo:
-        *
-        bool channelSpecificParam = false;
+        m_channels = channelContainerMap;
 
-        assert(channelContainerMap.size() != 0);
-        QMapIterator<QString, ChannelContainer> channel(channelContainerMap);
-        QVector<ByteArray> channelList;
-        QMap<QString, ito::Param>initialParams = m_params;
+        // iterate over all channels and register their parameters as global parameter,
+        // however store a flag, that this is a channel parameter.
 
-        while (channel.hasNext())
+        QString paramName;
+        ChannelContainerMapConstIterator channelIter = channelContainerMap.constBegin();
+
+        while (channelIter != channelContainerMap.constEnd())
         {
-            channel.next();
-            QMapIterator<QString, ito::Param> channelParamIterator(channel.value().m_channelParam);
+            ParamMapConstIterator channelParamIter = channelIter->m_channelParam.constBegin();
 
-            while (channelParamIterator.hasNext())//iterate through channel params
+            while (channelParamIter != channelIter->m_channelParam.constEnd())
             {
-                channelParamIterator.next();
+                //iterate through channel params
 
-                if (!m_params.contains(channelParamIterator.key()))
-                {
-                    m_params.insert(channelParamIterator.key(), channelParamIterator.value());
-                }
+                paramName = channelParamIter.key();
 
-                if (!d->m_paramChannelAvailabilityMap.contains(channelParamIterator.key()))
+                if (m_params.contains(paramName))
                 {
-                    d->m_paramChannelAvailabilityMap.insert(channelParamIterator.key(), QStringList(channel.key()));
+                    // if another channel already registered this key, it must have the same type
+                    Q_ASSERT_X(m_params[paramName].getType() == channelParamIter->getType(),
+                        "initChannelsAndGlobalParameters",
+                        "The type of channel parameters of the same name must be equal.");
                 }
                 else
                 {
-                    d->m_paramChannelAvailabilityMap[channelParamIterator.key()].append(channel.key());
+                    // add a deep copy of the channel parameter to m_params
+                    m_params.insert(paramName, Param(channelParamIter.value()));
                 }
 
+                if (!d->m_paramChannelAvailabilityMap.contains(paramName))
+                {
+                    d->m_paramChannelAvailabilityMap[paramName] = QStringList(channelIter.key());
+                }
+                else
+                {
+                    d->m_paramChannelAvailabilityMap[paramName].append(channelIter.key());
+                }
+
+                channelParamIter++;
             }
 
-            channelList.append(channel.key().toLatin1().data());
+            channelIter++;
         }
 
-        m_params["availableChannels"].setVal<ByteArray*>(channelList.data(), channelList.length());
-        m_params["defaultChannel"].setVal<const char*>(channelContainerMap.firstKey().toLatin1().data());
-        m_params["channelSelector"].setVal<const char*>(channelContainerMap.firstKey().toLatin1().data());
-        m_channels = channelContainerMap;
+        // add all global parameters to m_params, unless they exist already: error
 
-        QMapIterator<QString, ito::Param> nonChannelSpecificParamsIt(nonChannelSpecificParams);
-
-        while (nonChannelSpecificParamsIt.hasNext())
+        foreach(const ito::Param& p, globalParameters)
         {
-            nonChannelSpecificParamsIt.next();
-            assert(!m_params.contains(nonChannelSpecificParamsIt.key()));
-            assert(!d->m_paramChannelAvailabilityMap.contains(nonChannelSpecificParamsIt.key()));
-            d->m_paramChannelAvailabilityMap.insert(nonChannelSpecificParamsIt.key(), QStringList());
-            m_params.insert(nonChannelSpecificParamsIt.key(), nonChannelSpecificParamsIt.value());
-
+            paramName = QLatin1String(p.getName());
+            Q_ASSERT_X(!m_params.contains(paramName),
+                "initChannelsAndGlobalParameters",
+                "the globalParameters must not contain a parameter whose name is already contained in at least one channel.");
+            m_params[paramName] = p;
         }
-
-        QMapIterator<QString, ito::Param> initialParamsIt(initialParams);
-
-        while (initialParamsIt.hasNext())
-        {
-            initialParamsIt.next();
-            assert(!d->m_paramChannelAvailabilityMap.contains(initialParamsIt.key()));
-            d->m_paramChannelAvailabilityMap.insert(nonChannelSpecificParamsIt.key(), QStringList());
-        }
-        */
 
         d->m_channelParamsProxyInitialized = true;
+
+        // call switchChannelSelector to synchronize the values in the channel specific parameters with
+        // to these of the current channel (channelSelector).
         switchChannelSelector();
     }
 
-    ////-------------------------------------------------------------------------------
-    ////! sends m_image to all registered listeners.
-    ///*!
-    //This method is continuously called from timerEvent. Also call this method from your getVal-Method (usually with 0-timeout). The function adds axis scale and axis unit to the dataObject.
+    //-------------------------------------------------------------------------------
+    //! sends m_image to all registered listeners.
+    /*
+    This method is continuously called from timerEvent. Also call this method from
+    your getVal-Method (usually with 0-timeout). The function adds axis scale and
+    axis unit to the dataObject.
 
-    //\param [in] waitMS indicates the time (in ms) that should be waiting until every registered live image source node received m_image. 0: no wait, -1: infinit waiting time, else time in milliseconds
-    //\return retOk if everything was ok, retWarning if live image could not be invoked
-    //*/
+    \param [in] waitMS indicates the time (in ms) that should be waiting until every
+                registered live image source node received m_image. 0: no wait, -1:
+                infinit waiting time, else time in milliseconds
+    \return retOk if everything was ok, retWarning if live image could not be invoked
+    */
     ito::RetVal AddInMultiChannelGrabber::sendDataToListeners(int waitMS)
     {
         Q_D(AddInMultiChannelGrabber);
@@ -324,9 +330,11 @@ namespace ito
         assert(d->m_channelParamsProxyInitialized);
         ito::RetVal retValue = ito::retOk;
         int size = m_autoGrabbingListeners.size();
+
         if (waitMS == 0)
         {
             QMultiMap<QString, QObject*>::iterator it = m_autoGrabbingListeners.begin();
+
             while (it != m_autoGrabbingListeners.end())
             {
                 const ChannelContainer& container = m_channels[it.key().toLatin1().data()];
@@ -336,6 +344,7 @@ namespace ito
                 {
                     retValue += ito::RetVal(ito::retWarning, 1001, tr("slot 'setSource' of live source node could not be invoked").toLatin1().data());
                 }
+
                 it++;
             }
         }
@@ -344,6 +353,7 @@ namespace ito
             ItomSharedSemaphore** waitConds = new ItomSharedSemaphore * [size];
             int i = 0;
             QMultiMap<QString, QObject*>::iterator it = m_autoGrabbingListeners.begin();
+
             while (it != m_autoGrabbingListeners.end())
             {
                 waitConds[i] = new ItomSharedSemaphore();
@@ -365,12 +375,12 @@ namespace ito
                 {
                     qDebug() << "timeout in number: " << i << "number of items: " << size;
                 }
+
                 waitConds[i]->deleteSemaphore();
-                waitConds[i] = NULL;
+                waitConds[i] = nullptr;
             }
 
-            delete[] waitConds;
-            waitConds = NULL;
+            DELETE_AND_SET_NULL_ARRAY(waitConds);
         }
 
 
@@ -750,19 +760,19 @@ namespace ito
         return retValue;
     }
 
-    ////-------------------------------------------------------------------------------
-    ////! Sets a new value to a parameter.
-    ///*!
-    // This function parses the given parameter and calls setParameter. If the bool parameter ok in the setParameter (to be implemented in the individual plugins)
-    // function returns false, it gets assumed that the plugin didn't process the parameter. In this case the value of the parameter gets copied here.
-    // If the parameter name is "roi" sizex and sizey gets updated by setParam. If the key of the parameter is "defaultChannel" the function "switchDefaultChannel" gets called.
-    // Both happens also if the "ok" value of setParameter is true.
-    // "applyParamsToChannelParams" is called to synchronize the parameters of the channel container follwed by a call of checkData.
+    //-------------------------------------------------------------------------------
+    //! Sets a new value to a parameter.
+    /*!
+     This function parses the given parameter and calls setParameter. If the bool parameter ok in the setParameter (to be implemented in the individual plugins)
+     function returns false, it gets assumed that the plugin didn't process the parameter. In this case the value of the parameter gets copied here.
+     If the parameter name is "roi" sizex and sizey gets updated by setParam. If the key of the parameter is "defaultChannel" the function "switchDefaultChannel" gets called.
+     Both happens also if the "ok" value of setParameter is true.
+     "applyParamsToChannelParams" is called to synchronize the parameters of the channel container follwed by a call of checkData.
 
-    //\param [in] val is a QSharedPOinter of type ParamBase containing the paremeter to be set.
-    //\param [in] waitCond
-    //\return retOk if everything was ok, else retError
-    //*/
+    \param [in] val is a QSharedPOinter of type ParamBase containing the paremeter to be set.
+    \param [in] waitCond
+    \return retOk if everything was ok, else retError
+    */
     ito::RetVal AddInMultiChannelGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore* waitCond/* = NULL*/)
     {
         Q_D(AddInMultiChannelGrabber);
@@ -806,7 +816,7 @@ namespace ito
                         }
                         else
                         {
-                            retValue += retValue += ito::RetVal(ito::retError, 0, tr("could not switch to channel %1. The channel is unknown.").arg(val->getVal<const char*>()).toLatin1().data());
+                            retValue += ito::RetVal(ito::retError, 0, tr("could not switch to channel %1. The channel is unknown.").arg(val->getVal<const char*>()).toLatin1().data());
                         }
                     }
                 }
@@ -846,46 +856,54 @@ namespace ito
         return retValue;
     }
 
-    ////-------------------------------------------------------------------------------
-    ////! synchronizes m_params with the params of default channel container
-    ///*!
-    //This method synchronizes the parameters from the current selected channel container with m_params. Call this function after changing the defaultChannel parameter.Parameters which are not available for the current default channel are set to readonly
+    //-------------------------------------------------------------------------------
+    //! synchronizes m_params with the params of default channel container
+    /*!
+    This method synchronizes the parameters from the current selected channel container
+    with m_params. Call this function after changing the defaultChannel parameter.
+    Parameters which are not available for the current default channel are set to readonly
 
-    //\return retOk if everything was ok, else retError
-    //*/
+    \return retOk if everything was ok, else retError
+    */
     ito::RetVal AddInMultiChannelGrabber::switchChannelSelector()
     {
         Q_D(AddInMultiChannelGrabber);
 
         assert(d->m_channelParamsProxyInitialized);
         ito::RetVal retValue(ito::retOk);
-        unsigned int flag = 0;
+        ito::uint32 flag = 0;
         QString selectedChannel = QLatin1String(m_params["channelSelector"].getVal<const char*>());
 
         if (m_channels.contains(selectedChannel))
         {
-            QMutableMapIterator<QString, ito::Param> itParam(m_params);
+            const auto& selChannel = m_channels[selectedChannel];
+            auto paramsInChannelIter = d->m_paramChannelAvailabilityMap.constBegin();
 
-            while (itParam.hasNext())
+            while (paramsInChannelIter != d->m_paramChannelAvailabilityMap.constEnd())
             {
-                itParam.next();
+                if (paramsInChannelIter->contains(selectedChannel))
+                {
+                    // this parameters is contained in the selected channel. Copy its value and flags
+                    // from the channel to m_params
+                    const ito::Param p = selChannel.m_channelParam[paramsInChannelIter.key()];
+                    m_params[paramsInChannelIter.key()].copyValueFrom(&p);
+                    m_params[paramsInChannelIter.key()].setFlags(selChannel.m_channelParam[paramsInChannelIter.key()].getFlags());
+                }
 
-                if (d->m_paramChannelAvailabilityMap[itParam.key()].contains(selectedChannel))
-                {
-                    itParam.value() = m_channels[selectedChannel].m_channelParam[itParam.key()];
-                }
-                else if (!d->m_paramChannelAvailabilityMap[itParam.key()].isEmpty())
-                {
-                    flag = itParam.value().getFlags();
-                    flag |= ito::ParamBase::Readonly;
-                    itParam.value().setFlags(flag);
-                }
+                paramsInChannelIter++;
             }
         }
         else
         {
-            retValue += ito::RetVal(ito::retError, 0, tr("could not switch to channel %1. The channel is not registered.").arg(selectedChannel).toLatin1().data());
+            retValue += ito::RetVal(
+                ito::retError,
+                0,
+                tr("could not switch to channel %1. The channel is not registered.").arg(selectedChannel).toLatin1().data()
+            );
         }
+
+        emit parametersChanged(m_params);
+
         return retValue;
     }
 
