@@ -153,7 +153,9 @@ namespace ito
             */
             virtual ito::RetVal observeInvocation(ItomSharedSemaphore *waitCond, MessageLevel msgLevel) const;
 
-            QMap<QString, ito::Param> m_currentParameters; /*! use this map to save the current values of all parameters. For instance it is conventient to copy the map given in parametersChanged to this map */
+            /*! use this map to save the current values of all parameters.
+            For instance it is conventient to copy the map given in parametersChanged to this map */
+            QMap<QString, ito::Param> m_currentParameters;
 
         private:
             /*! private data pointer of this class. */
@@ -173,5 +175,3 @@ namespace ito
             virtual void parametersChanged(QMap<QString, ito::Param> params) = 0;
     };
 } //end namespace ito
-
-#endif //ABSTRACTADDINCONFIGDIALOG_H

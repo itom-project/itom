@@ -212,7 +212,7 @@ namespace ito
     }
 
     //---------------------------------------------------------------------------------
-    void AddInMultiChannelGrabber::initChannelsAndGlobalParameters(
+    ito::RetVal AddInMultiChannelGrabber::initChannelsAndGlobalParameters(
         const ChannelContainerMap& channelContainerMap,
         const QString& defaultChannelName,
         const QList<ito::Param>& globalParameters /*= QList<ito::Param>()*/)
@@ -308,7 +308,9 @@ namespace ito
 
         // call switchChannelSelector to synchronize the values in the channel specific parameters with
         // to these of the current channel (channelSelector).
-        switchChannelSelector();
+        retValue += switchChannelSelector();
+
+        return retValue;
     }
 
     //-------------------------------------------------------------------------------
@@ -682,8 +684,8 @@ namespace ito
     ito::RetVal AddInMultiChannelGrabber::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore* waitCond)
     {
         Q_D(AddInMultiChannelGrabber);
-
         assert(d->m_channelParamsProxyInitialized);
+
         ItomSharedSemaphoreLocker locker(waitCond);
         ito::RetVal retValue;
         QString key;
@@ -700,12 +702,15 @@ namespace ito
         {
             retValue += apiGetParamFromMapByKey(m_params, key, it, false);
         }
+
         if (!retValue.containsError())
         {
-            retValue += getParameter(val, it, suffix, key, index, hasIndex, ok);
+            retValue += getParameter(val, it, key, suffix, index, hasIndex, ok);
         }
-        if (!retValue.containsError() && !ok)//the parameter was not processed by the plugin, so it is done here
+
+        if (!retValue.containsError() && !ok)
         {
+            //the parameter was not processed by the plugin, so it is done here
             *val = it.value();
         }
 
@@ -763,43 +768,52 @@ namespace ito
     //-------------------------------------------------------------------------------
     //! Sets a new value to a parameter.
     /*!
-     This function parses the given parameter and calls setParameter. If the bool parameter ok in the setParameter (to be implemented in the individual plugins)
-     function returns false, it gets assumed that the plugin didn't process the parameter. In this case the value of the parameter gets copied here.
-     If the parameter name is "roi" sizex and sizey gets updated by setParam. If the key of the parameter is "defaultChannel" the function "switchDefaultChannel" gets called.
+     This function parses the given parameter and calls setParameter. If the bool
+     parameter ok in the setParameter (to be implemented in the individual plugins)
+     function returns false, it gets assumed that the plugin didn't process the
+     parameter. In this case the value of the parameter gets copied here.
+     If the parameter name is "roi" sizex and sizey gets updated by setParam. If the
+     key of the parameter is "defaultChannel" the function "switchDefaultChannel" gets called.
      Both happens also if the "ok" value of setParameter is true.
-     "applyParamsToChannelParams" is called to synchronize the parameters of the channel container follwed by a call of checkData.
+     "applyParamsToChannelParams" is called to synchronize the parameters of the
+     channel container follwed by a call of checkData.
 
     \param [in] val is a QSharedPOinter of type ParamBase containing the paremeter to be set.
     \param [in] waitCond
     \return retOk if everything was ok, else retError
     */
-    ito::RetVal AddInMultiChannelGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore* waitCond/* = NULL*/)
+    ito::RetVal AddInMultiChannelGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore* waitCond/* = nullptr*/)
     {
         Q_D(AddInMultiChannelGrabber);
-
         assert(d->m_channelParamsProxyInitialized);
+
         ItomSharedSemaphoreLocker locker(waitCond);
         ito::RetVal retValue;
-        bool hasIndex, ok;
+        bool hasIndex;
+        bool ok = false;
         int index;
-        QString suffix, key;
+        QString suffix;
+        QString key;
         QStringList paramUpdateList;
         ParamMapIterator it;
+
         int cntStartedDevices = grabberStartedCount();
-        retValue += ito::parseParamName(val->getName(), key, hasIndex, index, suffix);
+
+        retValue += apiParseParamName(val->getName(), key, hasIndex, index, suffix);
         retValue += apiGetParamFromMapByKey(m_params, key, it, true);
         retValue += apiValidateParam(*it, *val, false, true);
+
         if (!retValue.containsError())
         {
             retValue += setParameter(val, it, suffix, key, index, hasIndex, ok, paramUpdateList);
+
             if (ok && !paramUpdateList.contains(val->getName()))
             {
                 paramUpdateList << val->getName();
             }
+
             if (!retValue.containsError() && !ok)
             {
-
-
                 if (!retValue.containsError())
                 {
                     if (key != "defaultChannel")
@@ -821,6 +835,7 @@ namespace ito
                     }
                 }
             }
+
             if (!retValue.containsError())
             {
                 if (key == "roi" || paramUpdateList.contains("roi"))
@@ -835,19 +850,22 @@ namespace ito
                 retValue += applyParamsToChannelParams(paramUpdateList);
                 retValue += checkData();
             }
+
             if (!retValue.containsError())
             {
                 emit parametersChanged(m_params);
             }
         }
+
         if (cntStartedDevices < grabberStartedCount())
         {
             if (cntStartedDevices != 0)
             {
-                retValue += startDevice(NULL);
+                retValue += startDevice(nullptr);
                 setGrabberStarted(cntStartedDevices);
             }
         }
+
         if (waitCond)
         {
             waitCond->returnValue = retValue;
