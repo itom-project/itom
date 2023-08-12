@@ -836,10 +836,12 @@ class ITOMCOMMONQT_EXPORT AddInDataIO : public AddInBase
                                     this variable becomes false and any timer is activated, this timer is killed.*/
 
   public:
+
+    /*!< returns the state of m_autoGrabbingEnabled; consider this method as final */
     inline int getAutoGrabbing()
     {
         return m_autoGrabbingEnabled;
-    } /*!< returns the state of m_autoGrabbingEnabled; consider this method as final */
+    }
 
   Q_SIGNALS:
 
@@ -851,54 +853,54 @@ class ITOMCOMMONQT_EXPORT AddInDataIO : public AddInBase
     virtual ito::RetVal stopDevice(ItomSharedSemaphore *waitCond);
 
     //! freeze the current data and prepare it for retrieval
-    virtual ito::RetVal acquire(const int trigger, ItomSharedSemaphore *waitCond = NULL);
+    virtual ito::RetVal acquire(const int trigger, ItomSharedSemaphore *waitCond = nullptr);
 
     //! stops a continuous acquisition (usually only required by AD/DA converters). This method has not to be
     //! implemented in every plugin. New from itom.AddIn.Interface/4.0.0 on
-    virtual ito::RetVal stop(ItomSharedSemaphore *waitCond = NULL);
+    virtual ito::RetVal stop(ItomSharedSemaphore *waitCond = nullptr);
 
     //! read data from the device into a dataObject (which is passed as void pointer actually). Output is a shallow-copy
     //! to the grabber internal buffer-object.
-    virtual ito::RetVal getVal(void *data, ItomSharedSemaphore *waitCond = NULL);
+    virtual ito::RetVal getVal(void *data, ItomSharedSemaphore *waitCond = nullptr);
 
     //! read data from the device into a "raw data pointer" (in this case a char * is passed, pointing to the start of
     //! the preallocated memory)
     virtual ito::RetVal getVal(QSharedPointer<char> data, QSharedPointer<int> length,
-                               ItomSharedSemaphore *waitCond = NULL);
+                               ItomSharedSemaphore *waitCond = nullptr);
 
     //! read data from the device into a dataObject (which is passed as void pointer actually). The map contains
     //! dataObjects for different channels. Output is a shallow-copy to the grabber internal buffer-object.
     virtual ito::RetVal getVal(QSharedPointer<QMap<QString, ito::DataObject *>> dataObjMap,
-                               ItomSharedSemaphore *waitCond = NULL);
+                               ItomSharedSemaphore *waitCond = nullptr);
 
-    virtual ito::RetVal getVal(ItomSharedSemaphore* waitCond = NULL);
+    virtual ito::RetVal getVal(ItomSharedSemaphore* waitCond = nullptr);
     //! read data from the device into a dataObject (which is passed as void pointer actually). Output is a deep-copy to
     //! the grabber internal object.
     virtual ito::RetVal copyVal(void *dObj, ItomSharedSemaphore *waitCond);
 
     //! write data, e.g. to the DA part of an ADDA card
-    virtual ito::RetVal setVal(const char *data, const int length, ItomSharedSemaphore *waitCond = NULL);
+    virtual ito::RetVal setVal(const char *data, const int length, ItomSharedSemaphore *waitCond = nullptr);
 
     //! enables the timer for auto grabbing (live image), if any live image has signed on (usually this method must not
     //! be overwritten)
-    ito::RetVal enableAutoGrabbing(ItomSharedSemaphore *waitCond = NULL); // consider this method as final
+    ito::RetVal enableAutoGrabbing(ItomSharedSemaphore *waitCond = nullptr); // consider this method as final
 
     //! disables the timer for auto grabbing (live image) (usually this method must not be overwritten)
-    ito::RetVal disableAutoGrabbing(ItomSharedSemaphore *waitCond = NULL); // consider this method as final
+    ito::RetVal disableAutoGrabbing(ItomSharedSemaphore *waitCond = nullptr); // consider this method as final
 
     //! sets a new interval for the auto-grabbing timer (in ms). If interval <= 0 is passed, nothing is changed, but the
     //! current interval is returned. This method does not enable or disable the timer.
     ito::RetVal setAutoGrabbingInterval(QSharedPointer<int> interval,
-                                        ItomSharedSemaphore *waitCond = NULL); // consider this method as final
+                                        ItomSharedSemaphore *waitCond = nullptr); // consider this method as final
 
     //! starts device and registers obj as listener (live image). This listener must have a slot void
-    //! setSource(QSharedPointer<ito::DataObject>, ItomSaredSemaphore).
-    ito::RetVal startDeviceAndRegisterListener(QObject *obj,
-                                               ItomSharedSemaphore *waitCond = NULL); // consider this method as final
+    //! setSource(QSharedPointer<ito::DataObject>, ItomSharedSemaphore).
+    ito::RetVal startDeviceAndRegisterListener(QObject *listener,
+                                               ItomSharedSemaphore *waitCond = nullptr); // consider this method as final
 
     //! stops device and unregisters obj (live image).
-    ito::RetVal stopDeviceAndUnregisterListener(QObject *obj,
-                                                ItomSharedSemaphore *waitCond = NULL); // consider this method as final
+    ito::RetVal stopDeviceAndUnregisterListener(QObject * listener,
+                                                ItomSharedSemaphore *waitCond = nullptr); // consider this method as final
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------

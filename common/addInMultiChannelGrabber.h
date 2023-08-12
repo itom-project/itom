@@ -34,19 +34,33 @@
 #include "sharedStructuresQt.h"
 #include "sharedStructures.h"
 
-#if !defined(Q_MOC_RUN) || defined(ITOMCOMMONQT_MOC) //only moc this file in itomCommonQtLib but not in other libraries or executables linking against this itomCommonQtLib
+// only moc this file in itomCommonQtLib but not in other libraries or executables linking against this itomCommonQtLib
+#if !defined(Q_MOC_RUN) || defined(ITOMCOMMONQT_MOC)
 
 namespace ito
 {
     class AddInMultiChannelGrabberPrivate;
-
-
 
     class ITOMCOMMONQT_EXPORT AddInMultiChannelGrabber : public AbstractAddInGrabber
     {
         Q_OBJECT
 
     protected:
+
+        //! enumeration values, that can be combined
+        enum class DataStatus
+        {
+            //! idle = no new data in object
+            Idle = 0,
+
+            //! newData = new data in object, not emitted via newData
+            //! yet, not fetched via getVal/copyVal yet
+            NewData = 1,
+
+            //! same than newData, however data is already emitted,
+            //! but not fetched via getVal/copyVal yet
+            NewDataAndEmitted = 2
+        };
 
         class ChannelContainer
         {
@@ -76,13 +90,16 @@ namespace ito
             //!< dataObject container with currently acquired data for this channel
             ito::DataObject m_data;
 
+            //!< state of the dataObject container
+            DataStatus m_dataStatus;
+
             //!< map of individual parameters for this channel. Every channel has a set
             //! of default parameters, namely: pixelFormat, roi, sizex, sizey, axisOffset, axisScale.
             //! axisDescription, axisUnit, valueDescription, valueUnit. Further parameters
             //! can be added. It is recommended to have the same parameter types and names
             //! in every channel, since they are mirrored to the m_params map of the main
             //! plugin class.
-            ParamMap m_channelParam;
+            ParamMap m_channelParams;
 
         protected:
             void addDefaultMetaParams();
@@ -95,10 +112,13 @@ namespace ito
         ChannelContainerMap m_channels; /*!< Map for recently grabbed images of various channels */
 
         virtual ito::RetVal checkData(ito::DataObject* externalDataObject = nullptr);
-        virtual ito::RetVal checkData(QMap<QString, ito::DataObject*>& externalDataObject);
+        virtual ito::RetVal checkData(const QString &channelName, ito::DataObject* externalDataObject = nullptr);
+
         virtual ito::RetVal sendDataToListeners(int waitMS); /*!< sends m_data to all registered listeners. */
         ito::RetVal adaptDefaultChannelParams(); /*!< adaptes the params after changing the defaultChannel param*/
+
         void addChannel(QString name);
+
         virtual ito::RetVal switchChannelSelector();/*!< synchronizes m_params with the params of default channel container */
         virtual ito::RetVal applyParamsToChannelParams(const QStringList& keyList = QStringList());
 
@@ -111,9 +131,27 @@ namespace ito
         ito::RetVal setParamMeta(const QByteArray& paramName, ito::ParamMeta* meta, bool takeOwnerShip, const QList<QByteArray>& channelList = QList<QByteArray>());
         ito::RetVal setParamFlags(const QByteArray& paramName, const unsigned int& flags, const QList<QByteArray>& channelList = QList<QByteArray>());
 
+        //! This method fetches the latest acquired images or datasets from the grabber and store it into the channel.
+        /*
+        This method has to be overloaded by the specific plugin instance. It should
+        fetch the latest acquired images or datasets for all given channels and store
+        it into the internal buffers (m_data) of all corresponding channels.
+
+        The new data is not emitted yet. Its state has to be set to DataStatus::NewData.
+
+        \param channels are the desired channels. If empty, all registered channels should
+            be fetched.
+        \return ito::retError if at least one dataset of at least one desired channel
+            is not available.
+
+        */
+        virtual ito::RetVal retrieveData(const QStringList& channels = QStringList()) = 0;
+
         //! Specific function to set the parameters in the respective plugin class
         /*!
-        This function is a specific implementation of setParam. Overload this function to process parameters individually in the plugin class. This function is called by setParam after the parameter has been parsed and checked .
+        This function is a specific implementation of setParam. Overload this function to
+        process parameters individually in the plugin class. This function is called
+        by setParam after the parameter has been parsed and checked .
 
         \param [in] val parameter to be processed
         \param [in] it ParamMapIterator iterator to the parameter in m_params
@@ -125,7 +163,15 @@ namespace ito
         \param [in] add key of changed channel specific parameters to pendingUpdate.
         \return retOk if everything was ok, else retError
         */
-        virtual ito::RetVal setParameter(QSharedPointer<ito::ParamBase>& val, const ParamMapIterator& it, const QString& suffix, const QString& key, int index, bool hasIndex, bool& ok, QStringList& pendingUpdate) = 0;
+        virtual ito::RetVal setParameter(
+            QSharedPointer<ito::ParamBase>& val,
+            const ParamMapIterator& it,
+            const QString& suffix,
+            const QString& key,
+            int index,
+            bool hasIndex,
+            bool& ok,
+            QStringList& pendingUpdate) = 0;
 
         //! Specific function to get a parameter in the respective plugin class.
         /*
@@ -146,10 +192,10 @@ namespace ito
             bool hasIndex,
             bool& ok) = 0;
 
-        virtual ito::RetVal getValByMap(QSharedPointer<QMap<QString, ito::DataObject*>> dataObjMap) = 0;
-
-        virtual ito::RetVal copyValByMap(QSharedPointer<QMap<QString, ito::DataObject*>> dataObjMap) = 0;
         void updateSizeXY(); /*!< updates sizex und sizey*/
+
+        const ChannelContainer& getCurrentDefaultChannel() const;
+        ChannelContainer& getCurrentDefaultChannel();
 
     public:
         AddInMultiChannelGrabber(const QByteArray& grabberName);
@@ -186,13 +232,19 @@ namespace ito
         */
         ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore* waitCond) final;
 
-        ito::RetVal changeChannelForListeners(const QString& newChannel, QObject* obj);
-        ito::RetVal getVal(QSharedPointer<QMap<QString, ito::DataObject*> > dataObjMap, ItomSharedSemaphore* waitCond);
-        ito::RetVal copyVal(QSharedPointer<QMap<QString, ito::DataObject*> > dataObjMap, ItomSharedSemaphore* waitCond);
+        virtual ito::RetVal getVal(void* vpdObj, ItomSharedSemaphore* waitCond);
+        virtual ito::RetVal copyVal(void* vpdObj, ItomSharedSemaphore* waitCond);
+
+        virtual ito::RetVal getVal(QSharedPointer<const QMap<QString, ito::DataObject*> > channelDatasets, ItomSharedSemaphore* waitCond);
+        virtual ito::RetVal copyVal(QSharedPointer<const QMap<QString, ito::DataObject*> > channelDatasets, ItomSharedSemaphore* waitCond);
+
+        ito::RetVal changeChannelForListener(QObject* listener, const QString& newChannel);
 
     signals:
         /*!< Signals that a new image or set of images is available. Connect to this signal to obtain a shallow copy of the new images */
-        void newData(QSharedPointer<QMap<QString, ito::DataObject> > dataObjMap);
+        void newData(QSharedPointer<QMap<QString, ito::DataObject> > channelDatasets);
     };
+
 }
+
 #endif

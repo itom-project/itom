@@ -122,7 +122,7 @@ public slots:
     virtual ito::RetVal setDisplayedCameraChannel(const QString& channel);
 
 signals:
-    void cameraChannelChanged(const QString& channel, QObject* obj);
+    void cameraChannelChanged(const QObject* listener, const QString& channel);
 };
 
 } // namespace ito

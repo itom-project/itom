@@ -441,7 +441,7 @@ ito::RetVal AbstractDObjFigure::setDisplayedCameraChannel(const QString& channel
                         {
                             found = true;
                             m_currentDisplayedCameraChannel = channel;
-                            emit cameraChannelChanged(channel, this);
+                            emit cameraChannelChanged(this, channel);
                             break;
                         }
                     }

@@ -851,35 +851,41 @@ namespace ito
     }
 
     //---------------------------------------------------------------------------------
-    ito::RetVal AddInDataIO::startDeviceAndRegisterListener(QObject* obj, ItomSharedSemaphore *waitCond)
+    ito::RetVal AddInDataIO::startDeviceAndRegisterListener(QObject* listener, ItomSharedSemaphore *waitCond)
     {
         qDebug("begin: startDeviceAndRegisterListener");
         ItomSharedSemaphoreLocker locker(waitCond);
         ito::RetVal retValue(ito::retOk);
         QString defaultChannel;
-        bool isMultiChannel = false;
-        isMultiChannel = this->inherits("ito::AddInMultiChannelGrabber");
+        bool isMultiChannel = inherits("ito::AddInMultiChannelGrabber");
+        QByteArray setSourceSignature =
+            QMetaObject::normalizedSignature(
+                "setSource(QSharedPointer<ito::DataObject>,ItomSharedSemaphore*)"
+            );
 
         if (isMultiChannel)
         {
-            defaultChannel = m_params["defaultChannel"].getVal<const char*>();
+            defaultChannel = QLatin1String(m_params["defaultChannel"].getVal<const char*>());
         }
 
-        if (obj->metaObject()->indexOfSlot(QMetaObject::normalizedSignature("setSource(QSharedPointer<ito::DataObject>,ItomSharedSemaphore*)")) == -1)
+        if (listener->metaObject()->indexOfSlot(setSourceSignature) == -1)
         {
-            retValue += ito::RetVal(ito::retError, 2002, tr("listener does not have a slot ").toLatin1().data());
+            retValue += ito::RetVal(ito::retError, 2002, tr("listener does not have the mandatory slot ``setSource``.").toLatin1().data());
         }
-        else if ((!isMultiChannel && m_autoGrabbingListeners.contains("",obj))||(isMultiChannel && m_autoGrabbingListeners.contains(defaultChannel, obj)))
+        else if (
+            (!isMultiChannel && m_autoGrabbingListeners.contains("",listener)) ||
+            (isMultiChannel && m_autoGrabbingListeners.contains(defaultChannel, listener))
+            )
         {
-            retValue += ito::RetVal(ito::retWarning, 1011, tr("this object already has been registered as listener").toLatin1().data());
+            retValue += ito::RetVal(ito::retWarning, 1011, tr("this object has already been registered as listener").toLatin1().data());
         }
         else
         {
-            retValue += startDevice(NULL);
+            retValue += startDevice(nullptr);
 
             if (!retValue.containsError())
             {
-                if (m_autoGrabbingEnabled == true && m_autoGrabbingListeners.size() >= 0 && m_timerID == 0)
+                if (m_autoGrabbingEnabled && m_autoGrabbingListeners.size() >= 0 && m_timerID == 0)
                 {
                     m_timerID = startTimer(m_timerIntervalMS);
 
@@ -888,13 +894,14 @@ namespace ito
                         retValue += ito::RetVal(ito::retError, 2001, tr("timer could not be set").toLatin1().data());
                     }
                 }
+
                 if (!isMultiChannel)
                 {
-                    m_autoGrabbingListeners.insert("",obj);
+                    m_autoGrabbingListeners.insert("", listener);
                 }
                 else
                 {
-                    m_autoGrabbingListeners.insert(defaultChannel, obj);
+                    m_autoGrabbingListeners.insert(defaultChannel, listener);
                 }
             }
         }
@@ -914,29 +921,30 @@ namespace ito
     }
 
     //---------------------------------------------------------------------------------
-    ito::RetVal AddInDataIO::stopDeviceAndUnregisterListener(QObject* obj, ItomSharedSemaphore *waitCond)
+    ito::RetVal AddInDataIO::stopDeviceAndUnregisterListener(QObject* listener, ItomSharedSemaphore *waitCond)
     {
         qDebug("start: stopDeviceAndUnregisterListener");
         ItomSharedSemaphoreLocker locker(waitCond);
         ito::RetVal retValue(ito::retOk);
 
-        if (obj)
+        if (listener)
         {
             bool found = false;
-            QMultiMap<QString, QObject*>::iterator i = m_autoGrabbingListeners.begin();
-            while (i != m_autoGrabbingListeners.end())
+            auto it = m_autoGrabbingListeners.begin();
+
+            while (it != m_autoGrabbingListeners.end())
             {
-                if (i.value() == obj)
+                if (*it == listener)
                 {
                     found = true;
-                    m_autoGrabbingListeners.remove(i.key(), i.value());
+                    m_autoGrabbingListeners.erase(it);
                     break;
                 }
-
             }
+
             if (!found)
             {
-                retValue += ito::RetVal(ito::retWarning, 1012, tr("the object could not been found in m_autoGrabbingListeners").toLatin1().data());
+                retValue += ito::RetVal(ito::retWarning, 1012, tr("The given listener (e.g. plot) is not among the list of currently registered listeners.").toLatin1().data());
             }
         }
         else
@@ -952,7 +960,7 @@ namespace ito
                 }
             }
 
-            retValue += stopDevice(NULL);
+            retValue += stopDevice(nullptr);
         }
 
         if (waitCond)
