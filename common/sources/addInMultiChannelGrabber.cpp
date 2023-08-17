@@ -390,7 +390,6 @@ ito::RetVal AddInMultiChannelGrabber::sendDataToListeners(int waitMS)
         DELETE_AND_SET_NULL_ARRAY(waitConds);
     }
 
-
     return retValue;
 }
 
@@ -414,12 +413,12 @@ ito::RetVal AddInMultiChannelGrabber::checkData(const QString& channelName, ito:
         return ito::RetVal(ito::retError, 0, tr("channel name does not exist").toLatin1().data());
     }
 
-    ChannelContainer& channel = getCurrentDefaultChannel();
+    auto channel = getCurrentDefaultChannel();
 
-    const int futureHeight = channel.m_channelParams["sizey"].getVal<int>();
-    const int futureWidth = channel.m_channelParams["sizex"].getVal<int>();
+    const int futureHeight = channel->m_channelParams["sizey"].getVal<int>();
+    const int futureWidth = channel->m_channelParams["sizex"].getVal<int>();
     bool futureTypeOk;
-    int futureType = itoDataTypeFromPixelFormat(channel.m_channelParams["pixelFormat"].getVal<const char*>(), &futureTypeOk);
+    int futureType = itoDataTypeFromPixelFormat(channel->m_channelParams["pixelFormat"].getVal<const char*>(), &futureTypeOk);
 
     if (!futureTypeOk)
     {
@@ -427,46 +426,46 @@ ito::RetVal AddInMultiChannelGrabber::checkData(const QString& channelName, ito:
     }
 
     ito::float64 axisOffset[] = {
-        channel.m_channelParams["axisOffset"].getVal<const ito::float64*>()[0],
-        channel.m_channelParams["axisOffset"].getVal<const ito::float64*>()[1]
+        channel->m_channelParams["axisOffset"].getVal<const ito::float64*>()[0],
+        channel->m_channelParams["axisOffset"].getVal<const ito::float64*>()[1]
     };
 
     ito::float64 axisScale[] = {
-        channel.m_channelParams["axisScale"].getVal<const ito::float64*>()[0],
-        channel.m_channelParams["axisScale"].getVal<const ito::float64*>()[1]
+        channel->m_channelParams["axisScale"].getVal<const ito::float64*>()[0],
+        channel->m_channelParams["axisScale"].getVal<const ito::float64*>()[1]
     };
 
     ito::ByteArray axisUnit[] = {
-        channel.m_channelParams["axisUnit"].getVal<const ito::ByteArray*>()[0],
-        channel.m_channelParams["axisUnit"].getVal<const ito::ByteArray*>()[1]
+        channel->m_channelParams["axisUnit"].getVal<const ito::ByteArray*>()[0],
+        channel->m_channelParams["axisUnit"].getVal<const ito::ByteArray*>()[1]
     };
 
     ito::ByteArray axisDescription[] = {
-        channel.m_channelParams["axisDescription"].getVal<const ito::ByteArray*>()[0],
-        channel.m_channelParams["axisDescription"].getVal<const ito::ByteArray*>()[1]
+        channel->m_channelParams["axisDescription"].getVal<const ito::ByteArray*>()[0],
+        channel->m_channelParams["axisDescription"].getVal<const ito::ByteArray*>()[1]
     };
 
-    ito::ByteArray valueDescription = channel.m_channelParams["valueDescription"].getVal<const char*>();
-    ito::ByteArray valueUnit = channel.m_channelParams["valueUnit"].getVal<const char*>();
+    ito::ByteArray valueDescription = channel->m_channelParams["valueDescription"].getVal<const char*>();
+    ito::ByteArray valueUnit = channel->m_channelParams["valueUnit"].getVal<const char*>();
 
     if (!externalDataObject)
     {
-        if (channel.m_data.getDims() < 2 || channel.m_data.getSize(0) != futureHeight ||
-            channel.m_data.getSize(1) != futureWidth || channel.m_data.getType() != futureType)
+        if (channel->m_data.getDims() < 2 || channel->m_data.getSize(0) != futureHeight ||
+            channel->m_data.getSize(1) != futureWidth || channel->m_data.getType() != futureType)
         {
-            channel.m_data = ito::DataObject(futureHeight, futureWidth, futureType);
+            channel->m_data = ito::DataObject(futureHeight, futureWidth, futureType);
         }
 
-        channel.m_data.setAxisScale(0, axisScale[0]);
-        channel.m_data.setAxisScale(1, axisScale[1]);
-        channel.m_data.setAxisOffset(0, axisOffset[0]);
-        channel.m_data.setAxisOffset(1, axisOffset[1]);
-        channel.m_data.setAxisDescription(0, axisDescription[0].data());
-        channel.m_data.setAxisDescription(1, axisDescription[1].data());
-        channel.m_data.setAxisUnit(0, axisUnit[0].data());
-        channel.m_data.setAxisUnit(1, axisUnit[1].data());
-        channel.m_data.setValueDescription(valueDescription.data());
-        channel.m_data.setValueUnit(valueUnit.data());
+        channel->m_data.setAxisScale(0, axisScale[0]);
+        channel->m_data.setAxisScale(1, axisScale[1]);
+        channel->m_data.setAxisOffset(0, axisOffset[0]);
+        channel->m_data.setAxisOffset(1, axisOffset[1]);
+        channel->m_data.setAxisDescription(0, axisDescription[0].data());
+        channel->m_data.setAxisDescription(1, axisDescription[1].data());
+        channel->m_data.setAxisUnit(0, axisUnit[0].data());
+        channel->m_data.setAxisUnit(1, axisUnit[1].data());
+        channel->m_data.setValueDescription(valueDescription.data());
+        channel->m_data.setValueUnit(valueUnit.data());
     }
     else
     {
@@ -1056,80 +1055,88 @@ ito::RetVal AddInMultiChannelGrabber::copyVal(void* vpdObj, ItomSharedSemaphore*
 }
 
 //-------------------------------------------------------------------------------------
-ito::RetVal AddInMultiChannelGrabber::getVal(QSharedPointer<const QMap<QString, ito::DataObject*> > channelDatasets, ItomSharedSemaphore* waitCond)
-{
-    //todo
-    //ItomSharedSemaphoreLocker locker(waitCond);
-    //ito::RetVal retValue(ito::retOk);
-    //ito::DataObject* dObj = reinterpret_cast<ito::DataObject*>(vpdObj);
-    //QString defaultChannel = QLatin1String(m_params["defaultChannel"].getVal<const char*>());
-
-    //if (!dObj)
-    //{
-    //    retValue += ito::RetVal(
-    //        ito::retError, 0, tr("Empty dataObject handle retrieved from caller").toLatin1().data());
-    //}
-
-    //if (!retValue.containsError())
-    //{
-    //    retValue += retrieveData(QStringList(defaultChannel));
-    //}
-
-    //if (!retValue.containsError())
-    //{
-    //    // don't wait for live image, since user should get the image as fast as possible.
-    //    sendDataToListeners(0);
-
-    //    (*dObj) = m_channels[defaultChannel].m_data;
-
-    //    auto channelDatasets = QSharedPointer<QMap<QString, ito::DataObject>>::create();
-    //    channelDatasets->insert(defaultChannel, m_channels[defaultChannel].m_data);
-
-    //    emit newData(channelDatasets);
-    //    m_channels[defaultChannel].m_dataStatus = DataStatus::NewDataAndEmitted;
-    //}
-
-    //if (waitCond)
-    //{
-    //    waitCond->returnValue = retValue;
-    //    waitCond->release();
-    //}
-
-    //return retValue;
-}
-
-//-------------------------------------------------------------------------------------
-ito::RetVal AddInMultiChannelGrabber::copyVal(QSharedPointer<const QMap<QString, ito::DataObject*> > channelDatasets, ItomSharedSemaphore* waitCond)
+ito::RetVal AddInMultiChannelGrabber::getVal(QSharedPointer<QMap<QString, ito::DataObject> > channelDatasets, ItomSharedSemaphore* waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue;
+    QStringList channels;
 
     auto it = channelDatasets->constBegin();
 
     while (it != channelDatasets->constEnd())
     {
-        if (it.value())
+        retValue += checkData(it.key(), nullptr);
+        channels << it.key();
+        it++;
+    }
+
+    if (!retValue.containsError())
+    {
+        retValue += retrieveData(channels);
+    }
+
+    if (!retValue.containsError())
+    {
+        // don't wait for live image, since user should get the image as fast as possible.
+        sendDataToListeners(0);
+
+        auto it2 = channelDatasets->begin();
+
+        while (it2 != channelDatasets->end())
         {
-            retValue += ito::RetVal(
-                ito::retError, 0, tr("Empty dataObject handle retrieved from caller").toLatin1().data());
-        }
-        else
-        {
-            retValue += checkData(it.value());
+            it2->operator=(m_channels[it2.key()].m_data);
+            m_channels[it.key()].m_dataStatus = DataStatus::NewDataAndEmitted;
+            it2++;
         }
 
-        if (!retValue.containsError())
+        emit newData(channelDatasets);
+    }
+
+    if (waitCond)
+    {
+        waitCond->returnValue = retValue;
+        waitCond->release();
+    }
+
+    return retValue;
+}
+
+//-------------------------------------------------------------------------------------
+ito::RetVal AddInMultiChannelGrabber::copyVal(QSharedPointer<QMap<QString, ito::DataObject> > channelDatasets, ItomSharedSemaphore* waitCond)
+{
+    ItomSharedSemaphoreLocker locker(waitCond);
+    ito::RetVal retValue;
+    QStringList channels;
+
+    auto it = channelDatasets->begin();
+
+    while (it != channelDatasets->end())
+    {
+        retValue += checkData(it.key(), &(*it));
+        channels << it.key();
+        it++;
+    }
+
+    if (!retValue.containsError())
+    {
+        retValue += retrieveData(channels);
+    }
+
+    if (!retValue.containsError())
+    {
+        // don't wait for live image, since user should get the image as fast as possible.
+        sendDataToListeners(0);
+
+        it = channelDatasets->begin();
+
+        while (it != channelDatasets->end())
         {
-            // todo --> must be a channel-based getVal
-            retValue += getVal(it.value(), nullptr);
+            m_channels[it.key()].m_dataStatus = DataStatus::NewDataAndEmitted;
+            retValue += m_channels[it.key()].m_data.deepCopyPartial(*it);
+            it++;
         }
 
-        if (!retValue.containsError())
-        {
-            retValue += m_channels[it.key()].m_data.deepCopyPartial(*(it.value()));
-        }
-
-        ++it;
+        emit newData(channelDatasets);
     }
 
     if (waitCond)
@@ -1143,17 +1150,17 @@ ito::RetVal AddInMultiChannelGrabber::copyVal(QSharedPointer<const QMap<QString,
 
 
 //-------------------------------------------------------------------------------------
-const AddInMultiChannelGrabber::ChannelContainer& AddInMultiChannelGrabber::getCurrentDefaultChannel() const
+AddInMultiChannelGrabber::ChannelContainerMapConstIterator AddInMultiChannelGrabber::getCurrentDefaultChannel() const
 {
     QString defaultChannel = QLatin1String(m_params["defaultChannel"].getVal<const char*>());
-    return m_channels[defaultChannel];
+    return m_channels.constFind(defaultChannel);
 }
 
 //-------------------------------------------------------------------------------------
-AddInMultiChannelGrabber::ChannelContainer& AddInMultiChannelGrabber::getCurrentDefaultChannel()
+AddInMultiChannelGrabber::ChannelContainerMapIterator AddInMultiChannelGrabber::getCurrentDefaultChannel()
 {
     QString defaultChannel = QLatin1String(m_params["defaultChannel"].getVal<const char*>());
-    return m_channels[defaultChannel];
+    return m_channels.find(defaultChannel);
 }
 
 } //end namespace ito

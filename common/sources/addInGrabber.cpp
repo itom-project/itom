@@ -87,9 +87,9 @@ ito::RetVal AddInGrabber::checkData(ito::DataObject *externalDataObject)
     if (m_params.contains("axisDescription"))
     {
         axisDescription[0] =
-            m_params["axisDescription"].getVal<const ito::ByteArray*>()[0]);
+            m_params["axisDescription"].getVal<const ito::ByteArray*>()[0];
         axisDescription[1] =
-            m_params["axisDescription"].getVal<const ito::ByteArray*>()[1]);
+            m_params["axisDescription"].getVal<const ito::ByteArray*>()[1];
     }
 
     // only if exists in plugin

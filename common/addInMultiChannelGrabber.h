@@ -194,8 +194,8 @@ namespace ito
 
         void updateSizeXY(); /*!< updates sizex und sizey*/
 
-        const ChannelContainer& getCurrentDefaultChannel() const;
-        ChannelContainer& getCurrentDefaultChannel();
+        ChannelContainerMapConstIterator getCurrentDefaultChannel() const;
+        ChannelContainerMapIterator getCurrentDefaultChannel();
 
     public:
         AddInMultiChannelGrabber(const QByteArray& grabberName);
@@ -235,14 +235,14 @@ namespace ito
         virtual ito::RetVal getVal(void* vpdObj, ItomSharedSemaphore* waitCond);
         virtual ito::RetVal copyVal(void* vpdObj, ItomSharedSemaphore* waitCond);
 
-        virtual ito::RetVal getVal(QSharedPointer<const QMap<QString, ito::DataObject*> > channelDatasets, ItomSharedSemaphore* waitCond);
-        virtual ito::RetVal copyVal(QSharedPointer<const QMap<QString, ito::DataObject*> > channelDatasets, ItomSharedSemaphore* waitCond);
+        virtual ito::RetVal getVal(QSharedPointer<QMap<QString, ito::DataObject> > channelDatasets, ItomSharedSemaphore* waitCond);
+        virtual ito::RetVal copyVal(QSharedPointer<QMap<QString, ito::DataObject> > channelDatasets, ItomSharedSemaphore* waitCond);
 
         ito::RetVal changeChannelForListener(QObject* listener, const QString& newChannel);
 
     signals:
         /*!< Signals that a new image or set of images is available. Connect to this signal to obtain a shallow copy of the new images */
-        void newData(QSharedPointer<QMap<QString, ito::DataObject> > channelDatasets);
+        void newData(QSharedPointer<const QMap<QString, ito::DataObject> > channelDatasets);
     };
 
 }
