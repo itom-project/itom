@@ -12,11 +12,10 @@ The following arguments are possible (the order of arguments is unimportant):
 
 1. **<path-to-python-script.py>**: opens the indicated script in the script editor.
    This argument can be appended multiple times.
-2. **log=<path-to-directory>**: By default, logging is enabled. The logfile
-   is saved into the user directory ``C:\Users\<UserName>\AppData\Local\qitom``.
+2. **log=<path-to-directory>**: By default, logging is enabled. The log is saved into
+   the user directory ``C:\Users\<UserName>\AppData\Local\qitom``.
    The ``log=<path-to-directory>`` argument can be used to define a different path
-   where the log files are saved. All messages sent via qDebug, QWarning,
-   via the ``itom.log`` function and call python errors are written to the log.
+   where the log files are saved. 
 3. **nolog**: Do not write a log file.
 4. **name=<usernameID>**: Pass an additional ID of an available user. If given,
    itom is started with this user and its corresponding setting files.
@@ -30,3 +29,17 @@ The following arguments are possible (the order of arguments is unimportant):
    to update **Numpy**, since this cannot be updated if the main GUI is started,
    since itom directly uses Numpy, such that some of its files are blocked during
    the runtime of itom.
+
+
+Logging
+===========
+All messages sent via qDebug, QWarning, via the ``itom.log`` function and call python
+errors are written to the log. The log is written by default unless the ``nolog``
+startup argument is given. The log is saved to the user directory
+``C:\Users\<UserName>\AppData\Local\qitom`` or the directory given with the ``log``
+argument.  
+A form of log rotation is used to save disk space and prevent extremely large log files.
+The most recent log messages are appended to the file ``itomlog.txt``. When the file
+size exceeds 5 MB on startup, the file will be backed up by renaming it to contain the
+current date and a new file will be created. When there are more than two of these
+backup files, all but the two newest ones will be deleted.
