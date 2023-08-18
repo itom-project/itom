@@ -13,7 +13,7 @@ In order to learn more about [``itom``](https://itom-project.github.io/ "``itom`
 
 ## What is this project for?
 
-This project contains the core application of: 
+This project contains the core application of:
 * [itom](https://github.com/itom-project/itom) core application
 
 Furthermore, you may also need the ``plugins`` and ``designer plugins`` repositories to get all itom functionalities.
@@ -66,7 +66,7 @@ All plugins and designer-plugins that can be integrated into itom can have their
 
 > Germany
 
-in co-operation with 
+in co-operation with
 > [twip Optical Solutions GmbH](http://www.twip-os.com)
 
 > Stuttgart

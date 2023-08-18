@@ -46,6 +46,7 @@ QObject* AppManagement::m_userOrganizer = nullptr;
 QObject* AppManagement::m_addInManager = nullptr;
 QObject* AppManagement::m_cerrStream = nullptr;
 QObject* AppManagement::m_coutStream = nullptr;
+QObject* AppManagement::m_logger = nullptr;
 QMutex AppManagement::m_mutex;
 AppManagement::Timeouts AppManagement::timeouts;
 
