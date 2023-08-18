@@ -15,7 +15,7 @@ The following arguments are possible (the order of arguments is unimportant):
 2. **log=<path-to-directory>**: By default, logging is enabled. The log is saved into
    the user directory ``C:\Users\<UserName>\AppData\Local\qitom``.
    The ``log=<path-to-directory>`` argument can be used to define a different path
-   where the log files are saved. 
+   where the log files are saved.
 3. **nolog**: Do not write a log file.
 4. **name=<usernameID>**: Pass an additional ID of an available user. If given,
    itom is started with this user and its corresponding setting files.
@@ -33,11 +33,13 @@ The following arguments are possible (the order of arguments is unimportant):
 
 Logging
 ===========
-All messages sent via qDebug, QWarning, via the ``itom.log`` function and call python
-errors are written to the log. The log is written by default unless the ``nolog``
-startup argument is given. The log is saved to the user directory
-``C:\Users\<UserName>\AppData\Local\qitom`` or the directory given with the ``log``
-argument.  
+
+All messages sent via qDebug, QWarning, via the ``itom.log`` function and python
+error calls are written to the log. The log is written by default unless the ``nolog``
+startup argument is given as described in the previous chapter.
+The log is saved to the user directory ``C:\Users\<UserName>\AppData\Local\qitom``
+or the directory given with the ``log`` argument.
+
 A form of log rotation is used to save disk space and prevent extremely large log files.
 The most recent log messages are appended to the file ``itomlog.txt``. When the file
 size exceeds 5 MB on startup, the file will be backed up by renaming it to contain the
