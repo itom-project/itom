@@ -574,7 +574,13 @@ For additional information on the features and usage of the |itom| GUI, see
 GUI :ref:`gui`
 For a short introduction to the Python scripting language and use of the |itom| internal
 dataObject, see the section about the :ref:`scriptLanguage` with more information about
-the :ref:`dataObject <itomDataObject>`
+the :ref:`dataObject <itomDataObject>`.
+To make the introduction to |itom| easier, the examples in the
+:ref:`demo <gallery-demos-label>` can be used.
+
+By default, logging is enabled. The logfile is saved into the
+user directory ``C:\Users\<UserName>\AppData\Local\qitom``.
+For more information go to the chapter :ref:`startup-and-arguments`.
 
 
 Tutorials
