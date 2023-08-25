@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2023, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
@@ -3158,7 +3158,7 @@ MAKEFUNCLIST(DeepCopyPartialFunc);
     \throws cv::Exception(CV_StsAssert) if sizes or type of both matrices are not equal
     \sa DeepCopyPartialFunc
 */
-RetVal DataObject::deepCopyPartial(DataObject& copyTo)
+RetVal DataObject::deepCopyPartial(DataObject& copyTo) const
 {
     if (m_type != copyTo.m_type)
     {
@@ -3167,29 +3167,35 @@ RetVal DataObject::deepCopyPartial(DataObject& copyTo)
     }
 
     // calc and compare squeezed dimensions
-    int thisDims = this->getDims();
+    int thisDims = getDims();
     int rhsDims = copyTo.getDims();
     int* thisSizes = new int[thisDims];
     int* rhsSizes = new int[rhsDims];
-
     int j = 0;
+
     for (int i = 0; i < thisDims; i++)
     {
         thisSizes[j] = this->getSize(i);
-        if (thisSizes[j] > 1)
-            j++;
-    }
-    thisDims = j;
 
+        if (thisSizes[j] > 1)
+        {
+            j++;
+        }
+    }
+
+    thisDims = j;
     j = 0;
+
     for (int i = 0; i < rhsDims; i++)
     {
         rhsSizes[j] = copyTo.getSize(i);
+
         if (rhsSizes[j] > 1)
         {
             j++;
         }
     }
+
     rhsDims = j;
 
     if (thisDims != rhsDims)
@@ -3227,6 +3233,7 @@ RetVal DataObject::deepCopyPartial(DataObject& copyTo)
     //    this->copyTagMapTo(rhs);   //Deepcopy the tagspace
     //    this->copyAxisTagsTo(rhs); //Deepcopy the tagspace
     //}
+
     return ret;
 }
 
@@ -10495,7 +10502,7 @@ dimensions is allowed to have a size greter than one. \param *mats sequence of i
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-DataObject DataObject::pow(const ito::float64& power)
+DataObject DataObject::pow(const ito::float64& power) const
 {
     DataObject result(m_dims, getSize(), m_type);
     pow(power, result);
@@ -10503,7 +10510,7 @@ DataObject DataObject::pow(const ito::float64& power)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DataObject::pow(const ito::float64& power, DataObject& dst)
+void DataObject::pow(const ito::float64& power, DataObject& dst) const
 {
     if (dst.getDims() == 0)
     {
@@ -10573,7 +10580,7 @@ void DataObject::pow(const ito::float64& power, DataObject& dst)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-DataObject DataObject::sqrt()
+DataObject DataObject::sqrt() const
 {
     DataObject result(m_dims, getSize(), m_type);
     sqrt(result);
@@ -10581,7 +10588,7 @@ DataObject DataObject::sqrt()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DataObject::sqrt(DataObject& dst)
+void DataObject::sqrt(DataObject& dst) const
 {
     if (dst.getDims() == 0)
     {

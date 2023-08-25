@@ -1,7 +1,7 @@
 /* ********************************************************************
  itom software
  URL: http://www.uni-stuttgart.de/ito
- Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+ Copyright (C) 2023, Institut fuer Technische Optik (ITO),
  Universitaet Stuttgart, Germany
 
  This file is part of itom and its software development toolkit (SDK).
@@ -25,8 +25,7 @@
  along with itom. If not, see <http://www.gnu.org/licenses/>.
  *********************************************************************** */
 
-#ifndef __DATAOBJH
-#define __DATAOBJH
+#pragma once
 
 #include "defines.h"
 
@@ -1089,7 +1088,7 @@ namespace ito {
         RetVal setTo(const ito::TimeDelta &value, const DataObject &mask = DataObject()); /*!< Sets all or some (if uint8 mask is given) of the array elements to the specified value. */
 
         //! copy all values of this data object to the copyTo data object. The copyTo-data object must be allocated and have the same type and size (of its roi) than this data object. The compared sequence of sizes only contains dimensions whose size is bigger than one (e.g. it is possible to copy a 5x1 object to a 1x1x5 object)
-        RetVal deepCopyPartial(DataObject &copyTo);
+        RetVal deepCopyPartial(DataObject &copyTo) const;
 
         //! Returns the matrix iterator and sets it to the first matrix element.
         DObjIterator begin();
@@ -1244,11 +1243,11 @@ namespace ito {
 
 
 		// power (power of 0.5 is the square root)
-		DataObject pow(const ito::float64 &power); // returns a new data object with the same size and type than this data object and calculates src**power if power is an integer, else |src|**power (only for float32 and float64 data objects)
-		void pow(const ito::float64 &power, DataObject &dst); // this function raises every element of this data object to *power* and saves the result in dst. Dst must be of the same size and type than this data object or empty. In the latter case, it is reassigned to the right size and type.
+		DataObject pow(const ito::float64 &power) const; // returns a new data object with the same size and type than this data object and calculates src**power if power is an integer, else |src|**power (only for float32 and float64 data objects)
+		void pow(const ito::float64 &power, DataObject &dst) const; // this function raises every element of this data object to *power* and saves the result in dst. Dst must be of the same size and type than this data object or empty. In the latter case, it is reassigned to the right size and type.
 
-		DataObject sqrt(); // returns a new data object of the same size and type than this data object where the square root of every element is calculated. Is the same than pow(0.5)
-		void sqrt(DataObject &dst); // this function calculates the square root of every element and saves the result in dst. Dst must be of the same size and type than this data object or empty. In the latter case, it is reassigned to the right size and type.. Is the same than pow(0.5, dst)
+		DataObject sqrt() const; // returns a new data object of the same size and type than this data object where the square root of every element is calculated. Is the same than pow(0.5)
+		void sqrt(DataObject &dst) const; // this function calculates the square root of every element and saves the result in dst. Dst must be of the same size and type than this data object or empty. In the latter case, it is reassigned to the right size and type.. Is the same than pow(0.5, dst)
 
         DataObject squeeze() const;
         DataObject reshape(int newDims, const int *newSizes) const;
@@ -1433,10 +1432,17 @@ namespace ito {
 		DataObject lineCut(const double* coordinates, const int& len) const;
 
         // ROI
-        DataObject & adjustROI(const int dtop, const int dbottom, const int dleft, const int dright);   /*!< changes the boundaries of the ROI of a two-dimensional data object by the given incremental values */
-        DataObject & adjustROI(const unsigned char dims, const int *lims);                              /*!< changes the boundaries of the ROI of a n-dimensional data object by the given incremental values */
-        RetVal locateROI(int *wholeSizes, int *offsets) const;                                          /*!< locates the boundaries of the ROI of a n-dimensional data object and returns the original size and the distances to the physical borders */
-        RetVal locateROI(int *lims) const;                                                              /*!< locates the boundaries of the ROI of a n-dimensional data object the distances to the physical borders */
+        /*!< changes the boundaries of the ROI of a two-dimensional data object by the given incremental values */
+        DataObject& adjustROI(const int dtop, const int dbottom, const int dleft, const int dright);
+
+        /*!< changes the boundaries of the ROI of a n-dimensional data object by the given incremental values */
+        DataObject& adjustROI(const unsigned char dims, const int *lims);
+
+        /*!< locates the boundaries of the ROI of a n-dimensional data object and returns the original size and the distances to the physical borders */
+        RetVal locateROI(int *wholeSizes, int *offsets) const;
+
+        /*!< locates the boundaries of the ROI of a n-dimensional data object the distances to the physical borders */
+        RetVal locateROI(int *lims) const;
 
         //! copies the externally given source data inside this data object
         /*!
@@ -1454,7 +1460,11 @@ namespace ito {
          \param sizeY is the height of the array and must fit to the plane height of the data object
          \return RetVal error if sizeX or sizeY does not fit to the size of the data object or if the type of the given array does not fit to the type of the data object
          */
-        template<typename _Tp> RetVal copyFromData2D(const _Tp* src, const int sizeX, const int sizeY) { return copyFromData2DInternal((const uchar*)src, sizeof(_Tp), sizeX, sizeY); }        // copies 2D continuous data into data object, data object must have correct size and type, otherwise an error is returned
+        template<typename _Tp> RetVal copyFromData2D(const _Tp* src, const int sizeX, const int sizeY) const
+        {
+            // copies 2D continuous data into data object, data object must have correct size and type, otherwise an error is returned
+            return copyFromData2DInternal((const uchar*)src, sizeof(_Tp), sizeX, sizeY);
+        }
 
         //! copies the externally given source data inside this data object
         /*!
@@ -1481,9 +1491,13 @@ namespace ito {
          \param height is the height of the sub-region of the source data that should be copied (must fit to the height of the data object)
          \return RetVal error if sizeX or sizeY does not fit to the size of the data object or if the type of the given array does not fit to the type of the data object
          */
-        template<typename _Tp> RetVal copyFromData2D(const _Tp *src, const int sizeX, const int sizeY, const int x0, const int y0, const int width, const int height) { return copyFromData2DInternal((const uchar*)src, sizeof(_Tp), sizeX, x0, y0, width, height); }      // copies 2D continuous data into data object, data object must have correct size and type, otherwise an error is returned
+        template<typename _Tp> RetVal copyFromData2D(const _Tp *src, const int sizeX, const int sizeY, const int x0, const int y0, const int width, const int height) const
+        {
+            // copies 2D continuous data into data object, data object must have correct size and type, otherwise an error is returned
+            return copyFromData2DInternal((const uchar*)src, sizeof(_Tp), sizeX, x0, y0, width, height);
+        }
 
-        template<typename T2> operator T2 ();  /*!< cast operator, tries to cast this data object to another element type */
+        template<typename T2> operator T2();  /*!< cast operator, tries to cast this data object to another element type */
 
         template<typename _Tp> RetVal linspace(const _Tp start, const _Tp end, const _Tp inc, const int transposed);
 
@@ -1721,5 +1735,3 @@ namespace ito {
     template<> inline ito::tDataType getDataType2<TimeDelta*>()   { return ito::tTimeDelta; }
 
 } //namespace ito
-
-#endif //__DATAOBJH
