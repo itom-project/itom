@@ -1148,6 +1148,32 @@ ito::RetVal AddInMultiChannelGrabber::copyVal(QSharedPointer<QMap<QString, ito::
     return retValue;
 }
 
+//-------------------------------------------------------------------------------------
+ito::RetVal AddInMultiChannelGrabber::retrieveData(ito::DataObject* externalDataObject /*= nullptr*/)
+{
+    QString defaultChannel = QLatin1String(m_params["defaultChannel"].getVal<const char*>());
+    ito::RetVal retval;
+
+    if (externalDataObject)
+    {
+        retval += checkData(defaultChannel, externalDataObject);
+    }
+
+    if (!retval.containsError())
+    {
+        // fetch all channels. This is necessary for the auto
+        // grabbing using the timerEvent in abstractAddInGrabber.
+        retval += retrieveData(QStringList());
+    }
+
+    if (externalDataObject && !retval.containsError())
+    {
+        retval += m_channels[defaultChannel].m_data.deepCopyPartial(*externalDataObject);
+    }
+
+    return retval;
+}
+
 
 //-------------------------------------------------------------------------------------
 AddInMultiChannelGrabber::ChannelContainerMapConstIterator AddInMultiChannelGrabber::getCurrentDefaultChannel() const

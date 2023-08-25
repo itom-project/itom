@@ -62,7 +62,7 @@ namespace ito
             NewDataAndEmitted = 2
         };
 
-        class ChannelContainer
+        class ITOMCOMMONQT_EXPORT ChannelContainer
         {
         public:
             ChannelContainer();
@@ -112,7 +112,7 @@ namespace ito
         ChannelContainerMap m_channels; /*!< Map for recently grabbed images of various channels */
 
         virtual ito::RetVal checkData(ito::DataObject* externalDataObject = nullptr);
-        virtual ito::RetVal checkData(const QString &channelName, ito::DataObject* externalDataObject = nullptr);
+        virtual ito::RetVal checkData(const QString& channelName, ito::DataObject* externalDataObject = nullptr);
 
         virtual ito::RetVal sendDataToListeners(int waitMS); /*!< sends m_data to all registered listeners. */
         ito::RetVal adaptDefaultChannelParams(); /*!< adaptes the params after changing the defaultChannel param*/
@@ -146,6 +146,21 @@ namespace ito
 
         */
         virtual ito::RetVal retrieveData(const QStringList& channels = QStringList()) = 0;
+
+        //! This method fetches the latest acquired image of the current default channel.
+        /*
+        This method gets the name of the current default channel and calls the overloaded
+        method ``retrieveData(channels)`` to fetch the latest acquired image of the default
+        channel.
+
+        If the ``externalDataObject`` is given, it must either be empty or have the same
+        size and dtype than the latest image of the default channel. If given, the latest
+        image is copied into the given externalDataObject.
+
+        Usually, this method has not to be overloaded, since it is implemented in a useable
+        way. Nevertheless, it can be overloaded.
+        */
+        virtual ito::RetVal retrieveData(ito::DataObject* externalDataObject = nullptr);
 
         //! Specific function to set the parameters in the respective plugin class
         /*!

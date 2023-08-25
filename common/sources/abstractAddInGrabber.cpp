@@ -166,7 +166,7 @@ void AbstractAddInGrabber::timerEvent(QTimerEvent * /*event*/)
 
     if (m_autoGrabbingListeners.size() > 0) // verify that any liveImage is listening
     {
-        retValue += acquire(0, NULL);
+        retValue += acquire(0, nullptr);
 
         if (!retValue.containsError())
         {
