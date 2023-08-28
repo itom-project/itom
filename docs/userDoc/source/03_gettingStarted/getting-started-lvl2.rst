@@ -232,7 +232,7 @@ bit depth, whose default ist 8 bit.
 
 In order to create an instance of the camera, we create an object of the Python class
 :py:class:`~itom.dataIO`, which is part of the module :py:mod:`itom`. Since this module
-has been globally imported at startup of |itom| using::
+has been globally imported at startup of |itom| using:
 
 .. code-block:: python
 
