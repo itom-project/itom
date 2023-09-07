@@ -715,8 +715,8 @@ QString PyDocstringGeneratorMode::generateNumpyDoc(
 
                     if (arg.m_isOptional)
                     {
-                        docs += QString("\n%1 : %2, optional\n    DESCRIPTION")
-                            .arg(arg.m_name).arg(typ);
+                        docs += QString("\n%1 : %2, optional\n    DESCRIPTION, by default %3")
+                            .arg(arg.m_name).arg(typ).arg(arg.m_defaultValue);
                     }
                     else
                     {
