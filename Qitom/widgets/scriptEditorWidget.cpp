@@ -552,6 +552,13 @@ void ScriptEditorWidget::initMenus()
         );
     m_editorMenuActions["formatFile"]->setVisible(false);
 
+    m_editorMenuActions["referenceRenameing"] = editorMenu->addAction(
+        QIcon(":/editor/icons/rename.png"),
+        tr("Rename References"),
+        this,
+        SLOT(mnuPyReferenceRenaming()),
+        QKeySequence(tr("F2", "QShortcu")));
+
     m_editorMenuActions["generateDocstring"] =
         editorMenu->addAction(
             QIcon(), tr("Generate Docstring"),
@@ -1434,6 +1441,12 @@ void ScriptEditorWidget::menuPyCodeFormatting()
             );
         }
     }
+}
+
+//-------------------------------------------------------------------------------------
+void ScriptEditorWidget::menuPyReferenceRenaming()
+{
+    bool breakPoint = true;
 }
 
 //-------------------------------------------------------------------------------------
