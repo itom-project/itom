@@ -17,6 +17,7 @@
         <file alias="icons/editCut.png">icons_dark/editCut.png</file>
         <file alias="icons/find.png">icons_dark/find.png</file>
         <file alias="icons/leftAlign.png">icons_dark/leftAlign.png</file>
+        <file alias="icons/rename.png">icons_dark/rename.png</file>
     </qresource>
     <qresource prefix="/general">
         <file alias="icons/decimals.png">icons_dark/decimals.png</file>

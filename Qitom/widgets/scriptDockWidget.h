@@ -160,7 +160,7 @@ private:
     ShortcutAction *m_indentAction;
     ShortcutAction *m_unindentAction;
     ShortcutAction *m_autoCodeFormatAction;
-    ShortcutAction *m_referenceRenameAction;
+    ShortcutAction *m_variableRenameAction;
     ShortcutAction *m_pyDocstringGeneratorAction;
     ShortcutAction *m_scriptRunAction;
     ShortcutAction *m_scriptRunSelectionAction;
