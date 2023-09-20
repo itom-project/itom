@@ -36,7 +36,7 @@
 #include "../codeEditor/panels/lineNumber.h"
 #include "../codeEditor/codeCheckerItem.h"
 #include "../codeEditor/pyCodeFormatter.h"
-
+#include "../codeEditor/pyCodeVariableRenamer.h"
 #include "../global.h"
 
 #include <qfilesystemwatcher.h>
@@ -219,6 +219,7 @@ private:
     BookmarkModel *m_pBookmarkModel; //! borrowed reference to the bookmark model. The owner of this model is the ScriptEditorOrganizer.
 
     QSharedPointer<PyCodeFormatter> m_pyCodeFormatter;
+    QSharedPointer<PyCodeVariableRenamer> m_pyCodeVariableRenamer;
 
     //!< the current command string for the python auto code formatting.
     QString m_autoCodeFormatCmd;

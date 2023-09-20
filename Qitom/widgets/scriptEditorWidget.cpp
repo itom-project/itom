@@ -1446,7 +1446,26 @@ void ScriptEditorWidget::menuPyCodeFormatting()
 //-------------------------------------------------------------------------------------
 void ScriptEditorWidget::menuPyCodeVariableRenaming()
 {
-    bool breakPoint = true;
+    // TODO check if jedi
+    if (m_autoCodeFormatCmd == "")
+    {
+        QMessageBox::critical(
+            this,
+            tr("Missing auto code format command"),
+            tr("No auto code format call command has been given in the "
+               "itom property dialog. Please indicate a command there."));
+        return;
+    }
+
+    // the PyCodeFormatter should be destroyed using deleteLater
+    // since the cancel button event will indirectly lead to
+    // a clear command of m_pyCodeFormatter (via the method pyCodeFormatterDone).
+    // This would then destroy the QProgressDialog before the mouseRelease event
+    // of the cancel button has been fully terminated.
+    m_pyCodeVariableRenamer =
+        QSharedPointer<PyCodeVariableRenamer>(new PyCodeVariableRenamer(this), doDeleteLater);
+
+    // TODO connect
 }
 
 //-------------------------------------------------------------------------------------
