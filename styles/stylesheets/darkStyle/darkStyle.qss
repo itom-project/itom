@@ -785,8 +785,11 @@ QToolButton#qt_toolbar_ext_button:hover {
 }
 
 QToolBar QLabel {
-  /* Fixes label in toolbar */
+  /* Fixes label in toolbar, e.g. in plots */
   background: transparent;
+  background-color: #ff00ff;
+  padding: 0px;
+  margin: 0px;
 }
 
 QToolBar QWidget {

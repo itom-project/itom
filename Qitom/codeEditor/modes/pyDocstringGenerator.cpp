@@ -549,7 +549,14 @@ void PyDocstringGeneratorMode::parseArgList(
     foreach(const QString &arg, args)
     {
         idx1 = arg.indexOf(":");
-        idx2 = arg.indexOf("=", idx1);
+        if (idx1 == -1 and arg.indexOf("=") >= 0)
+        {
+            idx2 = arg.indexOf("=");
+        }
+        else
+        {
+            idx2 = arg.indexOf("=", idx1);
+        }
 
         ArgInfo a;
         a.m_isOptional = (idx2 >= 0);
