@@ -19,7 +19,7 @@
 # along with itom. If not, see <http://www.gnu.org/licenses/>.
 
 cmake_minimum_required(VERSION 3.12...3.24)
-
+ 
 project(itom)
 
 # set qitom as Visual Studio Startup-Projekt
