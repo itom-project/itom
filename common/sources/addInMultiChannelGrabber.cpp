@@ -150,7 +150,7 @@ void AddInMultiChannelGrabber::ChannelContainer::addDefaultMetaParams()
     addChannelParam(paramVal);
 
     double axisScales[] = { 1.0, 1.0 };
-    paramVal = ito::Param("axisScales", ito::ParamBase::DoubleArray, 2, axisOffsets, "the scale values of the y- and x-axis of this channel image.");
+    paramVal = ito::Param("axisScales", ito::ParamBase::DoubleArray, 2, axisScales, "the scale values of the y- and x-axis of this channel image.");
     paramVal.setMeta(new ito::DoubleArrayMeta(-DBL_MAX, DBL_MAX, 0.0, 2, 2, 1, "MetaInformation"), true);
     addChannelParam(paramVal);
 
@@ -239,7 +239,7 @@ ito::RetVal AddInMultiChannelGrabber::initChannelsAndGlobalParameters(
         "at least one channel container must be given");
 
     // initialize default global parameters
-    m_params["channelName"].setVal<const char*>(defaultChannelName.toLatin1().constData());
+    m_params["defaultChannel"].setVal<const char*>(defaultChannelName.toLatin1().constData());
     m_params["channelSelector"].setVal<const char*>(defaultChannelName.toLatin1().constData());
 
     QList<ito::ByteArray> channelNames;
@@ -426,23 +426,23 @@ ito::RetVal AddInMultiChannelGrabber::checkData(const QString& channelName, ito:
     }
 
     ito::float64 axisOffset[] = {
-        channel->m_channelParams["axisOffset"].getVal<const ito::float64*>()[0],
-        channel->m_channelParams["axisOffset"].getVal<const ito::float64*>()[1]
+        channel->m_channelParams["axisOffsets"].getVal<const ito::float64*>()[0],
+        channel->m_channelParams["axisOffsets"].getVal<const ito::float64*>()[1]
     };
 
     ito::float64 axisScale[] = {
-        channel->m_channelParams["axisScale"].getVal<const ito::float64*>()[0],
-        channel->m_channelParams["axisScale"].getVal<const ito::float64*>()[1]
+        channel->m_channelParams["axisScales"].getVal<const ito::float64*>()[0],
+        channel->m_channelParams["axisScales"].getVal<const ito::float64*>()[1]
     };
 
     ito::ByteArray axisUnit[] = {
-        channel->m_channelParams["axisUnit"].getVal<const ito::ByteArray*>()[0],
-        channel->m_channelParams["axisUnit"].getVal<const ito::ByteArray*>()[1]
+        channel->m_channelParams["axisUnits"].getVal<const ito::ByteArray*>()[0],
+        channel->m_channelParams["axisUnits"].getVal<const ito::ByteArray*>()[1]
     };
 
     ito::ByteArray axisDescription[] = {
-        channel->m_channelParams["axisDescription"].getVal<const ito::ByteArray*>()[0],
-        channel->m_channelParams["axisDescription"].getVal<const ito::ByteArray*>()[1]
+        channel->m_channelParams["axisDescriptions"].getVal<const ito::ByteArray*>()[0],
+        channel->m_channelParams["axisDescriptions"].getVal<const ito::ByteArray*>()[1]
     };
 
     ito::ByteArray valueDescription = channel->m_channelParams["valueDescription"].getVal<const char*>();
@@ -695,7 +695,15 @@ ito::RetVal AddInMultiChannelGrabber::setParam(QSharedPointer<ito::ParamBase> va
                     }
                     else
                     {
-                        retValue += ito::RetVal(ito::retError, 0, tr("could not switch to channel %1. The channel is unknown.").arg(val->getVal<const char*>()).toLatin1().data());
+                        QStringList availableChannels = m_channels.keys();
+
+                        retValue += ito::RetVal(
+                            ito::retError,
+                            0,
+                            tr("Cannot switch to channel \"%1\" since it does not exist. Available channels are %2.")
+                            .arg(val->getVal<const char*>())
+                            .arg(availableChannels.join(", ")).toLatin1().data()
+                        );
                     }
                 }
             }
@@ -708,10 +716,11 @@ ito::RetVal AddInMultiChannelGrabber::setParam(QSharedPointer<ito::ParamBase> va
                 updateSizeXY();
                 paramUpdateList << "sizex" << "sizey";
             }
-            if (key == "defaultChannel")
+            else if (key == "channelSelector")
             {
                 retValue += switchChannelSelector();
             }
+
             retValue += applyParamsToChannelParams(paramUpdateList);
             retValue += checkData();
         }
@@ -781,7 +790,7 @@ ito::RetVal AddInMultiChannelGrabber::switchChannelSelector()
         retValue += ito::RetVal(
             ito::retError,
             0,
-            tr("could not switch to channel %1. The channel is not registered.").arg(selectedChannel).toLatin1().data()
+            tr("Cannot switch to channel %1. The channel is not registered.").arg(selectedChannel).toLatin1().data()
         );
     }
 
@@ -830,7 +839,7 @@ ito::RetVal AddInMultiChannelGrabber::applyParamsToChannelParams(const QStringLi
 
         else
         {
-            retVal = ito::RetVal(ito::retError, 0, tr("unknown channel %1").arg(channelSelector).toLatin1().data());
+            retVal = ito::RetVal(ito::retError, 0, tr("Unknown channel \"%1\". Available channels are: %2").arg(channelSelector).arg(m_channels.keys().join(", ")).toLatin1().data());
         }
     }
     else
