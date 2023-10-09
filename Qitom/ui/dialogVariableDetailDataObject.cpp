@@ -75,6 +75,7 @@ DialogVariableDetailDataObject::DialogVariableDetailDataObject(
     tableLayout->removeWidget(ui.dataTable);
     tableMain->setCentralWidget(ui.dataTable);
     tb->addActions(ui.dataTable->actions());
+    tableMain->updateGeometry();
 
     ui.dataTable->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
     ui.dataTable->setReadOnly(true);

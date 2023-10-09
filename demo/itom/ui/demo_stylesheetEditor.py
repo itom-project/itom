@@ -42,6 +42,22 @@ class StyleSheetEditor(ItomUi):  # StyleCreator is inherited from ItomUi
         self.gui.itom2dQwtPlot["overlayImage"] = dataObject.rand([512, 768], "float32")
         self.gui.itom2dQwtPlot_2["source"] = dataObject.randN([100, 512, 768], "uint8")
         self.gui.itom2dQwtPlot_2["overlayImage"] = dataObject.randN([512, 768], "float32")
+        dObj = dataObject.rand([10, 10])
+        dObj.setAxisDescription(0, "y axis")
+        dObj.setAxisDescription(1, "x axis")
+        dObj.setAxisUnit(0, "µm")
+        dObj.setAxisUnit(1, "mm")
+        dObj.setAxisOffset(0, 10)
+        dObj.setAxisOffset(1, 10)
+        dObj.setAxisScale(0, 100)
+        dObj.setAxisScale(1, 10)
+        dObj.valueDescription = "value"
+        dObj.valueUnit = "a.u."
+        dObj.addToProtocol("created and set to stylesheeteditor")
+        dObj.setTag("title", "dObj title")
+        self.dObj = dObj
+        self.gui.dataObjectTable["data"] =dObj
+        self.gui.dataObjectMetaWidget["data"] = dObj
 
         self.gui.call("statusBar").call("showMessage", "Status bar message...")
 
