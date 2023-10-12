@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2023, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
@@ -20,8 +20,7 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef MAINAPPLICATION_H
-#define MAINAPPLICATION_H
+#pragma once
 
 #include "python/pythonEngineInc.h"
 #include "python/qDebugStream.h"
@@ -109,9 +108,7 @@ class MainApplication : public QObject
 
     public slots:
         void _propertiesChanged() { emit propertiesChanged(); }
-        void mainWindowCloseRequest();
+        void mainWindowCloseRequest(bool considerPythonBusy);
 };
 
 } //end namespace ito
-
-#endif
