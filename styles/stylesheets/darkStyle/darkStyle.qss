@@ -2101,7 +2101,10 @@ QHeaderView::section::horizontal:disabled {
 QHeaderView::section::vertical {
   padding-left: 4px;
   padding-right: 4px;
+  padding-top: 0px;
+  padding-bottom: 0px;
   border-top: 1px solid #19232D;
+  text-align: center;
 }
 
 QHeaderView::section::vertical::first, QHeaderView::section::vertical::only-one {
