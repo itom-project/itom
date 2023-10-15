@@ -501,7 +501,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap
         }
 
         //!< must be called after any PyImport_AppendInittab-call
-        if (pythonDirState > 1)
+        if (pythonDirState >= 0)
         {
             Py_Initialize();
         }
@@ -1859,8 +1859,7 @@ ito::RetVal PythonEngine::runString(const QString &command)
         {
             if (PyErr_Occurred() && PyErr_ExceptionMatches(PyExc_SystemExit))
             {
-                std::cerr << "wish to exit (not possible yet)\n" << std::endl;
-                retValue += RetVal(retError, 2, tr("exiting desired.").toLatin1().data());
+                retValue += handlePythonSysExit();
             }
             else
             {
@@ -1945,8 +1944,7 @@ ito::RetVal PythonEngine::runPyFile(const QString &pythonFileName)
                 {
                     if (PyErr_Occurred() && PyErr_ExceptionMatches(PyExc_SystemExit))
                     {
-                        std::cerr << "wish to exit (not possible yet)\n" << std::endl;
-                        retValue += RetVal(retError);
+                        retValue += handlePythonSysExit();
                     }
                     else
                     {
@@ -1972,8 +1970,7 @@ ito::RetVal PythonEngine::runPyFile(const QString &pythonFileName)
                     {
                         if (PyErr_Occurred() && PyErr_ExceptionMatches(PyExc_SystemExit))
                         {
-                            std::cerr << "wish to exit (not possible yet)\n" << std::endl;
-                            retValue += RetVal(retError);
+                            retValue += handlePythonSysExit();
                         }
                         else
                         {
@@ -2038,8 +2035,7 @@ ito::RetVal PythonEngine::runPyFile(const QString &pythonFileName)
             {
                 if (PyErr_Occurred() && PyErr_ExceptionMatches(PyExc_SystemExit))
                 {
-                    std::cerr << "wish to exit (not possible yet)\n" << std::endl;
-                    retValue += RetVal(retError);
+                    retValue += handlePythonSysExit();
                 }
                 else
                 {
@@ -2208,8 +2204,7 @@ ito::RetVal PythonEngine::debugFunction(PyObject *callable, PyObject *argTuple, 
         {
             if (PyErr_Occurred() && PyErr_ExceptionMatches(PyExc_SystemExit))
             {
-                std::cerr << "wish to exit (not possible yet)\n" << std::endl;
-                retValue += RetVal(retError);
+                retValue += handlePythonSysExit();
             }
             else
             {
@@ -2323,8 +2318,7 @@ ito::RetVal PythonEngine::debugFile(const QString &pythonFileName)
         {
             if (PyErr_Occurred() && PyErr_ExceptionMatches(PyExc_SystemExit))
             {
-                std::cerr << "wish to exit (not possible yet)\n" << std::endl;
-                retValue += RetVal(retError);
+                retValue += handlePythonSysExit();
             }
             else
             {
@@ -2438,12 +2432,11 @@ ito::RetVal PythonEngine::debugString(const QString &command)
 
         clearDbgCmdLoop();
 
-        if (result == NULL) //!< syntax error
+        if (result == nullptr) //!< syntax error
         {
             if (PyErr_Occurred() && PyErr_ExceptionMatches(PyExc_SystemExit))
             {
-                std::cerr << "wish to exit (not possible yet)\n" << std::endl;
-                retValue += RetVal(retError);
+                retValue += handlePythonSysExit();
             }
             else
             {
@@ -2452,7 +2445,7 @@ ito::RetVal PythonEngine::debugString(const QString &command)
                 modifyTracebackDepth(3, true);
                 PyErr_PrintEx(0);
 
-                if (oldTBLimit != NULL)
+                if (oldTBLimit != nullptr)
                 {
                     PySys_SetObject("tracebacklimit", oldTBLimit);
                 }
@@ -2484,7 +2477,28 @@ ito::RetVal PythonEngine::debugString(const QString &command)
     return retValue;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
+ito::RetVal PythonEngine::handlePythonSysExit()
+{
+    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+    settings.beginGroup("Python");
+    bool closeItom = settings.value("closeItomWithPySysExit", false).toBool();
+    settings.endGroup();
+
+    if (closeItom)
+    {
+        QMetaObject::invokeMethod(AppManagement::getMainApplication(), "mainWindowCloseRequest", Q_ARG(bool, false));
+        std::cerr << tr("close itom due to sys.exit()").toLatin1().data() << "\n" << std::endl;
+        return ito::RetVal(ito::retError, 0, "Close itom due to Python sys.exit()");
+    }
+    else
+    {
+        std::cerr << tr("sys.exit() is ignored. If itom should be closed, enable it in the itom properties dialog.").toLatin1().data() << "\n" << std::endl;
+        return ito::RetVal(ito::retError, 0, "sys.exit() ignored.");
+    }
+}
+
+//-------------------------------------------------------------------------------------
 bool PythonEngine::tryToLoadJediIfNotYetDone()
 {
     if (!m_jediRunner.isNull())

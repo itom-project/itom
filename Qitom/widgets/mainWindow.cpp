@@ -104,7 +104,7 @@ MainWindow::MainWindow() :
     //    m_pythonMessageDock(NULL),
     m_helpDock(NULL), m_globalWorkspaceDock(NULL), m_localWorkspaceDock(NULL),
     m_callStackDock(NULL), m_fileSystemDock(NULL), m_pAIManagerWidget(NULL), m_appFileNew(NULL),
-    m_appFileOpen(NULL), m_aboutQt(NULL), m_aboutQitom(NULL), m_pMenuFigure(NULL),
+    m_appFileOpen(NULL), m_aboutQt(NULL), m_aboutQitom(NULL), m_copyLog(nullptr), m_pMenuFigure(NULL),
     m_pMenuHelp(NULL), m_pMenuFile(NULL), m_pMenuPython(NULL), m_pMenuReloadModule(NULL),
     m_pMenuView(NULL), m_pHelpSystem(NULL), m_pStatusLblCurrentDir(NULL),
     m_pStatusLblScriptInfo(nullptr),
@@ -876,7 +876,7 @@ void MainWindow::connectPythonMessageBox(QListWidget* pythonMessageBox)
 */
 void MainWindow::closeEvent(QCloseEvent* event)
 {
-    emit(mainWindowCloseRequest());
+    emit(mainWindowCloseRequest(true));
     event->ignore(); //!< if mainWindowCloseRequest is handled and accepted by mainApplication,
                      //!< MainWindow will be destroyed
 }
@@ -944,6 +944,12 @@ void MainWindow::createActions()
     m_aboutQitom = new QAction(
         QIcon(":/application/icons/itomicon/itomLogo3_64.png"), tr("About itom..."), this);
     connect(m_aboutQitom, SIGNAL(triggered()), this, SLOT(mnuAboutQitom()));
+
+    if (AppManagement::getLogger())
+    {
+        m_copyLog = new QAction(tr("Copy Log..."), this);
+        connect(m_copyLog, SIGNAL(triggered()), this, SLOT(mnuCopyLog()));
+    }
 
     m_actions["show_loaded_plugins"] =
         new QAction(QIcon(":/plugins/icons/plugin.png"), tr("Loaded Plugins..."), this);
@@ -1206,6 +1212,10 @@ void MainWindow::createMenus()
 
     m_pMenuHelp->addAction(m_aboutQt);
     m_pMenuHelp->addAction(m_aboutQitom);
+    if (m_copyLog)
+    {
+        m_pMenuHelp->addAction(m_copyLog);
+    }
 
     // linux: in some linux distributions, the menu bar did not appear if it is displayed
     // on top of the desktop. Therefore, native menu bars (as provided by the OS) are disabled here.
@@ -1672,6 +1682,7 @@ void MainWindow::showAssistant(
         {
             m_helpViewer = QPointer<HelpViewer>(new HelpViewer(NULL));
             // m_helpViewer->setAttribute(Qt::WA_DeleteOnClose, true);
+            // reopening help leads to empty help site
         }
         m_helpViewer->setCollectionFile(collectionFile_);
         if (!showUrl.isEmpty())
@@ -1800,6 +1811,46 @@ void MainWindow::mnuAboutQitom()
     DialogAboutQItom* dlgAbout = new DialogAboutQItom(versionList);
     dlgAbout->exec();
     DELETE_AND_SET_NULL(dlgAbout);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void MainWindow::mnuCopyLog()
+{
+    QString directory = QFileDialog::getExistingDirectory(this, tr("Select directory"));
+    if (!directory.isEmpty())
+    {
+        QObject* logger;
+        logger = AppManagement::getLogger();
+        if (logger)
+        {
+            ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+            QMetaObject::invokeMethod(
+                logger,
+                "copyLog",
+                Q_ARG(QString, directory),
+                Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+            if (!locker.getSemaphore()->wait(PLUGINWAIT))
+            {
+                QMessageBox::critical(this, tr("Timeout"), tr("Timeout while executing copyLog."));
+            }
+            else
+            {
+                ito::RetVal retVal = locker.getSemaphore()->returnValue;
+                if (retVal.containsWarningOrError())
+                {
+                    QMessageBox::critical(
+                        this, tr("Error while copying log"), retVal.errorMessage());
+                }
+                else
+                {
+                    QMessageBox::information(
+                        this,
+                        tr("Logs copied"),
+                        tr("The log files were copied successfully to %1").arg(directory));
+                }
+            }
+        }
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2775,7 +2826,7 @@ void MainWindow::mnuShowLoadedPlugins()
 void MainWindow::mnuExitApplication()
 {
     // does not call the closeEvent-method!
-    emit(mainWindowCloseRequest());
+    emit(mainWindowCloseRequest(true));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

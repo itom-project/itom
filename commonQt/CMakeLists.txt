@@ -23,7 +23,7 @@
 # You should have received a copy of the GNU Library General Public License
 # along with itom. If not, see <http://www.gnu.org/licenses/>.
 
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.12...3.24)
 
 set(target_name itomCommonQtLib)
 project(${target_name})
@@ -76,6 +76,7 @@ set(ITOMCOMMONQT_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/abstractAddInConfigDialog.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/helperCommon.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/helperDatetime.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/itomLog.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/pluginThreadCtrl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedFunctionsQt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructuresGraphics.h
@@ -95,6 +96,7 @@ set(ITOMCOMMONQT_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/abstractAddInConfigDialog.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/helperCommon.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/helperDatetime.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/itomLog.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/pluginThreadCtrl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/sharedFunctionsQt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/sharedStructuresQt.cpp

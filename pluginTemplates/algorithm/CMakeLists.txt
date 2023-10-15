@@ -7,11 +7,11 @@
 ###################################################################
 ###################################################################
 
+# this should be the first line of your project.
+cmake_minimum_required(VERSION 3.12...3.24)
+
 #here you give your project a unique name (replace MyAlgoPlugin by the desired project name of your plugin)
 set(target_name MyAlgoPlugin)
-
-# this should be the first line of your project.
-cmake_minimum_required(VERSION 3.1...3.15)
 
 #this is to automatically detect the SDK subfolder of the itom build directory.
 if(NOT EXISTS ${ITOM_SDK_DIR})

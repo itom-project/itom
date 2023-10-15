@@ -18,7 +18,8 @@
 # You should have received a copy of the GNU Library General Public License
 # along with itom. If not, see <http://www.gnu.org/licenses/>.
 
-cmake_minimum_required(VERSION 3.12)
+
+cmake_minimum_required(VERSION 3.12...3.24)
 
 project(itom)
 
@@ -31,9 +32,9 @@ include(cmake/Setup_Core_Itom.cmake)
 
 if(BUILD_QTVERSION STREQUAL "Qt6")
     set(CMAKE_CXX_STANDARD 17)
-else()
+elseif(BUILD_QTVERSION STREQUAL "Qt5")
     set(CMAKE_CXX_STANDARD 11)
-endif()
+endif(BUILD_QTVERSION STREQUAL "Qt6")
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -94,6 +95,8 @@ if(BUILD_UNITTEST)
     add_subdirectory(gtest-1.10.0)
     add_subdirectory(itom_unittests)
 endif()
+
+#itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 
 if(SETUP_ISSCONFIG)
     set(InnoSetupPath CACHE PATH "base path to inno setup")

@@ -164,10 +164,9 @@ Obtain the sources
 
 .. code-block:: bash
 
-git clone git clone git@bitbucket.org:itom/itomproject.git
+    git clone --recursive --remote git@github.com:itom-project/itomProject.git
     cd itomproject
-    git submodule init
-    git submodule update
+    git submodule foreach --recursive git checkout master
     mkdir -p ./{build_debug,build_release}
     cd ./build_release
     cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=OFF -DCMAKE_BUILD_TYPE=Release ../  #If PCL-support should be enabled, replace OFF by ON

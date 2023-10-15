@@ -61,7 +61,7 @@ About us
 | 70569 Stuttgart
 |
 | **Report issues at:**
-| https://bitbucket.org/itom/itom/issues
+| https://github.com/itom-project/itom/issues
 
 This help has been built for itom-version |version| (Git-revision |release|).
 

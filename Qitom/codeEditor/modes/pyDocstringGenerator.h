@@ -81,9 +81,13 @@ protected:
 
     struct ArgInfo
     {
-        ArgInfo(const QString &name = "", const QString &type = "", bool isOptional = false) :
+        ArgInfo(
+            const QString& name = "",
+            const QString& type = "",
+            const QString& defaultValue = "", bool isOptional = false) :
             m_name(name),
             m_type(type),
+            m_defaultValue(defaultValue),
             m_isOptional(isOptional)
         {
 
@@ -91,6 +95,7 @@ protected:
 
         QString m_name;
         QString m_type;
+        QString m_defaultValue;
         bool m_isOptional;
     };
 

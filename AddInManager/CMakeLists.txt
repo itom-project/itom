@@ -23,7 +23,7 @@
 # You should have received a copy of the GNU Library General Public License
 # along with itom. If not, see <http://www.gnu.org/licenses/>.
 
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.12...3.24)
 
 set(target_name addinmanager)
 project(${target_name})
@@ -106,4 +106,4 @@ foreach(_qm ${QM_FILES})
 endforeach()
 
 itom_add_library_to_appdir_and_sdk(${target_name} COPY_SOURCES COPY_DESTINATIONS)
-itom_post_build_copy_files(addinmanager COPY_SOURCES COPY_DESTINATIONS)
+itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)

@@ -598,7 +598,7 @@ If you want to create a linearly distributed datetime x-axis, the numpy method `
 Main operations on numpy.arrays and itom.dataObjects
 ----------------------------------------------------------
 
-The following list in an extract of the itom cheatsheet (http://itom.bitbucket.io/media.html) and shows major operations on numpy.arrays and itom.dataObjects:
+The following list in an extract of the itom cheatsheet (https://itom.bitbucket.io/documents/itom_cheatsheet.pdf) and shows major operations on numpy.arrays and itom.dataObjects:
 
 ======================================= ============================================= ===========================================================================================
 np.array (import numpy as np)           itom.dataObject (import itom)

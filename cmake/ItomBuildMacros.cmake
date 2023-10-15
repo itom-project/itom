@@ -300,7 +300,12 @@ macro(itom_init_plugin_library target)
 
     message(STATUS "\n<--- PLUGIN ${target} --->")
 
-    set(CMAKE_CXX_STANDARD 11)
+    if(BUILD_QTVERSION STREQUAL "Qt6")
+        set(CMAKE_CXX_STANDARD 17)
+    elseif(BUILD_QTVERSION STREQUAL "Qt5")
+        set(CMAKE_CXX_STANDARD 11)
+    endif(BUILD_QTVERSION STREQUAL "Qt6")
+
     set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
     project(${target})
@@ -359,7 +364,12 @@ macro(itom_init_designerplugin_library target)
 
     message(STATUS "\n<--- DESIGNERPLUGIN ${target} --->")
 
-    set(CMAKE_CXX_STANDARD 11)
+    if(BUILD_QTVERSION STREQUAL "Qt6")
+        set(CMAKE_CXX_STANDARD 17)
+    elseif(BUILD_QTVERSION STREQUAL "Qt5")
+        set(CMAKE_CXX_STANDARD 11)
+    endif(BUILD_QTVERSION STREQUAL "Qt6")
+
     set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
     project(${target})

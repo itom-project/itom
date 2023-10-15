@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2023, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
@@ -20,8 +20,7 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#pragma once
 
 #include "workspaceDockWidget.h"
 #include "callStackDockWidget.h"
@@ -109,6 +108,7 @@ private:
     QAction *m_appFileOpen;
     QAction *m_aboutQt;
     QAction *m_aboutQitom;
+    QAction* m_copyLog;
 
     QMap<QString, QAction*> m_actions;
 
@@ -146,7 +146,7 @@ private:
     QMap<QString, QPointer<WidgetInfoBox> > m_infoBoxWidgets;
 
 signals:
-    void mainWindowCloseRequest();  /*!<  signal emitted if user would like to close the main window and therefore the entire application */
+    void mainWindowCloseRequest(bool considerPythonBusy);  /*!<  signal emitted if user would like to close the main window and therefore the entire application */
     void pythonDebugCommand(tPythonDbgCmd cmd); /*!<  will be received by PythonThread, directly */
     void pythonSetAutoReloadSettings(bool enabled, bool checkFile, bool checkCmd, bool checkFct);
 
@@ -184,6 +184,7 @@ public slots:
 
 private slots:
     void mnuAboutQitom();
+    void mnuCopyLog();
     void mnuExitApplication();
 
     void mnuNewScript();
@@ -234,5 +235,3 @@ private slots:
 };
 
 } //end namespace ito
-
-#endif

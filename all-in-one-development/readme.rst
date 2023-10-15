@@ -6,7 +6,7 @@ for various development environments.
 
 More information how to get your computer ready to compile itom and its plugins
 using these all-in-one development environments can be found here:
-http://itom.bitbucket.org/latest/docs/02_installation/install_all-in-one_development_setup.html
+https://itom-project.github.io/latest/docs/02_installation/install_all-in-one_development_setup.html
 
 Available editions
 -----------------------------

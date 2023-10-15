@@ -728,7 +728,7 @@ itom
 * more unittests added
 * many smaller improvements when using auto completion, calltips etc. from the python package jedi. Adaptions to support jedi 0.15, 0.16 and 0.17.
 * templates for plugins adapted to the current state of the art
-* replace unknown NULL macro by nullptr if the compiler is configured to C++11 e.g. via CMake: set(CMAKE_CXX_STANDARD 11) set(CMAKE_CXX_STANDARD_REQUIRED ON)
+* replace unknown NULL macro by nullptr if the compiler is configured to C++11 e.g. via CMake: set(CMAKE_CXX_STANDARD 17) set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 **Internal changes and improvements:**
 

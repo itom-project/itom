@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2023, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
@@ -104,6 +104,10 @@ void WidgetPropPythonGeneral::readSettings()
             on_cbbPyUse3rdPartyPresets_currentTextChanged(it.key());
         }
     }
+
+    bool closeItomWithPySysExit = settings.value("closeItomWithPySysExit", false).toBool();
+    ui.checkCloseItomByPySysExit->setChecked(closeItomWithPySysExit);
+
     settings.endGroup();
 }
 
@@ -135,6 +139,10 @@ void WidgetPropPythonGeneral::writeSettings()
 
     settings.setValue("python3rdPartyHelperUse",ui.cbPyUse3rdPartyHelp->isChecked());
     settings.setValue("python3rdPartyHelperCommand", ui.lePyUse3rdPartyCommand->text());
+
+    bool closeItomWithPySysExit = ui.checkCloseItomByPySysExit->isChecked();
+    settings.setValue("closeItomWithPySysExit", closeItomWithPySysExit);
+
     settings.endGroup();
 
 }

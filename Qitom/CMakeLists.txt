@@ -18,7 +18,7 @@
 # You should have received a copy of the GNU Library General Public License
 # along with itom. If not, see <http://www.gnu.org/licenses/>.
 
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.12...3.24)
 
 set(target_name qitom)
 project(${target_name})
@@ -29,11 +29,12 @@ message(STATUS "--------------- EXECUTABLE ${target_name} -----------------")
 include("../cmake/ItomBuildMacros.cmake")
 include("../cmake/ItomBuildMacrosInternal.cmake")
 
-if(${BUILD_QTVERSION} STREQUAL "Qt6")
+if(BUILD_QTVERSION STREQUAL "Qt6")
     set(CMAKE_CXX_STANDARD 17)
-else()
+elseif(BUILD_QTVERSION STREQUAL "Qt5")
     set(CMAKE_CXX_STANDARD 11)
-endif()
+endif(BUILD_QTVERSION STREQUAL "Qt6")
+
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 itom_init_cmake_policy(3.12)
@@ -303,6 +304,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonItomMetaObject.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonJedi.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonJediRunner.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonLogger.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonMatlab.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonNone.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonPCL.h
@@ -560,6 +562,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonFont.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonItom.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonJediRunner.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonLogger.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonMatlab.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonPCL.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonPlotItem.cpp
@@ -742,11 +745,11 @@ if(APPLE)
     set(MACOSX_BUNDLE TRUE)
     set(MACOSX_BUNDLE_BUNDLE_NAME "itom")
     set(MACOSX_BUNDLE_GUI_IDENTIFIER "ITO.itom")
-    set(MACOSX_BUNDLE_INFO_STRING "itom - an Open Source Measurement, Automation and Evaluation Software\nhttp://itom.bitbucket.org")
+    set(MACOSX_BUNDLE_INFO_STRING "itom - an Open Source Measurement, Automation and Evaluation Software\nhttps://github.com/itom-project")
     set(MACOSX_BUNDLE_LONG_VERSION_STRING "${ITOM_VERSION_STRING}")
     set(MACOSX_BUNDLE_SHORT_VERSION_STRING "${ITOM_VERSION_STRING}")
     set(MACOSX_BUNDLE_BUNDLE_VERSION ${ITOM_VERSION_STRING})
-    set(MACOSX_BUNDLE_COPYRIGHT "GNU LGPL with itom exception. Used plugins and libraries might differ. http://itom.bitbucket.org/latest/docs/01_introduction/introduction.html#licensing.")
+    set(MACOSX_BUNDLE_COPYRIGHT "GNU LGPL with itom exception. Used plugins and libraries might differ. https://itom-project.github.io/latest/docs/01_introduction/introduction.html#licensing.")
 
     # Setting icon for OS X
     set(target_icon itomicon.icns)
@@ -817,7 +820,7 @@ else()
 endif()
 # END HANDLE VERSION
 
-add_dependencies(${target_name} itomWidgets)
+add_dependencies(${target_name} itomWidgets iconThemeBright iconThemeDark)
 
 set( WINICONRES "" )
 
@@ -847,6 +850,7 @@ endif()
 
 if(BUILD_WITH_PCL)
     set(POINTCLOUD_LIBRARIES pointcloud)
+    target_link_libraries(pointcloud)
 else()
     set(POINTCLOUD_LIBRARIES "")
 endif()
@@ -859,13 +863,14 @@ if(WIN32)
         ${POINTCLOUD_LIBRARIES}
         ${VISUALLEAKDETECTOR_LIBRARIES}
         ${QT5_LIBRARIES}
-        dataobject
         addinmanager
-        qpropertyeditor
         itomCommonLib
         itomCommonQtLib
+        dataobject
         itomWidgets
         itomCommonPlotLib
+        qpropertyeditor
+        itomShapeLib
         ${PYMATLAB_LIBRARIES}
         shell32)
 else()
@@ -876,13 +881,14 @@ else()
         ${POINTCLOUD_LIBRARIES}
         ${VISUALLEAKDETECTOR_LIBRARIES}
         ${QT5_LIBRARIES}
-        dataobject
         addinmanager
-        qpropertyeditor
         itomCommonLib
         itomCommonQtLib
+        dataobject
         itomWidgets
         itomCommonPlotLib
+        qpropertyeditor
+        itomShapeLib
         ${PYMATLAB_LIBRARIES})
 endif()
 
