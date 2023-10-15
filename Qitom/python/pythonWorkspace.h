@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2023, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
@@ -20,8 +20,7 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef PYTHONWORKSPACE_H
-#define PYTHONWORKSPACE_H
+#pragma once
 
 #ifndef Q_MOC_RUN
     #define PY_ARRAY_UNIQUE_SYMBOL itom_ARRAY_API //see numpy help ::array api :: Miscellaneous :: Importing the api (this line must before include global.h)
@@ -121,6 +120,9 @@ private:
     //!< appends a possible names in __slots__ attribute of objOrType (object or type object) to pre-defined list slotNamesList.
     void appendSlotNamesToList(PyObject *objOrType, PyObject *slotNamesList);
 
+    //!< initializes some Python unicode constant strings. Requires the GIL to do this.
+    void initUnicodeConstants();
+
     bool m_globalNotLocal;
     PyObject *m_dictUnicode;
     PyObject *m_slotsUnicode;
@@ -132,6 +134,3 @@ signals:
 };
 
 } //end namespace ito
-
-
-#endif
