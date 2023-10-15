@@ -549,7 +549,7 @@ void PyDocstringGeneratorMode::parseArgList(
     foreach(const QString &arg, args)
     {
         idx1 = arg.indexOf(":");
-        if (idx1 == -1 and arg.indexOf("=") >= 0)
+        if (idx1 == -1 && arg.indexOf("=") >= 0)
         {
             idx2 = arg.indexOf("=");
         }
@@ -564,8 +564,8 @@ void PyDocstringGeneratorMode::parseArgList(
         if (idx1 >= 0)
         {
             a.m_name = arg.left(idx1).trimmed();
-            a.m_type = idx2 >= 0 ? arg.sliced(idx1 + 1, idx2 - idx1 - 1).trimmed()
-                                 : arg.sliced(idx1 + 1).trimmed();
+            a.m_type = idx2 >= 0 ? arg.mid(idx1 + 1, idx2 - idx1 - 1).trimmed()
+                                 : arg.mid(idx1 + 1).trimmed();
         }
         else if (idx2 >= 0)
         {
@@ -578,7 +578,7 @@ void PyDocstringGeneratorMode::parseArgList(
 
         if (a.m_isOptional)
         {
-            a.m_defaultValue = arg.sliced(idx2 + 1).trimmed();
+            a.m_defaultValue = arg.mid(idx2 + 1).trimmed();
         }
 
         if (count == 0 && expectSelfOrCls && (a.m_name == "self" || a.m_name == "cls"))
