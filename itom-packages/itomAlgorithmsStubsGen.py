@@ -110,7 +110,7 @@ from itom import dataObject, dataIO, actuator"""
     )
 
     pclVersion = itom.version(dictionary=True)["itom"]["PCL_Version"]
-    if re.match("^\d+\.\d+(.\d+)?$", pclVersion):
+    if re.match(r"^\d+\.\d+(.\d+)?$", pclVersion):
         header += "\nfrom itom import point, pointCloud, polygonMesh"
 
     header += "\n\n"

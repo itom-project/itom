@@ -61,11 +61,13 @@ of the full path to a python variable. */
 QChar PyWorkspaceContainer::delimiter = QChar(0x1C, 0x00); // '/';
 
 //-----------------------------------------------------------------------------------------------------------
-PyWorkspaceContainer::PyWorkspaceContainer(bool globalNotLocal) : m_globalNotLocal(globalNotLocal)
+PyWorkspaceContainer::PyWorkspaceContainer(bool globalNotLocal) :
+    m_globalNotLocal(globalNotLocal),
+    m_dictUnicode(nullptr),
+    m_slotsUnicode(nullptr),
+    m_mroUnicode(nullptr)
 {
-    m_dictUnicode = PyUnicode_FromString("__dict__");
-    m_slotsUnicode = PyUnicode_FromString("__slots__");
-    m_mroUnicode = PyUnicode_FromString("__mro__");
+    int i = 0;
 }
 
 //-----------------------------------------------------------------------------------------------------------
@@ -74,6 +76,17 @@ PyWorkspaceContainer::~PyWorkspaceContainer()
     Py_XDECREF(m_dictUnicode);
     Py_XDECREF(m_slotsUnicode);
     Py_XDECREF(m_mroUnicode);
+}
+
+//-----------------------------------------------------------------------------------------------------------
+void PyWorkspaceContainer::initUnicodeConstants()
+{
+    if (!m_dictUnicode)
+    {
+        m_dictUnicode = PyUnicode_FromString("__dict__");
+        m_slotsUnicode = PyUnicode_FromString("__slots__");
+        m_mroUnicode = PyUnicode_FromString("__mro__");
+    }
 }
 
 //-----------------------------------------------------------------------------------------------------------
@@ -191,6 +204,11 @@ void PyWorkspaceContainer::loadDictionaryRec(
         return;
     }
 #endif
+
+    if (!m_dictUnicode)
+    {
+        initUnicodeConstants();
+    }
 
     // To call this method, the Python GIL must already be locked!
     PyObject* keys = nullptr;
@@ -517,6 +535,11 @@ void PyWorkspaceContainer::parseSinglePyObject(
     // To call this method, the Python GIL must already be locked!
     Py_ssize_t size;
     bool expandableType = false;
+
+    if (!m_dictUnicode)
+    {
+        initUnicodeConstants();
+    }
 
     // check new value
     item->m_exist = true;

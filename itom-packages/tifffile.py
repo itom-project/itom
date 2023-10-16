@@ -2487,7 +2487,7 @@ def natural_sorted(iterable):
     ['f1', 'f2', 'f10']
 
     """
-    numbers = re.compile("(\d+)")
+    numbers = re.compile(r"(\d+)")
     sortkey = lambda x: [
         (int(c) if c.isdigit() else c) for c in re.split(numbers, x)
     ]
