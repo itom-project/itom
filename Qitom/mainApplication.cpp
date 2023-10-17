@@ -825,16 +825,16 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
     m_pSplashScreen->showMessage(tr("load script editor organizer..."), Qt::AlignRight | Qt::AlignBottom, m_splashScreenTextColor);
     QCoreApplication::processEvents();
 
-    m_scriptEditorOrganizer = new ScriptEditorOrganizer(m_mainWin != NULL);
+    m_scriptEditorOrganizer = new ScriptEditorOrganizer(m_mainWin != nullptr);
     AppManagement::setScriptEditorOrganizer(m_scriptEditorOrganizer); //qobject_cast<QObject*>(scriptEditorOrganizer);
 
     qDebug("..script editor started");
 
-    if (m_mainWin != NULL)
+    if (m_mainWin != nullptr)
     {
         connect(m_scriptEditorOrganizer, SIGNAL(addScriptDockWidgetToMainWindow(AbstractDockWidget*,Qt::DockWidgetArea)), m_mainWin, SLOT(addAbstractDock(AbstractDockWidget*, Qt::DockWidgetArea)));
         connect(m_scriptEditorOrganizer, SIGNAL(removeScriptDockWidgetFromMainWindow(AbstractDockWidget*)), m_mainWin, SLOT(removeAbstractDock(AbstractDockWidget*)));
-        connect(m_mainWin, SIGNAL(mainWindowCloseRequest()), this, SLOT(mainWindowCloseRequest()));
+        connect(m_mainWin, &MainWindow::mainWindowCloseRequest, this, &MainApplication::mainWindowCloseRequest);
 
         if (m_scriptEditorOrganizer)
         {
@@ -1092,7 +1092,7 @@ void MainApplication::finalizeApplication()
 /*!
     \sa MainWindow
 */
-void MainApplication::mainWindowCloseRequest()
+void MainApplication::mainWindowCloseRequest(bool considerPythonBusy)
 {
     RetVal retValue(retOk);
 
@@ -1100,12 +1100,12 @@ void MainApplication::mainWindowCloseRequest()
     settings->beginGroup("MainWindow");
 
     bool pythonStopped = false;
-    bool closeRequestCanceled = false;
+    bool closeRequestCancelled = false;
     int dialogRequest = -1;
 
-    if (m_pyEngine != NULL && m_pyEngine->isPythonBusy())
+    if (considerPythonBusy && m_pyEngine != nullptr && m_pyEngine->isPythonBusy())
     {
-        DialogCloseItom *dialog = new DialogCloseItom(NULL);
+        DialogCloseItom *dialog = new DialogCloseItom(nullptr);
 
         int dialogRequest = dialog->exec();
 
@@ -1115,7 +1115,7 @@ void MainApplication::mainWindowCloseRequest()
         }
         else if (dialogRequest == QDialog::Rejected)
         {
-            closeRequestCanceled = true;
+            closeRequestCancelled = true;
         }
 
         DELETE_AND_SET_NULL(dialog);
@@ -1158,7 +1158,7 @@ void MainApplication::mainWindowCloseRequest()
         }
     }
 
-    if (!retValue.containsError() && !closeRequestCanceled)
+    if (!retValue.containsError() && !closeRequestCancelled)
     {
         settings->endGroup();
         delete settings;

@@ -99,7 +99,7 @@ import weakref
 import gc
 from importlib import import_module
 from importlib.util import source_from_cache
-from imp import reload
+from importlib import reload
 
 # ------------------------------------------------------------------------------
 # Autoreload functionality

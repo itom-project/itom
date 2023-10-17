@@ -589,7 +589,7 @@ def _parse_signature_from_first_line(obj, first_line: str) -> Signature:
         sig.rettype = comps[1].strip()
 
     if len(comps) >= 1:  # parse args
-        regexp = re.compile("(\w+)\((.*)\)")
+        regexp = re.compile(r"(\w+)\((.*)\)")
         m = regexp.match(comps[0])
 
         if m is None:

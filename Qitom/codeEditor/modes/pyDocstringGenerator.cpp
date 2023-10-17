@@ -549,7 +549,14 @@ void PyDocstringGeneratorMode::parseArgList(
     foreach(const QString &arg, args)
     {
         idx1 = arg.indexOf(":");
-        idx2 = arg.indexOf("=", idx1);
+        if (idx1 == -1 && arg.indexOf("=") >= 0)
+        {
+            idx2 = arg.indexOf("=");
+        }
+        else
+        {
+            idx2 = arg.indexOf("=", idx1);
+        }
 
         ArgInfo a;
         a.m_isOptional = (idx2 >= 0);
@@ -557,9 +564,8 @@ void PyDocstringGeneratorMode::parseArgList(
         if (idx1 >= 0)
         {
             a.m_name = arg.left(idx1).trimmed();
-            a.m_type = idx2 >= 0 ?
-                arg.mid(idx1 + 1, idx2 - idx1 - 1).trimmed() :
-                arg.mid(idx1 + 1).trimmed();
+            a.m_type = idx2 >= 0 ? arg.mid(idx1 + 1, idx2 - idx1 - 1).trimmed()
+                                 : arg.mid(idx1 + 1).trimmed();
         }
         else if (idx2 >= 0)
         {
@@ -570,6 +576,11 @@ void PyDocstringGeneratorMode::parseArgList(
             a.m_name = arg.trimmed();
         }
 
+        if (a.m_isOptional)
+        {
+            a.m_defaultValue = arg.mid(idx2 + 1).trimmed();
+        }
+
         if (count == 0 && expectSelfOrCls && (a.m_name == "self" || a.m_name == "cls"))
         {
             //pass
@@ -578,6 +589,8 @@ void PyDocstringGeneratorMode::parseArgList(
         {
             info.m_args.append(a);
         }
+
+
 
         count++;
     }
@@ -624,8 +637,9 @@ QString PyDocstringGeneratorMode::generateGoogleDoc(
 
                     if (arg.m_isOptional)
                     {
-                        docs += QString("\n    %1 (%2, optional): DESCRIPTION")
-                            .arg(arg.m_name).arg(typ);
+                        // Defaults notation according https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_google.html
+                        docs += QString("\n    %1 (%2, optional): DESCRIPTION. Defaults to %3.")
+                            .arg(arg.m_name).arg(typ).arg(arg.m_defaultValue);
                     }
                     else
                     {
@@ -708,8 +722,8 @@ QString PyDocstringGeneratorMode::generateNumpyDoc(
 
                     if (arg.m_isOptional)
                     {
-                        docs += QString("\n%1 : %2, optional\n    DESCRIPTION")
-                            .arg(arg.m_name).arg(typ);
+                        docs += QString("\n%1 : %2, optional\n    DESCRIPTION, by default %3")
+                            .arg(arg.m_name).arg(typ).arg(arg.m_defaultValue);
                     }
                     else
                     {
