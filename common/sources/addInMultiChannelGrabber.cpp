@@ -401,6 +401,21 @@ ito::RetVal AddInMultiChannelGrabber::checkData(ito::DataObject* externalDataObj
 }
 
 //-------------------------------------------------------------------------------------
+ito::RetVal AddInMultiChannelGrabber::checkDataFromAllChannels()
+{
+    auto it = m_channels.constBegin();
+    ito::RetVal retval;
+
+    while (it != m_channels.constEnd())
+    {
+        retval += checkData(it.key());
+        ++it;
+    }
+
+    return retval;
+}
+
+//-------------------------------------------------------------------------------------
 ito::RetVal AddInMultiChannelGrabber::checkData(const QString& channelName, ito::DataObject* externalDataObject /*= nullptr*/)
 {
     Q_D(AddInMultiChannelGrabber);
@@ -408,12 +423,12 @@ ito::RetVal AddInMultiChannelGrabber::checkData(const QString& channelName, ito:
     assert(d->m_channelParamsProxyInitialized);
     ito::RetVal retVal(ito::retOk);
 
-    if (!m_channels.contains(channelName))
+    auto channel = m_channels.find(channelName);
+
+    if (channel == m_channels.end())
     {
         return ito::RetVal(ito::retError, 0, tr("channel name does not exist").toLatin1().data());
     }
-
-    auto channel = getCurrentDefaultChannel();
 
     const int futureHeight = channel->m_channelParams["sizey"].getVal<int>();
     const int futureWidth = channel->m_channelParams["sizex"].getVal<int>();

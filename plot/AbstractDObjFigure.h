@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2023, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
@@ -25,8 +25,7 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef ABSTRACTDOBJFIGURE_H
-#define ABSTRACTDOBJFIGURE_H
+#pragma once
 
 #include "AbstractFigure.h"
 #include "../DataObject/dataobj.h"
@@ -122,11 +121,9 @@ public slots:
     virtual ito::RetVal setDisplayedCameraChannel(const QString& channel);
 
 signals:
-    void cameraChannelChanged(const QObject* listener, const QString& channel);
+    void cameraChannelChanged(QObject* listener, const QString& channel);
 };
 
 } // namespace ito
 
 #endif //#if !defined(Q_MOC_RUN) || defined(ITOMCOMMONQT_MOC)
-
-#endif //ABSTRACTDOBJFIGURE_H

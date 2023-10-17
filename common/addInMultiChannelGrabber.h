@@ -114,6 +114,9 @@ namespace ito
         virtual ito::RetVal checkData(ito::DataObject* externalDataObject = nullptr);
         virtual ito::RetVal checkData(const QString& channelName, ito::DataObject* externalDataObject = nullptr);
 
+        //!< calls checkData for the internal data caches for all channels
+        virtual ito::RetVal checkDataFromAllChannels();
+
         virtual ito::RetVal sendDataToListeners(int waitMS); /*!< sends m_data to all registered listeners. */
         ito::RetVal adaptDefaultChannelParams(); /*!< adaptes the params after changing the defaultChannel param*/
 
