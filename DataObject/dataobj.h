@@ -1460,7 +1460,7 @@ namespace ito {
          \param sizeY is the height of the array and must fit to the plane height of the data object
          \return RetVal error if sizeX or sizeY does not fit to the size of the data object or if the type of the given array does not fit to the type of the data object
          */
-        template<typename _Tp> RetVal copyFromData2D(const _Tp* src, const int sizeX, const int sizeY) const
+        template<typename _Tp> RetVal copyFromData2D(const _Tp* src, const int sizeX, const int sizeY)
         {
             // copies 2D continuous data into data object, data object must have correct size and type, otherwise an error is returned
             return copyFromData2DInternal((const uchar*)src, sizeof(_Tp), sizeX, sizeY);
@@ -1491,7 +1491,7 @@ namespace ito {
          \param height is the height of the sub-region of the source data that should be copied (must fit to the height of the data object)
          \return RetVal error if sizeX or sizeY does not fit to the size of the data object or if the type of the given array does not fit to the type of the data object
          */
-        template<typename _Tp> RetVal copyFromData2D(const _Tp *src, const int sizeX, const int sizeY, const int x0, const int y0, const int width, const int height) const
+        template<typename _Tp> RetVal copyFromData2D(const _Tp *src, const int sizeX, const int sizeY, const int x0, const int y0, const int width, const int height)
         {
             // copies 2D continuous data into data object, data object must have correct size and type, otherwise an error is returned
             return copyFromData2DInternal((const uchar*)src, sizeof(_Tp), sizeX, x0, y0, width, height);
