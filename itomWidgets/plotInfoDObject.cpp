@@ -37,10 +37,11 @@ PlotInfoDObject::PlotInfoDObject(QWidget* parent /*= NULL*/) : QPlainTextEdit(pa
 //---------------------------------------------------------------------------------------------------------
 void PlotInfoDObject::updateInfoHeader(const QString newString)
 {
-	m_infoHeader = newString;
-	QString baseText = m_infoHeader;
-	baseText.append(m_infoDetail);
-	setPlainText(baseText);
+	if (newString != m_infoHeader)
+	{
+		m_infoHeader = newString;
+		setPlainText(m_infoHeader + m_infoDetail);
+	}
 }
 //---------------------------------------------------------------------------------------------------------
 void PlotInfoDObject::updateInfoHeader(const QString typeString, const int dType, const int dims, const int sizes[])
@@ -107,15 +108,17 @@ void PlotInfoDObject::updateInfoHeader(const QString typeString, const int dType
 //---------------------------------------------------------------------------------------------------------
 void PlotInfoDObject::updateInfoDetail(const QString newString)
 {
-	m_infoDetail = newString;
-	QString baseText = m_infoHeader;
-	baseText.append(m_infoDetail);
-	setPlainText(baseText);
+	if (newString != m_infoDetail)
+	{
+		m_infoDetail = newString;
+		setPlainText(m_infoHeader + m_infoDetail);
+	}
 }
 //---------------------------------------------------------------------------------------------------------
 void PlotInfoDObject::updateInfoDetail(const double minVal, const double maxVal, const double meanVal, const double devVal)
 {
 	QString baseText = "";
+
 	if (m_valid)
 	{
 		baseText.append(QString("Maximum: %1\n").arg(QString::number(maxVal)));
@@ -123,6 +126,7 @@ void PlotInfoDObject::updateInfoDetail(const double minVal, const double maxVal,
 		baseText.append(QString("Mean Value: %1\n").arg(QString::number(meanVal)));
 		baseText.append(QString("Dev Value: %1\n").arg(QString::number(devVal)));
 	}
+
 	updateInfoDetail(baseText);
 }
 //---------------------------------------------------------------------------------------------------------
@@ -138,10 +142,12 @@ void PlotInfoDObject::clearObjectInfo()
 void PlotInfoDObject::setUseDetailInfo(const bool state)
 {
 	m_addDetailInfo = state;
+
 	if (!state)
 	{
 		updateInfoDetail("");
 	}
+
 	return;
 }
 //---------------------------------------------------------------------------------------------------------
@@ -153,4 +159,3 @@ QPainterPath PlotInfoDObject::renderToPainterPath(const int xsize, const int ysi
 
 	return destinationPath;
 }
-//---------------------------------------------------------------------------------------------------------

@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2023, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
@@ -108,6 +108,14 @@ QSharedPointer<ito::DataObject> AbstractDObjFigure::getSource(void) const
     }
     return QSharedPointer<ito::DataObject>();
 }
+
+//-------------------------------------------------------------------------------------
+Qt::Axis AbstractDObjFigure::getValueAxis() const
+{
+    // default, only the 1D plot will overwrite this to correct it
+    return Qt::ZAxis;
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal AbstractDObjFigure::setAxisData(QSharedPointer<ito::DataObject> data, Qt::Axis axis)
 {
@@ -321,7 +329,7 @@ void AbstractDObjFigure::setSource(QSharedPointer<ito::DataObject> source, ItomS
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal AbstractDObjFigure::removeLiveSource()
+/*virtual*/ RetVal AbstractDObjFigure::removeLiveSource()
 {
     RetVal retval;
     ito::Param *liveSource = getInputParam("liveSource");

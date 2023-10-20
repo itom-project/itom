@@ -33,6 +33,7 @@
 #include <qmap.h>
 #include <qlist.h>
 #include "common/helperCommon.h"
+#include "common/interval.h"
 
 
 namespace ito
@@ -588,7 +589,47 @@ ito::RetVal AddInMultiChannelGrabber::getParam(QSharedPointer<ito::Param> val, I
     if (!retValue.containsError() && !ok)
     {
         //the parameter was not processed by the plugin, so it is done here
-        *val = it.value();
+
+        // if a suffix is available, check if it is a channel name and if yes,
+        // check if the key is contained in this channel. If this is also true,
+        // return this parameter instead of the global one.
+        if (suffix != "")
+        {
+            auto channel = m_channels.find(suffix);
+
+            if (channel != m_channels.end())
+            {
+                // ok, there is a channel with the suffix name
+                auto channelParam = channel->m_channelParams.find(key);
+
+                // check if this channel also has the desired param, and if yes, return this one.
+                if (channelParam != channel->m_channelParams.end())
+                {
+                    it = channelParam;
+                }
+            }
+            else
+            {
+                retValue += ito::RetVal::format(
+                    ito::retWarning,
+                    0,
+                    "Suffix '%s' is no valid channel and unsupported. It is ignored.",
+                    suffix.toLatin1().data()
+                );
+            }
+        }
+
+        // check if an index is available and if yes, try to return this index.
+        // In this case, the parameter must be an array-type parameter. If this is not
+        // the case an error is returned.
+        if (hasIndex)
+        {
+            retValue += apiGetItemFromParamArray(it.value(), index, *val);
+        }
+        else
+        {
+            *val = it.value();
+        }
     }
 
     if (waitCond)
@@ -621,9 +662,60 @@ ito::RetVal AddInMultiChannelGrabber::changeChannelForListener(QObject* listener
 
                 if (it.key() != newChannel)
                 {
+                    //// temporarily remove the source from the plot
+                    //QMetaObject::invokeMethod(listener, "setSource", Qt::DirectConnection,
+                    //    Q_ARG(QSharedPointer<ito::DataObject>,
+                    //        QSharedPointer<ito::DataObject>(new ito::DataObject())),
+                    //    Q_ARG(ItomSharedSemaphore*, nullptr));
+
                     // the channel has changed
                     m_autoGrabbingListeners.erase(it);
                     m_autoGrabbingListeners.insert(newChannel, listener);
+
+                    // Problem: here, the itomCLommonPlotLib library cannot be used, due to a ring
+                    // include. Therefore, all properties etc. have to be read and written using the
+                    // generic Qt methods of the MOC system.
+                    if (listener->inherits("ito::AbstractDObjFigure"))
+                    {
+                        // here the property must be requested by its name, since the itomPlot library
+                        // cannot be linked here, due to a ring include issue.
+                        Qt::Axis plotValueAxis = listener->property("valueAxis").value<Qt::Axis>();
+
+                        // request the pixel format for the desired channel (independent if this channel is the default channel
+                        // or the selected channel).
+                        ito::ByteArray paramName = ito::ByteArray("pixelFormat:").append(newChannel.toLatin1().data());
+                        QSharedPointer<ito::Param> pixelFormatParam(new ito::Param(paramName, ito::ParamBase::String));
+                        ito::RetVal retval2 = getParam(pixelFormatParam, nullptr);
+
+                        if (retval2 == ito::retOk)
+                        {
+                            ito::AutoInterval bitRange(0.0, 1.0);
+                            const char* pixelFormat = pixelFormatParam->getVal<const char*>();
+                            int min, max = 0;
+                            bool ok = false;
+                            AbstractAddInGrabber::minMaxBoundariesFromIntegerPixelFormat(pixelFormat, min, max, ok);
+
+                            if (ok)
+                            {
+                                bitRange.setMaximum(max);
+                                bitRange.setMinimum(min);
+                            }
+                            else
+                            {
+                                bitRange.setAuto(true);
+                            }
+
+                            switch (plotValueAxis)
+                            {
+                            case Qt::YAxis:
+                                //listener->setProperty("yAxisInterval", QVariant::fromValue<ito::AutoInterval>(bitRange));
+                                break;
+                            default:
+                                //listener->setProperty("zAxisInterval", QVariant::fromValue<ito::AutoInterval>(bitRange));
+                                break;
+                            }
+                        }
+                    }
                 }
 
                 break;
@@ -664,6 +756,7 @@ ito::RetVal AddInMultiChannelGrabber::changeChannelForListener(QObject* listener
 */
 ito::RetVal AddInMultiChannelGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore* waitCond/* = nullptr*/)
 {
+    // todo: consider the cases if suffixes or index is given
     Q_D(AddInMultiChannelGrabber);
     assert(d->m_channelParamsProxyInitialized);
 
@@ -715,9 +808,9 @@ ito::RetVal AddInMultiChannelGrabber::setParam(QSharedPointer<ito::ParamBase> va
                         retValue += ito::RetVal(
                             ito::retError,
                             0,
-                            tr("Cannot switch to channel \"%1\" since it does not exist. Available channels are %2.")
+                            tr("Cannot switch to channel \"%1\" since it does not exist. Available channels are \"%2\".")
                             .arg(val->getVal<const char*>())
-                            .arg(availableChannels.join(", ")).toLatin1().data()
+                            .arg(availableChannels.join("\", \"")).toLatin1().data()
                         );
                     }
                 }

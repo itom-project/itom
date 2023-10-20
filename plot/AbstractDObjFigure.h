@@ -55,6 +55,9 @@ class ITOMCOMMONPLOT_EXPORT AbstractDObjFigure : public AbstractFigure
     Q_PROPERTY(QString colorMap READ getColorMap WRITE setColorMap DESIGNABLE true USER true)
     Q_PROPERTY(QString cameraChannel READ getDisplayedCameraChannel WRITE setDisplayedCameraChannel DESIGNABLE false USER true);
 
+    // the property valueAxis is requested as dynamic property by AddInMultiChannelGrabber::changeChannelForListener. Do not change the name!
+    Q_PROPERTY(Qt::Axis valueAxis READ getValueAxis DESIGNABLE false USER false);
+
     Q_CLASSINFO("prop://source", "Sets the input data object for this plot.")
     Q_CLASSINFO("prop://displayed", "This returns the currently displayed data object [read only].")
     Q_CLASSINFO("prop://camera", "Use this property to set a camera/grabber to this plot (live image).")
@@ -63,6 +66,7 @@ class ITOMCOMMONPLOT_EXPORT AbstractDObjFigure : public AbstractFigure
     Q_CLASSINFO("prop://zAxisInterval", "Sets the visible range of the displayed z-axis (in coordinates of the data object). Set it to 'auto' if range should be automatically set [default].")
     Q_CLASSINFO("prop://colorMap", "Color map (string) that should be used to colorize a non-color data object.")
     Q_CLASSINFO("prop://cameraChannel", "If a multi channel device (MultiChannelGrabber) is connected to this plot, the currently displayed channel of the device can be set. To obtain a list of the available channels see the parameter channelList of the device")
+    Q_CLASSINFO("prop://valueaxis", "Returns the axis that is used in this plot for displaying the values. Usually this is the z-axis for a 2D plot and the y-axis for a 1D plot.")
 
     Q_CLASSINFO("slot://setSource", "This slot can be implemented by any plot plugin to send a dataObject to the plot. Here it is not required and therefore not implemented.")
     Q_CLASSINFO("slot://setLinePlot", "This slot can be implemented by any plot plugin to force the plot to open a line plot. Here it is not required and therefore not implemented.")
@@ -99,6 +103,8 @@ public:
     virtual QString getColorMap(void) const;
     virtual void setColorMap(QString);
 
+    virtual Qt::Axis getValueAxis() const;
+
     //! plot-specific render function to enable more complex printing in subfigures ...
     virtual QPixmap renderToPixMap(const int xsize, const int ysize, const int resolution);
 
@@ -109,7 +115,7 @@ protected:
     QHash<QString, QSharedPointer<ito::DataObject> > m_dataPointer;
     bool m_cameraConnected;
 
-    RetVal removeLiveSource();
+    virtual RetVal removeLiveSource();
 
 public slots:
     //this source is invoked by any connected camera

@@ -473,10 +473,9 @@ RetVal FigureWidget::liveImage(
     DesignerWidgetOrganizer *dwo = qobject_cast<DesignerWidgetOrganizer*>(AppManagement::getDesignerWidgetOrganizer());
     RetVal retval;
     QString plotClassName;
-//    bool exists = false;
     int idx = areaCol + areaRow * m_cols;
 
-    *canvasWidget = NULL;
+    *canvasWidget = nullptr;
 
     if (!dwo)
     {
@@ -489,47 +488,62 @@ RetVal FigureWidget::liveImage(
     else
     {
         //get grabDepth
-        bool setDepth = false;
         bool isLine = false;
-        ito::AutoInterval bitRange (0.0, 1.0);
+        ito::AutoInterval bitRange(0.0, 1.0);
 
 		if (qobject_cast<AddInMultiChannelGrabber*>(cam))
 		{
-			QSharedPointer<ito::Param> paramFormat = getParamByInvoke(cam.data(), "pixelFormat", retval);
-			const char * pixelFormat = paramFormat->getVal<const char*>();
-            int min, max = 0;
-            bool ok = false;
-            AbstractAddInGrabber::minMaxBoundariesFromIntegerPixelFormat(pixelFormat, min, max, ok);
-            if (ok)
+            auto paramDefaultChannel = getParamByInvoke(cam.data(), "defaultChannel", retval);
+            QString channel = "";
+
+            if (!retval.containsError())
             {
-                bitRange.setMaximum(max);
-                bitRange.setMinimum(min);
-                setDepth = true;
+                channel = QString(":") + paramDefaultChannel->getVal<const char*>();
             }
 
+			auto paramFormat = getParamByInvoke(cam.data(), QString("pixelFormat%1").arg(channel), retval);
+
+            if (!retval.containsError() && !paramFormat.isNull())
+            {
+                const char* pixelFormat = paramFormat->getVal<const char*>();
+                int min, max = 0;
+                bool ok = false;
+                AbstractAddInGrabber::minMaxBoundariesFromIntegerPixelFormat(pixelFormat, min, max, ok);
+
+                if (ok)
+                {
+                    bitRange.setMaximum(max);
+                    bitRange.setMinimum(min);
+                }
+                else
+                {
+                    bitRange.setAuto(true);
+                }
+            }
 		}
 		else // fall back for AddInGrabber
 		{
-			int bpp = getParamByInvoke(cam.data(), "bpp", retval)->getVal<int>();
-            if (!retval.containsError())
+            auto paramBpp = getParamByInvoke(cam.data(), "bpp", retval);
+
+            if (!retval.containsError() && !paramBpp.isNull())
             {
+			    int bpp = paramBpp->getVal<int>();
+
                 if (bpp == 8)
                 {
-                    setDepth = true;
                     bitRange.setMaximum(255.0);
                 }
                 else if (bpp < 17)
                 {
-                    setDepth = true;
                     bitRange.setMaximum((float)((1 << bpp) - 1));
                 }
                 else if (bpp == 32)
                 {
-                    // ToDo define float32 and int32 behavior!
+                    bitRange.setAuto(true);
                 }
                 else if (bpp == 64)
                 {
-                    // ToDo define float64 behavior!
+                    bitRange.setAuto(true);
                 }
             }
 
@@ -609,10 +623,13 @@ RetVal FigureWidget::liveImage(
                     dObjFigure->setProperty("yAxisFlipped", true);
                 }
 
-                if (setDepth)
+                if (isLine)
                 {
-                    if (isLine) dObjFigure->setYAxisInterval(bitRange);
-                    else dObjFigure->setZAxisInterval(bitRange);
+                    dObjFigure->setYAxisInterval(bitRange);
+                }
+                else
+                {
+                    dObjFigure->setZAxisInterval(bitRange);
                 }
 
                 dObjFigure->setCamera(cam);
@@ -624,18 +641,21 @@ RetVal FigureWidget::liveImage(
 
                 //check if dObjFigure has property "yAxisFlipped" and flip it, if so.
                 QVariant yAxisFlipped = dObjPclFigure->property("yAxisFlipped");
+
                 if (yAxisFlipped.isValid())
                 {
                     dObjPclFigure->setProperty("yAxisFlipped", true);
                 }
 
-                if (setDepth)
+                if (isLine)
                 {
-                    if (isLine) dObjPclFigure->setYAxisInterval(bitRange);
-                    else dObjPclFigure->setZAxisInterval(bitRange);
+                    dObjPclFigure->setYAxisInterval(bitRange);
+                }
+                else
+                {
+                    dObjPclFigure->setZAxisInterval(bitRange);
                 }
 
-//                dObjPclFigure->setCamera(cam);
                 *canvasWidget = destWidget;
             }
             else
@@ -834,30 +854,23 @@ QSharedPointer<ito::Param> FigureWidget::getParamByInvoke(ito::AddInBase* addIn,
 {
     QSharedPointer<ito::Param> result;
 
-    if (addIn == NULL)
+    if (addIn == nullptr)
     {
         retval += RetVal(retError, 0, tr("addInBase pointer is NULL").toLatin1().data());
     }
     else
     {
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-        ito::Param param = addIn->getParamRec(paramName);
-        if (param.getName() != NULL)   // Parameter is defined
+        result = QSharedPointer<ito::Param>(new ito::Param(ito::ByteArray(paramName.toLatin1().data())));
+        QMetaObject::invokeMethod(addIn, "getParam", Q_ARG(QSharedPointer<ito::Param>, result), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+
+        if (!locker.getSemaphore()->wait(PLUGINWAIT))
         {
-            result = QSharedPointer<ito::Param>(new ito::Param(param));
-            QMetaObject::invokeMethod(addIn, "getParam", Q_ARG(QSharedPointer<ito::Param>, result), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
-            if (!locker.getSemaphore()->wait(PLUGINWAIT))
-            {
-                retval += RetVal::format(retError, 0, tr("timeout while getting parameter '%s' from plugin").toLatin1().data(), paramName.toLatin1().data());
-            }
-            else
-            {
-                retval += locker.getSemaphore()->returnValue;
-            }
+            retval += RetVal::format(retError, 0, tr("timeout while getting parameter '%s' from plugin").toLatin1().data(), paramName.toLatin1().data());
         }
         else
         {
-            retval += RetVal::format(retError, 0, tr("parameter '%s' is not defined in plugin").toLatin1().data(), paramName.toLatin1().data());
+            retval += locker.getSemaphore()->returnValue;
         }
     }
 
