@@ -36,6 +36,7 @@ namespace ito
         ~PyCodeVariableRenamer();
 
     private:
+        QObject* m_pPythonEngine;
 
     private slots:
 

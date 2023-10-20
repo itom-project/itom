@@ -28,6 +28,7 @@
 #include "pyCodeVariableRenamer.h"
 #include "../python/pythonEngine.h"
 #include "../AppManagement.h"
+#include "../python/pythonJedi.h"
 
 namespace ito {
 
@@ -35,7 +36,8 @@ namespace ito {
 PyCodeVariableRenamer::PyCodeVariableRenamer(QObject* parent /*= nullptr*/) :
     QObject(parent)
 {
-    const PythonEngine* pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
+    m_pPythonEngine = AppManagement::getPythonEngine();
+
 }
 
 //-------------------------------------------------------------------------------------

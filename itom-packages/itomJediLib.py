@@ -178,9 +178,7 @@ def calltipModuleItomModification(sig, params):
 
     if len(parts) == len(params):
         return parts
-    elif (
-        len(params) >= 1 and params[0].name == "self" and len(parts) == len(params) - 1
-    ):
+    elif len(params) >= 1 and params[0].name == "self" and len(parts) == len(params) - 1:
         return [
             "self",
         ] + parts
@@ -204,9 +202,7 @@ def calltips(code, line, column, path=None):
                 script = jedi.Script(code=code, path=path, environment=jedienv)
                 signatures = script.get_signatures(line=line + 1, column=column)
             elif jedi.__version__ >= "0.16.0":
-                script = jedi.Script(
-                    source=code, path=path, encoding="utf-8", environment=jedienv
-                )
+                script = jedi.Script(source=code, path=path, encoding="utf-8", environment=jedienv)
                 signatures = script.get_signatures(line=line + 1, column=column)
             else:
                 if jedi.__version__ >= "0.12.0":
@@ -280,9 +276,7 @@ def completions(code, line, column, path, prefix):
                 script = jedi.Script(code=code, path=path, environment=jedienv)
                 completions = script.complete(line=line + 1, column=column)
             elif jedi.__version__ >= "0.16.0":
-                script = jedi.Script(
-                    source=code, path=path, encoding="utf-8", environment=jedienv
-                )
+                script = jedi.Script(source=code, path=path, encoding="utf-8", environment=jedienv)
                 completions = script.complete(line=line + 1, column=column)
             else:
                 if jedi.__version__ >= "0.12.0":
@@ -352,11 +346,7 @@ def completions(code, line, column, path, prefix):
                                     if jedi.__version__ >= "0.17.0":
                                         rettype = completion.get_type_hint()
                                         if rettype != "":
-                                            tooltip = (
-                                                rettype
-                                                + ": "
-                                                + tooltip[len(pattern) :].lstrip()
-                                            )
+                                            tooltip = rettype + ": " + tooltip[len(pattern) :].lstrip()
                                     else:
                                         # jedi < 0.17.0 does not have the get_type_hint() method
                                         tooltip = tooltip[len(pattern) :].lstrip()
@@ -379,9 +369,7 @@ def completions(code, line, column, path, prefix):
                                     # if tooltip is empty, use desc as tooltip (done in C++)
                                     if jedi.__version__ >= "0.17.0":
                                         type_hint = completion.get_type_hint()
-                                        if type_hint != "" and not tooltip.startswith(
-                                            type_hint
-                                        ):
+                                        if type_hint != "" and not tooltip.startswith(type_hint):
                                             tooltip = type_hint + " : " + tooltip
                                     tooltipList = [
                                         tooltip,
@@ -435,15 +423,11 @@ def goto_assignments(code, line, column, path, mode=0, encoding="utf-8"):
                 if jedi.__version__ >= "0.17.0":
                     script = jedi.Script(code=code, path=path, environment=jedienv)
                 else:
-                    script = jedi.Script(
-                        source=code, path=path, encoding="utf-8", environment=jedienv
-                    )
+                    script = jedi.Script(source=code, path=path, encoding="utf-8", environment=jedienv)
 
                 try:
                     if mode == 0:
-                        assignments = script.infer(
-                            line=line + 1, column=column, prefer_stubs=False
-                        )
+                        assignments = script.infer(line=line + 1, column=column, prefer_stubs=False)
                     elif mode == 1:
                         assignments = script.goto(
                             line=line + 1,
@@ -489,16 +473,11 @@ def goto_assignments(code, line, column, path, mode=0, encoding="utf-8"):
             if (
                 assignment.full_name
                 and assignment.full_name != ""
-                and (
-                    assignment.module_path is None
-                    or not str(assignment.module_path).endswith("pyi")
-                )
+                and (assignment.module_path is None or not str(assignment.module_path).endswith("pyi"))
             ):
                 result.append(
                     (
-                        str(assignment.module_path)
-                        if assignment.module_path is not None
-                        else "",
+                        str(assignment.module_path) if assignment.module_path is not None else "",
                         assignment.line - 1 if assignment.line else -1,
                         assignment.column if assignment.column else -1,
                         assignment.full_name,
@@ -507,9 +486,7 @@ def goto_assignments(code, line, column, path, mode=0, encoding="utf-8"):
 
         if len(result) == 0 and len(assignments) > 0 and mode == 0:
             # instead of 'infer' try 'goto' instead
-            result = goto_assignments(
-                code, line, column, path, mode=1, encoding=encoding
-            )
+            result = goto_assignments(code, line, column, path, mode=1, encoding=encoding)
 
         return result
 
@@ -763,9 +740,7 @@ def get_help(code, line, column, path):
                 script = jedi.Script(code=code, path=path, environment=jedienv)
                 helps = script.help(line=line + 1, column=column)
             elif jedi.__version__ >= "0.16.0":
-                script = jedi.Script(
-                    source=code, path=path, encoding="utf-8", environment=jedienv
-                )
+                script = jedi.Script(source=code, path=path, encoding="utf-8", environment=jedienv)
                 helps = script.help(line=line + 1, column=column)
             else:
                 if jedi.__version__ >= "0.12.0":
@@ -816,8 +791,36 @@ def get_help(code, line, column, path):
         return results
 
 
-if __name__ == "__main__":
+def rename_variable(code, line, column, path, new_name):
+    with reduceRecursionLimit():
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
 
+            if jedi.__version__ >= "0.16.0":
+                if jedi.__version__ >= "0.17.0":
+                    script = jedi.Script(code=code, path=path, environment=jedienv)
+                else:
+                    script = jedi.Script(source=code, path=path, encoding="utf-8", environment=jedienv)
+
+            else:
+                if jedi.__version__ >= "0.12.0":
+                    script = jedi.Script(
+                        code,
+                        line + 1,
+                        column,
+                        path,
+                        encoding="utf-8",
+                        environment=jedienv,
+                    )
+                else:
+                    script = jedi.Script(code, line + 1, column, path, encoding="utf-8")
+
+            refactoring = script.rename(line=line, column=column, new_name=new_name)
+            refactoring.apply()
+    return
+
+
+if __name__ == "__main__":
     text = "bla = 4\ndata = 2\ndata = data + 3\nprint(data)"
     print(goto_assignments(text, 3, 8, "", 0))
     print(goto_assignments(text, 3, 8, "", 1))
@@ -868,3 +871,6 @@ inception()"""
 
     text = "import itom\nitom."
     completions(text, 1, 5, "", "")
+
+    path = r"C:\itom\build\itom\demo\python_packages\matplotlib\demo_scatter3d.py"
+    rename_variable(None, 7, 25, path, "plt_renamed")

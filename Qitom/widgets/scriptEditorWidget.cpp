@@ -324,6 +324,8 @@ RetVal ScriptEditorWidget::initEditor()
     m_wordHoverTooltipMode = QSharedPointer<WordHoverTooltipMode>(new WordHoverTooltipMode("WordHoverTooltipMode"));
     modes()->append(m_wordHoverTooltipMode.dynamicCast<ito::Mode>());
 
+    m_pyCodeVariableRenamer = QSharedPointer<PyCodeVariableRenamer>(new PyCodeVariableRenamer(this));
+
     if (m_symbolMatcher)
     {
         m_symbolMatcher->setMatchBackground(QColor("lightGray"));
@@ -331,7 +333,6 @@ RetVal ScriptEditorWidget::initEditor()
     }
 
     connect(m_checkerBookmarkPanel.data(), SIGNAL(toggleBookmarkRequested(int)), this, SLOT(toggleBookmarkRequested(int)));
-
     connect(m_breakpointPanel.data(), SIGNAL(toggleBreakpointRequested(int)), this, SLOT(toggleBreakpoint(int)));
     connect(m_breakpointPanel.data(), SIGNAL(toggleEnableBreakpointRequested(int)), this, SLOT(toggleEnableBreakpoint(int)));
     connect(m_breakpointPanel.data(), SIGNAL(editBreakpointRequested(int)), this, SLOT(editBreakpoint(int)));

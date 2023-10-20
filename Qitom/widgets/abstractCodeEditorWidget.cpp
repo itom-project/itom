@@ -30,7 +30,6 @@
 #include "../codeEditor/managers/modesManager.h"
 #include "../codeEditor/modes/pyAutoIndent.h"
 #include "../codeEditor/modes/indenter.h"
-#include "../codeEditor/syntaxHighlighter/codeEditorStyle.h"
 
 #include <qstring.h>
 #include <qsettings.h>
@@ -95,6 +94,9 @@ void AbstractCodeEditorWidget::init()
 
     m_caretLineHighlighter = QSharedPointer<CaretLineHighlighterMode>(new CaretLineHighlighterMode("CaretLineHighlighterMode"));
     modes()->append(m_caretLineHighlighter.dynamicCast<Mode>());
+
+    m_pyCodeVariableRenamer =
+        QSharedPointer<PyCodeVariableRenamer>(new PyCodeVariableRenamer(this));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
