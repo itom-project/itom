@@ -44,4 +44,11 @@ PyCodeVariableRenamer::PyCodeVariableRenamer(QObject* parent /*= nullptr*/) :
 PyCodeVariableRenamer::~PyCodeVariableRenamer()
 {
 }
+
+//-------------------------------------------------------------------------------------
+void PyCodeVariableRenamer::rename(const int &line, const int &column, const QString &newName)
+{
+
+}
+
 } // namespace ito

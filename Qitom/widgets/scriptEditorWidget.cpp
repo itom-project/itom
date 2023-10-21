@@ -1465,7 +1465,20 @@ void ScriptEditorWidget::menuPyCodeVariableRenaming()
     // of the cancel button has been fully terminated.
     m_pyCodeVariableRenamer =
         QSharedPointer<PyCodeVariableRenamer>(new PyCodeVariableRenamer(this), doDeleteLater);
+    QTextCursor cursor = textCursor();
+    int line = currentLineNumber() + 1;
+    int col = currentColumnNumber() + 1;
 
+    bool ok;
+    QString NewName = QInputDialog::getText(
+        this,
+        tr("Rename variable"),
+        tr("What is the new variable name?"),
+        QLineEdit::Normal,
+        QDir::home().dirName(),
+        &ok);
+    if (ok && !NewName.isEmpty())
+        m_pyCodeVariableRenamer;
     // TODO connect
 }
 
