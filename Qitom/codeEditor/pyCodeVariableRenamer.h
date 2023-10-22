@@ -34,7 +34,8 @@ namespace ito
     public:
         PyCodeVariableRenamer(QObject* parent = nullptr);
         ~PyCodeVariableRenamer();
-        void rename(const int &line, const int &column, const QString &newName);
+        void rename(
+            const int &line, const int &column, const QString &fileName, const QString &newName);
 
     private:
         QObject* m_pPythonEngine;

@@ -325,6 +325,7 @@ RetVal ScriptEditorWidget::initEditor()
     modes()->append(m_wordHoverTooltipMode.dynamicCast<ito::Mode>());
 
     m_pyCodeVariableRenamer = QSharedPointer<PyCodeVariableRenamer>(new PyCodeVariableRenamer(this));
+    //modes()->append(m_pyCodeVariableRenamer.dynamicCast<ito::Mode>());
 
     if (m_symbolMatcher)
     {
@@ -1468,18 +1469,22 @@ void ScriptEditorWidget::menuPyCodeVariableRenaming()
     QTextCursor cursor = textCursor();
     int line = currentLineNumber() + 1;
     int col = currentColumnNumber() + 1;
+    ScriptEditorWidget* sew = qobject_cast<ScriptEditorWidget*>(this);
+    QString fileName = sew->getFilename();
 
+    // get filename from user via dialog
     bool ok;
     QString NewName = QInputDialog::getText(
         this,
         tr("Rename variable"),
         tr("What is the new variable name?"),
         QLineEdit::Normal,
-        QDir::home().dirName(),
+        "",
         &ok);
     if (ok && !NewName.isEmpty())
-        m_pyCodeVariableRenamer;
-    // TODO connect
+    {
+        m_pyCodeVariableRenamer->rename(line, col, fileName, NewName);
+    }
 }
 
 //-------------------------------------------------------------------------------------

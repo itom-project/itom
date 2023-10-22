@@ -42,6 +42,7 @@ namespace ito {
 /*static*/ unsigned char GoToAssignmentRunnable::mostRecentId = 0;
 /*static*/ unsigned char CalltipRunnable::mostRecentId = 0;
 /*static*/ unsigned char GetHelpRunnable::mostRecentId = 0;
+/*static*/ unsigned char RenameRunnable::mostRecentId = 0;
 /*static*/ QMutex JediRunnable::m_mutex;
 
 //-------------------------------------------------------------------------------------
@@ -194,6 +195,23 @@ void PythonJediRunner::addGetHelpRequest(const JediGetHelpRequest& request)
     {
         GetHelpRunnable* runnable =
             new GetHelpRunnable(additionalImportString(), m_pyModJedi, request);
+
+        /*qDebug()
+            << QDateTime::currentDateTime().toString("hh:mm:ss.zzz")
+            << "Calltip request enqueued. ID:"
+            << runnable->getCurrentId();*/
+
+        m_threadPool->start(runnable);
+    }
+}
+
+//-------------------------------------------------------------------------------------
+void PythonJediRunner::addRenameRequest(const JediRenameRequest& request)
+{
+    if (!m_threadPool.isNull())
+    {
+        RenameRunnable* runnable =
+            new RenameRunnable(additionalImportString(), m_pyModJedi, request);
 
         /*qDebug()
             << QDateTime::currentDateTime().toString("hh:mm:ss.zzz")
@@ -674,6 +692,63 @@ void GetHelpRunnable::run()
         QMetaObject::invokeMethod(
             s, m_request.m_callbackFctName.constData(), Q_ARG(QVector<ito::JediGetHelp>, helps));
     }
+
+    endRun();
+};
+
+//-------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
+void RenameRunnable::run()
+{
+    startRun();
+
+    if (isOutdated())
+    {
+        return;
+    }
+
+    QVector<ito::JediRename> rename;
+
+    PyGILState_STATE gstate = PyGILState_Ensure();
+
+    try
+    {
+        PyObject* result = NULL;
+
+        if (m_additionalImportString != "")
+        {
+            // add from itom import * as first line (this is afterwards removed from results)
+            result = PyObject_CallMethod(
+                m_pPyModJedi,
+                "rename_variable",
+                "siiss",
+                (m_additionalImportString + "\n" + m_request.m_code).toUtf8().constData(),
+                m_request.m_line + 1,
+                m_request.m_col,
+                m_request.m_fileName.toUtf8().constData(),
+                m_request.m_newName.toUtf8().constData()); // new ref
+        }
+        else
+        {
+            result = PyObject_CallMethod(
+                m_pPyModJedi,
+                "rename_variable",
+                "siiss",
+                m_request.m_code.toUtf8().constData(),
+                m_request.m_line,
+                m_request.m_col,
+                m_request.m_fileName.toUtf8().constData(),
+                m_request.m_newName.toUtf8().constData()); // new ref
+        }
+    }
+    catch (...)
+    {
+        qDebug() << "jediCompletionRequestEnqueued4: exception";
+        std::cerr << "Unknown exception in jediCompletionRequestEnqueued. Please report this bug.\n"
+                  << std::endl;
+    }
+
+    PyGILState_Release(gstate);
 
     endRun();
 };

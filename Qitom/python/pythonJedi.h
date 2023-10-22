@@ -143,11 +143,37 @@ namespace ito
         QStringList m_tooltips; //!< can be multiple tooltips for overloaded methods
     };
 
+    //--------------------------------------------------------------------------------------
+    struct JediRenameRequest
+    {
+        QString m_code;
+        int m_line;
+        int m_col;
+        QString m_fileName;
+        QString m_newName;
+        QByteArray m_callbackFctName;
+        QPointer<QObject> m_sender;
+    };
+
+    //--------------------------------------------------------------------------------------
+    struct JediRename
+    {
+        JediRename(){};
+        JediRename(const QString& description, const QStringList& tooltips) :
+            m_description(description), m_tooltips(tooltips)
+        {
+        }
+
+        QString m_description;
+        QStringList m_tooltips; //!< can be multiple tooltips for overloaded methods
+    };
+
 } //end namespace ito
 
 Q_DECLARE_METATYPE(ito::JediCalltip)
 Q_DECLARE_METATYPE(ito::JediCompletion)
 Q_DECLARE_METATYPE(ito::JediAssignment)
 Q_DECLARE_METATYPE(ito::JediGetHelp)
+Q_DECLARE_METATYPE(ito::JediRename)
 
 #endif

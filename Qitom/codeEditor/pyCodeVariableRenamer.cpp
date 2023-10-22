@@ -37,7 +37,6 @@ PyCodeVariableRenamer::PyCodeVariableRenamer(QObject* parent /*= nullptr*/) :
     QObject(parent)
 {
     m_pPythonEngine = AppManagement::getPythonEngine();
-
 }
 
 //-------------------------------------------------------------------------------------
@@ -46,9 +45,17 @@ PyCodeVariableRenamer::~PyCodeVariableRenamer()
 }
 
 //-------------------------------------------------------------------------------------
-void PyCodeVariableRenamer::rename(const int &line, const int &column, const QString &newName)
+void PyCodeVariableRenamer::rename(const int &line, const int &column, const QString &fileName, const QString &newName)
 {
-
+    ito::JediRenameRequest request;
+    request.m_code = "";
+    request.m_callbackFctName = "";
+    request.m_col = column;
+    request.m_line = line;
+    request.m_fileName = fileName;
+    request.m_newName = newName;
+    PythonEngine* pyEng = (PythonEngine*)m_pPythonEngine;
+    pyEng->enqueueJediRenameRequest(request);
 }
 
 } // namespace ito

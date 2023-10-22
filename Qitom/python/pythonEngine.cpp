@@ -2523,6 +2523,15 @@ void PythonEngine::enqueueJediCompletionRequest(const ito::JediCompletionRequest
 }
 
 //-------------------------------------------------------------------------------------
+void PythonEngine::enqueueJediRenameRequest(const ito::JediRenameRequest& request)
+{
+    if (!m_jediRunner.isNull())
+    {
+        m_jediRunner->addRenameRequest(request);
+    }
+}
+
+//-------------------------------------------------------------------------------------
 void PythonEngine::enqueueGoToAssignmentRequest(const ito::JediAssignmentRequest &request)
 {
     if (!m_jediRunner.isNull())
@@ -2530,8 +2539,6 @@ void PythonEngine::enqueueGoToAssignmentRequest(const ito::JediAssignmentRequest
         m_jediRunner->addGoToAssignmentRequest(request);
     }
 }
-
-
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! public slot invoked by the scriptEditorWidget
