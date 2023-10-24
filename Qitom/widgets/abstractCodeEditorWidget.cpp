@@ -95,8 +95,8 @@ void AbstractCodeEditorWidget::init()
     m_caretLineHighlighter = QSharedPointer<CaretLineHighlighterMode>(new CaretLineHighlighterMode("CaretLineHighlighterMode"));
     modes()->append(m_caretLineHighlighter.dynamicCast<Mode>());
 
-    m_pyCodeVariableRenamer =
-        QSharedPointer<PyCodeVariableRenamer>(new PyCodeVariableRenamer(this));
+    m_pyCodeReferenceRenamer =
+        QSharedPointer<PyCodeReferenceRenamer>(new PyCodeReferenceRenamer(this));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

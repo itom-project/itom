@@ -28,12 +28,12 @@
 namespace ito
 {
 
-    class PyCodeVariableRenamer : public QObject
+    class PyCodeReferenceRenamer : public QObject
     {
         Q_OBJECT
     public:
-        PyCodeVariableRenamer(QObject* parent = nullptr);
-        ~PyCodeVariableRenamer();
+        PyCodeReferenceRenamer(QObject* parent = nullptr);
+        ~PyCodeReferenceRenamer();
         void rename(
             const int &line, const int &column, const QString &fileName, const QString &newName);
 

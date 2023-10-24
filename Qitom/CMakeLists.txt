@@ -18,6 +18,7 @@
 # You should have received a copy of the GNU Library General Public License
 # along with itom. If not, see <http://www.gnu.org/licenses/>.
 
+
 cmake_minimum_required(VERSION 3.12...3.24)
 
 set(target_name qitom)
@@ -419,7 +420,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/textDecoration.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/codeCheckerItem.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/pyCodeFormatter.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/pyCodeVariableRenamer.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/pyCodeReferenceRenamer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/textBlockUserData.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/toolTip.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/foldDetector/foldDetector.h
@@ -666,7 +667,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/textDecoration.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/codeCheckerItem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/pyCodeFormatter.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/pyCodeVariableRenamer.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/pyCodeReferenceRenamer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/textBlockUserData.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/toolTip.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/foldDetector/foldDetector.cpp

@@ -25,7 +25,7 @@
     https://code.woboq.org/qt5/qtbase/src/widgets/kernel/qtooltip.cpp.html
 *********************************************************************** */
 
-#include "pyCodeVariableRenamer.h"
+#include "pyCodeReferenceRenamer.h"
 #include "../python/pythonEngine.h"
 #include "../AppManagement.h"
 #include "../python/pythonJedi.h"
@@ -33,19 +33,19 @@
 namespace ito {
 
 //-------------------------------------------------------------------------------------
-PyCodeVariableRenamer::PyCodeVariableRenamer(QObject* parent /*= nullptr*/) :
+PyCodeReferenceRenamer::PyCodeReferenceRenamer(QObject* parent /*= nullptr*/) :
     QObject(parent)
 {
     m_pPythonEngine = AppManagement::getPythonEngine();
 }
 
 //-------------------------------------------------------------------------------------
-PyCodeVariableRenamer::~PyCodeVariableRenamer()
+PyCodeReferenceRenamer::~PyCodeReferenceRenamer()
 {
 }
 
 //-------------------------------------------------------------------------------------
-void PyCodeVariableRenamer::rename(const int &line, const int &column, const QString &fileName, const QString &newName)
+void PyCodeReferenceRenamer::rename(const int &line, const int &column, const QString &fileName, const QString &newName)
 {
     ito::JediRenameRequest request;
     request.m_code = "";

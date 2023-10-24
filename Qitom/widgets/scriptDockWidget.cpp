@@ -1715,11 +1715,11 @@ void ScriptDockWidget::createActions()
         this, QKeySequence(tr("Ctrl+Alt+I", "QShortcut")), Qt::WidgetWithChildrenShortcut);
     m_autoCodeFormatAction->connectTrigger(this, SLOT(mnuPyCodeFormatting()));
 
-    m_variableRenameAction = new ShortcutAction(
+    m_referenceRenameAction = new ShortcutAction(
         QIcon(":/editor/icons/rename.png"),
-        tr("Rename Variables"),
+        tr("Rename Reference"),
         this, QKeySequence(tr("F2", "QShortcut")), Qt::WidgetWithChildrenShortcut);
-    m_variableRenameAction->connectTrigger(this, SLOT(mnuPyReferenceRenaming()));
+    m_referenceRenameAction->connectTrigger(this, SLOT(mnuPyReferenceRenaming()));
 
     m_pyDocstringGeneratorAction = new ShortcutAction(QIcon(), tr("Generate Docstring"),
         this, QKeySequence(tr("Ctrl+Alt+D", "QShortcut")), Qt::WidgetWithChildrenShortcut);
@@ -1905,7 +1905,7 @@ void ScriptDockWidget::createMenus()
     m_editMenu->addAction(m_indentAction->action());
     m_editMenu->addAction(m_unindentAction->action());
     m_editMenu->addAction(m_autoCodeFormatAction->action());
-    m_editMenu->addAction(m_variableRenameAction->action());
+    m_editMenu->addAction(m_referenceRenameAction->action());
     m_editMenu->addAction(m_pyDocstringGeneratorAction->action());
     m_editMenu->addSeparator();
     m_editMenu->addAction(m_findTextExprAction->action());
@@ -1988,7 +1988,7 @@ void ScriptDockWidget::createToolBars()
     m_editToolBar->addAction(m_openIconBrowser->action());
     m_editToolBar->addAction(m_findSymbols->action());
     m_editToolBar->addAction(m_autoCodeFormatAction->action());
-    m_editToolBar->addAction(m_variableRenameAction->action());
+    m_editToolBar->addAction(m_referenceRenameAction->action());
     m_editToolBar->setFloatable(false);
 
     m_scriptToolBar = new QToolBar(tr("Script Toolbar"), this);

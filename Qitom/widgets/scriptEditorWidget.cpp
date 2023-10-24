@@ -324,8 +324,8 @@ RetVal ScriptEditorWidget::initEditor()
     m_wordHoverTooltipMode = QSharedPointer<WordHoverTooltipMode>(new WordHoverTooltipMode("WordHoverTooltipMode"));
     modes()->append(m_wordHoverTooltipMode.dynamicCast<ito::Mode>());
 
-    m_pyCodeVariableRenamer = QSharedPointer<PyCodeVariableRenamer>(new PyCodeVariableRenamer(this));
-    //modes()->append(m_pyCodeVariableRenamer.dynamicCast<ito::Mode>());
+    m_pyCodeReferenceRenamer =
+        QSharedPointer<PyCodeReferenceRenamer>(new PyCodeReferenceRenamer(this));
 
     if (m_symbolMatcher)
     {
@@ -1464,8 +1464,8 @@ void ScriptEditorWidget::menuPyCodeVariableRenaming()
     // a clear command of m_pyCodeFormatter (via the method pyCodeFormatterDone).
     // This would then destroy the QProgressDialog before the mouseRelease event
     // of the cancel button has been fully terminated.
-    m_pyCodeVariableRenamer =
-        QSharedPointer<PyCodeVariableRenamer>(new PyCodeVariableRenamer(this), doDeleteLater);
+    m_pyCodeReferenceRenamer =
+        QSharedPointer<PyCodeReferenceRenamer>(new PyCodeReferenceRenamer(this), doDeleteLater);
     QTextCursor cursor = textCursor();
     int line = currentLineNumber() + 1;
     int col = currentColumnNumber() + 1;
@@ -1476,14 +1476,14 @@ void ScriptEditorWidget::menuPyCodeVariableRenaming()
     bool ok;
     QString NewName = QInputDialog::getText(
         this,
-        tr("Rename variable"),
-        tr("What is the new variable name?"),
+        tr("Rename Reference"),
+        tr("What is the new name?"),
         QLineEdit::Normal,
         "",
         &ok);
     if (ok && !NewName.isEmpty())
     {
-        m_pyCodeVariableRenamer->rename(line, col, fileName, NewName);
+        m_pyCodeReferenceRenamer->rename(line, col, fileName, NewName);
     }
 }
 
