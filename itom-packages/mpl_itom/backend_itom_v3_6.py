@@ -722,7 +722,10 @@ class FigureManagerItom(FigureManagerBase):
         if self.canvas._destroying:
             return
         self.canvas._destroying = True
-        self.canvas.close_event()
+        if matplotlib.__version__ >= "3.8.0":
+            self.canvas.flush_events()
+        else:
+            self.canvas.close_event()
         try:
             Gcf.destroy(self.num)
         except AttributeError:

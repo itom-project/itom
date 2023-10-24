@@ -27,7 +27,7 @@ class DesignerPluginDocInclude(Include):
             with open(rstFileName, 'rt') as f:
                 lines = [line for line in f]
 
-            pattern = re.compile("(.*)(\.\. figure:: |\.\. image:: )(.*\.[a-zA-Z0-9]{1,4})(.*)")
+            pattern = re.compile(r"(.*)(\.\. figure:: |\.\. image:: )(.*\.[a-zA-Z0-9]{1,4})(.*)")
 
             for i in range(0, len(lines)):
                 line = lines[i]

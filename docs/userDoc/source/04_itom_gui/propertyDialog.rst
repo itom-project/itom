@@ -150,6 +150,9 @@ General
 * Use the drop-down menu to define if changes in scripts should automatically
   be saved before executing the script.
 
+* You can select if a Python **SystemExit** exception, triggered by **exit()**, **sys.exit()** or **quit()**,
+  will totally close the itom application or if the script execution is only stopped.
+
 * Every version of |itom| is compiled against a certain version of Python.
   At runtime, Python can be loaded from different directories, which
   can be given in the 2nd part of this

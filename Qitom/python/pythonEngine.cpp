@@ -425,9 +425,6 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap
         }
 #endif
 
-        m_dictUnicode = PyUnicode_FromString("__dict__");
-        m_slotsUnicode = PyUnicode_FromString("__slots__");
-
         //!< add all static, known function calls to python-module itom
         PyImport_AppendInittab("itom", &PythonItom::PyInitItom);
 
@@ -556,6 +553,9 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap
         }
 
         qDebug() << "Py_Initialize done.";
+
+        m_dictUnicode = PyUnicode_FromString("__dict__");
+        m_slotsUnicode = PyUnicode_FromString("__slots__");
 
 #if (PY_VERSION_HEX < 0x03070000)
         //!< prepare Python multithreading
@@ -1346,12 +1346,12 @@ ito::RetVal PythonEngine::pythonShutdown(ItomSharedSemaphore *aimWait)
         if (m_autoReload.classAutoReload)
         {
             Py_XDECREF(m_autoReload.classAutoReload);
-            m_autoReload.classAutoReload = NULL;
+            m_autoReload.classAutoReload = nullptr;
         }
         if (m_autoReload.modAutoReload)
         {
             Py_XDECREF(m_autoReload.modAutoReload);
-            m_autoReload.modAutoReload = NULL;
+            m_autoReload.modAutoReload = nullptr;
         }
         m_autoReload.checkFctExec = false;
         m_autoReload.checkFileExec = false;
@@ -1365,21 +1365,25 @@ ito::RetVal PythonEngine::pythonShutdown(ItomSharedSemaphore *aimWait)
         }
 
         Py_XDECREF(m_itomDbgInstance);
-        m_itomDbgInstance = NULL;
+        m_itomDbgInstance = nullptr;
+
         Py_XDECREF(m_itomDbgModule);
-        m_itomDbgModule = NULL;
+        m_itomDbgModule = nullptr;
 
         Py_XDECREF(m_itomModule);
-        m_itomModule = NULL;
+        m_itomModule = nullptr;
 
         Py_XDECREF(m_itomFunctions);
-        m_itomFunctions = NULL;
+        m_itomFunctions = nullptr;
 
         Py_XDECREF(m_pyModCodeChecker);
-        m_pyModCodeChecker = NULL;
+        m_pyModCodeChecker = nullptr;
 
         Py_XDECREF(m_pyModGC);
-        m_pyModGC = NULL;
+        m_pyModGC = nullptr;
+
+        Py_XDECREF(m_dictUnicode);
+        Py_XDECREF(m_slotsUnicode);
 
         if (Py_IsInitialized())
         {
@@ -1387,6 +1391,7 @@ ito::RetVal PythonEngine::pythonShutdown(ItomSharedSemaphore *aimWait)
             {
                 PyErr_PrintEx(0);
             }
+
             PyErr_Clear();
             Py_Finalize();
         }
@@ -1394,9 +1399,6 @@ ito::RetVal PythonEngine::pythonShutdown(ItomSharedSemaphore *aimWait)
         {
             retValue += RetVal(retError, 1, tr("Python not initialized").toLatin1().data());
         }
-
-        Py_XDECREF(m_dictUnicode);
-        Py_XDECREF(m_slotsUnicode);
 
         m_mainModule = nullptr;
         m_pMainDictionary = nullptr;
@@ -1859,8 +1861,7 @@ ito::RetVal PythonEngine::runString(const QString &command)
         {
             if (PyErr_Occurred() && PyErr_ExceptionMatches(PyExc_SystemExit))
             {
-                std::cerr << "wish to exit (not possible yet)\n" << std::endl;
-                retValue += RetVal(retError, 2, tr("exiting desired.").toLatin1().data());
+                retValue += handlePythonSysExit();
             }
             else
             {
@@ -1945,8 +1946,7 @@ ito::RetVal PythonEngine::runPyFile(const QString &pythonFileName)
                 {
                     if (PyErr_Occurred() && PyErr_ExceptionMatches(PyExc_SystemExit))
                     {
-                        std::cerr << "wish to exit (not possible yet)\n" << std::endl;
-                        retValue += RetVal(retError);
+                        retValue += handlePythonSysExit();
                     }
                     else
                     {
@@ -1972,8 +1972,7 @@ ito::RetVal PythonEngine::runPyFile(const QString &pythonFileName)
                     {
                         if (PyErr_Occurred() && PyErr_ExceptionMatches(PyExc_SystemExit))
                         {
-                            std::cerr << "wish to exit (not possible yet)\n" << std::endl;
-                            retValue += RetVal(retError);
+                            retValue += handlePythonSysExit();
                         }
                         else
                         {
@@ -2038,8 +2037,7 @@ ito::RetVal PythonEngine::runPyFile(const QString &pythonFileName)
             {
                 if (PyErr_Occurred() && PyErr_ExceptionMatches(PyExc_SystemExit))
                 {
-                    std::cerr << "wish to exit (not possible yet)\n" << std::endl;
-                    retValue += RetVal(retError);
+                    retValue += handlePythonSysExit();
                 }
                 else
                 {
@@ -2208,8 +2206,7 @@ ito::RetVal PythonEngine::debugFunction(PyObject *callable, PyObject *argTuple, 
         {
             if (PyErr_Occurred() && PyErr_ExceptionMatches(PyExc_SystemExit))
             {
-                std::cerr << "wish to exit (not possible yet)\n" << std::endl;
-                retValue += RetVal(retError);
+                retValue += handlePythonSysExit();
             }
             else
             {
@@ -2323,8 +2320,7 @@ ito::RetVal PythonEngine::debugFile(const QString &pythonFileName)
         {
             if (PyErr_Occurred() && PyErr_ExceptionMatches(PyExc_SystemExit))
             {
-                std::cerr << "wish to exit (not possible yet)\n" << std::endl;
-                retValue += RetVal(retError);
+                retValue += handlePythonSysExit();
             }
             else
             {
@@ -2438,12 +2434,11 @@ ito::RetVal PythonEngine::debugString(const QString &command)
 
         clearDbgCmdLoop();
 
-        if (result == NULL) //!< syntax error
+        if (result == nullptr) //!< syntax error
         {
             if (PyErr_Occurred() && PyErr_ExceptionMatches(PyExc_SystemExit))
             {
-                std::cerr << "wish to exit (not possible yet)\n" << std::endl;
-                retValue += RetVal(retError);
+                retValue += handlePythonSysExit();
             }
             else
             {
@@ -2452,7 +2447,7 @@ ito::RetVal PythonEngine::debugString(const QString &command)
                 modifyTracebackDepth(3, true);
                 PyErr_PrintEx(0);
 
-                if (oldTBLimit != NULL)
+                if (oldTBLimit != nullptr)
                 {
                     PySys_SetObject("tracebacklimit", oldTBLimit);
                 }
@@ -2484,7 +2479,28 @@ ito::RetVal PythonEngine::debugString(const QString &command)
     return retValue;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
+ito::RetVal PythonEngine::handlePythonSysExit()
+{
+    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+    settings.beginGroup("Python");
+    bool closeItom = settings.value("closeItomWithPySysExit", false).toBool();
+    settings.endGroup();
+
+    if (closeItom)
+    {
+        QMetaObject::invokeMethod(AppManagement::getMainApplication(), "mainWindowCloseRequest", Q_ARG(bool, false));
+        std::cerr << tr("close itom due to sys.exit()").toLatin1().data() << "\n" << std::endl;
+        return ito::RetVal(ito::retError, 0, "Close itom due to Python sys.exit()");
+    }
+    else
+    {
+        std::cerr << tr("sys.exit() is ignored. If itom should be closed, enable it in the itom properties dialog.").toLatin1().data() << "\n" << std::endl;
+        return ito::RetVal(ito::retError, 0, "sys.exit() ignored.");
+    }
+}
+
+//-------------------------------------------------------------------------------------
 bool PythonEngine::tryToLoadJediIfNotYetDone()
 {
     if (!m_jediRunner.isNull())
