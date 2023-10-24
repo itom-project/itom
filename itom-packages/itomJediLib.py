@@ -798,14 +798,13 @@ def rename_variable(code, line, column, path, new_name):
 
             if jedi.__version__ >= "0.16.0":
                 if jedi.__version__ >= "0.17.0":
-                    script = jedi.Script(code=code, path=path, environment=jedienv)
+                    script = jedi.Script(path=path, environment=jedienv)
                 else:
-                    script = jedi.Script(source=code, path=path, encoding="utf-8", environment=jedienv)
+                    script = jedi.Script(path=path, encoding="utf-8", environment=jedienv)
 
             else:
                 if jedi.__version__ >= "0.12.0":
                     script = jedi.Script(
-                        code,
                         line + 1,
                         column,
                         path,
@@ -813,7 +812,7 @@ def rename_variable(code, line, column, path, new_name):
                         environment=jedienv,
                     )
                 else:
-                    script = jedi.Script(code, line + 1, column, path, encoding="utf-8")
+                    script = jedi.Script(line + 1, column, path, encoding="utf-8")
 
             refactoring = script.rename(line=line, column=column, new_name=new_name)
             refactoring.apply()

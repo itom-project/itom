@@ -715,35 +715,19 @@ void RenameRunnable::run()
     {
         PyObject* result = NULL;
 
-        if (m_additionalImportString != "")
-        {
-            // add from itom import * as first line (this is afterwards removed from results)
-            result = PyObject_CallMethod(
-                m_pPyModJedi,
-                "rename_variable",
-                "siiss",
-                (m_additionalImportString + "\n" + m_request.m_code).toUtf8().constData(),
-                m_request.m_line + 1,
-                m_request.m_col,
-                m_request.m_fileName.toUtf8().constData(),
-                m_request.m_newName.toUtf8().constData()); // new ref
-        }
-        else
-        {
-            result = PyObject_CallMethod(
-                m_pPyModJedi,
-                "rename_variable",
-                "siiss",
-                m_request.m_code.toUtf8().constData(),
-                m_request.m_line,
-                m_request.m_col,
-                m_request.m_fileName.toUtf8().constData(),
-                m_request.m_newName.toUtf8().constData()); // new ref
-        }
+        result = PyObject_CallMethod(
+            m_pPyModJedi,
+            "rename_variable",
+            "siiss",
+            m_request.m_code.toUtf8().constData(),
+            m_request.m_line,
+            m_request.m_col,
+            m_request.m_fileName.toUtf8().constData(),
+            m_request.m_newName.toUtf8().constData()); // new ref
     }
     catch (...)
     {
-        qDebug() << "jediCompletionRequestEnqueued4: exception";
+        qDebug() << "enqueueJediRenameRequest4: exception";
         std::cerr << "Unknown exception in jediCompletionRequestEnqueued. Please report this bug.\n"
                   << std::endl;
     }
