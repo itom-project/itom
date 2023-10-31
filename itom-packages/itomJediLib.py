@@ -30,6 +30,8 @@ import sys
 import itomStubsGen
 import itomAlgorithmsStubsGen
 import warnings
+from pathlib import WindowsPath
+from parso.python.tree import Name
 from contextlib import contextmanager
 
 __version__ = "1.2.0"
@@ -815,8 +817,16 @@ def rename_variable(code, line, column, path, new_name):
                     script = jedi.Script(line + 1, column, path, encoding="utf-8")
 
             refactoring = script.rename(line=line, column=column, new_name=new_name)
-            refactoring.apply()
-    return
+            files = {}
+            lines = []
+            cols = []
+            for filename, node in refactoring._file_to_node_changes.items():
+                for name, nameToChange in node.items():
+                    lines.append(name.line)
+                    cols.append(name.column)
+                files[str(filename)] = {"lines": lines.copy(), "columns": cols.copy()}
+            # refactoring.apply()  # implemented in c++
+    return files
 
 
 if __name__ == "__main__":
@@ -872,4 +882,4 @@ inception()"""
     completions(text, 1, 5, "", "")
 
     path = r"C:\itom\build\itom\demo\python_packages\matplotlib\demo_scatter3d.py"
-    rename_variable(None, 7, 25, path, "plt_renamed")
+    rename_variable(None, 7, 29, path, "plt_renamed")

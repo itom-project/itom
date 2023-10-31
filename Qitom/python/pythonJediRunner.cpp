@@ -713,7 +713,7 @@ void RenameRunnable::run()
 
     try
     {
-        PyObject* result = NULL;
+        PyObject *result = nullptr;
 
         result = PyObject_CallMethod(
             m_pPyModJedi,
@@ -724,6 +724,30 @@ void RenameRunnable::run()
             m_request.m_col,
             m_request.m_fileName.toUtf8().constData(),
             m_request.m_newName.toUtf8().constData()); // new ref
+
+        if (result && PyDict_Check(result))
+        {
+            PyObject* keyFiles = nullptr;
+
+            PyObject* valueFiles = nullptr;
+
+            Py_ssize_t posFile = 0;
+            QStringList fileNames;
+            QList<int> lines;
+            QList<int> columns;
+            bool check;
+
+            while (PyDict_Next(result, &posFile, &keyFiles, &valueFiles))
+            {
+                Py_ssize_t posFile = 0;
+                PyObject* keyFile = nullptr;
+                PyObject* valueFile = nullptr;
+                fileNames.append(PythonQtConversion::PyObjGetString(keyFiles, true, check));
+
+            }
+
+            Py_DECREF(result);
+        }
     }
     catch (...)
     {
