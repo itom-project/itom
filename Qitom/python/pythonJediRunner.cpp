@@ -717,7 +717,7 @@ void RenameRunnable::run()
 
         result = PyObject_CallMethod(
             m_pPyModJedi,
-            "rename_variable",
+            "rename_reference",
             "siiss",
             m_request.m_code.toUtf8().constData(),
             m_request.m_line,

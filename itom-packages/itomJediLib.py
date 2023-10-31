@@ -793,7 +793,7 @@ def get_help(code, line, column, path):
         return results
 
 
-def rename_variable(code, line, column, path, new_name):
+def rename_reference(code, line, column, path, new_name):
     with reduceRecursionLimit():
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
@@ -817,16 +817,18 @@ def rename_variable(code, line, column, path, new_name):
                     script = jedi.Script(line + 1, column, path, encoding="utf-8")
 
             refactoring = script.rename(line=line, column=column, new_name=new_name)
-            files = {}
-            lines = []
-            cols = []
+            result = []
+
             for filename, node in refactoring._file_to_node_changes.items():
+                lines = []
+                cols = []
                 for name, nameToChange in node.items():
                     lines.append(name.line)
                     cols.append(name.column)
-                files[str(filename)] = {"lines": lines.copy(), "columns": cols.copy()}
+                result.append((str(filename), lines.copy(), cols.copy()))
+                # files[str(filename)] = {"lines": lines.copy(), "columns": cols.copy()}
             # refactoring.apply()  # implemented in c++
-    return files
+    return result
 
 
 if __name__ == "__main__":
@@ -882,4 +884,4 @@ inception()"""
     completions(text, 1, 5, "", "")
 
     path = r"C:\itom\build\itom\demo\python_packages\matplotlib\demo_scatter3d.py"
-    rename_variable(None, 7, 29, path, "plt_renamed")
+    rename_reference(None, 7, 29, path, "plt_renamed")
