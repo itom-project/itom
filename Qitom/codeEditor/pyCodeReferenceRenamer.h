@@ -40,6 +40,15 @@ namespace ito
     private:
         QObject* m_pPythonEngine;
 
+        struct FileToChange
+        {
+            QString* filePath;
+            QVector<int>* lines;
+            QVector<int>* columns;
+        };
+
+        QList<FileToChange>* m_filesToChange;
+
     private slots:
 
     signals:

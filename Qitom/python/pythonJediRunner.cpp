@@ -725,28 +725,42 @@ void RenameRunnable::run()
             m_request.m_fileName.toUtf8().constData(),
             m_request.m_newName.toUtf8().constData()); // new ref
 
-        if (result && PyDict_Check(result))
+        if (result && PyList_Check(result))
         {
-            PyObject* keyFiles = nullptr;
-
-            PyObject* valueFiles = nullptr;
-
-            Py_ssize_t posFile = 0;
-            QStringList fileNames;
-            QList<int> lines;
-            QList<int> columns;
-            bool check;
-
-            while (PyDict_Next(result, &posFile, &keyFiles, &valueFiles))
+            Py_ssize_t resultSize = PyList_Size(result);
+            for (Py_ssize_t resultIdx = 0; resultIdx < resultSize; ++resultIdx)
             {
-                Py_ssize_t posFile = 0;
-                PyObject* keyFile = nullptr;
-                PyObject* valueFile = nullptr;
-                fileNames.append(PythonQtConversion::PyObjGetString(keyFiles, true, check));
+                PyObject* resultItem = PyList_GetItem(result, resultIdx);
 
+                if (PyTuple_Check(resultItem) && PyTuple_Size(resultItem) == 3)
+                {
+                    PyObject* filePathRef = PyTuple_GetItem(resultItem, 0);
+                    PyObject* linesRef = PyTuple_GetItem(resultItem, 1);
+                    PyObject* columnsRef = PyTuple_GetItem(resultItem, 2);
+
+                    if (PyUnicode_Check(filePathRef) && PyList_Check(linesRef) &&
+                        PyList_Check(columnsRef))
+                    {
+                        bool ok;
+                        QString file = PythonQtConversion::PyObjGetString(filePathRef, true, ok);
+
+                        QVector<int> lines = PythonQtConversion::PyObjGetIntArray(linesRef, true, ok);
+                        QVector<int> columns =
+                            PythonQtConversion::PyObjGetIntArray(columnsRef, true, ok);
+
+                    }
+
+                }
             }
-
             Py_DECREF(result);
+        }
+        else
+        {
+            Py_XDECREF(result);
+#ifdef _DEBUG
+            std::cerr << "Error when getting reference renames from jedi\n" << std::endl;
+            PyErr_PrintEx(0);
+#endif
         }
     }
     catch (...)

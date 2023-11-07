@@ -34,7 +34,7 @@ namespace ito {
 
 //-------------------------------------------------------------------------------------
 PyCodeReferenceRenamer::PyCodeReferenceRenamer(QObject* parent /*= nullptr*/) :
-    QObject(parent)
+    QObject(parent), m_filesToChange(nullptr)
 {
     m_pPythonEngine = AppManagement::getPythonEngine();
 }

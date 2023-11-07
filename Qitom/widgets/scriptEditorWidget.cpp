@@ -558,7 +558,7 @@ void ScriptEditorWidget::initMenus()
         QIcon(":/editor/icons/rename.png"),
         tr("Rename Variables"),
         this,
-        SLOT(menuPyCodeVariableRenaming()),
+        SLOT(menuPyCodeReferenceRenaming()),
         QKeySequence(tr("F2", "QShortcu")));
 
     m_editorMenuActions["generateDocstring"] =
@@ -1446,7 +1446,7 @@ void ScriptEditorWidget::menuPyCodeFormatting()
 }
 
 //-------------------------------------------------------------------------------------
-void ScriptEditorWidget::menuPyCodeVariableRenaming()
+void ScriptEditorWidget::menuPyCodeReferenceRenaming()
 {
     // TODO check if jedi
     if (m_autoCodeFormatCmd == "")

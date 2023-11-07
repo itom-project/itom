@@ -2699,7 +2699,7 @@ void ScriptDockWidget::mnuPyReferenceRenaming()
 
     if (sew != nullptr)
     {
-        sew->menuPyCodeVariableRenaming();
+        sew->menuPyCodeReferenceRenaming();
     }
 }
 

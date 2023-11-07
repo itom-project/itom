@@ -297,7 +297,7 @@ public slots:
     void menuStopScript();
 
     void menuPyCodeFormatting();
-    void menuPyCodeVariableRenaming();
+    void menuPyCodeReferenceRenaming();
     void menuGenerateDocstring();
     void menuScriptCharsetEncoding();
 
