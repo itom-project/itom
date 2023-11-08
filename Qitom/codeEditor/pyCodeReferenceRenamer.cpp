@@ -33,6 +33,7 @@
 #include <qlistwidget.h>
 #include <qdialog.h>
 #include <qlayout.h>
+#include <qdialogbuttonbox.h>
 
 namespace ito {
 
@@ -66,10 +67,11 @@ void PyCodeReferenceRenamer::rename(const int &line, const int &column, const QS
 //-------------------------------------------------------------------
 void PyCodeReferenceRenamer::onJediRenameResultAvailable(QVector<ito::JediRename> fileToChange)
 {
-    QDialog dialog;
-    dialog.setWindowTitle("List of files to change references");
+    QDialog* dialog = new QDialog();
+    dialog->setWindowTitle("List of files to change references");
 
-    QListWidget listWidget;
+    QListWidget* listWidget = new QListWidget;
+    listWidget->setAlternatingRowColors(true);
 
     QVectorIterator<JediRename> iter(fileToChange);
     foreach (const JediRename &file, fileToChange)
@@ -77,14 +79,19 @@ void PyCodeReferenceRenamer::onJediRenameResultAvailable(QVector<ito::JediRename
         QListWidgetItem* item = new QListWidgetItem(file.m_flePath);
         item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
         item->setCheckState(Qt::Checked);
-        listWidget.addItem(item);
+        listWidget->addItem(item);
     }
 
-    QVBoxLayout layout(&dialog);
-    layout.addWidget(&listWidget);
+    QDialogButtonBox* buttonBox =
+        new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
 
-    dialog.setLayout(&layout);
-    dialog.show();
+
+    QVBoxLayout* layout = new QVBoxLayout(dialog);
+    layout->addWidget(listWidget);
+    layout->addWidget(buttonBox);
+
+    dialog->setLayout(layout);
+    dialog->show();
 }
 
 } // namespace ito
