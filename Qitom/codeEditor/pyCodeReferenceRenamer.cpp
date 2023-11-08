@@ -30,11 +30,15 @@
 #include "../AppManagement.h"
 #include "../python/pythonJedi.h"
 
+#include <qlistwidget.h>
+#include <qdialog.h>
+#include <qlayout.h>
+
 namespace ito {
 
 //-------------------------------------------------------------------------------------
 PyCodeReferenceRenamer::PyCodeReferenceRenamer(QObject* parent /*= nullptr*/) :
-    QObject(parent), m_filesToChange(nullptr)
+    QObject(parent)
 {
     m_pPythonEngine = AppManagement::getPythonEngine();
 }
@@ -49,13 +53,38 @@ void PyCodeReferenceRenamer::rename(const int &line, const int &column, const QS
 {
     ito::JediRenameRequest request;
     request.m_code = "";
-    request.m_callbackFctName = "";
+    request.m_callbackFctName = "onJediRenameResultAvailable";
     request.m_col = column;
     request.m_line = line;
     request.m_fileName = fileName;
     request.m_newName = newName;
+    request.m_sender = this;
     PythonEngine* pyEng = (PythonEngine*)m_pPythonEngine;
     pyEng->enqueueJediRenameRequest(request);
+}
+
+//-------------------------------------------------------------------
+void PyCodeReferenceRenamer::onJediRenameResultAvailable(QVector<ito::JediRename> fileToChange)
+{
+    QDialog dialog;
+    dialog.setWindowTitle("List of files to change references");
+
+    QListWidget listWidget;
+
+    QVectorIterator<JediRename> iter(fileToChange);
+    foreach (const JediRename &file, fileToChange)
+    {
+        QListWidgetItem* item = new QListWidgetItem(file.m_flePath);
+        item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
+        item->setCheckState(Qt::Checked);
+        listWidget.addItem(item);
+    }
+
+    QVBoxLayout layout(&dialog);
+    layout.addWidget(&listWidget);
+
+    dialog.setLayout(&layout);
+    dialog.show();
 }
 
 } // namespace ito

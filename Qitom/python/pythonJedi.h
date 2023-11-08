@@ -159,13 +159,17 @@ namespace ito
     struct JediRename
     {
         JediRename(){};
-        JediRename(const QString& description, const QStringList& tooltips) :
-            m_description(description), m_tooltips(tooltips)
+        JediRename(
+            const QString& filePath, const QVector<int>& lines, const QVector<int>& columns) :
+            m_flePath(filePath),
+            m_lines(lines), m_columns(columns)
         {
         }
 
-        QString m_description;
-        QStringList m_tooltips; //!< can be multiple tooltips for overloaded methods
+        QString m_flePath;
+        QVector<int> m_lines;
+        QVector<int> m_columns;
+
     };
 
 } //end namespace ito

@@ -748,6 +748,14 @@ void RenameRunnable::run()
                         QVector<int> columns =
                             PythonQtConversion::PyObjGetIntArray(columnsRef, true, ok);
 
+                        if (ok)
+                        {
+                            JediRename fileToChange;
+                            fileToChange.m_flePath = file;
+                            fileToChange.m_lines = lines;
+                            fileToChange.m_columns = columns;
+                            rename.append(fileToChange);
+                        }
                     }
 
                 }
@@ -771,6 +779,13 @@ void RenameRunnable::run()
     }
 
     PyGILState_Release(gstate);
+
+    QObject* s = m_request.m_sender.data();
+    if (s && m_request.m_callbackFctName != "")
+    {
+        QMetaObject::invokeMethod(
+            s, m_request.m_callbackFctName.constData(), Q_ARG(QVector<ito::JediRename>, rename));
+    }
 
     endRun();
 };

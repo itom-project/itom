@@ -23,6 +23,7 @@
 
 #pragma once
 
+#include "../python/pythonJedi.h"
 #include <qobject.h>
 
 namespace ito
@@ -40,16 +41,8 @@ namespace ito
     private:
         QObject* m_pPythonEngine;
 
-        struct FileToChange
-        {
-            QString* filePath;
-            QVector<int>* lines;
-            QVector<int>* columns;
-        };
-
-        QList<FileToChange>* m_filesToChange;
-
     private slots:
+        void onJediRenameResultAvailable(QVector<ito::JediRename> fileToChange);
 
     signals:
 
