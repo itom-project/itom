@@ -822,10 +822,12 @@ def rename_reference(code, line, column, path, new_name):
             for filename, node in refactoring._file_to_node_changes.items():
                 lines = []
                 cols = []
+                values = []
                 for name, _nameToChange in node.items():
                     lines.append(name.line)
                     cols.append(name.column)
-                result.append((str(filename), lines.copy(), cols.copy()))
+                    values.append(name.value)
+                result.append((str(filename), lines.copy(), cols.copy(), values.copy()))
             # refactoring.apply()  # implemented in c++
     return result
 
@@ -883,4 +885,4 @@ inception()"""
     completions(text, 1, 5, "", "")
 
     path = r"C:\itom\build\itom\demo\python_packages\matplotlib\demo_scatter3d.py"
-    rename_reference(None, 7, 7, path, "plt_renamed")
+    rename_reference(None, 7, 29, path, "plt_renamed")

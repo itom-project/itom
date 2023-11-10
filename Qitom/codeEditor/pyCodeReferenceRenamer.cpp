@@ -34,6 +34,7 @@
 #include <qdialog.h>
 #include <qlayout.h>
 #include <qdialogbuttonbox.h>
+#include <qtreewidget.h>
 
 namespace ito {
 
@@ -65,33 +66,53 @@ void PyCodeReferenceRenamer::rename(const int &line, const int &column, const QS
 }
 
 //-------------------------------------------------------------------
-void PyCodeReferenceRenamer::onJediRenameResultAvailable(QVector<ito::JediRename> fileToChange)
+void PyCodeReferenceRenamer::onJediRenameResultAvailable(QVector<ito::JediRename> filesToChange)
 {
-    QDialog* dialog = new QDialog();
-    dialog->setWindowTitle("List of files to change references");
-
-    QListWidget* listWidget = new QListWidget;
-    listWidget->setAlternatingRowColors(true);
-
-    QVectorIterator<JediRename> iter(fileToChange);
-    foreach (const JediRename &file, fileToChange)
+    if (filesToChange.size() != 0)
     {
-        QListWidgetItem* item = new QListWidgetItem(file.m_flePath);
-        item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
-        item->setCheckState(Qt::Checked);
-        listWidget->addItem(item);
+        QDialog* dialog = new QDialog();
+        dialog->setWindowTitle(tr("Rename references").toLatin1().data());
+
+        QTreeWidget* treeWidget = new QTreeWidget;
+        treeWidget->setAlternatingRowColors(true);
+        treeWidget->setColumnCount(3);
+
+        QStringList headerLabels;
+        headerLabels << tr("File").toLatin1().data() << tr("Line").toLatin1().data()
+                     << tr("Column").toLatin1().data();
+        treeWidget->setHeaderLabels(headerLabels);
+
+        foreach (const JediRename &file, filesToChange)
+        {
+            QTreeWidgetItem* fileItem = new QTreeWidgetItem(treeWidget);
+            fileItem->setFlags(fileItem->flags() | Qt::ItemIsUserCheckable);
+            fileItem->setCheckState(0, Qt::Checked);
+            fileItem->setText(0, file.m_filePath);
+            treeWidget->addTopLevelItem(fileItem);
+
+            int idxLine = 0;
+            foreach(const int& line, file.m_lines)
+            {
+                QTreeWidgetItem* lineItem = new QTreeWidgetItem(fileItem);
+                lineItem->setFlags(lineItem->flags() | Qt::ItemIsUserCheckable);
+                lineItem->setCheckState(idxLine, Qt::Checked);
+                lineItem->setText(0, file.m_values.at(idxLine));
+                lineItem->setText(1, QString::number(line));
+                lineItem->setText(2, QString::number(file.m_columns.at(idxLine)));
+            }
+        }
+
+        QDialogButtonBox* buttonBox =
+            new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+
+
+        QVBoxLayout* layout = new QVBoxLayout(dialog);
+        layout->addWidget(treeWidget);
+        layout->addWidget(buttonBox);
+
+        dialog->setLayout(layout);
+        dialog->show();
     }
-
-    QDialogButtonBox* buttonBox =
-        new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
-
-
-    QVBoxLayout* layout = new QVBoxLayout(dialog);
-    layout->addWidget(listWidget);
-    layout->addWidget(buttonBox);
-
-    dialog->setLayout(layout);
-    dialog->show();
 }
 
 } // namespace ito
