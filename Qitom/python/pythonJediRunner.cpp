@@ -718,12 +718,11 @@ void RenameRunnable::run()
         result = PyObject_CallMethod(
             m_pPyModJedi,
             "rename_reference",
-            "siiss",
+            "siis",
             m_request.m_code.toUtf8().constData(),
             m_request.m_line,
             m_request.m_col,
-            m_request.m_fileName.toUtf8().constData(),
-            m_request.m_newName.toUtf8().constData()); // new ref
+            m_request.m_fileName.toUtf8().constData()); // new ref
 
         if (result && PyList_Check(result))
         {
@@ -732,7 +731,7 @@ void RenameRunnable::run()
             {
                 PyObject* resultItem = PyList_GetItem(result, resultIdx);
 
-                if (PyTuple_Check(resultItem) && PyTuple_Size(resultItem) == 3)
+                if (PyTuple_Check(resultItem) && PyTuple_Size(resultItem) == 4)
                 {
                     PyObject* filePathRef = PyTuple_GetItem(resultItem, 0);
                     PyObject* linesRef = PyTuple_GetItem(resultItem, 1);

@@ -200,7 +200,6 @@ protected:
 
 private:
     QObject *m_pPythonEngine;
-    int m_requestCount;
 
     /* maps the completion name to a a list of (string list of signatures and a docstring) */
     QMap<QString, QList<QPair<QStringList, QString>>> m_tooltips;

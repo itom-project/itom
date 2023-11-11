@@ -793,7 +793,7 @@ def get_help(code, line, column, path):
         return results
 
 
-def rename_reference(code, line, column, path, new_name):
+def rename_reference(code, line, column, path):
     with reduceRecursionLimit():
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
@@ -816,7 +816,7 @@ def rename_reference(code, line, column, path, new_name):
                 else:
                     script = jedi.Script(line + 1, column, path, encoding="utf-8")
 
-            refactoring = script.rename(line=line, column=column, new_name=new_name)
+            refactoring = script.rename(line=line, column=column, new_name="")
             result = []
 
             for filename, node in refactoring._file_to_node_changes.items():
@@ -885,4 +885,4 @@ inception()"""
     completions(text, 1, 5, "", "")
 
     path = r"C:\itom\build\itom\demo\python_packages\matplotlib\demo_scatter3d.py"
-    rename_reference(None, 7, 29, path, "plt_renamed")
+    rename_reference(None, 7, 29, path)

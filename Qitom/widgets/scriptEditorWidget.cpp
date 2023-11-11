@@ -1453,22 +1453,8 @@ void ScriptEditorWidget::menuPyCodeReferenceRenaming()
     QTextCursor cursor = textCursor();
     int line = currentLineNumber() + 1;
     int col = currentColumnNumber() + 1;
-    ScriptEditorWidget* sew = qobject_cast<ScriptEditorWidget*>(this);
-    QString fileName = sew->getFilename();
-
-    // get filename from user via dialog
-    bool ok;
-    QString NewName = QInputDialog::getText(
-        this,
-        tr("Rename Reference"),
-        tr("What is the new name?"),
-        QLineEdit::Normal,
-        "",
-        &ok);
-    if (ok && !NewName.isEmpty())
-    {
-        m_pyCodeReferenceRenamer->rename(line, col, fileName, NewName);
-    }
+    QString fileName = qobject_cast<ScriptEditorWidget*>(this)->getFilename();
+    m_pyCodeReferenceRenamer->rename(line, col, fileName);
 }
 
 //-------------------------------------------------------------------------------------

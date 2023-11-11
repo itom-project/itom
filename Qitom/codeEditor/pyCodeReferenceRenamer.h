@@ -36,7 +36,7 @@ namespace ito
         PyCodeReferenceRenamer(QObject* parent = nullptr);
         ~PyCodeReferenceRenamer();
         void rename(
-            const int &line, const int &column, const QString &fileName, const QString &newName);
+            const int &line, const int &column, const QString &fileName);
 
     private:
         QObject* m_pPythonEngine;
