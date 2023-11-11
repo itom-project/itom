@@ -816,7 +816,10 @@ def rename_reference(code, line, column, path):
                 else:
                     script = jedi.Script(line + 1, column, path, encoding="utf-8")
 
-            refactoring = script.rename(line=line, column=column, new_name="")
+            try:
+                refactoring = script.rename(line=line, column=column, new_name="")
+            except jedi.api.exceptions.RefactoringError:
+                return []
             result = []
 
             for filename, node in refactoring._file_to_node_changes.items():
@@ -885,4 +888,4 @@ inception()"""
     completions(text, 1, 5, "", "")
 
     path = r"C:\itom\build\itom\demo\python_packages\matplotlib\demo_scatter3d.py"
-    rename_reference(None, 7, 29, path)
+    rename_reference(None, 7, 27, path)

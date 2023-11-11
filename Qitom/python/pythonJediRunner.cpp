@@ -31,6 +31,7 @@
 #include <qdebug.h>
 #include <qfileinfo.h>
 #include <qmetaobject.h>
+#include <qmessagebox.h>
 
 
 //-------------------------------------------------------------------------------------
@@ -727,41 +728,52 @@ void RenameRunnable::run()
         if (result && PyList_Check(result))
         {
             Py_ssize_t resultSize = PyList_Size(result);
-            for (Py_ssize_t resultIdx = 0; resultIdx < resultSize; ++resultIdx)
+            if (resultSize > 0)
             {
-                PyObject* resultItem = PyList_GetItem(result, resultIdx);
-
-                if (PyTuple_Check(resultItem) && PyTuple_Size(resultItem) == 4)
+                for (Py_ssize_t resultIdx = 0; resultIdx < resultSize; ++resultIdx)
                 {
-                    PyObject* filePathRef = PyTuple_GetItem(resultItem, 0);
-                    PyObject* linesRef = PyTuple_GetItem(resultItem, 1);
-                    PyObject* columnsRef = PyTuple_GetItem(resultItem, 2);
-                    PyObject* valuesRef = PyTuple_GetItem(resultItem, 3);
+                    PyObject* resultItem = PyList_GetItem(result, resultIdx);
 
-                    if (PyUnicode_Check(filePathRef) && PyList_Check(linesRef) &&
-                        PyList_Check(columnsRef) && PyList_Check(valuesRef))
+                    if (PyTuple_Check(resultItem) && PyTuple_Size(resultItem) == 4)
                     {
-                        bool ok;
-                        QString file = PythonQtConversion::PyObjGetString(filePathRef, true, ok);
+                        PyObject* filePathRef = PyTuple_GetItem(resultItem, 0);
+                        PyObject* linesRef = PyTuple_GetItem(resultItem, 1);
+                        PyObject* columnsRef = PyTuple_GetItem(resultItem, 2);
+                        PyObject* valuesRef = PyTuple_GetItem(resultItem, 3);
 
-                        QVector<int> lines = PythonQtConversion::PyObjGetIntArray(linesRef, true, ok);
-                        QVector<int> columns =
-                            PythonQtConversion::PyObjGetIntArray(columnsRef, true, ok);
-                        QVector<QString> values =
-                            PythonQtConversion::PyObjToStringList(valuesRef, true, ok);
-                        if (ok)
+                        if (PyUnicode_Check(filePathRef) && PyList_Check(linesRef) &&
+                            PyList_Check(columnsRef) && PyList_Check(valuesRef))
                         {
-                            JediRename fileToChange;
-                            fileToChange.m_filePath = file;
-                            fileToChange.m_lines = lines;
-                            fileToChange.m_columns = columns;
-                            fileToChange.m_values = values;
-                            rename.append(fileToChange);
-                        }
-                    }
+                            bool ok;
+                            QString file = PythonQtConversion::PyObjGetString(filePathRef, true, ok);
 
+                            QVector<int> lines = PythonQtConversion::PyObjGetIntArray(linesRef, true, ok);
+                            QVector<int> columns =
+                                PythonQtConversion::PyObjGetIntArray(columnsRef, true, ok);
+                            QVector<QString> values =
+                                PythonQtConversion::PyObjToStringList(valuesRef, true, ok);
+                            if (ok)
+                            {
+                                JediRename fileToChange;
+                                fileToChange.m_filePath = file;
+                                fileToChange.m_lines = lines;
+                                fileToChange.m_columns = columns;
+                                fileToChange.m_values = values;
+                                rename.append(fileToChange);
+                            }
+                        }
+
+                    }
                 }
             }
+            else
+            {
+                QMessageBox::warning(
+                    this,
+                    "Reference renaming",
+                    "no reference found at cursor position");
+            }
+
             Py_DECREF(result);
         }
         else
