@@ -24,28 +24,38 @@
 #pragma once
 
 #include "../python/pythonJedi.h"
-#include <qobject.h>
+#include <qabstractbutton.h>
+#include <qdialog.h>
+#include <qlineedit.h>
+#include <qtreewidget.h>
+#include <qwidget.h>
+#include <qdialogbuttonbox.h>
 
-namespace ito
+namespace ito {
+
+class PyCodeReferenceRenamer : public QObject
 {
+    Q_OBJECT
+public:
+    PyCodeReferenceRenamer(QObject* parent = nullptr);
+    ~PyCodeReferenceRenamer();
+    void rename(const int& line, const int& column, const QString& fileName);
 
-    class PyCodeReferenceRenamer : public QObject
-    {
-        Q_OBJECT
-    public:
-        PyCodeReferenceRenamer(QObject* parent = nullptr);
-        ~PyCodeReferenceRenamer();
-        void rename(
-            const int &line, const int &column, const QString &fileName);
+private:
+    QObject* m_pPythonEngine;
+    QDialog* m_renameDialog;
+    QLineEdit* m_newNameUserInput;
+    QTreeWidget* m_treeWidgetReferences;
+    QDialogButtonBox* m_dialogButtonBox;
 
-    private:
-        QObject* m_pPythonEngine;
 
-    private slots:
-        void onJediRenameResultAvailable(QVector<ito::JediRename> fileToChange);
+private slots:
+    void onJediRenameResultAvailable(QVector<ito::JediRename> fileToChange);
+    void onClicked(QAbstractButton*);
+    void onAccept();
+    void onCanceled();
 
-    signals:
+signals:
+};
 
-    };
-
-}; // end namepsace ito
+}; // namespace ito

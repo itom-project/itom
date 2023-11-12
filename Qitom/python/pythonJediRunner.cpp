@@ -31,7 +31,6 @@
 #include <qdebug.h>
 #include <qfileinfo.h>
 #include <qmetaobject.h>
-#include <qmessagebox.h>
 
 
 //-------------------------------------------------------------------------------------
@@ -768,10 +767,8 @@ void RenameRunnable::run()
             }
             else
             {
-                QMessageBox::warning(
-                    this,
-                    "Reference renaming",
-                    "no reference found at cursor position");
+                std::cerr << "No reference found at cursor position\n" << std::endl;
+                PyErr_PrintEx(0);
             }
 
             Py_DECREF(result);

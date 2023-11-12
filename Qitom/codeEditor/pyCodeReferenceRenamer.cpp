@@ -26,27 +26,53 @@
 *********************************************************************** */
 
 #include "pyCodeReferenceRenamer.h"
-#include "../python/pythonEngine.h"
 #include "../AppManagement.h"
+#include "../python/pythonEngine.h"
 #include "../python/pythonJedi.h"
 
-#include <qlistwidget.h>
-#include <qdialog.h>
-#include <qlayout.h>
-#include <qdialogbuttonbox.h>
-#include <qtreewidget.h>
-#include <qlineedit.h>
-#include <qlabel.h>
-#include <qpushbutton.h>
 #include <qfileinfo.h>
+#include <qlabel.h>
+#include <qlayout.h>
+#include <qlistwidget.h>
+#include <qmetaobject.h>
+#include <qpushbutton.h>
 
 namespace ito {
 
 //-------------------------------------------------------------------------------------
-PyCodeReferenceRenamer::PyCodeReferenceRenamer(QObject* parent /*= nullptr*/) :
-    QObject(parent)
+PyCodeReferenceRenamer::PyCodeReferenceRenamer(QObject* parent) : QObject(parent)
 {
     m_pPythonEngine = AppManagement::getPythonEngine();
+
+    // create dialog
+    m_renameDialog = new QDialog();
+    m_renameDialog->setWindowTitle(tr("Rename references").toLatin1().data());
+
+    m_newNameUserInput = new QLineEdit();
+    QHBoxLayout* newNameLayout = new QHBoxLayout();
+    newNameLayout->addWidget(new QLabel(tr("New value: ").toLatin1().data()));
+    newNameLayout->addWidget(m_newNameUserInput);
+
+    m_treeWidgetReferences = new QTreeWidget;
+    m_treeWidgetReferences->setAlternatingRowColors(true);
+    m_treeWidgetReferences->setColumnCount(3);
+
+
+    QStringList headerLabels;
+    headerLabels << tr("Value").toLatin1().data() << tr("Line").toLatin1().data()
+                 << tr("Column").toLatin1().data();
+    m_treeWidgetReferences->setHeaderLabels(headerLabels);
+    m_dialogButtonBox = new QDialogButtonBox(
+        QDialogButtonBox::StandardButton::Apply | QDialogButtonBox::StandardButton::Cancel);
+
+    QVBoxLayout* dialogLayout = new QVBoxLayout(m_renameDialog);
+    dialogLayout->addLayout(newNameLayout);
+    dialogLayout->addWidget(m_treeWidgetReferences);
+    dialogLayout->addWidget(m_dialogButtonBox);
+
+    // connect dialog
+    connect(
+        m_dialogButtonBox, &QDialogButtonBox::clicked, this, &PyCodeReferenceRenamer::onClicked);
 }
 
 //-------------------------------------------------------------------------------------
@@ -55,7 +81,7 @@ PyCodeReferenceRenamer::~PyCodeReferenceRenamer()
 }
 
 //-------------------------------------------------------------------------------------
-void PyCodeReferenceRenamer::rename(const int &line, const int &column, const QString &fileName)
+void PyCodeReferenceRenamer::rename(const int& line, const int& column, const QString& fileName)
 {
     ito::JediRenameRequest request;
     request.m_code = "";
@@ -73,37 +99,18 @@ void PyCodeReferenceRenamer::onJediRenameResultAvailable(QVector<ito::JediRename
 {
     if (filesToChange.size() != 0)
     {
-        QDialog* dialog = new QDialog();
-        dialog->setWindowTitle(tr("Rename references").toLatin1().data());
-
-        QLabel* newNameText = new QLabel(tr("New value: ").toLatin1().data());
-        QLineEdit* newName = new QLineEdit();
-        QHBoxLayout* newNameLayout = new QHBoxLayout();
-        newNameLayout->addWidget(newNameText);
-        newNameLayout->addWidget(newName);
-
-        QTreeWidget* treeWidget = new QTreeWidget;
-        treeWidget->setAlternatingRowColors(true);
-        treeWidget->setColumnCount(3);
-
-
-        QStringList headerLabels;
-        headerLabels << tr("Value").toLatin1().data() << tr("Line").toLatin1().data()
-                     << tr("Column").toLatin1().data();
-        treeWidget->setHeaderLabels(headerLabels);
-
-        foreach (const JediRename &file, filesToChange)
+        foreach (const JediRename& file, filesToChange)
         {
-            QTreeWidgetItem* fileItem = new QTreeWidgetItem(treeWidget);
+            QTreeWidgetItem* fileItem = new QTreeWidgetItem(m_treeWidgetReferences);
             fileItem->setFlags(fileItem->flags() | Qt::ItemIsUserCheckable);
             fileItem->setCheckState(0, Qt::Checked);
 
             QFileInfo* fileInfo = new QFileInfo(file.m_filePath);
             fileItem->setText(0, fileInfo->fileName());
-            treeWidget->addTopLevelItem(fileItem);
+            m_treeWidgetReferences->addTopLevelItem(fileItem);
 
             int idxLine = 0;
-            foreach(const int& line, file.m_lines)
+            foreach (const int& line, file.m_lines)
             {
                 QTreeWidgetItem* lineItem = new QTreeWidgetItem(fileItem);
                 lineItem->setFlags(lineItem->flags() | Qt::ItemIsUserCheckable);
@@ -114,22 +121,41 @@ void PyCodeReferenceRenamer::onJediRenameResultAvailable(QVector<ito::JediRename
             }
         }
 
-        QDialogButtonBox* buttonBox =
-            new QDialogButtonBox(QDialogButtonBox::Apply | QDialogButtonBox::Cancel);
-
-        QVBoxLayout* dialogLayout = new QVBoxLayout(dialog);
-        dialogLayout->addLayout(newNameLayout);
-        dialogLayout->addWidget(treeWidget);
-        dialogLayout->addWidget(buttonBox);
-
-        treeWidget->expandAll();
-        for (int i = 0; i < treeWidget->columnCount(); ++i)
+        m_treeWidgetReferences->expandAll();
+        for (int i = 0; i < m_treeWidgetReferences->columnCount(); ++i)
         {
-            treeWidget->resizeColumnToContents(i);
+            m_treeWidgetReferences->resizeColumnToContents(i);
         }
-        dialog->resize(500, 500);
-        dialog->show();
+        m_renameDialog->resize(500, 500);
+        m_renameDialog->show();
     }
+}
+
+//-------------------------------------------------------------------
+void PyCodeReferenceRenamer::onClicked(QAbstractButton* button)
+{
+    QDialogButtonBox::ButtonRole role = m_dialogButtonBox->buttonRole(button);
+    if (role == QDialogButtonBox::ApplyRole)
+    {
+        onAccept();
+    }
+    else
+    {
+        onCanceled();
+    }
+}
+
+//-------------------------------------------------------------------
+void PyCodeReferenceRenamer::onAccept()
+{
+    m_renameDialog->hide();
+}
+
+//-------------------------------------------------------------------
+void PyCodeReferenceRenamer::onCanceled()
+{
+    m_treeWidgetReferences->clear();
+    m_renameDialog->hide();
 }
 
 } // namespace ito
