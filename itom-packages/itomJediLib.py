@@ -888,4 +888,4 @@ inception()"""
     completions(text, 1, 5, "", "")
 
     path = r"C:\itom\build\itom\demo\python_packages\matplotlib\demo_scatter3d.py"
-    rename_reference(None, 7, 27, path)
+    rename_reference(None, 14, 0, path)

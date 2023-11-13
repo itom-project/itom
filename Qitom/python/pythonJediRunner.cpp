@@ -713,7 +713,7 @@ void RenameRunnable::run()
 
     try
     {
-        PyObject *result = nullptr;
+        PyObject* result = nullptr;
 
         result = PyObject_CallMethod(
             m_pPyModJedi,
@@ -744,24 +744,25 @@ void RenameRunnable::run()
                             PyList_Check(columnsRef) && PyList_Check(valuesRef))
                         {
                             bool ok;
-                            QString file = PythonQtConversion::PyObjGetString(filePathRef, true, ok);
+                            QString filePath =
+                                PythonQtConversion::PyObjGetString(filePathRef, true, ok);
 
-                            QVector<int> lines = PythonQtConversion::PyObjGetIntArray(linesRef, true, ok);
+                            QVector<int> lines =
+                                PythonQtConversion::PyObjGetIntArray(linesRef, true, ok);
                             QVector<int> columns =
                                 PythonQtConversion::PyObjGetIntArray(columnsRef, true, ok);
                             QVector<QString> values =
                                 PythonQtConversion::PyObjToStringList(valuesRef, true, ok);
                             if (ok)
                             {
-                                JediRename fileToChange;
-                                fileToChange.m_filePath = file;
-                                fileToChange.m_lines = lines;
-                                fileToChange.m_columns = columns;
-                                fileToChange.m_values = values;
-                                rename.append(fileToChange);
+                                JediRename filesToChange;
+                                filesToChange.m_filePath = filePath;
+                                filesToChange.m_lines = lines;
+                                filesToChange.m_columns = columns;
+                                filesToChange.m_values = values;
+                                rename.append(filesToChange);
                             }
                         }
-
                     }
                 }
             }

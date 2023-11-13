@@ -26,10 +26,11 @@
 #include "../python/pythonJedi.h"
 #include <qabstractbutton.h>
 #include <qdialog.h>
+#include <qdialogbuttonbox.h>
+#include <qevent.h>
 #include <qlineedit.h>
 #include <qtreewidget.h>
 #include <qwidget.h>
-#include <qdialogbuttonbox.h>
 
 namespace ito {
 
@@ -47,13 +48,15 @@ private:
     QLineEdit* m_newNameUserInput;
     QTreeWidget* m_treeWidgetReferences;
     QDialogButtonBox* m_dialogButtonBox;
-
+    QVector<ito::JediRename> m_filesToChange;
 
 private slots:
-    void onJediRenameResultAvailable(QVector<ito::JediRename> fileToChange);
-    void onClicked(QAbstractButton*);
-    void onAccept();
+    void onJediRenameResultAvailable(const QVector<ito::JediRename>& filesToChange);
+    void onApply();
     void onCanceled();
+    void onItemChanged(QTreeWidgetItem* item, int column);
+    void keyPressEvent(QKeyEvent* event);
+    void clearAndHideTreeWidget();
 
 signals:
 };

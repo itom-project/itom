@@ -163,7 +163,7 @@ struct JediRename
 {
     JediRename(){};
     JediRename(
-        const QString& filePath,
+        const QString filePath,
         const QVector<int>& lines,
         const QVector<int>& columns,
         const QVector<QString>& values) :
