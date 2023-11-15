@@ -30,6 +30,7 @@
 #include "../python/pythonEngine.h"
 #include "../python/pythonJedi.h"
 
+#include <qfile.h>
 #include <qfileinfo.h>
 #include <qlabel.h>
 #include <qlayout.h>
@@ -42,7 +43,8 @@ namespace ito {
 
 //-------------------------------------------------------------------------------------
 PyCodeReferenceRenamer::PyCodeReferenceRenamer(QObject* parent) :
-    QObject(parent), m_renameDialog(nullptr)
+    QObject(parent), m_pPythonEngine(nullptr), m_renameDialog(nullptr), m_newNameUserInput(nullptr),
+    m_treeWidgetReferences(nullptr), m_dialogButtonBox(nullptr), m_filesToChange()
 {
     m_pPythonEngine = AppManagement::getPythonEngine();
 
@@ -50,11 +52,11 @@ PyCodeReferenceRenamer::PyCodeReferenceRenamer(QObject* parent) :
     {
         // create dialog
         m_renameDialog = new QDialog();
-        m_renameDialog->setWindowTitle(tr("Rename references").toLatin1().data());
+        m_renameDialog->setWindowTitle(tr("Rename references").toUtf8().data());
 
         m_newNameUserInput = new QLineEdit();
         QHBoxLayout* newNameLayout = new QHBoxLayout();
-        newNameLayout->addWidget(new QLabel(tr("New value: ").toLatin1().data()));
+        newNameLayout->addWidget(new QLabel(tr("New value: ").toUtf8().data()));
         newNameLayout->addWidget(m_newNameUserInput);
 
         m_treeWidgetReferences = new QTreeWidget;
@@ -63,8 +65,8 @@ PyCodeReferenceRenamer::PyCodeReferenceRenamer(QObject* parent) :
 
 
         QStringList headerLabels;
-        headerLabels << tr("Value").toLatin1().data() << tr("Line").toLatin1().data()
-                     << tr("Column").toLatin1().data();
+        headerLabels << tr("Value").toUtf8().data() << tr("Line").toUtf8().data()
+                     << tr("Column").toUtf8().data();
         m_treeWidgetReferences->setHeaderLabels(headerLabels);
 
         m_dialogButtonBox = new QDialogButtonBox(
@@ -72,7 +74,7 @@ PyCodeReferenceRenamer::PyCodeReferenceRenamer(QObject* parent) :
 
         QVBoxLayout* dialogLayout = new QVBoxLayout(m_renameDialog);
         dialogLayout->addLayout(newNameLayout);
-        dialogLayout->addWidget(new QLabel(tr("References changes:").toLatin1().data()));
+        dialogLayout->addWidget(new QLabel(tr("References changes:").toUtf8().data()));
         dialogLayout->addWidget(m_treeWidgetReferences);
         dialogLayout->addWidget(m_dialogButtonBox);
 
@@ -129,16 +131,33 @@ void PyCodeReferenceRenamer::onJediRenameResultAvailable(
             fileItem->setText(0, fileInfo->fileName());
             m_treeWidgetReferences->addTopLevelItem(fileItem);
 
+            QFile* scriptFile = new QFile(file.m_filePath);
+            if (!scriptFile->open(QIODevice::ReadOnly | QIODevice::Text))
+            {
+                qDebug() << "Failed to open the file";
+            }
+
+            QTextStream in(scriptFile);
+
             int idxLine = 0;
+            int iterLine = 1;
             foreach (const int& line, file.m_lines)
             {
                 QTreeWidgetItem* lineItem = new QTreeWidgetItem(fileItem);
+                QString lineText;
+
+                for (iterLine; iterLine <= line; ++iterLine)
+                {
+                    lineText = in.readLine();
+                }
+
                 lineItem->setFlags(lineItem->flags() | Qt::ItemIsUserCheckable);
                 lineItem->setCheckState(idxLine, Qt::Checked);
-                lineItem->setText(0, file.m_values.at(idxLine));
+                lineItem->setText(0, lineText);
                 lineItem->setText(1, QString::number(line));
                 lineItem->setText(2, QString::number(file.m_columns.at(idxLine)));
             }
+            scriptFile->close();
         }
 
         m_treeWidgetReferences->expandAll();
@@ -190,7 +209,6 @@ void PyCodeReferenceRenamer::onApply()
             return;
         }
     }
-
 
     // iter all files
     for (int idxTopLevel = 0; idxTopLevel < m_treeWidgetReferences->topLevelItemCount();
