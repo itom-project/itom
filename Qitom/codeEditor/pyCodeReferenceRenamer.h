@@ -57,6 +57,7 @@ private slots:
     void onItemChanged(QTreeWidgetItem* item, int column);
     void keyPressEvent(QKeyEvent* event);
     void clearAndHideTreeWidget();
+    void onItemDoubleClick(QTreeWidgetItem* item, int column);
 
 signals:
 };

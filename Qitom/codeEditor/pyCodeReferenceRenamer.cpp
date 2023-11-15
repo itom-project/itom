@@ -92,6 +92,12 @@ PyCodeReferenceRenamer::PyCodeReferenceRenamer(QObject* parent) :
             &QDialogButtonBox::rejected,
             this,
             &PyCodeReferenceRenamer::onCanceled);
+
+        connect(
+            m_treeWidgetReferences,
+            &QTreeWidget::itemDoubleClicked,
+            this,
+            &PyCodeReferenceRenamer::onItemDoubleClick);
     }
 }
 
@@ -121,6 +127,9 @@ void PyCodeReferenceRenamer::onJediRenameResultAvailable(
     if (filesToChange.size() != 0)
     {
         m_filesToChange = filesToChange;
+        // set current value to new value line edit
+        m_newNameUserInput->setText(filesToChange.at(0).m_values.at(0));
+
         foreach (const JediRename& file, m_filesToChange)
         {
             QTreeWidgetItem* fileItem = new QTreeWidgetItem(m_treeWidgetReferences);
@@ -128,7 +137,12 @@ void PyCodeReferenceRenamer::onJediRenameResultAvailable(
             fileItem->setCheckState(0, Qt::Checked);
 
             QFileInfo* fileInfo = new QFileInfo(file.m_filePath);
+
             fileItem->setText(0, fileInfo->fileName());
+            QFont font = QFont(fileItem->font(0));
+            font.setBold(true);
+            fileItem->setFont(0, font);
+
             m_treeWidgetReferences->addTopLevelItem(fileItem);
 
             QFile* scriptFile = new QFile(file.m_filePath);
@@ -152,10 +166,12 @@ void PyCodeReferenceRenamer::onJediRenameResultAvailable(
                 }
 
                 lineItem->setFlags(lineItem->flags() | Qt::ItemIsUserCheckable);
-                lineItem->setCheckState(idxLine, Qt::Checked);
+                lineItem->setCheckState(0, Qt::Checked);
                 lineItem->setText(0, lineText);
+
                 lineItem->setText(1, QString::number(line));
                 lineItem->setText(2, QString::number(file.m_columns.at(idxLine)));
+                idxLine++;
             }
             scriptFile->close();
         }
@@ -165,8 +181,9 @@ void PyCodeReferenceRenamer::onJediRenameResultAvailable(
         {
             m_treeWidgetReferences->resizeColumnToContents(i);
         }
-        m_renameDialog->resize(500, 500);
+        m_renameDialog->resize(800, 600);
         m_renameDialog->show();
+        m_newNameUserInput->setFocus();
     }
     else
     {
@@ -278,6 +295,12 @@ void PyCodeReferenceRenamer::onItemChanged(QTreeWidgetItem* item, int column)
             }
         }
     }
+}
+
+//-------------------------------------------------------------------
+void PyCodeReferenceRenamer::onItemDoubleClick(QTreeWidgetItem* item, int column)
+{
+    // open file in script editor
 }
 
 } // namespace ito
