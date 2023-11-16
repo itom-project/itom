@@ -248,7 +248,6 @@ void PyCodeReferenceRenamer::onApply()
             {
                 QTreeWidgetItem* secondLevelItem = topItem->child(idxSecondLevel);
                 filePath = getAbsoluteFilePath(filePath);
-                value = secondLevelItem->text(0);
                 line = secondLevelItem->text(1).toInt();
                 column = secondLevelItem->text(2).toInt();
 
@@ -385,7 +384,7 @@ void PyCodeReferenceRenamer::replaceWordInFile(
         if (currentLineNumber == lineNumber)
         {
             // Check if the specified column exists in the line
-            if (columnNumber > 0 && columnNumber <= line.length())
+            if (columnNumber >= 0 && columnNumber <= line.length())
             {
                 // Delete the word at the specified column
                 line.remove(columnNumber, value.length());
