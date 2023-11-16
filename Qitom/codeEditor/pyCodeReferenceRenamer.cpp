@@ -127,75 +127,75 @@ void PyCodeReferenceRenamer::rename(const int& line, const int& column, const QS
 void PyCodeReferenceRenamer::onJediRenameResultAvailable(
     const QVector<ito::JediRename>& filesToChange)
 {
-    if (filesToChange.size() != 0)
+    if (filesToChange.isEmpty())
     {
-        m_filesToChange = filesToChange;
-        // set current value to new value line edit
-        m_newNameUserInput->setText(filesToChange.at(0).m_values.at(0));
-        m_newNameUserInput->selectAll();
+        clearAndHideTreeWidget();
+        return;
+    }
 
-        ScriptEditorOrganizer* seo =
-            qobject_cast<ScriptEditorOrganizer*>(AppManagement::getScriptEditorOrganizer());
+    m_filesToChange = filesToChange;
 
-        foreach (const JediRename& file, m_filesToChange)
+    // set current value to new value line edit
+    m_newNameUserInput->setText(filesToChange.first().m_values.first());
+    m_newNameUserInput->selectAll();
+
+    ScriptEditorOrganizer* seo =
+        qobject_cast<ScriptEditorOrganizer*>(AppManagement::getScriptEditorOrganizer());
+
+    for (const auto& file : m_filesToChange)
+    {
+        QTreeWidgetItem* fileItem = new QTreeWidgetItem(m_treeWidgetReferences);
+        fileItem->setFlags(fileItem->flags() | Qt::ItemIsUserCheckable);
+        fileItem->setCheckState(0, Qt::Checked);
+
+        QFileInfo* fileInfo = new QFileInfo(file.m_filePath);
+
+        fileItem->setText(0, fileInfo->fileName());
+        QFont font = QFont(fileItem->font(0));
+        font.setBold(true);
+        fileItem->setFont(0, font);
+
+        m_treeWidgetReferences->addTopLevelItem(fileItem);
+
+        QFile* scriptFile = new QFile(file.m_filePath);
+        if (!scriptFile->open(QIODevice::ReadOnly | QIODevice::Text))
         {
-            QTreeWidgetItem* fileItem = new QTreeWidgetItem(m_treeWidgetReferences);
-            fileItem->setFlags(fileItem->flags() | Qt::ItemIsUserCheckable);
-            fileItem->setCheckState(0, Qt::Checked);
-
-            QFileInfo* fileInfo = new QFileInfo(file.m_filePath);
-
-            fileItem->setText(0, fileInfo->fileName());
-            QFont font = QFont(fileItem->font(0));
-            font.setBold(true);
-            fileItem->setFont(0, font);
-
-            m_treeWidgetReferences->addTopLevelItem(fileItem);
-
-            QFile* scriptFile = new QFile(file.m_filePath);
-            if (!scriptFile->open(QIODevice::ReadOnly | QIODevice::Text))
-            {
-                qDebug() << "Failed to open the file";
-            }
-
-            QTextStream in(scriptFile);
-
-            int idxLine = 0;
-            int iterLine = 1;
-            foreach (const int& line, file.m_lines)
-            {
-                QTreeWidgetItem* lineItem = new QTreeWidgetItem(fileItem);
-                QString lineText;
-
-                for (iterLine; iterLine <= line; ++iterLine)
-                {
-                    lineText = in.readLine();
-                }
-
-                lineItem->setFlags(lineItem->flags() | Qt::ItemIsUserCheckable);
-                lineItem->setCheckState(0, Qt::Checked);
-                lineItem->setText(0, lineText);
-
-                lineItem->setText(1, QString::number(line));
-                lineItem->setText(2, QString::number(file.m_columns.at(idxLine)));
-                idxLine++;
-            }
-            scriptFile->close();
+            qDebug() << "Failed to open the file";
         }
 
-        m_treeWidgetReferences->expandAll();
-        for (int i = 0; i < m_treeWidgetReferences->columnCount(); ++i)
+        QTextStream in(scriptFile);
+
+        int idxLine = 0;
+        int iterLine = 1;
+        foreach (const int& line, file.m_lines)
         {
-            m_treeWidgetReferences->resizeColumnToContents(i);
+            QTreeWidgetItem* lineItem = new QTreeWidgetItem(fileItem);
+            QString lineText;
+
+            for (iterLine; iterLine <= line; ++iterLine)
+            {
+                lineText = in.readLine();
+            }
+
+            lineItem->setFlags(lineItem->flags() | Qt::ItemIsUserCheckable);
+            lineItem->setCheckState(0, Qt::Checked);
+            lineItem->setText(0, lineText);
+
+            lineItem->setText(1, QString::number(line));
+            lineItem->setText(2, QString::number(file.m_columns.at(idxLine)));
+            idxLine++;
         }
-        m_renameDialog->resize(800, 600);
-        m_renameDialog->show();
-        m_newNameUserInput->setFocus();
+        scriptFile->close();
     }
-    else
+
+    m_treeWidgetReferences->expandAll();
+    for (int i = 0; i < m_treeWidgetReferences->columnCount(); ++i)
     {
-        m_filesToChange.clear();
+        m_treeWidgetReferences->resizeColumnToContents(i);
     }
+    m_renameDialog->resize(800, 600);
+    m_renameDialog->show();
+    m_newNameUserInput->setFocus();
 }
 
 //-------------------------------------------------------------------
@@ -215,7 +215,7 @@ void PyCodeReferenceRenamer::onApply()
     int column;
     QString newValue = m_newNameUserInput->text();
 
-    if (newValue.length() == 0)
+    if (newValue.isEmpty())
     {
         QMessageBox msgBox(
             QMessageBox::Warning,
@@ -223,11 +223,9 @@ void PyCodeReferenceRenamer::onApply()
             tr("No new reference name was given.\n"
                "Do you want to continue?"),
             QMessageBox::Ok | QMessageBox::Cancel);
-
         msgBox.setDefaultButton(QMessageBox::Cancel);
-        int result = msgBox.exec();
 
-        if (result == QMessageBox::Cancel)
+        if (msgBox.exec() == QMessageBox::Cancel)
         {
             clearAndHideTreeWidget();
             return;
@@ -242,12 +240,11 @@ void PyCodeReferenceRenamer::onApply()
 
         if (topItem->checkState(0) == Qt::Checked) // iter lines and columns of checked files
         {
-            filePath = topItem->text(0);
+            filePath = getAbsoluteFilePath(topItem->text(0));
             for (int idxSecondLevel = topItem->childCount() - 1; idxSecondLevel >= 0;
                  --idxSecondLevel)
             {
                 QTreeWidgetItem* secondLevelItem = topItem->child(idxSecondLevel);
-                filePath = getAbsoluteFilePath(filePath);
                 line = secondLevelItem->text(1).toInt();
                 column = secondLevelItem->text(2).toInt();
 
@@ -262,18 +259,22 @@ void PyCodeReferenceRenamer::onApply()
 //-------------------------------------------------------------------
 void PyCodeReferenceRenamer::keyPressEvent(QKeyEvent* event)
 {
-    if (event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return)
+    switch (event->key())
     {
+    case Qt::Key_Enter:
+    case Qt::Key_Return:
         onApply();
-    }
-    else if (event->key() == Qt::Key_Escape)
-    {
+        break;
+
+    case Qt::Key_Escape:
         onCanceled();
-    }
-    else
-    {
+        break;
+
+    default:
         PyCodeReferenceRenamer::keyPressEvent(event);
+        break;
     }
+    return;
 }
 
 //-------------------------------------------------------------------
@@ -285,23 +286,21 @@ void PyCodeReferenceRenamer::onCanceled()
 //-------------------------------------------------------------------
 void PyCodeReferenceRenamer::onItemChanged(QTreeWidgetItem* item, int column)
 {
-    if (item && item->childCount() > 0 && column == 0)
+    if (!item || item->childCount() == 0 || column != 0)
     {
-        Qt::CheckState state = item->checkState(column);
-
-        for (int iter = 0; iter < item->childCount(); iter++)
-        {
-            item->child(iter)->setCheckState(column, state);
-            if (state == Qt::Unchecked)
-            {
-                item->setExpanded(false);
-            }
-            else
-            {
-                item->setExpanded(true);
-            }
-        }
+        return;
     }
+
+    Qt::CheckState state = item->checkState(column);
+
+    for (int iter = 0; iter < item->childCount(); ++iter)
+    {
+        auto childItem = item->child(iter);
+        childItem->setCheckState(column, state);
+
+        item->setExpanded(state == Qt::Checked);
+    }
+    return;
 }
 
 //-------------------------------------------------------------------
@@ -314,42 +313,35 @@ void PyCodeReferenceRenamer::onItemDoubleClick(QTreeWidgetItem* item, int column
     ScriptEditorOrganizer* seo =
         qobject_cast<ScriptEditorOrganizer*>(AppManagement::getScriptEditorOrganizer());
 
-    if (seo)
+    if (!seo)
+        return;
+
+    if (m_treeWidgetReferences->indexOfTopLevelItem(item) != -1)
     {
-        if (m_treeWidgetReferences->indexOfTopLevelItem(item) != -1)
-        {
-            topLevelItem = item;
-            line = 0;
-        }
-        else
-        {
-            topLevelItem = item->parent();
-            line = item->text(1).toInt() - 1;
-        }
-
-        fileToOpen = topLevelItem->text(0);
-        fileToOpen = getAbsoluteFilePath(fileToOpen);
-
-        seo->openScript(fileToOpen, nullptr, line);
+        topLevelItem = item;
     }
+    else
+    {
+        topLevelItem = item->parent();
+        line = item->text(1).toInt() - 1;
+    }
+
+    seo->openScript(getAbsoluteFilePath(topLevelItem->text(0)), nullptr, line);
+    return;
 }
 
 //-------------------------------------------------------------------
 QString PyCodeReferenceRenamer::getAbsoluteFilePath(const QString& fileName)
 {
-    int index;
-    QString absolutePath;
-
-    foreach (auto files, m_filesToChange)
+    for (const auto& files : m_filesToChange)
     {
-        index = files.m_filePath.indexOf(fileName);
-        if (index != -1)
+        if (files.m_filePath.indexOf(fileName) != -1)
         {
-            absolutePath = files.m_filePath;
-            break;
+            return files.m_filePath;
         }
     }
-    return absolutePath;
+
+    return QString(); // Return an empty string if the file is not found
 }
 
 //-------------------------------------------------------------------
