@@ -132,6 +132,7 @@ void PyCodeReferenceRenamer::onJediRenameResultAvailable(
         m_filesToChange = filesToChange;
         // set current value to new value line edit
         m_newNameUserInput->setText(filesToChange.at(0).m_values.at(0));
+        m_newNameUserInput->selectAll();
 
         ScriptEditorOrganizer* seo =
             qobject_cast<ScriptEditorOrganizer*>(AppManagement::getScriptEditorOrganizer());
@@ -246,12 +247,13 @@ void PyCodeReferenceRenamer::onApply()
                  --idxSecondLevel)
             {
                 QTreeWidgetItem* secondLevelItem = topItem->child(idxSecondLevel);
+                filePath = getAbsoluteFilePath(filePath);
                 value = secondLevelItem->text(0);
                 line = secondLevelItem->text(1).toInt();
                 column = secondLevelItem->text(2).toInt();
-                qDebug() << "Second Level value:" << value;
-                qDebug() << "Second Level line:" << line;
-                qDebug() << "Second Level column:" << column;
+
+                replaceWordInFile(
+                    filePath, line, column, m_filesToChange.at(0).m_values.at(0), newValue);
             }
         }
     }
@@ -306,8 +308,6 @@ void PyCodeReferenceRenamer::onItemChanged(QTreeWidgetItem* item, int column)
 //-------------------------------------------------------------------
 void PyCodeReferenceRenamer::onItemDoubleClick(QTreeWidgetItem* item, int column)
 {
-    int index = 0;
-    int level = 0;
     int line = 0;
     QString fileToOpen;
     QTreeWidgetItem* topLevelItem = nullptr;
@@ -351,6 +351,83 @@ QString PyCodeReferenceRenamer::getAbsoluteFilePath(const QString& fileName)
         }
     }
     return absolutePath;
+}
+
+//-------------------------------------------------------------------
+void PyCodeReferenceRenamer::replaceWordInFile(
+    const QString& filePath,
+    int lineNumber,
+    int columnNumber,
+    const QString& value,
+    const QString& newValue)
+{
+    // Open the file
+    QFile file(filePath);
+    if (!file.open(QIODevice::ReadWrite | QIODevice::Text))
+    {
+        qDebug() << "Could not open file" << filePath;
+        return;
+    }
+
+    // Create a QTextStream to read from and write to the file
+    QTextStream in(&file);
+
+    // Create a list to store modified lines
+    QStringList modifiedLines;
+
+    // Read and modify lines one by one
+    int currentLineNumber = 1;
+    while (!in.atEnd())
+    {
+        QString line = in.readLine();
+
+        // Check if this is the line to be modified
+        if (currentLineNumber == lineNumber)
+        {
+            // Check if the specified column exists in the line
+            if (columnNumber > 0 && columnNumber <= line.length())
+            {
+                // Delete the word at the specified column
+                line.remove(columnNumber, value.length());
+
+                // Insert the new word at the specified column
+                line.insert(columnNumber, newValue);
+            }
+            else
+            {
+                qDebug() << "Invalid column number";
+            }
+        }
+
+        // Add the modified or unmodified line to the list
+        modifiedLines << line;
+
+        // Move to the next line
+        currentLineNumber++;
+    }
+
+    // Close the file
+    file.close();
+
+    // Open the file in write mode to update its content
+    if (file.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        QTextStream out(&file);
+
+        // Write the modified lines back to the file
+        for (const QString& modifiedLine : modifiedLines)
+        {
+            out << modifiedLine << "\n";
+        }
+
+        // Close the file
+        file.close();
+        qDebug() << "Word replaced successfully.";
+    }
+    else
+    {
+        qDebug() << "Could not open file" << filePath << "for writing";
+    }
 }
 
 } // namespace ito

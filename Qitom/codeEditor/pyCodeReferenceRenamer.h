@@ -60,6 +60,12 @@ private slots:
     void onItemDoubleClick(QTreeWidgetItem* item, int column);
 
     QString getAbsoluteFilePath(const QString& fileName);
+    void replaceWordInFile(
+        const QString& filePath,
+        int lineNumber,
+        int columnNumber,
+        const QString& value,
+        const QString& newValue);
 
 signals:
 };
