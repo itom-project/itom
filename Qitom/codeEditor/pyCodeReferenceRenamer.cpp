@@ -54,7 +54,7 @@ PyCodeReferenceRenamer::PyCodeReferenceRenamer(QObject* parent) :
     {
         // create dialog
         m_renameDialog = new QDialog();
-        m_renameDialog->setWindowTitle(tr("Rename references").toUtf8().data());
+        m_renameDialog->setWindowTitle(tr("Rename reference").toUtf8().data());
         m_renameDialog->setModal(true);
 
         m_newNameUserInput = new QLineEdit();
@@ -329,19 +329,28 @@ void PyCodeReferenceRenamer::onItemDoubleClick(QTreeWidgetItem* item, int column
         }
 
         fileToOpen = topLevelItem->text(0);
-
-        foreach (auto files, m_filesToChange)
-        {
-            index = files.m_filePath.indexOf(fileToOpen);
-            if (index != -1)
-            {
-                fileToOpen = files.m_filePath;
-                break;
-            }
-        }
+        fileToOpen = getAbsoluteFilePath(fileToOpen);
 
         seo->openScript(fileToOpen, nullptr, line);
     }
+}
+
+//-------------------------------------------------------------------
+QString PyCodeReferenceRenamer::getAbsoluteFilePath(const QString& fileName)
+{
+    int index;
+    QString absolutePath;
+
+    foreach (auto files, m_filesToChange)
+    {
+        index = files.m_filePath.indexOf(fileName);
+        if (index != -1)
+        {
+            absolutePath = files.m_filePath;
+            break;
+        }
+    }
+    return absolutePath;
 }
 
 } // namespace ito

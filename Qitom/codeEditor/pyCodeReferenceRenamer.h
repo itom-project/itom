@@ -59,6 +59,8 @@ private slots:
     void clearAndHideTreeWidget();
     void onItemDoubleClick(QTreeWidgetItem* item, int column);
 
+    QString getAbsoluteFilePath(const QString& fileName);
+
 signals:
 };
 

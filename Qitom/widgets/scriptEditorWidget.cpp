@@ -654,7 +654,7 @@ void ScriptEditorWidget::initMenus()
 
     m_editorMenuActions["referenceRenameing"] = editorMenu->addAction(
         QIcon(":/editor/icons/rename.png"),
-        tr("Rename Variables"),
+        tr("Rename Reference"),
         this,
         SLOT(menuPyCodeReferenceRenaming()),
         QKeySequence(tr("F2", "QShortcu")));
