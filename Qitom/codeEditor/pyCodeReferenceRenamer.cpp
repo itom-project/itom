@@ -26,9 +26,11 @@
 *********************************************************************** */
 
 #include "pyCodeReferenceRenamer.h"
-#include "../AppManagement.h"
 #include "../python/pythonEngine.h"
 #include "../python/pythonJedi.h"
+#include "AppManagement.h"
+#include "global.h"
+#include "organizer/scriptEditorOrganizer.h"
 
 #include <qfile.h>
 #include <qfileinfo.h>
@@ -53,6 +55,7 @@ PyCodeReferenceRenamer::PyCodeReferenceRenamer(QObject* parent) :
         // create dialog
         m_renameDialog = new QDialog();
         m_renameDialog->setWindowTitle(tr("Rename references").toUtf8().data());
+        m_renameDialog->setModal(true);
 
         m_newNameUserInput = new QLineEdit();
         QHBoxLayout* newNameLayout = new QHBoxLayout();
@@ -129,6 +132,9 @@ void PyCodeReferenceRenamer::onJediRenameResultAvailable(
         m_filesToChange = filesToChange;
         // set current value to new value line edit
         m_newNameUserInput->setText(filesToChange.at(0).m_values.at(0));
+
+        ScriptEditorOrganizer* seo =
+            qobject_cast<ScriptEditorOrganizer*>(AppManagement::getScriptEditorOrganizer());
 
         foreach (const JediRename& file, m_filesToChange)
         {
@@ -300,7 +306,42 @@ void PyCodeReferenceRenamer::onItemChanged(QTreeWidgetItem* item, int column)
 //-------------------------------------------------------------------
 void PyCodeReferenceRenamer::onItemDoubleClick(QTreeWidgetItem* item, int column)
 {
-    // open file in script editor
+    int index = 0;
+    int level = 0;
+    int line = 0;
+    QString fileToOpen;
+    QTreeWidgetItem* topLevelItem = nullptr;
+
+    ScriptEditorOrganizer* seo =
+        qobject_cast<ScriptEditorOrganizer*>(AppManagement::getScriptEditorOrganizer());
+
+    if (seo)
+    {
+        if (m_treeWidgetReferences->indexOfTopLevelItem(item) != -1)
+        {
+            topLevelItem = item;
+            line = 0;
+        }
+        else
+        {
+            topLevelItem = item->parent();
+            line = item->text(1).toInt() - 1;
+        }
+
+        fileToOpen = topLevelItem->text(0);
+
+        foreach (auto files, m_filesToChange)
+        {
+            index = files.m_filePath.indexOf(fileToOpen);
+            if (index != -1)
+            {
+                fileToOpen = files.m_filePath;
+                break;
+            }
+        }
+
+        seo->openScript(fileToOpen, nullptr, line);
+    }
 }
 
 } // namespace ito
