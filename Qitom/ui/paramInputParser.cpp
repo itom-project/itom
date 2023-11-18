@@ -578,7 +578,7 @@ QWidget* ParamInputParser::renderTypeString(
         {
             if (meta->getLen() == 1)
             {
-                QString pattern = CompatHelper::regExpAnchoredPattern(CompatHelper::wildcardToRegularExpression(QLatin1String(meta->getString(0))));
+                QString pattern = CompatHelper::wildcardToRegularExpression(QLatin1String(meta->getString(0)));
                 QRegularExpression reg(pattern);
                 txt->setValidator(new QRegularExpressionValidator(reg, txt));
                 QString toolTip = tr("%1 [Wildcard]").arg(reg.pattern());

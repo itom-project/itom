@@ -23,7 +23,7 @@ import plotly.express as px
 # import the base class ItomUi from the module itomUi in the itom-packages subfolder
 from itomUi import ItomUi
 from itom import ui
-# sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoPloty.png'
+# sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoPlotly.png'
 
 
 class PlotlyGuiDemo(ItomUi):
