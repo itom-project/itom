@@ -243,14 +243,14 @@ ito::RetVal AddInMultiChannelGrabber::initChannelsAndGlobalParameters(
     m_params["defaultChannel"].setVal<const char*>(defaultChannelName.toLatin1().constData());
     m_params["channelSelector"].setVal<const char*>(defaultChannelName.toLatin1().constData());
 
-    QList<ito::ByteArray> channelNames;
+    QVector<ito::ByteArray> channelNames;
 
     foreach(const QString & channelName, channelContainerMap.keys())
     {
         channelNames << ito::ByteArray(channelName.toLatin1().constData());
     }
 
-    m_params["availableChannels"].setVal<ito::ByteArray*>(channelNames.data(), channelNames.size());
+    m_params["availableChannels"].setVal<const ito::ByteArray*>(channelNames.constData(), channelNames.size());
 
     m_channels = channelContainerMap;
 

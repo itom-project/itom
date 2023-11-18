@@ -445,7 +445,7 @@ ito::RetVal AbstractDObjFigure::setDisplayedCameraChannel(const QString& channel
 
                     for (int i = 0; i < len; i++)
                     {
-                        if (QLatin1String(channelList[i].data()).compare(channel) == 0)
+                        if (QString::fromLatin1(channelList[i].data()).compare(channel) == 0)
                         {
                             found = true;
                             m_currentDisplayedCameraChannel = channel;
