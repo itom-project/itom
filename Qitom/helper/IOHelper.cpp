@@ -1302,7 +1302,7 @@ end:
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Checks if a file fits to a filter
 /*!
-    This function checks if a fileending of a file fits to a given set of filters.
+    This function checks if a file ending of a file fits to a given set of filters.
 
     \param filename pass the filename as a QString
     \param IOfilters pass the filterset that the filename shopuld be checked against
@@ -1313,12 +1313,13 @@ end:
     QStringList allPatterns;
     getFileFilters(IOfilters, &allPatterns);
     QRegularExpression reg;
+    QString filename_ = QFileInfo(filename).fileName();
 
     foreach(const QString &pat, allPatterns)
     {
         reg.setPattern(CompatHelper::regExpAnchoredPattern(CompatHelper::wildcardToRegularExpression(pat)));
 
-        if(filename.indexOf(reg) >= 0)
+        if(filename_.indexOf(reg) >= 0)
         {
             return true;
         }

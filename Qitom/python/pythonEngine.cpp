@@ -5869,7 +5869,7 @@ ito::RetVal PythonEngine::getVarnamesListInWorkspace(bool globalNotLocal, const 
             varnameList->clear();
             PyObject *key, *value;
             Py_ssize_t pos = 0;
-            QRegularExpression rx(CompatHelper::regExpAnchoredPattern(CompatHelper::wildcardToRegularExpression(find)));
+            QRegularExpression rx(CompatHelper::wildcardToRegularExpression(find));
             bool ok;
 
             while (PyDict_Next(destinationDict, &pos, &key, &value))

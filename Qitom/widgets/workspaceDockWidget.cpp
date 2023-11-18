@@ -971,6 +971,7 @@ void WorkspaceDockWidget::dragEnterEvent(QDragEnterEvent* event)
             &allPatterns);
         QRegularExpression reg("", QRegularExpression::CaseInsensitiveOption);
         bool ok = false;
+        QString localFileName;
 
         // check files
         foreach (const QUrl& url, urls)
@@ -980,21 +981,24 @@ void WorkspaceDockWidget::dragEnterEvent(QDragEnterEvent* event)
                 return;
             }
 
+            // the wildcard regexp cannot match / or \, therefore only the filename is compared.
+            localFileName = QFileInfo(url.toLocalFile()).fileName();
+
             foreach (const QString& pat, allPatterns)
             {
-                reg.setPattern(CompatHelper::regExpAnchoredPattern(CompatHelper::wildcardToRegularExpression(pat)));
+                reg.setPattern(CompatHelper::wildcardToRegularExpression(pat));
 
-                if (url.toLocalFile().indexOf(reg) >= 0)
+                if (localFileName.indexOf(reg) >= 0)
                 {
                     ok = true;
                     break;
                 }
             }
+        }
 
-            if (!ok)
-            {
-                return;
-            }
+        if (!ok)
+        {
+            return;
         }
 
         event->acceptProposedAction();
