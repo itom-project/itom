@@ -19,3 +19,5 @@ sphinx-favicon
 sphinxcontrib-fulltoc
 sphinxcontrib-jquery
 pydata-sphinx-theme
+ipython
+nbformat

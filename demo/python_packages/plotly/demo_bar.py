@@ -15,7 +15,7 @@ import itomPlotlyRenderer
 
 import plotly.express as px
 
-# sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoPloty.png'
+# sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoPlotlyBar.png'
 
 df = px.data.tips()
 fig = px.bar(
