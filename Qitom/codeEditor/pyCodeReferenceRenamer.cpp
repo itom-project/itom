@@ -30,6 +30,7 @@
 #include "../python/pythonJedi.h"
 #include "AppManagement.h"
 #include "global.h"
+#include "helper/IOHelper.h"
 #include "organizer/scriptEditorOrganizer.h"
 
 #include <qfile.h>
@@ -46,7 +47,7 @@ namespace ito {
 //-------------------------------------------------------------------------------------
 PyCodeReferenceRenamer::PyCodeReferenceRenamer(QObject* parent) :
     QObject(parent), m_pPythonEngine(nullptr), m_renameDialog(nullptr), m_newNameUserInput(nullptr),
-    m_treeWidgetReferences(nullptr), m_dialogButtonBox(nullptr), m_filesToChange()
+    m_treeWidgetReferences(nullptr), m_dialogButtonBox(nullptr), m_filesToChange(), m_request()
 {
     m_pPythonEngine = AppManagement::getPythonEngine();
 
@@ -112,15 +113,14 @@ PyCodeReferenceRenamer::~PyCodeReferenceRenamer()
 //-------------------------------------------------------------------------------------
 void PyCodeReferenceRenamer::rename(const int& line, const int& column, const QString& fileName)
 {
-    ito::JediRenameRequest request;
-    request.m_code = "";
-    request.m_callbackFctName = "onJediRenameResultAvailable";
-    request.m_col = column;
-    request.m_line = line;
-    request.m_fileName = fileName;
-    request.m_sender = this;
+    m_request.m_code = "";
+    m_request.m_callbackFctName = "onJediRenameResultAvailable";
+    m_request.m_col = column;
+    m_request.m_line = line;
+    m_request.m_fileName = fileName;
+    m_request.m_sender = this;
     PythonEngine* pyEng = (PythonEngine*)m_pPythonEngine;
-    pyEng->enqueueJediRenameRequest(request);
+    pyEng->enqueueJediRenameRequest(m_request);
 }
 
 //-------------------------------------------------------------------
@@ -139,20 +139,35 @@ void PyCodeReferenceRenamer::onJediRenameResultAvailable(
     m_newNameUserInput->setText(filesToChange.first().m_values.first());
     m_newNameUserInput->selectAll();
 
-    ScriptEditorOrganizer* seo =
-        qobject_cast<ScriptEditorOrganizer*>(AppManagement::getScriptEditorOrganizer());
+    QDir rootDir = QDir(m_request.m_fileName);
 
     for (const auto& file : m_filesToChange)
     {
         QTreeWidgetItem* fileItem = new QTreeWidgetItem(m_treeWidgetReferences);
         fileItem->setFlags(fileItem->flags() | Qt::ItemIsUserCheckable);
-        fileItem->setCheckState(0, Qt::Checked);
-
         QFileInfo* fileInfo = new QFileInfo(file.m_filePath);
-
-        fileItem->setText(0, fileInfo->fileName());
+        QString displayedPath = fileInfo->absoluteFilePath();
+        displayedPath.replace("/", "\\");
+        IOHelper::elideFilepathMiddle(displayedPath, 300);
+        fileItem->setText(0, displayedPath);
+        fileItem->setToolTip(0, fileInfo->absoluteFilePath());
         QFont font = QFont(fileItem->font(0));
-        font.setBold(true);
+
+        QString relativePath = rootDir.relativeFilePath(file.m_filePath);
+
+        if (relativePath.startsWith(".."))
+        {
+            fileItem->setCheckState(0, Qt::Unchecked);
+            fileItem->setExpanded(false);
+            font.setBold(false);
+        }
+        else
+        {
+            fileItem->setCheckState(0, Qt::Checked);
+            fileItem->setExpanded(true);
+            font.setBold(true);
+        }
+
         fileItem->setFont(0, font);
 
         m_treeWidgetReferences->addTopLevelItem(fileItem);
@@ -167,6 +182,7 @@ void PyCodeReferenceRenamer::onJediRenameResultAvailable(
 
         int idxLine = 0;
         int iterLine = 1;
+
         foreach (const int& line, file.m_lines)
         {
             QTreeWidgetItem* lineItem = new QTreeWidgetItem(fileItem);
@@ -178,7 +194,7 @@ void PyCodeReferenceRenamer::onJediRenameResultAvailable(
             }
 
             lineItem->setFlags(lineItem->flags() | Qt::ItemIsUserCheckable);
-            lineItem->setCheckState(0, Qt::Checked);
+            lineItem->setCheckState(0, fileItem->checkState(0));
             lineItem->setText(0, lineText);
 
             lineItem->setText(1, QString::number(line));
@@ -188,7 +204,6 @@ void PyCodeReferenceRenamer::onJediRenameResultAvailable(
         scriptFile->close();
     }
 
-    m_treeWidgetReferences->expandAll();
     for (int i = 0; i < m_treeWidgetReferences->columnCount(); ++i)
     {
         m_treeWidgetReferences->resizeColumnToContents(i);
@@ -299,6 +314,9 @@ void PyCodeReferenceRenamer::onItemChanged(QTreeWidgetItem* item, int column)
         childItem->setCheckState(column, state);
 
         item->setExpanded(state == Qt::Checked);
+        QFont font = QFont(item->font(0));
+        font.setBold(state == Qt::Checked);
+        item->setFont(0, font);
     }
     return;
 }

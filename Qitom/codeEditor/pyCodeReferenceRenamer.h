@@ -49,6 +49,8 @@ private:
     QTreeWidget* m_treeWidgetReferences;
     QDialogButtonBox* m_dialogButtonBox;
     QVector<ito::JediRename> m_filesToChange;
+    ito::JediRenameRequest m_request;
+
 
 private slots:
     void onJediRenameResultAvailable(const QVector<ito::JediRename>& filesToChange);
