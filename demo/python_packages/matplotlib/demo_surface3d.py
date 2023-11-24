@@ -1,7 +1,4 @@
-"""Surface 3D
-=============
 
-"""
 
 from itom import dataObject
 import matplotlib.pyplot as plt

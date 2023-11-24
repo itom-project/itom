@@ -32,6 +32,7 @@
 #include "global.h"
 #include "helper/IOHelper.h"
 #include "organizer/scriptEditorOrganizer.h"
+#include "widgets/scriptDockWidget.h"
 
 #include <qfile.h>
 #include <qfileinfo.h>
@@ -113,14 +114,27 @@ PyCodeReferenceRenamer::~PyCodeReferenceRenamer()
 //-------------------------------------------------------------------------------------
 void PyCodeReferenceRenamer::rename(const int& line, const int& column, const QString& fileName)
 {
-    m_request.m_code = "";
-    m_request.m_callbackFctName = "onJediRenameResultAvailable";
-    m_request.m_col = column;
-    m_request.m_line = line;
-    m_request.m_fileName = fileName;
-    m_request.m_sender = this;
     PythonEngine* pyEng = (PythonEngine*)m_pPythonEngine;
-    pyEng->enqueueJediRenameRequest(m_request);
+
+    if (pyEng)
+    {
+        if (pyEng->tryToLoadJediIfNotYetDone())
+        {
+            m_request.m_code = "";
+            m_request.m_callbackFctName = "onJediRenameResultAvailable";
+            m_request.m_col = column;
+            m_request.m_line = line;
+            m_request.m_fileName = fileName;
+            m_request.m_sender = this;
+            PythonEngine* pyEng = (PythonEngine*)m_pPythonEngine;
+
+            ScriptEditorOrganizer* seo =
+                qobject_cast<ScriptEditorOrganizer*>(AppManagement::getScriptEditorOrganizer());
+            seo->saveAllScripts(true, true);
+
+            pyEng->enqueueJediRenameRequest(m_request);
+        }
+    }
 }
 
 //-------------------------------------------------------------------
@@ -255,13 +269,14 @@ void PyCodeReferenceRenamer::onApply()
 
         if (topItem->checkState(0) == Qt::Checked) // iter lines and columns of checked files
         {
-            filePath = getAbsoluteFilePath(topItem->text(0));
+            filePath = getAbsoluteFilePath(m_filesToChange.at(idxTopLevel).m_filePath);
             for (int idxSecondLevel = topItem->childCount() - 1; idxSecondLevel >= 0;
                  --idxSecondLevel)
             {
                 QTreeWidgetItem* secondLevelItem = topItem->child(idxSecondLevel);
                 line = secondLevelItem->text(1).toInt();
                 column = secondLevelItem->text(2).toInt();
+
 
                 replaceWordInFile(
                     filePath, line, column, m_filesToChange.at(0).m_values.at(0), newValue);
