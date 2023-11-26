@@ -800,13 +800,14 @@ def rename_reference(code, line, column, path):
 
             if jedi.__version__ >= "0.16.0":
                 if jedi.__version__ >= "0.17.0":
-                    script = jedi.Script(path=path, environment=jedienv)
+                    script = jedi.Script(code, path=path, environment=jedienv)
                 else:
-                    script = jedi.Script(path=path, encoding="utf-8", environment=jedienv)
+                    script = jedi.Script(code, path=path, encoding="utf-8", environment=jedienv)
 
             else:
                 if jedi.__version__ >= "0.12.0":
                     script = jedi.Script(
+                        code,
                         line + 1,
                         column,
                         path,
@@ -814,7 +815,7 @@ def rename_reference(code, line, column, path):
                         environment=jedienv,
                     )
                 else:
-                    script = jedi.Script(line + 1, column, path, encoding="utf-8")
+                    script = jedi.Script(code, line + 1, column, path, encoding="utf-8")
 
             try:
                 refactoring = script.rename(line=line, column=column, new_name="")

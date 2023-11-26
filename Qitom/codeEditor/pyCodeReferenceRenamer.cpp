@@ -29,10 +29,12 @@
 #include "../python/pythonEngine.h"
 #include "../python/pythonJedi.h"
 #include "AppManagement.h"
+#include "codeEditor.h"
 #include "global.h"
 #include "helper/IOHelper.h"
 #include "organizer/scriptEditorOrganizer.h"
 #include "widgets/scriptDockWidget.h"
+#include "widgets/scriptEditorWidget.h"
 
 #include <qfile.h>
 #include <qfileinfo.h>
@@ -42,6 +44,7 @@
 #include <qmessagebox.h>
 #include <qmetaobject.h>
 #include <qpushbutton.h>
+#include <qstandarditemmodel.h>
 
 namespace ito {
 
@@ -120,7 +123,14 @@ void PyCodeReferenceRenamer::rename(const int& line, const int& column, const QS
     {
         if (pyEng->tryToLoadJediIfNotYetDone())
         {
-            m_request.m_code = "";
+            ScriptEditorOrganizer* seo =
+                qobject_cast<ScriptEditorOrganizer*>(AppManagement::getScriptEditorOrganizer());
+
+            ScriptDockWidget* sdw = seo->getActiveDockWidget();
+            ScriptEditorWidget* sew = sdw->getCurrentEditor();
+            QString code = sew->toPlainText();
+
+            m_request.m_code = code;
             m_request.m_callbackFctName = "onJediRenameResultAvailable";
             m_request.m_col = column;
             m_request.m_line = line;
@@ -128,8 +138,6 @@ void PyCodeReferenceRenamer::rename(const int& line, const int& column, const QS
             m_request.m_sender = this;
             PythonEngine* pyEng = (PythonEngine*)m_pPythonEngine;
 
-            ScriptEditorOrganizer* seo =
-                qobject_cast<ScriptEditorOrganizer*>(AppManagement::getScriptEditorOrganizer());
             seo->saveAllScripts(true, true);
 
             pyEng->enqueueJediRenameRequest(m_request);
@@ -197,14 +205,19 @@ void PyCodeReferenceRenamer::onJediRenameResultAvailable(
         int idxLine = 0;
         int iterLine = 1;
 
+        int previousLine = -1;
+        QString lineText;
         foreach (const int& line, file.m_lines)
         {
             QTreeWidgetItem* lineItem = new QTreeWidgetItem(fileItem);
-            QString lineText;
 
-            for (iterLine; iterLine <= line; ++iterLine)
+
+            if (line > previousLine)
             {
-                lineText = in.readLine();
+                for (iterLine; iterLine <= line; ++iterLine)
+                {
+                    lineText = in.readLine();
+                }
             }
 
             lineItem->setFlags(lineItem->flags() | Qt::ItemIsUserCheckable);
@@ -214,7 +227,9 @@ void PyCodeReferenceRenamer::onJediRenameResultAvailable(
             lineItem->setText(1, QString::number(line));
             lineItem->setText(2, QString::number(file.m_columns.at(idxLine)));
             idxLine++;
+            previousLine = line;
         }
+
         scriptFile->close();
     }
 
@@ -359,7 +374,9 @@ void PyCodeReferenceRenamer::onItemDoubleClick(QTreeWidgetItem* item, int column
         line = item->text(1).toInt() - 1;
     }
 
-    seo->openScript(getAbsoluteFilePath(topLevelItem->text(0)), nullptr, line);
+    QFileInfo* fileInfo = new QFileInfo(topLevelItem->text(0));
+    fileToOpen = getAbsoluteFilePath(fileInfo->fileName());
+    seo->openScript(getAbsoluteFilePath(fileToOpen), nullptr, line);
     return;
 }
 
