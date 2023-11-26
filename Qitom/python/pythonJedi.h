@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2023, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
@@ -27,6 +27,8 @@
 #include <qobject.h>
 #include <qpointer.h>
 #include <qstring.h>
+#include <qvector.h>
+#include <qstringlist.h>
 
 namespace ito {
 //--------------------------------------------------------------------------------------
@@ -166,7 +168,7 @@ struct JediRename
         const QString filePath,
         const QVector<int>& lines,
         const QVector<int>& columns,
-        const QVector<QString>& values) :
+        const QStringList& values) :
         m_filePath(filePath),
         m_lines(lines), m_columns(columns), m_values(values)
     {
@@ -175,7 +177,7 @@ struct JediRename
     QString m_filePath;
     QVector<int> m_lines;
     QVector<int> m_columns;
-    QVector<QString> m_values;
+    QStringList m_values;
 };
 
 } // end namespace ito

@@ -747,11 +747,11 @@ void RenameRunnable::run()
                             QString filePath =
                                 PythonQtConversion::PyObjGetString(filePathRef, true, ok);
 
-                            QVector<int> lines =
+                            auto lines =
                                 PythonQtConversion::PyObjGetIntArray(linesRef, true, ok);
-                            QVector<int> columns =
+                            auto columns =
                                 PythonQtConversion::PyObjGetIntArray(columnsRef, true, ok);
-                            QVector<QString> values =
+                            auto values =
                                 PythonQtConversion::PyObjToStringList(valuesRef, true, ok);
                             if (ok)
                             {
