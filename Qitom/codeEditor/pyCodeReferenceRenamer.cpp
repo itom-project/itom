@@ -35,6 +35,7 @@
 #include "organizer/scriptEditorOrganizer.h"
 #include "widgets/scriptDockWidget.h"
 #include "widgets/scriptEditorWidget.h"
+#include "delegates/htmlItemDelegate.h"
 
 #include <qfile.h>
 #include <qfileinfo.h>
@@ -59,16 +60,17 @@ PyCodeReferenceRenamer::PyCodeReferenceRenamer(QObject* parent) :
     {
         // create dialog
         m_renameDialog = new QDialog();
-        m_renameDialog->setWindowTitle(tr("Rename reference").toUtf8().data());
+        m_renameDialog->setWindowTitle(tr("Rename reference"));
         m_renameDialog->setModal(true);
 
-        m_newNameUserInput = new QLineEdit();
+        m_newNameUserInput = new QLineEdit(m_renameDialog);
         QHBoxLayout* newNameLayout = new QHBoxLayout();
-        newNameLayout->addWidget(new QLabel(tr("New value: ").toUtf8().data()));
+        newNameLayout->addWidget(new QLabel(tr("New value: ")));
         newNameLayout->addWidget(m_newNameUserInput);
 
-        m_treeWidgetReferences = new QTreeWidget;
+        m_treeWidgetReferences = new QTreeWidget(m_renameDialog);
         m_treeWidgetReferences->setAlternatingRowColors(true);
+        m_treeWidgetReferences->setItemDelegateForColumn(0, new HtmlItemDelegate());
         m_treeWidgetReferences->setColumnCount(3);
 
 
@@ -78,7 +80,7 @@ PyCodeReferenceRenamer::PyCodeReferenceRenamer(QObject* parent) :
         m_treeWidgetReferences->setHeaderLabels(headerLabels);
 
         m_dialogButtonBox = new QDialogButtonBox(
-            QDialogButtonBox::StandardButton::Ok | QDialogButtonBox::StandardButton::Cancel);
+            QDialogButtonBox::StandardButton::Ok | QDialogButtonBox::StandardButton::Cancel, m_renameDialog);
 
         QVBoxLayout* dialogLayout = new QVBoxLayout(m_renameDialog);
         dialogLayout->addLayout(newNameLayout);
@@ -112,6 +114,7 @@ PyCodeReferenceRenamer::PyCodeReferenceRenamer(QObject* parent) :
 //-------------------------------------------------------------------------------------
 PyCodeReferenceRenamer::~PyCodeReferenceRenamer()
 {
+    DELETE_AND_SET_NULL(m_renameDialog);
 }
 
 //-------------------------------------------------------------------------------------
@@ -126,8 +129,8 @@ void PyCodeReferenceRenamer::rename(const int& line, const int& column, const QS
             ScriptEditorOrganizer* seo =
                 qobject_cast<ScriptEditorOrganizer*>(AppManagement::getScriptEditorOrganizer());
 
-            ScriptDockWidget* sdw = seo->getActiveDockWidget();
-            ScriptEditorWidget* sew = sdw->getCurrentEditor();
+            const ScriptDockWidget* sdw = seo->getActiveDockWidget();
+            const ScriptEditorWidget* sew = sdw->getCurrentEditor();
             QString code = sew->toPlainText();
 
             m_request.m_code = code;
@@ -167,13 +170,13 @@ void PyCodeReferenceRenamer::onJediRenameResultAvailable(
     {
         QTreeWidgetItem* fileItem = new QTreeWidgetItem(m_treeWidgetReferences);
         fileItem->setFlags(fileItem->flags() | Qt::ItemIsUserCheckable);
-        QFileInfo* fileInfo = new QFileInfo(file.m_filePath);
-        QString displayedPath = fileInfo->absoluteFilePath();
+        QFileInfo fileInfo(file.m_filePath);
+        QString displayedPath = fileInfo.absoluteFilePath();
         displayedPath.replace("/", "\\");
         IOHelper::elideFilepathMiddle(displayedPath, 300);
         fileItem->setText(0, displayedPath);
-        fileItem->setToolTip(0, fileInfo->absoluteFilePath());
-        QFont font = QFont(fileItem->font(0));
+        fileItem->setToolTip(0, fileInfo.absoluteFilePath());
+        QFont font(fileItem->font(0));
 
         QString relativePath = rootDir.relativeFilePath(file.m_filePath);
 
@@ -201,20 +204,21 @@ void PyCodeReferenceRenamer::onJediRenameResultAvailable(
         }
 
         QTextStream in(scriptFile);
-
         int idxLine = 0;
         int iterLine = 1;
-
         int previousLine = -1;
         QString lineText;
-        foreach (const int& line, file.m_lines)
+        QString textLeft, textRight;
+        int lineNumber;
+
+        for (int idx = 0; idx < file.m_lines.size(); ++idx)
         {
+            lineNumber = file.m_lines[idx];
             QTreeWidgetItem* lineItem = new QTreeWidgetItem(fileItem);
 
-
-            if (line > previousLine)
+            if (lineNumber > previousLine)
             {
-                for (iterLine; iterLine <= line; ++iterLine)
+                for (iterLine; iterLine <= lineNumber; ++iterLine)
                 {
                     lineText = in.readLine();
                 }
@@ -222,21 +226,26 @@ void PyCodeReferenceRenamer::onJediRenameResultAvailable(
 
             lineItem->setFlags(lineItem->flags() | Qt::ItemIsUserCheckable);
             lineItem->setCheckState(0, fileItem->checkState(0));
-            lineItem->setText(0, lineText);
 
-            lineItem->setText(1, QString::number(line));
+            textLeft = lineText.left(file.m_columns[idx]);
+            textRight = lineText.mid(file.m_columns[idx] + file.m_values[idx].size());
+            lineItem->setText(0, textLeft + "<b>" + file.m_values[idx] + "</b>" + textRight);
+
+            lineItem->setText(1, QString::number(lineNumber));
             lineItem->setText(2, QString::number(file.m_columns.at(idxLine)));
             idxLine++;
-            previousLine = line;
+            previousLine = lineNumber;
         }
 
         scriptFile->close();
+        DELETE_AND_SET_NULL(scriptFile);
     }
 
     for (int i = 0; i < m_treeWidgetReferences->columnCount(); ++i)
     {
         m_treeWidgetReferences->resizeColumnToContents(i);
     }
+
     m_renameDialog->resize(800, 600);
     m_renameDialog->show();
     m_newNameUserInput->setFocus();
@@ -292,12 +301,12 @@ void PyCodeReferenceRenamer::onApply()
                 line = secondLevelItem->text(1).toInt();
                 column = secondLevelItem->text(2).toInt();
 
-
                 replaceWordInFile(
                     filePath, line, column, m_filesToChange.at(0).m_values.at(0), newValue);
             }
         }
     }
+
     clearAndHideTreeWidget();
 }
 
