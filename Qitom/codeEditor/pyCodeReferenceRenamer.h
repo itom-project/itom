@@ -32,15 +32,22 @@
 #include <qtreewidget.h>
 #include <qwidget.h>
 
+#include "common/retVal.h"
+
 namespace ito {
 
 class PyCodeReferenceRenamer : public QObject
 {
     Q_OBJECT
 public:
-    PyCodeReferenceRenamer(QObject* parent = nullptr);
+    PyCodeReferenceRenamer(QWidget* parent = nullptr);
     ~PyCodeReferenceRenamer();
-    void rename(const int& line, const int& column, const QString& fileName);
+    RetVal rename(const int& line, const int& column, const QString& filepath);
+
+    enum RenamerRetVal
+    {
+        CodeYetNotAvailable = 100
+    };
 
 private:
     QObject* m_pPythonEngine;
@@ -50,10 +57,11 @@ private:
     QDialogButtonBox* m_dialogButtonBox;
     QVector<ito::JediRename> m_filesToChange;
     ito::JediRenameRequest m_request;
+    QWidget *m_pParent;
 
 
 private slots:
-    void onJediRenameResultAvailable(const QVector<ito::JediRename>& filesToChange);
+    void onJediRenameResultAvailable(const QVector<ito::JediRename>& filesToChange, bool success, QString errorText);
     void onApply();
     void onCanceled();
     void onItemChanged(QTreeWidgetItem* item, int column);

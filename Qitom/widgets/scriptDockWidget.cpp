@@ -1717,8 +1717,9 @@ void ScriptDockWidget::createActions()
 
     m_referenceRenameAction = new ShortcutAction(
         QIcon(":/editor/icons/rename.png"),
-        tr("Rename Reference"),
+        tr("Rename..."),
         this, QKeySequence(tr("F2", "QShortcut")), Qt::WidgetWithChildrenShortcut);
+    m_referenceRenameAction->action()->setToolTip(tr("Rename all references of the symbol under the cursor"));
     m_referenceRenameAction->connectTrigger(this, SLOT(mnuPyReferenceRenaming()));
 
     m_pyDocstringGeneratorAction = new ShortcutAction(QIcon(), tr("Generate Docstring"),
@@ -2699,7 +2700,11 @@ void ScriptDockWidget::mnuPyReferenceRenaming()
 
     if (sew != nullptr)
     {
-        sew->menuPyCodeReferenceRenaming();
+        if (!sew->menuPyCodeReferenceRenaming())
+        {
+            // jedi not available or could not be loaded
+            m_referenceRenameAction->setEnabled(false);
+        }
     }
 }
 

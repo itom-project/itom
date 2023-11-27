@@ -654,10 +654,11 @@ void ScriptEditorWidget::initMenus()
 
     m_editorMenuActions["referenceRenameing"] = editorMenu->addAction(
         QIcon(":/editor/icons/rename.png"),
-        tr("Rename Reference"),
+        tr("Rename..."),
         this,
         SLOT(menuPyCodeReferenceRenaming()),
-        QKeySequence(tr("F2", "QShortcu")));
+        QKeySequence(tr("F2", "QShortcut")));
+    m_editorMenuActions["referenceRenameing"]->setToolTip(tr("Rename all references of the symbol under the cursor"));
 
     m_editorMenuActions["generateDocstring"] = editorMenu->addAction(
         QIcon(),
@@ -1559,15 +1560,37 @@ void ScriptEditorWidget::menuPyCodeFormatting()
 }
 
 //-------------------------------------------------------------------------------------
-void ScriptEditorWidget::menuPyCodeReferenceRenaming()
+bool ScriptEditorWidget::menuPyCodeReferenceRenaming()
 {
     m_pyCodeReferenceRenamer =
         QSharedPointer<PyCodeReferenceRenamer>(new PyCodeReferenceRenamer(this), doDeleteLater);
     QTextCursor cursor = textCursor();
-    int line = currentLineNumber() + 1;
+    int lineNumber = currentLineNumber() + 1;
     int col = currentColumnNumber();
-    QString fileName = qobject_cast<ScriptEditorWidget*>(this)->getFilename();
-    m_pyCodeReferenceRenamer->rename(line, col, fileName);
+    QString filepath = qobject_cast<ScriptEditorWidget*>(this)->getFilename();
+
+    if (lineNumber < 1 || col < 0)
+    {
+        return true;
+    }
+
+    ito::RetVal retValue = m_pyCodeReferenceRenamer->rename(lineNumber, col, filepath);
+
+    if (retValue.containsError())
+    {
+        if (retValue.errorCode() == PyCodeReferenceRenamer::CodeYetNotAvailable)
+        {
+            m_editorMenuActions["referenceRenameing"]->setEnabled(false);
+            QMessageBox::critical(this, tr("Error during renaming"), retValue.errorMessage());
+            return false;
+        }
+        else
+        {
+            QMessageBox::critical(this, tr("General error during renaming"), retValue.errorMessage());
+        }
+    }
+
+    return true;
 }
 
 //-------------------------------------------------------------------------------------

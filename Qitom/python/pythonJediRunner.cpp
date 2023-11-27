@@ -707,26 +707,28 @@ void RenameRunnable::run()
         return;
     }
 
-    QVector<ito::JediRename> rename;
-
+    QVector<ito::JediRename> renameList;
+    bool success = false;
+    QString errorText;
+    QString mainFile = QFileInfo(m_request.m_filepath).canonicalFilePath();
     PyGILState_STATE gstate = PyGILState_Ensure();
 
     try
     {
-        PyObject* result = nullptr;
-
-        result = PyObject_CallMethod(
+        PyObject* result = PyObject_CallMethod(
             m_pPyModJedi,
             "rename_reference",
             "siis",
             m_request.m_code.toUtf8().constData(),
             m_request.m_line,
             m_request.m_col,
-            m_request.m_fileName.toUtf8().constData()); // new ref
+            m_request.m_filepath.toUtf8().constData()); // new ref
 
         if (result && PyList_Check(result))
         {
+            success = true;
             Py_ssize_t resultSize = PyList_Size(result);
+
             if (resultSize > 0)
             {
                 for (Py_ssize_t resultIdx = 0; resultIdx < resultSize; ++resultIdx)
@@ -746,7 +748,6 @@ void RenameRunnable::run()
                             bool ok;
                             QString filePath =
                                 PythonQtConversion::PyObjGetString(filePathRef, true, ok);
-
                             auto lines =
                                 PythonQtConversion::PyObjGetIntArray(linesRef, true, ok);
                             auto columns =
@@ -755,12 +756,21 @@ void RenameRunnable::run()
                                 PythonQtConversion::PyObjToStringList(valuesRef, true, ok);
                             if (ok)
                             {
-                                JediRename filesToChange;
-                                filesToChange.m_filePath = filePath;
-                                filesToChange.m_lines = lines;
-                                filesToChange.m_columns = columns;
-                                filesToChange.m_values = values;
-                                rename.append(filesToChange);
+                                JediRename fileToChange;
+                                fileToChange.m_mainFile = (mainFile == QFileInfo(filePath).canonicalFilePath());
+                                fileToChange.m_filePath = filePath;
+                                fileToChange.m_lines = lines;
+                                fileToChange.m_columns = columns;
+                                fileToChange.m_values = values;
+
+                                if (renameList.size() > 0 && fileToChange.m_mainFile)
+                                {
+                                    renameList.prepend(fileToChange);
+                                }
+                                else
+                                {
+                                    renameList.append(fileToChange);
+                                }
                             }
                         }
                     }
@@ -768,8 +778,7 @@ void RenameRunnable::run()
             }
             else
             {
-                std::cerr << "No reference found at cursor position\n" << std::endl;
-                PyErr_PrintEx(0);
+                errorText = QObject::tr("No reference or symbol found at cursor position");
             }
 
             Py_DECREF(result);
@@ -793,10 +802,16 @@ void RenameRunnable::run()
     PyGILState_Release(gstate);
 
     QObject* s = m_request.m_sender.data();
+
     if (s && m_request.m_callbackFctName != "")
     {
         QMetaObject::invokeMethod(
-            s, m_request.m_callbackFctName.constData(), Q_ARG(QVector<ito::JediRename>, rename));
+            s, 
+            m_request.m_callbackFctName.constData(), 
+            Q_ARG(QVector<ito::JediRename>, renameList), 
+            Q_ARG(bool, success), 
+            Q_ARG(QString, errorText)
+        );
     }
 
     endRun();

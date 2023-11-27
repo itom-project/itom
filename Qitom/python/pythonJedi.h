@@ -155,7 +155,8 @@ struct JediRenameRequest
     QString m_code;
     int m_line;
     int m_col;
-    QString m_fileName;
+    QString m_filepath;
+    bool m_fileModified;
     QByteArray m_callbackFctName;
     QPointer<QObject> m_sender;
 };
@@ -175,6 +176,7 @@ struct JediRename
     }
 
     QString m_filePath;
+    bool m_mainFile;
     QVector<int> m_lines;
     QVector<int> m_columns;
     QStringList m_values;

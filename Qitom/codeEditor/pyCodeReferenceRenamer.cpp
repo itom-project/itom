@@ -19,10 +19,6 @@
     You should have received a copy of the GNU Library General Public License
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 
-    --------------------------------
-    This class is a modified version of the class QToolTip of the
-    Qt framework (licensed under LGPL):
-    https://code.woboq.org/qt5/qtbase/src/widgets/kernel/qtooltip.cpp.html
 *********************************************************************** */
 
 #include "pyCodeReferenceRenamer.h"
@@ -36,6 +32,7 @@
 #include "widgets/scriptDockWidget.h"
 #include "widgets/scriptEditorWidget.h"
 #include "delegates/htmlItemDelegate.h"
+#include "helper/guiHelper.h"
 
 #include <qfile.h>
 #include <qfileinfo.h>
@@ -50,8 +47,8 @@
 namespace ito {
 
 //-------------------------------------------------------------------------------------
-PyCodeReferenceRenamer::PyCodeReferenceRenamer(QObject* parent) :
-    QObject(parent), m_pPythonEngine(nullptr), m_renameDialog(nullptr), m_newNameUserInput(nullptr),
+PyCodeReferenceRenamer::PyCodeReferenceRenamer(QWidget* parent) :
+    QObject(parent), m_pParent(parent), m_pPythonEngine(nullptr), m_renameDialog(nullptr), m_newNameUserInput(nullptr),
     m_treeWidgetReferences(nullptr), m_dialogButtonBox(nullptr), m_filesToChange(), m_request()
 {
     m_pPythonEngine = AppManagement::getPythonEngine();
@@ -59,7 +56,7 @@ PyCodeReferenceRenamer::PyCodeReferenceRenamer(QObject* parent) :
     if (!m_renameDialog)
     {
         // create dialog
-        m_renameDialog = new QDialog();
+        m_renameDialog = new QDialog(parent);
         m_renameDialog->setWindowTitle(tr("Rename reference"));
         m_renameDialog->setModal(true);
 
@@ -118,7 +115,7 @@ PyCodeReferenceRenamer::~PyCodeReferenceRenamer()
 }
 
 //-------------------------------------------------------------------------------------
-void PyCodeReferenceRenamer::rename(const int& line, const int& column, const QString& fileName)
+ito::RetVal PyCodeReferenceRenamer::rename(const int& line, const int& column, const QString& filepath)
 {
     PythonEngine* pyEng = (PythonEngine*)m_pPythonEngine;
 
@@ -134,26 +131,45 @@ void PyCodeReferenceRenamer::rename(const int& line, const int& column, const QS
             QString code = sew->toPlainText();
 
             m_request.m_code = code;
+            m_request.m_fileModified = sew->isModified();
             m_request.m_callbackFctName = "onJediRenameResultAvailable";
             m_request.m_col = column;
             m_request.m_line = line;
-            m_request.m_fileName = fileName;
+            m_request.m_filepath = filepath;
             m_request.m_sender = this;
             PythonEngine* pyEng = (PythonEngine*)m_pPythonEngine;
 
-            seo->saveAllScripts(true, true);
-
+            QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
             pyEng->enqueueJediRenameRequest(m_request);
         }
+        else
+        {
+            return RetVal(
+                retError, 
+                CodeYetNotAvailable, 
+                tr("Python module Jedi is not available or could not be loaded. The rename feature will be disabled.").toLatin1().data()
+            );
+        }
     }
+
+    return ito::retOk;
 }
 
 //-------------------------------------------------------------------
 void PyCodeReferenceRenamer::onJediRenameResultAvailable(
-    const QVector<ito::JediRename>& filesToChange)
+    const QVector<ito::JediRename>& filesToChange,
+    bool success,
+    QString errorText)
 {
-    if (filesToChange.isEmpty())
+    QApplication::restoreOverrideCursor();
+
+    if (!success || filesToChange.isEmpty())
     {
+        if (errorText != "")
+        {
+            QMessageBox::critical(m_pParent, tr("Rename error"), errorText);
+        }
+
         clearAndHideTreeWidget();
         return;
     }
@@ -164,19 +180,20 @@ void PyCodeReferenceRenamer::onJediRenameResultAvailable(
     m_newNameUserInput->setText(filesToChange.first().m_values.first());
     m_newNameUserInput->selectAll();
 
-    QDir rootDir = QDir(m_request.m_fileName);
+    QDir rootDir = QDir(m_request.m_filepath);
 
     for (const auto& file : m_filesToChange)
     {
         QTreeWidgetItem* fileItem = new QTreeWidgetItem(m_treeWidgetReferences);
         fileItem->setFlags(fileItem->flags() | Qt::ItemIsUserCheckable);
         QFileInfo fileInfo(file.m_filePath);
-        QString displayedPath = fileInfo.absoluteFilePath();
-        displayedPath.replace("/", "\\");
+        QString canonicalFilePath = fileInfo.canonicalFilePath();
+        QString displayedPath = canonicalFilePath;
+        fileItem->setData(0, Qt::UserRole, canonicalFilePath);
+        fileItem->setData(0, Qt::UserRole + 1, file.m_mainFile);
         IOHelper::elideFilepathMiddle(displayedPath, 300);
-        fileItem->setText(0, displayedPath);
+        fileItem->setText(0, "<b>" + displayedPath + "</b>");
         fileItem->setToolTip(0, fileInfo.absoluteFilePath());
-        QFont font(fileItem->font(0));
 
         QString relativePath = rootDir.relativeFilePath(file.m_filePath);
 
@@ -184,16 +201,12 @@ void PyCodeReferenceRenamer::onJediRenameResultAvailable(
         {
             fileItem->setCheckState(0, Qt::Unchecked);
             fileItem->setExpanded(false);
-            font.setBold(false);
         }
         else
         {
             fileItem->setCheckState(0, Qt::Checked);
             fileItem->setExpanded(true);
-            font.setBold(true);
         }
-
-        fileItem->setFont(0, font);
 
         m_treeWidgetReferences->addTopLevelItem(fileItem);
 
@@ -215,6 +228,7 @@ void PyCodeReferenceRenamer::onJediRenameResultAvailable(
         {
             lineNumber = file.m_lines[idx];
             QTreeWidgetItem* lineItem = new QTreeWidgetItem(fileItem);
+            lineItem->setData(0, Qt::UserRole, canonicalFilePath);
 
             if (lineNumber > previousLine)
             {
@@ -233,6 +247,8 @@ void PyCodeReferenceRenamer::onJediRenameResultAvailable(
 
             lineItem->setText(1, QString::number(lineNumber));
             lineItem->setText(2, QString::number(file.m_columns.at(idxLine)));
+            lineItem->setData(1, Qt::UserRole, lineNumber);
+            lineItem->setData(2, Qt::UserRole, file.m_columns.at(idxLine));
             idxLine++;
             previousLine = lineNumber;
         }
@@ -246,7 +262,8 @@ void PyCodeReferenceRenamer::onJediRenameResultAvailable(
         m_treeWidgetReferences->resizeColumnToContents(i);
     }
 
-    m_renameDialog->resize(800, 600);
+    auto f = GuiHelper::screenDpiFactor();
+    m_renameDialog->resize(f * 800.0, f * 600.0);
     m_renameDialog->show();
     m_newNameUserInput->setFocus();
 }
@@ -285,6 +302,9 @@ void PyCodeReferenceRenamer::onApply()
         }
     }
 
+    ScriptEditorOrganizer* seo =
+        qobject_cast<ScriptEditorOrganizer*>(AppManagement::getScriptEditorOrganizer());
+
     // iter all files
     for (int idxTopLevel = 0; idxTopLevel < m_treeWidgetReferences->topLevelItemCount();
          ++idxTopLevel)
@@ -293,13 +313,14 @@ void PyCodeReferenceRenamer::onApply()
 
         if (topItem->checkState(0) == Qt::Checked) // iter lines and columns of checked files
         {
-            filePath = getAbsoluteFilePath(m_filesToChange.at(idxTopLevel).m_filePath);
+            filePath = topItem->data(0, Qt::UserRole).toString();
+
             for (int idxSecondLevel = topItem->childCount() - 1; idxSecondLevel >= 0;
                  --idxSecondLevel)
             {
-                QTreeWidgetItem* secondLevelItem = topItem->child(idxSecondLevel);
-                line = secondLevelItem->text(1).toInt();
-                column = secondLevelItem->text(2).toInt();
+                const QTreeWidgetItem* secondLevelItem = topItem->child(idxSecondLevel);
+                line = secondLevelItem->data(1, Qt::UserRole).toInt();
+                column = secondLevelItem->data(2, Qt::UserRole).toInt();
 
                 replaceWordInFile(
                     filePath, line, column, m_filesToChange.at(0).m_values.at(0), newValue);
@@ -380,13 +401,11 @@ void PyCodeReferenceRenamer::onItemDoubleClick(QTreeWidgetItem* item, int column
     else
     {
         topLevelItem = item->parent();
-        line = item->text(1).toInt() - 1;
+        line = item->data(1, Qt::UserRole).toInt() - 1;
     }
 
-    QFileInfo* fileInfo = new QFileInfo(topLevelItem->text(0));
-    fileToOpen = getAbsoluteFilePath(fileInfo->fileName());
-    seo->openScript(getAbsoluteFilePath(fileToOpen), nullptr, line);
-    return;
+    QFileInfo fileInfo(topLevelItem->data(0, Qt::UserRole).toString());
+    seo->openScript(fileInfo.canonicalFilePath(), nullptr, line);
 }
 
 //-------------------------------------------------------------------
