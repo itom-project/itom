@@ -64,13 +64,7 @@ void HtmlItemDelegate::paint(
 //-------------------------------------------------------------------------------------
 QSize HtmlItemDelegate::sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     QStyleOptionViewItem optionV4 = option;
-    optionV4;
-#else
-    QStyleOptionViewItemV4 optionV4 = option;
-#endif
-
     initStyleOption(&optionV4, index);
 
     QTextDocument doc;
