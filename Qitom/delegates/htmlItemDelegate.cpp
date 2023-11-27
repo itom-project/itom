@@ -22,21 +22,21 @@
 
 #include "htmlItemDelegate.h"
 
-#include <qtextdocument.h>
 #include <qabstracttextdocumentlayout.h>
 #include <qapplication.h>
 #include <qpainter.h>
+#include <qtextdocument.h>
 
-namespace ito
-{
+namespace ito {
 
 //-------------------------------------------------------------------------------------
-void HtmlItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
+void HtmlItemDelegate::paint(
+    QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
     QStyleOptionViewItem styleOption = option;
     initStyleOption(&styleOption, index);
 
-    QStyle *style = styleOption.widget? styleOption.widget->style() : QApplication::style();
+    QStyle* style = styleOption.widget ? styleOption.widget->style() : QApplication::style();
 
     QTextDocument doc;
     doc.setHtml(styleOption.text);
@@ -49,7 +49,8 @@ void HtmlItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opti
 
     // Highlighting text if item is selected
     if (styleOption.state & QStyle::State_Selected)
-        ctx.palette.setColor(QPalette::Text, styleOption.palette.color(QPalette::Active, QPalette::HighlightedText));
+        ctx.palette.setColor(
+            QPalette::Text, styleOption.palette.color(QPalette::Active, QPalette::HighlightedText));
 
     QRect textRect = style->subElementRect(QStyle::SE_ItemViewItemText, &styleOption);
     painter->save();
@@ -61,9 +62,15 @@ void HtmlItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opti
 
 
 //-------------------------------------------------------------------------------------
-QSize HtmlItemDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
+QSize HtmlItemDelegate::sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QStyleOptionViewItem optionV4 = option;
+    optionV4;
+#else
     QStyleOptionViewItemV4 optionV4 = option;
+#endif
+
     initStyleOption(&optionV4, index);
 
     QTextDocument doc;
