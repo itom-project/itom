@@ -39,6 +39,7 @@
 #include <qlabel.h>
 #include <qlayout.h>
 #include <qlistwidget.h>
+#include <qheaderview.h>
 #include <qmessagebox.h>
 #include <qmetaobject.h>
 #include <qpushbutton.h>
@@ -70,6 +71,11 @@ PyCodeReferenceRenamer::PyCodeReferenceRenamer(QWidget* parent) :
         m_treeWidgetReferences->setItemDelegateForColumn(0, new HtmlItemDelegate());
         m_treeWidgetReferences->setColumnCount(3);
 
+        m_treeWidgetReferences->header()->setDefaultSectionSize(GuiHelper::screenDpiFactor() * 55);
+        m_treeWidgetReferences->header()->setStretchLastSection(false);
+        m_treeWidgetReferences->header()->setSectionResizeMode(0, QHeaderView::Stretch);
+        m_treeWidgetReferences->header()->setSectionResizeMode(1, QHeaderView::Fixed);
+        m_treeWidgetReferences->header()->setSectionResizeMode(2, QHeaderView::Fixed);
 
         QStringList headerLabels;
         headerLabels << tr("Value").toUtf8().data() << tr("Line").toUtf8().data()
@@ -195,9 +201,7 @@ void PyCodeReferenceRenamer::onJediRenameResultAvailable(
         fileItem->setText(0, "<b>" + displayedPath + "</b>");
         fileItem->setToolTip(0, fileInfo.absoluteFilePath());
 
-        QString relativePath = rootDir.relativeFilePath(file.m_filePath);
-
-        if (relativePath.startsWith(".."))
+        if (!file.m_fileInProject)
         {
             fileItem->setCheckState(0, Qt::Unchecked);
             fileItem->setExpanded(false);
@@ -209,6 +213,7 @@ void PyCodeReferenceRenamer::onJediRenameResultAvailable(
         }
 
         m_treeWidgetReferences->addTopLevelItem(fileItem);
+        m_treeWidgetReferences->setFirstItemColumnSpanned(fileItem, true);
 
         QFile* scriptFile = new QFile(file.m_filePath);
         if (!scriptFile->open(QIODevice::ReadOnly | QIODevice::Text))
@@ -257,10 +262,10 @@ void PyCodeReferenceRenamer::onJediRenameResultAvailable(
         DELETE_AND_SET_NULL(scriptFile);
     }
 
-    for (int i = 0; i < m_treeWidgetReferences->columnCount(); ++i)
+    /*for (int i = 0; i < m_treeWidgetReferences->columnCount(); ++i)
     {
         m_treeWidgetReferences->resizeColumnToContents(i);
-    }
+    }*/
 
     auto f = GuiHelper::screenDpiFactor();
     m_renameDialog->resize(f * 800.0, f * 600.0);

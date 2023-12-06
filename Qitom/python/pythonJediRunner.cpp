@@ -735,15 +735,16 @@ void RenameRunnable::run()
                 {
                     PyObject* resultItem = PyList_GetItem(result, resultIdx);
 
-                    if (PyTuple_Check(resultItem) && PyTuple_Size(resultItem) == 4)
+                    if (PyTuple_Check(resultItem) && PyTuple_Size(resultItem) == 5)
                     {
                         PyObject* filePathRef = PyTuple_GetItem(resultItem, 0);
                         PyObject* linesRef = PyTuple_GetItem(resultItem, 1);
                         PyObject* columnsRef = PyTuple_GetItem(resultItem, 2);
                         PyObject* valuesRef = PyTuple_GetItem(resultItem, 3);
+                        PyObject* fileInProjectRef = PyTuple_GetItem(resultItem, 4);
 
                         if (PyUnicode_Check(filePathRef) && PyList_Check(linesRef) &&
-                            PyList_Check(columnsRef) && PyList_Check(valuesRef))
+                            PyList_Check(columnsRef) && PyList_Check(valuesRef) && PyBool_Check(fileInProjectRef))
                         {
                             bool ok;
                             QString filePath =
@@ -754,9 +755,11 @@ void RenameRunnable::run()
                                 PythonQtConversion::PyObjGetIntArray(columnsRef, true, ok);
                             auto values =
                                 PythonQtConversion::PyObjToStringList(valuesRef, true, ok);
+                                
                             if (ok)
                             {
                                 JediRename fileToChange;
+                                fileToChange.m_fileInProject = (fileInProjectRef == Py_True);
                                 fileToChange.m_mainFile = (mainFile == QFileInfo(filePath).canonicalFilePath());
                                 fileToChange.m_filePath = filePath;
                                 fileToChange.m_lines = lines;

@@ -167,16 +167,23 @@ struct JediRename
     JediRename(){};
     JediRename(
         const QString filePath,
+        const bool fileInProject,
         const QVector<int>& lines,
         const QVector<int>& columns,
         const QStringList& values) :
-        m_filePath(filePath),
+        m_filePath(filePath), m_fileInProject(fileInProject),
         m_lines(lines), m_columns(columns), m_values(values)
     {
     }
 
     QString m_filePath;
     bool m_mainFile;
+
+    //!< defines if this file is with the project of the initial file of the rename operation.
+    /* The project is defined by jedi.api.project.get_default_project()
+    */
+    bool m_fileInProject;
+
     QVector<int> m_lines;
     QVector<int> m_columns;
     QStringList m_values;

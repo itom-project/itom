@@ -27,6 +27,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 
 import jedi
 import sys
+import os
 import itomStubsGen
 import itomAlgorithmsStubsGen
 import warnings
@@ -65,7 +66,8 @@ with warnings.catch_warnings():
 
 @contextmanager
 def reduceRecursionLimit():
-    """Temporarily limits the sys.recursionlimit to the global variable maxreclimit."""
+    """Temporarily limits the sys.recursionlimit to the
+    global variable maxreclimit."""
     currentlimit = sys.getrecursionlimit()
     try:
         global maxreclimit
@@ -174,7 +176,7 @@ def calltipModuleItomModification(sig, params):
     if arrow_idx == -1 or not doc.startswith(sig.name):
         return None
 
-    signature = doc[len(sig.name) : arrow_idx].strip()
+    signature = doc[len(sig.name): arrow_idx].strip()
     signature = signature[1:-1]
     parts = signature.split(",")
 
@@ -817,6 +819,9 @@ def rename_reference(code, line, column, path):
                 else:
                     script = jedi.Script(code, line + 1, column, path, encoding="utf-8")
 
+            project = jedi.api.project.get_default_project(path=path)
+            projectRootPath = os.path.realpath(project.path)
+            
             try:
                 refactoring = script.rename(line=line, column=column, new_name="")
             except jedi.api.exceptions.RefactoringError:
@@ -827,11 +832,20 @@ def rename_reference(code, line, column, path):
                 lines = []
                 cols = []
                 values = []
+                filenameStr = os.path.realpath(filename)
+                fileInProject = filenameStr.startswith(projectRootPath)
+                
                 for name, _nameToChange in node.items():
                     lines.append(name.line)
                     cols.append(name.column)
                     values.append(name.value)
-                result.append((str(filename), lines.copy(), cols.copy(), values.copy()))
+                result.append(
+                    (filenameStr,
+                     lines.copy(),
+                     cols.copy(),
+                     values.copy(),
+                     fileInProject)
+                    )
             # refactoring.apply()  # implemented in c++
     return result
 
@@ -889,4 +903,4 @@ inception()"""
     completions(text, 1, 5, "", "")
 
     path = r"C:\itom\build\itom\demo\python_packages\matplotlib\demo_scatter3d.py"
-    rename_reference(None, 7, 31, path)
+    print(rename_reference(None, 7, 31, path))
