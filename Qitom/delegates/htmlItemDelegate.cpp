@@ -25,6 +25,7 @@
 #include <qabstracttextdocumentlayout.h>
 #include <qapplication.h>
 #include <qpainter.h>
+#include <qpalette.h>
 #include <qtextdocument.h>
 
 namespace ito {
@@ -51,7 +52,7 @@ void HtmlItemDelegate::paint(
     if (styleOption.state & QStyle::State_MouseOver)
     {
         ctx.palette.setColor(
-            QPalette::Background, styleOption.palette.color(QPalette::Active, QPalette::Highlight));
+            QPalette::Window, styleOption.palette.color(QPalette::Active, QPalette::Highlight));
     }
     else if (styleOption.state & QStyle::State_Selected)
     {

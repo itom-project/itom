@@ -26,20 +26,20 @@
 #include "../python/pythonJedi.h"
 #include "AppManagement.h"
 #include "codeEditor.h"
+#include "delegates/htmlItemDelegate.h"
 #include "global.h"
 #include "helper/IOHelper.h"
+#include "helper/guiHelper.h"
 #include "organizer/scriptEditorOrganizer.h"
 #include "widgets/scriptDockWidget.h"
 #include "widgets/scriptEditorWidget.h"
-#include "delegates/htmlItemDelegate.h"
-#include "helper/guiHelper.h"
 
 #include <qfile.h>
 #include <qfileinfo.h>
+#include <qheaderview.h>
 #include <qlabel.h>
 #include <qlayout.h>
 #include <qlistwidget.h>
-#include <qheaderview.h>
 #include <qmessagebox.h>
 #include <qmetaobject.h>
 #include <qpushbutton.h>
@@ -49,8 +49,9 @@ namespace ito {
 
 //-------------------------------------------------------------------------------------
 PyCodeReferenceRenamer::PyCodeReferenceRenamer(QWidget* parent) :
-    QObject(parent), m_pParent(parent), m_pPythonEngine(nullptr), m_renameDialog(nullptr), m_newNameUserInput(nullptr),
-    m_treeWidgetReferences(nullptr), m_dialogButtonBox(nullptr), m_filesToChange(), m_request()
+    QObject(parent), m_pParent(parent), m_pPythonEngine(nullptr), m_renameDialog(nullptr),
+    m_newNameUserInput(nullptr), m_treeWidgetReferences(nullptr), m_dialogButtonBox(nullptr),
+    m_filesToChange(), m_request()
 {
     m_pPythonEngine = AppManagement::getPythonEngine();
 
@@ -83,7 +84,8 @@ PyCodeReferenceRenamer::PyCodeReferenceRenamer(QWidget* parent) :
         m_treeWidgetReferences->setHeaderLabels(headerLabels);
 
         m_dialogButtonBox = new QDialogButtonBox(
-            QDialogButtonBox::StandardButton::Ok | QDialogButtonBox::StandardButton::Cancel, m_renameDialog);
+            QDialogButtonBox::StandardButton::Ok | QDialogButtonBox::StandardButton::Cancel,
+            m_renameDialog);
 
         QVBoxLayout* dialogLayout = new QVBoxLayout(m_renameDialog);
         dialogLayout->addLayout(newNameLayout);
@@ -121,7 +123,8 @@ PyCodeReferenceRenamer::~PyCodeReferenceRenamer()
 }
 
 //-------------------------------------------------------------------------------------
-ito::RetVal PyCodeReferenceRenamer::rename(const int& line, const int& column, const QString& filepath)
+ito::RetVal PyCodeReferenceRenamer::rename(
+    const int& line, const int& column, const QString& filepath)
 {
     PythonEngine* pyEng = (PythonEngine*)m_pPythonEngine;
 
@@ -151,10 +154,12 @@ ito::RetVal PyCodeReferenceRenamer::rename(const int& line, const int& column, c
         else
         {
             return RetVal(
-                retError, 
-                CodeYetNotAvailable, 
-                tr("Python module Jedi is not available or could not be loaded. The rename feature will be disabled.").toLatin1().data()
-            );
+                retError,
+                CodeYetNotAvailable,
+                tr("Python module Jedi is not available or could not be loaded. The rename feature "
+                   "will be disabled.")
+                    .toLatin1()
+                    .data());
         }
     }
 
@@ -163,9 +168,7 @@ ito::RetVal PyCodeReferenceRenamer::rename(const int& line, const int& column, c
 
 //-------------------------------------------------------------------
 void PyCodeReferenceRenamer::onJediRenameResultAvailable(
-    const QVector<ito::JediRename>& filesToChange,
-    bool success,
-    QString errorText)
+    const QVector<ito::JediRename>& filesToChange, bool success, QString errorText)
 {
     QApplication::restoreOverrideCursor();
 
@@ -213,7 +216,7 @@ void PyCodeReferenceRenamer::onJediRenameResultAvailable(
         }
 
         m_treeWidgetReferences->addTopLevelItem(fileItem);
-        m_treeWidgetReferences->setFirstItemColumnSpanned(fileItem, true);
+        fileItem->setFirstColumnSpanned(true);
 
         QFile* scriptFile = new QFile(file.m_filePath);
         if (!scriptFile->open(QIODevice::ReadOnly | QIODevice::Text))
