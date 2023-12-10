@@ -161,20 +161,18 @@ struct JediRenameRequest
     QPointer<QObject> m_sender;
 };
 
+//-------------------------------------------------------------------------------------
+struct FileRenameItem
+{
+    int lineNumber;
+    int startColumnIndex;
+    int oldWordSize;
+};
+
 //--------------------------------------------------------------------------------------
 struct JediRename
 {
     JediRename(){};
-    JediRename(
-        const QString filePath,
-        const bool fileInProject,
-        const QVector<int>& lines,
-        const QVector<int>& columns,
-        const QStringList& values) :
-        m_filePath(filePath), m_fileInProject(fileInProject),
-        m_lines(lines), m_columns(columns), m_values(values)
-    {
-    }
 
     QString m_filePath;
     bool m_mainFile;
@@ -184,9 +182,7 @@ struct JediRename
     */
     bool m_fileInProject;
 
-    QVector<int> m_lines;
-    QVector<int> m_columns;
-    QStringList m_values;
+    QVector<FileRenameItem> m_items;
 };
 
 } // end namespace ito
@@ -196,5 +192,6 @@ Q_DECLARE_METATYPE(ito::JediCompletion)
 Q_DECLARE_METATYPE(ito::JediAssignment)
 Q_DECLARE_METATYPE(ito::JediGetHelp)
 Q_DECLARE_METATYPE(ito::JediRename)
+Q_DECLARE_METATYPE(ito::FileRenameItem)
 
 #endif

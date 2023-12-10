@@ -143,6 +143,9 @@ public:
 
     IOHelper::CharsetEncodingItem charsetEncoding() const { return m_charsetEncoding; }
 
+    //!< the replacement will be handled as one undo-action. The script will be marked as modified afterwards.
+    void replaceOccurencesInCurrentScript(const QString &newValue, const QVector<ito::FileRenameItem> &renameItems);
+
     static QString filenameFromUID(int UID, bool &found);
 
 protected:

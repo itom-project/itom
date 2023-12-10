@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2024, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
@@ -27,9 +27,11 @@
 #include "../models/bookmarkModel.h"
 #include "../widgets/outlineSelectorWidget.h"
 #include "../widgets/scriptDockWidget.h"
+#include "../widgets/scriptEditorWidget.h"
 
 #include <qlist.h>
 #include <qsignalmapper.h>
+#include <qpair.h>
 
 namespace ito {
 
@@ -64,6 +66,8 @@ public:
 
     QStringList openedScripts() const;
 
+    QVector<QPair<QString, bool>> getAllOpenedScriptsWithModificationState() const;
+
     inline BookmarkModel* getBookmarkModel() const
     {
         return m_pBookmarkModel;
@@ -76,6 +80,8 @@ public:
     //!< returns the outlines of all opened scripts
     QList<OutlineSelectorWidget::EditorOutline> getAllOutlines(
         const ScriptDockWidget* currentScriptDockWidget, int& currentIndex) const;
+
+    ScriptEditorWidget* getEditorFromCanonicalFilepath(const QString &filepath) const;
 
 protected:
     ScriptDockWidget* createEmptyScriptDock(

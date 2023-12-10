@@ -46,7 +46,13 @@ public:
 
     enum RenamerRetVal
     {
-        CodeYetNotAvailable = 100
+        CodeYetNotAvailable = 100,
+        CouldNotOpenFile = 101
+    };
+
+    struct RenameItem
+    {
+
     };
 
 private:
@@ -55,13 +61,22 @@ private:
     QLineEdit* m_newNameUserInput;
     QTreeWidget* m_treeWidgetReferences;
     QDialogButtonBox* m_dialogButtonBox;
-    QVector<ito::JediRename> m_filesToChange;
     ito::JediRenameRequest m_request;
     QWidget *m_pParent;
 
+    enum RenamerRole
+    {
+        RoleFilePath = Qt::UserRole,
+        RoleMainFile = Qt::UserRole + 1,
+        RoleFileOpened = Qt::UserRole + 2,
+        RoleFileModified = Qt::UserRole + 3,
+        RoleFileRenameItem = Qt::UserRole + 4
+    };
+
+    QStringList readFirstNLinesFromFile(const QString &filepath, int n) const;
 
 private slots:
-    void onJediRenameResultAvailable(const QVector<ito::JediRename>& filesToChange, bool success, QString errorText);
+    void onJediRenameResultAvailable(const QVector<ito::JediRename>& filesToChange, const QString &oldValue, bool success, QString errorText);
     void onApply();
     void onCanceled();
     void onItemChanged(QTreeWidgetItem* item, int column);
@@ -69,13 +84,11 @@ private slots:
     void clearAndHideTreeWidget();
     void onItemDoubleClick(QTreeWidgetItem* item, int column);
 
-    QString getAbsoluteFilePath(const QString& fileName);
-    void replaceWordInFile(
+
+    ito::RetVal replaceOccurencesInFile(
         const QString& filePath,
-        int lineNumber,
-        int columnNumber,
-        const QString& value,
-        const QString& newValue);
+        const QString &newValue,
+        const QVector<ito::FileRenameItem> &renameItems);
 
 signals:
 };

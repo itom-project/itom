@@ -70,8 +70,9 @@ public:
         Qt::WindowFlags flags = Qt::WindowFlags());
     ~ScriptDockWidget();
 
-    QStringList getModifiedFileNames(bool ignoreNewScripts = false, int excludeIndex = -1) const;
+    QStringList getModifiedFilenames(bool ignoreNewScripts = false, int excludeIndex = -1) const;
     QStringList getAllFilenames() const;
+    void getAllCanonicalFilenamesWithModificationState(QStringList &filenames, QList<bool> &modified) const;
 
     RetVal newScript();
     RetVal openScript();
@@ -125,6 +126,8 @@ public:
 
     //!< return all outlines in the tabs of this script dock widget
     QList<OutlineSelectorWidget::EditorOutline> getAllOutlines(int& activeIndex) const;
+
+    ScriptEditorWidget* getEditorByCanonicalFilepath(const QString &filepath) const;
 
 protected:
     ScriptEditorWidget* getEditorByIndex(int index) const;

@@ -3873,4 +3873,53 @@ void ScriptEditorWidget::onTextChanged()
     m_outlineDirty = true;
 }
 
+//-------------------------------------------------------------------------------------
+void ScriptEditorWidget::replaceOccurencesInCurrentScript(const QString &newValue, const QVector<ito::FileRenameItem> &renameItems)
+{
+    if (renameItems.size() > 0)
+    {
+        // sort items by starting with the last one first
+        QVector<ito::FileRenameItem> items = renameItems;
+        std::sort(
+            items.begin(),
+            items.end(),
+            [](const ito::FileRenameItem& a, const ito::FileRenameItem& b) {
+                if (a.lineNumber != b.lineNumber)
+                {
+                    return a.lineNumber >= b.lineNumber;
+                }
+                else
+                {
+                    return a.startColumnIndex >= b.startColumnIndex;
+                }
+            });
+
+        QTextCursor cursor = textCursor();
+        
+
+        cursor.beginEditBlock();
+
+        foreach(const ito::FileRenameItem &item, items)
+        {
+            cursor.movePosition(QTextCursor::Start);
+
+            if (item.lineNumber > 1)
+            {
+                cursor.movePosition(QTextCursor::NextBlock, QTextCursor::MoveAnchor, item.lineNumber - 1);
+
+                if (item.startColumnIndex > 0)
+                {
+                    cursor.movePosition(QTextCursor::NextCharacter, QTextCursor::MoveAnchor, item.startColumnIndex);
+                }
+
+                cursor.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, item.oldWordSize);
+                cursor.insertText(newValue);
+            }
+        }
+        
+
+        cursor.endEditBlock();
+    }
+}
+
 } // end namespace ito

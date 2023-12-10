@@ -711,6 +711,7 @@ void RenameRunnable::run()
     bool success = false;
     QString errorText;
     QString mainFile = QFileInfo(m_request.m_filepath).canonicalFilePath();
+    QString oldValue;
     PyGILState_STATE gstate = PyGILState_Ensure();
 
     try
@@ -762,9 +763,20 @@ void RenameRunnable::run()
                                 fileToChange.m_fileInProject = (fileInProjectRef == Py_True);
                                 fileToChange.m_mainFile = (mainFile == QFileInfo(filePath).canonicalFilePath());
                                 fileToChange.m_filePath = filePath;
-                                fileToChange.m_lines = lines;
-                                fileToChange.m_columns = columns;
-                                fileToChange.m_values = values;
+
+                                if (values.size() > 0)
+                                {
+                                    oldValue = values[0];
+                                }
+
+                                for (int idx = 0; idx < lines.size(); ++idx)
+                                {
+                                    FileRenameItem item;
+                                    item.lineNumber = lines[idx];
+                                    item.startColumnIndex = columns[idx];
+                                    item.oldWordSize = values[idx].size();
+                                    fileToChange.m_items << item;
+                                }
 
                                 if (renameList.size() > 0 && fileToChange.m_mainFile)
                                 {
@@ -812,6 +824,7 @@ void RenameRunnable::run()
             s, 
             m_request.m_callbackFctName.constData(), 
             Q_ARG(QVector<ito::JediRename>, renameList), 
+            Q_ARG(QString, oldValue),
             Q_ARG(bool, success), 
             Q_ARG(QString, errorText)
         );

@@ -50,8 +50,7 @@ namespace ito {
 //-------------------------------------------------------------------------------------
 PyCodeReferenceRenamer::PyCodeReferenceRenamer(QWidget* parent) :
     QObject(parent), m_pParent(parent), m_pPythonEngine(nullptr), m_renameDialog(nullptr),
-    m_newNameUserInput(nullptr), m_treeWidgetReferences(nullptr), m_dialogButtonBox(nullptr),
-    m_filesToChange(), m_request()
+    m_newNameUserInput(nullptr), m_treeWidgetReferences(nullptr), m_dialogButtonBox(nullptr)
 {
     m_pPythonEngine = AppManagement::getPythonEngine();
 
@@ -168,7 +167,7 @@ ito::RetVal PyCodeReferenceRenamer::rename(
 
 //-------------------------------------------------------------------
 void PyCodeReferenceRenamer::onJediRenameResultAvailable(
-    const QVector<ito::JediRename>& filesToChange, bool success, QString errorText)
+    const QVector<ito::JediRename>& filesToChange, const QString &oldValue, bool success, QString errorText)
 {
     QApplication::restoreOverrideCursor();
 
@@ -183,26 +182,55 @@ void PyCodeReferenceRenamer::onJediRenameResultAvailable(
         return;
     }
 
-    m_filesToChange = filesToChange;
-
     // set current value to new value line edit
-    m_newNameUserInput->setText(filesToChange.first().m_values.first());
+    m_newNameUserInput->setText(oldValue);
     m_newNameUserInput->selectAll();
 
     QDir rootDir = QDir(m_request.m_filepath);
 
-    for (const auto& file : m_filesToChange)
+    ScriptEditorOrganizer* seo =
+        qobject_cast<ScriptEditorOrganizer*>(AppManagement::getScriptEditorOrganizer());
+
+    const auto openedScripts = seo->getAllOpenedScriptsWithModificationState();
+    QString canonicalFilePath, displayedPath;
+    bool modified, scriptOpened;
+
+    for (const auto& file : filesToChange)
     {
         QTreeWidgetItem* fileItem = new QTreeWidgetItem(m_treeWidgetReferences);
         fileItem->setFlags(fileItem->flags() | Qt::ItemIsUserCheckable);
         QFileInfo fileInfo(file.m_filePath);
-        QString canonicalFilePath = fileInfo.canonicalFilePath();
-        QString displayedPath = canonicalFilePath;
-        fileItem->setData(0, Qt::UserRole, canonicalFilePath);
-        fileItem->setData(0, Qt::UserRole + 1, file.m_mainFile);
+        canonicalFilePath = fileInfo.canonicalFilePath();
+        displayedPath = canonicalFilePath;
+        modified = false;
+        scriptOpened = false;
+
+        foreach(const auto &item, openedScripts)
+        {
+            if (item.first == canonicalFilePath)
+            {
+                modified = item.second;
+                scriptOpened = true;
+                break;
+            }
+        }
+
+        fileItem->setData(0, RoleFilePath, canonicalFilePath);
+        fileItem->setData(0, RoleMainFile, file.m_mainFile);
+        fileItem->setData(0, RoleFileModified, modified);
+        fileItem->setData(0, RoleFileOpened, scriptOpened);
         IOHelper::elideFilepathMiddle(displayedPath, 300);
-        fileItem->setText(0, "<b>" + displayedPath + "</b>");
-        fileItem->setToolTip(0, fileInfo.absoluteFilePath());
+
+        if (modified)
+        {
+            fileItem->setText(0, "<b>" + displayedPath + "*</b>");
+            fileItem->setData(0, Qt::ToolTipRole, fileInfo.absoluteFilePath() + " " + tr("(Script contains unsaved changes)"));
+        }
+        else
+        {
+            fileItem->setText(0, "<b>" + displayedPath + "</b>");
+            fileItem->setData(0, Qt::ToolTipRole, fileInfo.absoluteFilePath());
+        }
 
         if (!file.m_fileInProject)
         {
@@ -218,62 +246,85 @@ void PyCodeReferenceRenamer::onJediRenameResultAvailable(
         m_treeWidgetReferences->addTopLevelItem(fileItem);
         fileItem->setFirstColumnSpanned(true);
 
-        QFile* scriptFile = new QFile(file.m_filePath);
-        if (!scriptFile->open(QIODevice::ReadOnly | QIODevice::Text))
+        QString lineText;
+        QString textLeft, textRight, value;
+        QStringList content;
+        
+        if (file.m_items.size() > 0)
         {
-            qDebug() << "Failed to open the file";
+            if (file.m_mainFile)
+            {
+                const ScriptEditorWidget* sew = seo->getEditorFromCanonicalFilepath(file.m_filePath);
+
+                if (sew)
+                {
+                    content = sew->toPlainText().split("\n");
+                }
+            }
+            else
+            {
+                content = readFirstNLinesFromFile(file.m_filePath, file.m_items.last().lineNumber);
+            }
         }
 
-        QTextStream in(scriptFile);
-        int idxLine = 0;
-        int iterLine = 1;
-        int previousLine = -1;
-        QString lineText;
-        QString textLeft, textRight;
-        int lineNumber;
-
-        for (int idx = 0; idx < file.m_lines.size(); ++idx)
+        for (int idx = 0; idx < file.m_items.size(); ++idx)
         {
-            lineNumber = file.m_lines[idx];
+            const ito::FileRenameItem &renameItem = file.m_items[idx];
             QTreeWidgetItem* lineItem = new QTreeWidgetItem(fileItem);
             lineItem->setData(0, Qt::UserRole, canonicalFilePath);
 
-            if (lineNumber > previousLine)
+            if (content.size() >= renameItem.lineNumber)
             {
-                for (iterLine; iterLine <= lineNumber; ++iterLine)
-                {
-                    lineText = in.readLine();
-                }
+                lineText = content[renameItem.lineNumber - 1];
+            }
+            else
+            {
+                lineText = "";
             }
 
             lineItem->setFlags(lineItem->flags() | Qt::ItemIsUserCheckable);
             lineItem->setCheckState(0, fileItem->checkState(0));
 
-            textLeft = lineText.left(file.m_columns[idx]);
-            textRight = lineText.mid(file.m_columns[idx] + file.m_values[idx].size());
-            lineItem->setText(0, textLeft + "<b>" + file.m_values[idx] + "</b>" + textRight);
+            textLeft = lineText.left(renameItem.startColumnIndex);
+            textRight = lineText.mid(renameItem.startColumnIndex + renameItem.oldWordSize);
+            value = lineText.mid(renameItem.startColumnIndex, renameItem.oldWordSize);
+            lineItem->setText(0, textLeft + "<b>" + value + "</b>" + textRight);
 
-            lineItem->setText(1, QString::number(lineNumber));
-            lineItem->setText(2, QString::number(file.m_columns.at(idxLine)));
-            lineItem->setData(1, Qt::UserRole, lineNumber);
-            lineItem->setData(2, Qt::UserRole, file.m_columns.at(idxLine));
-            idxLine++;
-            previousLine = lineNumber;
+            lineItem->setText(1, QString::number(renameItem.lineNumber));
+            lineItem->setText(2, QString::number(renameItem.startColumnIndex));
+            lineItem->setData(0, RoleFileRenameItem, QVariant::fromValue(file.m_items[idx]));
         }
-
-        scriptFile->close();
-        DELETE_AND_SET_NULL(scriptFile);
     }
-
-    /*for (int i = 0; i < m_treeWidgetReferences->columnCount(); ++i)
-    {
-        m_treeWidgetReferences->resizeColumnToContents(i);
-    }*/
 
     auto f = GuiHelper::screenDpiFactor();
     m_renameDialog->resize(f * 800.0, f * 600.0);
     m_renameDialog->show();
     m_newNameUserInput->setFocus();
+}
+
+//-------------------------------------------------------------------
+QStringList PyCodeReferenceRenamer::readFirstNLinesFromFile(const QString &filepath, int n) const
+{
+    QFile scriptFile(filepath);
+
+    if (!scriptFile.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        qDebug() << "Failed to open the file";
+        return QStringList();
+    }
+
+    QTextStream in(&scriptFile);
+    QStringList content;
+    int i = 0;
+
+    while (i < n && !in.atEnd())
+    {
+        content << in.readLine();
+        i++;
+    }
+
+    scriptFile.close();
+    return content;
 }
 
 //-------------------------------------------------------------------
@@ -286,11 +337,9 @@ void PyCodeReferenceRenamer::clearAndHideTreeWidget()
 //-------------------------------------------------------------------
 void PyCodeReferenceRenamer::onApply()
 {
-    QTreeWidgetItem* topItem;
-    QString filePath;
+    QTreeWidgetItem* fileItem;
+    QTreeWidgetItem* changeItem;
     QString value;
-    int line;
-    int column;
     QString newValue = m_newNameUserInput->text();
 
     if (newValue.isEmpty())
@@ -310,28 +359,111 @@ void PyCodeReferenceRenamer::onApply()
         }
     }
 
+    // Approach:
+    /* 1. collect all files with at least one replacement and a list of replacements
+       2. Check if there is at least one file, that is currently opened in itom, modified and not the
+          main file. If this exists, ask if the modifications should be done. If yes, the affected
+          files will be modified on the hard drive and a modification notification will be shown in itom.    
+    */
+
     ScriptEditorOrganizer* seo =
         qobject_cast<ScriptEditorOrganizer*>(AppManagement::getScriptEditorOrganizer());
+    ScriptEditorWidget *sew = nullptr;
 
-    // iter all files
-    for (int idxTopLevel = 0; idxTopLevel < m_treeWidgetReferences->topLevelItemCount();
-         ++idxTopLevel)
+    struct RenameFile
     {
-        topItem = m_treeWidgetReferences->topLevelItem(idxTopLevel); // get files on top level
+        QString canonicalFileName;
+        QVector<FileRenameItem> items;
+        bool fileOpened;
+        bool mainFile;
+        bool fileModified;
+    };
 
-        if (topItem->checkState(0) == Qt::Checked) // iter lines and columns of checked files
+    QVector<RenameFile> renameFiles;
+    bool needToAskTheUser = false;
+
+    // iterate over all files
+    for (int fileIdx = 0; fileIdx < m_treeWidgetReferences->topLevelItemCount(); ++fileIdx)
+    {
+        fileItem = m_treeWidgetReferences->topLevelItem(fileIdx); // get files on top level
+
+        if (fileItem->checkState(0) == Qt::Checked) // iter lines and columns of checked files
         {
-            filePath = topItem->data(0, Qt::UserRole).toString();
+            RenameFile renameFile;
+            renameFile.canonicalFileName = fileItem->data(0, RoleFilePath).toString();
+            renameFile.mainFile = fileItem->data(0, RoleMainFile).toBool();
+            renameFile.fileOpened = fileItem->data(0, RoleFileOpened).toBool();
+            renameFile.fileModified = fileItem->data(0, RoleFileModified).toBool();
 
-            for (int idxSecondLevel = topItem->childCount() - 1; idxSecondLevel >= 0;
-                 --idxSecondLevel)
+            for (int itemIdx = fileItem->childCount() - 1; itemIdx >= 0; --itemIdx)
             {
-                const QTreeWidgetItem* secondLevelItem = topItem->child(idxSecondLevel);
-                line = secondLevelItem->data(1, Qt::UserRole).toInt();
-                column = secondLevelItem->data(2, Qt::UserRole).toInt();
+                changeItem = fileItem->child(itemIdx);
 
-                replaceWordInFile(
-                    filePath, line, column, m_filesToChange.at(0).m_values.at(0), newValue);
+                if (changeItem->checkState(0) == Qt::Checked)
+                {
+                    renameFile.items << changeItem->data(0, RoleFileRenameItem).value<FileRenameItem>();
+                }
+            }
+
+            if (renameFile.items.size() > 0)
+            {
+                renameFiles << renameFile;
+
+                if (renameFile.fileOpened && !renameFile.mainFile && renameFile.fileModified)
+                {
+                    needToAskTheUser = true;
+                }
+            }
+        }
+    }
+
+    // check if there is at least one opened file, which is not the main file and which is modified
+    if (needToAskTheUser)
+    {
+        QMessageBox msgBox(
+            QMessageBox::Question,
+            tr("Changes in modified files"),
+            tr("Some renames affect other opened and modified scripts. If you continue, "
+                "these files will be modified based on their latest saved state. "
+                "Do you want to continue?"),
+            QMessageBox::Yes | QMessageBox::No);
+        msgBox.setDefaultButton(QMessageBox::No);
+
+        if (msgBox.exec() == QMessageBox::No)
+        {
+            return;
+        }
+    }
+
+    // do the replacement
+    foreach(const RenameFile &renameFile, renameFiles)
+    {
+        if (!renameFile.fileOpened ||
+            (renameFile.fileOpened && !renameFile.mainFile && renameFile.fileModified))
+        {
+            ito::RetVal retValue = replaceOccurencesInFile(renameFile.canonicalFileName, newValue, renameFile.items);
+
+            if (retValue.containsError())
+            {
+                QMessageBox::warning(
+                    m_renameDialog,
+                    tr("File error"),
+                    tr("An error occurred when replacing occurrences in the file '%1': %2")
+                    .arg(renameFile.canonicalFileName)
+                    .arg(QLatin1String(retValue.errorMessage())));
+            }
+        }
+        else if (renameFile.mainFile || (renameFile.fileOpened && !renameFile.fileModified))
+        {
+            sew = seo->getEditorFromCanonicalFilepath(renameFile.canonicalFileName);
+
+            if (sew)
+            {
+                sew->replaceOccurencesInCurrentScript(newValue, renameFile.items);
+            }
+            else
+            {
+                qDebug() << "The main script could not be references. This should not be possible!";
             }
         }
     }
@@ -386,7 +518,6 @@ void PyCodeReferenceRenamer::onItemChanged(QTreeWidgetItem* item, int column)
         font.setBold(state == Qt::Checked);
         item->setFont(0, font);
     }
-    return;
 }
 
 //-------------------------------------------------------------------
@@ -417,94 +548,69 @@ void PyCodeReferenceRenamer::onItemDoubleClick(QTreeWidgetItem* item, int column
 }
 
 //-------------------------------------------------------------------
-QString PyCodeReferenceRenamer::getAbsoluteFilePath(const QString& fileName)
-{
-    for (const auto& files : m_filesToChange)
-    {
-        if (files.m_filePath.indexOf(fileName) != -1)
-        {
-            return files.m_filePath;
-        }
-    }
-
-    return QString(); // Return an empty string if the file is not found
-}
-
-//-------------------------------------------------------------------
-void PyCodeReferenceRenamer::replaceWordInFile(
+ito::RetVal PyCodeReferenceRenamer::replaceOccurencesInFile(
     const QString& filePath,
-    int lineNumber,
-    int columnNumber,
-    const QString& value,
-    const QString& newValue)
+    const QString &newValue,
+    const QVector<ito::FileRenameItem> &renameItems)
 {
-    // Open the file
-    QFile file(filePath);
-    if (!file.open(QIODevice::ReadWrite | QIODevice::Text))
-    {
-        qDebug() << "Could not open file" << filePath;
-        return;
-    }
-
-    // Create a QTextStream to read from and write to the file
-    QTextStream in(&file);
-
-    // Create a list to store modified lines
-    QStringList modifiedLines;
-
-    // Read and modify lines one by one
-    int currentLineNumber = 1;
-    while (!in.atEnd())
-    {
-        QString line = in.readLine();
-
-        // Check if this is the line to be modified
-        if (currentLineNumber == lineNumber)
-        {
-            // Check if the specified column exists in the line
-            if (columnNumber >= 0 && columnNumber <= line.length())
+    // sort items by starting with the last one first
+    QVector<ito::FileRenameItem> items = renameItems;
+    std::sort(
+        items.begin(), 
+        items.end(), 
+        [](const ito::FileRenameItem& a, const ito::FileRenameItem& b) {
+            if (a.lineNumber != b.lineNumber)
             {
-                // Delete the word at the specified column
-                line.remove(columnNumber, value.length());
-
-                // Insert the new word at the specified column
-                line.insert(columnNumber, newValue);
+                return a.lineNumber >= b.lineNumber;
             }
             else
             {
-                qDebug() << "Invalid column number";
+                return a.startColumnIndex >= b.startColumnIndex;
             }
-        }
+        });
 
-        // Add the modified or unmodified line to the list
-        modifiedLines << line;
+    // Open the file
+    QFile file(filePath);
 
-        // Move to the next line
-        currentLineNumber++;
+    if (!file.open(QIODevice::ReadWrite | QIODevice::Text))
+    {
+        return ito::RetVal(ito::retError, CouldNotOpenFile, "could not open the file");
     }
 
-    // Close the file
+    // Create a QTextStream to read from and write to the file
+    QTextStream stream(&file);
+
+    // Create a list to store modified lines
+    QStringList content;
+    QString line;
+
+    while (!stream.atEnd())
+    {
+        content << stream.readLine();
+    }
+
+    // modify content
+    foreach(const ito::FileRenameItem &item, items)
+    {
+        line = content[item.lineNumber - 1];
+        line = line.left(item.startColumnIndex) + newValue + line.mid(item.startColumnIndex + item.oldWordSize);
+        content[item.lineNumber - 1] = line;
+    }
+
+    // clear file
+    file.resize(0);
+
+    // go back to the start
+    stream.seek(0);
+
+    foreach(const QString &line, content)
+    {
+        stream << line << "\n";
+    }
+
     file.close();
 
-    // Open the file in write mode to update its content
-    if (file.open(QIODevice::WriteOnly | QIODevice::Text))
-    {
-        QTextStream out(&file);
-
-        // Write the modified lines back to the file
-        for (const QString& modifiedLine : modifiedLines)
-        {
-            out << modifiedLine << "\n";
-        }
-
-        // Close the file
-        file.close();
-        qDebug() << "Word replaced successfully.";
-    }
-    else
-    {
-        qDebug() << "Could not open file" << filePath << "for writing";
-    }
+    return ito::retOk;
 }
 
 } // namespace ito

@@ -751,7 +751,7 @@ RetVal ScriptDockWidget::restoreScriptState(const QList<ito::ScriptEditorStorage
     \param exludeIndex tab-index which should be ignored, set to -1 in order to consider every tab
     \return string list
 */
-QStringList ScriptDockWidget::getModifiedFileNames(bool ignoreUnsavedFiles, int excludeIndex) const
+QStringList ScriptDockWidget::getModifiedFilenames(bool ignoreUnsavedFiles, int excludeIndex) const
 {
     QStringList list;
     ScriptEditorWidget* sew;
@@ -759,6 +759,7 @@ QStringList ScriptDockWidget::getModifiedFileNames(bool ignoreUnsavedFiles, int 
     for (int i = 0; i < m_tab->count(); i++)
     {
         sew = getEditorByIndex(i);
+
         if (sew != NULL && sew->isModified() && i != excludeIndex)
         {
             if (!ignoreUnsavedFiles || !sew->hasNoFilename())
@@ -776,6 +777,49 @@ QStringList ScriptDockWidget::getModifiedFileNames(bool ignoreUnsavedFiles, int 
     }
 
     return list;
+}
+
+//-------------------------------------------------------------------------------------
+void ScriptDockWidget::getAllCanonicalFilenamesWithModificationState(QStringList &filenames, QList<bool> &modified) const
+{
+    QStringList list;
+    ScriptEditorWidget* sew;
+
+    for (int i = 0; i < m_tab->count(); i++)
+    {
+        sew = getEditorByIndex(i);
+
+        if (sew != nullptr && !sew->hasNoFilename())
+        {
+            filenames << QFileInfo(sew->getFilename()).canonicalFilePath();
+            modified << sew->isModified();
+        }
+    }
+}
+
+//-------------------------------------------------------------------------------------
+ScriptEditorWidget* ScriptDockWidget::getEditorByCanonicalFilepath(const QString &filepath) const
+{
+    ScriptEditorWidget* sew;
+    QFileInfo path;
+    QFileInfo filepath_(filepath);
+
+    for (int i = 0; i < m_tab->count(); i++)
+    {
+        sew = getEditorByIndex(i);
+
+        if (sew != nullptr && !sew->hasNoFilename())
+        {
+            path = QFileInfo(sew->getFilename());
+            
+            if (path == filepath_)
+            {
+                return sew;
+            }
+        }
+    }
+
+    return nullptr;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -937,7 +981,7 @@ RetVal ScriptDockWidget::saveAllScripts(bool askFirst, bool ignoreNewScripts, in
 
     if (askFirst)
     {
-        QStringList list = this->getModifiedFileNames(ignoreNewScripts);
+        QStringList list = this->getModifiedFilenames(ignoreNewScripts);
         QMessageBox msgBox;
 
         if (list.size() > 0)
