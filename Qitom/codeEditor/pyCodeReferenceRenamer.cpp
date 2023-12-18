@@ -68,7 +68,8 @@ PyCodeReferenceRenamer::PyCodeReferenceRenamer(QWidget* parent) :
 
         m_treeWidgetReferences = new QTreeWidget(m_renameDialog);
         m_treeWidgetReferences->setAlternatingRowColors(true);
-        m_treeWidgetReferences->setItemDelegateForColumn(0, new HtmlItemDelegate());
+        HtmlItemDelegate* htmlDelegate = new HtmlItemDelegate();
+        m_treeWidgetReferences->setItemDelegateForColumn(0, htmlDelegate);
         m_treeWidgetReferences->setColumnCount(3);
 
         m_treeWidgetReferences->header()->setDefaultSectionSize(GuiHelper::screenDpiFactor() * 55);
@@ -108,8 +109,8 @@ PyCodeReferenceRenamer::PyCodeReferenceRenamer(QWidget* parent) :
             &PyCodeReferenceRenamer::onCanceled);
 
         connect(
-            m_treeWidgetReferences,
-            &QTreeWidget::itemDoubleClicked,
+            htmlDelegate,
+            &HtmlItemDelegate::itemDoubleClicked,
             this,
             &PyCodeReferenceRenamer::onItemDoubleClick);
     }
@@ -167,7 +168,10 @@ ito::RetVal PyCodeReferenceRenamer::rename(
 
 //-------------------------------------------------------------------
 void PyCodeReferenceRenamer::onJediRenameResultAvailable(
-    const QVector<ito::JediRename>& filesToChange, const QString &oldValue, bool success, QString errorText)
+    const QVector<ito::JediRename>& filesToChange,
+    const QString& oldValue,
+    bool success,
+    QString errorText)
 {
     QApplication::restoreOverrideCursor();
 
@@ -205,7 +209,7 @@ void PyCodeReferenceRenamer::onJediRenameResultAvailable(
         modified = false;
         scriptOpened = false;
 
-        foreach(const auto &item, openedScripts)
+        foreach (const auto& item, openedScripts)
         {
             if (item.first == canonicalFilePath)
             {
@@ -224,7 +228,10 @@ void PyCodeReferenceRenamer::onJediRenameResultAvailable(
         if (modified)
         {
             fileItem->setText(0, "<b>" + displayedPath + "*</b>");
-            fileItem->setData(0, Qt::ToolTipRole, fileInfo.absoluteFilePath() + " " + tr("(Script contains unsaved changes)"));
+            fileItem->setData(
+                0,
+                Qt::ToolTipRole,
+                fileInfo.absoluteFilePath() + " " + tr("(Script contains unsaved changes)"));
         }
         else
         {
@@ -249,12 +256,13 @@ void PyCodeReferenceRenamer::onJediRenameResultAvailable(
         QString lineText;
         QString textLeft, textRight, value;
         QStringList content;
-        
+
         if (file.m_items.size() > 0)
         {
             if (file.m_mainFile)
             {
-                const ScriptEditorWidget* sew = seo->getEditorFromCanonicalFilepath(file.m_filePath);
+                const ScriptEditorWidget* sew =
+                    seo->getEditorFromCanonicalFilepath(file.m_filePath);
 
                 if (sew)
                 {
@@ -269,7 +277,7 @@ void PyCodeReferenceRenamer::onJediRenameResultAvailable(
 
         for (int idx = 0; idx < file.m_items.size(); ++idx)
         {
-            const ito::FileRenameItem &renameItem = file.m_items[idx];
+            const ito::FileRenameItem& renameItem = file.m_items[idx];
             QTreeWidgetItem* lineItem = new QTreeWidgetItem(fileItem);
             lineItem->setData(0, Qt::UserRole, canonicalFilePath);
 
@@ -303,7 +311,7 @@ void PyCodeReferenceRenamer::onJediRenameResultAvailable(
 }
 
 //-------------------------------------------------------------------
-QStringList PyCodeReferenceRenamer::readFirstNLinesFromFile(const QString &filepath, int n) const
+QStringList PyCodeReferenceRenamer::readFirstNLinesFromFile(const QString& filepath, int n) const
 {
     QFile scriptFile(filepath);
 
@@ -361,14 +369,15 @@ void PyCodeReferenceRenamer::onApply()
 
     // Approach:
     /* 1. collect all files with at least one replacement and a list of replacements
-       2. Check if there is at least one file, that is currently opened in itom, modified and not the
-          main file. If this exists, ask if the modifications should be done. If yes, the affected
-          files will be modified on the hard drive and a modification notification will be shown in itom.    
+       2. Check if there is at least one file, that is currently opened in itom, modified and not
+       the main file. If this exists, ask if the modifications should be done. If yes, the affected
+          files will be modified on the hard drive and a modification notification will be shown in
+       itom.
     */
 
     ScriptEditorOrganizer* seo =
         qobject_cast<ScriptEditorOrganizer*>(AppManagement::getScriptEditorOrganizer());
-    ScriptEditorWidget *sew = nullptr;
+    ScriptEditorWidget* sew = nullptr;
 
     struct RenameFile
     {
@@ -401,7 +410,8 @@ void PyCodeReferenceRenamer::onApply()
 
                 if (changeItem->checkState(0) == Qt::Checked)
                 {
-                    renameFile.items << changeItem->data(0, RoleFileRenameItem).value<FileRenameItem>();
+                    renameFile.items
+                        << changeItem->data(0, RoleFileRenameItem).value<FileRenameItem>();
                 }
             }
 
@@ -424,8 +434,8 @@ void PyCodeReferenceRenamer::onApply()
             QMessageBox::Question,
             tr("Changes in modified files"),
             tr("Some renames affect other opened and modified scripts. If you continue, "
-                "these files will be modified based on their latest saved state. "
-                "Do you want to continue?"),
+               "these files will be modified based on their latest saved state. "
+               "Do you want to continue?"),
             QMessageBox::Yes | QMessageBox::No);
         msgBox.setDefaultButton(QMessageBox::No);
 
@@ -436,12 +446,13 @@ void PyCodeReferenceRenamer::onApply()
     }
 
     // do the replacement
-    foreach(const RenameFile &renameFile, renameFiles)
+    foreach (const RenameFile& renameFile, renameFiles)
     {
         if (!renameFile.fileOpened ||
             (renameFile.fileOpened && !renameFile.mainFile && renameFile.fileModified))
         {
-            ito::RetVal retValue = replaceOccurencesInFile(renameFile.canonicalFileName, newValue, renameFile.items);
+            ito::RetVal retValue =
+                replaceOccurencesInFile(renameFile.canonicalFileName, newValue, renameFile.items);
 
             if (retValue.containsError())
             {
@@ -449,8 +460,8 @@ void PyCodeReferenceRenamer::onApply()
                     m_renameDialog,
                     tr("File error"),
                     tr("An error occurred when replacing occurrences in the file '%1': %2")
-                    .arg(renameFile.canonicalFileName)
-                    .arg(QLatin1String(retValue.errorMessage())));
+                        .arg(renameFile.canonicalFileName)
+                        .arg(QLatin1String(retValue.errorMessage())));
             }
         }
         else if (renameFile.mainFile || (renameFile.fileOpened && !renameFile.fileModified))
@@ -521,44 +532,41 @@ void PyCodeReferenceRenamer::onItemChanged(QTreeWidgetItem* item, int column)
 }
 
 //-------------------------------------------------------------------
-void PyCodeReferenceRenamer::onItemDoubleClick(QTreeWidgetItem* item, int column)
+void PyCodeReferenceRenamer::onItemDoubleClick(QTreeWidget* treeWidget, QTreeWidgetItem* item)
 {
-    int line = 0;
-    QString fileToOpen;
-    QTreeWidgetItem* topLevelItem = nullptr;
-
     ScriptEditorOrganizer* seo =
         qobject_cast<ScriptEditorOrganizer*>(AppManagement::getScriptEditorOrganizer());
-
     if (!seo)
         return;
 
-    if (m_treeWidgetReferences->indexOfTopLevelItem(item) != -1)
+    QTreeWidgetItem* topLevelItem;
+
+    if (treeWidget->indexOfTopLevelItem(item) != -1)
     {
         topLevelItem = item;
     }
     else
     {
         topLevelItem = item->parent();
-        line = item->data(1, Qt::UserRole).toInt() - 1;
     }
+    QString filename = topLevelItem->data(0, RoleFilePath).toString();
+    QFileInfo fileInfo(filename);
 
-    QFileInfo fileInfo(topLevelItem->data(0, Qt::UserRole).toString());
-    seo->openScript(fileInfo.canonicalFilePath(), nullptr, line);
+    int line = item->text(1).toInt();
+
+    seo->openScript(fileInfo.filePath(), nullptr, line);
 }
 
 //-------------------------------------------------------------------
 ito::RetVal PyCodeReferenceRenamer::replaceOccurencesInFile(
     const QString& filePath,
-    const QString &newValue,
-    const QVector<ito::FileRenameItem> &renameItems)
+    const QString& newValue,
+    const QVector<ito::FileRenameItem>& renameItems)
 {
     // sort items by starting with the last one first
     QVector<ito::FileRenameItem> items = renameItems;
     std::sort(
-        items.begin(), 
-        items.end(), 
-        [](const ito::FileRenameItem& a, const ito::FileRenameItem& b) {
+        items.begin(), items.end(), [](const ito::FileRenameItem& a, const ito::FileRenameItem& b) {
             if (a.lineNumber != b.lineNumber)
             {
                 return a.lineNumber >= b.lineNumber;
@@ -590,10 +598,11 @@ ito::RetVal PyCodeReferenceRenamer::replaceOccurencesInFile(
     }
 
     // modify content
-    foreach(const ito::FileRenameItem &item, items)
+    foreach (const ito::FileRenameItem& item, items)
     {
         line = content[item.lineNumber - 1];
-        line = line.left(item.startColumnIndex) + newValue + line.mid(item.startColumnIndex + item.oldWordSize);
+        line = line.left(item.startColumnIndex) + newValue +
+            line.mid(item.startColumnIndex + item.oldWordSize);
         content[item.lineNumber - 1] = line;
     }
 
@@ -603,7 +612,7 @@ ito::RetVal PyCodeReferenceRenamer::replaceOccurencesInFile(
     // go back to the start
     stream.seek(0);
 
-    foreach(const QString &line, content)
+    foreach (const QString& line, content)
     {
         stream << line << "\n";
     }

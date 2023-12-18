@@ -27,6 +27,7 @@
 #include <qpainter.h>
 #include <qpalette.h>
 #include <qtextdocument.h>
+#include <qtreewidget.h>
 
 namespace ito {
 
@@ -79,6 +80,31 @@ QSize HtmlItemDelegate::sizeHint(const QStyleOptionViewItem& option, const QMode
     doc.setHtml(optionV4.text);
     doc.setTextWidth(optionV4.rect.width());
     return QSize(doc.idealWidth(), doc.size().height());
+}
+
+//-------------------------------------------------------------------------------------
+bool HtmlItemDelegate::editorEvent(
+    QEvent* event,
+    QAbstractItemModel* model,
+    const QStyleOptionViewItem& option,
+    const QModelIndex& index)
+{
+    if (event->type() == QEvent::MouseButtonDblClick)
+    {
+        QTreeWidget* treeWidget = qobject_cast<QTreeWidget*>(const_cast<QWidget*>(option.widget));
+        if (treeWidget)
+        {
+            QTreeWidgetItem* item = treeWidget->itemFromIndex(index);
+            if (item)
+            {
+                emit itemDoubleClicked(treeWidget, item);
+                return true;
+            }
+        }
+        return true;
+    }
+
+    return QStyledItemDelegate::editorEvent(event, model, option, index);
 }
 
 } // end namespace ito

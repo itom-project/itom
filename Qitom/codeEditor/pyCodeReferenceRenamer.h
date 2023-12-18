@@ -52,7 +52,6 @@ public:
 
     struct RenameItem
     {
-
     };
 
 private:
@@ -62,7 +61,7 @@ private:
     QTreeWidget* m_treeWidgetReferences;
     QDialogButtonBox* m_dialogButtonBox;
     ito::JediRenameRequest m_request;
-    QWidget *m_pParent;
+    QWidget* m_pParent;
 
     enum RenamerRole
     {
@@ -73,22 +72,26 @@ private:
         RoleFileRenameItem = Qt::UserRole + 4
     };
 
-    QStringList readFirstNLinesFromFile(const QString &filepath, int n) const;
+    QStringList readFirstNLinesFromFile(const QString& filepath, int n) const;
 
 private slots:
-    void onJediRenameResultAvailable(const QVector<ito::JediRename>& filesToChange, const QString &oldValue, bool success, QString errorText);
+    void onJediRenameResultAvailable(
+        const QVector<ito::JediRename>& filesToChange,
+        const QString& oldValue,
+        bool success,
+        QString errorText);
     void onApply();
     void onCanceled();
     void onItemChanged(QTreeWidgetItem* item, int column);
     void keyPressEvent(QKeyEvent* event);
     void clearAndHideTreeWidget();
-    void onItemDoubleClick(QTreeWidgetItem* item, int column);
+    void onItemDoubleClick(QTreeWidget* treeWidget, QTreeWidgetItem* item);
 
 
     ito::RetVal replaceOccurencesInFile(
         const QString& filePath,
-        const QString &newValue,
-        const QVector<ito::FileRenameItem> &renameItems);
+        const QString& newValue,
+        const QVector<ito::FileRenameItem>& renameItems);
 
 signals:
 };

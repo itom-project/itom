@@ -22,22 +22,30 @@
 
 #pragma once
 
-#include <qstyleditemdelegate.h>
-#include <qsize.h>
 #include <qabstractitemmodel.h>
+#include <qsize.h>
+#include <qstyleditemdelegate.h>
+#include <qtreewidget.h>
 
 
-
-namespace ito
-{
+namespace ito {
 
 class HtmlItemDelegate : public QStyledItemDelegate
 {
+    Q_OBJECT;
+
 protected:
-    void paint ( QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index ) const;
-    QSize sizeHint ( const QStyleOptionViewItem & option, const QModelIndex & index ) const;
+    void paint(
+        QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const;
+    QSize sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const;
+
+    bool editorEvent(
+        QEvent* event,
+        QAbstractItemModel* model,
+        const QStyleOptionViewItem& option,
+        const QModelIndex& index) override;
+
+signals:
+    void itemDoubleClicked(QTreeWidget* treeWidget, QTreeWidgetItem* item);
 };
-
-
-
-} //end namespace ito
+} // end namespace ito
