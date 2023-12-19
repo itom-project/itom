@@ -539,20 +539,15 @@ void PyCodeReferenceRenamer::onItemDoubleClick(QTreeWidget* treeWidget, QTreeWid
     if (!seo)
         return;
 
-    QTreeWidgetItem* topLevelItem;
+    // top level item with filename information
+    QTreeWidgetItem* topLevelItem =
+        (treeWidget->indexOfTopLevelItem(item) != -1) ? item : item->parent();
 
-    if (treeWidget->indexOfTopLevelItem(item) != -1)
-    {
-        topLevelItem = item;
-    }
-    else
-    {
-        topLevelItem = item->parent();
-    }
     QString filename = topLevelItem->data(0, RoleFilePath).toString();
     QFileInfo fileInfo(filename);
 
-    int line = item->text(1).toInt();
+    int line = item->data(1, Qt::DisplayRole).toInt() - 1;
+    line = (line == -1) ? 0 : line; // set to 0 to open file in the first line
 
     seo->openScript(fileInfo.filePath(), nullptr, line);
 }

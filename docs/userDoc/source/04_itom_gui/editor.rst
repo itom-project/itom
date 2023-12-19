@@ -633,6 +633,7 @@ To open the dialog, the script editor cursor must be positioned on the correspon
     :align: center
 
 All positions are listed in a dialog as shown in the screenshot below.
+Double click opens the file at the corresponding position.
 The positions can be taken into account or ignored using the checkboxes.
 References found outside the current project are not checked in.
 By default, the reference name to be renamed is suggested as a new name, which must be renamed accordingly.

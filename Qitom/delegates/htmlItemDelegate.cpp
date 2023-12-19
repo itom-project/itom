@@ -66,6 +66,7 @@ void HtmlItemDelegate::paint(
     painter->translate(textRect.topLeft());
     painter->setClipRect(textRect.translated(-textRect.topLeft()));
     doc.documentLayout()->draw(painter, ctx);
+
     painter->restore();
 }
 
