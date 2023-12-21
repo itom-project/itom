@@ -29,6 +29,8 @@
 #include <qtextdocument.h>
 #include <qtreewidget.h>
 
+#include "widgets/itomQWidgets.h"
+
 namespace ito {
 
 //-------------------------------------------------------------------------------------
@@ -48,18 +50,19 @@ void HtmlItemDelegate::paint(
     style->drawControl(QStyle::CE_ItemViewItem, &styleOption, painter);
 
     QAbstractTextDocumentLayout::PaintContext ctx;
+    ctx.palette = styleOption.palette;
 
-    // Highlighting text if item is selected
-    if (styleOption.state & QStyle::State_MouseOver)
+    //// Highlighting text if item is selected
+    /*if (styleOption.state & QStyle::State_MouseOver)
     {
         ctx.palette.setColor(
             QPalette::Window, styleOption.palette.color(QPalette::Active, QPalette::Highlight));
-    }
-    else if (styleOption.state & QStyle::State_Selected)
-    {
-        ctx.palette.setColor(
-            QPalette::Text, styleOption.palette.color(QPalette::Active, QPalette::HighlightedText));
-    }
+    }*/
+    //else if (styleOption.state & QStyle::State_Selected)
+    //{
+    //    ctx.palette.setColor(
+    //        QPalette::Text, styleOption.palette.color(QPalette::Active, QPalette::HighlightedText));
+    //}
 
     QRect textRect = style->subElementRect(QStyle::SE_ItemViewItemText, &styleOption);
     painter->save();
@@ -92,10 +95,10 @@ bool HtmlItemDelegate::editorEvent(
 {
     if (event->type() == QEvent::MouseButtonDblClick)
     {
-        QTreeWidget* treeWidget = qobject_cast<QTreeWidget*>(const_cast<QWidget*>(option.widget));
+        QTreeWidgetItom* treeWidget = qobject_cast<QTreeWidgetItom*>(const_cast<QWidget*>(option.widget));
         if (treeWidget)
         {
-            QTreeWidgetItem* item = treeWidget->itemFromIndex(index);
+            QTreeWidgetItem* item = treeWidget->itemFromIndex2(index);
             if (item)
             {
                 emit itemDoubleClicked(treeWidget, item);

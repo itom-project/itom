@@ -33,6 +33,7 @@
 #include "organizer/scriptEditorOrganizer.h"
 #include "widgets/scriptDockWidget.h"
 #include "widgets/scriptEditorWidget.h"
+#include "widgets/itomQWidgets.h"
 
 #include <qfile.h>
 #include <qfileinfo.h>
@@ -66,7 +67,7 @@ PyCodeReferenceRenamer::PyCodeReferenceRenamer(QWidget* parent) :
         newNameLayout->addWidget(new QLabel(tr("New value: ")));
         newNameLayout->addWidget(m_newNameUserInput);
 
-        m_treeWidgetReferences = new QTreeWidget(m_renameDialog);
+        m_treeWidgetReferences = new QTreeWidgetItom(m_renameDialog);
         m_treeWidgetReferences->setAlternatingRowColors(true);
         HtmlItemDelegate* htmlDelegate = new HtmlItemDelegate();
         m_treeWidgetReferences->setItemDelegateForColumn(0, htmlDelegate);
