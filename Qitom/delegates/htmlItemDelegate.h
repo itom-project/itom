@@ -26,6 +26,7 @@
 #include <qsize.h>
 #include <qstyleditemdelegate.h>
 #include <qtreewidget.h>
+#include <qtextdocument.h>
 
 
 namespace ito {
@@ -44,6 +45,8 @@ protected:
         QAbstractItemModel* model,
         const QStyleOptionViewItem& option,
         const QModelIndex& index) override;
+
+    void prepareTextDocument(QStyleOptionViewItem& option, QTextDocument &doc, const QModelIndex &index) const;
 
 signals:
     void itemDoubleClicked(QTreeWidget* treeWidget, QTreeWidgetItem* item);

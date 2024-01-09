@@ -28,6 +28,7 @@
 #include <qpalette.h>
 #include <qtextdocument.h>
 #include <qtreewidget.h>
+#include <qdebug.h>
 
 #include "widgets/itomQWidgets.h"
 
@@ -37,53 +38,54 @@ namespace ito {
 void HtmlItemDelegate::paint(
     QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
-    QStyleOptionViewItem styleOption = option;
-    initStyleOption(&styleOption, index);
-
-    QStyle* style = styleOption.widget ? styleOption.widget->style() : QApplication::style();
-
+    QStyleOptionViewItem options(option);
     QTextDocument doc;
-    doc.setHtml(styleOption.text);
+    prepareTextDocument(options, doc, index);
 
-    /// Painting item without text
-    styleOption.text = QString();
-    style->drawControl(QStyle::CE_ItemViewItem, &styleOption, painter);
+    QStyle* style = options.widget ? options.widget->style() : QApplication::style();
+    options.text = "";
+
+    // Note : We need to pass the options widget as an argument of
+    // drawCrontol to make sure the delegate is painted with a style
+    // consistent with the widget in which it is used.
+    // See spyder - ide / spyder#10677.
+    style->drawControl(QStyle::CE_ItemViewItem, &options, painter, options.widget);
 
     QAbstractTextDocumentLayout::PaintContext ctx;
-    ctx.palette = styleOption.palette;
+    ctx.palette = options.palette;
 
-    //// Highlighting text if item is selected
-    /*if (styleOption.state & QStyle::State_MouseOver)
-    {
-        ctx.palette.setColor(
-            QPalette::Window, styleOption.palette.color(QPalette::Active, QPalette::Highlight));
-    }*/
-    //else if (styleOption.state & QStyle::State_Selected)
-    //{
-    //    ctx.palette.setColor(
-    //        QPalette::Text, styleOption.palette.color(QPalette::Active, QPalette::HighlightedText));
-    //}
-
-    QRect textRect = style->subElementRect(QStyle::SE_ItemViewItemText, &styleOption);
+    QRect textRect = style->subElementRect(QStyle::SE_ItemViewItemText, &options, nullptr);
     painter->save();
-    painter->translate(textRect.topLeft());
-    painter->setClipRect(textRect.translated(-textRect.topLeft()));
-    doc.documentLayout()->draw(painter, ctx);
+
+    painter->translate(textRect.topLeft() + QPoint(0, -3));
+
+    // Type check : Prevent error in PySide where using
+    // doc.documentLayout().draw() may fail because doc.documentLayout()
+    // returns an object of type QtGui.QStandardItem(for whatever reason).
+    auto docLayout = doc.documentLayout();
+    docLayout->draw(painter, ctx);
 
     painter->restore();
+}
+
+//-------------------------------------------------------------------------------------
+void HtmlItemDelegate::prepareTextDocument(QStyleOptionViewItem& option, QTextDocument &doc, const QModelIndex &index) const
+{
+    // This logic must be shared between paint and sizeHint for consistency
+    QStyleOptionViewItem options(option);
+    initStyleOption(&options, index);
+
+    doc.setHtml(options.text);
 }
 
 
 //-------------------------------------------------------------------------------------
 QSize HtmlItemDelegate::sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
-    QStyleOptionViewItem optionV4 = option;
-    initStyleOption(&optionV4, index);
-
+    QStyleOptionViewItem options(option);
     QTextDocument doc;
-    doc.setHtml(optionV4.text);
-    doc.setTextWidth(optionV4.rect.width());
-    return QSize(doc.idealWidth(), doc.size().height());
+    prepareTextDocument(options, doc, index);
+    return QSize(qRound(doc.idealWidth()), qRound(doc.size().height() - 2));
 }
 
 //-------------------------------------------------------------------------------------
