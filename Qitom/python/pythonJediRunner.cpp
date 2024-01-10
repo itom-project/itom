@@ -42,6 +42,7 @@ namespace ito {
 /*static*/ unsigned char GoToAssignmentRunnable::mostRecentId = 0;
 /*static*/ unsigned char CalltipRunnable::mostRecentId = 0;
 /*static*/ unsigned char GetHelpRunnable::mostRecentId = 0;
+/*static*/ unsigned char RenameRunnable::mostRecentId = 0;
 /*static*/ QMutex JediRunnable::m_mutex;
 
 //-------------------------------------------------------------------------------------
@@ -194,6 +195,23 @@ void PythonJediRunner::addGetHelpRequest(const JediGetHelpRequest& request)
     {
         GetHelpRunnable* runnable =
             new GetHelpRunnable(additionalImportString(), m_pyModJedi, request);
+
+        /*qDebug()
+            << QDateTime::currentDateTime().toString("hh:mm:ss.zzz")
+            << "Calltip request enqueued. ID:"
+            << runnable->getCurrentId();*/
+
+        m_threadPool->start(runnable);
+    }
+}
+
+//-------------------------------------------------------------------------------------
+void PythonJediRunner::addRenameRequest(const JediRenameRequest& request)
+{
+    if (!m_threadPool.isNull())
+    {
+        RenameRunnable* runnable =
+            new RenameRunnable(additionalImportString(), m_pyModJedi, request);
 
         /*qDebug()
             << QDateTime::currentDateTime().toString("hh:mm:ss.zzz")
@@ -673,6 +691,143 @@ void GetHelpRunnable::run()
     {
         QMetaObject::invokeMethod(
             s, m_request.m_callbackFctName.constData(), Q_ARG(QVector<ito::JediGetHelp>, helps));
+    }
+
+    endRun();
+};
+
+//-------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
+void RenameRunnable::run()
+{
+    startRun();
+
+    if (isOutdated())
+    {
+        return;
+    }
+
+    QVector<ito::JediRename> renameList;
+    bool success = false;
+    QString errorText;
+    QString mainFile = QFileInfo(m_request.m_filepath).canonicalFilePath();
+    QString oldValue;
+    PyGILState_STATE gstate = PyGILState_Ensure();
+
+    try
+    {
+        PyObject* result = PyObject_CallMethod(
+            m_pPyModJedi,
+            "rename_reference",
+            "siis",
+            m_request.m_code.toUtf8().constData(),
+            m_request.m_line,
+            m_request.m_col,
+            m_request.m_filepath.toUtf8().constData()); // new ref
+
+        if (result && PyList_Check(result))
+        {
+            success = true;
+            Py_ssize_t resultSize = PyList_Size(result);
+
+            if (resultSize > 0)
+            {
+                for (Py_ssize_t resultIdx = 0; resultIdx < resultSize; ++resultIdx)
+                {
+                    PyObject* resultItem = PyList_GetItem(result, resultIdx);
+
+                    if (PyTuple_Check(resultItem) && PyTuple_Size(resultItem) == 5)
+                    {
+                        PyObject* filePathRef = PyTuple_GetItem(resultItem, 0);
+                        PyObject* linesRef = PyTuple_GetItem(resultItem, 1);
+                        PyObject* columnsRef = PyTuple_GetItem(resultItem, 2);
+                        PyObject* valuesRef = PyTuple_GetItem(resultItem, 3);
+                        PyObject* fileInProjectRef = PyTuple_GetItem(resultItem, 4);
+
+                        if (PyUnicode_Check(filePathRef) && PyList_Check(linesRef) &&
+                            PyList_Check(columnsRef) && PyList_Check(valuesRef) && PyBool_Check(fileInProjectRef))
+                        {
+                            bool ok;
+                            QString filePath =
+                                PythonQtConversion::PyObjGetString(filePathRef, true, ok);
+                            auto lines =
+                                PythonQtConversion::PyObjGetIntArray(linesRef, true, ok);
+                            auto columns =
+                                PythonQtConversion::PyObjGetIntArray(columnsRef, true, ok);
+                            auto values =
+                                PythonQtConversion::PyObjToStringList(valuesRef, true, ok);
+                                
+                            if (ok)
+                            {
+                                JediRename fileToChange;
+                                fileToChange.m_fileInProject = (fileInProjectRef == Py_True);
+                                fileToChange.m_mainFile = (mainFile == QFileInfo(filePath).canonicalFilePath());
+                                fileToChange.m_filePath = filePath;
+
+                                if (values.size() > 0)
+                                {
+                                    oldValue = values[0];
+                                }
+
+                                for (int idx = 0; idx < lines.size(); ++idx)
+                                {
+                                    FileRenameItem item;
+                                    item.lineNumber = lines[idx];
+                                    item.startColumnIndex = columns[idx];
+                                    item.oldWordSize = values[idx].size();
+                                    fileToChange.m_items << item;
+                                }
+
+                                if (renameList.size() > 0 && fileToChange.m_mainFile)
+                                {
+                                    renameList.prepend(fileToChange);
+                                }
+                                else
+                                {
+                                    renameList.append(fileToChange);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                errorText = QObject::tr("No reference or symbol found at cursor position");
+            }
+
+            Py_DECREF(result);
+        }
+        else
+        {
+            Py_XDECREF(result);
+#ifdef _DEBUG
+            std::cerr << "Error when getting reference renames from jedi\n" << std::endl;
+            PyErr_PrintEx(0);
+#endif
+        }
+    }
+    catch (...)
+    {
+        qDebug() << "enqueueJediRenameRequest4: exception";
+        std::cerr << "Unknown exception in jediCompletionRequestEnqueued. Please report this bug.\n"
+                  << std::endl;
+    }
+
+    PyGILState_Release(gstate);
+
+    QObject* s = m_request.m_sender.data();
+
+    if (s && m_request.m_callbackFctName != "")
+    {
+        QMetaObject::invokeMethod(
+            s, 
+            m_request.m_callbackFctName.constData(), 
+            Q_ARG(QVector<ito::JediRename>, renameList), 
+            Q_ARG(QString, oldValue),
+            Q_ARG(bool, success), 
+            Q_ARG(QString, errorText)
+        );
     }
 
     endRun();

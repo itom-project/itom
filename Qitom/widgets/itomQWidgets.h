@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2023, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
@@ -27,6 +27,7 @@
 #include <qtreeview.h>
 #include <qlistview.h>
 #include <qtableview.h>
+#include <qtreewidget.h>
 #include <qtabbar.h>
 #include <qevent.h>
 
@@ -56,6 +57,23 @@ class QTabWidgetItom : public QTabWidget
 
     signals:
         void tabContextMenuEvent (QContextMenuEvent *event);
+};
+
+//----------------------------------------------------------------------------------------------------------------------------------
+class QTreeWidgetItom : public QTreeWidget
+{
+    Q_OBJECT
+
+public:
+    QTreeWidgetItom(QWidget * parent = 0) : QTreeWidget(parent) {}
+    ~QTreeWidgetItom() {}
+
+
+    QTreeWidgetItem* itemFromIndex2(const QModelIndex &index) const
+    {
+        return itemFromIndex(index);
+    }
+
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------

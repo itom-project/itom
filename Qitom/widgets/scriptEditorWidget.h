@@ -36,7 +36,7 @@
 #include "../codeEditor/panels/lineNumber.h"
 #include "../codeEditor/codeCheckerItem.h"
 #include "../codeEditor/pyCodeFormatter.h"
-
+#include "../codeEditor/pyCodeReferenceRenamer.h"
 #include "../global.h"
 
 #include <qfilesystemwatcher.h>
@@ -143,6 +143,9 @@ public:
 
     IOHelper::CharsetEncodingItem charsetEncoding() const { return m_charsetEncoding; }
 
+    //!< the replacement will be handled as one undo-action. The script will be marked as modified afterwards.
+    void replaceOccurencesInCurrentScript(const QString &newValue, const QVector<ito::FileRenameItem> &renameItems);
+
     static QString filenameFromUID(int UID, bool &found);
 
 protected:
@@ -219,6 +222,7 @@ private:
     BookmarkModel *m_pBookmarkModel; //! borrowed reference to the bookmark model. The owner of this model is the ScriptEditorOrganizer.
 
     QSharedPointer<PyCodeFormatter> m_pyCodeFormatter;
+    QSharedPointer<PyCodeReferenceRenamer> m_pyCodeReferenceRenamer;
 
     //!< the current command string for the python auto code formatting.
     QString m_autoCodeFormatCmd;
@@ -296,6 +300,7 @@ public slots:
     void menuStopScript();
 
     void menuPyCodeFormatting();
+    bool menuPyCodeReferenceRenaming();
     void menuGenerateDocstring();
     void menuScriptCharsetEncoding();
 

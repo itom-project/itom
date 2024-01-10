@@ -302,8 +302,8 @@ Code Outline
 
 When a script is loaded or changed, an outline of all methods, classes
 is created. This outline can then be used for multiple purposes.
-Many features can be parameterized by the :
-ref:`script editors <gui-prop-script-editors>` subpage of the property dialog.
+Many features can be parameterized by the
+:ref:`script editors <gui-prop-script-editors>` subpage of the property dialog.
 
 One feature is the code navigation bar above each script editor. Its
 visibility can be set by a checkbox in the property dialog. If visible,
@@ -613,3 +613,31 @@ If the script is encoded in a charset encoding different than **UTF-8**, it is h
 this encoding using the **coding** comment in the first or second line of the script, as described in
 `PEP 263 <https://peps.python.org/pep-0263/>`_. It is possible to insert the specific comment line by selecting the
 desired encoding in the dialog and press the button to insert it in the first line of the dialog.
+
+.. _gui-editor-reference-renamer:
+
+Reference renaming
+===================
+
+The script editor also has the feature of renaming references such as variable or function names.
+To open the dialog, the script editor cursor must be positioned on the corresponding reference in a script.
+
+1. Choose **Rename** from the context menu of the script editor.
+
+2. Press **F2**.
+
+3. Or click the button **Rename all references ...** from the script editor tool bar.
+
+.. figure:: images/scripteditor_referencerenaming.png
+    :scale: 100%
+    :align: center
+
+All positions are listed in a dialog as shown in the screenshot below.
+Double click opens the file at the corresponding position.
+The positions can be taken into account or ignored using the checkboxes.
+References found outside the current project are not checked in.
+By default, the reference name to be renamed is suggested as a new name, which must be renamed accordingly.
+
+.. figure:: images/scripteditor_referencerenamingdialog.png
+    :scale: 100%
+    :align: center

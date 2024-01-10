@@ -21,27 +21,30 @@
 *********************************************************************** */
 
 #include "bookmarkDockWidget.h"
-#include "../global.h"
 #include "../AppManagement.h"
+#include "../global.h"
 
-#include "../organizer/scriptEditorOrganizer.h"
+// #include "../organizer/scriptEditorOrganizer.h"
 #include "../helper/guiHelper.h"
 
 #include <qheaderview.h>
+#include <qlayout.h>
 #include <qsettings.h>
 
 
 namespace ito {
 
 //----------------------------------------------------------------------------------------------------------------------------------
-BookmarkDockWidget::BookmarkDockWidget(const QString &title, const QString &objName,
-        QWidget *parent, bool docked, bool isDockAvailable,
-        tFloatingStyle floatingStyle, tMovingStyle movingStyle) :
+BookmarkDockWidget::BookmarkDockWidget(
+    const QString& title,
+    const QString& objName,
+    QWidget* parent,
+    bool docked,
+    bool isDockAvailable,
+    tFloatingStyle floatingStyle,
+    tMovingStyle movingStyle) :
     AbstractDockWidget(docked, isDockAvailable, floatingStyle, movingStyle, title, objName, parent),
-    m_pModel(NULL),
-    m_pMainToolbar(NULL),
-    m_pSpacerAction(NULL),
-    m_pContextMenu(NULL),
+    m_pModel(NULL), m_pMainToolbar(NULL), m_pSpacerAction(NULL), m_pContextMenu(NULL),
     m_bookmarkView(nullptr)
 {
     m_bookmarkView = new QTreeViewItom(this);
@@ -50,8 +53,16 @@ BookmarkDockWidget::BookmarkDockWidget(const QString &title, const QString &objN
 
     m_bookmarkView->setContextMenuPolicy(Qt::CustomContextMenu);
 
-    connect(m_bookmarkView, SIGNAL(doubleClicked(const QModelIndex &)), this, SLOT(doubleClicked(const QModelIndex &)));
-    connect(m_bookmarkView, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(treeViewContextMenuRequested(const QPoint &)));
+    connect(
+        m_bookmarkView,
+        SIGNAL(doubleClicked(const QModelIndex&)),
+        this,
+        SLOT(doubleClicked(const QModelIndex&)));
+    connect(
+        m_bookmarkView,
+        SIGNAL(customContextMenuRequested(const QPoint&)),
+        this,
+        SLOT(treeViewContextMenuRequested(const QPoint&)));
 
     m_bookmarkView->setTextElideMode(Qt::ElideLeft);
     m_bookmarkView->setSortingEnabled(false);
@@ -67,20 +78,20 @@ BookmarkDockWidget::BookmarkDockWidget(const QString &title, const QString &objN
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void BookmarkDockWidget::setBookmarkModel(BookmarkModel *model)
+void BookmarkDockWidget::setBookmarkModel(BookmarkModel* model)
 {
     if (m_pModel != NULL || model == NULL)
     {
-        return; //can only assign a model once
+        return; // can only assign a model once
     }
 
     m_pModel = model;
     m_bookmarkView->setModel(m_pModel);
 
-    QVariant width; //user defined role: UserRole + SizeHintRole to get width only
+    QVariant width; // user defined role: UserRole + SizeHintRole to get width only
     int width_;
     bool ok;
-    float dpiFactor = GuiHelper::screenDpiFactor(); //factor related to 96dpi (1.0)
+    float dpiFactor = GuiHelper::screenDpiFactor(); // factor related to 96dpi (1.0)
 
     for (int i = 0; i < m_pModel->columnCount(); ++i)
     {
@@ -110,14 +121,14 @@ void BookmarkDockWidget::setBookmarkModel(BookmarkModel *model)
 //----------------------------------------------------------------------------------------------------------------------------------
 BookmarkDockWidget::~BookmarkDockWidget()
 {
-    //m_pModel is already destroyed if this destructor is called
+    // m_pModel is already destroyed if this destructor is called
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void BookmarkDockWidget::createToolBars()
 {
-    QWidget *spacerWidget = new QWidget();
-    QHBoxLayout *spacerLayout = new QHBoxLayout();
+    QWidget* spacerWidget = new QWidget();
+    QHBoxLayout* spacerLayout = new QHBoxLayout();
     spacerLayout->addItem(new QSpacerItem(5, 5, QSizePolicy::Expanding, QSizePolicy::Minimum));
     spacerLayout->setStretch(0, 2);
     spacerWidget->setLayout(spacerLayout);
@@ -134,7 +145,6 @@ void BookmarkDockWidget::createToolBars()
 //----------------------------------------------------------------------------------------------------------------------------------
 void BookmarkDockWidget::createActions()
 {
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -144,7 +154,7 @@ void BookmarkDockWidget::createMenus()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void BookmarkDockWidget::treeViewContextMenuRequested(const QPoint &pos)
+void BookmarkDockWidget::treeViewContextMenuRequested(const QPoint& pos)
 {
     updateActions();
     m_pContextMenu->exec(pos + m_bookmarkView->mapToGlobal(m_bookmarkView->pos()));
@@ -153,13 +163,12 @@ void BookmarkDockWidget::treeViewContextMenuRequested(const QPoint &pos)
 //----------------------------------------------------------------------------------------------------------------------------------
 void BookmarkDockWidget::updateActions()
 {
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void BookmarkDockWidget::doubleClicked(const QModelIndex &index)
+void BookmarkDockWidget::doubleClicked(const QModelIndex& index)
 {
-    QAbstractItemModel *m = m_bookmarkView->model();
+    QAbstractItemModel* m = m_bookmarkView->model();
 
     if (index.isValid() && m)
     {
@@ -168,4 +177,4 @@ void BookmarkDockWidget::doubleClicked(const QModelIndex &index)
     }
 }
 
-} //end namespace ito
+} // end namespace ito
