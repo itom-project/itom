@@ -38,9 +38,10 @@ namespace ito {
 void HtmlItemDelegate::paint(
     QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
-    QStyleOptionViewItem options(option);
+    QStyleOptionViewItem options = option;
     QTextDocument doc;
-    prepareTextDocument(options, doc, index);
+    initStyleOption(&options, index);
+    doc.setHtml(options.text);
 
     QStyle* style = options.widget ? options.widget->style() : QApplication::style();
     options.text = "";
@@ -57,34 +58,21 @@ void HtmlItemDelegate::paint(
     QRect textRect = style->subElementRect(QStyle::SE_ItemViewItemText, &options, nullptr);
     painter->save();
 
-    painter->translate(textRect.topLeft() + QPoint(0, -3));
-
-    // Type check : Prevent error in PySide where using
-    // doc.documentLayout().draw() may fail because doc.documentLayout()
-    // returns an object of type QtGui.QStandardItem(for whatever reason).
-    auto docLayout = doc.documentLayout();
-    docLayout->draw(painter, ctx);
+    painter->translate(textRect.topLeft());
+    painter->setClipRect(textRect.translated(-textRect.topLeft()));
+    doc.documentLayout()->draw(painter, ctx);
 
     painter->restore();
 }
 
 //-------------------------------------------------------------------------------------
-void HtmlItemDelegate::prepareTextDocument(QStyleOptionViewItem& option, QTextDocument &doc, const QModelIndex &index) const
-{
-    // This logic must be shared between paint and sizeHint for consistency
-    QStyleOptionViewItem options(option);
-    initStyleOption(&options, index);
-
-    doc.setHtml(options.text);
-}
-
-
-//-------------------------------------------------------------------------------------
 QSize HtmlItemDelegate::sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
-    QStyleOptionViewItem options(option);
+    QStyleOptionViewItem options = option;
     QTextDocument doc;
-    prepareTextDocument(options, doc, index);
+    initStyleOption(&options, index);
+    doc.setHtml(options.text);
+
     return QSize(qRound(doc.idealWidth()), qRound(doc.size().height() - 2));
 }
 

@@ -46,8 +46,6 @@ protected:
         const QStyleOptionViewItem& option,
         const QModelIndex& index) override;
 
-    void prepareTextDocument(QStyleOptionViewItem& option, QTextDocument &doc, const QModelIndex &index) const;
-
 signals:
     void itemDoubleClicked(QTreeWidget* treeWidget, QTreeWidgetItem* item);
 };
