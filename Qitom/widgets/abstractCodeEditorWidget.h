@@ -34,6 +34,7 @@
 #include "../codeEditor/modes/codeCompletion.h"
 #include "../codeEditor/modes/pyCalltips.h"
 #include "../codeEditor/modes/pyAutoIndent.h"
+#include "../codeEditor/pyCodeReferenceRenamer.h"
 
 #include <qstringlist.h>
 #include <qrect.h>
@@ -74,6 +75,7 @@ protected:
     QSharedPointer<PyCalltipsMode> m_calltipsMode;
     QSharedPointer<CodeCompletionMode> m_codeCompletionMode;
     QSharedPointer<PyAutoIndentMode> m_pyAutoIndentMode;
+    QSharedPointer<PyCodeReferenceRenamer> m_pyCodeReferenceRenamer;
 
     virtual int startLineOffset(int lineIdx) const { return 0; }
 

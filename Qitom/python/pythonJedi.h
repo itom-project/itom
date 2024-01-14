@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2023, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
@@ -24,130 +24,174 @@
 #define PYTHONJEDI_H
 
 #include <QMetaType>
-#include <qstring.h>
-#include <qpointer.h>
 #include <qobject.h>
+#include <qpointer.h>
+#include <qstring.h>
+#include <qvector.h>
+#include <qstringlist.h>
 
-namespace ito
+namespace ito {
+//--------------------------------------------------------------------------------------
+struct JediCalltipRequest
 {
-    //--------------------------------------------------------------------------------------
-    struct JediCalltipRequest
+    QString m_source;
+    int m_line;
+    int m_col;
+    QString m_path;
+    QByteArray m_callbackFctName;
+    QPointer<QObject> m_sender;
+};
+
+//--------------------------------------------------------------------------------------
+struct JediCalltip
+{
+    JediCalltip() : m_column(-1), m_bracketStartCol(-1), m_bracketStartLine(-1){};
+    JediCalltip(
+        const QString& methodName,
+        const QStringList& params,
+        int column,
+        int bracketStartLine,
+        int bracketStartCol) :
+        m_calltipMethodName(methodName),
+        m_calltipParams(params), m_column(column), m_bracketStartCol(bracketStartCol),
+        m_bracketStartLine(bracketStartLine)
     {
-        QString m_source;
-        int     m_line;
-        int     m_col;
-        QString m_path;
-        QByteArray m_callbackFctName;
-        QPointer<QObject> m_sender;
-    };
+    }
 
-    //--------------------------------------------------------------------------------------
-    struct JediCalltip
+    QString m_calltipMethodName;
+    QStringList m_calltipParams;
+    int m_column;
+    int m_bracketStartCol;
+    int m_bracketStartLine;
+};
+
+//--------------------------------------------------------------------------------------
+struct JediCompletionRequest
+{
+    QString m_source;
+    int m_line;
+    int m_col;
+    QString m_path;
+    QString m_prefix;
+    int m_requestId;
+    QByteArray m_callbackFctName;
+    QPointer<QObject> m_sender;
+};
+
+//--------------------------------------------------------------------------------------
+struct JediCompletion
+{
+    JediCompletion(){};
+    JediCompletion(
+        const QString& name,
+        const QStringList& tooltips,
+        const QString& icon = QString(),
+        const QString& description = QString()) :
+        m_name(name),
+        m_tooltips(tooltips), m_icon(icon), m_description(description)
     {
-        JediCalltip() : m_column(-1), m_bracketStartCol(-1), m_bracketStartLine(-1) {};
-        JediCalltip(const QString &methodName, const QStringList &params, int column, int bracketStartLine, int bracketStartCol) :
-            m_calltipMethodName(methodName),
-            m_calltipParams(params),
-            m_column(column),
-            m_bracketStartCol(bracketStartCol),
-            m_bracketStartLine(bracketStartLine)
-        {}
+    }
 
-        QString m_calltipMethodName;
-        QStringList m_calltipParams;
-        int m_column;
-        int m_bracketStartCol;
-        int m_bracketStartLine;
-    };
+    QString m_name;
+    QStringList m_tooltips; //!< can be multiple tooltips for overloaded methods
+    QString m_icon;
+    QString m_description;
+};
 
-    //--------------------------------------------------------------------------------------
-    struct JediCompletionRequest
+//--------------------------------------------------------------------------------------
+struct JediAssignmentRequest
+{
+    QString m_source;
+    int m_line;
+    int m_col;
+    QString m_path;
+    int m_mode;
+    QByteArray m_callbackFctName;
+    QPointer<QObject> m_sender;
+};
+
+//--------------------------------------------------------------------------------------
+struct JediAssignment
+{
+    JediAssignment(){};
+    JediAssignment(const QString& path, int line, int column, const QString& fullName) :
+        m_path(path), m_line(line), m_column(column), m_fullName(fullName)
     {
-        QString m_source;
-        int     m_line;
-        int     m_col;
-        QString m_path;
-        QString m_prefix;
-        int m_requestId;
-        QByteArray m_callbackFctName;
-        QPointer<QObject> m_sender;
-    };
+    }
 
-    //--------------------------------------------------------------------------------------
-    struct JediCompletion
+    QString m_path; // File path of the module where the assignment can be found
+    int m_line; // line number
+    int m_column; // column number
+    QString m_fullName; // assignement full name
+};
+
+//--------------------------------------------------------------------------------------
+struct JediGetHelpRequest
+{
+    QString m_source;
+    int m_line;
+    int m_col;
+    QString m_path;
+    QByteArray m_callbackFctName;
+    QPointer<QObject> m_sender;
+};
+
+//--------------------------------------------------------------------------------------
+struct JediGetHelp
+{
+    JediGetHelp(){};
+    JediGetHelp(const QString& description, const QStringList& tooltips) :
+        m_description(description), m_tooltips(tooltips)
     {
-        JediCompletion() {};
-        JediCompletion(const QString &name, const QStringList &tooltips, const QString &icon = QString(), const QString &description = QString()) :
-            m_name(name),
-            m_tooltips(tooltips),
-            m_icon(icon),
-            m_description(description)
-        {}
+    }
 
-        QString m_name;
-        QStringList m_tooltips; //!< can be multiple tooltips for overloaded methods
-        QString m_icon;
-        QString m_description;
-    };
+    QString m_description;
+    QStringList m_tooltips; //!< can be multiple tooltips for overloaded methods
+};
 
-    //--------------------------------------------------------------------------------------
-    struct JediAssignmentRequest
-    {
-        QString m_source;
-        int m_line;
-        int m_col;
-        QString m_path;
-        int m_mode;
-        QByteArray m_callbackFctName;
-        QPointer<QObject> m_sender;
-    };
+//--------------------------------------------------------------------------------------
+struct JediRenameRequest
+{
+    QString m_code;
+    int m_line;
+    int m_col;
+    QString m_filepath;
+    bool m_fileModified;
+    QByteArray m_callbackFctName;
+    QPointer<QObject> m_sender;
+};
 
-    //--------------------------------------------------------------------------------------
-    struct JediAssignment
-    {
-        JediAssignment() {};
-        JediAssignment(const QString &path, int line, int column, const QString &fullName) :
-            m_path(path),
-            m_line(line),
-            m_column(column),
-            m_fullName(fullName)
-        {}
+//-------------------------------------------------------------------------------------
+struct FileRenameItem
+{
+    int lineNumber;
+    int startColumnIndex;
+    int oldWordSize;
+};
 
-        QString m_path; // File path of the module where the assignment can be found
-        int m_line; //line number
-        int m_column; //column number
-        QString m_fullName; //assignement full name
-    };
+//--------------------------------------------------------------------------------------
+struct JediRename
+{
+    JediRename(){};
 
-    //--------------------------------------------------------------------------------------
-    struct JediGetHelpRequest
-    {
-        QString m_source;
-        int m_line;
-        int m_col;
-        QString m_path;
-        QByteArray m_callbackFctName;
-        QPointer<QObject> m_sender;
-    };
+    QString m_filePath;
+    bool m_mainFile;
 
-    //--------------------------------------------------------------------------------------
-    struct JediGetHelp
-    {
-        JediGetHelp() {};
-        JediGetHelp(const QString &description, const QStringList &tooltips) :
-            m_description(description),
-            m_tooltips(tooltips)
-        {}
+    //!< defines if this file is with the project of the initial file of the rename operation.
+    /* The project is defined by jedi.api.project.get_default_project()
+    */
+    bool m_fileInProject;
 
-        QString m_description;
-        QStringList m_tooltips; //!< can be multiple tooltips for overloaded methods
-    };
+    QVector<FileRenameItem> m_items;
+};
 
-} //end namespace ito
+} // end namespace ito
 
 Q_DECLARE_METATYPE(ito::JediCalltip)
 Q_DECLARE_METATYPE(ito::JediCompletion)
 Q_DECLARE_METATYPE(ito::JediAssignment)
 Q_DECLARE_METATYPE(ito::JediGetHelp)
+Q_DECLARE_METATYPE(ito::JediRename)
+Q_DECLARE_METATYPE(ito::FileRenameItem)
 
 #endif

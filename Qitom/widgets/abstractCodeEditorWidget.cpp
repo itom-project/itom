@@ -21,41 +21,42 @@
 *********************************************************************** */
 
 #include "abstractCodeEditorWidget.h"
-#include "../global.h"
 #include "../AppManagement.h"
-#include "../helper/guiHelper.h"
 #include "../codeEditor/foldDetector/indentFoldDetector.h"
-#include "../codeEditor/syntaxHighlighter/pythonSyntaxHighlighter.h"
-#include "../codeEditor/modes/occurrences.h"
 #include "../codeEditor/managers/modesManager.h"
-#include "../codeEditor/modes/pyAutoIndent.h"
 #include "../codeEditor/modes/indenter.h"
-#include "../codeEditor/syntaxHighlighter/codeEditorStyle.h"
+#include "../codeEditor/modes/occurrences.h"
+#include "../codeEditor/modes/pyAutoIndent.h"
+#include "../codeEditor/syntaxHighlighter/pythonSyntaxHighlighter.h"
+#include "../global.h"
+#include "../helper/guiHelper.h"
 
-#include <qstring.h>
-#include <qsettings.h>
-#include <qdebug.h>
-#include <qcolor.h>
-#include <qfont.h>
-#include <qtooltip.h>
-#include <qclipboard.h>
 #include <qapplication.h>
+#include <qclipboard.h>
+#include <qcolor.h>
+#include <qdebug.h>
+#include <qfont.h>
 #include <qmimedata.h>
 #include <qregularexpression.h>
-
+#include <qsettings.h>
+#include <qstring.h>
+#include <qtooltip.h>
 
 
 namespace ito {
 
 //----------------------------------------------------------------------------------------------------------------------------------
 AbstractCodeEditorWidget::AbstractCodeEditorWidget(QWidget* parent) :
-    CodeEditor(parent),
-    m_userSelectionState(selNo)
+    CodeEditor(parent), m_userSelectionState(selNo)
 {
     init();
     reloadSettings();
 
-    connect(AppManagement::getMainApplication(), SIGNAL(propertiesChanged()), this, SLOT(reloadSettings()));
+    connect(
+        AppManagement::getMainApplication(),
+        SIGNAL(propertiesChanged()),
+        this,
+        SLOT(reloadSettings()));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -67,19 +68,23 @@ AbstractCodeEditorWidget::~AbstractCodeEditorWidget()
 void AbstractCodeEditorWidget::init()
 {
     m_editorStyle = QSharedPointer<CodeEditorStyle>(new CodeEditorStyle());
-    //add python syntax highlighter
-    m_pythonSyntaxHighlighter = QSharedPointer<SyntaxHighlighterBase>(new PythonSyntaxHighlighter(document(), "PythonSyntaxHighlighter", m_editorStyle));
-    m_pythonSyntaxHighlighter->setFoldDetector(QSharedPointer<FoldDetector>(new IndentFoldDetector()));
+    // add python syntax highlighter
+    m_pythonSyntaxHighlighter = QSharedPointer<SyntaxHighlighterBase>(
+        new PythonSyntaxHighlighter(document(), "PythonSyntaxHighlighter", m_editorStyle));
+    m_pythonSyntaxHighlighter->setFoldDetector(
+        QSharedPointer<FoldDetector>(new IndentFoldDetector()));
     modes()->append(m_pythonSyntaxHighlighter.dynamicCast<Mode>());
 
-    OccurrencesHighlighterMode *occHighlighterMode = new OccurrencesHighlighterMode("OccurrencesHighlighterMode");
+    OccurrencesHighlighterMode* occHighlighterMode =
+        new OccurrencesHighlighterMode("OccurrencesHighlighterMode");
     occHighlighterMode->setBackground(Qt::green);
     occHighlighterMode->setCaseSensitive(true);
     occHighlighterMode->setSelectOnDoubleClick(true);
     occHighlighterMode->setDelay(100);
     modes()->append(Mode::Ptr(occHighlighterMode));
 
-    m_codeCompletionMode = QSharedPointer<CodeCompletionMode>(new CodeCompletionMode("CodeCompletionMode"));
+    m_codeCompletionMode =
+        QSharedPointer<CodeCompletionMode>(new CodeCompletionMode("CodeCompletionMode"));
     modes()->append(Mode::Ptr(m_codeCompletionMode.dynamicCast<Mode>()));
 
     m_calltipsMode = QSharedPointer<PyCalltipsMode>(new PyCalltipsMode("CalltipsMode", "", this));
@@ -93,8 +98,12 @@ void AbstractCodeEditorWidget::init()
     m_symbolMatcher = QSharedPointer<SymbolMatcherMode>(new SymbolMatcherMode("SymbolMatcherMode"));
     modes()->append(m_symbolMatcher.dynamicCast<Mode>());
 
-    m_caretLineHighlighter = QSharedPointer<CaretLineHighlighterMode>(new CaretLineHighlighterMode("CaretLineHighlighterMode"));
+    m_caretLineHighlighter = QSharedPointer<CaretLineHighlighterMode>(
+        new CaretLineHighlighterMode("CaretLineHighlighterMode"));
     modes()->append(m_caretLineHighlighter.dynamicCast<Mode>());
+
+    m_pyCodeReferenceRenamer =
+        QSharedPointer<PyCodeReferenceRenamer>(new PyCodeReferenceRenamer(this));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -109,7 +118,7 @@ void AbstractCodeEditorWidget::loadSettings()
 
     // ------------ general  --------------------------------------------------------
 
-    //TODO:
+    // TODO:
     /*QString eolMode = settings.value("eolMode", "EolUnix").toString();
 
     if (eolMode == "EolUnix")
@@ -125,86 +134,112 @@ void AbstractCodeEditorWidget::loadSettings()
         setEolMode(QsciScintilla::EolMac);
     }*/
 
-    QSharedPointer<PyAutoIndentMode> pyAutoIndentMode = modes()->get("PyAutoIndentMode").dynamicCast<PyAutoIndentMode>();
+    QSharedPointer<PyAutoIndentMode> pyAutoIndentMode =
+        modes()->get("PyAutoIndentMode").dynamicCast<PyAutoIndentMode>();
 
     if (pyAutoIndentMode)
     {
-        //always enable=true, control the two functionalities via
-        //enableAutoIndent and setAutoStripTrailingSpacesAfterReturn
+        // always enable=true, control the two functionalities via
+        // enableAutoIndent and setAutoStripTrailingSpacesAfterReturn
         pyAutoIndentMode->setEnabled(true);
-        pyAutoIndentMode->enableAutoIndent(settings.value("autoIndent", true).toBool()); //auto indentation
+        pyAutoIndentMode->enableAutoIndent(
+            settings.value("autoIndent", true).toBool()); // auto indentation
     }
 
-    setUseSpacesInsteadOfTabs(!settings.value("indentationUseTabs", false).toBool()); //tabs (true) or whitespace (false)
-    setTabLength(settings.value("indentationWidth", 4).toInt()); //numbers of whitespaces
+    setUseSpacesInsteadOfTabs(
+        !settings.value("indentationUseTabs", false).toBool()); // tabs (true) or whitespace (false)
+    setTabLength(settings.value("indentationWidth", 4).toInt()); // numbers of whitespaces
     setShowIndentationGuides(settings.value("showIndentationGuides", true).toBool());
 
     // ------------ calltips --------------------------------------------------------
-    m_calltipsMode->setEnabled(settings.value("calltipsEnabled",true).toBool());
+    m_calltipsMode->setEnabled(settings.value("calltipsEnabled", true).toBool());
 
     // ------------ auto completion --------------------------------------------------------
     m_codeCompletionMode->setEnabled(settings.value("autoComplEnabled", true).toBool());
-    m_codeCompletionMode->setCaseSensitive(settings.value("autoComplCaseSensitive", false).toBool());
+    m_codeCompletionMode->setCaseSensitive(
+        settings.value("autoComplCaseSensitive", false).toBool());
     m_codeCompletionMode->setTriggerLength(settings.value("autoComplThreshold", 2).toInt());
     m_codeCompletionMode->setShowTooltips(settings.value("autoComplShowTooltips", true).toBool());
-    m_codeCompletionMode->setFilterMode((ito::CodeCompletionMode::FilterMode)settings.value("autoComplFilterMode", CodeCompletionMode::FilterFuzzy).toInt());
+    m_codeCompletionMode->setFilterMode(
+        (ito::CodeCompletionMode::FilterMode)settings
+            .value("autoComplFilterMode", CodeCompletionMode::FilterFuzzy)
+            .toInt());
 
     // --------------- styles ------------------------------------------------------------
 
     if (m_pythonSyntaxHighlighter)
     {
         setBackground(QColor(settings.value("paperBackgroundColor", QColor(Qt::white)).toString()));
-        m_pythonSyntaxHighlighter->editorStyle()->setBackground(QColor(settings.value("paperBackgroundColor", QColor(Qt::white)).toString()));
+        m_pythonSyntaxHighlighter->editorStyle()->setBackground(
+            QColor(settings.value("paperBackgroundColor", QColor(Qt::white)).toString()));
 
-        QTextCharFormat keyWhitespaceFormat = m_pythonSyntaxHighlighter->editorStyle()->format(StyleItem::KeyWhitespace);
+        QTextCharFormat keyWhitespaceFormat =
+            m_pythonSyntaxHighlighter->editorStyle()->format(StyleItem::KeyWhitespace);
 
-        if (keyWhitespaceFormat.background() != QColor(settings.value("whitespaceBackgroundColor", QColor(Qt::white)).toString()))
+        if (keyWhitespaceFormat.background() !=
+            QColor(settings.value("whitespaceBackgroundColor", QColor(Qt::white)).toString()))
         {
-            m_pythonSyntaxHighlighter->editorStyle()->rformat(StyleItem::KeyWhitespace).setBackground(QColor(settings.value("whitespaceBackgroundColor", QColor(Qt::white)).toString()));
+            m_pythonSyntaxHighlighter->editorStyle()
+                ->rformat(StyleItem::KeyWhitespace)
+                .setBackground(QColor(
+                    settings.value("whitespaceBackgroundColor", QColor(Qt::white)).toString()));
             updateSyntaxHighlighter = true;
         }
 
-        if (keyWhitespaceFormat.foreground().color() != QColor(settings.value("whitespaceForegroundColor", QColor(Qt::black)).toString()))
+        if (keyWhitespaceFormat.foreground().color() !=
+            QColor(settings.value("whitespaceForegroundColor", QColor(Qt::black)).toString()))
         {
-            m_pythonSyntaxHighlighter->editorStyle()->rformat(StyleItem::KeyWhitespace).setForeground(QColor(settings.value("whitespaceForegroundColor", QColor(Qt::black)).toString()));
+            m_pythonSyntaxHighlighter->editorStyle()
+                ->rformat(StyleItem::KeyWhitespace)
+                .setForeground(QColor(
+                    settings.value("whitespaceForegroundColor", QColor(Qt::black)).toString()));
             updateSyntaxHighlighter = true;
         }
     }
 
     if (m_symbolMatcher)
     {
-        m_symbolMatcher->setMatchBackground(QColor(settings.value("matchedBraceBackgroundColor", QColor(Qt::white)).toString()));
-        m_symbolMatcher->setMatchForeground(QColor(settings.value("matchedBraceForegroundColor", QColor(Qt::red)).toString()));
+        m_symbolMatcher->setMatchBackground(
+            QColor(settings.value("matchedBraceBackgroundColor", QColor(Qt::white)).toString()));
+        m_symbolMatcher->setMatchForeground(
+            QColor(settings.value("matchedBraceForegroundColor", QColor(Qt::red)).toString()));
 
-        m_symbolMatcher->setUnmatchBackground(QColor(settings.value("unmatchedBraceBackgroundColor", QColor(Qt::white)).toString()));
-        m_symbolMatcher->setUnmatchForeground(QColor(settings.value("unmatchedBraceForegroundColor", QColor(Qt::red)).toString()));
+        m_symbolMatcher->setUnmatchBackground(
+            QColor(settings.value("unmatchedBraceBackgroundColor", QColor(Qt::white)).toString()));
+        m_symbolMatcher->setUnmatchForeground(
+            QColor(settings.value("unmatchedBraceForegroundColor", QColor(Qt::red)).toString()));
     }
 
-    m_caretLineHighlighter->setBackground(QColor(settings.value("caretBackgroundColor", QColor(Qt::white)).toString()));
+    m_caretLineHighlighter->setBackground(
+        QColor(settings.value("caretBackgroundColor", QColor(Qt::white)).toString()));
     m_caretLineHighlighter->setEnabled(settings.value("caretBackgroundShow", false).toBool());
-    //todo
-    setForeground(QColor(settings.value("caretForegroundColor", QColor(Qt::black)).toString())); //caret color
+    // todo
+    setForeground(QColor(
+        settings.value("caretForegroundColor", QColor(Qt::black)).toString())); // caret color
 
 
     Mode::Ptr mode = modes()->get("OccurrencesHighlighterMode");
     if (mode)
     {
         OccurrencesHighlighterMode* occHighlighterMode = (OccurrencesHighlighterMode*)(mode.data());
-        occHighlighterMode->setBackground(QColor(settings.value("markerSameStringBackgroundColor", QColor(Qt::green)).toString()));
+        occHighlighterMode->setBackground(QColor(
+            settings.value("markerSameStringBackgroundColor", QColor(Qt::green)).toString()));
     }
 
-    setSelectionBackground(QColor(settings.value("selectionBackgroundColor", QColor(51, 153, 255)).toString()));
-    setSelectionForeground(QColor(settings.value("selectionForegroundColor", QColor(Qt::white)).toString()));
+    setSelectionBackground(
+        QColor(settings.value("selectionBackgroundColor", QColor(51, 153, 255)).toString()));
+    setSelectionForeground(
+        QColor(settings.value("selectionForegroundColor", QColor(Qt::white)).toString()));
 
     settings.endGroup();
 
     // ------------ styles ---------------------------------------------------------------
-    //set font for line numbers (equal to font of default style number)
+    // set font for line numbers (equal to font of default style number)
 
 
-    //TODO
-    //QFont marginFont = qSciLex->font(qSciLex->defaultStyle());
-    //setMarginsFont(marginFont);
+    // TODO
+    // QFont marginFont = qSciLex->font(qSciLex->defaultStyle());
+    // setMarginsFont(marginFont);
 
     QTextCharFormat defaultFormat;
     QTextCharFormat currentFormat;
@@ -214,11 +249,11 @@ void AbstractCodeEditorWidget::loadSettings()
     {
         if (styleType == StyleItem::KeyWhitespace)
         {
-            continue; //this will be handled separately
+            continue; // this will be handled separately
         }
 
-        StyleItem &item = m_editorStyle->at(styleType);
-        defaultFormat =  defaultStyle[styleType].format();
+        StyleItem& item = m_editorStyle->at(styleType);
+        defaultFormat = defaultStyle[styleType].format();
         currentFormat = item.format();
 
         if (item.isValid())
@@ -236,7 +271,8 @@ void AbstractCodeEditorWidget::loadSettings()
                 }
             }
 
-            QColor fgColor = settings.value("foregroundColor", defaultFormat.foreground().color()).toString();
+            QColor fgColor =
+                settings.value("foregroundColor", defaultFormat.foreground().color()).toString();
             if (fgColor.isValid())
             {
                 fgColor.setAlpha(settings.value("foregroundColorAlpha", 255).toInt());
@@ -291,8 +327,9 @@ void AbstractCodeEditorWidget::loadSettings()
 
             if (item.isValid())
             {
-                //set font of whitespace to default
-                QTextCharFormat &whitespaceFormat = m_editorStyle->rformat(ito::StyleItem::KeyWhitespace);
+                // set font of whitespace to default
+                QTextCharFormat& whitespaceFormat =
+                    m_editorStyle->rformat(ito::StyleItem::KeyWhitespace);
                 if (whitespaceFormat.font() != currentFormat.font())
                 {
                     whitespaceFormat.setFont(currentFormat.font());
@@ -334,7 +371,7 @@ void AbstractCodeEditorWidget::loadSettings()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-QPixmap AbstractCodeEditorWidget::loadMarker(const QString &name, int sizeAt96dpi) const
+QPixmap AbstractCodeEditorWidget::loadMarker(const QString& name, int sizeAt96dpi) const
 {
     int dpi = GuiHelper::getScreenLogicalDpi();
     QPixmap px(name);
@@ -349,7 +386,7 @@ QPixmap AbstractCodeEditorWidget::loadMarker(const QString &name, int sizeAt96dp
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-QString AbstractCodeEditorWidget::getWordAtPosition(const int &line, const int &index) const
+QString AbstractCodeEditorWidget::getWordAtPosition(const int& line, const int& index) const
 {
     return wordAtPosition(line, index, true);
 }
@@ -359,7 +396,7 @@ QString AbstractCodeEditorWidget::getWordAtPosition(const int &line, const int &
 /*!
     \return number of leading tabs or spaces
 */
-int AbstractCodeEditorWidget::getSpaceTabCount(const QString &text) const
+int AbstractCodeEditorWidget::getSpaceTabCount(const QString& text) const
 {
     int res = 0;
     if (text.mid(res, 1).indexOf(QRegularExpression("[\t]")) > -1 || text.mid(res, 1) == " ")
@@ -367,15 +404,16 @@ int AbstractCodeEditorWidget::getSpaceTabCount(const QString &text) const
         do
         {
             ++res;
-        }
-        while (text.mid(res, 1).indexOf(QRegularExpression("[\t]")) > -1 || text.mid(res, 1) == " ");
+        } while (text.mid(res, 1).indexOf(QRegularExpression("[\t]")) > -1 ||
+                 text.mid(res, 1) == " ");
     }
 
     return res;
 }
 
 //-------------------------------------------------------------------------------------
-//! removes parts of the possible indentation of the given text from line 2 until the end and returns the re-formatted text.
+//! removes parts of the possible indentation of the given text from line 2 until the end and
+//! returns the re-formatted text.
 /*
 This method splits the given text using the \n endline character.
 
@@ -395,7 +433,11 @@ unindented by minIndentLevel.
 
 \returns the modified string
 */
-QString AbstractCodeEditorWidget::formatCodeBeforeInsertion(const QString &text, int &lineCount, bool trimText /*= false*/, const QString &newIndent /*= ""*/) const
+QString AbstractCodeEditorWidget::formatCodeBeforeInsertion(
+    const QString& text,
+    int& lineCount,
+    bool trimText /*= false*/,
+    const QString& newIndent /*= ""*/) const
 {
     QString res = "";
     lineCount = 0;
@@ -413,69 +455,80 @@ QString AbstractCodeEditorWidget::formatCodeBeforeInsertion(const QString &text,
         }
         else if (lineCount > 1)
         {
-			//if the first line starts does not start with a space or tab,
-			//it is assumed, that the cursor just starts at the first real
-			//character and subsequent lines might possibly be indented. Then
-			//do not change or consider the first line for indentation detection
-			//and / or removal. Else: consider it.
-			const QString &firstLine = commandList[0];
-			const QString &firstLineLeftStrip = Utils::lstrip(firstLine);
+            // if the first line starts does not start with a space or tab,
+            // it is assumed, that the cursor just starts at the first real
+            // character and subsequent lines might possibly be indented. Then
+            // do not change or consider the first line for indentation detection
+            // and / or removal. Else: consider it.
+            const QString& firstLine = commandList[0];
+            const QString& firstLineLeftStrip = Utils::lstrip(firstLine);
 
-			bool firstLineIndented = firstLine.size() > firstLineLeftStrip.size();
+            bool firstLineIndented = firstLine.size() > firstLineLeftStrip.size();
 
-			if (!firstLineIndented && firstLineLeftStrip.size() > 0)
-			{
-				//it can be that the first line starts with a possible keyword
-				//for a subsequent indented block. If so, also consider the first line to
-				//be indented (such that it is considered for the minIndentLevel.
-				QList<QString> blockKeywords;
-				blockKeywords << "def" << "if" << "elif" << "else" << "while" << \
-					"for" << "try" << "except" << "finally" << "with" << "class" << "async";
+            if (!firstLineIndented && firstLineLeftStrip.size() > 0)
+            {
+                // it can be that the first line starts with a possible keyword
+                // for a subsequent indented block. If so, also consider the first line to
+                // be indented (such that it is considered for the minIndentLevel.
+                QList<QString> blockKeywords;
+                blockKeywords << "def"
+                              << "if"
+                              << "elif"
+                              << "else"
+                              << "while"
+                              << "for"
+                              << "try"
+                              << "except"
+                              << "finally"
+                              << "with"
+                              << "class"
+                              << "async";
 
-				if (blockKeywords.contains(firstLineLeftStrip.split(" ")[0]))
-				{
-					firstLineIndented = true;
-				}
-			}
+                if (blockKeywords.contains(firstLineLeftStrip.split(" ")[0]))
+                {
+                    firstLineIndented = true;
+                }
+            }
 
-			int minIndentLevel = 1e6;
-			int startLine = firstLineIndented ? 0 : 1;
+            int minIndentLevel = 1e6;
+            int startLine = firstLineIndented ? 0 : 1;
 
-			for (int i = startLine; i < lineCount; ++i)
-			{
-                if (commandList[i].trimmed() != "" && commandList[i][0]!='#')
-				{
-					minIndentLevel = std::min(minIndentLevel, getSpaceTabCount(commandList[i]));
-				}
-			}
+            for (int i = startLine; i < lineCount; ++i)
+            {
+                if (commandList[i].trimmed() != "" && commandList[i][0] != '#')
+                {
+                    minIndentLevel = std::min(minIndentLevel, getSpaceTabCount(commandList[i]));
+                }
+            }
 
-			if (minIndentLevel == 0 && newIndent == "")
-			{
-				res = text;
-			}
-			else
-			{
-				if (!firstLineIndented)
-				{
-					res += firstLine;
-				}
-				else
-				{
-					res += firstLine.mid(minIndentLevel);
-				}
+            if (minIndentLevel == 0 && newIndent == "")
+            {
+                res = text;
+            }
+            else
+            {
+                if (!firstLineIndented)
+                {
+                    res += firstLine;
+                }
+                else
+                {
+                    res += firstLine.mid(minIndentLevel);
+                }
 
-				for (int i = 1; i < lineCount; ++i)
-				{
+                for (int i = 1; i < lineCount; ++i)
+                {
                     if (commandList[i][0] != '#')
                     {
                         res += endline + newIndent + commandList[i].mid(minIndentLevel);
                     }
                     else
                     {
-                        res += endline + newIndent + commandList[i]; // do not remove indent from comment line
+                        res += endline + newIndent +
+                            commandList[i]; // do not remove indent from comment line
                     }
-				}
-			}
+                }
+            }
         }
     }
 
@@ -500,7 +553,8 @@ Else, the prependedTextInFirstLine can contain the text before the code. If this
 only contains whitespaces, it is prepended to the code, such that the entire code
 has a proper indentation.
 */
-QString AbstractCodeEditorWidget::formatCodeForClipboard(const QString &code, const QString &prependedTextInFirstLine) const
+QString AbstractCodeEditorWidget::formatCodeForClipboard(
+    const QString& code, const QString& prependedTextInFirstLine) const
 {
     if (prependedTextInFirstLine == "" || prependedTextInFirstLine.trimmed() != "")
     {
@@ -539,9 +593,9 @@ void AbstractCodeEditorWidget::copy()
 
     if (formatCopyCode)
     {
-        QClipboard *clipboard = QApplication::clipboard();
+        QClipboard* clipboard = QApplication::clipboard();
 
-        const QMimeData *mimeData = clipboard->mimeData();
+        const QMimeData* mimeData = clipboard->mimeData();
 
         if (mimeData && mimeData->hasText())
         {
@@ -578,13 +632,10 @@ void AbstractCodeEditorWidget::copy()
             // delay, however the event loop has to be run at least one time.
             // Therefore, a simple sleep / delay does not work.
 #ifdef _WIN32
-            QTimer::singleShot(25, [=]()
-            {
-                clipboard->setText(modifiedText);
-            });
+            QTimer::singleShot(25, [=]() { clipboard->setText(modifiedText); });
 #else
-            //clipboard->clear(); // mimeData is now invalid!
-            //clipboard->setText(modifiedText);
+            // clipboard->clear(); // mimeData is now invalid!
+            // clipboard->setText(modifiedText);
 #endif
         }
     }
@@ -612,7 +663,7 @@ void AbstractCodeEditorWidget::paste()
         // adapt this text, set it again to the clipboard and
         // use the ordinary paste method to insert it. Afterwards,
         // the original text will be set again to the clipboard.
-        QClipboard *clipboard = QApplication::clipboard();
+        QClipboard* clipboard = QApplication::clipboard();
         QString currentClipboardText = "";
 
         if (clipboard->mimeData()->hasText())
@@ -656,7 +707,8 @@ void AbstractCodeEditorWidget::paste()
 
             currentClipboardText = clipboard->text();
             int lineCount;
-            clipboard->setText(formatCodeBeforeInsertion(currentClipboardText, lineCount, false, indent));
+            clipboard->setText(
+                formatCodeBeforeInsertion(currentClipboardText, lineCount, false, indent));
         }
 
         CodeEditor::paste();
@@ -693,9 +745,9 @@ void AbstractCodeEditorWidget::cut()
 
     if (formatCopyCode)
     {
-        QClipboard *clipboard = QApplication::clipboard();
+        QClipboard* clipboard = QApplication::clipboard();
 
-        const QMimeData *mimeData = clipboard->mimeData();
+        const QMimeData* mimeData = clipboard->mimeData();
 
         if (mimeData && mimeData->hasText())
         {
@@ -732,17 +784,14 @@ void AbstractCodeEditorWidget::cut()
 // delay, however the event loop has to be run at least one time.
 // Therefore, a simple sleep / delay does not work.
 #ifdef _WIN32
-            QTimer::singleShot(25, [=]()
-            {
-                clipboard->setText(modifiedText);
-            });
+            QTimer::singleShot(25, [=]() { clipboard->setText(modifiedText); });
 #else
-            //clipboard->clear(); // mimeData is now invalid!
-            //clipboard->setText(modifiedText);
+            // clipboard->clear(); // mimeData is now invalid!
+            // clipboard->setText(modifiedText);
 #endif
         }
     }
 }
 
 
-} //end namespace ito
+} // end namespace ito

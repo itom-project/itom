@@ -1960,11 +1960,16 @@ QTextCursor CodeEditor::setCursorPosition(int line, int column, bool applySelect
 {
     QTextCursor cursor = textCursor();
     QTextBlock block = document()->findBlockByNumber(line);
+
+    column = qBound(0, column, block.length() - 1);
+
     cursor.setPosition(block.position() + column);
+
     if (applySelection)
     {
         setTextCursor(cursor);
     }
+
     return cursor;
 }
 

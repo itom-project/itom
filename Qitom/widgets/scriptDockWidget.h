@@ -25,19 +25,19 @@
 
 #include "abstractDockWidget.h"
 #include "itomQWidgets.h"
+#include "outlineSelectorWidget.h"
 #include "scriptEditorWidget.h"
 #include "tabSwitcherWidget.h"
-#include "outlineSelectorWidget.h"
 
 #include <qaction.h>
-#include <qstring.h>
-#include <qtoolbar.h>
 #include <qcombobox.h>
 #include <qpointer.h>
 #include <qsharedpointer.h>
+#include <qstring.h>
+#include <qtoolbar.h>
 
-#include "../models/outlineItem.h"
 #include "../models/bookmarkModel.h"
+#include "../models/outlineItem.h"
 
 #include <qevent.h>
 
@@ -45,13 +45,13 @@
 
 namespace ito {
 
-class DialogReplace; //forward declaration
+class DialogReplace; // forward declaration
 
 //! this struct can hold common actions for all script editor and script dock widgets
 struct ScriptEditorActions
 {
-    QAction *actNavigationForward;
-    QAction *actNavigationBackward;
+    QAction* actNavigationForward;
+    QAction* actNavigationBackward;
 };
 
 
@@ -59,71 +59,106 @@ class ScriptDockWidget : public AbstractDockWidget
 {
     Q_OBJECT
 public:
-    ScriptDockWidget(const QString &title, const QString &objName, bool docked, bool isDockAvailable,
-        const ScriptEditorActions &commonActions, BookmarkModel *bookmarkModel,
-        QWidget* parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
+    ScriptDockWidget(
+        const QString& title,
+        const QString& objName,
+        bool docked,
+        bool isDockAvailable,
+        const ScriptEditorActions& commonActions,
+        BookmarkModel* bookmarkModel,
+        QWidget* parent = 0,
+        Qt::WindowFlags flags = Qt::WindowFlags());
     ~ScriptDockWidget();
 
-    QStringList getModifiedFileNames(bool ignoreNewScripts = false, int excludeIndex = -1) const;
+    QStringList getModifiedFilenames(bool ignoreNewScripts = false, int excludeIndex = -1) const;
     QStringList getAllFilenames() const;
+    void getAllCanonicalFilenamesWithModificationState(QStringList &filenames, QList<bool> &modified) const;
 
     RetVal newScript();
     RetVal openScript();
     RetVal openScript(QString filename, bool silent = false);
-    RetVal saveAllScripts(bool askFirst = true, bool ignoreNewScripts = false, int excludeIndex = -1);
-    RetVal closeAllScripts(bool saveFirst = true, bool askFirst = true, bool ignoreNewScripts = false, \
-                            int excludeIndex = -1, bool closeScriptWidgetIfLastTabClosed = true);
+    RetVal saveAllScripts(
+        bool askFirst = true, bool ignoreNewScripts = false, int excludeIndex = -1);
+    RetVal closeAllScripts(
+        bool saveFirst = true,
+        bool askFirst = true,
+        bool ignoreNewScripts = false,
+        int excludeIndex = -1,
+        bool closeScriptWidgetIfLastTabClosed = true);
 
-    inline bool isTabIndexValid(int tabIndex) const { return (tabIndex >= 0 && tabIndex < m_tab->count()); }   /*!<  checks wether given tab-index is valid (true) or not (false) */
-    inline int getTabCount() const { return m_tab->count(); }      /*!<  returns number of tabs */
-    inline int getCurrentIndex() const { return m_tab->currentIndex(); }
+    inline bool isTabIndexValid(int tabIndex) const
+    {
+        return (tabIndex >= 0 && tabIndex < m_tab->count());
+    } /*!<  checks wether given tab-index is valid (true) or not (false) */
+    inline int getTabCount() const
+    {
+        return m_tab->count();
+    } /*!<  returns number of tabs */
+    inline int getCurrentIndex() const
+    {
+        return m_tab->currentIndex();
+    }
     void setCurrentIndex(int index);
 
     bool containsNewScripts() const;
 
-    RetVal appendEditor(ScriptEditorWidget* editorWidget);         /*!<  appends widget, without creating it (for drag&drop, (un)-docking...) */
-    ScriptEditorWidget* removeEditor(int index);                    /*!<  removes widget, without deleting it (for drag&drop, (un)-docking...) */
-    bool activateTabByFilename(const QString &filename, int currentDebugLine = -1, int UID = -1);
-    bool activeTabEnsureLineVisible(const int lineNr, bool errorMessageClick = false, bool showSelectedCallstackLine = false);
-    void activeTabShowLineAndHighlightWord(const int line, const QString &highlightedText, Qt::CaseSensitivity caseSensitivity = Qt::CaseInsensitive);
-    const QTabWidget* tabWidget() const { return m_tab;  }
+    RetVal appendEditor(ScriptEditorWidget* editorWidget); /*!<  appends widget, without creating it
+                                                              (for drag&drop, (un)-docking...) */
+    ScriptEditorWidget* removeEditor(
+        int index); /*!<  removes widget, without deleting it (for drag&drop, (un)-docking...) */
+
+    ScriptEditorWidget* getCurrentEditor() const;
+
+    bool activateTabByFilename(const QString& filename, int currentDebugLine = -1, int UID = -1);
+    bool activeTabEnsureLineVisible(
+        const int lineNr, bool errorMessageClick = false, bool showSelectedCallstackLine = false);
+    void activeTabShowLineAndHighlightWord(
+        const int line,
+        const QString& highlightedText,
+        Qt::CaseSensitivity caseSensitivity = Qt::CaseInsensitive);
+    const QTabWidget* tabWidget() const
+    {
+        return m_tab;
+    }
 
     QList<ito::ScriptEditorStorage> saveScriptState() const;
-    RetVal restoreScriptState(const QList<ito::ScriptEditorStorage> &states);
+    RetVal restoreScriptState(const QList<ito::ScriptEditorStorage>& states);
 
     //!< return all outlines in the tabs of this script dock widget
-    QList<OutlineSelectorWidget::EditorOutline> getAllOutlines(int &activeIndex) const;
+    QList<OutlineSelectorWidget::EditorOutline> getAllOutlines(int& activeIndex) const;
+
+    ScriptEditorWidget* getEditorByCanonicalFilepath(const QString &filepath) const;
 
 protected:
     ScriptEditorWidget* getEditorByIndex(int index) const;
-    ScriptEditorWidget* getCurrentEditor() const;
 
     int getIndexByEditor(const ScriptEditorWidget* sew) const;
     void tabFilenameOrModificationChanged(int index);
 
     void createActions();
-    //void deleteActions();
+    // void deleteActions();
     void createMenus();
     void createToolBars();
     void createStatusBar();
-    void closeEvent(QCloseEvent *event);
+    void closeEvent(QCloseEvent* event);
     virtual void windowStateChanged(bool windowNotToolbox);
 
     RetVal closeTab(int index, bool saveFirst = true, bool closeScriptWidgetIfLastTabClosed = true);
     RetVal saveTab(int index, bool forceSaveAs = false, bool askFirst = true);
 
 private:
-    QWidget *m_pCenterWidget;
-    QVBoxLayout *m_pVBox;
-    QTabWidgetItom* m_tab;              /*!<  reference to QTabWidgetItom instance */
-    WidgetFindWord *m_pWidgetFindWord;
-    DialogReplace *m_pDialogReplace;
-    BookmarkModel* m_pBookmarkModel; //! borrowed reference to the bookmark model. This model is owned by the script editor organizer.
+    QWidget* m_pCenterWidget;
+    QVBoxLayout* m_pVBox;
+    QTabWidgetItom* m_tab; /*!<  reference to QTabWidgetItom instance */
+    WidgetFindWord* m_pWidgetFindWord;
+    DialogReplace* m_pDialogReplace;
+    BookmarkModel* m_pBookmarkModel; //! borrowed reference to the bookmark model. This model is
+                                     //! owned by the script editor organizer.
     QLabel* m_pStatusBarWidget;
 
     static const char* statusBarStatePropertyName;
 
-    int m_actTabIndex;                  /*!<  member indicating the tab-index of the active script editor */
+    int m_actTabIndex; /*!<  member indicating the tab-index of the active script editor */
 
     //!< indices of the tabs. The most recently activated tab index is at the front.
     /*
@@ -135,61 +170,62 @@ private:
     QSharedPointer<OutlineSelectorWidget> m_outlineSelectorWidget;
 
     // ACTIONS
-    ShortcutAction *m_tabMoveLeftAction;
-    ShortcutAction *m_tabMoveRightAction;
-    ShortcutAction *m_tabMoveFirstAction;
-    ShortcutAction *m_tabMoveLastAction;
-    ShortcutAction *m_tabCloseAction;
-    ShortcutAction *m_tabCloseOthersAction;
-    ShortcutAction *m_tabCloseAllAction;
-    ShortcutAction *m_tabDockAction;
-    ShortcutAction *m_tabUndockAction;
-    ShortcutAction *m_newScriptAction;
-    ShortcutAction *m_openScriptAction;
-    ShortcutAction *m_saveScriptAction;
-    ShortcutAction *m_saveScriptAsAction;
-    ShortcutAction *m_saveAllScriptsAction;
-    ShortcutAction *m_printAction;
-    ShortcutAction *m_cutAction;
-    ShortcutAction *m_copyAction;
-    ShortcutAction *m_pasteAction;
-    ShortcutAction *m_undoAction;
-    ShortcutAction *m_redoAction;
-    ShortcutAction *m_commentAction;
-    ShortcutAction *m_uncommentAction;
-    ShortcutAction *m_indentAction;
-    ShortcutAction *m_unindentAction;
-    ShortcutAction *m_autoCodeFormatAction;
-    ShortcutAction *m_pyDocstringGeneratorAction;
-    ShortcutAction *m_scriptRunAction;
-    ShortcutAction *m_scriptRunSelectionAction;
-    ShortcutAction *m_scriptDebugAction;
-    ShortcutAction *m_scriptStopAction;
-    ShortcutAction *m_scriptContinueAction;
-    ShortcutAction *m_scriptStepAction;
-    ShortcutAction *m_scriptStepOverAction;
-    ShortcutAction *m_scriptStepOutAction;
-    ShortcutAction *m_findTextExprAction;
-    ShortcutAction *m_findTextExprActionSC;
-    ShortcutAction *m_replaceTextExprAction;
-    ShortcutAction *m_gotoAction;
-    ShortcutAction *m_openIconBrowser;
-    ShortcutAction *m_bookmarkToggle;
+    ShortcutAction* m_tabMoveLeftAction;
+    ShortcutAction* m_tabMoveRightAction;
+    ShortcutAction* m_tabMoveFirstAction;
+    ShortcutAction* m_tabMoveLastAction;
+    ShortcutAction* m_tabCloseAction;
+    ShortcutAction* m_tabCloseOthersAction;
+    ShortcutAction* m_tabCloseAllAction;
+    ShortcutAction* m_tabDockAction;
+    ShortcutAction* m_tabUndockAction;
+    ShortcutAction* m_newScriptAction;
+    ShortcutAction* m_openScriptAction;
+    ShortcutAction* m_saveScriptAction;
+    ShortcutAction* m_saveScriptAsAction;
+    ShortcutAction* m_saveAllScriptsAction;
+    ShortcutAction* m_printAction;
+    ShortcutAction* m_cutAction;
+    ShortcutAction* m_copyAction;
+    ShortcutAction* m_pasteAction;
+    ShortcutAction* m_undoAction;
+    ShortcutAction* m_redoAction;
+    ShortcutAction* m_commentAction;
+    ShortcutAction* m_uncommentAction;
+    ShortcutAction* m_indentAction;
+    ShortcutAction* m_unindentAction;
+    ShortcutAction* m_autoCodeFormatAction;
+    ShortcutAction* m_referenceRenameAction;
+    ShortcutAction* m_pyDocstringGeneratorAction;
+    ShortcutAction* m_scriptRunAction;
+    ShortcutAction* m_scriptRunSelectionAction;
+    ShortcutAction* m_scriptDebugAction;
+    ShortcutAction* m_scriptStopAction;
+    ShortcutAction* m_scriptContinueAction;
+    ShortcutAction* m_scriptStepAction;
+    ShortcutAction* m_scriptStepOverAction;
+    ShortcutAction* m_scriptStepOutAction;
+    ShortcutAction* m_findTextExprAction;
+    ShortcutAction* m_findTextExprActionSC;
+    ShortcutAction* m_replaceTextExprAction;
+    ShortcutAction* m_gotoAction;
+    ShortcutAction* m_openIconBrowser;
+    ShortcutAction* m_bookmarkToggle;
 
-    ShortcutAction *m_insertCodecAct;
-    ShortcutAction *m_copyFilename;
-    ShortcutAction *m_findSymbols;
+    ShortcutAction* m_insertCodecAct;
+    ShortcutAction* m_copyFilename;
+    ShortcutAction* m_findSymbols;
 
     ScriptEditorActions m_commonActions;
 
-    QMenu *m_tabContextMenu;
-    QMenu *m_fileMenu;
-    QMenu *m_lastFilesMenu;
-    QMenu *m_viewMenu;
-    QMenu *m_editMenu;
-    QMenu *m_scriptMenu;
-    QMenu *m_winMenu;
-    QMenu *m_bookmark;
+    QMenu* m_tabContextMenu;
+    QMenu* m_fileMenu;
+    QMenu* m_lastFilesMenu;
+    QMenu* m_viewMenu;
+    QMenu* m_editMenu;
+    QMenu* m_scriptMenu;
+    QMenu* m_winMenu;
+    QMenu* m_bookmark;
 
     QToolBar* m_fileToolBar;
     QToolBar* m_editToolBar;
@@ -199,45 +235,82 @@ private:
     QString m_autoCodeFormatCmd;
 
     // ClassNavigator
-    QWidget *m_classMenuBar;
-    QComboBox *m_classBox;
-    QComboBox *m_methodBox;
+    QWidget* m_classMenuBar;
+    QComboBox* m_classBox;
+    QComboBox* m_methodBox;
     bool m_outlineShowNavigation;
-    void fillNavigationClassComboBox(const QSharedPointer<OutlineItem> &parent, const QString &prefix);
-    void fillNavigationMethodComboBox(const QSharedPointer<OutlineItem> &parent, const QString &prefix);
+    void fillNavigationClassComboBox(
+        const QSharedPointer<OutlineItem>& parent, const QString& prefix);
+    void fillNavigationMethodComboBox(
+        const QSharedPointer<OutlineItem>& parent, const QString& prefix);
     void showOutlineNavigationBar(bool show);
 
-    static QPointer<ScriptEditorWidget> currentSelectedCallstackLineEditor; //this static variable holds the (weak) pointer to the script editor widget that received the last "selected callstack line" selector.
+    static QPointer<ScriptEditorWidget>
+        currentSelectedCallstackLineEditor; // this static variable holds the (weak) pointer to the
+                                            // script editor widget that received the last "selected
+                                            // callstack line" selector.
 
 
 signals:
-    void removeAndDeleteScriptDockWidget(ScriptDockWidget* widget);                             /*!<  signal emitted if given ScriptDockWidget should be closed and removed by ScriptEditorOrganizer */
+    void removeAndDeleteScriptDockWidget(
+        ScriptDockWidget* widget); /*!<  signal emitted if given ScriptDockWidget should be closed
+                                      and removed by ScriptEditorOrganizer */
 
-    void openScriptRequest(const QString &filename, ScriptDockWidget* scriptDockWidget);               /*!<  signal emitted if script with given filename should be opened in scriptDockWidget */
+    void openScriptRequest(
+        const QString& filename,
+        ScriptDockWidget* scriptDockWidget); /*!<  signal emitted if script with given filename
+                                                should be opened in scriptDockWidget */
 
-    void dockScriptTab(ScriptDockWidget* widget, int index, bool closeDockIfEmpty = false);     /*!<  signal emitted if tab with given index of given ScriptDockWidget should be docked in a docked ScriptDockWidget */
-    void undockScriptTab(ScriptDockWidget* widget, int index, bool undockToNewScriptWindow = false, bool closeDockIfEmpty = false);   /*!<  signal emitted if tab with given index of given ScriptDockWidget should be undocked in an undocked ScriptDockWidget */
+    void dockScriptTab(
+        ScriptDockWidget* widget,
+        int index,
+        bool closeDockIfEmpty =
+            false); /*!<  signal emitted if tab with given index of given ScriptDockWidget should be
+                       docked in a docked ScriptDockWidget */
+    void undockScriptTab(
+        ScriptDockWidget* widget,
+        int index,
+        bool undockToNewScriptWindow = false,
+        bool closeDockIfEmpty =
+            false); /*!<  signal emitted if tab with given index of given ScriptDockWidget should be
+                       undocked in an undocked ScriptDockWidget */
 
-    void pythonRunFileRequest(QString filename);                                                /*!<  will be received by scriptEditorOrganizer, in order to save all unsaved changes first */
-    void pythonDebugFileRequest(QString filename);                                              /*!<  will be received by scriptEditorOrganizer, in order to save all unsaved changes first */
-    void pythonInterruptExecution();                                                            /*!<  will be received by PythonThread, directly */
-    void pythonDebugCommand(tPythonDbgCmd cmd);                                                 /*!<  will be received by PythonThread, directly */
-    void pythonRunSelection(QString selectionText);                                             /*!<  will be received by consoleWidget, directly */
+    void pythonRunFileRequest(QString filename); /*!<  will be received by scriptEditorOrganizer, in
+                                                    order to save all unsaved changes first */
+    void pythonDebugFileRequest(QString filename); /*!<  will be received by scriptEditorOrganizer,
+                                                      in order to save all unsaved changes first */
+    void pythonInterruptExecution(); /*!<  will be received by PythonThread, directly */
+    void pythonDebugCommand(tPythonDbgCmd cmd); /*!<  will be received by PythonThread, directly */
+    void pythonRunSelection(
+        QString selectionText); /*!<  will be received by consoleWidget, directly */
 
-    void addGoBackNavigationItem(const GoBackNavigationItem &item);
+    void addGoBackNavigationItem(const GoBackNavigationItem& item);
 
     void statusBarInformationChanged(
         const QPointer<ScriptDockWidget> sourceDockWidget,
-        const QString &encoding,
+        const QString& encoding,
         int line,
         int column);
 
 private slots:
-    void tabContextMenuEvent (QContextMenuEvent * event);
+    void tabContextMenuEvent(QContextMenuEvent* event);
 
-    void findTextExpr(QString expr, bool regExpr, bool caseSensitive, bool wholeWord, bool wrap, bool forward, bool isQuickSeach);
+    void findTextExpr(
+        QString expr,
+        bool regExpr,
+        bool caseSensitive,
+        bool wholeWord,
+        bool wrap,
+        bool forward,
+        bool isQuickSeach);
     void replaceTextExpr(QString expr, QString replace);
-    void replaceAllExpr(QString expr, QString replace, bool regExpr, bool caseSensitive, bool wholeWord, bool findInSel);
+    void replaceAllExpr(
+        QString expr,
+        QString replace,
+        bool regExpr,
+        bool caseSensitive,
+        bool wholeWord,
+        bool findInSel);
     void insertIconBrowserText(QString iconLink);
 
     void currentTabChanged(int index);
@@ -290,11 +363,12 @@ private slots:
     void mnuInsertCodec();
     void mnuCopyFilename();
     void mnuPyCodeFormatting();
+    void mnuPyReferenceRenaming();
     void mnuPyDocstringGenerator();
 
 
     void menuLastFilesAboutToShow();
-    void lastFileOpen(const QString &path);
+    void lastFileOpen(const QString& path);
 
     // Class Navigator
     void navigatorClassSelected(int row);
@@ -307,11 +381,11 @@ private slots:
 
 public slots:
     void editorMarginChanged();
-    void updateCodeNavigation(ScriptEditorWidget *editor, QSharedPointer<OutlineItem> rootItem);
+    void updateCodeNavigation(ScriptEditorWidget* editor, QSharedPointer<OutlineItem> rootItem);
     void tabChangedRequest();
     void mnuFindSymbolsShow();
 };
 
-} //end namespace ito
+} // end namespace ito
 
 #endif

@@ -164,6 +164,9 @@ public:
     //!< thread-safe method (can be called from any thread) to enqueue a jedi get-help request
     void enqueueJediGetHelpRequest(const ito::JediGetHelpRequest &request);
 
+    //!< thread-safe method (can be called from any thread) to enqueue a jedi rename request
+    void enqueueJediRenameRequest(const ito::JediRenameRequest& request);
+
     static bool isInterruptQueued();
     static const PythonEngine *getInstance();
 

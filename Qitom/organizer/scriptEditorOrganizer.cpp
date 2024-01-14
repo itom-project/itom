@@ -502,7 +502,7 @@ RetVal ScriptEditorOrganizer::saveAllScripts(bool askFirst, bool ignoreNewScript
         m_scriptStackMutex.lock();
         for (it = m_scriptDockElements.begin(); it != m_scriptDockElements.end(); ++it)
         {
-            unsavedFileNames.append((*it)->getModifiedFileNames(ignoreNewScripts));
+            unsavedFileNames.append((*it)->getModifiedFilenames(ignoreNewScripts));
         }
         m_scriptStackMutex.unlock();
 
@@ -1089,6 +1089,45 @@ QStringList ScriptEditorOrganizer::openedScripts() const
     openedScripts.sort(Qt::CaseInsensitive);
     openedScripts.removeDuplicates();
     return openedScripts; //return list with all filenames of all opened scripts
+}
+
+//-------------------------------------------------------------------------------------
+QVector<QPair<QString, bool>> ScriptEditorOrganizer::getAllOpenedScriptsWithModificationState() const
+{
+    QStringList filenames;
+    QList<bool> modified;
+
+    foreach(const ito::ScriptDockWidget *sdw, m_scriptDockElements)
+    {
+        sdw->getAllCanonicalFilenamesWithModificationState(filenames, modified);
+    }
+
+    QVector<QPair<QString, bool>> result;
+
+    for (int idx = 0; idx < filenames.size(); ++idx)
+    {
+        result << qMakePair(filenames[idx], modified[idx]);
+    }
+
+    return result; //return list with all filenames of all opened scripts
+}
+
+//--------------------------------------------------------------------------------------
+ScriptEditorWidget* ScriptEditorOrganizer::getEditorFromCanonicalFilepath(const QString &filepath) const
+{
+    ScriptEditorWidget* sew = nullptr;
+
+    foreach(const ito::ScriptDockWidget *sdw, m_scriptDockElements)
+    {
+        sew = sdw->getEditorByCanonicalFilepath(filepath);
+
+        if (sew)
+        {
+            return sew;
+        }
+    }
+
+    return nullptr;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

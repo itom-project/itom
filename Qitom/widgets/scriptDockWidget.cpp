@@ -751,7 +751,7 @@ RetVal ScriptDockWidget::restoreScriptState(const QList<ito::ScriptEditorStorage
     \param exludeIndex tab-index which should be ignored, set to -1 in order to consider every tab
     \return string list
 */
-QStringList ScriptDockWidget::getModifiedFileNames(bool ignoreUnsavedFiles, int excludeIndex) const
+QStringList ScriptDockWidget::getModifiedFilenames(bool ignoreUnsavedFiles, int excludeIndex) const
 {
     QStringList list;
     ScriptEditorWidget* sew;
@@ -759,6 +759,7 @@ QStringList ScriptDockWidget::getModifiedFileNames(bool ignoreUnsavedFiles, int 
     for (int i = 0; i < m_tab->count(); i++)
     {
         sew = getEditorByIndex(i);
+
         if (sew != NULL && sew->isModified() && i != excludeIndex)
         {
             if (!ignoreUnsavedFiles || !sew->hasNoFilename())
@@ -776,6 +777,49 @@ QStringList ScriptDockWidget::getModifiedFileNames(bool ignoreUnsavedFiles, int 
     }
 
     return list;
+}
+
+//-------------------------------------------------------------------------------------
+void ScriptDockWidget::getAllCanonicalFilenamesWithModificationState(QStringList &filenames, QList<bool> &modified) const
+{
+    QStringList list;
+    ScriptEditorWidget* sew;
+
+    for (int i = 0; i < m_tab->count(); i++)
+    {
+        sew = getEditorByIndex(i);
+
+        if (sew != nullptr && !sew->hasNoFilename())
+        {
+            filenames << QFileInfo(sew->getFilename()).canonicalFilePath();
+            modified << sew->isModified();
+        }
+    }
+}
+
+//-------------------------------------------------------------------------------------
+ScriptEditorWidget* ScriptDockWidget::getEditorByCanonicalFilepath(const QString &filepath) const
+{
+    ScriptEditorWidget* sew;
+    QFileInfo path;
+    QFileInfo filepath_(filepath);
+
+    for (int i = 0; i < m_tab->count(); i++)
+    {
+        sew = getEditorByIndex(i);
+
+        if (sew != nullptr && !sew->hasNoFilename())
+        {
+            path = QFileInfo(sew->getFilename());
+            
+            if (path == filepath_)
+            {
+                return sew;
+            }
+        }
+    }
+
+    return nullptr;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -937,7 +981,7 @@ RetVal ScriptDockWidget::saveAllScripts(bool askFirst, bool ignoreNewScripts, in
 
     if (askFirst)
     {
-        QStringList list = this->getModifiedFileNames(ignoreNewScripts);
+        QStringList list = this->getModifiedFilenames(ignoreNewScripts);
         QMessageBox msgBox;
 
         if (list.size() > 0)
@@ -1715,6 +1759,13 @@ void ScriptDockWidget::createActions()
         this, QKeySequence(tr("Ctrl+Alt+I", "QShortcut")), Qt::WidgetWithChildrenShortcut);
     m_autoCodeFormatAction->connectTrigger(this, SLOT(mnuPyCodeFormatting()));
 
+    m_referenceRenameAction = new ShortcutAction(
+        QIcon(":/editor/icons/rename.png"),
+        tr("Rename..."),
+        this, QKeySequence(tr("F2", "QShortcut")), Qt::WidgetWithChildrenShortcut);
+    m_referenceRenameAction->action()->setToolTip(tr("Rename all references of the symbol under the cursor"));
+    m_referenceRenameAction->connectTrigger(this, SLOT(mnuPyReferenceRenaming()));
+
     m_pyDocstringGeneratorAction = new ShortcutAction(QIcon(), tr("Generate Docstring"),
         this, QKeySequence(tr("Ctrl+Alt+D", "QShortcut")), Qt::WidgetWithChildrenShortcut);
     m_pyDocstringGeneratorAction->connectTrigger(this, SLOT(mnuPyDocstringGenerator()));
@@ -1899,6 +1950,7 @@ void ScriptDockWidget::createMenus()
     m_editMenu->addAction(m_indentAction->action());
     m_editMenu->addAction(m_unindentAction->action());
     m_editMenu->addAction(m_autoCodeFormatAction->action());
+    m_editMenu->addAction(m_referenceRenameAction->action());
     m_editMenu->addAction(m_pyDocstringGeneratorAction->action());
     m_editMenu->addSeparator();
     m_editMenu->addAction(m_findTextExprAction->action());
@@ -1981,6 +2033,7 @@ void ScriptDockWidget::createToolBars()
     m_editToolBar->addAction(m_openIconBrowser->action());
     m_editToolBar->addAction(m_findSymbols->action());
     m_editToolBar->addAction(m_autoCodeFormatAction->action());
+    m_editToolBar->addAction(m_referenceRenameAction->action());
     m_editToolBar->setFloatable(false);
 
     m_scriptToolBar = new QToolBar(tr("Script Toolbar"), this);
@@ -2681,6 +2734,21 @@ void ScriptDockWidget::mnuPyCodeFormatting()
     if (sew != nullptr)
     {
         sew->menuPyCodeFormatting();
+    }
+}
+
+//-------------------------------------------------------------------------------------
+void ScriptDockWidget::mnuPyReferenceRenaming()
+{
+    ScriptEditorWidget* sew = getCurrentEditor();
+
+    if (sew != nullptr)
+    {
+        if (!sew->menuPyCodeReferenceRenaming())
+        {
+            // jedi not available or could not be loaded
+            m_referenceRenameAction->setEnabled(false);
+        }
     }
 }
 
