@@ -1006,11 +1006,11 @@ void ScriptEditorWidget::dropEvent(QDropEvent* event)
                 QMimeData mimeData;
                 mimeData.setText("");
                 QDropEvent dummyEvent(
-                    event->posF(),
+                    event->position(),
                     event->possibleActions(),
                     &mimeData,
-                    event->mouseButtons(),
-                    event->keyboardModifiers());
+                    event->buttons(),
+                    event->modifiers());
                 AbstractCodeEditorWidget::dropEvent(&dummyEvent);
             }
             else
@@ -3895,7 +3895,7 @@ void ScriptEditorWidget::replaceOccurencesInCurrentScript(const QString &newValu
             });
 
         QTextCursor cursor = textCursor();
-        
+
 
         cursor.beginEditBlock();
 
@@ -3916,7 +3916,7 @@ void ScriptEditorWidget::replaceOccurencesInCurrentScript(const QString &newValu
                 cursor.insertText(newValue);
             }
         }
-        
+
 
         cursor.endEditBlock();
     }
