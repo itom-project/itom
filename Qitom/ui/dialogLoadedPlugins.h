@@ -25,40 +25,44 @@
 
 #include "../global.h"
 
-#include <qdialog.h>
-#include <qlist.h>
 #include <qcolor.h>
-#include <qtreewidget.h>
+#include <qdialog.h>
 #include <qfileiconprovider.h>
+#include <qlist.h>
+#include <qtreewidget.h>
 
 #include "ui_dialogLoadedPlugins.h"
 
 namespace ito {
 
-struct PluginLoadStatus; //forward declaration
+struct PluginLoadStatus; // forward declaration
 
 class DialogLoadedPlugins : public QDialog
 {
     Q_OBJECT
 
-    Q_PROPERTY(QColor pluginBackgroundColor READ pluginBackgroundColor WRITE setPluginBackgroundColor DESIGNABLE true);
+    Q_PROPERTY(QColor pluginBackgroundColor READ pluginBackgroundColor WRITE
+                   setPluginBackgroundColor DESIGNABLE true);
 
 public:
-    DialogLoadedPlugins(QWidget *parent = NULL);
+    DialogLoadedPlugins(QWidget* parent = NULL);
     ~DialogLoadedPlugins();
 
 protected:
     void init();
     void filter();
-    void setSortChar(int column, QTreeWidgetItem &item);
+    void setSortChar(int column, QTreeWidgetItem& item);
 
-    QColor pluginBackgroundColor() const { return m_pluginBackgroundColor; }
-    void setPluginBackgroundColor(const QColor &color);
+    QColor pluginBackgroundColor() const
+    {
+        return m_pluginBackgroundColor;
+    }
+    void setPluginBackgroundColor(const QColor& color);
 
     Ui::DialogLoadedPlugins ui;
     QList<PluginLoadStatus> m_content;
-    QList< QPair<int, QTreeWidgetItem*> > m_items;
-    QFileIconProvider *m_fileIconProvider;
+    QList<QPair<int, QTreeWidgetItem*>> m_items;
+    QFileIconProvider* m_fileIconProvider;
     QString m_windowTitle;
     QString m_cmdMessage;
     QString m_cmdWarning;
@@ -67,15 +71,33 @@ protected:
     QColor m_pluginBackgroundColor;
 
 private slots:
-    void on_onlyCompatibleCheck_clicked(bool /*value*/) { filter(); };
-    void on_cmdError_clicked(bool /*value*/) { filter(); };
-    void on_cmdWarning_clicked(bool /*value*/) { filter(); };
-    void on_cmdMessage_clicked(bool /*value*/) { filter(); };
-    void on_cmdIgnored_clicked(bool /*value*/) { filter(); };
-    void on_filterEdit_textChanged(const QString /*value*/) { filter(); };
+    void on_onlyCompatibleCheck_clicked(bool /*value*/)
+    {
+        filter();
+    };
+    void on_cmdError_clicked(bool /*value*/)
+    {
+        filter();
+    };
+    void on_cmdWarning_clicked(bool /*value*/)
+    {
+        filter();
+    };
+    void on_cmdMessage_clicked(bool /*value*/)
+    {
+        filter();
+    };
+    void on_cmdIgnored_clicked(bool /*value*/)
+    {
+        filter();
+    };
+    void on_filterEdit_textChanged(const QString /*value*/)
+    {
+        filter();
+    };
     void on_tree_itemSelectionChanged();
 };
 
-} //end namespace ito
+} // end namespace ito
 
 #endif
