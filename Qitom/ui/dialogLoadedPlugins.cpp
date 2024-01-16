@@ -37,7 +37,7 @@ namespace ito {
 
 //----------------------------------------------------------------------------------------------------------------------------------
 DialogLoadedPlugins::DialogLoadedPlugins(QWidget* parent) :
-    QDialog(parent), m_fileIconProvider(NULL), m_pluginBackgroundColor(QColor(0xB4, 0xCD, 0xCD))
+    QDialog(parent), m_fileIconProvider(nullptr)
 {
     ui.setupUi(this);
     m_fileIconProvider = new QFileIconProvider();
@@ -115,13 +115,6 @@ void DialogLoadedPlugins::init()
         plugin->setData(5, Qt::DisplayRole, info.fileName());
         plugin->setData(5, Qt::ToolTipRole, info.absoluteFilePath());
         plugin->setData(0, Qt::DecorationRole, m_fileIconProvider->icon(info));
-
-        plugin->setBackground(0, m_pluginBackgroundColor);
-        plugin->setBackground(1, m_pluginBackgroundColor);
-        plugin->setBackground(2, m_pluginBackgroundColor);
-        plugin->setBackground(3, m_pluginBackgroundColor);
-        plugin->setBackground(4, m_pluginBackgroundColor);
-        plugin->setBackground(5, m_pluginBackgroundColor);
         // bool pluginOK = true;
 
         QChar sortElement = ' '; // This character is only in a column if there is an icon... this
@@ -189,24 +182,6 @@ void DialogLoadedPlugins::init()
         }
         m_items.append(QPair<int, QTreeWidgetItem*>(overallStatus, plugin));
         ui.tree->addTopLevelItem(plugin);
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-void DialogLoadedPlugins::setPluginBackgroundColor(const QColor& color)
-{
-    m_pluginBackgroundColor = color;
-    QTreeWidgetItem* t;
-
-    for (int i = 0; i < ui.tree->topLevelItemCount(); ++i)
-    {
-        t = ui.tree->topLevelItem(i);
-        t->setBackground(0, m_pluginBackgroundColor);
-        t->setBackground(1, m_pluginBackgroundColor);
-        t->setBackground(2, m_pluginBackgroundColor);
-        t->setBackground(3, m_pluginBackgroundColor);
-        t->setBackground(4, m_pluginBackgroundColor);
-        t->setBackground(5, m_pluginBackgroundColor);
     }
 }
 
