@@ -178,8 +178,6 @@ void DialogLoadedPlugins::init()
         }
 
         // if (pluginOK)
-        {
-        }
         m_items.append(QPair<int, QTreeWidgetItem*>(overallStatus, plugin));
         ui.tree->addTopLevelItem(plugin);
     }
