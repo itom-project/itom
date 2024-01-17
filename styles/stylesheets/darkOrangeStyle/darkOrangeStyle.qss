@@ -2371,10 +2371,6 @@ ito--DialogPipManager {
   qproperty-colorError: rgb(255,0,0);
 }
 
-ito--DialogLoadedPlugins {
-  qproperty-pluginBackgroundColor: rgb(0,0,0);
-}
-
 ito--DialogAboutQItom {
   qproperty-textColor: #ffffff;
   qproperty-linkColor: #ff9800;
