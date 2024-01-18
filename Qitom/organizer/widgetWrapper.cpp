@@ -244,6 +244,7 @@ void WidgetWrapper::initMethodHash()
         qGridLayout << buildMethodDescription(QMetaObject::normalizedSignature("addItemToGrid(QString,QString,int,int,int,int)"), "ito::PythonQObjectMarshal", 14012, ok);
         qGridLayout << buildMethodDescription(QMetaObject::normalizedSignature("addItemToGridFromUiFile(QString,QString,int,int,int,int)"), "ito::PythonQObjectMarshal", 14013, ok);
         qGridLayout << buildMethodDescription(QMetaObject::normalizedSignature("removeItemFromGrid(int,int)"), "void", 14014, ok);
+        qGridLayout << buildMethodDescription(QMetaObject::normalizedSignature("setContentsMargins(int,int,int,int)"), "void", 14015, ok);
         m_methodHash["QGridLayout"] = qGridLayout;
 
         //QBoxLayout
@@ -1883,6 +1884,15 @@ ito::RetVal WidgetWrapper::callGridLayout(QGridLayout *layout, int methodIndex, 
 
         layoutItem->deleteLater();
 
+        return ito::retOk;
+    }
+    case 14015: // setContentsMargins(int,int,int,int)
+    {
+        int left = *reinterpret_cast<int(*)>(_a[1]);
+        int top = *reinterpret_cast<int(*)>(_a[2]);
+        int right = *reinterpret_cast<int(*)>(_a[3]);
+        int bottom = *reinterpret_cast<int(*)>(_a[4]);
+        layout->setContentsMargins(left, top, right, bottom);
         return ito::retOk;
     }
     }
