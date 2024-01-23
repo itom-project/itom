@@ -658,7 +658,8 @@ void ScriptEditorWidget::initMenus()
         this,
         SLOT(menuPyCodeReferenceRenaming()),
         QKeySequence(tr("F2", "QShortcut")));
-    m_editorMenuActions["referenceRenameing"]->setToolTip(tr("Rename all references of the symbol under the cursor"));
+    m_editorMenuActions["referenceRenameing"]->setToolTip(
+        tr("Rename all references of the symbol under the cursor"));
 
     m_editorMenuActions["generateDocstring"] = editorMenu->addAction(
         QIcon(),
@@ -1005,12 +1006,23 @@ void ScriptEditorWidget::dropEvent(QDropEvent* event)
                 // https://stackoverflow.com/questions/29456366/qtextedit-cursor-becomes-frozen-after-overriding-its-dropevent
                 QMimeData mimeData;
                 mimeData.setText("");
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
                 QDropEvent dummyEvent(
                     event->position(),
                     event->possibleActions(),
                     &mimeData,
                     event->buttons(),
                     event->modifiers());
+#else
+                QDropEvent dummyEvent(
+                    event->posF(),
+                    event->possibleActions(),
+                    &mimeData,
+                    event->mouseButtons(),
+                    event->keyboardModifiers());
+#endif
+
                 AbstractCodeEditorWidget::dropEvent(&dummyEvent);
             }
             else
@@ -1586,7 +1598,8 @@ bool ScriptEditorWidget::menuPyCodeReferenceRenaming()
         }
         else
         {
-            QMessageBox::critical(this, tr("General error during renaming"), retValue.errorMessage());
+            QMessageBox::critical(
+                this, tr("General error during renaming"), retValue.errorMessage());
         }
     }
 
@@ -3874,7 +3887,8 @@ void ScriptEditorWidget::onTextChanged()
 }
 
 //-------------------------------------------------------------------------------------
-void ScriptEditorWidget::replaceOccurencesInCurrentScript(const QString &newValue, const QVector<ito::FileRenameItem> &renameItems)
+void ScriptEditorWidget::replaceOccurencesInCurrentScript(
+    const QString& newValue, const QVector<ito::FileRenameItem>& renameItems)
 {
     if (renameItems.size() > 0)
     {
@@ -3899,20 +3913,23 @@ void ScriptEditorWidget::replaceOccurencesInCurrentScript(const QString &newValu
 
         cursor.beginEditBlock();
 
-        foreach(const ito::FileRenameItem &item, items)
+        foreach (const ito::FileRenameItem& item, items)
         {
             cursor.movePosition(QTextCursor::Start);
 
             if (item.lineNumber > 1)
             {
-                cursor.movePosition(QTextCursor::NextBlock, QTextCursor::MoveAnchor, item.lineNumber - 1);
+                cursor.movePosition(
+                    QTextCursor::NextBlock, QTextCursor::MoveAnchor, item.lineNumber - 1);
 
                 if (item.startColumnIndex > 0)
                 {
-                    cursor.movePosition(QTextCursor::NextCharacter, QTextCursor::MoveAnchor, item.startColumnIndex);
+                    cursor.movePosition(
+                        QTextCursor::NextCharacter, QTextCursor::MoveAnchor, item.startColumnIndex);
                 }
 
-                cursor.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, item.oldWordSize);
+                cursor.movePosition(
+                    QTextCursor::NextCharacter, QTextCursor::KeepAnchor, item.oldWordSize);
                 cursor.insertText(newValue);
             }
         }
