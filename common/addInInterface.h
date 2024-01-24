@@ -1034,8 +1034,8 @@ namespace ito
             virtual ~FilterDefExt() {}
 
             t_filterExt m_filterFuncExt;                      //!< extended function pointer (unbounded, static) for filter-method
-            bool m_hasStatusInformation;                      //!< true, if filter updates status information to the optional observer
-            bool m_isCancellable;                             //!< true, if filter listens to a possible interrupt flag in the optional observer and cancels the execution if set
+            bool m_hasStatusInformation = true;                      //!< true, if filter updates status information to the optional observer
+            bool m_isCancellable = true;                             //!< true, if filter listens to a possible interrupt flag in the optional observer and cancels the execution if set
 
         private:
             FilterDefExt(const FilterDefExt & /*p*/); //disable copy constructor

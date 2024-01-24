@@ -272,7 +272,7 @@ class ItomSharedSemaphoreLocker
     private:
         inline ItomSharedSemaphoreLocker(ItomSharedSemaphoreLocker & /*other*/ ) { /* forbidden */ }
         inline ItomSharedSemaphoreLocker & operator = (const ItomSharedSemaphoreLocker & /*other*/ ) { return *this; /* forbidden */ }
-        ItomSharedSemaphore* m_semaphore;  /*!< pointer to ItomSharedSemaphore */
+        ItomSharedSemaphore* m_semaphore = nullptr;  /*!< pointer to ItomSharedSemaphore */
 };
 
 //} //end namespace ito

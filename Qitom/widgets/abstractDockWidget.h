@@ -115,7 +115,7 @@ namespace ito
 
             struct Toolbar
             {
-                Toolbar() : section(0), key(""), tb(NULL) {}
+                Toolbar() : area(Qt::AllToolBarAreas), section(0), key(""), tb(nullptr) {}
                 Qt::ToolBarArea area;
                 int section;
                 QString key;

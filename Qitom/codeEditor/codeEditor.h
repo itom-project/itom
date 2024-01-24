@@ -414,7 +414,7 @@ protected:
 private:
     struct FindOptions
     {
-        FindOptions() : valid(false), forward(true){};
+        FindOptions() : valid(false), re(false), cs(false), wo(false), wrap(false), forward(true), show(true) {};
         bool valid;
         QString expr;
         bool re;

@@ -174,7 +174,7 @@ namespace ito
             m_createdByGUI(0),
             m_initialized(false),
             m_refCount(0),
-            m_alive(0)
+            m_alive(0), m_uniqueID(0)
         {}
 
         QPointer<QDockWidget> m_dockWidget;     //!< safe pointer to dock widget. This pointer is automatically NULL if the dock widget is deleted e.g. by a previous deletion of the main window.

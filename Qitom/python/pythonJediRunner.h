@@ -79,7 +79,8 @@ public:
     ) :
         m_type(type),
         m_pPyModJedi(pPyModJedi),
-        m_additionalImportString(additionalImportString)
+        m_additionalImportString(additionalImportString),
+        m_currentId(0)
     {
         setAutoDelete(true);
     };

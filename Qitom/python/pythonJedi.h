@@ -120,8 +120,8 @@ struct JediAssignment
     }
 
     QString m_path; // File path of the module where the assignment can be found
-    int m_line; // line number
-    int m_column; // column number
+    int m_line = 0; // line number
+    int m_column = 0; // column number
     QString m_fullName; // assignement full name
 };
 
@@ -175,12 +175,12 @@ struct JediRename
     JediRename(){};
 
     QString m_filePath;
-    bool m_mainFile;
+    bool m_mainFile = true;
 
     //!< defines if this file is with the project of the initial file of the rename operation.
     /* The project is defined by jedi.api.project.get_default_project()
     */
-    bool m_fileInProject;
+    bool m_fileInProject = true;
 
     QVector<FileRenameItem> m_items;
 };

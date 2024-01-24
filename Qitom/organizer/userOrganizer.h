@@ -85,7 +85,7 @@ class UserOrganizer : public QObject
 		QString m_strConstStdUserId;
         QString m_lastOpenedUserName;
 
-        UserModel *m_userModel;
+        UserModel *m_userModel = nullptr;
 
 };
 

@@ -69,7 +69,7 @@ class BreakPointModel;
 struct ScriptEditorStorage
 {
     QString     filename;
-    int         firstVisibleLine;
+    int         firstVisibleLine = 0;
     QList<int>  bookmarkLines; //! this is deprecated, since bookmarks are now managed by the global bookmarkModel
 };
 
@@ -77,10 +77,10 @@ struct ScriptEditorStorage
 struct GoBackNavigationItem
 {
     QString filename;
-    int UID;
+    int UID = 0;
     QString shortText;
-    int line;
-    int column;
+    int line = 0;
+    int column = 0;
     QString origin;
 };
 

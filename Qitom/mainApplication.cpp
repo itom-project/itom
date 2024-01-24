@@ -514,37 +514,50 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
     m_pSplashScreen->showMessage(tr("load translations..."), Qt::AlignRight | Qt::AlignBottom, m_splashScreenTextColor);
     QCoreApplication::processEvents();
 
+    bool loadedQtTranslation = false;
+
     //1. try to load qt-translations from qt-folder
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    m_qtTranslator.load(
+    loadedQtTranslation = m_qtTranslator.load(
         "qt_" + local.name(), QLibraryInfo::path(QLibraryInfo::TranslationsPath));
 #else
-    m_qtTranslator.load(
+    loadedQtTranslation = m_qtTranslator.load(
         "qt_" + local.name(), QLibraryInfo::location(QLibraryInfo::TranslationsPath));
 #endif
 
-    if (m_qtTranslator.isEmpty())
+    if (m_qtTranslator.isEmpty() || !loadedQtTranslation)
     {
         //qt-folder is not available, then try itom translation folder
-        m_qtTranslator.load("qt_" + local.name(), itomTranslationFolder);
+        loadedQtTranslation = m_qtTranslator.load("qt_" + local.name(), itomTranslationFolder);
+        if (!loadedQtTranslation)
+        {
+            qDebug() << "Translation from qt and itom translation folder loading failed.";
+        }
     }
     QCoreApplication::instance()->installTranslator(&m_qtTranslator);
 
+    bool loaded = false;
+
     //2. load itom-specific translation file
-    m_translator.load("qitom_" + local.name(), itomTranslationFolder);
+    loaded = m_translator.load("qitom_" + local.name(), itomTranslationFolder);
     QCoreApplication::instance()->installTranslator(&m_translator);
 
-    m_commonQtTranslator.load("itomCommonQtLib_" + local.name(), itomTranslationFolder);
+    loaded = m_commonQtTranslator.load("itomCommonQtLib_" + local.name(), itomTranslationFolder);
     QCoreApplication::instance()->installTranslator(&m_commonQtTranslator);
 
-    m_commonPlotTranslator.load("itomCommonPlotLib_" + local.name(), itomTranslationFolder);
+    loaded = m_commonPlotTranslator.load("itomCommonPlotLib_" + local.name(), itomTranslationFolder);
     QCoreApplication::instance()->installTranslator(&m_commonPlotTranslator);
 
-    m_widgetsTranslator.load("itomWidgets_" + local.name(), itomTranslationFolder);
+    loaded = m_widgetsTranslator.load("itomWidgets_" + local.name(), itomTranslationFolder);
     QCoreApplication::instance()->installTranslator(&m_widgetsTranslator);
 
-    m_addinmanagerTranslator.load("addinmanager_" + local.name(), itomTranslationFolder);
+    loaded = m_addinmanagerTranslator.load("addinmanager_" + local.name(), itomTranslationFolder);
     QCoreApplication::instance()->installTranslator(&m_addinmanagerTranslator);
+
+    if (!loaded)
+    {
+            qDebug() << "Load of translation files failed";
+    }
 
     //3. set default encoding codec
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)

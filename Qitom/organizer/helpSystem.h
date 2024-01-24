@@ -75,7 +75,7 @@ private:
     QString m_helpCollectionProject;
     QString m_pluginHelpCollectionName;
     QString m_pluginHelpCollectionProject;
-    bool m_upToDate;
+    bool m_upToDate = false;
 
 
 

@@ -68,7 +68,7 @@ protected:
 private:
     struct DelayedTransition
     {
-        DelayedTransition() : timerId(-1) {}
+        DelayedTransition() : timerId(-1), transition(tPythonTransitions::pyTransBeginRun) {}
 
         int timerId; //!< -1 if no timer is currently set, else the timer id
         tPythonTransitions transition; //!< the scheduled transition

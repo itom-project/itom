@@ -130,8 +130,8 @@ public:
 
     inline ito::BreakPointModel *getBreakPointModel() const { return m_bpModel; }
     inline bool isPythonBusy() const                { return m_pythonState != ito::pyStateIdle; }
-    inline bool isPythonDebugging() const           { return (m_pythonState == ito::pyStateDebuggingWaitingButBusy || m_pythonState == ito::pyStateDebugging || m_pythonState == ito::pyStateDebuggingWaiting); }
-    inline bool isPythonDebuggingAndWaiting() const { return m_pythonState == ito::pyStateDebuggingWaiting; }
+    inline bool isPythonDebugging() const           { return (m_pythonState & ito::pyStateDebuggingWaitingButBusy || m_pythonState & ito::pyStateDebugging || m_pythonState & ito::pyStateDebuggingWaiting); }
+    inline bool isPythonDebuggingAndWaiting() const { return m_pythonState & ito::pyStateDebuggingWaiting; }
     inline bool execInternalCodeByDebugger() const  { return m_executeInternalPythonCodeInDebugMode; }
     inline void setExecInternalCodeByDebugger(bool value) { m_executeInternalPythonCodeInDebugMode = value; }
     void printPythonErrorWithoutTraceback();

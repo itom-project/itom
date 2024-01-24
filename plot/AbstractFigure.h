@@ -96,7 +96,9 @@ class ITOMCOMMONPLOT_EXPORT AbstractFigure : public QMainWindow, public Abstract
         Q_ENUM(UnitLabelStyle)
 
         struct ToolBarItem {
-            ToolBarItem() : toolbar(NULL), visible(1), section(0), key("") {}
+            ToolBarItem() : toolbar(nullptr), visible(1), section(0), area(Qt::AllToolBarAreas), key("")
+            {
+            }
             QToolBar *toolbar;
             bool visible;
             int section;
@@ -105,7 +107,9 @@ class ITOMCOMMONPLOT_EXPORT AbstractFigure : public QMainWindow, public Abstract
         };
 
         struct ToolboxItem {
-            ToolboxItem() : toolbox(NULL), key("") {}
+            ToolboxItem() : toolbox(nullptr), area(Qt::AllDockWidgetAreas), key("")
+            {
+            }
             QDockWidget *toolbox;
             Qt::DockWidgetArea area;
             QString key;

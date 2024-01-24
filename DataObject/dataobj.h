@@ -400,7 +400,7 @@ namespace ito {
             {
                 return std::numeric_limits<double>::quiet_NaN();
             }
-            else if(m_type == DataObjectTagType::typeDouble)
+            else if(m_type & DataObjectTagType::typeDouble)
             {
                 return m_dVal;
             }
@@ -423,7 +423,7 @@ namespace ito {
             {
                 return "";
             }
-            else if(m_type == DataObjectTagType::typeString)
+            else if(m_type & DataObjectTagType::typeString)
             {
                 return m_strValue;
             }

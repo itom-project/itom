@@ -363,7 +363,7 @@ public:
     */
     inline pcl::PointCloud<pcl::PointXYZ>::Ptr toPointXYZ() const
     {
-        if(m_type == ito::pclXYZ) return m_pcXYZ;
+        if(m_type & ito::pclXYZ) return m_pcXYZ;
         throw pcl::PCLException("point cloud has not the desired type PointXYZ",__FILE__, "toPointXYZ", __LINE__);
     };
 
@@ -373,7 +373,7 @@ public:
     */
     inline pcl::PointCloud<pcl::PointXYZI>::Ptr toPointXYZI() const
     {
-        if(m_type == ito::pclXYZI) return m_pcXYZI;
+        if(m_type & ito::pclXYZI) return m_pcXYZI;
         throw pcl::PCLException("point cloud has not the desired type PointXYZI",__FILE__, "toPointXYZI", __LINE__);
     };
 
@@ -383,7 +383,7 @@ public:
     */
     inline pcl::PointCloud<pcl::PointXYZRGBA>::Ptr toPointXYZRGBA() const
     {
-        if(m_type == ito::pclXYZRGBA) return m_pcXYZRGBA;
+        if(m_type & ito::pclXYZRGBA) return m_pcXYZRGBA;
         throw pcl::PCLException("point cloud has not the desired type PointXYZRGBA",__FILE__, "toPointXYZRGBA", __LINE__);
     };
 
@@ -393,7 +393,7 @@ public:
     */
     inline pcl::PointCloud<pcl::PointNormal>::Ptr toPointXYZNormal() const
     {
-        if(m_type == ito::pclXYZNormal) return m_pcXYZNormal;
+        if(m_type & ito::pclXYZNormal) return m_pcXYZNormal;
         throw pcl::PCLException("point cloud has not the desired type PointXYZNormal",__FILE__, "toPointXYZNormal", __LINE__);
     };
 
@@ -403,7 +403,7 @@ public:
     */
     inline pcl::PointCloud<pcl::PointXYZINormal>::Ptr toPointXYZINormal() const
     {
-        if(m_type == ito::pclXYZINormal) return m_pcXYZINormal;
+        if(m_type & ito::pclXYZINormal) return m_pcXYZINormal;
         throw pcl::PCLException("point cloud has not the desired type PointXYZINormal",__FILE__, "toPointXYZINormal", __LINE__);
     };
 
@@ -413,7 +413,7 @@ public:
     */
     inline pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr toPointXYZRGBNormal() const
     {
-        if(m_type == ito::pclXYZRGBNormal) return m_pcXYZRGBNormal;
+        if(m_type & ito::pclXYZRGBNormal) return m_pcXYZRGBNormal;
         throw pcl::PCLException("point cloud has not the desired type PointXYZRGBNormal",__FILE__, "toPointXYZRGBNormal", __LINE__);
     };
 
@@ -423,7 +423,7 @@ public:
     */
     inline pcl::PointCloud<pcl::PointXYZ>::ConstPtr toPointXYZConst() const
     {
-        if(m_type == ito::pclXYZ) return m_pcXYZ;
+        if(m_type & ito::pclXYZ) return m_pcXYZ;
         throw pcl::PCLException("point cloud has not the desired type PointXYZ",__FILE__, "toPointXYZ", __LINE__);
     };
 
@@ -433,7 +433,7 @@ public:
     */
     inline pcl::PointCloud<pcl::PointXYZI>::ConstPtr toPointXYZIConst() const
     {
-        if(m_type == ito::pclXYZI) return m_pcXYZI;
+        if(m_type & ito::pclXYZI) return m_pcXYZI;
         throw pcl::PCLException("point cloud has not the desired type PointXYZI",__FILE__, "toPointXYZI", __LINE__);
     };
 
@@ -443,7 +443,7 @@ public:
     */
     inline pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr toPointXYZRGBAConst() const
     {
-        if(m_type == ito::pclXYZRGBA) return m_pcXYZRGBA;
+        if(m_type & ito::pclXYZRGBA) return m_pcXYZRGBA;
         throw pcl::PCLException("point cloud has not the desired type PointXYZRGBA",__FILE__, "toPointXYZRGBA", __LINE__);
     };
 
@@ -453,7 +453,7 @@ public:
     */
     inline pcl::PointCloud<pcl::PointNormal>::ConstPtr toPointXYZNormalConst() const
     {
-        if(m_type == ito::pclXYZNormal) return m_pcXYZNormal;
+        if (m_type & ito::pclXYZNormal) return m_pcXYZNormal;
         throw pcl::PCLException("point cloud has not the desired type PointXYZNormal",__FILE__, "toPointXYZNormal", __LINE__);
     };
 
@@ -463,7 +463,7 @@ public:
     */
     inline pcl::PointCloud<pcl::PointXYZINormal>::ConstPtr toPointXYZINormalConst() const
     {
-        if(m_type == ito::pclXYZINormal) return m_pcXYZINormal;
+        if(m_type & ito::pclXYZINormal) return m_pcXYZINormal;
         throw pcl::PCLException("point cloud has not the desired type PointXYZINormal",__FILE__, "toPointXYZINormal", __LINE__);
     };
 
@@ -473,7 +473,7 @@ public:
     */
     inline pcl::PointCloud<pcl::PointXYZRGBNormal>::ConstPtr toPointXYZRGBNormalConst() const
     {
-        if(m_type == ito::pclXYZRGBNormal) return m_pcXYZRGBNormal;
+        if(m_type & ito::pclXYZRGBNormal) return m_pcXYZRGBNormal;
         throw pcl::PCLException("point cloud has not the desired type PointXYZRGBNormal",__FILE__, "toPointXYZRGBNormal", __LINE__);
     };
 

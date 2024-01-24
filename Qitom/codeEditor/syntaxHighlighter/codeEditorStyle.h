@@ -97,7 +97,9 @@ public:
     //values are always accessible.
     Q_ENUM(StyleType)
 
-    StyleItem() : m_valid(false) {}
+    StyleItem() : m_type(StyleType::KeyBackground), m_valid(false)
+    {
+    }
 
     StyleItem(StyleType type, const QTextCharFormat &format);
 

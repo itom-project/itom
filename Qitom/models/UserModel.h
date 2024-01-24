@@ -66,8 +66,8 @@ struct UserInfoStruct
     QString id;
     QString iniFile;
     QByteArray password;
-    UserRole role;
-    UserFeatures features;
+    UserRole role = UserRole::userRoleAdministrator;
+    UserFeatures features = UserFeature::featDeveloper;
     bool standardUser;
 };
 
