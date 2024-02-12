@@ -690,7 +690,6 @@ ito::RetVal MyActuator::waitForDone(const int timeoutMS, const QVector<int> axis
             else if (1 /*axis i is at target*/)
             {
                 setStatus(m_currentStatus[i], ito::actuatorAtTarget, ito::actSwitchesMask | ito::actStatusMask);
-                done = false; //not done yet
             }
         }
 

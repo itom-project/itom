@@ -19,7 +19,7 @@ import pointcloud_pickle
 import idc_test
 import plot_test
 import shape_test
-
+import multichannel_test
 if pyversion >= (3, 6):
     import itom_stubs_generator
     import itom_algorithm_stubs_generator
@@ -43,6 +43,7 @@ def suite():
     suite.addTest(unittest.makeSuite(datatype_conversion_test.DatatypeConversionTest))
     suite.addTest(unittest.makeSuite(pointcloud_pickle.PointCloudPickle))
     suite.addTest(unittest.makeSuite(idc_test.IdcTest))
+    suite.addTest(unittest.makeSuite(multichannel_test.MultiChannelDummyGrabberTest))
 
     if pyversion >= (3, 6):
         suite.addTest(unittest.makeSuite(itom_stubs_generator.ItomStubsGenTest))

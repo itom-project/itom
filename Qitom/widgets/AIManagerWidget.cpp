@@ -57,7 +57,7 @@ AIManagerWidget::AIManagerWidget(
     m_pMainToolbar(nullptr), m_pViewList(nullptr), m_pViewDetails(nullptr), m_pPlugInModel(nullptr)
 {
     int size = 0;
-    ito::AddInManager* aim = qobject_cast<ito::AddInManager*>(AppManagement::getAddInManager());
+    ito::AddInManager *aim = qobject_cast<ito::AddInManager*>(AppManagement::getAddInManager());
 
     m_pAIManagerView = new QTreeView(this);
     m_pAIManagerView->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -155,7 +155,7 @@ AIManagerWidget::AIManagerWidget(
             m_pAIManagerView->expand(index);
         }
 
-        QSettings* settings = new QSettings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+        QSettings *settings = new QSettings(AppManagement::getSettingsFile(), QSettings::IniFormat);
         settings->beginGroup("itomPluginsDockWidget");
         size = settings->beginReadArray("ColWidth");
         for (int i = 0; i < size; ++i)
@@ -204,18 +204,18 @@ AIManagerWidget::AIManagerWidget(
 //-------------------------------------------------------------------------------------
 AIManagerWidget::~AIManagerWidget()
 {
-    ito::AddInManager* aim = qobject_cast<ito::AddInManager*>(AppManagement::getAddInManager());
+    ito::AddInManager *aim = qobject_cast<ito::AddInManager*>(AppManagement::getAddInManager());
 
     if (aim)
     {
-        PlugInModel* plugInModel = (PlugInModel*)(aim->getPluginModel());
+        PlugInModel *plugInModel = (PlugInModel*)(aim->getPluginModel());
         QString setFile(AppManagement::getSettingsFile());
-        QSettings* settings = new QSettings(setFile, QSettings::IniFormat);
+        QSettings *settings = new QSettings(setFile, QSettings::IniFormat);
 
         settings->beginGroup("itomPluginsDockWidget");
 
-        //    QByteArray state = m_pMainToolbar->saveGeometry();
-        //    settings->setValue("stateToolBar", state);
+    //    QByteArray state = m_pMainToolbar->saveGeometry();
+    //    settings->setValue("stateToolBar", state);
 
         settings->beginWriteArray("ColWidth");
 
@@ -293,8 +293,8 @@ void AIManagerWidget::createMenus()
 //-------------------------------------------------------------------------------------
 void AIManagerWidget::createToolBars()
 {
-    QWidget* spacerWidget = new QWidget();
-    QHBoxLayout* spacerLayout = new QHBoxLayout();
+    QWidget *spacerWidget = new QWidget();
+    QHBoxLayout *spacerLayout = new QHBoxLayout();
     spacerLayout->addItem(new QSpacerItem(5, 5, QSizePolicy::Expanding, QSizePolicy::Minimum));
     spacerLayout->setStretch(0, 2);
     spacerWidget->setLayout(spacerLayout);
@@ -341,7 +341,7 @@ void AIManagerWidget::updateActions()
     {
         PlugInModel::tItemType itemType;
         size_t itemInternalData;
-        PlugInModel* plugInModel = (PlugInModel*)(index.model());
+        PlugInModel *plugInModel = (PlugInModel*)(index.model());
 
         if (plugInModel->flags(index) & Qt::ItemIsEnabled)
         {
@@ -351,13 +351,13 @@ void AIManagerWidget::updateActions()
                 //            PlugInModel::itemCatActuator || itemType == PlugInModel::itemCatAlgo
                 //            || itemType == PlugInModel::itemCatDataIO || itemType ==
                 //            PlugInModel::itemSubCategoryDataIO_Grabber;
-                bool isPlugInNode = (itemType == PlugInModel::itemPlugin);
-                bool isPlugInAlgoNode = plugInModel->getIsAlgoPlugIn(itemType, itemInternalData);
-                bool isInstanceNode = (itemType == PlugInModel::itemInstance);
+                bool isPlugInNode     =    (itemType == PlugInModel::itemPlugin);
+                bool isPlugInAlgoNode =    plugInModel->getIsAlgoPlugIn(itemType, itemInternalData);
+                bool isInstanceNode   =    (itemType == PlugInModel::itemInstance);
                 bool isPlugInGrabberNode =
                     plugInModel->getIsGrabberInstance(itemType, itemInternalData);
-                bool isFilterNode = (itemType == PlugInModel::itemFilter);
-                bool isWidgetNode = (itemType == PlugInModel::itemWidget);
+                bool isFilterNode     =    (itemType == PlugInModel::itemFilter);
+                bool isWidgetNode     =    (itemType == PlugInModel::itemWidget);
 
                 m_pActCloseAllInstances->setVisible(isPlugInNode && !isPlugInAlgoNode);
                 m_pActCloseInstance->setVisible(isInstanceNode);
@@ -374,11 +374,11 @@ void AIManagerWidget::updateActions()
 
                 if (isInstanceNode)
                 {
-                    ito::AddInBase* ais = (ito::AddInBase*)index.internalPointer();
+                    ito::AddInBase *ais = (ito::AddInBase *)index.internalPointer();
 
                     m_pActCloseInstance->setEnabled(ais->createdByGUI() > 0);
 
-                    QObject* engine = AppManagement::getPythonEngine();
+                    QObject *engine = AppManagement::getPythonEngine();
                     m_pActSendToPython->setEnabled(engine);
 
                     m_pShowConfDialog->setEnabled(
@@ -409,7 +409,7 @@ void AIManagerWidget::updateActions()
 
                     if (m_pActAutoGrabbing->isVisible())
                     {
-                        ito::AddInBase* ais = (ito::AddInBase*)index.internalPointer();
+                        ito::AddInBase *ais = (ito::AddInBase *)index.internalPointer();
                         if (ais)
                         {
                             m_pActAutoGrabbing->setChecked(
@@ -466,7 +466,7 @@ QColor AIManagerWidget::backgroundColorInstancesWithPythonRef() const
 }
 
 //-------------------------------------------------------------------------------------
-void AIManagerWidget::setBackgroundColorInstancesWithPythonRef(const QColor& bgColor)
+void AIManagerWidget::setBackgroundColorInstancesWithPythonRef(const QColor &bgColor)
 {
     if (m_pPlugInModel)
     {
@@ -512,7 +512,7 @@ void AIManagerWidget::selectionChanged(
 //-------------------------------------------------------------------------------------
 void AIManagerWidget::closeInstance(const QModelIndex index)
 {
-    ito::AddInBase* ais = (ito::AddInBase*)index.internalPointer();
+    ito::AddInBase *ais = (ito::AddInBase *)index.internalPointer();
     if (ais)
     {
         if (ais->createdByGUI() == 0)
@@ -572,7 +572,7 @@ void AIManagerWidget::closeInstance(const QModelIndex index)
 }
 
 //-------------------------------------------------------------------------------------
-void AIManagerWidget::treeViewContextMenuRequested(const QPoint& pos)
+void AIManagerWidget::treeViewContextMenuRequested(const QPoint &pos)
 {
     updateActions();
     m_pContextMenu->exec(pos + m_pAIManagerView->mapToGlobal(m_pAIManagerView->pos()));
@@ -590,7 +590,7 @@ void AIManagerWidget::mnuShowConfdialog()
 
     if (index.isValid())
     {
-        ito::AddInBase* ais = (ito::AddInBase*)index.internalPointer();
+        ito::AddInBase *ais = (ito::AddInBase *)index.internalPointer();
         if ((qobject_cast<QApplication*>(QCoreApplication::instance())) && ais &&
             ais->hasConfDialog())
         {
@@ -626,7 +626,7 @@ void AIManagerWidget::mnuToggleDockWidget()
 
     if (index.isValid())
     {
-        ito::AddInBase* ais = (ito::AddInBase*)index.internalPointer();
+        ito::AddInBase *ais = (ito::AddInBase *)index.internalPointer();
         if (ais)
         {
             QDockWidget* dockWidget = ais->getDockWidget();
@@ -650,11 +650,11 @@ void AIManagerWidget::mnuCreateNewInstance()
 
     if (index.isValid())
     {
-        ito::AddInManager* aim = qobject_cast<ito::AddInManager*>(AppManagement::getAddInManager());
-        ito::AddInInterfaceBase* aib = (ito::AddInInterfaceBase*)index.internalPointer();
+        ito::AddInManager *aim = qobject_cast<ito::AddInManager*>(AppManagement::getAddInManager());
+        ito::AddInInterfaceBase *aib = (ito::AddInInterfaceBase*)index.internalPointer();
 
-        DialogNewPluginInstance* dialog = new DialogNewPluginInstance(index, aib);
-        if (dialog->exec() == 1) // accepted
+        DialogNewPluginInstance *dialog = new DialogNewPluginInstance(index, aib);
+        if (dialog->exec() == 1) //accepted
         {
             QVector<ito::ParamBase> paramsMandNew, paramsOptNew;
             QString pythonVarName = dialog->getPythonVariable();
@@ -740,7 +740,7 @@ void AIManagerWidget::mnuCreateNewInstance()
 
                 if (pythonVarName != "")
                 {
-                    QObject* engine = AppManagement::getPythonEngine();
+                    QObject *engine = AppManagement::getPythonEngine();
                     if (engine)
                     {
                         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
@@ -826,7 +826,7 @@ void AIManagerWidget::mnuCloseAllInstances()
 
     if (index.isValid())
     {
-        const QAbstractItemModel* model = index.model();
+        const QAbstractItemModel *model = index.model();
 
         for (int i = model->rowCount(index) - 1; i > -1; --i)
         {
@@ -847,10 +847,10 @@ void AIManagerWidget::mnuSendToPython()
 
     if (index.isValid())
     {
-        ito::AddInBase* ais = (ito::AddInBase*)index.internalPointer();
+        ito::AddInBase *ais = (ito::AddInBase *)index.internalPointer();
         if (ais)
         {
-            QObject* engine = AppManagement::getPythonEngine();
+            QObject *engine = AppManagement::getPythonEngine();
             if (engine)
             {
                 bool ok = false;
@@ -945,11 +945,11 @@ void AIManagerWidget::mnuShowAlgoWidget(ito::AddInAlgo::AlgoWidgetDef* awd)
     {
         if (paramsMand.size() > 0 || paramsOpt.size() > 0)
         {
-            DialogOpenNewGui* dialog = new DialogOpenNewGui(awd->m_name, paramsMand, paramsOpt);
+            DialogOpenNewGui *dialog = new DialogOpenNewGui(awd->m_name, paramsMand, paramsOpt);
 
-            if (dialog->exec() == 1) // accepted
+            if (dialog->exec() == 1) //accepted
             {
-                // QString pythonVarName = dialog->getPythonVariable();
+                //QString pythonVarName = dialog->getPythonVariable();
                 ito::RetVal retValue = ito::retOk;
                 ito::AddInBase* basePlugin = nullptr;
 
@@ -966,7 +966,7 @@ void AIManagerWidget::mnuShowAlgoWidget(ito::AddInAlgo::AlgoWidgetDef* awd)
             }
         }
 
-        UiOrganizer* uiOrganizer = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
+        UiOrganizer *uiOrganizer = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
         QSharedPointer<unsigned int> dialogHandle(new unsigned int);
         QSharedPointer<int> retCodeIfModal(new int);
         QSharedPointer<unsigned int> objectID(new unsigned int);
@@ -1065,15 +1065,14 @@ void AIManagerWidget::mnuShowLiveImage()
 
     if (index.isValid())
     {
-        ito::AddInBase* ais = (ito::AddInBase*)index.internalPointer();
-
-        if (ais && ais->inherits("ito::AddInGrabber"))
+        ito::AddInBase *ais = (ito::AddInBase *)index.internalPointer();
+        if (ais && ais->inherits("ito::AbstractAddInGrabber"))
         {
-            UiOrganizer* uiOrg = (UiOrganizer*)AppManagement::getUiOrganizer();
+            UiOrganizer *uiOrg = (UiOrganizer*)AppManagement::getUiOrganizer();
             QString defaultPlotClassName;
             QSharedPointer<unsigned int> objectID(new unsigned int);
             QSharedPointer<unsigned int> figHandle(new unsigned int);
-            *figHandle = 0; // new figure will be requested
+            *figHandle = 0; //new figure will be requested
 
             ito::RetVal retval = uiOrg->figureLiveImage(
                 (ito::AddInDataIO*)ais,
@@ -1123,13 +1122,12 @@ void AIManagerWidget::mnuSnapDialog()
 
     if (index.isValid())
     {
-        ito::AddInBase* ais = (ito::AddInBase*)index.internalPointer();
-
-        if (ais && ais->inherits("ito::AddInGrabber"))
+        ito::AddInBase *ais = (ito::AddInBase *)index.internalPointer();
+        if (ais && ais->inherits("ito::AbstractAddInGrabber"))
         {
             ito::RetVal retval = ito::retOk;
             QPointer<ito::AddInDataIO> aisPointer((ito::AddInDataIO*)ais);
-            DialogSnapshot* snapDialog = new DialogSnapshot(this, aisPointer, retval);
+            DialogSnapshot *snapDialog = new DialogSnapshot(this, aisPointer, retval);
             snapDialog->setAttribute(Qt::WA_DeleteOnClose, true);
             snapDialog->show();
 
@@ -1171,7 +1169,7 @@ void AIManagerWidget::mnuToggleAutoGrabbing()
 
     if (index.isValid())
     {
-        ito::AddInBase* ais = (ito::AddInBase*)index.internalPointer();
+        ito::AddInBase *ais = (ito::AddInBase *)index.internalPointer();
 
         if (ais)
         {
@@ -1187,14 +1185,14 @@ void AIManagerWidget::mnuToggleAutoGrabbing()
                 QMetaObject::invokeMethod(
                     ais, "disableAutoGrabbing", Q_ARG(ItomSharedSemaphore*, waitCond));
             }
-            waitCond->deleteSemaphore();
+             waitCond->deleteSemaphore();
             waitCond = nullptr;
         }
     }
 }
 
 //-------------------------------------------------------------------------------------
-void AIManagerWidget::setTreeViewHideColumns(const bool& hide, const int colCount)
+void AIManagerWidget::setTreeViewHideColumns(const bool &hide, const int colCount)
 {
     for (int i = 1; i < colCount; ++i)
     {
@@ -1205,8 +1203,8 @@ void AIManagerWidget::setTreeViewHideColumns(const bool& hide, const int colCoun
 //-------------------------------------------------------------------------------------
 void AIManagerWidget::showList()
 {
-    ito::AddInManager* aim = qobject_cast<ito::AddInManager*>(AppManagement::getAddInManager());
-    PlugInModel* plugInModel = (PlugInModel*)(aim->getPluginModel());
+    ito::AddInManager *aim = qobject_cast<ito::AddInManager*>(AppManagement::getAddInManager());
+    PlugInModel *plugInModel = (PlugInModel*)(aim->getPluginModel());
     bool isList = true;
 
     for (int i = 1; i < plugInModel->columnCount(); ++i)
@@ -1241,8 +1239,8 @@ void AIManagerWidget::mnuToggleView()
 //-------------------------------------------------------------------------------------
 void AIManagerWidget::showDetails()
 {
-    ito::AddInManager* aim = qobject_cast<ito::AddInManager*>(AppManagement::getAddInManager());
-    PlugInModel* plugInModel = (PlugInModel*)(aim->getPluginModel());
+    ito::AddInManager *aim = qobject_cast<ito::AddInManager*>(AppManagement::getAddInManager());
+    PlugInModel *plugInModel = (PlugInModel*)(aim->getPluginModel());
     bool isList = true;
 
     for (int i = 1; i < plugInModel->columnCount(); ++i)
@@ -1282,12 +1280,12 @@ void AIManagerWidget::mnuShowInfo()
         {
             if (itemType & PlugInModel::itemFilter)
             { // Filter
-                ito::AddInAlgo::FilterDef* awd = (ito::AddInAlgo::FilterDef*)itemInternalData;
+                ito::AddInAlgo::FilterDef *awd = (ito::AddInAlgo::FilterDef*)itemInternalData;
                 emit showPluginInfo(
                     "Algorithms." + awd->m_pBasePlugin->objectName() + "." + awd->m_name,
                     HelpTreeDockWidget::typeFilter);
             }
-            else if (itemType & PlugInModel::itemWidget)
+            else if(itemType & PlugInModel::itemWidget)
             { // Widget
                 ito::AddInAlgo::AlgoWidgetDef* awd =
                     (ito::AddInAlgo::AlgoWidgetDef*)itemInternalData;
@@ -1295,9 +1293,9 @@ void AIManagerWidget::mnuShowInfo()
                     "Widgets." + awd->m_pBasePlugin->objectName() + "." + awd->m_name,
                     HelpTreeDockWidget::typeWidget);
             }
-            else if (itemType & PlugInModel::itemPlugin)
+            else if(itemType & PlugInModel::itemPlugin)
             { // DataIO and Actuator and Plugins (eg BasicFilters)
-                ito::AddInInterfaceBase* aib = (ito::AddInInterfaceBase*)itemInternalData;
+                ito::AddInInterfaceBase *aib = (ito::AddInInterfaceBase*)itemInternalData;
                 if (aib->getType() & ito::typeActuator)
                 {
                     emit showPluginInfo(
@@ -1331,4 +1329,4 @@ void AIManagerWidget::mnuShowInfo()
     }
 }
 
-} // end namespace ito
+} //end namespace ito

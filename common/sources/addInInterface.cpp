@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2023, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
@@ -34,6 +34,7 @@
 #include <qcoreapplication.h>
 #include <qpointer.h>
 #include <QtCore/qpluginloader.h>
+#include "addInGrabber.h"
 
 #include "abstractAddInDockWidget.h"
 #include "helperCommon.h"
@@ -47,7 +48,7 @@
 
 namespace ito
 {
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     class AddInInterfaceBasePrivate
     {
     public:
@@ -62,7 +63,7 @@ namespace ito
     int AddInBase::m_instCounter = 0;
     int AddInBase::maxThreadCount = QThread::idealThreadCount();
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     AddInInterfaceBase::AddInInterfaceBase() :
         m_type(0),
         m_version(CREATEVERSION(0, 0, 0)),
@@ -83,39 +84,39 @@ namespace ito
         d_ptr(new AddInInterfaceBasePrivate())
     { }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     AddInInterfaceBase::~AddInInterfaceBase()
     {
         m_initParamsMand.clear();
         m_initParamsOpt.clear();
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     ito::RetVal AddInInterfaceBase::closeInst(ito::AddInBase **addInInst)
     {
         ito::RetVal ret = closeThisInst(addInInst);
         return ret;
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     void AddInInterfaceBase::incRef(ito::AddInBase *addIn)
     {
         addIn->incRefCount();
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     void AddInInterfaceBase::decRef(ito::AddInBase *addIn)
     {
         addIn->decRefCount();
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     int AddInInterfaceBase::getRef(ito::AddInBase *addIn)
     {
         return addIn->getRefCount();
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     //! set api function pointer
     void AddInInterfaceBase::setApiFunctions(void **apiFunctions)
     {
@@ -124,7 +125,7 @@ namespace ito
         ito::ITOM_API_FUNCS = apiFunctions; //this propagates the api pointer to the itomCommonQt dll where this source file has been compiled
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     void AddInInterfaceBase::setApiFunctionsGraph(void ** apiFunctionsGraph)
     {
         m_apiFunctionsGraphBasePtr = apiFunctionsGraph;
@@ -132,7 +133,7 @@ namespace ito
         ito::ITOM_API_FUNCS_GRAPH = apiFunctionsGraph; //this propagates the api pointer to the itomCommonQt dll where this source file has been compiled
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     bool AddInInterfaceBase::event(QEvent *e)
     {
         //the event User+123 is emitted by AddInManager, if the API has been prepared and can
@@ -150,21 +151,21 @@ namespace ito
         return QObject::event(e);
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     void AddInInterfaceBase::setLoader(QPluginLoader *loader)
     {
         Q_D(AddInInterfaceBase);
         d_ptr->m_pLoader = loader;
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     QPluginLoader * AddInInterfaceBase::getLoader(void) const
     {
         Q_D(const AddInInterfaceBase);
         return d->m_pLoader;
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     class AddInBasePrivate
     {
     public:
@@ -202,7 +203,7 @@ namespace ito
         QMutex m_userMutex;
     };
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     //! Constructor.
     /*!
         This constructor is called by any constructor of classes AddInActuator, AddInDataIO or AddInAlgo.
@@ -221,7 +222,7 @@ namespace ito
         d->m_uniqueID = (++m_instCounter);
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     //! Destructor.
     /*!
         This destructor is automatically called if any plugin instance is destroyed. It does the following steps:
@@ -250,7 +251,13 @@ namespace ito
         }
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
+    void AddInBase::insertParam(const Param& param)
+    {
+        m_params.insert(param.getName(), param);
+    }
+
+    //---------------------------------------------------------------------------------
     //! retrieve the uniqueID of this instance
     int AddInBase::getID() const
     {
@@ -258,7 +265,7 @@ namespace ito
         return d->m_uniqueID;
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     //! increments reference counter of this plugin (thread-safe)
     void AddInBase::incRefCount(void)
     {
@@ -267,7 +274,7 @@ namespace ito
         d->m_refCount++;
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     //! decrements reference counter of this plugin (thread-safe)
     void AddInBase::decRefCount(void)
     {
@@ -282,7 +289,7 @@ namespace ito
         return d->m_refCount;
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     //! returns true if this instance has firstly been created by the GUI
     int AddInBase::createdByGUI() const
     {
@@ -290,7 +297,7 @@ namespace ito
         return d->m_createdByGUI;
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     //! method to set whether this instance has been firstly created by the GUI (true) or by any other component (Python, C++, other plugin,..) (false)
     void AddInBase::setCreatedByGUI(int value)
     {
@@ -298,7 +305,7 @@ namespace ito
         d->m_createdByGUI = value;
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     //! returns in a thread-safe way the status of the m_initialized-member variable. This variable should be set to true at the end of the init-method.
     bool AddInBase::isInitialized(void) const
     {
@@ -306,7 +313,7 @@ namespace ito
         return d->m_initialized;
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     //! sets in a thread-safe way the status of the m_initialized-member
     /*
     \param [in] initialized is the value to set
@@ -317,7 +324,7 @@ namespace ito
         d->m_initialized = initialized;
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     //! returns the alive-flag of this plugin
     /*
     Any time-consuming operation of the plugin should regularly set the alive-flag to true
@@ -335,7 +342,7 @@ namespace ito
         return wasalive;
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     //! sets the alive-flag to 1 ("still alive")
     /*
     This method is thread-safe.
@@ -348,14 +355,14 @@ namespace ito
         d->m_alive = 1;
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     QMutex& AddInBase::getUserMutex()
     {
         Q_D(AddInBase);
         return d->m_userMutex;
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     //! method for setting various parameters in a sequence
     /*!
         Using this method, only one over-thread call needs to be executed in order to set various parameters
@@ -386,7 +393,7 @@ namespace ito
         return retValue;
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     //! method for setting various parameters in a sequence
     /*!
         Using this method, only one over-thread call needs to be executed in order to set various parameters
@@ -417,7 +424,7 @@ namespace ito
         return retValue;
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     //! creates new thread for the class instance and moves this instance to the new thread
     ito::RetVal AddInBase::MoveToThread(void)
     {
@@ -426,17 +433,17 @@ namespace ito
         moveToThread(d->m_pThread);
         d->m_pThread->start();
 
-		/*set new seed for random generator of OpenCV.
-		This is required to have real random values for any randn or randu command.
-		The seed must be set in every thread. This is for the main thread.
-		*/
-		cv::theRNG().state = (uint64)cv::getCPUTickCount();
-		/*seed is set*/
+        /*set new seed for random generator of OpenCV.
+        This is required to have real random values for any randn or randu command.
+        The seed must be set in every thread. This is for the main thread.
+        */
+        cv::theRNG().state = (uint64)cv::getCPUTickCount();
+        /*seed is set*/
 
         return retOk;
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     //! method to retrieve a parameter from the parameter map (m_params)
     /*!
         returns parameter from m_params vector. If the parameter could not be found or if the given name is invalid an invalid Param is returned.
@@ -489,7 +496,7 @@ namespace ito
         return Param();
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     //! this method can handle additional functions of your plugin.
     /*!
         Use registerExecFunc to register a specific function name and a set of mandatory and optional default parameters.
@@ -520,14 +527,14 @@ namespace ito
         return retValue;
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     bool AddInBase::hasDockWidget(void) const
     {
         Q_D(const AddInBase);
         return !d->m_dockWidget.isNull();
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     //! Returns the reference to the dock widget of this plugin or NULL, if no dock widget is provided.
     /*
     \sa hasDockWidget
@@ -538,7 +545,7 @@ namespace ito
         return d->m_dockWidget;
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     //! Creates the dock-widget for this plugin
     /*
         Call this method ONLY in the constructor of your plugin, since it must be executed in the main thread.
@@ -579,7 +586,7 @@ namespace ito
         }
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     void AddInBase::setIdentifier(const QString &identifier)
     {
         Q_D(AddInBase);
@@ -595,7 +602,7 @@ namespace ito
         }
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     //! sets the interface of this instance to base. \sa AddInInterfaceBase
     void AddInBase::setBasePlugin(AddInInterfaceBase *base)
     {
@@ -603,13 +610,13 @@ namespace ito
         d->m_pBasePlugin = base;
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     /*static*/ int AddInBase::getMaximumThreadCount()
     {
         return maxThreadCount;
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     /*static*/ RetVal AddInBase::setMaximumThreadCount(int threadCount)
     {
         if (QThread::idealThreadCount() > 0)
@@ -632,14 +639,14 @@ namespace ito
         return ito::retOk;
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     AddInInterfaceBase* AddInBase::getBasePlugin(void) const
     {
         Q_D(const AddInBase);
         return d->m_pBasePlugin;
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     //! Registers an additional function with specific name and default parameters
     /*
         After having registered the function, the method execFunc can be called with the specific function name
@@ -726,7 +733,7 @@ namespace ito
         return retValue;
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     //! returns default style properties for dock-widget of plugin
     /*
         This method is called by the AddInManager at initialization of a plugin instance. Then,
@@ -755,7 +762,7 @@ namespace ito
          }
      }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     //! method indicates whether this plugin instance has a configuration dialog.
     /*!
         Overwrite this method if your plugin provides such a configuration dialog by simply returning 1 instead of 0.
@@ -768,7 +775,7 @@ namespace ito
         return 0;
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     //! method called if the configuration dialog of the plugin should be shown.
     /*!
         Overwrite this method if your plugin provides a configuration dialog. This method is directly called by the main (GUI) thread.
@@ -782,7 +789,7 @@ namespace ito
         return ito::RetVal(ito::retWarning,0, tr("Your plugin is supposed to have a configuration dialog, but you did not implement the showConfDialog-method").toLatin1().data());
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     //! method invoked by AddInManager if the plugin should be pulled back to the main thread of itom.
     /*!
         Do not invoke this method in any other case. It should only be invoked by AddInManager of the itom core.
@@ -812,7 +819,7 @@ namespace ito
         return retOk;
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     class AddInDataIOPrivate
     {
     public:
@@ -822,7 +829,7 @@ namespace ito
 
     };
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     AddInDataIO::AddInDataIO() :
         AddInBase(),
         m_timerID(0),
@@ -833,7 +840,7 @@ namespace ito
         qDebug() << "AddInDataIO constructor. ThreadID: " << QThread::currentThreadId();
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     AddInDataIO::~AddInDataIO()
     {
         if (m_timerID > 0)
@@ -843,39 +850,60 @@ namespace ito
         }
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
-    ito::RetVal AddInDataIO::startDeviceAndRegisterListener(QObject* obj, ItomSharedSemaphore *waitCond)
+    //---------------------------------------------------------------------------------
+    ito::RetVal AddInDataIO::startDeviceAndRegisterListener(QObject* listener, ItomSharedSemaphore *waitCond)
     {
         qDebug("begin: startDeviceAndRegisterListener");
         ItomSharedSemaphoreLocker locker(waitCond);
         ito::RetVal retValue(ito::retOk);
+        QString defaultChannel;
+        bool isMultiChannel = inherits("ito::AddInMultiChannelGrabber");
+        QByteArray setSourceSignature =
+            QMetaObject::normalizedSignature(
+                "setSource(QSharedPointer<ito::DataObject>,ItomSharedSemaphore*)"
+            );
 
-        if (obj->metaObject()->indexOfSlot(QMetaObject::normalizedSignature("setSource(QSharedPointer<ito::DataObject>,ItomSharedSemaphore*)")) == -1)
+        if (isMultiChannel)
         {
-            retValue += ito::RetVal(ito::retError, 2002, tr("listener does not have a slot ").toLatin1().data());
+            defaultChannel = QLatin1String(m_params["defaultChannel"].getVal<const char*>());
         }
-        else if (m_autoGrabbingListeners.contains(obj))
+
+        if (listener->metaObject()->indexOfSlot(setSourceSignature) == -1)
         {
-            retValue += ito::RetVal(ito::retWarning, 1011, tr("this object already has been registered as listener").toLatin1().data());
+            retValue += ito::RetVal(ito::retError, 2002, tr("listener does not have the mandatory slot ``setSource``.").toLatin1().data());
+        }
+        else if (
+            (!isMultiChannel && m_autoGrabbingListeners.contains("",listener)) ||
+            (isMultiChannel && m_autoGrabbingListeners.contains(defaultChannel, listener))
+            )
+        {
+            retValue += ito::RetVal(ito::retWarning, 1011, tr("this object has already been registered as listener").toLatin1().data());
         }
         else
         {
-            retValue += startDevice(NULL);
+            retValue += startDevice(nullptr);
 
-			if (!retValue.containsError())
-			{
-				if (m_autoGrabbingEnabled == true && m_autoGrabbingListeners.size() >= 0 && m_timerID == 0)
-				{
-					m_timerID = startTimer(m_timerIntervalMS);
+            if (!retValue.containsError())
+            {
+                if (m_autoGrabbingEnabled && m_autoGrabbingListeners.size() >= 0 && m_timerID == 0)
+                {
+                    m_timerID = startTimer(m_timerIntervalMS);
 
-					if (m_timerID == 0)
-					{
-						retValue += ito::RetVal(ito::retError, 2001, tr("timer could not be set").toLatin1().data());
-					}
-				}
+                    if (m_timerID == 0)
+                    {
+                        retValue += ito::RetVal(ito::retError, 2001, tr("timer could not be set").toLatin1().data());
+                    }
+                }
 
-				m_autoGrabbingListeners.insert(obj);
-			}
+                if (!isMultiChannel)
+                {
+                    m_autoGrabbingListeners.insert("", listener);
+                }
+                else
+                {
+                    m_autoGrabbingListeners.insert(defaultChannel, listener);
+                }
+            }
         }
 
         if (waitCond)
@@ -883,57 +911,73 @@ namespace ito
             waitCond->returnValue = retValue;
             waitCond->release();
         }
-		else if (retValue.containsError())
-		{
-			std::cout << "Error binding / starting camera: " << retValue.errorMessage() << "\n" << std::endl;
-		}
+        else if (retValue.containsError())
+        {
+            std::cout << "Error binding / starting camera: " << retValue.errorMessage() << "\n" << std::endl;
+        }
 
         qDebug("end: startDeviceAndRegisterListener");
         return retValue;
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
-	ito::RetVal AddInDataIO::stopDeviceAndUnregisterListener(QObject* obj, ItomSharedSemaphore *waitCond)
-	{
-		qDebug("start: stopDeviceAndUnregisterListener");
-		ItomSharedSemaphoreLocker locker(waitCond);
-		ito::RetVal retValue(ito::retOk);
+    //---------------------------------------------------------------------------------
+    ito::RetVal AddInDataIO::stopDeviceAndUnregisterListener(QObject* listener, ItomSharedSemaphore *waitCond)
+    {
+        qDebug("start: stopDeviceAndUnregisterListener");
+        ItomSharedSemaphoreLocker locker(waitCond);
+        ito::RetVal retValue(ito::retOk);
 
-		if (!m_autoGrabbingListeners.remove(obj))
-		{
-			retValue += ito::RetVal(ito::retWarning, 1012, tr("the object could not been removed from the listener list").toLatin1().data());
-		}
-		else
-		{
-			qDebug("live image has been removed from listener list");
+        if (listener)
+        {
+            bool found = false;
+            auto it = m_autoGrabbingListeners.begin();
 
-			if (m_autoGrabbingListeners.size() <= 0)
-			{
-				if (m_timerID) //stop timer if no other listeners are registered
-				{
-					killTimer(m_timerID);
-					m_timerID = 0;
-				}
-			}
+            while (it != m_autoGrabbingListeners.end())
+            {
+                if (*it == listener)
+                {
+                    found = true;
+                    m_autoGrabbingListeners.erase(it);
+                    break;
+                }
+            }
 
-			retValue += stopDevice(NULL);
-		}
+            if (!found)
+            {
+                retValue += ito::RetVal(ito::retWarning, 1012, tr("The given listener (e.g. plot) is not among the list of currently registered listeners.").toLatin1().data());
+            }
+        }
+        else
+        {
+            qDebug("live image has been removed from listener list");
+
+            if (m_autoGrabbingListeners.size() <= 0)
+            {
+                if (m_timerID) //stop timer if no other listeners are registered
+                {
+                    killTimer(m_timerID);
+                    m_timerID = 0;
+                }
+            }
+
+            retValue += stopDevice(nullptr);
+        }
 
         if (waitCond)
         {
             waitCond->returnValue = retValue;
             waitCond->release();
         }
-		else if (retValue.containsError())
-		{
-			std::cout << "Error unbinding / stopping camera: " << retValue.errorMessage() << "\n" << std::endl;
-		}
+        else if (retValue.containsError())
+        {
+            std::cout << "Error unbinding / stopping camera: " << retValue.errorMessage() << "\n" << std::endl;
+        }
 
         qDebug("end: stopDeviceAndUnregisterListener");
         return retValue;
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     ito::RetVal AddInDataIO::disableAutoGrabbing(ItomSharedSemaphore *waitCond)
     {
         m_autoGrabbingEnabled = false;
@@ -954,7 +998,7 @@ namespace ito
         return ito::retOk;
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     ito::RetVal AddInDataIO::enableAutoGrabbing(ItomSharedSemaphore *waitCond)
     {
         m_autoGrabbingEnabled = true;
@@ -974,7 +1018,7 @@ namespace ito
         return ito::retOk;
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     ito::RetVal AddInDataIO::setAutoGrabbingInterval(QSharedPointer<int> interval, ItomSharedSemaphore *waitCond /*= NULL*/)
     {
         ito::RetVal retval;
@@ -1012,7 +1056,7 @@ namespace ito
         return retval;
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     void AddInDataIO::runStatusChanged(bool deviceStarted)
     {
         if (deviceStarted && m_autoGrabbingEnabled)
@@ -1034,7 +1078,7 @@ namespace ito
         }
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     ito::RetVal AddInDataIO::startDevice(ItomSharedSemaphore *waitCond)
     {
         Q_ASSERT_X(1, "AddInDataIO::startDevice", tr("not implemented").toLatin1().data());
@@ -1054,7 +1098,7 @@ namespace ito
         }
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     ito::RetVal AddInDataIO::stopDevice(ItomSharedSemaphore *waitCond)
     {
         Q_ASSERT_X(1, "AddInDataIO::stopDevice", tr("not implemented").toLatin1().data());
@@ -1072,7 +1116,7 @@ namespace ito
         }
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     ito::RetVal AddInDataIO::acquire(const int /*trigger*/, ItomSharedSemaphore *waitCond)
     {
         Q_ASSERT_X(1, "AddInDataIO::acquire", tr("not implemented").toLatin1().data());
@@ -1090,7 +1134,7 @@ namespace ito
         }
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     ito::RetVal AddInDataIO::stop(ItomSharedSemaphore *waitCond)
     {
         Q_ASSERT_X(1, "AddInDataIO::stop", tr("not implemented").toLatin1().data());
@@ -1108,7 +1152,7 @@ namespace ito
         }
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     ito::RetVal AddInDataIO::getVal(void * /*data*/, ItomSharedSemaphore *waitCond)
     {
         Q_ASSERT_X(1, "AddInDataIO::getVal(ito::RetVal, void *data, ItomSharedSemaphore *waitCond)", tr("not implemented").toLatin1().data());
@@ -1125,8 +1169,32 @@ namespace ito
             return ito::retError;
         }
     }
+    //---------------------------------------------------------------------------------
+    ito::RetVal AddInDataIO::getVal(QSharedPointer<QMap<QString, ito::DataObject*>> dataObjMap, ItomSharedSemaphore* waitCond)
+    {
+        if (waitCond)
+        {
+            waitCond->returnValue += ito::RetVal(
+                ito::retError,
+                0,
+                tr("method getVal(QSharedPointer<QMap<QString, ito::DataObject*>>, ItomSharedSemaphore*) "
+                   "is not implemented in this plugin")
+                    .toLatin1()
+                    .data());
+            waitCond->release();
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+            return waitCond->returnValue;
+        }
+        else
+        {
+            return ito::retError;
+        }
+    }
+    ito::RetVal AddInDataIO::getVal(ItomSharedSemaphore* waitCond)
+    {
+        return ito::retError;
+    }
+    //---------------------------------------------------------------------------------
     ito::RetVal AddInDataIO::getVal(QSharedPointer<char> /*data*/, QSharedPointer<int> /*length*/, ItomSharedSemaphore *waitCond)
     {
         Q_ASSERT_X(1, "AddInDataIO::getVal(ito::RetVal, QSharedPointer<char> data, QSharedPointer<int> length, ItomSharedSemaphore *waitCond)", tr("not implemented").toLatin1().data());
@@ -1144,7 +1212,7 @@ namespace ito
         }
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     ito::RetVal AddInDataIO::copyVal(void * /*data*/, ItomSharedSemaphore *waitCond)
     {
         Q_ASSERT_X(1, "AddInDataIO::copyVal(void *data, ItomSharedSemaphore *waitCond)", tr("not implemented").toLatin1().data());
@@ -1162,7 +1230,7 @@ namespace ito
         }
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     ito::RetVal AddInDataIO::setVal(const char * /*data*/, const int /*length*/, ItomSharedSemaphore *waitCond)
     {
         Q_ASSERT_X(1, "AddInDataIO::setVal(const char *data, const int length, ItomSharedSemaphore *waitCond)", tr("not implemented").toLatin1().data());
@@ -1181,7 +1249,7 @@ namespace ito
     }
 
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     class AddInActuatorPrivate
     {
     public:
@@ -1199,19 +1267,19 @@ namespace ito
     };
 
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     AddInActuator::AddInActuator()
         : AddInBase(),
         d_ptr(new AddInActuatorPrivate())
     {
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     AddInActuator::~AddInActuator()
     {
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     //! method emits the actuatorStatusChanged signal if any slot is connected to this signal.
     /*!
         The emitted values are the member variables m_currentStatus and m_currentPos (optional).
@@ -1240,7 +1308,7 @@ namespace ito
         }
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     //! method emits the targetChanged signal if any slot is connected to this signal.
     /*!
         The emitted values is the member variable m_targetPos
@@ -1259,7 +1327,7 @@ namespace ito
         emit targetChanged(m_targetPos);
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     //! method invoked in order to force a re-emitation of the current status, the current positions (if desired) and the target positions (if desired)
     /*!
         This method is mainly invoked by a dock widget of the actuator such that the plugin re-emits the current values, that are then
@@ -1284,7 +1352,7 @@ namespace ito
         return retval;
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     ito::RetVal AddInActuator::getLastSignalledStates(QVector<int> &status, QVector<double> &currentPos, QVector<double> &targetPos)
     {
         Q_D(AddInActuator);
@@ -1304,13 +1372,13 @@ namespace ito
         }
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     void AddInActuator::setStatus(int &status, const int newFlags, const int keepMask /*= 0*/)
     {
         status = (status & keepMask) | newFlags;
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     void AddInActuator::setStatus(const QVector<int> &axis, const int newFlags, const int keepMask /*= 0*/)
     {
         foreach(const int &i, axis)
@@ -1319,7 +1387,7 @@ namespace ito
         }
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     void AddInActuator::replaceStatus(const QVector<int> &axis, const int existingFlag, const int replaceFlag)
     {
         foreach(const int &i, axis)
@@ -1328,7 +1396,7 @@ namespace ito
         }
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     void AddInActuator::replaceStatus(int &status, const int existingFlag, const int replaceFlag)
     {
         if (status & existingFlag)
@@ -1363,7 +1431,7 @@ namespace ito
         }
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     //! checks whether any axis is still moving (moving flag is set)
     bool AddInActuator::isMotorMoving() const
     {
@@ -1377,7 +1445,7 @@ namespace ito
         return false;
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     bool AddInActuator::isInterrupted()
     {
         Q_D(AddInActuator);
@@ -1387,7 +1455,7 @@ namespace ito
         return res;
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     void AddInActuator::setInterrupt()
     {
         Q_D(AddInActuator);
@@ -1395,7 +1463,7 @@ namespace ito
         d->m_interruptFlag = true;
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     void AddInActuator::resetInterrupt()
     {
         Q_D(AddInActuator);
@@ -1403,7 +1471,7 @@ namespace ito
         d->m_interruptFlag = false;
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     ito::RetVal AddInActuator::getStatus(const int axis, QSharedPointer<int> status, ItomSharedSemaphore *waitCond)
     {
         ito::RetVal retval;
@@ -1438,14 +1506,14 @@ namespace ito
         return retval;
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     class AddInAlgoPrivate
     {
     public:
         AddInAlgoPrivate() {}
     };
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     AddInAlgo::AddInAlgo() : AddInBase(),
         d_ptr(new AddInAlgoPrivate())
     {
@@ -1453,7 +1521,7 @@ namespace ito
         return;
     }
 
-   //----------------------------------------------------------------------------------------------------------------------------------
+   //---------------------------------------------------------------------------------
     AddInAlgo::~AddInAlgo()
     {
         FilterDef *filter;
@@ -1471,21 +1539,21 @@ namespace ito
         m_algoWidgetList.clear();
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     ito::RetVal AddInAlgo::getFilterList(QHash<QString, FilterDef *> &fList) const
     {
         fList = m_filterList;
         return ito::retOk;
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     ito::RetVal AddInAlgo::getAlgoWidgetList(QHash<QString, AlgoWidgetDef *> &awList) const
     {
         awList = m_algoWidgetList;
         return ito::retOk;
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     ito::RetVal AddInAlgo::rejectFilter(const QString &name)
     {
         QHash<QString, FilterDef *>::iterator it = m_filterList.find(name);
@@ -1499,7 +1567,7 @@ namespace ito
         return ito::retError;
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     ito::RetVal AddInAlgo::rejectAlgoWidget(const QString &name)
     {
         QHash<QString, AlgoWidgetDef *>::iterator it = m_algoWidgetList.find(name);
@@ -1513,7 +1581,7 @@ namespace ito
         return ito::retError;
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     /*static*/ ito::RetVal AddInAlgo::prepareParamVectors(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
     {
         if (!paramsMand)
@@ -1534,5 +1602,5 @@ namespace ito
         return ito::retOk;
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
 } // namespace ito

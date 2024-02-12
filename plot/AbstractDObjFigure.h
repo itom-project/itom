@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2023, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
@@ -25,8 +25,7 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef ABSTRACTDOBJFIGURE_H
-#define ABSTRACTDOBJFIGURE_H
+#pragma once
 
 #include "AbstractFigure.h"
 #include "../DataObject/dataobj.h"
@@ -54,6 +53,10 @@ class ITOMCOMMONPLOT_EXPORT AbstractDObjFigure : public AbstractFigure
     Q_PROPERTY(ito::AutoInterval yAxisInterval READ getYAxisInterval WRITE setYAxisInterval DESIGNABLE true USER true)
     Q_PROPERTY(ito::AutoInterval zAxisInterval READ getZAxisInterval WRITE setZAxisInterval DESIGNABLE true USER true)
     Q_PROPERTY(QString colorMap READ getColorMap WRITE setColorMap DESIGNABLE true USER true)
+    Q_PROPERTY(QString cameraChannel READ getDisplayedCameraChannel WRITE setDisplayedCameraChannel DESIGNABLE false USER true);
+
+    // the property valueAxis is requested as dynamic property by AddInMultiChannelGrabber::changeChannelForListener. Do not change the name!
+    Q_PROPERTY(Qt::Axis valueAxis READ getValueAxis DESIGNABLE false USER false);
 
     Q_CLASSINFO("prop://source", "Sets the input data object for this plot.")
     Q_CLASSINFO("prop://displayed", "This returns the currently displayed data object [read only].")
@@ -62,10 +65,13 @@ class ITOMCOMMONPLOT_EXPORT AbstractDObjFigure : public AbstractFigure
     Q_CLASSINFO("prop://yAxisInterval", "Sets the visible range of the displayed y-axis (in coordinates of the data object). Set it to 'auto' if range should be automatically set [default].")
     Q_CLASSINFO("prop://zAxisInterval", "Sets the visible range of the displayed z-axis (in coordinates of the data object). Set it to 'auto' if range should be automatically set [default].")
     Q_CLASSINFO("prop://colorMap", "Color map (string) that should be used to colorize a non-color data object.")
+    Q_CLASSINFO("prop://cameraChannel", "If a multi channel device (MultiChannelGrabber) is connected to this plot, the currently displayed channel of the device can be set. To obtain a list of the available channels see the parameter channelList of the device")
+    Q_CLASSINFO("prop://valueaxis", "Returns the axis that is used in this plot for displaying the values. Usually this is the z-axis for a 2D plot and the y-axis for a 1D plot.")
 
     Q_CLASSINFO("slot://setSource", "This slot can be implemented by any plot plugin to send a dataObject to the plot. Here it is not required and therefore not implemented.")
     Q_CLASSINFO("slot://setLinePlot", "This slot can be implemented by any plot plugin to force the plot to open a line plot. Here it is not required and therefore not implemented.")
-
+private:
+    QString m_currentDisplayedCameraChannel;
 public:
     AbstractDObjFigure(const QString &itomSettingsFile, AbstractFigure::WindowMode windowMode = AbstractFigure::ModeStandaloneInUi, QWidget *parent = 0);
 
@@ -97,16 +103,19 @@ public:
     virtual QString getColorMap(void) const;
     virtual void setColorMap(QString);
 
+    virtual Qt::Axis getValueAxis() const;
+
     //! plot-specific render function to enable more complex printing in subfigures ...
     virtual QPixmap renderToPixMap(const int xsize, const int ysize, const int resolution);
+
+    //!< returns the currently displayed channel of the connected grabber
+    QString getDisplayedCameraChannel() const;
 
 protected:
     QHash<QString, QSharedPointer<ito::DataObject> > m_dataPointer;
     bool m_cameraConnected;
 
-    RetVal removeLiveSource();
-
-signals:
+    virtual RetVal removeLiveSource();
 
 public slots:
     //this source is invoked by any connected camera
@@ -114,10 +123,13 @@ public slots:
 
     //this can be invoked by python to trigger a lineplot
     virtual ito::RetVal setLinePlot(const double x0, const double y0, const double x1, const double y1, const int destID = -1);
+
+    virtual ito::RetVal setDisplayedCameraChannel(const QString& channel);
+
+signals:
+    void cameraChannelChanged(QObject* listener, const QString& channel);
 };
 
 } // namespace ito
 
 #endif //#if !defined(Q_MOC_RUN) || defined(ITOMCOMMONQT_MOC)
-
-#endif //ABSTRACTDOBJFIGURE_H

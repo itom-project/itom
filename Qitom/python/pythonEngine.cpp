@@ -91,16 +91,16 @@ namespace ito
 {
 
 QMutex PythonEngine::instancePtrProtection;
-PythonEngine* PythonEngine::instance = NULL;
+PythonEngine* PythonEngine::instance = nullptr;
 QString PythonEngine::fctHashPrefix = ":::itomfcthash:::";
 
 //----------------------------------------------------------------------------------------------------------------------------------
-FuncWeakRef::FuncWeakRef() : m_proxyObject(NULL), m_argument(NULL), m_handle(0)
+FuncWeakRef::FuncWeakRef() : m_proxyObject(nullptr), m_argument(nullptr), m_handle(0)
 {
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-FuncWeakRef::FuncWeakRef(PythonProxy::PyProxy *proxyObject, PyObject *argTuple /*= NULL*/) :
+FuncWeakRef::FuncWeakRef(PythonProxy::PyProxy *proxyObject, PyObject *argTuple /*= nullptr*/) :
     m_proxyObject(proxyObject),
     m_argument(argTuple),
     m_handle(0)
@@ -265,7 +265,7 @@ PythonEngine::PythonEngine() :
     qRegisterMetaType<ito::JediAssignment>("ito::JediAssignment");
     qRegisterMetaType<QVector<ito::JediAssignment> >("QVector<ito::JediAssignment>");
     qRegisterMetaType<QSharedPointer<ito::FunctionCancellationAndObserver> >("QSharedPointer<ito::FunctionCancellationAndObserver>");
-
+    qRegisterMetaType <QSharedPointer<QMap<QString, ito::DataObject>>>("QSharedPointer<QMap<QString, ito::DataObject>>");
     m_autoReload.modAutoReload = nullptr;
     m_autoReload.classAutoReload = nullptr;
     m_autoReload.checkFctExec = false;
@@ -438,7 +438,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap
         if (pythonDir != "")
         {
             //the python home path given to Py_SetPythonHome must be persistent for the whole Python session
-            m_pUserDefinedPythonHome = Py_DecodeLocale(pythonDir.toLatin1().data(), NULL);
+            m_pUserDefinedPythonHome = Py_DecodeLocale(pythonDir.toLatin1().data(), nullptr);
         }
 
 #if (PY_VERSION_HEX >= 0x030B0000)
@@ -849,7 +849,7 @@ ito::RetVal PythonEngine::startupLoadAndImportAdditionalModules(QSharedPointer<Q
         else
         {
             //!< http://bytes.com/topic/python/answers/649229-_pyobject_new-pyobject_init-pyinstance_new-etc, new reference
-            m_itomDbgInstance = PyObject_CallObject(itomDbgClass, NULL);
+            m_itomDbgInstance = PyObject_CallObject(itomDbgClass, nullptr);
         }
     }
 
@@ -1251,9 +1251,9 @@ QVariantMap PythonEngine::checkCodeCheckerRequirements()
 PyObject* PythonEngine::setPyErrFromException(const std::exception &exc)
 {
     const std::exception *p_exc = &exc;
-    const cv::Exception *p_cvexc = NULL;
+    const cv::Exception *p_cvexc = nullptr;
 
-    if ((p_cvexc = dynamic_cast<const cv::Exception*>(p_exc)) != NULL)
+    if ((p_cvexc = dynamic_cast<const cv::Exception*>(p_exc)) != nullptr)
     {
         const char* errorStr = cvErrorStr(p_cvexc->code);
         return PyErr_Format(PyExc_RuntimeError, "OpenCV Error: %s (%s) in %s, file %s, line %d",
@@ -1443,7 +1443,7 @@ ito::RetVal PythonEngine::stringEncodingChanged()
 //    QList<QByteArray> qtCodecNames = QTextCodec::codecForCStrings()->aliases();
 //    qtCodecNames.append(QTextCodec::codecForCStrings()->name());
     //QList<QByteArray> qtCodecNames = QTextCodec::availableCodecs();
-    QTextCodec *codec = NULL;
+    QTextCodec *codec = nullptr;
     QByteArray curQtCodec;
 
 #if linux
@@ -1690,15 +1690,15 @@ void PythonEngine::setAutoReloader(bool enabled, bool checkFile, bool checkCmd, 
             if (!m_autoReload.classAutoReload)
             {
                 PyObject *dictItem = PyDict_GetItemString(PyModule_GetDict(m_autoReload.modAutoReload), "ItomAutoreloader"); // both borrowed references
-                if (dictItem == NULL)
+                if (dictItem == nullptr)
                 {
                     std::cerr << "Failed to enable 'auto reload'.\nThe class 'ItomAutoreloader' in module 'autoreload' could not be found:\n" << std::endl;
                     PyErr_PrintEx(0);
                 }
                 else
                 {
-                    m_autoReload.classAutoReload = PyObject_CallObject(dictItem, NULL); //!< http://bytes.com/topic/python/answers/649229-_pyobject_new-pyobject_init-pyinstance_new-etc, new reference
-                    if (m_autoReload.classAutoReload == NULL)
+                    m_autoReload.classAutoReload = PyObject_CallObject(dictItem, nullptr); //!< http://bytes.com/topic/python/answers/649229-_pyobject_new-pyobject_init-pyinstance_new-etc, new reference
+                    if (m_autoReload.classAutoReload == nullptr)
                     {
                         std::cerr << "Failed to enable 'auto reload'.\nThe class 'ItomAutoreloader' could not be instantiated.\n" << std::endl;
                         PyErr_PrintEx(0);
@@ -1895,8 +1895,8 @@ ito::RetVal PythonEngine::runString(const QString &command)
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal PythonEngine::runPyFile(const QString &pythonFileName)
 {
-    PyObject* result = NULL;
-    PyObject* compile = NULL;
+    PyObject* result = nullptr;
+    PyObject* compile = nullptr;
     RetVal retValue = RetVal(retOk);
 
     int method = 2; //1: direct, 2: by itomDebugger.py (sets the system path to folder of executed file)
@@ -1942,7 +1942,7 @@ ito::RetVal PythonEngine::runPyFile(const QString &pythonFileName)
 
                 compile = Py_CompileString(fileContent.constData(), filename.constData(), Py_file_input);
 
-                if (compile == NULL)
+                if (compile == nullptr)
                 {
                     if (PyErr_Occurred() && PyErr_ExceptionMatches(PyExc_SystemExit))
                     {
@@ -1955,7 +1955,7 @@ ito::RetVal PythonEngine::runPyFile(const QString &pythonFileName)
                         modifyTracebackDepth(2, true);
                         PyErr_PrintEx(0);
 
-                        if (oldTBLimit != NULL)
+                        if (oldTBLimit != nullptr)
                         {
                             PySys_SetObject("tracebacklimit", oldTBLimit);
                         }
@@ -1966,9 +1966,9 @@ ito::RetVal PythonEngine::runPyFile(const QString &pythonFileName)
                 }
                 else
                 {
-                    result = PyEval_EvalCode(compile, m_pMainDictionary, NULL);
+                    result = PyEval_EvalCode(compile, m_pMainDictionary, nullptr);
 
-                    if (result == NULL)
+                    if (result == nullptr)
                     {
                         if (PyErr_Occurred() && PyErr_ExceptionMatches(PyExc_SystemExit))
                         {
@@ -2004,7 +2004,7 @@ ito::RetVal PythonEngine::runPyFile(const QString &pythonFileName)
     }
     else if (method == 2)
     {
-        if (m_itomDbgInstance == NULL)
+        if (m_itomDbgInstance == nullptr)
         {
             return RetVal(retError);
         }
@@ -2033,7 +2033,7 @@ ito::RetVal PythonEngine::runPyFile(const QString &pythonFileName)
                 result = PyErr_Format(PyExc_RuntimeError, "Unknown runtime error when executing python script (maybe stack overflow?)");
             }
 
-            if (result == NULL)
+            if (result == nullptr)
             {
                 if (PyErr_Occurred() && PyErr_ExceptionMatches(PyExc_SystemExit))
                 {
@@ -2046,7 +2046,7 @@ ito::RetVal PythonEngine::runPyFile(const QString &pythonFileName)
                     modifyTracebackDepth(2, true);
                     PyErr_PrintEx(0);
 
-                    if (oldTBLimit != NULL)
+                    if (oldTBLimit != nullptr)
                     {
                         PySys_SetObject("tracebacklimit", oldTBLimit);
                     }
@@ -2111,7 +2111,7 @@ ito::RetVal PythonEngine::runFunction(PyObject *callable, PyObject *argTuple, bo
         ret = PyErr_Format(PyExc_RuntimeError, "Unknown runtime error when executing python method (maybe stack overflow?)");
     }
 
-    if (ret == NULL)
+    if (ret == nullptr)
     {
         PyErr_PrintEx(0);
         retValue += RetVal(retError);
@@ -2141,10 +2141,10 @@ ito::RetVal PythonEngine::runFunction(PyObject *callable, PyObject *argTuple, bo
 
 ito::RetVal PythonEngine::debugFunction(PyObject *callable, PyObject *argTuple, bool gilExternal /*= false*/)
 {
-    PyObject* result = NULL;
+    PyObject* result = nullptr;
     RetVal retValue = RetVal(retOk);
     m_interruptCounter = 0;
-    if (m_itomDbgInstance == NULL)
+    if (m_itomDbgInstance == nullptr)
     {
         return RetVal(retError);
     }
@@ -2158,7 +2158,7 @@ ito::RetVal PythonEngine::debugFunction(PyObject *callable, PyObject *argTuple, 
 
         //!< first, clear all existing breakpoints
         result = PyObject_CallMethod(m_itomDbgInstance, "clear_all_breaks", "");
-        if (result == NULL)
+        if (result == nullptr)
         {
             std::cerr << tr("Error while clearing all breakpoints in itoDebugger.").toLatin1().data() << "\n" << std::endl;
             printPythonErrorWithoutTraceback(); //traceback is sense-less, since the traceback is in itoDebugger.py only!
@@ -2202,7 +2202,7 @@ ito::RetVal PythonEngine::debugFunction(PyObject *callable, PyObject *argTuple, 
 
         clearDbgCmdLoop();
 
-        if (result == NULL) //!< syntax error
+        if (result == nullptr) //!< syntax error
         {
             if (PyErr_Occurred() && PyErr_ExceptionMatches(PyExc_SystemExit))
             {
@@ -2215,7 +2215,7 @@ ito::RetVal PythonEngine::debugFunction(PyObject *callable, PyObject *argTuple, 
                 modifyTracebackDepth(3, true);
                 PyErr_PrintEx(0);
 
-                if (oldTBLimit != NULL)
+                if (oldTBLimit != nullptr)
                 {
                     PySys_SetObject("tracebacklimit", oldTBLimit);
                 }
@@ -2235,7 +2235,7 @@ ito::RetVal PythonEngine::debugFunction(PyObject *callable, PyObject *argTuple, 
         }
 
         setGlobalDictionary();
-        setLocalDictionary(NULL);
+        setLocalDictionary(nullptr);
 
         //!< disconnect connections for live-changes in breakpoints
         shutdownBreakPointDebugConnections();
@@ -2253,7 +2253,7 @@ ito::RetVal PythonEngine::debugFunction(PyObject *callable, PyObject *argTuple, 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal PythonEngine::debugFile(const QString &pythonFileName)
 {
-    PyObject* result = NULL;
+    PyObject* result = nullptr;
     RetVal retValue = RetVal(retOk);
 
     QString desiredPath = QFileInfo(pythonFileName).canonicalPath();
@@ -2265,7 +2265,7 @@ ito::RetVal PythonEngine::debugFile(const QString &pythonFileName)
         emit pythonCurrentDirChanged();
     }
 
-    if (m_itomDbgInstance == NULL)
+    if (m_itomDbgInstance == nullptr)
     {
         return RetVal(retError);
     }
@@ -2275,7 +2275,7 @@ ito::RetVal PythonEngine::debugFile(const QString &pythonFileName)
 
         //!< first, clear all existing breakpoints
         result = PyObject_CallMethod(m_itomDbgInstance, "clear_all_breaks", "");
-        if (result == NULL)
+        if (result == nullptr)
         {
             std::cerr << tr("Error while clearing all breakpoints in itoDebugger.").toLatin1().data() << "\n" << std::endl;
             printPythonErrorWithoutTraceback(); //traceback is sense-less, since the traceback is in itoDebugger.py only!
@@ -2316,7 +2316,7 @@ ito::RetVal PythonEngine::debugFile(const QString &pythonFileName)
 
         clearDbgCmdLoop();
 
-        if (result == NULL) //!< syntax error
+        if (result == nullptr) //!< syntax error
         {
             if (PyErr_Occurred() && PyErr_ExceptionMatches(PyExc_SystemExit))
             {
@@ -2329,7 +2329,7 @@ ito::RetVal PythonEngine::debugFile(const QString &pythonFileName)
                 modifyTracebackDepth(3, true);
                 PyErr_PrintEx(0);
 
-                if (oldTBLimit != NULL)
+                if (oldTBLimit != nullptr)
                 {
                     PySys_SetObject("tracebacklimit", oldTBLimit);
                 }
@@ -2349,7 +2349,7 @@ ito::RetVal PythonEngine::debugFile(const QString &pythonFileName)
         }
 
         setGlobalDictionary();
-        setLocalDictionary(NULL);
+        setLocalDictionary(nullptr);
 
         //!< disconnect connections for live-changes in breakpoints
         shutdownBreakPointDebugConnections();
@@ -2467,7 +2467,7 @@ ito::RetVal PythonEngine::debugString(const QString &command)
         }
 
         setGlobalDictionary();
-        setLocalDictionary(NULL);
+        setLocalDictionary(nullptr);
 
         //!< disconnect connections for live-changes in breakpoints
         shutdownBreakPointDebugConnections();
@@ -3041,15 +3041,15 @@ ito::RetVal PythonEngine::pythonDeleteBreakpoint(const int pyBpNumber)
 {
     ito::RetVal retval;
     //when calling this method, the Python GIL must already be locked
-    PyObject *result = NULL;
-    if (m_itomDbgInstance == NULL)
+    PyObject *result = nullptr;
+    if (m_itomDbgInstance == nullptr)
     {
         retval += RetVal(retError, 0, tr("Debugger not available").toLatin1().data());
     }
     else if (pyBpNumber >= 0)
     {
         result = PyObject_CallMethod(m_itomDbgInstance, "clearBreakPoint", "i", pyBpNumber); //returns 0 (int) or str with error message
-        if (result == NULL)
+        if (result == nullptr)
         {
             //this is an exception case that should not occure under normal circumstances
             std::cerr << "Error while clearing breakpoint in debugger." << "\n" << std::endl;
@@ -3079,7 +3079,7 @@ ito::RetVal PythonEngine::pythonDeleteBreakpoint(const int pyBpNumber)
         }
 
         Py_XDECREF(result);
-        result = NULL;
+        result = nullptr;
     }
     return retval;
 }
@@ -3089,9 +3089,9 @@ ito::RetVal PythonEngine::modifyTracebackDepth(int NrOfLevelsToPopAtFront, bool 
 {
     if (PyErr_Occurred())
     {
-        PyObject* pyErrType = NULL;
-        PyObject* pyErrValue = NULL;
-        PyObject* pyErrTrace = NULL;
+        PyObject* pyErrType = nullptr;
+        PyObject* pyErrValue = nullptr;
+        PyObject* pyErrTrace = nullptr;
         PyErr_Fetch(&pyErrType, &pyErrValue, &pyErrTrace);
 
         PyTracebackObject* tb = (PyTracebackObject*)pyErrTrace;
@@ -3099,7 +3099,7 @@ ito::RetVal PythonEngine::modifyTracebackDepth(int NrOfLevelsToPopAtFront, bool 
         int depth=0;
 //        int line;
 
-        while(tb != NULL)
+        while(tb != nullptr)
         {
             depth++;
 //            line = tb->tb_lineno;
@@ -3114,7 +3114,7 @@ ito::RetVal PythonEngine::modifyTracebackDepth(int NrOfLevelsToPopAtFront, bool 
         else if (depth - NrOfLevelsToPopAtFront <= 0 && NrOfLevelsToPopAtFront > -1)
         {
             //PyException_SetTraceback(pyErrValue,Py_None);
-            PyErr_Restore(pyErrType, pyErrValue, NULL);
+            PyErr_Restore(pyErrType, pyErrValue, nullptr);
         }
 
         return RetVal(retOk);
@@ -3130,12 +3130,12 @@ ito::RetVal PythonEngine::modifyTracebackDepth(int NrOfLevelsToPopAtFront, bool 
 void PythonEngine::printPythonErrorWithoutTraceback()
 {
     PyObject *exception, *v, *tb;
-    tb = NULL;
+    tb = nullptr;
 
     if (PyErr_Occurred())
     {
         PyErr_Fetch(&exception, &v, &tb);
-        if (exception == NULL)
+        if (exception == nullptr)
         {
             return;
         }
@@ -3145,7 +3145,7 @@ void PythonEngine::printPythonErrorWithoutTraceback()
         tb = Py_None;
         Py_INCREF(tb);
         PyException_SetTraceback(v, tb);
-        if (exception == NULL)
+        if (exception == nullptr)
         {
             return;
         }
@@ -3857,29 +3857,29 @@ void PythonEngine::registerWorkspaceContainer(PyWorkspaceContainer *container, b
 The path name is a delimiter (/) separated string list where each item has the following form XY:name.
 The meaning for XY:name corresponds to PyWorkspaceItem::m_key.
 
-This method returns a new reference to the found PyObject* or NULL. This function can only be
+This method returns a new reference to the found PyObject* or nullptr. This function can only be
 called if the Python GIL is already locked.
 
 \TODO: up to now, validVariableName is the name of the item at the deepest level (for nested variables) only.
 We should think about if the validVariableName should be a underscore-joined string of all variable names along
 the tree, beginning from the root level.
 */
-PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QStringList &fullNameSplittedByDelimiter, QString *validVariableName /*= NULL*/)
+PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QStringList &fullNameSplittedByDelimiter, QString *validVariableName /*= nullptr*/)
 {
 #if defined _DEBUG
     if (!PyGILState_Check())
     {
         std::cerr << "Python GIL must be locked when calling getPyObjectByFullName\n" << std::endl;
-        return NULL;
+        return nullptr;
     }
 #endif
-    PyObject *obj = NULL;
-    PyObject *current_obj = NULL;
+    PyObject *obj = nullptr;
+    PyObject *current_obj = nullptr;
     QStringList items = fullNameSplittedByDelimiter;
     int i=0;
     float f=0.0;
-    PyObject *tempObj = NULL;
-    PyObject *number = NULL;
+    PyObject *tempObj = nullptr;
+    PyObject *number = nullptr;
 
     char itemKeyType, itemType;
     QString itemName;
@@ -4304,7 +4304,7 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyObject *PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString &fullName, QString *validVariableName /*= NULL*/)
+PyObject *PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString &fullName, QString *validVariableName /*= nullptr*/)
 {
     return getPyObjectByFullName(globalNotLocal, fullName.split(ito::PyWorkspaceContainer::delimiter), validVariableName);
 }
@@ -4332,14 +4332,14 @@ void PythonEngine::workspaceGetValueInformation(PyWorkspaceContainer *container,
 
     PyObject *obj = getPyObjectByFullName(container->isGlobalWorkspace(), fullItemName);
 
-    if (obj == NULL)
+    if (obj == nullptr)
     {
         *extendedValue = "";
     }
     else
     {
         PyObject *repr = PyObject_Repr(obj);
-        if (repr == NULL)
+        if (repr == nullptr)
         {
 			PyErr_Clear();
             *extendedValue = "<error during call of repr()>";
@@ -4574,7 +4574,7 @@ void PythonEngine::addFunctionCancellationAndObserver(QWeakPointer<ito::Function
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void PythonEngine::removeFunctionCancellationAndObserver(ito::FunctionCancellationAndObserver* observer /*= NULL*/)
+void PythonEngine::removeFunctionCancellationAndObserver(ito::FunctionCancellationAndObserver* observer /*= nullptr*/)
 {
     QList<QWeakPointer<ito::FunctionCancellationAndObserver> >::iterator it = m_activeFunctionCancellations.begin();
 
@@ -4633,7 +4633,7 @@ int PythonEngine::queuedInterrupt(void* /*arg*/)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void PythonEngine::pythonInterruptExecutionThreadSafe(bool *interruptActuatorsAndTimers /*= NULL*/)
+void PythonEngine::pythonInterruptExecutionThreadSafe(bool *interruptActuatorsAndTimers /*= nullptr*/)
 {
     // only queue the interrupt event if not yet done.
     // ==operator(int) of QAtomicInt does not exist for all versions of Qt5.
@@ -4648,7 +4648,7 @@ void PythonEngine::pythonInterruptExecutionThreadSafe(bool *interruptActuatorsAn
         }
         else
         {
-            int result = Py_AddPendingCall(&PythonEngine::queuedInterrupt, NULL);
+            int result = Py_AddPendingCall(&PythonEngine::queuedInterrupt, nullptr);
         }
     }
 
@@ -4696,15 +4696,15 @@ void PythonEngine::pythonInterruptExecutionThreadSafe(bool *interruptActuatorsAn
 PyObject* PythonEngine::PyDbgCommandLoop(PyObject * /*pSelf*/, PyObject *pArgs)
 {
 
-    PyObject *self = NULL;
-    PyObject *frame = NULL;
-    PyObject *frame2 = NULL;
-    PyObject *frame_next = NULL;
+    PyObject *self = nullptr;
+    PyObject *frame = nullptr;
+    PyObject *frame2 = nullptr;
+    PyObject *frame_next = nullptr;
     PyObject* temp;
     PyObject* temp2;
-    PyObject* globalDict = NULL;
-    PyObject* localDict = NULL;
-    PyObject* callRet = NULL;
+    PyObject* globalDict = nullptr;
+    PyObject* localDict = nullptr;
+    PyObject* callRet = nullptr;
 
     tPythonDbgCmd recentDbgCmd = pyDbgNone;
 
@@ -4745,7 +4745,7 @@ PyObject* PythonEngine::PyDbgCommandLoop(PyObject * /*pSelf*/, PyObject *pArgs)
 
     frame2 = PyObject_GetAttrString(frame, "f_back");
 
-    while(frame2 != NULL && frame2 != Py_None)
+    while(frame2 != nullptr && frame2 != Py_None)
     {
         temp = PyObject_GetAttrString(frame2, "f_code");
         temp2 = PyObject_GetAttrString(temp, "co_filename");
@@ -4843,7 +4843,7 @@ PyObject* PythonEngine::PyDbgCommandLoop(PyObject * /*pSelf*/, PyObject *pArgs)
                 Py_CLEAR(pArgs);
 
                 Py_CLEAR(globalDict);
-                pyEngine->setLocalDictionary(NULL);
+                pyEngine->setLocalDictionary(nullptr);
                 Py_CLEAR(localDict);
                 return PyErr_Occurred();
             }
@@ -5031,7 +5031,7 @@ bool PythonEngine::renameVariable(bool globalNotLocal, const QString &oldFullIte
                             PyLong_FromLong(old[1].toInt()); //new reference
                         char parentContainerType = old[0][0].toLatin1();
                         fullNameSplit.removeLast();
-                        PyObject *parentContainer = NULL;
+                        PyObject *parentContainer = nullptr;
 
                         if (fullNameSplit.size() > 0)
                         {
@@ -5356,7 +5356,7 @@ ito::RetVal PythonEngine::saveMatlabVariables(bool globalNotLocal, QString filen
 
     tPythonState oldState = m_pythonState;
     RetVal retVal;
-    PyObject* dict = NULL;
+    PyObject* dict = nullptr;
 
     if ((m_pythonState & pyStateRunning) || (m_pythonState & pyStateDebugging) || (m_pythonState & pyStateDebuggingWaitingButBusy))
     {
@@ -5382,7 +5382,7 @@ ito::RetVal PythonEngine::saveMatlabVariables(bool globalNotLocal, QString filen
             dict = getLocalDictionary();
         }
 
-        if (dict == NULL)
+        if (dict == nullptr)
         {
             retVal += RetVal(retError, 0, tr("Variables cannot be saved since dictionary is not available").toLatin1().data());
         }
@@ -5392,26 +5392,26 @@ ito::RetVal PythonEngine::saveMatlabVariables(bool globalNotLocal, QString filen
 
             //build dictionary, which should be pickled
             PyObject* pArgs = PyTuple_New(3);
-            PyTuple_SetItem(pArgs,0, PyUnicode_DecodeLatin1(filename.toLatin1().data(), filename.length(), NULL));
+            PyTuple_SetItem(pArgs,0, PyUnicode_DecodeLatin1(filename.toLatin1().data(), filename.length(), nullptr));
 
 
             PyObject* keyList = PyList_New(0);
             PyObject* valueList = PyList_New(0);
-            PyObject* tempElem = NULL;
-            PyObject* keyListItem = NULL;
+            PyObject* tempElem = nullptr;
+            PyObject* keyListItem = nullptr;
             QString validVariableName;
 
             for (int i = 0 ; i < varNames.size() ; i++)
             {
                 tempElem = getPyObjectByFullName(globalNotLocal, varNames[i], &validVariableName); //new reference
 
-                if (tempElem == NULL)
+                if (tempElem == nullptr)
                 {
                     std::cerr << "variable '" << varNames.at(i).toLatin1().data() << "' cannot be found in dictionary and will not be exported.\n" << std::endl;
                 }
                 else
                 {
-                    keyListItem = PyUnicode_DecodeLatin1(validVariableName.toLatin1().constData(), validVariableName.length(), NULL); //new ref
+                    keyListItem = PyUnicode_DecodeLatin1(validVariableName.toLatin1().constData(), validVariableName.length(), nullptr); //new ref
                     PyList_Append(keyList, keyListItem);
                     PyList_Append(valueList, tempElem);
                     Py_DECREF(tempElem);
@@ -5421,7 +5421,7 @@ ito::RetVal PythonEngine::saveMatlabVariables(bool globalNotLocal, QString filen
 
             PyTuple_SetItem(pArgs,1,valueList);
             PyTuple_SetItem(pArgs,2,keyList);
-            PyObject* pyRet = ito::PythonItom::PySaveMatlabMat(NULL, pArgs);
+            PyObject* pyRet = ito::PythonItom::PySaveMatlabMat(nullptr, pArgs);
 
             retVal += PythonCommon::checkForPyExceptions(true);
 
@@ -5442,7 +5442,7 @@ ito::RetVal PythonEngine::saveMatlabVariables(bool globalNotLocal, QString filen
         }
     }
 
-    if (semaphore != NULL)
+    if (semaphore != nullptr)
     {
         semaphore->returnValue = retVal;
         semaphore->release();
@@ -5467,7 +5467,7 @@ ito::RetVal PythonEngine::saveMatlabSingleParam(QString filename, QSharedPointer
 
     tPythonState oldState = m_pythonState;
     RetVal retVal;
-    PyObject* dict = NULL;
+    PyObject* dict = nullptr;
 
     if ((m_pythonState & pyStateRunning) || (m_pythonState & pyStateDebugging) || (m_pythonState & pyStateDebuggingWaitingButBusy))
     {
@@ -5484,7 +5484,7 @@ ito::RetVal PythonEngine::saveMatlabSingleParam(QString filename, QSharedPointer
             pythonStateTransition(pyTransDebugExecCmdBegin);
         }
 
-        PyObject *item = NULL;
+        PyObject *item = nullptr;
 
         if (value.isNull())
         {
@@ -5547,7 +5547,7 @@ ito::RetVal PythonEngine::saveMatlabSingleParam(QString filename, QSharedPointer
                 retVal += ito::RetVal(retError, 0, tr("Unsupported data type to save to matlab.").toLatin1().data());
             }
 
-            if (item == NULL)
+            if (item == nullptr)
             {
                 retVal += ito::RetVal(retError, 0, tr("Error converting object to Python object. Save to matlab not possible.").toLatin1().data());
             }
@@ -5558,10 +5558,10 @@ ito::RetVal PythonEngine::saveMatlabSingleParam(QString filename, QSharedPointer
             PyGILState_STATE gstate = PyGILState_Ensure();
 
             PyObject* pArgs = PyTuple_New(3);
-            PyTuple_SetItem(pArgs, 0, PyUnicode_DecodeLatin1(filename.toLatin1().data(), filename.length(), NULL)); //steals ref.
+            PyTuple_SetItem(pArgs, 0, PyUnicode_DecodeLatin1(filename.toLatin1().data(), filename.length(), nullptr)); //steals ref.
             PyTuple_SetItem(pArgs, 1, item); //steals ref.
-            PyTuple_SetItem(pArgs, 2, PyUnicode_DecodeLatin1(valueName.toLatin1().data(), valueName.length(), NULL)); //steals ref.
-            PyObject *pyRet = ito::PythonItom::PySaveMatlabMat(NULL, pArgs);
+            PyTuple_SetItem(pArgs, 2, PyUnicode_DecodeLatin1(valueName.toLatin1().data(), valueName.length(), nullptr)); //steals ref.
+            PyObject *pyRet = ito::PythonItom::PySaveMatlabMat(nullptr, pArgs);
             retVal += PythonCommon::checkForPyExceptions(true);
             Py_XDECREF(pyRet);
             Py_XDECREF(pArgs);
@@ -5580,7 +5580,7 @@ ito::RetVal PythonEngine::saveMatlabSingleParam(QString filename, QSharedPointer
         }
     }
 
-    if (semaphore != NULL)
+    if (semaphore != nullptr)
     {
         semaphore->returnValue = retVal;
         semaphore->release();
@@ -5598,7 +5598,7 @@ ito::RetVal PythonEngine::loadMatlabVariables(bool globalNotLocal, QString filen
     ItomSharedSemaphoreLocker locker(semaphore);
     tPythonState oldState = m_pythonState;
     RetVal retVal;
-    PyObject* destinationDict = NULL;
+    PyObject* destinationDict = nullptr;
     bool released = false;
 
     if ((m_pythonState & pyStateRunning) || (m_pythonState & pyStateDebugging) || (m_pythonState & pyStateDebuggingWaitingButBusy))
@@ -5625,7 +5625,7 @@ ito::RetVal PythonEngine::loadMatlabVariables(bool globalNotLocal, QString filen
             destinationDict = getLocalDictionary();
         }
 
-        if (destinationDict == NULL)
+        if (destinationDict == nullptr)
         {
             retVal += RetVal(retError, 0, tr("Variables cannot be loaded since dictionary is not available").toLatin1().data());
         }
@@ -5633,15 +5633,15 @@ ito::RetVal PythonEngine::loadMatlabVariables(bool globalNotLocal, QString filen
         {
             PyGILState_STATE gstate = PyGILState_Ensure();
 
-            PyObject *filenameUnicode = PyUnicode_DecodeLatin1(filename.toLatin1().data(), filename.length(), NULL);
+            PyObject *filenameUnicode = PyUnicode_DecodeLatin1(filename.toLatin1().data(), filename.length(), nullptr);
             PyObject *pArgs = PyTuple_Pack(1, filenameUnicode);
             Py_DECREF(filenameUnicode);
-            PyObject *dict = ito::PythonItom::PyLoadMatlabMat(NULL, pArgs);
+            PyObject *dict = ito::PythonItom::PyLoadMatlabMat(nullptr, pArgs);
             Py_DECREF(pArgs);
 
             retVal += PythonCommon::checkForPyExceptions(true);
 
-            if (dict == NULL || retVal.containsError())
+            if (dict == nullptr || retVal.containsError())
             {
             }
             else
@@ -5730,13 +5730,13 @@ ito::RetVal PythonEngine::loadMatlabVariables(bool globalNotLocal, QString filen
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal PythonEngine::checkVarnamesInWorkspace(bool globalNotLocal, const QStringList &names, QSharedPointer<IntList> existing, ItomSharedSemaphore *semaphore /*= NULL*/)
+ito::RetVal PythonEngine::checkVarnamesInWorkspace(bool globalNotLocal, const QStringList &names, QSharedPointer<IntList> existing, ItomSharedSemaphore *semaphore /*= nullptr*/)
 {
     ItomSharedSemaphoreLocker locker(semaphore);
     tPythonState oldState = m_pythonState;
     ito::RetVal retVal;
-    PyObject* destinationDict = NULL;
-    PyObject* value = NULL;
+    PyObject* destinationDict = nullptr;
+    PyObject* value = nullptr;
     bool released = false;
 
     if ((m_pythonState & pyStateRunning) || (m_pythonState & pyStateDebugging) || (m_pythonState & pyStateDebuggingWaitingButBusy))
@@ -5763,7 +5763,7 @@ ito::RetVal PythonEngine::checkVarnamesInWorkspace(bool globalNotLocal, const QS
             destinationDict = getLocalDictionary();
         }
 
-        if (destinationDict == NULL)
+        if (destinationDict == nullptr)
         {
             retVal += ito::RetVal(ito::retError, 0, tr("Values cannot be saved since workspace dictionary not available.").toLatin1().data());
         }
@@ -5771,8 +5771,8 @@ ito::RetVal PythonEngine::checkVarnamesInWorkspace(bool globalNotLocal, const QS
         {
             PyGILState_STATE gstate = PyGILState_Ensure();
 
-            PyObject *existingItem = NULL;
-            PyObject *varname = NULL;
+            PyObject *existingItem = nullptr;
+            PyObject *varname = nullptr;
 
             existing->clear();
             existing->reserve(names.size());
@@ -5780,7 +5780,7 @@ ito::RetVal PythonEngine::checkVarnamesInWorkspace(bool globalNotLocal, const QS
             for (int i = 0; (i < names.size()) && (!retVal.containsError()); i++)
             {
                 varname = getAndCheckIdentifier(names[i], retVal); //new ref
-                existingItem = varname ? PyDict_GetItem(destinationDict, varname) : NULL; //borrowed ref
+                existingItem = varname ? PyDict_GetItem(destinationDict, varname) : nullptr; //borrowed ref
 
                 if (existingItem)
                 {
@@ -5805,7 +5805,7 @@ ito::RetVal PythonEngine::checkVarnamesInWorkspace(bool globalNotLocal, const QS
 
             PyGILState_Release(gstate);
 
-            if (semaphore != NULL)
+            if (semaphore != nullptr)
             {
                 semaphore->returnValue = retVal;
                 semaphore->release();
@@ -5823,7 +5823,7 @@ ito::RetVal PythonEngine::checkVarnamesInWorkspace(bool globalNotLocal, const QS
         }
     }
 
-    if (semaphore != NULL && !released)
+    if (semaphore != nullptr && !released)
     {
         semaphore->returnValue = retVal;
         semaphore->release();
@@ -5833,13 +5833,13 @@ ito::RetVal PythonEngine::checkVarnamesInWorkspace(bool globalNotLocal, const QS
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal PythonEngine::getVarnamesListInWorkspace(bool globalNotLocal, const QString &find, QSharedPointer<QStringList> varnameList, ItomSharedSemaphore *semaphore /*= NULL*/)
+ito::RetVal PythonEngine::getVarnamesListInWorkspace(bool globalNotLocal, const QString &find, QSharedPointer<QStringList> varnameList, ItomSharedSemaphore *semaphore /*= nullptr*/)
 {
     ItomSharedSemaphoreLocker locker(semaphore);
     tPythonState oldState = m_pythonState;
     ito::RetVal retVal;
-    PyObject* destinationDict = NULL;
-    PyObject* value = NULL;
+    PyObject* destinationDict = nullptr;
+    PyObject* value = nullptr;
     bool released = false;
 
     if ((m_pythonState & pyStateRunning) || (m_pythonState & pyStateDebugging) || (m_pythonState & pyStateDebuggingWaitingButBusy))
@@ -5866,7 +5866,7 @@ ito::RetVal PythonEngine::getVarnamesListInWorkspace(bool globalNotLocal, const 
             destinationDict = getLocalDictionary();
         }
 
-        if (destinationDict == NULL)
+        if (destinationDict == nullptr)
         {
             retVal += ito::RetVal(ito::retError, 0, tr("Values cannot be saved since workspace dictionary not available.").toLatin1().data());
         }
@@ -5890,7 +5890,7 @@ ito::RetVal PythonEngine::getVarnamesListInWorkspace(bool globalNotLocal, const 
 
             PyGILState_Release(gstate);
 
-            if (semaphore != NULL)
+            if (semaphore != nullptr)
             {
                 semaphore->returnValue = retVal;
                 semaphore->release();
@@ -5908,7 +5908,7 @@ ito::RetVal PythonEngine::getVarnamesListInWorkspace(bool globalNotLocal, const 
         }
     }
 
-    if (semaphore != NULL && !released)
+    if (semaphore != nullptr && !released)
     {
         semaphore->returnValue = retVal;
         semaphore->release();
@@ -5929,8 +5929,8 @@ ito::RetVal PythonEngine::putParamsToWorkspace(bool globalNotLocal, const QStrin
     ItomSharedSemaphoreLocker locker(semaphore);
     //tPythonState oldState = m_pythonState;
     ito::RetVal retVal;
-    PyObject* destinationDict = NULL;
-    PyObject* value = NULL;
+    PyObject* destinationDict = nullptr;
+    PyObject* value = nullptr;
     bool released = false;
 
     if (names.size() != values.size())
@@ -5961,7 +5961,7 @@ ito::RetVal PythonEngine::putParamsToWorkspace(bool globalNotLocal, const QStrin
             destinationDict = getLocalDictionary();
         }
 
-        if (destinationDict == NULL)
+        if (destinationDict == nullptr)
         {
             retVal += ito::RetVal(ito::retError, 0, tr("Values cannot be saved since workspace dictionary not available.").toLatin1().data());
         }
@@ -5969,13 +5969,13 @@ ito::RetVal PythonEngine::putParamsToWorkspace(bool globalNotLocal, const QStrin
         {
             PyGILState_STATE gstate = PyGILState_Ensure();
 
-            PyObject *existingItem = NULL;
-            PyObject *varname = NULL;
+            PyObject *existingItem = nullptr;
+            PyObject *varname = nullptr;
 
             for (int i = 0; (i < names.size()) && (!retVal.containsError()); i++)
             {
                 varname = getAndCheckIdentifier(names[i], retVal); //new ref
-                existingItem = varname ? PyDict_GetItem(destinationDict, varname) : NULL; //borrowed ref
+                existingItem = varname ? PyDict_GetItem(destinationDict, varname) : nullptr; //borrowed ref
 
                 if (existingItem)
                 {
@@ -6008,7 +6008,7 @@ ito::RetVal PythonEngine::putParamsToWorkspace(bool globalNotLocal, const QStrin
                 if (varname)
                 {
                     value = PythonParamConversion::ParamBaseToPyObject(*(values[i]));
-                    if (value == NULL)
+                    if (value == nullptr)
                     {
                         retVal += ito::RetVal::format(ito::retError, 0, tr("Error while transforming value '%s' to PyObject*.").toLatin1().data(), names[i].toLatin1().data());
                     }
@@ -6022,7 +6022,7 @@ ito::RetVal PythonEngine::putParamsToWorkspace(bool globalNotLocal, const QStrin
                 Py_XDECREF(varname);
             }
 
-            if (semaphore != NULL)
+            if (semaphore != nullptr)
             {
                 semaphore->returnValue = retVal;
                 semaphore->release();
@@ -6051,7 +6051,7 @@ ito::RetVal PythonEngine::putParamsToWorkspace(bool globalNotLocal, const QStrin
         }*/
     }
 
-    if (semaphore != NULL && !released)
+    if (semaphore != nullptr && !released)
     {
         semaphore->returnValue = retVal;
         semaphore->release();
@@ -6066,7 +6066,7 @@ ito::RetVal PythonEngine::getParamsFromWorkspace(bool globalNotLocal, const QStr
     ItomSharedSemaphoreLocker locker(semaphore);
     tPythonState oldState = m_pythonState;
     ito::RetVal retVal;
-    PyObject* value = NULL;
+    PyObject* value = nullptr;
     bool released = false;
     QSharedPointer<ito::ParamBase> param;
 
@@ -6092,7 +6092,7 @@ ito::RetVal PythonEngine::getParamsFromWorkspace(bool globalNotLocal, const QStr
             pythonStateTransition(pyTransDebugExecCmdBegin);
         }
 
-        if ((globalNotLocal && getGlobalDictionary() == NULL) || (!globalNotLocal && getLocalDictionary() == NULL))
+        if ((globalNotLocal && getGlobalDictionary() == nullptr) || (!globalNotLocal && getLocalDictionary() == nullptr))
         {
             retVal += ito::RetVal(ito::retError, 0, tr("Values cannot be obtained since workspace dictionary not available.").toLatin1().data());
         }
@@ -6104,7 +6104,7 @@ ito::RetVal PythonEngine::getParamsFromWorkspace(bool globalNotLocal, const QStr
             for (int i = 0; i < names.size(); i++)
             {
                 value = getPyObjectByFullName(globalNotLocal, names[i], &validVariableName); //new reference
-                if (value == NULL)
+                if (value == nullptr)
                 {
                     retVal += ito::RetVal(ito::retError, 0, tr("Item '%1' does not exist in workspace.").arg(names[i]).toLatin1().data());
                     break;
@@ -6131,7 +6131,7 @@ ito::RetVal PythonEngine::getParamsFromWorkspace(bool globalNotLocal, const QStr
 
             PyGILState_Release(gstate);
 
-            if (semaphore != NULL)
+            if (semaphore != nullptr)
             {
                 semaphore->returnValue = retVal;
                 semaphore->release();
@@ -6149,7 +6149,7 @@ ito::RetVal PythonEngine::getParamsFromWorkspace(bool globalNotLocal, const QStr
         }
     }
 
-    if (semaphore != NULL && !released)
+    if (semaphore != nullptr && !released)
     {
         semaphore->returnValue = retVal;
         semaphore->release();
@@ -6165,7 +6165,7 @@ This function detects all currently available variables and stores them in a glo
 ito::RetVal PythonEngine::pythonGetClearAllValues()
 {
     ito::RetVal retVal;
-    if (m_itomFunctions == NULL)
+    if (m_itomFunctions == nullptr)
     {
         retVal += RetVal(retError, 0, tr("The script itomFunctions.py is not available").toLatin1().data());
     }
@@ -6186,7 +6186,7 @@ Afterwards the workspace will be updated.
 ito::RetVal PythonEngine::pythonClearAll()
 {
     ito::RetVal retVal;
-    if (m_itomFunctions == NULL)
+    if (m_itomFunctions == nullptr)
     {
         retVal += RetVal(retError, 0, tr("The script itomFunctions.py is not available").toLatin1().data());
     }
@@ -6211,15 +6211,15 @@ ito::RetVal PythonEngine::registerAddInInstance(QString varname, ito::AddInBase 
     RetVal retVal(retOk);
 
     tPythonState oldState = m_pythonState;
-    PyObject* dict = NULL;
-    PyObject* value = NULL;
+    PyObject* dict = nullptr;
+    PyObject* value = nullptr;
     bool globalNotLocal = true; //may also be accessed by parameter, if desired
 
     if ((m_pythonState & pyStateRunning) || (m_pythonState & pyStateDebugging) || (m_pythonState & pyStateDebuggingWaitingButBusy))
     {
         retVal += RetVal(retError, 0, tr("It is not allowed to register an AddIn-instance in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy").toLatin1().data());
 
-        if (semaphore != NULL) //release semaphore now, since the following emit command will be a blocking connection, too.
+        if (semaphore != nullptr) //release semaphore now, since the following emit command will be a blocking connection, too.
         {
             semaphore->returnValue = retVal;
             semaphore->release();
@@ -6245,7 +6245,7 @@ ito::RetVal PythonEngine::registerAddInInstance(QString varname, ito::AddInBase 
             dict = getLocalDictionary();
         }
 
-        if (dict == NULL)
+        if (dict == nullptr)
         {
             retVal += RetVal(retError, 0, tr("Dictionary is not available").toLatin1().data());
         }
@@ -6257,7 +6257,7 @@ ito::RetVal PythonEngine::registerAddInInstance(QString varname, ito::AddInBase 
 
             if (pyVarname)
             {
-                if (PyDict_GetItem(dict, pyVarname) != NULL)
+                if (PyDict_GetItem(dict, pyVarname) != nullptr)
                 {
                     QString ErrStr = tr("Variable name '%1' already exists in dictionary").arg(varname);
                     retVal += RetVal(retError, 0, ErrStr.toLatin1().data());
@@ -6266,8 +6266,8 @@ ito::RetVal PythonEngine::registerAddInInstance(QString varname, ito::AddInBase 
                 {
                     if (instance->getBasePlugin()->getType() & ito::typeDataIO)
                     {
-                        PythonPlugins::PyDataIOPlugin *dataIOPlugin = (PythonPlugins::PyDataIOPlugin*)PythonPlugins::PyDataIOPluginType.tp_new(&PythonPlugins::PyDataIOPluginType,NULL,NULL); //new ref
-                        if (dataIOPlugin == NULL)
+                        PythonPlugins::PyDataIOPlugin *dataIOPlugin = (PythonPlugins::PyDataIOPlugin*)PythonPlugins::PyDataIOPluginType.tp_new(&PythonPlugins::PyDataIOPluginType,nullptr,nullptr); //new ref
+                        if (dataIOPlugin == nullptr)
                         {
                             retVal += RetVal(retError, 0, tr("No instance of python class dataIO could be created").toLatin1().data());
                         }
@@ -6280,8 +6280,8 @@ ito::RetVal PythonEngine::registerAddInInstance(QString varname, ito::AddInBase 
                     }
                     else if (instance->getBasePlugin()->getType() & ito::typeActuator)
                     {
-                        PythonPlugins::PyActuatorPlugin *actuatorPlugin = (PythonPlugins::PyActuatorPlugin*)PythonPlugins::PyActuatorPluginType.tp_new(&PythonPlugins::PyActuatorPluginType,NULL,NULL); //new ref
-                        if (actuatorPlugin == NULL)
+                        PythonPlugins::PyActuatorPlugin *actuatorPlugin = (PythonPlugins::PyActuatorPlugin*)PythonPlugins::PyActuatorPluginType.tp_new(&PythonPlugins::PyActuatorPluginType,nullptr,nullptr); //new ref
+                        if (actuatorPlugin == nullptr)
                         {
                             retVal += RetVal(retError, 0, tr("No instance of python class actuator could be created").toLatin1().data());
                         }
@@ -6315,7 +6315,7 @@ ito::RetVal PythonEngine::registerAddInInstance(QString varname, ito::AddInBase 
             PyGILState_Release(gstate);
         }
 
-        if (semaphore != NULL) //release semaphore now, since the following emit command will be a blocking connection, too.
+        if (semaphore != nullptr) //release semaphore now, since the following emit command will be a blocking connection, too.
         {
             semaphore->returnValue = retVal;
             semaphore->release();
@@ -6344,11 +6344,11 @@ ito::RetVal PythonEngine::registerAddInInstance(QString varname, ito::AddInBase 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! get the unicode object from identifier and checks if it is a valid python identifier (variable name). This returns a new reference of the unicode object or NULL with a corresponding error message (python error flag is cleared)
+//! get the unicode object from identifier and checks if it is a valid python identifier (variable name). This returns a new reference of the unicode object or nullptr with a corresponding error message (python error flag is cleared)
 PyObject* PythonEngine::getAndCheckIdentifier(const QString &identifier, ito::RetVal &retval) const
 {
     //QByteArray ba = identifier.toLatin1();
-    //PyObject *obj = PyUnicode_DecodeLatin1(ba.data(), ba.size(), NULL);
+    //PyObject *obj = PyUnicode_DecodeLatin1(ba.data(), ba.size(), nullptr);
 
     PyObject *obj = PythonQtConversion::QStringToPyObject(identifier);
 
@@ -6357,7 +6357,7 @@ PyObject* PythonEngine::getAndCheckIdentifier(const QString &identifier, ito::Re
         if (!PyUnicode_IsIdentifier(obj))
         {
             Py_DECREF(obj);
-            obj = NULL;
+            obj = nullptr;
             retval += ito::RetVal::format(ito::retError, 0, "String '%s' is no valid python identifier", identifier.toLatin1().data());
         }
     }
@@ -6394,7 +6394,7 @@ ito::RetVal PythonEngine::getSysModules(QSharedPointer<QStringList> modNames, QS
         }
 
         //code
-        if (m_itomFunctions == NULL)
+        if (m_itomFunctions == nullptr)
         {
             retValue += RetVal(retError, 0, tr("The script itomFunctions.py is not available").toLatin1().data());
         }
@@ -6469,7 +6469,7 @@ ito::RetVal PythonEngine::reloadSysModules(QSharedPointer<QStringList> modNames,
         }
 
         //code
-        if (m_itomFunctions == NULL)
+        if (m_itomFunctions == nullptr)
         {
             retValue += RetVal(retError, 0, tr("The script itomFunctions.py is not available").toLatin1().data());
         }
@@ -6525,7 +6525,7 @@ ito::RetVal PythonEngine::pickleVariables(bool globalNotLocal, QString filename,
 
     tPythonState oldState = m_pythonState;
     RetVal retVal;
-    PyObject* dict = NULL;
+    PyObject* dict = nullptr;
 
     if ((m_pythonState & pyStateRunning) || (m_pythonState & pyStateDebugging) || (m_pythonState & pyStateDebuggingWaitingButBusy))
     {
@@ -6569,7 +6569,7 @@ ito::RetVal PythonEngine::pickleVariables(bool globalNotLocal, QString filename,
             {
                 tempElem = getPyObjectByFullName(globalNotLocal, varNames[i], &validVariableName); //new reference
 
-                if (tempElem == NULL)
+                if (tempElem == nullptr)
                 {
                     std::cerr << "variable '" << validVariableName.toLatin1().data() << "' cannot be found in dictionary and will not be exported.\n" << std::endl;
                 }
@@ -6592,7 +6592,7 @@ ito::RetVal PythonEngine::pickleVariables(bool globalNotLocal, QString filename,
 
             PyDict_Clear(exportDict);
             Py_DECREF(exportDict);
-            exportDict = NULL;
+            exportDict = nullptr;
         }
 
         PyGILState_Release(gstate);
@@ -6633,7 +6633,7 @@ ito::RetVal PythonEngine::pickleSingleParam(QString filename, QSharedPointer<ito
 
     tPythonState oldState = m_pythonState;
     RetVal retVal;
-    PyObject* dict = NULL;
+    PyObject* dict = nullptr;
 
     if ((m_pythonState & pyStateRunning) || (m_pythonState & pyStateDebugging) || (m_pythonState & pyStateDebuggingWaitingButBusy))
     {
@@ -6650,7 +6650,7 @@ ito::RetVal PythonEngine::pickleSingleParam(QString filename, QSharedPointer<ito
             pythonStateTransition(pyTransDebugExecCmdBegin);
         }
 
-        PyObject *item = NULL;
+        PyObject *item = nullptr;
 
         if (value.isNull())
         {
@@ -6712,7 +6712,7 @@ ito::RetVal PythonEngine::pickleSingleParam(QString filename, QSharedPointer<ito
                 retVal += ito::RetVal(retError, 0, tr("Unsupported data type to pickle.").toLatin1().data());
             }
 
-            if (item == NULL)
+            if (item == nullptr)
             {
                 retVal += ito::RetVal(retError, 0, tr("Error converting object to Python object. No pickle possible.").toLatin1().data());
             }
@@ -6730,7 +6730,7 @@ ito::RetVal PythonEngine::pickleSingleParam(QString filename, QSharedPointer<ito
 
             PyDict_Clear(exportDict);
             Py_DECREF(exportDict);
-            exportDict = NULL;
+            exportDict = nullptr;
 
             PyGILState_Release(gstate);
         }
@@ -6747,7 +6747,7 @@ ito::RetVal PythonEngine::pickleSingleParam(QString filename, QSharedPointer<ito
         }
     }
 
-    if (semaphore != NULL)
+    if (semaphore != nullptr)
     {
         semaphore->returnValue = retVal;
         semaphore->release();
@@ -6769,14 +6769,14 @@ ito::RetVal PythonEngine::pickleDictionary(PyObject *dict, const QString &filena
 
     RetVal retval;
 
-    if (m_mainModule == NULL)
+    if (m_mainModule == nullptr)
     {
         return RetVal(retError, 0, tr("MainModule is empty or cannot be accessed").toLatin1().data());
     }
 
     PyObject* pickleModule = PyImport_AddModule("pickle"); // borrowed reference
 
-    if (pickleModule == NULL)
+    if (pickleModule == nullptr)
     {
         retval += PythonCommon::checkForPyExceptions(true);
         return retval;
@@ -6784,7 +6784,7 @@ ito::RetVal PythonEngine::pickleDictionary(PyObject *dict, const QString &filena
 
     PyObject *builtinsModule = PyObject_GetAttrString(m_mainModule, "__builtins__"); //new reference
 
-    if (builtinsModule == NULL)
+    if (builtinsModule == nullptr)
     {
         retval += PythonCommon::checkForPyExceptions(true);
         return retval;
@@ -6793,34 +6793,34 @@ ito::RetVal PythonEngine::pickleDictionary(PyObject *dict, const QString &filena
     PyObject* openMethod = PyDict_GetItemString(PyModule_GetDict(builtinsModule), "open"); //both: borrowed
 
     Py_DECREF(builtinsModule);
-    builtinsModule = NULL;
+    builtinsModule = nullptr;
 
     PyObject* pyMode = PyUnicode_FromString("wb\0"); //new reference
-    PyObject* fileHandle = NULL;
+    PyObject* fileHandle = nullptr;
 
-    PyObject* pyFileName = PyUnicode_DecodeLatin1(filename.toLatin1().data(), filename.length(), NULL);
+    PyObject* pyFileName = PyUnicode_DecodeLatin1(filename.toLatin1().data(), filename.length(), nullptr);
 
-    if (pyFileName != NULL)
+    if (pyFileName != nullptr)
     {
-        fileHandle = PyObject_CallFunctionObjArgs(openMethod, pyFileName, pyMode, NULL); //new reference
+        fileHandle = PyObject_CallFunctionObjArgs(openMethod, pyFileName, pyMode, nullptr); //new reference
         Py_DECREF(pyFileName);
     }
 
     Py_XDECREF(pyMode);
 
-    if (fileHandle == NULL)
+    if (fileHandle == nullptr)
     {
         retval += PythonCommon::checkForPyExceptions(true);
     }
     else
     {
-        PyObject *result = NULL;
+        PyObject *result = nullptr;
         PyObject *version = PyLong_FromLong(3); //Use pickle protocol version 3 as default. This is readable by all itom version that have been published (default for Python 3).
         PyObject *dumpObj = PyUnicode_FromString("dump"); //new reference
 
         try
         {
-            result = PyObject_CallMethodObjArgs(pickleModule, dumpObj, dict, fileHandle, version, NULL); //new reference
+            result = PyObject_CallMethodObjArgs(pickleModule, dumpObj, dict, fileHandle, version, nullptr); //new reference
         }
         catch(std::bad_alloc &/*ba*/)
         {
@@ -6845,7 +6845,7 @@ ito::RetVal PythonEngine::pickleDictionary(PyObject *dict, const QString &filena
         Py_DECREF(dumpObj);
         Py_DECREF(version);
 
-        if (result == NULL)
+        if (result == nullptr)
         {
             retval += PythonCommon::checkForPyExceptions(true);
         }
@@ -6876,7 +6876,7 @@ ito::RetVal PythonEngine::unpickleVariables(bool globalNotLocal, QString filenam
     tPythonState oldState = m_pythonState;
     RetVal retVal;
     bool released = false;
-    PyObject* destinationDict = NULL;
+    PyObject* destinationDict = nullptr;
 
     if ((m_pythonState & pyStateRunning) || (m_pythonState & pyStateDebugging) || (m_pythonState & pyStateDebuggingWaitingButBusy))
     {
@@ -6902,7 +6902,7 @@ ito::RetVal PythonEngine::unpickleVariables(bool globalNotLocal, QString filenam
             destinationDict = getLocalDictionary();
         }
 
-        if (destinationDict == NULL)
+        if (destinationDict == nullptr)
         {
             retVal += RetVal(retError, 0, tr("Variables cannot be unpickled since dictionary is not available").toLatin1().data());
         }
@@ -6979,14 +6979,14 @@ ito::RetVal PythonEngine::unpickleDictionary(PyObject *destinationDict, const QS
 
     RetVal retval;
 
-    if (m_mainModule == NULL)
+    if (m_mainModule == nullptr)
     {
         return RetVal(retError, 0, tr("MainModule is empty or cannot be accessed").toLatin1().data());
     }
 
     PyObject* pickleModule = PyImport_AddModule("pickle"); // borrowed reference
 
-    if (pickleModule == NULL)
+    if (pickleModule == nullptr)
     {
         retval += PythonCommon::checkForPyExceptions(true);
         return retval;
@@ -6994,7 +6994,7 @@ ito::RetVal PythonEngine::unpickleDictionary(PyObject *destinationDict, const QS
 
     PyObject *builtinsModule = PyObject_GetAttrString(m_mainModule, "__builtins__"); //new reference
 
-    if (builtinsModule == NULL)
+    if (builtinsModule == nullptr)
     {
         retval += PythonCommon::checkForPyExceptions(true);
         return retval;
@@ -7003,32 +7003,32 @@ ito::RetVal PythonEngine::unpickleDictionary(PyObject *destinationDict, const QS
     PyObject* openMethod = PyDict_GetItemString(PyModule_GetDict(builtinsModule), "open"); //borrowed
 
     Py_DECREF(builtinsModule);
-    builtinsModule = NULL;
+    builtinsModule = nullptr;
 
     PyObject* pyMode = PyUnicode_FromString("rb\0");
-    PyObject* fileHandle = NULL;
+    PyObject* fileHandle = nullptr;
 
-    PyObject* pyFileName = PyUnicode_DecodeLatin1(filename.toLatin1().data(), filename.length(), NULL);
+    PyObject* pyFileName = PyUnicode_DecodeLatin1(filename.toLatin1().data(), filename.length(), nullptr);
 
-    if (pyFileName != NULL)
+    if (pyFileName != nullptr)
     {
-        fileHandle = PyObject_CallFunctionObjArgs(openMethod, pyFileName, pyMode, NULL); //new reference
+        fileHandle = PyObject_CallFunctionObjArgs(openMethod, pyFileName, pyMode, nullptr); //new reference
         Py_DECREF(pyFileName);
     }
 
     if (pyMode) Py_DECREF(pyMode);
 
-    if (fileHandle == NULL)
+    if (fileHandle == nullptr)
     {
         retval += PythonCommon::checkForPyExceptions(true);
     }
     else
     {
         PyObject *loadObj = PyUnicode_FromString("load");
-        PyObject *unpickledItem = NULL;
+        PyObject *unpickledItem = nullptr;
         try
         {
-            unpickledItem = PyObject_CallMethodObjArgs(pickleModule, loadObj, fileHandle, NULL); //new ref
+            unpickledItem = PyObject_CallMethodObjArgs(pickleModule, loadObj, fileHandle, nullptr); //new ref
         }
         catch(std::bad_alloc &/*ba*/)
         {
@@ -7051,7 +7051,7 @@ ito::RetVal PythonEngine::unpickleDictionary(PyObject *destinationDict, const QS
         }
         Py_DECREF(loadObj);
 
-        if (unpickledItem == NULL)
+        if (unpickledItem == nullptr)
         {
             retval += PythonCommon::checkForPyExceptions(true);
         }
@@ -7180,12 +7180,12 @@ PyMethodDef PythonEngine::PyMethodItomDbg[] = {
     // "Python name", C Ffunction Code, Argument Flags, __doc__ description
     {"pyDbgCommandLoop", PythonEngine::PyDbgCommandLoop, METH_VARARGS, "will be invoked if debugger stopped at the given filename and line"},
     {"pyDbgClearBreakpoint", PythonEngine::PyDbgClearBreakpoint, METH_VARARGS, "will be invoked if debugger wants to remove a temporary breakpoint"},
-    {NULL, NULL, 0, NULL}
+    {nullptr, nullptr, 0, nullptr}
 };
 
 PyModuleDef PythonEngine::PyModuleItomDbg = {
-    PyModuleDef_HEAD_INIT, "itomDbgWrapper", NULL, -1, PythonEngine::PyMethodItomDbg,
-    NULL, NULL, NULL, NULL
+    PyModuleDef_HEAD_INIT, "itomDbgWrapper", nullptr, -1, PythonEngine::PyMethodItomDbg,
+    nullptr, nullptr, nullptr, nullptr
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------

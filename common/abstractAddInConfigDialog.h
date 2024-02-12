@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2023, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
@@ -25,8 +25,7 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef ABSTRACTADDINCONFIGDIALOG_H
-#define ABSTRACTADDINCONFIGDIALOG_H
+#pragma once
 
 #include "retVal.h"
 #include "typeDefs.h"
@@ -38,8 +37,6 @@
 #include <QtWidgets/qdialog.h>
 #include <qmap.h>
 #include <qsharedpointer.h>
-
-
 
 
 
@@ -156,10 +153,14 @@ namespace ito
             */
             virtual ito::RetVal observeInvocation(ItomSharedSemaphore *waitCond, MessageLevel msgLevel) const;
 
-            QMap<QString, ito::Param> m_currentParameters; /*! use this map to save the current values of all parameters. For instance it is conventient to copy the map given in parametersChanged to this map */
+            /*! use this map to save the current values of all parameters.
+            For instance it is conventient to copy the map given in parametersChanged to this map */
+            QMap<QString, ito::Param> m_currentParameters;
 
         private:
-            AbstractAddInConfigDialogPrivate* d; /*! private data pointer of this class. */
+            /*! private data pointer of this class. */
+            QScopedPointer<AbstractAddInConfigDialogPrivate> d_ptr;
+            Q_DECLARE_PRIVATE(AbstractAddInConfigDialog);
 
         public slots:
             //! slot invoked if any parameter of the plugin has been changed.
@@ -174,5 +175,3 @@ namespace ito
             virtual void parametersChanged(QMap<QString, ito::Param> params) = 0;
     };
 } //end namespace ito
-
-#endif //ABSTRACTADDINCONFIGDIALOG_H
