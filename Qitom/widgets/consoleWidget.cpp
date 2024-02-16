@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2024, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
@@ -62,16 +62,18 @@ ConsoleWidget::ConsoleWidget(QWidget* parent) :
     m_canCut(false),
     m_waitForCmdExecutionDone(false),
     m_pythonBusy(false),
-    m_pCmdList(NULL),
-    m_inputStreamWaitCond(NULL),
+    m_pCmdList(nullptr),
+    m_inputStreamWaitCond(nullptr),
     m_inputStartLine(0),
     m_autoWheel(true),
     m_splitLongLines(true),
     m_splitLongLinesMaxLength(200)
 {
     m_inputTextMode.inputModeEnabled = false;
+    m_ansiEscapeSeqRegExp.setPattern("\\x1B\\[(?<code>[0-9]{1,2})(;(?<suffix1>[0-9]{1,2})(;(?<suffix2>[0-9]{1,3}))?)?m");
 
     setSelectLineOnCopyEmpty(false);
+    updateAnsiTextCharFormat(m_recentAnsiTextCharFormat, 0);
 
     m_receiveStreamBuffer.msgType = ito::msgStreamOut;
     connect(&m_receiveStreamBufferTimer, SIGNAL(timeout()), this, SLOT(processStreamBuffer()));
@@ -1300,6 +1302,135 @@ void ConsoleWidget::receiveStream(QString text, ito::tStreamMessageType msgType)
 }
 
 //-------------------------------------------------------------------------------------
+static QColor ansiColor(uint code)
+{
+    const int red = code & 0x1 ? 170 : 0;
+    const int green = code & 0x2 ? 170 : 0;
+    const int blue = code & 0x4 ? 170 : 0;
+    return QColor(red, green, blue);
+}
+
+//-------------------------------------------------------------------------------------
+void ConsoleWidget::updateAnsiTextCharFormat(
+    ito::TextBlockUserData::AnsiTextCharFormat &format, 
+    int ansiCodeId, 
+    int ansiCodeSuffix1 /*= 0*/, 
+    int ansiCodeSuffix2 /*= 0*/)
+{
+    if (ansiCodeId == 0)
+    {
+        //reset
+        format.backgroundColor = QColor();
+        format.textBold = false;
+        format.textUnderline = false;
+        format.textColor = QColor();
+    }
+    else if (ansiCodeId >= 30 && ansiCodeId <= 37)
+    {
+        const QColor colors[] = { Qt::black, Qt::red, Qt::green, Qt::yellow, Qt::blue, Qt::magenta, Qt::cyan, Qt::white };
+
+        if (ansiCodeSuffix1 == 1)
+        {
+            format.textColor = colors[ansiCodeId - 30].lighter(150);
+        }
+        else
+        {
+            format.textColor = colors[ansiCodeId - 30];
+        }
+    }
+    else if (ansiCodeId == 38 && ansiCodeSuffix1 == 5)
+    {
+        // 256 colors
+        format.textColor = ansiColor(ansiCodeSuffix2);
+    }
+    else if (ansiCodeId >= 40 && ansiCodeId <= 47)
+    {
+        const QColor colors[] = { Qt::black, Qt::red, Qt::green, Qt::yellow, Qt::blue, Qt::magenta, Qt::cyan, Qt::white };
+
+        if (ansiCodeSuffix1 == 1)
+        {
+            format.backgroundColor = colors[ansiCodeId - 40].lighter(150);
+        }
+        else
+        {
+            format.backgroundColor = colors[ansiCodeId - 40];
+        }
+    }
+    else if (ansiCodeId == 1)
+    {
+        format.textBold = true;
+    }
+    else if (ansiCodeId == 4)
+    {
+        format.textUnderline = true;
+    }
+}
+
+//-------------------------------------------------------------------------------------
+/*
+see https://www.lihaoyi.com/post/BuildyourownCommandLinewithANSIescapecodes.html#colors
+*/
+QSharedPointer<QList<ito::TextBlockUserData::AnsiTextCharFormat>> ConsoleWidget::parseReceiveStreamBufferForAnsiCodes()
+{
+    // this method will possibly modify m_receiveStreamBuffer.text
+
+    QString text = m_receiveStreamBuffer.text;
+
+    if (text.isNull())
+    {
+        return QSharedPointer<QList<ito::TextBlockUserData::AnsiTextCharFormat>>();
+    }
+
+    // regular expression for ANSI escape codes (colors and decorators only)   
+    // m_ansiEscapeSeqRegExp.setPattern("\\x1B\\[(?<code>[0-9]{1,2})(;(?<suffix1>[0-9]{1,2})(;(?<suffix2>[0-9]{1,3}))?)?m");
+    int offset = 0;
+    QSharedPointer<QList<ito::TextBlockUserData::AnsiTextCharFormat>> outputData(new QList<ito::TextBlockUserData::AnsiTextCharFormat>());
+    QRegularExpressionMatch match = m_ansiEscapeSeqRegExp.match(text, offset);
+
+    while (match.hasMatch()) 
+    {
+        m_recentAnsiTextCharFormat.colStart = offset;
+        m_recentAnsiTextCharFormat.colEnd = match.capturedStart(0);
+
+        if (m_recentAnsiTextCharFormat.colEnd > m_recentAnsiTextCharFormat.colStart)
+        {
+            outputData->append(m_recentAnsiTextCharFormat);
+        }
+
+        offset = m_recentAnsiTextCharFormat.colEnd;
+        text.remove(offset, match.capturedLength(0));
+
+        updateAnsiTextCharFormat(
+            m_recentAnsiTextCharFormat,
+            match.captured("code").toInt(),
+            match.captured("suffix1").toInt(),
+            match.captured("suffix2").toInt()
+        );
+
+        match = m_ansiEscapeSeqRegExp.match(text, offset);
+    }
+
+    if (offset > 0)
+    {
+        // we had at least one match, check if the end has to be added
+        if (offset < text.length() - 1)
+        {
+            m_recentAnsiTextCharFormat.colStart = offset;
+            m_recentAnsiTextCharFormat.colEnd = text.size();
+            
+            if (m_recentAnsiTextCharFormat.colEnd > m_recentAnsiTextCharFormat.colStart)
+            {
+                outputData->append(m_recentAnsiTextCharFormat);
+            }
+        }
+    }
+
+    m_receiveStreamBuffer.text = text;
+
+    return outputData;
+}
+
+//-------------------------------------------------------------------------------------
 void ConsoleWidget::processStreamBuffer()
 {
 
@@ -1401,17 +1532,22 @@ void ConsoleWidget::processStreamBuffer()
     switch (m_receiveStreamBuffer.msgType)
     {
     case ito::msgStreamErr:
+    {
         //case msgReturnError:
         //!> insert msg after last line
         fromLine = lineCount() - 1;
+
         if (lineLength(fromLine) > 0)
         {
             fromLine++;
         }
 
+        auto ansiTextCharFormats = parseReceiveStreamBufferForAnsiCodes();
+
         append(m_receiveStreamBuffer.text);
 
         toLine = lineCount() - 1;
+
         if (lineLength(toLine) == 0)
         {
             toLine--;
@@ -1426,7 +1562,9 @@ void ConsoleWidget::processStreamBuffer()
         {
             userData = getTextBlockUserData(lineIdx, true);
             userData->m_syntaxStyle = ito::TextBlockUserData::StyleError;
+            userData->m_ansiTextCharFormats = ansiTextCharFormats;
         }
+
         rehighlightBlock(fromLine, toLine);
 
         moveCursorToEnd();
@@ -1442,19 +1580,23 @@ void ConsoleWidget::processStreamBuffer()
 
         emit sendToPythonMessage(m_receiveStreamBuffer.text);
         break;
-
+    }
     case ito::msgStreamOut:
-
+    {
         fromLine = lineCount() - 1;
+
         if (lineLength(fromLine) > 0)
         {
             fromLine++;
         }
 
+        auto ansiTextCharFormats = parseReceiveStreamBufferForAnsiCodes();
+
         //!> insert msg after last line
         append(m_receiveStreamBuffer.text);
 
         toLine = lineCount() - 1;
+
         if (lineLength(toLine) == 0)
         {
             toLine--;
@@ -1464,7 +1606,9 @@ void ConsoleWidget::processStreamBuffer()
         {
             userData = getTextBlockUserData(lineIdx, true);
             userData->m_syntaxStyle = ito::TextBlockUserData::StyleOutput;
+            userData->m_ansiTextCharFormats = ansiTextCharFormats;
         }
+
         rehighlightBlock(fromLine, toLine);
 
         moveCursorToEnd();
@@ -1479,6 +1623,7 @@ void ConsoleWidget::processStreamBuffer()
         }
 
         break;
+    }
     }
 
     m_receiveStreamBuffer.text = "";
