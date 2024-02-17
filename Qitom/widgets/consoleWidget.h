@@ -153,7 +153,7 @@ private:
     void enableInputTextMode();
     void disableInputTextMode();
 
-    QSharedPointer<QList<ito::TextBlockUserData::AnsiTextCharFormat>> parseReceiveStreamBufferForAnsiCodes();
+    QSharedPointer<QList<ito::TextBlockUserData::AnsiTextCharFormat>> parseReceiveStreamBufferForAnsiCodes(const QString &inputText, QString &strippedText);
     void updateAnsiTextCharFormat(ito::TextBlockUserData::AnsiTextCharFormat &format, int ansiCodeId, int ansiCodeSuffix1 = 0, int ansiCodeSuffix2 = 0);
 
     int m_startLineBeginCmd; //!< zero-based, first-line of actual (not evaluated command), last line which starts with ">>", -1: no command active

@@ -1370,13 +1370,13 @@ void ConsoleWidget::updateAnsiTextCharFormat(
 /*
 see https://www.lihaoyi.com/post/BuildyourownCommandLinewithANSIescapecodes.html#colors
 */
-QSharedPointer<QList<ito::TextBlockUserData::AnsiTextCharFormat>> ConsoleWidget::parseReceiveStreamBufferForAnsiCodes()
+QSharedPointer<QList<ito::TextBlockUserData::AnsiTextCharFormat>> ConsoleWidget::parseReceiveStreamBufferForAnsiCodes(const QString &inputText, QString &strippedText)
 {
     // this method will possibly modify m_receiveStreamBuffer.text
 
-    QString text = m_receiveStreamBuffer.text;
+    strippedText = inputText;
 
-    if (text.isNull())
+    if (strippedText.isNull() || strippedText.size() == 0)
     {
         return QSharedPointer<QList<ito::TextBlockUserData::AnsiTextCharFormat>>();
     }
@@ -1385,7 +1385,7 @@ QSharedPointer<QList<ito::TextBlockUserData::AnsiTextCharFormat>> ConsoleWidget:
     // m_ansiEscapeSeqRegExp.setPattern("\\x1B\\[(?<code>[0-9]{1,2})(;(?<suffix1>[0-9]{1,2})(;(?<suffix2>[0-9]{1,3}))?)?m");
     int offset = 0;
     QSharedPointer<QList<ito::TextBlockUserData::AnsiTextCharFormat>> outputData(new QList<ito::TextBlockUserData::AnsiTextCharFormat>());
-    QRegularExpressionMatch match = m_ansiEscapeSeqRegExp.match(text, offset);
+    QRegularExpressionMatch match = m_ansiEscapeSeqRegExp.match(strippedText, offset);
 
     while (match.hasMatch()) 
     {
@@ -1398,7 +1398,7 @@ QSharedPointer<QList<ito::TextBlockUserData::AnsiTextCharFormat>> ConsoleWidget:
         }
 
         offset = m_recentAnsiTextCharFormat.colEnd;
-        text.remove(offset, match.capturedLength(0));
+        strippedText.remove(offset, match.capturedLength(0));
 
         updateAnsiTextCharFormat(
             m_recentAnsiTextCharFormat,
@@ -1407,16 +1407,16 @@ QSharedPointer<QList<ito::TextBlockUserData::AnsiTextCharFormat>> ConsoleWidget:
             match.captured("suffix2").toInt()
         );
 
-        match = m_ansiEscapeSeqRegExp.match(text, offset);
+        match = m_ansiEscapeSeqRegExp.match(strippedText, offset);
     }
 
     if (offset > 0)
     {
         // we had at least one match, check if the end has to be added
-        if (offset < text.length() - 1)
+        if (offset < strippedText.length() - 1)
         {
             m_recentAnsiTextCharFormat.colStart = offset;
-            m_recentAnsiTextCharFormat.colEnd = text.size();
+            m_recentAnsiTextCharFormat.colEnd = strippedText.size();
             
             if (m_recentAnsiTextCharFormat.colEnd > m_recentAnsiTextCharFormat.colStart)
             {
@@ -1424,8 +1424,6 @@ QSharedPointer<QList<ito::TextBlockUserData::AnsiTextCharFormat>> ConsoleWidget:
             }
         }
     }
-
-    m_receiveStreamBuffer.text = text;
 
     return outputData;
 }
@@ -1440,13 +1438,13 @@ void ConsoleWidget::processStreamBuffer()
     }
 
     int fromLine, toLine;
-    TextBlockUserData *userData = NULL;
+    TextBlockUserData *userData = nullptr;
 
     //process very long lines
     if (m_splitLongLines && m_receiveStreamBuffer.text.size() > m_splitLongLinesMaxLength)
     {
         QStringList outputs;
-        QStringList splits = m_receiveStreamBuffer.text.split("\n");
+        QStringList splits = m_receiveStreamBuffer.text.split(QRegularExpression("\n|\r\n|\r"));
         int lineStartPos = 0;
         int prevPos;
         QString substr;
@@ -1477,6 +1475,7 @@ void ConsoleWidget::processStreamBuffer()
                         if (prevPos <= lineStartPos)
                         {
                             substr = t.mid(lineStartPos, m_splitLongLinesMaxLength);
+
                             if (lineStartPos == 0)
                             {
                                 outputs.append(substr);
@@ -1485,11 +1484,13 @@ void ConsoleWidget::processStreamBuffer()
                             {
                                 outputs.append(longLineWrapPrefix + substr);
                             }
+
                             lineStartPos += substr.size();
                         }
                         else
                         {
                             substr = t.mid(lineStartPos, prevPos - lineStartPos);
+
                             if (lineStartPos == 0)
                             {
                                 outputs.append(substr);
@@ -1498,6 +1499,7 @@ void ConsoleWidget::processStreamBuffer()
                             {
                                 outputs.append(longLineWrapPrefix + substr);
                             }
+
                             lineStartPos = prevPos;
                         }
                     }
@@ -1526,8 +1528,11 @@ void ConsoleWidget::processStreamBuffer()
         }
 
         m_receiveStreamBuffer.text = outputs.join("\n");
-
     }
+
+    bool hasAnsiEscapeCodes = m_receiveStreamBuffer.text.contains("\x1B");
+    // ansiTextCharFormats per line
+    QList<QSharedPointer<QList<ito::TextBlockUserData::AnsiTextCharFormat>>> ansiTextCharFormats;
 
     switch (m_receiveStreamBuffer.msgType)
     {
@@ -1542,9 +1547,30 @@ void ConsoleWidget::processStreamBuffer()
             fromLine++;
         }
 
-        auto ansiTextCharFormats = parseReceiveStreamBufferForAnsiCodes();
+        if (hasAnsiEscapeCodes)
+        {
+            // usually, only \n and \r\n are used for line breaks, but \r also occurs. Therefore, we have
+            // to check for all
+            QStringList textLines = m_receiveStreamBuffer.text.split(QRegularExpression("\n|\r\n|\r"));
 
-        append(m_receiveStreamBuffer.text);
+            QString strippedLine;
+            int count = 0;
+
+            foreach(const QString &textLine, textLines)
+            {
+                ansiTextCharFormats << parseReceiveStreamBufferForAnsiCodes(textLine, strippedLine);
+                append(strippedLine);
+
+                if (++count < textLines.size())
+                {
+                    append(ConsoleWidget::lineBreak);
+                }
+            }
+        }
+        else
+        {
+            append(m_receiveStreamBuffer.text);
+        }
 
         toLine = lineCount() - 1;
 
@@ -1562,7 +1588,19 @@ void ConsoleWidget::processStreamBuffer()
         {
             userData = getTextBlockUserData(lineIdx, true);
             userData->m_syntaxStyle = ito::TextBlockUserData::StyleError;
-            userData->m_ansiTextCharFormats = ansiTextCharFormats;
+
+            if (hasAnsiEscapeCodes)
+            {
+                /*if (lineIdx - fromLine < 0 || lineIdx - fromLine >= ansiTextCharFormats.size())
+                {
+                    int i = 1;
+                }*/
+                userData->m_ansiTextCharFormats = ansiTextCharFormats[lineIdx - fromLine];
+            }
+            else
+            {
+                userData->m_ansiTextCharFormats.clear();
+            }
         }
 
         rehighlightBlock(fromLine, toLine);
@@ -1590,10 +1628,30 @@ void ConsoleWidget::processStreamBuffer()
             fromLine++;
         }
 
-        auto ansiTextCharFormats = parseReceiveStreamBufferForAnsiCodes();
+        if (hasAnsiEscapeCodes)
+        {
+            // usually, only \n and \r\n are used for line breaks, but \r also occurs. Therefore, we have
+            // to check for all
+            QStringList textLines = m_receiveStreamBuffer.text.split(QRegularExpression("\n|\r\n|\r"));
 
-        //!> insert msg after last line
-        append(m_receiveStreamBuffer.text);
+            QString strippedLine;
+            int count = 0;
+            
+            foreach(const QString &textLine, textLines)
+            {
+                ansiTextCharFormats << parseReceiveStreamBufferForAnsiCodes(textLine, strippedLine);
+                append(strippedLine);
+
+                if (++count < textLines.size())
+                {
+                    append(ConsoleWidget::lineBreak);
+                }
+            }
+        }
+        else
+        {
+            append(m_receiveStreamBuffer.text);
+        }
 
         toLine = lineCount() - 1;
 
@@ -1606,7 +1664,19 @@ void ConsoleWidget::processStreamBuffer()
         {
             userData = getTextBlockUserData(lineIdx, true);
             userData->m_syntaxStyle = ito::TextBlockUserData::StyleOutput;
-            userData->m_ansiTextCharFormats = ansiTextCharFormats;
+            
+            if (hasAnsiEscapeCodes)
+            {
+                /*if (lineIdx - fromLine < 0 || lineIdx - fromLine >= ansiTextCharFormats.size())
+                {
+                    int i = 1;
+                }*/
+                userData->m_ansiTextCharFormats = ansiTextCharFormats[lineIdx - fromLine];
+            }
+            else
+            {
+                userData->m_ansiTextCharFormats.clear();
+            }
         }
 
         rehighlightBlock(fromLine, toLine);
@@ -1626,7 +1696,7 @@ void ConsoleWidget::processStreamBuffer()
     }
     }
 
-    m_receiveStreamBuffer.text = "";
+    m_receiveStreamBuffer.text.clear();
 
 	autoLineDelete();
 
