@@ -70,7 +70,7 @@ ConsoleWidget::ConsoleWidget(QWidget* parent) :
     m_splitLongLinesMaxLength(200)
 {
     m_inputTextMode.inputModeEnabled = false;
-    m_ansiEscapeSeqRegExp.setPattern("\\x1B\\[(?<code>[0-9]{1,2})(;(?<suffix1>[0-9]{1,2})(;(?<suffix2>[0-9]{1,3}))?)?m");
+    m_ansiEscapeSeqRegExp.setPattern("\\x1B\\[([0-9]{1,2}(;[0-9]{1,3})*)m");
 
     setSelectLineOnCopyEmpty(false);
     updateAnsiTextCharFormat(m_recentAnsiTextCharFormat, 0);
@@ -1313,56 +1313,124 @@ static QColor ansiColor(uint code)
 //-------------------------------------------------------------------------------------
 void ConsoleWidget::updateAnsiTextCharFormat(
     ito::TextBlockUserData::AnsiTextCharFormat &format, 
-    int ansiCodeId, 
-    int ansiCodeSuffix1 /*= 0*/, 
-    int ansiCodeSuffix2 /*= 0*/)
+    const QString &args)
 {
-    if (ansiCodeId == 0)
-    {
-        //reset
-        format.backgroundColor = QColor();
-        format.textBold = false;
-        format.textUnderline = false;
-        format.textColor = QColor();
-    }
-    else if (ansiCodeId >= 30 && ansiCodeId <= 37)
-    {
-        const QColor colors[] = { Qt::black, Qt::red, Qt::green, Qt::yellow, Qt::blue, Qt::magenta, Qt::cyan, Qt::white };
+    QStringList arglist = args.split(";");
+    QList<int> argnums;
 
-        if (ansiCodeSuffix1 == 1)
-        {
-            format.textColor = colors[ansiCodeId - 30].lighter(150);
-        }
-        else
-        {
-            format.textColor = colors[ansiCodeId - 30];
-        }
-    }
-    else if (ansiCodeId == 38 && ansiCodeSuffix1 == 5)
+    foreach(const QString &a, arglist)
     {
-        // 256 colors
-        format.textColor = ansiColor(ansiCodeSuffix2);
+        argnums << a.toInt();
     }
-    else if (ansiCodeId >= 40 && ansiCodeId <= 47)
-    {
-        const QColor colors[] = { Qt::black, Qt::red, Qt::green, Qt::yellow, Qt::blue, Qt::magenta, Qt::cyan, Qt::white };
 
-        if (ansiCodeSuffix1 == 1)
-        {
-            format.backgroundColor = colors[ansiCodeId - 40].lighter(150);
-        }
-        else
-        {
-            format.backgroundColor = colors[ansiCodeId - 40];
-        }
-    }
-    else if (ansiCodeId == 1)
+    argnums << -1 << -1 << -1; // add three more arguments, to avoid overflow checks in the following code.
+
+    int idx = 0;
+    int ansiCodeId;
+
+    while (idx < argnums.size())
     {
-        format.textBold = true;
-    }
-    else if (ansiCodeId == 4)
-    {
-        format.textUnderline = true;
+        ansiCodeId = argnums[idx];
+
+        if (ansiCodeId == 0)
+        {
+            //reset
+            format.backgroundColor = QColor();
+            format.textBold = false;
+            format.textUnderline = false;
+            format.textItalic = false;
+            format.textColor = QColor();
+        }
+        else if (ansiCodeId >= 30 && ansiCodeId <= 37)
+        {
+            const QColor colors[] = { Qt::black, Qt::red, Qt::green, Qt::yellow, Qt::blue, Qt::magenta, Qt::cyan, Qt::white };
+
+            if (argnums[idx + 1] == 1)
+            {
+                format.textColor = colors[ansiCodeId - 30].lighter(150);
+                idx++;
+            }
+            else
+            {
+                format.textColor = colors[ansiCodeId - 30];
+            }
+        }
+        else if (ansiCodeId == 38)
+        {
+            if (argnums[idx + 1] == 5 && argnums[idx + 2] >= 0)
+            {
+                // 256 colors
+                format.textColor = ansiColor(argnums[idx + 2]);
+                idx += 2;
+            }
+            else if (argnums[idx + 1] == 2)
+            {
+                format.textColor = QColor(argnums[idx + 2], argnums[idx + 3], argnums[idx + 4]);
+                idx += 4;
+            }
+        }
+        else if (ansiCodeId == 39)
+        {
+            format.textColor = QColor(); // reset
+        }
+        else if (ansiCodeId >= 40 && ansiCodeId <= 47)
+        {
+            const QColor colors[] = { Qt::black, Qt::red, Qt::green, Qt::yellow, Qt::blue, Qt::magenta, Qt::cyan, Qt::white };
+
+            if (argnums[idx + 1] == 1)
+            {
+                format.backgroundColor = colors[ansiCodeId - 30].lighter(150);
+                idx++;
+            }
+            else
+            {
+                format.backgroundColor = colors[ansiCodeId - 30];
+            }
+        }
+        else if (ansiCodeId == 48)
+        {
+            if (argnums[idx + 1] == 5 && argnums[idx + 2] >= 0)
+            {
+                // 256 colors
+                format.backgroundColor = ansiColor(argnums[idx + 2]);
+                idx += 2;
+            }
+            else if (argnums[idx + 1] == 2)
+            {
+                format.backgroundColor = QColor(argnums[idx + 2], argnums[idx + 3], argnums[idx + 4]);
+                idx += 4;
+            }
+        }
+        else if (ansiCodeId == 49)
+        {
+            format.backgroundColor = QColor(); // reset
+        }
+        else if (ansiCodeId == 1)
+        {
+            format.textBold = true;
+        }
+        else if (ansiCodeId == 3)
+        {
+            format.textItalic = true;
+        }
+        else if (ansiCodeId == 4)
+        {
+            format.textUnderline = true;
+        }
+        else if (ansiCodeId == 22)
+        {
+            format.textBold = false;
+        }
+        else if (ansiCodeId == 23)
+        {
+            format.textItalic = false;
+        }
+        else if (ansiCodeId == 24)
+        {
+            format.textUnderline = false;
+        }
+
+        idx++;
     }
 }
 
@@ -1370,10 +1438,10 @@ void ConsoleWidget::updateAnsiTextCharFormat(
 /*
 see https://www.lihaoyi.com/post/BuildyourownCommandLinewithANSIescapecodes.html#colors
 */
-QSharedPointer<QList<ito::TextBlockUserData::AnsiTextCharFormat>> ConsoleWidget::parseReceiveStreamBufferForAnsiCodes(const QString &inputText, QString &strippedText)
+QSharedPointer<QList<ito::TextBlockUserData::AnsiTextCharFormat>> ConsoleWidget::parseReceiveStreamBufferForAnsiCodes(
+    const QString &inputText, 
+    QString &strippedText)
 {
-    // this method will possibly modify m_receiveStreamBuffer.text
-
     strippedText = inputText;
 
     if (strippedText.isNull() || strippedText.size() == 0)
@@ -1382,9 +1450,9 @@ QSharedPointer<QList<ito::TextBlockUserData::AnsiTextCharFormat>> ConsoleWidget:
     }
 
     // regular expression for ANSI escape codes (colors and decorators only)   
-    // m_ansiEscapeSeqRegExp.setPattern("\\x1B\\[(?<code>[0-9]{1,2})(;(?<suffix1>[0-9]{1,2})(;(?<suffix2>[0-9]{1,3}))?)?m");
+    // m_ansiEscapeSeqRegExp.setPattern("\\x1B\\[([0-9]{1,2}(;[0-9]{1,3})*)m"");
     int offset = 0;
-    QSharedPointer<QList<ito::TextBlockUserData::AnsiTextCharFormat>> outputData(new QList<ito::TextBlockUserData::AnsiTextCharFormat>());
+    auto outputData = QSharedPointer<QList<ito::TextBlockUserData::AnsiTextCharFormat>>::create();
     QRegularExpressionMatch match = m_ansiEscapeSeqRegExp.match(strippedText, offset);
 
     while (match.hasMatch()) 
@@ -1402,9 +1470,7 @@ QSharedPointer<QList<ito::TextBlockUserData::AnsiTextCharFormat>> ConsoleWidget:
 
         updateAnsiTextCharFormat(
             m_recentAnsiTextCharFormat,
-            match.captured("code").toInt(),
-            match.captured("suffix1").toInt(),
-            match.captured("suffix2").toInt()
+            match.captured(1)
         );
 
         match = m_ansiEscapeSeqRegExp.match(strippedText, offset);

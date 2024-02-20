@@ -79,8 +79,9 @@ public:
         int colEnd; // inclusive, zero-based
         QColor textColor;
         QColor backgroundColor;
-        bool textBold; /* true: bold, false: do not change the current default style */
-        bool textUnderline; /* true: underline, false: do not change the current default style */
+        bool textBold; /* true: bold, false: do not change the default */
+        bool textUnderline; /* true: underline, false: do not change the default */
+        bool textItalic; /* true: italic, false: do not change the default */
     };
 
     TextBlockUserData(CodeEditor *editor);

@@ -154,13 +154,18 @@ void PythonSyntaxHighlighter::default_highlight_block(const QString &text, const
             format = defaultFormat;
 
             // only modify the font style if bold or underline is set to true
-            if (item.textBold || item.textUnderline)
+            if (item.textBold || item.textUnderline || item.textItalic)
             {
                 QFont font = format.font();
 
                 if (item.textBold)
                 {
                     font.setWeight(QFont::Bold);
+                }
+
+                if (item.textItalic)
+                {
+                    font.setItalic(true);
                 }
 
                 if (item.textUnderline)
