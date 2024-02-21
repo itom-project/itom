@@ -121,6 +121,10 @@ General
 
 This tab provides options to decide how text is processed before copying it
 to the clipboard or before pasting it from the clipboard to the command line.
+Furthermore, you can decide if optional ANSI Escape Sequences are identified in
+output or error texts, removed and - if possible - applied as formatting instructions.
+This means, that the text or background color, as well as features like bold, italic
+or underline can be set and reset by these special commands.
 
 Line Wrap
 ---------------------

@@ -85,8 +85,6 @@ public slots:
 signals:
     void wantToCopy();
     void sendToLastCommand(QString cmd);
-    void sendToPythonMessage(QString cmd);
-
 
 protected:
     virtual bool keyPressInternalEvent(QKeyEvent *event);
@@ -192,6 +190,7 @@ private:
 
     ito::TextBlockUserData::AnsiTextCharFormat m_recentAnsiTextCharFormat;
     QRegularExpression m_ansiEscapeSeqRegExp;
+    bool m_considerAnsiEscapeSequences;
 
     static const QString longLineWrapPrefix;
 

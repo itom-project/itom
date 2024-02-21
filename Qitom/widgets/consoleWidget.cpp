@@ -67,7 +67,8 @@ ConsoleWidget::ConsoleWidget(QWidget* parent) :
     m_inputStartLine(0),
     m_autoWheel(true),
     m_splitLongLines(true),
-    m_splitLongLinesMaxLength(200)
+    m_splitLongLinesMaxLength(200),
+    m_considerAnsiEscapeSequences(true)
 {
     m_inputTextMode.inputModeEnabled = false;
     m_ansiEscapeSeqRegExp.setPattern("\\x1B\\[([0-9]{1,2}(;[0-9]{1,3})*)m");
@@ -117,11 +118,13 @@ ConsoleWidget::ConsoleWidget(QWidget* parent) :
     QSettings *settings = new QSettings(settingsName, QSettings::IniFormat);
     settings->beginGroup("ConsoleDequeCommandList");
     int size = settings->beginReadArray("LastCommandList");
+
     for (int i = size - 1; i > -1; --i)
     {
         settings->setArrayIndex(i);
         m_pCmdList->add(settings->value("cmd", "").toString());
     }
+
     settings->endArray();
     settings->endGroup();
     delete settings;
@@ -222,17 +225,11 @@ void ConsoleWidget::loadSettings()
     m_splitLongLines = settings.value("SplitLongLines", true).toBool();
     m_splitLongLinesMaxLength = qMax(10, settings.value("SplitLongLinesMaxLength", 200).toInt());
 
-    /*
-
-    int indent = settings.value("WrapIndent", 2).toInt(&ok);
-    if (!ok)
-    {
-        indent = 2;
-    }*/
-
     m_markErrorLineMode->setBackground(QColor(settings.value("markerErrorForegroundColor", QColor(255, 192, 192)).toString()));
     m_markCurrentLineMode->setBackground(QColor(settings.value("markerCurrentBackgroundColor", QColor(255, 255, 128)).toString()));
     m_markInputLineMode->setBackground(QColor(settings.value("markerInputForegroundColor", QColor(179, 222, 171)).toString()));
+
+    m_considerAnsiEscapeSequences = settings.value("considerAnsiEscapeSequences", true).toBool();
 
     settings.endGroup();
 
@@ -1596,7 +1593,7 @@ void ConsoleWidget::processStreamBuffer()
         m_receiveStreamBuffer.text = outputs.join("\n");
     }
 
-    bool hasAnsiEscapeCodes = m_receiveStreamBuffer.text.contains("\x1B");
+    bool hasAnsiEscapeCodes = m_considerAnsiEscapeSequences && m_receiveStreamBuffer.text.contains("\x1B");
     // ansiTextCharFormats per line
     QList<QSharedPointer<QList<ito::TextBlockUserData::AnsiTextCharFormat>>> ansiTextCharFormats;
 
@@ -1682,7 +1679,6 @@ void ConsoleWidget::processStreamBuffer()
             m_startLineBeginCmd = lineCount() - 1;
         }
 
-        emit sendToPythonMessage(m_receiveStreamBuffer.text);
         break;
     }
     case ito::msgStreamOut:
