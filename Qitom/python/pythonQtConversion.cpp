@@ -3682,7 +3682,6 @@ PyObject* PythonQtConversion::ConvertQtValueToPythonInternal(int type, const voi
 //-------------------------------------------------------------------------------------
 /*static*/ PyObject* PythonQtConversion::QByteArrayUtf8ToPyUnicode(const QByteArray &ba, const char *errors)
 {
-    int bo;
     int len = ba.size();
     const char* data = ba.constData();
 
