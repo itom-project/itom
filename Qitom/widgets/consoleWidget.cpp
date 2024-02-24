@@ -1376,12 +1376,12 @@ void ConsoleWidget::updateAnsiTextCharFormat(
 
             if (argnums[idx + 1] == 1)
             {
-                format.backgroundColor = colors[ansiCodeId - 30].lighter(150);
+                format.backgroundColor = colors[ansiCodeId - 40].lighter(150);
                 idx++;
             }
             else
             {
-                format.backgroundColor = colors[ansiCodeId - 30];
+                format.backgroundColor = colors[ansiCodeId - 40];
             }
         }
         else if (ansiCodeId == 48)
