@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2024, Institut fuer Technische Optik (ITO),
     University of Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
@@ -53,6 +53,7 @@ class ITOMWIDGETS_EXPORT PythonLogWidget : public ito::AbstractApiWidget
     Q_PROPERTY(bool errorStream READ getErrorStream WRITE setErrorStream)
     Q_PROPERTY(int verticalSizeHint READ getVerticalSizeHint WRITE setVerticalSizeHint)
     Q_PROPERTY(bool autoScroll READ getAutoScroll WRITE setAutoScroll)
+    Q_PROPERTY(bool removeAnsiEscapeSequences READ getRemoveAnsiEscapeSequences WRITE setRemoveAnsiEscapeSequences)
 
     WIDGET_ITOM_API
 
@@ -63,6 +64,9 @@ class ITOMWIDGETS_EXPORT PythonLogWidget : public ito::AbstractApiWidget
         void setVerticalSizeHint(int value);
         void clear();
         void setAutoScroll(bool autoScroll);
+        void setRemoveAnsiEscapeSequences(bool removeAnsiEscapeSequences);
+        void messageReceived(QString message, ito::tStreamMessageType messageType);
+        void showContextMenu(const QPoint &pt);
 
 
     Q_SIGNALS:
@@ -77,19 +81,13 @@ class ITOMWIDGETS_EXPORT PythonLogWidget : public ito::AbstractApiWidget
         bool getErrorStream() const;
         int getVerticalSizeHint() const;
         bool getAutoScroll() const;
+        bool getRemoveAnsiEscapeSequences() const;
 
     protected:
-//        void createActions();
         virtual ito::RetVal init();
         QSize sizeHint() const;
 
         QScopedPointer<PythonLogWidgetPrivate> d_ptr;
-
-    public slots:
-        void messageReceived(QString message, ito::tStreamMessageType messageType);
-
-    private Q_SLOTS:
-        void showContextMenu(const QPoint &pt);
 
     private:
         Q_DECLARE_PRIVATE(PythonLogWidget);
