@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**00:00.143** total execution time for 148 files **from all galleries**:
+**00:00.028** total execution time for 149 files **from all galleries**:
 
 .. container::
 
@@ -32,8 +32,8 @@ Computation times
    * - Example
      - Time
      - Mem (MB)
-   * - :ref:`sphx_glr_11_demos_python_packages_matplotlib_demo_surface3d.py` (``..\..\..\demo\python_packages\matplotlib\demo_surface3d.py``)
-     - 00:00.143
+   * - :ref:`sphx_glr_11_demos_itom_basics_demo_ansiEscapeSequencesOutput.py` (``..\..\..\demo\itom\basics\demo_ansiEscapeSequencesOutput.py``)
+     - 00:00.028
      - 0.0
    * - :ref:`sphx_glr_11_demos_itom_basics_demo_CameraAndImages.py` (``..\..\..\demo\itom\basics\demo_CameraAndImages.py``)
      - 00:00.000
@@ -345,6 +345,9 @@ Computation times
      - 00:00.000
      - 0.0
    * - :ref:`sphx_glr_11_demos_python_packages_matplotlib_demo_streamplot_features.py` (``..\..\..\demo\python_packages\matplotlib\demo_streamplot_features.py``)
+     - 00:00.000
+     - 0.0
+   * - :ref:`sphx_glr_11_demos_python_packages_matplotlib_demo_surface3d.py` (``..\..\..\demo\python_packages\matplotlib\demo_surface3d.py``)
      - 00:00.000
      - 0.0
    * - :ref:`sphx_glr_11_demos_python_packages_matplotlib_demo_tex.py` (``..\..\..\demo\python_packages\matplotlib\demo_tex.py``)
