@@ -61,7 +61,7 @@ public:
         autoScroll(true),
         removeAnsiEscapeSequences(true)
     {
-        m_ansiEscapeSequenceRegExp.setPattern("\\x1B\\[[0-9]{1,2}(;[0-9]{1,3})*m");
+        m_ansiEscapeSequenceRegExp.setPattern("\\x1B\\[([0-9]{1,2}(;[0-9]{1,3})*)?[m,K,J]");
     }
 
     QPlainTextEdit *textEdit;

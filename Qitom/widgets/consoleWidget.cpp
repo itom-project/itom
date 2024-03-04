@@ -71,10 +71,10 @@ ConsoleWidget::ConsoleWidget(QWidget* parent) :
     m_considerAnsiEscapeSequences(true)
 {
     m_inputTextMode.inputModeEnabled = false;
-    m_ansiEscapeSeqRegExp.setPattern("\\x1B\\[([0-9]{1,2}(;[0-9]{1,3})*)m");
+    m_ansiEscapeSeqRegExp.setPattern("\\x1B\\[([0-9]{1,2}(;[0-9]{1,3})*)?([m|K|J])");
 
     setSelectLineOnCopyEmpty(false);
-    updateAnsiTextCharFormat(m_recentAnsiTextCharFormat, 0);
+    updateAnsiTextCharFormat(m_recentAnsiTextCharFormat, "m", 0);
 
     m_receiveStreamBuffer.msgType = ito::msgStreamOut;
     connect(&m_receiveStreamBufferTimer, SIGNAL(timeout()), this, SLOT(processStreamBuffer()));
@@ -1310,8 +1310,15 @@ static QColor ansiColor(uint code)
 //-------------------------------------------------------------------------------------
 void ConsoleWidget::updateAnsiTextCharFormat(
     ito::TextBlockUserData::AnsiTextCharFormat &format, 
+    const QString &mainChar, 
     const QString &args)
 {
+    if (mainChar != "m")
+    {
+        // ignore other commands than color and decorators!
+        return;
+    }
+
     QStringList arglist = args.split(";");
     QList<int> argnums;
 
@@ -1446,8 +1453,7 @@ QSharedPointer<QList<ito::TextBlockUserData::AnsiTextCharFormat>> ConsoleWidget:
         return QSharedPointer<QList<ito::TextBlockUserData::AnsiTextCharFormat>>();
     }
 
-    // regular expression for ANSI escape codes (colors and decorators only)   
-    // m_ansiEscapeSeqRegExp.setPattern("\\x1B\\[([0-9]{1,2}(;[0-9]{1,3})*)m"");
+    // regular expression for ANSI escape codes (colors, erase functions and decorators only)   
     int offset = 0;
     auto outputData = QSharedPointer<QList<ito::TextBlockUserData::AnsiTextCharFormat>>::create();
     QRegularExpressionMatch match = m_ansiEscapeSeqRegExp.match(strippedText, offset);
@@ -1467,6 +1473,7 @@ QSharedPointer<QList<ito::TextBlockUserData::AnsiTextCharFormat>> ConsoleWidget:
 
         updateAnsiTextCharFormat(
             m_recentAnsiTextCharFormat,
+            match.captured(3),
             match.captured(1)
         );
 
