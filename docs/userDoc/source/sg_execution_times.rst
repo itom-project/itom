@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**00:00.143** total execution time for 148 files **from all galleries**:
+**00:00.234** total execution time for 148 files **from all galleries**:
 
 .. container::
 
@@ -32,8 +32,8 @@ Computation times
    * - Example
      - Time
      - Mem (MB)
-   * - :ref:`sphx_glr_11_demos_python_packages_matplotlib_demo_surface3d.py` (``..\..\..\demo\python_packages\matplotlib\demo_surface3d.py``)
-     - 00:00.143
+   * - :ref:`sphx_glr_11_demos_itom_plots_demo_drawMarkers.py` (``..\..\..\demo\itom\plots\demo_drawMarkers.py``)
+     - 00:00.234
      - 0.0
    * - :ref:`sphx_glr_11_demos_itom_basics_demo_CameraAndImages.py` (``..\..\..\demo\itom\basics\demo_CameraAndImages.py``)
      - 00:00.000
@@ -117,9 +117,6 @@ Computation times
      - 00:00.000
      - 0.0
    * - :ref:`sphx_glr_11_demos_itom_plots_demo_drawAndTransformShapes.py` (``..\..\..\demo\itom\plots\demo_drawAndTransformShapes.py``)
-     - 00:00.000
-     - 0.0
-   * - :ref:`sphx_glr_11_demos_itom_plots_demo_drawMarkers.py` (``..\..\..\demo\itom\plots\demo_drawMarkers.py``)
      - 00:00.000
      - 0.0
    * - :ref:`sphx_glr_11_demos_itom_plots_demo_drawPickersPlot1D.py` (``..\..\..\demo\itom\plots\demo_drawPickersPlot1D.py``)
@@ -345,6 +342,9 @@ Computation times
      - 00:00.000
      - 0.0
    * - :ref:`sphx_glr_11_demos_python_packages_matplotlib_demo_streamplot_features.py` (``..\..\..\demo\python_packages\matplotlib\demo_streamplot_features.py``)
+     - 00:00.000
+     - 0.0
+   * - :ref:`sphx_glr_11_demos_python_packages_matplotlib_demo_surface3d.py` (``..\..\..\demo\python_packages\matplotlib\demo_surface3d.py``)
      - 00:00.000
      - 0.0
    * - :ref:`sphx_glr_11_demos_python_packages_matplotlib_demo_tex.py` (``..\..\..\demo\python_packages\matplotlib\demo_tex.py``)

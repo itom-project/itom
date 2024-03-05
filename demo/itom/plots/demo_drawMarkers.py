@@ -1,4 +1,4 @@
-"""Draw markers
+r"""Draw markers
 =================
 
 In this example, you will learn how to mark points in ``1d`` or ``2d`` plots

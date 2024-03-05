@@ -59,17 +59,17 @@ for i in range(samples):
 
 ###############################################################################
 # Determine the polyonimal coefficients only using the random samples.
-coeffs2 = algorithms.polyfitWeighted2DSinglePoints( X2, Y2, Z2, 2, 2)
+coeffs2 = algorithms.polyfitWeighted2DSinglePoints(X2, Y2, Z2, 2, 2)
 # coeffs and coeffs2 must be the same!
 print("fitted coefficient: ", coeffs2)
 
 ###############################################################################
 # And reconstruct the entire surface for X and Y values.
-Z2_reconstruction = dataObject()
+reconstruction = dataObject()
 algorithms.polyval2DSinglePoints(
     dataObject(X),
     dataObject(Y),
-    Z2_reconstruction,
+    reconstruction,
     coeffs2,
     2,
     2,

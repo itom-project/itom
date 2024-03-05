@@ -6,8 +6,8 @@ Frequently used methods are thus easier to access.
 By clicking the button, these are executed. """
 
 from functools import partial
-from itom import addButton
-from itom import removeButton
+
+from itom import addButton, removeButton
 from itom import version as itomVersion
 
 # sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoToolbar.png'
@@ -67,9 +67,7 @@ addButton("demobar", "call lambda function", lambda: print("lambda func call"))
 ###############################################################################
 # Call a partial method. This is a method, that wraps a base method with
 # more arguments, but selected arguments are already preset.
-addButton(
-    "demobar", "call partial method", partial(lambda num, base: print(int(num, base)), base=2), argtuple=("10010",)
-)
+addButton("demobar", "call partial method", partial(lambda num, base: print(int(num, base)), base=2), argtuple=("10010",))
 
 ###############################################################################
 # Add a button to the 'demobar' toolbar, that evaluates a Python code string.

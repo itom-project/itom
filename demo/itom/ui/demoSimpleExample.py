@@ -31,6 +31,7 @@ field["text"] = "hello world"
 # the same can be done directly:
 mainWin.txtMessage["text"] = "hello world"
 
+
 ###############################################################################
 # Now we want to connect the ``clicked`` signal of the button with the method ``showMessage``.
 # How do I know which signal any GUI-element can emit?
@@ -50,6 +51,7 @@ def showMessage():
 
 mainWin.btnShowText.connect("clicked()", showMessage)
 
+
 ###############################################################################
 # Second group box: show getDirectory-dialog and print the chosen directory in the text field.
 def showGetDirectory():
@@ -66,6 +68,7 @@ mainWin.toolSelectDir.connect("clicked()", showGetDirectory)
 
 # if txtDirectory has the property 'readOnly' set to true, the button btnReadOnly should be 'checked'.
 mainWin.btnReadOnly["checked"] = mainWin.txtDirectory["readOnly"]
+
 
 # if the button is toggled (check-state is changed), then we want to change the ready-only property.
 def btnReadOnlyToggled(checked):
@@ -150,6 +153,7 @@ listBox.connect("currentRowChanged(int)", listCurrentChanged)
 #   .. code-block:: python
 #
 #       mainWin.show(2)
+#
 #
 
 mainWin.show(1)
