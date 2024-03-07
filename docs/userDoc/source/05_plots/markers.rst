@@ -137,3 +137,24 @@ If you want to display the set-name next to each marker, set the property
 .. code-block:: python
 
     plotHandle["markerLabelsVisible"] = True
+
+If a 2D plot visualizes a multi-plane array or dataObject (>= 3 dimensions), one can switch the displayed plane by a
+spin box in the toolbar of the plot of via the property **planeIndex**. Per default, marker sets are displayed for all 
+planes. However it is also possible to set different marker sets for different planes, by adding a last optional
+argument **plane** to the **plotMarkers** slot:
+
+.. code-block::python
+    
+    h.call("plotMarkers", move(circles,200,700), "bx10", "markers for all planes: -1", -1)
+    h.call("plotMarkers", move(circles,200,700), "rx10", "markers for the 2nd plane only: 1", 1)
+
+The argument **plane** must be set after the optional name of the marker set. **-1** indicates, that the marker set
+should be displayed in all planes, a value of 0 or above shows the respective marker set only in the first, 2nd, ...
+plane.
+
+Please remember that the plane for a 3D array or dataObject is the first dimension, hence the z-dimension for the
+shape **[z, y, x]**, which is the shape interpretation everywhere in itom.
+
+For an array with more than three dimensions, all first dimensions, besides the last two ones (x, y), are interpreted
+as 1d-list of planes (jumping between adjacent indices in the first dimension can then mean, that there is a plane offset
+bigger than 1).
