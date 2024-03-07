@@ -2961,7 +2961,7 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
         bool valid;
         QString description, shortDescription;
 
-        while (mo != NULL)
+        while (mo != nullptr)
         {
             if ((type & infoShowInheritanceUpToWidget) && qtBaseClasses.contains(className, Qt::CaseInsensitive) == 0)
             {
@@ -3012,7 +3012,10 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
                     }
                     else
                     {
-                        tmpObjectInfo.append(ClassInfoContainer(ClassInfoContainer::TypeClassInfo, QLatin1String(ci.name()), QLatin1String(ci.value())));
+                        tmpObjectInfo.append(ClassInfoContainer(
+                            ClassInfoContainer::TypeClassInfo,
+                            QLatin1String(ci.name()),
+                            QLatin1String(ci.value())));
                     }
                 }
             }
@@ -3081,7 +3084,12 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
 
 
 
-                    tmpObjectInfo.append(ClassInfoContainer(ClassInfoContainer::TypeProperty, QLatin1String(prop.name()), shortDescription, description));
+                    tmpObjectInfo.append(ClassInfoContainer(
+                        ClassInfoContainer::TypeProperty,
+                        QLatin1String(prop.name()),
+                        shortDescription,
+                        description,
+                        ""));
                 }
             }
 
@@ -3145,7 +3153,7 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
                                 }
                             }
 
-                            tmpObjectInfo.append(ClassInfoContainer(ClassInfoContainer::TypeSignal, QLatin1String(methodName), shortDescription, description));
+                            tmpObjectInfo.append(ClassInfoContainer(ClassInfoContainer::TypeSignal, QLatin1String(methodName), shortDescription, description, QLatin1String(signature)));
                         }
                     }
                 }
@@ -3179,7 +3187,7 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
                                 shortDescription = description = QLatin1String(signature);
                             }
 
-                            tmpObjectInfo.append(ClassInfoContainer(ClassInfoContainer::TypeSlot, QLatin1String(methodName), shortDescription, description));
+                            tmpObjectInfo.append(ClassInfoContainer(ClassInfoContainer::TypeSlot, QLatin1String(methodName), shortDescription, description, QLatin1String(signature)));
                         }
                     }
                 }
@@ -3188,6 +3196,7 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
             if (type & (infoShowItomInheritance | infoShowInheritanceUpToWidget | infoShowAllInheritance))
             {
                 mo = mo->superClass();
+
                 if (mo)
                 {
                     className = mo->className();
@@ -3195,7 +3204,7 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
             }
             else
             {
-                mo = NULL;
+                mo = nullptr;
             }
         }
 
@@ -3203,16 +3212,20 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
         {
             if (tmpObjectInfo.length() > 0)
             {
+                // sort list by signature (if available), else name
                 std::sort(
                     tmpObjectInfo.begin(),
                     tmpObjectInfo.end(),
                     [](ito::ClassInfoContainer t1, ito::ClassInfoContainer t2) {
-                        return t1.m_name < t2.m_name;
+                        QString arg1 = t1.m_signature != "" ? t1.m_signature : t1.m_name;
+                        QString arg2 = t2.m_signature != "" ? t2.m_signature : t2.m_name;
+                        return arg1 < arg2;
                     });
             }
 
             std::cout << "Widget '" << firstClassName.data() << "'\n--------------------------\n" << std::endl;
             valid = false;
+
             foreach(const ClassInfoContainer &c, tmpObjectInfo)
             {
                 if (c.m_type == ClassInfoContainer::TypeClassInfo)
@@ -3226,11 +3239,10 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
                     std::cout << " " << c.m_shortDescription.toLatin1().data() << "\n";
                     std::cout << "\n" << std::endl;
                 }
-
-
             }
 
             valid = false;
+
             foreach(const ClassInfoContainer &c, tmpObjectInfo)
             {
                 if (c.m_type == ClassInfoContainer::TypeProperty)
@@ -3243,10 +3255,10 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
 
                     std::cout << " " << c.m_shortDescription.toLatin1().data() << "\n";
                 }
-
             }
 
             valid = false;
+
             foreach(const ClassInfoContainer &c, tmpObjectInfo)
             {
                 if (c.m_type == ClassInfoContainer::TypeSignal)
@@ -3259,10 +3271,10 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
 
                     std::cout << " " << c.m_shortDescription.toLatin1().data() << "\n";
                 }
-
             }
 
             valid = false;
+
             foreach(const ClassInfoContainer &c, tmpObjectInfo)
             {
                 if (c.m_type == ClassInfoContainer::TypeSlot)
@@ -3275,7 +3287,6 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
 
                     std::cout << " " << c.m_shortDescription.toLatin1().data() << "\n";
                 }
-
             }
         }
         else
@@ -3297,6 +3308,7 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
 
     return retValue;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal UiOrganizer::getObjectID(const QObject *obj, QSharedPointer<unsigned int> objectID, ItomSharedSemaphore *semaphore /*= NULL*/)
 {
@@ -3305,6 +3317,7 @@ RetVal UiOrganizer::getObjectID(const QObject *obj, QSharedPointer<unsigned int>
     *objectID = 0;
 
     QHash<unsigned int, QPointer<QObject> >::iterator elem = m_objectList.begin();
+
     while (elem != m_objectList.end())
     {
         if(elem.value() == obj)
@@ -3312,6 +3325,7 @@ RetVal UiOrganizer::getObjectID(const QObject *obj, QSharedPointer<unsigned int>
             *objectID = elem.key();
             break;
         }
+
         ++elem;
     }
 
