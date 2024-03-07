@@ -1,5 +1,5 @@
 """Sankey diagram
-=========
+==============
 
 This demo shows how to use the Python ``plotly`` package under itom.
 

@@ -2,7 +2,8 @@
 =========================
 
 This demo shows how to **save** and **load** ``dataObjects``
-to/from image formats as well as native itom formats."""
+to/from image formats as well as native itom formats.
+"""
 
 from itom import dataObject
 from itom import algorithms
@@ -31,7 +32,7 @@ rgba32[80:100, :] = rgba(0, 0, 255, 150)
 plot(rgba32)
 
 ###############################################################################
-# Save the ``dataObject`` as a *.tiff file with a rgba color palette.
+# Save the ``dataObject`` as a `*.tiff` file with a rgba color palette.
 algorithms.saveTiff(rgba32, "pic_rgba.tiff", "rgba")
 
 ###############################################################################
@@ -40,7 +41,7 @@ reload_tiff_rgba = dataObject()
 algorithms.loadAnyImage(reload_tiff_rgba, "pic_rgba.tiff", "asIs")
 
 ###############################################################################
-# Save the ``dataObject`` as a *.tiff file with a rgb color palette,
+# Save the ``dataObject`` as a `*.tiff` file with a rgb color palette,
 # which causes that the transparency of the bars will be ignored.
 # If ``gray`` or ``gray16`` is choosen as color palette the colored
 # ``dataObject`` will be converted to a gray image
@@ -53,7 +54,7 @@ reload_tiff_rgb = dataObject()
 algorithms.loadAnyImage(reload_tiff_rgb, "pic_rgb.tiff", "asIs")
 
 ###############################################################################
-# Save the ``dataObject`` as a *.png file with a ``gray`` color palette
+# Save the ``dataObject`` as a `*.png` file with a ``gray`` color palette
 # (also ``gray16`` and all colored palettes are supportted).
 algorithms.savePNG(rgba32, "pic_gray.png", "gray")
 
@@ -63,24 +64,24 @@ reload_png_gray = dataObject()
 algorithms.loadAnyImage(reload_png_gray, "pic_gray.png", "asIs")
 
 ###############################################################################
-# Save the ``dataObject`` as a *.pgm with a 16bit grayscale
+# Save the ``dataObject`` as a `*.pgm` with a 16bit grayscale
 # (``gray`` and ``gray16`` are only supported for gray images).
 algorithms.savePGM(rgba32, "pic_gray.pgm", "gray16")
 
 ###############################################################################
-# Load the *.pgm file as it was, that is of type ``gray``
+# Load the `*.pgm` file as it was, that is of type ``gray``
 # (type ``uint16`` due to the 16bit gray color palette)
 reload_pgm_gray16 = dataObject()
 algorithms.loadAnyImage(reload_pgm_gray16, "pic_gray.pgm", "asIs")
 
 ###############################################################################
-# Save the ``dataObject`` as an *.idc file (itom data collection,
+# Save the ``dataObject`` as an `*.idc` file (itom data collection,
 # saved using Python module ``pickle``) therefore it must be wrapped into a ``dictionary``.
 dataDict = {"data": rgba32}
 saveIDC("pic_idc.idc", dataDict)
 
 ###############################################################################
-# Load the *.idc file as it was, that is of type ``dictionary``.
+# Load the `*.idc` file as it was, that is of type ``dictionary``.
 loaded_dic = loadIDC("pic_idc.idc")
 reload_img = loaded_dic["data"]
 
@@ -89,7 +90,7 @@ reload_img = loaded_dic["data"]
 rgba32_1 = rgba32
 
 ###############################################################################
-# Save both (also more possible) in one *.idc file.
+# Save both (also more possible) in one `*.idc` file.
 dic_1 = {"data_1": rgba32, "data_2": rgba32_1}
 loaded_dic_1 = saveIDC("multi_pic_idc.idc", dic_1)
 
@@ -105,7 +106,7 @@ uint8[50:75, :] = 50
 uint8[75:100, :] = 100
 
 ###############################################################################
-# Save as *.tiff file colored in the ``hotIron`` color palette.
+# Save as `*.tiff` file colored in the ``hotIron`` color palette.
 # Other palettes are for example ``grayMarked`` or ``falseColor``.
 algorithms.saveTiff(uint8, "pic_uint8.tiff", "hotIron")
 
@@ -121,7 +122,7 @@ float32[50:75, :] = 50.0
 float32[75:100, :] = 100.0
 
 ###############################################################################
-# Save the ``float32`` ``dataObject`` as a *.png file
+# Save the ``float32`` ``dataObject`` as a `*.png` file
 # with a ``falseColor`` palette (here ``hotIron`` is used,
 # others are for example ``grayMarked`` or ``falseColor``).
 # If you save a ``dataObject`` of type float the color palette is spaced between
@@ -129,7 +130,7 @@ float32[75:100, :] = 100.0
 algorithms.savePNG(float32, "pic_falseColor.png", "hotIron")
 
 ###############################################################################
-# Reload the saved *.png as a ``uint8`` ``dataObject``
+# Reload the saved `*.png` as a ``uint8`` ``dataObject``
 # ->all steps with values above 1.0 have the same gray value.
 reload_png_falseColor = dataObject()
 algorithms.loadAnyImage(reload_png_falseColor, "pic_falseColor.png", "GRAY")

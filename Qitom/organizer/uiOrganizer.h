@@ -272,8 +272,15 @@ public:
 struct ClassInfoContainer
 {
     enum Type {TypeClassInfo, TypeSlot, TypeSignal, TypeProperty, TypeEnum, TypeFlag, TypeInheritance};
-    ClassInfoContainer(Type type, const QString &name, const QString &shortDescription = "", const QString &description = "") :
-        m_type(type), m_name(name), m_shortDescription(shortDescription), m_description(description)
+    ClassInfoContainer(
+        Type type,
+        const QString& name,
+        const QString& shortDescription = "",
+        const QString& description = "",
+        const QString& signature = "") :
+        m_type(type),
+        m_name(name), m_shortDescription(shortDescription), m_description(description),
+        m_signature(signature)
     {
         if (m_description == "")
         {
@@ -285,6 +292,7 @@ struct ClassInfoContainer
     QString m_name;
     QString m_shortDescription;
     QString m_description;
+    QString m_signature;
 };
 
 } // namespace ito

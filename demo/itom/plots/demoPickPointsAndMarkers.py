@@ -35,11 +35,15 @@ for numPoint in range(pickedPoints.shape[1]):
 # Plot the ``dataObject`` again together with the previously selected points as ``marker``.
 #
 # The second argument of ``plotMarkers`` is a style-string (this may change) ``[color, symbol, size]``:
-# =======  =====================================
-# color    {b, g, r, c, m, y, k, w}
-# symbol   {., o, s, d, >, v, ^, <, x, *, +, h}
-# size     any integer number
-# =======  =====================================
+#
+# +----------+------------------------------------------+
+# | color    | \{b, g, r, c, m, y, k, w\}               |
+# +----------+------------------------------------------+
+# | symbol   | \{., o, s, d, >, v, ^, <, x, `*`, +, h\} |
+# +----------+------------------------------------------+
+# | size     | any integer number                       |
+# +----------+------------------------------------------+
+#
 markers = dataObject([2, 3], "float32", data=[10.1, 20.2, 30.3, 7, 100, 500])
 [nr, h] = plot2(obj)
 h["title"] = "Showcase: plot the currently selected points"
