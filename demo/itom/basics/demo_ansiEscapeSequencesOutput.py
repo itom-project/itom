@@ -27,5 +27,5 @@ print("\u001b[44;1m E \u001b[45;1m F \u001b[46;1m G \u001b[47;1m H \u001b[0mText
 # use text bold, underline, italic or combine them
 print(
     "\u001b[1;3;4mText bold, underline and italic \u001b[22mRemove bold only "
-    "\u001b[23;1mRemove underline and set bold again \u001b[0mReset all"
+    "\u001b[23;1mRemove italic and set bold again \u001b[0mReset all"
 )
