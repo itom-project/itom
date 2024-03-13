@@ -127,10 +127,11 @@ void SyntaxHighlighterBase::highlightBlock(const QString &text)
         CodeEditor *e = editor();
 
         //qDebug() << current_block.blockNumber();
-        TextBlockUserData *userData = e->getTextBlockUserData(current_block, false);
+        const TextBlockUserData *userData = e->getTextBlockUserData(current_block, false);
+
         if (userData && userData->m_syntaxStyle != TextBlockUserData::StylePython)
         {
-            default_highlight_block(text, userData->m_syntaxStyle == TextBlockUserData::StyleOutput);
+            default_highlight_block(text, userData);
         }
         else
         {

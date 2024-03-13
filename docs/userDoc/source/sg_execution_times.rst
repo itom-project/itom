@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**00:00.234** total execution time for 148 files **from all galleries**:
+**00:00.028** total execution time for 149 files **from all galleries**:
 
 .. container::
 
@@ -32,8 +32,8 @@ Computation times
    * - Example
      - Time
      - Mem (MB)
-   * - :ref:`sphx_glr_11_demos_itom_plots_demo_drawMarkers.py` (``..\..\..\demo\itom\plots\demo_drawMarkers.py``)
-     - 00:00.234
+   * - :ref:`sphx_glr_11_demos_itom_basics_demo_ansiEscapeSequencesOutput.py` (``..\..\..\demo\itom\basics\demo_ansiEscapeSequencesOutput.py``)
+     - 00:00.028
      - 0.0
    * - :ref:`sphx_glr_11_demos_itom_basics_demo_CameraAndImages.py` (``..\..\..\demo\itom\basics\demo_CameraAndImages.py``)
      - 00:00.000
@@ -117,6 +117,9 @@ Computation times
      - 00:00.000
      - 0.0
    * - :ref:`sphx_glr_11_demos_itom_plots_demo_drawAndTransformShapes.py` (``..\..\..\demo\itom\plots\demo_drawAndTransformShapes.py``)
+     - 00:00.000
+     - 0.0
+   * - :ref:`sphx_glr_11_demos_itom_plots_demo_drawMarkers.py` (``..\..\..\demo\itom\plots\demo_drawMarkers.py``)
      - 00:00.000
      - 0.0
    * - :ref:`sphx_glr_11_demos_itom_plots_demo_drawPickersPlot1D.py` (``..\..\..\demo\itom\plots\demo_drawPickersPlot1D.py``)
