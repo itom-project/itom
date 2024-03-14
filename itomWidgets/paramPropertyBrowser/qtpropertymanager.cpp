@@ -1242,7 +1242,7 @@ public:
 
     struct Data
     {
-        Data() : regularExpression(QString(QLatin1Char('.*'))), echoMode(QLineEdit::Normal)
+        Data() : regularExpression(QString(".*")), echoMode(QLineEdit::Normal)
         {
         }
         QString val;
