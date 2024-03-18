@@ -9,6 +9,14 @@
 
 set(FFTW_FOUND false)
 
+if(NOT EXISTS ${FFTW_DIR})
+    if(EXISTS $ENV{FFTW_ROOT})
+        set(FFTW_DIR $ENV{FFTW_ROOT} CACHE PATH "Root directory of fftw3, containing sub-directories library and include")
+    else(EXISTS $ENV{FFTW_ROOT})
+        set(FFTW_DIR "FFTW_DIR-NOTFOUND" CACHE PATH "Root directory of fftw3, containing sub-directories library and include")
+    endif(EXISTS $ENV{FFTW_ROOT})
+endif(NOT EXISTS ${FFTW_DIR})
+
 find_path(FFTW_DIR fftw3.h PATHS $ENV{FFTW_ROOT} /usr/local/include /usr/include /opt/local/lib DOC "Root directory of fftw")
 find_path(FFTW_INCLUDE_DIR fftw3.h PATHS $ENV{FFTW_ROOT} /usr/local/include /usr/include /opt/local/lib ${FFTW_DIR})
 
@@ -23,13 +31,14 @@ if(WIN32)
 endif(WIN32)
 
 if(WIN32)
-  if(FFTW_RUNTIME_LIBRARY_D AND FFTW_INCLUDE_DIR)
+  if(FFTW_RUNTIME_LIBRARY_D AND FFTW_LIBRARY_D AND FFTW_INCLUDE_DIR)
     set(FFTW_FOUND TRUE)
     set(FFTW_RUNTIME_LIBRARIES ${FFTW_RUNTIME_LIBRARY_F} ${FFTW_RUNTIME_LIBRARY_D} ${FFTW_RUNTIME_LIBRARY_L})
-  else(FFTW_LIBRARY_D AND FFTW_INCLUDE_DIR)
+    set(FFTW_LIBRARIES ${FFTW_LIBRARY_F} ${FFTW_LIBRARY_D} ${FFTW_LIBRARY_L})
+  else(FFTW_RUNTIME_LIBRARY_D AND FFTW_LIBRARY_D AND FFTW_INCLUDE_DIR)
     set(FFTW_FOUND false)
     set(FFTW_LIBRARIES "")
-  endif(FFTW_LIBRARY_D AND FFTW_INCLUDE_DIR)
+  endif(FFTW_RUNTIME_LIBRARY_D AND FFTW_LIBRARY_D AND FFTW_INCLUDE_DIR)
 else(WIN32)
   if(FFTW_LIBRARY_D AND FFTW_INCLUDE_DIR)
     set(FFTW_FOUND true)
@@ -39,10 +48,6 @@ else(WIN32)
     set(FFTW_LIBRARIES "")
   endif(FFTW_LIBRARY_D AND FFTW_INCLUDE_DIR)
 endif(WIN32)
-
-message(STATUS "FFTW_LIBRARY_D: ${FFTW_LIBRARY_D}")
-message(STATUS "FFTW_INCLUDE_DIR: ${FFTW_INCLUDE_DIR}")
-message(STATUS "FFTW_FOUND: ${FFTW_FOUND}")
 
 if(FFTW_FOUND)
    if(NOT FFTW_FIND_QUIETLY)
