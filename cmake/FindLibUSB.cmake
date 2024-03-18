@@ -58,6 +58,34 @@ else()
     mark_as_advanced ( LibUSB_INCLUDE_DIRS )
     #  message( STATUS "LibUSB include dir: ${LIBUSB_ROOT}" )
 
+    if(MSVC)
+
+        if((MSVC_VERSION GREATER 1929) AND (MSVC_VERSION LESS 1939))
+            set(LIBUSB_DETECTED_TOOLSET "vc143")
+            set(LIBUSB_MSVC_FOLDER "VS2022")
+
+        elseif((MSVC_VERSION GREATER 1919) AND (MSVC_VERSION LESS 1930))
+            set(LIBUSB_DETECTED_TOOLSET "vc142")
+            set(LIBUSB_MSVC_FOLDER "VS2019")
+
+        elseif((MSVC_VERSION GREATER 1909) AND (MSVC_VERSION LESS 1920))
+            set(LIBUSB_DETECTED_TOOLSET "vc141")
+            set(LIBUSB_MSVC_FOLDER "VS2017")
+
+        elseif(MSVC_VERSION EQUAL 1900)
+            set(LIBUSB_DETECTED_TOOLSET "vc140")
+            set(LIBUSB_MSVC_FOLDER "VS2015")
+
+        elseif(MSVC_VERSION EQUAL 1800)
+            set(LIBUSB_DETECTED_TOOLSET "vc120")
+            set(LIBUSB_MSVC_FOLDER "VS2015")
+        
+        endif((MSVC_VERSION GREATER 1929) AND (MSVC_VERSION LESS 1939))
+
+        message(STATUS "LIBUSB_MSVC_FOLDER: ${LIBUSB_MSVC_FOLDER}")
+
+    endif(MSVC)
+
     if( ${CMAKE_SYSTEM_NAME} STREQUAL "Windows" )
         # LibUSB-Win32 binary distribution contains several libs.
         # Use the lib that got compiled with the same compiler.
@@ -65,6 +93,11 @@ else()
             if(BUILD_TARGET64)
                 set( LibUSB_LIBRARY_PATH_SUFFIX
                     MS64/static
+                    MS64/dll
+                    ${LIBUSB_MSVC_FOLDER}/MS64/dll
+                    ${LIBUSB_MSVC_FOLDER}/MS64/dll
+                    MS64/static
+                    MS64/dll
                     x64
                     x64/Release
                     x64/Debug
@@ -90,6 +123,9 @@ else()
             else (BUILD_TARGET64)
                 set( LibUSB_LIBRARY_PATH_SUFFIX
                     MS32/static
+                    MS32/dll
+                    ${LIBUSB_MSVC_FOLDER}/MS32/dll
+                    ${LIBUSB_MSVC_FOLDER}/MS32/dll
                     Win32
                     Win32/Release
                     Win32/Debug
@@ -130,8 +166,6 @@ else()
     PATH_SUFFIXES
         ${LibUSB_LIBRARY_PATH_SUFFIX}
     )
-
-	message(STATUS "LibUSB_LIBRARY: " ${LibUSB_LIBRARY})
 
     mark_as_advanced ( LibUSB_LIBRARY )
     if( LibUSB_LIBRARY )
