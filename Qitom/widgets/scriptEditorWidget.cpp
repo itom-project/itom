@@ -3917,7 +3917,7 @@ void ScriptEditorWidget::replaceOccurencesInCurrentScript(
         {
             cursor.movePosition(QTextCursor::Start);
 
-            if (item.lineNumber > 1)
+            if (item.lineNumber >= 1)
             {
                 cursor.movePosition(
                     QTextCursor::NextBlock, QTextCursor::MoveAnchor, item.lineNumber - 1);
