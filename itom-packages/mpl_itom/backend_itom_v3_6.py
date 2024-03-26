@@ -40,7 +40,7 @@ import weakref
 
 # itom specific imports (end)
 
-backend_version = "3.2.1"
+backend_version = "3.2.2"
 DEBUG = False
 
 # SPECIAL_KEYS are keys that do *not* return their unicode name
@@ -719,6 +719,9 @@ class FigureManagerItom(FigureManagerBase):
         ##    self.windowUi.showFullScreen()
 
     def _widgetclosed(self):
+        if matplotlib.__version__ >= "3.8.0":
+            CloseEvent("close_event", self.canvas)._process()
+        
         if self.canvas._destroying:
             return
         self.canvas._destroying = True
