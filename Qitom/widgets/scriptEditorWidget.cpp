@@ -1579,7 +1579,7 @@ bool ScriptEditorWidget::menuPyCodeReferenceRenaming()
     QTextCursor cursor = textCursor();
     int lineNumber = currentLineNumber() + 1;
     int col = currentColumnNumber();
-    QString filepath = qobject_cast<ScriptEditorWidget*>(this)->getFilename();
+    QString filepath = this->hasNoFilename() ? QString() : this->getFilename();
 
     if (lineNumber < 1 || col < 0)
     {
