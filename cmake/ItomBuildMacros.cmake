@@ -509,7 +509,7 @@ macro(itom_fetch_git_commit_hash)
             endforeach()
         endif()
 
-        if(WORKINGDIR_FOUND)
+        if(GITDIR_FOUND)
             execute_process(
                 COMMAND "${GIT_EXECUTABLE}" log -1 --format=%H HEAD
                 WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
@@ -546,9 +546,9 @@ macro(itom_fetch_git_commit_hash)
             message(STATUS "Git commit hash: ${GITCOMMITHASHSHORT} from ${GITCOMMITDATE}")
         elseif(OPT_OPTIONAL)
             message(STATUS "Sources seem not to contain any Git repository. Git commit information is ignored.")
-        else()
+        else(GITDIR_FOUND)
             message(WARNING "Sources seem not to contain any Git repository. Git commit information cannot be found. Avoid this warning by disabling BUILD_GIT_TAG.")
-        endif()
+        endif(GITDIR_FOUND)
     endif()
 
     if(OPT_DESTINATION)
