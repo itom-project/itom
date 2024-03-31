@@ -448,6 +448,15 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap
 
         PyConfig_InitIsolatedConfig(&config);
 
+#ifdef Q_OS_UNIX
+        // under linux, it is desired to also consider locally installed Python packages.
+        // Therefore, deactivate the 'isolated' mode and manually set some properties
+        config.isolated = 0;
+        config.safe_path = 1; // default in isolated mode
+        config.use_environment = 0; // default in isolated mode
+        config.user_site_directory = 1; // changed
+#endif
+
         /* Set the program name before reading the configuration
            (decode byte string from the locale encoding).
 
