@@ -84,15 +84,15 @@ void QVector3DProperty::setValue(const QVariant& value)
         {
             if (count == 0)
             {
-                x = match.captured(1).toDouble();
+                x = defaultLocale.toDouble(match.captured(1));
             }
             else if (count == 1)
             {
-                y = match.captured(1).toDouble();
+                y = defaultLocale.toDouble(match.captured(1));
             }
             else if (count == 2)
             {
-                z = match.captured(1).toDouble();
+                z = defaultLocale.toDouble(match.captured(1));
             }
             else if (count > 2)
             {
