@@ -24,10 +24,10 @@
 
 //this file is copied to the SDK/include folder.
 
-#define ITOM_MAJOR_VERSION  ${ITOM_VERSION_MAJOR}
-#define ITOM_MINOR_VERSION  ${ITOM_VERSION_MINOR}
-#define ITOM_PATCH_VERSION  ${ITOM_VERSION_PATCH}
-#define ITOM_VERSION_STRING "${ITOM_VERSION_STRING}"
+#define ITOM_MAJOR_VERSION  ${itom_VERSION_MAJOR}
+#define ITOM_MINOR_VERSION  ${itom_VERSION_MINOR}
+#define ITOM_PATCH_VERSION  ${itom_VERSION_PATCH}
+#define ITOM_VERSION_STRING "${itom_VERSION}"
 #define INTERFACE_VERSION   "${ITOM_VERSION_STRING_WITH_API}"
 #define ITOM_APP_NAME       "itom - ito measurement software"
 

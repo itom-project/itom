@@ -17,9 +17,23 @@
 #
 # You should have received a copy of the GNU Library General Public License
 # along with itom. If not, see <http://www.gnu.org/licenses/>.
-cmake_minimum_required(VERSION 3.12...3.24)
 
-project(itom)
+cmake_minimum_required(VERSION 3.12...3.29)
+
+message(
+    STATUS "------------------- PROJECT itom ---------------------")
+# Retrieve Version Number and Identifier from GIT-TAG
+include(cmake/VersionFromGit.cmake)
+version_from_git(
+  LOG       ON
+  TIMESTAMP "%Y%m%d%H%M%S"
+)
+
+# define cmake project and version number
+project(itom VERSION ${GIT_VERSION})
+
+message(
+    STATUS "------------------- Version = ${itom_VERSION} -----------------------\n")
 
 # set qitom as Visual Studio Startup-Projekt
 set_property( DIRECTORY PROPERTY VS_STARTUP_PROJECT "qitom" )
@@ -99,15 +113,6 @@ endif()
 if(SETUP_ISSCONFIG)
     set(InnoSetupPath CACHE PATH "base path to inno setup")
 endif()
-
-#find current itom version from qitom/global.h
-file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/Qitom/global.h ITOM_versionStringFull LIMIT_COUNT 1 REGEX "^#define ITOM_VERSION_STR.*$")
-string(REGEX MATCH "([0-9]+).([0-9]+).([0-9]+)" ITOM_versionString ${ITOM_versionStringFull}) #searches for Number.Number.Number[.Number] in ITOM_versionStringFull
-
-message(STATUS "itom version is: ${ITOM_versionString}. If wrong change it in global.h and reconfigure CMake")
-message(STATUS "")
-message(STATUS "CMAKE_CURRENT_BINARY_DIR: ${CMAKE_CURRENT_BINARY_DIR}")
-message(STATUS "")
 
 ################################################################################################################
 #CONFIGURE AND PREPARE THE INNO SETUP FILES (require location of Qt, therefore find_package_qt must be called)
@@ -247,6 +252,7 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/cmake                         DESTINATION 
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/cmake/ItomBuildMacros.cmake   DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/SDK/cmake)
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Setup_PCL_Itom.cmake   DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/SDK/cmake)
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Setup_PCL_Plugins.cmake   DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/SDK/cmake)
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/cmake/VersionFromGit.cmake   DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/SDK/cmake)
 
 if(MSVC)
     file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/designerPluginLibraryVersion.rc DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/SDK)

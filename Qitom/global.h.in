@@ -40,11 +40,12 @@
 #include <qsharedpointer.h>
 
 /* definition and macros */
-#define ITOM_VERSION_MAJOR  0x04
-#define ITOM_VERSION_MINOR  0x02
-#define ITOM_VERSION_PATCH  0x02
-#define ITOM_VERSION        CREATEVERSION(ITOM_VERSION_MAJOR,ITOM_VERSION_MINOR,ITOM_VERSION_PATCH) //ITOM_VERSION is (major << 16) + (minor << 8) + patch
-#define ITOM_VERSION_STR    "4.2.2"
+#define ITOM_VERSION_MAJOR  ${itom_VERSION_MAJOR}
+#define ITOM_VERSION_MINOR  ${itom_VERSION_MINOR}
+#define ITOM_VERSION_PATCH  ${itom_VERSION_PATCH}
+#define ITOM_VERSION        CREATEVERSION(ITOM_VERSION_MAJOR ,ITOM_VERSION_MINOR,ITOM_VERSION_PATCH) //ITOM_VERSION is (major << 16) + (minor << 8) + patch
+#define ITOM_VERSION_STR    "${itom_VERSION}"
+#define ITOM_RELEASE_STR    "${itom_VERSION}"
 
 #ifdef USEPCL
     #define ITOM_POINTCLOUDLIBRARY 1
