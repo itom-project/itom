@@ -833,7 +833,7 @@ RetVal HelpSystem::buildSinglePluginHelp(const QString &pluginFolder, QDir &buil
 RetVal HelpSystem::analyzeQhpFile(const QString &pluginFolder, QFile &qhpFile, QString &tocs, QString &keywords, QString &files, QStringList &filesToCopy, QPair<QString,QString> &mainFileInfo)
 {
     QRegularExpression regExp(
-        "^.*<toc>(.*)<\/toc>.*<keywords>(.*)<\/keywords>.*<files>(.*)<\/files>.*$",
+        "^.*<toc>(.*)</toc>.*<keywords>(.*)</keywords>.*<files>(.*)</files>.*$",
         QRegularExpression::DotMatchesEverythingOption |
             QRegularExpression::MultilineOption);
     if (qhpFile.open(QIODevice::ReadOnly))

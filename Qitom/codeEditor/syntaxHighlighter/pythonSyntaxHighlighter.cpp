@@ -48,6 +48,7 @@
 #include "../managers/panelsManager.h"
 #include "../modes/caretLineHighlight.h"
 #include "../utils/utils.h"
+#include "../textBlockUserData.h"
 
 #include <qdebug.h>
 #include <iostream>
@@ -120,15 +121,84 @@ hasNextMatch(const QList<QPair<QRegularExpressionMatch, QStringList> > &matches,
 }
 
 
-void PythonSyntaxHighlighter::default_highlight_block(const QString &text, bool outputNotError)
+void PythonSyntaxHighlighter::default_highlight_block(const QString &text, const TextBlockUserData *textBlockUserData)
 {
-    if (outputNotError)
+    bool outputNotError = textBlockUserData->m_syntaxStyle == TextBlockUserData::StyleOutput;
+
+    QTextCharFormat defaultFormat = getFormatFromStyle(
+        outputNotError ? StyleItem::KeyStreamOutput : StyleItem::KeyStreamError
+    );
+
+    if (textBlockUserData->m_ansiTextCharFormats.isNull())
     {
-        setFormat(0, text.size(), getFormatFromStyle(StyleItem::KeyStreamOutput));
+        // no special ansi text char formats: apply defaultFormat everywhere
+        setFormat(0, text.size(), defaultFormat);
     }
     else
     {
-        setFormat(0, text.size(), getFormatFromStyle(StyleItem::KeyStreamError));
+        int curCol = 0;
+        int count;
+        QTextCharFormat format;
+        QBrush brush;
+
+        foreach(const ito::TextBlockUserData::AnsiTextCharFormat &item, *(textBlockUserData->m_ansiTextCharFormats))
+        {
+            if (item.colStart > curCol)
+            {
+                count = item.colStart - curCol;
+                setFormat(0, count, defaultFormat);
+                curCol += count;
+            }
+
+            count = item.colEnd - item.colStart;
+            format = defaultFormat;
+
+            // only modify the font style if bold or underline is set to true
+            if (item.textBold || item.textUnderline || item.textItalic)
+            {
+                QFont font = format.font();
+
+                if (item.textBold)
+                {
+                    font.setWeight(QFont::Bold);
+                }
+
+                if (item.textItalic)
+                {
+                    font.setItalic(true);
+                }
+
+                if (item.textUnderline)
+                {
+                    font.setUnderline(true);
+                }
+
+                format.setFont(font);
+            }
+
+            if (item.textColor.spec() != QColor::Invalid)
+            {
+                brush = format.foreground();
+                brush.setColor(item.textColor);
+                format.setForeground(brush);
+            }
+
+            if (item.backgroundColor.spec() != QColor::Invalid)
+            {
+                brush = format.background();
+                brush.setColor(item.backgroundColor);
+                format.setBackground(brush);
+            }
+
+            setFormat(item.colStart, count, format);
+            curCol += count;
+        }
+
+        if (curCol < text.size())
+        {
+            count = text.size() - curCol;
+            setFormat(curCol, count, defaultFormat);
+        }
     }
 }
 //-------------------------------------------------------------------

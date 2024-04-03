@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2024, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
@@ -62,16 +62,19 @@ ConsoleWidget::ConsoleWidget(QWidget* parent) :
     m_canCut(false),
     m_waitForCmdExecutionDone(false),
     m_pythonBusy(false),
-    m_pCmdList(NULL),
-    m_inputStreamWaitCond(NULL),
+    m_pCmdList(nullptr),
+    m_inputStreamWaitCond(nullptr),
     m_inputStartLine(0),
     m_autoWheel(true),
     m_splitLongLines(true),
-    m_splitLongLinesMaxLength(200)
+    m_splitLongLinesMaxLength(200),
+    m_considerAnsiEscapeSequences(true)
 {
     m_inputTextMode.inputModeEnabled = false;
+    m_ansiEscapeSeqRegExp.setPattern("\\x1B\\[([0-9]{1,2}(;[0-9]{1,3})*)?([m|K|J])");
 
     setSelectLineOnCopyEmpty(false);
+    updateAnsiTextCharFormat(m_recentAnsiTextCharFormat, "m", 0);
 
     m_receiveStreamBuffer.msgType = ito::msgStreamOut;
     connect(&m_receiveStreamBufferTimer, SIGNAL(timeout()), this, SLOT(processStreamBuffer()));
@@ -115,11 +118,13 @@ ConsoleWidget::ConsoleWidget(QWidget* parent) :
     QSettings *settings = new QSettings(settingsName, QSettings::IniFormat);
     settings->beginGroup("ConsoleDequeCommandList");
     int size = settings->beginReadArray("LastCommandList");
+
     for (int i = size - 1; i > -1; --i)
     {
         settings->setArrayIndex(i);
         m_pCmdList->add(settings->value("cmd", "").toString());
     }
+
     settings->endArray();
     settings->endGroup();
     delete settings;
@@ -220,17 +225,11 @@ void ConsoleWidget::loadSettings()
     m_splitLongLines = settings.value("SplitLongLines", true).toBool();
     m_splitLongLinesMaxLength = qMax(10, settings.value("SplitLongLinesMaxLength", 200).toInt());
 
-    /*
-
-    int indent = settings.value("WrapIndent", 2).toInt(&ok);
-    if (!ok)
-    {
-        indent = 2;
-    }*/
-
     m_markErrorLineMode->setBackground(QColor(settings.value("markerErrorForegroundColor", QColor(255, 192, 192)).toString()));
     m_markCurrentLineMode->setBackground(QColor(settings.value("markerCurrentBackgroundColor", QColor(255, 255, 128)).toString()));
     m_markInputLineMode->setBackground(QColor(settings.value("markerInputForegroundColor", QColor(179, 222, 171)).toString()));
+
+    m_considerAnsiEscapeSequences = settings.value("considerAnsiEscapeSequences", true).toBool();
 
     settings.endGroup();
 
@@ -1300,6 +1299,446 @@ void ConsoleWidget::receiveStream(QString text, ito::tStreamMessageType msgType)
 }
 
 //-------------------------------------------------------------------------------------
+static QColor ansiColor(uint code)
+{
+    const int red = code & 0x1 ? 170 : 0;
+    const int green = code & 0x2 ? 170 : 0;
+    const int blue = code & 0x4 ? 170 : 0;
+    return QColor(red, green, blue);
+}
+
+//-------------------------------------------------------------------------------------
+void ConsoleWidget::updateAnsiTextCharFormat(
+    ito::TextBlockUserData::AnsiTextCharFormat &format, 
+    const QString &mainChar, 
+    const QString &args)
+{
+    if (mainChar != "m")
+    {
+        // ignore other commands than color and decorators!
+        return;
+    }
+
+    QStringList arglist = args.split(";");
+    QList<int> argnums;
+
+    foreach(const QString &a, arglist)
+    {
+        argnums << a.toInt();
+    }
+
+    argnums << -1 << -1 << -1; // add three more arguments, to avoid overflow checks in the following code.
+
+    int idx = 0;
+    int ansiCodeId;
+
+    while (idx < argnums.size())
+    {
+        ansiCodeId = argnums[idx];
+
+        if (ansiCodeId == 0)
+        {
+            //reset
+            format.backgroundColor = QColor();
+            format.textBold = false;
+            format.textUnderline = false;
+            format.textItalic = false;
+            format.textColor = QColor();
+        }
+        else if (ansiCodeId >= 30 && ansiCodeId <= 37)
+        {
+            const QColor colors[] = { Qt::black, Qt::red, Qt::green, Qt::yellow, Qt::blue, Qt::magenta, Qt::cyan, Qt::white };
+
+            if (argnums[idx + 1] == 1)
+            {
+                format.textColor = colors[ansiCodeId - 30].lighter(150);
+                idx++;
+            }
+            else
+            {
+                format.textColor = colors[ansiCodeId - 30];
+            }
+        }
+        else if (ansiCodeId == 38)
+        {
+            if (argnums[idx + 1] == 5 && argnums[idx + 2] >= 0)
+            {
+                // 256 colors
+                format.textColor = ansiColor(argnums[idx + 2]);
+                idx += 2;
+            }
+            else if (argnums[idx + 1] == 2)
+            {
+                format.textColor = QColor(argnums[idx + 2], argnums[idx + 3], argnums[idx + 4]);
+                idx += 4;
+            }
+        }
+        else if (ansiCodeId == 39)
+        {
+            format.textColor = QColor(); // reset
+        }
+        else if (ansiCodeId >= 40 && ansiCodeId <= 47)
+        {
+            const QColor colors[] = { Qt::black, Qt::red, Qt::green, Qt::yellow, Qt::blue, Qt::magenta, Qt::cyan, Qt::white };
+
+            if (argnums[idx + 1] == 1)
+            {
+                format.backgroundColor = colors[ansiCodeId - 40].lighter(150);
+                idx++;
+            }
+            else
+            {
+                format.backgroundColor = colors[ansiCodeId - 40];
+            }
+        }
+        else if (ansiCodeId == 48)
+        {
+            if (argnums[idx + 1] == 5 && argnums[idx + 2] >= 0)
+            {
+                // 256 colors
+                format.backgroundColor = ansiColor(argnums[idx + 2]);
+                idx += 2;
+            }
+            else if (argnums[idx + 1] == 2)
+            {
+                format.backgroundColor = QColor(argnums[idx + 2], argnums[idx + 3], argnums[idx + 4]);
+                idx += 4;
+            }
+        }
+        else if (ansiCodeId == 49)
+        {
+            format.backgroundColor = QColor(); // reset
+        }
+        else if (ansiCodeId == 1)
+        {
+            format.textBold = true;
+        }
+        else if (ansiCodeId == 3)
+        {
+            format.textItalic = true;
+        }
+        else if (ansiCodeId == 4)
+        {
+            format.textUnderline = true;
+        }
+        else if (ansiCodeId == 22)
+        {
+            format.textBold = false;
+        }
+        else if (ansiCodeId == 23)
+        {
+            format.textItalic = false;
+        }
+        else if (ansiCodeId == 24)
+        {
+            format.textUnderline = false;
+        }
+
+        idx++;
+    }
+}
+
+//-------------------------------------------------------------------------------------
+/*
+see https://www.lihaoyi.com/post/BuildyourownCommandLinewithANSIescapecodes.html#colors
+*/
+QList<ito::TextBlockUserData::AnsiTextCharFormat> ConsoleWidget::parseReceiveStreamBufferForAnsiCodes(
+    const QString &inputText, 
+    QString &strippedText)
+{
+    strippedText = inputText;
+
+    if (strippedText.isNull() || strippedText.size() == 0)
+    {
+        return QList<ito::TextBlockUserData::AnsiTextCharFormat>();
+    }
+
+    // regular expression for ANSI escape codes (colors, erase functions and decorators only)   
+    int offset = 0;
+    QList<ito::TextBlockUserData::AnsiTextCharFormat> outputData;
+    QRegularExpressionMatch match = m_ansiEscapeSeqRegExp.match(strippedText, offset);
+
+    while (match.hasMatch()) 
+    {
+        m_recentAnsiTextCharFormat.colStart = offset;
+        m_recentAnsiTextCharFormat.colEnd = match.capturedStart(0);
+
+        if (m_recentAnsiTextCharFormat.colEnd > m_recentAnsiTextCharFormat.colStart)
+        {
+        outputData.append(m_recentAnsiTextCharFormat);
+        }
+
+        offset = m_recentAnsiTextCharFormat.colEnd;
+        strippedText.remove(offset, match.capturedLength(0));
+
+        updateAnsiTextCharFormat(
+            m_recentAnsiTextCharFormat,
+            match.captured(3),
+            match.captured(1)
+        );
+
+        match = m_ansiEscapeSeqRegExp.match(strippedText, offset);
+    }
+
+    if (offset > 0)
+    {
+        // we had at least one match, check if the end has to be added
+        if (offset < strippedText.length() - 1)
+        {
+            m_recentAnsiTextCharFormat.colStart = offset;
+            m_recentAnsiTextCharFormat.colEnd = strippedText.size();
+
+            if (m_recentAnsiTextCharFormat.colEnd > m_recentAnsiTextCharFormat.colStart)
+            {
+                outputData.append(m_recentAnsiTextCharFormat);
+            }
+        }
+    }
+
+    return outputData;
+}
+
+//-------------------------------------------------------------------------------------
+QList<QSharedPointer<QList<ito::TextBlockUserData::AnsiTextCharFormat>>> ConsoleWidget::splitLongLinesText(
+    QString &text,
+    const QSharedPointer<QList<ito::TextBlockUserData::AnsiTextCharFormat>> &ansiTextCharFormat,
+    bool smartSplitting)
+{
+    // 1.: split text
+    QStringList textLines;
+
+    if (smartSplitting)
+    {
+        //more sophisticated word wrap at word boundaries
+        QTextBoundaryFinder finder(QTextBoundaryFinder::Line, text);
+        int lineStartPos = 0;
+        int prevPos;
+        QString substr;
+    
+
+        finder.setPosition(0);
+
+        while (lineStartPos < text.size())
+        {
+            finder.setPosition(lineStartPos + m_splitLongLinesMaxLength);
+            if (finder.isAtBoundary())
+            {
+                prevPos = finder.position();
+            }
+            else
+            {
+                prevPos = finder.toPreviousBoundary();
+            }
+
+            if (prevPos <= lineStartPos)
+            {
+                substr = text.mid(lineStartPos, m_splitLongLinesMaxLength);
+                textLines.append(substr);
+                lineStartPos += substr.size();
+            }
+            else
+            {
+                substr = text.mid(lineStartPos, prevPos - lineStartPos);
+                textLines.append(substr);
+                lineStartPos = prevPos;
+            }
+        }
+    }
+    else
+    {
+        //simple (and faster) split after m_splitLongLinesMaxLength characters each
+        textLines.append(text.left(m_splitLongLinesMaxLength));
+        QString rest = text.mid(m_splitLongLinesMaxLength);
+
+        while (rest.size() > m_splitLongLinesMaxLength)
+        {
+            textLines.append(rest.left(m_splitLongLinesMaxLength));
+            rest.remove(0, m_splitLongLinesMaxLength);
+        }
+
+        if (rest.size() > 0)
+        {
+            textLines.append(rest);
+        }
+    }
+
+    // 2. adjust ansi auto 
+    QList<QSharedPointer<QList<ito::TextBlockUserData::AnsiTextCharFormat>>> textFormatsMultiLines;
+    auto currentTextFormat = ansiTextCharFormat->begin();
+    int lineLength;
+    int lineStartOffset = 0;
+    int prefixOffset = 0; // first line 0, afterwards compensate for "..."
+
+    foreach(const QString &textLine, textLines)
+    {
+        auto textFormatsInCurrentLine = QSharedPointer<QList<ito::TextBlockUserData::AnsiTextCharFormat>>::create();
+        lineLength = textLine.size();
+
+        while (currentTextFormat != ansiTextCharFormat->end())
+        {
+            if (currentTextFormat->colStart >= lineStartOffset + lineLength)
+            {
+                // all following text formats belong to next lines
+                break;
+            }
+            else if (currentTextFormat->colStart < lineStartOffset)
+            {
+                // the currentTextFormat started in the line before, but ends here. It must be split
+                ito::TextBlockUserData::AnsiTextCharFormat item = *currentTextFormat;
+                item.colStart = prefixOffset;
+                item.colEnd -= (lineStartOffset - prefixOffset);
+                *textFormatsInCurrentLine << item;
+                currentTextFormat++;
+            }
+            else if (currentTextFormat->colEnd <= lineStartOffset + lineLength)
+            {
+                // the currentTextFormat fully fits into this line
+                ito::TextBlockUserData::AnsiTextCharFormat item = *currentTextFormat;
+                item.colStart -= (lineStartOffset - prefixOffset);
+                item.colEnd -= (lineStartOffset - prefixOffset);
+                *textFormatsInCurrentLine << item;
+                currentTextFormat++;
+            }
+            else
+            {
+                // the currentTextFormat starts in this line but continuous in the next line 
+                ito::TextBlockUserData::AnsiTextCharFormat item = *currentTextFormat;
+                item.colStart -= (lineStartOffset - prefixOffset);
+                item.colEnd = lineLength + prefixOffset;
+                *textFormatsInCurrentLine << item;
+                break;
+            }
+        }
+
+        textFormatsMultiLines << textFormatsInCurrentLine;
+        lineStartOffset += textLine.size();
+        prefixOffset = longLineWrapPrefix.size();
+    }
+
+    text = textLines.join("\n" + longLineWrapPrefix);
+
+    return textFormatsMultiLines;
+}
+
+//-------------------------------------------------------------------------------------
+QList<QSharedPointer<QList<ito::TextBlockUserData::AnsiTextCharFormat>>> ConsoleWidget::handleTextLinesAndSplitLongLines(
+    QString &text,
+    const QList<ito::TextBlockUserData::AnsiTextCharFormat> &ansiTextCharFormat,
+    bool smartSplitting)
+{
+    if (ansiTextCharFormat.size() == 0 && (!m_splitLongLines || text.size() <= m_splitLongLinesMaxLength))
+    {
+        // do not change something
+        return QList<QSharedPointer<QList<ito::TextBlockUserData::AnsiTextCharFormat>>>();
+    }
+
+    // step 1: divide the text by existing new lines. Don't add any ... prefix in next lines
+    QRegularExpression re("\n|\r\n|\r");
+    QRegularExpressionMatchIterator reIter = re.globalMatch(text);
+
+    QStringList textLines;
+    QList<int> endlineLength;
+    int idx = 0;
+
+    if (reIter.hasNext())
+    {
+        while (reIter.hasNext())
+        {
+            QRegularExpressionMatch match = reIter.next();
+            textLines << text.mid(idx, match.capturedStart(0) - idx);
+            endlineLength << match.capturedLength(0);
+            idx = match.capturedEnd(0);
+        }
+    }
+    else
+    {
+        textLines << text;
+        endlineLength << 0;
+    }
+
+    QList<QSharedPointer<QList<ito::TextBlockUserData::AnsiTextCharFormat>>> textFormatsMultiLines;
+    QList<QSharedPointer<QList<ito::TextBlockUserData::AnsiTextCharFormat>>> textFormatsMultiLines2;
+    auto currentTextFormat = ansiTextCharFormat.begin();
+    int lineLength;
+    int lineStartOffset = 0;
+
+    for (int i = 0; i < textLines.size(); ++i)
+    {
+        auto textFormatsInCurrentLine = QSharedPointer<QList<ito::TextBlockUserData::AnsiTextCharFormat>>::create();
+        lineLength = textLines[i].size();
+
+        while (currentTextFormat != ansiTextCharFormat.end())
+        {
+            if (currentTextFormat->colStart >= lineStartOffset + lineLength)
+            {
+                // all following text formats belong to next lines
+                break;
+            }
+            else if (currentTextFormat->colEnd <= lineStartOffset)
+            {
+                currentTextFormat++;
+            }
+            else if (currentTextFormat->colStart < lineStartOffset)
+            {
+                // the currentTextFormat started in the line before, but ends here. It must be split
+                ito::TextBlockUserData::AnsiTextCharFormat item = *currentTextFormat;
+                item.colStart = 0;
+                item.colEnd -= lineStartOffset;
+                *textFormatsInCurrentLine << item;
+                currentTextFormat++;
+            }
+            else if (currentTextFormat->colEnd <= lineStartOffset + lineLength)
+            {
+                // the currentTextFormat fully fits into this line
+                ito::TextBlockUserData::AnsiTextCharFormat item = *currentTextFormat;
+                item.colStart -= lineStartOffset;
+                item.colEnd -= lineStartOffset;
+                *textFormatsInCurrentLine << item;
+                currentTextFormat++;
+            }
+            else
+            {
+                // the currentTextFormat starts in this line but continuous in the next line 
+                ito::TextBlockUserData::AnsiTextCharFormat item = *currentTextFormat;
+                item.colStart -= lineStartOffset;
+                item.colEnd = lineLength;
+                *textFormatsInCurrentLine << item;
+                break;
+            }
+        }
+
+        textFormatsMultiLines << textFormatsInCurrentLine;
+        lineStartOffset += (textLines[i].size() + endlineLength[i]);
+    }
+
+
+    if (m_splitLongLines && text.size() >= m_splitLongLinesMaxLength)
+    {
+        for (int i = 0; i < textFormatsMultiLines.size(); ++i)
+        {
+            if (textLines[i].size() >= m_splitLongLinesMaxLength)
+            {
+                textFormatsMultiLines2 << splitLongLinesText(textLines[i], textFormatsMultiLines[i], smartSplitting);
+            }
+            else
+            {
+                textFormatsMultiLines2 << textFormatsMultiLines[i];
+            }
+        }
+    }
+    else
+    {
+        textFormatsMultiLines2 = textFormatsMultiLines;
+    }
+
+    text = textLines.join("\n");
+    text += "\n";
+
+
+    return textFormatsMultiLines2;
+}
+
+//-------------------------------------------------------------------------------------
 void ConsoleWidget::processStreamBuffer()
 {
 
@@ -1309,109 +1748,44 @@ void ConsoleWidget::processStreamBuffer()
     }
 
     int fromLine, toLine;
-    TextBlockUserData *userData = NULL;
+    TextBlockUserData *userData = nullptr;
+    QList<ito::TextBlockUserData::AnsiTextCharFormat> ansiTextCharFormats;
+    QList<QSharedPointer<QList<ito::TextBlockUserData::AnsiTextCharFormat>>> ansiTextCharFormatsPerLine;
+    bool hasAnsiEscapeCodes = m_considerAnsiEscapeSequences && m_receiveStreamBuffer.text.contains("\x1B");
+    QString strippedText;
 
-    //process very long lines
-    if (m_splitLongLines && m_receiveStreamBuffer.text.size() > m_splitLongLinesMaxLength)
+    if (hasAnsiEscapeCodes)
     {
-        QStringList outputs;
-        QStringList splits = m_receiveStreamBuffer.text.split("\n");
-        int lineStartPos = 0;
-        int prevPos;
-        QString substr;
-
-        foreach(const QString &t, splits)
-        {
-            if (t.size() > m_splitLongLinesMaxLength)
-            {
-                if (m_receiveStreamBuffer.msgType == ito::msgStreamErr)
-                {
-                    //more sophisticated word wrap at word boundaries
-                    QTextBoundaryFinder finder(QTextBoundaryFinder::Line, t);
-                    lineStartPos = 0;
-                    finder.setPosition(0);
-
-                    while (lineStartPos < t.size())
-                    {
-                        finder.setPosition(lineStartPos + m_splitLongLinesMaxLength);
-                        if (finder.isAtBoundary())
-                        {
-                            prevPos = finder.position();
-                        }
-                        else
-                        {
-                            prevPos = finder.toPreviousBoundary();
-                        }
-
-                        if (prevPos <= lineStartPos)
-                        {
-                            substr = t.mid(lineStartPos, m_splitLongLinesMaxLength);
-                            if (lineStartPos == 0)
-                            {
-                                outputs.append(substr);
-                            }
-                            else
-                            {
-                                outputs.append(longLineWrapPrefix + substr);
-                            }
-                            lineStartPos += substr.size();
-                        }
-                        else
-                        {
-                            substr = t.mid(lineStartPos, prevPos - lineStartPos);
-                            if (lineStartPos == 0)
-                            {
-                                outputs.append(substr);
-                            }
-                            else
-                            {
-                                outputs.append(longLineWrapPrefix + substr);
-                            }
-                            lineStartPos = prevPos;
-                        }
-                    }
-                }
-                else
-                {
-                    //simple (and faster) split after m_splitLongLinesMaxLength characters each
-                    outputs.append(t.left(m_splitLongLinesMaxLength));
-                    QString rest = t.mid(m_splitLongLinesMaxLength);
-                    while (rest.size() > m_splitLongLinesMaxLength)
-                    {
-                        outputs.append(longLineWrapPrefix + rest.left(m_splitLongLinesMaxLength));
-                        rest.remove(0, m_splitLongLinesMaxLength);
-                    }
-
-                    if (rest.size() > 0)
-                    {
-                        outputs.append(longLineWrapPrefix + rest);
-                    }
-                }
-            }
-            else
-            {
-                outputs.append(t);
-            }
-        }
-
-        m_receiveStreamBuffer.text = outputs.join("\n");
-
+        ansiTextCharFormats << parseReceiveStreamBufferForAnsiCodes(m_receiveStreamBuffer.text, strippedText);
     }
+    else
+    {
+        strippedText = m_receiveStreamBuffer.text;
+    }
+
+    ansiTextCharFormatsPerLine = handleTextLinesAndSplitLongLines(
+        strippedText, 
+        ansiTextCharFormats, 
+        m_receiveStreamBuffer.msgType == ito::msgStreamErr
+    );
 
     switch (m_receiveStreamBuffer.msgType)
     {
     case ito::msgStreamErr:
+    {
         //case msgReturnError:
         //!> insert msg after last line
         fromLine = lineCount() - 1;
+
         if (lineLength(fromLine) > 0)
         {
             fromLine++;
         }
 
-        append(m_receiveStreamBuffer.text);
+        append(strippedText);
 
         toLine = lineCount() - 1;
+
         if (lineLength(toLine) == 0)
         {
             toLine--;
@@ -1426,45 +1800,17 @@ void ConsoleWidget::processStreamBuffer()
         {
             userData = getTextBlockUserData(lineIdx, true);
             userData->m_syntaxStyle = ito::TextBlockUserData::StyleError;
-        }
-        rehighlightBlock(fromLine, toLine);
 
-        moveCursorToEnd();
-
-        if (!m_pythonBusy && m_receiveStreamBuffer.text.right(1) == ConsoleWidget::lineBreak)
-        {
-            startNewCommand(false);
-        }
-        else
-        {
-            m_startLineBeginCmd = lineCount() - 1;
+            if (hasAnsiEscapeCodes)
+            {
+                userData->m_ansiTextCharFormats = ansiTextCharFormatsPerLine[lineIdx - fromLine];
+            }
+            else
+            {
+                userData->m_ansiTextCharFormats.clear();
+            }
         }
 
-        emit sendToPythonMessage(m_receiveStreamBuffer.text);
-        break;
-
-    case ito::msgStreamOut:
-
-        fromLine = lineCount() - 1;
-        if (lineLength(fromLine) > 0)
-        {
-            fromLine++;
-        }
-
-        //!> insert msg after last line
-        append(m_receiveStreamBuffer.text);
-
-        toLine = lineCount() - 1;
-        if (lineLength(toLine) == 0)
-        {
-            toLine--;
-        }
-
-        for (int lineIdx = fromLine; lineIdx <= toLine; ++lineIdx)
-        {
-            userData = getTextBlockUserData(lineIdx, true);
-            userData->m_syntaxStyle = ito::TextBlockUserData::StyleOutput;
-        }
         rehighlightBlock(fromLine, toLine);
 
         moveCursorToEnd();
@@ -1480,8 +1826,57 @@ void ConsoleWidget::processStreamBuffer()
 
         break;
     }
+    case ito::msgStreamOut:
+    {
+        fromLine = lineCount() - 1;
 
-    m_receiveStreamBuffer.text = "";
+        if (lineLength(fromLine) > 0)
+        {
+            fromLine++;
+        }
+
+        append(strippedText);
+
+        toLine = lineCount() - 1;
+
+        if (lineLength(toLine) == 0)
+        {
+            toLine--;
+        }
+
+        for (int lineIdx = fromLine; lineIdx <= toLine; ++lineIdx)
+        {
+            userData = getTextBlockUserData(lineIdx, true);
+            userData->m_syntaxStyle = ito::TextBlockUserData::StyleOutput;
+            
+            if (hasAnsiEscapeCodes)
+            {
+                userData->m_ansiTextCharFormats = ansiTextCharFormatsPerLine[lineIdx - fromLine];
+            }
+            else
+            {
+                userData->m_ansiTextCharFormats.clear();
+            }
+        }
+
+        rehighlightBlock(fromLine, toLine);
+
+        moveCursorToEnd();
+
+        if (!m_pythonBusy && m_receiveStreamBuffer.text.right(1) == ConsoleWidget::lineBreak)
+        {
+            startNewCommand(false);
+        }
+        else
+        {
+            m_startLineBeginCmd = lineCount() - 1;
+        }
+
+        break;
+    }
+    }
+
+    m_receiveStreamBuffer.text.clear();
 
 	autoLineDelete();
 

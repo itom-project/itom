@@ -432,16 +432,16 @@ macro(itom_fetch_git_commit_hash)
                           "${multiValueArgs}" ${ARGN} )
 
     # this is to automatically detect the SDK subfolder of the itom build directory.
-	if(NOT EXISTS ${ITOM_SDK_DIR})
-		find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
-		HINTS "$ENV{ITOM_SDK_ROOT}"
-			  "${CMAKE_CURRENT_BINARY_DIR}/../itom/SDK"
-		DOC "Path of SDK subfolder of itom root (build) directory")
-	endif(NOT EXISTS ${ITOM_SDK_DIR})
+    if(NOT EXISTS ${ITOM_SDK_DIR})
+        find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
+        HINTS "$ENV{ITOM_SDK_ROOT}"
+              "${CMAKE_CURRENT_BINARY_DIR}/../itom/SDK"
+        DOC "Path of SDK subfolder of itom root (build) directory")
+    endif()
 
-	if(NOT EXISTS ${ITOM_SDK_DIR})
-		message(FATAL_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
-	endif(NOT EXISTS ${ITOM_SDK_DIR})
+    if(NOT EXISTS ${ITOM_SDK_DIR})
+        message(FATAL_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
+    endif()
 
     option(BUILD_GIT_TAG "Fetch the current Git commit hash and add it to the gitVersion.h file in the binary directory of each plugin." ON)
 
@@ -452,74 +452,103 @@ macro(itom_fetch_git_commit_hash)
     set(GITCOMMITDATE "")
 
     if(BUILD_GIT_TAG)
+        if(NOT OPT_QUIET)
+            find_package(Git REQUIRED) #raises a fatal error
+        else()
+            find_package(Git QUIET)
+        endif()
+            
         #try to get working directory of git
-        set(WORKINGDIR_FOUND )
-        set(WORKINGDIR ${CMAKE_SOURCE_DIR})
-
-        foreach(ITER "1" "2" "3")
-            if(NOT EXISTS ${WORKINGDIR})
-                break()
+        set(GITDIR_FOUND )
+        set(GIT_DIRECTORY "")
+        set(GIT_INDEX_FILE "")
+        
+        if (Git_FOUND)
+            # try to get the git directory of the git index file
+            # this directory is different dependent if plugins are built
+            # within a submodule or with a stand-alone project.
+            execute_process(
+                COMMAND "${GIT_EXECUTABLE}" rev-parse --git-dir
+                WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+                RESULT_VARIABLE res
+                OUTPUT_VARIABLE GIT_DIRECTORY
+                ERROR_QUIET
+                OUTPUT_STRIP_TRAILING_WHITESPACE)
+            
+            if(NOT IS_ABSOLUTE ${GIT_DIRECTORY})
+                get_filename_component(GIT_DIRECTORY_ABS ${GIT_DIRECTORY} ABSOLUTE ${CMAKE_CURRENT_SOURCE_DIR})
+                set(GIT_DIRECTORY ${GIT_DIRECTORY_ABS})
             endif()
-
-            if(EXISTS "${WORKINGDIR}/.git/index")
-                set(WORKINGDIR_FOUND TRUE)
-                break()
-            else()
-                #goto parent directory
-                get_filename_component(WORKINGDIR ${WORKINGDIR} DIRECTORY)
+            
+            set(GIT_INDEX_FILE "${GIT_DIRECTORY}/index")
+            
+            if(EXISTS ${GIT_INDEX_FILE})
+                set(GITDIR_FOUND TRUE)
             endif()
-        endforeach()
+        else()
+            message(STATUS "Could not find Git package. Cannot obtain Git commit information.")
+        endif()
 
-        if(WORKINGDIR_FOUND)
-            if(NOT OPT_QUIET)
-                find_package(Git REQUIRED) #raises a fatal error
-            else()
-                find_package(Git QUIET)
-            endif()
+        if(NOT GITDIR_FOUND)
+            # backup solution, try to find a .git/index file by recursing to the top directory.
+            set(WORKINGDIR ${CMAKE_CURRENT_SOURCE_DIR})
+            
+            foreach(ITER "1" "2" "3")
+                if(NOT EXISTS ${WORKINGDIR})
+                    break()
+                endif()
 
-            if(Git_FOUND)
-                execute_process(
-                    COMMAND "${GIT_EXECUTABLE}" log -1 --format=%H HEAD
-                    WORKING_DIRECTORY "${WORKINGDIR}"
-                    RESULT_VARIABLE res
-                    OUTPUT_VARIABLE GITCOMMITHASH
-                    ERROR_QUIET
-                    OUTPUT_STRIP_TRAILING_WHITESPACE)
+                if(EXISTS "${WORKINGDIR}/.git/index")
+                    set(GITDIR_FOUND TRUE)
+                    set(GIT_INDEX_FILE "${WORKINGDIR}/.git/index")
+                    break()
+                else()
+                    #goto parent directory
+                    get_filename_component(WORKINGDIR ${WORKINGDIR} DIRECTORY)
+                endif()
+            endforeach()
+        endif()
 
-                execute_process(
-                    COMMAND "${GIT_EXECUTABLE}" log -1 --format=%h HEAD
-                    WORKING_DIRECTORY "${WORKINGDIR}"
-                    RESULT_VARIABLE res
-                    OUTPUT_VARIABLE GITCOMMITHASHSHORT
-                    ERROR_QUIET
-                    OUTPUT_STRIP_TRAILING_WHITESPACE)
+        if(GITDIR_FOUND)
+            execute_process(
+                COMMAND "${GIT_EXECUTABLE}" log -1 --format=%H HEAD
+                WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+                RESULT_VARIABLE res
+                OUTPUT_VARIABLE GITCOMMITHASH
+                ERROR_QUIET
+                OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-                execute_process(
-                    COMMAND "${GIT_EXECUTABLE}" log -1 --format=%cI HEAD
-                    WORKING_DIRECTORY "${WORKINGDIR}"
-                    RESULT_VARIABLE res
-                    OUTPUT_VARIABLE GITCOMMITDATE
-                    ERROR_QUIET
-                    OUTPUT_STRIP_TRAILING_WHITESPACE)
+            execute_process(
+                COMMAND "${GIT_EXECUTABLE}" log -1 --format=%h HEAD
+                WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+                RESULT_VARIABLE res
+                OUTPUT_VARIABLE GITCOMMITHASHSHORT
+                ERROR_QUIET
+                OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-                set(GITVERSION "${GITCOMMITHASHSHORT}/${GITCOMMITDATE}")
-                set(GITVERSIONAVAILABLE 1)
+            execute_process(
+                COMMAND "${GIT_EXECUTABLE}" log -1 --format=%cI HEAD
+                WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+                RESULT_VARIABLE res
+                OUTPUT_VARIABLE GITCOMMITDATE
+                ERROR_QUIET
+                OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-                #always mark this project as outdated if the .git/index file changed.
-                #see also: https://cmake.org/pipermail/cmake/2018-October/068389.html
-                set_property(GLOBAL APPEND
-                    PROPERTY CMAKE_CONFIGURE_DEPENDS
-                    "${WORKINGDIR}/.git/index")
+            set(GITVERSION "${GITCOMMITHASHSHORT}/${GITCOMMITDATE}")
+            set(GITVERSIONAVAILABLE 1)
 
-                message(STATUS "Git commit hash: ${GITCOMMITHASHSHORT} from ${GITCOMMITDATE}")
-            else()
-                message(STATUS "Could not find Git package. Cannot obtain Git commit information.")
-            endif()
+            #always mark this project as outdated if the .git/index file changed.
+            #see also: https://cmake.org/pipermail/cmake/2018-October/068389.html
+            set_property(GLOBAL APPEND
+                PROPERTY CMAKE_CONFIGURE_DEPENDS
+                "${GIT_INDEX_FILE}")
+
+            message(STATUS "Git commit hash: ${GITCOMMITHASHSHORT} from ${GITCOMMITDATE}")
         elseif(OPT_OPTIONAL)
             message(STATUS "Sources seem not to contain any Git repository. Git commit information is ignored.")
-        else()
+        else(GITDIR_FOUND)
             message(WARNING "Sources seem not to contain any Git repository. Git commit information cannot be found. Avoid this warning by disabling BUILD_GIT_TAG.")
-        endif()
+        endif(GITDIR_FOUND)
     endif()
 
     if(OPT_DESTINATION)

@@ -30,6 +30,7 @@
 
 #include <qmap.h>
 #include <qvector2d.h>
+#include <qlocale.h>
 
 Q_DECLARE_METATYPE(ito::AutoInterval)
 
@@ -43,7 +44,9 @@ TEST(QPropertyEditorTest, CheckVector2DSetValue)
     ASSERT_EQ(vecProperty.x(), 0.0);
     ASSERT_EQ(vecProperty.y(), 0.0);
 
-    vecProperty.setValue("-2.756;4.5e-7");
+    QLocale locale; // local settings
+
+    vecProperty.setValue(QString("%1;%2").arg(locale.toString(-2.756)).arg(locale.toString(4.5e-7)));
 
     auto data = vecProperty.value().value<QVector2D>();
     ASSERT_FLOAT_EQ(data.x(), -2.756);
@@ -51,7 +54,7 @@ TEST(QPropertyEditorTest, CheckVector2DSetValue)
     ASSERT_FLOAT_EQ(vecProperty.x(), -2.756);
     ASSERT_FLOAT_EQ(vecProperty.y(), 4.5e-7);
 
-    vecProperty.setValue("-20.756//40.5E-7//55");
+    vecProperty.setValue(QString("%1//%2//55").arg(locale.toString(-20.756)).arg(locale.toString(40.5E-7)));
 
     data = vecProperty.value().value<QVector2D>();
     ASSERT_FLOAT_EQ(data.x(), -20.756);
@@ -71,7 +74,9 @@ TEST(QPropertyEditorTest, CheckVector3DSetValue)
     ASSERT_EQ(vecProperty.y(), 0.0);
     ASSERT_EQ(vecProperty.z(), 0.0);
 
-    vecProperty.setValue("-2.756;4.5e-7;-4.23e2");
+    QLocale locale; // local settings
+
+    vecProperty.setValue(QString("%1;%2;%3").arg(locale.toString(-2.756)).arg(locale.toString(4.5e-7)).arg(locale.toString(-4.23e2)));
 
     auto data = vecProperty.value().value<QVector3D>();
     ASSERT_FLOAT_EQ(data.x(), -2.756);
@@ -80,7 +85,7 @@ TEST(QPropertyEditorTest, CheckVector3DSetValue)
     ASSERT_FLOAT_EQ(vecProperty.y(), 4.5e-7);
     ASSERT_FLOAT_EQ(vecProperty.z(), -4.23e2);
 
-    vecProperty.setValue("-20.756//40.5E-7//55//-44");
+    vecProperty.setValue(QString("%1//%2//55").arg(locale.toString(-20.756)).arg(locale.toString(40.5e-7)));
 
     data = vecProperty.value().value<QVector3D>();
     ASSERT_FLOAT_EQ(data.x(), -20.756);
@@ -97,12 +102,14 @@ TEST(QPropertyEditorTest, CheckVector4DSetValue)
     QObject propObj;
     ito::QVector4DProperty vecProperty("name", &propObj, nullptr);
 
+    QLocale locale; // local settings
+
     ASSERT_EQ(vecProperty.x(), 0.0);
     ASSERT_EQ(vecProperty.y(), 0.0);
     ASSERT_EQ(vecProperty.z(), 0.0);
     ASSERT_EQ(vecProperty.w(), 0.0);
 
-    vecProperty.setValue("-2.756;4.5e-7;-4.23e2;34");
+    vecProperty.setValue(QString("%1;%2;%3;34").arg(locale.toString(-2.756)).arg(locale.toString(4.5e-7)).arg(locale.toString(-4.23e2)));
 
     auto data = vecProperty.value().value<QVector4D>();
     ASSERT_FLOAT_EQ(data.x(), -2.756);
@@ -112,7 +119,7 @@ TEST(QPropertyEditorTest, CheckVector4DSetValue)
     ASSERT_FLOAT_EQ(vecProperty.z(), -4.23e2);
     ASSERT_FLOAT_EQ(vecProperty.w(), 34);
 
-    vecProperty.setValue("-20.756//40.5E-7//55//-44e4//45");
+    vecProperty.setValue(QString("%1//%2//55//%3").arg(locale.toString(-20.756)).arg(locale.toString(40.5e-7)).arg(locale.toString(-44e4)));
 
     data = vecProperty.value().value<QVector4D>();
     ASSERT_FLOAT_EQ(data.x(), -20.756);
@@ -165,7 +172,9 @@ TEST(QPropertyEditorTest, CheckAutoIntervalSetValue)
     ASSERT_EQ(aiProperty.maximum(), interval.maximum());
     ASSERT_EQ(aiProperty.autoScaling(), true);
 
-    aiProperty.setValue("-6.5e2//3.245");
+    QLocale locale; // local settings
+
+    aiProperty.setValue(QString("%1//%2").arg(locale.toString(-6.5e2)).arg(locale.toString(3.245)));
     ASSERT_EQ(aiProperty.minimum(), -6.5e2);
     ASSERT_EQ(aiProperty.maximum(), 3.245);
     ASSERT_EQ(aiProperty.autoScaling(), false);

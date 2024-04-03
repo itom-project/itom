@@ -73,6 +73,17 @@ public:
         StyleError
     };
 
+    struct AnsiTextCharFormat 
+    {
+        int colStart; // inclusive, zero-based
+        int colEnd; // inclusive, zero-based
+        QColor textColor;
+        QColor backgroundColor;
+        bool textBold; /* true: bold, false: do not change the default */
+        bool textUnderline; /* true: underline, false: do not change the default */
+        bool textItalic; /* true: italic, false: do not change the default */
+    };
+
     TextBlockUserData(CodeEditor *editor);
 
     virtual ~TextBlockUserData();
@@ -89,7 +100,9 @@ public:
 
     bool m_bookmark;
 
-    QSharedPointer<TextBlockUserData> m_syntaxStack; //e.g. for python syntax highlighter
+    // this is only not nullptr, if special ansi text char formats have been encountered for parts of this text block
+    // if given, this must be sorted by anscending startcols
+    QSharedPointer<QList<AnsiTextCharFormat>> m_ansiTextCharFormats;
 
     int m_currentLineIdx;
 

@@ -155,8 +155,10 @@ struct JediRenameRequest
     QString m_code;
     int m_line;
     int m_col;
-    QString m_filepath;
+    QString m_filepath; //!< full filepath, or a non-existing py-file in the current directory in case of an unsafed file
     bool m_fileModified;
+    bool m_untitledFile; //!< true if file has not been safed yet
+    QString m_untitledName; //!< only != null, if this file is unsafed
     QByteArray m_callbackFctName;
     QPointer<QObject> m_sender;
 };
@@ -174,7 +176,9 @@ struct JediRename
 {
     JediRename(){};
 
-    QString m_filePath;
+    QString m_filePath; //!< either a true filepath or a non-existing dummy file in the current dir, if the file is untitled.
+    bool m_untitledFile;
+    QString m_untitledFilename; //!< null if a real file
     bool m_mainFile;
 
     //!< defines if this file is with the project of the initial file of the rename operation.

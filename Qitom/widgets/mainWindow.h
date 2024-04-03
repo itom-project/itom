@@ -153,7 +153,6 @@ signals:
 public slots:
     void addAbstractDock(AbstractDockWidget* dockWidget, Qt::DockWidgetArea area = Qt::TopDockWidgetArea);
     void removeAbstractDock(AbstractDockWidget* dockWidget);
-    void connectPythonMessageBox(QListWidget* pythonMessageBox);
 
     void pythonStateChanged(tPythonTransitions pyTransition);
 

@@ -78,7 +78,7 @@ public:
     */
     void highlight_block(const QString &text, QTextBlock &block);
 
-    void default_highlight_block(const QString &text, bool outputNotError);
+    void default_highlight_block(const QString &text, const TextBlockUserData *textBlockUserData);
 
     virtual void rehighlight();
 

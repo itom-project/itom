@@ -1763,7 +1763,8 @@ void ScriptDockWidget::createActions()
         QIcon(":/editor/icons/rename.png"),
         tr("Rename..."),
         this, QKeySequence(tr("F2", "QShortcut")), Qt::WidgetWithChildrenShortcut);
-    m_referenceRenameAction->action()->setToolTip(tr("Rename all references of the symbol under the cursor"));
+    m_referenceRenameAction->action()->setToolTip(
+        tr("Rename all references of the symbol under the cursor (%1)").arg(tr("F2", "QShortcut")));
     m_referenceRenameAction->connectTrigger(this, SLOT(mnuPyReferenceRenaming()));
 
     m_pyDocstringGeneratorAction = new ShortcutAction(QIcon(), tr("Generate Docstring"),

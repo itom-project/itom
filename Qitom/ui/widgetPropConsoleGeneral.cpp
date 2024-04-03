@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2024, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
@@ -28,19 +28,19 @@
 namespace ito
 {
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 WidgetPropConsoleGeneral::WidgetPropConsoleGeneral(QWidget *parent) :
     AbstractPropertyPageWidget(parent)
 {
     ui.setupUi(this);
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 WidgetPropConsoleGeneral::~WidgetPropConsoleGeneral()
 {
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void WidgetPropConsoleGeneral::readSettings()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
@@ -48,11 +48,12 @@ void WidgetPropConsoleGeneral::readSettings()
 
     ui.checkBoxFormatCopyCode->setChecked(settings.value("formatCopyCutCode", true).toBool());
     ui.checkBoxFormatPastCode->setChecked(settings.value("formatPasteAndDropCode", true).toBool());
+    ui.checkConsiderAnsiEscapeSequences->setChecked(settings.value("considerAnsiEscapeSequences", true).toBool());
 
     settings.endGroup();
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void WidgetPropConsoleGeneral::writeSettings()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
@@ -60,6 +61,7 @@ void WidgetPropConsoleGeneral::writeSettings()
 
     settings.setValue("formatCopyCutCode", ui.checkBoxFormatCopyCode->isChecked());
     settings.setValue("formatPasteAndDropCode", ui.checkBoxFormatPastCode->isChecked());
+    settings.setValue("considerAnsiEscapeSequences", ui.checkConsiderAnsiEscapeSequences->isChecked());
 
     settings.endGroup();
 }
