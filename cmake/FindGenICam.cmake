@@ -6,7 +6,6 @@
 #C:\genicam\library\cpp\include
 #C:\genicam\library\cpp\lib\win64_x64
 
-
 if(NOT EXISTS ${GenICam_Dir})
     if(EXISTS $ENV{GENICAM_ROOT})
         set(GenICam_Dir $ENV{GENICAM_ROOT} CACHE PATH "Root directory of genicam, containing sub-directories library and include")
