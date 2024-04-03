@@ -8,8 +8,7 @@
 ###################################################################
 
 # this should be the first line of your project.
-cmake_minimum_required(VERSION 3.12...3.24)
-
+cmake_minimum_required(VERSION 3.12...3.29)
 #here you give your project a unique name (replace MyAlgoPlugin by the desired project name of your plugin)
 set(target_name MyAlgoPlugin)
 
