@@ -31,6 +31,7 @@ version_from_git(
 
 # define cmake project and version number
 project(itom VERSION ${GIT_VERSION})
+set(itom_VERSION_IDENTIFIERS ${GIT_IDENTIFIERS})
 
 message(
     STATUS "------------------- Version = ${itom_VERSION} -----------------------\n")

@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**00:00.028** total execution time for 149 files **from all galleries**:
+**00:00.634** total execution time for 150 files **from all galleries**:
 
 .. container::
 
@@ -32,8 +32,116 @@ Computation times
    * - Example
      - Time
      - Mem (MB)
-   * - :ref:`sphx_glr_11_demos_itom_basics_demo_ansiEscapeSequencesOutput.py` (``..\..\..\demo\itom\basics\demo_ansiEscapeSequencesOutput.py``)
-     - 00:00.028
+   * - :ref:`sphx_glr_11_demos_itom_dataProcessing_demo_CrossCorrelation_LiveImage.py` (``..\..\..\demo\itom\dataProcessing\demo_CrossCorrelation_LiveImage.py``)
+     - 00:00.286
+     - 0.0
+   * - :ref:`sphx_glr_11_demos_itom_plots_demo_cloudAndMeshVisualization.py` (``..\..\..\demo\itom\plots\demo_cloudAndMeshVisualization.py``)
+     - 00:00.217
+     - 0.0
+   * - :ref:`sphx_glr_11_demos_itom_pointClouds_demo_cloud.py` (``..\..\..\demo\itom\pointClouds\demo_cloud.py``)
+     - 00:00.037
+     - 0.0
+   * - :ref:`sphx_glr_11_demos_python_packages_matplotlib_demo_qbstyles.py` (``..\..\..\demo\python_packages\matplotlib\demo_qbstyles.py``)
+     - 00:00.016
+     - 0.0
+   * - :ref:`sphx_glr_11_demos_itom_basics_demo_measurement.py` (``..\..\..\demo\itom\basics\demo_measurement.py``)
+     - 00:00.014
+     - 0.0
+   * - :ref:`sphx_glr_11_demos_itom_itom_apps_demo_ImageDistortion.py` (``..\..\..\demo\itom\itom_apps\demo_ImageDistortion.py``)
+     - 00:00.011
+     - 0.0
+   * - :ref:`sphx_glr_11_demos_python_packages_plotly_demo_bar.py` (``..\..\..\demo\python_packages\plotly\demo_bar.py``)
+     - 00:00.011
+     - 0.0
+   * - :ref:`sphx_glr_11_demos_itom_ui_demo_cloudViewer.py` (``..\..\..\demo\itom\ui\demo_cloudViewer.py``)
+     - 00:00.008
+     - 0.0
+   * - :ref:`sphx_glr_11_demos_itom_pointClouds_demo_fitGeometricElement.py` (``..\..\..\demo\itom\pointClouds\demo_fitGeometricElement.py``)
+     - 00:00.003
+     - 0.0
+   * - :ref:`sphx_glr_11_demos_python_packages_seaborn_demo_bivariate.py` (``..\..\..\demo\python_packages\seaborn\demo_bivariate.py``)
+     - 00:00.002
+     - 0.0
+   * - :ref:`sphx_glr_11_demos_python_packages_seaborn_demo_jointKernel.py` (``..\..\..\demo\python_packages\seaborn\demo_jointKernel.py``)
+     - 00:00.002
+     - 0.0
+   * - :ref:`sphx_glr_11_demos_python_packages_matplotlib_demo_cyberpunk.py` (``..\..\..\demo\python_packages\matplotlib\demo_cyberpunk.py``)
+     - 00:00.002
+     - 0.0
+   * - :ref:`sphx_glr_11_demos_python_packages_plotly_demo_sankey_diagram.py` (``..\..\..\demo\python_packages\plotly\demo_sankey_diagram.py``)
+     - 00:00.002
+     - 0.0
+   * - :ref:`sphx_glr_11_demos_python_packages_pandas_demo_in_out.py` (``..\..\..\demo\python_packages\pandas\demo_in_out.py``)
+     - 00:00.001
+     - 0.0
+   * - :ref:`sphx_glr_11_demos_python_packages_seaborn_demo_violinplots.py` (``..\..\..\demo\python_packages\seaborn\demo_violinplots.py``)
+     - 00:00.001
+     - 0.0
+   * - :ref:`sphx_glr_11_demos_python_packages_pandas_demo_grouping.py` (``..\..\..\demo\python_packages\pandas\demo_grouping.py``)
+     - 00:00.001
+     - 0.0
+   * - :ref:`sphx_glr_11_demos_python_packages_seaborn_demo_scatterplot.py` (``..\..\..\demo\python_packages\seaborn\demo_scatterplot.py``)
+     - 00:00.001
+     - 0.0
+   * - :ref:`sphx_glr_11_demos_python_packages_scikit-learn_demo_componentRegression.py` (``..\..\..\demo\python_packages\scikit-learn\demo_componentRegression.py``)
+     - 00:00.001
+     - 0.0
+   * - :ref:`sphx_glr_11_demos_itom_dataProcessing_demo_LateralShift.py` (``..\..\..\demo\itom\dataProcessing\demo_LateralShift.py``)
+     - 00:00.001
+     - 0.0
+   * - :ref:`sphx_glr_11_demos_python_packages_pandas_demo_selection.py` (``..\..\..\demo\python_packages\pandas\demo_selection.py``)
+     - 00:00.001
+     - 0.0
+   * - :ref:`sphx_glr_11_demos_python_packages_matplotlib_demo_scientific.py` (``..\..\..\demo\python_packages\matplotlib\demo_scientific.py``)
+     - 00:00.001
+     - 0.0
+   * - :ref:`sphx_glr_11_demos_python_packages_pandas_demo_categoricals.py` (``..\..\..\demo\python_packages\pandas\demo_categoricals.py``)
+     - 00:00.001
+     - 0.0
+   * - :ref:`sphx_glr_11_demos_itom_pointClouds_demo_mesh.py` (``..\..\..\demo\itom\pointClouds\demo_mesh.py``)
+     - 00:00.001
+     - 0.0
+   * - :ref:`sphx_glr_11_demos_python_packages_pandas_demo_plotting.py` (``..\..\..\demo\python_packages\pandas\demo_plotting.py``)
+     - 00:00.001
+     - 0.0
+   * - :ref:`sphx_glr_11_demos_python_packages_pandas_demo_missing.py` (``..\..\..\demo\python_packages\pandas\demo_missing.py``)
+     - 00:00.001
+     - 0.0
+   * - :ref:`sphx_glr_11_demos_itom_plots_demo_Vtk3dVisualizer.py` (``..\..\..\demo\itom\plots\demo_Vtk3dVisualizer.py``)
+     - 00:00.001
+     - 0.0
+   * - :ref:`sphx_glr_11_demos_python_packages_pandas_demo_operations.py` (``..\..\..\demo\python_packages\pandas\demo_operations.py``)
+     - 00:00.001
+     - 0.0
+   * - :ref:`sphx_glr_11_demos_python_packages_scikit-learn_demo_featureSelection.py` (``..\..\..\demo\python_packages\scikit-learn\demo_featureSelection.py``)
+     - 00:00.001
+     - 0.0
+   * - :ref:`sphx_glr_11_demos_python_packages_scikit-learn_demo_kMeansClustering.py` (``..\..\..\demo\python_packages\scikit-learn\demo_kMeansClustering.py``)
+     - 00:00.001
+     - 0.0
+   * - :ref:`sphx_glr_11_demos_python_packages_seaborn_demo_timeseries.py` (``..\..\..\demo\python_packages\seaborn\demo_timeseries.py``)
+     - 00:00.001
+     - 0.0
+   * - :ref:`sphx_glr_11_demos_python_packages_pandas_demo_create.py` (``..\..\..\demo\python_packages\pandas\demo_create.py``)
+     - 00:00.001
+     - 0.0
+   * - :ref:`sphx_glr_11_demos_python_packages_scipy_demo_Scipy.py` (``..\..\..\demo\python_packages\scipy\demo_Scipy.py``)
+     - 00:00.001
+     - 0.0
+   * - :ref:`sphx_glr_11_demos_python_packages_seaborn_demo_linearRegression.py` (``..\..\..\demo\python_packages\seaborn\demo_linearRegression.py``)
+     - 00:00.001
+     - 0.0
+   * - :ref:`sphx_glr_11_demos_python_packages_pandas_demo_reshaping.py` (``..\..\..\demo\python_packages\pandas\demo_reshaping.py``)
+     - 00:00.001
+     - 0.0
+   * - :ref:`sphx_glr_11_demos_python_packages_scipy_demo_nearest_neighbors.py` (``..\..\..\demo\python_packages\scipy\demo_nearest_neighbors.py``)
+     - 00:00.001
+     - 0.0
+   * - :ref:`sphx_glr_11_demos_python_packages_scipy_demo_scipy-signal-correlate.py` (``..\..\..\demo\python_packages\scipy\demo_scipy-signal-correlate.py``)
+     - 00:00.001
+     - 0.0
+   * - :ref:`sphx_glr_11_demos_python_packages_pandas_demo_merge.py` (``..\..\..\demo\python_packages\pandas\demo_merge.py``)
+     - 00:00.000
      - 0.0
    * - :ref:`sphx_glr_11_demos_itom_basics_demo_CameraAndImages.py` (``..\..\..\demo\itom\basics\demo_CameraAndImages.py``)
      - 00:00.000
@@ -47,22 +155,16 @@ Computation times
    * - :ref:`sphx_glr_11_demos_itom_basics_demo_LoadSaveDataObjects.py` (``..\..\..\demo\itom\basics\demo_LoadSaveDataObjects.py``)
      - 00:00.000
      - 0.0
-   * - :ref:`sphx_glr_11_demos_itom_basics_demo_convertFalseColor.py` (``..\..\..\demo\itom\basics\demo_convertFalseColor.py``)
+   * - :ref:`sphx_glr_11_demos_itom_basics_demo_ansiEscapeSequencesOutput.py` (``..\..\..\demo\itom\basics\demo_ansiEscapeSequencesOutput.py``)
      - 00:00.000
      - 0.0
-   * - :ref:`sphx_glr_11_demos_itom_basics_demo_measurement.py` (``..\..\..\demo\itom\basics\demo_measurement.py``)
+   * - :ref:`sphx_glr_11_demos_itom_basics_demo_convertFalseColor.py` (``..\..\..\demo\itom\basics\demo_convertFalseColor.py``)
      - 00:00.000
      - 0.0
    * - :ref:`sphx_glr_11_demos_itom_basics_demo_timerExample.py` (``..\..\..\demo\itom\basics\demo_timerExample.py``)
      - 00:00.000
      - 0.0
-   * - :ref:`sphx_glr_11_demos_itom_dataProcessing_demo_CrossCorrelation_LiveImage.py` (``..\..\..\demo\itom\dataProcessing\demo_CrossCorrelation_LiveImage.py``)
-     - 00:00.000
-     - 0.0
    * - :ref:`sphx_glr_11_demos_itom_dataProcessing_demo_FitData.py` (``..\..\..\demo\itom\dataProcessing\demo_FitData.py``)
-     - 00:00.000
-     - 0.0
-   * - :ref:`sphx_glr_11_demos_itom_dataProcessing_demo_LateralShift.py` (``..\..\..\demo\itom\dataProcessing\demo_LateralShift.py``)
      - 00:00.000
      - 0.0
    * - :ref:`sphx_glr_11_demos_itom_embeddedMatplotlib_demo_matplotlibGui.py` (``..\..\..\demo\itom\embeddedMatplotlib\demo_matplotlibGui.py``)
@@ -72,9 +174,6 @@ Computation times
      - 00:00.000
      - 0.0
    * - :ref:`sphx_glr_11_demos_itom_embeddedMatplotlib_demo_matplotlibGuiFastAutoUpdate.py` (``..\..\..\demo\itom\embeddedMatplotlib\demo_matplotlibGuiFastAutoUpdate.py``)
-     - 00:00.000
-     - 0.0
-   * - :ref:`sphx_glr_11_demos_itom_itom_apps_demo_ImageDistortion.py` (``..\..\..\demo\itom\itom_apps\demo_ImageDistortion.py``)
      - 00:00.000
      - 0.0
    * - :ref:`sphx_glr_11_demos_itom_plots_demoInteractiveShapePicker.py` (``..\..\..\demo\itom\plots\demoInteractiveShapePicker.py``)
@@ -105,12 +204,6 @@ Computation times
      - 00:00.000
      - 0.0
    * - :ref:`sphx_glr_11_demos_itom_plots_demo_ShapesTransformation.py` (``..\..\..\demo\itom\plots\demo_ShapesTransformation.py``)
-     - 00:00.000
-     - 0.0
-   * - :ref:`sphx_glr_11_demos_itom_plots_demo_Vtk3dVisualizer.py` (``..\..\..\demo\itom\plots\demo_Vtk3dVisualizer.py``)
-     - 00:00.000
-     - 0.0
-   * - :ref:`sphx_glr_11_demos_itom_plots_demo_cloudAndMeshVisualization.py` (``..\..\..\demo\itom\plots\demo_cloudAndMeshVisualization.py``)
      - 00:00.000
      - 0.0
    * - :ref:`sphx_glr_11_demos_itom_plots_demo_coloredShapes.py` (``..\..\..\demo\itom\plots\demo_coloredShapes.py``)
@@ -155,15 +248,6 @@ Computation times
    * - :ref:`sphx_glr_11_demos_itom_pointClouds_demo_PointCloud.py` (``..\..\..\demo\itom\pointClouds\demo_PointCloud.py``)
      - 00:00.000
      - 0.0
-   * - :ref:`sphx_glr_11_demos_itom_pointClouds_demo_cloud.py` (``..\..\..\demo\itom\pointClouds\demo_cloud.py``)
-     - 00:00.000
-     - 0.0
-   * - :ref:`sphx_glr_11_demos_itom_pointClouds_demo_fitGeometricElement.py` (``..\..\..\demo\itom\pointClouds\demo_fitGeometricElement.py``)
-     - 00:00.000
-     - 0.0
-   * - :ref:`sphx_glr_11_demos_itom_pointClouds_demo_mesh.py` (``..\..\..\demo\itom\pointClouds\demo_mesh.py``)
-     - 00:00.000
-     - 0.0
    * - :ref:`sphx_glr_11_demos_itom_ui_demoDialogExamples.py` (``..\..\..\demo\itom\ui\demoDialogExamples.py``)
      - 00:00.000
      - 0.0
@@ -183,9 +267,6 @@ Computation times
      - 00:00.000
      - 0.0
    * - :ref:`sphx_glr_11_demos_itom_ui_demo_cameraWindow.py` (``..\..\..\demo\itom\ui\demo_cameraWindow.py``)
-     - 00:00.000
-     - 0.0
-   * - :ref:`sphx_glr_11_demos_itom_ui_demo_cloudViewer.py` (``..\..\..\demo\itom\ui\demo_cloudViewer.py``)
      - 00:00.000
      - 0.0
    * - :ref:`sphx_glr_11_demos_itom_ui_demo_dataObjectTable.py` (``..\..\..\demo\itom\ui\demo_dataObjectTable.py``)
@@ -287,9 +368,6 @@ Computation times
    * - :ref:`sphx_glr_11_demos_python_packages_matplotlib_demo_colorbar_tick_labelling_demo.py` (``..\..\..\demo\python_packages\matplotlib\demo_colorbar_tick_labelling_demo.py``)
      - 00:00.000
      - 0.0
-   * - :ref:`sphx_glr_11_demos_python_packages_matplotlib_demo_cyberpunk.py` (``..\..\..\demo\python_packages\matplotlib\demo_cyberpunk.py``)
-     - 00:00.000
-     - 0.0
    * - :ref:`sphx_glr_11_demos_python_packages_matplotlib_demo_dateaxis.py` (``..\..\..\demo\python_packages\matplotlib\demo_dateaxis.py``)
      - 00:00.000
      - 0.0
@@ -317,6 +395,9 @@ Computation times
    * - :ref:`sphx_glr_11_demos_python_packages_matplotlib_demo_matplotlibAnimation2d.py` (``..\..\..\demo\python_packages\matplotlib\demo_matplotlibAnimation2d.py``)
      - 00:00.000
      - 0.0
+   * - :ref:`sphx_glr_11_demos_python_packages_matplotlib_demo_matplotlibFuncAnimation.py` (``..\..\..\demo\python_packages\matplotlib\demo_matplotlibFuncAnimation.py``)
+     - 00:00.000
+     - 0.0
    * - :ref:`sphx_glr_11_demos_python_packages_matplotlib_demo_matplotlib_events.py` (``..\..\..\demo\python_packages\matplotlib\demo_matplotlib_events.py``)
      - 00:00.000
      - 0.0
@@ -332,13 +413,7 @@ Computation times
    * - :ref:`sphx_glr_11_demos_python_packages_matplotlib_demo_polar.py` (``..\..\..\demo\python_packages\matplotlib\demo_polar.py``)
      - 00:00.000
      - 0.0
-   * - :ref:`sphx_glr_11_demos_python_packages_matplotlib_demo_qbstyles.py` (``..\..\..\demo\python_packages\matplotlib\demo_qbstyles.py``)
-     - 00:00.000
-     - 0.0
    * - :ref:`sphx_glr_11_demos_python_packages_matplotlib_demo_scatter3d.py` (``..\..\..\demo\python_packages\matplotlib\demo_scatter3d.py``)
-     - 00:00.000
-     - 0.0
-   * - :ref:`sphx_glr_11_demos_python_packages_matplotlib_demo_scientific.py` (``..\..\..\demo\python_packages\matplotlib\demo_scientific.py``)
      - 00:00.000
      - 0.0
    * - :ref:`sphx_glr_11_demos_python_packages_matplotlib_demo_slider.py` (``..\..\..\demo\python_packages\matplotlib\demo_slider.py``)
@@ -392,36 +467,6 @@ Computation times
    * - :ref:`sphx_glr_11_demos_python_packages_others_demoPyro4.py` (``..\..\..\demo\python_packages\others\demoPyro4.py``)
      - 00:00.000
      - 0.0
-   * - :ref:`sphx_glr_11_demos_python_packages_pandas_demo_categoricals.py` (``..\..\..\demo\python_packages\pandas\demo_categoricals.py``)
-     - 00:00.000
-     - 0.0
-   * - :ref:`sphx_glr_11_demos_python_packages_pandas_demo_create.py` (``..\..\..\demo\python_packages\pandas\demo_create.py``)
-     - 00:00.000
-     - 0.0
-   * - :ref:`sphx_glr_11_demos_python_packages_pandas_demo_grouping.py` (``..\..\..\demo\python_packages\pandas\demo_grouping.py``)
-     - 00:00.000
-     - 0.0
-   * - :ref:`sphx_glr_11_demos_python_packages_pandas_demo_in_out.py` (``..\..\..\demo\python_packages\pandas\demo_in_out.py``)
-     - 00:00.000
-     - 0.0
-   * - :ref:`sphx_glr_11_demos_python_packages_pandas_demo_merge.py` (``..\..\..\demo\python_packages\pandas\demo_merge.py``)
-     - 00:00.000
-     - 0.0
-   * - :ref:`sphx_glr_11_demos_python_packages_pandas_demo_missing.py` (``..\..\..\demo\python_packages\pandas\demo_missing.py``)
-     - 00:00.000
-     - 0.0
-   * - :ref:`sphx_glr_11_demos_python_packages_pandas_demo_operations.py` (``..\..\..\demo\python_packages\pandas\demo_operations.py``)
-     - 00:00.000
-     - 0.0
-   * - :ref:`sphx_glr_11_demos_python_packages_pandas_demo_plotting.py` (``..\..\..\demo\python_packages\pandas\demo_plotting.py``)
-     - 00:00.000
-     - 0.0
-   * - :ref:`sphx_glr_11_demos_python_packages_pandas_demo_reshaping.py` (``..\..\..\demo\python_packages\pandas\demo_reshaping.py``)
-     - 00:00.000
-     - 0.0
-   * - :ref:`sphx_glr_11_demos_python_packages_pandas_demo_selection.py` (``..\..\..\demo\python_packages\pandas\demo_selection.py``)
-     - 00:00.000
-     - 0.0
    * - :ref:`sphx_glr_11_demos_python_packages_parallelization_threading_demoMultiProcessing.py` (``..\..\..\demo\python_packages\parallelization_threading\demoMultiProcessing.py``)
      - 00:00.000
      - 0.0
@@ -431,51 +476,9 @@ Computation times
    * - :ref:`sphx_glr_11_demos_python_packages_parallelization_threading_demoworkerThread.py` (``..\..\..\demo\python_packages\parallelization_threading\demoworkerThread.py``)
      - 00:00.000
      - 0.0
-   * - :ref:`sphx_glr_11_demos_python_packages_plotly_demo_bar.py` (``..\..\..\demo\python_packages\plotly\demo_bar.py``)
-     - 00:00.000
-     - 0.0
-   * - :ref:`sphx_glr_11_demos_python_packages_plotly_demo_sankey_diagram.py` (``..\..\..\demo\python_packages\plotly\demo_sankey_diagram.py``)
-     - 00:00.000
-     - 0.0
    * - :ref:`sphx_glr_11_demos_python_packages_plotly_itomGUI.py` (``..\..\..\demo\python_packages\plotly\itomGUI.py``)
      - 00:00.000
      - 0.0
    * - :ref:`sphx_glr_11_demos_python_packages_pyTest_runPyTest.py` (``..\..\..\demo\python_packages\pyTest\runPyTest.py``)
-     - 00:00.000
-     - 0.0
-   * - :ref:`sphx_glr_11_demos_python_packages_scikit-learn_demo_componentRegression.py` (``..\..\..\demo\python_packages\scikit-learn\demo_componentRegression.py``)
-     - 00:00.000
-     - 0.0
-   * - :ref:`sphx_glr_11_demos_python_packages_scikit-learn_demo_featureSelection.py` (``..\..\..\demo\python_packages\scikit-learn\demo_featureSelection.py``)
-     - 00:00.000
-     - 0.0
-   * - :ref:`sphx_glr_11_demos_python_packages_scikit-learn_demo_kMeansClustering.py` (``..\..\..\demo\python_packages\scikit-learn\demo_kMeansClustering.py``)
-     - 00:00.000
-     - 0.0
-   * - :ref:`sphx_glr_11_demos_python_packages_scipy_demo_Scipy.py` (``..\..\..\demo\python_packages\scipy\demo_Scipy.py``)
-     - 00:00.000
-     - 0.0
-   * - :ref:`sphx_glr_11_demos_python_packages_scipy_demo_nearest_neighbors.py` (``..\..\..\demo\python_packages\scipy\demo_nearest_neighbors.py``)
-     - 00:00.000
-     - 0.0
-   * - :ref:`sphx_glr_11_demos_python_packages_scipy_demo_scipy-signal-correlate.py` (``..\..\..\demo\python_packages\scipy\demo_scipy-signal-correlate.py``)
-     - 00:00.000
-     - 0.0
-   * - :ref:`sphx_glr_11_demos_python_packages_seaborn_demo_bivariate.py` (``..\..\..\demo\python_packages\seaborn\demo_bivariate.py``)
-     - 00:00.000
-     - 0.0
-   * - :ref:`sphx_glr_11_demos_python_packages_seaborn_demo_jointKernel.py` (``..\..\..\demo\python_packages\seaborn\demo_jointKernel.py``)
-     - 00:00.000
-     - 0.0
-   * - :ref:`sphx_glr_11_demos_python_packages_seaborn_demo_linearRegression.py` (``..\..\..\demo\python_packages\seaborn\demo_linearRegression.py``)
-     - 00:00.000
-     - 0.0
-   * - :ref:`sphx_glr_11_demos_python_packages_seaborn_demo_scatterplot.py` (``..\..\..\demo\python_packages\seaborn\demo_scatterplot.py``)
-     - 00:00.000
-     - 0.0
-   * - :ref:`sphx_glr_11_demos_python_packages_seaborn_demo_timeseries.py` (``..\..\..\demo\python_packages\seaborn\demo_timeseries.py``)
-     - 00:00.000
-     - 0.0
-   * - :ref:`sphx_glr_11_demos_python_packages_seaborn_demo_violinplots.py` (``..\..\..\demo\python_packages\seaborn\demo_violinplots.py``)
      - 00:00.000
      - 0.0

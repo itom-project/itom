@@ -32,6 +32,10 @@
 #
 #=============================================================================
 
+# This code was derived form Theo Willows' Mukei project at Github:
+# https://github.com/Itom
+# and further adopted for the needs of Itom
+
 cmake_minimum_required(VERSION 3.12...3.24)
 
 include( CMakeParseArguments )
@@ -59,7 +63,7 @@ function( version_from_git )
     # Find Git or bail out
     find_package( Git )
     if( NOT GIT_FOUND )
-      message( FATAL_ERROR "[MunkeiVersionFromGit] Git not found" )
+      message( FATAL_ERROR "[ItomVersionFromGit] Git not found" )
     endif( NOT GIT_FOUND )
   endif()
 
@@ -75,7 +79,7 @@ function( version_from_git )
     )
   if( NOT git_result EQUAL 0 )
     message( FATAL_ERROR
-      "[MunkeiVersionFromGit] Failed to execute Git: ${git_error}"
+      "[ItomVersionFromGit] Failed to execute Git: ${git_error}"
       )
   endif()
 
@@ -91,7 +95,7 @@ function( version_from_git )
     )
   if( NOT git_result EQUAL 0 )
     message( FATAL_ERROR
-      "[MunkeiVersionFromGit] Failed to execute Git: ${git_error}"
+      "[ItomVersionFromGit] Failed to execute Git: ${git_error}"
       )
   endif()
 
@@ -103,7 +107,7 @@ function( version_from_git )
     set( metadata      "${CMAKE_MATCH_5}" )
   else()
     message( FATAL_ERROR
-      "[MunkeiVersionFromGit] Git tag isn't valid semantic version: [${git_tag}]"
+      "[ItomVersionFromGit] Git tag isn't valid semantic version: [${git_tag}]"
       )
   endif()
 
@@ -158,7 +162,7 @@ function( version_from_git )
   # Log the results
   if( ARG_LOG )
     message( STATUS
-      "[MunkeiVersionFromGit] Version: ${version}
+      "[ItomVersionFromGit] Version: ${version}
      Git tag:     [${git_tag}]
      Git hash:    [${git_hash}]
      Decorated:   [${git_describe}]
@@ -169,12 +173,12 @@ function( version_from_git )
   endif( ARG_LOG )
 
   # Set parent scope variables
-  set( GIT_TAG       ${git_tag}       PARENT_SCOPE )
+  set( GIT_TAG           ${git_tag}       PARENT_SCOPE )
   set( GIT_SEMVER        ${semver}        PARENT_SCOPE )
   set( GIT_VERSION       ${version}       PARENT_SCOPE )
   set( GIT_VERSION_MAJOR ${version_major} PARENT_SCOPE )
   set( GIT_VERSION_MINOR ${version_minor} PARENT_SCOPE )
   set( GIT_VERSION_PATCH ${version_patch} PARENT_SCOPE )
-  set( GIT_IDENTIFIERS ${identifiers} PARENT_SCOPE )
+  set( GIT_IDENTIFIERS   ${identifiers}   PARENT_SCOPE )
 
 endfunction( version_from_git )

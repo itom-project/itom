@@ -11,15 +11,16 @@
 #include "itom_sdk.h"
 
 //Change ${itom_VERSION_MAJOR} etc. to your project definition (eg. itom_designerPlugin_VERSION_MAJOR)
-#define PLUGIN_VERSION_MAJOR  ${itom_VERSION_MAJOR}
-#define PLUGIN_VERSION_MINOR  ${itom_VERSION_MINOR}
-#define PLUGIN_VERSION_PATCH  ${itom_VERSION_PATCH}
-#define PLUGIN_VERSION        CREATE_VERSION(PLUGIN_VERSION_MAJOR,PLUGIN_VERSION_MINOR,PLUGIN_VERSION_PATCH)
-#define PLUGIN_VERSION_STRING CREATE_VERSION_STRING(PLUGIN_VERSION_MAJOR,PLUGIN_VERSION_MINOR,PLUGIN_VERSION_PATCH)
-#define PLUGIN_COMPANY        "Your Company Name"
-#define PLUGIN_AUTHOR         "AuthorName"
-#define PLUGIN_COPYRIGHT      "Your Copyright"
-#define PLUGIN_NAME           "MyActuator"
+#define PLUGIN_VERSION_MAJOR        ${itom_VERSION_MAJOR}
+#define PLUGIN_VERSION_MINOR        ${itom_VERSION_MINOR}
+#define PLUGIN_VERSION_PATCH        ${itom_VERSION_PATCH}
+#define PLUGIN_VERSION_IDENTIFIERS  "${itom_VERSION_IDENTIFIERS}"
+#define PLUGIN_VERSION              CREATE_VERSION(PLUGIN_VERSION_MAJOR,PLUGIN_VERSION_MINOR,PLUGIN_VERSION_PATCH)
+#define PLUGIN_VERSION_STRING       CREATE_VERSION_STRING(PLUGIN_VERSION_MAJOR,PLUGIN_VERSION_MINOR,PLUGIN_VERSION_PATCH)
+#define PLUGIN_COMPANY              "Your Company Name"
+#define PLUGIN_AUTHOR               "AuthorName"
+#define PLUGIN_COPYRIGHT            "Your Copyright"
+#define PLUGIN_NAME                 "MyActuator"
 
 //----------------------------------------------------------------------------------------------------------------------------------
 
