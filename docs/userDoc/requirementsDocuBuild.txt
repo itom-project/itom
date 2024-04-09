@@ -11,6 +11,7 @@ scikit-learn
 scipy
 SciencePlots
 seaborn
+scikit-learn
 sphinx
 sphinx_copybutton
 sphinx_gallery
