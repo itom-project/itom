@@ -17,6 +17,7 @@
 #
 # You should have received a copy of the GNU Library General Public License
 # along with itom. If not, see <http://www.gnu.org/licenses/>.
+
 cmake_minimum_required(VERSION 3.12...3.29)
 project(itom)
 

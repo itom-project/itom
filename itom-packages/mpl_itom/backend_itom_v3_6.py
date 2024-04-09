@@ -1,46 +1,41 @@
-# coding=iso-8859-15
-import functools
 import os
 import re
-import signal
 import sys
 import traceback
-
-import matplotlib
-
-from matplotlib import backend_tools, cbook
-from matplotlib._pylab_helpers import Gcf
-from matplotlib.backend_bases import (
-    _Backend,
-    FigureCanvasBase,
-    FigureManagerBase,
-    NavigationToolbar2,
-    TimerBase,
-    cursors,
-    ToolContainerBase,
-    _Mode,
-    MouseButton,
-    CloseEvent,
-    KeyEvent,
-    LocationEvent,
-    MouseEvent,
-    ResizeEvent
-)
-
-import mpl_itom.figureoptions as figureoptions
-
-# from matplotlib.backends.qt_editor.formsubplottool import UiSubplotTool
-from matplotlib.figure import Figure
-from matplotlib.backend_managers import ToolManager
+import weakref
 
 # itom specific imports
 import itom
-from itom import uiItem, timer, ui
-import weakref
+import matplotlib
+from itom import timer, ui, uiItem
+from matplotlib import backend_tools, cbook
+from matplotlib._pylab_helpers import Gcf
+from matplotlib.backend_bases import (
+    CloseEvent,
+    FigureCanvasBase,
+    FigureManagerBase,
+    KeyEvent,
+    LocationEvent,
+    MouseButton,
+    MouseEvent,
+    NavigationToolbar2,
+    ResizeEvent,
+    TimerBase,
+    ToolContainerBase,
+    _Backend,
+    _Mode,
+    cursors,
+)
+from matplotlib.backend_managers import ToolManager
+
+# from matplotlib.backends.qt_editor.formsubplottool import UiSubplotTool
+from matplotlib.figure import Figure
+
+import mpl_itom.figureoptions as figureoptions
 
 # itom specific imports (end)
 
-backend_version = "3.2.3"
+backend_version = "3.2.4"
 DEBUG = False
 
 # SPECIAL_KEYS are keys that do *not* return their unicode name
@@ -98,9 +93,7 @@ MODIFIER_KEYS = [
 if sys.platform == "darwin":
     # in OSX, the control and super (aka cmd/apple) keys are switched, so
     # switch them back.
-    SPECIAL_KEYS.update(
-        {0x01000021: "cmd", 0x01000022: "control"}  # cmd/apple key
-    )
+    SPECIAL_KEYS.update({0x01000021: "cmd", 0x01000022: "control"})  # cmd/apple key
     MODIFIER_KEYS[0] = ("cmd", 0x04000000, 0x01000021)
     MODIFIER_KEYS[2] = ("ctrl", 0x10000000, 0x01000022)
 
@@ -151,8 +144,8 @@ class TimerItom(TimerBase):
         # _on_timer method.
         # set a long default interval to stop the timer. The super
         # constructor will then directly set the interval and singleShot.
-        self._timer = itom.timer(
-            1000000, self._on_timer, singleShot=False
+        self._timer = timer(
+            1000000, self._on_timer, singleShot=False, startAfterInit=False
         )
         super().__init__(*args, **kwargs)
 
@@ -168,9 +161,7 @@ class TimerItom(TimerBase):
             pass
 
     def _timer_set_single_shot(self):
-        self._timer = itom.timer(
-            self._interval, self._on_timer, singleShot=self._single
-        )
+        self._timer = timer(self._interval, self._on_timer, singleShot=self._single)
 
     def _timer_set_interval(self):
         self._timer.setInterval(self._interval)
@@ -219,9 +210,9 @@ class FigureCanvasItom(FigureCanvasBase):
         self.matplotlibWidgetUiItem = (
             matplotlibplotUiItem.canvasWidget
         )  # this object is deleted in the destroy-method of manager, due to cyclic garbage collection
-        self.matplotlibWidgetUiItem[
-            "mouseTracking"
-        ] = True  # by default, the itom-widget only sends mouse-move events if at least one button is pressed or the tracker-button is is checked-state
+        self.matplotlibWidgetUiItem["mouseTracking"] = (
+            True  # by default, the itom-widget only sends mouse-move events if at least one button is pressed or the tracker-button is is checked-state
+        )
 
         self.matplotlibWidgetUiItem.connect("eventEnter(int,int)", self.enterEvent)
         self.matplotlibWidgetUiItem.connect("eventLeave()", self.leaveEvent)
@@ -349,18 +340,14 @@ class FigureCanvasItom(FigureCanvasBase):
         replacement of enterEvent and leaveEvent of Qt5 backend
         """
         x_, y_ = self.mouseEventCoords(x, y)
-        LocationEvent("figure_enter_event", self,
-                      x_, y_,
-                      guiEvent=None)._process()
+        LocationEvent("figure_enter_event", self, x_, y_, guiEvent=None)._process()
 
     def leaveEvent(self):
         """itom specific:
         replacement of enterEvent and leaveEvent of Qt5 backend
         """
         itom.setApplicationCursor(-1)
-        LocationEvent("figure_leave_event", self,
-                      0, 0,
-                      guiEvent=None)._process()
+        LocationEvent("figure_leave_event", self, 0, 0, guiEvent=None)._process()
 
     def mouseEventCoords(self, x, y):
         """Calculate mouse coordinates in physical pixels
@@ -391,25 +378,29 @@ class FigureCanvasItom(FigureCanvasBase):
         try:
             # button: left 1, middle 2, right 3
             if eventType == 0:  # mousePressEvent
-                MouseEvent("button_press_event",
-                           self, x, y, button,
-                           guiEvent=None)._process()
+                MouseEvent(
+                    "button_press_event", self, x, y, button, guiEvent=None
+                )._process()
             elif eventType == 1:  # mouseDoubleClickEvent
-                MouseEvent("button_press_event",
-                           self, x, y, button, dblclick=True,
-                           guiEvent=None)._process()
+                MouseEvent(
+                    "button_press_event",
+                    self,
+                    x,
+                    y,
+                    button,
+                    dblclick=True,
+                    guiEvent=None,
+                )._process()
             elif eventType == 2:  # mouseMoveEvent
                 if button == 0:
                     # if move without button press, reset timer since no other
                     # visualization is given to Qt, which could then reset the timer
                     self.matplotlibWidgetUiItem.call("stopTimer")
-                MouseEvent("motion_notify_event", self,
-                   x, y,
-                   guiEvent=None)._process()
+                MouseEvent("motion_notify_event", self, x, y, guiEvent=None)._process()
             elif eventType == 3:  # mouseReleaseEvent
-                MouseEvent("button_release_event", self,
-                       x, y, button,
-                       guiEvent=None)._process()
+                MouseEvent(
+                    "button_release_event", self, x, y, button, guiEvent=None
+                )._process()
         except NotImplementedError:
             # derived from RuntimeError, therefore handle it separately.
             pass
@@ -421,9 +412,7 @@ class FigureCanvasItom(FigureCanvasBase):
         # from QWheelEvent::delta doc
         steps = delta / 120
         if orientation == 1:  # vertical
-            MouseEvent("scroll_event", self,
-                       x, y, step=steps,
-                       guiEvent=None)._process()
+            MouseEvent("scroll_event", self, x, y, step=steps, guiEvent=None)._process()
 
     def keyEvent(self, type, key, modifiers, autoRepeat):
         key = self._get_key(key, modifiers, autoRepeat)
@@ -432,13 +421,9 @@ class FigureCanvasItom(FigureCanvasBase):
 
         if type == 0:  # keyPressEvent
             # mouse coordinates are missing here
-            KeyEvent("key_press_event", self,
-                     key, 0, 0,
-                     guiEvent=None)._process()
+            KeyEvent("key_press_event", self, key, 0, 0, guiEvent=None)._process()
         elif type == 1:  # keyReleaseEvent
-            KeyEvent("key_release_event", self,
-                     key, 0, 0,
-                     guiEvent=None)._process()
+            KeyEvent("key_release_event", self, key, 0, 0, guiEvent=None)._process()
 
     def resizeEvent(self, w, h, draw=True):
         if self._destroying or (w, h) == self.lastResizeSize:
@@ -550,8 +535,7 @@ class FigureCanvasItom(FigureCanvasBase):
         ##    self._event_loop.quit()
 
     def draw(self):
-        """Render the figure, and queue a request for a Qt draw.
-        """
+        """Render the figure, and queue a request for a Qt draw."""
         # The renderer draw is done here; delaying causes problems with code
         # that uses the result of the draw() to update plot elements.
         if self._is_drawing:
@@ -562,8 +546,7 @@ class FigureCanvasItom(FigureCanvasBase):
         self.paintEvent()
 
     def draw_idle(self):
-        """Queue redraw of the Agg buffer and request Qt paintEvent.
-        """
+        """Queue redraw of the Agg buffer and request Qt paintEvent."""
         # The Agg draw needs to be handled by the same thread matplotlib
         # modifies the scene graph from. Post Agg draw request to the
         # current event loop in order to ensure thread affinity and to
@@ -572,7 +555,6 @@ class FigureCanvasItom(FigureCanvasBase):
         if not (self._draw_pending or self._is_drawing):
             self._draw_pending = True
             self._draw_idle()
-
 
     def _draw_idle(self):
         # if self.height() < 0 or self.width() < 0:
@@ -594,7 +576,7 @@ class FigureCanvasItom(FigureCanvasBase):
         try:
             if rect:
                 self.matplotlibWidgetUiItem.call(
-                    "paintRect", True, *(pt / (1+0*self._dpi_ratio) for pt in rect)
+                    "paintRect", True, *(pt / (1 + 0 * self._dpi_ratio) for pt in rect)
                 )
             else:
                 self.matplotlibWidgetUiItem.call("paintRect", False, 0, 0, 0, 0)
@@ -852,7 +834,7 @@ class Signal:
 
 class NavigationToolbar2Itom(NavigationToolbar2):
     def __init__(self, canvas, matplotlibplotUiItem, parentUi, coordinates=True):
-        """ coordinates: should we show the coordinates on the right? """
+        """coordinates: should we show the coordinates on the right?"""
         self.canvas = canvas
         self.parentUi = parentUi
         self.matplotlibplotUiItem = weakref.ref(matplotlibplotUiItem)
@@ -904,8 +886,7 @@ class NavigationToolbar2Itom(NavigationToolbar2):
         """
 
     def _initToolbar(self):
-        """
-        """
+        """ """
         w = self.matplotlibplotUiItem()
         if not w:
             return
@@ -1359,12 +1340,16 @@ class SaveFigureItom(backend_tools.SaveFigureBase):
             except Exception as e:
                 itom.ui.msgCritical("Error saving file", str(e), parent=parent)
 
+
 if matplotlib.__version__ < "3.7.0":
+
     @backend_tools._register_tool_class(FigureCanvasItom)
     class SetCursorItom(backend_tools.SetCursorBase):
         def set_cursor(self, cursor):
             self.canvas.matplotlibWidgetUiItem.call("setCursor", cursord[cursor])
+
 else:
+
     @backend_tools._register_tool_class(FigureCanvasItom)
     class SetCursorItom(backend_tools.ToolSetCursor):
         def set_cursor(self, cursor):
@@ -1436,8 +1421,7 @@ class _BackendItom(_Backend):
 
     @classmethod
     def new_figure_manager_given_figure(cls, num, figure):
-        """Create a new figure manager instance for the given figure.
-        """
+        """Create a new figure manager instance for the given figure."""
         canvas = cls.FigureCanvas(figure)
         manager = cls.FigureManager(canvas, num)
         return manager

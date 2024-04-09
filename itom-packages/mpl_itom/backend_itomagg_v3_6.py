@@ -1,14 +1,13 @@
 """
 Render to itom (qt) from agg
 """
-from matplotlib.transforms import Bbox
-
-from matplotlib import cbook
-from matplotlib.backends.backend_agg import FigureCanvasAgg
-from .backend_itom_v3_6 import FigureCanvasItom, _BackendItom
 
 import itom
 import numpy as np  # for color channel conversion in copy to clipboard
+from matplotlib.backends.backend_agg import FigureCanvasAgg
+from matplotlib.transforms import Bbox
+
+from .backend_itom_v3_6 import FigureCanvasItom, _BackendItom
 
 DEBUG = False
 
@@ -147,8 +146,7 @@ class FigureCanvasItomAgg(FigureCanvasItom, FigureCanvasAgg):
         self.figure.set_canvas(self)
 
     def blit(self, bbox=None):
-        """Blit the region in bbox.
-        """
+        """Blit the region in bbox."""
         if DEBUG:
             print("blit:", str(bbox))
         # If bbox is None, blit the entire canvas. Otherwise
@@ -157,8 +155,7 @@ class FigureCanvasItomAgg(FigureCanvasItom, FigureCanvasAgg):
             bbox = self.figure.bbox
 
         # repaint uses logical pixels, not physical pixels like the renderer.
-        dpi_ratio = self._dpi_ratio
-        x0, y0, w, h = [pt / dpi_ratio for pt in bbox.extents]
+        x0, y0, w, h = [pt for pt in bbox.extents]
 
         self.paintEvent((x0, y0, w, h))
 
