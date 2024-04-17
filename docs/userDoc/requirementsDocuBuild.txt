@@ -1,7 +1,5 @@
-breathe
 matplotlib
 mplcyberpunk
-numpydoc
 pandas
 openpyxl
 plotly
@@ -12,13 +10,15 @@ scipy
 SciencePlots
 seaborn
 scikit-learn
-sphinx
+pydata-sphinx-theme
+ipython
+nbformat
+sphinx==5.3.0
 sphinx_copybutton
 sphinx_gallery
 sphinxcontrib-moderncmakedomain
 sphinx-favicon
 sphinxcontrib-fulltoc
 sphinxcontrib-jquery
-pydata-sphinx-theme
-ipython
-nbformat
+numpydoc==1.6.0
+breathe==4.35.0

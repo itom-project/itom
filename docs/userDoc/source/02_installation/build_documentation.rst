@@ -44,19 +44,17 @@ installed on your computer. The main applications are:
 3. Python-Packages and Sphinx extensions
 
     In the |itom| sources folder **itom/docs/userDoc**, you can find a
-    **requirements.txt** file containing all further necessary python packages
+    **requirementsDocuBuild.txt** file containing all further necessary python packages
     and Sphinx extensions. Install them by using **pip**:
 
     .. code-block: bat
 
-        python.exe -m pip install -r requirements.txt
+        python.exe -m pip install -r requirementsDocuBuild.txt
 
-    Following packages will be installed:
+    Or Install it manually:
 
-    * `breathe <https://pypi.org/project/breathe/>`_
     * `matplotlib <https://pypi.org/project/matplotlib/>`_
     * `numpy <https://pypi.org/project/numpy/>`_
-    * `numpydoc <https://pypi.org/project/numpydoc/>`_
     * `openpyxl <https://pypi.org/project/openpyxl/>`_
     * `pandas <https://pypi.org/project/pandas/>`_
     * `plotly <https://pypi.org/project/plotly/>`_
@@ -64,7 +62,19 @@ installed on your computer. The main applications are:
     * `scikit learn <https://pypi.org/project/scikit-learn/>`_
     * `scipy <https://pypi.org/project/scipy/>`_
     * `seaborn <https://pypi.org/project/seaborn/>`_
-    * `sphinx <https://pypi.org/project/Sphinx/>`_
+    
+    Regarding Python3.12:
+
+    Running pip install breathe automatically installs sphinx v7.3.5.
+    However sphinx v5.3.0 is needed to allow compatibility with breathe.
+    Issue is reported: https://github.com/itom-project/itom/issues/281. 
+    Therefore run the following commands in the exact order:
+
+    * pip install sphinx==5.3.0
+    * pip install numpydoc==1.6.0
+    * pip install breathe==4.35.0
+    * pip install sphinxcontrib-moderncmakedomain
+
 
     To create the demo chapter documentation, the Sphinx extension:
 
