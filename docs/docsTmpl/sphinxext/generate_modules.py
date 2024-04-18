@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 # Miville
 # Copyright (C) 2008 Société des arts technologiques (SAT)

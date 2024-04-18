@@ -1,4 +1,3 @@
-# coding=iso-8859-15
 
 """Base class for custom user interfaces with auto-slot connections.
 

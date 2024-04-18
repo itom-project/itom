@@ -1,4 +1,3 @@
-# coding=iso-8859-15
 """
 This file contains a template class for measurement systems used under itom.
 By using this template further packages, e.g. unified stitching shall be implemented.

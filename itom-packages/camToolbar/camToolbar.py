@@ -1,4 +1,3 @@
-# coding=iso-8859-15
 """
 This file contains a toolbar with basic live image and snap shot interactions
 """

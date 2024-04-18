@@ -1,4 +1,3 @@
-# coding=iso-8859-15
 from itomUi import ItomUi
 from itom import dataObject, ui, filter
 import inspect

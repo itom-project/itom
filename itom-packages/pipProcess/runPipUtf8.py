@@ -1,4 +1,3 @@
-# coding=utf8
 
 """Helper module to call pip from a QProcess and forcing the stdout and sterr streams to UTF-8.
 

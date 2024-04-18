@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 # tifffile.py
 
 # Copyright (c) 2008-2012, Christoph Gohlke

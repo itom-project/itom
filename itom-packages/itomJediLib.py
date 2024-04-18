@@ -821,7 +821,7 @@ def rename_reference(code, line, column, path):
 
             project = jedi.api.project.get_default_project(path=path)
             projectRootPath = os.path.realpath(project.path)
-            
+
             try:
                 refactoring = script.rename(line=line, column=column, new_name="")
             except jedi.api.exceptions.RefactoringError:
@@ -834,7 +834,7 @@ def rename_reference(code, line, column, path):
                 values = []
                 filenameStr = os.path.realpath(filename)
                 fileInProject = filenameStr.startswith(projectRootPath)
-                
+
                 for name, _nameToChange in node.items():
                     lines.append(name.line)
                     cols.append(name.column)

@@ -1,4 +1,3 @@
-# coding=iso-8859-15
 
 #
 # itom documentation build configuration file

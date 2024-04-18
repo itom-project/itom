@@ -1,4 +1,3 @@
-# coding=iso-8859-15
 """
 This file contains a toolbar with basic surface analysis methods e.g. Rz, Sa, Polynomical Fittings,
 INIT via

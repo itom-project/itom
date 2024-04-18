@@ -1,4 +1,3 @@
-# coding=iso-8859-15
 
 """Parses the stubs file for the itom.algorithms submodule.
 This module contains wrapper methods for all algorithms in

@@ -1,4 +1,3 @@
-# coding=iso-8859-15
 """Contourlines 2D plot
 =======================
 

@@ -1,4 +1,3 @@
-# coding=iso-8859-15
 
 #
 # plugin documentation build configuration file for use with itom.

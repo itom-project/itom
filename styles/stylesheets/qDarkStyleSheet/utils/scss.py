@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """Utilities for compiling SASS files."""
 
 # Standard library imports

@@ -1,4 +1,3 @@
-# coding=iso-8859-15
 # Copyright © 2009 Pierre Raybaut
 # Licensed under the terms of the MIT License
 # see the mpl licenses directory for a copy of the license

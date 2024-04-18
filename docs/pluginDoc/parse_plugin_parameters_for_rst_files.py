@@ -1,4 +1,3 @@
-# coding=iso-8859-15
 
 """This script print a reStructuredText representation of all parameters
 of an opened plugin instance to the console.

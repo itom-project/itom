@@ -1,4 +1,3 @@
-# coding=iso-8859-15
 
 """Parses the stubs file for the entire itom module.
 

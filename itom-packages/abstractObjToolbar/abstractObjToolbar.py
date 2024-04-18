@@ -1,4 +1,3 @@
-# coding=iso-8859-15
 """
 This file contains an abstract toolbar with basic functions for ToolBar / Menu Interaction.
 This contains parser for the global workspace to find DataObjects.

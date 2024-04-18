@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 from docutils import nodes, utils, statemachine
 from docutils.parsers.rst.roles import set_classes

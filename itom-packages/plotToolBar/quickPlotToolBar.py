@@ -1,4 +1,3 @@
-# coding=iso-8859-15
 """
 This file contains a toolbar with basic plot interactions e.g. linePlot, 2D-Plot
 INIT via
