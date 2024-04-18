@@ -13,12 +13,12 @@ scikit-learn
 pydata-sphinx-theme
 ipython
 nbformat
-sphinx==5.3.0
+sphinx
 sphinx_copybutton
 sphinx_gallery
 sphinxcontrib-moderncmakedomain
 sphinx-favicon
 sphinxcontrib-fulltoc
 sphinxcontrib-jquery
-numpydoc==1.6.0
-breathe==4.35.0
+numpydoc
+breathe
