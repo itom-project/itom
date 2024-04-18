@@ -1,4 +1,3 @@
-
 # iTOM documentation build configuration file, created by
 # sphinx-quickstart on Sat Jul 30 14:36:28 2011.
 #

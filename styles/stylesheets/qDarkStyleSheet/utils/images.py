@@ -4,7 +4,6 @@ Utilities to process and convert svg images to png using palette colors.
 """
 
 # Standard library imports
-from __future__ import absolute_import, division, print_function
 
 import logging
 import os
@@ -74,7 +73,7 @@ def _create_colored_svg(svg_path, temp_svg_path, color):
     """
     Replace base svg with fill color.
     """
-    with open(svg_path, 'r') as fh:
+    with open(svg_path) as fh:
         data = fh.read()
 
     base_color = '#ff0000'  # Hardcoded in base svg files
@@ -112,7 +111,7 @@ def create_palette_image(base_svg_path=SVG_PATH, path=IMAGES_PATH,
     _logger.info("To SVG: %s" % palette_svg_path)
     _logger.info("To PNG: %s" % palette_png_path)
 
-    with open(base_palette_svg_path, 'r') as fh:
+    with open(base_palette_svg_path) as fh:
         data = fh.read()
 
     color_palette = palette.color_palette()
@@ -171,7 +170,7 @@ def create_images(base_svg_path=SVG_PATH, rc_path=RC_PATH,
     for height, ext in heights.items():
         width = height
 
-        _logger.debug(" Size HxW (px): %s X %s" % (height, width))
+        _logger.debug(" Size HxW (px): {} X {}".format(height, width))
 
         for svg_fname in svg_fnames:
             svg_name = svg_fname.split('.')[0]
@@ -267,7 +266,7 @@ def get_rc_links_from_scss(pattern=r"\/.*\.png"):
         list(str): list of unique links found.
     """
 
-    with open(STYLES_SCSS_FILEPATH, 'r') as fh:
+    with open(STYLES_SCSS_FILEPATH) as fh:
         data = fh.read()
 
     lines = data.split("\n")

@@ -1,5 +1,3 @@
-
-
 """Draw and transform shapes
 ============================
 

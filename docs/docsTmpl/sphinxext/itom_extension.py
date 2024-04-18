@@ -1,4 +1,3 @@
-
 from docutils import nodes, utils, statemachine
 from docutils.parsers.rst.roles import set_classes
 from docutils.parsers.rst import directives
@@ -276,14 +275,14 @@ class PluginInitParams(Directive):
                     # fallback
                     meta = self.parseContent(p)
 
-                text = "* **%s**: %s\n    %s" % (
+                text = "* **{}**: {}\n    {}".format(
                     p["name"],
                     p["type"],
                     p["info"],
                 )
 
                 if meta != "":
-                    text = text + "\n    \n    *%s*" % meta.replace("*", "\*")
+                    text = text + "\n    \n    *%s*" % meta.replace("*", r"\*")
 
                 textlist.append(text)
 
@@ -295,14 +294,14 @@ class PluginInitParams(Directive):
                     # fallback
                     meta = self.parseContent(p)
 
-                text = "* **%s**: %s, optional\n    %s" % (
+                text = "* **{}**: {}, optional\n    {}".format(
                     p["name"],
                     p["type"],
                     p["info"],
                 )
 
                 if meta != "":
-                    text = text + "\n    \n    *%s*" % meta.replace("*", "\*")
+                    text = text + "\n    \n    *%s*" % meta.replace("*", r"\*")
 
                 textlist.append(text)
 
@@ -323,14 +322,14 @@ class PluginInitParams(Directive):
             )
         elif "metaType" in param and param["metaType"] == 8:  # seq. of float
             if param["step"] == 0.0:
-                content = "%f-%f values, each value in range [%f:%f]" % (
+                content = "{:f}-{:f} values, each value in range [{:f}:{:f}]".format(
                     param["numMin"],
                     param["numMax"],
                     param["min"],
                     param["max"],
                 )
             else:
-                content = "%f-%f values, each value in range [%f:%f:%f]" % (
+                content = "{:f}-{:f} values, each value in range [{:f}:{:f}:{:f}]".format(
                     param["numMin"],
                     param["numMax"],
                     param["min"],
@@ -339,14 +338,14 @@ class PluginInitParams(Directive):
                 )
         elif "min" in param and "max" in param:
             if "step" in param and not (param["step"] is None):
-                content = "[%s,%s], default: %s, step: %s" % (
+                content = "[{},{}], default: {}, step: {}".format(
                     param["min"],
                     param["max"],
                     param["value"],
                     param["step"],
                 )
             else:
-                content = "[%s,%s], default: %s" % (
+                content = "[{},{}], default: {}".format(
                     param["min"],
                     param["max"],
                     param["value"],
@@ -416,7 +415,7 @@ class PluginFilterList(Directive):
 
                 for f in pluginInfo["filter"]:
                     [signature, description, parameters] = self.analyzeFilter(f)
-                    t = ".. py:function:: %s(%s)" % (f, signature)
+                    t = ".. py:function:: {}({})".format(f, signature)
                     t += (
                         "\n    \n"
                         + self.indent(description)
@@ -499,7 +498,7 @@ class PluginFilterList(Directive):
 
             for i in outParams:
                 parameters.append(
-                    ":return: %s - %s\n:rtype: %s" % (i["name"], i["info"], i["type"])
+                    ":return: {} - {}\n:rtype: {}".format(i["name"], i["info"], i["type"])
                 )
         else:
             signature = "???"

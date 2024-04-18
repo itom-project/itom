@@ -1,4 +1,4 @@
-# Copyright © 2009 Pierre Raybaut
+# Copyright @ 2009 Pierre Raybaut
 # Licensed under the terms of the MIT License
 # see the mpl licenses directory for a copy of the license
 

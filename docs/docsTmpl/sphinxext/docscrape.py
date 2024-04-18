@@ -10,7 +10,7 @@ from io import StringIO
 #from StringIO import StringIO
 from warnings import warn
 4
-class Reader(object):
+class Reader:
     """A line-based string reader.
 
     """
@@ -84,7 +84,7 @@ class Reader(object):
         return not ''.join(self._str).strip()
 
 
-class NumpyDocString(object):
+class NumpyDocString:
     def __init__(self,docstring):
         docstring = textwrap.dedent(docstring).split('\n')
 
@@ -307,7 +307,7 @@ class NumpyDocString(object):
 
     def _str_signature(self):
         if self['Signature']:
-            return [self['Signature'].replace('*','\*')] + ['']
+            return [self['Signature'].replace('*',r'\*')] + ['']
         else:
             return ['']
 
@@ -328,7 +328,7 @@ class NumpyDocString(object):
         if self[name]:
             out += self._str_header(name)
             for param,param_type,desc in self[name]:
-                out += ['%s : %s' % (param, param_type)]
+                out += ['{} : {}'.format(param, param_type)]
                 out += self._str_indent(desc)
             out += ['']
         return out
@@ -348,9 +348,9 @@ class NumpyDocString(object):
         last_had_desc = True
         for func, desc, role in self['See Also']:
             if role:
-                link = ':%s:`%s`' % (role, func)
+                link = ':{}:`{}`'.format(role, func)
             elif func_role:
-                link = ':%s:`%s`' % (func_role, func)
+                link = ':{}:`{}`'.format(func_role, func)
             else:
                 link = "`%s`_" % func
             if desc or last_had_desc:
@@ -373,7 +373,7 @@ class NumpyDocString(object):
         for section, references in idx.iteritems():
             if section == 'default':
                 continue
-            out += ['   :%s: %s' % (section, ', '.join(references))]
+            out += ['   :{}: {}'.format(section, ', '.join(references))]
         return out
 
     def __str__(self, func_role=''):
@@ -416,7 +416,7 @@ class FunctionDoc(NumpyDocString):
             NumpyDocString.__init__(self, doc)
         except ValueError as e:
             print('*'*78)
-            print("ERROR: '%s' while parsing `%s`" % (e, self._f))
+            print("ERROR: '{}' while parsing `{}`".format(e, self._f))
             print('*'*78)
             #print "Docstring follows:"
             #print doclines
@@ -428,8 +428,8 @@ class FunctionDoc(NumpyDocString):
                 # try to read signature
                 argspec = inspect.getargspec(func)
                 argspec = inspect.formatargspec(*argspec)
-                argspec = argspec.replace('*','\*')
-                signature = '%s%s' % (func_name, argspec)
+                argspec = argspec.replace('*',r'\*')
+                signature = '{}{}'.format(func_name, argspec)
             except TypeError as e:
                 signature = '%s()' % func_name
             self['Signature'] = signature
@@ -446,7 +446,7 @@ class FunctionDoc(NumpyDocString):
         out = ''
 
         func, func_name = self.get_func()
-        signature = self['Signature'].replace('*', '\*')
+        signature = self['Signature'].replace('*', r'\*')
 
         roles = {'func': 'function',
                  'meth': 'method'}
@@ -454,10 +454,10 @@ class FunctionDoc(NumpyDocString):
         if self._role:
             if not (self._role in roles):
                 print("Warning: invalid role %s" % self._role)
-            out += '.. %s:: %s\n    \n\n' % (roles.get(self._role,''),
+            out += '.. {}:: {}\n    \n\n'.format(roles.get(self._role,''),
                                              func_name)
 
-        out += super(FunctionDoc, self).__str__(func_role=self._role)
+        out += super().__str__(func_role=self._role)
         return out
 
 
@@ -485,7 +485,7 @@ class ClassDoc(NumpyDocString):
 
     def __str__(self):
         out = ''
-        out += super(ClassDoc, self).__str__()
+        out += super().__str__()
         out += "\n\n"
 
         #for m in self.methods:

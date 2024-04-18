@@ -1,4 +1,3 @@
-
 #
 # itom documentation build configuration file
 #

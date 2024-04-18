@@ -74,7 +74,7 @@ EXPECTED_NON_EMPTY_XML = """<?xml version="1.0" encoding="UTF-8"?>
       <failure message="gtest_xml_output_unittest_.cc:*&#x0A;Expected equality of these values:&#x0A;  1&#x0A;  2" type=""><![CDATA[gtest_xml_output_unittest_.cc:*
 Expected equality of these values:
   1
-  2%(stack)s]]></failure>
+  2{stack}]]></failure>
     </testcase>
   </testsuite>
   <testsuite name="MixedResultTest" tests="3" failures="1" disabled="1" errors="0" time="*" timestamp="*">
@@ -83,11 +83,11 @@ Expected equality of these values:
       <failure message="gtest_xml_output_unittest_.cc:*&#x0A;Expected equality of these values:&#x0A;  1&#x0A;  2" type=""><![CDATA[gtest_xml_output_unittest_.cc:*
 Expected equality of these values:
   1
-  2%(stack)s]]></failure>
+  2{stack}]]></failure>
       <failure message="gtest_xml_output_unittest_.cc:*&#x0A;Expected equality of these values:&#x0A;  2&#x0A;  3" type=""><![CDATA[gtest_xml_output_unittest_.cc:*
 Expected equality of these values:
   2
-  3%(stack)s]]></failure>
+  3{stack}]]></failure>
     </testcase>
     <testcase name="DISABLED_test" status="notrun" result="suppressed" time="*" timestamp="*" classname="MixedResultTest"/>
   </testsuite>
@@ -95,14 +95,14 @@ Expected equality of these values:
     <testcase name="OutputsCData" status="run" result="completed" time="*" timestamp="*" classname="XmlQuotingTest">
       <failure message="gtest_xml_output_unittest_.cc:*&#x0A;Failed&#x0A;XML output: &lt;?xml encoding=&quot;utf-8&quot;&gt;&lt;top&gt;&lt;![CDATA[cdata text]]&gt;&lt;/top&gt;" type=""><![CDATA[gtest_xml_output_unittest_.cc:*
 Failed
-XML output: <?xml encoding="utf-8"><top><![CDATA[cdata text]]>]]&gt;<![CDATA[</top>%(stack)s]]></failure>
+XML output: <?xml encoding="utf-8"><top><![CDATA[cdata text]]>]]&gt;<![CDATA[</top>{stack}]]></failure>
     </testcase>
   </testsuite>
   <testsuite name="InvalidCharactersTest" tests="1" failures="1" disabled="0" errors="0" time="*" timestamp="*">
     <testcase name="InvalidCharactersInMessage" status="run" result="completed" time="*" timestamp="*" classname="InvalidCharactersTest">
       <failure message="gtest_xml_output_unittest_.cc:*&#x0A;Failed&#x0A;Invalid characters in brackets []" type=""><![CDATA[gtest_xml_output_unittest_.cc:*
 Failed
-Invalid characters in brackets []%(stack)s]]></failure>
+Invalid characters in brackets []{stack}]]></failure>
     </testcase>
   </testsuite>
   <testsuite name="DisabledTest" tests="1" failures="0" disabled="1" errors="0" time="*" timestamp="*">
@@ -170,9 +170,9 @@ Invalid characters in brackets []%(stack)s]]></failure>
   <testsuite name="Single/TypeParameterizedTestSuite/1" tests="1" failures="0" disabled="0" errors="0" time="*" timestamp="*">
     <testcase name="HasTypeParamAttribute" type_param="*" status="run" result="completed" time="*" timestamp="*" classname="Single/TypeParameterizedTestSuite/1" />
   </testsuite>
-</testsuites>""" % {
-    'stack': STACK_TRACE_TEMPLATE
-}
+</testsuites>""".format(
+    stack=STACK_TRACE_TEMPLATE
+)
 
 EXPECTED_FILTERED_TEST_XML = """<?xml version="1.0" encoding="UTF-8"?>
 <testsuites tests="1" failures="0" disabled="0" errors="0" time="*"
@@ -279,9 +279,9 @@ class GTestXMLOutputUnitTest(gtest_xml_test_utils.GTestXMLTestCase):
     p = gtest_test_utils.Subprocess(
         [gtest_prog_path, '%s=xml' % GTEST_OUTPUT_FLAG],
         working_dir=gtest_test_utils.GetTempDir())
-    self.assert_(p.exited)
-    self.assertEquals(0, p.exit_code)
-    self.assert_(os.path.isfile(output_file))
+    self.assertTrue(p.exited)
+    self.assertEqual(0, p.exit_code)
+    self.assertTrue(os.path.isfile(output_file))
 
   def testSuppressedXmlOutput(self):
     """
@@ -295,7 +295,7 @@ class GTestXMLOutputUnitTest(gtest_xml_test_utils.GTestXMLTestCase):
       os.remove(xml_path)
 
     command = [GTEST_PROGRAM_PATH,
-               '%s=xml:%s' % (GTEST_OUTPUT_FLAG, xml_path),
+               '{}=xml:{}'.format(GTEST_OUTPUT_FLAG, xml_path),
                '--shut_down_xml']
     p = gtest_test_utils.Subprocess(command)
     if p.terminated_by_signal:
@@ -304,13 +304,13 @@ class GTestXMLOutputUnitTest(gtest_xml_test_utils.GTestXMLTestCase):
           p.terminated_by_signal,
           '%s was killed by signal %d' % (GTEST_PROGRAM_NAME, p.signal))
     else:
-      self.assert_(p.exited)
-      self.assertEquals(1, p.exit_code,
+      self.assertTrue(p.exited)
+      self.assertEqual(1, p.exit_code,
                         "'%s' exited with code %s, which doesn't match "
                         'the expected exit code %s.'
                         % (command, p.exit_code, 1))
 
-    self.assert_(not os.path.isfile(xml_path))
+    self.assertTrue(not os.path.isfile(xml_path))
 
   def testFilteredTestXmlOutput(self):
     """Verifies XML output when a filter is applied.
@@ -346,7 +346,7 @@ class GTestXMLOutputUnitTest(gtest_xml_test_utils.GTestXMLTestCase):
                             gtest_prog_name + 'out.xml')
     gtest_prog_path = gtest_test_utils.GetTestExecutablePath(gtest_prog_name)
 
-    command = ([gtest_prog_path, '%s=xml:%s' % (GTEST_OUTPUT_FLAG, xml_path)] +
+    command = ([gtest_prog_path, '{}=xml:{}'.format(GTEST_OUTPUT_FLAG, xml_path)] +
                extra_args)
     environ_copy = os.environ.copy()
     if extra_env:
@@ -354,11 +354,11 @@ class GTestXMLOutputUnitTest(gtest_xml_test_utils.GTestXMLTestCase):
     p = gtest_test_utils.Subprocess(command, env=environ_copy)
 
     if p.terminated_by_signal:
-      self.assert_(False,
+      self.assertTrue(False,
                    '%s was killed by signal %d' % (gtest_prog_name, p.signal))
     else:
-      self.assert_(p.exited)
-      self.assertEquals(expected_exit_code, p.exit_code,
+      self.assertTrue(p.exited)
+      self.assertEqual(expected_exit_code, p.exit_code,
                         "'%s' exited with code %s, which doesn't match "
                         'the expected exit code %s.'
                         % (command, p.exit_code, expected_exit_code))

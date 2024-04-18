@@ -1,4 +1,3 @@
-
 from docutils import nodes, utils, statemachine
 from docutils.parsers.rst.roles import set_classes
 from docutils.parsers.rst import directives, Directive
@@ -23,7 +22,7 @@ class DesignerPluginDocInclude(Include):
         if os.path.exists(rstFileName):
             #load the rst file at the build location and check for .. figure:: img or .. image:: img
             #if img seems to be relative, replace it by the absolute location
-            with open(rstFileName, 'rt') as f:
+            with open(rstFileName) as f:
                 lines = [line for line in f]
 
             pattern = re.compile(r"(.*)(\.\. figure:: |\.\. image:: )(.*\.[a-zA-Z0-9]{1,4})(.*)")
@@ -44,7 +43,7 @@ class DesignerPluginDocInclude(Include):
                             file = rstPath + '/' + file
                         lines[i] = prefix + directive + file + suffix + '\n'
 
-            with open(rstFileName, 'wt') as f:
+            with open(rstFileName, 'w') as f:
                 for line in lines:
                     f.write(line)
             #end rst file manipulation

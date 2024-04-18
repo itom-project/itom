@@ -1,7 +1,6 @@
 """
 Render to itom (qt) from agg
 """
-from __future__ import absolute_import, division, print_function, unicode_literals
 
 from matplotlib import cbook
 from matplotlib.transforms import Bbox
@@ -164,7 +163,7 @@ class FigureCanvasItomAgg(FigureCanvasItom, FigureCanvasAgg):
 
         # repaint uses logical pixels, not physical pixels like the renderer.
         dpi_ratio = self._dpi_ratio
-        x0, y0, w, h = [pt / dpi_ratio for pt in bbox.extents]
+        x0, y0, w, h = (pt / dpi_ratio for pt in bbox.extents)
 
         self.paintEvent((x0, y0, w, h))
 
@@ -177,7 +176,7 @@ class FigureCanvasItomAgg(FigureCanvasItom, FigureCanvasAgg):
         self.do_not_resize_window = True
         # itom specific end -->
 
-        super(FigureCanvasItomAgg, self).print_figure(*args, **kwargs)
+        super().print_figure(*args, **kwargs)
 
         # <-- itom specific start
         self.do_not_resize_window = False

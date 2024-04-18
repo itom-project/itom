@@ -49,21 +49,21 @@ class ParamValidator:
         if not (isinstance(value, float) or isinstance(value, int)):
             return ParamValidatorResult(
                 False,
-                "parameter '{0}' is not convertable into a floating point number.".format(
+                "parameter '{}' is not convertable into a floating point number.".format(
                     key
                 ),
             )
         if not (minValue is None) and value < minValue:
             return ParamValidatorResult(
                 False,
-                "parameter '{0}' must not be smaller than {1}".format(
+                "parameter '{}' must not be smaller than {}".format(
                     key, minValue
                 ),
             )
         if not (maxValue is None) and value > maxValue:
             return ParamValidatorResult(
                 False,
-                "parameter '{0}' must not be bigger than {1}".format(
+                "parameter '{}' must not be bigger than {}".format(
                     key, maxValue
                 ),
             )
@@ -73,7 +73,7 @@ class ParamValidator:
     def checkBool(key, value):
         if not (isinstance(value, bool)):
             return ParamValidatorResult(
-                False, "parameter '{0}' is no boolean data type".format(key)
+                False, "parameter '{}' is no boolean data type".format(key)
             )
         return ParamValidatorResult()
 
@@ -82,21 +82,21 @@ class ParamValidator:
         if not (isinstance(value, int)):
             return ParamValidatorResult(
                 False,
-                "parameter '{0}' is not convertable into a fixed point number.".format(
+                "parameter '{}' is not convertable into a fixed point number.".format(
                     key
                 ),
             )
         if not (minValue is None) and value < minValue:
             return ParamValidatorResult(
                 False,
-                "parameter '{0}' must not be smaller than {1}".format(
+                "parameter '{}' must not be smaller than {}".format(
                     key, minValue
                 ),
             )
         if not (maxValue is None) and value > maxValue:
             return ParamValidatorResult(
                 False,
-                "parameter '{0}' must not be bigger than {1}".format(
+                "parameter '{}' must not be bigger than {}".format(
                     key, maxValue
                 ),
             )
@@ -114,7 +114,7 @@ class ParamValidator:
             if not (len(value) in elemCountRange):
                 return ParamValidatorResult(
                     False,
-                    "size of parameter '{0}' is not in given range {1}".format(
+                    "size of parameter '{}' is not in given range {}".format(
                         key, elemCountRange
                     ),
                 )
@@ -123,7 +123,7 @@ class ParamValidator:
         c = 0
         for i in value:
             ret += ParamValidator.checkFloat(
-                "{0}[{1}]".format(key, c), i, minValue, maxValue
+                "{}[{}]".format(key, c), i, minValue, maxValue
             )
         return ret
 
@@ -139,7 +139,7 @@ class ParamValidator:
             if not (len(value) in elemCountRange):
                 return ParamValidatorResult(
                     False,
-                    "size of parameter '{0}' is not in given range {1}".format(
+                    "size of parameter '{}' is not in given range {}".format(
                         key, elemCountRange
                     ),
                 )
@@ -148,7 +148,7 @@ class ParamValidator:
         c = 0
         for i in value:
             ret += ParamValidator.checkInt(
-                "{0}[{1}]".format(key, c), i, minValue, maxValue
+                "{}[{}]".format(key, c), i, minValue, maxValue
             )
         return ret
 
@@ -157,7 +157,7 @@ class ParamValidator:
         if not value in allowedList:
             return ParamValidatorResult(
                 False,
-                "parameter '{0}' does not correspond to allowed values ({1})".format(
+                "parameter '{}' does not correspond to allowed values ({})".format(
                     key, allowedList
                 ),
             )
@@ -170,7 +170,7 @@ class ParamValidator:
         ):
             return ParamValidatorResult(
                 False,
-                "parameter '{0}' does not correspond to enumeration {1}".format(
+                "parameter '{}' does not correspond to enumeration {}".format(
                     key, allowedEnum
                 ),
             )
@@ -185,6 +185,6 @@ class ParamValidator:
             return ParamValidatorResult(False, "the given folder-name is empty")
         elif path.exists(str(value)) == False:
             return ParamValidatorResult(
-                False, "the folder parameter '{0}' does not exist".format(v)
+                False, "the folder parameter '{}' does not exist".format(v)
             )
         return ParamValidatorResult()

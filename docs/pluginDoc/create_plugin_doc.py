@@ -1,6 +1,3 @@
-
-# -*- coding: utf-8 -*-
-
 import os
 import sys
 from sphinx.util.console import nocolor
@@ -22,7 +19,7 @@ def pathConv(p: str):
 
 def createPluginDoc(confFile: str, buildernames):
     """Main method."""
-    with(open(confFile, "r")) as infile:
+    with(open(confFile)) as infile:
         pluginConfiguration = infile.readlines()
         pluginConfiguration = "".join(pluginConfiguration)
 

@@ -374,7 +374,7 @@ class FigureCanvasItom(FigureCanvasBase):
         if button is None:
             button = 0  # fallback solution
         if DEBUG:
-            print("mouseEvent %s (%.2f,%.2f), button: %s" % (eventType, x, y, button))
+            print("mouseEvent {} ({:.2f},{:.2f}), button: {}".format(eventType, x, y, button))
         try:
             # button: left 1, middle 2, right 3
             if eventType == 0:  # mousePressEvent
@@ -1047,7 +1047,7 @@ class NavigationToolbar2Itom(NavigationToolbar2):
         selectedFilter = 0
         for name, exts in sorted_filetypes:
             exts_list = " ".join(["*.%s" % ext for ext in exts])
-            filter = "%s (%s)" % (name, exts_list)
+            filter = "{} ({})".format(name, exts_list)
             if default_filetype in exts:
                 selectedFilter = len(filters)
             filters.append(filter)
@@ -1312,7 +1312,7 @@ class SaveFigureItom(backend_tools.SaveFigureBase):
         selectedFilter = None
         for name, exts in sorted_filetypes:
             exts_list = " ".join(["*.%s" % ext for ext in exts])
-            filtername = "%s (%s)" % (name, exts_list)
+            filtername = "{} ({})".format(name, exts_list)
             if default_filetype in exts:
                 selectedFilter = filtername
             filters.append(filtername)

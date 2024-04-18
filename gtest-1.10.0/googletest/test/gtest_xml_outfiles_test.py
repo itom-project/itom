@@ -86,15 +86,15 @@ class GTestXMLOutFilesTest(gtest_xml_test_utils.GTestXMLTestCase):
   def DeleteFilesAndDir(self):
     try:
       os.remove(os.path.join(self.output_dir_, GTEST_OUTPUT_1_TEST + ".xml"))
-    except os.error:
+    except OSError:
       pass
     try:
       os.remove(os.path.join(self.output_dir_, GTEST_OUTPUT_2_TEST + ".xml"))
-    except os.error:
+    except OSError:
       pass
     try:
       os.rmdir(self.output_dir_)
-    except os.error:
+    except OSError:
       pass
 
   def testOutfile1(self):
@@ -108,14 +108,14 @@ class GTestXMLOutFilesTest(gtest_xml_test_utils.GTestXMLTestCase):
     command = [gtest_prog_path, "--gtest_output=xml:%s" % self.output_dir_]
     p = gtest_test_utils.Subprocess(command,
                                     working_dir=gtest_test_utils.GetTempDir())
-    self.assert_(p.exited)
-    self.assertEquals(0, p.exit_code)
+    self.assertTrue(p.exited)
+    self.assertEqual(0, p.exit_code)
 
     output_file_name1 = test_name + ".xml"
     output_file1 = os.path.join(self.output_dir_, output_file_name1)
     output_file_name2 = 'lt-' + output_file_name1
     output_file2 = os.path.join(self.output_dir_, output_file_name2)
-    self.assert_(os.path.isfile(output_file1) or os.path.isfile(output_file2),
+    self.assertTrue(os.path.isfile(output_file1) or os.path.isfile(output_file2),
                  output_file1)
 
     expected = minidom.parseString(expected_xml)

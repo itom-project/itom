@@ -38,7 +38,7 @@ def find_function(funcname, filename):
     cre = re.compile(r'def\s+%s\s*[(]' % re.escape(funcname))
     try:
         fp = open(filename)
-    except IOError:
+    except OSError:
         return None
     # consumer of this info expects the first line to be 1
     lineno = 1
@@ -363,7 +363,7 @@ class itoDebugger(bdb.Bdb):
         try:
             line = linecache.getline(filename, lineno, globs) #returns line in file or '' if empty line or invalid file or lineno
         except UnicodeDecodeError as E:
-            E.reason = "{0}. File '{1}', line {2}".format(E.reason,filename,lineno)
+            E.reason = "{}. File '{}', line {}".format(E.reason,filename,lineno)
             raise #reraise modified error
 
         if(line == ''):
@@ -424,9 +424,9 @@ class itoDebugger(bdb.Bdb):
         for i in range(n):
             name = co.co_varnames[i]
             if name in dict:
-                self.message('%s = %r' % (name, dict[name]))
+                self.message('{} = {!r}'.format(name, dict[name]))
             else:
-                self.message('%s = *** undefined ***' % (name,))
+                self.message('{} = *** undefined ***'.format(name))
 
     def do_retval(self, arg):
         """retval
@@ -533,7 +533,7 @@ class itoDebugger(bdb.Bdb):
         breaklist = self.get_file_breaks(filename)
         try:
             lines, lineno = getsourcelines(self.curframe)
-        except IOError as err:
+        except OSError as err:
             self.error(err)
             return
         self._print_lines(lines, lineno, breaklist, self.curframe)
@@ -548,7 +548,7 @@ class itoDebugger(bdb.Bdb):
             return
         try:
             lines, lineno = getsourcelines(obj)
-        except (IOError, TypeError) as err:
+        except (OSError, TypeError) as err:
             self.error(err)
             return
         self._print_lines(lines, lineno)
@@ -602,7 +602,7 @@ class itoDebugger(bdb.Bdb):
             return
         # Is it a class?
         if value.__class__ is type:
-            self.message('Class %s.%s' % (value.__module__, value.__name__))
+            self.message('Class {}.{}'.format(value.__module__, value.__name__))
             return
         # None of the above...
         self.message(type(value))

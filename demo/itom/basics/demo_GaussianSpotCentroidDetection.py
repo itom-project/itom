@@ -1,4 +1,3 @@
-
 """Gaussian spot centroid detection
 =================================
 

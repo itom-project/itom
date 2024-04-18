@@ -1,4 +1,3 @@
-
 """Parses the stubs file for the itom.algorithms submodule.
 This module contains wrapper methods for all algorithms in
 algorithm plugins, whose name is a valid Python identifier.
@@ -19,7 +18,7 @@ def generateAlgorithmHash():
     plugins = itom.version(dictionary=True, addPluginInfo=True)["plugins"]
     for ap in plugins:
         if plugins[ap]["type"] == "algorithm":
-            h.update((";%s-%s" % (ap, plugins[ap]["version"])).encode("utf8"))
+            h.update((";{}-{}".format(ap, plugins[ap]["version"])).encode("utf8"))
     return h.digest()
 
 
@@ -75,10 +74,10 @@ def parseAlgorithmString(algoItem):
 
     arguments = ", ".join(args)
 
-    text = """def %s(%s) -> %s:
-    \"\"\"%s
+    text = """def {}({}) -> {}:
+    \"\"\"{}
     \"\"\"
-    pass""" % (
+    pass""".format(
         funcname,
         arguments,
         rettype,
@@ -141,7 +140,7 @@ def parse_stubs(overwrite: bool = False):
         prefix = "# algo_hash = "
 
         if os.path.exists(stubs_file):
-            with open(stubs_file, "rt") as fp:
+            with open(stubs_file) as fp:
                 count = 0
                 for line in fp:
                     if line.startswith(prefix):
@@ -163,7 +162,7 @@ def parse_stubs(overwrite: bool = False):
             if not os.path.exists(base_folder):
                 os.makedirs(base_folder)
 
-            with open(stubs_file, "wt") as fp:
+            with open(stubs_file, "w") as fp:
                 fp.write(text)
         except Exception as ex:
             warnings.warn("Error creating the stubs file: %s" % str(ex), RuntimeWarning)

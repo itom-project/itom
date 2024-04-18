@@ -103,7 +103,7 @@ _CONFIG_DEFAULTS = {
 }
 
 
-class TimeIt(object):
+class TimeIt:
     """Time measurement for a code block.
 
     This class is only necessary for debug purposes and
@@ -122,7 +122,7 @@ class TimeIt(object):
 
     def __exit__(self, type, value, traceback):
         if self.name:
-            print("[%s]: %.4f s elapsed" % (self.name, time.time() - self.tstart))
+            print("[{}]: {:.4f} s elapsed".format(self.name, time.time() - self.tstart))
         else:
             print("%.4f s elapsed" % (time.time() - self.tstart))
 
@@ -330,7 +330,7 @@ if _HAS_FLAKE8:
 
         def __init__(self, *args, **kwargs):
             """Constructor."""
-            super(ItomFlake8Formatter, self).__init__(*args, **kwargs)
+            super().__init__(*args, **kwargs)
             self._items = []
             self._errorCodes = [
                 "F",
@@ -538,10 +538,10 @@ if _HAS_FLAKE8:
 
                 if type(val) is list:
                     kwargs_parsed.append(
-                        "--%s=%s" % (item, ",".join([str(ii) for ii in val]))
+                        "--{}={}".format(item, ",".join([str(ii) for ii in val]))
                         )
                 else:
-                    kwargs_parsed.append("--%s=%s" % (item, val))
+                    kwargs_parsed.append("--{}={}".format(item, val))
 
             application.plugins, application.options = parse_args(kwargs_parsed)
 
@@ -911,7 +911,7 @@ def check(
     elif mode == 1:  # CodeCheckerPyFlakes
         if _HAS_PYFLAKES:
             if autoImportItom:
-                codestring = "%s\n%s" % (
+                codestring = "{}\n{}".format(
                     _CHECKER_CACHE["importItomString"],
                     codestring,
                 )

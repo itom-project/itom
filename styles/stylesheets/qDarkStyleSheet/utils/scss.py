@@ -94,7 +94,7 @@ def _create_qss(main_scss_path, qss_filepath, header=HEADER_QSS):
     qtsass.compile_filename(main_scss_path, qss_filepath,
                             output_style='expanded')
 
-    with open(qss_filepath, 'r') as f:
+    with open(qss_filepath) as f:
         data = f.read()
 
     data = header.format(qtsass.__version__) + data
@@ -209,7 +209,7 @@ def create_custom_qss(
     )
 
     # Update colors in text
-    with open(theme_main_scss_filepath, 'r') as fh:
+    with open(theme_main_scss_filepath) as fh:
         data = fh.read()
 
     for key, color in DarkPalette.color_palette().items():

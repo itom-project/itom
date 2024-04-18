@@ -1,4 +1,3 @@
-
 #
 # plugin documentation build configuration file for use with itom.
 #

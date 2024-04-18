@@ -1,5 +1,3 @@
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 import itom
 from itom import uiItem, timer, ui
 from itom import figure as itomFigure
@@ -697,11 +695,11 @@ class NavigationToolbar2Itom(NavigationToolbar2):
             self.set_cursor(-1)
 
     def pan(self, *args):
-        super(NavigationToolbar2Itom, self).pan(*args)
+        super().pan(*args)
         self._update_buttons_checked()
 
     def zoom(self, *args):
-        super(NavigationToolbar2Itom, self).zoom(*args)
+        super().zoom(*args)
         self._update_buttons_checked()
 
     def dynamic_update(self):
@@ -762,7 +760,7 @@ class NavigationToolbar2Itom(NavigationToolbar2):
         selectedFilterIndex = 0
         for name, exts in sorted_filetypes:
             exts_list = " ".join(["*.%s" % ext for ext in exts])
-            filter = "%s (%s)" % (name, exts_list)
+            filter = "{} ({})".format(name, exts_list)
             if default_filetype in exts:
                 selectedFilterIndex = len(filters)
             filters.append(filter)

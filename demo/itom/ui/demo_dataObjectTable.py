@@ -70,7 +70,7 @@ def comboLabelsChanged(idx):
         gui.table["horizontalHeaderVisible"] = True
         gui.table["verticalHeaderVisible"] = True
     elif idx == 2:
-        gui.table["suffixes"] = (" mm", u" \xb0", "")
+        gui.table["suffixes"] = (" mm", " \xb0", "")
         gui.table["horizontalHeaderVisible"] = False
         gui.table["verticalHeaderVisible"] = False
 

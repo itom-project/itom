@@ -1,4 +1,3 @@
-
 """Interactive shape picker
 ===========================
 

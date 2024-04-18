@@ -1,4 +1,3 @@
-from __future__ import absolute_import, division, print_function, unicode_literals
 import six
 
 import functools
@@ -209,7 +208,7 @@ class FigureCanvasItom(FigureCanvasBase):
             False: matplotlib widget is displayed in figure window
         """
         ##_create_qApp()
-        super(FigureCanvasItom, self).__init__(figure=figure)
+        super().__init__(figure=figure)
 
         self.figure = figure
 
@@ -482,7 +481,7 @@ class FigureCanvasItom(FigureCanvasBase):
             if event_key > MAX_UNICODE:
                 return None
 
-            key = unichr(event_key)
+            key = chr(event_key)
             # qt delivers capitalized letters.  fix capitalization
             # note that capslock is ignored
             if "shift" in mods:
@@ -539,7 +538,7 @@ class FigureCanvasItom(FigureCanvasBase):
             return
         self._is_drawing = True
         try:
-            super(FigureCanvasItom, self).draw()
+            super().draw()
         finally:
             self._is_drawing = False
         self.paintEvent()
@@ -1008,7 +1007,7 @@ class NavigationToolbar2Itom(NavigationToolbar2):
                 parent=self.matplotlibplotUiItem(),
             )
             if ok:
-                axes = allaxes[titles.index(six.text_type(item))]
+                axes = allaxes[titles.index(str(item))]
             else:
                 return
 
@@ -1020,11 +1019,11 @@ class NavigationToolbar2Itom(NavigationToolbar2):
         self._get_predef_action("zoom")["checked"] = self._active == "ZOOM"
 
     def pan(self, *args):
-        super(NavigationToolbar2Itom, self).pan(*args)
+        super().pan(*args)
         self._update_buttons_checked()
 
     def zoom(self, *args):
-        super(NavigationToolbar2Itom, self).zoom(*args)
+        super().zoom(*args)
         self._update_buttons_checked()
 
     def set_message(self, s):
@@ -1061,7 +1060,7 @@ class NavigationToolbar2Itom(NavigationToolbar2):
 
     def save_figure(self, *args):
         filetypes = self.canvas.get_supported_filetypes_grouped()
-        sorted_filetypes = sorted(six.iteritems(filetypes))
+        sorted_filetypes = sorted(filetypes.items())
         default_filetype = self.canvas.get_default_filetype()
 
         startpath = os.path.expanduser(matplotlib.rcParams["savefig.directory"])
@@ -1070,7 +1069,7 @@ class NavigationToolbar2Itom(NavigationToolbar2):
         selectedFilter = 0
         for name, exts in sorted_filetypes:
             exts_list = " ".join(["*.%s" % ext for ext in exts])
-            filter = "%s (%s)" % (name, exts_list)
+            filter = "{} ({})".format(name, exts_list)
             if default_filetype in exts:
                 selectedFilter = len(filters)
             filters.append(filter)
@@ -1087,14 +1086,14 @@ class NavigationToolbar2Itom(NavigationToolbar2):
             # Save dir for next time, unless empty str (i.e., use cwd).
             if startpath != "":
                 matplotlib.rcParams["savefig.directory"] = os.path.dirname(
-                    six.text_type(fname)
+                    str(fname)
                 )
             try:
-                self.canvas.figure.savefig(six.text_type(fname))
+                self.canvas.figure.savefig(str(fname))
             except Exception as e:
                 itom.ui.msgCritical(
                     "Error saving file",
-                    six.text_type(e),
+                    str(e),
                     ui.MsgBoxOk,
                     ui.MsgBoxNoButton,
                     parent=self.parentUi,
@@ -1301,7 +1300,7 @@ class StatusbarItom(StatusbarBase):
 
 class ConfigureSubplotsItom(backend_tools.ConfigureSubplotsBase):
     def __init__(self, name, *args, **kwargs):
-        super(ConfigureSubplotsItom, self).__init__(name, *args, **kwargs)
+        super().__init__(name, *args, **kwargs)
         self.subplotConfigDialog = None
 
     def trigger(self, *args):
@@ -1319,7 +1318,7 @@ class SaveFigureItom(backend_tools.SaveFigureBase):
 
     def trigger(self, *args):
         filetypes = self.canvas.get_supported_filetypes_grouped()
-        sorted_filetypes = sorted(six.iteritems(filetypes))
+        sorted_filetypes = sorted(filetypes.items())
         default_filetype = self.canvas.get_default_filetype()
 
         startpath = os.path.expanduser(matplotlib.rcParams["savefig.directory"])
@@ -1328,7 +1327,7 @@ class SaveFigureItom(backend_tools.SaveFigureBase):
         selectedFilter = None
         for name, exts in sorted_filetypes:
             exts_list = " ".join(["*.%s" % ext for ext in exts])
-            filtername = "%s (%s)" % (name, exts_list)
+            filtername = "{} ({})".format(name, exts_list)
             if default_filetype in exts:
                 selectedFilter = filtername
             filters.append(filtername)
@@ -1350,14 +1349,14 @@ class SaveFigureItom(backend_tools.SaveFigureBase):
             # Save dir for next time, unless empty str (i.e., use cwd).
             if startpath != "":
                 matplotlib.rcParams["savefig.directory"] = os.path.dirname(
-                    six.text_type(fname)
+                    str(fname)
                 )
             try:
-                self.canvas.figure.savefig(six.text_type(fname))
+                self.canvas.figure.savefig(str(fname))
                 self.defaultSaveFileName = fname
             except Exception as e:
                 itom.ui.msgCritical(
-                    "Error saving file", six.text_type(e), parent=parent
+                    "Error saving file", str(e), parent=parent
                 )
 
 
@@ -1385,7 +1384,7 @@ backend_tools.ToolRubberband = RubberbandItom
 
 
 def error_msg_itom(msg, parent=None):
-    if not isinstance(msg, six.string_types):
+    if not isinstance(msg, str):
         msg = ",".join(map(str, msg))
 
     itom.ui.msgWarning("Matplotlib", msg)
@@ -1402,7 +1401,7 @@ def exception_handler(type, value, tb):
     if hasattr(value, "strerror") and value.strerror is not None:
         msg += value.strerror
     else:
-        msg += six.text_type(value)
+        msg += str(value)
 
     if len(msg):
         error_msg_itom(msg)
