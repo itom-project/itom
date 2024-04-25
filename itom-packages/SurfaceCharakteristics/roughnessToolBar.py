@@ -1,4 +1,3 @@
-# coding=iso-8859-15
 """
 This file contains a toolbar with basic surface analysis methods e.g. Rz, Sa, Polynomical Fittings,
 INIT via
@@ -173,7 +172,7 @@ class surfaceAnalysisTools(abstractObjInteractionToolBar):
             try:
                 # Evaluate String with {} changed to varname
                 result = eval(script.format(varname))
-                valueUnit = eval("{}.valueUnit".format(varname))
+                valueUnit = eval(f"{varname}.valueUnit")
                 if line == True:
                     if skipBox == False:
                         [scaledResult, scaledUnit] = scaleDoubleUnit(
@@ -264,7 +263,7 @@ class surfaceAnalysisTools(abstractObjInteractionToolBar):
             try:
                 # Evaluate String with {} changed to varname
                 result = eval(script.format(varname))
-                valueUnit = eval("{}.valueUnit".format(varname))
+                valueUnit = eval(f"{varname}.valueUnit")
                 if skipBox == False:
                     [scaledResult, scaledUnit] = scaleDoubleUnit(
                         getDefaultScaleableUnits(), result[0], valueUnit
@@ -335,7 +334,7 @@ class surfaceAnalysisTools(abstractObjInteractionToolBar):
 
             try:
                 result = eval(script.format(varname))
-                valueUnit = eval("{}.valueUnit".format(varname))
+                valueUnit = eval(f"{varname}.valueUnit")
                 if skipBox == False:
                     [scaledResult, scaledUnit] = scaleDoubleUnit(
                         getDefaultScaleableUnits(), result, valueUnit
@@ -406,7 +405,7 @@ class surfaceAnalysisTools(abstractObjInteractionToolBar):
 
             try:
                 result = eval(script.format(varname))
-                valueUnit = eval("{}.valueUnit".format(varname))
+                valueUnit = eval(f"{varname}.valueUnit")
                 if skipBox == False:
                     [scaledResult, scaledUnit] = scaleDoubleUnit(
                         getDefaultScaleableUnits(), result, valueUnit
@@ -458,13 +457,13 @@ class surfaceAnalysisTools(abstractObjInteractionToolBar):
 
         if check == True:
             try:
-                dims = eval("{}.dims".format(varname))
+                dims = eval(f"{varname}.dims")
                 if dims > 2:
                     if skipBox == False:
                         ui.msgCritical(
                             "Roughness", "Dimension must be 1D or 2D", ui.MsgBoxOk
                         )
-                dim = eval("{}.shape".format(varname))
+                dim = eval(f"{varname}.shape")
 
             except:
                 if skipBox == False:
@@ -519,7 +518,7 @@ class surfaceAnalysisTools(abstractObjInteractionToolBar):
 
         if check == True:
             try:
-                dims = eval("{}.dims".format(varname))
+                dims = eval(f"{varname}.dims")
                 if dims > 2:
                     if skipBox == False:
                         ui.msgCritical(

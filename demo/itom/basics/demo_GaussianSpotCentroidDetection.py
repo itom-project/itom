@@ -1,5 +1,3 @@
-# coding=utf8
-
 """Gaussian spot centroid detection
 =================================
 

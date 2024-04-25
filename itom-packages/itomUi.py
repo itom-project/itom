@@ -1,5 +1,3 @@
-# coding=iso-8859-15
-
 """Base class for custom user interfaces with auto-slot connections.
 
 License information:
@@ -217,7 +215,7 @@ class ItomUi:
             parts = func.__name__.split("_")
             if len(parts) >= 3 and parts[0] == "on":
                 setattr(func, "hasAutoSlot", True)
-                newSig = "{0}({1})".format(parts[len(parts) - 1], attr[0])
+                newSig = f"{parts[len(parts) - 1]}({attr[0]})"
                 sig = getattr(func, "signature", [])
                 sig.append(newSig)
                 wid = getattr(func, "widgetName", [])

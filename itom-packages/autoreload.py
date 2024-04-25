@@ -71,7 +71,6 @@ Some of the known remaining caveats are:
 
 - C extension modules cannot be reloaded, and so cannot be autoreloaded.
 """
-from __future__ import print_function
 
 skip_doctest = True
 
@@ -106,7 +105,7 @@ from importlib import reload
 # ------------------------------------------------------------------------------
 
 
-class ModuleReloader(object):
+class ModuleReloader:
     enabled = False
     """Whether this reloader is enabled"""
 
@@ -348,7 +347,7 @@ def update_generic(a, b):
     return False
 
 
-class StrongRef(object):
+class StrongRef:
     def __init__(self, obj):
         self.obj = obj
 

@@ -11,7 +11,7 @@ class ItomJediLibTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """Loads the demo scripts itom_jedilib_demo_notypehints.py."""
-        with open("itom_jedilib_demo_notypehints.py", "rt") as fp:
+        with open("itom_jedilib_demo_notypehints.py") as fp:
             cls.sample_notypehints = fp.read()
 
     def _assertStartsWith(self, statement, string):

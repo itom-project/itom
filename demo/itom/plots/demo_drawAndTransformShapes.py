@@ -1,6 +1,3 @@
-# coding=utf8
-
-
 """Draw and transform shapes
 ============================
 

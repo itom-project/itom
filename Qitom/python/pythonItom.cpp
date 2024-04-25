@@ -186,7 +186,7 @@ PyObject* PythonItom::PyLog(PyObject* /*pSelf*/, PyObject* pArgs)
     {
         return NULL;
     }
-    
+
     QObject* logger;
     if (!retVal.containsWarningOrError())
     {

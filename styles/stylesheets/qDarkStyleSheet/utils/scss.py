@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """Utilities for compiling SASS files."""
 
 # Standard library imports
@@ -95,7 +94,7 @@ def _create_qss(main_scss_path, qss_filepath, header=HEADER_QSS):
     qtsass.compile_filename(main_scss_path, qss_filepath,
                             output_style='expanded')
 
-    with open(qss_filepath, 'r') as f:
+    with open(qss_filepath) as f:
         data = f.read()
 
     data = header.format(qtsass.__version__) + data
@@ -192,7 +191,7 @@ def create_custom_qss(
     custom_palette.COLOR_SELECTION_NORMAL = color_selection_normal
     custom_palette.COLOR_SELECTION_DARK = color_selection_dark
     custom_palette.SIZE_BORDER_RADIUS = border_radius
-    custom_palette.PATH_RESOURCES = "'{}'".format(theme_root_path)
+    custom_palette.PATH_RESOURCES = f"'{theme_root_path}'"
 
     # Process images and save them to the custom platte rc folder
     create_images(rc_path=theme_rc_path, palette=custom_palette)
@@ -210,7 +209,7 @@ def create_custom_qss(
     )
 
     # Update colors in text
-    with open(theme_main_scss_filepath, 'r') as fh:
+    with open(theme_main_scss_filepath) as fh:
         data = fh.read()
 
     for key, color in DarkPalette.color_palette().items():

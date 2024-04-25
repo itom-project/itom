@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
     sphinx.builders.qthelp
     ~~~~~~~~~~~~~~~~~~~~~~
@@ -139,7 +138,7 @@ class QtHelpBuilder(StandaloneHTMLBuilder):
                 new_sections.append(section.encode('utf-8'))
             else:
                 new_sections.append(section)
-        sections = '\n'.encode('utf-8').join(new_sections)
+        sections = b'\n'.join(new_sections)
 
         # keywords
         keywords = []
@@ -170,7 +169,7 @@ class QtHelpBuilder(StandaloneHTMLBuilder):
         # it seems that the "namespace" may not contain non-alphanumeric
         # characters, and more than one successive dot, or leading/trailing
         # dots, are also forbidden
-        nspace = 'org.sphinx.%s.%s' % (outname, self.config.version)
+        nspace = 'org.sphinx.{}.{}'.format(outname, self.config.version)
         nspace = re.sub('[^a-zA-Z0-9.]', '', nspace)
         nspace = re.sub(r'\.+', '.', nspace).strip('.')
         nspace = nspace.lower()
@@ -225,9 +224,9 @@ class QtHelpBuilder(StandaloneHTMLBuilder):
             refnode = node.children[0][0]
             link = refnode['refuri']
             title = escape(refnode.astext()).replace('"','&quot;')
-            item = '<section title="%(title)s" ref="%(ref)s">' % {
-                                                                'title': title,
-                                                                'ref': link}
+            item = '<section title="{title}" ref="{ref}">'.format(
+                                                                title=title,
+                                                                ref=link)
             parts.append(' '*4*indentlevel + item)
             for subnode in node.children[1]:
                 parts.extend(self.write_toc(subnode, indentlevel+1))
@@ -259,15 +258,15 @@ class QtHelpBuilder(StandaloneHTMLBuilder):
 #            descr = groupdict.get('descr')
             if shortname.endswith('()'):
                 shortname = shortname[:-2]
-            id = '%s.%s' % (id, shortname)
+            id = '{}.{}'.format(id, shortname)
         else:
             id = None
 
         if id:
-            item = ' '*12 + '<keyword name="%s" id="%s" ref="%s"/>' % (
+            item = ' '*12 + '<keyword name="{}" id="{}" ref="{}"/>'.format(
                                                                 name, id, ref)
         else:
-            item = ' '*12 + '<keyword name="%s" ref="%s"/>' % (name, ref)
+            item = ' '*12 + '<keyword name="{}" ref="{}"/>'.format(name, ref)
         item.encode('ascii', 'xmlcharrefreplace')
         return item
 

@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 # tifffile.py
 
 # Copyright (c) 2008-2012, Christoph Gohlke
@@ -118,7 +117,6 @@ Examples
 
 """
 
-from __future__ import division, print_function
 
 import sys
 import os
@@ -132,7 +130,8 @@ import warnings
 import datetime
 import collections
 from fractions import Fraction
-from xml.etree import cElementTree as ElementTree
+
+from xml.etree import ElementTree as ElementTree
 
 import numpy
 
@@ -505,7 +504,7 @@ def imread(files, *args, **kwargs):
             return imseq.asarray(*args, **kwargs)
 
 
-class lazyattr(object):
+class lazyattr:
     """Lazy object attribute whose value is computed on first access."""
 
     __slots__ = "func"
@@ -523,7 +522,7 @@ class lazyattr(object):
         return value
 
 
-class TiffFile(object):
+class TiffFile:
     """Read image and meta-data from TIFF, STK, LSM, and FluoView files.
 
     TiffFile instances must be closed using the close method.
@@ -780,7 +779,7 @@ class TiffFile(object):
             pages = [pages[key]]
         elif isinstance(key, slice):
             pages = pages[key]
-        elif isinstance(key, collections.Iterable):
+        elif isinstance(key, collections.abc.Iterable):
             pages = [pages[k] for k in key]
         else:
             raise TypeError("key must be an int, slice, or sequence")
@@ -876,7 +875,7 @@ class TiffFile(object):
                                 fn = uuid.attrib["FileName"]
                                 try:
                                     tf = TiffFile(os.path.join(self.fpath, fn))
-                                except (IOError, ValueError):
+                                except (OSError, ValueError):
                                     warnings.warn("failed to read %s" % fn)
                                     break
                                 self._tiffs[uuid.text] = tf
@@ -1003,7 +1002,7 @@ class TiffFile(object):
         return self.pages[0].is_ome
 
 
-class TiffPage(object):
+class TiffPage:
     """A TIFF image file directory (IFD).
 
     Attributes
@@ -1122,7 +1121,7 @@ class TiffPage(object):
                         )
                 except KeyError:
                     raise ValueError(
-                        "%s.value (%s) not supported" % (name, tags[name].value)
+                        "{}.value ({}) not supported".format(name, tags[name].value)
                     )
 
         tag = tags["bits_per_sample"]
@@ -1130,7 +1129,7 @@ class TiffPage(object):
             self.bits_per_sample = tag.value
         else:
             value = tag.value[: self.samples_per_pixel]
-            if any((v - value[0] for v in value)):
+            if any(v - value[0] for v in value):
                 self.bits_per_sample = value
             else:
                 self.bits_per_sample = value[0]
@@ -1140,7 +1139,7 @@ class TiffPage(object):
             self.sample_format = TIFF_SAMPLE_FORMATS[tag.value]
         else:
             value = tag.value[: self.samples_per_pixel]
-            if any((v - value[0] for v in value)):
+            if any(v - value[0] for v in value):
                 self.sample_format = [TIFF_SAMPLE_FORMATS[v] for v in value]
             else:
                 self.sample_format = TIFF_SAMPLE_FORMATS[value[0]]
@@ -1297,7 +1296,7 @@ class TiffPage(object):
         """
         fh = self.parent._fh
         if not fh:
-            raise IOError("TIFF file is not open")
+            raise OSError("TIFF file is not open")
         if self.dtype is None:
             raise ValueError(
                 "data type not supported: %s%i"
@@ -1310,7 +1309,7 @@ class TiffPage(object):
         ].value not in (1, (1, 1)):
             raise ValueError("YCbCr subsampling not supported")
         tag = self.tags["sample_format"]
-        if tag.count != 1 and any((i - tag.value[0] for i in tag.value)):
+        if tag.count != 1 and any(i - tag.value[0] for i in tag.value):
             raise ValueError("sample formats don't match %s" % str(tag.value))
 
         dtype = self._dtype
@@ -1560,7 +1559,7 @@ class TiffPage(object):
         ].value.startswith(b"ImageJ=")
 
 
-class TiffTag(object):
+class TiffTag:
     """A TIFF tag structure.
 
     Attributes
@@ -1667,7 +1666,7 @@ class TiffTag(object):
         return " ".join(str(getattr(self, s)) for s in self.__slots__)
 
 
-class TiffSequence(object):
+class TiffSequence:
     """Sequence of image files.
 
     Properties
@@ -1688,7 +1687,7 @@ class TiffSequence(object):
 
     """
 
-    _axes_pattern = """
+    _axes_pattern = r"""
         # matches Olympus OIF and Leica TIFF series
         _?(?:(q|l|p|a|c|t|x|y|z|ch|tp)(\d{1,4}))
         _?(?:(q|l|p|a|c|t|x|y|z|ch|tp)(\d{1,4}))?
@@ -1862,7 +1861,7 @@ class Record(dict):
                 elif isinstance(v[0], TiffPage):
                     v = [i.index for i in v if i]
             s.append(
-                ("* %s: %s" % (k, str(v))).split("\n", 1)[0][:PRINT_LINE_LEN].rstrip()
+                ("* {}: {}".format(k, str(v))).split("\n", 1)[0][:PRINT_LINE_LEN].rstrip()
             )
         for k, v in lists:
             l = []
@@ -1916,7 +1915,7 @@ def read_mm_uic1(fh, byteorder, dtype, count):
     """Read MM_UIC1 tag from file and return as dictionary."""
     t = fh.read(8 * count)
     t = struct.unpack("%s%iI" % (byteorder, 2 * count), t)
-    return dict((MM_TAG_IDS[k], v) for k, v in zip(t[::2], t[1::2]) if k in MM_TAG_IDS)
+    return {MM_TAG_IDS[k]: v for k, v in zip(t[::2], t[1::2]) if k in MM_TAG_IDS}
 
 
 def read_mm_uic2(fh, byteorder, dtype, count):
@@ -1940,7 +1939,7 @@ def read_mm_uic3(fh, byteorder, dtype, count):
 def read_mm_uic4(fh, byteorder, dtype, count):
     """Read MM_UIC4 tag from file and return as dictionary."""
     t = struct.unpack(byteorder + "hI" * count, fh.read(6 * count))
-    return dict((MM_TAG_IDS[k], v) for k, v in zip(t[::2], t[1::2]) if k in MM_TAG_IDS)
+    return {MM_TAG_IDS[k]: v for k, v in zip(t[::2], t[1::2]) if k in MM_TAG_IDS}
 
 
 def read_cz_lsm_info(fh, byteorder, dtype, count):
@@ -2394,7 +2393,7 @@ def numpy_fromfile(arg, dtype=float, count=-1, sep=""):
     """
     try:
         return numpy.fromfile(arg, dtype, count, sep)
-    except IOError:
+    except OSError:
         if count < 0:
             size = 2 ** 30
         else:
@@ -2413,7 +2412,7 @@ def format_size(size):
     """Return file size as string from byte size."""
     for unit in ("B", "KB", "MB", "GB", "TB"):
         if size < 2048:
-            return "%.f %s" % (size, unit)
+            return "{:.f} {}".format(size, unit)
         size /= 1024.0
 
 
@@ -2498,7 +2497,7 @@ def test_tifffile(directory="testimages", verbose=True):
         )
 
 
-class TIFF_SUBFILE_TYPES(object):
+class TIFF_SUBFILE_TYPES:
     def __getitem__(self, key):
         result = []
         if key & 1:
@@ -2671,7 +2670,7 @@ AXES_LABELS = {
     "Q": "other",
 }
 
-AXES_LABELS.update(dict((v, k) for k, v in AXES_LABELS.items()))
+AXES_LABELS.update({v: k for k, v in AXES_LABELS.items()})
 
 # NIH Image PicHeader v1.63
 NIH_IMAGE_HEADER = [
@@ -3681,7 +3680,7 @@ def main(argv=None):
                     else:
                         if vmax <= vmin:
                             vmin, vmax = None, None
-                title = "%s\n %s" % (str(tif), str(page))
+                title = "{}\n {}".format(str(tif), str(page))
                 imshow(
                     img,
                     title=title,

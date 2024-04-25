@@ -1,5 +1,3 @@
-# coding=iso-8859-15
-
 # -*- coding: utf-8 -*-
 
 import os
@@ -23,7 +21,7 @@ def pathConv(p: str):
 
 def createPluginDoc(confFile: str, buildernames):
     """Main method."""
-    with(open(confFile, "r")) as infile:
+    with(open(confFile)) as infile:
         pluginConfiguration = infile.readlines()
         pluginConfiguration = "".join(pluginConfiguration)
 

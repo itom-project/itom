@@ -457,12 +457,12 @@ macro(itom_fetch_git_commit_hash)
         else()
             find_package(Git QUIET)
         endif()
-            
+
         #try to get working directory of git
         set(GITDIR_FOUND )
         set(GIT_DIRECTORY "")
         set(GIT_INDEX_FILE "")
-        
+
         if (Git_FOUND)
             # try to get the git directory of the git index file
             # this directory is different dependent if plugins are built
@@ -474,14 +474,14 @@ macro(itom_fetch_git_commit_hash)
                 OUTPUT_VARIABLE GIT_DIRECTORY
                 ERROR_QUIET
                 OUTPUT_STRIP_TRAILING_WHITESPACE)
-            
+
             if(NOT IS_ABSOLUTE ${GIT_DIRECTORY})
                 get_filename_component(GIT_DIRECTORY_ABS ${GIT_DIRECTORY} ABSOLUTE ${CMAKE_CURRENT_SOURCE_DIR})
                 set(GIT_DIRECTORY ${GIT_DIRECTORY_ABS})
             endif()
-            
+
             set(GIT_INDEX_FILE "${GIT_DIRECTORY}/index")
-            
+
             if(EXISTS ${GIT_INDEX_FILE})
                 set(GITDIR_FOUND TRUE)
             endif()
@@ -492,7 +492,7 @@ macro(itom_fetch_git_commit_hash)
         if(NOT GITDIR_FOUND)
             # backup solution, try to find a .git/index file by recursing to the top directory.
             set(WORKINGDIR ${CMAKE_CURRENT_SOURCE_DIR})
-            
+
             foreach(ITER "1" "2" "3")
                 if(NOT EXISTS ${WORKINGDIR})
                     break()

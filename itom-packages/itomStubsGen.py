@@ -1,5 +1,3 @@
-# coding=iso-8859-15
-
 """Parses the stubs file for the entire itom module.
 
 The pyi stubs file is put into itom-stubs/__init__.py,
@@ -76,7 +74,7 @@ class Signature:
     def tostring(self) -> str:
         """Returns the full signature as it would be written in a script using the
         typing module."""
-        sig = "def %s(%s)" % (
+        sig = "def {}({})".format(
             self.name,
             ", ".join([a.tostring() for a in self.args]),
         )
@@ -110,7 +108,7 @@ def parse_stubs(overwrite: bool = False):
         prefix = "# compile_date = "
 
         if os.path.exists(stubs_file):
-            with open(stubs_file, "rt") as fp:
+            with open(stubs_file) as fp:
                 count = 0
                 for line in fp:
                     if line.startswith(prefix):
@@ -153,7 +151,7 @@ def parse_stubs(overwrite: bool = False):
             if not os.path.exists(base_folder):
                 os.makedirs(base_folder)
 
-            with open(stubs_file, "wt") as fp:
+            with open(stubs_file, "w") as fp:
                 fp.write(text)
         except Exception as ex:
             warnings.warn(
@@ -242,7 +240,7 @@ def _parse_object(obj, indent: int = 0) -> str:
                     child,
                 )
             elif type(child) is float:
-                yield "%s#: constant float value.\n%s%s: float = %f" % (
+                yield "{}#: constant float value.\n{}{}: float = {:f}".format(
                     prefix,
                     prefix,
                     childname,
@@ -258,7 +256,7 @@ def _parse_object(obj, indent: int = 0) -> str:
                 yield _parse_property_docstring(child, indent)
             else:
                 # constant or something else
-                yield "%s#: constant %s value.\n%s%s" % (
+                yield "{}#: constant {} value.\n{}{}".format(
                     prefix,
                     type(child),
                     prefix,
@@ -286,7 +284,7 @@ def _get_class_signature(classobj: type, indent: int) -> str:
     if len(b) == 0 or (len(b) == 1 and b[0] is object):
         sig = prefix + "class %s:\n" % classobj.__name__
     else:
-        sig = prefix + "class %s(%s):\n" % (
+        sig = prefix + "class {}({}):\n".format(
             classobj.__name__,
             ", ".join([item.__name__ for item in classobj.__bases__]),
         )
@@ -815,7 +813,7 @@ def _nptype2typing(nptypestr: str) -> str:
             comps[0] = removeRefs(comps[0].strip())
             # turn first letter into upper case
             comps[0] = comps[0][0].upper() + comps[0][1:]
-            return "%s[%s]" % (comps[0], comps[1])
+            return "{}[{}]".format(comps[0], comps[1])
 
     alternatives = [parseval(a) for a in alternatives if a.strip() != ""]
 
@@ -880,7 +878,7 @@ def _parse_property_docstring(obj, indent: int) -> str:
             "Docstring missing for property %s" % name, RuntimeWarning
         )
         text = "%s@property\n" % prefix
-        text += "%sdef %s(self):\n%s    pass" % (prefix, name, prefix)
+        text += "{}def {}(self):\n{}    pass".format(prefix, name, prefix)
         return text
 
     docstrings = docstring.split("\n")
@@ -902,7 +900,7 @@ def _parse_property_docstring(obj, indent: int) -> str:
         docstrings[0] = docstrings[0][colon_idx + len(search_str) :].strip()
 
     text = "%s@property\n" % prefix
-    text += prefix + "def %s(self)%s:\n" % (name, rettype)
+    text += prefix + "def {}(self){}:\n".format(name, rettype)
 
     while len(docstrings) > 0 and docstrings[0].strip() == "":
         docstrings = docstrings[1:]  # remove the first empty lines

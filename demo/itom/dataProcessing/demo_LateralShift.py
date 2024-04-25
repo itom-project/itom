@@ -61,7 +61,7 @@ image1FFT = np.fft.fft2(image1)
 image2FFT = np.conjugate(np.fft.fft2(image2))
 
 # inverse fourier transformation of product -> equal to cross correlation
-imageCCor = np.real(np.fft.ifft2((image1FFT * image2FFT)))
+imageCCor = np.real(np.fft.ifft2(image1FFT * image2FFT))
 
 # Shift the zero-frequency component to the center of the spectrum
 imageCCorShift = np.fft.fftshift(imageCCor)

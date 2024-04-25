@@ -1,4 +1,3 @@
-# coding=utf8
 """Plot line cut, volume cut, through z-stack
 =============================================
 

@@ -252,7 +252,7 @@ def calltips(code, line, column, path=None):
                 paramlist[index] = "<b>%s</b>" % paramlist[index]
 
             if module_name != "":
-                method_name = "%s.%s" % (module_name, call_name)
+                method_name = "{}.{}".format(module_name, call_name)
             else:
                 method_name = call_name
 
@@ -326,7 +326,7 @@ def completions(code, line, column, path, prefix):
                             if len(signatures) == 0:
                                 tooltip = completion.docstring()
                                 if tooltip != "":
-                                    tooltip = "%s\n\n%s" % (
+                                    tooltip = "{}\n\n{}".format(
                                         completion.name,
                                         tooltip,
                                     )
@@ -513,10 +513,10 @@ def name_tooltip_type_module(item):
         list of str
             One or multiple possible tooltips for the given item.
     """
-    heading = "Module %s" % (item.name,)
+    heading = "Module {}".format(item.name)
     body = item.docstring()
     if body is not None and body != "":
-        tooltip = "%s\n\n%s" % (heading, body)
+        tooltip = "{}\n\n{}".format(heading, body)
     else:
         tooltip = heading
     return [
@@ -544,13 +544,13 @@ def name_tooltip_type_statement(item):
     """
     typehint = item.get_type_hint()
     if typehint != "":
-        heading = "%s: %s" % (item.name, typehint)
+        heading = "{}: {}".format(item.name, typehint)
     else:
         heading = item.name
 
     body = item.docstring()
     if body is not None and body != "":
-        tooltip = "%s\n\n%s" % (heading, body)
+        tooltip = "{}\n\n{}".format(heading, body)
     else:
         tooltip = heading
     return [
@@ -628,11 +628,11 @@ def name_tooltip_type_property(item):
 
     if docstring != "":
         return [
-            "%s: %s\n\n%s" % (name, rettype, docstring),
+            "{}: {}\n\n{}".format(name, rettype, docstring),
         ]
     else:
         return [
-            "%s: %s" % (name, rettype),
+            "{}: {}".format(name, rettype),
         ]
 
 
@@ -670,7 +670,7 @@ def name_tooltip_type_general(item):
                 if rettype != "":
                     name += ": %s" % rettype
             if tooltip != "":
-                tooltip = "%s\n\n%s" % (name, tooltip)
+                tooltip = "{}\n\n{}".format(name, tooltip)
             else:
                 tooltip = name
             tooltipList = [
@@ -821,7 +821,7 @@ def rename_reference(code, line, column, path):
 
             project = jedi.api.project.get_default_project(path=path)
             projectRootPath = os.path.realpath(project.path)
-            
+
             try:
                 refactoring = script.rename(line=line, column=column, new_name="")
             except jedi.api.exceptions.RefactoringError:
@@ -834,7 +834,7 @@ def rename_reference(code, line, column, path):
                 values = []
                 filenameStr = os.path.realpath(filename)
                 fileInProject = filenameStr.startswith(projectRootPath)
-                
+
                 for name, _nameToChange in node.items():
                     lines.append(name.line)
                     cols.append(name.column)

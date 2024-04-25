@@ -1,7 +1,6 @@
 """Extract reference documentation from the NumPy source tree.
 
 """
-from __future__ import division, absolute_import, print_function
 
 import inspect
 import textwrap
@@ -12,7 +11,7 @@ import collections
 import sys
 
 
-class Reader(object):
+class Reader:
     """A line-based string reader.
 
     """
@@ -92,7 +91,7 @@ class ParseError(Exception):
     def __str__(self):
         message = self.message
         if hasattr(self, 'docstring'):
-            message = "%s in %r" % (message, self.docstring)
+            message = "{} in {!r}".format(message, self.docstring)
         return message
 
 
@@ -314,7 +313,7 @@ class ItomDocString(collections.abc.Mapping):
         self._parse_summary()
 
         sections = list(self._read_sections())
-        section_names = set([section for section, content in sections])
+        section_names = {section for section, content in sections}
 
         has_returns = 'Returns' in section_names
         has_yields = 'Yields' in section_names
@@ -351,7 +350,7 @@ class ItomDocString(collections.abc.Mapping):
 
     def _str_signature(self):
         if self['Signature']:
-            return [self['Signature'].replace('*', '\*')] + ['']
+            return [self['Signature'].replace('*', r'\*')] + ['']
         else:
             return ['']
 
@@ -374,9 +373,9 @@ class ItomDocString(collections.abc.Mapping):
                 if param_type:
                     if param_type.startswith('{') and param_type.endswith('}'):
                         param_type = param_type[1:-1]
-                    out += [':param %s: %s' % (param, " ".join(desc)), ':type %s: %s' % (param, param_type)]
+                    out += [':param {}: {}'.format(param, " ".join(desc)), ':type {}: {}'.format(param, param_type)]
                 else:
-                    out += [':param %s: %s' % (param, " ".join(desc))]
+                    out += [':param {}: {}'.format(param, " ".join(desc))]
             out += ['']
         return out
 
@@ -388,7 +387,7 @@ class ItomDocString(collections.abc.Mapping):
                 if param_type:
                     if param_type.startswith('{') and param_type.endswith('}'):
                         param_type = param_type[1:-1]
-                    out += [':return: %s -> %s' % (param, " ".join(desc)), ':rtype: %s' % (param_type)]
+                    out += [':return: {} -> {}'.format(param, " ".join(desc)), ':rtype: %s' % (param_type)]
                 else:
                     out += [':return: %s' % (" ".join(desc))]
             out += ['']
@@ -399,7 +398,7 @@ class ItomDocString(collections.abc.Mapping):
         name = 'Raises'
         if self[name]:
             for param, param_type, desc in self[name]:
-                out += [':raises %s: %s' % (param, " ".join(desc))]
+                out += [':raises {}: {}'.format(param, " ".join(desc))]
             out += ['']
         return out
 
@@ -429,9 +428,9 @@ class ItomDocString(collections.abc.Mapping):
         last_had_desc = True
         for func, desc, role in self['See Also']:
             if role:
-                link = ':%s:`%s`' % (role, func)
+                link = ':{}:`{}`'.format(role, func)
             elif func_role:
-                link = ':%s:`%s`' % (func_role, func)
+                link = ':{}:`{}`'.format(func_role, func)
             else:
                 link = "`%s`_" % func
             if desc or last_had_desc:
@@ -457,7 +456,7 @@ class ItomDocString(collections.abc.Mapping):
         for section, references in idx.items():
             if section == 'default':
                 continue
-            out += ['   :%s: %s' % (section, ', '.join(references))]
+            out += ['   :{}: {}'.format(section, ', '.join(references))]
         return out
 
     def __str__(self, func_role=''):
@@ -521,7 +520,7 @@ class FunctionDoc(ItomDocString):
                     else:
                         argspec = inspect.getargspec(func)
                     signature = inspect.formatargspec(*argspec)
-                signature = '%s%s' % (func_name, signature.replace('*', '\*'))
+                signature = '{}{}'.format(func_name, signature.replace('*', r'\*'))
             except TypeError:
                 signature = '%s()' % func_name
             self['Signature'] = signature
@@ -538,7 +537,7 @@ class FunctionDoc(ItomDocString):
         out = ''
 
         func, func_name = self.get_func()
-        signature = self['Signature'].replace('*', '\*')
+        signature = self['Signature'].replace('*', r'\*')
 
         roles = {'func': 'function',
                  'meth': 'method'}
@@ -546,10 +545,10 @@ class FunctionDoc(ItomDocString):
         if self._role:
             if self._role not in roles:
                 print("Warning: invalid role %s" % self._role)
-            out += '.. %s:: %s\n    \n\n' % (roles.get(self._role, ''),
+            out += '.. {}:: {}\n    \n\n'.format(roles.get(self._role, ''),
                                              func_name)
 
-        out += super(FunctionDoc, self).__str__(func_role=self._role)
+        out += super().__str__(func_role=self._role)
         return out
 
 
@@ -603,7 +602,7 @@ class ClassDoc(ItomDocString):
         return [name for name, func in inspect.getmembers(self._cls)
                 if ((not name.startswith('_')
                      or name in self.extra_public_methods)
-                    and isinstance(func, collections.Callable)
+                    and isinstance(func, collections.abc.Callable)
                     and self._is_show_member(name))]
 
     @property

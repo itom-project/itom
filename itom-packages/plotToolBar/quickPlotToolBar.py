@@ -1,4 +1,3 @@
-# coding=iso-8859-15
 """
 This file contains a toolbar with basic plot interactions e.g. linePlot, 2D-Plot
 INIT via
@@ -325,18 +324,18 @@ class quickPlotToolBar(abstractObjInteractionToolBar):
             fig = plt.figure()
             ax = fig.add_subplot(111, projection="3d")
 
-            shape = eval("{}.shape()".format(dataObj))
-            scale = eval("{}.axisScales".format(dataObj))
-            offset = eval("{}.axisOffsets".format(dataObj))
-            unit = eval("{}.axisUnits".format(dataObj))
-            desc = eval("{}.axisDescriptions".format(dataObj))
-            valUn = eval("{}.valueUnit".format(dataObj))
-            valDes = eval("{}.valueDescription".format(dataObj))
+            shape = eval(f"{dataObj}.shape()")
+            scale = eval(f"{dataObj}.axisScales")
+            offset = eval(f"{dataObj}.axisOffsets")
+            unit = eval(f"{dataObj}.axisUnits")
+            desc = eval(f"{dataObj}.axisDescriptions")
+            valUn = eval(f"{dataObj}.valueUnit")
+            valDes = eval(f"{dataObj}.valueDescription")
 
-            minValue = eval('filter("minValue",{})'.format(dataObj))
-            maxValue = eval('filter("maxValue",{})'.format(dataObj))
+            minValue = eval(f'filter("minValue",{dataObj})')
+            maxValue = eval(f'filter("maxValue",{dataObj})')
 
-            npdObj = eval("npDataObject({})".format(dataObj))
+            npdObj = eval(f"npDataObject({dataObj})")
 
             # create supporting points cartesian system
             x = np.linspace(
@@ -366,9 +365,9 @@ class quickPlotToolBar(abstractObjInteractionToolBar):
             )
             # ax.plot_surface(X, Y, npdObj, rstride=5, cstride=5, linewidth=0, antialiased=False)
             ax.set_zlim3d(minValue, maxValue)
-            ax.set_xlabel(r"${} in {}$".format(desc[dims - 1], unit[dims - 1]))
-            ax.set_ylabel(r"${} in {}$".format(desc[dims - 2], unit[dims - 2]))
-            ax.set_zlabel(r"${} in {}$".format(valDes, valUn))
+            ax.set_xlabel(fr"${desc[dims - 1]} in {unit[dims - 1]}$")
+            ax.set_ylabel(fr"${desc[dims - 2]} in {unit[dims - 2]}$")
+            ax.set_zlabel(fr"${valDes} in {valUn}$")
             plt.show()
 
             del shape
@@ -419,7 +418,7 @@ class quickPlotToolBar(abstractObjInteractionToolBar):
             dims = 2
             try:
                 # Check if variable exists
-                dims = eval("{}.dims".format(dataObj))
+                dims = eval(f"{dataObj}.dims")
             except:
                 if skipBox == False:
                     ui.msgCritical("DataObject", "Variable does not exist", ui.MsgBoxOk)

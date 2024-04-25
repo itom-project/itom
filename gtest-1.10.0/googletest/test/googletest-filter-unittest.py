@@ -236,10 +236,10 @@ class GTestFilterUnitTest(gtest_test_utils.TestCase):
     """Asserts that two sets are equal."""
 
     for elem in lhs:
-      self.assert_(elem in rhs, '%s in %s' % (elem, rhs))
+      self.assertTrue(elem in rhs, '{} in {}'.format(elem, rhs))
 
     for elem in rhs:
-      self.assert_(elem in lhs, '%s in %s' % (elem, lhs))
+      self.assertTrue(elem in lhs, '{} in {}'.format(elem, lhs))
 
   def AssertPartitionIsValid(self, set_var, list_of_sets):
     """Asserts that list_of_sets is a valid partition of set_var."""
@@ -284,7 +284,7 @@ class GTestFilterUnitTest(gtest_test_utils.TestCase):
     if gtest_filter is None:
       args = []
     else:
-      args = ['--%s=%s' % (FILTER_FLAG, gtest_filter)]
+      args = ['--{}={}'.format(FILTER_FLAG, gtest_filter)]
 
     tests_run = RunAndExtractTestList(args)[0]
     self.AssertSetEqual(tests_run, tests_to_run)
@@ -344,7 +344,7 @@ class GTestFilterUnitTest(gtest_test_utils.TestCase):
     # Construct the command line.
     args = ['--%s' % ALSO_RUN_DISABLED_TESTS_FLAG]
     if gtest_filter is not None:
-      args.append('--%s=%s' % (FILTER_FLAG, gtest_filter))
+      args.append('--{}={}'.format(FILTER_FLAG, gtest_filter))
 
     tests_run = RunAndExtractTestList(args)[0]
     self.AssertSetEqual(tests_run, tests_to_run)
@@ -570,7 +570,7 @@ class GTestFilterUnitTest(gtest_test_utils.TestCase):
     """Tests that the filter flag overrides the filtering env. variable."""
 
     SetEnvVar(FILTER_ENV_VAR, 'Foo*')
-    args = ['--%s=%s' % (FILTER_FLAG, '*One')]
+    args = ['--{}={}'.format(FILTER_FLAG, '*One')]
     tests_run = RunAndExtractTestList(args)[0]
     SetEnvVar(FILTER_ENV_VAR, None)
 
@@ -581,13 +581,13 @@ class GTestFilterUnitTest(gtest_test_utils.TestCase):
 
     shard_status_file = os.path.join(gtest_test_utils.GetTempDir(),
                                      'shard_status_file')
-    self.assert_(not os.path.exists(shard_status_file))
+    self.assertTrue(not os.path.exists(shard_status_file))
 
     extra_env = {SHARD_STATUS_FILE_ENV_VAR: shard_status_file}
     try:
       InvokeWithModifiedEnv(extra_env, RunAndReturnOutput)
     finally:
-      self.assert_(os.path.exists(shard_status_file))
+      self.assertTrue(os.path.exists(shard_status_file))
       os.remove(shard_status_file)
 
   def testShardStatusFileIsCreatedWithListTests(self):
@@ -595,7 +595,7 @@ class GTestFilterUnitTest(gtest_test_utils.TestCase):
 
     shard_status_file = os.path.join(gtest_test_utils.GetTempDir(),
                                      'shard_status_file2')
-    self.assert_(not os.path.exists(shard_status_file))
+    self.assertTrue(not os.path.exists(shard_status_file))
 
     extra_env = {SHARD_STATUS_FILE_ENV_VAR: shard_status_file}
     try:
@@ -605,12 +605,12 @@ class GTestFilterUnitTest(gtest_test_utils.TestCase):
     finally:
       # This assertion ensures that Google Test enumerated the tests as
       # opposed to running them.
-      self.assert_('[==========]' not in output,
+      self.assertTrue('[==========]' not in output,
                    'Unexpected output during test enumeration.\n'
                    'Please ensure that LIST_TESTS_FLAG is assigned the\n'
                    'correct flag value for listing Google Test tests.')
 
-      self.assert_(os.path.exists(shard_status_file))
+      self.assertTrue(os.path.exists(shard_status_file))
       os.remove(shard_status_file)
 
   if SUPPORTS_DEATH_TESTS:

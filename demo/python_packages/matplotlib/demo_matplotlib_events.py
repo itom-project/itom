@@ -19,7 +19,7 @@ def onclick(event):
 
 def onfigureenter(event):
     if event.x and event.y:
-        print("onfigureenter: x=%f, y=%f, inaxes=%s" % (event.x, event.y, str(event.inaxes)))
+        print("onfigureenter: x={:f}, y={:f}, inaxes={}".format(event.x, event.y, str(event.inaxes)))
     else:
         print("onfigureenter: x=<None>, y=<None>, inaxes=%s" % str(event.inaxes))
 

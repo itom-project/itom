@@ -11,7 +11,7 @@ import numpy as np
 
 ###############################################################################
 # Define random generator class and register the host.
-class RandGenerator(object):
+class RandGenerator:
     def getRand(self, x, y):
         return list(np.random.rand(y, x))
 

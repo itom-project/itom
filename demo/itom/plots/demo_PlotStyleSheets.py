@@ -46,7 +46,7 @@ class PlotStyleSheets(ItomUi):
 
     @ItomUi.autoslot("")
     def on_radioDarkStyle_clicked(self):
-        with open("darkorange.qss", "rt") as f:
+        with open("darkorange.qss") as f:
             self.gui["styleSheet"] = f.read()
         self.gui.plot2d["backgroundColor"] = "#323232"
         self.gui.plot2d["axisColor"] = "#ffffff"

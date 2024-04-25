@@ -85,7 +85,7 @@ algorithms.calcMeanZ(d, result_mean, ignoreInf=0, calcStd=0)
 # We squeeze it to get a 2D Object
 result_mean = result_mean.squeeze()
 
-result_mean.setTag("title", "mean value of {} acquisitions".format(num))
+result_mean.setTag("title", f"mean value of {num} acquisitions")
 result_mean.axisUnits = ("px", "px")
 result_mean.axisDescriptions = ("y", "x")
 plot(result_mean)
@@ -102,7 +102,7 @@ algorithms.gaussianFilter(result_mean, result_filter, kernelx=kernelVal, kernely
 ###############################################################################
 # Copy meta information from source ``dataObject``.
 result_filter.copyMetaInfo(result_mean)
-result_filter.setTag("title", "Gaussian filter with kernel {}".format(kernelVal))
+result_filter.setTag("title", f"Gaussian filter with kernel {kernelVal}")
 plot(result_filter)
 ###############################################################################
 # .. image:: ../../_static/demoCameraAndImages_2.png

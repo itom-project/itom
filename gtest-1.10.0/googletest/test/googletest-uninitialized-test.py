@@ -43,8 +43,8 @@ def Assert(condition):
 
 def AssertEq(expected, actual):
   if expected != actual:
-    print('Expected: %s' % (expected,))
-    print('  Actual: %s' % (actual,))
+    print('Expected: {}'.format(expected))
+    print('  Actual: {}'.format(actual))
     raise AssertionError
 
 

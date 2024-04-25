@@ -811,7 +811,7 @@ ScriptEditorWidget* ScriptDockWidget::getEditorByCanonicalFilepath(const QString
         if (sew != nullptr && !sew->hasNoFilename())
         {
             path = QFileInfo(sew->getFilename());
-            
+
             if (path == filepath_)
             {
                 return sew;

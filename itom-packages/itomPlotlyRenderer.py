@@ -1,5 +1,3 @@
-# coding=iso-8859-15
-
 """Creates a new renderer for the Python plotly library and registers
 this renderer as another possible renderer for the plotly package under
 the name ``itom``. This renderer is also set as default.

@@ -144,7 +144,7 @@ def NormalizeToCurrentPlatform(test_output):
 
   if IS_WINDOWS:
     # Removes the color information that is not present on Windows.
-    test_output = re.sub('\x1b\\[(0;3\d)?m', '', test_output)
+    test_output = re.sub('\x1b\\[(0;3\\d)?m', '', test_output)
     # Changes failure message headers into the Windows format.
     test_output = re.sub(r': Failure\n', r': error: ', test_output)
     # Changes file(line_number) to file:line_number.
@@ -183,7 +183,7 @@ def RemoveMatchingTests(test_output, pattern):
   """
 
   test_output = re.sub(
-      r'.*\[ RUN      \] .*%s(.|\n)*?\[(  FAILED  |       OK )\] .*%s.*\n' % (
+      r'.*\[ RUN      \] .*{}(.|\n)*?\[(  FAILED  |       OK )\] .*{}.*\n'.format(
           pattern, pattern),
       '',
       test_output)

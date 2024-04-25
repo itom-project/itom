@@ -29,7 +29,7 @@ h.pickPoints(pickedPoints, 4)
 
 print("coordinates of selected points: ")
 for numPoint in range(pickedPoints.shape[1]):
-    print("x: {}, y: {}".format(pickedPoints[0, numPoint], pickedPoints[1, numPoint]))
+    print(f"x: {pickedPoints[0, numPoint]}, y: {pickedPoints[1, numPoint]}")
 
 ###############################################################################
 # Plot the ``dataObject`` again together with the previously selected points as ``marker``.

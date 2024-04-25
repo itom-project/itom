@@ -93,7 +93,7 @@ def VerifyFileExists(directory, relative_path):
   """
 
   if not os.path.isfile(os.path.join(directory, relative_path)):
-    print('ERROR: Cannot find %s in directory %s.' % (relative_path,
+    print('ERROR: Cannot find {} in directory {}.'.format(relative_path,
                                                       directory))
     print('Please either specify a valid project root directory '
           'or omit it on the command line.')
@@ -162,7 +162,7 @@ def FuseGTestH(gtest_root, output_dir):
     processed_files.add(gtest_header_path)
 
     # Reads each line in the given gtest header.
-    for line in open(os.path.join(gtest_root, gtest_header_path), 'r'):
+    for line in open(os.path.join(gtest_root, gtest_header_path)):
       m = INCLUDE_GTEST_FILE_REGEX.match(line)
       if m:
         # It's '#include "gtest/..."' - let's process it recursively.
@@ -190,7 +190,7 @@ def FuseGTestAllCcToFile(gtest_root, output_file):
     processed_files.add(gtest_source_file)
 
     # Reads each line in the given gtest source file.
-    for line in open(os.path.join(gtest_root, gtest_source_file), 'r'):
+    for line in open(os.path.join(gtest_root, gtest_source_file)):
       m = INCLUDE_GTEST_FILE_REGEX.match(line)
       if m:
         if 'include/' + m.group(1) == GTEST_SPI_H_SEED:
@@ -206,7 +206,7 @@ def FuseGTestAllCcToFile(gtest_root, output_file):
           # There is no need to #include "gtest/gtest.h" more than once.
           if not GTEST_H_SEED in processed_files:
             processed_files.add(GTEST_H_SEED)
-            output_file.write('#include "%s"\n' % (GTEST_H_OUTPUT,))
+            output_file.write('#include "{}"\n'.format(GTEST_H_OUTPUT))
       else:
         m = INCLUDE_SRC_FILE_REGEX.match(line)
         if m:

@@ -57,7 +57,7 @@ for fitGeometry in geometryList:
 
         [cVec, cPt, cInl] = algorithms.pclFitPlane(cloud, 1, optimizeParameters=0)
 
-        print("The plane's direction is ({}, {}, {}) with the constant {}".format(cVec[0], cVec[1], cVec[2], cPt))
+        print(f"The plane's direction is ({cVec[0]}, {cVec[1]}, {cVec[2]}) with the constant {cPt}")
 
     elif fitGeometry == "circle2D":
 
@@ -72,7 +72,7 @@ for fitGeometry in geometryList:
 
         [cPt, cRad, cInl] = algorithms.pclFitCircle2D(cloud, [1, 6], optimizeParameters=0)
 
-        print("The circle has a radius {} and is centered at ({}, {})".format(cRad, cPt[0], cPt[1]))
+        print(f"The circle has a radius {cRad} and is centered at ({cPt[0]}, {cPt[1]})")
 
     elif fitGeometry == "circle3D":
 
@@ -113,7 +113,7 @@ for fitGeometry in geometryList:
         )
 
         [cPt, cRad, cInl] = algorithms.pclFitSphere(cloud, [1, 6], optimizeParameters=0)
-        print("The sphere has a radius {} and is centered at ({}, {}, {})".format(cRad, cPt[0], cPt[1], cPt[2]))
+        print(f"The sphere has a radius {cRad} and is centered at ({cPt[0]}, {cPt[1]}, {cPt[2]})")
     elif fitGeometry == "cylinder":
 
         [X, Y] = np.meshgrid(np.arange(-2.0, 2.0, 0.1), np.arange(-2.0, 2.0, 0.1))
