@@ -1,11 +1,11 @@
 Versions-Verwaltung itom
 ------------------------
 
-Der Verantwortliche für die Versions-Nummern-Vergabe bei 'itom' ist Heiko Bieger.
+Der Verantwortliche fÃ¼r die Versions-Nummern-Vergabe bei 'itom' ist Heiko Bieger.
 
 Jedes Mal, wenn ein neues Setup von 'itom' herauskommt, wird die Patch-Nummer der
 'itom'-Version inkrementiert. Versions-Inkrementierungen bei Major und Minor erfolgen
-nur bei größeren Änderungen und werden durch die Core-Entwickler mitfestgelegt.
+nur bei grÃ¶ÃŸeren Ã„nderungen und werden durch die Core-Entwickler mitfestgelegt.
 
 
 Inkrementierung der 'itom'-Versionsnummer:
@@ -15,11 +15,11 @@ In 'global.h' die neue itom Versionsnummer nach dem Prinzip von Semantic Version
 vergeben.
 
 
-Überprüfung der AddInInterface- und DesignerPluginInterface-Versionsnummer:
+ÃœberprÃ¼fung der AddInInterface- und DesignerPluginInterface-Versionsnummer:
 ----------------------------------------------------------------------------
 
-Prüfen, ob seit dem letzten Setup eine Änderung im AddInInterface und / oder
-DesignerPluginInterface vorkam. Dies führt zu einer Inkrementierung der Versionsnummer(n)
+PrÃ¼fen, ob seit dem letzten Setup eine Ã„nderung im AddInInterface und / oder
+DesignerPluginInterface vorkam. Dies fÃ¼hrt zu einer Inkrementierung der Versionsnummer(n)
 nach dem Prinzip von Semantic Versioning, die in den Dateien addInInterfaceVersion.h und
 designerPluginInterfaceVersion.h vergeben werden.
 
@@ -33,9 +33,9 @@ Doku erstellen:
 
 1. \Build\itom\docs\doxygen\itom_doxygen.dox per Doppelklick starten
 2. itom starten
-3. in \Build\itom\docs\userDoc die python-Datei "create_doc.py" ausführen und Hilfe starten
-4. in \Build\itom\docs\pluginDoc die python-Datei "create_all_plugin_docs.py" ausführen,
-   Build-Verzeichnis der freien Plugins wählen und Hilfe starten
+3. in \Build\itom\docs\userDoc die python-Datei "create_doc.py" ausfÃ¼hren und Hilfe starten
+4. in \Build\itom\docs\pluginDoc die python-Datei "create_all_plugin_docs.py" ausfÃ¼hren,
+   Build-Verzeichnis der freien Plugins wÃ¤hlen und Hilfe starten
 
 
 CHANGE-LOG
