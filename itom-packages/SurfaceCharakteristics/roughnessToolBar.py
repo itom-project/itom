@@ -1,5 +1,5 @@
 """
-This file contains a toolbar with basic surface analysis methods e.g. Rz, Sa, Polynomical Fittings,
+This file contains a toolbar with basic surface analysis methods e.g. Rz, Sa, Polynomial Fittings,
 INIT via
 toolBarRoughnesStatistics = roughnessToolBar("toolBarRoughnesStatistics")
 ...
@@ -18,7 +18,7 @@ if not (itom.pluginLoaded("FittingFilters")):
 class surfaceAnalysisTools(abstractObjInteractionToolBar):
     """
     This class contains function for the analysis of technical surfaces.
-    It wrapps functions from the M++Filter, the FittingFilters and the ITOMFilters plugins to a menu entry and a button bar.
+    It wraps functions from the M++Filter, the FittingFilters and the ITOMFilters plugins to a menu entry and a button bar.
     """
 
     def __init__(
@@ -131,7 +131,7 @@ class surfaceAnalysisTools(abstractObjInteractionToolBar):
             - skipBox             If True, the dialog will be skipped and
             - defaultVarName  The name of the variable to plot
         Return parameters:
-            - check:                   True finishied correctly
+            - check:                   True finished correctly
             - List with parameter: [Rz, Skipped Pixel] or [Sp, Sv, Sz]
         """
         if defaultVarName == None:
@@ -161,7 +161,7 @@ class surfaceAnalysisTools(abstractObjInteractionToolBar):
                     ui.msgCritical("Roughness", "Variable does not exist", ui.MsgBoxOk)
                 return [False, [0, 0]]
 
-            # Create a command to calculate Rz as executeable string
+            # Create a command to calculate Rz as executable string
             if line == True:
                 script = 'filter("calcRz",{},5)\n'
             else:
@@ -225,7 +225,7 @@ class surfaceAnalysisTools(abstractObjInteractionToolBar):
             - skipBox             If True, the dialog will be skipped and
             - defaultVarName  The name of the variable to plot
         Return parameters:
-            - check:                   True finishied correctly
+            - check:                   True finished correctly
             - List with parameter: [Sz, Skipped Pixel in y, Skipped Pixel in x]
         """
         if defaultVarName == None:
@@ -255,7 +255,7 @@ class surfaceAnalysisTools(abstractObjInteractionToolBar):
                     ui.msgCritical("Roughness", "Variable does not exist", ui.MsgBoxOk)
                 return [False, [0, 0]]
 
-            # Create a command to calculate Rz as executeable string
+            # Create a command to calculate Rz as executable string
             script = 'filter("calcTenPointHeigth",{})\n'
 
             try:
@@ -292,7 +292,7 @@ class surfaceAnalysisTools(abstractObjInteractionToolBar):
             - skipBox             If True, the dialog will be skipped and
             - defaultVarName  The name of the variable to plot
         Return parameters:
-            - check:                   True finishied correctly
+            - check:                   True finished correctly
             - List with parameter: [Ra] or [Sa]
         """
         if defaultVarName == None:
@@ -327,7 +327,7 @@ class surfaceAnalysisTools(abstractObjInteractionToolBar):
                     ],
                 ]
 
-            # Create a command to calculate Rz as executeable string
+            # Create a command to calculate Rz as executable string
             if line == True:
                 script = 'filter("calcRa",{})\n'
                 printScript = "Ra = {:.4f} {}"
@@ -368,7 +368,7 @@ class surfaceAnalysisTools(abstractObjInteractionToolBar):
             - skipBox             If True, the dialog will be skipped
             - defaultVarName  The name of the variable to plot
         Return parameters:
-            - check:                   True finishied correctly
+            - check:                   True finished correctly
             - List with parameter: [Rq] or [Sq]
         """
         if defaultVarName == None:
@@ -403,7 +403,7 @@ class surfaceAnalysisTools(abstractObjInteractionToolBar):
                     ],
                 ]
 
-            # Create a command to calculate Rz as executeable string
+            # Create a command to calculate Rz as executable string
             if line == True:
                 script = 'filter("calcRq",{})\n'
                 printScript = "Rq = {:.4f} {}"
@@ -443,12 +443,12 @@ class surfaceAnalysisTools(abstractObjInteractionToolBar):
 
     def planefit(self, skipBox=False, defaultVarName=None):
         """
-        planefit([skipBox [, defaultVarName]) -> Fit a plane or a line into the object and substract the values. The function works in place and the object will be changed to float64.
+        planefit([skipBox [, defaultVarName]) -> Fit a plane or a line into the object and subtract the values. The function works in place and the object will be changed to float64.
         Parameters:
             - skipBox             If True, the dialog will be skipped
             - defaultVarName  The name of the variable to plot
         Return parameters:
-            - check:                   True finishied correctly
+            - check:                   True finished correctly
         """
         if defaultVarName == None:
             defaultVar = self.defaultVarName
@@ -494,12 +494,12 @@ class surfaceAnalysisTools(abstractObjInteractionToolBar):
 
     def polyfit(self, skipBox=False, defaultVarName=None):
         """
-        polyfit([skipBox [, defaultVarName]) -> Fit a mxn-th Order or n-th Order into a 1D or 2D object and substract the values. The function works in place and the object will be changed to float64.
+        polyfit([skipBox [, defaultVarName]) -> Fit a mxn-th Order or n-th Order into a 1D or 2D object and subtract the values. The function works in place and the object will be changed to float64.
         Parameters:
             - skipBox             If True, the dialog will be skipped
             - defaultVarName  The name of the variable to plot
         Return parameters:
-            - check:                   True finishied correctly
+            - check:                   True finished correctly
             - List with parameter: [Rq] or [Sq]
         """
         if defaultVarName == None:

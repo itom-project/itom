@@ -1,0 +1,12 @@
+{
+    "files.associations": {
+        "algorithm": "cpp",
+        "xiosbase": "cpp",
+        "xlocale": "cpp",
+        "xutility": "cpp",
+        "sstream": "cpp",
+        "iosfwd": "cpp",
+        "complex": "cpp",
+        "chrono": "cpp"
+    }
+}

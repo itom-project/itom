@@ -1,7 +1,7 @@
 """Algorithm cancel and progress widget
 =======================================
 
-This scipt shows how the ``itom.progressObserver`` is used
+This script shows how the ``itom.progressObserver`` is used
 to observe and report the progress of functions.
 """
 

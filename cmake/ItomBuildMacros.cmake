@@ -956,7 +956,7 @@ macro(itom_qt_create_translation outputFiles tsFiles target languages)
 
             get_directory_property(_inc_DIRS INCLUDE_DIRECTORIES)
             foreach(_pro_include ${_inc_DIRS})
-                # some include pathes somehow disturb lupdate, such that it requires a long time to finish.
+                # some include paths somehow disturb lupdate, such that it requires a long time to finish.
                 # Therefore, they are excluded from the lupdate include list
                 string(REGEX MATCH "boost|pcl-1|pcl-2|pcl-3" match ${_pro_include})
                 if(NOT match)
@@ -1250,7 +1250,7 @@ macro(itom_post_build_copy_files target sources destinations)
 
     list(REMOVE_DUPLICATES destPathes)
 
-    #try to create all pathes
+    #try to create all paths
     foreach(destPath ${destPathes})
         #first try to create the directory
         add_custom_command(TARGET ${target} POST_BUILD

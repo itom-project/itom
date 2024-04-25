@@ -48,7 +48,7 @@ These are some debug tools.
 
 Request user rights
 ===================
-These are some methods to get user informations.
+These are some methods to get user information.
 
 .. automodule:: itom
     :members: userIsAdmin, userIsDeveloper, userIsUser, userGetInfo

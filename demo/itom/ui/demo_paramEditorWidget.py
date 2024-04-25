@@ -3,7 +3,7 @@
 
 This example shows the usage of the generic ParamEditorWidget.
 
-The widget can be used in various ways. Some of them are shwon in
+The widget can be used in various ways. Some of them are shown in
 this example.
 
 In the first tab, we have a DummyGrabber live image with two

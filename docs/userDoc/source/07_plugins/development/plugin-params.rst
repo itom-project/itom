@@ -44,11 +44,11 @@ The possible types, covered by this container are:
 .. note::
 
     *Type 1* means, that these types are internally copied when calling a constructor, copy constructor
-    or assignement operator of the parameter, where for parameters of *Type 2* only the pointer to the value
+    or assignment operator of the parameter, where for parameters of *Type 2* only the pointer to the value
     itself is internally stored in the parameter, hence, only this pointer is copied at the above mentioned
     methods. The reason is, that a quick passing of the parameter is provided, on the other side, parameters
     of *Type 2* need some further attention concerning thread-safety and/or creation and deletion
-    responsability.
+    responsibility.
 
 *ParamBase* and *Param* and the *Meta*-classes
 ----------------------------------------------

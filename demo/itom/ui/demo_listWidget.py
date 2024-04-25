@@ -11,7 +11,7 @@ by a class in Python.
     This demo uses specially wrapped methods of QListWidget. For more information see
     section 'Calling slots' in https://itom-project.github.io/latest/docs/06_extended_gui/qtdesigner.html)
 
-    These methods are indiciated by #-> special method call
+    These methods are indicated by #-> special method call
 """
 
 from itomUi import (

@@ -1,7 +1,7 @@
 """ANSI escape codes
 ===================
 
-This demo shows some possibilites of ANSI escape codes."""
+This demo shows some possibilities of ANSI escape codes."""
 
 ###############################################################################
 # Change the text color

@@ -145,7 +145,7 @@ plot(obj3dim)
 # .. image:: ../../_static/demoDataObject_4.png
 #    :width: 100%
 
-# Set additional informations (meta data) as tags
+# Set additional information (meta data) as tags
 # Use set tag "key", "value". Key / value are user defined.
 obj2dim.setTag("Creator", "itom")
 obj2dim.setTag("Type", "Measurement")

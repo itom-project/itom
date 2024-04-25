@@ -122,7 +122,7 @@ void WidgetPropGeneralLanguage::readSettings()
     QString lang = settings.value("language", "en").toString();
     QLocale loc(lang);
 
-    if (loc.language() == QLocale::C) //the language could not be detected, use the default one as selected langauge
+    if (loc.language() == QLocale::C) //the language could not be detected, use the default one as selected language
     {
         loc = QLocale(QLocale::English, QLocale::UnitedStates);
     }

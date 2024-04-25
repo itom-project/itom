@@ -18,17 +18,17 @@ class DesignerPluginDocInclude(Include):
         )
         rstPath = rstPath.replace(
             "\\\\", "/"
-        )  # include command want's to have slash only
+        )  # include command wants to have slash only
         rstPath = rstPath.replace(
             "\\", "/"
-        )  # include command want's to have slash only
+        )  # include command wants to have slash only
         rstFileName = os.path.join(rstPath, "%s.rst" % self.arguments[0])
         rstFileName = rstFileName.replace(
             "\\\\", "/"
-        )  # include command want's to have slash only
+        )  # include command wants to have slash only
         rstFileName = rstFileName.replace(
             "\\", "/"
-        )  # include command want's to have slash only
+        )  # include command wants to have slash only
 
         if os.path.exists(rstFileName):
             # load the rst file at the build location and check for .. figure:: img or .. image:: img

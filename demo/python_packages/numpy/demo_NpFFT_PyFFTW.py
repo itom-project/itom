@@ -2,7 +2,7 @@
 ====================
 
 This example shows how to use the FFT or IFFT from ``Numpy``.
-If possible the package PyFFTW is searched. If it is avaible,
+If possible the package PyFFTW is searched. If it is available,
 the fast implementation of FFT and IFFT is used from this package (GPL license!!!).
 
 In order to have the fast version of the fourier transform

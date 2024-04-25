@@ -4,7 +4,7 @@
 This script creates an instance of a ``DummyGrabber``
 and implements a timer with an interval of ``1000ms``.
 
-Everytime, the interval is expired the method ``imageAcquisition``
+Every time, the interval is expired the method ``imageAcquisition``
 is called. It acquires a new image an appends it to the global
 list ``myImages``.
 

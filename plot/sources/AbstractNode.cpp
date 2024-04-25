@@ -670,7 +670,7 @@ RetVal AbstractNode::updateChannels(const QList<QString> &outputParamNames)
         {
             // If they are in the list, we trigger an update and remove them from the temp list
             channelList.append(channel);
-            // If we have at least one channel with this param, we remove its name from the copied list to check wether all params were found
+            // If we have at least one channel with this param, we remove its name from the copied list to check whether all params were found
             copyParamNames.removeOne(channel->getSenderParamName());
             retVal += setUpdatePending(channel);
         }

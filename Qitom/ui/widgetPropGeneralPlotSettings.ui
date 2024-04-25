@@ -35,7 +35,7 @@
          </size>
         </property>
         <property name="text">
-         <string>When opening any plot supported by itom a set of default style settings is loaded. Each plot decides whehter the setting is relevant or not for its type (e.g. the line style does not affect a 2D plot). Plots, that are integrated in an ui-file, only consider these settings above, that cannot be set in the QtDesigner properties.</string>
+         <string>When opening any plot supported by itom a set of default style settings is loaded. Each plot decides whether the setting is relevant or not for its type (e.g. the line style does not affect a 2D plot). Plots, that are integrated in an ui-file, only consider these settings above, that cannot be set in the QtDesigner properties.</string>
         </property>
         <property name="wordWrap">
          <bool>true</bool>

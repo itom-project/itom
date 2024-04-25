@@ -92,7 +92,7 @@ void PlotInfoPicker::updatePickers(const QVector<int> indices, const QVector<QPo
 {
     if (indices.size() != positions.size())
     {
-        qDebug("Could not update pickers, indices and positions missmatch");
+        qDebug("Could not update pickers, indices and positions mismatch");
         return;
     }
 
@@ -151,7 +151,7 @@ void PlotInfoPicker::updatePickers(
 
     if (indices.size() != xpositions.size() || indices.size() != ypositions.size())
     {
-        qDebug("Could not update pickers, indices and positions missmatch");
+        qDebug("Could not update pickers, indices and positions mismatch");
         return;
     }
 
@@ -260,7 +260,7 @@ void PlotInfoPicker::updatePickers(const QVector<int> indices, const QVector<QVe
 {
     if (indices.size() != positions.size())
     {
-        qDebug("Could not update pickers, indices and positions missmatch");
+        qDebug("Could not update pickers, indices and positions mismatch");
         return;
     }
 

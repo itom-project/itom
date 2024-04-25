@@ -380,7 +380,7 @@ void DialogSnapshot::acquisitionEnd()
 
             if (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginFileSaveLoad))
             {
-                retval += ito::RetVal(ito::retError, 0, tr("Timeout while seaching file name at workspace").toLatin1().data());
+                retval += ito::RetVal(ito::retError, 0, tr("Timeout while searching file name at workspace").toLatin1().data());
                 checkRetval(retval);
             }
 

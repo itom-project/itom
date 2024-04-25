@@ -98,7 +98,7 @@ set(qpropertyeditor_UI
 )
 
 set(qpropertyeditor_RCC
-    #add absolute pathes to any *.qrc resource files here
+    #add absolute paths to any *.qrc resource files here
 )
 
 if(MSVC)

@@ -16,7 +16,7 @@
         <translation>插件名称未定义</translation>
     </message>
     <message>
-        <source>ParamList not inialized properly</source>
+        <source>ParamList not initialized properly</source>
         <translation>参数列表未合理初始化</translation>
     </message>
     <message>
@@ -236,7 +236,7 @@ Type conflict for %1</source>
         <translation>加载对象失败：错误的格式版本</translation>
     </message>
     <message>
-        <source>Load object failed: object header not valied</source>
+        <source>Load object failed: object header not valid</source>
         <translation>加载对象失败：对象头不正确</translation>
     </message>
     <message>
@@ -368,7 +368,7 @@ Type conflict for %1</source>
         <translation>请求参数的名称为空</translation>
     </message>
     <message>
-        <source>the parameter name &apos;%1&apos; is invald</source>
+        <source>the parameter name &apos;%1&apos; is invalid</source>
         <translation>参数名称&apos;%1&apos;不正确</translation>
     </message>
     <message>

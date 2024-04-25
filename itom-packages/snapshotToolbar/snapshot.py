@@ -269,7 +269,7 @@ class Snapshot(ItomUi):
             except Exception:
                 ui.msgCritical(
                     "Error",
-                    "Not able to save files. Maybe the selcted color palette does not fit to data type",
+                    "Not able to save files. Maybe the selected color palette does not fit to data type",
                 )
 
     ##########################################################

@@ -24,7 +24,7 @@ The following arguments are possible (the order of arguments is unimportant):
    active user settings. The path to the script can also be put into quotation marks,
    if it contains spaces or other special characters. This argument can be appended
    multiple times.
-6. **pipManager**: If this argument ist given, only opens the Python Package
+6. **pipManager**: If this argument is given, only opens the Python Package
    Manager instead of the main GUI of itom. This can for instance be used
    to update **Numpy**, since this cannot be updated if the main GUI is started,
    since itom directly uses Numpy, such that some of its files are blocked during

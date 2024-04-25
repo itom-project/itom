@@ -88,7 +88,7 @@ public:
     //! destructor. Decrements the reference counter of the covered plugin and deletes it, if it drops to zero.
     virtual ~PluginThreadCtrl();
 
-    //! assigment operator. Gets control over the plugin currently covered by other. Decrements the reference counter of the former plugin and increments it of the plugin controlled by other.
+    //! assignment operator. Gets control over the plugin currently covered by other. Decrements the reference counter of the former plugin and increments it of the plugin controlled by other.
     PluginThreadCtrl& operator =(const PluginThreadCtrl &other);
 
     ito::RetVal getParam(ito::Param &val, int timeOutMS = PLUGINWAIT);      /*!< Get a parameter of the plugin */
@@ -185,7 +185,7 @@ public:
     virtual ~DataIOThreadCtrl();
 
     ito::RetVal startDevice(int timeOutMS = PLUGINWAIT);                     /*!< Set camera active */
-    ito::RetVal stopDevice(int timeOutMS = PLUGINWAIT);                      /*!< Set camera deactive */
+    ito::RetVal stopDevice(int timeOutMS = PLUGINWAIT);                      /*!< Set camera deactivate */
     ito::RetVal acquire(const int trigger = 0, int timeOutMS = PLUGINWAIT);  /*!< Trigger an exposure and return before image is done*/
     ito::RetVal getVal(ito::DataObject &dObj, int timeOutMS = PLUGINWAIT);   /*!< Get a shallow-copy of the dataObject */
     ito::RetVal copyVal(ito::DataObject &dObj, int timeOutMS = PLUGINWAIT);  /*!< Get a deep-copy of the dataObject */
@@ -277,9 +277,9 @@ public:
     //! destructor. Decrements the reference counter of the covered plugin and deletes it, if it drops to zero.
     virtual ~ActuatorThreadCtrl();
 
-    ito::RetVal setPosRel(const QVector<int> &axes, const QVector<double> &relPositions, int timeOutMS = PLUGINWAIT);  /*!< Move more than on axis relativ to current position */
+    ito::RetVal setPosRel(const QVector<int> &axes, const QVector<double> &relPositions, int timeOutMS = PLUGINWAIT);  /*!< Move more than on axis relative to current position */
     ito::RetVal setPosAbs(const QVector<int> &axes, const QVector<double> &absPositions, int timeOutMS = PLUGINWAIT);  /*!< Move more than on axis absolute*/
-    ito::RetVal setPosRel(int axis, double relPosition, int timeOutMS = PLUGINWAIT);                       /*!< Move a single axis relativ to current position */
+    ito::RetVal setPosRel(int axis, double relPosition, int timeOutMS = PLUGINWAIT);                       /*!< Move a single axis relative to current position */
     ito::RetVal setPosAbs(int axis, double absPosition, int timeOutMS = PLUGINWAIT);                       /*!< Move a single axi absolute*/
 
     ito::RetVal getPos(QVector<int> axes, QVector<double> &positions, int timeOutMS = PLUGINWAIT);         /*!< Get the position of more than one axis */

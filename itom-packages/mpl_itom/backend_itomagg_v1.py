@@ -127,7 +127,7 @@ class FigureCanvasItomAgg(FigureCanvasItom, FigureCanvasAgg):
             Y = 0
             W = round(self.renderer.width)
             H = round(self.renderer.height)
-            # workaround sometimes the width and hight does not fit to the stringBuffer length, leding to a crash of itom.
+            # workaround sometimes the width and height does not fit to the stringBuffer length, leding to a crash of itom.
             # If the length is a multiple of either the width or the length we readjust them.
             if not int(W * H * 4) == len(stringBuffer):
                 numberElements = len(stringBuffer) / 4

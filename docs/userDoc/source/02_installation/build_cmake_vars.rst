@@ -35,8 +35,8 @@ to change the environment variables permanently use:
 
    setx <VARIABLE_NAME> <Value>
 
-In general it is recomended to use the system environment variables, because they can
-be reused permanently and are used to set during the internal cmake confguration
+In general it is recommended to use the system environment variables, because they can
+be reused permanently and are used to set during the internal cmake configuration
 to define the correct location of the cmake modules and configurations scripts, which
 in turn define the set of Cmake Variables.
 
@@ -53,7 +53,7 @@ Environment Variables:
 
 .. |cmakelist_itom_sdk_root| replace::
 
-   Path to the build ITOM SDK Path, as created after a succesfull |Itom| build.
+   Path to the build ITOM SDK Path, as created after a successful |Itom| build.
    (e.g. <Itom_BuildFolder>/SDK). Should be set manually if ITOM is not build
    outside of the proposed build structure.
 
@@ -132,7 +132,7 @@ Cmake Variables:
 
 .. |cmakelist_Itom_SDK_DIR| replace::
 
-   Path to the build ITOM SDK Path, as created after a succesfull |Itom| build.
+   Path to the build ITOM SDK Path, as created after a successful |Itom| build.
    (e.g. <Itom_BuildFolder>/SDK). Should be set manually if ITOM is not build
    outside of the proposed build structure.
 

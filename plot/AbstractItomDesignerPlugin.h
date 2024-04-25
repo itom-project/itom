@@ -73,7 +73,7 @@ namespace ito {
             const QString getDetailDescription(void) const { return m_detaildescription; }
             //! returns a detailed description of the plugin license
             const QString getLicenseInfo(void) const { return m_license; }
-            //! returns a detailed description of the plugin compile informations
+            //! returns a detailed description of the plugin compile information
             const QString getAboutInfo(void) const { return m_aboutThis; }
 
             inline void setItomSettingsFile(const QString &settingsFile) { m_itomSettingsFile = settingsFile; }
@@ -87,13 +87,13 @@ namespace ito {
 
             int m_version;                        //!< plugin version
             QString m_author;                     //!< the plugin author
-            QString m_description;                //!< a brief descrition of the plugin
-            QString m_detaildescription;          //!< a detail descrition of the plugin
+            QString m_description;                //!< a brief description of the plugin
+            QString m_detaildescription;          //!< a detail description of the plugin
             QString m_license;                    //!< a short license string for the plugin, default value is "LGPL with ITO itom-exception"
-            QString m_aboutThis;                  //!< a short string with compile informations
+            QString m_aboutThis;                  //!< a short string with compile information
             QString m_itomSettingsFile;
     };
-} // namepsace ito
+} // namespace ito
 
 #endif //#if !defined(Q_MOC_RUN) || defined(ITOMCOMMONQT_MOC)
 

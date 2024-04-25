@@ -51,7 +51,7 @@ def getModuleFile(mod):
             return [p, 0]
     except Exception as e:
         # print("Error:", e)
-        return ["<build-in>", 1]
+        return ["<built-in>", 1]
 
 
 def reloadModules(modNames):
@@ -161,7 +161,7 @@ def clearAll():
 
         for key in deleted_keywords:
             del __main__.__dict__[key]
-        # call garbage collector to really and immediately remove all flaged variables
+        # call garbage collector to really and immediately remove all flagged variables
         gc.collect()
 
 

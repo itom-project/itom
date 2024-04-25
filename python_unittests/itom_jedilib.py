@@ -228,10 +228,10 @@ dataObject.ones([2, 2])"""
         h = jedilib.get_help(doc, 131, 8, path=p)  # comment -> no help
         self.assertEqual(len(h), 0)
 
-        h = jedilib.get_help(doc, 132, 7, path=p)  # pathes = ... -> help
-        self.assertEqual(h, [("pathes = sys.path", ["pathes: List[str]"])])
+        h = jedilib.get_help(doc, 132, 7, path=p)  # paths = ... -> help
+        self.assertEqual(h, [("paths = sys.path", ["paths: List[str]"])])
 
-        h = jedilib.get_help(doc, 132, 15, path=p)  # pathes = sys... -> help
+        h = jedilib.get_help(doc, 132, 15, path=p)  # paths = sys... -> help
         self._assertOneHelpEntry(h, "module sys", "Module sys\n\nThis module")
 
         h = jedilib.get_help(doc, 137, 7, path=p)  # result1
@@ -307,7 +307,7 @@ dataObject.ones([2, 2])"""
 
     def test_recursionAbility(self):
         """Check by an example, that the maximum recursion limit value, indicated
-        in itomJediLib.py can be fullfilled by this itom / Python setup. This
+        in itomJediLib.py can be fulfilled by this itom / Python setup. This
         test is inspired by check_recursionlimit.py, a tool script of Python.
 
         If the test fails, the application usually crashes.

@@ -170,7 +170,7 @@ WorkspaceDockWidget::~WorkspaceDockWidget()
     }
 
     m_pWorkspaceWidget
-        ->deleteLater(); // important, since the above invokation still needs the container
+        ->deleteLater(); // important, since the above invocation still needs the container
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

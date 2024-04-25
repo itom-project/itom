@@ -38,7 +38,7 @@ namespace ito
 
 const int PAPERCOLOR = 1;
 // const int FOLDMARGINCOLOR = 2; -> does not exist any more, changed via stylesheet
-// const int MARGINCOLOR = 3; -> doest not exist any more, changed via stylesheet
+// const int MARGINCOLOR = 3; -> doesn't exist any more, changed via stylesheet
 const int WHITESPACECOLOR = 4;
 const int UNMATCHEDBRACECOLOR = 5;
 const int MATCHEDBRACECOLOR = 6;

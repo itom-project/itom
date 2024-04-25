@@ -826,8 +826,8 @@ class TiffFile:
                     if not annot.attrib.get("Namespace", "").endswith("modulo"):
                         continue
                     for value in annot:
-                        for modul in value:
-                            for along in modul:
+                        for module in value:
+                            for along in module:
                                 if not along.tag[:-1].endswith("Along"):
                                     continue
                                 axis = along.tag[-1]
@@ -3090,7 +3090,7 @@ CZ_LSM_SCAN_INFO_ATTRIBUTES = {
     0x90000001: "name",
     0x90000002: "power",
     0x90000003: "wavelength",
-    0x90000004: "aquire",
+    0x90000004: "acquire",
     0x90000005: "detchannel_name",
     0x90000006: "power_bc1",
     0x90000007: "power_bc2",

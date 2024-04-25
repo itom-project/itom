@@ -34,7 +34,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include <string.h>
 #include <stdexcept>
 #ifndef WIN32
-#include <unistd.h>    // neede for usleep
+#include <unistd.h>    // needed for usleep
 #endif
 
 #ifdef _MSC_VER

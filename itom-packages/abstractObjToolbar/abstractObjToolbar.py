@@ -26,7 +26,7 @@ class abstractObjInteractionToolBar:
         Parameters
         ------------
         myName : {str}
-            Name of this toolBar. Nessecary for the deleter function to kill the b-bar.
+            Name of this toolBar. Necessary for the deleter function to kill the b-bar.
         defaultVar :  {str}
             default variable name.
 
@@ -65,7 +65,7 @@ class abstractObjInteractionToolBar:
             default variable name.
         VarName :  {PythonDict}
             Kontent of the global workspace of caller (use globals())
-        objType : {str}, optinal
+        objType : {str}, optional
             ObjectTypes to filter. Can be ' line', 'plane' , ' empty' or 'ND'
         acceptedObjectType: {int}, optional
             BitSet 1 = DataObjects, 2 = NumPy-Array, 4 = PointClouds accepted

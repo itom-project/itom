@@ -198,7 +198,7 @@ namespace ito
 
             //! slot invoked if identifier of plugin has been set using AddInBase::setIdentifier
             /*!
-                overload this method in order to get the identfier of the plugin. Usually, this identifier is only set in the
+                overload this method in order to get the identifier of the plugin. Usually, this identifier is only set in the
                 init-method of the plugin, hence, after construction of the dock widget. Therefore this slot is invoked
                 once the identifier has been changed.
 

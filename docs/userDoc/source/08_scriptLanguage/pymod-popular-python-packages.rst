@@ -50,7 +50,7 @@ homepage of |itom| (https://itom-project.github.io/). See the section :ref:`buil
 
 **pip**
 
-Pip is the main package that is used to install other packages. From Python 3.4 on, pip comes with the |python| installer and is implicitely called by the :ref:`package manager <gui-pipmanager>`.
+Pip is the main package that is used to install other packages. From Python 3.4 on, pip comes with the |python| installer and is implicitly called by the :ref:`package manager <gui-pipmanager>`.
 
 **scikit-image**
 
@@ -64,7 +64,7 @@ the itom plugin **OpenCVFilters**.
 
 **frosted**
 
-This package is a syntax check for python scripts. Once the package is installed, |itom| is able to continously check your script files and show hints and bugs in the first column of the script.
+This package is a syntax check for python scripts. Once the package is installed, |itom| is able to continuously check your script files and show hints and bugs in the first column of the script.
 This syntax check can be enabled and configured in the :ref:`property dialog of itom <gui-prop-py-general>`.
 
 **pywin32** (Windows only)

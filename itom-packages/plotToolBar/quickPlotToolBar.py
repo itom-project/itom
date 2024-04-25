@@ -185,7 +185,7 @@ class quickPlotToolBar(abstractObjInteractionToolBar):
             - skipBox             If True, the dialog will be skipped and
             - defaultVarName  The name of the variable to calc the histogramm
         Return parameters:
-            - check:       True finishied correctly
+            - check:       True finished correctly
             - plotHandle: Handle to the figure (0 if failed)
         """
         if self.hasMCPP == False:
@@ -243,7 +243,7 @@ class quickPlotToolBar(abstractObjInteractionToolBar):
             - defaultVarName  The name of the variable to plot
             - typeFilter      BitMask of allowed dataTypes (1: DataObjects, 2: numpyArrays / npObjects, 3:pointclouds)
         Return parameters:
-            - check:       True finishied correctly
+            - check:       True finished correctly
             - plotHandle: Handle to the figure (0 if failed)
         """
         if defaultVarName == None:
@@ -289,7 +289,7 @@ class quickPlotToolBar(abstractObjInteractionToolBar):
         Parameters:
             - defaultVarName  The name of the variable to plot
         Return parameters:
-            - check:       True finishied correctly
+            - check:       True finished correctly
             - plotHandle: Handle to the figure (0 if failed)
         """
         check = True
@@ -315,7 +315,7 @@ class quickPlotToolBar(abstractObjInteractionToolBar):
         Parameters:
             - defaultVarName  The name of the variable to plot
         Return parameters:
-            - check:       True finishied correctly
+            - check:       True finished correctly
             - plotHandle: Handle to the figure (0 if failed)
         """
         check = True
@@ -401,7 +401,7 @@ class quickPlotToolBar(abstractObjInteractionToolBar):
             - skipBox             If True, the dialog will be skipped and
             - defaultVarName  The name of the variable to plot
         Return parameters:
-            - check:       True finishied correctly
+            - check:       True finished correctly
             - plotHandle: Handle to the figure (0 if failed)
         """
         if defaultVarName == None:
@@ -445,7 +445,7 @@ class quickPlotToolBar(abstractObjInteractionToolBar):
             - defaultVarName  The name of the variable to plot
             - typeFilter      BitMask of allowed dataTypes (1: DataObjects, 2: numpyArrays / npObjects, 3:pointclouds)
         Return parameters:
-            - check:       True finishied correctly
+            - check:       True finished correctly
             - plotHandle: Handle to the figure (0 if failed)
         """
         if defaultVarName == None:

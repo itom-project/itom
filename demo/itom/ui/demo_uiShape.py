@@ -59,7 +59,7 @@ class UiShapeDemo(ItomUi):
         else:
             try:
                 # drawAndPickElements throws RuntimeError if user interrupts the process to add a new shape or new shapes
-                # drawAndPickElements is a memeber of itom.plotItem, self.gui.plot however is of its base type uiItem.
+                # drawAndPickElements is a member of itom.plotItem, self.gui.plot however is of its base type uiItem.
                 # Therefore, the uiItem is cast to plotItem, first.
                 shapes = plotItem(self.gui.plot).drawAndPickElements(type, nrOfElements)
                 self.gui.listLog.call(

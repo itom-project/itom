@@ -137,7 +137,7 @@ class Predicate1Test : public testing::Test {
 
     // Verifies that the control flow in the test function is expected.
     if (expected_to_finish_ && !finished_) {
-      FAIL() << "The predicate assertion unexpactedly aborted the test.";
+      FAIL() << "The predicate assertion unexpectedly aborted the test.";
     } else if (!expected_to_finish_ && finished_) {
       FAIL() << "The failed predicate assertion didn't abort the test "
                 "as expected.";
@@ -532,7 +532,7 @@ class Predicate2Test : public testing::Test {
 
     // Verifies that the control flow in the test function is expected.
     if (expected_to_finish_ && !finished_) {
-      FAIL() << "The predicate assertion unexpactedly aborted the test.";
+      FAIL() << "The predicate assertion unexpectedly aborted the test.";
     } else if (!expected_to_finish_ && finished_) {
       FAIL() << "The failed predicate assertion didn't abort the test "
                 "as expected.";
@@ -969,7 +969,7 @@ class Predicate3Test : public testing::Test {
 
     // Verifies that the control flow in the test function is expected.
     if (expected_to_finish_ && !finished_) {
-      FAIL() << "The predicate assertion unexpactedly aborted the test.";
+      FAIL() << "The predicate assertion unexpectedly aborted the test.";
     } else if (!expected_to_finish_ && finished_) {
       FAIL() << "The failed predicate assertion didn't abort the test "
                 "as expected.";
@@ -1448,7 +1448,7 @@ class Predicate4Test : public testing::Test {
 
     // Verifies that the control flow in the test function is expected.
     if (expected_to_finish_ && !finished_) {
-      FAIL() << "The predicate assertion unexpactedly aborted the test.";
+      FAIL() << "The predicate assertion unexpectedly aborted the test.";
     } else if (!expected_to_finish_ && finished_) {
       FAIL() << "The failed predicate assertion didn't abort the test "
                 "as expected.";
@@ -1969,7 +1969,7 @@ class Predicate5Test : public testing::Test {
 
     // Verifies that the control flow in the test function is expected.
     if (expected_to_finish_ && !finished_) {
-      FAIL() << "The predicate assertion unexpactedly aborted the test.";
+      FAIL() << "The predicate assertion unexpectedly aborted the test.";
     } else if (!expected_to_finish_ && finished_) {
       FAIL() << "The failed predicate assertion didn't abort the test "
                 "as expected.";

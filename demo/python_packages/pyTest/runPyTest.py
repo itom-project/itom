@@ -4,7 +4,7 @@
 Execute lines from this file from demo folder to run all subsequent pytest scripts.
 
 .. hint::
-    from pytest verion ``5.x`` onwards make sure to use -p no:faulthandler
+    from pytest version ``5.x`` onwards make sure to use -p no:faulthandler
 
 Run pytest using line below. run it from within the pytestfolder in the demo scripts itom folder
 modules that are import ed once dont get reimportet, so restart itom frequently

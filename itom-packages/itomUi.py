@@ -32,7 +32,7 @@ __version__ = "2.4.0"
 
 class ItomUi:
     """Base class which can be inherited in order to show an user defined
-    user-interface. This class provides possibilites for auto-connecting
+    user-interface. This class provides possibilities for auto-connecting
     decorated methods in your implementation with certain signals of widgets
     in the user interface.
 

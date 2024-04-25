@@ -180,7 +180,7 @@ def _parse_object(obj, indent: int = 0) -> str:
 
     Args:
         obj: is the parent object to parse
-        indent: is the base identation level for the entire object and its children.
+        indent: is the base indentation level for the entire object and its children.
 
     Returns:
         the stubs docstring for this entire object and its children.
@@ -382,9 +382,9 @@ def _ismethod(obj) -> bool:
 
 
 def _parse_npdoc_argsection(doc_str: str, section_name: str) -> Optional[List[Arg]]:
-    """Searchs and parses a given doc_str for a numpydoc section.
+    """Searches and parses a given doc_str for a numpydoc section.
 
-    This method searchs a doc_str for one of the numpydoc sections ``Parameters``,
+    This method searches a doc_str for one of the numpydoc sections ``Parameters``,
     ``Returns`` or ``Yields``. If the desired section is found, parses its content
     and extracts all found arguments as list of Arg.
 
@@ -591,7 +591,7 @@ def _parse_signature_from_first_line(obj, first_line: str) -> Signature:
             sig.args += _parse_args_string(args)
 
     # sometimes `self` is already contained in docstring. If so, remove the
-    # artifically added `self` argument
+    # artificially added `self` argument
     if len(sig.args) >= 2:
         if sig.args[0].name == "self" and sig.args[1].name == "self":
             del sig.args[0]

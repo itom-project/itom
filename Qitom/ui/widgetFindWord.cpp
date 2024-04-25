@@ -108,9 +108,9 @@ void WidgetFindWord::setFindBarEnabled(bool enabled, bool reduced)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void WidgetFindWord::setSuccessState(bool successfull)
+void WidgetFindWord::setSuccessState(bool successful)
 {
-    if (successfull)
+    if (successful)
     {
         ui.txtFind->setStyleSheet("");
     }

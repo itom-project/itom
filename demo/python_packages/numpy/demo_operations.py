@@ -67,7 +67,7 @@ b.min(axis=1)  # min of each row
 b.cumsum(axis=1)  # cumulative sum along each row
 
 ###############################################################################
-# **Univeral functions**
+# **Universal functions**
 B = np.arange(3)
 np.exp(B)
 
