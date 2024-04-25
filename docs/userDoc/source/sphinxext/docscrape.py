@@ -345,7 +345,7 @@ class NumpyDocString:
         if self[name]:
             out += self._str_header(name)
             for param, param_type, desc in self[name]:
-                out += ["{} : {}".format(param, param_type)]
+                out += [f"{param} : {param_type}"]
                 out += self._str_indent(desc)
             out += [""]
         return out
@@ -366,9 +366,9 @@ class NumpyDocString:
         last_had_desc = True
         for func, desc, role in self["See Also"]:
             if role:
-                link = ":{}:`{}`".format(role, func)
+                link = f":{role}:`{func}`"
             elif func_role:
-                link = ":{}:`{}`".format(func_role, func)
+                link = f":{func_role}:`{func}`"
             else:
                 link = "`%s`_" % func
             if desc or last_had_desc:
@@ -436,7 +436,7 @@ class FunctionDoc(NumpyDocString):
             NumpyDocString.__init__(self, doc)
         except ValueError as e:
             print("*" * 78)
-            print("ERROR: '{}' while parsing `{}`".format(e, self._f))
+            print(f"ERROR: '{e}' while parsing `{self._f}`")
             print("*" * 78)
             # print "Docstring follows:"
             # print doclines
@@ -449,7 +449,7 @@ class FunctionDoc(NumpyDocString):
                 argspec = inspect.getargspec(func)
                 argspec = inspect.formatargspec(*argspec)
                 argspec = argspec.replace("*", r"\*")
-                signature = "{}{}".format(func_name, argspec)
+                signature = f"{func_name}{argspec}"
             except TypeError as e:
                 signature = "%s()" % func_name
             self["Signature"] = signature

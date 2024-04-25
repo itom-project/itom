@@ -94,7 +94,7 @@ def VerifyFileExists(directory, relative_path):
     """
 
     if not os.path.isfile(os.path.join(directory, relative_path)):
-        print("ERROR: Cannot find {} in directory {}.".format(relative_path, directory))
+        print(f"ERROR: Cannot find {relative_path} in directory {directory}.")
         print(
             "Please either specify a valid project root directory "
             "or omit it on the command line."
@@ -210,7 +210,7 @@ def FuseGTestAllCcToFile(gtest_root, output_file):
                     # There is no need to #include "gtest/gtest.h" more than once.
                     if not GTEST_H_SEED in processed_files:
                         processed_files.add(GTEST_H_SEED)
-                        output_file.write('#include "{}"\n'.format(GTEST_H_OUTPUT))
+                        output_file.write(f'#include "{GTEST_H_OUTPUT}"\n')
             else:
                 m = INCLUDE_SRC_FILE_REGEX.match(line)
                 if m:

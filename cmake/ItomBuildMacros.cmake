@@ -1194,7 +1194,7 @@ endmacro()
 
 # - appends the list of binary translation files (qm_files) to be copied from their source
 # directory to the 'plugins/${target}/translation' subfolder of the qitom root directory. This is
-# done by adding one or multiple filepathes and folders to the given lists 'sources' and
+# done by adding one or multiple filepaths and folders to the given lists 'sources' and
 # 'destinations'. The copy operation from every entry in sources to destinations
 # can then be triggered by calling 'itom_post_build_copy_files'.
 #
@@ -1213,7 +1213,7 @@ endmacro()
 
 # - appends the list of binary translation files (qm_files) to be copied from their source
 # directory to the 'designer/translation' subfolder of the qitom root directory. This is
-# done by adding one or multiple filepathes and folders to the given lists 'sources' and
+# done by adding one or multiple filepaths and folders to the given lists 'sources' and
 # 'destinations'. The copy operation from every entry in sources to destinations
 # can then be triggered by calling 'itom_post_build_copy_files'.
 #

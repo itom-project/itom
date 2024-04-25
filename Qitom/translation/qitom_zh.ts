@@ -8860,7 +8860,7 @@ or correct the base directory in the preferences dialog of itom.</source>
     <name>ito::WidgetPropEditorAPI</name>
     <message>
         <location filename="../ui/widgetPropEditorAPI.cpp" line="+49"/>
-        <source>Base path for relative pathes: </source>
+        <source>Base path for relative paths: </source>
         <translation>相对路径的基本路径: </translation>
     </message>
     <message>
@@ -9371,7 +9371,7 @@ or correct the base directory in the preferences dialog of itom.</source>
 <context>
     <name>ito::WidgetPropPythonStartup</name>
     <message>
-        <source>Base path for relative pathes: </source>
+        <source>Base path for relative paths: </source>
         <translation type="vanished">Basispfad der relativen Pfade: </translation>
     </message>
     <message>

@@ -123,7 +123,7 @@ class TimeIt:
 
     def __exit__(self, type, value, traceback):
         if self.name:
-            print("[{}]: {:.4f} s elapsed".format(self.name, time.time() - self.tstart))
+            print(f"[{self.name}]: {time.time() - self.tstart:.4f} s elapsed")
         else:
             print("%.4f s elapsed" % (time.time() - self.tstart))
 
@@ -555,7 +555,7 @@ if _HAS_FLAKE8:
                         "--{}={}".format(item, ",".join([str(ii) for ii in val]))
                     )
                 else:
-                    kwargs_parsed.append("--{}={}".format(item, val))
+                    kwargs_parsed.append(f"--{item}={val}")
 
             application.plugins, application.options = parse_args(kwargs_parsed)
 
@@ -974,7 +974,7 @@ def check(
                 # print("check saved file %s" % filename)
                 with warnings.catch_warnings():
                     # when parsing the file by the checker, a warning
-                    # can occure (e.g. from an assert statement). ignore this warning.
+                    # can occur (e.g. from an assert statement). ignore this warning.
                     warnings.simplefilter("ignore")
                     try:
                         report = style_guide.check_files(
@@ -996,7 +996,7 @@ def check(
                 try:
                     with warnings.catch_warnings():
                         # when parsing the file by the checker, a warning
-                        # can occure (e.g. from an assert statement). ignore this warning.
+                        # can occur (e.g. from an assert statement). ignore this warning.
                         warnings.simplefilter("ignore")
                         report = style_guide.check_files(
                             [

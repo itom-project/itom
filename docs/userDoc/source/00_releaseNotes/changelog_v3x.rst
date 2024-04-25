@@ -329,7 +329,7 @@ itom
 * FindWindowsSDK CMAKE-File adapted for MSVC2015
 * FindOpenCV.cmake updated for MSVC14
 * added titles to compile batch files to better see the type of compilation (debug, release, x86, x64)
-* updated pathes in doxygen input file, updates URLs in intersphinx_mappings
+* updated paths in doxygen input file, updates URLs in intersphinx_mappings
 * close-method of plugins is only called as direct connection from AddInManager if it is used by an external-DLL and has created its own instance of QApplication. In all other cases, an Auto-connection is used.
 * workaround in matplotlib backend if coordinates with special characters (e.g. due to polar plot -> zoom tool, greek letters) should be displayed
 * AddInManager unittest: scan plugin directory for plugins instead of entire itom directory

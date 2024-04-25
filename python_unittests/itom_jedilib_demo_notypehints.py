@@ -129,9 +129,9 @@ class MyClassDocStr:
 
 if __name__ == "__main__":
     # main part
-    pathes = sys.path
+    paths = sys.path
 
-    if "C:/temp" not in pathes:
+    if "C:/temp" not in paths:
         print("not contained")
 
     result1 = meth1_nodocstr()

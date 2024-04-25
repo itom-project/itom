@@ -6,7 +6,7 @@ These shapes are then rotated and translated by
 various angles and distances and displayed in one plot figure.
 
 The overlay image of the plot is finally set to a masked
-object, where the masked area ist equal to the union of
+object, where the masked area is equal to the union of
 all shapes, visible at the canvas.
 """
 

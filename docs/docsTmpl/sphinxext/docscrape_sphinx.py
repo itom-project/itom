@@ -36,7 +36,7 @@ class SphinxDocString(NumpyDocString):
             out += [""]
             for param, param_type, desc in self[name]:
                 out += self._str_indent(
-                    ["**{}** : {}".format(param.strip(), param_type)]
+                    [f"**{param.strip()}** : {param_type}"]
                 )
                 out += [""]
                 out += self._str_indent(desc, 8)

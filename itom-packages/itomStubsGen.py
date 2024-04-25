@@ -792,7 +792,7 @@ def _nptype2typing(nptypestr: str) -> str:
             comps[0] = removeRefs(comps[0].strip())
             # turn first letter into upper case
             comps[0] = comps[0][0].upper() + comps[0][1:]
-            return "{}[{}]".format(comps[0], comps[1])
+            return f"{comps[0]}[{comps[1]}]"
 
     alternatives = [parseval(a) for a in alternatives if a.strip() != ""]
 
@@ -855,7 +855,7 @@ def _parse_property_docstring(obj, indent: int) -> str:
     if docstring is None:
         warnings.warn("Docstring missing for property %s" % name, RuntimeWarning)
         text = "%s@property\n" % prefix
-        text += "{}def {}(self):\n{}    pass".format(prefix, name, prefix)
+        text += f"{prefix}def {name}(self):\n{prefix}    pass"
         return text
 
     docstrings = docstring.split("\n")
@@ -876,7 +876,7 @@ def _parse_property_docstring(obj, indent: int) -> str:
         docstrings[0] = docstrings[0][colon_idx + len(search_str) :].strip()
 
     text = "%s@property\n" % prefix
-    text += prefix + "def {}(self){}:\n".format(name, rettype)
+    text += prefix + f"def {name}(self){rettype}:\n"
 
     while len(docstrings) > 0 and docstrings[0].strip() == "":
         docstrings = docstrings[1:]  # remove the first empty lines

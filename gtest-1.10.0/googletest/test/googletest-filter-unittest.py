@@ -243,10 +243,10 @@ class GTestFilterUnitTest(gtest_test_utils.TestCase):
         """Asserts that two sets are equal."""
 
         for elem in lhs:
-            self.assertTrue(elem in rhs, "{} in {}".format(elem, rhs))
+            self.assertTrue(elem in rhs, f"{elem} in {rhs}")
 
         for elem in rhs:
-            self.assertTrue(elem in lhs, "{} in {}".format(elem, lhs))
+            self.assertTrue(elem in lhs, f"{elem} in {lhs}")
 
     def AssertPartitionIsValid(self, set_var, list_of_sets):
         """Asserts that list_of_sets is a valid partition of set_var."""
@@ -291,7 +291,7 @@ class GTestFilterUnitTest(gtest_test_utils.TestCase):
         if gtest_filter is None:
             args = []
         else:
-            args = ["--{}={}".format(FILTER_FLAG, gtest_filter)]
+            args = [f"--{FILTER_FLAG}={gtest_filter}"]
 
         tests_run = RunAndExtractTestList(args)[0]
         self.AssertSetEqual(tests_run, tests_to_run)
@@ -352,7 +352,7 @@ class GTestFilterUnitTest(gtest_test_utils.TestCase):
         # Construct the command line.
         args = ["--%s" % ALSO_RUN_DISABLED_TESTS_FLAG]
         if gtest_filter is not None:
-            args.append("--{}={}".format(FILTER_FLAG, gtest_filter))
+            args.append(f"--{FILTER_FLAG}={gtest_filter}")
 
         tests_run = RunAndExtractTestList(args)[0]
         self.AssertSetEqual(tests_run, tests_to_run)

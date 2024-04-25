@@ -9,7 +9,7 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
 
 
-class Ui_DialogReloadModule(object):
+class Ui_DialogReloadModule:
     def setupUi(self, DialogReloadModule):
         DialogReloadModule.setObjectName("DialogReloadModule")
         DialogReloadModule.resize(551, 481)

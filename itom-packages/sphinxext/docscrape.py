@@ -90,7 +90,7 @@ class ParseError(Exception):
     def __str__(self):
         message = self.args[0]
         if hasattr(self, "docstring"):
-            message = "{} in {!r}".format(message, self.docstring)
+            message = f"{message} in {self.docstring!r}"
         return message
 
 
@@ -401,7 +401,7 @@ class NumpyDocString(collections.abc.Mapping):
             out += self._str_header(name)
             for param, param_type, desc in self[name]:
                 if param_type:
-                    out += ["{} : {}".format(param, param_type)]
+                    out += [f"{param} : {param_type}"]
                 else:
                     out += [param]
                 out += self._str_indent(desc)
@@ -424,9 +424,9 @@ class NumpyDocString(collections.abc.Mapping):
         last_had_desc = True
         for func, desc, role in self["See Also"]:
             if role:
-                link = ":{}:`{}`".format(role, func)
+                link = f":{role}:`{func}`"
             elif func_role:
-                link = ":{}:`{}`".format(func_role, func)
+                link = f":{func_role}:`{func}`"
             else:
                 link = "`%s`_" % func
             if desc or last_had_desc:

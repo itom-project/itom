@@ -80,7 +80,7 @@ struct PyAssignment
     QString m_modulePath; // File path of the module where the assignment can be found
     int m_line; //line number
     int m_column; //column number
-    QString m_fullName; //assignement full name
+    QString m_fullName; //assignment full name
 };
 
 /*

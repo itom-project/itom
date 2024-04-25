@@ -68,7 +68,7 @@ class SphinxDocString(NumpyDocString):
             for param, param_type, desc in self[name]:
                 if param_type:
                     out += self._str_indent(
-                        ["**{}** : {}".format(param.strip(), param_type)]
+                        [f"**{param.strip()}** : {param_type}"]
                     )
                 else:
                     out += self._str_indent([param.strip()])
@@ -86,7 +86,7 @@ class SphinxDocString(NumpyDocString):
             for param, param_type, desc in self[name]:
                 if param_type:
                     out += self._str_indent(
-                        ["**{}** : {}".format(param.strip(), param_type)]
+                        [f"**{param.strip()}** : {param_type}"]
                     )
                 else:
                     out += self._str_indent(["**%s**" % param.strip()])
@@ -134,7 +134,7 @@ class SphinxDocString(NumpyDocString):
 
                 if param_obj and (pydoc.getdoc(param_obj) or not desc):
                     # Referenced object has a docstring
-                    autosum += ["   {}{}".format(prefix, param)]
+                    autosum += [f"   {prefix}{param}"]
                 else:
                     others.append((param, param_type, desc))
 
@@ -152,7 +152,7 @@ class SphinxDocString(NumpyDocString):
                 for param, param_type, desc in others:
                     desc = sixu(" ").join(x.strip() for x in desc).strip()
                     if param_type:
-                        desc = "({}) {}".format(param_type, desc)
+                        desc = f"({param_type}) {desc}"
                     out += [fmt % ("**" + param.strip() + "**", desc)]
                 out += [hdr]
             out += [""]

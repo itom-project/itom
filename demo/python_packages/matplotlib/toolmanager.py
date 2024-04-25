@@ -25,7 +25,7 @@ class ListTools(ToolBase):
             if not tools[name].description:
                 continue
             keys = ", ".join(sorted(self.toolmanager.get_tool_keymap(name)))
-            print("{:12} {:45} {}".format(name, tools[name].description, keys))
+            print(f"{name:12} {tools[name].description:45} {keys}")
         print("_" * 80)
         print("Active Toggle tools")
         print("{:12} {:45}".format("Group", "Active"))

@@ -1139,7 +1139,7 @@ class TiffPage:
                         )
                 except KeyError:
                     raise ValueError(
-                        "{}.value ({}) not supported".format(name, tags[name].value)
+                        f"{name}.value ({tags[name].value}) not supported"
                     )
 
         tag = tags["bits_per_sample"]
@@ -1887,7 +1887,7 @@ class Record(dict):
                 elif isinstance(v[0], TiffPage):
                     v = [i.index for i in v if i]
             s.append(
-                ("* {}: {}".format(k, str(v)))
+                (f"* {k}: {str(v)}")
                 .split("\n", 1)[0][:PRINT_LINE_LEN]
                 .rstrip()
             )
@@ -2440,7 +2440,7 @@ def format_size(size):
     """Return file size as string from byte size."""
     for unit in ("B", "KB", "MB", "GB", "TB"):
         if size < 2048:
-            return "{:.f} {}".format(size, unit)
+            return f"{size:.f} {unit}"
         size /= 1024.0
 
 
@@ -3724,7 +3724,7 @@ def main(argv=None):
                     else:
                         if vmax <= vmin:
                             vmin, vmax = None, None
-                title = "{}\n {}".format(str(tif), str(page))
+                title = f"{str(tif)}\n {str(page)}"
                 imshow(
                     img,
                     title=title,

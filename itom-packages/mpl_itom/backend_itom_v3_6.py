@@ -1047,7 +1047,7 @@ class NavigationToolbar2Itom(NavigationToolbar2):
         selectedFilter = 0
         for name, exts in sorted_filetypes:
             exts_list = " ".join(["*.%s" % ext for ext in exts])
-            filter = "{} ({})".format(name, exts_list)
+            filter = f"{name} ({exts_list})"
             if default_filetype in exts:
                 selectedFilter = len(filters)
             filters.append(filter)
@@ -1311,7 +1311,7 @@ class SaveFigureItom(backend_tools.SaveFigureBase):
         selectedFilter = None
         for name, exts in sorted_filetypes:
             exts_list = " ".join(["*.%s" % ext for ext in exts])
-            filtername = "{} ({})".format(name, exts_list)
+            filtername = f"{name} ({exts_list})"
             if default_filetype in exts:
                 selectedFilter = filtername
             filters.append(filtername)

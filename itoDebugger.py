@@ -465,9 +465,9 @@ class itoDebugger(bdb.Bdb):
         for i in range(n):
             name = co.co_varnames[i]
             if name in dict:
-                self.message("{} = {!r}".format(name, dict[name]))
+                self.message(f"{name} = {dict[name]!r}")
             else:
-                self.message("{} = *** undefined ***".format(name))
+                self.message(f"{name} = *** undefined ***")
 
     def do_retval(self, arg):
         """retval
@@ -643,7 +643,7 @@ class itoDebugger(bdb.Bdb):
             return
         # Is it a class?
         if value.__class__ is type:
-            self.message("Class {}.{}".format(value.__module__, value.__name__))
+            self.message(f"Class {value.__module__}.{value.__name__}")
             return
         # None of the above...
         self.message(type(value))
@@ -840,7 +840,7 @@ class itoDebugger(bdb.Bdb):
         self.reset()
 
         with open(filename, "rb") as fp:
-            statement = "exec(compile(%r,%r,'exec'))" % (fp.read(), self.mainpyfile)
+            statement = f"exec(compile({fp.read()!r},{self.mainpyfile!r},'exec'))"
         try:
             self.run(statement, __main__.__dict__)
             self.clear_all_breaks()
@@ -871,7 +871,7 @@ class itoDebugger(bdb.Bdb):
         self.checkSysPath(self.mainpyfile)
 
         with open(filename, "rb") as fp:
-            statement = "exec(compile(%r,%r,'exec'))" % (fp.read(), self.mainpyfile)
+            statement = f"exec(compile({fp.read()!r},{self.mainpyfile!r},'exec'))"
         try:
             exec(statement, __main__.__dict__)
         except SyntaxError as err:
@@ -897,7 +897,7 @@ class itoDebugger(bdb.Bdb):
         __main__.__dict__.update({"__file__": filename})
 
         with open(filename, "rb") as fp:
-            statement = "compile(%r,%r,'exec')" % (fp.read(), self.mainpyfile)
+            statement = f"compile({fp.read()!r},{self.mainpyfile!r},'exec')"
         exec(statement, __main__.__dict__)
 
         if tempFilename != "":

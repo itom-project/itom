@@ -416,7 +416,7 @@ class PluginFilterList(Directive):
 
                 for f in pluginInfo["filter"]:
                     [signature, description, parameters] = self.analyzeFilter(f)
-                    t = ".. py:function:: {}({})".format(f, signature)
+                    t = f".. py:function:: {f}({signature})"
                     t += (
                         "\n    \n"
                         + self.indent(description)

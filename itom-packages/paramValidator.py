@@ -47,19 +47,19 @@ class ParamValidator:
         if not (isinstance(value, float) or isinstance(value, int)):
             return ParamValidatorResult(
                 False,
-                "parameter '{}' is not convertable into a floating point number.".format(
+                "parameter '{}' is not convertible into a floating point number.".format(
                     key
                 ),
             )
         if not (minValue is None) and value < minValue:
             return ParamValidatorResult(
                 False,
-                "parameter '{}' must not be smaller than {}".format(key, minValue),
+                f"parameter '{key}' must not be smaller than {minValue}",
             )
         if not (maxValue is None) and value > maxValue:
             return ParamValidatorResult(
                 False,
-                "parameter '{}' must not be bigger than {}".format(key, maxValue),
+                f"parameter '{key}' must not be bigger than {maxValue}",
             )
         return ParamValidatorResult()
 
@@ -76,19 +76,19 @@ class ParamValidator:
         if not (isinstance(value, int)):
             return ParamValidatorResult(
                 False,
-                "parameter '{}' is not convertable into a fixed point number.".format(
+                "parameter '{}' is not convertible into a fixed point number.".format(
                     key
                 ),
             )
         if not (minValue is None) and value < minValue:
             return ParamValidatorResult(
                 False,
-                "parameter '{}' must not be smaller than {}".format(key, minValue),
+                f"parameter '{key}' must not be smaller than {minValue}",
             )
         if not (maxValue is None) and value > maxValue:
             return ParamValidatorResult(
                 False,
-                "parameter '{}' must not be bigger than {}".format(key, maxValue),
+                f"parameter '{key}' must not be bigger than {maxValue}",
             )
         return ParamValidatorResult()
 

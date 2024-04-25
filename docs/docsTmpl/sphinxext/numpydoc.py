@@ -32,7 +32,7 @@ def mangle_docstrings(app, what, name, obj, options, lines, reference_offset=[0]
 
     if app.config.numpydoc_edit_link and hasattr(obj, "__name__") and obj.__name__:
         if hasattr(obj, "__module__"):
-            v = dict(full_name="{}.{}".format(obj.__module__, obj.__name__))
+            v = dict(full_name=f"{obj.__module__}.{obj.__name__}")
         else:
             v = dict(full_name=obj.__name__)
         lines += ["", ".. htmlonly::", ""]

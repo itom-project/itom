@@ -309,7 +309,7 @@ class GTestXMLOutputUnitTest(gtest_xml_test_utils.GTestXMLTestCase):
 
         command = [
             GTEST_PROGRAM_PATH,
-            "{}=xml:{}".format(GTEST_OUTPUT_FLAG, xml_path),
+            f"{GTEST_OUTPUT_FLAG}=xml:{xml_path}",
             "--shut_down_xml",
         ]
         p = gtest_test_utils.Subprocess(command)
@@ -370,7 +370,7 @@ class GTestXMLOutputUnitTest(gtest_xml_test_utils.GTestXMLTestCase):
 
         command = [
             gtest_prog_path,
-            "{}=xml:{}".format(GTEST_OUTPUT_FLAG, xml_path),
+            f"{GTEST_OUTPUT_FLAG}=xml:{xml_path}",
         ] + extra_args
         environ_copy = os.environ.copy()
         if extra_env:

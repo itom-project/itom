@@ -319,7 +319,7 @@ int PythonDataObject::PyDataObject_init(PyDataObject* self, PyObject* args, PyOb
 
                 if (continuous > 0 && self->dataObject->getContinuous() == 0)
                 {
-                    // try to make this object continuous. The continous object cannot share any
+                    // try to make this object continuous. The continuous object cannot share any
                     // memory with any base objects, since it has to be reallocated as independent
                     // object
                     ito::DataObject tempObj = ito::makeContinuous(*(self->dataObject));

@@ -404,7 +404,7 @@ public slots:
 
     void setAutoReloader(bool enabled, bool checkFile, bool checkCmd, bool checkFct);
 
-    // Settings are neccesary for automatic itom inclusion and syntax check
+    // Settings are necessary for automatic itom inclusion and syntax check
     void readSettings();
     void propertiesChanged();
 

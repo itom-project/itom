@@ -173,7 +173,7 @@ def create_images(base_svg_path=SVG_PATH, rc_path=RC_PATH, palette=DarkPalette):
     for height, ext in heights.items():
         width = height
 
-        _logger.debug(" Size HxW (px): {} X {}".format(height, width))
+        _logger.debug(f" Size HxW (px): {height} X {width}")
 
         for svg_fname in svg_fnames:
             svg_name = svg_fname.split(".")[0]

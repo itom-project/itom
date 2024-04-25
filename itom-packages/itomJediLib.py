@@ -256,7 +256,7 @@ def calltips(code, line, column, path=None):
                 paramlist[index] = "<b>%s</b>" % paramlist[index]
 
             if module_name != "":
-                method_name = "{}.{}".format(module_name, call_name)
+                method_name = f"{module_name}.{call_name}"
             else:
                 method_name = call_name
 
@@ -536,10 +536,10 @@ def name_tooltip_type_module(item):
         list of str
             One or multiple possible tooltips for the given item.
     """
-    heading = "Module {}".format(item.name)
+    heading = f"Module {item.name}"
     body = item.docstring()
     if body is not None and body != "":
-        tooltip = "{}\n\n{}".format(heading, body)
+        tooltip = f"{heading}\n\n{body}"
     else:
         tooltip = heading
     return [
@@ -567,13 +567,13 @@ def name_tooltip_type_statement(item):
     """
     typehint = item.get_type_hint()
     if typehint != "":
-        heading = "{}: {}".format(item.name, typehint)
+        heading = f"{item.name}: {typehint}"
     else:
         heading = item.name
 
     body = item.docstring()
     if body is not None and body != "":
-        tooltip = "{}\n\n{}".format(heading, body)
+        tooltip = f"{heading}\n\n{body}"
     else:
         tooltip = heading
     return [
@@ -651,11 +651,11 @@ def name_tooltip_type_property(item):
 
     if docstring != "":
         return [
-            "{}: {}\n\n{}".format(name, rettype, docstring),
+            f"{name}: {rettype}\n\n{docstring}",
         ]
     else:
         return [
-            "{}: {}".format(name, rettype),
+            f"{name}: {rettype}",
         ]
 
 
@@ -693,7 +693,7 @@ def name_tooltip_type_general(item):
                 if rettype != "":
                     name += ": %s" % rettype
             if tooltip != "":
-                tooltip = "{}\n\n{}".format(name, tooltip)
+                tooltip = f"{name}\n\n{tooltip}"
             else:
                 tooltip = name
             tooltipList = [

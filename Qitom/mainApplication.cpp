@@ -399,9 +399,9 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
 
     //add further folders to path-variable
 
-    //you can add further pathes to the application-internal PATH variable by adding the following lines to the ini-file:
+    //you can add further paths to the application-internal PATH variable by adding the following lines to the ini-file:
     /*[Application]
-    searchPathes\size=1 ->add here the number of pathes
+    searchPathes\size=1 ->add here the number of paths
     searchPathes\1\path=PathToAdd -> for each path add one line like this where you auto-increment the number from \1\ up to your total number*/
     settings->beginGroup("Application");
 

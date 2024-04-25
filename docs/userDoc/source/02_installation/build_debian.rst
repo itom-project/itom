@@ -215,7 +215,7 @@ If this step fails, use ccmake or cmake-gui toi manually fix errors.
       Usually this is automatically detected in **usr/share/OpenCV**.
       If this is not the case, set **OpenCV_DIR** to the correct directory and press configure.
     * Python3: On some linux distributions, CMake always finds the Python version 2 as default version.
-      This is wrong. Therefore set the following variables to the right pathes:
+      This is wrong. Therefore set the following variables to the right paths:
       PYTHON_EXECUTABLE to /usr/bin/python3.2, PYTHON_INCLUDE_DIR to /usr/include/python3.2,
       PYTHON_LIBRARY to /usr/lib/libpython3.2mu.so.1.0 . The suffix 1.0 might also be different.
       It is also supported to use any other version of Python 3.

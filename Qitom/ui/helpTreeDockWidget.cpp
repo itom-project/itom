@@ -1101,8 +1101,8 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(
 //! Reformats all help strings that come from the widgets and plugins
 /*! All newLine characters are replaced by the html tag <br>
 
-    \param input The text that is supposed to be reformated
-    \return QString contains the reformated text
+    \param input The text that is supposed to be reformatted
+    \return QString contains the reformatted text
 */
 QString HelpTreeDockWidget::parseFilterWidgetContent(const QString& input)
 {
@@ -1452,11 +1452,11 @@ ito::RetVal HelpTreeDockWidget::highlightContent(
         rawContent.insert(0, shortDesc);
     }
 
-    // Ueberschrift (Funktionsname) einfuegen
+    // Insert heading (function name)
     // -------------------------------------
     rawContent.insert(0, "<h1 id=\"FunctionName\">" + name + param + "</h1>" + "");
 
-    // Prefix als Navigations-Links einfuegen
+    // Insert prefixes as navigation links.
     // -------------------------------------
     QStringList splittedLink = prefix.split(".");
     rawContent.insert(0, "&gt;&gt;&nbsp;" + splittedLink[splittedLink.length() - 1]);
@@ -1632,7 +1632,7 @@ QStringList HelpTreeDockWidget::separateLink(const QUrl& link)
    ... i.a. AIManagerWidget
 
     \param name name of the function that is supposed to be displayed
-    \param type it decides wheather the help is stored in a database (1) or calls
+    \param type it decides whether the help is stored in a database (1) or calls
    showFilterWidgetPluginHelp(...) (2-8) \param modelIndex that was clicked. If it's empty, it's a
    call from a link or from extern \param fromLink if true, a link called that slot
 */
@@ -1703,7 +1703,7 @@ void HelpTreeDockWidget::showPluginInfo(
 /*!
 
     \param type of the item (for more information see type enumeration in header file)
-    \param path path to the item splitted into a list
+    \param path path to the item split into a list
     \param current item whose children are searched
     \return QModelIndex
 */

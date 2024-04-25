@@ -1,7 +1,7 @@
 """Fit geometric element
 ========================
 
-Fit geomtric elements to pointClouds.
+Fit geometric elements to pointClouds.
 """
 
 import numpy as np

@@ -1,7 +1,7 @@
 """GUI icons from resources
 ===========================
 
-Demostration to show a ui file, that contains icons from a qrc / rcc
+Demonstration to show a ui file, that contains icons from a qrc / rcc
 resource file.
 
 To create the ui file, you need at first the icons and the index

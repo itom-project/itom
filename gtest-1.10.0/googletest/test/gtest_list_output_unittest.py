@@ -108,7 +108,7 @@ class GTestListTestsOutputUnitTest(gtest_test_utils.TestCase):
 
         command = [
             gtest_prog_path,
-            "{}={}:{}".format(GTEST_OUTPUT_FLAG, out_format, file_path),
+            f"{GTEST_OUTPUT_FLAG}={out_format}:{file_path}",
             "--gtest_list_tests",
         ]
         environ_copy = os.environ.copy()

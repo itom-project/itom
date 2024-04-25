@@ -621,7 +621,7 @@ class GTestJsonOutputUnitTest(gtest_test_utils.TestCase):
 
         command = [
             GTEST_PROGRAM_PATH,
-            "{}=json:{}".format(GTEST_OUTPUT_FLAG, json_path),
+            f"{GTEST_OUTPUT_FLAG}=json:{json_path}",
             "--shut_down_xml",
         ]
         p = gtest_test_utils.Subprocess(command)
@@ -673,7 +673,7 @@ class GTestJsonOutputUnitTest(gtest_test_utils.TestCase):
 
         command = [
             gtest_prog_path,
-            "{}=json:{}".format(GTEST_OUTPUT_FLAG, json_path),
+            f"{GTEST_OUTPUT_FLAG}=json:{json_path}",
         ] + extra_args
         p = gtest_test_utils.Subprocess(command)
         if p.terminated_by_signal:

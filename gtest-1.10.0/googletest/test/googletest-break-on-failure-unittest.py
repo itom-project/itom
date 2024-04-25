@@ -133,7 +133,7 @@ class GTestBreakOnFailureUnitTest(gtest_test_utils.TestCase):
 
         SetEnvVar(BREAK_ON_FAILURE_ENV_VAR, None)
 
-        msg = 'when %s%s, an assertion failure in "%s" %s cause a seg-fault.' % (
+        msg = 'when {}{}, an assertion failure in "{}" {} cause a seg-fault.'.format(
             BREAK_ON_FAILURE_ENV_VAR,
             env_var_value_msg,
             " ".join(command),

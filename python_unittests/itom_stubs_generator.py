@@ -45,14 +45,14 @@ class ItomStubsGenTest(unittest.TestCase):
             for nestItem in ["List", "Tuple", "Sequence"]:
                 s = nestItem.lower()
                 val = singleTypes[key]
-                nestedTypes["{} of {}".format(s, key)] = "{}[{}]".format(nestItem, val)
-                nestedTypes[":obj:`{}` of {}".format(s, key)] = "{}[{}]".format(
+                nestedTypes[f"{s} of {key}"] = f"{nestItem}[{val}]"
+                nestedTypes[f":obj:`{s}` of {key}"] = "{}[{}]".format(
                     nestItem, val
                 )
-                nestedTypes[":py:obj:`{}` of {}".format(s, key)] = "{}[{}]".format(
+                nestedTypes[f":py:obj:`{s}` of {key}"] = "{}[{}]".format(
                     nestItem, val
                 )
-                nestedTypes[":py:class:`{}` of {}".format(s, key)] = "{}[{}]".format(
+                nestedTypes[f":py:class:`{s}` of {key}"] = "{}[{}]".format(
                     nestItem, val
                 )
 

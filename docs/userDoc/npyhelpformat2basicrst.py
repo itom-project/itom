@@ -89,7 +89,7 @@ class ParseError(Exception):
     def __str__(self):
         message = self.message
         if hasattr(self, "docstring"):
-            message = "{} in {!r}".format(message, self.docstring)
+            message = f"{message} in {self.docstring!r}"
         return message
 
 
@@ -384,7 +384,7 @@ class ItomDocString(collections.abc.Mapping):
                         param_type = param_type[1:-1]
                     out += [
                         ":param {}: {}".format(param, " ".join(desc)),
-                        ":type {}: {}".format(param, param_type),
+                        f":type {param}: {param_type}",
                     ]
                 else:
                     out += [":param {}: {}".format(param, " ".join(desc))]
@@ -443,9 +443,9 @@ class ItomDocString(collections.abc.Mapping):
         last_had_desc = True
         for func, desc, role in self["See Also"]:
             if role:
-                link = ":{}:`{}`".format(role, func)
+                link = f":{role}:`{func}`"
             elif func_role:
-                link = ":{}:`{}`".format(func_role, func)
+                link = f":{func_role}:`{func}`"
             else:
                 link = "`%s`_" % func
             if desc or last_had_desc:

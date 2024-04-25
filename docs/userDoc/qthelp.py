@@ -170,7 +170,7 @@ class QtHelpBuilder(StandaloneHTMLBuilder):
         # it seems that the "namespace" may not contain non-alphanumeric
         # characters, and more than one successive dot, or leading/trailing
         # dots, are also forbidden
-        nspace = "org.sphinx.{}.{}".format(outname, self.config.version)
+        nspace = f"org.sphinx.{outname}.{self.config.version}"
         nspace = re.sub("[^a-zA-Z0-9.]", "", nspace)
         nspace = re.sub(r"\.+", ".", nspace).strip(".")
         nspace = nspace.lower()
@@ -234,7 +234,7 @@ class QtHelpBuilder(StandaloneHTMLBuilder):
             refnode = node.children[0][0]
             link = refnode["refuri"]
             title = escape(refnode.astext()).replace('"', "&quot;")
-            item = '<section title="{title}" ref="{ref}">'.format(title=title, ref=link)
+            item = f'<section title="{title}" ref="{link}">'
             parts.append(" " * 4 * indentlevel + item)
             for subnode in node.children[1]:
                 parts.extend(self.write_toc(subnode, indentlevel + 1))
@@ -266,7 +266,7 @@ class QtHelpBuilder(StandaloneHTMLBuilder):
             #            descr = groupdict.get('descr')
             if shortname.endswith("()"):
                 shortname = shortname[:-2]
-            id = "{}.{}".format(id, shortname)
+            id = f"{id}.{shortname}"
         else:
             id = None
 
@@ -275,7 +275,7 @@ class QtHelpBuilder(StandaloneHTMLBuilder):
                 name, id, ref
             )
         else:
-            item = " " * 12 + '<keyword name="{}" ref="{}"/>'.format(name, ref)
+            item = " " * 12 + f'<keyword name="{name}" ref="{ref}"/>'
         item.encode("ascii", "xmlcharrefreplace")
         return item
 

@@ -16,3 +16,10 @@ repos:
 #        args:
 #        -   --skip=*.ts,*.svg,*.hqx
 #        -   --ignore-words=.codespell_ignore_words.txt
+
+-   repo: https://github.com/asottile/pyupgrade
+    rev: v3.15.2
+    hooks:
+    -   id: pyupgrade
+        args:
+        -   --py36-plus

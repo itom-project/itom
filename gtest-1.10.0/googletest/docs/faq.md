@@ -612,7 +612,7 @@ runs on, you shouldn't depend on this.
 googletest does not interleave tests from different test suites. That is, it
 runs all tests in one test suite first, and then runs all tests in the next test
 suite, and so on. googletest does this because it needs to set up a test suite
-before the first test in it is run, and tear it down afterwords. Splitting up
+before the first test in it is run, and tear it down afterwards. Splitting up
 the test case would require multiple set-up and tear-down processes, which is
 inefficient and makes the semantics unclean.
 

@@ -9,7 +9,7 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
 
 
-class Ui_WidgetPropGeneralPlotSettings(object):
+class Ui_WidgetPropGeneralPlotSettings:
     def setupUi(self, WidgetPropGeneralPlotSettings):
         WidgetPropGeneralPlotSettings.setObjectName("WidgetPropGeneralPlotSettings")
         WidgetPropGeneralPlotSettings.resize(613, 697)
