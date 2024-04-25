@@ -48,7 +48,9 @@ polygon.name = "Polygon"
 ###############################################################################
 # This is another possibility, using static methods
 rect = shape.createRectangle(corner1=(400, 240), corner2=(470, 270), name="Rect")
-ellipse = shape.createEllipse(corner1=(-300, -300), corner2=(-140, -200), name="Ellipse")
+ellipse = shape.createEllipse(
+    corner1=(-300, -300), corner2=(-140, -200), name="Ellipse"
+)
 # rectangle and ellipses can also be created with the arguments center and size:
 ellipse = shape.createEllipse(
     center=(0.5 * (-300 - 140), 0.5 * (-300 - 200)),

@@ -61,7 +61,7 @@ class FigureCanvasItomAgg(FigureCanvasItom, FigureCanvasAgg):
     Public attribute
 
       figure - A Figure instance
-   """
+    """
 
     def __init__(self, figure, num, itomUI, itomFig, embeddedCanvas):
         if DEBUG:

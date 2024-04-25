@@ -27,7 +27,9 @@ class PlotStyleSheets(ItomUi):
         obj = dataObject.randN([1024, 1024], "float32")
         obj[200:300, 200:300] = float("nan")
         self.gui.plot2d["source"] = obj
-        self.gui.plot1d["source"] = dataObject(np.sin(np.arange(0, 10 * np.pi, (1 / 20) * np.pi)))
+        self.gui.plot1d["source"] = dataObject(
+            np.sin(np.arange(0, 10 * np.pi, (1 / 20) * np.pi))
+        )
 
     def show(self, modalLevel: int = 0):
         self.gui.show(modalLevel)

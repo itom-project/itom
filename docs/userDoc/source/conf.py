@@ -49,7 +49,7 @@ extensions = [
     "sphinx.ext.intersphinx",
     "itomext.designerplugindoc",
     "sphinx_gallery.gen_gallery",
-    "sphinxcontrib.moderncmakedomain"
+    "sphinxcontrib.moderncmakedomain",
 ]
 
 if sphinx.__version__ >= "0.7":
@@ -91,7 +91,10 @@ itomVersionInfo = itomFuncs.version(1)["itom"]
 version = itomVersionInfo["itom_Version"]
 if "itom_SVN_Rev" in itomVersionInfo and itomVersionInfo["itom_SVN_Rev"] != "":
     release = itomVersionInfo["itom_SVN_Rev"]
-elif "itom_GIT_Rev_Abbrev" in itomVersionInfo and itomVersionInfo["itom_GIT_Rev_Abbrev"] != "":
+elif (
+    "itom_GIT_Rev_Abbrev" in itomVersionInfo
+    and itomVersionInfo["itom_GIT_Rev_Abbrev"] != ""
+):
     release = itomVersionInfo["itom_GIT_Rev_Abbrev"]
 else:
     release = "unknown"
@@ -201,10 +204,7 @@ sphinx_gallery_conf = {
         "../../../demo/python",
         "../../../demo/python_packages",
     ],
-    "gallery_dirs": [
-        "11_demos/itom",
-        "11_demos/python",
-        "11_demos/python_packages"],
+    "gallery_dirs": ["11_demos/itom", "11_demos/python", "11_demos/python_packages"],
     "doc_module": ("matplotlib", "numpy", "pandas", "itom"),
     "reference_url": {"matplotlib": None, "numpy": None, "pandas": None, "itom": None},
     "show_memory": False,
@@ -341,7 +341,13 @@ latex_logo = "ITO_Logo.pdf"
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ("index", "itom", "itom Documentation", ["Institut fuer Technische Optik (ITO), Universitaet Stuttgart"], 1)
+    (
+        "index",
+        "itom",
+        "itom Documentation",
+        ["Institut fuer Technische Optik (ITO), Universitaet Stuttgart"],
+        1,
+    )
 ]
 
 # If true, show URL addresses after external links.

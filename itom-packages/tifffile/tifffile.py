@@ -117,7 +117,6 @@ Examples
 
 """
 
-
 import sys
 import os
 import re
@@ -203,7 +202,7 @@ def imsave(
     data_shape = shape = data.shape
     data = numpy.atleast_2d(data)
 
-    if not bigtiff and data.size * data.dtype.itemsize < 2040 * 2 ** 20:
+    if not bigtiff and data.size * data.dtype.itemsize < 2040 * 2**20:
         bigtiff = False
         offset_size = 4
         tag_size = 12
@@ -1223,7 +1222,7 @@ class TiffPage:
             #    self.color_map = self.color_map.astype(self.dtype)
             self.color_map.shape = (3, -1)
             self._shape = (1, 1, self.image_length, self.image_width, 1)
-            if self.color_map.shape[1] >= 2 ** self.bits_per_sample:
+            if self.color_map.shape[1] >= 2**self.bits_per_sample:
                 self.shape = (3, self.image_length, self.image_width)
                 self.axes = "SYX"
             else:
@@ -1416,7 +1415,7 @@ class TiffPage:
                 numpy.cumsum(result, axis=-2, dtype=dtype, out=result)
 
         if colormapped and self.is_palette:
-            if self.color_map.shape[1] >= 2 ** bits_per_sample:
+            if self.color_map.shape[1] >= 2**bits_per_sample:
                 # FluoView and LSM might fail here
                 result = numpy.take(self.color_map, result, axis=1)
         elif rgbonly and self.is_rgb and "extra_samples" in self.tags:
@@ -1861,7 +1860,9 @@ class Record(dict):
                 elif isinstance(v[0], TiffPage):
                     v = [i.index for i in v if i]
             s.append(
-                ("* {}: {}".format(k, str(v))).split("\n", 1)[0][:PRINT_LINE_LEN].rstrip()
+                ("* {}: {}".format(k, str(v)))
+                .split("\n", 1)[0][:PRINT_LINE_LEN]
+                .rstrip()
             )
         for k, v in lists:
             l = []
@@ -2347,7 +2348,7 @@ def unpackrgb(data, dtype="<B", bitspersample=(5, 6, 5), rescale=True):
             o = ((dtype.itemsize * 8) // bps + 1) * bps
             if o > data.dtype.itemsize * 8:
                 t = t.astype("I")
-            t *= (2 ** o - 1) // (2 ** bps - 1)
+            t *= (2**o - 1) // (2**bps - 1)
             t //= 2 ** (o - (dtype.itemsize * 8))
         result[:, i] = t
     return result.reshape(-1)
@@ -2395,7 +2396,7 @@ def numpy_fromfile(arg, dtype=float, count=-1, sep=""):
         return numpy.fromfile(arg, dtype, count, sep)
     except OSError:
         if count < 0:
-            size = 2 ** 30
+            size = 2**30
         else:
             size = count * numpy.dtype(dtype).itemsize
         data = arg.read(int(size))
@@ -3158,7 +3159,7 @@ TIFF_TAGS = {
     273: ("strip_offsets", None, 4, None, None),
     274: ("orientation", 1, 3, 1, TIFF_ORIENTATIONS),
     277: ("samples_per_pixel", 1, 3, 1, None),
-    278: ("rows_per_strip", 2 ** 32 - 1, 4, 1, None),
+    278: ("rows_per_strip", 2**32 - 1, 4, 1, None),
     279: ("strip_byte_counts", None, 4, None, None),
     280: ("min_sample_value", None, 3, None, None),
     281: ("max_sample_value", None, 3, None, None),  # 2**bits_per_sample
@@ -3262,7 +3263,7 @@ def imshow(
     figure=None,
     subplot=111,
     maxdim=8192,
-    **kwargs
+    **kwargs,
 ):
     """Plot n-dimensional images using matplotlib.pyplot.
 
@@ -3324,7 +3325,7 @@ def imshow(
         elif not isinstance(bitspersample, int):
             # bitspersample can be tuple, e.g. (5, 6, 5)
             bitspersample = data.dtype.itemsize * 8
-        datamax = 2 ** bitspersample
+        datamax = 2**bitspersample
         if isrgb:
             if bitspersample < 8:
                 data <<= 8 - bitspersample
@@ -3395,7 +3396,7 @@ def imshow(
         vmax=vmax,
         cmap=cmap,
         interpolation=interpolation,
-        **kwargs
+        **kwargs,
     )
 
     if not isrgb:

@@ -14,7 +14,6 @@ from itom import ui
 
 class EmbeddedPlots(ItomUi):
     def __init__(self, dataObj: dataObject):
-
         uiFile = r"embedded2DwLinePlot.ui"
         ItomUi.__init__(
             self,

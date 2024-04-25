@@ -94,7 +94,10 @@ if sys.platform == "darwin":
     # in OSX, the control and super (aka cmd/apple) keys are switched, so
     # switch them back.
     SPECIAL_KEYS.update(
-        {0x01000021: "cmd", 0x01000022: "control",}  # cmd/apple key
+        {
+            0x01000021: "cmd",
+            0x01000022: "control",
+        }  # cmd/apple key
     )
     MODIFIER_KEYS[0] = ("cmd", 0x04000000, 0x01000021)
     MODIFIER_KEYS[2] = ("ctrl", 0x10000000, 0x01000022)
@@ -190,7 +193,6 @@ class TimerItom(TimerBase):
 
 
 class FigureCanvasItom(FigureCanvasBase):
-
     # map Qt button codes to MouseEvent's ones:
     # left 1, middle 2, right 3
     buttond = {
@@ -221,12 +223,10 @@ class FigureCanvasItom(FigureCanvasBase):
         self._destroying = False
         # self.showEnable = False #this will be set to True if the draw() command has been called for the first time e.g. by show() of the manager
 
-        self.matplotlibWidgetUiItem = (
-            matplotlibplotUiItem.canvasWidget
-        )  # this object is deleted in the destroy-method of manager, due to cyclic garbage collection
-        self.matplotlibWidgetUiItem[
-            "mouseTracking"
-        ] = True  # by default, the itom-widget only sends mouse-move events if at least one button is pressed or the tracker-button is is checked-state
+        self.matplotlibWidgetUiItem = matplotlibplotUiItem.canvasWidget  # this object is deleted in the destroy-method of manager, due to cyclic garbage collection
+        self.matplotlibWidgetUiItem["mouseTracking"] = (
+            True  # by default, the itom-widget only sends mouse-move events if at least one button is pressed or the tracker-button is is checked-state
+        )
 
         self.matplotlibWidgetUiItem.connect(
             "eventLeaveEnter(bool)", self.leaveEnterEvent
@@ -530,8 +530,7 @@ class FigureCanvasItom(FigureCanvasBase):
         ##    self._event_loop.quit()
 
     def draw(self):
-        """Render the figure, and queue a request for a Qt draw.
-        """
+        """Render the figure, and queue a request for a Qt draw."""
         # The renderer draw is done here; delaying causes problems with code
         # that uses the result of the draw() to update plot elements.
         if self._is_drawing:
@@ -544,8 +543,7 @@ class FigureCanvasItom(FigureCanvasBase):
         self.paintEvent()
 
     def draw_idle(self):
-        """Queue redraw of the Agg buffer and request Qt paintEvent.
-        """
+        """Queue redraw of the Agg buffer and request Qt paintEvent."""
         # The Agg draw needs to be handled by the same thread matplotlib
         # modifies the scene graph from. Post Agg draw request to the
         # current event loop in order to ensure thread affinity and to
@@ -836,7 +834,7 @@ class Signal:
 
 class NavigationToolbar2Itom(NavigationToolbar2):
     def __init__(self, canvas, matplotlibplotUiItem, parentUi, coordinates=True):
-        """ coordinates: should we show the coordinates on the right? """
+        """coordinates: should we show the coordinates on the right?"""
         self.canvas = canvas
         self.parentUi = parentUi
         self.matplotlibplotUiItem = weakref.ref(matplotlibplotUiItem)
@@ -1085,9 +1083,7 @@ class NavigationToolbar2Itom(NavigationToolbar2):
         if fname:
             # Save dir for next time, unless empty str (i.e., use cwd).
             if startpath != "":
-                matplotlib.rcParams["savefig.directory"] = os.path.dirname(
-                    str(fname)
-                )
+                matplotlib.rcParams["savefig.directory"] = os.path.dirname(str(fname))
             try:
                 self.canvas.figure.savefig(str(fname))
             except Exception as e:
@@ -1235,7 +1231,6 @@ class ToolbarItom(ToolContainerBase):
         )  # replace all characters, which are not among the given set, by an underscore
 
     def add_toolitem(self, name, group, position, image_file, description, toggle):
-
         if self.matplotlibplotUiItem() is None:
             return
 
@@ -1348,16 +1343,12 @@ class SaveFigureItom(backend_tools.SaveFigureBase):
         if fname:
             # Save dir for next time, unless empty str (i.e., use cwd).
             if startpath != "":
-                matplotlib.rcParams["savefig.directory"] = os.path.dirname(
-                    str(fname)
-                )
+                matplotlib.rcParams["savefig.directory"] = os.path.dirname(str(fname))
             try:
                 self.canvas.figure.savefig(str(fname))
                 self.defaultSaveFileName = fname
             except Exception as e:
-                itom.ui.msgCritical(
-                    "Error saving file", str(e), parent=parent
-                )
+                itom.ui.msgCritical("Error saving file", str(e), parent=parent)
 
 
 class SetCursorItom(backend_tools.SetCursorBase):
@@ -1439,8 +1430,7 @@ class _BackendItom(_Backend):
 
     @classmethod
     def new_figure_manager_given_figure(cls, num, figure):
-        """Create a new figure manager instance for the given figure.
-        """
+        """Create a new figure manager instance for the given figure."""
         canvas = cls.FigureCanvas(figure)
         manager = cls.FigureManager(canvas, num)
         return manager

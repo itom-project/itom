@@ -25,8 +25,6 @@ pytest.main(["../demoDataObject.py", "--capture=no", "-c=./pytest.ini"])
 # Configuration is more easily done in the *.ini and conftest.py files.
 # So here two more helpful examples:
 # this one runs all the demo functions
-pytest.main(
-    ["../", "-v", "--capture=no", "--collect-only", "-c=./pytest_demo.ini"]
-)
+pytest.main(["../", "-v", "--capture=no", "--collect-only", "-c=./pytest_demo.ini"])
 # this one runs all the user demo functions, which require interaction from the user.
 pytest.main(["../", "-v", "--capture=no", "-c=./pytest_userdemo.ini"])

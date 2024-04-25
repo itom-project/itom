@@ -150,8 +150,7 @@ class FigureCanvasItomAgg(FigureCanvasItom, FigureCanvasAgg):
         self.figure.set_canvas(self)
 
     def blit(self, bbox=None):
-        """Blit the region in bbox.
-        """
+        """Blit the region in bbox."""
         if DEBUG:
             print("blit:", str(bbox))
         # If bbox is None, blit the entire canvas. Otherwise

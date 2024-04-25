@@ -9,6 +9,7 @@ from numpy.linalg import svd
 from numpy.typing import ArrayLike
 # sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoNumpy.png'
 
+
 ###############################################################################
 # Function to estimate the rank (i.e. the dimension of the nullspace) of a matrix.
 def rank(A: ArrayLike, atol: float = 1e-13, rtol: int = 0) -> int:
@@ -43,6 +44,7 @@ def rank(A: ArrayLike, atol: float = 1e-13, rtol: int = 0) -> int:
     tol = max(atol, rtol * s[0])
     rank = int((s >= tol).sum())
     return rank
+
 
 ###############################################################################
 # Function to compute an approximate basis for the nullspace of A.
@@ -83,6 +85,7 @@ def nullspace(A: ArrayLike, atol: float = 1e-13, rtol: int = 0) -> ArrayLike:
 
 ###############################################################################
 # Function to check rank and nullspace of the matrix.
+
 
 def checkit(mat):
     """This method calculates the rank and nullspace of matrix mat. The results

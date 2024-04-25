@@ -68,9 +68,7 @@ class FigureCanvasItomAgg(FigureCanvasItom, FigureCanvasAgg):
 
         # <-- itom specific start
         reg = self.copy_from_bbox(bbox)
-        buf = (
-            reg.to_string_argb()
-        )  # this is faster than the Qt-original version cbook._unmultiplied_rgba8888_to_premultiplied_argb32...
+        buf = reg.to_string_argb()  # this is faster than the Qt-original version cbook._unmultiplied_rgba8888_to_premultiplied_argb32...
         W = round(w)
         H = round(h)
         # workaround sometimes the width and hight does not fit to the buf length, leding to a crash of itom.

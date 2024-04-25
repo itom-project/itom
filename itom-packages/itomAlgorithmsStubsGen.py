@@ -97,15 +97,12 @@ def generateAlgorithmStubs():
         if algo.isidentifier():
             algoItems.append(parseAlgorithmString(algos[algo]))
 
-    header = (
-        """# coding=iso-8859-15
+    header = """# coding=iso-8859-15
 
 # algo_hash = %s
 
 from typing import Sequence, Union, Tuple
-from itom import dataObject, dataIO, actuator"""
-        % generateAlgorithmHash()
-    )
+from itom import dataObject, dataIO, actuator""" % generateAlgorithmHash()
 
     pclVersion = itom.version(dictionary=True)["itom"]["PCL_Version"]
     if re.match(r"^\d+\.\d+(.\d+)?$", pclVersion):

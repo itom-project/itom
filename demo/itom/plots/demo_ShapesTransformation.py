@@ -3,7 +3,6 @@
 
 This demo shows how you can translate and rotate ``itom.shapes`` in the ``itom`` plot."""
 
-
 from itom import dataObject
 from itom import plot
 from itom import shape

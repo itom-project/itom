@@ -84,7 +84,10 @@ class quickPlotToolBar(abstractObjInteractionToolBar):
 
             if self.hasMCPP == True:
                 addMenu(
-                    BUTTON, hashName + "/ShowHistogramm", "Histogramm", self.showHist,
+                    BUTTON,
+                    hashName + "/ShowHistogramm",
+                    "Histogramm",
+                    self.showHist,
                 )
         if self.hasButtons == True:
             addButton(
@@ -320,7 +323,6 @@ class quickPlotToolBar(abstractObjInteractionToolBar):
         skipBox = False
 
         try:
-
             fig = plt.figure()
             ax = fig.add_subplot(111, projection="3d")
 
@@ -365,9 +367,9 @@ class quickPlotToolBar(abstractObjInteractionToolBar):
             )
             # ax.plot_surface(X, Y, npdObj, rstride=5, cstride=5, linewidth=0, antialiased=False)
             ax.set_zlim3d(minValue, maxValue)
-            ax.set_xlabel(fr"${desc[dims - 1]} in {unit[dims - 1]}$")
-            ax.set_ylabel(fr"${desc[dims - 2]} in {unit[dims - 2]}$")
-            ax.set_zlabel(fr"${valDes} in {valUn}$")
+            ax.set_xlabel(rf"${desc[dims - 1]} in {unit[dims - 1]}$")
+            ax.set_ylabel(rf"${desc[dims - 2]} in {unit[dims - 2]}$")
+            ax.set_zlabel(rf"${valDes} in {valUn}$")
             plt.show()
 
             del shape
@@ -487,7 +489,10 @@ class quickPlotToolBar(abstractObjInteractionToolBar):
 
 if __name__ == "__main__":
     toolBarQuickPlot = quickPlotToolBar(
-        "Plotting Tools", hasMatPlotLib or True, hasBASICFILTERS, not (userIsUser()),
+        "Plotting Tools",
+        hasMatPlotLib or True,
+        hasBASICFILTERS,
+        not (userIsUser()),
     )
 
 del hasMatPlotLib

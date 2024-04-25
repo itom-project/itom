@@ -11,6 +11,7 @@ These settings were shamelessly stolen from [1]_ (with permission).
 .. _ggplot: http://had.co.nz/ggplot/
 .. _R: http://www.r-project.org/
 """
+
 import numpy as np
 import matplotlib.pyplot as plt
 

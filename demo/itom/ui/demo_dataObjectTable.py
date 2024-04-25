@@ -2,9 +2,11 @@
 ===================
 
 """
+
 from itom import ui
 from itom import dataObject
 # sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoTableWidget.png'
+
 
 def printContent():
     gui.table["data"].data()

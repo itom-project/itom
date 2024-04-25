@@ -48,6 +48,7 @@
 import numpy as np
 import numpy_utils.linalg_utils as nputils
 
+
 ##############################################################
 def polyfitweighted2(koX, koY, koZ, n, margin=0.2, w=None):
     """

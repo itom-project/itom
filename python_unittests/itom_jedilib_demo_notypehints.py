@@ -41,7 +41,6 @@ def meth3_docstr(arg1, arg2, *args):
 
 
 class MyClass:
-
     def __init__(self, arg1, arg2):
         self._arg1 = arg1
         self.__arg2 = arg2

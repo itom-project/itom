@@ -21,6 +21,7 @@ subfolder and apply
 Then, the resource file must be loaded first into itom before opening
 the ui.
 """
+
 import itom
 from itom import ui
 

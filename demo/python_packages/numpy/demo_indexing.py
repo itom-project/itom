@@ -7,7 +7,7 @@ import numpy as np
 # sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoNumpy.png'
 
 # **One dimensional**
-a = np.arange(10)**3
+a = np.arange(10) ** 3
 a[2]
 
 ###############################################################################
@@ -20,10 +20,12 @@ a[:6:2] = 1000
 # reverse array
 a[::-1]
 
+
 ###############################################################################
 # **Multi dimensional**
 def f(x, y):
     return 10 * x + y
+
 
 b = np.fromfunction(f, (5, 4), dtype=int)
 b

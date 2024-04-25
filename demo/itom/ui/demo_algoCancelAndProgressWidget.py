@@ -18,7 +18,6 @@ from typing import Dict
 
 class AlgoCancelAndProgressWidget(ItomUi):
     def __init__(self):  # constructor
-
         # call constructor of ItomUi like it would be the constructor of the class itom.ui:
         ItomUi.__init__(self, "algoCancelAndProgressWidget.ui", ui.TYPEWINDOW)
 

@@ -1,4 +1,4 @@
-""" Linear Algebra Helper Routines """
+"""Linear Algebra Helper Routines"""
 
 __docformat__ = "restructuredtext en"
 

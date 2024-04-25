@@ -14,8 +14,12 @@ from itom import liveImage
 ###############################################################################
 # Start camera (e.g.: ``DummyGrabber``)
 camera = dataIO("DummyGrabber")  # noise camera
-cameraGaussian = dataIO("DummyGrabber", imageType="gaussianSpot")  # moving Gaussian spot
-cameraGaussianArray = dataIO("DummyGrabber", imageType="gaussianSpotArray")  # moving 4 Gaussian spots
+cameraGaussian = dataIO(
+    "DummyGrabber", imageType="gaussianSpot"
+)  # moving Gaussian spot
+cameraGaussianArray = dataIO(
+    "DummyGrabber", imageType="gaussianSpotArray"
+)  # moving 4 Gaussian spots
 
 ###############################################################################
 # Set region of interest (ROI).

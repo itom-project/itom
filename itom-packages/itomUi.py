@@ -59,7 +59,7 @@ class ItomUi:
         childOfMainWindow=True,
         deleteOnClose=False,
         dockWidgetArea=ui.TOPDOCKWIDGETAREA,
-        **kwds
+        **kwds,
     ):
         """Constructor.
 

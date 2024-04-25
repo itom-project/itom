@@ -3,6 +3,7 @@ This file contains an abstract toolbar with basic functions for ToolBar / Menu I
 This contains parser for the global workspace to find DataObjects.
 By Wolfram Lyda, ITO, 2012
 """
+
 import itom
 from itom import ui
 
@@ -149,7 +150,8 @@ class abstractObjInteractionToolBar:
                 ):
                     try:
                         if eval(
-                            dimsNPTestString.format(key, key, key, key, key), workSpace,
+                            dimsNPTestString.format(key, key, key, key, key),
+                            workSpace,
                         ):
                             npObjects.append(key)
                     except:
@@ -271,7 +273,8 @@ class abstractObjInteractionToolBar:
             ):
                 isLine = True
                 if eval(
-                    f"({varname}.shape[{varname}.dims-1] == 1)", workSpace,
+                    f"({varname}.shape[{varname}.dims-1] == 1)",
+                    workSpace,
                 ):
                     dir = "y"
                 else:

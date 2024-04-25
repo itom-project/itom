@@ -97,7 +97,9 @@ plot(result_mean)
 # Apply Gaussian filter onto the mean image.
 result_filter = dataObject()
 kernelVal = 9
-algorithms.gaussianFilter(result_mean, result_filter, kernelx=kernelVal, kernely=kernelVal)
+algorithms.gaussianFilter(
+    result_mean, result_filter, kernelx=kernelVal, kernely=kernelVal
+)
 
 ###############################################################################
 # Copy meta information from source ``dataObject``.

@@ -4,7 +4,6 @@ import snapshot as sn
 
 class SnapFactory:
     def __init__(self):
-
         self.buttons = []
         self.buttons.append(itom.addButton("Snapshot", "Snap!", self.createChild))
 

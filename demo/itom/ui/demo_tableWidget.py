@@ -2,6 +2,7 @@
 ===============
 
 """
+
 from itomUi import (
     ItomUi,
 )  # import the base class ItomUi from the module itomUi in the itom-packages subfolder
@@ -28,9 +29,7 @@ class TableWidgetDemo(ItomUi):
         self.gui.table.call(
             "setHorizontalHeaderLabels", ("label 1", "label 2", "label 3")
         )
-        self.gui.table.call(
-            "setVerticalHeaderLabels", ("text 1", "text 2", "text 3")
-        )
+        self.gui.table.call("setVerticalHeaderLabels", ("text 1", "text 2", "text 3"))
 
     @ItomUi.autoslot("")  # the signal is clicked()
     def on_btnGetStatus_clicked(self):
@@ -39,17 +38,16 @@ class TableWidgetDemo(ItomUi):
         currentText = self.gui.table.call("getItem", currentRow, currentColumn)
         ui.msgInformation(
             "Status",
-            "Row: %i, Col: %i, Text: %s"
-            % (currentRow, currentColumn, currentText),
+            "Row: %i, Col: %i, Text: %s" % (currentRow, currentColumn, currentText),
             parent=self.gui,
         )
 
     @ItomUi.autoslot("bool")
     def on_checkReadOnly_clicked(self, value):
         if not value:
-            self.gui.table[
-                "editTriggers"
-            ] = "DoubleClicked;EditKeyPressed;AnyKeyPressed"
+            self.gui.table["editTriggers"] = (
+                "DoubleClicked;EditKeyPressed;AnyKeyPressed"
+            )
         else:
             self.gui.table["editTriggers"] = 0
 
@@ -66,14 +64,10 @@ class TableWidgetDemo(ItomUi):
         )  # -> special method call
         checkStateStr = ["unchecked", "partially", "checked"][checkState]
         currentText = self.gui.table.call("getItem", row, column)
-        print(
-            "Cell %i,%i (%s) changed: %s"
-            % (row, column, currentText, checkStateStr)
-        )
+        print("Cell %i,%i (%s) changed: %s" % (row, column, currentText, checkStateStr))
 
     @ItomUi.autoslot("")  # the signal is clicked()
     def on_btnAddCheckboxes_clicked(self):
-
         if not self.filled:
             ui.msgCritical("empty table", "fill the content first")
             return
@@ -106,9 +100,7 @@ class TableWidgetDemo(ItomUi):
         for m in range(self.gui.table["rowCount"]):
             for n in range(self.gui.table["columnCount"]):
                 f = flags[random.randint(0, len(flags) - 1)]
-                self.gui.table.call(
-                    "setFlags", m, n, f[0]
-                )  # -> special method call
+                self.gui.table.call("setFlags", m, n, f[0])  # -> special method call
                 self.gui.table.call(
                     "setCheckState", m, n, f[1]
                 )  # -> special method call

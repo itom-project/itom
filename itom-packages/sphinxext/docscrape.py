@@ -1,6 +1,4 @@
-"""Extract reference documentation from the NumPy source tree.
-
-"""
+"""Extract reference documentation from the NumPy source tree."""
 
 import inspect
 import textwrap
@@ -13,9 +11,7 @@ import sys
 
 
 class Reader:
-    """A line-based string reader.
-
-    """
+    """A line-based string reader."""
 
     def __init__(self, data):
         """
@@ -331,7 +327,7 @@ class NumpyDocString(collections.abc.Mapping):
             msg = "Docstring contains both a Returns and Yields section."
             raise ValueError(msg)
 
-        for (section, content) in sections:
+        for section, content in sections:
             if not section.startswith(".."):
                 section = (s.capitalize() for s in section.split(" "))
                 section = " ".join(section)
@@ -551,7 +547,6 @@ class FunctionDoc(NumpyDocString):
 
 
 class ClassDoc(NumpyDocString):
-
     extra_public_methods = ["__call__"]
 
     def __init__(self, cls, doc=None, modulename="", func_doc=FunctionDoc, config={}):

@@ -176,7 +176,6 @@ class camToolbar(abstractObjInteractionToolBar):
 
         if check == True:
             try:
-
                 global rows
                 script = "globals()['rows'] = {}.getParam('sizey')"
                 exec(script.format(camname))
@@ -262,18 +261,18 @@ class camToolbar(abstractObjInteractionToolBar):
         dialogSnapshot.comboBoxGrabber.call("setCurrentIndex", camindex)
         dialogSnapshot.comboBoxdObj.call("addItems", dObjects)
         dialogSnapshot.comboBoxdObj.call("setCurrentIndex", objindex)
-        dialogSnapshot.comboBoxdObj[
-            "editable"
-        ] = True  # .setProperty("comboBoxdObj", "editable", True)
-        dialogSnapshot.spinBoxTempBin[
-            "value"
-        ] = 1  # .setProperty("txtBinning", "text", "1")
-        dialogSnapshot.spinBoxNumImages[
-            "value"
-        ] = 1  # .setProperty("txtBinning", "text", "1")
-        dialogSnapshot.checkBoxShow[
-            "checked"
-        ] = True  # .setProperty("checkBoxShow", "checked", True)
+        dialogSnapshot.comboBoxdObj["editable"] = (
+            True  # .setProperty("comboBoxdObj", "editable", True)
+        )
+        dialogSnapshot.spinBoxTempBin["value"] = (
+            1  # .setProperty("txtBinning", "text", "1")
+        )
+        dialogSnapshot.spinBoxNumImages["value"] = (
+            1  # .setProperty("txtBinning", "text", "1")
+        )
+        dialogSnapshot.checkBoxShow["checked"] = (
+            True  # .setProperty("checkBoxShow", "checked", True)
+        )
         retdialog = dialogSnapshot.show(1)
 
         if retdialog == 1:
@@ -334,7 +333,6 @@ class camToolbar(abstractObjInteractionToolBar):
 
                 if stacked == 1:
                     if binning == 1:
-
                         eval(f"{camname}.acquire()")
 
                         script = 'tmpObj=dataObject()\n{camname}.getVal(tmpObj)\nglobals()["{dataObj}"]=tmpObj.copy()\ndel tmpObj'
@@ -346,8 +344,10 @@ class camToolbar(abstractObjInteractionToolBar):
 
                         exec(script.format(camname=camname), globals(), locals())
                         tmpObj2 = tmpObj.astype("float64")
-                        script = "{camname}.acquire()\n{camname}.getVal(tmpObj)\n".format(
-                            camname=camname
+                        script = (
+                            "{camname}.acquire()\n{camname}.getVal(tmpObj)\n".format(
+                                camname=camname
+                            )
                         )
                         for i in range(1, binning):
                             exec(script, globals(), locals())

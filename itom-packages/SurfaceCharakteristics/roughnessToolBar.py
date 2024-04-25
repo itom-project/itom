@@ -6,7 +6,6 @@ toolBarRoughnesStatistics = roughnessToolBar("toolBarRoughnesStatistics")
 ...
 """
 
-
 from abstractObjToolbar.abstractObjToolbar import abstractObjInteractionToolBar
 import itom
 
@@ -30,7 +29,6 @@ class surfaceAnalysisTools(abstractObjInteractionToolBar):
         defPrecision=3,
         defaultVar="dObj",
     ):
-
         # self.defaultVarName = defaultVar
         self.defaultPrecision = defPrecision
         self.defXGradPoly = 3
@@ -322,7 +320,12 @@ class surfaceAnalysisTools(abstractObjInteractionToolBar):
             except:
                 if skipBox == False:
                     ui.msgCritical("Roughness", "Variable does not exist", ui.MsgBoxOk)
-                return [False, [0,]]
+                return [
+                    False,
+                    [
+                        0,
+                    ],
+                ]
 
             # Create a command to calculate Rz as executeable string
             if line == True:
@@ -393,7 +396,12 @@ class surfaceAnalysisTools(abstractObjInteractionToolBar):
             except:
                 if skipBox == False:
                     ui.msgCritical("Roughness", "Variable does not exist", ui.MsgBoxOk)
-                return [False, [0,]]
+                return [
+                    False,
+                    [
+                        0,
+                    ],
+                ]
 
             # Create a command to calculate Rz as executeable string
             if line == True:
@@ -423,12 +431,15 @@ class surfaceAnalysisTools(abstractObjInteractionToolBar):
                     0,
                 ]
         else:
-            result[
-                0,
-            ]
+            result[0,]
 
         self.defaultVarName = varname
-        return [check, [result,]]
+        return [
+            check,
+            [
+                result,
+            ],
+        ]
 
     def planefit(self, skipBox=False, defaultVarName=None):
         """
@@ -537,8 +548,10 @@ class surfaceAnalysisTools(abstractObjInteractionToolBar):
                     else:
                         script = 'filter("fitPolynom2D",{}, tempObjVar, 0, {})\n'
                     result = eval(script.format(varname, str(self.defXGradPoly)))
-                    script = "globals()[\"{}\"] = {}.astype('float64') - tempObjVar".format(
-                        varname, varname
+                    script = (
+                        "globals()[\"{}\"] = {}.astype('float64') - tempObjVar".format(
+                            varname, varname
+                        )
                     )
                     exec(script, globals(), {"tempObjVar": tempObjVar})
                 else:
@@ -554,8 +567,10 @@ class surfaceAnalysisTools(abstractObjInteractionToolBar):
                             str(self.defYGradPoly),
                         )
                     )
-                    script = "globals()[\"{}\"] = {}.astype('float64') - tempObjVar".format(
-                        varname, varname
+                    script = (
+                        "globals()[\"{}\"] = {}.astype('float64') - tempObjVar".format(
+                            varname, varname
+                        )
                     )
                     exec(script)
             except:

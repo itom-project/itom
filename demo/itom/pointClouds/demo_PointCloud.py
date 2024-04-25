@@ -5,7 +5,6 @@ This demo is a very short introduction to basic point clouds
 and a polygon mesh, that consists of two triangles, whose corner
 points are given by some points of a cloud."""
 
-
 import numpy as np
 from itom import pointCloud
 from itom import polygonMesh

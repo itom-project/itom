@@ -38,9 +38,7 @@ class ParamValidatorResult:
 
     def throwExceptionIfInvalid(self):
         if self.isValid() == False:
-            raise RuntimeError(
-                "Invalid parameter input: " + str(self.__errorMessage)
-            )
+            raise RuntimeError("Invalid parameter input: " + str(self.__errorMessage))
 
 
 class ParamValidator:
@@ -56,16 +54,12 @@ class ParamValidator:
         if not (minValue is None) and value < minValue:
             return ParamValidatorResult(
                 False,
-                "parameter '{}' must not be smaller than {}".format(
-                    key, minValue
-                ),
+                "parameter '{}' must not be smaller than {}".format(key, minValue),
             )
         if not (maxValue is None) and value > maxValue:
             return ParamValidatorResult(
                 False,
-                "parameter '{}' must not be bigger than {}".format(
-                    key, maxValue
-                ),
+                "parameter '{}' must not be bigger than {}".format(key, maxValue),
             )
         return ParamValidatorResult()
 
@@ -89,24 +83,17 @@ class ParamValidator:
         if not (minValue is None) and value < minValue:
             return ParamValidatorResult(
                 False,
-                "parameter '{}' must not be smaller than {}".format(
-                    key, minValue
-                ),
+                "parameter '{}' must not be smaller than {}".format(key, minValue),
             )
         if not (maxValue is None) and value > maxValue:
             return ParamValidatorResult(
                 False,
-                "parameter '{}' must not be bigger than {}".format(
-                    key, maxValue
-                ),
+                "parameter '{}' must not be bigger than {}".format(key, maxValue),
             )
         return ParamValidatorResult()
 
     @staticmethod
-    def checkFloatArray(
-        key, value, minValue=None, maxValue=None, elemCountRange=None
-    ):
-
+    def checkFloatArray(key, value, minValue=None, maxValue=None, elemCountRange=None):
         if type(value) != list and type(value) != tuple:
             value = [value]
 
@@ -122,16 +109,11 @@ class ParamValidator:
         ret = ParamValidatorResult()
         c = 0
         for i in value:
-            ret += ParamValidator.checkFloat(
-                f"{key}[{c}]", i, minValue, maxValue
-            )
+            ret += ParamValidator.checkFloat(f"{key}[{c}]", i, minValue, maxValue)
         return ret
 
     @staticmethod
-    def checkIntArray(
-        key, value, minValue=None, maxValue=None, elemCountRange=None
-    ):
-
+    def checkIntArray(key, value, minValue=None, maxValue=None, elemCountRange=None):
         if type(value) != list and type(value) != tuple:
             value = [value]
 
@@ -147,9 +129,7 @@ class ParamValidator:
         ret = ParamValidatorResult()
         c = 0
         for i in value:
-            ret += ParamValidator.checkInt(
-                f"{key}[{c}]", i, minValue, maxValue
-            )
+            ret += ParamValidator.checkInt(f"{key}[{c}]", i, minValue, maxValue)
         return ret
 
     @staticmethod
@@ -165,9 +145,7 @@ class ParamValidator:
 
     @staticmethod
     def checkIfInEnum(key, value, allowedEnum):
-        if not (
-            allowedEnum.key_exists(value) or allowedEnum.value_exists(value)
-        ):
+        if not (allowedEnum.key_exists(value) or allowedEnum.value_exists(value)):
             return ParamValidatorResult(
                 False,
                 "parameter '{}' does not correspond to enumeration {}".format(

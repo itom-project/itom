@@ -23,7 +23,6 @@ class ItomPlotlyRenderer(ExternalRenderer):
         post_script=None,
         animation_opts=None,
     ):
-
         self.config = config
         self.auto_play = auto_play
         self.post_script = post_script
