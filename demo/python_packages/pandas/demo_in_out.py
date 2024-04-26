@@ -8,12 +8,12 @@ import numpy as np
 
 
 # sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoPandas.png'
-timeStemps = pd.Series(
+timestamps = pd.Series(
     np.random.randn(1000), index=pd.date_range("1/1/2000", periods=1000)
 )
-timeStemps = timeStemps.cumsum()
+timestamps = timestamps.cumsum()
 dataFrame = pd.DataFrame(
-    np.random.randn(1000, 4), index=timeStemps.index, columns=["A", "B", "C", "D"]
+    np.random.randn(1000, 4), index=timestamps.index, columns=["A", "B", "C", "D"]
 )
 dataFrame = dataFrame.cumsum()
 

@@ -269,7 +269,7 @@ You can also download sphinx from http://www.lfd.uci.edu/~gohlke/pythonlibs/. Ho
 sphinx is dependent on other packages, such that it is worth to install Sphinx
 using the |python| tool **pip** (If you don't have **pip** see the next section).
 Then open a command-line (cmd.exe) and switch to the directory **[YourPythonPath]/Scripts**.
-Type the following command in order to download **sphinx** including dependecies
+Type the following command in order to download **sphinx** including dependencies
 from the internet and install it::
 
     pip install sphinx

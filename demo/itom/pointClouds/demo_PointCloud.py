@@ -52,7 +52,7 @@ for idx in range(pcl.size):
 # to the points in the cloud that define a triangle or quadrangle of the
 # mesh. If the normal vector to such a triangle points towards the outside
 # of the object, the order of the points is given by the right-hand rule, where
-# the thumbs shows in the direction of the normale vector.
+# the thumbs shows in the direction of the normal vector.
 
 # create an array with two triangles. The first triangle has the corner
 # points with the indices 0, 1 and 2 of the cloud. The 2nd triangle consists

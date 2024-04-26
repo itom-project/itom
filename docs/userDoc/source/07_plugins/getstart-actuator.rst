@@ -22,7 +22,7 @@ For this tutorial, we will focus on the standard application of actuators: move 
 
 .. note::
 
-    As one of the major advatages of the plugin concept, all actuators shall behave in the same manner when given the same command. There may however be some special properties of some devices, wich cause slightly different behavior in very specialised cases. For further information read the plugin documentation of your device.
+    As one of the major advatages of the plugin concept, all actuators shall behave in the same manner when given the same command. There may however be some special properties of some devices, which cause slightly different behavior in very specialised cases. For further information read the plugin documentation of your device.
 
 Initialisation of an actuator
 ----------------------------------
@@ -39,7 +39,7 @@ Before using an actuator, we have to :ref:`initialise <initHardware>` it.
 
 Move actuator
 --------------
-Actuators can be moved by using the function :py:meth:`~itom.actuator.setPosRel()` for relative move steps and :py:meth:`~itom.actuator.setPosAbs()` for absolut move steps. Depending on your application one of both may be better to use. Following command moves the *axis* of your actuator to the absolute *absPos* position in global actuator coordinates. It may be useful to run the calibration before usage.
+Actuators can be moved by using the function :py:meth:`~itom.actuator.setPosRel()` for relative move steps and :py:meth:`~itom.actuator.setPosAbs()` for absolute move steps. Depending on your application one of both may be better to use. Following command moves the *axis* of your actuator to the absolute *absPos* position in global actuator coordinates. It may be useful to run the calibration before usage.
 
 .. code-block:: python
     :linenos:

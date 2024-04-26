@@ -70,7 +70,7 @@ namespace ito
     QLibrary PythonMatlab::engineLibrary;
     QLibrary PythonMatlab::mxLibrary;
 
-    /* This wraps a command call to the MATLAB interpretor */
+    /* This wraps a command call to the MATLAB interpreter */
 const char * function_wrap = "try\n\t%s;\ncatch err\n\tpymatlaberrstring = sprintf('Error: %%s with message: %%s\\n',err.identifier,err.message);\n\tfor i = 1:length(err.stack)\n\t\tpymatlaberrstring = sprintf('%%sError: in function %%s in file %%s line %%i\\n',pymatlaberrstring,err.stack(i,1).name,err.stack(i,1).file,err.stack(i,1).line);\n\tend\nend\nif exist('pymatlaberrstring','var')==0\n\tpymatlaberrstring='';\nend";
 
 int mxtonpy[17] = {

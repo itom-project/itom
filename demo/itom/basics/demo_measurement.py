@@ -126,7 +126,7 @@ class MeasureDemoGUI(ItomUi):
         # loop for all z positions
         for idx, z in enumerate(zVec):
             self.gui.call("statusBar").call(
-                "showMessage", f"z measurement posotion {z}", 5000
+                "showMessage", f"z measurement position {z}", 5000
             )
             # goto new motor position
             self.mot.setPosAbs(0, z)

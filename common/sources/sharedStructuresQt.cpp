@@ -34,7 +34,7 @@
 
 /*!
 *    \class ItomSharedSemaphore
-*    \brief semaphore which can be used for asychronous thread communication. By using this class it is possible to realize timeouts.
+*    \brief semaphore which can be used for asynchronous thread communication. By using this class it is possible to realize timeouts.
 
         This semaphore is usually applied if any method invokes another method in another thread and should wait for the called
         method being terminated or the waiting routine drops into a possible timeout. Therefore, the calling method

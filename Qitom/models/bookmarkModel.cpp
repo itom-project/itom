@@ -419,7 +419,7 @@ QVariant BookmarkModel::headerData(int section, Qt::Orientation orientation, int
 //! returns BookmarkItem for given QModelIndex
 /*!
     \param index given QModelIndex
-    \return BookmarkItem to the QModelIndex taht was given
+    \return BookmarkItem to the QModelIndex that was given
 */
 const BookmarkItem& BookmarkModel::itemFromModelIndex(const QModelIndex &index) const
 {

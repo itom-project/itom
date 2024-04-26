@@ -87,7 +87,7 @@ class FunctionCall:
         if self.observer:
             self.abortBtn["enabled"] = False
             # force the observer to cancel the running algorithm. The algorithm
-            # has to regularily check for this request and terminate the algorithm
+            # has to regularly check for this request and terminate the algorithm
             # (with an exception set) as soon as possible.
             self.observer.requestCancellation()
 

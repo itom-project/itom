@@ -61,7 +61,7 @@ print("x = " + str(x) + " y = " + str(y) + " z = " + str(z))
 #    will wait before the next ``setParam``, ``setPosAbs``, ``setPosRel``,
 #    ``getPos``, ``getParam``, ``getStatus`` methods until any previous movement is finished.
 
-# now switch the motor to an asychronous movement
+# now switch the motor to an asynchronous movement
 stage.setParam("async", 1)
 
 ###############################################################################

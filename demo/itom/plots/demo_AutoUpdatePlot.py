@@ -12,7 +12,7 @@ from itom import plot1
 
 ###############################################################################
 # Option 1: open plot with fixed interval, the plot shares its values
-# from a given ``dataObject``, update the ``dataObject`` regularily and call
+# from a given ``dataObject``, update the ``dataObject`` regularly and call
 # the replot slot of the plot to force an update of the canvas (without that
 # slot, the canvas is updated once the user makes a zoom, clicks somewhere...)
 d = dataObject.zeros([1, 3], "float64")
@@ -26,7 +26,7 @@ for i in range(0, 50):
 print("finished in %.2f s using replot" % (time.time() - t))
 
 ###############################################################################
-# Option 2: similar to option 1, but the plot is continously given the same
+# Option 2: similar to option 1, but the plot is continuously given the same
 # object again as source. Some caching mechanism provides a quick replot
 # of the data. This option makes an automatic bounds-check of the new source
 # and can therefore automatically reset automatic axes intervals

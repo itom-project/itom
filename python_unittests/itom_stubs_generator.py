@@ -205,7 +205,7 @@ param1 : sequence of int or iterable of int, optional
     The first parameter.
 """
 
-        docstring5 = """This is an errorneous docstring.
+        docstring5 = """This is an erroneous docstring.
 
 Parameters
 ----------

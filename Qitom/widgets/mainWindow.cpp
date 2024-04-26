@@ -1886,7 +1886,7 @@ void MainWindow::setStatusText(QString message, int timeout)
 /*
 An existing button with the same name (text) will not be deleted but a new button is added. This is
 because the possibly related python methods or functions cannot be deleted from this method.
-However, each button has its unique buttonHandle that can be used to explicitely delete the button.
+However, each button has its unique buttonHandle that can be used to explicitly delete the button.
 */
 ito::RetVal MainWindow::addToolbarButton(
     const QString& toolbarName,

@@ -66,7 +66,7 @@ protected:
 #ifndef QT_NO_STYLE_STYLESHEET
 public slots:
     /** \internal
-      Cleanup the _q_stylesheet_parent propery.
+      Cleanup the _q_stylesheet_parent property.
      */
     void styleSheetParentDestroyed() {
         setProperty("_q_stylesheet_parent", QVariant());

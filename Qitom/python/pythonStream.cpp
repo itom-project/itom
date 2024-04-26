@@ -257,7 +257,7 @@ PyObject* PyStream::PythonStream_flush(PythonStream* self, PyObject * /*args*/)
         std::cerr << std::flush;
     }
 
-    Py_RETURN_NONE; //args should be empty, if calling PythonStream_write from this position, garbage collector crash might occure
+    Py_RETURN_NONE; //args should be empty, if calling PythonStream_write from this position, garbage collector crash might occur
 }
 
 //---------------------------------------------------------------------------------

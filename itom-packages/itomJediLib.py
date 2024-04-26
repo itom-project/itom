@@ -400,7 +400,7 @@ def completions(code, line, column, path, prefix):
                         ]
 
                     if compl_type == "function" and len(tooltipList) > 0:
-                        """Properties, defined in C, are displayed as funtion.
+                        """Properties, defined in C, are displayed as function.
                         However, if the tooltip starts with 'type : text', it
                         is likely to be a property"""
                         text = tooltipList[0]

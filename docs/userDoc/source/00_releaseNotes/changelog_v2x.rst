@@ -333,7 +333,7 @@ itom
 * some cleanup in ItomBuildMacros.cmake
 * bugfix: long plugin info text cause itom to stall when opening new plugin instance using right mouse click on plugin in plugin explorer
 * improved error message in arguments of ui.msgInformation, ui.msgCritical... are wrong
-* bugfix: errornous optional parameter of a itom.filter-call was not always marked with an arrow due to a wrong counter variable.
+* bugfix: erroneous optional parameter of a itom.filter-call was not always marked with an arrow due to a wrong counter variable.
 * bugfix in :py:class:`itom.region`: QRegion fails to build region is an upper limit of internal rectangles is reached. This limit crashed the code and is now handled by an exception.
 * warnings created by plugins due to a Python invocation are now transformed to a python warning (PyExc_Warn...) instead of a non-adjustable std::cerr print. The behaviour of Python warnings can be controlled via the Python module 'warnings', the default is a cerr-print, too.
 * warnings during GUI-based load of files are also shown in a message box.

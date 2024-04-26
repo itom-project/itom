@@ -73,7 +73,7 @@ class FigureCanvasItomAgg(FigureCanvasItom, FigureCanvasAgg):
         buf = reg.to_string_argb()  # this is faster than the Qt-original version cbook._unmultiplied_rgba8888_to_premultiplied_argb32...
         W = round(w)
         H = round(h)
-        # workaround sometimes the width and hight does not fit to the buf length, leding to a crash of itom.
+        # workaround sometimes the width and height does not fit to the buf length, leding to a crash of itom.
         # If the length is a multiple of either the width or the length we readjust them.
         if not int(W * H * 4) == len(buf):
             numberElements = len(buf) / 4

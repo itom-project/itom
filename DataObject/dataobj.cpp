@@ -3793,7 +3793,7 @@ RetVal DataObject::nans(
     \detail this function allocates an random value matrix using cv::randu for uniform (randMode =
    false) or gausion noise (randMode = true). In case of an integer type, the uniform noise is from
    min(inclusiv) to max(inclusiv). For floating point types, the noise is between 0(inclusiv) and
-   1(exclusive). In case of an integer type, the gausian noise mean value is (max+min)/2.0 and the
+   1(exclusive). In case of an integer type, the Gaussian noise mean value is (max+min)/2.0 and the
    standard deviation is (max-min/)6.0 to max. For floating point types, the noise mean value is 0
    and the standard deviation is 1.0/3.0. \param type is the desired type-number \param randMode
    switch mode between uniform distributed(false) and normal distributed noise(true) \return retOk
@@ -3811,7 +3811,7 @@ RetVal DataObject::rand(const int type, const bool randMode)
     \detail this function allocates an random value matrix using cv::randu for uniform (randMode =
    false) or gausion noise (randMode = true). In case of an integer type, the uniform noise is from
    min(inclusiv) to max(inclusiv). For floating point types, the noise is between 0(inclusiv) and
-   1(exclusive). In case of an integer type, the gausian noise mean value is (max+min)/2.0 and the
+   1(exclusive). In case of an integer type, the Gaussian noise mean value is (max+min)/2.0 and the
    standard deviation is (max-min/)6.0 to max. For floating point types, the noise mean value is 0
    and the standard deviation is 1.0/3.0. \param size is the desired length of the vector \param
    type is the desired type-number \param randMode switch mode between uniform distributed(false)
@@ -3829,7 +3829,7 @@ RetVal DataObject::rand(const int size, const int type, const bool randMode)
     \detail this function allocates an random value matrix using cv::randu for uniform (randMode =
    false) or gausion noise (randMode = true). In case of an integer type, the uniform noise is from
    min(inclusiv) to max(inclusiv). For floating point types, the noise is between 0(inclusiv) and
-   1(exclusive). In case of an integer type, the gausian noise mean value is (max+min)/2.0 and the
+   1(exclusive). In case of an integer type, the Gaussian noise mean value is (max+min)/2.0 and the
    standard deviation is (max-min/)6.0 to max. For floating point types, the noise mean value is 0
    and the standard deviation is 1.0/3.0. \param sizeY are the number of rows \param sizeX are the
    number of columns \param type is the desired type-number \param randMode switch mode between
