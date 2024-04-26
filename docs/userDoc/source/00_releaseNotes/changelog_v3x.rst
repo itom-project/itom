@@ -243,7 +243,7 @@ itom
 * matplotlib example updated to be compatible with matplotlib 2.1.0
 * adapted pythonMatlab to newer numpy definitions (at least <= numpy 1.7)
 * partial fixes in matplotlib backend to support matplotlib >= 2.1.0. Fixes issue https://bitbucket.org/itom/designerplugins/issues/14/matplotlibplot-idleevent-removed
-* fix when opening an info page in the helpTreeDockWidget while the help ist currently rendered or loaded from the database.
+* fix when opening an info page in the helpTreeDockWidget while the help is currently rendered or loaded from the database.
 * backend_itom.py backward compatible for matplotlib < 2.1
 * Added a paletteEditor to create user defined color palettes
 * improvements in script reference (help viewer) including PythonAPI_SqlCreator.py

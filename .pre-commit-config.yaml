@@ -10,14 +10,14 @@ repos:
     -   id: trailing-whitespace
     -   id: fix-byte-order-marker
 
-#-   repo: https://github.com/codespell-project/codespell
-#    rev: v2.2.6
-#    hooks:
-#    -   id: codespell
-#        args:
-#        -   --skip=*.ts,*.svg,*.hqx,*-inv.txt
-#        -   --ignore-words=.codespell_ignore_words.txt
-#        -   --ignore-words-list="SEH,Ot,inOut,MARGE,Manuel"
+-   repo: https://github.com/codespell-project/codespell
+    rev: v2.2.6
+    hooks:
+    -   id: codespell
+        args:
+        -   --skip=*.ts,*.svg,*.hqx,*-inv.txt,*.iss.in
+        -   --ignore-words=.codespell_ignore_words.txt
+        #-   --ignore-words-list="SEH,Ot,inOut,MARGE,Manuel"
 
 -   repo: https://github.com/asottile/pyupgrade
     rev: v3.15.2

@@ -942,7 +942,7 @@ Slots
 
     Add a new geometric shape to the canvas if no shape with the same index already exists.
 
-    If the index of the new shape is -1 (default), the next free auto-incremented index will be set for this shape. (C++ only: this new index ist
+    If the index of the new shape is -1 (default), the next free auto-incremented index will be set for this shape. (C++ only: this new index is
     stored in the optional 'newIndex' parameter).
 
     :param geometricShape: new geometric shape

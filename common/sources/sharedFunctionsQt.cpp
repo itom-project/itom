@@ -2012,7 +2012,7 @@ namespace ito
             return RetVal(retError, 0, QObject::tr("Load object failed: Invalid object handle").toLatin1().data());
         }
 
-        // First start with the properties of the file, check if it ist readable ...
+        // First start with the properties of the file, check if it is readable ...
 
         QFileInfo checkFile(folderFileName);
 
