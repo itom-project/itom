@@ -259,9 +259,9 @@ namespace ito
     protected:
         int m_type;                                     //!< plugin type
         int m_version;                                  //!< plugin version
-        QString m_filename;                             //!< plugin (library) filename on the disc
         int m_maxItomVer;                               //!< minimum required version of the main program
         int m_minItomVer;                               //!< maximum supported version of the main program
+        QString m_filename;                             //!< plugin (library) filename on the disc
         QString m_author;                                //!< the plugin author
         QString m_description;                          //!< a brief descrition of the plugin
         QString m_detaildescription;                    //!< a detail descrition of the plugin

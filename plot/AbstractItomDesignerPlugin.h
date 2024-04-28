@@ -51,6 +51,8 @@ namespace ito {
                 QDesignerCustomWidgetInterface(),
                 m_plotFeatures(ito::Static),
                 m_version(0),
+                m_maxItomVer(0),
+                m_minItomVer(0),
                 m_author(""),
                 m_description(""),
                 m_detaildescription(""),
@@ -86,6 +88,8 @@ namespace ito {
             ito::PlotFeatures    m_plotFeatures;
 
             int m_version;                        //!< plugin version
+            int m_maxItomVer;                     //!< minimum required version of the main program
+            int m_minItomVer;                     //!< maximum supported version of the main program
             QString m_author;                     //!< the plugin author
             QString m_description;                //!< a brief descrition of the plugin
             QString m_detaildescription;          //!< a detail descrition of the plugin
