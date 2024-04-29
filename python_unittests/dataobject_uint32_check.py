@@ -19,7 +19,7 @@ class DataObjectUInt32Check(unittest.TestCase):
             e = d.astype("uint32")
 
         a = np.array([2, 2, 2], "uint32")  # np.array for uint32 is allowed
-        with self.assertRaises(ValueError):
+        with self.assertRaises(TypeError):
             b = dataObject(a)
 
 
