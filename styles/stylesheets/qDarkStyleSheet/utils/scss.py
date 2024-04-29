@@ -165,7 +165,7 @@ def create_custom_qss(
     if is_identifier(name):
         name = name if name[0].isupper() else name.capitalize()
     else:
-        raise Exception("The custom palette name must be a valid Python " "identifier!")
+        raise Exception("The custom palette name must be a valid Python identifier!")
 
     # Copy resources folder
     rc_loc = os.path.basename(RC_PATH)

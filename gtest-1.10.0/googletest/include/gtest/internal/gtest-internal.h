@@ -498,11 +498,11 @@ inline SetUpTearDownSuiteFuncType GetNotDefaultOrNull(
 
 template <typename T>
 //  Note that SuiteApiResolver inherits from T because
-//  SetUpTestSuite()/TearDownTestSuite() could be protected. This way
+//  SetUpTestSuite()/TearDownTestSuite() could be protected. Ths way
 //  SuiteApiResolver can access them.
 struct SuiteApiResolver : T {
   // testing::Test is only forward declared at this point. So we make it a
-  // dependent class for the compiler to be OK with it.
+  // dependend class for the compiler to be OK with it.
   using Test =
       typename std::conditional<sizeof(T) != 0, ::testing::Test, void>::type;
 
@@ -1318,7 +1318,7 @@ constexpr bool InstantiateTypedTestCase_P_IsDeprecated() { return true; }
 
 // Implements Boolean test assertions such as EXPECT_TRUE. expression can be
 // either a boolean expression or an AssertionResult. text is a textual
-// representation of expression as it was passed into the EXPECT_TRUE.
+// represenation of expression as it was passed into the EXPECT_TRUE.
 #define GTEST_TEST_BOOLEAN_(expression, text, actual, expected, fail) \
   GTEST_AMBIGUOUS_ELSE_BLOCKER_ \
   if (const ::testing::AssertionResult gtest_ar_ = \

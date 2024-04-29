@@ -364,13 +364,13 @@ TYPED_TEST(dataObjectTag_Test, set_getAxisUnit_Test1d)
 */
 TYPED_TEST(dataObjectTag_Test, set_getAxisUnit_Test2d)
 {
-    this->mat1_2d.setAxisUnit(0, "�m");
+    this->mat1_2d.setAxisUnit(0, "µm");
     this->mat1_2d.setAxisUnit(1, "cm");
     bool vop1;
     bool vop2;
     std::string AxisUnit1 = this->mat1_2d.getAxisUnit(0, vop1);
     std::string AxisUnit2 = this->mat1_2d.getAxisUnit(1, vop2);
-    EXPECT_EQ(AxisUnit1, "�m"); // checks if the retrieved Axis0 Unit by "getAxisUnit" function is same as the one
+    EXPECT_EQ(AxisUnit1, "µm"); // checks if the retrieved Axis0 Unit by "getAxisUnit" function is same as the one
                                 // assigned by "setAxisUnit" function.
     EXPECT_EQ(AxisUnit2, "cm"); // checks if the retrieved Axis1 Unit by "getAxisUnit" function is same as the one
                                 // assigned by "setAxisUnit" function.

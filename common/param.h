@@ -334,7 +334,7 @@ public:
     0 is returned. This changed from itom 5.0 on. Before -1 was returned
     if the array is a nullptr (which is equal to a length of 0).
 
-    StringList parameters behave like the other scalar parameters.
+    StringList parameter behave like the other scalar parameters.
 
     For String parameters, the length of the string is returned, but
     -1 is returned if the internal string is nullptr.

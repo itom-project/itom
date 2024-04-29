@@ -97,7 +97,7 @@ def generateAlgorithmStubs():
         if algo.isidentifier():
             algoItems.append(parseAlgorithmString(algos[algo]))
 
-    header = """# coding=iso-8859-15
+    header = """
 
 # algo_hash = %s
 

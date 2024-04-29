@@ -733,7 +733,7 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(
                         parameterSection.replace("<!--%PARAMOPT_CAPTION%-->", tr("optional"));
                     }
 
-                    // remove returns section (Widgets can�t return something)
+                    // remove returns section (Widgets can't return something)
                     returnsSection = "";
 
                     // Example-Section
@@ -1193,7 +1193,7 @@ QString HelpTreeDockWidget::parseParam(const QString& tmpl, const ito::Param& pa
 
     ito::uint32 inOut = param.getFlags();
 
-    // TODO: already tried to avoid the linewrap inside [] bit <td nowrap> didn�t work!
+    // TODO: already tried to avoid the linewrap inside [] bit <td nowrap> didn't work!
     if ((inOut & ito::ParamBase::In) && (inOut & ito::ParamBase::Out))
     {
         type.append(" [in/out]");
@@ -1817,7 +1817,7 @@ void HelpTreeDockWidget::on_helpTreeContent_anchorClicked(const QUrl& link)
         if (parts1[0] == "Widgets")
         {
             // Widget (This is a workaround for the Linklist. Without this else if the links
-            // wouldn�t work
+            // wouldn't work
             showPluginInfo(
                 parts[1],
                 typeWidget,
@@ -1827,7 +1827,7 @@ void HelpTreeDockWidget::on_helpTreeContent_anchorClicked(const QUrl& link)
         else
         {
             // Filter (This is a workaround for the Linklist. Without this else if the links
-            // wouldn�t work
+            // wouldn't work
             showPluginInfo(
                 parts[1],
                 typeFilter,

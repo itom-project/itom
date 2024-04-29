@@ -62,7 +62,7 @@ class ProfileRoughness(ItomUi):
         ):
             ui.msgWarning(
                 "wrong unit",
-                "Value and horizontal axis unit must be nm, �m or mm",
+                "Value and horizontal axis unit must be nm, µm or mm",
                 parent=self.gui,
             )
         else:

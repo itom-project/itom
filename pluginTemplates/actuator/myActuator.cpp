@@ -728,7 +728,7 @@ ito::RetVal MyActuator::waitForDone(const int timeoutMS, const QVector<int> axis
 
     if (timeout)
     {
-        //timeout ococcurredcured, set the status of all currently moving axes to timeout
+        //timeout occurred, set the status of all currently moving axes to timeout
         replaceStatus(_axis, ito::actuatorMoving, ito::actuatorTimeout);
         retVal += ito::RetVal(ito::retError,9999,"timeout occurred");
         sendStatusUpdate(true);

@@ -66,7 +66,7 @@ class ITOMCOMMON_EXPORT ByteArray
     private:
         /*!
         \struct Data
-        \brief basic data container for class ByteArray that is imimplicitlyplicitely shared over multiple instances of ByteArray of the same content
+        \brief basic data container for class ByteArray that is implicitly shared over multiple instances of ByteArray of the same content
 
         The address of the real character array is stored in m_pData. The data buffer itself starts at m_buffer
         and continues at the end of the struct. Therefore, ByteArray allocates memory for Data that has the length

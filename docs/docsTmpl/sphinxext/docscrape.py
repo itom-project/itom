@@ -6,10 +6,7 @@ import re
 import pydoc
 from io import StringIO
 
-# from StringIO import StringIO
 from warnings import warn
-
-4
 
 
 class Reader:
