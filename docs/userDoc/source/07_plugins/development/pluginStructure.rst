@@ -26,7 +26,7 @@ Each plugin is a different project in your programming environment and is finall
 Plugin load mechanism of |itom|
 -------------------------------
 
-For information about loading plugins in |itom|, see the section :ref:plugins-loading.
+For information about loading plugins in |itom|, see the section :ref:`plugins-loading`.
 
 Basic plugin structure
 ----------------------

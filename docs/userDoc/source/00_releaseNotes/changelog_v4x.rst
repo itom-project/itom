@@ -489,9 +489,9 @@ itom
   reference is kept to avoid cyclic garbage collections of the class instances.
 * `Pull request 56 <https://bitbucket.org/itom/itom/pull-requests/56>`_: ``DataIO`` and ``actuator``
   plugins now have a user mutex, that can be accessed both by the
-  C++ interface as well as by the Python methods py:meth:`dataIO.userMutexTryLock`,
-  py:meth:`dataIO.userMutexUnlock`, py:meth:`actuator.userMutexTryLock`,
-  py:meth:`actuator.userMutexUnlock`. Plugins must be compiled against the
+  C++ interface as well as by the Python methods :py:meth:`dataIO.userMutexTryLock`,
+  :py:meth:`dataIO.userMutexUnlock`, :py:meth:`actuator.userMutexTryLock`,
+  :py:meth:`actuator.userMutexUnlock`. Plugins must be compiled against the
   AddInInterface >= 4.2.0 to support this mutex.
 * added new editorTheme ``VSDarkStyle.ini`` to *styles/editorThemes*  which looks like Visual Studio.
 * **ParamEditorWidget** can now display the slider widget as editor for floating point values
@@ -514,7 +514,7 @@ itom
   recommended to follow the Python PEP8 style guide advises.
 * The constructor of :py:class:`itom.timer` has a new optional argument ``startAfterInit``
   (default: ``True``). If set, the timer is automatically started.
-* py:class:`itom.timer`, py:meth:`itom.addMenu` and py:meth:`itom.addButton` accept now
+* :py:class:`itom.timer`, :py:meth:`itom.addMenu` and :py:meth:`itom.addButton` accept now
   lambda and partialfunc callback functions. Redesign of the
   timer manager dialog (class DialogTimerManager) to avoid race conditions if the timers are
   deleted or changed by Python while the dialog is opened. While the dialog is opened, all timers
@@ -647,7 +647,7 @@ itom
 **New or changed major features:**
 
 * ScriptEditor can now handle filenames with special characters
-* New alternative interface for algorithms (ito::FilterDefExt) in algorithm plugins. This allows both continuously reporting the progress of an algorithm to Python (class py:class:`itom.progressObserver`) or C++ GUIs as well as interrupting a long running algorithm from these GUIs, too.
+* New alternative interface for algorithms (ito::FilterDefExt) in algorithm plugins. This allows both continuously reporting the progress of an algorithm to Python (class :py:class:`itom.progressObserver`) or C++ GUIs as well as interrupting a long running algorithm from these GUIs, too.
 * The keyword '_observer' is not allowed in any algorithm plugin filters, since it is a reserved keyword for passing an progress observer to a filter. Filters having such a keyword will be rejected by itom.
 * Forward and backward navigation buttons in script editors are available. Their behaviour is similar than in Visual Studio (see https://blogs.msdn.microsoft.com/zainnab/2010/03/01/navigate-backward-and-navigate-forward/)
 * Improved callstack toolbox: The internal traceback of the debugger is ignored, now. It is possible to double click every level of the callstack in order to jump to these lines. The top level will be marked with a yellow arrow in the script, other affected lines by a green arrow.

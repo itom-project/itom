@@ -28,7 +28,7 @@ itom
 * generic snapshot dialog added that is available for all camera instances (e.g. by their context menu)
 * improved drag&drop of files to the console. Hourglass is shown as cursor while a file is loaded.
 * documentation added how to directly start the package manager with an argument to qitom.exe
-* bugfix in matrix multiplication operator of DataObject: The data object has to be reallocated both for :literal:'*' and :literal:'*'= operators if the size of the multiplied matrix is different than the size of
+* "bugfix in matrix multiplication operator of DataObject: The data object has to be reallocated both for ``:literal:'*'`` and ``:literal:'*='`` operators if the size of the multiplied matrix is different than the size of"
 * method meanValue implemented in dataObjectFuncs using the quick median algorithm.
 * added available colorMaps in plot documentation
 * maximum number of threads that should be used for algorithms and filter plugins can be set in property dialog. In plugins use ito::AddInBase::getMaximumThreadCount() (static) to request this value. It is always bound between 1 and the maximum number of available threads on the computer.
