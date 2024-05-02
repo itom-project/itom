@@ -61,6 +61,12 @@ WidgetPropGeneralLanguage::WidgetPropGeneralLanguage(QWidget *parent) :
     lwi = new QListWidgetItem(lang, ui.listWidget);
     lwi->setData(Qt::UserRole + 1, loc.name());
 
+    // add "operating system" as language -> the current language from the OS is taken. If it does not exists,
+    // it falls back to the default language
+    lang = QString(tr("%1 (here: %2)").arg(m_operatingSystemLocale, QLocale().name()));
+    lwi = new QListWidgetItem(lang, ui.listWidget);
+    lwi->setData(Qt::UserRole + 1, "operatingsystem");
+
     QDir languageDir;
     languageDir.cd(QCoreApplication::applicationDirPath() + "/translation");
     languageDir.setNameFilters(QStringList("qitom_*.qm"));
@@ -119,22 +125,47 @@ void WidgetPropGeneralLanguage::readSettings()
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("Language");
 
-    QString lang = settings.value("language", "en").toString();
-    QLocale loc(lang);
+    QString language = settings.value("language", "en").toString();
 
-    if (loc.language() == QLocale::C) //the language could not be detected, use the default one as selected langauge
+    // language can be "language[_territory][.codeset][@modifier]" or "operatingsystem".
+    // In the last case, the default language of the operating system is used.
+    QLocale localeLanguage;
+    bool languageBasedOnOperatingSystem = false;
+    
+    if (language.compare("operatingsystem", Qt::CaseInsensitive) == 0)
     {
-        loc = QLocale(QLocale::English, QLocale::UnitedStates);
+        localeLanguage = QLocale();
+        languageBasedOnOperatingSystem = true;
+    }
+    else
+    {
+        localeLanguage = QLocale(language);
+    }
+
+    if (localeLanguage.language() == QLocale::C) //the language could not be detected, use the default one as selected langauge
+    {
+        localeLanguage = QLocale(QLocale::English, QLocale::UnitedStates);
     }
 
     for (int i = 0; i < ui.listWidget->count(); i++)
     {
-        if (ui.listWidget->item(i)->data(Qt::UserRole + 1).toString() == loc.name())
+        if (languageBasedOnOperatingSystem)
         {
-            ui.listWidget->setCurrentRow(i);
-
-            ui.lblCurrentLanguage->setText(tr("Current Language: ") + ui.listWidget->currentItem()->text());
-            break;
+            if (ui.listWidget->item(i)->data(Qt::UserRole + 1).toString() == "operatingsystem")
+            {
+                ui.listWidget->setCurrentRow(i);
+                ui.lblCurrentLanguage->setText(tr("Current Language: ") + ui.listWidget->currentItem()->text());
+                break;
+            }
+        }
+        else
+        {
+            if (ui.listWidget->item(i)->data(Qt::UserRole + 1).toString() == localeLanguage.name())
+            {
+                ui.listWidget->setCurrentRow(i);
+                ui.lblCurrentLanguage->setText(tr("Current Language: ") + ui.listWidget->currentItem()->text());
+                break;
+            }
         }
     }
 
