@@ -48,7 +48,7 @@ h["valueLabel"] = "value"
 
 ##############################################################################
 # Example with ``numpy datetime`` array.
-dateScale2 = np.arange('2005-02', '3005-03', dtype='datetime64[D]')
+dateScale2 = np.arange('2005-02', '2005-03', dtype='datetime64[D]')
 values2 = dataObject.randN([1, len(dateScale2)], "uint8")
 plot1(values2, dateScale2)
 
