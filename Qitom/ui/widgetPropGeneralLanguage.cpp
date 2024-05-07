@@ -172,7 +172,7 @@ void WidgetPropGeneralLanguage::writeSettings()
 
     QString locale = ui.comboLocale->currentText();
 
-    if (locale.toLower() == m_operatingSystemLocale)
+    if (locale.compare(m_operatingSystemLocale, Qt::CaseInsensitive) == 0)
     {
         settings.setValue("numberStringConversionStandard", "operatingsystem");
     }
@@ -200,7 +200,7 @@ void WidgetPropGeneralLanguage::on_comboLocale_currentIndexChanged(int index)
         QString itemText = ui.comboLocale->itemText(index);
         QLocale locale;
 
-        if (itemText == m_operatingSystemLocale)
+        if (itemText.compare(m_operatingSystemLocale, Qt::CaseInsensitive) == 0)
         {
             locale = QLocale::system();
         }
