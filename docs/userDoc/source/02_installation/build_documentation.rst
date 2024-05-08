@@ -44,12 +44,12 @@ installed on your computer. The main applications are:
 3. Python-Packages and Sphinx extensions
 
     In the |itom| sources folder **itom/docs/userDoc**, you can find a
-    **requirements.txt** file containing all further necessary python packages
+    **requirementsDocuBuild.txt** file containing all further necessary python packages
     and Sphinx extensions. Install them by using **pip**:
 
     .. code-block: bat
 
-        python.exe -m pip install -r requirements.txt
+        python.exe -m pip install -r requirementsDocuBuild.txt
 
     Following packages will be installed:
 
