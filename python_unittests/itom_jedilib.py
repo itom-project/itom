@@ -225,23 +225,23 @@ dataObject.ones([2, 2])"""
             self._assertOneHelpEntry(h, "def shape", "shape: tuple", True)
 
         # main code part
-        h = jedilib.get_help(doc, 131, 8, path=p)  # comment -> no help
+        h = jedilib.get_help(doc, 130, 8, path=p)  # comment -> no help
         self.assertEqual(len(h), 0)
 
-        h = jedilib.get_help(doc, 132, 7, path=p)  # paths = ... -> help
+        h = jedilib.get_help(doc, 131, 7, path=p)  # paths = ... -> help
         self.assertEqual(h, [("paths = sys.path", ["paths: List[str]"])])
 
-        h = jedilib.get_help(doc, 132, 15, path=p)  # paths = sys... -> help
+        h = jedilib.get_help(doc, 131, 15, path=p)  # paths = sys... -> help
         self._assertOneHelpEntry(h, "module sys", "Module sys\n\nThis module")
 
-        h = jedilib.get_help(doc, 137, 7, path=p)  # result1
+        h = jedilib.get_help(doc, 136, 7, path=p)  # result1
         self.assertEqual(h, [("result1 = meth1_nodocstr()", ["result1: float"])])
-        h = jedilib.get_help(doc, 137, 14, path=p)  # meth1_nodocstr()
+        h = jedilib.get_help(doc, 136, 14, path=p)  # meth1_nodocstr()
         self.assertEqual(h, [("def meth1_nodocstr", ["meth1_nodocstr()"])])
 
-        h = jedilib.get_help(doc, 138, 7, path=p)  # result2
+        h = jedilib.get_help(doc, 137, 7, path=p)  # result2
         self.assertEqual(h, [("result2 = meth1_docstr()", ["result2: float"])])
-        h = jedilib.get_help(doc, 138, 14, path=p)  # meth1_docstr()
+        h = jedilib.get_help(doc, 137, 14, path=p)  # meth1_docstr()
         self.assertEqual(
             h,
             [
@@ -252,16 +252,16 @@ dataObject.ones([2, 2])"""
             ],
         )
 
-        h = jedilib.get_help(doc, 139, 7, path=p)  # result3
+        h = jedilib.get_help(doc, 138, 7, path=p)  # result3
         self.assertEqual(h, [("result3 = meth2_nodocstr(-3)", ["result3: None"])])
-        h = jedilib.get_help(doc, 139, 14, path=p)  # meth2_nodocstr()
+        h = jedilib.get_help(doc, 138, 14, path=p)  # meth2_nodocstr()
         self.assertEqual(
             h, [("def meth2_nodocstr", ["meth2_nodocstr(arg1, arg2=4.0)"])]
         )
 
-        h = jedilib.get_help(doc, 140, 7, path=p)  # result4
+        h = jedilib.get_help(doc, 139, 7, path=p)  # result4
         self.assertEqual(h, [("result4 = meth2_docstr(7)", ["result4: None"])])
-        h = jedilib.get_help(doc, 140, 14, path=p)  # meth2_docstr()
+        h = jedilib.get_help(doc, 139, 14, path=p)  # meth2_docstr()
         self.assertEqual(
             h,
             [
@@ -274,7 +274,7 @@ dataObject.ones([2, 2])"""
             ],
         )
 
-        h = jedilib.get_help(doc, 141, 7, path=p)  # result5
+        h = jedilib.get_help(doc, 140, 7, path=p)  # result5
         self.assertEqual(
             h,
             [
@@ -284,7 +284,7 @@ dataObject.ones([2, 2])"""
                 )
             ],
         )
-        h = jedilib.get_help(doc, 141, 14, path=p)  # meth3_docstr()
+        h = jedilib.get_help(doc, 140, 14, path=p)  # meth3_docstr()
         self.assertEqual(
             h,
             [
@@ -297,10 +297,10 @@ dataObject.ones([2, 2])"""
             ],
         )
 
-        h = jedilib.get_help(doc, 143, 7, path=p)  # mycls1
+        h = jedilib.get_help(doc, 142, 7, path=p)  # mycls1
         self.assertEqual(h, [("mycls1 = MyClass(6, 7)", ["mycls1: MyClass"])])
 
-        h = jedilib.get_help(doc, 152, 7, path=p)  # mycls1
+        h = jedilib.get_help(doc, 151, 7, path=p)  # mycls1
         self.assertEqual(
             h, [("mycls1 = MyClassDocStr(6, 7)", ["mycls1: MyClassDocStr"])]
         )
