@@ -14,7 +14,7 @@
 #define PLUGIN_MIN_ITOM_VERSION     CREATE_VERSION(0, 0, 0) // First ITOM Release Version
 #define PLUGIN_MAX_ITOM_VERSION     CREATE_VERSION(${itom_VERSION_MAJOR},${itom_VERSION_MINOR},${itom_VERSION_PATCH})
 #define PLUGIN_LICENCE              "Applicable Licenses"
-#define PLUGIN_COMPANY              "Institut für Technische Optik, University Stuttgart"
+#define PLUGIN_COMPANY              "Institut für Technische Optik, Universität Stuttgart"
 #define PLUGIN_COMPANY              "Your Company Name"
 #define PLUGIN_AUTHOR               "AuthorName"
 #define PLUGIN_COPYRIGHT            "Your Copyright"
