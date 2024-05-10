@@ -9,6 +9,14 @@
 
 set(LAPACKE_FOUND false)
 
+if(NOT EXISTS ${LAPACKE_DIR})
+    if(EXISTS $ENV{LAPACKE_ROOT})
+        set(LAPACKE_DIR $ENV{LAPACKE_ROOT} CACHE PATH "Root directory of LAPACKE, containing sub-directories library and include")
+    else(EXISTS $ENV{LAPACKE_ROOT})
+        set(LAPACKE_DIR "LAPACKE_DIR-NOTFOUND" CACHE PATH "Root directory of LAPACKE, containing sub-directories library and include")
+    endif(EXISTS $ENV{LAPACKE_ROOT})
+endif(NOT EXISTS ${LAPACKE_DIR})
+
 find_path(LAPACKE_DIR lapacke.h PATH_SUFFIXES "include" DOC "Root directory of lapacke")
 find_path(LAPACKE_INCLUDE_DIR lapacke.h PATHS ${LAPACKE_DIR} PATH_SUFFIXES "include")
 

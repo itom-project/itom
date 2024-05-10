@@ -91,6 +91,8 @@ if(BUILD_WITH_PCL)
         find_package(PCL 1.5.1 QUIET REQUIRED COMPONENTS common)
     endif(WIN32)
 
+    message(STATUS "VTK_VERSION: ${VTK_VERSION}")
+
     # actually we need this only to configure the itom.bat including vtk, otherwise
     # eventually pcl-tools plugin will not be loaded
     find_package(VTK QUIET)
@@ -1043,7 +1045,6 @@ endif()
 if(MSVC)
     message(STATUS "Using rc-File for version information under windows")
     configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/version.rc.in ${CMAKE_CURRENT_BINARY_DIR}/version.rc )
-
 endif()
 
 # Copying scripts for OS X build process

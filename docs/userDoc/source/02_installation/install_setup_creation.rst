@@ -52,7 +52,7 @@ system.
 Create Documentation in ITOM
 ----------------------------
 
-1. run doxygen with \Build\itom\docs\doxygen\itom_doxygen.dox
+1. run doxygen with \build\itom\docs\doxygen\itom_doxygen.dox
 2. start itom \build\Qiom\qitom.exe
 3. run the python file "create_doc.py" in the \Build\itom\docs\userDoc folder.
 Open the Itom Help module by pressing F1.
@@ -63,5 +63,6 @@ Choose the build folder of the available Plugin. Open the Itom Help module by pr
 Create Setup for Windows
 ------------------------
 
-Download the latest [InnoSetupCompiler](https://jrsoftware.org/isdl.php).
-To create a Windows Setup install open the file build\itom\setup\win64\itom_setup_win64.iss in the InnoSetupCompiler and run it accordingly.
+1. Download the latest [InnoSetupCompiler](https://jrsoftware.org/isdl.php).
+2. Run the "start_qt_deployment.bat" file in \build\itom\setup\win64
+3. To create a Windows Setup install open the file build\itom\setup\win64\itom_setup_win64.iss in the InnoSetupCompiler and run it accordingly.

@@ -146,16 +146,12 @@ itom_find_package_qt(ON Core)
 itom_define_sdk_platform()
 itom_define_sdk_compiler()
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win32/itom_setup_win32.iss.in
-    ${CMAKE_CURRENT_BINARY_DIR}/setup/win32/itom_setup_win32.iss )
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/common/itom_setup_code.iss.in
-    ${CMAKE_CURRENT_BINARY_DIR}/setup/win32/itom_setup_win32_code.iss )
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/common/start_qt_deployment.bat.in
-    ${CMAKE_CURRENT_BINARY_DIR}/setup/win32/start_qt_deployment.bat )
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/common/PythonRequirements/requirementsMandatory.txt
-    ${CMAKE_CURRENT_BINARY_DIR}/setup/win32/PythonRequirements/requirementsMandatory.txt)
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/common/PythonRequirements/requirementsOptional.txt
-    ${CMAKE_CURRENT_BINARY_DIR}/setup/win32/PythonRequirements/requirementsOptional.txt)
+find_package(OpenCV COMPONENTS core REQUIRED)
+string(REPLACE . "" OpenCV_LIB_VERSION ${OpenCV_VERSION})
+
+message(STATUS "OpenCV_LIB_VERSION: ${OpenCV_LIB_VERSION}")
+
+message(STATUS "OpenCV_VERSION: ${OpenCV_VERSION}")    
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win64/itom_setup_win64.iss.in
     ${CMAKE_CURRENT_BINARY_DIR}/setup/win64/itom_setup_win64.iss )
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/common/itom_setup_code.iss.in
@@ -172,8 +168,6 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win64/itom_setup_zipper/start_q
     ${CMAKE_CURRENT_BINARY_DIR}/setup/win64/itom_setup_zipper/start_qt_deployment.bat.in COPYONLY)
 
 if(SETUP_ISSCONFIG)
-    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win32/compile_iss_win32.bat.in
-        ${CMAKE_CURRENT_BINARY_DIR}/setup/win32/compile_iss_win32.bat )
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win64/compile_iss_win64.bat.in
         ${CMAKE_CURRENT_BINARY_DIR}/setup/win64/compile_iss_win64.bat )
 endif()
