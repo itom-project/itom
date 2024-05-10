@@ -1,7 +1,7 @@
 # - itom software
 # URL: http://www.uni-stuttgart.de/ito
 # Copyright (C) 2020, Institut für Technische Optik (ITO),
-# Universität Stuttgart, Germany
+# Universitaet Stuttgart, Germany
 #
 # This file is part of itom and its software development toolkit (SDK).
 #
@@ -90,6 +90,8 @@ if(BUILD_WITH_PCL)
     else(WIN32)
         find_package(PCL 1.5.1 QUIET REQUIRED COMPONENTS common)
     endif(WIN32)
+
+    message(STATUS "VTK_VERSION: ${VTK_VERSION}")
 
     # actually we need this only to configure the itom.bat including vtk, otherwise
     # eventually pcl-tools plugin will not be loaded
@@ -210,6 +212,7 @@ endforeach()
 
 include_directories(
     ${CMAKE_CURRENT_BINARY_DIR}
+    ${CMAKE_CURRENT_BINARY_DIR}/..
     ${CMAKE_CURRENT_BINARY_DIR}/python
     ${CMAKE_CURRENT_BINARY_DIR}/GeneratedFiles
     ${CMAKE_CURRENT_SOURCE_DIR}
@@ -232,6 +235,7 @@ include_directories(
     ../PointCloud/
     ../AddInManager/
     ../itomWidgets
+    ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include
 )
 
 link_directories(
@@ -260,10 +264,10 @@ set(qitom_HEADERS_NOMOC
 )
 
 set(qitom_HEADERS
+    ${CMAKE_CURRENT_BINARY_DIR}/global.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../AddInManager/0.h   # this file must be first in list for automoc
     ${CMAKE_CURRENT_SOURCE_DIR}/main.h
     ${CMAKE_CURRENT_SOURCE_DIR}/AppManagement.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/global.h
     ${CMAKE_CURRENT_SOURCE_DIR}/mainApplication.h
     ${CMAKE_CURRENT_SOURCE_DIR}/api/apiFunctionsGraph.h
     ${CMAKE_CURRENT_SOURCE_DIR}/delegates/htmlItemDelegate.h
@@ -734,15 +738,8 @@ itom_add_source_group(textdiff)
 #end add filters to visual studio
 
 
-#Find ITOM_VERION version by looking at global.h
-file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/global.h ITOM_VERSIONS_TMP REGEX "^#define ITOM_VERSION_[A-Z]+[ \t]+0x[0-9A-F]+$")
-string(REGEX REPLACE ".*#define ITOM_VERSION_MAJOR[ \t]+(0x[0-9A-F]+).*" "\\1" ITOM_VERSION_MAJOR ${ITOM_VERSIONS_TMP})
-string(REGEX REPLACE ".*#define ITOM_VERSION_MINOR[ \t]+(0x[0-9A-F]+).*" "\\1" ITOM_VERSION_MINOR ${ITOM_VERSIONS_TMP})
-string(REGEX REPLACE ".*#define ITOM_VERSION_PATCH[ \t]+(0x[0-9A-F]+).*" "\\1" ITOM_VERSION_PATCH ${ITOM_VERSIONS_TMP})
-#set(ITOM_VERSION_STRING ${ITOM_VERSION_MAJOR}.${ITOM_VERSION_MINOR}.${ITOM_VERSION_PATCH} CACHE STRING "" FORCE)
-
-file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/global.h ITOM_VERSIONS_TMP REGEX "^#define ITOM_VERSION_STR[ \t]+.*$")
-string(REGEX REPLACE ".*#define ITOM_VERSION_STR[ \t]+.([0-9\\.]+).*" "\\1" ITOM_VERSION_STRING ${ITOM_VERSIONS_TMP})
+#Define Version in global.h
+configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/global.h.in ${CMAKE_CURRENT_BINARY_DIR}/global.h)
 
 if(APPLE)
     # Set meta data for OS X bundle
@@ -1048,7 +1045,6 @@ endif()
 if(MSVC)
     message(STATUS "Using rc-File for version information under windows")
     configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/version.rc.in ${CMAKE_CURRENT_BINARY_DIR}/version.rc )
-
 endif()
 
 # Copying scripts for OS X build process
