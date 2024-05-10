@@ -103,7 +103,7 @@ compile_datetime = itomVersionInfo["itom_compileDate"]  # Jun  5 2020, 08:13:57
 comma_index = compile_datetime.index(",")
 compile_year = compile_datetime[comma_index - 4 : comma_index]
 copyright = (
-    f"2011-{compile_year}, Institut fuer Technische Optik (ITO), "
+    f"2011-{compile_year}, Institut für Technische Optik (ITO), "
     "University Stuttgart. Bug report: https://github.com/itom-project/itom/issues"
 )
 
@@ -283,7 +283,7 @@ latex_documents = [
         "index",
         "itom_doc.tex",
         "itom Documentation",
-        "Institut fuer Technische Optik (ITO), University Stuttgart",
+        "Institut für Technische Optik (ITO), University Stuttgart",
         "manual",
     ),
     # script-language: FEHLER
@@ -307,8 +307,8 @@ latex_documents = [
 ]
 
 # latex_documents = [
-#  ('index', 'itom_doc.tex', u'ITOM Documentation', u'Institut fuer Technische Optik (ITO), Universitaet Stuttgart', 'manual'),
-#  ('plugins/plugins', 'plugins.tex', u'ITOM Documentation', u'Institut fuer Technische Optik (ITO), Universitaet Stuttgart', 'manual'),
+#  ('index', 'itom_doc.tex', u'ITOM Documentation', u'Institut für Technische Optik (ITO), Universitaet Stuttgart', 'manual'),
+#  ('plugins/plugins', 'plugins.tex', u'ITOM Documentation', u'Institut für Technische Optik (ITO), Universitaet Stuttgart', 'manual'),
 #  ('getting-started/getting-started', 'getting-started.tex', u'ITOM Documentation', u'Institut für Technische Optik (ITO), Universitaet Stuttgart', 'manual'),
 # ]
 
@@ -345,7 +345,7 @@ man_pages = [
         "index",
         "itom",
         "itom Documentation",
-        ["Institut fuer Technische Optik (ITO), Universitaet Stuttgart"],
+        ["Institut für Technische Optik (ITO), Universitaet Stuttgart"],
         1,
     )
 ]

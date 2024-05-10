@@ -55,7 +55,7 @@ to :ref:`gettingStarted`.
 About us
 **************
 
-| Institut fuer Technische Optik
+| Institut für Technische Optik
 | Universitaet Stuttgart
 | Pfaffenwaldring 9
 | 70569 Stuttgart
