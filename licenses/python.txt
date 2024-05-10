@@ -467,7 +467,7 @@ bzip2/libbzip2 version 1.0.6 of 6 September 2010
  */
 
 
-This software is copyrighted by the Regents of the Universität
+This software is copyrighted by the Regents of the University of
 California, Sun Microsystems, Inc., Scriptics Corporation, ActiveState
 Corporation and other parties.  The following terms apply to all files
 associated with the software unless explicitly disclaimed in
@@ -508,7 +508,7 @@ authors grant the U.S. Government and others acting in its behalf
 permission to use and distribute the software in accordance with the
 terms specified in this license.
 
-This software is copyrighted by the Regents of the Universität
+This software is copyrighted by the Regents of the University of
 California, Sun Microsystems, Inc., Scriptics Corporation, ActiveState
 Corporation, Apple Inc. and other parties.  The following terms apply to
 all files associated with the software unless explicitly disclaimed in
@@ -595,7 +595,7 @@ terms specified in this license.
 ----------------------------------------------------------------------
 
 Parts of this software are based on the Tcl/Tk software copyrighted by
-the Regents of the Universität California, Sun Microsystems, Inc.,
+the Regents of the University of California, Sun Microsystems, Inc.,
 and other parties. The original license terms of the Tcl/Tk software
 distribution is included in the file docs/license.tcltk.
 

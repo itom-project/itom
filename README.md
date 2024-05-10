@@ -60,7 +60,7 @@ All plugins and designer-plugins that can be integrated into itom can have their
 
 > [Institut für Technische Optik](http://www.uni-stuttgart.de/ito)
 
-> Universität Stuttgart
+> University of Stuttgart
 
 > Stuttgart
 

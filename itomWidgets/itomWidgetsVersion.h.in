@@ -30,6 +30,6 @@
 #define ITOM_WIDGETS_VERSION_PATCH 2
 #define ITOM_WIDGETS_VERSION_REVISION 0
 #define ITOM_WIDGETS_VERSION_STRING "1.15.2.0"
-#define ITOM_WIDGETS_COMPANY        "Institut für Technische Optik, Universität Stuttgart"
-#define ITOM_WIDGETS_COPYRIGHT      "(C) 2024, ITO, Universität Stuttgart"
+#define ITOM_WIDGETS_COMPANY        "Institut für Technische Optik, University of Stuttgart"
+#define ITOM_WIDGETS_COPYRIGHT      "(C) 2024, ITO, University of Stuttgart"
 #define ITOM_WIDGETS_NAME           "itomWidgets"
