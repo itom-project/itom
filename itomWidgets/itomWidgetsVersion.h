@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2024, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2024, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
 
@@ -30,6 +30,6 @@
 #define ITOM_WIDGETS_VERSION_PATCH 2
 #define ITOM_WIDGETS_VERSION_REVISION 0
 #define ITOM_WIDGETS_VERSION_STRING "1.15.2.0"
-#define ITOM_WIDGETS_COMPANY        "Institut für Technische Optik, University of Stuttgart"
+#define ITOM_WIDGETS_COMPANY        "Institut fuer Technische Optik, University of Stuttgart"
 #define ITOM_WIDGETS_COPYRIGHT      "(C) 2024, ITO, University of Stuttgart"
 #define ITOM_WIDGETS_NAME           "itomWidgets"
