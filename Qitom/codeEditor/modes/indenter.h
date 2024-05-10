@@ -58,7 +58,7 @@ It inserts/removes tabulations (a series of spaces defined by the
 tabLength settings) at the cursor position if there is no selection,
 otherwise it fully indents/un-indents selected lines.
 
-To trigger an indentation/un-indentation programatically, you must emit
+To trigger an indentation/un-indentation programmatically, you must emit
 :attr:`pyqode.core.api.CodeEdit.indent_requested` or
 :attr:`pyqode.core.api.CodeEdit.unindent_requested`.
 */

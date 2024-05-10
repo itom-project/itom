@@ -71,7 +71,7 @@ namespace ito {
         :param line: The message line number
         :param col: The message start column (at the moment the message ends at
         the end of the line).
-        :param icon: Unused, we keep it for backward compatiblity.
+        :param icon: Unused, we keep it for backward compatibility.
         :param color: Text decoration color
         :param path: file path. Optional
         */

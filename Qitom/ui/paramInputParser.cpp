@@ -98,7 +98,7 @@ ito::RetVal ParamInputParser::createInputMask(const QVector<ito::Param>& params)
         }
         else
         {
-            // try to split string into parts of around 120 characters and replace separatring
+            // try to split string into parts of around 120 characters and replace separating
             // spaces by \n to have a multi-line tool tip text
             int l = 119;
             while (l < info.length())

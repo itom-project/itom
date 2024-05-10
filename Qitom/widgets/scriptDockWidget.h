@@ -89,7 +89,7 @@ public:
     inline bool isTabIndexValid(int tabIndex) const
     {
         return (tabIndex >= 0 && tabIndex < m_tab->count());
-    } /*!<  checks wether given tab-index is valid (true) or not (false) */
+    } /*!<  checks whether given tab-index is valid (true) or not (false) */
     inline int getTabCount() const
     {
         return m_tab->count();

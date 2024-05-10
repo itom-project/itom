@@ -364,7 +364,7 @@ set(itomWidgets_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogHeatmapConfiguration.cpp
 )
 
-#If you want to use automatical metadata for dlls under windows use the following if-case.
+#If you want to use automatically metadata for dlls under windows use the following if-case.
 if(MSVC)
     list(APPEND itomWidgets_SOURCES version.rc)
 endif()

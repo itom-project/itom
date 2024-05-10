@@ -122,7 +122,7 @@ void WidgetPropGeneralLanguage::readSettings()
     QString lang = settings.value("language", "en").toString();
     QLocale loc(lang);
 
-    if (loc.language() == QLocale::C) //the language could not be detected, use the default one as selected langauge
+    if (loc.language() == QLocale::C) //the language could not be detected, use the default one as selected language
     {
         loc = QLocale(QLocale::English, QLocale::UnitedStates);
     }
@@ -172,7 +172,7 @@ void WidgetPropGeneralLanguage::writeSettings()
 
     QString locale = ui.comboLocale->currentText();
 
-    if (locale.toLower() == m_operatingSystemLocale)
+    if (locale.compare(m_operatingSystemLocale, Qt::CaseInsensitive) == 0)
     {
         settings.setValue("numberStringConversionStandard", "operatingsystem");
     }
@@ -200,7 +200,7 @@ void WidgetPropGeneralLanguage::on_comboLocale_currentIndexChanged(int index)
         QString itemText = ui.comboLocale->itemText(index);
         QLocale locale;
 
-        if (itemText == m_operatingSystemLocale)
+        if (itemText.compare(m_operatingSystemLocale, Qt::CaseInsensitive) == 0)
         {
             locale = QLocale::system();
         }

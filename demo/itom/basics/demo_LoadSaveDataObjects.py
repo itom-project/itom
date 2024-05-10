@@ -24,7 +24,7 @@ rgba32 = dataObject([100, 100], "rgba32")
 # what means that alpha has to be set to the maximal value of ``255``.
 rgba32[0:100, 0:100] = rgba(150, 150, 150, 255)
 
-"""insert a red, green and blue bar in the picture wich are not complete intransparent"""
+"""insert a red, green and blue bar in the picture which are not complete intransparent"""
 rgba32[10:30, :] = rgba(255, 0, 0, 150)
 rgba32[50:70, :] = rgba(0, 255, 0, 150)
 rgba32[80:100, :] = rgba(0, 0, 255, 150)
@@ -43,7 +43,7 @@ algorithms.loadAnyImage(reload_tiff_rgba, "pic_rgba.tiff", "asIs")
 ###############################################################################
 # Save the ``dataObject`` as a `*.tiff` file with a rgb color palette,
 # which causes that the transparency of the bars will be ignored.
-# If ``gray`` or ``gray16`` is choosen as color palette the colored
+# If ``gray`` or ``gray16`` is chosen as color palette the colored
 # ``dataObject`` will be converted to a gray image
 algorithms.saveTiff(rgba32, "pic_rgb.tiff", "rgb")
 
@@ -55,7 +55,7 @@ algorithms.loadAnyImage(reload_tiff_rgb, "pic_rgb.tiff", "asIs")
 
 ###############################################################################
 # Save the ``dataObject`` as a `*.png` file with a ``gray`` color palette
-# (also ``gray16`` and all colored palettes are supportted).
+# (also ``gray16`` and all colored palettes are supported).
 algorithms.savePNG(rgba32, "pic_gray.png", "gray")
 
 ###############################################################################

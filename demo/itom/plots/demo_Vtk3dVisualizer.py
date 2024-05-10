@@ -51,7 +51,9 @@ h.call("setItemProperty", "source_mesh", "ColorMap", "viridis")
 ###############################################################################
 # A cylinder is added to the canvas. The axis of symmetry is given by a start point and an orientation vector.
 # The length of the orientation vector defines the height of the cylinder, its radius is given by the third parameter.
-h.call("addCylinder", (10, 0, 0), (0, 0, 5), 0.5, "cylinder")  # arguments: point, orientation, radius, name
+h.call(
+    "addCylinder", (10, 0, 0), (0, 0, 5), 0.5, "cylinder"
+)  # arguments: point, orientation, radius, name
 h.call("setItemProperty", "cylinder", "Representation", "Surface")
 h.call("setItemProperty", "cylinder", "LineColor", "#808000")
 h.call("setItemProperty", "cylinder", "Lighting", True)

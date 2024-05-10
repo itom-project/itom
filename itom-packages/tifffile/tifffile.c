@@ -155,7 +155,7 @@ unsigned char bitmask(const int itemsize) {
     return result << (8 - itemsize);
 }
 
-/** Unpack sequence of tigthly packed 1-32 bit integers.
+/** Unpack sequence of tightly packed 1-32 bit integers.
 
 Native byte order will be returned.
 

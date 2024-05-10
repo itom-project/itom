@@ -5,17 +5,16 @@ import warnings
 
 try:
     from typing import Literal  # only available from Python 3.8 on
+
     hasLiteral = True
 except ImportError:
     hasLiteral = False
 
 
 class ItomStubsGenTest(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         pass
-
 
     def test_nptypehints2typing(self):
         """Test the conversion from numpydoc-types to typing type hints."""
@@ -27,7 +26,8 @@ class ItomStubsGenTest(unittest.TestCase):
             "dataObject": "dataObject",
             "float": "float",
             "np.ndarray": "np.ndarray",
-            "None": "None"}
+            "None": "None",
+        }
 
         newValues = {}
 
@@ -45,38 +45,41 @@ class ItomStubsGenTest(unittest.TestCase):
             for nestItem in ["List", "Tuple", "Sequence"]:
                 s = nestItem.lower()
                 val = singleTypes[key]
-                nestedTypes["%s of %s" % (s, key)] = "%s[%s]" % (nestItem, val)
-                nestedTypes[":obj:`%s` of %s" % (s, key)] = "%s[%s]" % (nestItem, val)
-                nestedTypes[":py:obj:`%s` of %s" % (s, key)] = \
-                    "%s[%s]" % (nestItem, val)
-                nestedTypes[":py:class:`%s` of %s" % (s, key)] = \
-                    "%s[%s]" % (nestItem, val)
+                nestedTypes[f"{s} of {key}"] = f"{nestItem}[{val}]"
+                nestedTypes[f":obj:`{s}` of {key}"] = "{}[{}]".format(
+                    nestItem, val
+                )
+                nestedTypes[f":py:obj:`{s}` of {key}"] = "{}[{}]".format(
+                    nestItem, val
+                )
+                nestedTypes[f":py:class:`{s}` of {key}"] = "{}[{}]".format(
+                    nestItem, val
+                )
 
         conversions = singleTypes
         conversions.update(nestedTypes)
 
-        conversions["list of int or sequence of :class:`itom.dataObject`"] = \
+        conversions["list of int or sequence of :class:`itom.dataObject`"] = (
             "Union[List[int], Sequence[itom.dataObject]]"
+        )
         conversions["int or None"] = "Optional[int]"
         conversions["float or None or int"] = "Optional[Union[float, int]]"
 
         if hasLiteral:
             conversions["{4}"] = "Literal[4]"
             conversions["{'test', 'fox'}"] = "Literal['test', 'fox']"
-            conversions["{2, 3, 4} or int"] ="Union[Literal[2, 3, 4], int]"
+            conversions["{2, 3, 4} or int"] = "Union[Literal[2, 3, 4], int]"
         else:
             conversions["{4}"] = "Any"
             conversions["{'test', 'fox'}"] = "Any"
-            conversions["{2, 3, 4} or int"] ="Union[Any, int]"
+            conversions["{2, 3, 4} or int"] = "Union[Any, int]"
 
         for key in conversions:
             self.assertEqual(isg._nptype2typing(key), conversions[key])
 
-
     def test_parse_numpydoc_section(self):
         """Test the parser for the parameters, returns or yields section."""
-        docstring1 = \
-"""Returns device information for each spectrometer that is connected.
+        docstring1 = """Returns device information for each spectrometer that is connected.
 
 Parameters
 ----------
@@ -98,8 +101,7 @@ Returns
     The information about the devices.
 """
 
-        docstring2 = \
-"""Exceptions are documented in the same way as classes.
+        docstring2 = """Exceptions are documented in the same way as classes.
 
 The __init__ method may be documented in either the class level
 docstring, or as a docstring on the __init__ method itself.
@@ -136,8 +138,7 @@ bytes
     True if successful, False otherwise.
 """
 
-        docstring3 = \
-"""This is an example of a module level function.
+        docstring3 = """This is an example of a module level function.
 
 Function parameters should be documented in the ``Parameters`` section.
 The name of each parameter is required. The type and description of each
@@ -196,8 +197,7 @@ ValueError
 
 """
 
-        docstring4 = \
-        """This is an example of a module level function.
+        docstring4 = """This is an example of a module level function.
 
 Parameters
 ----------
@@ -205,8 +205,7 @@ param1 : sequence of int or iterable of int, optional
     The first parameter.
 """
 
-        docstring5 = \
-        """This is an errorneous docstring.
+        docstring5 = """This is an erroneous docstring.
 
 Parameters
 ----------
@@ -221,27 +220,26 @@ param1 : sequence of int, iterable of int, optional
         # Yields section in docstring2
         res = isg._parse_npdoc_argsection(docstring2, "Yields")
         self.assertEqual(len(res), 1)
-        self.assertEqual(res[0].dtype, 'bytes')
-        self.assertEqual(res[0].name, '')
+        self.assertEqual(res[0].dtype, "bytes")
+        self.assertEqual(res[0].name, "")
 
         # no Yields section in docstring3
         res = isg._parse_npdoc_argsection(docstring3, "Yields")
         self.assertIsNone(res)
 
-        self.assertEqual(isg._get_rettype_from_npdocstring(docstring1),
-                         "List[.AvsIdentityType]")
+        self.assertEqual(
+            isg._get_rettype_from_npdocstring(docstring1), "List[.AvsIdentityType]"
+        )
 
-        self.assertEqual(isg._get_rettype_from_npdocstring(docstring2),
-                         "bool")
+        self.assertEqual(isg._get_rettype_from_npdocstring(docstring2), "bool")
 
-        self.assertEqual(isg._get_rettype_from_npdocstring(docstring3),
-                         "bool")
+        self.assertEqual(isg._get_rettype_from_npdocstring(docstring3), "bool")
 
         res = isg._get_parameters_from_npdocstring(docstring3)
         self.assertEqual(len(res), 4)
-        self.assertEqual(res[0].dtype, 'int')
+        self.assertEqual(res[0].dtype, "int")
         self.assertEqual(res[0].optional, False)
-        self.assertEqual(res[1].dtype, 'str')
+        self.assertEqual(res[1].dtype, "str")
         self.assertEqual(res[1].optional, True)
         self.assertIsNone(res[2].dtype)
         self.assertEqual(res[2].name, "*args")
@@ -265,7 +263,6 @@ param1 : sequence of int, iterable of int, optional
             self.assertTrue(issubclass(w[-1].category, RuntimeWarning))
 
     def test_property_parser(self):
-
         class Test:
             @property
             def demo(self):
@@ -276,8 +273,7 @@ param1 : sequence of int, iterable of int, optional
 
         text = isg._parse_property_docstring(Test.demo, 4)
 
-        text2 = \
-"""    @property
+        text2 = """    @property
     def demo(self) -> Optional[List[int]]:
         \"\"\"
         Returns the bounding rectangle of.
@@ -293,7 +289,6 @@ param1 : sequence of int, iterable of int, optional
             self.assertEqual(t.strip(), t2.strip())
 
     def test_get_direct_members(self):
-
         # some demo classes
         class A:
             def __init__(self):
@@ -387,8 +382,9 @@ int
     value without name
 """
         for args in [
-                isg._parse_npdoc_argsection(demo2, "Parameters"),
-                isg._get_parameters_from_npdocstring(demo2)]:
+            isg._parse_npdoc_argsection(demo2, "Parameters"),
+            isg._get_parameters_from_npdocstring(demo2),
+        ]:
             self.assertEqual(len(args), 4)
 
             # arg 1
@@ -426,7 +422,6 @@ int
         self.assertFalse(args[1].optional)
 
     def test_parse_signature_from_first_line(self):
-
         class Demo:
             def meth1(self):
                 """this method does nothing"""
@@ -485,7 +480,6 @@ int
             self.assertEqual(sig.rettype, "int")
 
     def test_parse_property_docstring(self):
-
         class Demo:
             @property
             def prop1(self):
@@ -510,7 +504,10 @@ int
             self.assertEqual(text1, "@property\ndef prop1(self):\n    pass")
 
         text2 = isg._parse_property_docstring(Demo.prop2, 4)
-        self.assertEqual(text2, "    @property\n    def prop2(self) -> int:\n        \"\"\"text of property.\"\"\"\n        pass")
+        self.assertEqual(
+            text2,
+            '    @property\n    def prop2(self) -> int:\n        """text of property."""\n        pass',
+        )
 
         with warnings.catch_warnings(record=True) as w:
             # Cause all warnings to always be triggered.
@@ -520,7 +517,10 @@ int
             # Verify some things
             self.assertEqual(len(w), 1)
             self.assertTrue(issubclass(w[-1].category, RuntimeWarning))
-            self.assertEqual(text3, "@property\ndef prop3(self):\n    \"\"\"text of property.\"\"\"\n    pass")
+            self.assertEqual(
+                text3,
+                '@property\ndef prop3(self):\n    """text of property."""\n    pass',
+            )
 
     def test_parse_args_string(self):
         args = isg._parse_args_string("a, b = None, c = Optional[Union[int, float]]")
@@ -546,5 +546,5 @@ int
         self.assertEqual(args[2].default, "Optional[Union[int, float]]")
 
 
-if __name__ == '__main__':
-    unittest.main(module='itom_stubs_generator', exit=False)
+if __name__ == "__main__":
+    unittest.main(module="itom_stubs_generator", exit=False)

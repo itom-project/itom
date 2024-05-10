@@ -29,7 +29,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR} ${ITOM_SD
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 #################################################################
-# Input elements for CMake GUI (Checkboxes, Pathes, Strings...)
+# Input elements for CMake GUI (Checkboxes, Paths, Strings...)
 #################################################################
 # BUILD_TARGET64 is set according to bitage of selected compiler
 # You may select loaded libraries(32 vs 64 bit) according to the Value of this
@@ -58,10 +58,10 @@ option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to 
 find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
 #find_package(OpenCV COMPONENTS core REQUIRED) #if you require openCV indicate all components that are required (e.g. core, imgproc...),
 #       if the dataobject is included in the ITOM_SDK components, the OpenCV core component is detected there and the necessary include
-#       directories and libraries to link agains are contained in ITOM_SDK_LIBRARIES and ITOM_SDK_INCLUDE_DIRS
+#       directories and libraries to link against are contained in ITOM_SDK_LIBRARIES and ITOM_SDK_INCLUDE_DIRS
 
 #################################################################
-# Add Additional Scipts
+# Add Additional Scripts
 #   add here include commands for searching for adding
 #    useful scripts
 #################################################################
@@ -120,7 +120,7 @@ include_directories(
 # Hint: libraries detected using FIND_PACKAGE usually provide
 #  all necessary libraries in a specific variable (e.g.
 #  ${OpenCV_LIBS} or ${ITOM_SDK_LIBRARIES}). These variables
-#  already contain absolute pathes, therefore no link directory
+#  already contain absolute paths, therefore no link directory
 #  needs to be set for them. Simply add these variables to
 #  the link target command below.
 #################################################################
@@ -135,7 +135,7 @@ link_directories(
 # Add all source (cpp,...) files to the PLUGIN_SOURCES list.
 # Add all ui-files (Qt-Designer layouts) to the PLUGIN_UI list.
 #
-# Use absolute pathes, e.g. using one of the following variables:
+# Use absolute paths, e.g. using one of the following variables:
 #
 # ${ITOM_SDK_INCLUDE_DIR} is the include directory of itom SDK
 # ${CMAKE_CURRENT_SOURCE_DIR} is the source directory of this plugin
@@ -148,7 +148,7 @@ set(PLUGIN_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetMyActuator.h
     ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h
     ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h #provided by the init script, contains currently checked out git tag
-    #add further header files (absolute pathes e.g. using CMAKE_CURRENT_SOURCE_DIR)
+    #add further header files (absolute paths e.g. using CMAKE_CURRENT_SOURCE_DIR)
 )
 
 set(PLUGIN_SOURCES
@@ -173,7 +173,7 @@ set(PLUGIN_UI
 )
 
 set(PLUGIN_RCC
-    #add absolute pathes to any *.qrc resource files here
+    #add absolute paths to any *.qrc resource files here
 )
 
 
@@ -266,7 +266,7 @@ itom_configure_plugin_documentation(${target_name} myGrabber)
 #
 # itom is able to force a post-build process that copies
 # different files, like the currently created library, to
-# other destination pathes. This is done in this section.
+# other destination paths. This is done in this section.
 # At first pairs of sources and destinations are added
 # to the lists COPY_SOURCES and COPY_DESTINATIONS.
 # Afterwards, the post-build process is generated using

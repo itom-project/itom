@@ -1,4 +1,4 @@
-""" Linear Algebra Helper Routines """
+"""Linear Algebra Helper Routines"""
 
 __docformat__ = "restructuredtext en"
 
@@ -321,7 +321,7 @@ def approximate_spectral_radius(A, tol=0.1, maxiter=10, symmetric=None):
 
 
 def condest(A, tol=0.1, maxiter=25, symmetric=False):
-    """Estimates the condition number of A
+    r"""Estimates the condition number of A
 
     Parameters
     ----------
@@ -406,7 +406,7 @@ def cond(A):
 
 
 def issymm(A, fast_check=True, tol=1e-6):
-    """Returns 0 if A is Hermitian symmetric to within tol
+    r"""Returns 0 if A is Hermitian symmetric to within tol
 
     Parameters
     ----------

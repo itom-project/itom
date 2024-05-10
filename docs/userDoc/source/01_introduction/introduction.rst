@@ -76,7 +76,7 @@ The core components and the main application of |itom| are covered by the
 **GNU Library General Public Licence** (GNU LGPL). All components belonging to
 the SDK of |itom| (e.g. *dataObject*, *pointCloud*, *addInInterface*,...) are
 additionally covered by an **itom exception**. The main idea of this exception is
-to allow other libraries (e.g. plugins) to include and link agains components
+to allow other libraries (e.g. plugins) to include and link against components
 of |itom| SDK independent on the specific license model of the respective "other" library.
 All files belonging to the |itom| SDK are included in the folder **SDK** that
 is shipped with any setup or included in the build directory (when build from sources).

@@ -224,7 +224,7 @@ void PyWorkspaceContainer::loadDictionaryRec(
     QString fullName;
     char keyType[] = {0, 0};
 
-    // at first, set status of all childs of parentItem to "not-existing"
+    // at first, set status of all children of parentItem to "not-existing"
     it = parentItem->m_childs.begin();
 
     while (it != parentItem->m_childs.end())

@@ -1,4 +1,3 @@
-# coding=iso-8859-15
 from itomUi import ItomUi
 from itom import dataObject, ui, filter
 import inspect
@@ -35,7 +34,7 @@ class ProfileRoughness(ItomUi):
 
     def loadItem(self, dataObj: dataObject):
         possibleTypes = ["int8", "int16", "int32", "float32", "float64"]
-        possibleUnits = ["µm", "mm", "nm"]
+        possibleUnits = ["Âµm", "mm", "nm"]
         if not type(dataObj) is dataObject:
             ui.msgWarning(
                 "wrong type",
@@ -63,7 +62,7 @@ class ProfileRoughness(ItomUi):
         ):
             ui.msgWarning(
                 "wrong unit",
-                "Value and horizontal axis unit must be nm, µm or mm",
+                "Value and horizontal axis unit must be nm, Âµm or mm",
                 parent=self.gui,
             )
         else:
@@ -195,7 +194,7 @@ class ProfileRoughness(ItomUi):
                         ui.msgCritical("Roughness", str(ex))
                         break
                     if w:
-                        warns.append("%s: %s" % (param, w[-1].message))
+                        warns.append(f"{param}: {w[-1].message}")
 
                 result[c, 0] = temp[0]
                 result[c, 1] = temp[1]

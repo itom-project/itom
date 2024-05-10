@@ -1,14 +1,13 @@
 """
 Render to itom (qt) from agg
 """
-from matplotlib.transforms import Bbox
-
-from matplotlib import cbook
-from matplotlib.backends.backend_agg import FigureCanvasAgg
-from .backend_itom_v3_6 import FigureCanvasItom, _BackendItom
 
 import itom
 import numpy as np  # for color channel conversion in copy to clipboard
+from matplotlib.backends.backend_agg import FigureCanvasAgg
+from matplotlib.transforms import Bbox
+
+from .backend_itom_v3_6 import FigureCanvasItom, _BackendItom
 
 DEBUG = False
 
@@ -69,12 +68,10 @@ class FigureCanvasItomAgg(FigureCanvasItom, FigureCanvasAgg):
 
         # <-- itom specific start
         reg = self.copy_from_bbox(bbox)
-        buf = (
-            reg.to_string_argb()
-        )  # this is faster than the Qt-original version cbook._unmultiplied_rgba8888_to_premultiplied_argb32...
+        buf = reg.to_string_argb()  # this is faster than the Qt-original version cbook._unmultiplied_rgba8888_to_premultiplied_argb32...
         W = round(w)
         H = round(h)
-        # workaround sometimes the width and hight does not fit to the buf length, leding to a crash of itom.
+        # workaround sometimes the width and height does not fit to the buf length, leding to a crash of itom.
         # If the length is a multiple of either the width or the length we readjust them.
         if not int(W * H * 4) == len(buf):
             numberElements = len(buf) / 4
@@ -147,8 +144,7 @@ class FigureCanvasItomAgg(FigureCanvasItom, FigureCanvasAgg):
         self.figure.set_canvas(self)
 
     def blit(self, bbox=None):
-        """Blit the region in bbox.
-        """
+        """Blit the region in bbox."""
         if DEBUG:
             print("blit:", str(bbox))
         # If bbox is None, blit the entire canvas. Otherwise
@@ -157,8 +153,7 @@ class FigureCanvasItomAgg(FigureCanvasItom, FigureCanvasAgg):
             bbox = self.figure.bbox
 
         # repaint uses logical pixels, not physical pixels like the renderer.
-        dpi_ratio = self._dpi_ratio
-        x0, y0, w, h = [pt / dpi_ratio for pt in bbox.extents]
+        x0, y0, w, h = (pt for pt in bbox.extents)
 
         self.paintEvent((x0, y0, w, h))
 
@@ -171,7 +166,7 @@ class FigureCanvasItomAgg(FigureCanvasItom, FigureCanvasAgg):
         self.do_not_resize_window = True
         # itom specific end -->
 
-        super(FigureCanvasItomAgg, self).print_figure(*args, **kwargs)
+        super().print_figure(*args, **kwargs)
 
         # <-- itom specific start
         self.do_not_resize_window = False

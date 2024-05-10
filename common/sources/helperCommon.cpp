@@ -332,7 +332,7 @@ ito::RetVal getParamValue(
             retValue = ito::RetVal::format(
                 ito::retError,
                 0,
-                QObject::tr("the parameter name '%1' is invald").arg(key).toLatin1().data());
+                QObject::tr("the parameter name '%1' is invalid").arg(key).toLatin1().data());
         }
         else
         {

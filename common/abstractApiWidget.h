@@ -71,8 +71,8 @@ public:
 protected:
     virtual RetVal init() { return retOk; } //this method is called from after construction and after that the api pointers have been transmitted
 
-    virtual void importItomApi(void** apiPtr) = 0;      /*!< function to provide access to the itom API functions. this methods are implemented in the plugin itsself. Therefore put the macro WIDGET_ITOM_API before the public section in the widget class. */
-    virtual void importItomApiGraph(void** apiPtr) = 0; /*!< function to provide access to the itom API functions. this methods are implemented in the plugin itsself. Therefore put the macro WIDGET_ITOM_API before the public section in the widget class. */
+    virtual void importItomApi(void** apiPtr) = 0;      /*!< function to provide access to the itom API functions. this methods are implemented in the plugin itself. Therefore put the macro WIDGET_ITOM_API before the public section in the widget class. */
+    virtual void importItomApiGraph(void** apiPtr) = 0; /*!< function to provide access to the itom API functions. this methods are implemented in the plugin itself. Therefore put the macro WIDGET_ITOM_API before the public section in the widget class. */
 
     void **m_apiFunctionsGraphBasePtr;
     void **m_apiFunctionsBasePtr;

@@ -11,6 +11,7 @@ Most functions used in this example are based on special methods
 of the form layout (Qt class: ``QFormLayout``), that are made accessible
 in itom via the ``uiItem.call('methodName', *args)`` method.
 """
+
 from itomUi import ItomUi
 from itom import ui
 from itom import uiItem
@@ -81,7 +82,6 @@ class DynamicFormLayout(ItomUi):
 
     @ItomUi.autoslot("")
     def on_btnSetWidget_clicked(self):
-
         rowIndex = self.gui.spinAddRowIndex["value"]
 
         # 0: modify label, 1: modify field, 2: widget spans both columns
@@ -89,7 +89,9 @@ class DynamicFormLayout(ItomUi):
 
         className = self.gui.comboAddWidget["currentText"]
 
-        self.layout.call("setItem", rowIndex, role, className, f"item_{rowIndex}_{role}")
+        self.layout.call(
+            "setItem", rowIndex, role, className, f"item_{rowIndex}_{role}"
+        )
         self._update()
 
     @ItomUi.autoslot("")
@@ -109,7 +111,6 @@ class DynamicFormLayout(ItomUi):
 
     @ItomUi.autoslot("")
     def on_btnInfo_clicked(self):
-
         items = []
         label: uiItem
         field: uiItem

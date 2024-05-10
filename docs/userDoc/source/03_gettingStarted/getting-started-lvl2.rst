@@ -228,7 +228,7 @@ are needed to instantiate one camera (the same holds for motors). If you remembe
 connection to the motor above, these parameters have been added to the dialog for the
 motor's initialization. In case of the camera, there are up to three optional parameters.
 The first two describe the virtual chip size of the camera, the third one is the desired
-bit depth, whose default ist 8 bit.
+bit depth, whose default is 8 bit.
 
 In order to create an instance of the camera, we create an object of the Python class
 :py:class:`~itom.dataIO`, which is part of the module :py:mod:`itom`. Since this module

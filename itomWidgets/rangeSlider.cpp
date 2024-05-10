@@ -173,7 +173,7 @@ RangeSliderPrivate::Handle RangeSliderPrivate::handleAtPos(const QPoint& pos, QR
   QStyleOptionSlider option;
   q->initStyleOption( &option );
 
-  // The functinos hitTestComplexControl only know about 1 handle. As we have
+  // The functions hitTestComplexControl only know about 1 handle. As we have
   // 2, we change the position of the handle and test if the pos correspond to
   // any of the 2 positions.
 

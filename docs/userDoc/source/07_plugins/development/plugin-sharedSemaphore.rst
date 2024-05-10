@@ -21,7 +21,7 @@ In |itom| different main components are executed in different threads.
 
 In |itom|, the following components run into a different thread:
 
-1. Main programm including all graphical user interface components (this is a restricting of windows operating systems). This thread is called "main thread".
+1. Main program including all graphical user interface components (this is a restricting of windows operating systems). This thread is called "main thread".
 2. Python scripting engine. All python scripts are executed in a second thread. Therefore you should not directly use any 3rd-party python modules which open any graphical user interface (like *PyQt*, *tkInter* ...).
 3. Every *DataIO* or *Actuator*-plugin is executed in its own thread. Every algorithm is executed in the thread of the calling instance (e.g. main thread or python thread). All widgets provided by any *Algo*-plugin are always executed in the *main thread* (see restricting of point 1).
 
@@ -34,17 +34,17 @@ In |itom|, the following components run into a different thread:
 
     Figure: Scheme of a communication between |itom| (main thread) and any plugin-method (plugin is running in another thread)
 
-In figure :ref:`plugin-sharedSemaphore-scheme`, a common communcation between a method **mainfunc** which is executed in |itom|'s main thread (e.g. in *AddInManager* and another method **func1** of a plugin is depicted. The plugin is of type *actuator* or *dataIO* and therefore runs in its own thread. **mainfunc** is calling the method **func1**. Usually the calling method has to wait until the called method (**func1**) has been finished (or until the most important parts of **func1** have been executed). In order to consider cases where the plugin-method is not answering within a certain timeout, |itom| has integrated a mechanism such that the waiting-process in the main-function can be stopped after that the timeout time expired. This mechanism is realized by the class **ItomSharedSemaphore**, which is definined in the file *sharedStructuresQt.h* (folder *common*).
+In figure :ref:`plugin-sharedSemaphore-scheme`, a common communication between a method **mainfunc** which is executed in |itom|'s main thread (e.g. in *AddInManager* and another method **func1** of a plugin is depicted. The plugin is of type *actuator* or *dataIO* and therefore runs in its own thread. **mainfunc** is calling the method **func1**. Usually the calling method has to wait until the called method (**func1**) has been finished (or until the most important parts of **func1** have been executed). In order to consider cases where the plugin-method is not answering within a certain timeout, |itom| has integrated a mechanism such that the waiting-process in the main-function can be stopped after that the timeout time expired. This mechanism is realized by the class **ItomSharedSemaphore**, which is defined in the file *sharedStructuresQt.h* (folder *common*).
 
 **ItomSharedSemaphore** consists of the following elements:
 
 .. c:member:: QSemaphore *m_pSemaphore
 
-    ItomSharedSemaphore internally contains an instance of *QSemaphore*, the platform independent semaphore provided by |Qt|. A semaphore can been considered as set of *gaming piece*. Any method executed within different threads can take one or more *gaming pieces* from the common semaphore. If there are not enough *gaming piece* in the storage, the method has to wait until the necessary number of *gaming pieces* become available. Any method which exits some "critical sections" in the code release their previously picked *gaming pieces*, such that other instances can repick them. In most cases in the communcation between |itom| and a plugin-method, the semaphore contains one *gaming piece*, since only two partners are participating in the communication: the method in the main thread and the called method in the plugin-thread. The method in the plugin-thread is picking the *gaming piece* and the calling method has to wait until the *gaming piece* gets back to the storage of the semaphore. This is achieved by *releasing* the *gaming piece* in the called method.
+    ItomSharedSemaphore internally contains an instance of *QSemaphore*, the platform independent semaphore provided by |Qt|. A semaphore can been considered as set of *gaming piece*. Any method executed within different threads can take one or more *gaming pieces* from the common semaphore. If there are not enough *gaming piece* in the storage, the method has to wait until the necessary number of *gaming pieces* become available. Any method which exits some "critical sections" in the code release their previously picked *gaming pieces*, such that other instances can repick them. In most cases in the communication between |itom| and a plugin-method, the semaphore contains one *gaming piece*, since only two partners are participating in the communication: the method in the main thread and the called method in the plugin-thread. The method in the plugin-thread is picking the *gaming piece* and the calling method has to wait until the *gaming piece* gets back to the storage of the semaphore. This is achieved by *releasing* the *gaming piece* in the called method.
 
 .. c:member:: int m_numOfListeners
 
-    This is the number of participants at a communcation process (without the calling method). Usually only one method is called, therefore this value is usually equal to 1. This value usually is automatically set.
+    This is the number of participants at a communication process (without the calling method). Usually only one method is called, therefore this value is usually equal to 1. This value usually is automatically set.
 
 .. c:member:: int m_instCounter
 
@@ -96,15 +96,15 @@ Scheme of the inter-thread communication
             //timeout occurred
         }
 
-5. Finally all participants at the communcation process (*here*: caller and called method) have to delete the semaphore. Be careful: This can not be done by simply **deleting the pointer to waitCond**. Instead both the caller and the called method have to execute the following command, hence, call the method **deleteSemaphore** of the semaphore pointer:
+5. Finally all participants at the communication process (*here*: caller and called method) have to delete the semaphore. Be careful: This can not be done by simply **deleting the pointer to waitCond**. Instead both the caller and the called method have to execute the following command, hence, call the method **deleteSemaphore** of the semaphore pointer:
 
     .. code-block:: c++
 
         waitCond->deleteSemaphore()
 
-6. After that the last participant at the communcation process deleted the semaphore, it is really deleted by |itom|. Then you don't have access to the semaphore any more, hence, you also don't have access to the internal return value.
+6. After that the last participant at the communication process deleted the semaphore, it is really deleted by |itom|. Then you don't have access to the semaphore any more, hence, you also don't have access to the internal return value.
 
-In order to simplify the process of deleting the semaphore, both the caller and the calling method can also create a variable of type **ItomSharedSemaphoreLocker**, where the pointer to **waitCond** has to be given as constructor-argument. If this variable finally is destroyed, which is automatically done if the method is finished - even after that the *return* command has been executed - it calles the *deleteSemaphore*-method of *ItomSharedSemaphore* with *waitCond* as argument.
+In order to simplify the process of deleting the semaphore, both the caller and the calling method can also create a variable of type **ItomSharedSemaphoreLocker**, where the pointer to **waitCond** has to be given as constructor-argument. If this variable finally is destroyed, which is automatically done if the method is finished - even after that the *return* command has been executed - it calls the *deleteSemaphore*-method of *ItomSharedSemaphore* with *waitCond* as argument.
 
 Then the scheme of the caller is:
 

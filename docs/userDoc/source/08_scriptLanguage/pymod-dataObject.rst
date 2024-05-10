@@ -262,7 +262,7 @@ Any created **dataObject** provides some basic attributes that describe the corr
 * The attribute :py:attr:`~itom.dataObject.ndim` or :py:attr:`~itom.dataObject.dims` return the number of dimensions of the  **dataObject**.
 * The attribute :py:attr:`~itom.dataObject.shape` returns a tuple with the size for every axis. The size of the tuple corresponds to the number of dimensions. Remember, that the order is always (y,x), (z,y,x)...
 * The attribute :py:attr:`~itom.dataObject.dtype` returns a string with the type of the **dataObject** (e.g. uint8, float32 or complex64).
-* The attribute :py:attr:`~itom.dataObject.continuous` returns True if the data block lies continuously in memory or not (False). False is only possible for 3 or higher dimensional dataObjects. Then, the memory of the single planes lies distributed at different locations in the memory allowing to save bigger matrices in the available memory. While a continuous dataObject can share its memory with a numpy array, a non-continuous dataObject has to be converted in the continuous version before being transmitted to a numpy array (this is implicitely done).
+* The attribute :py:attr:`~itom.dataObject.continuous` returns True if the data block lies continuously in memory or not (False). False is only possible for 3 or higher dimensional dataObjects. Then, the memory of the single planes lies distributed at different locations in the memory allowing to save bigger matrices in the available memory. While a continuous dataObject can share its memory with a numpy array, a non-continuous dataObject has to be converted in the continuous version before being transmitted to a numpy array (this is implicitly done).
 
 Examples:
 
@@ -464,7 +464,7 @@ is copied, a shallow copy is possible. However, this is not the case if the type
 While the copy constructor of a *np.array* usually creates a deep copy (default setting), the copy constructor of a dataObject always tries to make a shallow copy if possible.
 
 Usually, all methods of Numpy not only work with *np.arrays* but also with **array-like** objects. These are python objects that provide a specific interface such that Numpy
-can implicitely obtain a Numpy array out of them. This is also what *dataObject* provides. Therefore you can pass every dataObject to a numpy function without a previous conversion to
+can implicitly obtain a Numpy array out of them. This is also what *dataObject* provides. Therefore you can pass every dataObject to a numpy function without a previous conversion to
 a numpy array.
 
 On the other side, |itom| often supports numpy arrays without conversion to dataObject. This is for instance the case for the method :py:meth:`itom.plot`. Only, when passing arrays

@@ -3,6 +3,7 @@
 
 Demo for getting/setting the size and position of a figure.
 """
+
 from itom import figure
 from itom import dataObject
 # sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoFigurePositioning.png'

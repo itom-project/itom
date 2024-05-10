@@ -39,7 +39,7 @@ namespace ito
     //----------------------------------------------------------------------------------------------------------------------------------
     /** constructor
     *
-    *   contructor, creating column headers for the tree view
+    *   constructor, creating column headers for the tree view
     */
     PipManager::PipManager(ito::RetVal &retval, QObject *parent /*= 0*/) :
         QAbstractItemModel(parent),

@@ -76,7 +76,7 @@ namespace ito
             Call this method in getVal(...) in order to get the image from the camera and deeply copy it the the m_image variable.
             This method is equally called from timerEvent.
 
-            \return retOk if copy operation was successfull, else retWarning or retError
+            \return retOk if copy operation was successful, else retWarning or retError
             \sa getVal, timerEvent
         */
         virtual ito::RetVal retrieveData(ito::DataObject *externalDataObject = NULL) = 0;

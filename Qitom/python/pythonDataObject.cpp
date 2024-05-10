@@ -319,7 +319,7 @@ int PythonDataObject::PyDataObject_init(PyDataObject* self, PyObject* args, PyOb
 
                 if (continuous > 0 && self->dataObject->getContinuous() == 0)
                 {
-                    // try to make this object continuous. The continous object cannot share any
+                    // try to make this object continuous. The continuous object cannot share any
                     // memory with any base objects, since it has to be reallocated as independent
                     // object
                     ito::DataObject tempObj = ito::makeContinuous(*(self->dataObject));
@@ -342,7 +342,7 @@ int PythonDataObject::PyDataObject_init(PyDataObject* self, PyObject* args, PyOb
 
     if (!retValue.containsError())
     {
-        // the previous PyArg_ParseTupleAndKeywords returned false ans et an error. Delete this
+        // the previous PyArg_ParseTupleAndKeywords returned false and et an error. Delete this
         // error and try to go on.
         PyErr_Clear();
     }
@@ -374,7 +374,7 @@ int PythonDataObject::PyDataObject_init(PyDataObject* self, PyObject* args, PyOb
 
     if (!retValue.containsError())
     {
-        // the previous PyArg_ParseTupleAndKeywords returned false ans et an error. Delete this
+        // the previous PyArg_ParseTupleAndKeywords returned false and et an error. Delete this
         // error and try to go on.
         PyErr_Clear();
     }
@@ -857,7 +857,7 @@ int PythonDataObject::PyDataObj_CreateFromNpNdArrayAndType(
     {
         PyErr_SetString(
             PyExc_TypeError,
-            "Given numpy array has wrong byteorder (litte endian desired), which cannot be "
+            "Given numpy array has wrong byteorder (little endian desired), which cannot be "
             "transformed to dataObject");
         return -1;
     }
@@ -980,7 +980,7 @@ int PythonDataObject::PyDataObj_CreateFromNpNdArrayAndType(
                 currentStride = npstrides[i];
             }
 
-            // For the returned array, all values are continous in memory.
+            // For the returned array, all values are continuous in memory.
             // Therefore no special strides are required.
             stridesRequired = false;
         }
@@ -1790,7 +1790,7 @@ int PythonDataObject::PyDataObject_setTags(PyDataObject* self, PyObject* value, 
                 }
                 else
                 {
-                    PyErr_SetString(PyExc_TypeError, "tags must be convertable into strings");
+                    PyErr_SetString(PyExc_TypeError, "tags must be convertible into strings");
                     return -1;
                 }
             }
@@ -5963,7 +5963,7 @@ dimensions. This separated storage usually allows allocating more memory for hug
 instance three dimensional matrices. However, in order to generate a dataObject that is \n\
 directly compatible to Numpy or other C-style matrix structures, the entire allocated \n\
 memory must be in one block, that is called continuous. If you create a Numpy array \n\
-from a dataObject that is not continuous, this function is implicitely called in order \n\
+from a dataObject that is not continuous, this function is implicitly called in order \n\
 to firstly make the dataObject continuous before passing to Numpy. \n\
 \n\
 Returns \n\
@@ -6268,7 +6268,7 @@ data than this :class:`dataObject`. \n\
 \n\
 The shape of the returned object corresponds to the parameter ``shape``.  \n\
 If the last two dimensions of ``shape`` and of this object are equal and if the \n\
-data is not continously organized, a shallow copy can be returned, else a deep \n\
+data is not continuously organized, a shallow copy can be returned, else a deep \n\
 copy has to be created. \n\
 \n\
 Tags and the rotation matrix are copied. The axis tags are only copied for all axes \n\
@@ -7667,7 +7667,7 @@ PyObject* PythonDataObject::PyDataObj_mappingGetElem(PyDataObject* self, PyObjec
 
                 if (!overflow &&
                     (temp1 >= 0 &&
-                     temp1 < axisSize)) // temp1 is still the virtual order, therefore check agains
+                     temp1 < axisSize)) // temp1 is still the virtual order, therefore check against
                                         // the getSize-method which considers the transpose-flag
                 {
                     ranges[i].start = temp1;
@@ -9510,7 +9510,7 @@ PyObject* PythonDataObject::PyDataObj_Array_Interface(PyDataObject* self)
         Py_XDECREF(strides);
     }
 
-    // don't icrement SELF here, since the receiver of the capsule (e.g. numpy-method)
+    // don't increment SELF here, since the receiver of the capsule (e.g. numpy-method)
     // will increment the refcount of then PyDataObject SELF by itself.
     return retDict;
 }
@@ -10469,7 +10469,7 @@ PyDoc_STRVAR(
 Splits selected color channels from this coloured ``rgba32`` dataObject. \n\
 \n\
 A ``rgba32`` coloured :class:`dataObject` contains color values for each item. \n\
-Each color value contains a red, green, blue and alpha (transparancy) component (uint8 \n\
+Each color value contains a red, green, blue and alpha (transparency) component (uint8 \n\
 each). This method allows extracting one or several of these components from this \n\
 dataObject. These components are then returned in single slices of a new, first axis \n\
 of the returned dataObject. \n\
@@ -10490,7 +10490,7 @@ Example: :: \n\
     # printout: [3, 20, 10], \"uint8\" \n\
 \n\
 In this example, the :attr:`shape` of ``split_colors`` is ``[3, 20, 10]``, since \n\
-three channels (red, green and blue) should have been splitted, such that \n\
+three channels (red, green and blue) should have been split, such that \n\
 ``split_colors[0, :, :]`` contains the red component, etc. \n\
 \n\
 Parameters \n\
@@ -11701,7 +11701,7 @@ PyObject* PythonDataObject::PyDataObj_StaticFromNumpyColor(
     {
         PyErr_SetString(
             PyExc_TypeError,
-            "Given numpy array has wrong byteorder (litte endian desired), which cannot be "
+            "Given numpy array has wrong byteorder (little endian desired), which cannot be "
             "transformed to dataObject");
         return nullptr;
     }

@@ -1,11 +1,12 @@
-# coding=utf8
 """Dataobject table
 ===================
 
 """
+
 from itom import ui
 from itom import dataObject
 # sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoTableWidget.png'
+
 
 def printContent():
     gui.table["data"].data()
@@ -71,7 +72,7 @@ def comboLabelsChanged(idx):
         gui.table["horizontalHeaderVisible"] = True
         gui.table["verticalHeaderVisible"] = True
     elif idx == 2:
-        gui.table["suffixes"] = (" mm", u" \xb0", "")
+        gui.table["suffixes"] = (" mm", " \xb0", "")
         gui.table["horizontalHeaderVisible"] = False
         gui.table["verticalHeaderVisible"] = False
 

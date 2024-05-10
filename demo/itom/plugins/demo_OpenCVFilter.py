@@ -23,7 +23,12 @@ for key, value in filterInfoDict.items():
 # the desired filter is called "cvMedianBlur", now obtain detailed information
 medianBlurDict = filterHelp("cvMedianBlur", dictionary=1)
 
-print("{}: {}".format(medianBlurDict["cvMedianBlur"]["name"], medianBlurDict["cvMedianBlur"]["description"]))
+print(
+    "{}: {}".format(
+        medianBlurDict["cvMedianBlur"]["name"],
+        medianBlurDict["cvMedianBlur"]["description"],
+    )
+)
 
 # create an empty output image (its content will be filled within the filter-call)
 outputImage = dataObject()

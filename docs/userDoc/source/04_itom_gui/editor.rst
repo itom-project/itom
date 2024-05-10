@@ -264,7 +264,7 @@ clearly visible during coding. Configure the calltip behaviour in the
 
 The introspection for auto completions and calltips uses an offline parsing of
 the current script as well as all imported packages. This might take some time,
-when a new package is imported and analzyed for the first time (e.g. for numpy).
+when a new package is imported and analyzed for the first time (e.g. for numpy).
 
 .. note::
 
@@ -457,7 +457,7 @@ of the collapsed fold is marked by a vertical blue light line. This gives a hint
 of the code is collapsed here. Additionally, the last line above the collapsed block
 contains the most severe annotations in all lines of the collapsed block. Hence, if there
 is any breakpoint or bookmark in the collapsed part, this last visible line contains a
-bookmark or breakpoint mark. The same hold for informations, warnings and errors from
+bookmark or breakpoint mark. The same hold for information, warnings and errors from
 the style and syntax check (errors are more severe than warnings, and warnings beat infos).
 
 
@@ -571,7 +571,7 @@ of the main window:
     :scale: 100%
     :align: center
 
-Offically supported encodings are:
+Officially supported encodings are:
 
 * UTF-8
 * latin1

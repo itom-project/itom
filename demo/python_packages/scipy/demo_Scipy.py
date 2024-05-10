@@ -4,6 +4,7 @@
 Opens the ascent image from ``scipy.misc`` and shifts the image.
 Finally, the shift offsets are determined using cross-correlation.
 """
+
 import scipy.misc
 import numpy
 from numpy.fft import fft2

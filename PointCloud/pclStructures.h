@@ -34,7 +34,7 @@
 #include <vector>
 
 #ifdef WIN32
-#pragma warning( disable: 4996) //supress deprecated warning of pcl (which occur very often)
+#pragma warning( disable: 4996) //suppress deprecated warning of pcl (which occur very often)
 #endif
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
@@ -489,7 +489,7 @@ public:
     */
     const PCLPointCloud operator+ (const PCLPointCloud &rhs);
 
-    //! assigment operator
+    //! assignment operator
     PCLPointCloud & operator= (const PCLPointCloud &copy);
 
     //! make a deep copy of this point cloud
@@ -585,10 +585,10 @@ public:
     void insert(uint32_t index, const ito::PCLPoint& point);
 
 protected:
-    //! clears this point cloud and sets the type to ito::pclInvalid. An existing point cloud is implicitely deleted.
+    //! clears this point cloud and sets the type to ito::pclInvalid. An existing point cloud is implicitly deleted.
     void setInvalid();
 
-    //! creates an empty point cloud of given type. An existing point cloud is implicitely deleted.
+    //! creates an empty point cloud of given type. An existing point cloud is implicitly deleted.
     void createEmptyPointCloud(ito::tPCLPointType type);
 
 private:

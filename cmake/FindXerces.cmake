@@ -102,7 +102,7 @@ if(DEFINED MSVC_VERSION)
 		set(XERCES_LIBPATH_VERS_POSTFIX "vc-10.0/")
 	endif(XSD_VERSION EQUAL "4000000L")
   else(MSVC_VERSION EQUAL 1300)
-    # since we don't knwo wether we are on windows or not, we just undefined and see what happens
+    # since we don't know whether we are on windows or not, we just undefined and see what happens
     unset(XERCES_LIB_PATH_POSTFIX)
   endif(MSVC_VERSION EQUAL 1300)
 
@@ -136,7 +136,7 @@ if(BUILD_SHARED_LIBS)
 
     # Use DYNAMIC version of Xerces library
     # Find release dynamic link libraries
-    # BUG (Wiora): This works only on windows if dlls have .lib files asside. This is not the case and not necessary. No idea how to fix this.
+    # BUG (Wiora): This works only on windows if dlls have .lib files aside. This is not the case and not necessary. No idea how to fix this.
     find_library(XERCESC_LIBRARY NAMES xerces-c_3 xerces-c_3_1${XERCES_LIB_POSTFIX} xerces-c-3.1${XERCES_LIB_POSTFIX} libxerces-c-3.1.dylib libxerces-c.dylib
         PATHS
         $ENV{XERCESC_LIBRARY_DIR}
