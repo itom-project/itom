@@ -70,7 +70,7 @@ namespace ito
     /*!
         This method is continuously called from timerEvent. Also call this method from your getVal-Method (usually with 0-timeout)
 
-        \param [in] waitMS indicates the time (in ms) that should be waiting until every registered live image source node received m_image. 0: no wait, -1: infinit waiting time, else time in milliseconds
+        \param [in] waitMS indicates the time (in ms) that should be waiting until every registered live image source node received m_image. 0: no wait, -1: infinite waiting time, else time in milliseconds
         \return retOk if everything was ok, retWarning if live image could not be invoked
     */
     ito::RetVal AddInGrabber::sendDataToListeners(int waitMS)

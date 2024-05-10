@@ -80,4 +80,4 @@ namespace ito
 
     };
 
-}; // end namepsace ito
+}; // end namespace ito

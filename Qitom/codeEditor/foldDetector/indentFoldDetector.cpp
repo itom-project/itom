@@ -119,7 +119,7 @@ int IndentFoldDetector::detectFoldLevel(const QTextBlock &previousBlock, const Q
         }
         else if (!Utils::lstrip(prev_text).startsWith("#"))
         {
-            // ignore commented lines(could have arbitary indentation)
+            // ignore commented lines(could have arbitrary indentation)
             // Verify if the previous line ends with a continuation line
             // with a regex.
             // The 2nd case is for this (e.g. produced by black):

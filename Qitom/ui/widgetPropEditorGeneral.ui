@@ -125,7 +125,7 @@
         <item>
          <widget class="QCheckBox" name="checkKeepIndentationOnPaste">
           <property name="text">
-           <string>If code is pasted to a script, remove the identation level of the first line
+           <string>If code is pasted to a script, remove the indentation level of the first line
 from all lines and add all spaces and tabs from the beginning of the
 current line until the current cursor position.</string>
           </property>

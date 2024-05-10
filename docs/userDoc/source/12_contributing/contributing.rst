@@ -14,5 +14,6 @@ to provide a common code representation, as well as an introduction to translati
     :maxdepth: 2
 
     cmake_style_guide.rst
+    git_pre_commit_hooks
     translations.rst
     python_docstrings.rst

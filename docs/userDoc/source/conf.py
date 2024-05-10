@@ -1,5 +1,3 @@
-# coding=iso-8859-15
-
 #
 # itom documentation build configuration file
 #
@@ -51,7 +49,7 @@ extensions = [
     "sphinx.ext.intersphinx",
     "itomext.designerplugindoc",
     "sphinx_gallery.gen_gallery",
-    "sphinxcontrib.moderncmakedomain"
+    "sphinxcontrib.moderncmakedomain",
 ]
 
 if sphinx.__version__ >= "0.7":
@@ -93,7 +91,10 @@ itomVersionInfo = itomFuncs.version(1)["itom"]
 version = itomVersionInfo["itom_Version"]
 if "itom_SVN_Rev" in itomVersionInfo and itomVersionInfo["itom_SVN_Rev"] != "":
     release = itomVersionInfo["itom_SVN_Rev"]
-elif "itom_GIT_Rev_Abbrev" in itomVersionInfo and itomVersionInfo["itom_GIT_Rev_Abbrev"] != "":
+elif (
+    "itom_GIT_Rev_Abbrev" in itomVersionInfo
+    and itomVersionInfo["itom_GIT_Rev_Abbrev"] != ""
+):
     release = itomVersionInfo["itom_GIT_Rev_Abbrev"]
 else:
     release = "unknown"
@@ -203,10 +204,7 @@ sphinx_gallery_conf = {
         "../../../demo/python",
         "../../../demo/python_packages",
     ],
-    "gallery_dirs": [
-        "11_demos/itom",
-        "11_demos/python",
-        "11_demos/python_packages"],
+    "gallery_dirs": ["11_demos/itom", "11_demos/python", "11_demos/python_packages"],
     "doc_module": ("matplotlib", "numpy", "pandas", "itom"),
     "reference_url": {"matplotlib": None, "numpy": None, "pandas": None, "itom": None},
     "show_memory": False,
@@ -343,7 +341,13 @@ latex_logo = "ITO_Logo.pdf"
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ("index", "itom", "itom Documentation", ["Institut fuer Technische Optik (ITO), Universitaet Stuttgart"], 1)
+    (
+        "index",
+        "itom",
+        "itom Documentation",
+        ["Institut fuer Technische Optik (ITO), Universitaet Stuttgart"],
+        1,
+    )
 ]
 
 # If true, show URL addresses after external links.
@@ -411,9 +415,9 @@ todo_include_todos = True
 # Files for auto-generating links in documentation to methods / datatypes etc. of other projects...
 # to get the inv files, open the given URL/objects.inv.
 intersphinx_mapping = {
-    "python": ("https://docs.python.org/3", (None, "python3.8-inv.txt")),
-    "numpy": ("https://numpy.org/doc/stable", (None, "numpy1.22-inv.txt")),
-    "scipy": ("https://docs.scipy.org/doc/scipy", (None, "scipy1.6.1-inv.txt")),
-    "matplotlib": ("https://matplotlib.org", (None, "matplotlib3.5-inv.txt")),
-    "pandas": ("https://pandas.pydata.org/docs/", (None, "pandas1.3.5-inv.txt")),
+    "python": ("https://docs.python.org/3", (None, "python3.12-inv.txt")),
+    "numpy": ("https://numpy.org/doc/stable", (None, "numpy1.26-inv.txt")),
+    "scipy": ("https://docs.scipy.org/doc/scipy", (None, "scipy1.13.0-inv.txt")),
+    "matplotlib": ("https://matplotlib.org", (None, "matplotlib3.8.4-inv.txt")),
+    "pandas": ("https://pandas.pydata.org/docs/", (None, "pandas2.2.2-inv.txt")),
 }

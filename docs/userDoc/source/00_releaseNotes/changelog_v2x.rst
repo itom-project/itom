@@ -14,7 +14,7 @@ itom
 (more than 500 commits in itom repository)
 
 * Class :py:class:`~itom.figure` now provides the optional parameters x0,y0,width and height to initially position the figure. This is e.g. used by matplotlib.
-* added :py:meth:`itom.dataObject.splitColor` function. Now the colors of a rgba dataObject can be splitted.
+* added :py:meth:`itom.dataObject.splitColor` function. Now the colors of a rgba dataObject can be split.
 * ito::PCLPointCloud::copy() and ito::PCLPointCloud::scaleXYZ(...) added to pointClouds library. Method itom.pointCloud.scaleXYZ(...) added to Python class.
 * bugfix in dialogOpenFileWithFilter when loading Rgba32 dataObjects due to char-array access out of range for Rgba32
 * mat and idc files can be loaded as packed or unpacked version in workspace
@@ -28,13 +28,13 @@ itom
 * generic snapshot dialog added that is available for all camera instances (e.g. by their context menu)
 * improved drag&drop of files to the console. Hourglass is shown as cursor while a file is loaded.
 * documentation added how to directly start the package manager with an argument to qitom.exe
-* bugfix in matrix multiplication operator of DataObject: The data object has to be reallocated both for :literal:'*' and :literal:'*'= operators if the size of the multiplied matrix is different than the size of
+* "bugfix in matrix multiplication operator of DataObject: The data object has to be reallocated both for ``:literal:'*'`` and ``:literal:'*='`` operators if the size of the multiplied matrix is different than the size of"
 * method meanValue implemented in dataObjectFuncs using the quick median algorithm.
 * added available colorMaps in plot documentation
-* maximum number of threads that should be used for algorithms and filter plugins can be set in property dialog. In plugins use ito::AddInBase::getMaximumThreadCount() (static) to request this value. It is always bound between 1 and the maximum number of avaiable threads on the computer.
+* maximum number of threads that should be used for algorithms and filter plugins can be set in property dialog. In plugins use ito::AddInBase::getMaximumThreadCount() (static) to request this value. It is always bound between 1 and the maximum number of available threads on the computer.
 * context menu of command line reimplemented to provide itom-specific commands and respect that executed command cannot be removed any more
 * redesign of matplotlib backend to enable faster rendering and updates only if necessary
-* Proper installation of Python is checked at startup of itom. If Python Home directory could not be properly resolved (e.g. its search pathes do not contain the script 'os.py' as built-in script, an error is set and python is not started. The user can define a user-defined PYTHONHOME variable in the property dialog of itom.
+* Proper installation of Python is checked at startup of itom. If Python Home directory could not be properly resolved (e.g. its search paths do not contain the script 'os.py' as built-in script, an error is set and python is not started. The user can define a user-defined PYTHONHOME variable in the property dialog of itom.
 * added Dialog for opening various files at once (:py:func:`~itom.ui.getOpenFileNames`)
 * dataObjects (as well as numpy.arrays), polygonMeshes and pointClouds can now be plot from context menu of corresponding variables in workspace toolboxes
 * mainWindow: menu "View" shows now also a list of all opened scripts
@@ -75,7 +75,7 @@ itom
 * documentation added, how to create the all-in-one development setup
 * frosted syntax check can now also detect the usage of an unreference variable.
 * added optional parameter *parent* to :py:meth:`~itom.ui.getText`, :py:meth:`~itom.ui.getInt`, :py:meth:`~itom.ui.getDouble`
-* bugfix: itom crashed by calling :py:meth:`~itom.dataObject.pixToPhys` with negativ axis
+* bugfix: itom crashed by calling :py:meth:`~itom.dataObject.pixToPhys` with negative axis
 * improvements and fixes concerning interpreter lock GIL of Python
 * :py:meth:`itom.font.isFamilyInstalled` and :py:meth:`itom.font.installedFontFamilies` added to :py:class:`itom.font`
 * modifications in PaletteOrganizer, e.g. add of new matplotlibs colormap viridis and improved line colors
@@ -178,7 +178,7 @@ Designer Plugins
 * itom1dqwtplot: icon to "set picker to min/max" added, delete pickers added to toolbar and menu, dx and dy of pickers renamed to width and height (clearer for many users)
 * itom1DQwtPlot: improvements for pickers (slots setPicker, appendPicker, deletePicker unified and enhanced; new pickers are also placed to the closest curve, property picker also returns the curve index...)
 * itom1DQwtPlot: pickerType can now be AxisRangeMarker (same as RangeMarker) or ValueRangeMarker to provide vertical or horizontal lines
-* itom1DQwtPlot: adapted widget to work with new seperation
+* itom1DQwtPlot: adapted widget to work with new separation
 * itom1dqwtplot, itom2dqwtplot: mouse wheel based magnification with Ctrl, Ctrl+Shift, Ctrl+Alt now also works if y-axis is inverted
 * itom1dqwtplot, itom2dqwtplot: plots can be saved via script using the slot 'savePlot'
 * itom1dqwtplot, itom2dqwtplot: bugfix
@@ -210,7 +210,7 @@ Designer Plugins
 * itom1dQwtPlot, itom2dQwtPlot: settings of plots are not only read from ini-setting file but are also tried to be inherited from parent plot (e.g. 1D plot as child of 2D plot)
 * itom1dQwtPlot, itom2dQwtPlot: added init for markerLegend and changed primitv definition
 * itom1dQwtPlot, itom2dQwtPlot: rework of evaluteGeometrics plugin with respect to the new ito::Shape (python: itom.shape) class
-* itom1dQwtPlot, itom2dQwtPlot: readded code for markerLegend
+* itom1dQwtPlot, itom2dQwtPlot: re-added code for markerLegend
 * itom1dQwtPlot, itom2dQwtPlot: integrated Qwt fix r2509 from https://sourceforge.net/p/qwt/code/2509/
 * itom1dQwtPlot, itom2dQwtPlot: further documentation improvements in itomQwtDObjFigure
 * itom1dQwtPlot, itom2dQwtPlot: qwt updated to 6.1.3
@@ -286,7 +286,7 @@ itom
 * pythonPlugins.cpp: if getExecFuncsInfo is applied with keyword "detailLevel = 1", all execFunction of instance are returned. Before it was only possible to return detailLevels of each execFunc.
 * child-items from workspace widget can now directly be exported, deleted and renamed. Drag&Drop one or multiple items (also child-items) from workspace to console in order to get their full path name. If an item and its sub-item is selected, the sub-item is ignored since it is part of the parent item.
 * bugfixes in python class :py:class:`itom.rgba`. Method toGray added to itom.rgba
-* one or more pathes to python files (suffix .py) can be appended as argument to Qitom.exe. These files are then opened in a script at startup. Connect py-files with Qitom.exe to open them with a double-click.
+* one or more paths to python files (suffix .py) can be appended as argument to Qitom.exe. These files are then opened in a script at startup. Connect py-files with Qitom.exe to open them with a double-click.
 * html documentation updated using the read-the-docs theme
 * when loading files using algorithms, the python variable is checked for existence. If it already exists, a warning is shown and the user has to decide if the existing name should be overwritten.
 * timeouts are available via file >> Properties dialog, tab Application / General. New timeout added for file load and save operations.
@@ -333,7 +333,7 @@ itom
 * some cleanup in ItomBuildMacros.cmake
 * bugfix: long plugin info text cause itom to stall when opening new plugin instance using right mouse click on plugin in plugin explorer
 * improved error message in arguments of ui.msgInformation, ui.msgCritical... are wrong
-* bugfix: errornous optional parameter of a itom.filter-call was not always marked with an arrow due to a wrong counter variable.
+* bugfix: erroneous optional parameter of a itom.filter-call was not always marked with an arrow due to a wrong counter variable.
 * bugfix in :py:class:`itom.region`: QRegion fails to build region is an upper limit of internal rectangles is reached. This limit crashed the code and is now handled by an exception.
 * warnings created by plugins due to a Python invocation are now transformed to a python warning (PyExc_Warn...) instead of a non-adjustable std::cerr print. The behaviour of Python warnings can be controlled via the Python module 'warnings', the default is a cerr-print, too.
 * warnings during GUI-based load of files are also shown in a message box.
@@ -348,7 +348,7 @@ itom
 * :py:meth:`polygonMesh.fromTopography` and :py:meth:`pointCloud.fromTopography` added to created a polygonal mesh or a point cloud from a topography data object.
 * :py:class:`itom.pointCloud` mapping-get returns a point cloud if more than one index is requested, for one index an itom.point is returned.
 * :py:meth:`pointCloud.fromXYZ`, :py:meth:`pointCloud.fromXYZI`, :py:meth:`pointCloud.fromXYZRGBA` -> fix to return organized clouds if the incoming data objects have a height > 1
-* fixes issue #39: Add "additional search pathes" to Properties >> Application page
+* fixes issue #39: Add "additional search paths" to Properties >> Application page
 * fixes issue #42: ignore trailing >> characters when copying strings from command line
 * fixes issue #43: continue a search operation in script editor widget with F3
 * indexing of :py:class:`itom.dataObject` works now also with numpy.array as mask, e.g. myDataObj[myNpArray > 0.5] = 2
@@ -391,7 +391,7 @@ Plugins
 (more than 140 commits in plugins repository)
 
 * LeicaMotorFocus: fixes due to operation on fast computers. Uses new readline mode of serialIO now.
-* PCOPixelFly: avoid multiple attemps to close the data stream upon stopDevice calls
+* PCOPixelFly: avoid multiple attempts to close the data stream upon stopDevice calls
 * improvements in FFTWfilters: 1D fft and ifft can be applied along any desired axis, the output is complex128 for complex128 of float64 input, else complex64; better adaptions to (non)-continuous, single or multi-plane dataObjects, improved documentation
 * Roughness: initial commit of algorithm plugin Roughness for 1D roughness evaluation. See the tool RoughnessEvaluator in the 'itom-packages/apps' folder of itom
 * bugfix in AVTVimba, corrected copyright information
@@ -548,7 +548,7 @@ Plugins
 (more than 250 commits in plugins repository)
 
 * **Ximea**: Renewed plugin tested with several xiQ cameras (MQ013, MQ042). More parameters like full-featured triggering, frame_burst, fixed and auto framerate... The parameter trigger_mode2 was renamed to trigger_selector (what it really is). Updated to XIMEA API 4.0.0.5. A software based shading correction was added, too. Meta information added to each captured frame.
-* PointGrey FlyCapture (**PGRFlyCapture**): improved documentation; if a slow data connection (e.g. USB2) is used, some data packages might be lost, therefore we retry to fetch the image if it could not be obtained the first time. All parameters renamed to underscore-separated version. 'roi' parameter added instead of x0,x1,y0,y1. Futher parameters *trigger_polarity* and *packetsize* added. Meta information added to each captured frame.
+* PointGrey FlyCapture (**PGRFlyCapture**): improved documentation; if a slow data connection (e.g. USB2) is used, some data packages might be lost, therefore we retry to fetch the image if it could not be obtained the first time. All parameters renamed to underscore-separated version. 'roi' parameter added instead of x0,x1,y0,y1. Further parameters *trigger_polarity* and *packetsize* added. Meta information added to each captured frame.
 * **LibUSB**: Many improvements: Information about all connected devices and their endpoints (if device is readable by libusb) can be printed, different endpoints for reading and writing are adjustable. Improved documentation.
 * **PCOSensicam** plugin added: This plugin supports image acquisition of the Sensicam camera series from PCO.
 * **PCOPixelFly**: bugfixes and modified dock widget as well as configuration dialog. Gain is a two-state variable only (0: default mode, 1: higher infrared sensitivity)
@@ -716,7 +716,7 @@ Designer Plugins
 * itom1dqwtplot, itom2dqwtplot: Working on an improved geometric element handling (e.g. modes for move, modify points) Adapted type switches and comparisons to handle flagged geometric elements via type ito::PrimitiveContainer::tTypeMask
 * itom1dqwtplot, itom2dqwtplot: Added new icons for geometric element modification.
 * Added shift and alt modifier to itom2dqwtplot to move / rotate geometric lines with fixed length
-* update to qwt 6.1.2 for compability with Qt 5.4
+* update to qwt 6.1.2 for compatibility with Qt 5.4
 * Improving EvaluateGeometricsFigure to evaluate 3D-Data
 * Improved functionality of EvaluateGeometricsFigure to calculate distances between ellipse centers
 * fix in itom1dqwtplot and itom2dqwtplot: dataObjects were not updated if only their content, but not the size, type... changed
@@ -803,7 +803,7 @@ Plugins
 * fixes some bugs when importing csv files
 * filter *cvFlipFilter* also supports multi plane flipping for 3D data objects.
 * plugin *GLDisplay* added that allows displaying one or multiple arrays on the screen using OpenGL to provide a very fast flip between several images.
-* many enhancements and improvments in plugin *pclTools* (mainly done by company twip optical solutions GmbH): filter for fitting spheres to point clouds added, filter to calculate distances to a given model added, filter to prepare a display of these distances added, methods partially OpenMP parallelized, filter for fitting cones to point clouds added, filter for projecting point clouds to models added.
+* many enhancements and improvements in plugin *pclTools* (mainly done by company twip optical solutions GmbH): filter for fitting spheres to point clouds added, filter to calculate distances to a given model added, filter to prepare a display of these distances added, methods partially OpenMP parallelized, filter for fitting cones to point clouds added, filter for projecting point clouds to models added.
 * plugin *PGRFlyCapture* now runs under linux, general changes to support Grasshopper3 cameras (color supported as well).
 * some fixes in plugin *cmu1394* and optional byte swapping for 16bit camera added
 * improvements in camera plugin *Vistek*
@@ -877,7 +877,7 @@ itom
 * Help toolbox also shows information about all loaded hardware plugins (actuator, dataIO)
 * Help toolbox in itom shows information about filters and widgets provided by algorithm plugins. Exemplary code snippet for all filters added.
 * itom can be build without PCL support, hence the point cloud library is not required. The library *pointCloud* is not available then (see BUILD_WITH_PCL in CMake)
-* C-Api: New shared libraries created: itomCommon (RetVal, Param,...), itomCommonQt (ItomSharedSemaphore, AddInInterface,...), dataObject, pointCloud, itomWidgets. Plugins link agains these shared libraries. This allows an improved bugfix in these components. Additionally, many changes in these libraries don't require a new version number for the plugin interface (unless the binary compatibility is not destroyed).
+* C-Api: New shared libraries created: itomCommon (RetVal, Param,...), itomCommonQt (ItomSharedSemaphore, AddInInterface,...), dataObject, pointCloud, itomWidgets. Plugins link against these shared libraries. This allows an improved bugfix in these components. Additionally, many changes in these libraries don't require a new version number for the plugin interface (unless the binary compatibility is not destroyed).
 * C-Api: error message in ito::RetVal, name and info string of ito::Param are now stored as ito::ByteArray class that is based on a shared memory concept. Less memory copy operations are required.
 * crash fixed if itom is closed with user defined buttons and menus
 * fixes if some components are disabled by user management

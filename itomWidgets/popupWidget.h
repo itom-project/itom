@@ -45,13 +45,13 @@ class ITOMWIDGETS_EXPORT PopupWidget : public BasePopupWidget
   /// Control whether the popup listens to the application and baseWidget
   /// events and decides if it needs to be permanently or temporarily hidden.
   /// You might want to setActive(false) when embedding the popup
-  /// into a static layout intead of having it top-level (no parent).
+  /// into a static layout instead of having it top-level (no parent).
   /// Consider also removing its windowFlags (Qt::ToolTip |
   /// Qt::FramelessWindowHint) and removing the baseWidget.
   /// True by default
   Q_PROPERTY( bool active READ isActive WRITE setActive)
 
-  /// Control wether the popup automatically opens when the mouse
+  /// Control whether the popup automatically opens when the mouse
   /// enter the widget. True by default
   Q_PROPERTY( bool autoShow READ autoShow WRITE setAutoShow)
 
@@ -59,7 +59,7 @@ class ITOMWIDGETS_EXPORT PopupWidget : public BasePopupWidget
   /// 20ms by default
   Q_PROPERTY( int showDelay READ showDelay WRITE setShowDelay)
 
-  /// Control wether the popup automatically closes when the mouse
+  /// Control whether the popup automatically closes when the mouse
   /// leaves the widget. True by default
   Q_PROPERTY( bool autoHide READ autoHide WRITE setAutoHide)
 

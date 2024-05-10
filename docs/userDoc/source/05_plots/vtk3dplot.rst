@@ -381,7 +381,7 @@ Slots
     :noindex:
 
 
-    add m lines to the canvas. The coordintates are given by a float32 data object [m x 6] where one row is (x0,y0,z0,x1,y1,z1) (arguments: points, key, color=red).
+    add m lines to the canvas. The coordinates are given by a float32 data object [m x 6] where one row is (x0,y0,z0,x1,y1,z1) (arguments: points, key, color=red).
 
 
 .. py:function:: addCube(size, translation, rotation, fullname, color, rgba or hex) [slot]

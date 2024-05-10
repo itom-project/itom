@@ -67,7 +67,7 @@ TYPED_TEST(at_func_test1, at_Test1)
 
     //!< Test code with valid ranges less than dObj2
     ito::DataObject dObj2_test;
-    ito::Range ranges[2]; //!< Range to be applied on 2 dimesional data object dObj2 with at() function
+    ito::Range ranges[2]; //!< Range to be applied on 2 dimensional data object dObj2 with at() function
     ranges[0].start = 0;
     ranges[0].end = 4;
     ranges[1].start = 0;
@@ -75,16 +75,16 @@ TYPED_TEST(at_func_test1, at_Test1)
     dObj2_test = this->dObj2.at(
         ranges); //!< assigning a part of data object dObj2 to dObj2_test bounded in a range defined in array ranges[]
     EXPECT_EQ(this->dObj2.getDims(),
-              dObj2_test.getDims()); //!< checks if the dimesions of dObj2_test is same as the original data object
+              dObj2_test.getDims()); //!< checks if the dimensions of dObj2_test is same as the original data object
                                      //!< dObj2 after applying at() function.
     EXPECT_EQ(
         cv::saturate_cast<TypeParam>(4),
         dObj2_test.getSize(
-            0)); //!< checks expected size of 0th dimenstion of data object dObj2_test after applying at() function
+            0)); //!< checks expected size of 0th dimension of data object dObj2_test after applying at() function
     EXPECT_EQ(
         cv::saturate_cast<TypeParam>(3),
         dObj2_test.getSize(
-            1)); //!< checks expected size of 1st dimenstion of data object dObj2_test after applying at() function
+            1)); //!< checks expected size of 1st dimension of data object dObj2_test after applying at() function
     int temp = 0;
     for (int i = 0; i < 4; i++)
     {
@@ -111,7 +111,7 @@ TYPED_TEST(at_func_test1, at_Test1)
         }
     }
     ito::DataObject dObj3_test;
-    ito::Range ranges_3d[3]; //!< Range to be applied on 3 dimesional data object dObj3 with at() function
+    ito::Range ranges_3d[3]; //!< Range to be applied on 3 dimensional data object dObj3 with at() function
     ranges_3d[0].start = 1;
     ranges_3d[0].end = 3;
     ranges_3d[1].start = 0;
@@ -124,20 +124,20 @@ TYPED_TEST(at_func_test1, at_Test1)
     dObj3_test = this->dObj3.at(ranges_3d); //!< assigning a part of data object dObj3 to dObj3_test bounded in a range
                                             //!< defined in array ranges_3d[]
     EXPECT_EQ(this->dObj3.getDims(),
-              dObj3_test.getDims()); //!< checks if the dimesions of dObj3_test is same as the original data object
+              dObj3_test.getDims()); //!< checks if the dimensions of dObj3_test is same as the original data object
                                      //!< dObj3 after applying at() function.
     EXPECT_EQ(
         cv::saturate_cast<TypeParam>(2),
         dObj3_test.getSize(
-            0)); //!< checks expected size of 0th dimenstion of data object dObj3_test after applying at() function
+            0)); //!< checks expected size of 0th dimension of data object dObj3_test after applying at() function
     EXPECT_EQ(
         cv::saturate_cast<TypeParam>(2),
         dObj3_test.getSize(
-            1)); //!< checks expected size of 1st dimenstion of data object dObj3_test after applying at() function
+            1)); //!< checks expected size of 1st dimension of data object dObj3_test after applying at() function
     EXPECT_EQ(
         cv::saturate_cast<TypeParam>(3),
         dObj3_test.getSize(
-            2)); //!< checks expected size of 2nd dimenstion of data object dObj3_test after applying at() function
+            2)); //!< checks expected size of 2nd dimension of data object dObj3_test after applying at() function
 
     temp = 0;
     for (int i = 0; i < 2; i++)
@@ -187,7 +187,7 @@ TYPED_TEST(at_func_test1, at_Test2)
 
     //!< Test code with full ranges
     ito::DataObject dObj2_test1;
-    ito::Range ranges1[2];          //!< Range to be applied on 2 dimesional data object dObj2 with at() function
+    ito::Range ranges1[2];          //!< Range to be applied on 2 dimensional data object dObj2 with at() function
     ranges1[0] = ito::Range::all(); //!< ranges1[0] element should point to full range of 0th dimension of the related
                                     //!< data object
     ranges1[1] = ito::Range::all(); //!< ranges1[1] element should point to full range of 1st dimension of the related
@@ -217,7 +217,7 @@ TYPED_TEST(at_func_test1, at_Test2)
         The following code deals with 3 dimensional data objects.
     */
     ito::DataObject dObj3_test1;      //!< declaring temporary 3 dimensional data object for test purpose.
-    ito::Range ranges_3d[3];          //!< Range to be applied on 3 dimesional data object dObj3 with at() function.
+    ito::Range ranges_3d[3];          //!< Range to be applied on 3 dimensional data object dObj3 with at() function.
     ranges_3d[0] = ito::Range::all(); //!< ranges_3d[0] element should point to full range of 0th dimension of the
                                       //!< related data object.
     ranges_3d[1] = ito::Range::all(); //!< ranges_3d[1] element should point to full range of 1st dimension of the

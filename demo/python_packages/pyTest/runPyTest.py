@@ -4,7 +4,7 @@
 Execute lines from this file from demo folder to run all subsequent pytest scripts.
 
 .. hint::
-    from pytest verion ``5.x`` onwards make sure to use -p no:faulthandler
+    from pytest version ``5.x`` onwards make sure to use -p no:faulthandler
 
 Run pytest using line below. run it from within the pytestfolder in the demo scripts itom folder
 modules that are import ed once dont get reimportet, so restart itom frequently
@@ -25,8 +25,6 @@ pytest.main(["../demoDataObject.py", "--capture=no", "-c=./pytest.ini"])
 # Configuration is more easily done in the *.ini and conftest.py files.
 # So here two more helpful examples:
 # this one runs all the demo functions
-pytest.main(
-    ["../", "-v", "--capture=no", "--collect-only", "-c=./pytest_demo.ini"]
-)
+pytest.main(["../", "-v", "--capture=no", "--collect-only", "-c=./pytest_demo.ini"])
 # this one runs all the user demo functions, which require interaction from the user.
 pytest.main(["../", "-v", "--capture=no", "-c=./pytest_userdemo.ini"])

@@ -233,7 +233,6 @@ def umeyama_algorithm(P, Q):
 
 
 if __name__ == "__main__":
-
     A = np.array([[1, 1, 3], [3, 2, 1], [4, 5, 6]])
     B = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0]])
     [U, r, lrms] = kabsch_algorithm(A, B)

@@ -79,7 +79,7 @@ class ITOMWIDGETS_EXPORT PathLineEdit: public QWidget
   Q_PROPERTY ( QString currentPath READ currentPath WRITE setCurrentPath USER true )
   /// Qt versions prior to 4.7.0 didn't expose QFileDialog::Options in the
   /// public API. We need to create a custom property that will be used when
-  /// instanciating a QFileDialog in PathLineEdit::browse()
+  /// instantiating a QFileDialog in PathLineEdit::browse()
 #ifdef USE_QFILEDIALOG_OPTIONS
   Q_PROPERTY(QFileDialog::Options options READ options WRITE setOptions)
 #else
@@ -239,7 +239,7 @@ public:
   void setSizeAdjustPolicy(SizeAdjustPolicy policy);
 
   int minimumContentsLength()const;
-  void setMinimumContentsLength(int lenght);
+  void setMinimumContentsLength(int length);
 
   /// Return the combo box internally used by the path line edit
   QComboBox* comboBox() const;

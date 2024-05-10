@@ -152,7 +152,7 @@ namespace ito
         \param pluginIdx is the index of the plugin to open in its internal index list (obtained by apiAddInGetInitParams)
         \param autoLoadParams indicates if plugin parameters from last session should be automatically loaded at restart (only if m_autoLoadPolicy is set to autoLoadKeywordDefined in plugin). If unsure, set it to false.
         \param paramsMand are the mandatory parameters passed to the initialization method of the plugin (get their templates from apiAddInGetInitParams)
-        \param paramsOpt are the optional parameters (similiar to paramsMand)
+        \param paramsOpt are the optional parameters (similar to paramsMand)
         \param instance is the pointer to ito::AddActuator that contains the instance of the recently opened plugin (if successfully opened)
         \return ito::RetVal (retOk if plugin instance could be loaded, else retError)
 
@@ -171,7 +171,7 @@ namespace ito
         \param pluginIdx is the index of the plugin to open in its internal index list (obtained by apiAddInGetInitParams)
         \param autoLoadParams indicates if plugin parameters from last session should be automatically loaded at restart (only if m_autoLoadPolicy is set to autoLoadKeywordDefined in plugin). If unsure, set it to false.
         \param paramsMand are the mandatory parameters passed to the initialization method of the plugin (get their templates from apiAddInGetInitParams)
-        \param paramsOpt are the optional parameters (similiar to paramsMand)
+        \param paramsOpt are the optional parameters (similar to paramsMand)
         \param instance is the pointer to ito::AddInDataIO that contains the instance of the recently opened plugin (if successfully opened)
         \return ito::RetVal (retOk if plugin instance could be loaded, else retError)
 
@@ -182,7 +182,7 @@ namespace ito
         QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, \
         ito::AddInDataIO *&instance)) ito::ITOM_API_FUNCS[6])
 
-    //! decrements reference of given plugin instance. If the reference drops to zero, the instance is savely closed and deleted.
+    //! decrements reference of given plugin instance. If the reference drops to zero, the instance is safely closed and deleted.
     /*!
         This method does not wait for the plugin to be closed since this might cause deadlocks if called from the close method or destructor of another plugin.
         The AddIn manager will close the given instance as soon as possible.

@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**00:00.028** total execution time for 149 files **from all galleries**:
+**00:10.556** total execution time for 150 files **from all galleries**:
 
 .. container::
 
@@ -32,8 +32,8 @@ Computation times
    * - Example
      - Time
      - Mem (MB)
-   * - :ref:`sphx_glr_11_demos_itom_basics_demo_ansiEscapeSequencesOutput.py` (``..\..\..\demo\itom\basics\demo_ansiEscapeSequencesOutput.py``)
-     - 00:00.028
+   * - :ref:`sphx_glr_11_demos_itom_plots_demo_AutoUpdatePlot.py` (``..\..\..\demo\itom\plots\demo_AutoUpdatePlot.py``)
+     - 00:10.556
      - 0.0
    * - :ref:`sphx_glr_11_demos_itom_basics_demo_CameraAndImages.py` (``..\..\..\demo\itom\basics\demo_CameraAndImages.py``)
      - 00:00.000
@@ -45,6 +45,9 @@ Computation times
      - 00:00.000
      - 0.0
    * - :ref:`sphx_glr_11_demos_itom_basics_demo_LoadSaveDataObjects.py` (``..\..\..\demo\itom\basics\demo_LoadSaveDataObjects.py``)
+     - 00:00.000
+     - 0.0
+   * - :ref:`sphx_glr_11_demos_itom_basics_demo_ansiEscapeSequencesOutput.py` (``..\..\..\demo\itom\basics\demo_ansiEscapeSequencesOutput.py``)
      - 00:00.000
      - 0.0
    * - :ref:`sphx_glr_11_demos_itom_basics_demo_convertFalseColor.py` (``..\..\..\demo\itom\basics\demo_convertFalseColor.py``)
@@ -81,9 +84,6 @@ Computation times
      - 00:00.000
      - 0.0
    * - :ref:`sphx_glr_11_demos_itom_plots_demoPickPointsAndMarkers.py` (``..\..\..\demo\itom\plots\demoPickPointsAndMarkers.py``)
-     - 00:00.000
-     - 0.0
-   * - :ref:`sphx_glr_11_demos_itom_plots_demo_AutoUpdatePlot.py` (``..\..\..\demo\itom\plots\demo_AutoUpdatePlot.py``)
      - 00:00.000
      - 0.0
    * - :ref:`sphx_glr_11_demos_itom_plots_demo_ContourLines2dPlot.py` (``..\..\..\demo\itom\plots\demo_ContourLines2dPlot.py``)
@@ -315,6 +315,9 @@ Computation times
      - 00:00.000
      - 0.0
    * - :ref:`sphx_glr_11_demos_python_packages_matplotlib_demo_matplotlibAnimation2d.py` (``..\..\..\demo\python_packages\matplotlib\demo_matplotlibAnimation2d.py``)
+     - 00:00.000
+     - 0.0
+   * - :ref:`sphx_glr_11_demos_python_packages_matplotlib_demo_matplotlibFuncAnimation.py` (``..\..\..\demo\python_packages\matplotlib\demo_matplotlibFuncAnimation.py``)
      - 00:00.000
      - 0.0
    * - :ref:`sphx_glr_11_demos_python_packages_matplotlib_demo_matplotlib_events.py` (``..\..\..\demo\python_packages\matplotlib\demo_matplotlib_events.py``)

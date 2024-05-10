@@ -96,6 +96,8 @@ def update(frame):
 
 
 e = 45
-ani = FuncAnimation(fig, update, frames=np.linspace(0.01, T_full, 100), repeat=True, interval=50)
+ani = FuncAnimation(
+    fig, update, frames=np.linspace(0.01, T_full, 100), repeat=True, interval=50
+)
 
 plt.show()

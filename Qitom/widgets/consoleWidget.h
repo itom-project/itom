@@ -153,8 +153,8 @@ private:
 
     QList<ito::TextBlockUserData::AnsiTextCharFormat> parseReceiveStreamBufferForAnsiCodes(const QString &inputText, QString &strippedText);
     QList<QSharedPointer<QList<ito::TextBlockUserData::AnsiTextCharFormat>>> handleTextLinesAndSplitLongLines(
-        QString &text, 
-        const QList<ito::TextBlockUserData::AnsiTextCharFormat> &ansiTextCharFormat, 
+        QString &text,
+        const QList<ito::TextBlockUserData::AnsiTextCharFormat> &ansiTextCharFormat,
         bool smartSplitting);
     QList<QSharedPointer<QList<ito::TextBlockUserData::AnsiTextCharFormat>>> splitLongLinesText(
         QString &text,

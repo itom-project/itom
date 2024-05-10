@@ -10,7 +10,7 @@ have been develop to enable access to useful or itom specific objects and functi
 
 These widgets can be used like any other type of widget within an ui-dialog with two exceptions:
 
-1. The user interface in terms of an **ui**-file must be loaded and initilized within an itom-python context (e.g. script in itom).
+1. The user interface in terms of an **ui**-file must be loaded and initialized within an itom-python context (e.g. script in itom).
 
 2. Some properties are not accessible in the QtDesigner (e.g. actuator-handles or dataObjects) and must be set or read in the script. (They are marked with **DESIGNABLE false** in the **Q_PROPERTY** macro in their header file).
 
@@ -148,7 +148,7 @@ Properties
 
 **readOnlyEnabled**: *bool, DESIGNABLE*, enable write protection
 
-**detailedInfo**: *bool, DESIGNABLE*, Toogle between basic and detailed metaData
+**detailedInfo**: *bool, DESIGNABLE*, Toggle between basic and detailed metaData
 
 **previewEnabled**: *bool, DESIGNABLE*, Add a small quadratic image downsampled from the dataObject as a preview to the meta data.
 
@@ -240,7 +240,7 @@ MotorController
 -------------------------------------
 
 The "MotorController"-widget gives the user the some basic functions for generic motor positioning and position reporting within a complex GUI. The widget can be used for 1 to 6 axis and can be used readOnly or as a type of software control panel.
-The widget updated in a fixed interval (can be deactivated). During measurements the widget should be disabled to avoid user errors. A support for the 3DConnexion-Mouse is planed but *Not implemented yet*.
+The widget updated in a fixed interval (can be deactivated). During measurements the widget should be disabled to avoid user errors. A support for the 3DConnexion-Mouse is planned but *Not implemented yet*.
 
 The motor should support up *slot: RequestStatusAndPosition* and *signal: actuatorStatusChanged* for semaphore free communication, but this is not necessary.
 
@@ -253,15 +253,15 @@ Properties
 
 **unit**: *QString, DESIGNABLE*, Base unit for spinboxes and movements, e.g. nm, micron, mm, m, km
 
-**readOnly**: *bool, DESIGNABLE*, Toogle read only
+**readOnly**: *bool, DESIGNABLE*, Toggle read only
 
-**autoUpdate**: *bool, DESIGNABLE*, Toogle automatic motorposition update
+**autoUpdate**: *bool, DESIGNABLE*, Toggle automatic motorposition update
 
 **smallStep**: *double, DESIGNABLE*, Distances for the small step button, same value for plus and minus
 
 **bigStep**: *double, DESIGNABLE*, Distances for the large step button, same value for plus and minus
 
-**absRel**: *bool, DESIGNABLE*, Toogle between absolut or relative position display. Origin can be set via context menu.
+**absRel**: *bool, DESIGNABLE*, Toggle between absolute or relative position display. Origin can be set via context menu.
 
 **allowJoyStick**: *bool, DESIGNABLE*, Allow a software joystick, e.g. usb or gameport, not implemented yet.
 

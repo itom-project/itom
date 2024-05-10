@@ -58,7 +58,7 @@ private slots:
 
 public slots:
     void setFindBarEnabled(bool enabled, bool reduced);
-    void setSuccessState(bool successfull);
+    void setSuccessState(bool successful);
 
 
 signals:

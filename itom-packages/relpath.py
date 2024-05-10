@@ -28,7 +28,6 @@ def scriptDirectory(frame=None):
 
 
 def makeAbsInScriptDir(relPath, frame=None):
-
     if frame is None:
         curframe = inspect.currentframe()
         frame = curframe.f_back  # get caller frame

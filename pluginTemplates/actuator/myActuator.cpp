@@ -162,7 +162,7 @@ ito::RetVal MyActuator::close(ItomSharedSemaphore *waitCond)
 
     //todo:
     // - disconnect the device if not yet done
-    // - this funtion is considered to be the "inverse" of init.
+    // - this function is considered to be the "inverse" of init.
 
     if (waitCond)
     {
@@ -306,9 +306,9 @@ ito::RetVal MyActuator::calib(const QVector<int> axis, ItomSharedSemaphore *wait
     if (!retValue.containsError())
     {
         //todo:
-        //start calibrating the given axes and don't forget to regularily call setAlive().
+        //start calibrating the given axes and don't forget to regularly call setAlive().
         //this is important if the calibration needs more time than the timeout time of itom (e.g. 5sec).
-        //itom regularily checks the alive flag and only drops to a timeout if setAlive() is not regularily called (at least all 3-4 secs).
+        //itom regularly checks the alive flag and only drops to a timeout if setAlive() is not regularly called (at least all 3-4 secs).
     }
 
     if (waitCond)
@@ -728,7 +728,7 @@ ito::RetVal MyActuator::waitForDone(const int timeoutMS, const QVector<int> axis
 
     if (timeout)
     {
-        //timeout occured, set the status of all currently moving axes to timeout
+        //timeout occurred, set the status of all currently moving axes to timeout
         replaceStatus(_axis, ito::actuatorMoving, ito::actuatorTimeout);
         retVal += ito::RetVal(ito::retError,9999,"timeout occurred");
         sendStatusUpdate(true);
@@ -806,7 +806,7 @@ void MyActuator::dockWidgetVisibilityChanged(bool visible)
 
     The configuration dialog should emit reject() or accept() depending if the user wanted to close the dialog using the ok or cancel button.
     If ok has been clicked (accept()), this method calls applyParameters of the configuration dialog in order to force the dialog to send
-    all changed parameters to the plugin. If the user clicks an apply button, the configuration dialog itsself must call applyParameters.
+    all changed parameters to the plugin. If the user clicks an apply button, the configuration dialog itself must call applyParameters.
 
     If the configuration dialog is inherited from AbstractAddInConfigDialog, use the api-function apiShowConfigurationDialog that does all
     the things mentioned in this description.

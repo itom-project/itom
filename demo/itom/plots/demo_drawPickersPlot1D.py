@@ -2,7 +2,7 @@
 =======================
 
 
-This demo shows how to programatically set pickers
+This demo shows how to programmatically set pickers
 to the line of a 1D plot.
 
 The most important ``slots`` for these features are implemented

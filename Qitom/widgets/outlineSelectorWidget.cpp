@@ -521,7 +521,7 @@ void OutlineSelectorWidget::keyPressEvent(QKeyEvent* ev)
 
 //-------------------------------------------------------------------------------------
 /*
-Reimplement Qt method to close the widget when loosing focus.
+Reimplement Qt method to close the widget when losing focus.
 */
 void OutlineSelectorWidget::focusOutEvent(QFocusEvent* ev)
 {

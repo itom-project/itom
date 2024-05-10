@@ -1,5 +1,3 @@
-from __future__ import division, absolute_import, print_function
-
 import sys
 import re
 import inspect
@@ -70,7 +68,7 @@ class SphinxDocString(NumpyDocString):
             for param, param_type, desc in self[name]:
                 if param_type:
                     out += self._str_indent(
-                        ["**%s** : %s" % (param.strip(), param_type)]
+                        [f"**{param.strip()}** : {param_type}"]
                     )
                 else:
                     out += self._str_indent([param.strip()])
@@ -88,7 +86,7 @@ class SphinxDocString(NumpyDocString):
             for param, param_type, desc in self[name]:
                 if param_type:
                     out += self._str_indent(
-                        ["**%s** : %s" % (param.strip(), param_type)]
+                        [f"**{param.strip()}** : {param_type}"]
                     )
                 else:
                     out += self._str_indent(["**%s**" % param.strip()])
@@ -136,7 +134,7 @@ class SphinxDocString(NumpyDocString):
 
                 if param_obj and (pydoc.getdoc(param_obj) or not desc):
                     # Referenced object has a docstring
-                    autosum += ["   %s%s" % (prefix, param)]
+                    autosum += [f"   {prefix}{param}"]
                 else:
                     others.append((param, param_type, desc))
 
@@ -154,7 +152,7 @@ class SphinxDocString(NumpyDocString):
                 for param, param_type, desc in others:
                     desc = sixu(" ").join(x.strip() for x in desc).strip()
                     if param_type:
-                        desc = "(%s) %s" % (param_type, desc)
+                        desc = f"({param_type}) {desc}"
                     out += [fmt % ("**" + param.strip() + "**", desc)]
                 out += [hdr]
             out += [""]
@@ -173,7 +171,7 @@ class SphinxDocString(NumpyDocString):
     def _str_see_also(self, func_role):
         out = []
         if self["See Also"]:
-            see_also = super(SphinxDocString, self)._str_see_also(func_role)
+            see_also = super()._str_see_also(func_role)
             out = [".. seealso::", ""]
             out += self._str_indent(see_also[2:])
         return out
@@ -198,7 +196,7 @@ class SphinxDocString(NumpyDocString):
             elif section == "refguide":
                 out += ["   single: %s" % (", ".join(references))]
             else:
-                out += ["   %s: %s" % (section, ",".join(references))]
+                out += ["   {}: {}".format(section, ",".join(references))]
         return out
 
     def _str_references(self):
@@ -260,7 +258,7 @@ class SphinxDocString(NumpyDocString):
             "attributes": self._str_member_list("Attributes"),
             "methods": self._str_member_list("Methods"),
         }
-        ns = dict((k, "\n".join(v)) for k, v in ns.items())
+        ns = {k: "\n".join(v) for k, v in ns.items()}
 
         rendered = self.template.render(**ns)
         return "\n".join(self._str_indent(rendered.split("\n"), indent))
@@ -291,7 +289,7 @@ def get_doc_object(obj, what=None, doc=None, config={}, builder=None):
             what = "class"
         elif inspect.ismodule(obj):
             what = "module"
-        elif isinstance(obj, collections.Callable):
+        elif isinstance(obj, collections.abc.Callable):
             what = "function"
         else:
             what = "object"

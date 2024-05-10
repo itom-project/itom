@@ -65,7 +65,7 @@ QHash<char*,PyObject*> PythonQtConversion::m_pyBaseObjectStorage = QHash<char*, 
 //-------------------------------------------------------------------------------------
 //! conversion from PyObject* to QStringList
 /*!
-    tries to interprete given PyObject* as list of strings and converts it to QStringList.
+    tries to interpret given PyObject* as list of strings and converts it to QStringList.
     If strict is true, we do not want to convert a string to a stringlist, since single strings in python
     are also detected to be sequences.
 
@@ -365,7 +365,7 @@ QSharedPointer<char> PythonQtConversion::PyObjGetBytesShared(PyObject* val, bool
 //-------------------------------------------------------------------------------------
 //! conversion from PyObject* to vector of ito::ByteArray
 /*!
-    tries to interprete given PyObject* as list of strings and converts it to QVector<ito::ByteArray>.
+    tries to interpret given PyObject* as list of strings and converts it to QVector<ito::ByteArray>.
     If strict is true, we do not want to convert a string to a stringlist, since single strings in python
     are also detected to be sequences.
 

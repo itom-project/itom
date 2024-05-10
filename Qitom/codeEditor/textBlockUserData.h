@@ -73,7 +73,7 @@ public:
         StyleError
     };
 
-    struct AnsiTextCharFormat 
+    struct AnsiTextCharFormat
     {
         int colStart; // inclusive, zero-based
         int colEnd; // inclusive, zero-based

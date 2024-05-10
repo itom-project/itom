@@ -12,7 +12,6 @@ class DataObjectConstructors(unittest.TestCase):
 
     ##########################################################
     def test_constructor_simple(self):
-
         # DEFAULT TYPE: UINT8
         # test >= 2D
         shapes = [
@@ -64,7 +63,6 @@ class DataObjectConstructors(unittest.TestCase):
 
     ##########################################################
     def test_continuous_constructor(self):
-
         # for 2d objects, there is no difference between continuous and non-continuous
         obj2dcont = dataObject([500, 512], continuous=1)
         obj2dnoncont = dataObject([500, 512], continuous=0)
@@ -89,7 +87,6 @@ class DataObjectConstructors(unittest.TestCase):
 
     ##########################################################
     def test_value_constructor(self):
-
         obj = dataObject([2, 4], "float32", data=[1, 2, 3, 4, 5, 6, 7, 8])
         for r in [0, 1]:
             for c in [0, 1, 2, 3]:

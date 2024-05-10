@@ -142,8 +142,8 @@ class ITOMCOMMONPLOT_EXPORT AbstractFigure : public QMainWindow, public Abstract
 
         virtual RetVal init() { return retOk; } //this method is called from after construction and after that the api pointers have been transmitted
 
-        virtual void importItomApi(void** apiPtr) = 0;      /*!< function to provide access to the itom API functions. this methods are implemented in the plugin itsself. Therefore put the macro DESIGNER_PLUGIN_ITOM_API before the public section in the designer plugin class. */
-        virtual void importItomApiGraph(void** apiPtr) = 0; /*!< function to provide access to the itom API functions. this methods are implemented in the plugin itsself. Therefore put the macro DESIGNER_PLUGIN_ITOM_API before the public section in the designer plugin class. */
+        virtual void importItomApi(void** apiPtr) = 0;      /*!< function to provide access to the itom API functions. this methods are implemented in the plugin itself. Therefore put the macro DESIGNER_PLUGIN_ITOM_API before the public section in the designer plugin class. */
+        virtual void importItomApiGraph(void** apiPtr) = 0; /*!< function to provide access to the itom API functions. this methods are implemented in the plugin itself. Therefore put the macro DESIGNER_PLUGIN_ITOM_API before the public section in the designer plugin class. */
 
         void addToolBar(QToolBar *toolbar, const QString &key, Qt::ToolBarArea area = Qt::TopToolBarArea, int section = 1); /*!< Register any toolbar of the plot widget using this method. */
         void addToolBarBreak(const QString &key, Qt::ToolBarArea area = Qt::TopToolBarArea); /*!< Add a toolbar break, hence a new line for the following toolbars to the indicated area. */
@@ -157,7 +157,7 @@ class ITOMCOMMONPLOT_EXPORT AbstractFigure : public QMainWindow, public Abstract
         void addMenu(QMenu *menu); /*!< append a menu to the figure. AbstractFigure then takes care about the menu. Only use this method to add menus since the menu bar of figures is differently handled depending on the window mode of the figure. */
 
         void updatePropertyDock(); /*!< call this method if any property of the figure changed such that the property toolbox is synchronized and updated. */
-        void setPropertyObservedObject(QObject* obj); /*!< registeres obj for a property observation of the property toolbox. All readable properties are then listed in the property toolbox. */
+        void setPropertyObservedObject(QObject* obj); /*!< registers obj for a property observation of the property toolbox. All readable properties are then listed in the property toolbox. */
 
         RetVal initialize();
 

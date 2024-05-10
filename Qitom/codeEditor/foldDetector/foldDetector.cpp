@@ -234,7 +234,7 @@ bool FoldScope::isValid() const
 
 //------------------------------------------------
 /*
-Returns True if the block is collasped, False if it is expanded.
+Returns True if the block is collapsed, False if it is expanded.
 */
 bool FoldScope::collapsed() const
 {

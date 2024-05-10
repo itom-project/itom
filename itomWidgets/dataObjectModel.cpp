@@ -132,7 +132,7 @@ QString DataObjectModel::getDisplayNumber(
         }
         else
         {
-            // programm style, dot remains dot... (for copy to clipboard operations)
+            // program style, dot remains dot... (for copy to clipboard operations)
             return QString("%1%2").arg(number, 0, m_numberFormat, decimals).arg(suffix);
         }
     }
@@ -172,7 +172,7 @@ QString DataObjectModel::getDisplayNumber(
         }
         else
         {
-            // programm style, dot remains dot... (for copy to clipboard operations)
+            // program style, dot remains dot... (for copy to clipboard operations)
             return QString("%1%2").arg(number, 0, m_numberFormat, decimals).arg(suffix);
         }
     }
@@ -222,7 +222,7 @@ QString DataObjectModel::getDisplayNumber(
         }
         else
         {
-            // programm style, dot remains dot... (for copy to clipboard operations)
+            // program style, dot remains dot... (for copy to clipboard operations)
             if (number.imag() >= 0)
             {
                 return QString("%1+%2i%3")
@@ -282,7 +282,7 @@ QString DataObjectModel::getDisplayNumber(
         }
         else
         {
-            // programm style, dot remains dot... (for copy to clipboard operations)
+            // program style, dot remains dot... (for copy to clipboard operations)
             if (number.imag() >= 0)
             {
                 return QString("%1+%2i%3")
