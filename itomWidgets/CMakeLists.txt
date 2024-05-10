@@ -64,10 +64,10 @@ endif ()
 
 #check https://blog.initiali.se/posts/building-qt-designer-plugins-for-your-custom-qt-widgets/
 # if not included like this an "undefined interface error will be risen from Qt (moc?!)
-INCLUDE_DIRECTORIES(
+include_directories(
     ${Qt5Designer_INCLUDE_DIRS}
     ${Qt6Designer_INCLUDE_DIRS}
-    ${ITOM_SDK_INCLUDE_DIR}
+    ${CMAKE_BINARY_DIR}/SDK/include
 )
 
 # kann ein target_include_directories werden
