@@ -1,7 +1,7 @@
 # - itom software
 # URL: http://www.uni-stuttgart.de/ito
 # Copyright (C) 2020, Institut für Technische Optik (ITO),
-# Universitaet Stuttgart, Germany
+# Universität Stuttgart, Germany
 #
 # This file is part of itom and its software development toolkit (SDK).
 #
@@ -10,7 +10,7 @@
 # the Free Software Foundation; either version 2 of the Licence, or (at
 # your option) any later version.
 #
-# In addition, as a special exception, the Institut für Technische
+# In addition, as a special exception, the Institut fuer Technische
 # Optik (ITO) gives you certain additional rights.
 # These rights are described in the ITO LGPL Exception version 1.0,
 # which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -64,10 +64,10 @@ endif ()
 
 #check https://blog.initiali.se/posts/building-qt-designer-plugins-for-your-custom-qt-widgets/
 # if not included like this an "undefined interface error will be risen from Qt (moc?!)
-include_directories(
+INCLUDE_DIRECTORIES(
     ${Qt5Designer_INCLUDE_DIRS}
     ${Qt6Designer_INCLUDE_DIRS}
-    ${CMAKE_BINARY_DIR}/SDK/include
+    ${ITOM_SDK_INCLUDE_DIR}
 )
 
 # kann ein target_include_directories werden
@@ -180,8 +180,8 @@ set(itomWidgets_Factory_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/dataObjectDelegate.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dataObjectModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/brushCreatorDialog.h
-    ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h
-    ${CMAKE_CURRENT_BINARY_DIR}/itomWidgetsVersion.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/itomWidgetsVersion.h
     ${CMAKE_CURRENT_SOURCE_DIR}/doubleSpinBox_p.h
     ${CMAKE_CURRENT_SOURCE_DIR}/penCreatorDialog.h
     ${CMAKE_CURRENT_SOURCE_DIR}/popupWidget_p.h
@@ -234,10 +234,6 @@ set(itomWidgets_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/dataObjectTable.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dataObjectMetaWidget.h
 )
-
-#Define Version in pluginVersion.h
-configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h)
-configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/itomWidgetsVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/itomWidgetsVersion.h)
 
 if (QT5_FOUND)
     QT5_WRAP_CPP(paramPropertyBrowser_MOC ${paramPropertyBrowser_MOC_SOURCES})

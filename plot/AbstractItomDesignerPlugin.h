@@ -2,7 +2,7 @@
     itom software
     URL: http://www.uni-stuttgart.de/ito
     Copyright (C) 2020, Institut für Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Universität Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
 
@@ -11,7 +11,7 @@
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
 
-    In addition, as a special exception, the Institut für Technische
+    In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
     which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -51,8 +51,6 @@ namespace ito {
                 QDesignerCustomWidgetInterface(),
                 m_plotFeatures(ito::Static),
                 m_version(0),
-                m_maxItomVer(0),
-                m_minItomVer(0),
                 m_author(""),
                 m_description(""),
                 m_detaildescription(""),
@@ -88,8 +86,6 @@ namespace ito {
             ito::PlotFeatures    m_plotFeatures;
 
             int m_version;                        //!< plugin version
-            int m_maxItomVer;                     //!< minimum required version of the main program
-            int m_minItomVer;                     //!< maximum supported version of the main program
             QString m_author;                     //!< the plugin author
             QString m_description;                //!< a brief description of the plugin
             QString m_detaildescription;          //!< a detail description of the plugin

@@ -4,7 +4,7 @@ Introduction
 #########################################
 
 |itom| is a lab automation and measurement software developed, maintained and
-provided by the ITO (Institut for Technical Optics, University Stuttgart, Germany).
+provided by the ITO (Institut für Technische Optik, Universität Stuttgart, Germany).
 While this software has been designed with an emphasis on developing and
 running optical systems, it is not limited to this field of application.
 |itom| represents a versatile tool for building the control software for any
@@ -56,7 +56,7 @@ About us
 **************
 
 | Institut für Technische Optik
-| Universitaet Stuttgart
+| Universität Stuttgart
 | Pfaffenwaldring 9
 | 70569 Stuttgart
 |
