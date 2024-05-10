@@ -104,7 +104,7 @@ comma_index = compile_datetime.index(",")
 compile_year = compile_datetime[comma_index - 4 : comma_index]
 copyright = (
     f"2011-{compile_year}, Institut fuer Technische Optik (ITO), "
-    "Universität Stuttgart. Bug report: https://github.com/itom-project/itom/issues"
+    "University Stuttgart. Bug report: https://github.com/itom-project/itom/issues"
 )
 
 
@@ -283,27 +283,27 @@ latex_documents = [
         "index",
         "itom_doc.tex",
         "itom Documentation",
-        "Institut fuer Technische Optik (ITO), Universität Stuttgart",
+        "Institut fuer Technische Optik (ITO), University Stuttgart",
         "manual",
     ),
     # script-language: FEHLER
-    # ('script-language/script-language', 'itom_scriptLanguage.tex', u'itom Documentation', u'Institut for Technical Optics (ITO), Universität Stuttgart', 'manual'),
+    # ('script-language/script-language', 'itom_scriptLanguage.tex', u'itom Documentation', u'Institut for Technical Optics (ITO), University Stuttgart', 'manual'),
     # Reference: FEHLER
-    # ('reference/reference', 'itom_reference.tex', u'itom Documentation', u'Institut for Technical Optics (ITO), Universität Stuttgart', 'manual'),
+    # ('reference/reference', 'itom_reference.tex', u'itom Documentation', u'Institut for Technical Optics (ITO), University Stuttgart', 'manual'),
     # Installation: viele FEHLER
-    # ('02_installation/install', 'install.tex', u'itom Documentation', u'Institut for Technical Optics (ITO), Universität Stuttgart', 'manual'),
+    # ('02_installation/install', 'install.tex', u'itom Documentation', u'Institut for Technical Optics (ITO), University Stuttgart', 'manual'),
     # AboutItom: OK
-    # ('AboutItom/aboutItom','AbouItom.tex', u'itom Documentation', u'Institut for Technical Optics (ITO), Universität Stuttgart', 'manual'),
+    # ('AboutItom/aboutItom','AbouItom.tex', u'itom Documentation', u'Institut for Technical Optics (ITO), University Stuttgart', 'manual'),
     # getting-Started: OK
-    # ('getting-started/getting-started', 'getting-started.tex', u'itom Documentation', u'Institut for Technical Optics (ITO), Universität Stuttgart', 'manual'),
+    # ('getting-started/getting-started', 'getting-started.tex', u'itom Documentation', u'Institut for Technical Optics (ITO), University Stuttgart', 'manual'),
     # gui: OK
-    # ('gui/gui', 'gui.tex', u'itom Documentation', u'Institut for Technical Optics (ITO), Universität Stuttgart', 'manual'),
+    # ('gui/gui', 'gui.tex', u'itom Documentation', u'Institut for Technical Optics (ITO), University Stuttgart', 'manual'),
     # miscellaneous: OK
-    # ('miscellaneous/miscellaneous', 'miscellaneous.tex', u'itom Documentation', u'Institut for Technical Optics (ITO), Universität Stuttgart', 'manual'),
+    # ('miscellaneous/miscellaneous', 'miscellaneous.tex', u'itom Documentation', u'Institut for Technical Optics (ITO), University Stuttgart', 'manual'),
     # test-scripts: OK
-    # ('test-scripts/test-scripts', 'test-scripts.tex', u'itom Documentation', u'Institut for Technical Optics (ITO), Universität Stuttgart', 'manual'),
+    # ('test-scripts/test-scripts', 'test-scripts.tex', u'itom Documentation', u'Institut for Technical Optics (ITO), University Stuttgart', 'manual'),
     # whats-new: OK (leer)
-    # ('whats-new/whats-new', 'whats-new.tex', u'itom Documentation', u'Institut for Technical Optics (ITO), Universität Stuttgart', 'manual'),
+    # ('whats-new/whats-new', 'whats-new.tex', u'itom Documentation', u'Institut for Technical Optics (ITO), University Stuttgart', 'manual'),
 ]
 
 # latex_documents = [
