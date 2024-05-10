@@ -1,6 +1,6 @@
 
 REM Set the following variables by a CMake configure_file command and
-REM replace placeholders by absolute pathes
+REM replace placeholders by absolute paths
 SET QT_DEPLOYMENT_FOLDER="@CMAKE_CURRENT_BINARY_DIR@/setup/qt_deployment"
 SET QT_BIN="@QT_BINARY_DIR@"
 SET ITOM_BIN="@CMAKE_CURRENT_BINARY_DIR@"

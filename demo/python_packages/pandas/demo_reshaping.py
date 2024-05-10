@@ -2,6 +2,7 @@
 =================
 
 """
+
 import pandas as pd
 import numpy as np
 
@@ -50,17 +51,17 @@ pd.pivot_table(dataFrame, values="D", index=["A", "B"], columns=["C"])
 ###############################################################################
 # **Time series**
 indexData = pd.date_range("1/5/2022", periods=100, freq="S")
-timeStemps = pd.Series(np.random.randint(0, 500, len(indexData)), index=indexData)
-timeStemps.resample("5Min").sum()
+timestamps = pd.Series(np.random.randint(0, 500, len(indexData)), index=indexData)
+timestamps.resample("5Min").sum()
 
 ###############################################################################
-timeStempsUTC = timeStemps.tz_localize("UTC")
+timeStempsUTC = timestamps.tz_localize("UTC")
 
 ###############################################################################
 timeStempsUTC.tz_convert("US/Eastern")
 
 ###############################################################################
-ps = timeStemps.to_period()
+ps = timestamps.to_period()
 
 ###############################################################################
 ps.to_timestamp()

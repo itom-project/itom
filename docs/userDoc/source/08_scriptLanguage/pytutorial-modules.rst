@@ -18,7 +18,7 @@ Reload Modules in |itom|
 
 see :ref:`here <script-language-reload-modules>` to get more information about reloading modules in |itom|.
 
-path Variablen
+path variable
 ------------------
 
 itom-packages Folder

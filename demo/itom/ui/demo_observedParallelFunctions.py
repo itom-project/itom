@@ -40,8 +40,7 @@ from time import sleep
 
 
 class FunctionCall:
-    """This class wraps GUI items, the thread and observer of one function call.
-    """
+    """This class wraps GUI items, the thread and observer of one function call."""
 
     def __init__(self, label, progress, abortButton, overallObserver):
         """Constructor."""
@@ -88,7 +87,7 @@ class FunctionCall:
         if self.observer:
             self.abortBtn["enabled"] = False
             # force the observer to cancel the running algorithm. The algorithm
-            # has to regularily check for this request and terminate the algorithm
+            # has to regularly check for this request and terminate the algorithm
             # (with an exception set) as soon as possible.
             self.observer.requestCancellation()
 
@@ -171,9 +170,7 @@ class DemoObserver(ItomUi):
         """Constructor."""
         ItomUi.__init__(self, "observedParallelFunctions.ui")
 
-        self.sets = (
-            []
-        )  # sets of widgets in the GUI for each parallel function execution
+        self.sets = []  # sets of widgets in the GUI for each parallel function execution
 
         # this overallObserver gives 25% to each of the 4 parallel function calls.
         self.overallObserver = progressObserver(

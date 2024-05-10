@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2022, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2022, Institut für Technische Optik (ITO),
     University of Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
@@ -11,7 +11,7 @@
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
 
-    In addition, as a special exception, the Institut fuer Technische
+    In addition, as a special exception, the Institut für Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
     which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -92,7 +92,7 @@ void PlotInfoPicker::updatePickers(const QVector<int> indices, const QVector<QPo
 {
     if (indices.size() != positions.size())
     {
-        qDebug("Could not update pickers, indices and positions missmatch");
+        qDebug("Could not update pickers, indices and positions mismatch");
         return;
     }
 
@@ -151,7 +151,7 @@ void PlotInfoPicker::updatePickers(
 
     if (indices.size() != xpositions.size() || indices.size() != ypositions.size())
     {
-        qDebug("Could not update pickers, indices and positions missmatch");
+        qDebug("Could not update pickers, indices and positions mismatch");
         return;
     }
 
@@ -260,7 +260,7 @@ void PlotInfoPicker::updatePickers(const QVector<int> indices, const QVector<QVe
 {
     if (indices.size() != positions.size())
     {
-        qDebug("Could not update pickers, indices and positions missmatch");
+        qDebug("Could not update pickers, indices and positions mismatch");
         return;
     }
 

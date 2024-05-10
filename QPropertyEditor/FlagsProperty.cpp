@@ -113,7 +113,7 @@ bool FlagsProperty::setEditorData(QWidget* editor, const QVariant& data)
     if (!m_inModification)
     {
         CheckableComboBox* combo = 0;
-        // TODO: maybe malformed if statment or put brackets to make gcc happy
+        // TODO: maybe malformed if statement or put brackets to make gcc happy
         if (combo = qobject_cast<CheckableComboBox*>(editor))
         {
             int value = data.toInt();
@@ -148,7 +148,7 @@ bool FlagsProperty::setEditorData(QWidget* editor, const QVariant& data)
 QVariant FlagsProperty::editorData(QWidget* editor)
 {
     CheckableComboBox* combo = 0;
-    // TODO: maybe malformed if statment or put brackets to make gcc happy
+    // TODO: maybe malformed if statement or put brackets to make gcc happy
     if (combo = qobject_cast<CheckableComboBox*>(editor))
     {
         int result = 0;

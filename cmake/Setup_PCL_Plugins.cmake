@@ -28,7 +28,7 @@ endif(NOT EXISTS ${VTK_ROOT})
 
 if(WIN32)
     if(NOT EXISTS ${FLANN_ROOT} OR NOT EXISTS ${QHULL_ROOT} OR NOT EXISTS ${VTK_ROOT})
-        message(FATAL_ERROR "Depencencies Missing for Point-Cloud Library. Please make sure that FLANN_ROOT, QHULL_ROOT and VTK_ROOT are well defined")
+        message(FATAL_ERROR "Dependencies Missing for Point-Cloud Library. Please make sure that FLANN_ROOT, QHULL_ROOT and VTK_ROOT are well defined")
     endif(NOT EXISTS ${FLANN_ROOT} OR NOT EXISTS ${QHULL_ROOT} OR NOT EXISTS ${VTK_ROOT})
 endif(WIN32)
 

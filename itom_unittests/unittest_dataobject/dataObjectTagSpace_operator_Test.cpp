@@ -13,7 +13,7 @@
 /*! \class dataObjectTag_Test
     \brief Test for DataObjectTag class and functions for all itom data types
 
-    This test class checks functionality of different fuctions on data objects Tags.
+    This test class checks functionality of different functions on data objects Tags.
 */
 
 template <typename _Tp> class dataObjectTagSpace_operator_Test : public ::testing::Test
@@ -21,7 +21,7 @@ template <typename _Tp> class dataObjectTagSpace_operator_Test : public ::testin
   public:
     virtual void SetUp(void)
     {
-        // Creating 1,2 and 3 dimension DataObjects for this Perticular Test class.
+        // Creating 1,2 and 3 dimension DataObjects for this Particular Test class.
 
         rotMat[0] = 4.0;
         rotMat[1] = 3.0;
@@ -267,7 +267,7 @@ template <typename _Tp> class dataObjectTagSpace_operator_Test : public ::testin
 
 TYPED_TEST_CASE(dataObjectTagSpace_operator_Test, ItomDataAllTypes);
 
-// Check if operant supportes copy of tag space
+// Check if operant supports copy of tag space
 
 // tagSpace_copyTo_Test
 /*!
@@ -498,7 +498,7 @@ TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_div_Test)
 
 // tagSpace_comp_Test
 /*!
-    This test checks functionality of "elementwise comparision" of a DataObject is compatible with tagSpace copy.
+    This test checks functionality of "elementwise comparison" of a DataObject is compatible with tagSpace copy.
 */
 TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_comp_Test)
 {

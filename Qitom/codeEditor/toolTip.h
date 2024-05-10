@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
@@ -66,7 +66,7 @@ protected:
 #ifndef QT_NO_STYLE_STYLESHEET
 public slots:
     /** \internal
-      Cleanup the _q_stylesheet_parent propery.
+      Cleanup the _q_stylesheet_parent property.
      */
     void styleSheetParentDestroyed() {
         setProperty("_q_stylesheet_parent", QVariant());

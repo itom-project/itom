@@ -1,7 +1,7 @@
 Setup creation
 **************
 
-Responsible for Setup Releases and maintanance of the versioning system is
+Responsible for Setup Releases and maintenance of the versioning system is
 the [ITOM Release-Team](https://github.com/orgs/itom-project/teams/itom-release/).
 
 Version Management in ITOM
@@ -38,9 +38,9 @@ It sets the version number for the following files in the build directory:
   Designerplugins, by checking out different sets of Git-Tags.
  This is not intended for regular releases, whereby the version number should be
   unified throughout all Repositories.
-  
+
 Besides this the Itom-Release team checks the manually assigned Version Number
-for the Interface modules in the files **addInInterfaceVersion.h** and 
+for the Interface modules in the files **addInInterfaceVersion.h** and
 **designerPluginInterfaceVersion.h**. They are not related to the Itom Versioning
 system.
 
@@ -55,13 +55,42 @@ Open the Itom Help module by pressing F1.
 4. run in python the file "create_all_plugin_docs.py" in the \Build\itom\docs\pluginDoc.
 Choose the build folder of the available Plugin. Open the Itom Help module by pressing F1.
 
-   
+
 Create Setup for Windows
 ------------------------
 
 1. Download the latest [InnoSetupCompiler](https://jrsoftware.org/isdl.php).
 2. Run the "start_qt_deployment.bat" file in \build\itom\setup\win64
 3. To create a Windows Setup install open the file build\itom\setup\win64\itom_setup_win64.iss in the InnoSetupCompiler and run it accordingly.
+Version Management itom
+------------------------
+
+The person responsible for version number assignment in 'itom' is Heiko Bieger.
+
+Every time a new setup of 'itom' is released, the patch number of the 'itom' version is incremented. Major and minor version increments occur only with significant changes and are determined by the core developers.
+
+Incrementing the 'itom' version number:
+-------------------------------------------
+
+Assign the new 'itom' version number in 'global.h' according to the principles of Semantic Versioning.
+
+Checking the AddInInterface and DesignerPluginInterface version numbers:
+----------------------------------------------------------------------------
+
+Check if there have been any changes in the AddInInterface and/or DesignerPluginInterface since the last setup. This leads to an incrementation of the version number(s) according to the principles of Semantic Versioning, which are assigned in the files addInInterfaceVersion.h and designerPluginInterfaceVersion.h.
+
+Compile itom, designer plugins, and then all plugins
+---------------------------------------------------------
+
+1. Compile
+
+Creating documentation:
+---------------
+
+1. Start \Build\itom\docs\doxygen\itom_doxygen.dox by double-clicking
+2. Start itom
+3. Run the python file "create_doc.py" in \Build\itom\docs\userDoc and start Help
+4. Run the python file "create_all_plugin_docs.py" in \Build\itom\docs\pluginDoc, select the build directory of the free plugins, and start Help
 
 
 CHANGE-LOG

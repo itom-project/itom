@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
@@ -616,7 +616,7 @@ QString any(const QString &name, const QStringList &alternates)
 #if 0 //QT_VERSION > MIN_QT_REGULAREXPRESSION_VERSION
     QStringList all;
     all << instance << decorator << kw << kw_namespace << builtin << word_operators << builtin_fct << comment;
-    all << ufstring1 << ufstring2 << ufstring3 << ufstring4 << string << number << any("SNYC", QStringList("\\n"));
+    all << ufstring1 << ufstring2 << ufstring3 << ufstring4 << string << number << any("SYNC", QStringList("\\n"));
     QRegularExpression regExp = QRegularExpression(all.join("|"));
     regExpressions.append(NamedRegExp(regExp.namedCaptureGroups(), regExp));
 #else

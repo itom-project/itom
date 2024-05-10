@@ -15,7 +15,9 @@ class Snapshot(ItomUi):
         )
         self.absPath = os.path.join(self.dir, "snapshot.ui")
         ItomUi.__init__(
-            self, self.absPath, ui.TYPEWINDOW,
+            self,
+            self.absPath,
+            ui.TYPEWINDOW,
         )
         self.gui.setAttribute(55, True)
 
@@ -200,7 +202,7 @@ class Snapshot(ItomUi):
 
     ##########################################################
     def timerPic(self):
-        """ takes pictures and is called by a timer instance"""
+        """takes pictures and is called by a timer instance"""
         try:
             if self.cnt == 0:
                 self.selectedDevice.setAutoGrabbing(False)
@@ -267,7 +269,7 @@ class Snapshot(ItomUi):
             except Exception:
                 ui.msgCritical(
                     "Error",
-                    "Not able to save files. Maybe the selcted color palette does not fit to data type",
+                    "Not able to save files. Maybe the selected color palette does not fit to data type",
                 )
 
     ##########################################################

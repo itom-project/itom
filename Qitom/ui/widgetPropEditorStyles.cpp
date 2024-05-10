@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
@@ -38,7 +38,7 @@ namespace ito
 
 const int PAPERCOLOR = 1;
 // const int FOLDMARGINCOLOR = 2; -> does not exist any more, changed via stylesheet
-// const int MARGINCOLOR = 3; -> doest not exist any more, changed via stylesheet
+// const int MARGINCOLOR = 3; -> doesn't exist any more, changed via stylesheet
 const int WHITESPACECOLOR = 4;
 const int UNMATCHEDBRACECOLOR = 5;
 const int MATCHEDBRACECOLOR = 6;

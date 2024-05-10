@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
@@ -531,7 +531,7 @@ void CodeCompletionMode::setTriggerLength(int length)
 //-------------------------------------------------------------------
 /*
 Defines the list of symbols that immediately trigger a code completion
-requiest. BY default, this list contains the dot character.
+request. BY default, this list contains the dot character.
 
 For C++, we would add the '->' operator to that list.
 */

@@ -16,7 +16,6 @@ from itom import ui
 
 class AutoConnectExample(ItomUi):  # AutoConnectExample is inherited from ItomUi
     def __init__(self):  # constructor
-
         # call constructor of ItomUi like it would be the constructor of the class itom.ui:
         ItomUi.__init__(self, "autoConnectDemo.ui", ui.TYPEWINDOW)
         self.counter = 0  # create a counter variable for this instance

@@ -5,7 +5,7 @@
 Setup creation
 **************
 
-Responsible for Setup Releases and maintanance of the versioning system is
+Responsible for Setup Releases and maintenance of the versioning system is
 the [ITOM Release-Team](https://github.com/orgs/itom-project/teams/itom-release/).
 
 Version Management in ITOM
@@ -42,9 +42,9 @@ It sets the version number for the following files in the build directory:
   Designerplugins, by checking out different sets of Git-Tags.
  This is not intended for regular releases, whereby the version number should be
   unified throughout all Repositories.
-  
+
 Besides this the Itom-Release team checks the manually assigned Version Number
-for the Interface modules in the files **addInInterfaceVersion.h** and 
+for the Interface modules in the files **addInInterfaceVersion.h** and
 **designerPluginInterfaceVersion.h**. They are not related to the Itom Versioning
 system.
 
@@ -59,7 +59,7 @@ Open the Itom Help module by pressing F1.
 4. run in python the file "create_all_plugin_docs.py" in the \Build\itom\docs\pluginDoc.
 Choose the build folder of the available Plugin. Open the Itom Help module by pressing F1.
 
-   
+
 Create Setup for Windows
 ------------------------
 

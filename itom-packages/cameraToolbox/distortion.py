@@ -6,6 +6,7 @@ import warnings
 
 """Toolbox for distort and undistort point coordinates as well as determine the radial distortion"""
 
+
 #######################################################
 def getPointGrid(shape, pitch, center, rotation=0, repr="2d"):
     """creates a dataObject with coordinates of points on a regular grid.
@@ -318,7 +319,14 @@ def meritFitGridDistortionRotation(params, xe, ye):
     """
     pitchX, pitchY, centerX, centerY, rotation, k1, k2, k3 = params
     xy_grid = getPointGridDistorted(
-        xe.shape, [pitchX, pitchY], [centerX, centerY], rotation, k1, k2, k3, "3d",
+        xe.shape,
+        [pitchX, pitchY],
+        [centerX, centerY],
+        rotation,
+        k1,
+        k2,
+        k3,
+        "3d",
     )
     dist = getMeanDistance(xy_grid[:, :, 0], xy_grid[:, :, 1], xe, ye)
     # print(params, dist)
@@ -501,7 +509,10 @@ def fitGrid(
         elif len(x0) == 4:
             x0 = x0 + [0, 0, 0, 0]
         coeffs = minimize(
-            meritFitGridDistortionRotation, x0, args=(xe, ye), method="Nelder-Mead",
+            meritFitGridDistortionRotation,
+            x0,
+            args=(xe, ye),
+            method="Nelder-Mead",
         )
         result = coeffs.x
 

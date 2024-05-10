@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
@@ -675,8 +675,16 @@ RetVal FileSystemDockWidget::changeBaseDirectory(QString dir)
             act->setWhatsThis("");
             act->setIcon(QIcon(":/application/icons/empty.png"));
             act->setCheckable(false);
+
+            // if baseDirectory is directly given to the lambda function,
+            // its current state when triggering the lambda function is used
+            // instead of the value at the time when creating the signal-slot
+            // connection. This is achieved by creating a local copy of this
+            // variable.
+            QString baseDirectoryCopy = QString(baseDirectory);
+
             connect(act, &QAction::triggered, [=]() {
-                newDirSelected(baseDirectory);
+                newDirSelected(baseDirectoryCopy);
             });
         }
 

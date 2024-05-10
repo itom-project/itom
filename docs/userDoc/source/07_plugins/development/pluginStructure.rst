@@ -12,11 +12,11 @@ These plugins are separated into three main groups:
 
 * Type **actuator**: Plugins of this basic type should be used if you want to connect any actuator, like motor stages, piezo actuators, focussing systems, ... to |itom| (see :ref:`plugin-class` and :ref:`plugin-class-actuator`)
 
-* Type **dataIO**: Plugins of this basic type should be used for connecting any input or output device to |itom|. The main representative of this group are cameras as input device or the serial port as an input/ouput device (see :ref:`plugin-class` and :ref:`plugin-class-dataio`). This group is subdivided into the following sub-types:
+* Type **dataIO**: Plugins of this basic type should be used for connecting any input or output device to |itom|. The main representative of this group are cameras as input device or the serial port as an input/output device (see :ref:`plugin-class` and :ref:`plugin-class-dataio`). This group is subdivided into the following sub-types:
 
     * **grabber** for cameras (Please consider that the class of the camera-plugin should not directly derive from *AddInDataIO* but from *AddInGrabber*, which is derived from the first.
     * **ADDA** for any analog-digital converters
-    * **rawIO** for further input-output devices, like display windows for SLM or LCoS-sensors, serial ports or plugins which do not fit to any other group, since the type **dataIO** is the most flexibel plugin type.
+    * **rawIO** for further input-output devices, like display windows for SLM or LCoS-sensors, serial ports or plugins which do not fit to any other group, since the type **dataIO** is the most flexible plugin type.
 
 * Type **algo**: Plugins of this type mainly contain different algorithms and/or advanced user interfaces like dialogs, main windows, widgets, ...  (see :ref:`plugin-class` and :ref:`plugin-class-algo`)
 
@@ -26,7 +26,7 @@ Each plugin is a different project in your programming environment and is finall
 Plugin load mechanism of |itom|
 -------------------------------
 
-For information about loading plugins in |itom|, see the section :ref:plugins-loading.
+For information about loading plugins in |itom|, see the section :ref:`plugins-loading`.
 
 Basic plugin structure
 ----------------------
@@ -37,7 +37,7 @@ Every plugin consists at least of two classes, which are both derived from two d
 
     addInInterface.h
 
-which is contained in the folder **include/common** of |itom|'s SDK. This folder contains further header files which can be used in every plugin and contain interfaces and helper libaries with useful functions for successfully and easily program a plugin. For using these files you need to link your plugin agains the libraries **itomCommonLib** and **itomCommonQtLib**. Additionally |itom| provides an application programming interface (API) such that plugins can access important methods of |itom|. For more information see :ref:`plugin-itomAPI`.
+which is contained in the folder **include/common** of |itom|'s SDK. This folder contains further header files which can be used in every plugin and contain interfaces and helper libraries with useful functions for successfully and easily program a plugin. For using these files you need to link your plugin against the libraries **itomCommonLib** and **itomCommonQtLib**. Additionally |itom| provides an application programming interface (API) such that plugins can access important methods of |itom|. For more information see :ref:`plugin-itomAPI`.
 
 The two classes of the plugin are as follows:
 

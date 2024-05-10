@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2023, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2023, Institut für Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
@@ -404,7 +404,7 @@ public slots:
 
     void setAutoReloader(bool enabled, bool checkFile, bool checkCmd, bool checkFct);
 
-    // Settings are neccesary for automatic itom inclusion and syntax check
+    // Settings are necessary for automatic itom inclusion and syntax check
     void readSettings();
     void propertiesChanged();
 

@@ -5,7 +5,6 @@ from numpy import testing as nptesting
 
 
 class DataObjectMultiplication(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         pass
@@ -24,8 +23,16 @@ class DataObjectMultiplication(unittest.TestCase):
 
             nptesting.assert_array_almost_equal(obj3, obj1)
 
-        types_bad = ['uint8','int8','uint16','int16',
-                     'int32', 'complex64', 'complex128', 'rgba32']
+        types_bad = [
+            "uint8",
+            "int8",
+            "uint16",
+            "int16",
+            "int32",
+            "complex64",
+            "complex128",
+            "rgba32",
+        ]
 
         for typ in types_bad:
             obj1 = dataObject.eye(3, typ)
@@ -54,8 +61,9 @@ class DataObjectMultiplication(unittest.TestCase):
             a1 = dataObject([2, 3], dtype=typ, data=[-1, 2, 0.0001, 0.7, -3, 5])
             a2 = dataObject([3, 2], dtype=typ, data=[0.4, 100, -5e4, 22, 0.01, -0.01])
             a3 = dataObject([2, 2], dtype=typ, data=[1, 1, 0, 5])
-            a4 = dataObject([3, 3], dtype=typ, data=
-                            [-0.1, 0.2, -0.3, 0.4, 1, 2, -7, -5, 0])
+            a4 = dataObject(
+                [3, 3], dtype=typ, data=[-0.1, 0.2, -0.3, 0.4, 1, 2, -7, -5, 0]
+            )
 
             d1 = a1 @ a2
             n1 = np.array(a1) @ np.array(a2)
@@ -73,13 +81,11 @@ class DataObjectMultiplication(unittest.TestCase):
             n4 = np.array(a4) @ np.array(a2)
             nptesting.assert_array_almost_equal(d4, n4)
 
-
     def test_matmul_operator_wrong(self):
-        """Test some things that should fail with the matmul operator.
-        """
-        a = dataObject.eye(3, dtype='float32')
-        a2 = dataObject.eye(4, dtype='float32')
-        a3 = dataObject([3, 4], dtype='float64', data=list(range(0, 12)))
+        """Test some things that should fail with the matmul operator."""
+        a = dataObject.eye(3, dtype="float32")
+        a2 = dataObject.eye(4, dtype="float32")
+        a3 = dataObject([3, 4], dtype="float64", data=list(range(0, 12)))
 
         with self.assertRaises(TypeError):
             b = a @ 2.0  # scalar multiplication not allowed
@@ -97,6 +103,5 @@ class DataObjectMultiplication(unittest.TestCase):
             b = a2 @ a3  # shape inappropriate
 
 
-
-if __name__ == '__main__':
-    unittest.main(module='dataobject_multiplication', exit=False)
+if __name__ == "__main__":
+    unittest.main(module="dataobject_multiplication", exit=False)

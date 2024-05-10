@@ -307,11 +307,11 @@ void QPropertyModel::updateItem ( QObject* propertyObject, const QModelIndex& pa
         QModelIndex itemIndex = createIndex(parentItem->row(), 0, static_cast<Property*>(parentItem));
         dataChanged(itemIndex, createIndex(parentItem->row(), 1, static_cast<Property*>(parentItem)));
         QList<QByteArray> dynamicProperties = propertyObject->dynamicPropertyNames();
-        QList<QObject*> childs = parentItem->parent()->children();
+        QList<QObject*> children = parentItem->parent()->children();
         int removed = 0;
-        for(int i = 0; i < childs.count(); ++i )
+        for(int i = 0; i < children.count(); ++i )
         {
-            QObject* obj = childs[i];
+            QObject* obj = children[i];
             if( !obj->property("__Dynamic").toBool() || dynamicProperties.contains( obj->objectName().toLocal8Bit() ) )
                 continue;
             beginRemoveRows(itemIndex.parent(), i - removed, i - removed);
@@ -328,14 +328,14 @@ void QPropertyModel::addDynamicProperties( Property* parent, QObject* propertyOb
     // Get dynamic property names
     QList<QByteArray> dynamicProperties = propertyObject->dynamicPropertyNames();
 
-    QList<QObject*> childs = parent->children();
+    QList<QObject*> children = parent->children();
 
     // Remove already existing properties from list
-    for(int i = 0; i < childs.count(); ++i )
+    for(int i = 0; i < children.count(); ++i )
     {
-        if( !childs[i]->property("__Dynamic").toBool() ) continue;
+        if( !children[i]->property("__Dynamic").toBool() ) continue;
 
-        int index = dynamicProperties.indexOf( childs[i]->objectName().toLocal8Bit() );
+        int index = dynamicProperties.indexOf( children[i]->objectName().toLocal8Bit() );
         if( index != -1)
         {
             dynamicProperties.removeAt(index);
@@ -343,7 +343,7 @@ void QPropertyModel::addDynamicProperties( Property* parent, QObject* propertyOb
         }
     }
 
-    // Remove invalid properites and those we don't want to add
+    // Remove invalid properties and those we don't want to add
     for(int i = 0; i < dynamicProperties.size(); ++i )
     {
         QString dynProp = dynamicProperties[i];

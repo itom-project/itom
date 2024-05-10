@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
@@ -171,7 +171,7 @@ void DialogOpenFileWithFilter::on_buttonBox_accepted()
             }
             else
             {
-                QMessageBox::critical(this, tr("Timeout while verifiying variable name"), tr("A timeout occurred while checking for the existence of the variable name in Python. Please try it again."));
+                QMessageBox::critical(this, tr("Timeout while verifying variable name"), tr("A timeout occurred while checking for the existence of the variable name in Python. Please try it again."));
                 success = false;
             }
         }

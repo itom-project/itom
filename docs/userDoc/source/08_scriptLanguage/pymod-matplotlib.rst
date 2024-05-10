@@ -346,11 +346,11 @@ Matplotlib can be used to create figures with **LaTeX** for the text layout. Thi
 
 .. note:: Required installation: `LaTeX <https://miktex.org/>`_ , `dvipng <https://www.ctan.org/pkg/dvipng?lang=de/>`_ (may be included in LaTeX installation), `Ghostscript <https://www.ghostscript.com/>`_ . The executables of **LaTeX**, **Ghostscript** must all be located on your **PATH** variable.
 
-The **LaTeX** options is actived by the setting *text.usedtex* in the **rc** settings of the Matplotlib:
+The **LaTeX** options is activated by the setting *text.usedtex* in the **rc** settings of the Matplotlib:
 
 .. code-block:: python
 
-    fromt matplotlib import rc
+    from matplotlib import rc
     rc('text', usetex = True)
 
 Some detailed documentation can be found on the Matplotlib website: `<http://matplotlib.org/users/usetex.html>`_
@@ -481,7 +481,7 @@ Signals
     :noindex:
 
 
-    interal use between MatplotlibPlot and the subplot configuration dialog.
+    internal use between MatplotlibPlot and the subplot configuration dialog.
 
     .. note::
 

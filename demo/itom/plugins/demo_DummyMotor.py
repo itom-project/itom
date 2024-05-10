@@ -61,7 +61,7 @@ print("x = " + str(x) + " y = " + str(y) + " z = " + str(z))
 #    will wait before the next ``setParam``, ``setPosAbs``, ``setPosRel``,
 #    ``getPos``, ``getParam``, ``getStatus`` methods until any previous movement is finished.
 
-# now switch the motor to an asychronous movement
+# now switch the motor to an asynchronous movement
 stage.setParam("async", 1)
 
 ###############################################################################
@@ -88,12 +88,14 @@ while not targetReached:
 #    executing is finished. Therefore, this approach is better suited for GUI applications which are
 #    mainly based on events.
 
+
 # use an event-driven approach to control the current status and position:
 def statusChanged(state, currentPos):
     print(
         "motor reported a status changed event. state: %s, current position: %s"
         % (str(state), str(currentPos))
     )
+
 
 ###############################################################################
 # The method ``statusChanged`` can only be called if the script is not executing any more.
@@ -102,7 +104,9 @@ def statusChanged(state, currentPos):
 # be added to the connection, such that the ``statusChanged slot`` is only called after 100ms again. All intermediate
 # calls are ignored (new in itom 3.2)
 stage.connect(
-    "actuatorStatusChanged(QVector<int>,QVector<double>)", statusChanged, 100,
+    "actuatorStatusChanged(QVector<int>,QVector<double>)",
+    statusChanged,
+    100,
 )
 
 stage.setPosAbs(0, 0.0, 1, 0.0)

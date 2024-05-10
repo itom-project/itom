@@ -34,7 +34,7 @@
     The Flags Property Class extends a Property to add flag / enum functionality to the
     QPropertyEditor.
     Flags Properties are automatically created in the QPropertyModel for objects that
-    have an enum as property value wich is a flag (or-combination of its own enumeration).
+    have an enum as property value which is a flag (or-combination of its own enumeration).
 
     @author Marc Gronle
 */

@@ -1,7 +1,7 @@
 /* ********************************************************************
 itom software
 URL: http://www.uni-stuttgart.de/ito
-Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+Copyright (C) 2020, Institut für Technische Optik (ITO),
 Universitaet Stuttgart, Germany
 
 This file is part of itom and its software development toolkit (SDK).
@@ -11,7 +11,7 @@ under the terms of the GNU Library General Public Licence as published by
 the Free Software Foundation; either version 2 of the Licence, or (at
 your option) any later version.
 
-In addition, as a special exception, the Institut fuer Technische
+In addition, as a special exception, the Institut für Technische
 Optik (ITO) gives you certain additional rights.
 These rights are described in the ITO LGPL Exception version 1.0,
 which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -226,16 +226,16 @@ namespace ito
     *   @brief class of the AddIn - Library (DLL) - Interface
     *
     *   The measurement program can (and should) be expanded with additional functionality by "plugins". The aim of separating
-    *   part of the program into plugins is to speed up developement and to reduce complexity for plugin developers.
+    *   part of the program into plugins is to speed up development and to reduce complexity for plugin developers.
     *   The main program holds the necessary functionality to load and use plugins with either the integrated python interpreter
     *   or within c/c++ functions.
-    *   All plugins are divded into two parts:
+    *   All plugins are divided into two parts:
     *       - the AddInInterfaceBase
     *       - the AddIn (derived from the specific addIn-type that should be created which is derived from AddInBase
     *
     *   The Interface is a small light weight class which is used when loading the dll into the main program. It holds information
     *   about the plugin itself, e.g. name, version, parameters and so on.
-    *   When loading the plugin is tested for compability with the current version of the main program based on the information in the
+    *   When loading the plugin is tested for compatibility with the current version of the main program based on the information in the
     *   interface class.
     *   The AddInXXX class provides the plugin functionality. Instances of this class are only created when the plugin "is used" either
     *   by python or within other functions. For a description about the loading, using and unloading process see \ref AddInBase, \ref AddInActuator,
@@ -263,8 +263,8 @@ namespace ito
         int m_minItomVer;                               //!< maximum supported version of the main program
         QString m_filename;                             //!< plugin (library) filename on the disc
         QString m_author;                                //!< the plugin author
-        QString m_description;                          //!< a brief descrition of the plugin
-        QString m_detaildescription;                    //!< a detail descrition of the plugin
+        QString m_description;                          //!< a brief description of the plugin
+        QString m_detaildescription;                    //!< a detail description of the plugin
         QString m_license;                              //!< a short license string for the plugin, default value is "LGPL with ITO itom-exception"
         QString m_aboutThis;
         QList<ito::AddInBase *> m_InstList;             //!< vector holding a list of the actual instantiated classes of the plugin
@@ -275,7 +275,7 @@ namespace ito
         bool m_callInitInNewThread;                     /*!< true (default): the init-method of addIn will be called after that the plugin-instance has been moved to new thread (my addInManager). false: the init-method is called in main(gui)-thread, and will be moved to new thread afterwards (this should only be chosen, if not otherwise feasible) */
 
 
-        virtual void importItomApi(void** apiPtr) = 0; //this methods are implemented in the plugin itsself. Therefore place ITOM_API right after Q_INTERFACE in the header file and replace Q_EXPORT_PLUGIN2 by Q_EXPORT_PLUGIN2_ITOM in the source file.
+        virtual void importItomApi(void** apiPtr) = 0; //this methods are implemented in the plugin itself. Therefore place ITOM_API right after Q_INTERFACE in the header file and replace Q_EXPORT_PLUGIN2 by Q_EXPORT_PLUGIN2_ITOM in the source file.
         virtual void importItomApiGraph(void** apiPtr) = 0;
 
         //!> check if we have gui support
@@ -333,13 +333,13 @@ namespace ito
         const QString getDetailDescription(void) const { return m_detaildescription; }
         //! returns a detailed description of the plugin license
         const QString getLicenseInfo(void) const { return m_license; }
-        //! returns a detailed description of the plugin compile informations
+        //! returns a detailed description of the plugin compile information
         const QString getAboutInfo(void) const { return m_aboutThis; }
         //! returns the plugin's filename
         const QString getFilename(void) const { return m_filename; }
 
         const ito::RetVal setFilename(const QString &name) { m_filename = name; return ito::retOk; }
-        //! returns a list of the actual intantiated classes from this plugin
+        //! returns a list of the actual instantiated classes from this plugin
         inline QList<ito::AddInBase *> getInstList(void) { return m_InstList; }
         inline const QList<ito::AddInBase *> getInstList(void) const { return m_InstList; }
         //! method for closing an instance
@@ -380,7 +380,7 @@ namespace ito
     *   calling thread whilst the plugin classes are run in separate threads. Therefore the plugin functions are implemented as slots which can be
     *   used e.g. with the invokeMethod function.
     *   The base functionality included in this base class is getting the plugin's parameter list, getting the classes uniqueID (which is
-    *   used e.g. for saveing the parameter values) and optinally to bring up a configuration dialog.
+    *   used e.g. for saving the parameter values) and optionally to bring up a configuration dialog.
     */
     class ITOMCOMMONQT_EXPORT AddInBase : public QObject
     {
@@ -645,12 +645,12 @@ namespace ito
     *
     *   the steps 2. and 3. can be repeated until the desired number of "frames" has been read. The device
     *   should be only started once before the first acquisition of a sequence and stop only at their end.
-    *   The device itself MUST NOT allocate memory for the data to be stored. This HAS TO BE DONE in the main programm
+    *   The device itself MUST NOT allocate memory for the data to be stored. This HAS TO BE DONE in the main program
     *   or in the calling method!
     *
     *   If a live image is listening this device, its source node calls startDeviceAndRegisterListener. If the autoGrabbing-flag is enabled,
     *   a timer will be started, which triggers the method 'timerEvent' (should be implemented by any camera). If this flag is disabled, the
-    *   live image is registered, but no images will be regularily aquired. In this case, only manually taken images will be passed to any registered
+    *   live image is registered, but no images will be regularly acquired. In this case, only manually taken images will be passed to any registered
     *   source node. If the flag is enabled again, the timer is restarted and every live image will automatically get new images. This is done by
     *   invoking the slot 'setSource' of every registered source node.
     *
@@ -769,7 +769,7 @@ namespace ito
         //! sets status flags of given status variable
         /*!
         Use this small inline method in order to set the status of given status variable. The status is an OR-combination of the enumeration ito::tActuatorStatus.
-        You can assign a mask (keepMask). Bits whithin this mask will be unchanged.
+        You can assign a mask (keepMask). Bits within this mask will be unchanged.
 
         \param [in,out] status is the status variable which is changed.
         \param [in] newFlags    is an OR-combination of ito::tActuatorStatus which is assigned to status.
@@ -837,7 +837,7 @@ namespace ito
         //! set interrupt flag (thread-safe)
         /*!
         call this method (even direct call from different thread is possible) if you want to set the interrupt flag in order to stop a moving actuator.
-        This flag has to be continously be checked in waitForDone using the method isInterrupted, since this method only sets the flag without initiating
+        This flag has to be continuously be checked in waitForDone using the method isInterrupted, since this method only sets the flag without initiating
         further actions.
 
         \sa waitForDone, isInterrupted
@@ -961,7 +961,7 @@ namespace ito
             iWritePointCloud = 0x0008, //!< interface for saving point cloud to file
             iReadPolygonMesh = 0x0010, //!< interface for loading content of files into a polygon mesh
             iWritePolygonMesh = 0x0020, //!< interface for saving polygon mesh to file
-            iPlotSingleObject = 0x0040  //!< interface for ploting dataObjects via the GUI
+            iPlotSingleObject = 0x0040  //!< interface for plotting dataObjects via the GUI
         };
 
         //Q_ENUM exposes a meta object to the enumeration types, such that the key names for the enumeration

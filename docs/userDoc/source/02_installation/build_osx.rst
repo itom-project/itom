@@ -17,7 +17,7 @@ Once Xcode has been installed, run Xcode and then open the preferences. Select t
 CMake
 -----
 
-Go to **http://www.cmake.org** to download and install the current stable releasse of CMake. It is recommended to download a release that looks like **cmake-x.y.z-Darwin-x86_64.dmg**
+Go to **http://www.cmake.org** to download and install the current stable release of CMake. It is recommended to download a release that looks like **cmake-x.y.z-Darwin-x86_64.dmg**
 
 Homebrew
 --------
@@ -60,7 +60,7 @@ Required Python packages:
 
 * **NumPy**
 
-Recommended Pyton packages:
+Recommended Python packages:
 
 * **SciPy**
 * **Pillow**
@@ -72,7 +72,7 @@ Recommended Pyton packages:
 
     You will find the script *osx_install_dependencies.sh* in the source directory. This script allows to install all dependencies in one rush. To use it run the command *sh osx_install_dependencies.sh* in a Terminal.
 
-To install all in one rush run the follwing list of commands. This might take a whole lot of time (we might talk about hours).
+To install all in one rush run the following list of commands. This might take a whole lot of time (we might talk about hours).
 
 .. code-block:: bash
 
@@ -109,7 +109,7 @@ If you would like to compile |itom| with Qt 5 replace *brew install qt --with-de
 Python 3
 --------
 
-The default Python version on OS X is 2.x. Since |itom| is using Python 3.x you installed in the previous step but it is'nt recommended to replace version 2.x with 3.x. We will set an alias for python3, so when entered python in a terminal session, python3 will be called.
+The default Python version on OS X is 2.x. Since |itom| is using Python 3.x you installed in the previous step but it isn't recommended to replace version 2.x with 3.x. We will set an alias for python3, so when entered python in a terminal session, python3 will be called.
 
 To edit you aliases execute the following command.
 
@@ -117,7 +117,7 @@ To edit you aliases execute the following command.
 
     printf "alias python='python3'\n" >> ~/.bash_profile
 
-The same thing must be done for *pip* and *easy_install*. Be adviced to check the installed version number of python and change it when necessary. The command python --version will give you the installed version number.
+The same thing must be done for *pip* and *easy_install*. Be advised to check the installed version number of python and change it when necessary. The command python --version will give you the installed version number.
 
 .. code-block:: bash
 
@@ -125,7 +125,7 @@ The same thing must be done for *pip* and *easy_install*. Be adviced to check th
     printf "alias pip='/usr/local/Cellar/python3/3.4.3/bin/pip3.4'\n" >> ~/.bash_profile
     . ~/.bash_profile
 
-Now we need to install two packages using easy_install (again remeber to check your version number!):
+Now we need to install two packages using easy_install (again remember to check your version number!):
 
 .. code-block:: bash
 
@@ -225,7 +225,7 @@ Use **CMake** to create the necessary makefiles for debug and/or release:
 
     * **OpenMP**: OpenMP is not available when using the default compiler clang. If your setup includes OpenMP set *-fopenmp* to *OpenMP_CXX_FLAGS* and *OpenMP_C_FLAGS*.
 
-    * **Python3**: On OS X CMake always finds the Python version 2 as default version. This is wrong. Therefore set the following variables to the right pathes:
+    * **Python3**: On OS X CMake always finds the Python version 2 as default version. This is wrong. Therefore set the following variables to the right paths:
 
         * **PYTHON_EXECUTABLE**: /usr/local/bin/python3.4
         * **PYTHON_INCLUDE_DIR**: /usr/local/Cellar/python3/3.4.3/Frameworks/Python.framework/Versions/3.4/include/python3.4m
@@ -239,7 +239,7 @@ Use **CMake** to create the necessary makefiles for debug and/or release:
         * **OpenCV_CONFIG_PATH**: /usr/local/share/OpenCV
         * **OpenCV_DIR**: /usr/local/share/OpenCV
 
-    * **PointCloudLibrary** (optonal):
+    * **PointCloudLibrary** (optional):
         * **PCL_COMMON_INCLUDE_DIR**: /usr/local/include/pcl-1.7
         * **PCL_COMMON_LIBRARY**: /usr/local/lib/libpcl_common.dylib
         * **PCL_COMMON_LIBRARY_DEBUG**: /usr/local/lib/libpcl_common.dylib

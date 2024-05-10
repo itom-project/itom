@@ -1,6 +1,6 @@
 # - itom software
 # URL: http://www.uni-stuttgart.de/ito
-# Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+# Copyright (C) 2020, Institut für Technische Optik (ITO),
 # Universitaet Stuttgart, Germany
 #
 # This file is part of itom and its software development toolkit (SDK).
@@ -927,8 +927,8 @@ endif()
 
 itom_build_parallel_linux(${target_name})
 
-# for backward compatiblity: enum.py is a default python library from Python 3.4 on. In order to
-# also support earlier versoins, enum.py was also part of the itom-packages folder. However, this
+# for backward compatibility: enum.py is a default python library from Python 3.4 on. In order to
+# also support earlier versions, enum.py was also part of the itom-packages folder. However, this
 # version is old and creates conflicts with newer versions required by further modern python packages.
 # Therefore, enum.py was removed from itom-packages. If one uses Python 3.3 or earlier, the packages enum34
 # has to be installed manually!

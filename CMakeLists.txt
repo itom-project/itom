@@ -1,6 +1,6 @@
 # - itom software -
 # URL: http://www.uni-stuttgart.de/ito
-# Copyright (C) 2024, Institut fuer Technische Optik (ITO),
+# Copyright (C) 2024, Institut für Technische Optik (ITO),
 # Universitaet Stuttgart, Germany
 #
 # This file is part of itom and its software development toolkit (SDK).
@@ -151,7 +151,7 @@ string(REPLACE . "" OpenCV_LIB_VERSION ${OpenCV_VERSION})
 
 message(STATUS "OpenCV_LIB_VERSION: ${OpenCV_LIB_VERSION}")
 
-message(STATUS "OpenCV_VERSION: ${OpenCV_VERSION}")    
+message(STATUS "OpenCV_VERSION: ${OpenCV_VERSION}")
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win64/itom_setup_win64.iss.in
     ${CMAKE_CURRENT_BINARY_DIR}/setup/win64/itom_setup_win64.iss )
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/common/itom_setup_code.iss.in
