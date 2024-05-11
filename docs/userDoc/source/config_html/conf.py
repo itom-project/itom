@@ -82,7 +82,7 @@ master_doc = "index"
 
 # General information about the project.
 project = "itom Documentation"
-# copyright = '2011-2016, Institut für Technische Optik (ITO), University Stuttgart. Bug report: https://github.com/itom-project/itom/issues'
+# copyright = '2011-2016, Institut für Technische Optik (ITO), Universität Stuttgart. Bug report: https://github.com/itom-project/itom/issues'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -106,7 +106,7 @@ comma_index = compile_datetime.index(",")
 compile_year = compile_datetime[comma_index - 4 : comma_index]
 copyright = (
     f"2011-{compile_year}, Institut für Technische Optik (ITO), "
-    "University Stuttgart. Bug report: https://github.com/itom-project/itom/issues"
+    "Universität Stuttgart. Bug report: https://github.com/itom-project/itom/issues"
 )
 
 
