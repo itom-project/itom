@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
@@ -73,7 +73,7 @@ public:
         StyleError
     };
 
-    struct AnsiTextCharFormat 
+    struct AnsiTextCharFormat
     {
         int colStart; // inclusive, zero-based
         int colEnd; // inclusive, zero-based

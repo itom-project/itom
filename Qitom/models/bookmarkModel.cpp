@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
@@ -419,7 +419,7 @@ QVariant BookmarkModel::headerData(int section, Qt::Orientation orientation, int
 //! returns BookmarkItem for given QModelIndex
 /*!
     \param index given QModelIndex
-    \return BookmarkItem to the QModelIndex taht was given
+    \return BookmarkItem to the QModelIndex that was given
 */
 const BookmarkItem& BookmarkModel::itemFromModelIndex(const QModelIndex &index) const
 {

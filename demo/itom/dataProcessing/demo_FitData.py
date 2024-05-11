@@ -3,16 +3,16 @@
 
 This demo shows how data fitting can be performed using the ``itom.dataObject`` and ``itom.algorithms``."""
 
-
 import numpy as np
 from itom import dataObject
 from itom import algorithms
 # sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoFitData.png'
 
+
 ###############################################################################
 # Polynomial of order 2 in x- and y-direction
-def polyFuncOrder2x2(x: float, y:float) -> float:
-    return 2.5 * x ** 2 + -1.7 * y ** 2 + 1.3 * x * y + 0.7 * x - 0.3 * y + 3.2
+def polyFuncOrder2x2(x: float, y: float) -> float:
+    return 2.5 * x**2 + -1.7 * y**2 + 1.3 * x * y + 0.7 * x - 0.3 * y + 3.2
 
 
 ###############################################################################

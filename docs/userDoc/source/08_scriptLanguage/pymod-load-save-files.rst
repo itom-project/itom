@@ -44,7 +44,7 @@ an **idc** file (by :py:meth:`itom.loadIDC`, you get the original dictionary bac
 
     # save idc file
     saveIDC("C:/test.idc", {"mat1":obj1, "mat2":obj2, "mat3":obj3})
-    # remember: if you use \ in pathes, replace them by \\
+    # remember: if you use \ in paths, replace them by \\
 
     # load the file again
     myDict = loadIDC("C:/test.idc")
@@ -104,7 +104,7 @@ menu of any algorithm filter to get more information about this filter.
 All image-based file filters follow these rules how to handle different data types:
 
 * uint8 or uint16 are saved as gray-values (8bit or if supported as 16bit) or if the image format allows color are saved according to the defined color palette.
-* float32 or float64 are saved as gray-values (8bit or if suppored as 16bit) or according to the defined color palette. Therefore the values must be between 0.0 and 1.0.  Values outside these borders are clipped. If the image format supports RGBA, invalid values are saved as transparent values (alpha=zero) else as black values.
+* float32 or float64 are saved as gray-values (8bit or if supported as 16bit) or according to the defined color palette. Therefore the values must be between 0.0 and 1.0.  Values outside these borders are clipped. If the image format supports RGBA, invalid values are saved as transparent values (alpha=zero) else as black values.
 * rgba32 can be saved as 'rgb' (full opacity), 'rgba' (alpha channel is considered, not supported by all formats) or gray formats, where the color image is transformed to gray. if a format from a color palette is indicated, the color image is transformed to gray first and then interpreted using the indicated color palette.
 
 Among others, the following color formats are supported: bmp, jpg, png, gif (read-only), tiff, xpm, xbm, ras, pgm, ppm...

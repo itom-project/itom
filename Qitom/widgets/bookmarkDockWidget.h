@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
@@ -72,7 +72,7 @@ namespace ito
                 Therefore the model is set via this method at a later time. However the model can only be set once.
                 Further calls of this method will do nothing.
 
-                \param model is a reference to the inialized BookmarkModel
+                \param model is a reference to the initialized BookmarkModel
             */
             void setBookmarkModel(BookmarkModel *model);
 

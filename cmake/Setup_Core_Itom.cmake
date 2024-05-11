@@ -19,7 +19,7 @@ endif(NOT EXISTS ${Python_ROOT_DIR})
 
 if(WIN32)
     if(NOT EXISTS ${Python_ROOT_DIR})
-        message(FATAL_ERROR "Depencencies Missing for Python Library. \
+        message(FATAL_ERROR "Dependencies missing for Python Library. \
 Please make sure that the Cmake variable Python_ROOT_DIR or \
 the Environment Variable PYTHON_ROOT are well defined and \
 point to the root directory of the Python installation, that \
@@ -41,7 +41,7 @@ endif(NOT EXISTS ${OpenCV_DIR})
 
 if(WIN32)
     if(NOT EXISTS ${OpenCV_DIR})
-        message(FATAL_ERROR "Depencencies Missing for OpenCV Library. \
+        message(FATAL_ERROR "Dependencies Missing for OpenCV Library. \
 Please make sure that the Cmake Variable OpenCV_DIR or the \
 environment variable OPENCV_ROOT are well defined and point \
 to the root directory of OpenCV.")
@@ -67,7 +67,7 @@ endif(NOT EXISTS ${Qt_Prefix_DIR})
 
 if(WIN32)
     if(NOT EXISTS ${Qt_Prefix_DIR})
-        message(FATAL_ERROR "Depencencies missing for Qt Library. \
+        message(FATAL_ERROR "Dependencies missing for Qt Library. \
 Please make sure that the Cmake Variable Qt_Prefix_DIR or the environment \
 variable QT_ROOT are well defined and point to the root directory \
 of the Qt installation, e.g. a folder like ...Qt/6.4.0/msvc2019_64")

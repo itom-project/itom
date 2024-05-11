@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
@@ -63,7 +63,7 @@ BreakPointDockWidget::BreakPointDockWidget(const QString &title, const QString &
     {
         m_breakPointView->setModel(pe->getBreakPointModel());
         connect(pe->getBreakPointModel(), SIGNAL(rowsInserted(const QModelIndex &, int, int)), this, SLOT(actualizeTree(const QModelIndex &, int, int)));
-        // maybe it would be good to connect the rowsRemoved-Signal as well. Just to be shure!
+        // maybe it would be good to connect the rowsRemoved-Signal as well. Just to be sure!
     }
 
     QAbstractItemModel *model = m_breakPointView->model();

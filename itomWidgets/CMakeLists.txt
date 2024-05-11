@@ -1,6 +1,6 @@
 # - itom software
 # URL: http://www.uni-stuttgart.de/ito
-# Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+# Copyright (C) 2020, Institut für Technische Optik (ITO),
 # Universitaet Stuttgart, Germany
 #
 # This file is part of itom and its software development toolkit (SDK).
@@ -10,7 +10,7 @@
 # the Free Software Foundation; either version 2 of the Licence, or (at
 # your option) any later version.
 #
-# In addition, as a special exception, the Institut fuer Technische
+# In addition, as a special exception, the Institut für Technische
 # Optik (ITO) gives you certain additional rights.
 # These rights are described in the ITO LGPL Exception version 1.0,
 # which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -64,10 +64,10 @@ endif ()
 
 #check https://blog.initiali.se/posts/building-qt-designer-plugins-for-your-custom-qt-widgets/
 # if not included like this an "undefined interface error will be risen from Qt (moc?!)
-INCLUDE_DIRECTORIES(
+include_directories(
     ${Qt5Designer_INCLUDE_DIRS}
     ${Qt6Designer_INCLUDE_DIRS}
-    ${ITOM_SDK_INCLUDE_DIR}
+    ${CMAKE_BINARY_DIR}/SDK/include
 )
 
 # kann ein target_include_directories werden
@@ -364,7 +364,7 @@ set(itomWidgets_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogHeatmapConfiguration.cpp
 )
 
-#If you want to use automatical metadata for dlls under windows use the following if-case.
+#If you want to use automatically metadata for dlls under windows use the following if-case.
 if(MSVC)
     list(APPEND itomWidgets_SOURCES version.rc)
 endif()

@@ -23,7 +23,7 @@ BEGIN
     BEGIN
         BLOCK   "040904b0"
         BEGIN
-            VALUE   "CompanyName",      "Institut fuer Technische Optik, University Stuttgart\0"
+            VALUE   "CompanyName",      "Institut für Technische Optik, University Stuttgart\0"
             VALUE   "FileDescription",  "ITO Measurement Program\0"
             VALUE   "FileVersion",      "${itom_VERSION}\0"
             VALUE   "InternalName",     "itom\0"

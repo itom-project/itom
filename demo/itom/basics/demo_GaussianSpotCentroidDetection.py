@@ -1,5 +1,3 @@
-# coding=utf8
-
 """Gaussian spot centroid detection
 =================================
 
@@ -27,7 +25,8 @@ except ImportError:
 
     hasItomAlgo = False
     print(
-        "The itom.algorithms module cannot be used because" "of an older itom version. Use the itom.filter functions."
+        "The itom.algorithms module cannot be used because"
+        "of an older itom version. Use the itom.filter functions."
     )
 # sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoGaussianSpotCentroidDetection.png'
 
@@ -73,10 +72,16 @@ class GaussianSpotCentroidDetection:
         self.__cam.getVal(self.dObj)
 
         # calculate the centroid of the gaussianSpot
-        if hasItomAlgo:  # new itom.algorithms with auto completion and docstring in pop-up
-            [intensityX, intensityY, centroidX, centroidY] = algorithms.centroidXY(self.dObj)
+        if (
+            hasItomAlgo
+        ):  # new itom.algorithms with auto completion and docstring in pop-up
+            [intensityX, intensityY, centroidX, centroidY] = algorithms.centroidXY(
+                self.dObj
+            )
         else:  # old itom.filter
-            [intensityX, intensityY, centroidX, centroidY] = filter("centroidXY", self.dObj)
+            [intensityX, intensityY, centroidX, centroidY] = filter(
+                "centroidXY", self.dObj
+            )
 
         print(
             "Centroid (x, y) position: {:.3f} {}, {:.3f} {}".format(
@@ -92,7 +97,12 @@ class GaussianSpotCentroidDetection:
         # plot the camera image with marked centroid position
         if not self.__plotHandle:  # open figure window by first time
             [self.__plotIndex, self.__plotHandle] = plot2(
-                self.dObj, properties={"keepAspectRatio": True, "colorBarVisible": True, "colorMap": "viridis"}
+                self.dObj,
+                properties={
+                    "keepAspectRatio": True,
+                    "colorBarVisible": True,
+                    "colorMap": "viridis",
+                },
             )
 
         else:  # replot the figure
@@ -101,7 +111,9 @@ class GaussianSpotCentroidDetection:
         # delete markers and plot the new one
         if self.__plotHandle:
             self.__plotHandle.call("deleteMarkers")
-            self.__plotHandle.call("plotMarkers", centroidMarker, "r+25;2", "centroid", 0)
+            self.__plotHandle.call(
+                "plotMarkers", centroidMarker, "r+25;2", "centroid", 0
+            )
 
         return
 

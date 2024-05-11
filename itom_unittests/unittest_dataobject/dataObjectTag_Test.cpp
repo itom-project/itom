@@ -13,7 +13,7 @@
 /*! \class dataObjectTag_Test
     \brief Test for DataObjectTag class and functions for all itom data types
 
-    This test class checks functionality of different fuctions on data objects Tags.
+    This test class checks functionality of different functions on data objects Tags.
 */
 
 template <typename _Tp> class dataObjectTag_Test : public ::testing::Test
@@ -21,7 +21,7 @@ template <typename _Tp> class dataObjectTag_Test : public ::testing::Test
   public:
     virtual void SetUp(void)
     {
-        // Creating 1,2 and 3 dimension DataObjects for this Perticular Test class.
+        // Creating 1,2 and 3 dimension DataObjects for this Particular Test class.
 
         mat1_1d = ito::DataObject(3, ito::getDataType2<_Tp *>());
         mat2_1d = ito::DataObject(3, ito::getDataType2<_Tp *>());
@@ -364,13 +364,13 @@ TYPED_TEST(dataObjectTag_Test, set_getAxisUnit_Test1d)
 */
 TYPED_TEST(dataObjectTag_Test, set_getAxisUnit_Test2d)
 {
-    this->mat1_2d.setAxisUnit(0, "µm");
+    this->mat1_2d.setAxisUnit(0, "Âµm");
     this->mat1_2d.setAxisUnit(1, "cm");
     bool vop1;
     bool vop2;
     std::string AxisUnit1 = this->mat1_2d.getAxisUnit(0, vop1);
     std::string AxisUnit2 = this->mat1_2d.getAxisUnit(1, vop2);
-    EXPECT_EQ(AxisUnit1, "µm"); // checks if the retrieved Axis0 Unit by "getAxisUnit" function is same as the one
+    EXPECT_EQ(AxisUnit1, "Âµm"); // checks if the retrieved Axis0 Unit by "getAxisUnit" function is same as the one
                                 // assigned by "setAxisUnit" function.
     EXPECT_EQ(AxisUnit2, "cm"); // checks if the retrieved Axis1 Unit by "getAxisUnit" function is same as the one
                                 // assigned by "setAxisUnit" function.
@@ -416,7 +416,7 @@ TYPED_TEST(dataObjectTag_Test, set_getAxisDescription_Test1d)
     this->mat1_1d.setAxisDescription(0, "X-Axis ---> Height"); // set any relevant axis description to Axis0 of mat1_1d
     bool vop;
     std::string AxisDescrip = this->mat1_1d.getAxisDescription(
-        0, vop); // retrive the given axis description by "getAxisDescription" function for Axis0
+        0, vop); // retrieve the given axis description by "getAxisDescription" function for Axis0
     EXPECT_EQ(AxisDescrip, "X-Axis ---> Height"); // checks if the retrieved axis description is same as the one given
     EXPECT_TRUE(vop);                             // checks if the above operation is valid for this matrix
 
@@ -575,10 +575,10 @@ TYPED_TEST(dataObjectTag_Test, delete_existTag_Test)
     EXPECT_TRUE(chk2);     // value of chk2 should be True as there exists Tag for index1
     EXPECT_TRUE(chk3);     // value of chk3 should be True as there exists Tag for index2
     EXPECT_FALSE(chk4);    // value of chk4 should be False as there does not exist Tag for index3
-    EXPECT_TRUE(Delete1);  // it shows "deleteTag" function for key1 "creator1" is performed sucessfully.
-    EXPECT_TRUE(Delete2);  // it shows "deleteTag" function for key2 "creator2" is performed sucessfully.
-    EXPECT_TRUE(Delete3);  // it shows "deleteTag" function for key3 "creator3" is performed sucessfully.
-    EXPECT_FALSE(Delete4); // because there was no existance of key4 "creator4", the function "deleteTag" was
+    EXPECT_TRUE(Delete1);  // it shows "deleteTag" function for key1 "creator1" is performed successfully.
+    EXPECT_TRUE(Delete2);  // it shows "deleteTag" function for key2 "creator2" is performed successfully.
+    EXPECT_TRUE(Delete3);  // it shows "deleteTag" function for key3 "creator3" is performed successfully.
+    EXPECT_FALSE(Delete4); // because there was no existence of key4 "creator4", the function "deleteTag" was
                            // unsuccessful and the value of Delete4 should be expected False.
 
     chk1 = this->mat1_1d.existTag("creator1");

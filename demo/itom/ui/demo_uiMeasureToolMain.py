@@ -14,7 +14,6 @@ import numpy as np
 
 
 class MeasureToolMain(ItomUi):
-
     upDating = True
     measureType = 0
     plotElementType = 0
@@ -68,7 +67,6 @@ class MeasureToolMain(ItomUi):
         ret = self.gui.show(modalLevel)
 
     def showObject(self, newObject=None):
-
         if self.measureType != 0:
             self.on_pushButtonCancel_clicked()
         else:
@@ -94,9 +92,7 @@ class MeasureToolMain(ItomUi):
             self.plotElementTyp = shape.Point
             self.elementCount = self.gui.dataPlot["geometricShapesCount"]
             self.gui.pushButtonCancel["enabled"] = True
-            self.gui.dataPlot.call(
-                "userInteractionStart", self.plotElementTyp, True, 2
-            )
+            self.gui.dataPlot.call("userInteractionStart", self.plotElementTyp, True, 2)
 
     @ItomUi.autoslot("")
     def on_pushButtonDistanceP2L_clicked(self):
@@ -105,9 +101,7 @@ class MeasureToolMain(ItomUi):
             self.plotElementTyp = shape.Point
             self.elementCount = self.gui.dataPlot["geometricShapesCount"]
             self.gui.pushButtonCancel["enabled"] = True
-            self.gui.dataPlot.call(
-                "userInteractionStart", self.plotElementTyp, True, 1
-            )
+            self.gui.dataPlot.call("userInteractionStart", self.plotElementTyp, True, 1)
 
     @ItomUi.autoslot("")
     def on_pushButtonRadius_clicked(self):
@@ -116,9 +110,7 @@ class MeasureToolMain(ItomUi):
             self.plotElementTyp = shape.Ellipse
             self.elementCount = self.gui.dataPlot["geometricShapesCount"]
             self.gui.pushButtonCancel["enabled"] = True
-            self.gui.dataPlot.call(
-                "userInteractionStart", self.plotElementTyp, True, 1
-            )
+            self.gui.dataPlot.call("userInteractionStart", self.plotElementTyp, True, 1)
 
     @ItomUi.autoslot("")
     def on_pushButtonMean_clicked(self):
@@ -127,9 +119,7 @@ class MeasureToolMain(ItomUi):
             self.plotElementTyp = shape.Rectangle
             self.elementCount = self.gui.dataPlot["geometricShapesCount"]
             self.gui.pushButtonCancel["enabled"] = True
-            self.gui.dataPlot.call(
-                "userInteractionStart", self.plotElementTyp, True, 1
-            )
+            self.gui.dataPlot.call("userInteractionStart", self.plotElementTyp, True, 1)
 
     @ItomUi.autoslot("")
     def on_pushButtonCancel_clicked(self):
@@ -181,9 +171,7 @@ class MeasureToolMain(ItomUi):
             first = geometricShapes[newElementCount - 1]
             self.gui.measurementTable.call(
                 "addRelation",
-                dataObject(
-                    np.array([first.index, self.enumRelationIdx[1], -1, 0.0])
-                ),
+                dataObject(np.array([first.index, self.enumRelationIdx[1], -1, 0.0])),
             )
 
         elif self.measureType == 2:  # distance point to point P2P
@@ -214,16 +202,10 @@ class MeasureToolMain(ItomUi):
             first = geometricShapes[newElementCount - 1]
             self.gui.measurementTable.call(
                 "addRelation",
-                dataObject(
-                    np.array([first.index, self.enumRelationIdx[2], -1, 0.0])
-                ),
+                dataObject(np.array([first.index, self.enumRelationIdx[2], -1, 0.0])),
             )
-            self.plotElementTyp = self.enumGeomIdx[
-                self.enumGeomNames.index("line")
-            ]
-            self.gui.dataPlot.call(
-                "userInteractionStart", self.plotElementTyp, True, 1
-            )
+            self.plotElementTyp = self.enumGeomIdx[self.enumGeomNames.index("line")]
+            self.gui.dataPlot.call("userInteractionStart", self.plotElementTyp, True, 1)
             return
 
         elif (
@@ -260,32 +242,18 @@ class MeasureToolMain(ItomUi):
                 tempObj = self.gui.dataPlot["source"]
 
                 rect = geometricShapes[newElementCount - 1]
-                x0 = round(
-                    tempObj.physToPix(min(rect.point1[0], rect.point2[0]), 1)
-                )
+                x0 = round(tempObj.physToPix(min(rect.point1[0], rect.point2[0]), 1))
                 x1 = (
-                    round(
-                        tempObj.physToPix(
-                            max(rect.point1[0], rect.point2[0]), 1
-                        )
-                    )
-                    + 1
+                    round(tempObj.physToPix(max(rect.point1[0], rect.point2[0]), 1)) + 1
                 )
                 x0 = max(x0, 0)
                 x1 = max(x1, 0)
                 x0 = min(x0, tempObj.shape[tempObj.dims - 1] - 1)
                 x1 = min(x1, tempObj.shape[tempObj.dims - 1])
 
-                y0 = round(
-                    tempObj.physToPix(min(rect.point1[1], rect.point2[1]), 1)
-                )
+                y0 = round(tempObj.physToPix(min(rect.point1[1], rect.point2[1]), 1))
                 y1 = (
-                    round(
-                        tempObj.physToPix(
-                            max(rect.point1[1], rect.point2[1]), 1
-                        )
-                    )
-                    + 1
+                    round(tempObj.physToPix(max(rect.point1[1], rect.point2[1]), 1)) + 1
                 )
                 y0 = max(y0, 0)
                 y1 = max(y1, 0)
@@ -299,9 +267,7 @@ class MeasureToolMain(ItomUi):
 
             self.gui.measurementTable.call(
                 "addRelation",
-                dataObject(
-                    np.array([first.index, self.enumRelationIdx[4], -1, 0.0])
-                ),
+                dataObject(np.array([first.index, self.enumRelationIdx[4], -1, 0.0])),
             )
             self.gui.measurementTable.call(
                 "addRelation",

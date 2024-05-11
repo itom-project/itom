@@ -1,6 +1,3 @@
-# coding=utf8
-
-
 """Draw and transform shapes
 ============================
 
@@ -9,7 +6,7 @@ These shapes are then rotated and translated by
 various angles and distances and displayed in one plot figure.
 
 The overlay image of the plot is finally set to a masked
-object, where the masked area ist equal to the union of
+object, where the masked area is equal to the union of
 all shapes, visible at the canvas.
 """
 
@@ -51,7 +48,9 @@ polygon.name = "Polygon"
 ###############################################################################
 # This is another possibility, using static methods
 rect = shape.createRectangle(corner1=(400, 240), corner2=(470, 270), name="Rect")
-ellipse = shape.createEllipse(corner1=(-300, -300), corner2=(-140, -200), name="Ellipse")
+ellipse = shape.createEllipse(
+    corner1=(-300, -300), corner2=(-140, -200), name="Ellipse"
+)
 # rectangle and ellipses can also be created with the arguments center and size:
 ellipse = shape.createEllipse(
     center=(0.5 * (-300 - 140), 0.5 * (-300 - 200)),

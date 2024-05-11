@@ -139,12 +139,12 @@ If you want to display the set-name next to each marker, set the property
     plotHandle["markerLabelsVisible"] = True
 
 If a 2D plot visualizes a multi-plane array or dataObject (>= 3 dimensions), one can switch the displayed plane by a
-spin box in the toolbar of the plot of via the property **planeIndex**. Per default, marker sets are displayed for all 
+spin box in the toolbar of the plot of via the property **planeIndex**. Per default, marker sets are displayed for all
 planes. However it is also possible to set different marker sets for different planes, by adding a last optional
 argument **plane** to the **plotMarkers** slot:
 
 .. code-block::python
-    
+
     h.call("plotMarkers", move(circles,200,700), "bx10", "markers for all planes: -1", -1)
     h.call("plotMarkers", move(circles,200,700), "rx10", "markers for the 2nd plane only: 1", 1)
 

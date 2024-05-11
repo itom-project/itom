@@ -26,9 +26,7 @@ except Exception as ex:
 [X, Y] = np.meshgrid(np.arange(0, 5, 0.1), np.arange(0, 5, 0.1))
 Z = np.sin(X * 2) + np.cos(Y * 0.5)
 I = np.random.rand(*X.shape)  # further intensity
-C = dataObject.randN(
-    [X.shape[0], X.shape[1]], "rgba32"
-)  # further color information
+C = dataObject.randN([X.shape[0], X.shape[1]], "rgba32")  # further color information
 topography = dataObject(Z).astype("float32")
 topography.axisScales = (0.1, 0.1)
 topography[0, 0] = float("nan")
@@ -91,7 +89,5 @@ gui.plot.call(
     "setItemProperty", "cloud4", "PointSize", 10
 )  # change the property PointSize of this point
 # gui.plot.call("addMesh",mesh,"mesh")
-gui.plot.call(
-    "addMesh", mesh2, "mesh2"
-)  # visualize the mesh2 under the name 'mesh2'
+gui.plot.call("addMesh", mesh2, "mesh2")  # visualize the mesh2 under the name 'mesh2'
 gui.show()

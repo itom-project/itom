@@ -3,7 +3,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
@@ -60,7 +60,7 @@ Adds support for word click events.
 It will highlight the click-able word when the user press control and move
 the mouse over a word.
 
-Detecting whether a word is click-able is the responsability of the
+Detecting whether a word is click-able is the responsibility of the
 subclasses. You must override ``_check_word_cursor`` and call
 ``_select_word_cursor`` if this is a click-able word (this
 process might be asynchrone) otherwise _clear_selection.

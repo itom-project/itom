@@ -1069,7 +1069,7 @@ class MercurialVCS(VersionControlSystem):
     svndiff = []
     filecount = 0
     for line in data.splitlines():
-      m = re.match("diff --git a/(\S+) b/(\S+)", line)
+      m = re.match(r"diff --git a/(\S+) b/(\S+)", line)
       if m:
         # Modify line to make it look like as it comes from svn diff.
         # With this modification no changes on the server side are required
@@ -1243,8 +1243,8 @@ def GuessVCS(options):
     if errno != 2:  # ENOENT -- they don't have git installed.
       raise
 
-  ErrorExit(("Could not guess version control system. "
-             "Are you in a working copy directory?"))
+  ErrorExit("Could not guess version control system. "
+             "Are you in a working copy directory?")
 
 
 def RealMain(argv, data=None):

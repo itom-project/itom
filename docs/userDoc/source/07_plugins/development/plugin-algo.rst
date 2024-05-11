@@ -37,7 +37,7 @@ Factory-Class
 -------------
 
 The structure and exemplary implementation of a factory class **MyAlgoPluginInterface** is mainly explained in :ref:`plugin-interface-class`. Since the main class **MyAlgoPlugin**
-is mainly behaving like a static, singleton class, it will never be instatiated by the user, like it is the case for plugins of type **dataIO** or **actuator**. Therefore
+is mainly behaving like a static, singleton class, it will never be instantiated by the user, like it is the case for plugins of type **dataIO** or **actuator**. Therefore
 it makes no sense to define some default mandatory and optional parameters for the constructor of **MyAlgoPlugin**, such that the programmer should the vectors **m_initParamsMand**
 and **m_initParamsOpt** be unchanged.
 
@@ -82,7 +82,7 @@ The raw scheme for your plugin-class is as follows:
         static QWidget* widget1(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ito::RetVal &retValue);
         static ito::RetVal widget1Params(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
 
-        //for every futher widget-method define another pair like above
+        //for every further widget-method define another pair like above
 
     public slots:
         ito::RetVal init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond = NULL);
@@ -179,7 +179,7 @@ This is the default definition of filters and does not provide the possibility t
 or a way to let the user cancel the execution of the algorithm.
 
 After that you implemented the parameter-method in order to generate default parameters for your filter-method
-(see section above), you can now implement the filter-method itsself. This first implementation might follow this scheme:
+(see section above), you can now implement the filter-method itself. This first implementation might follow this scheme:
 
 .. code-block:: c++
     :linenos:
@@ -369,10 +369,10 @@ using python.
 Publish Filter- and Widget-Methods at Initialization
 ----------------------------------------------------
 
-The most important step in the developement of an algorithm plugin is to publish all created filter- and widget-methods. By that process,
+The most important step in the development of an algorithm plugin is to publish all created filter- and widget-methods. By that process,
 the methods will be made available to |itom|, such that they can be used by the python scripting language, the GUI or other plugins. The publishing
 is done in the method **init** of your plugin. It is important to say, that the two different signatures of a filter method (with or without observer)
-need to be published in two different ways. A exemplary implemention is as follows:
+need to be published in two different ways. A exemplary implementation is as follows:
 
 .. code-block:: c++
     :linenos:
@@ -446,8 +446,8 @@ The constructor of class **FilterDefExt** has the following arguments:
 * *ito::AddInAlgo::tAlgoCategory* **category** is an optional value of the category enumeration, the filter belongs too (*default:* ito::AddInAlgo::catNone)
 * *ito::AddInAlgo::tAlgoInterface* **interf** is an optional value of the interface enumeration, the filter fits to (*default:* ito::AddInAlgo::iNotSpecified)
 * *QString* **interfaceMeta** is depending on the chosen interface an additional meta string (*default:* QString())
-* *bool* **hasStatusInfo** indicates if the filter implements code to regularily report its progress to the passed observer
-* *bool* **isCancellable** indicates if the filter implements code to regularily check the interrupt flag of the observer and stop the algorithm as soon as it has been set (e.g. via Python)
+* *bool* **hasStatusInfo** indicates if the filter implements code to regularly report its progress to the passed observer
+* *bool* **isCancellable** indicates if the filter implements code to regularly check the interrupt flag of the observer and stop the algorithm as soon as it has been set (e.g. via Python)
 
 For a full reference of class **FilterDef**, see :ref:`plugin-Algo-FilterDefExt-Ref`.
 
