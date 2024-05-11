@@ -39,9 +39,9 @@ It sets the version number for the following files in the build directory:
 - designerplugins\<PluginName>\pluginVersion.h
 
 > Note: It is possible for Developers to combine different versions of Itom, Plugins and
-  Designerplugins, by checking out different sets of Git-Tags.
- This is not intended for regular releases, whereby the version number should be
-  unified throughout all Repositories.
+> Designerplugins, by checking out different sets of Git-Tags.
+> This is not intended for regular releases, whereby the version number should be
+> unified throughout all Repositories.
 
 Besides this the Itom-Release team checks the manually assigned Version Number
 for the Interface modules in the files **addInInterfaceVersion.h** and
@@ -49,20 +49,10 @@ for the Interface modules in the files **addInInterfaceVersion.h** and
 system.
 
 
-Create Documentation in ITOM
-----------------------------
-
-1. run doxygen with \build\itom\docs\doxygen\itom_doxygen.dox
-2. start itom \build\Qiom\qitom.exe
-3. run the python file "create_doc.py" in the \Build\itom\docs\userDoc folder.
-Open the Itom Help module by pressing F1.
-4. run in python the file "create_all_plugin_docs.py" in the \Build\itom\docs\pluginDoc.
-Choose the build folder of the available Plugin. Open the Itom Help module by pressing F1.
-
-
 Create Setup for Windows
 ------------------------
 
-1. Download the latest [InnoSetupCompiler](https://jrsoftware.org/isdl.php).
-2. Run the "start_qt_deployment.bat" file in \build\itom\setup\win64
-3. To create a Windows Setup install open the file build\itom\setup\win64\itom_setup_win64.iss in the InnoSetupCompiler and run it accordingly.
+1. Download the latest `InnoSetup <https://jrsoftware.org/isinfo.php>`_ .
+2. Build the Documentation according to :ref:`build-documentation-label` section.
+3. Run the "start_qt_deployment.bat" file in \build\itom\setup\win64
+4. To create a Windows Setup install open the file build\itom\setup\win64\itom_setup_win64.iss in the InnoSetupCompiler and run it accordingly.
