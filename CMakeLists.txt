@@ -149,9 +149,14 @@ itom_define_sdk_compiler()
 find_package(OpenCV COMPONENTS core REQUIRED)
 string(REPLACE . "" OpenCV_LIB_VERSION ${OpenCV_VERSION})
 
-message(STATUS "OpenCV_LIB_VERSION: ${OpenCV_LIB_VERSION}")
+find_package(VTK QUIET COMPONENTS vtkCommonCore QUIET)
+string(REPLACE . "" VTK_LIB_VERSION ${VTK_VERSION}) # das richtihe hier 9.0.3 -> 9.0
+message(STATUS "VTK_VERSION: ${VTK_VERSION}")
 
-message(STATUS "OpenCV_VERSION: ${OpenCV_VERSION}")    
+#python version
+#string(REPLACE . "" PYTHON_LIB_VERSION ${PYTHON_VERSION}) # 3.12.0 -> 312
+
+
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win64/itom_setup_win64.iss.in
     ${CMAKE_CURRENT_BINARY_DIR}/setup/win64/itom_setup_win64.iss )
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/common/itom_setup_code.iss.in

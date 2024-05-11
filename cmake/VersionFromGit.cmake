@@ -94,7 +94,7 @@ function( version_from_git )
     ERROR_STRIP_TRAILING_WHITESPACE
     )
   if( NOT git_result EQUAL 0 )
-    message( FATAL_ERROR
+    message( WARNING
       "[ItomVersionFromGit] Failed to execute Git: ${git_error}"
       )
   endif()
@@ -106,7 +106,12 @@ function( version_from_git )
     set( identifiers   "${CMAKE_MATCH_4}" )
     set( metadata      "${CMAKE_MATCH_5}" )
   else()
-    message( FATAL_ERROR
+    set( version_major "0" )
+    set( version_minor "0" )
+    set( version_patch "0" )
+    set( identifiers   "dev" )
+    set( metadata      "" )
+    message( WARNING
       "[ItomVersionFromGit] Git tag isn't valid semantic version: [${git_tag}]"
       )
   endif()

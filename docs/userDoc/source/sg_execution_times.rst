@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**00:00.559** total execution time for 150 files **from all galleries**:
+**00:00.810** total execution time for 150 files **from all galleries**:
 
 .. container::
 
@@ -33,28 +33,25 @@ Computation times
      - Time
      - Mem (MB)
    * - :ref:`sphx_glr_11_demos_itom_dataProcessing_demo_CrossCorrelation_LiveImage.py` (``..\..\..\demo\itom\dataProcessing\demo_CrossCorrelation_LiveImage.py``)
-     - 00:00.294
+     - 00:00.486
      - 0.0
    * - :ref:`sphx_glr_11_demos_itom_plots_demo_cloudAndMeshVisualization.py` (``..\..\..\demo\itom\plots\demo_cloudAndMeshVisualization.py``)
-     - 00:00.198
+     - 00:00.197
      - 0.0
    * - :ref:`sphx_glr_11_demos_itom_pointClouds_demo_cloud.py` (``..\..\..\demo\itom\pointClouds\demo_cloud.py``)
-     - 00:00.030
+     - 00:00.072
      - 0.0
    * - :ref:`sphx_glr_11_demos_itom_ui_demo_cloudViewer.py` (``..\..\..\demo\itom\ui\demo_cloudViewer.py``)
-     - 00:00.021
-     - 0.0
-   * - :ref:`sphx_glr_11_demos_python_packages_matplotlib_demo_cyberpunk.py` (``..\..\..\demo\python_packages\matplotlib\demo_cyberpunk.py``)
-     - 00:00.007
+     - 00:00.024
      - 0.0
    * - :ref:`sphx_glr_11_demos_itom_pointClouds_demo_fitGeometricElement.py` (``..\..\..\demo\itom\pointClouds\demo_fitGeometricElement.py``)
-     - 00:00.003
+     - 00:00.011
      - 0.0
    * - :ref:`sphx_glr_11_demos_itom_plots_demo_Vtk3dVisualizer.py` (``..\..\..\demo\itom\plots\demo_Vtk3dVisualizer.py``)
-     - 00:00.003
+     - 00:00.010
      - 0.0
-   * - :ref:`sphx_glr_11_demos_itom_pointClouds_demo_mesh.py` (``..\..\..\demo\itom\pointClouds\demo_mesh.py``)
-     - 00:00.002
+   * - :ref:`sphx_glr_11_demos_python_packages_matplotlib_demo_cyberpunk.py` (``..\..\..\demo\python_packages\matplotlib\demo_cyberpunk.py``)
+     - 00:00.010
      - 0.0
    * - :ref:`sphx_glr_11_demos_itom_basics_demo_CameraAndImages.py` (``..\..\..\demo\itom\basics\demo_CameraAndImages.py``)
      - 00:00.000
@@ -168,6 +165,9 @@ Computation times
      - 00:00.000
      - 0.0
    * - :ref:`sphx_glr_11_demos_itom_pointClouds_demo_PointCloud.py` (``..\..\..\demo\itom\pointClouds\demo_PointCloud.py``)
+     - 00:00.000
+     - 0.0
+   * - :ref:`sphx_glr_11_demos_itom_pointClouds_demo_mesh.py` (``..\..\..\demo\itom\pointClouds\demo_mesh.py``)
      - 00:00.000
      - 0.0
    * - :ref:`sphx_glr_11_demos_itom_ui_demoDialogExamples.py` (``..\..\..\demo\itom\ui\demoDialogExamples.py``)

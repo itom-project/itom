@@ -91,8 +91,6 @@ if(BUILD_WITH_PCL)
         find_package(PCL 1.5.1 QUIET REQUIRED COMPONENTS common)
     endif(WIN32)
 
-    message(STATUS "VTK_VERSION: ${VTK_VERSION}")
-
     # actually we need this only to configure the itom.bat including vtk, otherwise
     # eventually pcl-tools plugin will not be loaded
     find_package(VTK QUIET)
@@ -156,6 +154,14 @@ if(BUILD_WITH_PYMATLAB)
             "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\R2019b;MATLABROOT]"
             "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\R2020a;MATLABROOT]"
             "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\R2020b;MATLABROOT]"
+            "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\R2021a;MATLABROOT]"
+            "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\R2021b;MATLABROOT]"
+            "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\R2022a;MATLABROOT]"
+            "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\R2022b;MATLABROOT]"
+            "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\R2023a;MATLABROOT]"
+            "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\R2023b;MATLABROOT]"
+            "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\R2024a;MATLABROOT]"
+            "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\R2024b;MATLABROOT]"
         )
 
         if(BUILD_TARGET64)

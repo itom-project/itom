@@ -17,7 +17,9 @@ if(NOT EXISTS ${LAPACKE_DIR})
     endif(EXISTS $ENV{LAPACKE_ROOT})
 endif(NOT EXISTS ${LAPACKE_DIR})
 
-find_path(LAPACKE_DIR lapacke.h PATH_SUFFIXES "include" DOC "Root directory of lapacke")
+message(STATUS "LAPACKE_DIR: ${LAPACKE_DIR}")
+
+#find_path(LAPACKE_DIR lapacke.h PATH_SUFFIXES "include" DOC "Root directory of lapacke")
 find_path(LAPACKE_INCLUDE_DIR lapacke.h PATHS ${LAPACKE_DIR} PATH_SUFFIXES "include")
 
 if(MSVC)
@@ -52,7 +54,10 @@ foreach(__LIB ${LAPACKE_COMPONENTS})
 
 			if(LAPACKE_${__LIB}_RUNTIME)
 				set(LAPACKE_RUNTIME_LIBRARIES ${LAPACKE_RUNTIME_LIBRARIES} ${LAPACKE_${__LIB}_RUNTIME})
+				message(STATUS "LAPACKE_RUNTIME_LIBRARIES: ${LAPACKE_RUNTIME_LIBRARIES}")
 			endif(LAPACKE_${__LIB}_RUNTIME)
+
+			message(STATUS "LAPACKE_${__LIB}_RUNTIME: ${LAPACKE_${__LIB}_RUNTIME}")
 		endif(WIN32)
 endforeach(__LIB)
 
