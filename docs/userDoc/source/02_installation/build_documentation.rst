@@ -1,6 +1,6 @@
 .. include:: ../include/global.inc
 
-.. _buildDocumentation:
+.. _build-documentation-label:
 
 Build documentation
 ==========================
@@ -78,9 +78,11 @@ installed on your computer. The main applications are:
     * `sphinx-copybutton <https://pypi.org/project/sphinx-copybutton/>`_
     * `sphinx-rtd-theme <https://pypi.org/project/sphinx-rtd-theme/>`_
 
+
+.. _doxygenLabel:
+
 Run doxygen
 ---------------
-.. doxygenLabel:
 
 In your build-directory of |itom|, you will find a folder **docs**. Open its
 subfolder **doxygen**. There you will find a document
@@ -165,3 +167,16 @@ as described in the `Sphinx Gallery documentation <https://sphinx-gallery.github
 
     If the demo script filename contains the prefix **demo_**, this script will be executed
     when creating the documentation and the print outputs and plots will be generated and added.
+
+
+.. _create-docu-label:
+
+Create Documentation in ITOM
+----------------------------
+
+1. run doxygen with \build\itom\docs\doxygen\itom_doxygen.dox
+2. start itom \build\Qiom\qitom.exe
+3. run the python file "create_doc.py" in the \Build\itom\docs\userDoc folder.
+Open the Itom Help module by pressing F1.
+4. run in python the file "create_all_plugin_docs.py" in the \Build\itom\docs\pluginDoc.
+Choose the build folder of the available Plugin. Open the Itom Help module by pressing F1.
