@@ -2,7 +2,7 @@
 #    itom software
 #    URL: http://www.uni-stuttgart.de/ito
 #    Copyright (C) 2016, Institut für Technische Optik (ITO),
-#    Universitaet Stuttgart, Germany#
+#    Universität Stuttgart, Germany#
 #
 #    This file is part of itom.
 #
