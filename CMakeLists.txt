@@ -146,16 +146,15 @@ itom_find_package_qt(ON Core)
 itom_define_sdk_platform()
 itom_define_sdk_compiler()
 
-find_package(OpenCV COMPONENTS core REQUIRED)
+find_package(OpenCV QUIET)
 string(REPLACE . "" OpenCV_LIB_VERSION ${OpenCV_VERSION})
 
-find_package(VTK QUIET COMPONENTS vtkCommonCore QUIET)
-string(REPLACE . "" VTK_LIB_VERSION ${VTK_VERSION}) # das richtihe hier 9.0.3 -> 9.0
-message(STATUS "VTK_VERSION: ${VTK_VERSION}")
+find_package(VTK QUIET)
+string(REGEX MATCH "([0-9]+\.[0-9]+)" VTK_LIB_VERSION ${VTK_VERSION})
 
-#python version
-#string(REPLACE . "" PYTHON_LIB_VERSION ${PYTHON_VERSION}) # 3.12.0 -> 312
-
+find_package(Python QUIET)
+string(REGEX MATCH "([0-9]+\.[0-9]+)" Python_LIB_VERSION ${Python_VERSION})
+string(REPLACE . "" Python_LIB_VERSION ${Python_LIB_VERSION})
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win64/itom_setup_win64.iss.in
     ${CMAKE_CURRENT_BINARY_DIR}/setup/win64/itom_setup_win64.iss )
