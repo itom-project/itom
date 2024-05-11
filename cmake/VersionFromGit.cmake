@@ -63,7 +63,7 @@ function( version_from_git )
     # Find Git or bail out
     find_package( Git )
     if( NOT GIT_FOUND )
-      message( FATAL_ERROR "[ItomVersionFromGit] Git not found" )
+      message( WARNING "[ItomVersionFromGit] Git not found" )
     endif( NOT GIT_FOUND )
   endif()
 
@@ -78,7 +78,7 @@ function( version_from_git )
     ERROR_STRIP_TRAILING_WHITESPACE
     )
   if( NOT git_result EQUAL 0 )
-    message( FATAL_ERROR
+    message( WARNING
       "[ItomVersionFromGit] Failed to execute Git: ${git_error}"
       )
   endif()
@@ -105,12 +105,14 @@ function( version_from_git )
     set( version_patch "${CMAKE_MATCH_3}" )
     set( identifiers   "${CMAKE_MATCH_4}" )
     set( metadata      "${CMAKE_MATCH_5}" )
+    set( GIT_REPO_FOUND TRUE)
   else()
     set( version_major "0" )
     set( version_minor "0" )
     set( version_patch "0" )
     set( identifiers   "dev" )
     set( metadata      "" )
+    set( GIT_REPO_FOUND FALSE)
     message( WARNING
       "[ItomVersionFromGit] Git tag isn't valid semantic version: [${git_tag}]"
       )

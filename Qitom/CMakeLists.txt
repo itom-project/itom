@@ -808,7 +808,7 @@ endif(APPLE)
 unset(GIT_FOUND CACHE)
 find_package(Git)
 
-if(CONSIDER_GIT_SVN AND GIT_FOUND)
+if(CONSIDER_GIT_SVN AND GIT_FOUND AND GIT_REPO_FOUND)
     message(STATUS "Using GIT as repository information")
     configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pyGit2Header.py.in ${CMAKE_CURRENT_BINARY_DIR}/pyGit2Header.py )
 
