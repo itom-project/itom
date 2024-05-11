@@ -662,11 +662,11 @@ ito::RetVal AddInMultiChannelGrabber::changeChannelForListener(QObject* listener
 
                 if (it.key() != newChannel)
                 {
-                    //// temporarily remove the source from the plot
-                    //QMetaObject::invokeMethod(listener, "setSource", Qt::DirectConnection,
-                    //    Q_ARG(QSharedPointer<ito::DataObject>,
-                    //        QSharedPointer<ito::DataObject>(new ito::DataObject())),
-                    //    Q_ARG(ItomSharedSemaphore*, nullptr));
+                    // temporarily remove the source from the plot
+                    /*QMetaObject::invokeMethod(listener, "setSource", Qt::DirectConnection,
+                        Q_ARG(QSharedPointer<ito::DataObject>,
+                            QSharedPointer<ito::DataObject>(nullptr)),
+                        Q_ARG(ItomSharedSemaphore*, nullptr));*/
 
                     // the channel has changed
                     m_autoGrabbingListeners.erase(it);
@@ -708,10 +708,10 @@ ito::RetVal AddInMultiChannelGrabber::changeChannelForListener(QObject* listener
                             switch (plotValueAxis)
                             {
                             case Qt::YAxis:
-                                //listener->setProperty("yAxisInterval", QVariant::fromValue<ito::AutoInterval>(bitRange));
+                                listener->setProperty("yAxisInterval", QVariant::fromValue<ito::AutoInterval>(bitRange));
                                 break;
                             default:
-                                //listener->setProperty("zAxisInterval", QVariant::fromValue<ito::AutoInterval>(bitRange));
+                                listener->setProperty("zAxisInterval", QVariant::fromValue<ito::AutoInterval>(bitRange));
                                 break;
                             }
                         }

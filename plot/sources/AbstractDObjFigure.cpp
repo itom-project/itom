@@ -308,15 +308,18 @@ void AbstractDObjFigure::setSource(QSharedPointer<ito::DataObject> source, ItomS
             {
                 QSharedPointer<ito::DataObject> oldSource = m_dataPointer["source"];
                 m_dataPointer["source"] = source;
+                ito::ParamBase thisParam("source", ito::ParamBase::DObjPtr, (const char*)source.data());
+                retval += inputParamChanged(&thisParam);
             }
         }
         else
         {
             m_dataPointer["source"] = source;
+            ito::ParamBase thisParam("source", ito::ParamBase::DObjPtr, (const char*)source.data());
+            retval += inputParamChanged(&thisParam);
         }
 
-        ito::ParamBase thisParam("source", ito::ParamBase::DObjPtr, (const char*)source.data());
-        retval += inputParamChanged(&thisParam);
+
     }
 
     if (waitCond)
