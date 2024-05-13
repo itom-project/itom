@@ -21,7 +21,14 @@ class DataObjectNpConversion(unittest.TestCase):
         for i in a[:, 1:3, :]:
             sum += i
         self.assertEqual(result, sum)
-        self.assertIs(b1.base, a)
+
+        if np.__version__ >= "1.23.0":
+            # the base is now a tuple (dataObject, capsule object)
+            # see: https://github.com/itom-project/itom/issues/288
+            self.assertIs(b1.base[0], a)
+            self.assertEqual(len(b1.base), 2)
+        else:
+            self.assertIs(b1.base, a)
 
     def test_noncontinuousDataObject2NpArray(self):
         data = (1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19)
