@@ -9390,6 +9390,15 @@ PyObject* PythonDataObject::PyDataObj_Array_StructGet(PyDataObject* self)
 
     // don't increment SELF here, since the receiver of the capsule (e.g. numpy-method) will
     // increment the refcount of the PyDataObject SELF by itself.
+    //
+    // Hint: If this method is called by Numpy, the behaviour changed for np >= 1.23:
+    // Before, this dataObject is automatically incremented by the numpy array and
+    // stored as base object. The capsule is immediately destroyed after having called
+    // this method by the caller.
+    // For np >= 1.23, Numpy increments this dataObject AND sets the base object to
+    // a tuple, consisting of another incremented reference to this dataObject and
+    // the returned capsule. See: https://github.com/numpy/numpy/commit/a9299febc1852d3615ac39e88aabb22777120dbb
+    // and https://github.com/numpy/numpy/issues/20673.
     return PyCapsule_New((void*)inter, nullptr, &PyDataObj_Capsule_Destructor);
 }
 
