@@ -54,11 +54,14 @@ std::unique_ptr<T> make_unique(std::size_t size)
 }
 template <typename... Args> std::string string_format(const std::string& format, Args... args)
 {
+    // probing the real size of the final output string
     int size_s = _snprintf(nullptr, 0, format.c_str(), args...) + 1; // Extra space for '\0'
+
     if (size_s <= 0)
     {
         throw std::runtime_error("Error during formatting.");
     }
+
     auto size = static_cast<size_t>(size_s);
     auto buf = make_unique<char[]>(size);
     _snprintf(buf.get(), size, format.c_str(), args...);

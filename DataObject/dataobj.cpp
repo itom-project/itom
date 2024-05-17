@@ -6383,7 +6383,7 @@ template <> RetVal OpScalarMulFunc<ito::TimeDelta>(DataObject* src, const float6
 
                 for (int x = 0; x < tempMat->cols; x++)
                 {
-                    dstPtr[x].delta *= factor;
+                    dstPtr[x].delta = static_cast<ito::int64>(dstPtr[x].delta * factor);
                 }
             }
 #if (USEOMP)

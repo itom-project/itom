@@ -1958,7 +1958,7 @@ template <typename _Tp>
 RetVal medianValueFunc(const DataObject* dObj, float64& medianResult, bool ignoreNaN)
 {
     ito::DataObject temp;
-    size_t num = dObj->getTotal();
+    int num = dObj->getTotal();
     _Tp* values = new _Tp[num];
     const cv::Mat* mat;
     const _Tp* rowPtr;
@@ -1992,7 +1992,7 @@ RetVal medianValueFunc(const DataObject* dObj, float64& medianResult, bool ignor
     }
     else
     {
-        size_t idx = 0;
+        int idx = 0;
 
         for (int p = 0; p < dObj->getNumPlanes(); ++p)
         {
