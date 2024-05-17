@@ -1069,19 +1069,19 @@ template <typename _Tp> struct ItomParamHelper
 
             if (val)
             {
-                int len = static_cast<int>(strlen((const char*)val));
+                int str_len = static_cast<int>(strlen((const char*)val));
 
-                if (((ito::int32)len != param->d->len) || (param->d->data.ptrVal == nullptr))
+                if (((ito::uint32)str_len != param->d->len) || (param->d->data.ptrVal == nullptr))
                 {
-                    param->d->data.ptrVal = new char[len + 1];
+                    param->d->data.ptrVal = new char[str_len + 1];
                 }
                 else
                 {
                     cVal_ = nullptr;
                 }
 
-                std::copy_n((const char*)val, len + 1, (char*)param->d->data.ptrVal);
-                param->d->len = len;
+                std::copy_n((const char*)val, str_len + 1, (char*)param->d->data.ptrVal);
+                param->d->len = str_len;
             }
             else
             {
@@ -1101,7 +1101,7 @@ template <typename _Tp> struct ItomParamHelper
 
             if ((val) && (len > 0))
             {
-                if ((ito::int32)len != param->d->len)
+                if ((ito::uint32)len != param->d->len)
                 {
                     param->d->data.ptrVal = new char[len];
                     param->d->len = len;
@@ -1131,7 +1131,7 @@ template <typename _Tp> struct ItomParamHelper
 
             if ((val) && (len > 0))
             {
-                if ((ito::int32)len != param->d->len)
+                if ((ito::uint32)len != param->d->len)
                 {
                     param->d->data.ptrVal = new int32[len];
                     param->d->len = len;
@@ -1161,7 +1161,7 @@ template <typename _Tp> struct ItomParamHelper
 
             if ((val) && (len > 0))
             {
-                if ((ito::int32)len != param->d->len)
+                if ((ito::uint32)len != param->d->len)
                 {
                     param->d->data.ptrVal = new float64[len];
                     param->d->len = len;
@@ -1191,7 +1191,7 @@ template <typename _Tp> struct ItomParamHelper
 
             if ((val) && (len > 0))
             {
-                if ((ito::int32)len != param->d->len)
+                if ((ito::uint32)len != param->d->len)
                 {
                     param->d->data.ptrVal = new complex128[len];
                     param->d->len = len;
