@@ -35,11 +35,11 @@ set(CMAKE_MODULE_PATH
     ${CMAKE_MODULE_PATH}
     ${PROJECT_SOURCE_DIR}
     ${PROJECT_SOURCE_DIR}/../../cmake
-    ${PROJECT_SOURCE_DIR}/../../gtest-1.10.0/googletest/
+    ${PROJECT_SOURCE_DIR}/../../gtest-1.12.1/googletest/
 )
 
 # Define helper functions and macros used by Google Test.
-include("../../gtest-1.10.0/googletest/cmake/internal_utils.cmake")
+include("../../gtest-1.12.1/googletest/cmake/internal_utils.cmake")
 
 find_package(OpenCV REQUIRED COMPONENTS core)
 
@@ -51,7 +51,7 @@ if(WIN32 AND NOT ${gtest_force_shared_crt})
 endif()
 
 include_directories(
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../gtest-1.10.0/googletest/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../gtest-1.12.1/googletest/include
 )
 
 set(unittest_dataobject_HEADERS

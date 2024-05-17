@@ -9,7 +9,7 @@ set(CMAKE_MODULE_PATH
     ${CMAKE_MODULE_PATH}
     ${PROJECT_SOURCE_DIR}
     ${PROJECT_SOURCE_DIR}/../..
-    ${PROJECT_SOURCE_DIR}/../../gtest-1.10.0/googletest/
+    ${PROJECT_SOURCE_DIR}/../../gtest-1.12.1/googletest/
 )
 
 include("../../cmake/ItomBuildMacros.cmake")
@@ -17,7 +17,7 @@ include("../../cmake/ItomBuildMacros.cmake")
 find_package(OpenCV REQUIRED COMPONENTS core)
 
 # Define helper functions and macros used by Google Test.
-include("../../gtest-1.10.0/googletest/cmake/internal_utils.cmake")
+include("../../gtest-1.12.1/googletest/cmake/internal_utils.cmake")
 
 
 #config_compiler_and_linker()  # Defined in internal_utils.cmake.
@@ -29,7 +29,7 @@ endif()
 
 
 include_directories(
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../gtest-1.10.0/googletest/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../gtest-1.12.1/googletest/include
     ${CMAKE_CURRENT_SOURCE_DIR}/../../common
 )
 
