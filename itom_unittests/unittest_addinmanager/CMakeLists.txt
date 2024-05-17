@@ -25,7 +25,7 @@ include("../../gtest-1.12.1/googletest/cmake/internal_utils.cmake")
 fix_default_compiler_settings_()
 
 if(WIN32 AND NOT ${gtest_force_shared_crt})
-    message("Please set gtest_force_shared_crt to ON.")
+    message(SEND_ERROR "For properly running the unittests, please set the CMAKE variable gtest_force_shared_crt to ON.")
 endif()
 
 
