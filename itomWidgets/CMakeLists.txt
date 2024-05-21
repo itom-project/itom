@@ -62,6 +62,24 @@ if (MSVC)
   add_compile_options(/bigobj)
 endif ()
 
+#check https://blog.initiali.se/posts/building-qt-designer-plugins-for-your-custom-qt-widgets/
+# if not included like this an "undefined interface error will be risen from Qt (moc?!)
+include_directories(
+    ${Qt5Designer_INCLUDE_DIRS}
+    ${Qt6Designer_INCLUDE_DIRS}
+    ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include
+)
+
+# kann ein target_include_directories werden
+include_directories(
+    ${CMAKE_CURRENT_BINARY_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser
+    ${CMAKE_CURRENT_SOURCE_DIR}/..
+    ${Qt5Widgets_INCLUDE_DIRS}
+    ${Qt6Widgets_INCLUDE_DIRS}
+    ${VISUALLEAKDETECTOR_INCLUDE_DIR}
+)
 
 set(paramPropertyBrowser_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qtbuttonpropertybrowser.cpp
@@ -386,19 +404,6 @@ add_library(${target_name} SHARED
     ${itomWidgets_RCC_MOC}
     ${paramPropertyBrowser_SOURCES}
     ${paramPropertyBrowser_MOC})
-
-target_include_directories( ${target_name} PUBLIC
-    ${CMAKE_CURRENT_BINARY_DIR}
-    ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser
-    ${CMAKE_CURRENT_SOURCE_DIR}/..
-    ${Qt5Widgets_INCLUDE_DIRS}
-    ${Qt6Widgets_INCLUDE_DIRS}
-    ${Qt5Designer_INCLUDE_DIRS}
-    ${Qt6Designer_INCLUDE_DIRS}
-    ${VISUALLEAKDETECTOR_INCLUDE_DIR}
-)
 
 target_link_libraries(${target_name}
     ${VISUALLEAKDETECTOR_LIBRARIES}
