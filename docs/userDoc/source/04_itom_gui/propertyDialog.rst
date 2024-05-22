@@ -9,7 +9,7 @@ The property dialog of itom provides an overview of many basic itom settings,
 as well as global settings for many plots etc.
 It can be found by clicking **Properties...** in the **File** menu of itom.
 It consists of different sections with
-several subsections. Each of these subsections referes to a specific group of
+several subsections. Each of these subsections refers to a specific group of
 settings. In the following list you will
 get more information about the specific sections and subsections.
 
@@ -45,8 +45,8 @@ Application
   really closed.
 
 * |itom| is created as multi-threaded application. For instance, every hardware
-  instance runs in its own thread and can therefore run parallely to the main
-  application. Timeout values control the sychronization process between all
+  instance runs in its own thread and can therefore run parallelly to the main
+  application. Timeout values control the synchronization process between all
   these threads. Timeout values for different situations can be adjusted using
   the spin boxes in the group *Timeouts*.
 
@@ -56,9 +56,9 @@ Application
 
 * Library paths: Before itom starts loading all plugin and designer plugin
   libraries, the local PATH environment variable of |itom| can be extended by further values.
-  This gives the possibility to add further search pathes for 3rd party libraries
+  This gives the possibility to add further search paths for 3rd party libraries
   (e.g. required by plugins) without the need to globally changing the environment variables of
-  the operating system. Hereby, the entry *pathes from global PATH variable*
+  the operating system. Hereby, the entry *paths from global PATH variable*
   is a placeholder for the global PATH variable such that you can define whether a new path
   is prepended or appended to the existing list.
 
@@ -188,7 +188,7 @@ Startup
 
 It is possible to indicate one or several python scripts, which will executed
 after the startup of |itom|. These files can be indicated in this property page.
-Another possiblity to define this list is by editing a user role in the
+Another possibility to define this list is by editing a user role in the
 :ref:`user management system <gui-user-management>` of |itom|. You can load new
 files, remove existing files from the list or change the order of execution.
 
@@ -230,14 +230,14 @@ In this tab, you can mainly set all settings that are related to indentation:
   is possible to entirely copy or cut the current line instead. Another option
   controls a smart paste behaviour if indented code, that has possibly been
   removed from a block with another initial indentation level, should be adapted
-  to the current identation level of the current cursor position.
+  to the current indentation level of the current cursor position.
 
 .. _gui-prop-py-code-checkers:
 
 Code Checkers
 ----------------------
 
-|itom| provides the possiblity to regularily check a script for syntax errors,
+|itom| provides the possibility to regularly check a script for syntax errors,
 code style errors, docstring style errors or other linter hints in any scripts.
 All these checks are done by means of a code analysis only, the script(s) is / are
 not executed for these checks.
@@ -316,7 +316,7 @@ Flake8 provides many options, that can be set to configure all checks. Only the
 most important subset of options can be configured via given fields in the
 property dialog. For further options, the optional text box can be used.
 
-Nevertheless, flake8 provides different possiblities to configure options. This
+Nevertheless, flake8 provides different possibilities to configure options. This
 can be an ini configuration file (tox.ini, .flake8 or setup.cfg) in the user
 directory of your operating system, or such an ini configuration file in the
 directory of your project (e.g. the directory, where the scripts are located or
@@ -706,7 +706,7 @@ Palette Settings
 -------------------
 
 The standard plots of |itom| (e.g. *itom2dqwtplot*, ...) provide different color
-maps, which can be choosen to visualize the data. There is a default list of
+maps, which can be chosen to visualize the data. There is a default list of
 color palettes, which is pre-defined for each |itom| installation. Using the
 color palette property page, it is possible to add additional color palettes.
 These palettes can also be exported and / or imported, such that a backup of
@@ -718,7 +718,7 @@ user-defined palettes is possible.
 
 An |itom| color palette is defined by an array of 256 colors, which are mainly
 defined by a number of color stops. Each color stop consists of a position and
-a color value. The array values inbetween two color stops are calculated by
+a color value. The array values in between two color stops are calculated by
 means of a linear interpolation.
 
 If you want to create a new color palette, you can either start from scratch and

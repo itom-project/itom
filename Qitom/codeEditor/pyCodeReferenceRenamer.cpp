@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2024, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2024, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom.
 
@@ -128,7 +128,7 @@ PyCodeReferenceRenamer::~PyCodeReferenceRenamer()
 /*!
     setups connections to python engine and to get a notification about focus changes.
 
-    \param filepath is the filepath of the word under the cursor or a NULL-string, if 
+    \param filepath is the filepath of the word under the cursor or a NULL-string, if
         the script is unnamed, hence, has not been safed yet.
 */
 ito::RetVal PyCodeReferenceRenamer::rename(
@@ -173,11 +173,11 @@ ito::RetVal PyCodeReferenceRenamer::rename(
                 m_request.m_untitledFile = false;
                 m_request.m_untitledName = QString();
             }
-            
+
             m_request.m_callbackFctName = "onJediRenameResultAvailable";
             m_request.m_col = column;
             m_request.m_line = line;
-            
+
             m_request.m_sender = this;
             PythonEngine* pyEng = (PythonEngine*)m_pPythonEngine;
 
@@ -257,7 +257,7 @@ void PyCodeReferenceRenamer::onJediRenameResultAvailable(
             fileItem->setData(0, RoleFilePath, file.m_untitledFilename);
             fileItem->setData(0, RoleMainFile, file.m_untitledFilename);
             fileItem->setData(0, RoleFileUntitled, true);
-            displayedPath = file.m_untitledFilename; 
+            displayedPath = file.m_untitledFilename;
             scriptOpened = true; // an untitled script must be opened, anything else is not possible
         }
         else
@@ -265,7 +265,7 @@ void PyCodeReferenceRenamer::onJediRenameResultAvailable(
             fileItem->setData(0, RoleFilePath, canonicalFilePath);
             fileItem->setData(0, RoleMainFile, file.m_mainFile);
             fileItem->setData(0, RoleFileUntitled, false);
-            
+
         }
 
         fileItem->setData(0, RoleFileModified, modified);

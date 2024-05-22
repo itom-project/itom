@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom.
 
@@ -207,7 +207,7 @@ RetVal BreakPointModel::addBreakPoint(BreakPointItem bp)
 //-------------------------------------------------------------------------------------------------------
 //! delete breakpoint given by its QModelIndex
 /*!
-    emits breakPointDeleted if deletion has been successfull.
+    emits breakPointDeleted if deletion has been successful.
 
     \param index QModelIndex of breakpoint which should be deleted
     \return retOk in case of success, if QModelIndex not valid retError
@@ -729,7 +729,7 @@ QModelIndexList BreakPointModel::getBreakPointIndizes(const QString &filename, i
 //-------------------------------------------------------------------------------------
 //! returns a List of all Breakpoints, doesn't matter in which file they are.
 /*
-    \return QModelIndexList of all Breakpoints whereever they are
+    \return QModelIndexList of all Breakpoints wherever they are
 */
 QModelIndexList BreakPointModel::getAllBreakPointIndizes()
 {
@@ -758,7 +758,7 @@ BreakPointItem BreakPointModel::getBreakPoint(const QString &filename, int lineI
 //! returns BreakPointItem for given QModelIndex
 /*!
     \param index given QModelIndex
-    \return BreakPointItem to the QModelIndex taht was given
+    \return BreakPointItem to the QModelIndex that was given
 */
 BreakPointItem BreakPointModel::getBreakPoint(const QModelIndex &index) const
 {

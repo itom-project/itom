@@ -9,8 +9,8 @@ This section describes how |itom| and its plugins are built on a Debian-based
 operating system, like Debian itself, Ubuntu or any of its derivates or even
 the Raspberry Pi (Raspbian) operation system.
 
-Please be aware that Qt6 is currently not fully supported by Debian-based destributions,
-such as Ubuntu. Therefore the PCL libary is not available as Qt6 build and
+Please be aware that Qt6 is currently not fully supported by Debian-based distributions,
+such as Ubuntu. Therefore the PCL library is not available as Qt6 build and
 consequently not available for ITOM in the Qt6 Version.
 
 
@@ -146,7 +146,7 @@ If you want to compile |itom| with support from the Point Cloud Library, also ge
     sudo apt install qt6-webengine-dev
 
 Since the Qt webengine is not available (yet) on **Rasbpian** (at least for Raspbian buster or older),
-you cannot get the webengine libraries. Therfore the update commands look like this:
+you cannot get the webengine libraries. Therefore the update commands look like this:
 
 **Qt5:**
 
@@ -196,7 +196,7 @@ Use **CMake** to create the necessary makefiles for debug and/or release:
 Most IDEs don't follow the concept of having different configurations for Debug/Release.
 So you need to separate Debug builds from release builds, if required. But you can also mix these,
 e.g. for Debugging some plugin, you don't necessarily need a Debug Version of itom.
-If this step fails, use ccmake or cmake-gui toi manually fix errors.
+If this step fails, use ccmake or cmake-gui to manually fix errors.
 
 1. Indicate the folder **sources/itom** as source folder
 2. Indicate either the folder **build_debug/itom** or **build_release/itom** as
@@ -215,7 +215,7 @@ If this step fails, use ccmake or cmake-gui toi manually fix errors.
       Usually this is automatically detected in **usr/share/OpenCV**.
       If this is not the case, set **OpenCV_DIR** to the correct directory and press configure.
     * Python3: On some linux distributions, CMake always finds the Python version 2 as default version.
-      This is wrong. Therefore set the following variables to the right pathes:
+      This is wrong. Therefore set the following variables to the right paths:
       PYTHON_EXECUTABLE to /usr/bin/python3.2, PYTHON_INCLUDE_DIR to /usr/include/python3.2,
       PYTHON_LIBRARY to /usr/lib/libpython3.2mu.so.1.0 . The suffix 1.0 might also be different.
       It is also supported to use any other version of Python 3.
@@ -251,7 +251,7 @@ resulting library files into the **designer** and **plugins** subfolder of |itom
 Restart |itom| and you the plugin will be loaded.
 If **itom** is build with Point Cloud Library and you want to build the **Vtk3dVisualizer**
 with **vtk 6.2** you may come up with a linker exception: **cannot find -lvtkproj4**
-This can be fixed by generating a sybolic link to any vtk .so file as followed:
+This can be fixed by generating a symbolic link to any vtk .so file as followed:
 
 .. code-block:: bash
 

@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom.
 
@@ -217,7 +217,7 @@ void TabSwitcherWidget::keyPressEvent(QKeyEvent* ev)
 
 //-------------------------------------------------------------------------------------
 /*
-Reimplement Qt method to close the widget when loosing focus.
+Reimplement Qt method to close the widget when losing focus.
 */
 void TabSwitcherWidget::focusOutEvent(QFocusEvent* ev)
 {

@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2024, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2024, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom.
 
@@ -1309,8 +1309,8 @@ static QColor ansiColor(uint code)
 
 //-------------------------------------------------------------------------------------
 void ConsoleWidget::updateAnsiTextCharFormat(
-    ito::TextBlockUserData::AnsiTextCharFormat &format, 
-    const QString &mainChar, 
+    ito::TextBlockUserData::AnsiTextCharFormat &format,
+    const QString &mainChar,
     const QString &args)
 {
     if (mainChar != "m")
@@ -1443,7 +1443,7 @@ void ConsoleWidget::updateAnsiTextCharFormat(
 see https://www.lihaoyi.com/post/BuildyourownCommandLinewithANSIescapecodes.html#colors
 */
 QList<ito::TextBlockUserData::AnsiTextCharFormat> ConsoleWidget::parseReceiveStreamBufferForAnsiCodes(
-    const QString &inputText, 
+    const QString &inputText,
     QString &strippedText)
 {
     strippedText = inputText;
@@ -1453,12 +1453,12 @@ QList<ito::TextBlockUserData::AnsiTextCharFormat> ConsoleWidget::parseReceiveStr
         return QList<ito::TextBlockUserData::AnsiTextCharFormat>();
     }
 
-    // regular expression for ANSI escape codes (colors, erase functions and decorators only)   
+    // regular expression for ANSI escape codes (colors, erase functions and decorators only)
     int offset = 0;
     QList<ito::TextBlockUserData::AnsiTextCharFormat> outputData;
     QRegularExpressionMatch match = m_ansiEscapeSeqRegExp.match(strippedText, offset);
 
-    while (match.hasMatch()) 
+    while (match.hasMatch())
     {
         m_recentAnsiTextCharFormat.colStart = offset;
         m_recentAnsiTextCharFormat.colEnd = match.capturedStart(0);
@@ -1514,7 +1514,7 @@ QList<QSharedPointer<QList<ito::TextBlockUserData::AnsiTextCharFormat>>> Console
         int lineStartPos = 0;
         int prevPos;
         QString substr;
-    
+
 
         finder.setPosition(0);
 
@@ -1562,7 +1562,7 @@ QList<QSharedPointer<QList<ito::TextBlockUserData::AnsiTextCharFormat>>> Console
         }
     }
 
-    // 2. adjust ansi auto 
+    // 2. adjust ansi auto
     QList<QSharedPointer<QList<ito::TextBlockUserData::AnsiTextCharFormat>>> textFormatsMultiLines;
     auto currentTextFormat = ansiTextCharFormat->begin();
     int lineLength;
@@ -1601,7 +1601,7 @@ QList<QSharedPointer<QList<ito::TextBlockUserData::AnsiTextCharFormat>>> Console
             }
             else
             {
-                // the currentTextFormat starts in this line but continuous in the next line 
+                // the currentTextFormat starts in this line but continuous in the next line
                 ito::TextBlockUserData::AnsiTextCharFormat item = *currentTextFormat;
                 item.colStart -= (lineStartOffset - prefixOffset);
                 item.colEnd = lineLength + prefixOffset;
@@ -1698,7 +1698,7 @@ QList<QSharedPointer<QList<ito::TextBlockUserData::AnsiTextCharFormat>>> Console
             }
             else
             {
-                // the currentTextFormat starts in this line but continuous in the next line 
+                // the currentTextFormat starts in this line but continuous in the next line
                 ito::TextBlockUserData::AnsiTextCharFormat item = *currentTextFormat;
                 item.colStart -= lineStartOffset;
                 item.colEnd = lineLength;
@@ -1764,8 +1764,8 @@ void ConsoleWidget::processStreamBuffer()
     }
 
     ansiTextCharFormatsPerLine = handleTextLinesAndSplitLongLines(
-        strippedText, 
-        ansiTextCharFormats, 
+        strippedText,
+        ansiTextCharFormats,
         m_receiveStreamBuffer.msgType == ito::msgStreamErr
     );
 
@@ -1848,7 +1848,7 @@ void ConsoleWidget::processStreamBuffer()
         {
             userData = getTextBlockUserData(lineIdx, true);
             userData->m_syntaxStyle = ito::TextBlockUserData::StyleOutput;
-            
+
             if (hasAnsiEscapeCodes)
             {
                 userData->m_ansiTextCharFormats = ansiTextCharFormatsPerLine[lineIdx - fromLine];

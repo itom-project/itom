@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
 
@@ -11,7 +11,7 @@
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
 
-    In addition, as a special exception, the Institut fuer Technische
+    In addition, as a special exception, the Institut für Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
     which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -724,7 +724,7 @@ private:
 
 An object of this class can be used to parametrize a parameter whose type is ito::ParamBase::CharArray.
 Since this meta information class is derived from ito::CharMeta, it is possible to restrict each value to the single
-value contraints of ito::CharMeta. Furthermore, this class allows restricting the minimum and maximum length of the
+value constraints of ito::CharMeta. Furthermore, this class allows restricting the minimum and maximum length of the
 array as well as the optional step size of the array's length.
 
 \sa ito::Param, ito::ParamMeta, ito::CharMeta
@@ -751,7 +751,7 @@ class ITOMCOMMON_EXPORT CharArrayMeta : public CharMeta, public ListMeta
 
 An object of this class can be used to parametrize a parameter whose type is ito::ParamBase::IntArray.
 Since this meta information class is derived from ito::IntMeta, it is possible to restrict each value to the single
-value contraints of ito::IntMeta. Furthermore, this class allows restricting the minimum and maximum length of the array
+value constraints of ito::IntMeta. Furthermore, this class allows restricting the minimum and maximum length of the array
 as well as the optional step size of the array's length.
 
 \sa ito::Param, ito::ParamMeta, ito::IntArray
@@ -778,7 +778,7 @@ class ITOMCOMMON_EXPORT IntArrayMeta : public IntMeta, public ListMeta
 
 An object of this class can be used to parametrize a parameter whose type is ito::ParamBase::DoubleArray.
 Since this meta information class is derived from ito::DoubleArray, it is possible to restrict each value to the single
-value contraints of ito::DoubleArray. Furthermore, this class allows restricting the minimum and maximum length of the
+value constraints of ito::DoubleArray. Furthermore, this class allows restricting the minimum and maximum length of the
 array as well as the optional step size of the array's length.
 
 \sa ito::Param, ito::ParamMeta, ito::DoubleMeta
@@ -880,7 +880,7 @@ class ITOMCOMMON_EXPORT DoubleIntervalMeta : public DoubleMeta
 
 An object of this class can be used to parametrize a parameter whose type is ito::ParamBase::StringListMeta.
 Since this meta information class is derived from ito::StringMeta,
-it is possible to restrict each value to the single value contraints of ito::StringMeta.
+it is possible to restrict each value to the single value constraints of ito::StringMeta.
 Furthermore, this class allows restricting the minimum and maximum length of the list as well as the optional step size
 of the list's length.
 
@@ -1060,7 +1060,7 @@ class ITOMCOMMON_EXPORT RangeMeta : public IntervalMeta
 An object of this class can be used to parametrize a parameter whose type is ito::ParamBase::IntArray.
 This meta information class indicates that the corresponding integer array parameter is interpreted as a rectangle,
 hence, only an array consisting of four values is accepted. This meta information consists of two object of type
-ito::RangeMeta, describing the contraints of the horizontal and vertical axes of the rectangle.
+ito::RangeMeta, describing the constraints of the horizontal and vertical axes of the rectangle.
 
 \sa ito::Param, ito::ParamMeta, ito::RangeMeta, ito::IntArrayMeta
 */

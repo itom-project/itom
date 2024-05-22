@@ -1,5 +1,3 @@
-# coding=iso-8859-15
-
 # iTOM documentation build configuration file, created by
 # sphinx-quickstart on Sat Jul 30 14:36:28 2011.
 #
@@ -84,7 +82,7 @@ master_doc = "index"
 
 # General information about the project.
 project = "itom Documentation"
-# copyright = '2011-2016, Institut fuer Technische Optik (ITO), University Stuttgart. Bug report: https://github.com/itom-project/itom/issues'
+# copyright = '2011-2016, Institut für Technische Optik (ITO), Universität Stuttgart. Bug report: https://github.com/itom-project/itom/issues'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -107,8 +105,8 @@ compile_datetime = itomVersionInfo["itom_compileDate"]  # Jun  5 2020, 08:13:57
 comma_index = compile_datetime.index(",")
 compile_year = compile_datetime[comma_index - 4 : comma_index]
 copyright = (
-    f"2011-{compile_year}, Institut fuer Technische Optik (ITO), "
-    "University Stuttgart. Bug report: https://github.com/itom-project/itom/issues"
+    f"2011-{compile_year}, Institut für Technische Optik (ITO), "
+    "Universität Stuttgart. Bug report: https://github.com/itom-project/itom/issues"
 )
 
 
@@ -312,7 +310,7 @@ todo_include_todos = True
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", (None, "python3.8-inv.txt")),
     "numpy": ("https://numpy.org/doc/stable", (None, "numpy1.22-inv.txt")),
-    "scipy": ("https://docs.scipy.org/doc/scipy", (None, "scipy1.6.1-inv.txt")),
-    "matplotlib": ("https://matplotlib.org", (None, "matplotlib3.5-inv.txt")),
-    "pandas": ("https://pandas.pydata.org/docs/", (None, "pandas1.3.5-inv.txt")),
+    "scipy": ("https://docs.scipy.org/doc/scipy", (None, "scipy1.13.0-inv.txt")),
+    "matplotlib": ("https://matplotlib.org", (None, "matplotlib3.8.4-inv.txt")),
+    "pandas": ("https://pandas.pydata.org/docs/", (None, "pandas2.2.2-inv.txt")),
 }

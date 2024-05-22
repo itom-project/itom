@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom.
 
@@ -52,7 +52,7 @@ private:
     //!< if the caller of the deleter currently does not own the Python GIL,
     //!< this method is called to safely decrement the refcount of the
     //!< owner PyObject. This is done by a worker thread, that tries to
-    //!< acquire the GIL, decrease the refcount and releas the GIL.
+    //!< acquire the GIL, decrease the refcount and release the GIL.
     static void safeDecrefPyObject2Async(PyObject* obj);
 
     //!< user-defined deleter for the QSharedPointer, released by createPythonSharedPointer

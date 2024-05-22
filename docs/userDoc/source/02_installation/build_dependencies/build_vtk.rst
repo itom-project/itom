@@ -33,7 +33,7 @@ and execute than CMake with this two folders.
 * Add a new entry: name = **"VTK_USE_QT"**, type = **"BOOL"** with the value = checked for version <9
 * Add a new entry: name = **"VTK_USE_GUISUPPORT"**, type = **"BOOL"** with the value = checked for version <9
 * Change **CMAKE_INSTALL_PREFIX** to **${MAINDIR}/3rdPartyPCL/vtk8.2.0**
-* If an error occures with wrong Qt Version, change **VTK_QT_VERSION** to **5**
+* If an error occurs with wrong Qt Version, change **VTK_QT_VERSION** to **5**
 * Choose with the variable **VTK_RENDERING_BACKEND** which OpenGL is used for VTK/PCL.
 * Set the entry **Qt_Prefix_DIR** to to **${MAINDIR}/3rdParty/Qt5.12.1/msvc2017_64/lib/cmake/Qt5**.
 * Check **VTK_BUILD_QT_DESIGNER_PLUGIN**.

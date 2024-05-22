@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom.
 
@@ -276,7 +276,7 @@ int main(int argc, char *argv[])
     QItomApplication itomApplication(argc, argv);
 
     //itom modifies its local environment variables like PATH such that plugin libraries, python... that are loaded later
-    //benefit from necessary pathes that are then guaranteed to be found.
+    //benefit from necessary paths that are then guaranteed to be found.
 
     //      These things are done:
 
@@ -371,7 +371,7 @@ int main(int argc, char *argv[])
 
     //itom has an user management. If you pass the string name=[anyUsername] to the executable,
     //a setting file itom_{anyUsername}.ini is searched and if found loaded. Pass itom.ini as anyUsername
-    //to explicitely load the default setting file itom.ini. If no username is given and more than
+    //to explicitly load the default setting file itom.ini. If no username is given and more than
     //one settings ini file is available, a selection dialog is shown.
     //another setting file than the default file itom.ini will be loaded for this session of itom.
     //Therefore all settings files in the folder itomSettings matching itom_*.ini are checked for

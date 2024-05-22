@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom.
 
@@ -48,7 +48,7 @@ namespace ito
         \brief Base class for all widgets that should be docked into the main window of itom.
                Widgets, deriving from this base class, can have different appearances. Depending
                on their configuration, they can behave like a dock widget and be docked into the main window
-               or undocked (floated) as indpendent toolbox or they can be a dock widget if docked or a real
+               or undocked (floated) as independent toolbox or they can be a dock widget if docked or a real
                window if they are undocked.
     */
     class AbstractDockWidget : public QDockWidget
@@ -219,7 +219,7 @@ namespace ito
 
             //! eventFilter for m_pWindow
             /*!
-                depending on m_floatingStyle and the docked property, close-events will be catched by the closeEvent-method of this docking-widget or by the closeEvent
+                depending on m_floatingStyle and the docked property, close-events will be caught by the closeEvent-method of this docking-widget or by the closeEvent
                 of m_pWindow, which is not overloaded directly. Therefore this event-filter is installed and in case of a QCloseEvent, the closeEvent-method of this
                 docking widget will be invoked in order to handle the close request. Else, the event will be passed and handled by somebody else.
             */

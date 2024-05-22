@@ -9,6 +9,7 @@ In addition to the basic fill plot, this demo shows a few optional features:
 * Setting the fill color.
 * Setting the opacity (alpha value).
 """
+
 import numpy as np
 import matplotlib.pyplot as plt
 

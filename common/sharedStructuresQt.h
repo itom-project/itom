@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
 
@@ -11,7 +11,7 @@
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
 
-    In addition, as a special exception, the Institut fuer Technische
+    In addition, as a special exception, the Institut für Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
     which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -70,7 +70,7 @@ class ITOMCOMMONQT_EXPORT ItomSharedSemaphore
             A new ItomSharedSemaphore is created and the underlying semaphore is already locked with a certain number.
             This number depends on the number of listeners (usually: 1). A listener is a method which is called in another
             thread. The caller creates the ItomSharedSemaphore in order to wait until the listener decreases the lock level
-            of the semaphore by one or a certain timout time has been reached.
+            of the semaphore by one or a certain timeout time has been reached.
 
             \param [in] numberOfListeners (default: 1) are the number of different methods in other threads which should release this semaphore before the caller can go on.
         */
@@ -181,7 +181,7 @@ class ITOMCOMMONQT_EXPORT ItomSharedSemaphore
 
         //! indicates whether caller-method is still waiting that the lock is released by the listener(s).
         /*
-            this method is not 100% thread-safe, that means it might occure, that the wait-method of the caller drops into the timeout
+            this method is not 100% thread-safe, that means it might occur, that the wait-method of the caller drops into the timeout
             during the call to the method isCallerStillWaiting. Therefore consider this method as pure information.
 
             @return true if caller-method is still waiting (in \sa wait-method) that all listeners are calling the release method

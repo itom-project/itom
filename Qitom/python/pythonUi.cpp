@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom.
 
@@ -91,9 +91,9 @@ Base class that represents any widget or layout of an user interface. \n\
 \n\
 This class represents any widget (graphical, interactive element like a button or \n\
 checkbox) on a graphical user interface. An object of this class provides many \n\
-functionalities given by the underlying Qt system. For instance, it is posible to \n\
+functionalities given by the underlying Qt system. For instance, it is possible to \n\
 call a public slot of the corresponding widget, connect signals to specific python \n\
-methods or functions or change properties of the widget represeted by this object. \n\
+methods or functions or change properties of the widget represented by this object. \n\
 \n\
 The overall dialog or window as main element of a graphical user interface itself are \n\
 instances of the class :class:`ui`. However, they are derived from :class:`uiItem`, \n\
@@ -555,7 +555,7 @@ PyObject* PythonUi::PyUiItem_call(PyUiItem *self, PyObject* args)
     QByteArray possibleSignatures = "";
     const MethodDescription *foundMethod = NULL;
 
-    // if more than one possible method is availabe,
+    // if more than one possible method is available,
     // at first, try to strictly cast all parameters...
     if (possibleMethods.count() > 1)
     {
@@ -886,7 +886,7 @@ PyObject* PythonUi::PyUiItem_connect(PyUiItem *self, PyObject* args, PyObject *k
 //-------------------------------------------------------------------------------------
 PyDoc_STRVAR(PyUiItemConnectKeyboardInterrupt_doc,"invokeKeyboardInterrupt(signalSignature) \n\
 \n\
-Connects the given signal with the immediate invokation of a Python interrupt signal. \n\
+Connects the given signal with the immediate invocation of a Python interrupt signal. \n\
 \n\
 If you use the connect method to link a signal with a python method or function, this \n\
 method can only be executed if Python is in an idle status. However, if you want to \n\
@@ -3940,7 +3940,7 @@ PyObject* PythonUi::PyUi_getExistingDirectory(PyUi * /*self*/, PyObject *args, P
 PyDoc_STRVAR(pyUiGetOpenFileNames_doc,
 "getOpenFileNames(caption = \"\", startDirectory = \"\", filters = \"\", selectedFilterIndex = 0, options = 0, parent = None) -> Optional[List[str]] \n\
 \n\
-Shows a dialog for chosing one or multiple file names. The selected file(s) must exist. \n\
+Shows a dialog for choosing one or multiple file names. The selected file(s) must exist. \n\
 \n\
 This method creates a modal file dialog to let the user select one or multiple file \n\
 names used for opening these files. \n\
@@ -3952,7 +3952,7 @@ Parameters \n\
 caption : str, optional \n\
     This is the title of the dialog. \n\
 startDirectory : str, optional \n\
-    The intial directory, shown in the dialog. If an empty string, the current working \n\
+    The initial directory, shown in the dialog. If an empty string, the current working \n\
     directory will be taken. \n\
 filters : str, optional \n\
     Possible filter list or allowed file types / suffixes etc. The entries should be \n\
@@ -3968,7 +3968,7 @@ parent : uiItem, optional \n\
 Returns \n\
 ------- \n\
 selectedFileNames : None or list of str \n\
-    The selected file pathes or ``None`` if the dialog has been aborted. \n\
+    The selected file paths or ``None`` if the dialog has been aborted. \n\
 \n\
 See Also \n\
 -------- \n\
@@ -4079,7 +4079,7 @@ PyObject* PythonUi::PyUi_getOpenFileNames(PyUi * /*self*/, PyObject *args, PyObj
 PyDoc_STRVAR(pyUiGetOpenFileName_doc,
 "getOpenFileName(caption = \"\", startDirectory = \"\", filters = \"\", selectedFilterIndex = 0, options = 0, parent = None) -> Optional[str] \n\
 \n\
-Shows a dialog for chosing a file name. The selected file must exist. \n\
+Shows a dialog for choosing a file name. The selected file must exist. \n\
 \n\
 This method creates a modal file dialog to let the user select a file name used for opening a file. \n\
 \n\
@@ -4090,7 +4090,7 @@ Parameters \n\
 caption : str, optional \n\
     This is the title of the dialog. \n\
 startDirectory : str, optional \n\
-    The intial directory, shown in the dialog. If an empty string, the current working \n\
+    The initial directory, shown in the dialog. If an empty string, the current working \n\
     directory will be taken. \n\
 filters : str, optional \n\
     Possible filter list or allowed file types / suffixes etc. The entries should be \n\
@@ -4218,7 +4218,7 @@ PyObject* PythonUi::PyUi_getOpenFileName(PyUi * /*self*/, PyObject *args, PyObje
 PyDoc_STRVAR(pyUiGetSaveFileName_doc,
 "getSaveFileName(caption = \"\", startDirectory = \"\", filters = \"\", selectedFilterIndex = 0, options = 0, parent = None) -> Optional[str] \n\
 \n\
-Shows a dialog for chosing a file name. The selected file must not exist. \n\
+Shows a dialog for choosing a file name. The selected file must not exist. \n\
 \n\
 This method creates a modal file dialog to let the user select a file name used for saving a file. \n\
 \n\
@@ -4229,7 +4229,7 @@ Parameters \n\
 caption : str, optional \n\
     This is the title of the dialog. \n\
 startDirectory : str, optional \n\
-    The intial directory, shown in the dialog. If an empty string, the current working \n\
+    The initial directory, shown in the dialog. If an empty string, the current working \n\
     directory will be taken. \n\
 filters : str, optional \n\
     Possible filter list or allowed file types / suffixes etc. The entries should be \n\

@@ -10,7 +10,7 @@ Getting started with A/D converters
 
 Introduction
 ====================
-This tutorial gives a short introduction to the use of A/D converters, which are adressed by the :py:class:`~itom.dataIO` class. Similar tutorials are available for :ref:`actuators <getStartActuator>` and :ref:`grabbers <getStartGrabber>`.
+This tutorial gives a short introduction to the use of A/D converters, which are addressed by the :py:class:`~itom.dataIO` class. Similar tutorials are available for :ref:`actuators <getStartActuator>` and :ref:`grabbers <getStartGrabber>`.
 
 Initialisation and common properties of :py:class:`~itom.dataIO` and :py:class:`~itom.actuator` are described :ref:`here <initHardware>`.
 
@@ -20,7 +20,7 @@ For this tutorial, we will focus on the standard application of A/D converters: 
 
 .. note::
 
-    As one of the major advatages of the plugin concept, all A/D converters shall behave in the same manner when given the same command. There may however be some special properties of some devices, wich cause slightly different behavior in very specialised cases. For further information read the plugin documentation of your device.
+    As one of the major advatages of the plugin concept, all A/D converters shall behave in the same manner when given the same command. There may however be some special properties of some devices, which cause slightly different behavior in very specialised cases. For further information read the plugin documentation of your device.
 
 Start/Stop device
 -----------------------

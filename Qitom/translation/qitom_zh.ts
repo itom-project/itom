@@ -59,7 +59,7 @@
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt; color:#000000;&quot;&gt;Institut fuer Technische Optik (&lt;/span&gt;&lt;a href=&quot;http://www.ito.uni-stuttgart.de&quot;&gt;&lt;span style=&quot; font-size:8pt; text-decoration: underline; color:#000000;&quot;&gt;ITO&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-size:8pt; color:#000000;&quot;&gt;) Universitaet Stuttgart Prof. Dr. Stephan Reichelt Pfaffenwaldring 9, 70569 Stuttgart, Germany&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt; color:#000000;&quot;&gt;Institut für Technische Optik (&lt;/span&gt;&lt;a href=&quot;http://www.ito.uni-stuttgart.de&quot;&gt;&lt;span style=&quot; font-size:8pt; text-decoration: underline; color:#000000;&quot;&gt;ITO&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-size:8pt; color:#000000;&quot;&gt;) Universität Stuttgart Prof. Dr. Stephan Reichelt Pfaffenwaldring 9, 70569 Stuttgart, Germany&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation></translation>
     </message>
     <message>
@@ -8860,7 +8860,7 @@ or correct the base directory in the preferences dialog of itom.</source>
     <name>ito::WidgetPropEditorAPI</name>
     <message>
         <location filename="../ui/widgetPropEditorAPI.cpp" line="+49"/>
-        <source>Base path for relative pathes: </source>
+        <source>Base path for relative paths: </source>
         <translation>相对路径的基本路径: </translation>
     </message>
     <message>
@@ -9371,7 +9371,7 @@ or correct the base directory in the preferences dialog of itom.</source>
 <context>
     <name>ito::WidgetPropPythonStartup</name>
     <message>
-        <source>Base path for relative pathes: </source>
+        <source>Base path for relative paths: </source>
         <translation type="vanished">Basispfad der relativen Pfade: </translation>
     </message>
     <message>

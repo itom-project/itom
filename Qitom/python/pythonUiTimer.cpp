@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom.
 
@@ -171,7 +171,7 @@ PyObject* PythonTimer::PyTimer_new(PyTypeObject *type, PyObject * /*args*/, PyOb
 //-------------------------------------------------------------------------------------
 PyDoc_STRVAR(PyTimerInit_doc,"timer(interval, callbackFunc, argTuple = (), singleShot = False, name = \"\", startAfterInit = True) -> timer \n\
 \n\
-Creates a new timer object for (continously) triggering a callback function \n\
+Creates a new timer object for (continuously) triggering a callback function \n\
 \n\
 Creates a timer object that (continuously) calls a python callback function or method. \n\
 The timer is active right from the beginning, hence, after creating this object. \n\
@@ -453,7 +453,7 @@ PyDoc_STRVAR(PyTimerSetInterval_doc,"setInterval(interval) \n\
 Sets the timer interval in ms. \n\
 \n\
 This method sets the timeout interval in milliseconds. If the timer is started, \n\
-the callback function is tried to be continously triggered whenever the interval \n\
+the callback function is tried to be continuously triggered whenever the interval \n\
 expired. \n\
 \n\
 Parameters \n\

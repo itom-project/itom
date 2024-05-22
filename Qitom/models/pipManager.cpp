@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2023, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2023, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom.
 
@@ -39,7 +39,7 @@ namespace ito
     //----------------------------------------------------------------------------------------------------------------------------------
     /** constructor
     *
-    *   contructor, creating column headers for the tree view
+    *   constructor, creating column headers for the tree view
     */
     PipManager::PipManager(ito::RetVal &retval, QObject *parent /*= 0*/) :
         QAbstractItemModel(parent),

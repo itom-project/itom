@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
 
@@ -11,7 +11,7 @@
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
 
-    In addition, as a special exception, the Institut fuer Technische
+    In addition, as a special exception, the Institut für Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
     which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -97,7 +97,7 @@ public:
   int   MaxHeight;
   int   CollapsedHeight;
 
-  /// We change the visibility of the chidren in setChildrenVisibility
+  /// We change the visibility of the children in setChildrenVisibility
   /// and we track when the visibility is changed to force it back to possibly
   /// force the child to be hidden. To prevent infinite loop we need to know
   /// who is changing children's visibility.
@@ -166,7 +166,7 @@ void CollapsibleGroupBoxPrivate::setChildVisibility(QWidget* childWidget)
   this->ForcingVisibility = true;
 
   bool visible= !q->collapsed();
-  // if the widget has been explicity hidden, then hide it.
+  // if the widget has been explicitly hidden, then hide it.
   if (childWidget->property("visibilityToParent").isValid()
       && !childWidget->property("visibilityToParent").toBool())
     {

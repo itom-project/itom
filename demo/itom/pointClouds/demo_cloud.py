@@ -39,7 +39,7 @@ level = 0.3
 Xnoise = (np.random.rand(len(X)) - 0.5) * level
 Ynoise = (np.random.rand(len(Y)) - 0.5) * level
 Znoise = (np.random.rand(len(Z)) - 0.5) * level
-dist = np.sqrt(Xnoise ** 2 + Ynoise ** 2 + Znoise ** 2)
+dist = np.sqrt(Xnoise**2 + Ynoise**2 + Znoise**2)
 
 ###############################################################################
 # Cloud 1: perfect sphere, no intensity values
@@ -48,9 +48,7 @@ cloud1 = pointCloud.fromXYZ(X, Y, Z)
 ###############################################################################
 # Cloud 2: noisy sphere, noise deviation as intensity, shift it a little bit in X direction
 Xshift = nominalRadius * 2.2
-cloud2 = pointCloud.fromXYZI(
-    X + Xnoise + Xshift, Y + Ynoise, Z + Znoise, dist
-)
+cloud2 = pointCloud.fromXYZI(X + Xnoise + Xshift, Y + Ynoise, Z + Znoise, dist)
 
 # Plot the first cloud --> this cloud has the default name 'source_cloud_normal'
 index, handle = plot(cloud1, "vtk3dvisualizer")

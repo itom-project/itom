@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom.
 
@@ -73,7 +73,7 @@ FoldingPanel::FoldingPanel(bool highlightCaretScope /*= false*/, const QString &
     //: the list of deco used to highlight the current fold region (
     //: surrounding regions are darker)
     m_scopeDecos = QList<TextDecoration::Ptr>();
-    //: the list of folded blocs decorations
+    //: the list of folded blocks decorations
     m_blockDecos = QList<TextDecoration::Ptr>();
     setMouseTracking(true);
     setScrollable(true);
@@ -358,7 +358,7 @@ void FoldingPanel::paintEvent(QPaintEvent *e)
                     }
                 }
 
-                if (!found)//TODO: was ist das fuer eine Struktur
+                if (!found)//TODO: what's that kind of structure?
                 {
                     bool valid;  //valid should always be true, since check for fold trigger was already done above
                     addFoldDecoration(block, FoldScope(block, valid));
@@ -544,7 +544,7 @@ void FoldingPanel::drawFoldIndicator(int top, bool mouseOver, bool collapsed, QP
 
 //----------------------------------------------------------
 /*
-Add fold decorations (boxes arround a folded block in the editor
+Add fold decorations (boxes around a folded block in the editor
 widget).
 */
 void FoldingPanel::addFoldDecoration(const QTextBlock &block, const FoldScope &region)
@@ -672,7 +672,7 @@ void FoldingPanel::toggleFoldTrigger(const QTextBlock &block, bool refreshEditor
 
 //----------------------------------------------------------
 /*
-Refrehes editor content and scollbars.
+Refrehes editor content and scrollbars.
 
 We generate a fake resize event to refresh scroll bar.
 
@@ -901,7 +901,7 @@ Show the block previous blank lines
 */
 /*static*/ void FoldingPanel::showPreviousBlankLines(const QTextBlock &block)
 {
-    // set previous blank lines visibles
+    // set previous blank lines visible
     QTextBlock pblock = block.previous();
     while ((Utils::strip(pblock.text()) == "") && \
             (pblock.blockNumber() >= 0))
@@ -987,7 +987,7 @@ void FoldingPanel::highlightSurroundingScopes(QTextBlock block)
 //----------------------------------------------------------
 /*
 Detect mouser over indicator and highlight the current scope in the
-editor (up and down decoration arround the foldable text when the mouse
+editor (up and down decoration around the foldable text when the mouse
 is over an indicator).
 
 :param event: event

@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom.
 
@@ -1700,7 +1700,7 @@ void ScriptEditorWidget::startUndoRedo(bool undoNotRedo)
         breakpointsCache[i].lineIdx = mapping[breakpointsCache[i].lineIdx];
     }
 
-    // restore all cached bookmarks, whose lineIdx ist still >= 0
+    // restore all cached bookmarks, whose lineIdx is still >= 0
     foreach (const BookmarkItem& item, bookmarksCache)
     {
         if (item.lineIdx >= 0)
@@ -1711,7 +1711,7 @@ void ScriptEditorWidget::startUndoRedo(bool undoNotRedo)
 
     if (bpModel)
     {
-        // restore all cached breakpoints, whose lineIdx ist still >= 0
+        // restore all cached breakpoints, whose lineIdx is still >= 0
         foreach (const BreakPointItem& item, breakpointsCache)
         {
             if (item.lineIdx >= 0)

@@ -6,8 +6,8 @@ License information:
 
 itom software
 URL: http://www.uni-stuttgart.de/ito
-Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-Universitaet Stuttgart, Germany
+Copyright (C) 2020, Institut für Technische Optik (ITO),
+Universität Stuttgart, Germany
 
 This file is part of itom.
 
@@ -176,13 +176,15 @@ def calltipModuleItomModification(sig, params):
     if arrow_idx == -1 or not doc.startswith(sig.name):
         return None
 
-    signature = doc[len(sig.name): arrow_idx].strip()
+    signature = doc[len(sig.name) : arrow_idx].strip()
     signature = signature[1:-1]
     parts = signature.split(",")
 
     if len(parts) == len(params):
         return parts
-    elif len(params) >= 1 and params[0].name == "self" and len(parts) == len(params) - 1:
+    elif (
+        len(params) >= 1 and params[0].name == "self" and len(parts) == len(params) - 1
+    ):
         return [
             "self",
         ] + parts
@@ -206,7 +208,9 @@ def calltips(code, line, column, path=None):
                 script = jedi.Script(code=code, path=path, environment=jedienv)
                 signatures = script.get_signatures(line=line + 1, column=column)
             elif jedi.__version__ >= "0.16.0":
-                script = jedi.Script(source=code, path=path, encoding="utf-8", environment=jedienv)
+                script = jedi.Script(
+                    source=code, path=path, encoding="utf-8", environment=jedienv
+                )
                 signatures = script.get_signatures(line=line + 1, column=column)
             else:
                 if jedi.__version__ >= "0.12.0":
@@ -252,7 +256,7 @@ def calltips(code, line, column, path=None):
                 paramlist[index] = "<b>%s</b>" % paramlist[index]
 
             if module_name != "":
-                method_name = "%s.%s" % (module_name, call_name)
+                method_name = f"{module_name}.{call_name}"
             else:
                 method_name = call_name
 
@@ -280,7 +284,9 @@ def completions(code, line, column, path, prefix):
                 script = jedi.Script(code=code, path=path, environment=jedienv)
                 completions = script.complete(line=line + 1, column=column)
             elif jedi.__version__ >= "0.16.0":
-                script = jedi.Script(source=code, path=path, encoding="utf-8", environment=jedienv)
+                script = jedi.Script(
+                    source=code, path=path, encoding="utf-8", environment=jedienv
+                )
                 completions = script.complete(line=line + 1, column=column)
             else:
                 if jedi.__version__ >= "0.12.0":
@@ -326,7 +332,7 @@ def completions(code, line, column, path, prefix):
                             if len(signatures) == 0:
                                 tooltip = completion.docstring()
                                 if tooltip != "":
-                                    tooltip = "%s\n\n%s" % (
+                                    tooltip = "{}\n\n{}".format(
                                         completion.name,
                                         tooltip,
                                     )
@@ -350,7 +356,11 @@ def completions(code, line, column, path, prefix):
                                     if jedi.__version__ >= "0.17.0":
                                         rettype = completion.get_type_hint()
                                         if rettype != "":
-                                            tooltip = rettype + ": " + tooltip[len(pattern) :].lstrip()
+                                            tooltip = (
+                                                rettype
+                                                + ": "
+                                                + tooltip[len(pattern) :].lstrip()
+                                            )
                                     else:
                                         # jedi < 0.17.0 does not have the get_type_hint() method
                                         tooltip = tooltip[len(pattern) :].lstrip()
@@ -373,7 +383,9 @@ def completions(code, line, column, path, prefix):
                                     # if tooltip is empty, use desc as tooltip (done in C++)
                                     if jedi.__version__ >= "0.17.0":
                                         type_hint = completion.get_type_hint()
-                                        if type_hint != "" and not tooltip.startswith(type_hint):
+                                        if type_hint != "" and not tooltip.startswith(
+                                            type_hint
+                                        ):
                                             tooltip = type_hint + " : " + tooltip
                                     tooltipList = [
                                         tooltip,
@@ -388,7 +400,7 @@ def completions(code, line, column, path, prefix):
                         ]
 
                     if compl_type == "function" and len(tooltipList) > 0:
-                        """Properties, defined in C, are displayed as funtion.
+                        """Properties, defined in C, are displayed as function.
                         However, if the tooltip starts with 'type : text', it
                         is likely to be a property"""
                         text = tooltipList[0]
@@ -427,11 +439,15 @@ def goto_assignments(code, line, column, path, mode=0, encoding="utf-8"):
                 if jedi.__version__ >= "0.17.0":
                     script = jedi.Script(code=code, path=path, environment=jedienv)
                 else:
-                    script = jedi.Script(source=code, path=path, encoding="utf-8", environment=jedienv)
+                    script = jedi.Script(
+                        source=code, path=path, encoding="utf-8", environment=jedienv
+                    )
 
                 try:
                     if mode == 0:
-                        assignments = script.infer(line=line + 1, column=column, prefer_stubs=False)
+                        assignments = script.infer(
+                            line=line + 1, column=column, prefer_stubs=False
+                        )
                     elif mode == 1:
                         assignments = script.goto(
                             line=line + 1,
@@ -477,11 +493,16 @@ def goto_assignments(code, line, column, path, mode=0, encoding="utf-8"):
             if (
                 assignment.full_name
                 and assignment.full_name != ""
-                and (assignment.module_path is None or not str(assignment.module_path).endswith("pyi"))
+                and (
+                    assignment.module_path is None
+                    or not str(assignment.module_path).endswith("pyi")
+                )
             ):
                 result.append(
                     (
-                        str(assignment.module_path) if assignment.module_path is not None else "",
+                        str(assignment.module_path)
+                        if assignment.module_path is not None
+                        else "",
                         assignment.line - 1 if assignment.line else -1,
                         assignment.column if assignment.column else -1,
                         assignment.full_name,
@@ -490,7 +511,9 @@ def goto_assignments(code, line, column, path, mode=0, encoding="utf-8"):
 
         if len(result) == 0 and len(assignments) > 0 and mode == 0:
             # instead of 'infer' try 'goto' instead
-            result = goto_assignments(code, line, column, path, mode=1, encoding=encoding)
+            result = goto_assignments(
+                code, line, column, path, mode=1, encoding=encoding
+            )
 
         return result
 
@@ -513,10 +536,10 @@ def name_tooltip_type_module(item):
         list of str
             One or multiple possible tooltips for the given item.
     """
-    heading = "Module %s" % (item.name,)
+    heading = f"Module {item.name}"
     body = item.docstring()
     if body is not None and body != "":
-        tooltip = "%s\n\n%s" % (heading, body)
+        tooltip = f"{heading}\n\n{body}"
     else:
         tooltip = heading
     return [
@@ -544,13 +567,13 @@ def name_tooltip_type_statement(item):
     """
     typehint = item.get_type_hint()
     if typehint != "":
-        heading = "%s: %s" % (item.name, typehint)
+        heading = f"{item.name}: {typehint}"
     else:
         heading = item.name
 
     body = item.docstring()
     if body is not None and body != "":
-        tooltip = "%s\n\n%s" % (heading, body)
+        tooltip = f"{heading}\n\n{body}"
     else:
         tooltip = heading
     return [
@@ -628,11 +651,11 @@ def name_tooltip_type_property(item):
 
     if docstring != "":
         return [
-            "%s: %s\n\n%s" % (name, rettype, docstring),
+            f"{name}: {rettype}\n\n{docstring}",
         ]
     else:
         return [
-            "%s: %s" % (name, rettype),
+            f"{name}: {rettype}",
         ]
 
 
@@ -670,7 +693,7 @@ def name_tooltip_type_general(item):
                 if rettype != "":
                     name += ": %s" % rettype
             if tooltip != "":
-                tooltip = "%s\n\n%s" % (name, tooltip)
+                tooltip = f"{name}\n\n{tooltip}"
             else:
                 tooltip = name
             tooltipList = [
@@ -744,7 +767,9 @@ def get_help(code, line, column, path):
                 script = jedi.Script(code=code, path=path, environment=jedienv)
                 helps = script.help(line=line + 1, column=column)
             elif jedi.__version__ >= "0.16.0":
-                script = jedi.Script(source=code, path=path, encoding="utf-8", environment=jedienv)
+                script = jedi.Script(
+                    source=code, path=path, encoding="utf-8", environment=jedienv
+                )
                 helps = script.help(line=line + 1, column=column)
             else:
                 if jedi.__version__ >= "0.12.0":
@@ -804,7 +829,9 @@ def rename_reference(code, line, column, path):
                 if jedi.__version__ >= "0.17.0":
                     script = jedi.Script(code, path=path, environment=jedienv)
                 else:
-                    script = jedi.Script(code, path=path, encoding="utf-8", environment=jedienv)
+                    script = jedi.Script(
+                        code, path=path, encoding="utf-8", environment=jedienv
+                    )
 
             else:
                 if jedi.__version__ >= "0.12.0":
@@ -821,7 +848,7 @@ def rename_reference(code, line, column, path):
 
             project = jedi.api.project.get_default_project(path=path)
             projectRootPath = os.path.realpath(project.path)
-            
+
             try:
                 refactoring = script.rename(line=line, column=column, new_name="")
             except jedi.api.exceptions.RefactoringError:
@@ -834,18 +861,20 @@ def rename_reference(code, line, column, path):
                 values = []
                 filenameStr = os.path.realpath(filename)
                 fileInProject = filenameStr.startswith(projectRootPath)
-                
+
                 for name, _nameToChange in node.items():
                     lines.append(name.line)
                     cols.append(name.column)
                     values.append(name.value)
                 result.append(
-                    (filenameStr,
-                     lines.copy(),
-                     cols.copy(),
-                     values.copy(),
-                     fileInProject)
+                    (
+                        filenameStr,
+                        lines.copy(),
+                        cols.copy(),
+                        values.copy(),
+                        fileInProject,
                     )
+                )
             # refactoring.apply()  # implemented in c++
     return result
 

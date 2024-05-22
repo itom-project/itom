@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom.
 
@@ -45,7 +45,7 @@ namespace Utils
 {
     //------------------------------------------------------------------------
     /*
-    Retuns  a list of symbols found in the block text
+    Returns  a list of symbols found in the block text
 
     :param editor: code edit instance
     :param block: block to parse
@@ -514,7 +514,7 @@ namespace Utils
         QString sigs = defs.join("\n");
         sigs = sigs.toHtmlEscaped().replace("    ", "&nbsp;&nbsp;&nbsp;&nbsp;");
 
-        // search for the last occurence of ") ->" and replaces the arrow
+        // search for the last occurrence of ") ->" and replaces the arrow
         // by a real arrow, since the -> arrow will be wrapped (although <nobr>).
         const QString pattern(") -&gt; ");
         int idx = sigs.lastIndexOf(pattern);

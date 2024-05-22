@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2023, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2023, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom.
 
@@ -183,7 +183,7 @@ void WidgetPropPythonGeneral::on_cbbPyUse3rdPartyPresets_currentTextChanged(QStr
     ui.lePyUse3rdPartyCommand->setText(pyExtHelpers[caption]);
 }
 
-//this is a workaround for the external cmd to be opened... and i don't want this to happen everytime
+//this is a workaround for the external cmd to be opened... and i don't want this to happen every time
 //the properties dialogue is accepted...
 void WidgetPropPythonGeneral::on_pbApplyPyUse3rdPartyHelpViewer_clicked()
 {

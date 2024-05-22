@@ -181,7 +181,7 @@ TYPED_TEST(dataTest, checkZeros)
 
 // checkIdentity
 /*!
-    This test checks functionality of "eye" method for 2 dimentional matrices by checking if the required matrix is
+    This test checks functionality of "eye" method for 2 dimensional matrices by checking if the required matrix is
    Identity matrix.
 */
 TYPED_TEST(dataTest, checkIdentity)

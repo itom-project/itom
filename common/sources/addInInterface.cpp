@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
 
@@ -11,7 +11,7 @@
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
 
-    In addition, as a special exception, the Institut fuer Technische
+    In addition, as a special exception, the Institut für Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
     which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -187,7 +187,7 @@ namespace ito
         int m_refCount;                         //!< reference counter, used to avoid early deletes (0 means that one instance is holding one reference, 1 that two participants hold the reference...)
         int m_alive;                            //!< member to check if thread is still responsive
 
-        //!< this user defined mutex can be accessed via C++ oder Python by the user code.
+        //!< this user defined mutex can be accessed via C++ or Python by the user code.
         /* This mutex has no designed task in the plugin, however it can be used by
         the user to for instance protect a sequence of different calls to this plugin.
 
@@ -1191,7 +1191,7 @@ namespace ito
         {}
 
         bool m_interruptFlag;                      /*!< interrupt flag (true if interrupt is requested, default: false) */
-        QMutex m_directAccessMutex;                /*!< mutex providing a thread-safe handling of the interrupt flag (internal use only), as well as of the last reported stati, current positions or target positions */
+        QMutex m_directAccessMutex;                /*!< mutex providing a thread-safe handling of the interrupt flag (internal use only), as well as of the last reported statuses, current positions or target positions */
         QVector<int>    m_lastSignalledStatus;      /*!< vector (same length than number of axes) containing the status of every axis. The status is a combination of enumeration ito::tActuatorStatus. */
         QVector<double> m_lastSignalledCurrentPos;  /*!< vector (same length than number of axes) containing the current position (mm or degree) of every axis. The current position should be updated with a reasonable frequency (depending on the actuator and situation)*/
         QVector<double> m_lastSignalledTargetPos;   /*!< vector (same length than number of axes) containing the target position (mm or degree) of every axis */

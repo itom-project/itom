@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom.
 
@@ -45,7 +45,7 @@ namespace ito
 
     QDataStream &operator>>(QDataStream &in, ito::ScriptEditorStorage &obj)
     {
-        // from itom 3.2.1 to itom 4.0 a bug was fixed in ito::ScriptEditorStorage (QByteArray / QString mixure in filename).
+        // from itom 3.2.1 to itom 4.0 a bug was fixed in ito::ScriptEditorStorage (QByteArray / QString mixture in filename).
         // This has been fixed. However, when an old setting file is loaded, the load will crash. This is caught here.
         try
         {
@@ -115,7 +115,7 @@ ScriptEditorOrganizer::ScriptEditorOrganizer(bool dockAvailable) :
 //----------------------------------------------------------------------------------------------------------------------------------
 //! destructor
 /*!
-    disconnections remaining connections to python engine and deletes remaining ScriptDockWidgets (should no occure)
+    disconnections remaining connections to python engine and deletes remaining ScriptDockWidgets (should no occur)
 */
 ScriptEditorOrganizer::~ScriptEditorOrganizer()
 {
@@ -142,7 +142,7 @@ ScriptEditorOrganizer::~ScriptEditorOrganizer()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! This function is called to save all the informations about widgets before itom is closed
+//! This function is called to save all the information about widgets before itom is closed
 /*!
 */
 void ScriptEditorOrganizer::saveScriptState()
@@ -203,7 +203,7 @@ void ScriptEditorOrganizer::saveScriptState()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! This function is called to get all the saved informations about widgets after itom starts
+//! This function is called to get all the saved information about widgets after itom starts
 /*!
 */
 RetVal ScriptEditorOrganizer::restoreScriptState()
@@ -935,7 +935,7 @@ RetVal ScriptEditorOrganizer::openScript(const QString &filename, ItomSharedSema
 //! slot invoked if a file open command has been executed in any script window.
 /*!
     Checks if filename already has been opened in another script window. If yes only activates this tab, else
-    openes the script in the given widget (if NULL opens a new script window)
+    opens the script in the given widget (if NULL opens a new script window)
 
     \param filename Filename of the python macro which should be opened
     \param widget ScriptDockWidget where this macro should appear as new tab. If NULL, new script window will be created

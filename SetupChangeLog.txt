@@ -1,63 +1,54 @@
-Versions-Verwaltung itom
+Version Management itom
 ------------------------
 
-Der Verantwortliche für die Versions-Nummern-Vergabe bei 'itom' ist Heiko Bieger.
+The person responsible for version number assignment in 'itom' is Heiko Bieger.
 
-Jedes Mal, wenn ein neues Setup von 'itom' herauskommt, wird die Patch-Nummer der
-'itom'-Version inkrementiert. Versions-Inkrementierungen bei Major und Minor erfolgen
-nur bei größeren Änderungen und werden durch die Core-Entwickler mitfestgelegt.
+Every time a new setup of 'itom' is released, the patch number of the 'itom' version is incremented. Major and minor version increments occur only with significant changes and are determined by the core developers.
 
-
-Inkrementierung der 'itom'-Versionsnummer:
+Incrementing the 'itom' version number:
 -------------------------------------------
 
-In 'global.h' die neue itom Versionsnummer nach dem Prinzip von Semantic Versioning
-vergeben.
+Assign the new 'itom' version number in 'global.h' according to the principles of Semantic Versioning.
 
-
-Überprüfung der AddInInterface- und DesignerPluginInterface-Versionsnummer:
+Checking the AddInInterface and DesignerPluginInterface version numbers:
 ----------------------------------------------------------------------------
 
-Prüfen, ob seit dem letzten Setup eine Änderung im AddInInterface und / oder
-DesignerPluginInterface vorkam. Dies führt zu einer Inkrementierung der Versionsnummer(n)
-nach dem Prinzip von Semantic Versioning, die in den Dateien addInInterfaceVersion.h und
-designerPluginInterfaceVersion.h vergeben werden.
+Check if there have been any changes in the AddInInterface and/or DesignerPluginInterface since the last setup. This leads to an incrementation of the version number(s) according to the principles of Semantic Versioning, which are assigned in the files addInInterfaceVersion.h and designerPluginInterfaceVersion.h.
 
-itom, designer plugins und dann alle plugins kompilieren
+Compile itom, designer plugins, and then all plugins
 ---------------------------------------------------------
 
 1. Compile
 
-Doku erstellen:
+Creating documentation:
 ---------------
 
-1. \Build\itom\docs\doxygen\itom_doxygen.dox per Doppelklick starten
-2. itom starten
-3. in \Build\itom\docs\userDoc die python-Datei "create_doc.py" ausführen und Hilfe starten
-4. in \Build\itom\docs\pluginDoc die python-Datei "create_all_plugin_docs.py" ausführen,
-   Build-Verzeichnis der freien Plugins wählen und Hilfe starten
+1. Start \Build\itom\docs\doxygen\itom_doxygen.dox by double-clicking
+2. Start itom
+3. Run the python file "create_doc.py" in \Build\itom\docs\userDoc and start Help
+4. Run the python file "create_all_plugin_docs.py" in \Build\itom\docs\pluginDoc, select the build directory of the free plugins, and start Help
 
 
 CHANGE-LOG
 ----------
 
-Setup 1.0.6  - SVN Rev. 4048 - Erstellt am 18.01.2013 - AddInInterface "ito.AddIn.InterfaceBase/1.1.8"
-Setup 1.0.8  - Erstellt am 18.03.2013 - AddInInterface "ito.AddIn.InterfaceBase/1.1.8"
-Setup 1.0.9  - Erstellt am 11.04.2013 - AddInInterface "ito.AddIn.InterfaceBase/1.1.14"
-Setup 1.0.10 - Erstellt am 26.04.2013 - AddInInterface "ito.AddIn.InterfaceBase/1.1.16"
-Setup 1.0.11 - Erstellt am 22.05.2013 - AddInInterface "ito.AddIn.InterfaceBase/1.1.16"
-Setup 1.0.12 - Erstellt am 07.06.2013 - AddInInterface "ito.AddIn.InterfaceBase/1.1.16"
-Setup 1.0.13 - Erstellt am 22.07.2013 - AddInInterface "ito.AddIn.InterfaceBase/1.1.19"
-Setup 1.0.14 - Erstellt am 30.08.2013 - AddInInterface "ito.AddIn.InterfaceBase/1.1.20"
-Setup 1.1.0  - Erstellt am 27.01.2014 - AddInInterface "ito.AddIn.InterfaceBase/1.1.24"
-Setup 1.2.0  - Erstellt am 27.05.2014 - AddInInterface "ito.AddIn.InterfaceBase/1.2.1"
-Setup 1.3.0  - Erstellt am 08.10.2014 - AddInInterface "ito.AddIn.InterfaceBase/1.3.0"
-Setup 1.4.0  - Erstellt am 17.02.2015 - AddInInterface "ito.AddIn.InterfaceBase/1.3.1"
-Setup 2.0.0  - Erstellt am 20.07.2015 - AddInInterface "ito.AddIn.InterfaceBase/2.0.0"
-Setup 2.1.0  - Erstellt am 01.03.2016 - AddInInterface "ito.AddIn.InterfaceBase/2.3.0"
-Setup 2.2.0  - Erstellt am 06.10.2016 - AddInInterface "ito.AddIn.InterfaceBase/2.5.0"
-Setup 2.2.1  - Erstellt am 14.10.2016 - AddInInterface "ito.AddIn.InterfaceBase/2.5.0"
-Setup 3.0.0  - Erstellt am 07.04.2017 - AddInInterface "ito.AddIn.InterfaceBase/3.0.0"
-Setup 3.1.0  - Erstellt am 19.02.2018 - AddInInterface "ito.AddIn.InterfaceBase/3.2.0"
-Setup 3.2.0  - Erstellt am 24.05.2019 - AddInInterface "ito.AddIn.InterfaceBase/3.3.0"
-Setup 3.2.1  - Erstellt am 14.09.2019 - AddInInterface "ito.AddIn.InterfaceBase/3.3.0"
+Setup 1.0.6  - SVN Rev. 4048 - Created on 18.01.2013 - AddInInterface "ito.AddIn.InterfaceBase/1.1.8"
+Setup 1.0.8  - Created on 18.03.2013 - AddInInterface "ito.AddIn.InterfaceBase/1.1.8"
+Setup 1.0.9  - Created on 11.04.2013 - AddInInterface "ito.AddIn.InterfaceBase/1.1.14"
+Setup 1.0.10 - Created on 26.04.2013 - AddInInterface "ito.AddIn.InterfaceBase/1.1.16"
+Setup 1.0.11 - Created on 22.05.2013 - AddInInterface "ito.AddIn.InterfaceBase/1.1.16"
+Setup 1.0.12 - Created on 07.06.2013 - AddInInterface "ito.AddIn.InterfaceBase/1.1.16"
+Setup 1.0.13 - Created on 22.07.2013 - AddInInterface "ito.AddIn.InterfaceBase/1.1.19"
+Setup 1.0.14 - Created on 30.08.2013 - AddInInterface "ito.AddIn.InterfaceBase/1.1.20"
+Setup 1.1.0  - Created on 27.01.2014 - AddInInterface "ito.AddIn.InterfaceBase/1.1.24"
+Setup 1.2.0  - Created on 27.05.2014 - AddInInterface "ito.AddIn.InterfaceBase/1.2.1"
+Setup 1.3.0  - Created on 08.10.2014 - AddInInterface "ito.AddIn.InterfaceBase/1.3.0"
+Setup 1.4.0  - Created on 17.02.2015 - AddInInterface "ito.AddIn.InterfaceBase/1.3.1"
+Setup 2.0.0  - Created on 20.07.2015 - AddInInterface "ito.AddIn.InterfaceBase/2.0.0"
+Setup 2.1.0  - Created on 01.03.2016 - AddInInterface "ito.AddIn.InterfaceBase/2.3.0"
+Setup 2.2.0  - Created on 06.10.2016 - AddInInterface "ito.AddIn.InterfaceBase/2.5.0"
+Setup 2.2.1  - Created on 14.10.2016 - AddInInterface "ito.AddIn.InterfaceBase/2.5.0"
+Setup 3.0.0  - Created on 07.04.2017 - AddInInterface "ito.AddIn.InterfaceBase/3.0.0"
+Setup 3.1.0  - Created on 19.02.2018 - AddInInterface "ito.AddIn.InterfaceBase/3.2.0"
+Setup 3.2.0  - Created on 24.05.2019 - AddInInterface "ito.AddIn.InterfaceBase/3.3.0"
+Setup 3.2.1  - Created on 14.09.2019 - AddInInterface "ito.AddIn.InterfaceBase/3.3.0"

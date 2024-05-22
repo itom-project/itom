@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom.
 
@@ -257,7 +257,7 @@ PyObject* PyStream::PythonStream_flush(PythonStream* self, PyObject * /*args*/)
         std::cerr << std::flush;
     }
 
-    Py_RETURN_NONE; //args should be empty, if calling PythonStream_write from this position, garbage collector crash might occure
+    Py_RETURN_NONE; //args should be empty, if calling PythonStream_write from this position, garbage collector crash might occur
 }
 
 //---------------------------------------------------------------------------------

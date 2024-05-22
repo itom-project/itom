@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom.
 
@@ -60,7 +60,7 @@ public:
 //-------------------------------------------------------------------------------------
 /** constructor
  *
- *   contructor, creating column headers for the tree view
+ *   constructor, creating column headers for the tree view
  */
 PlugInModel::PlugInModel(ito::AddInManager* addInManager, QObject* parent /*= nullptr*/) :
     QAbstractItemModel(parent), d_ptr(new PlugInModelPrivate())
@@ -392,7 +392,7 @@ int PlugInModel::columnCount(const QModelIndex& /*parent*/) const
  *   This method returns the QModelIndex for the current element. As the tree structure is not
  * cached it has to be "calculated" on each call. An invalid parent means were in the top most
  * "plane" of the tree, i.e. the plugin-plane. If the passed index is out of range we return an
- * empty element. Otherwise a new element marked as root level element (i.e. interal pointer =
+ * empty element. Otherwise a new element marked as root level element (i.e. internal pointer =
  * ROOTPOINTER) is returned. If the parent element is valid the index for an instance is requested.
  * In that case it is first checked if the index for a child child element is queried. In that case
  * again an empty element is returned else the plugin for the selected instance is searched in the
@@ -840,7 +840,7 @@ QVariant PlugInModel::getPluginNodeInfo(const QModelIndex& index, const int& rol
             filename = QFileInfo(aib->getFilename());
             return filename.fileName();
         }
-        case 4: // autor
+        case 4: // author
         {
             return aib->getAuthor();
         }
@@ -1219,7 +1219,7 @@ QVariant PlugInModel::getFilterOrWidgetNodeInfo(
  *
  *   This method is actually used to fill the tree view. It returns the data for the selected
  * element, depending as well on the column of the selected element, passed in index.column. The
- * method here is divded into two parts. The first one handels requests for root elements (plugins)
+ * method here is divided into two parts. The first one handles requests for root elements (plugins)
  * the second one is used for child elements (instances of plugins).
  */
 QVariant PlugInModel::data(const QModelIndex& index, int role) const

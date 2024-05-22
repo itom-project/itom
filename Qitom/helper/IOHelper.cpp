@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2022, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2022, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom.
 
@@ -520,7 +520,7 @@ end:
 //! import an idc or mat file and load the content to a python workspace
 /*!
     Import an idc (itom data collection) or mat (Matlab) ocntainer to the global or local
-    python workspace. This is done by an invokation of the slot unpickleVariables or loadMatlabVariables
+    python workspace. This is done by an invocation of the slot unpickleVariables or loadMatlabVariables
     of the class PythonEngine.
 
     \param filename is the filename with a suffix idc or mat (only supported if Scipy is available)
@@ -977,12 +977,12 @@ end:
                         if (retval.hasErrorMessage()) text = QString("\n%1").arg(QLatin1String(retval.errorMessage()));
                         if (retval.containsError())
                         {
-                            text.prepend(tr("An error occured while importing the loaded file into the python workspace."));
+                            text.prepend(tr("An error occurred while importing the loaded file into the python workspace."));
                             QMessageBox::critical(parent, tr("Error while sending values to python"), text);
                         }
                         else if (retval.containsWarning())
                         {
-                            text.prepend(tr("A warning occured while importing the loaded file into the python workspace."));
+                            text.prepend(tr("A warning occurred while importing the loaded file into the python workspace."));
                             QMessageBox::warning(parent, tr("Warning while sending values to python"), text);
                         }
                     }
@@ -1305,7 +1305,7 @@ end:
     This function checks if a file ending of a file fits to a given set of filters.
 
     \param filename pass the filename as a QString
-    \param IOfilters pass the filterset that the filename shopuld be checked against
+    \param IOfilters pass the filterset that the filename should be checked against
     \return returns true if the file fits to the filters, else false is returned
 */
 /*static*/ bool IOHelper::fileFitsToFileFilters(const QString &filename, const IOFilters &IOfilters)
@@ -1331,8 +1331,8 @@ end:
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Shortens paths so that menus can display them without becoming too big
 /*!
-    This functio is used to shorten paths so they fit into a menu or something
-    compareable.
+    This function is used to shorten paths so they fit into a menu or something
+    comparable.
 
     Example:
     D:/testdir1/testdir2/file.py

@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
 
@@ -11,7 +11,7 @@
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
 
-    In addition, as a special exception, the Institut fuer Technische
+    In addition, as a special exception, the Institut für Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
     which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -45,13 +45,13 @@ class ITOMWIDGETS_EXPORT PopupWidget : public BasePopupWidget
   /// Control whether the popup listens to the application and baseWidget
   /// events and decides if it needs to be permanently or temporarily hidden.
   /// You might want to setActive(false) when embedding the popup
-  /// into a static layout intead of having it top-level (no parent).
+  /// into a static layout instead of having it top-level (no parent).
   /// Consider also removing its windowFlags (Qt::ToolTip |
   /// Qt::FramelessWindowHint) and removing the baseWidget.
   /// True by default
   Q_PROPERTY( bool active READ isActive WRITE setActive)
 
-  /// Control wether the popup automatically opens when the mouse
+  /// Control whether the popup automatically opens when the mouse
   /// enter the widget. True by default
   Q_PROPERTY( bool autoShow READ autoShow WRITE setAutoShow)
 
@@ -59,7 +59,7 @@ class ITOMWIDGETS_EXPORT PopupWidget : public BasePopupWidget
   /// 20ms by default
   Q_PROPERTY( int showDelay READ showDelay WRITE setShowDelay)
 
-  /// Control wether the popup automatically closes when the mouse
+  /// Control whether the popup automatically closes when the mouse
   /// leaves the widget. True by default
   Q_PROPERTY( bool autoHide READ autoHide WRITE setAutoHide)
 

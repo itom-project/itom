@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2024, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2024, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom.
 
@@ -757,7 +757,7 @@ void RenameRunnable::run()
                                 PythonQtConversion::PyObjGetIntArray(columnsRef, true, ok);
                             auto values =
                                 PythonQtConversion::PyObjToStringList(valuesRef, true, ok);
-                                
+
                             if (ok)
                             {
                                 JediRename fileToChange;
@@ -839,11 +839,11 @@ void RenameRunnable::run()
     if (s && m_request.m_callbackFctName != "")
     {
         QMetaObject::invokeMethod(
-            s, 
-            m_request.m_callbackFctName.constData(), 
-            Q_ARG(QVector<ito::JediRename>, renameList), 
+            s,
+            m_request.m_callbackFctName.constData(),
+            Q_ARG(QVector<ito::JediRename>, renameList),
             Q_ARG(QString, oldValue),
-            Q_ARG(bool, success), 
+            Q_ARG(bool, success),
             Q_ARG(QString, errorText)
         );
     }

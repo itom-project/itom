@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom.
 
@@ -234,7 +234,7 @@ bool FoldScope::isValid() const
 
 //------------------------------------------------
 /*
-Returns True if the block is collasped, False if it is expanded.
+Returns True if the block is collapsed, False if it is expanded.
 */
 bool FoldScope::collapsed() const
 {

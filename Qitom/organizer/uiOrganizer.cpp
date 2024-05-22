@@ -1,8 +1,8 @@
-﻿/* ********************************************************************
+/* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom.
 
@@ -791,7 +791,7 @@ RetVal UiOrganizer::createNewDialog(
             QSharedPointer<int> col(new int);
             *col = 1;
             retValue += createFigure(guardedFigHandle, figObjectID, row, col, QPoint(), QSize(), NULL);
-            if (!retValue.containsError()) //if the figure window is created by this method, it is assumed, that no figure-instance keeps track of this figure, therefore its guardedFigHandle is given to the figure itsself
+            if (!retValue.containsError()) //if the figure window is created by this method, it is assumed, that no figure-instance keeps track of this figure, therefore its guardedFigHandle is given to the figure itself
             {
                 *dialogHandle = *(*guardedFigHandle);
                 if (m_dialogList.contains(*dialogHandle))
@@ -2416,7 +2416,7 @@ Every class, that has the Q_OBJECT macro defined and is derived from QObject (li
 The Qt moc process turns every signal into an auto-incremented number, the so called signal index. This method tries to find
 out the corresponding signal index of this signal.
 
-\param objectID is the indentifier, that references the emitting object
+\param objectID is the identifier, that references the emitting object
 \param signalSignature is the original signature of the signal, e.g. 'clicked(bool)'
 \param signalIndex is the returned signal index, or -1 if the signal could not be found
 \param objPtr is the object pointer that belongs to objectID. Hint: only use this pointer within another thread as long as you are sure that the object still exists
@@ -3375,7 +3375,7 @@ ito::RetVal UiOrganizer::figurePlot(
         QSharedPointer<int> col(new int);
         *col = areaCol + 1;
         retval += createFigure(guardedFigHandle, figObjectID, row, col, QPoint(), QSize(), NULL);
-        if (!retval.containsError()) //if the figure window is created by this method, it is assumed, that no figure-instance keeps track of this figure, therefore its guardedFigHandle is given to the figure itsself
+        if (!retval.containsError()) //if the figure window is created by this method, it is assumed, that no figure-instance keeps track of this figure, therefore its guardedFigHandle is given to the figure itself
         {
             *figHandle = *(*guardedFigHandle);
             fig = qobject_cast<FigureWidget*>(m_dialogList[*figHandle].container->getUiWidget());
@@ -3468,7 +3468,7 @@ RetVal UiOrganizer::figureLiveImage(
         QSharedPointer<int> col(new int);
         *col = areaCol + 1;
         retval += createFigure(guardedFigHandle, figObjectID, row, col, QPoint(), QSize(), NULL);
-        if (!retval.containsError()) //if the figure window is created by this method, it is assumed, that no figure-instance keeps track of this figure, therefore its guardedFigHandle is given to the figure itsself
+        if (!retval.containsError()) //if the figure window is created by this method, it is assumed, that no figure-instance keeps track of this figure, therefore its guardedFigHandle is given to the figure itself
         {
             *figHandle = *(*guardedFigHandle);
             fig = qobject_cast<FigureWidget*>(m_dialogList[*figHandle].container->getUiWidget());
@@ -3539,7 +3539,7 @@ RetVal UiOrganizer::figureDesignerWidget(
         QSharedPointer<int> col(new int);
         *col = areaCol + 1;
         retval += createFigure(guardedFigHandle, figObjectID, row, col, QPoint(), QSize(), NULL);
-        if (!retval.containsError()) //if the figure window is created by this method, it is assumed, that no figure-instance keeps track of this figure, therefore its guardedFigHandle is given to the figure itsself
+        if (!retval.containsError()) //if the figure window is created by this method, it is assumed, that no figure-instance keeps track of this figure, therefore its guardedFigHandle is given to the figure itself
         {
             *figHandle = *(*guardedFigHandle);
             fig = qobject_cast<FigureWidget*>(m_dialogList[*figHandle].container->getUiWidget());

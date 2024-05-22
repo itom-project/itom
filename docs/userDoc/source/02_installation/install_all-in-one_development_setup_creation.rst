@@ -7,7 +7,7 @@
 All-In-One development creation
 *******************************
 
-This chapter here shows how the all-in-one develoment setup is created. In this
+This chapter here shows how the all-in-one development setup is created. In this
 setup all required components for the |itom| development environment are installed/compiled.
 The following steps must be executed in the given procedure.
 In the chapter about :ref:`install_all-in-one_development_setup <install-all-in-one-dev-setup>`
@@ -24,7 +24,7 @@ All these steps here are shown for a 64-bit version of the all-in-one developmen
 A 32-bit version is created in the same way with the corresponding 32-bit software/packages.
 
 First download all the needed software and packages. This download links are for
-the current availabe software versions.
+the current available software versions.
 
 * `MS Visual Studio Community Edition <http://www.visualstudio.com/de-de/downloads/download-visual-studio-vs.aspx>`_
 * `Qt Visual Studio Add-in <https://download.qt.io/development_releases/vsaddin/>`_

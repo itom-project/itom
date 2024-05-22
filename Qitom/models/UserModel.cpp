@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom.
 
@@ -30,7 +30,7 @@ namespace ito
 //-------------------------------------------------------------------------------------
 /** constructor
 *
-*   contructor, creating column headers for the tree view
+*   constructor, creating column headers for the tree view
 */
 UserModel::UserModel()
 {
@@ -96,7 +96,7 @@ QVariant UserModel::headerData(int section, Qt::Orientation orientation, int rol
 *   @return data of the selected element, depending on the element's row and column (passed in index.row and index.column)
 *
 *   This method is actually used to fill the tree view. It returns the data for the selected element, depending as well on the
-*   column of the selected element, passed in index.column. The method here is divded into two parts. The first one handels requests
+*   column of the selected element, passed in index.column. The method here is divided into two parts. The first one handles requests
 *   for root elements (plugins) the second one is used for child elements (instances of plugins).
 */
 QVariant UserModel::data(const QModelIndex &index, int role) const

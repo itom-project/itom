@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom.
 
@@ -196,12 +196,12 @@ void DialogProperties::initPages()
     m_pages["07_plots/03palettes"] = PropertyPage(tr("Palettes Settings"), tr("Plots and Figures - Palettes Settings"), "07_plots/03palettes", new WidgetPropPalettes(), QIcon(":/plots/icons/itom_icons/color.png"));
 
     PropertyPage page;
-    QStringList pathes;
+    QStringList paths;
 
     foreach(page, m_pages)
     {
-        pathes = page.m_fullname.split("/");
-        addPage(page, m_pCategories->invisibleRootItem(), pathes);
+        paths = page.m_fullname.split("/");
+        addPage(page, m_pCategories->invisibleRootItem(), paths);
 
         /*
         if (page.m_widget)
@@ -282,7 +282,7 @@ bool DialogProperties::selectTabByKey(QString &key, QTreeWidgetItem *parent /*= 
         }
     }
 
-    if (!found) //search all childs...
+    if (!found) //search all child's...
     {
         for(int i = 0; i < parent->childCount(); ++i)
         {
@@ -349,7 +349,6 @@ void DialogProperties::rejected()
 void DialogProperties::apply()
 {
     PropertyPage page;
-    QStringList pathes;
 
     foreach(page, m_pages)
     {

@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom.
 
@@ -286,7 +286,7 @@ MethodDescriptionList WidgetWrapper::getMethodList(QObject *object)
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 //! creates an instance of MethodDescription which contains all necessary information in order to call the corresponding method at runtime using the method \sa call.
 /*!
-    This method creates the neccesary input for the constructor of MethodDescription, which has pretty much the same functionality than
+    This method creates the necessary input for the constructor of MethodDescription, which has pretty much the same functionality than
     the call of slots in Qt at runtime using the signal/slot and Qt-meta system.
 
     \param [in] signature is the Qt-like signature string for the method to wrap (e.g. "methodName(argType1,argType2,argType3,...)" without argument names)
@@ -371,12 +371,12 @@ MethodDescription WidgetWrapper::buildMethodDescription(QByteArray signature, QS
     \param [in] object is the instance casted to its base class QObject, whose wrapped public method should be called
     \param [in] methodIndex is the ID of the wrapped method to call
     \param [in/out] _a is a void-array containing the value for the return value as first element and the content of all argument as following elements. (similar to qt_metacall)
-    \return true if call could successfully be executed (only if call itsself was successfull), false if method could not be found
+    \return true if call could successfully be executed (only if call itself was successful), false if method could not be found
     \sa UiOrganizer::callMethod
 */
 ito::RetVal WidgetWrapper::call(QObject *object, int methodIndex, void **_a)
 {
-    //parse the class hierarchie of object recursively and check for possible methods:
+    //parse the class hierarchy of object recursively and check for possible methods:
     const QMetaObject *tempMetaObject = object->metaObject();
     QString className;
     ito::RetVal retVal(ito::retError, m_methodIndexNotFound, QObject::tr("Slot or widget not found").toLatin1().data());
@@ -1986,7 +1986,7 @@ ito::RetVal WidgetWrapper::callBoxLayout(QBoxLayout *layout, int methodIndex, vo
 //! Method is able to handle unexisting properties and map them to existing ones (compatibility to QtDesigner)
 /*!
     In QtDesigner, sometimes it is possible to change properties that are not directly extracted from the QMetaObject-system.
-    However, QtDesigner adds some artifical sets of properties, especially for widgets derived from QTreeView and QTableView.
+    However, QtDesigner adds some artificial sets of properties, especially for widgets derived from QTreeView and QTableView.
     Therefore, if methods UiOrganizer::writeProperties and UiOrganizer::readProperties fail to address the given property,
     they call this method. In the given property can be transformed into a new property of a new object, then this is returned,
     else an empty QMetaProperty is returned.
@@ -1999,7 +1999,7 @@ ito::RetVal WidgetWrapper::callBoxLayout(QBoxLayout *layout, int methodIndex, vo
 */
 QMetaProperty WidgetWrapper::fakeProperty(const QObject *baseObject, const QString &fakePropertyName, QObject **destinationObject)
 {
-    //parse the class hierarchie of object recursively and check for possible methods:
+    //parse the class hierarchy of object recursively and check for possible methods:
     const QMetaObject *tempMetaObject = baseObject->metaObject();
     QString className;
     QString newProperty;

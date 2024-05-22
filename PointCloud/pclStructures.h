@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
 
@@ -11,7 +11,7 @@
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
 
-    In addition, as a special exception, the Institut fuer Technische
+    In addition, as a special exception, the Institut für Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
     which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -34,7 +34,7 @@
 #include <vector>
 
 #ifdef WIN32
-#pragma warning( disable: 4996) //supress deprecated warning of pcl (which occur very often)
+#pragma warning( disable: 4996) //suppress deprecated warning of pcl (which occur very often)
 #endif
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
@@ -489,7 +489,7 @@ public:
     */
     const PCLPointCloud operator+ (const PCLPointCloud &rhs);
 
-    //! assigment operator
+    //! assignment operator
     PCLPointCloud & operator= (const PCLPointCloud &copy);
 
     //! make a deep copy of this point cloud
@@ -585,10 +585,10 @@ public:
     void insert(uint32_t index, const ito::PCLPoint& point);
 
 protected:
-    //! clears this point cloud and sets the type to ito::pclInvalid. An existing point cloud is implicitely deleted.
+    //! clears this point cloud and sets the type to ito::pclInvalid. An existing point cloud is implicitly deleted.
     void setInvalid();
 
-    //! creates an empty point cloud of given type. An existing point cloud is implicitely deleted.
+    //! creates an empty point cloud of given type. An existing point cloud is implicitly deleted.
     void createEmptyPointCloud(ito::tPCLPointType type);
 
 private:

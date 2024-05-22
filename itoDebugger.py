@@ -1,8 +1,8 @@
 # ***********************************************************************
 #    itom software
 #    URL: http://www.uni-stuttgart.de/ito
-#    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
-#    Universitaet Stuttgart, Germany#
+#    Copyright (C) 2016, Institut für Technische Optik (ITO),
+#    Universität Stuttgart, Germany#
 #
 #    This file is part of itom.
 #
@@ -21,31 +21,34 @@
 # ***********************************************************************
 
 import bdb
-import itomDbgWrapper #given at runtime by itom-c++-project
+import itomDbgWrapper  # given at runtime by itom-c++-project
 import os
-import re #regular expressions
+import re  # regular expressions
 import sys
 import dis
 import inspect
 import traceback
 import linecache
 
+
 class Restart(Exception):
     """Causes a debugger to be restarted for the debugged python program."""
+
     pass
 
+
 def find_function(funcname, filename):
-    cre = re.compile(r'def\s+%s\s*[(]' % re.escape(funcname))
+    cre = re.compile(r"def\s+%s\s*[(]" % re.escape(funcname))
     try:
         fp = open(filename)
-    except IOError:
+    except OSError:
         return None
     # consumer of this info expects the first line to be 1
     lineno = 1
     answer = None
     while True:
         line = fp.readline()
-        if line == '':
+        if line == "":
             break
         if cre.match(line):
             answer = funcname, filename, lineno
@@ -54,6 +57,7 @@ def find_function(funcname, filename):
     fp.close()
     return answer
 
+
 def getsourcelines(obj):
     lines, lineno = inspect.findsource(obj)
     if inspect.isframe(obj) and obj.f_globals is obj.f_locals:
@@ -61,7 +65,8 @@ def getsourcelines(obj):
         return lines, 1
     elif inspect.ismodule(obj):
         return lines, 1
-    return inspect.getblock(lines[lineno:]), lineno+1
+    return inspect.getblock(lines[lineno:]), lineno + 1
+
 
 def lasti2lineno(code, lasti):
     linestarts = list(dis.findlinestarts(code))
@@ -74,15 +79,15 @@ def lasti2lineno(code, lasti):
 
 class _rstr(str):
     """String that doesn't quote its repr."""
+
     def __repr__(self):
         return self
 
 
 class itoDebugger(bdb.Bdb):
-
     def __init__(self):
         bdb.Bdb.__init__(self, skip=None)
-        self.mainpyfile = ''
+        self.mainpyfile = ""
         self._wait_for_mainpyfile = False
         self._wait_for_first_stop = True
         self._come_back_from_mainpyfile = False
@@ -121,16 +126,16 @@ class itoDebugger(bdb.Bdb):
         return
 
     def checkFrameForDebugging(self, frame):
-        #checks the frame-stack to the bottom and verifies,
-        #that the current stack-number is higher or equal to self.minStackIndexToDebug
-        if(frame):
+        # checks the frame-stack to the bottom and verifies,
+        # that the current stack-number is higher or equal to self.minStackIndexToDebug
+        if frame:
             count = 0
             temp_frame = frame
             while temp_frame:
-                count = count +1
+                count = count + 1
                 temp_frame = temp_frame.f_back
 
-            if count >= self.minStackIndexToDebug :
+            if count >= self.minStackIndexToDebug:
                 return True
             else:
                 return False
@@ -138,67 +143,72 @@ class itoDebugger(bdb.Bdb):
         else:
             return False
 
-
     # Override Bdb methods
-
 
     def user_call(self, frame, argument_list):
         """This method is called when there is the remote possibility
         that we ever need to stop in this function."""
-        if(self.debug >= 2):
-            print("user_call: I am in line %d of file %s" % (frame.f_lineno, frame.f_code.co_filename))
-        if (self._wait_for_mainpyfile or not(self.checkFrameForDebugging(frame))):
+        if self.debug >= 2:
+            print(
+                "user_call: I am in line %d of file %s"
+                % (frame.f_lineno, frame.f_code.co_filename)
+            )
+        if self._wait_for_mainpyfile or not (self.checkFrameForDebugging(frame)):
             return
         if self.stop_here(frame):
-            #self.message('--Call--')
+            # self.message('--Call--')
             self.interaction(frame, None)
-
 
     def user_line(self, frame):
         """This function is called when we stop or break at this line."""
-        #self.message("user line: at line: %d wait: %d" % (frame.f_lineno,  self._wait_for_mainpyfile))
-        if(self.debug >= 1):
-            print("user_line: I am in line %d of file %s" % (frame.f_lineno, frame.f_code.co_filename))
-        #print("checkFrameForDebugging:", self.checkFrameForDebugging(frame))
+        # self.message("user line: at line: %d wait: %d" % (frame.f_lineno,  self._wait_for_mainpyfile))
+        if self.debug >= 1:
+            print(
+                "user_line: I am in line %d of file %s"
+                % (frame.f_lineno, frame.f_code.co_filename)
+            )
+        # print("checkFrameForDebugging:", self.checkFrameForDebugging(frame))
 
-        if not(self.checkFrameForDebugging(frame)):
+        if not (self.checkFrameForDebugging(frame)):
             return
 
         if self._wait_for_mainpyfile:
-            if (self.mainpyfile != self.canonic(frame.f_code.co_filename) or frame.f_lineno <= 0):
+            if (
+                self.mainpyfile != self.canonic(frame.f_code.co_filename)
+                or frame.f_lineno <= 0
+            ):
                 return
             self._wait_for_mainpyfile = False
-        #else:
-            #print("user_line: I am in line %d of file %s, wait: %d" % (frame.f_lineno, frame.f_code.co_filename,  self._wait_for_mainpyfile))
+        # else:
+        # print("user_line: I am in line %d of file %s, wait: %d" % (frame.f_lineno, frame.f_code.co_filename,  self._wait_for_mainpyfile))
 
-        if(self.get_break(self.canonic(frame.f_code.co_filename),  frame.f_lineno)):
-            #print("interaction due to breakpoint in line %d" % frame.f_lineno)
+        if self.get_break(self.canonic(frame.f_code.co_filename), frame.f_lineno):
+            # print("interaction due to breakpoint in line %d" % frame.f_lineno)
             self.interaction(frame, None)
         else:
-            #print("interaction due to step in line %d" % frame.f_lineno)
+            # print("interaction due to step in line %d" % frame.f_lineno)
             self.interaction(frame, None)
-
-
-
 
     def user_return(self, frame, return_value):
         """This function is called when a return trap is set here."""
-        if(self.debug >= 2):
-            print("user_return: I am in line %d of file %s" % (frame.f_lineno, frame.f_code.co_filename))
-        #print("return")
-        #print(frame)
+        if self.debug >= 2:
+            print(
+                "user_return: I am in line %d of file %s"
+                % (frame.f_lineno, frame.f_code.co_filename)
+            )
+        # print("return")
+        # print(frame)
         if self._wait_for_mainpyfile:
             return
 
-        if(self.checkFrameForDebugging(frame)):
-            #self._come_back_from_mainpyfile = True
-            frame.f_locals['__return__'] = return_value
-            #print('--Return (End)--')
-            #self.interaction(frame, None)
+        if self.checkFrameForDebugging(frame):
+            # self._come_back_from_mainpyfile = True
+            frame.f_locals["__return__"] = return_value
+            # print('--Return (End)--')
+            # self.interaction(frame, None)
         else:
-            frame.f_locals['__return__'] = return_value
-            #print('--Return--')
-
+            frame.f_locals["__return__"] = return_value
+            # print('--Return--')
 
     def user_exception(self, frame, exc_info):
         """This function is called if an exception occurs,
@@ -206,43 +216,45 @@ class itoDebugger(bdb.Bdb):
         if self._wait_for_mainpyfile:
             return
 
-        #in case of an exception, you can directly stop...
-        #return
-        #... or you can print the traceback while passing the exception through the whole traceback-stack
+        # in case of an exception, you can directly stop...
+        # return
+        # ... or you can print the traceback while passing the exception through the whole traceback-stack
 
         exc_type, exc_value, exc_traceback = exc_info
-        frame.f_locals['__exception__'] = exc_type, exc_value, exc_traceback
+        frame.f_locals["__exception__"] = exc_type, exc_value, exc_traceback
 
-        #if issubclass(exc_type, SyntaxError):
-            #this is a hack, since exc_value is no instance of an error, but only a tuple with the arguments
-            #However, in case of a SyntaxError, format_exception_only below needs an instance of SyntaxError
-            #exc_value = SyntaxError(exc_value[0], exc_value[1])
+        # if issubclass(exc_type, SyntaxError):
+        # this is a hack, since exc_value is no instance of an error, but only a tuple with the arguments
+        # However, in case of a SyntaxError, format_exception_only below needs an instance of SyntaxError
+        # exc_value = SyntaxError(exc_value[0], exc_value[1])
 
-        if(not exc_traceback is None):
-            print("exception raised in method '" + exc_traceback.tb_frame.f_code.co_name + "', line " + str(exc_traceback.tb_frame.f_lineno))
+        if not exc_traceback is None:
+            print(
+                "exception raised in method '"
+                + exc_traceback.tb_frame.f_code.co_name
+                + "', line "
+                + str(exc_traceback.tb_frame.f_lineno)
+            )
         print(traceback.format_exception_only(exc_type, exc_value)[-1].strip())
         self.interaction(frame, exc_traceback)
 
     # General interaction function
-    def _cmdloop(self,  frame):
-        if(self._wait_for_first_stop == False):
+    def _cmdloop(self, frame):
+        if self._wait_for_first_stop == False:
             itomDbgWrapper.pyDbgCommandLoop(self, frame)
-        elif(self.get_break(self.canonic(frame.f_code.co_filename),  frame.f_lineno)):
+        elif self.get_break(self.canonic(frame.f_code.co_filename), frame.f_lineno):
             self._wait_for_first_stop = False
-            #this is the case that the first call of _cmdloop should usually be ignored, but it is a breakpoint-line. Therefore stop.
+            # this is the case that the first call of _cmdloop should usually be ignored, but it is a breakpoint-line. Therefore stop.
             itomDbgWrapper.pyDbgCommandLoop(self, frame)
         else:
             self._wait_for_first_stop = False
             self.set_continue()
 
-
     def interaction(self, frame, traceback):
-        self.setup(frame, traceback) #save frame parameters
-        #self.print_stack_entry(self.stack[self.curindex])
+        self.setup(frame, traceback)  # save frame parameters
+        # self.print_stack_entry(self.stack[self.curindex])
         self._cmdloop(frame)
-        self.forget() #delete frame parameters
-
-
+        self.forget()  # delete frame parameters
 
     # interface abstraction functions
 
@@ -250,7 +262,7 @@ class itoDebugger(bdb.Bdb):
         print(msg)
 
     def error(self, msg):
-        print('***', msg)
+        print("***", msg)
 
     # Command definitions, called by cmdloop()
     # The argument is the remaining string on the command line
@@ -260,11 +272,13 @@ class itoDebugger(bdb.Bdb):
     def defaultFile(self):
         """Produce a reasonable default."""
         filename = self.curframe.f_code.co_filename
-        if filename == '<string>' and self.mainpyfile:
+        if filename == "<string>" and self.mainpyfile:
             filename = self.mainpyfile
         return filename
 
-    def addNewBreakPoint(self,  filename,  lineno,  enabled,  temporary,  condition,  ignoreCount):
+    def addNewBreakPoint(
+        self, filename, lineno, enabled, temporary, condition, ignoreCount
+    ):
         """Adds breakpoint to list of breakpoints.
 
         Return breakpoint ID (int) or error string (str).
@@ -278,7 +292,9 @@ class itoDebugger(bdb.Bdb):
 
         # Check for reasonable breakpoint
         try:
-            line = self._checkline(filename, lineno) #may raise an UnicodeDecodeError or IndexError
+            line = self._checkline(
+                filename, lineno
+            )  # may raise an UnicodeDecodeError or IndexError
         except IndexError as err:
             return "Cannot add breakpoint: " + str(err)
         except UnicodeDecodeError as err:
@@ -287,16 +303,23 @@ class itoDebugger(bdb.Bdb):
 
         if line > 0:
             # now set the break point
-            err = self.set_break(filename, line, temporary, condition, None) #returns None if ok, else an error string
+            err = self.set_break(
+                filename, line, temporary, condition, None
+            )  # returns None if ok, else an error string
             if err is None:
                 bp = self.get_breaks(filename, line)[-1]
                 bp.enabled = enabled
                 bp.ignore = ignoreCount
                 return int(bp.number)
             else:
-                return "Cannot add breakpoint (file '%s', line %i): " % (filename, lineno) + str(err)
+                return "Cannot add breakpoint (file '%s', line %i): " % (
+                    filename,
+                    lineno,
+                ) + str(err)
 
-    def editBreakPoint(self,  bpNumber,  filename,  lineno,  enabled,  temporary,  condition,  ignoreCount):
+    def editBreakPoint(
+        self, bpNumber, filename, lineno, enabled, temporary, condition, ignoreCount
+    ):
         """
         Edit breakpoint given by bpNumber.
 
@@ -305,11 +328,13 @@ class itoDebugger(bdb.Bdb):
         if not filename:
             filename = self.defaultFile()
         else:
-            filename = self.canonic(filename) # This better be in canonical form!
+            filename = self.canonic(filename)  # This better be in canonical form!
 
         # Check for reasonable breakpoint
         try:
-            line = self._checkline(filename, lineno) #may raise an UnicodeDecodeError or IndexError
+            line = self._checkline(
+                filename, lineno
+            )  # may raise an UnicodeDecodeError or IndexError
         except IndexError as err:
             return "Cannot edit breakpoint: " + str(err)
         except UnicodeDecodeError as err:
@@ -317,7 +342,7 @@ class itoDebugger(bdb.Bdb):
             return "_Cannot edit breakpoint: " + str(err)
 
         if line > 0:
-            #input values are ok, break point can be edited
+            # input values are ok, break point can be edited
             try:
                 bp = self.get_bpbynumber(bpNumber)
             except ValueError as err:
@@ -331,7 +356,10 @@ class itoDebugger(bdb.Bdb):
                 bp.ignore = ignoreCount
                 return 0
         else:
-            return "Cannot edit breakpoint: Line %i in file \"%s\" is an invalid line number, a blank or comment line"  % (lineno, filename)
+            return (
+                'Cannot edit breakpoint: Line %i in file "%s" is an invalid line number, a blank or comment line'
+                % (lineno, filename)
+            )
 
     def clearBreakPoint(self, bpNumber):
         """Clears breakpoint with given bpNumber.
@@ -339,7 +367,9 @@ class itoDebugger(bdb.Bdb):
         return 0 if done, else str with error
         """
         try:
-            self.get_bpbynumber(bpNumber) #check if bp-number exists, if not raises a ValueError
+            self.get_bpbynumber(
+                bpNumber
+            )  # check if bp-number exists, if not raises a ValueError
         except ValueError as err:
             return "Cannot clear breakpoint: " + str(err)
         self.clear_bpbynumber(bpNumber)
@@ -353,26 +383,35 @@ class itoDebugger(bdb.Bdb):
         """
         # this method should be callable before starting debugging, so default
         # to "no globals" if there is no current frame
-        if hasattr(self, 'curframe') and self.curframe != None:
+        if hasattr(self, "curframe") and self.curframe != None:
             globs = self.curframe.f_globals
         else:
             globs = None
 
-        linecache.checkcache(filename) #force linecache to check if file has been update since last getline
-        #globs = self.curframe.f_globals if hasattr(self, 'curframe') else None
+        linecache.checkcache(
+            filename
+        )  # force linecache to check if file has been update since last getline
+        # globs = self.curframe.f_globals if hasattr(self, 'curframe') else None
         try:
-            line = linecache.getline(filename, lineno, globs) #returns line in file or '' if empty line or invalid file or lineno
+            line = linecache.getline(
+                filename, lineno, globs
+            )  # returns line in file or '' if empty line or invalid file or lineno
         except UnicodeDecodeError as E:
-            E.reason = "{0}. File '{1}', line {2}".format(E.reason,filename,lineno)
-            raise #reraise modified error
+            E.reason = f"{E.reason}. File '{filename}', line {lineno}"
+            raise  # reraise modified error
 
-        if(line == ''):
-            raise IndexError("Line %d in file \"%s\" is blank or does not exist." % (lineno, filename))
+        if line == "":
+            raise IndexError(
+                'Line %d in file "%s" is blank or does not exist.' % (lineno, filename)
+            )
         else:
             line = line.strip()
             # Don't allow setting breakpoint at a blank line
-            if (not line or (line[0] == '#') or (line[:3] == '"""') or line[:3] == "'''"):
-                raise IndexError("Line %d in file \"%s\" is blank or is a comment." % (lineno, filename))
+            if not line or (line[0] == "#") or (line[:3] == '"""') or line[:3] == "'''":
+                raise IndexError(
+                    'Line %d in file "%s" is blank or is a comment.'
+                    % (lineno, filename)
+                )
 
         return lineno
 
@@ -419,23 +458,25 @@ class itoDebugger(bdb.Bdb):
         co = self.curframe.f_code
         dict = self.curframe_locals
         n = co.co_argcount
-        if co.co_flags & 4: n = n+1
-        if co.co_flags & 8: n = n+1
+        if co.co_flags & 4:
+            n = n + 1
+        if co.co_flags & 8:
+            n = n + 1
         for i in range(n):
             name = co.co_varnames[i]
             if name in dict:
-                self.message('%s = %r' % (name, dict[name]))
+                self.message(f"{name} = {dict[name]!r}")
             else:
-                self.message('%s = *** undefined ***' % (name,))
+                self.message(f"{name} = *** undefined ***")
 
     def do_retval(self, arg):
         """retval
         Print the return value for the last return of a function.
         """
-        if '__return__' in self.curframe_locals:
-            self.message(repr(self.curframe_locals['__return__']))
+        if "__return__" in self.curframe_locals:
+            self.message(repr(self.curframe_locals["__return__"]))
         else:
-            self.error('Not yet returned!')
+            self.error("Not yet returned!")
 
     def _getval(self, arg):
         try:
@@ -454,7 +495,7 @@ class itoDebugger(bdb.Bdb):
         except Exception:
             exc_info = sys.exc_info()[:2]
             err = traceback.format_exception_only(*exc_info)[-1].strip()
-            return _rstr('** raised %s **' % err)
+            return _rstr("** raised %s **" % err)
 
     def do_p(self, arg):
         """p(rint) expression
@@ -464,6 +505,7 @@ class itoDebugger(bdb.Bdb):
             self.message(repr(self._getval(arg)))
         except Exception:
             pass
+
     # make "print" an alias of "p" since print isn't a Python statement anymore
 
     def do_pp(self, arg):
@@ -490,12 +532,12 @@ class itoDebugger(bdb.Bdb):
         exception was originally raised or propagated is indicated by
         ">>", if it differs from the current line.
         """
-        self.lastcmd = 'list'
+        self.lastcmd = "list"
         last = None
-        if arg and arg != '.':
+        if arg and arg != ".":
             try:
-                if ',' in arg:
-                    first, last = arg.split(',')
+                if "," in arg:
+                    first, last = arg.split(",")
                     first = int(first.strip())
                     last = int(last.strip())
                     if last < first:
@@ -505,9 +547,9 @@ class itoDebugger(bdb.Bdb):
                     first = int(arg.strip())
                     first = max(1, first - 5)
             except ValueError:
-                self.error('Error in argument: %r' % arg)
+                self.error("Error in argument: %r" % arg)
                 return
-        elif self.lineno is None or arg == '.':
+        elif self.lineno is None or arg == ".":
             first = max(1, self.curframe.f_lineno - 5)
         else:
             first = self.lineno + 1
@@ -517,11 +559,10 @@ class itoDebugger(bdb.Bdb):
         breaklist = self.get_file_breaks(filename)
         try:
             lines = linecache.getlines(filename, self.curframe.f_globals)
-            self._print_lines(lines[first-1:last], first, breaklist,
-                              self.curframe)
+            self._print_lines(lines[first - 1 : last], first, breaklist, self.curframe)
             self.lineno = min(last, len(lines))
             if len(lines) < last:
-                self.message('[EOF]')
+                self.message("[EOF]")
         except KeyboardInterrupt:
             pass
 
@@ -533,7 +574,7 @@ class itoDebugger(bdb.Bdb):
         breaklist = self.get_file_breaks(filename)
         try:
             lines, lineno = getsourcelines(self.curframe)
-        except IOError as err:
+        except OSError as err:
             self.error(err)
             return
         self._print_lines(lines, lineno, breaklist, self.curframe)
@@ -548,7 +589,7 @@ class itoDebugger(bdb.Bdb):
             return
         try:
             lines, lineno = getsourcelines(obj)
-        except (IOError, TypeError) as err:
+        except (OSError, TypeError) as err:
             self.error(err)
             return
         self._print_lines(lines, lineno)
@@ -563,16 +604,16 @@ class itoDebugger(bdb.Bdb):
         for lineno, line in enumerate(lines, start):
             s = str(lineno).rjust(3)
             if len(s) < 4:
-                s += ' '
+                s += " "
             if lineno in breaks:
-                s += 'B'
+                s += "B"
             else:
-                s += ' '
+                s += " "
             if lineno == current_lineno:
-                s += '->'
+                s += "->"
             elif lineno == exc_lineno:
-                s += '>>'
-            self.message(s + '\t' + line.rstrip())
+                s += ">>"
+            self.message(s + "\t" + line.rstrip())
 
     def do_whatis(self, arg):
         """whatis arg
@@ -590,7 +631,7 @@ class itoDebugger(bdb.Bdb):
         except Exception:
             pass
         if code:
-            self.message('Function %s' % code.co_name)
+            self.message("Function %s" % code.co_name)
             return
         # Is it an instance method?
         try:
@@ -598,18 +639,14 @@ class itoDebugger(bdb.Bdb):
         except Exception:
             pass
         if code:
-            self.message('Method %s' % code.co_name)
+            self.message("Method %s" % code.co_name)
             return
         # Is it a class?
         if value.__class__ is type:
-            self.message('Class %s.%s' % (value.__module__, value.__name__))
+            self.message(f"Class {value.__module__}.{value.__name__}")
             return
         # None of the above...
         self.message(type(value))
-
-
-
-
 
     # Print a traceback starting at the top stack frame.
     # The most recently entered frame is printed last;
@@ -623,17 +660,13 @@ class itoDebugger(bdb.Bdb):
         for frame_lineno in self.stack:
             self.print_stack_entry(frame_lineno)
 
-
-    def print_stack_entry(self, frame_lineno, prompt_prefix=':::'):
+    def print_stack_entry(self, frame_lineno, prompt_prefix=":::"):
         frame, lineno = frame_lineno
         if frame is self.curframe:
-            prefix = '> '
+            prefix = "> "
         else:
-            prefix = '  '
-        self.message(prefix +
-                     self.format_stack_entry(frame_lineno, prompt_prefix))
-
-
+            prefix = "  "
+        self.message(prefix + self.format_stack_entry(frame_lineno, prompt_prefix))
 
     # other helper functions
 
@@ -643,14 +676,14 @@ class itoDebugger(bdb.Bdb):
         lookupmodule() translates (possibly incomplete) file or module name
         into an absolute file name.
         """
-        if os.path.isabs(filename) and  os.path.exists(filename):
+        if os.path.isabs(filename) and os.path.exists(filename):
             return filename
         f = os.path.join(sys.path[0], filename)
-        if  os.path.exists(f) and self.canonic(f) == self.mainpyfile:
+        if os.path.exists(f) and self.canonic(f) == self.mainpyfile:
             return f
         root, ext = os.path.splitext(filename)
-        if ext == '':
-            filename = filename + '.py'
+        if ext == "":
+            filename = filename + ".py"
         if os.path.isabs(filename):
             return filename
         for dirname in sys.path:
@@ -661,86 +694,95 @@ class itoDebugger(bdb.Bdb):
                 return fullname
         return None
 
-
-    def checkSysPath(self,canonicFilename):
-        [dir,file] = os.path.split(canonicFilename)
-        if( (dir in sys.path) == False):
+    def checkSysPath(self, canonicFilename):
+        [dir, file] = os.path.split(canonicFilename)
+        if (dir in sys.path) == False:
             sys.path.append(dir)
 
     def debugString(self, codeString):
         # The script has to run in __main__ namespace (or imports from
         # __main__ will break).
         import __main__
+
         self.minStackIndexToDebug = 4
 
         tempFilename = ""
-        if(hasattr(__main__.__dict__ ,  "__file__")):
+        if hasattr(__main__.__dict__, "__file__"):
             tempFilename = __main__.__dict__.__file__
 
-        __main__.__dict__.update({"__file__" : "<string>"})
+        __main__.__dict__.update({"__file__": "<string>"})
 
-        self._wait_for_mainpyfile = False #must be false, otherwise the debugger will not start since there is no function-stack by compiler and exec command, which forces us to check when the real function is finally reached.
-        self._wait_for_first_stop = True #if True we are waiting for the first stop (first line), where the debugger is forced to directly continue, if False the debugger is forced to also stop in the first possible line
+        self._wait_for_mainpyfile = False  # must be false, otherwise the debugger will not start since there is no function-stack by compiler and exec command, which forces us to check when the real function is finally reached.
+        self._wait_for_first_stop = True  # if True we are waiting for the first stop (first line), where the debugger is forced to directly continue, if False the debugger is forced to also stop in the first possible line
         self._come_back_from_mainpyfile = False
         self.mainpyfile = "<string>"
         self._user_requested_quit = False
 
         self.reset()
         try:
-            compiledCode = compile(codeString, "<string>", mode = "single") #mode = 'single' forces statements that evaluate to something other than None will be printed
+            compiledCode = compile(
+                codeString, "<string>", mode="single"
+            )  # mode = 'single' forces statements that evaluate to something other than None will be printed
             self.runeval(compiledCode)
         finally:
             self.clear_all_breaks()
             self.reset()
 
-            if(tempFilename != ""):
-                __main__.__dict__.update({"__file__" : tempFilename})
+            if tempFilename != "":
+                __main__.__dict__.update({"__file__": tempFilename})
             else:
-                del(__main__.__dict__["__file__"])
+                del __main__.__dict__["__file__"]
 
-    def debugFunction(self, fctPointer, args, kwargs = None):
+    def debugFunction(self, fctPointer, args, kwargs=None):
         # The script has to run in __main__ namespace (or imports from
         # __main__ will break).
         import __main__
+
         self.minStackIndexToDebug = 3
 
         tempFilename = ""
-        if(hasattr(__main__.__dict__ ,  "__file__")):
+        if hasattr(__main__.__dict__, "__file__"):
             tempFilename = __main__.__dict__.__file__
 
-        __main__.__dict__.update({"__file__" : "<string>"})
+        __main__.__dict__.update({"__file__": "<string>"})
 
-        self._wait_for_mainpyfile = False #must be false, otherwise the debugger will not start since there is no function-stack by compiler and exec command, which forces us to check when the real function is finally reached.
-        self._wait_for_first_stop = True #if True we are waiting for the first stop (first line), where the debugger is forced to directly continue, if False the debugger is forced to also stop in the first possible line
+        self._wait_for_mainpyfile = False  # must be false, otherwise the debugger will not start since there is no function-stack by compiler and exec command, which forces us to check when the real function is finally reached.
+        self._wait_for_first_stop = True  # if True we are waiting for the first stop (first line), where the debugger is forced to directly continue, if False the debugger is forced to also stop in the first possible line
         self._come_back_from_mainpyfile = False
         self.mainpyfile = "<string>"
         self._user_requested_quit = False
 
         self.reset()
         try:
-            #for arg in args:
+            # for arg in args:
             #    print ("another arg:", arg)
-            #for key in kwargs:
+            # for key in kwargs:
             #    print ("another keyword arg: %s: %s" % (key, kwargs[key]))
-            if(kwargs is None):
-                self.runcall(fctPointer,*args)
+            if kwargs is None:
+                self.runcall(fctPointer, *args)
             else:
-                self.runcall(fctPointer,*args,**kwargs)
+                self.runcall(fctPointer, *args, **kwargs)
             self.clear_all_breaks()
             self.reset()
         finally:
-            if(tempFilename != ""):
-                __main__.__dict__.update({"__file__" : tempFilename})
+            if tempFilename != "":
+                __main__.__dict__.update({"__file__": tempFilename})
             else:
-                del(__main__.__dict__["__file__"])
+                del __main__.__dict__["__file__"]
 
     def parseUnicodeError(self, err):
         import re
-        m = re.match(r"\(unicode error\) (.*) can't decode byte (0x[0-9a-zA-Z]{1,2}) in position (\d+): (.*)", err.msg)
+
+        m = re.match(
+            r"\(unicode error\) (.*) can't decode byte (0x[0-9a-zA-Z]{1,2}) in position (\d+): (.*)",
+            err.msg,
+        )
         if m:
             if err.filename is None or err.filename == "" or err.lineno <= 0:
-                err.msg = "(unicode error) %s cannot decode byte '%s' in line %i, position %i: %s. \nThe line possibly contains an invalid character. Please remove them or add a coding hint in the first line (menu option 'insert codec...')" \
+                err.msg = (
+                    "(unicode error) %s cannot decode byte '%s' in line %i, position %i: %s. \nThe line possibly contains an invalid character. Please remove them or add a coding hint in the first line (menu option 'insert codec...')"
                     % (m.group(1), m.group(2), err.lineno, int(m.group(3)), m.group(4))
+                )
             else:
                 wrongByte = int(m.group(2), 16)
                 fp = open(err.filename, "rb")
@@ -748,30 +790,47 @@ class itoDebugger(bdb.Bdb):
                 fp.close()
                 lines = text.split(b"\n")
                 if len(lines) >= err.lineno:
-                    err.msg = "(unicode error) %s cannot decode byte '%s' in line %i, position %i: %s. \nThe line possibly contains an invalid character. Please remove them or add a coding hint in the first line (menu option 'insert codec...')" \
-                        % (m.group(1), m.group(2), err.lineno, lines[err.lineno - 1].index(wrongByte) + 1, m.group(4))
+                    err.msg = (
+                        "(unicode error) %s cannot decode byte '%s' in line %i, position %i: %s. \nThe line possibly contains an invalid character. Please remove them or add a coding hint in the first line (menu option 'insert codec...')"
+                        % (
+                            m.group(1),
+                            m.group(2),
+                            err.lineno,
+                            lines[err.lineno - 1].index(wrongByte) + 1,
+                            m.group(4),
+                        )
+                    )
                 else:
-                    err.msg = "(unicode error) %s cannot decode byte '%s' in line %i, position %i: %s. \nThe line possibly contains an invalid character. Please remove them or add a coding hint in the first line (menu option 'insert codec...')" \
-                        % (m.group(1), m.group(2), err.lineno, int(m.group(3)), m.group(4))
-            raise #reraise exception
+                    err.msg = (
+                        "(unicode error) %s cannot decode byte '%s' in line %i, position %i: %s. \nThe line possibly contains an invalid character. Please remove them or add a coding hint in the first line (menu option 'insert codec...')"
+                        % (
+                            m.group(1),
+                            m.group(2),
+                            err.lineno,
+                            int(m.group(3)),
+                            m.group(4),
+                        )
+                    )
+            raise  # reraise exception
         else:
-            raise #reraise exception
+            raise  # reraise exception
 
     def debugScript(self, filename):
         # The script has to run in __main__ namespace (or imports from
         # __main__ will break).
         #
         import __main__
+
         self.minStackIndexToDebug = 4
 
         tempFilename = ""
-        if(hasattr(__main__.__dict__ ,  "__file__")):
+        if hasattr(__main__.__dict__, "__file__"):
             tempFilename = __main__.__dict__.__file__
 
-        __main__.__dict__.update({"__file__" : filename})
+        __main__.__dict__.update({"__file__": filename})
 
         self._wait_for_mainpyfile = True
-        self._wait_for_first_stop = False #if True we are waiting for the first stop (first line), where the debugger is forced to directly continue
+        self._wait_for_first_stop = False  # if True we are waiting for the first stop (first line), where the debugger is forced to directly continue
         self._come_back_from_mainpyfile = False
         self.mainpyfile = self.canonic(filename)
         self._user_requested_quit = False
@@ -781,71 +840,67 @@ class itoDebugger(bdb.Bdb):
         self.reset()
 
         with open(filename, "rb") as fp:
-            statement = "exec(compile(%r,%r,'exec'))" % \
-                        (fp.read(), self.mainpyfile)
+            statement = f"exec(compile({fp.read()!r},{self.mainpyfile!r},'exec'))"
         try:
-            self.run(statement,  __main__.__dict__)
+            self.run(statement, __main__.__dict__)
             self.clear_all_breaks()
             self.reset()
         except SyntaxError as err:
-            if err.msg.startswith('(unicode error)'):
+            if err.msg.startswith("(unicode error)"):
                 self.parseUnicodeError(err)
             else:
                 raise
         finally:
-            if(tempFilename != ""):
-                __main__.__dict__.update({"__file__" : tempFilename})
+            if tempFilename != "":
+                __main__.__dict__.update({"__file__": tempFilename})
             else:
-                del(__main__.__dict__["__file__"])
+                del __main__.__dict__["__file__"]
 
-
-    def runScript(self,  filename):
-
+    def runScript(self, filename):
         import __main__
+
         self.minStackIndexToDebug = 4
 
         tempFilename = ""
-        if(hasattr(__main__.__dict__ ,  "__file__")):
+        if hasattr(__main__.__dict__, "__file__"):
             tempFilename = __main__.__dict__.__file__
 
-        __main__.__dict__.update({"__file__" : filename})
+        __main__.__dict__.update({"__file__": filename})
 
         self.mainpyfile = self.canonic(filename)
         self.checkSysPath(self.mainpyfile)
 
         with open(filename, "rb") as fp:
-            statement = "exec(compile(%r,%r,'exec'))" % \
-                        (fp.read(), self.mainpyfile)
+            statement = f"exec(compile({fp.read()!r},{self.mainpyfile!r},'exec'))"
         try:
-            exec(statement,  __main__.__dict__)
+            exec(statement, __main__.__dict__)
         except SyntaxError as err:
-            if err.msg.startswith('(unicode error)'):
+            if err.msg.startswith("(unicode error)"):
                 self.parseUnicodeError(err)
             else:
                 raise
         finally:
-            if(tempFilename != ""):
-                __main__.__dict__.update({"__file__" : tempFilename})
+            if tempFilename != "":
+                __main__.__dict__.update({"__file__": tempFilename})
             else:
-                del(__main__.__dict__["__file__"])
+                del __main__.__dict__["__file__"]
 
-    def compileScript(self,  filename):
-
+    def compileScript(self, filename):
         import __main__
+
         self.minStackIndexToDebug = 4
 
         tempFilename = ""
-        if(hasattr(__main__.__dict__ ,  "__file__")):
+        if hasattr(__main__.__dict__, "__file__"):
             tempFilename = __main__.__dict__.__file__
 
-        __main__.__dict__.update({"__file__" : filename})
+        __main__.__dict__.update({"__file__": filename})
 
         with open(filename, "rb") as fp:
-            statement = "compile(%r,%r,'exec')" % \
-                        (fp.read(), self.mainpyfile)
-        exec(statement,  __main__.__dict__)
+            statement = f"compile({fp.read()!r},{self.mainpyfile!r},'exec')"
+        exec(statement, __main__.__dict__)
 
-        if(tempFilename != ""):
-            __main__.__dict__.update({"__file__" : tempFilename})
+        if tempFilename != "":
+            __main__.__dict__.update({"__file__": tempFilename})
         else:
-            del(__main__.__dict__["__file__"])
+            del __main__.__dict__["__file__"]

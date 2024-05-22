@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom.
 
@@ -480,7 +480,7 @@ signals:
     void keyReleased(QKeyEvent* e);
     void postKeyPressed(QKeyEvent* e); // Signal emitted at the end of the key_pressed event
     void mouseDoubleClicked(
-        QMouseEvent* e); // Signal emitted when a mouse double click event occured
+        QMouseEvent* e); // Signal emitted when a mouse double click event occurred
     void mousePressed(QMouseEvent* e); // Signal emitted when a mouse button is pressed
     void mouseReleased(QMouseEvent* e); // Signal emitted when a key is released
     void mouseMoved(QMouseEvent* e); // Signal emitted when the mouse_moved

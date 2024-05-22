@@ -1,7 +1,7 @@
 # - itom software
 # URL: http://www.uni-stuttgart.de/ito
-# Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-# Universitaet Stuttgart, Germany
+# Copyright (C) 2020, Institut für Technische Optik (ITO),
+# Universität Stuttgart, Germany
 #
 # This file is part of itom and its software development toolkit (SDK).
 #
@@ -90,11 +90,12 @@ if(BUILD_WITH_PCL)
     else(WIN32)
         find_package(PCL 1.5.1 QUIET REQUIRED COMPONENTS common)
     endif(WIN32)
+    add_definitions(-DUSEPCL -D_USEPCL)
 
     # actually we need this only to configure the itom.bat including vtk, otherwise
     # eventually pcl-tools plugin will not be loaded
     find_package(VTK QUIET)
-endif()
+endif(BUILD_WITH_PCL)
 
 find_package(VisualLeakDetector QUIET)
 find_package(HTMLHelp)
@@ -930,8 +931,8 @@ endif()
 
 itom_build_parallel_linux(${target_name})
 
-# for backward compatiblity: enum.py is a default python library from Python 3.4 on. In order to
-# also support earlier versoins, enum.py was also part of the itom-packages folder. However, this
+# for backward compatibility: enum.py is a default python library from Python 3.4 on. In order to
+# also support earlier versions, enum.py was also part of the itom-packages folder. However, this
 # version is old and creates conflicts with newer versions required by further modern python packages.
 # Therefore, enum.py was removed from itom-packages. If one uses Python 3.3 or earlier, the packages enum34
 # has to be installed manually!

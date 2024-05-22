@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom.
 
@@ -111,7 +111,7 @@ PyObject* PythonItom::PyOpenEmptyScriptEditor(PyObject* /*pSelf*/, PyObject* /*p
     }
     else
     {
-        if (PyErr_CheckSignals() == -1) //!< check if key interrupt occured
+        if (PyErr_CheckSignals() == -1) //!< check if key interrupt occurred
         {
             return PyErr_Occurred();
         }
@@ -152,7 +152,7 @@ PyObject* PythonItom::PyNewScript(PyObject* /*pSelf*/, PyObject* /*pArgs*/)
     }
     else
     {
-        if (PyErr_CheckSignals() == -1) //!< check if key interrupt occured
+        if (PyErr_CheckSignals() == -1) //!< check if key interrupt occurred
         {
             return PyErr_Occurred();
         }
@@ -186,7 +186,7 @@ PyObject* PythonItom::PyLog(PyObject* /*pSelf*/, PyObject* pArgs)
     {
         return NULL;
     }
-    
+
     QObject* logger;
     if (!retVal.containsWarningOrError())
     {
@@ -256,7 +256,7 @@ PyObject* PythonItom::PyOpenScript(PyObject* /*pSelf*/, PyObject* pArgs)
             if (ok)
             {
                 filename2 = f.toLatin1();
-                filename = filename2.data(); // be carefull, filename is borrowed from filename2
+                filename = filename2.data(); // be careful, filename is borrowed from filename2
             }
             else
             {
@@ -1468,7 +1468,7 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs, PyObject* pK
     if (namefilter.contains("*") &&
         ((namefilter.indexOf("*") == (namefilter.length() - 1)) || (namefilter.indexOf("*") == 0)))
     {
-        // This is executed if the '*' ist either the first or the last sign of the string
+        // This is executed if the '*' is either the first or the last sign of the string
         listonly = 1;
         namefilter.remove("*");
     }
@@ -3689,7 +3689,7 @@ Parameters \n\
 type : int \n\
     The type of the menu-element (:attr:`~itom.BUTTON` : 0 [default], \n\
     :attr:`~itom.SEPARATOR` : 1, :attr:`~itom.MENU` : 2). Use the corresponding \n\
-    constans in module :mod:`itom`.\n\
+    constant in module :mod:`itom`.\n\
 key : str \n\
     A slash-separated string where every sub-element is the key-name for the menu-element \n\
     in the specific level.\n\
@@ -4079,7 +4079,7 @@ dict \n\
         }
         else
         {
-            // this is a little bit an unconvenient way to parse a python-like string.
+            // this is a little bit an inconvenient way to parse a python-like string.
             // The string dump is parsed by the python interpreter and represents a
             // dictionary. This dictionary is then returned.
             PyObject* globals = PyDict_New();
@@ -5126,7 +5126,7 @@ too few values, the result is undefined, but the program will still be well-beha
 The overall size of the central area will not be affected. Instead, any additional/missing \n\
 space is distributed amongst the widgets according to the relative weight of the sizes. \n\
 \n\
-If you speciy a size of 0, the widget will be invisible and can be made visible again \n\
+If you specify a size of 0, the widget will be invisible and can be made visible again \n\
 using this method or by increasing its size again with the mouse. \n\
 \n\
 Parameters \n\
@@ -5181,7 +5181,7 @@ other using :meth:`scaleValueAndUnit`. \n\
 Returns \n\
 ------- \n\
 units : list of str \n\
-    List with strings containing all scaleable units \n\
+    List with strings containing all scalable units \n\
 \n\
 See Also \n\
 -------- \n\
@@ -5393,7 +5393,7 @@ Set current working directory to a new absolute path. \n\
 \n\
 sets the absolute path of the current working directory to 'newPath'. \n\
 The current working directory is the base directory for all subsequent relative \n\
-pathes of icon-files, script-files, ui-files, relative import statements... \n\
+paths of icon-files, script-files, ui-files, relative import statements... \n\
 \n\
 The current directory is always indicated in the right corner of the status \n\
 bar of the main window. \n\
@@ -5906,7 +5906,7 @@ PyDoc_STRVAR(pyCheckIsDeveloper_doc, "userIsDeveloper() -> bool \n\
 Returns ``True`` if the current user has developer rights.\n\
 \n\
 This method only returns ``True``, if the current user has developer rights, not if \n\
-he has higher rights, like adminstrator. \n\
+he has higher rights, like administrator. \n\
 For more information about the user management of itom, see :ref:`gui-user-management`. \n\
 \n\
 Returns \n\
@@ -5939,7 +5939,7 @@ PyDoc_STRVAR(pyCheckIsUser_doc, "userIsUser() -> bool \n\
 Returns ``True`` if the current user has user rights.\n\
 \n\
 This method only returns ``True``, if the current user has user rights, not if \n\
-he has higher rights, like developer or adminstrator. \n\
+he has higher rights, like developer or administrator. \n\
 For more information about the user management of itom, see :ref:`gui-user-management`. \n\
 \n\
 Returns \n\
@@ -6959,7 +6959,7 @@ PyObject* PythonItom::PyInitItom(void)
     if (pyEngine)
     {
         // check if hashValue is in m_pyFuncWeakRefHashes and delete
-        // it and all hashValues which start with the given hashValue (hence its childs)
+        // it and all hashValues which start with the given hashValue (hence its children)
         auto it = pyEngine->m_pyFuncWeakRefHashes.begin();
 
         while (it != pyEngine->m_pyFuncWeakRefHashes.end())
@@ -6995,7 +6995,7 @@ PyObject* PythonItom::PyInitItom(void)
     if (pyEngine)
     {
         // check if hashValue is in m_pyFuncWeakRefHashes and delete it and all hashValues which
-        // start with the given hashValue (hence its childs)
+        // start with the given hashValue (hence its children)
         QHash<size_t, FuncWeakRef>::iterator it = pyEngine->m_pyFuncWeakRefHashes.begin();
 
         while (it != pyEngine->m_pyFuncWeakRefHashes.end())

@@ -174,7 +174,6 @@ class TimerItom(TimerBase):
 
 
 class FigureCanvasItom(FigureCanvasBase):
-
     # map itom/matplotlibWidget button codes to MPL button codes
     # left 1, middle 2, right 3, no mouse button 0
     # todo: from MPL 3.1 on, these values can directly be mapped
@@ -207,9 +206,7 @@ class FigureCanvasItom(FigureCanvasBase):
         self._destroying = False
         # self.showEnable = False #this will be set to True if the draw() command has been called for the first time e.g. by show() of the manager
 
-        self.matplotlibWidgetUiItem = (
-            matplotlibplotUiItem.canvasWidget
-        )  # this object is deleted in the destroy-method of manager, due to cyclic garbage collection
+        self.matplotlibWidgetUiItem = matplotlibplotUiItem.canvasWidget  # this object is deleted in the destroy-method of manager, due to cyclic garbage collection
         self.matplotlibWidgetUiItem["mouseTracking"] = (
             True  # by default, the itom-widget only sends mouse-move events if at least one button is pressed or the tracker-button is is checked-state
         )
@@ -374,7 +371,11 @@ class FigureCanvasItom(FigureCanvasBase):
         if button is None:
             button = 0  # fallback solution
         if DEBUG:
-            print("mouseEvent %s (%.2f,%.2f), button: %s" % (eventType, x, y, button))
+            print(
+                "mouseEvent {} ({:.2f},{:.2f}), button: {}".format(
+                    eventType, x, y, button
+                )
+            )
         try:
             # button: left 1, middle 2, right 3
             if eventType == 0:  # mousePressEvent
@@ -588,7 +589,7 @@ class FigureCanvasItom(FigureCanvasBase):
     def signalDestroyedWidget(self):
         """
         if the figure has been closed (e.g. by the user - clicking the close button),
-        this might either be registered by the destroyed-event, catched by FigureManagerItom,
+        this might either be registered by the destroyed-event, caught by FigureManagerItom,
         or by any method of this class which tries to access the figure (since the destroyed
         signal is delivered with a time gap). This function should be called whenever the widget
         is not accessible any more, then the manager is closed as quick as possible, such that
@@ -622,7 +623,6 @@ class FigureManagerItom(FigureManagerBase):
     """
 
     def __init__(self, canvas, num, matplotlibplotUiItem, windowUi, embeddedWidget):
-
         self.canvas = canvas
         self.windowUi = windowUi  # can also be None if embeddedWidget is True
         self.matplotlibplotUiItem = matplotlibplotUiItem
@@ -1047,7 +1047,7 @@ class NavigationToolbar2Itom(NavigationToolbar2):
         selectedFilter = 0
         for name, exts in sorted_filetypes:
             exts_list = " ".join(["*.%s" % ext for ext in exts])
-            filter = "%s (%s)" % (name, exts_list)
+            filter = f"{name} ({exts_list})"
             if default_filetype in exts:
                 selectedFilter = len(filters)
             filters.append(filter)
@@ -1218,7 +1218,6 @@ class ToolbarItom(ToolContainerBase):
         )  # replace all characters, which are not among the given set, by an underscore
 
     def add_toolitem(self, name, group, position, image_file, description, toggle):
-
         if self.matplotlibplotUiItem() is None:
             return
 
@@ -1312,7 +1311,7 @@ class SaveFigureItom(backend_tools.SaveFigureBase):
         selectedFilter = None
         for name, exts in sorted_filetypes:
             exts_list = " ".join(["*.%s" % ext for ext in exts])
-            filtername = "%s (%s)" % (name, exts_list)
+            filtername = f"{name} ({exts_list})"
             if default_filetype in exts:
                 selectedFilter = filtername
             filters.append(filtername)

@@ -1,13 +1,11 @@
-# coding=iso-8859-15
-
 """Base class for custom user interfaces with auto-slot connections.
 
 License information:
 
 itom software
 URL: http://www.uni-stuttgart.de/ito
-Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-Universitaet Stuttgart, Germany
+Copyright (C) 2020, Institut für Technische Optik (ITO),
+Universität Stuttgart, Germany
 
 This file is part of itom.
 
@@ -34,7 +32,7 @@ __version__ = "2.4.0"
 
 class ItomUi:
     """Base class which can be inherited in order to show an user defined
-    user-interface. This class provides possibilites for auto-connecting
+    user-interface. This class provides possibilities for auto-connecting
     decorated methods in your implementation with certain signals of widgets
     in the user interface.
 
@@ -61,7 +59,7 @@ class ItomUi:
         childOfMainWindow=True,
         deleteOnClose=False,
         dockWidgetArea=ui.TOPDOCKWIDGETAREA,
-        **kwds
+        **kwds,
     ):
         """Constructor.
 
@@ -217,7 +215,7 @@ class ItomUi:
             parts = func.__name__.split("_")
             if len(parts) >= 3 and parts[0] == "on":
                 setattr(func, "hasAutoSlot", True)
-                newSig = "{0}({1})".format(parts[len(parts) - 1], attr[0])
+                newSig = f"{parts[len(parts) - 1]}({attr[0]})"
                 sig = getattr(func, "signature", [])
                 sig.append(newSig)
                 wid = getattr(func, "widgetName", [])

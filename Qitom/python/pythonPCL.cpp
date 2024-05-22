@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom.
 
@@ -2505,7 +2505,7 @@ Z : dataObject \n\
     A ``M x N`` `float32` :class :`dataObject` with the z - coordinates of all points. \n\
 XYZ : dataObject \n\
     Either a ``3 x M x N`` `float32` :class :`dataObject`, where the first plane ``[0, :, : ]`` \n\
-    contains the x - coordiantes, the 2nd plane ``[1, :, : ]`` the y - coordinates and \n\
+    contains the x - coordinates, the 2nd plane ``[1, :, : ]`` the y - coordinates and \n\
     the 3rd plane the z - coordinates.Or a ``M x 3`` `float32` :class :`dataObject`, \n\
     where each row represents one point, that consists of the x - , y - and z - coordinates. \n\
 color : dataObject \n\

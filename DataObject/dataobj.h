@@ -1,8 +1,8 @@
 /* ********************************************************************
  itom software
  URL: http://www.uni-stuttgart.de/ito
- Copyright (C) 2020, Institut fuer Technische Optik (ITO),
- Universitaet Stuttgart, Germany
+ Copyright (C) 2020, Institut für Technische Optik (ITO),
+ Universität Stuttgart, Germany
 
  This file is part of itom and its software development toolkit (SDK).
 
@@ -11,7 +11,7 @@
  the Free Software Foundation; either version 2 of the Licence, or (at
  your option) any later version.
 
- In addition, as a special exception, the Institut fuer Technische
+ In addition, as a special exception, the Institut für Technische
  Optik (ITO) gives you certain additional rights.
  These rights are described in the ITO LGPL Exception version 1.0,
  which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -392,7 +392,7 @@ namespace ito {
         /** getVal_ToDouble  read parameter value and try to convert to double
          *   @return parameter value (numeric, casted) or quiet_NaN()
          *
-         *   returns the actual parameter value as double. If conversion failes it returns a signaling_NaN()
+         *   returns the actual parameter value as double. If conversion fails it returns a signaling_NaN()
          */
         inline double getVal_ToDouble(void)
         {
@@ -415,7 +415,7 @@ namespace ito {
         /** getVal_ToString  read parameter value and try to convert to std::string
          *   @return parameter value (numeric, casted) or 'NaN' || 'Inf'
          *
-         *   returns the actual parameter value as std::string. If conversion from double failes it returns 'NaN' || 'Inf'
+         *   returns the actual parameter value as std::string. If conversion from double fails it returns 'NaN' || 'Inf'
          */
         inline ByteArray getVal_ToString(void)
         {
@@ -593,7 +593,7 @@ namespace ito {
         //! create header information for data objects with a given size and step sizes to jump from one element in a dimension to the next one.
         void createHeader(const unsigned char dimensions, const int *sizes, const int *steps, const int elemSize);
 
-        //! create header information for data objects with a given size, optional roi indeces and a possible original size
+        //! create header information for data objects with a given size, optional roi indices and a possible original size
         void createHeaderWithROI(const unsigned char dimensions, const int *sizes, const int *osizes = NULL, const int *roi = NULL);
 
         void create(const unsigned char dimensions, const int *sizes, const int type, const unsigned char continuous, const uchar* continuousDataPtr = NULL, const int* steps = NULL);  /*!< allocates new data */
@@ -844,13 +844,13 @@ namespace ito {
          \brief Function to access (set) the rotiational matrix by each element
          \param[in] r11  Upper left element
          \param[in] r12  Upper middle element
-         \param[in] r13  Upper rigth element
+         \param[in] r13  Upper right element
          \param[in] r21  Middle left element
          \param[in] r22  Middle middle element
-         \param[in] r23  Middle rigth element
+         \param[in] r23  Middle right element
          \param[in] r31  Lower left element
          \param[in] r32  Lower middle element
-         \param[in] r33  Lower rigth element
+         \param[in] r33  Lower right element
          \return ito::retOk || ito::retError
          */
         RetVal setXYRotationalMatrix(double r11, double r12, double r13, double r21, double r22, double r23, double r31, double r32, double r33);
@@ -859,13 +859,13 @@ namespace ito {
          \brief Function to access (get) the rotiational matrix by each element
          \param[out] r11  Upper left element
          \param[out] r12  Upper middle element
-         \param[out] r13  Upper rigth element
+         \param[out] r13  Upper right element
          \param[out] r21  Middle left element
          \param[out] r22  Middle middle element
-         \param[out] r23  Middle rigth element
+         \param[out] r23  Middle right element
          \param[out] r31  Lower left element
          \param[out] r32  Lower middle element
-         \param[out] r33  Lower rigth element
+         \param[out] r33  Lower right element
          \return ito::retOk || ito::retError
          */
         RetVal getXYRotationalMatrix(double &r11, double &r12, double &r13, double &r21, double &r22, double &r23, double &r31, double &r32, double &r33) const;
@@ -1447,7 +1447,7 @@ namespace ito {
          object.
 
          Then, the given array is copied inside of the values of the data object. The external
-         array must have a row-wise data arrangment (c-style), hence, one row follows after the other one.
+         array must have a row-wise data arrangement (c-style), hence, one row follows after the other one.
 
          \param _Tp* src is the source array. The type of the array is analyzed at compile time (_Tp is the placeholder for this type as template parameter)
          \param sizeX is the width of the array and must fit to the plane width of the data object
@@ -1465,7 +1465,7 @@ namespace ito {
          object.
 
          Then, the given array is copied inside of the values of the data object. The external
-         array must have a row-wise data arrangment (c-style), hence, one row follows after the other one.
+         array must have a row-wise data arrangement (c-style), hence, one row follows after the other one.
 
          In this method, it is allowed that the original width and height of the given data is different
          than the plane size of this data object. Then only a subregion of the external data is copied, indicated
@@ -1564,14 +1564,14 @@ namespace ito {
                 retValue = cv::saturate_cast<_Tp>(*(static_cast<const ito::TimeDelta*>(scalar)));
                 break;
             default:
-                cv::error(cv::Exception(CV_StsAssert, "Input value type unkown", "", __FILE__, __LINE__));
+                cv::error(cv::Exception(CV_StsAssert, "Input value type unknown", "", __FILE__, __LINE__));
                 retValue = 0;
         }
 
         return retValue;
     };
 
-    //! streaming operator to stream the representation or contant of a data object
+    //! streaming operator to stream the representation or constant of a data object
     DATAOBJ_EXPORT std::ostream& operator << (std::ostream& out, const DataObject& dObj);
 
     //! method which returns the real data type of any given data type
@@ -1671,7 +1671,7 @@ namespace ito {
      */
     template<typename _Tp> inline ito::tDataType getDataType(const _Tp* /*src*/)
     {
-        cv::error(cv::Exception(CV_StsAssert, "Input value type unkown", "", __FILE__, __LINE__));
+        cv::error(cv::Exception(CV_StsAssert, "Input value type unknown", "", __FILE__, __LINE__));
         return ito::tInt8;
     }
 
@@ -1702,7 +1702,7 @@ namespace ito {
      */
     template<typename _Tp> inline ito::tDataType getDataType2()
     {
-        cv::error(cv::Exception(CV_StsAssert, "Input value type unkown", "", __FILE__, __LINE__));
+        cv::error(cv::Exception(CV_StsAssert, "Input value type unknown", "", __FILE__, __LINE__));
         return ito::tInt8;
     }
 

@@ -1,8 +1,8 @@
-﻿/* ********************************************************************
+/* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom.
 
@@ -648,7 +648,7 @@ void WorkspaceWidget::itemExpanded(QTreeWidgetItem* item)
     m_workspaceContainer->m_expandedFullNames.insert(fullName);
     m_workspaceContainer->m_accessMutex.unlock();
 
-    if (item->childCount() == 0) // childs have not been submitted by python yet
+    if (item->childCount() == 0) // children have not been submitted by python yet
     {
         m_workspaceContainer->emitGetChildNodes(m_workspaceContainer, fullName);
     }

@@ -73,7 +73,7 @@
         <item>
          <widget class="QCheckBox" name="checkShowBuildin">
           <property name="text">
-           <string>show build-in modules</string>
+           <string>show built-in modules</string>
           </property>
          </widget>
         </item>

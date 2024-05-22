@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom.
 
@@ -111,7 +111,7 @@ ScriptDockWidget::ScriptDockWidget(const QString &title, const QString &objName,
 
     //this is an example shortcut. This shortcut is the same than the shortcut directly set to the corresponding action.
     //The action is not triggered by shortcut in docked-mode. Therefore we have the following QShortcut-instance.
-    //In undocked mode, the parent-dock-widget of the QShortcut is invisble, hence disabled, and the QAction-shortcut is triggered.
+    //In undocked mode, the parent-dock-widget of the QShortcut is invisible, hence disabled, and the QAction-shortcut is triggered.
     //The shortcut is deleted when this instance is deleted (due to parent-indication).
     //QShortcut *s = new QShortcut(QKeySequence::Find, this, SLOT(mnuFindTextExpr()), 0, Qt::WidgetWithChildrenShortcut);
 
@@ -811,7 +811,7 @@ ScriptEditorWidget* ScriptDockWidget::getEditorByCanonicalFilepath(const QString
         if (sew != nullptr && !sew->hasNoFilename())
         {
             path = QFileInfo(sew->getFilename());
-            
+
             if (path == filepath_)
             {
                 return sew;
@@ -929,10 +929,10 @@ RetVal ScriptDockWidget::openScript(QString filename, bool silent)
 
     QString absoluteFilename = fileInfo.absoluteFilePath();
 
-    // under Windows, pathes must not be case sensitive. Therefore
+    // under Windows, paths must not be case sensitive. Therefore
     // filename can be case insensitive. To show the correct name,
     // try to figure out how the case-correct filename would be.
-    // Hint: this does not consider the pathes so far.
+    // Hint: this does not consider the paths so far.
     QDir path(fileInfo.absolutePath());
     QStringList nameFilters;
     nameFilters << "*.py";
@@ -966,7 +966,7 @@ RetVal ScriptDockWidget::openScript(QString filename, bool silent)
 //----------------------------------------------------------------------------------------------------------------------------------
 //! tries to save all opened scripts in this ScriptDockWidget
 /*!
-    First, all unsaved and modified scripts are indentified and listed. Then the user is asked for confirmation of
+    First, all unsaved and modified scripts are identified and listed. Then the user is asked for confirmation of
     saving these modified documents. Then these scripts will be saved, if desired.
 
     \param askFirst if true, the user is asked for confirmation, else all scripts are silently saved
@@ -1808,7 +1808,7 @@ void ScriptDockWidget::createActions()
     m_findTextExprAction->connectTrigger(this, SLOT(mnuFindTextExpr()));
 //    m_findTextExprAction->action()->setCheckable(true);
 
-    // To add a secound shortcut. It works, but I don't know why!
+    // To add a second shortcut. It works, but I don't know why!
     m_findTextExprActionSC = new ShortcutAction(QIcon(":/editor/icons/find.png"), tr("Quick Search..."),
         this, QKeySequence(tr("F3", "QShortcut")), Qt::WidgetWithChildrenShortcut);
     m_findTextExprActionSC->connectTrigger(this, SLOT(mnuFindTextExpr()));

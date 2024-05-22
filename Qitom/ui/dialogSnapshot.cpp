@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom.
 
@@ -380,7 +380,7 @@ void DialogSnapshot::acquisitionEnd()
 
             if (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginFileSaveLoad))
             {
-                retval += ito::RetVal(ito::retError, 0, tr("Timeout while seaching file name at workspace").toLatin1().data());
+                retval += ito::RetVal(ito::retError, 0, tr("Timeout while searching file name at workspace").toLatin1().data());
                 checkRetval(retval);
             }
 

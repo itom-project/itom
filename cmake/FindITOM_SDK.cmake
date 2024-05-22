@@ -87,7 +87,7 @@ if(EXISTS ${ITOM_SDK_CONFIG_FILE})
     else(${CMAKE_PROJECT_NAME}  MATCHES "itomproject")
         if(EXISTS "${ITOM_APP_DIR}")
             #try to load the CMakeCache file from itom and extract some useful variables.
-            #The variables must be filepathes or pathes. They are only copied to this project
+            #The variables must be filepaths or paths. They are only copied to this project
             #... if they exist in itom's CMakeCache,
             #... if they are valid,
             #... if they exist in the file system and

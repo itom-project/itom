@@ -10,8 +10,8 @@ License information:
 
 itom software
 URL: http://www.uni-stuttgart.de/ito
-Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-Universitaet Stuttgart, Germany
+Copyright (C) 2020, Institut für Technische Optik (ITO),
+Universität Stuttgart, Germany
 
 This file is part of itom.
 
@@ -48,6 +48,7 @@ except ImportError:
 
 try:
     import flake8_docstrings
+
     _HAS_FLAKE8_DOCSTRINGS = True
 except ImportError:
     _HAS_FLAKE8_DOCSTRINGS = False
@@ -103,7 +104,7 @@ _CONFIG_DEFAULTS = {
 }
 
 
-class TimeIt(object):
+class TimeIt:
     """Time measurement for a code block.
 
     This class is only necessary for debug purposes and
@@ -122,7 +123,7 @@ class TimeIt(object):
 
     def __exit__(self, type, value, traceback):
         if self.name:
-            print("[%s]: %.4f s elapsed" % (self.name, time.time() - self.tstart))
+            print(f"[{self.name}]: {time.time() - self.tstart:.4f} s elapsed")
         else:
             print("%.4f s elapsed" % (time.time() - self.tstart))
 
@@ -330,7 +331,7 @@ if _HAS_FLAKE8:
 
         def __init__(self, *args, **kwargs):
             """Constructor."""
-            super(ItomFlake8Formatter, self).__init__(*args, **kwargs)
+            super().__init__(*args, **kwargs)
             self._items = []
             self._errorCodes = [
                 "F",
@@ -372,7 +373,13 @@ if _HAS_FLAKE8:
             self._warningCodes = self._check_categories(warnCodes, False)
 
         def _addItem(
-            self, errorType, filename, msgCode, description, lineNo=-1, column=-1,
+            self,
+            errorType,
+            filename,
+            msgCode,
+            description,
+            lineNo=-1,
+            column=-1,
         ):
             """
                type: the type of message (0: Info, 1: Warning, 2: Error)
@@ -389,7 +396,14 @@ if _HAS_FLAKE8:
             if lineNo > 0:
                 self._items.append(
                     "%i::%s::%i::%i::%s::%s"
-                    % (errorType, filename, lineNo, column, msgCode, description,)
+                    % (
+                        errorType,
+                        filename,
+                        lineNo,
+                        column,
+                        msgCode,
+                        description,
+                    )
                 )
 
         def results(self):
@@ -538,10 +552,10 @@ if _HAS_FLAKE8:
 
                 if type(val) is list:
                     kwargs_parsed.append(
-                        "--%s=%s" % (item, ",".join([str(ii) for ii in val]))
-                        )
+                        "--{}={}".format(item, ",".join([str(ii) for ii in val]))
+                    )
                 else:
-                    kwargs_parsed.append("--%s=%s" % (item, val))
+                    kwargs_parsed.append(f"--{item}={val}")
 
             application.plugins, application.options = parse_args(kwargs_parsed)
 
@@ -593,11 +607,13 @@ if _HAS_FLAKE8:
 
             if flake8.__version__ < "4.0.0":
                 config_parser = config.MergedConfigParser(
-                    option_manager=application.option_manager, config_finder=config_finder,
+                    option_manager=application.option_manager,
+                    config_finder=config_finder,
                 )
             else:
                 config_parser = config.ConfigParser(
-                    option_manager=application.option_manager, config_finder=config_finder,
+                    option_manager=application.option_manager,
+                    config_finder=config_finder,
                 )
 
             # Get the local (project, e.g. tox.ini) config again
@@ -609,7 +625,8 @@ if _HAS_FLAKE8:
             )  # for max logging pass: ["-vvv"]
 
             flake8.configure_logging(
-                application.prelim_opts.verbose, application.prelim_opts.output_file,
+                application.prelim_opts.verbose,
+                application.prelim_opts.output_file,
             )
             application.make_config_finder()
 
@@ -621,7 +638,8 @@ if _HAS_FLAKE8:
             config_finder = application.config_finder
 
             config_parser = config.MergedConfigParser(
-                option_manager=application.option_manager, config_finder=config_finder,
+                option_manager=application.option_manager,
+                config_finder=config_finder,
             )
 
             # Get the local (project, e.g. tox.ini) config again
@@ -911,7 +929,7 @@ def check(
     elif mode == 1:  # CodeCheckerPyFlakes
         if _HAS_PYFLAKES:
             if autoImportItom:
-                codestring = "%s\n%s" % (
+                codestring = "{}\n{}".format(
                     _CHECKER_CACHE["importItomString"],
                     codestring,
                 )
@@ -931,7 +949,6 @@ def check(
 
     elif mode == 2:  # CodeCheckerFlake8
         if _HAS_FLAKE8:
-
             if autoImportItom:
                 # add the itom imports as builtins option to flake8.
                 # This overwrites other builtins, set in user or project config files!
@@ -957,10 +974,14 @@ def check(
                 # print("check saved file %s" % filename)
                 with warnings.catch_warnings():
                     # when parsing the file by the checker, a warning
-                    # can occure (e.g. from an assert statement). ignore this warning.
+                    # can occur (e.g. from an assert statement). ignore this warning.
                     warnings.simplefilter("ignore")
                     try:
-                        report = style_guide.check_files([filename,])
+                        report = style_guide.check_files(
+                            [
+                                filename,
+                            ]
+                        )
                     except Exception as ex:
                         # import traceback
                         # traceback.print_exc()
@@ -975,9 +996,13 @@ def check(
                 try:
                     with warnings.catch_warnings():
                         # when parsing the file by the checker, a warning
-                        # can occure (e.g. from an assert statement). ignore this warning.
+                        # can occur (e.g. from an assert statement). ignore this warning.
                         warnings.simplefilter("ignore")
-                        report = style_guide.check_files([tempfilename,])
+                        report = style_guide.check_files(
+                            [
+                                tempfilename,
+                            ]
+                        )
                 except Exception as ex:
                     # import traceback
                     # traceback.print_exc()
@@ -1031,7 +1056,12 @@ if __name__ == "__main__":
 }"""
 
     result = check(
-        codestring, filename, fileSaved, mode, autoImportItom, furtherPropertiesJson,
+        codestring,
+        filename,
+        fileSaved,
+        mode,
+        autoImportItom,
+        furtherPropertiesJson,
     )
 
     import pprint

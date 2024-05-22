@@ -21,7 +21,14 @@ class DataObjectNpConversion(unittest.TestCase):
         for i in a[:, 1:3, :]:
             sum += i
         self.assertEqual(result, sum)
-        self.assertIs(b1.base, a)
+
+        if np.__version__ >= "1.23.0":
+            # the base is now a tuple (dataObject, capsule object)
+            # see: https://github.com/itom-project/itom/issues/288
+            self.assertIs(b1.base[0], a)
+            self.assertEqual(len(b1.base), 2)
+        else:
+            self.assertIs(b1.base, a)
 
     def test_noncontinuousDataObject2NpArray(self):
         data = (1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19)
@@ -71,8 +78,8 @@ class DataObjectNpConversion(unittest.TestCase):
         nptesting.assert_array_equal(arr2.squeeze(), np.array(darr2).squeeze())
 
         x, y = np.ogrid[:512, :512]
-        x = x.astype('int32')
-        y = y.astype('int32')
+        x = x.astype("int32")
+        y = y.astype("int32")
         dx = dataObject(x)  # 2 dim, strides (4, 0) --> could be a problem
         nptesting.assert_array_equal(x.squeeze(), np.array(dx).squeeze())
         dy = dataObject(y)  # 2 dim, strides (0, 4) --> could be a problem
@@ -83,14 +90,14 @@ class DataObjectNpConversion(unittest.TestCase):
         dx = dataObject(xbool)  # shape: (7,1,1), strides: (4,0,0)
         self.assertEqual(dx.dtype, "uint8")
         nptesting.assert_array_equal(xbool.squeeze(), np.array(dx).squeeze())
-        x2 = x[::2, :, :].astype('int32')
+        x2 = x[::2, :, :].astype("int32")
         dx2 = dataObject(x2)
         nptesting.assert_array_equal(x2.squeeze(), np.array(dx2).squeeze())
-        dy = dataObject(y.astype('int32'))  # shape: (1,5,1), strides: (0,4,0)
+        dy = dataObject(y.astype("int32"))  # shape: (1,5,1), strides: (0,4,0)
         nptesting.assert_array_equal(y.squeeze(), np.array(dy).squeeze())
-        dz = dataObject(z.astype('int32'))  # shape: (1,1,6), strides: (0,0,4)
+        dz = dataObject(z.astype("int32"))  # shape: (1,1,6), strides: (0,0,4)
         nptesting.assert_array_equal(z.squeeze(), np.array(dz).squeeze())
-        z2 = z[:, :, 1:3].astype('int32')
+        z2 = z[:, :, 1:3].astype("int32")
         dz2 = dataObject(z2)
         nptesting.assert_array_equal(z2.squeeze(), np.array(dz2).squeeze())
 
@@ -194,70 +201,70 @@ class DataObjectNpConversion(unittest.TestCase):
         dObj = dataObject(npArray, continuous=255)
         self.assertTrue("_orgNpShape" in dObj.tags)
         self.assertTrue("_orgNpDType" in dObj.tags)
-        self.assertEqual(dObj.tags["_orgNpShape"], "[{}]".format(npArray.shape[0]))
+        self.assertEqual(dObj.tags["_orgNpShape"], f"[{npArray.shape[0]}]")
         self.assertEqual(dObj.tags["_orgNpDType"], "bool")
 
         npArray = np.array([1, 2, 3, 4, 5, 6], "uint8")
         dObj = dataObject(npArray, continuous=255)
         self.assertTrue("_orgNpShape" in dObj.tags)
         self.assertTrue("_orgNpDType" in dObj.tags)
-        self.assertEqual(dObj.tags["_orgNpShape"], "[{}]".format(npArray.shape[0]))
+        self.assertEqual(dObj.tags["_orgNpShape"], f"[{npArray.shape[0]}]")
         self.assertEqual(dObj.tags["_orgNpDType"], "uint8")
 
         npArray = np.array([1, 2, 3, 4, 5, 6], "uint16")
         dObj = dataObject(npArray, continuous=255)
         self.assertTrue("_orgNpShape" in dObj.tags)
         self.assertTrue("_orgNpDType" in dObj.tags)
-        self.assertEqual(dObj.tags["_orgNpShape"], "[{}]".format(npArray.shape[0]))
+        self.assertEqual(dObj.tags["_orgNpShape"], f"[{npArray.shape[0]}]")
         self.assertEqual(dObj.tags["_orgNpDType"], "uint16")
 
         npArray = np.array([1, 2, 3, 4, 5, 6], "int8")
         dObj = dataObject(npArray, continuous=255)
         self.assertTrue("_orgNpShape" in dObj.tags)
         self.assertTrue("_orgNpDType" in dObj.tags)
-        self.assertEqual(dObj.tags["_orgNpShape"], "[{}]".format(npArray.shape[0]))
+        self.assertEqual(dObj.tags["_orgNpShape"], f"[{npArray.shape[0]}]")
         self.assertEqual(dObj.tags["_orgNpDType"], "int8")
 
         npArray = np.array([1, 2, 3, 4, 5, 6], "int16")
         dObj = dataObject(npArray, continuous=255)
         self.assertTrue("_orgNpShape" in dObj.tags)
         self.assertTrue("_orgNpDType" in dObj.tags)
-        self.assertEqual(dObj.tags["_orgNpShape"], "[{}]".format(npArray.shape[0]))
+        self.assertEqual(dObj.tags["_orgNpShape"], f"[{npArray.shape[0]}]")
         self.assertEqual(dObj.tags["_orgNpDType"], "int16")
 
         npArray = np.array([1, 2, 3, 4, 5, 6], "int32")
         dObj = dataObject(npArray, continuous=255)
         self.assertTrue("_orgNpShape" in dObj.tags)
         self.assertTrue("_orgNpDType" in dObj.tags)
-        self.assertEqual(dObj.tags["_orgNpShape"], "[{}]".format(npArray.shape[0]))
-        self.assertTrue(dObj.tags["_orgNpDType"] in  ["long", "int32"])
+        self.assertEqual(dObj.tags["_orgNpShape"], f"[{npArray.shape[0]}]")
+        self.assertTrue(dObj.tags["_orgNpDType"] in ["long", "int32"])
 
         npArray = np.array([1.1, 2.2, 3.3, 4.4, 5.5, 6.6], "float")
         dObj = dataObject(npArray, continuous=255)
         self.assertTrue("_orgNpShape" in dObj.tags)
         self.assertTrue("_orgNpDType" in dObj.tags)
-        self.assertEqual(dObj.tags["_orgNpShape"], "[{}]".format(npArray.shape[0]))
+        self.assertEqual(dObj.tags["_orgNpShape"], f"[{npArray.shape[0]}]")
         self.assertEqual(dObj.tags["_orgNpDType"], "float64")
 
         npArray = np.array([1.1, 2.2, 3.3, 4.4, 5.5, 6.6], "float32")
         dObj = dataObject(npArray, continuous=255)
         self.assertTrue("_orgNpShape" in dObj.tags)
         self.assertTrue("_orgNpDType" in dObj.tags)
-        self.assertEqual(dObj.tags["_orgNpShape"], "[{}]".format(npArray.shape[0]))
+        self.assertEqual(dObj.tags["_orgNpShape"], f"[{npArray.shape[0]}]")
         self.assertEqual(dObj.tags["_orgNpDType"], "float32")
 
         npArray = np.array([1.1, 2.2, 3.3, 4.4, 5.5, 6.6], "complex64")
         dObj = dataObject(npArray, continuous=255)
         self.assertTrue("_orgNpShape" in dObj.tags)
         self.assertTrue("_orgNpDType" in dObj.tags)
-        self.assertEqual(dObj.tags["_orgNpShape"], "[{}]".format(npArray.shape[0]))
+        self.assertEqual(dObj.tags["_orgNpShape"], f"[{npArray.shape[0]}]")
         self.assertEqual(dObj.tags["_orgNpDType"], "complex64")
 
         npArray = np.array([1.1, 2.2, 3.3, 4.4, 5.5, 6.6], "complex128")
         dObj = dataObject(npArray, continuous=255)
         self.assertTrue("_orgNpShape" in dObj.tags)
         self.assertTrue("_orgNpDType" in dObj.tags)
-        self.assertEqual(dObj.tags["_orgNpShape"], "[{}]".format(npArray.shape[0]))
+        self.assertEqual(dObj.tags["_orgNpShape"], f"[{npArray.shape[0]}]")
         self.assertEqual(dObj.tags["_orgNpDType"], "complex128")
 
 

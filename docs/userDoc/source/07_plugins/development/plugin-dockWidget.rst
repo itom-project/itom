@@ -31,7 +31,7 @@ Before you start programming the toolbox, consider the following hints:
 * Therefore the communication between toolbox and plugin must be implemented via a thread-safe signal/slot mechanism.
 * |itom| provides the base class **ito::AbstractAddInDockWidget** in order to unify and simplify this process. This base class is contained in the SDK.
 * Usually you will design the toolbox with the **Qt Designer** and implement the specific code within a class that is inherited from **ito::AbstractAddInDockWidget**.
-* As last step, you need to create one instance of the toolbox class within the constructor of the plugin itself and register the toolbox such that |itom| knows about its existance.
+* As last step, you need to create one instance of the toolbox class within the constructor of the plugin itself and register the toolbox such that |itom| knows about its existence.
 
 User Interface Design
 =========================================
@@ -56,7 +56,7 @@ The **ui**-file can only be used and interpreted in your plugin source code if i
     #... somewhere in the area where the header and source files are inserted
 
     set(plugin_UI
-        #add absolute pathes to any *.ui files
+        #add absolute paths to any *.ui files
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetMSMediaFoundation.ui
     )
 
@@ -238,7 +238,7 @@ Lets start with interrupting the movement of all active axes. Simply call the me
 
 defined in **AbstractAddInDockWidget**.
 
-For relatively or absolutly moving one or multiple axes, directly call the method
+For relatively or absolutely moving one or multiple axes, directly call the method
 
 .. code-block:: c++
 
@@ -249,7 +249,7 @@ For relatively or absolutly moving one or multiple axes, directly call the metho
         MessageLevel msgLevel = msgLevelWarningAndError)
 
 also defined in **AbstractAddInDockWidget**. They invoke the slots **setPosAbs** or **setPosRel** of the actuator plugin, wait for the release of the semaphore. **relNotAbs** decides whether the
-movement is absolut or relative. Use the **msgLevel** to let a message box appear if the movement failed or returned a warning. The default value does both.
+movement is absolute or relative. Use the **msgLevel** to let a message box appear if the movement failed or returned a warning. The default value does both.
 
 Finally, you should implement and connect the slot **targetChanged** and **actuatorStatusChanged** (see header file above). In **targetChanged**, set the value of the related widgets of the user
 interface to the new target values (in *mm* or *degree*). The slot **actuatorStatusChanged** is used to update the current positions as well as to analyze the status of all axes.

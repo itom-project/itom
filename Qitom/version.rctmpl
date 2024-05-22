@@ -23,11 +23,11 @@ BEGIN
     BEGIN
         BLOCK   "040904b0"
         BEGIN
-            VALUE   "CompanyName",      "Institut fuer Technische Optik, University Stuttgart\0"
+            VALUE   "CompanyName",      "Institut für Technische Optik, Universität Stuttgart\0"
             VALUE   "FileDescription",  "ITO Measurement Program\0"
             VALUE   "FileVersion",      "0.0.1"
             VALUE   "InternalName",     "itom\0"
-            VALUE   "LegalCopyright",   "LGPL with ITO exection\0"
+            VALUE   "LegalCopyright",   "LGPL with ITO exception\0"
 #ifdef _DEBUG
             VALUE   "OriginalFilename", "qitom.exe\0"
 #else

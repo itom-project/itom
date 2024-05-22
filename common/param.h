@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
 
@@ -11,7 +11,7 @@
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
 
-    In addition, as a special exception, the Institut fuer Technische
+    In addition, as a special exception, the Institut für Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
     which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -54,7 +54,7 @@ template <typename _Tp> struct ItomParamHelper;
 
 const uint32 paramFlagMask = 0xFFFF0000; //!< bits of type lying within this mask are flags (e.g.
                                          //!< typeNoAutosave, typeReadonly...)
-const uint32 paramTypeMask = 0x0000FFFF; //!< bits of param type lying withing this mask describe
+const uint32 paramTypeMask = 0x0000FFFF; //!< bits of param type lying within this mask describe
                                          //!< the type (typeNoAutosave must be included there)
 
 //! wrapper class for a complex128 value. This class is used, since the std::complex stl class is
@@ -334,7 +334,7 @@ public:
     0 is returned. This changed from itom 5.0 on. Before -1 was returned
     if the array is a nullptr (which is equal to a length of 0).
 
-    StringList parameter behave like the other scalar parmeters.
+    StringList parameter behave like the other scalar parameters.
 
     For String parameters, the length of the string is returned, but
     -1 is returned if the internal string is nullptr.
@@ -468,7 +468,7 @@ private:
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /** @class Param
- *   @brief  class for parameter handling e.g. to pass paramters to plugins
+ *   @brief  class for parameter handling e.g. to pass parameters to plugins
  *
  *   The plugins use this class to organize their parameters (internally) and for the paramList
  * which is used for type checking whilst parsing parameters passed from python to c.

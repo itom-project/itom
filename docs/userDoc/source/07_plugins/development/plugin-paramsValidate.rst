@@ -51,7 +51,7 @@ meta information.
 
     This methods checks whether the number 'value' does not exceed the boundaries given by the double meta information 'meta'.
     If this is not the case *retError* with an appropriate error message is returned, else *retOk*. In difference to :c:func:`validateDoubleMeta`,
-    this method rounds the given value to the nearest value, that fits to the step size contraints (if a step size != 0.0 is given).
+    this method rounds the given value to the nearest value, that fits to the step size constraints (if a step size != 0.0 is given).
 
     The rounding is only done, if *allowRounding* is equal to *true*, else *value* will not be modified and can be considered to be constant.
 

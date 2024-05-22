@@ -26,7 +26,7 @@ rand = np.random.randint(0, XY.shape[1], size=(20,))
 for r in rand:
     # random point:
     point = XY[r, :]
-    # query the 8 nearest neightbours with an euclidian distance
+    # query the 8 nearest neighbours with an euclidean distance
     [dists, indices] = kdtree.query(point, k=8, p=2)
     print("Nearest points to point:", point)
     print("------------------------------------------")

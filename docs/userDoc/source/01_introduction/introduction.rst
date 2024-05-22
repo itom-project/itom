@@ -4,7 +4,7 @@ Introduction
 #########################################
 
 |itom| is a lab automation and measurement software developed, maintained and
-provided by the ITO (Institut for Technical Optics, University Stuttgart, Germany).
+provided by the ITO (Institut for Technical Optics, Universität Stuttgart, Germany).
 While this software has been designed with an emphasis on developing and
 running optical systems, it is not limited to this field of application.
 |itom| represents a versatile tool for building the control software for any
@@ -55,8 +55,8 @@ to :ref:`gettingStarted`.
 About us
 **************
 
-| Institut fuer Technische Optik
-| Universitaet Stuttgart
+| Institut für Technische Optik
+| Universität Stuttgart
 | Pfaffenwaldring 9
 | 70569 Stuttgart
 |
@@ -76,7 +76,7 @@ The core components and the main application of |itom| are covered by the
 **GNU Library General Public Licence** (GNU LGPL). All components belonging to
 the SDK of |itom| (e.g. *dataObject*, *pointCloud*, *addInInterface*,...) are
 additionally covered by an **itom exception**. The main idea of this exception is
-to allow other libraries (e.g. plugins) to include and link agains components
+to allow other libraries (e.g. plugins) to include and link against components
 of |itom| SDK independent on the specific license model of the respective "other" library.
 All files belonging to the |itom| SDK are included in the folder **SDK** that
 is shipped with any setup or included in the build directory (when build from sources).

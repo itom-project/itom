@@ -378,3 +378,5 @@ Makefile*
 
 .clang-tid
 *.bak
+/docs/userDoc/source/sg_execution_times.rst
+/.vscode

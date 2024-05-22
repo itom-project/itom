@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2023, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2023, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom.
 
@@ -83,7 +83,7 @@ public:
     int m_compatibleParamBaseType; /*!< sets the corresponding type of ito::ParamBase::Type that fits to the variable or 0 if no ito::ParamBase::Type fits. */
     bool m_exist;
     bool m_isarrayelement; /*!< true if this variable is part of a list, tuple, dict, mapping, ... If the python type does not allow any child, m_isarrayelement is set to false. */
-    ChildState m_childState; /*!< indicates if this type of variable can have any childs and the expand indicator should be displayed in the tree view. */
+    ChildState m_childState; /*!< indicates if this type of variable can have any children and the expand indicator should be displayed in the tree view. */
     QHash<QString, PyWorkspaceItem*> m_childs;
 };
 
@@ -130,7 +130,7 @@ private:
 
 signals:
     void updateAvailable(PyWorkspaceItem *rootItem, QString fullNameRoot, QStringList recentlyDeletedFullNames);   //TODO
-    void getChildNodes(PyWorkspaceContainer *container, QString fullNameParentItem); //signal catched by python    //TODO
+    void getChildNodes(PyWorkspaceContainer *container, QString fullNameParentItem); //signal caught by python    //TODO
 };
 
 } //end namespace ito

@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
 
@@ -11,7 +11,7 @@
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
 
-    In addition, as a special exception, the Institut fuer Technische
+    In addition, as a special exception, the Institut für Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
     which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -69,7 +69,7 @@ class ITOMWIDGETS_EXPORT Completer: public QCompleter
   /// FilterContains is the most permissive filter, the completer filters out
   /// only strings that don't contain the characters from \sa completionPrefix
   /// FilterWordStartsWith is useful when strings contain space separated words
-  /// and \sa completionPrefix applies to the beginnig of any of the words in the
+  /// and \sa completionPrefix applies to the beginning of any of the words in the
   /// string.
   Q_PROPERTY(ModelFiltering modelFiltering READ modelFiltering WRITE setModelFiltering)
 

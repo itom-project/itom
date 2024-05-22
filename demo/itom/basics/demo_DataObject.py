@@ -1,5 +1,3 @@
-# coding=utf8
-
 """DataObject
 ===========
 
@@ -28,8 +26,12 @@ obj3dim = dataObject([zDim, yDim, xDim], "uint16")
 objZero = dataObject.zeros([yDim, xDim], "float64")  # 2D object filled with zeros
 objOnes = dataObject.ones([yDim, xDim], "float64")  # 2D object filled with ones
 objEye = dataObject.eye(4, "uint8")  # 4x4 matrix
-objRand = dataObject.rand([yDim, xDim], "uint8")  # 2D object filled with uniformly distributed random values
-objRandN = dataObject.randN([yDim, xDim], "uint8")  # 2D object filled with Gaussian distributed random values
+objRand = dataObject.rand(
+    [yDim, xDim], "uint8"
+)  # 2D object filled with uniformly distributed random values
+objRandN = dataObject.randN(
+    [yDim, xDim], "uint8"
+)  # 2D object filled with Gaussian distributed random values
 
 ###############################################################################
 # .. hint:: the methods rand and randN create values in the full data range for integer based data types
@@ -43,10 +45,10 @@ objRandFloat = objRand.astype("float64")
 # Assign values to data objects
 
 # fill the upper half of the object with 5.7 (the operator // makes an integer division)
-obj2dim[0: yDim // 2, :] = 5.7
+obj2dim[0 : yDim // 2, :] = 5.7
 
 # fill the bottom half of the object with 6.6 (the operator // makes an integer division)
-obj2dim[yDim // 2:, :] = 6.6
+obj2dim[yDim // 2 :, :] = 6.6
 
 # fill a selected rectangle with -2.0
 obj2dim[5:10, 20:100] = -2.0
@@ -121,7 +123,7 @@ obj2dim.axisUnits = ("mm", "mm")
 obj2dim.axisDescriptions = ("y-axis", "x-axis")
 obj2dim.setTag("title", "obj2dim Title")
 
-obj2dim.valueUnit = u"\xb0"  # this is a special character. To allow this, the first line of this script is relevant (right click -> insert codec)
+obj2dim.valueUnit = "\xb0"  # this is a special character. To allow this, the first line of this script is relevant (right click -> insert codec)
 obj2dim.valueDescription = "phase"
 
 plot(obj2dim, properties={"colorBarVisible": True})
@@ -143,7 +145,7 @@ plot(obj3dim)
 # .. image:: ../../_static/demoDataObject_4.png
 #    :width: 100%
 
-# Set additional informations (meta data) as tags
+# Set additional information (meta data) as tags
 # Use set tag "key", "value". Key / value are user defined.
 obj2dim.setTag("Creator", "itom")
 obj2dim.setTag("Type", "Measurement")

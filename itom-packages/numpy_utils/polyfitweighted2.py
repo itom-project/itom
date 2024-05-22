@@ -1,4 +1,3 @@
-# coding=utf-8
 # polyfitweighted2.py
 # -------------------
 #
@@ -49,6 +48,7 @@
 import numpy as np
 import numpy_utils.linalg_utils as nputils
 
+
 ##############################################################
 def polyfitweighted2(koX, koY, koZ, n, margin=0.2, w=None):
     """
@@ -86,7 +86,7 @@ def polyfitweighted2(koX, koY, koZ, n, margin=0.2, w=None):
     ma = np.isfinite(z)
     x = x[
         ma
-    ]  # Z-Werte werden gemessen, und koennen NaN oder infinite sein, solche Werte werden ausgefiltert
+    ]  # Z-values are measured and can be NaN or infinite; such values are filtered out.
     y = y[ma]
     pw = pw[ma]
     z = z[ma]

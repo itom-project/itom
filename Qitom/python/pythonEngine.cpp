@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2023, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2023, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom.
 
@@ -889,7 +889,7 @@ ito::RetVal PythonEngine::startupInitPythonHelpStreamConsumer(QSettings& setting
     QString python3rdPartyHelperCommand = settings.value("python3rdPartyHelperCommand", "").toString();
     bool python3rdPartyHelperUse = settings.value("python3rdPartyHelperUse", false).toBool();
     //since these config files can be copied around, shared to other ppl etc,
-    // PAGER enver might be lost/canged/unexpected from this POV.
+    // PAGER enver might be lost/changed/unexpected from this POV.
     // If PAGER is not as expected, help is not going to be used...
     //Hint: in debugger, enver Vars are only loaded on your IDE startup, e.g. msvc.
     //So if you change PAGER, you might need to restart you IDE
@@ -1852,7 +1852,7 @@ ito::RetVal PythonEngine::runString(const QString &command)
             //{
             //    result = PyRun_String(command.toUtf8().data(), Py_single_input, mainDict, localDict); //Py_file_input is used such that multi-line commands (separated by \n) are evaluated
             //}
-            //else //this command is a single line command, then Py_single_input must be set, such that the output of any command is printed in the next line, else this output is supressed (if no print command is executed)
+            //else //this command is a single line command, then Py_single_input must be set, such that the output of any command is printed in the next line, else this output is suppressed (if no print command is executed)
             //{
             //    result = PyRun_String(command.toUtf8().data(), Py_single_input /*was in 2015: Py_single_input*/, mainDict , localDict); //Py_file_input is used such that multi-line commands (separated by \n) are evaluated
             //}
@@ -2429,7 +2429,7 @@ ito::RetVal PythonEngine::debugString(const QString &command)
 
         try
         {
-            //the result of all commands that return something else than None is printed. This can be changed in itoDebugger by chosing compile(...,'exec') instead of 'single'
+            //the result of all commands that return something else than None is printed. This can be changed in itoDebugger by choosing compile(...,'exec') instead of 'single'
             result = PyObject_CallMethod(m_itomDbgInstance, "debugString", "s", command.toUtf8().data()); //command must be UTF8
         }
         catch(std::exception &exc)
@@ -2974,7 +2974,7 @@ ito::RetVal PythonEngine::pythonEditBreakpoint(const int pyBpNumber, const Break
 
         if (result == nullptr)
         {
-            //this is an exception case that should not occure under normal circumstances
+            //this is an exception case that should not occur under normal circumstances
             std::cerr << "Error while editing breakpoint in debugger." << "\n" << std::endl;
 
             printPythonErrorWithoutTraceback(); //traceback is sense-less, since the traceback is in itoDebugger.py only!
@@ -3060,7 +3060,7 @@ ito::RetVal PythonEngine::pythonDeleteBreakpoint(const int pyBpNumber)
         result = PyObject_CallMethod(m_itomDbgInstance, "clearBreakPoint", "i", pyBpNumber); //returns 0 (int) or str with error message
         if (result == NULL)
         {
-            //this is an exception case that should not occure under normal circumstances
+            //this is an exception case that should not occur under normal circumstances
             std::cerr << "Error while clearing breakpoint in debugger." << "\n" << std::endl;
             printPythonErrorWithoutTraceback(); //traceback is sense-less, since the traceback is in itoDebugger.py only!
             retval += RetVal(retError, 0, tr("Exception raised while clearing breakpoint in debugger.").toLatin1().data());
@@ -3906,7 +3906,7 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString
         //this is a compatibility thing. This function can also be used to
         //get a variable from the global or local dictionary. If only a
         //variable name is passed, we prepend PY_DICT PY_STRING : to the string
-        //such that an item from the gobal or local dictionary is chosen.
+        //such that an item from the global or local dictionary is chosen.
         const char prepend[] = { PY_DICT, PY_STRING, ':', '\0' };
         items[0].prepend(prepend);
     }
@@ -4612,7 +4612,7 @@ int PythonEngine::queuedInterrupt(void* /*arg*/)
     //
     // we have to raise an except while exception handling. Therefore
     // we accumulate some keyboards interrupts and force their
-    // excecution afterwards with setInterrupt ...
+    // execution afterwards with setInterrupt ...
     // Anyway deeper nested try - except constructs we cannot terminate this way
 
     {
@@ -5468,7 +5468,7 @@ ito::RetVal PythonEngine::saveMatlabVariables(bool globalNotLocal, QString filen
 *  \param filename is the filename of the mat file
 *  \param value is the given DataObject, PointCloud or PolygonMesh in terms of ito::Param
 *  \param valueName is the name of the variable in the mat file
-*  \param semaphore is the control semaphore for an asychronous call.
+*  \param semaphore is the control semaphore for an asynchronous call.
 */
 ito::RetVal PythonEngine::saveMatlabSingleParam(QString filename, QSharedPointer<ito::Param> value, const QString &valueName, ItomSharedSemaphore *semaphore)
 {
@@ -6588,7 +6588,7 @@ ito::RetVal PythonEngine::pickleVariables(bool globalNotLocal, QString filename,
 
                     if (keyUnicode)
                     {
-                        //increments tempElem by itsself
+                        //increments tempElem by itself
                         PyDict_SetItem(exportDict, keyUnicode, tempElem);
                         Py_DECREF(keyUnicode);
                     }
@@ -6634,7 +6634,7 @@ ito::RetVal PythonEngine::pickleVariables(bool globalNotLocal, QString filename,
 *  \param filename is the filename of the idc file
 *  \param value is the given DataObject, PointCloud or PolygonMesh in terms of ito::Param
 *  \param valueName is the name of the variable in the idc file
-*  \param semaphore is the control semaphore for an asychronous call.
+*  \param semaphore is the control semaphore for an asynchronous call.
 */
 ito::RetVal PythonEngine::pickleSingleParam(QString filename, QSharedPointer<ito::Param> value, const QString &valueName, ItomSharedSemaphore *semaphore)
 {

@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom.
 
@@ -216,7 +216,7 @@ bool ItomPaletteBase::setColorStops(const QVector<QPair<double, QColor> > &color
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! \brief      Get the position of the n-th color-stop in the palette
-/*! \detail     This function returns the position (doubel value) of the color stop devined by int color
+/*! \detail     This function returns the position (double value) of the color stop defined by int color
 
     \param      color     index of the color to retrieve
     \return     double    position of the color stop
@@ -230,7 +230,7 @@ double ItomPaletteBase::getPos(unsigned int color) const
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! \brief      Get the RGBA-Color of the n-th color-stop in the palette
-/*! \detail     This function returns the position (doubel value) of the color stop devined by int color
+/*! \detail     This function returns the position (double value) of the color stop defined by int color
 
     \param      index     index of the color stop, whose color is returned
     \return     QColor    the RGBA-Color of the color stop
@@ -243,8 +243,8 @@ QColor ItomPaletteBase::getColor(unsigned int index) const
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! \brief      This function returns the internal structur of the palette
-/*! \detail     This function returns the internal structur of the palette
+//! \brief      This function returns the internal structure of the palette
+/*! \detail     This function returns the internal structure of the palette
 */
 ItomPalette ItomPaletteBase::getPalette() const
 {

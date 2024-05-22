@@ -56,25 +56,25 @@ dl.class dt{
    font-size: 19px;
 }
 
-/*Das Wort "class" in der Klassenueberschrift*/
+/* The word "class" in the class heading */
 dl.class dt em.property{
 	font-size: 1.05em
 }
 
 
-/*Hinterlegung der gesamten Methoden*/
+/* Definition of all methods */
 dl.method, dl.staticmethod, dl.function{
   background-color: #ffffff; /*#FBF8EF;*/
   border: 0px solid #000000;
 }
 
-/*Hinterlegung des gesamten Attributes*/
+/* Definition of all attributes */
 dl.attribute{
   background-color: #F2FBff;
   border: 1px solid;
 }
 
-/*Hinterlegung des Attributeheaders*/
+/* Definition of the static and method headers */
 dl.attribute dt{
  	background-color: #E6E6E6;
   font-size: 13px;
@@ -162,7 +162,7 @@ div.content {
 /* heading and navigation */
 
 div.content.div#dataobject.section.dl.class.dd.table.docutils.field-list.tbody.tr.field-odd.field.th.field-name{
-  backround: #0000FF;
+  background: #0000FF;
 }
 
 div.header {
@@ -428,8 +428,8 @@ td {
     vertical-align: top;
 }
 
-/*Groesse aller Links*/
-/*Vorsicht, da relativ und manche Boxen dadurch extrem grosse Links*/
+/* Size of all links /
+/ Caution, as this is relative and some boxes may result in extremely large links */
 tt {
     background-color: #e2e2e2;
     font-size: 1.2em;

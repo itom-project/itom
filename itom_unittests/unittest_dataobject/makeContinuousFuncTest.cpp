@@ -76,7 +76,7 @@ TYPED_TEST(makeContinuousFunc_test, nonContTest_3d)
     delete newObj;
 
     this->dObj_3dres =
-        ito::makeContinuous(this->dObj_3d); //!< Converting a non-continous data object this->dObj_3d into a continous
+        ito::makeContinuous(this->dObj_3d); //!< Converting a non-continuous data object this->dObj_3d into a continuous
                                             //!< one and storing the result into this->dObj_3dres data object.
 
     // compare inner size of first plane in ROI with last two dimensions of dataObject
@@ -121,7 +121,7 @@ TYPED_TEST(makeContinuousFunc_test, nonContTest_big3d)
     bigDataObj.adjustROI(3, limits);
     ito::DataObject *roiBased =
         new ito::DataObject(ito::makeContinuous(bigDataObj)); // ---------------------------> 21.05.2013 NOTE: TEST
-                                                              // Fails here (Should dissapear after updating the files)
+                                                              // Fails here (Should disappear after updating the files)
     delete roiBased;
 }
 
@@ -168,7 +168,7 @@ TYPED_TEST(makeContinuousFunc_test, nonContTest_4d)
         4,
         matLimits4d); //!< adjusting ROI of this->dObj_4d with general 2 parameter adjustROI method to desired position
     this->dObj_4dres =
-        ito::makeContinuous(this->dObj_4d); //!< Converting a non-continous data object this->dObj_4d into a continous
+        ito::makeContinuous(this->dObj_4d); //!< Converting a non-continuous data object this->dObj_4d into a continuous
                                             //!< one and storing the result into this->dObj_4dres data object.
     // std::cout << this->dObj_4d << std::endl;
     dim1 = this->dObj_4d.getSize(0);
@@ -211,7 +211,7 @@ TYPED_TEST(makeContinuousFunc_test, nonContTest_big4d)
     bigDataObj.adjustROI(4, limits);
     ito::DataObject *roiBased =
         new ito::DataObject(ito::makeContinuous(bigDataObj)); // ---------------------------> 24.05.2013 NOTE: TEST
-                                                              // Fails here (Should dissapear after updating the files)
+                                                              // Fails here (Should disappear after updating the files)
     delete roiBased;
     // delete temp_size;
 }

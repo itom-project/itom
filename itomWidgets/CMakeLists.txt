@@ -1,7 +1,7 @@
 # - itom software
 # URL: http://www.uni-stuttgart.de/ito
-# Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-# Universitaet Stuttgart, Germany
+# Copyright (C) 2020, Institut für Technische Optik (ITO),
+# Universität Stuttgart, Germany
 #
 # This file is part of itom and its software development toolkit (SDK).
 #
@@ -10,7 +10,7 @@
 # the Free Software Foundation; either version 2 of the Licence, or (at
 # your option) any later version.
 #
-# In addition, as a special exception, the Institut fuer Technische
+# In addition, as a special exception, the Institut für Technische
 # Optik (ITO) gives you certain additional rights.
 # These rights are described in the ITO LGPL Exception version 1.0,
 # which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -360,7 +360,7 @@ set(itomWidgets_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogHeatmapConfiguration.cpp
 )
 
-#If you want to use automatical metadata for dlls under windows use the following if-case.
+#If you want to use automatically metadata for dlls under windows use the following if-case.
 if(MSVC)
     list(APPEND itomWidgets_SOURCES version.rc)
 endif()

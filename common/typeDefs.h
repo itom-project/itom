@@ -1,8 +1,8 @@
 /* ********************************************************************
 itom software
 URL: http://www.uni-stuttgart.de/ito
-Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-Universitaet Stuttgart, Germany
+Copyright (C) 2020, Institut für Technische Optik (ITO),
+Universität Stuttgart, Germany
 
 This file is part of itom and its software development toolkit (SDK).
 
@@ -11,7 +11,7 @@ under the terms of the GNU Library General Public Licence as published by
 the Free Software Foundation; either version 2 of the Licence, or (at
 your option) any later version.
 
-In addition, as a special exception, the Institut fuer Technische
+In addition, as a special exception, the Institut für Technische
 Optik (ITO) gives you certain additional rights.
 These rights are described in the ITO LGPL Exception version 1.0,
 which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -34,7 +34,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include <string.h>
 #include <stdexcept>
 #ifndef WIN32
-#include <unistd.h>    // neede for usleep
+#include <unistd.h>    // needed for usleep
 #endif
 
 #ifdef _MSC_VER

@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom.
 
@@ -244,7 +244,7 @@ void DialogLoadedPlugins::filter()
 
         // check if button is active for this type of message
         bool show = (first & flag) != 0;
-        // Isn't compability checkbox set OR if reldgb flag is set it's incompatibel, if 0 it's
+        // Isn't compatibility checkbox set OR if reldgb flag is set it's incompatibel, if 0 it's
         // compatible
         show &= (!ui.onlyCompatibleCheck->checkState() || (first & ito::plsfRelDbg) == 0);
         // has no child OR filter text is empty OR filter text matches node text

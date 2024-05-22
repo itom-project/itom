@@ -66,7 +66,7 @@ public:
     virtual void setEditorData(QWidget* editor, const QModelIndex& index) const;
 
     /**
-     * Sets the data of a specific QModelIndex to tha value of the editor widget
+     * Sets the data of a specific QModelIndex to the value of the editor widget
      * @param editor the editor widget that contains the new value
      * @param model the model that contains the index
      * @param index the index within the model whose data value should be set to the data value of

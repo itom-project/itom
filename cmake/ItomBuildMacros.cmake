@@ -1,7 +1,7 @@
 # - itom software
 # URL: http://www.uni-stuttgart.de/ito
-# Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-# Universitaet Stuttgart, Germany
+# Copyright (C) 2020, Institut für Technische Optik (ITO),
+# Universität Stuttgart, Germany
 #
 # This file is part of itom and its software development toolkit (SDK).
 #
@@ -10,7 +10,7 @@
 # the Free Software Foundation; either version 2 of the Licence, or (at
 # your option) any later version.
 #
-# In addition, as a special exception, the Institut fuer Technische
+# In addition, as a special exception, the Institut für Technische
 # Optik (ITO) gives you certain additional rights.
 # These rights are described in the ITO LGPL Exception version 1.0,
 # which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -457,12 +457,12 @@ macro(itom_fetch_git_commit_hash)
         else()
             find_package(Git QUIET)
         endif()
-            
+
         #try to get working directory of git
         set(GITDIR_FOUND )
         set(GIT_DIRECTORY "")
         set(GIT_INDEX_FILE "")
-        
+
         if (Git_FOUND)
             # try to get the git directory of the git index file
             # this directory is different dependent if plugins are built
@@ -474,14 +474,14 @@ macro(itom_fetch_git_commit_hash)
                 OUTPUT_VARIABLE GIT_DIRECTORY
                 ERROR_QUIET
                 OUTPUT_STRIP_TRAILING_WHITESPACE)
-            
+
             if(NOT IS_ABSOLUTE ${GIT_DIRECTORY})
                 get_filename_component(GIT_DIRECTORY_ABS ${GIT_DIRECTORY} ABSOLUTE ${CMAKE_CURRENT_SOURCE_DIR})
                 set(GIT_DIRECTORY ${GIT_DIRECTORY_ABS})
             endif()
-            
+
             set(GIT_INDEX_FILE "${GIT_DIRECTORY}/index")
-            
+
             if(EXISTS ${GIT_INDEX_FILE})
                 set(GITDIR_FOUND TRUE)
             endif()
@@ -492,7 +492,7 @@ macro(itom_fetch_git_commit_hash)
         if(NOT GITDIR_FOUND)
             # backup solution, try to find a .git/index file by recursing to the top directory.
             set(WORKINGDIR ${CMAKE_CURRENT_SOURCE_DIR})
-            
+
             foreach(ITER "1" "2" "3")
                 if(NOT EXISTS ${WORKINGDIR})
                     break()
@@ -956,7 +956,7 @@ macro(itom_qt_create_translation outputFiles tsFiles target languages)
 
             get_directory_property(_inc_DIRS INCLUDE_DIRECTORIES)
             foreach(_pro_include ${_inc_DIRS})
-                # some include pathes somehow disturb lupdate, such that it requires a long time to finish.
+                # some include paths somehow disturb lupdate, such that it requires a long time to finish.
                 # Therefore, they are excluded from the lupdate include list
                 string(REGEX MATCH "boost|pcl-1|pcl-2|pcl-3" match ${_pro_include})
                 if(NOT match)
@@ -1194,7 +1194,7 @@ endmacro()
 
 # - appends the list of binary translation files (qm_files) to be copied from their source
 # directory to the 'plugins/${target}/translation' subfolder of the qitom root directory. This is
-# done by adding one or multiple filepathes and folders to the given lists 'sources' and
+# done by adding one or multiple filepaths and folders to the given lists 'sources' and
 # 'destinations'. The copy operation from every entry in sources to destinations
 # can then be triggered by calling 'itom_post_build_copy_files'.
 #
@@ -1213,7 +1213,7 @@ endmacro()
 
 # - appends the list of binary translation files (qm_files) to be copied from their source
 # directory to the 'designer/translation' subfolder of the qitom root directory. This is
-# done by adding one or multiple filepathes and folders to the given lists 'sources' and
+# done by adding one or multiple filepaths and folders to the given lists 'sources' and
 # 'destinations'. The copy operation from every entry in sources to destinations
 # can then be triggered by calling 'itom_post_build_copy_files'.
 #
@@ -1250,7 +1250,7 @@ macro(itom_post_build_copy_files target sources destinations)
 
     list(REMOVE_DUPLICATES destPathes)
 
-    #try to create all pathes
+    #try to create all paths
     foreach(destPath ${destPathes})
         #first try to create the directory
         add_custom_command(TARGET ${target} POST_BUILD

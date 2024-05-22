@@ -15,7 +15,7 @@ defaultDir = itom.ui.getExistingDirectory("plugin build folder", defaultDir)
 
 matches = []
 for root, dirnames, filenames in os.walk(defaultDir):
-    for filename in fnmatch.filter(filenames, '*.cfg'):
+    for filename in fnmatch.filter(filenames, "*.cfg"):
         matches.append(os.path.join(root, filename))
 
 buildernames = ["qthelp"]  # ["qthelp", "htmlhelp", "latex", "html"]

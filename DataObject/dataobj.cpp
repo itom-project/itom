@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
 
@@ -11,7 +11,7 @@
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
 
-    In addition, as a special exception, the Institut fuer Technische
+    In addition, as a special exception, the Institut für Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
     which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -40,7 +40,7 @@
 #else
 #define USEOMP 0
 #endif
-// need to implement this function, just for testing of openmp funcitonality
+// need to implement this function, just for testing of openmp functionality
 int getMaximumThreadCount()
 {
     return 2;
@@ -62,7 +62,7 @@ public:
                                                         and value (either std::string or double) */
     std::vector<double>
         m_axisOffsets; /*!< vector with offset-values for each axis (offset in dataObject-Pixel).
-                          Describes the distance from pixel [0,0,..0] to coordiante system origin.
+                          Describes the distance from pixel [0,0,..0] to coordinate system origin.
                           Unit-Coordinate = ( px-Coordinate - Offset)* Scale*/
     std::vector<double>
         m_axisScales; /*!< vector with scale-values for each axis (unit / px). Unit-Coordinate = (
@@ -647,7 +647,7 @@ DObjIterator DObjIterator::operator++(int)
    continuous-flag will be set and the whole data block can be accessed by taking the pointer given
    by m_data[0]. Nevertheless, the indicated data structure with the two-dimensional
    sub-matrix-planes is still existing, hence, the pointer to each matrix-planes points to the entry
-   point of its matrix-planes lying withing the huge data block.
+   point of its matrix-planes lying within the huge data block.
 
     The data organization is equal to the one of open-cv, hence, two-dimensional matrices are stored
    row-by-row (C-style)...
@@ -889,7 +889,7 @@ template <typename _Tp> RetVal FreeFunc(DataObject* dObj)
         return ito::retOk;
     }
 
-    // check if the data has been allocated "en bloc" and delete the data first.
+    // check if the data has been allocated "en block" and delete the data first.
     if (dObj->m_continuous && old_m_dims > 2 && dObj->m_owndata)
     {
         cv::Mat_<_Tp>* dataMat = (cv::Mat_<_Tp>*)dObj->m_data[0];
@@ -1003,7 +1003,7 @@ template <typename _Tp> RetVal SecureFreeFunc(DataObject* dObj)
 
     if (numMats > 0)
     {
-        // check if the data has been allocated "en bloc" and delete the data first.
+        // check if the data has been allocated "en block" and delete the data first.
         if (dObj->m_continuous && old_m_dims > 2 && dObj->m_owndata)
         {
             cv::Mat_<_Tp>* dataMat = (cv::Mat_<_Tp>*)dObj->m_data[0];
@@ -1536,7 +1536,7 @@ int DataObject::getStep(int index) const
     cv::Point ofs;
     ((cv::Mat*)(this->m_data[0]))->locateROI(osize, ofs);
 
-    if (index > 2) // steps of 3D Objekt from plane to plane
+    if (index > 2) // steps of 3D Object from plane to plane
         step *= osize.height * osize.width;
     else if ((m_dims == 2 && index == 0) || (m_dims > 2 && (m_dims - index) == 2))
         step *= osize.width;
@@ -1616,7 +1616,7 @@ int DataObject::seekMat(const int matNum, const int numMats) const
 
     ////end 1. and 2. possibility
 
-    // begin 3. possibility, directly combine 2. possiblity into one loop without allocating
+    // begin 3. possibility, directly combine 2. possibility into one loop without allocating
     // idx-vector
     int result = 0;
 
@@ -1866,7 +1866,7 @@ void DataObject::createHeaderWithROI(
 
     \param dObj DataObject, whose matrix is created here
     \param dimensions total number of dimensions (>=1), if dimensions == 1, dimensions will be set
-   to two and a matrix with dimension [1 x orginial dimension] is created \param *sizes vector with
+   to two and a matrix with dimension [1 x original dimension] is created \param *sizes vector with
    size of dimensions, each element gives the size of elements in each dimension \param continuous,
    indicates whether the data stored in this data object is stored in one continuous data block or
    not. if dimension <= 2, matrix is always continuous be careful, continuous has not the same
@@ -2084,7 +2084,7 @@ MAKEFUNCLIST(CreateFunc)
     \param dimensions is the total number of dimensions
     \param *sizes is a vector whose length is equal to dimensions. Each entry indicates the size of
    the specific dimension. Each matrix-plane is allocated with the size of the last two sizes \param
-   type is the desired element data type (see tDataType) \param continuous indicates wether the
+   type is the desired element data type (see tDataType) \param continuous indicates whether the
    entire array should be allocated in one connected data block in memory (true) or not (default,
    better for huge matrices) \param *continuousDataPtr is NULL if new data storage should be
    allocated (then m_owndata is true). Otherwise this pointer points to the starting point of a
@@ -2335,7 +2335,7 @@ void DataObject::create(
         break;
 
     default:
-        cv::error(cv::Exception(CV_StsError, "unkown type.", "", __FILE__, __LINE__));
+        cv::error(cv::Exception(CV_StsError, "unknown type.", "", __FILE__, __LINE__));
         break;
     }
 
@@ -3234,7 +3234,7 @@ RetVal DataObject::deepCopyPartial(DataObject& copyTo)
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
     \detail this function makes a deepcopy of the tags map to rhs object from this object.
-    \param &rhs is the matrix where the map is copied to. The old map of ths object is cleared first
+    \param &rhs is the matrix where the map is copied to. The old map of this object is cleared first
     \return retOk
     \sa DataObjectTags
 */
@@ -3379,7 +3379,7 @@ RetVal DataObject::zeros(const int sizeY, const int sizeX, const int type)
     \param sizeY are the number of rows
     \param sizeX are the number of columns
     \param type is the desired type-number
-    \param continuous indicates wether the data should be in one continuous block (true) or not
+    \param continuous indicates whether the data should be in one continuous block (true) or not
    (false) \return retOk \sa zeros, ZerosFunc
 */
 RetVal DataObject::zeros(
@@ -3420,7 +3420,7 @@ MAKEFUNCLIST(ZerosFunc);
     \param dimensions indicates the number of dimensions
     \param *sizes is a vector with the same length than dimensions. Every element indicates the size
    of the specific dimension \param type is the desired data-element-type \param continuous
-   indicates wether the data should be in one continuous block (true) or not (false) \return retOk
+   indicates whether the data should be in one continuous block (true) or not (false) \return retOk
     \sa ZerosFunc
 */
 RetVal DataObject::zeros(
@@ -3498,7 +3498,7 @@ RetVal DataObject::ones(const int sizeY, const int sizeX, const int type)
     \param sizeY are the number of rows
     \param sizeX are the number of columns
     \param type is the desired type-number
-    \param unsigned char continuous indicates wether the data should be in one continuous block
+    \param unsigned char continuous indicates whether the data should be in one continuous block
    (true) or not (false) \return retOk \sa zeros, ZerosFunc
 */
 RetVal DataObject::ones(
@@ -3573,7 +3573,7 @@ MAKEFUNCLIST(OnesFunc);
     \param dimensions indicates the number of dimensions
     \param *sizes is a vector with the same length than dimensions. Every element indicates the size
    of the specific dimension \param type is the desired data-element-type \param continuous
-   indicates wether the data should be in one continuous block (true) or not (false) \return retOk
+   indicates whether the data should be in one continuous block (true) or not (false) \return retOk
     \sa OnesFunc
 */
 RetVal DataObject::ones(
@@ -3653,7 +3653,7 @@ RetVal DataObject::nans(const int sizeY, const int sizeX, const int type)
 \param sizeY are the number of rows
 \param sizeX are the number of columns
 \param type is the desired type-number
-\param unsigned char continuous indicates wether the data should be in one continuous block (true)
+\param unsigned char continuous indicates whether the data should be in one continuous block (true)
 or not (false) \return retOk \sa zeros, ZerosFunc
 */
 RetVal DataObject::nans(
@@ -3793,7 +3793,7 @@ RetVal DataObject::nans(
     \detail this function allocates an random value matrix using cv::randu for uniform (randMode =
    false) or gausion noise (randMode = true). In case of an integer type, the uniform noise is from
    min(inclusiv) to max(inclusiv). For floating point types, the noise is between 0(inclusiv) and
-   1(exclusiv). In case of an integer type, the gausian noise mean value is (max+min)/2.0 and the
+   1(exclusive). In case of an integer type, the Gaussian noise mean value is (max+min)/2.0 and the
    standard deviation is (max-min/)6.0 to max. For floating point types, the noise mean value is 0
    and the standard deviation is 1.0/3.0. \param type is the desired type-number \param randMode
    switch mode between uniform distributed(false) and normal distributed noise(true) \return retOk
@@ -3811,7 +3811,7 @@ RetVal DataObject::rand(const int type, const bool randMode)
     \detail this function allocates an random value matrix using cv::randu for uniform (randMode =
    false) or gausion noise (randMode = true). In case of an integer type, the uniform noise is from
    min(inclusiv) to max(inclusiv). For floating point types, the noise is between 0(inclusiv) and
-   1(exclusiv). In case of an integer type, the gausian noise mean value is (max+min)/2.0 and the
+   1(exclusive). In case of an integer type, the Gaussian noise mean value is (max+min)/2.0 and the
    standard deviation is (max-min/)6.0 to max. For floating point types, the noise mean value is 0
    and the standard deviation is 1.0/3.0. \param size is the desired length of the vector \param
    type is the desired type-number \param randMode switch mode between uniform distributed(false)
@@ -3829,7 +3829,7 @@ RetVal DataObject::rand(const int size, const int type, const bool randMode)
     \detail this function allocates an random value matrix using cv::randu for uniform (randMode =
    false) or gausion noise (randMode = true). In case of an integer type, the uniform noise is from
    min(inclusiv) to max(inclusiv). For floating point types, the noise is between 0(inclusiv) and
-   1(exclusiv). In case of an integer type, the gausian noise mean value is (max+min)/2.0 and the
+   1(exclusive). In case of an integer type, the Gaussian noise mean value is (max+min)/2.0 and the
    standard deviation is (max-min/)6.0 to max. For floating point types, the noise mean value is 0
    and the standard deviation is 1.0/3.0. \param sizeY are the number of rows \param sizeX are the
    number of columns \param type is the desired type-number \param randMode switch mode between
@@ -3847,12 +3847,12 @@ RetVal DataObject::rand(const int sizeY, const int sizeX, const int type, const 
     \detail this function allocates an random value matrix using cv::randu for uniform (randMode =
    false) or gausion noise (randMode = true). In case of an integer type, the uniform noise is from
    min(inclusiv) to max(inclusiv). For floating point types, the noise is between 0(inclusiv) and
-   1(exclusiv). In case of an integer type, the gausian noise mean value is (max+min)/2.0 and the
+   1(exclusive). In case of an integer type, the Gaussian noise mean value is (max+min)/2.0 and the
    standard deviation is (max-min/)6.0 to max. For floating point types, the noise mean value is 0
    and the standard deviation is 1.0/3.0. \param sizeZ are the number of matrix-planes \param sizeY
    are the number of rows \param sizeX are the number of columns \param type is the desired
    type-number \param randMode switch mode between uniform distributed(false) and normal distributed
-   noise(true) \param unsigned char continuous indicates wether the data should be in one continuous
+   noise(true) \param unsigned char continuous indicates whether the data should be in one continuous
    block (true) or not (false) \return retOk \sa zeros, ZerosFunc
 */
 RetVal DataObject::rand(
@@ -3973,7 +3973,7 @@ MAKEFUNCLIST(RandFunc);
     \detail this function allocates an random value matrix using cv::randu for uniform (randMode =
    false) or gausion noise (randMode = true). In case of an integer type, the uniform noise is from
    min(inclusiv) to max(exclusive). For floating point types, the noise is between 0(inclusiv) and
-   1(exclusiv). In case of an integer type, the gaussian noise mean value is (max+min)/2.0 and the
+   1(exclusive). In case of an integer type, the Gaussian noise mean value is (max+min)/2.0 and the
    standard deviation is (max-min/)6.0 to max. For floating point types, the noise mean value is 0
    and the standard deviation is 1.0/3.0.
 
@@ -6051,7 +6051,7 @@ DataObject& DataObject::operator*=(const DataObject& rhs)
     {
         cv::error(cv::Exception(
             CV_StsAssert,
-            "DataObject - matrix dimensions inapropriate for matrix multiplication.",
+            "DataObject - matrix dimensions inappropriate for matrix multiplication.",
             "",
             __FILE__,
             __LINE__));
@@ -6147,7 +6147,7 @@ DataObject DataObject::operator*(const DataObject& rhs)
     {
         cv::error(cv::Exception(
             CV_StsAssert,
-            "DataObject - matrix dimensions inapropriate for matrix multiplication.",
+            "DataObject - matrix dimensions inappropriate for matrix multiplication.",
             "",
             __FILE__,
             __LINE__));
@@ -6383,7 +6383,7 @@ template <> RetVal OpScalarMulFunc<ito::TimeDelta>(DataObject* src, const float6
 
                 for (int x = 0; x < tempMat->cols; x++)
                 {
-                    dstPtr[x].delta *= factor;
+                    dstPtr[x].delta = static_cast<ito::int64>(dstPtr[x].delta * factor);
                 }
             }
 #if (USEOMP)
@@ -6661,7 +6661,7 @@ DataObject DataObject::operator*(const complex128& factor)
 // comparison operators
 //----------------------------------------------------------------------------------------------------------------------------------
 //! low-level, templated method which compares each element in source-matrix1 with its corresponding
-//! element in source-matrix2 and saves the result in a destionation matrix
+//! element in source-matrix2 and saves the result in a destination matrix
 /*!
     \param *src1 is the first source matrix
     \param *src2 is the second source matrix
@@ -7489,7 +7489,7 @@ RetVal CmpFuncScalarComplex64(
 }
 
 //! low-level, templated method which compares each element in source-matrix1 with its corresponding
-//! element in source-matrix2 and saves the result in a destionation matrix
+//! element in source-matrix2 and saves the result in a destination matrix
 /*!
     \param *src1 is the first source matrix
     \param *src2 is the second source matrix
@@ -10146,7 +10146,7 @@ the same number of planes. Also the shape of the axis along which is not stacked
 all objects. \param &num the number of dataObjects inclluded in mats \param &axis defines the axis
 along the dataObjects will be stacked in the res dataObject. The parameter has to be one or two.
 \param *res is the result matrix (3d DataObject), which must have a size that fits to the
-corresponding stack axis. Furthermore the cv::Mats must be continous \return retOk
+corresponding stack axis. Furthermore the cv::Mats must be continuous \return retOk
 */
 template <typename _Tp>
 RetVal planeStackFunc(
@@ -10209,7 +10209,7 @@ RetVal planeStackFunc(
                 {
                     dstData = (_Tp*)res->get_mdata()[plane]
                                   ->data; // since this is allocated in DataObject::stack the plane
-                                          // is allways the right index
+                                          // is always the right index
                     memcpy(dstData + offset, srcPlane->data, maxCol * height[dObjIdx] * byte);
                     offset += maxCol * height[dObjIdx];
                 }
@@ -11446,11 +11446,11 @@ DataObject DataObject::splitColor(
 //! low-level, templated method to take a line cut across the planes of a dataObject.
 /*!
 This method takes a line cut across the planes of a 2d or 3d dataObject. The result is stored in a
-result matrix. The list containing coordinates of the start and endpoint is interpretated as
+result matrix. The list containing coordinates of the start and endpoint is interpreted as
 followed: [x0,y0,x1,y1]
 
 \param *src is source matrix
-\param *coordinates points to a int arrray containing len elements
+\param *coordinates points to a int array containing len elements
 \param *len length of coordinates list
 \param *res result dataObject of the right shape
 \return retOk
@@ -11669,7 +11669,7 @@ MAKEFUNCLIST(lineCutFunc)
 //! high-level method which takes a line cut across the planes of a dataObject.
 /*!
 The result is stored in a 2d result matrix of the same type.
-\param *coordinates start and end point coordinates of line cut (phyiscal). The coordinates are
+\param *coordinates start and end point coordinates of line cut (physical). The coordinates are
 interpreted as followed: [x0,y0,x1,y1]. \param &len length of coordinates list. \return result
 dataObject
 */
@@ -11733,7 +11733,7 @@ DataObject DataObject::lineCut(const double* coordinates, const int& len) const
                 cv::error(cv::Exception(
                     CV_StsAssert,
                     cv::format(
-                        "The %i-th entry of the coordinate list exeeds the size of the dataObject",
+                        "The %i-th entry of the coordinate list exceeds the size of the dataObject",
                         i + 1),
                     "",
                     __FILE__,
@@ -11748,7 +11748,7 @@ DataObject DataObject::lineCut(const double* coordinates, const int& len) const
                 cv::error(cv::Exception(
                     CV_StsAssert,
                     cv::format(
-                        "The %i-th entry of the coordinate list exeeds the size of the dataObject",
+                        "The %i-th entry of the coordinate list exceeds the size of the dataObject",
                         i + 1),
                     "",
                     __FILE__,
@@ -12109,7 +12109,7 @@ RetVal CastFuncFromRgba32(const DataObject* srcObj, DataObject* resObj, double a
 //----------------------------------------------------------------------------------------------------------------------------------
 //! converts data in DataObject lhs to DataObject rhs with a given type
 /*!
-    Every element of the source data object is copied to the destionation data object by using this
+    Every element of the source data object is copied to the destination data object by using this
    transformation<BR> elem_destination = static_cast<newType>(elem_source * alpha + beta)
 
     \param &lhs is the left-hand sided data object, whose data should be converted
@@ -12797,7 +12797,7 @@ MAKEFUNCLIST_CMPLX_TO_REAL(AbsFunc)
 */
 DataObject abs(const DataObject& dObj)
 {
-    // resObj must be allocated with pysical data size of dObj since iterators in AbsFunc doesn't
+    // resObj must be allocated with physical data size of dObj since iterators in AbsFunc doesn't
     // know anything about transpose-flag. afterwards the transpose flag of resObj is set to this of
     // dObj.
     if (dObj.getType() >= TYPE_OFFSET_COMPLEX && dObj.getType() < TYPE_OFFSET_RGBA)
@@ -13554,7 +13554,7 @@ template <typename _Tp> RetVal MakeContinuousFunc(const DataObject& dObj, DataOb
 
 
     //#### OLD VERSION: all data is copied and a roi of the source object is finally applied to the
-    // destination, continous object (memory intense)
+    // destination, continuous object (memory intense)
     /*resDObj = DataObject(dObj.getDims() , dObj.m_osize, dObj.getType() , 1);
     resDObj.m_owndata = 1;
 
@@ -13616,7 +13616,7 @@ MAKEFUNCLIST(MakeContinuousFunc)
    representation for higher dimensions), a shallow copy to the given object is returned. In any
    other cases, a deep copy of the given object is returned, where the entire data block is
     continuously aligned in memory. Additionally, only values within the current region of interest
-   are copied to the new, continous object (in order to safe memory).
+   are copied to the new, continuous object (in order to safe memory).
 
     \param &dObj is the source data object
     \return resulting data object
@@ -13636,7 +13636,7 @@ DataObject makeContinuous(const DataObject& dObj)
     }
 }
 
-//! equivalent to matlab linspace functino
+//! equivalent to matlab linspace function
 /*!
     \param &dObj is the source data object
     \return
@@ -13819,7 +13819,7 @@ int DataObject::addToProtocol(const std::string& value)
         return 1; // error
     /* Check if object is only an ROI */
     bool isROI = false;
-    ByteArray newcontent; // Start with an empty sting
+    ByteArray newcontent; // Start with an empty string
     for (int dim = 0; dim < m_dims; dim++) // Check if this is an ROI
     {
         if (m_size[dim] != m_osize[dim])
@@ -13861,7 +13861,7 @@ int DataObject::addToProtocol(const std::string& value)
         free(posROI);
     }
     newcontent.append(value.data()); // Append the value to the content
-    if (newcontent[newcontent.length() - 1] != '\n') // add a \n is not aready there
+    if (newcontent[newcontent.length() - 1] != '\n') // add a \n is not already there
     {
         newcontent.append("\n");
     }

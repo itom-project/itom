@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom.
 
@@ -224,7 +224,7 @@ void PyWorkspaceContainer::loadDictionaryRec(
     QString fullName;
     char keyType[] = {0, 0};
 
-    // at first, set status of all childs of parentItem to "not-existing"
+    // at first, set status of all children of parentItem to "not-existing"
     it = parentItem->m_childs.begin();
 
     while (it != parentItem->m_childs.end())

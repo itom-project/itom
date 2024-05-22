@@ -1,8 +1,8 @@
 /* ********************************************************************
 itom software
 URL: http://www.uni-stuttgart.de/ito
-Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-Universitaet Stuttgart, Germany
+Copyright (C) 2020, Institut für Technische Optik (ITO),
+Universität Stuttgart, Germany
 
 This file is part of itom and its software development toolkit (SDK).
 
@@ -11,7 +11,7 @@ under the terms of the GNU Library General Public Licence as published by
 the Free Software Foundation; either version 2 of the Licence, or (at
 your option) any later version.
 
-In addition, as a special exception, the Institut fuer Technische
+In addition, as a special exception, the Institut für Technische
 Optik (ITO) gives you certain additional rights.
 These rights are described in the ITO LGPL Exception version 1.0,
 which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -77,16 +77,16 @@ static const char* ito_AddInInterface_OldVersions[] = {
     "ito.AddIn.InterfaceBase/1.1.20",//version until 2013-10-10 (outdated: RGBA-type introduced into dataObjectTypes)
     "ito.AddIn.InterfaceBase/1.1.21",//version until 2013-10-15 (outdated: getSize(..) and getTotalSize(..) return int now and -1 if error. Consistency to documented behaviour)
     "ito.AddIn.InterfaceBase/1.1.22",//version until 2013-10-27 (outdated: class Rgba32Base in typedefs.h and inherited class Rgba32 in color.h introduced, improved data() method in dataObj)
-    "ito.AddIn.InterfaceBase/1.1.23",//version until 2013-12-17 (outdated: changed dataObject internal size parameters (back) from size_t to int - hopfully last time)
+    "ito.AddIn.InterfaceBase/1.1.23",//version until 2013-12-17 (outdated: changed dataObject internal size parameters (back) from size_t to int - hopefully last time)
     "ito.AddIn.InterfaceBase/1.1.24",//version until 2014-02-09 (outdated: restructuring to itomCommonLib and itomCommonQtLib for a better binary compatibility)
     "ito.AddIn.InterfaceBase/1.2.0", //outdated on 2014-03-14 due to change in AddInDataIO::setVal(const char *data, const int length, ItomSharedSemaphore *waitCond = NULL); (const void *data changed to const char *data) (Qt5 bugfix)
     "ito.AddIn.InterfaceBase/1.2.1", //outdated on 2014-10-06 due to changes in APIs, retVal.h and itomWidgets-project. The next version 1.3.0 is the version for the setup 1.3.0.
     "ito.AddIn.InterfaceBase/1.3.0", //outdated on 2014-10-27 due to insertion of ito::AutoInterval object and addition of further ito::ParamMeta classes.
     "ito.AddIn.InterfaceBase/1.3.1", //outdated on 2015-03-01 due to rework on data object
-    "ito.AddIn.InterfaceBase/1.4.0", //outdated on 2015-07-03 due to removal of lock mechanism in data object, add of embedded line plots, qt5 incompatiblity changes and some refinements in addInInterface
+    "ito.AddIn.InterfaceBase/1.4.0", //outdated on 2015-07-03 due to removal of lock mechanism in data object, add of embedded line plots, qt5 incompatibility changes and some refinements in addInInterface
     "ito.AddIn.InterfaceBase/2.0.0", //outdated on 2015-12-04 due to improvements in plot/figure interfaces, removal of deprecated classes helperActuator and helperGrabber and further removal of deprecated items
     "ito.AddIn.InterfaceBase/2.1.0", //outdated on 2016-02-01 due to improvements in PluginThreadCtrl, ActuatorThreadCtrl and DataIoThreadCtrl (as replacement for removed classes helperActuator and helperGrabber), new method ito::DataObject::getStep and some smaller rearrangements
-    "ito.AddIn.InterfaceBase/2.2.0", //outdated on 2016-02-19 due to crash fixes if the main mindow is deleted and implicitely closes dock widgets of plugins, that are currently blocked by any other operation.
+    "ito.AddIn.InterfaceBase/2.2.0", //outdated on 2016-02-19 due to crash fixes if the main mindow is deleted and implicitly closes dock widgets of plugins, that are currently blocked by any other operation.
     "ito.AddIn.InterfaceBase/2.3.0", //outdated on 2016-06-14 due to changes in signal definitions in plots, introduction of complex and complexArray types in ParamBase and further smaller changes.
     "ito.AddIn.InterfaceBase/2.4.0", //outdated on 2016-07-12 due to new library itomCommonPlotLib.
     "ito.AddIn.InterfaceBase/2.5.0", //outdated on 2017-02-05 due to changes in ParamMeta classes
