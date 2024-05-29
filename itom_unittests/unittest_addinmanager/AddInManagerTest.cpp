@@ -105,7 +105,6 @@ TEST(AddInManagerTest, General)
     }
 
     char* oldpath = getenv("path");
-    char pathSep[] = ";";
 
     // try add or lib directory to path variables, to avoid user has to do this
     QString libDir = addInPath + QString("/lib");

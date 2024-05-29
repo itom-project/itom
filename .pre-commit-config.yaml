@@ -1,4 +1,4 @@
-exclude: ^(gtest-1.10.0)/
+exclude: ^(gtest-1.12.1)/
 
 ci:
     autoupdate_schedule: monthly
