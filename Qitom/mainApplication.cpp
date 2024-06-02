@@ -137,7 +137,7 @@ MainApplication::MainApplication(tGuiType guiType) :
     QCoreApplication::setOrganizationName("ito");
     QCoreApplication::setApplicationName("itom");
     QCoreApplication::setApplicationVersion(ITOM_VERSION_STR);
-    if(ITOM_ADDITIONAL_EDITION_NAME != "")
+    if(ITOM_ADDITIONAL_EDITION_NAME == "")
     {
         if(ITOM_VERSION_STR == "0.0.0" || ITOM_VERSION_IDENTIFIERS == "dev" )
         {
