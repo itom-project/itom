@@ -72,34 +72,35 @@ Environment Variables:
 
 .. |cmakelist_boost_root| replace::
 
-   Path to the boost build folder.
+   Path to the boost build folder (e.g. <BOOST_BuildFolder>).
 
 .. |cmakelist_flann_root| replace::
 
-   Path to the flann build folder.
+   Path to the flann build folder (e.g. <FLANN_BuildFolder>).
 
 .. |cmakelist_vtk_root| replace::
 
    The folder in the vtk module containing VTKConfig.cmake
+   (e.g.  <VTK_BuildFolder>\lib\cmake\vtk-#.# )
    or VTKConfigVersion.cmake, highly depending on the vtk version you are using.
    On Linux Systems you need to separately install vtk-dev(even if it does not
    fit the version you want to use) for one or two headers that are missing otherwise...
 
 .. |cmakelist_eigen_root| replace::
 
-   Path to the eigen build folder.
+   Path to the eigen build folder (e.g. <EIGEN_BuildFolder>).
 
 .. |cmakelist_pcl_root| replace::
 
-   Path to the pcl build folder.
+   Path to the pcl build folder (e.g. <PCL_BuildFolder>\PCL1.12.0\cmake).
 
 .. |cmakelist_libusb_root| replace::
 
-   Path to the libusb build folder.
+   Path to the libusb build folder (e.g. <LIBUSB_BuildFolder>).
 
 .. |cmakelist_fftw_root| replace::
 
-   Path to the fftw build folder.
+   Path to the fftw build folder (e.g. <FFTW_BuildFolder>).
 
 +-------------------+-------------------------------------------------------+
 | Env. Variable     | Description                                           |
