@@ -67,6 +67,8 @@ class MainApplication : public QObject
         void registerMetaObjects();
 
     private:
+        bool devFlag = false;                                 /*!<  member to designate dev-build */
+
         tGuiType m_guiType;                                   /*!<  member for the desired gui-type */
 
         QThread* m_pyThread;                                  /*!<  Thread, where python engine is executed */

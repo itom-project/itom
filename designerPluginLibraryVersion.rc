@@ -2,11 +2,12 @@
     itom software
     URL: http://www.uni-stuttgart.de/ito
     Copyright (C) 2020, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    University Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
 
-    itom is free software; you can redistribute it and/or modify it
+    itom is free software; you can redistr
+    ibute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
@@ -30,8 +31,8 @@
 #include "pluginVersion.h"
 
 VS_VERSION_INFO     VERSIONINFO
-FILEVERSION         PLUGIN_VERSION_MAJOR, PLUGIN_VERSION_MINOR, PLUGIN_VERSION_PATCH, PLUGIN_VERSION_REVISION
-PRODUCTVERSION      PLUGIN_VERSION_MAJOR, PLUGIN_VERSION_MINOR, PLUGIN_VERSION_PATCH, 0
+FILEVERSION         PLUGIN_VERSION
+PRODUCTVERSION      PLUGIN_VERSION
 FILEFLAGSMASK       VS_FF_PRERELEASE
 
 
@@ -67,7 +68,7 @@ BEGIN
                 VALUE   "FileDescription", "designer library for itom (x86, release)\0"
     #endif
 #endif
-            VALUE   "FileVersion",      PLUGIN_VERSION_STRING "\0"
+            VALUE   "FileVersion",      PLUGIN_VERSION "\0"
             VALUE   "InternalName",     PLUGIN_NAME "\0"
             VALUE   "LegalCopyright",   PLUGIN_COPYRIGHT "\0"
 #ifdef _DEBUG

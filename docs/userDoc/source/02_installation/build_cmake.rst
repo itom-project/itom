@@ -2,7 +2,7 @@
 
 .. _install-cmake:
 
-Build with **CMake**
+Build with CMake
 ==========================
 
 In this chapter, you will learn how to create the project files from the sources,
@@ -43,7 +43,7 @@ the build-directory of itom is located on your harddrive.
 This is finally used in order to copy the relevant output of every plugin to
 this itom application directory in a post-build step of every plugin or designer-plugin.
 
-Generating |itom| using CMake
+Generating Itom using CMake
 -----------------------------
 
 .. |cmake_opencv_dir| replace:: Set this variable to the directory of OpenCV.

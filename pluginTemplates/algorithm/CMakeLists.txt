@@ -147,7 +147,7 @@ link_directories(
 #################################################################
 set(PLUGIN_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/algoPlugin.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+    ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h
     ${CMAKE_CURRENT_BINARY_DIR}/gitVersion.h #provided by the init script, contains currently checked out git tag
     #add further header files (absolute paths e.g. using CMAKE_CURRENT_SOURCE_DIR)
 )
@@ -156,6 +156,9 @@ set(PLUGIN_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/algoPlugin.cpp
     #add further source files here
 )
+
+#Define Version in pluginVersion.h
+configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h)
 
 #Append rc file to the source files for adding information about the plugin
 # to the properties of the DLL under Visual Studio.

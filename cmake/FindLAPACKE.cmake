@@ -9,7 +9,17 @@
 
 set(LAPACKE_FOUND false)
 
-find_path(LAPACKE_DIR lapacke.h PATH_SUFFIXES "include" DOC "Root directory of lapacke")
+if(NOT EXISTS ${LAPACKE_DIR})
+    if(EXISTS $ENV{LAPACKE_ROOT})
+        set(LAPACKE_DIR $ENV{LAPACKE_ROOT} CACHE PATH "Root directory of LAPACKE, containing sub-directories library and include")
+    else(EXISTS $ENV{LAPACKE_ROOT})
+        set(LAPACKE_DIR "LAPACKE_DIR-NOTFOUND" CACHE PATH "Root directory of LAPACKE, containing sub-directories library and include")
+    endif(EXISTS $ENV{LAPACKE_ROOT})
+endif(NOT EXISTS ${LAPACKE_DIR})
+
+message(STATUS "LAPACKE_DIR: ${LAPACKE_DIR}")
+
+#find_path(LAPACKE_DIR lapacke.h PATH_SUFFIXES "include" DOC "Root directory of lapacke")
 find_path(LAPACKE_INCLUDE_DIR lapacke.h PATHS ${LAPACKE_DIR} PATH_SUFFIXES "include")
 
 if(MSVC)
@@ -44,7 +54,10 @@ foreach(__LIB ${LAPACKE_COMPONENTS})
 
 			if(LAPACKE_${__LIB}_RUNTIME)
 				set(LAPACKE_RUNTIME_LIBRARIES ${LAPACKE_RUNTIME_LIBRARIES} ${LAPACKE_${__LIB}_RUNTIME})
+				message(STATUS "LAPACKE_RUNTIME_LIBRARIES: ${LAPACKE_RUNTIME_LIBRARIES}")
 			endif(LAPACKE_${__LIB}_RUNTIME)
+
+			message(STATUS "LAPACKE_${__LIB}_RUNTIME: ${LAPACKE_${__LIB}_RUNTIME}")
 		endif(WIN32)
 endforeach(__LIB)
 

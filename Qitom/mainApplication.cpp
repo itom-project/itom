@@ -137,6 +137,14 @@ MainApplication::MainApplication(tGuiType guiType) :
     QCoreApplication::setOrganizationName("ito");
     QCoreApplication::setApplicationName("itom");
     QCoreApplication::setApplicationVersion(ITOM_VERSION_STR);
+    if(ITOM_ADDITIONAL_EDITION_NAME != "")
+    {
+        if(ITOM_VERSION_STR == "0.0.0" || ITOM_VERSION_IDENTIFIERS == "dev" )
+        {
+            devFlag = true;
+        }
+    }
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -229,19 +237,24 @@ QString MainApplication::getSplashScreenFileName() const
 
 	qint64 daysDiffToEaster = currentDate.toJulianDay() - QDate(currentYear, easterMonth, easterDay).toJulianDay();
 
-    if (currentMonth == 12)
+    if( !devFlag )
     {
-        //Christmas splashScreen whole december of each year
-        fileName = ":/application/icons/itomicon/splashScreen4Christmas.png";
-    }
-    else if (qAbs(daysDiffToEaster) <= 7)
-    {
-        //Easter splashScreen one week before and after easter day
-        fileName = ":/application/icons/itomicon/splashScreen4Easter.png";
-    }
-    else //default splashScreen
-    {
-        fileName = ":/application/icons/itomicon/splashScreen4.png";
+        if (currentMonth == 12)
+        {
+            //Christmas splashScreen whole december of each year
+            fileName = ":/application/icons/itomicon/splashScreen4Christmas.png";
+        }
+        else if (qAbs(daysDiffToEaster) <= 7)
+        {
+            //Easter splashScreen one week before and after easter day
+            fileName = ":/application/icons/itomicon/splashScreen4Easter.png";
+        }
+        else //default splashScreen
+        {
+            fileName = ":/application/icons/itomicon/splashScreen4.png";
+        }
+    }else{
+        fileName = ":/application/icons/itomicon/splashScreen4dev.png";
     }
 
     return fileName;

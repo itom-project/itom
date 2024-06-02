@@ -64,10 +64,10 @@ endif ()
 
 #check https://blog.initiali.se/posts/building-qt-designer-plugins-for-your-custom-qt-widgets/
 # if not included like this an "undefined interface error will be risen from Qt (moc?!)
-INCLUDE_DIRECTORIES(
+include_directories(
     ${Qt5Designer_INCLUDE_DIRS}
     ${Qt6Designer_INCLUDE_DIRS}
-    ${ITOM_SDK_INCLUDE_DIR}
+    ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include
 )
 
 # kann ein target_include_directories werden
@@ -180,8 +180,8 @@ set(itomWidgets_Factory_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/dataObjectDelegate.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dataObjectModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/brushCreatorDialog.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/itomWidgetsVersion.h
+    ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h
+    ${CMAKE_CURRENT_BINARY_DIR}/itomWidgetsVersion.h
     ${CMAKE_CURRENT_SOURCE_DIR}/doubleSpinBox_p.h
     ${CMAKE_CURRENT_SOURCE_DIR}/penCreatorDialog.h
     ${CMAKE_CURRENT_SOURCE_DIR}/popupWidget_p.h
@@ -234,6 +234,10 @@ set(itomWidgets_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/dataObjectTable.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dataObjectMetaWidget.h
 )
+
+#Define Version in pluginVersion.h
+configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/pluginVersion.h)
+configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/itomWidgetsVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/itomWidgetsVersion.h)
 
 if (QT5_FOUND)
     QT5_WRAP_CPP(paramPropertyBrowser_MOC ${paramPropertyBrowser_MOC_SOURCES})
