@@ -1,0 +1,24 @@
+/* ********************************************************************
+    Template for an actuator plugin for the software itom
+
+    You can use this template, use it in your plugins, modify it,
+    copy it and distribute it without any license restrictions.
+*********************************************************************** */
+
+#ifndef PLUGINVERSION_H
+#define PLUGINVERSION_H
+
+#include "itom_sdk.h"
+
+//Change ${itom_VERSION_MAJOR} etc. to your project definition (eg. itom_designerPlugin_VERSION_MAJOR)
+#define PLUGIN_VERSION              CREATE_VERSION(1, 0, 0) // Plugin Version number, either based on semantic versioning or based on dependencies version number
+#define PLUGIN_MIN_ITOM_VERSION     CREATE_VERSION(0, 0, 0) // First ITOM Release Version
+#define PLUGIN_MAX_ITOM_VERSION     CREATE_VERSION(${itom_VERSION_MAJOR},${itom_VERSION_MINOR},${itom_VERSION_PATCH})
+#define PLUGIN_LICENCE              "Applicable Licenses"
+#define PLUGIN_COMPANY              "Institut für Technische Optik, University Stuttgart"
+#define PLUGIN_COMPANY              "Your Company Name"
+#define PLUGIN_AUTHOR               "AuthorName"
+#define PLUGIN_COPYRIGHT            "Your Copyright"
+#define PLUGIN_NAME                 "MyGrabber"
+
+#endif // PLUGINVERSION_H
