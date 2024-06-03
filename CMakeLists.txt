@@ -96,10 +96,7 @@ if(BUILD_UNITTEST)
         message(WARNING "For properly running the unittests, the CMAKE variable gtest_force_shared_crt has been forced to ON.")
     endif()
 
-    message(WARNING "Start adding gtest ${gtest_force_shared_crt}")
-
     add_subdirectory(gtest-1.12.1)
-    message(WARNING "End adding gtest ${gtest_force_shared_crt}")
     add_subdirectory(itom_unittests)
 endif()
 
