@@ -1,7 +1,7 @@
 /* ********************************************************************
  itom software
  URL: http://www.uni-stuttgart.de/ito
- Copyright (C) 2020, Institut für Technische Optik (ITO),
+ Copyright (C) 2024, Institut für Technische Optik (ITO),
  Universität Stuttgart, Germany
 
  This file is part of itom and its software development toolkit (SDK).
@@ -76,43 +76,36 @@ namespace cv
     template<typename _Tp> static inline _Tp saturate_cast(ito::complex128 /*v*/)
     {
         cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
-        return 0;
     }
 
     template<typename _Tp> static inline _Tp saturate_cast(ito::complex64 /*v*/)
     {
         cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
-        return 0;
     }
 
     template<typename _Tp> static inline _Tp saturate_cast(ito::Rgba32 /*v*/)
     {
         cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
-        return 0;
     }
 
     template<typename _Tp> static inline _Tp saturate_cast(ito::DateTime /*v*/)
     {
         cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
-        return 0;
     }
 
     template<typename _Tp> static inline _Tp saturate_cast(ito::TimeDelta /*v*/)
     {
         cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
-        return 0;
     }
 
     template<> inline ito::Rgba32 saturate_cast(ito::DateTime /*v*/)
     {
         cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
-        return ito::Rgba32::black();
     }
 
     template<> inline ito::Rgba32 saturate_cast(ito::TimeDelta /*v*/)
     {
         cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
-        return ito::Rgba32::black();
     }
 
     template<> inline ito::TimeDelta saturate_cast(ito::TimeDelta v) { return v; }
@@ -148,20 +141,22 @@ namespace cv
     {
         return ito::Rgba32::fromUnsignedLong(v);
     }
+
     template<> inline ito::Rgba32 saturate_cast(ito::int32 v)
     {
         ito::Rgba32 temp;
         temp.rgba = static_cast<ito::uint32>(v);
         return temp;
     }
+
     template<> inline ito::Rgba32 saturate_cast(ito::float32 v){return ito::Rgba32(saturate_cast<ito::uint8>(v));}
     template<> inline ito::Rgba32 saturate_cast(ito::float64 v){return ito::Rgba32(saturate_cast<ito::uint8>(v));}
     template<> inline ito::Rgba32 saturate_cast(ito::Rgba32 v){return v;}
 
-    template<> inline ito::Rgba32 saturate_cast(ito::int8 /*v*/) { cv::error(cv::Exception(CV_StsAssert, "Cast from int8 to rgba32 not defined.", "", __FILE__, __LINE__)); return ito::Rgba32(); }
-    template<> inline ito::Rgba32 saturate_cast(ito::int16 /*v*/) { cv::error(cv::Exception(CV_StsAssert, "Cast from int16 to rgba32 not defined.", "", __FILE__, __LINE__)); return ito::Rgba32(); }
-    template<> inline ito::Rgba32 saturate_cast(ito::complex128 /*v*/) { cv::error(cv::Exception(CV_StsAssert, "Cast from complex128 to rgba32 not defined.", "", __FILE__, __LINE__)); return ito::Rgba32(); }
-    template<> inline ito::Rgba32 saturate_cast(ito::complex64 /*v*/) {  cv::error(cv::Exception(CV_StsAssert, "Cast from complex64 to rgba32 not defined.", "", __FILE__, __LINE__)); return ito::Rgba32(); }
+    template<> inline ito::Rgba32 saturate_cast(ito::int8 /*v*/) { cv::error(cv::Exception(CV_StsAssert, "Cast from int8 to rgba32 not defined.", "", __FILE__, __LINE__)); }
+    template<> inline ito::Rgba32 saturate_cast(ito::int16 /*v*/) { cv::error(cv::Exception(CV_StsAssert, "Cast from int16 to rgba32 not defined.", "", __FILE__, __LINE__)); }
+    template<> inline ito::Rgba32 saturate_cast(ito::complex128 /*v*/) { cv::error(cv::Exception(CV_StsAssert, "Cast from complex128 to rgba32 not defined.", "", __FILE__, __LINE__)); }
+    template<> inline ito::Rgba32 saturate_cast(ito::complex64 /*v*/) {  cv::error(cv::Exception(CV_StsAssert, "Cast from complex64 to rgba32 not defined.", "", __FILE__, __LINE__)); }
 
     template<> inline ito::uint8 saturate_cast(ito::Rgba32 v){return saturate_cast<ito::uint8>(v.gray());};
     //template<> inline ito::int16 saturate_cast(ito::Rgba32 v){return saturate_cast<ito::int16>(v.gray());};
@@ -606,7 +601,10 @@ namespace ito {
         //----------------------------------------------------------------------------------------------------------------------------------
         ito::RetVal matNumToIdx(const int matNum, int *matIdx) const;
 
-        //! \brief calculates the index of the matrix-plane in the m_data-vector for a given vector of indices, which address one element in the n-dimensional matrix
+        /*! \brief calculates the index of the matrix-plane in the m_data-vector 
+                for a given vector of indices, which address one element in the 
+                n-dimensional matrix
+        */
         ito::RetVal matIdxToNum(const unsigned int *matIdx, int *matNum) const;
 
 
@@ -770,14 +768,16 @@ namespace ito {
         //!< Function returns the axis-description for the exist specified by axisNum. If axisNum is out of dimension range it returns NULL.
         std::string getAxisDescription(const int axisNum, bool &validOperation) const;
 
+        //!< returns the tag, that corresponds to the given key in the tag map. A success of the tag lookup is returned by the validOperation argument.
         DataObjectTagType getTag(const std::string &key, bool &validOperation) const;
 
-        bool getTagByIndex(const int tagNumber, std::string &key, DataObjectTagType &value) const;
+        //!< gets the tagIndex-th tag from the tag map and returns its key and current value. Returns true if successful, else false.
+        bool getTagByIndex(const int tagIndex, std::string &key, DataObjectTagType &value) const;
 
-        //!<  Function returns the string-value for 'key' identified by int tagNumber. If key in the TagMap do not exist NULL is returned
-        std::string getTagKey(const int tagNumber, bool &validOperation) const;
+        //!< returns the key of the tagIndex-th tag in the tag map as string. If the tag does not exist, validOperation is set to false.
+        std::string getTagKey(const int tagIndex, bool &validOperation) const;
 
-        //!< Function returns the number of elements in the Tags-Maps
+        //!< returns the number of tags in the tag map
         int getTagListSize() const;
 
         //!<  Function to set the string-value of the value unit, return 1 if values does not exist
@@ -870,8 +870,40 @@ namespace ito {
          */
         RetVal getXYRotationalMatrix(double &r11, double &r12, double &r13, double &r21, double &r22, double &r23, double &r31, double &r32, double &r33) const;
 
+        /*!
+          .
+        */
         RetVal copyTagMapTo(DataObject &rhs) const;  /*!< Deep copies the tagmap with all entries to rhs object */
-        RetVal copyAxisTagsTo(DataObject &rhs) const;  /*!< Deep copies the axistags to rhs object */
+
+        /*! Deeply copies axes meta information from this object to the destination object.
+          
+          All meta information is copied, besides the tags (\sa copyTagMapTo).
+          These are: tags for every axis (scale, offset, description, unit), value tags,
+            the rotation matrix (if given).
+          
+          Existing tags are overwritten.
+
+          \param destination is the destination object
+          \return retOk if the method succeeded. retError in case of an error.
+        */
+        RetVal copyAxisTagsTo(DataObject &destination) const;
+        
+        /*! Deeply copies axes meta information from this object to the destination object.
+          
+          This method is very similar to \sa copyAxisTagsTo, however you can detailly define
+          which parts of the meta information is copied.
+
+          Existing tags are overwritten.
+
+          Hint: this method never copies the tag map (e.g. legend titles, title...). To copy
+          this, use \sa copyTagMapTo.
+
+          \param destination is the destination object
+          \param ignoreValueTags defines, if value tags (valueDescription, valueUnit...) should be copied, too.
+          \param ignoreRotationMatrix defines, if the rotation matrix meta information should be copied, too.
+          \return retOk if the method succeeded. retError in case of an error.
+        */
+        RetVal copyAxisTagsToExtended(DataObject &destination, bool ignoreValueTags, bool ignoreRotationMatrix) const;
 
 		RetVal setReal(DataObject &valuesObj); /*change the real part of a complex data object*/
 		RetVal setImag(DataObject &valuesObj); /*change the imaginary part of a complex data object*/
@@ -1119,12 +1151,29 @@ namespace ito {
         DataObject & operator = (const ito::DateTime &value); /*!< sets all elements of the data object to the given value. Value is cast to the data object's type */
         DataObject & operator = (const ito::TimeDelta &value);/*!< sets all elements of the data object to the given value. Value is cast to the data object's type */
 
+        //! element-wisely adds each value of rhs to this dataObject.
+        /*!
+        This object and rhs must have the same shape and usually the same type.
+        Only for a dateTime dataObject, rhs must be a dataObject of type 
+        timeDelta.
 
+        Axes information and general meta information are unchanged and used
+        from this dataObject.
+        */
         DataObject & operator += (const DataObject &rhs);
         DataObject & operator += (const float64 &value);
         DataObject & operator += (const complex128 &value);
         DataObject & operator += (const TimeDelta &value);
 
+        //! element-wisely adds each value of this dataObject and rhs and returns the result as a new dataObject.
+        /*!
+        This object and rhs must have the same shape and usually the same type.
+        If one of both objects is of type timeDelta, it is allowed to either
+        add a timeDelta or dateTime dataObject.
+
+        Axes information and general meta information are used from this dataObject,
+        independent from rhs.
+        */
         DataObject operator + (const DataObject &rhs);
         DataObject operator + (const float64 &value);
         DataObject operator + (const complex128 &value);
@@ -1454,7 +1503,11 @@ namespace ito {
          \param sizeY is the height of the array and must fit to the plane height of the data object
          \return RetVal error if sizeX or sizeY does not fit to the size of the data object or if the type of the given array does not fit to the type of the data object
          */
-        template<typename _Tp> RetVal copyFromData2D(const _Tp* src, const int sizeX, const int sizeY) { return copyFromData2DInternal((const uchar*)src, sizeof(_Tp), sizeX, sizeY); }        // copies 2D continuous data into data object, data object must have correct size and type, otherwise an error is returned
+        template<typename _Tp> RetVal copyFromData2D(const _Tp* src, const int sizeX, const int sizeY) 
+        { 
+            // copies 2D continuous data into data object, data object must have correct size and type, otherwise an error is returned
+            return copyFromData2DInternal((const uchar*)src, sizeof(_Tp), sizeX, sizeY); 
+        }        
 
         //! copies the externally given source data inside this data object
         /*!
@@ -1483,7 +1536,11 @@ namespace ito {
          */
         template<typename _Tp> RetVal copyFromData2D(const _Tp *src, const int sizeX, const int sizeY, const int x0, const int y0, const int width, const int height) { return copyFromData2DInternal((const uchar*)src, sizeof(_Tp), sizeX, x0, y0, width, height); }      // copies 2D continuous data into data object, data object must have correct size and type, otherwise an error is returned
 
-        template<typename T2> operator T2 ();  /*!< cast operator, tries to cast this data object to another element type */
+        //! Type cast operator.
+        /**
+         * Use this operator to cast the dataObject to the type T2.
+         */
+        template<typename T2> operator T2 ();
 
         template<typename _Tp> RetVal linspace(const _Tp start, const _Tp end, const _Tp inc, const int transposed);
 
@@ -1495,10 +1552,6 @@ namespace ito {
 		static DataObject stack(const DataObject *mats, int num, unsigned int axis = 0);
 
     };
-
-    //template<> DATAOBJ_EXPORT RetVal ito::DataObject::linspace<ito::int8>(const ito::int8 /*start*/, const ito::int8 /*end*/, const ito::int8 /*inc*/, const int /*transposed*/);
-    //template<> DATAOBJ_EXPORT RetVal ito::DataObject::linspace<ito::uint8>(const ito::uint8 /*start*/, const ito::uint8 /*end*/, const ito::uint8 /*inc*/, const int /*transposed*/);
-
 
     //----------------------------------------------------------------------------------------------------------------------------------
     // functions for DataObject in namespace ITO, which are NOT member functions

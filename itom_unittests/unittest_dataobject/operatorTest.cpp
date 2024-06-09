@@ -473,6 +473,7 @@ TYPED_TEST(operatorTest, CompareEQ_test)
     this->mat2_3d.template at<TypeParam>(2, 1, 0) = cv::saturate_cast<TypeParam>(95);
     this->mat2_3d.template at<TypeParam>(2, 1, 1) = cv::saturate_cast<TypeParam>(149);
 
+#if CV_VERSION_MAJOR == 2 && CV_VERSION_MINOR <= 2
     if (std::numeric_limits<TypeParam>::max() ==
         std::numeric_limits<ito::int8>::max()) // compare not implemented for int8
     {
@@ -481,6 +482,9 @@ TYPED_TEST(operatorTest, CompareEQ_test)
         EXPECT_THROW({ this->mat1_3d == this->mat2_3d; }, cv::Exception);
     }
     else
+#else
+    if (1)
+#endif
     {
         this->mat3_1d = (this->mat1_1d == this->mat2_1d);
         this->mat3_2d = (this->mat1_2d == this->mat2_2d);
@@ -564,8 +568,12 @@ TYPED_TEST(operatorTest, CompareNE_test)
     this->mat1_3d = cv::saturate_cast<TypeParam>(25);
     this->mat2_3d = cv::saturate_cast<TypeParam>(26);
 
+#if CV_VERSION_MAJOR == 2 && CV_VERSION_MINOR <= 2
     if (std::numeric_limits<TypeParam>::max() ==
         std::numeric_limits<ito::int8>::max()) // compare not implemented for int8
+#else
+    if (0)
+#endif
     {
         EXPECT_THROW({ this->mat1_1d != this->mat2_1d; }, cv::Exception);
         EXPECT_THROW({ this->mat1_2d != this->mat2_2d; }, cv::Exception);
@@ -601,8 +609,12 @@ TYPED_TEST(operatorTest, CompareLE_test)
     this->mat1_3d = cv::saturate_cast<TypeParam>(25);
     this->mat2_3d = cv::saturate_cast<TypeParam>(25);
 
+#if CV_VERSION_MAJOR == 2 && CV_VERSION_MINOR <= 2
     if (std::numeric_limits<TypeParam>::max() ==
         std::numeric_limits<ito::int8>::max()) // compare not implemented for int8
+#else
+    if (0)
+#endif
     {
         EXPECT_THROW({ this->mat1_1d <= this->mat2_1d; }, cv::Exception);
         EXPECT_THROW({ this->mat1_2d <= this->mat2_2d; }, cv::Exception);
@@ -637,8 +649,12 @@ TYPED_TEST(operatorTest, CompareGE_test)
     this->mat1_3d = cv::saturate_cast<TypeParam>(29);
     this->mat2_3d = cv::saturate_cast<TypeParam>(25);
 
+#if CV_VERSION_MAJOR == 2 && CV_VERSION_MINOR <= 2
     if (std::numeric_limits<TypeParam>::max() ==
         std::numeric_limits<ito::int8>::max()) // compare not implemented for int8
+#else
+    if (0)
+#endif
     {
         EXPECT_THROW({ this->mat1_1d >= this->mat2_1d; }, cv::Exception);
         EXPECT_THROW({ this->mat1_2d >= this->mat2_2d; }, cv::Exception);
@@ -690,8 +706,12 @@ TYPED_TEST(operatorTest, CompareLT_test)
     this->mat1_3d = cv::saturate_cast<TypeParam>(21);
     this->mat2_3d = cv::saturate_cast<TypeParam>(25);
 
+#if CV_VERSION_MAJOR == 2 && CV_VERSION_MINOR <= 2
     if (std::numeric_limits<TypeParam>::max() ==
         std::numeric_limits<ito::int8>::max()) // compare not implemented for int8
+#else
+    if (0)
+#endif
     {
         EXPECT_THROW({ this->mat1_1d < this->mat2_1d; }, cv::Exception);
         EXPECT_THROW({ this->mat1_2d < this->mat2_2d; }, cv::Exception);
@@ -743,8 +763,12 @@ TYPED_TEST(operatorTest, CompareGT_test)
     this->mat1_3d = cv::saturate_cast<TypeParam>(26);
     this->mat2_3d = cv::saturate_cast<TypeParam>(22);
 
+#if CV_VERSION_MAJOR == 2 && CV_VERSION_MINOR <= 2
     if (std::numeric_limits<TypeParam>::max() ==
         std::numeric_limits<ito::int8>::max()) // compare not implemented for int8
+#else
+    if (0)
+#endif
     {
         EXPECT_THROW({ this->mat1_1d > this->mat2_1d; }, cv::Exception);
         EXPECT_THROW({ this->mat1_2d > this->mat2_2d; }, cv::Exception);

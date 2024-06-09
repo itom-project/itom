@@ -389,6 +389,7 @@ void DObjConstIterator::seekRel(int ofs)
 
         int curRowIdx = (ptr - dObj->rowPtr(plane, 0)) / (stride * elemSize); // floor
         int curElemIdxInPlane;
+
         if (planeContinuous)
         {
             curElemIdxInPlane = (ptr - dObj->rowPtr(plane, 0)) / elemSize;
@@ -397,7 +398,8 @@ void DObjConstIterator::seekRel(int ofs)
         {
             curElemIdxInPlane = curRowIdx * width + (ptr - sliceStart) / elemSize;
         }
-        int planeSize = static_cast<int>(dObj->getSize(dims - 1) * dObj->getSize(dims - 2));
+
+        int planeSize = dObj->getSize(dims - 1) * dObj->getSize(dims - 2);
 
         curElemIdxInPlane += ofs;
 
@@ -1950,11 +1952,11 @@ RetVal CreateFunc(
             if (continuousDataPtr)
             {
                 dataMat = new cv::Mat_<_Tp>(
-                    1, static_cast<int>(sizes[0]), (_Tp*)continuousDataPtr, sizes[0] * sizeof(_Tp));
+                    1, sizes[0], (_Tp*)continuousDataPtr, sizes[0] * sizeof(_Tp));
             }
             else
             {
-                dataMat = new cv::Mat_<_Tp>(1, static_cast<int>(sizes[0]));
+                dataMat = new cv::Mat_<_Tp>(1, sizes[0]);
             }
         }
         catch (cv::Exception /*&exc*/) // handle memory error
@@ -1974,8 +1976,8 @@ RetVal CreateFunc(
             if (continuousDataPtr)
             {
                 dataMat = new cv::Mat_<_Tp>(
-                    static_cast<int>(sizes[0]),
-                    static_cast<int>(sizes[1]),
+                    sizes[0],
+                    sizes[1],
                     (_Tp*)continuousDataPtr,
                     steps ? steps[0] : cv::Mat::AUTO_STEP);
             }
@@ -2004,8 +2006,8 @@ RetVal CreateFunc(
                 for (int n = 0; n < numMats; ++n)
                 {
                     dataMat = new cv::Mat_<_Tp>(
-                        static_cast<int>(sizes[dimensions - 2]),
-                        static_cast<int>(sizes[dimensions - 1]));
+                        sizes[dimensions - 2],
+                        sizes[dimensions - 1]);
                     dObj->m_data[n] = reinterpret_cast<uchar*>(dataMat);
                 }
             }
@@ -2020,8 +2022,8 @@ RetVal CreateFunc(
                     for (int n = 0; n < numMats; n++)
                     {
                         dataMat = new cv::Mat_<_Tp>(
-                            static_cast<int>(sizes[dimensions - 2]),
-                            static_cast<int>(sizes[dimensions - 1]),
+                            sizes[dimensions - 2],
+                            sizes[dimensions - 1],
                             (_Tp*)continuousDataPtr,
                             steps ? steps[dimensions - 2] : cv::Mat::AUTO_STEP);
                         dObj->m_data[n] = reinterpret_cast<uchar*>(dataMat);
@@ -2050,8 +2052,8 @@ RetVal CreateFunc(
                     for (int n = 0; n < numMats; n++)
                     {
                         dataMat = new cv::Mat_<_Tp>(
-                            static_cast<int>(sizes[dimensions - 2]),
-                            static_cast<int>(sizes[dimensions - 1]),
+                            sizes[dimensions - 2],
+                            sizes[dimensions - 1],
                             (_Tp*)dataPtr);
                         dObj->m_data[n] = reinterpret_cast<uchar*>(dataMat);
                         dataPtr += matSize;
@@ -2887,7 +2889,7 @@ double DataObject::getPixToPhys(const unsigned int dim, const double pix) const
 //----------------------------------------------------------------------------------------------------------------------------------
 //! low-level, templated method for deeply copying the data of one matrix to another given matrix
 /*!
-    In case of 'regionOnly' == false, the destination dataObject 'rhs' is always newly allocated
+    In case of 'regionOnly' == false, the destination dataObject 'destination' is always newly allocated
     before copying data and the tags as well as the axis descriptions etc. are also copied from
     the source object. If the source object has a ROI set, the entire object with all data
     outside of the ROI is copied and the ROI is applied to the destination object, too.
@@ -2898,9 +2900,9 @@ double DataObject::getPixToPhys(const unsigned int dim, const double pix) const
     axis descriptions etc. are always copied to the destination object.
 
     \param &lhs is the matrix whose data is copied
-    \param &rhs is the matrix where the data is copied to. The old data of rhs is deleted first
+    \param &destination is the matrix where the data is copied to. The old data of destination is deleted first
     \param regionOnly, if true, only the data of the ROI in lhs is copied, hence, the org-size of
-   rhs corresponds to the ROI-size of lhs, else the whole data block is copied and the ROI of rhs is
+   destination corresponds to the ROI-size of lhs, else the whole data block is copied and the ROI of destination is
    set to the ROI of lhs \return retOk \sa copyTo, CreateFunc
 */
 template <typename _Tp>
@@ -2925,7 +2927,7 @@ RetVal CopyToFunc(const DataObject& lhs, DataObject& rhs, unsigned char regionOn
             rhs.m_type = lhs.m_type;
             char rhsOldContinuous = rhs.getDims() > 2
                 ? rhs.m_continuous
-                : 0; // if dims(rhs)<=2, then the continuity-flag should only be influenced by lhs,
+                : 0; // if dims(destination)<=2, then the continuity-flag should only be influenced by lhs,
                      // since then the continuity doesn't change the representation and the
                      // constructor of empty dataObject sets the flag to one (default)
             rhs.m_continuous = rhsOldContinuous | lhs.m_continuous;
@@ -2938,7 +2940,7 @@ RetVal CopyToFunc(const DataObject& lhs, DataObject& rhs, unsigned char regionOn
         rhs.m_type = lhs.m_type;
         char rhsOldContinuous = rhs.getDims() > 2
             ? rhs.m_continuous
-            : 0; // if dims(rhs)<=2, then the continuity-flag should only be influenced by lhs,
+            : 0; // if dims(destination)<=2, then the continuity-flag should only be influenced by lhs,
                  // since then the continuity doesn't change the representation and the constructor
                  // of empty dataObject sets the flag to one (default)
         rhs.m_continuous = rhsOldContinuous | lhs.m_continuous;
@@ -3006,9 +3008,9 @@ typedef RetVal (*tCopyToFunc)(const DataObject& lhs, DataObject& rhs, unsigned c
 
 MAKEFUNCLIST(CopyToFunc);
 
-//! high-level, non-templated method to deeply copy the data of this matrix to another matrix rhs
+//! high-level, non-templated method to deeply copy the data of this matrix to another matrix destination
 /*!
-    In case of 'regionOnly' == false, the destination dataObject 'rhs' is always newly allocated
+    In case of 'regionOnly' == false, the destination dataObject 'destination' is always newly allocated
     before copying data and the tags as well as the axis descriptions etc. are also copied from
     the source object. If the source object has a ROI set, the entire object with all data
     outside of the ROI is copied and the ROI is applied to the destination object, too.
@@ -3018,10 +3020,10 @@ MAKEFUNCLIST(CopyToFunc);
     do not fit to the source object. Else, data is copied into the existing memory. Tags and
     axis descriptions etc. are always copied to the destination object.
 
-    \param &rhs is the matrix where the data is copied to. The old data of rhs is deleted first
+    \param &destination is the matrix where the data is copied to. The old data of destination is deleted first
     \param regionOnly, if true, only the data of the ROI in lhs is copied, hence, the org-size of
-           rhs corresponds to the ROI-size of lhs, else the whole data block is copied and the ROI
-           of rhs is set to the ROI of lhs
+           destination corresponds to the ROI-size of lhs, else the whole data block is copied and the ROI
+           of destination is set to the ROI of lhs
     \return retOk
     \sa deepCopyPartial
 */
@@ -3040,12 +3042,12 @@ RetVal DataObject::copyTo(DataObject& rhs, unsigned char regionOnly) const
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! low-level, templated method to copy the values of the ROI of matrix lhs to the ROI of matrix
-//! rhs.
+//! destination.
 /*!
-    the ROI of rhs must already correspond to the ROI of lhs, hence, rhs must have allocated data.
+    the ROI of destination must already correspond to the ROI of lhs, hence, destination must have allocated data.
 
     \param &lhs is the original data object
-    \param &rhs is the data object, where the values are copied to.
+    \param &destination is the data object, where the values are copied to.
     \return retOk
     \sa deepCopyPartial
     \todo avoid DObjIterator for speed-up
@@ -3101,7 +3103,7 @@ template <typename _Tp> RetVal DeepCopyPartialFunc(const DataObject& lhs, DataOb
                     rhs_ptr += rhs_mat->step[0];
                 }
             }
-            else // so lhs has shape nXm while rhs is of shape mXn so it is necessary to loop ofer
+            else // so lhs has shape nXm while destination is of shape mXn so it is necessary to loop ofer
                  // the cv:mats
             {
                 lhs_ptr = lhs_mat->data;
@@ -3151,9 +3153,9 @@ typedef RetVal (*tDeepCopyPartialFunc)(const DataObject& lhs, DataObject& rhs);
 MAKEFUNCLIST(DeepCopyPartialFunc);
 
 //! high-level, non-templated method. Deeply copies data of this data object which is within its ROI
-//! to the ROI of rhs.
+//! to the ROI of destination.
 /*!
-    \param &rhs is the right-handed data object, where data is copied to.
+    \param &destination is the right-handed data object, where data is copied to.
     \return retOk
     \throws cv::Exception(CV_StsAssert) if sizes or type of both matrices are not equal
     \sa DeepCopyPartialFunc
@@ -3224,8 +3226,8 @@ RetVal DataObject::deepCopyPartial(DataObject& copyTo)
     // in copypartial, no tags or axis (offsets, scales...) should be copy to core object!
     // if(!ret.containsError())
     //{
-    //    this->copyTagMapTo(rhs);   //Deepcopy the tagspace
-    //    this->copyAxisTagsTo(rhs); //Deepcopy the tagspace
+    //    this->copyTagMapTo(destination);   //Deepcopy the tagspace
+    //    this->copyAxisTagsTo(destination); //Deepcopy the tagspace
     //}
     return ret;
 }
@@ -3233,8 +3235,8 @@ RetVal DataObject::deepCopyPartial(DataObject& copyTo)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
-    \detail this function makes a deepcopy of the tags map to rhs object from this object.
-    \param &rhs is the matrix where the map is copied to. The old map of this object is cleared first
+    \detail this function makes a deepcopy of the tags map to destination object from this object.
+    \param &destination is the matrix where the map is copied to. The old map of this object is cleared first
     \return retOk
     \sa DataObjectTags
 */
@@ -3267,18 +3269,15 @@ RetVal DataObject::copyTagMapTo(DataObject& rhs) const
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*!
-   this function makes a deepcopy of the axis and value metadata from this object to rhs
-   object. It copies
-
-   \param &rhs is the matrix where the map is copied from. The old map of this
-          object is cleared first
-   \return retOk
-   \sa DataObjectTags
-*/
-RetVal DataObject::copyAxisTagsTo(DataObject& rhs) const
+RetVal DataObject::copyAxisTagsTo(DataObject& destination) const
 {
-    if (this == &rhs)
+    return copyAxisTagsToExtended(destination, false, false);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+RetVal DataObject::copyAxisTagsToExtended(DataObject &destination, bool ignoreValueTags, bool ignoreRotationMatrix) const
+{
+    if (this == &destination)
     {
         return ito::retOk;
     }
@@ -3287,49 +3286,61 @@ RetVal DataObject::copyAxisTagsTo(DataObject& rhs) const
     {
         return ito::RetVal(ito::retError, 0, "Source tagspace is not allocated");
     }
-    if (!rhs.m_pDataObjectTags)
+    if (!destination.m_pDataObjectTags)
     {
         return ito::RetVal(ito::retError, 0, "Destination tagspace is not allocated");
     }
 
-    const double* rot = m_pDataObjectTags->m_rotMatrix;
-    rhs.setXYRotationalMatrix(
-        rot[0], rot[1], rot[2], rot[3], rot[4], rot[5], rot[6], rot[7], rot[8]);
+    if (!ignoreRotationMatrix)
+    {
+        const double* rot = m_pDataObjectTags->m_rotMatrix;
+        destination.setXYRotationalMatrix(
+            rot[0], rot[1], rot[2], rot[3], rot[4], rot[5], rot[6], rot[7], rot[8]);
+    }
 
-    int axisNumRhs = rhs.getDims() - 1;
+    int axisNumDest = destination.getDims() - 1;
     bool isValid;
+    std::string tempStr;
 
     for (int axisNum = getDims() - 1; axisNum > -1; axisNum--)
     {
-        rhs.setAxisOffset(axisNumRhs, getAxisOffset(axisNum));
-        rhs.setAxisScale(axisNumRhs, getAxisScale(axisNum));
+        destination.setAxisOffset(axisNumDest, getAxisOffset(axisNum));
+        destination.setAxisScale(axisNumDest, getAxisScale(axisNum));
 
         isValid = false;
-        std::string tempDes = getAxisDescription(axisNum, isValid); // check this
+        tempStr = getAxisDescription(axisNum, isValid);
+
         if (isValid)
         {
-            rhs.setAxisDescription(axisNumRhs, tempDes);
+            destination.setAxisDescription(axisNumDest, tempStr);
         }
 
         isValid = false;
-        std::string tempUnit = getAxisUnit(axisNum, isValid);
+        tempStr = getAxisUnit(axisNum, isValid);
+
         if (isValid)
         {
-            rhs.setAxisUnit(axisNumRhs, tempUnit);
+            destination.setAxisUnit(axisNumDest, tempStr);
         }
 
-        axisNumRhs--;
-        if (axisNumRhs < 0)
+        axisNumDest--;
+
+        if (axisNumDest < 0)
         {
             break;
         }
     }
 
-    rhs.setValueDescription(getValueDescription());
-    rhs.setValueUnit(getValueUnit());
+    if (!ignoreValueTags)
+    {
+        destination.setValueDescription(getValueDescription());
+        destination.setValueUnit(getValueUnit());
+    }
 
     return ito::retOk;
 }
+
+
 //----------------------------------------------------------------------------------------------------------------------------------
 //! allocates a zero-value matrix of size 1x1 with the given type
 /*!
@@ -4215,15 +4226,15 @@ MAKEFUNCLIST(CopyMatFunc)
     shallow-copy means, that the header information of this data-object is physically created at the
    hard disk, while the data is shared with the original cv::Mat.
 
-    \param &rhs is the cv::Mat where the shallow copy is taken from. At first, the existing data of
-   this object is freed. \return this data object \throws cv::Exception if rhs is not
+    \param &destination is the cv::Mat where the shallow copy is taken from. At first, the existing data of
+   this object is freed. \return this data object \throws cv::Exception if destination is not
    two-dimensional or data type has no compatible data type of dataObject. \sa create
 */
 DataObject& DataObject::operator=(const cv::Mat& rhs)
 {
     int dataObjType = -1;
 
-    // check data type of rhs
+    // check data type of destination
     switch (rhs.type())
     {
     case CV_8UC1:
@@ -4286,17 +4297,17 @@ DataObject& DataObject::operator=(const cv::Mat& rhs)
 }
 
 //-----------------------------------------------------------------------------------------------------------
-//! assign-operator which makes a shallow-copy of the rhs data object and stores it in this data
+//! assign-operator which makes a shallow-copy of the destination data object and stores it in this data
 //! object
 /*!
-    shallow-copy means, that the header information of the rhs data-object is physically copied to
+    shallow-copy means, that the header information of the destination data-object is physically copied to
    this-dataObject while the data is shared, hence, only its reference counter is incremented.
 
     The previous array covered by this data object is completely released before assigning the new
-   rhs data object. In order to deeply copy the values from one object into another pre-allocated
+   destination data object. In order to deeply copy the values from one object into another pre-allocated
    object use the method deepCopyPartial.
 
-    \param &rhs is the data object where the shallow copy is taken from. At first, the existing data
+    \param &destination is the data object where the shallow copy is taken from. At first, the existing data
    of this object is freed. \return this data object \throws cv::Exception if lock state of both
    objects is not equal. Please make sure, that both lock states are equal \sa CopyMatFunc,
    deepCopyPartial
@@ -4314,7 +4325,7 @@ DataObject& DataObject::operator=(const DataObject& rhs)
     m_type = rhs.m_type;
     m_continuous = rhs.m_continuous;
     m_pRefCount = rhs.m_pRefCount;
-    m_owndata = rhs.m_owndata; // if the rhs object already shared its data with another owner, this
+    m_owndata = rhs.m_owndata; // if the destination object already shared its data with another owner, this
                                // object will also shared data with the original owner!
 
     if (rhs.m_dims > 0 || m_pRefCount)
@@ -4333,7 +4344,7 @@ DataObject& DataObject::operator=(const DataObject& rhs)
             secureFreeData();
             throw; // rethrow exception
         }
-    } // else: rhs is empty
+    } // else: destination is empty
 
     return *this;
 }
@@ -4526,7 +4537,7 @@ template <typename _Tp>
 RetVal AssignScalarFunc(DataObject* src, const ito::tDataType type, const void* scalar)
 {
     int numMats = src->getNumPlanes();
-    int MatNum = 0;
+    int matIdx = 0;
 
     _Tp scalar2 = ito::numberConversion<_Tp>(
         type, scalar); // convert the void* scalar to the data type of the source data object
@@ -4534,12 +4545,12 @@ RetVal AssignScalarFunc(DataObject* src, const ito::tDataType type, const void* 
 
     cv::Mat** tempMats = src->get_mdata();
     cv::Mat* tempMat;
-    int sizex = static_cast<int>(src->getSize(src->getDims() - 1));
-    int sizey = static_cast<int>(src->getSize(src->getDims() - 2));
+    int sizex = src->getSize(src->getDims() - 1);
+    int sizey = src->getSize(src->getDims() - 2);
     for (int nmat = 0; nmat < numMats; nmat++)
     {
-        MatNum = src->seekMat(nmat, numMats);
-        tempMat = tempMats[MatNum];
+        matIdx = src->seekMat(nmat, numMats);
+        tempMat = tempMats[matIdx];
 
 #if (USEOMP)
 #pragma omp parallel num_threads(getMaximumThreadCount())
@@ -4773,8 +4784,8 @@ RetVal AssignScalarMaskFunc(
             const cv::Mat** maskMats = mask->get_mdata();
             const cv::Mat* maskMat;
 
-            int sizex = static_cast<int>(src->getSize(src->getDims() - 1));
-            int sizey = static_cast<int>(src->getSize(src->getDims() - 2));
+            int sizex = src->getSize(src->getDims() - 1);
+            int sizey = src->getSize(src->getDims() - 2);
 
             for (int nmat = 0; nmat < numMats; nmat++)
             {
@@ -4942,7 +4953,8 @@ RetVal DataObject::setTo(const complex128& value, const DataObject& mask /*= Dat
 /*!
     \param assigned scalar converted to the actual array type
     \param mask Operation mask of the same size as *this and type uint8 or empty data object if no
-   mask should be considered (default) \return retError in case of error \sa AssignScalarValue
+        mask should be considered (default) \return retError in case of error 
+    \sa AssignScalarValue
 */
 RetVal DataObject::setTo(const ito::Rgba32& value, const DataObject& mask /*= DataObject()*/)
 {
@@ -4954,7 +4966,8 @@ RetVal DataObject::setTo(const ito::Rgba32& value, const DataObject& mask /*= Da
 /*!
     \param assigned scalar converted to the actual array type
     \param mask Operation mask of the same size as *this and type uint8 or empty data object if no
-   mask should be considered (default) \return retError in case of error \sa AssignScalarValue
+       mask should be considered (default) \return retError in case of error 
+    \sa AssignScalarValue
 */
 RetVal DataObject::setTo(const ito::DateTime& value, const DataObject& mask /*= DataObject()*/)
 {
@@ -4966,7 +4979,8 @@ RetVal DataObject::setTo(const ito::DateTime& value, const DataObject& mask /*= 
 /*!
     \param assigned scalar converted to the actual array type
     \param mask Operation mask of the same size as *this and type uint8 or empty data object if no
-   mask should be considered (default) \return retError in case of error \sa AssignScalarValue
+   mask should be considered (default) \return retError in case of error 
+   \sa AssignScalarValue
 */
 RetVal DataObject::setTo(const ito::TimeDelta& value, const DataObject& mask /*= DataObject()*/)
 {
@@ -4977,76 +4991,68 @@ RetVal DataObject::setTo(const ito::TimeDelta& value, const DataObject& mask /*=
 //----------------------------------------------------------------------------------------------------------------------------------
 // arithmetic operators
 //----------------------------------------------------------------------------------------------------------------------------------
-//! low-level, templated method for element-wise addition of two given data objects.
+//! low-level, templated method for element-wise in-line addition of dObjOther to the resulting dObjResult.
 /*!
-    dObjRes = dObj1 + dObj2
+    dObjResult += dObjOther
 
-    \param *dObj1 is the first data object
-    \param *dObj2 is the second data object
-    \param *dObjRes is the pointer to the data object, where the values will be written to. This
-   data object must already be allocated. \remark The size check for all data objects must be done
-   before. \return retOk \sa operator +=, operator +
+    \param *dObjOther is the destination data object, whose elements are added to dObjResult
+    \param *dObjResult is the pointer to the data object, where the values will be written to. This
+       data object must already be allocated. If an non-inline addition should be done, copy the
+       content of the first dataObject to this one first before calling this method.
+    \remark The size check for all data objects must be done before. 
+    \return retOk 
+    \sa operator +=, operator +
 */
 template <typename _Tp>
-RetVal AddFunc(const DataObject* dObj1, const DataObject* dObj2, DataObject* dObjRes)
+RetVal AddFunc(const DataObject* dObjOther, DataObject* dObjResult)
 {
-    int srcTmat1 = 0;
-    int srcTmat2 = 0;
+    int rhsTmat = 0;
     int dstTmat = 0;
-    int numMats = dObj1->getNumPlanes();
-    const cv::Mat_<_Tp>* cvSrcTmat1 = NULL;
-    const cv::Mat_<_Tp>* cvSrcTmat2 = NULL;
-    cv::Mat_<_Tp>* cvDstTmat = NULL;
+    int numMats = dObjResult->getNumPlanes();
+    const cv::Mat_<_Tp>* cvRhsTmat = nullptr;
+    cv::Mat_<_Tp>* cvDstTmat = nullptr;
 
     for (int nmat = 0; nmat < numMats; ++nmat)
     {
-        dstTmat = dObjRes->seekMat(nmat, numMats);
-        srcTmat1 = dObj1->seekMat(nmat, numMats);
-        srcTmat2 = dObj2->seekMat(nmat, numMats);
-        cvSrcTmat1 = static_cast<const cv::Mat_<_Tp>*>(dObj1->get_mdata()[srcTmat1]);
-        cvSrcTmat2 = static_cast<const cv::Mat_<_Tp>*>(dObj2->get_mdata()[srcTmat2]);
-        cvDstTmat = static_cast<cv::Mat_<_Tp>*>(dObjRes->get_mdata()[dstTmat]);
-        *cvDstTmat = *cvSrcTmat1 + *cvSrcTmat2;
+        dstTmat = dObjResult->seekMat(nmat, numMats);
+        rhsTmat = dObjOther->seekMat(nmat, numMats);
+        cvRhsTmat = static_cast<const cv::Mat_<_Tp>*>(dObjOther->get_mdata()[rhsTmat]);
+        cvDstTmat = static_cast<cv::Mat_<_Tp>*>(dObjResult->get_mdata()[dstTmat]);
+        *cvDstTmat += *cvRhsTmat;
     }
 
     return RetVal(retOk);
 }
 
 template <>
-RetVal AddFunc<ito::DateTime>(const DataObject* dObj1, const DataObject* dObj2, DataObject* dObjRes)
+RetVal AddFunc<ito::DateTime>(const DataObject* dObjOther, DataObject* dObjResult)
 {
-    assert(dObj2->getType() == ito::tTimeDelta);
-    // further assumption: dObjRes is already equal to dObj1 (based on the content)
+    assert(dObjOther->getType() == ito::tTimeDelta);
+    // further assumption: dObjResult is already equal to dObj1 (based on the content)
 
-    int srcTmat1 = 0;
-    int srcTmat2 = 0;
+    int rhsTmat = 0;
     int dstTmat = 0;
-    int numMats = dObj1->getNumPlanes();
-    const cv::Mat_<ito::DateTime>* cvSrcTmat1 = nullptr;
-    const cv::Mat_<ito::TimeDelta>* cvSrcTmat2 = nullptr;
+    int numMats = dObjResult->getNumPlanes();
+    const cv::Mat_<ito::TimeDelta>* cvRhsTmat = nullptr;
     cv::Mat_<ito::DateTime>* cvDstTmat = nullptr;
     ito::DateTime* dstRowPtr = nullptr;
-    const ito::DateTime* src1RowPtr = nullptr;
-    const ito::TimeDelta* src2RowPtr = nullptr;
+    const ito::TimeDelta* rhsRowPtr = nullptr;
 
     for (int nmat = 0; nmat < numMats; ++nmat)
     {
-        dstTmat = dObjRes->seekMat(nmat, numMats);
-        srcTmat1 = dObj1->seekMat(nmat, numMats);
-        srcTmat2 = dObj2->seekMat(nmat, numMats);
-        cvSrcTmat1 = static_cast<const cv::Mat_<ito::DateTime>*>(dObj1->get_mdata()[srcTmat1]);
-        cvSrcTmat2 = static_cast<const cv::Mat_<ito::TimeDelta>*>(dObj2->get_mdata()[srcTmat2]);
-        cvDstTmat = static_cast<cv::Mat_<ito::DateTime>*>(dObjRes->get_mdata()[dstTmat]);
+        dstTmat = dObjResult->seekMat(nmat, numMats);
+        rhsTmat = dObjOther->seekMat(nmat, numMats);
+        cvRhsTmat = static_cast<const cv::Mat_<ito::TimeDelta>*>(dObjOther->get_mdata()[rhsTmat]);
+        cvDstTmat = static_cast<cv::Mat_<ito::DateTime>*>(dObjResult->get_mdata()[dstTmat]);
 
         for (int row = 0; row < cvDstTmat->rows; ++row)
         {
             dstRowPtr = cvDstTmat->ptr<ito::DateTime>(row);
-            src1RowPtr = cvSrcTmat1->ptr<ito::DateTime>(row);
-            src2RowPtr = cvSrcTmat2->ptr<ito::TimeDelta>(row);
+            rhsRowPtr = cvRhsTmat->ptr<ito::TimeDelta>(row);
 
             for (int col = 0; col < cvDstTmat->cols; ++col)
             {
-                dstRowPtr[col].datetime += src2RowPtr[col].delta;
+                dstRowPtr[col].datetime += rhsRowPtr[col].delta;
             }
         }
     }
@@ -5055,82 +5061,37 @@ RetVal AddFunc<ito::DateTime>(const DataObject* dObj1, const DataObject* dObj2, 
 }
 
 template <>
-RetVal AddFunc<ito::TimeDelta>(const DataObject* dObj1, const DataObject* dObj2, DataObject* dObjRes)
+RetVal AddFunc<ito::TimeDelta>(const DataObject* dObjOther, DataObject* dObjResult)
 {
-    int dType2 = dObj2->getType();
+    int dTypeRhs = dObjOther->getType();
 
-    assert(dType2 == ito::tTimeDelta || dType2 == ito::tDateTime);
+    assert(dTypeRhs == ito::tTimeDelta);
 
-    int srcTmat1 = 0;
-    int srcTmat2 = 0;
+    int rhsTmat = 0;
     int dstTmat = 0;
-    int numMats = dObj1->getNumPlanes();
+    int numMats = dObjResult->getNumPlanes();
 
-    if (dType2 == ito::tTimeDelta)
+    // further assumption: dObjResult is already equal to dObj1 (based on the content)
+    const cv::Mat_<ito::TimeDelta>* cvRhsTmat = nullptr;
+    cv::Mat_<ito::TimeDelta>* cvDstTmat = nullptr;
+    ito::TimeDelta* dstRowPtr = nullptr;
+    const ito::TimeDelta* rhsRowPtr = nullptr;
+
+    for (int nmat = 0; nmat < numMats; ++nmat)
     {
-        assert(dObjRes->getType() == ito::tTimeDelta);
-        // further assumption: dObjRes is already equal to dObj1 (based on the content)
+        dstTmat = dObjResult->seekMat(nmat, numMats);
+        rhsTmat = dObjOther->seekMat(nmat, numMats);
+        cvRhsTmat = static_cast<const cv::Mat_<ito::TimeDelta>*>(dObjOther->get_mdata()[rhsTmat]);
+        cvDstTmat = static_cast<cv::Mat_<ito::TimeDelta>*>(dObjResult->get_mdata()[dstTmat]);
 
-        const cv::Mat_<ito::TimeDelta>* cvSrcTmat1 = nullptr;
-        const cv::Mat_<ito::TimeDelta>* cvSrcTmat2 = nullptr;
-        cv::Mat_<ito::TimeDelta>* cvDstTmat = nullptr;
-        ito::TimeDelta* dstRowPtr = nullptr;
-        const ito::TimeDelta* src1RowPtr = nullptr;
-        const ito::TimeDelta* src2RowPtr = nullptr;
-
-        for (int nmat = 0; nmat < numMats; ++nmat)
+        for (int row = 0; row < cvDstTmat->rows; ++row)
         {
-            dstTmat = dObjRes->seekMat(nmat, numMats);
-            srcTmat1 = dObj1->seekMat(nmat, numMats);
-            srcTmat2 = dObj2->seekMat(nmat, numMats);
-            cvSrcTmat1 = static_cast<const cv::Mat_<ito::TimeDelta>*>(dObj1->get_mdata()[srcTmat1]);
-            cvSrcTmat2 = static_cast<const cv::Mat_<ito::TimeDelta>*>(dObj2->get_mdata()[srcTmat2]);
-            cvDstTmat = static_cast<cv::Mat_<ito::TimeDelta>*>(dObjRes->get_mdata()[dstTmat]);
+            dstRowPtr = cvDstTmat->ptr<ito::TimeDelta>(row);
+            rhsRowPtr = cvRhsTmat->ptr<ito::TimeDelta>(row);
 
-            for (int row = 0; row < cvDstTmat->rows; ++row)
+            for (int col = 0; col < cvDstTmat->cols; ++col)
             {
-                dstRowPtr = cvDstTmat->ptr<ito::TimeDelta>(row);
-                src1RowPtr = cvSrcTmat1->ptr<ito::TimeDelta>(row);
-                src2RowPtr = cvSrcTmat2->ptr<ito::TimeDelta>(row);
-
-                for (int col = 0; col < cvDstTmat->cols; ++col)
-                {
-                    dstRowPtr[col].delta += src2RowPtr[col].delta;
-                }
-            }
-        }
-    }
-    else if (dType2 == ito::tDateTime)
-    {
-        assert(dObjRes->getType() == ito::tDateTime);
-        // further assumption: dObjRes is already equal to dObj2 (based on the content)
-
-        const cv::Mat_<ito::TimeDelta>* cvSrcTmat1 = nullptr;
-        const cv::Mat_<ito::DateTime>* cvSrcTmat2 = nullptr;
-        cv::Mat_<ito::DateTime>* cvDstTmat = nullptr;
-        ito::DateTime* dstRowPtr = nullptr;
-        const ito::TimeDelta* src1RowPtr = nullptr;
-        const ito::DateTime* src2RowPtr = nullptr;
-
-        for (int nmat = 0; nmat < numMats; ++nmat)
-        {
-            dstTmat = dObjRes->seekMat(nmat, numMats);
-            srcTmat1 = dObj1->seekMat(nmat, numMats);
-            srcTmat2 = dObj2->seekMat(nmat, numMats);
-            cvSrcTmat1 = static_cast<const cv::Mat_<ito::TimeDelta>*>(dObj1->get_mdata()[srcTmat1]);
-            cvSrcTmat2 = static_cast<const cv::Mat_<ito::DateTime>*>(dObj2->get_mdata()[srcTmat2]);
-            cvDstTmat = static_cast<cv::Mat_<ito::DateTime>*>(dObjRes->get_mdata()[dstTmat]);
-
-            for (int row = 0; row < cvDstTmat->rows; ++row)
-            {
-                dstRowPtr = cvDstTmat->ptr<ito::DateTime>(row);
-                src1RowPtr = cvSrcTmat1->ptr<ito::TimeDelta>(row);
-                src2RowPtr = cvSrcTmat2->ptr<ito::DateTime>(row);
-
-                for (int col = 0; col < cvDstTmat->cols; ++col)
-                {
-                    dstRowPtr[col].datetime += src1RowPtr[col].delta;
-                }
+                dstRowPtr[col].delta += rhsRowPtr[col].delta;
             }
         }
     }
@@ -5138,40 +5099,33 @@ RetVal AddFunc<ito::TimeDelta>(const DataObject* dObj1, const DataObject* dObj2,
     return RetVal(retOk);
 }
 
-typedef RetVal (*tAddFunc)(const DataObject* src1, const DataObject* src2, DataObject* dst);
+typedef RetVal (*tAddFunc)(const DataObject* dObjOther, DataObject* dObjResult);
 MAKEFUNCLIST(AddFunc);
 
 template <typename _Tp>
-RetVal AddScalarFunc(const DataObject* dObjIn, ito::float64 scalar, DataObject* dObjOut)
+RetVal AddScalarFunc(ito::float64 scalar, DataObject* dObjResult)
 {
-    int srcTmat = 0;
     int dstTmat = 0;
-    int numMats = dObjIn->getNumPlanes();
-    const cv::Mat_<_Tp>* cvSrc = NULL;
-    cv::Mat_<_Tp>* cvDest = NULL;
-
+    int numMats = dObjResult->getNumPlanes();
+    cv::Mat_<_Tp>* cvDest = nullptr;
     cv::Scalar s = scalar;
+
     for (int nmat = 0; nmat < numMats; ++nmat)
     {
-        dstTmat = dObjOut->seekMat(nmat, numMats);
-        srcTmat = dObjIn->seekMat(nmat, numMats);
-        cvSrc = static_cast<const cv::Mat_<_Tp>*>(dObjIn->get_mdata()[srcTmat]);
-        cvDest = static_cast<cv::Mat_<_Tp>*>(dObjOut->get_mdata()[dstTmat]);
-        *cvDest = *cvSrc + s;
+        dstTmat = dObjResult->seekMat(nmat, numMats);
+        cvDest = static_cast<cv::Mat_<_Tp>*>(dObjResult->get_mdata()[dstTmat]);
+        *cvDest += s;
     }
 
     return RetVal(retOk);
 }
 
 template <>
-RetVal AddScalarFunc<ito::Rgba32>(
-    const DataObject* dObjIn, ito::float64 scalar, DataObject* dObjOut)
+RetVal AddScalarFunc<ito::Rgba32>(ito::float64 scalar, DataObject* dObjResult)
 {
-    int srcTmat = 0;
     int dstTmat = 0;
-    int numMats = dObjIn->getNumPlanes();
-    const cv::Mat_<ito::Rgba32>* cvSrc = NULL;
-    cv::Mat_<ito::Rgba32>* cvDest = NULL;
+    int numMats = dObjResult->getNumPlanes();
+    cv::Mat_<ito::Rgba32>* cvDest = nullptr;
     cv::Scalar s;
     ito::int32 sign = scalar < 0.0 ? -1 : 1;
     ito::uint32 val = fabs(scalar) > 4294967295 ? 0xFFFFFFFF : (ito::uint32)fabs(scalar);
@@ -5182,19 +5136,16 @@ RetVal AddScalarFunc<ito::Rgba32>(
 
     for (int nmat = 0; nmat < numMats; ++nmat)
     {
-        dstTmat = dObjOut->seekMat(nmat, numMats);
-        srcTmat = dObjIn->seekMat(nmat, numMats);
-        cvSrc = static_cast<const cv::Mat_<ito::Rgba32>*>(dObjIn->get_mdata()[srcTmat]);
-        cvDest = static_cast<cv::Mat_<ito::Rgba32>*>(dObjOut->get_mdata()[dstTmat]);
-        *cvDest = *cvSrc + s;
+        dstTmat = dObjResult->seekMat(nmat, numMats);
+        cvDest = static_cast<cv::Mat_<ito::Rgba32>*>(dObjResult->get_mdata()[dstTmat]);
+        *cvDest += s;
     }
 
     return RetVal(retOk);
 }
 
 template <>
-RetVal AddScalarFunc<ito::DateTime>(
-    const DataObject* dObjIn, ito::float64 scalar, DataObject* dObjOut)
+RetVal AddScalarFunc<ito::DateTime>(ito::float64 scalar, DataObject* dObjResult)
 {
     cv::error(cv::Exception(
         CV_StsAssert,
@@ -5206,8 +5157,7 @@ RetVal AddScalarFunc<ito::DateTime>(
 }
 
 template <>
-RetVal AddScalarFunc<ito::TimeDelta>(
-    const DataObject* dObjIn, ito::float64 scalar, DataObject* dObjOut)
+RetVal AddScalarFunc<ito::TimeDelta>(ito::float64 scalar, DataObject* dObjResult)
 {
     cv::error(cv::Exception(
         CV_StsAssert,
@@ -5218,19 +5168,16 @@ RetVal AddScalarFunc<ito::TimeDelta>(
 	return RetVal(retOk);
 }
 
-typedef RetVal (*tAddScalarFunc)(
-    const DataObject* dObjIn, ito::float64 scalar, DataObject* dObjOut);
+typedef RetVal (*tAddScalarFunc)(ito::float64 scalar, DataObject* dObjResult);
 MAKEFUNCLIST(AddScalarFunc);
 
 
 template <typename _Tp>
-RetVal AddComplexScalarFunc(const DataObject* dObjIn, ito::complex128 scalar, DataObject* dObjOut)
+RetVal AddComplexScalarFunc(ito::complex128 scalar, DataObject* dObjResult)
 {
-    int srcTmat = 0;
     int dstTmat = 0;
-    int numMats = dObjIn->getNumPlanes();
-    const cv::Mat** cvSrc = dObjIn->get_mdata();
-    cv::Mat** cvDest = dObjOut->get_mdata();
+    int numMats = dObjResult->getNumPlanes();
+    cv::Mat** cvDest = dObjResult->get_mdata();
 
     if (std::abs(scalar.imag()) < std::numeric_limits<ito::float64>::epsilon())
     {
@@ -5238,9 +5185,8 @@ RetVal AddComplexScalarFunc(const DataObject* dObjIn, ito::complex128 scalar, Da
 
         for (int nmat = 0; nmat < numMats; ++nmat)
         {
-            dstTmat = dObjOut->seekMat(nmat, numMats);
-            srcTmat = dObjIn->seekMat(nmat, numMats);
-            *(cvDest[dstTmat]) = *(cvSrc[srcTmat]) + s;
+            dstTmat = dObjResult->seekMat(nmat, numMats);
+            *(cvDest[dstTmat]) += s;
         }
     }
     else
@@ -5258,36 +5204,30 @@ RetVal AddComplexScalarFunc(const DataObject* dObjIn, ito::complex128 scalar, Da
 }
 
 template <>
-RetVal AddComplexScalarFunc<ito::complex64>(
-    const DataObject* dObjIn, ito::complex128 scalar, DataObject* dObjOut)
+RetVal AddComplexScalarFunc<ito::complex64>(ito::complex128 scalar, DataObject* dObjResult)
 {
-    int numMats = dObjIn->getNumPlanes();
-    const cv::Mat** cvSrcs = dObjIn->get_mdata();
-    cv::Mat** cvDests = dObjOut->get_mdata();
-    const cv::Mat* cvSrc;
+    int numMats = dObjResult->getNumPlanes();
+    cv::Mat** cvDests = dObjResult->get_mdata();
     cv::Mat* cvDest;
     ito::complex64 value = cv::saturate_cast<ito::complex64>(scalar);
 
     for (int nmat = 0; nmat < numMats; ++nmat)
     {
-        cvDest = cvDests[dObjOut->seekMat(nmat, numMats)];
-        cvSrc = cvSrcs[dObjIn->seekMat(nmat, numMats)];
+        cvDest = cvDests[dObjResult->seekMat(nmat, numMats)];
 #if (USEOMP)
 #pragma omp parallel num_threads(getMaximumThreadCount())
         {
 #endif
-            const ito::complex64* srcPtr;
             ito::complex64* destPtr;
 #if (USEOMP)
 #pragma omp for schedule(guided)
 #endif
             for (int r = 0; r < cvDest->rows; ++r)
             {
-                srcPtr = cvSrc->ptr<ito::complex64>(r);
                 destPtr = cvDest->ptr<ito::complex64>(r);
                 for (int c = 0; c < cvDest->cols; ++c)
                 {
-                    destPtr[c] = srcPtr[c] + value;
+                    destPtr[c] += value;
                 }
             }
 #if (USEOMP)
@@ -5299,35 +5239,30 @@ RetVal AddComplexScalarFunc<ito::complex64>(
 }
 
 template <>
-RetVal AddComplexScalarFunc<ito::complex128>(
-    const DataObject* dObjIn, ito::complex128 scalar, DataObject* dObjOut)
+RetVal AddComplexScalarFunc<ito::complex128>(ito::complex128 scalar, DataObject* dObjResult)
 {
-    int numMats = dObjIn->getNumPlanes();
-    const cv::Mat** cvSrcs = dObjIn->get_mdata();
-    cv::Mat** cvDests = dObjOut->get_mdata();
-    const cv::Mat* cvSrc;
+    int numMats = dObjResult->getNumPlanes();
+    cv::Mat** cvDests = dObjResult->get_mdata();
     cv::Mat* cvDest;
 
     for (int nmat = 0; nmat < numMats; ++nmat)
     {
-        cvDest = cvDests[dObjOut->seekMat(nmat, numMats)];
-        cvSrc = cvSrcs[dObjIn->seekMat(nmat, numMats)];
+        cvDest = cvDests[dObjResult->seekMat(nmat, numMats)];
 #if (USEOMP)
 #pragma omp parallel num_threads(getMaximumThreadCount())
         {
 #endif
-            const ito::complex128* srcPtr;
             ito::complex128* destPtr;
 #if (USEOMP)
 #pragma omp for schedule(guided)
 #endif
             for (int r = 0; r < cvDest->rows; ++r)
             {
-                srcPtr = cvSrc->ptr<ito::complex128>(r);
                 destPtr = cvDest->ptr<ito::complex128>(r);
+
                 for (int c = 0; c < cvDest->cols; ++c)
                 {
-                    destPtr[c] = srcPtr[c] + scalar;
+                    destPtr[c] += scalar;
                 }
             }
 #if (USEOMP)
@@ -5339,14 +5274,11 @@ RetVal AddComplexScalarFunc<ito::complex128>(
 }
 
 template <>
-RetVal AddComplexScalarFunc<ito::Rgba32>(
-    const DataObject* dObjIn, ito::complex128 scalar, DataObject* dObjOut)
+RetVal AddComplexScalarFunc<ito::Rgba32>(ito::complex128 scalar, DataObject* dObjResult)
 {
-    int srcTmat = 0;
     int dstTmat = 0;
-    int numMats = dObjIn->getNumPlanes();
-    const cv::Mat_<ito::Rgba32>** cvSrc = (const cv::Mat_<ito::Rgba32>**)dObjIn->get_mdata();
-    cv::Mat_<ito::Rgba32>** cvDest = (cv::Mat_<ito::Rgba32>**)dObjOut->get_mdata();
+    int numMats = dObjResult->getNumPlanes();
+    cv::Mat_<ito::Rgba32>** cvDest = (cv::Mat_<ito::Rgba32>**)dObjResult->get_mdata();
 
     if (std::abs(scalar.imag()) < std::numeric_limits<ito::float64>::epsilon())
     {
@@ -5361,9 +5293,8 @@ RetVal AddComplexScalarFunc<ito::Rgba32>(
 
         for (int nmat = 0; nmat < numMats; ++nmat)
         {
-            dstTmat = dObjOut->seekMat(nmat, numMats);
-            srcTmat = dObjIn->seekMat(nmat, numMats);
-            *(cvDest[dstTmat]) = *(cvSrc[srcTmat]) + s;
+            dstTmat = dObjResult->seekMat(nmat, numMats);
+            *(cvDest[dstTmat]) += s;
         }
     }
     else
@@ -5381,8 +5312,7 @@ RetVal AddComplexScalarFunc<ito::Rgba32>(
 }
 
 template <>
-RetVal AddComplexScalarFunc<ito::DateTime>(
-    const DataObject* dObjIn, ito::complex128 scalar, DataObject* dObjOut)
+RetVal AddComplexScalarFunc<ito::DateTime>(ito::complex128 scalar, DataObject* dObjResult)
 {
     cv::error(cv::Exception(
         CV_StsAssert,
@@ -5394,8 +5324,7 @@ RetVal AddComplexScalarFunc<ito::DateTime>(
 }
 
 template <>
-RetVal AddComplexScalarFunc<ito::TimeDelta>(
-    const DataObject* dObjIn, ito::complex128 scalar, DataObject* dObjOut)
+RetVal AddComplexScalarFunc<ito::TimeDelta>(ito::complex128 scalar, DataObject* dObjResult)
 {
     cv::error(cv::Exception(
         CV_StsAssert,
@@ -5406,13 +5335,11 @@ RetVal AddComplexScalarFunc<ito::TimeDelta>(
 	return RetVal(retOk);
 }
 
-typedef RetVal (*tAddComplexScalarFunc)(
-    const DataObject* dObjIn, ito::complex128 scalar, DataObject* dObjOut);
+typedef RetVal (*tAddComplexScalarFunc)(ito::complex128 scalar, DataObject* dObjResult);
 MAKEFUNCLIST(AddComplexScalarFunc);
 
 template <typename _Tp>
-RetVal AddTimeDeltaScalarFunc(
-    const DataObject* dObjIn, const ito::TimeDelta& scalar, DataObject* dObjOut)
+RetVal AddTimeDeltaScalarFunc(const ito::TimeDelta& scalar, DataObject* dObjResult)
 {
     cv::error(cv::Exception(
         CV_StsAssert,
@@ -5424,32 +5351,24 @@ RetVal AddTimeDeltaScalarFunc(
 }
 
 template <>
-RetVal AddTimeDeltaScalarFunc<ito::TimeDelta>(
-    const DataObject* dObjIn, const ito::TimeDelta& scalar, DataObject* dObjOut)
+RetVal AddTimeDeltaScalarFunc<ito::TimeDelta>(const ito::TimeDelta& scalar, DataObject* dObjResult)
 {
-    int srcTmat = 0;
     int dstTmat = 0;
-    int numMats = dObjIn->getNumPlanes();
-    const cv::Mat_<ito::TimeDelta>* cvSrc = nullptr;
+    int numMats = dObjResult->getNumPlanes();
     cv::Mat_<ito::TimeDelta>* cvDest = nullptr;
-    const ito::TimeDelta* srcPtr;
     ito::TimeDelta* destPtr;
 
     for (int nmat = 0; nmat < numMats; ++nmat)
     {
-        dstTmat = dObjOut->seekMat(nmat, numMats);
-        srcTmat = dObjIn->seekMat(nmat, numMats);
-        cvSrc = static_cast<const cv::Mat_<ito::TimeDelta>*>(dObjIn->get_mdata()[srcTmat]);
-        cvDest = static_cast<cv::Mat_<ito::TimeDelta>*>(dObjOut->get_mdata()[dstTmat]);
+        dstTmat = dObjResult->seekMat(nmat, numMats);
+        cvDest = static_cast<cv::Mat_<ito::TimeDelta>*>(dObjResult->get_mdata()[dstTmat]);
 
-        for (int r = 0; r < cvSrc->rows; ++r)
+        for (int r = 0; r < cvDest->rows; ++r)
         {
-            srcPtr = cvSrc->ptr<const ito::TimeDelta>(r);
             destPtr = cvDest->ptr<ito::TimeDelta>(r);
 
-            for (int c = 0; c < cvSrc->cols; ++c)
+            for (int c = 0; c < cvDest->cols; ++c)
             {
-                destPtr[c] = srcPtr[c];
                 destPtr[c].delta += scalar.delta;
             }
         }
@@ -5459,32 +5378,24 @@ RetVal AddTimeDeltaScalarFunc<ito::TimeDelta>(
 }
 
 template <>
-RetVal AddTimeDeltaScalarFunc<ito::DateTime>(
-    const DataObject* dObjIn, const ito::TimeDelta& scalar, DataObject* dObjOut)
+RetVal AddTimeDeltaScalarFunc<ito::DateTime>(const ito::TimeDelta& scalar, DataObject* dObjResult)
 {
-    int srcTmat = 0;
     int dstTmat = 0;
-    int numMats = dObjIn->getNumPlanes();
-    const cv::Mat_<ito::DateTime>* cvSrc = nullptr;
+    int numMats = dObjResult->getNumPlanes();
     cv::Mat_<ito::DateTime>* cvDest = nullptr;
-    const ito::DateTime* srcPtr;
     ito::DateTime* destPtr;
 
     for (int nmat = 0; nmat < numMats; ++nmat)
     {
-        dstTmat = dObjOut->seekMat(nmat, numMats);
-        srcTmat = dObjIn->seekMat(nmat, numMats);
-        cvSrc = static_cast<const cv::Mat_<ito::DateTime>*>(dObjIn->get_mdata()[srcTmat]);
-        cvDest = static_cast<cv::Mat_<ito::DateTime>*>(dObjOut->get_mdata()[dstTmat]);
+        dstTmat = dObjResult->seekMat(nmat, numMats);
+        cvDest = static_cast<cv::Mat_<ito::DateTime>*>(dObjResult->get_mdata()[dstTmat]);
 
-        for (int r = 0; r < cvSrc->rows; ++r)
+        for (int r = 0; r < cvDest->rows; ++r)
         {
-            srcPtr = cvSrc->ptr<const ito::DateTime>(r);
             destPtr = cvDest->ptr<ito::DateTime>(r);
 
-            for (int c = 0; c < cvSrc->cols; ++c)
+            for (int c = 0; c < cvDest->cols; ++c)
             {
-                destPtr[c] = srcPtr[c];
                 destPtr[c].datetime += scalar.delta;
             }
         }
@@ -5494,14 +5405,14 @@ RetVal AddTimeDeltaScalarFunc<ito::DateTime>(
 }
 
 typedef RetVal (*tAddTimeDeltaScalarFunc)(
-    const DataObject* dObjIn, const ito::TimeDelta& scalar, DataObject* dObjOut);
+    const ito::TimeDelta& scalar, DataObject* dObjResult);
 MAKEFUNCLIST(AddTimeDeltaScalarFunc);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! high-level, non-templated arithmetic operator for element-wise addition of values of given data
 //! object to this data object
 /*!
-    \param &rhs is the data object whose elements will be added to this data object
+    \param &destination is the data object whose elements will be added to this data object
     \return this data object
     \throws cv::Exception if both data objects don't have the same size or type
     \sa AddFunc
@@ -5539,25 +5450,25 @@ DataObject& DataObject::operator+=(const DataObject& rhs)
         break;
     }
 
-    (fListAddFunc[m_type])(this, &rhs, this);
+    (fListAddFunc[m_type])(&rhs, this);
     return *this;
 }
 
 DataObject& DataObject::operator+=(const float64& value)
 {
-    (fListAddScalarFunc[m_type])(this, value, this);
+    (fListAddScalarFunc[m_type])(value, this);
     return *this;
 }
 
 DataObject& DataObject::operator+=(const complex128& value)
 {
-    (fListAddComplexScalarFunc[m_type])(this, value, this);
+    (fListAddComplexScalarFunc[m_type])(value, this);
     return *this;
 }
 
 DataObject& DataObject::operator+=(const TimeDelta& value)
 {
-    (fListAddTimeDeltaScalarFunc[m_type])(this, value, this);
+    (fListAddTimeDeltaScalarFunc[m_type])(value, this);
     return *this;
 }
 
@@ -5565,7 +5476,7 @@ DataObject& DataObject::operator+=(const TimeDelta& value)
 //! high-level, non-templated arithmetic operator for element-wise addition of values of two given
 //! data objects
 /*!
-    \param &rhs is the data object whose elements will be added to this data object
+    \param &destination is the data object whose elements will be added to this data object
     \return new resulting data object
     \throws cv::Exception if both data objects don't have the same size or type
     \sa AddFunc
@@ -5608,15 +5519,25 @@ DataObject DataObject::operator+(const DataObject& rhs)
 
     if (m_type == ito::tTimeDelta && rhs.m_type == ito::tDateTime)
     {
-        // exception: timeDelta + dateTime returns a dateTime object.
+        // special case: timeDelta + dateTime is not possible, however
+        // dateTime + timeDelta = dateTime. Therefore swap destination and this,
+        // however always use tags, meta info etc. from this.
         rhs.copyTo(result, 1);
+
+        this->copyAxisTagsTo(result);
+        this->copyTagMapTo(result);
+
+        //... and adds the destination object afterwards
+        (fListAddFunc[ito::tDateTime])(this, &result);
     }
     else
     {
+        // copies this object to result (including tags, meta info...)
         copyTo(result, 1);
-    }
 
-    (fListAddFunc[m_type])(this, &rhs, &result);
+        //... and adds the destination object afterwards
+        (fListAddFunc[m_type])(&rhs, &result);
+    }
 
     return result;
 }
@@ -5627,7 +5548,7 @@ DataObject DataObject::operator+(const float64& value)
     result.m_continuous = this->m_continuous;
     copyTo(result, 1);
 
-    (fListAddScalarFunc[m_type])(this, value, &result);
+    (fListAddScalarFunc[m_type])(value, &result);
     return result;
 }
 
@@ -5637,7 +5558,7 @@ DataObject DataObject::operator+(const complex128& value)
     result.m_continuous = this->m_continuous;
     copyTo(result, 1);
 
-    (fListAddComplexScalarFunc[m_type])(this, value, &result);
+    (fListAddComplexScalarFunc[m_type])(value, &result);
     return result;
 }
 
@@ -5647,119 +5568,76 @@ DataObject DataObject::operator+(const TimeDelta& value)
     result.m_continuous = this->m_continuous;
     copyTo(result, 1);
 
-    (fListAddTimeDeltaScalarFunc[m_type])(this, value, &result);
+    (fListAddTimeDeltaScalarFunc[m_type])(value, &result);
     return result;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! low-level, templated method for element-wise subtraction of values from second data object from
-//! values of first data object
+//! low-level, templated method for element-wise in-line subtraction of dObjOther from the resulting dObjResult.
 /*!
-    dObjRes = dObj1 - dObj2
+    dObjResult -= dObjOther
 
-    \param *dObj1 is the first data object
-    \param *dObj2 is the second data object
-    \param *dObjRes is the pointer to the data object, where the values will be written to. This
-   data object must already be allocated. \remark The size check for all data objects must be done
-   before. \return retOk \sa operator -=, operator -
+    \param *dObjOther is the destination data object, whose elements are subtracted from dObjResult
+    \param *dObjResult is the pointer to the data object, where the values will be written to. This
+       data object must already be allocated. If an non-inline addition should be done, copy the
+       content of the first dataObject to this one first before calling this method.
+    \remark The size check for all data objects must be done before.
+    \return retOk
+    \sa operator -=, operator -
 */
 template <typename _Tp>
-RetVal SubFunc(const DataObject* dObj1, const DataObject* dObj2, DataObject* dObjRes)
+RetVal SubFunc(const DataObject* dObjOther, DataObject* dObjResult)
 {
     int nmat = 0;
-    int srcTmat1 = 0;
-    int srcTmat2 = 0;
+    int rhsTmat = 0;
     int dstTmat = 0;
-    int numMats = dObj1->getNumPlanes();
-    const cv::Mat_<_Tp>* cvSrcTmat1 = NULL;
-    const cv::Mat_<_Tp>* cvSrcTmat2 = NULL;
-    cv::Mat_<_Tp>* cvDstTmat = NULL;
+    int numMats = dObjResult->getNumPlanes();
+    const cv::Mat_<_Tp>* cvRhsTmat = nullptr;
+    cv::Mat_<_Tp>* cvDstTmat = nullptr;
 
     for (nmat = 0; nmat < numMats; nmat++)
     {
-        dstTmat = dObjRes->seekMat(nmat, numMats);
-        srcTmat1 = dObj1->seekMat(nmat, numMats);
-        srcTmat2 = dObj2->seekMat(nmat, numMats);
-        cvSrcTmat1 = static_cast<const cv::Mat_<_Tp>*>(dObj1->get_mdata()[srcTmat1]);
-        cvSrcTmat2 = static_cast<const cv::Mat_<_Tp>*>(dObj2->get_mdata()[srcTmat2]);
-        cvDstTmat = static_cast<cv::Mat_<_Tp>*>(dObjRes->get_mdata()[dstTmat]);
-        *cvDstTmat = *cvSrcTmat1 - *cvSrcTmat2;
+        dstTmat = dObjResult->seekMat(nmat, numMats);
+        rhsTmat = dObjOther->seekMat(nmat, numMats);
+        cvRhsTmat = static_cast<const cv::Mat_<_Tp>*>(dObjOther->get_mdata()[rhsTmat]);
+        cvDstTmat = static_cast<cv::Mat_<_Tp>*>(dObjResult->get_mdata()[dstTmat]);
+        *cvDstTmat -= *cvRhsTmat;
     }
 
     return retOk;
 }
 
 template <>
-RetVal SubFunc<ito::DateTime>(const DataObject* dObj1, const DataObject* dObj2, DataObject* dObjRes)
+RetVal SubFunc<ito::DateTime>(const DataObject* dObjOther, DataObject* dObjResult)
 {
-    int dType2 = dObj2->getType();
+    // subtract a TimeDelta obj (other) from this dateTime object. The result is a dateTime object.
+    assert(dObjOther->getType() == ito::tTimeDelta);
+    // further assumption: dObjResult is already equal to the first operator (based on the content)
 
-    assert(dType2 == ito::tTimeDelta || dType2 == ito::tDateTime);
-    // further assumption: dObjRes is already equal to dObj1 (based on the content)
-
-    int srcTmat1 = 0;
-    int srcTmat2 = 0;
+    int rhsTmat = 0;
     int dstTmat = 0;
-    int numMats = dObj1->getNumPlanes();
-    const cv::Mat_<ito::DateTime>* cvSrcTmat1 = nullptr;
-    const ito::DateTime* src1RowPtr = nullptr;
+    int numMats = dObjResult->getNumPlanes();
 
-    if (dType2 == ito::tTimeDelta)
+    const cv::Mat_<ito::TimeDelta>* cvRhsTmat = nullptr;
+    cv::Mat_<ito::DateTime>* cvDstTmat = nullptr;
+    ito::DateTime* dstRowPtr = nullptr;
+    const ito::TimeDelta* rhsRowPtr = nullptr;
+
+    for (int nmat = 0; nmat < numMats; ++nmat)
     {
-        const cv::Mat_<ito::TimeDelta>* cvSrcTmat2 = nullptr;
-        cv::Mat_<ito::DateTime>* cvDstTmat = nullptr;
-        ito::DateTime* dstRowPtr = nullptr;
-        const ito::TimeDelta* src2RowPtr = nullptr;
+        dstTmat = dObjResult->seekMat(nmat, numMats);
+        rhsTmat = dObjOther->seekMat(nmat, numMats);
+        cvRhsTmat = static_cast<const cv::Mat_<ito::TimeDelta>*>(dObjOther->get_mdata()[rhsTmat]);
+        cvDstTmat = static_cast<cv::Mat_<ito::DateTime>*>(dObjResult->get_mdata()[dstTmat]);
 
-        for (int nmat = 0; nmat < numMats; ++nmat)
+        for (int row = 0; row < cvDstTmat->rows; ++row)
         {
-            dstTmat = dObjRes->seekMat(nmat, numMats);
-            srcTmat1 = dObj1->seekMat(nmat, numMats);
-            srcTmat2 = dObj2->seekMat(nmat, numMats);
-            cvSrcTmat1 = static_cast<const cv::Mat_<ito::DateTime>*>(dObj1->get_mdata()[srcTmat1]);
-            cvSrcTmat2 = static_cast<const cv::Mat_<ito::TimeDelta>*>(dObj2->get_mdata()[srcTmat2]);
-            cvDstTmat = static_cast<cv::Mat_<ito::DateTime>*>(dObjRes->get_mdata()[dstTmat]);
+            dstRowPtr = cvDstTmat->ptr<ito::DateTime>(row);
+            rhsRowPtr = cvRhsTmat->ptr<ito::TimeDelta>(row);
 
-            for (int row = 0; row < cvDstTmat->rows; ++row)
+            for (int col = 0; col < cvDstTmat->cols; ++col)
             {
-                dstRowPtr = cvDstTmat->ptr<ito::DateTime>(row);
-                src1RowPtr = cvSrcTmat1->ptr<ito::DateTime>(row);
-                src2RowPtr = cvSrcTmat2->ptr<ito::TimeDelta>(row);
-
-                for (int col = 0; col < cvDstTmat->cols; ++col)
-                {
-                    dstRowPtr[col].datetime -= src2RowPtr[col].delta;
-                }
-            }
-        }
-    }
-    else
-    {
-        const cv::Mat_<ito::DateTime>* cvSrcTmat2 = nullptr;
-        cv::Mat_<ito::TimeDelta>* cvDstTmat = nullptr;
-        ito::TimeDelta* dstRowPtr = nullptr;
-        const ito::DateTime* src2RowPtr = nullptr;
-
-        for (int nmat = 0; nmat < numMats; ++nmat)
-        {
-            dstTmat = dObjRes->seekMat(nmat, numMats);
-            srcTmat1 = dObj1->seekMat(nmat, numMats);
-            srcTmat2 = dObj2->seekMat(nmat, numMats);
-            cvSrcTmat1 = static_cast<const cv::Mat_<ito::DateTime>*>(dObj1->get_mdata()[srcTmat1]);
-            cvSrcTmat2 = static_cast<const cv::Mat_<ito::DateTime>*>(dObj2->get_mdata()[srcTmat2]);
-            cvDstTmat = static_cast<cv::Mat_<ito::TimeDelta>*>(dObjRes->get_mdata()[dstTmat]);
-
-            for (int row = 0; row < cvDstTmat->rows; ++row)
-            {
-                dstRowPtr = cvDstTmat->ptr<ito::TimeDelta>(row);
-                src1RowPtr = cvSrcTmat1->ptr<ito::DateTime>(row);
-                src2RowPtr = cvSrcTmat2->ptr<ito::DateTime>(row);
-
-                for (int col = 0; col < cvDstTmat->cols; ++col)
-                {
-                    dstRowPtr[col].delta = src1RowPtr[col].datetime - src2RowPtr[col].datetime;
-                    dstRowPtr[col].delta += (src1RowPtr[col].utcOffset - src2RowPtr[col].utcOffset);
-                }
+                dstRowPtr[col].datetime -= rhsRowPtr[col].delta;
             }
         }
     }
@@ -5768,43 +5646,36 @@ RetVal SubFunc<ito::DateTime>(const DataObject* dObj1, const DataObject* dObj2, 
 }
 
 template <>
-RetVal SubFunc<ito::TimeDelta>(const DataObject* dObj1, const DataObject* dObj2, DataObject* dObjRes)
+RetVal SubFunc<ito::TimeDelta>(const DataObject* dObjOther, DataObject* dObjResult)
 {
-    assert(dObj2->getType() == ito::tTimeDelta);
+    assert(dObjOther->getType() == ito::tTimeDelta);
+    assert(dObjResult->getType() == ito::tTimeDelta);
+    // further assumption: dObjResult is already equal to dObjOther (based on the content)
 
-    int srcTmat1 = 0;
-    int srcTmat2 = 0;
+    int rhsTmat = 0;
     int dstTmat = 0;
-    int numMats = dObj1->getNumPlanes();
+    int numMats = dObjResult->getNumPlanes();
 
-    assert(dObjRes->getType() == ito::tTimeDelta);
-    // further assumption: dObjRes is already equal to dObj1 (based on the content)
-
-    const cv::Mat_<ito::TimeDelta>* cvSrcTmat1 = nullptr;
-    const cv::Mat_<ito::TimeDelta>* cvSrcTmat2 = nullptr;
+    const cv::Mat_<ito::TimeDelta>* cvRhsTmat = nullptr;
     cv::Mat_<ito::TimeDelta>* cvDstTmat = nullptr;
     ito::TimeDelta* dstRowPtr = nullptr;
-    const ito::TimeDelta* src1RowPtr = nullptr;
-    const ito::TimeDelta* src2RowPtr = nullptr;
+    const ito::TimeDelta* rhsRowPtr = nullptr;
 
     for (int nmat = 0; nmat < numMats; ++nmat)
     {
-        dstTmat = dObjRes->seekMat(nmat, numMats);
-        srcTmat1 = dObj1->seekMat(nmat, numMats);
-        srcTmat2 = dObj2->seekMat(nmat, numMats);
-        cvSrcTmat1 = static_cast<const cv::Mat_<ito::TimeDelta>*>(dObj1->get_mdata()[srcTmat1]);
-        cvSrcTmat2 = static_cast<const cv::Mat_<ito::TimeDelta>*>(dObj2->get_mdata()[srcTmat2]);
-        cvDstTmat = static_cast<cv::Mat_<ito::TimeDelta>*>(dObjRes->get_mdata()[dstTmat]);
+        dstTmat = dObjResult->seekMat(nmat, numMats);
+        rhsTmat = dObjOther->seekMat(nmat, numMats);
+        cvRhsTmat = static_cast<const cv::Mat_<ito::TimeDelta>*>(dObjOther->get_mdata()[rhsTmat]);
+        cvDstTmat = static_cast<cv::Mat_<ito::TimeDelta>*>(dObjResult->get_mdata()[dstTmat]);
 
         for (int row = 0; row < cvDstTmat->rows; ++row)
         {
             dstRowPtr = cvDstTmat->ptr<ito::TimeDelta>(row);
-            src1RowPtr = cvSrcTmat1->ptr<ito::TimeDelta>(row);
-            src2RowPtr = cvSrcTmat2->ptr<ito::TimeDelta>(row);
+            rhsRowPtr = cvRhsTmat->ptr<ito::TimeDelta>(row);
 
             for (int col = 0; col < cvDstTmat->cols; ++col)
             {
-                dstRowPtr[col].delta = src1RowPtr[col].delta - src2RowPtr[col].delta;
+                dstRowPtr[col].delta -= rhsRowPtr[col].delta;
 
             }
         }
@@ -5813,15 +5684,62 @@ RetVal SubFunc<ito::TimeDelta>(const DataObject* dObj1, const DataObject* dObj2,
     return RetVal(retOk);
 }
 
-typedef RetVal (*tSubFunc)(const DataObject* src1, const DataObject* src2, DataObject* dst);
+typedef RetVal (*tSubFunc)(const DataObject* dObjOther, DataObject* dObjResult);
 
 MAKEFUNCLIST(SubFunc);
+
+
+RetVal SubtractDateTimeFromDateTime(const DataObject* dObj1, const DataObject* dObj2, DataObject* dObjResult)
+{
+    // assert: dObj1, dObj2, dObjResult must have the same shape
+    // dObjResult must be allocated, the values are not important
+    assert(dObj1->getType() == ito::tDateTime);
+    assert(dObj2->getType() == ito::tDateTime);
+    assert(dObjResult->getType() == ito::tTimeDelta);
+
+    int srcTmat1 = 0;
+    int srcTmat2 = 0;
+    int dstTmat = 0;
+    int numMats = dObj1->getNumPlanes();
+
+    const cv::Mat_<ito::DateTime>* cvSrcTmat1 = nullptr;
+    const cv::Mat_<ito::DateTime>* cvSrcTmat2 = nullptr;
+    cv::Mat_<ito::TimeDelta>* cvDstTmat = nullptr;
+    ito::TimeDelta* dstRowPtr = nullptr;
+    const ito::DateTime* src1RowPtr = nullptr;
+    const ito::DateTime* src2RowPtr = nullptr;
+
+    for (int nmat = 0; nmat < numMats; ++nmat)
+    {
+        dstTmat = dObjResult->seekMat(nmat, numMats);
+        srcTmat1 = dObj1->seekMat(nmat, numMats);
+        srcTmat2 = dObj2->seekMat(nmat, numMats);
+        cvSrcTmat1 = static_cast<const cv::Mat_<ito::DateTime>*>(dObj1->get_mdata()[srcTmat1]);
+        cvSrcTmat2 = static_cast<const cv::Mat_<ito::DateTime>*>(dObj2->get_mdata()[srcTmat2]);
+        cvDstTmat = static_cast<cv::Mat_<ito::TimeDelta>*>(dObjResult->get_mdata()[dstTmat]);
+
+        for (int row = 0; row < cvDstTmat->rows; ++row)
+        {
+            dstRowPtr = cvDstTmat->ptr<ito::TimeDelta>(row);
+            src1RowPtr = cvSrcTmat1->ptr<ito::DateTime>(row);
+            src2RowPtr = cvSrcTmat2->ptr<ito::DateTime>(row);
+
+            for (int col = 0; col < cvDstTmat->cols; ++col)
+            {
+                dstRowPtr[col].delta = src1RowPtr[col].datetime - src2RowPtr[col].datetime;
+                dstRowPtr[col].delta += (src1RowPtr[col].utcOffset - src2RowPtr[col].utcOffset);
+            }
+        }
+    }
+
+    return RetVal(retOk);
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! high-level, non-templated arithmetic operator for element-wise subtraction of values of given
 //! data object from values of this data object
 /*!
-    \param &rhs is the data object whose elements will be subtracted from this data object
+    \param &destination is the data object whose elements will be subtracted from this data object
     \return this data object
     \throws cv::Exception if both data objects don't have the same size or type
     \sa SubFunc
@@ -5833,11 +5751,11 @@ DataObject& DataObject::operator-=(const DataObject& rhs)
     switch (m_type)
     {
     case ito::tDateTime:
-        if (rhs.m_type != ito::tTimeDelta && rhs.m_type != ito::tDateTime)
+        if (rhs.m_type != ito::tTimeDelta)
         {
             cv::error(cv::Exception(
                 CV_StsUnmatchedFormats,
-                "Only a timedelta or datetime object can be subtracted from a datetime object.", "",
+                "Only a timedelta object can be subtracted inline from a datetime object.", "",
                 __FILE__, __LINE__));
         }
         break;
@@ -5859,19 +5777,19 @@ DataObject& DataObject::operator-=(const DataObject& rhs)
         break;
     }
 
-    fListSubFunc[m_type](this, &rhs, this);
+    fListSubFunc[m_type](&rhs, this);
     return *this;
 }
 
 DataObject& DataObject::operator-=(const float64& value)
 {
-    (fListAddScalarFunc[m_type])(this, -value, this);
+    (fListAddScalarFunc[m_type])(-value, this);
     return *this;
 }
 
 DataObject& DataObject::operator-=(const complex128& value)
 {
-    (fListAddComplexScalarFunc[m_type])(this, -value, this);
+    (fListAddComplexScalarFunc[m_type])(-value, this);
     return *this;
 }
 
@@ -5879,7 +5797,7 @@ DataObject& DataObject::operator-=(const TimeDelta& value)
 {
     TimeDelta valueNeg;
     valueNeg.delta = -valueNeg.delta;
-    (fListAddTimeDeltaScalarFunc[m_type])(this, valueNeg, this);
+    (fListAddTimeDeltaScalarFunc[m_type])(valueNeg, this);
     return *this;
 }
 
@@ -5887,7 +5805,7 @@ DataObject& DataObject::operator-=(const TimeDelta& value)
 //! high-level, non-templated arithmetic operator for element-wise subtraction of values of given
 //! data object from values of this data object
 /*!
-    \param &rhs is the data object whose elements will be subtracted from this data object
+    \param &destination is the data object whose elements will be subtracted from this data object
     \return new resulting data object
     \throws cv::Exception if both data objects don't have the same size or type
     \sa SubFunc
@@ -5931,13 +5849,17 @@ DataObject DataObject::operator-(const DataObject& rhs)
     if (m_type == ito::tDateTime && rhs.m_type == ito::tDateTime)
     {
         result = DataObject(rhs.m_size, ito::tTimeDelta, rhs.m_continuous);
+        this->copyAxisTagsTo(result);
+        this->copyTagMapTo(result);
+        SubtractDateTimeFromDateTime(this, &rhs, &result);
     }
     else
     {
         this->copyTo(result, 1);
+        (fListSubFunc[m_type])(&rhs, &result);
     }
 
-    (fListSubFunc[m_type])(this, &rhs, &result);
+    
 
     return result;
 }
@@ -5948,7 +5870,7 @@ DataObject DataObject::operator-(const float64& value)
     result.m_continuous = this->m_continuous;
     copyTo(result, 1);
 
-    (fListAddScalarFunc[m_type])(this, -value, &result);
+    (fListAddScalarFunc[m_type])(-value, &result);
     return result;
 }
 
@@ -5958,7 +5880,7 @@ DataObject DataObject::operator-(const complex128& value)
     result.m_continuous = this->m_continuous;
     copyTo(result, 1);
 
-    (fListAddComplexScalarFunc[m_type])(this, -value, &result);
+    (fListAddComplexScalarFunc[m_type])(-value, &result);
     return result;
 }
 
@@ -5971,7 +5893,7 @@ DataObject DataObject::operator-(const TimeDelta& value)
     TimeDelta valueNeg = value;
     valueNeg.delta = -valueNeg.delta;
 
-    (fListAddTimeDeltaScalarFunc[m_type])(this, valueNeg, &result);
+    (fListAddTimeDeltaScalarFunc[m_type])(valueNeg, &result);
     return result;
 }
 
@@ -5981,25 +5903,25 @@ DataObject DataObject::operator-(const TimeDelta& value)
     \todo check for right definition of multiplication
 */
 template <typename _Tp>
-RetVal OpMulFunc(const DataObject* dObj1, const DataObject* dObj2, DataObject* dObjRes)
+RetVal OpMulFunc(const DataObject* dObj1, const DataObject* dObj2, DataObject* dObjResult)
 {
     int nmat = 0;
     int srcTmat1 = 0;
     int srcTmat2 = 0;
     int dstTmat = 0;
     int numMats = dObj1->getNumPlanes();
-    const cv::Mat_<_Tp>* cvSrcTmat1 = NULL;
-    const cv::Mat_<_Tp>* cvSrcTmat2 = NULL;
-    cv::Mat_<_Tp>* cvDstTmat = NULL;
+    const cv::Mat_<_Tp>* cvSrcTmat1 = nullptr;
+    const cv::Mat_<_Tp>* cvSrcTmat2 = nullptr;
+    cv::Mat_<_Tp>* cvDstTmat = nullptr;
 
     for (nmat = 0; nmat < numMats; nmat++)
     {
-        dstTmat = dObjRes->seekMat(nmat, numMats);
+        dstTmat = dObjResult->seekMat(nmat, numMats);
         srcTmat1 = dObj1->seekMat(nmat, numMats);
         srcTmat2 = dObj2->seekMat(nmat, numMats);
         cvSrcTmat1 = static_cast<const cv::Mat_<_Tp>*>(dObj1->get_mdata()[srcTmat1]);
         cvSrcTmat2 = static_cast<const cv::Mat_<_Tp>*>(dObj2->get_mdata()[srcTmat2]);
-        cvDstTmat = static_cast<cv::Mat_<_Tp>*>(dObjRes->get_mdata()[dstTmat]);
+        cvDstTmat = static_cast<cv::Mat_<_Tp>*>(dObjResult->get_mdata()[dstTmat]);
         *cvDstTmat = *cvSrcTmat1 * *cvSrcTmat2;
     }
 
@@ -6011,7 +5933,7 @@ typedef RetVal (*tOpMulFunc)(const DataObject* src1, const DataObject* src2, Dat
 MAKEFUNCLIST(OpMulFunc);
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! inplace matrix multiplication of this dataObject with rhs (this *= rhs)
+//! inplace matrix multiplication of this dataObject with destination (this *= destination)
 /*!
     This multiplication is only implemented for float32 and float64. The matrix multiplication is
    only executed plane-by-plane, hence, the multiplication is done separately for each plane. This
@@ -6084,24 +6006,30 @@ DataObject& DataObject::operator*=(const DataObject& rhs)
             __LINE__));
     }
 
-    if (m_size[m_dims - 1] ==
-        rhs.m_size[m_dims - 1]) // The shape of the multiplication result has the same shape than
-                                // this matrix. Inplace is possible.
+    if (m_size[m_dims - 1] == rhs.m_size[m_dims - 1]) 
     {
+        // The shape of the multiplication result has the same shape than
+        // this matrix. Inplace is possible.
         fListOpMulFunc[m_type](this, &rhs, this);
         return *this;
     }
     else
     {
         int* sizes = new int[m_dims];
+
         for (int i = 0; i < m_dims - 2; ++i)
         {
             sizes[i] = m_size[i];
         }
+
         sizes[m_dims - 2] = m_size[m_dims - 2];
         sizes[m_dims - 1] = rhs.m_size[m_dims - 1];
         DataObject result(m_dims, sizes, m_type);
         delete[] sizes;
+
+        copyAxisTagsTo(result);
+        copyTagMapTo(result);
+        
         fListOpMulFunc[m_type](this, &rhs, &result);
         *this = result;
         return *this;
@@ -6109,7 +6037,7 @@ DataObject& DataObject::operator*=(const DataObject& rhs)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! matrix multiplication of this dataObject with rhs. The result is returned.
+//! matrix multiplication of this dataObject with destination. The result is returned.
 /*!
     This multiplication is only implemented for float32 and float64. The matrix multiplication is
    only executed plane-by-plane, hence, the multiplication is done separately for each plane.
@@ -6181,14 +6109,21 @@ DataObject DataObject::operator*(const DataObject& rhs)
     }
 
     int* sizes = new int[m_dims];
+
     for (int i = 0; i < m_dims - 2; ++i)
     {
         sizes[i] = m_size[i];
     }
+
     sizes[m_dims - 2] = m_size[m_dims - 2];
     sizes[m_dims - 1] = rhs.m_size[m_dims - 1];
+
     DataObject result(m_dims, sizes, m_type);
     delete[] sizes;
+
+    copyAxisTagsTo(result);
+    copyTagMapTo(result);
+
     fListOpMulFunc[m_type](this, &rhs, &result);
     return result;
 }
@@ -6205,7 +6140,7 @@ template <typename _Tp> RetVal OpScalarMulFunc(DataObject* src, const float64& f
     int numMats = src->getNumPlanes();
     int MatNum = 0;
 
-    cv::Mat* tempMat = NULL;
+    cv::Mat* tempMat = nullptr;
 
     for (int nmat = 0; nmat < numMats; nmat++)
     {
@@ -6216,13 +6151,14 @@ template <typename _Tp> RetVal OpScalarMulFunc(DataObject* src, const float64& f
 #pragma omp parallel num_threads(getMaximumThreadCount())
         {
 #endif
-            _Tp* dstPtr = NULL;
+            _Tp* dstPtr = nullptr;
 #if (USEOMP)
 #pragma omp for schedule(guided)
 #endif
             for (int y = 0; y < tempMat->rows; ++y)
             {
                 dstPtr = tempMat->ptr<_Tp>(y);
+
                 for (int x = 0; x < tempMat->cols; ++x)
                 {
                     dstPtr[x] = cv::saturate_cast<_Tp>(dstPtr[x] * factor);
@@ -6242,7 +6178,7 @@ template <> RetVal OpScalarMulFunc<ito::complex64>(DataObject* src, const float6
     int MatNum = 0;
     ito::complex64 factor2 = ito::complex64(cv::saturate_cast<ito::float32>(factor), 0.0);
 
-    cv::Mat* tempMat = NULL;
+    cv::Mat* tempMat = nullptr;
 
     for (int nmat = 0; nmat < numMats; nmat++)
     {
@@ -6253,13 +6189,14 @@ template <> RetVal OpScalarMulFunc<ito::complex64>(DataObject* src, const float6
 #pragma omp parallel num_threads(getMaximumThreadCount())
         {
 #endif
-            ito::complex64* dstPtr = NULL;
+            ito::complex64* dstPtr = nullptr;
 #if (USEOMP)
 #pragma omp for schedule(guided)
 #endif
             for (int y = 0; y < tempMat->rows; y++)
             {
                 dstPtr = tempMat->ptr<ito::complex64>(y);
+
                 for (int x = 0; x < tempMat->cols; x++)
                 {
                     dstPtr[x] = cv::saturate_cast<ito::complex64>(dstPtr[x] * factor2);
@@ -6278,7 +6215,7 @@ template <> RetVal OpScalarMulFunc<ito::complex128>(DataObject* src, const float
     int numMats = src->getNumPlanes();
     int MatNum = 0;
     ito::complex128 factor2 = ito::complex128(cv::saturate_cast<ito::float64>(factor), 0.0);
-    cv::Mat* tempMat = NULL;
+    cv::Mat* tempMat = nullptr;
 
     for (int nmat = 0; nmat < numMats; nmat++)
     {
@@ -6289,13 +6226,14 @@ template <> RetVal OpScalarMulFunc<ito::complex128>(DataObject* src, const float
 #pragma omp parallel num_threads(getMaximumThreadCount())
         {
 #endif
-            ito::complex128* dstPtr = NULL;
+            ito::complex128* dstPtr = nullptr;
 #if (USEOMP)
 #pragma omp for schedule(guided)
 #endif
             for (int y = 0; y < tempMat->rows; y++)
             {
                 dstPtr = tempMat->ptr<ito::complex128>(y);
+
                 for (int x = 0; x < tempMat->cols; x++)
                 {
                     dstPtr[x] = cv::saturate_cast<ito::complex128>(dstPtr[x] * factor2);
@@ -6319,7 +6257,7 @@ template <> RetVal OpScalarMulFunc<ito::Rgba32>(DataObject* src, const float64& 
              ? (ito::uint32)0
              : (factor > 4294967295 ? (ito::uint32)0xFFFFFFFF : (ito::uint32)(factor + 0.5)));
 
-    cv::Mat* tempMat = NULL;
+    cv::Mat* tempMat = nullptr;
 
     for (int nmat = 0; nmat < numMats; nmat++)
     {
@@ -6330,13 +6268,14 @@ template <> RetVal OpScalarMulFunc<ito::Rgba32>(DataObject* src, const float64& 
 #pragma omp parallel num_threads(getMaximumThreadCount())
         {
 #endif
-            ito::Rgba32* dstPtr = NULL;
+            ito::Rgba32* dstPtr = nullptr;
 #if (USEOMP)
 #pragma omp for schedule(guided)
 #endif
             for (int y = 0; y < tempMat->rows; y++)
             {
                 dstPtr = tempMat->ptr<ito::Rgba32>(y);
+
                 for (int x = 0; x < tempMat->cols; x++)
                 {
                     dstPtr[x] *= factor2;
@@ -6409,7 +6348,7 @@ template <typename _Tp> RetVal OpScalarComplexMulFunc(DataObject* src, const com
     int numMats = src->getNumPlanes();
     int MatNum = 0;
 
-    cv::Mat* tempMat = NULL;
+    cv::Mat* tempMat = nullptr;
 
     if (std::abs(factor.imag()) < std::numeric_limits<ito::float64>::epsilon())
     {
@@ -6424,13 +6363,14 @@ template <typename _Tp> RetVal OpScalarComplexMulFunc(DataObject* src, const com
 #pragma omp parallel num_threads(getMaximumThreadCount())
             {
 #endif
-                _Tp* dstPtr = NULL;
+                _Tp* dstPtr = nullptr;
 #if (USEOMP)
 #pragma omp for schedule(guided)
 #endif
                 for (int y = 0; y < tempMat->rows; ++y)
                 {
                     dstPtr = tempMat->ptr<_Tp>(y);
+
                     for (int x = 0; x < tempMat->cols; ++x)
                     {
                         dstPtr[x] = cv::saturate_cast<_Tp>(dstPtr[x] * factor2);
@@ -6461,7 +6401,7 @@ template <> RetVal OpScalarComplexMulFunc<ito::complex64>(DataObject* src, const
     int MatNum = 0;
     ito::complex64 factor2 = cv::saturate_cast<complex64>(factor);
 
-    cv::Mat* tempMat = NULL;
+    cv::Mat* tempMat = nullptr;
 
     for (int nmat = 0; nmat < numMats; nmat++)
     {
@@ -6472,13 +6412,14 @@ template <> RetVal OpScalarComplexMulFunc<ito::complex64>(DataObject* src, const
 #pragma omp parallel num_threads(getMaximumThreadCount())
         {
 #endif
-            ito::complex64* dstPtr = NULL;
+            ito::complex64* dstPtr = nullptr;
 #if (USEOMP)
 #pragma omp for schedule(guided)
 #endif
             for (int y = 0; y < tempMat->rows; y++)
             {
                 dstPtr = tempMat->ptr<ito::complex64>(y);
+
                 for (int x = 0; x < tempMat->cols; x++)
                 {
                     dstPtr[x] = cv::saturate_cast<ito::complex64>(dstPtr[x] * factor2);
@@ -6498,7 +6439,7 @@ RetVal OpScalarComplexMulFunc<ito::complex128>(DataObject* src, const complex128
     int numMats = src->getNumPlanes();
     int MatNum = 0;
 
-    cv::Mat* tempMat = NULL;
+    cv::Mat* tempMat = nullptr;
 
     for (int nmat = 0; nmat < numMats; nmat++)
     {
@@ -6509,13 +6450,14 @@ RetVal OpScalarComplexMulFunc<ito::complex128>(DataObject* src, const complex128
 #pragma omp parallel num_threads(getMaximumThreadCount())
         {
 #endif
-            ito::complex128* dstPtr = NULL;
+            ito::complex128* dstPtr = nullptr;
 #if (USEOMP)
 #pragma omp for schedule(guided)
 #endif
             for (int y = 0; y < tempMat->rows; y++)
             {
                 dstPtr = tempMat->ptr<ito::complex128>(y);
+
                 for (int x = 0; x < tempMat->cols; x++)
                 {
                     dstPtr[x] = cv::saturate_cast<ito::complex128>(dstPtr[x] * factor);
@@ -6543,7 +6485,7 @@ template <> RetVal OpScalarComplexMulFunc<ito::Rgba32>(DataObject* src, const co
                  : (factor.real() > 4294967295 ? (ito::uint32)0xFFFFFFFF
                                                : (ito::uint32)(factor.real() + 0.5)));
 
-        cv::Mat* tempMat = NULL;
+        cv::Mat* tempMat = nullptr;
 
         for (int nmat = 0; nmat < numMats; nmat++)
         {
@@ -6554,13 +6496,14 @@ template <> RetVal OpScalarComplexMulFunc<ito::Rgba32>(DataObject* src, const co
 #pragma omp parallel num_threads(getMaximumThreadCount())
             {
 #endif
-                ito::Rgba32* dstPtr = NULL;
+                ito::Rgba32* dstPtr = nullptr;
 #if (USEOMP)
 #pragma omp for schedule(guided)
 #endif
                 for (int y = 0; y < tempMat->rows; y++)
                 {
                     dstPtr = tempMat->ptr<ito::Rgba32>(y);
+
                     for (int x = 0; x < tempMat->cols; x++)
                     {
                         dstPtr[x] *= factor2;
@@ -6619,14 +6562,12 @@ MAKEFUNCLIST(OpScalarComplexMulFunc);
 DataObject& DataObject::operator*=(const float64& factor)
 {
     fListOpScalarMulFunc[m_type](this, factor);
-
     return *this;
 }
 
 DataObject& DataObject::operator*=(const complex128& factor)
 {
     fListOpScalarComplexMulFunc[m_type](this, factor);
-
     return *this;
 }
 
@@ -6641,7 +6582,6 @@ DataObject DataObject::operator*(const float64& factor)
     DataObject result;
     result.m_continuous = m_continuous;
     copyTo(result, 1);
-
     result *= factor;
     return result;
 }
@@ -6651,7 +6591,6 @@ DataObject DataObject::operator*(const complex128& factor)
     DataObject result;
     result.m_continuous = m_continuous;
     copyTo(result, 1);
-
     result *= factor;
     return result;
 }
@@ -6701,11 +6640,35 @@ template <>
 void CmpFunc<ito::int8>(
     const DataObject* src1, const DataObject* src2, DataObject* dst, cv::CmpTypes cmpOp)
 {
+#if CV_VERSION_MAJOR == 2 && CV_VERSION_MINOR <= 2
     cv::error(cv::Exception(
-        CV_StsAssert, "Compare operator not defined for int8.", "", __FILE__, __LINE__));
+        CV_StsAssert, "Compare operator not defined for int8 for OpenCV <= 2.2.", "", __FILE__, __LINE__));
+#else
+    int numMats = src1->getNumPlanes();
+    int lhsMatNum = 0;
+    int rhsMatNum = 0;
+    int resMatNum = 0;
+
+    const cv::Mat* src1mat;
+    const cv::Mat* src2mat;
+    cv::Mat* dest;
+
+    for (int nmat = 0; nmat < numMats; nmat++)
+    {
+        lhsMatNum = src1->seekMat(nmat, numMats);
+        rhsMatNum = src2->seekMat(nmat, numMats);
+        resMatNum = dst->seekMat(nmat, numMats);
+
+        src1mat = src1->get_mdata()[lhsMatNum];
+        src2mat = src2->get_mdata()[rhsMatNum];
+        dest = dst->get_mdata()[resMatNum];
+
+        cv::compare(*src1mat, *src2mat, *dest, cmpOp);
+    }
+#endif
 }
 
-//! template specialisation for compare function of type complex64
+//! template specialization for compare function of type complex64
 /*!
     \throws cv::Exception since comparison is not defined for complex input types
 */
@@ -6776,7 +6739,7 @@ void CmpFunc<ito::Rgba32>(
     }
 }
 
-//! template specialisation for compare function of type complex64
+//! template specialization for compare function of type complex64
 /*!
     \throws cv::Exception since comparison is not defined for complex input types
 */
@@ -6853,7 +6816,7 @@ void CmpFunc<ito::complex64>(
     }
 }
 
-//! template specialisation for compare function of type complex64
+//! template specialization for compare function of type complex64
 /*!
     \throws cv::Exception since comparison is not defined for complex input types
 */
@@ -6930,7 +6893,7 @@ void CmpFunc<ito::complex128>(
     }
 }
 
-//! template specialisation for compare function of type complex64
+//! template specialization for compare function of type complex64
 /*!
     \throws cv::Exception since comparison is not defined for complex input types
 */
@@ -7115,7 +7078,7 @@ MAKEFUNCLIST(CmpFunc);
 
 //! compare operator, compares for "lower than"
 /*!
-    \param &rhs is the data object with which this data object should element-wisely be compared
+    \param &destination is the data object with which this data object should element-wisely be compared
     \return compare matrix of type uint8, which contains 0 or 1, depending on the result of the
    element-wise comparison \throws cv::Exception if both data objects doesn't have the same size or
    type \sa CmpFunc
@@ -7130,6 +7093,8 @@ DataObject DataObject::operator<(DataObject& rhs)
     }
 
     DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous | rhs.m_continuous);
+    copyAxisTagsToExtended(resMat, true, false);
+    copyTagMapTo(resMat);
     fListCmpFunc[m_type](this, &rhs, &resMat, cv::CMP_LT);
 
     return resMat;
@@ -7137,19 +7102,33 @@ DataObject DataObject::operator<(DataObject& rhs)
 
 //! compare operator, compares for "bigger than"
 /*!
-    \param &rhs is the data object with which this data object should element-wisely be compared
+    \param &destination is the data object with which this data object should element-wisely be compared
     \return compare matrix of type uint8, which contains 0 or 1, depending on the result of the
    element-wise comparison \throws cv::Exception if both data objects doesn't have the same size or
    type \sa CmpFunc
 */
 DataObject DataObject::operator>(DataObject& rhs)
 {
+    if ((m_size != rhs.m_size) || (m_type != rhs.m_type))
+    {
+        cv::error(cv::Exception(
+            CV_StsAssert, "DataObject - operands differ in size or type", "", __FILE__, __LINE__));
+        return *this;
+    }
+
+    DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous | rhs.m_continuous);
+    copyAxisTagsToExtended(resMat, true, false);
+    copyTagMapTo(resMat);
+    fListCmpFunc[m_type](this, &rhs, &resMat, cv::CMP_GT);
+
+    return resMat;
+
     return rhs < *this;
 }
 
 //! compare operator, compares for "lower or equal than"
 /*!
-    \param &rhs is the data object with which this data object should element-wisely be compared
+    \param &destination is the data object with which this data object should element-wisely be compared
     \return compare matrix of type uint8, which contains 0 or 1, depending on the result of the
    element-wise comparison \throws cv::Exception if both data objects doesn't have the same size or
    type \sa CmpFunc
@@ -7164,6 +7143,8 @@ DataObject DataObject::operator<=(DataObject& rhs)
     }
 
     DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous | rhs.m_continuous);
+    copyAxisTagsToExtended(resMat, true, false);
+    copyTagMapTo(resMat);
     fListCmpFunc[m_type](this, &rhs, &resMat, cv::CMP_LE);
 
     return resMat;
@@ -7171,19 +7152,31 @@ DataObject DataObject::operator<=(DataObject& rhs)
 
 //! compare operator, compares for "bigger or equal than"
 /*!
-    \param &rhs is the data object with which this data object should element-wisely be compared
+    \param &destination is the data object with which this data object should element-wisely be compared
     \return compare matrix of type uint8, which contains 0 or 1, depending on the result of the
    element-wise comparison \throws cv::Exception if both data objects doesn't have the same size or
    type \sa CmpFunc
 */
 DataObject DataObject::operator>=(DataObject& rhs)
 {
-    return rhs <= *this;
+    if ((m_size != rhs.m_size) || (m_type != rhs.m_type))
+    {
+        cv::error(cv::Exception(
+            CV_StsAssert, "DataObject - operands differ in size or type", "", __FILE__, __LINE__));
+        return *this;
+    }
+
+    DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous | rhs.m_continuous);
+    copyAxisTagsToExtended(resMat, true, false);
+    copyTagMapTo(resMat);
+    fListCmpFunc[m_type](this, &rhs, &resMat, cv::CMP_GE);
+
+    return resMat;
 }
 
 //! compare operator, compares for "equal to"
 /*!
-    \param &rhs is the data object with which this data object should element-wisely be compared
+    \param &destination is the data object with which this data object should element-wisely be compared
     \return compare matrix of type uint8, which contains 0 or 1, depending on the result of the
    element-wise comparison \throws cv::Exception if both data objects doesn't have the same size or
    type \sa CmpFunc
@@ -7198,7 +7191,8 @@ DataObject DataObject::operator==(DataObject& rhs)
     }
 
     DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous | rhs.m_continuous);
-
+    copyAxisTagsToExtended(resMat, true, false);
+    copyTagMapTo(resMat);
     fListCmpFunc[m_type](this, &rhs, &resMat, cv::CMP_EQ);
 
     return resMat;
@@ -7206,7 +7200,7 @@ DataObject DataObject::operator==(DataObject& rhs)
 
 //! compare operator, compares for "unequal to"
 /*!
-    \param &rhs is the data object with which this data object should element-wisely be compared
+    \param &destination is the data object with which this data object should element-wisely be compared
     \return compare matrix of type uint8, which contains 0 or 1, depending on the result of the
    element-wise comparison \throws cv::Exception if both data objects doesn't have the same size or
    type \sa CmpFunc
@@ -7221,6 +7215,8 @@ DataObject DataObject::operator!=(DataObject& rhs)
     }
 
     DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous | rhs.m_continuous);
+    copyAxisTagsToExtended(resMat, true, false);
+    copyTagMapTo(resMat);
     fListCmpFunc[m_type](this, &rhs, &resMat, cv::CMP_NE);
 
     return resMat;
@@ -7520,10 +7516,12 @@ RetVal CmpFuncScalar(const DataObject* src, const float64& value, DataObject* ds
             __FILE__,
             __LINE__));
         break;
+#if CV_VERSION_MAJOR == 2 && CV_VERSION_MINOR <= 2
     case ito::tInt8:
         cv::error(cv::Exception(
             CV_StsAssert, "Compare operator not defined for int8.", "", __FILE__, __LINE__));
         break;
+#endif
     }
 
     const int numMats = src->getNumPlanes();
@@ -7562,6 +7560,8 @@ MAKEFUNCLIST(CmpFuncScalar);
 DataObject DataObject::operator<(const float64& value)
 {
     DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
+    copyAxisTagsToExtended(resMat, true, false);
+    copyTagMapTo(resMat);
     RetVal retValue = fListCmpFuncScalar[m_type](this, value, &resMat, cv::CMP_LT);
 
     return resMat;
@@ -7577,6 +7577,8 @@ DataObject DataObject::operator<(const float64& value)
 DataObject DataObject::operator>(const float64& value)
 {
     DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
+    copyAxisTagsToExtended(resMat, true, false);
+    copyTagMapTo(resMat);
     RetVal retValue = fListCmpFuncScalar[m_type](this, value, &resMat, cv::CMP_GT);
 
     return resMat;
@@ -7592,6 +7594,8 @@ DataObject DataObject::operator>(const float64& value)
 DataObject DataObject::operator<=(const float64& value)
 {
     DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
+    copyAxisTagsToExtended(resMat, true, false);
+    copyTagMapTo(resMat);
     RetVal retValue = fListCmpFuncScalar[m_type](this, value, &resMat, cv::CMP_LE);
 
     return resMat;
@@ -7607,6 +7611,8 @@ DataObject DataObject::operator<=(const float64& value)
 DataObject DataObject::operator>=(const float64& value)
 {
     DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
+    copyAxisTagsToExtended(resMat, true, false);
+    copyTagMapTo(resMat);
     RetVal retValue = fListCmpFuncScalar[m_type](this, value, &resMat, cv::CMP_GE);
 
     return resMat;
@@ -7622,6 +7628,8 @@ DataObject DataObject::operator>=(const float64& value)
 DataObject DataObject::operator==(const float64& value)
 {
     DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
+    copyAxisTagsToExtended(resMat, true, false);
+    copyTagMapTo(resMat);
     RetVal retValue = fListCmpFuncScalar[m_type](this, value, &resMat, cv::CMP_EQ);
 
     return resMat;
@@ -7637,6 +7645,8 @@ DataObject DataObject::operator==(const float64& value)
 DataObject DataObject::operator!=(const float64& value)
 {
     DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
+    copyAxisTagsToExtended(resMat, true, false);
+    copyTagMapTo(resMat);
     fListCmpFuncScalar[m_type](this, value, &resMat, cv::CMP_NE);
 
     return resMat;
@@ -7758,6 +7768,8 @@ void ScalarDateTimeCmp(
 DataObject DataObject::operator<(const DateTime& value)
 {
     DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
+    copyAxisTagsToExtended(resMat, true, false);
+    copyTagMapTo(resMat);
     ScalarDateTimeCmp(this, &resMat, value, cv::CMP_LT);
     return resMat;
 }
@@ -7772,6 +7784,8 @@ DataObject DataObject::operator<(const DateTime& value)
 DataObject DataObject::operator>(const DateTime& value)
 {
     DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
+    copyAxisTagsToExtended(resMat, true, false);
+    copyTagMapTo(resMat);
     ScalarDateTimeCmp(this, &resMat, value, cv::CMP_GT);
     return resMat;
 }
@@ -7786,6 +7800,8 @@ DataObject DataObject::operator>(const DateTime& value)
 DataObject DataObject::operator<=(const DateTime& value)
 {
     DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
+    copyAxisTagsToExtended(resMat, true, false);
+    copyTagMapTo(resMat);
     ScalarDateTimeCmp(this, &resMat, value, cv::CMP_LE);
     return resMat;
 }
@@ -7800,6 +7816,8 @@ DataObject DataObject::operator<=(const DateTime& value)
 DataObject DataObject::operator>=(const DateTime& value)
 {
     DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
+    copyAxisTagsToExtended(resMat, true, false);
+    copyTagMapTo(resMat);
     ScalarDateTimeCmp(this, &resMat, value, cv::CMP_GE);
     return resMat;
 }
@@ -7814,6 +7832,8 @@ DataObject DataObject::operator>=(const DateTime& value)
 DataObject DataObject::operator==(const DateTime& value)
 {
     DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
+    copyAxisTagsToExtended(resMat, true, false);
+    copyTagMapTo(resMat);
     ScalarDateTimeCmp(this, &resMat, value, cv::CMP_EQ);
     return resMat;
 }
@@ -7828,8 +7848,9 @@ DataObject DataObject::operator==(const DateTime& value)
 DataObject DataObject::operator!=(const DateTime& value)
 {
     DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
+    copyAxisTagsToExtended(resMat, true, false);
+    copyTagMapTo(resMat);
     ScalarDateTimeCmp(this, &resMat, value, cv::CMP_NE);
-
     return resMat;
 }
 
@@ -7937,6 +7958,8 @@ void ScalarTimeDeltaCmp(
 DataObject DataObject::operator<(const TimeDelta& value)
 {
     DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
+    copyAxisTagsToExtended(resMat, true, false);
+    copyTagMapTo(resMat);
     ScalarTimeDeltaCmp(this, &resMat, value, cv::CMP_LT);
     return resMat;
 }
@@ -7951,6 +7974,8 @@ DataObject DataObject::operator<(const TimeDelta& value)
 DataObject DataObject::operator>(const TimeDelta& value)
 {
     DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
+    copyAxisTagsToExtended(resMat, true, false);
+    copyTagMapTo(resMat);
     ScalarTimeDeltaCmp(this, &resMat, value, cv::CMP_GT);
     return resMat;
 }
@@ -7965,6 +7990,8 @@ DataObject DataObject::operator>(const TimeDelta& value)
 DataObject DataObject::operator<=(const TimeDelta& value)
 {
     DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
+    copyAxisTagsToExtended(resMat, true, false);
+    copyTagMapTo(resMat);
     ScalarTimeDeltaCmp(this, &resMat, value, cv::CMP_LE);
     return resMat;
 }
@@ -7979,6 +8006,8 @@ DataObject DataObject::operator<=(const TimeDelta& value)
 DataObject DataObject::operator>=(const TimeDelta& value)
 {
     DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
+    copyAxisTagsToExtended(resMat, true, false);
+    copyTagMapTo(resMat);
     ScalarTimeDeltaCmp(this, &resMat, value, cv::CMP_GE);
     return resMat;
 }
@@ -7993,6 +8022,8 @@ DataObject DataObject::operator>=(const TimeDelta& value)
 DataObject DataObject::operator==(const TimeDelta& value)
 {
     DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
+    copyAxisTagsToExtended(resMat, true, false);
+    copyTagMapTo(resMat);
     ScalarTimeDeltaCmp(this, &resMat, value, cv::CMP_EQ);
     return resMat;
 }
@@ -8007,8 +8038,9 @@ DataObject DataObject::operator==(const TimeDelta& value)
 DataObject DataObject::operator!=(const TimeDelta& value)
 {
     DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
+    copyAxisTagsToExtended(resMat, true, false);
+    copyTagMapTo(resMat);
     ScalarTimeDeltaCmp(this, &resMat, value, cv::CMP_NE);
-
     return resMat;
 }
 
@@ -8096,6 +8128,8 @@ void ScalarRgbaCmp(
 DataObject DataObject::operator==(const Rgba32& value)
 {
     DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
+    copyAxisTagsToExtended(resMat, true, false);
+    copyTagMapTo(resMat);
     ScalarRgbaCmp(this, &resMat, value, cv::CMP_EQ);
     return resMat;
 }
@@ -8110,8 +8144,9 @@ DataObject DataObject::operator==(const Rgba32& value)
 DataObject DataObject::operator!=(const Rgba32& value)
 {
     DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
+    copyAxisTagsToExtended(resMat, true, false);
+    copyTagMapTo(resMat);
     ScalarRgbaCmp(this, &resMat, value, cv::CMP_NE);
-
     return resMat;
 }
 
@@ -8127,8 +8162,9 @@ DataObject DataObject::operator!=(const Rgba32& value)
 DataObject DataObject::operator!=(const ito::complex64& value)
 {
     DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
+    copyAxisTagsToExtended(resMat, true, false);
+    copyTagMapTo(resMat);
     CmpFuncScalarComplex64(this, value, &resMat, cv::CMP_NE);
-
     return resMat;
 }
 
@@ -8136,16 +8172,18 @@ DataObject DataObject::operator!=(const ito::complex64& value)
 DataObject DataObject::operator==(const ito::complex64& value)
 {
     DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
+    copyAxisTagsToExtended(resMat, true, false);
+    copyTagMapTo(resMat);
     CmpFuncScalarComplex64(this, value, &resMat, cv::CMP_EQ);
-
     return resMat;
 }
 
 DataObject DataObject::operator!=(const ito::complex128& value)
 {
     DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
+    copyAxisTagsToExtended(resMat, true, false);
+    copyTagMapTo(resMat);
     CmpFuncScalarComplex128(this, value, &resMat, cv::CMP_NE);
-
     return resMat;
 }
 
@@ -8153,8 +8191,9 @@ DataObject DataObject::operator!=(const ito::complex128& value)
 DataObject DataObject::operator==(const ito::complex128& value)
 {
     DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
+    copyAxisTagsToExtended(resMat, true, false);
+    copyTagMapTo(resMat);
     CmpFuncScalarComplex128(this, value, &resMat, cv::CMP_EQ);
-
     return resMat;
 }
 
@@ -8178,8 +8217,8 @@ template <typename _Tp> RetVal ShiftLFunc(DataObject* src, const unsigned char s
     int MatNum = 0;
 
     cv::Mat_<_Tp>* tempMat = NULL;
-    int sizex = static_cast<int>(src->getSize(src->getDims() - 1));
-    int sizey = static_cast<int>(src->getSize(src->getDims() - 2));
+    int sizex = src->getSize(src->getDims() - 1);
+    int sizey = src->getSize(src->getDims() - 2);
     for (int nmat = 0; nmat < numMats; nmat++)
     {
         MatNum = src->seekMat(nmat, numMats);
@@ -8218,7 +8257,7 @@ template <> RetVal ShiftLFunc<ito::float32>(DataObject* /*src*/, const unsigned 
 {
     cv::error(cv::Exception(
         CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
-    return ito::retOk;
+    return ito::retError;
 }
 
 //! template specialisation for shift function of type float64
@@ -8229,7 +8268,7 @@ template <> RetVal ShiftLFunc<ito::float64>(DataObject* /*src*/, const unsigned 
 {
     cv::error(cv::Exception(
         CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
-    return ito::retOk;
+    return ito::retError;
 }
 
 //! template specialisation for shift function of type complex64
@@ -8240,7 +8279,7 @@ template <> RetVal ShiftLFunc<ito::complex64>(DataObject* /*src*/, const unsigne
 {
     cv::error(cv::Exception(
         CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
-    return ito::retOk;
+    return ito::retError;
 }
 
 //! template specialisation for shift function of type complex128
@@ -8252,7 +8291,7 @@ RetVal ShiftLFunc<ito::complex128>(DataObject* /*src*/, const unsigned char /*sh
 {
     cv::error(cv::Exception(
         CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
-    return ito::retOk;
+    return ito::retError;
 }
 
 //! template specialisation for shift function of type rgba32
@@ -8263,7 +8302,7 @@ template <> RetVal ShiftLFunc<ito::Rgba32>(DataObject* /*src*/, const unsigned c
 {
     cv::error(cv::Exception(
         CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
-    return ito::retOk;
+    return ito::retError;
 }
 
 //! template specialisation for shift function of type DateTime
@@ -8274,10 +8313,10 @@ template <> RetVal ShiftLFunc<ito::DateTime>(DataObject* /*src*/, const unsigned
 {
     cv::error(cv::Exception(
         CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
-    return ito::retOk;
+    return ito::retError;
 }
 
-//! template specialisation for shift function of type TimeDelta
+//! template specialization for shift function of type TimeDelta
 /*!
     \throws cv::Exception since shifting is not defined for that input type
 */
@@ -8347,8 +8386,8 @@ template <typename _Tp> RetVal ShiftRFunc(DataObject* src, const unsigned char s
     int MatNum = 0;
 
     cv::Mat_<_Tp>* tempMat = NULL;
-    int sizex = static_cast<int>(src->getSize(src->getDims() - 1));
-    int sizey = static_cast<int>(src->getSize(src->getDims() - 2));
+    int sizex = src->getSize(src->getDims() - 1);
+    int sizey = src->getSize(src->getDims() - 2);
     for (int nmat = 0; nmat < numMats; nmat++)
     {
         MatNum = src->seekMat(nmat, numMats);
@@ -8511,12 +8550,12 @@ DataObject DataObject::operator>>(const unsigned int shiftbit)
 /*!
     \param *dObj1 is the first data object
     \param *dObj2 is the second data object
-    \param *dObjRes is the data object, where the result is stored
+    \param *dObjResult is the data object, where the result is stored
     \throws cv::Exception for unsupported data types (template specialization)
     \return retOk
 */
 template <typename _Tp>
-RetVal BitAndFunc(const DataObject* dObj1, const DataObject* dObj2, DataObject* dObjRes)
+RetVal BitAndFunc(const DataObject* dObj1, const DataObject* dObj2, DataObject* dObjResult)
 {
     int numMats = dObj1->getNumPlanes();
     int lhsMatNum = 0;
@@ -8525,13 +8564,13 @@ RetVal BitAndFunc(const DataObject* dObj1, const DataObject* dObj2, DataObject* 
 
     const cv::Mat_<_Tp>** dobj1mats = reinterpret_cast<const cv::Mat_<_Tp>**>(dObj1->get_mdata());
     const cv::Mat_<_Tp>** dobj2mats = reinterpret_cast<const cv::Mat_<_Tp>**>(dObj2->get_mdata());
-    cv::Mat_<_Tp>** dobjresmats = reinterpret_cast<cv::Mat_<_Tp>**>(dObjRes->get_mdata());
+    cv::Mat_<_Tp>** dobjresmats = reinterpret_cast<cv::Mat_<_Tp>**>(dObjResult->get_mdata());
 
     for (int nmat = 0; nmat < numMats; nmat++)
     {
         lhsMatNum = dObj1->seekMat(nmat, numMats);
         rhsMatNum = dObj2->seekMat(nmat, numMats);
-        resMatNum = dObjRes->seekMat(nmat, numMats);
+        resMatNum = dObjResult->seekMat(nmat, numMats);
         *(dobjresmats[resMatNum]) = *(dobj1mats[lhsMatNum]) & *(dobj2mats[rhsMatNum]);
     }
     return ito::retOk;
@@ -8543,7 +8582,7 @@ RetVal BitAndFunc(const DataObject* dObj1, const DataObject* dObj2, DataObject* 
 */
 template <>
 RetVal BitAndFunc<ito::float32>(
-    const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjRes*/)
+    const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjResult*/)
 {
     cv::error(cv::Exception(
         CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
@@ -8556,7 +8595,7 @@ RetVal BitAndFunc<ito::float32>(
 */
 template <>
 RetVal BitAndFunc<ito::float64>(
-    const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjRes*/)
+    const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjResult*/)
 {
     cv::error(cv::Exception(
         CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
@@ -8569,7 +8608,7 @@ RetVal BitAndFunc<ito::float64>(
 */
 template <>
 RetVal BitAndFunc<ito::complex64>(
-    const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjRes*/)
+    const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjResult*/)
 {
     cv::error(cv::Exception(
         CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
@@ -8582,7 +8621,7 @@ RetVal BitAndFunc<ito::complex64>(
 */
 template <>
 RetVal BitAndFunc<ito::complex128>(
-    const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjRes*/)
+    const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjResult*/)
 {
     cv::error(cv::Exception(
         CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
@@ -8595,7 +8634,7 @@ RetVal BitAndFunc<ito::complex128>(
 */
 template <>
 RetVal BitAndFunc<ito::Rgba32>(
-    const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjRes*/)
+    const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjResult*/)
 {
     cv::error(cv::Exception(
         CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
@@ -8608,7 +8647,7 @@ RetVal BitAndFunc<ito::Rgba32>(
 */
 template <>
 RetVal BitAndFunc<ito::DateTime>(
-    const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjRes*/)
+    const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjResult*/)
 {
     cv::error(cv::Exception(
         CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
@@ -8621,7 +8660,7 @@ RetVal BitAndFunc<ito::DateTime>(
 */
 template <>
 RetVal BitAndFunc<ito::TimeDelta>(
-    const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjRes*/)
+    const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjResult*/)
 {
     cv::error(cv::Exception(
         CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
@@ -8635,7 +8674,7 @@ MAKEFUNCLIST(BitAndFunc)
 //! high-level operator, which executes the element-wise operation "bitwise and" between this data
 //! object and a given data object
 /*!
-    \param &rhs is the matrix which is used for the operator
+    \param &destination is the matrix which is used for the operator
     \return reference to this data object, where the result of the operation is stored
     \throws cv::Exception if data type is not supported or both data objects differs either in their
    size or data type \sa BitAndFunc
@@ -8658,7 +8697,7 @@ DataObject& DataObject::operator&=(const DataObject& rhs)
 //! object and a given data object
 /*!
     the result is returned as a newly allocated data object.
-    \param &rhs is the matrix which is used for the operator
+    \param &destination is the matrix which is used for the operator
     \return new data object, where the result of the operation is stored
     \throws cv::Exception if data type is not supported or both data objects differs either in their
    size or data type \sa operator &=, BitAndFunc
@@ -8687,12 +8726,12 @@ DataObject DataObject::operator&(const DataObject& rhs)
 /*!
     \param *dObj1 is the first data object
     \param *dObj2 is the second data object
-    \param *dObjRes is the data object, where the result is stored
+    \param *dObjResult is the data object, where the result is stored
     \throws cv::Exception for unsupported data types (template specialization)
     \return retOk
 */
 template <typename _Tp>
-RetVal BitOrFunc(const DataObject* dObj1, const DataObject* dObj2, DataObject* dObjRes)
+RetVal BitOrFunc(const DataObject* dObj1, const DataObject* dObj2, DataObject* dObjResult)
 {
     int numMats = dObj1->getNumPlanes();
     int lhsMatNum = 0;
@@ -8701,25 +8740,25 @@ RetVal BitOrFunc(const DataObject* dObj1, const DataObject* dObj2, DataObject* d
 
     const cv::Mat_<_Tp>** dobj1mats = reinterpret_cast<const cv::Mat_<_Tp>**>(dObj1->get_mdata());
     const cv::Mat_<_Tp>** dobj2mats = reinterpret_cast<const cv::Mat_<_Tp>**>(dObj2->get_mdata());
-    cv::Mat_<_Tp>** dobjresmats = reinterpret_cast<cv::Mat_<_Tp>**>(dObjRes->get_mdata());
+    cv::Mat_<_Tp>** dobjresmats = reinterpret_cast<cv::Mat_<_Tp>**>(dObjResult->get_mdata());
 
     for (int nmat = 0; nmat < numMats; nmat++)
     {
         lhsMatNum = dObj1->seekMat(nmat, numMats);
         rhsMatNum = dObj2->seekMat(nmat, numMats);
-        resMatNum = dObjRes->seekMat(nmat, numMats);
+        resMatNum = dObjResult->seekMat(nmat, numMats);
         *(dobjresmats[resMatNum]) = *(dobj1mats[lhsMatNum]) | *(dobj2mats[rhsMatNum]);
     }
     return ito::retOk;
 }
 
-//! template specialisation for bitwise or function of type float32
+//! template specialization for bitwise or function of type float32
 /*!
     \throws cv::Exception since this operation is not defined for that input type
 */
 template <>
 RetVal BitOrFunc<ito::float32>(
-    const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjRes*/)
+    const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjResult*/)
 {
     cv::error(cv::Exception(
         CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
@@ -8732,7 +8771,7 @@ RetVal BitOrFunc<ito::float32>(
 */
 template <>
 RetVal BitOrFunc<ito::float64>(
-    const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjRes*/)
+    const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjResult*/)
 {
     cv::error(cv::Exception(
         CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
@@ -8745,7 +8784,7 @@ RetVal BitOrFunc<ito::float64>(
 */
 template <>
 RetVal BitOrFunc<ito::complex64>(
-    const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjRes*/)
+    const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjResult*/)
 {
     cv::error(cv::Exception(
         CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
@@ -8758,7 +8797,7 @@ RetVal BitOrFunc<ito::complex64>(
 */
 template <>
 RetVal BitOrFunc<ito::complex128>(
-    const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjRes*/)
+    const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjResult*/)
 {
     cv::error(cv::Exception(
         CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
@@ -8771,7 +8810,7 @@ RetVal BitOrFunc<ito::complex128>(
 */
 template <>
 RetVal BitOrFunc<ito::Rgba32>(
-    const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjRes*/)
+    const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjResult*/)
 {
     cv::error(cv::Exception(
         CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
@@ -8784,7 +8823,7 @@ RetVal BitOrFunc<ito::Rgba32>(
 */
 template <>
 RetVal BitOrFunc<ito::DateTime>(
-    const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjRes*/)
+    const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjResult*/)
 {
     cv::error(cv::Exception(
         CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
@@ -8797,7 +8836,7 @@ RetVal BitOrFunc<ito::DateTime>(
 */
 template <>
 RetVal BitOrFunc<ito::TimeDelta>(
-    const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjRes*/)
+    const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjResult*/)
 {
     cv::error(cv::Exception(
         CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
@@ -8810,7 +8849,7 @@ MAKEFUNCLIST(BitOrFunc)
 //! high-level operator, which executes the element-wise operation "bitwise or" between this data
 //! object and a given data object
 /*!
-    \param &rhs is the matrix which is used for the operator
+    \param &destination is the matrix which is used for the operator
     \return reference to this data object, where the result of the operation is stored
     \throws cv::Exception if data type is not supported or both data objects differs either in their
    size or data type \sa BitOrFunc
@@ -8833,7 +8872,7 @@ DataObject& DataObject::operator|=(const DataObject& rhs)
 //! object and a given data object
 /*!
     the result is returned as a newly allocated data object.
-    \param &rhs is the matrix which is used for the operator
+    \param &destination is the matrix which is used for the operator
     \return new data object, where the result of the operation is stored
     \throws cv::Exception if data type is not supported or both data objects differs either in their
    size or data type \sa operator |=, BitOrFunc
@@ -8861,12 +8900,12 @@ DataObject DataObject::operator|(const DataObject& rhs)
 /*!
     \param *dObj1 is the first data object
     \param *dObj2 is the second data object
-    \param *dObjRes is the data object, where the result is stored
+    \param *dObjResult is the data object, where the result is stored
     \throws cv::Exception for unsupported data types (template specialization)
     \return retOk
 */
 template <typename _Tp>
-RetVal BitXorFunc(const DataObject* dObj1, const DataObject* dObj2, DataObject* dObjRes)
+RetVal BitXorFunc(const DataObject* dObj1, const DataObject* dObj2, DataObject* dObjResult)
 {
     int numMats = dObj1->getNumPlanes();
     int lhsMatNum = 0;
@@ -8875,25 +8914,26 @@ RetVal BitXorFunc(const DataObject* dObj1, const DataObject* dObj2, DataObject* 
 
     const cv::Mat_<_Tp>** dobj1mats = reinterpret_cast<const cv::Mat_<_Tp>**>(dObj1->get_mdata());
     const cv::Mat_<_Tp>** dobj2mats = reinterpret_cast<const cv::Mat_<_Tp>**>(dObj2->get_mdata());
-    cv::Mat_<_Tp>** dobjresmats = reinterpret_cast<cv::Mat_<_Tp>**>(dObjRes->get_mdata());
+    cv::Mat_<_Tp>** dobjresmats = reinterpret_cast<cv::Mat_<_Tp>**>(dObjResult->get_mdata());
 
     for (int nmat = 0; nmat < numMats; nmat++)
     {
         lhsMatNum = dObj1->seekMat(nmat, numMats);
         rhsMatNum = dObj2->seekMat(nmat, numMats);
-        resMatNum = dObjRes->seekMat(nmat, numMats);
+        resMatNum = dObjResult->seekMat(nmat, numMats);
         *(dobjresmats[resMatNum]) = *(dobj1mats[lhsMatNum]) ^ *(dobj2mats[rhsMatNum]);
     }
+
     return ito::retOk;
 }
 
-//! template specialisation for bitwise xor function of type float32
+//! template specialization for bitwise xor function of type float32
 /*!
     \throws cv::Exception since this operation is not defined for that input type
 */
 template <>
 RetVal BitXorFunc<ito::float32>(
-    const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjRes*/)
+    const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjResult*/)
 {
     cv::error(cv::Exception(
         CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
@@ -8906,7 +8946,7 @@ RetVal BitXorFunc<ito::float32>(
 */
 template <>
 RetVal BitXorFunc<ito::float64>(
-    const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjRes*/)
+    const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjResult*/)
 {
     cv::error(cv::Exception(
         CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
@@ -8919,7 +8959,7 @@ RetVal BitXorFunc<ito::float64>(
 */
 template <>
 RetVal BitXorFunc<ito::complex64>(
-    const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjRes*/)
+    const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjResult*/)
 {
     cv::error(cv::Exception(
         CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
@@ -8932,7 +8972,7 @@ RetVal BitXorFunc<ito::complex64>(
 */
 template <>
 RetVal BitXorFunc<ito::complex128>(
-    const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjRes*/)
+    const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjResult*/)
 {
     cv::error(cv::Exception(
         CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
@@ -8945,7 +8985,7 @@ RetVal BitXorFunc<ito::complex128>(
 */
 template <>
 RetVal BitXorFunc<ito::Rgba32>(
-    const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjRes*/)
+    const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjResult*/)
 {
     cv::error(cv::Exception(
         CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
@@ -8958,7 +8998,7 @@ RetVal BitXorFunc<ito::Rgba32>(
 */
 template <>
 RetVal BitXorFunc<ito::DateTime>(
-    const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjRes*/)
+    const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjResult*/)
 {
     cv::error(cv::Exception(
         CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
@@ -8971,7 +9011,7 @@ RetVal BitXorFunc<ito::DateTime>(
 */
 template <>
 RetVal BitXorFunc<ito::TimeDelta>(
-    const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjRes*/)
+    const DataObject* /*dObj1*/, const DataObject* /*dObj2*/, DataObject* /*dObjResult*/)
 {
     cv::error(cv::Exception(
         CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
@@ -8984,7 +9024,7 @@ MAKEFUNCLIST(BitXorFunc)
 //! high-level operator, which executes the element-wise operation "bitwise xor" between this data
 //! object and a given data object
 /*!
-    \param &rhs is the matrix which is used for the operator
+    \param &destination is the matrix which is used for the operator
     \return reference to this data object, where the result of the operation is stored
     \throws cv::Exception if data type is not supported or both data objects differs either in their
    size or data type \sa BitXorFunc
@@ -9007,7 +9047,7 @@ DataObject& DataObject::operator^=(const DataObject& rhs)
 //! object and a given data object
 /*!
     the result is returned as a newly allocated data object.
-    \param &rhs is the matrix which is used for the operator
+    \param &destination is the matrix which is used for the operator
     \return new data object, where the result of the operation is stored
     \throws cv::Exception if data type is not supported or both data objects differs either in their
    size or data type \sa operator ^=, BitXorFunc
@@ -9098,11 +9138,11 @@ RetVal GetRangeFunc(
     if (dObj->getDims() > 1) // new version: adjusts ROI for every plane
     {
         int numMats = dObj->mdata_size();
-        cv::Mat_<_Tp>** mats = reinterpret_cast<cv::Mat_<_Tp>**>(dObj->get_mdata());
+        auto matrixPlanes = dObj->get_mdata();
 
         for (int nmat = 0; nmat < numMats; nmat++)
         {
-            mats[nmat]->adjustROI(dtop, dbottom, dleft, dright);
+            matrixPlanes[nmat]->adjustROI(dtop, dbottom, dleft, dright);
         }
     }
 
@@ -9141,11 +9181,14 @@ DataObject DataObject::at(ito::Range* ranges) const
         if (start > end)
             std::swap(start, end);
         lims[(n * 2)] = -ranges[n].start;
+
         if (ranges[n].start == INT_MIN) // range all
         {
             lims[(n * 2)] = 0;
         }
+
         size = m_size.m_p[n];
+
         if (ranges[n].end == INT_MAX) // range all
         {
             lims[(n * 2) + 1] = 0;
@@ -9266,11 +9309,11 @@ RetVal AdjustROIFunc(DataObject* dObj, int dtop, int dbottom, int dleft, int dri
     if (dObj->getDims() > 1) // new version: adjusts ROI for every plane
     {
         int numMats = dObj->mdata_size();
-        cv::Mat_<_Tp>** mats = reinterpret_cast<cv::Mat_<_Tp>**>(dObj->get_mdata());
+        auto matrixPlanes = dObj->get_mdata();
 
         for (int nmat = 0; nmat < numMats; nmat++)
         {
-            mats[nmat]->adjustROI(dtop, dbottom, dleft, dright);
+            matrixPlanes[nmat]->adjustROI(dtop, dbottom, dleft, dright);
         }
     }
 
@@ -9394,21 +9437,21 @@ RetVal DataObject::locateROI(int* wholeSizes, int* offsets) const
 {
     for (int nDim = 0; nDim < m_dims - 2; nDim++)
     {
-        wholeSizes[nDim] = static_cast<int>(m_osize[nDim]);
-        offsets[nDim] = static_cast<int>(m_roi[nDim]);
+        wholeSizes[nDim] = m_osize[nDim];
+        offsets[nDim] = m_roi[nDim];
     }
 
     if (m_dims > 1)
     {
-        wholeSizes[m_dims - 2] = static_cast<int>(m_osize[m_dims - 2]);
-        offsets[m_dims - 2] = static_cast<int>(m_roi[m_dims - 2]);
-        wholeSizes[m_dims - 1] = static_cast<int>(m_osize[m_dims - 1]);
-        offsets[m_dims - 1] = static_cast<int>(m_roi[m_dims - 1]);
+        wholeSizes[m_dims - 2] = m_osize[m_dims - 2];
+        offsets[m_dims - 2] = m_roi[m_dims - 2];
+        wholeSizes[m_dims - 1] = m_osize[m_dims - 1];
+        offsets[m_dims - 1] = m_roi[m_dims - 1];
     }
     else if (m_dims == 1)
     {
-        wholeSizes[0] = static_cast<int>(m_osize[0]);
-        offsets[0] = static_cast<int>(m_roi[0]);
+        wholeSizes[0] = m_osize[0];
+        offsets[0] = m_roi[0];
     }
 
     return ito::retOk;
@@ -9428,25 +9471,25 @@ RetVal DataObject::locateROI(int* lims) const
 {
     for (int nDim = 0; nDim < m_dims - 2; nDim++)
     {
-        lims[2 * nDim] = static_cast<int>(m_roi[nDim]);
-        lims[2 * nDim + 1] = static_cast<int>(m_size[nDim]) - static_cast<int>(m_osize[nDim]);
+        lims[2 * nDim] = m_roi[nDim];
+        lims[2 * nDim + 1] = m_size[nDim] - m_osize[nDim];
     }
 
     if (m_dims > 1)
     {
         {
-            lims[2 * (m_dims - 1)] = static_cast<int>(m_roi[(m_dims - 1)]);
+            lims[2 * (m_dims - 1)] = m_roi[(m_dims - 1)];
             lims[2 * (m_dims - 1) + 1] =
-                static_cast<int>(m_size[(m_dims - 1)]) - static_cast<int>(m_osize[(m_dims - 1)]);
-            lims[2 * (m_dims - 2)] = static_cast<int>(m_roi[(m_dims - 2)]);
+                m_size[(m_dims - 1)] - m_osize[(m_dims - 1)];
+            lims[2 * (m_dims - 2)] = m_roi[(m_dims - 2)];
             lims[2 * (m_dims - 2) + 1] =
-                static_cast<int>(m_size[(m_dims - 2)]) - static_cast<int>(m_osize[(m_dims - 2)]);
+                m_size[(m_dims - 2)] - m_osize[(m_dims - 2)];
         }
     }
     else if (m_dims == 1)
     {
-        lims[0] = static_cast<int>(m_roi[0]);
-        lims[1] = static_cast<int>(m_size[0]) - static_cast<int>(m_osize[0]);
+        lims[0] = m_roi[0];
+        lims[1] = m_size[0] - m_osize[0];
     }
 
     return ito::retOk;
@@ -9462,7 +9505,7 @@ RetVal DataObject::locateROI(int* lims) const
 template <typename _Tp> RetVal EyeFunc(const int size, uchar** dstMat)
 {
     (*((cv::Mat_<_Tp>*)(*dstMat))) =
-        cv::Mat_<_Tp>::eye(static_cast<int>(size), static_cast<int>(size));
+        cv::Mat_<_Tp>::eye(size, size);
 
     return ito::retOk;
 }
@@ -9517,22 +9560,22 @@ RetVal DataObject::eye(const int size, const int type)
 template <typename _Tp> RetVal ConjFunc(DataObject* dObj)
 {
     int numMats = dObj->getNumPlanes();
-    int MatNum = 0;
+    int matIndex = 0;
 
-    cv::Mat_<_Tp>* tempMat = NULL;
-    int sizex = static_cast<int>(dObj->getSize(dObj->getDims() - 1));
-    int sizey = static_cast<int>(dObj->getSize(dObj->getDims() - 2));
+    cv::Mat_<_Tp>* tempMat = nullptr;
+    int sizex = dObj->getSize(dObj->getDims() - 1);
+    int sizey = dObj->getSize(dObj->getDims() - 2);
     for (int nmat = 0; nmat < numMats; nmat++)
     {
         // TODO: check if non iterator version is working
-        MatNum = dObj->seekMat(nmat, numMats);
-        tempMat = static_cast<cv::Mat_<_Tp>*>((dObj->get_mdata())[MatNum]);
+        matIndex = dObj->seekMat(nmat, numMats);
+        tempMat = static_cast<cv::Mat_<_Tp>*>((dObj->get_mdata())[matIndex]);
 
 #if (USEOMP)
 #pragma omp parallel num_threads(getMaximumThreadCount())
         {
 #endif
-            _Tp* dstPtr = NULL;
+            _Tp* dstPtr = nullptr;
 #if (USEOMP)
 #pragma omp for schedule(guided)
 #endif
@@ -11086,8 +11129,8 @@ RetVal GrayScaleCastFunc(const DataObject* dObj, DataObject* resObj, double alph
 {
     int numMats = dObj->getNumPlanes();
 
-    int sizex = static_cast<int>(dObj->getSize(dObj->getDims() - 1));
-    int sizey = static_cast<int>(dObj->getSize(dObj->getDims() - 2));
+    int sizex = dObj->getSize(dObj->getDims() - 1);
+    int sizey = dObj->getSize(dObj->getDims() - 2);
     const cv::Mat* srcMat = NULL;
     cv::Mat* dstMat = NULL;
 
@@ -11249,8 +11292,8 @@ void extractColor(const DataObject* dObj, DataObject& resObj, const char* color,
     }
     }
 
-    int sizex = static_cast<int>(dObj->getSize(dObj->getDims() - 1));
-    int sizey = static_cast<int>(dObj->getSize(dObj->getDims() - 2));
+    int sizex = dObj->getSize(dObj->getDims() - 1);
+    int sizey = dObj->getSize(dObj->getDims() - 2);
 
     const cv::Mat* srcMat = NULL;
     cv::Mat* dstMat = NULL;
@@ -12107,13 +12150,13 @@ RetVal CastFuncFromRgba32(const DataObject* srcObj, DataObject* resObj, double a
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! converts data in DataObject lhs to DataObject rhs with a given type
+//! converts data in DataObject lhs to DataObject destination with a given type
 /*!
     Every element of the source data object is copied to the destination data object by using this
    transformation<BR> elem_destination = static_cast<newType>(elem_source * alpha + beta)
 
     \param &lhs is the left-hand sided data object, whose data should be converted
-    \param &rhs is the destination data object, whose memory is firstly deleted, then newly
+    \param &destination is the destination data object, whose memory is firstly deleted, then newly
    allocated \param dest_type is the type-number of the destination element \param alpha scaling
    factor (default: 1.0) \param beta offset value (default: 0.0) \return retOk \throws
    cv::Exception(CV_StsAssert) if conversion type is unknown \sa convertTo, CastFunc
@@ -12170,8 +12213,8 @@ RetVal ConvertToFunc(
 
             // uint32 is not fully supported by OpenCV -> constructor is blocked
             /*case ito::tUInt32:
-               rhs.create(lhs.m_dims, lhs.m_size, dest_type, lhs.m_continuous);
-               CastFunc<_Tp, uint32>(&lhs, &rhs, alpha, beta);
+               destination.create(lhs.m_dims, lhs.m_size, dest_type, lhs.m_continuous);
+               CastFunc<_Tp, uint32>(&lhs, &destination, alpha, beta);
             break;*/
 
         case ito::tFloat32:
@@ -12268,8 +12311,8 @@ RetVal ConvertToFunc<ito::complex64>(
 
             // uint32 is not fully supported by OpenCV -> constructor is blocked
             /*case ito::tUInt32:
-               rhs.create(lhs.m_dims, lhs.m_size, dest_type, lhs.m_continuous);
-               CastFuncFromComplex64<uint32>(&lhs, &rhs, alpha, beta);
+               destination.create(lhs.m_dims, lhs.m_size, dest_type, lhs.m_continuous);
+               CastFuncFromComplex64<uint32>(&lhs, &destination, alpha, beta);
             break;*/
 
         case ito::tFloat32:
@@ -12366,8 +12409,8 @@ RetVal ConvertToFunc<ito::complex128>(
 
             // uint32 is not fully supported by OpenCV -> constructor is blocked
             /*case ito::tUInt32:
-               rhs.create(lhs.m_dims, lhs.m_size, dest_type, lhs.m_continuous);
-               CastFuncFromComplex128<uint32>(&lhs, &rhs, alpha, beta);
+               destination.create(lhs.m_dims, lhs.m_size, dest_type, lhs.m_continuous);
+               CastFuncFromComplex128<uint32>(&lhs, &destination, alpha, beta);
             break;*/
 
         case ito::tFloat32:
@@ -12464,8 +12507,8 @@ RetVal ConvertToFunc<ito::Rgba32>(
 
             // uint32 is not fully supported by OpenCV -> constructor is blocked
             /*case ito::tUInt32:
-               rhs.create(lhs.m_dims, lhs.m_size, dest_type, lhs.m_continuous);
-               CastFuncFromRgba32<uint32>(&lhs, &rhs, alpha, beta);
+               destination.create(lhs.m_dims, lhs.m_size, dest_type, lhs.m_continuous);
+               CastFuncFromRgba32<uint32>(&lhs, &destination, alpha, beta);
             break;*/
 
         case ito::tFloat32:
@@ -12588,7 +12631,7 @@ MAKEFUNCLIST(ConvertToFunc);
     Every element of the source matrix is converted to a new, given type. Additionally a
    floating-point scaling and offset parameter is possible.
 
-    \param &rhs is the destination data object, whose memory is firstly deleted, then newly
+    \param &destination is the destination data object, whose memory is firstly deleted, then newly
    allocated \param type is the type-number of the destination element \param alpha scaling factor
    (default: 1.0) \param beta offset value (default: 0.0) \throws cv::Exception if cast failed, e.g.
    if cast not possible or types unknown \return retOk \sa fListConvertToFunc
@@ -12644,8 +12687,8 @@ RetVal AbsFunc(const DataObject* dObj, DataObject* resObj)
 
     const cv::Mat_<_CmplxTp>* srcMat = NULL;
     cv::Mat_<_Tp>* dstMat = NULL;
-    int sizex = static_cast<int>(dObj->getSize(dObj->getDims() - 1));
-    int sizey = static_cast<int>(dObj->getSize(dObj->getDims() - 2));
+    int sizex = dObj->getSize(dObj->getDims() - 1);
+    int sizey = dObj->getSize(dObj->getDims() - 2);
 
     for (int nmat = 0; nmat < numMats; nmat++)
     {
@@ -12879,8 +12922,8 @@ RetVal ArgFunc(const DataObject* dObj, DataObject* resObj)
 
     const cv::Mat_<_CmplxTp>* srcMat = NULL;
     cv::Mat_<_Tp>* dstMat = NULL;
-    int sizex = static_cast<int>(dObj->getSize(dObj->getDims() - 1));
-    int sizey = static_cast<int>(dObj->getSize(dObj->getDims() - 2));
+    int sizex = dObj->getSize(dObj->getDims() - 1);
+    int sizey = dObj->getSize(dObj->getDims() - 2);
     for (int nmat = 0; nmat < numMats; nmat++)
     {
         // TODO: check if non iterator version is working
@@ -12973,8 +13016,8 @@ RetVal RealFunc(const DataObject* dObj, DataObject* resObj)
 
     const cv::Mat_<_CmplxTp>* srcMat = NULL;
     cv::Mat_<_Tp>* dstMat = NULL;
-    int sizex = static_cast<int>(dObj->getSize(dObj->getDims() - 1));
-    int sizey = static_cast<int>(dObj->getSize(dObj->getDims() - 2));
+    int sizex = dObj->getSize(dObj->getDims() - 1);
+    int sizey = dObj->getSize(dObj->getDims() - 2);
     for (int nmat = 0; nmat < numMats; nmat++)
     {
         // TODO: check if non iterator version is working
@@ -13062,16 +13105,16 @@ RetVal SetRealFunc(DataObject* dObj, DataObject* valueObj)
 {
     int numMats = dObj->getNumPlanes();
 
-    cv::Mat_<_Tp>* dObjMat = NULL;
-    const cv::Mat_<_Tp>* valMat = NULL;
-    int sizex = static_cast<int>(dObj->getSize(dObj->getDims() - 1));
-    int sizey = static_cast<int>(dObj->getSize(dObj->getDims() - 2));
+    cv::Mat_<_Tp>* dObjMat = nullptr;
+    const cv::Mat_<_Tp>* valMat = nullptr;
+    int sizex = dObj->getSize(dObj->getDims() - 1);
+    int sizey = dObj->getSize(dObj->getDims() - 2);
 
 
     if (valueObj->getTotal() == 1) // just a single value
     {
         const int valMat = valueObj->seekMat(0);
-        const _Tp* valPtr = NULL;
+        const _Tp* valPtr = nullptr;
         valPtr = (_Tp*)valueObj->rowPtr(valMat, 0);
         const _Tp val = valPtr[0];
 
@@ -13083,7 +13126,7 @@ RetVal SetRealFunc(DataObject* dObj, DataObject* valueObj)
 #pragma omp parallel num_threads(getMaximumThreadCount())
             {
 #endif
-                _Tp* dObjPtr = NULL;
+                _Tp* dObjPtr = nullptr;
 
 #if (USEOMP)
 #pragma omp for schedule(guided)
@@ -13114,8 +13157,8 @@ RetVal SetRealFunc(DataObject* dObj, DataObject* valueObj)
 #pragma omp parallel num_threads(getMaximumThreadCount())
             {
 #endif
-                _Tp* dObjPtr = NULL;
-                const _Tp* valPtr = NULL;
+                _Tp* dObjPtr = nullptr;
+                const _Tp* valPtr = nullptr;
 
 #if (USEOMP)
 #pragma omp for schedule(guided)
@@ -13148,8 +13191,8 @@ RetVal SetRealFunc(DataObject* dObj, DataObject* valueObj)
 #pragma omp parallel num_threads(getMaximumThreadCount())
             {
 #endif
-                _Tp* dObjPtr = NULL;
-                const _Tp* valPtr = NULL;
+                _Tp* dObjPtr = nullptr;
+                const _Tp* valPtr = nullptr;
 
 #if (USEOMP)
 #pragma omp for schedule(guided)
@@ -13198,7 +13241,7 @@ RetVal DataObject::setReal(DataObject& valuesObj)
         else
         {
             cv::error(cv::Exception(
-                CV_StsAssert, "Wrong dataType of value object", "", __FILE__, __LINE__));
+                CV_StsAssert, "A complex128 dataObject only accepts a float64 object, a complex64 one only a float32.", "", __FILE__, __LINE__));
             return ito::retError;
         }
 
@@ -13235,8 +13278,8 @@ RetVal SetImagFunc(DataObject* dObj, DataObject* valueObj)
 
     cv::Mat_<_Tp>* dObjMat = NULL;
     const cv::Mat_<_Tp>* valMat = NULL;
-    int sizex = static_cast<int>(dObj->getSize(dObj->getDims() - 1));
-    int sizey = static_cast<int>(dObj->getSize(dObj->getDims() - 2));
+    int sizex = dObj->getSize(dObj->getDims() - 1);
+    int sizey = dObj->getSize(dObj->getDims() - 2);
 
 
     if (valueObj->getTotal() == 1) // just a single value
@@ -13368,7 +13411,7 @@ RetVal DataObject::setImag(DataObject& valuesObj)
         else
         {
             cv::error(cv::Exception(
-                CV_StsAssert, "Wrong dataType of value object", "", __FILE__, __LINE__));
+                CV_StsAssert, "a complex128 dataObject only accepts a float64 object, a complex64 one only a float32.", "", __FILE__, __LINE__));
             return ito::retError;
         }
 
@@ -13409,8 +13452,8 @@ RetVal ImagFunc(const DataObject* dObj, DataObject* resObj)
 
     const cv::Mat_<_CmplxTp>* srcMat = NULL;
     cv::Mat_<_Tp>* dstMat = NULL;
-    int sizex = static_cast<int>(dObj->getSize(dObj->getDims() - 1));
-    int sizey = static_cast<int>(dObj->getSize(dObj->getDims() - 2));
+    int sizex = dObj->getSize(dObj->getDims() - 1);
+    int sizey = dObj->getSize(dObj->getDims() - 2);
     for (int nmat = 0; nmat < numMats; nmat++)
     {
         // TODO: check if non iterator version is working
@@ -14079,14 +14122,21 @@ std::string DataObject::getAxisDescription(const int axisNum, bool& validOperati
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+/*
+returns the tag, that corresponds to the given key in the tag map. 
+A success of the tag lookup is returned by the validOperation argument.
+*/
 DataObjectTagType DataObject::getTag(const std::string& key, bool& validOperation) const
 {
     validOperation = false;
+
     if (!m_pDataObjectTags || m_dims < 1)
     {
         return DataObjectTagType(); // error
     }
+
     std::map<std::string, DataObjectTagType>::iterator it = m_pDataObjectTags->m_tags.find(key);
+
     if (it != m_pDataObjectTags->m_tags.end())
     {
         validOperation = true;
@@ -14096,8 +14146,12 @@ DataObjectTagType DataObject::getTag(const std::string& key, bool& validOperatio
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+/*
+gets the tagIndex-th tag from the tag map and returns its key and current value. 
+Returns true if successful, else false.
+*/
 bool DataObject::getTagByIndex(
-    const int tagNumber, std::string& key, DataObjectTagType& value) const
+    const int tagIndex, std::string& key, DataObjectTagType& value) const
 {
     if (!m_pDataObjectTags || m_dims < 1)
     {
@@ -14106,62 +14160,75 @@ bool DataObject::getTagByIndex(
         return false;
     }
 
-    if ((tagNumber < 0) || ((int)(tagNumber + 1) > (int)m_pDataObjectTags->m_tags.size()))
+    if ((tagIndex < 0) || (tagIndex >= (int)m_pDataObjectTags->m_tags.size()))
     {
         key = std::string();
         value = "";
         return false;
     }
+
     std::map<std::string, DataObjectTagType>::iterator it = m_pDataObjectTags->m_tags.begin();
-    for (int i = 0; i < tagNumber; i++)
+
+    for (int i = 0; i < tagIndex; i++)
     {
         ++it;
     }
 
     key = (*it).first;
     value = (*it).second;
+
     return true;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//!<  Function returns the string-value for 'key' identified by int tagNumber. If key in the TagMap
-//!<  do not exist NULL is returned
-std::string DataObject::getTagKey(const int tagNumber, bool& validOperation) const
+//!< returns the key of the tagIndex-th tag in the tag map as string. 
+//!< If the tag does not exist, validOperation is set to false.
+std::string DataObject::getTagKey(const int tagIndex, bool& validOperation) const
 {
     if (!m_pDataObjectTags || m_dims < 1)
     {
         validOperation = false;
         return std::string(""); // error
     }
-    if ((tagNumber < 0) || ((int)(tagNumber + 1) > (int)m_pDataObjectTags->m_tags.size()))
+
+    if ((tagIndex < 0) || (tagIndex >= (int)m_pDataObjectTags->m_tags.size()))
     {
         validOperation = false;
         return std::string(""); // does not exist
     }
+
     std::map<std::string, DataObjectTagType>::iterator it = m_pDataObjectTags->m_tags.begin();
     validOperation = true;
-    for (int i = 0; i < tagNumber; i++)
+
+    for (int i = 0; i < tagIndex; i++)
     {
         ++it;
     }
+
     return (*it).first;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//!< Function returns the number of elements in the Tags-Maps
+//!< Returns the number of tags in the tag map
 int DataObject::getTagListSize() const
 {
     if (!m_pDataObjectTags || m_dims < 1)
+    {
         return 0; // error
+    }
+
     return static_cast<int>(m_pDataObjectTags->m_tags.size());
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//!<  Function to set the string-value of the value unit, return 1 if values does not exist
+//!< Function to set the string-value of the value unit, return 1 if values does not exist
 int DataObject::setValueUnit(const std::string& unit)
 {
     if (!m_pDataObjectTags || m_dims < 1)
+    {
         return 1; // error
+    }
+
     m_pDataObjectTags->m_valueUnit = unit;
     return 0;
 }
@@ -14171,7 +14238,10 @@ int DataObject::setValueUnit(const std::string& unit)
 int DataObject::setValueDescription(const std::string& description)
 {
     if (!m_pDataObjectTags || m_dims < 1)
+    {
         return 1; // error
+    }
+
     m_pDataObjectTags->m_valueDescription = description;
     return 0;
 }
