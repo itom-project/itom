@@ -5,6 +5,103 @@
 Changelog Versions 4.x
 ######################
 
+Version 4.3.0 (YYYY-MM-DD)
+**************************
+
+itom
+----
+
+**New Features**
+
+*
+*
+*
+
+
+**Changed Behaviour**
+
+*
+*
+*
+
+**Improvements**
+
+*
+*
+*
+
+**Refactorings and bugfixes**
+
+*
+*
+*
+
+Plugins
+-------
+
+**New plugins:**
+
+*
+*
+*
+
+**Bugfixes and improvements:**
+
+*
+*
+*
+
+Designer Plugins
+----------------
+
+**vtk3dVisualizer**
+
+*
+*
+*
+
+**plotly**
+
+*
+*
+*
+
+**twipoglfigure**
+
+*
+*
+*
+
+**itom2dqwtplot**
+
+*
+*
+*
+
+**itom1dqwtplot**
+
+*
+*
+*
+
+**matplotlib**
+
+*
+*
+*
+
+**motorController**
+
+*
+*
+*
+
+**General**
+
+*
+*
+*
+
 Version 4.2.2 (2022-09-02)
 **************************
 
