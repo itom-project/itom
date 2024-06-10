@@ -39,17 +39,30 @@ itom
 Plugins
 -------
 
+**General:**
+
+* Added `pre-commit <https://pre-commit.com/>`_ hooks to repository
+* Added Min, Max Itom version and Plugin version numbers
+* Added PLUGIN_VERSION_IDENTIFIERS to distinguish between release and oterh versions
+* Refactoring cmake structure, warnings and errors
+* Fix to support QT6
+
 **New plugins:**
 
-*
-*
-*
+* NewportConexLDS (RawIO)
+* ThorlabsBDCServo (actuator)
 
 **Bugfixes and improvements:**
 
-*
-*
-*
+* FittingFilters: Changed error conditions
+* FittingFilters: Fix of lapacke include
+* GenICam: Support of pixel format *Bayer_RG8*
+* GenICam: Speed inprovements for decoding the format *YCbCr422_8*.
+* GenICam: Fix and test with a Baumer *GEV* camera
+* GenICam: Fix in *Mono12* pixel format
+* OceanOpticsSpec: Adapations in typedef struct which are no longer allowed
+* PclTools: Adaptations for PCL 1.13
+* SerialIO: Memory bug fix
 
 Designer Plugins
 ----------------
