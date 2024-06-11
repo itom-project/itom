@@ -352,6 +352,7 @@ RetVal DesignerWidgetOrganizer::scanDesignerPlugins()
                                 infoStruct.plotDataFormats = absIDP->getPlotDataFormats();
                                 infoStruct.plotDataTypes = absIDP->getPlotDataTypes();
                                 infoStruct.plotFeatures = absIDP->getPlotFeatures();
+                                infoStruct.pluginVersion = absIDP->getVersion();
                                 infoStruct.icon = iface->icon();
                                 infoStruct.factory = loader; //now, loader is organized by m_figurePlugins-list
                                 m_figurePlugins.append(infoStruct);

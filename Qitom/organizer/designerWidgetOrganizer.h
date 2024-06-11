@@ -39,13 +39,14 @@ namespace ito
 
 struct FigurePlugin
 {
-    FigurePlugin() : filename(""), classname(""), plotDataTypes(DataObjLine), plotFeatures(Static), factory(NULL) {}
+    FigurePlugin() : filename(""), classname(""), plotDataTypes(DataObjLine), plotFeatures(Static), factory(nullptr), pluginVersion(0) {}
     QString filename;
     QString classname;
     PlotDataTypes plotDataTypes;
     PlotDataFormats plotDataFormats;
     PlotFeatures plotFeatures;
     QIcon icon;
+    int pluginVersion;
     QPluginLoader *factory;
 };
 

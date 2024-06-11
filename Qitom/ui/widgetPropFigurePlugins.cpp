@@ -36,9 +36,9 @@ namespace ito
 //----------------------------------------------------------------------------------------------------------------------------------
 WidgetPropFigurePlugins::WidgetPropFigurePlugins(QWidget *parent) :
     AbstractPropertyPageWidget(parent),
-    m_loadedFiguresModel(NULL),
-    m_figureCategoryModel(NULL),
-    m_delegate(NULL)
+    m_loadedFiguresModel(nullptr),
+    m_figureCategoryModel(nullptr),
+    m_delegate(nullptr)
 {
     ui.setupUi(this);
 
@@ -75,13 +75,14 @@ void WidgetPropFigurePlugins::init()
         QFileInfo fi;
         int row = 0;
 
-        m_loadedFiguresModel = new QStandardItemModel(plugins.size(), 6, this);
+        m_loadedFiguresModel = new QStandardItemModel(plugins.size(), 7, this);
         m_loadedFiguresModel->setHeaderData(0, Qt::Horizontal, tr("class name"), Qt::DisplayRole);
         m_loadedFiguresModel->setHeaderData(1, Qt::Horizontal, tr("data types"), Qt::DisplayRole);
         m_loadedFiguresModel->setHeaderData(2, Qt::Horizontal, tr("data formats"), Qt::DisplayRole);
         m_loadedFiguresModel->setHeaderData(3, Qt::Horizontal, tr("features"), Qt::DisplayRole);
         m_loadedFiguresModel->setHeaderData(4, Qt::Horizontal, tr("plot type"), Qt::DisplayRole);
-        m_loadedFiguresModel->setHeaderData(5, Qt::Horizontal, tr("plugin file"), Qt::DisplayRole);
+        m_loadedFiguresModel->setHeaderData(5, Qt::Horizontal, tr("plugin version"), Qt::DisplayRole);
+        m_loadedFiguresModel->setHeaderData(6, Qt::Horizontal, tr("plugin file"), Qt::DisplayRole);
 
         foreach (const FigurePlugin &f, plugins)
         {
@@ -107,10 +108,19 @@ void WidgetPropFigurePlugins::init()
             i = new QStandardItem(sl.join(", "));
             m_loadedFiguresModel->setItem(row, 4, i);
 
+            sl.clear();
+            i = new QStandardItem(
+                QString("%1.%2.%3")
+                                      .arg(MAJORVERSION(f.pluginVersion))
+                                      .arg(MINORVERSION(f.pluginVersion))
+                                      .arg(PATCHVERSION(f.pluginVersion))
+            );
+            m_loadedFiguresModel->setItem(row, 5, i);
+
             fi = QFileInfo(f.filename);
             i = new QStandardItem(fi.completeBaseName());
             i->setToolTip(f.filename);
-            m_loadedFiguresModel->setItem(row, 5, i);
+            m_loadedFiguresModel->setItem(row, 6, i);
             row++;
         }
 
