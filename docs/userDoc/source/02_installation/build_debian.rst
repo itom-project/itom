@@ -20,7 +20,7 @@ Steps are as usual:
 *  obtain sources
 *  configure projects
 *  compile projects
-*  ->test/use project?
+*  test/use project
 
 Necessary packages
 -------------------------------------------------------------------------------
