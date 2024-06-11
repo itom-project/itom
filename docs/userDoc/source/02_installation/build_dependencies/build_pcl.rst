@@ -12,7 +12,7 @@ execute CMake with this folders. After each step, you must start the CMake confi
 otherwise the new entries will not be added.
 
 * Set **EIGEN_INCLUDE_DIR** to ${MAINDIR}/3rdPartyPCL/Eigen3.4.0
-* Set **FLANN_INCLUDE_DIR** to ${MAINDIR}/3rdPartyPCL/flann1.9.1/include
+* Set **FLANN_ROOT** to ${MAINDIR}/3rdPartyPCL/flann1.9.1
 * Set **FLANN_LIBRARY** to ${MAINDIR}/3rdPartyPCL/flann1.9.1/lib/flann_cpp_s.lib
 * set **FLANN_LIBRARAY_DEBUG** to ${MAINDIR}/3rdPartyPCL/flann1.9.1/lib/flann_cpp_s-gd.lib
 * Set **Boost_INCLUDE_DIR** to ${MAINDIR}/3rdPartyPCL/boost1.81.0 (Boost library must be named libboost... \*.lib)
@@ -33,7 +33,7 @@ execute CMake with this folders. After each step, you must start the CMake confi
 otherwise the new entries will not be added.
 
 * Set **EIGEN_INCLUDE_DIR** to ${MAINDIR}/3rdPartyPCL/Eigen3.3.7
-* Set **FLANN_INCLUDE_DIR** to ${MAINDIR}/3rdPartyPCL/flann1.9.1/include
+* Set **FLANN_ROOT** to ${MAINDIR}/3rdPartyPCL/flann1.9.1
 * Set **FLANN_LIBRARY** to ${MAINDIR}/3rdPartyPCL/flann1.9.1/lib/flann_cpp_s.lib
 * set **FLANN_LIBRARAY_DEBUG** to ${MAINDIR}/3rdPartyPCL/flann1.9.1/lib/flann_cpp_s-gd.lib
 * Set **Boost_INCLUDE_DIR** to ${MAINDIR}/3rdPartyPCL/boost1.69.0 (Boost library must be named libboost... \*.lib)

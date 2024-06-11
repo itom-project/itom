@@ -100,7 +100,7 @@ if(EXISTS ${ITOM_SDK_CONFIG_FILE})
                 OpenCV_DIR
                 Boost_INCLUDE_DIR
                 Boost_LIBRARY_DIR
-                FLANN_INCLUDE_DIRS
+                FLANN_ROOT
                 VTK_DIR
                 EIGEN_INCLUDE_DIRS
                 EIGEN_INCLUDE_DIR
