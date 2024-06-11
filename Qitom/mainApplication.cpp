@@ -137,11 +137,12 @@ MainApplication::MainApplication(tGuiType guiType) :
     QCoreApplication::setOrganizationName("ito");
     QCoreApplication::setApplicationName("itom");
     QCoreApplication::setApplicationVersion(ITOM_VERSION_STR);
+
     if(ITOM_ADDITIONAL_EDITION_NAME == "")
     {
         if(ITOM_VERSION_STR == "0.0.0" || ITOM_VERSION_IDENTIFIERS == "dev" )
         {
-            devFlag = true;
+            m_devFlag = true;
         }
     }
 
@@ -237,7 +238,7 @@ QString MainApplication::getSplashScreenFileName() const
 
 	qint64 daysDiffToEaster = currentDate.toJulianDay() - QDate(currentYear, easterMonth, easterDay).toJulianDay();
 
-    if( !devFlag )
+    if( !m_devFlag )
     {
         if (currentMonth == 12)
         {
@@ -253,7 +254,9 @@ QString MainApplication::getSplashScreenFileName() const
         {
             fileName = ":/application/icons/itomicon/splashScreen4.png";
         }
-    }else{
+    }
+    else
+    {
         fileName = ":/application/icons/itomicon/splashScreen4dev.png";
     }
 
