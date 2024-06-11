@@ -6,6 +6,7 @@ import itom
 import numpy as np  # for color channel conversion in copy to clipboard
 from matplotlib.backends.backend_agg import FigureCanvasAgg
 from matplotlib.transforms import Bbox
+import matplotlib
 
 from .backend_itom_v3_6 import FigureCanvasItom, _BackendItom
 
@@ -68,7 +69,16 @@ class FigureCanvasItomAgg(FigureCanvasItom, FigureCanvasAgg):
 
         # <-- itom specific start
         reg = self.copy_from_bbox(bbox)
-        buf = reg.to_string_argb()  # this is faster than the Qt-original version cbook._unmultiplied_rgba8888_to_premultiplied_argb32...
+        
+        if matplotlib.__version__ >= "3.9.0":
+            # returns a RGBA8888 image format
+            buf = memoryview(reg).tobytes()
+        else:
+            # this is faster than the Qt-original version cbook._unmultiplied_rgba8888_to_premultiplied_argb32...
+            # However, it has been removed with MPL 3.9
+            # returns a ARGB32 image format buffer
+            buf = reg.to_string_argb()
+        
         W = round(w)
         H = round(h)
         # workaround sometimes the width and height does not fit to the buf length, leding to a crash of itom.
@@ -81,19 +91,32 @@ class FigureCanvasItomAgg(FigureCanvasItom, FigureCanvasAgg):
                 H = int(numberElements / W)
             else:
                 return
-        try:
-            # if blit: W and H are a sum of the real width/height and the offset x0 or y0.
-            # else: W and H are the real width and height of the image
-            self.matplotlibWidgetUiItem.call("paintResult", buf, x0, y0, W, H, blit)
-        except RuntimeError as e:
-            # it is possible that the figure has currently be closed by the user
-            # do not call self.signalDestroyedWidget() among others,
-            # since it might be, that the paintEvent is called from
-            # a timer event, that should finish, such that a close event
-            # is called afterwards.
-            pass
-            # self.signalDestroyedWidget()
-            # print("paintEvent::Matplotlib figure is not available (err: %s)" % str(e))
+
+        # the slot calls below might fail, since it is possible that the figure has
+        # currently be closed by the user
+        # do not call self.signalDestroyedWidget() among others,
+        # since it might be, that the paintEvent is called from
+        # a timer event, that should finish, such that a close event
+        # is called afterwards.
+
+        # if blit: W and H are a sum of the real width/height and the offset x0 or y0.
+        # else: W and H are the real width and height of the image
+
+        if matplotlib.__version__ >= "3.9.0":
+            try:
+                self.matplotlibWidgetUiItem.call("paintResultWithImageFormat", buf, "rgba8888", x0, y0, W, H, blit)
+            except RuntimeError:
+                if self.matplotlibWidgetUiItem.exists():
+                    print("For matplotlib 3.9, the itom matplotlib designer plugin must have version >= 2.7.0")
+                else:
+                    # see comment above
+                    pass
+        else:
+            try:
+                self.matplotlibWidgetUiItem.call("paintResult", buf, x0, y0, W, H, blit)
+            except RuntimeError:
+                # see comment above
+                pass
         # itom specific end -->
 
     def copyToClipboard(self, dpi):
