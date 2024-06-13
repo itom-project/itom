@@ -97,6 +97,7 @@ To install all in one rush run the following list of commands. This might take a
     brew install opencv pcl caskroom/cask/brew-cask
     brew cask install qt-creator
     brew linkapps
+    brew install libusb-dev #this is optional to get the libusb drivers
 
 The above commands in one line:
 

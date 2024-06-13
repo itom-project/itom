@@ -83,5 +83,6 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../PointCloud/impl/pclFunctionsImpl.h DEST
 # COPY SECTION
 set(COPY_SOURCES "")
 set(COPY_DESTINATIONS "")
+
 itom_add_library_to_appdir_and_sdk(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 itom_post_build_copy_files(${target_name} COPY_SOURCES COPY_DESTINATIONS)
