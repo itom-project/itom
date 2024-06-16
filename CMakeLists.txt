@@ -165,6 +165,10 @@ find_package(Python QUIET)
 string(REGEX MATCH "([0-9]+\.[0-9]+)" Python_LIB_VERSION ${Python_VERSION})
 string(REPLACE . "" Python_LIB_VERSION ${Python_LIB_VERSION})
 
+message(STATUS "itom_VERSION_IDENTIFIERS: ${itom_VERSION_IDENTIFIERS}")
+message(STATUS "itom_VERSION: ${itom_VERSION}")
+
+
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win64/itom_setup_win64.iss.in
     ${CMAKE_CURRENT_BINARY_DIR}/setup/win64/itom_setup_win64.iss )
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/common/itom_setup_code.iss.in
