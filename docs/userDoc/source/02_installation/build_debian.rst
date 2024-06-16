@@ -20,7 +20,7 @@ Steps are as usual:
 *  obtain sources
 *  configure projects
 *  compile projects
-*  ->test/use project?
+*  test/use project
 
 Necessary packages
 -------------------------------------------------------------------------------
@@ -118,7 +118,7 @@ for |itom| (comments after the hash-tag should not be copied to the command line
     sudo apt update
     sudo apt install build-essential cmake cmake-qt-gui git python3 python3-dev python3-numpy python3-pip python-apt-dev
     sudo apt install libopencv-dev python3-opencv libv4l-dev xsdcxx libxerces-c3.2 libxerces-c-dev #these are optional
-    sudo apt install libv4l-dev #this is optional to get the video for linux drivers
+    sudo apt install libv4l-dev libusb-dev libudev-dev #this is optional to get the video for linux drivers
 
 The packages *xsdcxx* and *libxerces-c-dev* are only required for building the optional plugin *x3p*. Usually, *libxerces-c-dev*
 should install its runtime package *libxerces-c3.2* (or similar).
