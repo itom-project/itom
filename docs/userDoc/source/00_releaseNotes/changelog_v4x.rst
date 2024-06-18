@@ -57,10 +57,10 @@ Plugins
 * FittingFilters: Changed error conditions
 * FittingFilters: Fix of lapacke include
 * GenICam: Support of pixel format *Bayer_RG8*
-* GenICam: Speed inprovements for decoding the format *YCbCr422_8*.
+* GenICam: Speed improvements for decoding the format *YCbCr422_8*.
 * GenICam: Fix and test with a Baumer *GEV* camera
 * GenICam: Fix in *Mono12* pixel format
-* OceanOpticsSpec: Adapations in typedef struct which are no longer allowed
+* OceanOpticsSpec: Adaptations in typedef struct which are no longer allowed
 * PclTools: Adaptations for PCL 1.13
 * SerialIO: Memory bug fix
 

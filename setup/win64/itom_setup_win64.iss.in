@@ -3,7 +3,7 @@
 
 #define ExeName "Qitom.exe"
 #define Name "itom (x64)"
-#define Version "${ITOM_versionString}"
+#define Version "${itom_VERSION}${itom_VERSION_IDENTIFIERS}"
 #define Publisher "ITO Uni Stuttgart"
 #define URL "http://www.ito.uni-stuttgart.de/"
 #define DSetupMode 64;
@@ -28,7 +28,7 @@
 ; NOTE: The value of AppId uniquely identifies this application.
 ; Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
-AppId={{1AD9A522-E06D-462F-83F9-2CCB00D7B3E2}
+AppId={{1AD9A522-E06D-462F-83F9-2CCB00D7B3E2}-{#Version}
 AppName={#Name}
 AppVersion={#Version}
 AppVerName={#Name} {#Version}
@@ -38,14 +38,14 @@ AppSupportURL={#URL}
 AppUpdatesURL={#URL}
 DefaultDirName={pf64}\{#Name} {#Version}
 DefaultGroupName={#Name}
-OutputBaseFilename=setup
+OutputBaseFilename=itom_setup_v${itom_VERSION}${itom_VERSION_IDENTIFIERS}
 Compression=lzma
 SolidCompression=yes
 LicenseFile={#SourceDirItomSource}\COPYING.txt
 AlwaysRestart=False
 PrivilegesRequired=admin
 RestartIfNeededByRun=False
-MinVersion=0,6.0
+MinVersion=0,6.1
 
 [Dirs]
 Name: "{app}\"; Permissions: everyone-modify
@@ -463,7 +463,7 @@ Name: "Install"; Description: "Installation"; Flags: iscustom
 
 [Components]
 Name: "Main"; Description: "{#Name}"; Types: Install; Flags: checkablealone fixed
-Name: "CREDPACK2017"; Description: "Microsoft Visual C++ 2017 Redistr. x64 (required by some python packages)"; Types: Install; Flags: checkablealone; Check: NeedInstallRP17({#DSetupMode})
+Name: "CREDPACK2017"; Description: "{#SourceRedistributableName} (required by some python packages)"; Types: Install; Flags: checkablealone; Check: NeedInstallRP17({#DSetupMode})
 Name: "PACKAGESMAND"; Description: "Mandatory Python packages"; Types: Install; Flags: checkablealone fixed
 Name: "PACKAGESOPT"; Description: "Optional Python packages"; Types: Install; Flags: checkablealone
 Name: "SDK"; Description: "itom SDK"; Types: Install; Flags: checkablealone

@@ -44,8 +44,6 @@ ItomFileSystemModel::ItomFileSystemModel(QObject *parent) :
 {
 }
 
-
-
 //----------------------------------------------------------------------------------------------------------------------------------
 bool ItomFileSystemModel::dropMimeData(const QMimeData *data, Qt::DropAction action,
                               int row, int column, const QModelIndex &parent)

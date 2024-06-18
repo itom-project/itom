@@ -303,8 +303,12 @@ Typkonflikt für &apos;%1&apos;</translation>
     </message>
     <message>
         <location filename="../../common/sources/sharedFunctionsQt.cpp" line="2134"/>
+        <source>Load object failed: object header not valid</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Load object failed: object header not valied</source>
-        <translation type="unfinished">Fehler beim Laden des Objekts: Die Objekt-Header ist ungültig</translation>
+        <translation type="obsolete">Fehler beim Laden des Objekts: Die Objekt-Header ist ungültig</translation>
     </message>
     <message>
         <location filename="../../common/sources/pluginThreadCtrl.cpp" line="64"/>
@@ -490,9 +494,8 @@ Typkonflikt für &apos;%1&apos;</translation>
         <translation type="unfinished">Der Name des gesuchten Parameters ist leer.</translation>
     </message>
     <message>
-        <location filename="../../common/sources/helperCommon.cpp" line="335"/>
         <source>the parameter name &apos;%1&apos; is invald</source>
-        <translation type="unfinished">Der Parametername &apos;%1&apos; ist ungültig</translation>
+        <translation type="obsolete">Der Parametername &apos;%1&apos; ist ungültig</translation>
     </message>
     <message>
         <location filename="../../common/sources/helperCommon.cpp" line="373"/>
@@ -512,6 +515,7 @@ Typkonflikt für &apos;%1&apos;</translation>
         <translation type="unfinished">Der Parameter wurde nicht in &apos;m_params&apos; gefunden.</translation>
     </message>
     <message>
+        <location filename="../../common/sources/helperCommon.cpp" line="335"/>
         <location filename="../../common/sources/helperCommon.cpp" line="529"/>
         <source>the parameter name &apos;%1&apos; is invalid</source>
         <translation type="unfinished">Der Parametername &apos;%1&apos; ist ungültig</translation>
@@ -979,6 +983,19 @@ Typkonflikt für &apos;%1&apos;</translation>
         <location filename="../../common/sources/addInGrabber.cpp" line="263"/>
         <source>Error during check data, external dataObject invalid. Object must be of right size and type or an uninitilized image.</source>
         <translation type="unfinished">Fehler beim überprüfen der Daten. Das externe Datenobjekt ist ungültig. Das Objekt muss die richtige Größe und vom richtigen Typ sein oder ein nicht initialisiertes Image.</translation>
+    </message>
+</context>
+<context>
+    <name>ito::Logger</name>
+    <message>
+        <location filename="../../common/sources/itomLog.cpp" line="76"/>
+        <source>The file already exists: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../common/sources/itomLog.cpp" line="85"/>
+        <source>The file could not be copied to: %1</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>
