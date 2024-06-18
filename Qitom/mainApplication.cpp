@@ -524,7 +524,7 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
     settings->endGroup();
 
     QLocale localLanguage;
-    
+
     // language can be "language[_territory][.codeset][@modifier]" or "operatingsystem".
     // In the last case, the default language of the operating system is used.
     if (language.compare("operatingsystem", Qt::CaseInsensitive) == 0)

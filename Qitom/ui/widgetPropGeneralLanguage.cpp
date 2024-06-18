@@ -131,7 +131,7 @@ void WidgetPropGeneralLanguage::readSettings()
     // In the last case, the default language of the operating system is used.
     QLocale localeLanguage;
     bool languageBasedOnOperatingSystem = false;
-    
+
     if (language.compare("operatingsystem", Qt::CaseInsensitive) == 0)
     {
         localeLanguage = QLocale();
@@ -142,7 +142,7 @@ void WidgetPropGeneralLanguage::readSettings()
         localeLanguage = QLocale(language);
     }
 
-    if (localeLanguage.language() == QLocale::C) //the language could not be detected, use the default one as selected langauge
+    if (localeLanguage.language() == QLocale::C) //the language could not be detected, use the default one as selected language
     {
         localeLanguage = QLocale(QLocale::English, QLocale::UnitedStates);
     }

@@ -69,7 +69,7 @@ class FigureCanvasItomAgg(FigureCanvasItom, FigureCanvasAgg):
 
         # <-- itom specific start
         reg = self.copy_from_bbox(bbox)
-        
+
         if matplotlib.__version__ >= "3.9.0":
             # returns a RGBA8888 image format
             buf = memoryview(reg).tobytes()
@@ -78,7 +78,7 @@ class FigureCanvasItomAgg(FigureCanvasItom, FigureCanvasAgg):
             # However, it has been removed with MPL 3.9
             # returns a ARGB32 image format buffer
             buf = reg.to_string_argb()
-        
+
         W = round(w)
         H = round(h)
         # workaround sometimes the width and height does not fit to the buf length, leding to a crash of itom.
