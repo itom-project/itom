@@ -48,36 +48,18 @@ namespace ito {
 //----------------------------------------------------------------------------------------------------------------------------------
 FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &objName, QWidget *parent, bool docked, bool isDockAvailable, tFloatingStyle floatingStyle, tMovingStyle movingStyle, const QString &baseDirectory) :
     AbstractDockWidget(docked, isDockAvailable, floatingStyle, movingStyle, title, objName, parent),
-    m_pShowDirListMenu(NULL),
-    m_pFileSystemSettingMenu(NULL),
-    m_pContextMenu(NULL),
-    m_pPathEdit(NULL),
-    m_pMainToolbar(NULL),
-    m_pTreeView(NULL),
-    m_pLblFilter(NULL),
-    m_pCmbFilter(NULL),
-    m_pFileSystemModel(NULL),
+    m_pShowDirListMenu(nullptr), m_pFileSystemSettingMenu(nullptr), m_pContextMenu(nullptr),
+    m_pPathEdit(nullptr), m_pMainToolbar(nullptr), m_pTreeView(nullptr), m_pLblFilter(nullptr),
+    m_pCmbFilter(nullptr), m_pFileSystemModel(nullptr),
     baseDirectory(QString()),
-    m_pColumnWidth(NULL),
-    m_pActMoveCDUp(NULL),
-    m_pActSelectCD(NULL),
-    m_pActOpenFile(NULL),
-    m_pActExecuteFile(NULL),
-    m_pActLocateOnDisk(NULL),
-    m_pActRenameItem(NULL),
-    m_pActDeleteItems(NULL),
-    m_pActCutItems(NULL),
-    m_pActCopyItems(NULL),
-    m_pActPasteItems(NULL),
-    m_pActNewDir(NULL),
-    m_pActNewPyFile(NULL),
-    m_pViewList(NULL),
-    m_pViewDetails(NULL),
-    m_lastMovedShowDirAction(NULL),
-    m_linkColor(Qt::blue)
+    m_pColumnWidth(nullptr), m_pActMoveCDUp(nullptr), m_pActSelectCD(nullptr),
+    m_pActOpenFile(nullptr), m_pActExecuteFile(nullptr), m_pActLocateOnDisk(nullptr),
+    m_pActRenameItem(nullptr), m_pActDeleteItems(nullptr), m_pActCutItems(nullptr),
+    m_pActCopyItems(nullptr), m_pActPasteItems(nullptr), m_pActNewDir(nullptr),
+    m_pActNewPyFile(nullptr), m_pViewList(nullptr), m_pViewDetails(nullptr),
+    m_lastMovedShowDirAction(nullptr), m_linkColor(Qt::blue)
 {
-    int size = 0;
-    QAction *act = NULL;
+    QAction* act = nullptr;
     QString actCheckedStr = "";
     QString actDir = "";
     QIcon actIcon;  // we cannot assign NULL to a qicon for gcc, so rely on default constructor ... hope this works
@@ -89,7 +71,7 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
 
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("itomFileSystemDockWidget");
-    size = settings.beginReadArray("lastUsedDirs");
+    int size = settings.beginReadArray("lastUsedDirs");
     int count = 0;
 
     for (int i = 0; i < size; ++i)
@@ -561,35 +543,51 @@ void FileSystemDockWidget::updateActions()
 //----------------------------------------------------------------------------------------------------------------------------------
 void FileSystemDockWidget::fillFilterList()
 {
-    int defFilterNumber = 0;
-    int cnt = 0;
-    QString itomFiles = IOHelper::getAllItomFilesName();
-    QString filters = IOHelper::getFileFilters(IOHelper::IOFilters(IOHelper::IOInput | IOHelper::IOOutput | IOHelper::IOPlugin | IOHelper::IOAllFiles | IOHelper::IOMimeAll));
-    QStringList fList = filters.split(";;");
+    const QString settingsFile = AppManagement::getSettingsFile();
+    const QString itomFiles = IOHelper::getAllItomFilesName();
+    const QStringList filterList =
+        IOHelper::getFileFilters(IOHelper::IOFilters(
+        IOHelper::IOInput | IOHelper::IOOutput | IOHelper::IOPlugin |
+        IOHelper::IOAllFiles | IOHelper::IOMimeAll)).split(";;");
+    const QRegularExpression filterPatternRegex("^[a-zA-Z0-9-_ ]+ \\((\\*\\..*)\\)$");
+
+    QSettings settings(settingsFile, QSettings::IniFormat);
+    settings.beginGroup("itomFileSystemDockWidget");
+
+    QString savedFileFilter = settings.value("fileFilterString", "").toString();
     defaultFilterPatterns.clear();
-    QRegularExpression regExp("^[a-zA-Z0-9-_ ]+ \\((\\*\\..*)\\)$");
-    QRegularExpressionMatch regExpMatch;
-    QStringList suffixes;
+    m_pCmbFilter->clear();
 
-    foreach(const QString &s, fList)
+    int filterIndexToSelect = 0;
+    bool filterFound = false;
+
+    for (int index = 0; index < filterList.size(); ++index)
     {
-        m_pCmbFilter->addItem(s, s);
-        regExpMatch = regExp.match(s);
+        const QString& filter = filterList[index];
+        m_pCmbFilter->addItem(filter, filter);
 
-        if (regExpMatch.hasMatch())
+        QRegularExpressionMatch match = filterPatternRegex.match(filter);
+        if (match.hasMatch())
         {
-            suffixes = regExpMatch.captured(1).split(" ");
-            defaultFilterPatterns[s] << suffixes;
+            const QStringList suffixes = match.captured(1).split(" ");
+            defaultFilterPatterns[filter] << suffixes;
         }
 
-        if (s.contains(itomFiles))
+        if (!filterFound)
         {
-            defFilterNumber = cnt;
+            if (filter == savedFileFilter || filter.contains(itomFiles))
+            {
+                filterIndexToSelect = index;
+                filterFound = true;
+            }
         }
-        cnt++;
     }
-    m_pCmbFilter->setCurrentIndex(defFilterNumber);
+
+    m_pCmbFilter->setCurrentIndex(filterIndexToSelect);
     cmbFilterEditTextChanged(m_pCmbFilter->currentText());
+
+    settings.setValue("fileFilterString", m_pCmbFilter->currentText());
+    settings.endGroup();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -611,12 +609,17 @@ void FileSystemDockWidget::cmbFilterEditTextChanged(const QString &text)
         }
         m_pFileSystemModel->setNameFilters(filters2);
     }
+
+    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+    settings.beginGroup("itomFileSystemDockWidget");
+    settings.setValue("fileFilterString", m_pCmbFilter->currentText());
+    settings.endGroup();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal FileSystemDockWidget::changeBaseDirectory(QString dir)
 {
-    QAction* act = NULL;
+    QAction* act = nullptr;
 
     QMutexLocker mutexLocker(&baseDirChangeMutex);
     QDir newDir(dir);
@@ -649,7 +652,7 @@ RetVal FileSystemDockWidget::changeBaseDirectory(QString dir)
         if (i < m_pShowDirListMenu->actions().count())
         {
             removeActionFromDirList(i);
-            m_lastMovedShowDirAction = NULL;
+            m_lastMovedShowDirAction = nullptr;
         }
     }
     else
@@ -694,7 +697,7 @@ RetVal FileSystemDockWidget::changeBaseDirectory(QString dir)
         }
         else
         {
-            m_pShowDirListMenu->insertAction(NULL, act);
+            m_pShowDirListMenu->insertAction(nullptr, act);
         }
 
         if (m_pShowDirListMenu->actions().count() == 11)
