@@ -76,6 +76,9 @@ ConsoleWidget::ConsoleWidget(QWidget* parent) :
     setSelectLineOnCopyEmpty(false);
     updateAnsiTextCharFormat(m_recentAnsiTextCharFormat, "m", 0);
 
+    // undo/redo does not really work for the special text handling in the console widget
+    setUndoRedoEnabled(false);
+
     m_receiveStreamBuffer.msgType = ito::msgStreamOut;
     connect(&m_receiveStreamBufferTimer, SIGNAL(timeout()), this, SLOT(processStreamBuffer()));
     //m_receiveStreamBufferTimer.setSingleShot(true);
