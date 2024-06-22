@@ -228,6 +228,7 @@ int main(int argc, char *argv[])
 #endif
 #endif
     qputenv("QT_AUTO_SCREEN_SCALE_FACTOR", "1");  // auto scale by qt
+    //qputenv("QT_QPA_PLATFORM", "windows:darkmode=0");
 
     //startBenchmarks();
 

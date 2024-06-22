@@ -257,7 +257,20 @@ QString MainApplication::getSplashScreenFileName() const
     }
     else
     {
-        fileName = ":/application/icons/itomicon/splashScreen4dev.png";
+        if (currentMonth == 12)
+        {
+            //Christmas splashScreen whole december of each year
+            fileName = ":/application/icons/itomicon/splashScreen4devChristmas.png";
+        }
+        else if (qAbs(daysDiffToEaster) <= 7)
+        {
+            //Easter splashScreen one week before and after easter day
+            fileName = ":/application/icons/itomicon/splashScreen4devEaster.png";
+        }
+        else //default splashScreen
+        {
+            fileName = ":/application/icons/itomicon/splashScreen4dev.png";
+        }
     }
 
     return fileName;
