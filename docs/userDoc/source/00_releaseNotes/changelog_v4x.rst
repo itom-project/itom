@@ -67,53 +67,42 @@ Plugins
 Designer Plugins
 ----------------
 
-**vtk3dVisualizer**
-
-*
-*
-*
-
-**plotly**
-
-*
-*
-*
-
-**twipoglfigure**
-
-*
-*
-*
-
-**itom2dqwtplot**
-
-*
-*
-*
-
-**itom1dqwtplot**
-
-*
-*
-*
-
-**matplotlib**
-
-*
-*
-*
-
-**motorController**
-
-*
-*
-*
+(more than 75 commits in designerplugin repository)
 
 **General**
 
-*
-*
-*
+* style and typo fixes to pass some pre-commit hooks
+* some modifications since repo moved to github.com
+* source files and python scripts changed to utf8, if not yet done. Use utf8 as far as possible (`pull request 52 <https://github.com/itom-project/designerPlugins/pull/52>`_).
+* Added PLUGIN_VERSION_IDENTIFIERS to distinguish between tagged release versions and other versions.
+* multiple Qt5 and Qt6 fixes
+* Minimum CMake version: 3.12. Tested up to 3.29.
+
+**vtk3dVisualizer**
+
+* fix and support for Qt6 and VTK9
+
+**plotly**
+
+* plotly now supports special characters in underlying html content
+* fix for a crash when the plotly image is downloaded multiple times (`pull request 49 <https://github.com/itom-project/designerPlugins/pull/49>`_).
+
+**itom2dqwtplot**
+
+* Many improvements of zoom feature: Ctrl+0 goes to the initial home zoom. Actions for zoom backwards and forwards added (Ctrl+Z, Ctrl+Y).
+* Manual adjustment of min / max axes values are now also considered in the zoom stack.
+
+**itom1dqwtplot**
+
+* Many improvements of zoom feature: Ctrl+0 goes to the initial home zoom. Actions for zoom backwards and forwards added (Ctrl+Z, Ctrl+Y).
+* Manual adjustment of min / max axes values are now also considered in the zoom stack.
+* depending on the input data object and its (optional) bounding values, the right data representation actions are enabled or disabled
+* Fixes an issue with the line cut, which showed empty values for NaN-based float objects, depending on the line start (`issue 44 <https://github.com/itom-project/designerPlugins/issues/44>`_).
+
+**matplotlib**
+
+* support of both image buffers of type argb32 (for MPL < 3.9) and rgba8888 (MPL >= 3.9).
+
 
 Version 4.2.2 (2022-09-02)
 **************************
