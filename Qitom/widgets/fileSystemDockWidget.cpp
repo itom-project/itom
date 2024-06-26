@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Copyright (C) 2024, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of itom.
@@ -52,7 +52,7 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
     m_pPathEdit(nullptr), m_pMainToolbar(nullptr), m_pTreeView(nullptr), m_pLblFilter(nullptr),
     m_pCmbFilter(nullptr), m_pFileSystemModel(nullptr),
     baseDirectory(QString()),
-    m_pColumnWidth(nullptr), m_pActMoveCDUp(nullptr), m_pActSelectCD(nullptr),
+    m_pActMoveCDUp(nullptr), m_pActSelectCD(nullptr),
     m_pActOpenFile(nullptr), m_pActExecuteFile(nullptr), m_pActLocateOnDisk(nullptr),
     m_pActRenameItem(nullptr), m_pActDeleteItems(nullptr), m_pActCutItems(nullptr),
     m_pActCopyItems(nullptr), m_pActPasteItems(nullptr), m_pActNewDir(nullptr),
@@ -115,13 +115,7 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
     m_pPathEdit->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     m_pPathEdit->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     m_pPathEdit->setOpenLinks(false);
-
-    connect(m_pPathEdit, SIGNAL(anchorClicked(const QUrl&)), this, SLOT(pathAnchorClicked(const QUrl&)));
-//m_pPathEdit->setEnabled(false);
-/*    QColor color = 433;
-//    m_pPathEdit->setTextBackgroundColor(color);
-    QPalette::ColorGroup cg;
-    m_pPathEdit->palette().setColor(cg, color);*/
+    connect(m_pPathEdit, &QTextBrowser::anchorClicked, this, &FileSystemDockWidget::pathAnchorClicked);
 
     m_pLblFilter = new QLabel(tr("Filter:"), this);
     m_pLblFilter->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
@@ -131,16 +125,15 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
     m_pCmbFilter->setEditable(true);
     m_pCmbFilter->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Fixed);
     m_pCmbFilter->setToolTip(tr("file name filters (semicolon or space separated list)"));
-
-    connect(m_pCmbFilter, SIGNAL(editTextChanged(const QString&)), this, SLOT(cmbFilterEditTextChanged(const QString &)));
+    connect(m_pCmbFilter, &QComboBox::editTextChanged, this, &FileSystemDockWidget::cmbFilterEditTextChanged);
 
     m_pFileSystemModel = new ItomFileSystemModel(m_pTreeView);
     m_pFileSystemModel->setRootPath("");
     m_pFileSystemModel->setReadOnly(false);
 
     m_pTreeView = new ito::QTreeViewItom(this);
-    connect(m_pTreeView, SIGNAL(activated(const QModelIndex&)), this, SLOT(openFile(const QModelIndex&)));
-    connect(m_pTreeView, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(treeViewContextMenuRequested(const QPoint &)));
+    connect(m_pTreeView, &QTreeViewItom::activated, this, &FileSystemDockWidget::openFile);
+    connect(m_pTreeView, &QTreeViewItom::customContextMenuRequested, this, &FileSystemDockWidget::treeViewContextMenuRequested);
     m_pTreeView->setModel(m_pFileSystemModel);
 
     // Demonstrating look and feel features
@@ -167,40 +160,21 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
     m_pTreeView->setDragEnabled(true);
     m_pTreeView->setAcceptDrops(true);
     m_pTreeView->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    connect(m_pTreeView, SIGNAL(doubleClicked(const QModelIndex&)), this, SLOT(itemDoubleClicked(const QModelIndex&)));
+    connect(m_pTreeView, &QTreeViewItom::doubleClicked, this, &FileSystemDockWidget::itemDoubleClicked);
 
-    size = settings.beginReadArray("ColWidth");
+    m_showColumnDetails = settings.value("showColumnDetails", false).toBool();
+    m_detailColumnsWidth.resize(m_pFileSystemModel->columnCount(), 120);
+    size = settings.beginReadArray("detailColumnsWidth");
 
-    for (int i = 0; i < size; ++i)
+    for (int i = 0; i < std::min(size, m_pFileSystemModel->columnCount()); ++i)
     {
         settings.setArrayIndex(i);
-        m_pTreeView->setColumnWidth(i, settings.value("width", 100).toInt());
-        m_pTreeView->setColumnHidden(i, m_pTreeView->columnWidth(i) == 0);
-    }
-    settings.endArray();
-
-    m_pColumnWidth = new int[m_pFileSystemModel->columnCount()];
-    size = settings.beginReadArray("StandardColWidth");
-
-    if (size != m_pFileSystemModel->columnCount())
-    {
-        for (int i = 0; i < m_pFileSystemModel->columnCount(); ++i)
-        {
-            m_pColumnWidth[i] = 120;
-        }
-    }
-
-    for (int i = 0; i < size; ++i)
-    {
-        settings.setArrayIndex(i);
-        m_pColumnWidth[i] = settings.value("width", 100).toInt();
-        if (m_pColumnWidth[i] == 0)
-        {
-            m_pColumnWidth[i] = 120;
-        }
+        m_detailColumnsWidth[i] = settings.value("width", m_detailColumnsWidth[i]).toInt();
+        m_pTreeView->setColumnWidth(i, m_detailColumnsWidth[i]);
     }
 
     settings.endArray();
+    treeViewHideOrShowColumns(!m_showColumnDetails);
     settings.endGroup();
 
     AbstractDockWidget::init();
@@ -254,21 +228,20 @@ FileSystemDockWidget::~FileSystemDockWidget()
 
     settings.endArray();
 
-    settings.beginWriteArray("ColWidth");
-    for (int i = 0; i < m_pFileSystemModel->columnCount(); i++)
-    {
-        settings.setArrayIndex(i);
-        settings.setValue("width", m_pTreeView->columnWidth(i));
-    }
-    settings.endArray();
+    settings.setValue("showColumnDetails", m_showColumnDetails);
 
-    settings.beginWriteArray("StandardColWidth");
-    for (int i = 0; i < m_pFileSystemModel->columnCount(); i++)
+    if (m_showColumnDetails)
     {
-        settings.setArrayIndex(i);
-        settings.setValue("width", m_pColumnWidth[i]);
+        settings.beginWriteArray("detailColumnsWidth");
+
+        for (int i = 0; i < m_pFileSystemModel->columnCount(); i++)
+        {
+            settings.setArrayIndex(i);
+            settings.setValue("width", m_pTreeView->columnWidth(i));
+        }
+
+        settings.endArray();
     }
-    settings.endArray();
 
     settings.setValue("sortColumn", m_pTreeView->header()->sortIndicatorSection());
     settings.setValue("sortOrder", m_pTreeView->header()->sortIndicatorOrder());
@@ -284,7 +257,6 @@ FileSystemDockWidget::~FileSystemDockWidget()
     DELETE_AND_SET_NULL(m_pLblFilter);
     DELETE_AND_SET_NULL(m_pCmbFilter);
     DELETE_AND_SET_NULL(m_pFileSystemModel);
-    DELETE_AND_SET_NULL_ARRAY(m_pColumnWidth);
     DELETE_AND_SET_NULL(m_pActMoveCDUp);
     DELETE_AND_SET_NULL(m_pActSelectCD);
     DELETE_AND_SET_NULL(m_pActOpenFile);
@@ -299,7 +271,6 @@ FileSystemDockWidget::~FileSystemDockWidget()
     DELETE_AND_SET_NULL(m_pActNewPyFile);
     DELETE_AND_SET_NULL(m_pViewList);
     DELETE_AND_SET_NULL(m_pViewDetails);
-    //DELETE_AND_SET_NULL(m_lastMovedShowDirAction);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1264,7 +1235,7 @@ void FileSystemDockWidget::showInGraphicalShell(const QString & filePath)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void FileSystemDockWidget::setTreeViewHideColumns(const bool &hide)
+void FileSystemDockWidget::treeViewHideOrShowColumns(const bool &hide)
 {
     for (int i = 1; i < m_pFileSystemModel->columnCount(); ++i)
     {
@@ -1275,41 +1246,30 @@ void FileSystemDockWidget::setTreeViewHideColumns(const bool &hide)
 //----------------------------------------------------------------------------------------------------------------------------------
 void FileSystemDockWidget::showList()
 {
-    bool isList = true;
-
-    for (int i = 1; i < m_pFileSystemModel->columnCount(); ++i)
+    if (m_showColumnDetails)
     {
-        isList = isList && m_pTreeView->isColumnHidden(i);
-    }
+        m_showColumnDetails = false;
 
-    if (!isList)
-    {
         for (int i = 0; i < m_pFileSystemModel->columnCount(); ++i)
         {
-            m_pColumnWidth[i] = m_pTreeView->columnWidth(i);
+            m_detailColumnsWidth[i] = m_pTreeView->columnWidth(i);
         }
-    }
 
-    setTreeViewHideColumns(true);
+        treeViewHideOrShowColumns(true);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void FileSystemDockWidget::showDetails()
 {
-    bool isList = true;
-
-    for (int i = 1; i < m_pFileSystemModel->columnCount(); ++i)
+    if (!m_showColumnDetails)
     {
-        isList = isList && m_pTreeView->isColumnHidden(i);
-    }
+        m_showColumnDetails = true;
+        treeViewHideOrShowColumns(false);
 
-    setTreeViewHideColumns(false);
-
-    if (isList)
-    {
         for (int i = 0; i < m_pFileSystemModel->columnCount(); ++i)
         {
-            m_pTreeView->setColumnWidth(i, m_pColumnWidth[i]);
+            m_pTreeView->setColumnWidth(i, m_detailColumnsWidth[i]);
         }
     }
 }

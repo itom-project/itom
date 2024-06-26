@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Copyright (C) 2024, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of itom.
@@ -20,8 +20,7 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef FILESYSTEMDOCKWIDGET_H
-#define FILESYSTEMDOCKWIDGET_H
+#pragma once
 
 #include "../helper/IOHelper.h"
 #include "abstractDockWidget.h"
@@ -77,6 +76,7 @@ namespace ito
         private:
             void fillFilterList();
             void showInGraphicalShell(const QString &filePath);
+            void treeViewHideOrShowColumns(const bool& hide);
 
             QMenu* m_pShowDirListMenu;
             QMenu* m_pFileSystemSettingMenu;
@@ -91,7 +91,8 @@ namespace ito
             QHash<QString,QStringList> defaultFilterPatterns;
             QMutex baseDirChangeMutex;
             QList<QUrl> m_clipboardCutData; //this mime-data has recently be selected by a cut action and is no available in QClipboard
-            int *m_pColumnWidth;
+            bool m_showColumnDetails;
+            QList<int> m_detailColumnsWidth;
             QColor m_linkColor;
 
             ShortcutAction* m_pActMoveCDUp;
@@ -138,7 +139,6 @@ namespace ito
             void cmbFilterEditTextChanged(const QString &text);
             void openFile(const QModelIndex& index);
             void treeViewContextMenuRequested(const QPoint &pos);
-            void setTreeViewHideColumns(const bool &hide);
             void removeActionFromDirList(const int &pos);
             void itemDoubleClicked(const QModelIndex &index);
 
@@ -150,5 +150,3 @@ namespace ito
     };
 
 } //end namespace ito
-
-#endif

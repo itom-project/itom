@@ -99,18 +99,17 @@ const QScreen* guiApplicationScreenAt(const QPoint &point)
     establishes widgets being part of the main window including necessary actions
 */
 MainWindow::MainWindow() :
-    m_console(NULL), m_contentLayout(NULL), m_breakPointDock(NULL), m_bookmarkDock(NULL),
-    m_lastCommandDock(NULL),
-    //    m_pythonMessageDock(NULL),
-    m_helpDock(NULL), m_globalWorkspaceDock(NULL), m_localWorkspaceDock(NULL),
-    m_callStackDock(NULL), m_fileSystemDock(NULL), m_pAIManagerWidget(NULL), m_appFileNew(NULL),
-    m_appFileOpen(NULL), m_aboutQt(NULL), m_aboutQitom(NULL), m_copyLog(nullptr), m_pMenuFigure(NULL),
-    m_pMenuHelp(NULL), m_pMenuFile(NULL), m_pMenuPython(NULL), m_pMenuReloadModule(NULL),
-    m_pMenuView(NULL), m_pHelpSystem(NULL), m_pStatusLblCurrentDir(NULL),
-    m_pStatusLblScriptInfo(nullptr),
-    m_pStatusLblPythonBusy(NULL), m_pythonBusy(false), m_pythonDebugMode(false),
+    m_console(nullptr), m_contentLayout(nullptr), m_breakPointDock(nullptr), 
+    m_bookmarkDock(nullptr), m_lastCommandDock(nullptr), m_helpDock(nullptr), 
+    m_globalWorkspaceDock(nullptr), m_localWorkspaceDock(nullptr), m_callStackDock(nullptr), 
+    m_fileSystemDock(nullptr), m_pAIManagerWidget(nullptr), m_appFileNew(nullptr),
+    m_appFileOpen(nullptr), m_aboutQt(nullptr), m_aboutQitom(nullptr), m_copyLog(nullptr), 
+    m_pMenuFigure(nullptr), m_pMenuHelp(nullptr), m_pMenuFile(nullptr), 
+    m_pMenuPython(nullptr), m_pMenuReloadModule(nullptr), m_pMenuView(nullptr), 
+    m_pHelpSystem(nullptr), m_pStatusLblCurrentDir(nullptr), m_pStatusLblScriptInfo(nullptr),
+    m_pStatusLblPythonBusy(nullptr), m_pythonBusy(false), m_pythonDebugMode(false),
     m_pythonInWaitingMode(false), m_isFullscreen(false), m_userDefinedActionCounter(0),
-    m_plastFilesMenu(NULL)
+    m_plastFilesMenu(nullptr)
 {
     // qDebug() << "mainWindow. Thread: " << QThread::currentThreadId ();
 #ifdef __APPLE__
@@ -179,6 +178,22 @@ MainWindow::MainWindow() :
     centralWidget->setLayout(m_contentLayout);
     setCentralWidget(centralWidget);
 
+    if (uOrg && uOrg->currentUserHasFeature(featDeveloper))
+    {
+        // lastCommandDock
+        m_lastCommandDock = new LastCommandDockWidget(
+            tr("Command History"),
+            "itomLastCommandDockWidget",
+            this,
+            true,
+            true,
+            AbstractDockWidget::floatingStandard);
+        m_lastCommandDock->setAllowedAreas(
+            Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea |
+            Qt::TopDockWidgetArea);
+        addDockWidget(Qt::LeftDockWidgetArea, m_lastCommandDock);
+    }
+
     if (uOrg && uOrg->currentUserHasFeature(featFileSystem))
     {
         // FileDir-Dock
@@ -225,26 +240,6 @@ MainWindow::MainWindow() :
             Qt::TopDockWidgetArea);
         addDockWidget(Qt::LeftDockWidgetArea, m_bookmarkDock);
 
-        // lastCommandDock
-        m_lastCommandDock = new LastCommandDockWidget(
-            tr("Command History"),
-            "itomLastCommandDockWidget",
-            this,
-            true,
-            true,
-            AbstractDockWidget::floatingStandard);
-        m_lastCommandDock->setAllowedAreas(
-            Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea |
-            Qt::TopDockWidgetArea);
-        addDockWidget(Qt::LeftDockWidgetArea, m_lastCommandDock);
-
-        // pythonMessageDock
-        // m_pythonMessageDock = new PythonMessageDockWidget(tr("Python Messages"),
-        // "itomPythonMessageDockWidget", this, true, true, AbstractDockWidget::floatingStandard);
-        // m_pythonMessageDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea |
-        // Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
-        // addDockWidget(Qt::BottomDockWidgetArea, m_pythonMessageDock);
-
         // helpDock
         m_helpDock = new HelpDockWidget(
             tr("Plugin Help Viewer"),
@@ -256,7 +251,7 @@ MainWindow::MainWindow() :
         m_helpDock->setAllowedAreas(
             Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea |
             Qt::TopDockWidgetArea);
-        addDockWidget(Qt::LeftDockWidgetArea, m_helpDock);
+        addDockWidget(Qt::RightDockWidgetArea, m_helpDock);
 
         // CallStack-Dock
         m_callStackDock = new CallStackDockWidget(
@@ -274,9 +269,8 @@ MainWindow::MainWindow() :
         if (m_fileSystemDock)
         {
             // tabify file-directory and breakpoints
-            tabifyDockWidget(m_callStackDock, m_fileSystemDock);
-            tabifyDockWidget(m_fileSystemDock, m_breakPointDock);
-            m_fileSystemDock->raise();
+            tabifyDockWidget(m_fileSystemDock, m_callStackDock);
+            tabifyDockWidget(m_callStackDock, m_breakPointDock);
         }
         else
         {
@@ -286,6 +280,11 @@ MainWindow::MainWindow() :
         if (m_breakPointDock && m_bookmarkDock)
         {
             tabifyDockWidget(m_breakPointDock, m_bookmarkDock);
+        }
+
+        if (m_fileSystemDock)
+        {
+            m_fileSystemDock->raise();
         }
 
         // global workspace widget (Python)
@@ -350,7 +349,7 @@ MainWindow::MainWindow() :
         }
     }
 
-    if (m_pAIManagerWidget != NULL && m_helpDock != NULL)
+    if (m_pAIManagerWidget != nullptr && m_helpDock != nullptr)
     {
         connect(
             m_pAIManagerWidget,

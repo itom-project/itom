@@ -208,7 +208,7 @@ bool IsNotWin7PreRTM()
 int main(int argc, char *argv[])
 {
 #ifdef WIN32
-#if WDK_NTDDI_VERSION >= 0x0A000002 // only for windows 10 anniversity update because SetProcessDpiAwarenessContext was introduced
+#if WDK_NTDDI_VERSION >= 0x0A000002 // only for windows 10 anniversary update because SetProcessDpiAwarenessContext was introduced
     //  https://docs.microsoft.com/de-de/windows/win32/winprog/using-the-windows-headers
     //  https://naughter.wordpress.com/2017/02/14/changes-in-the-windows-v10-0-15021-sdk-compared-to-windows-v10-0-14393-sdk-part-one/
     //  https://searchfox.org/mozilla-central/source/mfbt/WindowsVersion.h#84
