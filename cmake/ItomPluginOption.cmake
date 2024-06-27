@@ -1,6 +1,6 @@
 macro(itom_plugin_option PLUGIN_ID)
 
-    set(PLUGINS_LIST
+    set(PLUGINS_LIST	# Legend: X = OFF, D = Default, S = Setup, T = Test
     "+-------------------------------+-------------------------------------------+"
     "| **Plugin**                    | Win11 | Win10 | macOS | Ubu2404 | Rasbian |"
     "+===============================+===========================================+"
@@ -203,32 +203,29 @@ macro(itom_plugin_option PLUGIN_ID)
             string(REPLACE "|" ";" SPLIT_LIST "${MATCHSTRING}")
             message(STATUS "SPLIT_LIST: ${SPLIT_LIST}")
 
-            list(GET SPLIT_LIST ${INDEX} ELEMENt)
-            message(STATUS "ELEMENt: ${ELEMENt}")
+            list(GET SPLIT_LIST ${INDEX} ELEMENT)
+            message(STATUS "ELEMENT: ${ELEMENT}")
 
-            string(STRIP "${ELEMENt}" VALUE)
+            string(STRIP "${ELEMENT}" VALUE)
             message(STATUS "VALUE: ${VALUE}")
 
             # case DEFAULT
             if(VALUE STREQUAL "D")
                 set(BUILD_OPTION ON)
-            else()
-                set(BUILD_OPTION OFF)
-            endif()
 
             # case SETUP
-            if(ITOM_BUILD_SETUP AND (VALUE STREQUAL "D" OR VALUE STREQUAL "S"))
+            elseif(ITOM_BUILD_SETUP AND (VALUE STREQUAL "D" OR VALUE STREQUAL "S"))
                 set(BUILD_OPTION ON)
+
+            # case TEST
+            elseif(ITOM_BUILD_TEST AND (VALUE STREQUAL "D" OR VALUE STREQUAL "S" OR VALUE STREQUAL "T"))
+                set(BUILD_OPTION ON)
+
             else()
                 set(BUILD_OPTION OFF)
             endif()
 
-            # case TEST
-            if(ITOM_BUILD_TEST AND (VALUE STREQUAL "D" OR VALUE STREQUAL "S" OR VALUE STREQUAL "T"))
-                set(BUILD_OPTION ON)
-            else()
-                set(BUILD_OPTION OFF)
-            endif()
+			message(STATUS "${PLUGIN_ID} BUILD_OPTION: ${BUILD_OPTION}")
 
         endif(MATCHSTRING)
     endforeach()
