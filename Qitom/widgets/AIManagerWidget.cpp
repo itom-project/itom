@@ -157,7 +157,7 @@ AIManagerWidget::AIManagerWidget(
 
         QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
         settings.beginGroup("itomPluginsDockWidget");
-        
+
         m_showColumnDetails = settings.value("showColumnDetails", false).toBool();
         m_detailColumnsWidth.resize(m_pPlugInModel->columnCount(), 120);
         size = settings.beginReadArray("detailColumnsWidth");
