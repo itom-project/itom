@@ -41,6 +41,7 @@
 #include <qapplication.h>
 #include <qshortcut.h>
 #include <qmimedata.h>
+#include <qfileiconprovider.h>
 
 namespace ito {
 
@@ -210,6 +211,18 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
     fillFilterList();
 
 //    QObject::dumpObjectTree();
+
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
+    // since (at least) Qt 6.7, QFileSystemModel
+    // creates a default QAbstractFileIconProvider,
+    // that shows very basic folder icons. However, we
+    // would like to see the real folder icons of the 
+    // operating system. Therefore, we have to pass
+    // our own instance of QFileIconProvider to the model.
+    // The model does not take care of the given object,
+    // therefore it is created as a member of the class.
+    m_pFileSystemModel->setIconProvider(&m_fileIconProvider);
+#endif
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
