@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Copyright (C) 2024, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of itom.
@@ -104,8 +104,9 @@ ScriptDockWidget::ScriptDockWidget(const QString &title, const QString &objName,
 
     const MainWindow *mainWin = qobject_cast<MainWindow*>(AppManagement::getMainWindow());
 
-    connect(m_tab, SIGNAL(tabContextMenuEvent(QContextMenuEvent*)), this, SLOT(tabContextMenuEvent(QContextMenuEvent*)));
-    connect(this, SIGNAL(pythonRunSelection(QString)), mainWin, SLOT(pythonRunSelection(QString)));
+    connect(m_tab, &QTabWidgetItom::tabContextMenuEvent, this, &ScriptDockWidget::tabContextMenuEvent);
+    connect(m_tab, &QTabWidgetItom::currentChanged, this, &ScriptDockWidget::currentTabChanged);
+    connect(this, &ScriptDockWidget::pythonRunSelection, mainWin, &MainWindow::pythonRunSelection);
 
     AbstractDockWidget::init();
 
@@ -117,7 +118,6 @@ ScriptDockWidget::ScriptDockWidget(const QString &title, const QString &objName,
 
     resize(700,400);
 
-    connect(m_tab, SIGNAL(currentChanged(int)), this, SLOT(currentTabChanged(int)));
     if (m_tabContextMenu != NULL)
     {
         connect(m_tabContextMenu, SIGNAL(aboutToShow()), this, SLOT(updateTabContextActions()));
@@ -1266,6 +1266,8 @@ void ScriptDockWidget::tabFilenameOrModificationChanged(int index)
 /*!
     modifies title of this ScriptDockWidget instance, depending on the active tab.
 
+    Gives the focus to the new tab.
+
     \param index tab-index of changed editor
 */
 void ScriptDockWidget::currentTabChanged(int index)
@@ -1291,6 +1293,8 @@ void ScriptDockWidget::currentTabChanged(int index)
         disconnect(this, SLOT(currentScriptCursorPositionChanged()));
 
         connect(currentEditor, &ScriptEditorWidget::cursorPositionChanged, this, &ScriptDockWidget::currentScriptCursorPositionChanged);
+
+        currentEditor->setFocus();
     }
     else
     {
