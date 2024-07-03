@@ -2169,7 +2169,7 @@ ito::RetVal PythonEngine::debugFunction(PyObject *callable, PyObject *argTuple, 
         result = PyObject_CallMethod(m_itomDbgInstance, "clear_all_breaks", "");
         if (result == NULL)
         {
-            std::cerr << tr("Error while clearing all breakpoints in itoDebugger.").toLatin1().data() << "\n" << std::endl;
+            std::cerr << tr("Error while clearing all breakpoints in itoDebugger.").toUtf8().data() << "\n" << std::endl;
             printPythonErrorWithoutTraceback(); //traceback is sense-less, since the traceback is in itoDebugger.py only!
 
             if (!gilExternal)
@@ -2286,7 +2286,7 @@ ito::RetVal PythonEngine::debugFile(const QString &pythonFileName)
         result = PyObject_CallMethod(m_itomDbgInstance, "clear_all_breaks", "");
         if (result == NULL)
         {
-            std::cerr << tr("Error while clearing all breakpoints in itoDebugger.").toLatin1().data() << "\n" << std::endl;
+            std::cerr << tr("Error while clearing all breakpoints in itoDebugger.").toUtf8().data() << "\n" << std::endl;
             printPythonErrorWithoutTraceback(); //traceback is sense-less, since the traceback is in itoDebugger.py only!
 
             PyGILState_STATE gstate = PyGILState_Ensure();
@@ -2403,7 +2403,7 @@ ito::RetVal PythonEngine::debugString(const QString &command)
 
         if (result == nullptr)
         {
-            std::cerr << tr("Error while clearing all breakpoints in itoDebugger.").toLatin1().data() << "\n" << std::endl;
+            std::cerr << tr("Error while clearing all breakpoints in itoDebugger.").toUtf8().data() << "\n" << std::endl;
             printPythonErrorWithoutTraceback(); //traceback is sense-less, since the traceback is in itoDebugger.py only!
             PyGILState_Release(gstate);
             return RetVal(retError);
@@ -2499,12 +2499,12 @@ ito::RetVal PythonEngine::handlePythonSysExit()
     if (closeItom)
     {
         QMetaObject::invokeMethod(AppManagement::getMainApplication(), "mainWindowCloseRequest", Q_ARG(bool, false));
-        std::cerr << tr("close itom due to sys.exit()").toLatin1().data() << "\n" << std::endl;
+        std::cerr << tr("close itom due to sys.exit()").toUtf8().data() << "\n" << std::endl;
         return ito::RetVal(ito::retError, 0, "Close itom due to Python sys.exit()");
     }
     else
     {
-        std::cerr << tr("sys.exit() is ignored. If itom should be closed, enable it in the itom properties dialog.").toLatin1().data() << "\n" << std::endl;
+        std::cerr << tr("sys.exit() is ignored. If itom should be closed, enable it in the itom properties dialog.").toUtf8().data() << "\n" << std::endl;
         return ito::RetVal(ito::retError, 0, "sys.exit() ignored.");
     }
 }
@@ -2852,7 +2852,7 @@ ito::RetVal PythonEngine::pythonAddBreakpoint(
         {
             //this is an exception case that should not occur under normal circumstances
             std::cerr << tr("Adding breakpoint to file '%1', line %2 failed in Python debugger.")
-                .arg(breakpoint.filename).arg(lineNo).toLatin1().constData() << "\n" << std::endl;
+                .arg(breakpoint.filename).arg(lineNo).toUtf8().constData() << "\n" << std::endl;
 
             //traceback is sense-less, since the traceback is in itoDebugger.py only!
             printPythonErrorWithoutTraceback();
