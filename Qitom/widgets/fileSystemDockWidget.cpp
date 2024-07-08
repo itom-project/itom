@@ -53,6 +53,9 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
     m_pPathEdit(nullptr), m_pMainToolbar(nullptr), m_pTreeView(nullptr), m_pLblFilter(nullptr),
     m_pCmbFilter(nullptr), m_pFileSystemModel(nullptr),
     baseDirectory(QString()),
+    // Tests Here
+    m_pColumnWidth(nullptr),
+    // Tests End
     m_pActMoveCDUp(nullptr), m_pActSelectCD(nullptr),
     m_pActOpenFile(nullptr), m_pActExecuteFile(nullptr), m_pActLocateOnDisk(nullptr),
     m_pActRenameItem(nullptr), m_pActDeleteItems(nullptr), m_pActCutItems(nullptr),
@@ -161,22 +164,39 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
     m_pTreeView->setDragEnabled(true);
     m_pTreeView->setAcceptDrops(true);
     m_pTreeView->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    connect(m_pTreeView, &QTreeViewItom::doubleClicked, this, &FileSystemDockWidget::itemDoubleClicked);
 
-    m_showColumnDetails = settings.value("showColumnDetails", false).toBool();
-    m_detailColumnsWidth.resize(m_pFileSystemModel->columnCount(), 120);
-    size = settings.beginReadArray("detailColumnsWidth");
+    connect(m_pTreeView, SIGNAL(doubleClicked(const QModelIndex&)), this, SLOT(itemDoubleClicked(const QModelIndex&)));
 
-    for (int i = 0; i < std::min(size, m_pFileSystemModel->columnCount()); ++i)
+    size = settings.beginReadArray("ColWidth");
+
+    for (int i = 0; i < size; ++i)
     {
         settings.setArrayIndex(i);
-        m_detailColumnsWidth[i] = settings.value("width", m_detailColumnsWidth[i]).toInt();
-        m_pTreeView->setColumnWidth(i, m_detailColumnsWidth[i]);
+        m_pTreeView->setColumnWidth(i, settings.value("width", 100).toInt());
+        m_pTreeView->setColumnHidden(i, m_pTreeView->columnWidth(i) == 0);
+    }
+    settings.endArray();
+
+    m_pColumnWidth = new int[m_pFileSystemModel->columnCount()];
+    size = settings.beginReadArray("StandardColWidth");
+
+    if (size != m_pFileSystemModel->columnCount())
+    {
+        for (int i = 0; i < m_pFileSystemModel->columnCount(); ++i)
+        {
+            m_pColumnWidth[i] = 120;
+        }
     }
 
-    settings.endArray();
-    treeViewHideOrShowColumns(!m_showColumnDetails);
-    settings.endGroup();
+    for (int i = 0; i < size; ++i)
+    {
+        settings.setArrayIndex(i);
+        m_pColumnWidth[i] = settings.value("width", 100).toInt();
+        if (m_pColumnWidth[i] == 0)
+        {
+            m_pColumnWidth[i] = 120;
+        }
+    }
 
     AbstractDockWidget::init();
 
