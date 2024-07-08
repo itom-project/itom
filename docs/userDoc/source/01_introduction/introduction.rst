@@ -174,6 +174,9 @@ Numpy (see above). Furthermore, it is possible to install other python packages
 (like Scipy, Matplotlib...). For a list of installed packages including their
 specific licenses, see the **Package Manager** dialog in the menu **Scripts**.
 
+Up to itom 4.3.0, only Numpy < 2.0 is supported. Support for Numpy 2.0 or above will
+be added later on.
+
 Usage of 3rd party libraries in plugins and designer plugins (plots...)
 ------------------------------------------------------------------------
 Plugins and designer plugins (plots...) can make use of further 3rd party
