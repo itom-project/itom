@@ -424,6 +424,7 @@ Source: "{#SourceDirVTK}\bin\vtkIOPLY-${VTK_LIB_VERSION}.dll"; DestDir: "{app}\l
 Source: "{#SourceDirVTK}\bin\vtkIOXML-${VTK_LIB_VERSION}.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirVTK}\bin\vtkIOXMLParser-${VTK_LIB_VERSION}.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirVTK}\bin\vtkjpeg-${VTK_LIB_VERSION}.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkloguru-${VTK_LIB_VERSION}.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirVTK}\bin\vtklz4-${VTK_LIB_VERSION}.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirVTK}\bin\vtklzma-${VTK_LIB_VERSION}.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirVTK}\bin\vtkmetaio-${VTK_LIB_VERSION}.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
