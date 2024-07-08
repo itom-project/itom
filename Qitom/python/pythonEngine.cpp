@@ -2737,13 +2737,15 @@ void PythonEngine::pythonCodeCheck(const QString &code, const QString &filename,
                 QMetaObject::invokeMethod(s, callbackFctName.constData(), Q_ARG(QList<ito::CodeCheckerItem>, codeCheckerItems));
             }
         }
-#ifdef _DEBUG
         else if (!result)
         {
+#ifdef _DEBUG
             std::cerr << "Error when calling the syntax check module of python\n" << std::endl;
             PyErr_PrintEx(0);
-        }
+#else
+            PyErr_Clear();
 #endif
+        }
 
         Py_XDECREF(result);
 
