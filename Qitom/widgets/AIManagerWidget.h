@@ -94,7 +94,6 @@ namespace ito
             bool m_showColumnDetails;
             QList<int> m_detailColumnsWidth;
             PlugInModel *m_pPlugInModel;
-            int *m_pColumnWidth;
 
         public slots:
 

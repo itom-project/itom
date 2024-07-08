@@ -122,7 +122,6 @@ namespace ito
             ShortcutAction* m_pActNewPyFile;
             ShortcutAction* m_pViewList;
             ShortcutAction* m_pViewDetails;
-            int *m_pColumnWidth;
 
             QAction *m_lastMovedShowDirAction;
 

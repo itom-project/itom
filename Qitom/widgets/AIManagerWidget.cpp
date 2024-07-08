@@ -53,7 +53,7 @@ AIManagerWidget::AIManagerWidget(
     m_pActDockWidgetToolbar(nullptr), m_pActNewInstance(nullptr), m_pActCloseInstance(nullptr),
     m_pActCloseAllInstances(nullptr), m_pActSendToPython(nullptr), m_pActLiveImage(nullptr),
     m_pActSnapDialog(nullptr), m_pActAutoGrabbing(nullptr), m_pActInfo(nullptr), m_pActOpenWidget(nullptr),
-    m_pAIManagerView(nullptr), m_pSortFilterProxyModel(nullptr), m_pColumnWidth(nullptr),
+    m_pAIManagerView(nullptr), m_pSortFilterProxyModel(nullptr),
     m_pMainToolbar(nullptr), m_pViewList(nullptr), m_pViewDetails(nullptr), m_pPlugInModel(nullptr)
 {
     int size = 0;
@@ -155,45 +155,35 @@ AIManagerWidget::AIManagerWidget(
             m_pAIManagerView->expand(index);
         }
 
+        QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+        settings.beginGroup("itomPluginsDockWidget");
 
-        QSettings* settings = new QSettings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-        settings->beginGroup("itomPluginsDockWidget");
-        size = settings->beginReadArray("ColWidth");
-        for (int i = 0; i < size; ++i)
+        m_showColumnDetails = settings.value("showColumnDetails", false).toBool();
+
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
+        m_detailColumnsWidth.resize(m_pPlugInModel->columnCount(), 120);
+#else
+        m_detailColumnsWidth.reserve(m_pPlugInModel->columnCount());
+
+        for (int i = 0; i < m_pPlugInModel->columnCount(); ++i)
         {
-            settings->setArrayIndex(i);
-            m_pAIManagerView->setColumnWidth(i, settings->value("width", 100).toInt());
-            m_pAIManagerView->setColumnHidden(i, m_pAIManagerView->columnWidth(i) == 0);
+            m_detailColumnsWidth << 120;
         }
-        settings->endArray();
+#endif
 
-        m_pColumnWidth = new int[m_pPlugInModel->columnCount()];
-        size = settings->beginReadArray("StandardColWidth");
+        size = settings.beginReadArray("detailColumnsWidth");
 
-        if (size != m_pPlugInModel->columnCount())
+        for (int i = 0; i < std::min(size, m_pPlugInModel->columnCount()); ++i)
         {
-            m_pColumnWidth[0] = 200;
-
-            for (int i = 1; i < m_pPlugInModel->columnCount(); ++i)
-            {
-                m_pColumnWidth[i] = 120;
-            }
-        }
-
-        for (int i = 0; i < size; ++i)
-        {
-            settings->setArrayIndex(i);
-            m_pColumnWidth[i] = settings->value("width", 100).toInt();
-
-            if (m_pColumnWidth[i] == 0)
-            {
-                m_pColumnWidth[i] = 120;
-            }
+            settings.setArrayIndex(i);
+            m_detailColumnsWidth[i] = settings.value("width", m_detailColumnsWidth[i]).toInt();
+            m_pAIManagerView->setColumnWidth(i, m_detailColumnsWidth[i]);
         }
 
-        settings->endArray();
-        settings->endGroup();
-        delete settings;
+        settings.endArray();
+        treeViewHideOrShowColumns(!m_showColumnDetails);
+
+        settings.endGroup();
     }
 
     AbstractDockWidget::init();
