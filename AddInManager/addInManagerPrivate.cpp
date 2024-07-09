@@ -320,9 +320,22 @@ RetVal AddInManagerPrivate::loadAddIn(QString &filename)
         fileInfoDir.cdUp();
         if (language != "en_US" && fileInfoDir.absolutePath() == qApp->applicationDirPath() + "/plugins")
         {
-            QLocale local = QLocale(language); //language can be "language[_territory][.codeset][@modifier]"
+            QLocale localLanguage;
+
+            // language can be "language[_territory][.codeset][@modifier]" or "operatingsystem".
+            // In the last case, the default language of the operating system is used.
+            if (language.compare("operatingsystem", Qt::CaseInsensitive) == 0)
+            {
+                localLanguage = QLocale();
+            }
+            else
+            {
+                localLanguage = QLocale(language);
+            }
+
             QString translationPath = fileInfo.path() + "/translation";
-            QString languageStr = local.name().left(local.name().indexOf("_", 0, Qt::CaseInsensitive));
+            QString languageStr = localLanguage.name().left(
+                localLanguage.name().indexOf("_", 0, Qt::CaseInsensitive));
             QDirIterator it(translationPath, QStringList("*_" + languageStr + ".qm"), QDir::Files);
             if (it.hasNext())
             {

@@ -38,6 +38,15 @@ Available editions
 * CMake 3.5.1
 * OpenCV 3.1.0
 
+**MSVC2019-Qt5.15.12-x64
+
+* 64bit
+* Visual Studio 2019 (e.g. Community Edition)
+* Qt 5.15.12
+* Python 3.12.4 / Numpy 1.26.4
+* CMake 3.12.1
+* OpenCV 4.5.3
+
 Changelog
 --------------------
 

@@ -23,6 +23,7 @@ cmake_minimum_required(VERSION 3.12...3.29)
 message(
     STATUS "------------------- PROJECT itom ---------------------")
 
+
 # Retrieve Version Number and Identifier from GIT-TAG
 include(cmake/VersionFromGit.cmake)
 version_from_git(

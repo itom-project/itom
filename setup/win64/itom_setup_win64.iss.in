@@ -239,9 +239,6 @@ Source: "{#SourceDirItomBuild}\plugins\OphirPowermeter\*.*"; DestDir: "{app}\plu
 Source: "{#SourceDirItomBuild}\plugins\PclTools\*.*"; DestDir: "{app}\plugins\PclTools"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\PCOCamera\*.*"; DestDir: "{app}\plugins\PCOCamera"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\PCOPixelFly\*.*"; DestDir: "{app}\plugins\PCOPixelFly"; Flags: ignoreversion recursesubdirs
-#if "Qt5" == SourceQTVersion
-    Source: "{#SourceDirItomBuild}\plugins\PCOSensicam\*.*"; DestDir: "{app}\plugins\PCOSensicam"; Flags: ignoreversion recursesubdirs
-#endif
 Source: "{#SourceDirItomBuild}\plugins\PGRFlyCapture\*.*"; DestDir: "{app}\plugins\PGRFlyCapture"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\PI_GCS2\*.*"; DestDir: "{app}\plugins\PI_GCS2"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\PIHexapodCtrl\*.*"; DestDir: "{app}\plugins\PIHexapodCtrl"; Flags: ignoreversion recursesubdirs
@@ -268,7 +265,6 @@ Source: "{#SourceDirItomBuild}\plugins\ThorlabsTCubeTEC\*.*"; DestDir: "{app}\pl
 Source: "{#SourceDirItomBuild}\plugins\ThorlabsPowerMeter\*.*"; DestDir: "{app}\plugins\ThorlabsPowerMeter"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\UhlRegister\*.*"; DestDir: "{app}\plugins\UhlRegister"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\UhlText\*.*"; DestDir: "{app}\plugins\UhlText"; Flags: ignoreversion recursesubdirs
-Source: "{#SourceDirItomBuild}\plugins\USBMotion3XIII\*.*"; DestDir: "{app}\plugins\USBMotion3XIII"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\Vistek\*.*"; DestDir: "{app}\plugins\Vistek"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\VRMagic\*.*"; DestDir: "{app}\plugins\VRMagic"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\x3pio\*.*"; DestDir: "{app}\plugins\x3pio"; Flags: ignoreversion recursesubdirs
@@ -428,6 +424,7 @@ Source: "{#SourceDirVTK}\bin\vtkIOPLY-${VTK_LIB_VERSION}.dll"; DestDir: "{app}\l
 Source: "{#SourceDirVTK}\bin\vtkIOXML-${VTK_LIB_VERSION}.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirVTK}\bin\vtkIOXMLParser-${VTK_LIB_VERSION}.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirVTK}\bin\vtkjpeg-${VTK_LIB_VERSION}.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirVTK}\bin\vtkloguru-${VTK_LIB_VERSION}.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirVTK}\bin\vtklz4-${VTK_LIB_VERSION}.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirVTK}\bin\vtklzma-${VTK_LIB_VERSION}.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirVTK}\bin\vtkmetaio-${VTK_LIB_VERSION}.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
