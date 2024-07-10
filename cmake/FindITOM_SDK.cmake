@@ -81,10 +81,7 @@ if(EXISTS ${ITOM_SDK_CONFIG_FILE})
     find_path(ITOM_SDK_INCLUDE_DIR "itom_sdk.h" PATHS "${ITOM_SDK_DIR}" PATH_SUFFIXES "include" DOC "")
     
     if(${CMAKE_PROJECT_NAME}  MATCHES "itomproject")
-        #set(ITOM_APP_DIR "CMakeCache.txt" ${ITOM_SDK_DIR}/../.. DOC "")
-        #find_path(ITOM_APP_DIR "CMakeCache.txt" PATHS ${ITOM_SDK_DIR}/../.. DOC "")
         message(STATUS "ITOM_APP_DIR: ${ITOM_APP_DIR}")
-        #message(STATUS "ITOM_SDK_DIR: ${ITOM_SDK_DIR}")
     else(NOT ${CMAKE_PROJECT_NAME}  MATCHES "itomproject" )
         find_path(ITOM_CACHE_DIR "CMakeCache.txt" PATHS ${ITOM_SDK_DIR}/.. DOC "")
         set(ITOM_APP_DIR ${ITOM_CACHE_DIR})
@@ -108,11 +105,9 @@ if(EXISTS ${ITOM_SDK_CONFIG_FILE})
                 BUILD_QTVERSION
                 OpenCV_DIR
                 Boost_INCLUDE_DIR
-                Boost_LIBRARY_DIR
                 FLANN_ROOT
                 VTK_DIR
-                EIGEN_INCLUDE_DIRS
-                EIGEN_INCLUDE_DIR
+                EIGEN_ROOT
                 PCL_DIR
                 VISUALLEAKDETECTOR_DIR
                 GIT_EXECUTABLE
