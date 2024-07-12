@@ -177,23 +177,31 @@ macro(itom_plugin_option PLUGIN_ID)
 	"| PLUGIN_Xeneth                 |   S   |   X   |    X    |    X    |"
 	"+-------------------------------+-----------------------------------+"
 	"| PLUGIN_XIMEA                  |   S   |   X   |    X    |    X    |"
+	"+-------------------------------+-----------------------------------+"
+    "| **Plugin**                    |  Win  | macOS | Ubu2404 | Rasbian |"
 )
 
     set(PATTERN "${PLUGIN_ID}.*$")
 
     # get column index
-    if(WIN32)
-        set(INDEX 1)
-    endif(WIN32)
-
-    if(APPLE)
-        set(INDEX 3)
-    endif(APPLE)
-
-    if(UNIX)
-        set(INDEX 4)
-    endif(UNIX)
-	# find out raspi
+	if(WIN32)
+		set(INDEX 1)
+		message(STATUS "Operating System: Windows")
+	elseif(APPLE)
+		set(INDEX 2)
+		message(STATUS "Operating System: macOS")
+	elseif(UNIX)
+		file(READ "/etc/os-release" OS_RELEASE_CONTENTS)
+		if(OS_RELEASE_CONTENTS MATCHES "Ubuntu")
+			set(INDEX 3)
+			message(STATUS "Operating System: Ubuntu")
+		elseif(OS_RELEASE_CONTENTS MATCHES "Raspbian")
+			set(INDEX 4)
+			message(STATUS "Operating System: Raspbian")
+		endif()
+	else()
+		message(FATAL_ERROR "Operating System not support. Itom is available for Win, macOS, Ubuntu2404 and Rasbian only.")    
+	endif()
 
     foreach(PLUGIN_ROW ${PLUGINS_LIST})
         # get row
