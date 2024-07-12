@@ -685,10 +685,21 @@ QWidget* UiOrganizer::loadUiFile(const QString &filename, RetVal &retValue, QWid
         QString language = settings.value("language", "en").toString();
         settings.endGroup();
 
-        QLocale local = QLocale(language); //language can be "language[_territory][.codeset][@modifier]"
+        QLocale localLanguage;
+
+        // language can be "language[_territory][.codeset][@modifier]" or "operatingsystem".
+        // In the last case, the default language of the operating system is used.
+        if (language.compare("operatingsystem", Qt::CaseInsensitive) == 0)
+        {
+            localLanguage = QLocale();
+        }
+        else
+        {
+            localLanguage = QLocale(language);
+        }
 
         QTranslator *qtrans = new QTranslator();
-        bool couldLoad = qtrans->load(local, fileinfo.baseName(), "_", fileinfo.path());
+        bool couldLoad = qtrans->load(localLanguage, fileinfo.baseName(), "_", fileinfo.path());
         if (couldLoad)
         {
             QString canonicalFilePath = fileinfo.canonicalFilePath();

@@ -79,13 +79,19 @@ if(EXISTS ${ITOM_SDK_CONFIG_FILE})
 
     #find include directory
     find_path(ITOM_SDK_INCLUDE_DIR "itom_sdk.h" PATHS "${ITOM_SDK_DIR}" PATH_SUFFIXES "include" DOC "")
-
-    find_path(ITOM_APP_DIR "CMakeCache.txt" PATHS ${ITOM_SDK_DIR} PATH_SUFFIXES .. ../.. DOC "")
-
+    
     if(${CMAKE_PROJECT_NAME}  MATCHES "itomproject")
+        message(STATUS "ITOM_APP_DIR: ${ITOM_APP_DIR}")
+    else(NOT ${CMAKE_PROJECT_NAME}  MATCHES "itomproject" )
+        find_path(ITOM_CACHE_DIR "CMakeCache.txt" PATHS ${ITOM_SDK_DIR}/.. DOC "")
+        set(ITOM_APP_DIR ${ITOM_CACHE_DIR})
+    endif(${CMAKE_PROJECT_NAME}  MATCHES "itomproject")
+
+
+    if(${CMAKE_PROJECT_NAME}  MATCHES "itomproject" AND BUILD_ITOM_CORE)
         message(STATUS  "Subproject - Skipped loading ITOM SDK CACHE ")
-    else(${CMAKE_PROJECT_NAME}  MATCHES "itomproject")
-        if(EXISTS "${ITOM_APP_DIR}")
+    else(${CMAKE_PROJECT_NAME}  MATCHES "itomproject" AND BUILD_ITOM_CORE)
+        if(EXISTS "${ITOM_CACHE_DIR}")
             #try to load the CMakeCache file from itom and extract some useful variables.
             #The variables must be filepaths or paths. They are only copied to this project
             #... if they exist in itom's CMakeCache,
@@ -99,18 +105,16 @@ if(EXISTS ${ITOM_SDK_CONFIG_FILE})
                 BUILD_QTVERSION
                 OpenCV_DIR
                 Boost_INCLUDE_DIR
-                Boost_LIBRARY_DIR
                 FLANN_ROOT
                 VTK_DIR
-                EIGEN_INCLUDE_DIRS
-                EIGEN_INCLUDE_DIR
+                EIGEN_ROOT
                 PCL_DIR
                 VISUALLEAKDETECTOR_DIR
                 GIT_EXECUTABLE
                 )
 
-            if(EXISTS "${ITOM_APP_DIR}/CMakeCache.txt")
-                load_cache("${ITOM_APP_DIR}" READ_WITH_PREFIX "ITOMCACHE_" ${CACHE_VARIABLES})
+            if(EXISTS "${ITOM_CACHE_DIR}/CMakeCache.txt")
+                load_cache("${ITOM_CACHE_DIR}" READ_WITH_PREFIX "ITOMCACHE_" ${CACHE_VARIABLES})
 
                 message(STATUS "Try to load selected CMake variables from CMakeCache of itom project and copy them to this set of variables.")
 
@@ -135,10 +139,10 @@ if(EXISTS ${ITOM_SDK_CONFIG_FILE})
                 endforeach()
             endif()
         else()
-            message(WARNING "ITOM_APP_DIR does not exist. No CMake cache values can be loaded from itom")
+            message(WARNING "ITOM_CACHE_DIR does not exist. No CMake cache values can be loaded from itom")
         endif()
 
-    endif(${CMAKE_PROJECT_NAME}  MATCHES "itomproject")
+    endif(${CMAKE_PROJECT_NAME}  MATCHES "itomproject" AND BUILD_ITOM_CORE)
 
 
     if(BUILD_TARGET64)
@@ -191,7 +195,7 @@ if(EXISTS ${ITOM_SDK_CONFIG_FILE})
 
     set(ITOM_SDK_INCLUDE_DIRS ${ITOM_SDK_INCLUDE_DIR})
 
-    if(${CMAKE_PROJECT_NAME}  MATCHES "itomproject")
+    if(${CMAKE_PROJECT_NAME}  MATCHES "itomproject" AND BUILD_ITOM_CORE)
         # if CMAKE Module is called from itomproject libraries, variables
         # and submodules are known throughout the course of the project
         message(STATUS  "Subproject - Skipped setting ITOM Libraries ")
@@ -214,8 +218,7 @@ if(EXISTS ${ITOM_SDK_CONFIG_FILE})
 
         set(ITOM_SDK_FOUND TRUE CACHE BOOL "" FORCE)
 
-    else(${CMAKE_PROJECT_NAME}  MATCHES "itomproject")
-
+    else(${CMAKE_PROJECT_NAME}  MATCHES "itomproject" AND BUILD_ITOM_CORE)
         #Initiate the variable before the loop
         set(GLOBAL ITOM_SDK_LIBS "")
         set(ITOM_SDK_FOUND_TMP true)
@@ -362,7 +365,7 @@ if(EXISTS ${ITOM_SDK_CONFIG_FILE})
 
         set(ITOM_SDK_FOUND ${ITOM_SDK_FOUND_TMP} CACHE BOOL "" FORCE)
 
-    endif(${CMAKE_PROJECT_NAME}  MATCHES "itomproject")
+    endif(${CMAKE_PROJECT_NAME}  MATCHES "itomproject" AND BUILD_ITOM_CORE)
 
 
 else(EXISTS ${ITOM_SDK_CONFIG_FILE})

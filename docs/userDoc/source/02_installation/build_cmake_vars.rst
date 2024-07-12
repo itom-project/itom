@@ -161,10 +161,10 @@ Cmake Variables:
    set the right one here the boost libraries will get autopoulated...
    If not, this entry gets cleared again...
 
-.. |cmakelist_flann_root| replace::
+.. |cmakelist_flann_include_dirs| replace::
 
-   Path to the flann build folder (e.g. <FLANN_BuildFolder>),
-   which comprises of the subfolders "include", "bin" and "lib".
+   Path to filder named "include"
+   which lives in a directory side-by-side with "bin" and "lib" folders.
 
 .. |cmakelist_vtk_dir| replace::
 
@@ -173,7 +173,7 @@ Cmake Variables:
    On Linux Systems you need to separately install vtk-dev(even if it does not
    fit the version you want to use) for one or two headers that are missing otherwise...
 
-.. |cmakelist_eigen_dir| replace::
+.. |cmakelist_eigen_root| replace::
 
    Path to folder containing subfolders "build",
    "Eigen", "unsupported"
@@ -239,11 +239,11 @@ Cmake Variables:
 +----------------------------+--------------------------------------------+
 | **Boost_INCLUDE_DIR**      | |cmakelist_boost_dir|                      |
 +----------------------------+--------------------------------------------+
-| **FLANN_ROOT**             | |cmakelist_flann_root|             |
+| **FLANN_INCLUDE_DIRS**     | |cmakelist_flann_include_dirs|             |
 +----------------------------+--------------------------------------------+
 | **VTK_DIR**                | |cmakelist_vtk_dir|                        |
 +----------------------------+--------------------------------------------+
-| **Eigen_DIR**              | |cmakelist_eigen_dir|                      |
+| **Eigen_ROOT**              | |cmakelist_eigen_root|                      |
 +----------------------------+--------------------------------------------+
 | **PCL_DIR**                | |cmakelist_pcl_dir|                        |
 +----------------------------+--------------------------------------------+
