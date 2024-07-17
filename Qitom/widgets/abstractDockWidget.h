@@ -125,7 +125,12 @@ namespace ito
             AbstractDockWidget(bool docked, bool isDockAvailable, tFloatingStyle floatingStyle, tMovingStyle movingStyle, const QString &title = QString(), const QString &objName = QString(), QWidget *parent = 0);
             virtual ~AbstractDockWidget();
 
-            inline bool docked() const { return m_docked; }    /*!<  returns if docking widget is docked (true) or undocked (false) */
+            /*!<  returns if docking widget is docked (true) or undocked (false) */
+            bool docked() const 
+            { 
+                return m_docked; 
+            }
+
             RetVal setTopLevel( tTopLevelStyle topLevel, bool showWindow = true );
 
             void setParent ( QWidget * parent ) { m_overallParent = parent; QDockWidget::setParent(parent); }
