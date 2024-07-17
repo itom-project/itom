@@ -18,11 +18,11 @@ if(NOT EXISTS ${QHULL_ROOT})
     endif(EXISTS $ENV{QHULL_ROOT})
 endif(NOT EXISTS ${QHULL_ROOT})
 
-if(NOT EXISTS ${VTK_ROOT})
+if(NOT EXISTS ${VTK_DIR})
     if(EXISTS $ENV{VTK_ROOT})
         set(VTK_DIR $ENV{VTK_ROOT} CACHE PATH "Path to the VTK Directory")
     else(EXISTS $ENV{VTK_ROOT})
-        set(VTK_DIR "VTK_ROOT-NOTFOUND" CACHE PATH "Path to the VTK Directory")
+        set(VTK_DIR "VTK_DIR-NOTFOUND" CACHE PATH "Path to the VTK Directory")
     endif(EXISTS $ENV{VTK_ROOT})
 endif(NOT EXISTS ${VTK_ROOT})
 
