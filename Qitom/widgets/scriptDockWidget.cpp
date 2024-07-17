@@ -1932,16 +1932,6 @@ void ScriptDockWidget::createMenus()
     m_fileMenu->addAction(m_tabCloseAction->action());
     m_fileMenu->addAction(m_tabCloseAllAction->action());
 
-//    m_viewMenu = getMenuBar()->addMenu(tr("&View"));
-//    m_viewMenu->addAction();
-/*    QMenu *dockWidgets = createPopupMenu();
-    if (dockWidgets)
-    {
-        dockWidgets->menuAction()->setIcon(QIcon(":/application/icons/preferences-general.png"));
-        dockWidgets->menuAction()->setText(tr("Toolboxes"));
-        m_viewMenu->addMenu(dockWidgets);
-    }*/
-
     m_editMenu = getMenuBar()->addMenu(tr("&Edit"));
     m_editMenu->addAction(m_undoAction->action());
     m_editMenu->addAction(m_redoAction->action());
