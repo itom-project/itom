@@ -518,7 +518,7 @@ QString AbstractCodeEditorWidget::formatCodeBeforeInsertion(
 
                 for (int i = 1; i < lineCount; ++i)
                 {
-                    if (commandList[i][0] != '#')
+                    if (commandList[i].size() > 0 && commandList[i][0] != '#')
                     {
                         res += endline + newIndent + commandList[i].mid(minIndentLevel);
                     }
