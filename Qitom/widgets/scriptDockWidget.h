@@ -221,7 +221,6 @@ private:
     QMenu* m_tabContextMenu;
     QMenu* m_fileMenu;
     QMenu* m_lastFilesMenu;
-    QMenu* m_viewMenu;
     QMenu* m_editMenu;
     QMenu* m_scriptMenu;
     QMenu* m_winMenu;

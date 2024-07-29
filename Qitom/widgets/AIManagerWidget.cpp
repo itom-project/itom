@@ -157,9 +157,20 @@ AIManagerWidget::AIManagerWidget(
 
         QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
         settings.beginGroup("itomPluginsDockWidget");
-        
+
         m_showColumnDetails = settings.value("showColumnDetails", false).toBool();
+
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
         m_detailColumnsWidth.resize(m_pPlugInModel->columnCount(), 120);
+#else
+        m_detailColumnsWidth.reserve(m_pPlugInModel->columnCount());
+
+        for (int i = 0; i < m_pPlugInModel->columnCount(); ++i)
+        {
+            m_detailColumnsWidth << 120;
+        }
+#endif
+
         size = settings.beginReadArray("detailColumnsWidth");
 
         for (int i = 0; i < std::min(size, m_pPlugInModel->columnCount()); ++i)

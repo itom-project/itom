@@ -99,13 +99,13 @@ const QScreen* guiApplicationScreenAt(const QPoint &point)
     establishes widgets being part of the main window including necessary actions
 */
 MainWindow::MainWindow() :
-    m_console(nullptr), m_contentLayout(nullptr), m_breakPointDock(nullptr), 
-    m_bookmarkDock(nullptr), m_lastCommandDock(nullptr), m_helpDock(nullptr), 
-    m_globalWorkspaceDock(nullptr), m_localWorkspaceDock(nullptr), m_callStackDock(nullptr), 
+    m_console(nullptr), m_contentLayout(nullptr), m_breakPointDock(nullptr),
+    m_bookmarkDock(nullptr), m_lastCommandDock(nullptr), m_helpDock(nullptr),
+    m_globalWorkspaceDock(nullptr), m_localWorkspaceDock(nullptr), m_callStackDock(nullptr),
     m_fileSystemDock(nullptr), m_pAIManagerWidget(nullptr), m_appFileNew(nullptr),
-    m_appFileOpen(nullptr), m_aboutQt(nullptr), m_aboutQitom(nullptr), m_copyLog(nullptr), 
-    m_pMenuFigure(nullptr), m_pMenuHelp(nullptr), m_pMenuFile(nullptr), 
-    m_pMenuPython(nullptr), m_pMenuReloadModule(nullptr), m_pMenuView(nullptr), 
+    m_appFileOpen(nullptr), m_aboutQt(nullptr), m_aboutQitom(nullptr), m_copyLog(nullptr),
+    m_pMenuFigure(nullptr), m_pMenuHelp(nullptr), m_pMenuFile(nullptr),
+    m_pMenuPython(nullptr), m_pMenuReloadModule(nullptr), m_pMenuView(nullptr),
     m_pHelpSystem(nullptr), m_pStatusLblCurrentDir(nullptr), m_pStatusLblScriptInfo(nullptr),
     m_pStatusLblPythonBusy(nullptr), m_pythonBusy(false), m_pythonDebugMode(false),
     m_pythonInWaitingMode(false), m_isFullscreen(false), m_userDefinedActionCounter(0),
