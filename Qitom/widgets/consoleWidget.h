@@ -80,6 +80,7 @@ public slots:
     void pythonRunSelection(QString selectionText);
     void pythonStateChanged(tPythonTransitions pyTransition);
     void clearCommandLine();
+    void interruptCommandInput(); // interrupt a possibly running input command
     void startInputCommandLine(QSharedPointer<QByteArray> buffer, ItomSharedSemaphore *inputWaitCond);
 
 signals:

@@ -402,6 +402,22 @@ RetVal ConsoleWidget::useCmdListCommand(int dir)
 }
 
 //-------------------------------------------------------------------------------------
+void ConsoleWidget::interruptCommandInput()
+{
+    if (m_inputStreamWaitCond)
+    {
+        m_markInputLineMode->clearAllMarkers();
+        m_caretLineHighlighter->setBlocked(false);
+        m_inputStreamBuffer->clear();
+        m_inputStreamWaitCond->release();
+        m_inputStreamWaitCond->deleteSemaphore();
+        m_inputStreamWaitCond = NULL;
+        disableInputTextMode();
+        append(ConsoleWidget::lineBreak);
+    }
+}
+
+//-------------------------------------------------------------------------------------
 //!> reimplementation to process the keyReleaseEvent
 bool ConsoleWidget::keyPressInternalEvent(QKeyEvent *event)
 {

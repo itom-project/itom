@@ -4646,20 +4646,28 @@ int PythonEngine::queuedInterrupt(void* /*arg*/)
 //----------------------------------------------------------------------------------------------------------------------------------
 void PythonEngine::pythonInterruptExecutionThreadSafe(bool *interruptActuatorsAndTimers /*= NULL*/)
 {
-    // only queue the interrupt event if not yet done.
-    // ==operator(int) of QAtomicInt does not exist for all versions of Qt5.
-    //testAndSetRelaxed returns true, if the value was 0 (and assigns one to it)
-    if (m_interruptCounter.testAndSetRelaxed(0, 1))
+    if (isPythonDebugging() && isPythonDebuggingAndWaiting())
     {
-        if (isPythonDebugging() && isPythonDebuggingAndWaiting())
+        m_dbgCmdMutex.lock();
+
+        if (m_debugCommandQueue.size() == 0 || m_debugCommandQueue[0] != ito::pyDbgQuit)
         {
-            m_dbgCmdMutex.lock();
             m_debugCommandQueue.insert(0, ito::pyDbgQuit);
-            m_dbgCmdMutex.unlock();
         }
-        else
+
+        m_dbgCmdMutex.unlock();
+    }
+    else
+    {
+        // only queue the interrupt event if not yet done.
+        // ==operator(int) of QAtomicInt does not exist for all versions of Qt5.
+        //testAndSetRelaxed returns true, if the value was 0 (and assigns one to it)
+        if (m_interruptCounter.testAndSetRelaxed(0, 1))
         {
             int result = Py_AddPendingCall(&PythonEngine::queuedInterrupt, NULL);
+
+            // if an input command is currently running, it can only be interrupted by this:
+            emit interruptCommandInput();
         }
     }
 

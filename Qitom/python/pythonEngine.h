@@ -388,6 +388,7 @@ signals:
     void pythonResetCursor();
     void pythonAutoReloadChanged(bool enabled, bool checkFile, bool checkCmd, bool checkFct);
     void clearCommandLine();
+    void interruptCommandInput();
     void startInputCommandLine(QSharedPointer<QByteArray> buffer, ItomSharedSemaphore *semaphore);
 
 private slots:
