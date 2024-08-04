@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2023, Institut für Technische Optik (ITO),
+    Copyright (C) 2024, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of itom.
@@ -260,6 +260,8 @@ private:
 
     //!< debugs the given Python string command
     void pythonDebugString(QString cmd);
+
+    QString modifyCommandStringInCaseOfSpecialComments(const QString& command);
 
     //methods for debugging
     void enqueueDbgCmd(ito::tPythonDbgCmd dbgCmd);

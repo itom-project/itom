@@ -3189,11 +3189,7 @@ void PythonEngine::setLocalDictionary(PyObject* localDict)
 //----------------------------------------------------------------------------------------------------------------------------------
 void PythonEngine::pythonRunString(QString cmd)
 {
-    if (cmd.trimmed().startsWith("#"))
-    {
-        cmd.prepend("pass"); //a single command line leads to an error while execution
-    }
-    //ba.replace("\\n",QByteArray(1,'\n')); //replace \n by ascii(10) in order to realize multi-line evaluations
+    cmd = modifyCommandStringInCaseOfSpecialComments(cmd);
 
     switch (m_pythonState)
     {
@@ -3285,10 +3281,7 @@ void PythonEngine::pythonDebugFile(QString filename)
 //----------------------------------------------------------------------------------------------------------------------------------
 void PythonEngine::pythonDebugString(QString cmd)
 {
-    if (cmd.trimmed().startsWith("#"))
-    {
-        cmd.prepend("pass"); //a single comment while cause an error in python
-    }
+    cmd = modifyCommandStringInCaseOfSpecialComments(cmd);
 
     switch (m_pythonState)
     {
@@ -3312,13 +3305,41 @@ void PythonEngine::pythonDebugString(QString cmd)
     }
 }
 
+//--------------------------------------------------------------------------------------
+/* if a single command line or a multi-block line is executed, Python will
+* raise a SyntaxError, if comment lines exist at special positions. To avoid
+* this, some modifications are optionally done here.
+*/
+QString PythonEngine::modifyCommandStringInCaseOfSpecialComments(const QString& command)
+{
+    QString cmd = command;
+
+    if (cmd.trimmed().startsWith("#"))
+    {
+        cmd.prepend("pass"); //a single comment line leads to an error while execution
+    }
+
+    int lastLineBreakIdx = cmd.lastIndexOf("\n");
+
+    if (lastLineBreakIdx >= 0)
+    {
+        QString lastCmd = cmd.mid(lastLineBreakIdx + 1);
+
+        if (lastCmd.trimmed().startsWith("#"))
+        {
+            // a command line in the last line of the block can lead to an error.
+            // Insert an empty line at the end
+            cmd.append("\n");
+        }
+    }
+
+    return cmd;
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------
 void PythonEngine::pythonExecStringFromCommandLine(QString cmd)
 {
-    if (cmd.trimmed().startsWith("#"))
-    {
-        cmd.prepend("pass"); //a single command line leads to an error while execution
-    }
+    cmd = modifyCommandStringInCaseOfSpecialComments(cmd);
 
     switch (m_pythonState)
     {
