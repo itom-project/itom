@@ -80,7 +80,7 @@ else()
             set(LIBUSB_DETECTED_TOOLSET "vc120")
             set(LIBUSB_MSVC_FOLDER "VS2015")
 
-        endif((MSVC_VERSION GREATER 1929) AND (MSVC_VERSION LESS_EQUAL 1939))
+        endif()
 
         message(STATUS "LIBUSB_MSVC_FOLDER: ${LIBUSB_MSVC_FOLDER}")
 
