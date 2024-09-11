@@ -1863,14 +1863,16 @@ void ConsoleWidget::processStreamBuffer()
             toLine--;
         }
 
-        for (int lineIdx = fromLine; lineIdx <= toLine; ++lineIdx)
+        for (qsizetype lineIdx = fromLine; lineIdx <= toLine; ++lineIdx)
         {
             userData = getTextBlockUserData(lineIdx, true);
             userData->m_syntaxStyle = ito::TextBlockUserData::StyleOutput;
+            qsizetype ansiSize = ansiTextCharFormatsPerLine.size();
 
-            if (hasAnsiEscapeCodes)
+            if (hasAnsiEscapeCodes && (lineIdx - fromLine) < ansiSize)
             {
-                userData->m_ansiTextCharFormats = ansiTextCharFormatsPerLine[lineIdx - fromLine];
+                userData->m_ansiTextCharFormats =
+                    ansiTextCharFormatsPerLine[lineIdx - fromLine];
             }
             else
             {
