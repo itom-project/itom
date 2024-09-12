@@ -1640,6 +1640,11 @@ QList<QSharedPointer<QList<ito::TextBlockUserData::AnsiTextCharFormat>>> Console
 }
 
 //-------------------------------------------------------------------------------------
+/* the length of the returned list is equal to the number of lines in text or
+* can also be an empty list if no text char formats are contained at all.
+* text is by-ref and might be changed by this method!
+
+*/
 QList<QSharedPointer<QList<ito::TextBlockUserData::AnsiTextCharFormat>>> ConsoleWidget::handleTextLinesAndSplitLongLines(
     QString &text,
     const QList<ito::TextBlockUserData::AnsiTextCharFormat> &ansiTextCharFormat,
@@ -1647,7 +1652,7 @@ QList<QSharedPointer<QList<ito::TextBlockUserData::AnsiTextCharFormat>>> Console
 {
     if (ansiTextCharFormat.size() == 0 && (!m_splitLongLines || text.size() <= m_splitLongLinesMaxLength))
     {
-        // do not change something
+        // do not change something. text is one line.
         return QList<QSharedPointer<QList<ito::TextBlockUserData::AnsiTextCharFormat>>>();
     }
 
@@ -1753,7 +1758,6 @@ QList<QSharedPointer<QList<ito::TextBlockUserData::AnsiTextCharFormat>>> Console
     text = textLines.join("\n");
     text += "\n";
 
-
     return textFormatsMultiLines2;
 }
 
@@ -1788,6 +1792,8 @@ void ConsoleWidget::processStreamBuffer()
         m_receiveStreamBuffer.msgType == ito::msgStreamErr
     );
 
+    const auto ansiTextCharFormatsPerLineSize = ansiTextCharFormatsPerLine.size();
+
     switch (m_receiveStreamBuffer.msgType)
     {
     case ito::msgStreamErr:
@@ -1820,7 +1826,7 @@ void ConsoleWidget::processStreamBuffer()
             userData = getTextBlockUserData(lineIdx, true);
             userData->m_syntaxStyle = ito::TextBlockUserData::StyleError;
 
-            if (hasAnsiEscapeCodes)
+            if (hasAnsiEscapeCodes && ansiTextCharFormatsPerLineSize > 0)
             {
                 userData->m_ansiTextCharFormats = ansiTextCharFormatsPerLine[lineIdx - fromLine];
             }
@@ -1867,9 +1873,9 @@ void ConsoleWidget::processStreamBuffer()
         {
             userData = getTextBlockUserData(lineIdx, true);
             userData->m_syntaxStyle = ito::TextBlockUserData::StyleOutput;
-            qsizetype ansiSize = ansiTextCharFormatsPerLine.size();
 
-            if (hasAnsiEscapeCodes && (lineIdx - fromLine) < ansiSize)
+
+            if (hasAnsiEscapeCodes && ansiTextCharFormatsPerLineSize > 0)
             {
                 userData->m_ansiTextCharFormats =
                     ansiTextCharFormatsPerLine[lineIdx - fromLine];
