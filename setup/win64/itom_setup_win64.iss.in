@@ -21,7 +21,7 @@
 #define SourceDirSys32 "C:\Windows\System32"
 #define SourceRedistributablePath "W:\m\ITOM\allInOne_development\Software\MS VisualStudio\Redistributable\64 Bit"
 #define SourceRedistributableName "Microsoft Visual C++ 2015_2022 Redistributable (x64) - 14.38.33135"
-#define SourcePythonDir "W:\m\ITOM\allInOne_development\Software\Python\Python 3.12.3"
+#define SourcePythonDir "W:\m\ITOM\allInOne_development\Software\Python\Python 3.12.4"
 #define SourceRedistributableDir "W:\m\ITOM\allInOne_development\Software\MS VisualStudio\Redistributable\DLLs"
 
 [Setup]
@@ -245,7 +245,6 @@ Source: "{#SourceDirItomBuild}\plugins\PIHexapodCtrl\*.*"; DestDir: "{app}\plugi
 Source: "{#SourceDirItomBuild}\plugins\PiezosystemJena_NV40_1\*.*"; DestDir: "{app}\plugins\PiezosystemJena_NV40_1"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\PIPiezoCtrl\*.*"; DestDir: "{app}\plugins\PIPiezoCtrl"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\PmdPico\*.*"; DestDir: "{app}\plugins\PmdPico"; Flags: ignoreversion recursesubdirs
-Source: "{#SourceDirItomBuild}\plugins\QCam\*.*"; DestDir: "{app}\plugins\QCam"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\QuantumComposer\*.*"; DestDir: "{app}\plugins\QuantumComposer"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\rawImport\*.*"; DestDir: "{app}\plugins\rawImport"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\Roughness\*.*"; DestDir: "{app}\plugins\Roughness"; Flags: ignoreversion recursesubdirs

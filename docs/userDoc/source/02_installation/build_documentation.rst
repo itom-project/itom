@@ -176,7 +176,7 @@ Create Documentation in ITOM
 
 1. run doxygen with \build\itom\docs\doxygen\itom_doxygen.dox
 2. start itom \build\itom\qitom.exe
-3. run the python file "create_doc.py" in the \Build\itom\docs\userDoc folder.
+3. run the python file "create_doc.py" in the \build\itom\docs\userDoc folder.
 Open the Itom Help module by pressing F1.
-4. run in python the file "create_all_plugin_docs.py" in the \Build\itom\docs\pluginDoc.
+4. run in python the file "create_all_plugin_docs.py" in the \build\itom\docs\pluginDoc.
 Choose the build folder of the available Plugin. Open the Itom Help module by pressing F1.
