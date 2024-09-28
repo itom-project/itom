@@ -200,6 +200,7 @@ Source: "{#SourceDirItomBuild}\plugins\LibUSB\*.*"; DestDir: "{app}\plugins\LibU
 #endif
 Source: "{#SourceDirItomBuild}\plugins\AvantesAvaSpec\*.*"; DestDir: "{app}\plugins\AvantesAvaSpec"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\AVTVimba\*.*"; DestDir: "{app}\plugins\AVTVimba"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\AVTVimbaX\*.*"; DestDir: "{app}\plugins\AVTVimbaX"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\BasicFilters\*.*"; DestDir: "{app}\plugins\BasicFilters"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\BasicGPLFilters\*.*"; DestDir: "{app}\plugins\BasicGPLFilters"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\hidApi\*.*"; DestDir: "{app}\plugins\hidApi"; Flags: ignoreversion recursesubdirs
