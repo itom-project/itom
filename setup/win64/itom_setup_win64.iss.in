@@ -215,6 +215,7 @@ Source: "{#SourceDirItomBuild}\plugins\dispWindow\*.*"; DestDir: "{app}\plugins\
 Source: "{#SourceDirItomBuild}\plugins\DummyGrabber\*.*"; DestDir: "{app}\plugins\DummyGrabber"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\DummyMotor\*.*"; DestDir: "{app}\plugins\DummyMotor"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\demoAlgorithms\*.*"; DestDir: "{app}\plugins\demoAlgorithms"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\demoFaulhaberMCS\*.*"; DestDir: "{app}\plugins\FaulhaberMCS"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\FFTWfilters\*.*"; DestDir: "{app}\plugins\FFTWfilters"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\FileGrabber\*.*"; DestDir: "{app}\plugins\FileGrabber"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\FittingFilters\*.*"; DestDir: "{app}\plugins\FittingFilters"; Flags: ignoreversion recursesubdirs
