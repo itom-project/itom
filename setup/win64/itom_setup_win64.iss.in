@@ -209,17 +209,17 @@ Source: "{#SourceDirItomBuild}\plugins\CommonVisionBlox\*.*"; DestDir: "{app}\pl
 Source: "{#SourceDirItomBuild}\plugins\CyUSB\*.*"; DestDir: "{app}\plugins\CyUSB"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\dataobjectarithmetic\*.*"; DestDir: "{app}\plugins\dataobjectarithmetic"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\DataObjectIO\*.*"; DestDir: "{app}\plugins\DataObjectIO"; Flags: ignoreversion recursesubdirs
-; Source: "{#SourceDirItomBuild}\plugins\DIC\*.*"; DestDir: "{app}\plugins\DIC"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\DIC\*.*"; DestDir: "{app}\plugins\DIC"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\dispWindow\*.*"; DestDir: "{app}\plugins\dispWindow"; Flags: ignoreversion recursesubdirs
-; Source: "{#SourceDirItomBuild}\plugins\DslrRemote\*.*"; DestDir: "{app}\plugins\DslrRemote"; Flags: ignoreversion recursesubdirs
-; Source: "{#SourceDirItomBuild}\plugins\DslrRemote2\*.*"; DestDir: "{app}\plugins\DslrRemote2"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\DslrRemote\*.*"; DestDir: "{app}\plugins\DslrRemote"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\DslrRemote2\*.*"; DestDir: "{app}\plugins\DslrRemote2"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\DummyGrabber\*.*"; DestDir: "{app}\plugins\DummyGrabber"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\DummyMotor\*.*"; DestDir: "{app}\plugins\DummyMotor"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\demoAlgorithms\*.*"; DestDir: "{app}\plugins\demoAlgorithms"; Flags: ignoreversion recursesubdirs
-Source: "{#SourceDirItomBuild}\plugins\demoFaulhaberMCS\*.*"; DestDir: "{app}\plugins\FaulhaberMCS"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\FaulhaberMCS\*.*"; DestDir: "{app}\plugins\FaulhaberMCS"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\FFTWfilters\*.*"; DestDir: "{app}\plugins\FFTWfilters"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\FileGrabber\*.*"; DestDir: "{app}\plugins\FileGrabber"; Flags: ignoreversion recursesubdirs
-Source: "{#SourceDirItomBuild}\plugins\FittingFilters\*.*"; DestDir: "{app}\plugins\FittingFilters"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\FittingFilters\*.*"; DestDir: "{app}\plugins\FittingFilters";F Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\FireGrabber\*.*"; DestDir: "{app}\plugins\FireGrabber"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\FirgelliLAC\*.*"; DestDir: "{app}\plugins\FirgelliLAC"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\FringeProj\*.*"; DestDir: "{app}\plugins\FringeProj"; Flags: ignoreversion recursesubdirs

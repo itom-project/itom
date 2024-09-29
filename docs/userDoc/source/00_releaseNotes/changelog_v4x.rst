@@ -5,52 +5,60 @@
 Changelog Versions 4.x
 ######################
 
-Version 4.3.0 (YYYY-MM-DD)
+Version 4.3.0 (2024-10-DD)
 **************************
 
 itom
 ----
 
-**New Features**
-
-*
-*
-*
-
-
 **Changed Behaviour**
 
-*
-*
-*
+* Added additional startup opütions: ``log``, ``log=<path-to-directory>`` and ``nolog``
+
 
 **Improvements**
 
-*
-*
-*
+* Build and tested for Win11 x64
+* Updated to Python 3.12.4
+* Updated to OpenCV 4.10.0
 
 **Refactorings and bugfixes**
 
-*
-*
-*
+* Git/CMake: Added environment variables for itom and plugin configuration
+
+Itom-Project
+------------
+
+**General:**
+* Git/CMake: Enabled build via centralized superproject `archive <https://github.com/itom-project/archive.git/>`_
+* Git/CMake: Created unified versioning system based on Git Tags
+
 
 Plugins
 -------
 
 **General:**
 
+* Added Plugin Option configuration, to enable platform specific overview of build modes
 * Added `pre-commit <https://pre-commit.com/>`_ hooks to repository
-* Added Min, Max Itom version and Plugin version numbers
-* Added PLUGIN_VERSION_IDENTIFIERS to distinguish between release and oterh versions
-* Refactoring cmake structure, warnings and errors
+* Added min., max. itom version and plugin version numbers
+* Added PLUGIN_VERSION_IDENTIFIERS to distinguish between release and other versions
+* Refactoring CMake structure, warnings and errors
 * Fix to support QT6
 
 **New plugins:**
 
 * NewportConexLDS (RawIO)
 * ThorlabsBDCServo (actuator)
+* FaulhaberMCS (actuator)
+* AVTVimbaX (RawIO)
+
+**Archived plugins:**
+
+* Git/Cmake: Created archive repository for unsupported plugins `itom-project <https://github.com/itom-project/itomProject.git>`_
+* Archived Plugin: PCOSensicam
+* Archived Plugin: QCam
+* Archived Plugin: USBMotion3XIII
 
 **Bugfixes and improvements:**
 

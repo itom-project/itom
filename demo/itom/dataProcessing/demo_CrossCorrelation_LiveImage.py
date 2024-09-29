@@ -83,7 +83,7 @@ try:
 except:
     print("Can not open camera with OpenCVGrabber. Probabel root cause: WebCam is not available.")
     print("Used Itom Dummy Grabber instead.")
-    cam = dataIO("DummyGrabber") 
+    cam = dataIO("DummyGrabber")
 
 # start camera
 cam.startDevice()

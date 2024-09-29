@@ -100,7 +100,7 @@ namespace ito
             // since (at least) Qt 6.7, QFileSystemModel
             // creates a default QAbstractFileIconProvider,
             // that shows very basic folder icons. However, we
-            // would like to see the real folder icons of the 
+            // would like to see the real folder icons of the
             // operating system. Therefore, we have to pass
             // our own instance of QFileIconProvider to the model.
             QFileIconProvider m_fileIconProvider;

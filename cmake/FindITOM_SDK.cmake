@@ -79,7 +79,7 @@ if(EXISTS ${ITOM_SDK_CONFIG_FILE})
 
     #find include directory
     find_path(ITOM_SDK_INCLUDE_DIR "itom_sdk.h" PATHS "${ITOM_SDK_DIR}" PATH_SUFFIXES "include" DOC "")
-    
+
     if(${CMAKE_PROJECT_NAME}  MATCHES "itomproject")
         message(STATUS "ITOM_APP_DIR: ${ITOM_APP_DIR}")
     else(NOT ${CMAKE_PROJECT_NAME}  MATCHES "itomproject" )

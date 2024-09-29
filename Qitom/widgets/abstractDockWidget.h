@@ -126,9 +126,9 @@ namespace ito
             virtual ~AbstractDockWidget();
 
             /*!<  returns if docking widget is docked (true) or undocked (false) */
-            bool docked() const 
-            { 
-                return m_docked; 
+            bool docked() const
+            {
+                return m_docked;
             }
 
             RetVal setTopLevel( tTopLevelStyle topLevel, bool showWindow = true );
