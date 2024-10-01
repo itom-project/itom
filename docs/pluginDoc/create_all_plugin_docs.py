@@ -24,5 +24,5 @@ for cfg in matches:
     print("create plugin documentation for", cfg)
     try:
         create_plugin_doc.createPluginDoc(cfg, buildernames)
-    except Exception:
-        print("Error", cfg)
+    except Exception as ex:
+        print("Error (%s)" % str(ex), cfg)
