@@ -219,7 +219,7 @@ Source: "{#SourceDirItomBuild}\plugins\demoAlgorithms\*.*"; DestDir: "{app}\plug
 Source: "{#SourceDirItomBuild}\plugins\FaulhaberMCS\*.*"; DestDir: "{app}\plugins\FaulhaberMCS"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\FFTWfilters\*.*"; DestDir: "{app}\plugins\FFTWfilters"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\FileGrabber\*.*"; DestDir: "{app}\plugins\FileGrabber"; Flags: ignoreversion recursesubdirs
-Source: "{#SourceDirItomBuild}\plugins\FittingFilters\*.*"; DestDir: "{app}\plugins\FittingFilters";F Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\FittingFilters\*.*"; DestDir: "{app}\plugins\FittingFilters"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\FireGrabber\*.*"; DestDir: "{app}\plugins\FireGrabber"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\FirgelliLAC\*.*"; DestDir: "{app}\plugins\FirgelliLAC"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\FringeProj\*.*"; DestDir: "{app}\plugins\FringeProj"; Flags: ignoreversion recursesubdirs
