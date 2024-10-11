@@ -11,9 +11,11 @@ Version 4.3.0 (2024-10-DD)
 itom
 ----
 
+(more than 650 commits in itom repository)
+
 **Changed Behaviour**
 
-* Added additional startup opütions: ``log``, ``log=<path-to-directory>`` and ``nolog``
+* Added additional startup options: ``log``, ``log=<path-to-directory>`` and ``nolog``
 
 
 **Improvements**
@@ -21,10 +23,34 @@ itom
 * Build and tested for Win11 x64
 * Updated to Python 3.12.4
 * Updated to OpenCV 4.10.0
+* support for Qt6 added. Qt5 still working.
+* Adaptions to support the python package flake8 in version 5.x and 6.x, too
+* improvements in documentation (e.g. read-the-doc theme, gallery of demo scripts, ...)
+* The Python package manager now allows installing packages from its source directory as additional option
+* The python method :py:meth:`itom.showHelpViewer` accepts an optional url argument, such that a specific page of the help is displayed. Per default, the index page is displayed.
+* The charset encoding dialog of the scripts has been improved: It helps adding a #coding-line to the script, if it is encoded in a different encoding than utf8 and the encoding of a script can now be changed (and saved with the new encoding).
+* script editors now have a small bar on the right side, showing the displayed part of the script with respect to the entire script and all positions of identified infos, warnings and errors (based on flake8)
+* pressing F9 in a script line, where no selection is available, will now execute the entire line
+* The representation of numbers as strings can now be configured in the itom property dialog. Usually the settings (decimal sign, group separator...) are taken from the language of the operating system, however a specific country style can also be set.
+* For the auto code formatting, it is now possible to optionally run the Python package **isort** (must be installed) before **black** (among others) is called.
+* The auto code formatting package **ruff** can now also be used for the auto code formatting feature.
+* Logfiles can be exported to a desired location.
+* You can now set in the itom property dialog, if itom should be closed upon :py:meth:`exit` or if this command is blocked (no-op).
+* A rename feature (dialog) for variables in Python scripts has been added. Make a right click on a symbol and choose **rename**.
+* Python ANSI escape sequences can now be displayed in the command line widget. This can be configured in the itom property dialog.
+* The language of itom can now also set to **operatingsystem**. If this is the case, the startup language is chosen from the default language of the operating system.
+* A python **input** command can now be interrupted by the cancel button in the toolbar or **shift+F5** --> KeyboardInterrupt exception in Python
 
 **Refactorings and bugfixes**
 
 * Git/CMake: Added environment variables for itom and plugin configuration
+* display fix for some string variables in workspace widget
+* encoding fix of special characters in motor axis controller widget
+* some fixes in syntax highlighting of Python scripts
+* temporary breakpoints are working now again
+* improved tooltips of calltips for very long texts
+* support for Python 3.11 and 3.12 added. Since Python 3.11, itom is mainly started based on the default rules of an isolated Python configuration.
+* With newer Python versions, fetching details of Python packages in the Python package manager requires some time. Therefore a progress bar has been added fetching these details can be cancelled.
 
 Itom-Project
 ------------
@@ -36,6 +62,8 @@ Itom-Project
 
 Plugins
 -------
+
+(more than 350 commits in plugins repository)
 
 **General:**
 
@@ -68,9 +96,12 @@ Plugins
 * GenICam: Speed improvements for decoding the format *YCbCr422_8*.
 * GenICam: Fix and test with a Baumer *GEV* camera
 * GenICam: Fix in *Mono12* pixel format
+* GenICam: some cameras do not have a persistent deviceID, used for initialization (e.g. IDS cameras). Therefore, cameras can optionally be initialized by their serial number (`pull request 49 <https://github.com/itom-project/plugins/pull/47>`_).
+* GenICam: support for "special" pixel format of IDS camera families U3-38Jx and U3-33Fx (`pull request 49 <https://github.com/itom-project/plugins/pull/47>`_).
 * OceanOpticsSpec: Adaptations in typedef struct which are no longer allowed
 * PclTools: Adaptations for PCL 1.13
 * SerialIO: Memory bug fix
+* all source files are now in utf8 encoding
 
 Designer Plugins
 ----------------
@@ -110,6 +141,8 @@ Designer Plugins
 **matplotlib**
 
 * support of both image buffers of type argb32 (for MPL < 3.9) and rgba8888 (MPL >= 3.9).
+* fix for matplotlib 3.6 - 3.8
+* better support of scaled or high-dpi screens with dpi-factor != 1.0 (both Qt5 and Qt6)
 
 
 Version 4.2.2 (2022-09-02)
