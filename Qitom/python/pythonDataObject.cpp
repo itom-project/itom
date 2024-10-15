@@ -24,7 +24,7 @@
 #include "pythonEngineInc.h"
 
 #include "numpy/arrayscalars.h"
-
+#include "numpy/ndarrayobject.h"
 #include "structmember.h"
 
 #include "../global.h"
@@ -45,6 +45,11 @@
 #include <stdexcept>
 
 #define PROTOCOL_STR_LENGTH 128
+
+// Define NPY_2_0_API_VERSION if it's not available (e.g., when using NumPy 1.x)
+#ifndef NPY_2_0_API_VERSION
+#define NPY_2_0_API_VERSION 0x00000012
+#endif
 
 namespace ito {
 template<class T>
@@ -1172,7 +1177,13 @@ bool PythonDataObject::PyDataObj_CopyFromDatetimeNpNdArray(
 
     // in case of datetime or timedelta: The values are int64, based on 1.1.1970
     // the timebase is given by:
+    // Assuming NumPy 1.7+ has the new behavior for descr metadata
+#if (NPY_2_0_API_VERSION)
+    const auto md = (PyArray_DatetimeDTypeMetaData*)(descr);
+#else
     const auto md = (PyArray_DatetimeDTypeMetaData*)(descr->c_metadata);
+#endif
+
     // timezone is ignored in numpy. If dataObject contains a timezone, ignore it and raise a
     // warning.
 
@@ -1302,7 +1313,11 @@ bool PythonDataObject::PyDataObj_CopyFromTimedeltaNpNdArray(
 
     // in case of datetime or timedelta: The values are int64, based on 1.1.1970
     // the timebase is given by:
+#if (NPY_2_0_API_VERSION)
+    const auto md = (PyArray_DatetimeDTypeMetaData*)(descr);
+#else
     const auto md = (PyArray_DatetimeDTypeMetaData*)(descr->c_metadata);
+#endif
 
     if (md == nullptr)
     {
@@ -2522,7 +2537,6 @@ PyObject* PythonDataObject::PyDataObject_getValue(PyDataObject* self, void* /*cl
         return -1;
     }
 
-// try to convert value to a numpy-array
 #if !defined(NPY_NO_DEPRECATED_API) || (NPY_NO_DEPRECATED_API < NPY_1_7_API_VERSION)
     PyObject* arr = PyArray_FromObject(value, typenum, 1, 1); // new ref
 #else
@@ -8550,7 +8564,7 @@ RetVal PythonDataObject::parseTypeNumber(int typeno, char& typekind, int& itemsi
         // todo: maybe kind and size can be hard coded
         PyArray_Descr* descr = PyArray_DescrNewFromType(NPY_DATETIME);
         typekind = descr->kind; // NPY_DATETIMELTR
-        itemsize = descr->elsize; // 8
+        itemsize = PyDataType_ELSIZE(descr);
         Py_DECREF(descr);
 
         // PyDatetimeScalarObject
@@ -8560,7 +8574,7 @@ RetVal PythonDataObject::parseTypeNumber(int typeno, char& typekind, int& itemsi
         // todo: maybe kind and size can be hard coded
         PyArray_Descr* descr = PyArray_DescrNewFromType(NPY_TIMEDELTA);
         typekind = descr->kind; // NPY_TIMEDELTALTR
-        itemsize = descr->elsize; // 8
+        itemsize = PyDataType_ELSIZE(descr);
         Py_DECREF(descr);
         break;
     }
@@ -8734,7 +8748,11 @@ std::string PythonDataObject::getNpDTypeStringFromNpDTypeEnum(const int type)
     case NPY_HALF:
         typeStr = "half";
         break;
+#if (NPY_2_0_API_VERSION)
+    case NPY_NTYPES_LEGACY:
+#else
     case NPY_NTYPES:
+#endif
         typeStr = "ntypes";
         break;
     case NPY_NOTYPE:
@@ -8962,7 +8980,11 @@ ito::RetVal PythonDataObject::copyNpArrayValuesToDataObject(
             ito::DateTime* rowPtr;
             PyArray_Descr* dtype = PyArray_DESCR(npNdArray);
 
+#if (NPY_2_0_API_VERSION)
+            const auto md = (PyArray_DatetimeDTypeMetaData*)(dtype);
+#else
             const auto md = (PyArray_DatetimeDTypeMetaData*)(dtype->c_metadata);
+#endif
             // timezone is ignored in numpy. If dataObject contains a timezone, ignore it and raise a
             // warning.
 
@@ -8992,7 +9014,11 @@ ito::RetVal PythonDataObject::copyNpArrayValuesToDataObject(
             ito::TimeDelta* rowPtr;
             PyArray_Descr* dtype = PyArray_DESCR(npNdArray);
 
+#if (NPY_2_0_API_VERSION)
+            const auto md = (PyArray_DatetimeDTypeMetaData*)(dtype);
+#else
             const auto md = (PyArray_DatetimeDTypeMetaData*)(dtype->c_metadata);
+#endif
             // timezone is ignored in numpy. If dataObject contains a timezone, ignore it and raise a
             // warning.
 
@@ -9534,7 +9560,11 @@ PyArrayObject* nparrayFromTimeDeltaDataObject(
 {
     // step 1: create numpy array
     PyArray_Descr* descr = PyArray_DescrNewFromType(NPY_TIMEDELTA);
+#if (NPY_2_0_API_VERSION)
+    auto metaData = (PyArray_DatetimeDTypeMetaData*)(descr);
+#else
     auto metaData = (PyArray_DatetimeDTypeMetaData*)(descr->c_metadata);
+#endif
 
     if (meta != nullptr)
     {
@@ -9655,7 +9685,11 @@ PyArrayObject* nparrayFromDateTimeDataObject(
 {
     // step 1: create numpy array
     PyArray_Descr* descr = PyArray_DescrNewFromType(NPY_DATETIME);
+    #if (NPY_2_0_API_VERSION)
+    auto metaData = (PyArray_DatetimeDTypeMetaData*)(descr);
+#else
     auto metaData = (PyArray_DatetimeDTypeMetaData*)(descr->c_metadata);
+#endif
 
     if (meta != nullptr)
     {
@@ -9819,7 +9853,11 @@ PyObject* PythonDataObject::PyDataObj_Array_(PyDataObject* self, PyObject* args)
 
         if (newtype && PyDataType_ISDATETIME(newtype))
         {
+#if (NPY_2_0_API_VERSION)
+            meta = &(((PyArray_DatetimeDTypeMetaData*)newtype)->meta);
+#else
             meta = &(((PyArray_DatetimeDTypeMetaData*)newtype->c_metadata)->meta);
+#endif
         }
 
         newArray = nparrayFromDateTimeDataObject(selfDO, meta);
@@ -9830,7 +9868,11 @@ PyObject* PythonDataObject::PyDataObj_Array_(PyDataObject* self, PyObject* args)
 
         if (newtype && PyDataType_ISDATETIME(newtype))
         {
+#if (NPY_2_0_API_VERSION)
+            meta = &(((PyArray_DatetimeDTypeMetaData*)newtype)->meta);
+#else
             meta = &(((PyArray_DatetimeDTypeMetaData*)newtype->c_metadata)->meta);
+#endif
         }
 
         newArray = nparrayFromTimeDeltaDataObject(selfDO, meta);

@@ -45,6 +45,8 @@
 #include "../organizer/uiOrganizer.h"
 #include "../organizer/userOrganizer.h"
 
+#include "numpy/ndarrayobject.h" // Ensure to include the necessary NumPy header
+
 #include <qcoreapplication.h>
 
 #include <qdir.h>
@@ -4781,9 +4783,7 @@ PyObject* PythonItom::PyLoadMatlabMat(PyObject* /*pSelf*/, PyObject* pArgs)
     }
 
     // Arguments must be: filename -> string
-
     PyObject* filename = NULL; // borrowed reference
-
     if (!PyArg_ParseTuple(pArgs, "U", &filename))
     {
         Py_XDECREF(scipyIoModule);
@@ -4792,21 +4792,23 @@ PyObject* PythonItom::PyLoadMatlabMat(PyObject* /*pSelf*/, PyObject* pArgs)
 
     PyObject* kwdDict = PyDict_New();
     PyObject* argTuple = PyTuple_New(1);
-    // PyTuple_SetItem(argTuple, 0, PyUnicode_FromString(filename));
     Py_INCREF(filename);
     PyTuple_SetItem(argTuple, 0, filename); // steals a reference
     PyDict_SetItemString(kwdDict, "squeeze_me", Py_True);
+
+    // Get callable loadmat function
     PyObject* loadmatobj = PyUnicode_FromString("loadmat");
     PyObject* callable = PyObject_GetAttr(scipyIoModule, loadmatobj);
     Py_DECREF(loadmatobj);
+
+    // Call loadmat
     resultLoadMat = PyObject_Call(callable, argTuple, kwdDict);
     Py_DECREF(kwdDict);
     Py_DECREF(argTuple);
 
     if (resultLoadMat)
     {
-        // parse every element of dictionary and check if it is a numpy.ndarray. If so, transforms
-        // it to c-style contiguous form
+        // Check if the result is a dictionary
         if (PyDict_Check(resultLoadMat))
         {
             PyObject* key = NULL;
@@ -4816,76 +4818,89 @@ PyObject* PythonItom::PyLoadMatlabMat(PyObject* /*pSelf*/, PyObject* pArgs)
             PyObject* importMatlabMatAsDataObjectObj =
                 PyUnicode_FromString("importMatlabMatAsDataObject");
 
+            // Iterate through dictionary items
             while (PyDict_Next(
                 resultLoadMat, &pos, &key, &value)) // borrowed reference to key and value
             {
-                if (PyArray_Check(value))
+                if (PyArray_Check(value)) // Check if the value is a NumPy array
                 {
-                    if (PyArray_SIZE((PyArrayObject*)value) ==
-                        1) // this is either a single value or a matlab-struct
-                    {
-                        PyObject* item = PyArray_ToList((PyArrayObject*)value); // new ref
+                    PyArrayObject* array =
+                        reinterpret_cast<PyArrayObject*>(value); // Cast to PyArrayObject
 
-                        if (item && (PyLong_Check(item) || PyFloat_Check(item))) // keep it
+                    // Check if it's a single element or a struct
+                    if (PyArray_SIZE(array) == 1)
+                    {
+                        PyObject* item = PyArray_ToList(array); // new ref
+                        if (item &&
+                            (PyLong_Check(item) || PyFloat_Check(item))) // Keep it if it's a scalar
                         {
                             PyDict_SetItem(resultLoadMat, key, item);
                         }
-                        else if (value && PyArray_HASFIELDS((PyArrayObject*)value))
+                        else if (PyArray_HASFIELDS(
+                                     array)) // Use HASFIELDS macro to check for fields
                         {
-                            // it may be that this is a struct which has been generated earlier from
-                            // a npDataObject or dataObject
-                            PyArray_Descr* descr = PyArray_DESCR((PyArrayObject*)value);
+                            // It may be that this is a struct
+                            PyArray_Descr* descr = PyArray_DESCR(array); // Get the descriptor
 
-                            if (descr->fields != NULL) // fields is a dictionary with "fieldname" =>
-                                                       // type-description for this field
+                            // Instead of checking 'fields', let's manually check for a specific
+                            // field
+                            if (descr) // Check if descriptor exists
                             {
-                                if (PyDict_Contains(descr->fields, itomMetaInfoObj))
+                                // Get the field names if available
+                                PyObject* fields = PyObject_GetAttrString(
+                                    reinterpret_cast<PyObject*>(descr), "fields");
+                                if (fields &&
+                                    PyDict_Check(fields)) // Check if fields is a dictionary
                                 {
-                                    PythonEngine* pyEngine = qobject_cast<PythonEngine*>(
-                                        AppManagement::getPythonEngine());
-                                    if (pyEngine)
+                                    // Now check if itomMetaInfoObj exists in the fields
+                                    if (PyDict_Contains(fields, itomMetaInfoObj) == 1)
                                     {
-                                        PyObject* result = PyObject_CallMethodObjArgs(
-                                            pyEngine->m_itomFunctions,
-                                            importMatlabMatAsDataObjectObj,
-                                            value,
-                                            NULL); // new reference
-
-                                        if (result == NULL || PyErr_Occurred())
+                                        PythonEngine* pyEngine = qobject_cast<PythonEngine*>(
+                                            AppManagement::getPythonEngine());
+                                        if (pyEngine)
                                         {
+                                            PyObject* result = PyObject_CallMethodObjArgs(
+                                                pyEngine->m_itomFunctions,
+                                                importMatlabMatAsDataObjectObj,
+                                                array,
+                                                NULL); // new reference
+
+                                            if (result == NULL || PyErr_Occurred())
+                                            {
+                                                Py_XDECREF(result);
+                                                Py_XDECREF(scipyIoModule);
+                                                Py_XDECREF(itomMetaInfoObj);
+                                                Py_XDECREF(importMatlabMatAsDataObjectObj);
+                                                PyErr_PrintEx(0);
+                                                PyErr_SetString(
+                                                    PyExc_RuntimeError,
+                                                    "Error while parsing imported dataObject or "
+                                                    "npDataObject.");
+                                                return NULL;
+                                            }
+                                            PyDict_SetItem(resultLoadMat, key, result);
                                             Py_XDECREF(result);
+                                        }
+                                        else
+                                        {
                                             Py_XDECREF(scipyIoModule);
                                             Py_XDECREF(itomMetaInfoObj);
                                             Py_XDECREF(importMatlabMatAsDataObjectObj);
-                                            PyErr_PrintEx(0);
                                             PyErr_SetString(
-                                                PyExc_RuntimeError,
-                                                "Error while parsing imported dataObject or "
-                                                "npDataObject.");
+                                                PyExc_RuntimeError, "Python Engine not available");
                                             return NULL;
                                         }
-                                        PyDict_SetItem(resultLoadMat, key, result);
-                                        Py_XDECREF(result);
-                                    }
-                                    else
-                                    {
-                                        Py_XDECREF(scipyIoModule);
-                                        Py_XDECREF(itomMetaInfoObj);
-                                        Py_XDECREF(importMatlabMatAsDataObjectObj);
-                                        PyErr_SetString(
-                                            PyExc_RuntimeError, "Python Engine not available");
-                                        return NULL;
                                     }
                                 }
+                                Py_XDECREF(fields);
                             }
                         }
-
                         Py_XDECREF(item);
                     }
-                    else // this should be an ordinary numpy.array
+                    else // Ordinary numpy array
                     {
-                        PyObject* newArr = (PyObject*)PyArray_GETCONTIGUOUS(
-                            (PyArrayObject*)value); // should be new reference
+                        PyObject* newArr =
+                            (PyObject*)PyArray_GETCONTIGUOUS(array); // should be new reference
                         PyDict_SetItem(resultLoadMat, key, newArr);
                         Py_DECREF(newArr);
                     }
@@ -4898,7 +4913,6 @@ PyObject* PythonItom::PyLoadMatlabMat(PyObject* /*pSelf*/, PyObject* pArgs)
     }
 
     Py_XDECREF(scipyIoModule);
-
     return resultLoadMat;
 }
 
