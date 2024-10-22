@@ -6770,12 +6770,16 @@ ito::RetVal PythonEngine::pickleSingleParam(QString filename, QSharedPointer<ito
 
             PyDict_Clear(exportDict);
             Py_DECREF(exportDict);
-            exportDict = NULL;
-
+            exportDict = nullptr;
+            Py_XDECREF(item);
             PyGILState_Release(gstate);
         }
-
-        Py_XDECREF(item);
+        else
+        {
+            PyGILState_STATE gstate = PyGILState_Ensure();
+            Py_XDECREF(item);
+            PyGILState_Release(gstate);
+        }
 
         if (oldState & pyStateIdle)
         {
