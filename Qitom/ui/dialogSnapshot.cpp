@@ -549,6 +549,10 @@ void DialogSnapshot::acquisitionEnd()
                         checkRetval(retval);
                         break;
                     }
+                    else if (locker->returnValue != ito::retOk)
+                    {
+                        checkRetval(locker->returnValue);
+                    }
                 }
             }
         }
