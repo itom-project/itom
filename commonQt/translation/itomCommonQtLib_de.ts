@@ -304,7 +304,7 @@ Typkonflikt für &apos;%1&apos;</translation>
     <message>
         <location filename="../../common/sources/sharedFunctionsQt.cpp" line="2134"/>
         <source>Load object failed: object header not valid</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Fehler beim Laden des Objekts: Die Objekt-Header ist ungültig</translation>
     </message>
     <message>
         <source>Load object failed: object header not valied</source>
@@ -990,12 +990,12 @@ Typkonflikt für &apos;%1&apos;</translation>
     <message>
         <location filename="../../common/sources/itomLog.cpp" line="76"/>
         <source>The file already exists: %1</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Datei existiert bereits: %1</translation>
     </message>
     <message>
         <location filename="../../common/sources/itomLog.cpp" line="85"/>
         <source>The file could not be copied to: %1</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Datei kann nicht an folgendes Ziel kopiert werden: %1</translation>
     </message>
 </context>
 </TS>

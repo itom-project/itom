@@ -4,12 +4,12 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../addInManagerPrivate.cpp" line="713"/>
+        <location filename="../addInManagerPrivate.cpp" line="726"/>
         <source>Widget &apos;%1&apos; rejected since widget with the same name already exists in global plugin widget list</source>
         <translation type="unfinished">Das Widget &apos;%1&apos; wurde abgelehnt, da es in der globalen Plugin-Widget-Liste bereits ein Widget mit dem selben Namen gibt</translation>
     </message>
     <message>
-        <location filename="../addInManagerPrivate.cpp" line="743"/>
+        <location filename="../addInManagerPrivate.cpp" line="756"/>
         <source>Widget %1 loaded</source>
         <translation type="unfinished">Widget %1 geladen</translation>
     </message>
@@ -527,11 +527,7 @@
     <message>
         <location filename="../paramHelper.cpp" line="2629"/>
         <source>Parameter is no array type. Indexing not possible.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Paramater is no array type. Indexing not possible.</source>
-        <translation type="obsolete">Der Parameter ist nicht vom Typ Array. Ein Indizierung ist nicht möglich.</translation>
+        <translation type="unfinished">Der Parameter ist nicht vom Typ Array. Ein Indizierung ist nicht möglich.</translation>
     </message>
     <message>
         <source>Paramater is no array type. Indexing not possible.</source>
@@ -678,182 +674,182 @@
         <translation>Sucht und lädt Plugins (%1)</translation>
     </message>
     <message>
-        <location filename="../addInManagerPrivate.cpp" line="334"/>
+        <location filename="../addInManagerPrivate.cpp" line="347"/>
         <source>Unable to load translation file &apos;%1&apos;. Translation file is empty.</source>
         <translation>Nicht möglich die Übersetzungsdatei &apos;%1&apos; zu laden. Die Datei ist leer.</translation>
     </message>
     <message>
-        <location filename="../addInManagerPrivate.cpp" line="345"/>
+        <location filename="../addInManagerPrivate.cpp" line="358"/>
         <source>Unable to find translation file.</source>
         <translation>Die Übersetzungsdatei wurde nicht gefunden.</translation>
     </message>
     <message>
-        <location filename="../addInManagerPrivate.cpp" line="413"/>
+        <location filename="../addInManagerPrivate.cpp" line="426"/>
         <source>Plugin with filename &apos;%1&apos; is unknown.</source>
         <translation>Das Plugin unter dem Dateinamen &apos;%1&apos; ist unbekannt.</translation>
     </message>
     <message>
-        <location filename="../addInManagerPrivate.cpp" line="436"/>
+        <location filename="../addInManagerPrivate.cpp" line="449"/>
         <source>AddIn &apos;%1&apos; fits to the obsolete interface %2. The AddIn interface of this version of &apos;itom&apos; is %3.</source>
         <translation>Das AddIn &apos;%1&apos; benötigt das veraltete AddIn-Interface %2. Die aktuelle Interface-Version dieses itoms ist %3.</translation>
     </message>
     <message>
-        <location filename="../addInManagerPrivate.cpp" line="443"/>
+        <location filename="../addInManagerPrivate.cpp" line="456"/>
         <source>AddIn &apos;%1&apos; fits to a new addIn-interface, which is not supported by this version of itom. The AddIn interface of this version of &apos;itom&apos; is %2.</source>
         <translation>Das AddIn &apos;%1&apos; benötigt ein neueres AddIn-Interface, welches mit dieser itom-Version nicht unterstützt wird. Die aktuelle Interface-Version dieses itoms ist %2.</translation>
     </message>
     <message>
-        <location filename="../addInManagerPrivate.cpp" line="448"/>
+        <location filename="../addInManagerPrivate.cpp" line="461"/>
         <source>AddIn &apos;%1&apos; does not fit to the general interface AddInInterfaceBase</source>
         <translation>Das AddIn &apos;%1&apos; passt nicht zur Basis-Schnittstelle &apos;AddInInterfaceBase&apos;</translation>
     </message>
     <message>
-        <location filename="../addInManagerPrivate.cpp" line="453"/>
+        <location filename="../addInManagerPrivate.cpp" line="466"/>
         <source>AddIn &apos;%1&apos; is not derived from class QObject.</source>
         <translation>Das AddIn &apos;%1&apos; ist keine Ableitung der Klasse QObject.</translation>
     </message>
     <message>
-        <location filename="../addInManagerPrivate.cpp" line="467"/>
+        <location filename="../addInManagerPrivate.cpp" line="480"/>
         <source>The file &apos;%1&apos; is not a valid Qt plugin.</source>
         <translation>Die Datei &apos;%1&apos; ist kein gültiges Qt-Plugin.</translation>
     </message>
     <message>
-        <location filename="../addInManagerPrivate.cpp" line="471"/>
+        <location filename="../addInManagerPrivate.cpp" line="484"/>
         <source>Library &apos;%1&apos; was ignored. Message: %2</source>
         <translation>Die Bibliothek &apos;%1&apos; wurde ignoriert. Meldung: %2</translation>
     </message>
     <message>
-        <location filename="../addInManagerPrivate.cpp" line="486"/>
-        <location filename="../addInManagerPrivate.cpp" line="495"/>
+        <location filename="../addInManagerPrivate.cpp" line="499"/>
+        <location filename="../addInManagerPrivate.cpp" line="508"/>
         <source>AddIn &apos;%1&apos; could not be loaded. Error message: %2</source>
         <translation>Das AddIn &apos;%1&apos; konnte nicht geladen werden. Fehlermeldung: %2</translation>
     </message>
     <message>
-        <location filename="../addInManagerPrivate.cpp" line="532"/>
+        <location filename="../addInManagerPrivate.cpp" line="545"/>
         <source>%1 (DataIO) loaded</source>
         <translation>%1 (DataIO) geladen</translation>
     </message>
     <message>
-        <location filename="../addInManagerPrivate.cpp" line="537"/>
+        <location filename="../addInManagerPrivate.cpp" line="550"/>
         <source>Plugin %1 (DataIO) already exists. Duplicate rejected.</source>
         <translation>Das Plugin %1 (DataIO) existiert bereits. Das Duplikat wurde zurückgewiesen.</translation>
     </message>
     <message>
-        <location filename="../addInManagerPrivate.cpp" line="553"/>
+        <location filename="../addInManagerPrivate.cpp" line="566"/>
         <source>%1 (Actuator) loaded</source>
         <translation>%1 (Motor) geladen</translation>
     </message>
     <message>
-        <location filename="../addInManagerPrivate.cpp" line="558"/>
+        <location filename="../addInManagerPrivate.cpp" line="571"/>
         <source>Plugin %1 (Actuator) already exists. Duplicate rejected.</source>
         <translation>Das Plugin %1 (Motor) existiert bereits. Das Duplikat wurde zurückgewiesen.</translation>
     </message>
     <message>
-        <location filename="../addInManagerPrivate.cpp" line="582"/>
+        <location filename="../addInManagerPrivate.cpp" line="595"/>
         <source>Error initializing plugin: %1</source>
         <translation>Fehler beim Initialisieren des Plugins: %1</translation>
     </message>
     <message>
-        <location filename="../addInManagerPrivate.cpp" line="662"/>
+        <location filename="../addInManagerPrivate.cpp" line="675"/>
         <source>Filter %1 loaded</source>
         <translation>Der Filter &apos;%1&apos; wurde geladen</translation>
     </message>
     <message>
-        <location filename="../addInManagerPrivate.cpp" line="675"/>
+        <location filename="../addInManagerPrivate.cpp" line="688"/>
         <source>Filter &apos;%1&apos; rejected. The filter parameters could not be loaded: %2</source>
         <translation>Der Filter %1 wurde zurückgewiesen. Der Filterparameter konnte nicht geladen werden: %2</translation>
     </message>
     <message>
-        <location filename="../addInManagerPrivate.cpp" line="679"/>
+        <location filename="../addInManagerPrivate.cpp" line="692"/>
         <source>Filter &apos;%1&apos; rejected. The filter parameters could not be loaded.</source>
         <translation>Der Filter %1 wurde zurückgewiesen. Der Filterparameter konnte nicht geladen werden.</translation>
     </message>
     <message>
-        <location filename="../addInManagerPrivate.cpp" line="690"/>
+        <location filename="../addInManagerPrivate.cpp" line="703"/>
         <source>Filter &apos;%1&apos; rejected. It does not correspond to the algorithm interface: %2</source>
         <translation>Der Filter %1 wurde zurückgewiesen. Er passt nicht zu dem Algorithmus-Interface: %2</translation>
     </message>
     <message>
-        <location filename="../addInManagerPrivate.cpp" line="694"/>
+        <location filename="../addInManagerPrivate.cpp" line="707"/>
         <source>Filter &apos;%1&apos; rejected. It does not correspond to the algorithm interface.</source>
         <translation>Der Filter %1 wurde zurückgewiese. Er passt nicht zu dem Algorithmus-Interface.</translation>
     </message>
     <message>
-        <location filename="../addInManagerPrivate.cpp" line="750"/>
+        <location filename="../addInManagerPrivate.cpp" line="763"/>
         <source>Widget &apos;%1&apos; rejected. It does not correspond to the algorithm interface: %2</source>
         <translation>Das Widget &apos;%1&apos; wurde zurückgewiesen. Er passt nicht zu dem Algorithmus-Interface: %2</translation>
     </message>
     <message>
-        <location filename="../addInManagerPrivate.cpp" line="754"/>
+        <location filename="../addInManagerPrivate.cpp" line="767"/>
         <source>Widget &apos;%1&apos; rejected. It does not correspond to the algorithm interface.</source>
         <translation>Das Widget &apos;%1&apos; wurde zurückgewiesen. Er passt nicht zu dem Algorithmus-Interface.</translation>
     </message>
     <message>
-        <location filename="../addInManagerPrivate.cpp" line="799"/>
-        <location filename="../addInManagerPrivate.cpp" line="899"/>
+        <location filename="../addInManagerPrivate.cpp" line="812"/>
+        <location filename="../addInManagerPrivate.cpp" line="912"/>
         <source>Wrong plugin name</source>
         <translation>Falscher Plugin-Name</translation>
     </message>
     <message>
-        <location filename="../addInManagerPrivate.cpp" line="807"/>
-        <location filename="../addInManagerPrivate.cpp" line="918"/>
+        <location filename="../addInManagerPrivate.cpp" line="820"/>
+        <location filename="../addInManagerPrivate.cpp" line="931"/>
         <source>Plugin instance is invalid (NULL)</source>
         <translation>Die Plugin-Instanz ist ungültig (NULL)</translation>
     </message>
     <message>
-        <location filename="../addInManagerPrivate.cpp" line="816"/>
-        <location filename="../addInManagerPrivate.cpp" line="928"/>
+        <location filename="../addInManagerPrivate.cpp" line="829"/>
+        <location filename="../addInManagerPrivate.cpp" line="941"/>
         <source>Reference counter of plugin has to be initialized with zero. This is not the case for this plugin (Please contact the plugin developer).</source>
         <translation>Der Referenzzähler des Plugins muss mit Null initialisiert werden. Das ist für dieses Plugin nicht der Fall (Bitte den Plugin-Entwickler kontaktieren!).</translation>
     </message>
     <message>
-        <location filename="../addInManagerPrivate.cpp" line="934"/>
+        <location filename="../addInManagerPrivate.cpp" line="947"/>
         <source>Base plugin or appropriate plugin type not indicated for this plugin.</source>
         <translation>Das Base-Plugin oder der entsprechende Plugin-Typ diese Plugins ist nicht angegeben.</translation>
     </message>
     <message>
-        <location filename="../addInManagerPrivate.cpp" line="965"/>
+        <location filename="../addInManagerPrivate.cpp" line="978"/>
         <source>Timeout while initializing dataIO</source>
         <translation>Zeitüberschreitung beim Initialisieren des DataIOs</translation>
     </message>
     <message>
-        <location filename="../addInManagerPrivate.cpp" line="1081"/>
-        <location filename="../addInManagerPrivate.cpp" line="1120"/>
+        <location filename="../addInManagerPrivate.cpp" line="1094"/>
+        <location filename="../addInManagerPrivate.cpp" line="1133"/>
         <source>Timeout while pulling plugin back to main thread.</source>
         <translation>Zeitüberschreitung beim Zurücksetzen des Plugins in den Hauptthread.</translation>
     </message>
     <message>
-        <location filename="../addInManagerPrivate.cpp" line="1088"/>
-        <location filename="../addInManagerPrivate.cpp" line="1126"/>
+        <location filename="../addInManagerPrivate.cpp" line="1101"/>
+        <location filename="../addInManagerPrivate.cpp" line="1139"/>
         <source>Error invoking method &apos;moveBackToApplicationThread&apos; of plugin.</source>
         <translation>Fehler beim Aufruf der Methode &apos;moveBackToApplicationThread&apos; des Plugins.</translation>
     </message>
     <message>
-        <location filename="../addInManagerPrivate.cpp" line="1100"/>
+        <location filename="../addInManagerPrivate.cpp" line="1113"/>
         <source>Timeout while closing plugin</source>
         <translation>Zeitüberschreitung beim Schließen des Plugins</translation>
     </message>
     <message>
-        <location filename="../addInManagerPrivate.cpp" line="605"/>
+        <location filename="../addInManagerPrivate.cpp" line="618"/>
         <source>Filter &apos;%1&apos; rejected since a filter with the same name already exists in global filter list.
 </source>
         <translation>Der Filter %1 wurde zurückgewiesen, da bereits ein Filter des gleichen Namens in der globalen Filterliste existiert.
 </translation>
     </message>
     <message>
-        <location filename="../addInManagerPrivate.cpp" line="392"/>
+        <location filename="../addInManagerPrivate.cpp" line="405"/>
         <source>Plugin with filename &apos;%1&apos; is a dataIO type, but no subtype is given in the type flag.</source>
         <translation>Das Plugin mti dem Dateinamen &apos;%1&apos; hat den dataIO Type gesetzt, aber es wurde kein Untertyp angegeben.</translation>
     </message>
     <message>
-        <location filename="../addInManagerPrivate.cpp" line="510"/>
+        <location filename="../addInManagerPrivate.cpp" line="523"/>
         <source>Caught an exception when loading the plugin &apos;%1&apos;
 Reason: %2</source>
         <translation type="unfinished">Beim Laden des Plugins &apos;%1&apos; trat ein Exception auf
 Grund: %2</translation>
     </message>
     <message>
-        <location filename="../addInManagerPrivate.cpp" line="514"/>
+        <location filename="../addInManagerPrivate.cpp" line="527"/>
         <source>Caught an exception when loading the plugin &apos;%1&apos;</source>
         <translation type="unfinished">Beim Laden des Plugins &apos;%1&apos; trat ein Exception auf</translation>
     </message>
