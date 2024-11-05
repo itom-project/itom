@@ -530,10 +530,6 @@
         <translation type="unfinished">Der Parameter ist nicht vom Typ Array. Ein Indizierung ist nicht möglich.</translation>
     </message>
     <message>
-        <source>Paramater is no array type. Indexing not possible.</source>
-        <translation type="obsolete">Der Parameter ist nicht vom Typ Array. Ein Indizierung ist nicht möglich.</translation>
-    </message>
-    <message>
         <location filename="../paramHelper.cpp" line="2657"/>
         <source>Parameter &apos;%s&apos; does not exist</source>
         <translation type="unfinished">Der Parameter &apos;%s&apos; existiert nicht</translation>
