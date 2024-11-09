@@ -8266,7 +8266,7 @@ or correct the base directory in the preferences dialog of itom.</source>
         <source>The home directory of Python is currently set to the non-existing directory &apos;%s&apos;
 Python cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python
 or correct the base directory in the property dialog of itom.</source>
-        <translation type="vanished">Das Stammverzeichnis von Python ist aktuell auf ein nicht existierendes Verzeichnis gesetzt (&apos;%s&apos;)
+        <translation type="obsolete">Das Stammverzeichnis von Python ist aktuell auf ein nicht existierendes Verzeichnis gesetzt (&apos;%s&apos;)
 Python kann nicht gestartet werden. Bitte entweder im System die Umgebungsvariable &apos;PYTHONHOME&apos; mit dem Stammverzeichnis von Python setzen
 oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
     </message>
@@ -8274,7 +8274,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <source>The built-in library path of Python could not be found. The current home directory is &apos;%s&apos;
 Python cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python
 or correct the base directory in the preferences dialog of itom.</source>
-        <translation type="vanished">Das Verzeichnis zur &apos;built-in library&apos; von Python wurde nicht gefunden. Der aktuelle Pfad des Python-Stammverzeichnisses lautet &apos;%s&apos;
+        <translation type="obsolete">Das Verzeichnis zur &apos;built-in library&apos; von Python wurde nicht gefunden. Der aktuelle Pfad des Python-Stammverzeichnisses lautet &apos;%s&apos;
 Python kann nicht gestartet werden. Bitte entweder im System die Umgebungsvariable &apos;PYTHONHOME&apos; mit dem Stammverzeichnis von Python setzen
 oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
     </message>

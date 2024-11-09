@@ -417,7 +417,7 @@ todo_include_todos = True
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", (None, "python3.12-inv.txt")),
     "numpy": ("https://numpy.org/doc/stable", (None, "numpy1.26-inv.txt")),
-    "scipy": ("https://docs.scipy.org/doc/scipy", (None, "scipy1.13.0-inv.txt")),
-    "matplotlib": ("https://matplotlib.org", (None, "matplotlib3.8.4-inv.txt")),
+    "scipy": ("https://docs.scipy.org/doc/scipy", (None, "scipy1.14.0-inv.txt")),
+    "matplotlib": ("https://matplotlib.org", (None, "matplotlib3.9.2-inv.txt")),
     "pandas": ("https://pandas.pydata.org/docs/", (None, "pandas2.2.2-inv.txt")),
 }
