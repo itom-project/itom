@@ -53,7 +53,7 @@ python -m pre_commit install
 It's usually a good idea to run the hooks against all of the files when adding new hooks (usually ``pre-commit`` will only run on the changed files during git hooks).
 
 ```bash
-python -m pre_commit run --all-files
+python -m pre-commit run --all-files
 ```
 
 ## Licensing

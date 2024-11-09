@@ -26,7 +26,7 @@ Pre_commits can be executed manually:
 
 .. code-block:: bash
 
-    python -m pre_commit run --all-files
+    python -m pre-commit run --all-files
 
 A practical tip is to also run pre_commits manually to reduce frustration when you want or need to create a commit.
 Failed hooks ensure that a commit cannot be set.
@@ -35,4 +35,4 @@ To execute specific hooks, their names can be passed as an additional argument (
 
 .. code-block:: bash
 
-    python -m pre_commit run --all-files codespell
+    python -m pre-commit run --all-files codespell
