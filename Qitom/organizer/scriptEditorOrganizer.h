@@ -162,6 +162,9 @@ public slots:
 
     void fileOpenedOrSaved(const QString& filename);
 
+    void navigateForward();
+    void navigateBackward();
+
 private slots:
     void widgetFocusChanged(QWidget* old, QWidget* now);
 
@@ -169,8 +172,6 @@ private slots:
     void onGotoBookmark(const BookmarkItem& item);
 
     // Action slots
-    void mnuNavigateForward();
-    void mnuNavigateBackward();
     void mnuNavigateBackwardItem(int index);
 };
 

@@ -45,6 +45,8 @@
 #include <qpainter.h>
 #include <qtextdocument.h>
 #include <qtooltip.h>
+#include "Appmanagement.h"
+#include "organizer/scriptEditorOrganizer.h"
 
 #include "delayJobRunner.h"
 #include "managers/modesManager.h"
@@ -864,6 +866,7 @@ void CodeEditor::mousePressEvent(QMouseEvent* e)
         QPlainTextEdit::mousePressEvent(e);
     }
 }
+
 
 //-----------------------------------------------------------
 /*
