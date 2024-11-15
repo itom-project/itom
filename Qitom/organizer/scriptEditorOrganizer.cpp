@@ -110,6 +110,8 @@ ScriptEditorOrganizer::ScriptEditorOrganizer(bool dockAvailable) :
     m_pBookmarkModel = new ito::BookmarkModel();
     m_pBookmarkModel->restoreState(); //get bookmarks from last session
     connect(m_pBookmarkModel, SIGNAL(gotoBookmark(BookmarkItem)), this, SLOT(onGotoBookmark(BookmarkItem)));
+
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1120,6 +1122,18 @@ ScriptEditorWidget* ScriptEditorOrganizer::getEditorFromCanonicalFilepath(const 
     }
 
     return nullptr;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void ScriptEditorOrganizer::navigateBackward()
+{
+    mnuNavigateBackward();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void ScriptEditorOrganizer::navigateForward()
+{
+    mnuNavigateForward();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

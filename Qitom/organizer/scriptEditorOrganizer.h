@@ -83,6 +83,9 @@ public:
 
     ScriptEditorWidget* getEditorFromCanonicalFilepath(const QString &filepath) const;
 
+    void navigateBackward();
+    void navigateForward();
+
 protected:
     ScriptDockWidget* createEmptyScriptDock(
         bool docked,

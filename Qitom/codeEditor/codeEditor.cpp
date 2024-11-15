@@ -45,6 +45,8 @@
 #include <qpainter.h>
 #include <qtextdocument.h>
 #include <qtooltip.h>
+#include "Appmanagement.h"
+#include "organizer/scriptEditorOrganizer.h"
 
 #include "delayJobRunner.h"
 #include "managers/modesManager.h"
@@ -857,6 +859,24 @@ void CodeEditor::mousePressEvent(QMouseEvent* e)
             ++it;
         }
     }
+    else if (e->button() == Qt::BackButton)
+    {
+        ScriptEditorOrganizer* sew =
+            qobject_cast<ScriptEditorOrganizer*>(AppManagement::getScriptEditorOrganizer());
+        if (sew)
+        {
+            sew->navigateBackward();
+        }
+    }
+    else if (e->button() == Qt::ForwardButton)
+    {
+        ScriptEditorOrganizer* sew =
+            qobject_cast<ScriptEditorOrganizer*>(AppManagement::getScriptEditorOrganizer());
+        if (sew)
+        {
+            sew->navigateForward();
+        }
+    }
 
     if (!e->isAccepted())
     {
@@ -864,6 +884,7 @@ void CodeEditor::mousePressEvent(QMouseEvent* e)
         QPlainTextEdit::mousePressEvent(e);
     }
 }
+
 
 //-----------------------------------------------------------
 /*
