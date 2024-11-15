@@ -162,8 +162,8 @@ public slots:
 
     void fileOpenedOrSaved(const QString& filename);
 
-    void mnuNavigateForward();
-    void mnuNavigateBackward();
+    void navigateForward();
+    void navigateBackward();
 
 private slots:
     void widgetFocusChanged(QWidget* old, QWidget* now);

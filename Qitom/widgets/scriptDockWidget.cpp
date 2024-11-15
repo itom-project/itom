@@ -2787,22 +2787,20 @@ void ScriptDockWidget::closeEvent(QCloseEvent *event)
 //----------------------------------------------------------------------------------------------------------------------------------
 void ScriptDockWidget::mousePressEvent(QMouseEvent* e)
 {
+    auto* scriptEditorOrganizer =
+        qobject_cast<ScriptEditorOrganizer*>(AppManagement::getScriptEditorOrganizer());
     if (e->button() == Qt::BackButton)
     {
-        ScriptEditorOrganizer* sew =
-            qobject_cast<ScriptEditorOrganizer*>(AppManagement::getScriptEditorOrganizer());
-        if (sew)
+        if (scriptEditorOrganizer)
         {
-            sew->mnuNavigateBackward();
+            scriptEditorOrganizer->navigateBackward();
         }
     }
     else if (e->button() == Qt::ForwardButton)
     {
-        ScriptEditorOrganizer* sew =
-            qobject_cast<ScriptEditorOrganizer*>(AppManagement::getScriptEditorOrganizer());
-        if (sew)
+        if (scriptEditorOrganizer)
         {
-            sew->mnuNavigateForward();
+            scriptEditorOrganizer->navigateForward();
         }
     }
 }
