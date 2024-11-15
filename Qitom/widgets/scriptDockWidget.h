@@ -141,6 +141,7 @@ protected:
     void createToolBars();
     void createStatusBar();
     void closeEvent(QCloseEvent* event);
+    virtual void mousePressEvent(QMouseEvent* e);
     virtual void windowStateChanged(bool windowNotToolbox);
 
     RetVal closeTab(int index, bool saveFirst = true, bool closeScriptWidgetIfLastTabClosed = true);

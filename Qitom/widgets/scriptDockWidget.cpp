@@ -2785,6 +2785,29 @@ void ScriptDockWidget::closeEvent(QCloseEvent *event)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+void ScriptDockWidget::mousePressEvent(QMouseEvent* e)
+{
+    if (e->button() == Qt::BackButton)
+    {
+        ScriptEditorOrganizer* sew =
+            qobject_cast<ScriptEditorOrganizer*>(AppManagement::getScriptEditorOrganizer());
+        if (sew)
+        {
+            sew->mnuNavigateBackward();
+        }
+    }
+    else if (e->button() == Qt::ForwardButton)
+    {
+        ScriptEditorOrganizer* sew =
+            qobject_cast<ScriptEditorOrganizer*>(AppManagement::getScriptEditorOrganizer());
+        if (sew)
+        {
+            sew->mnuNavigateForward();
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 void ScriptDockWidget::findTextExpr(QString expr, bool regExpr, bool caseSensitive, bool wholeWord, bool wrap, bool forward, bool isQuickSeach)
 {
     ScriptEditorWidget* sew = getCurrentEditor();

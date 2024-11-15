@@ -859,24 +859,6 @@ void CodeEditor::mousePressEvent(QMouseEvent* e)
             ++it;
         }
     }
-    else if (e->button() == Qt::BackButton)
-    {
-        ScriptEditorOrganizer* sew =
-            qobject_cast<ScriptEditorOrganizer*>(AppManagement::getScriptEditorOrganizer());
-        if (sew)
-        {
-            sew->navigateBackward();
-        }
-    }
-    else if (e->button() == Qt::ForwardButton)
-    {
-        ScriptEditorOrganizer* sew =
-            qobject_cast<ScriptEditorOrganizer*>(AppManagement::getScriptEditorOrganizer());
-        if (sew)
-        {
-            sew->navigateForward();
-        }
-    }
 
     if (!e->isAccepted())
     {

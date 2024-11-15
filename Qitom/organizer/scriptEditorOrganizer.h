@@ -83,9 +83,6 @@ public:
 
     ScriptEditorWidget* getEditorFromCanonicalFilepath(const QString &filepath) const;
 
-    void navigateBackward();
-    void navigateForward();
-
 protected:
     ScriptDockWidget* createEmptyScriptDock(
         bool docked,
@@ -165,6 +162,9 @@ public slots:
 
     void fileOpenedOrSaved(const QString& filename);
 
+    void mnuNavigateForward();
+    void mnuNavigateBackward();
+
 private slots:
     void widgetFocusChanged(QWidget* old, QWidget* now);
 
@@ -172,8 +172,6 @@ private slots:
     void onGotoBookmark(const BookmarkItem& item);
 
     // Action slots
-    void mnuNavigateForward();
-    void mnuNavigateBackward();
     void mnuNavigateBackwardItem(int index);
 };
 

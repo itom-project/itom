@@ -1125,18 +1125,6 @@ ScriptEditorWidget* ScriptEditorOrganizer::getEditorFromCanonicalFilepath(const 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void ScriptEditorOrganizer::navigateBackward()
-{
-    mnuNavigateBackward();
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-void ScriptEditorOrganizer::navigateForward()
-{
-    mnuNavigateForward();
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
 void ScriptEditorOrganizer::onGotoBookmark(const BookmarkItem &item)
 {
     if (item.filename != "")
