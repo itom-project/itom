@@ -1494,15 +1494,18 @@ RetVal PythonDataObject::PyDataObj_ParseCreateArgs(
                         PyErr_PrintEx(0);
                         PyErr_Clear();
                         PyErr_Format(
-                            PyExc_TypeError,
-                            "Element %d of dimension-list is no integer number",
+                            PyExc_ValueError,
+                            "%d. value of dimensions sequence is no integer value.",
                             i + 1);
                         retValue += RetVal(retError);
                         break;
                     }
                     else if (tempSizes <= 0)
                     {
-                        PyErr_SetString(PyExc_TypeError, "Element %d must be bigger than 1");
+                        PyErr_Format(
+                            PyExc_ValueError,
+                            "%d. value of dimensions sequence must be bigger than 0.",
+                            i + 1);
                         retValue += RetVal(retError);
                         break;
                     }
@@ -1558,15 +1561,18 @@ RetVal PythonDataObject::PyDataObj_ParseCreateArgs(
                         PyErr_PrintEx(0);
                         PyErr_Clear();
                         PyErr_Format(
-                            PyExc_TypeError,
-                            "Element %d of dimension-tuple is no integer number",
+                            PyExc_ValueError,
+                            "%d. value of dimensions sequence is no integer value.",
                             i + 1);
                         retValue += RetVal(retError);
                         break;
                     }
                     else if (tempSizes <= 0)
                     {
-                        PyErr_SetString(PyExc_TypeError, "Element %d must be bigger than 1");
+                        PyErr_Format(
+                            PyExc_ValueError,
+                            "%d. value of dimensions sequence must be bigger than 0.",
+                            i + 1);
                         retValue += RetVal(retError);
                         break;
                     }
