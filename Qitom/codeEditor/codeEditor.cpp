@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Copyright (C) 2024, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of itom.
@@ -45,8 +45,6 @@
 #include <qpainter.h>
 #include <qtextdocument.h>
 #include <qtooltip.h>
-#include "Appmanagement.h"
-#include "organizer/scriptEditorOrganizer.h"
 
 #include "delayJobRunner.h"
 #include "managers/modesManager.h"
