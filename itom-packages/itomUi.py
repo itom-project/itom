@@ -1,4 +1,5 @@
-"""Base class for custom user interfaces with auto-slot connections.
+"""
+Base class for custom user interfaces with auto-slot connections.
 
 License information:
 
@@ -10,24 +11,26 @@ Universität Stuttgart, Germany
 This file is part of itom.
 
 itom is free software; you can redistribute it and/or modify it
-under the terms of the GNU Library General Public Licence as published by
-the Free Software Foundation; either version 2 of the Licence, or (at
+under the terms of the GNU Library General Public License as published by
+the Free Software Foundation; either version 2 of the License, or (at
 your option) any later version.
 
 itom is distributed in the hope that it will be useful, but
 WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library
-General Public Licence for more details.
+General Public License for more details.
 
 You should have received a copy of the GNU Library General Public License
 along with itom. If not, see <http://www.gnu.org/licenses/>.
 """
 
-from itom import ui
-import itom
 from contextlib import contextmanager
+from typing import List, Tuple, Union
 
-__version__ = "2.4.0"
+import itom
+from itom import ui
+
+__version__ = "2.5.0"
 
 
 class ItomUi:
@@ -52,13 +55,13 @@ class ItomUi:
 
     def __init__(
         self,
-        filename,
-        type=ui.TYPEWINDOW,
-        dialogButtonBar=ui.BUTTONBAR_NO,
-        dialogButtons={},
-        childOfMainWindow=True,
-        deleteOnClose=False,
-        dockWidgetArea=ui.TOPDOCKWIDGETAREA,
+        filename: str,
+        type: int = ui.TYPEWINDOW,
+        dialogButtonBar: int = ui.BUTTONBAR_NO,
+        dialogButtons: dict = None,
+        childOfMainWindow: bool = True,
+        deleteOnClose: bool = False,
+        dockWidgetArea: int = ui.TOPDOCKWIDGETAREA,
         **kwds,
     ):
         """Constructor.
@@ -127,6 +130,7 @@ class ItomUi:
                 from ``ItomUi`` and another class. Then, the ``kwds`` parameters
                 are passed to the other class.
         """
+        dialogButtons = dialogButtons or {}
         self.gui = ui(
             filename,
             type,
@@ -143,7 +147,7 @@ class ItomUi:
         super().__init__(**kwds)
         self.autoconnect()
 
-    def show(self, modal=0):
+    def show(self, modal: int = 0) -> Union[None, int]:
         """Show the gui in a model or non-modal way.
 
         Args:
@@ -179,28 +183,21 @@ class ItomUi:
         for key in dir(self):
             value = getattr(self, key)
             if getattr(value, "hasAutoSlot", False):
-                wid = getattr(value, "widgetName", [])
-                sig = getattr(value, "signature", [])
-                for w, s in zip(wid, sig):
+                widgets = getattr(value, "widgetName", [])
+                signals = getattr(value, "signature", [])
+                for widget_name, signal in zip(widgets, signals):
                     try:
-                        widget = eval("self.gui." + w)
+                        widget = eval(f"self.gui.{widget_name}")
                     except Exception:
-                        if self.gui["objectName"] == w:
+                        if self.gui["objectName"] == widget_name:
                             widget = self.gui
                         else:
-                            print(
-                                "Auto-connection failed: "
-                                "Widget %s could not be found." % str(w)
-                            )
+                            print(f"Auto-connection failed: Widget {widget_name} could not be found.")
                             continue
-
                     try:
-                        widget.connect(s, value)
+                        widget.connect(signal, value)
                     except Exception:
-                        print(
-                            "Auto-connection failed. Widget %s has no slot %s(%s)"
-                            % (str(w), str(s), str(sig))
-                        )
+                        print(f"Auto-connection failed: Widget {widget_name} has no slot {signal}.")
 
     def autoslot(*attr):
         """Decorator to mark methods in derived classes to be a slot for a widget signal.
@@ -214,20 +211,11 @@ class ItomUi:
             """Internal decorator method."""
             parts = func.__name__.split("_")
             if len(parts) >= 3 and parts[0] == "on":
-                setattr(func, "hasAutoSlot", True)
-                newSig = f"{parts[len(parts) - 1]}({attr[0]})"
-                sig = getattr(func, "signature", [])
-                sig.append(newSig)
-                wid = getattr(func, "widgetName", [])
-
-                if len(parts) == 3:
-                    widgetName = parts[1]
-                else:
-                    widgetName = "_".join(parts[1 : len(parts) - 1])
-
-                wid.append(widgetName)
-                setattr(func, "signature", sig)
-                setattr(func, "widgetName", wid)
+                func.hasAutoSlot = True
+                signature = f"{parts[-1]}({attr[0]})"
+                func.signature = getattr(func, "signature", []) + [signature]
+                widget_name = "_".join(parts[1:-1]) if len(parts) > 3 else parts[1]
+                func.widgetName = getattr(func, "widgetName", []) + [widget_name]
             return func
 
         return decorate
@@ -235,49 +223,52 @@ class ItomUi:
     @contextmanager
     def disableGui(
         self,
-        disableItems=[],
-        showItems=[],
-        hideItems=[],
-        enableItems=[],
-        revertToInitialStateOnExit=True,
-        showWaitCursor=True,
+        disableItems: List[itom.uiItem] = None,
+        showItems: List[itom.uiItem] = None,
+        hideItems: List[itom.uiItem] = None,
+        enableItems: List[itom.uiItem] = None,
+        renameItems: List[Tuple[itom.uiItem, str]] = None,
+        revertToInitialStateOnExit: bool = True,
+        showWaitCursor: bool = True,
     ):
         """Factory function for with statement to disable parts of the GUI.
 
-        This function can be called in a with statement to wrap a long going
-        operation. If the with block is entered, given items of the GUI are
-        switched to a disable state (hidden, disabled, shown...) and if the
-        block is exited, the states will be reverted to the original or
-        opposite value.
+           This function can be called in a with statement to wrap a long going
+           operation. If the with block is entered, given items of the GUI are
+           switched to a disable state (hidden, disabled, shown...) and if the
+           block is exited, the states will be reverted to the original or
+           opposite value.
 
-        The advantage of using this context function instead of "manually"
-        disable and enabling the GUI during one operation is, that this
-        approach will even revert to GUI to an enabled state, if the operation
-        within the ``with`` block raises an unhandled exception.
+           The advantage of using this context function instead of "manually"
+           disable and enabling the GUI during one operation is, that this
+           approach will even revert to GUI to an enabled state, if the operation
+           within the ``with`` block raises an unhandled exception.
 
-        New in version 2.2 of this module.
+           New in version 2.2 of this module.
 
         Args:
-            disableItems (List[itom.uiItem]): list of :class:`itom.uiItem`, that
+            disableItems (List[itom.uiItem], optional): list of :class:`itom.uiItem`, that
                 should be disabled on entering the with block and reverted
-                (enabled) on exiting it.
-            showItems (List[itom.uiItem]): list of :class:`itom.uiItem`, that
+                (enabled) on exiting it. Defaults to [].
+            showItems (List[itom.uiItem], optional): list of :class:`itom.uiItem`, that
                 should be shown on entering the with block and reverted (hidden)
-                on exiting it.
-            hideItems (List[itom.uiItem]): list of :class:`itom.uiItem`, that
-                should be hidden on entering the with block and reverted
-                (shown) on exiting it.
-            enableItems (List[itom.uiItem]): list of :class:`itom.uiItem`, that
+                on exiting it. Defaults to [].
+            hideItems (List[itom.uiItem], optional): list of :class:`itom.uiItem`, that
+                should be disabled on entering the with block and reverted
+                (enabled) on exiting it. Defaults to [].
+            enableItems (List[itom.uiItem], optional): list of :class:`itom.uiItem`, that
                 should be enabled on entering the with block and reverted
-                (disabled) on exiting it.
-            revertToInitialStateOnExit (bool): If True (default), all items
+                (disabled) on exiting it. Added to version "2.5.0". Defaults to [].
+            renameItems (List[Tuple[itom.uiItem, str]], optional): list of tuple of :class:`itom.uiItem`
+                and str, that should be set as the text of the item. Defaults to [].
+            revertToInitialStateOnExit (bool, optional): If True (default), all items
                 are always reverted on exiting the with block to the state,
                 they hade before (default). Else: they are always forced to
                 be reverted to the opposite of the desired state on entering
-                the with block.
-            showWaitCursor (bool): If True (default), the wait cursor is
+                the with block. Defaults to True.
+            showWaitCursor (bool, optional): If True, the wait cursor is
                 shown during the execution of the with block and reverted
-                to the previous value on exit.
+                to the previous value on exit. Defaults to True.
 
         An exemplary call of this context function is::
 
@@ -291,73 +282,67 @@ class ItomUi:
                     showItems,
                     hideItems,
                     enableItems,
+                    renameItems,
                     revertToInitialStateOnExit=True,
                     showWaitCursor=True):
                 doSomethingLong()
         """
+        disableItems = disableItems or []
+        showItems = showItems or []
+        hideItems = hideItems or []
+        enableItems = enableItems or []
+        renameItems = renameItems or []
+
         try:
-            # enter block
             if showWaitCursor:
                 itom.setApplicationCursor(16)
 
             revertItems = []
+            renamedItems = []
 
             for item in disableItems:
-                if revertToInitialStateOnExit:
-                    val = item["enabled"]
-                else:
-                    val = True
-
+                val = item["enabled"] if revertToInitialStateOnExit else True
                 if val:
-                    revertItems.append([item, "enabled", val])
-
+                    revertItems.append((item, "enabled", val))
                 item["enabled"] = False
 
             for item in showItems:
-                if revertToInitialStateOnExit:
-                    val = item["visible"]
-                else:
-                    val = False
-
+                val = item["visible"] if revertToInitialStateOnExit else False
                 if not val:
-                    revertItems.append([item, "visible", val])
-
+                    revertItems.append((item, "visible", val))
                 item["visible"] = True
 
             for item in enableItems:
-                if revertToInitialStateOnExit:
-                    val = item["enabled"]
-                else:
-                    val = False
-
+                val = item["enabled"] if revertToInitialStateOnExit else False
                 if not val:
-                    revertItems.append([item, "enabled", val])
-
+                    revertItems.append((item, "enabled", val))
                 item["enabled"] = True
 
             for item in hideItems:
-                if revertToInitialStateOnExit:
-                    val = item["visible"]
-                else:
-                    val = True
-
+                val = item["visible"] if revertToInitialStateOnExit else True
                 if val:
-                    revertItems.append([item, "visible", val])
-
+                    revertItems.append((item, "visible", val))
                 item["visible"] = False
 
-            yield  # this statement starts the long operation in the with block
+            for item, text in renameItems:
+                val = item["text"] if revertToInitialStateOnExit else text
+                renamedItems.append((item, val))
+                item["text"] = text
+
+            yield
 
         finally:
-            # exit block
             if showWaitCursor:
                 itom.setApplicationCursor(-1)
 
             for item, prop, value in revertItems:
                 item[prop] = value
 
+            for item, text in renamedItems:
+                item["text"] = text
+
     @contextmanager
-    def blockSignals(self, item):
+    def blockSignals(self, item: Union[itom.uiItem, List[itom.uiItem]]):
         """Factory function to temporarily block signals of an widget (item).
 
         This function can be called in a with statement to temporarily block
@@ -382,31 +367,19 @@ class ItomUi:
             with self.blockSignals(self.gui.myItem1):
                 self.gui.myItem1['currentIndex'] = 2
         """
-        if type(item) is itom.uiItem:
-            try:
-                item.call("blockSignals", True)
-                yield
-            finally:
-                item.call("blockSignals", False)
-        elif type(item) is tuple or type(item) is list:
-            for item2 in item:
-                if type(item2) is not itom.uiItem:
-                    raise TypeError(
-                        "items must be an itom.uiItem object or a "
-                        "list / tuple of itom.uiItem objects."
-                    )
-            try:
-                for item2 in item:
-                    item2.call("blockSignals", True)
-                yield
-            finally:
-                for item2 in item:
-                    item2.call("blockSignals", False)
-        else:
-            raise TypeError(
-                "item must be an itom.uiItem object or a "
-                "list / tuple of itom.uiItem objects."
-            )
+        items = item if isinstance(item, (list, tuple)) else [item]
+
+        for it in items:
+            if not isinstance(it, itom.uiItem):
+                raise TypeError("Item must be an itom.uiItem or a list/tuple of itom.uiItems.")
+
+        try:
+            for it in items:
+                it.call("blockSignals", True)
+            yield
+        finally:
+            for it in items:
+                it.call("blockSignals", False)
 
 
 # deprecated: workaround to have old version member of class UiItem again:
