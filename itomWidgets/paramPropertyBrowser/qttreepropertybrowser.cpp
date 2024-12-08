@@ -900,7 +900,7 @@ void QtTreePropertyBrowser::setResizeMode(QtTreePropertyBrowser::ResizeMode mode
 
 /*!
     \property QtTreePropertyBrowser::splitterPosition
-    \brief the position of the splitter between the colunms.
+    \brief the position of the splitter between the columns.
 */
 
 int QtTreePropertyBrowser::splitterPosition() const

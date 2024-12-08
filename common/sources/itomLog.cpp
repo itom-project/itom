@@ -145,7 +145,7 @@ void Logger::initFiles(int fileSizeBytes, int backupCount)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /**
- * @brief Lists all existing backup files whit the form <logFile>_<date>.<suffix>
+ * @brief Lists all existing backup files with the form <logFile>_<date>.<suffix>
  */
 QFileInfoList Logger::listBackups()
 {

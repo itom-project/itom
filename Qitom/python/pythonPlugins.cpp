@@ -947,7 +947,7 @@ This method prints a detailed listing with the `name`, `current value`, \n\
 `description string` and further `meta information` of every plugin parameter. \n\
 Additionally, the column ``R/W`` indicates if this parameter is writable or read-only. \n\
 \n\
-Dependin`g on ``detailLevel``, this method will not print the listing to the command line \n\
+Depending on ``detailLevel``, this method will not print the listing to the command line \n\
 but returns it using a nested :class:`dict`. \n\
 \n\
 Parameters \n\
@@ -3603,7 +3603,7 @@ then decrements this counter and finally stops the device once the counter drops
 zero again. \n\
 \n\
 The counter is necessary, since every connected live image needs to start the device \n\
-without knownledge about any previous start. No acquisition is possible, if the device \n\
+without knowledge about any previous start. No acquisition is possible, if the device \n\
 has not been started, hence the counter is 0. \n\
 \n\
 Parameters \n\

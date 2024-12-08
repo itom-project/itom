@@ -244,7 +244,7 @@ The you have the reference to the figure-instance of *matplotlib* and can go one
 
         gui.plot["forceWindowResize"] = False
 
-    or by directlly setting the corresponding property when designing the user interface in QtDesigner.
+    or by directly setting the corresponding property when designing the user interface in QtDesigner.
 
 This example is contained in the **demo/ui/embeddedMatplotlib** folder.
 

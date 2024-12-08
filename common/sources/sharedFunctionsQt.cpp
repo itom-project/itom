@@ -1214,7 +1214,7 @@ namespace ito
     *
     *   \details This function writes data and meta data of a dataObject to the harddrive. The file format is based on xml.
     *            The data of the dataObject are converted to binary without XML-registed signs by QByteArray::toBase64()).
-    *            The metaData and tagSpace are either saved as binary (QByteArray::toBase64()) or saves as strings with 15 signifiant digits (more than 32-Bit).
+    *            The metaData and tagSpace are either saved as binary (QByteArray::toBase64()) or saves as strings with 15 significant digits (more than 32-Bit).
     *            So for most applications doubleAsBinary==false is enough.
     *
     *   \autor Lyda

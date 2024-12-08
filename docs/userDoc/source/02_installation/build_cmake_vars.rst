@@ -163,7 +163,7 @@ Cmake Variables:
 
 .. |cmakelist_flann_include_dirs| replace::
 
-   Path to filder named "include"
+   Path to folder named "include"
    which lives in a directory side-by-side with "bin" and "lib" folders.
 
 .. |cmakelist_vtk_dir| replace::

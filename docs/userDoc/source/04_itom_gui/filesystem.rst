@@ -18,7 +18,7 @@ tree.
 
 The first combo box in the toolbar gives you access to the last ten current directories, that are also saved at termination of |itom| and are available at the next startup. The context menu of every item
 depends on the type of the item (file, folder, empty space in the tree). A right click on a python file for instance allows to open that file or to directly execute the script. The command **locate on disk**
-opens an external exporer with the current directory as start directory. Additionally, you can always create a new directory or python script in the current folder.
+opens an external explorer with the current directory as start directory. Additionally, you can always create a new directory or python script in the current folder.
 
 The file system toolbox also provides the common drag&drop functionalities allowing to move or copy files from and to another application, like the explorer. You can even drag a data file, that is known by
 |itom| onto a workspace toolbox in order to import that file in the workspace.

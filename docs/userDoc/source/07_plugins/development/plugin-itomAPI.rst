@@ -54,7 +54,7 @@ Usage
 
 You can call the methods, defined in **apiFunctionsInc.h** or **apiFunctionsGraphInc.h** like normal function calls. In the following example, the filter **saveRPM**, which is defined
 in another plugin should be called. Since, the mandatory, optional and output parameters of this filter are unknown, we will first request their default
-values, then change their values and finally we call the filter-method. If you have knownledge about the parameters, you just can implement the second part.
+values, then change their values and finally we call the filter-method. If you have knowledge about the parameters, you just can implement the second part.
 
 .. code-block:: c++
 

@@ -131,7 +131,7 @@ QVariant UserModel::data(const QModelIndex &index, int role) const
     {
         if (m_userInfo[index.row()].standardUser)
         {
-            return QVariant(); //standard user is not editible
+            return QVariant(); //standard user is not editable
         }
         else
         {
