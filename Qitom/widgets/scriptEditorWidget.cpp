@@ -3659,6 +3659,28 @@ void ScriptEditorWidget::parseOutlineRecursive(QSharedPointer<OutlineItem>& pare
 }
 
 //-------------------------------------------------------------------------------------
+bool ScriptEditorWidget::isCodeCellStart(const QString& text, QString& name) const
+{
+    if (text.startsWith("#%%"))
+    {
+        name = text.mid(3).trimmed();
+        return true;
+    }
+    else if (text.startsWith("# %%"))
+    {
+        name = text.mid(4).trimmed();
+        return true;
+    }
+    else if (text.startsWith("# <codecell>"))
+    {
+        name = text.mid(12).trimmed();
+        return true;
+    }
+
+    return false;
+}
+
+//-------------------------------------------------------------------------------------
 QSharedPointer<OutlineItem> ScriptEditorWidget::parseOutline(bool forceParsing /*=false*/) const
 {
     if (!m_outlineDirty && !forceParsing)
@@ -3673,9 +3695,33 @@ QSharedPointer<OutlineItem> ScriptEditorWidget::parseOutline(bool forceParsing /
 
     QSharedPointer<OutlineItem> root(new OutlineItem(OutlineItem::typeRoot));
 
+    QList<QSharedPointer<OutlineItem>> codeCells;
+    QString blockText, codeCellName;
+
     for (int blockIdx = 0; blockIdx < blockCount(); ++blockIdx)
     {
         const QTextBlock& block = doc->findBlockByNumber(blockIdx);
+
+        // check for code cell
+        blockText = block.text();
+
+        if (blockText.startsWith("#"))
+        {
+            if (isCodeCellStart(blockText, codeCellName))
+            {
+                // correct the endLineIdx of the previous codeCell, if one exists
+                if (codeCells.size() > 0)
+                {
+                    codeCells.last()->m_endLineIdx = blockIdx - 1;
+                }
+
+                QSharedPointer<OutlineItem> newCodeCell(new OutlineItem(OutlineItem::typeCodeCell));
+                newCodeCell->m_name = codeCellName;
+                newCodeCell->m_startLineIdx = blockIdx;
+                newCodeCell->m_endLineIdx = blockCount() - 1; // assume that the code cell goes until the end
+                codeCells.append(newCodeCell);
+            }
+        }
 
         if (Utils::TextBlockHelper::isFoldTrigger(block))
         {
@@ -3697,6 +3743,12 @@ QSharedPointer<OutlineItem> ScriptEditorWidget::parseOutline(bool forceParsing /
                 }
             }
         }
+    }
+
+    // add the code cells to the children of the root item
+    foreach(const auto & codeCell, codeCells)
+    {
+        root->m_childs << codeCell;
     }
 
     m_rootOutlineItem = root;

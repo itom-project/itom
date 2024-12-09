@@ -266,7 +266,35 @@ void ScriptDockWidget::fillNavigationClassComboBox(
             );
         }
 
-        foreach(auto item, parent->m_childs)
+        // screen for code cells
+        foreach(const auto item, parent->m_childs)
+        {
+            if (item->m_type == OutlineItem::typeCodeCell)
+            {
+                QVariant userData = QVariant::fromValue(item);
+                QString codeCellName = item->m_name;
+
+                if (codeCellName.size() > 100)
+                {
+                    codeCellName = codeCellName.left(97) + "...";
+                }
+                else if (codeCellName == "")
+                {
+                    codeCellName = QString("lines %1 - %2").arg(item->m_startLineIdx + 1).arg(item->m_endLineIdx + 1);
+                }
+
+                name = QString("Cell: %1").arg(codeCellName);
+
+                m_classBox->addItem(
+                    item->icon(),
+                    name,
+                    userData
+                );
+            }
+        }
+
+        // screen for classes
+        foreach(const auto item, parent->m_childs)
         {
             if (item->m_type == OutlineItem::typeClass)
             {

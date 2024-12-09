@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Copyright (C) 2024, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of itom.
@@ -136,6 +136,8 @@ public:
     void startUndoRedo(bool unundoNotRedo);
 
     QSharedPointer<OutlineItem> parseOutline(bool forceParsing = false) const;
+
+    bool isCodeCellStart(const QString& text, QString& name) const;
 
     //!< returns true if the current line can be a trigger to insert a template docstring
     //!< for a possible method / function, this line belongs to.
