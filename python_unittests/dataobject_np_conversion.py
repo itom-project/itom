@@ -5,6 +5,36 @@ from numpy import testing as nptesting
 
 
 class DataObjectNpConversion(unittest.TestCase):
+    """
+    Unit tests for the conversion between dataObject and numpy arrays.
+    This module contains a series of unit tests to verify the correct conversion
+    between custom dataObject instances and numpy arrays. The tests cover various
+    scenarios including continuous and non-continuous dataObjects, boolean arrays,
+    zero strides, read-only arrays, and different data types.
+    Classes:
+        DataObjectNpConversion: A unittest.TestCase subclass containing the test
+        methods for dataObject and numpy array conversions.
+    Methods:
+        setUpClass: Class-level setup method.
+        test_continuousDataObject2NpArray: Tests conversion of continuous dataObject
+        to numpy array.
+        test_noncontinuousDataObject2NpArray: Tests conversion of non-continuous
+        dataObject to numpy array.
+        test_npArrayBool2DataObject: Tests conversion of boolean numpy array to
+        dataObject.
+        test_zeroStridesNpArray2DataObject: Tests conversion of numpy arrays with
+        zero strides to dataObject.
+        test_npArray2dataObjectReadonly: Tests conversion of read-only numpy arrays
+        to dataObject.
+        test_npArray2dataObjectSameType: Tests conversion of numpy arrays to
+        dataObject with the same data type.
+        test_npArray2dataObjectDiffType: Tests conversion of numpy arrays to
+        dataObject with different data types.
+        test_createEmptyDataObjectFromEmptyNpArray: Tests creation of empty
+        dataObject from empty numpy array.
+        test_convertNpArrayToDataObjectAndCheckForOriginNpTags: Tests conversion of
+        numpy arrays to dataObject and checks for original numpy tags.
+    """
     @classmethod
     def setUpClass(cls):
         pass

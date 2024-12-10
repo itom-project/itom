@@ -3,6 +3,26 @@ from itom import dataObject
 
 
 class DataObjectResize(unittest.TestCase):
+    """
+    Unit tests for the dataObject class, focusing on reshape and squeeze operations.
+    This module contains a set of unit tests for verifying the functionality of the
+    dataObject class, particularly its ability to reshape and squeeze data arrays
+    of various types and dimensions. The tests ensure that reshaping operations
+    preserve the data and that squeezing operations correctly reduce the dimensions
+    of the data arrays.
+    Classes:
+        DataObjectResize: A unittest.TestCase subclass containing tests for the
+                          dataObject class.
+    Methods:
+        setUpClass: Initializes any state that is shared across tests.
+        test_reshape_uint16: Tests reshaping of a uint16 dataObject.
+        test_reshape_float32: Tests reshaping of a float32 dataObject.
+        test_reshape_complex128: Tests reshaping of a complex128 dataObject.
+        test_reshape_rgba32: Tests reshaping of an rgba32 dataObject.
+        test_squeeze_continuous_obj: Tests squeezing of a continuous float64 dataObject.
+        test_reshape_continuous_obj: Tests reshaping of a continuous float64 dataObject.
+        test_deepCopyPartial: Tests deep copying of a partial dataObject.
+    """
     @classmethod
     def setUpClass(cls):
         pass

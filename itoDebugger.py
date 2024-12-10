@@ -153,7 +153,7 @@ class itoDebugger(bdb.Bdb):
                 "user_call: I am in line %d of file %s"
                 % (frame.f_lineno, frame.f_code.co_filename)
             )
-        if self._wait_for_mainpyfile or not (self.checkFrameForDebugging(frame)):
+        if self._wait_for_mainpyfile or not self.checkFrameForDebugging(frame):
             return
         if self.stop_here(frame):
             # self.message('--Call--')
@@ -169,7 +169,7 @@ class itoDebugger(bdb.Bdb):
             )
         # print("checkFrameForDebugging:", self.checkFrameForDebugging(frame))
 
-        if not (self.checkFrameForDebugging(frame)):
+        if not self.checkFrameForDebugging(frame):
             return
 
         if self._wait_for_mainpyfile:
@@ -180,7 +180,8 @@ class itoDebugger(bdb.Bdb):
                 return
             self._wait_for_mainpyfile = False
         # else:
-        # print("user_line: I am in line %d of file %s, wait: %d" % (frame.f_lineno, frame.f_code.co_filename,  self._wait_for_mainpyfile))
+        # print("user_line: I am in line %d of file %s, wait: %d" % (frame.f_lineno, frame.f_code.co_filename,
+        # self._wait_for_mainpyfile))
 
         if self.get_break(self.canonic(frame.f_code.co_filename), frame.f_lineno):
             # print("interaction due to breakpoint in line %d" % frame.f_lineno)
@@ -244,7 +245,8 @@ class itoDebugger(bdb.Bdb):
             itomDbgWrapper.pyDbgCommandLoop(self, frame)
         elif self.get_break(self.canonic(frame.f_code.co_filename), frame.f_lineno):
             self._wait_for_first_stop = False
-            # this is the case that the first call of _cmdloop should usually be ignored, but it is a breakpoint-line. Therefore stop.
+            # this is the case that the first call of _cmdloop should usually be ignored, but it is a breakpoint-line.
+            # Therefore stop.
             itomDbgWrapper.pyDbgCommandLoop(self, frame)
         else:
             self._wait_for_first_stop = False
@@ -712,8 +714,12 @@ class itoDebugger(bdb.Bdb):
 
         __main__.__dict__.update({"__file__": "<string>"})
 
-        self._wait_for_mainpyfile = False  # must be false, otherwise the debugger will not start since there is no function-stack by compiler and exec command, which forces us to check when the real function is finally reached.
-        self._wait_for_first_stop = True  # if True we are waiting for the first stop (first line), where the debugger is forced to directly continue, if False the debugger is forced to also stop in the first possible line
+        self._wait_for_mainpyfile = False  # must be false, otherwise the debugger will not start since
+        # there is no function-stack by compiler and exec command, which forces us to check when the
+        # real function is finally reached.
+        self._wait_for_first_stop = True  # if True we are waiting for the first stop (first line),
+        # where the debugger is forced to directly continue, if False the debugger is forced to
+        # also stop in the first possible line
         self._come_back_from_mainpyfile = False
         self.mainpyfile = "<string>"
         self._user_requested_quit = False
@@ -746,8 +752,11 @@ class itoDebugger(bdb.Bdb):
 
         __main__.__dict__.update({"__file__": "<string>"})
 
-        self._wait_for_mainpyfile = False  # must be false, otherwise the debugger will not start since there is no function-stack by compiler and exec command, which forces us to check when the real function is finally reached.
-        self._wait_for_first_stop = True  # if True we are waiting for the first stop (first line), where the debugger is forced to directly continue, if False the debugger is forced to also stop in the first possible line
+        self._wait_for_mainpyfile = False  # must be false, otherwise the debugger will not start since
+        # there is no function-stack by compiler and exec command, which forces us to check when the real function
+        # is finally reached.
+        self._wait_for_first_stop = True  # if True we are waiting for the first stop (first line), where the debugger
+        # is forced to directly continue, if False the debugger is forced to also stop in the first possible line
         self._come_back_from_mainpyfile = False
         self.mainpyfile = "<string>"
         self._user_requested_quit = False
@@ -780,7 +789,10 @@ class itoDebugger(bdb.Bdb):
         if m:
             if err.filename is None or err.filename == "" or err.lineno <= 0:
                 err.msg = (
-                    "(unicode error) %s cannot decode byte '%s' in line %i, position %i: %s. \nThe line possibly contains an invalid character. Please remove them or add a coding hint in the first line (menu option 'insert codec...')"
+                    "(unicode error) %s cannot decode byte '%s' in line %i, position %i: %s. \n"
+                    "The line possibly contains an invalid character. Please remove them or add a coding hint"
+                    "in the first line "
+                    "(menu option 'insert codec...')"
                     % (m.group(1), m.group(2), err.lineno, int(m.group(3)), m.group(4))
                 )
             else:
@@ -791,8 +803,10 @@ class itoDebugger(bdb.Bdb):
                 lines = text.split(b"\n")
                 if len(lines) >= err.lineno:
                     err.msg = (
-                        "(unicode error) %s cannot decode byte '%s' in line %i, position %i: %s. \nThe line possibly contains an invalid character. Please remove them or add a coding hint in the first line (menu option 'insert codec...')"
-                        % (
+                        "(unicode error) %s cannot decode byte '%s' in line %i, position %i: %s. \n"
+                        "The line possibly contains an invalid character. Please remove them or add a coding hint"
+                        "in the first line "
+                        "(menu option 'insert codec...')" % (
                             m.group(1),
                             m.group(2),
                             err.lineno,
@@ -802,8 +816,10 @@ class itoDebugger(bdb.Bdb):
                     )
                 else:
                     err.msg = (
-                        "(unicode error) %s cannot decode byte '%s' in line %i, position %i: %s. \nThe line possibly contains an invalid character. Please remove them or add a coding hint in the first line (menu option 'insert codec...')"
-                        % (
+                        "(unicode error) %s cannot decode byte '%s' in line %i, position %i: %s. \n"
+                        "The line possibly contains an invalid character. Please remove them or add a coding hint"
+                        "in the first line "
+                        "(menu option 'insert codec...')" % (
                             m.group(1),
                             m.group(2),
                             err.lineno,
@@ -830,7 +846,8 @@ class itoDebugger(bdb.Bdb):
         __main__.__dict__.update({"__file__": filename})
 
         self._wait_for_mainpyfile = True
-        self._wait_for_first_stop = False  # if True we are waiting for the first stop (first line), where the debugger is forced to directly continue
+        self._wait_for_first_stop = False   # if True we are waiting for the first stop (first line),
+                                            # where the debugger is forced to directly continue
         self._come_back_from_mainpyfile = False
         self.mainpyfile = self.canonic(filename)
         self._user_requested_quit = False

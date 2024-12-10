@@ -22,8 +22,7 @@ count = 0
 while count < 5:
     print(count, " is  less than 5")
     count = count + 1
-else:
-    print(count, " is not less than 5")
+print(count, " is not less than 5")
 
 ###############################################################################
 # For loop
@@ -37,8 +36,8 @@ for fruit in fruits:  # Second Example
 ###############################################################################
 # Iterating by sequence index
 fruits = ["banana", "apple", "mango"]
-for index in range(len(fruits)):
-    print("Current fruit :", fruits[index])
+for index, fruit in enumerate(fruits):
+    print("Current fruit :", fruit)
 
 ###############################################################################
 # For loop with else
@@ -46,7 +45,7 @@ for num in range(10, 20):  # to iterate between 10 to 20
     for idx in range(2, num):  # to iterate on the factors of the number
         if num % idx == 0:  # to determine the first factor
             jdx = num / idx  # to calculate the second factor
-            print("%d equals %d * %d" % (num, idx, jdx))
+            print(f"{num} equals {idx} * {jdx}")
             break  # to move to the next number, the #first FOR
     else:  # else part of the loop
         print(num, "is a prime number")
@@ -58,7 +57,7 @@ val = 2
 while val < 100:
     val2 = 2
     while val2 <= (val / val2):
-        if not (val % val2):
+        if not val % val2:
             break
         val2 = val2 + 1
     if val2 > val / val2:
@@ -97,6 +96,5 @@ while var > 0:
 # Pass statement
 for letter in "Python":
     if letter == "h":
-        pass
         print("This is pass block")
     print("Current Letter :", letter)

@@ -2,7 +2,9 @@
 =============================
 
 An example of ``scikit-learn``, copied from
-`scikit-learn.org <https://scikit-learn.org/stable/auto_examples/feature_selection/plot_rfe_digits.html#sphx-glr-auto-examples-feature-selection-plot-rfe-digits-py>`_.
+`scikit-learn.org
+<https://scikit-learn.org/stable/auto_examples/feature_selection/plot_rfe_digits.html
+#sphx-glr-auto-examples-feature-selection-plot-rfe-digits-py>`_.
 
 A recursive feature elimination example showing the relevance of pixels in
 a digit classification task.

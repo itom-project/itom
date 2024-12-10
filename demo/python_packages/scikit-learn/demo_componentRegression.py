@@ -2,7 +2,8 @@
 ==================================================================
 
 An example of ``scikit-learn``, copied from
-`scikit-learn.org <https://scikit-learn.org/stable/auto_examples/cross_decomposition/plot_pcr_vs_pls.html#sphx-glr-auto-examples-cross-decomposition-plot-pcr-vs-pls-py>`_.
+`scikit-learn.org <https://scikit-learn.org/stable/auto_examples/cross_decomposition/
+plot_pcr_vs_pls.html#sphx-glr-auto-examples-cross-decomposition-plot-pcr-vs-pls-py>`_.
 
 This example compares `Principal Component Regression
 <https://en.wikipedia.org/wiki/Principal_component_regression>`_ (PCR) and

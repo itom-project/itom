@@ -6,6 +6,35 @@ from datetime import datetime, timedelta, timezone
 
 
 class DataObjectDatetime(unittest.TestCase):
+    """
+    Unit tests for the DataObject class with datetime and timedelta data types.
+    This module contains a series of unit tests to verify the behavior of the DataObject class
+    when working with datetime and timedelta objects. The tests cover various operations such as
+    comparison, addition, subtraction, negation, multiplication, division, and conversion between
+    numpy datetime64/timedelta64 and DataObject.
+    Classes:
+        DataObjectDatetime: A unittest.TestCase subclass containing all the test methods.
+    Methods:
+        setUpClass: Class-level setup method.
+        setUp: Instance-level setup method.
+        test_compare_operator: Tests comparison operators for datetime and timedelta DataObjects.
+        test_operator_add_dataObjects: Tests addition operators for datetime and timedelta DataObjects.
+        test_operator_subtract_dataObjects: Tests subtraction operators for datetime and timedelta DataObjects.
+        test_operator_negate: Tests negation operator for timedelta DataObjects.
+        test_operator_multdiv: Tests multiplication and division operators for timedelta DataObjects.
+        test_abs: Tests the abs() function for timedelta DataObjects.
+        test_negate: Tests the bitwise negation operator for datetime and timedelta DataObjects.
+        test_shift: Tests bitwise shift operators for datetime and timedelta DataObjects.
+        test_bitops: Tests bitwise operators for datetime and timedelta DataObjects.
+        test_complex_operators: Tests complex number related operators for datetime and timedelta DataObjects.
+        test_npdatetime64_to_dataObject: Tests conversion from numpy datetime64 to DataObject.
+        test_nptimedelta64_to_dataObject: Tests conversion from numpy timedelta64 to DataObject.
+        test_dataObject2nparray: Tests conversion from DataObject to numpy array.
+        test_dateTimeAssign: Tests assignment of datetime values to DataObject.
+        test_timeDeltaAssign: Tests assignment of timedelta values to DataObject.
+        test_createDatetimeDataObject: Tests creation of DataObject with datetime values.
+        test_createTimedeltaDataObject: Tests creation of DataObject with timedelta values.
+    """
     @classmethod
     def setUpClass(cls):
         pass

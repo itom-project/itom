@@ -14,7 +14,8 @@ class DataObjectComparison(unittest.TestCase):
     def test_invertComparison(self):
         npArray = np.ndarray([2, 3, 4])
         with self.assertRaises(ValueError):
-            result = not npArray  # The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+            result = not npArray  # The truth value of an array with more than one element is ambiguous.
+                                  # Use a.any() or a.all()
 
         dataObj = dataObject([2, 3, 4])
         with self.assertRaises(ValueError):

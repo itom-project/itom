@@ -3,6 +3,18 @@ from itom import dataObject
 
 
 class DataObjectStaticConstructors(unittest.TestCase):
+    """
+    Unit tests for the DataObject static constructors.
+    This module contains unit tests for verifying the behavior of static constructors
+    of the `dataObject` class. The tests ensure that the static constructors return
+    objects with the expected data types and shapes.
+    Classes:
+        DataObjectStaticConstructors: Contains unit tests for `dataObject` static constructors.
+    Methods:
+        setUpClass: Sets up the test class (currently does nothing).
+        test_default_types: Tests that all static constructors return `uint8` data type by default.
+        test_stack_dimensions: Tests the dimensions of stacked `dataObject` instances.
+    """
     @classmethod
     def setUpClass(cls):
         pass

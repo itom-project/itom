@@ -4,6 +4,20 @@ import numpy as np
 
 
 class DataObjectMakeContinuous(unittest.TestCase):
+    """
+    Unit tests for the DataObject class's makeContinuous method.
+    This module contains a test case for verifying the functionality of the
+    makeContinuous method in the DataObject class. The tests ensure that the
+    makeContinuous method correctly converts non-continuous data objects into
+    continuous ones while preserving the data integrity.
+    Classes:
+        DataObjectMakeContinuous: A test case class for testing the makeContinuous
+        method of the DataObject class.
+    Methods:
+        setUpClass: A class method to set up any state that is shared across tests.
+        test_dataObjectMakeContinuous: Tests the makeContinuous method with various
+        slicing operations to ensure data integrity is maintained.
+    """
     @classmethod
     def setUpClass(cls):
         pass

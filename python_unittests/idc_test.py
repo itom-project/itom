@@ -7,6 +7,18 @@ from numpy import testing as nptesting
 
 
 class IdcTest(unittest.TestCase):
+    """
+    Unit tests for IDC save and load functionality.
+    This module contains tests for saving and loading data using the IDC format.
+    It includes tests for default data, data objects with various data types, and
+    data with special key names.
+    Classes:
+        IdcTest: Contains unit tests for IDC save and load functions.
+    Methods:
+        test_saveLoadDefault: Tests saving and loading default data types.
+        test_saveLoadDataObjects: Tests saving and loading data objects with various data types.
+        test_saveLoadSpecialNames: Tests saving and loading data with special key names.
+    """
     def test_saveLoadDefault(self):
         data = {"a": 1, "b": "string", "c": b"bytes"}
 

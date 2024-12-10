@@ -36,5 +36,28 @@ repos:
     rev: v3.0.0a5
     hooks:
       - id: pylint
-        args:
-          - --py-version=3.6
+        files: .*\.py$
+        args: [
+          "--max-line-length=120",
+          "--disable=C0103,
+          C0302,
+          C0411,
+          C0412,
+          C0114,
+          W0511,
+          F0002",
+          "--py-version=3.6"
+        ]
+
+#  - repo: https://github.com/astral-sh/ruff-pre-commit
+#    # Ruff version.
+#    rev: v0.8.2
+#    hooks:
+#        # Run the linter.
+#      - id: ruff
+#        types_or: [ python, pyi, jupyter ]
+#        args: ["--target-version=py37"]
+#        # Run the formatter.
+#     - id: ruff-format
+#       types_or: [ python, pyi, jupyter ]
+#       args: ["--target-version=py37"]

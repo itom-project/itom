@@ -39,13 +39,13 @@ OPTIONS = [
 
 def create_file_name(base, opts):
     """Create file name from base name, path and suffix"""
-    return os.path.join(opts.destdir, "%s.%s" % (base, opts.suffix))
+    return os.path.join(opts.destdir, f"{base}.{opts.suffix}")
 
 
 def write_directive(module, package=None):
     """Create the automodule directive and add the options"""
     if package:
-        directive = ".. automodule:: %s.%s\n" % (package, module)
+        directive = f".. automodule:: {package}.{module}\n"
     else:
         directive = ".. automodule:: %s\n" % module
     for option in OPTIONS:
@@ -56,29 +56,29 @@ def write_directive(module, package=None):
 def write_heading(module, kind="Module"):
     """Create the page heading."""
     #     module = module.title()
-    heading = title_line(":mod:`%s` %s Documentation" % (module, kind), "=")
-    heading += "This page contains the %s %s documentation.\n\n" % (module, kind)
+    heading = title_line(f":mod:`{module}` {kind} Documentation", "=")
+    heading += f"This page contains the {module} {kind} documentation.\n\n"
     return heading
 
 
 def write_sub(module, kind="Module"):
     """Create the module subtitle"""
-    sub = title_line("The :mod:`%s` %s" % (module, kind), "-")
+    sub = title_line(f"The :mod:`{module}` {kind}", "-")
     return sub
 
 
 def title_line(title, char):
     """ Underline the title with the character pass, with the right length."""
-    return "%s\n%s\n\n" % (title, len(title) * char)
+    return f"{title}\n{len(title) * char}\n\n"
 
 
 def create_module_file(package, module, opts):
     """Build the text of the file and write the file."""
     name = create_file_name(module, opts)
     if not opts.force and os.path.isfile(name):
-        print "File %s already exists." % name
+        print("File %s already exists." % name)
     else:
-        print "Creating file %s (module)." % name
+        print("Creating file %s (module)." % name)
         text = write_heading(module)
         text += write_sub(module)
         text += write_directive(module, package)
@@ -95,9 +95,9 @@ def create_package_file(root, master_package, subroot, py_files, opts, subs=None
     package = os.path.split(root)[-1]  # .lower()
     name = create_file_name(subroot, opts)
     if not opts.force and os.path.isfile(name):
-        print "File %s already exists." % name
+        print("File %s already exists." % name)
     else:
-        print "Creating file %s (package)." % name
+        print("Creating file %s (package)." % name)
         text = write_heading(package, "Package")
         if subs == None:
             subs = []
@@ -113,7 +113,7 @@ def create_package_file(root, master_package, subroot, py_files, opts, subs=None
                 #                 text += title_line('Subpackages', '-')
                 text += ".. toctree::\n\n"
                 for sub in subs:
-                    text += "    %s.%s\n" % (subroot, sub)
+                    text += f"    {subroot}.{sub}\n"
                 text += "\n"
 
         # add each package's module
@@ -122,7 +122,7 @@ def create_package_file(root, master_package, subroot, py_files, opts, subs=None
                 # don't build the file if there's no code in it
                 continue
             py_file = os.path.splitext(py_file)[0]
-            py_path = "%s.%s" % (subroot, py_file)
+            py_path = f"{subroot}.{py_file}"
             kind = "Module"
             if py_file == "__init__":
                 kind = "Package"
@@ -143,7 +143,7 @@ def check_for_code(module):
     """
     Check if there's at least one class or one function in the module.
     """
-    fd = open(module, "r")
+    fd = open(module)
     for line in fd:
         if line.startswith("def ") or line.startswith("class "):
             fd.close()
@@ -217,10 +217,10 @@ def modules_toc(modules, opts, name="modules"):
     """
     fname = create_file_name(name, opts)
     if not opts.force and os.path.exists(fname):
-        print "File %s already exists." % name
+        print("File %s already exists." % name)
         return
 
-    print "Creating module's index modules.txt."
+    print("Creating module's index modules.txt.")
     text = write_heading(opts.header, "Modules")
     #     text += title_line('Modules:', '-')
     text += ".. toctree::\n"
@@ -349,9 +349,9 @@ Note: By default this script will not overwrite already created files."""
                 excludes = args[1:]
                 recurse_tree(args[0], excludes, opts)
             else:
-                print "%s is not a valid output destination directory." % opts.destdir
+                print("%s is not a valid output destination directory." % opts.destdir)
         else:
-            print "%s is not a valid directory." % args
+            print("%s is not a valid directory." % args)
 
 
 if __name__ == "__main__":

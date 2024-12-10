@@ -36,7 +36,8 @@ class abstractObjInteractionToolBar:
 
         Notes
         -------
-        This function initializes an abstract toolbar. You can derive toolBars with object variable selection from this class.
+        This function initializes an abstract toolbar. You can derive toolBars with object variable selection
+        from this class.
         """
 
         self.defaultVarName = defaultVar
@@ -55,7 +56,8 @@ class abstractObjInteractionToolBar:
         self, title, VarName, workSpace, objType="ND", acceptedObjectType=1
     ):
         """
-        getVarName(title, VarName, workSpace [, objType]) -> opens a drop down window with suitable DataObjects / npOjects / PointClouds and returns selected variable
+        getVarName(title, VarName, workSpace [, objType]) -> opens a drop down window with suitable DataObjects
+        / npOjects / PointClouds and returns selected variable
 
         Parameters
         ------------

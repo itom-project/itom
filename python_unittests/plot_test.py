@@ -6,6 +6,12 @@ import numpy as np
 
 
 class PlotTest(unittest.TestCase):
+    """
+    Unit tests for the plotting functionality.
+    This module contains a test case for verifying the correct plotting of data
+    values using the `plot` function. It ensures that the plotted values match
+    the expected data and that the plot is displayed correctly.
+    """
     @classmethod
     def setUpClass(cls):
         pass

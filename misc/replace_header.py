@@ -6,6 +6,22 @@ import os
 
 
 def update_source(filename, oldcopyright, copyright):
+    """
+    Updates the copyright header of a source file.
+
+    This function reads the content of the specified file, checks for the presence of a UTF-8 BOM,
+    and updates the copyright header if necessary. If the file starts with the old copyright header,
+    it is replaced with the new copyright header. If the file does not start with the new copyright
+    header, the new copyright header is prepended to the file content.
+
+    Args:
+        filename (str): The path to the source file to be updated.
+        oldcopyright (str): The old copyright header to be replaced. If None, no replacement is done.
+        copyright (str): The new copyright header to be added.
+
+    Returns:
+        None
+    """
     utfstr = chr(0xEF) + chr(0xBB) + chr(0xBF)
     # fdata = file(filename,"r+").read()
     with open(filename, "r+") as f:
@@ -17,7 +33,7 @@ def update_source(filename, oldcopyright, copyright):
     if oldcopyright != None:
         if fdata.startswith(oldcopyright):
             fdata = fdata[len(oldcopyright) :]
-    if not (fdata.startswith(copyright)):
+    if not fdata.startswith(copyright):
         print("updating " + filename)
         fdata = copyright + fdata
         if isUTF:

@@ -335,7 +335,12 @@ class camToolbar(abstractObjInteractionToolBar):
                     if binning == 1:
                         eval(f"{camname}.acquire()")
 
-                        script = 'tmpObj=dataObject()\n{camname}.getVal(tmpObj)\nglobals()["{dataObj}"]=tmpObj.copy()\ndel tmpObj'
+                        script = (
+                            'tmpObj=dataObject()\n'
+                            '{camname}.getVal(tmpObj)\n'
+                            'globals()["{dataObj}"]=tmpObj.copy()\n'
+                            'del tmpObj'
+                        )
                         exec(script.format(camname=camname, dataObj=dataObj), globals())
 
                     else:
@@ -361,13 +366,18 @@ class camToolbar(abstractObjInteractionToolBar):
                     if binning > 1:
                         print("Warning, binning not compatible with stack")
                     exec(
-                        'tmpObj=dataObject()\n{camname}.acquire()\n{camname}.getVal(tmpObj)\nglobals()["{dataObj}"] = dataObject([{cnt},tmpObj.shape[0], tmpObj.shape[1]], tmpObj.dtype)\nglobals()["{dataObj}"][0,:, :] = tmpObj'.format(
+                        'tmpObj=dataObject()\n'
+                        '{camname}.acquire()\n'
+                        '{camname}.getVal(tmpObj)\n'
+                        'globals()["{dataObj}"] = dataObject([{cnt},tmpObj.shape[0], tmpObj.shape[1]], tmpObj.dtype)\n'
+                        'globals()["{dataObj}"][0,:, :] = tmpObj'.format(
                             cnt=stacked, camname=camname, dataObj=dataObj
                         )
                     )
                     for i in range(1, stacked):
                         exec(
-                            'tmpObj=dataObject()\n{camname}.acquire()\n{camname}.getVal(tmpObj)\nglobals()["{dataObj}"][{cnt},:, :] = tmpObj'.format(
+                            'tmpObj=dataObject()\n{camname}.acquire()\n{camname}.getVal(tmpObj)\n'
+                            'globals()["{dataObj}"][{cnt},:, :] = tmpObj'.format(
                                 cnt=i, camname=camname, dataObj=dataObj
                             )
                         )
@@ -422,7 +432,13 @@ class camToolbar(abstractObjInteractionToolBar):
                 check = False
                 return [check, ""]
 
-        script = '{camname}.acquire()\ntmpObj=dataObject()\n{camname}.getVal(tmpObj)\nglobals()["{dataObj}"]=tmpObj.copy()\ndel tmpObj\n'
+        script = (
+            '{camname}.acquire()\n'
+            'tmpObj=dataObject()\n'
+            '{camname}.getVal(tmpObj)\n'
+            'globals()["{dataObj}"]=tmpObj.copy()\n'
+            'del tmpObj\n'
+        )
 
         try:
             checkGrabbing = eval(f"{camname}.getAutoGrabbing()")
@@ -452,6 +468,6 @@ class camToolbar(abstractObjInteractionToolBar):
 
 
 if __name__ == "__main__":
-    toolbarCamera = camToolbar("Camera Access", not (userIsUser()))
+    toolbarCamera = camToolbar("Camera Access", not userIsUser())
 
 # Tobias Boettcher, ITO, & Wolfram Lyda, twip optical solutions

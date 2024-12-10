@@ -72,24 +72,6 @@ Some of the known remaining caveats are:
 - C extension modules cannot be reloaded, and so cannot be autoreloaded.
 """
 
-skip_doctest = True
-
-# -----------------------------------------------------------------------------
-#  Copyright (C) 2000 Thomas Heller
-#  Copyright (C) 2008 Pauli Virtanen <pav@iki.fi>
-#  Copyright (C) 2012  The IPython Development Team
-#
-#  Distributed under the terms of the BSD License.  The full license is in
-#  the file COPYING, distributed as part of this software.
-# -----------------------------------------------------------------------------
-#
-# This IPython module is written by Pauli Virtanen, based on the autoreload
-# code by Thomas Heller.
-
-# -----------------------------------------------------------------------------
-# Imports
-# -----------------------------------------------------------------------------
-
 import os
 import sys
 import traceback
@@ -99,6 +81,20 @@ import gc
 from importlib import import_module
 from importlib.util import source_from_cache
 from importlib import reload
+
+skip_doctest = True
+
+# -----------------------------------------------------------------------------
+#  Copyright (C) 2000 Thomas Heller
+#  Copyright (C) 2008 Pauli Virtanen <pav@iki.fi>
+#  Copyright (C) 2012 The IPython Development Team
+#
+#  Distributed under the terms of the BSD License.  The full license is in
+#  the file COPYING, distributed as part of this software.
+# -----------------------------------------------------------------------------
+#
+# This IPython module is written by Pauli Virtanen, based on the autoreload
+# code by Thomas Heller.
 
 # ------------------------------------------------------------------------------
 # Autoreload functionality

@@ -8,7 +8,7 @@ in any worker thread.
 Alternative approaches for multiprocessing are
 python ``threading`` module and ``asyncio``. Or use ``subprocess``."""
 
-from multiprocessing import Pool, TimeoutError
+from multiprocessing import Pool, TimeoutError as MPTimeoutError
 import multiprocessing
 import time
 import os
@@ -58,7 +58,7 @@ if pythonPath and os.path.exists(pythonPath):
         res = pool.apply_async(time.sleep, (10,))
         try:
             print(res.get(timeout=1))
-        except TimeoutError:
+        except MPTimeoutError:
             print("We lacked patience and got a multiprocessing.TimeoutError")
 
         print("For the moment, the pool remains available for more work")

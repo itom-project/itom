@@ -5,7 +5,6 @@
 
 """Module that provides a GUI-based editor for matplotlib's figure options."""
 
-import os.path
 import re
 
 import matplotlib

@@ -62,7 +62,8 @@ class MatplotGuiAutoUpdate(ItomUi):
         self.gui.btnStart["enabled"] = True
         self.gui.btnStop["enabled"] = False
 
-    # for itom <= 2.1, this auto-slot will raise a runtime error, however it is manually connected in the constructor of this class.
+    # for itom <= 2.1, this auto-slot will raise a runtime error,
+    # however it is manually connected in the constructor of this class.
     @ItomUi.autoslot("")
     def on_mainWindow_destroyed(self):
         """The windows was closed and destroyed. Stop the timer and tell matplotlib to close the figure"""

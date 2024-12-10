@@ -12,6 +12,22 @@ except ImportError:
 
 
 class ItomStubsGenTest(unittest.TestCase):
+    """Unit tests for the Itom Stubs Generator.
+    This module contains a set of unit tests for verifying the functionality of the
+    Itom Stubs Generator. The tests cover various aspects of the generator, including
+    type hint conversions, parsing of numpydoc sections, property parsing, and more.
+    Classes:
+        ItomStubsGenTest: A unittest.TestCase subclass containing all the test methods.
+    Methods:
+        setUpClass: Class-level setup method.
+        test_nptypehints2typing: Tests conversion from numpydoc types to typing type hints.
+        test_parse_numpydoc_section: Tests parsing of parameters, returns, or yields sections.
+        test_property_parser: Tests parsing of property docstrings.
+        test_get_direct_members: Tests retrieval of direct members of a class.
+        test_parse_npdoc_argsection: Tests parsing of argument sections in numpydoc.
+        test_parse_signature_from_first_line: Tests parsing of method signatures from the first line of docstrings.
+        test_parse_property_docstring: Tests parsing of property docstrings.
+        test_parse_args_string: Tests parsing of argument strings."""
     @classmethod
     def setUpClass(cls):
         pass

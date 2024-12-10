@@ -9,7 +9,7 @@ toolBarRoughnesStatistics = roughnessToolBar("toolBarRoughnesStatistics")
 from abstractObjToolbar.abstractObjToolbar import abstractObjInteractionToolBar
 import itom
 
-if not (itom.pluginLoaded("FittingFilters")):
+if not itom.pluginLoaded("FittingFilters"):
     raise RuntimeError(
         "FittingFilters-plugin not available. Loading roughness toolbar cancelled"
     )
@@ -18,7 +18,8 @@ if not (itom.pluginLoaded("FittingFilters")):
 class surfaceAnalysisTools(abstractObjInteractionToolBar):
     """
     This class contains function for the analysis of technical surfaces.
-    It wraps functions from the M++Filter, the FittingFilters and the ITOMFilters plugins to a menu entry and a button bar.
+    It wraps functions from the M++Filter, the FittingFilters and the
+    ITOMFilters plugins to a menu entry and a button bar.
     """
 
     def __init__(
@@ -443,7 +444,8 @@ class surfaceAnalysisTools(abstractObjInteractionToolBar):
 
     def planefit(self, skipBox=False, defaultVarName=None):
         """
-        planefit([skipBox [, defaultVarName]) -> Fit a plane or a line into the object and subtract the values. The function works in place and the object will be changed to float64.
+        planefit([skipBox [, defaultVarName]) -> Fit a plane or a line into the object and subtract the values.
+        The function works in place and the object will be changed to float64.
         Parameters:
             - skipBox             If True, the dialog will be skipped
             - defaultVarName  The name of the variable to plot
@@ -494,7 +496,8 @@ class surfaceAnalysisTools(abstractObjInteractionToolBar):
 
     def polyfit(self, skipBox=False, defaultVarName=None):
         """
-        polyfit([skipBox [, defaultVarName]) -> Fit a mxn-th Order or n-th Order into a 1D or 2D object and subtract the values. The function works in place and the object will be changed to float64.
+        polyfit([skipBox [, defaultVarName]) -> Fit a mxn-th Order or n-th Order into a 1D or 2D object
+        and subtract the values. The function works in place and the object will be changed to float64.
         Parameters:
             - skipBox             If True, the dialog will be skipped
             - defaultVarName  The name of the variable to plot
@@ -588,4 +591,4 @@ class surfaceAnalysisTools(abstractObjInteractionToolBar):
 
 
 if __name__ == "__main__":
-    toolbarSurface = surfaceAnalysisTools("Surface analysis", not (userIsUser()))
+    toolbarSurface = surfaceAnalysisTools("Surface analysis", not userIsUser())

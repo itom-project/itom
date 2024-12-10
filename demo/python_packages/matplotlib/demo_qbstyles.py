@@ -1,7 +1,8 @@
 """Quantum Black Styles
 ====================
 
-This `matplotlib <https://matplotlib.org/>`_ style `Quantum Black Styles <https://github.com/quantumblacklabs/qbstyles>`_ generates figures in dark style.
+This `matplotlib <https://matplotlib.org/>`_ style `Quantum Black Styles
+<https://github.com/quantumblacklabs/qbstyles>`_ generates figures in dark style.
 In addition to `matplotlib <https://matplotlib.org/>`_, the style must be installed.
 
 ..  code-block:: bat

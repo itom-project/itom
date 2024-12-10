@@ -15,12 +15,12 @@ hasBASICFILTERS = True
 
 loadWarnings = []
 
-if not (plotLoaded("twipOGLFigure")):
+if not plotLoaded("twipOGLFigure"):
     loadWarnings.append(
         "- 3D plot 'twipOGLFigure' not found. Try to use deprecated 'ItomIsoGLWidget' instead."
     )
 
-if not (itom.pluginLoaded("BasicFilters")):
+if not itom.pluginLoaded("BasicFilters"):
     loadWarnings.append(
         "- Not all functions available since plugin 'BasicFilters' not available."
     )
@@ -396,7 +396,8 @@ class quickPlotToolBar(abstractObjInteractionToolBar):
 
     def show25D(self, skipBox=False, defaultVarName=None):
         """
-        show25D([skipBox [, defaultVarName])  -> give a list with all 2D-objects an plot one of this either via ITOM-Filters 3DPlot-Widget or MatplotLib
+        show25D([skipBox [, defaultVarName])  -> give a list with all 2D-objects
+        and plot one of this either via ITOM-Filters 3DPlot-Widget or MatplotLib
         Parameters:
             - skipBox             If True, the dialog will be skipped and
             - defaultVarName  The name of the variable to plot

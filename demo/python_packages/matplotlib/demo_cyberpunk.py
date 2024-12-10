@@ -1,7 +1,8 @@
 """Cyberpunk
 ==========
 
-This `matplotlib <https://matplotlib.org/>`_ style `Cyberpunk <https://github.com/dhaitz/mplcyberpunk>`_ generate a futuristic style with neon light.
+This `matplotlib <https://matplotlib.org/>`_ style `Cyberpunk <https://github.com/dhaitz/mplcyberpunk>`_
+generate a futuristic style with neon light.
 In addition to `matplotlib <https://matplotlib.org/>`_, the style must be installed.
 
 ..  code-block:: bat

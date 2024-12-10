@@ -109,28 +109,28 @@ print("line 6 - Value of c is ", c)
 
 ###############################################################################
 # Logical operations
-(a and b) is True
-(a or b) is True
-not (a and b) is False
+print((a and b) is True)
+print((a or b) is True)
+print(a and b is not False)
 
 ###############################################################################
 # Membership operations
 a = 10
 b = 20
-list = [1, 2, 3, 4, 5]
+demoList = [1, 2, 3, 4, 5]
 
-if a in list:
+if a in demoList:
     print("line 1 - a is available in the given list")
 else:
     print("line 1 - a is not available in the given list")
 
-if b not in list:
+if b not in demoList:
     print("line 2 - b is not available in the given list")
 else:
     print("line 2 - b is available in the given list")
 
 a = 2
-if a in list:
+if a in demoList:
     print("line 3 - a is available in the given list")
 else:
     print("line 3 - a is not available in the given list")

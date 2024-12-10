@@ -6,6 +6,24 @@ from numpy import testing as nptesting
 
 
 class ShapeTest(unittest.TestCase):
+    """
+    Unit tests for shape-related functionalities.
+    This module contains a collection of unit tests for various shape operations,
+    including containment checks, shape creation, mask creation, contour generation,
+    and geometric properties verification.
+    Classes:
+        ShapeTest: A unittest.TestCase subclass that defines tests for shape operations.
+    Methods:
+        setUpClass: Class-level setup method.
+        test_rect_contains: Tests the contains method for rectangle shapes.
+        test_circle_contains: Tests the contains method for circle shapes.
+        test_ellipse_contains: Tests the contains method for ellipse shapes.
+        test_shape_contains_wrong_args: Tests the contains method with invalid arguments.
+        test_create_point: Tests the creation of point shapes.
+        test_create_mask_from_shapes: Tests the creation of masks from various shapes.
+        test_ellipse_contour: Tests the contour generation for ellipse shapes.
+        test_center_point_and_area: Tests the center point and area calculations for shapes.
+    """
     @classmethod
     def setUpClass(cls):
         pass

@@ -63,7 +63,8 @@ class MatplotGuiAutoUpdate(ItomUi):
         self.gui.btnStart["enabled"] = True
         self.gui.btnStop["enabled"] = False
 
-    # for itom <= 2.1, this auto-slot will raise a runtime error, however it is manually connected in the constructor of this class.
+    # for itom <= 2.1, this auto-slot will raise a runtime error,
+    # however it is manually connected in the constructor of this class.
     @ItomUi.autoslot("")
     def on_mainWindow_destroyed(self):
         """The windows was closed and destroyed. Stop the timer and tell matplotlib to close the figure"""
@@ -96,7 +97,8 @@ class MatplotGuiAutoUpdate(ItomUi):
             ax.xaxis.set_ticks_position("bottom")
             plt.show()
         else:
-            # subsequent calls: the existing AxesImage object is updated, this is much faster than replotting a new object
+            # subsequent calls: the existing AxesImage object is updated,
+            # this is much faster than replotting a new object
             self.axisImage.set_data(dataObject.randN([200, 200], "uint8"))
             self.axisImage.set_extent([0, 200, 0, 200])  # update the new size
             fig.canvas.draw()

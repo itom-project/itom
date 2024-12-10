@@ -59,8 +59,10 @@ def polyfitweighted2(koX, koY, koZ, n, margin=0.2, w=None):
     @param koX Matrix or Vector of type numpy array, describing XValue of Point
     @param koY Matrix or Vector of type numpy array, describing YValue of Point
     @param koZ Matrix or Vector of type numpy array, describing ZValue of Point, measured values
-    @return Function will return a polynom in a row vector that best fits (RMS) Values in the (n+1) Dimension, so n=1 will do a Plane fit and n=2 a paraboloidfit
-        also returns a Number, that shows the Quality of the fit, the Number of points that are in a margin around the fit
+    @return Function will return a polynom in a row vector that best fits (RMS) Values in the (n+1) Dimension,
+        so n=1 will do a Plane fit and n=2 a paraboloidfit
+        also returns a Number, that shows the Quality of the fit, the Number of points that are in a margin
+        around the fit
     Quality fit only works for n=1 or Planes at the moment
     """
 
@@ -69,7 +71,7 @@ def polyfitweighted2(koX, koY, koZ, n, margin=0.2, w=None):
     )  # These are row Vectors in difference to ployval2 function
     koY = koY.reshape([koY.size, 1])  # size equals Number of Elements in array
     koZ = koZ.reshape([koZ.size, 1])
-    if w == None:
+    if w is None:
         pw = np.ones((koX.size, 1))
     else:
         w = w.reshape([w.size, 1])
@@ -84,9 +86,7 @@ def polyfitweighted2(koX, koY, koZ, n, margin=0.2, w=None):
     y = koY.copy()
     z = koZ.copy()
     ma = np.isfinite(z)
-    x = x[
-        ma
-    ]  # Z-values are measured and can be NaN or infinite; such values are filtered out.
+    x = x[ma]  # Z-values are measured and can be NaN or infinite; such values are filtered out.
     y = y[ma]
     pw = pw[ma]
     z = z[ma]
@@ -110,7 +110,8 @@ def polyfitweighted2(koX, koY, koZ, n, margin=0.2, w=None):
         p = np.linalg.solve(R, np.dot(Q.conj().T, pw * z))
     except:
         print(
-            "Hey das geht nicht! QR- Zerlegung failure, badly conditioned inputmatrix.You probably mismatched the input Vectors."
+            "QR decomposition failure, badly conditioned input matrix."
+            "You probably mismatched the input vectors."
         )
         return None
 
@@ -118,19 +119,13 @@ def polyfitweighted2(koX, koY, koZ, n, margin=0.2, w=None):
         print(
             "polyfitweighted2:PolyNotUnique Polynomial is not unique; degree >= number of data points."
         )
-    # elif np.linalg.cond(R) > 1.0e10:
-    elif (
-        nputils.condest(R) > 1.0e10
-    ):  # in Mathlab war das mal 'condest(R)' Warnung bezueglich Unterbestimmung, wenn gleiche Punkte in der Matrix auftauchen
+    elif nputils.condest(R) > 1.0e10:
         print(
             """  polyfitweighted2:RepeatedPointsOrRescale Polynomial is badly conditioned.
                             Remove repeated data points\nor try centering and scaling as described in HELP POLYFIT."""
         )
 
-    # p = p[:,np.newaxis]
     p = p.transpose()
-    # koX = koX.astype('float32')
-    # koY = koY.astype('float32')
 
     # Check Quality of PolyFit
     nop = np.cumsum(np.absolute(p[0] + p[1] * koX + p[2] * koY - koZ) < margin)

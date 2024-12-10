@@ -6,6 +6,18 @@ import itom
 
 
 class ItomAlgorithmsStubsGenTest(unittest.TestCase):
+    """
+    Unit tests for the ItomAlgorithmsStubsGen module.
+    This test suite includes tests for generating algorithm hashes, parsing algorithm definitions,
+    and reading the PCL version from the itom library.
+    Classes:
+        ItomAlgorithmsStubsGenTest: Contains unit tests for the ItomAlgorithmsStubsGen module.
+    Methods:
+        setUpClass: Sets up the test class (currently does nothing).
+        test_generate_hash: Tests the generation of algorithm hashes.
+        test_parse_algorithm_def: Tests the parsing of algorithm definitions.
+        test_read_pcl_version: Tests reading the PCL version from the itom library.
+    """
     @classmethod
     def setUpClass(cls):
         pass
@@ -25,7 +37,10 @@ class ItomAlgorithmsStubsGenTest(unittest.TestCase):
                 docstring = algoStubsGen.parseAlgorithmString(algos[algo])
                 self.assertTrue(
                     docstring.startswith(
-                        "def centroid1D(sourceImage: itom.dataObject, destCOG: itom.dataObject, destIntensity: itom.dataObject, pvThreshold: float = 0.0, dynamicThreshold: float = 0.5, lowerThreshold: float = -1.7976931348623157e+308, columnWise: int = 0) -> None:"
+                        "def centroid1D(sourceImage: itom.dataObject, destCOG: "
+                        "itom.dataObject, destIntensity: itom.dataObject, pvThreshold: "
+                        "float = 0.0, dynamicThreshold: float = 0.5, lowerThreshold: "
+                        "float = -1.7976931348623157e+308, columnWise: int = 0) -> None:"
                     )
                 )
                 break

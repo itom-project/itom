@@ -71,7 +71,8 @@ master_doc = "index"  # will be overwritten
 
 # General information about the project.
 project = ""  # will be overwritten
-copyright = ""  # will be overwritten
+copyright = ""  # pylint: disable=redefined-builtin
+# will be overwritten
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

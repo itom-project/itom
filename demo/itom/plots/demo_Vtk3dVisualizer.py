@@ -73,7 +73,8 @@ h.call("addPyramid", dataObject(pyramid), "pyramid")
 h.call("setItemProperty", "pyramid", "LineColor", "blue")
 
 ###############################################################################
-# Add a cube with a side length of ``(12, 10, 2)`` ``[x, y, z]``. The cube is originally centered at the origin ``(0,0,0)``.
+# Add a cube with a side length of ``(12, 10, 2)`` ``[x, y, z]``.
+# The cube is originally centered at the origin ``(0,0,0)``.
 # The second parameter however translates it by ``(dx, dy, dz)``. The third vector contains rotations around
 # the x-, y- and z-axis in rad. As alternative to 'addCube', it is also possible to use ``addCuboid`` that has the
 # coordinates of the 8 corner points as 3x8 ``dataObject`` (first argument).

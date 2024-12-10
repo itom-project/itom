@@ -42,14 +42,14 @@ img2 = img1.copy()
 result_map = "hotIron"  # 'gray' or 'hotIron'
 
 if result_map == "hotIron":
-    map = []
+    mapList = []
     for i in range(0, 256):
-        map.append(itom.rgba(i, 0, 0))
+        mapList.append(itom.rgba(i, 0, 0))
     for i in range(0, 256):
-        map.append(itom.rgba(255, i, 0))
+        mapList.append(itom.rgba(255, i, 0))
     for i in range(0, 256):
-        map.append(itom.rgba(255, 255, i))
-    map_len = len(map)
+        mapList.append(itom.rgba(255, 255, i))
+    map_len = len(mapList)
 
 for m in range(height):
     for n in range(width):
@@ -61,7 +61,7 @@ for m in range(height):
                 img2[m, n] = itom.rgba(h_, h_, h_)
             elif result_map == "hotIron":
                 s_ = int(v * 255)
-                img2[m, n] = map[int(h * map_len)] * itom.rgba(s_, s_, s_)
+                img2[m, n] = mapList[int(h * map_len)] * itom.rgba(s_, s_, s_)
             else:
                 raise RuntimeError("map must be gray or hotIron")
 

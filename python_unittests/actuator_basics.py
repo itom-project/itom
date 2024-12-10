@@ -6,6 +6,23 @@ import numpy as np
 
 
 class ActuatorBasicsTest(unittest.TestCase):
+    """
+    Unit tests for the ActuatorBasics class using the unittest framework.
+    This module contains tests for the following functionalities:
+    - Setting the origin of the actuator
+    - Calibrating the actuator
+    - Getting the position of the actuator
+    - Setting the position of the actuator
+    Each test checks for correct behavior with valid inputs and raises appropriate exceptions for invalid inputs.
+    Classes:
+        ActuatorBasicsTest: Contains unit tests for the ActuatorBasics class.
+    Methods:
+        setUpClass: Sets up the test class.
+        test_setOrigin: Tests the setOrigin method of the actuator.
+        test_calib: Tests the calib method of the actuator.
+        test_getPos: Tests the getPos method of the actuator.
+        test_setPos: Tests the setPosAbs and setPosRel methods of the actuator.
+    """
     @classmethod
     def setUpClass(cls):
         pass

@@ -47,7 +47,7 @@ def new_figure_manager(num, *args, **kwargs):
         if isinstance(existingCanvas, uiItem):
             itomUI = existingCanvas
         else:
-            raise ("keyword 'canvas' must contain an instance of uiItem")
+            raise TypeError("keyword 'canvas' must contain an instance of uiItem")
     thisFig = FigureClass(*args, **kwargs)
     canvas = FigureCanvasItomAgg(thisFig, num, itomUI, itomFig, embedded)
     return FigureManagerItom(canvas, num, itomUI, itomFig, embedded)
@@ -127,7 +127,8 @@ class FigureCanvasItomAgg(FigureCanvasItom, FigureCanvasAgg):
             Y = 0
             W = round(self.renderer.width)
             H = round(self.renderer.height)
-            # workaround sometimes the width and height does not fit to the stringBuffer length, leding to a crash of itom.
+            # workaround sometimes the width and height does not fit to the stringBuffer length,
+            # leading to a crash of itom.
             # If the length is a multiple of either the width or the length we readjust them.
             if not int(W * H * 4) == len(stringBuffer):
                 numberElements = len(stringBuffer) / 4

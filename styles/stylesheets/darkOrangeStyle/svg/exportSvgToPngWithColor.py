@@ -5,7 +5,7 @@ It is assumed that the main color in the svg raw files is #ff0000.
 This color is replaced by different colors, depending on icon subtype.
 """
 
-from itom import rgba, filter
+from itom import rgba
 import tempfile
 import subprocess  # May want to use subprocess32 instead
 import os

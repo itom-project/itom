@@ -82,19 +82,23 @@ class MLJ050:
         # Sent to enable or disable the specified drive channel. Channel 1, enable.
         self.dev.write(bytes.fromhex("10 02 01 01 50 01"))
 
-        # The CONTROL IO connector on the rear panel of the unit exposes a number of digital outputs. This message is used to configure these digital outputs.
+        # The CONTROL IO connector on the rear panel of the unit exposes a number of digital outputs.
+        # This message is used to configure these digital outputs.
         self.dev.write(bytes.fromhex("13 02 00 ff 50 01"))
 
         # Set Trigger Mode -> Channel 1, Relative Move on Trigger
         self.dev.write(bytes.fromhex("00 05 01 10 50 01"))
 
         # Set the trapezoidal velocity parameters for the specified motor channel.
-        # For stepper motor controllers the velocity is set in microsteps/sec and acceleration is set in microsteps/sec/sec
+        # For stepper motor controllers the velocity is set in microsteps/sec and acceleration is set
+        #  in microsteps/sec/sec
         # header (13 04 0e 00 d0 01)
         # channel ident (01 00)
         # MinVelocity (00 00 00 00) = 0
-        # Acceleration (36 a6 01 00) = 108086 -> *90.9 due to weird factor = 9825017.4 -> approximately 7.99 mm/sec/sec (through 1228800 microsteps)
-        # Max Velocity (e0 52 cb 0b) = 197874400 -> /53.68 wegen komischem Factor = 3686184.50 -> ca. 3mm/sec (durch 1228800 microsteps)
+        # Acceleration (36 a6 01 00) = 108086 -> *90.9 due to weird factor = 9825017.4 -> approximately 7.99 mm/sec/sec
+        # (through 1228800 microsteps)
+        # Max Velocity (e0 52 cb 0b) = 197874400 -> /53.68 wegen komischem Factor = 3686184.50 -> ca. 3mm/sec
+        # (durch 1228800 microsteps)
         # http://www.thorlabs.de/NewGroupPage9_PF.cfm?Guide=10&Category_ID=23&ObjectGroup_ID=4018
         # 1228800 microsteps = 1mm travel
         self.dev.write(

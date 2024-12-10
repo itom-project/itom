@@ -24,10 +24,10 @@ print("After deleting value at index 2 : ", list1)
 
 ###############################################################################
 # List operations
-len(list1)  # length of list
-list1 + list2  # concatenate list
-["ho"] * 4  # repetition
-2000 in list1  # membership
+list_length = len(list1)  # length of list
+concatenated_list = list1 + list2  # concatenate list
+repeated_list = ["ho"] * 4  # repetition
+is_member = 2000 in list1  # membership
 for obj in list1:  # iterations
     print(obj)
 
@@ -57,10 +57,11 @@ print(tup3)
 
 ###############################################################################
 # Tuples operations
-len(tup1)  # length of list
-tup1 + tup2  # concatenate list
-("ho") * 4  # repetition
-2000 in tup1  # membership
+tup1_length = len(tup1)  # length of list
+concatenated_tup = tup1 + tup2  # concatenate list
+repeated_string = ("ho") * 4  # repetition
+print(repeated_string)
+print(2000 in tup1)  # membership
 for obj in tup1:  # iterations
     print(obj)
 

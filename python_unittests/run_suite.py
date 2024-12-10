@@ -1,9 +1,7 @@
 import sys
+import unittest
 
 pyversion = (sys.version_info.major, sys.version_info.minor)
-
-
-import unittest
 import dataobject_squeeze_reshape
 import dataobject_static_constructors
 import dataobject_constructors
@@ -27,6 +25,15 @@ if pyversion >= (3, 6):
 
 
 def suite():
+    """
+    This module defines a test suite for running unit tests on various components.
+    The suite function aggregates multiple test cases from different modules into a single test suite.
+    It includes tests for data object operations, plotting, shape tests, datatype conversions, point cloud pickling,
+    and IDC tests. Additionally, if the Python version is 3.6 or higher, it includes tests for Itom stubs generation,
+    Itom Jedi library, and Itom algorithm stubs generation.
+    Functions:
+        suite(): Creates and returns a unittest.TestSuite object containing all the specified test cases.
+    """
     suite = unittest.TestSuite()
     suite.addTest(
         unittest.defaultTestLoader.loadTestsFromTestCase(

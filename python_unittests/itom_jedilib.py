@@ -7,6 +7,23 @@ import sys
 
 
 class ItomJediLibTest(unittest.TestCase):
+    """Unit tests for the Itom Jedi Library.
+    This module contains a set of unit tests for the Itom Jedi Library, which provides
+    code completion, goto assignments, and help functionalities for the Itom framework.
+    The tests cover various aspects of the library, including completions for errors,
+    Itom module classes, built-in classes, and help documentation without type hints.
+    Classes:
+        ItomJediLibTest: A unittest.TestCase subclass that defines the unit tests for the Itom Jedi Library.
+    Methods:
+        setUpClass: Loads the demo scripts for testing.
+        _assertStartsWith: Asserts that a statement starts with a given string.
+        _assertOneHelpEntry: Asserts that there is one help entry with the expected description and docstring start.
+        test_completions_errors: Tests errors in completions.
+        test_completions_itommod_class: Tests completions for classes in the Itom module.
+        test_completions_builtins_class: Tests completions for built-in classes.
+        test_goto_assignments: Tests the goto_assignments method.
+        test_help_notypehints: Tests the help functionality without type hints.
+        test_recursionAbility: Checks the maximum recursion limit value for the Itom Jedi Library."""
     @classmethod
     def setUpClass(cls):
         """Loads the demo scripts itom_jedilib_demo_notypehints.py."""

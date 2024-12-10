@@ -54,14 +54,14 @@ class MeasurementSystemBase:
     tFeatureType = ItomEnum("FeatureType", ("unknown", "SUR", "PRF", "PCL"))
 
     def __init__(self, name, probingSystem, instrument, username):
-        """The basic constructor. In real implementations, it should verify parameters amd load configuration parameters."""
-
+        """The basic constructor. In real implementations,
+        it should verify parameters amd load configuration parameters."""
         # Parameter Validation
-        if not (isinstance(probingSystem, ProbingSystemType)):
+        if not isinstance(probingSystem, ProbingSystemType):
             raise RuntimeError(
                 "probingSystem must be an instance of class 'ProbingSystemType'"
             )
-        if not (isinstance(instrument, InstrumentType)):
+        if not isinstance(instrument, InstrumentType):
             raise RuntimeError(
                 "instrument must be an instance of class 'InstrumentType'"
             )
@@ -83,12 +83,12 @@ class MeasurementSystemBase:
         If you load a new calibration to your system, use this method of the base class to tell the system
         the timestamp of the calibration data.
         """
-        if not (isinstance(calibrationDate, datetime)):
+        if not isinstance(calibrationDate, datetime):
             raise RuntimeError("calibrationDate must be a datetime object")
         self.__calibrationDate = calibrationDate
         self.calibrationDate = calibrationDate.strftime("%Y-%m-%dT%H:%M:%S.%f")
 
-    # ---------------------------------------------------------------------------------------------------------------------------------------
+    # -----------------------------------------------------------------------------------------------------------------
 
     def addSystemTags(self, dObj, title=None, configurationDict=None):
         """
@@ -97,7 +97,7 @@ class MeasurementSystemBase:
         and then stored in the tag 'configuration'.
         """
 
-        if not (isinstance(dObj, itom.dataObject)):
+        if not isinstance(dObj, itom.dataObject):
             raise RuntimeError("dObj must a dataObject")
 
         dObj.setTag("calibrationDate", self.calibrationDate)
@@ -118,7 +118,7 @@ class MeasurementSystemBase:
         if title is not None:
             dObj.setTag("title", title)
 
-    # ---------------------------------------------------------------------------------------------------------------------------------------
+    # -----------------------------------------------------------------------------------------------------------------
 
     def add25DMeasurementTags(
         self,
@@ -132,11 +132,11 @@ class MeasurementSystemBase:
         measurementDate=None,
     ):
         """
-        adds tags to the given dataObject (by reference) which are related to a 2.5D measurement. The measurementDate must be
-        given as datetime object. If it is set to None (default), the actual timestamp is assigned to the tag 'measurementDate'
-        of the data object.
+        adds tags to the given dataObject (by reference) which are related to a 2.5D measurement. The measurementDate
+        must be given as datetime object. If it is set to None (default), the actual timestamp is assigned to
+        the tag 'measurementDate' of the data object.
         """
-        if not (isinstance(dObj, itom.dataObject)):
+        if not isinstance(dObj, itom.dataObject):
             raise RuntimeError("dObj must a dataObject")
 
         if measurementDate is None:
@@ -158,27 +158,33 @@ class MeasurementSystemBase:
         dObj.valueUnit = valueUnit
         dObj.valueDescription = valueDescription
 
-    # ---------------------------------------------------------------------------------------------------------------------------------------
+    # -----------------------------------------------------------------------------------------------------------------
     def setParam(self, paramDict):
         """
-        overwrite this method to verify and set all the parameters contained in paramDict. In case of error you may throw an exception.
+        overwrite this method to verify and set all the parameters contained in paramDict.
+        In case of error you may throw an exception.
         """
         raise RuntimeError("setParam not implemented")
 
-    # ---------------------------------------------------------------------------------------------------------------------------------------
+    # -----------------------------------------------------------------------------------------------------------------
     def getSystemCapabilities(self):
         """
-        overwrite this method to return your system capability as dictionary with the following entries:
-        - 'field2D' : {'available':True or False, 'size':(sizex,sizey), 'scale':(scalex,scaley) or scale <in mm/px>, 'bitdepth':<8 or 16>)
-        - 'field25D' : {'available':True or False, 'size':(sizex,sizey), 'scale':(scalex,scaley) or scale <in mm/px>, 'bitdepth':<32 or 64>)
-        - 'field3D' : {'available':True or False}
+          - 'field2D' : {'available':True or False, 'size':(sizex,sizey), 'scale':(scalex,scaley) or scale <in mm/px>,
+
+        'bitdepth':<8 or 16>)
+
+         - 'field25D' : {'available':True or False, 'size':(sizex,sizey), 'scale':(scalex,scaley) or scale <in mm/px>,
+
+          'bitdepth':<32 or 64>)
+
+           - 'field3D' : {'available':True or False}
         ...
         """
         raise RuntimeError(
             "getSystemCapabilites has to be implemented by your measurement system"
         )
 
-    # ---------------------------------------------------------------------------------------------------------------------------------------
+    # -----------------------------------------------------------------------------------------------------------------
     def measurementField2DSnap(self, *args, **kwds):
         """
         performs one single snap of a 2D-scene with the camera
@@ -190,7 +196,7 @@ class MeasurementSystemBase:
         """
         raise RuntimeError("System has no implementation for a 2D scaled snapshot")
 
-    # ---------------------------------------------------------------------------------------------------------------------------------------
+    # -----------------------------------------------------------------------------------------------------------------
     def measurementField25D(self, *args, **kwds):
         """
         performs one single 2,5D-measurement
@@ -202,34 +208,39 @@ class MeasurementSystemBase:
         """
         raise RuntimeError("System has no implementation for a 2.5D measurement")
 
-    # ---------------------------------------------------------------------------------------------------------------------------------------
+    # -----------------------------------------------------------------------------------------------------------------
     def measurementField3D(self, *args, **kwds):
         """
         performs one single 3D-measurement
         @param args is an infinite number of further parameters, accessible as tuple.
         @return dictionary with the following mandatory and optional values:
-            - 'points3D': pointCloud [mand] is the (optionally organized) point cloud consisting of XYZ-tuples and optionally further information about intensity, color...
-            - 'X': dataObject [optional] are the x-values of every point in the regular grid, only possible if point-cloud is organized, hence NaN values are still available.
-            - 'Y': dataObject [optional] are the y-values of every point in the regular grid, only possible if point-cloud is organized, hence NaN values are still available.
-            - 'Z': dataObject [optional] are the z-values of every point in the regular grid, only possible if point-cloud is organized, hence NaN values are still available.
+            - 'points3D': pointCloud [mand] is the (optionally organized) point cloud consisting of XYZ-tuples
+                and optionally further information about intensity, color...
+            - 'X': dataObject [optional] are the x-values of every point in the regular grid, only possible if
+                point-cloud is organized, hence NaN values are still available.
+            - 'Y': dataObject [optional] are the y-values of every point in the regular grid, only possible if
+                point-cloud is organized, hence NaN values are still available.
+            - 'Z': dataObject [optional] are the z-values of every point in the regular grid, only possible if
+                point-cloud is organized, hence NaN values are still available.
             - 'intensity': dataObject [optional] are further intensity-values of every point.
             - <user defined> : you can add further elements to the dictionary
         """
         raise RuntimeError("System has no implementation for a 3D measurement")
 
-    # ---------------------------------------------------------------------------------------------------------------------------------------
+    # -----------------------------------------------------------------------------------------------------------------
     def getCameras(self):
         """
-        overwrite this method and return list of cameras, used in this system. This might be useful to show a general live image of your main camera
+        overwrite this method and return list of cameras, used in this system. This might be useful to show a general
+        live image of your main camera
         """
         return []
 
-    # ---------------------------------------------------------------------------------------------------------------------------------------
+    # -----------------------------------------------------------------------------------------------------------------
     def getSinglePoint3DCoordsFrom25D(self, mPx, nPx, height):
         """
-        this method returns the 3D-coordinates in the sensor's coordinate system for one single value in the topology map.
-        Overwrite this method, if your height value together with its pixel position cannot be simply transformed into
-        a real 3D coordinate (e.g. microscopic fringe projection)
+        this method returns the 3D-coordinates in the sensor's coordinate system for one single value in the topology
+        map. Overwrite this method, if your height value together with its pixel position cannot be simply
+        transformed into a real 3D coordinate (e.g. microscopic fringe projection)
         """
         cap = self.getSystemCapabilites()["field25D"]
         scales = cap["scale"]

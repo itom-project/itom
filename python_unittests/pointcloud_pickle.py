@@ -13,6 +13,20 @@ except (ModuleNotFoundError, ImportError):
 if hasPCL:
 
     class PointCloudPickle(unittest.TestCase):
+        """
+        Unit tests for pickling and unpickling point cloud and polygon mesh objects.
+        This module contains tests to ensure that point cloud and polygon mesh objects
+        can be correctly serialized (pickled) and deserialized (unpickled) using the
+        pickle module. The tests compare the original and reloaded objects to verify
+        that they are equivalent.
+        Classes:
+            PointCloudPickle: Contains unit tests for pickling and unpickling point
+                              cloud and polygon mesh objects.
+        Methods:
+            setUpClass: Sets up any state that is shared across tests.
+            test_picklePointCloud: Tests pickling and unpickling of a point cloud object.
+            test_picklePolygonMesh: Tests pickling and unpickling of a polygon mesh object.
+        """
         @classmethod
         def setUpClass(cls):
             pass

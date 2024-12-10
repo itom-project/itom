@@ -18,7 +18,7 @@ class ParamValidatorResult:
         return "ParamValidatorResult. Valid: " + str(self.isValid())
 
     def isValid(self):
-        return not (False in self.__valid)
+        return not False in self.__valid
 
     def errorMessages(self):
         return self.__errorMessage
@@ -65,7 +65,7 @@ class ParamValidator:
 
     @staticmethod
     def checkBool(key, value):
-        if not (isinstance(value, bool)):
+        if not isinstance(value, bool):
             return ParamValidatorResult(
                 False, f"parameter '{key}' is no boolean data type"
             )
@@ -73,7 +73,7 @@ class ParamValidator:
 
     @staticmethod
     def checkInt(key, value, minValue=None, maxValue=None):
-        if not (isinstance(value, int)):
+        if not isinstance(value, int):
             return ParamValidatorResult(
                 False,
                 "parameter '{}' is not convertible into a fixed point number.".format(
@@ -98,7 +98,7 @@ class ParamValidator:
             value = [value]
 
         if not elemCountRange is None:
-            if not (len(value) in elemCountRange):
+            if not len(value) in elemCountRange:
                 return ParamValidatorResult(
                     False,
                     "size of parameter '{}' is not in given range {}".format(
@@ -118,7 +118,7 @@ class ParamValidator:
             value = [value]
 
         if not elemCountRange is None:
-            if not (len(value) in elemCountRange):
+            if not len(value) in elemCountRange:
                 return ParamValidatorResult(
                     False,
                     "size of parameter '{}' is not in given range {}".format(

@@ -6,6 +6,23 @@ from numpy import testing as nptesting
 
 
 class DataObjectConstructors(unittest.TestCase):
+    """
+    Unit tests for the dataObject constructors.
+    This module contains a series of unit tests for the dataObject class,
+    testing various constructors and their functionalities.
+    Classes:
+        DataObjectConstructors: A unittest.TestCase subclass containing tests for dataObject constructors.
+    Methods:
+        setUpClass(cls): Class-level setup method.
+        test_constructor_simple(self): Tests simple constructors with various shapes and data types.
+        test_continuous_constructor(self): Tests the continuous and non-continuous constructors.
+        test_copy_constructor_noncontinuous(self): Tests the copy constructor for non-continuous dataObjects.
+        test_value_constructor(self): Tests constructors with initial values.
+        test_dtype_conversion_copy_constructor(self): Tests the copy constructor with dtype conversion.
+        test_copy_constructor(self): Tests the copy constructor.
+        test_ones_constructor(self): Tests the ones constructor for various data types.
+        test_zeros_constructor(self): Tests the zeros constructor for various data types.
+    """
     @classmethod
     def setUpClass(cls):
         pass

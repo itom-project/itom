@@ -5,6 +5,18 @@ from numpy import testing as nptesting
 
 
 class DatatypeConversionTest(unittest.TestCase):
+    """
+    Unit tests for datatype conversion functionalities in the GUI.
+    This module contains a test case class `DatatypeConversionTest` that tests the conversion
+    of various data types using the GUI's widget. The tests cover conversions for numbers,
+    integers, floats, shorts, int64, and uint64 types.
+    Classes:
+        DatatypeConversionTest: A test case class for testing datatype conversions.
+    Methods:
+        setUpClass: Sets up the GUI and widget for testing.
+        tearDownClass: Cleans up the GUI after testing.
+        test_qmetatype_number_conversion: Tests the conversion of various number types.
+    """
     @classmethod
     def setUpClass(cls):
         cls.gui = ui("datatype_conversion.ui")

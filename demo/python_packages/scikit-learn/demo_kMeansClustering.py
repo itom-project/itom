@@ -2,7 +2,9 @@
 =====================
 
 An example of ``scikit-learn``, copied from
-`scikit-learn.org <https://scikit-learn.org/stable/auto_examples/cluster/plot_kmeans_plusplus.html#sphx-glr-auto-examples-cluster-plot-kmeans-plusplus-py>`_.
+`scikit-learn.org
+<https://scikit-learn.org/stable/auto_examples/cluster/plot_kmeans_plusplus.html
+#sphx-glr-auto-examples-cluster-plot-kmeans-plusplus-py>`_.
 """
 
 from sklearn.cluster import kmeans_plusplus

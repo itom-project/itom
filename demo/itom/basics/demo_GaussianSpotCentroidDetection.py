@@ -21,7 +21,7 @@ try:
 
     hasItomAlgo = True
 except ImportError:
-    from itom import filter
+    from itom import filter as itom_filter
 
     hasItomAlgo = False
     print(
@@ -79,7 +79,7 @@ class GaussianSpotCentroidDetection:
                 self.dObj
             )
         else:  # old itom.filter
-            [intensityX, intensityY, centroidX, centroidY] = filter(
+            [intensityX, intensityY, centroidX, centroidY] = itom_filter(
                 "centroidXY", self.dObj
             )
 

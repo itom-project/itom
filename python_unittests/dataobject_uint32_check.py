@@ -4,6 +4,11 @@ import numpy as np
 
 
 class DataObjectUInt32Check(unittest.TestCase):
+    """
+    Unit tests for checking the behavior of dataObject with uint32 type.
+    This module contains a test case class `DataObjectUInt32Check` that verifies
+    the restrictions on creating or converting dataObject instances to uint32 type.
+    """
     @classmethod
     def setUpClass(cls):
         pass

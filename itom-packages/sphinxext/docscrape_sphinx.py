@@ -14,12 +14,21 @@ from sphinx.jinja2glue import BuiltinTemplateLoader
 from .docscrape import NumpyDocString, FunctionDoc, ClassDoc
 
 if sys.version_info[0] >= 3:
-    sixu = lambda s: s
+    def sixu(s):
+        return s
 else:
-    sixu = lambda s: unicode(s, "unicode_escape")
+    def sixu(s):
+        return s.decode("unicode_escape")
 
 
 class SphinxDocString(NumpyDocString):
+    """
+    This module provides the SphinxDocString class, which extends the NumpyDocString
+    class to support Sphinx-specific documentation formatting.
+    Classes:
+        SphinxDocString: A class for parsing and formatting docstrings in a way that
+                         is compatible with Sphinx and NumPy documentation standards.
+    """
     def __init__(self, docstring, config={}):
         NumpyDocString.__init__(self, docstring, config=config)
         self.load_config(config)

@@ -156,7 +156,7 @@ def new_figure_manager(num, *args, **kwargs):
         if isinstance(existingCanvas, uiItem):
             itomUI = existingCanvas
         else:
-            raise ("keyword 'canvas' must contain an instance of uiItem")
+            raise TypeError("keyword 'canvas' must contain an instance of uiItem")
     thisFig = FigureClass(*args, **kwargs)
     canvas = FigureCanvasItom(thisFig, num, itomUI, itomFig, embeddedCanvas)
     manager = FigureManagerItom(canvas, num, itomUI, itomFig, embeddedCanvas)
@@ -232,20 +232,26 @@ class FigureCanvasItom(FigureCanvasBase):
         self.embeddedCanvas = embeddedCanvas
         self._destroying = False
         self.itomFig = itomFig
-        # self.showEnable = False #this will be set to True if the draw() command has been called for the first time e.g. by show() of the manager
+        # self.showEnable = False #this will be set to True if the draw() command
+                     # has been called for the first time e.g. by show()
+                     # of the manager
 
         if embeddedCanvas == False:
-            self.canvas = itomUI.canvasWidget  # this object is deleted in the destroy-method of manager, due to cyclic garbage collection
+            self.canvas = itomUI.canvasWidget  # this object is deleted in the
+                                               # destroy-method of manager,
+                                               # due to cyclic garbage collection
             win = self.canvas
             # win["width"]=w
             # win["height"]=h
             win["mouseTracking"] = (
-                False  # by default, the itom-widget only sends mouse-move events if at least one button is pressed or the tracker-button is is checked-state
+                False  # by default, the itom-widget only sends mouse-move events if at least one button is pressed
+                       # or the tracker-button is in checked-state
             )
         else:
             self.canvas = itomUI.canvasWidget
             itomUI["mouseTracking"] = (
-                False  # by default, the itom-widget only sends mouse-move events if at least one button is pressed or the tracker-button is is checked-state
+                False  # by default, the itom-widget only sends mouse-move events if at least one button is pressed or
+                # the tracker-button is is checked-state
             )
 
         self.canvas.connect("eventLeaveEnter(bool)", self.leaveEnterEvent)
@@ -297,7 +303,8 @@ class FigureCanvasItom(FigureCanvasBase):
             elif type == 2:  # mouseMoveEvent
                 if (
                     button == 0
-                ):  # if move without button press, reset timer since no other visualization is given to Qt, which could then reset the timer
+                ):  # if move without button press, reset timer since no other visualization is given to Qt, which
+                    # could then reset the timer
                     self.canvas.call("stopTimer")
                 FigureCanvasBase.motion_notify_event(self, x, y)
                 if DEBUG:
@@ -544,7 +551,8 @@ class FigureManagerItom(FigureManagerBase):
     def resize(self, width, height):
         "set the canvas size in pixels"
         if "do_not_resize_window" in self.canvas.__dict__:
-            # savefig or copyToClipboard will force to resize the window if dpi is higher than default (only in matplotlib >= 2.0). This is not wanted.
+            # savefig or copyToClipboard will force to resize the window if dpi is higher than default
+            # (only in matplotlib >= 2.0). This is not wanted.
             if self.canvas.do_not_resize_window:
                 return
         self.canvas.canvas.call("externalResize", width, height)

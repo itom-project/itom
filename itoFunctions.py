@@ -131,7 +131,8 @@ def importMatlabMatAsDataObject(value):
 
 def clearAll():
     """
-    Clears all the global variables from the workspace except for all function, modules, classes, itom variables and items stored in clearAllState...
+    Clears all the global variables from the workspace except for all function, modules, classes,
+    itom variables and items stored in clearAllState...
     """
     if not clearAllState:
         raise RuntimeError("No initial state found")

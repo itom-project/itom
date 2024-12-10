@@ -52,6 +52,7 @@ win1 = AutoConnectExample()
 win1.gui.show()  # show the gui
 win1.gui["geometry"] = (100, 100, 412, 157)
 
-# create a second instance (due to the class based approach, both windows have different counter variables (among others)
+# create a second instance (due to the class based approach,
+# both windows have different counter variables (among others)
 win2 = AutoConnectExample()
 win2.gui.show()  # show the gui
