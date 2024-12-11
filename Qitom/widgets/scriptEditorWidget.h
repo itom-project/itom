@@ -33,6 +33,7 @@
 #include "../codeEditor/modes/pyGotoAssignment.h"
 #include "../codeEditor/modes/pyDocstringGenerator.h"
 #include "../codeEditor/modes/wordHoverTooltip.h"
+#include "../codeEditor/modes/codeCellHighlight.h"
 #include "../codeEditor/panels/lineNumber.h"
 #include "../codeEditor/codeCheckerItem.h"
 #include "../codeEditor/pyCodeFormatter.h"
@@ -54,6 +55,7 @@
 #include "../ui/dialogScriptCharsetEncoding.h"
 
 #include <QtPrintSupport/qprinter.h>
+#include <qevent.h>
 
 QT_BEGIN_NAMESPACE
 
@@ -174,6 +176,8 @@ protected:
     BreakPointModel* getBreakPointModel();
     const BreakPointModel* getBreakPointModel() const;
 
+    void paintEvent(QPaintEvent* e);
+
 private:
     enum markerType
     {
@@ -246,6 +250,7 @@ private:
     QSharedPointer<LineNumberPanel> m_lineNumberPanel;
     QSharedPointer<PyGotoAssignmentMode> m_pyGotoAssignmentMode;
     QSharedPointer<WordHoverTooltipMode> m_wordHoverTooltipMode;
+    QSharedPointer<CodeCellHighlighterMode> m_codeCellHighlighterMode;
     QSharedPointer<PyDocstringGeneratorMode> m_pyDocstringGeneratorMode;
 
     static const QString lineBreak;

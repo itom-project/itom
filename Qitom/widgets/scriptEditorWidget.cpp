@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Copyright (C) 2024, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of itom.
@@ -40,11 +40,11 @@
 #include <qinputdialog.h>
 #include <qmessagebox.h>
 #include <qmimedata.h>
-#include <qpainter.h>
 #include <qregularexpression.h>
 #include <qtextdocumentfragment.h>
 #include <qtimer.h>
 #include <qtooltip.h>
+#include <qpainter.h>
 
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include <qtextcodec.h>
@@ -382,6 +382,16 @@ RetVal ScriptEditorWidget::initEditor()
         QSharedPointer<WordHoverTooltipMode>(new WordHoverTooltipMode("WordHoverTooltipMode"));
     modes()->append(m_wordHoverTooltipMode.dynamicCast<ito::Mode>());
 
+    m_codeCellHighlighterMode =
+        QSharedPointer<CodeCellHighlighterMode>(new CodeCellHighlighterMode("CodeCellHighlighterMode"));
+    connect(
+        this,
+        &ScriptEditorWidget::outlineModelChanged,
+        m_codeCellHighlighterMode.data(),
+        &CodeCellHighlighterMode::outlineModelChanged
+    );
+    modes()->append(m_codeCellHighlighterMode.dynamicCast<ito::Mode>());
+
     m_pyCodeReferenceRenamer =
         QSharedPointer<PyCodeReferenceRenamer>(new PyCodeReferenceRenamer(this));
 
@@ -527,6 +537,8 @@ void ScriptEditorWidget::loadSettings()
     m_pyGotoAssignmentMode->setWordClickModifiers(modifiers);
 
     m_wordHoverTooltipMode->setEnabled(settings.value("helpTooltipEnabled", true).toBool());
+
+    m_codeCellHighlighterMode->setEnabled(true);
 
     m_errorLineHighlighterMode->setBackground(QColor(
         settings.value("markerScriptErrorBackgroundColor", QColor(255, 192, 192)).toString()));
@@ -3988,6 +4000,40 @@ void ScriptEditorWidget::replaceOccurencesInCurrentScript(
 
 
         cursor.endEditBlock();
+    }
+}
+
+//------------------------------------------------------------------------------
+void ScriptEditorWidget::paintEvent(QPaintEvent* e)
+{
+    CodeEditor::paintEvent(e);
+
+    QPainter painter(viewport());
+    QPen pen = painter.pen();
+    pen.setStyle(Qt::SolidLine);
+    pen.setColor(Qt::green);
+    painter.setPen(pen);
+
+    QList<int> codeCellStartLineIndices;
+
+    foreach(const auto & childItems, m_rootOutlineItem->m_childs)
+    {
+        if (childItems->m_type == OutlineItem::typeCodeCell)
+        {
+            codeCellStartLineIndices << childItems->m_startLineIdx;
+        }
+    }
+
+    if (codeCellStartLineIndices.size() > 0)
+    {
+        foreach(const VisibleBlock & block, visibleBlocks())
+        {
+            if (codeCellStartLineIndices.contains(block.lineNumber))
+            {
+                painter.drawLine(
+                    0, block.topPosition, width(), block.topPosition);
+            }
+        }
     }
 }
 
