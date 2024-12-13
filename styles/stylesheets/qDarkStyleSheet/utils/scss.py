@@ -89,7 +89,7 @@ def _create_scss_variables(variables_scss_filepath, palette, header=HEADER_SCSS)
     scss = _dict_to_scss(palette.to_dict())
     data = header + scss + "\n"
 
-    with open(variables_scss_filepath, "w") as f:
+    with open(variables_scss_filepath, "w", encoding="utf-8") as f:
         f.write(data)
 
 
@@ -99,12 +99,12 @@ def _create_qss(main_scss_path, qss_filepath, header=HEADER_QSS):
 
     qtsass.compile_filename(main_scss_path, qss_filepath, output_style="expanded")
 
-    with open(qss_filepath) as f:
+    with open(qss_filepath, encoding="utf-8") as f:
         data = f.read()
 
     data = header.format(qtsass.__version__) + data
 
-    with open(qss_filepath, "w") as f:
+    with open(qss_filepath, "w", encoding="utf-8") as f:
         f.write(data)
 
     return data
@@ -165,7 +165,7 @@ def create_custom_qss(
     if is_identifier(name):
         name = name if name[0].isupper() else name.capitalize()
     else:
-        raise Exception("The custom palette name must be a valid Python identifier!")
+        raise ValueError("The custom palette name must be a valid Python identifier!")
 
     # Copy resources folder
     rc_loc = os.path.basename(RC_PATH)
@@ -216,7 +216,7 @@ def create_custom_qss(
     )
 
     # Update colors in text
-    with open(theme_main_scss_filepath) as fh:
+    with open(theme_main_scss_filepath, encoding="utf-8") as fh:
         data = fh.read()
 
     for key, color in DarkPalette.color_palette().items():
@@ -224,10 +224,10 @@ def create_custom_qss(
         data = data.replace(color, custom_color)
         stylesheet = stylesheet.replace(color, custom_color)
 
-    with open(theme_main_scss_filepath, "w") as fh:
+    with open(theme_main_scss_filepath, "w", encoding="utf-8") as fh:
         fh.write(data)
 
-    with open(theme_qss_filepath, "w") as fh:
+    with open(theme_qss_filepath, "w", encoding="utf-8") as fh:
         fh.write(stylesheet)
 
     return stylesheet

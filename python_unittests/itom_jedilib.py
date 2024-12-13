@@ -1,8 +1,6 @@
 import itomJediLib as jedilib
 import jedi
 import unittest
-from typing import Tuple, Dict, List, Optional
-import warnings
 import sys
 
 
@@ -24,10 +22,11 @@ class ItomJediLibTest(unittest.TestCase):
         test_goto_assignments: Tests the goto_assignments method.
         test_help_notypehints: Tests the help functionality without type hints.
         test_recursionAbility: Checks the maximum recursion limit value for the Itom Jedi Library."""
+
     @classmethod
     def setUpClass(cls):
         """Loads the demo scripts itom_jedilib_demo_notypehints.py."""
-        with open("itom_jedilib_demo_notypehints.py") as fp:
+        with open("itom_jedilib_demo_notypehints.py", encoding="utf-8") as fp:
             cls.sample_notypehints = fp.read()
 
     def _assertStartsWith(self, statement, string):
@@ -52,7 +51,7 @@ class ItomJediLibTest(unittest.TestCase):
 
         for line, col in wrong_line_cols:
             with self.assertRaises(ValueError):
-                result = jedilib.completions(text, line, col, "", "")
+                jedilib.completions(text, line, col, "", "")
 
     def test_completions_itommod_class(self):
         """completion test for classes in the itom module."""
@@ -136,7 +135,7 @@ dataObject.ones([2, 2])"""
 
         assign2 = jedilib.goto_assignments(text, 3, 8, "", 1)
         self.assertEqual(len(assign2), 1)
-        self.assertTrue(type(assign2[0][0]) is str)
+        self.assertTrue(isinstance(assign2[0][0], str))
         if jedi.__version__ >= "0.18.0":
             self.assertTrue(assign2[0][0].endswith("python_unittests"))
             self.assertEqual(assign2[0][1:], (2, -1, "python_unittests.data"))
@@ -146,7 +145,7 @@ dataObject.ones([2, 2])"""
 
         assign3 = jedilib.goto_assignments(text, 3, 8, "", 2)
         self.assertEqual(len(assign3), 1)
-        self.assertTrue(type(assign3[0][0]) is str)
+        self.assertTrue(isinstance(assign3[0][0], str))
         if jedi.__version__ >= "0.18.0":
             self.assertTrue(assign3[0][0].endswith("python_unittests"))
             self.assertEqual(assign3[0][1:], (2, -1, "python_unittests.data"))
@@ -334,6 +333,9 @@ dataObject.ones([2, 2])"""
             def __repr__(self):
                 return repr(self)
 
+            def another_method(self):
+                pass
+
         def func_repr():
             return repr(RecursiveBlowup2())
 
@@ -347,7 +349,6 @@ dataObject.ones([2, 2])"""
         # as "missing attribute".
         except (RecursionError, AttributeError):
             pass
-        self.assertTrue(True)
         sys.setrecursionlimit(currentlimit)
 
 

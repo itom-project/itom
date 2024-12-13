@@ -170,11 +170,15 @@ def create_images(base_svg_path=SVG_PATH, rc_path=RC_PATH, palette=DarkPalette):
     rc_list = get_rc_links_from_scss()
     num_rc_list = len(rc_list)
 
-    for height, ext in heights.items():
-        width = height
+        for height, ext in heights.items():
+            width = height
 
-        _logger.debug(f" Size HxW (px): {height} X {width}")
+            _logger.debug(f" Size HxW (px): {height} X {width}")
 
+            process_svg_files(svg_fnames, base_svg_path, temp_dir, rc_path, ext, height, width, base_height, rc_list, palette, num_png, num_ignored)
+
+
+    def process_svg_files(svg_fnames, base_svg_path, temp_dir, rc_path, ext, height, width, base_height, rc_list, palette, num_png, num_ignored):
         for svg_fname in svg_fnames:
             svg_name = svg_fname.split(".")[0]
 
@@ -186,36 +190,40 @@ def create_images(base_svg_path=SVG_PATH, rc_path=RC_PATH, palette=DarkPalette):
                 _logger.debug("  Working on: %s" % os.path.basename(svg_fname))
 
                 # Replace colors and create all file for different states
-                for color_svg_name, color in color_files.items():
-                    temp_svg_path = os.path.join(temp_dir, color_svg_name)
-                    _create_colored_svg(svg_path, temp_svg_path, color)
-
-                    png_fname = color_svg_name.replace(".svg", ext)
-                    png_path = os.path.join(rc_path, png_fname)
-                    convert_svg_to_png(temp_svg_path, png_path, height, width)
-                    num_png += 1
-                    _logger.debug("   Creating: %s" % os.path.basename(png_fname))
-
-                    # Check if the rc_name is in the rc_list from scss
-                    # only for the base size
-                    if height == base_height:
-                        rc_base = os.path.basename(rc_path)
-                        png_base = os.path.basename(png_fname)
-                        rc_name = "/" + os.path.join(rc_base, png_base)
-                        try:
-                            rc_list.remove(rc_name)
-                        except ValueError:
-                            pass
+                process_color_files(color_files, svg_path, temp_dir, rc_path, ext, height, width, base_height, rc_list, num_png)
             else:
                 num_ignored += 1
                 _logger.debug("  Ignored blacklist: %s" % os.path.basename(svg_fname))
 
-    _logger.info("# SVG files: %s" % num_svg)
-    _logger.info("# SVG ignored: %s" % num_ignored)
-    _logger.info("# PNG files: %s" % num_png)
-    _logger.info("# RC links: %s" % num_rc_list)
-    _logger.info("# RC links not in RC: %s" % len(rc_list))
-    _logger.info("RC links not in RC: %s" % rc_list)
+
+    def process_color_files(color_files, svg_path, temp_dir, rc_path, ext, height, width, base_height, rc_list, num_png):
+        for color_svg_name, color in color_files.items():
+            temp_svg_path = os.path.join(temp_dir, color_svg_name)
+            _create_colored_svg(svg_path, temp_svg_path, color)
+
+            png_fname = color_svg_name.replace(".svg", ext)
+            png_path = os.path.join(rc_path, png_fname)
+            convert_svg_to_png(temp_svg_path, png_path, height, width)
+            num_png += 1
+            _logger.debug("   Creating: %s" % os.path.basename(png_fname))
+
+            # Check if the rc_name is in the rc_list from scss
+            # only for the base size
+            if height == base_height:
+                rc_base = os.path.basename(rc_path)
+                png_base = os.path.basename(png_fname)
+                rc_name = "/" + os.path.join(rc_base, png_base)
+                try:
+                    rc_list.remove(rc_name)
+                except ValueError:
+                    pass
+
+    _logger.info("# SVG files: %d", num_svg)
+    _logger.info("# SVG ignored: %d", num_ignored)
+    _logger.info("# PNG files: %d", num_png)
+    _logger.info("# RC links: %d", num_rc_list)
+    _logger.info("# RC links not in RC: %d", len(rc_list))
+    _logger.info("RC links not in RC: %s", rc_list)
 
 
 def generate_qrc_file(resource_prefix="qss_icons", style_prefix="qdarkstyle"):
@@ -234,10 +242,10 @@ def generate_qrc_file(resource_prefix="qss_icons", style_prefix="qdarkstyle"):
     files = []
 
     _logger.info("Generating QRC file ...")
-    _logger.info("Resource prefix: %s" % resource_prefix)
-    _logger.info("Style prefix: %s" % style_prefix)
+    _logger.info("Resource prefix: %s", resource_prefix)
+    _logger.info("Style prefix: %s", style_prefix)
 
-    _logger.info("Searching in: %s" % RC_PATH)
+    _logger.info("Searching in: %s", RC_PATH)
 
     # Search by png images
     for fname in sorted(os.listdir(RC_PATH)):
@@ -250,10 +258,10 @@ def generate_qrc_file(resource_prefix="qss_icons", style_prefix="qdarkstyle"):
         + TEMPLATE_QRC_FOOTER.format(style_prefix=style_prefix)
     )
 
-    _logger.info("Writing in: %s" % QRC_FILEPATH)
+    _logger.info("Writing in: %s", QRC_FILEPATH)
 
     # Write qrc file
-    with open(QRC_FILEPATH, "w") as fh:
+    with open(QRC_FILEPATH, "w", encoding='utf-8') as fh:
         fh.write(qrc_content)
 
 
@@ -268,7 +276,7 @@ def get_rc_links_from_scss(pattern=r"\/.*\.png"):
         list(str): list of unique links found.
     """
 
-    with open(STYLES_SCSS_FILEPATH) as fh:
+    with open(STYLES_SCSS_FILEPATH, encoding='utf-8') as fh:
         data = fh.read()
 
     lines = data.split("\n")

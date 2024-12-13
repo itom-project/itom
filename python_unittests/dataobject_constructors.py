@@ -23,6 +23,7 @@ class DataObjectConstructors(unittest.TestCase):
         test_ones_constructor(self): Tests the ones constructor for various data types.
         test_zeros_constructor(self): Tests the zeros constructor for various data types.
     """
+
     @classmethod
     def setUpClass(cls):
         pass
@@ -104,18 +105,30 @@ class DataObjectConstructors(unittest.TestCase):
 
     ##########################################################
     def test_value_constructor(self):
+        self._test_value_constructor_float32()
+        self._test_value_constructor_int16()
+        self._test_value_constructor_npvalues()
+        self._test_value_constructor_single_value()
+        self._test_value_constructor_complex()
+        self._test_value_constructor_rgba()
+        self._test_value_constructor_datetime()
+        self._test_value_constructor_timedelta()
+
+    def _test_value_constructor_float32(self):
         obj = dataObject([2, 4], "float32", data=[1, 2, 3, 4, 5, 6, 7, 8])
         for r in [0, 1]:
             for c in [0, 1, 2, 3]:
                 self.assertEqual(obj[r, c], r * 4 + c + 1)
                 self.assertEqual(type(obj[r, c]), float)
 
+    def _test_value_constructor_int16(self):
         obj = dataObject([2, 4], "int16", data=[1, 2, 3, 4, 5, 6, 7, 8])
         for r in [0, 1]:
             for c in [0, 1, 2, 3]:
                 self.assertEqual(obj[r, c], r * 4 + c + 1)
                 self.assertEqual(type(obj[r, c]), int)
 
+    def _test_value_constructor_npvalues(self):
         npvalues = np.array([1, 2, 3, 4, 5, 6])
         with self.assertRaises(TypeError):
             obj = dataObject([2, 3], "float32", data=npvalues)
@@ -124,6 +137,7 @@ class DataObjectConstructors(unittest.TestCase):
         self.assertEqual(obj[0, 0], 1)
         self.assertEqual(obj[1, 2], 6)
 
+    def _test_value_constructor_single_value(self):
         obj = dataObject([2, 4], "float32", data=57)
         for r in [0, 1]:
             for c in [0, 1, 2, 3]:
@@ -134,6 +148,7 @@ class DataObjectConstructors(unittest.TestCase):
             for c in [0, 1, 2, 3]:
                 self.assertEqual(obj[r, c], 5)
 
+    def _test_value_constructor_complex(self):
         with self.assertRaises(TypeError):
             obj = dataObject([2, 4], "int8", data=4 + 5j)
 
@@ -142,17 +157,20 @@ class DataObjectConstructors(unittest.TestCase):
             for c in [0, 1, 2, 3]:
                 self.assertAlmostEqual(obj[r, c], 4.2 + 5.8j, places=5)
 
+    def _test_value_constructor_rgba(self):
         obj = dataObject([2, 4], "rgba32", data=rgba(200, 100, 50))
         for r in [0, 1]:
             for c in [0, 1, 2, 3]:
                 self.assertEqual(obj[r, c], rgba(200, 100, 50))
 
+    def _test_value_constructor_datetime(self):
         dt = datetime(1999, 7, 13, hour=14, minute=9, second=59, microsecond=12000)
         obj = dataObject([2, 4], "datetime", data=dt)
         for r in [0, 1]:
             for c in [0, 1, 2, 3]:
                 self.assertEqual(obj[r, c], dt)
 
+    def _test_value_constructor_timedelta(self):
         td = timedelta(days=-7912, seconds=59, microseconds=12000)
         obj = dataObject([2, 4], "timedelta", data=td)
         for r in [0, 1]:

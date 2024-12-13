@@ -1,10 +1,10 @@
 import itomStubsGen as isg
 import unittest
-from typing import Tuple, Dict, List, Optional
 import warnings
 
 try:
-    from typing import Literal  # only available from Python 3.8 on
+    # only available from Python 3.8 on
+    from typing import Literal  # pylint: disable=unused-import
 
     hasLiteral = True
 except ImportError:
@@ -28,6 +28,7 @@ class ItomStubsGenTest(unittest.TestCase):
         test_parse_signature_from_first_line: Tests parsing of method signatures from the first line of docstrings.
         test_parse_property_docstring: Tests parsing of property docstrings.
         test_parse_args_string: Tests parsing of argument strings."""
+
     @classmethod
     def setUpClass(cls):
         pass
@@ -48,29 +49,22 @@ class ItomStubsGenTest(unittest.TestCase):
         newValues = {}
 
         # extend single types by :py:obj:`...` or similar refs
-        for key in singleTypes:
-            newValues[":py:obj:`%s`" % key] = singleTypes[key]
-            newValues[":obj:`%s`" % key] = singleTypes[key]
-            newValues[":py:class:`%s`" % key] = singleTypes[key]
+        for key, value in singleTypes.items():
+            newValues[f":py:obj:`{key}`"] = value
+            newValues[f":obj:`{key}`"] = value
+            newValues[f":py:class:`{key}`"] = value
 
         singleTypes.update(newValues)
 
         nestedTypes = {}
 
-        for key in singleTypes:
+        for key, val in singleTypes.items():
             for nestItem in ["List", "Tuple", "Sequence"]:
                 s = nestItem.lower()
-                val = singleTypes[key]
                 nestedTypes[f"{s} of {key}"] = f"{nestItem}[{val}]"
-                nestedTypes[f":obj:`{s}` of {key}"] = "{}[{}]".format(
-                    nestItem, val
-                )
-                nestedTypes[f":py:obj:`{s}` of {key}"] = "{}[{}]".format(
-                    nestItem, val
-                )
-                nestedTypes[f":py:class:`{s}` of {key}"] = "{}[{}]".format(
-                    nestItem, val
-                )
+                nestedTypes[f":obj:`{s}` of {key}"] = f"{nestItem}[{val}]"
+                nestedTypes[f":py:obj:`{s}` of {key}"] = f"{nestItem}[{val}]"
+                nestedTypes[f":py:class:`{s}` of {key}"] = f"{nestItem}[{val}]"
 
         conversions = singleTypes
         conversions.update(nestedTypes)
@@ -90,8 +84,8 @@ class ItomStubsGenTest(unittest.TestCase):
             conversions["{'test', 'fox'}"] = "Any"
             conversions["{2, 3, 4} or int"] = "Union[Any, int]"
 
-        for key in conversions:
-            self.assertEqual(isg._nptype2typing(key), conversions[key])
+        for key, value in conversions.items():
+            self.assertEqual(isg._nptype2typing(key), value)
 
     def test_parse_numpydoc_section(self):
         """Test the parser for the parameters, returns or yields section."""
@@ -285,7 +279,11 @@ param1 : sequence of int, iterable of int, optional
                 """list of int or None : Returns the bounding rectangle of.
 
                 The bounding rectangle is given by a list (x, y, width, height)."""
-                pass
+                return
+
+            def another_method(self):
+                """Another public method to satisfy pylint."""
+                return
 
         text = isg._parse_property_docstring(Test.demo, 4)
 
@@ -307,28 +305,22 @@ param1 : sequence of int, iterable of int, optional
     def test_get_direct_members(self):
         # some demo classes
         class A:
-            def __init__(self):
-                pass
-
             def meth1(self):
-                pass
+                return
 
             def meth2(self):
-                pass
+                return
 
             @staticmethod
-            def meth3(self):
-                pass
+            def meth3():
+                return
 
         class B(A):
-            def __init_(self):
-                pass
-
             def meth1(self):
-                pass
+                return
 
             def meth4(self):
-                pass
+                return
 
         membersA = [m for m in isg._get_direct_members(A)]
         membersA_name = [m[0] for m in membersA]
@@ -441,11 +433,11 @@ int
         class Demo:
             def meth1(self):
                 """this method does nothing"""
-                pass
+                return
 
             def meth2(self):
                 """"""
-                pass
+                return
 
             @staticmethod
             def meth3():
@@ -470,19 +462,19 @@ int
         wrong_signatures = [Demo.meth1, Demo.meth2, Demo.meth3]
 
         for ws in wrong_signatures:
-            line1 = ws.__doc__.split("\n")[0]
+            line1 = ws.__doc__.split('\n', maxsplit=1)[0]
             with self.assertRaises(ValueError, msg=ws.__qualname__):
                 isg._parse_signature_from_first_line(ws, line1)
 
         meth4 = Demo.meth4
-        sig_meth4 = meth4.__doc__.split("\n")[0]
+        sig_meth4 = meth4.__doc__.split('\n', maxsplit=1)[0]
         sig = isg._parse_signature_from_first_line(meth4, sig_meth4)
         self.assertEqual(sig.name, "meth4")
         self.assertEqual(sig.rettype, "Optional[int]")
         self.assertEqual(len(sig.args), 3)
 
         meth5 = Demo.meth5
-        sig_meth5 = meth5.__doc__.split("\n")[0]
+        sig_meth5 = meth5.__doc__.split("\n", maxsplit=1)[0]
 
         with warnings.catch_warnings(record=True) as w:
             # Cause all warnings to always be triggered.

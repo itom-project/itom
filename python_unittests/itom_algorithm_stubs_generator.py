@@ -1,7 +1,5 @@
 import itomAlgorithmsStubsGen as algoStubsGen
 import unittest
-from typing import Tuple, Dict, List, Optional
-import warnings
 import itom
 
 
@@ -18,6 +16,7 @@ class ItomAlgorithmsStubsGenTest(unittest.TestCase):
         test_parse_algorithm_def: Tests the parsing of algorithm definitions.
         test_read_pcl_version: Tests reading the PCL version from the itom library.
     """
+
     @classmethod
     def setUpClass(cls):
         pass
@@ -28,7 +27,6 @@ class ItomAlgorithmsStubsGenTest(unittest.TestCase):
 
     def test_parse_algorithm_def(self):
         algos = itom.filterHelp("", dictionary=1, furtherInfos=1)
-        algoItems = []
         found = False
 
         for algo in algos:

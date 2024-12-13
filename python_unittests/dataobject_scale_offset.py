@@ -1,6 +1,5 @@
 import unittest
 from itom import dataObject
-import numpy as np
 
 
 class DataObjectScaleOffset(unittest.TestCase):

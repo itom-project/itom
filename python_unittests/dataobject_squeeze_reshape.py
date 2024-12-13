@@ -23,6 +23,7 @@ class DataObjectResize(unittest.TestCase):
         test_reshape_continuous_obj: Tests reshaping of a continuous float64 dataObject.
         test_deepCopyPartial: Tests deep copying of a partial dataObject.
     """
+
     @classmethod
     def setUpClass(cls):
         pass

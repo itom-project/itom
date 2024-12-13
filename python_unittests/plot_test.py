@@ -12,6 +12,7 @@ class PlotTest(unittest.TestCase):
     values using the `plot` function. It ensures that the plotted values match
     the expected data and that the plot is displayed correctly.
     """
+
     @classmethod
     def setUpClass(cls):
         pass

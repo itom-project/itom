@@ -17,6 +17,7 @@ class DatatypeConversionTest(unittest.TestCase):
         tearDownClass: Cleans up the GUI after testing.
         test_qmetatype_number_conversion: Tests the conversion of various number types.
     """
+
     @classmethod
     def setUpClass(cls):
         cls.gui = ui("datatype_conversion.ui")

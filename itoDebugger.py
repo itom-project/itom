@@ -714,10 +714,14 @@ class itoDebugger(bdb.Bdb):
 
         __main__.__dict__.update({"__file__": "<string>"})
 
-        self._wait_for_mainpyfile = False  # must be false, otherwise the debugger will not start since
+        self._wait_for_mainpyfile = (
+            False  # must be false, otherwise the debugger will not start since
+        )
         # there is no function-stack by compiler and exec command, which forces us to check when the
         # real function is finally reached.
-        self._wait_for_first_stop = True  # if True we are waiting for the first stop (first line),
+        self._wait_for_first_stop = (
+            True  # if True we are waiting for the first stop (first line),
+        )
         # where the debugger is forced to directly continue, if False the debugger is forced to
         # also stop in the first possible line
         self._come_back_from_mainpyfile = False
@@ -752,7 +756,9 @@ class itoDebugger(bdb.Bdb):
 
         __main__.__dict__.update({"__file__": "<string>"})
 
-        self._wait_for_mainpyfile = False  # must be false, otherwise the debugger will not start since
+        self._wait_for_mainpyfile = (
+            False  # must be false, otherwise the debugger will not start since
+        )
         # there is no function-stack by compiler and exec command, which forces us to check when the real function
         # is finally reached.
         self._wait_for_first_stop = True  # if True we are waiting for the first stop (first line), where the debugger
@@ -806,7 +812,8 @@ class itoDebugger(bdb.Bdb):
                         "(unicode error) %s cannot decode byte '%s' in line %i, position %i: %s. \n"
                         "The line possibly contains an invalid character. Please remove them or add a coding hint"
                         "in the first line "
-                        "(menu option 'insert codec...')" % (
+                        "(menu option 'insert codec...')"
+                        % (
                             m.group(1),
                             m.group(2),
                             err.lineno,
@@ -819,7 +826,8 @@ class itoDebugger(bdb.Bdb):
                         "(unicode error) %s cannot decode byte '%s' in line %i, position %i: %s. \n"
                         "The line possibly contains an invalid character. Please remove them or add a coding hint"
                         "in the first line "
-                        "(menu option 'insert codec...')" % (
+                        "(menu option 'insert codec...')"
+                        % (
                             m.group(1),
                             m.group(2),
                             err.lineno,
@@ -846,8 +854,10 @@ class itoDebugger(bdb.Bdb):
         __main__.__dict__.update({"__file__": filename})
 
         self._wait_for_mainpyfile = True
-        self._wait_for_first_stop = False   # if True we are waiting for the first stop (first line),
-                                            # where the debugger is forced to directly continue
+        self._wait_for_first_stop = (
+            False  # if True we are waiting for the first stop (first line),
+        )
+        # where the debugger is forced to directly continue
         self._come_back_from_mainpyfile = False
         self.mainpyfile = self.canonic(filename)
         self._user_requested_quit = False

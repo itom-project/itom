@@ -1,6 +1,5 @@
 import unittest
 from itom import dataObject
-import numpy as np
 
 
 class DataObjectMakeContinuous(unittest.TestCase):
@@ -18,14 +17,14 @@ class DataObjectMakeContinuous(unittest.TestCase):
         test_dataObjectMakeContinuous: Tests the makeContinuous method with various
         slicing operations to ensure data integrity is maintained.
     """
+
     @classmethod
     def setUpClass(cls):
         pass
 
     def test_dataObjectMakeContinuous(self):
-        data = (1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19)
-        sum = np.sum(data)
-        a = dataObject([2, 3, 3], "uint8", continuous=0, data=data)
+        data_values = (1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19)
+        a = dataObject([2, 3, 3], "uint8", continuous=0, data=data_values)
         ac = a.makeContinuous()
         for i, j in zip(a, ac):
             self.assertEqual(i, j)

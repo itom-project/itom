@@ -23,6 +23,7 @@ class ActuatorBasicsTest(unittest.TestCase):
         test_getPos: Tests the getPos method of the actuator.
         test_setPos: Tests the setPosAbs and setPosRel methods of the actuator.
     """
+
     @classmethod
     def setUpClass(cls):
         pass

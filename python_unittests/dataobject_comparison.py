@@ -14,12 +14,14 @@ class DataObjectComparison(unittest.TestCase):
     def test_invertComparison(self):
         npArray = np.ndarray([2, 3, 4])
         with self.assertRaises(ValueError):
-            result = not npArray  # The truth value of an array with more than one element is ambiguous.
-                                  # Use a.any() or a.all()
+            _ = (
+                not npArray
+            )  # The truth value of an array with more than one element is ambiguous.
+            # Use a.any() or a.all()
 
         dataObj = dataObject([2, 3, 4])
         with self.assertRaises(ValueError):
-            result = not dataObj
+            _ = not dataObj
 
     ##########################################################
     def test_bool(self):
@@ -87,7 +89,7 @@ class DataObjectComparison(unittest.TestCase):
 
         for nv in number_values:
             with self.assertRaises(TypeError):
-                a == nv
+                _ = a == nv
 
         # timedelta
         a = dataObject([100, 100], "timedelta")
@@ -103,7 +105,7 @@ class DataObjectComparison(unittest.TestCase):
 
         for nv in number_values:
             with self.assertRaises(TypeError):
-                a == nv
+                _ = a == nv
 
         # rgba
         a = dataObject([2, 1], "rgba32")
@@ -122,7 +124,7 @@ class DataObjectComparison(unittest.TestCase):
 
         for nv in number_values:
             with self.assertRaises(TypeError):
-                a == nv
+                _ = a == nv
 
     def test_comparison_notequal(self):
         dtypes = [
@@ -158,7 +160,6 @@ class DataObjectComparison(unittest.TestCase):
         c[:, :] = dt3
         d = a != b
         e = a != c
-        d[0, 0]
         nptesting.assert_array_equal(d, 255)
         nptesting.assert_array_equal(e, 255)
 
@@ -176,7 +177,7 @@ class DataObjectComparison(unittest.TestCase):
 
         for nv in number_values:
             with self.assertRaises(TypeError):
-                a != nv
+                _ = a != nv
 
         # timedelta
         a = dataObject([100, 100], "timedelta")
@@ -192,7 +193,7 @@ class DataObjectComparison(unittest.TestCase):
 
         for nv in number_values:
             with self.assertRaises(TypeError):
-                a != nv
+                _ = a != nv
 
         # rgba
         a = dataObject([2, 1], "rgba32")
@@ -210,7 +211,7 @@ class DataObjectComparison(unittest.TestCase):
 
         for nv in number_values:
             with self.assertRaises(TypeError):
-                a != nv
+                _ = a != nv
 
     def test_greater(self):
         # datetime
@@ -296,8 +297,8 @@ class DataObjectComparison(unittest.TestCase):
 
             one = dataObject.ones([2, 3, 4], dtype=dt)
             self.assertTrue(np.all(one))
-            self.assertTrue(np.all(one == one))
-            self.assertTrue(np.all((one != one) == 0))
+            self.assertTrue(np.all(one))
+            self.assertFalse(np.any(one != one))
 
             many = dataObject.randN([2, 3, 4], dtype=dt)
             # full DObject compare
@@ -327,7 +328,7 @@ class DataObjectComparison(unittest.TestCase):
         for dt in dtypes:
             obj = dataObject.ones([2, 3, 4], dt)
             with self.assertRaises(TypeError):
-                obj == 2.3j
+                self.assertFalse(np.any(obj == 2.3j))
             self.assertTrue(np.all(obj == 1))
 
 

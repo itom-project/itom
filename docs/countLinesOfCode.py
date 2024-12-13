@@ -115,8 +115,12 @@ if __name__ == "__main__":
     ]
 
     # Count lines of code for all project directories
-    total_lines = sum_lines_of_code_for_multiple_directories(project_directories, extensions)
+    total_lines = sum_lines_of_code_for_multiple_directories(
+        project_directories, extensions
+    )
 
     # Generate and print Markdown table for all projects
-    markdown_output = generate_markdown_table_for_multiple_projects(total_lines, extensions)
+    markdown_output = generate_markdown_table_for_multiple_projects(
+        total_lines, extensions
+    )
     print(markdown_output)

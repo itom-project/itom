@@ -4,6 +4,10 @@
 
 import os
 
+global excludedir
+excludedir = []
+excludedirnames = []
+
 
 def update_source(filename, oldcopyright, copyright):
     """
@@ -24,13 +28,13 @@ def update_source(filename, oldcopyright, copyright):
     """
     utfstr = chr(0xEF) + chr(0xBB) + chr(0xBF)
     # fdata = file(filename,"r+").read()
-    with open(filename, "r+") as f:
-        fdata = f.read()
+    with open(filename, "r+", encoding="utf-8") as file:
+        fdata = file.read()
     isUTF = False
     if fdata.startswith(utfstr):
         isUTF = True
         fdata = fdata[3:]
-    if oldcopyright != None:
+    if oldcopyright is not None:
         if fdata.startswith(oldcopyright):
             fdata = fdata[len(oldcopyright) :]
     if not fdata.startswith(copyright):
@@ -38,12 +42,12 @@ def update_source(filename, oldcopyright, copyright):
         fdata = copyright + fdata
         if isUTF:
             # file(filename,"w").write(utfstr+fdata)
-            with open(filename, "w") as f:
-                f.write(utfstr + fdata)
+            with open(filename, "w", encoding="utf-8") as file:
+                file.write(utfstr + fdata)
         else:
             # file(filename,"w").write(fdata)
-            with open(filename, "w") as f:
-                f.write(fdata)
+            with open(filename, "w") as file:
+                file.write(fdata)
 
 
 def recursive_traversal(dir, oldcopyright, copyright):
@@ -67,9 +71,9 @@ def recursive_traversal(dir, oldcopyright, copyright):
 excludedir = [""]
 excludedirnames = [".svn"]
 
-with open("old_header.txt", "r+") as f:
+with open("old_header.txt", "r+", encoding="utf-8") as f:
     oldcright = f.read()
-with open("itom_header.txt", "r+") as f:
+with open("itom_header.txt", "r+", encoding="utf-8") as f:
     cright = f.read()
 
 recursive_traversal("..\\Qitom", oldcright, cright)
@@ -78,9 +82,9 @@ recursive_traversal("..\\Qitom", oldcright, cright)
 excludedir = [""]
 excludedirnames = [".svn", "Win32", "x64"]
 
-with open("old_header.txt", "r+") as f:
+with open("old_header.txt", "r+", encoding="utf-8") as f:
     oldcright = f.read()
-with open("itom_sdk_header.txt", "r+") as f:
+with open("itom_sdk_header.txt", "r+", encoding="utf-8") as f:
     cright = f.read()
 
 recursive_traversal("..\\DataObject", oldcright, cright)

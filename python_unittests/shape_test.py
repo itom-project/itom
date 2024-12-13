@@ -24,6 +24,7 @@ class ShapeTest(unittest.TestCase):
         test_ellipse_contour: Tests the contour generation for ellipse shapes.
         test_center_point_and_area: Tests the center point and area calculations for shapes.
     """
+
     @classmethod
     def setUpClass(cls):
         pass
@@ -167,6 +168,7 @@ class ShapeTest(unittest.TestCase):
         maskLineDesired = sourceObj.copy()
         nptesting.assert_array_equal(maskLine, sourceObj)
         self.assertEqual(maskLine.shape, (220, 200))
+        self.assertEqual(maskLineDesired.shape, (220, 200))
 
         # check multiple
         masks = sourceObj.createMask([rect, square, circle, ellipse, line])
@@ -185,7 +187,7 @@ class ShapeTest(unittest.TestCase):
                 ptx = contour[0, idx] - cx
                 pty = contour[1, idx] - cy
                 diff = ptx * ptx / (a * a) + pty * pty / (b * b) - 1
-                self.assertAlmostEqual(diff, 0.0, delta=0.1, msg="Idx %i" % idx)
+                self.assertAlmostEqual(diff, 0.0, delta=0.1, msg=f"Idx {idx}")
 
         a = 20
         b = 10

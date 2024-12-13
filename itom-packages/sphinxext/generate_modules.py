@@ -68,7 +68,7 @@ def write_sub(module, kind="Module"):
 
 
 def title_line(title, char):
-    """ Underline the title with the character pass, with the right length."""
+    """Underline the title with the character pass, with the right length."""
     return f"{title}\n{len(title) * char}\n\n"
 
 

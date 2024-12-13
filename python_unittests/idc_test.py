@@ -3,7 +3,6 @@ from itom import loadIDC, saveIDC, dataObject
 import numpy as np
 import tempfile
 import os
-from numpy import testing as nptesting
 
 
 class IdcTest(unittest.TestCase):
@@ -19,6 +18,7 @@ class IdcTest(unittest.TestCase):
         test_saveLoadDataObjects: Tests saving and loading data objects with various data types.
         test_saveLoadSpecialNames: Tests saving and loading data with special key names.
     """
+
     def test_saveLoadDefault(self):
         data = {"a": 1, "b": "string", "c": b"bytes"}
 

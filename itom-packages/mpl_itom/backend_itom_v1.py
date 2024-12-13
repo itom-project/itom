@@ -233,19 +233,19 @@ class FigureCanvasItom(FigureCanvasBase):
         self._destroying = False
         self.itomFig = itomFig
         # self.showEnable = False #this will be set to True if the draw() command
-                     # has been called for the first time e.g. by show()
-                     # of the manager
+        # has been called for the first time e.g. by show()
+        # of the manager
 
         if embeddedCanvas == False:
             self.canvas = itomUI.canvasWidget  # this object is deleted in the
-                                               # destroy-method of manager,
-                                               # due to cyclic garbage collection
+            # destroy-method of manager,
+            # due to cyclic garbage collection
             win = self.canvas
             # win["width"]=w
             # win["height"]=h
             win["mouseTracking"] = (
                 False  # by default, the itom-widget only sends mouse-move events if at least one button is pressed
-                       # or the tracker-button is in checked-state
+                # or the tracker-button is in checked-state
             )
         else:
             self.canvas = itomUI.canvasWidget

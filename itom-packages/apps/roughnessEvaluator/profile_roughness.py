@@ -27,7 +27,7 @@ class ProfileRoughness(ItomUi):
         workspace = __main__.__dict__
         self.gui.comboBox.call("clear")
         vals = []
-        for (key, val) in workspace.items():
+        for key, val in workspace.items():
             if type(val) is dataObject:
                 vals.append(key)
         self.gui.comboBox.call("addItems", vals)
@@ -49,7 +49,9 @@ class ProfileRoughness(ItomUi):
             )
         elif dataObj.dims != 2:
             ui.msgWarning(
-                "wrong size", "Only 1D or 2D data objects are allowed", parent=self.gui,
+                "wrong size",
+                "Only 1D or 2D data objects are allowed",
+                parent=self.gui,
             )
         elif dataObj.shape[1] <= 1:
             ui.msgWarning(
@@ -80,7 +82,6 @@ class ProfileRoughness(ItomUi):
     def filterProfile(self):
         self.gui.groupFiltering["enabled"] = False
         if self.sourceObjCropped is not None:
-
             if self.gui.comboFilterForm["currentText"] == "tilt correction":
                 filter(
                     "subtract1DRegression",

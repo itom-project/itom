@@ -192,12 +192,16 @@ class ItomUi:
                         if self.gui["objectName"] == widget_name:
                             widget = self.gui
                         else:
-                            print(f"Auto-connection failed: Widget {widget_name} could not be found.")
+                            print(
+                                f"Auto-connection failed: Widget {widget_name} could not be found."
+                            )
                             continue
                     try:
                         widget.connect(signal, value)
                     except Exception:
-                        print(f"Auto-connection failed: Widget {widget_name} has no slot {signal}.")
+                        print(
+                            f"Auto-connection failed: Widget {widget_name} has no slot {signal}."
+                        )
 
     def autoslot(*attr):
         """Decorator to mark methods in derived classes to be a slot for a widget signal.
@@ -371,7 +375,9 @@ class ItomUi:
 
         for it in items:
             if not isinstance(it, itom.uiItem):
-                raise TypeError("Item must be an itom.uiItem or a list/tuple of itom.uiItems.")
+                raise TypeError(
+                    "Item must be an itom.uiItem or a list/tuple of itom.uiItems."
+                )
 
         try:
             for it in items:

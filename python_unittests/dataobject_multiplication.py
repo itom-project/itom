@@ -39,7 +39,7 @@ class DataObjectMultiplication(unittest.TestCase):
             obj2 = dataObject.eye(3, typ)
 
             with self.assertRaises(TypeError):
-                obj1 @ obj2
+                _ = obj1 @ obj2
 
     def test_matmul_operator_eye(self):
         """Verify the matmul of two eye matrix with different sizes and types."""
@@ -88,19 +88,19 @@ class DataObjectMultiplication(unittest.TestCase):
         a3 = dataObject([3, 4], dtype="float64", data=list(range(0, 12)))
 
         with self.assertRaises(TypeError):
-            b = a @ 2.0  # scalar multiplication not allowed
+            _ = a @ 2.0  # scalar multiplication not allowed
 
         with self.assertRaises(TypeError):
-            b = 2 @ a  # scalar multiplication not allowed
+            _ = 2 @ a  # scalar multiplication not allowed
 
         with self.assertRaises(TypeError):
-            b = a @ np.eye(3)  # matmul with np.ndarray not allowed
+            _ = a @ np.eye(3)  # matmul with np.ndarray not allowed
 
         with self.assertRaises(TypeError):
-            b = a3 @ a3  # shape inappropriate
+            _ = a3 @ a3  # shape inappropriate
 
         with self.assertRaises(TypeError):
-            b = a2 @ a3  # shape inappropriate
+            _ = a2 @ a3  # shape inappropriate
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 import unittest
 from itom import dataObject, rgba
-from datetime import datetime, timedelta
+from datetime import datetime
 import numpy as np
 from numpy import testing as nptesting
 
@@ -70,7 +70,7 @@ class DataObjectMapping(unittest.TestCase):
             rgba(1, 2, 3, 4),
         ]
         d = dataObject([1, 4], "rgba32")
-        for idx in range(len(values)):
+        for idx, value in enumerate(values):
             d[0, idx] = values[idx]
         for a, b in zip(d.value, values):
             self.assertEqual(a, b)
@@ -83,8 +83,8 @@ class DataObjectMapping(unittest.TestCase):
             datetime(2099, 12, 31, 23, 59, 59, 99999),
         ]
         d = dataObject([1, 4], "datetime")
-        for idx in range(len(values)):
-            d[0, idx] = values[idx]
+        for idx, value in enumerate(values):
+            d[0, idx] = value
         for a, b in zip(d.value, values):
             self.assertEqual(a, b)
 

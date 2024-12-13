@@ -14,9 +14,11 @@ from sphinx.jinja2glue import BuiltinTemplateLoader
 from .docscrape import NumpyDocString, FunctionDoc, ClassDoc
 
 if sys.version_info[0] >= 3:
+
     def sixu(s):
         return s
 else:
+
     def sixu(s):
         return s.decode("unicode_escape")
 
@@ -29,6 +31,7 @@ class SphinxDocString(NumpyDocString):
         SphinxDocString: A class for parsing and formatting docstrings in a way that
                          is compatible with Sphinx and NumPy documentation standards.
     """
+
     def __init__(self, docstring, config={}):
         NumpyDocString.__init__(self, docstring, config=config)
         self.load_config(config)
@@ -76,9 +79,7 @@ class SphinxDocString(NumpyDocString):
             out += [""]
             for param, param_type, desc in self[name]:
                 if param_type:
-                    out += self._str_indent(
-                        [f"**{param.strip()}** : {param_type}"]
-                    )
+                    out += self._str_indent([f"**{param.strip()}** : {param_type}"])
                 else:
                     out += self._str_indent([param.strip()])
                 if desc:
@@ -94,9 +95,7 @@ class SphinxDocString(NumpyDocString):
             out += [""]
             for param, param_type, desc in self[name]:
                 if param_type:
-                    out += self._str_indent(
-                        [f"**{param.strip()}** : {param_type}"]
-                    )
+                    out += self._str_indent([f"**{param.strip()}** : {param_type}"])
                 else:
                     out += self._str_indent(["**%s**" % param.strip()])
                 if desc:

@@ -9,6 +9,7 @@ class DataObjectUInt32Check(unittest.TestCase):
     This module contains a test case class `DataObjectUInt32Check` that verifies
     the restrictions on creating or converting dataObject instances to uint32 type.
     """
+
     @classmethod
     def setUpClass(cls):
         pass
@@ -21,11 +22,11 @@ class DataObjectUInt32Check(unittest.TestCase):
 
         d = dataObject.randN([2, 2], "float32")
         with self.assertRaises(TypeError):
-            e = d.astype("uint32")
+            d.astype("uint32")
 
         a = np.array([2, 2, 2], "uint32")  # np.array for uint32 is allowed
         with self.assertRaises(TypeError):
-            b = dataObject(a)
+            dataObject(a)
 
 
 if __name__ == "__main__":

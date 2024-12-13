@@ -104,10 +104,14 @@ class FigureCanvasItomAgg(FigureCanvasItom, FigureCanvasAgg):
 
         if matplotlib.__version__ >= "3.9.0":
             try:
-                self.matplotlibWidgetUiItem.call("paintResultWithImageFormat", buf, "rgba8888", x0, y0, W, H, blit)
+                self.matplotlibWidgetUiItem.call(
+                    "paintResultWithImageFormat", buf, "rgba8888", x0, y0, W, H, blit
+                )
             except RuntimeError:
                 if self.matplotlibWidgetUiItem.exists():
-                    print("For matplotlib 3.9, the itom matplotlib designer plugin must have version >= 2.7.0")
+                    print(
+                        "For matplotlib 3.9, the itom matplotlib designer plugin must have version >= 2.7.0"
+                    )
                 else:
                     # see comment above
                     pass

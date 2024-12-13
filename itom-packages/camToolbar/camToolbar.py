@@ -336,10 +336,10 @@ class camToolbar(abstractObjInteractionToolBar):
                         eval(f"{camname}.acquire()")
 
                         script = (
-                            'tmpObj=dataObject()\n'
-                            '{camname}.getVal(tmpObj)\n'
+                            "tmpObj=dataObject()\n"
+                            "{camname}.getVal(tmpObj)\n"
                             'globals()["{dataObj}"]=tmpObj.copy()\n'
-                            'del tmpObj'
+                            "del tmpObj"
                         )
                         exec(script.format(camname=camname, dataObj=dataObj), globals())
 
@@ -366,9 +366,9 @@ class camToolbar(abstractObjInteractionToolBar):
                     if binning > 1:
                         print("Warning, binning not compatible with stack")
                     exec(
-                        'tmpObj=dataObject()\n'
-                        '{camname}.acquire()\n'
-                        '{camname}.getVal(tmpObj)\n'
+                        "tmpObj=dataObject()\n"
+                        "{camname}.acquire()\n"
+                        "{camname}.getVal(tmpObj)\n"
                         'globals()["{dataObj}"] = dataObject([{cnt},tmpObj.shape[0], tmpObj.shape[1]], tmpObj.dtype)\n'
                         'globals()["{dataObj}"][0,:, :] = tmpObj'.format(
                             cnt=stacked, camname=camname, dataObj=dataObj
@@ -376,7 +376,7 @@ class camToolbar(abstractObjInteractionToolBar):
                     )
                     for i in range(1, stacked):
                         exec(
-                            'tmpObj=dataObject()\n{camname}.acquire()\n{camname}.getVal(tmpObj)\n'
+                            "tmpObj=dataObject()\n{camname}.acquire()\n{camname}.getVal(tmpObj)\n"
                             'globals()["{dataObj}"][{cnt},:, :] = tmpObj'.format(
                                 cnt=i, camname=camname, dataObj=dataObj
                             )
@@ -433,11 +433,11 @@ class camToolbar(abstractObjInteractionToolBar):
                 return [check, ""]
 
         script = (
-            '{camname}.acquire()\n'
-            'tmpObj=dataObject()\n'
-            '{camname}.getVal(tmpObj)\n'
+            "{camname}.acquire()\n"
+            "tmpObj=dataObject()\n"
+            "{camname}.getVal(tmpObj)\n"
             'globals()["{dataObj}"]=tmpObj.copy()\n'
-            'del tmpObj\n'
+            "del tmpObj\n"
         )
 
         try:

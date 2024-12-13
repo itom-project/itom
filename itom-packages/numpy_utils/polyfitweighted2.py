@@ -86,7 +86,9 @@ def polyfitweighted2(koX, koY, koZ, n, margin=0.2, w=None):
     y = koY.copy()
     z = koZ.copy()
     ma = np.isfinite(z)
-    x = x[ma]  # Z-values are measured and can be NaN or infinite; such values are filtered out.
+    x = x[
+        ma
+    ]  # Z-values are measured and can be NaN or infinite; such values are filtered out.
     y = y[ma]
     pw = pw[ma]
     z = z[ma]

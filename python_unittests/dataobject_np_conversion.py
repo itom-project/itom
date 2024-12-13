@@ -35,6 +35,7 @@ class DataObjectNpConversion(unittest.TestCase):
         test_convertNpArrayToDataObjectAndCheckForOriginNpTags: Tests conversion of
         numpy arrays to dataObject and checks for original numpy tags.
     """
+
     @classmethod
     def setUpClass(cls):
         pass
@@ -47,16 +48,19 @@ class DataObjectNpConversion(unittest.TestCase):
         b2 = np.array(a[:, 1:3, :])
         result = 4 + 5 + 6 + 7 + 8 + 9 + 14 + 15 + 16 + 17 + 18 + 19
         self.assertEqual(np.sum(b2), result)
-        sum = 0
+        total_sum = 0
         for i in a[:, 1:3, :]:
-            sum += i
-        self.assertEqual(result, sum)
+            total_sum += i
+        self.assertEqual(result, total_sum)
 
         if np.__version__ >= "1.23.0":
             # the base is now a tuple (dataObject, capsule object)
             # see: https://github.com/itom-project/itom/issues/288
-            self.assertIs(b1.base[0], a)
-            self.assertEqual(len(b1.base), 2)
+            if isinstance(b1.base, tuple):
+                self.assertIs(b1.base[0], a)
+                self.assertEqual(len(b1.base), 2)
+            else:
+                self.assertIs(b1.base, a)
         else:
             self.assertIs(b1.base, a)
 

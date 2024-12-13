@@ -15,6 +15,7 @@ class DataObjectStaticConstructors(unittest.TestCase):
         test_default_types: Tests that all static constructors return `uint8` data type by default.
         test_stack_dimensions: Tests the dimensions of stacked `dataObject` instances.
     """
+
     @classmethod
     def setUpClass(cls):
         pass

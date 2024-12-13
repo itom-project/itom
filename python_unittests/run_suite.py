@@ -1,27 +1,27 @@
 import sys
 import unittest
 
-pyversion = (sys.version_info.major, sys.version_info.minor)
-import dataobject_squeeze_reshape
-import dataobject_static_constructors
-import dataobject_constructors
 import dataobject_comparison
+import dataobject_constructors
+import dataobject_datetime
+import dataobject_makecontinuous
 import dataobject_mapping
 import dataobject_multiplication
 import dataobject_np_conversion
-import dataobject_makecontinuous
 import dataobject_scale_offset
-import dataobject_datetime
+import dataobject_squeeze_reshape
+import dataobject_static_constructors
 import datatype_conversion_test
-import pointcloud_pickle
 import idc_test
 import plot_test
+import pointcloud_pickle
 import shape_test
 
+pyversion = (sys.version_info.major, sys.version_info.minor)
 if pyversion >= (3, 6):
-    import itom_stubs_generator
     import itom_algorithm_stubs_generator
     import itom_jedilib
+    import itom_stubs_generator
 
 
 def suite():
@@ -34,93 +34,93 @@ def suite():
     Functions:
         suite(): Creates and returns a unittest.TestSuite object containing all the specified test cases.
     """
-    suite = unittest.TestSuite()
-    suite.addTest(
+    test_suite = unittest.TestSuite()
+    test_suite.addTest(
         unittest.defaultTestLoader.loadTestsFromTestCase(
             dataobject_squeeze_reshape.DataObjectResize
         )
     )
-    suite.addTest(
+    test_suite.addTest(
         unittest.defaultTestLoader.loadTestsFromTestCase(
             dataobject_static_constructors.DataObjectStaticConstructors
         )
     )
-    suite.addTest(
+    test_suite.addTest(
         unittest.defaultTestLoader.loadTestsFromTestCase(
             dataobject_constructors.DataObjectConstructors
         )
     )
-    suite.addTest(
+    test_suite.addTest(
         unittest.defaultTestLoader.loadTestsFromTestCase(
             dataobject_comparison.DataObjectComparison
         )
     )
-    suite.addTest(
+    test_suite.addTest(
         unittest.defaultTestLoader.loadTestsFromTestCase(
             dataobject_mapping.DataObjectMapping
         )
     )
-    suite.addTest(
+    test_suite.addTest(
         unittest.defaultTestLoader.loadTestsFromTestCase(
             dataobject_multiplication.DataObjectMultiplication
         )
     )
-    suite.addTest(
+    test_suite.addTest(
         unittest.defaultTestLoader.loadTestsFromTestCase(
             dataobject_np_conversion.DataObjectNpConversion
         )
     )
-    suite.addTest(
+    test_suite.addTest(
         unittest.defaultTestLoader.loadTestsFromTestCase(
             dataobject_makecontinuous.DataObjectMakeContinuous
         )
     )
-    suite.addTest(
+    test_suite.addTest(
         unittest.defaultTestLoader.loadTestsFromTestCase(
             dataobject_scale_offset.DataObjectScaleOffset
         )
     )
-    suite.addTest(
+    test_suite.addTest(
         unittest.defaultTestLoader.loadTestsFromTestCase(
             dataobject_datetime.DataObjectDatetime
         )
     )
-    suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(plot_test.PlotTest))
-    suite.addTest(
+    test_suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(plot_test.PlotTest))
+    test_suite.addTest(
         unittest.defaultTestLoader.loadTestsFromTestCase(shape_test.ShapeTest)
     )
-    suite.addTest(
+    test_suite.addTest(
         unittest.defaultTestLoader.loadTestsFromTestCase(
             datatype_conversion_test.DatatypeConversionTest
         )
     )
-    suite.addTest(
+    test_suite.addTest(
         unittest.defaultTestLoader.loadTestsFromTestCase(
             pointcloud_pickle.PointCloudPickle
         )
     )
-    suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(idc_test.IdcTest))
+    test_suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(idc_test.IdcTest))
 
     if pyversion >= (3, 6):
-        suite.addTest(
+        test_suite.addTest(
             unittest.defaultTestLoader.loadTestsFromTestCase(
                 itom_stubs_generator.ItomStubsGenTest
             )
         )
-        suite.addTest(
+        test_suite.addTest(
             unittest.defaultTestLoader.loadTestsFromTestCase(
                 itom_jedilib.ItomJediLibTest
             )
         )
-        suite.addTest(
+        test_suite.addTest(
             unittest.defaultTestLoader.loadTestsFromTestCase(
                 itom_algorithm_stubs_generator.ItomAlgorithmsStubsGenTest
             )
         )
-    return suite
+    return test_suite
 
 
 if __name__ == "__main__":
     runner = unittest.TextTestRunner(verbosity=2)
-    test_suite = suite()
-    runner.run(test_suite)
+    testSuite = suite()
+    runner.run(testSuite)

@@ -1138,9 +1138,7 @@ class TiffPage:
                             tuple(validate[value] for value in tags[name].value),
                         )
                 except KeyError:
-                    raise ValueError(
-                        f"{name}.value ({tags[name].value}) not supported"
-                    )
+                    raise ValueError(f"{name}.value ({tags[name].value}) not supported")
 
         tag = tags["bits_per_sample"]
         if tag.count == 1:
@@ -1886,11 +1884,7 @@ class Record(dict):
                     continue
                 elif isinstance(v[0], TiffPage):
                     v = [i.index for i in v if i]
-            s.append(
-                (f"* {k}: {str(v)}")
-                .split("\n", 1)[0][:PRINT_LINE_LEN]
-                .rstrip()
-            )
+            s.append((f"* {k}: {str(v)}").split("\n", 1)[0][:PRINT_LINE_LEN].rstrip())
         for k, v in lists:
             l = []
             for i, w in enumerate(v):

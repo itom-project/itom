@@ -1,5 +1,5 @@
 import unittest
-from itom import dataObject, rgba
+from itom import dataObject
 import numpy as np
 from numpy import testing as nptesting
 from datetime import datetime, timedelta, timezone
@@ -35,6 +35,7 @@ class DataObjectDatetime(unittest.TestCase):
         test_createDatetimeDataObject: Tests creation of DataObject with datetime values.
         test_createTimedeltaDataObject: Tests creation of DataObject with timedelta values.
     """
+
     @classmethod
     def setUpClass(cls):
         pass
@@ -101,7 +102,7 @@ class DataObjectDatetime(unittest.TestCase):
         for b in blacklist:
             obj = dataObject([2, 4, 3], b)
             with self.assertRaises(TypeError):
-                self.dateObj + obj
+                _ = self.dateObj + obj
 
             with self.assertRaises(TypeError):
                 obj2 = self.dateObj.copy()
@@ -126,11 +127,11 @@ class DataObjectDatetime(unittest.TestCase):
             obj1 = dataObject([2, 4, 3], "timedelta")
             obj2 = dataObject([2, 4, 3], b)
             with self.assertRaises(TypeError):
-                obj1 + obj2
+                _ = obj1 + obj2
 
             with self.assertRaises(TypeError):
                 obj2 = self.tdObj.copy()
-                obj2 += obj
+                _ = obj2 += obj
 
         ## OUT-OF-PLACE ADD
 
@@ -312,13 +313,13 @@ class DataObjectDatetime(unittest.TestCase):
             self.dateObj * (2j + 3)
 
         with self.assertRaises(TypeError):
-            self.dateObj *= 2
+            self.dateObj = self.dateObj * 2
 
         with self.assertRaises(TypeError):
-            self.dateObj *= 2.5
+            self.dateObj = self.dateObj * 2.5
 
         with self.assertRaises(TypeError):
-            self.dateObj *= 2j + 3
+            self.dateObj = self.dateObj * (2j + 3)
 
         with self.assertRaises(TypeError):
             self.dateObj.mul(self.tdObj)
@@ -363,7 +364,7 @@ class DataObjectDatetime(unittest.TestCase):
             self.assertAlmostEqual(t1, t2 * 2.5)
 
         with self.assertRaises(TypeError):
-            self.tdObj *= 2j + 3
+            self.tdObj = self.tdObj * (2j + 3)
 
     def test_abs(self):
         with self.assertRaises(TypeError):
@@ -376,54 +377,54 @@ class DataObjectDatetime(unittest.TestCase):
 
     def test_negate(self):
         with self.assertRaises(TypeError):
-            ~(self.dateObj)
+            _ = ~(self.dateObj)
 
         with self.assertRaises(TypeError):
-            ~(self.tdObj)
+            _ = ~(self.tdObj)
 
     def test_shift(self):
         with self.assertRaises(TypeError):
-            self.dateObj << 2
+            _ = self.dateObj << 2
 
         with self.assertRaises(TypeError):
-            self.dateObj >> 2
+            _ = self.dateObj >> 2
 
         with self.assertRaises(TypeError):
-            self.dateObj <<= 2
+            _ = self.dateObj <<= 2
 
         with self.assertRaises(TypeError):
-            self.dateObj >>= 2
+            _ = self.dateObj >>= 2
 
         with self.assertRaises(TypeError):
-            self.tdObj << 2
+            _ = self.tdObj << 2
 
         with self.assertRaises(TypeError):
-            self.tdObj >> 2
+            _ = self.tdObj >> 2
 
         with self.assertRaises(TypeError):
-            self.tdObj <<= 2
+            _ = self.tdObj <<= 2
 
         with self.assertRaises(TypeError):
-            self.tdObj >>= 2
+            _ = self.tdObj >>= 2
 
     def test_bitops(self):
         for obj in [self.dateObj, self.tdObj]:
             obj2 = obj.copy()
 
             with self.assertRaises(TypeError):
-                obj ^ obj2
+                _ = obj ^ obj2
 
             with self.assertRaises(TypeError):
                 obj ^= obj2
 
             with self.assertRaises(TypeError):
-                obj | obj2
+                _ = obj | obj2
 
             with self.assertRaises(TypeError):
                 obj |= obj2
 
             with self.assertRaises(TypeError):
-                obj & obj2
+                _ = obj & obj2
 
             with self.assertRaises(TypeError):
                 obj &= obj2
@@ -431,31 +432,31 @@ class DataObjectDatetime(unittest.TestCase):
     def test_complex_operators(self):
         for obj in [self.dateObj, self.tdObj]:
             with self.assertRaises(TypeError):
-                obj.imag
+                _ = obj.imag
 
             with self.assertRaises(TypeError):
                 obj.imag = 2
 
             with self.assertRaises(TypeError):
-                obj.real
+                _ = obj.real
 
             with self.assertRaises(TypeError):
                 obj.real = 5
 
             with self.assertRaises(TypeError):
-                obj.arg()
+                _ = obj.arg()
 
             with self.assertRaises(TypeError):
-                obj.adj()
+                _ = obj.adj()
 
             with self.assertRaises(TypeError):
-                obj.adjugate()
+                _ = obj.adjugate()
 
             with self.assertRaises(TypeError):
-                obj.conj()
+                _ = obj.conj()
 
             with self.assertRaises(TypeError):
-                obj.conjugate()
+                _ = obj.conjugate()
 
     def test_npdatetime64_to_dataObject(self):
         # timebase us
@@ -562,14 +563,14 @@ class DataObjectDatetime(unittest.TestCase):
         for timebase in ["Y", "M"]:
             with self.assertRaises(ValueError):
                 dateNpTimebase = np.array(
-                    self.tdObj, dtype="timedelta64[%s]" % timebase
+                    self.tdObj, dtype=f"timedelta64[{timebase}]"
                 )
 
         for timebase in ["W", "D", "h", "m", "s", "ms", "us", "ns", "as", "fs", "ps"]:
-            dateNpTimebase = np.array(self.tdObj, dtype="timedelta64[%s]" % timebase)
-            dateNpTimebase2 = dateNp.astype("timedelta64[%s]" % timebase)
+            dateNpTimebase = np.array(self.tdObj, dtype=f"timedelta64[{timebase}]")
+            dateNpTimebase2 = dateNp.astype(f"timedelta64[{timebase}]")
             nptesting.assert_array_equal(
-                dateNpTimebase, dateNpTimebase2, err_msg="Timebase: %s" % timebase
+                dateNpTimebase, dateNpTimebase2, err_msg=f"Timebase: {timebase}"
             )
 
         # datetime
@@ -603,10 +604,10 @@ class DataObjectDatetime(unittest.TestCase):
             "fs",
             "ps",
         ]:
-            dateNpTimebase = np.array(dateObjNoTz, dtype="datetime64[%s]" % timebase)
-            dateNpTimebase2 = dateNp.astype("datetime64[%s]" % timebase)
+            dateNpTimebase = np.array(dateObjNoTz, dtype=f"datetime64[{timebase}]")
+            dateNpTimebase2 = dateNp.astype(f"datetime64[{timebase}]")
             nptesting.assert_array_equal(
-                dateNpTimebase, dateNpTimebase2, err_msg="Timebase: %s" % timebase
+                dateNpTimebase, dateNpTimebase2, err_msg=f"Timebase: {timebase}"
             )
 
     def test_dateTimeAssign(self):

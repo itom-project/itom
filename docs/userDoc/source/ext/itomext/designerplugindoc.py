@@ -19,9 +19,7 @@ class DesignerPluginDocInclude(Include):
         rstPath = rstPath.replace(
             "\\\\", "/"
         )  # include command wants to have slash only
-        rstPath = rstPath.replace(
-            "\\", "/"
-        )  # include command wants to have slash only
+        rstPath = rstPath.replace("\\", "/")  # include command wants to have slash only
         rstFileName = os.path.join(rstPath, "%s.rst" % self.arguments[0])
         rstFileName = rstFileName.replace(
             "\\\\", "/"

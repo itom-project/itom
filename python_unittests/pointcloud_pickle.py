@@ -27,6 +27,7 @@ if hasPCL:
             test_picklePointCloud: Tests pickling and unpickling of a point cloud object.
             test_picklePolygonMesh: Tests pickling and unpickling of a polygon mesh object.
         """
+
         @classmethod
         def setUpClass(cls):
             pass
