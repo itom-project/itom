@@ -363,6 +363,12 @@ RetVal ScriptEditorWidget::initEditor()
     m_lineNumberPanel->setOrderInZone(3);
 
     auto p = QSharedPointer<GlobalCheckerPanel>(new GlobalCheckerPanel("GlobalCheckerPanel"));
+    connect(
+        this,
+        &ScriptEditorWidget::outlineModelChanged,
+        p.data(),
+        &GlobalCheckerPanel::outlineModelChanged
+    );
     panels()->append(p.dynamicCast<ito::Panel>(), ito::Panel::Right);
 
     m_pyGotoAssignmentMode =
@@ -1129,7 +1135,10 @@ void ScriptEditorWidget::removeCurrentCallstackLine()
 
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal ScriptEditorWidget::showLineAndHighlightWord(
-    const int line, const QString& highlightedText, Qt::CaseSensitivity caseSensitivity)
+    const int line,
+    const QString& highlightedText,
+    Qt::CaseSensitivity caseSensitivity /*= Qt::CaseInsensitive*/,
+    bool highlightWord /*= true*/)
 {
     ito::RetVal retval;
 
@@ -1137,12 +1146,15 @@ RetVal ScriptEditorWidget::showLineAndHighlightWord(
     {
         retval += setCursorPosAndEnsureVisible(line);
 
-        QString text = lineText(line);
-        int idx = text.indexOf(highlightedText, 0, caseSensitivity);
-
-        if (idx >= 0)
+        if (highlightWord)
         {
-            setSelection(line, idx, line, idx + highlightedText.size());
+            QString text = lineText(line);
+            int idx = text.indexOf(highlightedText, 0, caseSensitivity);
+
+            if (idx >= 0)
+            {
+                setSelection(line, idx, line, idx + highlightedText.size());
+            }
         }
     }
 

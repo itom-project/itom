@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2023, Institut für Technische Optik (ITO),
+    Copyright (C) 2024, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of itom.
@@ -47,6 +47,7 @@ and error indicators.
 #include "../panel.h"
 #include "../utils/utils.h"
 #include "../textBlockUserData.h"
+#include "models/outlineItem.h"
 
 #include <qevent.h>
 #include <qsize.h>
@@ -54,11 +55,14 @@ and error indicators.
 #include <qicon.h>
 #include <qmap.h>
 #include <qtimer.h>
+#include <qsharedpointer.h>
 
 class QMenu;
 class QAction;
 
 namespace ito {
+
+class ScriptEditorWidget;
 
 /*
 Displays all checker messages found in the document.
@@ -73,9 +77,14 @@ public:
 
     virtual QSize sizeHint() const;
 
+public slots:
+    void outlineModelChanged(ito::ScriptEditorWidget* sew, QSharedPointer<OutlineItem> rootItem);
+
 protected:
     virtual void paintEvent(QPaintEvent *e);
     virtual void mousePressEvent(QMouseEvent *e);
+    virtual void mouseMoveEvent(QMouseEvent* e);
+    virtual void mouseReleaseEvent(QMouseEvent* e);
     virtual void wheelEvent(QWheelEvent* e);
 
     float getMarkerSpacing() const;
@@ -90,7 +99,8 @@ protected:
             bookmark(false),
             breakpoint(false),
             headOfCollapsedFold(false),
-            worstCaseStatus(0)
+            worstCaseStatus(0),
+            startOfCodeCell(false)
         {}
 
         CheckerItem(int orgLineIndex) :
@@ -98,7 +108,8 @@ protected:
             bookmark(false),
             breakpoint(false),
             headOfCollapsedFold(false),
-            worstCaseStatus(0)
+            worstCaseStatus(0),
+            startOfCodeCell(false)
         {}
 
         int originalLineIndex;
@@ -116,6 +127,9 @@ protected:
         //!< 0 if no status flag in this line, else the
         //! worst case as ito::CodeCheckerItem value
         int worstCaseStatus;
+
+        //!< true if this line is the first line of a code cell
+        bool startOfCodeCell;
     };
 
 private:
@@ -133,6 +147,12 @@ private:
     // in the script.
     QList<CheckerItem> m_itemCache;
     QTimer m_cacheRenewTimer;
+
+    // the latest reported version of the script outline (for code cells)
+    QSharedPointer<OutlineItem> m_outlineCache;
+
+    // true between mousePress andMouseRelease event
+    bool m_globalCheckerPanelMousePressed;
 
 private Q_SLOTS:
     void renewItemCache();

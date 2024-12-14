@@ -163,8 +163,8 @@ ScriptDockWidget::ScriptDockWidget(const QString &title, const QString &objName,
     m_classMenuBar->setMaximumHeight(20);
     m_pVBox->addWidget(m_classMenuBar, 1);
 
-    connect(m_classBox, SIGNAL(activated(int)), this, SLOT(navigatorClassSelected(int)));
-    connect(m_methodBox, SIGNAL(activated(int)), this, SLOT(navigatorMethodSelected(int)));
+    connect(m_classBox, &QComboBox::activated, this, &ScriptDockWidget::navigatorClassSelected);
+    connect(m_methodBox, &QComboBox::activated, this, &ScriptDockWidget::navigatorMethodSelected);
 
     // Add EditorTab
     m_pVBox->addWidget(m_tab);
@@ -668,7 +668,9 @@ void ScriptDockWidget::navigatorClassSelected(int row)
         {
             editor->showLineAndHighlightWord(
                 classItem->m_startLineIdx,
-                classItem->m_name);
+                classItem->m_name,
+                Qt::CaseInsensitive,
+                classItem->m_type != OutlineItem::typeCodeCell);
         }
 
         m_methodBox->clear();

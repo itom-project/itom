@@ -120,9 +120,14 @@ public:
     inline QString getUntitledName() const { return tr("Untitled%1").arg(m_uid); }
 
     RetVal setCursorPosAndEnsureVisible(const int line, bool errorMessageClick = false, bool showSelectedCallstackLine = false);
-    RetVal showLineAndHighlightWord(const int line, const QString &highlightedText, Qt::CaseSensitivity caseSensitivity = Qt::CaseInsensitive);
+    RetVal showLineAndHighlightWord(
+        const int line,
+        const QString &highlightedText,
+        Qt::CaseSensitivity caseSensitivity = Qt::CaseInsensitive,
+        bool highlightWord = true);
 
-    void removeCurrentCallstackLine(); //!< removes the current-callstack-line arrow from the breakpoint panel, if currently displayed
+    //!< removes the current-callstack-line arrow from the breakpoint panel, if currently displayed
+    void removeCurrentCallstackLine();
 
     const ScriptEditorStorage saveState() const;
     RetVal restoreState(const ScriptEditorStorage &data);
