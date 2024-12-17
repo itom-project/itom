@@ -144,8 +144,6 @@ public:
 
     QSharedPointer<OutlineItem> parseOutline(bool forceParsing = false) const;
 
-    bool isCodeCellStart(const QString& text, QString& name) const;
-
     //!< returns true if the current line can be a trigger to insert a template docstring
     //!< for a possible method / function, this line belongs to.
     bool currentLineCanHaveDocstring() const;
@@ -308,6 +306,7 @@ public slots:
 
     void menuRunScript();
     void menuRunSelection();
+    void menuRunCodeCell();
     void menuDebugScript();
     void menuStopScript();
 
@@ -351,7 +350,7 @@ private slots:
     void fileSysWatcherFileChangedStep2(const QString &path);
     void printPreviewRequested(QPrinter *printer);
 
-    void dumpFoldsToConsole(bool);
+    void dumpFoldsToConsole();
     void onCursorPositionChanged();
     void onTextChanged();
     void tabChangeRequest();

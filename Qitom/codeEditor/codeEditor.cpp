@@ -677,6 +677,12 @@ void CodeEditor::paintEvent(QPaintEvent* e)
             bottom = block.topPosition + blockBoundingRect(block.textBlock).height() - 1;
             indentation = Utils::TextBlockHelper::getFoldLvl(block.textBlock);
 
+            //foldLvl is always in steps of 2, since only even numbers are real indentations.
+            //Odd numbers are another fold level but with the same indentation than the previous
+            //even number.
+            indentation = indentation / 2;
+
+
             for (int i = 1; i < indentation; ++i)
             {
                 painter.drawLine(

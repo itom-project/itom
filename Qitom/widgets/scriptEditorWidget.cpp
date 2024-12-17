@@ -702,6 +702,12 @@ void ScriptEditorWidget::initMenus()
         SLOT(menuRunSelection()),
         QKeySequence(tr("F9", "QShortcut")));
 
+    m_editorMenuActions["runCodeCell"] = editorMenu->addAction(
+        QIcon(":/classNavigator/icons/codeCell.png"),
+        tr("Run Code Cell"),
+        this,
+        SLOT(menuRunCodeCell()));
+
     m_editorMenuActions["debugScript"] = editorMenu->addAction(
         QIcon(":/script/icons/debugScript.png"),
         tr("Debug Script"),
@@ -750,6 +756,9 @@ void ScriptEditorWidget::initMenus()
 
     m_editorMenuActions["charsetEncoding"] =
         editorMenu->addAction(tr("&Charset Encoding..."), this, SLOT(menuScriptCharsetEncoding()));
+
+    /*m_editorMenuActions["dumpFolding"] =
+        editorMenu->addAction(tr("Dump Folding..."), this, SLOT(dumpFoldsToConsole()));*/
 
 #if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
 #if QT_VERSION < QT_VERSION_CHECK(5, 11, 0)
@@ -1404,6 +1413,64 @@ void ScriptEditorWidget::menuRunSelection()
         }
 
         emit pythonRunSelection(defaultText);
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void ScriptEditorWidget::menuRunCodeCell()
+{
+    QTextCursor cursor = textCursor();
+
+    if (cursor.hasSelection())
+    {
+        QMessageBox::information(
+            this,
+            tr("Run Code Cell"),
+            tr("For running a code cell, no text must be selected.")
+        );
+        return;
+    }
+    else
+    {
+        int lineFrom, indexFrom;
+        bool found = false;
+
+        // single line
+        getCursorPosition(&lineFrom, &indexFrom);
+
+        // check if cursor position is within code cell
+        m_rootOutlineItem = parseOutline();
+
+        foreach(const auto & item, m_rootOutlineItem->m_childs)
+        {
+            if (item->m_type == OutlineItem::typeCodeCell)
+            {
+                if (item->m_startLineIdx <= lineFrom && item->m_endLineIdx >= lineFrom)
+                {
+                    cursor.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor, 1);
+                    cursor.movePosition(QTextCursor::StartOfBlock, QTextCursor::MoveAnchor, item->m_startLineIdx);
+
+                    if (item->m_endLineIdx > item->m_startLineIdx)
+                    {
+                        cursor.movePosition(QTextCursor::NextBlock, QTextCursor::KeepAnchor, item->m_endLineIdx - item->m_startLineIdx);
+                    }
+
+                    cursor.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
+                    QString text = cursor.selectedText().replace(QChar(0x2029), '\n');
+                    emit pythonRunSelection(text);
+                    found = true;
+                    break;
+                }
+            }
+        }
+
+        if (!found)
+        {
+            QMessageBox::information(
+                this,
+                tr("Run Code Cell"),
+                tr("The current cursor position is not within any code cell"));
+        }
     }
 }
 
@@ -3683,28 +3750,6 @@ void ScriptEditorWidget::parseOutlineRecursive(QSharedPointer<OutlineItem>& pare
 }
 
 //-------------------------------------------------------------------------------------
-bool ScriptEditorWidget::isCodeCellStart(const QString& text, QString& name) const
-{
-    if (text.startsWith("#%%"))
-    {
-        name = text.mid(3).trimmed();
-        return true;
-    }
-    else if (text.startsWith("# %%"))
-    {
-        name = text.mid(4).trimmed();
-        return true;
-    }
-    else if (text.startsWith("# <codecell>"))
-    {
-        name = text.mid(12).trimmed();
-        return true;
-    }
-
-    return false;
-}
-
-//-------------------------------------------------------------------------------------
 QSharedPointer<OutlineItem> ScriptEditorWidget::parseOutline(bool forceParsing /*=false*/) const
 {
     if (!m_outlineDirty && !forceParsing)
@@ -3727,11 +3772,11 @@ QSharedPointer<OutlineItem> ScriptEditorWidget::parseOutline(bool forceParsing /
         const QTextBlock& block = doc->findBlockByNumber(blockIdx);
 
         // check for code cell
-        blockText = block.text();
+        blockText = Utils::lstrip(block.text());
 
         if (blockText.startsWith("#"))
         {
-            if (isCodeCellStart(blockText, codeCellName))
+            if (Utils::isCodeCellStart(blockText, codeCellName))
             {
                 // correct the endLineIdx of the previous codeCell, if one exists
                 if (codeCells.size() > 0)
@@ -3797,7 +3842,7 @@ void ScriptEditorWidget::outlineTimerElapsed()
 }
 
 //-------------------------------------------------------------------------------------
-void ScriptEditorWidget::dumpFoldsToConsole(bool)
+void ScriptEditorWidget::dumpFoldsToConsole()
 {
     int lvl;
     bool trigger;

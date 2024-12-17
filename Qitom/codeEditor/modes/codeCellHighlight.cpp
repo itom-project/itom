@@ -136,7 +136,7 @@ void CodeCellHighlighterMode::updateActiveCodeCell()
             if (numLines > 0)
             {
                 m_activeCodeCellDecorator = TextDecoration::Ptr(
-                    new TextDecoration(editor()->document(), -1, -1, codeCellStartIndex + 1, codeCellEndIndex, 1));
+                    new TextDecoration(editor()->document(), -1, -1, codeCellStartIndex + 1, codeCellEndIndex + 1, 1));
                 m_activeCodeCellDecorator->setBackground(QBrush(m_activeCellBgColor));
                 m_activeCodeCellDecorator->setFullWidth(true, false);
                 editor()->decorations()->append(m_activeCodeCellDecorator);
@@ -219,6 +219,8 @@ void CodeCellHighlighterMode::outlineModelChanged(ScriptEditorWidget* /*sew*/, Q
     }
 
     m_rootOutline = rootItem;
+
+    updateActiveCodeCell();
 }
 
 

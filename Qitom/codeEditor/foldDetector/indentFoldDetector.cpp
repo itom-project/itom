@@ -85,19 +85,22 @@ Detects fold level by looking at the block indentation.
 :param prev_block: previous text block
 :param block: current block to highlight
 */
-int IndentFoldDetector::detectFoldLevel(const QTextBlock &previousBlock, const QTextBlock &block)
+int IndentFoldDetector::detectFoldLevel(const QTextBlock &previousBlock, const QTextBlock &block, bool& withinCodeCell)
 {
     QString text = block.text();
     int min_lvl = 0;
     int level;
+    QString codeCellName;
+    int prev_lvl = 0;
 
     if (previousBlock.isValid())
     {
-        int prev_lvl = Utils::TextBlockHelper::getFoldLvl(previousBlock);
+        prev_lvl = Utils::TextBlockHelper::getFoldLvl(previousBlock);
         QString prev_text = previousBlock.text();
         int prev_state = Utils::TextBlockHelper::getState(previousBlock);
         int prev_prev_state = PythonSyntaxHighlighter::Normal;
         QTextBlock prevPrevBlock = previousBlock.previous();
+        withinCodeCell = Utils::TextBlockHelper::isWithinCodeCell(previousBlock);
 
         if (prevPrevBlock.isValid())
         {
@@ -114,7 +117,7 @@ int IndentFoldDetector::detectFoldLevel(const QTextBlock &previousBlock, const Q
             if (prev_prev_state != prev_state)
             {
                 //this is the 2nd line of a multi line string. Indent it.
-                min_lvl++;
+                min_lvl += 2;
             }
         }
         else if (!Utils::lstrip(prev_text).startsWith("#"))
@@ -138,6 +141,15 @@ int IndentFoldDetector::detectFoldLevel(const QTextBlock &previousBlock, const Q
                 min_lvl = prev_lvl;
             }
         }
+        else if (Utils::isCodeCellStart(prev_text, codeCellName))
+        {
+            withinCodeCell = true;
+        }
+    }
+
+    if (Utils::isCodeCellStart(text, codeCellName))
+    {
+        withinCodeCell = false;
     }
 
     // round down to previous indentation guide to ensure contiguous block
@@ -149,6 +161,25 @@ int IndentFoldDetector::detectFoldLevel(const QTextBlock &previousBlock, const Q
     else
     {
         level = (text.size() - Utils::lstrip(text).size());
+    }
+
+    prev_lvl /= 2;
+
+    if (level == prev_lvl)
+    {
+        if (withinCodeCell)
+        {
+            level = level * 2 + 1;
+        }
+        else
+        {
+            level *= 2;
+        }
+    }
+    else
+    {
+        // real change in indentation
+        level *= 2; // indented levels are always even numbers
     }
 
     return qMax(min_lvl, level);
