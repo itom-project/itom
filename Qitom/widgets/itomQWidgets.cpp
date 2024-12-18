@@ -64,32 +64,14 @@ void QTreeViewItom::selectionChanged(
     emit selectedItemsChanged(selected, deselected);
 }
 
-void QTreeViewItom::mousePressEvent(QMouseEvent* event)
+//----------------------------------------------------------------------------------------------------------------------------------
+void QTreeViewItom::mouseReleaseEvent(QMouseEvent* event)
 {
-    auto* mainWindow = qobject_cast<ito::MainWindow*>(this->window());
-    auto* fileSystemDockWidget = mainWindow->m_fileSystemDock;
+    // Call the base class implementation
+    QTreeView::mouseReleaseEvent(event);
 
-    // Handle Backward Button (Navigate Up)
-    if (event->button() == Qt::BackButton)
-    {
-
-        if (fileSystemDockWidget)
-        {
-            fileSystemDockWidget->mnuMoveCDUp();
-        }
-    }
-
-    // Handle Forward Button (Navigate Down)
-    if (event->button() == Qt::ForwardButton)
-    {
-        if (fileSystemDockWidget)
-        {
-            fileSystemDockWidget->mnuSelectCD();
-        }
-    }
-
-    // Call base class implementation for other buttons
-    QTreeView::mousePressEvent(event);
+    // Your custom code here
+    emit QTreeViewItomMouseReleased(event);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

@@ -220,6 +220,21 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
 
     fillFilterList();
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    connect(
+        m_pTreeView,
+        &QTreeViewItom::QTreeViewItomMouseReleased,
+        this,
+        &FileSystemDockWidget::onMouseReleased);
+#else
+    connect(
+        m_pTreeView,
+        SIGNAL(QTreeViewItomMouseReleased(QMouseEvent*)),
+        this,
+        SLOT(onMouseReleased(QMouseEvent*)));
+#endif
+
+
 //    QObject::dumpObjectTree();
 
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
@@ -549,7 +564,7 @@ void FileSystemDockWidget::fillFilterList()
     settings.beginGroup("itomFileSystemDockWidget");
 
     QString savedFileFilter = settings.value("fileFilterString", "").toString();
-    defaultFilterPatterns.clear();
+    m_defaultFilterPatterns.clear();
     m_pCmbFilter->clear();
 
     int filterIndexToSelect = 0;
@@ -564,7 +579,7 @@ void FileSystemDockWidget::fillFilterList()
         if (match.hasMatch())
         {
             const QStringList suffixes = match.captured(1).split(" ");
-            defaultFilterPatterns[filter] << suffixes;
+            m_defaultFilterPatterns[filter] << suffixes;
         }
 
         if (!filterFound)
@@ -587,9 +602,9 @@ void FileSystemDockWidget::fillFilterList()
 //----------------------------------------------------------------------------------------------------------------------------------
 void FileSystemDockWidget::cmbFilterEditTextChanged(const QString &text)
 {
-    if (defaultFilterPatterns.contains(text))
+    if (m_defaultFilterPatterns.contains(text))
     {
-        this->m_pFileSystemModel->setNameFilters(defaultFilterPatterns[text]);
+        this->m_pFileSystemModel->setNameFilters(m_defaultFilterPatterns[text]);
     }
     else
     {
@@ -615,7 +630,7 @@ RetVal FileSystemDockWidget::changeBaseDirectory(QString dir)
 {
     QAction* act = nullptr;
 
-    QMutexLocker mutexLocker(&baseDirChangeMutex);
+    QMutexLocker mutexLocker(&m_baseDirChangeMutex);
     QDir newDir(dir);
     RetVal retValue(retOk);
 
@@ -735,7 +750,8 @@ RetVal FileSystemDockWidget::changeBaseDirectory(QString dir)
 //----------------------------------------------------------------------------------------------------------------------------------
 void FileSystemDockWidget::mnuSelectCD()
 {
-    QString newDirectory = QFileDialog::getExistingDirectory(this, tr("Select base directory"), m_baseDirectory);
+    QString newDirectory =
+        QFileDialog::getExistingDirectory(this, tr("Select base directory"), m_baseDirectory);
 
     if (!newDirectory.isEmpty() && !newDirectory.isNull())
     {
@@ -747,16 +763,12 @@ void FileSystemDockWidget::mnuSelectCD()
 //----------------------------------------------------------------------------------------------------------------------------------
 void FileSystemDockWidget::mnuMoveCDUp()
 {
-    if (!m_baseDirectory.isEmpty())
+    QDir baseDir(m_baseDirectory);
+
+    if (baseDir.exists() && baseDir.cdUp())
     {
-        QDir baseDir(m_baseDirectory);
-
-        if (baseDir.exists() && baseDir.cdUp())
-        {
-            changeBaseDirectory(QDir::cleanPath(baseDir.absolutePath()));
-        }
+        changeBaseDirectory(QDir::cleanPath(baseDir.absolutePath()));
     }
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -867,9 +879,9 @@ void FileSystemDockWidget::newDirSelected(const QString& text)
 {
     RetVal retValue(retOk);
 
-    if (baseDirChangeMutex.tryLock(0))
+    if (m_baseDirChangeMutex.tryLock(0))
     {
-        baseDirChangeMutex.unlock();
+        m_baseDirChangeMutex.unlock();
         retValue += changeBaseDirectory(text);
         if (retValue.containsError())
         {
@@ -1343,6 +1355,19 @@ void FileSystemDockWidget::pathAnchorClicked(const QUrl &link)
             dir += "/";
         }
         newDirSelected(dir);
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void FileSystemDockWidget::onMouseReleased(QMouseEvent* e)
+{
+    if (e->button() == Qt::BackButton)
+    {
+        mnuMoveCDUp();
+    }
+    else if (e->button() == Qt::ForwardButton)
+    {
+        mnuSelectCD();
     }
 }
 

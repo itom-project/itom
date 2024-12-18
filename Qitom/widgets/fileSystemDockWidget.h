@@ -89,8 +89,8 @@ namespace ito
             QComboBox* m_pCmbFilter;
             ItomFileSystemModel* m_pFileSystemModel;
             QString m_baseDirectory;
-            QHash<QString,QStringList> defaultFilterPatterns;
-            QMutex baseDirChangeMutex;
+            QHash<QString,QStringList> m_defaultFilterPatterns;
+            QMutex m_baseDirChangeMutex;
             QList<QUrl> m_clipboardCutData; //this mime-data has recently be selected by a cut action and is no available in QClipboard
             bool m_showColumnDetails;
             QList<int> m_detailColumnsWidth;
@@ -129,6 +129,8 @@ namespace ito
             void currentDirChanged();
 
         private slots:
+            void mnuMoveCDUp();
+            void mnuSelectCD();
             void mnuCopyDir();
             void mnuPasteDir();
             void mnuLocateOnDisk();
@@ -150,14 +152,12 @@ namespace ito
             void treeViewContextMenuRequested(const QPoint &pos);
             void removeActionFromDirList(const int &pos);
             void itemDoubleClicked(const QModelIndex &index);
-
             void pathAnchorClicked(const QUrl &link);
+            void onMouseReleased(QMouseEvent* e);
 
         public slots:
             RetVal changeBaseDirectory(QString dir);
             void processError(QProcess::ProcessError error);
-            void mnuMoveCDUp();
-            void mnuSelectCD();
     };
 
 } //end namespace ito

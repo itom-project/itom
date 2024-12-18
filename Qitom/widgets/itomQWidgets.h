@@ -88,10 +88,13 @@ public:
 
 protected:
     virtual void selectionChanged(const QItemSelection& selected, const QItemSelection& deselected);
-    virtual void mousePressEvent(QMouseEvent* event);
+    virtual void mouseReleaseEvent(QMouseEvent* event);
 
 signals:
     void selectedItemsChanged(const QItemSelection& selected, const QItemSelection& deselected);
+
+Q_SIGNALS:
+    void QTreeViewItomMouseReleased(QMouseEvent* event);
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
