@@ -83,8 +83,8 @@ ScriptDockWidget::ScriptDockWidget(const QString &title, const QString &objName,
     m_pWidgetFindWord(nullptr),
     m_pDialogReplace(nullptr),
     m_actTabIndex(-1),
-    m_tabContextMenu(NULL),
-    m_winMenu(NULL),
+    m_tabContextMenu(nullptr),
+    m_winMenu(nullptr),
     m_commonActions(commonActions),
     m_pBookmarkModel(bookmarkModel),
     m_outlineShowNavigation(true),
@@ -1626,16 +1626,13 @@ void ScriptDockWidget::updatePythonActions()
 
     m_scriptRunAction->setEnabled(!busy1);
     m_scriptRunSelectionAction->setEnabled(sew && (!busy1 || pythonInWaitingMode()));
+    m_scriptRunCodeCellAction->setEnabled(sew && (!busy1 || pythonInWaitingMode()));
     m_scriptDebugAction->setEnabled(!busy1);
     m_scriptStopAction->setEnabled(busy1);
     m_scriptContinueAction->setEnabled(busy2);
     m_scriptStepAction->setEnabled(busy2);
     m_scriptStepOverAction->setEnabled(busy2);
     m_scriptStepOutAction->setEnabled(busy2);
-
-    m_scriptRunSelectionAction->setEnabled(
-        sew != nullptr &&
-        (!pythonBusy() || pythonInWaitingMode()));
 
     m_replaceTextExprAction->setEnabled(
         !busy1 &&
@@ -1812,6 +1809,10 @@ void ScriptDockWidget::createActions()
     m_scriptRunSelectionAction = new ShortcutAction(QIcon(":/script/icons/runScript.png"), tr("Run Selection"),
         this, QKeySequence(tr("F9", "QShortcut")), Qt::WidgetWithChildrenShortcut);
     m_scriptRunSelectionAction->connectTrigger(this, SLOT(mnuScriptRunSelection()));
+
+    m_scriptRunCodeCellAction = new ShortcutAction(QIcon(":/classNavigator/icons/codeCell.png"), tr("Run Code Cell"),
+        this, QKeySequence(tr("Shift+F9", "QShortcut")), Qt::WidgetWithChildrenShortcut);
+    m_scriptRunCodeCellAction->connectTrigger(this, SLOT(mnuScriptRunCodeCell()));
 
     m_scriptDebugAction = new ShortcutAction(QIcon(":/script/icons/debugScript.png"), tr("Debug"),
         this, QKeySequence(tr("F6", "QShortcut")), Qt::WidgetWithChildrenShortcut);
@@ -1997,6 +1998,7 @@ void ScriptDockWidget::createMenus()
     m_scriptMenu = getMenuBar()->addMenu(tr("&Script"));
     m_scriptMenu->addAction(m_scriptRunAction->action());
     m_scriptMenu->addAction(m_scriptRunSelectionAction->action());
+    m_scriptMenu->addAction(m_scriptRunCodeCellAction->action());
     m_scriptMenu->addAction(m_scriptDebugAction->action());
     m_scriptMenu->addAction(m_scriptStopAction->action());
     m_scriptMenu->addSeparator();
@@ -2064,7 +2066,6 @@ void ScriptDockWidget::createToolBars()
     m_scriptToolBar = new QToolBar(tr("Script Toolbar"), this);
     addToolBar(m_scriptToolBar, "scriptToolBar");
     m_scriptToolBar->addAction(m_scriptRunAction->action());
-//    m_scriptToolBar->addAction(m_scriptRunSelectionAction->action());
     m_scriptToolBar->addAction(m_scriptDebugAction->action());
     m_scriptToolBar->addAction(m_scriptStopAction->action());
     m_scriptToolBar->addAction(m_scriptContinueAction->action());
@@ -2549,6 +2550,16 @@ void ScriptDockWidget::mnuScriptRunSelection()
     if (sew == NULL) return;
 
     sew->menuRunSelection();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void ScriptDockWidget::mnuScriptRunCodeCell()
+{
+    ScriptEditorWidget* sew = getCurrentEditor();
+
+    if (sew == NULL) return;
+
+    sew->menuRunCodeCell();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

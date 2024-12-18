@@ -706,7 +706,8 @@ void ScriptEditorWidget::initMenus()
         QIcon(":/classNavigator/icons/codeCell.png"),
         tr("Run Code Cell"),
         this,
-        SLOT(menuRunCodeCell()));
+        SLOT(menuRunCodeCell()),
+        QKeySequence(tr("Shift+F9", "QShortcut")));
 
     m_editorMenuActions["debugScript"] = editorMenu->addAction(
         QIcon(":/script/icons/debugScript.png"),
@@ -846,6 +847,8 @@ void ScriptEditorWidget::contextMenuAboutToShow(int contextMenuLine)
     m_editorMenuActions["paste"]->setEnabled(!m_pythonBusy && contextMenuLine >= 0 && canPaste());
     m_editorMenuActions["runScript"]->setEnabled(!m_pythonBusy);
     m_editorMenuActions["runSelection"]->setEnabled(
+        pyEngine && (!m_pythonBusy || pyEngine->isPythonDebuggingAndWaiting()));
+    m_editorMenuActions["runCodeCell"]->setEnabled(
         pyEngine && (!m_pythonBusy || pyEngine->isPythonDebuggingAndWaiting()));
     m_editorMenuActions["debugScript"]->setEnabled(!m_pythonBusy);
     m_editorMenuActions["stopScript"]->setEnabled(m_pythonBusy);
@@ -1469,7 +1472,7 @@ void ScriptEditorWidget::menuRunCodeCell()
             QMessageBox::information(
                 this,
                 tr("Run Code Cell"),
-                tr("The current cursor position is not within any code cell"));
+                tr("The current cursor position is not within any code cell."));
         }
     }
 }
