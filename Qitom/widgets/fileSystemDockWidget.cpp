@@ -51,8 +51,7 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
     AbstractDockWidget(docked, isDockAvailable, floatingStyle, movingStyle, title, objName, parent),
     m_pShowDirListMenu(nullptr), m_pFileSystemSettingMenu(nullptr), m_pContextMenu(nullptr),
     m_pPathEdit(nullptr), m_pMainToolbar(nullptr), m_pTreeView(nullptr), m_pLblFilter(nullptr),
-    m_pCmbFilter(nullptr), m_pFileSystemModel(nullptr),
-    baseDirectory(QString()),
+    m_pCmbFilter(nullptr), m_pFileSystemModel(nullptr), m_baseDirectory(QString()),
     m_pActMoveCDUp(nullptr), m_pActSelectCD(nullptr),
     m_pActOpenFile(nullptr), m_pActExecuteFile(nullptr), m_pActLocateOnDisk(nullptr),
     m_pActRenameItem(nullptr), m_pActDeleteItems(nullptr), m_pActCutItems(nullptr),
@@ -478,7 +477,7 @@ void FileSystemDockWidget::updateActions()
     //shortcuts are always enabled, since the selection-changed signal of the tree-view does not call updateActions.
     if (m_pActMoveCDUp)
     {
-        QDir baseDir(baseDirectory);
+        QDir baseDir(m_baseDirectory);
         m_pActMoveCDUp->setEnabled(baseDir.exists() && baseDir.cdUp(), true);
     }
 
@@ -620,15 +619,15 @@ RetVal FileSystemDockWidget::changeBaseDirectory(QString dir)
     QDir newDir(dir);
     RetVal retValue(retOk);
 
-    if (dir == baseDirectory)
+    if (dir == m_baseDirectory)
     {
         return retValue;
     }
 
     if (newDir.exists())
     {
-        baseDirectory = dir;
-        QDir::setCurrent(baseDirectory);
+        m_baseDirectory = dir;
+        QDir::setCurrent(m_baseDirectory);
     }
     else
     {
@@ -652,12 +651,12 @@ RetVal FileSystemDockWidget::changeBaseDirectory(QString dir)
     }
     else
     {
-        m_pTreeView->setRootIndex(m_pFileSystemModel->index(baseDirectory)); //setCurrentIndex
+        m_pTreeView->setRootIndex(m_pFileSystemModel->index(m_baseDirectory)); //setCurrentIndex
 
         bool isInList = false;
         foreach (act, m_pShowDirListMenu->actions())
         {
-            if (act->data().toString() == baseDirectory)
+            if (act->data().toString() == m_baseDirectory)
             {
                 m_pShowDirListMenu->removeAction(act);
                 isInList = true;
@@ -667,19 +666,19 @@ RetVal FileSystemDockWidget::changeBaseDirectory(QString dir)
 
         if (!isInList)
         {
-            QDir baseDir(baseDirectory);
-            act = new QAction(baseDirectory, m_pShowDirListMenu);
-            act->setData(baseDirectory);
+            QDir baseDir(m_baseDirectory);
+            act = new QAction(m_baseDirectory, m_pShowDirListMenu);
+            act->setData(m_baseDirectory);
             act->setWhatsThis("");
             act->setIcon(QIcon(":/application/icons/empty.png"));
             act->setCheckable(false);
 
-            // if baseDirectory is directly given to the lambda function,
+            // if m_baseDirectory is directly given to the lambda function,
             // its current state when triggering the lambda function is used
             // instead of the value at the time when creating the signal-slot
             // connection. This is achieved by creating a local copy of this
             // variable.
-            QString baseDirectoryCopy = QString(baseDirectory);
+            QString baseDirectoryCopy = QString(m_baseDirectory);
 
             connect(act, &QAction::triggered, [=]() {
                 newDirSelected(baseDirectoryCopy);
@@ -712,12 +711,12 @@ RetVal FileSystemDockWidget::changeBaseDirectory(QString dir)
         m_pShowDirListMenu->actions()[x]->setText(QString::number(x+1) + " " + m_pShowDirListMenu->actions()[x]->data().toString());
     }
 
-    m_pPathEdit->setToolTip(baseDirectory);
-    m_pPathEdit->setHtml(getHtmlTag(baseDirectory));
+    m_pPathEdit->setToolTip(m_baseDirectory);
+    m_pPathEdit->setHtml(getHtmlTag(m_baseDirectory));
     //m_pPathEdit->scrollContentsBy(500,0);
 
     //m_pPathEdit->scrollToAnchor("last");
-//    m_pPathEdit->setText(baseDirectory);
+//    m_pPathEdit->setText(m_baseDirectory);
     //m_pPathEdit->textCursor().setPosition(40); //movePosition(QTextCursor::End);
     //m_pPathEdit->ensureCursorVisible();
 
@@ -736,7 +735,7 @@ RetVal FileSystemDockWidget::changeBaseDirectory(QString dir)
 //----------------------------------------------------------------------------------------------------------------------------------
 void FileSystemDockWidget::mnuSelectCD()
 {
-    QString newDirectory = QFileDialog::getExistingDirectory(this, tr("Select base directory"), baseDirectory);
+    QString newDirectory = QFileDialog::getExistingDirectory(this, tr("Select base directory"), m_baseDirectory);
 
     if (!newDirectory.isEmpty() && !newDirectory.isNull())
     {
@@ -748,19 +747,23 @@ void FileSystemDockWidget::mnuSelectCD()
 //----------------------------------------------------------------------------------------------------------------------------------
 void FileSystemDockWidget::mnuMoveCDUp()
 {
-    QDir baseDir(baseDirectory);
-
-    if (baseDir.exists() && baseDir.cdUp())
+    if (!m_baseDirectory.isEmpty())
     {
-        changeBaseDirectory(QDir::cleanPath(baseDir.absolutePath()));
+        QDir baseDir(m_baseDirectory);
+
+        if (baseDir.exists() && baseDir.cdUp())
+        {
+            changeBaseDirectory(QDir::cleanPath(baseDir.absolutePath()));
+        }
     }
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void FileSystemDockWidget::mnuCopyDir()
 {
     QClipboard *clipboard = QApplication::clipboard();
-    clipboard->setText(QDir::toNativeSeparators(baseDirectory));
+    clipboard->setText(QDir::toNativeSeparators(m_baseDirectory));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
