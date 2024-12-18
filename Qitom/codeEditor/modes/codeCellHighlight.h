@@ -66,6 +66,9 @@ public:
     virtual void onInstall(CodeEditor *editor);
     virtual void onStateChanged(bool state);
 
+    void setHeadlineBgColor(const QColor& color);
+    void setActiveCellBgColor(const QColor& color);
+
 public slots:
     void outlineModelChanged(ScriptEditorWidget* sew, QSharedPointer<OutlineItem> rootItem);
     void updateActiveCodeCell();

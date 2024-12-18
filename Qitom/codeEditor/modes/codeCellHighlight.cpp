@@ -50,7 +50,7 @@ namespace ito {
 CodeCellHighlighterMode::CodeCellHighlighterMode(const QString& description /*= ""*/, QObject* parent /*= NULL*/) :
     Mode("CodeCellHighlighterMode", description),
     QObject(parent),
-    m_headlineBgColor(QColor(191, 242, 31)),
+    m_headlineBgColor(QColor(240,240,240)),
     m_activeCellBgColor(QColor(242, 242, 210)),
     m_activeCodeCellDecorator(nullptr),
     m_rootOutline(nullptr)
@@ -62,6 +62,20 @@ CodeCellHighlighterMode::CodeCellHighlighterMode(const QString& description /*= 
 */
 CodeCellHighlighterMode::~CodeCellHighlighterMode()
 {
+}
+
+//------------------------------------------------------------------------------
+void CodeCellHighlighterMode::setHeadlineBgColor(const QColor& color)
+{
+    m_headlineBgColor = color;
+    outlineModelChanged(nullptr, m_rootOutline);
+}
+
+//------------------------------------------------------------------------------
+void CodeCellHighlighterMode::setActiveCellBgColor(const QColor& color)
+{
+    m_activeCellBgColor = color;
+    outlineModelChanged(nullptr, m_rootOutline);
 }
 
 //------------------------------------------------------------------------------
@@ -175,6 +189,11 @@ void CodeCellHighlighterMode::outlineModelChanged(ScriptEditorWidget* /*sew*/, Q
     QList<int> confirmedIndices;
     int startLineIdx;
     bool found;
+
+    if (!rootItem)
+    {
+        return;
+    }
 
     foreach(const auto & childItem, rootItem->m_childs)
     {

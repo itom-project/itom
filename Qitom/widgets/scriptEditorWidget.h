@@ -49,6 +49,8 @@
 #include <qmetaobject.h>
 #include <qsharedpointer.h>
 #include <qregularexpression.h>
+#include <qpen.h>
+
 #include "../models/outlineItem.h"
 #include "../models/bookmarkModel.h"
 #include "../helper/IOHelper.h"
@@ -229,6 +231,8 @@ private:
     bool m_keepIndentationOnPaste;
     int m_textBlockLineIdxAboutToBeDeleted; //!< if != -1, a TextBlockUserData in the line index is about to be removed.
     BookmarkModel *m_pBookmarkModel; //! borrowed reference to the bookmark model. The owner of this model is the ScriptEditorOrganizer.
+
+    QPen m_codeCellHeaderLine;
 
     QSharedPointer<PyCodeFormatter> m_pyCodeFormatter;
     QSharedPointer<PyCodeReferenceRenamer> m_pyCodeReferenceRenamer;

@@ -606,6 +606,24 @@ void ScriptEditorWidget::loadSettings()
 
     settings.endGroup();
 
+    settings.beginGroup("PythonLexerStyle" + QString::number(StyleItem::KeyComment));
+    m_codeCellHeaderLine.setStyle(Qt::SolidLine);
+    m_codeCellHeaderLine.setColor(QColor(0, 127, 0));
+    m_codeCellHeaderLine.setWidthF(1.0);
+    QColor lineColor = QColor(settings.value("foregroundColor", QColor(0, 127, 0)).toString());
+    lineColor.setAlpha(settings.value("foregroundColorAlpha", 255).toInt());
+    m_codeCellHeaderLine.setColor(lineColor);
+    settings.endGroup();
+
+    settings.beginGroup("CodeEditor");
+    QColor headlineBgColor(settings.value("paperBackgroundColor", QColor(Qt::white)).toString());
+    headlineBgColor = Utils::driftColor(headlineBgColor, 105);
+    m_codeCellHighlighterMode->setHeadlineBgColor(headlineBgColor);
+    settings.endGroup();
+    //m_codeCellHighlighterMode->setActiveCellBgColor();
+
+
+
     AbstractCodeEditorWidget::loadSettings();
 }
 
@@ -4069,10 +4087,9 @@ void ScriptEditorWidget::paintEvent(QPaintEvent* e)
     CodeEditor::paintEvent(e);
 
     QPainter painter(viewport());
-    QPen pen = painter.pen();
-    pen.setStyle(Qt::SolidLine);
-    pen.setColor(Qt::green);
-    painter.setPen(pen);
+
+    // line above heading of code cell
+    painter.setPen(m_codeCellHeaderLine);
 
     QList<int> codeCellStartLineIndices;
 
