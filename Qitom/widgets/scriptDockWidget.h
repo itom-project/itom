@@ -201,6 +201,7 @@ private:
     ShortcutAction* m_scriptRunAction;
     ShortcutAction* m_scriptRunSelectionAction;
     ShortcutAction* m_scriptRunCodeCellAction;
+    ShortcutAction* m_scriptRunCodeCellAndAdvanceAction;
     ShortcutAction* m_scriptDebugAction;
     ShortcutAction* m_scriptStopAction;
     ShortcutAction* m_scriptContinueAction;
@@ -352,6 +353,7 @@ private slots:
     void mnuScriptRun();
     void mnuScriptRunSelection();
     void mnuScriptRunCodeCell();
+    void mnuScriptRunCodeCellAndAdvance();
     void mnuScriptDebug();
     void mnuScriptStop();
     void mnuScriptContinue();

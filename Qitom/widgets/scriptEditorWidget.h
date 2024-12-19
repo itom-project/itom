@@ -310,7 +310,8 @@ public slots:
 
     void menuRunScript();
     void menuRunSelection();
-    void menuRunCodeCell();
+    bool menuRunCodeCell();
+    void menuRunCodeCellAndAdvance();
     void menuDebugScript();
     void menuStopScript();
 

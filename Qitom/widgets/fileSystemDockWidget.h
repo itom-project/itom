@@ -43,7 +43,6 @@
 #include <qevent.h>
 #include <qurl.h>
 #include <qfileiconprovider.h>
-
 #include <qsignalmapper.h>
 
 

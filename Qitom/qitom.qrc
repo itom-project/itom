@@ -159,6 +159,8 @@
         <file>icons/iconList.png</file>
         <file>icons/navigateBackward.png</file>
         <file>icons/navigateForward.png</file>
+        <file>icons/runCodeCell.png</file>
+        <file>icons/runCodeCellAndAdvance.png</file>
     </qresource>
     <qresource prefix="/script">
         <file>icons/continue.png</file>

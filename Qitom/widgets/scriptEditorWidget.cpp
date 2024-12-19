@@ -617,7 +617,18 @@ void ScriptEditorWidget::loadSettings()
 
     settings.beginGroup("CodeEditor");
     QColor headlineBgColor(settings.value("paperBackgroundColor", QColor(Qt::white)).toString());
-    headlineBgColor = Utils::driftColor(headlineBgColor, 105);
+
+    if (headlineBgColor.lightness() > 128)
+    {
+        headlineBgColor = Utils::driftColor(headlineBgColor, 105);
+        m_codeCellHighlighterMode->setActiveCellBgColor(QColor(242, 242, 210));
+    }
+    else
+    {
+        m_codeCellHighlighterMode->setActiveCellBgColor(Utils::driftColor(headlineBgColor, 120));
+        headlineBgColor = Utils::driftColor(headlineBgColor, 150);
+    }
+
     m_codeCellHighlighterMode->setHeadlineBgColor(headlineBgColor);
     settings.endGroup();
     //m_codeCellHighlighterMode->setActiveCellBgColor();
@@ -721,10 +732,17 @@ void ScriptEditorWidget::initMenus()
         QKeySequence(tr("F9", "QShortcut")));
 
     m_editorMenuActions["runCodeCell"] = editorMenu->addAction(
-        QIcon(":/classNavigator/icons/codeCell.png"),
+        QIcon(":/editor/icons/runCodeCell.png"),
         tr("Run Code Cell"),
         this,
         SLOT(menuRunCodeCell()),
+        QKeySequence(tr("Ctrl+F9", "QShortcut")));
+
+    m_editorMenuActions["runCodeCellAndAdvance"] = editorMenu->addAction(
+        QIcon(":/editor/icons/runCodeCellAndAdvance.png"),
+        tr("Run Code Cell And Advance"),
+        this,
+        SLOT(menuRunCodeCellAndAdvance()),
         QKeySequence(tr("Shift+F9", "QShortcut")));
 
     m_editorMenuActions["debugScript"] = editorMenu->addAction(
@@ -867,6 +885,8 @@ void ScriptEditorWidget::contextMenuAboutToShow(int contextMenuLine)
     m_editorMenuActions["runSelection"]->setEnabled(
         pyEngine && (!m_pythonBusy || pyEngine->isPythonDebuggingAndWaiting()));
     m_editorMenuActions["runCodeCell"]->setEnabled(
+        pyEngine && (!m_pythonBusy || pyEngine->isPythonDebuggingAndWaiting()));
+    m_editorMenuActions["runCodeCellAndAdvance"]->setEnabled(
         pyEngine && (!m_pythonBusy || pyEngine->isPythonDebuggingAndWaiting()));
     m_editorMenuActions["debugScript"]->setEnabled(!m_pythonBusy);
     m_editorMenuActions["stopScript"]->setEnabled(m_pythonBusy);
@@ -1438,7 +1458,7 @@ void ScriptEditorWidget::menuRunSelection()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void ScriptEditorWidget::menuRunCodeCell()
+bool ScriptEditorWidget::menuRunCodeCell()
 {
     QTextCursor cursor = textCursor();
 
@@ -1449,7 +1469,7 @@ void ScriptEditorWidget::menuRunCodeCell()
             tr("Run Code Cell"),
             tr("For running a code cell, no text must be selected.")
         );
-        return;
+        return false;
     }
     else
     {
@@ -1469,7 +1489,7 @@ void ScriptEditorWidget::menuRunCodeCell()
                 if (item->m_startLineIdx <= lineFrom && item->m_endLineIdx >= lineFrom)
                 {
                     cursor.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor, 1);
-                    cursor.movePosition(QTextCursor::StartOfBlock, QTextCursor::MoveAnchor, item->m_startLineIdx);
+                    cursor.movePosition(QTextCursor::NextBlock, QTextCursor::MoveAnchor, item->m_startLineIdx);
 
                     if (item->m_endLineIdx > item->m_startLineIdx)
                     {
@@ -1491,6 +1511,43 @@ void ScriptEditorWidget::menuRunCodeCell()
                 this,
                 tr("Run Code Cell"),
                 tr("The current cursor position is not within any code cell."));
+            return false;
+        }
+    }
+
+    return true;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void ScriptEditorWidget::menuRunCodeCellAndAdvance()
+{
+    if (menuRunCodeCell())
+    {
+        int lineFrom, indexFrom;
+        bool found = false;
+
+        // single line
+        getCursorPosition(&lineFrom, &indexFrom);
+
+        if (lineFrom >= 0)
+        {
+            int nextBlockStart = -1;
+
+            foreach(const auto & item, m_rootOutlineItem->m_childs)
+            {
+                if (item->m_type == OutlineItem::typeCodeCell && item->m_startLineIdx > lineFrom)
+                {
+                    if (nextBlockStart == -1 || nextBlockStart > item->m_startLineIdx)
+                    {
+                        nextBlockStart = item->m_startLineIdx;
+                    }
+                }
+            }
+
+            if (nextBlockStart >= 0)
+            {
+                setCursorPosAndEnsureVisible(nextBlockStart);
+            }
         }
     }
 }
