@@ -63,6 +63,8 @@ QIcon OutlineItem::icon() const
         return QIcon(":/classNavigator/icons/property_get.png");
     case typePropertySet:
         return QIcon(":/classNavigator/icons/property_set.png");
+    case typeCodeCell:
+        return QIcon(":/classNavigator/icons/codeCell.png");
     case typeClassMethod:
         if (m_private)
         {
