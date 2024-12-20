@@ -42,7 +42,7 @@
 #include <qshortcut.h>
 #include <qmimedata.h>
 #include <qfileiconprovider.h>
-
+#include <iostream>
 namespace ito {
 
 
@@ -56,8 +56,8 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
     m_pActOpenFile(nullptr), m_pActExecuteFile(nullptr), m_pActLocateOnDisk(nullptr),
     m_pActRenameItem(nullptr), m_pActDeleteItems(nullptr), m_pActCutItems(nullptr),
     m_pActCopyItems(nullptr), m_pActPasteItems(nullptr), m_pActNewDir(nullptr),
-    m_pActNewPyFile(nullptr), m_pViewList(nullptr), m_pViewDetails(nullptr),
-    m_lastMovedShowDirAction(nullptr), m_linkColor(Qt::blue)
+    m_pActNewPyFile(nullptr), m_pViewList(nullptr), m_pViewDetails(nullptr), m_lastMovedShowDirAction(nullptr),
+    m_linkColor(Qt::blue), m_backStack(), m_forwardStack()
 {
     QAction* act = nullptr;
     QString actCheckedStr = "";
@@ -248,6 +248,8 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
     // therefore it is created as a member of the class.
     m_pFileSystemModel->setIconProvider(&m_fileIconProvider);
 #endif
+
+    m_backStack.clear();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -641,8 +643,37 @@ RetVal FileSystemDockWidget::changeBaseDirectory(QString dir)
 
     if (newDir.exists())
     {
+        if (!m_backStack.isEmpty())
+        {
+            m_forwardStack.clear();
+        }
+
+        if (QFileInfo(m_baseDirectory).isDir())
+        {
+            // Check if the last item in m_backStack is equal to m_baseDirectory
+            if (m_backStack.isEmpty() || m_backStack.top() != m_baseDirectory)
+            {
+                m_backStack.push(m_baseDirectory);
+            }
+        }
+
         m_baseDirectory = dir;
         QDir::setCurrent(m_baseDirectory);
+
+        // Debug output for m_backStack and m_forwardStack
+        std::cout << "m_backStack: ";
+        for (const auto& item : m_backStack)
+        {
+            std::cout << item.toStdString() << " ";
+        }
+        std::cout << "\n" << std::endl;
+
+        std::cout << "m_forwardStack: ";
+        for (const auto& item : m_forwardStack)
+        {
+            std::cout << item.toStdString() << " ";
+        }
+        std::cout << "\n" << std::endl;
     }
     else
     {
@@ -757,6 +788,7 @@ void FileSystemDockWidget::mnuSelectCD()
     {
         QDir baseDir(newDirectory);
         changeBaseDirectory(QDir::cleanPath(baseDir.absolutePath()));
+        m_backStack.clear();
     }
 }
 
@@ -1363,11 +1395,34 @@ void FileSystemDockWidget::onMouseReleased(QMouseEvent* e)
 {
     if (e->button() == Qt::BackButton)
     {
-        mnuMoveCDUp();
+        navigateBackward();
     }
     else if (e->button() == Qt::ForwardButton)
     {
-        mnuSelectCD();
+        navigateForward();
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void FileSystemDockWidget::navigateBackward()
+{
+    if (!m_backStack.isEmpty())
+    {
+        QString previousPath = m_backStack.pop();
+        m_forwardStack.push(previousPath);
+        changeBaseDirectory(previousPath);
+
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void FileSystemDockWidget::navigateForward()
+{
+    if (!m_forwardStack.isEmpty())
+    {
+        QString nextDir = m_forwardStack.pop();
+        m_backStack.push(nextDir);
+        changeBaseDirectory(nextDir);
     }
 }
 

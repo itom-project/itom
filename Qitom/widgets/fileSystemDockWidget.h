@@ -43,7 +43,7 @@
 #include <qevent.h>
 #include <qurl.h>
 #include <qfileiconprovider.h>
-
+#include <qstack.h>
 #include <qsignalmapper.h>
 
 
@@ -95,6 +95,9 @@ namespace ito
             bool m_showColumnDetails;
             QList<int> m_detailColumnsWidth;
             QColor m_linkColor;
+
+            QStack<QString> m_backStack;
+            QStack<QString> m_forwardStack;
 
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
             // since (at least) Qt 6.7, QFileSystemModel
@@ -154,6 +157,9 @@ namespace ito
             void itemDoubleClicked(const QModelIndex &index);
             void pathAnchorClicked(const QUrl &link);
             void onMouseReleased(QMouseEvent* e);
+
+            void navigateBackward();
+            void navigateForward();
 
         public slots:
             RetVal changeBaseDirectory(QString dir);
