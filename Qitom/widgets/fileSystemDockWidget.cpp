@@ -250,6 +250,7 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
 #endif
 
     m_backStack.clear();
+    m_forwardStack.clear();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -628,12 +629,11 @@ void FileSystemDockWidget::cmbFilterEditTextChanged(const QString &text)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal FileSystemDockWidget::changeBaseDirectory(QString dir)
+RetVal FileSystemDockWidget::changeBaseDirectory(QString dir, bool clearHistory)
 {
     QAction* act = nullptr;
 
     QMutexLocker mutexLocker(&m_baseDirChangeMutex);
-    QDir newDir(dir);
     RetVal retValue(retOk);
 
     if (dir == m_baseDirectory)
@@ -641,14 +641,9 @@ RetVal FileSystemDockWidget::changeBaseDirectory(QString dir)
         return retValue;
     }
 
-    if (newDir.exists())
+    if (QDir(dir).exists())
     {
-        if (!m_backStack.isEmpty())
-        {
-            m_forwardStack.clear();
-        }
-
-        if (QFileInfo(m_baseDirectory).isDir())
+        if (m_baseDirectory != dir && QFileInfo(m_baseDirectory).isDir())
         {
             // Check if the last item in m_backStack is equal to m_baseDirectory
             if (m_backStack.isEmpty() || m_backStack.top() != m_baseDirectory)
@@ -660,20 +655,27 @@ RetVal FileSystemDockWidget::changeBaseDirectory(QString dir)
         m_baseDirectory = dir;
         QDir::setCurrent(m_baseDirectory);
 
-        // Debug output for m_backStack and m_forwardStack
+        if (clearHistory)
+        {
+            m_backStack.clear();
+            m_forwardStack.clear();
+        }
+
+                // Debug output for m_backStack and m_forwardStack
         std::cout << "m_backStack: ";
         for (const auto& item : m_backStack)
         {
-            std::cout << item.toStdString() << " ";
+            std::cout << item.toStdString() << "\n";
         }
         std::cout << "\n" << std::endl;
 
         std::cout << "m_forwardStack: ";
         for (const auto& item : m_forwardStack)
         {
-            std::cout << item.toStdString() << " ";
+            std::cout << item.toStdString() << "\n";
         }
         std::cout << "\n" << std::endl;
+
     }
     else
     {
@@ -788,7 +790,6 @@ void FileSystemDockWidget::mnuSelectCD()
     {
         QDir baseDir(newDirectory);
         changeBaseDirectory(QDir::cleanPath(baseDir.absolutePath()));
-        m_backStack.clear();
     }
 }
 
@@ -914,6 +915,8 @@ void FileSystemDockWidget::newDirSelected(const QString& text)
     if (m_baseDirChangeMutex.tryLock(0))
     {
         m_baseDirChangeMutex.unlock();
+        m_backStack.clear();
+        m_forwardStack.clear();
         retValue += changeBaseDirectory(text);
         if (retValue.containsError())
         {
@@ -1409,9 +1412,11 @@ void FileSystemDockWidget::navigateBackward()
     if (!m_backStack.isEmpty())
     {
         QString previousPath = m_backStack.pop();
-        m_forwardStack.push(previousPath);
+        if (m_forwardStack.isEmpty() || m_forwardStack.top() != previousPath)
+        {
+            m_forwardStack.push(previousPath);
+        }
         changeBaseDirectory(previousPath);
-
     }
 }
 
@@ -1421,7 +1426,10 @@ void FileSystemDockWidget::navigateForward()
     if (!m_forwardStack.isEmpty())
     {
         QString nextDir = m_forwardStack.pop();
-        m_backStack.push(nextDir);
+        if (m_backStack.isEmpty() || m_backStack.top() != nextDir)
+        {
+            m_backStack.push(nextDir);
+        }
         changeBaseDirectory(nextDir);
     }
 }
