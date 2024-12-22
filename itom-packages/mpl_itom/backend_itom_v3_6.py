@@ -32,6 +32,7 @@ from matplotlib.backend_managers import ToolManager
 from matplotlib.figure import Figure
 
 import mpl_itom.figureoptions as figureoptions
+from mpl_itom import versiontuple
 
 # itom specific imports (end)
 
@@ -704,13 +705,13 @@ class FigureManagerItom(FigureManagerBase):
         ##    self.windowUi.showFullScreen()
 
     def _widgetclosed(self):
-        if matplotlib.__version__ >= "3.8.0":
+        if versiontuple(matplotlib.__version__) >= versiontuple("3.8.0"):
             CloseEvent("close_event", self.canvas)._process()
 
         if self.canvas._destroying:
             return
         self.canvas._destroying = True
-        if matplotlib.__version__ >= "3.8.0":
+        if versiontuple(matplotlib.__version__) >= versiontuple("3.8.0"):
             self.canvas.flush_events()
         else:
             self.canvas.close_event()
@@ -1340,7 +1341,7 @@ class SaveFigureItom(backend_tools.SaveFigureBase):
                 itom.ui.msgCritical("Error saving file", str(e), parent=parent)
 
 
-if matplotlib.__version__ < "3.7.0":
+if versiontuple(matplotlib.__version__) < versiontuple("3.7.0"):
 
     @backend_tools._register_tool_class(FigureCanvasItom)
     class SetCursorItom(backend_tools.SetCursorBase):
