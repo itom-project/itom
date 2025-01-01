@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Copyright (C) 2024, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of itom.
@@ -40,11 +40,11 @@
 #include <qinputdialog.h>
 #include <qmessagebox.h>
 #include <qmimedata.h>
-#include <qpainter.h>
 #include <qregularexpression.h>
 #include <qtextdocumentfragment.h>
 #include <qtimer.h>
 #include <qtooltip.h>
+#include <qpainter.h>
 
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include <qtextcodec.h>
@@ -363,6 +363,12 @@ RetVal ScriptEditorWidget::initEditor()
     m_lineNumberPanel->setOrderInZone(3);
 
     auto p = QSharedPointer<GlobalCheckerPanel>(new GlobalCheckerPanel("GlobalCheckerPanel"));
+    connect(
+        this,
+        &ScriptEditorWidget::outlineModelChanged,
+        p.data(),
+        &GlobalCheckerPanel::outlineModelChanged
+    );
     panels()->append(p.dynamicCast<ito::Panel>(), ito::Panel::Right);
 
     m_pyGotoAssignmentMode =
@@ -381,6 +387,16 @@ RetVal ScriptEditorWidget::initEditor()
     m_wordHoverTooltipMode =
         QSharedPointer<WordHoverTooltipMode>(new WordHoverTooltipMode("WordHoverTooltipMode"));
     modes()->append(m_wordHoverTooltipMode.dynamicCast<ito::Mode>());
+
+    m_codeCellHighlighterMode =
+        QSharedPointer<CodeCellHighlighterMode>(new CodeCellHighlighterMode("CodeCellHighlighterMode"));
+    connect(
+        this,
+        &ScriptEditorWidget::outlineModelChanged,
+        m_codeCellHighlighterMode.data(),
+        &CodeCellHighlighterMode::outlineModelChanged
+    );
+    modes()->append(m_codeCellHighlighterMode.dynamicCast<ito::Mode>());
 
     m_pyCodeReferenceRenamer =
         QSharedPointer<PyCodeReferenceRenamer>(new PyCodeReferenceRenamer(this));
@@ -528,6 +544,8 @@ void ScriptEditorWidget::loadSettings()
 
     m_wordHoverTooltipMode->setEnabled(settings.value("helpTooltipEnabled", true).toBool());
 
+    m_codeCellHighlighterMode->setEnabled(true);
+
     m_errorLineHighlighterMode->setBackground(QColor(
         settings.value("markerScriptErrorBackgroundColor", QColor(255, 192, 192)).toString()));
 
@@ -587,6 +605,35 @@ void ScriptEditorWidget::loadSettings()
     m_charsetEncodingAutoGuess = settings.value("characterSetEncodingAutoGuess", true).toBool();
 
     settings.endGroup();
+
+    settings.beginGroup("PythonLexerStyle" + QString::number(StyleItem::KeyComment));
+    m_codeCellHeaderLine.setStyle(Qt::SolidLine);
+    m_codeCellHeaderLine.setColor(QColor(0, 127, 0));
+    m_codeCellHeaderLine.setWidthF(1.0);
+    QColor lineColor = QColor(settings.value("foregroundColor", QColor(0, 127, 0)).toString());
+    lineColor.setAlpha(settings.value("foregroundColorAlpha", 255).toInt());
+    m_codeCellHeaderLine.setColor(lineColor);
+    settings.endGroup();
+
+    settings.beginGroup("CodeEditor");
+    QColor headlineBgColor(settings.value("paperBackgroundColor", QColor(Qt::white)).toString());
+
+    if (headlineBgColor.lightness() > 128)
+    {
+        headlineBgColor = Utils::driftColor(headlineBgColor, 105);
+        m_codeCellHighlighterMode->setActiveCellBgColor(QColor(242, 242, 210));
+    }
+    else
+    {
+        m_codeCellHighlighterMode->setActiveCellBgColor(Utils::driftColor(headlineBgColor, 120));
+        headlineBgColor = Utils::driftColor(headlineBgColor, 150);
+    }
+
+    m_codeCellHighlighterMode->setHeadlineBgColor(headlineBgColor);
+    settings.endGroup();
+    //m_codeCellHighlighterMode->setActiveCellBgColor();
+
+
 
     AbstractCodeEditorWidget::loadSettings();
 }
@@ -684,6 +731,20 @@ void ScriptEditorWidget::initMenus()
         SLOT(menuRunSelection()),
         QKeySequence(tr("F9", "QShortcut")));
 
+    m_editorMenuActions["runCodeCell"] = editorMenu->addAction(
+        QIcon(":/editor/icons/runCodeCell.png"),
+        tr("Run Code Cell"),
+        this,
+        SLOT(menuRunCodeCell()),
+        QKeySequence(tr("Ctrl+F9", "QShortcut")));
+
+    m_editorMenuActions["runCodeCellAndAdvance"] = editorMenu->addAction(
+        QIcon(":/editor/icons/runCodeCellAndAdvance.png"),
+        tr("Run Code Cell And Advance"),
+        this,
+        SLOT(menuRunCodeCellAndAdvance()),
+        QKeySequence(tr("Shift+F9", "QShortcut")));
+
     m_editorMenuActions["debugScript"] = editorMenu->addAction(
         QIcon(":/script/icons/debugScript.png"),
         tr("Debug Script"),
@@ -732,6 +793,9 @@ void ScriptEditorWidget::initMenus()
 
     m_editorMenuActions["charsetEncoding"] =
         editorMenu->addAction(tr("&Charset Encoding..."), this, SLOT(menuScriptCharsetEncoding()));
+
+    /*m_editorMenuActions["dumpFolding"] =
+        editorMenu->addAction(tr("Dump Folding..."), this, SLOT(dumpFoldsToConsole()));*/
 
 #if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
 #if QT_VERSION < QT_VERSION_CHECK(5, 11, 0)
@@ -819,6 +883,10 @@ void ScriptEditorWidget::contextMenuAboutToShow(int contextMenuLine)
     m_editorMenuActions["paste"]->setEnabled(!m_pythonBusy && contextMenuLine >= 0 && canPaste());
     m_editorMenuActions["runScript"]->setEnabled(!m_pythonBusy);
     m_editorMenuActions["runSelection"]->setEnabled(
+        pyEngine && (!m_pythonBusy || pyEngine->isPythonDebuggingAndWaiting()));
+    m_editorMenuActions["runCodeCell"]->setEnabled(
+        pyEngine && (!m_pythonBusy || pyEngine->isPythonDebuggingAndWaiting()));
+    m_editorMenuActions["runCodeCellAndAdvance"]->setEnabled(
         pyEngine && (!m_pythonBusy || pyEngine->isPythonDebuggingAndWaiting()));
     m_editorMenuActions["debugScript"]->setEnabled(!m_pythonBusy);
     m_editorMenuActions["stopScript"]->setEnabled(m_pythonBusy);
@@ -1117,7 +1185,10 @@ void ScriptEditorWidget::removeCurrentCallstackLine()
 
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal ScriptEditorWidget::showLineAndHighlightWord(
-    const int line, const QString& highlightedText, Qt::CaseSensitivity caseSensitivity)
+    const int line,
+    const QString& highlightedText,
+    Qt::CaseSensitivity caseSensitivity /*= Qt::CaseInsensitive*/,
+    bool highlightWord /*= true*/)
 {
     ito::RetVal retval;
 
@@ -1125,12 +1196,15 @@ RetVal ScriptEditorWidget::showLineAndHighlightWord(
     {
         retval += setCursorPosAndEnsureVisible(line);
 
-        QString text = lineText(line);
-        int idx = text.indexOf(highlightedText, 0, caseSensitivity);
-
-        if (idx >= 0)
+        if (highlightWord)
         {
-            setSelection(line, idx, line, idx + highlightedText.size());
+            QString text = lineText(line);
+            int idx = text.indexOf(highlightedText, 0, caseSensitivity);
+
+            if (idx >= 0)
+            {
+                setSelection(line, idx, line, idx + highlightedText.size());
+            }
         }
     }
 
@@ -1380,6 +1454,101 @@ void ScriptEditorWidget::menuRunSelection()
         }
 
         emit pythonRunSelection(defaultText);
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+bool ScriptEditorWidget::menuRunCodeCell()
+{
+    QTextCursor cursor = textCursor();
+
+    if (cursor.hasSelection())
+    {
+        QMessageBox::information(
+            this,
+            tr("Run Code Cell"),
+            tr("For running a code cell, no text must be selected.")
+        );
+        return false;
+    }
+    else
+    {
+        int lineFrom, indexFrom;
+        bool found = false;
+
+        // single line
+        getCursorPosition(&lineFrom, &indexFrom);
+
+        // check if cursor position is within code cell
+        m_rootOutlineItem = parseOutline();
+
+        foreach(const auto & item, m_rootOutlineItem->m_childs)
+        {
+            if (item->m_type == OutlineItem::typeCodeCell)
+            {
+                if (item->m_startLineIdx <= lineFrom && item->m_endLineIdx >= lineFrom)
+                {
+                    cursor.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor, 1);
+                    cursor.movePosition(QTextCursor::NextBlock, QTextCursor::MoveAnchor, item->m_startLineIdx);
+
+                    if (item->m_endLineIdx > item->m_startLineIdx)
+                    {
+                        cursor.movePosition(QTextCursor::NextBlock, QTextCursor::KeepAnchor, item->m_endLineIdx - item->m_startLineIdx);
+                    }
+
+                    cursor.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
+                    QString text = cursor.selectedText().replace(QChar(0x2029), '\n');
+                    emit pythonRunSelection(text);
+                    found = true;
+                    break;
+                }
+            }
+        }
+
+        if (!found)
+        {
+            QMessageBox::information(
+                this,
+                tr("Run Code Cell"),
+                tr("The current cursor position is not within any code cell."));
+            return false;
+        }
+    }
+
+    return true;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void ScriptEditorWidget::menuRunCodeCellAndAdvance()
+{
+    if (menuRunCodeCell())
+    {
+        int lineFrom, indexFrom;
+        bool found = false;
+
+        // single line
+        getCursorPosition(&lineFrom, &indexFrom);
+
+        if (lineFrom >= 0)
+        {
+            int nextBlockStart = -1;
+
+            foreach(const auto & item, m_rootOutlineItem->m_childs)
+            {
+                if (item->m_type == OutlineItem::typeCodeCell && item->m_startLineIdx > lineFrom)
+                {
+                    if (nextBlockStart == -1 || nextBlockStart > item->m_startLineIdx)
+                    {
+                        nextBlockStart = item->m_startLineIdx;
+                    }
+                }
+            }
+
+            if (nextBlockStart >= 0)
+            {
+                setCursorPosAndEnsureVisible(nextBlockStart);
+            }
+        }
     }
 }
 
@@ -3673,9 +3842,33 @@ QSharedPointer<OutlineItem> ScriptEditorWidget::parseOutline(bool forceParsing /
 
     QSharedPointer<OutlineItem> root(new OutlineItem(OutlineItem::typeRoot));
 
+    QList<QSharedPointer<OutlineItem>> codeCells;
+    QString blockText, codeCellName;
+
     for (int blockIdx = 0; blockIdx < blockCount(); ++blockIdx)
     {
         const QTextBlock& block = doc->findBlockByNumber(blockIdx);
+
+        // check for code cell
+        blockText = Utils::lstrip(block.text());
+
+        if (blockText.startsWith("#"))
+        {
+            if (Utils::isCodeCellStart(blockText, codeCellName))
+            {
+                // correct the endLineIdx of the previous codeCell, if one exists
+                if (codeCells.size() > 0)
+                {
+                    codeCells.last()->m_endLineIdx = blockIdx - 1;
+                }
+
+                QSharedPointer<OutlineItem> newCodeCell(new OutlineItem(OutlineItem::typeCodeCell));
+                newCodeCell->m_name = codeCellName;
+                newCodeCell->m_startLineIdx = blockIdx;
+                newCodeCell->m_endLineIdx = blockCount() - 1; // assume that the code cell goes until the end
+                codeCells.append(newCodeCell);
+            }
+        }
 
         if (Utils::TextBlockHelper::isFoldTrigger(block))
         {
@@ -3697,6 +3890,12 @@ QSharedPointer<OutlineItem> ScriptEditorWidget::parseOutline(bool forceParsing /
                 }
             }
         }
+    }
+
+    // add the code cells to the children of the root item
+    foreach(const auto & codeCell, codeCells)
+    {
+        root->m_childs << codeCell;
     }
 
     m_rootOutlineItem = root;
@@ -3721,7 +3920,7 @@ void ScriptEditorWidget::outlineTimerElapsed()
 }
 
 //-------------------------------------------------------------------------------------
-void ScriptEditorWidget::dumpFoldsToConsole(bool)
+void ScriptEditorWidget::dumpFoldsToConsole()
 {
     int lvl;
     bool trigger;
@@ -3936,6 +4135,39 @@ void ScriptEditorWidget::replaceOccurencesInCurrentScript(
 
 
         cursor.endEditBlock();
+    }
+}
+
+//------------------------------------------------------------------------------
+void ScriptEditorWidget::paintEvent(QPaintEvent* e)
+{
+    CodeEditor::paintEvent(e);
+
+    QPainter painter(viewport());
+
+    // line above heading of code cell
+    painter.setPen(m_codeCellHeaderLine);
+
+    QList<int> codeCellStartLineIndices;
+
+    foreach(const auto & childItems, m_rootOutlineItem->m_childs)
+    {
+        if (childItems->m_type == OutlineItem::typeCodeCell)
+        {
+            codeCellStartLineIndices << childItems->m_startLineIdx;
+        }
+    }
+
+    if (codeCellStartLineIndices.size() > 0)
+    {
+        foreach(const VisibleBlock & block, visibleBlocks())
+        {
+            if (codeCellStartLineIndices.contains(block.lineNumber))
+            {
+                painter.drawLine(
+                    0, block.topPosition, width(), block.topPosition);
+            }
+        }
     }
 }
 

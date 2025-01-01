@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Copyright (C) 2024, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of itom.
@@ -33,6 +33,7 @@
 #include "../codeEditor/modes/pyGotoAssignment.h"
 #include "../codeEditor/modes/pyDocstringGenerator.h"
 #include "../codeEditor/modes/wordHoverTooltip.h"
+#include "../codeEditor/modes/codeCellHighlight.h"
 #include "../codeEditor/panels/lineNumber.h"
 #include "../codeEditor/codeCheckerItem.h"
 #include "../codeEditor/pyCodeFormatter.h"
@@ -48,12 +49,15 @@
 #include <qmetaobject.h>
 #include <qsharedpointer.h>
 #include <qregularexpression.h>
+#include <qpen.h>
+
 #include "../models/outlineItem.h"
 #include "../models/bookmarkModel.h"
 #include "../helper/IOHelper.h"
 #include "../ui/dialogScriptCharsetEncoding.h"
 
 #include <QtPrintSupport/qprinter.h>
+#include <qevent.h>
 
 QT_BEGIN_NAMESPACE
 
@@ -118,9 +122,14 @@ public:
     inline QString getUntitledName() const { return tr("Untitled%1").arg(m_uid); }
 
     RetVal setCursorPosAndEnsureVisible(const int line, bool errorMessageClick = false, bool showSelectedCallstackLine = false);
-    RetVal showLineAndHighlightWord(const int line, const QString &highlightedText, Qt::CaseSensitivity caseSensitivity = Qt::CaseInsensitive);
+    RetVal showLineAndHighlightWord(
+        const int line,
+        const QString &highlightedText,
+        Qt::CaseSensitivity caseSensitivity = Qt::CaseInsensitive,
+        bool highlightWord = true);
 
-    void removeCurrentCallstackLine(); //!< removes the current-callstack-line arrow from the breakpoint panel, if currently displayed
+    //!< removes the current-callstack-line arrow from the breakpoint panel, if currently displayed
+    void removeCurrentCallstackLine();
 
     const ScriptEditorStorage saveState() const;
     RetVal restoreState(const ScriptEditorStorage &data);
@@ -172,6 +181,8 @@ protected:
     BreakPointModel* getBreakPointModel();
     const BreakPointModel* getBreakPointModel() const;
 
+    void paintEvent(QPaintEvent* e);
+
 private:
     enum markerType
     {
@@ -221,6 +232,8 @@ private:
     int m_textBlockLineIdxAboutToBeDeleted; //!< if != -1, a TextBlockUserData in the line index is about to be removed.
     BookmarkModel *m_pBookmarkModel; //! borrowed reference to the bookmark model. The owner of this model is the ScriptEditorOrganizer.
 
+    QPen m_codeCellHeaderLine;
+
     QSharedPointer<PyCodeFormatter> m_pyCodeFormatter;
     QSharedPointer<PyCodeReferenceRenamer> m_pyCodeReferenceRenamer;
 
@@ -244,6 +257,7 @@ private:
     QSharedPointer<LineNumberPanel> m_lineNumberPanel;
     QSharedPointer<PyGotoAssignmentMode> m_pyGotoAssignmentMode;
     QSharedPointer<WordHoverTooltipMode> m_wordHoverTooltipMode;
+    QSharedPointer<CodeCellHighlighterMode> m_codeCellHighlighterMode;
     QSharedPointer<PyDocstringGeneratorMode> m_pyDocstringGeneratorMode;
 
     static const QString lineBreak;
@@ -296,6 +310,8 @@ public slots:
 
     void menuRunScript();
     void menuRunSelection();
+    bool menuRunCodeCell();
+    void menuRunCodeCellAndAdvance();
     void menuDebugScript();
     void menuStopScript();
 
@@ -339,7 +355,7 @@ private slots:
     void fileSysWatcherFileChangedStep2(const QString &path);
     void printPreviewRequested(QPrinter *printer);
 
-    void dumpFoldsToConsole(bool);
+    void dumpFoldsToConsole();
     void onCursorPositionChanged();
     void onTextChanged();
     void tabChangeRequest();

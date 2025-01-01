@@ -237,6 +237,9 @@ void ConsoleWidget::loadSettings()
     settings.endGroup();
 
     AbstractCodeEditorWidget::loadSettings();
+
+    // it is not very useful to have the caret line highlighter in the command line
+    m_caretLineHighlighter->setEnabled(false);
 }
 
 //-------------------------------------------------------------------------------------

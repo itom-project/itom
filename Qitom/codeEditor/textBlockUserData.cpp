@@ -59,7 +59,7 @@ TextBlockUserData::TextBlockUserData(CodeEditor *editor) :
 */
 void TextBlockUserData::removeCodeEditorRef()
 {
-    m_codeEditor = NULL;
+    m_codeEditor = nullptr;
 }
 
 //------------------------------------------------------------------------

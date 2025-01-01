@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Copyright (C) 2024, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of itom.
@@ -35,55 +35,53 @@
 
 *********************************************************************** */
 
-#ifndef INDENTFOLDDETECTOR_H
-#define INDENTFOLDDETECTOR_H
+#pragma once
 
-#include "foldDetector.h"
+/*
+This module contains the error line highlighter mode
+*/
 
-#include <qregularexpression.h>
+#include "../textDecoration.h"
+#include "../mode.h"
+#include "models/outlineItem.h"
+
+#include <qcolor.h>
+#include <qlist.h>
+#include <qevent.h>
 
 namespace ito {
 
-/*
-This module contains the code folding API.
-*/
-
+class ScriptEditorWidget;
 
 /*
-Simple fold detector based on the line indentation level
+Handles code cells
 */
-class IndentFoldDetector : public FoldDetector
+class CodeCellHighlighterMode : public QObject, public Mode
 {
     Q_OBJECT
 public:
-    IndentFoldDetector(QObject *parent = NULL);
+    CodeCellHighlighterMode(const QString &description = "", QObject *parent = NULL);
+    virtual ~CodeCellHighlighterMode();
 
-    virtual ~IndentFoldDetector();
+    virtual void onInstall(CodeEditor *editor);
+    virtual void onStateChanged(bool state);
 
-    /*
-    Detects the block fold level.
+    void setHeadlineBgColor(const QColor& color);
+    void setActiveCellBgColor(const QColor& color);
 
-    The default implementation is based on the block **indentation**.
+public slots:
+    void outlineModelChanged(ScriptEditorWidget* sew, QSharedPointer<OutlineItem> rootItem);
+    void updateActiveCodeCell();
 
-    .. note:: Blocks fold level must be contiguous, there cannot be
-        a difference greater than 1 between two successive block fold
-        levels.
+protected:
+    QColor m_headlineBgColor;
+    QColor m_activeCellBgColor;
+    QList<TextDecoration::Ptr> m_codeCellHeadlineDecorators;
+    TextDecoration::Ptr m_activeCodeCellDecorator;
+    QSharedPointer<OutlineItem> m_rootOutline;
 
-    :param prev_block: first previous **non-blank** block or None if this
-        is the first line of the document
-    :param block: The block to process.
-    :param withinCodeCell: true if block is within a code cell, else false.
-                       A title line of a code cell is not within a code cell
-    :return: Fold level
-    */
-    virtual int detectFoldLevel(const QTextBlock &previousBlock, const QTextBlock &block, bool& withinCodeCell);
-private:
+    void clearAllDecorators(bool removeActiveCodeCell, bool removeCodeCellHeadings);
 
-    QRegularExpression m_reContinuationLine;
-    QRegularExpression m_lastSignatureLine;
 };
 
 } //end namespace ito
-
-
-#endif

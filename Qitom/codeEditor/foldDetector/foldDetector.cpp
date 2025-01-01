@@ -50,7 +50,7 @@ class FoldDetectorPrivate
 {
 public:
     FoldDetectorPrivate() :
-        m_limit(0x3FF) //see capacity of fold level in TextBlockHelper::setFoldLvl
+        m_limit(0x1FF) //see capacity of fold level in TextBlockHelper::setFoldLvl
     {
         /*
         //: Reference to the parent editor, automatically set by the syntax
@@ -96,6 +96,7 @@ void FoldDetector::processBlock(QTextBlock &currentBlock, QTextBlock &previousBl
 
     int prev_fold_level = Utils::TextBlockHelper::getFoldLvl(previousBlock);
     int fold_level;
+    bool withinCodeCell = Utils::TextBlockHelper::isWithinCodeCell(previousBlock);
 
     if (text.trimmed() == "")
     {
@@ -104,7 +105,7 @@ void FoldDetector::processBlock(QTextBlock &currentBlock, QTextBlock &previousBl
     }
     else
     {
-        fold_level = detectFoldLevel(previousBlock, currentBlock);
+        fold_level = detectFoldLevel(previousBlock, currentBlock, withinCodeCell);
 
         if (fold_level > d->m_limit)
         {
@@ -112,6 +113,7 @@ void FoldDetector::processBlock(QTextBlock &currentBlock, QTextBlock &previousBl
         }
     }
 
+    Utils::TextBlockHelper::setWithinCodeCell(currentBlock, withinCodeCell);
     prev_fold_level = Utils::TextBlockHelper::getFoldLvl(previousBlock);
 
     if (fold_level > prev_fold_level)
