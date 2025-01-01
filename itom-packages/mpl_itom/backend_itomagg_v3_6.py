@@ -9,6 +9,7 @@ from matplotlib.transforms import Bbox
 import matplotlib
 
 from .backend_itom_v3_6 import FigureCanvasItom, _BackendItom
+from mpl_itom import versiontuple
 
 DEBUG = False
 
@@ -70,7 +71,7 @@ class FigureCanvasItomAgg(FigureCanvasItom, FigureCanvasAgg):
         # <-- itom specific start
         reg = self.copy_from_bbox(bbox)
 
-        if matplotlib.__version__ >= "3.9.0":
+        if versiontuple(matplotlib.__version__) >= versiontuple("3.9.0"):
             # returns a RGBA8888 image format
             buf = memoryview(reg).tobytes()
         else:
@@ -102,7 +103,7 @@ class FigureCanvasItomAgg(FigureCanvasItom, FigureCanvasAgg):
         # if blit: W and H are a sum of the real width/height and the offset x0 or y0.
         # else: W and H are the real width and height of the image
 
-        if matplotlib.__version__ >= "3.9.0":
+        if versiontuple(matplotlib.__version__) >= versiontuple("3.9.0"):
             try:
                 self.matplotlibWidgetUiItem.call("paintResultWithImageFormat", buf, "rgba8888", x0, y0, W, H, blit)
             except RuntimeError:

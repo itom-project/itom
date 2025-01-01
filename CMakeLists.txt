@@ -1,6 +1,6 @@
 # - itom software -
 # URL: http://www.uni-stuttgart.de/ito
-# Copyright (C) 2024, Institut für Technische Optik (ITO),
+# Copyright (C) 2025, Institut für Technische Optik (ITO),
 # Universität Stuttgart, Germany
 #
 # This file is part of itom and its software development toolkit (SDK).
@@ -22,7 +22,6 @@ cmake_minimum_required(VERSION 3.12...3.29)
 
 message(
     STATUS "------------------- PROJECT itom ---------------------")
-
 
 # Retrieve Version Number and Identifier from GIT-TAG
 include(cmake/VersionFromGit.cmake)

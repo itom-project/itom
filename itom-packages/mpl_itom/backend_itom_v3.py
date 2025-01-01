@@ -19,7 +19,9 @@ from matplotlib.backend_bases import (
     ToolContainerBase,
 )
 
-if matplotlib.__version__ >= "3.3.0":
+from mpl_itom import versiontuple
+
+if versiontuple(matplotlib.__version__) >= versiontuple("3.3.0"):
     from matplotlib.backend_bases import _Mode
 else:
     from matplotlib.backend_bases import StatusbarBase
@@ -162,7 +164,7 @@ class TimerItom(TimerBase):
     def __init__(self, *args, **kwargs):
         # Create a new timer and connect the timeout() signal to the
         # _on_timer method.
-        if matplotlib.__version__ < "3.3.0":
+        if versiontuple(matplotlib.__version__) < versiontuple("3.3.0"):
             TimerBase.__init__(self, *args, **kwargs)
             self._timer = itom.timer(
                 self._interval, self._on_timer, singleShot=self._single
@@ -433,7 +435,7 @@ class FigureCanvasItom(FigureCanvasBase):
         elif type == 1:  # keyReleaseEvent
             FigureCanvasBase.key_release_event(self, key)
 
-    if matplotlib.__version__ < "3.2.0":
+    if versiontuple(matplotlib.__version__) < versiontuple("3.2.0"):
 
         @property
         @cbook.deprecated(
@@ -476,7 +478,7 @@ class FigureCanvasItom(FigureCanvasBase):
             hinch = self._dpi_ratio * h / dpival
             self.figure.set_size_inches(winch, hinch, forward=False)
             status = self._is_drawing
-            if not draw and matplotlib.__version__ >= "2.1.0":
+            if not draw and versiontuple(matplotlib.__version__) >= versiontuple("2.1.0"):
                 self._is_drawing = (
                     True  # else the following resize_event will call draw_idle, too
                 )
@@ -694,7 +696,7 @@ class FigureManagerItom(FigureManagerBase):
         self.toolmanager = self._get_toolmanager()
         self.toolbar = self._get_toolbar(self.canvas, self.windowUi)
 
-        if matplotlib.__version__ < "3.3.0":
+        if versiontuple(matplotlib.__version__) < versiontuple("3.3.0"):
             self.statusbar = None
 
         if self.toolmanager:
@@ -702,7 +704,7 @@ class FigureManagerItom(FigureManagerBase):
             if self.toolbar:
                 backend_tools.add_tools_to_container(self.toolbar)
 
-                if matplotlib.__version__ < "3.3.0":
+                if versiontuple(matplotlib.__version__) < versiontuple("3.3.0"):
                     self.statusbar = StatusbarItom(
                         matplotlibplotUiItem, self.toolmanager
                     )
@@ -1023,7 +1025,7 @@ class NavigationToolbar2Itom(NavigationToolbar2):
 
     def _update_buttons_checked(self):
         # sync button checkstates to match active mode
-        if matplotlib.__version__ < "3.3.0":
+        if versiontuple(matplotlib.__version__) < versiontuple("3.3.0"):
             self._get_predef_action("pan")["checked"] = self._active == "PAN"
             self._get_predef_action("zoom")["checked"] = self._active == "ZOOM"
         else:
@@ -1314,7 +1316,7 @@ class ToolbarItom(ToolContainerBase):
         self.statusbar_label["text"] = s
 
 
-if matplotlib.__version__ < "3.3.0":
+if versiontuple(matplotlib.__version__) < versiontuple("3.3.0"):
 
     class StatusbarItom(StatusbarBase):
         """
@@ -1427,7 +1429,7 @@ backend_tools.ToolRubberband = RubberbandItom
 backend_tools.ToolHelp = HelpItom
 backend_tools.ToolCopyToClipboard = ToolCopyToClipboardItom
 
-if matplotlib.__version__ < "3.2.0":
+if versiontuple(matplotlib.__version__) < versiontuple("3.2.0"):
 
     @cbook.deprecated("3.0")
     def error_msg_itom(msg, parent=None):
