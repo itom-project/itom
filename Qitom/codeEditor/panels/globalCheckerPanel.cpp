@@ -263,7 +263,7 @@ void GlobalCheckerPanel::drawMessages(QPainter& painter)
     QBrush brushWarning(QColor(241, 133, 46));
     QBrush brushError(QColor(226, 0, 0));
     QBrush brushCollapsedFold(QColor(145, 205, 251));
-    QPen codeCellPen(Qt::green);
+    QPen codeCellPen(QColor(44, 160, 33));
     codeCellPen.setWidth(5);
     int y;
 
