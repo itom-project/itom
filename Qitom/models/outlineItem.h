@@ -43,7 +43,8 @@ public:
         typePropertyGet,
         typePropertySet,
         typeStaticMethod,
-        typeClassMethod
+        typeClassMethod,
+        typeCodeCell // will only occur in the child level of root, code cells (# %%, #%%, # <codecell>)
     };
 
     explicit OutlineItem(Type type);
