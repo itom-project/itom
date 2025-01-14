@@ -192,6 +192,8 @@ Navigate forward and backward
 limited to 20 entries and can be accessed via the **Navigate Backward** or
 **Navigate Forward** buttons in the toolbar of any script editor. This allows
 jumping from the current cursor position to a previous or a following position.
+Additionally, navigation forward and backward can also be performed using
+the mouse back and forward buttons.
 The full stack is contained in the submenu of the **Navigate Backward** button:
 
 .. figure:: images/scripteditor_navigation.png
