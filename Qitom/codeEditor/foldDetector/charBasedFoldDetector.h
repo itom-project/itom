@@ -62,7 +62,11 @@ public:
     virtual ~CharBasedFoldDetector();
 
 
-    virtual int detectFoldLevel(const QTextBlock &previousBlock, const QTextBlock &block, bool& withinCodeCell);
+    virtual int detectFoldLevel(
+        const QTextBlock &previousBlock,
+        const QTextBlock &block,
+        bool& withinCodeCell,
+        bool& codeCellStart);
 private:
     CharBasedFoldDetectorPrivate *d_ptr;
     Q_DECLARE_PRIVATE(CharBasedFoldDetector);

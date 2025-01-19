@@ -43,6 +43,8 @@
 #include "widgets/scriptEditorWidget.h"
 
 #include <qbrush.h>
+#include <qtextcursor.h>
+#include <qdebug.h>
 
 namespace ito {
 
@@ -206,7 +208,8 @@ void CodeCellHighlighterMode::outlineModelChanged(ScriptEditorWidget* /*sew*/, Q
 
             for (int i = 0; i < m_codeCellHeadlineDecorators.size(); ++i)
             {
-                if (m_codeCellHeadlineDecorators[i]->block().blockNumber() == startLineIdx)
+                qDebug() << "m_codeCellHeadlineDecorators" << m_codeCellHeadlineDecorators[i]->cursor.blockNumber() << startLineIdx;
+                if (m_codeCellHeadlineDecorators[i]->cursor.blockNumber() == startLineIdx)
                 {
                     confirmedIndices << i;
                     found = true;

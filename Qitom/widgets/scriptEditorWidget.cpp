@@ -2051,6 +2051,9 @@ void ScriptEditorWidget::pyCodeFormatterDone(bool success, QString code)
         cursor.movePosition(QTextCursor::End, QTextCursor::KeepAnchor);
 
         replaceSelectionAndKeepBookmarksAndBreakpoints(cursor, code);
+
+        // immediately restart the outline update if the script was completely changed
+        outlineTimerElapsed();
     }
     else if (!success && code.trimmed() != "")
     {
@@ -3461,10 +3464,9 @@ void ScriptEditorWidget::nrOfLinesChanged()
             m_codeCheckerCallTimer->start(); // starts or restarts the timer
         }
     }
-    if (m_outlineTimerEnabled)
-    {
-        m_outlineTimer->start(); // starts or restarts the timer
-    }
+
+    // immediately restart the outline update if the number of lines changed
+    outlineTimerElapsed();
 }
 
 //-------------------------------------------------------------------------------------
@@ -3845,10 +3847,12 @@ QSharedPointer<OutlineItem> ScriptEditorWidget::parseOutline(bool forceParsing /
     QList<QSharedPointer<OutlineItem>> codeCells;
     QString blockText, codeCellName;
 
-    for (int blockIdx = 0; blockIdx < blockCount(); ++blockIdx)
-    {
-        const QTextBlock& block = doc->findBlockByNumber(blockIdx);
+    // parse for code cells (non-recursive implementation)
+    QTextBlock block = doc->firstBlock();
+    int blockIdx = 0;
 
+    while (block.isValid())
+    {
         // check for code cell
         blockText = Utils::lstrip(block.text());
 
@@ -3870,6 +3874,21 @@ QSharedPointer<OutlineItem> ScriptEditorWidget::parseOutline(bool forceParsing /
             }
         }
 
+        block = block.next();
+        blockIdx++;
+    }
+
+    // add the code cells to the children of the root item
+    foreach(const auto & codeCell, codeCells)
+    {
+        root->m_childs << codeCell;
+    }
+
+    // parse for nested items, foldings... (recursive)
+    for (int blockIdx = 0; blockIdx < blockCount(); ++blockIdx)
+    {
+        const QTextBlock& block = doc->findBlockByNumber(blockIdx);
+
         if (Utils::TextBlockHelper::isFoldTrigger(block))
         {
             FoldScope scope(block, valid);
@@ -3890,12 +3909,6 @@ QSharedPointer<OutlineItem> ScriptEditorWidget::parseOutline(bool forceParsing /
                 }
             }
         }
-    }
-
-    // add the code cells to the children of the root item
-    foreach(const auto & codeCell, codeCells)
-    {
-        root->m_childs << codeCell;
     }
 
     m_rootOutlineItem = root;

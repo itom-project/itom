@@ -84,12 +84,18 @@ Detects fold level by looking at the block indentation.
 :param block: current block to highlight
 :param withinCodeCell: true if block is within a code cell, else false.
                        A title line of a code cell is not within a code cell
+:param codeCellStart: true if this block is the start line of a code cell
 */
-int CharBasedFoldDetector::detectFoldLevel(const QTextBlock &previousBlock, const QTextBlock &block, bool &withinCodeCell)
+int CharBasedFoldDetector::detectFoldLevel(
+    const QTextBlock &previousBlock,
+    const QTextBlock &block,
+    bool &withinCodeCell,
+    bool& codeCellStart)
 {
     Q_D(CharBasedFoldDetector);
 
     withinCodeCell = false; //todo
+    codeCellStart = false; // todo
     QString prev_text;
 
     if (previousBlock.isValid())
