@@ -82,6 +82,8 @@ ScriptEditorWidget::ScriptEditorWidget(
     m_outlineDirty(true), m_wasReadonly(false), m_charsetEncodingAutoGuess(true),
     m_charsetDefined(false)
 {
+    m_rootOutlineItem = QSharedPointer<OutlineItem>(new OutlineItem(OutlineItem::typeRoot));
+
     qRegisterMetaType<QList<ito::CodeCheckerItem>>("QList<ito::CodeCheckerItem>");
     qRegisterMetaType<IOHelper::CharsetEncodingItem>("IOHelper::CharsetEncodingItem");
 
@@ -2240,7 +2242,13 @@ RetVal ScriptEditorWidget::openFile(
         file.close();
 
         clearAllBreakpoints();
+
+        // block signals avoid that nrOfLinesChanges is emitted, that
+        // might cause a crash uue to the outline parser and code cells
+        blockSignals(true);
         setPlainText("");
+        blockSignals(false);
+
         setPlainText(text);
 
         changeFilename(fileName);
