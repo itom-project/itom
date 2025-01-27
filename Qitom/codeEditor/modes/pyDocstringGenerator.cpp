@@ -193,7 +193,8 @@ QSharedPointer<OutlineItem> PyDocstringGeneratorMode::getOutlineOfLineIdx(int li
 
         foreach(const QSharedPointer<OutlineItem> &c, current->m_childs)
         {
-            if (lineIdx >= c->m_startLineIdx
+            if (c->m_type != OutlineItem::typeCodeCell
+                && lineIdx >= c->m_startLineIdx
                 && lineIdx <= c->m_endLineIdx)
             {
                 result = c;
