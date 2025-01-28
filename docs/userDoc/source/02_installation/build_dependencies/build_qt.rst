@@ -60,4 +60,22 @@ For a working |itom| development environment only a prebuild version of Qt is ne
 Qt 6
 ----
 
-Copy the subfolders of the doc folder into the folder /X.X.X//msvc2017_64/doc. Change in the preferences of the Assistant the documentation folder.
+The following components must be selected in the **Qt Online Installer**:
+
+* Extensions
+    * QT WebEngine
+        * Qt 6.8.1
+            * MSVC 2022 x64
+
+* Qt
+    * Qt 6.8.1
+        * MSVC 2022 64-bit
+        * Additional Libraries
+            * Qt Positioning
+            * Qt WebChannel
+            * Qt WebSockets
+            * Qt WebView
+
+Copy the subfolders of the **doc** folder into the folder /X.X.X//msvc2022_64/doc.
+Change in the preferences of the Assistant the documentation folder.
+All other folder can be deleted.
