@@ -143,6 +143,7 @@ void FoldDetector::processBlock(QTextBlock &currentBlock, QTextBlock &previousBl
         // not be changed. Then, it is assumed, that all the rest is also correct.
 
         bool nextLinesAreWithinCodeCell = true;
+        int lvl;
 
         if (!currentWithinCodeCellNew && !isCodeCellStart)
         {
@@ -160,6 +161,18 @@ void FoldDetector::processBlock(QTextBlock &currentBlock, QTextBlock &previousBl
             else if (Utils::TextBlockHelper::isWithinCodeCell(block) != nextLinesAreWithinCodeCell)
             {
                 Utils::TextBlockHelper::setWithinCodeCell(block, nextLinesAreWithinCodeCell);
+                lvl = Utils::TextBlockHelper::getFoldLvl(block);
+
+                // this is called for lines, that were in a code cell, but the code cell was removed
+                // of lines, that have not been within a code cell and are now in a code cell
+                if (lvl % 2 == 0 && nextLinesAreWithinCodeCell)
+                {
+                    Utils::TextBlockHelper::setFoldLvl(block, lvl + 1);
+                }
+                else if (lvl % 2 == 1 && !nextLinesAreWithinCodeCell)
+                {
+                    Utils::TextBlockHelper::setFoldLvl(block, lvl - 1);
+                }
             }
             else
             {
