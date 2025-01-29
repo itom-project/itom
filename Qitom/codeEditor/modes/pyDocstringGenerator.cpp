@@ -158,6 +158,8 @@ void PyDocstringGeneratorMode::mnuInsertDocstring()
 
     if (cursor.hasSelection())
     {
+        int startBlockIdx = cursor.blockNumber();
+
         if (cursor.selectedText().trimmed() == "\"\"\"")
         {
             cursor.movePosition(QTextCursor::PreviousBlock);
@@ -170,6 +172,8 @@ void PyDocstringGeneratorMode::mnuInsertDocstring()
         }
 
         m_overwriteEndLineIndex = -1;
+
+        e->rehighlightBlock(startBlockIdx, e->lineCount() - 1);
     }
 }
 
@@ -351,7 +355,6 @@ void PyDocstringGeneratorMode::insertDocstring(
     insertCursor.endEditBlock();
 
     e->setCursorPosition(lineIdx + 1, indent.size() + quotes.size() + cursorPos);
-
     e->textChanged();
 }
 
