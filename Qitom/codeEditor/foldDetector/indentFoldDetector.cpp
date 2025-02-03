@@ -171,21 +171,13 @@ int IndentFoldDetector::detectFoldLevel(
 
     prev_lvl /= 2;
 
-    if (true) //level <= prev_lvl)
+    if (withinCodeCell)
     {
-        if (withinCodeCell)
-        {
-            level = level * 2 + 1;
-        }
-        else
-        {
-            level *= 2;
-        }
+        level = level * 2 + 1;
     }
     else
     {
-        // real change in indentation
-        level *= 2; // indented levels are always even numbers
+        level *= 2;
     }
 
     return qMax(min_lvl, level);
