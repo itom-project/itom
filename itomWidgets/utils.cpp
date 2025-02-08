@@ -98,9 +98,10 @@ const char *ctkValidWildCard =
 //-----------------------------------------------------------------------------
 QStringList ctk::nameFilterToExtensions(const QString& nameFilter)
 {
+  QRegularExpressionMatch match;
   QRegularExpression regexp(QString::fromLatin1(ctkNameFilterRegExp));
-  int i = nameFilter.indexOf(regexp);
-  if (i < 0)
+  int i = nameFilter.indexOf(regexp, 0, &match);
+  if (!match.hasMatch())
     {
     QRegularExpression isWildCard(QString::fromLatin1(ctkValidWildCard));
     if (nameFilter.indexOf(isWildCard) >= 0)
@@ -109,7 +110,7 @@ QStringList ctk::nameFilterToExtensions(const QString& nameFilter)
       }
     return QStringList();
     }
-  QStringList captured = regexp.namedCaptureGroups();
+  QStringList captured = match.capturedTexts();
   QString f;
 
   if (captured.size() > 2)
@@ -143,14 +144,15 @@ QStringList ctk::nameFiltersToExtensions(const QStringList& nameFilters)
 QString ctk::extensionToRegExp(const QString& extension)
 {
   // typically *.jpg
+  QRegularExpressionMatch match;
   QRegularExpression extensionExtractor("\\*\\.(\\w+)");
-  int pos = extension.indexOf(extensionExtractor);
+  int pos = extension.indexOf(extensionExtractor, 0, &match);
   if (pos < 0)
     {
     return QString();
     }
 
-  QStringList captured = extensionExtractor.namedCaptureGroups();
+  QStringList captured = match.capturedTexts();
 
   if (captured.size() > 1)
   {
