@@ -137,10 +137,11 @@ void CodeCellHighlighterMode::updateActiveCodeCell()
     else
     {
         int numLines = codeCellEndIndex - codeCellStartIndex;
+        const QTextBlock activeBlock = m_activeCodeCellDecorator ? m_activeCodeCellDecorator->block() : QTextBlock();
 
-        if (m_activeCodeCellDecorator &&
-            m_activeCodeCellDecorator->block().firstLineNumber() == codeCellStartIndex + 1 &&
-            m_activeCodeCellDecorator->block().lineCount() == numLines)
+        if (activeBlock.isValid() &&
+            activeBlock.firstLineNumber() == codeCellStartIndex + 1 &&
+            activeBlock.lineCount() == numLines)
         {
             // no changes
             return;
@@ -153,6 +154,9 @@ void CodeCellHighlighterMode::updateActiveCodeCell()
             {
                 m_activeCodeCellDecorator = TextDecoration::Ptr(
                     new TextDecoration(editor()->document(), -1, -1, codeCellStartIndex + 1, codeCellEndIndex + 1, 1));
+                QTextBlock block = editor()->document()->findBlockByNumber(codeCellStartIndex + 1);
+                block.setLineCount(numLines);
+                m_activeCodeCellDecorator->setBlock(block);
                 m_activeCodeCellDecorator->setBackground(QBrush(m_activeCellBgColor));
                 m_activeCodeCellDecorator->setFullWidth(true, false);
                 editor()->decorations()->append(m_activeCodeCellDecorator);
@@ -208,7 +212,6 @@ void CodeCellHighlighterMode::outlineModelChanged(ScriptEditorWidget* /*sew*/, Q
 
             for (int i = 0; i < m_codeCellHeadlineDecorators.size(); ++i)
             {
-                qDebug() << "m_codeCellHeadlineDecorators" << m_codeCellHeadlineDecorators[i]->cursor.blockNumber() << startLineIdx;
                 if (m_codeCellHeadlineDecorators[i]->cursor.blockNumber() == startLineIdx)
                 {
                     confirmedIndices << i;
