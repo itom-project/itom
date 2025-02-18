@@ -53,9 +53,9 @@ CodeCellHighlighterMode::CodeCellHighlighterMode(const QString& description /*= 
     Mode("CodeCellHighlighterMode", description),
     QObject(parent),
     m_headlineBgColor(QColor(240,240,240)),
-    m_activeCellBgColor(QColor(242, 242, 210)),
-    m_activeCodeCellDecorator(nullptr),
-    m_rootOutline(nullptr)
+    m_activeCodeCellBgColor(QColor(242, 242, 210)),
+    m_rootOutline(nullptr),
+    m_activeCodeCellLineRange(qMakePair<int, int>(-1, -1))
 {
 }
 
@@ -74,9 +74,9 @@ void CodeCellHighlighterMode::setHeadlineBgColor(const QColor& color)
 }
 
 //------------------------------------------------------------------------------
-void CodeCellHighlighterMode::setActiveCellBgColor(const QColor& color)
+void CodeCellHighlighterMode::setActiveCodeCellBgColor(const QColor& color)
 {
-    m_activeCellBgColor = color;
+    m_activeCodeCellBgColor = color;
     outlineModelChanged(nullptr, m_rootOutline);
 }
 
@@ -101,7 +101,7 @@ void CodeCellHighlighterMode::onStateChanged(bool state)
     else
     {
         disconnect(editor(), SIGNAL(cursorPositionChanged()), this, SLOT(updateActiveCodeCell()));
-        clearAllDecorators(true, true);
+        clearAllDecorators();
     }
 }
 
@@ -132,60 +132,28 @@ void CodeCellHighlighterMode::updateActiveCodeCell()
 
     if (!withinCodeCell)
     {
-        clearAllDecorators(true, false);
+        m_activeCodeCellLineRange = qMakePair<int, int>(-1, -1);
     }
     else
     {
-        int numLines = codeCellEndIndex - codeCellStartIndex;
-        const QTextBlock activeBlock = m_activeCodeCellDecorator ? m_activeCodeCellDecorator->block() : QTextBlock();
-
-        if (activeBlock.isValid() &&
-            activeBlock.firstLineNumber() == codeCellStartIndex + 1 &&
-            activeBlock.lineCount() == numLines)
-        {
-            // no changes
-            return;
-        }
-        else
-        {
-            clearAllDecorators(true, false);
-
-            if (numLines > 0)
-            {
-                m_activeCodeCellDecorator = TextDecoration::Ptr(
-                    new TextDecoration(editor()->document(), -1, -1, codeCellStartIndex + 1, codeCellEndIndex + 1, 1));
-                QTextBlock block = editor()->document()->findBlockByNumber(codeCellStartIndex + 1);
-                block.setLineCount(numLines);
-                m_activeCodeCellDecorator->setBlock(block);
-                m_activeCodeCellDecorator->setBackground(QBrush(m_activeCellBgColor));
-                m_activeCodeCellDecorator->setFullWidth(true, false);
-                editor()->decorations()->append(m_activeCodeCellDecorator);
-            }
-        }
+        m_activeCodeCellLineRange = QPair<int, int>(codeCellStartIndex + 1, codeCellEndIndex);
     }
+
+    editor()->viewport()->update();
 }
 
 //--------------------------------------------------------------
 /*
 */
-void CodeCellHighlighterMode::clearAllDecorators(bool removeActiveCodeCell, bool removeCodeCellHeadings)
+void CodeCellHighlighterMode::clearAllDecorators()
 {
-    if (m_activeCodeCellDecorator && removeActiveCodeCell)
+    // remove non-confirmed indices
+    for (int i = m_codeCellHeadlineDecorators.size() - 1; i >= 0; --i)
     {
-        editor()->decorations()->remove(m_activeCodeCellDecorator);
-        m_activeCodeCellDecorator = nullptr;
+        editor()->decorations()->remove(m_codeCellHeadlineDecorators[i]);
     }
 
-    if (removeCodeCellHeadings)
-    {
-        // remove non-confirmed indices
-        for (int i = m_codeCellHeadlineDecorators.size() - 1; i >= 0; --i)
-        {
-            editor()->decorations()->remove(m_codeCellHeadlineDecorators[i]);
-        }
-
-        m_codeCellHeadlineDecorators.clear();
-    }
+    m_codeCellHeadlineDecorators.clear();
 }
 
 //------------------------------------------------------------------------------

@@ -623,17 +623,17 @@ void ScriptEditorWidget::loadSettings()
     if (headlineBgColor.lightness() > 128)
     {
         headlineBgColor = Utils::driftColor(headlineBgColor, 105);
-        m_codeCellHighlighterMode->setActiveCellBgColor(QColor(242, 242, 210));
+        m_codeCellHighlighterMode->setActiveCodeCellBgColor(QColor(242, 242, 210));
     }
     else
     {
-        m_codeCellHighlighterMode->setActiveCellBgColor(Utils::driftColor(headlineBgColor, 120));
+        m_codeCellHighlighterMode->setActiveCodeCellBgColor(Utils::driftColor(headlineBgColor, 120));
         headlineBgColor = Utils::driftColor(headlineBgColor, 150);
     }
 
     m_codeCellHighlighterMode->setHeadlineBgColor(headlineBgColor);
     settings.endGroup();
-    //m_codeCellHighlighterMode->setActiveCellBgColor();
+    //m_codeCellHighlighterMode->setActiveCodeCellBgColor();
 
 
 
@@ -4162,12 +4162,7 @@ void ScriptEditorWidget::replaceOccurencesInCurrentScript(
 //------------------------------------------------------------------------------
 void ScriptEditorWidget::paintEvent(QPaintEvent* e)
 {
-    CodeEditor::paintEvent(e);
-
-    QPainter painter(viewport());
-
-    // line above heading of code cell
-    painter.setPen(m_codeCellHeaderLine);
+    updateVisibleBlocks();
 
     QList<int> codeCellStartLineIndices;
 
@@ -4179,8 +4174,44 @@ void ScriptEditorWidget::paintEvent(QPaintEvent* e)
         }
     }
 
+    if (m_codeCellHighlighterMode)
+    {
+        QPainter painter(viewport());
+        painter.setBrush(QBrush(m_codeCellHighlighterMode->activeCodeCellBgColor()));
+        painter.setPen(QPen(Qt::NoPen));
+        const auto lineRange = m_codeCellHighlighterMode->activeCodeCellLineRange();
+
+        if (lineRange.first > -1)
+        {
+            int y0 = INT_MAX;
+            int y1 = 0;
+
+            foreach(const VisibleBlock & block, visibleBlocks())
+            {
+                if (block.lineNumber >= lineRange.first && block.lineNumber <= lineRange.second)
+                {
+                    y0 = qMin(y0, block.topPosition);
+                    y1 = qMax(y1, block.topPosition + block.lineHeight);
+                }
+            }
+
+            if (y0 < y1)
+            {
+                y1 = qMin(y1, height());
+                painter.drawRect(0, y0, width(), y1 - y0);
+            }
+        }
+    }
+
+    CodeEditor::paintEventWithoutVisibleBlockUpdate(e);
+
     if (codeCellStartLineIndices.size() > 0)
     {
+        QPainter painter(viewport());
+
+        // line above heading of code cell
+        painter.setPen(m_codeCellHeaderLine);
+
         foreach(const VisibleBlock & block, visibleBlocks())
         {
             if (codeCellStartLineIndices.contains(block.lineNumber))

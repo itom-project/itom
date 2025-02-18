@@ -56,7 +56,9 @@ namespace ito {
 
 struct VisibleBlock
 {
+    bool partlyVisible;
     int topPosition;
+    int lineHeight;
     int lineNumber;
     QTextBlock textBlock;
 };
@@ -410,6 +412,8 @@ protected:
     {
         return true;
     };
+
+    void paintEventWithoutVisibleBlockUpdate(QPaintEvent* e);
 
 private:
     struct FindOptions

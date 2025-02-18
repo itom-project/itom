@@ -48,6 +48,7 @@ This module contains the error line highlighter mode
 #include <qcolor.h>
 #include <qlist.h>
 #include <qevent.h>
+#include <qpair.h>
 
 namespace ito {
 
@@ -67,7 +68,15 @@ public:
     virtual void onStateChanged(bool state);
 
     void setHeadlineBgColor(const QColor& color);
-    void setActiveCellBgColor(const QColor& color);
+    void setActiveCodeCellBgColor(const QColor& color);
+
+    QColor activeCodeCellBgColor() const {
+        return m_activeCodeCellBgColor;
+    }
+
+    QPair<int, int> activeCodeCellLineRange() const {
+        return m_activeCodeCellLineRange;
+    }
 
 public slots:
     void outlineModelChanged(ScriptEditorWidget* sew, QSharedPointer<OutlineItem> rootItem);
@@ -75,12 +84,12 @@ public slots:
 
 protected:
     QColor m_headlineBgColor;
-    QColor m_activeCellBgColor;
+    QColor m_activeCodeCellBgColor;
     QList<TextDecoration::Ptr> m_codeCellHeadlineDecorators;
-    TextDecoration::Ptr m_activeCodeCellDecorator;
+    QPair<int, int> m_activeCodeCellLineRange; // first line and last line within the active code cell (without heading), if none -1, -1
     QSharedPointer<OutlineItem> m_rootOutline;
 
-    void clearAllDecorators(bool removeActiveCodeCell, bool removeCodeCellHeadings);
+    void clearAllDecorators();
 
 };
 
