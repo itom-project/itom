@@ -627,8 +627,8 @@ void ScriptEditorWidget::loadSettings()
     }
     else
     {
-        m_codeCellHighlighterMode->setActiveCodeCellBgColor(Utils::driftColor(headlineBgColor, 120));
-        headlineBgColor = Utils::driftColor(headlineBgColor, 150);
+        m_codeCellHighlighterMode->setActiveCodeCellBgColor(Utils::driftColor(headlineBgColor, 130));
+        headlineBgColor = Utils::driftColor(headlineBgColor, 160);
     }
 
     m_codeCellHighlighterMode->setHeadlineBgColor(headlineBgColor);

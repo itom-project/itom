@@ -69,14 +69,24 @@ CodeCellHighlighterMode::~CodeCellHighlighterMode()
 //------------------------------------------------------------------------------
 void CodeCellHighlighterMode::setHeadlineBgColor(const QColor& color)
 {
-    m_headlineBgColor = color;
+    if (m_headlineBgColor != color)
+    {
+        clearAllDecorators();
+        m_headlineBgColor = color;
+    }
+
     outlineModelChanged(nullptr, m_rootOutline);
 }
 
 //------------------------------------------------------------------------------
 void CodeCellHighlighterMode::setActiveCodeCellBgColor(const QColor& color)
 {
-    m_activeCodeCellBgColor = color;
+    if (m_activeCodeCellBgColor != color)
+    {
+        clearAllDecorators();
+        m_activeCodeCellBgColor = color;
+    }
+
     outlineModelChanged(nullptr, m_rootOutline);
 }
 
