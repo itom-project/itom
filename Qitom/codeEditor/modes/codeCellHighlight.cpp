@@ -71,7 +71,6 @@ void CodeCellHighlighterMode::setHeadlineBgColor(const QColor& color)
 {
     if (m_headlineBgColor != color)
     {
-        clearAllDecorators();
         m_headlineBgColor = color;
     }
 
@@ -83,7 +82,6 @@ void CodeCellHighlighterMode::setActiveCodeCellBgColor(const QColor& color)
 {
     if (m_activeCodeCellBgColor != color)
     {
-        clearAllDecorators();
         m_activeCodeCellBgColor = color;
     }
 
@@ -93,7 +91,6 @@ void CodeCellHighlighterMode::setActiveCodeCellBgColor(const QColor& color)
 //------------------------------------------------------------------------------
 /*
 */
-
 void CodeCellHighlighterMode::onInstall(CodeEditor* editor)
 {
     Mode::onInstall(editor);
@@ -111,7 +108,6 @@ void CodeCellHighlighterMode::onStateChanged(bool state)
     else
     {
         disconnect(editor(), SIGNAL(cursorPositionChanged()), this, SLOT(updateActiveCodeCell()));
-        clearAllDecorators();
     }
 }
 
@@ -152,20 +148,6 @@ void CodeCellHighlighterMode::updateActiveCodeCell()
     editor()->viewport()->update();
 }
 
-//--------------------------------------------------------------
-/*
-*/
-void CodeCellHighlighterMode::clearAllDecorators()
-{
-    // remove non-confirmed indices
-    for (int i = m_codeCellHeadlineDecorators.size() - 1; i >= 0; --i)
-    {
-        editor()->decorations()->remove(m_codeCellHeadlineDecorators[i]);
-    }
-
-    m_codeCellHeadlineDecorators.clear();
-}
-
 //------------------------------------------------------------------------------
 void CodeCellHighlighterMode::outlineModelChanged(ScriptEditorWidget* /*sew*/, QSharedPointer<OutlineItem> rootItem)
 {
@@ -177,48 +159,6 @@ void CodeCellHighlighterMode::outlineModelChanged(ScriptEditorWidget* /*sew*/, Q
     if (!rootItem)
     {
         return;
-    }
-
-    foreach(const auto & childItem, rootItem->m_childs)
-    {
-        if (childItem->m_type == OutlineItem::typeCodeCell)
-        {
-            startLineIdx = childItem->m_startLineIdx;
-
-            // check if the item already exists in m_codeCellHeadlineDecorators
-            found = false;
-
-            for (int i = 0; i < m_codeCellHeadlineDecorators.size(); ++i)
-            {
-                if (m_codeCellHeadlineDecorators[i]->cursor.blockNumber() == startLineIdx)
-                {
-                    confirmedIndices << i;
-                    found = true;
-                    break;
-                }
-            }
-
-            if (!found)
-            {
-                auto newDecorator = TextDecoration::Ptr(new TextDecoration(editor()->document(), -1, -1, startLineIdx, startLineIdx, 1));
-                newDecorator->setBackground(QBrush(m_headlineBgColor));
-                newDecorator->setFullWidth();
-                editor()->decorations()->append(newDecorator);
-                m_codeCellHeadlineDecorators << newDecorator;
-                confirmedIndices << m_codeCellHeadlineDecorators.size() - 1;
-            }
-
-        }
-    }
-
-    // remove non-confirmed indices
-    for (int i = m_codeCellHeadlineDecorators.size() - 1; i >= 0; --i)
-    {
-        if (!confirmedIndices.contains(i))
-        {
-            editor()->decorations()->remove(m_codeCellHeadlineDecorators[i]);
-            m_codeCellHeadlineDecorators.takeAt(i);
-        }
     }
 
     m_rootOutline = rootItem;
