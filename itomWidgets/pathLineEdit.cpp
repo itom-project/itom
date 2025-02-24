@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Copyright (C) 2025, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
@@ -104,7 +104,7 @@ PathLineEditPrivate::PathLineEditPrivate(PathLineEdit& object)
   , BrowseButton(0)
   , MinimumContentsLength(0)
   , SizeAdjustPolicy(PathLineEdit::AdjustToContentsOnFirstShow)
-  , Filters(QDir::AllEntries|QDir::NoDotAndDotDot|QDir::Readable)
+  , Filters(QDir::AllEntries | QDir::NoDotAndDotDot)
   , HasValidInput(false)
 {
 }
@@ -272,6 +272,8 @@ void PathLineEditPrivate::updateFilter()
   QFileSystemModel* fileSystemModel = new QFileSystemModel(newCompleter);
   fileSystemModel->setNameFilters(ctk::nameFiltersToExtensions(this->NameFilters));
   fileSystemModel->setFilter(this->Filters | QDir::NoDotAndDotDot | QDir::AllDirs);
+  fileSystemModel->setRootPath(QString());
+  fileSystemModel->setNameFilterDisables(false);
   newCompleter->setModel(fileSystemModel);
 
   this->LineEdit->setCompleter(newCompleter);

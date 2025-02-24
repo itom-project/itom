@@ -21,10 +21,8 @@ except Exception as ex:
     raise ex
 
 
-from itom import polygonMesh
-from itom import dataObject
-from itom import plot
-from itom import algorithms
+from itom import algorithms, dataObject, plot, polygonMesh
+
 # sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoVTK3DVisualizer.png'
 
 
@@ -51,9 +49,7 @@ h.call("setItemProperty", "source_mesh", "ColorMap", "viridis")
 ###############################################################################
 # A cylinder is added to the canvas. The axis of symmetry is given by a start point and an orientation vector.
 # The length of the orientation vector defines the height of the cylinder, its radius is given by the third parameter.
-h.call(
-    "addCylinder", (10, 0, 0), (0, 0, 5), 0.5, "cylinder"
-)  # arguments: point, orientation, radius, name
+h.call("addCylinder", (10, 0, 0), (0, 0, 5), 0.5, "cylinder")  # arguments: point, orientation, radius, name
 h.call("setItemProperty", "cylinder", "Representation", "Surface")
 h.call("setItemProperty", "cylinder", "LineColor", "#808000")
 h.call("setItemProperty", "cylinder", "Lighting", True)
@@ -68,7 +64,7 @@ h.call("setItemProperty", "sphere", "Lighting", True)
 # A pyramid is added. It is defined by its five corner points using a ``3 x 5`` ``dataObject``. The first four
 # columns hereby describe the corner points of the base rectangle, the last column are the ``x, y, z``
 # coordinates of the tip. Currently, a pyramid only consists of line and no surface representation is possible.
-pyramid = np.array([[0, 0, 6, 6, 3], [0, 6, 6, 0, 3], [0, 0, 0, 0, 7]])
+pyramid = np.array([[0, 0, 6, 6, 3], [0, 6, 6, 0, 3], [0, 0, 0, 0, 7]]).astype("int32")
 h.call("addPyramid", dataObject(pyramid), "pyramid")
 h.call("setItemProperty", "pyramid", "LineColor", "blue")
 

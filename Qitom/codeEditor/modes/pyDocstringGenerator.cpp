@@ -158,6 +158,8 @@ void PyDocstringGeneratorMode::mnuInsertDocstring()
 
     if (cursor.hasSelection())
     {
+        int startBlockIdx = cursor.blockNumber();
+
         if (cursor.selectedText().trimmed() == "\"\"\"")
         {
             cursor.movePosition(QTextCursor::PreviousBlock);
@@ -170,6 +172,8 @@ void PyDocstringGeneratorMode::mnuInsertDocstring()
         }
 
         m_overwriteEndLineIndex = -1;
+
+        e->rehighlightBlock(startBlockIdx, e->lineCount() - 1);
     }
 }
 
@@ -193,7 +197,8 @@ QSharedPointer<OutlineItem> PyDocstringGeneratorMode::getOutlineOfLineIdx(int li
 
         foreach(const QSharedPointer<OutlineItem> &c, current->m_childs)
         {
-            if (lineIdx >= c->m_startLineIdx
+            if (c->m_type != OutlineItem::typeCodeCell
+                && lineIdx >= c->m_startLineIdx
                 && lineIdx <= c->m_endLineIdx)
             {
                 result = c;
@@ -350,7 +355,6 @@ void PyDocstringGeneratorMode::insertDocstring(
     insertCursor.endEditBlock();
 
     e->setCursorPosition(lineIdx + 1, indent.size() + quotes.size() + cursorPos);
-
     e->textChanged();
 }
 

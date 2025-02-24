@@ -122,3 +122,4 @@ Setup 4.2.0  - created 22.06.2022 - AddInInterface "ito.AddIn.InterfaceBase/3.3.
 Setup 4.2.1  - created 12.08.2022 - AddInInterface "ito.AddIn.InterfaceBase/3.3.0"
 Setup 4.2.2  - created 02.09.2022 - AddInInterface "ito.AddIn.InterfaceBase/3.3.0"
 Setup 4.3.0  - created 09.05.2024 - AddInInterface "ito.AddIn.InterfaceBase/3.3.0"
+Setup 5.0.0-dev  - created 12.01.2025 - AddInInterface "ito.AddIn.InterfaceBase/3.3.0"

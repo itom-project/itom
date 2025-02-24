@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Copyright (C) 2024, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of itom.
@@ -35,44 +35,62 @@
 
 *********************************************************************** */
 
-#ifndef CHARBASEDFOLDDETECTOR_H
-#define CHARBASEDFOLDDETECTOR_H
-
-#include "foldDetector.h"
+#pragma once
 
 /*
-This module contains the code folding API.
+This module contains the error line highlighter mode
 */
+
+#include "../textDecoration.h"
+#include "../mode.h"
+#include "models/outlineItem.h"
+
+#include <qcolor.h>
+#include <qlist.h>
+#include <qevent.h>
+#include <qpair.h>
 
 namespace ito {
 
-class CharBasedFoldDetectorPrivate;
-
+class ScriptEditorWidget;
 
 /*
-Fold detector based on trigger characters (e.g. a { increase fold level
-    and } decrease fold level).
+Handles code cells
 */
-class CharBasedFoldDetector : public FoldDetector
+class CodeCellHighlighterMode : public QObject, public Mode
 {
     Q_OBJECT
 public:
-    CharBasedFoldDetector(QChar openChars = '{', QChar closeChars = '}', QObject *parent = NULL);
+    CodeCellHighlighterMode(const QString &description = "", QObject *parent = NULL);
+    virtual ~CodeCellHighlighterMode();
 
-    virtual ~CharBasedFoldDetector();
+    virtual void onInstall(CodeEditor *editor);
+    virtual void onStateChanged(bool state);
 
+    void setHeadlineBgColor(const QColor& color);
+    void setActiveCodeCellBgColor(const QColor& color);
 
-    virtual int detectFoldLevel(
-        const QTextBlock &previousBlock,
-        const QTextBlock &block,
-        bool& withinCodeCell,
-        bool& codeCellStart);
-private:
-    CharBasedFoldDetectorPrivate *d_ptr;
-    Q_DECLARE_PRIVATE(CharBasedFoldDetector);
+    QColor activeCodeCellBgColor() const {
+        return m_activeCodeCellBgColor;
+    }
+
+    QPair<int, int> activeCodeCellLineRange() const {
+        return m_activeCodeCellLineRange;
+    }
+
+public slots:
+    void outlineModelChanged(ScriptEditorWidget* sew, QSharedPointer<OutlineItem> rootItem);
+    void updateActiveCodeCell();
+
+protected:
+    QColor m_headlineBgColor;
+    QColor m_activeCodeCellBgColor;
+    QList<TextDecoration::Ptr> m_codeCellHeadlineDecorators;
+    QPair<int, int> m_activeCodeCellLineRange; // first line and last line within the active code cell (without heading), if none -1, -1
+    QSharedPointer<OutlineItem> m_rootOutline;
+
+    void clearAllDecorators();
+
 };
 
 } //end namespace ito
-
-
-#endif

@@ -118,12 +118,12 @@ h1.call("plotMarkers", maximas, "gs5", "local-maximas")
 [X2, Y2] = np.meshgrid(range(128, 1024, 128), range(128, 1024, 128))
 
 corners1 = dataObject([2, 225], "int32")
-corners1[0, :] = X1.flatten()
-corners1[1, :] = Y1.flatten()
+corners1[0, :] = X1.flatten().astype("int32")
+corners1[1, :] = Y1.flatten().astype("int32")
 
 corners2 = dataObject([2, 49], "int32")
-corners2[0, :] = X2.flatten()
-corners2[1, :] = Y2.flatten()
+corners2[0, :] = X2.flatten().astype("int32")
+corners2[1, :] = Y2.flatten().astype("int32")
 
 h2.call("plotMarkers", corners1, "r+25;2", "corners1", 0)  # draw to plane 0 only
 h2.call("plotMarkers", corners2, "c+25", "corners2", 1)  # draw to plane 1 only

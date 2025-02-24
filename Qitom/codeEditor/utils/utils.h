@@ -84,7 +84,9 @@ namespace Utils
         - bit30: fold trigger flag
         - bit0 -> bit15: 16 bits for syntax highlighter user state (
           for syntax highlighting)
-        - bit16-bit25: 10 bits for the fold level (1024 levels)
+        - bit16-bit24: 10 bits for the fold level (512 values, however only 256 levels can be used:
+          Only even numbers are indented levels, odd numbers are levels at the same indentation level, e.g. for code cells)
+        - bit25: 1 bit. If set, the line is within a code cell. For the title of the code cell it is not set.
         - bit26: 1 bit for the fold trigger flag (trigger or not trigger)
         - bit27: 1 bit for the fold trigger state (expanded/collapsed)
     */
@@ -97,6 +99,8 @@ namespace Utils
         static void setFoldLvl(QTextBlock &block, int val);
         static bool isFoldTrigger(const QTextBlock &block);
         static void setFoldTrigger(QTextBlock &block, int val);
+        static bool isWithinCodeCell(const QTextBlock& block);
+        static void setWithinCodeCell(QTextBlock& block, int val);
         static bool isCollapsed(const QTextBlock &block);
         static void setCollapsed(QTextBlock &block, int val);
     };
@@ -115,6 +119,7 @@ namespace Utils
     QStringList splitlines(const QString &string);
     QString signatureWordWrap(QString signature, int width, int totalMaxLineWidth = -1);
     QStringList parseStyledTooltipsFromSignature(const QStringList &signatures, const QString &docstring, int maxLineLength = 44, int maxDocStrLength = -1);
+    bool isCodeCellStart(const QString& lineText, QString& name);
 };
 
 } //end namespace ito

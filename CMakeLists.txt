@@ -1,6 +1,6 @@
 # - itom software -
 # URL: http://www.uni-stuttgart.de/ito
-# Copyright (C) 2024, Institut für Technische Optik (ITO),
+# Copyright (C) 2025, Institut für Technische Optik (ITO),
 # Universität Stuttgart, Germany
 #
 # This file is part of itom and its software development toolkit (SDK).
@@ -158,7 +158,14 @@ string(REPLACE . "" OpenCV_LIB_VERSION ${OpenCV_VERSION})
 
 if(BUILD_WITH_PCL)
     find_package(VTK QUIET)
-    string(REGEX MATCH "([0-9]+\.[0-9]+)" VTK_LIB_VERSION ${VTK_VERSION})
+    if(VTK_VERSION)
+        string(REGEX MATCH "([0-9]+\.[0-9]+)" VTK_LIB_VERSION ${VTK_VERSION})
+        if(NOT VTK_LIB_VERSION)
+            message(FATAL_ERROR "Failed to extract VTK_LIB_VERSION from VTK_VERSION: ${VTK_VERSION}")
+        endif()
+    else()
+        message(FATAL_ERROR "VTK_VERSION is not defined")
+    endif()
 endif(BUILD_WITH_PCL)
 
 find_package(Python QUIET)

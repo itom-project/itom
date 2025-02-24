@@ -11,15 +11,18 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import matplotlib.cbook as cbook
 import matplotlib
+from mpl_itom import versiontuple  # method to properly compare version strings
 
 years = mdates.YearLocator()  # every year
 months = mdates.MonthLocator()  # every month
 yearsFmt = mdates.DateFormatter("%Y")
 
 
-if matplotlib.__version__ < "3.3.0":
+if versiontuple(matplotlib.__version__) < versiontuple("3.3.0"):
     with cbook.get_sample_data("goog.npz") as datafile:
         r = np.load(datafile)
+elif versiontuple(matplotlib.__version__) >= versiontuple("3.8.0"):
+    r = cbook.get_sample_data("goog.npz")
 else:
     r = cbook.get_sample_data("goog.npz", np_load=True)
 

@@ -82,12 +82,20 @@ Detects fold level by looking at the block indentation.
 
 :param prev_block: previous text block
 :param block: current block to highlight
+:param withinCodeCell: true if block is within a code cell, else false.
+                       A title line of a code cell is not within a code cell
+:param codeCellStart: true if this block is the start line of a code cell
 */
-int CharBasedFoldDetector::detectFoldLevel(const QTextBlock &previousBlock, const QTextBlock &block)
+int CharBasedFoldDetector::detectFoldLevel(
+    const QTextBlock &previousBlock,
+    const QTextBlock &block,
+    bool &withinCodeCell,
+    bool& codeCellStart)
 {
     Q_D(CharBasedFoldDetector);
 
-
+    withinCodeCell = false; //todo
+    codeCellStart = false; // todo
     QString prev_text;
 
     if (previousBlock.isValid())
@@ -98,19 +106,24 @@ int CharBasedFoldDetector::detectFoldLevel(const QTextBlock &previousBlock, cons
     {
         prev_text = "";
     }
+
     QString text = Utils::strip(block.text());
+
     if (d->m_openChars.contains(text))
     {
-        return Utils::TextBlockHelper::getFoldLvl(previousBlock) + 1;
+        return Utils::TextBlockHelper::getFoldLvl(previousBlock) + 2;
     }
+
     if (prev_text.endsWith(d->m_openChars) && !d->m_openChars.contains(prev_text))
     {
-        return Utils::TextBlockHelper::getFoldLvl(previousBlock) + 1;
+        return Utils::TextBlockHelper::getFoldLvl(previousBlock) + 2;
     }
+
     if (prev_text.contains(d->m_openChars))
     {
-        return Utils::TextBlockHelper::getFoldLvl(previousBlock) - 1;
+        return Utils::TextBlockHelper::getFoldLvl(previousBlock) - 2;
     }
+
     return Utils::TextBlockHelper::getFoldLvl(previousBlock);
 }
 

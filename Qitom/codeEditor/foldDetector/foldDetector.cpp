@@ -50,7 +50,7 @@ class FoldDetectorPrivate
 {
 public:
     FoldDetectorPrivate() :
-        m_limit(0x3FF) //see capacity of fold level in TextBlockHelper::setFoldLvl
+        m_limit(0x1FF) //see capacity of fold level in TextBlockHelper::setFoldLvl
     {
         /*
         //: Reference to the parent editor, automatically set by the syntax
@@ -82,12 +82,16 @@ FoldDetector::~FoldDetector()
 /*
 Processes a block and setup its folding info.
 
-This method call ``detect_fold_level`` and handles most of the tricky
+This method call ``detectFoldLevel`` and handles most of the tricky
 corner cases so that all you have to do is focus on getting the proper
 fold level foreach meaningful block, skipping the blank ones.
 
+This method also detects the codeCells. Is has to be considered,
+that this method must not be called for every block, but for instance
+only for changed blocks.
+
 :param current_block: current block to process
-:param previous_block: previous block
+:param previous_block: previous non blank block
 :param text: current block text
 */
 void FoldDetector::processBlock(QTextBlock &currentBlock, QTextBlock &previousBlock, const QString &text)
@@ -96,19 +100,86 @@ void FoldDetector::processBlock(QTextBlock &currentBlock, QTextBlock &previousBl
 
     int prev_fold_level = Utils::TextBlockHelper::getFoldLvl(previousBlock);
     int fold_level;
+    bool prevWithinCodeCell = Utils::TextBlockHelper::isWithinCodeCell(previousBlock);
+    bool currentWithinCodeCell = Utils::TextBlockHelper::isWithinCodeCell(currentBlock);
+    bool currentWithinCodeCellNew = currentWithinCodeCell;
+    bool isCodeCellStart = false;
 
     if (text.trimmed() == "")
     {
         // blank line always have the same level as the previous line
         fold_level = prev_fold_level;
+
+        if (!previousBlock.isValid() && currentWithinCodeCellNew)
+        {
+            // currentWithinCodeCell is wrong, e.g. if a script is cleared, the
+            // state of the previous last line is assigned to the first line (which is not right)
+            currentWithinCodeCellNew = false;
+        }
     }
     else
     {
-        fold_level = detectFoldLevel(previousBlock, currentBlock);
+        fold_level = detectFoldLevel(previousBlock, currentBlock, currentWithinCodeCellNew, isCodeCellStart);
 
         if (fold_level > d->m_limit)
         {
             fold_level = d->m_limit;
+        }
+    }
+
+    Utils::TextBlockHelper::setWithinCodeCell(currentBlock, currentWithinCodeCellNew);
+
+    if (currentWithinCodeCell != currentWithinCodeCellNew || isCodeCellStart)
+    {
+        QTextBlock block = currentBlock;
+        QString codeCellTitle;
+
+        // the code cell state of the current block changed:
+        // this can have an impact on following lines -> handle it
+        // the following lines must only be checked until a new code cell
+        // is started. From that point on, the code cell state is only influenced
+        // by this next code cell and must therefore not be verified here.
+        // we can also stop if the "within code cell" state of a next line must
+        // not be changed. Then, it is assumed, that all the rest is also correct.
+
+        bool nextLinesAreWithinCodeCell = true;
+        int lvl;
+
+        if (!currentWithinCodeCellNew && !isCodeCellStart)
+        {
+            nextLinesAreWithinCodeCell = false;
+        }
+
+        block = block.next();
+
+        while (block.isValid())
+        {
+            if (Utils::isCodeCellStart(block.text(), codeCellTitle))
+            {
+                break;
+            }
+            else if (Utils::TextBlockHelper::isWithinCodeCell(block) != nextLinesAreWithinCodeCell)
+            {
+                Utils::TextBlockHelper::setWithinCodeCell(block, nextLinesAreWithinCodeCell);
+                lvl = Utils::TextBlockHelper::getFoldLvl(block);
+
+                // this is called for lines, that were in a code cell, but the code cell was removed
+                // of lines, that have not been within a code cell and are now in a code cell
+                if (lvl % 2 == 0 && nextLinesAreWithinCodeCell)
+                {
+                    Utils::TextBlockHelper::setFoldLvl(block, lvl + 1);
+                }
+                else if (lvl % 2 == 1 && !nextLinesAreWithinCodeCell)
+                {
+                    Utils::TextBlockHelper::setFoldLvl(block, lvl - 1);
+                }
+            }
+            else
+            {
+                break;
+            }
+
+            block = block.next();
         }
     }
 
@@ -125,7 +196,7 @@ void FoldDetector::processBlock(QTextBlock &currentBlock, QTextBlock &previousBl
             block = block.previous();
         }
 
-        Utils::TextBlockHelper::setFoldTrigger(block, true);
+        //Utils::TextBlockHelper::setFoldTrigger(block, true);
     }
 
     // update block fold level
@@ -138,8 +209,8 @@ void FoldDetector::processBlock(QTextBlock &currentBlock, QTextBlock &previousBl
 
     // user pressed enter at the beginning of a fold trigger line
     // the previous blank line will keep the trigger state and the new line
-    // (which actually contains the trigger) must use the prev state (
-    // and prev state must then be reset).
+    // (which actually contains the trigger) must use the prev state
+    // (and prev state must then be reset).
     QTextBlock prev = currentBlock.previous();  // real prev block (may be blank)
 
     if (prev.isValid()
@@ -151,6 +222,20 @@ void FoldDetector::processBlock(QTextBlock &currentBlock, QTextBlock &previousBl
         // make empty line not a trigger
         Utils::TextBlockHelper::setFoldTrigger(prev, false);
         Utils::TextBlockHelper::setCollapsed(prev, false);
+    }
+
+    // if this block has a fold trigger, but is not a start of a code cell (any more)
+    // or if the block has no fold trigger,but is the start of a code cell (new???),
+    // then also process the next block to be sure, that the fold triggers are properly
+    // set, since code cells are not based on indentation, hence, changes of the next lines
+    bool hasFoldTrigger = Utils::TextBlockHelper::isFoldTrigger(currentBlock);
+    QTextBlock nextBlock = currentBlock.next();
+
+    if (nextBlock.isValid() &&
+        ((hasFoldTrigger && !isCodeCellStart) ||
+            (!hasFoldTrigger && isCodeCellStart)))
+    {
+        processBlock(nextBlock, currentBlock, nextBlock.text());
     }
 }
 
