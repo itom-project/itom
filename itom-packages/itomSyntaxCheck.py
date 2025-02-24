@@ -982,7 +982,7 @@ def check(
                                 filename,
                             ]
                         )
-                    except Exception as ex:
+                    except OSError as ex:
                         # import traceback
                         # traceback.print_exc()
                         pass

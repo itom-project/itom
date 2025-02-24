@@ -153,7 +153,7 @@ class SphinxDocString(NumpyDocString):
                 out += [""] + autosum
 
             if others:
-                maxlen_0 = max(3, max([len(x[0]) + 4 for x in others]))
+                maxlen_0 = max(3, *(len(x[0]) + 4 for x in others))
                 hdr = sixu("=") * maxlen_0 + sixu("  ") + sixu("=") * 10
                 fmt = sixu("%%%ds  %%s  ") % (maxlen_0,)
                 out += ["", "", hdr]

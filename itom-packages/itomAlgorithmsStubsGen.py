@@ -137,7 +137,7 @@ def parse_stubs(overwrite: bool = False):
         prefix = "# algo_hash = "
 
         if os.path.exists(stubs_file):
-            with open(stubs_file) as fp:
+            with open(stubs_file, encoding="utf-8") as fp:
                 count = 0
                 for line in fp:
                     if line.startswith(prefix):
@@ -159,9 +159,9 @@ def parse_stubs(overwrite: bool = False):
             if not os.path.exists(base_folder):
                 os.makedirs(base_folder)
 
-            with open(stubs_file, "w") as fp:
+            with open(stubs_file, "w", encoding="utf-8") as fp:
                 fp.write(text)
-        except Exception as ex:
+        except OSError as ex:
             warnings.warn("Error creating the stubs file: %s" % str(ex), RuntimeWarning)
 
 

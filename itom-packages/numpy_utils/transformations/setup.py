@@ -6,7 +6,7 @@ Usage:: ``python setup.py build_ext --inplace``
 
 """
 
-from distutils.core import setup, Extension
+from setuptools import setup, Extension
 import numpy
 
 setup(

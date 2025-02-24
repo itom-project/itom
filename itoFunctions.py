@@ -49,19 +49,19 @@ def getModuleFile(mod):
             return [p, 2]
         else:
             return [p, 0]
-    except Exception as e:
+    except (TypeError, AttributeError, ImportError) as e:
         # print("Error:", e)
         return ["<built-in>", 1]
 
 
 def reloadModules(modNames):
-    import imp
+    import importlib
 
     res = []
     for i in modNames:
         if sys.modules[i] != None:
             try:
-                imp.reload(sys.modules[i])
+                importlib.reload(sys.modules[i])
             except SyntaxError as err:
                 s = (
                     "module %s could not be reloaded. Invalid syntax in file %s, line %i: %s (character %i)"
@@ -74,9 +74,17 @@ def reloadModules(modNames):
                     )
                 )
                 print(s)
+            except ImportError as err:
+                print(
+                    "Import error while reloading module", str(sys.modules[i]), ":", str(err)
+                )
+            except AttributeError as err:
+                print(
+                    "Attribute error while reloading module", str(sys.modules[i]), ":", str(err)
+                )
             except Exception as err:
                 print(
-                    "error while reloading module", str(sys.modules[i]), ":", str(err)
+                    "Unexpected error while reloading module", str(sys.modules[i]), ":", str(err)
                 )
         else:
             res.append(i)

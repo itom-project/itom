@@ -25,7 +25,7 @@ It also create a modules index.
 """
 
 import os
-import optparse
+import argparse
 
 
 # automodule options
@@ -85,7 +85,7 @@ def create_module_file(package, module, opts):
 
         # write the file
         if not opts.dryrun:
-            fd = open(name, "w")
+            fd = open(name, "w", encoding="utf-8")
             fd.write(text)
             fd.close()
 
@@ -134,7 +134,7 @@ def create_package_file(root, master_package, subroot, py_files, opts, subs=None
 
         # write the file
         if not opts.dryrun:
-            fd = open(name, "w")
+            fd = open(name, "w", encoding="utf-8")
             fd.write(text)
             fd.close()
 
@@ -143,7 +143,7 @@ def check_for_code(module):
     """
     Check if there's at least one class or one function in the module.
     """
-    fd = open(module)
+    fd = open(module, encoding="utf-8")
     for line in fd:
         if line.startswith("def ") or line.startswith("class "):
             fd.close()
@@ -237,7 +237,7 @@ def modules_toc(modules, opts, name="modules"):
 
     # write the file
     if not opts.dryrun:
-        fd = open(fname, "w")
+        fd = open(fname, "w", encoding="utf-8")
         fd.write(text)
         fd.close()
 
@@ -279,12 +279,12 @@ def main():
     """
     Parse and check the command line arguments
     """
-    parser = optparse.OptionParser(
+    parser = argparse.ArgumentParser(
         usage="""usage: %prog [options] <package path> [exclude paths, ...]
 
 Note: By default this script will not overwrite already created files."""
     )
-    parser.add_option(
+    parser.add_argument(
         "-n",
         "--doc-header",
         action="store",
@@ -338,7 +338,8 @@ Note: By default this script will not overwrite already created files."""
         dest="notoc",
         help="Don't create the table of content file",
     )
-    (opts, args) = parser.parse_args()
+    args = parser.parse_args()
+    opts = args
     if len(args) < 1:
         parser.error("package path is required.")
     else:

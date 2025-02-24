@@ -211,7 +211,7 @@ class PluginSummaryExtended(Directive):
             pluginInfo = getPluginInfo(
                 self.state.document.settings.env, self.options["plugin"]
             )
-        except Exception:
+        except RuntimeError:
             return [
                 self.state.document.reporter.warning(
                     'Error getting plugin information from plugin "%s"'
@@ -255,7 +255,7 @@ class PluginInitParams(Directive):
             pluginInfo = getPluginInfo(
                 self.state.document.settings.env, self.options["plugin"]
             )
-        except Exception:
+        except RuntimeError:
             return [
                 self.state.document.reporter.warning(
                     'Error getting plugin information from plugin "%s"'
@@ -388,7 +388,7 @@ class PluginFilterList(Directive):
             pluginInfo = getPluginInfo(
                 self.state.document.settings.env, self.options["plugin"]
             )
-        except Exception:
+        except RuntimeError:
             return [
                 self.state.document.reporter.warning(
                     'Error getting plugin information from plugin "%s"'
@@ -809,7 +809,7 @@ class PlotSummaryExtended(Directive):
             pluginInfo = getPlotInfo(
                 self.state.document.settings.env, self.options["plugin"]
             )
-        except Exception:
+        except RuntimeError:
             return [
                 self.state.document.reporter.warning(
                     'Error getting plugin information from plugin "%s"'
@@ -854,7 +854,7 @@ class PlotProperties(Directive):
             plotInfo = getPlotInfo(
                 self.state.document.settings.env, self.options["plugin"]
             )
-        except Exception:
+        except RuntimeError:
             return [
                 self.state.document.reporter.warning(
                     'Error getting plot information from plugin "%s"'
@@ -919,7 +919,7 @@ class PlotSlots(Directive):
             plotInfo = getPlotInfo(
                 self.state.document.settings.env, self.options["plugin"]
             )
-        except Exception:
+        except RuntimeError:
             return [
                 self.state.document.reporter.warning(
                     'Error getting plot information from plugin "%s"'
@@ -984,7 +984,7 @@ class PlotSignals(Directive):
             plotInfo = getPlotInfo(
                 self.state.document.settings.env, self.options["plugin"]
             )
-        except Exception:
+        except RuntimeError:
             return [
                 self.state.document.reporter.warning(
                     'Error getting plot information from plugin "%s"'

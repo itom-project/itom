@@ -168,7 +168,7 @@ def calltipModuleItomModification(sig, params):
     """
     try:
         doc = sig.docstring(raw=False, fast=True)
-    except Exception:
+    except (jedi.api.exceptions.JediError, AttributeError, TypeError):
         return None
 
     arrow_idx = doc.find("->")
@@ -420,7 +420,7 @@ def completions(code, line, column, path, prefix):
                             tooltipList,
                         )
                     )
-                except Exception as ex:
+                except jedi.api.exceptions.JediError as ex:
                     break  # todo, check this further
 
         return result
@@ -462,7 +462,7 @@ def goto_assignments(code, line, column, path, mode=0, encoding="utf-8"):
                             follow_imports=True,
                             prefer_stubs=False,
                         )
-                except Exception:
+                except (jedi.api.exceptions.JediError, AttributeError, TypeError):
                     assignments = []
 
             else:
@@ -485,7 +485,7 @@ def goto_assignments(code, line, column, path, mode=0, encoding="utf-8"):
                         assignments = script.goto_assignments(follow_imports=False)
                     else:
                         assignments = script.goto_assignments(follow_imports=True)
-                except Exception:
+                except (jedi.api.exceptions.JediError, AttributeError, TypeError):
                     assignments = []
 
         result = []
@@ -814,7 +814,7 @@ def get_help(code, line, column, path):
                         tooltips = name_tooltip_type_general(h)
 
                     results.append((desc, tooltips))
-                except Exception as ex:
+                except (jedi.api.exceptions.JediError, AttributeError, TypeError) as ex:
                     break  # todo, check this further
 
         return results

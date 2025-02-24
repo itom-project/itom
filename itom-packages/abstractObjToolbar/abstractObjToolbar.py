@@ -267,8 +267,8 @@ class abstractObjInteractionToolBar:
                     return [False, False, 0, ""]
 
             if eval(
-                "({}.shape[{}.dims-1] == 1) or ({}.shape[{}.dims-2] == 1)".format(
-                    varname, varname, varname, varname
+                "({var}.shape[{var}.dims-1] == 1) or ({var}.shape[{var}.dims-2] == 1)".format(
+                    var=varname
                 ),
                 workSpace,
                 {"dimensions": dims},

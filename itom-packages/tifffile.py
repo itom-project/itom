@@ -972,7 +972,7 @@ class TiffFile:
     def fstat(self):
         try:
             return os.fstat(self._fh.fileno())
-        except Exception:  # io.UnsupportedOperation
+        except (OSError, AttributeError):  # io.UnsupportedOperation
             return None
 
     @lazyattr
@@ -1090,7 +1090,7 @@ class TiffPage:
         fmt, size = {4: ("H", 2), 8: ("Q", 8)}[offset_size]
         try:
             numtags = struct.unpack(byteorder + fmt, fh.read(size))[0]
-        except Exception:
+        except (ValueError, TypeError, KeyError):
             warnings.warn("corrupted page list")
             raise StopIteration()
 
@@ -1187,7 +1187,7 @@ class TiffPage:
                         self.parent.byteorder,
                     )
                 )
-            except Exception:
+            except (ValueError, TypeError, KeyError):
                 pass
             self.imagej_tags = Record(adict)
 
@@ -2110,7 +2110,7 @@ def imagej_description(description):
     for line in description.splitlines():
         try:
             key, val = line.split(b"=")
-        except Exception:
+        except (ValueError, TypeError, KeyError):
             continue
         key = key.strip()
         val = val.strip()
@@ -2118,7 +2118,7 @@ def imagej_description(description):
             try:
                 val = dtype(val)
                 break
-            except Exception:
+            except (ValueError, TypeError, KeyError):
                 pass
         result[_str(key)] = val
     return result
@@ -2137,7 +2137,7 @@ def _replace_by(module_function, package=None, warn=True):
                 module = import_module("." + module, package=package)
             func, oldfunc = getattr(module, function), func
             globals()["__old_" + func.__name__] = oldfunc
-        except Exception:
+        except (ValueError, TypeError, KeyError):
             if warn:
                 warnings.warn("failed to import %s" % module_function)
         return func
@@ -2197,7 +2197,7 @@ def decodelzw(encoded):
         s = encoded[start : start + 4]
         try:
             code = unpack(">I", s)[0]
-        except Exception:
+        except (ValueError, TypeError, KeyError):
             code = unpack(">I", s + b"\x00" * (4 - len(s)))[0]
         code = code << (bitcount % 8)
         code = code & mask
@@ -2481,7 +2481,7 @@ def test_tifffile(directory="testimages", verbose=True):
         t0 = time.time()
         try:
             tif = TiffFile(f, multifile=True)
-        except Exception as e:
+        except (ValueError, TypeError, KeyError) as e:
             if not verbose:
                 print(f, end=" ")
             print("ERROR:", e)
@@ -2492,7 +2492,7 @@ def test_tifffile(directory="testimages", verbose=True):
         except ValueError:
             try:
                 img = tif[0].asarray()
-            except Exception as e:
+            except (ValueError, TypeError, KeyError) as e:
                 if not verbose:
                     print(f, end=" ")
                 print("ERROR:", e)
@@ -3528,76 +3528,73 @@ def main(argv=None):
     if argv is None:
         argv = sys.argv
 
-    import optparse
+    import argparse
 
     search_doc = lambda r, d: re.search(r, __doc__).group(1) if __doc__ else d
-    parser = optparse.OptionParser(
-        usage="usage: %prog [options] path",
+    parser = argparse.ArgumentParser(
         description=search_doc("\n\n([^|]*?)\n\n", ""),
-        version="%%prog %s" % search_doc(":Version: (.*)", "Unknown"),
     )
-    opt = parser.add_option
-    opt(
+    parser.add_argument(
         "-p",
         "--page",
         dest="page",
-        type="int",
+        type=int,
         default=-1,
         help="display single page",
     )
-    opt(
+    parser.add_argument(
         "-s",
         "--series",
         dest="series",
-        type="int",
+        type=int,
         default=-1,
         help="display series of pages of same shape",
     )
-    opt(
+    parser.add_argument(
         "--nomultifile",
         dest="nomultifile",
         action="store_true",
         default=False,
         help="don't read OME series from multiple files",
     )
-    opt(
+    parser.add_argument(
         "--noplot",
         dest="noplot",
         action="store_true",
         default=False,
         help="don't display images",
     )
-    opt(
+    parser.add_argument(
         "--interpol",
         dest="interpol",
         metavar="INTERPOL",
         default="bilinear",
         help="image interpolation method",
     )
-    opt("--dpi", dest="dpi", type="int", default=96, help="set plot resolution")
-    opt(
+    parser.add_argument("--dpi", dest="dpi", type=int, default=96, help="set plot resolution")
+    parser.add_argument(
         "--debug",
         dest="debug",
         action="store_true",
         default=False,
         help="raise exception on failures",
     )
-    opt(
+    parser.add_argument(
         "--test",
         dest="test",
         action="store_true",
         default=False,
         help="try read all images in path",
     )
-    opt(
+    parser.add_argument(
         "--doctest",
         dest="doctest",
         action="store_true",
         default=False,
         help="runs the internal tests",
     )
-    opt("-v", "--verbose", dest="verbose", action="store_true", default=True)
-    opt("-q", "--quiet", dest="verbose", action="store_false")
+    parser.add_argument("-v", "--verbose", dest="verbose", action="store_true", default=True)
+    parser.add_argument("-q", "--quiet", dest="verbose", action="store_false")
 
     settings, path = parser.parse_args()
     path = " ".join(path)

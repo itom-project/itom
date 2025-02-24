@@ -18,7 +18,7 @@ import itomPlotlyRenderer
 import plotly.graph_objects as go
 import json
 
-with open("sankey_energy.json") as file:
+with open("sankey_energy.json", encoding="utf-8") as file:
     data = json.load(file)
 
 # override gray link colors with 'source' colors

@@ -40,7 +40,7 @@ class Restart(Exception):
 def find_function(funcname, filename):
     cre = re.compile(r"def\s+%s\s*[(]" % re.escape(funcname))
     try:
-        fp = open(filename)
+        fp = open(filename, encoding='utf-8')
     except OSError:
         return None
     # consumer of this info expects the first line to be 1
@@ -432,7 +432,7 @@ class itoDebugger(bdb.Bdb):
         """
         try:
             bpNumber = int(arg)
-        except Exception:
+        except (ValueError, TypeError):
             return
 
         itomDbgWrapper.pyDbgClearBreakpoint(bpNumber)
@@ -483,7 +483,7 @@ class itoDebugger(bdb.Bdb):
     def _getval(self, arg):
         try:
             return eval(arg, self.curframe.f_globals, self.curframe_locals)
-        except Exception:
+        except (NameError, TypeError, SyntaxError):
             exc_info = sys.exc_info()[:2]
             self.error(traceback.format_exception_only(*exc_info)[-1].strip())
             raise
@@ -494,7 +494,7 @@ class itoDebugger(bdb.Bdb):
                 return eval(arg, self.curframe.f_globals, self.curframe_locals)
             else:
                 return eval(arg, frame.f_globals, frame.f_locals)
-        except Exception:
+        except (NameError, TypeError, SyntaxError):
             exc_info = sys.exc_info()[:2]
             err = traceback.format_exception_only(*exc_info)[-1].strip()
             return _rstr("** raised %s **" % err)
@@ -505,7 +505,7 @@ class itoDebugger(bdb.Bdb):
         """
         try:
             self.message(repr(self._getval(arg)))
-        except Exception:
+        except (NameError, TypeError, SyntaxError):
             pass
 
     # make "print" an alias of "p" since print isn't a Python statement anymore
@@ -516,7 +516,7 @@ class itoDebugger(bdb.Bdb):
         """
         try:
             self.message(pprint.pformat(self._getval(arg)))
-        except Exception:
+        except (NameError, TypeError, SyntaxError):
             pass
 
     def do_list(self, arg):
@@ -587,7 +587,7 @@ class itoDebugger(bdb.Bdb):
         """
         try:
             obj = self._getval(arg)
-        except Exception:
+        except (NameError, TypeError, SyntaxError):
             return
         try:
             lines, lineno = getsourcelines(obj)
@@ -623,14 +623,14 @@ class itoDebugger(bdb.Bdb):
         """
         try:
             value = self._getval(arg)
-        except Exception:
+        except (NameError, TypeError, SyntaxError):
             # _getval() already printed the error
             return
         code = None
         # Is it a function?
         try:
             code = value.__code__
-        except Exception:
+        except AttributeError:
             pass
         if code:
             self.message("Function %s" % code.co_name)
@@ -638,7 +638,7 @@ class itoDebugger(bdb.Bdb):
         # Is it an instance method?
         try:
             code = value.__func__.__code__
-        except Exception:
+        except (AttributeError, TypeError):
             pass
         if code:
             self.message("Method %s" % code.co_name)

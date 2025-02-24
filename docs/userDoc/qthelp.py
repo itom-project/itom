@@ -13,7 +13,7 @@ import re
 import codecs
 import posixpath
 from os import path
-from cgi import escape
+from html import escape
 
 from docutils import nodes
 

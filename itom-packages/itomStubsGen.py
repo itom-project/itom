@@ -104,7 +104,7 @@ def parse_stubs(overwrite: bool = False):
         prefix = "# compile_date = "
 
         if os.path.exists(stubs_file):
-            with open(stubs_file) as fp:
+            with open(stubs_file, encoding="utf-8") as fp:
                 count = 0
                 for line in fp:
                     if line.startswith(prefix):
@@ -147,7 +147,7 @@ def parse_stubs(overwrite: bool = False):
             if not os.path.exists(base_folder):
                 os.makedirs(base_folder)
 
-            with open(stubs_file, "w") as fp:
+            with open(stubs_file, "w", encoding="utf-8") as fp:
                 fp.write(text)
         except Exception as ex:
             warnings.warn("Error creating the stubs file: %s" % str(ex), RuntimeWarning)
@@ -234,11 +234,10 @@ def _parse_object(obj, indent: int = 0) -> str:
                     child,
                 )
             elif type(child) is float:
-                yield "{}#: constant float value.\n{}{}: float = {:f}".format(
-                    prefix,
-                    prefix,
-                    childname,
-                    child,
+                yield "{prefix}#: constant float value.\n{prefix}{childname}: float = {child:f}".format(
+                    prefix=prefix,
+                    childname=childname,
+                    child=child,
                 )
             elif inspect.ismodule(child):
                 # ignore for now
@@ -248,11 +247,10 @@ def _parse_object(obj, indent: int = 0) -> str:
                 yield _parse_property_docstring(child, indent)
             else:
                 # constant or something else
-                yield "{}#: constant {} value.\n{}{}".format(
-                    prefix,
-                    type(child),
-                    prefix,
-                    childname,
+                yield "{prefix}#: constant {type} value.\n{prefix}{name}".format(
+                    prefix=prefix,
+                    type=type(child),
+                    name=childname,
                 )
 
 

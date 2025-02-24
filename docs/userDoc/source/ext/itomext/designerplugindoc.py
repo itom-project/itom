@@ -31,7 +31,7 @@ class DesignerPluginDocInclude(Include):
         if os.path.exists(rstFileName):
             # load the rst file at the build location and check for .. figure:: img or .. image:: img
             # if img seems to be relative, replace it by the absolute location
-            with open(rstFileName) as f:
+            with open(rstFileName, encoding="utf-8") as f:
                 lines = [line for line in f]
 
             pattern = re.compile(
@@ -54,7 +54,7 @@ class DesignerPluginDocInclude(Include):
                             file = rstPath + "/" + file
                         lines[i] = prefix + directive + file + suffix + "\n"
 
-            with open(rstFileName, "w") as f:
+            with open(rstFileName, "w", encoding="utf-8") as f:
                 for line in lines:
                     f.write(line)
             # end rst file manipulation

@@ -34,7 +34,7 @@ def parseProperties(properties):
                     "type": m.group(1),
                     "text": indentText("\n".join(lines)),
                 }
-            except Exception:
+            except AttributeError:
                 d = {"name": key, "readonly": "", "type": "", "text": ""}
 
         output.append(tmpl % d)

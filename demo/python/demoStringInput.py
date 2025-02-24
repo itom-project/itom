@@ -16,5 +16,5 @@ age = input("Please put your age:")
 try:
     age_ = int(age)
     print(f"Hello {name}. Your age is {age_}")
-except Exception:
+except ValueError:
     print("Your age could not be interpreted as integer")

@@ -57,7 +57,7 @@ class Proxy:
         """
         try:
             return self.func == other.func and self.inst() == other.inst()
-        except Exception:
+        except AttributeError:
             return False
 
     def __ne__(self, other):

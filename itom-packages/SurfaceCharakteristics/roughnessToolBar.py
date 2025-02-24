@@ -552,8 +552,8 @@ class surfaceAnalysisTools(abstractObjInteractionToolBar):
                         script = 'filter("fitPolynom2D",{}, tempObjVar, 0, {})\n'
                     result = eval(script.format(varname, str(self.defXGradPoly)))
                     script = (
-                        "globals()[\"{}\"] = {}.astype('float64') - tempObjVar".format(
-                            varname, varname
+                        "globals()[\"{varname}\"] = {varname}.astype('float64') - tempObjVar".format(
+                            varname=varname
                         )
                     )
                     exec(script, globals(), {"tempObjVar": tempObjVar})
@@ -571,8 +571,8 @@ class surfaceAnalysisTools(abstractObjInteractionToolBar):
                         )
                     )
                     script = (
-                        "globals()[\"{}\"] = {}.astype('float64') - tempObjVar".format(
-                            varname, varname
+                        "globals()[\"{varname}\"] = {varname}.astype('float64') - tempObjVar".format(
+                            varname=varname
                         )
                     )
                     exec(script)

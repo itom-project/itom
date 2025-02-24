@@ -33,7 +33,11 @@ with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
         url = future_to_url[future]
         try:
             data = future.result()
+        except urllib.error.HTTPError as exc:
+            print(f"{url!r} generated an HTTP error: {exc}")
+        except urllib.error.URLError as exc:
+            print(f"{url!r} generated a URL error: {exc}")
         except Exception as exc:
-            print(f"{url!r} generated an exception: {exc}")
+            print(f"{url!r} generated an unexpected exception: {exc}")
         else:
             print("%r page is %d bytes" % (url, len(data)))

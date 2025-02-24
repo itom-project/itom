@@ -609,7 +609,7 @@ class FigureManagerItom(FigureManagerBase):
     def get_window_title(self):
         try:
             return str(self.windowTitle)
-        except Exception:
+        except RuntimeError:
             return ""
 
     def set_window_title(self, title):
@@ -786,7 +786,7 @@ class NavigationToolbar2Itom(NavigationToolbar2):
             try:
                 self.canvas.print_figure(str(fname))
                 self.defaultSaveFileName = fname
-            except Exception as e:
+            except (OSError, ValueError) as e:
                 ui.msgCritical("Error saving file", str(e), parent=self.itomUI())
 
     def set_history_buttons(self):

@@ -103,8 +103,8 @@ class ProfileRoughness(ItomUi):
             self.waviness = dataObject()
             try:
                 Lc = float(self.gui.comboFilterLc["currentText"])
-            except Exception:
-                ui.msgWarning("wrong type", "Lc is no number", parent=self.gui)
+            except ValueError:
+                ui.msgWarning("wrong type", "Lc is not a valid number", parent=self.gui)
                 return
             if self.gui.comboFilterLs["currentText"] == "None":
                 Ls = 0.0
@@ -138,8 +138,8 @@ class ProfileRoughness(ItomUi):
                 self.showFilteredProfile(0)
                 self.calcRoughness()
                 self.calcAbbott(self.gui.radioAbbottRoughness["checked"])
-            except Exception as ex:
-                raise ex
+            except (RuntimeError, ValueError) as ex:
+                ui.msgCritical("Error", str(ex))
             finally:
                 self.gui.groupFiltering["enabled"] = True
 
@@ -147,7 +147,7 @@ class ProfileRoughness(ItomUi):
         if self.roughness is not None:
             try:
                 Lc = float(self.gui.comboFilterLc["currentText"])
-            except Exception:
+            except ValueError:
                 ui.msgWarning("wrong type", "Lc is no number", parent=self.gui)
                 return
             rangeRdc = (
@@ -274,7 +274,7 @@ class ProfileRoughness(ItomUi):
         itemName = self.gui.comboBox["currentText"]
         try:
             dataObj = __main__.__dict__[itemName]
-        except Exception:
+        except KeyError:
             ui.msgWarning(
                 "not available",
                 "The object %s is not available" % itemName,

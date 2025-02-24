@@ -179,9 +179,9 @@ class Snapshot(ItomUi):
                         i = i + 1
                     self.selectedDevice.stopDevice()
                     return dat
-                except Exception:
-                    ui.msgCritical("Error", "Not able to acquire Snapshot")
-                    raise RuntimeError("Error", "Not able to acquire Snapshot")
+                except (itom.DeviceError, itom.AcquisitionError) as e:
+                    ui.msgCritical("Error", f"Not able to acquire Snapshot: {e}")
+                    raise RuntimeError("Error", f"Not able to acquire Snapshot: {e}")
             else:
                 self.cnt = 0
                 step = int(self.gui.spinInterval["value"] * 1e3)
@@ -196,7 +196,9 @@ class Snapshot(ItomUi):
                 self.selectedDevice.copyVal(data)
                 self.selectedDevice.stopDevice()
                 return data
-            except Exception:
+            except (itom.DeviceError, itom.AcquisitionError) as e:
+                ui.msgCritical("Error", f"Not able to acquire Snapshot: {e}")
+                raise RuntimeError("Error", f"Not able to acquire Snapshot: {e}")
                 ui.msgCritical("Error", "Not able to acquire Snapshot")
                 raise RuntimeError("Error", "Not able to acquire Snapshot")
 
@@ -232,7 +234,7 @@ class Snapshot(ItomUi):
                     self.safeMultiFiles(self.dat)
                 self.disableElements(1)
                 del self.tim, self.dat, self.cnt
-        except Exception:
+        except (itom.DeviceError, itom.AcquisitionError) as e:
             self.disableElements(1)
             del self.tim, self.dat, self.cnt
 
@@ -251,8 +253,8 @@ class Snapshot(ItomUi):
             dict = {"data": file}
             try:
                 saveIDC(self.direct + "\\" + filename, dict)
-            except Exception:
-                ui.msgCritical("Error", "Not able to save files")
+            except (itom.SaveError, OSError) as e:
+                ui.msgCritical("Error", f"Not able to save files: {e}")
         else:
             idx = 1
             filename = "pic_%03i.%s" % (idx, self.Typ)
@@ -266,10 +268,10 @@ class Snapshot(ItomUi):
                     filename,
                     self.dataTyp[self.Typ][self.gui.comboColor["currentIndex"]],
                 )
-            except Exception:
+            except (itom.SaveError, OSError) as e:
                 ui.msgCritical(
                     "Error",
-                    "Not able to save files. Maybe the selected color palette does not fit to data type",
+                    f"Not able to save files. Maybe the selected color palette does not fit to data type: {e}",
                 )
 
     ##########################################################
@@ -333,7 +335,7 @@ class Snapshot(ItomUi):
         try:
             self.selectedDevice = self.devices[list(self.devices.keys())[var]]()
             self.on_btnLive_clicked()
-        except Exception:
+        except (KeyError, AttributeError):
             pass
 
     ##########################################################

@@ -188,7 +188,7 @@ class ItomUi:
                 for widget_name, signal in zip(widgets, signals):
                     try:
                         widget = eval(f"self.gui.{widget_name}")
-                    except Exception:
+                    except AttributeError:
                         if self.gui["objectName"] == widget_name:
                             widget = self.gui
                         else:
@@ -198,9 +198,17 @@ class ItomUi:
                             continue
                     try:
                         widget.connect(signal, value)
-                    except Exception:
+                    except AttributeError:
                         print(
-                            f"Auto-connection failed: Widget {widget_name} has no slot {signal}."
+                            f"Auto-connection failed: Widget {widget_name} has no attribute {signal}."
+                        )
+                    except TypeError:
+                        print(
+                            f"Auto-connection failed: Signal {signal} is not compatible with the slot."
+                        )
+                    except RuntimeError:
+                        print(
+                            f"Auto-connection failed: Runtime error occurred while connecting {widget_name} to {signal}."
                         )
 
     def autoslot(*attr):

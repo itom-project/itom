@@ -8,7 +8,7 @@ clc()
 try:
     if defaultDir is not None:
         defaultDir = ""
-except Exception:
+except NameError:
     defaultDir = ""
 
 defaultDir = itom.ui.getExistingDirectory("plugin build folder", defaultDir)
@@ -24,5 +24,5 @@ for cfg in matches:
     print("create plugin documentation for", cfg)
     try:
         create_plugin_doc.createPluginDoc(cfg, buildernames)
-    except Exception as ex:
+    except OSError as ex:
         print("Error (%s)" % str(ex), cfg)

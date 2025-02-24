@@ -46,7 +46,7 @@ def update_source(filename, oldcopyright, copyright):
                 file.write(utfstr + fdata)
         else:
             # file(filename,"w").write(fdata)
-            with open(filename, "w") as file:
+            with open(filename, "w", encoding="utf-8") as file:
                 file.write(fdata)
 
 

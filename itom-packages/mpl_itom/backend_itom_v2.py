@@ -300,7 +300,7 @@ class FigureCanvasItom(FigureCanvasBase):
         """
         try:
             dpi_ratio = self.matplotlibWidgetUiItem.call("devicePixelRatioF")
-        except Exception:
+        except (TypeError, ValueError, AttributeError):
             dpi_ratio = 1
         return dpi_ratio
 
@@ -562,7 +562,7 @@ class FigureCanvasItom(FigureCanvasBase):
         try:
             if self.matplotlibWidgetUiItem:
                 self.draw()
-        except Exception:
+        except (RuntimeError, AttributeError):
             # Uncaught exceptions are fatal for PyQt5, so catch them instead.
             traceback.print_exc()
         finally:
@@ -803,7 +803,7 @@ class FigureManagerItom(FigureManagerBase):
     def get_window_title(self):
         try:
             return str(self.windowTitle)
-        except Exception:
+        except (RuntimeError, AttributeError):
             return ""
 
     def set_window_title(self, title):
@@ -1086,7 +1086,7 @@ class NavigationToolbar2Itom(NavigationToolbar2):
                 matplotlib.rcParams["savefig.directory"] = os.path.dirname(str(fname))
             try:
                 self.canvas.figure.savefig(str(fname))
-            except Exception as e:
+            except (OSError, ValueError) as e:
                 itom.ui.msgCritical(
                     "Error saving file",
                     str(e),
@@ -1269,7 +1269,7 @@ class ToolbarItom(ToolContainerBase):
         for button, handler in self._toolitems[name]:
             try:
                 button.disconnect("triggered()", handler)
-            except Exception:
+            except (RuntimeError, AttributeError):
                 pass
             button["checked"] = toggled
             button.connect("triggered()", handler)
@@ -1347,7 +1347,7 @@ class SaveFigureItom(backend_tools.SaveFigureBase):
             try:
                 self.canvas.figure.savefig(str(fname))
                 self.defaultSaveFileName = fname
-            except Exception as e:
+            except (OSError, ValueError) as e:
                 itom.ui.msgCritical("Error saving file", str(e), parent=parent)
 
 

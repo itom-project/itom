@@ -25,7 +25,7 @@ It also create a modules index.
 """
 
 import os
-import optparse
+import argparse
 
 
 # automodule options
@@ -279,12 +279,12 @@ def main():
     """
     Parse and check the command line arguments
     """
-    parser = optparse.OptionParser(
-        usage="""usage: %prog [options] <package path> [exclude paths, ...]
+    parser = argparse.ArgumentParser(
+        description="""usage: %(prog)s [options] <package path> [exclude paths, ...]
 
 Note: By default this script will not overwrite already created files."""
     )
-    parser.add_option(
+    parser.add_argument(
         "-n",
         "--doc-header",
         action="store",
@@ -338,15 +338,16 @@ Note: By default this script will not overwrite already created files."""
         dest="notoc",
         help="Don't create the table of content file",
     )
-    (opts, args) = parser.parse_args()
+    args = parser.parse_args()
+    opts = args.__dict__
     if len(args) < 1:
         parser.error("package path is required.")
-    else:
+        if os.path.isdir(args.package_path):
         if os.path.isdir(args[0]):
             # check if the output destination is a valid directory
             if opts.destdir and os.path.isdir(opts.destdir):
-                # if there's some exclude arguments, build the list of excludes
-                excludes = args[1:]
+                excludes = args.exclude_paths
+                recurse_tree(args.package_path, excludes, opts)
                 recurse_tree(args[0], excludes, opts)
             else:
                 print("%s is not a valid output destination directory." % opts.destdir)

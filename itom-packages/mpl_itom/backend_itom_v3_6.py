@@ -285,7 +285,7 @@ class FigureCanvasItom(FigureCanvasBase):
         """
         try:
             dpi_ratio = self.matplotlibWidgetUiItem.call("devicePixelRatioF")
-        except Exception:
+        except RuntimeError:
             dpi_ratio = 1
         return dpi_ratio
 
@@ -566,8 +566,11 @@ class FigureCanvasItom(FigureCanvasBase):
         try:
             if self.matplotlibWidgetUiItem:
                 self.draw()
-        except Exception:
-            # Uncaught exceptions are fatal for PyQt5, so catch them instead.
+        except RuntimeError:
+            # Handle specific runtime error
+            traceback.print_exc()
+        except ValueError:
+            # Handle specific value error
             traceback.print_exc()
         finally:
             self._draw_pending = False
@@ -804,7 +807,7 @@ class FigureManagerItom(FigureManagerBase):
     def get_window_title(self):
         try:
             return str(self.windowTitle)
-        except Exception:
+        except AttributeError:
             return ""
 
     def set_window_title(self, title):
@@ -1067,7 +1070,7 @@ class NavigationToolbar2Itom(NavigationToolbar2):
                 matplotlib.rcParams["savefig.directory"] = os.path.dirname(fname)
             try:
                 self.canvas.figure.savefig(fname)
-            except Exception as e:
+            except (OSError, ValueError) as e:
                 itom.ui.msgCritical(
                     "Error saving file",
                     str(e),

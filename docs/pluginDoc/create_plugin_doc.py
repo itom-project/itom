@@ -19,7 +19,7 @@ def pathConv(p: str):
 
 def createPluginDoc(confFile: str, buildernames):
     """Main method."""
-    with open(confFile) as infile:
+    with open(confFile, encoding='utf-8') as infile:
         pluginConfiguration = infile.readlines()
         pluginConfiguration = "".join(pluginConfiguration)
 
@@ -74,7 +74,7 @@ def createPluginDoc(confFile: str, buildernames):
 
             try:
                 os.mkdir(outdir)
-            except Exception:
+            except OSError:
                 pass
 
             nocolor()
@@ -114,7 +114,7 @@ if __name__ == "__main__":
     try:
         if defaultConfFile is None:
             defaultConfFile = ""
-    except Exception:
+    except NameError:
         defaultConfFile = ""
 
     confFile = itom.ui.getOpenFileName(
