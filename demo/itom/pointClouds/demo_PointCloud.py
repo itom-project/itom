@@ -6,9 +6,7 @@ and a polygon mesh, that consists of two triangles, whose corner
 points are given by some points of a cloud."""
 
 import numpy as np
-from itom import pointCloud
-from itom import polygonMesh
-from itom import point
+from itom import point, pointCloud, polygonMesh
 
 # sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoPCL.png'
 
@@ -57,7 +55,7 @@ for idx in range(pcl.size):
 # create an array with two triangles. The first triangle has the corner
 # points with the indices 0, 1 and 2 of the cloud. The 2nd triangle consists
 # of the corner points 0, 1 and 3.
-vertices = np.array([[0, 1, 2], [0, 1, 3]])
+vertices = np.array([[0, 1, 2], [0, 1, 3]]).astype("int32")
 
 # create a mesh from the cloud and the vertices
 mesh = polygonMesh.fromCloudAndPolygons(pcl, vertices)

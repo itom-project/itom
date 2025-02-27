@@ -792,15 +792,19 @@ void FoldingPanel::collapseAll()
     {
         lvl = Utils::TextBlockHelper::getFoldLvl(block);
         trigger = Utils::TextBlockHelper::isFoldTrigger(block);
+
         if (trigger)
         {
             if (lvl == 0)
             {
                 FoldingPanel::showPreviousBlankLines(block);
             }
+
             Utils::TextBlockHelper::setCollapsed(block, true);
         }
+
         block.setVisible(lvl == 0);
+
         if ((block == last) && (Utils::strip(block.text()) == ""))
         {
             block.setVisible(true);
@@ -851,10 +855,12 @@ void FoldingPanel::toggleFold(bool topLevelOnly)
         {
             lvl = Utils::TextBlockHelper::getFoldLvl(block);
             trigger = Utils::TextBlockHelper::isFoldTrigger(block);
+
             if (lvl == 0 && trigger)
             {
                 toggleFoldTrigger(block, true);
             }
+
             block = block.next();
         }
 
@@ -870,10 +876,12 @@ void FoldingPanel::toggleFold(bool topLevelOnly)
         {
             lvl = Utils::TextBlockHelper::getFoldLvl(block);
             trigger = Utils::TextBlockHelper::isFoldTrigger(block);
+
             if (lvl == 0 && trigger)
             {
                 toggleFoldTrigger(block, false);
             }
+
             block = block.next();
         }
 
@@ -886,10 +894,12 @@ void FoldingPanel::toggleFold(bool topLevelOnly)
         {
             lvl = Utils::TextBlockHelper::getFoldLvl(block);
             trigger = Utils::TextBlockHelper::isFoldTrigger(block);
+
             if (lvl > 0 && trigger)
             {
                 toggleFoldTrigger(block, false);
             }
+
             block = block.next();
         }
     }
@@ -928,8 +938,10 @@ Find parent scope, if the block is not a fold trigger.
         {
             block2 = block2.next();
         }
+
         ref_lvl = Utils::TextBlockHelper::getFoldLvl(block2) - 1;
         block2 = original;
+
         while (block2.blockNumber() && \
                 (!Utils::TextBlockHelper::isFoldTrigger(block2) || \
                 (Utils::TextBlockHelper::getFoldLvl(block2) > ref_lvl)))

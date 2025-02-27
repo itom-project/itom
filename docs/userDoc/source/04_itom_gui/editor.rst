@@ -192,6 +192,8 @@ Navigate forward and backward
 limited to 20 entries and can be accessed via the **Navigate Backward** or
 **Navigate Forward** buttons in the toolbar of any script editor. This allows
 jumping from the current cursor position to a previous or a following position.
+Additionally, navigation forward and backward can also be performed using
+the mouse back and forward buttons.
 The full stack is contained in the submenu of the **Navigate Backward** button:
 
 .. figure:: images/scripteditor_navigation.png
@@ -315,7 +317,8 @@ it looks like this:
 
 The left combo box shows a **globals** section for all methods,
 that are not part of any classes, as well a list of all classes,
-detected in the current script. If one of these values is selected,
+detected in the current script. Additionally, :ref:`code cells <gui-editor-code-cells>`
+are listed in this combo box. If one of these values is selected,
 the cursor is moved to the line, where the class is defined (if it is
 a class) and the right combo box shows all methods, functions, properties...
 that belong to this class or the globals section of the script.
@@ -446,6 +449,7 @@ The following annotations are visualized:
   in the bar.
 * All breakpoints (independent on their subtypes) by a red dot
 * All bookmarks by a yellow star
+* The start of a code cell by a bright green bar (see :ref:`section code cells <gui-editor-code-cells>`)
 
 You can click at any location in this panel and the cursor jumps to the corresponding
 line in the script.
@@ -641,3 +645,36 @@ By default, the reference name to be renamed is suggested as a new name, which m
 .. figure:: images/scripteditor_referencerenamingdialog.png
     :scale: 100%
     :align: center
+
+.. _gui-editor-code-cells:
+
+Code Cells
+===========
+
+Code cells are a well known approach to bring more structure into bigger scripts. Special comments
+can be used to divide the script in the editor into multiple sections, where the special comment line
+is the headline of a section, denoted as code cell.
+
+.. figure:: images/codeCell.png
+    :scale: 100%
+    :align: center
+
+The advantages of using code cells are:
+
+1. Each code cell is listed in the left :ref:`navigation combo box <gui-editor-outline-navigator>`
+   on top of the editor. If such an item is clicked, the cursor is moved to the headline of the
+   respective code cell.
+2. Every code cell is visually separated in the editor by a horizontal line on top of the headline
+   and the code cell with the active cursor is additionally highlighted by a different background
+   color.
+3. It is possible to execute the current code cell by choosing "Run Code Cell" (Ctrl+F9) from the
+   context menu, or to run the cell and let the cursor move to the headline of the next code cell
+   ("Run Code Cell And Advance" Shift+F9).
+4. The folds are extended to code cells, too, such that one can collapse every code cell.
+
+Creating code cells follow the same standards, known from other IDEs like VSCode, Spyder or ipython.
+The possible trigger comments for a code cell are:
+
+1. **# %%** (no title) or **# %% title** (with title)
+2. **#%%** or **#%% title**
+3. **# <codecell>** or **# <codecell> title**

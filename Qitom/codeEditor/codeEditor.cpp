@@ -621,8 +621,14 @@ the painted e->
 */
 void CodeEditor::paintEvent(QPaintEvent* e)
 {
-    updateVisibleBlocks(); //_update_visible_blocks
+    updateVisibleBlocks();
 
+    paintEventWithoutVisibleBlockUpdate(e);
+}
+
+//------------------------------------------------------------------------------
+void CodeEditor::paintEventWithoutVisibleBlockUpdate(QPaintEvent* e)
+{
     QTextCursor tc = textCursor();
     tc.movePosition(QTextCursor::Start);
     int xoffset = cursorRect(tc).x(); // left offset of first character
@@ -676,6 +682,12 @@ void CodeEditor::paintEvent(QPaintEvent* e)
         {
             bottom = block.topPosition + blockBoundingRect(block.textBlock).height() - 1;
             indentation = Utils::TextBlockHelper::getFoldLvl(block.textBlock);
+
+            //foldLvl is always in steps of 2, since only even numbers are real indentations.
+            //Odd numbers are another fold level but with the same indentation than the previous
+            //even number.
+            indentation = indentation / 2;
+
 
             for (int i = 1; i < indentation; ++i)
             {
@@ -1083,27 +1095,37 @@ void CodeEditor::updateVisibleBlocks()
     QTextBlock block = firstVisibleBlock();
     int block_nbr = block.blockNumber();
     int top = int(blockBoundingGeometry(block).translated(contentOffset()).top());
-    int bottom = top + int(blockBoundingRect(block).height());
+    int bottom = 0;
+    int line_height = 0;
     int ebottom_top = 0;
     int ebottom_bottom = height();
+    bool visible, partly_visible;
+
     while (block.isValid())
     {
-        bool visible = ((top >= ebottom_top) && (bottom <= ebottom_bottom));
-        if (!visible)
+        line_height = int(blockBoundingRect(block).height());
+        bottom = top + line_height;
+        visible = ((top >= ebottom_top) && (bottom <= ebottom_bottom));
+        partly_visible = (!visible) && ((top >= ebottom_top) && (top < ebottom_bottom));
+
+        if (!visible && !partly_visible)
         {
             break;
         }
+
         if (block.isVisible())
         {
             VisibleBlock vb;
+            vb.partlyVisible = partly_visible;
             vb.lineNumber = block_nbr;
             vb.textBlock = block;
             vb.topPosition = top;
+            vb.lineHeight = line_height;
             m_visibleBlocks.append(vb);
         }
+
         block = block.next();
         top = bottom;
-        bottom = top + int(blockBoundingRect(block).height());
         block_nbr = block.blockNumber();
     }
 }
@@ -1886,14 +1908,14 @@ Returns the line number from the y_pos
 */
 int CodeEditor::lineNbrFromPosition(int yPos) const
 {
-    int height = fontMetrics().height();
     foreach (const VisibleBlock& vb, visibleBlocks())
     {
-        if ((vb.topPosition <= yPos) && (yPos <= (vb.topPosition + height)))
+        if ((vb.topPosition <= yPos) && (yPos <= (vb.topPosition + vb.lineHeight)))
         {
             return vb.lineNumber;
         }
     }
+
     return -1;
 }
 
@@ -1950,6 +1972,7 @@ void CodeEditor::getCursorPosition(int* line, int* column) const
     {
         *line = cursor.blockNumber();
     }
+
     if (column)
     {
         *column = cursor.positionInBlock();

@@ -72,9 +72,16 @@ public:
     :param prev_block: first previous **non-blank** block or None if this
         is the first line of the document
     :param block: The block to process.
+    :param withinCodeCell: true if block is within a code cell, else false.
+                       A title line of a code cell is not within a code cell
+    :param codeCellStart: true if this block is the start line of a code cell
     :return: Fold level
     */
-    virtual int detectFoldLevel(const QTextBlock &previousBlock, const QTextBlock &block);
+    virtual int detectFoldLevel(
+        const QTextBlock &previousBlock,
+        const QTextBlock &block,
+        bool& withinCodeCell,
+        bool& codeCellStart);
 private:
 
     QRegularExpression m_reContinuationLine;

@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2023, Institut für Technische Optik (ITO),
+    Copyright (C) 2024, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of itom.
@@ -38,6 +38,8 @@
 #include "globalCheckerPanel.h"
 
 #include "../codeEditor.h"
+#include "widgets/scriptEditorWidget.h"
+
 #include <qpainter.h>
 #include <qapplication.h>
 #include <qicon.h>
@@ -60,7 +62,8 @@ namespace ito {
 /*
 */
 GlobalCheckerPanel::GlobalCheckerPanel(const QString &description /*= ""*/, QWidget *parent /*= nullptr */) :
-    Panel("GlobalCheckerPanel", false, description, parent)
+    Panel("GlobalCheckerPanel", false, description, parent),
+    m_globalCheckerPanelMousePressed(false)
 {
     setScrollable(true);
     m_breakpointIcon = QIcon(":/breakpoints/icons/itomBreak.png");
@@ -179,6 +182,19 @@ void GlobalCheckerPanel::createItemCache()
     m_itemCache.clear();
     m_itemCache.reserve(sb->maximum() + 1);
 
+    // analyze code cells
+    QList<int> startLinesOfCodeCells;
+
+    foreach(const auto & item, m_outlineCache->m_childs)
+    {
+        if (item->m_type == OutlineItem::typeCodeCell)
+        {
+            startLinesOfCodeCells << item->m_startLineIdx;
+        }
+    }
+
+    std::sort(startLinesOfCodeCells.begin(), startLinesOfCodeCells.end());
+
     while (b.isValid())
     {
         tbud = dynamic_cast<TextBlockUserData*>(b.userData());
@@ -192,6 +208,11 @@ void GlobalCheckerPanel::createItemCache()
         {
             // there is at least one invisible item below current
             current->headOfCollapsedFold = true;
+        }
+
+        if (startLinesOfCodeCells.contains(b.blockNumber()))
+        {
+            current->startOfCodeCell = true;
         }
 
         if (tbud && current)
@@ -242,6 +263,9 @@ void GlobalCheckerPanel::drawMessages(QPainter& painter)
     QBrush brushWarning(QColor(241, 133, 46));
     QBrush brushError(QColor(226, 0, 0));
     QBrush brushCollapsedFold(QColor(145, 205, 251));
+    QPen codeCellPen(QColor(44, 160, 33));
+    codeCellPen.setWidth(5);
+    int y;
 
     QSize markerSize = getMarkerSize();
     int voffset = verticalOffset();
@@ -254,6 +278,13 @@ void GlobalCheckerPanel::drawMessages(QPainter& painter)
     for (int blockIndex = 0; blockIndex < m_itemCache.size(); ++blockIndex)
     {
         const CheckerItem& item = m_itemCache[blockIndex];
+
+        if (item.startOfCodeCell)
+        {
+            painter.setPen(codeCellPen);
+            y = qRound(voffset + blockIndex * markerSpacing + offset1 + 1);
+            painter.drawLine(0, y, sizeHintWidth, y);
+        }
 
         if (item.headOfCollapsedFold)
         {
@@ -382,6 +413,7 @@ QSize GlobalCheckerPanel::getMarkerSize() const
 */
 void GlobalCheckerPanel::mousePressEvent(QMouseEvent *e)
 {
+    m_globalCheckerPanelMousePressed = true;
     auto vsb = editor()->verticalScrollBar();
     auto markerSpacing = getMarkerSpacing();
     auto height = e->pos().y() - verticalOffset() - markerSpacing / 2.0f;
@@ -395,12 +427,48 @@ void GlobalCheckerPanel::mousePressEvent(QMouseEvent *e)
 }
 
 //-------------------------------------------------------------------------------------
+void GlobalCheckerPanel::mouseMoveEvent(QMouseEvent* e)
+{
+    if (m_globalCheckerPanelMousePressed)
+    {
+        m_globalCheckerPanelMousePressed = false;
+        auto vsb = editor()->verticalScrollBar();
+        auto markerSpacing = getMarkerSpacing();
+        auto height = e->pos().y() - verticalOffset() - markerSpacing / 2.0f;
+        int line = qBound<int>(vsb->minimum(), qRound(height / markerSpacing), vsb->maximum());
+
+        if (m_itemCache.size() >= line + 1)
+        {
+            editor()->setCursorPosition(line, 0);
+            editor()->ensureLineVisible(line);
+        }
+    }
+}
+
+//-------------------------------------------------------------------------------------
+void GlobalCheckerPanel::mouseReleaseEvent(QMouseEvent* e)
+{
+    m_globalCheckerPanelMousePressed = false;
+}
+
+//-------------------------------------------------------------------------------------
 /*
 * Moves the editor text cursor to the clicked line.
 */
 void GlobalCheckerPanel::wheelEvent(QWheelEvent* e)
 {
     editor()->callWheelEvent(e);
+}
+
+//-------------------------------------------------------------------------------------
+void GlobalCheckerPanel::outlineModelChanged(ito::ScriptEditorWidget* /*sew*/, QSharedPointer<OutlineItem> rootItem)
+{
+    m_outlineCache = rootItem;
+
+    if (!m_cacheRenewTimer.isActive())
+    {
+        m_cacheRenewTimer.start();
+    }
 }
 
 
