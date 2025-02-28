@@ -14,7 +14,7 @@ For instance, to compile the qrc file in the icons subfolder to
 a rcc file in this folder, navigate a command line to the icons
 subfolder and apply
 
-..code-block:: bat
+.. code-block:: bash
 
     rcc -binary myIconResource.qrc -o ../myIconResource.rcc
 
