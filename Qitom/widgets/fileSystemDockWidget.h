@@ -96,8 +96,9 @@ namespace ito
             QList<int> m_detailColumnsWidth;
             QColor m_linkColor;
 
-            QStack<QString> m_backStack;
+            QStack<QString> m_historyStack;
             QStack<QString> m_forwardStack;
+            int m_maxHistorySize = 20;
 
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
             // since (at least) Qt 6.7, QFileSystemModel

@@ -57,7 +57,7 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
     m_pActRenameItem(nullptr), m_pActDeleteItems(nullptr), m_pActCutItems(nullptr),
     m_pActCopyItems(nullptr), m_pActPasteItems(nullptr), m_pActNewDir(nullptr),
     m_pActNewPyFile(nullptr), m_pViewList(nullptr), m_pViewDetails(nullptr), m_lastMovedShowDirAction(nullptr),
-    m_linkColor(Qt::blue), m_backStack(), m_forwardStack()
+    m_linkColor(Qt::blue), m_historyStack(), m_forwardStack()
 {
     QAction* act = nullptr;
     QString actCheckedStr = "";
@@ -249,7 +249,7 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
     m_pFileSystemModel->setIconProvider(&m_fileIconProvider);
 #endif
 
-    m_backStack.clear();
+    m_historyStack.clear();
     m_forwardStack.clear();
 }
 
@@ -645,10 +645,14 @@ RetVal FileSystemDockWidget::changeBaseDirectory(QString dir, bool clearHistory)
     {
         if (m_baseDirectory != dir && QFileInfo(m_baseDirectory).isDir())
         {
-            // Check if the last item in m_backStack is equal to m_baseDirectory
-            if (m_backStack.isEmpty() || m_backStack.top() != m_baseDirectory)
+            if (m_historyStack.isEmpty() || m_historyStack.top() != m_baseDirectory)
             {
-                m_backStack.push(m_baseDirectory);
+                if (m_historyStack.size() >= m_maxHistorySize)
+                {
+                    m_historyStack.remove(0);
+                }
+                m_historyStack.push(m_baseDirectory);
+                m_forwardStack.clear();
             }
         }
 
@@ -657,25 +661,9 @@ RetVal FileSystemDockWidget::changeBaseDirectory(QString dir, bool clearHistory)
 
         if (clearHistory)
         {
-            m_backStack.clear();
+            m_historyStack.clear();
             m_forwardStack.clear();
         }
-
-                // Debug output for m_backStack and m_forwardStack
-        std::cout << "m_backStack: ";
-        for (const auto& item : m_backStack)
-        {
-            std::cout << item.toStdString() << "\n";
-        }
-        std::cout << "\n" << std::endl;
-
-        std::cout << "m_forwardStack: ";
-        for (const auto& item : m_forwardStack)
-        {
-            std::cout << item.toStdString() << "\n";
-        }
-        std::cout << "\n" << std::endl;
-
     }
     else
     {
@@ -915,8 +903,9 @@ void FileSystemDockWidget::newDirSelected(const QString& text)
     if (m_baseDirChangeMutex.tryLock(0))
     {
         m_baseDirChangeMutex.unlock();
-        m_backStack.clear();
+        m_historyStack.clear();
         m_forwardStack.clear();
+
         retValue += changeBaseDirectory(text);
         if (retValue.containsError())
         {
@@ -1409,28 +1398,26 @@ void FileSystemDockWidget::onMouseReleased(QMouseEvent* e)
 //----------------------------------------------------------------------------------------------------------------------------------
 void FileSystemDockWidget::navigateBackward()
 {
-    if (!m_backStack.isEmpty())
+    if (m_historyStack.size() > 1)
     {
-        QString previousPath = m_backStack.pop();
-        if (m_forwardStack.isEmpty() || m_forwardStack.top() != previousPath)
+        m_forwardStack.push(m_historyStack.pop());
+        if (!m_historyStack.isEmpty())
         {
-            m_forwardStack.push(previousPath);
+            changeBaseDirectory(m_historyStack.top());
         }
-        changeBaseDirectory(previousPath);
     }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void FileSystemDockWidget::navigateForward()
 {
-    if (!m_forwardStack.isEmpty())
+    if (!m_forwardStack.empty())
     {
-        QString nextDir = m_forwardStack.pop();
-        if (m_backStack.isEmpty() || m_backStack.top() != nextDir)
+        m_historyStack.push(m_forwardStack.pop());
+        if (!m_forwardStack.isEmpty())
         {
-            m_backStack.push(nextDir);
+            changeBaseDirectory(m_historyStack.top());
         }
-        changeBaseDirectory(nextDir);
     }
 }
 
