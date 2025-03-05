@@ -42,7 +42,7 @@
 #include <qshortcut.h>
 #include <qmimedata.h>
 #include <qfileiconprovider.h>
-#include <iostream>
+
 namespace ito {
 
 
