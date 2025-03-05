@@ -163,7 +163,7 @@ namespace ito
             void navigateForward();
 
         public slots:
-            RetVal changeBaseDirectory(QString dir, bool clearHistory=false);
+            RetVal changeBaseDirectory(QString dir, bool clearHistory=false, bool addToHistory=true);
             void processError(QProcess::ProcessError error);
     };
 

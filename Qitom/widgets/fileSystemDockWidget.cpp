@@ -629,7 +629,7 @@ void FileSystemDockWidget::cmbFilterEditTextChanged(const QString &text)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal FileSystemDockWidget::changeBaseDirectory(QString dir, bool clearHistory)
+RetVal FileSystemDockWidget::changeBaseDirectory(QString dir, /*static*/ bool clearHistory, /*static*/ bool addToHistory)
 {
     QAction* act = nullptr;
 
@@ -643,21 +643,25 @@ RetVal FileSystemDockWidget::changeBaseDirectory(QString dir, bool clearHistory)
 
     if (QDir(dir).exists())
     {
-        if (m_baseDirectory != dir && QFileInfo(m_baseDirectory).isDir())
+        if (m_baseDirectory != dir && QFileInfo(m_baseDirectory).isDir() && addToHistory)
         {
-            if (m_historyStack.isEmpty() || m_historyStack.top() != m_baseDirectory)
+            if (m_historyStack.isEmpty() || m_historyStack.top() != dir)
             {
                 if (m_historyStack.size() >= m_maxHistorySize)
                 {
                     m_historyStack.remove(0);
                 }
+                if (m_forwardStack.size() >= m_maxHistorySize)
+                {
+                    m_forwardStack.remove(0);
+                }
                 m_historyStack.push(m_baseDirectory);
-                m_forwardStack.clear();
             }
         }
 
         m_baseDirectory = dir;
         QDir::setCurrent(m_baseDirectory);
+
 
         if (clearHistory)
         {
@@ -903,8 +907,6 @@ void FileSystemDockWidget::newDirSelected(const QString& text)
     if (m_baseDirChangeMutex.tryLock(0))
     {
         m_baseDirChangeMutex.unlock();
-        m_historyStack.clear();
-        m_forwardStack.clear();
 
         retValue += changeBaseDirectory(text);
         if (retValue.containsError())
@@ -1400,10 +1402,10 @@ void FileSystemDockWidget::navigateBackward()
 {
     if (m_historyStack.size() > 1)
     {
-        m_forwardStack.push(m_historyStack.pop());
+        m_forwardStack.push(m_historyStack.top());
         if (!m_historyStack.isEmpty())
         {
-            changeBaseDirectory(m_historyStack.top());
+            changeBaseDirectory(m_historyStack.pop(), false, false);
         }
     }
 }
@@ -1413,10 +1415,10 @@ void FileSystemDockWidget::navigateForward()
 {
     if (!m_forwardStack.empty())
     {
-        m_historyStack.push(m_forwardStack.pop());
+        m_historyStack.push(m_forwardStack.top());
         if (!m_forwardStack.isEmpty())
         {
-            changeBaseDirectory(m_historyStack.top());
+            changeBaseDirectory(m_forwardStack.pop(), false, false);
         }
     }
 }
