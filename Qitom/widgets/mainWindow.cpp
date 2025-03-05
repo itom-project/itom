@@ -2594,7 +2594,7 @@ void MainWindow::currentDirectoryChanged()
 
     if (m_fileSystemDock)
     {
-        m_fileSystemDock->changeBaseDirectory(cd);
+        m_fileSystemDock->changeBaseDirectory(cd, true);
     }
 }
 
