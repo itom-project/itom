@@ -658,6 +658,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/figureWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/fileSystemDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/helpDockWidget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/itomQWidgets.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/lastCommandDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/mainWindow.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/outlineSelectorWidget.cpp
