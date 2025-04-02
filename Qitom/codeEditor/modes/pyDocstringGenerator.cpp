@@ -465,13 +465,22 @@ void PyDocstringGeneratorMode::parseArgList(
     QList<QChar> specialCharStack;
     int idx1, idx2;
 
+    // divider for keyword-only and positional-only arguments
+    QStringList specialArgumentsBlacklist = QStringList() << "*" << "/";
+    QString argname;
+
     for (int pos = 0; pos < argstr.size(); ++pos)
     {
         if (argstr[pos] == ',' && specialCharStack.size() == 0)
         {
             if (pos - lastpos > 0)
             {
-                args.append(argstr.mid(lastpos, pos - lastpos));
+                argname = argstr.mid(lastpos, pos - lastpos).trimmed();
+
+                if (!specialArgumentsBlacklist.contains(argname))
+                {
+                    args.append(argname);
+                }
             }
 
             lastpos = pos + 1; //ignore the comma
@@ -545,7 +554,12 @@ void PyDocstringGeneratorMode::parseArgList(
     if (lastpos < argstr.size())
     {
         // append last section
-        args.append(argstr.mid(lastpos));
+        argname = argstr.mid(lastpos).trimmed();
+
+        if (!specialArgumentsBlacklist.contains(argname))
+        {
+            args.append(argname);
+        }
     }
 
     int count = 0;
