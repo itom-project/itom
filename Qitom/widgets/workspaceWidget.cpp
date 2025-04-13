@@ -237,6 +237,7 @@ QString WorkspaceWidget::getPythonReadableName(const QTreeWidgetItem* item) cons
         else
         {
             tempItem = item;
+            QString text = tempItem->text(0);
 
             while (tempItem->parent() != nullptr)
             {
@@ -246,20 +247,24 @@ QString WorkspaceWidget::getPythonReadableName(const QTreeWidgetItem* item) cons
                 {
                     if (type[1] == PY_NUMBER)
                     {
-                        name.prepend("[" + tempItem->text(0) + "]");
+                        name.prepend("[" + text + "]");
                     }
                     else if (type[1] == PY_STRING)
                     {
-                        name.prepend("[\"" + tempItem->text(0) + "\"]");
+                        name.prepend("[\"" + text + "\"]");
+                    }
+                    else if (type[1] = PY_INDEX_STRING)
+                    {
+                        name.prepend("." + text);
                     }
                     else
                     {
-                        name.prepend("[" + tempItem->text(0) + "]");
+                        name.prepend("[" + text + "]");
                     }
                 }
                 else if (type[0] == PY_ATTR)
                 {
-                    name.prepend("." + tempItem->text(0));
+                    name.prepend("." + text);
                 }
 
                 tempItem = tempItem->parent();
@@ -319,7 +324,7 @@ int WorkspaceWidget::numberOfSelectedItems(bool ableToBeRenamed /*= false*/) con
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void WorkspaceWidget::updateView(
+bool WorkspaceWidget::updateView(
     const QHash<QString, ito::PyWorkspaceItem*>& items,
     const QString& baseName,
     QTreeWidgetItem* parent)
@@ -328,6 +333,7 @@ void WorkspaceWidget::updateView(
     QString hashName;
     QTreeWidgetItem* actItem;
     QTreeWidgetItem* tempItem;
+    bool needsRepaint = false;
 
     foreach (const ito::PyWorkspaceItem* item, items)
     {
@@ -368,6 +374,8 @@ void WorkspaceWidget::updateView(
         // m_key is ab:name where a is
         // [PY_LIST_TUPLE,PY_MAPPING,PY_DICT,PY_ATTR]
         // and b is [PY_NUMBER or PY_STRING]
+        // for a = PY_LIST_TUPLE it is also possible to have
+        //ab:index:name with b = PY_INDEX_STRING
         actItem->setData(0, RoleType, item->m_key.left(2).toLatin1());
 
         if (item->m_childState == ito::PyWorkspaceItem::stateNoChilds)
@@ -378,7 +386,8 @@ void WorkspaceWidget::updateView(
             {
                 tempItem = actItem->child(0);
                 recursivelyDeleteHash(tempItem->data(0, RoleFullName).toString());
-                actItem->removeChild(actItem->child(0));
+                actItem->removeChild(tempItem);
+                delete tempItem;
             }
         }
         else
@@ -387,19 +396,30 @@ void WorkspaceWidget::updateView(
 
             if (item->m_childs.count() == 0) // item has children, but they are not shown yet
             {
-                while (actItem->childCount() > 0)
+                if (actItem->childCount() > 0)
                 {
-                    tempItem = actItem->child(0);
-                    recursivelyDeleteHash(tempItem->data(0, RoleFullName).toString());
-                    actItem->removeChild(actItem->child(0));
+                    while (actItem->childCount() > 0)
+                    {
+                        tempItem = actItem->child(0);
+                        recursivelyDeleteHash(tempItem->data(0, RoleFullName).toString());
+                        actItem->removeChild(tempItem);
+                        delete tempItem;
+                    }
+                }
+                else
+                {
+                    // update to show child indicator
+                    needsRepaint = true;
                 }
             }
             else
             {
-                updateView(item->m_childs, hashName, actItem);
+                needsRepaint |= updateView(item->m_childs, hashName, actItem);
             }
         }
     }
+
+    return needsRepaint;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -453,7 +473,14 @@ void WorkspaceWidget::workspaceContainerUpdated(
 
         if (m_workspaceContainer->m_accessMutex.tryLock(1000))
         {
-            updateView(rootItem->m_childs, fullNameRoot, parent);
+            if (updateView(rootItem->m_childs, fullNameRoot, parent))
+            {
+                // if an existing item does not have children and should display
+                // the child indicator now, it is required to repaint(), such
+                // that the indicator is shown.
+                repaint();
+            }
+
             m_workspaceContainer->m_accessMutex.unlock();
         }
     }

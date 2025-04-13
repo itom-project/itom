@@ -4059,7 +4059,21 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString
         }
         else if (itemType == PY_LIST_TUPLE && PyList_Check(obj))
         {
-            i = itemKey.toInt(&ok);
+            ok = false;
+
+            if (itemKeyType == PY_NUMBER)
+            {
+                i = itemKey.toInt(&ok);
+            }
+            else if (itemKeyType == PY_INDEX_STRING)
+            {
+                QStringList components = itemKey.split(":");
+
+                if (components.size() > 0)
+                {
+                    i = components[0].toInt(&ok);
+                }
+            }
 
             if (!ok || i < 0 || i >= PyList_Size(obj))
             {
@@ -4082,7 +4096,21 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString
         }
         else if (itemType == PY_LIST_TUPLE && PyTuple_Check(obj))
         {
-            i = itemKey.toInt(&ok);
+            ok = false;
+
+            if (itemKeyType == PY_NUMBER)
+            {
+                i = itemKey.toInt(&ok);
+            }
+            else if (itemKeyType == PY_INDEX_STRING)
+            {
+                QStringList components = itemKey.split(":");
+
+                if (components.size() > 0)
+                {
+                    i = components[0].toInt(&ok);
+                }
+            }
 
             if (!ok || i < 0 || i >= PyTuple_Size(obj))
             {
@@ -5305,6 +5333,10 @@ bool PythonEngine::deleteVariable(bool globalNotLocal, const QStringList &fullIt
                             retVal = false;
                             //todo: this is possible for dict types
                             std::cerr << "Currently, only keys of type string or int can be deleted.\n" << std::endl;
+                            break;
+                        case PY_INDEX_STRING:
+                            retVal = false;
+                            std::cerr << "Members of a named tuple cannot be deleted.\n" << std::endl;
                             break;
                         default:
                             retVal = false;
