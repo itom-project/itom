@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>492</width>
-    <height>427</height>
+    <width>579</width>
+    <height>490</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -22,6 +22,12 @@
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
        <widget class="QRadioButton" name="radioWhl">
+        <property name="toolTip">
+         <string>pip install --prefer-binary &lt;filepath.whl&gt;</string>
+        </property>
+        <property name="whatsThis">
+         <string/>
+        </property>
         <property name="text">
          <string>Install from Wheel archive (whl)</string>
         </property>
@@ -32,6 +38,12 @@
       </item>
       <item>
        <widget class="QRadioButton" name="radioTarGz">
+        <property name="toolTip">
+         <string>pip install --prefer-binary &lt;filenpath.tar.gz or .zip&gt;</string>
+        </property>
+        <property name="whatsThis">
+         <string/>
+        </property>
         <property name="text">
          <string>Install from tar.gz or zip archive</string>
         </property>
@@ -39,6 +51,12 @@
       </item>
       <item>
        <widget class="QRadioButton" name="radioSearchIndex">
+        <property name="toolTip">
+         <string>pip install --prefer-binary &lt;package-name&gt;</string>
+        </property>
+        <property name="whatsThis">
+         <string/>
+        </property>
         <property name="text">
          <string>Search Python package index for package name, download and install it</string>
         </property>
@@ -46,6 +64,12 @@
       </item>
       <item>
        <widget class="QRadioButton" name="radioRequirements">
+        <property name="toolTip">
+         <string>pip install -r &lt;requirements-filename.txt&gt;</string>
+        </property>
+        <property name="whatsThis">
+         <string/>
+        </property>
         <property name="text">
          <string>Install or upgrade listed packages in requirements text file</string>
         </property>
@@ -53,6 +77,12 @@
       </item>
       <item>
        <widget class="QRadioButton" name="radioPackageDevelopment">
+        <property name="toolTip">
+         <string>pip install -e &lt;path-to-source-folder&gt;</string>
+        </property>
+        <property name="whatsThis">
+         <string/>
+        </property>
         <property name="text">
          <string>Install from package source (setup.py or pyproject.toml must be included)</string>
         </property>
@@ -111,8 +141,14 @@
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
        <widget class="QCheckBox" name="checkUpgrade">
+        <property name="toolTip">
+         <string>pip install --upgrade</string>
+        </property>
+        <property name="whatsThis">
+         <string/>
+        </property>
         <property name="text">
-         <string>Upgrade existing package if newer version is available</string>
+         <string>Upgrade existing package if newer version is available,</string>
         </property>
         <property name="checked">
          <bool>false</bool>
@@ -121,6 +157,12 @@
       </item>
       <item>
        <widget class="QCheckBox" name="checkInstallDeps">
+        <property name="toolTip">
+         <string>If not set: pip install --no-deps</string>
+        </property>
+        <property name="whatsThis">
+         <string/>
+        </property>
         <property name="text">
          <string>Install dependencies if required (if upgrade flag is set, dependencies will be updated, too)</string>
         </property>
@@ -134,7 +176,10 @@
         <item>
          <widget class="QCheckBox" name="checkFindLinks">
           <property name="toolTip">
-           <string>If checked, indicate an URL or a local path that is searched for the indicated package</string>
+           <string>If checked, indicate an URL or a local path that is searched for the indicated package; pip install --find-links</string>
+          </property>
+          <property name="whatsThis">
+           <string/>
           </property>
           <property name="text">
            <string>Find links:</string>
@@ -145,6 +190,12 @@
          <widget class="QLineEdit" name="txtFindLinks">
           <property name="enabled">
            <bool>false</bool>
+          </property>
+          <property name="toolTip">
+           <string>If checked, indicate an URL or a local path that is searched for the indicated package; pip install --find-links</string>
+          </property>
+          <property name="whatsThis">
+           <string/>
           </property>
          </widget>
         </item>
@@ -162,6 +213,12 @@
       </item>
       <item>
        <widget class="QCheckBox" name="checkNoIndex">
+        <property name="toolTip">
+         <string>pip install --no-index</string>
+        </property>
+        <property name="whatsThis">
+         <string/>
+        </property>
         <property name="text">
          <string>Ignore Python package index (pypi.python.org/simple). Only look at find-links URLs.</string>
         </property>
