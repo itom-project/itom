@@ -48,6 +48,7 @@
 // type of key
 #define PY_NUMBER 'n'
 #define PY_STRING 's'
+#define PY_INDEX_STRING 'i'
 #define PY_OBJID 'h' // object id (ptr) as hex for all other objects
 
 namespace ito
@@ -76,7 +77,11 @@ public:
     };
 
     QString m_name; /*!< name of the item as it is visible in the first column of the workspace (either name of variable or index of list, tuple...) */
-    QString m_key;  /*!< type of this item. The string has the following form XY:name, where X is PY_LIST_TUPLE, PY_MAPPING, PY_ATTR or PY_DICT (depends where this variable is member from), Y is PY_NUMBER or PY_STRING (depends on the type of m_name, e.g. variable string name or index of list or tuple) and name is m_name.*/
+    /*!< type of this item. The string has the following form XY:name, where X is PY_LIST_TUPLE, PY_MAPPING,
+    PY_ATTR or PY_DICT (depends where this variable is member from), Y is PY_NUMBER or PY_STRING
+    (depends on the type of m_name, e.g. variable string name or index of list or tuple) and name is m_name.
+    For namedtuple or similar, it is also possible to have a form XY:index:name with Y = PY_INDEX_STRING*/
+    QString m_key;
     QString m_type; /*!< Python internal type name of the variable (ob_type->tp_name of PyObject) */
     QString m_value;
     QString m_extendedValue;
@@ -127,6 +132,7 @@ private:
     PyObject *m_dictUnicode;
     PyObject *m_slotsUnicode;
     PyObject *m_mroUnicode;
+    PyObject* m_fieldsUnicode;
 
 signals:
     void updateAvailable(PyWorkspaceItem *rootItem, QString fullNameRoot, QStringList recentlyDeletedFullNames);   //TODO

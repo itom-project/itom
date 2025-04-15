@@ -52,7 +52,9 @@ void PlotInfoShapes::adjustNumberOfChildItems(QTreeWidgetItem* curItem, int coun
 {
     while (curItem->childCount() > count)
     {
-        curItem->removeChild(curItem->child(curItem->childCount() - 1));
+		auto* item = curItem->child(curItem->childCount() - 1);
+        curItem->removeChild(item);
+		delete item;
     }
     while (curItem->childCount() < count)
     {

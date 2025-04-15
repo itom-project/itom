@@ -65,7 +65,8 @@ PyWorkspaceContainer::PyWorkspaceContainer(bool globalNotLocal) :
     m_globalNotLocal(globalNotLocal),
     m_dictUnicode(nullptr),
     m_slotsUnicode(nullptr),
-    m_mroUnicode(nullptr)
+    m_mroUnicode(nullptr),
+    m_fieldsUnicode(nullptr)
 {
     int i = 0;
 }
@@ -76,6 +77,7 @@ PyWorkspaceContainer::~PyWorkspaceContainer()
     Py_XDECREF(m_dictUnicode);
     Py_XDECREF(m_slotsUnicode);
     Py_XDECREF(m_mroUnicode);
+    Py_XDECREF(m_fieldsUnicode);
 }
 
 //-----------------------------------------------------------------------------------------------------------
@@ -86,6 +88,7 @@ void PyWorkspaceContainer::initUnicodeConstants()
         m_dictUnicode = PyUnicode_FromString("__dict__");
         m_slotsUnicode = PyUnicode_FromString("__slots__");
         m_mroUnicode = PyUnicode_FromString("__mro__");
+        m_fieldsUnicode = PyUnicode_FromString("_fields");
     }
 }
 
@@ -239,18 +242,42 @@ void PyWorkspaceContainer::loadDictionaryRec(
         // implement the sequence protocol
         if (PyTuple_Check(obj) || PyList_Check(obj))
         {
+            // only if not on blacklist
+            PyObject* fieldsTuple = nullptr;
+
+            if (PyObject_HasAttr(obj, m_fieldsUnicode))
+            {
+                fieldsTuple = PyObject_GetAttr(obj, m_fieldsUnicode); // new ref
+
+                if (!fieldsTuple ||
+                    !PyTuple_Check(fieldsTuple) ||
+                    PyTuple_Size(fieldsTuple) != PySequence_Size(obj))
+                {
+                    Py_XDECREF(fieldsTuple);
+                    fieldsTuple = nullptr;
+                }
+            }
+
             for (i = 0; i < PySequence_Size(obj); i++)
             {
                 value = PySequence_GetItem(obj, i); // new reference
 
                 if (isNotInBlacklist(value))
                 {
-                    // only if not on blacklist
-
-                    keyText = QString::number(i);
-                    keyKey = "xx:" + keyText; // list + number
-                    keyKey[0] = PY_LIST_TUPLE;
-                    keyKey[1] = PY_NUMBER;
+                    if (fieldsTuple)
+                    {
+                        keyText = PythonQtConversion::PyObjGetString(PyTuple_GET_ITEM(fieldsTuple, i));
+                        keyKey = "xx:" + QString::number(i) + ":" + keyText; // list + number + field name
+                        keyKey[0] = PY_LIST_TUPLE;
+                        keyKey[1] = PY_INDEX_STRING;
+                    }
+                    else
+                    {
+                        keyText = QString::number(i);
+                        keyKey = "xx:" + keyText; // list + number
+                        keyKey[0] = PY_LIST_TUPLE;
+                        keyKey[1] = PY_NUMBER;
+                    }
 
                     it = parentItem->m_childs.find(keyKey);
 
@@ -293,6 +320,8 @@ void PyWorkspaceContainer::loadDictionaryRec(
 
                 Py_DECREF(value);
             }
+
+            Py_XDECREF(fieldsTuple);
         }
         else
         {

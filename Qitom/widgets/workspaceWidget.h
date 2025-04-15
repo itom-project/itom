@@ -149,7 +149,7 @@ protected:
     void startDrag(Qt::DropActions supportedActions);
 
 private:
-    void updateView(
+    bool updateView(
         const QHash<QString, ito::PyWorkspaceItem*>& items,
         const QString& baseName,
         QTreeWidgetItem* parent = nullptr);

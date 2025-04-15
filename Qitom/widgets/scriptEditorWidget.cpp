@@ -4165,6 +4165,7 @@ void ScriptEditorWidget::paintEvent(QPaintEvent* e)
     updateVisibleBlocks();
 
     QList<int> codeCellStartLineIndices;
+    QList<int> linePositions;
 
     foreach(const auto & childItems, m_rootOutlineItem->m_childs)
     {
@@ -4201,26 +4202,38 @@ void ScriptEditorWidget::paintEvent(QPaintEvent* e)
                 painter.drawRect(0, y0, width(), y1 - y0);
             }
         }
+
+        if (codeCellStartLineIndices.size() > 0)
+        {
+            // line above heading of code cell
+            painter.setBrush(QBrush(m_codeCellHighlighterMode->headlineBgColor()));
+
+            foreach(const VisibleBlock & block, visibleBlocks())
+            {
+                if (codeCellStartLineIndices.contains(block.lineNumber))
+                {
+                    painter.drawRect(0, block.topPosition, width(), block.lineHeight);
+                    linePositions << block.topPosition;
+                }
+            }
+        }
     }
 
     CodeEditor::paintEventWithoutVisibleBlockUpdate(e);
 
-    if (codeCellStartLineIndices.size() > 0)
+    if (linePositions.size() > 0)
     {
         QPainter painter(viewport());
-
-        // line above heading of code cell
         painter.setPen(m_codeCellHeaderLine);
 
-        foreach(const VisibleBlock & block, visibleBlocks())
+        foreach(const int& linePos, linePositions)
         {
-            if (codeCellStartLineIndices.contains(block.lineNumber))
-            {
-                painter.drawLine(
-                    0, block.topPosition, width(), block.topPosition);
-            }
+            painter.drawLine(
+                0, linePos, width(), linePos);
         }
     }
+
+
 }
 
 } // end namespace ito

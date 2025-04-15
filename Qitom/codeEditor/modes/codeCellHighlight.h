@@ -74,6 +74,10 @@ public:
         return m_activeCodeCellBgColor;
     }
 
+    QColor headlineBgColor() const {
+        return m_headlineBgColor;
+    }
+
     QPair<int, int> activeCodeCellLineRange() const {
         return m_activeCodeCellLineRange;
     }
@@ -85,12 +89,8 @@ public slots:
 protected:
     QColor m_headlineBgColor;
     QColor m_activeCodeCellBgColor;
-    QList<TextDecoration::Ptr> m_codeCellHeadlineDecorators;
     QPair<int, int> m_activeCodeCellLineRange; // first line and last line within the active code cell (without heading), if none -1, -1
     QSharedPointer<OutlineItem> m_rootOutline;
-
-    void clearAllDecorators();
-
 };
 
 } //end namespace ito

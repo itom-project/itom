@@ -2725,7 +2725,10 @@ void UiOrganizer::pythonKeyboardInterrupt(bool /*checked*/)
     PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
     if (pyEngine)
     {
-        bool interruptActuatorsAndTimers = false;
+        QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+        settings.beginGroup("AddInManager");
+        bool interruptActuatorsAndTimers = settings.value("interruptActuatorsIfPythonInterrupted", false).toBool();
+        settings.endGroup();
         pyEngine->pythonInterruptExecutionThreadSafe(&interruptActuatorsAndTimers);
     }
 }
