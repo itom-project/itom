@@ -74,7 +74,8 @@ namespace ito
 		ui.legendLabelWidthSpin->setValue(settings.value("legendLabelWidth", 15).value<int>());
         ui.checkAntiAliasing->setChecked(settings.value("antiAliased", false).value<bool>());
         ui.clipboardResolutionSpin->setValue(settings.value("copyClipboardResolutionDpi", 200).value<int>());
-        ui.comboDefaultColorMap->setCurrentIndex(ui.comboDefaultColorMap->findText(settings.value("defaultColorMap").toString()));
+        ui.comboDefaultColorMap->setCurrentIndex(
+            ui.comboDefaultColorMap->findText(settings.value("defaultColorMap", "gray").toString()));
         ui.checkBoxKeepAspectRatio->setChecked(settings.value("keepAspectRatio").toBool());
         ui.checkBoxYAxisFlipped->setChecked(settings.value("yAxisFlipped").toBool());
         settings.endGroup();

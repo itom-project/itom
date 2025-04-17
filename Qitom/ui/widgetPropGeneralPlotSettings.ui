@@ -184,7 +184,7 @@
               <enum>Qt::RightToLeft</enum>
              </property>
              <property name="text">
-              <string>color map</string>
+              <string>Default color map</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -371,7 +371,7 @@
            </item>
            <item row="2" column="1">
             <widget class="BrushCreatorButton" name="trackerBackgroundBtn">
-             <property name="showAlphaChannel" stdset="0">
+             <property name="showAlphaChannel">
               <bool>true</bool>
              </property>
             </widget>
@@ -427,7 +427,7 @@
           <layout class="QGridLayout" name="gridLayout_4">
            <item row="0" column="1">
             <widget class="BrushCreatorButton" name="shapeLabelBgBtn">
-             <property name="showAlphaChannel" stdset="0">
+             <property name="showAlphaChannel">
               <bool>true</bool>
              </property>
             </widget>
@@ -530,14 +530,14 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>ColorPickerButton</class>
-   <extends>QPushButton</extends>
-   <header>colorPickerButton.h</header>
-  </customwidget>
-  <customwidget>
    <class>BrushCreatorButton</class>
    <extends>QPushButton</extends>
    <header>brushCreatorButton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ColorPickerButton</class>
+   <extends>QPushButton</extends>
+   <header>colorPickerButton.h</header>
   </customwidget>
   <customwidget>
    <class>PenCreatorButton</class>
