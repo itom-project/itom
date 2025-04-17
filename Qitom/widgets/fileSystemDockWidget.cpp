@@ -220,19 +220,12 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
 
     fillFilterList();
 
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     connect(
         m_pTreeView,
         &QTreeViewItom::QTreeViewItomMouseReleased,
         this,
         &FileSystemDockWidget::onMouseReleased);
-#else
-    connect(
-        m_pTreeView,
-        SIGNAL(QTreeViewItomMouseReleased(QMouseEvent*)),
-        this,
-        SLOT(onMouseReleased(QMouseEvent*)));
-#endif
+
 
 
 //    QObject::dumpObjectTree();
@@ -629,7 +622,7 @@ void FileSystemDockWidget::cmbFilterEditTextChanged(const QString &text)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal FileSystemDockWidget::changeBaseDirectory(QString dir, /*static*/ bool clearHistory, /*static*/ bool addToHistory)
+RetVal FileSystemDockWidget::changeBaseDirectory(QString dir, bool clearHistory /*=false*/, bool addToHistory /*=true*/)
 {
     QAction* act = nullptr;
 
