@@ -43,6 +43,7 @@
 #include <qevent.h>
 #include <qurl.h>
 #include <qfileiconprovider.h>
+#include <qstack.h>
 #include <qsignalmapper.h>
 
 
@@ -87,13 +88,17 @@ namespace ito
             QLabel* m_pLblFilter;
             QComboBox* m_pCmbFilter;
             ItomFileSystemModel* m_pFileSystemModel;
-            QString baseDirectory;
-            QHash<QString,QStringList> defaultFilterPatterns;
-            QMutex baseDirChangeMutex;
+            QString m_baseDirectory;
+            QHash<QString,QStringList> m_defaultFilterPatterns;
+            QMutex m_baseDirChangeMutex;
             QList<QUrl> m_clipboardCutData; //this mime-data has recently be selected by a cut action and is no available in QClipboard
             bool m_showColumnDetails;
             QList<int> m_detailColumnsWidth;
             QColor m_linkColor;
+
+            QStack<QString> m_historyStack;
+            QStack<QString> m_forwardStack;
+            int m_maxHistorySize = 20;
 
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
             // since (at least) Qt 6.7, QFileSystemModel
@@ -151,11 +156,14 @@ namespace ito
             void treeViewContextMenuRequested(const QPoint &pos);
             void removeActionFromDirList(const int &pos);
             void itemDoubleClicked(const QModelIndex &index);
-
             void pathAnchorClicked(const QUrl &link);
+            void onMouseReleased(QMouseEvent* e);
+
+            void navigateBackward();
+            void navigateForward();
 
         public slots:
-            RetVal changeBaseDirectory(QString dir);
+            RetVal changeBaseDirectory(QString dir, bool clearHistory=false, bool addToHistory=true);
             void processError(QProcess::ProcessError error);
     };
 

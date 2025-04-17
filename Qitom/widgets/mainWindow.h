@@ -61,6 +61,7 @@ public:
     ~MainWindow();
 
 	ito::RetVal addCentralWidget(QWidget *widget);
+    FileSystemDockWidget* m_fileSystemDock;
 
     void scriptEditorOrganizerAvailable();
 
@@ -96,7 +97,7 @@ private:
     WorkspaceDockWidget   *m_globalWorkspaceDock;
     WorkspaceDockWidget   *m_localWorkspaceDock;
     CallStackDockWidget   *m_callStackDock;
-    FileSystemDockWidget  *m_fileSystemDock;
+
 
     AIManagerWidget* m_pAIManagerWidget;
 

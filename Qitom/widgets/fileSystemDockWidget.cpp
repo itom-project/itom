@@ -51,14 +51,13 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
     AbstractDockWidget(docked, isDockAvailable, floatingStyle, movingStyle, title, objName, parent),
     m_pShowDirListMenu(nullptr), m_pFileSystemSettingMenu(nullptr), m_pContextMenu(nullptr),
     m_pPathEdit(nullptr), m_pMainToolbar(nullptr), m_pTreeView(nullptr), m_pLblFilter(nullptr),
-    m_pCmbFilter(nullptr), m_pFileSystemModel(nullptr),
-    baseDirectory(QString()),
+    m_pCmbFilter(nullptr), m_pFileSystemModel(nullptr), m_baseDirectory(QString()),
     m_pActMoveCDUp(nullptr), m_pActSelectCD(nullptr),
     m_pActOpenFile(nullptr), m_pActExecuteFile(nullptr), m_pActLocateOnDisk(nullptr),
     m_pActRenameItem(nullptr), m_pActDeleteItems(nullptr), m_pActCutItems(nullptr),
     m_pActCopyItems(nullptr), m_pActPasteItems(nullptr), m_pActNewDir(nullptr),
-    m_pActNewPyFile(nullptr), m_pViewList(nullptr), m_pViewDetails(nullptr),
-    m_lastMovedShowDirAction(nullptr), m_linkColor(Qt::blue)
+    m_pActNewPyFile(nullptr), m_pViewList(nullptr), m_pViewDetails(nullptr), m_lastMovedShowDirAction(nullptr),
+    m_linkColor(Qt::blue), m_historyStack(), m_forwardStack()
 {
     QAction* act = nullptr;
     QString actCheckedStr = "";
@@ -221,6 +220,14 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
 
     fillFilterList();
 
+    connect(
+        m_pTreeView,
+        &QTreeViewItom::QTreeViewItomMouseReleased,
+        this,
+        &FileSystemDockWidget::onMouseReleased);
+
+
+
 //    QObject::dumpObjectTree();
 
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
@@ -234,6 +241,9 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
     // therefore it is created as a member of the class.
     m_pFileSystemModel->setIconProvider(&m_fileIconProvider);
 #endif
+
+    m_historyStack.clear();
+    m_forwardStack.clear();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -478,7 +488,7 @@ void FileSystemDockWidget::updateActions()
     //shortcuts are always enabled, since the selection-changed signal of the tree-view does not call updateActions.
     if (m_pActMoveCDUp)
     {
-        QDir baseDir(baseDirectory);
+        QDir baseDir(m_baseDirectory);
         m_pActMoveCDUp->setEnabled(baseDir.exists() && baseDir.cdUp(), true);
     }
 
@@ -550,7 +560,7 @@ void FileSystemDockWidget::fillFilterList()
     settings.beginGroup("itomFileSystemDockWidget");
 
     QString savedFileFilter = settings.value("fileFilterString", "").toString();
-    defaultFilterPatterns.clear();
+    m_defaultFilterPatterns.clear();
     m_pCmbFilter->clear();
 
     int filterIndexToSelect = 0;
@@ -565,7 +575,7 @@ void FileSystemDockWidget::fillFilterList()
         if (match.hasMatch())
         {
             const QStringList suffixes = match.captured(1).split(" ");
-            defaultFilterPatterns[filter] << suffixes;
+            m_defaultFilterPatterns[filter] << suffixes;
         }
 
         if (!filterFound)
@@ -588,9 +598,9 @@ void FileSystemDockWidget::fillFilterList()
 //----------------------------------------------------------------------------------------------------------------------------------
 void FileSystemDockWidget::cmbFilterEditTextChanged(const QString &text)
 {
-    if (defaultFilterPatterns.contains(text))
+    if (m_defaultFilterPatterns.contains(text))
     {
-        this->m_pFileSystemModel->setNameFilters(defaultFilterPatterns[text]);
+        this->m_pFileSystemModel->setNameFilters(m_defaultFilterPatterns[text]);
     }
     else
     {
@@ -612,23 +622,45 @@ void FileSystemDockWidget::cmbFilterEditTextChanged(const QString &text)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal FileSystemDockWidget::changeBaseDirectory(QString dir)
+RetVal FileSystemDockWidget::changeBaseDirectory(QString dir, bool clearHistory /*=false*/, bool addToHistory /*=true*/)
 {
     QAction* act = nullptr;
 
-    QMutexLocker mutexLocker(&baseDirChangeMutex);
-    QDir newDir(dir);
+    QMutexLocker mutexLocker(&m_baseDirChangeMutex);
     RetVal retValue(retOk);
 
-    if (dir == baseDirectory)
+    if (dir == m_baseDirectory)
     {
         return retValue;
     }
 
-    if (newDir.exists())
+    if (QDir(dir).exists())
     {
-        baseDirectory = dir;
-        QDir::setCurrent(baseDirectory);
+        if (m_baseDirectory != dir && QFileInfo(m_baseDirectory).isDir() && addToHistory)
+        {
+            if (m_historyStack.isEmpty() || m_historyStack.top() != dir)
+            {
+                if (m_historyStack.size() >= m_maxHistorySize)
+                {
+                    m_historyStack.remove(0);
+                }
+                if (m_forwardStack.size() >= m_maxHistorySize)
+                {
+                    m_forwardStack.remove(0);
+                }
+                m_historyStack.push(m_baseDirectory);
+            }
+        }
+
+        m_baseDirectory = dir;
+        QDir::setCurrent(m_baseDirectory);
+
+
+        if (clearHistory)
+        {
+            m_historyStack.clear();
+            m_forwardStack.clear();
+        }
     }
     else
     {
@@ -652,12 +684,12 @@ RetVal FileSystemDockWidget::changeBaseDirectory(QString dir)
     }
     else
     {
-        m_pTreeView->setRootIndex(m_pFileSystemModel->index(baseDirectory)); //setCurrentIndex
+        m_pTreeView->setRootIndex(m_pFileSystemModel->index(m_baseDirectory)); //setCurrentIndex
 
         bool isInList = false;
         foreach (act, m_pShowDirListMenu->actions())
         {
-            if (act->data().toString() == baseDirectory)
+            if (act->data().toString() == m_baseDirectory)
             {
                 m_pShowDirListMenu->removeAction(act);
                 isInList = true;
@@ -667,19 +699,19 @@ RetVal FileSystemDockWidget::changeBaseDirectory(QString dir)
 
         if (!isInList)
         {
-            QDir baseDir(baseDirectory);
-            act = new QAction(baseDirectory, m_pShowDirListMenu);
-            act->setData(baseDirectory);
+            QDir baseDir(m_baseDirectory);
+            act = new QAction(m_baseDirectory, m_pShowDirListMenu);
+            act->setData(m_baseDirectory);
             act->setWhatsThis("");
             act->setIcon(QIcon(":/application/icons/empty.png"));
             act->setCheckable(false);
 
-            // if baseDirectory is directly given to the lambda function,
+            // if m_baseDirectory is directly given to the lambda function,
             // its current state when triggering the lambda function is used
             // instead of the value at the time when creating the signal-slot
             // connection. This is achieved by creating a local copy of this
             // variable.
-            QString baseDirectoryCopy = QString(baseDirectory);
+            QString baseDirectoryCopy = QString(m_baseDirectory);
 
             connect(act, &QAction::triggered, [=]() {
                 newDirSelected(baseDirectoryCopy);
@@ -712,12 +744,12 @@ RetVal FileSystemDockWidget::changeBaseDirectory(QString dir)
         m_pShowDirListMenu->actions()[x]->setText(QString::number(x+1) + " " + m_pShowDirListMenu->actions()[x]->data().toString());
     }
 
-    m_pPathEdit->setToolTip(baseDirectory);
-    m_pPathEdit->setHtml(getHtmlTag(baseDirectory));
+    m_pPathEdit->setToolTip(m_baseDirectory);
+    m_pPathEdit->setHtml(getHtmlTag(m_baseDirectory));
     //m_pPathEdit->scrollContentsBy(500,0);
 
     //m_pPathEdit->scrollToAnchor("last");
-//    m_pPathEdit->setText(baseDirectory);
+//    m_pPathEdit->setText(m_baseDirectory);
     //m_pPathEdit->textCursor().setPosition(40); //movePosition(QTextCursor::End);
     //m_pPathEdit->ensureCursorVisible();
 
@@ -736,7 +768,8 @@ RetVal FileSystemDockWidget::changeBaseDirectory(QString dir)
 //----------------------------------------------------------------------------------------------------------------------------------
 void FileSystemDockWidget::mnuSelectCD()
 {
-    QString newDirectory = QFileDialog::getExistingDirectory(this, tr("Select base directory"), baseDirectory);
+    QString newDirectory =
+        QFileDialog::getExistingDirectory(this, tr("Select base directory"), m_baseDirectory);
 
     if (!newDirectory.isEmpty() && !newDirectory.isNull())
     {
@@ -748,7 +781,7 @@ void FileSystemDockWidget::mnuSelectCD()
 //----------------------------------------------------------------------------------------------------------------------------------
 void FileSystemDockWidget::mnuMoveCDUp()
 {
-    QDir baseDir(baseDirectory);
+    QDir baseDir(m_baseDirectory);
 
     if (baseDir.exists() && baseDir.cdUp())
     {
@@ -760,7 +793,7 @@ void FileSystemDockWidget::mnuMoveCDUp()
 void FileSystemDockWidget::mnuCopyDir()
 {
     QClipboard *clipboard = QApplication::clipboard();
-    clipboard->setText(QDir::toNativeSeparators(baseDirectory));
+    clipboard->setText(QDir::toNativeSeparators(m_baseDirectory));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -864,9 +897,10 @@ void FileSystemDockWidget::newDirSelected(const QString& text)
 {
     RetVal retValue(retOk);
 
-    if (baseDirChangeMutex.tryLock(0))
+    if (m_baseDirChangeMutex.tryLock(0))
     {
-        baseDirChangeMutex.unlock();
+        m_baseDirChangeMutex.unlock();
+
         retValue += changeBaseDirectory(text);
         if (retValue.containsError())
         {
@@ -1340,6 +1374,45 @@ void FileSystemDockWidget::pathAnchorClicked(const QUrl &link)
             dir += "/";
         }
         newDirSelected(dir);
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void FileSystemDockWidget::onMouseReleased(QMouseEvent* e)
+{
+    if (e->button() == Qt::BackButton)
+    {
+        navigateBackward();
+    }
+    else if (e->button() == Qt::ForwardButton)
+    {
+        navigateForward();
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void FileSystemDockWidget::navigateBackward()
+{
+    if (m_historyStack.size() > 1)
+    {
+        m_forwardStack.push(m_historyStack.top());
+        if (!m_historyStack.isEmpty())
+        {
+            changeBaseDirectory(m_historyStack.pop(), false, false);
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void FileSystemDockWidget::navigateForward()
+{
+    if (!m_forwardStack.empty())
+    {
+        m_historyStack.push(m_forwardStack.top());
+        if (!m_forwardStack.isEmpty())
+        {
+            changeBaseDirectory(m_forwardStack.pop(), false, false);
+        }
     }
 }
 

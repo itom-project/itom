@@ -163,8 +163,14 @@ ScriptDockWidget::ScriptDockWidget(const QString &title, const QString &objName,
     m_classMenuBar->setMaximumHeight(20);
     m_pVBox->addWidget(m_classMenuBar, 1);
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     connect(m_classBox, &QComboBox::activated, this, &ScriptDockWidget::navigatorClassSelected);
     connect(m_methodBox, &QComboBox::activated, this, &ScriptDockWidget::navigatorMethodSelected);
+#else
+    // activated has overloads, a function-ptr based connect is therefore not possible with Qt5
+    connect(m_classBox, SIGNAL(activated(int)), this, SLOT(navigatorClassSelected(int)));
+    connect(m_methodBox, SIGNAL(activated(int)), this, SLOT(navigatorMethodSelected(int)));
+#endif
 
     // Add EditorTab
     m_pVBox->addWidget(m_tab);
