@@ -14,7 +14,7 @@ The file system toolbox gives you access to the file system of your harddrive.
 Below the toolbar, a breadcrumb menu allows seeing the current path, where a click to any parent folder changes the current path to that folder. The current path is also printed at the right
 side of |itom|'s statusbar and also corresponds to the current, active directory of python. The filter below the file system, contains file filters to all file formats that are recognized by |itom|,
 either by a direct way (Python files, itom data collection, ...) or by algorithms implemented in any algorithm plugins. However you can also type your own filters in order to filter the file system
-tree.
+tree. Mouse button backward and forward allow to navigate through the history of visited directories.
 
 The first combo box in the toolbar gives you access to the last ten current directories, that are also saved at termination of |itom| and are available at the next startup. The context menu of every item
 depends on the type of the item (file, folder, empty space in the tree). A right click on a python file for instance allows to open that file or to directly execute the script. The command **locate on disk**

@@ -18,7 +18,6 @@ seaborn
 sphinx
 sphinx_copybutton
 sphinx_gallery
-sphinxcontrib-fulltoc
 sphinxcontrib-jquery
 sphinxcontrib-moderncmakedomain
 sphinx-favicon
