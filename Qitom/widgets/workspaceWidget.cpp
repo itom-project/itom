@@ -237,34 +237,35 @@ QString WorkspaceWidget::getPythonReadableName(const QTreeWidgetItem* item) cons
         else
         {
             tempItem = item;
-            QString text = tempItem->text(0);
+            QString itemText;
 
             while (tempItem->parent() != nullptr)
             {
+                itemText = tempItem->text(0);
                 type = tempItem->data(0, RoleType).toByteArray();
 
                 if (type[0] == PY_DICT || type[0] == PY_MAPPING || type[0] == PY_LIST_TUPLE)
                 {
                     if (type[1] == PY_NUMBER)
                     {
-                        name.prepend("[" + text + "]");
+                        name.prepend("[" + itemText + "]");
                     }
                     else if (type[1] == PY_STRING)
                     {
-                        name.prepend("[\"" + text + "\"]");
+                        name.prepend("[\"" + itemText + "\"]");
                     }
                     else if (type[1] = PY_INDEX_STRING)
                     {
-                        name.prepend("." + text);
+                        name.prepend("." + itemText);
                     }
                     else
                     {
-                        name.prepend("[" + text + "]");
+                        name.prepend("[" + itemText + "]");
                     }
                 }
                 else if (type[0] == PY_ATTR)
                 {
-                    name.prepend("." + text);
+                    name.prepend("." + itemText);
                 }
 
                 tempItem = tempItem->parent();
