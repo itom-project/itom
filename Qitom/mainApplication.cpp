@@ -725,6 +725,13 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
             // and set the dark theme, if the lightness of this color is < 0.5.
             QColor bgColor = m_pSplashScreen->palette().window().color();
 
+            // sets the default palette of the application to the already loaded
+            // palette of the splash screen, which is for instance already a dark palette
+            // if for instance a dark qss style is loaded. This palette is then for instance
+            // called in the constructor of widgets, like plots, to automatically adjust their
+            // icon sets.
+            QGuiApplication::setPalette(m_pSplashScreen->palette());
+
             if (bgColor.toHsv().lightnessF() < 0.5)
             {
                 iconThemeFile = "iconThemeDark.rcc";
