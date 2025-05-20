@@ -31,6 +31,8 @@ def parse_parameters(instance):
             mandParamsString = ", ".join(
                 [d["name"] for d in paramtypedict["Mandatory Parameters"]]
             )
+        if len(mandParamsString) > 0:
+            mandParamsString = ", " + mandParamsString
         if "Optional Parameters" in paramtypedict.keys():
             optParamsString = (
                 " [,"
@@ -43,7 +45,7 @@ def parse_parameters(instance):
         item = (
             "\n.. py:function:: "
             + outParamsString
-            + " instance.exec('%s', " % (funcdictName)
+            + " instance.exec('%s'" % (funcdictName)
             + mandParamsString
             + optParamsString
             + ")\n\n"
