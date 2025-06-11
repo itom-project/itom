@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Copyright (C) 2025, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of itom.
@@ -32,6 +32,7 @@
 #include <qfiledialog.h>
 #include <qclipboard.h>
 #include <qfile.h>
+#include <qsortfilterproxymodel.h>
 
 #include "../global.h"
 #include "../AppManagement.h"
@@ -47,13 +48,14 @@ QString DialogPipManager::invisiblePwStr = "[invisible_password]";
 //--------------------------------------------------------------------------------
 DialogPipManager::DialogPipManager(QWidget *parent /*= NULL*/, bool standalone /*= false*/) :
     QDialog(parent),
-    m_pPipManager(NULL),
+    m_pPipManager(nullptr),
     m_lastLogEntry(-1),
     m_outputSilent(false),
     m_standalone(standalone),
     m_colorMessage(Qt::black),
     m_colorError(Qt::red),
-    m_currentTask(PipManager::taskNo)
+    m_currentTask(PipManager::taskNo),
+    m_pFilterProxyModel(nullptr)
 {
     setWindowFlags(windowFlags() | Qt::WindowMaximizeButtonHint);
 
@@ -71,6 +73,8 @@ DialogPipManager::DialogPipManager(QWidget *parent /*= NULL*/, bool standalone /
 
     if (!retval.containsError())
     {
+        m_pFilterProxyModel = new QSortFilterProxyModel(this);
+
         connect(m_pPipManager, &PipManager::pipVersion, this, &DialogPipManager::pipVersion);
         connect(m_pPipManager, &PipManager::outputAvailable, this, &DialogPipManager::outputReceived);
         connect(m_pPipManager, SIGNAL(pipRequestStarted(PipManager::Task, QString, bool)), this, SLOT(pipRequestStarted(PipManager::Task, QString, bool)));
@@ -78,10 +82,14 @@ DialogPipManager::DialogPipManager(QWidget *parent /*= NULL*/, bool standalone /
         connect(ui.tablePackages, SIGNAL(selectedItemsChanged(QItemSelection, QItemSelection)), this, SLOT(treeViewSelectionChanged(QItemSelection, QItemSelection)));
         connect(ui.tablePackages, SIGNAL(customContextMenuRequested(QPoint)),this, SLOT(tableCustomContextMenuRequested(QPoint)));
         connect(m_pPipManager, &PipManager::pipFetchDetailsProgress, this, &DialogPipManager::pipFetchDetailsProgress);
+        connect(ui.txtFilter, &SearchBox::textEdited, this, &DialogPipManager::packageNameFilterChanged);
 
         m_pPipManager->checkPipAvailable(createOptions());
+        m_pFilterProxyModel->setSourceModel(m_pPipManager);
+        m_pFilterProxyModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
+        m_pFilterProxyModel->setFilterKeyColumn(0); // filter package name
 
-        ui.tablePackages->setModel(m_pPipManager);
+        ui.tablePackages->setModel(m_pFilterProxyModel);
         ui.tablePackages->setWordWrap(false);
         ui.tablePackages->setShowGrid(false);
         ui.tablePackages->horizontalHeader()->setStretchLastSection(true);
@@ -170,6 +178,7 @@ DialogPipManager::~DialogPipManager()
     settings.endGroup();
 
     DELETE_AND_SET_NULL(m_pPipManager);
+    DELETE_AND_SET_NULL(m_pFilterProxyModel);
 }
 
 //--------------------------------------------------------------------------------
@@ -189,6 +198,12 @@ void DialogPipManager::setColorError(const QColor &color)
 }
 
 //--------------------------------------------------------------------------------
+void DialogPipManager::packageNameFilterChanged(const QString& text)
+{
+    m_pFilterProxyModel->setFilterWildcard(QString("*%1*").arg(text));
+}
+
+//--------------------------------------------------------------------------------
 PipGeneralOptions DialogPipManager::createOptions() const
 {
     PipGeneralOptions pgo;
@@ -201,6 +216,7 @@ PipGeneralOptions DialogPipManager::createOptions() const
     QStringList trustedHosts = ui.txtTrustedHosts->text().split(";");
     pgo.trustedHosts.clear();
     QString temp;
+
     foreach(const QString &th, trustedHosts)
     {
         temp = th.trimmed();
@@ -216,6 +232,7 @@ PipGeneralOptions DialogPipManager::createOptions() const
             }
         }
     }
+
     return pgo;
 }
 
@@ -332,8 +349,8 @@ void DialogPipManager::pipRequestFinished(const PipManager::Task &task, const QS
     else if (task == PipManager::taskCheckUpdates && success)
     {
         QModelIndex mi = ui.tablePackages->currentIndex();
-        QItemSelection ItemSelection(mi, mi);
-        treeViewSelectionChanged(ItemSelection, ItemSelection);
+        QItemSelection selectedItems(mi, mi);
+        treeViewSelectionChanged(selectedItems, selectedItems);
     }
 }
 
@@ -403,7 +420,7 @@ void DialogPipManager::on_btnUpdate_clicked()
 //---------------------------------------------------------------------------------
 void DialogPipManager::installOrUpdatePackage(bool update /*=false*/)
 {
-    const QModelIndex &mi = ui.tablePackages->currentIndex();
+    const QModelIndex &mi = m_pFilterProxyModel->mapToSource(ui.tablePackages->currentIndex());
 
     QString package = ""; //pre-defined package
 
@@ -485,7 +502,7 @@ It is also possible to directly start the package manager by calling the itom ap
 //---------------------------------------------------------------------------------
 void DialogPipManager::on_btnUninstall_clicked()
 {
-    QModelIndex mi = ui.tablePackages->currentIndex();
+    QModelIndex mi = m_pFilterProxyModel->mapToSource(ui.tablePackages->currentIndex());
 
     if (mi.isValid())
     {
@@ -517,7 +534,8 @@ void DialogPipManager::on_btnUninstall_clicked()
 //---------------------------------------------------------------------------------
 void DialogPipManager::on_btnSudoUninstall_clicked()
 {
-    QModelIndex mi = ui.tablePackages->currentIndex();
+    QModelIndex mi = m_pFilterProxyModel->mapToSource(ui.tablePackages->currentIndex());
+
     if (mi.isValid())
     {
         QString packageName = m_pPipManager->data(m_pPipManager->index(mi.row(), 0), Qt::DisplayRole).toString();
@@ -546,7 +564,7 @@ void DialogPipManager::on_btnSudoUninstall_clicked()
 }
 
 //---------------------------------------------------------------------------------
-void DialogPipManager::treeViewSelectionChanged(const QItemSelection & selected, const QItemSelection & deselected)
+void DialogPipManager::treeViewSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected)
 {
     bool updateAvailable = false;
 
@@ -563,8 +581,6 @@ void DialogPipManager::treeViewSelectionChanged(const QItemSelection & selected,
 //---------------------------------------------------------------------------------
 void DialogPipManager::tableCustomContextMenuRequested(const QPoint &pos)
 {
-    QModelIndex index = ui.tablePackages->indexAt(pos);
-
     QMenu *menu = new QMenu(this);
     QAction *copyToClipboard = menu->addAction(QIcon(":/files/icons/clipboard.png"), tr("Export table to clipboard"));
     connect(copyToClipboard, SIGNAL(triggered()), this, SLOT(exportTableToClipboard()));
@@ -612,6 +628,7 @@ QString DialogPipManager::exportPackageTableToString() const
 {
     QStringList output;
     QStringList strList;
+
     for (int i = 0; i < m_pPipManager->columnCount(); i++)
     {
         if (m_pPipManager->headerData(i, Qt::Horizontal, Qt::DisplayRole).toString().length() > 0)
@@ -624,11 +641,12 @@ QString DialogPipManager::exportPackageTableToString() const
         }
     }
 
-
     output << strList.join(";") << "\n";
+
     for (int i = 0; i < m_pPipManager->rowCount(); i++)
     {
         strList.clear();
+
         for (int j = 0; j < m_pPipManager->columnCount(); j++) {
 
             if (m_pPipManager->data(m_pPipManager->index(i, j), Qt::DisplayRole).toString().length() > 0)
@@ -640,6 +658,7 @@ QString DialogPipManager::exportPackageTableToString() const
                 strList.append("");
             }
         }
+
         output << strList.join(";") + "\n";
     }
 
