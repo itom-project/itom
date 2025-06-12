@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>902</width>
-    <height>683</height>
+    <width>1075</width>
+    <height>760</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -21,7 +21,24 @@
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout_3">
       <item>
-       <widget class="ito::QTableViewItom" name="tablePackages"/>
+       <layout class="QVBoxLayout" name="verticalLayout_4">
+        <item>
+         <widget class="SearchBox" name="txtFilter">
+          <property name="placeholderText">
+           <string>Filter Package Name...</string>
+          </property>
+          <property name="clearButtonEnabled">
+           <bool>true</bool>
+          </property>
+          <property name="showSearchIcon">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="ito::QTableViewItom" name="tablePackages"/>
+        </item>
+       </layout>
       </item>
       <item>
        <layout class="QVBoxLayout" name="verticalLayout">
@@ -335,6 +352,11 @@ li.checked::marker { content: &quot;\2612&quot;; }
    <extends>QGroupBox</extends>
    <header>collapsibleGroupBox.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>SearchBox</class>
+   <extends>QLineEdit</extends>
+   <header>searchBox.h</header>
   </customwidget>
   <customwidget>
    <class>ito::QTableViewItom</class>
