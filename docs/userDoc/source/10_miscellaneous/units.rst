@@ -14,5 +14,5 @@ General
 
 Physical Units
 ===============
-* Physical Base Units have to be in [mm; s; kg]
+* Physical Base Units have to be in [mm; s; degree]
 * Electrical Base Units have to be in [V; A; W]
