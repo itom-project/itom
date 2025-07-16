@@ -698,6 +698,31 @@ bool ConsoleWidget::keyPressInternalEvent(QKeyEvent *event)
                     acceptEvent = false;
                     forwardEvent = false;
                 }
+                else if ((modifiers & Qt::ControlModifier) && lineFrom == m_startLineBeginCmd)
+                {
+                    // do not forward Ctrl+Backspace in the first line, since this will sometimes also
+                    // remove the >>-signs, if they are considered to be part of the word.
+                    QTextCursor cursor = textCursor();
+                    cursor.beginEditBlock();
+                    int i = cursor.position();
+                    cursor.movePosition(QTextCursor::WordLeft, QTextCursor::KeepAnchor);
+                    int j = cursor.position();
+                    int posInBlock = cursor.positionInBlock();
+
+                    if (posInBlock < newCommandPrefix.size())
+                    {
+                        cursor.movePosition(
+                            QTextCursor::NextCharacter,
+                            QTextCursor::KeepAnchor,
+                            newCommandPrefix.size() - posInBlock);
+                    }
+
+                    cursor.removeSelectedText();
+                    cursor.endEditBlock();
+
+                    acceptEvent = true;
+                    forwardEvent = false;
+                }
                 else
                 {
                     acceptEvent = true;
@@ -876,7 +901,7 @@ bool ConsoleWidget::keyPressInternalEvent(QKeyEvent *event)
         if (acceptEvent && forwardEvent)
         {
             event->ignore();
-            //AbstractCodeEditorWidget::keyPressEvent(event);
+            //AbstractCodeEditorWidget::(event);
         }
         else if (!acceptEvent)
         {
