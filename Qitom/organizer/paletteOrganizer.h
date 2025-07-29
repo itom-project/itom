@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Copyright (C) 2025, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of itom.
@@ -20,8 +20,7 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef PALETTEORGANIZER_H
-#define PALETTEORGANIZER_H
+#pragma once
 
 #include "../../common/sharedStructures.h"
 #include "../../common/sharedStructuresQt.h"
@@ -155,4 +154,3 @@ class PaletteOrganizer : public QObject
         ito::RetVal getColorBarListThreaded(QSharedPointer<QStringList> palettes, ItomSharedSemaphore *waitCond = NULL);
 };
 } //namespace ito
-#endif
