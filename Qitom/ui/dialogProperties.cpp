@@ -82,8 +82,8 @@ DialogProperties::DialogProperties(QWidget* parent, Qt::WindowFlags f) :
         this, SLOT(categoryChanged(QTreeWidgetItem*, QTreeWidgetItem*)));
 
     m_pButtonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel | QDialogButtonBox::Apply , Qt::Horizontal);
-    connect(m_pButtonBox, SIGNAL(accepted()), this, SLOT(accepted()));
-    connect(m_pButtonBox, SIGNAL(rejected()), this, SLOT(rejected()));
+    connect(m_pButtonBox, &QDialogButtonBox::accepted, this, &DialogProperties::accepted);
+    connect(m_pButtonBox, &QDialogButtonBox::rejected, this, &DialogProperties::rejected);
     connect(m_pButtonBox->button(QDialogButtonBox::Apply), SIGNAL(clicked()), this, SLOT(apply()));
 
     m_pLine = new QFrame();
@@ -120,7 +120,7 @@ DialogProperties::DialogProperties(QWidget* parent, Qt::WindowFlags f) :
 
     initPages();
 
-	resize(950 * screenFactorDpi, 450 * screenFactorDpi);
+	//resize(950 * screenFactorDpi, 450 * screenFactorDpi);
 
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("DialogProperties");
@@ -145,6 +145,26 @@ DialogProperties::~DialogProperties()
         {
             delete page.m_widget;
         }
+    }
+}
+
+//---------------------------------------------------------------------------
+void DialogProperties::showEvent(QShowEvent* event)
+{
+    QWidget* p = qobject_cast<QWidget*>(parent());
+
+    if (p)
+    {
+        // Get parent window geometry
+        QRect parentRect = p->geometry();
+        QRect aa = geometry();
+
+        // Calculate center position
+        int x = parentRect.x() + (parentRect.width() - width()) / 2;
+        int y = parentRect.y() + (parentRect.height() - height()) / 2;
+
+        // Set dialog position
+        move(std::max(0, x), std::max(0, y));
     }
 }
 
