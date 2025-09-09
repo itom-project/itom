@@ -153,8 +153,6 @@ void CodeCellHighlighterMode::outlineModelChanged(ScriptEditorWidget* /*sew*/, Q
 {
     // code cell headlines
     QList<int> confirmedIndices;
-    int startLineIdx;
-    bool found;
 
     if (!rootItem)
     {

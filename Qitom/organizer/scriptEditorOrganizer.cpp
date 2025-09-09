@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Copyright (C) 2025, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of itom.
@@ -80,7 +80,7 @@ ScriptEditorOrganizer::ScriptEditorOrganizer(bool dockAvailable) :
     m_goBackNavigationIndex(-1),
     m_dockedNewWidget(true)
 {
-    widgetFocusChanged(NULL, NULL); //sets active ScriptDockWidget to NULL
+    widgetFocusChanged(nullptr, nullptr); //sets active ScriptDockWidget to NULL
 
     m_scriptStackMutex.lock();
     m_scriptDockElements.clear();
@@ -204,6 +204,21 @@ void ScriptEditorOrganizer::saveScriptState()
     settings.endGroup();
 }
 
+//----------------------------------------------------------------------------
+void ScriptEditorOrganizer::scriptZoomFactorChanged(int zoomFactor)
+{
+    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+
+    settings.beginGroup("CodeEditor");
+    settings.setValue("zoomFactor", zoomFactor);
+    settings.endGroup();
+
+    foreach(auto scriptDockWidget, m_scriptDockElements)
+    {
+        scriptDockWidget->setScriptZoomFactor(zoomFactor);
+    }
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------
 //! This function is called to get all the saved information about widgets after itom starts
 /*!
@@ -212,6 +227,7 @@ RetVal ScriptEditorOrganizer::restoreScriptState()
 {
     RetVal retval;
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+
     settings.beginGroup("ScriptEditorOrganizer");
     m_dockedNewWidget = settings.value("scriptEditorDocked", "false").toBool();
 
@@ -392,6 +408,7 @@ ScriptDockWidget* ScriptEditorOrganizer::createEmptyScriptDock(bool docked, Qt::
                                     nullptr /*mainWin*/); //parent will be set later by addScriptDockWidgetToMainWindow signal
 
     connect(newWidget, SIGNAL(addGoBackNavigationItem(GoBackNavigationItem)), this, SLOT(onAddGoBackNavigationItem(GoBackNavigationItem)));
+    connect(newWidget, &ScriptDockWidget::scriptZoomFactorChanged, this, &ScriptEditorOrganizer::scriptZoomFactorChanged);
 
     if (objectName.isNull() || m_usedObjectNames.contains(objectName))
     {

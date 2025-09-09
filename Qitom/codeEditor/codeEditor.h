@@ -143,8 +143,8 @@ public:
     int fontSize() const;
     void setFontSize(int fontSize);
 
-    int zoomLevel() const;
-    void setZoomLevel(int value);
+    int zoomFactor() const;
+    void setZoomFactor(int zoomFactor);
 
     int tabLength() const;
     void setTabLength(int value);
@@ -379,6 +379,9 @@ protected:
     void setWhitespacesFlags(bool show);
     void updateTabStopAndIndentationWidth();
 
+    bool enableZoomLevelByMouseWheel() const;
+    void setEnableZoomLevelByMouseWheel(bool enable);
+
     void updateVisibleBlocks();
 
     void doHomeKey(QEvent* event = NULL, bool select = false);
@@ -440,7 +443,8 @@ private:
     QColor m_foreground;
     bool m_showWhitespaces;
     int m_tabLength;
-    int m_zoomLevel;
+    int m_zoomFactor;
+    bool m_enableZoomLevelByMouseWheel;
     int m_fontSize;
     QString m_fontFamily;
     bool m_selectLineOnCopyEmpty;
@@ -500,6 +504,8 @@ signals:
     void updateActions();
 
     void newTextSet(); //!< Signal emitted when a new text is set on the widget
+
+    void zoomFactorChanged(int zoomFactor);
 };
 
 } // end namespace ito

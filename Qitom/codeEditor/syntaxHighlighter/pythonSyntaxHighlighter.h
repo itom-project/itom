@@ -99,7 +99,6 @@ private:
     static QRegularExpression regExpOeComment; //comments suitable for outline explorer
 
     QTextCharFormat getFormatFromStyle(StyleItem::StyleType token) const;
-    const QTextCharFormat getTextCharFormat(const QString &colorName, const QString &style = QString());
 
     static QList<NamedRegExp> makePythonPatterns(const QStringList &additionalKeywords = QStringList(), const QStringList &additionalBuiltins = QStringList());
 };

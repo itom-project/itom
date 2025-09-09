@@ -67,6 +67,8 @@ public:
 
     void setFoldDetector(QSharedPointer<FoldDetector> foldDetector);
 
+    void setZoomFactor(int zoomFactor);
+
     virtual void onStateChanged(bool state);
     virtual void onInstall(CodeEditor *editor);
 

@@ -61,6 +61,8 @@ void WidgetPropEditorGeneral::readSettings()
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("CodeEditor");
 
+    ui.spinZoom->setValue(settings.value("zoomFactor", 100).toInt());
+
     // EOL-Mode
     QString eolMode = settings.value("eolMode", "EolUnix").toString();
     ui.radioEOL1->setChecked(eolMode == "EolWindows");
@@ -114,6 +116,8 @@ void WidgetPropEditorGeneral::writeSettings()
 
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("CodeEditor");
+
+    settings.setValue("zoomFactor", ui.spinZoom->value());
 
     // EOL-Mode
     if (ui.radioEOL1->isChecked())

@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Copyright (C) 2025, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of itom.
@@ -20,8 +20,7 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef SCRIPTDOCKWIDGET_H
-#define SCRIPTDOCKWIDGET_H
+#pragma once
 
 #include "abstractDockWidget.h"
 #include "itomQWidgets.h"
@@ -73,6 +72,8 @@ public:
     QStringList getModifiedFilenames(bool ignoreNewScripts = false, int excludeIndex = -1) const;
     QStringList getAllFilenames() const;
     void getAllCanonicalFilenamesWithModificationState(QStringList &filenames, QList<bool> &modified) const;
+
+    void setScriptZoomFactor(int zoomFactor) const;
 
     RetVal newScript();
     RetVal openScript();
@@ -241,6 +242,7 @@ private:
     QComboBox* m_classBox;
     QComboBox* m_methodBox;
     bool m_outlineShowNavigation;
+
     void fillNavigationClassComboBox(
         const QSharedPointer<OutlineItem>& parent, const QString& prefix);
     void fillNavigationMethodComboBox(
@@ -294,8 +296,12 @@ signals:
         int line,
         int column);
 
+    void scriptZoomFactorChanged(int zoomFactor);
+
 private slots:
     void tabContextMenuEvent(QContextMenuEvent* event);
+
+    void scriptEditorZoomFactorChanged(int zoomFactor) { emit scriptZoomFactorChanged(zoomFactor); }
 
     void findTextExpr(
         QString expr,
@@ -391,5 +397,3 @@ public slots:
 };
 
 } // end namespace ito
-
-#endif

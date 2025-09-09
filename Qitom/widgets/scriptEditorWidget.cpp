@@ -276,6 +276,8 @@ ScriptEditorWidget::ScriptEditorWidget(
 
     // update the outline
     outlineTimerElapsed();
+
+    setEnableZoomLevelByMouseWheel(true);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

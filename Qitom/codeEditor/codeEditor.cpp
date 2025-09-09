@@ -58,15 +58,16 @@
 
 namespace ito {
 
-CodeEditor::CodeEditor(QWidget* parent /*= NULL*/, bool createDefaultActions /*= true*/) :
+CodeEditor::CodeEditor(QWidget* parent /*= nullptr*/, bool createDefaultActions /*= true*/) :
     QPlainTextEdit(parent), m_showCtxMenu(true), m_defaultFontSize(10),
-    m_useSpacesInsteadOfTabs(true), m_showWhitespaces(false), m_tabLength(0), m_zoomLevel(0),
+    m_useSpacesInsteadOfTabs(true), m_showWhitespaces(false), m_tabLength(0), m_zoomFactor(100),
     m_fontSize(10), m_fontFamily("Verdana"), m_selectLineOnCopyEmpty(true),
-    m_wordSeparators("~!@#$%^&*()+{}|:\"'<>?,./;[]\\\n\t=- "), m_pPanels(NULL),
-    m_pDecorations(NULL), m_pModes(NULL), m_lastMousePos(QPoint(0, 0)), m_prevTooltipBlockNbr(-1),
-    m_pTooltipsRunner(NULL), m_edgeMode(EdgeNone), m_edgeColumn(88), m_edgeColor(Qt::darkGray),
+    m_wordSeparators("~!@#$%^&*()+{}|:\"'<>?,./;[]\\\n\t=- "), m_pPanels(nullptr),
+    m_pDecorations(nullptr), m_pModes(nullptr), m_lastMousePos(QPoint(0, 0)), m_prevTooltipBlockNbr(-1),
+    m_pTooltipsRunner(nullptr), m_edgeMode(EdgeNone), m_edgeColumn(88), m_edgeColor(Qt::darkGray),
     m_showIndentationGuides(true), m_indentationGuidesColor(Qt::darkGray), m_redoAvailable(false),
-    m_undoAvailable(false), m_pContextMenu(NULL), m_minLineJumpsForGoBackNavigationReport(11)
+    m_undoAvailable(false), m_pContextMenu(nullptr), m_minLineJumpsForGoBackNavigationReport(11),
+    m_enableZoomLevelByMouseWheel(false)
 {
     installEventFilter(this);
     connect(document(), SIGNAL(modificationChanged(bool)), this, SLOT(emitDirtyChanged(bool)));
@@ -87,9 +88,7 @@ CodeEditor::CodeEditor(QWidget* parent /*= NULL*/, bool createDefaultActions /*=
     m_pPanels = new PanelsManager(this);
     m_pDecorations = new TextDecorationsManager(this);
     m_pModes = new ModesManager(this);
-
     m_pTooltipsRunner = new DelayJobRunner<CodeEditor, void (CodeEditor::*)(QList<QVariant>)>(700);
-
     m_pContextMenu = new QMenu(this);
 
     initStyle();
@@ -193,6 +192,18 @@ void CodeEditor::setUseSpacesInsteadOfTabs(bool value)
 {
     m_useSpacesInsteadOfTabs = value;
     updateTabStopAndIndentationWidth();
+}
+
+//-----------------------------------------------------------
+bool CodeEditor::enableZoomLevelByMouseWheel() const
+{
+    return m_enableZoomLevelByMouseWheel;
+}
+
+//-----------------------------------------------------------
+void CodeEditor::setEnableZoomLevelByMouseWheel(bool enable)
+{
+    m_enableZoomLevelByMouseWheel = enable;
 }
 
 //-----------------------------------------------------------
@@ -423,14 +434,30 @@ void CodeEditor::setFontSize(int fontSize)
 }
 
 //-----------------------------------------------------------
-int CodeEditor::zoomLevel() const
+int CodeEditor::zoomFactor() const
 {
-    return m_zoomLevel;
+    return m_zoomFactor;
 }
 
-void CodeEditor::setZoomLevel(int value)
+//-----------------------------------------------------------
+void CodeEditor::setZoomFactor(int zoomFactor)
 {
-    m_zoomLevel = value;
+    if (zoomFactor != m_zoomFactor)
+    {
+        m_zoomFactor = zoomFactor;
+
+        auto sh = syntaxHighlighter();
+
+        if (sh)
+        {
+            sh->setZoomFactor(zoomFactor);
+        }
+
+        resetStylesheet();
+        rehighlightBlock(0, lineCount() - 1);
+
+        emit zoomFactorChanged(m_zoomFactor);
+    }
 }
 
 //-----------------------------------------------------------
@@ -1241,20 +1268,50 @@ int CodeEditor::lineIndent(const QTextBlock* lineNbr) const
 //-------------------------------------------------------------
 /*virtual*/ bool CodeEditor::eventFilter(QObject* obj, QEvent* e)
 {
-    if ((obj == this) && (e->type() == QEvent::KeyPress))
+    if (obj == this)
     {
-        QKeyEvent* ke = dynamic_cast<QKeyEvent*>(e);
-        if (ke->matches(QKeySequence::Cut))
+        switch (e->type())
         {
-            cut();
-            return true;
+        case QEvent::KeyPress:
+        {
+            QKeyEvent* ke = dynamic_cast<QKeyEvent*>(e);
+            if (ke->matches(QKeySequence::Cut))
+            {
+                cut();
+                return true;
+            }
+            else if (ke->matches(QKeySequence::Copy))
+            {
+                copy();
+                return true;
+            }
+            else if (m_enableZoomLevelByMouseWheel && ke->key() == Qt::Key_0 && ke->modifiers() & Qt::ControlModifier)
+            {
+                setZoomFactor(100);
+            }
         }
-        else if (ke->matches(QKeySequence::Copy))
+            break;
+
+        case QEvent::Wheel:
         {
-            copy();
-            return true;
+            QWheelEvent* we = dynamic_cast<QWheelEvent*>(e);
+
+            if (m_enableZoomLevelByMouseWheel && (we->modifiers() & Qt::ControlModifier))
+            {
+                const QPoint delta = we->angleDelta();
+                const int wheelDelta = (qAbs(delta.x()) > qAbs(delta.y()))
+                    ? delta.x() : delta.y();
+
+                setZoomFactor(zoomFactor() + wheelDelta);
+            }
+        }
+            break;
+
+        default:
+            break;
         }
     }
+
     return false;
 }
 
@@ -1597,7 +1654,7 @@ Resets stylesheet
 */
 void CodeEditor::resetStylesheet()
 {
-    setFont(QFont(m_fontFamily, m_fontSize + m_zoomLevel));
+    setFont(QFont(m_fontFamily, qRound(m_fontSize * (float)m_zoomFactor / 100.0)));
 
     bool flg_stylesheet = property("flg_stylesheet").isValid();
     if (qApp->styleSheet() != "" || flg_stylesheet)
