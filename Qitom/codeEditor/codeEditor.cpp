@@ -456,8 +456,8 @@ void CodeEditor::applyZoomFactorChange()
         sh->setZoomFactor(m_zoomFactor);
     }
 
-    resetStylesheet(true);
     rehighlightBlock(0, lineCount() - 1);
+    resetStylesheet(true);
 }
 
 //-----------------------------------------------------------
