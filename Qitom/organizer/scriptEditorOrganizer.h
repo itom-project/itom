@@ -167,6 +167,8 @@ public slots:
     void navigateForward();
     void navigateBackward();
 
+    void scriptZoomFactorChanged(int zoomFactor);
+
 private slots:
     void widgetFocusChanged(QWidget* old, QWidget* now);
 
@@ -175,8 +177,6 @@ private slots:
 
     // Action slots
     void mnuNavigateBackwardItem(int index);
-
-    void scriptZoomFactorChanged(int zoomFactor);
 };
 
 } // end namespace ito

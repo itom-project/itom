@@ -45,6 +45,7 @@
 #include <qpainter.h>
 #include <qtextdocument.h>
 #include <qtooltip.h>
+#include <qtimer.h>
 
 #include "delayJobRunner.h"
 #include "managers/modesManager.h"
@@ -67,7 +68,7 @@ CodeEditor::CodeEditor(QWidget* parent /*= nullptr*/, bool createDefaultActions 
     m_pTooltipsRunner(nullptr), m_edgeMode(EdgeNone), m_edgeColumn(88), m_edgeColor(Qt::darkGray),
     m_showIndentationGuides(true), m_indentationGuidesColor(Qt::darkGray), m_redoAvailable(false),
     m_undoAvailable(false), m_pContextMenu(nullptr), m_minLineJumpsForGoBackNavigationReport(11),
-    m_enableZoomLevelByMouseWheel(false)
+    m_enableZoomLevelByMouseWheel(false), m_pZoomFactorChangedTimer(nullptr)
 {
     installEventFilter(this);
     connect(document(), SIGNAL(modificationChanged(bool)), this, SLOT(emitDirtyChanged(bool)));
@@ -90,6 +91,12 @@ CodeEditor::CodeEditor(QWidget* parent /*= nullptr*/, bool createDefaultActions 
     m_pModes = new ModesManager(this);
     m_pTooltipsRunner = new DelayJobRunner<CodeEditor, void (CodeEditor::*)(QList<QVariant>)>(700);
     m_pContextMenu = new QMenu(this);
+
+    m_pZoomFactorChangedTimer = new QTimer(this);
+    m_pZoomFactorChangedTimer->setSingleShot(true);
+    m_pZoomFactorChangedTimer->setInterval(100);
+    m_pZoomFactorChangedTimer->stop();
+    connect(m_pZoomFactorChangedTimer, &QTimer::timeout, this, &CodeEditor::applyZoomFactorChange);
 
     initStyle();
     resetStylesheet();
@@ -440,22 +447,32 @@ int CodeEditor::zoomFactor() const
 }
 
 //-----------------------------------------------------------
+void CodeEditor::applyZoomFactorChange()
+{
+    auto sh = syntaxHighlighter();
+
+    if (sh)
+    {
+        sh->setZoomFactor(m_zoomFactor);
+    }
+
+    resetStylesheet(true);
+    rehighlightBlock(0, lineCount() - 1);
+}
+
+//-----------------------------------------------------------
 void CodeEditor::setZoomFactor(int zoomFactor)
 {
+    // clip the zoom factor between 50 and 400%.
+    zoomFactor = qBound(50, zoomFactor, 400);
+
     if (zoomFactor != m_zoomFactor)
     {
         m_zoomFactor = zoomFactor;
+        m_pZoomFactorChangedTimer->start();
 
-        auto sh = syntaxHighlighter();
-
-        if (sh)
-        {
-            sh->setZoomFactor(zoomFactor);
-        }
-
-        resetStylesheet();
-        rehighlightBlock(0, lineCount() - 1);
-
+        // inform the script editor organizer about changes
+        // such that other scripts will also be updated.
         emit zoomFactorChanged(m_zoomFactor);
     }
 }
@@ -938,6 +955,19 @@ void CodeEditor::wheelEvent(QWheelEvent* e)
     bool initialState = e->isAccepted();
     e->ignore();
     emit mouseWheelActivated(e);
+
+    // handle a zoom in/out of the script
+    if (m_enableZoomLevelByMouseWheel && (e->modifiers() & Qt::ControlModifier))
+    {
+        const QPoint delta = e->angleDelta();
+        int wheelDelta = (qAbs(delta.x()) > qAbs(delta.y())) ? delta.x() : delta.y();
+
+        // 15° mouse wheel rotation should be 10% zoom change
+        wheelDelta = wheelDelta / 8;
+        setZoomFactor(zoomFactor() + wheelDelta);
+        e->accept();
+    }
+
     if (!e->isAccepted())
     {
         e->setAccepted(initialState);
@@ -1292,20 +1322,26 @@ int CodeEditor::lineIndent(const QTextBlock* lineNbr) const
         }
             break;
 
-        case QEvent::Wheel:
-        {
-            QWheelEvent* we = dynamic_cast<QWheelEvent*>(e);
+        //case QEvent::Wheel:
+        //{
+        //    QWheelEvent* we = dynamic_cast<QWheelEvent*>(e);
 
-            if (m_enableZoomLevelByMouseWheel && (we->modifiers() & Qt::ControlModifier))
-            {
-                const QPoint delta = we->angleDelta();
-                const int wheelDelta = (qAbs(delta.x()) > qAbs(delta.y()))
-                    ? delta.x() : delta.y();
+        //    if (m_enableZoomLevelByMouseWheel && (we->modifiers() & Qt::ControlModifier))
+        //    {
+        //        const QPoint delta = we->angleDelta();
+        //        const int wheelDelta = (qAbs(delta.x()) > qAbs(delta.y()))
+        //            ? delta.x() : delta.y();
 
-                setZoomFactor(zoomFactor() + wheelDelta);
-            }
-        }
-            break;
+        //        // 15° mouse wheel rotation should be 10% zoom change
+        //        std::cout << "wheel delta: " << wheelDelta << ", angle delta: " << delta.x() << "/" << delta.y()
+        //                  << ", new factor: " << (zoomFactor() + wheelDelta)
+        //                  << "\n"
+        //                  << std::endl;
+
+        //        setZoomFactor(zoomFactor() + wheelDelta);
+        //    }
+        //}
+        //    break;
 
         default:
             break;
@@ -1652,54 +1688,58 @@ bool CodeEditor::findNext()
 /*
 Resets stylesheet
 */
-void CodeEditor::resetStylesheet()
+void CodeEditor::resetStylesheet(bool fontSizeOnly /*= false*/)
 {
     setFont(QFont(m_fontFamily, qRound(m_fontSize * (float)m_zoomFactor / 100.0)));
 
-    bool flg_stylesheet = property("flg_stylesheet").isValid();
-    if (qApp->styleSheet() != "" || flg_stylesheet)
+    if (!fontSizeOnly)
     {
-        setProperty("flg_stylesheet", true);
-        /*On Window, if the application once had a stylesheet, we must
-        keep on using a stylesheet otherwise strange colors appear
-        see https://github.com/OpenCobolIDE/OpenCobolIDE/issues/65
-        Also happen on plasma 5*/
-        QByteArray ds = qgetenv("DESKTOP_SESSION");
-        if (ds.isEmpty() == false && ds == "plasma")
+        bool flg_stylesheet = property("flg_stylesheet").isValid();
+        if (qApp->styleSheet() != "" || flg_stylesheet)
         {
-            setStyleSheet(QString("QPlainTextEdit \
+            setProperty("flg_stylesheet", true);
+            /*On Window, if the application once had a stylesheet, we must
+            keep on using a stylesheet otherwise strange colors appear
+            see https://github.com/OpenCobolIDE/OpenCobolIDE/issues/65
+            Also happen on plasma 5*/
+            QByteArray ds = qgetenv("DESKTOP_SESSION");
+            if (ds.isEmpty() == false && ds == "plasma")
+            {
+                setStyleSheet(QString("QPlainTextEdit \
             { \
                 background-color: %1; \
                 color: %2; \
             }")
-                              .arg(m_background.name(), m_foreground.name()));
+                                  .arg(m_background.name(), m_foreground.name()));
+            }
+            else
+            {
+#if WIN32
+                setStyleSheet(QString("QPlainTextEdit \
+            { \
+                background-color: %1; \
+                color: %2; \
+            }")
+                                  .arg(m_background.name(), m_foreground.name()));
+#else
+                /*on linux/osx we just have to set an empty stylesheet to
+                cancel any previous stylesheet and still keep a correct
+                style for scrollbars*/
+                setStyleSheet("");
+#endif
+            }
         }
         else
         {
-#if WIN32
-            setStyleSheet(QString("QPlainTextEdit \
-            { \
-                background-color: %1; \
-                color: %2; \
-            }")
-                              .arg(m_background.name(), m_foreground.name()));
-#else
-            /*on linux/osx we just have to set an empty stylesheet to
-            cancel any previous stylesheet and still keep a correct
-            style for scrollbars*/
-            setStyleSheet("");
-#endif
+            QPalette p = palette();
+            p.setColor(QPalette::Base, m_background);
+            p.setColor(QPalette::Text, m_foreground);
+            p.setColor(QPalette::Highlight, m_selBackground);
+            p.setColor(QPalette::HighlightedText, m_selForeground);
+            setPalette(p);
         }
     }
-    else
-    {
-        QPalette p = palette();
-        p.setColor(QPalette::Base, m_background);
-        p.setColor(QPalette::Text, m_foreground);
-        p.setColor(QPalette::Highlight, m_selBackground);
-        p.setColor(QPalette::HighlightedText, m_selForeground);
-        setPalette(p);
-    }
+
     repaint();
 }
 

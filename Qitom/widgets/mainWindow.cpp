@@ -690,12 +690,26 @@ void MainWindow::scriptEditorOrganizerAvailable()
 {
     if (m_bookmarkDock)
     {
-        ScriptEditorOrganizer* sed =
+        ScriptEditorOrganizer* seo =
             qobject_cast<ScriptEditorOrganizer*>(AppManagement::getScriptEditorOrganizer());
 
-        if (sed)
+        if (seo)
         {
-            m_bookmarkDock->setBookmarkModel(sed->getBookmarkModel());
+            m_bookmarkDock->setBookmarkModel(seo->getBookmarkModel());
+
+            if (m_console)
+            {
+                connect(
+                    seo,
+                    &ScriptEditorOrganizer::scriptEditorZoomChanged,
+                    m_console,
+                    &CodeEditor::setZoomFactor);
+                connect(
+                    m_console,
+                    &CodeEditor::zoomFactorChanged,
+                    seo,
+                    &ScriptEditorOrganizer::scriptZoomFactorChanged);
+            }
         }
     }
 }

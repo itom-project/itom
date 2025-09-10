@@ -213,6 +213,8 @@ void ScriptEditorOrganizer::scriptZoomFactorChanged(int zoomFactor)
     settings.setValue("zoomFactor", zoomFactor);
     settings.endGroup();
 
+    emit scriptEditorZoomChanged(zoomFactor);
+
     foreach(auto scriptDockWidget, m_scriptDockElements)
     {
         scriptDockWidget->setScriptZoomFactor(zoomFactor);

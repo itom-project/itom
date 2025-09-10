@@ -1150,7 +1150,7 @@ RetVal ScriptDockWidget::appendEditor(ScriptEditorWidget* editorWidget)
     // Load the right Class->Method model for this Editor
     connect(editorWidget, &ScriptEditorWidget::outlineModelChanged,
         this, &ScriptDockWidget::updateCodeNavigation);
-    connect(editorWidget, &ScriptEditorWidget::zoomFactorChanged, this, &ScriptDockWidget::scriptEditorZoomFactorChanged);
+    connect(editorWidget, &CodeEditor::zoomFactorChanged, this, &ScriptDockWidget::scriptEditorZoomFactorChanged);
 
     updateEditorActions();
     updatePythonActions();
