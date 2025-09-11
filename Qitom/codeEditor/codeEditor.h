@@ -51,6 +51,7 @@
 
 class QMenu; // forward declaration
 class QMimeData; // forward declaration
+class QTimer; // forward declaration
 
 namespace ito {
 
@@ -143,8 +144,7 @@ public:
     int fontSize() const;
     void setFontSize(int fontSize);
 
-    int zoomLevel() const;
-    void setZoomLevel(int value);
+    int zoomFactor() const;
 
     int tabLength() const;
     void setTabLength(int value);
@@ -292,7 +292,7 @@ public:
     virtual void cut();
     virtual void copy();
 
-    void resetStylesheet();
+    void resetStylesheet(bool fontSizeOnly = false);
     void rehighlight();
     void rehighlightBlock(int lineFromIdx, int lineToIdx /*=-1*/);
 
@@ -379,6 +379,9 @@ protected:
     void setWhitespacesFlags(bool show);
     void updateTabStopAndIndentationWidth();
 
+    bool enableZoomLevelByMouseWheel() const;
+    void setEnableZoomLevelByMouseWheel(bool enable);
+
     void updateVisibleBlocks();
 
     void doHomeKey(QEvent* event = NULL, bool select = false);
@@ -440,7 +443,8 @@ private:
     QColor m_foreground;
     bool m_showWhitespaces;
     int m_tabLength;
-    int m_zoomLevel;
+    int m_zoomFactor;
+    bool m_enableZoomLevelByMouseWheel;
     int m_fontSize;
     QString m_fontFamily;
     bool m_selectLineOnCopyEmpty;
@@ -460,6 +464,8 @@ private:
     bool m_redoAvailable;
     bool m_undoAvailable;
 
+    QTimer* m_pZoomFactorChangedTimer;
+
     // flags/working variables
     QList<VisibleBlock> m_visibleBlocks;
     QSet<TextBlockUserData*> m_textBlockUserDataList;
@@ -472,10 +478,18 @@ private:
 
     DelayJobRunnerBase* m_pTooltipsRunner;
 
+public slots:
+    void setZoomFactor(int zoomFactor);
+
 private slots:
     void emitDirtyChanged(bool state);
     void setUndoAvailable(bool available);
     void setRedoAvailable(bool available);
+
+    //!< a change of the zoom factor requires a repaint of the full syntax highlighting. This is a little bit intense.
+    //! Therefore this calculation might be delayed or reduced to few times only. The zoomFactorChangeTimer will call
+    //! this slot, if required.
+    void applyZoomFactorChange();
 
 signals:
     void dirtyChanged(bool state); // Signal emitted when the dirty state changed
@@ -500,6 +514,8 @@ signals:
     void updateActions();
 
     void newTextSet(); //!< Signal emitted when a new text is set on the widget
+
+    void zoomFactorChanged(int zoomFactor);
 };
 
 } // end namespace ito

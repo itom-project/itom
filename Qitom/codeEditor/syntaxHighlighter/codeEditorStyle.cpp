@@ -162,16 +162,21 @@ QTextCharFormat StyleItem::createFormat(const QBrush &color, const QBrush &bgcol
     QTextCharFormat f;
     f.setForeground(color);
     f.setBackground(bgcolor);
+
     if (bold)
     {
         f.setFontWeight(QFont::Bold);
     }
+
     f.setFontItalic(italic);
+
     if (underline)
     {
         f.setUnderlineStyle(QTextCharFormat::SingleUnderline);
     }
+
     f.setFontStyleHint(styleHint);
+
     return f;
 }
 
@@ -190,6 +195,7 @@ QTextCharFormat StyleItem::createFormat(const QString &familyName, int pointSize
     {
         f.setFontWeight(QFont::Bold);
     }
+
     f.setFontItalic(false);
     f.setFontStyleHint(styleHint);
     return f;
@@ -223,7 +229,9 @@ QTextCharFormat StyleItem::createFormat(const QString &familyName, int pointSize
 }
 
 //------------------------------------------------------------------
-CodeEditorStyle::CodeEditorStyle()
+CodeEditorStyle::CodeEditorStyle() :
+    m_zoomFactor(100),
+    m_invalidCache(true)
 {
     QBrush bgcolor;
     bgcolor.setColor("white");
@@ -270,6 +278,22 @@ CodeEditorStyle::~CodeEditorStyle()
 }
 
 //------------------------------------------------------------------
+void CodeEditorStyle::setZoomFactor(int zoomFactor)
+{
+    if (zoomFactor != m_zoomFactor)
+    {
+        m_zoomFactor = zoomFactor;
+        m_invalidCache = true;
+    }
+}
+
+//------------------------------------------------------------------
+int CodeEditorStyle::zoomFactor() const
+{
+    return m_zoomFactor;
+}
+
+//------------------------------------------------------------------
 /*
 Gets the background color.
 :return:
@@ -288,7 +312,7 @@ void CodeEditorStyle::setBackground(const QColor &color)
     {
         bg.setColor(color);
         m_formats[StyleItem::KeyBackground].rformat().setBackground(bg);
-        //qDebug() << m_formats[StyleItem::KeyBackground].format().background().color();
+        m_invalidCache = true;
     }
 }
 
@@ -306,6 +330,8 @@ StyleItem CodeEditorStyle::operator[](StyleItem::StyleType type) const
 //------------------------------------------------------------------
 StyleItem& CodeEditorStyle::operator[](StyleItem::StyleType type)
 {
+    m_invalidCache = true; // since not sure, if the item will be changed externally
+
     if (m_formats.contains(type))
     {
         return m_formats[type];
@@ -328,6 +354,8 @@ QTextCharFormat CodeEditorStyle::format(StyleItem::StyleType type) const
 //------------------------------------------------------------------
 QTextCharFormat& CodeEditorStyle::rformat(StyleItem::StyleType type)
 {
+    m_invalidCache = true; // since not sure, if the item will be changed externally
+
     if (m_formats.contains(type))
     {
         return m_formats[type].rformat();
@@ -336,6 +364,39 @@ QTextCharFormat& CodeEditorStyle::rformat(StyleItem::StyleType type)
     return m_formats[StyleItem::KeyDefault].rformat();
 }
 
+//------------------------------------------------------------------
+void CodeEditorStyle::updateCache()
+{
+    QMapIterator<int, ito::StyleItem> i(m_formats);
+    m_formatsWithFontSizeOffsetCache.clear();
+
+    while (i.hasNext())
+    {
+        i.next();
+
+        StyleItem item = i.value();
+        item.rformat().setFontPointSize(qRound(item.format().fontPointSize() * ((float)m_zoomFactor / 100.0)));
+        m_formatsWithFontSizeOffsetCache[i.key()] = item;
+    }
+
+    m_invalidCache = false;
+}
+
+//------------------------------------------------------------------
+QTextCharFormat CodeEditorStyle::formatWithFontSizeOffset(StyleItem::StyleType type)
+{
+    if (m_invalidCache)
+    {
+        updateCache();
+    }
+
+    if (m_formatsWithFontSizeOffsetCache.contains(type))
+    {
+        return m_formatsWithFontSizeOffsetCache[type].format();
+    }
+
+    return QTextCharFormat();
+}
 
 
 } //end namespace ito

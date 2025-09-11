@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2024, Institut für Technische Optik (ITO),
+    Copyright (C) 2025, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of itom.
@@ -778,6 +778,16 @@ RetVal ScriptDockWidget::restoreScriptState(const QList<ito::ScriptEditorStorage
     return retVal;
 }
 
+//----------------------------------------------------------------------------
+void ScriptDockWidget::setScriptZoomFactor(int zoomFactor) const
+{
+    for (int i = 0; i < m_tab->count(); ++i)
+    {
+        ScriptEditorWidget* sew = static_cast<ScriptEditorWidget*>(m_tab->widget(i));
+        sew->setZoomFactor(zoomFactor);
+    }
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------
 //! returns a list of filenames, which have been modified in this ScriptDockWidget
 /*!
@@ -1140,6 +1150,7 @@ RetVal ScriptDockWidget::appendEditor(ScriptEditorWidget* editorWidget)
     // Load the right Class->Method model for this Editor
     connect(editorWidget, &ScriptEditorWidget::outlineModelChanged,
         this, &ScriptDockWidget::updateCodeNavigation);
+    connect(editorWidget, &CodeEditor::zoomFactorChanged, this, &ScriptDockWidget::scriptEditorZoomFactorChanged);
 
     updateEditorActions();
     updatePythonActions();
@@ -1199,6 +1210,8 @@ ScriptEditorWidget* ScriptDockWidget::removeEditor(int index)
     // Load the right Class->Method model for this Editor
     disconnect(removedWidget, &ScriptEditorWidget::outlineModelChanged,
         this, &ScriptDockWidget::updateCodeNavigation);
+
+    disconnect(removedWidget, &ScriptEditorWidget::zoomFactorChanged, this, &ScriptDockWidget::scriptEditorZoomFactorChanged);
 
     updateEditorActions();
     updatePythonActions();

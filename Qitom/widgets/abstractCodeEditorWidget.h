@@ -86,9 +86,7 @@ public slots:
     void reloadSettings() { loadSettings(); };
 
     virtual void copy();
-
     virtual void paste();
-
     virtual void cut();
 
 signals:

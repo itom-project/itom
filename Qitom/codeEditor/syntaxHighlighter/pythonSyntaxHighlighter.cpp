@@ -73,23 +73,6 @@ PythonSyntaxHighlighter::~PythonSyntaxHighlighter()
 {
 }
 
-//-------------------------------------------------------------------
-const QTextCharFormat PythonSyntaxHighlighter::getTextCharFormat(const QString &colorName, const QString &style)
-{
-    QTextCharFormat charFormat;
-    QColor color(colorName);
-    charFormat.setForeground(color);
-    if (style.contains("bold", Qt::CaseInsensitive))
-    {
-        charFormat.setFontWeight(QFont::Bold);
-    }
-    if (style.contains("italic", Qt::CaseInsensitive))
-    {
-        charFormat.setFontItalic(true);
-    }
-    return charFormat;
-}
-
 
 QList<QPair<QRegularExpressionMatch, QStringList> >::const_iterator
 hasNextMatch(const QList<QPair<QRegularExpressionMatch, QStringList> > &matches, QString &captureGroup)
@@ -451,7 +434,8 @@ Returns a QTextCharFormat for token
 */
 QTextCharFormat PythonSyntaxHighlighter::getFormatFromStyle(StyleItem::StyleType token) const
 {
-    return m_editorStyle->format(token);
+    auto textFormat = m_editorStyle->formatWithFontSizeOffset(token);
+    return textFormat;
 }
 
 //--------------------------------------------------------------------

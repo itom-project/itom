@@ -67,6 +67,15 @@ SyntaxHighlighterBase::~SyntaxHighlighterBase()
 }
 
 //-------------------------------------------------------------------
+void SyntaxHighlighterBase::setZoomFactor(int zoomFactor)
+{
+    if (m_editorStyle)
+    {
+        m_editorStyle->setZoomFactor(zoomFactor);
+    }
+}
+
+//-------------------------------------------------------------------
 void SyntaxHighlighterBase::setFoldDetector(QSharedPointer<FoldDetector> foldDetector)
 {
     m_foldDetector = foldDetector;
@@ -106,7 +115,7 @@ void SyntaxHighlighterBase::highlightWhitespaces(const QString &text)
     {
         index = match.capturedStart(0);
         length = match.captured(0).size();
-        setFormat(index, length, m_editorStyle->format(StyleItem::KeyWhitespace));
+        setFormat(index, length, m_editorStyle->formatWithFontSizeOffset(StyleItem::KeyWhitespace));
         match = m_regWhitespaces.match(text, index + length);
         index = match.capturedStart(0);
     }

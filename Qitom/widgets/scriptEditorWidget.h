@@ -59,11 +59,6 @@
 #include <QtPrintSupport/qprinter.h>
 #include <qevent.h>
 
-QT_BEGIN_NAMESPACE
-
-QT_END_NAMESPACE
-
-
 
 namespace ito
 {
@@ -97,7 +92,6 @@ Q_DECLARE_METATYPE(QList<ito::GoBackNavigationItem>) //must be outside of namesp
 
 namespace ito
 {
-
 
 class ScriptEditorWidget : public AbstractCodeEditorWidget
 {
@@ -328,7 +322,6 @@ public slots:
     void breakPointChange(BreakPointItem oldBp, BreakPointItem newBp);
 
     void updateSyntaxCheck();
-
     void print();
 
 private slots:

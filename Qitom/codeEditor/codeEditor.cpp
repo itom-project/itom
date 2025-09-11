@@ -45,6 +45,7 @@
 #include <qpainter.h>
 #include <qtextdocument.h>
 #include <qtooltip.h>
+#include <qtimer.h>
 
 #include "delayJobRunner.h"
 #include "managers/modesManager.h"
@@ -58,15 +59,16 @@
 
 namespace ito {
 
-CodeEditor::CodeEditor(QWidget* parent /*= NULL*/, bool createDefaultActions /*= true*/) :
+CodeEditor::CodeEditor(QWidget* parent /*= nullptr*/, bool createDefaultActions /*= true*/) :
     QPlainTextEdit(parent), m_showCtxMenu(true), m_defaultFontSize(10),
-    m_useSpacesInsteadOfTabs(true), m_showWhitespaces(false), m_tabLength(0), m_zoomLevel(0),
+    m_useSpacesInsteadOfTabs(true), m_showWhitespaces(false), m_tabLength(0), m_zoomFactor(100),
     m_fontSize(10), m_fontFamily("Verdana"), m_selectLineOnCopyEmpty(true),
-    m_wordSeparators("~!@#$%^&*()+{}|:\"'<>?,./;[]\\\n\t=- "), m_pPanels(NULL),
-    m_pDecorations(NULL), m_pModes(NULL), m_lastMousePos(QPoint(0, 0)), m_prevTooltipBlockNbr(-1),
-    m_pTooltipsRunner(NULL), m_edgeMode(EdgeNone), m_edgeColumn(88), m_edgeColor(Qt::darkGray),
+    m_wordSeparators("~!@#$%^&*()+{}|:\"'<>?,./;[]\\\n\t=- "), m_pPanels(nullptr),
+    m_pDecorations(nullptr), m_pModes(nullptr), m_lastMousePos(QPoint(0, 0)), m_prevTooltipBlockNbr(-1),
+    m_pTooltipsRunner(nullptr), m_edgeMode(EdgeNone), m_edgeColumn(88), m_edgeColor(Qt::darkGray),
     m_showIndentationGuides(true), m_indentationGuidesColor(Qt::darkGray), m_redoAvailable(false),
-    m_undoAvailable(false), m_pContextMenu(NULL), m_minLineJumpsForGoBackNavigationReport(11)
+    m_undoAvailable(false), m_pContextMenu(nullptr), m_minLineJumpsForGoBackNavigationReport(11),
+    m_enableZoomLevelByMouseWheel(false), m_pZoomFactorChangedTimer(nullptr)
 {
     installEventFilter(this);
     connect(document(), SIGNAL(modificationChanged(bool)), this, SLOT(emitDirtyChanged(bool)));
@@ -87,10 +89,14 @@ CodeEditor::CodeEditor(QWidget* parent /*= NULL*/, bool createDefaultActions /*=
     m_pPanels = new PanelsManager(this);
     m_pDecorations = new TextDecorationsManager(this);
     m_pModes = new ModesManager(this);
-
     m_pTooltipsRunner = new DelayJobRunner<CodeEditor, void (CodeEditor::*)(QList<QVariant>)>(700);
-
     m_pContextMenu = new QMenu(this);
+
+    m_pZoomFactorChangedTimer = new QTimer(this);
+    m_pZoomFactorChangedTimer->setSingleShot(true);
+    m_pZoomFactorChangedTimer->setInterval(50);
+    m_pZoomFactorChangedTimer->stop();
+    connect(m_pZoomFactorChangedTimer, &QTimer::timeout, this, &CodeEditor::applyZoomFactorChange);
 
     initStyle();
     resetStylesheet();
@@ -193,6 +199,18 @@ void CodeEditor::setUseSpacesInsteadOfTabs(bool value)
 {
     m_useSpacesInsteadOfTabs = value;
     updateTabStopAndIndentationWidth();
+}
+
+//-----------------------------------------------------------
+bool CodeEditor::enableZoomLevelByMouseWheel() const
+{
+    return m_enableZoomLevelByMouseWheel;
+}
+
+//-----------------------------------------------------------
+void CodeEditor::setEnableZoomLevelByMouseWheel(bool enable)
+{
+    m_enableZoomLevelByMouseWheel = enable;
 }
 
 //-----------------------------------------------------------
@@ -423,14 +441,40 @@ void CodeEditor::setFontSize(int fontSize)
 }
 
 //-----------------------------------------------------------
-int CodeEditor::zoomLevel() const
+int CodeEditor::zoomFactor() const
 {
-    return m_zoomLevel;
+    return m_zoomFactor;
 }
 
-void CodeEditor::setZoomLevel(int value)
+//-----------------------------------------------------------
+void CodeEditor::applyZoomFactorChange()
 {
-    m_zoomLevel = value;
+    auto sh = syntaxHighlighter();
+
+    if (sh)
+    {
+        sh->setZoomFactor(m_zoomFactor);
+    }
+
+    rehighlightBlock(0, lineCount() - 1);
+    resetStylesheet(true);
+}
+
+//-----------------------------------------------------------
+void CodeEditor::setZoomFactor(int zoomFactor)
+{
+    // clip the zoom factor between 50 and 400%.
+    zoomFactor = qBound(50, zoomFactor, 400);
+
+    if (zoomFactor != m_zoomFactor)
+    {
+        m_zoomFactor = zoomFactor;
+        m_pZoomFactorChangedTimer->start();
+
+        // inform the script editor organizer about changes
+        // such that other scripts will also be updated.
+        emit zoomFactorChanged(m_zoomFactor);
+    }
 }
 
 //-----------------------------------------------------------
@@ -911,6 +955,19 @@ void CodeEditor::wheelEvent(QWheelEvent* e)
     bool initialState = e->isAccepted();
     e->ignore();
     emit mouseWheelActivated(e);
+
+    // handle a zoom in/out of the script
+    if (m_enableZoomLevelByMouseWheel && (e->modifiers() & Qt::ControlModifier))
+    {
+        const QPoint delta = e->angleDelta();
+        int wheelDelta = (qAbs(delta.x()) > qAbs(delta.y())) ? delta.x() : delta.y();
+
+        // 15° mouse wheel rotation should be 10% zoom change
+        wheelDelta = wheelDelta / 8;
+        setZoomFactor(zoomFactor() + wheelDelta);
+        e->accept();
+    }
+
     if (!e->isAccepted())
     {
         e->setAccepted(initialState);
@@ -1241,20 +1298,56 @@ int CodeEditor::lineIndent(const QTextBlock* lineNbr) const
 //-------------------------------------------------------------
 /*virtual*/ bool CodeEditor::eventFilter(QObject* obj, QEvent* e)
 {
-    if ((obj == this) && (e->type() == QEvent::KeyPress))
+    if (obj == this)
     {
-        QKeyEvent* ke = dynamic_cast<QKeyEvent*>(e);
-        if (ke->matches(QKeySequence::Cut))
+        switch (e->type())
         {
-            cut();
-            return true;
+        case QEvent::KeyPress:
+        {
+            QKeyEvent* ke = dynamic_cast<QKeyEvent*>(e);
+            if (ke->matches(QKeySequence::Cut))
+            {
+                cut();
+                return true;
+            }
+            else if (ke->matches(QKeySequence::Copy))
+            {
+                copy();
+                return true;
+            }
+            else if (m_enableZoomLevelByMouseWheel && ke->key() == Qt::Key_0 && ke->modifiers() & Qt::ControlModifier)
+            {
+                setZoomFactor(100);
+            }
         }
-        else if (ke->matches(QKeySequence::Copy))
-        {
-            copy();
-            return true;
+            break;
+
+        //case QEvent::Wheel:
+        //{
+        //    QWheelEvent* we = dynamic_cast<QWheelEvent*>(e);
+
+        //    if (m_enableZoomLevelByMouseWheel && (we->modifiers() & Qt::ControlModifier))
+        //    {
+        //        const QPoint delta = we->angleDelta();
+        //        const int wheelDelta = (qAbs(delta.x()) > qAbs(delta.y()))
+        //            ? delta.x() : delta.y();
+
+        //        // 15° mouse wheel rotation should be 10% zoom change
+        //        std::cout << "wheel delta: " << wheelDelta << ", angle delta: " << delta.x() << "/" << delta.y()
+        //                  << ", new factor: " << (zoomFactor() + wheelDelta)
+        //                  << "\n"
+        //                  << std::endl;
+
+        //        setZoomFactor(zoomFactor() + wheelDelta);
+        //    }
+        //}
+        //    break;
+
+        default:
+            break;
         }
     }
+
     return false;
 }
 
@@ -1595,54 +1688,58 @@ bool CodeEditor::findNext()
 /*
 Resets stylesheet
 */
-void CodeEditor::resetStylesheet()
+void CodeEditor::resetStylesheet(bool fontSizeOnly /*= false*/)
 {
-    setFont(QFont(m_fontFamily, m_fontSize + m_zoomLevel));
+    setFont(QFont(m_fontFamily, qRound(m_fontSize * (float)m_zoomFactor / 100.0)));
 
-    bool flg_stylesheet = property("flg_stylesheet").isValid();
-    if (qApp->styleSheet() != "" || flg_stylesheet)
+    if (!fontSizeOnly)
     {
-        setProperty("flg_stylesheet", true);
-        /*On Window, if the application once had a stylesheet, we must
-        keep on using a stylesheet otherwise strange colors appear
-        see https://github.com/OpenCobolIDE/OpenCobolIDE/issues/65
-        Also happen on plasma 5*/
-        QByteArray ds = qgetenv("DESKTOP_SESSION");
-        if (ds.isEmpty() == false && ds == "plasma")
+        bool flg_stylesheet = property("flg_stylesheet").isValid();
+        if (qApp->styleSheet() != "" || flg_stylesheet)
         {
-            setStyleSheet(QString("QPlainTextEdit \
+            setProperty("flg_stylesheet", true);
+            /*On Window, if the application once had a stylesheet, we must
+            keep on using a stylesheet otherwise strange colors appear
+            see https://github.com/OpenCobolIDE/OpenCobolIDE/issues/65
+            Also happen on plasma 5*/
+            QByteArray ds = qgetenv("DESKTOP_SESSION");
+            if (ds.isEmpty() == false && ds == "plasma")
+            {
+                setStyleSheet(QString("QPlainTextEdit \
             { \
                 background-color: %1; \
                 color: %2; \
             }")
-                              .arg(m_background.name(), m_foreground.name()));
+                                  .arg(m_background.name(), m_foreground.name()));
+            }
+            else
+            {
+#if WIN32
+                setStyleSheet(QString("QPlainTextEdit \
+            { \
+                background-color: %1; \
+                color: %2; \
+            }")
+                                  .arg(m_background.name(), m_foreground.name()));
+#else
+                /*on linux/osx we just have to set an empty stylesheet to
+                cancel any previous stylesheet and still keep a correct
+                style for scrollbars*/
+                setStyleSheet("");
+#endif
+            }
         }
         else
         {
-#if WIN32
-            setStyleSheet(QString("QPlainTextEdit \
-            { \
-                background-color: %1; \
-                color: %2; \
-            }")
-                              .arg(m_background.name(), m_foreground.name()));
-#else
-            /*on linux/osx we just have to set an empty stylesheet to
-            cancel any previous stylesheet and still keep a correct
-            style for scrollbars*/
-            setStyleSheet("");
-#endif
+            QPalette p = palette();
+            p.setColor(QPalette::Base, m_background);
+            p.setColor(QPalette::Text, m_foreground);
+            p.setColor(QPalette::Highlight, m_selBackground);
+            p.setColor(QPalette::HighlightedText, m_selForeground);
+            setPalette(p);
         }
     }
-    else
-    {
-        QPalette p = palette();
-        p.setColor(QPalette::Base, m_background);
-        p.setColor(QPalette::Text, m_foreground);
-        p.setColor(QPalette::Highlight, m_selBackground);
-        p.setColor(QPalette::HighlightedText, m_selForeground);
-        setPalette(p);
-    }
+
     repaint();
 }
 

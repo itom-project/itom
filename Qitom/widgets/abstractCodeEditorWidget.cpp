@@ -134,6 +134,11 @@ void AbstractCodeEditorWidget::loadSettings()
         setEolMode(QsciScintilla::EolMac);
     }*/
 
+    int zoomFactor = settings.value("zoomFactor", 100).toInt();
+    blockSignals(true);
+    setZoomFactor(zoomFactor);
+    blockSignals(false);
+
     QSharedPointer<PyAutoIndentMode> pyAutoIndentMode =
         modes()->get("PyAutoIndentMode").dynamicCast<PyAutoIndentMode>();
 

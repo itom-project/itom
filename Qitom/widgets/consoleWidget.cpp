@@ -138,6 +138,8 @@ ConsoleWidget::ConsoleWidget(QWidget* parent) :
         m_cmdQueue.pop();
     }
 
+    setEnableZoomLevelByMouseWheel(true);
+
     startNewCommand(true);
 }
 
