@@ -94,7 +94,7 @@ CodeEditor::CodeEditor(QWidget* parent /*= nullptr*/, bool createDefaultActions 
 
     m_pZoomFactorChangedTimer = new QTimer(this);
     m_pZoomFactorChangedTimer->setSingleShot(true);
-    m_pZoomFactorChangedTimer->setInterval(100);
+    m_pZoomFactorChangedTimer->setInterval(50);
     m_pZoomFactorChangedTimer->stop();
     connect(m_pZoomFactorChangedTimer, &QTimer::timeout, this, &CodeEditor::applyZoomFactorChange);
 
