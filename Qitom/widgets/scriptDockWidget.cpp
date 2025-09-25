@@ -2886,7 +2886,7 @@ void ScriptDockWidget::findTextExpr(QString expr, bool regExpr, bool caseSensiti
 {
     ScriptEditorWidget* sew = getCurrentEditor();
 
-    if (sew != NULL)
+    if (sew != nullptr)
     {
         if (!forward)
         {
@@ -2898,7 +2898,8 @@ void ScriptDockWidget::findTextExpr(QString expr, bool regExpr, bool caseSensiti
             }
         }
 
-        bool success = sew->findFirst(expr, regExpr, caseSensitive, wholeWord, wrap, forward, -1, -1, true);
+        const auto findCursor = sew->findFirst(expr, regExpr, caseSensitive, wholeWord, wrap, forward, -1, -1, true);
+        bool success = !findCursor.isNull();
 
         if (isQuickSeach)
         {
@@ -2908,7 +2909,7 @@ void ScriptDockWidget::findTextExpr(QString expr, bool regExpr, bool caseSensiti
         {
             if (!success)
             {
-                QMessageBox::information(m_pDialogReplace, tr("Find And Replace"), tr("'%1' was not found").arg(expr));
+                QMessageBox::information(m_pDialogReplace, tr("Find And Replace"), tr("No or no more occurrence of '%1' found").arg(expr));
             }
         }
     }
@@ -2929,75 +2930,70 @@ void ScriptDockWidget::replaceTextExpr(QString expr, QString replace)
 //----------------------------------------------------------------------------------------------------------------------------------
 void ScriptDockWidget::replaceAllExpr(QString expr, QString replace, bool regExpr, bool caseSensitive, bool wholeWord, bool findInSel)
 {
-    bool success = true;
-    bool inRange = true;
     int count = 0;
-
     ScriptEditorWidget* sew = getCurrentEditor();
 
     if (sew != nullptr)
     {
-        int tempLineFrom, tempIndexFrom, tempLineTo, tempIndexTo;
-        int lastLineFrom = -1;
-        int lastIndexFrom = -1;
-        int lastLineTo = -1;
-        int lastIndexTo = -1;
-        int lineFrom = -1;
-        int indexFrom = -1;
-        int lineTo = -1;
-        int indexTo = -1;
-        if (findInSel)
+        QTextCursor cursor = sew->textCursor();
+        int originalCursorStart = cursor.selectionStart();
+        int originalCursorEnd = cursor.selectionEnd();
+
+        if (originalCursorStart > originalCursorEnd)
         {
-            sew->getSelection(&lineFrom, &indexFrom, &lineTo, &indexTo);
+            std::swap(originalCursorStart, originalCursorEnd);
         }
+
+        bool textFound = true;
+        cursor.setPosition(originalCursorStart);
+        int startLine = cursor.blockNumber();
+        int startIndex = cursor.positionInBlock();
 
         sew->beginUndoAction();
-        sew->setCursorPosition(0, 0);
-        success = sew->findFirst(expr, regExpr, caseSensitive, wholeWord, false, true, lineFrom, indexFrom, true);
 
-        if (findInSel)
+        while (textFound)
         {
-            sew->getSelection(&tempLineFrom, &tempIndexFrom, &tempLineTo, &tempIndexTo);
-            inRange = (lineTo > tempLineTo) || ((lineTo == tempLineTo) && (indexTo >= tempIndexTo));
+            const auto findCursor = sew->findFirst(expr, regExpr, caseSensitive, wholeWord, false, true, startLine, startIndex, true);
 
-            if (inRange)
+            if (!findCursor.isNull())
             {
-                lastLineFrom= tempLineFrom;
-                lastIndexFrom = tempIndexFrom;
-                lastLineTo = tempLineTo;
-                lastIndexTo = tempIndexTo;
-            }
-        }
-
-        while (success && inRange)
-        {
-            sew->replace(replace);
-            success = sew->findNext();
-
-            if (findInSel)
-            {
-                sew->getSelection(&tempLineFrom, &tempIndexFrom, &tempLineTo, &tempIndexTo);
-                inRange = (lineTo > tempLineTo) || ((lineTo == tempLineTo) && (indexTo >= tempIndexTo));
-
-                if (inRange)
+                if (findInSel)
                 {
-                    lastLineFrom= tempLineFrom;
-                    lastIndexFrom = tempIndexFrom;
-                    lastLineTo = tempLineTo;
-                    lastIndexTo = tempIndexTo;
+                    if (findCursor.selectionStart() < originalCursorStart ||
+                        findCursor.selectionEnd() > originalCursorEnd)
+                    {
+                        textFound = false;
+                    }
                 }
             }
+            else
+            {
+                textFound = false;
+            }
 
-            count++;
+            if (textFound)
+            {
+                sew->setTextCursor(findCursor);
+                originalCursorEnd += sew->replace(replace);
+                count++;
+
+                cursor.setPosition(findCursor.selectionEnd());
+                startLine = cursor.blockNumber();
+                startIndex = cursor.positionInBlock();
+            }
         }
+
         sew->endUndoAction();
+        sew->updateSyntaxCheck();
 
-        if (!inRange && lastLineFrom > -1)
+        cursor.setPosition(originalCursorStart);
+
+        if (findInSel && originalCursorEnd != originalCursorStart)
         {
-            sew->setSelection(lastLineFrom, lastIndexFrom, lastLineTo, lastIndexTo);
+            cursor.setPosition(originalCursorEnd, QTextCursor::KeepAnchor);
         }
 
-        sew->updateSyntaxCheck();
+        sew->setTextCursor(cursor);
     }
 
     if (count == 1)
