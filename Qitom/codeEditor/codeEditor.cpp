@@ -1322,27 +1322,6 @@ int CodeEditor::lineIndent(const QTextBlock* lineNbr) const
         }
             break;
 
-        //case QEvent::Wheel:
-        //{
-        //    QWheelEvent* we = dynamic_cast<QWheelEvent*>(e);
-
-        //    if (m_enableZoomLevelByMouseWheel && (we->modifiers() & Qt::ControlModifier))
-        //    {
-        //        const QPoint delta = we->angleDelta();
-        //        const int wheelDelta = (qAbs(delta.x()) > qAbs(delta.y()))
-        //            ? delta.x() : delta.y();
-
-        //        // 15° mouse wheel rotation should be 10% zoom change
-        //        std::cout << "wheel delta: " << wheelDelta << ", angle delta: " << delta.x() << "/" << delta.y()
-        //                  << ", new factor: " << (zoomFactor() + wheelDelta)
-        //                  << "\n"
-        //                  << std::endl;
-
-        //        setZoomFactor(zoomFactor() + wheelDelta);
-        //    }
-        //}
-        //    break;
-
         default:
             break;
         }
