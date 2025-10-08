@@ -242,7 +242,7 @@ public:
 
     void removeSelectedText();
 
-    bool findFirst(
+    QTextCursor findFirst(
         const QString& expr,
         bool re,
         bool cs,
@@ -252,23 +252,28 @@ public:
         int line = -1,
         int index = -1,
         bool show = true);
-    bool findNext();
-    void replace(const QString& text);
+    QTextCursor findNext();
+
+    //! replaces the text of the current selection and returns the size difference after the replacement
+    int replace(const QString& text);
 
     void endUndoAction()
     {
         textCursor().endEditBlock();
     }
+
     void beginUndoAction()
     {
         textCursor().beginEditBlock();
     }
 
     QString selectedText() const;
+
     int length() const
     {
         return toPlainText().size();
     }
+
     int positionFromLineIndex(int line, int column) const;
 
     int lineIndent(int lineNumber = -1) const;

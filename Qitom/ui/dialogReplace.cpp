@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Copyright (C) 2025, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of itom.
@@ -30,7 +30,7 @@ namespace ito
 //----------------------------------------------------------------------------------------------------------------------------------
 DialogReplace::DialogReplace(QWidget *parent) :
     QDialog(parent),
-    m_pCompleter(NULL)
+    m_pCompleter(nullptr)
 {
     int size = 0;
     ui.setupUi(this);
@@ -164,22 +164,8 @@ void DialogReplace::on_checkBoxReplaceWith_clicked()
 //void DialogReplace::setData(const QString &defaultText, const int &lineFrom, const int &indexFrom, const int &lineTo, const int &indexTo)
 void DialogReplace::setData(const QString &defaultText, const bool &rowSelected)
 {
-//    if (lineTo == lineFrom)
-/*    if (rowSelected)
-    {
-//        m_lineFrom = -1;
-        ui.comboBoxFindIn->setCurrentIndex(0);
-    }
-    else
-    {
-//        m_lineFrom = lineFrom;
-        ui.comboBoxFindIn->setCurrentIndex(1);
-    }*/
-/*    m_indexFrom = indexFrom;
-    m_lineTo = lineTo;
-    m_indexTo = indexTo;*/
-
     int index = comboBoxGetIndex(defaultText, ui.comboBoxFindText);
+
     if (index != -1)
     {
         ui.comboBoxFindText->setCurrentIndex(index);
@@ -195,6 +181,7 @@ void DialogReplace::setData(const QString &defaultText, const bool &rowSelected)
             ui.comboBoxFindText->setCurrentIndex(0);
         }
     }
+
     this->activateWindow();
     ui.comboBoxFindText->setFocus();
     ui.comboBoxFindText->lineEdit()->selectAll();
@@ -206,19 +193,23 @@ void DialogReplace::closeEvent(QCloseEvent * event)
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("dialogReplace");
     settings.beginWriteArray("lastFindText");
+
     for (int i = 0; i < ui.comboBoxFindText->count(); i++)
     {
         settings.setArrayIndex(i);
         settings.setValue("find", ui.comboBoxFindText->itemText(i));
     }
+
     settings.endArray();
 
     settings.beginWriteArray("lastReplacedText");
+
     for (int i = 0; i < ui.comboBoxReplacedText->count(); i++)
     {
         settings.setArrayIndex(i);
         settings.setValue("replace", ui.comboBoxReplacedText->itemText(i));
     }
+
     settings.endArray();
 
     settings.setValue("WholeWord", ui.checkBoxWholeWord->isChecked());
@@ -292,7 +283,7 @@ void DialogReplace::on_pushButtonExpand_clicked()
     {
         QRect rect = geometry();
         ui.groupBoxOptions->setVisible(false);
-        ui.pushButtonExpand->setText(tr("Expand"));
+        ui.pushButtonExpand->setText(tr("Show Options"));
 
         setVisible(false);
         setMaximumHeight(100);
@@ -302,7 +293,7 @@ void DialogReplace::on_pushButtonExpand_clicked()
     else
     {
         ui.groupBoxOptions->setVisible(true);
-        ui.pushButtonExpand->setText(tr("Collapse"));
+        ui.pushButtonExpand->setText(tr("Hide Options"));
     }
 }
 

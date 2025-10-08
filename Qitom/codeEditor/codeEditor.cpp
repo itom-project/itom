@@ -1322,27 +1322,6 @@ int CodeEditor::lineIndent(const QTextBlock* lineNbr) const
         }
             break;
 
-        //case QEvent::Wheel:
-        //{
-        //    QWheelEvent* we = dynamic_cast<QWheelEvent*>(e);
-
-        //    if (m_enableZoomLevelByMouseWheel && (we->modifiers() & Qt::ControlModifier))
-        //    {
-        //        const QPoint delta = we->angleDelta();
-        //        const int wheelDelta = (qAbs(delta.x()) > qAbs(delta.y()))
-        //            ? delta.x() : delta.y();
-
-        //        // 15° mouse wheel rotation should be 10% zoom change
-        //        std::cout << "wheel delta: " << wheelDelta << ", angle delta: " << delta.x() << "/" << delta.y()
-        //                  << ", new factor: " << (zoomFactor() + wheelDelta)
-        //                  << "\n"
-        //                  << std::endl;
-
-        //        setZoomFactor(zoomFactor() + wheelDelta);
-        //    }
-        //}
-        //    break;
-
         default:
             break;
         }
@@ -1542,7 +1521,7 @@ void CodeEditor::insertAt(const QString& text, int line, int index)
 Replace the current selection, set by a previous call to
 findFirst(), findFirstInSelection() or findNext(), with replaceStr.
 */
-void CodeEditor::replace(const QString& text)
+int CodeEditor::replace(const QString& text)
 {
     QTextCursor cursor = textCursor();
 
@@ -1551,19 +1530,21 @@ void CodeEditor::replace(const QString& text)
 
     if (!cursor.hasSelection())
     {
-        return;
+        return 0;
     }
 
     cursor.removeSelectedText();
     cursor.setPosition(start);
     cursor.insertText(text);
     cursor.setPosition(cursor.position() + text.size(), QTextCursor::MoveAnchor);
+
+    return text.size() - (end - start);
 }
 
 //--------------------------------------------------------------
 /*
  */
-bool CodeEditor::findFirst(
+QTextCursor CodeEditor::findFirst(
     const QString& expr,
     bool re,
     bool cs,
@@ -1651,7 +1632,7 @@ bool CodeEditor::findFirst(
     m_lastFindOptions.wo = wo;
     m_lastFindOptions.wrap = wrap;
 
-    if (cursor.isNull() == false)
+    if (!cursor.isNull())
     {
         setTextCursor(cursor);
 
@@ -1662,17 +1643,15 @@ bool CodeEditor::findFirst(
 
             reportGoBackNavigationCursorMovement(CursorPosition(cursor), "findFirst");
         }
-
-        return true;
     }
 
-    return false;
+    return cursor;
 }
 
 //--------------------------------------------------------------
 /*
  */
-bool CodeEditor::findNext()
+QTextCursor CodeEditor::findNext()
 {
     const FindOptions& f = m_lastFindOptions;
 
@@ -1681,7 +1660,7 @@ bool CodeEditor::findNext()
         return findFirst(f.expr, f.re, f.cs, f.wo, f.wrap, f.forward, -1, -1, f.show);
     }
 
-    return false;
+    return QTextCursor();
 }
 
 //--------------------------------------------------------------

@@ -6,7 +6,7 @@ In this demo the lateral image shift is determined.
 
 import numpy as np
 import scipy
-import scipy.misc
+import scipy.datasets
 import scipy.ndimage
 import matplotlib.pyplot as plt
 from numpy.typing import ArrayLike
@@ -19,16 +19,12 @@ def plotImage(image: ArrayLike, cmap: str = "gray"):
     plt.show()
 
 
-if scipy.__version__ <= "0.14.0":
-    # removed due to licensing reasons
-    image = scipy.misc.lena()
-else:
-    image = scipy.misc.face()
-    # Convert the image
-    R = image[:, :, 0]
-    G = image[:, :, 1]
-    B = image[:, :, 2]
-    image = R * 299.0 / 1000 + G * 587.0 / 1000 + B * 114.0 / 1000
+image = scipy.datasets.face()
+# Convert the image
+R = image[:, :, 0]
+G = image[:, :, 1]
+B = image[:, :, 2]
+image = R * 299.0 / 1000 + G * 587.0 / 1000 + B * 114.0 / 1000
 
 plotImage(image)
 
@@ -40,9 +36,7 @@ yPixelShift = -7
 ###############################################################################
 # Determine the ROI size: relative (centered) size of original image (relativeSize=1: original size).
 row, col = image.shape
-relativeSize = (
-    np.floor(min(1 - abs(xPixelShift) / col, 1 - abs(yPixelShift) / row) * 10) / 10
-)
+relativeSize = np.floor(min(1 - abs(xPixelShift) / col, 1 - abs(yPixelShift) / row) * 10) / 10
 
 x0 = int((col - col * relativeSize) / 2)
 x1 = col - x0 + 1
@@ -55,9 +49,7 @@ image1 = image[y0:y1, x0:x1].copy()
 plotImage(image1)
 
 # Shifted ROI
-image2 = image[
-    y0 + yPixelShift : y1 + yPixelShift, x0 + xPixelShift : x1 + xPixelShift
-].copy()
+image2 = image[y0 + yPixelShift : y1 + yPixelShift, x0 + xPixelShift : x1 + xPixelShift].copy()
 plotImage(image2)
 
 ###############################################################################
