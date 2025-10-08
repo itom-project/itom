@@ -7,6 +7,7 @@ numpydoc
 openpyxl
 pandas
 plotly
+pooch
 pydata-sphinx-theme
 pytest
 qbstyles
