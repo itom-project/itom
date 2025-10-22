@@ -91,7 +91,7 @@ void IndenterMode::indentSelection(QTextCursor cursor) const
         int nb_lines = Utils::numlines(cursor.selection().toPlainText());
         QTextCursor c = editor()->textCursor();
 
-        if (c.atBlockStart() && c.position() == c.selectionEnd())
+        if ((c.atBlockStart() && c.position() == c.selectionEnd()) && !(c.atEnd()))
         {
             nb_lines += 1;
         }
