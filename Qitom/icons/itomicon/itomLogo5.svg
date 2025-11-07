@@ -1,0 +1,448 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="95.25mm"
+   height="95.25mm"
+   viewBox="0 0 95.25 95.25"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.3.2 (091e20e, 2023-11-25, custom)"
+   sodipodi:docname="itomLogo5.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     inkscape:zoom="0.72248176"
+     inkscape:cx="330.8042"
+     inkscape:cy="505.89512"
+     inkscape:window-width="1743"
+     inkscape:window-height="1024"
+     inkscape:window-x="383"
+     inkscape:window-y="30"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs1">
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient1"
+       id="radialGradient2"
+       cx="479.93155"
+       cy="283.76184"
+       fx="479.93155"
+       fy="283.76184"
+       r="152.83386"
+       gradientTransform="matrix(0.31161288,0,0,0.31161294,-84.46535,-26.246768)"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       id="linearGradient1"
+       inkscape:collect="always">
+      <stop
+         style="stop-color:#919191;stop-opacity:1;"
+         offset="0"
+         id="stop1" />
+      <stop
+         style="stop-color:#919191;stop-opacity:0.49803922;"
+         offset="0.31827411"
+         id="stop3" />
+      <stop
+         style="stop-color:#919191;stop-opacity:0;"
+         offset="1"
+         id="stop2" />
+    </linearGradient>
+    <filter
+       inkscape:collect="always"
+       style="color-interpolation-filters:sRGB"
+       id="filter3805-6-9-2"
+       x="-0.040967126"
+       width="1.120904"
+       y="-0.024076163"
+       height="1.0504608">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="0.0053353332"
+         id="feGaussianBlur3807-7-4-4" />
+    </filter>
+    <filter
+       inkscape:collect="always"
+       style="color-interpolation-filters:sRGB"
+       id="filter3805-6-0"
+       x="-0.00033445772"
+       width="1.000661"
+       y="-0.00016549337"
+       height="1.0008457">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="0.0053353332"
+         id="feGaussianBlur3807-7-1" />
+    </filter>
+    <filter
+       inkscape:collect="always"
+       style="color-interpolation-filters:sRGB"
+       id="filter3805-6-6-8"
+       x="-0.00049603124"
+       width="1.0009921"
+       y="-0.0021238856"
+       height="1.0042478">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="0.0053353332"
+         id="feGaussianBlur3807-7-6-2" />
+    </filter>
+  </defs>
+  <g
+     inkscape:label="Ebene 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-17.462502,-14.552086)">
+    <circle
+       style="display:inline;fill:url(#radialGradient2);stroke-width:0.838454;paint-order:fill markers stroke"
+       id="path1"
+       cx="65.087502"
+       cy="62.177086"
+       r="47.625" />
+    <path
+       style="display:inline;fill:none;fill-rule:evenodd;stroke:#ffffff;stroke-width:4.36191;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;filter:url(#filter3805-6-9-2)"
+       d="m -727.84007,-107.20985 c 0,33.695183 -4.63868,110.0110321 -27.44365,112.5661191 -26.03382,2.9168467 -26.11144,-80.8747081 -26.11144,-107.8905991 0,-27.01587 -1.4238,-118.53456 26.11144,-117.24162 24.98176,1.17304 27.44365,78.87093 27.44365,112.5661 z"
+       id="path5493-3-6-2"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="zsssz"
+       transform="matrix(0.36425656,0,0,0.36363668,342.12987,100.41512)" />
+    <path
+       style="display:inline;fill:none;fill-rule:evenodd;stroke:#ffffff;stroke-width:4.36191;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;filter:url(#filter3805-6-9-2)"
+       d="m -745.41559,-131.27075 c 29.91,21.92706 82.48849,74.437697 72.96805,92.873412 -11.48658,22.243059 -79.19784,-32.145731 -100.24151,-49.458465 -21.04365,-17.312757 -93.02851,-80.607837 -74.78914,-94.480477 14.48039,-11.01361 72.15259,29.13844 102.0626,51.06553 z"
+       id="path5493-5-0-0-7"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="zsssz"
+       transform="matrix(0.36425656,0,0,0.36363668,342.12987,100.41512)" />
+    <path
+       style="display:inline;fill:none;fill-rule:evenodd;stroke:#ffffff;stroke-width:4.36191;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;filter:url(#filter3805-6-9-2)"
+       d="m -756.47909,-83.100678 c -34.26798,11.487895 -116.80551,33.948918 -118.86589,16.498548 -2.91167,-24.660483 79.17336,-52.33959 106.2524,-61.15602 27.87419,-9.07534 107.35406,-37.18714 115.81888,-15.58489 8.13025,20.74842 -68.9374,48.754439 -103.20539,60.242362 z"
+       id="path5493-0-7-0-2"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="zsssz"
+       transform="matrix(0.36425656,0,0,0.36363668,342.12987,100.41512)" />
+    <path
+       style="display:inline;fill:none;fill-rule:evenodd;stroke:#ffffff;stroke-width:4.36191;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;filter:url(#filter3805-6-9-2)"
+       d="m -742.06121,-93.807525 c -19.52327,26.092864 -65.36472,85.7962061 -84.08401,73.528224 -17.71455,-11.609527 26.28396,-81.023699 41.9372,-101.944269 15.6532,-20.92054 70.2211,-86.28379 89.19699,-71.70394 14.97324,11.50446 -27.52692,74.02707 -47.05018,100.119985 z"
+       id="path5493-56-60-5-4"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="zsssz"
+       transform="matrix(0.36425656,0,0,0.36363668,342.12987,100.41512)" />
+    <g
+       id="g1-5"
+       style="display:inline;filter:url(#filter3805-6-0)"
+       transform="matrix(0.36425656,0,0,0.36363668,-49.065498,31.74456)">
+      <path
+         inkscape:connector-curvature="0"
+         id="path4588-1-5-9"
+         d="m -213.3969,221.92958 33.41509,13.15408 45.48478,-14.35549 -34.51264,-9.85996 z"
+         style="display:inline;fill:#2b93d9;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.981518;filter:url(#filter3805-6-6-8)"
+         inkscape:export-filename="D:\itom\sources\itom\Qitom\icons\itomicon\itomLogo3_256.png"
+         inkscape:export-xdpi="103.59908"
+         inkscape:export-ydpi="103.59908"
+         transform="matrix(0.99971396,0,0,1.0024546,449.84965,-148.66542)" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path4590-4-9-5"
+         d="m -169.00967,210.86821 -27.13109,-7.57356 26.45779,-5.23171 z"
+         style="display:inline;fill:#2b93d9;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.981518;filter:url(#filter3805-6-6-8)"
+         inkscape:export-filename="D:\itom\sources\itom\Qitom\icons\itomicon\itomLogo3_256.png"
+         inkscape:export-xdpi="103.59908"
+         inkscape:export-ydpi="103.59908"
+         transform="matrix(0.99971396,0,0,1.0024546,449.84965,-148.66542)" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path4592-93-3-4"
+         d="m -134.49703,220.72817 33.63471,-10.6842 42.777323,9.47748 -31.35564,13.95642 z"
+         style="display:inline;fill:#2b93d9;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.981518;filter:url(#filter3805-6-6-8)"
+         inkscape:export-filename="D:\itom\sources\itom\Qitom\icons\itomicon\itomLogo3_256.png"
+         inkscape:export-xdpi="103.59908"
+         inkscape:export-ydpi="103.59908"
+         transform="matrix(0.99971396,0,0,1.0024546,449.84965,-148.66542)" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path4594-14-4-0"
+         d="m -99.685767,161.16676 -35.746703,-2.3792 -36.37011,2.7778 36.37011,3.25115 z"
+         style="display:inline;fill:#2b93d9;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.981518;filter:url(#filter3805-6-6-8)"
+         inkscape:export-filename="D:\itom\sources\itom\Qitom\icons\itomicon\itomLogo3_256.png"
+         inkscape:export-xdpi="103.59908"
+         inkscape:export-ydpi="103.59908"
+         transform="matrix(0.99971396,0,0,1.0024546,449.84965,-148.66542)" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path4596-6-2-8"
+         d="m -100.86232,210.04397 25.814503,-8.24436 -25.457463,-4.53396 z"
+         style="display:inline;fill:#2b93d9;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.981518;filter:url(#filter3805-6-6-8)"
+         inkscape:export-filename="D:\itom\sources\itom\Qitom\icons\itomicon\itomLogo3_256.png"
+         inkscape:export-xdpi="103.59908"
+         inkscape:export-ydpi="103.59908"
+         transform="matrix(0.99971396,0,0,1.0024546,449.84965,-148.66542)" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path4598-1-8-0"
+         d="m -134.49703,220.72817 45.060213,12.73926 -2.1947,55.25914 -42.099043,-18.86434 z"
+         style="display:inline;fill:#59aae1;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.981518;filter:url(#filter3805-6-6-8)"
+         inkscape:export-filename="D:\itom\sources\itom\Qitom\icons\itomicon\itomLogo3_256.png"
+         inkscape:export-xdpi="103.59908"
+         inkscape:export-ydpi="103.59908"
+         transform="matrix(0.99971396,0,0,1.0024546,449.84965,-148.66542)" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path4600-73-7-5"
+         d="m -133.73056,269.86223 0.68382,43.48286 -31.11761,-18.52003 -0.45647,-9.16799 z"
+         style="display:inline;fill:#59aae1;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.981518;filter:url(#filter3805-6-6-8)"
+         inkscape:export-filename="D:\itom\sources\itom\Qitom\icons\itomicon\itomLogo3_256.png"
+         inkscape:export-xdpi="103.59908"
+         inkscape:export-ydpi="103.59908"
+         transform="matrix(0.99971396,0,0,1.0024546,449.84965,-148.66542)" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path4602-09-6-7"
+         d="m -175.84232,291.18776 -4.13949,-56.1041 -33.41509,-13.15408 5.5858,49.77621 z"
+         style="display:inline;fill:#59aae1;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.981518;filter:url(#filter3805-6-6-8)"
+         inkscape:export-filename="D:\itom\sources\itom\Qitom\icons\itomicon\itomLogo3_256.png"
+         inkscape:export-xdpi="103.59908"
+         inkscape:export-ydpi="103.59908"
+         transform="matrix(0.99971396,0,0,1.0024546,449.84965,-148.66542)" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path4604-2-9-2"
+         d="m -196.14076,203.29465 1.33412,13.98867 25.79697,-6.41511 z"
+         style="display:inline;fill:#59aae1;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.981518;filter:url(#filter3805-6-6-8)"
+         inkscape:export-filename="D:\itom\sources\itom\Qitom\icons\itomicon\itomLogo3_256.png"
+         inkscape:export-xdpi="103.59908"
+         inkscape:export-ydpi="103.59908"
+         transform="matrix(0.99971396,0,0,1.0024546,449.84965,-148.66542)" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path4606-8-6-6"
+         d="m -169.00967,210.86821 -2.79291,-49.30285 36.37011,3.25115 0.93544,55.91166 z"
+         style="display:inline;fill:#59aae1;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.981518;filter:url(#filter3805-6-6-8)"
+         inkscape:export-filename="D:\itom\sources\itom\Qitom\icons\itomicon\itomLogo3_256.png"
+         inkscape:export-xdpi="103.59908"
+         inkscape:export-ydpi="103.59908"
+         transform="matrix(0.99971396,0,0,1.0024546,449.84965,-148.66542)" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path4608-8-8-8"
+         d="m -175.84232,291.18776 42.11176,-21.32553 -0.76647,-49.13406 -45.48478,14.35549 z"
+         style="display:inline;fill:#9bccee;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.981518;filter:url(#filter3805-6-6-8)"
+         inkscape:export-filename="D:\itom\sources\itom\Qitom\icons\itomicon\itomLogo3_256.png"
+         inkscape:export-xdpi="103.59908"
+         inkscape:export-ydpi="103.59908"
+         transform="matrix(0.99971396,0,0,1.0024546,449.84965,-148.66542)" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path4610-7-9-3"
+         d="m -133.04674,313.34509 30.06933,-20.50518 0.24599,-9.01946 -30.99914,-13.95822 z"
+         style="display:inline;fill:#9bccee;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.981518;filter:url(#filter3805-6-6-8)"
+         inkscape:export-filename="D:\itom\sources\itom\Qitom\icons\itomicon\itomLogo3_256.png"
+         inkscape:export-xdpi="103.59908"
+         inkscape:export-ydpi="103.59908"
+         transform="matrix(0.99971396,0,0,1.0024546,449.84965,-148.66542)" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path4612-5-3-3"
+         d="m -58.084997,219.52145 -3.63237,48.51493 -29.91415,20.69019 2.1947,-55.25914 z"
+         style="display:inline;fill:#9bccee;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.981518;filter:url(#filter3805-6-6-8)"
+         inkscape:export-filename="D:\itom\sources\itom\Qitom\icons\itomicon\itomLogo3_256.png"
+         inkscape:export-xdpi="103.59908"
+         inkscape:export-ydpi="103.59908"
+         transform="matrix(0.99971396,0,0,1.0024546,449.84965,-148.66542)" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path4614-9-9-4"
+         d="m -75.047817,201.79961 -0.77583,13.77583 -25.038673,-5.53147 z"
+         style="display:inline;fill:#9bccee;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.981518;filter:url(#filter3805-6-6-8)"
+         inkscape:export-filename="D:\itom\sources\itom\Qitom\icons\itomicon\itomLogo3_256.png"
+         inkscape:export-xdpi="103.59908"
+         inkscape:export-ydpi="103.59908"
+         transform="matrix(0.99971396,0,0,1.0024546,449.84965,-148.66542)" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path4616-6-2-0"
+         d="m -135.43247,164.81651 0.93544,55.91166 33.63471,-10.6842 1.176553,-48.87721 z"
+         style="display:inline;fill:#9bccee;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.981518;filter:url(#filter3805-6-6-8)"
+         inkscape:export-filename="D:\itom\sources\itom\Qitom\icons\itomicon\itomLogo3_256.png"
+         inkscape:export-xdpi="103.59908"
+         inkscape:export-ydpi="103.59908"
+         transform="matrix(0.99971396,0,0,1.0024546,449.84965,-148.66542)" />
+      <path
+         style="display:inline;fill:#2b93d9;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.981518;filter:url(#filter3805-6-6-8)"
+         d="m -213.3969,221.92958 33.41509,13.15408 45.48477,-14.35549 -34.51263,-9.85996 z"
+         id="path4620-7-5-1"
+         inkscape:connector-curvature="0"
+         inkscape:export-filename="D:\itom\sources\itom\Qitom\icons\itomicon\itomLogo3_256.png"
+         inkscape:export-xdpi="103.59908"
+         inkscape:export-ydpi="103.59908"
+         transform="matrix(0.99971396,0,0,1.0024546,449.84965,-148.66542)" />
+      <path
+         style="display:inline;fill:#2b93d9;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.981518;filter:url(#filter3805-6-6-8)"
+         d="m -169.00967,210.86821 -27.13109,-7.57356 26.45779,-5.23171 z"
+         id="path4622-8-9-9"
+         inkscape:connector-curvature="0"
+         inkscape:export-filename="D:\itom\sources\itom\Qitom\icons\itomicon\itomLogo3_256.png"
+         inkscape:export-xdpi="103.59908"
+         inkscape:export-ydpi="103.59908"
+         transform="matrix(0.99971396,0,0,1.0024546,449.84965,-148.66542)" />
+      <path
+         style="display:inline;fill:#2b93d9;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.981518;filter:url(#filter3805-6-6-8)"
+         d="m -134.49704,220.72817 33.63471,-10.6842 42.777333,9.47748 -31.35564,13.95642 z"
+         id="path4624-4-2-0"
+         inkscape:connector-curvature="0"
+         inkscape:export-filename="D:\itom\sources\itom\Qitom\icons\itomicon\itomLogo3_256.png"
+         inkscape:export-xdpi="103.59908"
+         inkscape:export-ydpi="103.59908"
+         transform="matrix(0.99971396,0,0,1.0024546,449.84965,-148.66542)" />
+      <path
+         style="display:inline;fill:#2b93d9;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.981518;filter:url(#filter3805-6-6-8)"
+         d="m -99.685777,161.16676 -35.746693,-2.3792 -36.37011,2.7778 36.37011,3.25115 z"
+         id="path4626-1-0-8"
+         inkscape:connector-curvature="0"
+         inkscape:export-filename="D:\itom\sources\itom\Qitom\icons\itomicon\itomLogo3_256.png"
+         inkscape:export-xdpi="103.59908"
+         inkscape:export-ydpi="103.59908"
+         transform="matrix(0.99971396,0,0,1.0024546,449.84965,-148.66542)" />
+      <path
+         style="display:inline;fill:#2b93d9;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.981518;filter:url(#filter3805-6-6-8)"
+         d="m -100.86233,210.04397 25.814513,-8.24436 -25.457473,-4.53396 z"
+         id="path4628-7-3-6"
+         inkscape:connector-curvature="0"
+         inkscape:export-filename="D:\itom\sources\itom\Qitom\icons\itomicon\itomLogo3_256.png"
+         inkscape:export-xdpi="103.59908"
+         inkscape:export-ydpi="103.59908"
+         transform="matrix(0.99971396,0,0,1.0024546,449.84965,-148.66542)" />
+      <path
+         style="display:inline;fill:#59aae1;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.981518;filter:url(#filter3805-6-6-8)"
+         d="m -134.49704,220.72817 45.060223,12.73926 -2.19471,55.25912 -42.099043,-18.86433 z"
+         id="path4630-0-1-2"
+         inkscape:connector-curvature="0"
+         inkscape:export-filename="D:\itom\sources\itom\Qitom\icons\itomicon\itomLogo3_256.png"
+         inkscape:export-xdpi="103.59908"
+         inkscape:export-ydpi="103.59908"
+         transform="matrix(0.99971396,0,0,1.0024546,449.84965,-148.66542)" />
+      <path
+         style="display:inline;fill:#59aae1;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.981518;filter:url(#filter3805-6-6-8)"
+         d="m -133.73057,269.86222 0.68383,43.48287 -31.11761,-18.52004 -0.45647,-9.16798 z"
+         id="path4632-5-4-5"
+         inkscape:connector-curvature="0"
+         inkscape:export-filename="D:\itom\sources\itom\Qitom\icons\itomicon\itomLogo3_256.png"
+         inkscape:export-xdpi="103.59908"
+         inkscape:export-ydpi="103.59908"
+         transform="matrix(0.99971396,0,0,1.0024546,449.84965,-148.66542)" />
+      <path
+         style="display:inline;fill:#59aae1;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.981518;filter:url(#filter3805-6-6-8)"
+         d="m -175.84232,291.18776 -4.13949,-56.1041 -33.41509,-13.15408 5.5858,49.77621 z"
+         id="path4634-04-3-7"
+         inkscape:connector-curvature="0"
+         inkscape:export-filename="D:\itom\sources\itom\Qitom\icons\itomicon\itomLogo3_256.png"
+         inkscape:export-xdpi="103.59908"
+         inkscape:export-ydpi="103.59908"
+         transform="matrix(0.99971396,0,0,1.0024546,449.84965,-148.66542)" />
+      <path
+         style="display:inline;fill:#59aae1;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.981518;filter:url(#filter3805-6-6-8)"
+         d="m -196.14076,203.29465 1.33412,13.98867 25.79697,-6.41511 z"
+         id="path4636-2-1-7"
+         inkscape:connector-curvature="0"
+         inkscape:export-filename="D:\itom\sources\itom\Qitom\icons\itomicon\itomLogo3_256.png"
+         inkscape:export-xdpi="103.59908"
+         inkscape:export-ydpi="103.59908"
+         transform="matrix(0.99971396,0,0,1.0024546,449.84965,-148.66542)" />
+      <path
+         style="display:inline;fill:#59aae1;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.981518;filter:url(#filter3805-6-6-8)"
+         d="m -169.00967,210.86821 -2.79291,-49.30285 36.37011,3.25115 0.93543,55.91166 z"
+         id="path4638-6-2-1"
+         inkscape:connector-curvature="0"
+         inkscape:export-filename="D:\itom\sources\itom\Qitom\icons\itomicon\itomLogo3_256.png"
+         inkscape:export-xdpi="103.59908"
+         inkscape:export-ydpi="103.59908"
+         transform="matrix(0.99971396,0,0,1.0024546,449.84965,-148.66542)" />
+      <path
+         style="display:inline;fill:#9bccee;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.981518;filter:url(#filter3805-6-6-8)"
+         d="m -175.84232,291.18776 42.11175,-21.32554 -0.76647,-49.13405 -45.48477,14.35549 z"
+         id="path4640-2-9-8"
+         inkscape:connector-curvature="0"
+         inkscape:export-filename="D:\itom\sources\itom\Qitom\icons\itomicon\itomLogo3_256.png"
+         inkscape:export-xdpi="103.59908"
+         inkscape:export-ydpi="103.59908"
+         transform="matrix(0.99971396,0,0,1.0024546,449.84965,-148.66542)" />
+      <path
+         style="display:inline;fill:#9bccee;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.981518;filter:url(#filter3805-6-6-8)"
+         d="m -133.04674,313.34509 30.06931,-20.50518 0.24601,-9.01947 -30.99915,-13.95822 z"
+         id="path4642-6-6-2"
+         inkscape:connector-curvature="0"
+         inkscape:export-filename="D:\itom\sources\itom\Qitom\icons\itomicon\itomLogo3_256.png"
+         inkscape:export-xdpi="103.59908"
+         inkscape:export-ydpi="103.59908"
+         transform="matrix(0.99971396,0,0,1.0024546,449.84965,-148.66542)" />
+      <path
+         style="display:inline;fill:#9bccee;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.981518;filter:url(#filter3805-6-6-8)"
+         d="m -58.084997,219.52145 -3.63237,48.51493 -29.91416,20.69017 2.19471,-55.25912 z"
+         id="path4644-9-7-1"
+         inkscape:connector-curvature="0"
+         inkscape:export-filename="D:\itom\sources\itom\Qitom\icons\itomicon\itomLogo3_256.png"
+         inkscape:export-xdpi="103.59908"
+         inkscape:export-ydpi="103.59908"
+         transform="matrix(0.99971396,0,0,1.0024546,449.84965,-148.66542)" />
+      <path
+         style="display:inline;fill:#9bccee;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.981518;filter:url(#filter3805-6-6-8)"
+         d="m -75.047817,201.79961 -0.77584,13.77583 -25.038673,-5.53147 z"
+         id="path4646-9-4-0"
+         inkscape:connector-curvature="0"
+         inkscape:export-filename="D:\itom\sources\itom\Qitom\icons\itomicon\itomLogo3_256.png"
+         inkscape:export-xdpi="103.59908"
+         inkscape:export-ydpi="103.59908"
+         transform="matrix(0.99971396,0,0,1.0024546,449.84965,-148.66542)" />
+      <path
+         style="display:inline;fill:#9bccee;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.981518;filter:url(#filter3805-6-6-8)"
+         d="m -135.43247,164.81651 0.93543,55.91166 33.63471,-10.6842 1.176553,-48.87721 z"
+         id="path4648-4-2-0"
+         inkscape:connector-curvature="0"
+         inkscape:export-filename="D:\itom\sources\itom\Qitom\icons\itomicon\itomLogo3_256.png"
+         inkscape:export-xdpi="103.59908"
+         inkscape:export-ydpi="103.59908"
+         transform="matrix(0.99971396,0,0,1.0024546,449.84965,-148.66542)" />
+    </g>
+    <path
+       sodipodi:nodetypes="csc"
+       inkscape:connector-curvature="0"
+       id="path5462-5-0-2"
+       d="m -672.44754,-38.397338 c -11.48658,22.243059 -79.19784,-32.145731 -100.24151,-49.458465 -21.04365,-17.312757 -93.02851,-80.607837 -74.78914,-94.480477"
+       style="display:inline;fill:none;fill-rule:evenodd;stroke:#ffffff;stroke-width:4.36191;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;filter:url(#filter3805-6-9-2)"
+       transform="matrix(0.36425656,0,0,0.36363668,342.12987,100.41512)" />
+    <path
+       sodipodi:nodetypes="czc"
+       inkscape:connector-curvature="0"
+       id="path5464-2-7-9"
+       d="m -653.2737,-143.34304 c 8.13025,20.74842 -68.9374,48.754439 -103.20539,60.242362 -34.26798,11.487895 -116.80551,33.948918 -118.86589,16.498548"
+       style="display:inline;fill:none;fill-rule:evenodd;stroke:#ffffff;stroke-width:4.36191;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;filter:url(#filter3805-6-9-2)"
+       transform="matrix(0.36425656,0,0,0.36363668,342.12987,100.41512)" />
+    <path
+       sodipodi:nodetypes="czc"
+       inkscape:connector-curvature="0"
+       id="path5466-6-2-0"
+       d="m -695.01103,-193.92751 c 14.97324,11.50446 -27.52692,74.02707 -47.05018,100.119985 -19.52327,26.092864 -65.36472,85.7962061 -84.08401,73.528224"
+       style="display:inline;fill:none;fill-rule:evenodd;stroke:#ffffff;stroke-width:4.36191;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;filter:url(#filter3805-6-9-2)"
+       transform="matrix(0.36425656,0,0,0.36363668,342.12987,100.41512)" />
+    <path
+       sodipodi:nodetypes="czc"
+       inkscape:connector-curvature="0"
+       id="path5460-5-3-3"
+       d="m -755.28372,-219.77595 c 24.98176,1.17304 27.44365,78.87093 27.44365,112.5661 0,33.695183 -4.63868,110.0110321 -27.44365,112.5661191"
+       style="display:inline;fill:none;fill-rule:evenodd;stroke:#ffffff;stroke-width:4.36191;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;filter:url(#filter3805-6-9-2)"
+       transform="matrix(0.36425656,0,0,0.36363668,342.12987,100.41512)" />
+  </g>
+</svg>
