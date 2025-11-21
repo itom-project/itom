@@ -74,12 +74,10 @@
         <file>icons/dialog-warning-4.png</file>
         <file>icons/loader16x16.gif</file>
         <file>icons/loader32x32trans.gif</file>
-        <file>icons/itomicon/splashScreen5Christmas.png</file>
-        <file>icons/itomicon/splashScreen5.png</file>
-        <file>icons/itomicon/splashScreen5Easter.png</file>
-        <file>icons/itomicon/splashScreen5dev.png</file>
-        <file>icons/itomicon/splashScreen5devChristmas.png</file>
-        <file>icons/itomicon/splashScreen5devEaster.png</file>
+        <file>icons/itomicon/splashScreen.svg</file>
+        <file>icons/itomicon/splashScreenDev.svg</file>
+        <file>icons/itomicon/splashScreenEaster.svg</file>
+        <file>icons/itomicon/splashScreenChristmas.svg</file>
         <file>icons/empty.png</file>
         <file>icons/pin.png</file>
         <file>icons/pinChecked.png</file>

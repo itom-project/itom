@@ -49,6 +49,7 @@
 #include <qresource.h>
 #include <qfileinfo.h>
 #include <qscreen.h>
+#include <QSvgRenderer>
 
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include <qtextcodec.h>
@@ -191,11 +192,9 @@ void MainApplication::setSplashScreenMessage(const QString &text)
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-QString MainApplication::getSplashScreenFileName() const
+QString MainApplication::getSplashGimmickFileName() const
 {
     QString fileName;
-
     QDate currentDate = QDate::currentDate();
     int currentMonth = currentDate.month();
     int currentYear = currentDate.year();
@@ -238,39 +237,33 @@ QString MainApplication::getSplashScreenFileName() const
 
 	qint64 daysDiffToEaster = currentDate.toJulianDay() - QDate(currentYear, easterMonth, easterDay).toJulianDay();
 
+    if (currentMonth == 12)
+    {
+        //Christmas splashScreen whole december of each year
+        fileName = ":/application/icons/itomicon/splashScreenChristmas.svg";
+    }
+    else if (qAbs(daysDiffToEaster) <= 7)
+    {
+        //Easter splashScreen one week before and after easter day
+        fileName = ":/application/icons/itomicon/splashScreenEaster.svg";
+    }
+
+ 
+    return fileName;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+QString MainApplication::getSplashScreenFileName() const
+{
+    QString fileName;
+
     if( !m_devFlag )
     {
-        if (currentMonth == 12)
-        {
-            //Christmas splashScreen whole december of each year
-            fileName = ":/application/icons/itomicon/splashScreen5Christmas.png";
-        }
-        else if (qAbs(daysDiffToEaster) <= 7)
-        {
-            //Easter splashScreen one week before and after easter day
-            fileName = ":/application/icons/itomicon/splashScreen5Easter.png";
-        }
-        else //default splashScreen
-        {
-            fileName = ":/application/icons/itomicon/splashScreen5.png";
-        }
+        fileName = ":/application/icons/itomicon/splashScreen.svg";
     }
     else
     {
-        if (currentMonth == 12)
-        {
-            //Christmas splashScreen whole december of each year
-            fileName = ":/application/icons/itomicon/splashScreen5devChristmas.png";
-        }
-        else if (qAbs(daysDiffToEaster) <= 7)
-        {
-            //Easter splashScreen one week before and after easter day
-            fileName = ":/application/icons/itomicon/splashScreen5devEaster.png";
-        }
-        else //default splashScreen
-        {
-            fileName = ":/application/icons/itomicon/splashScreen5dev.png";
-        }
+        fileName = ":/application/icons/itomicon/splashScreenDev.svg";
     }
 
     return fileName;
@@ -280,12 +273,41 @@ QString MainApplication::getSplashScreenFileName() const
 QPixmap MainApplication::getSplashScreenPixmap() const
 {
 #ifdef USEGIMMICKS
-    QString splashScreenFileName = getSplashScreenFileName(); // get the fileName of splashScreen. Different at easter and christmas time
+    QString splashScreenFileName = getSplashScreenFileName(); // get the fileName of splashScreen. 
+    QString splashGimmickFileName = getSplashGimmickFileName(); // get the fileName of the gimmik. Different at easter and christmas time, or none if empty
 #else
-    QString splashScreenFileName = ":/application/icons/itomicon/splashScreen5.png"; //only default splashScreen
+    QString splashScreenFileName = ":/application/icons/itomicon/splashScreen.svg"; //only default splashScreen
+    QString splashGimmickFileName = "";
 #endif // USEUSEGIMMICKS
 
-    QPixmap pixmap(splashScreenFileName);
+    // 30% of screen size
+    int primaryScreenWidth = QGuiApplication::primaryScreen()->geometry().width();
+
+    int width = 550;
+    int height = 380;
+    if (primaryScreenWidth < 1280) // HDReady screen
+    {   
+        width = 550;
+        height = 380;
+    }
+    else if (primaryScreenWidth <= 3840) // 30% of screen width
+    {   
+        width = primaryScreenWidth * 0.3;
+        height = width*380/550;
+    }
+    
+    QSvgRenderer renderer(splashScreenFileName);
+    QPixmap pixmap(width, height);
+    pixmap.fill(QColor(255, 255, 255, 0));
+    QPainter painter(&pixmap);
+    renderer.render(&painter, pixmap.rect());
+
+if (!splashGimmickFileName.isEmpty())
+    {
+        QSvgRenderer gimmickRenderer(splashGimmickFileName);
+        gimmickRenderer.render(&painter, pixmap.rect());
+    }
+
     QString versionText;
     QString buildText;
     QString bitTextShort;
@@ -293,18 +315,6 @@ QPixmap MainApplication::getSplashScreenPixmap() const
     QString revisionText = "";
     QString editionText = "";
     QString dateText;
-
-    // 30% of screen size
-    int pimaryScreenWidth = QGuiApplication::primaryScreen()->geometry().width();
-
-    if (pimaryScreenWidth < 1280) // HDReady screen
-    {
-        pixmap = pixmap.scaledToWidth(550, Qt::SmoothTransformation);
-    }
-    else if (pimaryScreenWidth <= 3840) // 30% of screen width
-    {
-        pixmap = pixmap.scaledToWidth(pimaryScreenWidth * 0.3, Qt::SmoothTransformation);
-    }
 
     QPainter p;
     p.begin(&pixmap);
