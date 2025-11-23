@@ -236,6 +236,7 @@ private:
     QToolBar* m_bookmarkToolBar;
 
     QString m_autoCodeFormatCmd;
+    bool m_autoCodeFormatOnSave;
 
     // ClassNavigator
     QWidget* m_classMenuBar;

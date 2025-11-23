@@ -237,6 +237,7 @@ private:
     //!< the current command string for the python imports sorting (or empty, if this pre-step is not enabled)
     QString m_autoCodeFormatPreCmd;
 
+    bool m_autoCodeFormatOnSave;
     //!< this is the encoding of this script, hence,
     //!< the encoding that was used to load this script from
     //!< a file and will also be used to store it in a file.

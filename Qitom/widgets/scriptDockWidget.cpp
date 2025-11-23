@@ -249,6 +249,8 @@ void ScriptDockWidget::loadSettings()
 
     m_autoCodeFormatAction->setEnabled(m_autoCodeFormatCmd != "" && getCurrentEditor() != nullptr);
 
+    m_autoCodeFormatOnSave = settings.value("autoCodeFormatOnSave", false).toBool();
+
     settings.endGroup();
 }
 

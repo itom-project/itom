@@ -1726,6 +1726,7 @@ void ScriptEditorWidget::menuPyCodeFormatting()
                 QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
                 settings.beginGroup("CodeEditor");
                 settings.setValue("autoCodeFormatEnabled", false);
+                settings.setValue("autoCodeFormatOnSave", false);
                 settings.endGroup();
 
                 MainApplication* ma =
@@ -2090,6 +2091,7 @@ void ScriptEditorWidget::pyCodeFormatterDone(bool success, QString code)
                 QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
                 settings.beginGroup("CodeEditor");
                 settings.setValue("autoCodeFormatEnabled", false);
+                settings.setValue("autoCodeFormatOnSave", false);
                 settings.endGroup();
 
                 MainApplication* ma =
@@ -2309,6 +2311,12 @@ RetVal ScriptEditorWidget::saveFile(bool askFirst)
     if (!isModified())
     {
         return RetVal(retOk);
+    }
+
+    if (m_autoCodeFormatOnSave)
+    {
+        menuPyCodeFormatting();
+        setModified(false);
     }
 
     if (this->getFilename().isNull())
