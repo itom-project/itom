@@ -50,7 +50,7 @@
         <file>icons/codeCell.png</file>
     </qresource>
     <qresource prefix="/application">
-        <file>icons/itomicon/itomLogo3_64.png</file>
+        <file>icons/itomicon/itomLogo5.svg</file>
         <file>icons/helpAboutQt.png</file>
         <file>icons/help.png</file>
         <file>icons/scriptReference.png</file>

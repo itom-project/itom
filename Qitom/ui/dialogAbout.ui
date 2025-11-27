@@ -47,7 +47,7 @@
       <string/>
      </property>
      <property name="pixmap">
-      <pixmap resource="../qitom.qrc">:/application/icons/itomicon/itomLogo3_64.png</pixmap>
+      <pixmap resource="../qitom.qrc">:/application/icons/itomicon/itomLogo5.svg</pixmap>
      </property>
      <property name="scaledContents">
       <bool>false</bool>

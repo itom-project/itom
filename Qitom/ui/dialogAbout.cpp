@@ -55,7 +55,7 @@ DialogAboutQItom::DialogAboutQItom(const QMap<QString, QString> &versionMap, QWi
     bool hasAdditionalEdition = false;
 
     ui.setupUi(this);
-    ui.itomLogo->setPixmap(QPixmap(QString::fromUtf8(":/application/icons/itomicon/itomLogo3_64.png")));
+    ui.itomLogo->setPixmap(QPixmap(QString::fromUtf8(":/application/icons/itomicon/itomLogo5.svg")));
     ui.ITOLogo->setPixmap(QPixmap(QString::fromUtf8(":/application/icons/itomicon/itologo64.png")));
 
     QMapIterator<QString, QString> i(versionMap);
