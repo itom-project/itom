@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="210mm"
+   height="297mm"
+   viewBox="0 0 210 297"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.4.2 (f4327f4, 2025-05-13)"
+   sodipodi:docname="pluginCloseInstance.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     inkscape:zoom="0.68862935"
+     inkscape:cx="396.43968"
+     inkscape:cy="561.25984"
+     inkscape:window-width="3200"
+     inkscape:window-height="1711"
+     inkscape:window-x="1911"
+     inkscape:window-y="-9"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs1">
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3554"
+       id="linearGradient5530"
+       gradientUnits="userSpaceOnUse"
+       x1="69.76622"
+       y1="35.584194"
+       x2="67.161568"
+       y2="103.38531"
+       gradientTransform="matrix(2.5571601,0,0,3.2764754,-58.721016,-71.311859)" />
+    <linearGradient
+       id="linearGradient3554"
+       inkscape:collect="always">
+      <stop
+         id="stop3556"
+         offset="0.58806092"
+         style="stop-color:#960c0c;stop-opacity:1;" />
+      <stop
+         id="stop3558"
+         offset="1"
+         style="stop-color:#dfdfdf;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <path
+       style="fill:url(#linearGradient5530);fill-opacity:1;stroke:none;stroke-width:2.42646;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 58.269081,45.20785 -30.206484,38.600875 43.631582,55.904935 -43.631582,55.80239 30.206484,38.70341 43.551579,-55.9048 43.63158,55.9048 30.12648,-38.70341 -43.55158,-55.80239 43.55158,-55.904935 -30.12648,-38.600875 -43.63158,55.80239 z"
+       id="rect3376" />
+  </g>
+</svg>
