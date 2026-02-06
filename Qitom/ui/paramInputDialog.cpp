@@ -392,8 +392,8 @@ ParamInputDialog::ParamInputDialog(const Param &param, QWidget *parent /*= nullp
 
     ui.setupUi(this);
 
-    QIcon upIcon(":/arrows/icons/up-32.png");
-    QIcon downIcon(":/arrows/icons/down-32.png");
+    QIcon upIcon(":/arrows/icons/up-32.svg");
+    QIcon downIcon(":/arrows/icons/down-32.svg");
     QIcon minusIcon(":/arrows/icons/minus.png");
     QIcon plusIcon(":/arrows/icons/plus.png");
     ui.moveListItemUpButton->setIcon(upIcon);

@@ -327,20 +327,20 @@ void FileSystemDockWidget::createActions()
 {
     ito::UserOrganizer *uOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
 
-    m_pActSelectCD = new ShortcutAction(QIcon(":/files/icons/dirOpen.png"), tr("Open New Folder"), this);
+    m_pActSelectCD = new ShortcutAction(QIcon(":/files/icons/dirOpen.svg"), tr("Open New Folder"), this);
     m_pActSelectCD->connectTrigger(this, SLOT(mnuSelectCD()));
-    m_pActMoveCDUp = new ShortcutAction(QIcon(":/files/icons/dir-parent-folder.png"), tr("Change To Parent Folder"), this);
+    m_pActMoveCDUp = new ShortcutAction(QIcon(":/files/icons/dir-parent-folder.svg"), tr("Change To Parent Folder"), this);
     m_pActMoveCDUp->connectTrigger(this, SLOT(mnuMoveCDUp()));
-    m_pActCopyDir = new ShortcutAction(QIcon(":/files/icons/dirCopy.png"), tr("Copy Path To Clipboard"), this);
+    m_pActCopyDir = new ShortcutAction(QIcon(":/files/icons/dirCopy.svg"), tr("Copy Path To Clipboard"), this);
     m_pActCopyDir->connectTrigger(this, SLOT(mnuCopyDir()));
-    m_pActPasteDir = new ShortcutAction(QIcon(":/files/icons/dirPaste.png"), tr("Get Path From Clipboard"), this);
+    m_pActPasteDir = new ShortcutAction(QIcon(":/files/icons/dirPaste.svg"), tr("Get Path From Clipboard"), this);
     m_pActPasteDir->connectTrigger(this, SLOT(mnuPasteDir()));
 
     if (uOrg->currentUserHasFeature(featDeveloper))
     {
-        m_pActOpenFile = new ShortcutAction(QIcon(":/files/icons/open.png"), tr("Open File"), this);
+        m_pActOpenFile = new ShortcutAction(QIcon(":/files/icons/open.svg"), tr("Open File"), this);
         m_pActOpenFile->connectTrigger(this, SLOT(mnuOpenFile()));
-        m_pActExecuteFile = new ShortcutAction(QIcon(":/script/icons/runScript.png"), tr("Execute File"), this);
+        m_pActExecuteFile = new ShortcutAction(QIcon(":/script/icons/runScript.svg"), tr("Execute File"), this);
         m_pActExecuteFile->connectTrigger(this, SLOT(mnuExecuteFile()));
     }
 
@@ -348,20 +348,20 @@ void FileSystemDockWidget::createActions()
     m_pActLocateOnDisk->connectTrigger(this, SLOT(mnuLocateOnDisk()));
     m_pActRenameItem = new ShortcutAction(QIcon(":/workspace/icons/edit-rename.png"), tr("Rename"), this, QKeySequence(tr("F2")), Qt::WidgetWithChildrenShortcut);
     m_pActRenameItem->connectTrigger(this, SLOT(mnuRenameItem()));
-    m_pActDeleteItems = new ShortcutAction(QIcon(":/editor/icons/editDelete.png"), tr("Delete"), this, QKeySequence::Delete, Qt::WidgetWithChildrenShortcut);
+    m_pActDeleteItems = new ShortcutAction(QIcon(":/editor/icons/editDelete.svg"), tr("Delete"), this, QKeySequence::Delete, Qt::WidgetWithChildrenShortcut);
     m_pActDeleteItems->connectTrigger(this, SLOT(mnuDeleteItems()));
-    m_pActCutItems = new ShortcutAction(QIcon(":/editor/icons/editCut.png"), tr("Cut"), this, QKeySequence::Cut, Qt::WidgetWithChildrenShortcut);
+    m_pActCutItems = new ShortcutAction(QIcon(":/editor/icons/editCut.svg"), tr("Cut"), this, QKeySequence::Cut, Qt::WidgetWithChildrenShortcut);
     m_pActCutItems->connectTrigger(this, SLOT(mnuCutItems()));
     m_pActCopyItems = new ShortcutAction(QIcon(":/editor/icons/editCopy.png"), tr("Copy"), this, QKeySequence::Copy, Qt::WidgetWithChildrenShortcut);
     m_pActCopyItems->connectTrigger(this, SLOT(mnuCopyItems()));
-    m_pActPasteItems = new ShortcutAction(QIcon(":/editor/icons/editPaste.png"), tr("Paste"), this, QKeySequence::Paste, Qt::WidgetWithChildrenShortcut);
+    m_pActPasteItems = new ShortcutAction(QIcon(":/editor/icons/editPaste.svg"), tr("Paste"), this, QKeySequence::Paste, Qt::WidgetWithChildrenShortcut);
     m_pActPasteItems->connectTrigger(this, SLOT(mnuPasteItems()));
     m_pActNewDir = new ShortcutAction(QIcon(":/files/icons/newDir.png"), tr("Create New Folder"), this);
     m_pActNewDir->connectTrigger(this, SLOT(mnuNewDir()));
     m_pActNewPyFile = new ShortcutAction(QIcon(":/files/icons/new.png"), tr("Create New Python File"), this);
     m_pActNewPyFile->connectTrigger(this, SLOT(mnuNewPyFile()));
 
-    m_pViewList = new ShortcutAction(QIcon(":/application/icons/kdb_form.png"), tr("List"), this);
+    m_pViewList = new ShortcutAction(QIcon(":/application/icons/kdb_form.svg"), tr("List"), this);
     m_pViewList->connectTrigger(this, SLOT(showList()));
     m_pViewDetails = new ShortcutAction(QIcon(":/application/icons/list.png"), tr("Details"), this);
     m_pViewDetails->connectTrigger(this, SLOT(showDetails()));
@@ -395,7 +395,7 @@ void FileSystemDockWidget::createMenus()
     m_pContextMenu->addAction(m_pActNewPyFile->action());
 
     m_pFileSystemSettingMenu = new QMenu(tr("Settings"), this);
-    m_pFileSystemSettingMenu->setIcon(QIcon(":/application/icons/adBlockAction.png"));
+    m_pFileSystemSettingMenu->setIcon(QIcon(":/application/icons/adBlockAction.svg"));
     m_pFileSystemSettingMenu->addAction(m_pViewList->action());
     m_pFileSystemSettingMenu->addAction(m_pViewDetails->action());
 }

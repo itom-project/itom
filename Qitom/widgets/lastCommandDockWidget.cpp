@@ -196,7 +196,7 @@ LastCommandDockWidget::~LastCommandDockWidget()
 //----------------------------------------------------------------------------------------------------------------------------------
 void LastCommandDockWidget::createActions()
 {
-    m_pActClearList = new ShortcutAction(QIcon(":/editor/icons/editDelete.png"), tr("Clear List"), this);
+    m_pActClearList = new ShortcutAction(QIcon(":/editor/icons/editDelete.svg"), tr("Clear List"), this);
     m_pActClearList->connectTrigger(this, SLOT(mnuClearList()));
 }
 

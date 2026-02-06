@@ -1123,7 +1123,7 @@ RetVal ScriptDockWidget::appendEditor(ScriptEditorWidget* editorWidget)
         QFileInfo info(name);
         name = info.fileName();
     }
-    m_tab->addTab(editorWidget, QIcon(":/files/icons/filePython.png"), name);
+    m_tab->addTab(editorWidget, QIcon(":/files/icons/filePython.svg"), name);
 
     // add the new index to the stackHistory.
     m_stackHistory.prepend(m_tab->count() - 1);
@@ -1719,26 +1719,26 @@ void ScriptDockWidget::updateTabContextActions()
 //! creates actions
 void ScriptDockWidget::createActions()
 {
-    m_tabMoveLeftAction = new ShortcutAction(QIcon(":/arrows/icons/1leftarrow.png"), tr("Move Left"), this);
+    m_tabMoveLeftAction = new ShortcutAction(QIcon(":/arrows/icons/1leftarrow.svg"), tr("Move Left"), this);
     m_tabMoveLeftAction->connectTrigger(this, SLOT(mnuTabMoveLeft()));
 
-    m_tabMoveRightAction = new ShortcutAction(QIcon(":/arrows/icons/1rightarrow.png"), tr("Move Right"), this);
+    m_tabMoveRightAction = new ShortcutAction(QIcon(":/arrows/icons/1rightarrow.svg"), tr("Move Right"), this);
     m_tabMoveRightAction->connectTrigger(this, SLOT(mnuTabMoveRight()));
 
-    m_tabMoveFirstAction = new ShortcutAction(QIcon(":/arrows/icons/2leftarrow.png"), tr("Move First"), this);
+    m_tabMoveFirstAction = new ShortcutAction(QIcon(":/arrows/icons/2leftarrow.svg"), tr("Move First"), this);
     m_tabMoveFirstAction->connectTrigger(this, SLOT(mnuTabMoveFirst()));
 
-    m_tabMoveLastAction = new ShortcutAction(QIcon(":/arrows/icons/2rightarrow.png"), tr("Move Last"), this);
+    m_tabMoveLastAction = new ShortcutAction(QIcon(":/arrows/icons/2rightarrow.svg"), tr("Move Last"), this);
     m_tabMoveLastAction->connectTrigger(this, SLOT(mnuTabMoveLast()));
 
-    m_tabCloseAction = new ShortcutAction(QIcon(":/files/icons/close.png"), tr("Close"),
+    m_tabCloseAction = new ShortcutAction(QIcon(":/files/icons/close.svg"), tr("Close"),
         this, QKeySequence::Close, Qt::WidgetWithChildrenShortcut);
     m_tabCloseAction->connectTrigger(this, SLOT(mnuTabClose()));
 
     m_tabCloseOthersAction = new ShortcutAction(QIcon(), tr("Close Others"), this);
     m_tabCloseOthersAction->connectTrigger(this, SLOT(mnuTabCloseOthers()));
 
-    m_tabCloseAllAction = new ShortcutAction(QIcon(":/plugins/icons/closeAll.png"), tr("Close All"), this);
+    m_tabCloseAllAction = new ShortcutAction(QIcon(":/plugins/icons/closeAll.svg"), tr("Close All"), this);
     m_tabCloseAllAction->connectTrigger(this, SLOT(mnuTabCloseAll()));
 
     m_tabDockAction = new ShortcutAction(QIcon(":/dockWidget/icons/dockButtonGlyph.png"), tr("Dock"), this);
@@ -1751,26 +1751,26 @@ void ScriptDockWidget::createActions()
         this, QKeySequence::New, Qt::WidgetShortcut, Qt::WidgetWithChildrenShortcut);
     m_newScriptAction->connectTrigger(this, SLOT(mnuNewScript()));
 
-    m_openScriptAction = new ShortcutAction(QIcon(":/files/icons/open.png"), tr("Open"),
+    m_openScriptAction = new ShortcutAction(QIcon(":/files/icons/open.svg"), tr("Open"),
         this, QKeySequence::Open, Qt::WidgetShortcut, Qt::WidgetWithChildrenShortcut);
     m_openScriptAction->connectTrigger(this, SLOT(mnuOpenScript()));
 
-    m_saveScriptAction = new ShortcutAction(QIcon(":/files/icons/fileSave.png"), tr("Save"),
+    m_saveScriptAction = new ShortcutAction(QIcon(":/files/icons/fileSave.svg"), tr("Save"),
         this, QKeySequence::Save, Qt::WidgetWithChildrenShortcut);
     m_saveScriptAction->connectTrigger(this, SLOT(mnuSaveScript()));
 
-    m_saveScriptAsAction = new ShortcutAction(QIcon(":/files/icons/fileSaveAs.png"), tr("Save As..."),
+    m_saveScriptAsAction = new ShortcutAction(QIcon(":/files/icons/fileSaveAs.svg"), tr("Save As..."),
         this, QKeySequence::SaveAs, Qt::WidgetWithChildrenShortcut);
     m_saveScriptAsAction->connectTrigger(this, SLOT(mnuSaveScriptAs()));
 
-    m_saveAllScriptsAction = new ShortcutAction(QIcon(":/files/icons/fileSaveAll.png"), tr("Save All"), this);
+    m_saveAllScriptsAction = new ShortcutAction(QIcon(":/files/icons/fileSaveAll.svg"), tr("Save All"), this);
     m_saveAllScriptsAction->connectTrigger(this, SLOT(mnuSaveAllScripts()));
 
-    m_printAction = new ShortcutAction(QIcon(":/plots/icons/print.png"), tr("Print..."),
+    m_printAction = new ShortcutAction(QIcon(":/plots/icons/print.svg"), tr("Print..."),
         this, QKeySequence::Print, Qt::WidgetWithChildrenShortcut);
     m_printAction->connectTrigger(this, SLOT(mnuPrint()));
 
-    m_cutAction = new ShortcutAction(QIcon(":/editor/icons/editCut.png"), tr("Cut"),
+    m_cutAction = new ShortcutAction(QIcon(":/editor/icons/editCut.svg"), tr("Cut"),
         this, QKeySequence::Cut, Qt::WidgetWithChildrenShortcut);
     m_cutAction->connectTrigger(this, SLOT(mnuCut()));
 
@@ -1778,7 +1778,7 @@ void ScriptDockWidget::createActions()
         this, QKeySequence::Copy, Qt::WidgetWithChildrenShortcut);
     m_copyAction->connectTrigger(this, SLOT(mnuCopy()));
 
-    m_pasteAction = new ShortcutAction(QIcon(":/editor/icons/editPaste.png"), tr("Paste"),
+    m_pasteAction = new ShortcutAction(QIcon(":/editor/icons/editPaste.svg"), tr("Paste"),
         this, QKeySequence::Paste, Qt::WidgetWithChildrenShortcut);
     m_pasteAction->connectTrigger(this, SLOT(mnuPaste()));
 
@@ -1822,15 +1822,15 @@ void ScriptDockWidget::createActions()
         this, QKeySequence(tr("Ctrl+Alt+D", "QShortcut")), Qt::WidgetWithChildrenShortcut);
     m_pyDocstringGeneratorAction->connectTrigger(this, SLOT(mnuPyDocstringGenerator()));
 
-    m_scriptRunAction = new ShortcutAction(QIcon(":/script/icons/runScript.png"), tr("Run"),
+    m_scriptRunAction = new ShortcutAction(QIcon(":/script/icons/runScript.svg"), tr("Run"),
         this, QKeySequence(tr("F5", "QShortcut")), Qt::WidgetWithChildrenShortcut);
     m_scriptRunAction->connectTrigger(this, SLOT(mnuScriptRun()));
 
-    m_scriptRunSelectionAction = new ShortcutAction(QIcon(":/script/icons/runScript.png"), tr("Run Selection"),
+    m_scriptRunSelectionAction = new ShortcutAction(QIcon(":/script/icons/runScript.svg"), tr("Run Selection"),
         this, QKeySequence(tr("F9", "QShortcut")), Qt::WidgetWithChildrenShortcut);
     m_scriptRunSelectionAction->connectTrigger(this, SLOT(mnuScriptRunSelection()));
 
-    m_scriptRunCodeCellAction = new ShortcutAction(QIcon(":/editor/icons/runCodeCell.png"), tr("Run Code Cell"),
+    m_scriptRunCodeCellAction = new ShortcutAction(QIcon(":/editor/icons/runCodeCell.svg"), tr("Run Code Cell"),
         this, QKeySequence(tr("Ctrl+F9", "QShortcut")), Qt::WidgetWithChildrenShortcut);
     m_scriptRunCodeCellAction->connectTrigger(this, SLOT(mnuScriptRunCodeCell()));
 
@@ -1838,11 +1838,11 @@ void ScriptDockWidget::createActions()
         this, QKeySequence(tr("Shift+F9", "QShortcut")), Qt::WidgetWithChildrenShortcut);
     m_scriptRunCodeCellAndAdvanceAction->connectTrigger(this, SLOT(mnuScriptRunCodeCellAndAdvance()));
 
-    m_scriptDebugAction = new ShortcutAction(QIcon(":/script/icons/debugScript.png"), tr("Debug"),
+    m_scriptDebugAction = new ShortcutAction(QIcon(":/script/icons/debugScript.svg"), tr("Debug"),
         this, QKeySequence(tr("F6", "QShortcut")), Qt::WidgetWithChildrenShortcut);
     m_scriptDebugAction->connectTrigger(this, SLOT(mnuScriptDebug()));
 
-    m_scriptStopAction = new ShortcutAction(QIcon(":/script/icons/stopScript.png"), tr("Stop"),
+    m_scriptStopAction = new ShortcutAction(QIcon(":/script/icons/stopScript.svg"), tr("Stop"),
         this, QKeySequence(tr("Shift+F5", "QShortcut")), Qt::WidgetShortcut, Qt::WidgetWithChildrenShortcut); //TODO
     m_scriptStopAction->connectTrigger(this, SLOT(mnuScriptStop()));
 
@@ -1862,13 +1862,13 @@ void ScriptDockWidget::createActions()
         this, QKeySequence(tr("Shift+F11", "QShortcut")), Qt::WidgetShortcut, Qt::WidgetWithChildrenShortcut);
     m_scriptStepOutAction->connectTrigger(this, SLOT(mnuScriptStepOut()));
 
-    m_findTextExprAction = new ShortcutAction(QIcon(":/editor/icons/find.png"), tr("Quick Search..."),
+    m_findTextExprAction = new ShortcutAction(QIcon(":/editor/icons/find.svg"), tr("Quick Search..."),
         this, QKeySequence::Find, Qt::WidgetWithChildrenShortcut);
     m_findTextExprAction->connectTrigger(this, SLOT(mnuFindTextExpr()));
 //    m_findTextExprAction->action()->setCheckable(true);
 
     // To add a second shortcut. It works, but I don't know why!
-    m_findTextExprActionSC = new ShortcutAction(QIcon(":/editor/icons/find.png"), tr("Quick Search..."),
+    m_findTextExprActionSC = new ShortcutAction(QIcon(":/editor/icons/find.svg"), tr("Quick Search..."),
         this, QKeySequence(tr("F3", "QShortcut")), Qt::WidgetWithChildrenShortcut);
     m_findTextExprActionSC->connectTrigger(this, SLOT(mnuFindTextExpr()));
 
@@ -1884,7 +1884,7 @@ void ScriptDockWidget::createActions()
         this, QKeySequence(tr("Ctrl+G", "QShortcut")), Qt::WidgetWithChildrenShortcut);
     m_gotoAction->connectTrigger(this, SLOT(mnuGoto()));
 
-    m_bookmarkToggle = new ShortcutAction(QIcon(":/bookmark/icons/bookmarkToggle.png"), tr("&Toggle Bookmark"), this);
+    m_bookmarkToggle = new ShortcutAction(QIcon(":/bookmark/icons/bookmarkToggle.svg"), tr("&Toggle Bookmark"), this);
     m_bookmarkToggle->connectTrigger(this, SLOT(mnuToggleBookmark()));
 
     m_insertCodecAct = new ShortcutAction(tr("&Insert Codec..."), this);
@@ -1938,7 +1938,7 @@ void ScriptDockWidget::menuLastFilesAboutToShow()
                 {
                     QString displayedPath = path;
                     IOHelper::elideFilepathMiddle(displayedPath, 200);
-                    a = new ShortcutAction(QIcon(":/files/icons/filePython.png"), displayedPath, this);
+                    a = new ShortcutAction(QIcon(":/files/icons/filePython.svg"), displayedPath, this);
                     m_lastFilesMenu->addAction(a->action());
                     connect(a->action(), &QAction::triggered, [=]() {
                         lastFileOpen(path);
@@ -1977,7 +1977,7 @@ void ScriptDockWidget::createMenus()
     m_fileMenu->addAction(m_saveAllScriptsAction->action());
 
     // dynamically created Menu with the last files
-    m_lastFilesMenu = m_fileMenu->addMenu(QIcon(":/files/icons/filePython.png"), tr("Recently Used Files"));
+    m_lastFilesMenu = m_fileMenu->addMenu(QIcon(":/files/icons/filePython.svg"), tr("Recently Used Files"));
     connect(this->m_lastFilesMenu, SIGNAL(aboutToShow()), this, SLOT(menuLastFilesAboutToShow()));
     // Add these menus dynamically
 
@@ -2010,7 +2010,7 @@ void ScriptDockWidget::createMenus()
     m_editMenu->addAction(m_openIconBrowser->action());
     m_editMenu->addAction(m_insertCodecAct->action());
     m_editMenu->addSeparator();
-    m_bookmark = m_editMenu->addMenu(QIcon(":/bookmark/icons/bookmark.png"), tr("Bookmark"));
+    m_bookmark = m_editMenu->addMenu(QIcon(":/bookmark/icons/bookmark.svg"), tr("Bookmark"));
     m_bookmark->addAction(m_bookmarkToggle->action());
     m_bookmark->addAction(m_pBookmarkModel->bookmarkPreviousAction());
     m_bookmark->addAction(m_pBookmarkModel->bookmarkNextAction());

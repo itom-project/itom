@@ -375,7 +375,7 @@ void WidgetPropPalettes::updatePaletteList()
 
         if (pal.getType() & ito::tPaletteReadOnly)
         {
-            QIcon lock(":/misc/icons/lock.png");
+            QIcon lock(":/misc/icons/lock.svg");
             painter.drawPixmap(width, 0, iconSize, iconSize, lock.pixmap(iconSize, iconSize));
         }
 

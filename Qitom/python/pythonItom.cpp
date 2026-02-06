@@ -3367,7 +3367,7 @@ pressed the given code, function or method is executed. If the toolbar specified
 icon, or - if not given / not loadable - the ``buttonName`` is displayed as text. \n\
 \n\
 Itom comes with basic icons addressable by ``:/../iconname.png``, e.g.\n\
-``:/gui/icons/close.png``. These natively available icons are listed in the icon \n\
+``:/gui/icons/close.svg``. These natively available icons are listed in the icon \n\
 browser in the menu **edit >> icon browser** of any script window. Furthermore you \n\
 can give a relative or absolute path to any allowed icon file (the preferred file \n\
 format is png). \n\
@@ -3679,7 +3679,7 @@ level. Only the element in the last can be something else than of type \n\
 :attr:`~itom.MENU`.\n\
 \n\
 Itom comes with basic icons addressable by ``:/../iconname.png``, e.g.\n\
-``:/gui/icons/close.png``. These natively available icons are listed in the icon \n\
+``:/gui/icons/close.svg``. These natively available icons are listed in the icon \n\
 browser in the menu **edit >> icon browser** of any script window. Furthermore you \n\
 can give a relative or absolute path to any allowed icon file (the preferred file \n\
 format is png). \n\

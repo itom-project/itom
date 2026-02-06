@@ -909,7 +909,7 @@
              </property>
              <property name="clearIcon">
               <iconset resource="../../../Qitom/qitom.qrc">
-               <normaloff>:/script/icons/stopScript.png</normaloff>:/script/icons/stopScript.png</iconset>
+               <normaloff>:/script/icons/stopScript.svg</normaloff>:/script/icons/stopScript.svg</iconset>
              </property>
             </widget>
            </item>
@@ -1291,7 +1291,7 @@ p, li { white-space: pre-wrap; }
   <action name="actionPoint_1">
    <property name="icon">
     <iconset resource="../../../Qitom/qitom.qrc">
-     <normaloff>:/bookmark/icons/bookmark.png</normaloff>:/bookmark/icons/bookmark.png</iconset>
+     <normaloff>:/bookmark/icons/bookmark.svg</normaloff>:/bookmark/icons/bookmark.svg</iconset>
    </property>
    <property name="text">
     <string>Point 1</string>
@@ -1303,7 +1303,7 @@ p, li { white-space: pre-wrap; }
    </property>
    <property name="icon">
     <iconset resource="../../../Qitom/qitom.qrc">
-     <normaloff>:/breakpoints/icons/itomBreak.png</normaloff>:/breakpoints/icons/itomBreak.png</iconset>
+     <normaloff>:/breakpoints/icons/itomBreak.svg</normaloff>:/breakpoints/icons/itomBreak.svg</iconset>
    </property>
    <property name="text">
     <string>Point 3</string>

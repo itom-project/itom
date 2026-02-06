@@ -224,7 +224,7 @@
          <string/>
         </property>
         <property name="pixmap">
-         <pixmap resource="../qitom.qrc">:/plugins/icons/sendToPython.png</pixmap>
+         <pixmap resource="../qitom.qrc">:/plugins/icons/sendToPython.svg</pixmap>
         </property>
         <property name="scaledContents">
          <bool>false</bool>

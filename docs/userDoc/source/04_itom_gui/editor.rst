@@ -655,7 +655,7 @@ Code cells are a well known approach to bring more structure into bigger scripts
 can be used to divide the script in the editor into multiple sections, where the special comment line
 is the headline of a section, denoted as code cell.
 
-.. figure:: images/codeCell.png
+.. figure:: images/codeCell.svg
     :scale: 100%
     :align: center
 

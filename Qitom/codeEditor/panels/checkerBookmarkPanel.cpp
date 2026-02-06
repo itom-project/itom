@@ -68,7 +68,7 @@ CheckerBookmarkPanel::CheckerBookmarkPanel(BookmarkModel *bookmarkModel, const Q
     m_pJobRunner = new DelayJobRunner<CheckerBookmarkPanel, void(CheckerBookmarkPanel::*)(QList<QVariant>)>(100);
 
     m_pContextMenu = new QMenu(this);
-    m_contextMenuActions["toggleBM"] = m_pContextMenu->addAction(QIcon(":/bookmark/icons/bookmarkToggle.png"), tr("&Toggle Bookmark"), this, SLOT(menuToggleBookmark()));
+    m_contextMenuActions["toggleBM"] = m_pContextMenu->addAction(QIcon(":/bookmark/icons/bookmarkToggle.svg"), tr("&Toggle Bookmark"), this, SLOT(menuToggleBookmark()));
     m_contextMenuActions["nextBM"] = m_pBookmarkModel->bookmarkNextAction();
     m_contextMenuActions["prevBM"] = m_pBookmarkModel->bookmarkPreviousAction();
     m_contextMenuActions["clearAllBM"] = m_pBookmarkModel->bookmarkClearAllAction();
@@ -142,27 +142,27 @@ QList<CodeCheckerItem> CheckerBookmarkPanel::markersForLine(int line) const
         switch (checkerStatus)
         {
         case CodeCheckerItem::Info:
-            return QIcon(":/script/icons/checkerInfo.png");
+            return QIcon(":/script/icons/checkerInfo.svg");
         case CodeCheckerItem::Warning:
-            return QIcon(":/script/icons/checkerWarning.png");
+            return QIcon(":/script/icons/checkerWarning.svg");
         case CodeCheckerItem::Error:
-            return QIcon(":/script/icons/syntaxError.png");
+            return QIcon(":/script/icons/syntaxError.svg");
         }
     }
     else if (hasBookmark && !hasCheckerMessages)
     {
-        return QIcon(":/bookmark/icons/bookmark.png");
+        return QIcon(":/bookmark/icons/bookmark.svg");
     }
     else if (hasBookmark && hasCheckerMessages)
     {
         switch (checkerStatus)
         {
         case CodeCheckerItem::Info:
-            return QIcon(":/script/icons/bookmarkAndInfo.png");
+            return QIcon(":/script/icons/bookmarkAndInfo.svg");
         case CodeCheckerItem::Warning:
-            return QIcon(":/script/icons/bookmarkAndWarning.png");
+            return QIcon(":/script/icons/bookmarkAndWarning.svg");
         case CodeCheckerItem::Error:
-            return QIcon(":/script/icons/bookmarkSyntaxError.png");
+            return QIcon(":/script/icons/bookmarkSyntaxError.svg");
         }
     }
 

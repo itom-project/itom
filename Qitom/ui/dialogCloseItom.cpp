@@ -47,7 +47,7 @@ DialogCloseItom::DialogCloseItom(QWidget *parent) :
 	ui.progressBarClose->setValue(0);
 	ui.progressBarClose->setMaximum(m_secondsToWait);
 	ui.progressBarClose->setVisible(false);
-	QPixmap pixmap(":/script/icons/stopScript.png");
+	QPixmap pixmap(":/script/icons/stopScript.svg");
     float dpiFactor = GuiHelper::screenDpiFactor(); //factor related to 96dpi (1.0)
     ui.labelImage->setPixmap(pixmap.scaled(32.0 / dpiFactor, 32.0 / dpiFactor, Qt::KeepAspectRatio));
 

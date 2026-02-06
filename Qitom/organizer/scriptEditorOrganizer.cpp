@@ -96,13 +96,13 @@ ScriptEditorOrganizer::ScriptEditorOrganizer(bool dockAvailable) :
         connect(qApp, SIGNAL(focusChanged(QWidget*, QWidget*)), this, SLOT(widgetFocusChanged(QWidget*, QWidget*)));
     }
 
-    QAction *a = m_commonScriptEditorActions.actNavigationForward = new QAction(QIcon(":/editor/icons/navigateForward.png"), tr("Navigate Forward"), this);
+    QAction *a = m_commonScriptEditorActions.actNavigationForward = new QAction(QIcon(":/editor/icons/navigateForward.svg"), tr("Navigate Forward"), this);
     connect(a, SIGNAL(triggered()), this, SLOT(navigateForward()));
     a->setEnabled(false);
 
     m_pGoBackNavigationMenu = new QMenu();
 
-    a = m_commonScriptEditorActions.actNavigationBackward = new QAction(QIcon(":/editor/icons/navigateBackward.png"), tr("Navigate Backward"), this);
+    a = m_commonScriptEditorActions.actNavigationBackward = new QAction(QIcon(":/editor/icons/navigateBackward.svg"), tr("Navigate Backward"), this);
     connect(a, SIGNAL(triggered()), this, SLOT(navigateBackward()));
     a->setMenu(m_pGoBackNavigationMenu);
     a->setEnabled(false);

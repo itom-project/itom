@@ -164,11 +164,11 @@ void BreakPointDockWidget::createActions()
     m_pActDelBP->connectTrigger(this, SLOT(mnuDeleteBP()));
     m_pActDelAllBPs     = new ShortcutAction(QIcon(":/breakpoints/icons/garbageAllBPs.png"), tr("Delete All Breakpoints"), this);
     m_pActDelAllBPs->connectTrigger(this, SLOT(mnuDeleteAllBPs()));
-    m_pActEditBP        = new ShortcutAction(QIcon(":/breakpoints/icons/itomcBreak.png"), tr("Edit Breakpoints"), this);
+    m_pActEditBP        = new ShortcutAction(QIcon(":/breakpoints/icons/itomcBreak.svg"), tr("Edit Breakpoints"), this);
     m_pActEditBP->connectTrigger(this, SLOT(mnuEditBreakpoint()));
-    m_pActToggleBP      = new ShortcutAction(QIcon(":/breakpoints/icons/itomBreakDisable.png"), tr("En- Or Disable Breakpoint"), this);
+    m_pActToggleBP      = new ShortcutAction(QIcon(":/breakpoints/icons/itomBreakDisable.svg"), tr("En- Or Disable Breakpoint"), this);
     m_pActToggleBP->connectTrigger(this, SLOT(mnuEnOrDisAbleBrakpoint()));
-    m_pActToggleAllBPs  = new ShortcutAction(QIcon(":/breakpoints/icons/itomBreakDisabledAll.png"), tr("En- Or Disable All Breakpoints"), this);
+    m_pActToggleAllBPs  = new ShortcutAction(QIcon(":/breakpoints/icons/itomBreakDisabledAll.svg"), tr("En- Or Disable All Breakpoints"), this);
     m_pActToggleAllBPs->connectTrigger(this, SLOT(mnuEnOrDisAbleAllBrakpoints()));
 }
 

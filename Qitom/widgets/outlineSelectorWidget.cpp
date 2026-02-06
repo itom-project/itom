@@ -87,7 +87,7 @@ OutlineSelectorWidget::OutlineSelectorWidget(
     act->setChecked(m_sortItems);
 
     m_actScopeChange = toolBar->addAction(
-        QIcon(":/files/icons/multiFilePython.png"),
+        QIcon(":/files/icons/multiFilePython.svg"),
         tr("Show the outline of all opened files"),
         this, SLOT(actScopeChanged(bool))
     );
@@ -152,7 +152,7 @@ void OutlineSelectorWidget::fillContent()
         foreach(const EditorOutline &eo, m_outlines)
         {
             QTreeWidgetItem *toplevel = new QTreeWidgetItem();
-            toplevel->setIcon(0, QIcon(":/files/icons/filePython.png"));
+            toplevel->setIcon(0, QIcon(":/files/icons/filePython.svg"));
 
             if (eo.filename != "")
             {

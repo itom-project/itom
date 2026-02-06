@@ -1574,7 +1574,7 @@ QTabBar::close-button {
   border: 0;
   margin: 2px;
   padding: 2px;
-  image: url(":/qss_icons/rc/window_close.png");
+  image: url(":/qss_icons/rc/window_close.svg");
 }
 
 QTabBar::close-button:hover {

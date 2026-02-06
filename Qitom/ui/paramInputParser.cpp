@@ -41,7 +41,7 @@ namespace ito {
 ParamInputParser::ParamInputParser(QWidget* canvas) : QObject(canvas)
 {
     m_canvas = QPointer<QWidget>(canvas);
-    m_iconInfo = QIcon(":/plugins/icons/info.png");
+    m_iconInfo = QIcon(":/plugins/icons/info.svg");
 }
 
 //-------------------------------------------------------------------------------------

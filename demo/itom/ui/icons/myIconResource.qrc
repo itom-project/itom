@@ -3,6 +3,6 @@
     <file>configure-icon.png</file>
     <file>document-decrypt-icon.png</file>
     <file>document-encrypt-icon.png</file>
-    <file alias="color-icon.png">format-stroke-color-icon.png</file>
+    <file alias="color-icon.svg">format-stroke-color-icon.svg</file>
 </qresource>
 </RCC>

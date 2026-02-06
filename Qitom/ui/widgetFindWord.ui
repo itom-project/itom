@@ -41,7 +41,7 @@
        </property>
        <property name="icon">
         <iconset resource="../qitom.qrc">
-         <normaloff>:/files/icons/close.png</normaloff>:/files/icons/close.png</iconset>
+         <normaloff>:/files/icons/close.svg</normaloff>:/files/icons/close.svg</iconset>
        </property>
       </widget>
      </item>
@@ -90,7 +90,7 @@
        </property>
        <property name="icon">
         <iconset resource="../qitom.qrc">
-         <normaloff>:/arrows/icons/1uparrow.png</normaloff>:/arrows/icons/1uparrow.png</iconset>
+         <normaloff>:/arrows/icons/1uparrow.svg</normaloff>:/arrows/icons/1uparrow.svg</iconset>
        </property>
        <property name="shortcut">
         <string>Shift+F3</string>
@@ -116,7 +116,7 @@
        </property>
        <property name="icon">
         <iconset resource="../qitom.qrc">
-         <normaloff>:/arrows/icons/1downarrow.png</normaloff>:/arrows/icons/1downarrow.png</iconset>
+         <normaloff>:/arrows/icons/1downarrow.svg</normaloff>:/arrows/icons/</iconset>
        </property>
        <property name="shortcut">
         <string>F3</string>
@@ -145,7 +145,7 @@
        </property>
        <property name="icon">
         <iconset resource="../qitom.qrc">
-         <normaloff>:/script/icons/bookmark.png</normaloff>:/script/icons/bookmark.png</iconset>
+         <normaloff>:/script/icons/bookmark.svg</normaloff>:/script/icons/bookmark.svg</iconset>
        </property>
       </widget>
      </item>

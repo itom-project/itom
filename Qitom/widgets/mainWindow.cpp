@@ -912,7 +912,7 @@ void MainWindow::createActions()
         connect(m_appFileNew, SIGNAL(triggered()), this, SLOT(mnuNewScript()));
         m_appFileNew->setShortcut(QKeySequence::New);
 
-        m_appFileOpen = new QAction(QIcon(":/files/icons/open.png"), tr("Open File..."), this);
+        m_appFileOpen = new QAction(QIcon(":/files/icons/open.svg"), tr("Open File..."), this);
         connect(m_appFileOpen, SIGNAL(triggered()), this, SLOT(mnuOpenFile()));
         m_appFileOpen->setShortcut(QKeySequence::Open);
     }
@@ -923,19 +923,19 @@ void MainWindow::createActions()
     if (uOrg->currentUserHasFeature(featProperties))
     {
         m_actions["properties"] =
-            new QAction(QIcon(":/application/icons/adBlockAction.png"), tr("Properties..."), this);
+            new QAction(QIcon(":/application/icons/adBlockAction.svg"), tr("Properties..."), this);
         connect(m_actions["properties"], SIGNAL(triggered()), this, SLOT(mnuShowProperties()));
     }
 
     if (uOrg->currentUserHasFeature(featUserManagement))
     {
         m_actions["usermanagement"] =
-            new QAction(QIcon(":/misc/icons/User.png"), tr("User Management..."), this);
+            new QAction(QIcon(":/misc/icons/User.svg"), tr("User Management..."), this);
         connect(
             m_actions["usermanagement"], SIGNAL(triggered()), this, SLOT(mnuShowUserManagement()));
     }
 
-    m_aboutQt = new QAction(QIcon(":/application/icons/helpAboutQt.png"), tr("About Qt..."), this);
+    m_aboutQt = new QAction(QIcon(":/application/icons/helpAboutQt.svg"), tr("About Qt..."), this);
     connect(m_aboutQt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
     // m_aboutQt->setShortcut(QKeySequence("F3"));
 
@@ -950,12 +950,12 @@ void MainWindow::createActions()
     }
 
     m_actions["show_loaded_plugins"] =
-        new QAction(QIcon(":/plugins/icons/plugin.png"), tr("Loaded Plugins..."), this);
+        new QAction(QIcon(":/plugins/icons/plugin.svg"), tr("Loaded Plugins..."), this);
     connect(
         m_actions["show_loaded_plugins"], SIGNAL(triggered()), this, SLOT(mnuShowLoadedPlugins()));
 
     a = m_actions["open_assistant"] =
-        new QAction(QIcon(":/application/icons/help.png"), tr("Help..."), this);
+        new QAction(QIcon(":/application/icons/help.svg"), tr("Help..."), this);
     a->setShortcut(QKeySequence::HelpContents);
     connect(a, SIGNAL(triggered()), this, SLOT(mnuShowAssistant()));
 
@@ -986,7 +986,7 @@ void MainWindow::createActions()
         connect(a, SIGNAL(triggered()), this, SLOT(mnuShowDesigner()));
 
         a = m_actions["python_global_runmode"] = new QAction(
-            QIcon(":/application/icons/pythonDebug.png"),
+            QIcon(":/application/icons/pythonDebug.svg"),
             tr("Run Python Code In Debug Mode"),
             this);
         a->setToolTip(tr("Set whether internal python code should be executed in debug mode"));
@@ -1002,7 +1002,7 @@ void MainWindow::createActions()
             SLOT(mnuToggleExecPyCodeByDebugger(bool)));
 
         a = m_actions["python_stopAction"] =
-            new QAction(QIcon(":/script/icons/stopScript.png"), tr("Stop"), this);
+            new QAction(QIcon(":/script/icons/stopScript.svg"), tr("Stop"), this);
         a->setShortcut(tr("Shift+F5"));
         connect(a, SIGNAL(triggered()), this, SLOT(mnuScriptStop()));
 
@@ -1127,7 +1127,7 @@ void MainWindow::createMenus()
     {
         // dynamically created Menu with the last files
         m_plastFilesMenu =
-            m_pMenuFile->addMenu(QIcon(":/files/icons/filePython.png"), tr("Recently Used Files"));
+            m_pMenuFile->addMenu(QIcon(":/files/icons/filePython.svg"), tr("Recently Used Files"));
         connect(
             this->m_plastFilesMenu, SIGNAL(aboutToShow()), this, SLOT(menuLastFilesAboutToShow()));
         // Add these menus dynamically
@@ -1168,7 +1168,7 @@ void MainWindow::createMenus()
     }
 
     m_pShowOpenFigure =
-        m_pMenuFigure->addMenu(QIcon(":/application/icons/showPlot.png"), tr("Current Figures"));
+        m_pMenuFigure->addMenu(QIcon(":/application/icons/showPlot.svg"), tr("Current Figures"));
     connect(m_pShowOpenFigure, SIGNAL(aboutToShow()), this, SLOT(mnuFigureAboutToShow()));
 
     if (uOrg->currentUserHasFeature(featDeveloper))
@@ -1265,7 +1265,7 @@ void MainWindow::menuLastFilesAboutToShow()
                 {
                     QString displayedPath = path;
                     IOHelper::elideFilepathMiddle(displayedPath, 200);
-                    a = new QAction(QIcon(":/files/icons/filePython.png"), displayedPath, this);
+                    a = new QAction(QIcon(":/files/icons/filePython.svg"), displayedPath, this);
                     m_plastFilesMenu->addAction(a);
                     connect(a, &QAction::triggered, [=]() { lastFileOpen(path); });
                 }
@@ -1365,7 +1365,7 @@ void MainWindow::mnuViewAboutToShow()
                 {
                     filenameElided = filename;
                     IOHelper::elideFilepathMiddle(filenameElided, 200);
-                    a = new QAction(QIcon(":/files/icons/filePython.png"), filenameElided, this);
+                    a = new QAction(QIcon(":/files/icons/filePython.svg"), filenameElided, this);
                     m_pMenuView->addAction(a);
                     connect(a, &QAction::triggered, [=]() { openScript(filename); });
                 }

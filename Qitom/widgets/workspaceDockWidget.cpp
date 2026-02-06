@@ -188,21 +188,21 @@ WorkspaceDockWidget::~WorkspaceDockWidget()
 void WorkspaceDockWidget::createActions()
 {
     m_actDelete = new ShortcutAction(
-        QIcon(":/workspace/icons/document-close-4.png"),
+        QIcon(":/workspace/icons/document-close-4.svg"),
         tr("Delete Selected Item(s)"),
         this,
         QKeySequence::Delete,
         Qt::WidgetWithChildrenShortcut);
     m_actDelete->connectTrigger(this, SLOT(mnuDeleteItem()));
     m_actExport = new ShortcutAction(
-        QIcon(":/workspace/icons/document-export.png"),
+        QIcon(":/workspace/icons/document-export.svg"),
         tr("Export Selected Item(s)"),
         this,
         QKeySequence::Save,
         Qt::WidgetWithChildrenShortcut);
     m_actExport->connectTrigger(this, SLOT(mnuExportItem()));
     m_actImport = new ShortcutAction(
-        QIcon(":/workspace/icons/document-import.png"), tr("Import Item(s)"), this);
+        QIcon(":/workspace/icons/document-import.svg"), tr("Import Item(s)"), this);
     m_actImport->connectTrigger(this, SLOT(mnuImportItem()));
     m_actRename = new ShortcutAction(
         QIcon(":/workspace/icons/edit-rename.png"),
@@ -233,7 +233,7 @@ void WorkspaceDockWidget::createActions()
     checkToggleUnpack();
 
     m_actClearAll = new ShortcutAction(
-        QIcon(":/workspace/icons/closeAll.png"), tr("Clear All Variables"), this);
+        QIcon(":/workspace/icons/closeAll.svg"), tr("Clear All Variables"), this);
     m_actClearAll->connectTrigger(this, SLOT(mnuClearAll()));
 }
 

@@ -465,7 +465,7 @@ void DataObjectTable::createActions()
     connect(ag, &QActionGroup::triggered, this, &DataObjectTable::numberFormatTriggered);
 
     QMenu* numberFormatMenu = new QMenu(tr("Number Format"), this);
-    numberFormatMenu->setIcon(QIcon(":general/icons/number_format.png"));
+    numberFormatMenu->setIcon(QIcon(":general/icons/number_format.svg"));
     numberFormatMenu->addActions(ag->actions());
 
     addAction(numberFormatMenu->menuAction());
@@ -487,7 +487,7 @@ void DataObjectTable::createActions()
     d->m_pActHeatmapOff->setCheckable(true);
 
     d->m_pActHeatmapRgb =
-        new QAction(QIcon(":/application/icons/color-icon.png"), tr("Real Color"), this);
+        new QAction(QIcon(":/application/icons/color-icon.svg"), tr("Real Color"), this);
     d->m_pActHeatmapRgb->setData(HeatmapType::RealColor);
     d->m_pActHeatmapRgb->setCheckable(true);
 
@@ -527,7 +527,7 @@ void DataObjectTable::createActions()
     d->m_pMenuHeatmap->addSeparator();
 
     d->m_pActHeatmapConfig =
-        new QAction(QIcon(":/application/icons/adBlockAction.png"), tr("Configure..."), this);
+        new QAction(QIcon(":/application/icons/adBlockAction.svg"), tr("Configure..."), this);
     connect(d->m_pActHeatmapConfig, &QAction::triggered, this, &DataObjectTable::configureHeatmap);
     d->m_pMenuHeatmap->addAction(d->m_pActHeatmapConfig);
 

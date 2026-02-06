@@ -53,13 +53,13 @@ DialogNewPluginInstance::DialogNewPluginInstance(QModelIndex &modelIndex, ito::A
     tempIcon = model->data(tempIndex, Qt::DecorationRole).value<QIcon>();
     if (tempIcon.isNull())
     {
-        tempIcon = QIcon(":/plugins/icons/plugin.png");
+        tempIcon = QIcon(":/plugins/icons/plugin.svg");
     }
 
     ui.lblIcon->setPixmap(tempIcon.pixmap(48 * dpiFactor, 48 * dpiFactor));
 	ui.lblIcon->setMaximumSize(48 * dpiFactor, 48 * dpiFactor);
 
-    tempIcon = QIcon(":/plugins/icons/sendToPython.png");
+    tempIcon = QIcon(":/plugins/icons/sendToPython.svg");
     ui.lblImage->setPixmap(tempIcon.pixmap(16 * dpiFactor, 16 * dpiFactor));
 	ui.lblImage->setMaximumSize(32 * dpiFactor, 32 * dpiFactor);
 

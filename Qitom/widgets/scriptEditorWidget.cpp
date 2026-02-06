@@ -648,7 +648,7 @@ void ScriptEditorWidget::initMenus()
     QMenu* editorMenu = contextMenu();
 
     m_editorMenuActions["cut"] = editorMenu->addAction(
-        QIcon(":/editor/icons/editCut.png"), tr("Cut"), this, SLOT(menuCut()), QKeySequence::Cut);
+        QIcon(":/editor/icons/editCut.svg"), tr("Cut"), this, SLOT(menuCut()), QKeySequence::Cut);
 
 
     m_editorMenuActions["copy"] = editorMenu->addAction(
@@ -659,7 +659,7 @@ void ScriptEditorWidget::initMenus()
         QKeySequence::Copy);
 
     m_editorMenuActions["paste"] = editorMenu->addAction(
-        QIcon(":/editor/icons/editPaste.png"),
+        QIcon(":/editor/icons/editPaste.svg"),
         tr("Paste"),
         this,
         SLOT(menuPaste()),
@@ -722,21 +722,21 @@ void ScriptEditorWidget::initMenus()
     editorMenu->addSeparator();
 
     m_editorMenuActions["runScript"] = editorMenu->addAction(
-        QIcon(":/script/icons/runScript.png"),
+        QIcon(":/script/icons/runScript.svg"),
         tr("Run Script"),
         this,
         SLOT(menuRunScript()),
         QKeySequence(tr("F5", "QShortcut")));
 
     m_editorMenuActions["runSelection"] = editorMenu->addAction(
-        QIcon(":/script/icons/runScript.png"),
+        QIcon(":/script/icons/runScript.svg"),
         tr("Run Selection"),
         this,
         SLOT(menuRunSelection()),
         QKeySequence(tr("F9", "QShortcut")));
 
     m_editorMenuActions["runCodeCell"] = editorMenu->addAction(
-        QIcon(":/editor/icons/runCodeCell.png"),
+        QIcon(":/editor/icons/runCodeCell.svg"),
         tr("Run Code Cell"),
         this,
         SLOT(menuRunCodeCell()),
@@ -750,14 +750,14 @@ void ScriptEditorWidget::initMenus()
         QKeySequence(tr("Shift+F9", "QShortcut")));
 
     m_editorMenuActions["debugScript"] = editorMenu->addAction(
-        QIcon(":/script/icons/debugScript.png"),
+        QIcon(":/script/icons/debugScript.svg"),
         tr("Debug Script"),
         this,
         SLOT(menuDebugScript()),
         QKeySequence(tr("F6", "QShortcut")));
 
     m_editorMenuActions["stopScript"] = editorMenu->addAction(
-        QIcon(":/script/icons/stopScript.png"),
+        QIcon(":/script/icons/stopScript.svg"),
         tr("Stop Script"),
         this,
         SLOT(menuStopScript()),

@@ -48,7 +48,7 @@ public:
         f.setPointSize(factor * f.pointSize());
         ui.lblInfo->setFont(f);
 
-        ui.btnClose->setIcon( QIcon(":/plugins/icons/pluginCloseInstance.png") );
+        ui.btnClose->setIcon( QIcon(":/plugins/icons/pluginCloseInstance.svg") );
         ui.btnClose->setText("");
         ui.btnClose->setIconSize( QSize(12 * factor, 12 * factor) );
 

@@ -100,7 +100,7 @@
       <string/>
      </property>
      <property name="pixmap">
-      <pixmap>../icons/stopScript.png</pixmap>
+      <pixmap>../icons/stopScript.svg</pixmap>
      </property>
     </widget>
    </item>

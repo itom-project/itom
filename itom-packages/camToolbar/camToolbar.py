@@ -48,7 +48,7 @@ class camToolbar(abstractObjInteractionToolBar):
                 self.myNameDelete,
                 "Live Image",
                 self.live,
-                ":/plots/icons/itom_icons/monitor.png",
+                ":/plots/icons/itom_icons/monitor.svg",
             )
             addButton(
                 self.myNameDelete,

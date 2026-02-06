@@ -60,11 +60,11 @@ QIcon OutlineItem::icon() const
     case typeClass:
         return QIcon(":/classNavigator/icons/class.png");
     case typePropertyGet:
-        return QIcon(":/classNavigator/icons/property_get.png");
+        return QIcon(":/classNavigator/icons/property_get.svg");
     case typePropertySet:
-        return QIcon(":/classNavigator/icons/property_set.png");
+        return QIcon(":/classNavigator/icons/property_set.svg");
     case typeCodeCell:
-        return QIcon(":/classNavigator/icons/codeCell.png");
+        return QIcon(":/classNavigator/icons/codeCell.svg");
     case typeClassMethod:
         if (m_private)
         {
@@ -77,11 +77,11 @@ QIcon OutlineItem::icon() const
     case typeStaticMethod:
         if (m_private)
         {
-            return QIcon(":/classNavigator/icons/method_static_private.png");
+            return QIcon(":/classNavigator/icons/method_static_private.svg");
         }
         else
         {
-            return QIcon(":/classNavigator/icons/method_static.png");
+            return QIcon(":/classNavigator/icons/method_static.svg");
         }
     case typeFunction:
     case typeMethod:

@@ -105,9 +105,9 @@ HelpTreeDockWidget::HelpTreeDockWidget(QWidget* parent, ito::AbstractDockWidget*
     }
 
     m_iconGallery[iconFilter] = QIcon(":/helpTreeDockWidget/filter");
-    m_iconGallery[iconPluginAlgo] = QIcon(":/plugins/icons/pluginAlgo.png");
-    m_iconGallery[iconPluginFilter] = QIcon(":/plugins/icons/pluginFilter.png");
-    m_iconGallery[iconWidget] = QIcon(":/plugins/icons/window.png");
+    m_iconGallery[iconPluginAlgo] = QIcon(":/plugins/icons/pluginAlgo.svg");
+    m_iconGallery[iconPluginFilter] = QIcon(":/plugins/icons/pluginFilter.svg");
+    m_iconGallery[iconWidget] = QIcon(":/plugins/icons/window.svg");
     m_iconGallery[iconPluginDataIO] = QIcon(":/helpTreeDockWidget/dataIO");
     m_iconGallery[iconPluginGrabber] = QIcon(":/helpTreeDockWidget/pluginGrabber");
     m_iconGallery[iconPluginAdda] = QIcon(":/helpTreeDockWidget/pluginAdda");

@@ -66,8 +66,8 @@ GlobalCheckerPanel::GlobalCheckerPanel(const QString &description /*= ""*/, QWid
     m_globalCheckerPanelMousePressed(false)
 {
     setScrollable(true);
-    m_breakpointIcon = QIcon(":/breakpoints/icons/itomBreak.png");
-    m_bookmarkIcon = QIcon(":/bookmark/icons/bookmark.png");
+    m_breakpointIcon = QIcon(":/breakpoints/icons/itomBreak.svg");
+    m_bookmarkIcon = QIcon(":/bookmark/icons/bookmark.svg");
 
     m_cacheRenewTimer.setSingleShot(true);
     m_cacheRenewTimer.setInterval(250);

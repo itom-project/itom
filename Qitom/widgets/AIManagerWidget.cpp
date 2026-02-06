@@ -91,18 +91,18 @@ AIManagerWidget::AIManagerWidget(
     connect(m_pActDockWidgetToolbar, SIGNAL(triggered()), this, SLOT(mnuToggleDockWidget()));
 
     m_pActCloseInstance =
-        new QAction(QIcon(":/plugins/icons/pluginCloseInstance.png"), tr("Close Instance"), this);
+        new QAction(QIcon(":/plugins/icons/pluginCloseInstance.svg"), tr("Close Instance"), this);
     connect(m_pActCloseInstance, SIGNAL(triggered()), this, SLOT(mnuCloseInstance()));
     m_pContextMenu->addAction(m_pActCloseInstance);
 
     m_pActCloseAllInstances =
-        new QAction(QIcon(":/plugins/icons/closeAll.png"), tr("Close All"), this);
+        new QAction(QIcon(":/plugins/icons/closeAll.svg"), tr("Close All"), this);
     connect(m_pActCloseAllInstances, SIGNAL(triggered()), this, SLOT(mnuCloseAllInstances()));
     m_pContextMenu->addAction(m_pActCloseAllInstances);
 
     m_pContextMenu->addSeparator();
 
-    m_pActLiveImage = new QAction(QIcon(":/plugins/icons/monitor.png"), tr("Live Image..."), this);
+    m_pActLiveImage = new QAction(QIcon(":/plugins/icons/monitor.svg"), tr("Live Image..."), this);
     connect(m_pActLiveImage, SIGNAL(triggered()), this, SLOT(mnuShowLiveImage()));
     m_pContextMenu->addAction(m_pActLiveImage);
 
@@ -111,23 +111,23 @@ AIManagerWidget::AIManagerWidget(
     connect(m_pActSnapDialog, SIGNAL(triggered()), this, SLOT(mnuSnapDialog()));
     m_pContextMenu->addAction(m_pActSnapDialog);
 
-    m_pActAutoGrabbing = new QAction(QIcon(":/misc/icons/shell.png"), tr("Auto Grabbing"), this);
+    m_pActAutoGrabbing = new QAction(QIcon(":/misc/icons/shell.svg"), tr("Auto Grabbing"), this);
     m_pActAutoGrabbing->setCheckable(true);
     connect(m_pActAutoGrabbing, SIGNAL(triggered()), this, SLOT(mnuToggleAutoGrabbing()));
     m_pContextMenu->addAction(m_pActAutoGrabbing);
 
-    m_pActOpenWidget = new QAction(QIcon(":/plugins/icons/window.png"), tr("Open Widget..."), this);
+    m_pActOpenWidget = new QAction(QIcon(":/plugins/icons/window.svg"), tr("Open Widget..."), this);
     connect(m_pActOpenWidget, SIGNAL(triggered()), this, SLOT(mnuOpenWidget()));
     m_pContextMenu->addAction(m_pActOpenWidget);
 
     m_pContextMenu->addSeparator();
 
-    m_pActInfo = new QAction(QIcon(":/plugins/icons/info.png"), tr("Info..."), this);
+    m_pActInfo = new QAction(QIcon(":/plugins/icons/info.svg"), tr("Info..."), this);
     connect(m_pActInfo, SIGNAL(triggered()), this, SLOT(mnuShowInfo()));
     m_pContextMenu->addAction(m_pActInfo);
 
     m_pActSendToPython =
-        new QAction(QIcon(":/plugins/icons/sendToPython.png"), tr("Send To Python..."), this);
+        new QAction(QIcon(":/plugins/icons/sendToPython.svg"), tr("Send To Python..."), this);
     connect(m_pActSendToPython, SIGNAL(triggered()), this, SLOT(mnuSendToPython()));
     m_pContextMenu->addAction(m_pActSendToPython);
 
@@ -257,9 +257,9 @@ AIManagerWidget::~AIManagerWidget()
 //-------------------------------------------------------------------------------------
 void AIManagerWidget::createActions()
 {
-    m_pViewList = new ShortcutAction(QIcon(":/application/icons/kdb_form.png"), tr("List"), this);
+    m_pViewList = new ShortcutAction(QIcon(":/application/icons/kdb_form.svg"), tr("List"), this);
     m_pViewList->connectTrigger(this, SLOT(showList()));
-    m_pViewDetails = new ShortcutAction(QIcon(":/application/icons/list.png"), tr("Details"), this);
+    m_pViewDetails = new ShortcutAction(QIcon(":/application/icons/list.svg"), tr("Details"), this);
     m_pViewDetails->connectTrigger(this, SLOT(showDetails()));
 }
 
@@ -267,7 +267,7 @@ void AIManagerWidget::createActions()
 void AIManagerWidget::createMenus()
 {
     m_pAIManagerViewSettingMenu = new QMenu(tr("Settings"), this);
-    m_pAIManagerViewSettingMenu->setIcon(QIcon(":/application/icons/adBlockAction.png"));
+    m_pAIManagerViewSettingMenu->setIcon(QIcon(":/application/icons/adBlockAction.svg"));
     m_pAIManagerViewSettingMenu->addAction(m_pViewList->action());
     m_pAIManagerViewSettingMenu->addAction(m_pViewDetails->action());
 }
@@ -483,7 +483,7 @@ void AIManagerWidget::selectionChanged(
 
     foreach (const QString &key, awList.keys())
     {
-        action = new QAction(QIcon(":/plugins/icons/window.png"), key, this);
+        action = new QAction(QIcon(":/plugins/icons/window.svg"), key, this);
         action->setData(key);
         actions.append(action);
     }

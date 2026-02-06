@@ -49,7 +49,7 @@ CallStackDockWidget::CallStackDockWidget(const QString &title, const QString &ob
 {
     m_emptyIcon = QIcon(":/application/icons/empty.png");
     m_currentIcon = QIcon(":/script/icons/currentLine.png");
-    m_selectedIcon = QIcon(":/script/icons/callstackLine.png");
+    m_selectedIcon = QIcon(":/script/icons/callstackLine.svg");
 
     m_table = new QTableWidget(this);
 

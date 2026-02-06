@@ -43,7 +43,7 @@ p, li { white-space: pre-wrap; }
         </property>
         <property name="icon">
          <iconset resource="icons/myIconResource.qrc">
-          <normaloff>:/myIcons/color-icon.png</normaloff>:/myIcons/color-icon.png</iconset>
+          <normaloff>:/myIcons/color-icon.svg</normaloff>:/myIcons/color-icon.svg</iconset>
         </property>
        </widget>
       </item>

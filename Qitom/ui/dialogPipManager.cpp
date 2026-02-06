@@ -582,9 +582,9 @@ void DialogPipManager::treeViewSelectionChanged(const QItemSelection &selected, 
 void DialogPipManager::tableCustomContextMenuRequested(const QPoint &pos)
 {
     QMenu *menu = new QMenu(this);
-    QAction *copyToClipboard = menu->addAction(QIcon(":/files/icons/clipboard.png"), tr("Export table to clipboard"));
+    QAction *copyToClipboard = menu->addAction(QIcon(":/files/icons/clipboard.svg"), tr("Export table to clipboard"));
     connect(copyToClipboard, SIGNAL(triggered()), this, SLOT(exportTableToClipboard()));
-    QAction *saveToCsv = menu->addAction(QIcon(":/files/icons/fileSave.png"), tr("Export table to csv-file..."));
+    QAction *saveToCsv = menu->addAction(QIcon(":/files/icons/fileSave.svg"), tr("Export table to csv-file..."));
     connect(saveToCsv, SIGNAL(triggered()), this, SLOT(exportTableToCsv()));
     menu->popup(ui.tablePackages->viewport()->mapToGlobal(pos));
 }

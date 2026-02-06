@@ -754,7 +754,7 @@ QTabBar:focus
 }
 
 QTabBar::close-button  {
-    image: url(:/qss_icons/rc/close.png);
+    image: url(:/qss_icons/rc/close.svg);
     background: transparent;
 }
 
@@ -892,7 +892,7 @@ QTabBar QToolButton::right-arrow:disabled {
 QDockWidget {
     background: #31363b;
     border: 1px solid #403F3F;
-    titlebar-close-icon: url(:/qss_icons/rc/close.png);
+    titlebar-close-icon: url(:/qss_icons/rc/close.svg);
     titlebar-normal-icon: url(:/qss_icons/rc/undock.png);
 }
 

@@ -80,10 +80,10 @@ PlugInModel::PlugInModel(ito::AddInManager* addInManager, QObject* parent /*= nu
     d->m_iconGrabber = QIcon(":/plugins/icons/pluginGrabber.png");
     d->m_iconADDA = QIcon(":/plugins/icons/pluginADDA.png");
     d->m_iconRawIO = QIcon(":/plugins/icons/pluginRawIO.png");
-    d->m_iconFilter = QIcon(":/plugins/icons/pluginFilter.png");
-    d->m_iconDataIO = QIcon(":/plugins/icons/plugin.png");
-    d->m_iconAlgo = QIcon(":/plugins/icons/pluginAlgo.png");
-    d->m_iconWidget = QIcon(":/plugins/icons/window.png");
+    d->m_iconFilter = QIcon(":/plugins/icons/pluginFilter.svg");
+    d->m_iconDataIO = QIcon(":/plugins/icons/plugin.svg");
+    d->m_iconAlgo = QIcon(":/plugins/icons/pluginAlgo.svg");
+    d->m_iconWidget = QIcon(":/plugins/icons/window.svg");
 
     d->m_treeFixNodes[0] = typeDataIO;
     d->m_treeFixNodes[1] = typeActuator;

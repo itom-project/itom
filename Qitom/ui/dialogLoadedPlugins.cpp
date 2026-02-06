@@ -43,10 +43,10 @@ DialogLoadedPlugins::DialogLoadedPlugins(QWidget* parent) :
     m_fileIconProvider = new QFileIconProvider();
     float dpiFactor = GuiHelper::screenDpiFactor(); // factor related to 96dpi (1.0)
 
-    ui.cmdError->setIcon(QIcon(":/application/icons/dialog-error-4.png"));
-    ui.cmdWarning->setIcon(QIcon(":/application/icons/dialog-warning-4.png"));
-    ui.cmdMessage->setIcon(QIcon(":/application/icons/dialog-information-4.png"));
-    ui.cmdIgnored->setIcon(QIcon(":/plugins/icons/ignored.png"));
+    ui.cmdError->setIcon(QIcon(":/application/icons/dialog-error-4.svg"));
+    ui.cmdWarning->setIcon(QIcon(":/application/icons/dialog-warning-4.svg"));
+    ui.cmdMessage->setIcon(QIcon(":/application/icons/dialog-information-4.svg"));
+    ui.cmdIgnored->setIcon(QIcon(":/plugins/icons/ignored.svg"));
     QSize iconSize(16 * dpiFactor, 16 * dpiFactor);
     ui.cmdError->setIconSize(iconSize);
     ui.cmdWarning->setIconSize(iconSize);
@@ -91,10 +91,10 @@ void DialogLoadedPlugins::init()
     ui.tree->header()->setMinimumSectionSize(dpiFactor * 21);
 
     QTreeWidgetItem* header = new QTreeWidgetItem();
-    header->setIcon(1, QIcon(":/application/icons/dialog-information-4.png"));
-    header->setIcon(2, QIcon(":/application/icons/dialog-warning-4.png"));
-    header->setIcon(3, QIcon(":/application/icons/dialog-error-4.png"));
-    header->setIcon(4, QIcon(":/plugins/icons/ignored.png"));
+    header->setIcon(1, QIcon(":/application/icons/dialog-information-4.svg"));
+    header->setIcon(2, QIcon(":/application/icons/dialog-warning-4.svg"));
+    header->setIcon(3, QIcon(":/application/icons/dialog-error-4.svg"));
+    header->setIcon(4, QIcon(":/plugins/icons/ignored.svg"));
     header->setText(5, "Library / Status");
     ui.tree->setHeaderItem(header);
 
@@ -132,17 +132,17 @@ void DialogLoadedPlugins::init()
             child->setIcon(5, QIcon());
             if (message->first & ito::plsfOk)
             {
-                child->setIcon(1, QIcon(":/application/icons/dialog-information-4.png"));
+                child->setIcon(1, QIcon(":/application/icons/dialog-information-4.svg"));
                 setSortChar(1, *child);
                 m_items.append(QPair<int, QTreeWidgetItem*>(
                     ito::plsfOk,
                     child)); // plsfOk is 0, that is bad, therefore use another value for retOk
-                plugin->setIcon(1, QIcon(":/application/icons/dialog-information-4.png"));
+                plugin->setIcon(1, QIcon(":/application/icons/dialog-information-4.svg"));
                 setSortChar(1, *plugin);
             }
             else if (message->first & ito::plsfWarning)
             {
-                child->setIcon(2, QIcon(":/application/icons/dialog-warning-4.png"));
+                child->setIcon(2, QIcon(":/application/icons/dialog-warning-4.svg"));
                 setSortChar(2, *child);
                 if (message->first & ito::plsfRelDbg)
                 {
@@ -153,25 +153,25 @@ void DialogLoadedPlugins::init()
                 {
                     m_items.append(QPair<int, QTreeWidgetItem*>(ito::plsfWarning, child));
                 }
-                plugin->setIcon(2, QIcon(":/application/icons/dialog-warning-4.png"));
+                plugin->setIcon(2, QIcon(":/application/icons/dialog-warning-4.svg"));
                 setSortChar(2, *plugin);
                 // pluginOK = false;
             }
             else if (message->first & ito::plsfIgnored)
             {
-                child->setIcon(4, QIcon(":/plugins/icons/ignored.png"));
+                child->setIcon(4, QIcon(":/plugins/icons/ignored.svg"));
                 setSortChar(4, *child);
                 m_items.append(QPair<int, QTreeWidgetItem*>(ito::plsfIgnored, child));
-                plugin->setIcon(4, QIcon(":/plugins/icons/ignored.png"));
+                plugin->setIcon(4, QIcon(":/plugins/icons/ignored.svg"));
                 setSortChar(4, *plugin);
                 // pluginOK = false;
             }
             else
             {
-                child->setIcon(3, QIcon(":/application/icons/dialog-error-4.png"));
+                child->setIcon(3, QIcon(":/application/icons/dialog-error-4.svg"));
                 setSortChar(3, *child);
                 m_items.append(QPair<int, QTreeWidgetItem*>(ito::plsfError, child));
-                plugin->setIcon(3, QIcon(":/application/icons/dialog-error-4.png"));
+                plugin->setIcon(3, QIcon(":/application/icons/dialog-error-4.svg"));
                 setSortChar(3, *plugin);
                 // pluginOK = false;
             }

@@ -40,7 +40,7 @@
            </property>
            <property name="icon">
             <iconset>
-             <normaloff>icons/2leftarrow.png</normaloff>icons/2leftarrow.png</iconset>
+             <normaloff>icons/2leftarrow.svg</normaloff>icons/2leftarrow.svg</iconset>
            </property>
           </widget>
          </item>
@@ -51,7 +51,7 @@
            </property>
            <property name="icon">
             <iconset>
-             <normaloff>icons/1leftarrow.png</normaloff>icons/1leftarrow.png</iconset>
+             <normaloff>icons/1leftarrow.svg</normaloff>icons/1leftarrow.svg</iconset>
            </property>
           </widget>
          </item>
@@ -62,7 +62,7 @@
            </property>
            <property name="icon">
             <iconset>
-             <normaloff>icons/1rightarrow.png</normaloff>icons/1rightarrow.png</iconset>
+             <normaloff>icons/1rightarrow.svg</normaloff>icons/1rightarrow.svg</iconset>
            </property>
           </widget>
          </item>
@@ -73,7 +73,7 @@
            </property>
            <property name="icon">
             <iconset>
-             <normaloff>icons/2rightarrow.png</normaloff>icons/2rightarrow.png</iconset>
+             <normaloff>icons/2rightarrow.svg</normaloff>icons/2rightarrow.svg</iconset>
            </property>
           </widget>
          </item>
@@ -165,7 +165,7 @@
   <action name="actionClose">
    <property name="icon">
     <iconset>
-     <normalon>icons/close.png</normalon>
+     <normalon>icons/close.svg</normalon>
     </iconset>
    </property>
    <property name="text">

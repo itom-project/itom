@@ -185,7 +185,7 @@ HelpViewer::HelpViewer(QWidget *parent /*= NULL*/) :
 	connect(zoomOutAction, SIGNAL(triggered()), this, SLOT(mnuZoomOutWindow()));
 	toolbar->addAction(zoomOutAction);
 
-	QAction *defaultZoomAction = new QAction(QIcon(":/plots/icons/zoom-3.png"), tr("Default zoom"), this);
+	QAction *defaultZoomAction = new QAction(QIcon(":/plots/icons/zoom-3.svg"), tr("Default zoom"), this);
 	connect(defaultZoomAction, SIGNAL(triggered()), this, SLOT(mnuDefaultZoomWindow()));
 	toolbar->addAction(defaultZoomAction);
 
@@ -195,7 +195,7 @@ HelpViewer::HelpViewer(QWidget *parent /*= NULL*/) :
 	connect(showFindWordBar, SIGNAL(triggered()), this, SLOT(showFindWordBar()));
 	toolbar->addAction(showFindWordBar);
 
-	QAction *closeHelpAction = new QAction(QIcon(":/files/icons/close.png"), tr("Exit"), this);
+	QAction *closeHelpAction = new QAction(QIcon(":/files/icons/close.svg"), tr("Exit"), this);
 	connect(closeHelpAction, SIGNAL(triggered()), this, SLOT(mnuCloseWindow()));
 	toolbar->addAction(closeHelpAction);
 

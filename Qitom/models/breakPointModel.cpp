@@ -374,7 +374,7 @@ QVariant BreakPointModel::data(const QModelIndex &index, int role) const
             }
             else if(role == Qt::DecorationRole)
             {
-                return QIcon(":/files/icons/filePython.png");
+                return QIcon(":/files/icons/filePython.svg");
             }
         }
         else // these columns are always empty in toplevel items
@@ -416,22 +416,22 @@ QVariant BreakPointModel::data(const QModelIndex &index, int role) const
             { // conditioned
                 if (item.enabled)
                 {
-                    return QIcon(":/breakpoints/icons/itomcBreak.png");
+                    return QIcon(":/breakpoints/icons/itomcBreak.svg");
                 }
                 else
                 {
-                    return QIcon(":/breakpoints/icons/itomCBreakDisabled.png");
+                    return QIcon(":/breakpoints/icons/itomCBreakDisabled.svg");
                 }
             }
             else
             { // not conditioned
                 if (item.enabled)
                 {
-                    return QIcon(":/breakpoints/icons/itomBreak.png");
+                    return QIcon(":/breakpoints/icons/itomBreak.svg");
                 }
                 else
                 {
-                    return QIcon(":/breakpoints/icons/itomBreakDisabled.png");
+                    return QIcon(":/breakpoints/icons/itomBreakDisabled.svg");
                 }
             }
         }

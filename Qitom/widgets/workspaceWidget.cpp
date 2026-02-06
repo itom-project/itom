@@ -87,7 +87,7 @@ WorkspaceWidget::WorkspaceWidget(bool globalNotLocal, QWidget* parent) :
     clear();
     m_itemHash.clear();
 
-    QIcon icon(":/application/icons/preferences-python.png");
+    QIcon icon(":/application/icons/preferences-python.svg");
     const float screenFactor = GuiHelper::screenDpiFactor();
     m_dragPixmap = icon.pixmap(screenFactor * 22, screenFactor * 22);
 

@@ -65,21 +65,21 @@ BreakpointPanel::BreakpointPanel(const QString &description /*= ""*/, QWidget *p
     setContextMenuPolicy(Qt::DefaultContextMenu);
 
     m_icons[TextBlockUserData::TypeNoBp] = QIcon();
-    m_icons[TextBlockUserData::TypeBp] = QIcon(":/breakpoints/icons/itomBreak.png");
-    m_icons[TextBlockUserData::TypeBpDisabled] = QIcon(":/breakpoints/icons/itomBreakDisabled.png");
-    m_icons[TextBlockUserData::TypeBpEdit] = QIcon(":/breakpoints/icons/itomcBreak.png");
-    m_icons[TextBlockUserData::TypeBpEditDisabled] = QIcon(":/breakpoints/icons/itomCBreakDisabled.png");
+    m_icons[TextBlockUserData::TypeBp] = QIcon(":/breakpoints/icons/itomBreak.svg");
+    m_icons[TextBlockUserData::TypeBpDisabled] = QIcon(":/breakpoints/icons/itomBreakDisabled.svg");
+    m_icons[TextBlockUserData::TypeBpEdit] = QIcon(":/breakpoints/icons/itomcBreak.svg");
+    m_icons[TextBlockUserData::TypeBpEditDisabled] = QIcon(":/breakpoints/icons/itomCBreakDisabled.svg");
 
     m_currentLineIcon = QIcon(":/script/icons/currentLine.png"); //yellow arrow
-    m_selectedCallstackLineIcon = QIcon(":/script/icons/callstackLine.png"); //green arrow
+    m_selectedCallstackLineIcon = QIcon(":/script/icons/callstackLine.svg"); //green arrow
 
     m_pContextMenu = new QMenu(this);
 
-    m_contextMenuActions["toggleBP"] = m_pContextMenu->addAction(QIcon(":/breakpoints/icons/itomBreak.png"), tr("&Toggle Breakpoint"), this, SLOT(menuToggleBreakpoint()));
-    m_contextMenuActions["toggleBPEnabled"] = m_pContextMenu->addAction(QIcon(":/breakpoints/icons/itomBreakDisable.png"), tr("&Disable Breakpoint"), this, SLOT(menuToggleEnableBreakpoint()));
-    m_contextMenuActions["editConditionBP"] = m_pContextMenu->addAction(QIcon(":/breakpoints/icons/itomcBreak.png"), tr("&Edit Condition"), this, SLOT(menuEditBreakpoint()));
-    m_contextMenuActions["nextBP"] = m_pContextMenu->addAction(QIcon(":/breakpoints/icons/breakpointNext.png"), tr("&Next Breakpoint"), this, SLOT(menuGotoNextBreakPoint()));
-    m_contextMenuActions["prevBP"] = m_pContextMenu->addAction(QIcon(":/breakpoints/icons/breakpointPrevious.png"),tr("&Previous Breakpoint"), this, SLOT(menuGotoPreviousBreakPoint()));
+    m_contextMenuActions["toggleBP"] = m_pContextMenu->addAction(QIcon(":/breakpoints/icons/itomBreak.svg"), tr("&Toggle Breakpoint"), this, SLOT(menuToggleBreakpoint()));
+    m_contextMenuActions["toggleBPEnabled"] = m_pContextMenu->addAction(QIcon(":/breakpoints/icons/itomBreakDisable.svg"), tr("&Disable Breakpoint"), this, SLOT(menuToggleEnableBreakpoint()));
+    m_contextMenuActions["editConditionBP"] = m_pContextMenu->addAction(QIcon(":/breakpoints/icons/itomcBreak.svg"), tr("&Edit Condition"), this, SLOT(menuEditBreakpoint()));
+    m_contextMenuActions["nextBP"] = m_pContextMenu->addAction(QIcon(":/breakpoints/icons/breakpointNext.svg"), tr("&Next Breakpoint"), this, SLOT(menuGotoNextBreakPoint()));
+    m_contextMenuActions["prevBP"] = m_pContextMenu->addAction(QIcon(":/breakpoints/icons/breakpointPrevious.svg"),tr("&Previous Breakpoint"), this, SLOT(menuGotoPreviousBreakPoint()));
     m_contextMenuActions["clearALLBP"] = m_pContextMenu->addAction(QIcon(":/breakpoints/icons/garbageAllBPs.png"), tr("&Delete All Breakpoints"), this, SLOT(menuClearAllBreakpoints()));
 }
 

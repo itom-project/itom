@@ -77,13 +77,13 @@ BookmarkModel::BookmarkModel() : QAbstractItemModel(), m_currentIndex(-1)
     m_filenameCaseSensitivity = Qt::CaseInsensitive;
 #endif
 
-    m_pBookmarkNext = new QAction(QIcon(":/bookmark/icons/bookmarkNext.png"), tr("&Next Bookmark"), this);
+    m_pBookmarkNext = new QAction(QIcon(":/bookmark/icons/bookmarkNext.svg"), tr("&Next Bookmark"), this);
     connect(m_pBookmarkNext, SIGNAL(triggered()), this, SLOT(gotoNextBookmark()));
 
-    m_pBookmarkPrevious = new QAction(QIcon(":/bookmark/icons/bookmarkPrevious.png"), tr("&Previous Bookmark"), this);
+    m_pBookmarkPrevious = new QAction(QIcon(":/bookmark/icons/bookmarkPrevious.svg"), tr("&Previous Bookmark"), this);
     connect(m_pBookmarkPrevious, SIGNAL(triggered()), this, SLOT(gotoPreviousBookmark()));
 
-    m_pBookmarkClearAll = new QAction(QIcon(":/bookmark/icons/bookmarkClearAll.png"), tr("&Clear All Bookmarks"), this);
+    m_pBookmarkClearAll = new QAction(QIcon(":/bookmark/icons/bookmarkClearAll.svg"), tr("&Clear All Bookmarks"), this);
     connect(m_pBookmarkClearAll, SIGNAL(triggered()), this, SLOT(clearAllBookmarks()));
 
     updateActions();
@@ -337,7 +337,7 @@ QVariant BookmarkModel::data(const QModelIndex &index, int role) const
     }
     else if (role == Qt::DecorationRole)
     {
-        return QIcon(":/bookmark/icons/bookmark.png");
+        return QIcon(":/bookmark/icons/bookmark.svg");
     }
     else if (role == Qt::ToolTipRole || role == RoleFilename)
     {

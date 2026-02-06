@@ -177,7 +177,7 @@
     <file>rc/transparent_focus@2x.png</file>
     <file>rc/transparent_pressed.png</file>
     <file>rc/transparent_pressed@2x.png</file>
-    <file>rc/window_close.png</file>
+    <file>rc/window_close.svg</file>
     <file>rc/window_close@2x.png</file>
     <file>rc/window_close_disabled.png</file>
     <file>rc/window_close_disabled@2x.png</file>

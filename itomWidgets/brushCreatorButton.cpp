@@ -182,11 +182,10 @@ void BrushCreatorButton::changeBrush()
 
     d->dialog->setShowAlphaChannel(d->m_showAlphaChannel);
 
-    if (d->>exec())
-    {
-        d->m_icon = QIcon();
-    }
-
+   if (d->dialog && d->dialog->exec() == QDialog::Accepted)
+{
+    d->m_icon = QIcon();
+}
 
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
