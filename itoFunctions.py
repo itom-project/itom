@@ -55,7 +55,7 @@ def getModuleFile(mod):
 
 
 def reloadModules(modNames):
-    import imp
+    import importlib as imp
 
     res = []
     for i in modNames:
