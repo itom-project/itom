@@ -146,6 +146,77 @@
        x2="57"
        y2="64.007812"
        gradientTransform="matrix(0.20490092,0,0,2.6751636,50.88634,-112.71047)" />
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient2-1"
+       id="radialGradient33119"
+       cx="-244.31538"
+       cy="-96.459435"
+       fx="-244.31538"
+       fy="-96.459435"
+       r="14.868506"
+       gradientTransform="matrix(-1,-6.5155108e-7,0,-1.0786576,-488.63077,-200.80564)"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       id="linearGradient2-1">
+      <stop
+         style="stop-color:#ffffff;stop-opacity:0.80000001;"
+         offset="0"
+         id="stop1" />
+      <stop
+         style="stop-color:#ffffff;stop-opacity:0;"
+         offset="1"
+         id="stop2" />
+    </linearGradient>
+    <filter
+       inkscape:collect="always"
+       style="color-interpolation-filters:sRGB"
+       id="filter33119"
+       x="-0.043002983"
+       y="-0.054311031"
+       width="1.086006"
+       height="1.1086221">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="0.53282511"
+         id="feGaussianBlur33119" />
+    </filter>
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient33121"
+       id="radialGradient33119-2"
+       cx="-244.35156"
+       cy="-95.703133"
+       fx="-244.35156"
+       fy="-95.703133"
+       r="14.868506"
+       gradientTransform="matrix(-1.7435737,0.04647276,-0.02874105,-1.0782746,-669.02954,-194.72992)"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       id="linearGradient33121"
+       inkscape:collect="always">
+      <stop
+         style="stop-color:#000000;stop-opacity:0.749"
+         offset="0"
+         id="stop33120" />
+      <stop
+         style="stop-color:#000000;stop-opacity:0;"
+         offset="1"
+         id="stop33121" />
+    </linearGradient>
+    <filter
+       inkscape:collect="always"
+       style="color-interpolation-filters:sRGB"
+       id="filter33119-5"
+       x="-0.13169664"
+       y="-0.16632754"
+       width="1.2633933"
+       height="1.3326551">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="1.6317769"
+         id="feGaussianBlur33119-1" />
+    </filter>
   </defs>
   <sodipodi:namedview
      id="base"
@@ -158,7 +229,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="4"
-     inkscape:cx="64"
+     inkscape:cx="64.125"
      inkscape:cy="59.125"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
@@ -170,9 +241,9 @@
      gridspacingy="4px"
      gridempspacing="2"
      inkscape:window-width="1920"
-     inkscape:window-height="991"
-     inkscape:window-x="-9"
-     inkscape:window-y="835"
+     inkscape:window-height="1046"
+     inkscape:window-x="-11"
+     inkscape:window-y="-11"
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      inkscape:window-maximized="1" />
@@ -222,5 +293,21 @@
        width="16.392075"
        id="rect1"
        style="opacity:1;fill:url(#linearGradient2);fill-opacity:1;stroke:none;stroke-width:1.40892;stroke-miterlimit:0;stroke-dasharray:none;stroke-opacity:1" />
+    <ellipse
+       style="mix-blend-mode:normal;fill:url(#radialGradient33119);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.276768;stroke-opacity:1;paint-order:stroke fill markers;filter:url(#filter33119)"
+       id="path33118"
+       cx="-244.27402"
+       cy="-89.847656"
+       rx="14.868506"
+       ry="11.772749"
+       transform="matrix(3.1733952,0,0,2.5523754,839.67799,262.91365)" />
+    <ellipse
+       style="opacity:0.5;mix-blend-mode:normal;fill:url(#radialGradient33119-2);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.276768;stroke-opacity:1;paint-order:stroke fill markers;filter:url(#filter33119-5)"
+       id="path33118-1"
+       cx="-240.23396"
+       cy="-95.163055"
+       rx="14.868506"
+       ry="11.772749"
+       transform="matrix(3.2387198,0,0,-2.5523754,842.55049,-150.55682)" />
   </g>
 </svg>

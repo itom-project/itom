@@ -6,8 +6,8 @@
    height="128"
    id="svg3669"
    sodipodi:version="0.32"
-   inkscape:version="1.4.3 (0d15f75, 2025-12-25)"
-   sodipodi:docname="window.svg"
+   inkscape:version="1.4.2 (f4327f4, 2025-05-13)"
+   sodipodi:docname="pluginFilter.svg"
    version="1.0"
    inkscape:output_extension="org.inkscape.output.svgz.inkscape"
    inkscape:export-filename="/home/david/svn/pics/oxygen/32x32/actions/window-new.png"
@@ -371,16 +371,6 @@
        y1="-468.66934"
        x2="1055.3002"
        y2="-481.76657" />
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient4711"
-       id="linearGradient2930"
-       gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(0.1057852,0,0,0.1756605,180.53595,499.66043)"
-       x1="-333.0289"
-       y1="-1473.6504"
-       x2="-333.0289"
-       y2="-776.61371" />
   </defs>
   <sodipodi:namedview
      inkscape:document-units="px"
@@ -389,15 +379,15 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="5.6568542"
-     inkscape:cx="121.26881"
-     inkscape:cy="63.020892"
+     inkscape:zoom="2"
+     inkscape:cx="40.25"
+     inkscape:cy="76.750001"
      inkscape:current-layer="layer1"
      id="namedview3673"
-     inkscape:window-width="2400"
-     inkscape:window-height="1261"
-     inkscape:window-x="2391"
-     inkscape:window-y="-9"
+     inkscape:window-width="1920"
+     inkscape:window-height="1046"
+     inkscape:window-x="-11"
+     inkscape:window-y="-11"
      showgrid="true"
      showguides="true"
      inkscape:guide-bbox="true"
@@ -422,6 +412,13 @@
        originx="0"
        originy="0"
        units="px" />
+    <sodipodi:guide
+       position="64,64"
+       orientation="-1,0"
+       id="guide1"
+       inkscape:locked="false"
+       inkscape:label=""
+       inkscape:color="rgb(0,134,229)" />
   </sodipodi:namedview>
   <metadata
      id="metadata3675">
@@ -1719,126 +1716,76 @@
        style="opacity:0.40163933"
        transform="matrix(1.2444386,0,0,0.8967627,474.40199,937.20278)"
        id="g4412" />
-    <path
-       sodipodi:nodetypes="cccccccccccccccccc"
-       id="path2906"
-       d="m 85.16695,240.87613 c -1.00084,0 -1.796369,1.08096 -1.796369,2.43749 v 95.12498 c 0,1.35655 0.795529,2.4375 1.796369,2.4375 h 100.92338 c 1.00086,0 1.79636,-1.08095 1.79636,-2.4375 v -95.12498 c 0,-1.35653 -0.7955,-2.43749 -1.79636,-2.43749 z m 1.2248,3.65625 h 98.47377 c 0.9508,0 1.71473,1.02406 1.71473,2.29688 v 90.24997 c 0,1.2728 -0.76393,2.29687 -1.71473,2.29687 H 86.39175 c -0.9508,0 -1.71472,-1.02407 -1.71472,-2.29687 v -90.24997 c 0,-1.27282 0.76392,-2.29688 1.71472,-2.29688 z"
-       style="fill:url(#linearGradient2930);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:4;stroke-opacity:1" />
     <g
-       id="g3"
-       transform="matrix(1.1843607,0,0,1.3839369,-15.370256,-120.44508)">
-      <path
-         id="path2908"
-         d="M 83.370581,276.8761 H 187.88669 v 64 H 83.370581 Z"
-         style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.67877;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dashoffset:4;stroke-opacity:1" />
-      <text
-         xml:space="preserve"
-         transform="translate(79.62865,236.8761)"
-         id="text8"
-         style="writing-mode:lr-tb;direction:ltr;white-space:pre;shape-inside:url(#rect8);display:inline;fill:#151515" />
-      <text
-         xml:space="preserve"
-         style="writing-mode:lr-tb;direction:ltr;fill:#151515"
-         x="111.62523"
-         y="299.80859"
-         id="text9"><tspan
-           sodipodi:role="line"
-           id="tspan9"
-           x="111.62523"
-           y="299.80859"></tspan></text>
-      <text
-         xml:space="preserve"
-         transform="translate(79.62865,236.8761)"
-         id="text10"
-         style="writing-mode:lr-tb;direction:ltr;white-space:pre;shape-inside:url(#rect10);display:inline;fill:#151515" />
-      <text
-         xml:space="preserve"
-         transform="translate(79.62865,236.8761)"
-         id="text11"
-         style="writing-mode:lr-tb;direction:ltr;white-space:pre;shape-inside:url(#rect11);display:inline;fill:#151515" />
-      <text
-         xml:space="preserve"
-         style="writing-mode:lr-tb;direction:ltr;fill:#151515"
-         x="109.68069"
-         y="297.33374"
-         id="text12"><tspan
-           sodipodi:role="line"
-           id="tspan12"
-           x="109.68069"
-           y="297.33374"></tspan></text>
-      <text
-         xml:space="preserve"
-         transform="translate(79.62865,236.8761)"
-         id="text13"
-         style="letter-spacing:100px;writing-mode:lr-tb;direction:ltr;white-space:pre;shape-inside:url(#rect13);display:inline;fill:#151515" />
-      <text
-         xml:space="preserve"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:2.35;font-family:'Cambria Math';-inkscape-font-specification:'Cambria Math';letter-spacing:100px;writing-mode:lr-tb;direction:ltr;fill:#151515"
-         x="112.15556"
-         y="296.80341"
-         id="text14"><tspan
-           sodipodi:role="line"
-           id="tspan14"
-           x="112.15556"
-           y="296.80341"></tspan></text>
-      <text
-         xml:space="preserve"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:3.55;font-family:'Cambria Math';-inkscape-font-specification:'Cambria Math';letter-spacing:100px;writing-mode:lr-tb;direction:ltr;fill:#151515"
-         x="123.2925"
-         y="298.57117"
-         id="text15"><tspan
-           sodipodi:role="line"
-           id="tspan15"
-           x="123.2925"
-           y="298.57117" /></text>
-      <text
-         xml:space="preserve"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:3.55;font-family:'Cambria Math';-inkscape-font-specification:'Cambria Math';letter-spacing:100px;writing-mode:lr-tb;direction:ltr;fill:#151515"
-         x="123.2925"
-         y="298.57117"
-         id="text16"><tspan
-           sodipodi:role="line"
-           id="tspan16"
-           x="123.2925"
-           y="298.57117" /></text>
-      <text
-         xml:space="preserve"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:66.6667px;line-height:3.55;font-family:'Cambria Math';-inkscape-font-specification:'Cambria Math';letter-spacing:100px;writing-mode:lr-tb;direction:ltr;white-space:pre;inline-size:11.5417;display:inline;fill:#151515"
-         x="130.54034"
-         y="299.98538"
-         id="text17"><tspan
-           x="130.54034"
-           y="299.98538"
-           id="tspan1">x</tspan></text>
-      <text
-         xml:space="preserve"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:66.6667px;line-height:3.55;font-family:'Cambria Math';-inkscape-font-specification:'Cambria Math';letter-spacing:100px;writing-mode:lr-tb;direction:ltr;white-space:pre;inline-size:14.2889;display:inline;fill:#151515"
-         x="142.38437"
-         y="327.91611"
-         id="text18"><tspan
-           x="142.38437"
-           y="327.91611"
-           id="tspan2">x</tspan></text>
-      <text
-         xml:space="preserve"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:66.6667px;line-height:3.55;font-family:'Cambria Math';-inkscape-font-specification:'Cambria Math';letter-spacing:100px;writing-mode:lr-tb;direction:ltr;white-space:pre;inline-size:23.0288;display:inline;fill:#151515"
-         x="101.1954"
-         y="325.61801"
-         id="text19"
-         transform="translate(-1.5909903,1.9445437)"><tspan
-           x="101.1954"
-           y="325.61801"
-           id="tspan3">f</tspan></text>
-      <text
-         xml:space="preserve"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:66.6667px;line-height:3.55;font-family:'Cambria Math';-inkscape-font-specification:'Cambria Math';letter-spacing:100px;writing-mode:lr-tb;direction:ltr;fill:#151515"
-         x="131.601"
-         y="327.56256"
-         id="text20"><tspan
-           sodipodi:role="line"
-           id="tspan20"
-           x="131.601"
-           y="327.56256">x</tspan></text>
+       data-mml-node="math"
+       data-latex="fx"
+       data-semantic-type="appl"
+       data-semantic-role="simple function"
+       data-semantic-annotation="clearspeak:simple;depth:1"
+       data-semantic-id="3"
+       data-semantic-children="0,1"
+       data-semantic-content="2,0"
+       data-semantic-attributes="latex:fx"
+       data-semantic-owns="0 2 1"
+       aria-level="0"
+       data-speech-node="true"
+       data-semantic-structure="(3 0 2 1)"
+       id="g4-0"
+       transform="matrix(0.09594726,0,0,-0.09594726,92.723138,324.55273)"
+       style="fill:#000000;stroke:#000000;stroke-width:0">
+      <g
+         data-mml-node="mi"
+         data-latex="f"
+         data-semantic-type="identifier"
+         data-semantic-role="simple function"
+         data-semantic-font="italic"
+         data-semantic-annotation="clearspeak:simple;nemeth:number;depth:2"
+         data-semantic-id="0"
+         data-semantic-parent="3"
+         data-semantic-attributes="latex:f"
+         data-semantic-operator="appl"
+         aria-level="1"
+         data-speech-node="true"
+         id="g1">
+        <path
+           id="use1"
+           d="m 552,633 c 0,44 -43,72 -90,72 -62,0 -105,-40 -128,-119 -5,-18 -16,-69 -32,-153 h -65 c -22,0 -33,-1 -33,-22 0,-11 10,-16 31,-16 h 60 L 222,8 c -11,-57 -21,-99 -30,-127 -12,-37 -29,-56 -51,-56 -15,0 -27,4 -38,11 32,5 48,24 48,56 0,26 -13,39 -40,39 -34,0 -58,-30 -58,-64 0,-44 41,-72 88,-72 25,0 48,10 67,31 32,33 57,80 75,143 11,39 21,77 28,115 l 58,311 h 82 c 23,0 33,1 33,24 0,9 -10,14 -30,14 h -77 c 6,41 34,192 43,211 10,21 24,31 42,31 15,0 28,-4 39,-11 -31,-7 -47,-25 -47,-56 0,-26 13,-39 40,-39 34,0 58,30 58,64 z" />
+      </g>
+      <g
+         data-mml-node="mo"
+         data-semantic-type="punctuation"
+         data-semantic-role="application"
+         data-semantic-annotation="nemeth:number;depth:2"
+         data-semantic-id="2"
+         data-semantic-parent="3"
+         data-semantic-added="true"
+         data-semantic-operator="appl"
+         aria-level="1"
+         data-speech-node="true"
+         transform="translate(552)"
+         id="g2">
+        <path
+           id="use2"
+           d="" />
+      </g>
+      <g
+         data-mml-node="mi"
+         data-latex="x"
+         data-semantic-type="identifier"
+         data-semantic-role="latinletter"
+         data-semantic-font="italic"
+         data-semantic-annotation="clearspeak:simple;nemeth:number;depth:2"
+         data-semantic-id="1"
+         data-semantic-parent="3"
+         data-semantic-attributes="latex:x"
+         aria-level="1"
+         data-speech-node="true"
+         transform="translate(552)"
+         id="g3-7">
+        <path
+           id="use3"
+           d="m 449.03307,373 c 0,46 -45,69 -95,69 -43,0 -77,-23 -103,-69 -21,46 -56,69 -107,69 -49.000003,0 -89.000003,-23 -121.000003,-68 -27,-39 -41,-68 -41,-87 0,-9 5,-14 15,-14 9,0 15,5 17,14 19,58 61,126 128.000003,126 33,0 49,-21 49,-62 0,-21 -18,-99 -53,-233 -17,-67 -47.000003,-100 -90.000003,-100 -14,0 -27,3 -38,8 26,10 39,28 39,54 0,26 -13,39 -40,39 -33,0 -58,-28 -58,-61 0,-46 47,-69 96,-69 42,0 76.000003,23 103.000003,69 19,-46 55,-69 107,-69 48,0 88,23 120,68 27,39 41,68 41,87 0,9 -5,14 -15,14 -9,0 -14,-5 -17,-14 -17,-57 -62,-126 -127,-126 -33,0 -50,20 -50,61 0,13 5,41 16,86 l 34,135 c 19,75 50,113 94,113 14,0 27,-3 38,-8 -27,-9 -40,-27 -40,-54 0,-26 14,-39 41,-39 32,0 57,29 57,61 z" />
+      </g>
     </g>
   </g>
 </svg>
