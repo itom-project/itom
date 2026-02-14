@@ -36,18 +36,21 @@
 namespace ito
 {
 
+    //----------------------------------------------------------------------------
 DialogReloadModule::DialogReloadModule(QWidget* parent) :
-    QDialog(parent)
+    QDialog(parent),
+    m_enabled(false)
 {
     ui.setupUi(this);
-    connect(ui.btnReload, SIGNAL(clicked()), this, SLOT(dialogAccepted()));
-    connect(ui.treeWidget, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)), this, SLOT(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)));
-    connect(ui.checkShowBuildin, SIGNAL(clicked(bool)), this, SLOT(checkBuildinClicked(bool)));
-    connect(ui.checkShowFromPythonPath, SIGNAL(clicked(bool)), this, SLOT(checkPythonPathClicked(bool)));
+    connect(ui.btnReload, &QPushButton::clicked, this, &DialogReloadModule::dialogAccepted);
+    connect(ui.treeWidget, &QTreeWidget::currentItemChanged, this, &DialogReloadModule::currentItemChanged);
+    connect(ui.treeWidget, &QTreeWidget::itemSelectionChanged, this, &DialogReloadModule::itemSelectionChanged);
+    connect(ui.checkShowBuildin, &QCheckBox::clicked, this, &DialogReloadModule::checkBuildinClicked);
+    connect(ui.checkShowFromPythonPath, &QCheckBox::clicked, this, &DialogReloadModule::checkPythonPathClicked);
 
     ui.treeWidget->setHeaderLabel(tr("Module Name"));
     ui.treeWidget->sortByColumn(0, Qt::AscendingOrder);
-    ui.treeWidget->setSelectionMode(QAbstractItemView::MultiSelection);
+    ui.treeWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
     enableUI(false);
 
@@ -55,6 +58,7 @@ DialogReloadModule::DialogReloadModule(QWidget* parent) :
 
 }
 
+//----------------------------------------------------------------------------
 void DialogReloadModule::loadModules()
 {
     int pos;
@@ -101,10 +105,10 @@ void DialogReloadModule::loadModules()
         {
             //refill
 
-            for(int i=0;i<modNames->size();i++)
+            for(int i = 0; i < modNames->size(); ++i)
             {
                 key = (*modNames)[i];
-                pos = key.lastIndexOf( ".");
+                pos = key.lastIndexOf(".");
                 part1 = pos >= 0 ? key.left(pos) : "";
                 part2 = pos >= 0 ? key.mid(pos+1) : key;
 
@@ -132,16 +136,16 @@ void DialogReloadModule::loadModules()
             enableUI(true);
         }
     }
-
 }
 
+//----------------------------------------------------------------------------
 void DialogReloadModule::dialogAccepted()
 {
     PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
-    if(pyEngine == NULL)
+
+    if(pyEngine == nullptr)
     {
         QMessageBox::critical(this, tr("Python Engine is invalid"), tr("The Python Engine could not be found"));
-        emit accept();
     }
     else
     {
@@ -175,16 +179,31 @@ void DialogReloadModule::dialogAccepted()
         {
             QMessageBox::information(this, tr("Module reload"), tr("The following modules could not be reloaded:\n") + mods->join("\n"));
         }
-
-        emit accept();
     }
 }
 
-void DialogReloadModule::enableUI(bool enabled)
+//----------------------------------------------------------------------------
+void DialogReloadModule::itemSelectionChanged()
 {
-    ui.btnReload->setEnabled(enabled);
+    ui.btnReload->setEnabled(m_enabled && ui.treeWidget->selectedItems().size() > 0);
 }
 
+//----------------------------------------------------------------------------
+void DialogReloadModule::enableUI(bool enabled)
+{
+    if (!enabled)
+    {
+        ui.btnReload->setEnabled(enabled);
+    }
+    else
+    {
+        ui.btnReload->setEnabled(ui.treeWidget->selectedItems().size() > 0);
+    }
+
+    m_enabled = enabled;
+}
+
+//----------------------------------------------------------------------------
 void DialogReloadModule::currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem * /*previous*/)
 {
     if(current)
@@ -199,6 +218,7 @@ void DialogReloadModule::currentItemChanged(QTreeWidgetItem *current, QTreeWidge
     }
 }
 
+//----------------------------------------------------------------------------
 void DialogReloadModule::filterItems()
 {
     bool showBuildins = ui.checkShowBuildin->isChecked();

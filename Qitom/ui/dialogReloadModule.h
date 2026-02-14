@@ -20,8 +20,7 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef DIALOGRELOADMODULE_H
-#define DIALOGRELOADMODULE_H
+#pragma once
 
 #include <QtGui>
 #include <qdialog.h>
@@ -49,12 +48,14 @@ private:
     Ui::DialogReloadModule ui;
 
     QMap<QString, QTreeWidgetItem*> m_items;
+    bool m_enabled;
 
 private slots:
     void loadModules();
     void currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
     void checkBuildinClicked(bool /*checked*/) { filterItems(); }
     void checkPythonPathClicked(bool /*checked*/) { filterItems(); }
+    void itemSelectionChanged();
 
 public slots:
     void dialogAccepted();
@@ -64,5 +65,3 @@ private slots:
 };
 
 } //end namespace ito
-
-#endif
