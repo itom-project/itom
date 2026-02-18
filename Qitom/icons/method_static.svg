@@ -6,7 +6,7 @@
    height="64"
    id="svg2"
    version="1.1"
-   inkscape:version="1.4.2 (f4327f4, 2025-05-13)"
+   inkscape:version="1.4.2 (ebf0e94, 2025-05-08)"
    sodipodi:docname="method_static.svg"
    inkscape:export-filename="D:\itom\sources\itom\Qitom\icons\method_static_private.png"
    inkscape:export-xdpi="90"
@@ -579,13 +579,13 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="7.2407734"
-     inkscape:cx="16.089441"
-     inkscape:cy="38.877062"
+     inkscape:cx="-21.406553"
+     inkscape:cy="31.143082"
      inkscape:document-units="px"
      inkscape:current-layer="g8207"
      showgrid="true"
-     inkscape:window-width="1920"
-     inkscape:window-height="1046"
+     inkscape:window-width="3840"
+     inkscape:window-height="2054"
      inkscape:window-x="-11"
      inkscape:window-y="-11"
      inkscape:window-maximized="1"
@@ -636,39 +636,9 @@
          transform="matrix(0.78864328,0,0,0.78864328,6.7402827,215.59415)"
          style="stroke-width:6.34000206;stroke-miterlimit:1;stroke-dasharray:none">
         <path
-           inkscape:connector-curvature="0"
-           id="path6598"
-           d="m -6.378334,1013.8747 20.678752,-6.5749 26.299664,5.8323 -19.277569,8.5884 z"
-           style="display:inline;fill:#2b93d9;fill-opacity:1;fill-rule:evenodd;stroke:none;filter:url(#filter4086)"
-           transform="matrix(0.97506412,0,0,1,-0.17577465,0)" />
-        <path
-           inkscape:connector-curvature="0"
-           id="path6609"
-           d="m -6.378334,1013.8747 27.70319,7.8395 -1.349304,34.0058 -25.8826526,-11.609 z"
-           style="display:inline;fill:#59aae1;fill-opacity:1;fill-rule:evenodd;stroke:none;filter:url(#filter4086)"
-           transform="matrix(0.97506412,0,0,1,-0.17577465,0)" />
-        <path
-           inkscape:connector-curvature="0"
-           id="path6622"
-           d="m 40.600082,1013.1321 -2.233185,29.8554 -18.391345,12.7325 1.349304,-34.0058 z"
-           style="display:inline;fill:#9bccee;fill-opacity:1;fill-rule:evenodd;stroke:none;filter:url(#filter4086)"
-           transform="matrix(0.97506412,0,0,1,-0.17577465,0)" />
-        <path
-           style="display:inline;fill:#bbbbbb;fill-opacity:1;fill-rule:evenodd;stroke:none;filter:url(#filter4086)"
-           d="m 24.809132,991.00444 20.678752,-6.5749 26.299664,5.8323 -19.277569,8.5884 z"
-           id="path4339-5"
-           inkscape:connector-curvature="0"
-           transform="matrix(0.97506412,0,0,1,-0.17577465,0)" />
-        <path
            style="display:inline;fill:#949494;fill-opacity:1;fill-rule:evenodd;stroke:none;filter:url(#filter4086)"
            d="m 24.809132,991.00444 27.70319,7.8395 -1.349304,34.00576 -25.882653,-11.609 z"
            id="path4345-5"
-           inkscape:connector-curvature="0"
-           transform="matrix(0.97506412,0,0,1,-0.17577465,0)" />
-        <path
-           style="display:inline;fill:#6d6d6d;fill-opacity:1;fill-rule:evenodd;stroke:none;filter:url(#filter4086)"
-           d="m 71.787548,990.26184 -2.233185,29.85536 -18.391345,12.7325 1.349304,-34.00576 z"
-           id="path4359-1"
            inkscape:connector-curvature="0"
            transform="matrix(0.97506412,0,0,1,-0.17577465,0)" />
         <g
@@ -691,6 +661,18 @@
              d="m 40.600082,1013.1321 -2.233185,29.8554 -18.391345,12.7325 1.349304,-34.0058 z"
              style="display:inline;fill:#e6c139;fill-opacity:1;fill-rule:evenodd;stroke:none" />
         </g>
+        <path
+           style="display:inline;fill:#bbbbbb;fill-opacity:1;fill-rule:evenodd;stroke:none;filter:url(#filter4086)"
+           d="m 24.809132,991.00444 20.678752,-6.5749 26.299664,5.8323 -19.277569,8.5884 z"
+           id="path4339-5"
+           inkscape:connector-curvature="0"
+           transform="matrix(0.97506412,0,0,1,-0.17577465,0)" />
+        <path
+           style="display:inline;fill:#6d6d6d;fill-opacity:1;fill-rule:evenodd;stroke:none;filter:url(#filter4086)"
+           d="m 71.787548,990.26184 -2.233185,29.85536 -18.391345,12.7325 1.349304,-34.00576 z"
+           id="path4359-1"
+           inkscape:connector-curvature="0"
+           transform="matrix(0.97506412,0,0,1,-0.17577465,0)" />
         <rect
            height="850"
            id="rect2300"

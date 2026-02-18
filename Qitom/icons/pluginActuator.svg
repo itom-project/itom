@@ -7,7 +7,7 @@
    viewBox="0 0 16.933333 16.933333"
    version="1.1"
    id="svg1"
-   inkscape:version="1.4.2 (f4327f4, 2025-05-13)"
+   inkscape:version="1.4.2 (ebf0e94, 2025-05-08)"
    sodipodi:docname="pluginActuator.svg"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
@@ -24,11 +24,11 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
-     inkscape:zoom="4.1776837"
-     inkscape:cx="11.609304"
-     inkscape:cy="58.04652"
-     inkscape:window-width="1920"
-     inkscape:window-height="1046"
+     inkscape:zoom="16.710735"
+     inkscape:cx="33.690918"
+     inkscape:cy="37.550713"
+     inkscape:window-width="3840"
+     inkscape:window-height="2054"
      inkscape:window-x="-11"
      inkscape:window-y="-11"
      inkscape:window-maximized="1"
@@ -1890,10 +1890,10 @@
        cy="11.41983"
        rx="4.8391008"
        ry="0.88226706"
-       transform="rotate(20,2.2218483,6.5103995)" />
+       transform="matrix(0.97717462,0.35566249,-0.35566249,0.97717462,1.0605954,-0.12685646)" />
     <g
        id="g1"
-       transform="matrix(0.10827434,0,0,0.10827434,30.360118,27.073213)">
+       transform="matrix(0.13425244,0,0,0.13425244,35.475698,31.258446)">
       <g
          id="g150-0"
          transform="matrix(0,-0.26458333,0.26458333,0,-304.53541,-32.724254)"
