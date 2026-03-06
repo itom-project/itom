@@ -77,7 +77,7 @@ AIManagerWidget::AIManagerWidget(
     m_pContextMenu->addAction(m_pActNewInstance);
 
     m_pShowConfDialog =
-        new QAction(QIcon(":/plugins/icons/pluginConfigure.svg"), tr("Configuration Dialog"), this);
+        new QAction(QIcon(":/plugins/icons/plugin-configure.svg"), tr("Configuration Dialog"), this);
     connect(m_pShowConfDialog, SIGNAL(triggered()), this, SLOT(mnuShowConfdialog()));
     m_pContextMenu->addAction(m_pShowConfDialog);
 

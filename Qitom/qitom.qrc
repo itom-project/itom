@@ -152,13 +152,13 @@
         <file>icons/editReplaceAll.svg</file>
         <file>icons/editSmartIndent.svg</file>
         <file>icons/editUncomment.svg</file>
-        <file>icons/editUndo.svg</file>
+        <file>icons/edit-undo.svg</file>
         <file>icons/editUnindent.svg</file>
         <file>icons/iconList.svg</file>
         <file>icons/navigateBackward.svg</file>
         <file>icons/navigateForward.svg</file>
         <file>icons/runCodeCell.svg</file>
-        <file>icons/runCodeCellAndAdvance.svg</file>
+        <file>icons/runCodeCellAndAdvance.png</file>
     </qresource>
     <qresource prefix="/script">
         <file>icons/continue.svg</file>
@@ -201,7 +201,7 @@
         <file>icons/itom_icons/2dc.svg</file>
         <file>icons/itom_icons/3d.svg</file>
         <file>icons/itom_icons/autoscal.svg</file>
-        <file>icons/itom_icons/blkorwht.svg</file>
+        <file>icons/itom_icons/blkorwht.png </file>
         <file>icons/itom_icons/color.svg</file>
         <file>icons/itom_icons/colorbar.svg</file>
         <file>icons/itom_icons/filmplay.svg</file>
@@ -219,7 +219,7 @@
         <file>icons/pluginGrabber.svg</file>
         <file>icons/pluginRawIO.svg</file>
         <file>icons/pluginADDA.svg</file>
-        <file>icons/pluginConfigure.svg</file>
+        <file>icons/plugin-configure.svg</file>
         <file>icons/pluginToolbox.svg</file>
         <file>icons/pluginNewInstance.svg</file>
         <file>icons/pluginCloseInstance.svg</file>
