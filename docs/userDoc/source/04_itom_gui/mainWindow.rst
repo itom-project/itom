@@ -123,8 +123,8 @@ This is an overview about the menu structure of itom
 +------------+--------------------+----------------------+--------------------------------------------------------------------------------------------+
 
 .. |mainsymbols| image:: images/mainsymbols.png
-.. |mainnew| image:: images/mainnew.png
-.. |mainopen| image:: images/mainopen.png
+.. |mainnew| image:: images/mainnew.svg
+.. |mainopen| image:: images/mainopen.svg
 .. |mainqtdesigner| image:: images/mainqtdesigner.png
 .. |mainhelp| image:: images/mainhelp.png
 .. |debugOn| image:: images/pythonDebug.png

@@ -40,7 +40,7 @@ namespace ito
 */
 TimerModel::TimerModel() :
     QAbstractItemModel(),
-    m_iconRunning(QIcon(":/application/icons/timerRun.png")),
+    m_iconRunning(QIcon(":/application/icons/timerRun.svg")),
     m_iconStopped(QIcon(":/application/icons/timerStop.svg")),
     m_timerId(-1),
     m_enableCount(0)

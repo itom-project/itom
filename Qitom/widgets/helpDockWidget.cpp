@@ -69,16 +69,16 @@ HelpDockWidget::~HelpDockWidget()
 //----------------------------------------------------------------------------------------------------------------------------------
 void HelpDockWidget::createActions()
 {
-    m_pActBackward = new QAction(QIcon(":/editor/icons/editUndo.png"), tr("backwards"), this);
+    m_pActBackward = new QAction(QIcon(":/editor/icons/editUndo.svg"), tr("backwards"), this);
     connect(m_pActBackward, SIGNAL(triggered()), m_pHelpWidget, SLOT(navigateBackwards()));
 
-    m_pActForward = new QAction(QIcon(":/editor/icons/editRedo.png"), tr("forwards"), this);
+    m_pActForward = new QAction(QIcon(":/editor/icons/editRedo.svg"), tr("forwards"), this);
     connect(m_pActForward, SIGNAL(triggered()), m_pHelpWidget, SLOT(navigateForwards()));
 
-    m_pActExpand = new QAction(QIcon(":/editor/icons/editSmartIndent.png"), tr("expand tree"), this);
+    m_pActExpand = new QAction(QIcon(":/editor/icons/editSmartIndent.svg"), tr("expand tree"), this);
     connect(m_pActExpand, SIGNAL(triggered()), m_pHelpWidget, SLOT(expandTree()));
 
-    m_pActCollapse = new QAction(QIcon(":/editor/icons/editUnindent.png"), tr("collapse tree"), this);
+    m_pActCollapse = new QAction(QIcon(":/editor/icons/editUnindent.svg"), tr("collapse tree"), this);
     connect(m_pActCollapse, SIGNAL(triggered()), m_pHelpWidget, SLOT(collapseTree()));
 
     connect(this, &HelpDockWidget::showPluginInfo, m_pHelpWidget, &HelpTreeDockWidget::showPluginInfo);

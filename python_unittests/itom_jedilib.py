@@ -46,7 +46,7 @@ dataObject"""
         item = result[0]
         self.assertEqual(item[0], "dataObject")
         self.assertEqual(item[1], "class dataObject")
-        self.assertEqual(item[2], ":/classNavigator/icons/class.png")
+        self.assertEqual(item[2], ":/classNavigator/icons/class.svg")
 
         text = """from itom import dataObject
 myObj = dataObject([2, 2])
@@ -82,7 +82,7 @@ dataObject.ones([2, 2])"""
         item = result[0]
         self.assertEqual(item[0], "abs")
         self.assertEqual(item[1], "def abs")
-        self.assertEqual(item[2], ":/classNavigator/icons/method.png")
+        self.assertEqual(item[2], ":/classNavigator/icons/method.svg")
 
         # check staic method
         result = jedilib.completions(text, 5, 13, path="", prefix="")
@@ -90,7 +90,7 @@ dataObject.ones([2, 2])"""
         item = result[0]
         self.assertEqual(item[0], "ones")
         self.assertEqual(item[1], "def ones")
-        self.assertEqual(item[2], ":/classNavigator/icons/method.png")
+        self.assertEqual(item[2], ":/classNavigator/icons/method.svg")
 
     def test_completions_builtins_class(self):
         """completion test for builtin classes."""
@@ -100,7 +100,7 @@ dataObject.ones([2, 2])"""
         item = result[0]
         self.assertEqual(item[0], "range")
         self.assertEqual(item[1], "class range")
-        self.assertEqual(item[2], ":/classNavigator/icons/class.png")
+        self.assertEqual(item[2], ":/classNavigator/icons/class.svg")
 
         text = "bytes"
         result = jedilib.completions(text, 0, 5, path="", prefix="")
@@ -108,7 +108,7 @@ dataObject.ones([2, 2])"""
         item = result[0]
         self.assertEqual(item[0], "bytes")
         self.assertEqual(item[1], "class bytes")
-        self.assertEqual(item[2], ":/classNavigator/icons/class.png")
+        self.assertEqual(item[2], ":/classNavigator/icons/class.svg")
 
     def test_goto_assignments(self):
         """unittest for goto_assignments method."""

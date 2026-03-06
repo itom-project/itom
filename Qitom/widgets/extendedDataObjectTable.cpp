@@ -41,14 +41,14 @@ ExtendedDataObjectTable::ExtendedDataObjectTable(QWidget* parent /*= nullptr*/) 
     a->setSeparator(true);
     addAction(a);
 
-    m_pActPlot2d = new QAction(QIcon(":/plots/icons/itom_icons/2d.png"), tr("2D Image Plot"), this);
+    m_pActPlot2d = new QAction(QIcon(":/plots/icons/itom_icons/2d.svg"), tr("2D Image Plot"), this);
     connect(m_pActPlot2d, &QAction::triggered, this, &ExtendedDataObjectTable::showPlot2d);
     m_pActPlot2d->setStatusTip(
         tr("Opens the current table or current selection in a 2d image plot."));
     m_pActPlot2d->setEnabled(false);
     addAction(m_pActPlot2d);
 
-    m_pActPlot1d = new QAction(QIcon(":/plots/icons/itom_icons/1d.png"), tr("1D Line Plot"), this);
+    m_pActPlot1d = new QAction(QIcon(":/plots/icons/itom_icons/1d.svg"), tr("1D Line Plot"), this);
     connect(m_pActPlot1d, &QAction::triggered, this, &ExtendedDataObjectTable::showPlot1d);
     m_pActPlot1d->setStatusTip(
         tr("Opens the current table or current selection in a 1d line plot."));

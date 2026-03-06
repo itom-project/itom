@@ -54,13 +54,13 @@ class camToolbar(abstractObjInteractionToolBar):
                 self.myNameDelete,
                 "Snapshot",
                 self.takeSnapshot,
-                ":/measurement/icons/itom_icons/snap.png",
+                ":/measurement/icons/itom_icons/snap.svg",
             )
             addButton(
                 self.myNameDelete,
                 "Speed Shot",
                 self.takeSpeedShot,
-                ":/measurement/icons/itom_icons/snapQuick.png",
+                ":/measurement/icons/itom_icons/snapQuick.svg",
             )
 
     def __del__(self):

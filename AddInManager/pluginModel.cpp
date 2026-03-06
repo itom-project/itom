@@ -76,10 +76,10 @@ PlugInModel::PlugInModel(ito::AddInManager* addInManager, QObject* parent /*= nu
                    << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignRight)
                    << QVariant(Qt::AlignRight) << QVariant(Qt::AlignLeft);
 
-    d->m_iconActuator = QIcon(":/plugins/icons/pluginActuator.png");
+    d->m_iconActuator = QIcon(":/plugins/icons/pluginActuator.svg");
     d->m_iconGrabber = QIcon(":/plugins/icons/pluginGrabber.png");
-    d->m_iconADDA = QIcon(":/plugins/icons/pluginADDA.png");
-    d->m_iconRawIO = QIcon(":/plugins/icons/pluginRawIO.png");
+    d->m_iconADDA = QIcon(":/plugins/icons/pluginADDA.svg");
+    d->m_iconRawIO = QIcon(":/plugins/icons/pluginRawIO.svg");
     d->m_iconFilter = QIcon(":/plugins/icons/pluginFilter.svg");
     d->m_iconDataIO = QIcon(":/plugins/icons/plugin.svg");
     d->m_iconAlgo = QIcon(":/plugins/icons/pluginAlgo.svg");

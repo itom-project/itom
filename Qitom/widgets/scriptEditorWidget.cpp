@@ -652,7 +652,7 @@ void ScriptEditorWidget::initMenus()
 
 
     m_editorMenuActions["copy"] = editorMenu->addAction(
-        QIcon(":/editor/icons/editCopy.png"),
+        QIcon(":/editor/icons/editCopy.svg"),
         tr("Copy"),
         this,
         SLOT(menuCopy()),
@@ -668,28 +668,28 @@ void ScriptEditorWidget::initMenus()
     editorMenu->addSeparator();
 
     m_editorMenuActions["indent"] = editorMenu->addAction(
-        QIcon(":/editor/icons/editIndent.png"),
+        QIcon(":/editor/icons/editIndent.svg"),
         tr("Indent"),
         this,
         SLOT(menuIndent()),
         QKeySequence(tr("Tab", "QShortcut")));
 
     m_editorMenuActions["unindent"] = editorMenu->addAction(
-        QIcon(":/editor/icons/editUnindent.png"),
+        QIcon(":/editor/icons/editUnindent.svg"),
         tr("Unindent"),
         this,
         SLOT(menuUnindent()),
         QKeySequence(tr("Shift+Tab", "QShortcut")));
 
     m_editorMenuActions["comment"] = editorMenu->addAction(
-        QIcon(":/editor/icons/editComment.png"),
+        QIcon(":/editor/icons/editComment.svg"),
         tr("Comment"),
         this,
         SLOT(menuComment()),
         QKeySequence(tr("Ctrl+R", "QShortcut")));
 
     m_editorMenuActions["uncomment"] = editorMenu->addAction(
-        QIcon(":/editor/icons/editUncomment.png"),
+        QIcon(":/editor/icons/editUncomment.svg"),
         tr("Uncomment"),
         this,
         SLOT(menuUncomment()),
@@ -743,7 +743,7 @@ void ScriptEditorWidget::initMenus()
         QKeySequence(tr("Ctrl+F9", "QShortcut")));
 
     m_editorMenuActions["runCodeCellAndAdvance"] = editorMenu->addAction(
-        QIcon(":/editor/icons/runCodeCellAndAdvance.png"),
+        QIcon(":/editor/icons/runCodeCellAndAdvance.svg"),
         tr("Run Code Cell And Advance"),
         this,
         SLOT(menuRunCodeCellAndAdvance()),
@@ -789,7 +789,7 @@ void ScriptEditorWidget::initMenus()
     editorMenu->addSeparator();
 
     m_editorMenuActions["findSymbols"] = editorMenu->addAction(
-        QIcon(":/classNavigator/icons/at.png"),
+        QIcon(":/classNavigator/icons/at.svg"),
         tr("Fast Symbol Search..."),
         this,
         SIGNAL(findSymbolsShowRequested()),

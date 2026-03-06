@@ -166,7 +166,7 @@ HelpViewer::HelpViewer(QWidget *parent /*= NULL*/) :
     toolbar->addAction(forward);
 
 	QAction* reload = m_pView->pageAction(QWebEnginePage::Reload);
-    reload->setIcon(QIcon(":/application/icons/reload.png"));
+    reload->setIcon(QIcon(":/application/icons/reload.svg"));
     toolbar->addAction(reload);
 
 	toolbar->addSeparator();

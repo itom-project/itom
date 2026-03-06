@@ -64,7 +64,7 @@ addButton(
     "demobar",
     "call methodArgs",
     methodArgs,
-    icon=":/arrows/icons/plus.png",
+    icon=":/arrows/icons/plus.svg",
     argtuple=("arg1", 23),
 )
 # add another button to 'demobar' and use a lambda function as callback

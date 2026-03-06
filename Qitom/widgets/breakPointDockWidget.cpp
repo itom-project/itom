@@ -160,9 +160,9 @@ void BreakPointDockWidget::createToolBars()
 //----------------------------------------------------------------------------------------------------------------------------------
 void BreakPointDockWidget::createActions()
 {
-    m_pActDelBP         = new ShortcutAction(QIcon(":/breakpoints/icons/garbageBP.png"), tr("Delete Breakpoint"), this);
+    m_pActDelBP         = new ShortcutAction(QIcon(":/breakpoints/icons/garbageBP.svg"), tr("Delete Breakpoint"), this);
     m_pActDelBP->connectTrigger(this, SLOT(mnuDeleteBP()));
-    m_pActDelAllBPs     = new ShortcutAction(QIcon(":/breakpoints/icons/garbageAllBPs.png"), tr("Delete All Breakpoints"), this);
+    m_pActDelAllBPs     = new ShortcutAction(QIcon(":/breakpoints/icons/garbageAllBPs.svg"), tr("Delete All Breakpoints"), this);
     m_pActDelAllBPs->connectTrigger(this, SLOT(mnuDeleteAllBPs()));
     m_pActEditBP        = new ShortcutAction(QIcon(":/breakpoints/icons/itomcBreak.svg"), tr("Edit Breakpoints"), this);
     m_pActEditBP->connectTrigger(this, SLOT(mnuEditBreakpoint()));

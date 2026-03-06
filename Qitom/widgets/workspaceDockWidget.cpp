@@ -205,7 +205,7 @@ void WorkspaceDockWidget::createActions()
         QIcon(":/workspace/icons/document-import.svg"), tr("Import Item(s)"), this);
     m_actImport->connectTrigger(this, SLOT(mnuImportItem()));
     m_actRename = new ShortcutAction(
-        QIcon(":/workspace/icons/edit-rename.png"),
+        QIcon(":/workspace/icons/edit-rename.svg"),
         tr("Rename Selected Item"),
         this,
         QKeySequence(tr("F2")),
@@ -213,20 +213,20 @@ void WorkspaceDockWidget::createActions()
     m_actRename->connectTrigger(this, SLOT(mnuRenameItem()));
 
     m_dObjPlot1d =
-        new ShortcutAction(QIcon(":/plots/icons/itom_icons/1d.png"), tr("1D Line Plot"), this);
+        new ShortcutAction(QIcon(":/plots/icons/itom_icons/1d.svg"), tr("1D Line Plot"), this);
     m_dObjPlot1d->connectTrigger(this, SLOT(mnuPlot1D()));
     m_dObjPlot2d =
-        new ShortcutAction(QIcon(":/plots/icons/itom_icons/2d.png"), tr("2D Image Plot"), this);
+        new ShortcutAction(QIcon(":/plots/icons/itom_icons/2d.svg"), tr("2D Image Plot"), this);
     m_dObjPlot2d->connectTrigger(this, SLOT(mnuPlot2D()));
     m_dObjPlot25d = new ShortcutAction(
-        QIcon(":/plots/icons/itom_icons/3d.png"), tr("2.5D Isometric Plot"), this);
+        QIcon(":/plots/icons/itom_icons/3d.svg"), tr("2.5D Isometric Plot"), this);
     m_dObjPlot25d->connectTrigger(this, SLOT(mnuPlot25D()));
     m_dObjPlot3d = new ShortcutAction(
-        QIcon(":/plots/icons/itom_icons/3d.png"), tr("3D Cloud Or Mesh Visualization"), this);
+        QIcon(":/plots/icons/itom_icons/3d.svg"), tr("3D Cloud Or Mesh Visualization"), this);
     m_dObjPlot3d->connectTrigger(this, SLOT(mnuPlot25D()));
 
     m_actUnpack =
-        new QAction(QIcon(":/application/icons/unpack.png"), tr("Unpack Loaded Dictionary"), this);
+        new QAction(QIcon(":/application/icons/unpack.svg"), tr("Unpack Loaded Dictionary"), this);
     m_actUnpack->setToolTip(tr("Unpack loaded dictionary from idc or mat files to workspace"));
     m_actUnpack->setCheckable(true);
     connect(m_actUnpack, SIGNAL(triggered()), this, SLOT(mnuToggleUnpack()));

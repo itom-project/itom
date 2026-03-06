@@ -56,9 +56,9 @@ QIcon OutlineItem::icon() const
     switch (m_type)
     {
     case typeRoot:
-        return QIcon(":/classNavigator/icons/global.png");
+        return QIcon(":/classNavigator/icons/global.svg");
     case typeClass:
-        return QIcon(":/classNavigator/icons/class.png");
+        return QIcon(":/classNavigator/icons/class.svg");
     case typePropertyGet:
         return QIcon(":/classNavigator/icons/property_get.svg");
     case typePropertySet:
@@ -68,11 +68,11 @@ QIcon OutlineItem::icon() const
     case typeClassMethod:
         if (m_private)
         {
-            return QIcon(":/classNavigator/icons/method_clmethod_private.png");
+            return QIcon(":/classNavigator/icons/method_clmethod_private.svg");
         }
         else
         {
-            return QIcon(":/classNavigator/icons/method_clmethod.png");
+            return QIcon(":/classNavigator/icons/method_clmethod.svg");
         }
     case typeStaticMethod:
         if (m_private)
@@ -87,11 +87,11 @@ QIcon OutlineItem::icon() const
     case typeMethod:
         if (m_private)
         {
-            return QIcon(":/classNavigator/icons/method_private.png");
+            return QIcon(":/classNavigator/icons/method_private.svg");
         }
         else
         {
-            return QIcon(":/classNavigator/icons/method.png");
+            return QIcon(":/classNavigator/icons/method.svg");
         }
     default:
         return QIcon();

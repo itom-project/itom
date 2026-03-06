@@ -127,7 +127,7 @@ void PyDocstringGeneratorMode::onKeyPressed(QKeyEvent *e)
 
                             m_popupMenu = QSharedPointer<QMenu>(new MenuOnlyForEnter(ed));
                             QAction *a = m_popupMenu->addAction(
-                                QIcon(":/arrows/icons/plus.png"),
+                                QIcon(":/arrows/icons/plus.svg"),
                                 tr("Generate docstring"),
                                 this,
                                 &PyDocstringGeneratorMode::mnuInsertDocstring

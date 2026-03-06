@@ -38,7 +38,7 @@ StringListDialog::StringListDialog(const QStringList& stringList, QWidget* paren
 
     QIcon upIcon(":/arrows/icons/up-32.svg");
     QIcon downIcon(":/arrows/icons/down-32.svg");
-    QIcon minusIcon(":/arrows/icons/minus.png");
+    QIcon minusIcon(":/arrows/icons/minus.svg");
     QIcon plusIcon(":/arrows/icons/plus.svg");
     ui.moveListItemUpButton->setIcon(upIcon);
     ui.moveListItemDownButton->setIcon(downIcon);

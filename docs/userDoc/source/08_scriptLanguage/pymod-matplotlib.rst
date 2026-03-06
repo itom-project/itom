@@ -329,10 +329,10 @@ or easier::
 
 ============================================== ==============================================
 
-.. figure:: images/matplotlibAnimation1d.png
+.. figure:: images/matplotlibAnimation1d.svg
     :scale: 0%
 
-.. figure:: images/matplotlibAnimation2d.png
+.. figure:: images/matplotlibAnimation2d.svg
     :scale: 0%
 
 

@@ -80,7 +80,7 @@ BreakpointPanel::BreakpointPanel(const QString &description /*= ""*/, QWidget *p
     m_contextMenuActions["editConditionBP"] = m_pContextMenu->addAction(QIcon(":/breakpoints/icons/itomcBreak.svg"), tr("&Edit Condition"), this, SLOT(menuEditBreakpoint()));
     m_contextMenuActions["nextBP"] = m_pContextMenu->addAction(QIcon(":/breakpoints/icons/breakpointNext.svg"), tr("&Next Breakpoint"), this, SLOT(menuGotoNextBreakPoint()));
     m_contextMenuActions["prevBP"] = m_pContextMenu->addAction(QIcon(":/breakpoints/icons/breakpointPrevious.svg"),tr("&Previous Breakpoint"), this, SLOT(menuGotoPreviousBreakPoint()));
-    m_contextMenuActions["clearALLBP"] = m_pContextMenu->addAction(QIcon(":/breakpoints/icons/garbageAllBPs.png"), tr("&Delete All Breakpoints"), this, SLOT(menuClearAllBreakpoints()));
+    m_contextMenuActions["clearALLBP"] = m_pContextMenu->addAction(QIcon(":/breakpoints/icons/garbageAllBPs.svg"), tr("&Delete All Breakpoints"), this, SLOT(menuClearAllBreakpoints()));
 }
 
 //----------------------------------------------------------

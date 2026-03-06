@@ -104,7 +104,7 @@ file is set as value of one single variable with the given name.
 .. |varimport| image:: images/varimport.png
 .. |vardelete| image:: images/vardelete.png
 .. |varrename| image:: images/varrename.png
-.. |varunpack| image:: images/varunpack.png
+.. |varunpack| image:: images/varunpack.svg
 .. |vardetails| image:: images/vardetails.png
 
 Variable detail dialog

@@ -184,7 +184,7 @@
              </property>
              <property name="icon">
               <iconset resource="../qitom.qrc">
-               <normaloff>:/misc/icons/color_stop_add.png</normaloff>:/misc/icons/color_stop_add.png</iconset>
+               <normaloff>:/misc/icons/color_stop_add.svg</normaloff>:/misc/icons/color_stop_add.svg</iconset>
              </property>
             </widget>
            </item>
@@ -198,7 +198,7 @@
              </property>
              <property name="icon">
               <iconset resource="../qitom.qrc">
-               <normaloff>:/misc/icons/color_stop_remove.png</normaloff>:/misc/icons/color_stop_remove.png</iconset>
+               <normaloff>:/misc/icons/color_stop_remove.svg</normaloff>:/misc/icons/color_stop_remove.svg</iconset>
              </property>
             </widget>
            </item>
@@ -212,7 +212,7 @@
              </property>
              <property name="icon">
               <iconset resource="../qitom.qrc">
-               <normaloff>:/misc/icons/color_stop_equidistant.png</normaloff>:/misc/icons/color_stop_equidistant.png</iconset>
+               <normaloff>:/misc/icons/color_stop_equidistant.svg</normaloff>:/misc/icons/color_stop_equidistant.svg</iconset>
              </property>
             </widget>
            </item>

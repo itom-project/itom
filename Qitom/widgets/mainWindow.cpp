@@ -908,7 +908,7 @@ void MainWindow::createActions()
     ito::UserOrganizer* uOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
     if (uOrg->currentUserHasFeature(featDeveloper))
     {
-        m_appFileNew = new QAction(QIcon(":/files/icons/new.png"), tr("New Script..."), this);
+        m_appFileNew = new QAction(QIcon(":/files/icons/new.svg"), tr("New Script..."), this);
         connect(m_appFileNew, SIGNAL(triggered()), this, SLOT(mnuNewScript()));
         m_appFileNew->setShortcut(QKeySequence::New);
 
@@ -960,11 +960,11 @@ void MainWindow::createActions()
     connect(a, SIGNAL(triggered()), this, SLOT(mnuShowAssistant()));
 
     a = m_actions["close_all_plots"] = new QAction(
-        QIcon(":/application/icons/closePlots.png"), tr("Close All Floatable Figures"), this);
+        QIcon(":/application/icons/closePlots.svg"), tr("Close All Floatable Figures"), this);
     connect(m_actions["close_all_plots"], SIGNAL(triggered(bool)), this, SLOT(mnuCloseAllPlots()));
 
     a = m_actions["show_all_plots"] = new QAction(
-        QIcon(":/application/icons/showAllPlots.png"), tr("Show All Floatable Figures"), this);
+        QIcon(":/application/icons/showAllPlots.svg"), tr("Show All Floatable Figures"), this);
     connect(m_actions["show_all_plots"], SIGNAL(triggered(bool)), this, SLOT(mnuShowAllPlots()));
 
     a = m_actions["minimize_all_plots"] = new QAction(
@@ -978,11 +978,11 @@ void MainWindow::createActions()
     if (uOrg->currentUserHasFeature(featDeveloper))
     {
         a = m_actions["script_reference"] = new QAction(
-            QIcon(":/application/icons/scriptReference.png"), tr("Plugin Help Viewer..."), this);
+            QIcon(":/application/icons/scriptReference.svg"), tr("Plugin Help Viewer..."), this);
         connect(a, SIGNAL(triggered()), this, SLOT(mnuShowScriptReference()));
 
         a = m_actions["open_designer"] =
-            new QAction(QIcon(":/application/icons/designer4.png"), tr("UI Designer"), this);
+            new QAction(QIcon(":/application/icons/designer6.svg"), tr("UI Designer"), this);
         connect(a, SIGNAL(triggered()), this, SLOT(mnuShowDesigner()));
 
         a = m_actions["python_global_runmode"] = new QAction(
@@ -1007,27 +1007,27 @@ void MainWindow::createActions()
         connect(a, SIGNAL(triggered()), this, SLOT(mnuScriptStop()));
 
         a = m_actions["python_continueAction"] =
-            new QAction(QIcon(":/script/icons/continue.png"), tr("Continue"), this);
+            new QAction(QIcon(":/script/icons/continue.svg"), tr("Continue"), this);
         a->setShortcut(tr("F6"));
         connect(a, SIGNAL(triggered()), this, SLOT(mnuScriptContinue()));
 
         m_actions["python_stepAction"] =
-            new QAction(QIcon(":/script/icons/step.png"), tr("Step"), this);
+            new QAction(QIcon(":/script/icons/step.svg"), tr("Step"), this);
         m_actions["python_stepAction"]->setShortcut(tr("F11"));
         connect(m_actions["python_stepAction"], SIGNAL(triggered()), this, SLOT(mnuScriptStep()));
 
         a = m_actions["python_stepOverAction"] =
-            new QAction(QIcon(":/script/icons/stepOver.png"), tr("Step Over"), this);
+            new QAction(QIcon(":/script/icons/stepOver.svg"), tr("Step Over"), this);
         a->setShortcut(tr("F10"));
         connect(a, SIGNAL(triggered()), this, SLOT(mnuScriptStepOver()));
 
         a = m_actions["python_stepOutAction"] =
-            new QAction(QIcon(":/script/icons/stepOut.png"), tr("Step Out"), this);
+            new QAction(QIcon(":/script/icons/stepOut.svg"), tr("Step Out"), this);
         a->setShortcut(tr("Shift+F11"));
         connect(a, SIGNAL(triggered()), this, SLOT(mnuScriptStepOut()));
 
         a = m_actions["python_reloadModules"] =
-            new QAction(QIcon(":/application/icons/reload.png"), tr("Reload Modules..."), this);
+            new QAction(QIcon(":/application/icons/reload.svg"), tr("Reload Modules..."), this);
         connect(a, SIGNAL(triggered()), this, SLOT(mnuPyReloadModules()));
 
         a = m_actions["py_autoReloadEnabled"] = new QAction(tr("Autoreload Modules"), this);
@@ -1183,7 +1183,7 @@ void MainWindow::createMenus()
         m_pMenuPython->addAction(m_actions["python_global_runmode"]);
 
         m_pMenuReloadModule =
-            m_pMenuPython->addMenu(QIcon(":/application/icons/reload.png"), tr("Reload Modules"));
+            m_pMenuPython->addMenu(QIcon(":/application/icons/reload.svg"), tr("Reload Modules"));
         m_pMenuReloadModule->addAction(m_actions["py_autoReloadEnabled"]);
         m_pMenuReloadModule->addSeparator();
         m_pMenuReloadModule->addAction(m_actions["py_autoReloadFile"]);
@@ -1344,7 +1344,7 @@ void MainWindow::mnuViewAboutToShow()
         if (dockWidgets)
         {
             dockWidgets->menuAction()->setIcon(
-                QIcon(":/application/icons/preferences-general.png"));
+                QIcon(":/application/icons/preferences-general.svg"));
             dockWidgets->menuAction()->setText(tr("Toolboxes"));
             m_pMenuView->addMenu(dockWidgets);
             m_pMenuView->addSeparator();

@@ -43,7 +43,7 @@
        </property>
        <property name="icon">
         <iconset resource="../qitom.qrc">
-         <normaloff>:/plugins/icons/pluginNewInstance.png</normaloff>:/plugins/icons/pluginNewInstance.png</iconset>
+         <normaloff>:/plugins/icons/pluginNewInstance.svg</normaloff>:/plugins/icons/pluginNewInstance.svg</iconset>
        </property>
       </widget>
      </item>

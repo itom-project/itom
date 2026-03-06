@@ -65,7 +65,7 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
     QIcon actIcon;  // we cannot assign NULL to a qicon for gcc, so rely on default constructor ... hope this works
 
     m_pShowDirListMenu = new QMenu(tr("Last used directories"), this);
-    m_pShowDirListMenu->setIcon(QIcon(":/files/icons/browser.png"));
+    m_pShowDirListMenu->setIcon(QIcon(":/files/icons/browser.svg"));
 
     m_pShowDirListMenu->installEventFilter(this);
 
@@ -81,13 +81,13 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
 
         if (dir.mid(0, 1) == "@")
         {
-            actIcon= QIcon(":/application/icons/pinChecked.png");
+            actIcon= QIcon(":/application/icons/pinChecked.svg");
             actCheckedStr = "@";
             actDir = dir.mid(1);
         }
         else
         {
-            actIcon= QIcon(":/application/icons/empty.png");
+            actIcon= QIcon(":/application/icons/empty.svg");
             actCheckedStr = "";
             actDir = dir;
         }
@@ -344,21 +344,21 @@ void FileSystemDockWidget::createActions()
         m_pActExecuteFile->connectTrigger(this, SLOT(mnuExecuteFile()));
     }
 
-    m_pActLocateOnDisk = new ShortcutAction(QIcon(":/files/icons/browser.png"), tr("Locate On Disk"), this);
+    m_pActLocateOnDisk = new ShortcutAction(QIcon(":/files/icons/browser.svg"), tr("Locate On Disk"), this);
     m_pActLocateOnDisk->connectTrigger(this, SLOT(mnuLocateOnDisk()));
-    m_pActRenameItem = new ShortcutAction(QIcon(":/workspace/icons/edit-rename.png"), tr("Rename"), this, QKeySequence(tr("F2")), Qt::WidgetWithChildrenShortcut);
+    m_pActRenameItem = new ShortcutAction(QIcon(":/workspace/icons/edit-rename.svg"), tr("Rename"), this, QKeySequence(tr("F2")), Qt::WidgetWithChildrenShortcut);
     m_pActRenameItem->connectTrigger(this, SLOT(mnuRenameItem()));
     m_pActDeleteItems = new ShortcutAction(QIcon(":/editor/icons/editDelete.svg"), tr("Delete"), this, QKeySequence::Delete, Qt::WidgetWithChildrenShortcut);
     m_pActDeleteItems->connectTrigger(this, SLOT(mnuDeleteItems()));
     m_pActCutItems = new ShortcutAction(QIcon(":/editor/icons/editCut.svg"), tr("Cut"), this, QKeySequence::Cut, Qt::WidgetWithChildrenShortcut);
     m_pActCutItems->connectTrigger(this, SLOT(mnuCutItems()));
-    m_pActCopyItems = new ShortcutAction(QIcon(":/editor/icons/editCopy.png"), tr("Copy"), this, QKeySequence::Copy, Qt::WidgetWithChildrenShortcut);
+    m_pActCopyItems = new ShortcutAction(QIcon(":/editor/icons/editCopy.svg"), tr("Copy"), this, QKeySequence::Copy, Qt::WidgetWithChildrenShortcut);
     m_pActCopyItems->connectTrigger(this, SLOT(mnuCopyItems()));
     m_pActPasteItems = new ShortcutAction(QIcon(":/editor/icons/editPaste.svg"), tr("Paste"), this, QKeySequence::Paste, Qt::WidgetWithChildrenShortcut);
     m_pActPasteItems->connectTrigger(this, SLOT(mnuPasteItems()));
-    m_pActNewDir = new ShortcutAction(QIcon(":/files/icons/newDir.png"), tr("Create New Folder"), this);
+    m_pActNewDir = new ShortcutAction(QIcon(":/files/icons/newDir.svg"), tr("Create New Folder"), this);
     m_pActNewDir->connectTrigger(this, SLOT(mnuNewDir()));
-    m_pActNewPyFile = new ShortcutAction(QIcon(":/files/icons/new.png"), tr("Create New Python File"), this);
+    m_pActNewPyFile = new ShortcutAction(QIcon(":/files/icons/new.svg"), tr("Create New Python File"), this);
     m_pActNewPyFile->connectTrigger(this, SLOT(mnuNewPyFile()));
 
     m_pViewList = new ShortcutAction(QIcon(":/application/icons/kdb_form.svg"), tr("List"), this);
@@ -703,7 +703,7 @@ RetVal FileSystemDockWidget::changeBaseDirectory(QString dir, bool clearHistory 
             act = new QAction(m_baseDirectory, m_pShowDirListMenu);
             act->setData(m_baseDirectory);
             act->setWhatsThis("");
-            act->setIcon(QIcon(":/application/icons/empty.png"));
+            act->setIcon(QIcon(":/application/icons/empty.svg"));
             act->setCheckable(false);
 
             // if m_baseDirectory is directly given to the lambda function,
@@ -1471,7 +1471,7 @@ bool FileSystemDockWidget::eventFilter(QObject *obj, QEvent *event)
         {
             if (m_lastMovedShowDirAction && m_lastMovedShowDirAction->whatsThis() == "")
             {
-                m_lastMovedShowDirAction->setIcon(QIcon(":/application/icons/empty.png"));
+                m_lastMovedShowDirAction->setIcon(QIcon(":/application/icons/empty.svg"));
             }
             m_lastMovedShowDirAction = actionUnderMouse;
         }
@@ -1480,11 +1480,11 @@ bool FileSystemDockWidget::eventFilter(QObject *obj, QEvent *event)
         {
             if (mouseEvent->pos().x() < 24 && mouseEvent->pos().x() > 1)
             {
-                actionUnderMouse->setIcon(QIcon(":/application/icons/pin.png"));
+                actionUnderMouse->setIcon(QIcon(":/application/icons/pin.svg"));
             }
             else
             {
-                actionUnderMouse->setIcon(QIcon(":/application/icons/empty.png"));
+                actionUnderMouse->setIcon(QIcon(":/application/icons/empty.svg"));
             }
         }
     }
@@ -1496,12 +1496,12 @@ bool FileSystemDockWidget::eventFilter(QObject *obj, QEvent *event)
         {
             if (actionUnderMouse->whatsThis() == "")
             {
-                actionUnderMouse->setIcon(QIcon(":/application/icons/pinChecked.png"));
+                actionUnderMouse->setIcon(QIcon(":/application/icons/pinChecked.svg"));
                 actionUnderMouse->setWhatsThis("@");
             }
             else
             {
-                actionUnderMouse->setIcon(QIcon(":/application/icons/pin.png"));
+                actionUnderMouse->setIcon(QIcon(":/application/icons/pin.svg"));
                 actionUnderMouse->setWhatsThis("");
             }
             return true;

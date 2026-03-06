@@ -30,7 +30,7 @@ If the class name cannot be found or if it is not able to plot the type of data 
 
 The result of both examples looks like this (if no other default plot class has been chosen for 1D static plots):
 
-.. figure:: images/plot1d.png
+.. figure:: images/plot1d.svg
     :scale: 100%
     :align: center
 

@@ -72,22 +72,22 @@ AIManagerWidget::AIManagerWidget(
     m_pContextMenu = new QMenu(this);
 
     m_pActNewInstance =
-        new QAction(QIcon(":/plugins/icons/pluginNewInstance.png"), tr("New Instance..."), this);
+        new QAction(QIcon(":/plugins/icons/pluginNewInstance.svg"), tr("New Instance..."), this);
     connect(m_pActNewInstance, SIGNAL(triggered()), this, SLOT(mnuCreateNewInstance()));
     m_pContextMenu->addAction(m_pActNewInstance);
 
     m_pShowConfDialog =
-        new QAction(QIcon(":/plugins/icons/pluginConfigure.png"), tr("Configuration Dialog"), this);
+        new QAction(QIcon(":/plugins/icons/pluginConfigure.svg"), tr("Configuration Dialog"), this);
     connect(m_pShowConfDialog, SIGNAL(triggered()), this, SLOT(mnuShowConfdialog()));
     m_pContextMenu->addAction(m_pShowConfDialog);
 
-    m_pActDockWidget = new QAction(QIcon(":/plugins/icons/pluginToolbox.png"), "", this);
+    m_pActDockWidget = new QAction(QIcon(":/plugins/icons/pluginToolbox.svg"), "", this);
     m_pActDockWidget->setCheckable(true);
     connect(m_pActDockWidget, SIGNAL(triggered()), this, SLOT(mnuToggleDockWidget()));
     m_pContextMenu->addAction(m_pActDockWidget);
 
     m_pActDockWidgetToolbar = new QAction(
-        QIcon(":/plugins/icons/pluginToolbox.png"), tr("Show/Hide Plugin Toolbox"), this);
+        QIcon(":/plugins/icons/pluginToolbox.svg"), tr("Show/Hide Plugin Toolbox"), this);
     connect(m_pActDockWidgetToolbar, SIGNAL(triggered()), this, SLOT(mnuToggleDockWidget()));
 
     m_pActCloseInstance =
@@ -107,7 +107,7 @@ AIManagerWidget::AIManagerWidget(
     m_pContextMenu->addAction(m_pActLiveImage);
 
     m_pActSnapDialog =
-        new QAction(QIcon(":/measurement/icons/itom_icons/snap.png"), tr("Snap Dialog..."), this);
+        new QAction(QIcon(":/measurement/icons/itom_icons/snap.svg"), tr("Snap Dialog..."), this);
     connect(m_pActSnapDialog, SIGNAL(triggered()), this, SLOT(mnuSnapDialog()));
     m_pContextMenu->addAction(m_pActSnapDialog);
 

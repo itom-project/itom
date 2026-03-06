@@ -36,7 +36,7 @@ from itomUi import ItomUi
 from itom import progressObserver
 from threading import Thread
 from time import sleep
-# sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoObserveParallelFunction.png'
+# sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoObserveParallelfunction.svg'
 
 
 class FunctionCall:

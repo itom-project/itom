@@ -43,17 +43,17 @@ maxreclimit = 1800
 if jedi.__version__ >= "0.12.0":
     jedienv = jedi.api.environment.InterpreterEnvironment()
 
-ICON_CLASS = ("code-class", ":/classNavigator/icons/class.png")
-ICON_FUNC = ("code-function", ":/classNavigator/icons/method.png")
+ICON_CLASS = ("code-class", ":/classNavigator/icons/class.svg")
+ICON_FUNC = ("code-function", ":/classNavigator/icons/method.svg")
 ICON_FUNC_PRIVATE = (
     "code-function",
-    ":/classNavigator/icons/method_private.png",
+    ":/classNavigator/icons/method_private.svg",
 )
 ICON_FUNC_PROTECTED = (
     "code-function",
-    ":/classNavigator/icons/method_protected.png",
+    ":/classNavigator/icons/method_protected.svg",
 )
-ICON_NAMESPACE = ("code-context", ":/classNavigator/icons/namespace.png")
+ICON_NAMESPACE = ("code-context", ":/classNavigator/icons/namespace.svg")
 ICON_VAR = ("code-variable", ":/classNavigator/icons/var.png")
 ICON_KEYWORD = ("quickopen", ":/classNavigator/icons/var.png")
 

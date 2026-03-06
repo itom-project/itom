@@ -614,7 +614,7 @@ QWidget* ParamInputParser::renderTypeHWRef(
     txt->setEnabled(false);
 
     QToolButton* tool = new QToolButton(container);
-    tool->setIcon(QIcon(":/files/icons/browser.png"));
+    tool->setIcon(QIcon(":/files/icons/browser.svg"));
     connect(tool, &QToolButton::clicked, [=]() { browsePluginPicker(virtualIndex); });
 
     layout->addWidget(txt);

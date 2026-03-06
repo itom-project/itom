@@ -124,7 +124,7 @@ QPropertyEditorWidget::QPropertyEditorWidget(QWidget* parent /*= 0*/) : QTreeVie
     connect(action, &QAction::triggered, this, &QPropertyEditorWidget::sortedAction);
     addAction(action);
 
-    action = new QAction(QIcon(":/files/icons/browser.png"), tr("Group by inheritance"), this);
+    action = new QAction(QIcon(":/files/icons/browser.svg"), tr("Group by inheritance"), this);
     action->setCheckable(true);
     action->setChecked(d->m_model->groupByInheritance());
     connect(action, &QAction::triggered, this, &QPropertyEditorWidget::setGroupByInheritance);

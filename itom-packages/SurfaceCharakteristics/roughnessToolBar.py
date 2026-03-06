@@ -88,13 +88,13 @@ class surfaceAnalysisTools(abstractObjInteractionToolBar):
                 self.myNameDelete,
                 "Subtract Plane",
                 self.planefit,
-                ":/measurement/icons/itom_icons/subtractPlane.png",
+                ":/measurement/icons/itom_icons/subtractPlane.svg",
             )
             addButton(
                 self.myNameDelete,
                 "Subtract Polynome",
                 self.polyfit,
-                ":/measurement/icons/itom_icons/subtractPolynom.png",
+                ":/measurement/icons/itom_icons/subtractPolynom.svg",
             )
 
     def __del__(self):

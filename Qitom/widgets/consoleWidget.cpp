@@ -2289,11 +2289,11 @@ void ConsoleWidget::initMenus()
 {
     QMenu *menu = contextMenu();
 
-    m_contextMenuActions["undo"] = menu->addAction(QIcon(":/editor/icons/editUndo.png"), tr("&Undo"), this, SLOT(undo()));
-    m_contextMenuActions["redo"] = menu->addAction(QIcon(":/editor/icons/editRedo.png"), tr("&Redo"), this, SLOT(redo()));
+    m_contextMenuActions["undo"] = menu->addAction(QIcon(":/editor/icons/editUndo.svg"), tr("&Undo"), this, SLOT(undo()));
+    m_contextMenuActions["redo"] = menu->addAction(QIcon(":/editor/icons/editRedo.svg"), tr("&Redo"), this, SLOT(redo()));
     m_contextMenuActions["undo_redo_separator"] = menu->addSeparator();
     m_contextMenuActions["cut"] = menu->addAction(QIcon(":/editor/icons/editCut.svg"), tr("&Cut"), this, SLOT(cut()));
-    m_contextMenuActions["copy"] = menu->addAction(QIcon(":/editor/icons/editCopy.png"), tr("Cop&y"), this, SLOT(copy()));
+    m_contextMenuActions["copy"] = menu->addAction(QIcon(":/editor/icons/editCopy.svg"), tr("Cop&y"), this, SLOT(copy()));
     m_contextMenuActions["paste"] = menu->addAction(QIcon(":/editor/icons/editPaste.svg"), tr("&Paste"), this, SLOT(paste()));
     m_contextMenuActions["delete"] = menu->addAction(QIcon(":/editor/icons/editDelete.svg"), tr("Clear Command Line"), this, SLOT(clearAndStartNewCommand()));
     menu->addSeparator();

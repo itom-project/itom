@@ -25,8 +25,8 @@
             <file>_static/bullet_orange.png</file>
             <file>_static/file.png</file>
             <file>_static/itom.css</file>
-            <file>_static/minus.png</file>
-            <file>_static/plus.png</file>
+            <file>_static/minus.svg</file>
+            <file>_static/plus.svg</file>
             <file>_static/pygments.css</file>
         </files>
     </filterSection>

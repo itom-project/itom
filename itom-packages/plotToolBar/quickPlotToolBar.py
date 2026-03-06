@@ -2,8 +2,8 @@
 This file contains a toolbar with basic plot interactions e.g. linePlot, 2D-Plot
 INIT via
 toolBarQuickPlot = quickPlotToolBar('toolBarQuickPlot')
-addButton("toolBarQuickPlot","Show Image","toolBarQuickPlot.show2D()", "icons_m/2d.png")
-addButton("toolBarQuickPlot","Show Line","toolBarQuickPlot.show1D()", "icons_m/1d.png")
+addButton("toolBarQuickPlot","Show Image","toolBarQuickPlot.show2D()", "icons_m/2d.svg")
+addButton("toolBarQuickPlot","Show Line","toolBarQuickPlot.show1D()", "icons_m/1d.svg")
 """
 
 from abstractObjToolbar.abstractObjToolbar import abstractObjInteractionToolBar
@@ -94,13 +94,13 @@ class quickPlotToolBar(abstractObjInteractionToolBar):
                 self.myNameDelete,
                 "Show Image",
                 self.show2D,
-                ":/plots/icons/itom_icons/2d.png",
+                ":/plots/icons/itom_icons/2d.svg",
             )
             addButton(
                 self.myNameDelete,
                 "Show Line",
                 self.show1D,
-                ":/plots/icons/itom_icons/1d.png",
+                ":/plots/icons/itom_icons/1d.svg",
             )
 
             if plotLoaded("ItomIsoGLWidget") or plotLoaded("twipOGLFigure"):
@@ -108,7 +108,7 @@ class quickPlotToolBar(abstractObjInteractionToolBar):
                     self.myNameDelete,
                     "Show ISO",
                     self.show25D,
-                    ":/plots/icons/itom_icons/3d.png",
+                    ":/plots/icons/itom_icons/3d.svg",
                 )
 
             if self.hasMCPP == True:
@@ -116,7 +116,7 @@ class quickPlotToolBar(abstractObjInteractionToolBar):
                     self.myNameDelete,
                     "Show Histogramm",
                     self.showHist,
-                    ":/plots/icons/itom_icons/histogra.png",
+                    ":/plots/icons/itom_icons/histogra.svg",
                 )
 
     def __del__(self):

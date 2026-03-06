@@ -94,7 +94,7 @@
          </property>
          <property name="icon">
           <iconset resource="../qitom.qrc">
-           <normaloff>:/editor/icons/editCopy.png</normaloff>:/editor/icons/editCopy.png</iconset>
+           <normaloff>:/editor/icons/editCopy.svg</normaloff>:/editor/icons/editCopy.svg</iconset>
          </property>
         </widget>
        </item>

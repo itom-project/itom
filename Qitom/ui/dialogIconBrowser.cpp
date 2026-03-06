@@ -52,7 +52,7 @@ DialogIconBrowser::DialogIconBrowser(QWidget *parent) :
 
     ui.txtCurrentName->setText(tr("loading..."));
 
-    setWindowIcon(QIcon(QString(":/editor/icons/iconList.png")));
+    setWindowIcon(QIcon(QString(":/editor/icons/iconList.svg")));
     setWindowTitle(tr("Icon Browser"));
 
     ui.cancelButton->setEnabled(false);
