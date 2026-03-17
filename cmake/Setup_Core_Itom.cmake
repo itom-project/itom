@@ -9,6 +9,10 @@ option(ITOM_BUILD_PACKAGE "Choose to build ITOM as a System specific Package for
 ###############################################################################
 # Python Definitions
 
+#if(EXISTS $ENV{PYTHON_ROOT})
+#    set(Python_ROOT_DIR $ENV{PYTHON_ROOT} CACHE PATH "Path to the root directory of the Python installation")
+#endif(EXISTS $ENV{PYTHON_ROOT})
+
 if(NOT EXISTS ${Python_ROOT_DIR})
     if(EXISTS $ENV{PYTHON_ROOT})
         set(Python_ROOT_DIR $ENV{PYTHON_ROOT} CACHE PATH "Path to the root directory of the Python installation")
@@ -53,7 +57,7 @@ endif(WIN32)
 # QT Definitions
 
 if(NOT EXISTS BUILD_QTVERSION)
-    SET(BUILD_QTVERSION "Qt5" CACHE STRING "Qt Version to be used, currently only Qt6 and Qt5 is supported.Qt5 by default.")
+    SET(BUILD_QTVERSION "Qt6" CACHE STRING "Qt Version to be used, currently only Qt6 and Qt5 is supported.Qt6 by default.")
 endif(NOT EXISTS BUILD_QTVERSION)
 set_property(CACHE BUILD_QTVERSION PROPERTY STRINGS Qt6 Qt5)
 

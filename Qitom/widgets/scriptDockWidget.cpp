@@ -1744,7 +1744,7 @@ void ScriptDockWidget::createActions()
     m_tabDockAction = new ShortcutAction(QIcon(":/dockWidget/icons/dockButtonGlyph.png"), tr("Dock"), this);
     m_tabDockAction->connectTrigger(this, SLOT(mnuTabDock()));
 
-    m_tabUndockAction = new ShortcutAction(QIcon(":/dockWidget/icons/undockButtonGlyph.png"), tr("Undock"), this);
+    m_tabUndockAction = new ShortcutAction(QIcon(":/dockWidget/icons/undockButtonGlyph.svg"), tr("Undock"), this);
     m_tabUndockAction->connectTrigger(this, SLOT(mnuTabUndock()));
 
     m_newScriptAction = new ShortcutAction(QIcon(":/files/icons/new.svg"), tr("New"),
@@ -1806,12 +1806,12 @@ void ScriptDockWidget::createActions()
         this, QKeySequence(tr("Shift+Tab", "QShortcut")), Qt::WidgetWithChildrenShortcut);
     m_unindentAction->connectTrigger(this, SLOT(mnuUnindent()));
 
-    m_autoCodeFormatAction = new ShortcutAction(QIcon(":/editor/icons/leftAlign.png"), tr("Auto Format File"),
+    m_autoCodeFormatAction = new ShortcutAction(QIcon(":/editor/icons/leftAlign.svg"), tr("Auto Format File"),
         this, QKeySequence(tr("Ctrl+Alt+I", "QShortcut")), Qt::WidgetWithChildrenShortcut);
     m_autoCodeFormatAction->connectTrigger(this, SLOT(mnuPyCodeFormatting()));
 
     m_referenceRenameAction = new ShortcutAction(
-        QIcon(":/editor/icons/rename.png"),
+        QIcon(":/editor/icons/rename.svg"),
         tr("Rename..."),
         this, QKeySequence(tr("F2", "QShortcut")), Qt::WidgetWithChildrenShortcut);
     m_referenceRenameAction->action()->setToolTip(

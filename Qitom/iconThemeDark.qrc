@@ -1,14 +1,14 @@
 <RCC>
     <qresource prefix="/dockWidget">
-        <file alias="icons/undockButtonGlyph.png">icons_dark/undockButtonGlyph.png</file>
-        <file alias="icons/dockButtonGlyph.png">icons_dark/dockButtonGlyph.png</file>
+        <file alias="icons/undockButtonGlyph.svg">icons_dark/undockButtonGlyph.svg</file>
+        <file alias="icons/dockButtonGlyph.svg">icons_dark/dockButtonGlyph.svg</file>
     </qresource>
     <qresource prefix="/application">
-        <file alias="icons/itomicon/itologo64.png">icons/itomicon/itologo64_lt.png</file>
+        <file alias="icons/itomicon/itologo.svg">icons/itomicon/itologo_lt.svg</file>
     </qresource>
     <qresource prefix="/classNavigator">
-        <file alias="icons/var.png">icons_dark/var.png</file>
-        <file alias="icons/sortAZAsc.png">icons_dark/sortAZAsc.png</file>
+        <file alias="icons/var.svg">icons_dark/var.svg</file>
+        <file alias="icons/sortAZAsc.svg">icons_dark/sortAZAsc.svg</file>
     </qresource>
      <qresource prefix="/plugins">
         <file alias="icons/pluginFilter.svg">icons_dark/pluginFilter.svg</file>
@@ -16,11 +16,11 @@
     <qresource prefix="/editor">
         <file alias="icons/editCut.svg">icons_dark/editCut.svg</file>
         <file alias="icons/find.svg">icons_dark/find.svg</file>
-        <file alias="icons/leftAlign.png">icons_dark/leftAlign.png</file>
-        <file alias="icons/rename.png">icons_dark/rename.png</file>
+        <file alias="icons/leftAlign.svg">icons_dark/leftAlign.svg</file>
+        <file alias="icons/rename.svg">icons_dark/rename.svg</file>
     </qresource>
     <qresource prefix="/general">
-        <file alias="icons/decimals.png">icons_dark/decimals.png</file>
+        <file alias="icons/decimals.svg">icons_dark/decimals.svg</file>
         <file alias="icons/number_format.svg">icons_dark/number_format.svg</file>
     </qresource>
     <qresource prefix="/table">

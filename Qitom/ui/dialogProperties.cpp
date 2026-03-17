@@ -200,8 +200,8 @@ void DialogProperties::initPages()
     m_pages["03_python"] = PropertyPage(tr("Python"), tr("Python - Please Choose Subpage"), "03_python", NULL, QIcon(":/application/icons/preferences-python.svg"));
     m_pages["03_python/01general"] = PropertyPage(tr("General"), tr("Python - General"), "03_python/01general", new WidgetPropPythonGeneral(), QIcon(":/application/icons/preferences-python.svg"));
     m_pages["03_python/02startup"] = PropertyPage(tr("Startup"), tr("Python - Startups"), "03_python/02startup", new WidgetPropPythonStartup(), QIcon(":/application/icons/preferences-python.svg"));
-    m_pages["00_general"] = PropertyPage(tr("General"), tr("General - Please Choose Subpage"), "00_general", NULL, QIcon(":/application/icons/itomicon/itomLogo5.svg"));
-    m_pages["00_general/01application"] = PropertyPage(tr("Application"), tr("General - Application"), "00_general/01application", new WidgetPropGeneralApplication(), QIcon(":/application/icons/itomicon/itomLogo5.svg"));
+    m_pages["00_general"] = PropertyPage(tr("General"), tr("General - Please Choose Subpage"), "00_general", NULL, QIcon(":/application/icons/itomicon/itomLogo.svg"));
+    m_pages["00_general/01application"] = PropertyPage(tr("Application"), tr("General - Application"), "00_general/01application", new WidgetPropGeneralApplication(), QIcon(":/application/icons/itomicon/itomLogo.svg"));
     m_pages["00_general/02language"] = PropertyPage(tr("Language"), tr("General - Language"), "00_general/02language", new WidgetPropGeneralLanguage(), QIcon(":/classNavigator/icons/global.svg"));
     m_pages["00_general/03helpViewer"]  = PropertyPage(tr("Plugin Help Viewer"), tr("General - Plugin Help Viewer"), "00_general/03helpViewer" , new WidgetPropHelpDock(), QIcon(":/plugins/icons/plugin.svg"));
     m_pages["00_general/04styles"] = PropertyPage(tr("Styles and Themes"), tr("General - Styles and Themes"), "00_general/04styles", new WidgetPropGeneralStyles(), QIcon(":/application/icons/color-icon.svg"));

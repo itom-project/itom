@@ -116,7 +116,7 @@ MainWindow::MainWindow() :
     // Setting high res icon for OS X
     QApplication::setWindowIcon(QIcon(":/application/icons/itomicon/itomIcon1024"));
 #else
-    QApplication::setWindowIcon(QIcon(":/application/icons/itomicon/itomLogo5.svg"));
+    QApplication::setWindowIcon(QIcon(":/application/icons/itomicon/itomLogo.svg"));
 #endif
 
     qDebug("build main window");
@@ -940,7 +940,7 @@ void MainWindow::createActions()
     // m_aboutQt->setShortcut(QKeySequence("F3"));
 
     m_aboutQitom = new QAction(
-        QIcon(":/application/icons/itomicon/itomLogo5.svg"), tr("About itom..."), this);
+        QIcon(":/application/icons/itomicon/itomLogo.svg"), tr("About itom..."), this);
     connect(m_aboutQitom, SIGNAL(triggered()), this, SLOT(mnuAboutQitom()));
 
     if (AppManagement::getLogger())

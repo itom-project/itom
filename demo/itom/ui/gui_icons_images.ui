@@ -122,7 +122,7 @@
           <string/>
          </property>
          <property name="pixmap">
-          <pixmap>itomLogo3_256.png</pixmap>
+          <pixmap>itomLogo.svg</pixmap>
          </property>
          <property name="scaledContents">
           <bool>true</bool>

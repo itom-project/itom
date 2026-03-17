@@ -92,7 +92,7 @@ Environment Variables:
 
 .. |cmakelist_pcl_root| replace::
 
-   Path to the pcl build folder (e.g. <PCL_BuildFolder>\PCL1.12.0\cmake).
+   Path to the pcl build folder (e.g. <PCL_BuildFolder>\PCL1.13.0\cmake).
 
 .. |cmakelist_libusb_root| replace::
 

@@ -199,7 +199,7 @@ void AbstractDockWidget::init()
 
         m_actDock = new QAction(QIcon(":/dockWidget/icons/dockButtonGlyph.png"), tr("Dock Widget"), this);
         connect(m_actDock, SIGNAL(triggered()), this, SLOT(dockWidget()));
-        m_actUndock = new QAction(QIcon(":/dockWidget/icons/undockButtonGlyph.png"), tr("Undock Widget"), this);
+        m_actUndock = new QAction(QIcon(":/dockWidget/icons/undockButtonGlyph.svg"), tr("Undock Widget"), this);
         connect(m_actUndock, SIGNAL(triggered()), this, SLOT(undockWidget()));
 
         m_dockToolbar->addWidget(spacerWidget);

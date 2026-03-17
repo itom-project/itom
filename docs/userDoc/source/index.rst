@@ -3,7 +3,7 @@
 |logo| itom documentation for version |version|
 ##################################################
 
-.. |logo| image:: itomLogo5.svg
+.. |logo| image:: itomLogo.svg
 
 .. toctree::
     :numbered:

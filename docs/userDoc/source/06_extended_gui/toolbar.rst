@@ -44,7 +44,7 @@ In the following example, three different buttons which link to either a python 
         print("The result of a+b is",a+b)
 
     addButton("myToolbar","HelloWorld","print('Hello World')")
-    addButton("myToolbar","BtnTest1",test1, ":/application/icons/itomicon/curAppIcon.png")
+    addButton("myToolbar","BtnTest1",test1, ":/application/icons/itomicon/curAppIcon.svg")
     addButton("myToolbar","BtnTest2",test2, argtuple=(4,7))
 
 .. note::

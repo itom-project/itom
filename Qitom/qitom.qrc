@@ -50,7 +50,7 @@
         <file>icons/codeCell.svg</file>
     </qresource>
     <qresource prefix="/application">
-        <file>icons/itomicon/itomLogo5.svg</file>
+        <file>icons/itomicon/itomLogo.svg</file>
         <file>icons/helpAboutQt.svg</file>
         <file>icons/help.svg</file>
         <file>icons/scriptReference.svg</file>
@@ -63,9 +63,9 @@
         <file>icons/showAllPlots.svg</file>
         <file>icons/hideAllPlots.svg</file>
         <file>icons/showPlot.svg</file>
-        <file>icons/itomicon/itomLogo3_32.png</file>
+        <file>icons/itomicon/itomLogo.svg</file>
         <file>icons/adBlockAction.svg</file>
-        <file>icons/itomicon/itomLogo3_1024.png</file>
+        <file>icons/itomicon/itomLogo.svg</file>
         <file>icons/list.svg</file>
         <file>icons/kdb_form.svg</file>
         <file>icons/reload.svg</file>
@@ -152,7 +152,7 @@
         <file>icons/editReplaceAll.svg</file>
         <file>icons/editSmartIndent.svg</file>
         <file>icons/editUncomment.svg</file>
-        <file>icons/edit-undo.svg</file>
+        <file>icons/editUndo.svg</file>
         <file>icons/editUnindent.svg</file>
         <file>icons/iconList.svg</file>
         <file>icons/navigateBackward.svg</file>
@@ -201,7 +201,7 @@
         <file>icons/itom_icons/2dc.svg</file>
         <file>icons/itom_icons/3d.svg</file>
         <file>icons/itom_icons/autoscal.svg</file>
-        <file>icons/itom_icons/blkorwht.png </file>
+        <file>icons/itom_icons/blkorwht.svg</file>
         <file>icons/itom_icons/color.svg</file>
         <file>icons/itom_icons/colorbar.svg</file>
         <file>icons/itom_icons/filmplay.svg</file>
