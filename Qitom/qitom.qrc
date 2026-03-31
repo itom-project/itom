@@ -158,7 +158,7 @@
         <file>icons/navigateBackward.svg</file>
         <file>icons/navigateForward.svg</file>
         <file>icons/runCodeCell.svg</file>
-        <file>icons/runCodeCellAndAdvance.png</file>
+        <file>icons/runAndAdvance.svg</file>
     </qresource>
     <qresource prefix="/script">
         <file>icons/continue.svg</file>
@@ -176,7 +176,7 @@
         <file>icons/bookmarkSyntaxError.svg</file>
         <file>icons/bookmarkAndWarning.svg</file>
         <file>icons/bookmarkAndInfo.svg</file>
-        <file>icons/currentLine.png</file>
+        <file>icons/currentLine.svg</file>
         <file>icons/callstackLine.svg</file>
     </qresource>
     <qresource prefix="/workspace">
@@ -189,7 +189,7 @@
     </qresource>
     <qresource prefix="/plots">
         <file>icons/zoom-3.svg</file>
-        <file>icons/move.png</file>
+        <file>icons/move.svg</file>
         <file>icons/print.svg</file>
         <file>icons/document-export.svg</file>
         <file>icons/ImRe.svg</file>

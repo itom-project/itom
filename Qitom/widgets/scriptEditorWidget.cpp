@@ -743,7 +743,7 @@ void ScriptEditorWidget::initMenus()
         QKeySequence(tr("Ctrl+F9", "QShortcut")));
 
     m_editorMenuActions["runCodeCellAndAdvance"] = editorMenu->addAction(
-        QIcon(":/editor/icons/runCodeCellAndAdvance.svg"),
+        QIcon(":/editor/icons/runAndAdvance.svg"),
         tr("Run Code Cell And Advance"),
         this,
         SLOT(menuRunCodeCellAndAdvance()),

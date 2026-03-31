@@ -1834,7 +1834,7 @@ void ScriptDockWidget::createActions()
         this, QKeySequence(tr("Ctrl+F9", "QShortcut")), Qt::WidgetWithChildrenShortcut);
     m_scriptRunCodeCellAction->connectTrigger(this, SLOT(mnuScriptRunCodeCell()));
 
-    m_scriptRunCodeCellAndAdvanceAction = new ShortcutAction(QIcon(":/editor/icons/runCodeCellAndAdvance.svg"), tr("Run Code Cell And Advance"),
+    m_scriptRunCodeCellAndAdvanceAction = new ShortcutAction(QIcon(":/editor/icons/runAndAdvance.svg"), tr("Run Code Cell And Advance"),
         this, QKeySequence(tr("Shift+F9", "QShortcut")), Qt::WidgetWithChildrenShortcut);
     m_scriptRunCodeCellAndAdvanceAction->connectTrigger(this, SLOT(mnuScriptRunCodeCellAndAdvance()));
 

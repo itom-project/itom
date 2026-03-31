@@ -185,7 +185,7 @@ HelpViewer::HelpViewer(QWidget *parent /*= NULL*/) :
 	connect(zoomOutAction, SIGNAL(triggered()), this, SLOT(mnuZoomOutWindow()));
 	toolbar->addAction(zoomOutAction);
 
-	QAction *defaultZoomAction = new QAction(QIcon(":/plots/icons/zoom-3.svg"), tr("Default zoom"), this);
+	QAction *defaultZoomAction = new QAction(QIcon(":/plots/icons/zoom-3.png"), tr("Default zoom"), this);
 	connect(defaultZoomAction, SIGNAL(triggered()), this, SLOT(mnuDefaultZoomWindow()));
 	toolbar->addAction(defaultZoomAction);
 
