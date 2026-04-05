@@ -238,6 +238,16 @@ private:
     QString m_autoCodeFormatCmd;
     bool m_autoCodeFormatOnSave;
 
+    // Auto-format on save/execute - state management
+    enum class AutoFormatAction {
+        None,
+        SaveTab,
+        RunScript
+    };
+    AutoFormatAction m_pendingAutoFormatAction;
+    int m_pendingTabIndex;
+    QString m_pendingFilename;
+
     // ClassNavigator
     QWidget* m_classMenuBar;
     QComboBox* m_classBox;
@@ -249,6 +259,8 @@ private:
     void fillNavigationMethodComboBox(
         const QSharedPointer<OutlineItem>& parent, const QString& prefix);
     void showOutlineNavigationBar(bool show);
+
+    void initiateAutoFormatting(AutoFormatAction action, int tabIndex = -1, const QString& filename = "");
 
     static QPointer<ScriptEditorWidget>
         currentSelectedCallstackLineEditor; // this static variable holds the (weak) pointer to the
@@ -330,6 +342,7 @@ private slots:
     void updateEditorActions();
     void updatePythonActions();
     void updateTabContextActions();
+    void onScriptEditorFormatCompleted();
 
     void mnuOpenIconBrowser();
 

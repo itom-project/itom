@@ -111,7 +111,7 @@ ScriptEditorWidget::ScriptEditorWidget(
     m_regExpMethodStart =
         QRegularExpression("^(\\s*)(async\\s+)?def\\s+(?<name>[^\\d\\W]\\w*)\\s*\\(");
 
-    // named groups in complex OR-cases seems not to work
+    // named groups in complex OR-cases seems to not work
     m_regExpMethod = QRegularExpression("^(\\s*)(?<async>async\\s+)?(def)\\s+(?<name>[^\\d\\W]\\w*)"
                                         "\\s*\\((.*)\\)(\\s*|\\s*->\\s*(.+)):\\s*(#.*)?");
 
@@ -1075,7 +1075,7 @@ void ScriptEditorWidget::dropEvent(QDropEvent* event)
             {
                 // fix in order not to freeze the cursor after dropping
                 // see:
-                // https://stackoverflow.com/questions/29456366/qtextedit-cursor-becomes-frozen-after-overriding-its-dropevent
+                // https://stackoverflow.com/questions/29456366/qtextedit-cursor-becomes-frozen-after-overriding-its-droeve
                 QMimeData mimeData;
                 mimeData.setText("");
 
@@ -2066,7 +2066,6 @@ void ScriptEditorWidget::pyCodeFormatterDone(bool success, QString code)
         ito::UserFeatures features = userOrg->getCurrentUserFeatures();
 
         code = code.trimmed();
-
         if (code.size() > 200)
         {
             // trim code if too long
@@ -2110,6 +2109,45 @@ void ScriptEditorWidget::pyCodeFormatterDone(bool success, QString code)
     }
 
     m_pyCodeFormatter.clear();
+
+    // Handle pending save action after formatting completes
+    if (m_pendingSaveAction)
+    {
+        m_pendingSaveAction = false;
+        bool askFirst = m_pendingSaveAskFirst;
+        m_pendingSaveAskFirst = false;
+
+        // Now perform the actual save with the formatted code
+        if (this->getFilename().isNull())
+        {
+            saveAsFile(askFirst);
+        }
+        else
+        {
+            if (askFirst)
+            {
+                int ret = QMessageBox::information(
+                    this,
+                    tr("Unsaved Changes"),
+                    tr("There are unsaved changes in the document '%1'. Do you want to save it "
+                       "first?")
+                        .arg(getFilename()),
+                    QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel,
+                    QMessageBox::Yes);
+
+                if (ret & QMessageBox::Cancel)
+                {
+                    return;
+                }
+                else if (ret & QMessageBox::No)
+                {
+                    return;
+                }
+            }
+
+            writeFileContent();
+        }
+    }
 }
 
 //-------------------------------------------------------------------------------------
@@ -2315,8 +2353,14 @@ RetVal ScriptEditorWidget::saveFile(bool askFirst)
 
     if (m_autoCodeFormatOnSave)
     {
+        // Defer the actual save until after formatting completes
+        m_pendingSaveAction = true;
+        m_pendingSaveAskFirst = askFirst;
+
+        suppressFileWatcherTemporarily();
         menuPyCodeFormatting();
-        setModified(false);
+
+        return RetVal(retOk);
     }
 
     if (this->getFilename().isNull())
@@ -2343,7 +2387,12 @@ RetVal ScriptEditorWidget::saveFile(bool askFirst)
             return RetVal(retOk);
         }
     }
+    return writeFileContent();
+}
 
+//----------------------------------------------------------------------------------------------------------------------------------
+RetVal ScriptEditorWidget::writeFileContent()
+{
     QFile file(getFilename());
 
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
@@ -2352,7 +2401,7 @@ RetVal ScriptEditorWidget::saveFile(bool askFirst)
             this,
             tr("Error while accessing file"),
             tr("File %1 could not be accessed").arg(getFilename()));
-        return false;
+        return RetVal(retError);
     }
 
     m_pFileSysWatcher->removePath(getFilename());
@@ -2419,9 +2468,11 @@ RetVal ScriptEditorWidget::saveFile(bool askFirst)
 
     text = encoder(t);
 #endif
-
     file.write(text);
     file.close();
+
+    changeFilename(getFilename());
+
     QFileInfo fi(getFilename());
 
     if (fi.exists())
@@ -4169,6 +4220,22 @@ void ScriptEditorWidget::replaceOccurencesInCurrentScript(
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+void ScriptEditorWidget::suppressFileWatcherTemporarily()
+{
+    if (m_pFileSysWatcher)
+    {
+        m_pFileSysWatcher->blockSignals(true);
+
+        QTimer::singleShot(1000, this, [this]() {
+            if (m_pFileSysWatcher)
+            {
+                m_pFileSysWatcher->blockSignals(false);
+            }
+        });
+    }
+}
+
 //------------------------------------------------------------------------------
 void ScriptEditorWidget::paintEvent(QPaintEvent* e)
 {
@@ -4243,7 +4310,5 @@ void ScriptEditorWidget::paintEvent(QPaintEvent* e)
         }
     }
 
-
 }
-
 } // end namespace ito

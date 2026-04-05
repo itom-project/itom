@@ -143,8 +143,13 @@ public:
     //!< returns true if the current line can be a trigger to insert a template docstring
     //!< for a possible method / function, this line belongs to.
     bool currentLineCanHaveDocstring() const;
+    IOHelper::CharsetEncodingItem charsetEncoding() const
+    {
+        return m_charsetEncoding;
+    }
 
-    IOHelper::CharsetEncodingItem charsetEncoding() const { return m_charsetEncoding; }
+    //!< temporarily suppress file watcher during formatting and save operations
+    void suppressFileWatcherTemporarily();
 
     //!< the replacement will be handled as one undo-action. The script will be marked as modified afterwards.
     void replaceOccurencesInCurrentScript(const QString &newValue, const QVector<ito::FileRenameItem> &renameItems);
@@ -190,11 +195,14 @@ private:
 
     bool lineAcceptsBPs(int line);
 
+    void changeFileSaveEncoding(const IOHelper::CharsetEncodingItem& encoding);
+
     RetVal changeFilename(const QString &newFilename);
 
     IOHelper::CharsetEncodingItem guessEncoding(const QByteArray &content) const;
-
-    void changeFileSaveEncoding(const IOHelper::CharsetEncodingItem &encoding);
+    
+    //!< private helper to write file content (used by both sync and async save paths)
+    RetVal writeFileContent();
 
     QFileSystemWatcher *m_pFileSysWatcher;
 
@@ -238,6 +246,11 @@ private:
     QString m_autoCodeFormatPreCmd;
 
     bool m_autoCodeFormatOnSave;
+    
+    //!< pending save state for async formatting workflow
+    bool m_pendingSaveAction;
+    bool m_pendingSaveAskFirst;
+    
     //!< this is the encoding of this script, hence,
     //!< the encoding that was used to load this script from
     //!< a file and will also be used to store it in a file.
@@ -325,6 +338,8 @@ public slots:
     void updateSyntaxCheck();
     void print();
 
+    void pyCodeFormatterDone(bool success, QString code);
+
 private slots:
     void toggleBookmarkRequested(int line);
     void onBookmarkAdded(const BookmarkItem &item);
@@ -353,8 +368,6 @@ private slots:
     void onCursorPositionChanged();
     void onTextChanged();
     void tabChangeRequest();
-
-    void pyCodeFormatterDone(bool success, QString code);
 };
 
 } //end namespace ito

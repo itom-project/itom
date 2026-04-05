@@ -88,7 +88,9 @@ ScriptDockWidget::ScriptDockWidget(const QString &title, const QString &objName,
     m_commonActions(commonActions),
     m_pBookmarkModel(bookmarkModel),
     m_outlineShowNavigation(true),
-    m_pStatusBarWidget(nullptr)
+    m_pStatusBarWidget(nullptr),
+    m_pendingAutoFormatAction(AutoFormatAction::None),
+    m_pendingTabIndex(-1)
 {
     qRegisterMetaType<QSharedPointer<OutlineItem> >("QSharedPointer<OutlineItem>");
 
@@ -246,9 +248,7 @@ void ScriptDockWidget::loadSettings()
     m_autoCodeFormatCmd = settings.value("autoCodeFormatCmd", "black --line-length 88 --quiet -").toString();
 
     m_autoCodeFormatAction->action()->setVisible(settings.value("autoCodeFormatEnabled", true).toBool());
-
     m_autoCodeFormatAction->setEnabled(m_autoCodeFormatCmd != "" && getCurrentEditor() != nullptr);
-
     m_autoCodeFormatOnSave = settings.value("autoCodeFormatOnSave", false).toBool();
 
     settings.endGroup();
@@ -914,7 +914,7 @@ RetVal ScriptDockWidget::newScript()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! method to open an existing script which can be indicated by the user by a getOpenFileName-dialog.
+//! method to open an existing script which can be indicated by a getOpenFileName-dialog.
 /*!
     the script is not directly opened by this method, but the signal openScriptRequest is emitted which invokes a slot in the scriptEditorOrganizer.
     Then the organizer can check, if that filename is already opened in another tab and activate it instead of opening a new editor.
@@ -1382,12 +1382,11 @@ void ScriptDockWidget::currentScriptCursorPositionChanged()
 
 //-------------------------------------------------------------------------------------
 //! slot connected to each ScriptEditorWidget instance. Invoked if any content in any script changed.
-/*!
-    calls slot currentTabChanged with tab index of scriptEditorWidget that sent the signal or
-    the active tab index if no sender is available.
-
-    \sa currentTabChanged
-*/
+///
+///    calls slot currentTabChanged with tab index of scriptEditorWidget that sent the signal or
+///    the active tab index if no sender is available.
+///
+///    \sa currentTabChanged
 void ScriptDockWidget::scriptModificationChanged(bool /*changed*/)
 {
     // in case of save-all or other commands that change other scripts than the active on,
@@ -1588,7 +1587,6 @@ void ScriptDockWidget::tabContextMenuEvent(QContextMenuEvent * event)
         int eventX = event->pos().x();
 //qDebug() << "tabRectangle: " << tabRectangle << ", event->pos(): " << event->pos() << ", m_tab->pos():" << m_tab->pos() << ", m_tab->getTabBar()->pos(): " << m_tab->getTabBar()->pos();
 
-//        if (tabRectangle.contains(event->pos() - m_tab->pos() - m_tab->getTabBar()->pos()))
         if (tabRectangle.x() <= eventX && (tabRectangle.x() + tabRectangle.width()) >= eventX)
         {
             m_tab->setCurrentIndex(i);
@@ -2723,8 +2721,6 @@ void ScriptDockWidget::mnuReplaceTextExpr()
     {
         //nothing selected, get cursor position
         sew->getCursorPosition(&lineFrom, &indexFrom);
-//        textSelected = false;
-//        multiLineSelection = false;
         defaultText = sew->getWordAtPosition(lineFrom, indexFrom);
     }
 
@@ -3131,4 +3127,116 @@ void ScriptDockWidget::tabChangedRequest()
     m_tabSwitcherWidget->setFocus();
 }
 
-} //end namespace ito
+//----------------------------------------------------------------------------------------------------------------------------------
+//! Initiates auto-formatting for current editor if enabled
+/*!
+    Checks if auto-format on save is enabled. If yes, triggers formatting
+    on the current editor and stores the pending action to execute after
+    formatting completes. If no formatting is needed, executes the action immediately.
+
+    \param action The action to perform after formatting (SaveTab or RunScript)
+    \param tabIndex Used with SaveTab action - which tab to save
+    \param filename Used with RunScript action - filename to run
+*/
+void ScriptDockWidget::initiateAutoFormatting(
+    AutoFormatAction action,
+    int tabIndex,
+    const QString& filename)
+{
+    ScriptEditorWidget* sew = getCurrentEditor();
+
+    if (sew == nullptr)
+    {
+        return;
+    }
+
+    // Check if auto-formatting is enabled and command is configured
+    if (!m_autoCodeFormatOnSave || m_autoCodeFormatCmd == "")
+    {
+        // Skip formatting, execute action immediately
+        switch (action)
+        {
+            case AutoFormatAction::SaveTab:
+                if (tabIndex >= 0)
+                {
+                    saveTab(tabIndex, false, true);
+                }
+                break;
+            case AutoFormatAction::RunScript:
+                if (!filename.isEmpty())
+                {
+                    emit pythonRunFileRequest(filename);
+                }
+                break;
+            case AutoFormatAction::None:
+            default:
+                break;
+        }
+        return;
+    }
+
+    // Store the pending action and its parameters
+    m_pendingAutoFormatAction = action;
+    m_pendingTabIndex = tabIndex;
+    m_pendingFilename = filename;
+
+    // Connect the formatting completion signal to our handler
+    disconnect(sew, nullptr, this, SLOT(onScriptEditorFormatCompleted()));
+    connect(
+        sew,
+        &ScriptEditorWidget::pyCodeFormatterDone,
+        this,
+        &ScriptDockWidget::onScriptEditorFormatCompleted,
+        Qt::UniqueConnection);
+
+    // Suppress file watcher during formatting and subsequent save to prevent reload dialogs
+    sew->suppressFileWatcherTemporarily();
+
+    // Trigger formatting
+    sew->menuPyCodeFormatting();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! Called when auto-formatting completes
+/*!
+    Executes the pending action that was stored before formatting started.
+    Handles both SaveTab and RunScript actions.
+*/
+void ScriptDockWidget::onScriptEditorFormatCompleted()
+{
+    ScriptEditorWidget* sew = getCurrentEditor();
+
+    if (sew != nullptr)
+    {
+        // Disconnect the signal to avoid repeated calls
+        disconnect(sew, nullptr, this, SLOT(onScriptEditorFormatCompleted()));
+    }
+
+    // Execute the pending action
+    switch (m_pendingAutoFormatAction)
+    {
+        case AutoFormatAction::SaveTab:
+            if (m_pendingTabIndex >= 0)
+            {
+                saveTab(m_pendingTabIndex, false, true);
+            }
+            break;
+
+        case AutoFormatAction::RunScript:
+            if (!m_pendingFilename.isEmpty())
+            {
+                emit pythonRunFileRequest(m_pendingFilename);
+            }
+            break;
+
+        case AutoFormatAction::None:
+        default:
+            break;
+    }
+
+    // Clear pending action
+    m_pendingAutoFormatAction = AutoFormatAction::None;
+    m_pendingTabIndex = -1;
+    m_pendingFilename = "";
+}
+} // end namespace ito
