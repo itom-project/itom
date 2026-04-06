@@ -80,7 +80,8 @@ ScriptEditorWidget::ScriptEditorWidget(
     m_outlineTimer(NULL), m_keepIndentationOnPaste(true), m_cursorJumpLastAction(false),
     m_pBookmarkModel(bookmarkModel), m_currentLineIndex(-1), m_textBlockLineIdxAboutToBeDeleted(-1),
     m_outlineDirty(true), m_wasReadonly(false), m_charsetEncodingAutoGuess(true),
-    m_charsetDefined(false)
+    m_charsetDefined(false), m_autoCodeFormatOnSave(false), m_pendingSaveAction(false),
+    m_pendingSaveAskFirst(false)
 {
     m_rootOutlineItem = QSharedPointer<OutlineItem>(new OutlineItem(OutlineItem::typeRoot));
 
@@ -560,6 +561,7 @@ void ScriptEditorWidget::loadSettings()
         settings.value("autoStripTrailingSpacesAfterReturn", true).toBool());
 
     bool pyCodeFormatEnabled = settings.value("autoCodeFormatEnabled", true).toBool();
+    m_autoCodeFormatOnSave = settings.value("autoCodeFormatOnSave", false).toBool();
     m_autoCodeFormatCmd =
         settings.value("autoCodeFormatCmd", "black --line-length 88 --quiet -").toString();
     m_autoCodeFormatPreCmd =
@@ -1685,6 +1687,7 @@ void ScriptEditorWidget::menuPyCodeFormatting()
             tr("Missing auto code format command"),
             tr("No auto code format call command has been given in the "
                "itom property dialog. Please indicate a command there."));
+        restoreFileWatcher();
         return;
     }
 
@@ -1742,6 +1745,8 @@ void ScriptEditorWidget::menuPyCodeFormatting()
         {
             QMessageBox::critical(this, tr("Error starting auto code format"), text1);
         }
+
+        restoreFileWatcher();
     }
 }
 
@@ -2109,6 +2114,9 @@ void ScriptEditorWidget::pyCodeFormatterDone(bool success, QString code)
     }
 
     m_pyCodeFormatter.clear();
+
+    // Restore file watcher signals now that formatting (and potential save) is about to complete
+    restoreFileWatcher();
 
     // Handle pending save action after formatting completes
     if (m_pendingSaveAction)
@@ -4226,13 +4234,15 @@ void ScriptEditorWidget::suppressFileWatcherTemporarily()
     if (m_pFileSysWatcher)
     {
         m_pFileSysWatcher->blockSignals(true);
+    }
+}
 
-        QTimer::singleShot(1000, this, [this]() {
-            if (m_pFileSysWatcher)
-            {
-                m_pFileSysWatcher->blockSignals(false);
-            }
-        });
+//----------------------------------------------------------------------------------------------------------------------------------
+void ScriptEditorWidget::restoreFileWatcher()
+{
+    if (m_pFileSysWatcher)
+    {
+        m_pFileSysWatcher->blockSignals(false);
     }
 }
 

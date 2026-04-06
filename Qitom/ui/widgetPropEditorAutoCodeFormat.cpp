@@ -56,7 +56,7 @@ void WidgetPropEditorAutoCodeFormat::readSettings()
     );
 
     ui.checkBoxFormatOnSave->setChecked(
-        settings.value("checkBoxFormatOnSave", false).toBool());
+        settings.value("autoCodeFormatOnSave", false).toBool());
 
     ui.txtCmd->setText(
         settings.value("autoCodeFormatCmd", "black --line-length 88 --quiet -").toString()
@@ -80,7 +80,7 @@ void WidgetPropEditorAutoCodeFormat::writeSettings()
     settings.beginGroup("CodeEditor");
 
     settings.setValue("autoCodeFormatEnabled", ui.groupAutoCodeFormat->isChecked());
-    settings.setValue("checkBoxFormatOnSave", ui.checkBoxFormatOnSave->isChecked());
+    settings.setValue("autoCodeFormatOnSave", ui.checkBoxFormatOnSave->isChecked());
     settings.setValue("autoCodeFormatCmd", ui.txtCmd->toPlainText());
     settings.setValue("autoCodeFormatImportsSortCmd", ui.txtPreCmd->text());
     settings.setValue("autoCodeFormatEnableImportsSort", ui.groupImportsSorting->isChecked());

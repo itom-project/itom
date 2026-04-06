@@ -148,8 +148,11 @@ public:
         return m_charsetEncoding;
     }
 
-    //!< temporarily suppress file watcher during formatting and save operations
+    //!< suppress file watcher signals during formatting and save operations
     void suppressFileWatcherTemporarily();
+
+    //!< restore file watcher signals after formatting and save operations are done
+    void restoreFileWatcher();
 
     //!< the replacement will be handled as one undo-action. The script will be marked as modified afterwards.
     void replaceOccurencesInCurrentScript(const QString &newValue, const QVector<ito::FileRenameItem> &renameItems);
@@ -200,7 +203,7 @@ private:
     RetVal changeFilename(const QString &newFilename);
 
     IOHelper::CharsetEncodingItem guessEncoding(const QByteArray &content) const;
-    
+
     //!< private helper to write file content (used by both sync and async save paths)
     RetVal writeFileContent();
 
@@ -246,11 +249,11 @@ private:
     QString m_autoCodeFormatPreCmd;
 
     bool m_autoCodeFormatOnSave;
-    
+
     //!< pending save state for async formatting workflow
     bool m_pendingSaveAction;
     bool m_pendingSaveAskFirst;
-    
+
     //!< this is the encoding of this script, hence,
     //!< the encoding that was used to load this script from
     //!< a file and will also be used to store it in a file.

@@ -90,7 +90,10 @@ ScriptDockWidget::ScriptDockWidget(const QString &title, const QString &objName,
     m_outlineShowNavigation(true),
     m_pStatusBarWidget(nullptr),
     m_pendingAutoFormatAction(AutoFormatAction::None),
-    m_pendingTabIndex(-1)
+    m_pendingTabIndex(-1),
+    m_classBox(nullptr),
+    m_methodBox(nullptr),
+    m_classMenuBar(nullptr)
 {
     qRegisterMetaType<QSharedPointer<OutlineItem> >("QSharedPointer<OutlineItem>");
 
@@ -589,7 +592,7 @@ void ScriptDockWidget::fillNavigationMethodComboBox(
 // public Slot invoked by outlineModelChanged from EditorWidget or by tabchange etc.
 void ScriptDockWidget::updateCodeNavigation(ScriptEditorWidget *editor, QSharedPointer<OutlineItem> rootItem)
 {
-    if (m_outlineShowNavigation && editor)
+    if (m_outlineShowNavigation && editor && m_classBox && m_methodBox)
     {
         if (m_tab->currentIndex() == m_tab->indexOf(editor))
         {
