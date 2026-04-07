@@ -154,6 +154,9 @@ public:
     //!< restore file watcher signals after formatting and save operations are done
     void restoreFileWatcher();
 
+    //!< write file content to disk (used by both sync and async save paths)
+    RetVal writeFileContent();
+
     //!< the replacement will be handled as one undo-action. The script will be marked as modified afterwards.
     void replaceOccurencesInCurrentScript(const QString &newValue, const QVector<ito::FileRenameItem> &renameItems);
 
@@ -204,9 +207,6 @@ private:
 
     IOHelper::CharsetEncodingItem guessEncoding(const QByteArray &content) const;
 
-    //!< private helper to write file content (used by both sync and async save paths)
-    RetVal writeFileContent();
-
     QFileSystemWatcher *m_pFileSysWatcher;
 
     // the following variables are related to the code checker feature of Python
@@ -253,6 +253,7 @@ private:
     //!< pending save state for async formatting workflow
     bool m_pendingSaveAction;
     bool m_pendingSaveAskFirst;
+    bool m_pendingRunAfterSave;
 
     //!< this is the encoding of this script, hence,
     //!< the encoding that was used to load this script from
@@ -300,6 +301,7 @@ signals:
     void addGoBackNavigationItem(const GoBackNavigationItem &item);
     void tabChangeRequested();
     void findSymbolsShowRequested();
+    void formatAndSaveCompleted();
 
 public slots:
     void triggerCodeChecker();

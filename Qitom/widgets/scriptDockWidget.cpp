@@ -2566,7 +2566,27 @@ void ScriptDockWidget::mnuScriptRun()
 
     if (!retValue.containsError())
     {
-        emit (pythonRunFileRequest(sew->getFilename()));
+        // If auto-format on save is enabled and the script is modified,
+        // format and save first, then run after completion.
+        if (m_autoCodeFormatOnSave && m_autoCodeFormatCmd != "" && sew->isModified())
+        {
+            initiateAutoFormatting(
+                AutoFormatAction::RunScript,
+                -1,
+                sew->getFilename());
+        }
+        else
+        {
+            if (sew->isModified())
+            {
+                retValue += sew->saveFile(false);
+            }
+
+            if (!retValue.containsError())
+            {
+                emit pythonRunFileRequest(sew->getFilename());
+            }
+        }
     }
 }
 
@@ -3187,7 +3207,7 @@ void ScriptDockWidget::initiateAutoFormatting(
     disconnect(sew, nullptr, this, SLOT(onScriptEditorFormatCompleted()));
     connect(
         sew,
-        &ScriptEditorWidget::pyCodeFormatterDone,
+        &ScriptEditorWidget::formatAndSaveCompleted,
         this,
         &ScriptDockWidget::onScriptEditorFormatCompleted,
         Qt::UniqueConnection);
@@ -3219,15 +3239,20 @@ void ScriptDockWidget::onScriptEditorFormatCompleted()
     switch (m_pendingAutoFormatAction)
     {
         case AutoFormatAction::SaveTab:
-            if (m_pendingTabIndex >= 0)
+            if (sew != nullptr && sew->isModified())
             {
-                saveTab(m_pendingTabIndex, false, true);
+                sew->writeFileContent();
             }
             break;
 
         case AutoFormatAction::RunScript:
             if (!m_pendingFilename.isEmpty())
             {
+                if (sew != nullptr && sew->isModified())
+                {
+                    sew->writeFileContent();
+                }
+
                 emit pythonRunFileRequest(m_pendingFilename);
             }
             break;

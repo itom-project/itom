@@ -81,7 +81,7 @@ ScriptEditorWidget::ScriptEditorWidget(
     m_pBookmarkModel(bookmarkModel), m_currentLineIndex(-1), m_textBlockLineIdxAboutToBeDeleted(-1),
     m_outlineDirty(true), m_wasReadonly(false), m_charsetEncodingAutoGuess(true),
     m_charsetDefined(false), m_autoCodeFormatOnSave(false), m_pendingSaveAction(false),
-    m_pendingSaveAskFirst(false)
+    m_pendingSaveAskFirst(false), m_pendingRunAfterSave(false)
 {
     m_rootOutlineItem = QSharedPointer<OutlineItem>(new OutlineItem(OutlineItem::typeRoot));
 
@@ -1405,9 +1405,12 @@ void ScriptEditorWidget::menuRunScript()
 
     if (!retValue.containsError())
     {
-        // retValue += checkSaveStateForExecution();
-
-        if (!retValue.containsError())
+        // If formatting is pending, defer the run until after format+save completes
+        if (m_pendingSaveAction)
+        {
+            m_pendingRunAfterSave = true;
+        }
+        else
         {
             emit pythonRunFile(getFilename());
         }
@@ -2145,10 +2148,14 @@ void ScriptEditorWidget::pyCodeFormatterDone(bool success, QString code)
 
                 if (ret & QMessageBox::Cancel)
                 {
+                    m_pendingRunAfterSave = false;
+                    emit formatAndSaveCompleted();
                     return;
                 }
                 else if (ret & QMessageBox::No)
                 {
+                    m_pendingRunAfterSave = false;
+                    emit formatAndSaveCompleted();
                     return;
                 }
             }
@@ -2156,6 +2163,15 @@ void ScriptEditorWidget::pyCodeFormatterDone(bool success, QString code)
             writeFileContent();
         }
     }
+
+    // Handle pending run action after formatting and save completes
+    if (m_pendingRunAfterSave)
+    {
+        m_pendingRunAfterSave = false;
+        emit pythonRunFile(getFilename());
+    }
+
+    emit formatAndSaveCompleted();
 }
 
 //-------------------------------------------------------------------------------------
