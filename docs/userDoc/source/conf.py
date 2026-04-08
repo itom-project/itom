@@ -415,9 +415,9 @@ todo_include_todos = True
 # Files for auto-generating links in documentation to methods / datatypes etc. of other projects...
 # to get the inv files, open the given URL/objects.inv.
 intersphinx_mapping = {
-    "python": ("https://docs.python.org/3", (None, "python3.12-inv.txt")),
-    "numpy": ("https://numpy.org/doc/stable", (None, "numpy1.26-inv.txt")),
-    "scipy": ("https://docs.scipy.org/doc/scipy", (None, "scipy1.14.0-inv.txt")),
-    "matplotlib": ("https://matplotlib.org", (None, "matplotlib3.9.2-inv.txt")),
-    "pandas": ("https://pandas.pydata.org/docs/", (None, "pandas2.2.2-inv.txt")),
+    "python": ("https://docs.python.org/3", (None, "python3.13-inv.txt")),
+    "numpy": ("https://numpy.org/doc/stable", (None, "numpy2.4-inv.txt")),
+    "scipy": ("https://docs.scipy.org/doc/scipy", (None, "scipy1.17.0-inv.txt")),
+    "matplotlib": ("https://matplotlib.org", (None, "matplotlib3.10.8-inv.txt")),
+    "pandas": ("https://pandas.pydata.org/docs/", (None, "pandas3.0.2-inv.txt")),
 }
