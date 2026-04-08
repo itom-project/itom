@@ -98,7 +98,7 @@ set(itomCommonPlot_SOURCES
 )
 
 if(MSVC)
-    list(APPEND itomCommonQt_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/version.rc)
+    list(APPEND itomCommonPlot_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/version.rc)
 endif()
 
 add_library(${target_name} SHARED ${itomCommonPlot_SOURCES} ${itomCommonPlot_HEADERS})
