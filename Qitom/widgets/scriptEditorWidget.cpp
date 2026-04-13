@@ -1077,7 +1077,7 @@ void ScriptEditorWidget::dropEvent(QDropEvent* event)
             {
                 // fix in order not to freeze the cursor after dropping
                 // see:
-                // https://stackoverflow.com/questions/29456366/qtextedit-cursor-becomes-frozen-after-overriding-its-droeve
+                // https://stackoverflow.com/questions/29456366/qtextedit-cursor-becomes-frozen-after-overriding-its-dropevent
                 QMimeData mimeData;
                 mimeData.setText("");
 
