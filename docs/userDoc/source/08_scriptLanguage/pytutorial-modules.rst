@@ -224,40 +224,23 @@ module directory can be shared by machines of different architectures.
 
 Some tips for experts:
 
-* When the Python interpreter is invoked with the **-O** flag, optimized
-  code is generated and stored in :file:`.pyo` files.  The optimizer currently
-  doesn't help much; it only removes :keyword:`assert` statements.  When
-  **-O** is used, *all* :term:`bytecode` is optimized; ``.pyc`` files are
-  ignored and ``.py`` files are compiled to optimized bytecode.
+* You can use the :option:`-O` or :option:`-OO` switches on the Python command
+  to reduce the size of a compiled module.  The ``-O`` switch removes assert
+  statements, the ``-OO`` switch removes both assert statements and __doc__
+  strings.  Since some programs may rely on having these available, you should
+  only use this option if you know what you're doing.  "Optimized" modules have
+  an ``opt-`` tag and are usually smaller.  Future releases may
+  change the effects of optimization.
 
-* Passing two **-O** flags to the Python interpreter (**-OO**) will
-  cause the bytecode compiler to perform optimizations that could in some rare
-  cases result in malfunctioning programs.  Currently only ``__doc__`` strings are
-  removed from the bytecode, resulting in more compact :file:`.pyo` files.  Since
-  some programs may rely on having these available, you should only use this
-  option if you know what you're doing.
+* A program doesn't run any faster when it is read from a ``.pyc``
+  file than when it is read from a ``.py`` file; the only thing that's faster
+  about ``.pyc`` files is the speed with which they are loaded.
 
-* A program doesn't run any faster when it is read from a :file:`.pyc` or
-  :file:`.pyo` file than when it is read from a :file:`.py` file; the only thing
-  that's faster about :file:`.pyc` or :file:`.pyo` files is the speed with which
-  they are loaded.
+* The module :mod:`compileall` can create .pyc files for all modules in a
+  directory.
 
-* When a script is run by giving its name on the command line, the bytecode for
-  the script is never written to a :file:`.pyc` or :file:`.pyo` file.  Thus, the
-  startup time of a script may be reduced by moving most of its code to a module
-  and having a small bootstrap script that imports that module.  It is also
-  possible to name a :file:`.pyc` or :file:`.pyo` file directly on the command
-  line.
-
-* It is possible to have a file called :file:`spam.pyc` (or :file:`spam.pyo`
-  when **-O** is used) without a file :file:`spam.py` for the same module.
-  This can be used to distribute a library of Python code in a form that is
-  moderately hard to reverse engineer.
-
-  .. index:: module: compileall
-
-* The module :mod:`compileall` can create :file:`.pyc` files (or :file:`.pyo`
-  files when **-O** is used) for all modules in a directory.
+* There is more detail on this process, including a flow chart of the
+  decisions, in :pep:`3147`.
 
 
 .. _tut-standardmodules:
@@ -265,7 +248,7 @@ Some tips for experts:
 Standard Modules
 -------------------
 
-.. index:: module: sys
+.. index:: pair: module; sys
 
 Python comes with a library of standard modules, described in a separate
 document, the Python Library Reference ("Library Reference" hereafter).  Some
@@ -335,7 +318,7 @@ Without arguments, :func:`dir` lists the names you have defined currently::
 
 Note that it lists all types of names: variables, modules, functions, etc.
 
-.. index:: module: builtins
+.. index:: pair: module; builtins
 
 :func:`dir` does not list the names of built-in functions and variables.  If you
 want a list of those, they are defined in the standard module
