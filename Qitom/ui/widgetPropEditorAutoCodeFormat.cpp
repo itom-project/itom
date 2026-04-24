@@ -98,7 +98,7 @@ void WidgetPropEditorAutoCodeFormat::writeSettings()
 void WidgetPropEditorAutoCodeFormat::on_btnTest_clicked()
 {
     m_pyCodeFormatter = QSharedPointer<PyCodeFormatter>(
-        new PyCodeFormatter(this),
+        new PyCodeFormatter(0, this),
         WidgetPropEditorAutoCodeFormat::deleteLater
     );
 

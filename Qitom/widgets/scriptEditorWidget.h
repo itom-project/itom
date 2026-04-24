@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2024, Institut für Technische Optik (ITO),
+    Copyright (C) 2026, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of itom.
@@ -20,8 +20,7 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef SCRIPTEDITORWIDGET_H
-#define SCRIPTEDITORWIDGET_H
+#pragma once
 
 #include "../models/breakPointModel.h"
 
@@ -148,22 +147,12 @@ public:
         return m_charsetEncoding;
     }
 
-    //!< suppress file watcher signals during formatting and save operations
-    void suppressFileWatcherTemporarily();
-
-    //!< restore file watcher signals after formatting and save operations are done
-    void restoreFileWatcher();
-
-    //!< write file content to disk (used by both sync and async save paths)
-    RetVal writeFileContent();
-
     //!< the replacement will be handled as one undo-action. The script will be marked as modified afterwards.
     void replaceOccurencesInCurrentScript(const QString &newValue, const QVector<ito::FileRenameItem> &renameItems);
 
     static QString filenameFromUID(int UID, bool &found);
 
 protected:
-
     bool canInsertFromMimeData(const QMimeData *source) const;
     void insertFromMimeData(const QMimeData *source);
 
@@ -187,6 +176,12 @@ protected:
     const BreakPointModel* getBreakPointModel() const;
 
     void paintEvent(QPaintEvent* e);
+
+    ito::RetVal formatPythonCode(int progressDialogShowDelayMs = 0);
+    void pyCodeFormatterDone(bool success, QString codeOrErrorString, QEventLoop& loop);
+
+    //!< write file content to disk (used by both sync and async save paths)
+    RetVal writeFileContent(const QString& filename);
 
 private:
     enum markerType
@@ -250,11 +245,6 @@ private:
 
     bool m_autoCodeFormatOnSave;
 
-    //!< pending save state for async formatting workflow
-    bool m_pendingSaveAction;
-    bool m_pendingSaveAskFirst;
-    bool m_pendingRunAfterSave;
-
     //!< this is the encoding of this script, hence,
     //!< the encoding that was used to load this script from
     //!< a file and will also be used to store it in a file.
@@ -292,9 +282,11 @@ private:
     QSharedPointer<OutlineItem> checkBlockForOutlineItem(int startLineIdx, int endLineIdx) const;
 
 signals:
-    void pythonRunFile(QString filename);
     void pythonRunSelection(QString selectionText);
-    void pythonDebugFile(QString filename);
+    void pythonRunFileRequest(QString filename); /*!<  will be received by scriptEditorOrganizer, in
+                                                    order to save all unsaved changes first */
+    void pythonDebugFileRequest(QString filename); /*!<  will be received by scriptEditorOrganizer,
+                                                      in order to save all unsaved changes first */
     void closeRequest(ScriptEditorWidget* sew, bool ignoreModifications); //signal emitted if this tab should be closed without considering any save-state
     void marginChanged();
     void outlineModelChanged(ScriptEditorWidget *editor, QSharedPointer<OutlineItem> rootItem);
@@ -343,7 +335,7 @@ public slots:
     void updateSyntaxCheck();
     void print();
 
-    void pyCodeFormatterDone(bool success, QString code);
+    // void pyCodeFormatterDone(bool success, QString codeOrErrorString);
 
 private slots:
     void toggleBookmarkRequested(int line);
@@ -376,5 +368,3 @@ private slots:
 };
 
 } //end namespace ito
-
-#endif

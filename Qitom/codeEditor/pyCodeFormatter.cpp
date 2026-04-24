@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Copyright (C) 2026, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of itom.
@@ -18,11 +18,6 @@
 
     You should have received a copy of the GNU Library General Public License
     along with itom. If not, see <http://www.gnu.org/licenses/>.
-
-    --------------------------------
-    This class is a modified version of the class QToolTip of the
-    Qt framework (licensed under LGPL):
-    https://code.woboq.org/qt5/qtbase/src/widgets/kernel/qtooltip.cpp.html
 *********************************************************************** */
 
 #include "pyCodeFormatter.h"
@@ -38,10 +33,11 @@
 namespace ito {
 
 //-------------------------------------------------------------------------------------
-PyCodeFormatter::PyCodeFormatter(QObject *parent /*= nullptr*/) :
+PyCodeFormatter::PyCodeFormatter(int progressDialogShowDelayMs, QObject *parent /*= nullptr*/) :
     QObject(parent),
     m_isCancelling(false),
-    m_importSortTempFileName("isort_temp.py")
+    m_importSortTempFileName("isort_temp.py"),
+    m_progressDialogShowDelayMs(progressDialogShowDelayMs)
 {
     const PythonEngine* pyeng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
 
@@ -93,10 +89,14 @@ PyCodeFormatter::PyCodeFormatter(QObject *parent /*= nullptr*/) :
     connect(&m_processImportSort, &QProcess::finished, this, &PyCodeFormatter::importSortFinished);
 #endif
 
-
-
     connect(&m_processImportSort, &QProcess::started,
         this, &PyCodeFormatter::importSortStarted);
+
+    m_pShowProgressDialogDelayedTimer = new QTimer(this);
+    m_pShowProgressDialogDelayedTimer->setSingleShot(true);
+    m_pShowProgressDialogDelayedTimer->setInterval(m_progressDialogShowDelayMs);
+    m_pShowProgressDialogDelayedTimer->stop();
+    connect(m_pShowProgressDialogDelayedTimer, &QTimer::timeout, this, &PyCodeFormatter::delayedShowTimeoutDialog);
 }
 
 //-------------------------------------------------------------------------------------
@@ -105,6 +105,17 @@ PyCodeFormatter::~PyCodeFormatter()
     if (!m_isCancelling)
     {
         cancelRequested();
+    }
+
+    DELETE_AND_SET_NULL(m_pShowProgressDialogDelayedTimer);
+}
+
+//-------------------------------------------------------------------------------------
+void PyCodeFormatter::delayedShowTimeoutDialog()
+{
+    if (m_progressDialog)
+    {
+        m_progressDialog->show();
     }
 }
 
@@ -161,7 +172,11 @@ ito::RetVal PyCodeFormatter::startImportsSorting(const QString& importSortingCmd
 \param formattingCmd is the command <cmd> in the call python -m <cmd> and must allow passing
     the code string via stdin.
 */
-ito::RetVal PyCodeFormatter::startSortingAndFormatting(const QString& importSortingCmd, const QString& formattingCmd, const QString &code, QWidget *dialogParent /*= nullptr*/)
+ito::RetVal PyCodeFormatter::startSortingAndFormatting(
+    const QString& importSortingCmd,
+    const QString& formattingCmd,
+    const QString &code,
+    QWidget *dialogParent /*= nullptr*/)
 {
     m_isCancelling = false;
 
@@ -182,7 +197,15 @@ ito::RetVal PyCodeFormatter::startSortingAndFormatting(const QString& importSort
         m_progressDialog->setValue(0);
         connect(m_progressDialog.data(), &QProgressDialog::canceled,
             this, &PyCodeFormatter::cancelRequested);
-        m_progressDialog->show();
+
+        if (m_progressDialogShowDelayMs == 0)
+        {
+            m_progressDialog->show();
+        }
+        else
+        {
+            m_pShowProgressDialogDelayedTimer->start();
+        }
     }
 
     m_currentCode = code;
@@ -273,6 +296,8 @@ void PyCodeFormatter::cancelRequested()
         m_progressDialog->accept();
         m_progressDialog.clear();
     }
+
+    m_pShowProgressDialogDelayedTimer->stop();
 }
 
 //-------------------------------------------------------------------------------------
@@ -283,6 +308,8 @@ void PyCodeFormatter::formatterErrorOccurred(QProcess::ProcessError error)
         m_progressDialog->accept();
         m_progressDialog.clear();
     }
+
+    m_pShowProgressDialogDelayedTimer->stop();
 
     if (!m_isCancelling)
     {
@@ -314,6 +341,8 @@ void PyCodeFormatter::formatterFinished(int exitCode, QProcess::ExitStatus exitS
         m_progressDialog->accept();
         m_progressDialog.clear();
     }
+
+    m_pShowProgressDialogDelayedTimer->stop();
 
     if (exitCode == 0 && !m_isCancelling)
     {
@@ -366,6 +395,8 @@ void PyCodeFormatter::importSortErrorOccurred(QProcess::ProcessError error)
         m_progressDialog->accept();
         m_progressDialog.clear();
     }
+
+    m_pShowProgressDialogDelayedTimer->stop();
 
     if (!m_isCancelling)
     {
@@ -440,6 +471,8 @@ void PyCodeFormatter::importSortFinished(int exitCode, QProcess::ExitStatus exit
             m_progressDialog->accept();
             m_progressDialog.clear();
         }
+
+        m_pShowProgressDialogDelayedTimer->stop();
 
         emit formattingDone(false, m_currentError);
     }

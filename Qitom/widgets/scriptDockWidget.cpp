@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2025, Institut für Technische Optik (ITO),
+    Copyright (C) 2026, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of itom.
@@ -51,7 +51,7 @@ namespace ito {
 /*static*/ QPointer<ScriptEditorWidget> ScriptDockWidget::currentSelectedCallstackLineEditor = QPointer<ScriptEditorWidget>();
 /*static*/ const char* ScriptDockWidget::statusBarStatePropertyName = "_statusBarState";
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 /*!
     \class ScriptDockWidget
     \brief widget containing one or multiple script editors (tabbed). This widget can either be a docking widget, docked in a docking
@@ -89,8 +89,6 @@ ScriptDockWidget::ScriptDockWidget(const QString &title, const QString &objName,
     m_pBookmarkModel(bookmarkModel),
     m_outlineShowNavigation(true),
     m_pStatusBarWidget(nullptr),
-    m_pendingAutoFormatAction(AutoFormatAction::None),
-    m_pendingTabIndex(-1),
     m_classBox(nullptr),
     m_methodBox(nullptr),
     m_classMenuBar(nullptr)
@@ -193,7 +191,7 @@ ScriptDockWidget::ScriptDockWidget(const QString &title, const QString &objName,
     connect(AppManagement::getMainApplication(), SIGNAL(propertiesChanged()), this, SLOT(loadSettings()));
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! destructor
 /*!
     cancels connections and closes every tab.
@@ -220,7 +218,7 @@ ScriptDockWidget::~ScriptDockWidget()
     DELETE_AND_SET_NULL(m_pDialogReplace);
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void ScriptDockWidget::loadSettings()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
@@ -732,7 +730,7 @@ void ScriptDockWidget::showOutlineNavigationBar(bool show)
     m_classMenuBar->setVisible(show);
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 QList<ito::ScriptEditorStorage> ScriptDockWidget::saveScriptState() const
 {
     QList<ito::ScriptEditorStorage> state;
@@ -754,7 +752,7 @@ QList<ito::ScriptEditorStorage> ScriptDockWidget::saveScriptState() const
     return state;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 RetVal ScriptDockWidget::restoreScriptState(const QList<ito::ScriptEditorStorage> &states)
 {
     RetVal retVal;
@@ -793,7 +791,7 @@ void ScriptDockWidget::setScriptZoomFactor(int zoomFactor) const
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! returns a list of filenames, which have been modified in this ScriptDockWidget
 /*!
     long description
@@ -873,7 +871,7 @@ ScriptEditorWidget* ScriptDockWidget::getEditorByCanonicalFilepath(const QString
     return nullptr;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! returns a list of all filenames of all opened scripts (besides new scripts)
 /*!
 \return string list
@@ -902,7 +900,7 @@ QStringList ScriptDockWidget::getAllFilenames() const
     return list;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! creates new instance of ScriptEditorWidget and appends it to the tab-widget
 /*!
     \return result of method appendEditor
@@ -916,7 +914,7 @@ RetVal ScriptDockWidget::newScript()
     return retval;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! method to open an existing script which can be indicated by a getOpenFileName-dialog.
 /*!
     the script is not directly opened by this method, but the signal openScriptRequest is emitted which invokes a slot in the scriptEditorOrganizer.
@@ -941,7 +939,7 @@ RetVal ScriptDockWidget::openScript()
     return RetVal(retError);
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! opens a given filename as new tab in this ScriptDockWidget
 /*!
     Opens new ScriptEditorWidget, appends it to the tab widget and opens filename in the newly created instance.
@@ -1014,7 +1012,7 @@ RetVal ScriptDockWidget::openScript(QString filename, bool silent)
     return retValue;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! tries to save all opened scripts in this ScriptDockWidget
 /*!
     First, all unsaved and modified scripts are identified and listed. Then the user is asked for confirmation of
@@ -1032,7 +1030,7 @@ RetVal ScriptDockWidget::saveAllScripts(bool askFirst, bool ignoreNewScripts, in
 
     if (askFirst)
     {
-        QStringList list = this->getModifiedFilenames(ignoreNewScripts);
+        QStringList list = getModifiedFilenames(ignoreNewScripts);
         QMessageBox msgBox;
 
         if (list.size() > 0)
@@ -1056,8 +1054,14 @@ RetVal ScriptDockWidget::saveAllScripts(bool askFirst, bool ignoreNewScripts, in
 
     for (int i = 0; i < m_tab->count(); i++)
     {
+        if (i == excludeIndex)
+        {
+            continue;
+        }
+
         sew = getEditorByIndex(i);
-        if ((!sew->hasNoFilename() || !ignoreNewScripts) && i != excludeIndex)
+
+        if (!sew->hasNoFilename() || !ignoreNewScripts)
         {
             retValue += saveTab(i, false, false);
         }
@@ -1066,7 +1070,7 @@ RetVal ScriptDockWidget::saveAllScripts(bool askFirst, bool ignoreNewScripts, in
     return retValue;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! closes all opened scripts in this ScriptDockWidget
 /*!
     if indicated, scripts will be saved first. Methods returns if saving process fails, else scripts will be closed.
@@ -1091,6 +1095,7 @@ RetVal ScriptDockWidget::closeAllScripts(bool saveFirst, bool askFirst, bool ign
     {
         QList<ScriptEditorWidget*> list;
         QList<ScriptEditorWidget*>::iterator it;
+
         for (int i = 0; i < m_tab->count(); i++)
         {
             if (i != excludeIndex)
@@ -1108,7 +1113,7 @@ RetVal ScriptDockWidget::closeAllScripts(bool saveFirst, bool askFirst, bool ign
     return retValue;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! append given ScriptEditorWidget as new tab
 /*!
     \param editorWidget ScriptEditorWidget to append
@@ -1169,7 +1174,7 @@ RetVal ScriptDockWidget::appendEditor(ScriptEditorWidget* editorWidget)
     return RetVal(retOk);
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! removes ScriptEditorWidget at given tab position from tab-widget and returns its reference
 /*!
     \param index tab index of editor, which should be removed
@@ -1233,7 +1238,7 @@ ScriptEditorWidget* ScriptDockWidget::removeEditor(int index)
     return removedWidget;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! checks whether any editor in this ScriptDockWidget has no filename
 /*!
     \return true if any script has no filename, else false
@@ -1315,7 +1320,7 @@ void ScriptDockWidget::tabFilenameOrModificationChanged(int index)
     updateEditorActions();
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! slot invoked by tab-widget if current tab changed
 /*!
     modifies title of this ScriptDockWidget instance, depending on the active tab.
@@ -1446,7 +1451,7 @@ void ScriptDockWidget::tabCloseRequested(ScriptEditorWidget* sew, bool ignoreMod
     closeTab(index, !ignoreModifications);
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! public method to close any specific tab with or without saving its script first
 /*!
     \param index tab-index of tab in question
@@ -1484,7 +1489,7 @@ RetVal ScriptDockWidget::closeTab(int index, bool saveFirst, bool closeScriptWid
     return retValue;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! saves tab
 /*!
     \param index tab-index of tab in question
@@ -1500,7 +1505,8 @@ RetVal ScriptDockWidget::saveTab(int index, bool forceSaveAs, bool askFirst)
     }
 
     ScriptEditorWidget* sew = getEditorByIndex(index);
-    if (sew == NULL)
+
+    if (sew == nullptr)
     {
         return RetVal(retError);
     }
@@ -1515,7 +1521,7 @@ RetVal ScriptDockWidget::saveTab(int index, bool forceSaveAs, bool askFirst)
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! returns ScriptEditorWidget by given tab-index
 /*!
     long description
@@ -1527,7 +1533,7 @@ ScriptEditorWidget* ScriptDockWidget::getEditorByIndex(int index) const
 {
     if (index < 0 || index >= m_tab->count())
     {
-        return NULL;
+        return nullptr;
     }
     else
     {
@@ -1536,7 +1542,7 @@ ScriptEditorWidget* ScriptDockWidget::getEditorByIndex(int index) const
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! returns tab-index by given reference to ScriptEditorWidget
 /*!
     \param sew reference to ScriptEditorWidget
@@ -1544,10 +1550,11 @@ ScriptEditorWidget* ScriptDockWidget::getEditorByIndex(int index) const
 */
 int ScriptDockWidget::getIndexByEditor(const ScriptEditorWidget* sew) const
 {
-    if (sew == NULL)
+    if (sew == nullptr)
     {
         return -1;
     }
+
     for (int i = 0; i < m_tab->count(); i++)
     {
         if (getEditorByIndex(i) == sew)
@@ -1559,7 +1566,7 @@ int ScriptDockWidget::getIndexByEditor(const ScriptEditorWidget* sew) const
     return -1;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! returns reference to current ScriptEditorWidget
 /*!
     \return reference to current ScriptEditorWidget or nullptr
@@ -1574,7 +1581,7 @@ ScriptEditorWidget* ScriptDockWidget::getCurrentEditor() const
     return static_cast<ScriptEditorWidget*>(m_tab->currentWidget());
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! method is invoked, if a context menu is requested
 /*!
     checks if mouse click directly has been located at any tab and if yes actualizes the member m_actTabIndex.
@@ -1588,7 +1595,6 @@ void ScriptDockWidget::tabContextMenuEvent(QContextMenuEvent * event)
     {
         tabRectangle = m_tab->getTabBar()->tabRect(i);
         int eventX = event->pos().x();
-//qDebug() << "tabRectangle: " << tabRectangle << ", event->pos(): " << event->pos() << ", m_tab->pos():" << m_tab->pos() << ", m_tab->getTabBar()->pos(): " << m_tab->getTabBar()->pos();
 
         if (tabRectangle.x() <= eventX && (tabRectangle.x() + tabRectangle.width()) >= eventX)
         {
@@ -1600,7 +1606,7 @@ void ScriptDockWidget::tabContextMenuEvent(QContextMenuEvent * event)
     m_tabContextMenu->exec(event->globalPos());
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! updates actions which deal with editor commands but are not dependent on the state of python.
 void ScriptDockWidget::updateEditorActions()
 {
@@ -1636,7 +1642,7 @@ void ScriptDockWidget::updateEditorActions()
     updatePythonActions();
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! updates actions which deal with python commands or which are dependent on the python state
 //! Read-only is also python-dependent.
 void ScriptDockWidget::updatePythonActions()
@@ -1688,7 +1694,7 @@ void ScriptDockWidget::updatePythonActions()
         sew->currentLineCanHaveDocstring());
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! updates actions before context menu of tabs is shown
 void ScriptDockWidget::updateTabContextActions()
 {
@@ -1718,7 +1724,7 @@ void ScriptDockWidget::updateTabContextActions()
     m_copyFilename->setEnabled(m_tab->count()>0 && sew != NULL && !sew->hasNoFilename());
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! creates actions
 void ScriptDockWidget::createActions()
 {
@@ -1952,7 +1958,7 @@ void ScriptDockWidget::menuLastFilesAboutToShow()
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 // Slot that is invoked by the lastfile Buttons over the signalmapper
 void ScriptDockWidget::lastFileOpen(const QString &path)
 {
@@ -1967,7 +1973,7 @@ void ScriptDockWidget::lastFileOpen(const QString &path)
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! create menus
 void ScriptDockWidget::createMenus()
 {
@@ -2062,7 +2068,7 @@ void ScriptDockWidget::createMenus()
     m_tabContextMenu->addAction(m_tabUndockAction->action());
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! create toolbars
 void ScriptDockWidget::createToolBars()
 {
@@ -2114,7 +2120,7 @@ void ScriptDockWidget::createToolBars()
     m_bookmarkToolBar->setFloatable(false);
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! init status bar \todo right now, this is an empty method
 void ScriptDockWidget::createStatusBar()
 {
@@ -2176,7 +2182,7 @@ void ScriptDockWidget::windowStateChanged(bool windowNotToolbox)
 
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! activates tab with script whose filename corresponds to the filename parameter (or the UID, if >= 0 for scripts without current filename).
 /*!
     \param filename Filename of the script which should be activated
@@ -2294,7 +2300,7 @@ void ScriptDockWidget::activeTabShowLineAndHighlightWord(
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 // menu slots:
 //! moves active tab by one position to the left
 void ScriptDockWidget::mnuTabMoveLeft()
@@ -2305,7 +2311,7 @@ void ScriptDockWidget::mnuTabMoveLeft()
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! moves active tab by one position to the right
 void ScriptDockWidget::mnuTabMoveRight()
 {
@@ -2315,7 +2321,7 @@ void ScriptDockWidget::mnuTabMoveRight()
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! Open the icon browser
 void ScriptDockWidget::mnuOpenIconBrowser()
 {
@@ -2330,7 +2336,7 @@ void ScriptDockWidget::mnuOpenIconBrowser()
     DELETE_AND_SET_NULL(iconBrowser);
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! moves active tab to the first position
 void ScriptDockWidget::mnuTabMoveFirst()
 {
@@ -2340,7 +2346,7 @@ void ScriptDockWidget::mnuTabMoveFirst()
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! moves active tab to the last position
 void ScriptDockWidget::mnuTabMoveLast()
 {
@@ -2350,7 +2356,7 @@ void ScriptDockWidget::mnuTabMoveLast()
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! closes active tab
 void ScriptDockWidget::mnuTabClose()
 {
@@ -2360,28 +2366,28 @@ void ScriptDockWidget::mnuTabClose()
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! closes every tab besides active one (asks for saving tabs, which should be closed)
 void ScriptDockWidget::mnuTabCloseOthers()
 {
     closeAllScripts(true, true, false, m_actTabIndex);
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! closes every tab, asks for saving first
 void ScriptDockWidget::mnuTabCloseAll()
 {
     closeAllScripts(true, true, false);
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! dock the active tab and closes this ScriptDockWidget, if it is not docked and empty after docking
 void ScriptDockWidget::mnuTabDock()
 {
     emit (dockScriptTab(this, m_actTabIndex, !docked()));
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! undock the active tab and closes this ScriptDockWidget, if it is not docked and empty after docking
 void ScriptDockWidget::mnuTabUndock()
 {
@@ -2389,21 +2395,21 @@ void ScriptDockWidget::mnuTabUndock()
     emit(undockScriptTab(this, m_actTabIndex, undockToNewScriptWindow, true)); // !docked()));
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! slot invoked by action to open a new script
 void ScriptDockWidget::mnuNewScript()
 {
     newScript();
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! slot invoked by action to open an existing script
 void ScriptDockWidget::mnuOpenScript()
 {
     openScript();
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! slot invoked by action to save active script
 void ScriptDockWidget::mnuSaveScript()
 {
@@ -2414,7 +2420,7 @@ void ScriptDockWidget::mnuSaveScript()
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! slot invoked by action to save active script with new filename (save as)
 void ScriptDockWidget::mnuSaveScriptAs()
 {
@@ -2430,7 +2436,7 @@ void ScriptDockWidget::mnuSaveScriptAs()
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! slot invoked by action to save all opened scripts
 void ScriptDockWidget::mnuSaveAllScripts()
 {
@@ -2446,7 +2452,7 @@ void ScriptDockWidget::mnuSaveAllScripts()
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void ScriptDockWidget::mnuPrint()
 {
     ScriptEditorWidget *sew = getCurrentEditor();
@@ -2456,7 +2462,7 @@ void ScriptDockWidget::mnuPrint()
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! slot invoked to execute a cut command in active script editor
 void ScriptDockWidget::mnuCut()
 {
@@ -2467,7 +2473,7 @@ void ScriptDockWidget::mnuCut()
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! slot invoked to execute a copy command in active script editor
 void ScriptDockWidget::mnuCopy()
 {
@@ -2517,7 +2523,7 @@ void ScriptDockWidget::mnuComment()
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! slot invoked to execute an uncomment command in active script editor
 void ScriptDockWidget::mnuUncomment()
 {
@@ -2528,7 +2534,7 @@ void ScriptDockWidget::mnuUncomment()
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! slot invoked to execute an indentation command in active script editor
 void ScriptDockWidget::mnuIndent()
 {
@@ -2539,7 +2545,7 @@ void ScriptDockWidget::mnuIndent()
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! slot invoked to execute an unindentation command in active script editor
 void ScriptDockWidget::mnuUnindent()
 {
@@ -2550,136 +2556,104 @@ void ScriptDockWidget::mnuUnindent()
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! slot invoked to run the active script in python engine
 void ScriptDockWidget::mnuScriptRun()
 {
     ScriptEditorWidget* sew = getCurrentEditor();
 
-    if (sew == NULL) return;
-
-    RetVal retValue(retOk);
-    if (sew->hasNoFilename())
+    if (sew)
     {
-        retValue += sew->saveAsFile(true);
-    }
-
-    if (!retValue.containsError())
-    {
-        // If auto-format on save is enabled and the script is modified,
-        // format and save first, then run after completion.
-        if (m_autoCodeFormatOnSave && m_autoCodeFormatCmd != "" && sew->isModified())
-        {
-            initiateAutoFormatting(
-                AutoFormatAction::RunScript,
-                -1,
-                sew->getFilename());
-        }
-        else
-        {
-            if (sew->isModified())
-            {
-                retValue += sew->saveFile(false);
-            }
-
-            if (!retValue.containsError())
-            {
-                emit pythonRunFileRequest(sew->getFilename());
-            }
-        }
+        sew->menuRunScript();
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void ScriptDockWidget::mnuScriptRunSelection()
 {
     ScriptEditorWidget* sew = getCurrentEditor();
 
-    if (sew == NULL) return;
-
-    sew->menuRunSelection();
+    if (sew)
+    {
+        sew->menuRunSelection();
+    }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void ScriptDockWidget::mnuScriptRunCodeCell()
 {
     ScriptEditorWidget* sew = getCurrentEditor();
 
-    if (sew == NULL) return;
-
-    sew->menuRunCodeCell();
+    if (sew)
+    {
+        sew->menuRunCodeCell();
+    }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void ScriptDockWidget::mnuScriptRunCodeCellAndAdvance()
 {
     ScriptEditorWidget* sew = getCurrentEditor();
 
-    if (sew == NULL) return;
-
-    sew->menuRunCodeCellAndAdvance();
+    if (sew)
+    {
+        sew->menuRunCodeCellAndAdvance();
+    }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! slot invoked to debug the active script in python engine
 void ScriptDockWidget::mnuScriptDebug()
 {
     ScriptEditorWidget* sew = getCurrentEditor();
 
-    if (sew == NULL) return;
-
-    RetVal retValue(retOk);
-    if (sew->hasNoFilename())
+    if (sew)
     {
-        retValue += sew->saveAsFile(true);
-    }
-
-    if (!retValue.containsError())
-    {
-        emit (pythonDebugFileRequest(sew->getFilename()));
+        sew->menuDebugScript();
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! slot invoked to stop python script execution
 void ScriptDockWidget::mnuScriptStop()
 {
     PythonEngine *pyeng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
+
     if (pyeng)
     {
         pyeng->pythonInterruptExecutionThreadSafe();
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! slot invoked to continue debugging process if actually waiting at breakpoint
 void ScriptDockWidget::mnuScriptContinue()
 {
-    emit (pythonDebugCommand(ito::pyDbgContinue));
+    emit pythonDebugCommand(ito::pyDbgContinue);
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! slot invoked to execute a python debugging step
 void ScriptDockWidget::mnuScriptStep()
 {
-    emit (pythonDebugCommand(ito::pyDbgStep));
+    emit pythonDebugCommand(ito::pyDbgStep);
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! slot invoked to execute a python debugging step over
 void ScriptDockWidget::mnuScriptStepOver()
 {
-    emit (pythonDebugCommand(ito::pyDbgStepOver));
+    emit pythonDebugCommand(ito::pyDbgStepOver);
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! slot invoked to execute a python debugging step out
 void ScriptDockWidget::mnuScriptStepOut()
 {
-    emit (pythonDebugCommand(ito::pyDbgStepOut));
+    emit pythonDebugCommand(ito::pyDbgStepOut);
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void ScriptDockWidget::mnuFindTextExpr()
 {
     m_findTextExprActionSC->setEnabled(false);
@@ -2709,7 +2683,7 @@ void ScriptDockWidget::mnuFindTextExpr()
     m_findTextExprAction->action()->setChecked(true);
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void ScriptDockWidget::mnuReplaceTextExpr()
 {
     ScriptEditorWidget* sew = getCurrentEditor();
@@ -2761,7 +2735,7 @@ void ScriptDockWidget::mnuReplaceTextExpr()
     m_pDialogReplace->show();
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void ScriptDockWidget::mnuGoto()
 {
     ScriptEditorWidget* sew = getCurrentEditor();
@@ -2797,7 +2771,7 @@ void ScriptDockWidget::mnuGoto()
     DELETE_AND_SET_NULL(d);
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void ScriptDockWidget::mnuToggleBookmark()
 {
     ScriptEditorWidget *sew = getCurrentEditor();
@@ -2808,7 +2782,7 @@ void ScriptDockWidget::mnuToggleBookmark()
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void ScriptDockWidget::mnuInsertCodec()
 {
     ScriptEditorWidget *sew = getCurrentEditor();
@@ -2855,7 +2829,7 @@ void ScriptDockWidget::mnuPyDocstringGenerator()
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! this method is invoked if this ScriptDockWidget should be closed.
 /*!
     First, tries to save every script. If this process is successfully executed, the close event is accepted in order to close this instance,
@@ -2881,7 +2855,7 @@ void ScriptDockWidget::closeEvent(QCloseEvent *event)
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void ScriptDockWidget::mousePressEvent(QMouseEvent* e)
 {
     auto* scriptEditorOrganizer =
@@ -2902,7 +2876,7 @@ void ScriptDockWidget::mousePressEvent(QMouseEvent* e)
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void ScriptDockWidget::findTextExpr(QString expr, bool regExpr, bool caseSensitive, bool wholeWord, bool wrap, bool forward, bool isQuickSeach)
 {
     ScriptEditorWidget* sew = getCurrentEditor();
@@ -2936,7 +2910,7 @@ void ScriptDockWidget::findTextExpr(QString expr, bool regExpr, bool caseSensiti
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void ScriptDockWidget::replaceTextExpr(QString expr, QString replace)
 {
     ScriptEditorWidget* sew = getCurrentEditor();
@@ -2948,7 +2922,7 @@ void ScriptDockWidget::replaceTextExpr(QString expr, QString replace)
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void ScriptDockWidget::replaceAllExpr(QString expr, QString replace, bool regExpr, bool caseSensitive, bool wholeWord, bool findInSel)
 {
     int count = 0;
@@ -3027,11 +3001,12 @@ void ScriptDockWidget::replaceAllExpr(QString expr, QString replace, bool regExp
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void ScriptDockWidget::insertIconBrowserText(QString iconLink)
 {
     ScriptEditorWidget* sew = getCurrentEditor();
-    if (sew != NULL)
+
+    if (sew != nullptr)
     {
         int line, index;
         sew->insertPlainText(iconLink);
@@ -3040,19 +3015,20 @@ void ScriptDockWidget::insertIconBrowserText(QString iconLink)
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void ScriptDockWidget::editorMarginChanged()
 {
     updateEditorActions();
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void ScriptDockWidget::findWordWidgetFinished()
 {
     m_pWidgetFindWord->hide();
 
     ScriptEditorWidget* sew = getCurrentEditor();
-    if (sew != NULL)
+
+    if (sew != nullptr)
     {
         sew->setFocus();
     }
@@ -3060,7 +3036,7 @@ void ScriptDockWidget::findWordWidgetFinished()
     m_findTextExprActionSC->setEnabled(true);
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void ScriptDockWidget::setCurrentIndex(int index)
 {
     m_tab->setCurrentIndex(index);
@@ -3072,12 +3048,13 @@ void ScriptDockWidget::setCurrentIndex(int index)
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 //! slot invoked by action to copy the filename to clipboard
 void ScriptDockWidget::mnuCopyFilename()
 {
     ScriptEditorWidget *sew = getEditorByIndex(m_actTabIndex);
-    if (sew != NULL)
+
+    if (sew != nullptr)
     {
         QClipboard *clipboard = QApplication::clipboard();
         clipboard->setText(sew->getFilename(), QClipboard::Clipboard);
@@ -3150,121 +3127,4 @@ void ScriptDockWidget::tabChangedRequest()
     m_tabSwitcherWidget->setFocus();
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-//! Initiates auto-formatting for current editor if enabled
-/*!
-    Checks if auto-format on save is enabled. If yes, triggers formatting
-    on the current editor and stores the pending action to execute after
-    formatting completes. If no formatting is needed, executes the action immediately.
-
-    \param action The action to perform after formatting (SaveTab or RunScript)
-    \param tabIndex Used with SaveTab action - which tab to save
-    \param filename Used with RunScript action - filename to run
-*/
-void ScriptDockWidget::initiateAutoFormatting(
-    AutoFormatAction action,
-    int tabIndex,
-    const QString& filename)
-{
-    ScriptEditorWidget* sew = getCurrentEditor();
-
-    if (sew == nullptr)
-    {
-        return;
-    }
-
-    // Check if auto-formatting is enabled and command is configured
-    if (!m_autoCodeFormatOnSave || m_autoCodeFormatCmd == "")
-    {
-        // Skip formatting, execute action immediately
-        switch (action)
-        {
-            case AutoFormatAction::SaveTab:
-                if (tabIndex >= 0)
-                {
-                    saveTab(tabIndex, false, true);
-                }
-                break;
-            case AutoFormatAction::RunScript:
-                if (!filename.isEmpty())
-                {
-                    emit pythonRunFileRequest(filename);
-                }
-                break;
-            case AutoFormatAction::None:
-            default:
-                break;
-        }
-        return;
-    }
-
-    // Store the pending action and its parameters
-    m_pendingAutoFormatAction = action;
-    m_pendingTabIndex = tabIndex;
-    m_pendingFilename = filename;
-
-    // Connect the formatting completion signal to our handler
-    disconnect(sew, nullptr, this, SLOT(onScriptEditorFormatCompleted()));
-    connect(
-        sew,
-        &ScriptEditorWidget::formatAndSaveCompleted,
-        this,
-        &ScriptDockWidget::onScriptEditorFormatCompleted,
-        Qt::UniqueConnection);
-
-    // Suppress file watcher during formatting and subsequent save to prevent reload dialogs
-    sew->suppressFileWatcherTemporarily();
-
-    // Trigger formatting
-    sew->menuPyCodeFormatting();
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-//! Called when auto-formatting completes
-/*!
-    Executes the pending action that was stored before formatting started.
-    Handles both SaveTab and RunScript actions.
-*/
-void ScriptDockWidget::onScriptEditorFormatCompleted()
-{
-    ScriptEditorWidget* sew = getCurrentEditor();
-
-    if (sew != nullptr)
-    {
-        // Disconnect the signal to avoid repeated calls
-        disconnect(sew, nullptr, this, SLOT(onScriptEditorFormatCompleted()));
-    }
-
-    // Execute the pending action
-    switch (m_pendingAutoFormatAction)
-    {
-        case AutoFormatAction::SaveTab:
-            if (sew != nullptr && sew->isModified())
-            {
-                sew->writeFileContent();
-            }
-            break;
-
-        case AutoFormatAction::RunScript:
-            if (!m_pendingFilename.isEmpty())
-            {
-                if (sew != nullptr && sew->isModified())
-                {
-                    sew->writeFileContent();
-                }
-
-                emit pythonRunFileRequest(m_pendingFilename);
-            }
-            break;
-
-        case AutoFormatAction::None:
-        default:
-            break;
-    }
-
-    // Clear pending action
-    m_pendingAutoFormatAction = AutoFormatAction::None;
-    m_pendingTabIndex = -1;
-    m_pendingFilename = "";
-}
 } // end namespace ito
