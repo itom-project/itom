@@ -26,6 +26,9 @@
 *********************************************************************** */
 
 #include <windows.h>
+
+#pragma code_page(65001) // UTF-8
+
 #include "commonQtVersion.h"
 
 VS_VERSION_INFO     VERSIONINFO

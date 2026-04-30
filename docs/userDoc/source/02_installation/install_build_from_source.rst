@@ -1,5 +1,7 @@
 .. include:: ../include/global.inc
 
+.. |itomproject| replace:: **itomproject**
+
 Build from Sources
 ************************
 
@@ -16,6 +18,7 @@ Git repository from git@github.com:itom-project/itomProject.git), initialize and
 submodules **itom**, **plugins** and **designerplugins**.
 
 .. code-block:: bash
+
     git clone --recursive --remote git@github.com:itom-project/itomProject.git
     cd itomproject
     git submodule foreach --recursive git checkout master

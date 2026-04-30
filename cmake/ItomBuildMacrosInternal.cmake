@@ -18,7 +18,7 @@
 # You should have received a copy of the GNU Library General Public License
 # along with itom. If not, see <http://www.gnu.org/licenses/>.
 
-cmake_minimum_required(VERSION 3.1...3.15)
+cmake_minimum_required(VERSION 3.12...3.29)
 
 if(${CMAKE_VERSION} VERSION_LESS 3.12)
     cmake_policy(VERSION ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION})
@@ -31,7 +31,7 @@ endif()
 # This macro is automatically called from itom_init_plugin_library and
 # itom_init_designerplugin_library.
 macro(itom_init_core_common_vars)
-    set(BUILD_QTVERSION "auto" CACHE STRING "currently only Qt5 is supported. Set this value to 'auto' in order to auto-detect the correct Qt version or set it to 'Qt5' to hardly select Qt5.")
+    set(BUILD_QTVERSION "auto" CACHE STRING "currently only Qt6 is supported. Set this value to 'auto' in order to auto-detect the correct Qt version or set it to 'Q6' to hardly select Qt6.")
     option(BUILD_OPENMP_ENABLE "Use OpenMP parallelization if available. If TRUE, the definition USEOPENMP is set. This is only the case if OpenMP is generally available and if the build is release." ON)
     option(BUILD_UNITTEST_INTERNAL_ENABLE "If set, some libraries are compiled to export some internal methods, too. These can be tested then in unittests." OFF)
 
