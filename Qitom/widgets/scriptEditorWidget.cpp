@@ -1752,6 +1752,13 @@ ito::RetVal ScriptEditorWidget::formatPythonCode(int progressDialogShowDelayMs /
         new PyCodeFormatter(progressDialogShowDelayMs, this),
         doDeleteLater);
 
+    // Use a queued connection to make sure the slot is only delivered once the
+    // local QEventLoop below is actually running. Otherwise, if the formatter
+    // process fails to start (e.g. wrong python path / insufficient rights) or
+    // finishes extremely fast, formattingDone is emitted synchronously from
+    // within startSortingAndFormatting(...) and loop.exit() would be called
+    // before loop.exec(). The following loop.exec() would then block forever
+    // and freeze itom (e.g. when running a modified script with format-on-save).
     connect(
         pyCodeFormatter.data(),
         &PyCodeFormatter::formattingDone,
@@ -1759,7 +1766,8 @@ ito::RetVal ScriptEditorWidget::formatPythonCode(int progressDialogShowDelayMs /
         [&](bool success, QString codeOrErrorString)
         {
             pyCodeFormatterDone(success, codeOrErrorString, loop);
-        }
+        },
+        Qt::QueuedConnection
     );
 
 
