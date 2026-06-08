@@ -516,14 +516,17 @@ RetVal ScriptEditorOrganizer::saveAllScripts(bool askFirst, bool ignoreNewScript
         QStringList unsavedFileNames;
         QMessageBox msgBox;
 
+        // work on a snapshot of m_scriptDockElements, since calls below may indirectly
+        // run a nested event loop (e.g. auto code formatting before save) which can
+        // trigger other slots that try to lock m_scriptStackMutex again -> deadlock.
         m_scriptStackMutex.lock();
+        QList<ScriptDockWidget*> tempList(m_scriptDockElements);
+        m_scriptStackMutex.unlock();
 
-        for (it = m_scriptDockElements.begin(); it != m_scriptDockElements.end(); ++it)
+        for (it = tempList.begin(); it != tempList.end(); ++it)
         {
             unsavedFileNames.append((*it)->getModifiedFilenames(ignoreNewScripts));
         }
-
-        m_scriptStackMutex.unlock();
 
         if (unsavedFileNames.size() > 0)
         {
@@ -570,14 +573,19 @@ RetVal ScriptEditorOrganizer::saveAllScripts(bool askFirst, bool ignoreNewScript
 
     if (saveScriptState == nullptr || *saveScriptState != 2)
     {
+        // work on a snapshot, see comment above. Saving with the auto code formatter
+        // active opens a nested QEventLoop (PyCodeFormatter), during which other
+        // slots that lock m_scriptStackMutex (e.g. getActiveDockWidget) can be
+        // invoked - this would otherwise deadlock and freeze itom, e.g. when
+        // pressing F6 with a modified script in another tab.
         m_scriptStackMutex.lock();
+        QList<ScriptDockWidget*> tempList(m_scriptDockElements);
+        m_scriptStackMutex.unlock();
 
-        for (it = m_scriptDockElements.begin(); it != m_scriptDockElements.end(); ++it)
+        for (it = tempList.begin(); it != tempList.end(); ++it)
         {
             retValue += (*it)->saveAllScripts(false, ignoreNewScripts);
         }
-
-        m_scriptStackMutex.unlock();
     }
 
     return retValue;
