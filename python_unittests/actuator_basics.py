@@ -22,7 +22,7 @@ class ActuatorBasicsTest(unittest.TestCase):
         self.assertIsNone(motor3.setOrigin(np.int32(2)))
 
         self.assertIsNone(motor3.setOrigin(0, 2))
-        self.assertIsNone(motor3.setOrigin(np.int32(0), 1, np.int(2)))
+        self.assertIsNone(motor3.setOrigin(np.int32(0), 1, int(2)))
 
         # check wrong argument types
         with self.assertRaises(TypeError):
@@ -48,7 +48,7 @@ class ActuatorBasicsTest(unittest.TestCase):
         motor3 = itom.actuator("DummyMotor", numAxis=3)
 
         # check integer arguments
-        self.assertIsNone(motor3.calib(np.int32(0), 1, np.int(2)))
+        self.assertIsNone(motor3.calib(np.int32(0), 1, int(2)))
 
         # check wrong argument types
         with self.assertRaises(TypeError):
@@ -78,7 +78,7 @@ class ActuatorBasicsTest(unittest.TestCase):
         self.assertEqual(type(motor3.getPos(np.int32(2))), float)
 
         self.assertEqual(len(motor3.getPos(0, 2)), 2)
-        self.assertEqual(len(motor3.getPos(np.int32(0), 1, np.int(2))), 3)
+        self.assertEqual(len(motor3.getPos(np.int32(0), 1, int(2))), 3)
 
         # check wrong argument types
         with self.assertRaises(TypeError):
@@ -100,7 +100,7 @@ class ActuatorBasicsTest(unittest.TestCase):
         motor1 = itom.actuator("DummyMotor", numAxis=1)
         motor3 = itom.actuator("DummyMotor", numAxis=3)
 
-        self.assertIsNone(motor1.setPosAbs(np.int32(0), np.float(0.05)))
+        self.assertIsNone(motor1.setPosAbs(np.int32(0), float(0.05)))
         self.assertEqual(motor1.getPos(0), 0.05)
         self.assertIsNone(
             motor3.setPosAbs(np.int32(0), 1, 1, np.int64(-1), 2, np.float64(0.001))

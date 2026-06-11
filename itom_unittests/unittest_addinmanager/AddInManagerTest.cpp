@@ -16,7 +16,7 @@
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
- *   Auxiliar function converting QVector<ito::Param> to QVector<ito::ParamBase>
+ *   Auxiliary function converting QVector<ito::Param> to QVector<ito::ParamBase>
  *
  *   \param *vecIn    Vector with input parameters
  *   \param &vecOut    Vector with output parameters
@@ -39,7 +39,7 @@ TEST(AddInManagerTest, General)
 {
     ito::RetVal retval;
 
-    // if we want to use multithreading and synchroneous plugin calls we need sort of a qt main
+    // if we want to use multithreading and synchronous plugin calls we need sort of a qt main
     // function this can be either an instance of QApplication (normally used for gui-based
     // applications) or an instance of QCoreApplication, which is reported to be sort of
     // lightweighter. So that is what we / why we do this here Actually now AddInManager should do
@@ -105,7 +105,6 @@ TEST(AddInManagerTest, General)
     }
 
     char* oldpath = getenv("path");
-    char pathSep[] = ";";
 
     // try add or lib directory to path variables, to avoid user has to do this
     QString libDir = addInPath + QString("/lib");

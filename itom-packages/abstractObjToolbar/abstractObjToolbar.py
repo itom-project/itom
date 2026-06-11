@@ -1,9 +1,9 @@
-# coding=iso-8859-15
 """
 This file contains an abstract toolbar with basic functions for ToolBar / Menu Interaction.
 This contains parser for the global workspace to find DataObjects.
 By Wolfram Lyda, ITO, 2012
 """
+
 import itom
 from itom import ui
 
@@ -26,7 +26,7 @@ class abstractObjInteractionToolBar:
         Parameters
         ------------
         myName : {str}
-            Name of this toolBar. Nessecary for the deleter function to kill the b-bar.
+            Name of this toolBar. Necessary for the deleter function to kill the b-bar.
         defaultVar :  {str}
             default variable name.
 
@@ -65,7 +65,7 @@ class abstractObjInteractionToolBar:
             default variable name.
         VarName :  {PythonDict}
             Kontent of the global workspace of caller (use globals())
-        objType : {str}, optinal
+        objType : {str}, optional
             ObjectTypes to filter. Can be ' line', 'plane' , ' empty' or 'ND'
         acceptedObjectType: {int}, optional
             BitSet 1 = DataObjects, 2 = NumPy-Array, 4 = PointClouds accepted
@@ -150,7 +150,8 @@ class abstractObjInteractionToolBar:
                 ):
                     try:
                         if eval(
-                            dimsNPTestString.format(key, key, key, key, key), workSpace,
+                            dimsNPTestString.format(key, key, key, key, key),
+                            workSpace,
                         ):
                             npObjects.append(key)
                     except:
@@ -253,13 +254,13 @@ class abstractObjInteractionToolBar:
         done = False
 
         try:
-            dims = eval("{}.dims".format(varname), workSpace)
+            dims = eval(f"{varname}.dims", workSpace)
             if dims > 3:
                 del dims
                 return [False, False, "", True]
 
             elif dims == 3:
-                if eval("{}.shape[0] > 1".format(varname, varname), workSpace):
+                if eval(f"{varname}.shape[0] > 1", workSpace):
                     del dims
                     return [False, False, 0, ""]
 
@@ -272,7 +273,8 @@ class abstractObjInteractionToolBar:
             ):
                 isLine = True
                 if eval(
-                    "({}.shape[{}.dims-1] == 1)".format(varname, varname), workSpace,
+                    f"({varname}.shape[{varname}.dims-1] == 1)",
+                    workSpace,
                 ):
                     dir = "y"
                 else:

@@ -7,7 +7,7 @@ Extending the user interface of |itom|
 gives introductions to these features. Besides showing messages and input boxes, you can
 use specific script commands to add new toolbars or menus to the main window of |itom|. Additionally
 it is possible to design user defined dialog and windows by using the WYSIWYG Qt designer or even
-implement complex GUIs with dependecies to other 3rd party libraries within a plugin.
+implement complex GUIs with dependencies to other 3rd party libraries within a plugin.
 
 .. toctree::
    :maxdepth: 2

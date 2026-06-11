@@ -16,7 +16,6 @@ from itom import dataObject
 
 class MultiPlotHorLayout(ItomUi):
     def __init__(self):  # constructor
-
         # call constructor of ItomUi like it would be the constructor of the class itom.ui:
         ItomUi.__init__(self, "multiplePlotsInHorizontalLayout.ui", ui.TYPEWINDOW)
 
@@ -71,7 +70,6 @@ class MultiPlotHorLayout(ItomUi):
 
     @ItomUi.autoslot("")
     def on_btnInsertButton_clicked(self):
-
         idx, valid = ui.getInt(
             "Position",
             "At which index should the button be inserted (-1: end)?",
@@ -104,7 +102,8 @@ class MultiPlotHorLayout(ItomUi):
                 "insertItemFromUiFile",
                 idx,  # index
                 "container.ui",  # filename to ui file
-                "_%i" % self.numWidgets,  # prefix, added to the objectNames of all new widgets and layouts
+                "_%i"
+                % self.numWidgets,  # prefix, added to the objectNames of all new widgets and layouts
             )
 
             self.gui.btnRemove["enabled"] = self.numWidgets > 0
@@ -112,11 +111,13 @@ class MultiPlotHorLayout(ItomUi):
 
     @ItomUi.autoslot("")
     def on_btnRemove_clicked(self):
-
         if self.numWidgets <= 0:
             return
 
-        labels = [self.layout.call("itemAt", idx)["objectName"] for idx in range(self.numWidgets)]
+        labels = [
+            self.layout.call("itemAt", idx)["objectName"]
+            for idx in range(self.numWidgets)
+        ]
 
         name, valid = ui.getItem(
             "Widget to remove",
@@ -134,15 +135,17 @@ class MultiPlotHorLayout(ItomUi):
 
     @ItomUi.autoslot("")
     def on_btnSetStretch_clicked(self):
-
         if self.numWidgets <= 0:
             return
 
-        stretchs = [str(self.layout.call("stretch", idx)) for idx in range(self.numWidgets)]
+        stretchs = [
+            str(self.layout.call("stretch", idx)) for idx in range(self.numWidgets)
+        ]
 
         text, valid = ui.getText(
             "Stretch",
-            f"Indicate a comma-separated list of stretch " f"factors for up to {self.numWidgets} widgets",
+            f"Indicate a comma-separated list of stretch "
+            f"factors for up to {self.numWidgets} widgets",
             ",".join(stretchs),
         )
 
@@ -152,7 +155,8 @@ class MultiPlotHorLayout(ItomUi):
             if len(stretchs) > self.numWidgets:
                 ui.msgCritical(
                     "Wrong input",
-                    f"Stretchs must be a comma separated list of " f"integers (max. {self.numWidgets} entries)",
+                    f"Stretchs must be a comma separated list of "
+                    f"integers (max. {self.numWidgets} entries)",
                     parent=self.gui,
                 )
                 return
@@ -172,7 +176,9 @@ class MultiPlotHorLayout(ItomUi):
 
     def _buttonClicked(self):
         # slot, called if any button is clicked
-        ui.msgInformation("Button clicked", "The button has been clicked", parent=self.gui)
+        ui.msgInformation(
+            "Button clicked", "The button has been clicked", parent=self.gui
+        )
 
 
 # create a first instance of AutoConnectExample and the gui

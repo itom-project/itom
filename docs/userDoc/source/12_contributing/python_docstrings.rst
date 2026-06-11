@@ -41,7 +41,7 @@ General rules
 --------------
 
 1. Always use the macro ``PyDoc_STRVAR`` to generate the docstring
-2. Do not indent multiline docstrings in **C/C++**, since this identation is kept in the docstring.
+2. Do not indent multiline docstrings in **C/C++**, since this indentation is kept in the docstring.
    Therefore, always start these multiline docstrings in the first column of the source file!
 3. Avoid long lines in the docstrings. Wrap them with an explicit newline character (\n) after a
    maximum number of 88 characters.

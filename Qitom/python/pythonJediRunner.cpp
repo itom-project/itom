@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2024, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom.
 
@@ -31,6 +31,7 @@
 #include <qdebug.h>
 #include <qfileinfo.h>
 #include <qmetaobject.h>
+#include <qdir.h>
 
 
 //-------------------------------------------------------------------------------------
@@ -749,20 +750,37 @@ void RenameRunnable::run()
                         {
                             bool ok;
                             QString filePath =
-                                PythonQtConversion::PyObjGetString(filePathRef, true, ok);
+                                QDir::cleanPath(PythonQtConversion::PyObjGetString(filePathRef, true, ok));
                             auto lines =
                                 PythonQtConversion::PyObjGetIntArray(linesRef, true, ok);
                             auto columns =
                                 PythonQtConversion::PyObjGetIntArray(columnsRef, true, ok);
                             auto values =
                                 PythonQtConversion::PyObjToStringList(valuesRef, true, ok);
-                                
+
                             if (ok)
                             {
                                 JediRename fileToChange;
                                 fileToChange.m_fileInProject = (fileInProjectRef == Py_True);
-                                fileToChange.m_mainFile = (mainFile == QFileInfo(filePath).canonicalFilePath());
-                                fileToChange.m_filePath = filePath;
+
+                                if (m_request.m_untitledFile && filePath == QDir::cleanPath(m_request.m_filepath))
+                                {
+                                    // the start file is an untitled file (and therefore the main file)
+                                    // and the current rename item belongs to this file
+                                    fileToChange.m_mainFile = true;
+                                    fileToChange.m_untitledFilename = m_request.m_untitledName;
+                                    fileToChange.m_untitledFile = m_request.m_untitledFile;
+                                    fileToChange.m_filePath = filePath;
+                                }
+                                else
+                                {
+                                    // a non-main file can also never be an untitled file
+                                    fileToChange.m_mainFile =
+                                        (mainFile == QFileInfo(filePath).canonicalFilePath());
+                                    fileToChange.m_untitledFilename = "";
+                                    fileToChange.m_untitledFile = false;
+                                    fileToChange.m_filePath = filePath;
+                                }
 
                                 if (values.size() > 0)
                                 {
@@ -821,11 +839,11 @@ void RenameRunnable::run()
     if (s && m_request.m_callbackFctName != "")
     {
         QMetaObject::invokeMethod(
-            s, 
-            m_request.m_callbackFctName.constData(), 
-            Q_ARG(QVector<ito::JediRename>, renameList), 
+            s,
+            m_request.m_callbackFctName.constData(),
+            Q_ARG(QVector<ito::JediRename>, renameList),
             Q_ARG(QString, oldValue),
-            Q_ARG(bool, success), 
+            Q_ARG(bool, success),
             Q_ARG(QString, errorText)
         );
     }

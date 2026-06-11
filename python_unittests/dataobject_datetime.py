@@ -400,7 +400,6 @@ class DataObjectDatetime(unittest.TestCase):
                 obj &= obj2
 
     def test_complex_operators(self):
-
         for obj in [self.dateObj, self.tdObj]:
             with self.assertRaises(TypeError):
                 obj.imag
@@ -430,7 +429,6 @@ class DataObjectDatetime(unittest.TestCase):
                 obj.conjugate()
 
     def test_npdatetime64_to_dataObject(self):
-
         # timebase us
         t = np.arange(datetime(1985, 7, 1), datetime(2003, 7, 1), timedelta(days=1))
         t[20] = datetime(2010, 6, 7, 16, 23, 59)
@@ -482,7 +480,6 @@ class DataObjectDatetime(unittest.TestCase):
             self.assertTrue(_t == np.datetime64(_d))
 
     def test_nptimedelta64_to_dataObject(self):
-
         # timebase us
         t = np.array([np.timedelta64(1, "Y"), np.timedelta64(-5, "Y")])
         with self.assertRaises(RuntimeError):
@@ -523,7 +520,6 @@ class DataObjectDatetime(unittest.TestCase):
             self.assertTrue(_t == np.timedelta64(_d))
 
     def test_dataObject2nparray(self):
-
         # timedelta
         dateNp = np.array(self.tdObj, copy=False)
 

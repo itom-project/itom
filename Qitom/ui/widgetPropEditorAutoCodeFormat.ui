@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>460</width>
-    <height>515</height>
+    <width>516</width>
+    <height>653</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -85,6 +85,11 @@ li.checked::marker { content: &quot;\2612&quot;; }
           </item>
           <item>
            <property name="text">
+            <string>ruff format --line-length 88 --stdin-filename stdinfile.py</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
             <string>yapf</string>
            </property>
           </item>
@@ -105,7 +110,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
        </layout>
       </item>
       <item>
-       <widget class="Line" name="line_2">
+       <widget class="Line" name="line_3">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
@@ -153,7 +158,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
        </widget>
       </item>
       <item>
-       <widget class="Line" name="line_3">
+       <widget class="Line" name="line_2">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
@@ -163,9 +168,6 @@ li.checked::marker { content: &quot;\2612&quot;; }
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
          <spacer name="horizontalSpacer">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
           <property name="sizeHint" stdset="0">
            <size>
             <width>40</width>
@@ -182,6 +184,20 @@ li.checked::marker { content: &quot;\2612&quot;; }
          </widget>
         </item>
        </layout>
+      </item>
+      <item>
+       <widget class="Line" name="line">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="checkBoxFormatOnSave">
+        <property name="text">
+         <string>Automatically format script on save (usually also before script execution)</string>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>

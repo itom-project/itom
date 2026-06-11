@@ -19,7 +19,6 @@ resource file, first. Then paste your desired stylesheet into
 the editor. Whenever you want to update the GUI click the update button.
 """
 
-
 from itomUi import (
     ItomUi,
 )  # import the base class ItomUi from the module itomUi in the itom-packages subfolder
@@ -31,7 +30,6 @@ from itom import dataObject
 
 class StyleSheetEditor(ItomUi):  # StyleCreator is inherited from ItomUi
     def __init__(self):  # constructor
-
         # call constructor of ItomUi like it would be the constructor of the class itom.ui:
         ItomUi.__init__(self, "stylesheetEditor.ui", ui.TYPEWINDOW)
 
@@ -41,7 +39,9 @@ class StyleSheetEditor(ItomUi):  # StyleCreator is inherited from ItomUi
         self.gui.itom2dQwtPlot["source"] = dataObject.randN([100, 512, 768], "uint8")
         self.gui.itom2dQwtPlot["overlayImage"] = dataObject.rand([512, 768], "float32")
         self.gui.itom2dQwtPlot_2["source"] = dataObject.randN([100, 512, 768], "uint8")
-        self.gui.itom2dQwtPlot_2["overlayImage"] = dataObject.randN([512, 768], "float32")
+        self.gui.itom2dQwtPlot_2["overlayImage"] = dataObject.randN(
+            [512, 768], "float32"
+        )
         dObj = dataObject.rand([10, 10])
         dObj.setAxisDescription(0, "y axis")
         dObj.setAxisDescription(1, "x axis")
@@ -56,7 +56,7 @@ class StyleSheetEditor(ItomUi):  # StyleCreator is inherited from ItomUi
         dObj.addToProtocol("created and set to stylesheeteditor")
         dObj.setTag("title", "dObj title")
         self.dObj = dObj
-        self.gui.dataObjectTable["data"] =dObj
+        self.gui.dataObjectTable["data"] = dObj
         self.gui.dataObjectMetaWidget["data"] = dObj
 
         self.gui.call("statusBar").call("showMessage", "Status bar message...")

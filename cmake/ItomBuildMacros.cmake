@@ -1,7 +1,7 @@
 # - itom software
 # URL: http://www.uni-stuttgart.de/ito
-# Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-# Universitaet Stuttgart, Germany
+# Copyright (C) 2020, Institut für Technische Optik (ITO),
+# Universität Stuttgart, Germany
 #
 # This file is part of itom and its software development toolkit (SDK).
 #
@@ -10,7 +10,7 @@
 # the Free Software Foundation; either version 2 of the Licence, or (at
 # your option) any later version.
 #
-# In addition, as a special exception, the Institut fuer Technische
+# In addition, as a special exception, the Institut für Technische
 # Optik (ITO) gives you certain additional rights.
 # These rights are described in the ITO LGPL Exception version 1.0,
 # which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -26,7 +26,7 @@
 #########################################################################
 #set general things
 #########################################################################
-cmake_minimum_required(VERSION 3.1...3.15)
+cmake_minimum_required(VERSION 3.12...3.29)
 
 if(${CMAKE_VERSION} VERSION_LESS 3.12)
     cmake_policy(VERSION ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION})
@@ -432,16 +432,16 @@ macro(itom_fetch_git_commit_hash)
                           "${multiValueArgs}" ${ARGN} )
 
     # this is to automatically detect the SDK subfolder of the itom build directory.
-	if(NOT EXISTS ${ITOM_SDK_DIR})
-		find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
-		HINTS "$ENV{ITOM_SDK_ROOT}"
-			  "${CMAKE_CURRENT_BINARY_DIR}/../itom/SDK"
-		DOC "Path of SDK subfolder of itom root (build) directory")
-	endif(NOT EXISTS ${ITOM_SDK_DIR})
+    if(NOT EXISTS ${ITOM_SDK_DIR})
+        find_path(ITOM_SDK_DIR "cmake/itom_sdk.cmake"
+        HINTS "$ENV{ITOM_SDK_ROOT}"
+              "${CMAKE_CURRENT_BINARY_DIR}/../itom/SDK"
+        DOC "Path of SDK subfolder of itom root (build) directory")
+    endif()
 
-	if(NOT EXISTS ${ITOM_SDK_DIR})
-		message(FATAL_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
-	endif(NOT EXISTS ${ITOM_SDK_DIR})
+    if(NOT EXISTS ${ITOM_SDK_DIR})
+        message(FATAL_ERROR "ITOM_SDK_DIR is invalid. Provide itom SDK directory path first")
+    endif()
 
     option(BUILD_GIT_TAG "Fetch the current Git commit hash and add it to the gitVersion.h file in the binary directory of each plugin." ON)
 
@@ -452,74 +452,103 @@ macro(itom_fetch_git_commit_hash)
     set(GITCOMMITDATE "")
 
     if(BUILD_GIT_TAG)
+        if(NOT OPT_QUIET)
+            find_package(Git REQUIRED) #raises a fatal error
+        else()
+            find_package(Git QUIET)
+        endif()
+
         #try to get working directory of git
-        set(WORKINGDIR_FOUND )
-        set(WORKINGDIR ${CMAKE_SOURCE_DIR})
+        set(GITDIR_FOUND )
+        set(GIT_DIRECTORY "")
+        set(GIT_INDEX_FILE "")
 
-        foreach(ITER "1" "2" "3")
-            if(NOT EXISTS ${WORKINGDIR})
-                break()
+        if (Git_FOUND)
+            # try to get the git directory of the git index file
+            # this directory is different dependent if plugins are built
+            # within a submodule or with a stand-alone project.
+            execute_process(
+                COMMAND "${GIT_EXECUTABLE}" rev-parse --git-dir
+                WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+                RESULT_VARIABLE res
+                OUTPUT_VARIABLE GIT_DIRECTORY
+                ERROR_QUIET
+                OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+            if(NOT IS_ABSOLUTE ${GIT_DIRECTORY})
+                get_filename_component(GIT_DIRECTORY_ABS ${GIT_DIRECTORY} ABSOLUTE ${CMAKE_CURRENT_SOURCE_DIR})
+                set(GIT_DIRECTORY ${GIT_DIRECTORY_ABS})
             endif()
 
-            if(EXISTS "${WORKINGDIR}/.git/index")
-                set(WORKINGDIR_FOUND TRUE)
-                break()
-            else()
-                #goto parent directory
-                get_filename_component(WORKINGDIR ${WORKINGDIR} DIRECTORY)
+            set(GIT_INDEX_FILE "${GIT_DIRECTORY}/index")
+
+            if(EXISTS ${GIT_INDEX_FILE})
+                set(GITDIR_FOUND TRUE)
             endif()
-        endforeach()
+        else()
+            message(STATUS "Could not find Git package. Cannot obtain Git commit information.")
+        endif()
 
-        if(WORKINGDIR_FOUND)
-            if(NOT OPT_QUIET)
-                find_package(Git REQUIRED) #raises a fatal error
-            else()
-                find_package(Git QUIET)
-            endif()
+        if(NOT GITDIR_FOUND)
+            # backup solution, try to find a .git/index file by recursing to the top directory.
+            set(WORKINGDIR ${CMAKE_CURRENT_SOURCE_DIR})
 
-            if(Git_FOUND)
-                execute_process(
-                    COMMAND "${GIT_EXECUTABLE}" log -1 --format=%H HEAD
-                    WORKING_DIRECTORY "${WORKINGDIR}"
-                    RESULT_VARIABLE res
-                    OUTPUT_VARIABLE GITCOMMITHASH
-                    ERROR_QUIET
-                    OUTPUT_STRIP_TRAILING_WHITESPACE)
+            foreach(ITER "1" "2" "3")
+                if(NOT EXISTS ${WORKINGDIR})
+                    break()
+                endif()
 
-                execute_process(
-                    COMMAND "${GIT_EXECUTABLE}" log -1 --format=%h HEAD
-                    WORKING_DIRECTORY "${WORKINGDIR}"
-                    RESULT_VARIABLE res
-                    OUTPUT_VARIABLE GITCOMMITHASHSHORT
-                    ERROR_QUIET
-                    OUTPUT_STRIP_TRAILING_WHITESPACE)
+                if(EXISTS "${WORKINGDIR}/.git/index")
+                    set(GITDIR_FOUND TRUE)
+                    set(GIT_INDEX_FILE "${WORKINGDIR}/.git/index")
+                    break()
+                else()
+                    #goto parent directory
+                    get_filename_component(WORKINGDIR ${WORKINGDIR} DIRECTORY)
+                endif()
+            endforeach()
+        endif()
 
-                execute_process(
-                    COMMAND "${GIT_EXECUTABLE}" log -1 --format=%cI HEAD
-                    WORKING_DIRECTORY "${WORKINGDIR}"
-                    RESULT_VARIABLE res
-                    OUTPUT_VARIABLE GITCOMMITDATE
-                    ERROR_QUIET
-                    OUTPUT_STRIP_TRAILING_WHITESPACE)
+        if(GITDIR_FOUND)
+            execute_process(
+                COMMAND "${GIT_EXECUTABLE}" log -1 --format=%H HEAD
+                WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+                RESULT_VARIABLE res
+                OUTPUT_VARIABLE GITCOMMITHASH
+                ERROR_QUIET
+                OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-                set(GITVERSION "${GITCOMMITHASHSHORT}/${GITCOMMITDATE}")
-                set(GITVERSIONAVAILABLE 1)
+            execute_process(
+                COMMAND "${GIT_EXECUTABLE}" log -1 --format=%h HEAD
+                WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+                RESULT_VARIABLE res
+                OUTPUT_VARIABLE GITCOMMITHASHSHORT
+                ERROR_QUIET
+                OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-                #always mark this project as outdated if the .git/index file changed.
-                #see also: https://cmake.org/pipermail/cmake/2018-October/068389.html
-                set_property(GLOBAL APPEND
-                    PROPERTY CMAKE_CONFIGURE_DEPENDS
-                    "${WORKINGDIR}/.git/index")
+            execute_process(
+                COMMAND "${GIT_EXECUTABLE}" log -1 --format=%cI HEAD
+                WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+                RESULT_VARIABLE res
+                OUTPUT_VARIABLE GITCOMMITDATE
+                ERROR_QUIET
+                OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-                message(STATUS "Git commit hash: ${GITCOMMITHASHSHORT} from ${GITCOMMITDATE}")
-            else()
-                message(STATUS "Could not find Git package. Cannot obtain Git commit information.")
-            endif()
+            set(GITVERSION "${GITCOMMITHASHSHORT}/${GITCOMMITDATE}")
+            set(GITVERSIONAVAILABLE 1)
+
+            #always mark this project as outdated if the .git/index file changed.
+            #see also: https://cmake.org/pipermail/cmake/2018-October/068389.html
+            set_property(GLOBAL APPEND
+                PROPERTY CMAKE_CONFIGURE_DEPENDS
+                "${GIT_INDEX_FILE}")
+
+            message(STATUS "Git commit hash: ${GITCOMMITHASHSHORT} from ${GITCOMMITDATE}")
         elseif(OPT_OPTIONAL)
             message(STATUS "Sources seem not to contain any Git repository. Git commit information is ignored.")
-        else()
+        else(GITDIR_FOUND)
             message(WARNING "Sources seem not to contain any Git repository. Git commit information cannot be found. Avoid this warning by disabling BUILD_GIT_TAG.")
-        endif()
+        endif(GITDIR_FOUND)
     endif()
 
     if(OPT_DESTINATION)
@@ -927,7 +956,7 @@ macro(itom_qt_create_translation outputFiles tsFiles target languages)
 
             get_directory_property(_inc_DIRS INCLUDE_DIRECTORIES)
             foreach(_pro_include ${_inc_DIRS})
-                # some include pathes somehow disturb lupdate, such that it requires a long time to finish.
+                # some include paths somehow disturb lupdate, such that it requires a long time to finish.
                 # Therefore, they are excluded from the lupdate include list
                 string(REGEX MATCH "boost|pcl-1|pcl-2|pcl-3" match ${_pro_include})
                 if(NOT match)
@@ -1165,7 +1194,7 @@ endmacro()
 
 # - appends the list of binary translation files (qm_files) to be copied from their source
 # directory to the 'plugins/${target}/translation' subfolder of the qitom root directory. This is
-# done by adding one or multiple filepathes and folders to the given lists 'sources' and
+# done by adding one or multiple filepaths and folders to the given lists 'sources' and
 # 'destinations'. The copy operation from every entry in sources to destinations
 # can then be triggered by calling 'itom_post_build_copy_files'.
 #
@@ -1184,7 +1213,7 @@ endmacro()
 
 # - appends the list of binary translation files (qm_files) to be copied from their source
 # directory to the 'designer/translation' subfolder of the qitom root directory. This is
-# done by adding one or multiple filepathes and folders to the given lists 'sources' and
+# done by adding one or multiple filepaths and folders to the given lists 'sources' and
 # 'destinations'. The copy operation from every entry in sources to destinations
 # can then be triggered by calling 'itom_post_build_copy_files'.
 #
@@ -1221,7 +1250,7 @@ macro(itom_post_build_copy_files target sources destinations)
 
     list(REMOVE_DUPLICATES destPathes)
 
-    #try to create all pathes
+    #try to create all paths
     foreach(destPath ${destPathes})
         #first try to create the directory
         add_custom_command(TARGET ${target} POST_BUILD

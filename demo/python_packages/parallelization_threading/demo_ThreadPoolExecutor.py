@@ -2,7 +2,7 @@
 =======================
 
 ``Asyncio``/``concurrent`` heavily changed from python ``3.4`` to ``3.7``, better read the docs
-and do some tutorials. Asyncio is preferred over plain concurrent module. """
+and do some tutorials. Asyncio is preferred over plain concurrent module."""
 
 import concurrent.futures
 import urllib.request
@@ -15,6 +15,7 @@ URLS = [
     "http://www.bbc.co.uk/",
     "http://some-made-up-domain.com/",
 ]
+
 
 ###############################################################################
 # Retrieve a single page and report the url and contents
@@ -33,6 +34,6 @@ with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
         try:
             data = future.result()
         except Exception as exc:
-            print("%r generated an exception: %s" % (url, exc))
+            print(f"{url!r} generated an exception: {exc}")
         else:
             print("%r page is %d bytes" % (url, len(data)))

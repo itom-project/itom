@@ -40,7 +40,7 @@ public:
 private:
     /// Testclass with some properties
     TestClass*        m_testClass;
-    /// Another test class inherited from TestClass to show the hierarchy managment of the QPropertyEditor
+    /// Another test class inherited from TestClass to show the hierarchy management of the QPropertyEditor
     TestSubClass*    m_testSubClass;
 };
 #endif

@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
 
@@ -11,7 +11,7 @@
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
 
-    In addition, as a special exception, the Institut fuer Technische
+    In addition, as a special exception, the Institut für Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
     which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -71,8 +71,8 @@ public:
 protected:
     virtual RetVal init() { return retOk; } //this method is called from after construction and after that the api pointers have been transmitted
 
-    virtual void importItomApi(void** apiPtr) = 0;      /*!< function to provide access to the itom API functions. this methods are implemented in the plugin itsself. Therefore put the macro WIDGET_ITOM_API before the public section in the widget class. */
-    virtual void importItomApiGraph(void** apiPtr) = 0; /*!< function to provide access to the itom API functions. this methods are implemented in the plugin itsself. Therefore put the macro WIDGET_ITOM_API before the public section in the widget class. */
+    virtual void importItomApi(void** apiPtr) = 0;      /*!< function to provide access to the itom API functions. this methods are implemented in the plugin itself. Therefore put the macro WIDGET_ITOM_API before the public section in the widget class. */
+    virtual void importItomApiGraph(void** apiPtr) = 0; /*!< function to provide access to the itom API functions. this methods are implemented in the plugin itself. Therefore put the macro WIDGET_ITOM_API before the public section in the widget class. */
 
     void **m_apiFunctionsGraphBasePtr;
     void **m_apiFunctionsBasePtr;

@@ -1,6 +1,3 @@
-# coding=iso-8859-15
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 import itom
 from itom import uiItem, timer, ui
 from itom import figure as itomFigure
@@ -88,7 +85,10 @@ if sys.platform == "darwin":
     # in OSX, the control and super (aka cmd/apple) keys are switched, so
     # switch them back.
     SPECIAL_KEYS.update(
-        {0x01000021: "super", 0x01000022: "control",}  # cmd/apple key
+        {
+            0x01000021: "super",
+            0x01000022: "control",
+        }  # cmd/apple key
     )
     MODIFIER_KEYS[0] = ("super", 0x04000000, 0x01000021)
     MODIFIER_KEYS[2] = ("ctrl", 0x10000000, 0x01000022)
@@ -213,7 +213,6 @@ class TimerItom(TimerBase):
 
 
 class FigureCanvasItom(FigureCanvasBase):
-
     # map Qt button codes to MouseEvent's ones:
     # left 1, middle 2, right 3
     buttond = {
@@ -236,20 +235,18 @@ class FigureCanvasItom(FigureCanvasBase):
         # self.showEnable = False #this will be set to True if the draw() command has been called for the first time e.g. by show() of the manager
 
         if embeddedCanvas == False:
-            self.canvas = (
-                itomUI.canvasWidget
-            )  # this object is deleted in the destroy-method of manager, due to cyclic garbage collection
+            self.canvas = itomUI.canvasWidget  # this object is deleted in the destroy-method of manager, due to cyclic garbage collection
             win = self.canvas
             # win["width"]=w
             # win["height"]=h
-            win[
-                "mouseTracking"
-            ] = False  # by default, the itom-widget only sends mouse-move events if at least one button is pressed or the tracker-button is is checked-state
+            win["mouseTracking"] = (
+                False  # by default, the itom-widget only sends mouse-move events if at least one button is pressed or the tracker-button is is checked-state
+            )
         else:
             self.canvas = itomUI.canvasWidget
-            itomUI[
-                "mouseTracking"
-            ] = False  # by default, the itom-widget only sends mouse-move events if at least one button is pressed or the tracker-button is is checked-state
+            itomUI["mouseTracking"] = (
+                False  # by default, the itom-widget only sends mouse-move events if at least one button is pressed or the tracker-button is is checked-state
+            )
 
         self.canvas.connect("eventLeaveEnter(bool)", self.leaveEnterEvent)
         self.canvas.connect("eventMouse(int,int,int,int)", self.mouseEvent)
@@ -410,7 +407,7 @@ class FigureCanvasItom(FigureCanvasBase):
             Sequence of (func, args, kwargs) where func(*args, **kwargs)
             will be executed by the timer every *interval*.
 
-    """
+        """
         return TimerItom(*args, **kwargs)
 
     def flush_events(self):
@@ -429,7 +426,7 @@ class FigureCanvasItom(FigureCanvasBase):
     def signalDestroyedWidget(self):
         """
         if the figure has been closed (e.g. by the user - clicking the close button),
-        this might either be registered by the destroyed-event, catched by FigureManagerItom,
+        this might either be registered by the destroyed-event, caught by FigureManagerItom,
         or by any method of this class which tries to access the figure (since the destroyed
         signal is delivered with a time gap). This function should be called whenever the widget
         is not accessible any more, then the manager is closed as quick as possible, such that
@@ -615,7 +612,7 @@ class FigureManagerItom(FigureManagerBase):
 
 class NavigationToolbar2Itom(NavigationToolbar2):
     def __init__(self, figureCanvas, itomUI, embeddedCanvas, coordinates=True):
-        """ coordinates: should we show the coordinates on the right? """
+        """coordinates: should we show the coordinates on the right?"""
 
         self.embeddedCanvas = embeddedCanvas
         self.itomUI = weakref.ref(itomUI)
@@ -698,11 +695,11 @@ class NavigationToolbar2Itom(NavigationToolbar2):
             self.set_cursor(-1)
 
     def pan(self, *args):
-        super(NavigationToolbar2Itom, self).pan(*args)
+        super().pan(*args)
         self._update_buttons_checked()
 
     def zoom(self, *args):
-        super(NavigationToolbar2Itom, self).zoom(*args)
+        super().zoom(*args)
         self._update_buttons_checked()
 
     def dynamic_update(self):
@@ -763,7 +760,7 @@ class NavigationToolbar2Itom(NavigationToolbar2):
         selectedFilterIndex = 0
         for name, exts in sorted_filetypes:
             exts_list = " ".join(["*.%s" % ext for ext in exts])
-            filter = "%s (%s)" % (name, exts_list)
+            filter = f"{name} ({exts_list})"
             if default_filetype in exts:
                 selectedFilterIndex = len(filters)
             filters.append(filter)

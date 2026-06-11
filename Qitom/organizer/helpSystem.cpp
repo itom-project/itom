@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom.
 
@@ -833,7 +833,7 @@ RetVal HelpSystem::buildSinglePluginHelp(const QString &pluginFolder, QDir &buil
 RetVal HelpSystem::analyzeQhpFile(const QString &pluginFolder, QFile &qhpFile, QString &tocs, QString &keywords, QString &files, QStringList &filesToCopy, QPair<QString,QString> &mainFileInfo)
 {
     QRegularExpression regExp(
-        "^.*<toc>(.*)<\/toc>.*<keywords>(.*)<\/keywords>.*<files>(.*)<\/files>.*$",
+        "^.*<toc>(.*)</toc>.*<keywords>(.*)</keywords>.*<files>(.*)</files>.*$",
         QRegularExpression::DotMatchesEverythingOption |
             QRegularExpression::MultilineOption);
     if (qhpFile.open(QIODevice::ReadOnly))

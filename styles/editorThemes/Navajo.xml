@@ -132,7 +132,7 @@ Installation:
             <WordsStyle name="COMMENT" styleID="1" fgColor="181880" bgColor="BA9C80" fontName="" fontStyle="2" fontSize="" />
             <WordsStyle name="KEYWORDS" styleID="2" fgColor="804040" bgColor="BA9C80" fontName="" fontStyle="0" fontSize="" keywordClass="instre1" />
             <WordsStyle name="LABEL" styleID="3" fgColor="C00058" bgColor="BA9C80" fontName="" fontStyle="0" fontSize="" />
-            <WordsStyle name="HIDE SYBOL" styleID="4" fgColor="3b4092" bgColor="BA9C80" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="HIDE SYMBOL" styleID="4" fgColor="3b4092" bgColor="BA9C80" fontName="" fontStyle="0" fontSize="" />
             <WordsStyle name="COMMAND" styleID="5" fgColor="D92B10" bgColor="BA9C80" fontName="" fontStyle="0" fontSize="" />
             <WordsStyle name="VARIABLE" styleID="6" fgColor="106060" bgColor="BA9C80" fontName="" fontStyle="0" fontSize="" />
             <WordsStyle name="OPERATOR" styleID="7" fgColor="010101" bgColor="BA9C80" fontName="" fontStyle="1" fontSize="" />

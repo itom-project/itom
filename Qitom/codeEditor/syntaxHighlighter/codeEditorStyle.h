@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom.
 
@@ -148,12 +148,21 @@ public:
     StyleItem& at(StyleItem::StyleType type) { return (*this)[type]; }
     QTextCharFormat format(StyleItem::StyleType type) const;
     QTextCharFormat& rformat(StyleItem::StyleType type);
+    QTextCharFormat formatWithFontSizeOffset(StyleItem::StyleType type);
 
     QColor background() const;
     void setBackground(const QColor &color);
 
+    void setZoomFactor(int offset);
+    int zoomFactor() const;
+
 private:
+    void updateCache();
+
     QMap<int, StyleItem> m_formats;
+    QMap<int, StyleItem> m_formatsWithFontSizeOffsetCache;
+    int m_zoomFactor;
+    bool m_invalidCache;
 };
 
 } //end namespace ito

@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom.
 
@@ -67,6 +67,15 @@ SyntaxHighlighterBase::~SyntaxHighlighterBase()
 }
 
 //-------------------------------------------------------------------
+void SyntaxHighlighterBase::setZoomFactor(int zoomFactor)
+{
+    if (m_editorStyle)
+    {
+        m_editorStyle->setZoomFactor(zoomFactor);
+    }
+}
+
+//-------------------------------------------------------------------
 void SyntaxHighlighterBase::setFoldDetector(QSharedPointer<FoldDetector> foldDetector)
 {
     m_foldDetector = foldDetector;
@@ -106,7 +115,7 @@ void SyntaxHighlighterBase::highlightWhitespaces(const QString &text)
     {
         index = match.capturedStart(0);
         length = match.captured(0).size();
-        setFormat(index, length, m_editorStyle->format(StyleItem::KeyWhitespace));
+        setFormat(index, length, m_editorStyle->formatWithFontSizeOffset(StyleItem::KeyWhitespace));
         match = m_regWhitespaces.match(text, index + length);
         index = match.capturedStart(0);
     }
@@ -126,11 +135,11 @@ void SyntaxHighlighterBase::highlightBlock(const QString &text)
     {
         CodeEditor *e = editor();
 
-        //qDebug() << current_block.blockNumber();
-        TextBlockUserData *userData = e->getTextBlockUserData(current_block, false);
+        const TextBlockUserData *userData = e->getTextBlockUserData(current_block, false);
+
         if (userData && userData->m_syntaxStyle != TextBlockUserData::StylePython)
         {
-            default_highlight_block(text, userData->m_syntaxStyle == TextBlockUserData::StyleOutput);
+            default_highlight_block(text, userData);
         }
         else
         {

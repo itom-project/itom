@@ -14,9 +14,7 @@ class DataObjectComparison(unittest.TestCase):
     def test_invertComparison(self):
         npArray = np.ndarray([2, 3, 4])
         with self.assertRaises(ValueError):
-            result = (
-                not npArray
-            )  # The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+            result = not npArray  # The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
 
         dataObj = dataObject([2, 3, 4])
         with self.assertRaises(ValueError):
@@ -63,7 +61,7 @@ class DataObjectComparison(unittest.TestCase):
             "complex128",
             "rgba32",
             "datetime",
-            "timedelta"
+            "timedelta",
         ]
 
         for dtype in dtypes:
@@ -72,7 +70,7 @@ class DataObjectComparison(unittest.TestCase):
             c = a == b
             nptesting.assert_array_equal(c, 255)
 
-        number_values = [1, -2.75, 1+2j]
+        number_values = [1, -2.75, 1 + 2j]
 
         # datetime
         a = dataObject([100, 100], "datetime")
@@ -83,7 +81,7 @@ class DataObjectComparison(unittest.TestCase):
         c = a == b
         nptesting.assert_array_equal(c, 255)
 
-        c = (a == dt)
+        c = a == dt
         nptesting.assert_array_equal(c, 255)
 
         for nv in number_values:
@@ -99,7 +97,7 @@ class DataObjectComparison(unittest.TestCase):
         c = a == b
         nptesting.assert_array_equal(c, 255)
 
-        c = (a == dt)
+        c = a == dt
         nptesting.assert_array_equal(c, 255)
 
         for nv in number_values:
@@ -117,14 +115,13 @@ class DataObjectComparison(unittest.TestCase):
         self.assertGreater(c[0, 0], 0)
         self.assertEqual(c[1, 0], 0)
 
-        c = (a == rgba(1,20,30,4))
-        self.assertEqual(c[0,0], 0)
-        self.assertEqual(c[1,0], 255)
+        c = a == rgba(1, 20, 30, 4)
+        self.assertEqual(c[0, 0], 0)
+        self.assertEqual(c[1, 0], 255)
 
         for nv in number_values:
             with self.assertRaises(TypeError):
                 a == nv
-
 
     def test_comparison_notequal(self):
         dtypes = [
@@ -146,7 +143,7 @@ class DataObjectComparison(unittest.TestCase):
             c = a != b
             nptesting.assert_array_equal(c, 255)
 
-        number_values = [1, -2.75, 1+2j]
+        number_values = [1, -2.75, 1 + 2j]
 
         # datetime
         a = dataObject([100, 100], "datetime")
@@ -173,7 +170,7 @@ class DataObjectComparison(unittest.TestCase):
         c = a != b
         nptesting.assert_array_equal(c, 0)
 
-        c = (a != dt)
+        c = a != dt
         nptesting.assert_array_equal(c, 0)
 
         for nv in number_values:
@@ -189,7 +186,7 @@ class DataObjectComparison(unittest.TestCase):
         c = a != b
         nptesting.assert_array_equal(c, 0)
 
-        c = (a != dt)
+        c = a != dt
         nptesting.assert_array_equal(c, 0)
 
         for nv in number_values:
@@ -207,7 +204,7 @@ class DataObjectComparison(unittest.TestCase):
         self.assertEqual(c[0, 0], 0)
         self.assertGreater(c[1, 0], 0)
 
-        c = (a != rgba(200, 20, 30, 40))
+        c = a != rgba(200, 20, 30, 40)
         nptesting.assert_array_equal(c, 255)
 
         for nv in number_values:

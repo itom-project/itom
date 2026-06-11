@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2022, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2022, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom.
 
@@ -76,13 +76,13 @@ tCompareResult ParamHelper::compareParam(
 }
 
 //-------------------------------------------------------------------------------------
-//!< verifies the meta informaiton of two different parameters for compatibility
+//!< verifies the meta information of two different parameters for compatibility
 /*
 The method verifies if meta information of a given parameter (meta, name) is
 compatible to the meta information of a template parameter.
 
 Both meta information are equal, if they are both either nullptr or if both
-have the same type and configurations. If their type is different, the compatiblity
+have the same type and configurations. If their type is different, the compatibility
 failed. A compatibility is returned, if the meta information is of the same type
 than the template but less restrictive than the template. If the meta information
 would be more restrictive than the template, the compatibility failed, too.
@@ -2626,7 +2626,7 @@ ito::RetVal ParamHelper::parseParamName(
             ret += ito::RetVal(
                 ito::retError,
                 0,
-                QObject::tr("Paramater is no array type. Indexing not possible.")
+                QObject::tr("Parameter is no array type. Indexing not possible.")
                     .toLatin1()
                     .data());
         }

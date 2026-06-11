@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom.
 
@@ -67,6 +67,8 @@ public:
 
     void setFoldDetector(QSharedPointer<FoldDetector> foldDetector);
 
+    void setZoomFactor(int zoomFactor);
+
     virtual void onStateChanged(bool state);
     virtual void onInstall(CodeEditor *editor);
 
@@ -91,7 +93,7 @@ public:
     */
     virtual void highlight_block(const QString &text, QTextBlock &block) = 0;
 
-    virtual void default_highlight_block(const QString &text, bool outputNotError) = 0;
+    virtual void default_highlight_block(const QString &text, const TextBlockUserData *textBlockUserData) = 0;
 
     virtual void rehighlight();
 

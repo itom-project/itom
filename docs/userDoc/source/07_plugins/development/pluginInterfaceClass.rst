@@ -156,9 +156,9 @@ At first, the constructor consists of a section where you define basic informati
 **Part 2 (mandatory and optional parameters):**
 
 .. note::
-    This part is only important if you build plugins of the basic types **dataIO** or **actuator**, since only plugins of these types can have multiple parameters, hence, it is usefull to parametrize their constructors. For algorithm- or filter-plugins, you can let the vectors **m_initParamsMand** and **m_initParamsOpt** unchanged (hence empty).
+    This part is only important if you build plugins of the basic types **dataIO** or **actuator**, since only plugins of these types can have multiple parameters, hence, it is useful to parametrize their constructors. For algorithm- or filter-plugins, you can let the vectors **m_initParamsMand** and **m_initParamsOpt** unchanged (hence empty).
 
-If you create an instance of a plugin using the python language, you have mainly two possibilites:
+If you create an instance of a plugin using the python language, you have mainly two possibilities:
 
 * Plugins of type **dataIO** are addressed using the python type **dataIO**, which is a class of the module |pyItom|:
 
@@ -198,7 +198,7 @@ Using the methods *append* or *insert* you can add an arbitrary number of values
 
 If one is creating an instance of the plugins, e.g. using the python commands above, |itom| is reading the given vector of mandatory of optional parameters. The first parameter of the constructors of the python class :py:class:`itom.dataIO` or :py:class:`itom.actuator` stands for the name of the plugin. The number of the following parameters must be equal or bigger than the length of the mandatory parameter vector. The first *n* parameters must exactly fit to the type, order and possible boundary values of the mandatory parameter vector. This vector is then copied and the values are replaced by the values given by the python-constructors.
 
-If the following parameters in the constructor don't have any keywords, they must also fit to the types,... of the optional parameter vector. If there are not enough parameters given, the default value will be taken. Additionally, if the user gives keywords to the parameters, each parameter will be checked agains its corresponding value in the optional parameter vector where keyword and parameter-name are equal. After the first parameter having a keyword no keyword-less parameters are accepted.
+If the following parameters in the constructor don't have any keywords, they must also fit to the types,... of the optional parameter vector. If there are not enough parameters given, the default value will be taken. Additionally, if the user gives keywords to the parameters, each parameter will be checked against its corresponding value in the optional parameter vector where keyword and parameter-name are equal. After the first parameter having a keyword no keyword-less parameters are accepted.
 
 This is an example of creating a plugin with a set of parameters, where the last two parameters are tagged with their keywords:
 

@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom.
 
@@ -90,7 +90,7 @@ void OccurrencesHighlighterMode::setBackground(const QColor &color)
 
 //----------------------------------------------------------
 /*
-Foreground color of occurences, not used if underlined is True.
+Foreground color of occurrences, not used if underlined is True.
 */
 QColor OccurrencesHighlighterMode::foreground() const
 {

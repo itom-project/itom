@@ -194,7 +194,7 @@ TYPED_TEST(operatorTest, SubTest)
 }
 // MulFactor_test
 /*!
-   This test checks functionality of "*" (muliplication with constant factor) operator for 1, 2 and 3 dimensional
+   This test checks functionality of "*" (multiplication with constant factor) operator for 1, 2 and 3 dimensional
    matrices
 */
 TYPED_TEST(operatorTest, MulFactor_test)
@@ -214,7 +214,7 @@ TYPED_TEST(operatorTest, MulFactor_test)
 
 // MulFactor1_test
 /*!
-   This test checks functionality of "*=" (muliplication with constant factor) operator for 1, 2 and 3 dimensional
+   This test checks functionality of "*=" (multiplication with constant factor) operator for 1, 2 and 3 dimensional
    matrices
 */
 TYPED_TEST(operatorTest, MulFactor1_test)
@@ -1064,7 +1064,7 @@ TYPED_TEST(operatorTest, BitNOT1_test) // Note: Test fails for datatypes "float3
 
 // Combination_Arith_Test
 /*!
-    This test checks functionality of mixed arithmatic operators for 1, 2 and 3 dimensional matrices
+    This test checks functionality of mixed arithmetic operators for 1, 2 and 3 dimensional matrices
 */
 TYPED_TEST(operatorTest, Combination_Arith_Test)
 {

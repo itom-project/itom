@@ -1,4 +1,3 @@
-# coding=utf8
 """Measurement
 ============
 
@@ -9,6 +8,7 @@ Afterwards the centroid position distribution of the beam is evaluated.
 Finally the result is plotted in three different ways using the ``itom.plot1``, ``matplotlib``
 and ``plotly`` plot engine.
 """
+
 from itom import actuator
 from itom import dataIO
 from itom import dataObject
@@ -115,7 +115,9 @@ class MeasureDemoGUI(ItomUi):
             dtype = "uint8"
         else:
             dtype = "uint16"
-        self.imageStack = dataObject([len(zVec), self.cam.getParam("sizey"), self.cam.getParam("sizex")], dtype)
+        self.imageStack = dataObject(
+            [len(zVec), self.cam.getParam("sizey"), self.cam.getParam("sizex")], dtype
+        )
         self.centroidData = dataObject([2, len(zVec)], "float32")
 
         # centroidMarker dObj
@@ -123,7 +125,9 @@ class MeasureDemoGUI(ItomUi):
 
         # loop for all z positions
         for idx, z in enumerate(zVec):
-            self.gui.call("statusBar").call("showMessage", "z measurement posotion {}".format(z), 5000)
+            self.gui.call("statusBar").call(
+                "showMessage", f"z measurement position {z}", 5000
+            )
             # goto new motor position
             self.mot.setPosAbs(0, z)
 
@@ -144,7 +148,9 @@ class MeasureDemoGUI(ItomUi):
             centroidMarker[0, 0] = cX
             centroidMarker[1, 0] = cY
             self.gui.camPlot.call("deleteMarkers")
-            self.gui.camPlot.call("plotMarkers", centroidMarker, "w+25;2", "centroid", 0)
+            self.gui.camPlot.call(
+                "plotMarkers", centroidMarker, "w+25;2", "centroid", 0
+            )
             self.gui.progressBar["value"] = idx / (len(zVec) - 1) * 100
 
         self.cam.enableAutoGrabbing()
@@ -179,7 +185,10 @@ class MeasureDemoGUI(ItomUi):
         self.centroidData.setTag("legendTitle1", "y centroid")
 
         # plot x, y as lines
-        plot1(self.centroidData, properties={"legendPosition": "Right", "grid": "GridMajorXY"})
+        plot1(
+            self.centroidData,
+            properties={"legendPosition": "Right", "grid": "GridMajorXY"},
+        )
 
         # plot y vs. x
         yData = self.centroidData[0, :].squeeze()
@@ -208,7 +217,9 @@ class MeasureDemoGUI(ItomUi):
         plt.show()
 
         # plot using plotly
-        figly = px.scatter(x=xData, y=yData, labels={"x": "x centroid /mm", "y": "y centroid /mm"})
+        figly = px.scatter(
+            x=xData, y=yData, labels={"x": "x centroid /mm", "y": "y centroid /mm"}
+        )
         figly.show()
 
 

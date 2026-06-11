@@ -5,6 +5,146 @@
 Changelog Versions 4.x
 ######################
 
+Version 4.3.0 (2024-10-DD)
+**************************
+
+itom
+----
+
+(more than 650 commits in itom repository)
+
+**Changed Behaviour**
+
+* Added additional startup options: ``log``, ``log=<path-to-directory>`` and ``nolog``
+
+
+**Improvements**
+
+* Build and tested for Win11 x64
+* Updated to Python 3.12.4
+* Updated to OpenCV 4.10.0
+* support for Qt6 added. Qt5 still working.
+* Adaptions to support the python package flake8 in version 5.x and 6.x, too
+* improvements in documentation (e.g. read-the-doc theme, gallery of demo scripts, ...)
+* The Python package manager now allows installing packages from its source directory as additional option
+* The python method :py:meth:`itom.showHelpViewer` accepts an optional url argument, such that a specific page of the help is displayed. Per default, the index page is displayed.
+* The charset encoding dialog of the scripts has been improved: It helps adding a #coding-line to the script, if it is encoded in a different encoding than utf8 and the encoding of a script can now be changed (and saved with the new encoding).
+* script editors now have a small bar on the right side, showing the displayed part of the script with respect to the entire script and all positions of identified infos, warnings and errors (based on flake8)
+* pressing F9 in a script line, where no selection is available, will now execute the entire line
+* The representation of numbers as strings can now be configured in the itom property dialog. Usually the settings (decimal sign, group separator...) are taken from the language of the operating system, however a specific country style can also be set.
+* For the auto code formatting, it is now possible to optionally run the Python package **isort** (must be installed) before **black** (among others) is called.
+* The auto code formatting package **ruff** can now also be used for the auto code formatting feature.
+* Logfiles can be exported to a desired location.
+* You can now set in the itom property dialog, if itom should be closed upon :py:meth:`exit` or if this command is blocked (no-op).
+* A rename feature (dialog) for variables in Python scripts has been added. Make a right click on a symbol and choose **rename**.
+* Python ANSI escape sequences can now be displayed in the command line widget. This can be configured in the itom property dialog.
+* The language of itom can now also set to **operatingsystem**. If this is the case, the startup language is chosen from the default language of the operating system.
+* A python **input** command can now be interrupted by the cancel button in the toolbar or **shift+F5** --> KeyboardInterrupt exception in Python
+
+**Refactorings and bugfixes**
+
+* Git/CMake: Added environment variables for itom and plugin configuration
+* display fix for some string variables in workspace widget
+* encoding fix of special characters in motor axis controller widget
+* some fixes in syntax highlighting of Python scripts
+* temporary breakpoints are working now again
+* improved tooltips of calltips for very long texts
+* support for Python 3.11 and 3.12 added. Since Python 3.11, itom is mainly started based on the default rules of an isolated Python configuration.
+* With newer Python versions, fetching details of Python packages in the Python package manager requires some time. Therefore a progress bar has been added fetching these details can be cancelled.
+
+Itom-Project
+------------
+
+**General:**
+* Git/CMake: Enabled build via centralized superproject `archive <https://github.com/itom-project/archive.git/>`_
+* Git/CMake: Created unified versioning system based on Git Tags
+
+
+Plugins
+-------
+
+(more than 350 commits in plugins repository)
+
+**General:**
+
+* Added Plugin Option configuration, to enable platform specific overview of build modes
+* Added `pre-commit <https://pre-commit.com/>`_ hooks to repository
+* Added min., max. itom version and plugin version numbers
+* Added PLUGIN_VERSION_IDENTIFIERS to distinguish between release and other versions
+* Refactoring CMake structure, warnings and errors
+* Fix to support QT6
+
+**New plugins:**
+
+* NewportConexLDS (RawIO)
+* ThorlabsBDCServo (actuator)
+* FaulhaberMCS (actuator)
+* AVTVimbaX (RawIO)
+
+**Archived plugins:**
+
+* Git/Cmake: Created archive repository for unsupported plugins `itom-project <https://github.com/itom-project/itomProject.git>`_
+* Archived Plugin: PCOSensicam
+* Archived Plugin: QCam
+* Archived Plugin: USBMotion3XIII
+
+**Bugfixes and improvements:**
+
+* FittingFilters: Changed error conditions
+* FittingFilters: Fix of lapacke include
+* GenICam: Support of pixel format *Bayer_RG8*
+* GenICam: Speed improvements for decoding the format *YCbCr422_8*.
+* GenICam: Fix and test with a Baumer *GEV* camera
+* GenICam: Fix in *Mono12* pixel format
+* GenICam: some cameras do not have a persistent deviceID, used for initialization (e.g. IDS cameras). Therefore, cameras can optionally be initialized by their serial number (`pull request 49 <https://github.com/itom-project/plugins/pull/47>`_).
+* GenICam: support for "special" pixel format of IDS camera families U3-38Jx and U3-33Fx (`pull request 49 <https://github.com/itom-project/plugins/pull/47>`_).
+* OceanOpticsSpec: Adaptations in typedef struct which are no longer allowed
+* PclTools: Adaptations for PCL 1.13
+* SerialIO: Memory bug fix
+* all source files are now in utf8 encoding
+
+Designer Plugins
+----------------
+
+(more than 75 commits in designerplugin repository)
+
+**General**
+
+* style and typo fixes to pass some pre-commit hooks
+* some modifications since repo moved to github.com
+* source files and python scripts changed to utf8, if not yet done. Use utf8 as far as possible (`pull request 52 <https://github.com/itom-project/designerPlugins/pull/52>`_).
+* Added PLUGIN_VERSION_IDENTIFIERS to distinguish between tagged release versions and other versions.
+* multiple Qt5 and Qt6 fixes
+* Minimum CMake version: 3.12. Tested up to 3.29.
+
+**vtk3dVisualizer**
+
+* fix and support for Qt6 and VTK9
+
+**plotly**
+
+* plotly now supports special characters in underlying html content
+* fix for a crash when the plotly image is downloaded multiple times (`pull request 49 <https://github.com/itom-project/designerPlugins/pull/49>`_).
+
+**itom2dqwtplot**
+
+* Many improvements of zoom feature: Ctrl+0 goes to the initial home zoom. Actions for zoom backwards and forwards added (Ctrl+Z, Ctrl+Y).
+* Manual adjustment of min / max axes values are now also considered in the zoom stack.
+
+**itom1dqwtplot**
+
+* Many improvements of zoom feature: Ctrl+0 goes to the initial home zoom. Actions for zoom backwards and forwards added (Ctrl+Z, Ctrl+Y).
+* Manual adjustment of min / max axes values are now also considered in the zoom stack.
+* depending on the input data object and its (optional) bounding values, the right data representation actions are enabled or disabled
+* Fixes an issue with the line cut, which showed empty values for NaN-based float objects, depending on the line start (`issue 44 <https://github.com/itom-project/designerPlugins/issues/44>`_).
+
+**matplotlib**
+
+* support of both image buffers of type argb32 (for MPL < 3.9) and rgba8888 (MPL >= 3.9).
+* fix for matplotlib 3.6 - 3.8
+* better support of scaled or high-dpi screens with dpi-factor != 1.0 (both Qt5 and Qt6)
+
+
 Version 4.2.2 (2022-09-02)
 **************************
 
@@ -57,7 +197,7 @@ itom
 * The properties ``yAxisFlipped`` and ``keepAspectRatio`` as well as the default color map of plots can now be set as default
   in the tab **Default Style Settings** of the itom property editor (`pull request 81 <https://bitbucket.org/itom/itom/pull-requests/81>`_).
 * Complete rework of the demo script sections in the user documentation. A gallery shows an introduction to several demo scripts.
-  Both the source code and the ouput (including plots...) after run are displayed for each demo script in the user documentation.
+  Both the source code and the output (including plots...) after run are displayed for each demo script in the user documentation.
   The scripts are also located in the **demo** folder of the itom installation (as usual).
 * added `sphinx_copybutton <https://pypi.org/project/sphinx-copybutton>`_ extension to html documentation
 * QPropertyEditorWidget can now be filtered, sorted and grouped. This feature is enabled in the corresponding dock widget of the plots.
@@ -80,7 +220,7 @@ itom
 * Fixes `issue 119 <https://bitbucket.org/itom/itom/issues/119>`_: The ``bool(dataObject)`` operator has changed its behaviour
   to be consistent with the behaviour of ``numpy.ndarray``.
 * Implements `issue 137 <https://bitbucket.org/itom/itom/issues/137>`_: comparison operators of **ito::RetVal** are ``const`` now.
-* `Pull request 66 <https://bitbucket.org/itom/itom/pull-requests/66>`_: :py:meth:`~itom.dataObject.createMask` will always returnd a 2D dataObject, whose size correspond
+* `Pull request 66 <https://bitbucket.org/itom/itom/pull-requests/66>`_: :py:meth:`~itom.dataObject.createMask` will always returned a 2D dataObject, whose size correspond
   to the last two dimension of the source dataObject instead of an object, whose number of dimension is equal to the dimensions
   of the source object.
 * Updated splash screen of itom (`pull request 78 <https://bitbucket.org/itom/itom/pull-requests/78>`_)
@@ -263,7 +403,7 @@ Plugins
 * ST8SMC4USB: added command_homezero into plugin calib function.
 * ST8SMC4USB: changed constructor, destructor to protected.
 * ST8SMC4USB: better status, position updates in calib function.
-* ST8SMC4USB: added homezero calibration run in seperate thread because its a long command.
+* ST8SMC4USB: added homezero calibration run in separate thread because its a long command.
 * ST8SMC4USB: update XILib to 2.13.1.
 * ThorlabsISM: update parameter in documentation.
 * ThorlabsISM: when moving relative the wrap on 360° was removed.
@@ -271,7 +411,7 @@ Plugins
 * ThorlabsKCubeDCServo: Qtime changed to QElapsedTimer.
 * ThorlabsKCubeIM: movement interrupt resets axes by retval.errorcde == -1.
 * ThorlabsKCubeIM: implemented interrupt while moving multiple axes.
-* ThorlabsKCubeIM: implemente KIM_RelativeMove and setInterrupt trigger KIM_MoveStop to stop the axis.
+* ThorlabsKCubeIM: implemented KIM_RelativeMove and setInterrupt trigger KIM_MoveStop to stop the axis.
 * Ximea: added lensAvialable to plugin documentation.
 * Ximea: added lens flag to optional parameters.
 * Ximea: Removed support for SDK < 4.10 from source.
@@ -489,9 +629,9 @@ itom
   reference is kept to avoid cyclic garbage collections of the class instances.
 * `Pull request 56 <https://bitbucket.org/itom/itom/pull-requests/56>`_: ``DataIO`` and ``actuator``
   plugins now have a user mutex, that can be accessed both by the
-  C++ interface as well as by the Python methods py:meth:`dataIO.userMutexTryLock`,
-  py:meth:`dataIO.userMutexUnlock`, py:meth:`actuator.userMutexTryLock`,
-  py:meth:`actuator.userMutexUnlock`. Plugins must be compiled against the
+  C++ interface as well as by the Python methods :py:meth:`dataIO.userMutexTryLock`,
+  :py:meth:`dataIO.userMutexUnlock`, :py:meth:`actuator.userMutexTryLock`,
+  :py:meth:`actuator.userMutexUnlock`. Plugins must be compiled against the
   AddInInterface >= 4.2.0 to support this mutex.
 * added new editorTheme ``VSDarkStyle.ini`` to *styles/editorThemes*  which looks like Visual Studio.
 * **ParamEditorWidget** can now display the slider widget as editor for floating point values
@@ -514,7 +654,7 @@ itom
   recommended to follow the Python PEP8 style guide advises.
 * The constructor of :py:class:`itom.timer` has a new optional argument ``startAfterInit``
   (default: ``True``). If set, the timer is automatically started.
-* py:class:`itom.timer`, py:meth:`itom.addMenu` and py:meth:`itom.addButton` accept now
+* :py:class:`itom.timer`, :py:meth:`itom.addMenu` and :py:meth:`itom.addButton` accept now
   lambda and partialfunc callback functions. Redesign of the
   timer manager dialog (class DialogTimerManager) to avoid race conditions if the timers are
   deleted or changed by Python while the dialog is opened. While the dialog is opened, all timers
@@ -556,7 +696,7 @@ itom
   non-continuous dataObject to a numpy array is working again, without the need to convert the
   dataObject to a continuous one before. This conversion is done again in the background. This
   fix is necessary due to a minor implementation change from Numpy 1.18 on.
-* bugfix in mapping set of itom.dataObject for scalar assignment (bug occured in GCC 6)
+* bugfix in mapping set of itom.dataObject for scalar assignment (bug occurred in GCC 6)
 * `Issue 157 <https://bitbucket.org/itom/itom/issues/157>`_: clean GIT URL in version
   information (without username from https synchronization)
 * improvements in some widgets of itomWidgets library (statusLed and rangeSlider), especially to
@@ -647,7 +787,7 @@ itom
 **New or changed major features:**
 
 * ScriptEditor can now handle filenames with special characters
-* New alternative interface for algorithms (ito::FilterDefExt) in algorithm plugins. This allows both continuously reporting the progress of an algorithm to Python (class py:class:`itom.progressObserver`) or C++ GUIs as well as interrupting a long running algorithm from these GUIs, too.
+* New alternative interface for algorithms (ito::FilterDefExt) in algorithm plugins. This allows both continuously reporting the progress of an algorithm to Python (class :py:class:`itom.progressObserver`) or C++ GUIs as well as interrupting a long running algorithm from these GUIs, too.
 * The keyword '_observer' is not allowed in any algorithm plugin filters, since it is a reserved keyword for passing an progress observer to a filter. Filters having such a keyword will be rejected by itom.
 * Forward and backward navigation buttons in script editors are available. Their behaviour is similar than in Visual Studio (see https://blogs.msdn.microsoft.com/zainnab/2010/03/01/navigate-backward-and-navigate-forward/)
 * Improved callstack toolbox: The internal traceback of the debugger is ignored, now. It is possible to double click every level of the callstack in order to jump to these lines. The top level will be marked with a yellow arrow in the script, other affected lines by a green arrow.
@@ -677,7 +817,7 @@ itom
 * New property page for actuators: It can be chosen if an interrupt flag should be send to all active actuator instances if a python script execution is interrupted (default: false). Calling itom.setPosAbs, itom.setPosRel, itom.calib or itom.setOrigin will now reset the interrupt flag before execution (as well as calling these methods from the motorAxisController.
 * Macro 'itom_fetch_git_commit_hash' added to ItomBuildMacros.cmake to get the current Git commit hash and store it in a gitVersion.h file in the file gitVersion.h in the project's output folder (can be changed). This behaviour can be toggled by the BUILD_GIT_TAG flag in CMake. This can only be done if the Git package can be found by CMake.
 * Script editor tabs: it is now possible to configure how long filenames are shortened if there are many scripts opened (see itom property dialog >> editor >> script editors)
-* File system dock widget: list of recent folders, loaded at startup from settings, will only contain pathes that exist at startup.
+* File system dock widget: list of recent folders, loaded at startup from settings, will only contain paths that exist at startup.
 * Grabber plugins can now have an optional **sizez** parameter and must then return a 3D dataObject (image stack) with shape (sizez, sizey, sizex)
 * Added the new default editor style *DefaultConsolas.ini*, that is based on the default style, but uses the consolas font for all style types.
 * The type **ItomPlotHandle** can now be set to None in Python. This allows removing assigned plot widgets for line cuts, z-stack cuts etc. and remove this connection between two plots.
@@ -686,7 +826,7 @@ itom
 
 **Bugfixes:**
 
-* `Issue 87 <https://bitbucket.org/itom/itom/issues/87>`_: multiple files can now be opened by droping on script editor
+* `Issue 87 <https://bitbucket.org/itom/itom/issues/87>`_: multiple files can now be opened by dropping on script editor
 * `Issue 89 <https://bitbucket.org/itom/itom/issues/89>`_: Removed a wrong "container=1" line in the ui-files for itom designer plugins. This line will let the QtDesigner crash if another widget is drag&dropped over a widget of the affected designer plugin class.
 * `Issue 94 <https://bitbucket.org/itom/itom/issues/94>`_: method navigation combobox above script editor did not show methods with some typehints.
 * `Issue 95 <https://bitbucket.org/itom/itom/issues/95>`_: correctly highlight private methods in scripts, that have numbers in their method name.
@@ -775,7 +915,7 @@ Plugins
 * Ximea: inserted aperture value as parameter
 * Ximea: ready for hyperspectral sensors
 * another time a deepcode.ai analysis
-* demoAlgorithms: Extension of the demoAlgorithms with respect to the algorithmInterrupt branch of the itom sources: Added a long-running algorithm (10sec) 'demoCancellationFunction', that can be interrupted by a python scipt cancellation. Additionally, you can obtain progress and cancel this function via a GUI. See the widget example 'demoCancellationFunctionWidget' for this
+* demoAlgorithms: Extension of the demoAlgorithms with respect to the algorithmInterrupt branch of the itom sources: Added a long-running algorithm (10sec) 'demoCancellationFunction', that can be interrupted by a python script cancellation. Additionally, you can obtain progress and cancel this function via a GUI. See the widget example 'demoCancellationFunctionWidget' for this
 * more work on niDAQmx: digital output tasks are now also running in finite and continuous mode
 * niDAQmx: complete set of demo files for digital and analog input and output tasks (finite, continuous and single value)
 * niDAQmx: rework of NIDAQMX plugin, mainly done by D. Nessett. See: https://bitbucket.org/dnessett/plugins
@@ -814,7 +954,7 @@ Designer Plugins
 * itom1dQwtPlot: font of legend items has not always been assigned to the curves (e.g. if the font is selected in QtDesigner)
 * itom1dQwtPlot: fixes issue #27: duplicated, adjacent points in X/Y data will be skipped when navigating through the points using the arrow keys
 * itom1dQwtPlot: fixes #15. Implementation of a ROI check to set the legend entries considering a possible ROI.
-* itom1dqwtplot: fixes issue #30. If an itom1dqwtplot is currently connected to the line cut / z-stack cut functionality of an itom2dqwtplot and the user assigns a new, different source to the source property of the line cut, the input parameters 'bounds' are resetted now, to fully display the newly given dataObject. However: the connection to the 2d plot is still there, hence, if the user draws a new line / z-stack position, this line is drawn again in the 1d plot. Avoid this by resetting the connection before assigning a new source object. This is done by assigning None to the properties 'lineCutPlotItem' / 'zSlicePlotItem' of the 2d plot.
+* itom1dqwtplot: fixes issue #30. If an itom1dqwtplot is currently connected to the line cut / z-stack cut functionality of an itom2dqwtplot and the user assigns a new, different source to the source property of the line cut, the input parameters 'bounds' are reset now, to fully display the newly given dataObject. However: the connection to the 2d plot is still there, hence, if the user draws a new line / z-stack position, this line is drawn again in the 1d plot. Avoid this by resetting the connection before assigning a new source object. This is done by assigning None to the properties 'lineCutPlotItem' / 'zSlicePlotItem' of the 2d plot.
 * itom2dqwtplot, itom1dQwtPlot: removed unused #include of plotLegends (plotLegends do not exist any more in the SDK since they have been merged into itomWidgets a long time ago.
 * itom2dqwtplot, itom1dQwtPlot: draw shapes on top of grid (z-index: 10), curves + images (z-index: 20) with z-index: 25. markers have a z-index of 30 and further labels 150.
 * itom2dqwtplot, itom1dQwtPlot: renamed private member, incremented version numbers

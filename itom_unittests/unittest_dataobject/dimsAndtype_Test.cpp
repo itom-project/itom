@@ -58,7 +58,7 @@ TYPED_TEST(DimAndTypeTest, getDims_Test)
     EXPECT_EQ(
         2, this->dObj2
                .getDims()); //!< checking dimensions of 1 dimensional data object using getDims() function which should
-                            //!< return value 2 because there is no existance of 1 dimensional data object and if they
+                            //!< return value 2 because there is no existence of 1 dimensional data object and if they
                             //!< are defined, they should be taken as 2 dimensional data object automatically.
     EXPECT_EQ(2, this->dObj3.getDims()); //!< checking dimensions of 2 dimensional data object using getDims() function
                                          //!< which should return value 2
@@ -70,7 +70,7 @@ TYPED_TEST(DimAndTypeTest, getDims_Test)
 
 // getType_Test
 /*!
-    This test checks the fucntionality of getType() method on differnt data objects of different types and sizes.
+    This test checks the functionality of getType() method on different data objects of different types and sizes.
 */
 TYPED_TEST(DimAndTypeTest, getType_Test)
 {

@@ -23,14 +23,14 @@ Algorithm Interfaces
 
 A programmer who wants to implement a filter or widget-method that fits to a specific algorithm interface can be forced by the interface to consider a certain set of rules. These rules can be:
 
-* The first **n** mandatory parameters can be determined. For each of these parameters the type and optionally some contraints by adding a meta information instance to the parameter are given.
+* The first **n** mandatory parameters can be determined. For each of these parameters the type and optionally some constraints by adding a meta information instance to the parameter are given.
 * The first **m** output parameter can be determined. Type and meta information (optional) are given as well).
 * The maximum number of mandatory parameters is determined, but can also be set to infinity (INT_MAX).
 * The maximum number of optional parameters is determined, but can also be set to infinity (INT_MAX).
 * The maximum number of output parameters is determined, but can also be set to infinity (INT_MAX).
 * The syntax or general form of the meta information string, added to the classes **FilterDef** or **AlgoWidgetDef** can be given.
 
-If a filter or widget-method pretends to implement a certain interface, |itom| checks at startup if the contraints are fullfilled are if this is not the case, the filter or widget-method is rejected and cannot be used within |itom|. The reason for the rejection can be seen by open the dialog **loaded plugins...** within the **help**-menu of |itom|.
+If a filter or widget-method pretends to implement a certain interface, |itom| checks at startup if the constraints are fulfilled are if this is not the case, the filter or widget-method is rejected and cannot be used within |itom|. The reason for the rejection can be seen by open the dialog **loaded plugins...** within the **help**-menu of |itom|.
 
 The following interfaces are available (in the enumeration **tAlgoInterface**, member of class **ito::AddInAlgo**:
 

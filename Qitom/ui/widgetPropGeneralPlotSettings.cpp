@@ -1,8 +1,8 @@
 /* ********************************************************************
 itom software
 URL: http://www.uni-stuttgart.de/ito
-Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-Universitaet Stuttgart, Germany
+Copyright (C) 2020, Institut für Technische Optik (ITO),
+Universität Stuttgart, Germany
 
 This file is part of itom.
 
@@ -74,7 +74,8 @@ namespace ito
 		ui.legendLabelWidthSpin->setValue(settings.value("legendLabelWidth", 15).value<int>());
         ui.checkAntiAliasing->setChecked(settings.value("antiAliased", false).value<bool>());
         ui.clipboardResolutionSpin->setValue(settings.value("copyClipboardResolutionDpi", 200).value<int>());
-        ui.comboDefaultColorMap->setCurrentIndex(ui.comboDefaultColorMap->findText(settings.value("defaultColorMap").toString()));
+        ui.comboDefaultColorMap->setCurrentIndex(
+            ui.comboDefaultColorMap->findText(settings.value("defaultColorMap", "gray").toString()));
         ui.checkBoxKeepAspectRatio->setChecked(settings.value("keepAspectRatio").toBool());
         ui.checkBoxYAxisFlipped->setChecked(settings.value("yAxisFlipped").toBool());
         settings.endGroup();

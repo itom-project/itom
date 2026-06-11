@@ -8,5 +8,5 @@ RetVal - Reference
 =====================
 
 .. doxygenclass:: ito::RetVal
-	:project: itom
-	:members:
+    :project: itom
+    :members:

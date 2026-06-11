@@ -120,7 +120,7 @@ Then execute the following steps:
 
     It depends on the version of the all-in-one development setup how many steps
     have to be executed by the **setup.py** script. In any case,
-    you will get a list of all steps. Press any number after the qestion **your input?**
+    you will get a list of all steps. Press any number after the question **your input?**
     followed by return to start the corresponding installation step.
     There is also a number that executes several other steps at once.
     You can close the script by the corresponding number and restart it at any later time and continue
@@ -163,7 +163,7 @@ Then execute the following steps:
 
         The folder **3rdParty** contains a prebuild version of Qt (5.12.0, with OpenGL support).
         No further compilation needs to be done. However this Qt installation needs to be
-        patched in order to correspond to your pathes. Use this setup step to
+        patched in order to correspond to your paths. Use this setup step to
         execute the patch. If you are able to start executables like **assistant.exe** or **designer.exe**
         from the **qtbase/bin** folder of Qt, the patch seemed to work.
 
@@ -183,7 +183,7 @@ Then execute the following steps:
 
             One drawback of this prebuild Qt installation is that you cannot
             directly debug into Qt methods (since the delivered ptb-files are not
-            patched and point to invalid pathes). If
+            patched and point to invalid paths). If
             you want to have this feature (usually not required for standard programming),
             you need to compile Qt by yourself into the same folder using the approach
             given in :ref:`this link <compile-qt5-from-sources>`.
@@ -203,7 +203,7 @@ Then execute the following steps:
 
         This step compiles itom from **build/itom** in a debug and release compilation.
         Then the executables **qitom.exe** and **qitomd.exe** are generated.
-        If you try to start them, this may fail, since the pathes to the binaries of
+        If you try to start them, this may fail, since the paths to the binaries of
         Qt, OpenCV and optionally the PointCloudLibrary are not included in the
         Windows path environment variable yet (see step 8)
 
@@ -225,7 +225,7 @@ Then execute the following steps:
     10. Modify Windows path variable
 
         In order to find the binaries of Qt, OpenCV and optionally the PointCloudLibrary,
-        it is necessary to prepend some pathes to the Windows path variable.
+        it is necessary to prepend some paths to the Windows path variable.
         If you choose option 8, a string is print to the command line and saved
         in the file **enver.txt**. Copy the string and **prepend** it to the PATH
         environment variable of Windows. Afterwards it is required to restart the

@@ -61,17 +61,17 @@ Properties
 .. py:attribute:: volumeCutPlotItem : uiItem
     :noindex:
 
-    Set/get the uiItem of the current line plot respective the destination line plot for the volume cut. The 'uiItem' can be savely cast to 'plotItem'.
+    Set/get the uiItem of the current line plot respective the destination line plot for the volume cut. The 'uiItem' can be safely cast to 'plotItem'.
 
 .. py:attribute:: zSlicePlotItem : uiItem
     :noindex:
 
-    Set/get the uiItem of the current line plot respective the destination line plot for z slicing. The 'uiItem' can be savely cast to 'plotItem'.
+    Set/get the uiItem of the current line plot respective the destination line plot for z slicing. The 'uiItem' can be safely cast to 'plotItem'.
 
 .. py:attribute:: lineCutPlotItem : uiItem
     :noindex:
 
-    Set/get the uiItem of the current line plot respective the destination line plot for lateral slicing. The 'uiItem' can be savely cast to 'plotItem'.
+    Set/get the uiItem of the current line plot respective the destination line plot for lateral slicing. The 'uiItem' can be safely cast to 'plotItem'.
 
 .. py:attribute:: dataChannel : ItomQwtPlotEnums::DataChannel
     :noindex:
@@ -505,7 +505,7 @@ Slots
 
     Updates an existing geometric shape by the new shape if the index of the shape already exists, else add the new shape to the canvas (similar to 'addGeometricShape'.
 
-    If the index of the new shape is -1 (default), the next free auto-incremented index will be set for this shape. (C++ only: this new index ist
+    If the index of the new shape is -1 (default), the next free auto-incremented index will be set for this shape. (C++ only: this new index is
     stored in the optional 'newIndex' parameter).
 
     :param geometricShape: new geometric shape
@@ -518,7 +518,7 @@ Slots
 
     Add a new geometric shape to the canvas if no shape with the same index already exists.
 
-    If the index of the new shape is -1 (default), the next free auto-incremented index will be set for this shape. (C++ only: this new index ist
+    If the index of the new shape is -1 (default), the next free auto-incremented index will be set for this shape. (C++ only: this new index is
     stored in the optional 'newIndex' parameter).
 
     :param geometricShape: new geometric shape

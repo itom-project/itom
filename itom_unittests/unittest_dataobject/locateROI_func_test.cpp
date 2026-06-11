@@ -27,7 +27,7 @@ template <typename _Tp> class locateROI_func_test : public ::testing::Test
         this->dObj3 = ito::DataObject(4, 5, 5, ito::getDataType2<_Tp *>()); //!< creating 3 dimensional data object
 
         int temp_size[] = { 4,5,5,4,3 };
-        this->dObj4 = ito::DataObject(5, temp_size, ito::getDataType2<_Tp *>()); //!< creating 5 dimesional data object
+        this->dObj4 = ito::DataObject(5, temp_size, ito::getDataType2<_Tp *>()); //!< creating 5 dimensional data object
     };
 
     virtual void TearDown(void){};

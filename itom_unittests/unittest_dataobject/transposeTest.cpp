@@ -27,7 +27,7 @@ TYPED_TEST_CASE(transposeTest, ItomRealDataTypes);
 
 // CVTransTest
 /*!
-    Currently, this test only checks the behaviour of the tranpose operation in OpenCV.
+    Currently, this test only checks the behaviour of the transpose operation in OpenCV.
     If an original 4x3 matrix is created, the step vector is [3,1]. If this
     matrix is transposed by OpenCV, OpenCV 2.4.10 or below returns a deep copy, hence the step vector is [4,1].
 

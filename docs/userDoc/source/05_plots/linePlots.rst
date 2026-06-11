@@ -179,10 +179,10 @@ menu entry or it can be exported to clipBoard via ctrl-c or a public slot.
 Setting properties
 -------------------------
 
-If you want to modify the lines, ploted in the :ref:`itom1dqwtplot`,
+If you want to modify the lines, plotted in the :ref:`itom1dqwtplot`,
 individually you can do this with the help of Python or the curve properties
 widget (View >> curve properties or via right click on the toolbar). The
-following line properties are acessable via Python:
+following line properties are accessible via Python:
 
 * **visible**
 * **lineStyle**
@@ -255,7 +255,7 @@ Properties
 .. py:attribute:: xData : dataObject
     :noindex:
 
-    DataObject representing the xData of the plot. Expect a two dimensional dataObject with a (n x m) or (1 x m) shape for an (n x m) source object with n < m. For n > m a shape of (n x 1) or (n x m) is exspected.
+    DataObject representing the xData of the plot. Expect a two dimensional dataObject with a (n x m) or (1 x m) shape for an (n x m) source object with n < m. For n > m a shape of (n x 1) or (n x m) is expected.
 
 .. py:attribute:: axisScale : ItomQwtPlotEnums::ScaleEngine
     :noindex:
@@ -424,7 +424,7 @@ Properties
 .. py:attribute:: curveFillAlpha : int
     :noindex:
 
-    set the alpha value for the curve fill color seperatly.
+    set the alpha value for the curve fill color separately.
 
 .. py:attribute:: curveFillColor : color str, rgba or hex
     :noindex:
@@ -929,7 +929,7 @@ Slots
 
     Updates an existing geometric shape by the new shape if the index of the shape already exists, else add the new shape to the canvas (similar to 'addGeometricShape'.
 
-    If the index of the new shape is -1 (default), the next free auto-incremented index will be set for this shape. (C++ only: this new index ist
+    If the index of the new shape is -1 (default), the next free auto-incremented index will be set for this shape. (C++ only: this new index is
     stored in the optional 'newIndex' parameter).
 
     :param geometricShape: new geometric shape
@@ -942,7 +942,7 @@ Slots
 
     Add a new geometric shape to the canvas if no shape with the same index already exists.
 
-    If the index of the new shape is -1 (default), the next free auto-incremented index will be set for this shape. (C++ only: this new index ist
+    If the index of the new shape is -1 (default), the next free auto-incremented index will be set for this shape. (C++ only: this new index is
     stored in the optional 'newIndex' parameter).
 
     :param geometricShape: new geometric shape

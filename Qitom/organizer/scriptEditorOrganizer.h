@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2024, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2025, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom.
 
@@ -20,8 +20,7 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef SCRIPTEDITORORGANIZER_H
-#define SCRIPTEDITORORGANIZER_H
+#pragma once
 
 #include "../common/sharedStructuresQt.h"
 #include "../models/bookmarkModel.h"
@@ -117,6 +116,7 @@ private:
     int m_goBackNavigationIndex; //! current position of script editors in goBackNavigationHistory.
                                  //! If equal to m_goBackNavigationHistory.size(), the current
                                  //! position is at the end.
+
     static const int
         MaxGoBackNavigationEntries; //! maximum number of entries in the go back navigation history.
 
@@ -133,6 +133,8 @@ signals:
         QString filename); //! signal emitted if macro (filename) should be executed in python
     void pythonDebugFile(
         QString filename); //! signal emitted if macro (filename) should be debugged in python
+
+    void scriptEditorZoomChanged(int zoomFactor);
 
 public slots:
     void removeScriptDockWidget(ScriptDockWidget* widget);
@@ -162,6 +164,11 @@ public slots:
 
     void fileOpenedOrSaved(const QString& filename);
 
+    void navigateForward();
+    void navigateBackward();
+
+    void scriptZoomFactorChanged(int zoomFactor);
+
 private slots:
     void widgetFocusChanged(QWidget* old, QWidget* now);
 
@@ -169,11 +176,7 @@ private slots:
     void onGotoBookmark(const BookmarkItem& item);
 
     // Action slots
-    void mnuNavigateForward();
-    void mnuNavigateBackward();
     void mnuNavigateBackwardItem(int index);
 };
 
 } // end namespace ito
-
-#endif

@@ -52,7 +52,7 @@ def replaceInFiles(path, ending):
                     # If so, reset the counter c.
                     m2 = pNeg.search(s, pos, len(s))
                     if not (m2 is None) and m2.end() < m.end():
-                        print("new section or chapter, figure newline counter resetted")
+                        print("new section or chapter, figure newline counter reset")
                         c = 1
                     else:
                         c += 1

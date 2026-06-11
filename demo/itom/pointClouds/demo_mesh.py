@@ -19,7 +19,7 @@ cloud = pointCloud.fromXYZ(
     dataObject(Y.astype("float32")),
     dataObject(Z.astype("float32")),
 )
-indices = np.array([[0, 1, 3, 2]])
+indices = np.array([[0, 1, 3, 2]]).astype("int32")
 
 mesh = polygonMesh.fromCloudAndPolygons(cloud, indices)
 meshOut = polygonMesh()

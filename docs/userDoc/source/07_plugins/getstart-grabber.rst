@@ -214,7 +214,7 @@ If you are developing your own GUI and want wo use live images from a grabber, y
 
     # be gui.myplot a designer widget of type Itom2dQwtPlot or Itom1dQwtPlot
     gui.myplot["camera"] = mygrabber # liveImage of grabber, if autograbbing in enabled
-    gui.myplot["source"] = mydataobject # diplaying dataObject
+    gui.myplot["source"] = mydataobject # displaying dataObject
                                         #(any previous camera is disconnected from the live image)
 
 Demo script cameraWindow.py

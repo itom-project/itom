@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2023, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2023, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom.
 
@@ -448,6 +448,15 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue, QSharedPointer<QVariantMap
 
         PyConfig_InitIsolatedConfig(&config);
 
+#ifdef Q_OS_UNIX
+        // under linux, it is desired to also consider locally installed Python packages.
+        // Therefore, deactivate the 'isolated' mode and manually set some properties
+        config.isolated = 0;
+        config.safe_path = 1; // default in isolated mode
+        config.use_environment = 0; // default in isolated mode
+        config.user_site_directory = 1; // changed
+#endif
+
         /* Set the program name before reading the configuration
            (decode byte string from the locale encoding).
 
@@ -880,7 +889,7 @@ ito::RetVal PythonEngine::startupInitPythonHelpStreamConsumer(QSettings& setting
     QString python3rdPartyHelperCommand = settings.value("python3rdPartyHelperCommand", "").toString();
     bool python3rdPartyHelperUse = settings.value("python3rdPartyHelperUse", false).toBool();
     //since these config files can be copied around, shared to other ppl etc,
-    // PAGER enver might be lost/canged/unexpected from this POV.
+    // PAGER enver might be lost/changed/unexpected from this POV.
     // If PAGER is not as expected, help is not going to be used...
     //Hint: in debugger, enver Vars are only loaded on your IDE startup, e.g. msvc.
     //So if you change PAGER, you might need to restart you IDE
@@ -1843,7 +1852,7 @@ ito::RetVal PythonEngine::runString(const QString &command)
             //{
             //    result = PyRun_String(command.toUtf8().data(), Py_single_input, mainDict, localDict); //Py_file_input is used such that multi-line commands (separated by \n) are evaluated
             //}
-            //else //this command is a single line command, then Py_single_input must be set, such that the output of any command is printed in the next line, else this output is supressed (if no print command is executed)
+            //else //this command is a single line command, then Py_single_input must be set, such that the output of any command is printed in the next line, else this output is suppressed (if no print command is executed)
             //{
             //    result = PyRun_String(command.toUtf8().data(), Py_single_input /*was in 2015: Py_single_input*/, mainDict , localDict); //Py_file_input is used such that multi-line commands (separated by \n) are evaluated
             //}
@@ -2160,7 +2169,7 @@ ito::RetVal PythonEngine::debugFunction(PyObject *callable, PyObject *argTuple, 
         result = PyObject_CallMethod(m_itomDbgInstance, "clear_all_breaks", "");
         if (result == nullptr)
         {
-            std::cerr << tr("Error while clearing all breakpoints in itoDebugger.").toLatin1().data() << "\n" << std::endl;
+            std::cerr << tr("Error while clearing all breakpoints in itoDebugger.").toUtf8().data() << "\n" << std::endl;
             printPythonErrorWithoutTraceback(); //traceback is sense-less, since the traceback is in itoDebugger.py only!
 
             if (!gilExternal)
@@ -2277,7 +2286,7 @@ ito::RetVal PythonEngine::debugFile(const QString &pythonFileName)
         result = PyObject_CallMethod(m_itomDbgInstance, "clear_all_breaks", "");
         if (result == nullptr)
         {
-            std::cerr << tr("Error while clearing all breakpoints in itoDebugger.").toLatin1().data() << "\n" << std::endl;
+            std::cerr << tr("Error while clearing all breakpoints in itoDebugger.").toUtf8().data() << "\n" << std::endl;
             printPythonErrorWithoutTraceback(); //traceback is sense-less, since the traceback is in itoDebugger.py only!
 
             PyGILState_STATE gstate = PyGILState_Ensure();
@@ -2394,7 +2403,7 @@ ito::RetVal PythonEngine::debugString(const QString &command)
 
         if (result == nullptr)
         {
-            std::cerr << tr("Error while clearing all breakpoints in itoDebugger.").toLatin1().data() << "\n" << std::endl;
+            std::cerr << tr("Error while clearing all breakpoints in itoDebugger.").toUtf8().data() << "\n" << std::endl;
             printPythonErrorWithoutTraceback(); //traceback is sense-less, since the traceback is in itoDebugger.py only!
             PyGILState_Release(gstate);
             return RetVal(retError);
@@ -2420,7 +2429,7 @@ ito::RetVal PythonEngine::debugString(const QString &command)
 
         try
         {
-            //the result of all commands that return something else than None is printed. This can be changed in itoDebugger by chosing compile(...,'exec') instead of 'single'
+            //the result of all commands that return something else than None is printed. This can be changed in itoDebugger by choosing compile(...,'exec') instead of 'single'
             result = PyObject_CallMethod(m_itomDbgInstance, "debugString", "s", command.toUtf8().data()); //command must be UTF8
         }
         catch(std::exception &exc)
@@ -2490,12 +2499,12 @@ ito::RetVal PythonEngine::handlePythonSysExit()
     if (closeItom)
     {
         QMetaObject::invokeMethod(AppManagement::getMainApplication(), "mainWindowCloseRequest", Q_ARG(bool, false));
-        std::cerr << tr("close itom due to sys.exit()").toLatin1().data() << "\n" << std::endl;
+        std::cerr << tr("close itom due to sys.exit()").toUtf8().data() << "\n" << std::endl;
         return ito::RetVal(ito::retError, 0, "Close itom due to Python sys.exit()");
     }
     else
     {
-        std::cerr << tr("sys.exit() is ignored. If itom should be closed, enable it in the itom properties dialog.").toLatin1().data() << "\n" << std::endl;
+        std::cerr << tr("sys.exit() is ignored. If itom should be closed, enable it in the itom properties dialog.").toUtf8().data() << "\n" << std::endl;
         return ito::RetVal(ito::retError, 0, "sys.exit() ignored.");
     }
 }
@@ -2728,13 +2737,15 @@ void PythonEngine::pythonCodeCheck(const QString &code, const QString &filename,
                 QMetaObject::invokeMethod(s, callbackFctName.constData(), Q_ARG(QList<ito::CodeCheckerItem>, codeCheckerItems));
             }
         }
-#ifdef _DEBUG
         else if (!result)
         {
+#ifdef _DEBUG
             std::cerr << "Error when calling the syntax check module of python\n" << std::endl;
             PyErr_PrintEx(0);
-        }
+#else
+            PyErr_Clear();
 #endif
+        }
 
         Py_XDECREF(result);
 
@@ -2843,7 +2854,7 @@ ito::RetVal PythonEngine::pythonAddBreakpoint(
         {
             //this is an exception case that should not occur under normal circumstances
             std::cerr << tr("Adding breakpoint to file '%1', line %2 failed in Python debugger.")
-                .arg(breakpoint.filename).arg(lineNo).toLatin1().constData() << "\n" << std::endl;
+                .arg(breakpoint.filename).arg(lineNo).toUtf8().constData() << "\n" << std::endl;
 
             //traceback is sense-less, since the traceback is in itoDebugger.py only!
             printPythonErrorWithoutTraceback();
@@ -2965,7 +2976,7 @@ ito::RetVal PythonEngine::pythonEditBreakpoint(const int pyBpNumber, const Break
 
         if (result == nullptr)
         {
-            //this is an exception case that should not occure under normal circumstances
+            //this is an exception case that should not occur under normal circumstances
             std::cerr << "Error while editing breakpoint in debugger." << "\n" << std::endl;
 
             printPythonErrorWithoutTraceback(); //traceback is sense-less, since the traceback is in itoDebugger.py only!
@@ -3051,7 +3062,7 @@ ito::RetVal PythonEngine::pythonDeleteBreakpoint(const int pyBpNumber)
         result = PyObject_CallMethod(m_itomDbgInstance, "clearBreakPoint", "i", pyBpNumber); //returns 0 (int) or str with error message
         if (result == nullptr)
         {
-            //this is an exception case that should not occure under normal circumstances
+            //this is an exception case that should not occur under normal circumstances
             std::cerr << "Error while clearing breakpoint in debugger." << "\n" << std::endl;
             printPythonErrorWithoutTraceback(); //traceback is sense-less, since the traceback is in itoDebugger.py only!
             retval += RetVal(retError, 0, tr("Exception raised while clearing breakpoint in debugger.").toLatin1().data());
@@ -3178,11 +3189,7 @@ void PythonEngine::setLocalDictionary(PyObject* localDict)
 //----------------------------------------------------------------------------------------------------------------------------------
 void PythonEngine::pythonRunString(QString cmd)
 {
-    if (cmd.trimmed().startsWith("#"))
-    {
-        cmd.prepend("pass"); //a single command line leads to an error while execution
-    }
-    //ba.replace("\\n",QByteArray(1,'\n')); //replace \n by ascii(10) in order to realize multi-line evaluations
+    cmd = modifyCommandStringInCaseOfSpecialComments(cmd);
 
     switch (m_pythonState)
     {
@@ -3274,10 +3281,7 @@ void PythonEngine::pythonDebugFile(QString filename)
 //----------------------------------------------------------------------------------------------------------------------------------
 void PythonEngine::pythonDebugString(QString cmd)
 {
-    if (cmd.trimmed().startsWith("#"))
-    {
-        cmd.prepend("pass"); //a single comment while cause an error in python
-    }
+    cmd = modifyCommandStringInCaseOfSpecialComments(cmd);
 
     switch (m_pythonState)
     {
@@ -3301,13 +3305,41 @@ void PythonEngine::pythonDebugString(QString cmd)
     }
 }
 
+//--------------------------------------------------------------------------------------
+/* if a single command line or a multi-block line is executed, Python will
+* raise a SyntaxError, if comment lines exist at special positions. To avoid
+* this, some modifications are optionally done here.
+*/
+QString PythonEngine::modifyCommandStringInCaseOfSpecialComments(const QString& command)
+{
+    QString cmd = command;
+
+    if (cmd.trimmed().startsWith("#"))
+    {
+        cmd.prepend("pass"); //a single comment line leads to an error while execution
+    }
+
+    int lastLineBreakIdx = cmd.lastIndexOf("\n");
+
+    if (lastLineBreakIdx >= 0)
+    {
+        QString lastCmd = cmd.mid(lastLineBreakIdx + 1);
+
+        if (lastCmd.trimmed().startsWith("#"))
+        {
+            // a command line in the last line of the block can lead to an error.
+            // Insert an empty line at the end
+            cmd.append("\n");
+        }
+    }
+
+    return cmd;
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------
 void PythonEngine::pythonExecStringFromCommandLine(QString cmd)
 {
-    if (cmd.trimmed().startsWith("#"))
-    {
-        cmd.prepend("pass"); //a single command line leads to an error while execution
-    }
+    cmd = modifyCommandStringInCaseOfSpecialComments(cmd);
 
     switch (m_pythonState)
     {
@@ -3897,7 +3929,7 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString
         //this is a compatibility thing. This function can also be used to
         //get a variable from the global or local dictionary. If only a
         //variable name is passed, we prepend PY_DICT PY_STRING : to the string
-        //such that an item from the gobal or local dictionary is chosen.
+        //such that an item from the global or local dictionary is chosen.
         const char prepend[] = { PY_DICT, PY_STRING, ':', '\0' };
         items[0].prepend(prepend);
     }
@@ -4027,7 +4059,21 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString
         }
         else if (itemType == PY_LIST_TUPLE && PyList_Check(obj))
         {
-            i = itemKey.toInt(&ok);
+            ok = false;
+
+            if (itemKeyType == PY_NUMBER)
+            {
+                i = itemKey.toInt(&ok);
+            }
+            else if (itemKeyType == PY_INDEX_STRING)
+            {
+                QStringList components = itemKey.split(":");
+
+                if (components.size() > 0)
+                {
+                    i = components[0].toInt(&ok);
+                }
+            }
 
             if (!ok || i < 0 || i >= PyList_Size(obj))
             {
@@ -4050,7 +4096,21 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString
         }
         else if (itemType == PY_LIST_TUPLE && PyTuple_Check(obj))
         {
-            i = itemKey.toInt(&ok);
+            ok = false;
+
+            if (itemKeyType == PY_NUMBER)
+            {
+                i = itemKey.toInt(&ok);
+            }
+            else if (itemKeyType == PY_INDEX_STRING)
+            {
+                QStringList components = itemKey.split(":");
+
+                if (components.size() > 0)
+                {
+                    i = components[0].toInt(&ok);
+                }
+            }
 
             if (!ok || i < 0 || i >= PyTuple_Size(obj))
             {
@@ -4603,7 +4663,7 @@ int PythonEngine::queuedInterrupt(void* /*arg*/)
     //
     // we have to raise an except while exception handling. Therefore
     // we accumulate some keyboards interrupts and force their
-    // excecution afterwards with setInterrupt ...
+    // execution afterwards with setInterrupt ...
     // Anyway deeper nested try - except constructs we cannot terminate this way
 
     {
@@ -4635,18 +4695,23 @@ int PythonEngine::queuedInterrupt(void* /*arg*/)
 //----------------------------------------------------------------------------------------------------------------------------------
 void PythonEngine::pythonInterruptExecutionThreadSafe(bool *interruptActuatorsAndTimers /*= nullptr*/)
 {
-    // only queue the interrupt event if not yet done.
-    // ==operator(int) of QAtomicInt does not exist for all versions of Qt5.
-    //testAndSetRelaxed returns true, if the value was 0 (and assigns one to it)
-    if (m_interruptCounter.testAndSetRelaxed(0, 1))
+    if (isPythonDebugging() && isPythonDebuggingAndWaiting())
     {
-        if (isPythonDebugging() && isPythonDebuggingAndWaiting())
+        m_dbgCmdMutex.lock();
+
+        if (m_debugCommandQueue.size() == 0 || m_debugCommandQueue[0] != ito::pyDbgQuit)
         {
-            m_dbgCmdMutex.lock();
             m_debugCommandQueue.insert(0, ito::pyDbgQuit);
-            m_dbgCmdMutex.unlock();
         }
-        else
+
+        m_dbgCmdMutex.unlock();
+    }
+    else
+    {
+        // only queue the interrupt event if not yet done.
+        // ==operator(int) of QAtomicInt does not exist for all versions of Qt5.
+        //testAndSetRelaxed returns true, if the value was 0 (and assigns one to it)
+        if (m_interruptCounter.testAndSetRelaxed(0, 1))
         {
             int result = Py_AddPendingCall(&PythonEngine::queuedInterrupt, nullptr);
         }
@@ -5266,6 +5331,10 @@ bool PythonEngine::deleteVariable(bool globalNotLocal, const QStringList &fullIt
                             //todo: this is possible for dict types
                             std::cerr << "Currently, only keys of type string or int can be deleted.\n" << std::endl;
                             break;
+                        case PY_INDEX_STRING:
+                            retVal = false;
+                            std::cerr << "Members of a named tuple cannot be deleted.\n" << std::endl;
+                            break;
                         default:
                             retVal = false;
                             std::cerr << "Unknown value type.\n" << std::endl;
@@ -5459,7 +5528,7 @@ ito::RetVal PythonEngine::saveMatlabVariables(bool globalNotLocal, QString filen
 *  \param filename is the filename of the mat file
 *  \param value is the given DataObject, PointCloud or PolygonMesh in terms of ito::Param
 *  \param valueName is the name of the variable in the mat file
-*  \param semaphore is the control semaphore for an asychronous call.
+*  \param semaphore is the control semaphore for an asynchronous call.
 */
 ito::RetVal PythonEngine::saveMatlabSingleParam(QString filename, QSharedPointer<ito::Param> value, const QString &valueName, ItomSharedSemaphore *semaphore)
 {
@@ -6579,7 +6648,7 @@ ito::RetVal PythonEngine::pickleVariables(bool globalNotLocal, QString filename,
 
                     if (keyUnicode)
                     {
-                        //increments tempElem by itsself
+                        //increments tempElem by itself
                         PyDict_SetItem(exportDict, keyUnicode, tempElem);
                         Py_DECREF(keyUnicode);
                     }
@@ -6625,7 +6694,7 @@ ito::RetVal PythonEngine::pickleVariables(bool globalNotLocal, QString filename,
 *  \param filename is the filename of the idc file
 *  \param value is the given DataObject, PointCloud or PolygonMesh in terms of ito::Param
 *  \param valueName is the name of the variable in the idc file
-*  \param semaphore is the control semaphore for an asychronous call.
+*  \param semaphore is the control semaphore for an asynchronous call.
 */
 ito::RetVal PythonEngine::pickleSingleParam(QString filename, QSharedPointer<ito::Param> value, const QString &valueName, ItomSharedSemaphore *semaphore)
 {
@@ -6734,8 +6803,6 @@ ito::RetVal PythonEngine::pickleSingleParam(QString filename, QSharedPointer<ito
 
             PyGILState_Release(gstate);
         }
-
-        Py_XDECREF(item);
 
         if (oldState & pyStateIdle)
         {

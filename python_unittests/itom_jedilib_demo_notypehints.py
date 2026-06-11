@@ -41,7 +41,6 @@ def meth3_docstr(arg1, arg2, *args):
 
 
 class MyClass:
-
     def __init__(self, arg1, arg2):
         self._arg1 = arg1
         self.__arg2 = arg2
@@ -130,9 +129,9 @@ class MyClassDocStr:
 
 if __name__ == "__main__":
     # main part
-    pathes = sys.path
+    paths = sys.path
 
-    if "C:/temp" not in pathes:
+    if "C:/temp" not in paths:
         print("not contained")
 
     result1 = meth1_nodocstr()

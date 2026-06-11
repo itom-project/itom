@@ -73,7 +73,7 @@ Here is a list of common error messages in this dialog:
 
 1. **Could not load library '...': Module could not be loaded**: It is likely, that the plugin library depends on further
    3rd party libraries, which could not be detected (in the itom root directory, in the subdirectory *lib** or in any
-   pathes, contained in the PATH environment variable of the operating system). Under Windows, it is recommended to
+   paths, contained in the PATH environment variable of the operating system). Under Windows, it is recommended to
    use the *dependency walker* tool to check the dependencies of the corresponding plugin library.
 2. **AddIn '...' fits to the obsolete interface 3.3.2. The AddIn interface of this version of 'itom' is 4.0.0.**: This
    indicates that the plugin is compiled with an older version of the itom SDK. Please re-compile the plugin with the

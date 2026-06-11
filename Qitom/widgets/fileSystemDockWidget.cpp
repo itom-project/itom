@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2024, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom.
 
@@ -41,6 +41,7 @@
 #include <qapplication.h>
 #include <qshortcut.h>
 #include <qmimedata.h>
+#include <qfileiconprovider.h>
 
 namespace ito {
 
@@ -48,36 +49,17 @@ namespace ito {
 //----------------------------------------------------------------------------------------------------------------------------------
 FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &objName, QWidget *parent, bool docked, bool isDockAvailable, tFloatingStyle floatingStyle, tMovingStyle movingStyle, const QString &baseDirectory) :
     AbstractDockWidget(docked, isDockAvailable, floatingStyle, movingStyle, title, objName, parent),
-    m_pShowDirListMenu(NULL),
-    m_pFileSystemSettingMenu(NULL),
-    m_pContextMenu(NULL),
-    m_pPathEdit(NULL),
-    m_pMainToolbar(NULL),
-    m_pTreeView(NULL),
-    m_pLblFilter(NULL),
-    m_pCmbFilter(NULL),
-    m_pFileSystemModel(NULL),
-    baseDirectory(QString()),
-    m_pColumnWidth(NULL),
-    m_pActMoveCDUp(NULL),
-    m_pActSelectCD(NULL),
-    m_pActOpenFile(NULL),
-    m_pActExecuteFile(NULL),
-    m_pActLocateOnDisk(NULL),
-    m_pActRenameItem(NULL),
-    m_pActDeleteItems(NULL),
-    m_pActCutItems(NULL),
-    m_pActCopyItems(NULL),
-    m_pActPasteItems(NULL),
-    m_pActNewDir(NULL),
-    m_pActNewPyFile(NULL),
-    m_pViewList(NULL),
-    m_pViewDetails(NULL),
-    m_lastMovedShowDirAction(NULL),
-    m_linkColor(Qt::blue)
+    m_pShowDirListMenu(nullptr), m_pFileSystemSettingMenu(nullptr), m_pContextMenu(nullptr),
+    m_pPathEdit(nullptr), m_pMainToolbar(nullptr), m_pTreeView(nullptr), m_pLblFilter(nullptr),
+    m_pCmbFilter(nullptr), m_pFileSystemModel(nullptr), m_baseDirectory(QString()),
+    m_pActMoveCDUp(nullptr), m_pActSelectCD(nullptr),
+    m_pActOpenFile(nullptr), m_pActExecuteFile(nullptr), m_pActLocateOnDisk(nullptr),
+    m_pActRenameItem(nullptr), m_pActDeleteItems(nullptr), m_pActCutItems(nullptr),
+    m_pActCopyItems(nullptr), m_pActPasteItems(nullptr), m_pActNewDir(nullptr),
+    m_pActNewPyFile(nullptr), m_pViewList(nullptr), m_pViewDetails(nullptr), m_lastMovedShowDirAction(nullptr),
+    m_linkColor(Qt::blue), m_historyStack(), m_forwardStack()
 {
-    int size = 0;
-    QAction *act = NULL;
+    QAction* act = nullptr;
     QString actCheckedStr = "";
     QString actDir = "";
     QIcon actIcon;  // we cannot assign NULL to a qicon for gcc, so rely on default constructor ... hope this works
@@ -89,7 +71,7 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
 
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("itomFileSystemDockWidget");
-    size = settings.beginReadArray("lastUsedDirs");
+    int size = settings.beginReadArray("lastUsedDirs");
     int count = 0;
 
     for (int i = 0; i < size; ++i)
@@ -133,13 +115,7 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
     m_pPathEdit->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     m_pPathEdit->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     m_pPathEdit->setOpenLinks(false);
-
-    connect(m_pPathEdit, SIGNAL(anchorClicked(const QUrl&)), this, SLOT(pathAnchorClicked(const QUrl&)));
-//m_pPathEdit->setEnabled(false);
-/*    QColor color = 433;
-//    m_pPathEdit->setTextBackgroundColor(color);
-    QPalette::ColorGroup cg;
-    m_pPathEdit->palette().setColor(cg, color);*/
+    connect(m_pPathEdit, &QTextBrowser::anchorClicked, this, &FileSystemDockWidget::pathAnchorClicked);
 
     m_pLblFilter = new QLabel(tr("Filter:"), this);
     m_pLblFilter->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
@@ -149,16 +125,15 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
     m_pCmbFilter->setEditable(true);
     m_pCmbFilter->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Fixed);
     m_pCmbFilter->setToolTip(tr("file name filters (semicolon or space separated list)"));
-
-    connect(m_pCmbFilter, SIGNAL(editTextChanged(const QString&)), this, SLOT(cmbFilterEditTextChanged(const QString &)));
+    connect(m_pCmbFilter, &QComboBox::editTextChanged, this, &FileSystemDockWidget::cmbFilterEditTextChanged);
 
     m_pFileSystemModel = new ItomFileSystemModel(m_pTreeView);
     m_pFileSystemModel->setRootPath("");
     m_pFileSystemModel->setReadOnly(false);
 
     m_pTreeView = new ito::QTreeViewItom(this);
-    connect(m_pTreeView, SIGNAL(activated(const QModelIndex&)), this, SLOT(openFile(const QModelIndex&)));
-    connect(m_pTreeView, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(treeViewContextMenuRequested(const QPoint &)));
+    connect(m_pTreeView, &QTreeViewItom::activated, this, &FileSystemDockWidget::openFile);
+    connect(m_pTreeView, &QTreeViewItom::customContextMenuRequested, this, &FileSystemDockWidget::treeViewContextMenuRequested);
     m_pTreeView->setModel(m_pFileSystemModel);
 
     // Demonstrating look and feel features
@@ -185,40 +160,32 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
     m_pTreeView->setDragEnabled(true);
     m_pTreeView->setAcceptDrops(true);
     m_pTreeView->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    connect(m_pTreeView, SIGNAL(doubleClicked(const QModelIndex&)), this, SLOT(itemDoubleClicked(const QModelIndex&)));
+    connect(m_pTreeView, &QTreeViewItom::doubleClicked, this, &FileSystemDockWidget::itemDoubleClicked);
 
-    size = settings.beginReadArray("ColWidth");
+    m_showColumnDetails = settings.value("showColumnDetails", false).toBool();
 
-    for (int i = 0; i < size; ++i)
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
+    m_detailColumnsWidth.resize(m_pFileSystemModel->columnCount(), 120);
+#else
+    m_detailColumnsWidth.reserve(m_pFileSystemModel->columnCount());
+
+    for (int i = 0; i < m_pFileSystemModel->columnCount(); ++i)
+    {
+        m_detailColumnsWidth << 120;
+    }
+#endif
+
+    size = settings.beginReadArray("detailColumnsWidth");
+
+    for (int i = 0; i < std::min(size, m_pFileSystemModel->columnCount()); ++i)
     {
         settings.setArrayIndex(i);
-        m_pTreeView->setColumnWidth(i, settings.value("width", 100).toInt());
-        m_pTreeView->setColumnHidden(i, m_pTreeView->columnWidth(i) == 0);
-    }
-    settings.endArray();
-
-    m_pColumnWidth = new int[m_pFileSystemModel->columnCount()];
-    size = settings.beginReadArray("StandardColWidth");
-
-    if (size != m_pFileSystemModel->columnCount())
-    {
-        for (int i = 0; i < m_pFileSystemModel->columnCount(); ++i)
-        {
-            m_pColumnWidth[i] = 120;
-        }
-    }
-
-    for (int i = 0; i < size; ++i)
-    {
-        settings.setArrayIndex(i);
-        m_pColumnWidth[i] = settings.value("width", 100).toInt();
-        if (m_pColumnWidth[i] == 0)
-        {
-            m_pColumnWidth[i] = 120;
-        }
+        m_detailColumnsWidth[i] = settings.value("width", m_detailColumnsWidth[i]).toInt();
+        m_pTreeView->setColumnWidth(i, m_detailColumnsWidth[i]);
     }
 
     settings.endArray();
+    treeViewHideOrShowColumns(!m_showColumnDetails);
     settings.endGroup();
 
     AbstractDockWidget::init();
@@ -253,7 +220,30 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
 
     fillFilterList();
 
+    connect(
+        m_pTreeView,
+        &QTreeViewItom::QTreeViewItomMouseReleased,
+        this,
+        &FileSystemDockWidget::onMouseReleased);
+
+
+
 //    QObject::dumpObjectTree();
+
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
+    // since (at least) Qt 6.7, QFileSystemModel
+    // creates a default QAbstractFileIconProvider,
+    // that shows very basic folder icons. However, we
+    // would like to see the real folder icons of the
+    // operating system. Therefore, we have to pass
+    // our own instance of QFileIconProvider to the model.
+    // The model does not take care of the given object,
+    // therefore it is created as a member of the class.
+    m_pFileSystemModel->setIconProvider(&m_fileIconProvider);
+#endif
+
+    m_historyStack.clear();
+    m_forwardStack.clear();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -272,21 +262,20 @@ FileSystemDockWidget::~FileSystemDockWidget()
 
     settings.endArray();
 
-    settings.beginWriteArray("ColWidth");
-    for (int i = 0; i < m_pFileSystemModel->columnCount(); i++)
-    {
-        settings.setArrayIndex(i);
-        settings.setValue("width", m_pTreeView->columnWidth(i));
-    }
-    settings.endArray();
+    settings.setValue("showColumnDetails", m_showColumnDetails);
 
-    settings.beginWriteArray("StandardColWidth");
-    for (int i = 0; i < m_pFileSystemModel->columnCount(); i++)
+    if (m_showColumnDetails)
     {
-        settings.setArrayIndex(i);
-        settings.setValue("width", m_pColumnWidth[i]);
+        settings.beginWriteArray("detailColumnsWidth");
+
+        for (int i = 0; i < m_pFileSystemModel->columnCount(); i++)
+        {
+            settings.setArrayIndex(i);
+            settings.setValue("width", m_pTreeView->columnWidth(i));
+        }
+
+        settings.endArray();
     }
-    settings.endArray();
 
     settings.setValue("sortColumn", m_pTreeView->header()->sortIndicatorSection());
     settings.setValue("sortOrder", m_pTreeView->header()->sortIndicatorOrder());
@@ -302,7 +291,6 @@ FileSystemDockWidget::~FileSystemDockWidget()
     DELETE_AND_SET_NULL(m_pLblFilter);
     DELETE_AND_SET_NULL(m_pCmbFilter);
     DELETE_AND_SET_NULL(m_pFileSystemModel);
-    DELETE_AND_SET_NULL_ARRAY(m_pColumnWidth);
     DELETE_AND_SET_NULL(m_pActMoveCDUp);
     DELETE_AND_SET_NULL(m_pActSelectCD);
     DELETE_AND_SET_NULL(m_pActOpenFile);
@@ -317,7 +305,6 @@ FileSystemDockWidget::~FileSystemDockWidget()
     DELETE_AND_SET_NULL(m_pActNewPyFile);
     DELETE_AND_SET_NULL(m_pViewList);
     DELETE_AND_SET_NULL(m_pViewDetails);
-    //DELETE_AND_SET_NULL(m_lastMovedShowDirAction);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -501,7 +488,7 @@ void FileSystemDockWidget::updateActions()
     //shortcuts are always enabled, since the selection-changed signal of the tree-view does not call updateActions.
     if (m_pActMoveCDUp)
     {
-        QDir baseDir(baseDirectory);
+        QDir baseDir(m_baseDirectory);
         m_pActMoveCDUp->setEnabled(baseDir.exists() && baseDir.cdUp(), true);
     }
 
@@ -561,43 +548,59 @@ void FileSystemDockWidget::updateActions()
 //----------------------------------------------------------------------------------------------------------------------------------
 void FileSystemDockWidget::fillFilterList()
 {
-    int defFilterNumber = 0;
-    int cnt = 0;
-    QString itomFiles = IOHelper::getAllItomFilesName();
-    QString filters = IOHelper::getFileFilters(IOHelper::IOFilters(IOHelper::IOInput | IOHelper::IOOutput | IOHelper::IOPlugin | IOHelper::IOAllFiles | IOHelper::IOMimeAll));
-    QStringList fList = filters.split(";;");
-    defaultFilterPatterns.clear();
-    QRegularExpression regExp("^[a-zA-Z0-9-_ ]+ \\((\\*\\..*)\\)$");
-    QRegularExpressionMatch regExpMatch;
-    QStringList suffixes;
+    const QString settingsFile = AppManagement::getSettingsFile();
+    const QString itomFiles = IOHelper::getAllItomFilesName();
+    const QStringList filterList =
+        IOHelper::getFileFilters(IOHelper::IOFilters(
+        IOHelper::IOInput | IOHelper::IOOutput | IOHelper::IOPlugin |
+        IOHelper::IOAllFiles | IOHelper::IOMimeAll)).split(";;");
+    const QRegularExpression filterPatternRegex("^[a-zA-Z0-9-_ ]+ \\((\\*\\..*)\\)$");
 
-    foreach(const QString &s, fList)
+    QSettings settings(settingsFile, QSettings::IniFormat);
+    settings.beginGroup("itomFileSystemDockWidget");
+
+    QString savedFileFilter = settings.value("fileFilterString", "").toString();
+    m_defaultFilterPatterns.clear();
+    m_pCmbFilter->clear();
+
+    int filterIndexToSelect = 0;
+    bool filterFound = false;
+
+    for (int index = 0; index < filterList.size(); ++index)
     {
-        m_pCmbFilter->addItem(s, s);
-        regExpMatch = regExp.match(s);
+        const QString& filter = filterList[index];
+        m_pCmbFilter->addItem(filter, filter);
 
-        if (regExpMatch.hasMatch())
+        QRegularExpressionMatch match = filterPatternRegex.match(filter);
+        if (match.hasMatch())
         {
-            suffixes = regExpMatch.captured(1).split(" ");
-            defaultFilterPatterns[s] << suffixes;
+            const QStringList suffixes = match.captured(1).split(" ");
+            m_defaultFilterPatterns[filter] << suffixes;
         }
 
-        if (s.contains(itomFiles))
+        if (!filterFound)
         {
-            defFilterNumber = cnt;
+            if (filter == savedFileFilter || filter.contains(itomFiles))
+            {
+                filterIndexToSelect = index;
+                filterFound = true;
+            }
         }
-        cnt++;
     }
-    m_pCmbFilter->setCurrentIndex(defFilterNumber);
+
+    m_pCmbFilter->setCurrentIndex(filterIndexToSelect);
     cmbFilterEditTextChanged(m_pCmbFilter->currentText());
+
+    settings.setValue("fileFilterString", m_pCmbFilter->currentText());
+    settings.endGroup();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void FileSystemDockWidget::cmbFilterEditTextChanged(const QString &text)
 {
-    if (defaultFilterPatterns.contains(text))
+    if (m_defaultFilterPatterns.contains(text))
     {
-        this->m_pFileSystemModel->setNameFilters(defaultFilterPatterns[text]);
+        this->m_pFileSystemModel->setNameFilters(m_defaultFilterPatterns[text]);
     }
     else
     {
@@ -611,26 +614,53 @@ void FileSystemDockWidget::cmbFilterEditTextChanged(const QString &text)
         }
         m_pFileSystemModel->setNameFilters(filters2);
     }
+
+    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+    settings.beginGroup("itomFileSystemDockWidget");
+    settings.setValue("fileFilterString", m_pCmbFilter->currentText());
+    settings.endGroup();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal FileSystemDockWidget::changeBaseDirectory(QString dir)
+RetVal FileSystemDockWidget::changeBaseDirectory(QString dir, bool clearHistory /*=false*/, bool addToHistory /*=true*/)
 {
-    QAction* act = NULL;
+    QAction* act = nullptr;
 
-    QMutexLocker mutexLocker(&baseDirChangeMutex);
-    QDir newDir(dir);
+    QMutexLocker mutexLocker(&m_baseDirChangeMutex);
     RetVal retValue(retOk);
 
-    if (dir == baseDirectory)
+    if (dir == m_baseDirectory)
     {
         return retValue;
     }
 
-    if (newDir.exists())
+    if (QDir(dir).exists())
     {
-        baseDirectory = dir;
-        QDir::setCurrent(baseDirectory);
+        if (m_baseDirectory != dir && QFileInfo(m_baseDirectory).isDir() && addToHistory)
+        {
+            if (m_historyStack.isEmpty() || m_historyStack.top() != dir)
+            {
+                if (m_historyStack.size() >= m_maxHistorySize)
+                {
+                    m_historyStack.remove(0);
+                }
+                if (m_forwardStack.size() >= m_maxHistorySize)
+                {
+                    m_forwardStack.remove(0);
+                }
+                m_historyStack.push(m_baseDirectory);
+            }
+        }
+
+        m_baseDirectory = dir;
+        QDir::setCurrent(m_baseDirectory);
+
+
+        if (clearHistory)
+        {
+            m_historyStack.clear();
+            m_forwardStack.clear();
+        }
     }
     else
     {
@@ -649,17 +679,17 @@ RetVal FileSystemDockWidget::changeBaseDirectory(QString dir)
         if (i < m_pShowDirListMenu->actions().count())
         {
             removeActionFromDirList(i);
-            m_lastMovedShowDirAction = NULL;
+            m_lastMovedShowDirAction = nullptr;
         }
     }
     else
     {
-        m_pTreeView->setRootIndex(m_pFileSystemModel->index(baseDirectory)); //setCurrentIndex
+        m_pTreeView->setRootIndex(m_pFileSystemModel->index(m_baseDirectory)); //setCurrentIndex
 
         bool isInList = false;
         foreach (act, m_pShowDirListMenu->actions())
         {
-            if (act->data().toString() == baseDirectory)
+            if (act->data().toString() == m_baseDirectory)
             {
                 m_pShowDirListMenu->removeAction(act);
                 isInList = true;
@@ -669,14 +699,22 @@ RetVal FileSystemDockWidget::changeBaseDirectory(QString dir)
 
         if (!isInList)
         {
-            QDir baseDir(baseDirectory);
-            act = new QAction(baseDirectory, m_pShowDirListMenu);
-            act->setData(baseDirectory);
+            QDir baseDir(m_baseDirectory);
+            act = new QAction(m_baseDirectory, m_pShowDirListMenu);
+            act->setData(m_baseDirectory);
             act->setWhatsThis("");
             act->setIcon(QIcon(":/application/icons/empty.png"));
             act->setCheckable(false);
+
+            // if m_baseDirectory is directly given to the lambda function,
+            // its current state when triggering the lambda function is used
+            // instead of the value at the time when creating the signal-slot
+            // connection. This is achieved by creating a local copy of this
+            // variable.
+            QString baseDirectoryCopy = QString(m_baseDirectory);
+
             connect(act, &QAction::triggered, [=]() {
-                newDirSelected(baseDirectory);
+                newDirSelected(baseDirectoryCopy);
             });
         }
 
@@ -686,7 +724,7 @@ RetVal FileSystemDockWidget::changeBaseDirectory(QString dir)
         }
         else
         {
-            m_pShowDirListMenu->insertAction(NULL, act);
+            m_pShowDirListMenu->insertAction(nullptr, act);
         }
 
         if (m_pShowDirListMenu->actions().count() == 11)
@@ -706,12 +744,12 @@ RetVal FileSystemDockWidget::changeBaseDirectory(QString dir)
         m_pShowDirListMenu->actions()[x]->setText(QString::number(x+1) + " " + m_pShowDirListMenu->actions()[x]->data().toString());
     }
 
-    m_pPathEdit->setToolTip(baseDirectory);
-    m_pPathEdit->setHtml(getHtmlTag(baseDirectory));
+    m_pPathEdit->setToolTip(m_baseDirectory);
+    m_pPathEdit->setHtml(getHtmlTag(m_baseDirectory));
     //m_pPathEdit->scrollContentsBy(500,0);
 
     //m_pPathEdit->scrollToAnchor("last");
-//    m_pPathEdit->setText(baseDirectory);
+//    m_pPathEdit->setText(m_baseDirectory);
     //m_pPathEdit->textCursor().setPosition(40); //movePosition(QTextCursor::End);
     //m_pPathEdit->ensureCursorVisible();
 
@@ -730,7 +768,8 @@ RetVal FileSystemDockWidget::changeBaseDirectory(QString dir)
 //----------------------------------------------------------------------------------------------------------------------------------
 void FileSystemDockWidget::mnuSelectCD()
 {
-    QString newDirectory = QFileDialog::getExistingDirectory(this, tr("Select base directory"), baseDirectory);
+    QString newDirectory =
+        QFileDialog::getExistingDirectory(this, tr("Select base directory"), m_baseDirectory);
 
     if (!newDirectory.isEmpty() && !newDirectory.isNull())
     {
@@ -742,7 +781,7 @@ void FileSystemDockWidget::mnuSelectCD()
 //----------------------------------------------------------------------------------------------------------------------------------
 void FileSystemDockWidget::mnuMoveCDUp()
 {
-    QDir baseDir(baseDirectory);
+    QDir baseDir(m_baseDirectory);
 
     if (baseDir.exists() && baseDir.cdUp())
     {
@@ -754,7 +793,7 @@ void FileSystemDockWidget::mnuMoveCDUp()
 void FileSystemDockWidget::mnuCopyDir()
 {
     QClipboard *clipboard = QApplication::clipboard();
-    clipboard->setText(QDir::toNativeSeparators(baseDirectory));
+    clipboard->setText(QDir::toNativeSeparators(m_baseDirectory));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -858,9 +897,10 @@ void FileSystemDockWidget::newDirSelected(const QString& text)
 {
     RetVal retValue(retOk);
 
-    if (baseDirChangeMutex.tryLock(0))
+    if (m_baseDirChangeMutex.tryLock(0))
     {
-        baseDirChangeMutex.unlock();
+        m_baseDirChangeMutex.unlock();
+
         retValue += changeBaseDirectory(text);
         if (retValue.containsError())
         {
@@ -1253,7 +1293,7 @@ void FileSystemDockWidget::showInGraphicalShell(const QString & filePath)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void FileSystemDockWidget::setTreeViewHideColumns(const bool &hide)
+void FileSystemDockWidget::treeViewHideOrShowColumns(const bool &hide)
 {
     for (int i = 1; i < m_pFileSystemModel->columnCount(); ++i)
     {
@@ -1264,41 +1304,30 @@ void FileSystemDockWidget::setTreeViewHideColumns(const bool &hide)
 //----------------------------------------------------------------------------------------------------------------------------------
 void FileSystemDockWidget::showList()
 {
-    bool isList = true;
-
-    for (int i = 1; i < m_pFileSystemModel->columnCount(); ++i)
+    if (m_showColumnDetails)
     {
-        isList = isList && m_pTreeView->isColumnHidden(i);
-    }
+        m_showColumnDetails = false;
 
-    if (!isList)
-    {
         for (int i = 0; i < m_pFileSystemModel->columnCount(); ++i)
         {
-            m_pColumnWidth[i] = m_pTreeView->columnWidth(i);
+            m_detailColumnsWidth[i] = m_pTreeView->columnWidth(i);
         }
-    }
 
-    setTreeViewHideColumns(true);
+        treeViewHideOrShowColumns(true);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void FileSystemDockWidget::showDetails()
 {
-    bool isList = true;
-
-    for (int i = 1; i < m_pFileSystemModel->columnCount(); ++i)
+    if (!m_showColumnDetails)
     {
-        isList = isList && m_pTreeView->isColumnHidden(i);
-    }
+        m_showColumnDetails = true;
+        treeViewHideOrShowColumns(false);
 
-    setTreeViewHideColumns(false);
-
-    if (isList)
-    {
         for (int i = 0; i < m_pFileSystemModel->columnCount(); ++i)
         {
-            m_pTreeView->setColumnWidth(i, m_pColumnWidth[i]);
+            m_pTreeView->setColumnWidth(i, m_detailColumnsWidth[i]);
         }
     }
 }
@@ -1345,6 +1374,45 @@ void FileSystemDockWidget::pathAnchorClicked(const QUrl &link)
             dir += "/";
         }
         newDirSelected(dir);
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void FileSystemDockWidget::onMouseReleased(QMouseEvent* e)
+{
+    if (e->button() == Qt::BackButton)
+    {
+        navigateBackward();
+    }
+    else if (e->button() == Qt::ForwardButton)
+    {
+        navigateForward();
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void FileSystemDockWidget::navigateBackward()
+{
+    if (m_historyStack.size() > 1)
+    {
+        m_forwardStack.push(m_historyStack.top());
+        if (!m_historyStack.isEmpty())
+        {
+            changeBaseDirectory(m_historyStack.pop(), false, false);
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void FileSystemDockWidget::navigateForward()
+{
+    if (!m_forwardStack.empty())
+    {
+        m_historyStack.push(m_forwardStack.top());
+        if (!m_forwardStack.isEmpty())
+        {
+            changeBaseDirectory(m_forwardStack.pop(), false, false);
+        }
     }
 }
 

@@ -37,7 +37,7 @@ class IdcTest(unittest.TestCase):
                 data2 = loadIDC(filename)
                 arr1 = np.array(data["dobj"])
                 arr2 = np.array(data2["dobj"])
-                self.assertTrue(np.all(arr1==arr2))
+                self.assertTrue(np.all(arr1 == arr2))
                 self.assertTrue(arr1.dtype == arr2.dtype)
 
     def test_saveLoadSpecialNames(self):

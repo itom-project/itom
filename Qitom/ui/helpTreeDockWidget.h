@@ -144,7 +144,7 @@ private:
     QStandardItemModel      *m_pMainModel;          /*!< Model to store the tree with all database entries*/
     LeafFilterProxyModel    *m_pMainFilterModel;    /*!< Filtered Tree Model (between the model and the tree*/
     ito::AbstractDockWidget *m_pParent;             /*!< pointer to helpDockWidget with Toolbar*/
-    QList<QModelIndex>       m_history;             /*!< List to store the adresses of the last visited pages */
+    QList<QModelIndex>       m_history;             /*!< List to store the addresses of the last visited pages */
     QMovie                  *m_previewMovie;        /*!< turning circle to show "wait" status*/
     QMap<int, QIcon>         m_iconGallery;
     int                      m_historyIndex;

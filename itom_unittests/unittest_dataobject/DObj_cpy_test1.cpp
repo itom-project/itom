@@ -110,7 +110,7 @@ TYPED_TEST_CASE(copyTests1, ItomRealDataTypes);
 // deepCopyPartial_Test
 /*!
     deepCopyPartial(..) function must raise an exception whenever the size (of ROI) of source and destination data
-   objects are unequal. This test varifies this functionality.
+   objects are unequal. This test verifies this functionality.
 */
 TYPED_TEST(copyTests1, deepCopyPartial_Test)
 {
@@ -173,7 +173,7 @@ TYPED_TEST(copyTests1, deepCopyPartial_Test)
 // deepCopyPartial_Test1
 /*!
     deepCopyPartial(..) function must raise an exception whenever the type of source and destination data objects are
-   unequal. This test varifies this functionality.
+   unequal. This test verifies this functionality.
 */
 TYPED_TEST(copyTests1, deepCopyPartial_Test1)
 {
@@ -368,7 +368,7 @@ TYPED_TEST(copyTests1, deepCopyPartial_Test3)
     }
 
     this->dObj4_s.deepCopyPartial(
-        this->dObj4_d); //!< Creating a deep copy of this->dObj4_s into this->dObj4_d using deepCopyPartial() funtion
+        this->dObj4_d); //!< Creating a deep copy of this->dObj4_s into this->dObj4_d using deepCopyPartial() function
 
     int dim1_d = this->dObj4_d.getSize(0);
     int dim2_d = this->dObj4_d.getSize(1);
@@ -461,7 +461,7 @@ TYPED_TEST(copyTests1, deepCopyPartial_Test4)
     int dim4_d = this->dObj4_d.getSize(3);
     int dim5_d = this->dObj4_d.getSize(4);
 
-    //!< To test the values of this->dObj4_dr are same as those of origianal after adjusting the ROI back to original
+    //!< To test the values of this->dObj4_dr are same as those of original after adjusting the ROI back to original
     //!< size.
     for (int i = 0; i < dim1_d; i++)
     {

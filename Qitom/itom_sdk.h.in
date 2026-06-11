@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom.
 
@@ -24,12 +24,13 @@
 
 //this file is copied to the SDK/include folder.
 
-#define ITOM_MAJOR_VERSION  ${ITOM_VERSION_MAJOR}
-#define ITOM_MINOR_VERSION  ${ITOM_VERSION_MINOR}
-#define ITOM_PATCH_VERSION  ${ITOM_VERSION_PATCH}
-#define ITOM_VERSION_STRING "${ITOM_VERSION_STRING}"
-#define INTERFACE_VERSION   "${ITOM_VERSION_STRING_WITH_API}"
-#define ITOM_APP_NAME       "itom - ito measurement software"
+#define ITOM_MAJOR_VERSION        ${itom_VERSION_MAJOR}
+#define ITOM_MINOR_VERSION        ${itom_VERSION_MINOR}
+#define ITOM_PATCH_VERSION        ${itom_VERSION_PATCH}
+#define ITOM_VERSION_IDENTIFIERS  "${itom_VERSION_IDENTIFIERS}"
+#define ITOM_VERSION_STRING       "${itom_VERSION}"
+#define INTERFACE_VERSION         "${ITOM_VERSION_STRING_WITH_API}"
+#define ITOM_APP_NAME             "itom - ito measurement software"
 
 #define CREATE_VERSION(major,minor,patch) ((major<<16)|(minor<<8)|(patch))
 #define CREATE_VERSION_STRING(major,minor,patch) #major"."#minor"."#patch

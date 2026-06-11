@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom.
 
@@ -63,6 +63,8 @@ QIcon OutlineItem::icon() const
         return QIcon(":/classNavigator/icons/property_get.png");
     case typePropertySet:
         return QIcon(":/classNavigator/icons/property_set.png");
+    case typeCodeCell:
+        return QIcon(":/classNavigator/icons/codeCell.png");
     case typeClassMethod:
         if (m_private)
         {

@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom.
 
@@ -91,7 +91,7 @@ void IndenterMode::indentSelection(QTextCursor cursor) const
         int nb_lines = Utils::numlines(cursor.selection().toPlainText());
         QTextCursor c = editor()->textCursor();
 
-        if (c.atBlockStart() && c.position() == c.selectionEnd())
+        if ((c.atBlockStart() && c.position() == c.selectionEnd()) && !(c.atEnd()))
         {
             nb_lines += 1;
         }

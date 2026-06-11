@@ -2,7 +2,7 @@
 ====================
 
 This example shows how to use the FFT or IFFT from ``Numpy``.
-If possible the package PyFFTW is searched. If it is avaible,
+If possible the package PyFFTW is searched. If it is available,
 the fast implementation of FFT and IFFT is used from this package (GPL license!!!).
 
 In order to have the fast version of the fourier transform
@@ -10,6 +10,7 @@ in ``pyfftw``, align your input data using ``getAlignNdArray``. This is
 an idle operation if PyFFTW is not available. Either ``np.fft.fft2``
 or ``pyfftw.interfaces.numpy_fft.fft2`` are mapped to ``myfft2``, such the
 overall call can be done by using ``myfft2(...)``. The same holds for ``myifft2(...)``."""
+
 import numpy as np
 
 myfft2 = np.fft.fft2  # default: fft2 from numpy
@@ -18,6 +19,7 @@ myifft2 = np.fft.ifft2  # default: ifft2 from numpy
 
 ###############################################################################
 # Define function and overwrite it when ``pyfftw`` is available.
+
 
 def getAlignNdArray(image):
     return np.array(image)

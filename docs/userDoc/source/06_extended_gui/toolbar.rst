@@ -145,9 +145,9 @@ a children respectively, called *Button2* and *Button3*.
 .. note::
 
     Please consider, that in line 8 an *argtuple* is appended to the function-call to *btn2*.
-    Altough only one argument is passed, it must be included in a tuple. Usually a tuple is created by the brace operator *(2)*. However, since only
+    Although only one argument is passed, it must be included in a tuple. Usually a tuple is created by the brace operator *(2)*. However, since only
     one argument is given, python is interpreting this brace-operator as mathematical expression and it is reduced to *2* only.
-    Therefore, we use the square bracket in order to create a list, that is implicitely converted to a tuple or append a comma to the brace operator *(2,)*.
+    Therefore, we use the square bracket in order to create a list, that is implicitly converted to a tuple or append a comma to the brace operator *(2,)*.
 
 In order to remove any menu item including its sub-item, call :py:func:`~itom.removeMenu`. This method has one argument which is either the
 handle of the menu item or its key-word. For instance, the
@@ -186,7 +186,7 @@ included in these resources are listed in the **icon browser**:
 The icon browser is accessible in any script window by its menu **edit >> icon browser** (or
 Ctrl+B). If you found your desired icon, double click on the entry in order to copy the
 appropriate string to the clipboard and paste it afterwards into your script. Resource locations
-always start witha colon (:) sign.
+always start with a colon (:) sign.
 
 .. _toolbar-icons-resources:
 
@@ -196,14 +196,14 @@ Icons from Resource files (rcc)
 It is also possible to compile one or multiple icons into a **rcc** resource file. This
 resource file can then be loaded into itom, using the command :py:func:`~itom.registerResource`.
 From this moment, the icons in this file should also be visible in the icon browser (see above)
-and they can be used as icons for buttons (also in user defined UIs). These pathes will always
+and they can be used as icons for buttons (also in user defined UIs). These paths will always
 start with a colon.
 
 An rcc resource file can also be unloaded again via :py:func:`~itom.unregisterResource`.
 
 To create such a resource file, one is referred to the official documentation of Qt: https://doc.qt.io/qt-5/resources.html
 
-At first, create a **qrc** text file (xml-like format), where you add the pathes of all
+At first, create a **qrc** text file (xml-like format), where you add the paths of all
 icons including their desired path (and / or alias).
 
 Then use the Qt tool **rcc.exe** (Windows) to compile the corresponding **rcc** binary file from

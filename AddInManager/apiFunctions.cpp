@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom.
 
@@ -99,7 +99,7 @@ ApiFunctions::~ApiFunctions()
 *   @return             retOk on success, retError otherwise
 *
 *   The function checks if the types of the passed python parameter and the parameter are compatible and sets the parameter
-*   value if it is possible. If the paramter cannot be set an error is returned.
+*   value if it is possible. If the parameter cannot be set an error is returned.
 */
 ito::RetVal apiFCheckAndSetParamVal(QVariant *tempParam, ito::ParamBase *param, int *set)
 {
@@ -176,7 +176,7 @@ ito::RetVal apiFCheckAndSetParamVal(QVariant *tempParam, ito::ParamBase *param, 
 *   @param [in]         kwds                list with named python arguments
 *   @return             returns ito::retOk if the number and type of parameters was correct, ito::retError otherwise
 *
-*   The function takes as input the vectors with the madatory and optional input parameters used for the plugin initialisation. These
+*   The function takes as input the vectors with the mandatory and optional input parameters used for the plugin initialisation. These
 *   vectors must be previously be read using the function \ref getInitParams. The default values of the parameters are overwritten with
 *   the values given by python. In case the number or parameters or a parameter type is incorrect the function will abort with an error.
 */
@@ -649,7 +649,7 @@ ito::DataObject* ApiFunctions::mcreateFromDataObject(const ito::DataObject *dObj
 *   @return             retOk on success, retError otherwise
 *
 *   The function checks if the types of the passed python parameter and the parameter are compatible and sets the parameter
-*   value if it is possible. If the paramter cannot be set an error is returned.
+*   value if it is possible. If the parameter cannot be set an error is returned.
 */
 QString ApiFunctions::getCurrentWorkingDir(void)
 {

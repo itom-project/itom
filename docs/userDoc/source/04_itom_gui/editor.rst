@@ -192,6 +192,8 @@ Navigate forward and backward
 limited to 20 entries and can be accessed via the **Navigate Backward** or
 **Navigate Forward** buttons in the toolbar of any script editor. This allows
 jumping from the current cursor position to a previous or a following position.
+Additionally, navigation forward and backward can also be performed using
+the mouse back and forward buttons.
 The full stack is contained in the submenu of the **Navigate Backward** button:
 
 .. figure:: images/scripteditor_navigation.png
@@ -264,7 +266,7 @@ clearly visible during coding. Configure the calltip behaviour in the
 
 The introspection for auto completions and calltips uses an offline parsing of
 the current script as well as all imported packages. This might take some time,
-when a new package is imported and analzyed for the first time (e.g. for numpy).
+when a new package is imported and analyzed for the first time (e.g. for numpy).
 
 .. note::
 
@@ -315,7 +317,8 @@ it looks like this:
 
 The left combo box shows a **globals** section for all methods,
 that are not part of any classes, as well a list of all classes,
-detected in the current script. If one of these values is selected,
+detected in the current script. Additionally, :ref:`code cells <gui-editor-code-cells>`
+are listed in this combo box. If one of these values is selected,
 the cursor is moved to the line, where the class is defined (if it is
 a class) and the right combo box shows all methods, functions, properties...
 that belong to this class or the globals section of the script.
@@ -446,6 +449,7 @@ The following annotations are visualized:
   in the bar.
 * All breakpoints (independent on their subtypes) by a red dot
 * All bookmarks by a yellow star
+* The start of a code cell by a bright green bar (see :ref:`section code cells <gui-editor-code-cells>`)
 
 You can click at any location in this panel and the cursor jumps to the corresponding
 line in the script.
@@ -457,7 +461,7 @@ of the collapsed fold is marked by a vertical blue light line. This gives a hint
 of the code is collapsed here. Additionally, the last line above the collapsed block
 contains the most severe annotations in all lines of the collapsed block. Hence, if there
 is any breakpoint or bookmark in the collapsed part, this last visible line contains a
-bookmark or breakpoint mark. The same hold for informations, warnings and errors from
+bookmark or breakpoint mark. The same hold for information, warnings and errors from
 the style and syntax check (errors are more severe than warnings, and warnings beat infos).
 
 
@@ -526,6 +530,59 @@ page of the itom property dialog.
 
 .. _gui-editor-docstring-generator:
 
+.. _gui-editor-format-on-save:
+
+Format on Save
+===============
+
+In addition to the manual code formatting feature described in the previous section,
+|itom| also provides an automatic code formatting option that is triggered whenever
+a script file is saved. When enabled, the auto code formatter is automatically invoked
+during the save operation, ensuring that your code is always formatted according to
+the configured style guidelines.
+
+**Benefits of Format on Save:**
+
+* Consistent code style without requiring manual intervention
+* Automatic formatting happens transparently during the save workflow
+* The formatted code becomes part of the saved file immediately
+* Undo functionality is available if you want to revert the formatting changes
+
+**Behavior and Workflow:**
+
+When you save a script file (using **File >> Save**, **Ctrl+S**, or the save button in the toolbar),
+the following sequence occurs if **Format on Save** is enabled:
+
+1. The current script content is passed to the configured auto code formatter
+2. If the formatter returns a modified version of the code, the script is updated with the formatted content
+3. The formatted script is then written to disk
+4. If formatting is unsuccessful, an error message is displayed and the file is saved in its current state
+
+.. note::
+
+    The file watcher that monitors external file changes is temporarily suppressed during
+    the formatting and save process to prevent spurious file change notifications.
+
+**Configuration:**
+
+The **Format on Save** feature can be enabled or disabled in the
+:ref:`auto code formatting <gui-prop-auto-code-format>` page of the itom property dialog.
+When enabled, every save operation will attempt to format the script using the configured
+formatter (e.g., **black**, **yapf**, or **autopep8**) and formatter command settings
+that you have configured.
+
+**Important Notes:**
+
+* **Format on Save** only applies when manually saving a file. It does not apply to
+  scripts that are automatically saved or reloaded from disk.
+* If the auto code formatter is not properly configured or the required Python packages
+  are not installed, the **Format on Save** feature will be disabled with a warning message.
+* The formatted code will be marked as modified (if it differs from the original), allowing
+  you to undo the formatting if desired using the **Undo** function (**Ctrl+Z**).
+* **Format on Save** and manual formatting (via **Ctrl+Alt+I** or the toolbar button)
+  use the same underlying formatter and configuration, ensuring consistent formatting
+  behavior across both workflows.
+
 Automatic Docstring Generator
 ==============================
 
@@ -571,7 +628,7 @@ of the main window:
     :scale: 100%
     :align: center
 
-Offically supported encodings are:
+Officially supported encodings are:
 
 * UTF-8
 * latin1
@@ -641,3 +698,36 @@ By default, the reference name to be renamed is suggested as a new name, which m
 .. figure:: images/scripteditor_referencerenamingdialog.png
     :scale: 100%
     :align: center
+
+.. _gui-editor-code-cells:
+
+Code Cells
+===========
+
+Code cells are a well known approach to bring more structure into bigger scripts. Special comments
+can be used to divide the script in the editor into multiple sections, where the special comment line
+is the headline of a section, denoted as code cell.
+
+.. figure:: images/codeCell.png
+    :scale: 100%
+    :align: center
+
+The advantages of using code cells are:
+
+1. Each code cell is listed in the left :ref:`navigation combo box <gui-editor-outline-navigator>`
+   on top of the editor. If such an item is clicked, the cursor is moved to the headline of the
+   respective code cell.
+2. Every code cell is visually separated in the editor by a horizontal line on top of the headline
+   and the code cell with the active cursor is additionally highlighted by a different background
+   color.
+3. It is possible to execute the current code cell by choosing "Run Code Cell" (Ctrl+F9) from the
+   context menu, or to run the cell and let the cursor move to the headline of the next code cell
+   ("Run Code Cell And Advance" Shift+F9).
+4. The folds are extended to code cells, too, such that one can collapse every code cell.
+
+Creating code cells follow the same standards, known from other IDEs like VSCode, Spyder or ipython.
+The possible trigger comments for a code cell are:
+
+1. **# %%** (no title) or **# %% title** (with title)
+2. **#%%** or **#%% title**
+3. **# <codecell>** or **# <codecell> title**

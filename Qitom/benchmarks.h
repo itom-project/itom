@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2018, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2018, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom.
 
@@ -40,7 +40,7 @@
 
 void benchmarkTest1()
 {
-    int64 start, ende;
+    int64 start, end;
     double freq = cv::getTickFrequency();
 
     //1
@@ -56,8 +56,8 @@ void benchmarkTest1()
         temp=a1[i];
     }
     a1.clear();
-    ende = cv::getTickCount();
-    qDebug() << "time: " << (ende-start)/freq;
+    end = cv::getTickCount();
+    qDebug() << "time: " << (end-start)/freq;
 
     start = cv::getTickCount();
     int* a2 = new int[size];
@@ -67,14 +67,14 @@ void benchmarkTest1()
         temp=a2[i];
     }
     delete[] a2;
-    ende = cv::getTickCount();
-    qDebug() << "time: " << (ende-start)/freq;
+    end = cv::getTickCount();
+    qDebug() << "time: " << (end-start)/freq;
 }
 
 void benchmarkTest2()
 {
     qDebug("benchmarkTest2");
-    int64 start, ende;
+    int64 start, end;
     double freq = cv::getTickFrequency();
 
 
@@ -87,24 +87,24 @@ void benchmarkTest2()
     for(int i=0;i<size;i++)
     {
     }
-    ende = cv::getTickCount();
-    qDebug() << "time: " << (ende-start)/freq;
+    end = cv::getTickCount();
+    qDebug() << "time: " << (end-start)/freq;
 
     start = cv::getTickCount();
     for(int i=0;i<size;i++)
     {
         ptr = (cv::Mat*)test;
     }
-    ende = cv::getTickCount();
-    qDebug() << "time: " << (ende-start)/freq;
+    end = cv::getTickCount();
+    qDebug() << "time: " << (end-start)/freq;
 
     start = cv::getTickCount();
     for(int i=0;i<size;i++)
     {
         ptr = reinterpret_cast<cv::Mat*>(test);
     }
-    ende = cv::getTickCount();
-    qDebug() << "time: " << (ende-start)/freq;
+    end = cv::getTickCount();
+    qDebug() << "time: " << (end-start)/freq;
 
 
 }
@@ -115,35 +115,35 @@ void benchmarkTest3()
     ito::DataObject *do2 = NULL;//new ito::DataObject(*do1);
 
     qDebug("benchmarkTest3");
-    int64 start, ende;
+    int64 start, end;
     double freq = cv::getTickFrequency();
 
     start = cv::getTickCount();
     do1 = new ito::DataObject(10000,100,100,ito::tFloat32);
-    ende = cv::getTickCount();
-    qDebug() << "time: " << (ende-start)/freq;
+    end = cv::getTickCount();
+    qDebug() << "time: " << (end-start)/freq;
 
     start = cv::getTickCount();
     do2 = new ito::DataObject(*do1);
-    ende = cv::getTickCount();
-    qDebug() << "time: " << (ende-start)/freq;
+    end = cv::getTickCount();
+    qDebug() << "time: " << (end-start)/freq;
 
     start = cv::getTickCount();
     delete do2;
-    ende = cv::getTickCount();
-    qDebug() << "time: " << (ende-start)/freq;
+    end = cv::getTickCount();
+    qDebug() << "time: " << (end-start)/freq;
 
     start = cv::getTickCount();
     delete do1;
-    ende = cv::getTickCount();
-    qDebug() << "time: " << (ende-start)/freq;
+    end = cv::getTickCount();
+    qDebug() << "time: " << (end-start)/freq;
 
     //int i=1;
 };
 
 void benchmarkTest4()
 {
-    int64 start, ende;
+    int64 start, end;
     double freq = cv::getTickFrequency();
     QString str1 = "guten tag kih ihiu oiuziuzt iztfzutfu iztuztriuz iuztiuztiuztzutut";
     QString str2 = "guten tag kih ihiu oiuziuzt iztfzutfu iztuztriuz iuztiuztiuztzutut";
@@ -162,32 +162,32 @@ void benchmarkTest4()
     {
         if(str1 == str2) {c++;}else{c--;}
     }
-    ende = cv::getTickCount();
-    qDebug() << "time: " << (ende-start)/freq << " result: " << c;
+    end = cv::getTickCount();
+    qDebug() << "time: " << (end-start)/freq << " result: " << c;
     c = 0;
     start = cv::getTickCount();
     for(int i = 0; i< num;i++)
     {
         if(ba1 == ba2) {c++;}else{c--;}
     }
-    ende = cv::getTickCount();
-    qDebug() << "time: " << (ende-start)/freq << " result: " << c;
+    end = cv::getTickCount();
+    qDebug() << "time: " << (end-start)/freq << " result: " << c;
     c = 0;
     start = cv::getTickCount();
     for(int i = 0; i< num;i++)
     {
         if(strcmp(c1,c2)) {c++;}else{c--;}
     }
-    ende = cv::getTickCount();
-    qDebug() << "time: " << (ende-start)/freq << " result: " << c;
+    end = cv::getTickCount();
+    qDebug() << "time: " << (end-start)/freq << " result: " << c;
     c = 0;
     start = cv::getTickCount();
     for(int i = 0; i< num;i++)
     {
         if(memcmp(c1,c2,size)) {c++;}else{c--;}
     }
-    ende = cv::getTickCount();
-    qDebug() << "time: " << (ende-start)/freq << " result: " << c;
+    end = cv::getTickCount();
+    qDebug() << "time: " << (end-start)/freq << " result: " << c;
 
     //int i=1;
 };
@@ -198,7 +198,7 @@ void benchmarkTest5()
     ito::DataObject *do2 = NULL;//new ito::DataObject(*do1);
 
     qDebug("benchmarkTest5");
-    int64 start, ende;
+    int64 start, end;
     double freq = cv::getTickFrequency();
     size_t j = 0;
 
@@ -207,8 +207,8 @@ void benchmarkTest5()
     {
         j += i;
     }
-    ende = cv::getTickCount();
-    qDebug() << "time: " << (ende-start)/freq;
+    end = cv::getTickCount();
+    qDebug() << "time: " << (end-start)/freq;
 
     j = 0;
     start = cv::getTickCount();
@@ -216,8 +216,8 @@ void benchmarkTest5()
     {
         j += i;
     }
-    ende = cv::getTickCount();
-    qDebug() << "time: " << (ende-start)/freq;
+    end = cv::getTickCount();
+    qDebug() << "time: " << (end-start)/freq;
 };
 
 typedef struct
@@ -243,7 +243,7 @@ rgba32_;
 
 void benchmarkTestColor()
 {
-    int64 start, ende;
+    int64 start, end;
     double freq = cv::getTickFrequency();
     size_t j = 0;
 
@@ -254,32 +254,32 @@ void benchmarkTestColor()
     {
         ito::Rgba32 e1;
     }
-    ende = cv::getTickCount();
-    qDebug() << "time: " << (ende-start)/freq;
+    end = cv::getTickCount();
+    qDebug() << "time: " << (end-start)/freq;
 
     start = cv::getTickCount();
     for (size_t i = 0 ; i < 1000000; i++)
     {
         c1 = ito::Rgba32(12,13,14,15);
     }
-    ende = cv::getTickCount();
-    qDebug() << "time: " << (ende-start)/freq;
+    end = cv::getTickCount();
+    qDebug() << "time: " << (end-start)/freq;
 
     start = cv::getTickCount();
     for (size_t i = 0 ; i < 1000000; i++)
     {
         c2 = c1;
     }
-    ende = cv::getTickCount();
-    qDebug() << "time: " << (ende-start)/freq;
+    end = cv::getTickCount();
+    qDebug() << "time: " << (end-start)/freq;
 
     for (size_t i = 0 ; i < 1000000; i++)
     {
         unsigned int argb = c2.argb();
         argb = argb+2;
     }
-    ende = cv::getTickCount();
-    qDebug() << "time: " << (ende-start)/freq;
+    end = cv::getTickCount();
+    qDebug() << "time: " << (end-start)/freq;
 
 
 
@@ -288,8 +288,8 @@ void benchmarkTestColor()
     {
         rgba32_ e1;
     }
-    ende = cv::getTickCount();
-    qDebug() << "time: " << (ende-start)/freq;
+    end = cv::getTickCount();
+    qDebug() << "time: " << (end-start)/freq;
 
     rgba32_ d1, d2;
     start = cv::getTickCount();
@@ -300,8 +300,8 @@ void benchmarkTestColor()
         d1.g = 14;
         d1.b = 15;
     }
-    ende = cv::getTickCount();
-    qDebug() << "time: " << (ende-start)/freq;
+    end = cv::getTickCount();
+    qDebug() << "time: " << (end-start)/freq;
 
     start = cv::getTickCount();
 
@@ -309,8 +309,8 @@ void benchmarkTestColor()
     {
         d2 = d1;
     }
-    ende = cv::getTickCount();
-    qDebug() << "time: " << (ende-start)/freq;
+    end = cv::getTickCount();
+    qDebug() << "time: " << (end-start)/freq;
 
     start = cv::getTickCount();
     for (size_t i = 0 ; i < 1000000; i++)
@@ -318,25 +318,25 @@ void benchmarkTestColor()
         unsigned int argb = d2.rgba;
         argb = argb+2;
     }
-    ende = cv::getTickCount();
-    qDebug() << "time: " << (ende-start)/freq;
+    end = cv::getTickCount();
+    qDebug() << "time: " << (end-start)/freq;
 
 
     qDebug() << "array construction";
     start = cv::getTickCount();
     ito::Rgba32 h1[100000];
-    ende = cv::getTickCount();
-    qDebug() << "time: " << (ende-start)/freq;
+    end = cv::getTickCount();
+    qDebug() << "time: " << (end-start)/freq;
 
     start = cv::getTickCount();
     rgba32_ h2[100000];
-    ende = cv::getTickCount();
-    qDebug() << "time: " << (ende-start)/freq;
+    end = cv::getTickCount();
+    qDebug() << "time: " << (end-start)/freq;
 
     start = cv::getTickCount();
     ito::uint32 h3[100000];
-    ende = cv::getTickCount();
-    qDebug() << "time: " << (ende-start)/freq;
+    end = cv::getTickCount();
+    qDebug() << "time: " << (end-start)/freq;
 }
 
 void dataObjectDStackMemoryLeak()

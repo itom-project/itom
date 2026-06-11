@@ -642,29 +642,29 @@
 <context>
     <name>PythonLogWidget</name>
     <message>
-        <location filename="../pythonLogWidget.cpp" line="92"/>
+        <location filename="../pythonLogWidget.cpp" line="97"/>
         <source>This widget automatically display the selected type of python output or error messages.</source>
         <translation type="unfinished">Dieses Widget zeigt automatisch die optional auswählbaren Arten von Python-Nachrichten (Ausgaben und/oder Fehlermeldungen) an.</translation>
     </message>
     <message>
-        <location filename="../pythonLogWidget.cpp" line="93"/>
+        <location filename="../pythonLogWidget.cpp" line="98"/>
         <source>Errors are displayed in red.</source>
         <translation type="unfinished">Fehler werden in rot dargestellt.</translation>
     </message>
     <message>
-        <location filename="../pythonLogWidget.cpp" line="210"/>
-        <location filename="../pythonLogWidget.cpp" line="241"/>
-        <location filename="../pythonLogWidget.cpp" line="270"/>
+        <location filename="../pythonLogWidget.cpp" line="232"/>
+        <location filename="../pythonLogWidget.cpp" line="262"/>
+        <location filename="../pythonLogWidget.cpp" line="291"/>
         <source>itom plot api not available</source>
         <translation type="unfinished">Die itom-Plot-API ist nicht verfügbar</translation>
     </message>
     <message>
-        <location filename="../pythonLogWidget.cpp" line="355"/>
+        <location filename="../pythonLogWidget.cpp" line="380"/>
         <source>Clear</source>
         <translation type="unfinished">Bereinigen</translation>
     </message>
     <message>
-        <location filename="../pythonLogWidget.cpp" line="359"/>
+        <location filename="../pythonLogWidget.cpp" line="384"/>
         <source>Auto Scroll</source>
         <translation type="unfinished">Auto-Scroll</translation>
     </message>

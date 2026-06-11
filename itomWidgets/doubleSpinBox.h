@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
 
@@ -11,7 +11,7 @@
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
 
-    In addition, as a special exception, the Institut fuer Technische
+    In addition, as a special exception, the Institut für Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
     which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -48,7 +48,7 @@ class DoubleSpinBoxPrivate;
 class ValueProxy;
 
 /// \brief Custom SpinBox
-/// The DoubleSpinBox internaly uses a QDoubleSpinBox while it retain controls
+/// The DoubleSpinBox internally uses a QDoubleSpinBox while it retain controls
 /// over it.
 /// \sa DoubleSlider, SliderWidget, RangeSlider
 class ITOMWIDGETS_EXPORT DoubleSpinBox : public QWidget
@@ -104,7 +104,7 @@ public:
   /// No check is made and the given parameters is directly set
   /// on the internal QDoubleSpinBox.
   /// SetIfDifferent:
-  /// Default mode, the given parameter is checked agains the
+  /// Default mode, the given parameter is checked against the
   /// current internal value and only set if they are different.
   /// For double, the comparison is based on the input parameters rounded
   /// with the current number of decimals (see round()).
@@ -202,7 +202,7 @@ public:
   /// \sa value()
   QString cleanText() const;
 
-  /// Set/Get the spinbox alignement
+  /// Set/Get the spinbox alignment
   Qt::Alignment alignment () const;
   void setAlignment (Qt::Alignment flag);
 
@@ -284,7 +284,7 @@ public:
   /// displayed value from the value retrieved by the value property.
   /// For example, the value proxy can allow one to display celsius in the
   /// spinbox while the value retrieved from the value property and signals
-  /// are in farenheit.
+  /// are in fahrenheit.
   /// To remove the proxy, simply install a new empty proxy. The proxy
   /// installation/removal is silent.
   /// \sa installValueProxy(), valueProxy()
@@ -306,7 +306,7 @@ public slots:
   /// \sa setMode(), value(), setValueIfDifferent(), setValueAlways()
   void setValue(double value);
 
-  /// Set the value of the spinbox followin the SetIfDifferent mode.
+  /// Set the value of the spinbox following the SetIfDifferent mode.
   /// \sa value(), setValue(), setMode(), setValueAlways()
   void setValueIfDifferent(double value);
 
@@ -324,7 +324,7 @@ public slots:
   void setDecimals(int decimal);
 
 signals:
-  /// Emitted everytime the spinbox value is modified
+  /// Emitted every time the spinbox value is modified
   /// \sa QDoubleSpinBox::valueChanged()
   void valueChanged(double);
   void valueChanged(const QString &);

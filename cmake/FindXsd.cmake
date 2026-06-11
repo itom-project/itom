@@ -107,7 +107,7 @@ if(DEFINED MSVC_VERSION)
     if(MSVC_VERSION EQUAL 1300)
         set(XSD_LIB_POSTFIX "_vc70")
         set(XSD_LIBPATH_VERS_POSTFIX "vc-7.1/")
-		# since we don't knwo wether we are on windows or not, we just undefined and see what happens
+		# since we don't know whether we are on windows or not, we just undefined and see what happens
 		unset(XERCES_LIB_PATH_POSTFIX)
     elseif(MSVC_VERSION EQUAL 1400)
         set(XSD_LIB_POSTFIX "_vc80")
@@ -218,7 +218,7 @@ mark_as_advanced( XSD_INCLUDE_DIR XSD_EXECUTABLE )
 #
 MACRO( XSD_SCHEMA NAME FILE )
   #
-  # Make a full path from the soource directory
+  # Make a full path from the source directory
   #
   set( xs_SRC "${FILE}" )
 

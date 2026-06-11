@@ -163,8 +163,8 @@ If the user uses zeros command then all the elements of matrix will have value 0
 
     cv::Mat F = cv::Mat::zeros(3, 3, CV_32FC1) * 3;
 
-Adressing values in a matrix
-----------------------------
+Addressing values in a matrix
+-----------------------------
 Creating a big Matrix
 
 .. code-block:: c++

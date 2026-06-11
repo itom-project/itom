@@ -38,11 +38,11 @@ Many steps below can be done via |python| scripting, or by GUI interaction.
     This tutorial is similar to the corresponding sections of the :ref:`getting started tutorial <gettingStarted>`, but describes the use of hardware plugins (:py:class:`~itom.actuator` and :py:class:`~itom.dataIO`) in more detail.
 
 
-Getting informations on plugins
+Getting information on plugins
 ========================================
 In order to start a new instance of any hardware plugin using the python scripting language, search the plugin toolbox for the desired plugin and remember its plugin-name (case insensitive).
 Before we can start using a hardware plugin, we need to know how to use it.
-You can use the :py:func:`itom.pluginHelp` command in |python| to get the neccessary information:
+You can use the :py:func:`itom.pluginHelp` command in |python| to get the necessary information:
 
 .. code-block:: python
     :linenos:
@@ -59,7 +59,7 @@ Or you can use the GUI. Therefore, select **Info...** from the context menu of y
 
     If you don't see the help page, go to the properties dialog of |itom| (menu **File >> Properties**) and select the checkbox **Show DataIO and Actuator** in the tab **General >> Help Viewer**.
 
-Here, most important for us is to learn about the init paramaters, especially the mandatory ones.
+Here, most important for us is to learn about the init parameters, especially the mandatory ones.
 A more detailed description of the plugin may be found in the plugin documentation.
 The fastest way to obtain the command used for initialisation is to drag the plugin into the command line or into the script editor.
 
@@ -85,7 +85,7 @@ Instances of :py:class:`~itom.dataIO` or :py:class:`~itom.actuator` can be initi
 
 .. note::
 
-    Most plugins can be initialized with paramaters, some of them may be mandatory (just place one value after the other one separated by commas).
+    Most plugins can be initialized with parameters, some of them may be mandatory (just place one value after the other one separated by commas).
     Optional parameter follow after the mandatory ones. Parameters can be assigned in designated order or using keyword notation.
 
 The pythonic way
@@ -173,7 +173,7 @@ Usage of hardware plugins
 ========================================
 
 As a major advantage of the plugin concept, different actual devices can be interchanged easily. The class :py:class:`~itom.dataIO` can be of type **rawIO**, **grabber** and **adda**.
-You can get the type of the plugin by the command **getType()**, which returns the c++ enumeration value. If different types are true at the same time, their enum vaule is linked via bitwise and:
+You can get the type of the plugin by the command **getType()**, which returns the c++ enumeration value. If different types are true at the same time, their enum value is linked via bitwise and:
 
     +----------------+---------------------+---------------+----------------+
     |plugin type     |return value {int}   |c++ enum       |remark          |
@@ -192,7 +192,7 @@ You can get the type of the plugin by the command **getType()**, which returns t
     +----------------+---------------------+---------------+----------------+
 
 :py:class:`~itom.actuator` is the class to use actuator plugins. Each provides a destinctive set of member functions and parameters, which are described in the respective sections below.
-Special hardware funtionality that is not easily mapped to these member functions and parameters, may be called by the **exec()** member functions.
+Special hardware functionality that is not easily mapped to these member functions and parameters, may be called by the **exec()** member functions.
 
 While you get a detailed class description using the **help()** command (see above), the functions **getParamList()** and **getParamListInfo()** give access to a detailed description of the plugin's parameters.
 

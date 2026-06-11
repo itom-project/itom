@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom.
 
@@ -98,7 +98,7 @@ ito::RetVal ParamInputParser::createInputMask(const QVector<ito::Param>& params)
         }
         else
         {
-            // try to split string into parts of around 120 characters and replace separatring
+            // try to split string into parts of around 120 characters and replace separating
             // spaces by \n to have a multi-line tool tip text
             int l = 119;
             while (l < info.length())

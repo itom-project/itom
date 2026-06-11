@@ -34,7 +34,12 @@ def distortionTest():
     )
 
     coeffs_coarse, opt_coarse_info = distortion.fitGrid(
-        points_d, rows=rows, cols=cols, x0=x0, withDistortion=False, withRotation=True,
+        points_d,
+        rows=rows,
+        cols=cols,
+        x0=x0,
+        withDistortion=False,
+        withRotation=True,
     )
     coeffs_fine, opt_fine_info = distortion.fitGrid(
         points_d,

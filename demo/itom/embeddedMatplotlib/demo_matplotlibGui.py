@@ -12,6 +12,7 @@ from itom import ui
 
 # sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoMatplotlibGUI.png'
 
+
 ###############################################################################
 # Plots spines into the ``MatplotlibPlot`` Qt Designer plugin.
 def plotDroppedSpines():
@@ -53,6 +54,7 @@ def plotDroppedSpines():
 ###############################################################################
 # .. image:: ../../_static/demoMatplotlibGUI_1.png
 #    :width: 75%
+
 
 ###############################################################################
 # Plots a sine curve into the ``MatplotlibPlot`` Qt Designer plugin.

@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
 
@@ -11,7 +11,7 @@
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
 
-    In addition, as a special exception, the Institut fuer Technische
+    In addition, as a special exception, the Institut für Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
     which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -45,7 +45,7 @@ namespace ito
     /**
     *   @detail Compared the abs(dValue) with the 10^(3N) and according to the results mu p M ... are added to the unit
     *           Allowed units are SI-Unit except kg and mm. If % is given as input unit, values are multiplied by 100
-    *   @param [in]  scaleThisUnitsOnly     List with scaleable units (e.g. mm, m)
+    *   @param [in]  scaleThisUnitsOnly     List with scalable units (e.g. mm, m)
     *   @param [in]  unitIn                 Old unit (e.g. mm, m, %)
     *   @param [in]  dVal                   Double value (e.g. mm, m, %)
     *   @param [out] dValOut                Scaled value
@@ -723,12 +723,12 @@ namespace ito
     /**
     *   @param [in/out] oldList  Paramlist with all plugin-parameters, which will contain the merged parameters in the end
     *   @param [in/out] newList  New parameter values to set
-    *   @param [in]  checkAutoSave  Flag to enable / disable autosave control to avoid obsolet parameters to overwrite exisiting parameters.
+    *   @param [in]  checkAutoSave  Flag to enable / disable autosave control to avoid obsolet parameters to overwrite existing parameters.
     *
     *   \details This function compares the new list with the old list. If new list contains parameters which do not exist in the existing list,
-    *   the paremeter is ignored and a warning is added to the errormessage stack.
+    *   the parameter is ignored and a warning is added to the errormessage stack.
     *   If the checkAutoSave parameter is true, parameters in oldList are not altered of the autosave is disabled. In this case a warning is returned.
-    *   In case the paremters Type is not equal, a warning is returned and the paremeter is not altered.
+    *   In case the parameter Type is not equal, a warning is returned and the parameter is not altered.
     *   At the moment only parameters of numeric values and strings are merged.
     */
     RetVal mergeQLists(QMap<QString, Param> *oldList, QMap<QString, Param> *newList, bool checkAutoSave, bool deleteUnchangedParams)
@@ -873,7 +873,7 @@ namespace ito
     *   \brief  This helper function writes the header of the Object to the xml stream.
     *   \detail This helper function writes the header (dims, sizes, type) of an object and the metaData (complete DataObjectTags without tagsMap) from the Object to the xml stream.
     *           The values of the header are stored as string. The values of each axis-tag / value-tag / rotation matrix are in case of string-type directly written to the stream or in case of double converted
-    *           to either strings directly (15 significat digits, >32Bit) or stored as lostfree binary (QByteArray::toBase64() to avoid XML-conflict).
+    *           to either strings directly (15 significant digits, >32Bit) or stored as lostfree binary (QByteArray::toBase64() to avoid XML-conflict).
     *           WARNING: Do not change the header (dims, sizes, type) information or the value of tags exported as binary (d2b).
     *
     *   @param [in|out] stream           outgoing xml-stream
@@ -937,7 +937,7 @@ namespace ito
             return RetVal(retError, 0, QObject::tr("Save object failed: Type not supported").toLatin1().data());
         }
 
-        // First add informations of the dataObject to element DataObject like FormatVersion of this file...
+        // First add information of the dataObject to element DataObject like FormatVersion of this file...
 
         stream.writeAttribute("FormatVersion", "1.0");
         stream.writeAttribute("dataType", type);
@@ -1111,7 +1111,7 @@ namespace ito
     *   \brief  This helper function writes the tags defined in the tagMap (DataObjectTags) from the Object to the xml stream.
     *   \detail This helper function writes the tags defined in the tagMap (DataObjectTags) from the Object to the xml stream.
     *           Therefore the values of each tag are in case of string-type directly written to the stream or in case of double converted
-    *           to either strings directly (15 significat digits, >32Bit) or stored as lostfree binary (QByteArray::toBase64() to avoid XML-conflict).
+    *           to either strings directly (15 significant digits, >32Bit) or stored as lostfree binary (QByteArray::toBase64() to avoid XML-conflict).
     *           WARNING: Do not change information or the value of tags exported as binary (d2b).
     *
     *   @param [in|out] stream           outgoing xml-stream
@@ -1309,10 +1309,10 @@ namespace ito
     //----------------------------------------------------------------------------------------------------------------------------------
     /**
     *   \brief This helper function reads the stream till the next startElement.
-    *   \detail The Qt-Function readNextStartElement sometimes stops at the end-element (:P). So the function tries to read until it reaches the next startelement but only for maxtimes trys
+    *   \detail The Qt-Function readNextStartElement sometimes stops at the end-element (:P). So the function tries to read until it reaches the next startelement but only for maxtimes tries
     *           the Function checks if the attribute exists and than tries to convert to the value of the attribute either from binary or with string to double functions.
     *
-    *   @param [in]     stream      incomming xml-stream
+    *   @param [in]     stream      incoming xml-stream
     *   @param [in|out] times       Counts of iterations
     *   @param [in]     maxtimes    maximal number of iterations to perform
     *
@@ -1338,7 +1338,7 @@ namespace ito
     *   \detail This helper function extracts a double from the xml-Attributes of the Stream copied by the caller with the attrStream = attrStream = stream.attributes();.
     *           the Function checks if the attribute exists and than tries to convert to the value of the attribute either from binary or with string to double functions.
     *
-    *   @param [in]     attrStream      incomming attribute-stream
+    *   @param [in]     attrStream      incoming attribute-stream
     *   @param [in]     Element         name of the element (only for error msg)
     *   @param [in]     Attrib          name of the attribute to extract
     *   @param [in|out] val             Must be filled with default value and is filled with value from the XML-Stream
@@ -1374,7 +1374,7 @@ namespace ito
     *   \detail This helper function extracts a std::string from the xml-Attributes of the Stream copied by the caller with the attrStream = attrStream = stream.attributes();.
     *           the Function checks if the attribute exists and than tries to convert to the value of the attribute from QString to std::string.
     *
-    *   @param [in]     attrStream      incomming attribute-stream
+    *   @param [in]     attrStream      incoming attribute-stream
     *   @param [in]     Element         name of the element (only for error msg)
     *   @param [in]     Attrib          name of the attribute to extract
     *   @param [in|out] val             Must be filled with default value and is filled with value from the XML-Stream
@@ -1404,7 +1404,7 @@ namespace ito
     *           The first start element, already read by the calling function must contain the attributes dims, dataType and dim0..dimn-2, dimX, dimY
     *
     *   @param [in|out] stream      The xml-Stream from the xml-file
-    *   @param [out] dObjIn         Destination dataContainter of type dataObject with size / dims / type speficied in the input xml
+    *   @param [out] dObjIn         Destination dataContainter of type dataObject with size / dims / type specified in the input xml
     *   @param [out] elementsize    Byte-Size of the current dataObjekt
     *
     *   \sa loadXML2DOBJ, loadXML2EmptyDOBJ
@@ -1802,7 +1802,7 @@ namespace ito
     /**
     *   \brief This function fills the tagsSpace (DataObjectTags) of an allocated dataObject from the values of an xml-file
     *   \detail This function fills the tagsSpace (DataObjectTags) of an allocated dataObject from the values of an xml-file.
-    *           This onlye includes the tag-Space (std::map<std::string, DataObjectTagType> m_tags) (e.g. protocol ...) and does not
+    *           This only includes the tag-Space (std::map<std::string, DataObjectTagType> m_tags) (e.g. protocol ...) and does not
     *            include the axis-Tags (offset, scale, unit, description), value-Tags ((offset), (scale), unit, description) and the rotation matrix.
     *
     *   @param [in|out] stream      The xml-Stream from the xml-file
@@ -1991,7 +1991,7 @@ namespace ito
     *   @param [in]  folderFileName  Folder and Filename of the Sourcefile
     *
     *   \details This function loads data from a xml-file to a dataObject. The file must be compatible to the file-format describted before.
-    *   There are to possilbe import methods:
+    *   There are to possible import methods:
     *        1. onlyHeaderObjectFile == false tries to import a ido file with a itoDataObject-note/startelement.
     *        1. onlyHeaderObjectFile == true tries to import a idh file with a itoDataObjectHeader-note/startelement. The dataSpace will be ignored
     *
@@ -2012,7 +2012,7 @@ namespace ito
             return RetVal(retError, 0, QObject::tr("Load object failed: Invalid object handle").toLatin1().data());
         }
 
-        // First start with the properties of the file, check if it ist readable ...
+        // First start with the properties of the file, check if it is readable ...
 
         QFileInfo checkFile(folderFileName);
 
@@ -2131,7 +2131,7 @@ namespace ito
         }
         else
         {
-            ret += RetVal(retError, 0, QObject::tr("Load object failed: object header not valied").toLatin1().data());
+            ret += RetVal(retError, 0, QObject::tr("Load object failed: object header not valid").toLatin1().data());
         }
 
         // Get the data

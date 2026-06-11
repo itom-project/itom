@@ -12,7 +12,7 @@ Prerequisites
 
 For programming a plugin, you need at least the following things:
 
-* A C++-compatible IDE. On Windows-machines it is recommended to program with *Visual Studio Professional 2010*, since |itom| is developped with this IDE, too. On Linux-machines you
+* A C++-compatible IDE. On Windows-machines it is recommended to program with *Visual Studio Professional 2010*, since |itom| is developed with this IDE, too. On Linux-machines you
   can for instance use the *QtCreator* or *Eclipse*. It is difficult to develop with *Visual Studio 2010 Express*, since you should install the *Qt AddIn for Visual Studio* in order to
   have a good support of |Qt| within *Visual Studio*. In the case you don't have the professional version of *Visual Studio*, better consider to use the *QtCreator* for Windows. You must have the |Qt| version installed, whose major and minor version number is equal than the version |itom| has been built with. Nevertheless the debugging of your plugin only is possible if you also have a debug-version of |itom| available on your computer, hence, you built it by yourself from the sources. Else, you only can test your plugin by extensively streaming debugging messages to the *std::cerr* or *std::cout* stream, which finally are displayed in the command line of |itom|.
 
@@ -40,11 +40,11 @@ opportunity to build GUI-applications, have network and graphics support or to e
 On the one hand, some functionalities of |Qt| can be used by the help of native Qt-applications, like the designer to build "what-you-see-is-what-you-get" user interfaces, the
 translator to create translations of the application..., on the other hand C++ is enlarged by |Qt| by writing specific pre-compiler commands in the code. In both cases, these features
 have to be translated into native C++-code during the pre-compiling process. Therefore the project files have to be adapted, such that the |Qt|-specific pre-steps will be triggered once
-the project's compilation process is started. All this is done if you install the |Qt|-AddOn for Visual Studio (if developping with Visual Studio IDE).
+the project's compilation process is started. All this is done if you install the |Qt|-AddOn for Visual Studio (if developing with Visual Studio IDE).
 
 Since the plugin, you will write, is based on *Qt*'s plugin system, these steps also have to be added to the plugin's pre-compiling steps. This can be realized by different ways:
 
-#. You use the **QtCreator** as IDE and everythings works fine (if the path to |Qt| is contained in the path variable and the environmental variable *QTDIR*)
+#. You use the **QtCreator** as IDE and everything works fine (if the path to |Qt| is contained in the path variable and the environmental variable *QTDIR*)
 #. You can use the professional version of Visual Studio together with the installed add-in **Qt Visual Studio Add-In**
 #. You can use any other development environment and you have to add the necessary pre-compilation step by yourself in the appropriate project file.
 
@@ -56,7 +56,7 @@ The pre-processor-step contains the following steps:
 #. The resource-files will be parsed and an appropriate C++-file is created (rcc-process).
 
 |Qt| is shipped with a number of different libraries (lying in the folder **$QTDIR$\bin**). You must link your application against the libraries, whose function you will need in your plugin.
-It is always necessary to link against the library **QtCore** and **QtGui** if your plugin contains any user interface functionality. Other importent libraries are
+It is always necessary to link against the library **QtCore** and **QtGui** if your plugin contains any user interface functionality. Other important libraries are
 **QtOpenGL** for OpenGL-support, **QtSvg** for *Svg*-support or **QtXml**, **QtSql** or **QtNetwork**. For each of these libraries you plugin must have an entry in the *include*-directories and the *linker*-commands.
 
 The pre-processor-definitions must contain the following entries:
@@ -100,7 +100,7 @@ Add as linker directory:
 * The library-path of OpenCV
 * The directory $(ITOM_QTDIR)\bin
 
-Your plugin should at least link agains the following libraries:
+Your plugin should at least link against the following libraries:
 
 **DEBUG**:
 

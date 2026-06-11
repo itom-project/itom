@@ -108,7 +108,7 @@ extern "C++"
         void setObject(QObject* propertyObject);
 
         /**
-         * Updates the view for the given object. This can be usefull if a property was changed
+         * Updates the view for the given object. This can be useful if a property was changed
          * programmatically instead of using the view. In this case the view normally will display
          * the new property values only after the user clicked on it. To overcome this problem you
          * can call updateObject with the object whose property was changed.

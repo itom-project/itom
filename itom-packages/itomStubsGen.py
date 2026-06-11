@@ -1,5 +1,3 @@
-# coding=iso-8859-15
-
 """Parses the stubs file for the entire itom module.
 
 The pyi stubs file is put into itom-stubs/__init__.py,
@@ -66,9 +64,7 @@ class Signature:
         rettype: is the potential return type (as string) or None if unknown or not given.
     """
 
-    def __init__(
-        self, name: str, args: List[Arg], rettype: Optional[str] = None
-    ):
+    def __init__(self, name: str, args: List[Arg], rettype: Optional[str] = None):
         self.name = name
         self.args = args
         self.rettype = rettype
@@ -76,7 +72,7 @@ class Signature:
     def tostring(self) -> str:
         """Returns the full signature as it would be written in a script using the
         typing module."""
-        sig = "def %s(%s)" % (
+        sig = "def {}({})".format(
             self.name,
             ", ".join([a.tostring() for a in self.args]),
         )
@@ -99,9 +95,7 @@ def parse_stubs(overwrite: bool = False):
         if os.path.exists(stubs_file):
             os.remove(stubs_file)
     else:
-        itom_compile_date = itom.version(dictionary=True)["itom"][
-            "itom_compileDate"
-        ]
+        itom_compile_date = itom.version(dictionary=True)["itom"]["itom_compileDate"]
 
         # check if stubs file exists. If so, load the first lines and
         # see if there is a compile_date comment. If the compile data is
@@ -110,13 +104,11 @@ def parse_stubs(overwrite: bool = False):
         prefix = "# compile_date = "
 
         if os.path.exists(stubs_file):
-            with open(stubs_file, "rt") as fp:
+            with open(stubs_file) as fp:
                 count = 0
                 for line in fp:
                     if line.startswith(prefix):
-                        line = line[
-                            len(prefix) : -1
-                        ]  # there is a \n at the end
+                        line = line[len(prefix) : -1]  # there is a \n at the end
                         if line == itom_compile_date:
                             uptodate = True
                             break
@@ -140,7 +132,9 @@ def parse_stubs(overwrite: bool = False):
         text += "import numpy\n"  # alternative
         text += "import types\n\n"  # also required by some itom methods
 
-        text += "from typing import overload, Tuple, List, Dict, Sequence, Iterable, Set\n"
+        text += (
+            "from typing import overload, Tuple, List, Dict, Sequence, Iterable, Set\n"
+        )
 
         if hasLiteral:
             text += "from typing import Optional, Union, Any, Literal\n\n"
@@ -153,12 +147,10 @@ def parse_stubs(overwrite: bool = False):
             if not os.path.exists(base_folder):
                 os.makedirs(base_folder)
 
-            with open(stubs_file, "wt") as fp:
+            with open(stubs_file, "w") as fp:
                 fp.write(text)
         except Exception as ex:
-            warnings.warn(
-                "Error creating the stubs file: %s" % str(ex), RuntimeWarning
-            )
+            warnings.warn("Error creating the stubs file: %s" % str(ex), RuntimeWarning)
 
 
 def _get_direct_members(obj) -> Tuple[str, object, object]:
@@ -188,7 +180,7 @@ def _parse_object(obj, indent: int = 0) -> str:
 
     Args:
         obj: is the parent object to parse
-        indent: is the base identation level for the entire object and its children.
+        indent: is the base indentation level for the entire object and its children.
 
     Returns:
         the stubs docstring for this entire object and its children.
@@ -242,7 +234,7 @@ def _parse_object(obj, indent: int = 0) -> str:
                     child,
                 )
             elif type(child) is float:
-                yield "%s#: constant float value.\n%s%s: float = %f" % (
+                yield "{}#: constant float value.\n{}{}: float = {:f}".format(
                     prefix,
                     prefix,
                     childname,
@@ -251,14 +243,12 @@ def _parse_object(obj, indent: int = 0) -> str:
             elif inspect.ismodule(child):
                 # ignore for now
                 pass
-            elif inspect.isgetsetdescriptor(
-                child
-            ) or inspect.ismemberdescriptor(child):
+            elif inspect.isgetsetdescriptor(child) or inspect.ismemberdescriptor(child):
                 # property
                 yield _parse_property_docstring(child, indent)
             else:
                 # constant or something else
-                yield "%s#: constant %s value.\n%s%s" % (
+                yield "{}#: constant {} value.\n{}{}".format(
                     prefix,
                     type(child),
                     prefix,
@@ -286,7 +276,7 @@ def _get_class_signature(classobj: type, indent: int) -> str:
     if len(b) == 0 or (len(b) == 1 and b[0] is object):
         sig = prefix + "class %s:\n" % classobj.__name__
     else:
-        sig = prefix + "class %s(%s):\n" % (
+        sig = prefix + "class {}({}):\n".format(
             classobj.__name__,
             ", ".join([item.__name__ for item in classobj.__bases__]),
         )
@@ -308,17 +298,10 @@ def _get_class_signature(classobj: type, indent: int) -> str:
         for signature in signatures:
             text = signature.tostring()
             text = text.replace("def %s" % classobj.__name__, "def __init__")
-            sig += (
-                overload_text + prefix + text + ":\n" + prefix + "    pass\n\n"
-            )
+            sig += overload_text + prefix + text + ":\n" + prefix + "    pass\n\n"
     else:
         # add the __init__ method
-        sig += (
-            prefix
-            + "def __init__(self, *args, **kwds):\n"
-            + prefix
-            + "    pass\n"
-        )
+        sig += prefix + "def __init__(self, *args, **kwds):\n" + prefix + "    pass\n"
 
     return sig
 
@@ -398,12 +381,10 @@ def _ismethod(obj) -> bool:
     return inspect.ismethod(obj) or inspect.ismethoddescriptor(obj)
 
 
-def _parse_npdoc_argsection(
-    doc_str: str, section_name: str
-) -> Optional[List[Arg]]:
-    """Searchs and parses a given doc_str for a numpydoc section.
+def _parse_npdoc_argsection(doc_str: str, section_name: str) -> Optional[List[Arg]]:
+    """Searches and parses a given doc_str for a numpydoc section.
 
-    This method searchs a doc_str for one of the numpydoc sections ``Parameters``,
+    This method searches a doc_str for one of the numpydoc sections ``Parameters``,
     ``Returns`` or ``Yields``. If the desired section is found, parses its content
     and extracts all found arguments as list of Arg.
 
@@ -610,7 +591,7 @@ def _parse_signature_from_first_line(obj, first_line: str) -> Signature:
             sig.args += _parse_args_string(args)
 
     # sometimes `self` is already contained in docstring. If so, remove the
-    # artifically added `self` argument
+    # artificially added `self` argument
     if len(sig.args) >= 2:
         if sig.args[0].name == "self" and sig.args[1].name == "self":
             del sig.args[0]
@@ -697,9 +678,7 @@ def _get_signatures_and_docstring(obj) -> Tuple[List[Signature], List[str]]:
                     signatures.append(Signature(obj.__name__, [], None))
             break
 
-        if (
-            first_line[-1] != "\\"
-        ):  # no backslash at the end, all signatures found
+        if first_line[-1] != "\\":  # no backslash at the end, all signatures found
             break
 
     # remove the first empty lines from the remaining docstring
@@ -783,9 +762,7 @@ def _nptype2typing(nptypestr: str) -> str:
     nptypestr = nptypestr.strip()  # trim spaces etc.
 
     if "," in nptypestr and "{" not in nptypestr:
-        warnings.warn(
-            "Invalid numpydoc typestring: %s" % nptypestr, RuntimeWarning
-        )
+        warnings.warn("Invalid numpydoc typestring: %s" % nptypestr, RuntimeWarning)
 
     # remove any references like :obj:`...` etc.
     def remref(match):
@@ -815,7 +792,7 @@ def _nptype2typing(nptypestr: str) -> str:
             comps[0] = removeRefs(comps[0].strip())
             # turn first letter into upper case
             comps[0] = comps[0][0].upper() + comps[0][1:]
-            return "%s[%s]" % (comps[0], comps[1])
+            return f"{comps[0]}[{comps[1]}]"
 
     alternatives = [parseval(a) for a in alternatives if a.strip() != ""]
 
@@ -876,11 +853,9 @@ def _parse_property_docstring(obj, indent: int) -> str:
     docstring: Optional[str] = obj.__doc__
 
     if docstring is None:
-        warnings.warn(
-            "Docstring missing for property %s" % name, RuntimeWarning
-        )
+        warnings.warn("Docstring missing for property %s" % name, RuntimeWarning)
         text = "%s@property\n" % prefix
-        text += "%sdef %s(self):\n%s    pass" % (prefix, name, prefix)
+        text += f"{prefix}def {name}(self):\n{prefix}    pass"
         return text
 
     docstrings = docstring.split("\n")
@@ -897,12 +872,11 @@ def _parse_property_docstring(obj, indent: int) -> str:
         )
         rettype: str = ""
     else:
-
         rettype: str = " -> " + _nptype2typing(docstrings[0][0:colon_idx])
         docstrings[0] = docstrings[0][colon_idx + len(search_str) :].strip()
 
     text = "%s@property\n" % prefix
-    text += prefix + "def %s(self)%s:\n" % (name, rettype)
+    text += prefix + f"def {name}(self){rettype}:\n"
 
     while len(docstrings) > 0 and docstrings[0].strip() == "":
         docstrings = docstrings[1:]  # remove the first empty lines

@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
 
@@ -11,7 +11,7 @@
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
 
-    In addition, as a special exception, the Institut fuer Technische
+    In addition, as a special exception, the Institut für Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
     which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -122,7 +122,7 @@ ParamBase::ParamBase(const ByteArray& name, const uint32 typeAndFlags, const cha
             // delete d since destructor of ParamBase will not be called if exception is thrown.
             DELETE_AND_SET_NULL(d);
             throw std::logic_error(
-                "valie must be 0 only for Char, "
+                "value must be 0 only for Char, "
                 "Int, Double, Complex.");
         }
     case DObjPtr:

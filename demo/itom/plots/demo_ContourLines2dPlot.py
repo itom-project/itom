@@ -1,4 +1,3 @@
-# coding=iso-8859-15
 """Contourlines 2D plot
 =======================
 
@@ -18,7 +17,7 @@ from itom import plot
 
 vec = np.linspace(-500, 501, 1001)
 x, y = np.meshgrid(vec, vec)
-r = np.sqrt(x ** 2 + y ** 2)
+r = np.sqrt(x**2 + y**2)
 
 [idx, handle] = plot(r)
 levels = dataObject.randN([1, 3], "uint8")

@@ -140,7 +140,7 @@ TYPED_TEST(ROITest, adjustROITest3d)
                                                // expected after adjusting ROI to desired location
     for (int i = 0; i < this->mat1_3d.getDims(); i++)
         EXPECT_EQ(offsets3d[i],
-                  expOffsets3d[i]); // cheks if retrieved offset values for ROI after adjusting it are same as expected
+                  expOffsets3d[i]); // checks if retrieved offset values for ROI after adjusting it are same as expected
 
     int temp = 0;
     for (int i = 0; i < 4; i++)

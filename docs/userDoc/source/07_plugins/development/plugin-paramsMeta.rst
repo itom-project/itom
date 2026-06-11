@@ -82,7 +82,7 @@ Class StringMeta
 ------------------
 
 This meta information object can be assigned to String parameters. By this, it is possible to choose between
-a certain type of string contraints:
+a certain type of string constraints:
 
 1. Wildcard expressions: Pass one wildcard expression to the meta information. The string parameter
    is then checked against this wildcard expression, e.g. **image_??.jpg**.
@@ -112,7 +112,7 @@ step size of the number of elements.
 Class IntervalMeta, Class RangeMeta
 -------------------------------------
 
-An interval meta can decorate an **Integer-Array** parameter whith two values. It is derived from **IntMeta**,
+An interval meta can decorate an **Integer-Array** parameter with two values. It is derived from **IntMeta**,
 that describes the minimum and maximum value, as well as the step size, of both limits of the interval.
 
 If the first value in the array is denoted as **val0** and the 2nd one **val1**, they are checked

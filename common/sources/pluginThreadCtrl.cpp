@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
 
@@ -11,7 +11,7 @@
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
 
-    In addition, as a special exception, the Institut fuer Technische
+    In addition, as a special exception, the Institut für Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
     which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -132,7 +132,7 @@ PluginThreadCtrl& PluginThreadCtrl::operator =(const PluginThreadCtrl &other)
     \detail After the invoke-command this thread must wait / be synchronize with the plugin-thread.
         Therefore the wait-Function of m_semaphoreLocker is called. If the plugin do not answer within timeOutMS and the pMyCamera is not alive anymore, the function returns a timeout.
 
-    \param [in] timeOutMS    timout for the wait. -1: endless wait until the plugin finished the last invokation or it is not 'alive' anymore, 0: no wait (this method does nothing), >0: time in ms
+    \param [in] timeOutMS    timeout for the wait. -1: endless wait until the plugin finished the last invocation or it is not 'alive' anymore, 0: no wait (this method does nothing), >0: time in ms
 
     \return retOk if semaphore was successfully released, retError if semaphore returned an error message or if a timeout occurred (error code: 256)
 */
@@ -478,7 +478,7 @@ ito::RetVal DataIOThreadCtrl::setAutoGrabbingInterval(QSharedPointer<int> interv
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
     \detail The getVal function is used to wait until an exposure is finished. Than it gives a shallow copy of the inner dataObject within the grabber to the dObj-argument.
-            Before the getVal()-function can be used an acquire() is neccessary.
+            Before the getVal()-function can be used an acquire() is necessary.
             If the content of dObj is not deepcopied to another object, the data is lost after the next acquire() - getVal() combination and overwritten by the newly captured image.
 
     \param [in|out] dObj    IN: an dataObject | OUT: an dataObject containing an shallow copy of the last captured image
@@ -509,7 +509,7 @@ ito::RetVal DataIOThreadCtrl::getVal(ito::DataObject &dObj, int timeOutMS /*= PL
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
     \detail The copyVal function is used to wait until an exposure is finished. Than it gives a deep copy of the inner dataObject within the grabber to the dObj-argument.
-            Before the copyVal()-function can be used an acquire() is neccessary.
+            Before the copyVal()-function can be used an acquire() is necessary.
             If the content of dObj do not need to be deepcopied to another object and will not be overwritten after the next acquire() - getVal() combination.
 
     \param [in|out] dObj    IN: an dataObject | OUT: an dataObject containing an shallow copy of the last captured image
@@ -627,7 +627,7 @@ ActuatorThreadCtrl::~ActuatorThreadCtrl()
 
     \param [in] axisVec         Vector with the axis to move
     \param [in] stepSizeVec     Vector with the distances for every axis
-    \param [in] timeOutMS       TimeOut for the semaphore-wait, if (0) the waitForSemaphore is not called and must be called seperate by the algorithm
+    \param [in] timeOutMS       TimeOut for the semaphore-wait, if (0) the waitForSemaphore is not called and must be called separate by the algorithm
 
     \return retOk or retError
     \sa ActuatorThreadCtrl::setPosAbs
@@ -664,7 +664,7 @@ ito::RetVal ActuatorThreadCtrl::setPosRel(const QVector<int> &axes, const QVecto
 
     \param [in] axisVec         Vector with the axis to move
     \param [in] posVec          Vector with the new absolute positions
-    \param [in] timeOutMS       TimeOut for the semaphore-wait, if (0) the waitForSemaphore is not called and must be called seperate by the algorithm
+    \param [in] timeOutMS       TimeOut for the semaphore-wait, if (0) the waitForSemaphore is not called and must be called separate by the algorithm
 
     \return retOk or retError
     \sa ActuatorThreadCtrl::setPosRel
@@ -700,7 +700,7 @@ ito::RetVal ActuatorThreadCtrl::setPosAbs(const QVector<int> &axes, const QVecto
 
     \param [in] axis         Number of the axis
     \param [in] stepSize     Distances from current position
-    \param [in] timeOutMS       TimeOut for the semaphore-wait, if (0) the waitForSemaphore is not called and must be called seperate by the algorithm
+    \param [in] timeOutMS       TimeOut for the semaphore-wait, if (0) the waitForSemaphore is not called and must be called separate by the algorithm
 
     \return retOk or retError
     \sa ActuatorThreadCtrl::setPosAbs
@@ -731,7 +731,7 @@ ito::RetVal ActuatorThreadCtrl::setPosRel(int axis, double relPosition, int time
 
     \param [in] axis         Number of the axis
     \param [in] pos          New position of the axis
-    \param [in] timeOutMS       TimeOut for the semaphore-wait, if (0) the waitForSemaphore is not called and must be called seperate by the algorithm
+    \param [in] timeOutMS       TimeOut for the semaphore-wait, if (0) the waitForSemaphore is not called and must be called separate by the algorithm
 
     \return retOk or retError
     \sa ActuatorThreadCtrl::setPosRel
@@ -800,7 +800,7 @@ ito::RetVal ActuatorThreadCtrl::getPos(int axis, double &position, int timeOutMS
     \detail Get the position of a number of axis specified by axisVec.
 
     \param [in] axisVec         Number of the axis
-    \param [out] posVec         Vecotr with position of the axis
+    \param [out] posVec         Vector with position of the axis
     \param [in] timeOutMS    TimeOut for the semaphore-wait
 
     \return retOk or retError

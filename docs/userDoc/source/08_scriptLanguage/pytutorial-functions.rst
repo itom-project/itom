@@ -294,7 +294,7 @@ Arbitrary Argument Lists
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. index::
-  statement: *
+   single: * (asterisk); in function calls
 
 Finally, the least frequently used option is to specify that a function can be
 called with an arbitrary number of arguments.  These arguments will be wrapped
@@ -338,7 +338,7 @@ or tuple::
    [3, 4, 5]
 
 .. index::
-  statement: **
+   single: **; in function calls
 
 In the same fashion, dictionaries can deliver keyword arguments with the ``**``\
 -operator::

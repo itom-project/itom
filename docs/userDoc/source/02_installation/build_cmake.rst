@@ -2,7 +2,7 @@
 
 .. _install-cmake:
 
-Build with **CMake**
+Build with CMake
 ==========================
 
 In this chapter, you will learn how to create the project files from the sources,
@@ -21,7 +21,7 @@ that describe how a project must be configured such that the code base can corre
 When calling the CMake GUI, the configuration files (CMakeLists.txt) will be analyzed.
 After indicating your desired compiler or generator of your preferred development system
 (see https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html,
-CMake will generate the specific project files for your comiler.
+CMake will generate the specific project files for your compiler.
 Then you can call your development environment or compiler like Visual Studio in
 order to open the recently created project files and finally build your application.
 
@@ -43,7 +43,7 @@ the build-directory of itom is located on your harddrive.
 This is finally used in order to copy the relevant output of every plugin to
 this itom application directory in a post-build step of every plugin or designer-plugin.
 
-Generating |itom| using CMake
+Generating Itom using CMake
 -----------------------------
 
 .. |cmake_opencv_dir| replace:: Set this variable to the directory of OpenCV.

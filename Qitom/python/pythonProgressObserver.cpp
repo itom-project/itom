@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom.
 
@@ -70,7 +70,7 @@ PyDoc_STRVAR(PyProgressObserver_doc,"progressObserver(progressBar = None, label 
 Creates a progressObserver object. \n\
 \n\
 A :class:`progressObserver` object can be passed to functions, that might need some \n\
-time to be finished, such that these functions can regularily report their current \n\
+time to be finished, such that these functions can regularly report their current \n\
 progress (as number as well as text) via this progress observer. These reported progress \n\
 values are then displayed in the passed ``progressBar`` and / or ``label``. \n\
 For more information see also this section: :ref:`filter_interruptible`. \n\
@@ -344,7 +344,7 @@ This object of :class:`progressObserver` wraps an underlying object of the C++ c
 ``ito::FunctionCancellationAndObserver``, which can emit various signals. Use this \n\
 method to connect any signal to any callable python method (bounded or unbounded). This \n\
 method must have the same number of arguments than the signal and the types of the \n\
-signal definition must be convertable into a python object. \n\
+signal definition must be convertible into a python object. \n\
 \n\
 Possible signals are (among others): \n\
 \n\

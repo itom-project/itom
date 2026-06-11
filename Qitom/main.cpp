@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom.
 
@@ -208,7 +208,7 @@ bool IsNotWin7PreRTM()
 int main(int argc, char *argv[])
 {
 #ifdef WIN32
-#if WDK_NTDDI_VERSION >= 0x0A000002 // only for windows 10 anniversity update because SetProcessDpiAwarenessContext was introduced
+#if WDK_NTDDI_VERSION >= 0x0A000002 // only for windows 10 anniversary update because SetProcessDpiAwarenessContext was introduced
     //  https://docs.microsoft.com/de-de/windows/win32/winprog/using-the-windows-headers
     //  https://naughter.wordpress.com/2017/02/14/changes-in-the-windows-v10-0-15021-sdk-compared-to-windows-v10-0-14393-sdk-part-one/
     //  https://searchfox.org/mozilla-central/source/mfbt/WindowsVersion.h#84
@@ -228,6 +228,7 @@ int main(int argc, char *argv[])
 #endif
 #endif
     qputenv("QT_AUTO_SCREEN_SCALE_FACTOR", "1");  // auto scale by qt
+    //qputenv("QT_QPA_PLATFORM", "windows:darkmode=0");
 
     //startBenchmarks();
 
@@ -251,6 +252,11 @@ int main(int argc, char *argv[])
 
     //it is possible to redirect all Qt messages sent via qDebug, qWarning... to the logfile itomlog.txt.
     //This option is enabled via the argument log passed to the executable.
+    // Options:
+    // 1. no argument: equal to log without further path
+    // 2. nolog: nothing will be logged, overwrites other log arguments
+    // 3. log: logging to itomlog.txt in <Windows User directory>/qitom/log
+    // 4. log=<path>: logging to itomlog.txt in indicated path
     ito::Logger* logger = nullptr;
     if (!args.contains("nolog", Qt::CaseInsensitive))
     {
@@ -276,7 +282,7 @@ int main(int argc, char *argv[])
     QItomApplication itomApplication(argc, argv);
 
     //itom modifies its local environment variables like PATH such that plugin libraries, python... that are loaded later
-    //benefit from necessary pathes that are then guaranteed to be found.
+    //benefit from necessary paths that are then guaranteed to be found.
 
     //      These things are done:
 
@@ -371,7 +377,7 @@ int main(int argc, char *argv[])
 
     //itom has an user management. If you pass the string name=[anyUsername] to the executable,
     //a setting file itom_{anyUsername}.ini is searched and if found loaded. Pass itom.ini as anyUsername
-    //to explicitely load the default setting file itom.ini. If no username is given and more than
+    //to explicitly load the default setting file itom.ini. If no username is given and more than
     //one settings ini file is available, a selection dialog is shown.
     //another setting file than the default file itom.ini will be loaded for this session of itom.
     //Therefore all settings files in the folder itomSettings matching itom_*.ini are checked for

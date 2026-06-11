@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
 
@@ -11,7 +11,7 @@
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
 
-    In addition, as a special exception, the Institut fuer Technische
+    In addition, as a special exception, the Institut für Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
     which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -50,7 +50,7 @@ class AbstractNode;
 typedef enum
 {
     rttiUnknown             = 0x0000, //default node type
-    rttiPlotNode            = 0x1000, //arbitray nodes in a tree of graphic nodes
+    rttiPlotNode            = 0x1000, //arbitrary nodes in a tree of graphic nodes
     rttiFilterNode          = 0x2000,
     rttiPlotNodeDObj        = 0x0100,
     rttiPlotNodePCL         = 0x0200,
@@ -66,7 +66,7 @@ class AbstractNodePrivate; //forward declaration
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
     \class Channel
-    \brief A channel defines a propagation pipline between two parameters of two nodes. The nodes are instances
+    \brief A channel defines a propagation pipeline between two parameters of two nodes. The nodes are instances
     of the class AbstractNode, which is for instance a base class of AbstractFigure, and therefore each plot designer
     plugin in itom.
 
@@ -234,7 +234,7 @@ class ITOMCOMMONPLOT_EXPORT AbstractNode
                                                    in each final successor in the inheritance structure. Anyway the "displayed" parameter MUST be filled adequately as
                                                    this can only be done by the node itself. */
 
-        //! update of this node if the values of all changed input channels are propgated to the corresponding input parameters of this node
+        //! update of this node if the values of all changed input channels are propagated to the corresponding input parameters of this node
         /* if all channels, whose receiver is this node and that are marked for updates (pending updates),
         are updated with new values, this method is internally called. It calls applyUpdate, that has to be overwritten
         by the real plot/figure class, and starts to update all outgoing channels afterwards.
@@ -274,7 +274,7 @@ class ITOMCOMMONPLOT_EXPORT AbstractNode
         //!> returns a list of channels, that are connected to a given input parameter. This node must be the receiver of the returned channels.
         QList<QSharedPointer<Channel> > getConnectedInputChannels(const ito::Param *inputParam) const;
 
-        //!> returns a list of channels, that are connected to an ouput param with a given name. This node must be the sender of the returned channels.
+        //!> returns a list of channels, that are connected to an output param with a given name. This node must be the sender of the returned channels.
         QList<QSharedPointer<Channel> > getConnectedOutputChannels(const QString &outputParamName) const;
 
         //!> returns a list of channels, that are connected to a given output parameter. This node must be the sender of the returned channels.
@@ -345,7 +345,7 @@ class ITOMCOMMONPLOT_EXPORT AbstractNode
         //!> attaches the given channel to the list of channels (either input or output, depending if this is sender or receiver)
         RetVal attachChannel(QSharedPointer<Channel> channel);
 
-        //!> indicates that an input parameter of the node has been changed and initializes the update pipline to child nodes if necessary. This is the source of an update.
+        //!> indicates that an input parameter of the node has been changed and initializes the update pipeline to child nodes if necessary. This is the source of an update.
         RetVal inputParamChanged(const ito::ParamBase *updatedInputParam); /*!> Updates the input param of the associated node and attempts to propagate the update down the node tree.
                                                         It DOES NOT/CANNOT, however, ensure that the output parameters of the node are updated correctly, this functionality has to be a part of update(). */
 

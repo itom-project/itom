@@ -61,7 +61,7 @@ In the following we will guide you through the installation setup with a couple 
     :scale: 80%
     :align: center
 
-    Select the components you want to install with Itom. If you want to install all optional Python packages, select "Optional Python packages". You can also manually install and/or update pakages before or after this setup.
+    Select the components you want to install with Itom. If you want to install all optional Python packages, select "Optional Python packages". You can also manually install and/or update packages before or after this setup.
     Note that some components require the "Microsoft Visual C++ Redistributable". We recommend to always install this if it is not already installed on your computer.
     The SDK is important if you want to develop your own plugins for |itom|.
 

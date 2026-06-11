@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2022, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2022, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
 
@@ -11,7 +11,7 @@
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
 
-    In addition, as a special exception, the Institut fuer Technische
+    In addition, as a special exception, the Institut für Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
     which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -1958,7 +1958,7 @@ template <typename _Tp>
 RetVal medianValueFunc(const DataObject* dObj, float64& medianResult, bool ignoreNaN)
 {
     ito::DataObject temp;
-    size_t num = dObj->getTotal();
+    int num = dObj->getTotal();
     _Tp* values = new _Tp[num];
     const cv::Mat* mat;
     const _Tp* rowPtr;
@@ -1992,7 +1992,7 @@ RetVal medianValueFunc(const DataObject* dObj, float64& medianResult, bool ignor
     }
     else
     {
-        size_t idx = 0;
+        int idx = 0;
 
         for (int p = 0; p < dObj->getNumPlanes(); ++p)
         {
@@ -2804,7 +2804,7 @@ ito::RetVal verifyDataObjectType(
 
     \param[in]  dObj                    handle to the dataObject, NULL-Pointer is allowed
     \param[in]  name                    the name of the dataObject, will be added to the error
-   message \param[in]  numberOfAllowedTypes    number of allowed types appened behind this.
+   message \param[in]  numberOfAllowedTypes    number of allowed types append behind this.
     \param[in]  Allowed types(mul)      A number of additional variabled (number =
    numberOfAllowedTypes) containing the type definition e.g. ito::tUint8, ito::tInt8... (order does
    not care)
@@ -2825,7 +2825,7 @@ ito::RetVal verifyDataObjectType(
 //-----------------------------------------------------------------------------------------------
 /*!
     This function checks if the dataObject pointer is valid and of the object is of right type.
-    Further more this function checks if the object is truely 2D (dims == 2).
+    Further more this function checks if the object is truly 2D (dims == 2).
     If the type is not one of the given types, a specific error message containing the name is
    returned.
 
@@ -2834,7 +2834,7 @@ ito::RetVal verifyDataObjectType(
    message \param[in]  sizeYMin                the minimum size in y direction \param[in]  sizeYMax
    the maximum size in y direction \param[in]  sizeXMin                the minimum size in x
    direction \param[in]  sizeXMax                the maximum size in x direction \param[in]
-   numberOfAllowedTypes    number of allowed types appened behind this, if zero all types are
+   numberOfAllowedTypes    number of allowed types append behind this, if zero all types are
    allowed. \param[in]  Allowed types(mul)      A number of additional variables (number =
    numberOfAllowedTypes) containing the type definition e.g. ito::tUint8, ito::tInt8... (order does
    not care)
@@ -2881,7 +2881,7 @@ ito::RetVal verify2DDataObject(
 //-----------------------------------------------------------------------------------------------
 /*!
     This function checks if the dataObject pointer is valid and of the object is of right type.
-    Further more this function checks if the object is truely 3D (dims == 3).
+    Further more this function checks if the object is truly 3D (dims == 3).
     If the type is not one of the given types, a specific error message containing the name is
    returned.
 
@@ -2891,7 +2891,7 @@ ito::RetVal verify2DDataObject(
    the maximum size in z direction \param[in]  sizeYMin                the minimum size in y
    direction \param[in]  sizeYMax                the maximum size in y direction \param[in] sizeXMin
    the minimum size in x direction \param[in]  sizeXMax                the maximum size in x
-   direction \param[in]  numberOfAllowedTypes    number of allowed types appened behind this, if
+   direction \param[in]  numberOfAllowedTypes    number of allowed types append behind this, if
    zero all types are allowed. \param[in]  Allowed types(mul)      A number of additional variabled
    (number = numberOfAllowedTypes) containing the type definition e.g. ito::tUint8, ito::tInt8...
    (order does not care)

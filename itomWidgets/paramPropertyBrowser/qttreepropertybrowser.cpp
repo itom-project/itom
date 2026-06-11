@@ -872,7 +872,7 @@ void QtTreePropertyBrowser::setHeaderVisible(bool visible)
 
 /*!
     \property QtTreePropertyBrowser::resizeMode
-    \brief the resize mode of setions in the header.
+    \brief the resize mode of sections in the header.
 */
 
 QtTreePropertyBrowser::ResizeMode QtTreePropertyBrowser::resizeMode() const

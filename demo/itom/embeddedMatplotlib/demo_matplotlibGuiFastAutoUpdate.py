@@ -80,7 +80,9 @@ class MatplotGuiAutoUpdate(ItomUi):
         if self.axisImage is None:
             # first time call, a new AxesImage object is created
             ax = fig.add_subplot(111)
-            self.axisImage = ax.imshow(dataObject.randN([100, 100], "uint8"), cmap=plt.cm.gray)
+            self.axisImage = ax.imshow(
+                dataObject.randN([100, 100], "uint8"), cmap=plt.cm.gray
+            )
             ax.set_title("title of plot [%i]" % self.counter)
             self.counter += 1
             # Move left and bottom spines outward by 10 points

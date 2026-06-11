@@ -25,7 +25,7 @@ The following components and structures are equal for all plugins of type *actua
 #. Each parameter is an instance of class **ito::Param**.
 #. The plugin itself is responsible if the new input to any parameter is valid or if the parameter is readonly as has to reject wrong input. For this purpose the parameters' meta information or flags can be used.
 #. Every plugin executes its methods mainly in an own thread.
-#. The communcation between the plugin and its GUI-components (Config-Dialog, Dock-Widget in main window) must therefore be done using a signal-slot-connection or a simple invoke, that allows to call methods in another thread.
+#. The communication between the plugin and its GUI-components (Config-Dialog, Dock-Widget in main window) must therefore be done using a signal-slot-connection or a simple invoke, that allows to call methods in another thread.
 #. The plugin's **init** method is called with the mandatory and optional parameters, those default is set the in the plugin's interface and which are updated by the user input.
 
 The basic scheme of the live-cycle of any plugin is depicted in the following figure:
@@ -42,10 +42,10 @@ obtained by the corresponding interface class (vectors **m_initParamsMand** and 
 
 Then **AddInManager** calls **getAddInInst()** of the plugin interface, that is creating a new instance of the plugin by calling its constructor. Please consider, that the mandatory and optional parameters are not passed to the
 constructor yet. Then, the pointer to the plugin is passed back to the **AddInManager**, that now moves the plugin to a newly created thread. From that point on, methods of the plugin should only be called using a
-thread-communcation technique, provided by |Qt|, e.g. using the method **invokeMethod** or the signal-slot-system of |Qt|. Then the method **init** of the plugin is "invoked" by the **AddInManager** and the mandatory and
+thread-communication technique, provided by |Qt|, e.g. using the method **invokeMethod** or the signal-slot-system of |Qt|. Then the method **init** of the plugin is "invoked" by the **AddInManager** and the mandatory and
 optional initialization parameters are passed as arguments.
 
-Next, the plugin can be used. Whenever a method of the plugin is called, either by python or any C-method, this call has to be executed again by an "over-thread" communcation technique (**invokeMethod** or signal-slot).
+Next, the plugin can be used. Whenever a method of the plugin is called, either by python or any C-method, this call has to be executed again by an "over-thread" communication technique (**invokeMethod** or signal-slot).
 The last argument of such a call always is a locked instance of **ItomSharedSemaphore**. The caller then waits until the semaphore will be released in the plugin's method or a timeout occurred. Please make sure, that
 you release the semaphore in your plugin's method only at the point, when you don't need any parameters given by the caller any more. Usually it is released at the bottom of your method. Only in special cases (like
 method **waitForDone** (for actuators) it makes sense to release it earlier. For more information about the semaphore see :ref:`plugin-sharedSemaphore`.

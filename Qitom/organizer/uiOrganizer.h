@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom.
 
@@ -194,7 +194,7 @@ public:
     inline tUiType getType() const { return m_type; }
 
 private:
-    QPointer<QWidget> m_weakDialog;        /*!< weak pointer to the user interface which is covered by this instance. A weak reference is used, since an external deletion of the user interface is then savely considered. */
+    QPointer<QWidget> m_weakDialog;        /*!< weak pointer to the user interface which is covered by this instance. A weak reference is used, since an external deletion of the user interface is then safely considered. */
     tUiType m_type;                            /*!< type of the user interface which is covered by this instance. \sa tUiType */
 };
 
@@ -272,8 +272,15 @@ public:
 struct ClassInfoContainer
 {
     enum Type {TypeClassInfo, TypeSlot, TypeSignal, TypeProperty, TypeEnum, TypeFlag, TypeInheritance};
-    ClassInfoContainer(Type type, const QString &name, const QString &shortDescription = "", const QString &description = "") :
-        m_type(type), m_name(name), m_shortDescription(shortDescription), m_description(description)
+    ClassInfoContainer(
+        Type type,
+        const QString& name,
+        const QString& shortDescription = "",
+        const QString& description = "",
+        const QString& signature = "") :
+        m_type(type),
+        m_name(name), m_shortDescription(shortDescription), m_description(description),
+        m_signature(signature)
     {
         if (m_description == "")
         {
@@ -285,6 +292,7 @@ struct ClassInfoContainer
     QString m_name;
     QString m_shortDescription;
     QString m_description;
+    QString m_signature;
 };
 
 } // namespace ito
@@ -305,7 +313,7 @@ public:
         propResettable =   0x0020
     };
 
-    enum tErrorCode  /*!< enumeration with error numbers for different errors which may occure within the class UiOrganizer */
+    enum tErrorCode  /*!< enumeration with error numbers for different errors which may occur within the class UiOrganizer */
     {
         errorUiHandleInvalid = 0x1001,
         errorObjDoesNotExist = 0x1002,

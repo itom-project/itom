@@ -225,11 +225,11 @@ TYPED_TEST(adjustROI_func_test, adjustROI_Test2)
     EXPECT_NO_THROW(
         this->dObj1.adjustROI(0, matLimits2d)); //!< Does not throw any exception as the data object dObj1 is empty
     EXPECT_ANY_THROW(this->dObj2.adjustROI(1, matLimits2d)); //!< expect an exception as the dimension and offset limits
-                                                             //!< for ROI are intensionally wrong declared
+                                                             //!< for ROI are intentionally wrong declared
     EXPECT_ANY_THROW(this->dObj3.adjustROI(2, matLimits3d)); //!< expect an exception as the dimension and offset limits
-                                                             //!< for ROI are intensionally wrong declared
+                                                             //!< for ROI are intentionally wrong declared
     EXPECT_ANY_THROW(this->dObj4.adjustROI(3, matLimits5d)); //!< expect an exception as the dimension and offset limits
-                                                             //!< for ROI are intensionally wrong declared
+                                                             //!< for ROI are intentionally wrong declared
 }
 
 //!< This test checks the range of valid ROI.
@@ -251,17 +251,17 @@ TYPED_TEST(adjustROI_func_test, adjustROI_Test3)
     EXPECT_NO_THROW(
         this->dObj1.adjustROI(0, matLimits1d)); //!< Does not throw any exception as the data object dObj1 is empty
     EXPECT_ANY_THROW(
-        this->dObj1.adjustROI(1, matLimits1d)); //!< expect an exception as the offset limits for ROI are intensionally
-                                                //!< declared partially outside of the valied matrix-region.
+        this->dObj1.adjustROI(1, matLimits1d)); //!< expect an exception as the offset limits for ROI are intentionally
+                                                //!< declared partially outside of the valid matrix-region.
     EXPECT_ANY_THROW(
-        this->dObj2.adjustROI(2, matLimits2d)); //!< expect an exception as the offset limits for ROI are intensionally
-                                                //!< declared partially outside of the valied matrix-region.
+        this->dObj2.adjustROI(2, matLimits2d)); //!< expect an exception as the offset limits for ROI are intentionally
+                                                //!< declared partially outside of the valid matrix-region.
     EXPECT_ANY_THROW(
-        this->dObj3.adjustROI(3, matLimits3d)); //!< expect an exception as the offset limits for ROI are intensionally
-                                                //!< declared partially outside of the valied matrix-region.
+        this->dObj3.adjustROI(3, matLimits3d)); //!< expect an exception as the offset limits for ROI are intentionally
+                                                //!< declared partially outside of the valid matrix-region.
     EXPECT_ANY_THROW(
-        this->dObj4.adjustROI(5, matLimits5d)); //!< expect an exception as the offset limits for ROI are intensionally
-                                                //!< declared partially outside of the valied matrix-region.
+        this->dObj4.adjustROI(5, matLimits5d)); //!< expect an exception as the offset limits for ROI are intentionally
+                                                //!< declared partially outside of the valid matrix-region.
 }
 
 //!< This test checks the range of valid ROI.
@@ -283,12 +283,12 @@ TYPED_TEST(adjustROI_func_test, adjustROI_Test4)
     EXPECT_NO_THROW(
         this->dObj1.adjustROI(0, matLimits1d)); //!< Does not throw any exception as the data object dObj1 is empty
     EXPECT_ANY_THROW(
-        this->dObj2.adjustROI(2, matLimits2d)); //!< expect an exception as the offset limits for ROI are intensionally
-                                                //!< declared fully outside of the valied matrix-region.
+        this->dObj2.adjustROI(2, matLimits2d)); //!< expect an exception as the offset limits for ROI are intentionally
+                                                //!< declared fully outside of the valid matrix-region.
     EXPECT_ANY_THROW(
-        this->dObj3.adjustROI(3, matLimits3d)); //!< expect an exception as the offset limits for ROI are intensionally
-                                                //!< declared fully outside of the valied matrix-region.
+        this->dObj3.adjustROI(3, matLimits3d)); //!< expect an exception as the offset limits for ROI are intentionally
+                                                //!< declared fully outside of the valid matrix-region.
     EXPECT_ANY_THROW(
-        this->dObj4.adjustROI(5, matLimits5d)); //!< expect an exception as the offset limits for ROI are intensionally
-                                                //!< declared fully outside of the valied matrix-region.
+        this->dObj4.adjustROI(5, matLimits5d)); //!< expect an exception as the offset limits for ROI are intentionally
+                                                //!< declared fully outside of the valid matrix-region.
 }

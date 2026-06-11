@@ -11,7 +11,7 @@ by a class in Python.
     This demo uses specially wrapped methods of QListWidget. For more information see
     section 'Calling slots' in https://itom-project.github.io/latest/docs/06_extended_gui/qtdesigner.html)
 
-    These methods are indiciated by #-> special method call
+    These methods are indicated by #-> special method call
 """
 
 from itomUi import (
@@ -35,9 +35,7 @@ class ListWidgetDemo(ItomUi):  # ListWidgetDemo is inherited from ItomUi
         size = 3
         newItemTexts = ["item %i" % i for i in range(count, count + size)]
 
-        self.gui.listMain.call(
-            "addItems", newItemTexts
-        )  # -> special method call
+        self.gui.listMain.call("addItems", newItemTexts)  # -> special method call
 
         # define the flags which parameterize every item in the list (individually, if desired)
         # the flag is an OR-combination of the enumeration Qt::ItemFlag
@@ -57,18 +55,13 @@ class ListWidgetDemo(ItomUi):  # ListWidgetDemo is inherited from ItomUi
 
         # set flags of all new items
         for i in range(count, count + size):
-
             if i % 2 == 0:
-                self.gui.listMain.call(
-                    "setFlags", i, flag1
-                )  # -> special method call
+                self.gui.listMain.call("setFlags", i, flag1)  # -> special method call
                 self.gui.listMain.call(
                     "setCheckState", i, checked
                 )  # -> special method call
             else:
-                self.gui.listMain.call(
-                    "setFlags", i, flag2
-                )  # -> special method call
+                self.gui.listMain.call("setFlags", i, flag2)  # -> special method call
                 self.gui.listMain.call(
                     "setCheckState", i, partially
                 )  # -> special method call
@@ -81,12 +74,8 @@ class ListWidgetDemo(ItomUi):  # ListWidgetDemo is inherited from ItomUi
     def on_btnEval_clicked(self):
         count = self.gui.listMain["count"]
         for i in range(count):
-            itemText = self.gui.listMain.call(
-                "item", i
-            )  # -> special method call
-            itemFlags = self.gui.listMain.call(
-                "flags", i
-            )  # -> special method call
+            itemText = self.gui.listMain.call("item", i)  # -> special method call
+            itemFlags = self.gui.listMain.call("flags", i)  # -> special method call
             checkState = self.gui.listMain.call(
                 "checkState", i
             )  # -> special method call

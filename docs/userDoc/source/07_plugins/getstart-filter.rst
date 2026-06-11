@@ -61,7 +61,7 @@ the current filter is notified about this via an interrupt-flag. As soon as the 
 state of this flag, the algorithm is stopped and an interrupt error is returned. However, it is a matter of the
 specific implementation of the algorithm, how fast this check and interruption can be executed. Of course, the
 further Python script execution is also stopped after having clicked the button or raised the KeyboardInterrupt
-execption.
+exception.
 
 It is also possible to provide a user defined instance of the class :py:class:`itom.progressObserver` to the call
 of filters, that support these new features. Then, a parameterless signal (e.g. **clicked()**) of a widget of a user-defined
@@ -72,7 +72,7 @@ algorithm (see the example **demo/algoCancelAndProgressWidget.py** for an exampl
 
 If the filter method provide information about its current progress, it is possible to both provide a progress bar
 and / or a label widget to this filter (via the class :py:class:`itom.progressObserver`), such that the filter can
-regularily update the integer value of the progress bar (must have a slot **setValue(int)**) and / or the text of
+regularly update the integer value of the progress bar (must have a slot **setValue(int)**) and / or the text of
 the label (via a slot **setText(QString)**). The progress will be changed from a user-defined minimum value up to
 a user-defined maximum value (if the algorithm is finished).
 

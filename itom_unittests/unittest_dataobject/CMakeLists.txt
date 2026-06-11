@@ -1,7 +1,7 @@
 # - itom software
 # URL: http://www.uni-stuttgart.de/ito
-# Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-# Universitaet Stuttgart, Germany
+# Copyright (C) 2020, Institut für Technische Optik (ITO),
+# Universität Stuttgart, Germany
 #
 # This file is part of itom and its software development toolkit (SDK).
 #
@@ -18,8 +18,7 @@
 # You should have received a copy of the GNU Library General Public License
 # along with itom. If not, see <http://www.gnu.org/licenses/>.
 
-cmake_minimum_required(VERSION 3.12...3.24)
-
+cmake_minimum_required(VERSION 3.12...3.29)
 set(target_name unittest_dataobject)
 project(${target_name})
 
@@ -36,23 +35,24 @@ set(CMAKE_MODULE_PATH
     ${CMAKE_MODULE_PATH}
     ${PROJECT_SOURCE_DIR}
     ${PROJECT_SOURCE_DIR}/../../cmake
-    ${PROJECT_SOURCE_DIR}/../../gtest-1.10.0/googletest/
+    ${PROJECT_SOURCE_DIR}/../../gtest-1.12.1/googletest/
 )
 
+if(WIN32 AND ((NOT DEFINED ${gtest_force_shared_crt}) OR (NOT ${gtest_force_shared_crt})))
+    set(gtest_force_shared_crt ON CACHE BOOL "Use shared (DLL) run-time lib even when Google Test is built as static lib." FORCE)
+    message(WARNING "For properly running the unittests, the CMAKE variable gtest_force_shared_crt has been forced to ON.")
+endif()
+
 # Define helper functions and macros used by Google Test.
-include("../../gtest-1.10.0/googletest/cmake/internal_utils.cmake")
+include("../../gtest-1.12.1/googletest/cmake/internal_utils.cmake")
 
 find_package(OpenCV REQUIRED COMPONENTS core)
 
 #config_compiler_and_linker()  # Defined in internal_utils.cmake.
 fix_default_compiler_settings_()
 
-if(WIN32 AND NOT ${gtest_force_shared_crt})
-    message("Please set gtest_force_shared_crt to ON.")
-endif()
-
 include_directories(
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../gtest-1.10.0/googletest/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../gtest-1.12.1/googletest/include
 )
 
 set(unittest_dataobject_HEADERS

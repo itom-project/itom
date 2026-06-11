@@ -162,7 +162,7 @@ the loaded toolboxes. The items after the separator correspond to the toolbars, 
     :align: center
 
 | It is possible to (un)dock the Toolboxes to the main frame at different positions. This is done by simple drag
-| and drop of the titel bar of the toolboxes. Another way of (un)docking can be realized by double-clicking on the title bar.
+| and drop of the title bar of the toolboxes. Another way of (un)docking can be realized by double-clicking on the title bar.
 | At the startup of the iTOM software all 5 Toolboxes are activated, which are:
 
 The following main toolbars are available:

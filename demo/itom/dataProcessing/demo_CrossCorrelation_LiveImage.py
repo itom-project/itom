@@ -12,6 +12,7 @@ import numpy as np
 from numpy import fft
 # sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoCrossCorrelation.png'
 
+
 # some methods
 def acquireImage1():
     g = cam.getAutoGrabbing()
@@ -29,6 +30,7 @@ def acquireImage2():
     cam.copyVal(image2)
     gui.plot2["source"] = image2
     cam.setAutoGrabbing(g)
+
 
 def evaluate():
     """determines the offset between image1 and image2
@@ -56,6 +58,7 @@ def evaluate():
     gui.lbl_dx["text"] = "dx: " + str(offset_x)
     gui.lbl_dy["text"] = "dy: " + str(offset_y)
 
+
 def saveImages():
     filename = ui.getSaveFileName("Filename", filters="IDC (*.idc)", parent=gui)
     if filename:
@@ -75,8 +78,12 @@ def loadImages():
 
 
 # open camera (make it before you start this script)
-cam = dataIO("OpenCVGrabber", colorMode="gray")
-# cam = dataIO("FileGrabber","*.tif","samples",8,2)
+try:
+    cam = dataIO("OpenCVGrabber", colorMode="gray")
+except:
+    print("Can not open camera with OpenCVGrabber. Probabel root cause: WebCam is not available.")
+    print("Used Itom Dummy Grabber instead.")
+    cam = dataIO("DummyGrabber")
 
 # start camera
 cam.startDevice()

@@ -71,7 +71,6 @@ Some of the known remaining caveats are:
 
 - C extension modules cannot be reloaded, and so cannot be autoreloaded.
 """
-from __future__ import print_function
 
 skip_doctest = True
 
@@ -106,7 +105,7 @@ from importlib import reload
 # ------------------------------------------------------------------------------
 
 
-class ModuleReloader(object):
+class ModuleReloader:
     enabled = False
     """Whether this reloader is enabled"""
 
@@ -348,7 +347,7 @@ def update_generic(a, b):
     return False
 
 
-class StrongRef(object):
+class StrongRef:
     def __init__(self, obj):
         self.obj = obj
 
@@ -530,8 +529,7 @@ class AutoreloadMagics:
                 pass
 
     def post_execute_hook(self):
-        """Cache the modification times of any modules imported in this execution
-        """
+        """Cache the modification times of any modules imported in this execution"""
         newly_loaded_modules = set(sys.modules) - self.loaded_modules
         for modname in newly_loaded_modules:
             _, pymtime = self._reloader.filename_and_mtime(sys.modules[modname])
@@ -545,7 +543,9 @@ class AutoreloadMagics:
 # itom connectivity
 # ----------------------------------------------
 class ItomAutoreloader:
-    def __init__(self,):
+    def __init__(
+        self,
+    ):
         self._reloader = ModuleReloader()
         self._reloader.check_all = False
         self.loaded_modules = set(sys.modules)
@@ -613,8 +613,7 @@ class ItomAutoreloader:
                 pass
 
     def post_execute_hook(self):
-        """Cache the modification times of any modules imported in this execution
-        """
+        """Cache the modification times of any modules imported in this execution"""
         newly_loaded_modules = set(sys.modules) - self.loaded_modules
         for modname in newly_loaded_modules:
             _, pymtime = self._reloader.filename_and_mtime(sys.modules[modname])

@@ -8,6 +8,7 @@ dialog. If you show the dialog in a modal way, you can then
 obtain the result (if OK or Cancel has been clicked).
 Use deleteOnClose=true such in order to close the dialog once
 the user pressed OK or Cancel."""
+
 from itom import ui
 
 # sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoDialog.png'

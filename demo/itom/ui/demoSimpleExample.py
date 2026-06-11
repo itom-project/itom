@@ -12,6 +12,7 @@ window, that ``itom`` provides for us (type: ``ui.TYPEDIALOG``).
 We want to have an auto-created vertical button bar at the right side
 (dialogButtonBar = ``ui.BUTTONBAR_VERTICAL``). The button bar
 should consist of one ``OK`` button, therefore its role is ``AcceptRole``."""
+
 from itom import ui
 
 # sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoSimpleUI.png'
@@ -25,11 +26,14 @@ mainWin = ui(
 
 ###############################################################################
 # First group box: show text of textfield in a message box. Set default text of TextField with name txtMessage.
-field = mainWin.txtMessage  # you can get an instance (class uiItem) of any sub-element of your user interface
+field = (
+    mainWin.txtMessage
+)  # you can get an instance (class uiItem) of any sub-element of your user interface
 field["text"] = "hello world"
 
 # the same can be done directly:
 mainWin.txtMessage["text"] = "hello world"
+
 
 ###############################################################################
 # Now we want to connect the ``clicked`` signal of the button with the method ``showMessage``.
@@ -50,10 +54,13 @@ def showMessage():
 
 mainWin.btnShowText.connect("clicked()", showMessage)
 
+
 ###############################################################################
 # Second group box: show getDirectory-dialog and print the chosen directory in the text field.
 def showGetDirectory():
-    directory = ui.getExistingDirectory("chose directory", itom.getCurrentPath(), parent=mainWin)
+    directory = ui.getExistingDirectory(
+        "chose directory", itom.getCurrentPath(), parent=mainWin
+    )
     if directory is None:
         pass
         # cancel has been clicked
@@ -66,6 +73,7 @@ mainWin.toolSelectDir.connect("clicked()", showGetDirectory)
 
 # if txtDirectory has the property 'readOnly' set to true, the button btnReadOnly should be 'checked'.
 mainWin.btnReadOnly["checked"] = mainWin.txtDirectory["readOnly"]
+
 
 # if the button is toggled (check-state is changed), then we want to change the ready-only property.
 def btnReadOnlyToggled(checked):
@@ -150,6 +158,7 @@ listBox.connect("currentRowChanged(int)", listCurrentChanged)
 #   .. code-block:: python
 #
 #       mainWin.show(2)
+#
 #
 
 mainWin.show(1)

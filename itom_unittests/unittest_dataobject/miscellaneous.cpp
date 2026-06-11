@@ -180,8 +180,8 @@ TYPED_TEST(miscellaneousTests, getAxisOffset_Test)
     EXPECT_ANY_THROW(this->dObj6.getAxisOffset(dObj6_dim + 1));
 
     //!< Test for getAxisOffset() function for this->dObj7.
-    /*< this->dObj7 is explicitely defined as 1 dimensional Data Object.
-    But as there is no existance of 1 dimensional Data Objects, this->dObj7 becomes 2 dimensional Data Object.
+    /*< this->dObj7 is explicitly defined as 1 dimensional Data Object.
+    But as there is no existence of 1 dimensional Data Objects, this->dObj7 becomes 2 dimensional Data Object.
     So this test checks this type of conversion and result of getAxisOffset() function accordingly.
     */
     EXPECT_ANY_THROW(this->dObj7.getAxisOffset(-1));
@@ -263,8 +263,8 @@ TYPED_TEST(miscellaneousTests, getAxisScale_Test)
     EXPECT_ANY_THROW(this->dObj6.getAxisScale(dObj6_dim + 1));
 
     //!< Test for getAxisScale() function for this->dObj7.
-    /*< this->dObj7 is explicitely defined as 1 dimensional Data Object.
-    But as there is no existance of 1 dimensional Data Objects, this->dObj7 becomes 2 dimensional Data Object.
+    /*< this->dObj7 is explicitly defined as 1 dimensional Data Object.
+    But as there is no existence of 1 dimensional Data Objects, this->dObj7 becomes 2 dimensional Data Object.
     So this test checks this type of conversion and result of getAxisScale() function accordingly.
     */
     EXPECT_ANY_THROW(this->dObj7.getAxisScale(-1));

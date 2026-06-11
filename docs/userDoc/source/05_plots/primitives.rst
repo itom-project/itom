@@ -85,7 +85,7 @@ The geometric elements can also be set by script by calling the corresponding sl
     element=shape(shape.Point,[50,50])
     h['geometricShapes']=element
 
-For more informations see also :ref:`plot-markers`
+For more information see also :ref:`plot-markers`
 
 The geometric elements can be read any time using the property "geometricShapes".
 
@@ -108,7 +108,7 @@ The Qwt-plot widgets functions had to be updated. The Qwt-Widgets got the follow
 *  "enablePlotting",            enable and disable plotting toolbar
 *  "selectedGeometry",          set / get the current selected geometric element
 
-In complete theses the functionality of the drawing interface, the following slots have been added to the widgets:
+In complete these the functionality of the drawing interface, the following slots have been added to the widgets:
 
 *  "plotMarkers"                Add markers and geometric elements to plot according to dataObject and style type. For geometric "style is not used", type in "b".
 *  "userInteractionStart"       Start a non-blocking user interaction for "multipointpick" or geometric elements with element count.

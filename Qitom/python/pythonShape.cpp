@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom.
 
@@ -2178,7 +2178,7 @@ PyDoc_STRVAR(shape_rotateDeg_doc, "rotateDeg(angle) \n\
 \n\
 Rotate shape by given angle in degrees around the center point of this shape \n\
 (counterclockwise). This method only affects the :attr:`transform` matrix, not the \n\
-base points themselfs. \n\
+base points themselves. \n\
 \n\
 Parameters \n\
 ---------- \n\
@@ -2212,7 +2212,7 @@ PyDoc_STRVAR(shape_rotateRad_doc, "rotateRad(angle) \n\
 \n\
 Rotate shape by given angle in radians around the center point of this shape \n\
 (counterclockwise). This method only affects the :attr:`transform` matrix, not the \n\
-base points themselfs. \n\
+base points themselves. \n\
 \n\
 Parameters \n\
 ---------- \n\
@@ -2399,7 +2399,7 @@ For most shapes, the contour is exactly given by its corner points. However for 
 circles or ellipses, the contour has to be approximated by line segments. Use the \n\
 argument ``tol`` to set the maximum distance between each line segment and the \n\
 real contour of the shape. If ``tol`` is set to -1.0, ``tol`` is assumed to be `1 %` \n\
-of the smalles diameter. \n\
+of the smallest diameter. \n\
 \n\
 Shapes can have a transformation matrix (attribute :attr:`transform`). If ``applyTrafo`` \n\
 is ``True``, the returned contour points correspond to the transformed base shape, else \n\
@@ -2592,7 +2592,7 @@ original shape object is returned as it is. \n\
 Returns \n\
 ------- \n\
 normalized : shape \n\
-    The normalized shape of this object (for types ``shape.Rectange``, ``shape.Square`` \n\
+    The normalized shape of this object (for types ``shape.Rectangle``, ``shape.Square`` \n\
     ``shape.Circle`` or ``shape.Ellipse``) or this object (for all other types).");
 /*static*/ PyObject* PythonShape::PyShape_normalized(PyShape *self)
 {

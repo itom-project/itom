@@ -1,5 +1,3 @@
-# coding=utf8
-
 """GUI integrated
 =================
 
@@ -46,7 +44,9 @@ class PlotlyGuiDemo(ItomUi):
         with self.disableGui(disableItems=[self.gui.groupActions]):
             long_df = px.data.medals_long()
 
-            fig = px.bar(long_df, x="nation", y="count", color="medal", title="Long-Form Input")
+            fig = px.bar(
+                long_df, x="nation", y="count", color="medal", title="Long-Form Input"
+            )
             fig.show(plotHandle=self.plotlyPlot)
 
     @ItomUi.autoslot("")
@@ -57,7 +57,14 @@ class PlotlyGuiDemo(ItomUi):
         """
         with self.disableGui(disableItems=[self.gui.groupActions]):
             df = px.data.tips()
-            fig = px.histogram(df, x="total_bill", y="tip", color="sex", marginal="rug", hover_data=df.columns)
+            fig = px.histogram(
+                df,
+                x="total_bill",
+                y="tip",
+                color="sex",
+                marginal="rug",
+                hover_data=df.columns,
+            )
             fig.show(plotHandle=self.plotlyPlot)
 
     @ItomUi.autoslot("")

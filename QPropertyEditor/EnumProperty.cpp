@@ -95,7 +95,7 @@ QWidget* EnumProperty::createEditor(QWidget* parent, const QStyleOptionViewItem&
 bool EnumProperty::setEditorData(QWidget* editor, const QVariant& data)
 {
     QComboBox* combo = 0;
-    // TODO: maybe malformed if statment or put brackets to make gcc happy
+    // TODO: maybe malformed if statement or put brackets to make gcc happy
     if (combo = qobject_cast<QComboBox*>(editor))
     {
         int value = data.toInt();
@@ -122,7 +122,7 @@ bool EnumProperty::setEditorData(QWidget* editor, const QVariant& data)
 QVariant EnumProperty::editorData(QWidget* editor)
 {
     QComboBox* combo = 0;
-    // TODO: maybe malformed if statment or put brackets to make gcc happy
+    // TODO: maybe malformed if statement or put brackets to make gcc happy
     if (combo = qobject_cast<QComboBox*>(editor))
     {
         return QVariant(combo->currentText());

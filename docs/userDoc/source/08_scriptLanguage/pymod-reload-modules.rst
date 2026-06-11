@@ -62,9 +62,9 @@ right result::
     'func2, version 2'
     'func3, version 2'
 
-Another possibility would be to reload *mod2* using the Python builtin-module *imp*, since *mod2* is imported by *script1.py*::
+Another possibility would be to reload *mod2* using the Python builtin-module *importlib*, since *mod2* is imported by *script1.py*::
 
-    import imp
+    import importlib as imp
     imp.reload(mod2)
 
 Another execution of *script1.py* will now lead to the following result::
@@ -73,7 +73,7 @@ Another execution of *script1.py* will now lead to the following result::
     'func2, version 2'
     'func3, version 1'
 
-The last result, coming from *mod3* is still unchanged. This comes due to the fact that the *imp.reload* command does not resolve any dependencies but
+The last result, coming from *mod3* is still unchanged. This comes due to the fact that the *importlib.reload* command does not resolve any dependencies but
 only tries to reload one single module, corresponding to the content of one single py-file. Therefore, you always need to know where exactly code changes
 have occurred and reload all related modules. To simplify this mechanism, you can use the dialog **Reload modules...** that is reachable via the |itom| menu
 **Script >> reload modules >> reload modules...**. Sometimes, the reload may fail. Reasons for this and further limitations of the reload process are discussed later.

@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2025, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom.
 
@@ -20,8 +20,7 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef SCRIPTDOCKWIDGET_H
-#define SCRIPTDOCKWIDGET_H
+#pragma once
 
 #include "abstractDockWidget.h"
 #include "itomQWidgets.h"
@@ -74,6 +73,8 @@ public:
     QStringList getAllFilenames() const;
     void getAllCanonicalFilenamesWithModificationState(QStringList &filenames, QList<bool> &modified) const;
 
+    void setScriptZoomFactor(int zoomFactor) const;
+
     RetVal newScript();
     RetVal openScript();
     RetVal openScript(QString filename, bool silent = false);
@@ -89,7 +90,7 @@ public:
     inline bool isTabIndexValid(int tabIndex) const
     {
         return (tabIndex >= 0 && tabIndex < m_tab->count());
-    } /*!<  checks wether given tab-index is valid (true) or not (false) */
+    } /*!<  checks whether given tab-index is valid (true) or not (false) */
     inline int getTabCount() const
     {
         return m_tab->count();
@@ -141,6 +142,7 @@ protected:
     void createToolBars();
     void createStatusBar();
     void closeEvent(QCloseEvent* event);
+    virtual void mousePressEvent(QMouseEvent* e);
     virtual void windowStateChanged(bool windowNotToolbox);
 
     RetVal closeTab(int index, bool saveFirst = true, bool closeScriptWidgetIfLastTabClosed = true);
@@ -199,6 +201,8 @@ private:
     ShortcutAction* m_pyDocstringGeneratorAction;
     ShortcutAction* m_scriptRunAction;
     ShortcutAction* m_scriptRunSelectionAction;
+    ShortcutAction* m_scriptRunCodeCellAction;
+    ShortcutAction* m_scriptRunCodeCellAndAdvanceAction;
     ShortcutAction* m_scriptDebugAction;
     ShortcutAction* m_scriptStopAction;
     ShortcutAction* m_scriptContinueAction;
@@ -221,7 +225,6 @@ private:
     QMenu* m_tabContextMenu;
     QMenu* m_fileMenu;
     QMenu* m_lastFilesMenu;
-    QMenu* m_viewMenu;
     QMenu* m_editMenu;
     QMenu* m_scriptMenu;
     QMenu* m_winMenu;
@@ -233,12 +236,14 @@ private:
     QToolBar* m_bookmarkToolBar;
 
     QString m_autoCodeFormatCmd;
+    bool m_autoCodeFormatOnSave;
 
     // ClassNavigator
     QWidget* m_classMenuBar;
     QComboBox* m_classBox;
     QComboBox* m_methodBox;
     bool m_outlineShowNavigation;
+
     void fillNavigationClassComboBox(
         const QSharedPointer<OutlineItem>& parent, const QString& prefix);
     void fillNavigationMethodComboBox(
@@ -275,10 +280,7 @@ signals:
             false); /*!<  signal emitted if tab with given index of given ScriptDockWidget should be
                        undocked in an undocked ScriptDockWidget */
 
-    void pythonRunFileRequest(QString filename); /*!<  will be received by scriptEditorOrganizer, in
-                                                    order to save all unsaved changes first */
-    void pythonDebugFileRequest(QString filename); /*!<  will be received by scriptEditorOrganizer,
-                                                      in order to save all unsaved changes first */
+
     void pythonInterruptExecution(); /*!<  will be received by PythonThread, directly */
     void pythonDebugCommand(tPythonDbgCmd cmd); /*!<  will be received by PythonThread, directly */
     void pythonRunSelection(
@@ -292,8 +294,12 @@ signals:
         int line,
         int column);
 
+    void scriptZoomFactorChanged(int zoomFactor);
+
 private slots:
     void tabContextMenuEvent(QContextMenuEvent* event);
+
+    void scriptEditorZoomFactorChanged(int zoomFactor) { emit scriptZoomFactorChanged(zoomFactor); }
 
     void findTextExpr(
         QString expr,
@@ -323,7 +329,6 @@ private slots:
     void updateTabContextActions();
 
     void mnuOpenIconBrowser();
-
     void mnuTabMoveLeft();
     void mnuTabMoveRight();
     void mnuTabMoveFirst();
@@ -350,6 +355,8 @@ private slots:
     void mnuUnindent();
     void mnuScriptRun();
     void mnuScriptRunSelection();
+    void mnuScriptRunCodeCell();
+    void mnuScriptRunCodeCellAndAdvance();
     void mnuScriptDebug();
     void mnuScriptStop();
     void mnuScriptContinue();
@@ -387,5 +394,3 @@ public slots:
 };
 
 } // end namespace ito
-
-#endif

@@ -219,7 +219,7 @@ Use the static method :py:meth:`~itom.ui.getSaveFileName` to show a dialog, wher
 The parameters are the same than for the open-file-dialog above. However for options, reasonable values are now:
 
 * 0x02, DontResolveSymlinks. If given, symbolic links are not shown in the dialog
-* 0x04, DontConfirmOverwrite. If given, the user don't has to confirm if an existing file has been choosen.
+* 0x04, DontConfirmOverwrite. If given, the user don't has to confirm if an existing file has been chosen.
 * 0x40, HideNameFilterDetails. This only shows the names of the filters, but not the pattern mask.
 
 For combining different options, use the or-operator **|**.

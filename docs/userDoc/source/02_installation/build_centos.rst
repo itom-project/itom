@@ -22,6 +22,7 @@ Please execute the following commands in the command line to get the dependencie
     sudo yum install opencv opencv-devel libv4l libv4l-devel
     sudo yum install qt5-qtbase-gui qt5-qtwebkit qt5-qtwebkit-devel
     sudo yum install qt5-qtsvg qt5-qtsvg-devel qt5-designer qt5-qttools-static qt5-qttools-devel
+    sudo yum install libusbx-devel libusb-devel libudev-devel
 
 These dependencies does not include support for point cloud libraries. To enable this support, you have to
 get further packages. Please see :ref:`build on fedora <build-fedora>` for more hints.
@@ -29,7 +30,7 @@ get further packages. Please see :ref:`build on fedora <build-fedora>` for more 
 Now, change to the base directory, where the sources and builds of itom and its plugins should be placed. The following commands are not executed
 with super-user rights; prepend *sudo* if this is required. In comparison to building *itom* under Debian based Linux versions, the CMake
 configuration process under CentOS needs some more *hints* about where to find some libraries etc. Therefore, it might be, that you have
-to adjust some pathes below. Currently, Qt5 is still built with webkit-support under CentOS, such that the WebEngine-support is not available.
+to adjust some paths below. Currently, Qt5 is still built with webkit-support under CentOS, such that the WebEngine-support is not available.
 Therefore, the built-in helpviewer of itom has to be disabled. For building itom **without** point cloud support use:
 
 .. code-block:: bash

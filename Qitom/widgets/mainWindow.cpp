@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom.
 
@@ -99,18 +99,17 @@ const QScreen* guiApplicationScreenAt(const QPoint &point)
     establishes widgets being part of the main window including necessary actions
 */
 MainWindow::MainWindow() :
-    m_console(NULL), m_contentLayout(NULL), m_breakPointDock(NULL), m_bookmarkDock(NULL),
-    m_lastCommandDock(NULL),
-    //    m_pythonMessageDock(NULL),
-    m_helpDock(NULL), m_globalWorkspaceDock(NULL), m_localWorkspaceDock(NULL),
-    m_callStackDock(NULL), m_fileSystemDock(NULL), m_pAIManagerWidget(NULL), m_appFileNew(NULL),
-    m_appFileOpen(NULL), m_aboutQt(NULL), m_aboutQitom(NULL), m_copyLog(nullptr), m_pMenuFigure(NULL),
-    m_pMenuHelp(NULL), m_pMenuFile(NULL), m_pMenuPython(NULL), m_pMenuReloadModule(NULL),
-    m_pMenuView(NULL), m_pHelpSystem(NULL), m_pStatusLblCurrentDir(NULL),
-    m_pStatusLblScriptInfo(nullptr),
-    m_pStatusLblPythonBusy(NULL), m_pythonBusy(false), m_pythonDebugMode(false),
+    m_console(nullptr), m_contentLayout(nullptr), m_breakPointDock(nullptr),
+    m_bookmarkDock(nullptr), m_lastCommandDock(nullptr), m_helpDock(nullptr),
+    m_globalWorkspaceDock(nullptr), m_localWorkspaceDock(nullptr), m_callStackDock(nullptr),
+    m_fileSystemDock(nullptr), m_pAIManagerWidget(nullptr), m_appFileNew(nullptr),
+    m_appFileOpen(nullptr), m_aboutQt(nullptr), m_aboutQitom(nullptr), m_copyLog(nullptr),
+    m_pMenuFigure(nullptr), m_pMenuHelp(nullptr), m_pMenuFile(nullptr),
+    m_pMenuPython(nullptr), m_pMenuReloadModule(nullptr), m_pMenuView(nullptr),
+    m_pHelpSystem(nullptr), m_pStatusLblCurrentDir(nullptr), m_pStatusLblScriptInfo(nullptr),
+    m_pStatusLblPythonBusy(nullptr), m_pythonBusy(false), m_pythonDebugMode(false),
     m_pythonInWaitingMode(false), m_isFullscreen(false), m_userDefinedActionCounter(0),
-    m_plastFilesMenu(NULL)
+    m_plastFilesMenu(nullptr)
 {
     // qDebug() << "mainWindow. Thread: " << QThread::currentThreadId ();
 #ifdef __APPLE__
@@ -179,6 +178,22 @@ MainWindow::MainWindow() :
     centralWidget->setLayout(m_contentLayout);
     setCentralWidget(centralWidget);
 
+    if (uOrg && uOrg->currentUserHasFeature(featDeveloper))
+    {
+        // lastCommandDock
+        m_lastCommandDock = new LastCommandDockWidget(
+            tr("Command History"),
+            "itomLastCommandDockWidget",
+            this,
+            true,
+            true,
+            AbstractDockWidget::floatingStandard);
+        m_lastCommandDock->setAllowedAreas(
+            Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea |
+            Qt::TopDockWidgetArea);
+        addDockWidget(Qt::LeftDockWidgetArea, m_lastCommandDock);
+    }
+
     if (uOrg && uOrg->currentUserHasFeature(featFileSystem))
     {
         // FileDir-Dock
@@ -225,26 +240,6 @@ MainWindow::MainWindow() :
             Qt::TopDockWidgetArea);
         addDockWidget(Qt::LeftDockWidgetArea, m_bookmarkDock);
 
-        // lastCommandDock
-        m_lastCommandDock = new LastCommandDockWidget(
-            tr("Command History"),
-            "itomLastCommandDockWidget",
-            this,
-            true,
-            true,
-            AbstractDockWidget::floatingStandard);
-        m_lastCommandDock->setAllowedAreas(
-            Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea |
-            Qt::TopDockWidgetArea);
-        addDockWidget(Qt::LeftDockWidgetArea, m_lastCommandDock);
-
-        // pythonMessageDock
-        // m_pythonMessageDock = new PythonMessageDockWidget(tr("Python Messages"),
-        // "itomPythonMessageDockWidget", this, true, true, AbstractDockWidget::floatingStandard);
-        // m_pythonMessageDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea |
-        // Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
-        // addDockWidget(Qt::BottomDockWidgetArea, m_pythonMessageDock);
-
         // helpDock
         m_helpDock = new HelpDockWidget(
             tr("Plugin Help Viewer"),
@@ -256,7 +251,7 @@ MainWindow::MainWindow() :
         m_helpDock->setAllowedAreas(
             Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea |
             Qt::TopDockWidgetArea);
-        addDockWidget(Qt::LeftDockWidgetArea, m_helpDock);
+        addDockWidget(Qt::RightDockWidgetArea, m_helpDock);
 
         // CallStack-Dock
         m_callStackDock = new CallStackDockWidget(
@@ -274,9 +269,8 @@ MainWindow::MainWindow() :
         if (m_fileSystemDock)
         {
             // tabify file-directory and breakpoints
-            tabifyDockWidget(m_callStackDock, m_fileSystemDock);
-            tabifyDockWidget(m_fileSystemDock, m_breakPointDock);
-            m_fileSystemDock->raise();
+            tabifyDockWidget(m_fileSystemDock, m_callStackDock);
+            tabifyDockWidget(m_callStackDock, m_breakPointDock);
         }
         else
         {
@@ -286,6 +280,11 @@ MainWindow::MainWindow() :
         if (m_breakPointDock && m_bookmarkDock)
         {
             tabifyDockWidget(m_breakPointDock, m_bookmarkDock);
+        }
+
+        if (m_fileSystemDock)
+        {
+            m_fileSystemDock->raise();
         }
 
         // global workspace widget (Python)
@@ -350,7 +349,7 @@ MainWindow::MainWindow() :
         }
     }
 
-    if (m_pAIManagerWidget != NULL && m_helpDock != NULL)
+    if (m_pAIManagerWidget != nullptr && m_helpDock != nullptr)
     {
         connect(
             m_pAIManagerWidget,
@@ -392,7 +391,8 @@ MainWindow::MainWindow() :
 
         if (m_console)
         {
-            connect(pyEngine, SIGNAL(clearCommandLine()), m_console, SLOT(clearCommandLine()));
+            connect(pyEngine, &PythonEngine::clearCommandLine, m_console, &ConsoleWidget::clearCommandLine);
+            connect(pyEngine, &PythonEngine::interruptCommandInput, m_console, &ConsoleWidget::interruptCommandInput);
             connect(
                 pyEngine,
                 SIGNAL(startInputCommandLine(QSharedPointer<QByteArray>, ItomSharedSemaphore*)),
@@ -633,12 +633,6 @@ MainWindow::~MainWindow()
             SLOT(addLastCommand(QString)));
     }
 
-    /*    if (m_pythonMessageDock && m_console)
-        {
-            disconnect(m_console, SIGNAL(sendToPythonMessage(QString)), m_pythonMessageDock,
-       SLOT(addPythonMessage(QString)));
-        }*/
-
     DELETE_AND_SET_NULL(m_pAIManagerWidget);
     DELETE_AND_SET_NULL(m_fileSystemDock);
     DELETE_AND_SET_NULL(m_helpDock);
@@ -696,12 +690,26 @@ void MainWindow::scriptEditorOrganizerAvailable()
 {
     if (m_bookmarkDock)
     {
-        ScriptEditorOrganizer* sed =
+        ScriptEditorOrganizer* seo =
             qobject_cast<ScriptEditorOrganizer*>(AppManagement::getScriptEditorOrganizer());
 
-        if (sed)
+        if (seo)
         {
-            m_bookmarkDock->setBookmarkModel(sed->getBookmarkModel());
+            m_bookmarkDock->setBookmarkModel(seo->getBookmarkModel());
+
+            if (m_console)
+            {
+                connect(
+                    seo,
+                    &ScriptEditorOrganizer::scriptEditorZoomChanged,
+                    m_console,
+                    &CodeEditor::setZoomFactor);
+                connect(
+                    m_console,
+                    &CodeEditor::zoomFactorChanged,
+                    seo,
+                    &ScriptEditorOrganizer::scriptZoomFactorChanged);
+            }
         }
     }
 }
@@ -852,16 +860,6 @@ void MainWindow::scriptStatusBarInformationChanged(
             m_pStatusLblScriptInfo->setText("");
         }
     }
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-void MainWindow::connectPythonMessageBox(QListWidget* pythonMessageBox)
-{
-    connect(
-        m_console,
-        SIGNAL(sendToPythonMessage(QString)),
-        pythonMessageBox,
-        SLOT(addNewMessage(QString)));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1902,7 +1900,7 @@ void MainWindow::setStatusText(QString message, int timeout)
 /*
 An existing button with the same name (text) will not be deleted but a new button is added. This is
 because the possibly related python methods or functions cannot be deleted from this method.
-However, each button has its unique buttonHandle that can be used to explicitely delete the button.
+However, each button has its unique buttonHandle that can be used to explicitly delete the button.
 */
 ito::RetVal MainWindow::addToolbarButton(
     const QString& toolbarName,
@@ -2610,7 +2608,7 @@ void MainWindow::currentDirectoryChanged()
 
     if (m_fileSystemDock)
     {
-        m_fileSystemDock->changeBaseDirectory(cd);
+        m_fileSystemDock->changeBaseDirectory(cd, true);
     }
 }
 

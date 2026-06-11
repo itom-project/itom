@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
 
@@ -11,7 +11,7 @@
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
 
-    In addition, as a special exception, the Institut fuer Technische
+    In addition, as a special exception, the Institut für Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
     which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -670,7 +670,7 @@ RetVal AbstractNode::updateChannels(const QList<QString> &outputParamNames)
         {
             // If they are in the list, we trigger an update and remove them from the temp list
             channelList.append(channel);
-            // If we have at least one channel with this param, we remove its name from the copied list to check wether all params were found
+            // If we have at least one channel with this param, we remove its name from the copied list to check whether all params were found
             copyParamNames.removeOne(channel->getSenderParamName());
             retVal += setUpdatePending(channel);
         }

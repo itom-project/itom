@@ -6,7 +6,6 @@ In most cases, the property can both be set for each line and globally
 as property of the plot. If the latter is set, all line properties are reset
 to the same global value!"""
 
-
 import numpy as np
 from itom import plot1
 from itom import dataObject
@@ -33,13 +32,21 @@ foursines[3, :] = sine4
 
 ###############################################################################
 # Get the current properties of the first line.
-print("lineStyle", h.call("getCurveProperty", 0, "lineStyle"))  # enumeration Qt::PenStyle
+print(
+    "lineStyle", h.call("getCurveProperty", 0, "lineStyle")
+)  # enumeration Qt::PenStyle
 print("lineWidth", h.call("getCurveProperty", 0, "lineWidth"))
 print("lineColor", h.call("getCurveProperty", 0, "lineColor"))
-print("lineJoinStyle", h.call("getCurveProperty", 0, "lineJoinStyle"))  # enumeration Qt::PenJoinStyle
-print("lineCapStyle", h.call("getCurveProperty", 0, "lineCapStyle"))  # enumeration  Qt::PenCapStyle
+print(
+    "lineJoinStyle", h.call("getCurveProperty", 0, "lineJoinStyle")
+)  # enumeration Qt::PenJoinStyle
+print(
+    "lineCapStyle", h.call("getCurveProperty", 0, "lineCapStyle")
+)  # enumeration  Qt::PenCapStyle
 print("lineSymbolSize", h.call("getCurveProperty", 0, "lineSymbolSize"))
-print("lineSymbolStyle", h.call("getCurveProperty", 0, "lineSymbolStyle"))  # enumeration Itom1DQwtPlot::Symbol
+print(
+    "lineSymbolStyle", h.call("getCurveProperty", 0, "lineSymbolStyle")
+)  # enumeration Itom1DQwtPlot::Symbol
 
 ###############################################################################
 # Change some styles.

@@ -3,16 +3,16 @@
 
 This demo shows how data fitting can be performed using the ``itom.dataObject`` and ``itom.algorithms``."""
 
-
 import numpy as np
 from itom import dataObject
 from itom import algorithms
 # sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoFitData.png'
 
+
 ###############################################################################
 # Polynomial of order 2 in x- and y-direction
-def polyFuncOrder2x2(x: float, y:float) -> float:
-    return 2.5 * x ** 2 + -1.7 * y ** 2 + 1.3 * x * y + 0.7 * x - 0.3 * y + 3.2
+def polyFuncOrder2x2(x: float, y: float) -> float:
+    return 2.5 * x**2 + -1.7 * y**2 + 1.3 * x * y + 0.7 * x - 0.3 * y + 3.2
 
 
 ###############################################################################
@@ -59,17 +59,17 @@ for i in range(samples):
 
 ###############################################################################
 # Determine the polyonimal coefficients only using the random samples.
-coeffs2 = algorithms.polyfitWeighted2DSinglePoints( X2, Y2, Z2, 2, 2)
+coeffs2 = algorithms.polyfitWeighted2DSinglePoints(X2, Y2, Z2, 2, 2)
 # coeffs and coeffs2 must be the same!
 print("fitted coefficient: ", coeffs2)
 
 ###############################################################################
 # And reconstruct the entire surface for X and Y values.
-Z2_reconstruction = dataObject()
+reconstruction = dataObject()
 algorithms.polyval2DSinglePoints(
     dataObject(X),
     dataObject(Y),
-    Z2_reconstruction,
+    reconstruction,
     coeffs2,
     2,
     2,

@@ -25,15 +25,15 @@ y2 = np.cos(x)
 
 ###############################################################################
 # Change matplotlib.pyplot style and plot data.
-with plt.style.context(['cyberpunk']):
-    plt.figure(figsize = (6,6))
-    plt.plot(x, y, marker='o', label='Line 1')
-    plt.plot(x, y2, marker='x', label='Line 2')
+with plt.style.context(["cyberpunk"]):
+    plt.figure(figsize=(6, 6))
+    plt.plot(x, y, marker="o", label="Line 1")
+    plt.plot(x, y2, marker="x", label="Line 2")
 
     mplcyberpunk.make_lines_glow()
-    mplcyberpunk.add_gradient_fill(alpha_gradientglow=0.5, gradient_start='zero')
+    mplcyberpunk.add_gradient_fill(alpha_gradientglow=0.5, gradient_start="zero")
 
-    plt.xlabel('X')
-    plt.ylabel('Y')
+    plt.xlabel("X")
+    plt.ylabel("Y")
     plt.grid()
     plt.show()

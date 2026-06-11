@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 # Miville
 # Copyright (C) 2008 Société des arts technologiques (SAT)
@@ -109,7 +108,7 @@ def create_package_file(root, master_package, subroot, py_files, opts, subs=None
                 for sub in subs
                 if os.path.isfile(os.path.join(root, sub, "__init__.py"))
             ]
-            # if there's some package directories, add a TOC for theses subpackages
+            # if there's some package directories, add a TOC for these subpackages
             if subs:
                 #                 text += title_line('Subpackages', '-')
                 text += ".. toctree::\n\n"

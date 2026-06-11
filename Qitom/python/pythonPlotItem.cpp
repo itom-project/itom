@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom.
 
@@ -80,7 +80,7 @@ for the direct usage of this constructor: \n\
    If the figure consists of more than one subplot, the index counts the subplots \n\
    row-by-row. \n\
 \n\
-The 3rd variant of this contructor, using the keyword-based argument ``objectID`` \n\
+The 3rd variant of this constructor, using the keyword-based argument ``objectID`` \n\
 is only internally used and has no further meaning for a high-level usage. However, \n\
 if it is used, ``objectID`` must be used as keyword argument, else ``subplotIdx`` is \n\
 assumed to be initialized. \n\

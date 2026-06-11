@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
 
@@ -11,7 +11,7 @@
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
 
-    In addition, as a special exception, the Institut fuer Technische
+    In addition, as a special exception, the Institut für Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
     which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -58,7 +58,7 @@ namespace ito
 
 This class uses implicit sharing (copy-on-write) to reduce memory usage and to avoid the needless
 copying of data. It can be used to store 8-bit '\0' terminated strings and is a easy and safe
-way to handle const char* types. ByteArray is a leightweight class without any dependency to Qt
+way to handle const char* types. ByteArray is a lightweight class without any dependency to Qt
 and is used in many itom libraries e.g. the Qt-free itomCommonLib library.
 */
 class ITOMCOMMON_EXPORT ByteArray
@@ -66,7 +66,7 @@ class ITOMCOMMON_EXPORT ByteArray
     private:
         /*!
         \struct Data
-        \brief basic data container for class ByteArray that is implicitely shared over multiple instances of ByteArray of the same content
+        \brief basic data container for class ByteArray that is implicitly shared over multiple instances of ByteArray of the same content
 
         The address of the real character array is stored in m_pData. The data buffer itself starts at m_buffer
         and continues at the end of the struct. Therefore, ByteArray allocates memory for Data that has the length
@@ -92,7 +92,7 @@ class ITOMCOMMON_EXPORT ByteArray
         //! constructor that copies the content of str ('\0'-terminated) to this ByteArray.
         ByteArray(const char *str);
 
-        //! copy constructor: the given byte array is implicitely shared between both instances until its content is changed by one of both participating instances.
+        //! copy constructor: the given byte array is implicitly shared between both instances until its content is changed by one of both participating instances.
         inline ByteArray(const ByteArray& copyConstr) : d(copyConstr.d)
         {
             if (d)
@@ -109,7 +109,7 @@ class ITOMCOMMON_EXPORT ByteArray
         //! destructor: the internal data is deleted if no other instance needs it.
         inline ~ByteArray() { decAndFree(d); }
 
-        //! another ByteArray is assigned to this ByteArray. The old content is deleted and the given byte array is implicitely shared between both instances.
+        //! another ByteArray is assigned to this ByteArray. The old content is deleted and the given byte array is implicitly shared between both instances.
         ByteArray &operator=(const ByteArray &rhs);
 
         ByteArray &operator=(ByteArray &&rhs);

@@ -1,7 +1,7 @@
 """Fit geometric element
 ========================
 
-Fit geomtric elements to pointClouds.
+Fit geometric elements to pointClouds.
 """
 
 import numpy as np
@@ -24,7 +24,6 @@ cloud = pointCloud()
 
 for fitGeometry in geometryList:
     if fitGeometry == "line":
-
         X = np.arange(-3.1, 3.1, 0.1) * 3
         Y = np.arange(-3.1, 3.1, 0.1) * 3
         Z = np.ones(X.shape, X.dtype)
@@ -45,7 +44,6 @@ for fitGeometry in geometryList:
         )
 
     elif fitGeometry == "plane":
-
         [X, Y] = np.meshgrid(np.arange(-2.0, 2.0, 0.1), np.arange(-2.0, 2.0, 0.1))
         Z = np.ones(X.shape, X.dtype) + Y * np.sin(45 * np.pi / 180)
         Y *= np.cos(45 * np.pi / 180)
@@ -57,10 +55,11 @@ for fitGeometry in geometryList:
 
         [cVec, cPt, cInl] = algorithms.pclFitPlane(cloud, 1, optimizeParameters=0)
 
-        print("The plane's direction is ({}, {}, {}) with the constant {}".format(cVec[0], cVec[1], cVec[2], cPt))
+        print(
+            f"The plane's direction is ({cVec[0]}, {cVec[1]}, {cVec[2]}) with the constant {cPt}"
+        )
 
     elif fitGeometry == "circle2D":
-
         X = np.cos(np.arange(-3.1, 3.1, 0.1)) * 3
         Y = np.sin(np.arange(-3.1, 3.1, 0.1)) * 3
         Z = np.ones(X.shape, X.dtype)
@@ -70,12 +69,13 @@ for fitGeometry in geometryList:
             dataObject(Z.astype("float32")),
         )
 
-        [cPt, cRad, cInl] = algorithms.pclFitCircle2D(cloud, [1, 6], optimizeParameters=0)
+        [cPt, cRad, cInl] = algorithms.pclFitCircle2D(
+            cloud, [1, 6], optimizeParameters=0
+        )
 
-        print("The circle has a radius {} and is centered at ({}, {})".format(cRad, cPt[0], cPt[1]))
+        print(f"The circle has a radius {cRad} and is centered at ({cPt[0]}, {cPt[1]})")
 
     elif fitGeometry == "circle3D":
-
         X = np.cos(np.arange(-3.1, 3.1, 0.1)) * 3
         Y = np.sin(np.arange(-3.1, 3.1, 0.1)) * 3
         Z = np.ones(X.shape, X.dtype) + Y * np.sin(45 * np.pi / 180)
@@ -86,10 +86,19 @@ for fitGeometry in geometryList:
             dataObject(Z.astype("float32")),
         )
 
-        [cPt, cNormal, cRad, cInl] = algorithms.pclFitCircle3D(cloud, [1, 6], optimizeParameters=0)
+        [cPt, cNormal, cRad, cInl] = algorithms.pclFitCircle3D(
+            cloud, [1, 6], optimizeParameters=0
+        )
 
         angle = (
-            mathe.acos(cNormal[2] / (cNormal[0] * cNormal[0] + cNormal[1] * cNormal[1] + cNormal[2] * cNormal[2]))
+            mathe.acos(
+                cNormal[2]
+                / (
+                    cNormal[0] * cNormal[0]
+                    + cNormal[1] * cNormal[1]
+                    + cNormal[2] * cNormal[2]
+                )
+            )
             * 180
             / np.pi
         )
@@ -103,7 +112,6 @@ for fitGeometry in geometryList:
         )
 
     elif fitGeometry == "sphere":
-
         [X, Y] = np.meshgrid(np.arange(-2.0, 2.0, 0.1), np.arange(-2.0, 2.0, 0.1))
         Z = np.sqrt(9 - Y * Y - X * X)
         cloud = pointCloud.fromXYZ(
@@ -113,9 +121,10 @@ for fitGeometry in geometryList:
         )
 
         [cPt, cRad, cInl] = algorithms.pclFitSphere(cloud, [1, 6], optimizeParameters=0)
-        print("The sphere has a radius {} and is centered at ({}, {}, {})".format(cRad, cPt[0], cPt[1], cPt[2]))
+        print(
+            f"The sphere has a radius {cRad} and is centered at ({cPt[0]}, {cPt[1]}, {cPt[2]})"
+        )
     elif fitGeometry == "cylinder":
-
         [X, Y] = np.meshgrid(np.arange(-2.0, 2.0, 0.1), np.arange(-2.0, 2.0, 0.1))
         Z = np.sqrt(9 - Y * Y)
         cloud = pointCloud.fromXYZ(
@@ -128,7 +137,9 @@ for fitGeometry in geometryList:
         pclNorm = pointCloud()
         algorithms.pclEstimateNormals(cloud, pclNorm)
 
-        [cPt, cAxis, cRad, cInl] = algorithms.pclFitCylinder(pclNorm, [1, 6], optimizeParameters=0)
+        [cPt, cAxis, cRad, cInl] = algorithms.pclFitCylinder(
+            pclNorm, [1, 6], optimizeParameters=0
+        )
         print(
             "The cylinder has a radius {} and its axis is at ({}, {}, {}) with the direction ({}, {}, {})".format(
                 cRad, cPt[0], cPt[1], cPt[2], cAxis[0], cAxis[1], cAxis[2]

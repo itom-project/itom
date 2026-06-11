@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom.
 
@@ -43,7 +43,7 @@ class PythonEngine;
          PythonEngine. This is mainly for one reason: Whenever a short script
          is run in Python (not debug), it might be that the execution is so short,
          that it is a waste of computing resources to switch the GUI to a busy state
-         during this short exeuction. Therefore, the transition to the `run` state
+         during this short execution. Therefore, the transition to the `run` state
          is signalled by this class with a short delay. Whenever, the 'idle' state
          is signalled by the PythonEngine before the delay exceeds, nothing is
          signalled by this class. This only holds for this transition. All other

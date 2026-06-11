@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom.
 
@@ -38,9 +38,9 @@ namespace ito
 
     Every user-defined dialog, main window or widget that is loaded by the python-class ui or that is loaded from a plugin,
     contains one instance of this class. Any signal from any item of this user interface, that is connected by a python
-    script with any appropriate bounded or unbounded pyhton method, is handled by this instance. This works as follows:
+    script with any appropriate bounded or unbounded python method, is handled by this instance. This works as follows:
     The Qt-signal-slot system obtains a virtual slot that fits to the requirements of the signal. Both are connected.
-    Once the slot as a member of this class is called, the call is catched by the overwritten method qt_metacall. If anything
+    Once the slot as a member of this class is called, the call is caught by the overwritten method qt_metacall. If anything
     is ok, the call is then redirected to the registered python method. Any python method that acts as slot for any signal
     of the dialog or window, is one instance of the class PythonQtSignalTarget.
 
@@ -171,7 +171,7 @@ bool PythonQtSignalMapper::removeSignalHandler(QObject *obj, int sigId, PyObject
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! disconnects all signal-slot connections managed by this instane of PythonQtSignalMapper
+//! disconnects all signal-slot connections managed by this instance of PythonQtSignalMapper
 /*!
     This disconnection is easily done by deleting the list of targets.
 */
@@ -372,7 +372,7 @@ bool PythonQtSignalTarget::isSame(int signalId, PyObject* callable) const
     window, the method is started in debug-mode. However, this is only done if python is in idle-mode
     at the point of the start of the execution.
 
-    The exeuction is as follows:
+    The execution is as follows:
     1. It is checked whether the method should be executed or started in debug-mode
     2. The given arguments are marshalled to PyObject-values and added to a tuple.
     3. The python method or function is called.

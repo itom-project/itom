@@ -1,11 +1,9 @@
-# coding=utf8
 """Face Detection
 =================
 
 This demo shows how a simple image processing example can be demonstrated.
 The ``itom`` grabber ``OpenCVGrabber`` captures your webcam.
 Then live your face and eyes are detected and marked in the live plot."""
-
 
 from itom import dataObject
 from itom import dataIO
@@ -14,6 +12,7 @@ import cv2
 import numpy as np
 import gc
 # sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoFaceDetection.png'
+
 
 ###############################################################################
 # Face detection method.
@@ -46,6 +45,7 @@ def drawRects(img, faces, color):
         rect.color = color
         win.plot.call("updateGeometricShape", rect)
 
+
 ###############################################################################
 # Draw detected eyes method.
 def drawEyes(img, eyes, color):
@@ -58,6 +58,7 @@ def drawEyes(img, eyes, color):
         except AttributeError:
             break
         cnt = cnt + 1
+
 
 ###############################################################################
 # Acquire an image from the webcam.
@@ -83,6 +84,7 @@ def snap():
     drawRects(img, faces, rgba(255, 0, 0, 255))  # in color red
     drawEyes(img, eyes, rgba(0, 255, 0, 255))  # in color green
 
+
 ###############################################################################
 # Close GUI and stop webcam.
 def guiClosed():
@@ -91,6 +93,7 @@ def guiClosed():
     del win
     del cam
     gc.collect()
+
 
 ###############################################################################
 # Open a simple ``GUI``, connect the webcam and starte the live face detection.

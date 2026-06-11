@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom.
 
@@ -163,7 +163,7 @@ ito::RetVal UserOrganizer::loadSettings(const QString &userId)
 
         DialogSelectUser userDialog(m_userModel);
 
-        // User(name) variable is not necessarily OS dependend. So this will give us the best chance to find the actual user name http://stackoverflow.com/questions/26552517/get-system-username-in-qt
+        // User(name) variable is not necessarily OS dependent. So this will give us the best chance to find the actual user name http://stackoverflow.com/questions/26552517/get-system-username-in-qt
         QString curSysUser = qgetenv("USERNAME");
         if (curSysUser.isEmpty())
         {

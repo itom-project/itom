@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
 
@@ -11,7 +11,7 @@
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
 
-    In addition, as a special exception, the Institut fuer Technische
+    In addition, as a special exception, the Institut für Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
     which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -51,7 +51,7 @@ namespace dObjHelper
     //! Find the global maximum of the given dataObject and saves it in maxValue. The plane-index, row and column is saved in the pre-allocated array firstLocation (three values).
     DATAOBJ_EXPORT RetVal maxValue(const DataObject *dObj, float64 &maxValue, uint32 *firstLocation, bool ignoreInf = true);
 
-    //! Find the minimal and maximal Value in the dataObject and saves their first occurence in firstMinLocation (uint32[3]-Array) and firstMaxLocation (uint32[3]-Array)
+    //! Find the minimal and maximal Value in the dataObject and saves their first occurrence in firstMinLocation (uint32[3]-Array) and firstMaxLocation (uint32[3]-Array)
     DATAOBJ_EXPORT RetVal minMaxValue(const DataObject *dObj, float64 &minValue, uint32 *firstMinLocation, float64 &maxValue, uint32 *firstMaxLocation, bool ignoreInf = true, const int specialDataTypeFlags = CMPLX_ABS_VALUE);
 
     DATAOBJ_EXPORT RetVal meanValue(const DataObject *dObj, float64 &meanResult, bool ignoreNaN = true);
@@ -76,8 +76,8 @@ namespace dObjHelper
 
     /*! checks given size to be in range [minSize, maxSize] and returns ito::retOk if this is the case
 
-    If maxSize == -1, size must only be equal to minSize or bigger. In case of error, an error meassage is set
-    using the name dObjName of the dataObject ans axisName of the name of the axis.
+    If maxSize == -1, size must only be equal to minSize or bigger. In case of error, an error message is set
+    using the name dObjName of the dataObject and axisName of the name of the axis.
     */
     DATAOBJ_EXPORT RetVal verifySize(int size, int minSize, int maxSize, const char *axisName, const char* dObjName);
 
@@ -160,7 +160,7 @@ namespace dObjHelper
     //-----------------------------------------------------------------------------------------------
     /*! \brief  check if both data objects are equal concerning their number of dimensions, sizes and type
         \param[in]   dObj1   first data object
-        \param[in]   dObj2   second data obect
+        \param[in]   dObj2   second data object
         \return true if size and type of both objects are equal, else false
         \author  Lyda
     */
@@ -187,7 +187,7 @@ namespace dObjHelper
 
     //-----------------------------------------------------------------------------------------------
     /*! \fn isIntType
-        \brief  Helpfunction to check if object type is integer type or not and if integer point the size is spezified in size
+        \brief  Helpfunction to check if object type is integer type or not and if integer point the size is specified in size
         \param[in]   type    tDataType of a DataObject
         \param[out]  size    Number of bytes if floating point type (1 or 4) else -1
         \author  Lyda
@@ -218,7 +218,7 @@ namespace dObjHelper
 
     //-----------------------------------------------------------------------------------------------
     /*! \fn isFPType
-        \brief  Helpfunction to check if object type is floating point type or not and if floating point point the size is spezified in size
+        \brief  Helpfunction to check if object type is floating point type or not and if floating point point the size is specified in size
         \param[in]   type    tDataType of a DataObject
         \param[out]  size    Number of bytes if floating point type (4 or 8) else -1
         \author  Lyda
@@ -246,7 +246,7 @@ namespace dObjHelper
 
     //-----------------------------------------------------------------------------------------------
     /*! \fn isCplxType
-        \brief  Helpfunction to check if object type is complex-type or not and if complex point the size is spezified in size
+        \brief  Helpfunction to check if object type is complex-type or not and if complex point the size is specified in size
         \param[in]   type    tDataType of a DataObject
         \param[out]  size    Number of bytes if complex type (8 or 16) else -1
         \author  Lyda
@@ -332,7 +332,7 @@ namespace dObjHelper
                This function allocates a type*** pointer to address each pixel by plane number, y-index, x-index.
                The size of the array is planes+1, ysize and row-length. The last plane index is set to NULL.
                The pointer array must be cleaned by freeRowPointer.
-               The function checks for type compability of object and pointer.
+               The function checks for type compatibility of object and pointer.
 
         \param[in]   *dObj    pointer to an existing dataObject of right type
         \param[in]   pointer  A _Type *** pointer of correct type
@@ -654,7 +654,7 @@ namespace dObjHelper
     *   @brief  This function return the Open-CV-datatype
     *   @param[in]  type    Datatype of the data-object of interest
     *   @return -1 or datatype
-    *   @detail This helper function converts itom-dataojecttype to openCV type. If unkwown type occurs, this function returns -1
+    *   @detail This helper function converts itom-dataojecttype to openCV type. If unknown type occurs, this function returns -1
     */
     inline int itomType2cvType(const int type)
     {
@@ -683,7 +683,7 @@ namespace dObjHelper
     *   @brief  This function return the ITOM-datatype
     *   @param[in]  type    Datatype of the current cv::Mat
     *   @return -1 or datatype
-    *   @detail This helper function converts openCV-type to itom-datatype. If unkwown type occurs, this function returns -1
+    *   @detail This helper function converts openCV-type to itom-datatype. If unknown type occurs, this function returns -1
     */
     inline int cvType2itomType(const int type)
     {

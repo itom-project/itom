@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2023, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2024, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom.
 
@@ -261,6 +261,8 @@ private:
     //!< debugs the given Python string command
     void pythonDebugString(QString cmd);
 
+    QString modifyCommandStringInCaseOfSpecialComments(const QString& command);
+
     //methods for debugging
     void enqueueDbgCmd(ito::tPythonDbgCmd dbgCmd);
     ito::tPythonDbgCmd dequeueDbgCmd();
@@ -388,6 +390,7 @@ signals:
     void pythonResetCursor();
     void pythonAutoReloadChanged(bool enabled, bool checkFile, bool checkCmd, bool checkFct);
     void clearCommandLine();
+    void interruptCommandInput();
     void startInputCommandLine(QSharedPointer<QByteArray> buffer, ItomSharedSemaphore *semaphore);
 
 private slots:
@@ -404,7 +407,7 @@ public slots:
 
     void setAutoReloader(bool enabled, bool checkFile, bool checkCmd, bool checkFct);
 
-    // Settings are neccesary for automatic itom inclusion and syntax check
+    // Settings are necessary for automatic itom inclusion and syntax check
     void readSettings();
     void propertiesChanged();
 

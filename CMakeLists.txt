@@ -1,7 +1,7 @@
 # - itom software -
 # URL: http://www.uni-stuttgart.de/ito
-# Copyright (C) 2022, Institut fuer Technische Optik (ITO),
-# Universitaet Stuttgart, Germany
+# Copyright (C) 2025, Institut für Technische Optik (ITO),
+# Universität Stuttgart, Germany
 #
 # This file is part of itom and its software development toolkit (SDK).
 #
@@ -18,9 +18,24 @@
 # You should have received a copy of the GNU Library General Public License
 # along with itom. If not, see <http://www.gnu.org/licenses/>.
 
-cmake_minimum_required(VERSION 3.12...3.24)
+cmake_minimum_required(VERSION 3.12...3.29)
 
-project(itom)
+message(
+    STATUS "------------------- PROJECT itom ---------------------")
+
+# Retrieve Version Number and Identifier from GIT-TAG
+include(cmake/VersionFromGit.cmake)
+version_from_git(
+  LOG       ON
+  TIMESTAMP "%Y%m%d%H%M%S"
+)
+
+# define cmake project and version number
+project(itom VERSION ${GIT_VERSION})
+set(itom_VERSION_IDENTIFIERS ${GIT_IDENTIFIERS})
+
+message(
+    STATUS "------------------- Version = ${itom_VERSION} -----------------------\n")
 
 # set qitom as Visual Studio Startup-Projekt
 set_property( DIRECTORY PROPERTY VS_STARTUP_PROJECT "qitom" )
@@ -89,9 +104,15 @@ add_subdirectory(plot)
 add_subdirectory(itomWidgets)
 add_subdirectory(Qitom)
 add_subdirectory(iconThemes)
+
 if(BUILD_UNITTEST)
     #put this as last, since gtest is globally changing many compiler flags
-    add_subdirectory(gtest-1.10.0)
+    if(WIN32 AND ((NOT DEFINED ${gtest_force_shared_crt}) OR (NOT ${gtest_force_shared_crt})))
+        set(gtest_force_shared_crt ON CACHE BOOL "Use shared (DLL) run-time lib even when Google Test is built as static lib." FORCE)
+        message(WARNING "For properly running the unittests, the CMAKE variable gtest_force_shared_crt has been forced to ON.")
+    endif()
+
+    add_subdirectory(gtest-1.12.1)
     add_subdirectory(itom_unittests)
 endif()
 
@@ -100,15 +121,6 @@ endif()
 if(SETUP_ISSCONFIG)
     set(InnoSetupPath CACHE PATH "base path to inno setup")
 endif()
-
-#find current itom version from qitom/global.h
-file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/Qitom/global.h ITOM_versionStringFull LIMIT_COUNT 1 REGEX "^#define ITOM_VERSION_STR.*$")
-string(REGEX MATCH "([0-9]+).([0-9]+).([0-9]+)" ITOM_versionString ${ITOM_versionStringFull}) #searches for Number.Number.Number[.Number] in ITOM_versionStringFull
-
-message(STATUS "itom version is: ${ITOM_versionString}. If wrong change it in global.h and reconfigure CMake")
-message(STATUS "")
-message(STATUS "CMAKE_CURRENT_BINARY_DIR: ${CMAKE_CURRENT_BINARY_DIR}")
-message(STATUS "")
 
 ################################################################################################################
 #CONFIGURE AND PREPARE THE INNO SETUP FILES (require location of Qt, therefore find_package_qt must be called)
@@ -141,16 +153,29 @@ itom_find_package_qt(ON Core)
 itom_define_sdk_platform()
 itom_define_sdk_compiler()
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win32/itom_setup_win32.iss.in
-    ${CMAKE_CURRENT_BINARY_DIR}/setup/win32/itom_setup_win32.iss )
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/common/itom_setup_code.iss.in
-    ${CMAKE_CURRENT_BINARY_DIR}/setup/win32/itom_setup_win32_code.iss )
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/common/start_qt_deployment.bat.in
-    ${CMAKE_CURRENT_BINARY_DIR}/setup/win32/start_qt_deployment.bat )
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/common/PythonRequirements/requirementsMandatory.txt
-    ${CMAKE_CURRENT_BINARY_DIR}/setup/win32/PythonRequirements/requirementsMandatory.txt)
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/common/PythonRequirements/requirementsOptional.txt
-    ${CMAKE_CURRENT_BINARY_DIR}/setup/win32/PythonRequirements/requirementsOptional.txt)
+find_package(OpenCV QUIET)
+string(REPLACE . "" OpenCV_LIB_VERSION ${OpenCV_VERSION})
+
+if(BUILD_WITH_PCL)
+    find_package(VTK QUIET)
+    if(VTK_VERSION)
+        string(REGEX MATCH "([0-9]+\.[0-9]+)" VTK_LIB_VERSION ${VTK_VERSION})
+        if(NOT VTK_LIB_VERSION)
+            message(FATAL_ERROR "Failed to extract VTK_LIB_VERSION from VTK_VERSION: ${VTK_VERSION}")
+        endif()
+    else()
+        message(FATAL_ERROR "VTK_VERSION is not defined")
+    endif()
+endif(BUILD_WITH_PCL)
+
+find_package(Python QUIET)
+string(REGEX MATCH "([0-9]+\.[0-9]+)" Python_LIB_VERSION ${Python_VERSION})
+string(REPLACE . "" Python_LIB_VERSION ${Python_LIB_VERSION})
+
+message(STATUS "itom_VERSION_IDENTIFIERS: ${itom_VERSION_IDENTIFIERS}")
+message(STATUS "itom_VERSION: ${itom_VERSION}")
+
+
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win64/itom_setup_win64.iss.in
     ${CMAKE_CURRENT_BINARY_DIR}/setup/win64/itom_setup_win64.iss )
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/common/itom_setup_code.iss.in
@@ -167,8 +192,6 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win64/itom_setup_zipper/start_q
     ${CMAKE_CURRENT_BINARY_DIR}/setup/win64/itom_setup_zipper/start_qt_deployment.bat.in COPYONLY)
 
 if(SETUP_ISSCONFIG)
-    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win32/compile_iss_win32.bat.in
-        ${CMAKE_CURRENT_BINARY_DIR}/setup/win32/compile_iss_win32.bat )
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win64/compile_iss_win64.bat.in
         ${CMAKE_CURRENT_BINARY_DIR}/setup/win64/compile_iss_win64.bat )
 endif()
@@ -248,6 +271,7 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/cmake                         DESTINATION 
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/cmake/ItomBuildMacros.cmake   DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/SDK/cmake)
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Setup_PCL_Itom.cmake   DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/SDK/cmake)
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Setup_PCL_Plugins.cmake   DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/SDK/cmake)
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/cmake/VersionFromGit.cmake   DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/SDK/cmake)
 
 if(MSVC)
     file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/designerPluginLibraryVersion.rc DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/SDK)

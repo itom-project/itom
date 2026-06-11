@@ -45,7 +45,9 @@ class ItomUiClassDemo(ItomUi):
 
         Use the constructor to further initialize the user interface.
         """
-        ItomUi.__init__(self, "itomUiClassDemo.ui", type=ui.TYPEWINDOW, deleteOnClose=True)
+        ItomUi.__init__(
+            self, "itomUiClassDemo.ui", type=ui.TYPEWINDOW, deleteOnClose=True
+        )
 
         # further initialization
         self.gui.progressBar["visible"] = False
@@ -157,7 +159,8 @@ class ItomUiClassDemo(ItomUi):
             time.sleep(3)
 
             raise RuntimeError(
-                "an unhandled exception occurred, but the " "GUI is turned into the original state though"
+                "an unhandled exception occurred, but the "
+                "GUI is turned into the original state though"
             )
 
 

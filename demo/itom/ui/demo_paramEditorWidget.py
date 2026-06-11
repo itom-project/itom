@@ -3,7 +3,7 @@
 
 This example shows the usage of the generic ParamEditorWidget.
 
-The widget can be used in various ways. Some of them are shwon in
+The widget can be used in various ways. Some of them are shown in
 this example.
 
 In the first tab, we have a DummyGrabber live image with two
@@ -19,6 +19,7 @@ a subset of parameters (depending on their category). The category
 of a parameter is an optional meta information and is part of the
 plugin.
 """
+
 from itom import dataIO
 from itom import actuator
 from itom import ui
@@ -41,17 +42,13 @@ def onApply():
 
 # configure the DummyGrabber camera tab
 gui.plot["camera"] = cam  # assign the camera to the plot
-gui.pewGrabber[
-    "plugin"
-] = cam  # assign the camera to the left ParamEditorWidget
+gui.pewGrabber["plugin"] = cam  # assign the camera to the left ParamEditorWidget
 
 # if a parameter is changed in this ParamEditorWidget, directly call
 # setParam of the camera
 gui.pewGrabber["immediatelyModifyPluginParamsAfterChange"] = True
 
-gui.pewGrabber2[
-    "plugin"
-] = cam  # assign the camera to the right ParamEditorWidget
+gui.pewGrabber2["plugin"] = cam  # assign the camera to the right ParamEditorWidget
 
 # do not directly change the parameters in the camera, instead click
 # the Apply button...

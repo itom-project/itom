@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
 
@@ -11,7 +11,7 @@
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
 
-    In addition, as a special exception, the Institut fuer Technische
+    In addition, as a special exception, the Institut für Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
     which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -79,7 +79,7 @@ class ITOMWIDGETS_EXPORT PathLineEdit: public QWidget
   Q_PROPERTY ( QString currentPath READ currentPath WRITE setCurrentPath USER true )
   /// Qt versions prior to 4.7.0 didn't expose QFileDialog::Options in the
   /// public API. We need to create a custom property that will be used when
-  /// instanciating a QFileDialog in PathLineEdit::browse()
+  /// instantiating a QFileDialog in PathLineEdit::browse()
 #ifdef USE_QFILEDIALOG_OPTIONS
   Q_PROPERTY(QFileDialog::Options options READ options WRITE setOptions)
 #else
@@ -239,7 +239,7 @@ public:
   void setSizeAdjustPolicy(SizeAdjustPolicy policy);
 
   int minimumContentsLength()const;
-  void setMinimumContentsLength(int lenght);
+  void setMinimumContentsLength(int length);
 
   /// Return the combo box internally used by the path line edit
   QComboBox* comboBox() const;

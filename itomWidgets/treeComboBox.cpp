@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
 
@@ -11,7 +11,7 @@
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
 
-    In addition, as a special exception, the Institut fuer Technische
+    In addition, as a special exception, the Institut für Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
     which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -383,7 +383,7 @@ void TreeComboBox::resizePopup()
         listRect.moveLeft(above.x());
 
 #ifndef Q_WS_S60
-        // Position vertically so the curently selected item lines up
+        // Position vertically so the currently selected item lines up
         // with the combo box.
         const QRect currentItemRect = this->view()->visualRect(this->view()->currentIndex());
         const int offset = listRect.top() - currentItemRect.top();
@@ -415,7 +415,7 @@ void TreeComboBox::resizePopup()
 #ifdef Q_WS_S60
         if (screen.width() < screen.height())
           {
-          // in portait, menu should be positioned above softkeys
+          // in portrait, menu should be positioned above softkeys
           listRect.moveBottom(screen.bottom());
           }
         else

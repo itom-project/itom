@@ -115,8 +115,8 @@ plot widgets. The returned plot handle of the commands :py:meth:`~itom.plot`
 or :py:meth:`~itom.liveImage` is always an instance of
 :py:class:`~itom.plotItem`. However, if the plot widget is integrated in an
 user interface, the reference to every widget is only given in terms of the
-base class :py:class:`~itom.uiItem`. You can however savely cast the given
-handle to a plot widget of itom to :py:class:`~itom.plotItem` in oder to get
+base class :py:class:`~itom.uiItem`. You can however safely cast the given
+handle to a plot widget of itom to :py:class:`~itom.plotItem` in order to get
 access to the method :py:meth:`~itom.plotItem.drawAndPickElements` (see the
 demo script *ui/uiShapeDemo.py* for an example about this).
 
@@ -283,10 +283,10 @@ areas are displayed at some corner points (comparable to shapes in Word, Inkscap
 The index of the currently selected shape can be obtained by the property **selectedGeometricShape**. This is the index of the shape and must not always correspond to the index-position
 of the shape in the tuple returned by the property **geometricShapes**.
 
-It is possible to move a shape by clicking somewhere on the contour and releasing the mouse button at the new location. To modifiy the size of the shape, drag one of the active
+It is possible to move a shape by clicking somewhere on the contour and releasing the mouse button at the new location. To modify the size of the shape, drag one of the active
 areas to a new location.
 
-It is not only possible to modifiy the available shapes, but you can also control whether the user is allowed to do a move or resize operation. This can be done either globally for
+It is not only possible to modify the available shapes, but you can also control whether the user is allowed to do a move or resize operation. This can be done either globally for
 the plot and then all existing and future shapes or it can be done selectively for every shape. For the global control, set the bitmask of the plot property **geometryModificationModes**.
 In the following example, move operations and resize operations should be globally allowed for all shapes:
 

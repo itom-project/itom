@@ -27,7 +27,7 @@ has been assigned to this user, you have to enter this password first.
     **ini** settings files of any user, it is always possible to remotely create new users, remove a user, set or unset a
     password or change the rights of a user. The user management system is intended to provide different representations of
     |itom| such that developers can for instance create scripts whereas default users only get a basic GUI with a minimal
-    set of widgets, which they need to fullfil their tasks.
+    set of widgets, which they need to fulfill their tasks.
 
 
 Display, edit and create new users

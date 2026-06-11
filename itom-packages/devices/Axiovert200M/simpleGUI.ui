@@ -368,7 +368,7 @@
       <item>
        <widget class="QPushButton" name="btnInit">
         <property name="text">
-         <string>Inizializing</string>
+         <string>Initializing</string>
         </property>
        </widget>
       </item>

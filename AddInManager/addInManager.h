@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom.
 
@@ -59,7 +59,7 @@ namespace ito
     *
     *   This class is internally used for plugin handling, i.e. detecting available plugins which can be loaded,
     *   maintaining a list (widget \ref AddInModel) of available and loaded plugins, loading and unloading of plugins.
-    *   The plugins themselfs are based on the addInInterface, declared in \ref addInInterface. The AddInManager is
+    *   The plugins themselves are based on the addInInterface, declared in \ref addInInterface. The AddInManager is
     *   implemented as singleton class because it must exist only one instance of it (which would also be possible using
     *   a static class) but which also does a clean up of the instantiated plugin classes at program exit.
     */
@@ -77,8 +77,8 @@ namespace ito
             //!> returns the instantiated singleton class or NULL if it has not been loaded, yet
             static AddInManager* instance() { return staticInstance; }
 
-            //!> scan directory at path for loadable plugins, if checkQCoreApp is 1 it is checked wether an instance of Q(Core)Application
-            //!> is already running, which is necessary for multithreading, i.e. asyncronous use of plugins. If no instance is found a new
+            //!> scan directory at path for loadable plugins, if checkQCoreApp is 1 it is checked whether an instance of Q(Core)Application
+            //!> is already running, which is necessary for multithreading, i.e. asynchronous use of plugins. If no instance is found a new
             //!> one is created
             const RetVal scanAddInDir(const QString &path, const int checkQCoreApp = 1);
 

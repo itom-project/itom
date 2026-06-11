@@ -1,5 +1,4 @@
-# coding=iso-8859-15
-# Copyright © 2009 Pierre Raybaut
+# Copyright (C) 2009 Pierre Raybaut
 # Licensed under the terms of the MIT License
 # see the mpl licenses directory for a copy of the license
 
@@ -12,6 +11,7 @@ import re
 import matplotlib
 from matplotlib import cm, colors as mcolors, markers, image as mimage
 from mpl_itom import _dialogEditProperties
+from mpl_itom import versiontuple
 
 
 LINESTYLES = {
@@ -92,7 +92,7 @@ def figure_edit(matplotlibplotUiItem, axes, parent=None):
         FormLayout combobox, namely `[initial_name, (shorthand,
         style_name), (shorthand, style_name), ...]`.
         """
-        if matplotlib.__version__ >= "3.0.0":
+        if versiontuple(matplotlib.__version__) >= versiontuple("3.0.0"):
             if init not in d:
                 d = {**d, init: str(init)}
         # Drop duplicate shorthands from dict (by overwriting them during
@@ -107,7 +107,7 @@ def figure_edit(matplotlibplotUiItem, axes, parent=None):
             short2name.items(), key=lambda short_and_name: short_and_name[1]
         )
 
-    if matplotlib.__version__ >= "3.0.0":
+    if versiontuple(matplotlib.__version__) >= versiontuple("3.0.0"):
         # BEGIN OF MATPLOTLIB 3.X
         curvelabels = sorted(linedict, key=cmp_key)
         for label in curvelabels:
@@ -152,9 +152,9 @@ def figure_edit(matplotlibplotUiItem, axes, parent=None):
         mappablelabels = sorted(mappabledict, key=cmp_key)
         mappables = []
 
-        if matplotlib.__version__ < "3.3.0":
+        if versiontuple(matplotlib.__version__) < versiontuple("3.3.0"):
             cm_cmaps = cm.cmap_d
-        elif matplotlib.__version__ >= "3.6.0":
+        elif versiontuple(matplotlib.__version__) >= versiontuple("3.6.0"):
             cm_cmaps = cm._colormaps
         else:
             cm_cmaps = cm._cmap_registry
@@ -281,7 +281,7 @@ def figure_edit(matplotlibplotUiItem, axes, parent=None):
                     draggable = old_legend._draggable is not None
                     ncol = old_legend._ncol
                 new_legend = axes.legend(ncol=ncol)
-                if matplotlib.__version__ >= "3.0.0":
+                if versiontuple(matplotlib.__version__) >= versiontuple("3.0.0"):
                     if new_legend:
                         new_legend.set_draggable(draggable)
                 else:

@@ -396,7 +396,7 @@ TYPED_TEST(copyTests, copyTo_False_Test)
                 EXPECT_EQ(this->dObj3_dr.template at<TypeParam>(i, j, k),
                           this->dObj3_s.template at<TypeParam>(
                               i, j, k)); //!< Checking if elements of ROI of original Data Object this->dObj3_dr has
-                                         //!< been changed while adusting the size of ROI back to original.
+                                         //!< been changed while adjusting the size of ROI back to original.
             }
         }
     }

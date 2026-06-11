@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2023, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2026, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom.
 
@@ -29,6 +29,7 @@
 #include <qsharedpointer.h>
 #include <qprogressdialog.h>
 #include <qtemporarydir.h>
+#include <qtimer.h>
 
 #include "common/retVal.h"
 
@@ -39,7 +40,7 @@ namespace ito
     {
         Q_OBJECT
     public:
-        PyCodeFormatter(QObject *parent = nullptr);
+        PyCodeFormatter(int progressDialogShowDelayMs, QObject *parent = nullptr);
         ~PyCodeFormatter();
 
         ito::RetVal startSortingAndFormatting(const QString &importSortingCmd, const QString &formattingCmd, const QString &code, QWidget *dialogParent = nullptr);
@@ -55,6 +56,8 @@ namespace ito
         QTemporaryDir m_importSortTempDir;
         QString m_pythonExePath;
         QString m_formattingCmd;
+        int m_progressDialogShowDelayMs;
+        QTimer *m_pShowProgressDialogDelayedTimer;
 
         ito::RetVal getPythonPath(QString &path) const;
         ito::RetVal startImportsSorting(const QString& importSortingCmd, const QString& code);
@@ -74,10 +77,11 @@ namespace ito
         void importSortStarted();
 
         void cancelRequested();
+        void delayedShowTimeoutDialog();
 
     signals:
         void formattingDone(bool success, QString code);
 
     };
 
-}; // end namepsace ito
+}; // end namespace ito

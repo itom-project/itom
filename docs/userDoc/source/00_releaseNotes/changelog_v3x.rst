@@ -76,7 +76,7 @@ itom
 * also added the new methods :py:meth:`itom.dataIO.disconnect` and :py:meth:`itom.actuator.disconnect`
 * With respect to the method :py:meth:`itom.uiItem.info`, also added the methods :py:meth:`itom.dataIO.info` and :py:meth:`itom.actuator.info`.
 * linux bugfix: workaround for bug in CentOS when waiting for semaphore without timeout value.
-* addded :py:meth:`itom.dataIO.getExecFuncsList` and :py:meth:`itom.actuator.getExecFuncsList` to print a list of available **exec-functions** of a specific plugin instance to the console.
+* added :py:meth:`itom.dataIO.getExecFuncsList` and :py:meth:`itom.actuator.getExecFuncsList` to print a list of available **exec-functions** of a specific plugin instance to the console.
 * added first version of chinese translation
 * proper display of *long long* values in workspace
 * pip settings of dialog pip manager are now saved and restored to or from settings file
@@ -170,7 +170,7 @@ Designer Plugins
 
 (more than 89 commits in designerPlugins repository)
 
-New features: support matplotlib 3.x including new *edit parameters* dialog, volumeCut in itom2dqwtplot, color of shapes can be assigned indivually (in script)
+New features: support matplotlib 3.x including new *edit parameters* dialog, volumeCut in itom2dqwtplot, color of shapes can be assigned individually (in script)
 
 * itom1dqwtplot: dataObjectSeriesData: adapted boundingRect for objects of type ito::Rgba32. Autointerval works now also for rbgba32 objects
 * itom1dqwtplot: line cuts in pure x or y direction are now displayed with regard to their start and endpoint. Until now the x-vector was always displayed in positive direction.
@@ -243,9 +243,9 @@ itom
 * matplotlib example updated to be compatible with matplotlib 2.1.0
 * adapted pythonMatlab to newer numpy definitions (at least <= numpy 1.7)
 * partial fixes in matplotlib backend to support matplotlib >= 2.1.0. Fixes issue https://bitbucket.org/itom/designerplugins/issues/14/matplotlibplot-idleevent-removed
-* fix when opening an info page in the helpTreeDockWidget while the help ist currently rendered or loaded from the database.
+* fix when opening an info page in the helpTreeDockWidget while the help is currently rendered or loaded from the database.
 * backend_itom.py backward compatible for matplotlib < 2.1
-* Added a paletteEditor to create user definied color palettes
+* Added a paletteEditor to create user defined color palettes
 * improvements in script reference (help viewer) including PythonAPI_SqlCreator.py
 * backend_itom.py: added wait Cursor for Matplotlib 2.1.0...
 * fix in copy constructor of DataObject if transpose is True
@@ -254,7 +254,7 @@ itom
 * fix in pointCloud.fromXYZ, .fromXYZI and .fromXYZRGBA if type of input dataObjects is not the same for all input objects.
 * changed parameter checking in AddInOrganizer, as some plugins did not load anymore, when the number of mandatory parameters of the interface was different from the plugin ones
 * improvements in PythonAPI_SqlCreator.py
-* fix with user rights for property-dialog, unconsistent assignment for user-rights concerning property-dialog
+* fix with user rights for property-dialog, inconsistent assignment for user-rights concerning property-dialog
 * fix if Qt is compiled without SSL support
 * updates in PythonAPI_SqlCreator
 * helpTreeDockWidget: Improvements with initial position after start, improvements when loading updated databases from internet resource...
@@ -329,7 +329,7 @@ itom
 * FindWindowsSDK CMAKE-File adapted for MSVC2015
 * FindOpenCV.cmake updated for MSVC14
 * added titles to compile batch files to better see the type of compilation (debug, release, x86, x64)
-* updated pathes in doxygen input file, updates URLs in intersphinx_mappings
+* updated paths in doxygen input file, updates URLs in intersphinx_mappings
 * close-method of plugins is only called as direct connection from AddInManager if it is used by an external-DLL and has created its own instance of QApplication. In all other cases, an Auto-connection is used.
 * workaround in matplotlib backend if coordinates with special characters (e.g. due to polar plot -> zoom tool, greek letters) should be displayed
 * AddInManager unittest: scan plugin directory for plugins instead of entire itom directory
@@ -377,7 +377,7 @@ Plugins
 * SerialIO: fix in dialog to choose, if a getVal should be directly executed after each setVal. This is not always desired, especially if the readline flag is activated.
 * SerialIO: removed restriction to endline characters. From now on any sign can be used...
 * ThorlabsPowerMeter: Updates in Thorlabs PowerMeter, a check for PowerMeter Version is integrated
-* Vistek: sychronization and threading fixes. ROI implemented. For fast acquisitions, plan to insert a small delay before acquiring the next image (this seems to be a problem of the software trigger)
+* Vistek: synchronization and threading fixes. ROI implemented. For fast acquisitions, plan to insert a small delay before acquiring the next image (this seems to be a problem of the software trigger)
 * Ximea: adapt timeout param to integration time (if timeout < integration_time)
 * Ximea: added API version switch in CMake (3.16, 4.10, newer)
 * Ximea: bug fix Ximea: Serial number of cam is now readable with new api
@@ -480,7 +480,7 @@ itom
 * update documentation of 1d and 2d plot
 * updated documentation due to modified widget wrappers (QComboBox::itemText accessible via python call)
 * fix in ItomBuildMacros.cmake, macro POST_BUILD_COPY_FILE_TO_LIB_FOLDER if the given library list is empty
-* added a paramEditorWidget which can for eg. can be used to acess parameters of a geniCam instance
+* added a paramEditorWidget which can for eg. can be used to access parameters of a geniCam instance
 * added itemText method to qlistview (widgetWrapper) and some code formatting
 * documentation updated for new pickerChanged signal of itom1dqwtplot
 * updated setup documentation of itom
@@ -508,7 +508,7 @@ itom
 * updated German translation
 * some security checks and comments added to new constructor of DataObject.
 * changes in tex_demo.py. There seems to be a bug in matplotlib 2.0.0, when using savefig command in combination with unicode!?
-* added dataobject contructor for single cv::Mat
+* added dataobject constructor for single cv::Mat
 * added some documentation about the Latex support for Matplotlib Text layout
 * re-add missing LinguistTools library
 * Integrated changes in commontk project: https://github.com/commontk/CTK/commit/5db3f9320ed50b9d8179236cd3e84694dd7153ec
@@ -534,7 +534,7 @@ itom
 * ito::Param::getMetaT<_Tp>() added as templated-version for ito::Param::getMeta() such that the C-cast can easily be replaced by the template parameter.
 * Bugfix application stall on closing, when using AddInManager dll
 * overloaded sizeHint in PenCreatorButton and added a brushCreatorButton
-* implemeted a fontButton
+* implemented a fontButton
 * added "item" slot for qListWidget, which retrieves the text of the "item"th row
 * added version.h (qitom / git) to sdk, added apifunction to read out filter version, author and plugin name
 * added option for Python path as itom subdirectory
@@ -619,7 +619,7 @@ Plugins
 * DemoAlgorithms: demoWidget added
 * more robust implementation of saveDataToTxt in DataObjectIO (concerning empty wrapSign and linux compilation)
 * Config dialog of FireGrabber adapted to modern style. Parameter 'roi' added.
-* added basci ascii export filter
+* added basic ascii export filter
 * modification in ptgrey path detection
 * Added newer MSVS version to PtGrey find library / binary
 * DataObjectIO: filter 'loadTXT' adapted and optional encoding of text file added. If this is not given, the encoding of the text file is guessed.
@@ -640,7 +640,7 @@ Plugins
 Designer Plugins
 ----------------
 
-(more than 30 commits in designerPlugins repsository)
+(more than 30 commits in designerPlugins repository)
 
 * others: from Qt5.5 on, an automatic parsing of enumerations and their keys in terms of strings is possible. Added this feature to improve python slot-calls.
 * others: changed Icons to 64x64 size.
@@ -657,7 +657,7 @@ Designer Plugins
 * itom2dqwtplot: fix to rescale color bar to right values if the value range is set to 'automatic'.
 * itom2dqwtplot: color bar can now display a logarithmic or double-logarithmic scale
 * itom2dqwtplot: a zStack or a lineCut is now of the same complex type as the parent plot
-* itom2dqwtplot: added api settings to individualize the z stack picker... added api settings to individualize the label of a drawed item... renamed some api functions
+* itom2dqwtplot: added api settings to individualize the z stack picker... added api settings to individualize the label of a drawn item... renamed some api functions
 * itom1dqwtplot, itom2dqwtplot: fixes when copying to clipboard or saving to a file (dpi related canvas size corrected). Screen dependent dpi has to be added in the future.
 * itom1dqwtplot, itom2dqwtplot: meta information widgets are copied to clipboard if visible
 * itom1dqwtplot, itom2dqwtplot: improved styles of picker, shapes, zoomer...

@@ -14,12 +14,12 @@ N = 1024
 amplitude = 128.0
 periodes = 3
 
-xs = np.linspace(-periodes*np.pi, periodes*np.pi, N)
-ys = np.linspace(-periodes*np.pi, periodes*np.pi, N)
+xs = np.linspace(-periodes * np.pi, periodes * np.pi, N)
+ys = np.linspace(-periodes * np.pi, periodes * np.pi, N)
 
 tau, phi = np.meshgrid(xs, ys)
 
-amp = np.sin(tau+phi)
+amp = np.sin(tau + phi)
 
 
 plot25(amp)

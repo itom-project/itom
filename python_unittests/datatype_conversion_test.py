@@ -29,13 +29,13 @@ class DatatypeConversionTest(unittest.TestCase):
             np.uint16(4000),
             np.int32(-64345345),
             np.int32(234234234),
-            np.int64(-(2 ** 50)),
-            np.uint64(2 ** 64 - 1),
+            np.int64(-(2**50)),
+            np.uint64(2**64 - 1),
         )
         result = cls.widget.call("__unittestVariantList", numbers)
         self.assertEqual(
             result,
-            (1.5, 1, 1, 2, 234, 4000, -64345345, 234234234, -(2 ** 50), 2 ** 64 - 1),
+            (1.5, 1, 1, 2, 234, 4000, -64345345, 234234234, -(2**50), 2**64 - 1),
         )
 
         # check int type
@@ -83,7 +83,7 @@ class DatatypeConversionTest(unittest.TestCase):
             np.uint16(4000),
             np.int32(-32768),
             np.uint32(32767),
-            np.int64(-(2 ** 50)),
+            np.int64(-(2**50)),
         )
         for num in numbersInt64:
             result = cls.widget.call("__unittestInt64", num)
@@ -98,8 +98,8 @@ class DatatypeConversionTest(unittest.TestCase):
             np.uint16(4000),
             np.int32(32768),
             np.uint32(32767),
-            np.int64(2 ** 50),
-            np.uint64(2 ** 64 - 1),
+            np.int64(2**50),
+            np.uint64(2**64 - 1),
         )
         for num in numbersUInt64:
             result = cls.widget.call("__unittestUInt64", num)

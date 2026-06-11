@@ -1,7 +1,33 @@
+exclude: ^(gtest-1.12.1)/
+
+ci:
+    autoupdate_schedule: monthly
+
 repos:
 -   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.4.0
+    rev: v4.6.0
     hooks:
     -   id: check-yaml
     -   id: end-of-file-fixer
     -   id: trailing-whitespace
+    -   id: fix-byte-order-marker
+
+-   repo: https://github.com/codespell-project/codespell
+    rev: v2.2.6
+    hooks:
+    -   id: codespell
+        args:
+        -   --skip=*.ts,*.svg,*.hqx,*-inv.txt,*.iss.in
+        -   --ignore-words=.codespell_ignore_words.txt
+
+-   repo: https://github.com/asottile/pyupgrade
+    rev: v3.15.2
+    hooks:
+    -   id: pyupgrade
+        args:
+        -   --py36-plus
+
+-   repo: https://github.com/sphinx-contrib/sphinx-lint
+    rev: v0.9.1
+    hooks:
+    -   id: sphinx-lint

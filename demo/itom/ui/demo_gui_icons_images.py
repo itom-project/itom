@@ -4,6 +4,7 @@
 In this example, all icons are loaded in the UI file
 as relative path to the icons in this or the icons subfolder.
 """
+
 from itom import ui
 
 # sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoGUIImages.png'

@@ -13,7 +13,7 @@
 /*! \class dataObjectTag_Test
     \brief Test for DataObjectTag class and functions for all itom data types
 
-    This test class checks functionality of different fuctions on data objects Tags.
+    This test class checks functionality of different functions on data objects Tags.
 */
 
 template <typename _Tp> class dataObjectTagType_Test : public ::testing::Test
@@ -425,8 +425,8 @@ TYPED_TEST(dataObjectTagType_Test, getVal_ToString_Test)
               "Test String"); //!< Test for getVal_ToString() with String Objects of DataObjectTagType
     EXPECT_EQ(this->EmptyObj1.getVal_ToString(),
               "");   //!< Test for getVal_ToString() with empty objects of DataObjectTagType
-    s4 << tempVal3;  //!< Creating StreamString representation of Double value for further comparision.
-    str4 = s4.str(); //!< Converting StreamString into String for further comparision.
+    s4 << tempVal3;  //!< Creating StreamString representation of Double value for further comparison.
+    str4 = s4.str(); //!< Converting StreamString into String for further comparison.
     EXPECT_EQ(str4.data(), this->Obj1.getVal_ToString());
     EXPECT_EQ(this->Obj2.getVal_ToString(), "NaN");
     EXPECT_EQ(this->Obj3.getVal_ToString(), "NaN");

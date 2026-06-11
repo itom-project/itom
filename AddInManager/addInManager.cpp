@@ -1,8 +1,8 @@
 /* ********************************************************************
 itom software
 URL: http://www.uni-stuttgart.de/ito
-Copyright (C) 2020, Institut fuer Technische Optik (ITO),
-Universitaet Stuttgart, Germany
+Copyright (C) 2020, Institut für Technische Optik (ITO),
+Universität Stuttgart, Germany
 
 This file is part of itom.
 
@@ -369,7 +369,7 @@ const RetVal AddInManager::scanAddInDir(const QString &path, const int checkQCor
 *   @param [out] paramsOpt   optional initialisation parameters
 *   @return      ito::retOk on success ito::retError otherwise
 *
-*   The getInitParams method searchs the plugin list given by plugin type for a plugin with the name 'name'. In case the according
+*   The getInitParams method searches the plugin list given by plugin type for a plugin with the name 'name'. In case the according
 *   plugin is found its number, mandatory and optional initialisation parameters are returned.
 *
 *   Please consider that this method returns pointers to the original initialization parameter vectors. If you change the value of these elements
@@ -441,8 +441,8 @@ const RetVal AddInManager::getInitParams(const QString &name, const int pluginTy
 *   @param [out] versionString      plugin version string
 *   @return      ito::retOk on success ito::retError otherwise
 *
-*   The getVersionString method searches in all three plugin lists for a plugin wirh the name 'name'. In case the according
-*   plugin is found its inforamtion about the plugin version string is returned. In contrast to the version number returned
+*   The getVersionString method searches in all three plugin lists for a plugin with the name 'name'. In case the according
+*   plugin is found its information about the plugin version string is returned. In contrast to the version number returned
 *   by the function 'getPluginInfo' the plugin version string can also handle alphanumerical signs.
 */
 const RetVal ito::AddInManager::getAboutInfo(const QString &name, QString &versionString)
@@ -512,12 +512,12 @@ const RetVal ito::AddInManager::getAboutInfo(const QString &name, QString &versi
 *   @param [out] pluginNum          number of the plugin in the plugin list, this number is needed later to create an instance of the plugin class
 *   @param [out] pluginTypeString   type of the plugin as string
 *   @param [out] author             author name or company
-*   @param [out] description        short discribtion of the plugin
-*   @param [out] detaildescription  detail discription of the plugin
+*   @param [out] description        short description of the plugin
+*   @param [out] detaildescription  detail description of the plugin
 *   @param [out] version            plugin version number
 *   @return      ito::retOk on success ito::retError otherwise
 *
-*   The getPlugInInfo method searchs in all three plugin lists for a plugin with the name 'name'. In case the according
+*   The getPlugInInfo method searches in all three plugin lists for a plugin with the name 'name'. In case the according
 *   plugin is found its information about number, name ... returned. For all parameters of type char** provide the address to a char*-variable.
 *   Then, a newly allocated \0-terminated string is returned. Don't forget to free this pointer after using it (free not delete!).
 */

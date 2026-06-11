@@ -20,7 +20,7 @@ template <typename _Tp> class operatorComplexTest : public ::testing::Test
   public:
     virtual void SetUp(void)
     {
-        // Creating DataObjects for this Perticular Test class.
+        // Creating DataObjects for this Particular Test class.
         mat1_1d = ito::DataObject(3, ito::getDataType2<_Tp *>());
         mat2_1d = ito::DataObject(3, ito::getDataType2<_Tp *>());
         mat3_1d = ito::DataObject(3, ito::getDataType2<_Tp *>());
@@ -225,10 +225,10 @@ TYPED_TEST(operatorComplexTest, complexAdjTest3d)
 }
 
 /*! \class operatorComplexTest1
-    \brief test for supported arithmatic operators and methods for complex datatype data objects
+    \brief test for supported arithmetic operators and methods for complex datatype data objects
 
     This test class checks functionality of supported methods (imag, real, abs) for data objects with complex data
-   types. This test class also checks functionality of supported arithmatic operators (+,-,+=,-=) for data objects with
+   types. This test class also checks functionality of supported arithmetic operators (+,-,+=,-=) for data objects with
    complex data types.
 */
 template <typename _Tp> class operatorComplexTest1 : public ::testing::Test
@@ -270,7 +270,7 @@ TYPED_TEST_CASE(operatorComplexTest1, ItomFloatDoubleDataTypes);
 
 // imageValTest1d
 /*!
-    This test checks the functionality of "imag" mathod for 1 dimensional matrices. "imag" mathod should return the
+    This test checks the functionality of "imag" method for 1 dimensional matrices. "imag" method should return the
    result matrix containing corresponding imaginary values as its elements of the test matrix.
 */
 TYPED_TEST(operatorComplexTest1, imageValTest1d)
@@ -282,7 +282,7 @@ TYPED_TEST(operatorComplexTest1, imageValTest1d)
 }
 // imageValTest2d
 /*!
-    This test checks the functionality of "imag" mathod for 2 dimensional matrices. "imag" mathod should return the
+    This test checks the functionality of "imag" method for 2 dimensional matrices. "imag" method should return the
    result matrix containing corresponding imaginary values as its elements of the test matrix.
 */
 TYPED_TEST(operatorComplexTest1, imageValTest2d)
@@ -295,7 +295,7 @@ TYPED_TEST(operatorComplexTest1, imageValTest2d)
 }
 // imageValTest3d
 /*!
-    This test checks the functionality of "imag" mathod for 3 dimensional matrices. "imag" mathod should return the
+    This test checks the functionality of "imag" method for 3 dimensional matrices. "imag" method should return the
    result matrix containing corresponding imaginary values as its elements of the test matrix.
 */
 TYPED_TEST(operatorComplexTest1, imageValTest3d)
@@ -309,7 +309,7 @@ TYPED_TEST(operatorComplexTest1, imageValTest3d)
 }
 // realValTest1d
 /*!
-    This test checks the functionality of "real" mathod for 1 dimensional matrices. "real" mathod should return the
+    This test checks the functionality of "real" method for 1 dimensional matrices. "real" method should return the
    result matrix containing corresponding Real values as its elements of the test matrix.
 */
 TYPED_TEST(operatorComplexTest1, realValTest1d)
@@ -321,7 +321,7 @@ TYPED_TEST(operatorComplexTest1, realValTest1d)
 }
 // realValTest2d
 /*!
-    This test checks the functionality of "real" mathod for 2 dimensional matrices. "real" mathod should return the
+    This test checks the functionality of "real" method for 2 dimensional matrices. "real" method should return the
    result matrix containing corresponding Real values as its elements of the test matrix.
 */
 TYPED_TEST(operatorComplexTest1, realValTest2d)
@@ -334,7 +334,7 @@ TYPED_TEST(operatorComplexTest1, realValTest2d)
 }
 // realValTest3d
 /*!
-    This test checks the functionality of "real" mathod for 3 dimensional matrices. "real" mathod should return the
+    This test checks the functionality of "real" method for 3 dimensional matrices. "real" method should return the
    result matrix containing corresponding Real values as its elements of the test matrix.
 */
 TYPED_TEST(operatorComplexTest1, realValTest3d)
@@ -348,7 +348,7 @@ TYPED_TEST(operatorComplexTest1, realValTest3d)
 }
 // absValTest1d
 /*!
-    This test checks the functionality of "abs" mathod for 1 dimensional matrices. "abs" mathod should return the result
+    This test checks the functionality of "abs" method for 1 dimensional matrices. "abs" method should return the result
    matrix containing corresponding Absolute values as its elements of the test matrix.
 */
 TYPED_TEST(operatorComplexTest1, absValTest1d)
@@ -360,7 +360,7 @@ TYPED_TEST(operatorComplexTest1, absValTest1d)
 }
 // absValTest2d
 /*!
-    This test checks the functionality of "abs" mathod for 2 dimensional matrices. "abs" mathod should return the result
+    This test checks the functionality of "abs" method for 2 dimensional matrices. "abs" method should return the result
    matrix containing corresponding Absolute values as its elements of the test matrix.
 */
 TYPED_TEST(operatorComplexTest1, absValTest2d)
@@ -373,7 +373,7 @@ TYPED_TEST(operatorComplexTest1, absValTest2d)
 }
 // absValTest3d
 /*!
-    This test checks the functionality of "abs" mathod for 3 dimensional matrices. "abs" mathod should return the result
+    This test checks the functionality of "abs" method for 3 dimensional matrices. "abs" method should return the result
    matrix containing corresponding Absolute values as its elements of the test matrix.
 */
 TYPED_TEST(operatorComplexTest1, absValTest3d)

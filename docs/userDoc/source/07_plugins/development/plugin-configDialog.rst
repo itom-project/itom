@@ -136,7 +136,7 @@ Initialize the widgets depending on the parameters of the plugin and change thei
         //and initialize all widgets (e.g. min, max values, labels, enable some,...)
 
         //if you use two range widgets (class RangeWidget from itomWidgets) for visualizing the ROI,
-        //you can directly pass the contraints of the width and height in terms of a ito::RectMeta structure, assigned
+        //you can directly pass the constraints of the width and height in terms of a ito::RectMeta structure, assigned
         //to the plugin parameter 'roi' to the RangeWidgets:
         /*ito::RectMeta *rm = static_cast<ito::RectMeta*>(params["roi"].getMeta());
         ui.rangeX01->setLimitsFromIntervalMeta(rm->getWidthRangeMeta());
