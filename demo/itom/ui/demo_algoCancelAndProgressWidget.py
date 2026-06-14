@@ -1,7 +1,7 @@
 """Algorithm cancel and progress widget
 =======================================
 
-This script shows how the ``itom.progressObserver`` is used
+This scipt shows how the ``itom.progressObserver`` is used
 to observe and report the progress of functions.
 """
 
@@ -18,6 +18,7 @@ from typing import Dict
 
 class AlgoCancelAndProgressWidget(ItomUi):
     def __init__(self):  # constructor
+
         # call constructor of ItomUi like it would be the constructor of the class itom.ui:
         ItomUi.__init__(self, "algoCancelAndProgressWidget.ui", ui.TYPEWINDOW)
 

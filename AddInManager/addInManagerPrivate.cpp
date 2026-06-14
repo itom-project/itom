@@ -1,8 +1,8 @@
 /* ********************************************************************
 itom software
 URL: http://www.uni-stuttgart.de/ito
-Copyright (C) 2020, Institut für Technische Optik (ITO),
-Universität Stuttgart, Germany
+Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+Universitaet Stuttgart, Germany
 
 This file is part of itom.
 
@@ -320,22 +320,9 @@ RetVal AddInManagerPrivate::loadAddIn(QString &filename)
         fileInfoDir.cdUp();
         if (language != "en_US" && fileInfoDir.absolutePath() == qApp->applicationDirPath() + "/plugins")
         {
-            QLocale localLanguage;
-
-            // language can be "language[_territory][.codeset][@modifier]" or "operatingsystem".
-            // In the last case, the default language of the operating system is used.
-            if (language.compare("operatingsystem", Qt::CaseInsensitive) == 0)
-            {
-                localLanguage = QLocale();
-            }
-            else
-            {
-                localLanguage = QLocale(language);
-            }
-
+            QLocale local = QLocale(language); //language can be "language[_territory][.codeset][@modifier]"
             QString translationPath = fileInfo.path() + "/translation";
-            QString languageStr = localLanguage.name().left(
-                localLanguage.name().indexOf("_", 0, Qt::CaseInsensitive));
+            QString languageStr = local.name().left(local.name().indexOf("_", 0, Qt::CaseInsensitive));
             QDirIterator it(translationPath, QStringList("*_" + languageStr + ".qm"), QDir::Files);
             if (it.hasNext())
             {

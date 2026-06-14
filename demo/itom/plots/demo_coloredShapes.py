@@ -1,3 +1,5 @@
+# coding=utf8
+
 """Colored shapes
 =================
 
@@ -16,7 +18,6 @@ of shapes can also be set permanently for each shape. This is done by the 'color
 of the itom.shape object. If the color property is set to None, the automatic line color mode is selected,
 else an object of type itom.rgba can be assigned.
 """
-
 from itom import dataObject
 from itom import rgba
 from itom import shape
@@ -39,9 +40,7 @@ rect2 = shape.createRectangle(center=(0, 0), size=(40, 20))
 rect2.color = None  # automatic, color map dependent coloring (default)
 
 circle = shape.createCircle(center=(-25, -12), radius=5)
-circle.color = rgba(
-    120, 0, 90
-)  # change the color of the circle to a permanent color (purple)
+circle.color = rgba(120, 0, 90)  # change the color of the circle to a permanent color (purple)
 
 ellipse = shape.createEllipse(center=(-20, 0), size=(40, 5))
 ellipse.color = None  # automatic, color map dependent coloring (default)

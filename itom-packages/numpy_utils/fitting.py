@@ -48,6 +48,7 @@ def lineFit3D(pointArray):
 
 
 if __name__ == "__main__":
+
     # Generate some data that lies along a line
     x = np.mgrid[-2:5:120j]
     y = np.mgrid[1:9:120j]

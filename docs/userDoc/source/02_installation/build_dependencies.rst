@@ -15,21 +15,21 @@ Software packages
 
 **Required Software-Packages**
 
-- IDE (e.g. Visual Studio 2022 Professional, QtCreator...)
+- IDE (e.g. Visual Studio 2015 Professional, QtCreator...)
 - Compiler: The C++ compiler must support at least the **C++11** standard.
 - CMake (recommended 3.12 or higher)
 - Qt5-framework or Qt6-framework (>= 5.5 required, >= 5.6 recommended)
-- OpenCV 3.2 or higher (4.x recommended)
+- OpenCV 3.2 or higher (3.x recommended)
 - Python 3.5 or higher, 3.7 or higher recommended
 - Git (git-scm.com) + GUI (e.g. TortoiseGit or GitExtensions) for accessing the remote repository
-- Python-Package: Numpy (up to itom 4.3.0, Numpy < 2.0 is supported only, Numpy 2.0 support will be added afterwards)
+- Python-Package: NumPy
 
 **Optional Software-Packages**
 
 - PointCloudLibrary 1.6 or higher (>= 1.9 recommended, optional)
 - Qt-AddOn for Visual Studio (requires .NET 2.0 framework with SP 1.0)
 - Doxygen (for creating the source code documentation)
-- Python-Packages: Scipy, Sphinx + numpydoc + breathe (user documentation generation), scikit-image, matplotlib...
+- Python-Packages: SciPy, Sphinx + numpydoc + breathe (user documentation generation), scikit-image, matplotlib...
 
 Detailed information
 ----------------------
@@ -269,7 +269,7 @@ You can also download sphinx from http://www.lfd.uci.edu/~gohlke/pythonlibs/. Ho
 sphinx is dependent on other packages, such that it is worth to install Sphinx
 using the |python| tool **pip** (If you don't have **pip** see the next section).
 Then open a command-line (cmd.exe) and switch to the directory **[YourPythonPath]/Scripts**.
-Type the following command in order to download **sphinx** including dependencies
+Type the following command in order to download **sphinx** including dependecies
 from the internet and install it::
 
     pip install sphinx

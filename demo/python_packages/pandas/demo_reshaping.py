@@ -2,7 +2,6 @@
 =================
 
 """
-
 import pandas as pd
 import numpy as np
 
@@ -50,18 +49,18 @@ pd.pivot_table(dataFrame, values="D", index=["A", "B"], columns=["C"])
 
 ###############################################################################
 # **Time series**
-indexData = pd.date_range("1/5/2022", periods=100, freq="s")
-timestamps = pd.Series(np.random.randint(0, 500, len(indexData)), index=indexData)
-timestamps.resample("5Min").sum()
+indexData = pd.date_range("1/5/2022", periods=100, freq="S")
+timeStemps = pd.Series(np.random.randint(0, 500, len(indexData)), index=indexData)
+timeStemps.resample("5Min").sum()
 
 ###############################################################################
-timeStempsUTC = timestamps.tz_localize("UTC")
+timeStempsUTC = timeStemps.tz_localize("UTC")
 
 ###############################################################################
 timeStempsUTC.tz_convert("US/Eastern")
 
 ###############################################################################
-ps = timestamps.to_period()
+ps = timeStemps.to_period()
 
 ###############################################################################
 ps.to_timestamp()
@@ -69,4 +68,4 @@ ps.to_timestamp()
 ###############################################################################
 prng = pd.period_range("1990Q1", "2000Q4", freq="Q-NOV")
 ts = pd.Series(np.random.randn(len(prng)), prng)
-ts.index = (prng.asfreq("M", "e") + 1).asfreq("h", "s") + 9
+ts.index = (prng.asfreq("M", "e") + 1).asfreq("H", "s") + 9

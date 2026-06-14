@@ -1,3 +1,5 @@
+# coding=iso-8859-15
+
 """Parses the stubs file for the itom.algorithms submodule.
 This module contains wrapper methods for all algorithms in
 algorithm plugins, whose name is a valid Python identifier.
@@ -18,7 +20,7 @@ def generateAlgorithmHash():
     plugins = itom.version(dictionary=True, addPluginInfo=True)["plugins"]
     for ap in plugins:
         if plugins[ap]["type"] == "algorithm":
-            h.update((";{}-{}".format(ap, plugins[ap]["version"])).encode("utf8"))
+            h.update((";%s-%s" % (ap, plugins[ap]["version"])).encode("utf8"))
     return h.digest()
 
 
@@ -74,10 +76,10 @@ def parseAlgorithmString(algoItem):
 
     arguments = ", ".join(args)
 
-    text = """def {}({}) -> {}:
-    \"\"\"{}
+    text = """def %s(%s) -> %s:
+    \"\"\"%s
     \"\"\"
-    pass""".format(
+    pass""" % (
         funcname,
         arguments,
         rettype,
@@ -97,12 +99,15 @@ def generateAlgorithmStubs():
         if algo.isidentifier():
             algoItems.append(parseAlgorithmString(algos[algo]))
 
-    header = """
+    header = (
+        """# coding=iso-8859-15
 
 # algo_hash = %s
 
 from typing import Sequence, Union, Tuple
-from itom import dataObject, dataIO, actuator""" % generateAlgorithmHash()
+from itom import dataObject, dataIO, actuator"""
+        % generateAlgorithmHash()
+    )
 
     pclVersion = itom.version(dictionary=True)["itom"]["PCL_Version"]
     if re.match(r"^\d+\.\d+(.\d+)?$", pclVersion):
@@ -137,7 +142,7 @@ def parse_stubs(overwrite: bool = False):
         prefix = "# algo_hash = "
 
         if os.path.exists(stubs_file):
-            with open(stubs_file) as fp:
+            with open(stubs_file, "rt") as fp:
                 count = 0
                 for line in fp:
                     if line.startswith(prefix):
@@ -159,7 +164,7 @@ def parse_stubs(overwrite: bool = False):
             if not os.path.exists(base_folder):
                 os.makedirs(base_folder)
 
-            with open(stubs_file, "w") as fp:
+            with open(stubs_file, "wt") as fp:
                 fp.write(text)
         except Exception as ex:
             warnings.warn("Error creating the stubs file: %s" % str(ex), RuntimeWarning)

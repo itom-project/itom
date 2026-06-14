@@ -1,3 +1,5 @@
+# coding=iso-8859-15
+
 """This script print a reStructuredText representation of all parameters
 of an opened plugin instance to the console.
 
@@ -15,12 +17,12 @@ import textwrap
 
 clc()
 
-
 def parse_parameters(instance):
     results = {}
     info = instance.getParamListInfo(1)
 
     for p in info:
+
         info = textwrap.wrap(p["info"], width=88)
         info = "\n    ".join(info)
 
@@ -30,9 +32,9 @@ def parse_parameters(instance):
             meta = "\n    ".join(meta)
 
         if p["readonly"]:
-            item = "**{}**: {}, read-only\n    {}".format(p["name"], p["type"], info)
+            item = "**%s**: %s, read-only\n    %s" % (p["name"], p["type"], info)
         else:
-            item = "**{}**: {}\n    {}".format(p["name"], p["type"], info)
+            item = "**%s**: %s\n    %s" % (p["name"], p["type"], info)
 
         if meta != "":
             item = item + "\n    \n    *%s*" % meta

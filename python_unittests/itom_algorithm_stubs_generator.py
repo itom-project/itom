@@ -5,7 +5,9 @@ import warnings
 import itom
 
 
+
 class ItomAlgorithmsStubsGenTest(unittest.TestCase):
+
     @classmethod
     def setUpClass(cls):
         pass
@@ -23,11 +25,7 @@ class ItomAlgorithmsStubsGenTest(unittest.TestCase):
             if algo == "centroid1D":
                 found = True
                 docstring = algoStubsGen.parseAlgorithmString(algos[algo])
-                self.assertTrue(
-                    docstring.startswith(
-                        "def centroid1D(sourceImage: itom.dataObject, destCOG: itom.dataObject, destIntensity: itom.dataObject, pvThreshold: float = 0.0, dynamicThreshold: float = 0.5, lowerThreshold: float = -1.7976931348623157e+308, columnWise: int = 0) -> None:"
-                    )
-                )
+                self.assertTrue(docstring.startswith("def centroid1D(sourceImage: itom.dataObject, destCOG: itom.dataObject, destIntensity: itom.dataObject, pvThreshold: float = 0.0, dynamicThreshold: float = 0.5, lowerThreshold: float = -1.7976931348623157e+308, columnWise: int = 0) -> None:"))
                 break
 
         self.assertTrue(found)
@@ -36,6 +34,5 @@ class ItomAlgorithmsStubsGenTest(unittest.TestCase):
         pclVersion = itom.version(dictionary=True)["itom"]["PCL_Version"]
         self.assertTrue(pclVersion != "")
 
-
-if __name__ == "__main__":
-    unittest.main(module="itom_algorithm_stubs_generator", exit=False)
+if __name__ == '__main__':
+    unittest.main(module='itom_algorithm_stubs_generator', exit=False)

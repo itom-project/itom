@@ -7,7 +7,6 @@ Please notice that you cannot use methods from the itom module
 in any worker thread.
 Alternative approaches for multiprocessing are
 python ``threading`` module and ``asyncio``. Or use ``subprocess``."""
-
 from multiprocessing import Pool, TimeoutError
 import multiprocessing
 import time
@@ -20,7 +19,6 @@ import os
 def func(x):
     print("return x*x with x = ", x)
     return x * x
-
 
 ###############################################################################
 # Python executable is required
@@ -35,6 +33,7 @@ if pythonPath and os.path.exists(pythonPath):
     multiprocessing.set_executable(pythonPath)
 
     with Pool(processes=4) as pool:
+
         # print "[0, 1, 4,..., 81]"
         print(pool.map(func, range(10)))
 

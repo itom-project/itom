@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
 
@@ -39,14 +39,13 @@ namespace ito
 
 struct FigurePlugin
 {
-    FigurePlugin() : filename(""), classname(""), plotDataTypes(DataObjLine), plotFeatures(Static), factory(nullptr), pluginVersion(0) {}
+    FigurePlugin() : filename(""), classname(""), plotDataTypes(DataObjLine), plotFeatures(Static), factory(NULL) {}
     QString filename;
     QString classname;
     PlotDataTypes plotDataTypes;
     PlotDataFormats plotDataFormats;
     PlotFeatures plotFeatures;
     QIcon icon;
-    int pluginVersion;
     QPluginLoader *factory;
 };
 

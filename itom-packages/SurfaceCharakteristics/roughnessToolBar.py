@@ -1,10 +1,12 @@
+# coding=iso-8859-15
 """
-This file contains a toolbar with basic surface analysis methods e.g. Rz, Sa, Polynomial Fittings,
+This file contains a toolbar with basic surface analysis methods e.g. Rz, Sa, Polynomical Fittings,
 INIT via
 toolBarRoughnesStatistics = roughnessToolBar("toolBarRoughnesStatistics")
 ...
 ...
 """
+
 
 from abstractObjToolbar.abstractObjToolbar import abstractObjInteractionToolBar
 import itom
@@ -18,7 +20,7 @@ if not (itom.pluginLoaded("FittingFilters")):
 class surfaceAnalysisTools(abstractObjInteractionToolBar):
     """
     This class contains function for the analysis of technical surfaces.
-    It wraps functions from the M++Filter, the FittingFilters and the ITOMFilters plugins to a menu entry and a button bar.
+    It wrapps functions from the M++Filter, the FittingFilters and the ITOMFilters plugins to a menu entry and a button bar.
     """
 
     def __init__(
@@ -29,6 +31,7 @@ class surfaceAnalysisTools(abstractObjInteractionToolBar):
         defPrecision=3,
         defaultVar="dObj",
     ):
+
         # self.defaultVarName = defaultVar
         self.defaultPrecision = defPrecision
         self.defXGradPoly = 3
@@ -131,7 +134,7 @@ class surfaceAnalysisTools(abstractObjInteractionToolBar):
             - skipBox             If True, the dialog will be skipped and
             - defaultVarName  The name of the variable to plot
         Return parameters:
-            - check:                   True finished correctly
+            - check:                   True finishied correctly
             - List with parameter: [Rz, Skipped Pixel] or [Sp, Sv, Sz]
         """
         if defaultVarName == None:
@@ -161,7 +164,7 @@ class surfaceAnalysisTools(abstractObjInteractionToolBar):
                     ui.msgCritical("Roughness", "Variable does not exist", ui.MsgBoxOk)
                 return [False, [0, 0]]
 
-            # Create a command to calculate Rz as executable string
+            # Create a command to calculate Rz as executeable string
             if line == True:
                 script = 'filter("calcRz",{},5)\n'
             else:
@@ -170,7 +173,7 @@ class surfaceAnalysisTools(abstractObjInteractionToolBar):
             try:
                 # Evaluate String with {} changed to varname
                 result = eval(script.format(varname))
-                valueUnit = eval(f"{varname}.valueUnit")
+                valueUnit = eval("{}.valueUnit".format(varname))
                 if line == True:
                     if skipBox == False:
                         [scaledResult, scaledUnit] = scaleDoubleUnit(
@@ -225,7 +228,7 @@ class surfaceAnalysisTools(abstractObjInteractionToolBar):
             - skipBox             If True, the dialog will be skipped and
             - defaultVarName  The name of the variable to plot
         Return parameters:
-            - check:                   True finished correctly
+            - check:                   True finishied correctly
             - List with parameter: [Sz, Skipped Pixel in y, Skipped Pixel in x]
         """
         if defaultVarName == None:
@@ -255,13 +258,13 @@ class surfaceAnalysisTools(abstractObjInteractionToolBar):
                     ui.msgCritical("Roughness", "Variable does not exist", ui.MsgBoxOk)
                 return [False, [0, 0]]
 
-            # Create a command to calculate Rz as executable string
+            # Create a command to calculate Rz as executeable string
             script = 'filter("calcTenPointHeigth",{})\n'
 
             try:
                 # Evaluate String with {} changed to varname
                 result = eval(script.format(varname))
-                valueUnit = eval(f"{varname}.valueUnit")
+                valueUnit = eval("{}.valueUnit".format(varname))
                 if skipBox == False:
                     [scaledResult, scaledUnit] = scaleDoubleUnit(
                         getDefaultScaleableUnits(), result[0], valueUnit
@@ -292,7 +295,7 @@ class surfaceAnalysisTools(abstractObjInteractionToolBar):
             - skipBox             If True, the dialog will be skipped and
             - defaultVarName  The name of the variable to plot
         Return parameters:
-            - check:                   True finished correctly
+            - check:                   True finishied correctly
             - List with parameter: [Ra] or [Sa]
         """
         if defaultVarName == None:
@@ -320,14 +323,9 @@ class surfaceAnalysisTools(abstractObjInteractionToolBar):
             except:
                 if skipBox == False:
                     ui.msgCritical("Roughness", "Variable does not exist", ui.MsgBoxOk)
-                return [
-                    False,
-                    [
-                        0,
-                    ],
-                ]
+                return [False, [0,]]
 
-            # Create a command to calculate Rz as executable string
+            # Create a command to calculate Rz as executeable string
             if line == True:
                 script = 'filter("calcRa",{})\n'
                 printScript = "Ra = {:.4f} {}"
@@ -337,7 +335,7 @@ class surfaceAnalysisTools(abstractObjInteractionToolBar):
 
             try:
                 result = eval(script.format(varname))
-                valueUnit = eval(f"{varname}.valueUnit")
+                valueUnit = eval("{}.valueUnit".format(varname))
                 if skipBox == False:
                     [scaledResult, scaledUnit] = scaleDoubleUnit(
                         getDefaultScaleableUnits(), result, valueUnit
@@ -368,7 +366,7 @@ class surfaceAnalysisTools(abstractObjInteractionToolBar):
             - skipBox             If True, the dialog will be skipped
             - defaultVarName  The name of the variable to plot
         Return parameters:
-            - check:                   True finished correctly
+            - check:                   True finishied correctly
             - List with parameter: [Rq] or [Sq]
         """
         if defaultVarName == None:
@@ -396,14 +394,9 @@ class surfaceAnalysisTools(abstractObjInteractionToolBar):
             except:
                 if skipBox == False:
                     ui.msgCritical("Roughness", "Variable does not exist", ui.MsgBoxOk)
-                return [
-                    False,
-                    [
-                        0,
-                    ],
-                ]
+                return [False, [0,]]
 
-            # Create a command to calculate Rz as executable string
+            # Create a command to calculate Rz as executeable string
             if line == True:
                 script = 'filter("calcRq",{})\n'
                 printScript = "Rq = {:.4f} {}"
@@ -413,7 +406,7 @@ class surfaceAnalysisTools(abstractObjInteractionToolBar):
 
             try:
                 result = eval(script.format(varname))
-                valueUnit = eval(f"{varname}.valueUnit")
+                valueUnit = eval("{}.valueUnit".format(varname))
                 if skipBox == False:
                     [scaledResult, scaledUnit] = scaleDoubleUnit(
                         getDefaultScaleableUnits(), result, valueUnit
@@ -431,24 +424,21 @@ class surfaceAnalysisTools(abstractObjInteractionToolBar):
                     0,
                 ]
         else:
-            result[0,]
+            result[
+                0,
+            ]
 
         self.defaultVarName = varname
-        return [
-            check,
-            [
-                result,
-            ],
-        ]
+        return [check, [result,]]
 
     def planefit(self, skipBox=False, defaultVarName=None):
         """
-        planefit([skipBox [, defaultVarName]) -> Fit a plane or a line into the object and subtract the values. The function works in place and the object will be changed to float64.
+        planefit([skipBox [, defaultVarName]) -> Fit a plane or a line into the object and substract the values. The function works in place and the object will be changed to float64.
         Parameters:
             - skipBox             If True, the dialog will be skipped
             - defaultVarName  The name of the variable to plot
         Return parameters:
-            - check:                   True finished correctly
+            - check:                   True finishied correctly
         """
         if defaultVarName == None:
             defaultVar = self.defaultVarName
@@ -468,13 +458,13 @@ class surfaceAnalysisTools(abstractObjInteractionToolBar):
 
         if check == True:
             try:
-                dims = eval(f"{varname}.dims")
+                dims = eval("{}.dims".format(varname))
                 if dims > 2:
                     if skipBox == False:
                         ui.msgCritical(
                             "Roughness", "Dimension must be 1D or 2D", ui.MsgBoxOk
                         )
-                dim = eval(f"{varname}.shape")
+                dim = eval("{}.shape".format(varname))
 
             except:
                 if skipBox == False:
@@ -494,12 +484,12 @@ class surfaceAnalysisTools(abstractObjInteractionToolBar):
 
     def polyfit(self, skipBox=False, defaultVarName=None):
         """
-        polyfit([skipBox [, defaultVarName]) -> Fit a mxn-th Order or n-th Order into a 1D or 2D object and subtract the values. The function works in place and the object will be changed to float64.
+        polyfit([skipBox [, defaultVarName]) -> Fit a mxn-th Order or n-th Order into a 1D or 2D object and substract the values. The function works in place and the object will be changed to float64.
         Parameters:
             - skipBox             If True, the dialog will be skipped
             - defaultVarName  The name of the variable to plot
         Return parameters:
-            - check:                   True finished correctly
+            - check:                   True finishied correctly
             - List with parameter: [Rq] or [Sq]
         """
         if defaultVarName == None:
@@ -529,7 +519,7 @@ class surfaceAnalysisTools(abstractObjInteractionToolBar):
 
         if check == True:
             try:
-                dims = eval(f"{varname}.dims")
+                dims = eval("{}.dims".format(varname))
                 if dims > 2:
                     if skipBox == False:
                         ui.msgCritical(
@@ -548,10 +538,8 @@ class surfaceAnalysisTools(abstractObjInteractionToolBar):
                     else:
                         script = 'filter("fitPolynom2D",{}, tempObjVar, 0, {})\n'
                     result = eval(script.format(varname, str(self.defXGradPoly)))
-                    script = (
-                        "globals()[\"{}\"] = {}.astype('float64') - tempObjVar".format(
-                            varname, varname
-                        )
+                    script = "globals()[\"{}\"] = {}.astype('float64') - tempObjVar".format(
+                        varname, varname
                     )
                     exec(script, globals(), {"tempObjVar": tempObjVar})
                 else:
@@ -567,10 +555,8 @@ class surfaceAnalysisTools(abstractObjInteractionToolBar):
                             str(self.defYGradPoly),
                         )
                     )
-                    script = (
-                        "globals()[\"{}\"] = {}.astype('float64') - tempObjVar".format(
-                            varname, varname
-                        )
+                    script = "globals()[\"{}\"] = {}.astype('float64') - tempObjVar".format(
+                        varname, varname
                     )
                     exec(script)
             except:

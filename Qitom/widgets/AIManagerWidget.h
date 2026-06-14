@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2024, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
 
@@ -87,12 +87,9 @@ namespace ito
             void closeInstance(const QModelIndex index);
 
         private:
-            void treeViewHideOrShowColumns(const bool& hide);
-
             QTreeView *m_pAIManagerView;
             QSortFilterProxyModel *m_pSortFilterProxyModel;
-            bool m_showColumnDetails;
-            QList<int> m_detailColumnsWidth;
+            int *m_pColumnWidth;
             PlugInModel *m_pPlugInModel;
 
         public slots:
@@ -112,6 +109,7 @@ namespace ito
             void mnuShowLiveImage();
             void mnuSnapDialog();
             void mnuToggleAutoGrabbing();
+            void setTreeViewHideColumns(const bool &hide, const int colCount);
             void showList();
             void showDetails();
             void mnuShowInfo();

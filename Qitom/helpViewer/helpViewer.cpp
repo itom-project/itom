@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
 
@@ -227,7 +227,12 @@ HelpViewer::HelpViewer(QWidget *parent /*= NULL*/) :
 
 	setMenuWidget(menuBar);
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     showMaximized();
+# else
+    showFullScreen();
+#endif
+
 }
 
 //----------------------------------------------------------------------------------------

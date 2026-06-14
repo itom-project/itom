@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
 
@@ -50,7 +50,7 @@ class CharBasedFoldDetectorPrivate;
 
 
 /*
-Fold detector based on trigger characters (e.g. a { increase fold level
+Fold detector based on trigger charachters (e.g. a { increase fold level
     and } decrease fold level).
 */
 class CharBasedFoldDetector : public FoldDetector
@@ -62,11 +62,7 @@ public:
     virtual ~CharBasedFoldDetector();
 
 
-    virtual int detectFoldLevel(
-        const QTextBlock &previousBlock,
-        const QTextBlock &block,
-        bool& withinCodeCell,
-        bool& codeCellStart);
+    virtual int detectFoldLevel(const QTextBlock &previousBlock, const QTextBlock &block);
 private:
     CharBasedFoldDetectorPrivate *d_ptr;
     Q_DECLARE_PRIVATE(CharBasedFoldDetector);

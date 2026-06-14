@@ -38,7 +38,9 @@ class ParamValidatorResult:
 
     def throwExceptionIfInvalid(self):
         if self.isValid() == False:
-            raise RuntimeError("Invalid parameter input: " + str(self.__errorMessage))
+            raise RuntimeError(
+                "Invalid parameter input: " + str(self.__errorMessage)
+            )
 
 
 class ParamValidator:
@@ -47,19 +49,23 @@ class ParamValidator:
         if not (isinstance(value, float) or isinstance(value, int)):
             return ParamValidatorResult(
                 False,
-                "parameter '{}' is not convertible into a floating point number.".format(
+                "parameter '{0}' is not convertable into a floating point number.".format(
                     key
                 ),
             )
         if not (minValue is None) and value < minValue:
             return ParamValidatorResult(
                 False,
-                f"parameter '{key}' must not be smaller than {minValue}",
+                "parameter '{0}' must not be smaller than {1}".format(
+                    key, minValue
+                ),
             )
         if not (maxValue is None) and value > maxValue:
             return ParamValidatorResult(
                 False,
-                f"parameter '{key}' must not be bigger than {maxValue}",
+                "parameter '{0}' must not be bigger than {1}".format(
+                    key, maxValue
+                ),
             )
         return ParamValidatorResult()
 
@@ -67,7 +73,7 @@ class ParamValidator:
     def checkBool(key, value):
         if not (isinstance(value, bool)):
             return ParamValidatorResult(
-                False, f"parameter '{key}' is no boolean data type"
+                False, "parameter '{0}' is no boolean data type".format(key)
             )
         return ParamValidatorResult()
 
@@ -76,24 +82,31 @@ class ParamValidator:
         if not (isinstance(value, int)):
             return ParamValidatorResult(
                 False,
-                "parameter '{}' is not convertible into a fixed point number.".format(
+                "parameter '{0}' is not convertable into a fixed point number.".format(
                     key
                 ),
             )
         if not (minValue is None) and value < minValue:
             return ParamValidatorResult(
                 False,
-                f"parameter '{key}' must not be smaller than {minValue}",
+                "parameter '{0}' must not be smaller than {1}".format(
+                    key, minValue
+                ),
             )
         if not (maxValue is None) and value > maxValue:
             return ParamValidatorResult(
                 False,
-                f"parameter '{key}' must not be bigger than {maxValue}",
+                "parameter '{0}' must not be bigger than {1}".format(
+                    key, maxValue
+                ),
             )
         return ParamValidatorResult()
 
     @staticmethod
-    def checkFloatArray(key, value, minValue=None, maxValue=None, elemCountRange=None):
+    def checkFloatArray(
+        key, value, minValue=None, maxValue=None, elemCountRange=None
+    ):
+
         if type(value) != list and type(value) != tuple:
             value = [value]
 
@@ -101,7 +114,7 @@ class ParamValidator:
             if not (len(value) in elemCountRange):
                 return ParamValidatorResult(
                     False,
-                    "size of parameter '{}' is not in given range {}".format(
+                    "size of parameter '{0}' is not in given range {1}".format(
                         key, elemCountRange
                     ),
                 )
@@ -109,11 +122,16 @@ class ParamValidator:
         ret = ParamValidatorResult()
         c = 0
         for i in value:
-            ret += ParamValidator.checkFloat(f"{key}[{c}]", i, minValue, maxValue)
+            ret += ParamValidator.checkFloat(
+                "{0}[{1}]".format(key, c), i, minValue, maxValue
+            )
         return ret
 
     @staticmethod
-    def checkIntArray(key, value, minValue=None, maxValue=None, elemCountRange=None):
+    def checkIntArray(
+        key, value, minValue=None, maxValue=None, elemCountRange=None
+    ):
+
         if type(value) != list and type(value) != tuple:
             value = [value]
 
@@ -121,7 +139,7 @@ class ParamValidator:
             if not (len(value) in elemCountRange):
                 return ParamValidatorResult(
                     False,
-                    "size of parameter '{}' is not in given range {}".format(
+                    "size of parameter '{0}' is not in given range {1}".format(
                         key, elemCountRange
                     ),
                 )
@@ -129,7 +147,9 @@ class ParamValidator:
         ret = ParamValidatorResult()
         c = 0
         for i in value:
-            ret += ParamValidator.checkInt(f"{key}[{c}]", i, minValue, maxValue)
+            ret += ParamValidator.checkInt(
+                "{0}[{1}]".format(key, c), i, minValue, maxValue
+            )
         return ret
 
     @staticmethod
@@ -137,7 +157,7 @@ class ParamValidator:
         if not value in allowedList:
             return ParamValidatorResult(
                 False,
-                "parameter '{}' does not correspond to allowed values ({})".format(
+                "parameter '{0}' does not correspond to allowed values ({1})".format(
                     key, allowedList
                 ),
             )
@@ -145,10 +165,12 @@ class ParamValidator:
 
     @staticmethod
     def checkIfInEnum(key, value, allowedEnum):
-        if not (allowedEnum.key_exists(value) or allowedEnum.value_exists(value)):
+        if not (
+            allowedEnum.key_exists(value) or allowedEnum.value_exists(value)
+        ):
             return ParamValidatorResult(
                 False,
-                "parameter '{}' does not correspond to enumeration {}".format(
+                "parameter '{0}' does not correspond to enumeration {1}".format(
                     key, allowedEnum
                 ),
             )
@@ -163,6 +185,6 @@ class ParamValidator:
             return ParamValidatorResult(False, "the given folder-name is empty")
         elif path.exists(str(value)) == False:
             return ParamValidatorResult(
-                False, f"the folder parameter '{v}' does not exist"
+                False, "the folder parameter '{0}' does not exist".format(v)
             )
         return ParamValidatorResult()

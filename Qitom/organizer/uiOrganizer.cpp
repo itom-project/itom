@@ -1,8 +1,8 @@
-/* ********************************************************************
+﻿/* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
 
@@ -685,21 +685,10 @@ QWidget* UiOrganizer::loadUiFile(const QString &filename, RetVal &retValue, QWid
         QString language = settings.value("language", "en").toString();
         settings.endGroup();
 
-        QLocale localLanguage;
-
-        // language can be "language[_territory][.codeset][@modifier]" or "operatingsystem".
-        // In the last case, the default language of the operating system is used.
-        if (language.compare("operatingsystem", Qt::CaseInsensitive) == 0)
-        {
-            localLanguage = QLocale();
-        }
-        else
-        {
-            localLanguage = QLocale(language);
-        }
+        QLocale local = QLocale(language); //language can be "language[_territory][.codeset][@modifier]"
 
         QTranslator *qtrans = new QTranslator();
-        bool couldLoad = qtrans->load(localLanguage, fileinfo.baseName(), "_", fileinfo.path());
+        bool couldLoad = qtrans->load(local, fileinfo.baseName(), "_", fileinfo.path());
         if (couldLoad)
         {
             QString canonicalFilePath = fileinfo.canonicalFilePath();
@@ -802,7 +791,7 @@ RetVal UiOrganizer::createNewDialog(
             QSharedPointer<int> col(new int);
             *col = 1;
             retValue += createFigure(guardedFigHandle, figObjectID, row, col, QPoint(), QSize(), NULL);
-            if (!retValue.containsError()) //if the figure window is created by this method, it is assumed, that no figure-instance keeps track of this figure, therefore its guardedFigHandle is given to the figure itself
+            if (!retValue.containsError()) //if the figure window is created by this method, it is assumed, that no figure-instance keeps track of this figure, therefore its guardedFigHandle is given to the figure itsself
             {
                 *dialogHandle = *(*guardedFigHandle);
                 if (m_dialogList.contains(*dialogHandle))
@@ -2427,7 +2416,7 @@ Every class, that has the Q_OBJECT macro defined and is derived from QObject (li
 The Qt moc process turns every signal into an auto-incremented number, the so called signal index. This method tries to find
 out the corresponding signal index of this signal.
 
-\param objectID is the identifier, that references the emitting object
+\param objectID is the indentifier, that references the emitting object
 \param signalSignature is the original signature of the signal, e.g. 'clicked(bool)'
 \param signalIndex is the returned signal index, or -1 if the signal could not be found
 \param objPtr is the object pointer that belongs to objectID. Hint: only use this pointer within another thread as long as you are sure that the object still exists
@@ -2725,10 +2714,7 @@ void UiOrganizer::pythonKeyboardInterrupt(bool /*checked*/)
     PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
     if (pyEngine)
     {
-        QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-        settings.beginGroup("AddInManager");
-        bool interruptActuatorsAndTimers = settings.value("interruptActuatorsIfPythonInterrupted", false).toBool();
-        settings.endGroup();
+        bool interruptActuatorsAndTimers = false;
         pyEngine->pythonInterruptExecutionThreadSafe(&interruptActuatorsAndTimers);
     }
 }
@@ -2975,7 +2961,7 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
         bool valid;
         QString description, shortDescription;
 
-        while (mo != nullptr)
+        while (mo != NULL)
         {
             if ((type & infoShowInheritanceUpToWidget) && qtBaseClasses.contains(className, Qt::CaseInsensitive) == 0)
             {
@@ -3026,10 +3012,7 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
                     }
                     else
                     {
-                        tmpObjectInfo.append(ClassInfoContainer(
-                            ClassInfoContainer::TypeClassInfo,
-                            QLatin1String(ci.name()),
-                            QLatin1String(ci.value())));
+                        tmpObjectInfo.append(ClassInfoContainer(ClassInfoContainer::TypeClassInfo, QLatin1String(ci.name()), QLatin1String(ci.value())));
                     }
                 }
             }
@@ -3098,12 +3081,7 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
 
 
 
-                    tmpObjectInfo.append(ClassInfoContainer(
-                        ClassInfoContainer::TypeProperty,
-                        QLatin1String(prop.name()),
-                        shortDescription,
-                        description,
-                        ""));
+                    tmpObjectInfo.append(ClassInfoContainer(ClassInfoContainer::TypeProperty, QLatin1String(prop.name()), shortDescription, description));
                 }
             }
 
@@ -3167,7 +3145,7 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
                                 }
                             }
 
-                            tmpObjectInfo.append(ClassInfoContainer(ClassInfoContainer::TypeSignal, QLatin1String(methodName), shortDescription, description, QLatin1String(signature)));
+                            tmpObjectInfo.append(ClassInfoContainer(ClassInfoContainer::TypeSignal, QLatin1String(methodName), shortDescription, description));
                         }
                     }
                 }
@@ -3201,7 +3179,7 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
                                 shortDescription = description = QLatin1String(signature);
                             }
 
-                            tmpObjectInfo.append(ClassInfoContainer(ClassInfoContainer::TypeSlot, QLatin1String(methodName), shortDescription, description, QLatin1String(signature)));
+                            tmpObjectInfo.append(ClassInfoContainer(ClassInfoContainer::TypeSlot, QLatin1String(methodName), shortDescription, description));
                         }
                     }
                 }
@@ -3210,7 +3188,6 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
             if (type & (infoShowItomInheritance | infoShowInheritanceUpToWidget | infoShowAllInheritance))
             {
                 mo = mo->superClass();
-
                 if (mo)
                 {
                     className = mo->className();
@@ -3218,7 +3195,7 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
             }
             else
             {
-                mo = nullptr;
+                mo = NULL;
             }
         }
 
@@ -3226,20 +3203,16 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
         {
             if (tmpObjectInfo.length() > 0)
             {
-                // sort list by signature (if available), else name
                 std::sort(
                     tmpObjectInfo.begin(),
                     tmpObjectInfo.end(),
                     [](ito::ClassInfoContainer t1, ito::ClassInfoContainer t2) {
-                        QString arg1 = t1.m_signature != "" ? t1.m_signature : t1.m_name;
-                        QString arg2 = t2.m_signature != "" ? t2.m_signature : t2.m_name;
-                        return arg1 < arg2;
+                        return t1.m_name < t2.m_name;
                     });
             }
 
             std::cout << "Widget '" << firstClassName.data() << "'\n--------------------------\n" << std::endl;
             valid = false;
-
             foreach(const ClassInfoContainer &c, tmpObjectInfo)
             {
                 if (c.m_type == ClassInfoContainer::TypeClassInfo)
@@ -3253,10 +3226,11 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
                     std::cout << " " << c.m_shortDescription.toLatin1().data() << "\n";
                     std::cout << "\n" << std::endl;
                 }
+
+
             }
 
             valid = false;
-
             foreach(const ClassInfoContainer &c, tmpObjectInfo)
             {
                 if (c.m_type == ClassInfoContainer::TypeProperty)
@@ -3269,10 +3243,10 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
 
                     std::cout << " " << c.m_shortDescription.toLatin1().data() << "\n";
                 }
+
             }
 
             valid = false;
-
             foreach(const ClassInfoContainer &c, tmpObjectInfo)
             {
                 if (c.m_type == ClassInfoContainer::TypeSignal)
@@ -3285,10 +3259,10 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
 
                     std::cout << " " << c.m_shortDescription.toLatin1().data() << "\n";
                 }
+
             }
 
             valid = false;
-
             foreach(const ClassInfoContainer &c, tmpObjectInfo)
             {
                 if (c.m_type == ClassInfoContainer::TypeSlot)
@@ -3301,6 +3275,7 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
 
                     std::cout << " " << c.m_shortDescription.toLatin1().data() << "\n";
                 }
+
             }
         }
         else
@@ -3322,7 +3297,6 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
 
     return retValue;
 }
-
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal UiOrganizer::getObjectID(const QObject *obj, QSharedPointer<unsigned int> objectID, ItomSharedSemaphore *semaphore /*= NULL*/)
 {
@@ -3331,7 +3305,6 @@ RetVal UiOrganizer::getObjectID(const QObject *obj, QSharedPointer<unsigned int>
     *objectID = 0;
 
     QHash<unsigned int, QPointer<QObject> >::iterator elem = m_objectList.begin();
-
     while (elem != m_objectList.end())
     {
         if(elem.value() == obj)
@@ -3339,7 +3312,6 @@ RetVal UiOrganizer::getObjectID(const QObject *obj, QSharedPointer<unsigned int>
             *objectID = elem.key();
             break;
         }
-
         ++elem;
     }
 
@@ -3389,7 +3361,7 @@ ito::RetVal UiOrganizer::figurePlot(
         QSharedPointer<int> col(new int);
         *col = areaCol + 1;
         retval += createFigure(guardedFigHandle, figObjectID, row, col, QPoint(), QSize(), NULL);
-        if (!retval.containsError()) //if the figure window is created by this method, it is assumed, that no figure-instance keeps track of this figure, therefore its guardedFigHandle is given to the figure itself
+        if (!retval.containsError()) //if the figure window is created by this method, it is assumed, that no figure-instance keeps track of this figure, therefore its guardedFigHandle is given to the figure itsself
         {
             *figHandle = *(*guardedFigHandle);
             fig = qobject_cast<FigureWidget*>(m_dialogList[*figHandle].container->getUiWidget());
@@ -3482,7 +3454,7 @@ RetVal UiOrganizer::figureLiveImage(
         QSharedPointer<int> col(new int);
         *col = areaCol + 1;
         retval += createFigure(guardedFigHandle, figObjectID, row, col, QPoint(), QSize(), NULL);
-        if (!retval.containsError()) //if the figure window is created by this method, it is assumed, that no figure-instance keeps track of this figure, therefore its guardedFigHandle is given to the figure itself
+        if (!retval.containsError()) //if the figure window is created by this method, it is assumed, that no figure-instance keeps track of this figure, therefore its guardedFigHandle is given to the figure itsself
         {
             *figHandle = *(*guardedFigHandle);
             fig = qobject_cast<FigureWidget*>(m_dialogList[*figHandle].container->getUiWidget());
@@ -3553,7 +3525,7 @@ RetVal UiOrganizer::figureDesignerWidget(
         QSharedPointer<int> col(new int);
         *col = areaCol + 1;
         retval += createFigure(guardedFigHandle, figObjectID, row, col, QPoint(), QSize(), NULL);
-        if (!retval.containsError()) //if the figure window is created by this method, it is assumed, that no figure-instance keeps track of this figure, therefore its guardedFigHandle is given to the figure itself
+        if (!retval.containsError()) //if the figure window is created by this method, it is assumed, that no figure-instance keeps track of this figure, therefore its guardedFigHandle is given to the figure itsself
         {
             *figHandle = *(*guardedFigHandle);
             fig = qobject_cast<FigureWidget*>(m_dialogList[*figHandle].container->getUiWidget());

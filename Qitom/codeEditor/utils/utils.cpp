@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
 
@@ -45,7 +45,7 @@ namespace Utils
 {
     //------------------------------------------------------------------------
     /*
-    Returns  a list of symbols found in the block text
+    Retuns  a list of symbols found in the block text
 
     :param editor: code edit instance
     :param block: block to parse
@@ -188,7 +188,7 @@ namespace Utils
             state = 0;
         }
 
-        return (state & 0x01FF0000) >> 16;
+        return (state & 0x03FF0000) >> 16;
     }
 
     //-------------------------------------------------------------
@@ -209,11 +209,11 @@ namespace Utils
         {
             state = 0;
         }
-        if (val >= 0x1FF) //maximum fold level
+        if (val >= 0x3FF) //maximum fold level
         {
-            val = 0x1FF;
+            val = 0x3FF;
         }
-        state &= 0x7E00FFFF;
+        state &= 0x7C00FFFF;
         state |= (val << 16);
         block.setUserState(state);
     }
@@ -267,59 +267,6 @@ namespace Utils
 
         state &= 0x7BFFFFFF;
         state |= int(val) << 26;
-        block.setUserState(state);
-    }
-
-    //-------------------------------------------------------------
-    /*
-    Checks if the block is within a code cell
-
-    The title is not among the lines within a code cell, however the
-    title is a fold trigger.
-
-    :param block: block to check
-    :return: True if the block is within a code cell
-    */
-    bool TextBlockHelper::isWithinCodeCell(const QTextBlock& block)
-    {
-        if (!block.isValid())
-        {
-            return false;
-        }
-
-        int state = block.userState();
-
-        if (state == -1)
-        {
-            state = 0;
-        }
-
-        return (bool)(state & 0x02000000);
-    }
-
-    //-------------------------------------------------------------
-    /*
-    Set if the line is within a code cell
-
-    :param block: block to set
-    :param val: value to set
-    */
-    void TextBlockHelper::setWithinCodeCell(QTextBlock& block, int val)
-    {
-        if (!block.isValid())
-        {
-            return;
-        }
-
-        int state = block.userState();
-
-        if (state == -1)
-        {
-            state = 0;
-        }
-
-        state &= 0x7DFFFFFF;
-        state |= int(val) << 25;
         block.setUserState(state);
     }
 
@@ -567,7 +514,7 @@ namespace Utils
         QString sigs = defs.join("\n");
         sigs = sigs.toHtmlEscaped().replace("    ", "&nbsp;&nbsp;&nbsp;&nbsp;");
 
-        // search for the last occurrence of ") ->" and replaces the arrow
+        // search for the last occurence of ") ->" and replaces the arrow
         // by a real arrow, since the -> arrow will be wrapped (although <nobr>).
         const QString pattern(") -&gt; ");
         int idx = sigs.lastIndexOf(pattern);
@@ -619,31 +566,6 @@ namespace Utils
         }
 
         return styledTooltips;
-    }
-
-    //-------------------------------------------------------------------------------------
-    //!< verifies if the given lineText is the start of a code cell. If so, an optional name of the cell is assigned to name.
-    bool isCodeCellStart(const QString& lineText, QString& name)
-    {
-        const QString lineTextStripped = Utils::lstrip(lineText);
-
-        if (lineTextStripped.startsWith("#%%"))
-        {
-            name = lineTextStripped.mid(3).trimmed();
-            return true;
-        }
-        else if (lineTextStripped.startsWith("# %%"))
-        {
-            name = lineTextStripped.mid(4).trimmed();
-            return true;
-        }
-        else if (lineTextStripped.startsWith("# <codecell>"))
-        {
-            name = lineTextStripped.mid(12).trimmed();
-            return true;
-        }
-
-        return false;
     }
 };
 

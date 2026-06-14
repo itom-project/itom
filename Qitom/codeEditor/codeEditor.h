@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
 
@@ -51,15 +51,12 @@
 
 class QMenu; // forward declaration
 class QMimeData; // forward declaration
-class QTimer; // forward declaration
 
 namespace ito {
 
 struct VisibleBlock
 {
-    bool partlyVisible;
     int topPosition;
-    int lineHeight;
     int lineNumber;
     QTextBlock textBlock;
 };
@@ -144,7 +141,8 @@ public:
     int fontSize() const;
     void setFontSize(int fontSize);
 
-    int zoomFactor() const;
+    int zoomLevel() const;
+    void setZoomLevel(int value);
 
     int tabLength() const;
     void setTabLength(int value);
@@ -242,7 +240,7 @@ public:
 
     void removeSelectedText();
 
-    QTextCursor findFirst(
+    bool findFirst(
         const QString& expr,
         bool re,
         bool cs,
@@ -252,28 +250,23 @@ public:
         int line = -1,
         int index = -1,
         bool show = true);
-    QTextCursor findNext();
-
-    //! replaces the text of the current selection and returns the size difference after the replacement
-    int replace(const QString& text);
+    bool findNext();
+    void replace(const QString& text);
 
     void endUndoAction()
     {
         textCursor().endEditBlock();
     }
-
     void beginUndoAction()
     {
         textCursor().beginEditBlock();
     }
 
     QString selectedText() const;
-
     int length() const
     {
         return toPlainText().size();
     }
-
     int positionFromLineIndex(int line, int column) const;
 
     int lineIndent(int lineNumber = -1) const;
@@ -297,7 +290,7 @@ public:
     virtual void cut();
     virtual void copy();
 
-    void resetStylesheet(bool fontSizeOnly = false);
+    void resetStylesheet();
     void rehighlight();
     void rehighlightBlock(int lineFromIdx, int lineToIdx /*=-1*/);
 
@@ -384,9 +377,6 @@ protected:
     void setWhitespacesFlags(bool show);
     void updateTabStopAndIndentationWidth();
 
-    bool enableZoomLevelByMouseWheel() const;
-    void setEnableZoomLevelByMouseWheel(bool enable);
-
     void updateVisibleBlocks();
 
     void doHomeKey(QEvent* event = NULL, bool select = false);
@@ -421,8 +411,6 @@ protected:
         return true;
     };
 
-    void paintEventWithoutVisibleBlockUpdate(QPaintEvent* e);
-
 private:
     struct FindOptions
     {
@@ -448,8 +436,7 @@ private:
     QColor m_foreground;
     bool m_showWhitespaces;
     int m_tabLength;
-    int m_zoomFactor;
-    bool m_enableZoomLevelByMouseWheel;
+    int m_zoomLevel;
     int m_fontSize;
     QString m_fontFamily;
     bool m_selectLineOnCopyEmpty;
@@ -469,8 +456,6 @@ private:
     bool m_redoAvailable;
     bool m_undoAvailable;
 
-    QTimer* m_pZoomFactorChangedTimer;
-
     // flags/working variables
     QList<VisibleBlock> m_visibleBlocks;
     QSet<TextBlockUserData*> m_textBlockUserDataList;
@@ -483,18 +468,10 @@ private:
 
     DelayJobRunnerBase* m_pTooltipsRunner;
 
-public slots:
-    void setZoomFactor(int zoomFactor);
-
 private slots:
     void emitDirtyChanged(bool state);
     void setUndoAvailable(bool available);
     void setRedoAvailable(bool available);
-
-    //!< a change of the zoom factor requires a repaint of the full syntax highlighting. This is a little bit intense.
-    //! Therefore this calculation might be delayed or reduced to few times only. The zoomFactorChangeTimer will call
-    //! this slot, if required.
-    void applyZoomFactorChange();
 
 signals:
     void dirtyChanged(bool state); // Signal emitted when the dirty state changed
@@ -503,7 +480,7 @@ signals:
     void keyReleased(QKeyEvent* e);
     void postKeyPressed(QKeyEvent* e); // Signal emitted at the end of the key_pressed event
     void mouseDoubleClicked(
-        QMouseEvent* e); // Signal emitted when a mouse double click event occurred
+        QMouseEvent* e); // Signal emitted when a mouse double click event occured
     void mousePressed(QMouseEvent* e); // Signal emitted when a mouse button is pressed
     void mouseReleased(QMouseEvent* e); // Signal emitted when a key is released
     void mouseMoved(QMouseEvent* e); // Signal emitted when the mouse_moved
@@ -519,8 +496,6 @@ signals:
     void updateActions();
 
     void newTextSet(); //!< Signal emitted when a new text is set on the widget
-
-    void zoomFactorChanged(int zoomFactor);
 };
 
 } // end namespace ito

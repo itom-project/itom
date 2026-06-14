@@ -73,14 +73,14 @@
         <item>
          <widget class="QCheckBox" name="checkShowBuildin">
           <property name="text">
-           <string>show built-in modules</string>
+           <string>show build-in modules</string>
           </property>
          </widget>
         </item>
         <item>
          <widget class="QCheckBox" name="checkShowFromPythonPath">
           <property name="text">
-           <string>show modules within in python-folder(s)</string>
+           <string>show modules lying in python-folder(s)</string>
           </property>
          </widget>
         </item>
@@ -141,22 +141,19 @@
    <item>
     <layout class="QVBoxLayout" name="verticalLayout_2">
      <item>
-      <widget class="QPushButton" name="btnExit">
+      <widget class="QPushButton" name="btnReload">
        <property name="text">
-        <string>Exit</string>
+        <string>Reload Modules</string>
+       </property>
+       <property name="default">
+        <bool>true</bool>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="btnReload">
+      <widget class="QPushButton" name="btnCancel">
        <property name="text">
-        <string>Reload Selected Modules</string>
-       </property>
-       <property name="icon">
-        <iconset theme="application-exit"/>
-       </property>
-       <property name="default">
-        <bool>true</bool>
+        <string>Cancel</string>
        </property>
       </widget>
      </item>
@@ -180,7 +177,7 @@
  <resources/>
  <connections>
   <connection>
-   <sender>btnExit</sender>
+   <sender>btnCancel</sender>
    <signal>clicked()</signal>
    <receiver>DialogReloadModule</receiver>
    <slot>reject()</slot>

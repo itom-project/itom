@@ -18,7 +18,7 @@
 #----------------------------------------------------------
 
 if(NOT XIMEA_APIDIR)
-	set(XIMEA_APIDIR $ENV{XIMEA_SDK_ROOT})
+	set(XIMEA_APIDIR $ENV{XIMEA_API_ROOT})
 endif(NOT XIMEA_APIDIR)
 
 SET( XIMEA_INCLUDE_SEARCH_PATHS
@@ -54,20 +54,10 @@ if(WIN32)
 		set(XIMEA_BIN_NAME "xiapi32.dll")
 	endif(CMAKE_CL_64)
 
-	message(STATUS "XIMEA_APIDIR: ${XIMEA_APIDIR}")
 	if(NOT XIMEA_SDK_VERSION)
-		if(EXISTS "${XIMEA_APIDIR}/Python")
-			file(READ "${XIMEA_APIDIR}/Python/v3/ximea/__init__.py" XIMEA_VER_FILE)
-			string(REGEX MATCH "__version__ = \'([0-9]+\.[0-9]+\.[0-9]+)" _ ${XIMEA_VER_FILE})
-			set(XIMEA_SDK_VERSION ${CMAKE_MATCH_1})
-		elseif(EXISTS "${XIMEA_APIDIR}/../Python")
-			message(STATUS "XIMEA_APIDIR: ${XIMEA_APIDIR}")
-			file(READ "${XIMEA_APIDIR}/../Python/v3/ximea/__init__.py" XIMEA_VER_FILE)
-			string(REGEX MATCH "__version__ = \'([0-9]+\.[0-9]+\.[0-9]+)" _ ${XIMEA_VER_FILE})
-			set(XIMEA_SDK_VERSION ${CMAKE_MATCH_1})
-		else(EXISTS "${XIMEA_APIDIR}/Python")
-			message(FATAL_ERORR "Ximea Python Directory does not exist")
-		endif(EXISTS "${XIMEA_APIDIR}/Python")
+		file(READ "${XIMEA_APIDIR}/Python/v3/ximea/__init__.py" XIMEA_VER_FILE)
+		string(REGEX MATCH "__version__ = \'([0-9]+\.[0-9]+\.[0-9]+)" _ ${XIMEA_VER_FILE})
+		set(XIMEA_SDK_VERSION ${CMAKE_MATCH_1})
 	endif(NOT XIMEA_SDK_VERSION)
 
 	# Please note: The Exact Version when XIMEA decided to change the library and binary

@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2023, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2023, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
 
@@ -67,8 +67,6 @@ class MainApplication : public QObject
         void registerMetaObjects();
 
     private:
-        bool m_devFlag = false;                                 /*!<  member to designate dev-build */
-
         tGuiType m_guiType;                                   /*!<  member for the desired gui-type */
 
         QThread* m_pyThread;                                  /*!<  Thread, where python engine is executed */

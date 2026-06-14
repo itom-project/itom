@@ -46,25 +46,13 @@ def suite():
     suite.addTest(unittest.makeSuite(multichannel_test.MultiChannelDummyGrabberTest))
 
     if pyversion >= (3, 6):
-        suite.addTest(
-            unittest.defaultTestLoader.loadTestsFromTestCase(
-                itom_stubs_generator.ItomStubsGenTest
-            )
-        )
-        suite.addTest(
-            unittest.defaultTestLoader.loadTestsFromTestCase(
-                itom_jedilib.ItomJediLibTest
-            )
-        )
-        suite.addTest(
-            unittest.defaultTestLoader.loadTestsFromTestCase(
-                itom_algorithm_stubs_generator.ItomAlgorithmsStubsGenTest
-            )
-        )
+        suite.addTest(unittest.makeSuite(itom_stubs_generator.ItomStubsGenTest))
+        suite.addTest(unittest.makeSuite(itom_jedilib.ItomJediLibTest))
+        suite.addTest(unittest.makeSuite(itom_algorithm_stubs_generator.ItomAlgorithmsStubsGenTest))
     return suite
 
 
-if __name__ == "__main__":
+if (__name__ == "__main__"):
     runner = unittest.TextTestRunner(verbosity=2)
     test_suite = suite()
     runner.run(test_suite)

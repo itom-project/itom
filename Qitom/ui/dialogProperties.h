@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2025, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
 
@@ -20,7 +20,8 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#pragma once
+#ifndef DIALOGPROPERTIES_H
+#define DIALOGPROPERTIES_H
 
 #include "abstractPropertyPageWidget.h"
 
@@ -66,8 +67,8 @@ public:
 
 protected:
     void initPages();
+
     void addPage(PropertyPage page, QTreeWidgetItem *parent, QStringList remainingPathes);
-    void showEvent(QShowEvent* event);
 
 private:
     QStackedWidget *m_pStackedWidget;
@@ -99,3 +100,5 @@ private slots:
 };
 
 } //end namespace ito
+
+#endif

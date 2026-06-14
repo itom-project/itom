@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2024, Institut für Technische Optik (ITO),
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
     University of Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
@@ -11,7 +11,7 @@
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
 
-    In addition, as a special exception, the Institut für Technische
+    In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
     which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -34,7 +34,6 @@
 #include <qlayout.h>
 #include <qscrollbar.h>
 #include <qmenu.h>
-#include <qregularexpression.h>
 
 #include "common/sharedStructures.h"
 #include "common/apiFunctionsGraphInc.h"
@@ -58,10 +57,8 @@ public:
         outputStream(true),
         errorStream(true),
         sizeHint(300, 120),
-        autoScroll(true),
-        removeAnsiEscapeSequences(true)
+        autoScroll(true)
     {
-        m_ansiEscapeSequenceRegExp.setPattern("\\x1B\\[([0-9]{1,2}(;[0-9]{1,3})*)?[m,K,J]");
     }
 
     QPlainTextEdit *textEdit;
@@ -71,13 +68,11 @@ public:
     bool errorStream;
     QSize sizeHint;
     bool autoScroll;
-    bool removeAnsiEscapeSequences;
-    QRegularExpression m_ansiEscapeSequenceRegExp;
 };
 
 
 //---------------------------------------------------------------------------------------------------------
-PythonLogWidget::PythonLogWidget(QWidget* parent /*= nullptr*/) :
+PythonLogWidget::PythonLogWidget(QWidget* parent /*= NULL*/) :
     AbstractApiWidget(parent),
     d_ptr(new PythonLogWidgetPrivate(*this))
 {
@@ -143,17 +138,6 @@ void PythonLogWidget::setAutoScroll(bool autoScroll)
 }
 
 //---------------------------------------------------------------------------------------------------------
-void PythonLogWidget::setRemoveAnsiEscapeSequences(bool removeAnsiEscapeSequences)
-{
-    Q_D(PythonLogWidget);
-
-    if (d->removeAnsiEscapeSequences != removeAnsiEscapeSequences)
-    {
-        d->removeAnsiEscapeSequences = removeAnsiEscapeSequences;
-    }
-}
-
-//---------------------------------------------------------------------------------------------------------
 int PythonLogWidget::getMaxMessages() const
 {
     Q_D(const PythonLogWidget);
@@ -188,13 +172,6 @@ bool PythonLogWidget::getAutoScroll() const
 }
 
 //---------------------------------------------------------------------------------------------------------
-bool PythonLogWidget::getRemoveAnsiEscapeSequences() const
-{
-    Q_D(const PythonLogWidget);
-    return d->removeAnsiEscapeSequences;
-}
-
-//---------------------------------------------------------------------------------------------------------
 QSize PythonLogWidget::sizeHint() const
 {
     Q_D(const PythonLogWidget);
@@ -226,6 +203,7 @@ ito::RetVal PythonLogWidget::setOutputStream(bool enabled)
             {
                 retval += apiDisconnectFromOutputAndErrorStream(this, SLOT(messageReceived(QString,ito::tStreamMessageType)), ito::msgStreamOut);
             }
+
         }
         else
         {
@@ -256,6 +234,7 @@ ito::RetVal PythonLogWidget::setErrorStream(bool enabled)
             {
                 retval += apiDisconnectFromOutputAndErrorStream(this, SLOT(messageReceived(QString,ito::tStreamMessageType)), ito::msgStreamErr);
             }
+
         }
         else
         {
@@ -297,11 +276,6 @@ void PythonLogWidget::messageReceived(QString message, ito::tStreamMessageType m
 {
     Q_D(PythonLogWidget);
 
-    if (d->removeAnsiEscapeSequences)
-    {
-        message.remove(d->m_ansiEscapeSequenceRegExp);
-    }
-
     if (d->tempText.size() > 0 && d->tempType != messageType)
     {
         QStringList sl = d->tempText.split("\n");
@@ -315,6 +289,7 @@ void PythonLogWidget::messageReceived(QString message, ito::tStreamMessageType m
         }
         else
         {
+
             foreach (const QString &t, sl)
             {
                 d->textEdit->appendHtml("<font color=\"red\">" + t.toHtmlEscaped().replace(" ", "&nbsp;") + "</font>");
@@ -391,4 +366,6 @@ void PythonLogWidget::showContextMenu(const QPoint &pt)
     menu->exec(d->textEdit->mapToGlobal(pt));
 
     DELETE_AND_SET_NULL(menu);
+
+
 }

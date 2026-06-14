@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2024, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
 
@@ -44,9 +44,10 @@
 #include <qsettings.h>
 #include <qtimer.h>
 #include <qelapsedtimer.h>
-#include <qregularexpression.h>
 
+QT_BEGIN_NAMESPACE
 
+QT_END_NAMESPACE
 
 namespace ito
 {
@@ -58,7 +59,7 @@ class ConsoleWidget : public AbstractCodeEditorWidget
     Q_OBJECT
 
 public:
-    ConsoleWidget(QWidget* parent = nullptr);
+    ConsoleWidget(QWidget* parent = NULL);
     ~ConsoleWidget();
 
     static const QString lineBreak;
@@ -80,12 +81,13 @@ public slots:
     void pythonRunSelection(QString selectionText);
     void pythonStateChanged(tPythonTransitions pyTransition);
     void clearCommandLine();
-    void interruptCommandInput(); // interrupt a possibly running input command
     void startInputCommandLine(QSharedPointer<QByteArray> buffer, ItomSharedSemaphore *inputWaitCond);
 
 signals:
     void wantToCopy();
     void sendToLastCommand(QString cmd);
+    void sendToPythonMessage(QString cmd);
+
 
 protected:
     virtual bool keyPressInternalEvent(QKeyEvent *event);
@@ -152,17 +154,6 @@ private:
     void enableInputTextMode();
     void disableInputTextMode();
 
-    QList<ito::TextBlockUserData::AnsiTextCharFormat> parseReceiveStreamBufferForAnsiCodes(const QString &inputText, QString &strippedText);
-    QList<QSharedPointer<QList<ito::TextBlockUserData::AnsiTextCharFormat>>> handleTextLinesAndSplitLongLines(
-        QString &text,
-        const QList<ito::TextBlockUserData::AnsiTextCharFormat> &ansiTextCharFormat,
-        bool smartSplitting);
-    QList<QSharedPointer<QList<ito::TextBlockUserData::AnsiTextCharFormat>>> splitLongLinesText(
-        QString &text,
-        const QSharedPointer<QList<ito::TextBlockUserData::AnsiTextCharFormat>> &ansiTextCharFormat,
-        bool smartSplitting);
-    void updateAnsiTextCharFormat(ito::TextBlockUserData::AnsiTextCharFormat &format, const QString &mainChar, const QString &args);
-
     int m_startLineBeginCmd; //!< zero-based, first-line of actual (not evaluated command), last line which starts with ">>", -1: no command active
 
     DequeCommandList *m_pCmdList;
@@ -196,10 +187,6 @@ private:
     QMap<QString, QAction*> m_contextMenuActions;
 
     InputTextMode m_inputTextMode;
-
-    ito::TextBlockUserData::AnsiTextCharFormat m_recentAnsiTextCharFormat;
-    QRegularExpression m_ansiEscapeSeqRegExp;
-    bool m_considerAnsiEscapeSequences;
 
     static const QString longLineWrapPrefix;
 

@@ -1,3 +1,4 @@
+# coding=iso-8859-15
 import functools
 import os
 import re
@@ -16,12 +17,10 @@ from matplotlib.backend_bases import (
     NavigationToolbar2,
     TimerBase,
     cursors,
-    ToolContainerBase,
+    ToolContainerBase
 )
 
-from mpl_itom import versiontuple
-
-if versiontuple(matplotlib.__version__) >= versiontuple("3.3.0"):
+if matplotlib.__version__ >= "3.3.0":
     from matplotlib.backend_bases import _Mode
 else:
     from matplotlib.backend_bases import StatusbarBase
@@ -98,10 +97,7 @@ if sys.platform == "darwin":
     # in OSX, the control and super (aka cmd/apple) keys are switched, so
     # switch them back.
     SPECIAL_KEYS.update(
-        {
-            0x01000021: "cmd",
-            0x01000022: "control",
-        }  # cmd/apple key
+        {0x01000021: "cmd", 0x01000022: "control",}  # cmd/apple key
     )
     MODIFIER_KEYS[0] = ("cmd", 0x04000000, 0x01000021)
     MODIFIER_KEYS[2] = ("ctrl", 0x10000000, 0x01000022)
@@ -164,7 +160,7 @@ class TimerItom(TimerBase):
     def __init__(self, *args, **kwargs):
         # Create a new timer and connect the timeout() signal to the
         # _on_timer method.
-        if versiontuple(matplotlib.__version__) < versiontuple("3.3.0"):
+        if matplotlib.__version__ < "3.3.0":
             TimerBase.__init__(self, *args, **kwargs)
             self._timer = itom.timer(
                 self._interval, self._on_timer, singleShot=self._single
@@ -173,7 +169,9 @@ class TimerItom(TimerBase):
         else:
             # set a long default interval to stop the timer. The super
             # constructor will then directly set the interval and singleShot.
-            self._timer = itom.timer(1000000, self._on_timer, singleShot=False)
+            self._timer = itom.timer(
+                1000000, self._on_timer, singleShot=False
+            )
             super().__init__(*args, **kwargs)
 
     def __del__(self):
@@ -204,6 +202,7 @@ class TimerItom(TimerBase):
 
 
 class FigureCanvasItom(FigureCanvasBase):
+
     # map itom/matplotlibWidget button codes to MPL button codes
     # left 1, middle 2, right 3, no mouse button 0
     # todo: from MPL 3.1 on, these values can directly be mapped
@@ -236,10 +235,12 @@ class FigureCanvasItom(FigureCanvasBase):
         self._destroying = False
         # self.showEnable = False #this will be set to True if the draw() command has been called for the first time e.g. by show() of the manager
 
-        self.matplotlibWidgetUiItem = matplotlibplotUiItem.canvasWidget  # this object is deleted in the destroy-method of manager, due to cyclic garbage collection
-        self.matplotlibWidgetUiItem["mouseTracking"] = (
-            True  # by default, the itom-widget only sends mouse-move events if at least one button is pressed or the tracker-button is is checked-state
-        )
+        self.matplotlibWidgetUiItem = (
+            matplotlibplotUiItem.canvasWidget
+        )  # this object is deleted in the destroy-method of manager, due to cyclic garbage collection
+        self.matplotlibWidgetUiItem[
+            "mouseTracking"
+        ] = True  # by default, the itom-widget only sends mouse-move events if at least one button is pressed or the tracker-button is is checked-state
 
         self.matplotlibWidgetUiItem.connect("eventEnter(int,int)", self.enterEvent)
         self.matplotlibWidgetUiItem.connect("eventLeave()", self.leaveEvent)
@@ -393,11 +394,7 @@ class FigureCanvasItom(FigureCanvasBase):
         if button is None:
             button = 0  # fallback solution
         if DEBUG:
-            print(
-                "mouseEvent {} ({:.2f},{:.2f}), button: {}".format(
-                    eventType, x, y, button
-                )
-            )
+            print("mouseEvent %s (%.2f,%.2f), button: %s" % (eventType, x, y, button))
         try:
             # button: left 1, middle 2, right 3
             if eventType == 0:  # mousePressEvent
@@ -435,8 +432,7 @@ class FigureCanvasItom(FigureCanvasBase):
         elif type == 1:  # keyReleaseEvent
             FigureCanvasBase.key_release_event(self, key)
 
-    if versiontuple(matplotlib.__version__) < versiontuple("3.2.0"):
-
+    if matplotlib.__version__ < "3.2.0":
         @property
         @cbook.deprecated(
             "3.0",
@@ -478,7 +474,7 @@ class FigureCanvasItom(FigureCanvasBase):
             hinch = self._dpi_ratio * h / dpival
             self.figure.set_size_inches(winch, hinch, forward=False)
             status = self._is_drawing
-            if not draw and versiontuple(matplotlib.__version__) >= versiontuple("2.1.0"):
+            if not draw and matplotlib.__version__ >= "2.1.0":
                 self._is_drawing = (
                     True  # else the following resize_event will call draw_idle, too
                 )
@@ -568,7 +564,8 @@ class FigureCanvasItom(FigureCanvasBase):
         ##    self._event_loop.quit()
 
     def draw(self):
-        """Render the figure, and queue a request for a Qt draw."""
+        """Render the figure, and queue a request for a Qt draw.
+        """
         # The renderer draw is done here; delaying causes problems with code
         # that uses the result of the draw() to update plot elements.
         if self._is_drawing:
@@ -579,7 +576,8 @@ class FigureCanvasItom(FigureCanvasBase):
         self.paintEvent()
 
     def draw_idle(self):
-        """Queue redraw of the Agg buffer and request Qt paintEvent."""
+        """Queue redraw of the Agg buffer and request Qt paintEvent.
+        """
         # The Agg draw needs to be handled by the same thread matplotlib
         # modifies the scene graph from. Post Agg draw request to the
         # current event loop in order to ensure thread affinity and to
@@ -610,7 +608,7 @@ class FigureCanvasItom(FigureCanvasBase):
         try:
             if rect:
                 self.matplotlibWidgetUiItem.call(
-                    "paintRect", True, *(pt / (1 + 0 * self._dpi_ratio) for pt in rect)
+                    "paintRect", True, *(pt / (1+0*self._dpi_ratio) for pt in rect)
                 )
             else:
                 self.matplotlibWidgetUiItem.call("paintRect", False, 0, 0, 0, 0)
@@ -622,7 +620,7 @@ class FigureCanvasItom(FigureCanvasBase):
     def signalDestroyedWidget(self):
         """
         if the figure has been closed (e.g. by the user - clicking the close button),
-        this might either be registered by the destroyed-event, caught by FigureManagerItom,
+        this might either be registered by the destroyed-event, catched by FigureManagerItom,
         or by any method of this class which tries to access the figure (since the destroyed
         signal is delivered with a time gap). This function should be called whenever the widget
         is not accessible any more, then the manager is closed as quick as possible, such that
@@ -657,6 +655,7 @@ class FigureManagerItom(FigureManagerBase):
     """
 
     def __init__(self, canvas, num, matplotlibplotUiItem, windowUi, embeddedWidget):
+
         self.canvas = canvas
         self.windowUi = windowUi  # can also be None if embeddedWidget is True
         self.matplotlibplotUiItem = matplotlibplotUiItem
@@ -696,7 +695,7 @@ class FigureManagerItom(FigureManagerBase):
         self.toolmanager = self._get_toolmanager()
         self.toolbar = self._get_toolbar(self.canvas, self.windowUi)
 
-        if versiontuple(matplotlib.__version__) < versiontuple("3.3.0"):
+        if matplotlib.__version__ < "3.3.0":
             self.statusbar = None
 
         if self.toolmanager:
@@ -704,7 +703,7 @@ class FigureManagerItom(FigureManagerBase):
             if self.toolbar:
                 backend_tools.add_tools_to_container(self.toolbar)
 
-                if versiontuple(matplotlib.__version__) < versiontuple("3.3.0"):
+                if matplotlib.__version__ < "3.3.0":
                     self.statusbar = StatusbarItom(
                         matplotlibplotUiItem, self.toolmanager
                     )
@@ -869,7 +868,7 @@ class Signal:
 
 class NavigationToolbar2Itom(NavigationToolbar2):
     def __init__(self, canvas, matplotlibplotUiItem, parentUi, coordinates=True):
-        """coordinates: should we show the coordinates on the right?"""
+        """ coordinates: should we show the coordinates on the right? """
         self.canvas = canvas
         self.parentUi = parentUi
         self.matplotlibplotUiItem = weakref.ref(matplotlibplotUiItem)
@@ -921,7 +920,8 @@ class NavigationToolbar2Itom(NavigationToolbar2):
         """
 
     def _initToolbar(self):
-        """ """
+        """
+        """
         w = self.matplotlibplotUiItem()
         if not w:
             return
@@ -1025,7 +1025,7 @@ class NavigationToolbar2Itom(NavigationToolbar2):
 
     def _update_buttons_checked(self):
         # sync button checkstates to match active mode
-        if versiontuple(matplotlib.__version__) < versiontuple("3.3.0"):
+        if matplotlib.__version__ < "3.3.0":
             self._get_predef_action("pan")["checked"] = self._active == "PAN"
             self._get_predef_action("zoom")["checked"] = self._active == "ZOOM"
         else:
@@ -1083,7 +1083,7 @@ class NavigationToolbar2Itom(NavigationToolbar2):
         selectedFilter = 0
         for name, exts in sorted_filetypes:
             exts_list = " ".join(["*.%s" % ext for ext in exts])
-            filter = f"{name} ({exts_list})"
+            filter = "%s (%s)" % (name, exts_list)
             if default_filetype in exts:
                 selectedFilter = len(filters)
             filters.append(filter)
@@ -1254,6 +1254,7 @@ class ToolbarItom(ToolContainerBase):
         )  # replace all characters, which are not among the given set, by an underscore
 
     def add_toolitem(self, name, group, position, image_file, description, toggle):
+
         if self.matplotlibplotUiItem() is None:
             return
 
@@ -1316,8 +1317,7 @@ class ToolbarItom(ToolContainerBase):
         self.statusbar_label["text"] = s
 
 
-if versiontuple(matplotlib.__version__) < versiontuple("3.3.0"):
-
+if matplotlib.__version__ < "3.3.0":
     class StatusbarItom(StatusbarBase):
         """
 
@@ -1337,7 +1337,7 @@ if versiontuple(matplotlib.__version__) < versiontuple("3.3.0"):
 
 class ConfigureSubplotsItom(backend_tools.ConfigureSubplotsBase):
     def __init__(self, name, *args, **kwargs):
-        super().__init__(name, *args, **kwargs)
+        super(ConfigureSubplotsItom, self).__init__(name, *args, **kwargs)
         self.subplotConfigDialog = None
 
     def trigger(self, *args):
@@ -1364,7 +1364,7 @@ class SaveFigureItom(backend_tools.SaveFigureBase):
         selectedFilter = None
         for name, exts in sorted_filetypes:
             exts_list = " ".join(["*.%s" % ext for ext in exts])
-            filtername = f"{name} ({exts_list})"
+            filtername = "%s (%s)" % (name, exts_list)
             if default_filetype in exts:
                 selectedFilter = filtername
             filters.append(filtername)
@@ -1429,14 +1429,14 @@ backend_tools.ToolRubberband = RubberbandItom
 backend_tools.ToolHelp = HelpItom
 backend_tools.ToolCopyToClipboard = ToolCopyToClipboardItom
 
-if versiontuple(matplotlib.__version__) < versiontuple("3.2.0"):
-
+if matplotlib.__version__ < "3.2.0":
     @cbook.deprecated("3.0")
     def error_msg_itom(msg, parent=None):
         if not isinstance(msg, str):
             msg = ",".join(map(str, msg))
 
         itom.ui.msgWarning("Matplotlib", msg)
+
 
     @cbook.deprecated("3.0")
     def exception_handler(type, value, tb):
@@ -1488,7 +1488,8 @@ class _BackendItom(_Backend):
 
     @classmethod
     def new_figure_manager_given_figure(cls, num, figure):
-        """Create a new figure manager instance for the given figure."""
+        """Create a new figure manager instance for the given figure.
+        """
         canvas = cls.FigureCanvas(figure)
         manager = cls.FigureManager(canvas, num)
         return manager

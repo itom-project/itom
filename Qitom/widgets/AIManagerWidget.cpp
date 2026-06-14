@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2024, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
 
@@ -53,7 +53,7 @@ AIManagerWidget::AIManagerWidget(
     m_pActDockWidgetToolbar(nullptr), m_pActNewInstance(nullptr), m_pActCloseInstance(nullptr),
     m_pActCloseAllInstances(nullptr), m_pActSendToPython(nullptr), m_pActLiveImage(nullptr),
     m_pActSnapDialog(nullptr), m_pActAutoGrabbing(nullptr), m_pActInfo(nullptr), m_pActOpenWidget(nullptr),
-    m_pAIManagerView(nullptr), m_pSortFilterProxyModel(nullptr),
+    m_pAIManagerView(nullptr), m_pSortFilterProxyModel(nullptr), m_pColumnWidth(nullptr),
     m_pMainToolbar(nullptr), m_pViewList(nullptr), m_pViewDetails(nullptr), m_pPlugInModel(nullptr)
 {
     int size = 0;
@@ -160,23 +160,39 @@ AIManagerWidget::AIManagerWidget(
         size = settings->beginReadArray("ColWidth");
         for (int i = 0; i < size; ++i)
         {
-            m_detailColumnsWidth << 120;
+            settings->setArrayIndex(i);
+            m_pAIManagerView->setColumnWidth(i, settings->value("width", 100).toInt());
+            m_pAIManagerView->setColumnHidden(i, m_pAIManagerView->columnWidth(i) == 0);
         }
-#endif
+        settings->endArray();
 
-        size = settings.beginReadArray("detailColumnsWidth");
+        m_pColumnWidth = new int[m_pPlugInModel->columnCount()];
+        size = settings->beginReadArray("StandardColWidth");
 
-        for (int i = 0; i < std::min(size, m_pPlugInModel->columnCount()); ++i)
+        if (size != m_pPlugInModel->columnCount())
         {
-            settings.setArrayIndex(i);
-            m_detailColumnsWidth[i] = settings.value("width", m_detailColumnsWidth[i]).toInt();
-            m_pAIManagerView->setColumnWidth(i, m_detailColumnsWidth[i]);
+            m_pColumnWidth[0] = 200;
+
+            for (int i = 1; i < m_pPlugInModel->columnCount(); ++i)
+            {
+                m_pColumnWidth[i] = 120;
+            }
         }
 
-        settings.endArray();
-        treeViewHideOrShowColumns(!m_showColumnDetails);
+        for (int i = 0; i < size; ++i)
+        {
+            settings->setArrayIndex(i);
+            m_pColumnWidth[i] = settings->value("width", 100).toInt();
 
-        settings.endGroup();
+            if (m_pColumnWidth[i] == 0)
+            {
+                m_pColumnWidth[i] = 120;
+            }
+        }
+
+        settings->endArray();
+        settings->endGroup();
+        delete settings;
     }
 
     AbstractDockWidget::init();
@@ -201,19 +217,26 @@ AIManagerWidget::~AIManagerWidget()
     //    QByteArray state = m_pMainToolbar->saveGeometry();
     //    settings->setValue("stateToolBar", state);
 
-        if (m_showColumnDetails)
+        settings->beginWriteArray("ColWidth");
+
+        for (int i = 0; i < plugInModel->columnCount(); i++)
         {
-            settings->beginWriteArray("detailColumnsWidth");
-
-            for (int i = 0; i < m_pPlugInModel->columnCount(); i++)
-            {
-                settings->setArrayIndex(i);
-                settings->setValue("width", m_pAIManagerView->columnWidth(i));
-            }
-
-            settings->endArray();
+            settings->setArrayIndex(i);
+            settings->setValue("width", m_pAIManagerView->columnWidth(i));
         }
 
+        settings->endArray();
+        settings->sync();
+
+        settings->beginWriteArray("StandardColWidth");
+
+        for (int i = 0; i < plugInModel->columnCount(); i++)
+        {
+            settings->setArrayIndex(i);
+            settings->setValue("width", m_pColumnWidth[i]);
+        }
+
+        settings->endArray();
         settings->endGroup();
         settings->sync();
         delete settings;
@@ -246,6 +269,7 @@ AIManagerWidget::~AIManagerWidget()
     DELETE_AND_SET_NULL(m_pActInfo);
     DELETE_AND_SET_NULL(m_pActOpenWidget);
     DELETE_AND_SET_NULL(m_pAIManagerViewSettingMenu);
+    DELETE_AND_SET_NULL_ARRAY(m_pColumnWidth);
 }
 
 //-------------------------------------------------------------------------------------
@@ -1170,7 +1194,7 @@ void AIManagerWidget::mnuToggleAutoGrabbing()
 //-------------------------------------------------------------------------------------
 void AIManagerWidget::setTreeViewHideColumns(const bool &hide, const int colCount)
 {
-    for (int i = 1; i < m_pPlugInModel->columnCount(); ++i)
+    for (int i = 1; i < colCount; ++i)
     {
         m_pAIManagerView->setColumnHidden(i, hide);
     }
@@ -1185,30 +1209,18 @@ void AIManagerWidget::showList()
 
     for (int i = 1; i < plugInModel->columnCount(); ++i)
     {
-        m_showColumnDetails = false;
-
-        for (int i = 0; i < m_pPlugInModel->columnCount(); ++i)
-        {
-            m_detailColumnsWidth[i] = m_pAIManagerView->columnWidth(i);
-        }
-
-        treeViewHideOrShowColumns(true);
+        isList = isList && m_pAIManagerView->isColumnHidden(i);
     }
-}
 
-//-------------------------------------------------------------------------------------
-void AIManagerWidget::showDetails()
-{
-    if (!m_showColumnDetails)
+    if (!isList)
     {
-        m_showColumnDetails = true;
-        treeViewHideOrShowColumns(false);
-
-        for (int i = 0; i < m_pPlugInModel->columnCount(); ++i)
+        for (int i = 0; i < plugInModel->columnCount(); ++i)
         {
-            m_pAIManagerView->setColumnWidth(i, m_detailColumnsWidth[i]);
+            m_pColumnWidth[i] = m_pAIManagerView->columnWidth(i);
         }
     }
+
+    setTreeViewHideColumns(true, plugInModel->columnCount());
 }
 
 //-------------------------------------------------------------------------------------

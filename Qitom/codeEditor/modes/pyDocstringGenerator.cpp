@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
 
@@ -158,8 +158,6 @@ void PyDocstringGeneratorMode::mnuInsertDocstring()
 
     if (cursor.hasSelection())
     {
-        int startBlockIdx = cursor.blockNumber();
-
         if (cursor.selectedText().trimmed() == "\"\"\"")
         {
             cursor.movePosition(QTextCursor::PreviousBlock);
@@ -172,8 +170,6 @@ void PyDocstringGeneratorMode::mnuInsertDocstring()
         }
 
         m_overwriteEndLineIndex = -1;
-
-        e->rehighlightBlock(startBlockIdx, e->lineCount() - 1);
     }
 }
 
@@ -197,8 +193,7 @@ QSharedPointer<OutlineItem> PyDocstringGeneratorMode::getOutlineOfLineIdx(int li
 
         foreach(const QSharedPointer<OutlineItem> &c, current->m_childs)
         {
-            if (c->m_type != OutlineItem::typeCodeCell
-                && lineIdx >= c->m_startLineIdx
+            if (lineIdx >= c->m_startLineIdx
                 && lineIdx <= c->m_endLineIdx)
             {
                 result = c;
@@ -355,6 +350,7 @@ void PyDocstringGeneratorMode::insertDocstring(
     insertCursor.endEditBlock();
 
     e->setCursorPosition(lineIdx + 1, indent.size() + quotes.size() + cursorPos);
+
     e->textChanged();
 }
 
@@ -465,22 +461,13 @@ void PyDocstringGeneratorMode::parseArgList(
     QList<QChar> specialCharStack;
     int idx1, idx2;
 
-    // divider for keyword-only and positional-only arguments
-    QStringList specialArgumentsBlacklist = QStringList() << "*" << "/";
-    QString argname;
-
     for (int pos = 0; pos < argstr.size(); ++pos)
     {
         if (argstr[pos] == ',' && specialCharStack.size() == 0)
         {
             if (pos - lastpos > 0)
             {
-                argname = argstr.mid(lastpos, pos - lastpos).trimmed();
-
-                if (!specialArgumentsBlacklist.contains(argname))
-                {
-                    args.append(argname);
-                }
+                args.append(argstr.mid(lastpos, pos - lastpos));
             }
 
             lastpos = pos + 1; //ignore the comma
@@ -554,12 +541,7 @@ void PyDocstringGeneratorMode::parseArgList(
     if (lastpos < argstr.size())
     {
         // append last section
-        argname = argstr.mid(lastpos).trimmed();
-
-        if (!specialArgumentsBlacklist.contains(argname))
-        {
-            args.append(argname);
-        }
+        args.append(argstr.mid(lastpos));
     }
 
     int count = 0;

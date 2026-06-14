@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2023, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2023, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
 
@@ -122,7 +122,7 @@ struct JediAssignment
     QString m_path; // File path of the module where the assignment can be found
     int m_line; // line number
     int m_column; // column number
-    QString m_fullName; // assignment full name
+    QString m_fullName; // assignement full name
 };
 
 //--------------------------------------------------------------------------------------
@@ -155,10 +155,8 @@ struct JediRenameRequest
     QString m_code;
     int m_line;
     int m_col;
-    QString m_filepath; //!< full filepath, or a non-existing py-file in the current directory in case of an unsafed file
+    QString m_filepath;
     bool m_fileModified;
-    bool m_untitledFile; //!< true if file has not been safed yet
-    QString m_untitledName; //!< only != null, if this file is unsafed
     QByteArray m_callbackFctName;
     QPointer<QObject> m_sender;
 };
@@ -176,9 +174,7 @@ struct JediRename
 {
     JediRename(){};
 
-    QString m_filePath; //!< either a true filepath or a non-existing dummy file in the current dir, if the file is untitled.
-    bool m_untitledFile;
-    QString m_untitledFilename; //!< null if a real file
+    QString m_filePath;
     bool m_mainFile;
 
     //!< defines if this file is with the project of the initial file of the rename operation.

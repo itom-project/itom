@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
 
@@ -55,9 +55,6 @@ void WidgetPropEditorAutoCodeFormat::readSettings()
         settings.value("autoCodeFormatEnabled", true).toBool()
     );
 
-    ui.checkBoxFormatOnSave->setChecked(
-        settings.value("autoCodeFormatOnSave", false).toBool());
-
     ui.txtCmd->setText(
         settings.value("autoCodeFormatCmd", "black --line-length 88 --quiet -").toString()
     );
@@ -80,7 +77,6 @@ void WidgetPropEditorAutoCodeFormat::writeSettings()
     settings.beginGroup("CodeEditor");
 
     settings.setValue("autoCodeFormatEnabled", ui.groupAutoCodeFormat->isChecked());
-    settings.setValue("autoCodeFormatOnSave", ui.checkBoxFormatOnSave->isChecked());
     settings.setValue("autoCodeFormatCmd", ui.txtCmd->toPlainText());
     settings.setValue("autoCodeFormatImportsSortCmd", ui.txtPreCmd->text());
     settings.setValue("autoCodeFormatEnableImportsSort", ui.groupImportsSorting->isChecked());
@@ -98,7 +94,7 @@ void WidgetPropEditorAutoCodeFormat::writeSettings()
 void WidgetPropEditorAutoCodeFormat::on_btnTest_clicked()
 {
     m_pyCodeFormatter = QSharedPointer<PyCodeFormatter>(
-        new PyCodeFormatter(0, this),
+        new PyCodeFormatter(this),
         WidgetPropEditorAutoCodeFormat::deleteLater
     );
 

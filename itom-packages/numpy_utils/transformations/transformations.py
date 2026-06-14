@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # transformations.py
 
 # Copyright (c) 2006-2012, Christoph Gohlke
@@ -29,7 +30,7 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-r"""Homogeneous Transformation Matrices and Quaternions.
+"""Homogeneous Transformation Matrices and Quaternions.
 
 A library for calculating 4x4 matrices for translating, rotating, reflecting,
 scaling, shearing, projecting, orthogonalizing, and superimposing arrays of
@@ -182,6 +183,8 @@ True
 True
 
 """
+
+from __future__ import division, print_function
 
 import sys
 import os
@@ -886,7 +889,7 @@ def orthogonalization_matrix(lengths, angles):
 
 
 def affine_matrix_from_points(v0, v1, shear=True, scale=True, usesvd=True):
-    r"""Return affine transform matrix to register two point sets.
+    """Return affine transform matrix to register two point sets.
 
     v0 and v1 are shape (ndims, \*) arrays of at least ndims non-homogeneous
     coordinates, where ndims is the dimensionality of the coordinate space.
@@ -997,7 +1000,7 @@ def affine_matrix_from_points(v0, v1, shear=True, scale=True, usesvd=True):
 
 
 def superimposition_matrix(v0, v1, scale=False, usesvd=True):
-    r"""Return matrix to transform given 3D point set into second point set.
+    """Return matrix to transform given 3D point set into second point set.
 
     v0 and v1 are shape (3, \*) or (4, \*) arrays of at least 3 points.
 
@@ -1516,7 +1519,7 @@ def random_rotation_matrix(rand=None):
     return quaternion_matrix(random_quaternion(rand))
 
 
-class Arcball:
+class Arcball(object):
     """Virtual Trackball Control.
 
     >>> ball = Arcball()
@@ -1702,7 +1705,7 @@ _AXES2TUPLE = {
     "rzyz": (2, 1, 1, 1),
 }
 
-_TUPLE2AXES = {v: k for k, v in _AXES2TUPLE.items()}
+_TUPLE2AXES = dict((v, k) for k, v in _AXES2TUPLE.items())
 
 
 def vector_norm(data, axis=None, out=None):

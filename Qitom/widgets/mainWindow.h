@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2023, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2023, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
 
@@ -61,7 +61,6 @@ public:
     ~MainWindow();
 
 	ito::RetVal addCentralWidget(QWidget *widget);
-    FileSystemDockWidget* m_fileSystemDock;
 
     void scriptEditorOrganizerAvailable();
 
@@ -97,7 +96,7 @@ private:
     WorkspaceDockWidget   *m_globalWorkspaceDock;
     WorkspaceDockWidget   *m_localWorkspaceDock;
     CallStackDockWidget   *m_callStackDock;
-
+    FileSystemDockWidget  *m_fileSystemDock;
 
     AIManagerWidget* m_pAIManagerWidget;
 
@@ -154,6 +153,7 @@ signals:
 public slots:
     void addAbstractDock(AbstractDockWidget* dockWidget, Qt::DockWidgetArea area = Qt::TopDockWidgetArea);
     void removeAbstractDock(AbstractDockWidget* dockWidget);
+    void connectPythonMessageBox(QListWidget* pythonMessageBox);
 
     void pythonStateChanged(tPythonTransitions pyTransition);
 

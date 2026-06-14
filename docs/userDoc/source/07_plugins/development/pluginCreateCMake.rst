@@ -14,7 +14,7 @@ The source folder of your plugin mainly consists of these files:
 #. **yourPlugin.h** and **yourPlugin.cpp**. This are the main header and source files of your plugin.
 #. **dialogYourPlugin.h** and **dialogYourPlugin.cpp** (optional, not for algorithms). Use these files if you want to provide a configuration dialog for your plugin (can also be added later).
 #. **dockWidgetYourPlugin.h** and **dockWidgetYourPlugin.cpp** (optional, not for algorithms). Use these files if you want to provide a dock widget of your plugin that is inserted into |itom|'s main window (can also be added later).
-#. **pluginVersion.h** (optional). This header contains some defines for your current plugin version. It should be included in **yourPlugin.cpp** and under MSVC / windows in **version.rc**.
+#. **pluginVersion.h** (optional). This header contains some defines for your current plugin version. It sould be included in **yourPlugin.cpp** and under MSVC / windows in **version.rc**.
 #. **version.rc** (optional, only under MSVC / windows). Under windows the content of this file will be automatically added to the meta-Data of your DLL.
 
 Templates
@@ -34,7 +34,8 @@ This file usually already contains a lot of subdirectories, added by the CMake-c
 
     project(itom_plugins) #name of the overall project
 
-    cmake_minimum_required(VERSION 3.12...3.29)
+    cmake_minimum_required(VERSION 3.12...3.24)
+
     option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
 
     #this is to automatically detect the SDK subfolder of the itom build directory.

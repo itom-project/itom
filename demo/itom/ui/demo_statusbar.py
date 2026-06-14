@@ -42,5 +42,6 @@ class Statusbar(ItomUi):
 
 
 if __name__ == "__main__":
+
     inst = Statusbar()
     inst.show()  # show the gui

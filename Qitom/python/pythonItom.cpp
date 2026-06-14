@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
 
@@ -44,8 +44,6 @@
 #include "../organizer/processOrganizer.h"
 #include "../organizer/uiOrganizer.h"
 #include "../organizer/userOrganizer.h"
-
-#include "numpy/ndarrayobject.h" // Ensure to include the necessary NumPy header
 
 #include <qcoreapplication.h>
 
@@ -113,7 +111,7 @@ PyObject* PythonItom::PyOpenEmptyScriptEditor(PyObject* /*pSelf*/, PyObject* /*p
     }
     else
     {
-        if (PyErr_CheckSignals() == -1) //!< check if key interrupt occurred
+        if (PyErr_CheckSignals() == -1) //!< check if key interrupt occured
         {
             return PyErr_Occurred();
         }
@@ -154,7 +152,7 @@ PyObject* PythonItom::PyNewScript(PyObject* /*pSelf*/, PyObject* /*pArgs*/)
     }
     else
     {
-        if (PyErr_CheckSignals() == -1) //!< check if key interrupt occurred
+        if (PyErr_CheckSignals() == -1) //!< check if key interrupt occured
         {
             return PyErr_Occurred();
         }
@@ -188,7 +186,7 @@ PyObject* PythonItom::PyLog(PyObject* /*pSelf*/, PyObject* pArgs)
     {
         return NULL;
     }
-
+    
     QObject* logger;
     if (!retVal.containsWarningOrError())
     {
@@ -258,7 +256,7 @@ PyObject* PythonItom::PyOpenScript(PyObject* /*pSelf*/, PyObject* pArgs)
             if (ok)
             {
                 filename2 = f.toLatin1();
-                filename = filename2.data(); // be careful, filename is borrowed from filename2
+                filename = filename2.data(); // be carefull, filename is borrowed from filename2
             }
             else
             {
@@ -1470,7 +1468,7 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs, PyObject* pK
     if (namefilter.contains("*") &&
         ((namefilter.indexOf("*") == (namefilter.length() - 1)) || (namefilter.indexOf("*") == 0)))
     {
-        // This is executed if the '*' is either the first or the last sign of the string
+        // This is executed if the '*' ist either the first or the last sign of the string
         listonly = 1;
         namefilter.remove("*");
     }
@@ -3691,7 +3689,7 @@ Parameters \n\
 type : int \n\
     The type of the menu-element (:attr:`~itom.BUTTON` : 0 [default], \n\
     :attr:`~itom.SEPARATOR` : 1, :attr:`~itom.MENU` : 2). Use the corresponding \n\
-    constant in module :mod:`itom`.\n\
+    constans in module :mod:`itom`.\n\
 key : str \n\
     A slash-separated string where every sub-element is the key-name for the menu-element \n\
     in the specific level.\n\
@@ -3841,7 +3839,7 @@ PyObject* PythonItom::PyAddMenu(PyObject* /*pSelf*/, PyObject* args, PyObject* k
         }
         case 2: // MENU
         {
-            bool ok = true;
+            bool ok;
             qcode = code ? PythonQtConversion::PyObjGetString(code, true, ok) : "";
             if (ok && qcode != "")
             {
@@ -4081,7 +4079,7 @@ dict \n\
         }
         else
         {
-            // this is a little bit an inconvenient way to parse a python-like string.
+            // this is a little bit an unconvenient way to parse a python-like string.
             // The string dump is parsed by the python interpreter and represents a
             // dictionary. This dictionary is then returned.
             PyObject* globals = PyDict_New();
@@ -4783,7 +4781,9 @@ PyObject* PythonItom::PyLoadMatlabMat(PyObject* /*pSelf*/, PyObject* pArgs)
     }
 
     // Arguments must be: filename -> string
+
     PyObject* filename = NULL; // borrowed reference
+
     if (!PyArg_ParseTuple(pArgs, "U", &filename))
     {
         Py_XDECREF(scipyIoModule);
@@ -4792,23 +4792,21 @@ PyObject* PythonItom::PyLoadMatlabMat(PyObject* /*pSelf*/, PyObject* pArgs)
 
     PyObject* kwdDict = PyDict_New();
     PyObject* argTuple = PyTuple_New(1);
+    // PyTuple_SetItem(argTuple, 0, PyUnicode_FromString(filename));
     Py_INCREF(filename);
     PyTuple_SetItem(argTuple, 0, filename); // steals a reference
     PyDict_SetItemString(kwdDict, "squeeze_me", Py_True);
-
-    // Get callable loadmat function
     PyObject* loadmatobj = PyUnicode_FromString("loadmat");
     PyObject* callable = PyObject_GetAttr(scipyIoModule, loadmatobj);
     Py_DECREF(loadmatobj);
-
-    // Call loadmat
     resultLoadMat = PyObject_Call(callable, argTuple, kwdDict);
     Py_DECREF(kwdDict);
     Py_DECREF(argTuple);
 
     if (resultLoadMat)
     {
-        // Check if the result is a dictionary
+        // parse every element of dictionary and check if it is a numpy.ndarray. If so, transforms
+        // it to c-style contiguous form
         if (PyDict_Check(resultLoadMat))
         {
             PyObject* key = NULL;
@@ -4818,89 +4816,76 @@ PyObject* PythonItom::PyLoadMatlabMat(PyObject* /*pSelf*/, PyObject* pArgs)
             PyObject* importMatlabMatAsDataObjectObj =
                 PyUnicode_FromString("importMatlabMatAsDataObject");
 
-            // Iterate through dictionary items
             while (PyDict_Next(
                 resultLoadMat, &pos, &key, &value)) // borrowed reference to key and value
             {
-                if (PyArray_Check(value)) // Check if the value is a NumPy array
+                if (PyArray_Check(value))
                 {
-                    PyArrayObject* array =
-                        reinterpret_cast<PyArrayObject*>(value); // Cast to PyArrayObject
-
-                    // Check if it's a single element or a struct
-                    if (PyArray_SIZE(array) == 1)
+                    if (PyArray_SIZE((PyArrayObject*)value) ==
+                        1) // this is either a single value or a matlab-struct
                     {
-                        PyObject* item = PyArray_ToList(array); // new ref
-                        if (item &&
-                            (PyLong_Check(item) || PyFloat_Check(item))) // Keep it if it's a scalar
+                        PyObject* item = PyArray_ToList((PyArrayObject*)value); // new ref
+
+                        if (item && (PyLong_Check(item) || PyFloat_Check(item))) // keep it
                         {
                             PyDict_SetItem(resultLoadMat, key, item);
                         }
-                        else if (PyArray_HASFIELDS(
-                                     array)) // Use HASFIELDS macro to check for fields
+                        else if (value && PyArray_HASFIELDS((PyArrayObject*)value))
                         {
-                            // It may be that this is a struct
-                            PyArray_Descr* descr = PyArray_DESCR(array); // Get the descriptor
+                            // it may be that this is a struct which has been generated earlier from
+                            // a npDataObject or dataObject
+                            PyArray_Descr* descr = PyArray_DESCR((PyArrayObject*)value);
 
-                            // Instead of checking 'fields', let's manually check for a specific
-                            // field
-                            if (descr) // Check if descriptor exists
+                            if (descr->fields != NULL) // fields is a dictionary with "fieldname" =>
+                                                       // type-description for this field
                             {
-                                // Get the field names if available
-                                PyObject* fields = PyObject_GetAttrString(
-                                    reinterpret_cast<PyObject*>(descr), "fields");
-                                if (fields &&
-                                    PyDict_Check(fields)) // Check if fields is a dictionary
+                                if (PyDict_Contains(descr->fields, itomMetaInfoObj))
                                 {
-                                    // Now check if itomMetaInfoObj exists in the fields
-                                    if (PyDict_Contains(fields, itomMetaInfoObj) == 1)
+                                    PythonEngine* pyEngine = qobject_cast<PythonEngine*>(
+                                        AppManagement::getPythonEngine());
+                                    if (pyEngine)
                                     {
-                                        PythonEngine* pyEngine = qobject_cast<PythonEngine*>(
-                                            AppManagement::getPythonEngine());
-                                        if (pyEngine)
-                                        {
-                                            PyObject* result = PyObject_CallMethodObjArgs(
-                                                pyEngine->m_itomFunctions,
-                                                importMatlabMatAsDataObjectObj,
-                                                array,
-                                                NULL); // new reference
+                                        PyObject* result = PyObject_CallMethodObjArgs(
+                                            pyEngine->m_itomFunctions,
+                                            importMatlabMatAsDataObjectObj,
+                                            value,
+                                            NULL); // new reference
 
-                                            if (result == NULL || PyErr_Occurred())
-                                            {
-                                                Py_XDECREF(result);
-                                                Py_XDECREF(scipyIoModule);
-                                                Py_XDECREF(itomMetaInfoObj);
-                                                Py_XDECREF(importMatlabMatAsDataObjectObj);
-                                                PyErr_PrintEx(0);
-                                                PyErr_SetString(
-                                                    PyExc_RuntimeError,
-                                                    "Error while parsing imported dataObject or "
-                                                    "npDataObject.");
-                                                return NULL;
-                                            }
-                                            PyDict_SetItem(resultLoadMat, key, result);
-                                            Py_XDECREF(result);
-                                        }
-                                        else
+                                        if (result == NULL || PyErr_Occurred())
                                         {
+                                            Py_XDECREF(result);
                                             Py_XDECREF(scipyIoModule);
                                             Py_XDECREF(itomMetaInfoObj);
                                             Py_XDECREF(importMatlabMatAsDataObjectObj);
+                                            PyErr_PrintEx(0);
                                             PyErr_SetString(
-                                                PyExc_RuntimeError, "Python Engine not available");
+                                                PyExc_RuntimeError,
+                                                "Error while parsing imported dataObject or "
+                                                "npDataObject.");
                                             return NULL;
                                         }
+                                        PyDict_SetItem(resultLoadMat, key, result);
+                                        Py_XDECREF(result);
+                                    }
+                                    else
+                                    {
+                                        Py_XDECREF(scipyIoModule);
+                                        Py_XDECREF(itomMetaInfoObj);
+                                        Py_XDECREF(importMatlabMatAsDataObjectObj);
+                                        PyErr_SetString(
+                                            PyExc_RuntimeError, "Python Engine not available");
+                                        return NULL;
                                     }
                                 }
-                                Py_XDECREF(fields);
                             }
                         }
+
                         Py_XDECREF(item);
                     }
-                    else // Ordinary numpy array
+                    else // this should be an ordinary numpy.array
                     {
-                        PyObject* newArr =
-                            (PyObject*)PyArray_GETCONTIGUOUS(array); // should be new reference
+                        PyObject* newArr = (PyObject*)PyArray_GETCONTIGUOUS(
+                            (PyArrayObject*)value); // should be new reference
                         PyDict_SetItem(resultLoadMat, key, newArr);
                         Py_DECREF(newArr);
                     }
@@ -4913,6 +4898,7 @@ PyObject* PythonItom::PyLoadMatlabMat(PyObject* /*pSelf*/, PyObject* pArgs)
     }
 
     Py_XDECREF(scipyIoModule);
+
     return resultLoadMat;
 }
 
@@ -5140,7 +5126,7 @@ too few values, the result is undefined, but the program will still be well-beha
 The overall size of the central area will not be affected. Instead, any additional/missing \n\
 space is distributed amongst the widgets according to the relative weight of the sizes. \n\
 \n\
-If you specify a size of 0, the widget will be invisible and can be made visible again \n\
+If you speciy a size of 0, the widget will be invisible and can be made visible again \n\
 using this method or by increasing its size again with the mouse. \n\
 \n\
 Parameters \n\
@@ -5195,7 +5181,7 @@ other using :meth:`scaleValueAndUnit`. \n\
 Returns \n\
 ------- \n\
 units : list of str \n\
-    List with strings containing all scalable units \n\
+    List with strings containing all scaleable units \n\
 \n\
 See Also \n\
 -------- \n\
@@ -5407,7 +5393,7 @@ Set current working directory to a new absolute path. \n\
 \n\
 sets the absolute path of the current working directory to 'newPath'. \n\
 The current working directory is the base directory for all subsequent relative \n\
-paths of icon-files, script-files, ui-files, relative import statements... \n\
+pathes of icon-files, script-files, ui-files, relative import statements... \n\
 \n\
 The current directory is always indicated in the right corner of the status \n\
 bar of the main window. \n\
@@ -5920,7 +5906,7 @@ PyDoc_STRVAR(pyCheckIsDeveloper_doc, "userIsDeveloper() -> bool \n\
 Returns ``True`` if the current user has developer rights.\n\
 \n\
 This method only returns ``True``, if the current user has developer rights, not if \n\
-he has higher rights, like administrator. \n\
+he has higher rights, like adminstrator. \n\
 For more information about the user management of itom, see :ref:`gui-user-management`. \n\
 \n\
 Returns \n\
@@ -5953,7 +5939,7 @@ PyDoc_STRVAR(pyCheckIsUser_doc, "userIsUser() -> bool \n\
 Returns ``True`` if the current user has user rights.\n\
 \n\
 This method only returns ``True``, if the current user has user rights, not if \n\
-he has higher rights, like developer or administrator. \n\
+he has higher rights, like developer or adminstrator. \n\
 For more information about the user management of itom, see :ref:`gui-user-management`. \n\
 \n\
 Returns \n\
@@ -6973,7 +6959,7 @@ PyObject* PythonItom::PyInitItom(void)
     if (pyEngine)
     {
         // check if hashValue is in m_pyFuncWeakRefHashes and delete
-        // it and all hashValues which start with the given hashValue (hence its children)
+        // it and all hashValues which start with the given hashValue (hence its childs)
         auto it = pyEngine->m_pyFuncWeakRefHashes.begin();
 
         while (it != pyEngine->m_pyFuncWeakRefHashes.end())
@@ -7009,7 +6995,7 @@ PyObject* PythonItom::PyInitItom(void)
     if (pyEngine)
     {
         // check if hashValue is in m_pyFuncWeakRefHashes and delete it and all hashValues which
-        // start with the given hashValue (hence its children)
+        // start with the given hashValue (hence its childs)
         QHash<size_t, FuncWeakRef>::iterator it = pyEngine->m_pyFuncWeakRefHashes.begin();
 
         while (it != pyEngine->m_pyFuncWeakRefHashes.end())

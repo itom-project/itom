@@ -5,14 +5,13 @@ import io
 
 try:
     from itom import pointCloud, point, polygonMesh, dataObject
-
     hasPCL = True
 except (ModuleNotFoundError, ImportError):
     hasPCL = False
 
 if hasPCL:
-
     class PointCloudPickle(unittest.TestCase):
+
         @classmethod
         def setUpClass(cls):
             pass
@@ -37,7 +36,7 @@ if hasPCL:
             """dumps and reloads a polygon mesh and compare both.
 
             Pickling is also used by loadIDC, saveIDC."""
-            mesh = polygonMesh.fromTopography(dataObject.randN([10, 10], "float32"))
+            mesh = polygonMesh.fromTopography(dataObject.randN([10,10], 'float32'))
             bytes_io = io.BytesIO()
             # should pass
             pickle.dump(mesh, bytes_io)
@@ -47,13 +46,12 @@ if hasPCL:
 
             mesh2 = pickle.load(bytes_io)
 
-            self.assertTrue(np.all(mesh.getPolygons() == mesh2.getPolygons()))
+            self.assertTrue(np.all(mesh.getPolygons()==mesh2.getPolygons()))
 
 else:
-
     class PointCloudPickle(unittest.TestCase):
         pass
 
 
-if __name__ == "__main__":
-    unittest.main(module="pointcloud_pickle", exit=False)
+if __name__ == '__main__':
+    unittest.main(module='pointcloud_pickle', exit=False)

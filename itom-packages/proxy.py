@@ -1,7 +1,7 @@
 import weakref  # , new
 
 
-class Proxy:
+class Proxy(object):
     """
     Our own proxy object which enables weak references to bound and unbound
     methods and arbitrary callables. Pulls information about the function,

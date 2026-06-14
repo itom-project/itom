@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
 
@@ -20,7 +20,8 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#pragma once
+#ifndef DIALOGRELOADMODULE_H
+#define DIALOGRELOADMODULE_H
 
 #include <QtGui>
 #include <qdialog.h>
@@ -48,14 +49,12 @@ private:
     Ui::DialogReloadModule ui;
 
     QMap<QString, QTreeWidgetItem*> m_items;
-    bool m_enabled;
 
 private slots:
     void loadModules();
     void currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
     void checkBuildinClicked(bool /*checked*/) { filterItems(); }
     void checkPythonPathClicked(bool /*checked*/) { filterItems(); }
-    void itemSelectionChanged();
 
 public slots:
     void dialogAccepted();
@@ -65,3 +64,5 @@ private slots:
 };
 
 } //end namespace ito
+
+#endif

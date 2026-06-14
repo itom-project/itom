@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
 
@@ -137,15 +137,6 @@ MainApplication::MainApplication(tGuiType guiType) :
     QCoreApplication::setOrganizationName("ito");
     QCoreApplication::setApplicationName("itom");
     QCoreApplication::setApplicationVersion(ITOM_VERSION_STR);
-
-    if(QByteArray(ITOM_ADDITIONAL_EDITION_NAME) == "")
-    {
-        if(QByteArray(ITOM_VERSION_STR) == "0.0.0" || QByteArray(ITOM_VERSION_IDENTIFIERS) == "dev" )
-        {
-            m_devFlag = true;
-        }
-    }
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -238,39 +229,19 @@ QString MainApplication::getSplashScreenFileName() const
 
 	qint64 daysDiffToEaster = currentDate.toJulianDay() - QDate(currentYear, easterMonth, easterDay).toJulianDay();
 
-    if( !m_devFlag )
+    if (currentMonth == 12)
     {
-        if (currentMonth == 12)
-        {
-            //Christmas splashScreen whole december of each year
-            fileName = ":/application/icons/itomicon/splashScreen4Christmas.png";
-        }
-        else if (qAbs(daysDiffToEaster) <= 7)
-        {
-            //Easter splashScreen one week before and after easter day
-            fileName = ":/application/icons/itomicon/splashScreen4Easter.png";
-        }
-        else //default splashScreen
-        {
-            fileName = ":/application/icons/itomicon/splashScreen4.png";
-        }
+        //Christmas splashScreen whole december of each year
+        fileName = ":/application/icons/itomicon/splashScreen4Christmas.png";
     }
-    else
+    else if (qAbs(daysDiffToEaster) <= 7)
     {
-        if (currentMonth == 12)
-        {
-            //Christmas splashScreen whole december of each year
-            fileName = ":/application/icons/itomicon/splashScreen4devChristmas.png";
-        }
-        else if (qAbs(daysDiffToEaster) <= 7)
-        {
-            //Easter splashScreen one week before and after easter day
-            fileName = ":/application/icons/itomicon/splashScreen4devEaster.png";
-        }
-        else //default splashScreen
-        {
-            fileName = ":/application/icons/itomicon/splashScreen4dev.png";
-        }
+        //Easter splashScreen one week before and after easter day
+        fileName = ":/application/icons/itomicon/splashScreen4Easter.png";
+    }
+    else //default splashScreen
+    {
+        fileName = ":/application/icons/itomicon/splashScreen4.png";
     }
 
     return fileName;
@@ -428,9 +399,9 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
 
     //add further folders to path-variable
 
-    //you can add further paths to the application-internal PATH variable by adding the following lines to the ini-file:
+    //you can add further pathes to the application-internal PATH variable by adding the following lines to the ini-file:
     /*[Application]
-    searchPathes\size=1 ->add here the number of paths
+    searchPathes\size=1 ->add here the number of pathes
     searchPathes\1\path=PathToAdd -> for each path add one line like this where you auto-increment the number from \1\ up to your total number*/
     settings->beginGroup("Application");
 
@@ -536,21 +507,7 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
     AppManagement::timeouts.pluginFileSaveLoad = settings->value("timeoutFileSaveLoad", 60000).toInt();
     settings->endGroup();
 
-    QLocale localLanguage;
-
-    // language can be "language[_territory][.codeset][@modifier]" or "operatingsystem".
-    // In the last case, the default language of the operating system is used.
-    if (language.compare("operatingsystem", Qt::CaseInsensitive) == 0)
-    {
-        localLanguage = QLocale();
-    }
-    else
-    {
-        localLanguage = QLocale(language);
-    }
-
-    qDebug() << "The desired language is " << localLanguage.name();
-
+    QLocale local = QLocale(language); //language can be "language[_territory][.codeset][@modifier]"
     QString itomTranslationFolder = QCoreApplication::applicationDirPath() + "/translation";
 
     //load translation files
@@ -560,33 +517,33 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
     //1. try to load qt-translations from qt-folder
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     m_qtTranslator.load(
-        "qt_" + localLanguage.name(), QLibraryInfo::path(QLibraryInfo::TranslationsPath));
+        "qt_" + local.name(), QLibraryInfo::path(QLibraryInfo::TranslationsPath));
 #else
     m_qtTranslator.load(
-        "qt_" + localLanguage.name(), QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+        "qt_" + local.name(), QLibraryInfo::location(QLibraryInfo::TranslationsPath));
 #endif
 
     if (m_qtTranslator.isEmpty())
     {
         //qt-folder is not available, then try itom translation folder
-        m_qtTranslator.load("qt_" + localLanguage.name(), itomTranslationFolder);
+        m_qtTranslator.load("qt_" + local.name(), itomTranslationFolder);
     }
     QCoreApplication::instance()->installTranslator(&m_qtTranslator);
 
     //2. load itom-specific translation file
-    m_translator.load("qitom_" + localLanguage.name(), itomTranslationFolder);
+    m_translator.load("qitom_" + local.name(), itomTranslationFolder);
     QCoreApplication::instance()->installTranslator(&m_translator);
 
-    m_commonQtTranslator.load("itomCommonQtLib_" + localLanguage.name(), itomTranslationFolder);
+    m_commonQtTranslator.load("itomCommonQtLib_" + local.name(), itomTranslationFolder);
     QCoreApplication::instance()->installTranslator(&m_commonQtTranslator);
 
-    m_commonPlotTranslator.load("itomCommonPlotLib_" + localLanguage.name(), itomTranslationFolder);
+    m_commonPlotTranslator.load("itomCommonPlotLib_" + local.name(), itomTranslationFolder);
     QCoreApplication::instance()->installTranslator(&m_commonPlotTranslator);
 
-    m_widgetsTranslator.load("itomWidgets_" + localLanguage.name(), itomTranslationFolder);
+    m_widgetsTranslator.load("itomWidgets_" + local.name(), itomTranslationFolder);
     QCoreApplication::instance()->installTranslator(&m_widgetsTranslator);
 
-    m_addinmanagerTranslator.load("addinmanager_" + localLanguage.name(), itomTranslationFolder);
+    m_addinmanagerTranslator.load("addinmanager_" + local.name(), itomTranslationFolder);
     QCoreApplication::instance()->installTranslator(&m_addinmanagerTranslator);
 
     //3. set default encoding codec
@@ -724,13 +681,6 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
             // test the base color of the color palette of a widget (here: the splashscreen)
             // and set the dark theme, if the lightness of this color is < 0.5.
             QColor bgColor = m_pSplashScreen->palette().window().color();
-
-            // sets the default palette of the application to the already loaded
-            // palette of the splash screen, which is for instance already a dark palette
-            // if for instance a dark qss style is loaded. This palette is then for instance
-            // called in the constructor of widgets, like plots, to automatically adjust their
-            // icon sets.
-            QGuiApplication::setPalette(m_pSplashScreen->palette());
 
             if (bgColor.toHsv().lightnessF() < 0.5)
             {
@@ -923,22 +873,22 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
 
 //This block is currently not perfectly working since it has too much negative side-influences...
 //#ifdef WIN32
-//    //For Windows: add the append and prepend paths to the search directories for subsequent LoadLibrary commands. This is done after
-//    //having loaded all the plugins, since the 'SetDefaultDllDirectories' command will let some plugins not being loaded.
+//    //For Windows: add the append and prepend pathes to the search directories for subsequent LoadLibrary commands. This is done after
+//    //having loaded all the plugins, since the 'SetDefaultDllDirectories' command will let some plugins not beeing loaded.
 //    if (appendPathes.length() > 0 || prependPathes.length() > 0)
 //    {
 //#ifdef WINVER
 //#if WINVER >= 0x0602
-//        //this is optional and only valid for Windows 8 or higher (at least the Windows SDK must be compatible to this).
-//        //the 'lib' directory is already added to the default search paths for LoadLibrary commands in main.cpp.
-//        //However, further paths have to be added with AddDllDirectory, which is only available for Windows SDKs >= Win8!
+//        //this is optional and only valid for Windows 8 or higher (at least the Windows SDK must be compatibel to this).
+//        //the 'lib' directory is already added to the default search pathes for LoadLibrary commands in main.cpp.
+//        //However, further pathes have to be added with AddDllDirectory, which is only available for Windows SDKs >= Win8!
 //        //
 //        if (QSysInfo::windowsVersion() >= QSysInfo::WV_WINDOWS7) //sometimes the win8 SDK has also be propagated to Windows 7. Therefore, let Win7 be accepted, too.
 //        {
 //            SetDefaultDllDirectories(LOAD_LIBRARY_SEARCH_DEFAULT_DIRS);
 //#if UNICODE
 //            //sometimes LoadLibrary commands in plugins with files that are located in the lib folder cannot be loaded
-//            //even if the lib folder is add to the path variable in this function, too. The SetDllDirectory
+//            //even if the lib folder is add to the path variable in this funtion, too. The SetDllDirectory
 //            //is another approach to reach this (only available since Win XP).
 //            foreach(const QString &path, prependPathes + appendPathes)
 //            {

@@ -3,28 +3,31 @@
 
 In this demo the lateral image shift is determined.
 """
-
 import numpy as np
 import scipy
-import scipy.datasets
+import scipy.misc
 import scipy.ndimage
 import matplotlib.pyplot as plt
 from numpy.typing import ArrayLike
 
 
-def plotImage(image: ArrayLike, cmap: str = "gray"):
+def plotImage(image: ArrayLike, cmap: str="gray"):
     plt.figure()
     plt.gray()
     plt.imshow(image, cmap=cmap)
     plt.show()
 
 
-image = scipy.datasets.face()
-# Convert the image
-R = image[:, :, 0]
-G = image[:, :, 1]
-B = image[:, :, 2]
-image = R * 299.0 / 1000 + G * 587.0 / 1000 + B * 114.0 / 1000
+if scipy.__version__ <= "0.14.0":
+    # removed due to licensing reasons
+    image = scipy.misc.lena()
+else:
+    image = scipy.misc.face()
+    # Convert the image
+    R = image[:, :, 0]
+    G = image[:, :, 1]
+    B = image[:, :, 2]
+    image = R * 299. / 1000 + G * 587. / 1000 + B * 114. / 1000
 
 plotImage(image)
 
@@ -58,7 +61,7 @@ image1FFT = np.fft.fft2(image1)
 image2FFT = np.conjugate(np.fft.fft2(image2))
 
 # inverse fourier transformation of product -> equal to cross correlation
-imageCCor = np.real(np.fft.ifft2(image1FFT * image2FFT))
+imageCCor = np.real(np.fft.ifft2((image1FFT * image2FFT)))
 
 # Shift the zero-frequency component to the center of the spectrum
 imageCCorShift = np.fft.fftshift(imageCCor)
