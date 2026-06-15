@@ -1,3 +1,4 @@
+# coding=iso-8859-15
 """
 This file contains a toolbar with basic live image and snap shot interactions
 """
@@ -176,6 +177,7 @@ class camToolbar(abstractObjInteractionToolBar):
 
         if check == True:
             try:
+
                 global rows
                 script = "globals()['rows'] = {}.getParam('sizey')"
                 exec(script.format(camname))
@@ -261,18 +263,18 @@ class camToolbar(abstractObjInteractionToolBar):
         dialogSnapshot.comboBoxGrabber.call("setCurrentIndex", camindex)
         dialogSnapshot.comboBoxdObj.call("addItems", dObjects)
         dialogSnapshot.comboBoxdObj.call("setCurrentIndex", objindex)
-        dialogSnapshot.comboBoxdObj["editable"] = (
-            True  # .setProperty("comboBoxdObj", "editable", True)
-        )
-        dialogSnapshot.spinBoxTempBin["value"] = (
-            1  # .setProperty("txtBinning", "text", "1")
-        )
-        dialogSnapshot.spinBoxNumImages["value"] = (
-            1  # .setProperty("txtBinning", "text", "1")
-        )
-        dialogSnapshot.checkBoxShow["checked"] = (
-            True  # .setProperty("checkBoxShow", "checked", True)
-        )
+        dialogSnapshot.comboBoxdObj[
+            "editable"
+        ] = True  # .setProperty("comboBoxdObj", "editable", True)
+        dialogSnapshot.spinBoxTempBin[
+            "value"
+        ] = 1  # .setProperty("txtBinning", "text", "1")
+        dialogSnapshot.spinBoxNumImages[
+            "value"
+        ] = 1  # .setProperty("txtBinning", "text", "1")
+        dialogSnapshot.checkBoxShow[
+            "checked"
+        ] = True  # .setProperty("checkBoxShow", "checked", True)
         retdialog = dialogSnapshot.show(1)
 
         if retdialog == 1:
@@ -310,7 +312,7 @@ class camToolbar(abstractObjInteractionToolBar):
                     )
                     check = False
                     return [check, result]
-            ui.msgInformation("DataObject", f"Created DataObject {dataObj}")
+            ui.msgInformation("DataObject", "Created DataObject {}".format(dataObj))
             check = True
 
         if check == True:
@@ -326,14 +328,15 @@ class camToolbar(abstractObjInteractionToolBar):
             try:
                 # Evaluate String with {} changed to varname
 
-                checkGrabbing = eval(f"{camname}.getAutoGrabbing()")
-                eval(f"{camname}.startDevice()")
+                checkGrabbing = eval("{}.getAutoGrabbing()".format(camname))
+                eval("{}.startDevice()".format(camname))
                 if checkGrabbing == True:
-                    eval(f"{camname}.disableAutoGrabbing()")
+                    eval("{}.disableAutoGrabbing()".format(camname))
 
                 if stacked == 1:
                     if binning == 1:
-                        eval(f"{camname}.acquire()")
+
+                        eval("{}.acquire()".format(camname))
 
                         script = 'tmpObj=dataObject()\n{camname}.getVal(tmpObj)\nglobals()["{dataObj}"]=tmpObj.copy()\ndel tmpObj'
                         exec(script.format(camname=camname, dataObj=dataObj), globals())
@@ -344,16 +347,14 @@ class camToolbar(abstractObjInteractionToolBar):
 
                         exec(script.format(camname=camname), globals(), locals())
                         tmpObj2 = tmpObj.astype("float64")
-                        script = (
-                            "{camname}.acquire()\n{camname}.getVal(tmpObj)\n".format(
-                                camname=camname
-                            )
+                        script = "{camname}.acquire()\n{camname}.getVal(tmpObj)\n".format(
+                            camname=camname
                         )
                         for i in range(1, binning):
                             exec(script, globals(), locals())
                             tmpObj2 = tmpObj2 + tmpObj.astype("float64")
                         bin = 1 / (binning)
-                        script = f"{dataObj}=tmpObj2*{bin}"
+                        script = "{}=tmpObj2*{}".format(dataObj, bin)
                         exec(script)
                         del tmpObj
 
@@ -373,8 +374,8 @@ class camToolbar(abstractObjInteractionToolBar):
                         )
 
                 if checkGrabbing == True:
-                    eval(f"{camname}.enableAutoGrabbing()")
-                eval(f"{camname}.stopDevice()")
+                    eval("{}.enableAutoGrabbing()".format(camname))
+                eval("{}.stopDevice()".format(camname))
 
                 if show == True:
                     script = "plot({})"
@@ -425,21 +426,21 @@ class camToolbar(abstractObjInteractionToolBar):
         script = '{camname}.acquire()\ntmpObj=dataObject()\n{camname}.getVal(tmpObj)\nglobals()["{dataObj}"]=tmpObj.copy()\ndel tmpObj\n'
 
         try:
-            checkGrabbing = eval(f"{camname}.getAutoGrabbing()")
-            eval(f"{camname}.startDevice()")
+            checkGrabbing = eval("{}.getAutoGrabbing()".format(camname))
+            eval("{}.startDevice()".format(camname))
             if checkGrabbing == True:
-                eval(f"{camname}.disableAutoGrabbing()")
+                eval("{}.disableAutoGrabbing()".format(camname))
             exec(script.format(camname=camname, dataObj=dataObj), globals())
             if checkGrabbing == True:
-                eval(f"{camname}.enableAutoGrabbing()")
-            eval(f"{camname}.stopDevice()")
+                eval("{}.enableAutoGrabbing()".format(camname))
+            eval("{}.stopDevice()".format(camname))
 
         except:
             ui.msgCritical("Cam", "Execution error during Grabbing", ui.MsgBoxOk)
             check = False
 
         try:
-            s = f"plot({dataObj})"
+            s = "plot({})".format(dataObj)
             eval(s)
             result = dataObj
 

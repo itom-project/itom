@@ -9,7 +9,6 @@ import time
 
 # sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoWorkerThread.png'
 
-
 def worker():
     """thread worker function"""
     print("worker start")

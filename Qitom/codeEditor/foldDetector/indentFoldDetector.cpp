@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
 
@@ -85,27 +85,19 @@ Detects fold level by looking at the block indentation.
 :param prev_block: previous text block
 :param block: current block to highlight
 */
-int IndentFoldDetector::detectFoldLevel(
-    const QTextBlock &previousBlock,
-    const QTextBlock &block,
-    bool& withinCodeCell,
-    bool& codeCellStart)
+int IndentFoldDetector::detectFoldLevel(const QTextBlock &previousBlock, const QTextBlock &block)
 {
     QString text = block.text();
     int min_lvl = 0;
     int level;
-    QString codeCellName;
-    int prev_lvl = 0;
-    codeCellStart = false;
 
     if (previousBlock.isValid())
     {
-        prev_lvl = Utils::TextBlockHelper::getFoldLvl(previousBlock);
+        int prev_lvl = Utils::TextBlockHelper::getFoldLvl(previousBlock);
         QString prev_text = previousBlock.text();
         int prev_state = Utils::TextBlockHelper::getState(previousBlock);
         int prev_prev_state = PythonSyntaxHighlighter::Normal;
         QTextBlock prevPrevBlock = previousBlock.previous();
-        withinCodeCell = Utils::TextBlockHelper::isWithinCodeCell(previousBlock);
 
         if (prevPrevBlock.isValid())
         {
@@ -122,12 +114,12 @@ int IndentFoldDetector::detectFoldLevel(
             if (prev_prev_state != prev_state)
             {
                 //this is the 2nd line of a multi line string. Indent it.
-                min_lvl += 2;
+                min_lvl++;
             }
         }
         else if (!Utils::lstrip(prev_text).startsWith("#"))
         {
-            // ignore commented lines(could have arbitrary indentation)
+            // ignore commented lines(could have arbitary indentation)
             // Verify if the previous line ends with a continuation line
             // with a regex.
             // The 2nd case is for this (e.g. produced by black):
@@ -146,16 +138,6 @@ int IndentFoldDetector::detectFoldLevel(
                 min_lvl = prev_lvl;
             }
         }
-        else if (Utils::isCodeCellStart(prev_text, codeCellName))
-        {
-            withinCodeCell = true;
-        }
-    }
-
-    if (Utils::isCodeCellStart(text, codeCellName))
-    {
-        withinCodeCell = false;
-        codeCellStart = true;
     }
 
     // round down to previous indentation guide to ensure contiguous block
@@ -167,17 +149,6 @@ int IndentFoldDetector::detectFoldLevel(
     else
     {
         level = (text.size() - Utils::lstrip(text).size());
-    }
-
-    prev_lvl /= 2;
-
-    if (withinCodeCell)
-    {
-        level = level * 2 + 1;
-    }
-    else
-    {
-        level *= 2;
     }
 
     return qMax(min_lvl, level);

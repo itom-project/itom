@@ -1,15 +1,14 @@
 """
 Render to itom (qt) from agg
 """
+from matplotlib.transforms import Bbox
+
+from matplotlib import cbook
+from matplotlib.backends.backend_agg import FigureCanvasAgg
+from .backend_itom_v3_6 import FigureCanvasItom, _BackendItom
 
 import itom
 import numpy as np  # for color channel conversion in copy to clipboard
-from matplotlib.backends.backend_agg import FigureCanvasAgg
-from matplotlib.transforms import Bbox
-import matplotlib
-
-from .backend_itom_v3_6 import FigureCanvasItom, _BackendItom
-from mpl_itom import versiontuple
 
 DEBUG = False
 
@@ -70,19 +69,12 @@ class FigureCanvasItomAgg(FigureCanvasItom, FigureCanvasAgg):
 
         # <-- itom specific start
         reg = self.copy_from_bbox(bbox)
-
-        if versiontuple(matplotlib.__version__) >= versiontuple("3.9.0"):
-            # returns a RGBA8888 image format
-            buf = memoryview(reg).tobytes()
-        else:
-            # this is faster than the Qt-original version cbook._unmultiplied_rgba8888_to_premultiplied_argb32...
-            # However, it has been removed with MPL 3.9
-            # returns a ARGB32 image format buffer
-            buf = reg.to_string_argb()
-
+        buf = (
+            reg.to_string_argb()
+        )  # this is faster than the Qt-original version cbook._unmultiplied_rgba8888_to_premultiplied_argb32...
         W = round(w)
         H = round(h)
-        # workaround sometimes the width and height does not fit to the buf length, leding to a crash of itom.
+        # workaround sometimes the width and hight does not fit to the buf length, leding to a crash of itom.
         # If the length is a multiple of either the width or the length we readjust them.
         if not int(W * H * 4) == len(buf):
             numberElements = len(buf) / 4
@@ -92,32 +84,19 @@ class FigureCanvasItomAgg(FigureCanvasItom, FigureCanvasAgg):
                 H = int(numberElements / W)
             else:
                 return
-
-        # the slot calls below might fail, since it is possible that the figure has
-        # currently be closed by the user
-        # do not call self.signalDestroyedWidget() among others,
-        # since it might be, that the paintEvent is called from
-        # a timer event, that should finish, such that a close event
-        # is called afterwards.
-
-        # if blit: W and H are a sum of the real width/height and the offset x0 or y0.
-        # else: W and H are the real width and height of the image
-
-        if versiontuple(matplotlib.__version__) >= versiontuple("3.9.0"):
-            try:
-                self.matplotlibWidgetUiItem.call("paintResultWithImageFormat", buf, "rgba8888", x0, y0, W, H, blit)
-            except RuntimeError:
-                if self.matplotlibWidgetUiItem.exists():
-                    print("For matplotlib 3.9, the itom matplotlib designer plugin must have version >= 2.7.0")
-                else:
-                    # see comment above
-                    pass
-        else:
-            try:
-                self.matplotlibWidgetUiItem.call("paintResult", buf, x0, y0, W, H, blit)
-            except RuntimeError:
-                # see comment above
-                pass
+        try:
+            # if blit: W and H are a sum of the real width/height and the offset x0 or y0.
+            # else: W and H are the real width and height of the image
+            self.matplotlibWidgetUiItem.call("paintResult", buf, x0, y0, W, H, blit)
+        except RuntimeError as e:
+            # it is possible that the figure has currently be closed by the user
+            # do not call self.signalDestroyedWidget() among others,
+            # since it might be, that the paintEvent is called from
+            # a timer event, that should finish, such that a close event
+            # is called afterwards.
+            pass
+            # self.signalDestroyedWidget()
+            # print("paintEvent::Matplotlib figure is not available (err: %s)" % str(e))
         # itom specific end -->
 
     def copyToClipboard(self, dpi):
@@ -168,7 +147,8 @@ class FigureCanvasItomAgg(FigureCanvasItom, FigureCanvasAgg):
         self.figure.set_canvas(self)
 
     def blit(self, bbox=None):
-        """Blit the region in bbox."""
+        """Blit the region in bbox.
+        """
         if DEBUG:
             print("blit:", str(bbox))
         # If bbox is None, blit the entire canvas. Otherwise
@@ -177,7 +157,8 @@ class FigureCanvasItomAgg(FigureCanvasItom, FigureCanvasAgg):
             bbox = self.figure.bbox
 
         # repaint uses logical pixels, not physical pixels like the renderer.
-        x0, y0, w, h = (pt for pt in bbox.extents)
+        dpi_ratio = self._dpi_ratio
+        x0, y0, w, h = [pt / dpi_ratio for pt in bbox.extents]
 
         self.paintEvent((x0, y0, w, h))
 
@@ -190,7 +171,7 @@ class FigureCanvasItomAgg(FigureCanvasItom, FigureCanvasAgg):
         self.do_not_resize_window = True
         # itom specific end -->
 
-        super().print_figure(*args, **kwargs)
+        super(FigureCanvasItomAgg, self).print_figure(*args, **kwargs)
 
         # <-- itom specific start
         self.do_not_resize_window = False

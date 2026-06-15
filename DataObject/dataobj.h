@@ -1,8 +1,8 @@
 /* ********************************************************************
  itom software
  URL: http://www.uni-stuttgart.de/ito
- Copyright (C) 2020, Institut für Technische Optik (ITO),
- Universität Stuttgart, Germany
+ Copyright (C) 2023, Institut fuer Technische Optik (ITO),
+ Universitaet Stuttgart, Germany
 
  This file is part of itom and its software development toolkit (SDK).
 
@@ -11,7 +11,7 @@
  the Free Software Foundation; either version 2 of the Licence, or (at
  your option) any later version.
 
- In addition, as a special exception, the Institut für Technische
+ In addition, as a special exception, the Institut fuer Technische
  Optik (ITO) gives you certain additional rights.
  These rights are described in the ITO LGPL Exception version 1.0,
  which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -25,8 +25,7 @@
  along with itom. If not, see <http://www.gnu.org/licenses/>.
  *********************************************************************** */
 
-#ifndef __DATAOBJH
-#define __DATAOBJH
+#pragma once
 
 #include "defines.h"
 
@@ -392,7 +391,7 @@ namespace ito {
         /** getVal_ToDouble  read parameter value and try to convert to double
          *   @return parameter value (numeric, casted) or quiet_NaN()
          *
-         *   returns the actual parameter value as double. If conversion fails it returns a signaling_NaN()
+         *   returns the actual parameter value as double. If conversion failes it returns a signaling_NaN()
          */
         inline double getVal_ToDouble(void)
         {
@@ -415,7 +414,7 @@ namespace ito {
         /** getVal_ToString  read parameter value and try to convert to std::string
          *   @return parameter value (numeric, casted) or 'NaN' || 'Inf'
          *
-         *   returns the actual parameter value as std::string. If conversion from double fails it returns 'NaN' || 'Inf'
+         *   returns the actual parameter value as std::string. If conversion from double failes it returns 'NaN' || 'Inf'
          */
         inline ByteArray getVal_ToString(void)
         {
@@ -593,7 +592,7 @@ namespace ito {
         //! create header information for data objects with a given size and step sizes to jump from one element in a dimension to the next one.
         void createHeader(const unsigned char dimensions, const int *sizes, const int *steps, const int elemSize);
 
-        //! create header information for data objects with a given size, optional roi indices and a possible original size
+        //! create header information for data objects with a given size, optional roi indeces and a possible original size
         void createHeaderWithROI(const unsigned char dimensions, const int *sizes, const int *osizes = NULL, const int *roi = NULL);
 
         void create(const unsigned char dimensions, const int *sizes, const int type, const unsigned char continuous, const uchar* continuousDataPtr = NULL, const int* steps = NULL);  /*!< allocates new data */
@@ -844,13 +843,13 @@ namespace ito {
          \brief Function to access (set) the rotiational matrix by each element
          \param[in] r11  Upper left element
          \param[in] r12  Upper middle element
-         \param[in] r13  Upper right element
+         \param[in] r13  Upper rigth element
          \param[in] r21  Middle left element
          \param[in] r22  Middle middle element
-         \param[in] r23  Middle right element
+         \param[in] r23  Middle rigth element
          \param[in] r31  Lower left element
          \param[in] r32  Lower middle element
-         \param[in] r33  Lower right element
+         \param[in] r33  Lower rigth element
          \return ito::retOk || ito::retError
          */
         RetVal setXYRotationalMatrix(double r11, double r12, double r13, double r21, double r22, double r23, double r31, double r32, double r33);
@@ -859,13 +858,13 @@ namespace ito {
          \brief Function to access (get) the rotiational matrix by each element
          \param[out] r11  Upper left element
          \param[out] r12  Upper middle element
-         \param[out] r13  Upper right element
+         \param[out] r13  Upper rigth element
          \param[out] r21  Middle left element
          \param[out] r22  Middle middle element
-         \param[out] r23  Middle right element
+         \param[out] r23  Middle rigth element
          \param[out] r31  Lower left element
          \param[out] r32  Lower middle element
-         \param[out] r33  Lower right element
+         \param[out] r33  Lower rigth element
          \return ito::retOk || ito::retError
          */
         RetVal getXYRotationalMatrix(double &r11, double &r12, double &r13, double &r21, double &r22, double &r23, double &r31, double &r32, double &r33) const;
@@ -1089,7 +1088,7 @@ namespace ito {
         RetVal setTo(const ito::TimeDelta &value, const DataObject &mask = DataObject()); /*!< Sets all or some (if uint8 mask is given) of the array elements to the specified value. */
 
         //! copy all values of this data object to the copyTo data object. The copyTo-data object must be allocated and have the same type and size (of its roi) than this data object. The compared sequence of sizes only contains dimensions whose size is bigger than one (e.g. it is possible to copy a 5x1 object to a 1x1x5 object)
-        RetVal deepCopyPartial(DataObject &copyTo);
+        RetVal deepCopyPartial(DataObject &copyTo) const;
 
         //! Returns the matrix iterator and sets it to the first matrix element.
         DObjIterator begin();
@@ -1244,11 +1243,11 @@ namespace ito {
 
 
 		// power (power of 0.5 is the square root)
-		DataObject pow(const ito::float64 &power); // returns a new data object with the same size and type than this data object and calculates src**power if power is an integer, else |src|**power (only for float32 and float64 data objects)
-		void pow(const ito::float64 &power, DataObject &dst); // this function raises every element of this data object to *power* and saves the result in dst. Dst must be of the same size and type than this data object or empty. In the latter case, it is reassigned to the right size and type.
+		DataObject pow(const ito::float64 &power) const; // returns a new data object with the same size and type than this data object and calculates src**power if power is an integer, else |src|**power (only for float32 and float64 data objects)
+		void pow(const ito::float64 &power, DataObject &dst) const; // this function raises every element of this data object to *power* and saves the result in dst. Dst must be of the same size and type than this data object or empty. In the latter case, it is reassigned to the right size and type.
 
-		DataObject sqrt(); // returns a new data object of the same size and type than this data object where the square root of every element is calculated. Is the same than pow(0.5)
-		void sqrt(DataObject &dst); // this function calculates the square root of every element and saves the result in dst. Dst must be of the same size and type than this data object or empty. In the latter case, it is reassigned to the right size and type.. Is the same than pow(0.5, dst)
+		DataObject sqrt() const; // returns a new data object of the same size and type than this data object where the square root of every element is calculated. Is the same than pow(0.5)
+		void sqrt(DataObject &dst) const; // this function calculates the square root of every element and saves the result in dst. Dst must be of the same size and type than this data object or empty. In the latter case, it is reassigned to the right size and type.. Is the same than pow(0.5, dst)
 
         DataObject squeeze() const;
         DataObject reshape(int newDims, const int *newSizes) const;
@@ -1433,10 +1432,17 @@ namespace ito {
 		DataObject lineCut(const double* coordinates, const int& len) const;
 
         // ROI
-        DataObject & adjustROI(const int dtop, const int dbottom, const int dleft, const int dright);   /*!< changes the boundaries of the ROI of a two-dimensional data object by the given incremental values */
-        DataObject & adjustROI(const unsigned char dims, const int *lims);                              /*!< changes the boundaries of the ROI of a n-dimensional data object by the given incremental values */
-        RetVal locateROI(int *wholeSizes, int *offsets) const;                                          /*!< locates the boundaries of the ROI of a n-dimensional data object and returns the original size and the distances to the physical borders */
-        RetVal locateROI(int *lims) const;                                                              /*!< locates the boundaries of the ROI of a n-dimensional data object the distances to the physical borders */
+        /*!< changes the boundaries of the ROI of a two-dimensional data object by the given incremental values */
+        DataObject& adjustROI(const int dtop, const int dbottom, const int dleft, const int dright);
+
+        /*!< changes the boundaries of the ROI of a n-dimensional data object by the given incremental values */
+        DataObject& adjustROI(const unsigned char dims, const int *lims);
+
+        /*!< locates the boundaries of the ROI of a n-dimensional data object and returns the original size and the distances to the physical borders */
+        RetVal locateROI(int *wholeSizes, int *offsets) const;
+
+        /*!< locates the boundaries of the ROI of a n-dimensional data object the distances to the physical borders */
+        RetVal locateROI(int *lims) const;
 
         //! copies the externally given source data inside this data object
         /*!
@@ -1447,14 +1453,18 @@ namespace ito {
          object.
 
          Then, the given array is copied inside of the values of the data object. The external
-         array must have a row-wise data arrangement (c-style), hence, one row follows after the other one.
+         array must have a row-wise data arrangment (c-style), hence, one row follows after the other one.
 
          \param _Tp* src is the source array. The type of the array is analyzed at compile time (_Tp is the placeholder for this type as template parameter)
          \param sizeX is the width of the array and must fit to the plane width of the data object
          \param sizeY is the height of the array and must fit to the plane height of the data object
          \return RetVal error if sizeX or sizeY does not fit to the size of the data object or if the type of the given array does not fit to the type of the data object
          */
-        template<typename _Tp> RetVal copyFromData2D(const _Tp* src, const int sizeX, const int sizeY) { return copyFromData2DInternal((const uchar*)src, sizeof(_Tp), sizeX, sizeY); }        // copies 2D continuous data into data object, data object must have correct size and type, otherwise an error is returned
+        template<typename _Tp> RetVal copyFromData2D(const _Tp* src, const int sizeX, const int sizeY)
+        {
+            // copies 2D continuous data into data object, data object must have correct size and type, otherwise an error is returned
+            return copyFromData2DInternal((const uchar*)src, sizeof(_Tp), sizeX, sizeY);
+        }
 
         //! copies the externally given source data inside this data object
         /*!
@@ -1465,7 +1475,7 @@ namespace ito {
          object.
 
          Then, the given array is copied inside of the values of the data object. The external
-         array must have a row-wise data arrangement (c-style), hence, one row follows after the other one.
+         array must have a row-wise data arrangment (c-style), hence, one row follows after the other one.
 
          In this method, it is allowed that the original width and height of the given data is different
          than the plane size of this data object. Then only a subregion of the external data is copied, indicated
@@ -1481,9 +1491,13 @@ namespace ito {
          \param height is the height of the sub-region of the source data that should be copied (must fit to the height of the data object)
          \return RetVal error if sizeX or sizeY does not fit to the size of the data object or if the type of the given array does not fit to the type of the data object
          */
-        template<typename _Tp> RetVal copyFromData2D(const _Tp *src, const int sizeX, const int sizeY, const int x0, const int y0, const int width, const int height) { return copyFromData2DInternal((const uchar*)src, sizeof(_Tp), sizeX, x0, y0, width, height); }      // copies 2D continuous data into data object, data object must have correct size and type, otherwise an error is returned
+        template<typename _Tp> RetVal copyFromData2D(const _Tp *src, const int sizeX, const int sizeY, const int x0, const int y0, const int width, const int height)
+        {
+            // copies 2D continuous data into data object, data object must have correct size and type, otherwise an error is returned
+            return copyFromData2DInternal((const uchar*)src, sizeof(_Tp), sizeX, x0, y0, width, height);
+        }
 
-        template<typename T2> operator T2 ();  /*!< cast operator, tries to cast this data object to another element type */
+        template<typename T2> operator T2();  /*!< cast operator, tries to cast this data object to another element type */
 
         template<typename _Tp> RetVal linspace(const _Tp start, const _Tp end, const _Tp inc, const int transposed);
 
@@ -1564,14 +1578,14 @@ namespace ito {
                 retValue = cv::saturate_cast<_Tp>(*(static_cast<const ito::TimeDelta*>(scalar)));
                 break;
             default:
-                cv::error(cv::Exception(CV_StsAssert, "Input value type unknown", "", __FILE__, __LINE__));
+                cv::error(cv::Exception(CV_StsAssert, "Input value type unkown", "", __FILE__, __LINE__));
                 retValue = 0;
         }
 
         return retValue;
     };
 
-    //! streaming operator to stream the representation or constant of a data object
+    //! streaming operator to stream the representation or contant of a data object
     DATAOBJ_EXPORT std::ostream& operator << (std::ostream& out, const DataObject& dObj);
 
     //! method which returns the real data type of any given data type
@@ -1671,7 +1685,7 @@ namespace ito {
      */
     template<typename _Tp> inline ito::tDataType getDataType(const _Tp* /*src*/)
     {
-        cv::error(cv::Exception(CV_StsAssert, "Input value type unknown", "", __FILE__, __LINE__));
+        cv::error(cv::Exception(CV_StsAssert, "Input value type unkown", "", __FILE__, __LINE__));
         return ito::tInt8;
     }
 
@@ -1702,7 +1716,7 @@ namespace ito {
      */
     template<typename _Tp> inline ito::tDataType getDataType2()
     {
-        cv::error(cv::Exception(CV_StsAssert, "Input value type unknown", "", __FILE__, __LINE__));
+        cv::error(cv::Exception(CV_StsAssert, "Input value type unkown", "", __FILE__, __LINE__));
         return ito::tInt8;
     }
 
@@ -1721,5 +1735,3 @@ namespace ito {
     template<> inline ito::tDataType getDataType2<TimeDelta*>()   { return ito::tTimeDelta; }
 
 } //namespace ito
-
-#endif //__DATAOBJH

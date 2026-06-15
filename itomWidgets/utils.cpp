@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
 
@@ -11,7 +11,7 @@
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
 
-    In addition, as a special exception, the Institut für Technische
+    In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
     which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -77,7 +77,7 @@ static std::string qStringToSTLString(const QString& qstring)
 void ctk::qListToSTLVector(const QStringList& list,
                                  std::vector<std::string>& vector)
 {
-  // To avoid unnecessary relocations, let's reserve the required amount of space
+  // To avoid unnessesary relocations, let's reserve the required amount of space
   vector.reserve(list.size());
   std::transform(list.begin(),list.end(),std::back_inserter(vector),&qStringToSTLString);
 }
@@ -98,10 +98,9 @@ const char *ctkValidWildCard =
 //-----------------------------------------------------------------------------
 QStringList ctk::nameFilterToExtensions(const QString& nameFilter)
 {
-  QRegularExpressionMatch match;
   QRegularExpression regexp(QString::fromLatin1(ctkNameFilterRegExp));
-  int i = nameFilter.indexOf(regexp, 0, &match);
-  if (!match.hasMatch())
+  int i = nameFilter.indexOf(regexp);
+  if (i < 0)
     {
     QRegularExpression isWildCard(QString::fromLatin1(ctkValidWildCard));
     if (nameFilter.indexOf(isWildCard) >= 0)
@@ -110,7 +109,7 @@ QStringList ctk::nameFilterToExtensions(const QString& nameFilter)
       }
     return QStringList();
     }
-  QStringList captured = match.capturedTexts();
+  QStringList captured = regexp.namedCaptureGroups();
   QString f;
 
   if (captured.size() > 2)
@@ -144,15 +143,14 @@ QStringList ctk::nameFiltersToExtensions(const QStringList& nameFilters)
 QString ctk::extensionToRegExp(const QString& extension)
 {
   // typically *.jpg
-  QRegularExpressionMatch match;
   QRegularExpression extensionExtractor("\\*\\.(\\w+)");
-  int pos = extension.indexOf(extensionExtractor, 0, &match);
+  int pos = extension.indexOf(extensionExtractor);
   if (pos < 0)
     {
     return QString();
     }
 
-  QStringList captured = match.capturedTexts();
+  QStringList captured = extensionExtractor.namedCaptureGroups();
 
   if (captured.size() > 1)
   {

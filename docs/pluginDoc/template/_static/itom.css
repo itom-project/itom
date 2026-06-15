@@ -71,7 +71,7 @@ div.figure.align-center {
     width: 1120px;
 }
 
-/* Parameters, Returns, etc - Spalte*/
+/*Parameters, Returns, etc - Spalte*/
 col.field-name{
     background-color: #F6E3CE;
     overflow: hidden;
@@ -85,13 +85,13 @@ tt > span.pre {
     font-family: Helvetica, sans-serif;
 }
 
-/* class.itom ... Ueberschrift*/
+/*class.itom ... Ueberschrift*/
 dl.class > dt{
    font-size: 11pt;
    border-bottom: dotted thin #e0e0e0;
 }
 
-/* The word "class" in the class heading */
+/*Das Wort "class" in der Klassenueberschrift*/
 dl.class > dt > em{
     font-size: 11pt;
 }
@@ -104,26 +104,26 @@ dl.class > dt > tt.descname {
 
 dl.class dt
 
-/* Definition of all methods */
+/*Hinterlegung der gesamten Methoden*/
 dl.method, dl.staticmethod, dl.function{
   background-color: #ffffff; /*#FBF8EF;*/
   border: 0px solid #000000;
 }
 
-/* Definition of all attributes */
+/*Hinterlegung des gesamten Attributes*/
 dl.attribute{
   background-color: #F2FBff;
   border: 1px solid;
 }
 
-/* Definition of the attribute header */
+/*Hinterlegung des Attributeheaders*/
 dl.attribute > dt{
     background-color: #E6E6E6;
     font-size: 11pt;
     padding-left: 7px;
 }
 
-/* Definition of the static and method headers */
+/*Hinterlegung des static- und Mehodenheaders*/
 dl.method dt, dl.staticmethod dt, dl.function dt{
     background-color: #E6E6E6;
     border-top: 0px solid #000000;
@@ -156,6 +156,7 @@ div.footer {
 }
 
 /* link colors and text decoration */
+
 a:link {
     font-weight: normal;
     text-decoration: none;
@@ -174,6 +175,7 @@ a:hover, a:active {
 }
 
 /* Some headers act as anchors, don't give them a hover effect */
+
 h1 a:hover, a:active {
     text-decoration: none;
     color: #0c3762;
@@ -204,6 +206,7 @@ a.headerlink:hover {
 }
 
 /* basic text elements */
+
 div.content {
     margin-top: 20px;
     margin-left: 40px;
@@ -213,8 +216,9 @@ div.content {
 }
 
 /* heading and navigation */
+
 div.content.div#dataobject.section.dl.class.dd.table.docutils.field-list.tbody.tr.field-odd.field.th.field-name{
-    background: #0000FF;
+  backround: #0000FF;
 }
 
 div.header {
@@ -532,8 +536,8 @@ td {
     vertical-align: top;
 }
 
-/* Size of all links /
-/ Caution, as this is relative and some boxes may result in extremely large links */
+/*Groesse aller Links*/
+/*Vorsicht, da relativ und manche Boxen dadurch extrem grosse Links*/
 
 hr {
     border-top: 1px solid #ccc;

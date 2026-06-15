@@ -4,7 +4,6 @@
 Opens the ascent image from ``scipy.misc`` and shifts the image.
 Finally, the shift offsets are determined using cross-correlation.
 """
-
 import scipy.misc
 import numpy
 from numpy.fft import fft2
@@ -14,10 +13,7 @@ import pylab
 
 ###############################################################################
 # Get the ascent image and calculate an offset shift.
-if scipy.__version__ > "1.10.0":
-    ascent = scipy.datasets.ascent()
-else:
-    ascent = scipy.misc.ascent()
+ascent = scipy.misc.ascent()
 print("The ascent-image has a size of", ascent.shape)
 print("The maximum value of this image is ", ascent.max())
 print("Its data type is ", ascent.dtype)

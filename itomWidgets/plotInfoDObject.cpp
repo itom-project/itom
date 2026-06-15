@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
     University of Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
@@ -11,7 +11,7 @@
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
 
-    In addition, as a special exception, the Institut für Technische
+    In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
     which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -37,10 +37,11 @@ PlotInfoDObject::PlotInfoDObject(QWidget* parent /*= NULL*/) : QPlainTextEdit(pa
 //---------------------------------------------------------------------------------------------------------
 void PlotInfoDObject::updateInfoHeader(const QString newString)
 {
-	m_infoHeader = newString;
-	QString baseText = m_infoHeader;
-	baseText.append(m_infoDetail);
-	setPlainText(baseText);
+	if (newString != m_infoHeader)
+	{
+		m_infoHeader = newString;
+		setPlainText(m_infoHeader + m_infoDetail);
+	}
 }
 //---------------------------------------------------------------------------------------------------------
 void PlotInfoDObject::updateInfoHeader(const QString typeString, const int dType, const int dims, const int sizes[])
@@ -107,15 +108,17 @@ void PlotInfoDObject::updateInfoHeader(const QString typeString, const int dType
 //---------------------------------------------------------------------------------------------------------
 void PlotInfoDObject::updateInfoDetail(const QString newString)
 {
-	m_infoDetail = newString;
-	QString baseText = m_infoHeader;
-	baseText.append(m_infoDetail);
-	setPlainText(baseText);
+	if (newString != m_infoDetail)
+	{
+		m_infoDetail = newString;
+		setPlainText(m_infoHeader + m_infoDetail);
+	}
 }
 //---------------------------------------------------------------------------------------------------------
 void PlotInfoDObject::updateInfoDetail(const double minVal, const double maxVal, const double meanVal, const double devVal)
 {
 	QString baseText = "";
+
 	if (m_valid)
 	{
 		baseText.append(QString("Maximum: %1\n").arg(QString::number(maxVal)));
@@ -123,6 +126,7 @@ void PlotInfoDObject::updateInfoDetail(const double minVal, const double maxVal,
 		baseText.append(QString("Mean Value: %1\n").arg(QString::number(meanVal)));
 		baseText.append(QString("Dev Value: %1\n").arg(QString::number(devVal)));
 	}
+
 	updateInfoDetail(baseText);
 }
 //---------------------------------------------------------------------------------------------------------
@@ -138,10 +142,12 @@ void PlotInfoDObject::clearObjectInfo()
 void PlotInfoDObject::setUseDetailInfo(const bool state)
 {
 	m_addDetailInfo = state;
+
 	if (!state)
 	{
 		updateInfoDetail("");
 	}
+
 	return;
 }
 //---------------------------------------------------------------------------------------------------------
@@ -153,4 +159,3 @@ QPainterPath PlotInfoDObject::renderToPainterPath(const int xsize, const int ysi
 
 	return destinationPath;
 }
-//---------------------------------------------------------------------------------------------------------

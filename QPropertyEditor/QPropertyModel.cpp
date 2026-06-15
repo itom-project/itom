@@ -457,12 +457,12 @@ void QPropertyModel::updateItem(
         dataChanged(
             itemIndex, createIndex(parentItem->row(), 1, static_cast<Property*>(parentItem)));
         QList<QByteArray> dynamicProperties = propertyObject->dynamicPropertyNames();
-        QList<QObject*> children = parentItem->parent()->children();
+        QList<QObject*> childs = parentItem->parent()->children();
         int removed = 0;
 
-        for (int i = 0; i < children.count(); ++i)
+        for (int i = 0; i < childs.count(); ++i)
         {
-            QObject* obj = children[i];
+            QObject* obj = childs[i];
 
             if (!obj->property("__Dynamic").toBool() ||
                 dynamicProperties.contains(obj->objectName().toLocal8Bit()))
@@ -485,17 +485,17 @@ void QPropertyModel::addDynamicProperties(Property* parent, QObject* propertyObj
 {
     // Get dynamic property names
     QList<QByteArray> dynamicProperties = propertyObject->dynamicPropertyNames();
-    QList<QObject*> children = parent->children();
+    QList<QObject*> childs = parent->children();
 
     // Remove already existing properties from list
-    for (int i = 0; i < children.count(); ++i)
+    for (int i = 0; i < childs.count(); ++i)
     {
-        if (!children[i]->property("__Dynamic").toBool())
+        if (!childs[i]->property("__Dynamic").toBool())
         {
             continue;
         }
 
-        int index = dynamicProperties.indexOf(children[i]->objectName().toLocal8Bit());
+        int index = dynamicProperties.indexOf(childs[i]->objectName().toLocal8Bit());
 
         if (index != -1)
         {
@@ -504,7 +504,7 @@ void QPropertyModel::addDynamicProperties(Property* parent, QObject* propertyObj
         }
     }
 
-    // Remove invalid properties and those we don't want to add
+    // Remove invalid properites and those we don't want to add
     for (int i = 0; i < dynamicProperties.size(); ++i)
     {
         QString dynProp = dynamicProperties[i];

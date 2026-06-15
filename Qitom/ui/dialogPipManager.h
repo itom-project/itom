@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
 
@@ -34,8 +34,6 @@
 
 #include "ui_dialogPipManager.h"
 
-class QSortFilterProxyModel;
-
 namespace ito {
 
 class DialogPipManager : public QDialog
@@ -64,7 +62,6 @@ protected:
 
 private:
     PipManager *m_pPipManager;
-    QSortFilterProxyModel* m_pFilterProxyModel;
     Ui::DialogPipManager ui;
     QString m_logHtml;
     PipManager::Task m_currentTask;
@@ -91,7 +88,6 @@ private slots:
     void on_btnSudoUninstall_clicked();
     void on_btnVerifyInstalledPackages_clicked();
     void on_btnCancelFetchDetails_clicked();
-    void packageNameFilterChanged(const QString& text);
     void treeViewSelectionChanged(const QItemSelection & selected, const QItemSelection & deselected);
     void tableCustomContextMenuRequested(const QPoint &pos);
     void exportTableToClipboard();

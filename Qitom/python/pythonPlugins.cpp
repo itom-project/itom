@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
 
@@ -93,7 +93,7 @@ PyObject * getParamList(ito::AddInBase *aib)
 
 
 //-------------------------------------------------------------------------------------
-/** returns the all information of the parameters available in a plugin
+/** returns the all informations of the parameters available in a plugin
 *   @param [in] aib     the plugin for which the parameter names are requested
 *   @param [in] args    1 Item-Vector with bool request for additional dictionary return
 *   @return     python list of python tuple with the parameters' names, min, max, current value, (infostring)
@@ -568,7 +568,7 @@ PyObject * getExecFuncsInfo(ito::AddInBase *aib, PyObject *args, PyObject *kwds)
 
 //-------------------------------------------------------------------------------------
 /** returns the name of a python plugin
-*   @param [in] addInObj    the plugin whose name should be returned
+*   @param [in] addInObj    the plugin whoes name should be returned
 *   @return     the plugin name
 */
 PyObject* getName(ito::AddInBase *addInObj)
@@ -760,7 +760,7 @@ PyObject* execFunc(ito::AddInBase *aib, PyObject *args, PyObject *kwds)
 
 //-------------------------------------------------------------------------------------
 /** return a parameter value
-*   @param [in] addInObj    the addIn whose parameter is requested
+*   @param [in] addInObj    the addIn whoes parameter is requested
 *   @param [in] args        the parameter name
 *   @return     python object with the parameter value on success (parameter exists), NULL otherwise
 *
@@ -1012,7 +1012,7 @@ The ``name`` of the parameter must have the following form: \n\
 * **name:additionalTag** (``additionalTag`` can be a special feature of some plugins) \n\
 * **name[index]** (only possible if parameter is an array type and you only want to get \n\
   one single value, specified by the integer index ``[0, len(array) - 1]``) \n\
-* **name[index]:additionalTag** (a combination of the two possibilities above) \n\
+* **name[index]:additionalTag** (a combination of the two possibilies above) \n\
 \n\
 Parameters \n\
 ---------- \n\
@@ -1038,7 +1038,7 @@ PyDoc_STRVAR(pyPluginSetParam_doc, "setParam(name, value) \n\
 \n\
 Sets a writeable parameter ``name`` of this plugin object to ``value``. \n\
 \n\
-Sets the internal plugin parameter with 'name' to a new value. The plugin itself \n\
+Sets the internal plugin parameter with 'name' to a new value. The plugin itsself \n\
 can decide whether the given value is accepted as new value. This may depend on the \n\
 type of the given value, but also on the allowed value range indicated by further \n\
 meta information of the internal parameter. Parameters that are (currently) set to \n\
@@ -1050,7 +1050,7 @@ The ``name`` of the parameter must have the following form: \n\
 * **name:additionalTag** (additionalTag can be a special feature of some plugins) \n\
 * **name[index]** (only possible if parameter is an array type and you only want to get \n\
   one single value, specified by the integer index [0,nrOfArrayItems-1]) \n\
-* **name[index]:additionalTag** (a combination of the two possibilities above) \n\
+* **name[index]:additionalTag** (a combination of the two possibilies above) \n\
 \n\
 Parameters \n\
 ---------- \n\
@@ -1192,7 +1192,7 @@ plugin to not to be interrupted by other participants. However, it is the \n\
 full responsibility of the programmer to carefully use this mutex. \n\
 \n\
 Please be careful, that this method can lead to a deadlock if ``timeout`` is \n\
-set to a negative value (infinite wait) and if the mutex is not released \n\
+set to a negative value (inifinite wait) and if the mutex is not released \n\
 by any other thread. Hint: A Python thread is no `real` thread, it must be \n\
 a real C++ thread. If you want to use the mutex within two or more Python \n\
 threads, it is recommended, to call this method with a defined ``timeout`` \n\
@@ -1239,7 +1239,7 @@ lock");
 
 //-------------------------------------------------------------------------------------
 /** set a parameter value
-*   @param [in] addInObj    the addIn whose parameter is requested
+*   @param [in] addInObj    the addIn whoes parameter is requested
 *   @param [in] args        the parameter name and value in a python object
 *   @return     Py_Return_None on success, NULL otherwise
 *
@@ -1360,7 +1360,7 @@ PyObject* setParam(ito::AddInBase *addInObj, PyObject *args)
 
 
 //-------------------------------------------------------------------------------------
-/** destructor for actuator object in python
+/** desctructor for actuator object in python
 *   @param [in] self
 *
 *   Destructs an actuator object (plugin), i.e. deletes the according python variable and invokes
@@ -1477,11 +1477,11 @@ actuator \n\
 /** constructor for actuator object (plugin) accessible from python
 *   @param [in] self    the according pythonActuator object
 *   @param [in] args    unnamed arguments passed to the constructor in python
-*   @param [in] kwds    keyword parameters passed to the constructor in python
-*   @return             -1 in case an error occurred, else 0
+*   @param [in] kwds    keyword parameters passed to the constructor in pyhton
+*   @return             -1 in case an error occured, else 0
 *
 *   At first the list of available plugins is searched whether the plugin can be found (by name). If it was found
-*   the plugin's manadtory and optional initialization parameters are retrieved and a parameter check is done. In
+*   the plugin's manadtory ans optional initialization parameters are retrieved and a parameter check is done. In
 *   case everything went right a new instance of a plugin is created with the parameters passed to the constructor.
 */
 int PythonPlugins::PyActuatorPlugin_init(PyActuatorPlugin *self, PyObject *args, PyObject *kwds)
@@ -1967,7 +1967,7 @@ Moving flags: \n\
   error during the movement occurred \n\
 * actuatorMoving      = 0x0004 : axis is currently moving \n\
 * actuatorAtTarget    = 0x0008 : axis reached the target position \n\
-* actuatorTimeout     = 0x0010 : timeout during movement. Unknown status of the movement \n\
+* actuatorTimeout     = 0x0010 : timout during movement. Unknown status of the movement \n\
 \n\
 Switches flags: \n\
 \n\
@@ -3206,7 +3206,7 @@ PyTypeObject PythonPlugins::PyActuatorPluginType = {
 
 
 //-------------------------------------------------------------------------------------
-/** destructor for dataIO object in python
+/** desctructor for dataIO object in python
 *   @param [in] self
 *
 *   Destructs an instance of a dataIO object (plugin), i.e. deletes the according python variable and invokes
@@ -3322,7 +3322,7 @@ actuator \n\
 /** constructor for dataIO object
 *   @param [in] self    the according dataIO object
 *   @param [in] args    unnamed arguments passed to the constructor in python
-*   @return             -1 in case an error occurred, else 0
+*   @return             -1 in case an error occured, else 0
 *
 *   The dataIO passed must be a valid dataIO object. In case the autoloading of parameters is activated for this
 *   plugin the default parameters are loaded.
@@ -3551,7 +3551,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_getExecFuncsInfo(PyDataIOPlugin* self, P
 
 //-------------------------------------------------------------------------------------
 /** return a parameter value
-*   @param [in] self        the addIn whose parameter is requested
+*   @param [in] self        the addIn whoes parameter is requested
 *   @param [in] args        the parameter name
 *   @return     python object with the parameter value on success (parameter exists), NULL otherwise
 *
@@ -3949,7 +3949,6 @@ PyObject* PythonPlugins::PyDataIOPlugin_stop(PyDataIOPlugin *self)
 
     Py_RETURN_NONE;
 }
-
 //-------------------------------------------------------------------------------------
 PyDoc_STRVAR(PyDataIOPlugin_getVal_doc,"getVal(dataObj) -> None \\\n\
 getVal(buffer, length = INT_MAX) -> int \n\
@@ -4040,6 +4039,62 @@ PyObject* PythonPlugins::PyDataIOPlugin_getVal(PyDataIOPlugin *self, PyObject *a
 
         invokeMethod = 1;
     }
+    else if (PyErr_Clear(), PyArg_ParseTuple(args, "O!", &PyDict_Type, &bufferObj))
+    {
+        PyObject *key, *value, *repr, *str;
+        Py_ssize_t pos = 0;
+        ito::DataObject* channelDataObj;
+        QSharedPointer<QMap<QString, ito::DataObject*>> channelMap(new QMap<QString, ito::DataObject*>);
+        while (PyDict_Next(bufferObj, &pos, &key, &value))
+        {
+            if (PyUnicode_Check(key))
+            {
+
+                if ((Py_TYPE(value) == &PythonDataObject::PyDataObjectType))
+                {
+                    repr = PyObject_Repr(key);
+                    str = PyUnicode_AsEncodedString(repr, "utf-8", "strict");
+                    if (((PythonDataObject::PyDataObject*)value)->dataObject)
+                    {
+                        QString key = QString(PyBytes_AS_STRING(str));
+                        if (key[0] == '\'' && key[key.length() - 1] == '\'')
+                        {
+                            key = key.mid(1, key.length() - 2);
+                        }
+                        (*channelMap)[key] =
+                            ((PythonDataObject::PyDataObject*)value)->dataObject;
+                    }
+                    else
+                    {
+                        Py_XDECREF(repr);
+                        Py_XDECREF(str);
+                        PyErr_SetString(
+                            PyExc_RuntimeError,
+                            "given data object of at least one data object is empty (internal dataObject-pointer is NULL)");
+                        return NULL;
+                    }
+                }
+                else
+                {
+                    PyErr_SetString(
+                        PyExc_RuntimeError, "The value of at least one item isn't a data object");
+                    return NULL;
+                }
+            }
+            else
+            {
+                PyErr_SetString(PyExc_RuntimeError, "The key of at least one item isn't a string");
+                return NULL;
+            }
+        }
+        locker = (new ItomSharedSemaphore());
+        using DataObjectChannelMap = QSharedPointer<QMap<QString, ito::DataObject*>>;
+        QMetaObject::invokeMethod(
+            self->dataIOObj, "getVal",
+            Q_ARG(DataObjectChannelMap, channelMap),
+            Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+
+    }
     else if (PyErr_Clear(), PyArg_ParseTuple(args, "O|i", &bufferObj, &length))
     {
         if (PyByteArray_Check(bufferObj))
@@ -4085,7 +4140,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_getVal(PyDataIOPlugin *self, PyObject *a
         PyErr_Clear();
         PyErr_SetString(
             PyExc_RuntimeError,
-            "arguments of method must be either one data object, byte array or "
+            "arguments of method must be either one data object, a dictionary containing data objects, a byte array or a "
             "byte object.");
         return NULL;
     }
@@ -4167,6 +4222,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_copyVal(PyDataIOPlugin *self, PyObject *
 {
     int length = PyTuple_Size(args);
     PyObject *tempObj = NULL;
+    PyObject* bufferObj = NULL;
     ito::RetVal ret = ito::retOk;
 
     if (self->dataIOObj->getBasePlugin()->getType() & ito::typeGrabber)
@@ -4183,45 +4239,122 @@ PyObject* PythonPlugins::PyDataIOPlugin_copyVal(PyDataIOPlugin *self, PyObject *
         if ((Py_TYPE(tempObj) == &PythonDataObject::PyDataObjectType))
         {
             dObj = ((PythonDataObject::PyDataObject *)tempObj)->dataObject;
-        }
-        else
-        {
-            PyErr_SetString(PyExc_TypeError, "argument must be of type itom.dataObject.");
-            return NULL;
-        }
-
-        if (dObj == NULL)
-        {
-            PyErr_SetString(PyExc_ValueError, "invalid dataObject");
-            return NULL;
-        }
-
-        ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-
-        if (QMetaObject::invokeMethod(self->dataIOObj, "copyVal", Q_ARG(void*, (void *)dObj), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
-        {
-            bool timeout = false;
-
-            while (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginGeneral))
+            if (dObj == NULL)
             {
-                if (!self->dataIOObj->isAlive())
+                PyErr_SetString(PyExc_ValueError, "invalid dataObject");
+                return NULL;
+            }
+
+            ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+
+            if (QMetaObject::invokeMethod(self->dataIOObj, "copyVal", Q_ARG(void*, (void*)dObj), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
+            {
+                bool timeout = false;
+
+                while (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginGeneral))
                 {
-                    timeout = true;
-                    ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout while calling 'copyVal'").toLatin1().data());
-                    break;
+                    if (!self->dataIOObj->isAlive())
+                    {
+                        timeout = true;
+                        ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout while calling 'copyVal'").toLatin1().data());
+                        break;
+                    }
+                }
+
+                if (!timeout)
+                {
+                    ret += locker.getSemaphore()->returnValue;
                 }
             }
-
-            if (!timeout)
+            else
             {
-                ret += locker.getSemaphore()->returnValue;
+                ret += ito::RetVal(ito::retError, 0, QObject::tr("Member 'copyVal' of plugin could not be invoked (error in signal/slot connection).").toLatin1().data());
             }
+        }
+        else if (PyArg_ParseTuple(args, "O!", &PyDict_Type, &bufferObj))
+        {
+            PyObject* key, * value, * repr, * str;
+            Py_ssize_t pos = 0;
+            ito::DataObject* channelDataObj;
+            QSharedPointer<QMap<QString, ito::DataObject*>> channelMap(new QMap<QString, ito::DataObject*>);
+            while (PyDict_Next(bufferObj, &pos, &key, &value))
+            {
+                if (PyUnicode_Check(key))
+                {
+
+                    if ((Py_TYPE(value) == &PythonDataObject::PyDataObjectType))
+                    {
+                        repr = PyObject_Repr(key);
+                        str = PyUnicode_AsEncodedString(repr, "utf-8", "strict");
+                        if (((PythonDataObject::PyDataObject*)value)->dataObject)
+                        {
+                            QString key = QString(PyBytes_AS_STRING(str));
+                            if (key[0] == '\'' && key[key.length() - 1] == '\'')
+                            {
+                                key = key.mid(1, key.length() - 2);
+                            }
+                            (*channelMap)[key] =
+                                ((PythonDataObject::PyDataObject*)value)->dataObject;
+                        }
+                        else
+                        {
+                            Py_XDECREF(repr);
+                            Py_XDECREF(str);
+                            PyErr_SetString(
+                                PyExc_RuntimeError,
+                                "given data object of at least one data object is empty (internal dataObject-pointer is NULL)");
+                            return NULL;
+                        }
+                    }
+                    else
+                    {
+                        PyErr_SetString(
+                            PyExc_RuntimeError, "The value of at least one item isn't a data object");
+                        return NULL;
+                    }
+                }
+                else
+                {
+                    PyErr_SetString(PyExc_RuntimeError, "The key of at least one item isn't a string");
+                    return NULL;
+                }
+            }
+            ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+            using DataObjectChannelMap = QSharedPointer<QMap<QString, ito::DataObject*>>;
+
+            if (QMetaObject::invokeMethod(
+                self->dataIOObj, "copyVal",
+                Q_ARG(DataObjectChannelMap, channelMap),
+                Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
+            {
+                bool timeout = false;
+
+                while (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginGeneral))
+                {
+                    if (!self->dataIOObj->isAlive())
+                    {
+                        timeout = true;
+                        ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout while calling 'copyVal'").toLatin1().data());
+                        break;
+                    }
+                }
+
+                if (!timeout)
+                {
+                    ret += locker.getSemaphore()->returnValue;
+                }
+            }
+            else
+            {
+                ret += ito::RetVal(ito::retError, 0, QObject::tr("Member 'copyVal' of plugin could not be invoked (error in signal/slot connection).").toLatin1().data());
+            }
+
         }
         else
         {
-            ret += ito::RetVal(ito::retError, 0, QObject::tr("Member 'copyVal' of plugin could not be invoked (error in signal/slot connection).").toLatin1().data());
+            PyErr_SetString(PyExc_TypeError, "argument must be of type itom.dataObject or dict.");
+            return NULL;
         }
-
     }
     else if (self->dataIOObj->getBasePlugin()->getType() & ito::typeADDA)
     {
@@ -5055,7 +5188,7 @@ Possible values are: \n\
 Returns \n\
 ------- \n\
 int \n\
-    dataIO type identifier.");
+    dataIO type indentifier.");
 /** returns the type of the dataIO object
 *   @param [in] self    the dataIO object (python)
 *   @return             a string with the type

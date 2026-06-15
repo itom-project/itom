@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
 
@@ -148,6 +148,8 @@ public:
 
     static PyObject* QVariantMapToPyObject(const QVariantMap& m);
     static PyObject* QVariantListToPyObject(const QVariantList& l);
+
+    static PyObject* QMapToPyObject(const QMap <QString, ito::DataObject>& m);
 
 #if ITOM_POINTCLOUDLIBRARY > 0
     static PyObject* PCLPointCloudToPyObject(const ito::PCLPointCloud& c);

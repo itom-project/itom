@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2025, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
 
@@ -45,7 +45,7 @@ namespace ito
 
     QDataStream &operator>>(QDataStream &in, ito::ScriptEditorStorage &obj)
     {
-        // from itom 3.2.1 to itom 4.0 a bug was fixed in ito::ScriptEditorStorage (QByteArray / QString mixture in filename).
+        // from itom 3.2.1 to itom 4.0 a bug was fixed in ito::ScriptEditorStorage (QByteArray / QString mixure in filename).
         // This has been fixed. However, when an old setting file is loaded, the load will crash. This is caught here.
         try
         {
@@ -80,7 +80,7 @@ ScriptEditorOrganizer::ScriptEditorOrganizer(bool dockAvailable) :
     m_goBackNavigationIndex(-1),
     m_dockedNewWidget(true)
 {
-    widgetFocusChanged(nullptr, nullptr); //sets active ScriptDockWidget to NULL
+    widgetFocusChanged(NULL, NULL); //sets active ScriptDockWidget to NULL
 
     m_scriptStackMutex.lock();
     m_scriptDockElements.clear();
@@ -97,27 +97,25 @@ ScriptEditorOrganizer::ScriptEditorOrganizer(bool dockAvailable) :
     }
 
     QAction *a = m_commonScriptEditorActions.actNavigationForward = new QAction(QIcon(":/editor/icons/navigateForward.png"), tr("Navigate Forward"), this);
-    connect(a, SIGNAL(triggered()), this, SLOT(navigateForward()));
+    connect(a, SIGNAL(triggered()), this, SLOT(mnuNavigateForward()));
     a->setEnabled(false);
 
     m_pGoBackNavigationMenu = new QMenu();
 
     a = m_commonScriptEditorActions.actNavigationBackward = new QAction(QIcon(":/editor/icons/navigateBackward.png"), tr("Navigate Backward"), this);
-    connect(a, SIGNAL(triggered()), this, SLOT(navigateBackward()));
+    connect(a, SIGNAL(triggered()), this, SLOT(mnuNavigateBackward()));
     a->setMenu(m_pGoBackNavigationMenu);
     a->setEnabled(false);
 
     m_pBookmarkModel = new ito::BookmarkModel();
     m_pBookmarkModel->restoreState(); //get bookmarks from last session
     connect(m_pBookmarkModel, SIGNAL(gotoBookmark(BookmarkItem)), this, SLOT(onGotoBookmark(BookmarkItem)));
-
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! destructor
 /*!
-    disconnections remaining connections to python engine and deletes remaining ScriptDockWidgets (should no occur)
+    disconnections remaining connections to python engine and deletes remaining ScriptDockWidgets (should no occure)
 */
 ScriptEditorOrganizer::~ScriptEditorOrganizer()
 {
@@ -144,7 +142,7 @@ ScriptEditorOrganizer::~ScriptEditorOrganizer()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! This function is called to save all the information about widgets before itom is closed
+//! This function is called to save all the informations about widgets before itom is closed
 /*!
 */
 void ScriptEditorOrganizer::saveScriptState()
@@ -204,32 +202,14 @@ void ScriptEditorOrganizer::saveScriptState()
     settings.endGroup();
 }
 
-//----------------------------------------------------------------------------
-void ScriptEditorOrganizer::scriptZoomFactorChanged(int zoomFactor)
-{
-    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-
-    settings.beginGroup("CodeEditor");
-    settings.setValue("zoomFactor", zoomFactor);
-    settings.endGroup();
-
-    emit scriptEditorZoomChanged(zoomFactor);
-
-    foreach(auto scriptDockWidget, m_scriptDockElements)
-    {
-        scriptDockWidget->setScriptZoomFactor(zoomFactor);
-    }
-}
-
 //----------------------------------------------------------------------------------------------------------------------------------
-//! This function is called to get all the saved information about widgets after itom starts
+//! This function is called to get all the saved informations about widgets after itom starts
 /*!
 */
 RetVal ScriptEditorOrganizer::restoreScriptState()
 {
     RetVal retval;
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-
     settings.beginGroup("ScriptEditorOrganizer");
     m_dockedNewWidget = settings.value("scriptEditorDocked", "false").toBool();
 
@@ -402,15 +382,22 @@ void ScriptEditorOrganizer::fileOpenedOrSaved(const QString &filename)
 */
 ScriptDockWidget* ScriptEditorOrganizer::createEmptyScriptDock(bool docked, Qt::DockWidgetArea area /*=Qt::TopDockWidgetArea*/, const QString &objectName /*= QString()*/)
 {
-    docked = docked && m_dockAvailable;
+    ScriptDockWidget* newWidget;
 
-    auto newWidget = new ScriptDockWidget(tr("Script Editor"), "",
+    //QWidget *mainWin = qobject_cast<QWidget*>(AppManagement::getMainWindow());
+
+    docked = docked && m_dockAvailable;
+    if (docked && this->getFirstDockedElement() != NULL)
+    {
+        docked = false;
+    }
+
+    newWidget = new ScriptDockWidget(tr("Script Editor"), "",
                                     docked, m_dockAvailable,
                                     m_commonScriptEditorActions, m_pBookmarkModel,
-                                    nullptr /*mainWin*/); //parent will be set later by addScriptDockWidgetToMainWindow signal
+                                    NULL /*mainWin*/); //parent will be set later by addScriptDockWidgetToMainWindow signal
 
     connect(newWidget, SIGNAL(addGoBackNavigationItem(GoBackNavigationItem)), this, SLOT(onAddGoBackNavigationItem(GoBackNavigationItem)));
-    connect(newWidget, &ScriptDockWidget::scriptZoomFactorChanged, this, &ScriptEditorOrganizer::scriptZoomFactorChanged);
 
     if (objectName.isNull() || m_usedObjectNames.contains(objectName))
     {
@@ -499,34 +486,25 @@ void ScriptEditorOrganizer::removeScriptDockWidget(ScriptDockWidget* widget)
 /*!
     \param askFirst true if user can decide whether to save the script or not
     \param ignoreNewScripts true if scripts which do not have a filename should be ignored
-    \param saveScriptState is the possibility to remember this action for the next time:
-        nullptr -> don't show a checkbox to remember this, else: pointer to value:
-        0: show message box and let user decide,
-        1: automatically save all changed files,
-        2: do not save unchanged files
+    \param saveScriptState is the possibility to remember this action for the next time: NULL -> don't show a checkbox to remember this, else: pointer to value: 0: show message box and let user decide, 1: automatically save all changed files, 2: do not save unchanged files
     \return retOk if everything done, else retError (e.g. user cancellation)
 */
-RetVal ScriptEditorOrganizer::saveAllScripts(bool askFirst, bool ignoreNewScripts, int *saveScriptState /*= nullptr*/)
+RetVal ScriptEditorOrganizer::saveAllScripts(bool askFirst, bool ignoreNewScripts, int *saveScriptState /*= NULL*/)
 {
     RetVal retValue(retOk);
     QList<ScriptDockWidget*>::iterator it;
 
-    if (askFirst && (saveScriptState == nullptr || *saveScriptState == 0))
+    if (askFirst && (saveScriptState == NULL || *saveScriptState == 0))
     {
         QStringList unsavedFileNames;
         QMessageBox msgBox;
 
-        // work on a snapshot of m_scriptDockElements, since calls below may indirectly
-        // run a nested event loop (e.g. auto code formatting before save) which can
-        // trigger other slots that try to lock m_scriptStackMutex again -> deadlock.
         m_scriptStackMutex.lock();
-        QList<ScriptDockWidget*> tempList(m_scriptDockElements);
-        m_scriptStackMutex.unlock();
-
-        for (it = tempList.begin(); it != tempList.end(); ++it)
+        for (it = m_scriptDockElements.begin(); it != m_scriptDockElements.end(); ++it)
         {
             unsavedFileNames.append((*it)->getModifiedFilenames(ignoreNewScripts));
         }
+        m_scriptStackMutex.unlock();
 
         if (unsavedFileNames.size() > 0)
         {
@@ -571,21 +549,14 @@ RetVal ScriptEditorOrganizer::saveAllScripts(bool askFirst, bool ignoreNewScript
         }
     }
 
-    if (saveScriptState == nullptr || *saveScriptState != 2)
+    if (saveScriptState == NULL || *saveScriptState != 2)
     {
-        // work on a snapshot, see comment above. Saving with the auto code formatter
-        // active opens a nested QEventLoop (PyCodeFormatter), during which other
-        // slots that lock m_scriptStackMutex (e.g. getActiveDockWidget) can be
-        // invoked - this would otherwise deadlock and freeze itom, e.g. when
-        // pressing F6 with a modified script in another tab.
         m_scriptStackMutex.lock();
-        QList<ScriptDockWidget*> tempList(m_scriptDockElements);
-        m_scriptStackMutex.unlock();
-
-        for (it = tempList.begin(); it != tempList.end(); ++it)
+        for (it = m_scriptDockElements.begin(); it != m_scriptDockElements.end(); ++it)
         {
             retValue += (*it)->saveAllScripts(false, ignoreNewScripts);
         }
+        m_scriptStackMutex.unlock();
     }
 
     return retValue;
@@ -964,7 +935,7 @@ RetVal ScriptEditorOrganizer::openScript(const QString &filename, ItomSharedSema
 //! slot invoked if a file open command has been executed in any script window.
 /*!
     Checks if filename already has been opened in another script window. If yes only activates this tab, else
-    opens the script in the given widget (if NULL opens a new script window)
+    openes the script in the given widget (if NULL opens a new script window)
 
     \param filename Filename of the python macro which should be opened
     \param widget ScriptDockWidget where this macro should appear as new tab. If NULL, new script window will be created
@@ -1023,7 +994,7 @@ void ScriptEditorOrganizer::pythonRunFileRequested(QString filename)
 
     int newSaveState = saveState;
 
-    retValue += saveAllScripts(true, true, &newSaveState);
+    retValue += this->saveAllScripts(true, true, &newSaveState);
 
     if (!retValue.containsError())
     {
@@ -1035,7 +1006,7 @@ void ScriptEditorOrganizer::pythonRunFileRequested(QString filename)
             settings.endGroup();
         }
 
-        emit pythonRunFile(filename);
+        emit(pythonRunFile(filename));
     }
 }
 
@@ -1058,7 +1029,7 @@ void ScriptEditorOrganizer::pythonDebugFileRequested(QString filename)
 
     int newSaveState = saveState;
 
-    retValue += saveAllScripts(true, true, &newSaveState);
+    retValue += this->saveAllScripts(true, true, &newSaveState);
 
     if (!retValue.containsError())
     {
@@ -1070,7 +1041,7 @@ void ScriptEditorOrganizer::pythonDebugFileRequested(QString filename)
             settings.endGroup();
         }
 
-        emit pythonDebugFile(filename);
+        emit(pythonDebugFile(filename));
     }
 }
 
@@ -1218,7 +1189,7 @@ void ScriptEditorOrganizer::onAddGoBackNavigationItem(const GoBackNavigationItem
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void ScriptEditorOrganizer::navigateBackward()
+void ScriptEditorOrganizer::mnuNavigateBackward()
 {
     if (m_goBackNavigationIndex > 0)
     {
@@ -1227,7 +1198,7 @@ void ScriptEditorOrganizer::navigateBackward()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void ScriptEditorOrganizer::navigateForward()
+void ScriptEditorOrganizer::mnuNavigateForward()
 {
     if (m_goBackNavigationIndex < m_goBackNavigationHistory.size() - 1)
     {

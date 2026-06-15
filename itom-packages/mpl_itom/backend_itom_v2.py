@@ -1,3 +1,5 @@
+# coding=iso-8859-15
+from __future__ import absolute_import, division, print_function, unicode_literals
 import six
 
 import functools
@@ -94,10 +96,7 @@ if sys.platform == "darwin":
     # in OSX, the control and super (aka cmd/apple) keys are switched, so
     # switch them back.
     SPECIAL_KEYS.update(
-        {
-            0x01000021: "cmd",
-            0x01000022: "control",
-        }  # cmd/apple key
+        {0x01000021: "cmd", 0x01000022: "control",}  # cmd/apple key
     )
     MODIFIER_KEYS[0] = ("cmd", 0x04000000, 0x01000021)
     MODIFIER_KEYS[2] = ("ctrl", 0x10000000, 0x01000022)
@@ -193,6 +192,7 @@ class TimerItom(TimerBase):
 
 
 class FigureCanvasItom(FigureCanvasBase):
+
     # map Qt button codes to MouseEvent's ones:
     # left 1, middle 2, right 3
     buttond = {
@@ -210,7 +210,7 @@ class FigureCanvasItom(FigureCanvasBase):
             False: matplotlib widget is displayed in figure window
         """
         ##_create_qApp()
-        super().__init__(figure=figure)
+        super(FigureCanvasItom, self).__init__(figure=figure)
 
         self.figure = figure
 
@@ -223,10 +223,12 @@ class FigureCanvasItom(FigureCanvasBase):
         self._destroying = False
         # self.showEnable = False #this will be set to True if the draw() command has been called for the first time e.g. by show() of the manager
 
-        self.matplotlibWidgetUiItem = matplotlibplotUiItem.canvasWidget  # this object is deleted in the destroy-method of manager, due to cyclic garbage collection
-        self.matplotlibWidgetUiItem["mouseTracking"] = (
-            True  # by default, the itom-widget only sends mouse-move events if at least one button is pressed or the tracker-button is is checked-state
-        )
+        self.matplotlibWidgetUiItem = (
+            matplotlibplotUiItem.canvasWidget
+        )  # this object is deleted in the destroy-method of manager, due to cyclic garbage collection
+        self.matplotlibWidgetUiItem[
+            "mouseTracking"
+        ] = True  # by default, the itom-widget only sends mouse-move events if at least one button is pressed or the tracker-button is is checked-state
 
         self.matplotlibWidgetUiItem.connect(
             "eventLeaveEnter(bool)", self.leaveEnterEvent
@@ -481,7 +483,7 @@ class FigureCanvasItom(FigureCanvasBase):
             if event_key > MAX_UNICODE:
                 return None
 
-            key = chr(event_key)
+            key = unichr(event_key)
             # qt delivers capitalized letters.  fix capitalization
             # note that capslock is ignored
             if "shift" in mods:
@@ -530,20 +532,22 @@ class FigureCanvasItom(FigureCanvasBase):
         ##    self._event_loop.quit()
 
     def draw(self):
-        """Render the figure, and queue a request for a Qt draw."""
+        """Render the figure, and queue a request for a Qt draw.
+        """
         # The renderer draw is done here; delaying causes problems with code
         # that uses the result of the draw() to update plot elements.
         if self._is_drawing:
             return
         self._is_drawing = True
         try:
-            super().draw()
+            super(FigureCanvasItom, self).draw()
         finally:
             self._is_drawing = False
         self.paintEvent()
 
     def draw_idle(self):
-        """Queue redraw of the Agg buffer and request Qt paintEvent."""
+        """Queue redraw of the Agg buffer and request Qt paintEvent.
+        """
         # The Agg draw needs to be handled by the same thread matplotlib
         # modifies the scene graph from. Post Agg draw request to the
         # current event loop in order to ensure thread affinity and to
@@ -586,7 +590,7 @@ class FigureCanvasItom(FigureCanvasBase):
     def signalDestroyedWidget(self):
         """
         if the figure has been closed (e.g. by the user - clicking the close button),
-        this might either be registered by the destroyed-event, caught by FigureManagerItom,
+        this might either be registered by the destroyed-event, catched by FigureManagerItom,
         or by any method of this class which tries to access the figure (since the destroyed
         signal is delivered with a time gap). This function should be called whenever the widget
         is not accessible any more, then the manager is closed as quick as possible, such that
@@ -834,7 +838,7 @@ class Signal:
 
 class NavigationToolbar2Itom(NavigationToolbar2):
     def __init__(self, canvas, matplotlibplotUiItem, parentUi, coordinates=True):
-        """coordinates: should we show the coordinates on the right?"""
+        """ coordinates: should we show the coordinates on the right? """
         self.canvas = canvas
         self.parentUi = parentUi
         self.matplotlibplotUiItem = weakref.ref(matplotlibplotUiItem)
@@ -1005,7 +1009,7 @@ class NavigationToolbar2Itom(NavigationToolbar2):
                 parent=self.matplotlibplotUiItem(),
             )
             if ok:
-                axes = allaxes[titles.index(str(item))]
+                axes = allaxes[titles.index(six.text_type(item))]
             else:
                 return
 
@@ -1017,11 +1021,11 @@ class NavigationToolbar2Itom(NavigationToolbar2):
         self._get_predef_action("zoom")["checked"] = self._active == "ZOOM"
 
     def pan(self, *args):
-        super().pan(*args)
+        super(NavigationToolbar2Itom, self).pan(*args)
         self._update_buttons_checked()
 
     def zoom(self, *args):
-        super().zoom(*args)
+        super(NavigationToolbar2Itom, self).zoom(*args)
         self._update_buttons_checked()
 
     def set_message(self, s):
@@ -1058,7 +1062,7 @@ class NavigationToolbar2Itom(NavigationToolbar2):
 
     def save_figure(self, *args):
         filetypes = self.canvas.get_supported_filetypes_grouped()
-        sorted_filetypes = sorted(filetypes.items())
+        sorted_filetypes = sorted(six.iteritems(filetypes))
         default_filetype = self.canvas.get_default_filetype()
 
         startpath = os.path.expanduser(matplotlib.rcParams["savefig.directory"])
@@ -1067,7 +1071,7 @@ class NavigationToolbar2Itom(NavigationToolbar2):
         selectedFilter = 0
         for name, exts in sorted_filetypes:
             exts_list = " ".join(["*.%s" % ext for ext in exts])
-            filter = f"{name} ({exts_list})"
+            filter = "%s (%s)" % (name, exts_list)
             if default_filetype in exts:
                 selectedFilter = len(filters)
             filters.append(filter)
@@ -1083,13 +1087,15 @@ class NavigationToolbar2Itom(NavigationToolbar2):
         if fname:
             # Save dir for next time, unless empty str (i.e., use cwd).
             if startpath != "":
-                matplotlib.rcParams["savefig.directory"] = os.path.dirname(str(fname))
+                matplotlib.rcParams["savefig.directory"] = os.path.dirname(
+                    six.text_type(fname)
+                )
             try:
-                self.canvas.figure.savefig(str(fname))
+                self.canvas.figure.savefig(six.text_type(fname))
             except Exception as e:
                 itom.ui.msgCritical(
                     "Error saving file",
-                    str(e),
+                    six.text_type(e),
                     ui.MsgBoxOk,
                     ui.MsgBoxNoButton,
                     parent=self.parentUi,
@@ -1231,6 +1237,7 @@ class ToolbarItom(ToolContainerBase):
         )  # replace all characters, which are not among the given set, by an underscore
 
     def add_toolitem(self, name, group, position, image_file, description, toggle):
+
         if self.matplotlibplotUiItem() is None:
             return
 
@@ -1295,7 +1302,7 @@ class StatusbarItom(StatusbarBase):
 
 class ConfigureSubplotsItom(backend_tools.ConfigureSubplotsBase):
     def __init__(self, name, *args, **kwargs):
-        super().__init__(name, *args, **kwargs)
+        super(ConfigureSubplotsItom, self).__init__(name, *args, **kwargs)
         self.subplotConfigDialog = None
 
     def trigger(self, *args):
@@ -1313,7 +1320,7 @@ class SaveFigureItom(backend_tools.SaveFigureBase):
 
     def trigger(self, *args):
         filetypes = self.canvas.get_supported_filetypes_grouped()
-        sorted_filetypes = sorted(filetypes.items())
+        sorted_filetypes = sorted(six.iteritems(filetypes))
         default_filetype = self.canvas.get_default_filetype()
 
         startpath = os.path.expanduser(matplotlib.rcParams["savefig.directory"])
@@ -1322,7 +1329,7 @@ class SaveFigureItom(backend_tools.SaveFigureBase):
         selectedFilter = None
         for name, exts in sorted_filetypes:
             exts_list = " ".join(["*.%s" % ext for ext in exts])
-            filtername = f"{name} ({exts_list})"
+            filtername = "%s (%s)" % (name, exts_list)
             if default_filetype in exts:
                 selectedFilter = filtername
             filters.append(filtername)
@@ -1343,12 +1350,16 @@ class SaveFigureItom(backend_tools.SaveFigureBase):
         if fname:
             # Save dir for next time, unless empty str (i.e., use cwd).
             if startpath != "":
-                matplotlib.rcParams["savefig.directory"] = os.path.dirname(str(fname))
+                matplotlib.rcParams["savefig.directory"] = os.path.dirname(
+                    six.text_type(fname)
+                )
             try:
-                self.canvas.figure.savefig(str(fname))
+                self.canvas.figure.savefig(six.text_type(fname))
                 self.defaultSaveFileName = fname
             except Exception as e:
-                itom.ui.msgCritical("Error saving file", str(e), parent=parent)
+                itom.ui.msgCritical(
+                    "Error saving file", six.text_type(e), parent=parent
+                )
 
 
 class SetCursorItom(backend_tools.SetCursorBase):
@@ -1375,7 +1386,7 @@ backend_tools.ToolRubberband = RubberbandItom
 
 
 def error_msg_itom(msg, parent=None):
-    if not isinstance(msg, str):
+    if not isinstance(msg, six.string_types):
         msg = ",".join(map(str, msg))
 
     itom.ui.msgWarning("Matplotlib", msg)
@@ -1392,7 +1403,7 @@ def exception_handler(type, value, tb):
     if hasattr(value, "strerror") and value.strerror is not None:
         msg += value.strerror
     else:
-        msg += str(value)
+        msg += six.text_type(value)
 
     if len(msg):
         error_msg_itom(msg)
@@ -1430,7 +1441,8 @@ class _BackendItom(_Backend):
 
     @classmethod
     def new_figure_manager_given_figure(cls, num, figure):
-        """Create a new figure manager instance for the given figure."""
+        """Create a new figure manager instance for the given figure.
+        """
         canvas = cls.FigureCanvas(figure)
         manager = cls.FigureManager(canvas, num)
         return manager

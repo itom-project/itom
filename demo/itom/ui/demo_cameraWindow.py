@@ -2,7 +2,6 @@
 ================
 
 """
-
 from itom import dataIO
 from itom import ui
 from itom import dataObject

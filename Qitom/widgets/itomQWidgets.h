@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2023, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2023, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
 
@@ -19,44 +19,44 @@
     You should have received a copy of the GNU Library General Public License
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
+
 #ifndef ITOMQTWIDGETS_H
 #define ITOMQTWIDGETS_H
 
-#include <qevent.h>
-#include <qlistview.h>
-#include <qtabbar.h>
-#include <qtableview.h>
 #include <qtabwidget.h>
 #include <qtreeview.h>
+#include <qlistview.h>
+#include <qtableview.h>
 #include <qtreewidget.h>
+#include <qtabbar.h>
+#include <qevent.h>
 
-namespace ito {
-class FileSystemDockWidget; // forward declaration
+namespace ito
+{
 
 //----------------------------------------------------------------------------------------------------------------------------------
+/*!
+    This class inherits QTabWidget and only has the additional inline function to get the member tabBar of QTabWidget.
+    In QTabWidget this member is protected.
+*/
 class QTabWidgetItom : public QTabWidget
 {
     Q_OBJECT
 
-public:
-    QTabWidgetItom(QWidget* parent = 0) : QTabWidget(parent)
-    {
-    }
+    public:
+        QTabWidgetItom(QWidget * parent = 0) : QTabWidget(parent) {};
 
-    inline QTabBar* getTabBar()
-    {
-        return tabBar();
-    };
+        inline QTabBar* getTabBar() {return tabBar(); };
 
-protected:
-    void contextMenuEvent(QContextMenuEvent* event)
-    {
-        emit tabContextMenuEvent(event);
-        event->accept();
-    };
+    protected:
+        void contextMenuEvent (QContextMenuEvent * event)
+        {
+            emit tabContextMenuEvent(event);
+            event->accept();
+        };
 
-signals:
-    void tabContextMenuEvent(QContextMenuEvent* event);
+    signals:
+        void tabContextMenuEvent (QContextMenuEvent *event);
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -65,12 +65,15 @@ class QTreeWidgetItom : public QTreeWidget
     Q_OBJECT
 
 public:
-    QTreeWidgetItom(QWidget* parent = 0) : QTreeWidget(parent)
-    {
-    }
-    ~QTreeWidgetItom();
+    QTreeWidgetItom(QWidget * parent = 0) : QTreeWidget(parent) {}
+    ~QTreeWidgetItom() {}
 
-    QTreeWidgetItem* itemFromIndex2(const QModelIndex& index) const;
+
+    QTreeWidgetItem* itemFromIndex2(const QModelIndex &index) const
+    {
+        return itemFromIndex(index);
+    }
+
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -78,23 +81,32 @@ class QTreeViewItom : public QTreeView
 {
     Q_OBJECT
 
-public:
-    QTreeViewItom(QWidget* parent = 0) : QTreeView(parent)
-    {
-    }
-    ~QTreeViewItom();
+    public:
+        QTreeViewItom(QWidget * parent = 0) : QTreeView(parent) {}
+        ~QTreeViewItom () {}
 
-    QModelIndexList selectedIndexes() const;
+        QModelIndexList selectedIndexes() const
+        {
+            QModelIndexList retList;
+            for (int i = 0; i < QTreeView::selectedIndexes().length(); ++i)
+            {
+                if (QTreeView::selectedIndexes().at(i).column() == 0)
+                {
+                    retList.append(QTreeView::selectedIndexes().at(i));
+                }
+            }
+            return retList;
+        }
 
-protected:
-    virtual void selectionChanged(const QItemSelection& selected, const QItemSelection& deselected);
-    virtual void mouseReleaseEvent(QMouseEvent* event);
+    protected:
+        virtual void selectionChanged(const QItemSelection & selected, const QItemSelection & deselected)
+        {
+            QTreeView::selectionChanged(selected, deselected);
+            emit selectedItemsChanged(selected, deselected);
+        }
 
-signals:
-    void selectedItemsChanged(const QItemSelection& selected, const QItemSelection& deselected);
-
-Q_SIGNALS:
-    void QTreeViewItomMouseReleased(QMouseEvent* event);
+    signals:
+        void selectedItemsChanged(const QItemSelection &selected, const QItemSelection &deselected);
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -102,19 +114,32 @@ class QListViewItom : public QListView
 {
     Q_OBJECT
 
-public:
-    QListViewItom(QWidget* parent = 0) : QListView(parent)
-    {
-    }
-    ~QListViewItom();
+    public:
+        QListViewItom(QWidget * parent = 0) : QListView(parent) {}
+        ~QListViewItom () {}
 
-    QModelIndexList selectedIndexes() const;
+        QModelIndexList selectedIndexes() const
+        {
+            QModelIndexList retList;
+            for (int i = 0; i < QListView::selectedIndexes().length(); ++i)
+            {
+                if (QListView::selectedIndexes().at(i).column() == 0)
+                {
+                    retList.append(QListView::selectedIndexes().at(i));
+                }
+            }
+            return retList;
+        }
 
-protected:
-    virtual void selectionChanged(const QItemSelection& selected, const QItemSelection& deselected);
+    protected:
+        virtual void selectionChanged(const QItemSelection & selected, const QItemSelection & deselected)
+        {
+            QListView::selectionChanged(selected, deselected);
+            emit selectedItemsChanged(selected, deselected);
+        }
 
-signals:
-    void selectedItemsChanged(const QItemSelection& selected, const QItemSelection& deselected);
+    signals:
+        void selectedItemsChanged(const QItemSelection &selected, const QItemSelection &deselected);
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -122,21 +147,34 @@ class QTableViewItom : public QTableView
 {
     Q_OBJECT
 
-public:
-    QTableViewItom(QWidget* parent = 0) : QTableView(parent)
-    {
-    }
-    ~QTableViewItom();
+    public:
+        QTableViewItom(QWidget * parent = 0) : QTableView(parent) {}
+        ~QTableViewItom () {}
 
-    QModelIndexList selectedIndexes() const;
+        QModelIndexList selectedIndexes() const
+        {
+            QModelIndexList retList;
+            for (int i = 0; i < QTableView::selectedIndexes().length(); ++i)
+            {
+                if (QTableView::selectedIndexes().at(i).column() == 0)
+                {
+                    retList.append(QTableView::selectedIndexes().at(i));
+                }
+            }
+            return retList;
+        }
 
-protected:
-    virtual void selectionChanged(const QItemSelection& selected, const QItemSelection& deselected);
+    protected:
+        virtual void selectionChanged(const QItemSelection & selected, const QItemSelection & deselected)
+        {
+            QTableView::selectionChanged(selected, deselected);
+            emit selectedItemsChanged(selected, deselected);
+        }
 
-signals:
-    void selectedItemsChanged(const QItemSelection& selected, const QItemSelection& deselected);
+    signals:
+        void selectedItemsChanged(const QItemSelection &selected, const QItemSelection &deselected);
 };
 
-} // end namespace ito
+} //end namespace ito
 
 #endif

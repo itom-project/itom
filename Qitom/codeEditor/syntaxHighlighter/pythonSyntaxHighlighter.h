@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
 
@@ -78,7 +78,7 @@ public:
     */
     void highlight_block(const QString &text, QTextBlock &block);
 
-    void default_highlight_block(const QString &text, const TextBlockUserData *textBlockUserData);
+    void default_highlight_block(const QString &text, bool outputNotError);
 
     virtual void rehighlight();
 
@@ -99,6 +99,7 @@ private:
     static QRegularExpression regExpOeComment; //comments suitable for outline explorer
 
     QTextCharFormat getFormatFromStyle(StyleItem::StyleType token) const;
+    const QTextCharFormat getTextCharFormat(const QString &colorName, const QString &style = QString());
 
     static QList<NamedRegExp> makePythonPatterns(const QStringList &additionalKeywords = QStringList(), const QStringList &additionalBuiltins = QStringList());
 };

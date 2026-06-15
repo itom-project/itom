@@ -381,26 +381,26 @@ tt > span.pre {
 }
 
 
-/* Definition of all methods */
+/*Hinterlegung der gesamten Methoden*/
 dl.method, dl.staticmethod, dl.function{
   background-color: #ffffff; /*#FBF8EF;*/
   border: 0px solid #000000;
 }
 
-/* Definition of all attributes */
+/*Hinterlegung des gesamten Attributes*/
 dl.attribute{
   background-color: #F2FBff;
   border: 1px solid;
 }
 
-/* Definition of the attribute header */
+/*Hinterlegung des Attributeheaders*/
 dl.attribute > dt{
     background-color: #E6E6E6;
     font-size: 13px;
     padding-left: 7px;
 }
 
-/* Definition of the static and method headers */
+/*Hinterlegung des static- und Mehodenheaders*/
 dl.method dt, dl.staticmethod dt, dl.function dt{
     background-color: #E6E6E6;
     border-top: 0px solid #000000;

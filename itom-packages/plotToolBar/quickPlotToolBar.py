@@ -1,3 +1,4 @@
+# coding=iso-8859-15
 """
 This file contains a toolbar with basic plot interactions e.g. linePlot, 2D-Plot
 INIT via
@@ -84,10 +85,7 @@ class quickPlotToolBar(abstractObjInteractionToolBar):
 
             if self.hasMCPP == True:
                 addMenu(
-                    BUTTON,
-                    hashName + "/ShowHistogramm",
-                    "Histogramm",
-                    self.showHist,
+                    BUTTON, hashName + "/ShowHistogramm", "Histogramm", self.showHist,
                 )
         if self.hasButtons == True:
             addButton(
@@ -185,7 +183,7 @@ class quickPlotToolBar(abstractObjInteractionToolBar):
             - skipBox             If True, the dialog will be skipped and
             - defaultVarName  The name of the variable to calc the histogramm
         Return parameters:
-            - check:       True finished correctly
+            - check:       True finishied correctly
             - plotHandle: Handle to the figure (0 if failed)
         """
         if self.hasMCPP == False:
@@ -243,7 +241,7 @@ class quickPlotToolBar(abstractObjInteractionToolBar):
             - defaultVarName  The name of the variable to plot
             - typeFilter      BitMask of allowed dataTypes (1: DataObjects, 2: numpyArrays / npObjects, 3:pointclouds)
         Return parameters:
-            - check:       True finished correctly
+            - check:       True finishied correctly
             - plotHandle: Handle to the figure (0 if failed)
         """
         if defaultVarName == None:
@@ -289,7 +287,7 @@ class quickPlotToolBar(abstractObjInteractionToolBar):
         Parameters:
             - defaultVarName  The name of the variable to plot
         Return parameters:
-            - check:       True finished correctly
+            - check:       True finishied correctly
             - plotHandle: Handle to the figure (0 if failed)
         """
         check = True
@@ -315,7 +313,7 @@ class quickPlotToolBar(abstractObjInteractionToolBar):
         Parameters:
             - defaultVarName  The name of the variable to plot
         Return parameters:
-            - check:       True finished correctly
+            - check:       True finishied correctly
             - plotHandle: Handle to the figure (0 if failed)
         """
         check = True
@@ -323,21 +321,22 @@ class quickPlotToolBar(abstractObjInteractionToolBar):
         skipBox = False
 
         try:
+
             fig = plt.figure()
             ax = fig.add_subplot(111, projection="3d")
 
-            shape = eval(f"{dataObj}.shape()")
-            scale = eval(f"{dataObj}.axisScales")
-            offset = eval(f"{dataObj}.axisOffsets")
-            unit = eval(f"{dataObj}.axisUnits")
-            desc = eval(f"{dataObj}.axisDescriptions")
-            valUn = eval(f"{dataObj}.valueUnit")
-            valDes = eval(f"{dataObj}.valueDescription")
+            shape = eval("{}.shape()".format(dataObj))
+            scale = eval("{}.axisScales".format(dataObj))
+            offset = eval("{}.axisOffsets".format(dataObj))
+            unit = eval("{}.axisUnits".format(dataObj))
+            desc = eval("{}.axisDescriptions".format(dataObj))
+            valUn = eval("{}.valueUnit".format(dataObj))
+            valDes = eval("{}.valueDescription".format(dataObj))
 
-            minValue = eval(f'filter("minValue",{dataObj})')
-            maxValue = eval(f'filter("maxValue",{dataObj})')
+            minValue = eval('filter("minValue",{})'.format(dataObj))
+            maxValue = eval('filter("maxValue",{})'.format(dataObj))
 
-            npdObj = eval(f"npDataObject({dataObj})")
+            npdObj = eval("npDataObject({})".format(dataObj))
 
             # create supporting points cartesian system
             x = np.linspace(
@@ -367,9 +366,9 @@ class quickPlotToolBar(abstractObjInteractionToolBar):
             )
             # ax.plot_surface(X, Y, npdObj, rstride=5, cstride=5, linewidth=0, antialiased=False)
             ax.set_zlim3d(minValue, maxValue)
-            ax.set_xlabel(rf"${desc[dims - 1]} in {unit[dims - 1]}$")
-            ax.set_ylabel(rf"${desc[dims - 2]} in {unit[dims - 2]}$")
-            ax.set_zlabel(rf"${valDes} in {valUn}$")
+            ax.set_xlabel(r"${} in {}$".format(desc[dims - 1], unit[dims - 1]))
+            ax.set_ylabel(r"${} in {}$".format(desc[dims - 2], unit[dims - 2]))
+            ax.set_zlabel(r"${} in {}$".format(valDes, valUn))
             plt.show()
 
             del shape
@@ -401,7 +400,7 @@ class quickPlotToolBar(abstractObjInteractionToolBar):
             - skipBox             If True, the dialog will be skipped and
             - defaultVarName  The name of the variable to plot
         Return parameters:
-            - check:       True finished correctly
+            - check:       True finishied correctly
             - plotHandle: Handle to the figure (0 if failed)
         """
         if defaultVarName == None:
@@ -420,7 +419,7 @@ class quickPlotToolBar(abstractObjInteractionToolBar):
             dims = 2
             try:
                 # Check if variable exists
-                dims = eval(f"{dataObj}.dims")
+                dims = eval("{}.dims".format(dataObj))
             except:
                 if skipBox == False:
                     ui.msgCritical("DataObject", "Variable does not exist", ui.MsgBoxOk)
@@ -445,7 +444,7 @@ class quickPlotToolBar(abstractObjInteractionToolBar):
             - defaultVarName  The name of the variable to plot
             - typeFilter      BitMask of allowed dataTypes (1: DataObjects, 2: numpyArrays / npObjects, 3:pointclouds)
         Return parameters:
-            - check:       True finished correctly
+            - check:       True finishied correctly
             - plotHandle: Handle to the figure (0 if failed)
         """
         if defaultVarName == None:
@@ -489,10 +488,7 @@ class quickPlotToolBar(abstractObjInteractionToolBar):
 
 if __name__ == "__main__":
     toolBarQuickPlot = quickPlotToolBar(
-        "Plotting Tools",
-        hasMatPlotLib or True,
-        hasBASICFILTERS,
-        not (userIsUser()),
+        "Plotting Tools", hasMatPlotLib or True, hasBASICFILTERS, not (userIsUser()),
     )
 
 del hasMatPlotLib

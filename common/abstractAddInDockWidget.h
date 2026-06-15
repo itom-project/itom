@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2023, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
 
@@ -11,7 +11,7 @@
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
 
-    In addition, as a special exception, the Institut für Technische
+    In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
     which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -25,8 +25,7 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef ABSTRACTADDINDOCKWIDGET_H
-#define ABSTRACTADDINDOCKWIDGET_H
+#pragma once
 
 #include "retVal.h"
 #include "typeDefs.h"
@@ -183,7 +182,9 @@ namespace ito
             ito::RetVal requestActuatorStatusAndPositions(bool sendCurrentPos, bool sendTargetPos, MessageLevel msgLevel = msgLevelWarningAndError) const;
 
         private:
-            AbstractAddInDockWidgetPrivate* d; /*! private data pointer of this class. */
+            /*! private data pointer of this class. */
+            QScopedPointer<AbstractAddInDockWidgetPrivate> d_ptr;
+            Q_DECLARE_PRIVATE(AbstractAddInDockWidget);
 
         public slots:
             //! slot invoked if any parameter of the plugin has been changed.
@@ -198,7 +199,7 @@ namespace ito
 
             //! slot invoked if identifier of plugin has been set using AddInBase::setIdentifier
             /*!
-                overload this method in order to get the identifier of the plugin. Usually, this identifier is only set in the
+                overload this method in order to get the identfier of the plugin. Usually, this identifier is only set in the
                 init-method of the plugin, hence, after construction of the dock widget. Therefore this slot is invoked
                 once the identifier has been changed.
 
@@ -231,5 +232,3 @@ namespace ito
             virtual void targetChanged(QVector<double> targetPositions);
     };
 } //end namespace ito
-
-#endif //ABSTRACTADDINDOCKWIDGET_H

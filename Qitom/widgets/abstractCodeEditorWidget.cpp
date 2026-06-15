@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
 
@@ -133,11 +133,6 @@ void AbstractCodeEditorWidget::loadSettings()
     {
         setEolMode(QsciScintilla::EolMac);
     }*/
-
-    int zoomFactor = settings.value("zoomFactor", 100).toInt();
-    blockSignals(true);
-    setZoomFactor(zoomFactor);
-    blockSignals(false);
 
     QSharedPointer<PyAutoIndentMode> pyAutoIndentMode =
         modes()->get("PyAutoIndentMode").dynamicCast<PyAutoIndentMode>();
@@ -523,7 +518,7 @@ QString AbstractCodeEditorWidget::formatCodeBeforeInsertion(
 
                 for (int i = 1; i < lineCount; ++i)
                 {
-                    if (commandList[i].size() > 0 && commandList[i][0] != '#')
+                    if (commandList[i][0] != '#')
                     {
                         res += endline + newIndent + commandList[i].mid(minIndentLevel);
                     }

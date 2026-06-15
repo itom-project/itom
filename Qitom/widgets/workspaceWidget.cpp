@@ -1,8 +1,8 @@
-/* ********************************************************************
+﻿/* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
 
@@ -237,35 +237,29 @@ QString WorkspaceWidget::getPythonReadableName(const QTreeWidgetItem* item) cons
         else
         {
             tempItem = item;
-            QString itemText;
 
             while (tempItem->parent() != nullptr)
             {
-                itemText = tempItem->text(0);
                 type = tempItem->data(0, RoleType).toByteArray();
 
                 if (type[0] == PY_DICT || type[0] == PY_MAPPING || type[0] == PY_LIST_TUPLE)
                 {
                     if (type[1] == PY_NUMBER)
                     {
-                        name.prepend("[" + itemText + "]");
+                        name.prepend("[" + tempItem->text(0) + "]");
                     }
                     else if (type[1] == PY_STRING)
                     {
-                        name.prepend("[\"" + itemText + "\"]");
-                    }
-                    else if (type[1] = PY_INDEX_STRING)
-                    {
-                        name.prepend("." + itemText);
+                        name.prepend("[\"" + tempItem->text(0) + "\"]");
                     }
                     else
                     {
-                        name.prepend("[" + itemText + "]");
+                        name.prepend("[" + tempItem->text(0) + "]");
                     }
                 }
                 else if (type[0] == PY_ATTR)
                 {
-                    name.prepend("." + itemText);
+                    name.prepend("." + tempItem->text(0));
                 }
 
                 tempItem = tempItem->parent();
@@ -325,7 +319,7 @@ int WorkspaceWidget::numberOfSelectedItems(bool ableToBeRenamed /*= false*/) con
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-bool WorkspaceWidget::updateView(
+void WorkspaceWidget::updateView(
     const QHash<QString, ito::PyWorkspaceItem*>& items,
     const QString& baseName,
     QTreeWidgetItem* parent)
@@ -334,7 +328,6 @@ bool WorkspaceWidget::updateView(
     QString hashName;
     QTreeWidgetItem* actItem;
     QTreeWidgetItem* tempItem;
-    bool needsRepaint = false;
 
     foreach (const ito::PyWorkspaceItem* item, items)
     {
@@ -375,8 +368,6 @@ bool WorkspaceWidget::updateView(
         // m_key is ab:name where a is
         // [PY_LIST_TUPLE,PY_MAPPING,PY_DICT,PY_ATTR]
         // and b is [PY_NUMBER or PY_STRING]
-        // for a = PY_LIST_TUPLE it is also possible to have
-        //ab:index:name with b = PY_INDEX_STRING
         actItem->setData(0, RoleType, item->m_key.left(2).toLatin1());
 
         if (item->m_childState == ito::PyWorkspaceItem::stateNoChilds)
@@ -387,8 +378,7 @@ bool WorkspaceWidget::updateView(
             {
                 tempItem = actItem->child(0);
                 recursivelyDeleteHash(tempItem->data(0, RoleFullName).toString());
-                actItem->removeChild(tempItem);
-                delete tempItem;
+                actItem->removeChild(actItem->child(0));
             }
         }
         else
@@ -397,30 +387,19 @@ bool WorkspaceWidget::updateView(
 
             if (item->m_childs.count() == 0) // item has children, but they are not shown yet
             {
-                if (actItem->childCount() > 0)
+                while (actItem->childCount() > 0)
                 {
-                    while (actItem->childCount() > 0)
-                    {
-                        tempItem = actItem->child(0);
-                        recursivelyDeleteHash(tempItem->data(0, RoleFullName).toString());
-                        actItem->removeChild(tempItem);
-                        delete tempItem;
-                    }
-                }
-                else
-                {
-                    // update to show child indicator
-                    needsRepaint = true;
+                    tempItem = actItem->child(0);
+                    recursivelyDeleteHash(tempItem->data(0, RoleFullName).toString());
+                    actItem->removeChild(actItem->child(0));
                 }
             }
             else
             {
-                needsRepaint |= updateView(item->m_childs, hashName, actItem);
+                updateView(item->m_childs, hashName, actItem);
             }
         }
     }
-
-    return needsRepaint;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -474,14 +453,7 @@ void WorkspaceWidget::workspaceContainerUpdated(
 
         if (m_workspaceContainer->m_accessMutex.tryLock(1000))
         {
-            if (updateView(rootItem->m_childs, fullNameRoot, parent))
-            {
-                // if an existing item does not have children and should display
-                // the child indicator now, it is required to repaint(), such
-                // that the indicator is shown.
-                repaint();
-            }
-
+            updateView(rootItem->m_childs, fullNameRoot, parent);
             m_workspaceContainer->m_accessMutex.unlock();
         }
     }
@@ -676,7 +648,7 @@ void WorkspaceWidget::itemExpanded(QTreeWidgetItem* item)
     m_workspaceContainer->m_expandedFullNames.insert(fullName);
     m_workspaceContainer->m_accessMutex.unlock();
 
-    if (item->childCount() == 0) // children have not been submitted by python yet
+    if (item->childCount() == 0) // childs have not been submitted by python yet
     {
         m_workspaceContainer->emitGetChildNodes(m_workspaceContainer, fullName);
     }

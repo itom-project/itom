@@ -2,7 +2,6 @@
 ==================
 
 """
-
 from itom import ui
 # sphinx_gallery_thumbnail_path = '11_demos/_static/_thumb/demoPropertyDialog.png'
 

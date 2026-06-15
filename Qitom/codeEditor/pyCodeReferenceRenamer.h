@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2024, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2023, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
 
@@ -69,8 +69,7 @@ private:
         RoleMainFile = Qt::UserRole + 1,
         RoleFileOpened = Qt::UserRole + 2,
         RoleFileModified = Qt::UserRole + 3,
-        RoleFileRenameItem = Qt::UserRole + 4,
-        RoleFileUntitled = Qt::UserRole + 5
+        RoleFileRenameItem = Qt::UserRole + 4
     };
 
     QStringList readFirstNLinesFromFile(const QString& filepath, int n) const;

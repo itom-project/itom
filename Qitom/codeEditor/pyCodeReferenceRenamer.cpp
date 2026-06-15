@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2024, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2023, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
 
@@ -124,13 +124,6 @@ PyCodeReferenceRenamer::~PyCodeReferenceRenamer()
 }
 
 //-------------------------------------------------------------------------------------
-//! starts a variable rename operation for the word under the given cursor position
-/*!
-    setups connections to python engine and to get a notification about focus changes.
-
-    \param filepath is the filepath of the word under the cursor or a NULL-string, if
-        the script is unnamed, hence, has not been safed yet.
-*/
 ito::RetVal PyCodeReferenceRenamer::rename(
     const int& line, const int& column, const QString& filepath)
 {
@@ -148,36 +141,11 @@ ito::RetVal PyCodeReferenceRenamer::rename(
             QString code = sew->toPlainText();
 
             m_request.m_code = code;
-
-            if (filepath.isNull())
-            {
-                // unnamed file --> create a non-existing dummy filename
-                QDir currDir = QDir::currentPath();
-                int idx = 1;
-                QString filenamePattern = "__untitled%1__.py";
-
-                while (currDir.exists(filenamePattern.arg(idx)))
-                {
-                    idx++;
-                }
-
-                m_request.m_filepath = currDir.filePath(filenamePattern.arg(idx));
-                m_request.m_fileModified = true;
-                m_request.m_untitledFile = true;
-                m_request.m_untitledName = sew->getUntitledName();
-            }
-            else
-            {
-                m_request.m_filepath = filepath;
-                m_request.m_fileModified = sew->isModified();
-                m_request.m_untitledFile = false;
-                m_request.m_untitledName = QString();
-            }
-
+            m_request.m_fileModified = sew->isModified();
             m_request.m_callbackFctName = "onJediRenameResultAvailable";
             m_request.m_col = column;
             m_request.m_line = line;
-
+            m_request.m_filepath = filepath;
             m_request.m_sender = this;
             PythonEngine* pyEng = (PythonEngine*)m_pPythonEngine;
 
@@ -221,6 +189,7 @@ void PyCodeReferenceRenamer::onJediRenameResultAvailable(
 
     // set current value to new value line edit
     m_newNameUserInput->setText(oldValue);
+    m_newNameUserInput->selectAll();
 
     QDir rootDir = QDir(m_request.m_filepath);
 
@@ -238,10 +207,9 @@ void PyCodeReferenceRenamer::onJediRenameResultAvailable(
         QFileInfo fileInfo(file.m_filePath);
         canonicalFilePath = fileInfo.canonicalFilePath();
         displayedPath = canonicalFilePath;
-        modified = true;
+        modified = false;
         scriptOpened = false;
 
-        // openedScripts only contains saved scripts, Untitled scripts are not considered.
         foreach (const auto& item, openedScripts)
         {
             if (item.first == canonicalFilePath)
@@ -252,22 +220,8 @@ void PyCodeReferenceRenamer::onJediRenameResultAvailable(
             }
         }
 
-        if (file.m_untitledFile)
-        {
-            fileItem->setData(0, RoleFilePath, file.m_untitledFilename);
-            fileItem->setData(0, RoleMainFile, file.m_untitledFilename);
-            fileItem->setData(0, RoleFileUntitled, true);
-            displayedPath = file.m_untitledFilename;
-            scriptOpened = true; // an untitled script must be opened, anything else is not possible
-        }
-        else
-        {
-            fileItem->setData(0, RoleFilePath, canonicalFilePath);
-            fileItem->setData(0, RoleMainFile, file.m_mainFile);
-            fileItem->setData(0, RoleFileUntitled, false);
-
-        }
-
+        fileItem->setData(0, RoleFilePath, canonicalFilePath);
+        fileItem->setData(0, RoleMainFile, file.m_mainFile);
         fileItem->setData(0, RoleFileModified, modified);
         fileItem->setData(0, RoleFileOpened, scriptOpened);
         IOHelper::elideFilepathMiddle(displayedPath, 300);
@@ -275,23 +229,15 @@ void PyCodeReferenceRenamer::onJediRenameResultAvailable(
         if (modified)
         {
             fileItem->setText(0, "<b>" + displayedPath + "*</b>");
-
-            if (!file.m_untitledFile)
-            {
-                fileItem->setData(
-                    0,
-                    Qt::ToolTipRole,
-                    fileInfo.absoluteFilePath() + " " + tr("(Script contains unsaved changes)"));
-            }
+            fileItem->setData(
+                0,
+                Qt::ToolTipRole,
+                fileInfo.absoluteFilePath() + " " + tr("(Script contains unsaved changes)"));
         }
         else
         {
             fileItem->setText(0, "<b>" + displayedPath + "</b>");
-
-            if (!file.m_untitledFile)
-            {
-                fileItem->setData(0, Qt::ToolTipRole, fileInfo.absoluteFilePath());
-            }
+            fileItem->setData(0, Qt::ToolTipRole, fileInfo.absoluteFilePath());
         }
 
         if (!file.m_fileInProject)
@@ -316,21 +262,8 @@ void PyCodeReferenceRenamer::onJediRenameResultAvailable(
         {
             if (file.m_mainFile)
             {
-                const ScriptEditorWidget* sew;
-
-                if (file.m_untitledFile)
-                {
-                    sew = seo->getActiveDockWidget() ? seo->getActiveDockWidget()->getCurrentEditor() : nullptr;
-
-                    if (sew && sew->getUntitledName() != file.m_untitledFilename)
-                    {
-                        sew = nullptr;
-                    }
-                }
-                else
-                {
-                    sew = seo->getEditorFromCanonicalFilepath(file.m_filePath);
-                }
+                const ScriptEditorWidget* sew =
+                    seo->getEditorFromCanonicalFilepath(file.m_filePath);
 
                 if (sew)
                 {
@@ -376,7 +309,6 @@ void PyCodeReferenceRenamer::onJediRenameResultAvailable(
     m_renameDialog->resize(f * 800.0, f * 600.0);
     m_renameDialog->show();
     m_newNameUserInput->setFocus();
-    m_newNameUserInput->selectAll();
 }
 
 //-------------------------------------------------------------------
@@ -450,12 +382,11 @@ void PyCodeReferenceRenamer::onApply()
 
     struct RenameFile
     {
-        QString canonicalFileName; // is the file path or the name of the untitled script (fileUntitled = true)
+        QString canonicalFileName;
         QVector<FileRenameItem> items;
         bool fileOpened;
         bool mainFile;
         bool fileModified;
-        bool fileUntitled;
     };
 
     QVector<RenameFile> renameFiles;
@@ -473,7 +404,6 @@ void PyCodeReferenceRenamer::onApply()
             renameFile.mainFile = fileItem->data(0, RoleMainFile).toBool();
             renameFile.fileOpened = fileItem->data(0, RoleFileOpened).toBool();
             renameFile.fileModified = fileItem->data(0, RoleFileModified).toBool();
-            renameFile.fileUntitled = fileItem->data(0, RoleFileUntitled).toBool();
 
             for (int itemIdx = fileItem->childCount() - 1; itemIdx >= 0; --itemIdx)
             {
@@ -519,30 +449,7 @@ void PyCodeReferenceRenamer::onApply()
     // do the replacement
     foreach (const RenameFile& renameFile, renameFiles)
     {
-        if (renameFile.fileUntitled)
-        {
-            if (renameFile.fileOpened)
-            {
-                sew = seo->getActiveDockWidget() ? seo->getActiveDockWidget()->getCurrentEditor()
-                                                 : nullptr;
-
-                if (sew && sew->getUntitledName() == renameFile.canonicalFileName)
-                {
-                    sew->replaceOccurencesInCurrentScript(newValue, renameFile.items);
-                }
-                else
-                {
-                    qDebug() << "The main script could not be referenced or is not the wanted "
-                                "untitled script. This should not be possible!";
-                }
-            }
-            else
-            {
-                qDebug() << "Renames should be done in an untitled script, which however is not "
-                            "opened. This should not be possible!";
-            }
-        }
-        else if (!renameFile.fileOpened ||
+        if (!renameFile.fileOpened ||
             (renameFile.fileOpened && !renameFile.mainFile && renameFile.fileModified))
         {
             ito::RetVal retValue =
@@ -568,7 +475,7 @@ void PyCodeReferenceRenamer::onApply()
             }
             else
             {
-                qDebug() << "The main script could not be referenced. This should not be possible!";
+                qDebug() << "The main script could not be references. This should not be possible!";
             }
         }
     }

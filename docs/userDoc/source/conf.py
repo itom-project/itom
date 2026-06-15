@@ -1,3 +1,5 @@
+# coding=iso-8859-15
+
 #
 # itom documentation build configuration file
 #
@@ -49,7 +51,7 @@ extensions = [
     "sphinx.ext.intersphinx",
     "itomext.designerplugindoc",
     "sphinx_gallery.gen_gallery",
-    "sphinxcontrib.moderncmakedomain",
+    "sphinxcontrib.moderncmakedomain"
 ]
 
 if sphinx.__version__ >= "0.7":
@@ -91,10 +93,7 @@ itomVersionInfo = itomFuncs.version(1)["itom"]
 version = itomVersionInfo["itom_Version"]
 if "itom_SVN_Rev" in itomVersionInfo and itomVersionInfo["itom_SVN_Rev"] != "":
     release = itomVersionInfo["itom_SVN_Rev"]
-elif (
-    "itom_GIT_Rev_Abbrev" in itomVersionInfo
-    and itomVersionInfo["itom_GIT_Rev_Abbrev"] != ""
-):
+elif "itom_GIT_Rev_Abbrev" in itomVersionInfo and itomVersionInfo["itom_GIT_Rev_Abbrev"] != "":
     release = itomVersionInfo["itom_GIT_Rev_Abbrev"]
 else:
     release = "unknown"
@@ -103,8 +102,8 @@ compile_datetime = itomVersionInfo["itom_compileDate"]  # Jun  5 2020, 08:13:57
 comma_index = compile_datetime.index(",")
 compile_year = compile_datetime[comma_index - 4 : comma_index]
 copyright = (
-    f"2011-{compile_year}, Institut für Technische Optik (ITO), "
-    "Universität Stuttgart. Bug report: https://github.com/itom-project/itom/issues"
+    f"2011-{compile_year}, Institut fuer Technische Optik (ITO), "
+    "University Stuttgart. Bug report: https://github.com/itom-project/itom/issues"
 )
 
 
@@ -204,7 +203,10 @@ sphinx_gallery_conf = {
         "../../../demo/python",
         "../../../demo/python_packages",
     ],
-    "gallery_dirs": ["11_demos/itom", "11_demos/python", "11_demos/python_packages"],
+    "gallery_dirs": [
+        "11_demos/itom",
+        "11_demos/python",
+        "11_demos/python_packages"],
     "doc_module": ("matplotlib", "numpy", "pandas", "itom"),
     "reference_url": {"matplotlib": None, "numpy": None, "pandas": None, "itom": None},
     "show_memory": False,
@@ -283,33 +285,33 @@ latex_documents = [
         "index",
         "itom_doc.tex",
         "itom Documentation",
-        "Institut für Technische Optik (ITO), Universität Stuttgart",
+        "Institut fuer Technische Optik (ITO), University Stuttgart",
         "manual",
     ),
     # script-language: FEHLER
-    # ('script-language/script-language', 'itom_scriptLanguage.tex', u'itom Documentation', u'Institut for Technical Optics (ITO), Universität Stuttgart', 'manual'),
+    # ('script-language/script-language', 'itom_scriptLanguage.tex', u'itom Documentation', u'Institut for Technical Optics (ITO), University Stuttgart', 'manual'),
     # Reference: FEHLER
-    # ('reference/reference', 'itom_reference.tex', u'itom Documentation', u'Institut for Technical Optics (ITO), Universität Stuttgart', 'manual'),
+    # ('reference/reference', 'itom_reference.tex', u'itom Documentation', u'Institut for Technical Optics (ITO), University Stuttgart', 'manual'),
     # Installation: viele FEHLER
-    # ('02_installation/install', 'install.tex', u'itom Documentation', u'Institut for Technical Optics (ITO), Universität Stuttgart', 'manual'),
+    # ('02_installation/install', 'install.tex', u'itom Documentation', u'Institut for Technical Optics (ITO), University Stuttgart', 'manual'),
     # AboutItom: OK
-    # ('AboutItom/aboutItom','AbouItom.tex', u'itom Documentation', u'Institut for Technical Optics (ITO), Universität Stuttgart', 'manual'),
+    # ('AboutItom/aboutItom','AbouItom.tex', u'itom Documentation', u'Institut for Technical Optics (ITO), University Stuttgart', 'manual'),
     # getting-Started: OK
-    # ('getting-started/getting-started', 'getting-started.tex', u'itom Documentation', u'Institut for Technical Optics (ITO), Universität Stuttgart', 'manual'),
+    # ('getting-started/getting-started', 'getting-started.tex', u'itom Documentation', u'Institut for Technical Optics (ITO), University Stuttgart', 'manual'),
     # gui: OK
-    # ('gui/gui', 'gui.tex', u'itom Documentation', u'Institut for Technical Optics (ITO), Universität Stuttgart', 'manual'),
+    # ('gui/gui', 'gui.tex', u'itom Documentation', u'Institut for Technical Optics (ITO), University Stuttgart', 'manual'),
     # miscellaneous: OK
-    # ('miscellaneous/miscellaneous', 'miscellaneous.tex', u'itom Documentation', u'Institut for Technical Optics (ITO), Universität Stuttgart', 'manual'),
+    # ('miscellaneous/miscellaneous', 'miscellaneous.tex', u'itom Documentation', u'Institut for Technical Optics (ITO), University Stuttgart', 'manual'),
     # test-scripts: OK
-    # ('test-scripts/test-scripts', 'test-scripts.tex', u'itom Documentation', u'Institut for Technical Optics (ITO), Universität Stuttgart', 'manual'),
+    # ('test-scripts/test-scripts', 'test-scripts.tex', u'itom Documentation', u'Institut for Technical Optics (ITO), University Stuttgart', 'manual'),
     # whats-new: OK (leer)
-    # ('whats-new/whats-new', 'whats-new.tex', u'itom Documentation', u'Institut for Technical Optics (ITO), Universität Stuttgart', 'manual'),
+    # ('whats-new/whats-new', 'whats-new.tex', u'itom Documentation', u'Institut for Technical Optics (ITO), University Stuttgart', 'manual'),
 ]
 
 # latex_documents = [
-#  ('index', 'itom_doc.tex', u'ITOM Documentation', u'Institut für Technische Optik (ITO), Universität Stuttgart', 'manual'),
-#  ('plugins/plugins', 'plugins.tex', u'ITOM Documentation', u'Institut für Technische Optik (ITO), Universität Stuttgart', 'manual'),
-#  ('getting-started/getting-started', 'getting-started.tex', u'ITOM Documentation', u'Institut für Technische Optik (ITO), Universität Stuttgart', 'manual'),
+#  ('index', 'itom_doc.tex', u'ITOM Documentation', u'Institut fuer Technische Optik (ITO), Universitaet Stuttgart', 'manual'),
+#  ('plugins/plugins', 'plugins.tex', u'ITOM Documentation', u'Institut fuer Technische Optik (ITO), Universitaet Stuttgart', 'manual'),
+#  ('getting-started/getting-started', 'getting-started.tex', u'ITOM Documentation', u'Institut für Technische Optik (ITO), Universitaet Stuttgart', 'manual'),
 # ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -341,13 +343,7 @@ latex_logo = "ITO_Logo.pdf"
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (
-        "index",
-        "itom",
-        "itom Documentation",
-        ["Institut für Technische Optik (ITO), Universität Stuttgart"],
-        1,
-    )
+    ("index", "itom", "itom Documentation", ["Institut fuer Technische Optik (ITO), Universitaet Stuttgart"], 1)
 ]
 
 # If true, show URL addresses after external links.
@@ -415,9 +411,9 @@ todo_include_todos = True
 # Files for auto-generating links in documentation to methods / datatypes etc. of other projects...
 # to get the inv files, open the given URL/objects.inv.
 intersphinx_mapping = {
-    "python": ("https://docs.python.org/3", (None, "python3.13-inv.txt")),
-    "numpy": ("https://numpy.org/doc/stable", (None, "numpy2.4-inv.txt")),
-    "scipy": ("https://docs.scipy.org/doc/scipy", (None, "scipy1.17.0-inv.txt")),
-    "matplotlib": ("https://matplotlib.org", (None, "matplotlib3.10.8-inv.txt")),
-    "pandas": ("https://pandas.pydata.org/docs/", (None, "pandas3.0.2-inv.txt")),
+    "python": ("https://docs.python.org/3", (None, "python3.8-inv.txt")),
+    "numpy": ("https://numpy.org/doc/stable", (None, "numpy1.22-inv.txt")),
+    "scipy": ("https://docs.scipy.org/doc/scipy", (None, "scipy1.6.1-inv.txt")),
+    "matplotlib": ("https://matplotlib.org", (None, "matplotlib3.5-inv.txt")),
+    "pandas": ("https://pandas.pydata.org/docs/", (None, "pandas1.3.5-inv.txt")),
 }

@@ -2,7 +2,12 @@
 ================
 
 This demo shows with the example of the ``DummyGrabber``
-how grabber and cameras are used in ``itom``."""
+how grabbers and cameras are used in ``itom``.
+The ``camera`` shows how to set parameter like ``region of interest``
+or ``bits per pixel``.
+
+First a ``liveImage`` is opened. In addition, 100 frames are grabbed
+from the ``camera`` and stored in the ``imageStack``."""
 
 from itom import dataIO
 from itom import dataObject
@@ -12,23 +17,21 @@ from itom import liveImage
 
 
 ###############################################################################
-# Start camera (e.g.: ``DummyGrabber``)
-camera = dataIO("DummyGrabber")  # noise camera
-cameraGaussian = dataIO(
-    "DummyGrabber", imageType="gaussianSpot"
-)  # moving Gaussian spot
-cameraGaussianArray = dataIO(
-    "DummyGrabber", imageType="gaussianSpotArray"
-)  # moving 4 Gaussian spots
+# Start camera (e.g.: ``DummyGrabber``) with a ``noise image`` (default).
+camera = dataIO("DummyGrabber")
 
 ###############################################################################
-# Set region of interest (ROI).
+# Set region of interest (ROI) by a tuple.
+#
 # x: [100,499] -> width: 400 (borders are included!)
+#
 # y: [40, 349] -> height: 310
 camera.setParam("roi", [100, 40, 400, 300])
-# or:
-# camera.setParam("roi[0]", 100)
-# camera.setParam("roi[2]", 400) #...
+
+###############################################################################
+# or by explicite roi values.
+camera.setParam("roi[0]", 100)
+camera.setParam("roi[2]", 400)
 
 print("width:", camera.getParam("sizex"))
 print("height:", camera.getParam("sizey"))
@@ -39,15 +42,16 @@ camera.setParam("bpp", 8)
 
 # print available parameters of that device
 print("DummyGrabber has the following parameters:")
-print(camera.getParamList())
+camera.getParamList()
 
 # print detailed information about parameters:
-print(camera.getParamListInfo())
+camera.getParamListInfo()
 
 ###############################################################################
 # Read parameters from device.
 sizex = camera.getParam("sizex")
 sizey = camera.getParam("sizey")
+
 ###############################################################################
 # Start camera.
 camera.startDevice()
@@ -87,21 +91,10 @@ camera.stopDevice()
 
 ###############################################################################
 # Start a live image.
-liveImage(camera)
-
-###############################################################################
+#
 # .. image:: ../../_static/demoDummyGrabber_1.png
 #    :width: 100%
-liveImage(cameraGaussian)
-
-###############################################################################
-# .. image:: ../../_static/demoDummyGrabber_2.png
-#    :width: 100%
-liveImage(cameraGaussianArray)
-
-###############################################################################
-# .. image:: ../../_static/demoDummyGrabber_3.png
-#    :width: 100%
+liveImage(camera)
 
 ###############################################################################
 # Acquire an image stack of 10 measurements.

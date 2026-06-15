@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2023, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
 
@@ -11,7 +11,7 @@
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
 
-    In addition, as a special exception, the Institut für Technische
+    In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
     which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -25,8 +25,7 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef ABSTRACTADDINCONFIGDIALOG_H
-#define ABSTRACTADDINCONFIGDIALOG_H
+#pragma once
 
 #include "retVal.h"
 #include "typeDefs.h"
@@ -38,8 +37,6 @@
 #include <QtWidgets/qdialog.h>
 #include <qmap.h>
 #include <qsharedpointer.h>
-
-
 
 
 
@@ -156,10 +153,14 @@ namespace ito
             */
             virtual ito::RetVal observeInvocation(ItomSharedSemaphore *waitCond, MessageLevel msgLevel) const;
 
-            QMap<QString, ito::Param> m_currentParameters; /*! use this map to save the current values of all parameters. For instance it is convenient to copy the map given in parametersChanged to this map */
+            /*! use this map to save the current values of all parameters.
+            For instance it is conventient to copy the map given in parametersChanged to this map */
+            QMap<QString, ito::Param> m_currentParameters;
 
         private:
-            AbstractAddInConfigDialogPrivate* d; /*! private data pointer of this class. */
+            /*! private data pointer of this class. */
+            QScopedPointer<AbstractAddInConfigDialogPrivate> d_ptr;
+            Q_DECLARE_PRIVATE(AbstractAddInConfigDialog);
 
         public slots:
             //! slot invoked if any parameter of the plugin has been changed.
@@ -174,5 +175,3 @@ namespace ito
             virtual void parametersChanged(QMap<QString, ito::Param> params) = 0;
     };
 } //end namespace ito
-
-#endif //ABSTRACTADDINCONFIGDIALOG_H

@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2024, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
 
@@ -45,7 +45,6 @@
 #include <qpainter.h>
 #include <qtextdocument.h>
 #include <qtooltip.h>
-#include <qtimer.h>
 
 #include "delayJobRunner.h"
 #include "managers/modesManager.h"
@@ -59,16 +58,15 @@
 
 namespace ito {
 
-CodeEditor::CodeEditor(QWidget* parent /*= nullptr*/, bool createDefaultActions /*= true*/) :
+CodeEditor::CodeEditor(QWidget* parent /*= NULL*/, bool createDefaultActions /*= true*/) :
     QPlainTextEdit(parent), m_showCtxMenu(true), m_defaultFontSize(10),
-    m_useSpacesInsteadOfTabs(true), m_showWhitespaces(false), m_tabLength(0), m_zoomFactor(100),
+    m_useSpacesInsteadOfTabs(true), m_showWhitespaces(false), m_tabLength(0), m_zoomLevel(0),
     m_fontSize(10), m_fontFamily("Verdana"), m_selectLineOnCopyEmpty(true),
-    m_wordSeparators("~!@#$%^&*()+{}|:\"'<>?,./;[]\\\n\t=- "), m_pPanels(nullptr),
-    m_pDecorations(nullptr), m_pModes(nullptr), m_lastMousePos(QPoint(0, 0)), m_prevTooltipBlockNbr(-1),
-    m_pTooltipsRunner(nullptr), m_edgeMode(EdgeNone), m_edgeColumn(88), m_edgeColor(Qt::darkGray),
+    m_wordSeparators("~!@#$%^&*()+{}|:\"'<>?,./;[]\\\n\t=- "), m_pPanels(NULL),
+    m_pDecorations(NULL), m_pModes(NULL), m_lastMousePos(QPoint(0, 0)), m_prevTooltipBlockNbr(-1),
+    m_pTooltipsRunner(NULL), m_edgeMode(EdgeNone), m_edgeColumn(88), m_edgeColor(Qt::darkGray),
     m_showIndentationGuides(true), m_indentationGuidesColor(Qt::darkGray), m_redoAvailable(false),
-    m_undoAvailable(false), m_pContextMenu(nullptr), m_minLineJumpsForGoBackNavigationReport(11),
-    m_enableZoomLevelByMouseWheel(false), m_pZoomFactorChangedTimer(nullptr)
+    m_undoAvailable(false), m_pContextMenu(NULL), m_minLineJumpsForGoBackNavigationReport(11)
 {
     installEventFilter(this);
     connect(document(), SIGNAL(modificationChanged(bool)), this, SLOT(emitDirtyChanged(bool)));
@@ -89,14 +87,10 @@ CodeEditor::CodeEditor(QWidget* parent /*= nullptr*/, bool createDefaultActions 
     m_pPanels = new PanelsManager(this);
     m_pDecorations = new TextDecorationsManager(this);
     m_pModes = new ModesManager(this);
-    m_pTooltipsRunner = new DelayJobRunner<CodeEditor, void (CodeEditor::*)(QList<QVariant>)>(700);
-    m_pContextMenu = new QMenu(this);
 
-    m_pZoomFactorChangedTimer = new QTimer(this);
-    m_pZoomFactorChangedTimer->setSingleShot(true);
-    m_pZoomFactorChangedTimer->setInterval(50);
-    m_pZoomFactorChangedTimer->stop();
-    connect(m_pZoomFactorChangedTimer, &QTimer::timeout, this, &CodeEditor::applyZoomFactorChange);
+    m_pTooltipsRunner = new DelayJobRunner<CodeEditor, void (CodeEditor::*)(QList<QVariant>)>(700);
+
+    m_pContextMenu = new QMenu(this);
 
     initStyle();
     resetStylesheet();
@@ -199,18 +193,6 @@ void CodeEditor::setUseSpacesInsteadOfTabs(bool value)
 {
     m_useSpacesInsteadOfTabs = value;
     updateTabStopAndIndentationWidth();
-}
-
-//-----------------------------------------------------------
-bool CodeEditor::enableZoomLevelByMouseWheel() const
-{
-    return m_enableZoomLevelByMouseWheel;
-}
-
-//-----------------------------------------------------------
-void CodeEditor::setEnableZoomLevelByMouseWheel(bool enable)
-{
-    m_enableZoomLevelByMouseWheel = enable;
 }
 
 //-----------------------------------------------------------
@@ -441,40 +423,14 @@ void CodeEditor::setFontSize(int fontSize)
 }
 
 //-----------------------------------------------------------
-int CodeEditor::zoomFactor() const
+int CodeEditor::zoomLevel() const
 {
-    return m_zoomFactor;
+    return m_zoomLevel;
 }
 
-//-----------------------------------------------------------
-void CodeEditor::applyZoomFactorChange()
+void CodeEditor::setZoomLevel(int value)
 {
-    auto sh = syntaxHighlighter();
-
-    if (sh)
-    {
-        sh->setZoomFactor(m_zoomFactor);
-    }
-
-    rehighlightBlock(0, lineCount() - 1);
-    resetStylesheet(true);
-}
-
-//-----------------------------------------------------------
-void CodeEditor::setZoomFactor(int zoomFactor)
-{
-    // clip the zoom factor between 50 and 400%.
-    zoomFactor = qBound(50, zoomFactor, 400);
-
-    if (zoomFactor != m_zoomFactor)
-    {
-        m_zoomFactor = zoomFactor;
-        m_pZoomFactorChangedTimer->start();
-
-        // inform the script editor organizer about changes
-        // such that other scripts will also be updated.
-        emit zoomFactorChanged(m_zoomFactor);
-    }
+    m_zoomLevel = value;
 }
 
 //-----------------------------------------------------------
@@ -665,14 +621,8 @@ the painted e->
 */
 void CodeEditor::paintEvent(QPaintEvent* e)
 {
-    updateVisibleBlocks();
+    updateVisibleBlocks(); //_update_visible_blocks
 
-    paintEventWithoutVisibleBlockUpdate(e);
-}
-
-//------------------------------------------------------------------------------
-void CodeEditor::paintEventWithoutVisibleBlockUpdate(QPaintEvent* e)
-{
     QTextCursor tc = textCursor();
     tc.movePosition(QTextCursor::Start);
     int xoffset = cursorRect(tc).x(); // left offset of first character
@@ -726,12 +676,6 @@ void CodeEditor::paintEventWithoutVisibleBlockUpdate(QPaintEvent* e)
         {
             bottom = block.topPosition + blockBoundingRect(block.textBlock).height() - 1;
             indentation = Utils::TextBlockHelper::getFoldLvl(block.textBlock);
-
-            //foldLvl is always in steps of 2, since only even numbers are real indentations.
-            //Odd numbers are another fold level but with the same indentation than the previous
-            //even number.
-            indentation = indentation / 2;
-
 
             for (int i = 1; i < indentation; ++i)
             {
@@ -921,7 +865,6 @@ void CodeEditor::mousePressEvent(QMouseEvent* e)
     }
 }
 
-
 //-----------------------------------------------------------
 /*
 Emits mouse_released signal.
@@ -955,19 +898,6 @@ void CodeEditor::wheelEvent(QWheelEvent* e)
     bool initialState = e->isAccepted();
     e->ignore();
     emit mouseWheelActivated(e);
-
-    // handle a zoom in/out of the script
-    if (m_enableZoomLevelByMouseWheel && (e->modifiers() & Qt::ControlModifier))
-    {
-        const QPoint delta = e->angleDelta();
-        int wheelDelta = (qAbs(delta.x()) > qAbs(delta.y())) ? delta.x() : delta.y();
-
-        // 15° mouse wheel rotation should be 10% zoom change
-        wheelDelta = wheelDelta / 8;
-        setZoomFactor(zoomFactor() + wheelDelta);
-        e->accept();
-    }
-
     if (!e->isAccepted())
     {
         e->setAccepted(initialState);
@@ -1152,37 +1082,27 @@ void CodeEditor::updateVisibleBlocks()
     QTextBlock block = firstVisibleBlock();
     int block_nbr = block.blockNumber();
     int top = int(blockBoundingGeometry(block).translated(contentOffset()).top());
-    int bottom = 0;
-    int line_height = 0;
+    int bottom = top + int(blockBoundingRect(block).height());
     int ebottom_top = 0;
     int ebottom_bottom = height();
-    bool visible, partly_visible;
-
     while (block.isValid())
     {
-        line_height = int(blockBoundingRect(block).height());
-        bottom = top + line_height;
-        visible = ((top >= ebottom_top) && (bottom <= ebottom_bottom));
-        partly_visible = (!visible) && ((top >= ebottom_top) && (top < ebottom_bottom));
-
-        if (!visible && !partly_visible)
+        bool visible = ((top >= ebottom_top) && (bottom <= ebottom_bottom));
+        if (!visible)
         {
             break;
         }
-
         if (block.isVisible())
         {
             VisibleBlock vb;
-            vb.partlyVisible = partly_visible;
             vb.lineNumber = block_nbr;
             vb.textBlock = block;
             vb.topPosition = top;
-            vb.lineHeight = line_height;
             m_visibleBlocks.append(vb);
         }
-
         block = block.next();
         top = bottom;
+        bottom = top + int(blockBoundingRect(block).height());
         block_nbr = block.blockNumber();
     }
 }
@@ -1298,35 +1218,20 @@ int CodeEditor::lineIndent(const QTextBlock* lineNbr) const
 //-------------------------------------------------------------
 /*virtual*/ bool CodeEditor::eventFilter(QObject* obj, QEvent* e)
 {
-    if (obj == this)
+    if ((obj == this) && (e->type() == QEvent::KeyPress))
     {
-        switch (e->type())
+        QKeyEvent* ke = dynamic_cast<QKeyEvent*>(e);
+        if (ke->matches(QKeySequence::Cut))
         {
-        case QEvent::KeyPress:
-        {
-            QKeyEvent* ke = dynamic_cast<QKeyEvent*>(e);
-            if (ke->matches(QKeySequence::Cut))
-            {
-                cut();
-                return true;
-            }
-            else if (ke->matches(QKeySequence::Copy))
-            {
-                copy();
-                return true;
-            }
-            else if (m_enableZoomLevelByMouseWheel && ke->key() == Qt::Key_0 && ke->modifiers() & Qt::ControlModifier)
-            {
-                setZoomFactor(100);
-            }
+            cut();
+            return true;
         }
-            break;
-
-        default:
-            break;
+        else if (ke->matches(QKeySequence::Copy))
+        {
+            copy();
+            return true;
         }
     }
-
     return false;
 }
 
@@ -1521,7 +1426,7 @@ void CodeEditor::insertAt(const QString& text, int line, int index)
 Replace the current selection, set by a previous call to
 findFirst(), findFirstInSelection() or findNext(), with replaceStr.
 */
-int CodeEditor::replace(const QString& text)
+void CodeEditor::replace(const QString& text)
 {
     QTextCursor cursor = textCursor();
 
@@ -1530,21 +1435,19 @@ int CodeEditor::replace(const QString& text)
 
     if (!cursor.hasSelection())
     {
-        return 0;
+        return;
     }
 
     cursor.removeSelectedText();
     cursor.setPosition(start);
     cursor.insertText(text);
     cursor.setPosition(cursor.position() + text.size(), QTextCursor::MoveAnchor);
-
-    return text.size() - (end - start);
 }
 
 //--------------------------------------------------------------
 /*
  */
-QTextCursor CodeEditor::findFirst(
+bool CodeEditor::findFirst(
     const QString& expr,
     bool re,
     bool cs,
@@ -1632,7 +1535,7 @@ QTextCursor CodeEditor::findFirst(
     m_lastFindOptions.wo = wo;
     m_lastFindOptions.wrap = wrap;
 
-    if (!cursor.isNull())
+    if (cursor.isNull() == false)
     {
         setTextCursor(cursor);
 
@@ -1643,15 +1546,17 @@ QTextCursor CodeEditor::findFirst(
 
             reportGoBackNavigationCursorMovement(CursorPosition(cursor), "findFirst");
         }
+
+        return true;
     }
 
-    return cursor;
+    return false;
 }
 
 //--------------------------------------------------------------
 /*
  */
-QTextCursor CodeEditor::findNext()
+bool CodeEditor::findNext()
 {
     const FindOptions& f = m_lastFindOptions;
 
@@ -1660,65 +1565,61 @@ QTextCursor CodeEditor::findNext()
         return findFirst(f.expr, f.re, f.cs, f.wo, f.wrap, f.forward, -1, -1, f.show);
     }
 
-    return QTextCursor();
+    return false;
 }
 
 //--------------------------------------------------------------
 /*
 Resets stylesheet
 */
-void CodeEditor::resetStylesheet(bool fontSizeOnly /*= false*/)
+void CodeEditor::resetStylesheet()
 {
-    setFont(QFont(m_fontFamily, qRound(m_fontSize * (float)m_zoomFactor / 100.0)));
+    setFont(QFont(m_fontFamily, m_fontSize + m_zoomLevel));
 
-    if (!fontSizeOnly)
+    bool flg_stylesheet = property("flg_stylesheet").isValid();
+    if (qApp->styleSheet() != "" || flg_stylesheet)
     {
-        bool flg_stylesheet = property("flg_stylesheet").isValid();
-        if (qApp->styleSheet() != "" || flg_stylesheet)
+        setProperty("flg_stylesheet", true);
+        /*On Window, if the application once had a stylesheet, we must
+        keep on using a stylesheet otherwise strange colors appear
+        see https://github.com/OpenCobolIDE/OpenCobolIDE/issues/65
+        Also happen on plasma 5*/
+        QByteArray ds = qgetenv("DESKTOP_SESSION");
+        if (ds.isEmpty() == false && ds == "plasma")
         {
-            setProperty("flg_stylesheet", true);
-            /*On Window, if the application once had a stylesheet, we must
-            keep on using a stylesheet otherwise strange colors appear
-            see https://github.com/OpenCobolIDE/OpenCobolIDE/issues/65
-            Also happen on plasma 5*/
-            QByteArray ds = qgetenv("DESKTOP_SESSION");
-            if (ds.isEmpty() == false && ds == "plasma")
-            {
-                setStyleSheet(QString("QPlainTextEdit \
+            setStyleSheet(QString("QPlainTextEdit \
             { \
                 background-color: %1; \
                 color: %2; \
             }")
-                                  .arg(m_background.name(), m_foreground.name()));
-            }
-            else
-            {
-#if WIN32
-                setStyleSheet(QString("QPlainTextEdit \
-            { \
-                background-color: %1; \
-                color: %2; \
-            }")
-                                  .arg(m_background.name(), m_foreground.name()));
-#else
-                /*on linux/osx we just have to set an empty stylesheet to
-                cancel any previous stylesheet and still keep a correct
-                style for scrollbars*/
-                setStyleSheet("");
-#endif
-            }
+                              .arg(m_background.name(), m_foreground.name()));
         }
         else
         {
-            QPalette p = palette();
-            p.setColor(QPalette::Base, m_background);
-            p.setColor(QPalette::Text, m_foreground);
-            p.setColor(QPalette::Highlight, m_selBackground);
-            p.setColor(QPalette::HighlightedText, m_selForeground);
-            setPalette(p);
+#if WIN32
+            setStyleSheet(QString("QPlainTextEdit \
+            { \
+                background-color: %1; \
+                color: %2; \
+            }")
+                              .arg(m_background.name(), m_foreground.name()));
+#else
+            /*on linux/osx we just have to set an empty stylesheet to
+            cancel any previous stylesheet and still keep a correct
+            style for scrollbars*/
+            setStyleSheet("");
+#endif
         }
     }
-
+    else
+    {
+        QPalette p = palette();
+        p.setColor(QPalette::Base, m_background);
+        p.setColor(QPalette::Text, m_foreground);
+        p.setColor(QPalette::Highlight, m_selBackground);
+        p.setColor(QPalette::HighlightedText, m_selForeground);
+        setPalette(p);
+    }
     repaint();
 }
 
@@ -1984,14 +1885,14 @@ Returns the line number from the y_pos
 */
 int CodeEditor::lineNbrFromPosition(int yPos) const
 {
+    int height = fontMetrics().height();
     foreach (const VisibleBlock& vb, visibleBlocks())
     {
-        if ((vb.topPosition <= yPos) && (yPos <= (vb.topPosition + vb.lineHeight)))
+        if ((vb.topPosition <= yPos) && (yPos <= (vb.topPosition + height)))
         {
             return vb.lineNumber;
         }
     }
-
     return -1;
 }
 
@@ -2048,7 +1949,6 @@ void CodeEditor::getCursorPosition(int* line, int* column) const
     {
         *line = cursor.blockNumber();
     }
-
     if (column)
     {
         *column = cursor.positionInBlock();

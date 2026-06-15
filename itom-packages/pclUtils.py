@@ -3,6 +3,7 @@ import numpy as np
 
 
 def createPointCloudNormal(dataArrayNx6):
+
     a = dataArrayNx6
     cloud = itom.pointCloud(itom.point.PointXYZNormal)
 

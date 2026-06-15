@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2023, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
 
@@ -11,7 +11,7 @@
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
 
-    In addition, as a special exception, the Institut für Technische
+    In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
     which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -37,7 +37,8 @@ namespace ito
 //----------------------------------------------------------------------------------------------------------------------------------
 AbstractDObjFigure::AbstractDObjFigure(const QString &itomSettingsFile, AbstractFigure::WindowMode windowMode /*= AbstractFigure::ModeStandaloneInUi*/, QWidget *parent /*= 0*/) :
     AbstractFigure(itomSettingsFile, windowMode, parent),
-    m_cameraConnected(false)
+    m_cameraConnected(false),
+    m_currentDisplayedCameraChannel("")
 {
     addInputParam(new ito::Param("source", ito::ParamBase::DObjPtr, NULL, QObject::tr("Source data for plot").toLatin1().data()));
     addInputParam(new ito::Param("liveSource", ito::ParamBase::HWRef, NULL, QObject::tr("Live data source for plot").toLatin1().data()));
@@ -107,6 +108,14 @@ QSharedPointer<ito::DataObject> AbstractDObjFigure::getSource(void) const
     }
     return QSharedPointer<ito::DataObject>();
 }
+
+//-------------------------------------------------------------------------------------
+Qt::Axis AbstractDObjFigure::getValueAxis() const
+{
+    // default, only the 1D plot will overwrite this to correct it
+    return Qt::ZAxis;
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal AbstractDObjFigure::setAxisData(QSharedPointer<ito::DataObject> data, Qt::Axis axis)
 {
@@ -299,15 +308,18 @@ void AbstractDObjFigure::setSource(QSharedPointer<ito::DataObject> source, ItomS
             {
                 QSharedPointer<ito::DataObject> oldSource = m_dataPointer["source"];
                 m_dataPointer["source"] = source;
+                ito::ParamBase thisParam("source", ito::ParamBase::DObjPtr, (const char*)source.data());
+                retval += inputParamChanged(&thisParam);
             }
         }
         else
         {
             m_dataPointer["source"] = source;
+            ito::ParamBase thisParam("source", ito::ParamBase::DObjPtr, (const char*)source.data());
+            retval += inputParamChanged(&thisParam);
         }
 
-        ito::ParamBase thisParam("source", ito::ParamBase::DObjPtr, (const char*)source.data());
-        retval += inputParamChanged(&thisParam);
+
     }
 
     if (waitCond)
@@ -320,7 +332,7 @@ void AbstractDObjFigure::setSource(QSharedPointer<ito::DataObject> source, ItomS
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal AbstractDObjFigure::removeLiveSource()
+/*virtual*/ RetVal AbstractDObjFigure::removeLiveSource()
 {
     RetVal retval;
     ito::Param *liveSource = getInputParam("liveSource");
@@ -400,6 +412,73 @@ QPixmap AbstractDObjFigure::renderToPixMap(const int xsize, const int ysize, con
     QPixmap emptyMap(xsize, ysize);
     emptyMap.fill(Qt::green);
     return emptyMap;
+}
+
+//-------------------------------------------------------------------------------------
+ito::RetVal AbstractDObjFigure::setDisplayedCameraChannel(const QString& channel)
+{
+    ito::RetVal retValue(ito::retOk);
+    QPointer<ito::AddInDataIO> liveSource = getCamera();
+
+    if (liveSource)
+    {
+        bool isMultiChannel = false;
+        isMultiChannel = liveSource->inherits("ito::AddInMultiChannelGrabber");
+
+        if (isMultiChannel)
+        {
+            ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+            QSharedPointer<ito::Param> channelListParam(new ito::Param("availableChannels", ito::ParamBase::StringList));
+
+            if (QMetaObject::invokeMethod(liveSource, "getParam", Q_ARG(QSharedPointer<ito::Param>, channelListParam), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
+            {
+                bool timeout = false;
+
+                while (!locker.getSemaphore()->wait(500))
+                {
+                    retValue += ito::RetVal(ito::retError, 0, tr("timeout while getting channelList parameter").toLatin1().data());
+                    break;
+                }
+
+                if (!retValue.containsError())
+                {
+                    int len = 0;
+                    const ito::ByteArray* channelList = channelListParam->getVal<const ito::ByteArray*>(len);
+                    bool found = false;
+
+                    for (int i = 0; i < len; i++)
+                    {
+                        if (QString::fromLatin1(channelList[i].data()).compare(channel) == 0)
+                        {
+                            found = true;
+                            m_currentDisplayedCameraChannel = channel;
+                            emit cameraChannelChanged(this, channel);
+                            break;
+                        }
+                    }
+
+                    if (!found)
+                    {
+                        retValue += ito::RetVal(ito::retError, 0, tr("the connected camera does not provide the channel '%1'.").arg(channel).toLatin1().data());
+                    }
+                }
+            }
+        }
+        else
+        {
+            retValue +=ito::RetVal(ito::retWarning, 0, tr("could not set a camera channel, since the connected camera is not of type \"AddInMultiChannelGrabber\".").toLatin1().data());
+            m_currentDisplayedCameraChannel = "";
+        }
+
+
+    }
+
+    return retValue;
+}
+//-------------------------------------------------------------------------------------
+QString AbstractDObjFigure::getDisplayedCameraChannel() const
+{
+    return m_currentDisplayedCameraChannel;
 }
 
 } //end namespace ito

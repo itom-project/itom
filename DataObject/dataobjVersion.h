@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2022, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2023, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
 
@@ -11,7 +11,7 @@
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
 
-    In addition, as a special exception, the Institut für Technische
+    In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
     which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -25,8 +25,8 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#define DATAOBJ_VERSION_MAJOR 1
-#define DATAOBJ_VERSION_MINOR 10
+#define DATAOBJ_VERSION_MAJOR 2
+#define DATAOBJ_VERSION_MINOR 0
 #define DATAOBJ_VERSION_PATCH 0
 #define DATAOBJ_VERSION_REVISION 0
-#define DATAOBJ_VERSION_STRING "1.10.0.0"
+#define DATAOBJ_VERSION_STRING "2.0.0.0"

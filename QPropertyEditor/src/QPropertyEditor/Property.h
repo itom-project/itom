@@ -32,7 +32,7 @@
 
 /**
  * The Property class is the base class for all properties in the QPropertyEditor
- * You can implement custom properties inherited from this class to further enhance the
+ * You can implement custom properties inherited from this class to further enhence the
  * functionality of the QPropertyEditor
  */
 class Property : public QObject

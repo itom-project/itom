@@ -1,7 +1,7 @@
 # - itom software
 # URL: http://www.uni-stuttgart.de/ito
-# Copyright (C) 2020, Institut für Technische Optik (ITO),
-# Universität Stuttgart, Germany
+# Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+# Universitaet Stuttgart, Germany
 #
 # This file is part of itom and its software development toolkit (SDK).
 #
@@ -18,7 +18,8 @@
 # You should have received a copy of the GNU Library General Public License
 # along with itom. If not, see <http://www.gnu.org/licenses/>.
 
-cmake_minimum_required(VERSION 3.12...3.29)
+cmake_minimum_required(VERSION 3.12...3.24)
+
 set(target_name qitom)
 project(${target_name})
 
@@ -90,12 +91,11 @@ if(BUILD_WITH_PCL)
     else(WIN32)
         find_package(PCL 1.5.1 QUIET REQUIRED COMPONENTS common)
     endif(WIN32)
-    add_definitions(-DUSEPCL -D_USEPCL)
 
     # actually we need this only to configure the itom.bat including vtk, otherwise
     # eventually pcl-tools plugin will not be loaded
     find_package(VTK QUIET)
-endif(BUILD_WITH_PCL)
+endif()
 
 find_package(VisualLeakDetector QUIET)
 find_package(HTMLHelp)
@@ -155,14 +155,6 @@ if(BUILD_WITH_PYMATLAB)
             "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\R2019b;MATLABROOT]"
             "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\R2020a;MATLABROOT]"
             "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\R2020b;MATLABROOT]"
-            "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\R2021a;MATLABROOT]"
-            "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\R2021b;MATLABROOT]"
-            "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\R2022a;MATLABROOT]"
-            "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\R2022b;MATLABROOT]"
-            "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\R2023a;MATLABROOT]"
-            "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\R2023b;MATLABROOT]"
-            "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\R2024a;MATLABROOT]"
-            "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\R2024b;MATLABROOT]"
         )
 
         if(BUILD_TARGET64)
@@ -219,7 +211,6 @@ endforeach()
 
 include_directories(
     ${CMAKE_CURRENT_BINARY_DIR}
-    ${CMAKE_CURRENT_BINARY_DIR}/..
     ${CMAKE_CURRENT_BINARY_DIR}/python
     ${CMAKE_CURRENT_BINARY_DIR}/GeneratedFiles
     ${CMAKE_CURRENT_SOURCE_DIR}
@@ -242,7 +233,6 @@ include_directories(
     ../PointCloud/
     ../AddInManager/
     ../itomWidgets
-    ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include
 )
 
 link_directories(
@@ -255,6 +245,7 @@ link_directories(
 set(qitom_HEADERS_NOMOC
     ${CMAKE_CURRENT_SOURCE_DIR}/benchmarks.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInGrabber.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/addInMultiChannelGrabber.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInInterface.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/helperCommon.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedFunctionsQt.h
@@ -271,10 +262,10 @@ set(qitom_HEADERS_NOMOC
 )
 
 set(qitom_HEADERS
-    ${CMAKE_CURRENT_BINARY_DIR}/global.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../AddInManager/0.h   # this file must be first in list for automoc
     ${CMAKE_CURRENT_SOURCE_DIR}/main.h
     ${CMAKE_CURRENT_SOURCE_DIR}/AppManagement.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/global.h
     ${CMAKE_CURRENT_SOURCE_DIR}/mainApplication.h
     ${CMAKE_CURRENT_SOURCE_DIR}/api/apiFunctionsGraph.h
     ${CMAKE_CURRENT_SOURCE_DIR}/delegates/htmlItemDelegate.h
@@ -443,7 +434,6 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/autoindent.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/caretLineHighlight.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/errorLineHighlight.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/codeCellHighlight.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/lineBackgroundMarker.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/indenter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/occurrences.h
@@ -658,7 +648,6 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/figureWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/fileSystemDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/helpDockWidget.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/itomQWidgets.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/lastCommandDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/mainWindow.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/outlineSelectorWidget.cpp
@@ -694,7 +683,6 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/caretLineHighlight.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/errorLineHighlight.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/lineBackgroundMarker.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/codeCellHighlight.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/indenter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/occurrences.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/pyAutoIndent.cpp
@@ -748,8 +736,15 @@ itom_add_source_group(textdiff)
 #end add filters to visual studio
 
 
-#Define Version in global.h
-configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/global.h.in ${CMAKE_CURRENT_BINARY_DIR}/global.h)
+#Find ITOM_VERION version by looking at global.h
+file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/global.h ITOM_VERSIONS_TMP REGEX "^#define ITOM_VERSION_[A-Z]+[ \t]+0x[0-9A-F]+$")
+string(REGEX REPLACE ".*#define ITOM_VERSION_MAJOR[ \t]+(0x[0-9A-F]+).*" "\\1" ITOM_VERSION_MAJOR ${ITOM_VERSIONS_TMP})
+string(REGEX REPLACE ".*#define ITOM_VERSION_MINOR[ \t]+(0x[0-9A-F]+).*" "\\1" ITOM_VERSION_MINOR ${ITOM_VERSIONS_TMP})
+string(REGEX REPLACE ".*#define ITOM_VERSION_PATCH[ \t]+(0x[0-9A-F]+).*" "\\1" ITOM_VERSION_PATCH ${ITOM_VERSIONS_TMP})
+#set(ITOM_VERSION_STRING ${ITOM_VERSION_MAJOR}.${ITOM_VERSION_MINOR}.${ITOM_VERSION_PATCH} CACHE STRING "" FORCE)
+
+file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/global.h ITOM_VERSIONS_TMP REGEX "^#define ITOM_VERSION_STR[ \t]+.*$")
+string(REGEX REPLACE ".*#define ITOM_VERSION_STR[ \t]+.([0-9\\.]+).*" "\\1" ITOM_VERSION_STRING ${ITOM_VERSIONS_TMP})
 
 if(APPLE)
     # Set meta data for OS X bundle
@@ -825,7 +820,6 @@ if(CONSIDER_GIT_SVN AND GIT_FOUND)
     add_dependencies(${target_name} ${target_name}_versionCheck)
 else()
     message(STATUS "Git versioning was not enabled (CONSIDER_GIT_SVN OFF) or git could not be found. Default version.h file is generated")
-    message(STATUS "CONSIDER_GIT_SVN: ${CONSIDER_GIT_SVN}. GIT_FOUND: ${GIT_FOUND}. GIT_REPO_FOUND: ${GIT_REPO_FOUND}")
     file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/version_nogit.h DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
     file(REMOVE ${CMAKE_CURRENT_BINARY_DIR}/version.h)
     file(RENAME ${CMAKE_CURRENT_BINARY_DIR}/version_nogit.h ${CMAKE_CURRENT_BINARY_DIR}/version.h)
@@ -938,8 +932,8 @@ endif()
 
 itom_build_parallel_linux(${target_name})
 
-# for backward compatibility: enum.py is a default python library from Python 3.4 on. In order to
-# also support earlier versions, enum.py was also part of the itom-packages folder. However, this
+# for backward compatiblity: enum.py is a default python library from Python 3.4 on. In order to
+# also support earlier versoins, enum.py was also part of the itom-packages folder. However, this
 # version is old and creates conflicts with newer versions required by further modern python packages.
 # Therefore, enum.py was removed from itom-packages. If one uses Python 3.3 or earlier, the packages enum34
 # has to be installed manually!
@@ -1056,6 +1050,7 @@ endif()
 if(MSVC)
     message(STATUS "Using rc-File for version information under windows")
     configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/version.rc.in ${CMAKE_CURRENT_BINARY_DIR}/version.rc )
+
 endif()
 
 # Copying scripts for OS X build process

@@ -1,6 +1,7 @@
 """
 Render to qt from agg
 """
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 import sys
 from itom import ui
@@ -61,7 +62,7 @@ class FigureCanvasItomAgg(FigureCanvasItom, FigureCanvasAgg):
     Public attribute
 
       figure - A Figure instance
-    """
+   """
 
     def __init__(self, figure, num, itomUI, itomFig, embeddedCanvas):
         if DEBUG:
@@ -127,7 +128,7 @@ class FigureCanvasItomAgg(FigureCanvasItom, FigureCanvasAgg):
             Y = 0
             W = round(self.renderer.width)
             H = round(self.renderer.height)
-            # workaround sometimes the width and height does not fit to the stringBuffer length, leding to a crash of itom.
+            # workaround sometimes the width and hight does not fit to the stringBuffer length, leding to a crash of itom.
             # If the length is a multiple of either the width or the length we readjust them.
             if not int(W * H * 4) == len(stringBuffer):
                 numberElements = len(stringBuffer) / 4

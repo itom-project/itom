@@ -2,7 +2,6 @@
 ===============
 
 """
-
 import pandas as pd
 import numpy as np
 
@@ -13,9 +12,7 @@ dataFrame = pd.DataFrame(np.random.randn(6, 4), index=dates, columns=list("ABCD"
 
 ###############################################################################
 # **Missing data**
-dataFrame1 = dataFrame.reindex(
-    index=dates[0:4], columns=list(dataFrame.columns) + ["E"]
-)
+dataFrame1 = dataFrame.reindex(index=dates[0:4], columns=list(dataFrame.columns) + ["E"])
 dataFrame1.loc[dates[0] : dates[1], "E"] = 1
 
 ###############################################################################

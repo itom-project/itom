@@ -3,7 +3,6 @@
 
 Demo using fontdict to control style of text and labels.
 """
-
 import numpy as np
 import matplotlib.pyplot as plt
 

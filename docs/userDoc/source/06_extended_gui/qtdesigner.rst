@@ -1342,7 +1342,7 @@ Usually a fully working custom user interface consists of the **ui** file, desig
 of a python script, that contains further parameterizations of items in the user interface, of callback functions
 (slots), that are called if a specific signal of an item has been emitted...
 
-In order to provide a modern, clean and reusable structure of all this Python code, |itom| provides an object-oriented,
+In order to provide a modern, clean and re-usable structure of all this Python code, |itom| provides an object-oriented,
 hence class based approach. This allows creating one class, that contains all GUI-related code for one **ui** file
 including slots, that are automatically connected to a specific signal of an :py:class:`~itom.uiItem` once an instance
 of this class is created. It is even possible to create multiple instances of this class in parallel, such that the
@@ -1976,7 +1976,7 @@ Insert a custom user interface from an ui-file into another layout
 In |itom|, it is also possible (since itom version 4.1) to put the content of one **Qt Designer** **ui file** one
 or multiple times into an existing layout of another loaded **ui** file.
 
-This can for instance be useful, if you want to reuse a layouted custom user interface multiple times within different
+This can for instance be useful, if you want to re-use a layouted custom user interface multiple times within different
 contexts or if you want to add / insert a group of widgets (e.g. also having spacers, horizontal or vertical lines,
 further layouts...) multiple times in a grid, form or any other kind of layout. The inserted ui file is then like
 a template, that is inserted whenever needed.
@@ -2095,5 +2095,4 @@ classes :py:class:`itom.ui` and :py:class:`itom.uiItem`, both problems are prope
 :py:class:`itom.ui` and :py:class:`itom.uiItem` have thread-safe implementations and communicate with an organization
 structure, that runs in the main thread of |itom|, in order to interact with all dialogs.
 
-.. _Qt::ItemFlags: https://doc.qt.io/qt-6/qt.html#ItemFlag-enum
-.. _Qt::SortOrder: https://doc.qt.io/qt-6/qt.html#SortOrder-enum
+.. _Qt::ItemFlags: https://doc.qt.io/qt-5/qt.html#CheckFlag-enum/

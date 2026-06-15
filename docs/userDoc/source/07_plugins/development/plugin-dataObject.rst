@@ -696,7 +696,7 @@ In the code above, a 2x2 data object d11 of type *ito::tInt16* is created. This 
 
 .. note::
 
-    Transposing the data object also transposes the axis related information.
+    Transposing the data object also transposes the axis related informations.
 
 Squeeze a data object
 ------------------------------------------------------------------------------

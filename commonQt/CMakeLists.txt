@@ -1,7 +1,7 @@
 # - itom software
 # URL: http://www.uni-stuttgart.de/ito
-# Copyright (C) 2020, Institut für Technische Optik (ITO),
-# Universität Stuttgart, Germany
+# Copyright (C) 2023, Institut fuer Technische Optik (ITO),
+# Universitaet Stuttgart, Germany
 #
 # This file is part of itom and its software development toolkit (SDK).
 #
@@ -10,7 +10,7 @@
 # the Free Software Foundation; either version 2 of the Licence, or (at
 # your option) any later version.
 #
-# In addition, as a special exception, the Institut für Technische
+# In addition, as a special exception, the Institut fuer Technische
 # Optik (ITO) gives you certain additional rights.
 # These rights are described in the ITO LGPL Exception version 1.0,
 # which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -23,7 +23,8 @@
 # You should have received a copy of the GNU Library General Public License
 # along with itom. If not, see <http://www.gnu.org/licenses/>.
 
-cmake_minimum_required(VERSION 3.12...3.29)
+cmake_minimum_required(VERSION 3.12...3.24)
+
 set(target_name itomCommonQtLib)
 project(${target_name})
 
@@ -68,7 +69,9 @@ link_directories(
 
 set(ITOMCOMMONQT_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/commonQtVersion.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/abstractAddInGrabber.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInGrabber.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInMultiChannelGrabber.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInInterface.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInInterfaceVersion.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/abstractAddInDockWidget.h
@@ -89,7 +92,9 @@ set(ITOMCOMMONQT_HEADERS
 )
 
 set(ITOMCOMMONQT_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/abstractAddInGrabber.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/addInGrabber.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/addInMultiChannelGrabber.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/addInInterface.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/abstractAddInDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/abstractAddInConfigDialog.cpp

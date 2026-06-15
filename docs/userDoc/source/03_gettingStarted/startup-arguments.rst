@@ -12,13 +12,11 @@ The following arguments are possible (the order of arguments is unimportant):
 
 1. **<path-to-python-script.py>**: opens the indicated script in the script editor.
    This argument can be appended multiple times.
-2. **log** or **log=<path-to-directory>**: The log is saved to the file itomlog.txt in
+2. **log=<path-to-directory>**: By default, logging is enabled. The log is saved into
    the user directory ``C:\Users\<UserName>\AppData\Local\qitom``.
    The ``log=<path-to-directory>`` argument can be used to define a different path
    where the log files are saved.
-3. **nolog**: Do not write a log file. Overwrites any **log** argument (see above).
-   If neither **log** nor **nolog** is given, the behaviour is equal to **log** without
-   user defined path.
+3. **nolog**: Do not write a log file.
 4. **name=<usernameID>**: Pass an additional ID of an available user. If given,
    itom is started with this user and its corresponding setting files.
 5. **run=<path-to-python-script.py>**: similar to 1. Runs the given script
@@ -26,7 +24,7 @@ The following arguments are possible (the order of arguments is unimportant):
    active user settings. The path to the script can also be put into quotation marks,
    if it contains spaces or other special characters. This argument can be appended
    multiple times.
-6. **pipManager**: If this argument is given, only opens the Python Package
+6. **pipManager**: If this argument ist given, only opens the Python Package
    Manager instead of the main GUI of itom. This can for instance be used
    to update **Numpy**, since this cannot be updated if the main GUI is started,
    since itom directly uses Numpy, such that some of its files are blocked during

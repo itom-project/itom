@@ -1,3 +1,4 @@
+# coding=utf8
 """Plot line cut, volume cut, through z-stack
 =============================================
 
@@ -15,9 +16,7 @@ import numpy as np
 
 ###############################################################################
 # Function to calculate 2D Gaussian beam profile.
-def gaussianBeam2D(
-    xValues: float, yValues: float, fwhm: float, centroid: list, amplitude: float
-) -> np.ndarray:
+def gaussianBeam2D(xValues: float, yValues: float, fwhm: float, centroid: list, amplitude: float) -> np.ndarray:
     """Create 2D Gaussian Beam intensity.
 
     Args:
@@ -31,10 +30,7 @@ def gaussianBeam2D(
         np.ndarray: 2D Gaussian intensity profile.
     """
     intensity = amplitude * np.exp(
-        -4
-        * np.log(2)
-        * ((xValues - centroid[0]) ** 2 + (yValues - centroid[1]) ** 2)
-        / fwhm**2
+        -4 * np.log(2) * ((xValues - centroid[0]) ** 2 + (yValues - centroid[1]) ** 2) / fwhm**2
     )
     return np.array(intensity)
 
@@ -86,18 +82,16 @@ widthZ = waistAtZ(5, zValues, RayleightL)
 gauss3D = dataObject([zSampling, ySampling, xSampling], "float64")
 
 for cnt in range(0, gauss3D.shape[0]):
-    gauss3D[cnt, :, :] = gaussianBeam2D(
-        xValues, yValues, widthZ[cnt], centroidPos, amplitude
-    )
+    gauss3D[cnt, :, :] = gaussianBeam2D(xValues, yValues, widthZ[cnt], centroidPos, amplitude)
 
 ###############################################################################
 # Define the 3D meta information.
 gauss3D.setAxisDescription(0, "z axis")
 gauss3D.setAxisDescription(1, "y axis")
 gauss3D.setAxisDescription(2, "x axis")
-gauss3D.setAxisUnit(0, "\u00b5m")
-gauss3D.setAxisUnit(2, "\u00b5m")
-gauss3D.setAxisUnit(1, "\u00b5m")
+gauss3D.setAxisUnit(0, "\u00B5m")
+gauss3D.setAxisUnit(2, "\u00B5m")
+gauss3D.setAxisUnit(1, "\u00B5m")
 gauss3D.setAxisScale(0, zScale)
 gauss3D.setAxisScale(1, xScale)
 gauss3D.setAxisScale(2, xScale)

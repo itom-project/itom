@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
 
@@ -49,7 +49,7 @@ namespace ito
 *   @return             retOk on success, retError otherwise
 *
 *   The function checks if the types of the passed python parameter and the parameter are compatible and sets the parameter
-*   value if it is possible. If the parameter cannot be set an error is returned.
+*   value if it is possible. If the paramter cannot be set an error is returned.
 */
 ito::RetVal checkAndSetParamVal(PyObject *tempObj, ito::Param *param, int *set)
 {
@@ -886,19 +886,19 @@ PyObject* printOutParams(const QVector<ito::Param> *params, bool asErr, bool add
                             values["values"].append("empty");
                             break;
                         case 1:
-                            temp = QString("[%1]").arg(ptr[0].data());
+                            temp = QString("[\"%1\"]").arg(ptr[0].data());
                             values["values"].append(temp);
                             break;
                         case 2:
-                            temp = QString("[%1,%2]").arg(ptr[0].data()).arg(ptr[1].data());
+                            temp = QString("[\"%1\",\"%2\"]").arg(ptr[0].data()).arg(ptr[1].data());
                             values["values"].append(temp);
                             break;
                         case 3:
-                            temp = QString("[%1,%2,%3]").arg(ptr[0].data()).arg(ptr[1].data()).arg(ptr[2].data());
+                            temp = QString("[\"%1\",\"%2\",\"%3\"]").arg(ptr[0].data()).arg(ptr[1].data()).arg(ptr[2].data());
                             values["values"].append(temp);
                             break;
                         case 4:
-                            temp = QString("[%1,%2,%3,%4]").arg(ptr[0].data()).arg(ptr[1].data()).arg(ptr[2].data()).arg(ptr[3].data());
+                            temp = QString("[\"%1\",\"%2\",\"%3\",\"%4\"]").arg(ptr[0].data()).arg(ptr[1].data()).arg(ptr[2].data()).arg(ptr[3].data());
                             values["values"].append(temp);
                             break;
                         default:
@@ -1147,12 +1147,12 @@ PyObject* printOutParams(const QVector<ito::Param> *params, bool asErr, bool add
 //----------------------------------------------------------------------------------------------------------------------------------
 /** Helper function for error output
 *   @param [in] params  parameters expected by the plugin
-*   @param [in] num     parameter where the error occurred
+*   @param [in] num     parameter where the error occured
 *   @param [in] reason  the reason for the error (e.g. parameter missing, wrong type, ...)
 *
-*   Function used for writing error messages occurred during the parsing of the parameters passed for the initialisation
+*   Function used for writing error messages occured during the parsing of the parameters passed for the initialisation
 *   of a plugin. The function uses the cerr stream to "post" the error message. If possible the parameter where the error
-*   occurred is marked with an arrow. Except the error all parameters necessary and optional including their type are written
+*   occured is marked with an arrow. Except the error all parameters necessary and optional including their type are written
 *   to the console.
 */
 void errOutInitParams(const QVector<ito::Param> *params, const int num, const char *reason)
@@ -1279,7 +1279,7 @@ ito::RetVal parseInitParams(const QVector<ito::Param> *defaultParamListMand, con
     }
 
 
-    // argsLen is not sufficient for mandatory parameters so check if we can complete with keywords
+    // argsLen ist not sufficient for mandatory parameters so check if we can complete with keywords
     if (argsLen < numMandParams)
     {
         for (int n = argsLen; n < numMandParams; n++)

@@ -1,3 +1,5 @@
+# coding=iso-8859-15
+
 """Creates a new renderer for the Python plotly library and registers
 this renderer as another possible renderer for the plotly package under
 the name ``itom``. This renderer is also set as default.
@@ -23,6 +25,7 @@ class ItomPlotlyRenderer(ExternalRenderer):
         post_script=None,
         animation_opts=None,
     ):
+
         self.config = config
         self.auto_play = auto_play
         self.post_script = post_script

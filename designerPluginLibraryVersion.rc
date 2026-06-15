@@ -1,18 +1,17 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fÃ¼r Technische Optik (ITO),
-    University Stuttgart, Germany
+    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
 
-    itom is free software; you can redistr
-    ibute it and/or modify it
+    itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
 
-    In addition, as a special exception, the Institut fÃ¼r Technische
+    In addition, as a special exception, the Institut für Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
     which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -27,10 +26,13 @@
 *********************************************************************** */
 
 #include <windows.h>
+
+#pragma code_page(65001) // UTF-8
+
 #include "itom_sdk.h"
 #include "pluginVersion.h"
 
-#pragma code_page(65001) // UTF-8
+
 
 VS_VERSION_INFO     VERSIONINFO
 FILEVERSION         PLUGIN_VERSION

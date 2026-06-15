@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
 
@@ -25,69 +25,57 @@
 
 #include "../global.h"
 
-#include <qcolor.h>
 #include <qdialog.h>
-#include <qfileiconprovider.h>
 #include <qlist.h>
+#include <qcolor.h>
 #include <qtreewidget.h>
+#include <qfileiconprovider.h>
 
 #include "ui_dialogLoadedPlugins.h"
 
 namespace ito {
 
-struct PluginLoadStatus; // forward declaration
+struct PluginLoadStatus; //forward declaration
 
 class DialogLoadedPlugins : public QDialog
 {
     Q_OBJECT
 
+    Q_PROPERTY(QColor pluginBackgroundColor READ pluginBackgroundColor WRITE setPluginBackgroundColor DESIGNABLE true);
+
 public:
-    DialogLoadedPlugins(QWidget* parent = nullptr);
+    DialogLoadedPlugins(QWidget *parent = NULL);
     ~DialogLoadedPlugins();
 
 protected:
     void init();
     void filter();
-    void setSortChar(int column, QTreeWidgetItem& item);
+    void setSortChar(int column, QTreeWidgetItem &item);
+
+    QColor pluginBackgroundColor() const { return m_pluginBackgroundColor; }
+    void setPluginBackgroundColor(const QColor &color);
 
     Ui::DialogLoadedPlugins ui;
     QList<PluginLoadStatus> m_content;
-    QList<QPair<int, QTreeWidgetItem*>> m_items;
-    QFileIconProvider* m_fileIconProvider;
+    QList< QPair<int, QTreeWidgetItem*> > m_items;
+    QFileIconProvider *m_fileIconProvider;
     QString m_windowTitle;
     QString m_cmdMessage;
     QString m_cmdWarning;
     QString m_cmdError;
     QString m_cmdIgnored;
+    QColor m_pluginBackgroundColor;
 
 private slots:
-    void on_onlyCompatibleCheck_clicked(bool /*value*/)
-    {
-        filter();
-    };
-    void on_cmdError_clicked(bool /*value*/)
-    {
-        filter();
-    };
-    void on_cmdWarning_clicked(bool /*value*/)
-    {
-        filter();
-    };
-    void on_cmdMessage_clicked(bool /*value*/)
-    {
-        filter();
-    };
-    void on_cmdIgnored_clicked(bool /*value*/)
-    {
-        filter();
-    };
-    void on_filterEdit_textChanged(const QString /*value*/)
-    {
-        filter();
-    };
+    void on_onlyCompatibleCheck_clicked(bool /*value*/) { filter(); };
+    void on_cmdError_clicked(bool /*value*/) { filter(); };
+    void on_cmdWarning_clicked(bool /*value*/) { filter(); };
+    void on_cmdMessage_clicked(bool /*value*/) { filter(); };
+    void on_cmdIgnored_clicked(bool /*value*/) { filter(); };
+    void on_filterEdit_textChanged(const QString /*value*/) { filter(); };
     void on_tree_itemSelectionChanged();
 };
 
-} // end namespace ito
+} //end namespace ito
 
 #endif

@@ -52,7 +52,9 @@ _log = logging.getLogger(__name__)
 
 BLACKLIST = {"title", "label"}
 
-__dialogCache__ = []  # cache to current instances of DialogEditProperties (as long as the real dialog is visible)
+__dialogCache__ = (
+    []
+)  # cache to current instances of DialogEditProperties (as long as the real dialog is visible)
 
 
 class FormWidget:
@@ -274,6 +276,7 @@ class DialogEditProperties:
     """Form Dialog"""
 
     def __init__(self, matplotlibplotUiItem, data, title="", comment="", apply=None):
+
         self.apply_callback = apply
 
         self.dialog = matplotlibplotUiItem.call(
