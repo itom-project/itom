@@ -155,10 +155,17 @@ AIManagerWidget::AIManagerWidget(
             m_pAIManagerView->expand(index);
         }
 
-        QSettings *settings = new QSettings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-        settings->beginGroup("itomPluginsDockWidget");
-        size = settings->beginReadArray("ColWidth");
-        for (int i = 0; i < size; ++i)
+        QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+        settings.beginGroup("itomPluginsDockWidget");
+
+        m_showColumnDetails = settings.value("showColumnDetails", false).toBool();
+
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
+        m_detailColumnsWidth.resize(m_pPlugInModel->columnCount(), 120);
+#else
+        m_detailColumnsWidth.reserve(m_pPlugInModel->columnCount());
+
+        for (int i = 0; i < m_pPlugInModel->columnCount(); ++i)
         {
             settings->setArrayIndex(i);
             m_pAIManagerView->setColumnWidth(i, settings->value("width", 100).toInt());
@@ -1192,7 +1199,7 @@ void AIManagerWidget::mnuToggleAutoGrabbing()
 }
 
 //-------------------------------------------------------------------------------------
-void AIManagerWidget::setTreeViewHideColumns(const bool &hide, const int colCount)
+void AIManagerWidget::treeViewHideOrShowColumns(const bool& hide)
 {
     for (int i = 1; i < colCount; ++i)
     {
@@ -1203,11 +1210,7 @@ void AIManagerWidget::setTreeViewHideColumns(const bool &hide, const int colCoun
 //-------------------------------------------------------------------------------------
 void AIManagerWidget::showList()
 {
-    ito::AddInManager *aim = qobject_cast<ito::AddInManager*>(AppManagement::getAddInManager());
-    PlugInModel *plugInModel = (PlugInModel*)(aim->getPluginModel());
-    bool isList = true;
-
-    for (int i = 1; i < plugInModel->columnCount(); ++i)
+    if (m_showColumnDetails)
     {
         isList = isList && m_pAIManagerView->isColumnHidden(i);
     }
@@ -1233,29 +1236,6 @@ void AIManagerWidget::mnuToggleView()
     else
     {
         showList();
-    }
-}
-
-//-------------------------------------------------------------------------------------
-void AIManagerWidget::showDetails()
-{
-    ito::AddInManager *aim = qobject_cast<ito::AddInManager*>(AppManagement::getAddInManager());
-    PlugInModel *plugInModel = (PlugInModel*)(aim->getPluginModel());
-    bool isList = true;
-
-    for (int i = 1; i < plugInModel->columnCount(); ++i)
-    {
-        isList = isList && m_pAIManagerView->isColumnHidden(i);
-    }
-
-    setTreeViewHideColumns(false, plugInModel->columnCount());
-
-    if (isList)
-    {
-        for (int i = 0; i < plugInModel->columnCount(); ++i)
-        {
-            m_pAIManagerView->setColumnWidth(i, m_pColumnWidth[i]);
-        }
     }
 }
 
