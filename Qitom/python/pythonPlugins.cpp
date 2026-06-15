@@ -4088,9 +4088,10 @@ PyObject* PythonPlugins::PyDataIOPlugin_getVal(PyDataIOPlugin *self, PyObject *a
             }
         }
         locker = (new ItomSharedSemaphore());
+        using DataObjectChannelMap = QSharedPointer<QMap<QString, ito::DataObject*>>;
         QMetaObject::invokeMethod(
             self->dataIOObj, "getVal",
-            QArgument<QSharedPointer<QMap<QString, ito::DataObject*> > >("QSharedPointer<QMap<QString, ito::DataObject*> >",channelMap),
+            Q_ARG(DataObjectChannelMap, channelMap),
             Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
 
     }
@@ -4319,10 +4320,11 @@ PyObject* PythonPlugins::PyDataIOPlugin_copyVal(PyDataIOPlugin *self, PyObject *
                 }
             }
             ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+            using DataObjectChannelMap = QSharedPointer<QMap<QString, ito::DataObject*>>;
 
             if (QMetaObject::invokeMethod(
                 self->dataIOObj, "copyVal",
-                QArgument<QSharedPointer<QMap<QString, ito::DataObject*> > >("QSharedPointer<QMap<QString, ito::DataObject*> >", channelMap),
+                Q_ARG(DataObjectChannelMap, channelMap),
                 Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
             {
                 bool timeout = false;
