@@ -3841,7 +3841,7 @@ PyObject* PythonItom::PyAddMenu(PyObject* /*pSelf*/, PyObject* args, PyObject* k
         }
         case 2: // MENU
         {
-            bool ok;
+            bool ok = true;
             qcode = code ? PythonQtConversion::PyObjGetString(code, true, ok) : "";
             if (ok && qcode != "")
             {
