@@ -307,10 +307,6 @@ Typkonflikt für &apos;%1&apos;</translation>
         <translation type="unfinished">Fehler beim Laden des Objekts: Die Objekt-Header ist ungültig</translation>
     </message>
     <message>
-        <source>Load object failed: object header not valied</source>
-        <translation type="obsolete">Fehler beim Laden des Objekts: Die Objekt-Header ist ungültig</translation>
-    </message>
-    <message>
         <location filename="../../common/sources/pluginThreadCtrl.cpp" line="64"/>
         <source>No or invalid plugin given.</source>
         <translation type="unfinished">Kein oder ein ungültiges Plugin übergeben.</translation>
@@ -492,10 +488,6 @@ Typkonflikt für &apos;%1&apos;</translation>
         <location filename="../../common/sources/helperCommon.cpp" line="510"/>
         <source>name of requested parameter is empty.</source>
         <translation type="unfinished">Der Name des gesuchten Parameters ist leer.</translation>
-    </message>
-    <message>
-        <source>the parameter name &apos;%1&apos; is invald</source>
-        <translation type="obsolete">Der Parametername &apos;%1&apos; ist ungültig</translation>
     </message>
     <message>
         <location filename="../../common/sources/helperCommon.cpp" line="373"/>

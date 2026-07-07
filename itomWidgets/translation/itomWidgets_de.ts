@@ -482,17 +482,17 @@
 <context>
     <name>PathLineEdit</name>
     <message>
-        <location filename="../pathLineEdit.cpp" line="449"/>
+        <location filename="../pathLineEdit.cpp" line="451"/>
         <source>Select a file to save </source>
         <translation>Dateiname angeben</translation>
     </message>
     <message>
-        <location filename="../pathLineEdit.cpp" line="464"/>
+        <location filename="../pathLineEdit.cpp" line="466"/>
         <source>Open a file</source>
         <translation>Datei öffnen</translation>
     </message>
     <message>
-        <location filename="../pathLineEdit.cpp" line="480"/>
+        <location filename="../pathLineEdit.cpp" line="482"/>
         <source>Select a directory...</source>
         <translation>Ein Verzeichnis auswählen...</translation>
     </message>
@@ -546,95 +546,95 @@
         <translation>Wert</translation>
     </message>
     <message>
-        <location filename="../plotInfoShapes.cpp" line="66"/>
+        <location filename="../plotInfoShapes.cpp" line="68"/>
         <source>Point %1</source>
         <translation type="unfinished">Punkt &apos;%1&apos;</translation>
     </message>
     <message>
-        <location filename="../plotInfoShapes.cpp" line="77"/>
+        <location filename="../plotInfoShapes.cpp" line="79"/>
         <source>Position</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../plotInfoShapes.cpp" line="84"/>
+        <location filename="../plotInfoShapes.cpp" line="86"/>
         <source>Line %1</source>
         <translation type="unfinished">Linie %1</translation>
     </message>
     <message>
-        <location filename="../plotInfoShapes.cpp" line="96"/>
+        <location filename="../plotInfoShapes.cpp" line="98"/>
         <source>Start</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../plotInfoShapes.cpp" line="98"/>
+        <location filename="../plotInfoShapes.cpp" line="100"/>
         <source>End</source>
         <translation>Ende</translation>
     </message>
     <message>
-        <location filename="../plotInfoShapes.cpp" line="100"/>
-        <location filename="../plotInfoShapes.cpp" line="217"/>
+        <location filename="../plotInfoShapes.cpp" line="102"/>
+        <location filename="../plotInfoShapes.cpp" line="219"/>
         <source>Length</source>
         <translation>Länge</translation>
     </message>
     <message>
-        <location filename="../plotInfoShapes.cpp" line="107"/>
+        <location filename="../plotInfoShapes.cpp" line="109"/>
         <source>Circle %1</source>
         <translation type="unfinished">Kreis %1</translation>
     </message>
     <message>
-        <location filename="../plotInfoShapes.cpp" line="119"/>
-        <location filename="../plotInfoShapes.cpp" line="141"/>
-        <location filename="../plotInfoShapes.cpp" line="167"/>
-        <location filename="../plotInfoShapes.cpp" line="190"/>
-        <location filename="../plotInfoShapes.cpp" line="215"/>
+        <location filename="../plotInfoShapes.cpp" line="121"/>
+        <location filename="../plotInfoShapes.cpp" line="143"/>
+        <location filename="../plotInfoShapes.cpp" line="169"/>
+        <location filename="../plotInfoShapes.cpp" line="192"/>
+        <location filename="../plotInfoShapes.cpp" line="217"/>
         <source>Center</source>
         <translation type="unfinished">Zentrum</translation>
     </message>
     <message>
-        <location filename="../plotInfoShapes.cpp" line="121"/>
+        <location filename="../plotInfoShapes.cpp" line="123"/>
         <source>Radius</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../plotInfoShapes.cpp" line="123"/>
-        <location filename="../plotInfoShapes.cpp" line="149"/>
-        <location filename="../plotInfoShapes.cpp" line="172"/>
-        <location filename="../plotInfoShapes.cpp" line="198"/>
+        <location filename="../plotInfoShapes.cpp" line="125"/>
+        <location filename="../plotInfoShapes.cpp" line="151"/>
+        <location filename="../plotInfoShapes.cpp" line="174"/>
+        <location filename="../plotInfoShapes.cpp" line="200"/>
         <source>Rotation</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../plotInfoShapes.cpp" line="130"/>
+        <location filename="../plotInfoShapes.cpp" line="132"/>
         <source>Ellipse %1</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../plotInfoShapes.cpp" line="144"/>
+        <location filename="../plotInfoShapes.cpp" line="146"/>
         <source>Radius 1</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../plotInfoShapes.cpp" line="147"/>
+        <location filename="../plotInfoShapes.cpp" line="149"/>
         <source>Radius 2</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../plotInfoShapes.cpp" line="170"/>
+        <location filename="../plotInfoShapes.cpp" line="172"/>
         <source>Side Length</source>
         <translation>Seitenlänge</translation>
     </message>
     <message>
-        <location filename="../plotInfoShapes.cpp" line="193"/>
+        <location filename="../plotInfoShapes.cpp" line="195"/>
         <source>Width</source>
         <translation>Breite</translation>
     </message>
     <message>
-        <location filename="../plotInfoShapes.cpp" line="196"/>
+        <location filename="../plotInfoShapes.cpp" line="198"/>
         <source>Height</source>
         <translation>Höhe</translation>
     </message>
     <message>
-        <location filename="../plotInfoShapes.cpp" line="219"/>
+        <location filename="../plotInfoShapes.cpp" line="221"/>
         <source>Nodes</source>
         <translation>Knoten</translation>
     </message>
