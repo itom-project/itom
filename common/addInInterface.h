@@ -1067,14 +1067,14 @@ namespace ito
 
             virtual ~AlgoWidgetDef() {}    //!< destructor
 
-            t_algoWidget m_widgetFunc;    //!< function pointer (unbounded, static) for widget-method
-            t_filterParam m_paramFunc;    //!< function pointer (unbounded, static) for widget's default parameter method
-            ito::AddInInterfaceBase *m_pBasePlugin;        //!< interface (factory) instance of this plugin (will be automatically filled)
-            QString m_name;                //!< name of widget
-            QString m_description;        //!< description of widget
-            ito::AddInAlgo::tAlgoCategory m_category;    //!< category, widget belongs to (default: catNone)
-            ito::AddInAlgo::tAlgoInterface m_interface; //!< algorithm interface, widget fits to (default: iNotSpecified)
-            QString m_interfaceMeta;    //!< meta information if required by algorithm interface
+            t_algoWidget m_widgetFunc;                      //!< function pointer (unbounded, static) for widget-method
+            t_filterParam m_paramFunc;                      //!< function pointer (unbounded, static) for widget's default parameter method
+            ito::AddInInterfaceBase *m_pBasePlugin;         //!< interface (factory) instance of this plugin (will be automatically filled)
+            QString m_name;                                 //!< name of widget
+            QString m_description;                          //!< description of widget
+            ito::AddInAlgo::tAlgoCategory m_category;       //!< category, widget belongs to (default: catNone)
+            ito::AddInAlgo::tAlgoInterface m_interface;     //!< algorithm interface, widget fits to (default: iNotSpecified)
+            QString m_interfaceMeta;                        //!< meta information if required by algorithm interface
 
         private:
             AlgoWidgetDef(const AlgoWidgetDef & /*p*/); //disable copy constructor
