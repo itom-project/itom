@@ -154,7 +154,11 @@ itom_define_sdk_platform()
 itom_define_sdk_compiler()
 
 find_package(OpenCV QUIET)
-string(REPLACE . "" OpenCV_LIB_VERSION ${OpenCV_VERSION})
+if(OpenCV_FOUND)
+    string(REPLACE . "" OpenCV_LIB_VERSION ${OpenCV_VERSION})
+else()
+    set(OpenCV_LIB_VERSION "")
+endif()
 
 if(BUILD_WITH_PCL)
     find_package(VTK QUIET)
