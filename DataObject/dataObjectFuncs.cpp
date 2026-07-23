@@ -1812,16 +1812,14 @@ template <>
 RetVal meanValueFunc<complex64, float64>(
     const ito::DataObject* /*dObj*/, float64& /*meanResult*/, bool /*ignoreNaN*/)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "meanValueFunc not defined for complex type", "", __FILE__, __LINE__));
+    cv::error(CV_StsAssert, "meanValueFunc not defined for complex type", "", __FILE__, __LINE__);
     return retError;
 }
 template <>
 RetVal meanValueFunc<complex64, complex64>(
     const ito::DataObject* /*dObj*/, float64& /*meanResult*/, bool /*ignoreNaN*/)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "meanValueFunc not defined for complex type", "", __FILE__, __LINE__));
+    cv::error(CV_StsAssert, "meanValueFunc not defined for complex type", "", __FILE__, __LINE__);
     return retError;
 }
 
@@ -1829,16 +1827,14 @@ template <>
 RetVal meanValueFunc<complex128, float64>(
     const ito::DataObject* /*dObj*/, float64& /*meanResult*/, bool /*ignoreNaN*/)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "meanValueFunc not defined for complex type", "", __FILE__, __LINE__));
+    cv::error(CV_StsAssert, "meanValueFunc not defined for complex type", "", __FILE__, __LINE__);
     return retError;
 }
 template <>
 RetVal meanValueFunc<complex128, complex128>(
     const ito::DataObject* /*dObj*/, float64& /*meanResult*/, bool /*ignoreNaN*/)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "meanValueFunc not defined for complex type", "", __FILE__, __LINE__));
+    cv::error(CV_StsAssert, "meanValueFunc not defined for complex type", "", __FILE__, __LINE__);
     return retError;
 }
 
@@ -1846,16 +1842,14 @@ template <>
 RetVal meanValueFunc<Rgba32, uint32>(
     const ito::DataObject* /*dObj*/, float64& /*meanResult*/, bool /*ignoreNaN*/)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "meanValueFunc not defined for rgba32 type", "", __FILE__, __LINE__));
+    cv::error(CV_StsAssert, "meanValueFunc not defined for rgba32 type", "", __FILE__, __LINE__);
     return retError;
 }
 template <>
 RetVal meanValueFunc<Rgba32, Rgba32>(
     const ito::DataObject* /*dObj*/, float64& /*meanResult*/, bool /*ignoreNaN*/)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "meanValueFunc not defined for rgba32 type", "", __FILE__, __LINE__));
+    cv::error(CV_StsAssert, "meanValueFunc not defined for rgba32 type", "", __FILE__, __LINE__);
     return retError;
 }
 
@@ -2066,8 +2060,7 @@ template <>
 RetVal medianValueFunc<complex64>(
     const ito::DataObject* /*dObj*/, float64& /*meanResult*/, bool /*ignoreNaN*/)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "medianValueFunc not defined for complex type", "", __FILE__, __LINE__));
+    cv::error(CV_StsAssert, "medianValueFunc not defined for complex type", "", __FILE__, __LINE__);
     return retError;
 }
 
@@ -2075,8 +2068,7 @@ template <>
 RetVal medianValueFunc<complex128>(
     const ito::DataObject* /*dObj*/, float64& /*meanResult*/, bool /*ignoreNaN*/)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "medianValueFunc not defined for complex type", "", __FILE__, __LINE__));
+    cv::error(CV_StsAssert, "medianValueFunc not defined for complex type", "", __FILE__, __LINE__);
     return retError;
 }
 
@@ -2084,8 +2076,7 @@ template <>
 RetVal medianValueFunc<Rgba32>(
     const ito::DataObject* /*dObj*/, float64& /*meanResult*/, bool /*ignoreNaN*/)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "medianValueFunc not defined for rgba32 type", "", __FILE__, __LINE__));
+    cv::error(CV_StsAssert, "medianValueFunc not defined for rgba32 type", "", __FILE__, __LINE__);
     return retError;
 }
 
@@ -2316,8 +2307,7 @@ RetVal devValueFunc<complex64, float64>(
     float64& /*devResult*/,
     bool /*ignoreNaN*/)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "devValueFunc not defined for complex type", "", __FILE__, __LINE__));
+    cv::error(CV_StsAssert, "devValueFunc not defined for complex type", "", __FILE__, __LINE__);
     return retError;
 }
 template <>
@@ -2328,8 +2318,7 @@ RetVal devValueFunc<complex64, complex64>(
     float64& /*devResult*/,
     bool /*ignoreNaN*/)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "devValueFunc not defined for complex type", "", __FILE__, __LINE__));
+    cv::error(CV_StsAssert, "devValueFunc not defined for complex type", "", __FILE__, __LINE__);
     return retError;
 }
 
@@ -2341,8 +2330,7 @@ RetVal devValueFunc<complex128, float64>(
     float64& /*devResult*/,
     bool /*ignoreNaN*/)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "devValueFunc not defined for complex type", "", __FILE__, __LINE__));
+    cv::error(CV_StsAssert, "devValueFunc not defined for complex type", "", __FILE__, __LINE__);
     return retError;
 }
 template <>
@@ -2353,8 +2341,7 @@ RetVal devValueFunc<complex128, complex128>(
     float64& /*devResult*/,
     bool /*ignoreNaN*/)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "devValueFunc not defined for complex type", "", __FILE__, __LINE__));
+    cv::error(CV_StsAssert, "devValueFunc not defined for complex type", "", __FILE__, __LINE__);
     return retError;
 }
 
@@ -2366,8 +2353,7 @@ RetVal devValueFunc<Rgba32, uint32>(
     float64& /*devResult*/,
     bool /*ignoreNaN*/)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "devValueFunc not defined for rgba32 type", "", __FILE__, __LINE__));
+    cv::error(CV_StsAssert, "devValueFunc not defined for rgba32 type", "", __FILE__, __LINE__);
     return retError;
 }
 template <>
@@ -2378,8 +2364,7 @@ RetVal devValueFunc<Rgba32, Rgba32>(
     float64& /*devResult*/,
     bool /*ignoreNaN*/)
 {
-    cv::error(cv::Exception(
-        CV_StsAssert, "devValueFunc not defined for rgba32 type", "", __FILE__, __LINE__));
+    cv::error(CV_StsAssert, "devValueFunc not defined for rgba32 type", "", __FILE__, __LINE__);
     return retError;
 }
 

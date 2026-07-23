@@ -85,7 +85,7 @@
 #include <langinfo.h>
 #endif
 
-#include "opencv2/core/core_c.h"
+#include "opencv2/core.hpp"
 
 namespace ito
 {
@@ -1264,7 +1264,7 @@ PyObject* PythonEngine::setPyErrFromException(const std::exception &exc)
 
     if ((p_cvexc = dynamic_cast<const cv::Exception*>(p_exc)) != NULL)
     {
-        const char* errorStr = cvErrorStr(p_cvexc->code);
+        const char* errorStr = p_cvexc->err.c_str();
         return PyErr_Format(PyExc_RuntimeError, "OpenCV Error: %s (%s) in %s, file %s, line %d",
             errorStr, p_cvexc->err.c_str(), p_cvexc->func.size() > 0 ?
             p_cvexc->func.c_str() : "unknown function", p_cvexc->file.c_str(), p_cvexc->line);

@@ -45,8 +45,45 @@
 #define NOMINMAX
 
 #include "opencv2/opencv.hpp"
-#include "opencv2/core/core.hpp"
-#include "opencv2/core/types_c.h"
+#include "opencv2/core.hpp"
+#include "opencv2/core/types.hpp"
+
+// Compatibility: some codebase locations still use legacy error codes like CV_StsAssert
+// which were provided by old C headers. Define them to the equivalent C++ enum values.
+#ifndef CV_StsAssert
+#define CV_StsAssert cv::Error::StsAssert
+#endif
+
+// Define a minimal set of legacy CV error macros if they are missing (OpenCV 5 removed C API)
+#ifndef CV_StsError
+#define CV_StsError 1
+#endif
+#ifndef CV_BadDepth
+#define CV_BadDepth 1
+#endif
+#ifndef CV_BadDataPtr
+#define CV_BadDataPtr 1
+#endif
+#ifndef CV_BadImageSize
+#define CV_BadImageSize 1
+#endif
+#ifndef CV_StsUnsupportedFormat
+#define CV_StsUnsupportedFormat 1
+#endif
+#ifndef CV_StsOutOfRange
+#define CV_StsOutOfRange 1
+#endif
+#ifndef CV_StsUnmatchedSizes
+#define CV_StsUnmatchedSizes 1
+#endif
+#ifndef CV_StsUnmatchedFormats
+#define CV_StsUnmatchedFormats 1
+#endif
+
+// Provide a simple replacement for cvErrorStr(code) used in older code; return empty string
+#ifndef cvErrorStr
+static inline const char* cvErrorStr(int) { return ""; }
+#endif
 
 #include "../common/sharedStructures.h"
 #include "../common/color.h"
@@ -75,43 +112,43 @@ namespace cv
 
     template<typename _Tp> static inline _Tp saturate_cast(ito::complex128 /*v*/)
     {
-        cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+        cv::error(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__);
         return 0;
     }
 
     template<typename _Tp> static inline _Tp saturate_cast(ito::complex64 /*v*/)
     {
-        cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+        cv::error(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__);
         return 0;
     }
 
     template<typename _Tp> static inline _Tp saturate_cast(ito::Rgba32 /*v*/)
     {
-        cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+        cv::error(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__);
         return 0;
     }
 
     template<typename _Tp> static inline _Tp saturate_cast(ito::DateTime /*v*/)
     {
-        cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+        cv::error(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__);
         return 0;
     }
 
     template<typename _Tp> static inline _Tp saturate_cast(ito::TimeDelta /*v*/)
     {
-        cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+        cv::error(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__);
         return 0;
     }
 
     template<> inline ito::Rgba32 saturate_cast(ito::DateTime /*v*/)
     {
-        cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+        cv::error(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__);
         return ito::Rgba32::black();
     }
 
     template<> inline ito::Rgba32 saturate_cast(ito::TimeDelta /*v*/)
     {
-        cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+        cv::error(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__);
         return ito::Rgba32::black();
     }
 
@@ -158,10 +195,10 @@ namespace cv
     template<> inline ito::Rgba32 saturate_cast(ito::float64 v){return ito::Rgba32(saturate_cast<ito::uint8>(v));}
     template<> inline ito::Rgba32 saturate_cast(ito::Rgba32 v){return v;}
 
-    template<> inline ito::Rgba32 saturate_cast(ito::int8 /*v*/) { cv::error(cv::Exception(CV_StsAssert, "Cast from int8 to rgba32 not defined.", "", __FILE__, __LINE__)); return ito::Rgba32(); }
-    template<> inline ito::Rgba32 saturate_cast(ito::int16 /*v*/) { cv::error(cv::Exception(CV_StsAssert, "Cast from int16 to rgba32 not defined.", "", __FILE__, __LINE__)); return ito::Rgba32(); }
-    template<> inline ito::Rgba32 saturate_cast(ito::complex128 /*v*/) { cv::error(cv::Exception(CV_StsAssert, "Cast from complex128 to rgba32 not defined.", "", __FILE__, __LINE__)); return ito::Rgba32(); }
-    template<> inline ito::Rgba32 saturate_cast(ito::complex64 /*v*/) {  cv::error(cv::Exception(CV_StsAssert, "Cast from complex64 to rgba32 not defined.", "", __FILE__, __LINE__)); return ito::Rgba32(); }
+    template<> inline ito::Rgba32 saturate_cast(ito::int8 /*v*/) { cv::error(CV_StsAssert, "Cast from int8 to rgba32 not defined.", "", __FILE__, __LINE__); return ito::Rgba32(); }
+    template<> inline ito::Rgba32 saturate_cast(ito::int16 /*v*/) { cv::error(CV_StsAssert, "Cast from int16 to rgba32 not defined.", "", __FILE__, __LINE__); return ito::Rgba32(); }
+    template<> inline ito::Rgba32 saturate_cast(ito::complex128 /*v*/) { cv::error(CV_StsAssert, "Cast from complex128 to rgba32 not defined.", "", __FILE__, __LINE__); return ito::Rgba32(); }
+    template<> inline ito::Rgba32 saturate_cast(ito::complex64 /*v*/) {  cv::error(CV_StsAssert, "Cast from complex64 to rgba32 not defined.", "", __FILE__, __LINE__); return ito::Rgba32(); }
 
     template<> inline ito::uint8 saturate_cast(ito::Rgba32 v){return saturate_cast<ito::uint8>(v.gray());};
     //template<> inline ito::int16 saturate_cast(ito::Rgba32 v){return saturate_cast<ito::int16>(v.gray());};
@@ -171,7 +208,7 @@ namespace cv
     template<> inline ito::float32 saturate_cast(ito::Rgba32 v){return v.gray();};
     template<> inline ito::float64 saturate_cast(ito::Rgba32 v){return (ito::float64)v.gray();};
 
-#if (CV_MAJOR_VERSION > 3) || (CV_MAJOR_VERSION == 3 && CV_MINOR_VERSION >= 3)
+#if defined(CV_MAJOR_VERSION) && (CV_MAJOR_VERSION < 5) && ((CV_MAJOR_VERSION > 3) || (CV_MAJOR_VERSION == 3 && CV_MINOR_VERSION >= 3))
     //from CV 3.3.1 on, the default implementation of DataType is dropped:
     //Original note in traits.hpp of OpenCV: Default values were dropped to stop confusing developers about using of unsupported types (see #7599)
     template<> class DataType<ito::uint32>
@@ -1266,11 +1303,11 @@ namespace ito {
 #if __ITODEBUG
             if (m_dims != 2)
             {
-                cv::error(cv::Exception(CV_StsAssert, "Dimension mismatch while addressing data field", "", __FILE__, __LINE__));
+                cv::error(CV_StsAssert, "Dimension mismatch while addressing data field", "", __FILE__, __LINE__);
             }
             else if (((int)x >= m_size[1]) || ((int)y >= m_size[0]) )
             {
-                cv::error(cv::Exception(CV_StsAssert, "Index out of bounds", "", __FILE__ , __LINE__));
+                cv::error(CV_StsAssert, "Index out of bounds", "", __FILE__ , __LINE__);
             }
 #endif
             return (*reinterpret_cast<const cv::Mat_<_Tp>*>(m_data[0]))(y, x);
@@ -1287,11 +1324,11 @@ namespace ito {
 #if __ITODEBUG
             if (m_dims != 2)
             {
-                cv::error(cv::Exception(CV_StsAssert, "Dimension mismatch while addressing data field", "", __FILE__, __LINE__));
+                cv::error(CV_StsAssert, "Dimension mismatch while addressing data field", "", __FILE__, __LINE__);
             }
             else if (((int)x >= m_size[1]) || ((int)y >= m_size[0]) )
             {
-                cv::error(cv::Exception(CV_StsAssert, "Index out of bounds", "", __FILE__ , __LINE__));
+                cv::error(CV_StsAssert, "Index out of bounds", "", __FILE__ , __LINE__);
             }
 #endif
             return (*reinterpret_cast<cv::Mat_<_Tp>*>(m_data[0]))(y, x);
@@ -1309,11 +1346,11 @@ namespace ito {
 #if __ITODEBUG
             if (m_dims != 3)
             {
-                cv::error(cv::Exception(CV_StsAssert, "Dimension mismatch while addressing data field", "", __FILE__, __LINE__));
+                cv::error(CV_StsAssert, "Dimension mismatch while addressing data field", "", __FILE__, __LINE__);
             }
             else if (((int)x >= m_size[2]) || ((int)y >= m_size[1]) || (((int)z + m_roi[0]) >= (m_roi[0] + m_size[0])))
             {
-                cv::error(cv::Exception(CV_StsAssert, "Index out of bounds", "", __FILE__ , __LINE__));
+                cv::error(CV_StsAssert, "Index out of bounds", "", __FILE__ , __LINE__);
             }
 #endif
             return (*reinterpret_cast<const cv::Mat_<_Tp>*>(m_data[z + m_roi[0]]))(y, x);
@@ -1331,11 +1368,11 @@ namespace ito {
 #if __ITODEBUG
             if (m_dims != 3)
             {
-                cv::error(cv::Exception(CV_StsAssert, "Dimension mismatch while addressing data field", "", __FILE__, __LINE__));
+                cv::error(CV_StsAssert, "Dimension mismatch while addressing data field", "", __FILE__, __LINE__);
             }
             else if (((int)x >= m_size[2]) || ((int)y >= m_size[1]) || (((int)z + m_roi[0]) >= (m_roi[0] + m_size[0])))
             {
-                cv::error(cv::Exception(CV_StsAssert, "Index out of bounds", "", __FILE__ , __LINE__));
+                cv::error(CV_StsAssert, "Index out of bounds", "", __FILE__ , __LINE__);
             }
 #endif
             return (*reinterpret_cast<cv::Mat_<_Tp>*>(m_data[z + m_roi[0]]))(y, x);
@@ -1564,7 +1601,7 @@ namespace ito {
                 retValue = cv::saturate_cast<_Tp>(*(static_cast<const ito::TimeDelta*>(scalar)));
                 break;
             default:
-                cv::error(cv::Exception(CV_StsAssert, "Input value type unknown", "", __FILE__, __LINE__));
+                cv::error(CV_StsAssert, "Input value type unknown", "", __FILE__, __LINE__);
                 retValue = 0;
         }
 
@@ -1604,7 +1641,7 @@ namespace ito {
                 return ito::tFloat64;
         }
 
-        cv::error(cv::Exception(CV_StsAssert, "Input data type unknown", "", __FILE__, __LINE__));
+        cv::error(CV_StsAssert, "Input data type unknown", "", __FILE__, __LINE__);
         return ito::tInt8;
     }
 
@@ -1671,7 +1708,7 @@ namespace ito {
      */
     template<typename _Tp> inline ito::tDataType getDataType(const _Tp* /*src*/)
     {
-        cv::error(cv::Exception(CV_StsAssert, "Input value type unknown", "", __FILE__, __LINE__));
+        cv::error(CV_StsAssert, "Input value type unknown", "", __FILE__, __LINE__);
         return ito::tInt8;
     }
 
@@ -1702,7 +1739,7 @@ namespace ito {
      */
     template<typename _Tp> inline ito::tDataType getDataType2()
     {
-        cv::error(cv::Exception(CV_StsAssert, "Input value type unknown", "", __FILE__, __LINE__));
+        cv::error(CV_StsAssert, "Input value type unknown", "", __FILE__, __LINE__);
         return ito::tInt8;
     }
 
