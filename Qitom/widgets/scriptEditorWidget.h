@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2024, Institut für Technische Optik (ITO),
+    Copyright (C) 2026, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of itom.
@@ -20,8 +20,7 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef SCRIPTEDITORWIDGET_H
-#define SCRIPTEDITORWIDGET_H
+#pragma once
 
 #include "../models/breakPointModel.h"
 
@@ -143,8 +142,10 @@ public:
     //!< returns true if the current line can be a trigger to insert a template docstring
     //!< for a possible method / function, this line belongs to.
     bool currentLineCanHaveDocstring() const;
-
-    IOHelper::CharsetEncodingItem charsetEncoding() const { return m_charsetEncoding; }
+    IOHelper::CharsetEncodingItem charsetEncoding() const
+    {
+        return m_charsetEncoding;
+    }
 
     //!< the replacement will be handled as one undo-action. The script will be marked as modified afterwards.
     void replaceOccurencesInCurrentScript(const QString &newValue, const QVector<ito::FileRenameItem> &renameItems);
@@ -152,7 +153,6 @@ public:
     static QString filenameFromUID(int UID, bool &found);
 
 protected:
-
     bool canInsertFromMimeData(const QMimeData *source) const;
     void insertFromMimeData(const QMimeData *source);
 
@@ -177,6 +177,12 @@ protected:
 
     void paintEvent(QPaintEvent* e);
 
+    ito::RetVal formatPythonCode(int progressDialogShowDelayMs = 0);
+    void pyCodeFormatterDone(bool success, QString codeOrErrorString, QEventLoop& loop);
+
+    //!< write file content to disk (used by both sync and async save paths)
+    RetVal writeFileContent(const QString& filename);
+
 private:
     enum markerType
     {
@@ -190,11 +196,11 @@ private:
 
     bool lineAcceptsBPs(int line);
 
+    void changeFileSaveEncoding(const IOHelper::CharsetEncodingItem& encoding);
+
     RetVal changeFilename(const QString &newFilename);
 
     IOHelper::CharsetEncodingItem guessEncoding(const QByteArray &content) const;
-
-    void changeFileSaveEncoding(const IOHelper::CharsetEncodingItem &encoding);
 
     QFileSystemWatcher *m_pFileSysWatcher;
 
@@ -237,6 +243,8 @@ private:
     //!< the current command string for the python imports sorting (or empty, if this pre-step is not enabled)
     QString m_autoCodeFormatPreCmd;
 
+    bool m_autoCodeFormatOnSave;
+
     //!< this is the encoding of this script, hence,
     //!< the encoding that was used to load this script from
     //!< a file and will also be used to store it in a file.
@@ -274,15 +282,18 @@ private:
     QSharedPointer<OutlineItem> checkBlockForOutlineItem(int startLineIdx, int endLineIdx) const;
 
 signals:
-    void pythonRunFile(QString filename);
     void pythonRunSelection(QString selectionText);
-    void pythonDebugFile(QString filename);
+    void pythonRunFileRequest(QString filename); /*!<  will be received by scriptEditorOrganizer, in
+                                                    order to save all unsaved changes first */
+    void pythonDebugFileRequest(QString filename); /*!<  will be received by scriptEditorOrganizer,
+                                                      in order to save all unsaved changes first */
     void closeRequest(ScriptEditorWidget* sew, bool ignoreModifications); //signal emitted if this tab should be closed without considering any save-state
     void marginChanged();
     void outlineModelChanged(ScriptEditorWidget *editor, QSharedPointer<OutlineItem> rootItem);
     void addGoBackNavigationItem(const GoBackNavigationItem &item);
     void tabChangeRequested();
     void findSymbolsShowRequested();
+    void formatAndSaveCompleted();
 
 public slots:
     void triggerCodeChecker();
@@ -324,6 +335,8 @@ public slots:
     void updateSyntaxCheck();
     void print();
 
+    // void pyCodeFormatterDone(bool success, QString codeOrErrorString);
+
 private slots:
     void toggleBookmarkRequested(int line);
     void onBookmarkAdded(const BookmarkItem &item);
@@ -352,10 +365,6 @@ private slots:
     void onCursorPositionChanged();
     void onTextChanged();
     void tabChangeRequest();
-
-    void pyCodeFormatterDone(bool success, QString code);
 };
 
 } //end namespace ito
-
-#endif
