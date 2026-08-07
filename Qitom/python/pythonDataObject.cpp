@@ -629,7 +629,7 @@ int PythonDataObject::PyDataObj_CreateFromShapeTypeData(
                         *(self->dataObject) = (int32)PyLong_AsLongAndOverflow(data, &overflow);
                         if (overflow)
                         {
-                            throw cv::Exception(
+                            throw ITOM_CV_EXCEPTION(
                                 0,
                                 "overflow: given data exceeds the integer boundaries.",
                                 "PyDataObject_init",
@@ -658,7 +658,7 @@ int PythonDataObject::PyDataObj_CreateFromShapeTypeData(
 
                         if (!ok)
                         {
-                            throw cv::Exception(
+                            throw ITOM_CV_EXCEPTION(
                                 0,
                                 "Value could not be parsed to an itom datetime value.",
                                 "PyDataObject_init",
@@ -675,7 +675,7 @@ int PythonDataObject::PyDataObj_CreateFromShapeTypeData(
 
                         if (!ok)
                         {
-                            throw cv::Exception(
+                            throw ITOM_CV_EXCEPTION(
                                 0,
                                 "Value could not be parsed to an itom timedelta value.",
                                 "PyDataObject_init",
@@ -742,7 +742,7 @@ int PythonDataObject::PyDataObj_CreateFromShapeTypeData(
 
                             if (npTypenum == -1)
                             {
-                                throw cv::Exception(
+                                throw ITOM_CV_EXCEPTION(
                                     0,
                                     "No compatible np datatype found for desired dtype",
                                     "PyDataObject_init",
@@ -756,7 +756,7 @@ int PythonDataObject::PyDataObj_CreateFromShapeTypeData(
                             {
                                 // Python error is set... Therefore just throw an exception without
                                 // message
-                                throw cv::Exception(0, "", "PyDataObject_init", __FILE__, __LINE__);
+                                throw ITOM_CV_EXCEPTION(0, "", "PyDataObject_init", __FILE__, __LINE__);
                             }
                             else
                             {
@@ -765,7 +765,7 @@ int PythonDataObject::PyDataObj_CreateFromShapeTypeData(
 
                                 if (retVal.containsError())
                                 {
-                                    throw cv::Exception(
+                                    throw ITOM_CV_EXCEPTION(
                                         0,
                                         retVal.errorMessage(),
                                         "PyDataObject_init",
@@ -779,7 +779,7 @@ int PythonDataObject::PyDataObj_CreateFromShapeTypeData(
                     }
                     else
                     {
-                        throw cv::Exception(
+                        throw ITOM_CV_EXCEPTION(
                             0, "invalid data value", "PyDataObject_init", __FILE__, __LINE__);
                     }
                 }

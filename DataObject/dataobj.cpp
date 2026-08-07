@@ -724,7 +724,7 @@ DObjIterator DObjIterator::operator++(int)
     if (m_type != otherObject.m_type)                                                              \
     {                                                                                              \
         cv::error(                                                                   \
-            cv::Error::StsUnmatchedFormats, "dataObjects differ in type", "", __FILE__, __LINE__));        \
+            cv::Error::StsUnmatchedFormats, "dataObjects differ in type", "", __FILE__, __LINE__);        \
     }                                                                                              \
     else if ((m_dims == otherObject.m_dims) && (m_size != otherObject.m_size))                     \
     {                                                                                              \
@@ -764,7 +764,7 @@ DObjIterator DObjIterator::operator++(int)
     if ((m_dims == otherObject.m_dims) && (m_size != otherObject.m_size))                          \
     {                                                                                              \
         cv::error(                                                                   \
-            cv::Error::StsUnmatchedSizes, "dataObjects differ in size", "", __FILE__, __LINE__));          \
+            cv::Error::StsUnmatchedSizes, "dataObjects differ in size", "", __FILE__, __LINE__);          \
     }                                                                                              \
     else if (getNumPlanes() != otherObject.getNumPlanes())                                         \
     {                                                                                              \
@@ -774,7 +774,7 @@ DObjIterator DObjIterator::operator++(int)
             "dataObjects differ in size (non equal number of planes)",                             \
             "",                                                                                    \
             __FILE__,                                                                              \
-            __LINE__));                                                                            \
+            __LINE__);                                                                            \
     }                                                                                              \
     else if (m_dims > 0 && (get_mdata()[0]->size() != otherObject.get_mdata()[0]->size()))         \
     {                                                                                              \
@@ -786,7 +786,7 @@ DObjIterator DObjIterator::operator++(int)
             "dataObjects differ in size (non equal size of each plane)",                           \
             "",                                                                                    \
             __FILE__,                                                                              \
-            __LINE__));                                                                            \
+            __LINE__);                                                                            \
     }                                                                                              \
     else if (m_size.m_p[0] == 0 || m_size.m_p[1] == 0)                                             \
     {                                                                                              \
@@ -796,7 +796,7 @@ DObjIterator DObjIterator::operator++(int)
             "one of the matrices dimension is zero, meaningless operation",                        \
             "",                                                                                    \
             __FILE__,                                                                              \
-            __LINE__));                                                                            \
+            __LINE__);                                                                            \
     }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1728,7 +1728,7 @@ void DataObject::createHeader(
                     // last dimension
                     if (elemSize == 0)
                     {
-                        cv::Exception(cv::Error::StsAssert, "elemSize is zero", "", __FILE__, __LINE__);
+                        cv::error(cv::Error::StsAssert, "elemSize is zero", "", __FILE__, __LINE__);
                     }
                     else if (steps[n - 1] != 0)
                     {
@@ -2004,7 +2004,7 @@ RetVal CreateFunc(
                     if (numMats > 0 && (std::numeric_limits<size_t>::max() / numMats) < matSize)
                     {
                         cv::error(
-                            cv::Error::StsNoMem, ("Failed to allocate memory"), "", __FILE__, __LINE__));
+                            cv::Error::StsNoMem, ("Failed to allocate memory"), "", __FILE__, __LINE__);
                     }
 
                     size_t bytesToAllocate = static_cast<size_t>(numMats) * matSize;
@@ -2014,7 +2014,7 @@ RetVal CreateFunc(
                     if (dataPtr == NULL)
                     {
                         cv::error(
-                            cv::Error::StsNoMem, ("Failed to allocate memory"), "", __FILE__, __LINE__));
+                            cv::Error::StsNoMem, ("Failed to allocate memory"), "", __FILE__, __LINE__);
                     }
 
                     dObj->mdata_realloc(numMats);
@@ -9820,7 +9820,7 @@ dimensions is allowed to have a size greter than one. \param *mats sequence of i
                                 i),
                             "",
                             __FILE__,
-                            __LINE__));
+                            __LINE__);
                     }
                 }
             }
@@ -11140,7 +11140,7 @@ DataObject DataObject::lineCut(const double* coordinates, const int& len) const
                         i + 1),
                     "",
                     __FILE__,
-                    __LINE__));
+                    __LINE__);
             }
         }
         else
@@ -11155,7 +11155,7 @@ DataObject DataObject::lineCut(const double* coordinates, const int& len) const
                         i + 1),
                     "",
                     __FILE__,
-                    __LINE__));
+                    __LINE__);
             }
         }
     }

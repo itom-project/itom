@@ -85,6 +85,19 @@
 static inline const char* cvErrorStr(int) { return ""; }
 #endif
 
+// OpenCV 5.0 changed cv::Exception API
+// Provide compatibility macro for OpenCV 3.x - 5.0
+// Note: cv::error() is already compatible across versions when using cv::Error::Code enum
+#if CV_VERSION_MAJOR >= 5
+    // OpenCV 5.x: cv::Exception constructor uses cv::Error::Code enum
+    #define ITOM_CV_EXCEPTION(code, msg, func, file, line) \
+        cv::Exception(cv::Error::Code(code), msg, func, file, line)
+#else
+    // OpenCV 3.x and 4.x: cv::Exception constructor takes integer code directly
+    #define ITOM_CV_EXCEPTION(code, msg, func, file, line) \
+        cv::Exception(code, msg, func, file, line)
+#endif
+
 #include "../common/sharedStructures.h"
 #include "../common/color.h"
 #include "../common/byteArray.h"
