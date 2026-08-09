@@ -154,6 +154,11 @@ itom_define_sdk_platform()
 itom_define_sdk_compiler()
 
 find_package(OpenCV QUIET)
+
+# Verify OpenCV version is 3.0 or higher
+if(OpenCV_VERSION VERSION_LESS "3.0")
+	message(FATAL_ERROR "OpenCV version ${OpenCV_VERSION} found, but version 3.0 or higher is required (supports 3.x, 4.x, and 5.0+)")
+endif()
 if(OpenCV_FOUND)
     string(REPLACE . "" OpenCV_LIB_VERSION ${OpenCV_VERSION})
 else()

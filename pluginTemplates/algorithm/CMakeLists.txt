@@ -58,7 +58,12 @@ option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to 
 # - pointcloud (pointCloud, point, polygonMesh...) (optional)
 # if no components are indicated, all components above are used
 find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
-#find_package(OpenCV COMPONENTS core REQUIRED) #if you require openCV indicate all components that are required (e.g. core, imgproc...),
+#find_package(OpenCV REQUIRED COMPONENTS core REQUIRED) #if you require openCV indicate all components that are required (e.g. core, imgproc...),
+
+# Verify OpenCV version is 3.0 or higher
+if(OpenCV_VERSION VERSION_LESS "3.0")
+	message(FATAL_ERROR "OpenCV version ${OpenCV_VERSION} found, but version 3.0 or higher is required (supports 3.x, 4.x, and 5.0+)")
+endif()
 #       if the dataobject is included in the ITOM_SDK components, the OpenCV core component is detected there and the necessary include
 #       directories and libraries to link against are contained in ITOM_SDK_LIBRARIES and ITOM_SDK_INCLUDE_DIRS
 

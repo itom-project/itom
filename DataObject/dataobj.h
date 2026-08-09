@@ -40,8 +40,7 @@
     #pragma warning(disable:4996)
 #endif
 
-// see: http://social.msdn.microsoft.com/Forums/sv/vclanguage/thread/d986a370-d856-4f9e-9f14-53f3b18ab63e,
-// this is only an issue with OpenCV 2.4.3, not 2.3.x
+// see: http://social.msdn.microsoft.com/Forums/sv/vclanguage/thread/d986a370-d856-4f9e-9f14-53f3b18ab63e
 #define NOMINMAX
 
 #include "opencv2/opencv.hpp"
@@ -221,9 +220,13 @@ namespace cv
     template<> inline ito::float32 saturate_cast(ito::Rgba32 v){return v.gray();};
     template<> inline ito::float64 saturate_cast(ito::Rgba32 v){return (ito::float64)v.gray();};
 
-#if defined(CV_MAJOR_VERSION) && (CV_MAJOR_VERSION < 5) && ((CV_MAJOR_VERSION > 3) || (CV_MAJOR_VERSION == 3 && CV_MINOR_VERSION >= 3))
-    //from CV 3.3.1 on, the default implementation of DataType is dropped:
-    //Original note in traits.hpp of OpenCV: Default values were dropped to stop confusing developers about using of unsupported types (see #7599)
+#if defined(CV_MAJOR_VERSION) && ((CV_MAJOR_VERSION == 3 && CV_MINOR_VERSION >= 3) || (CV_MAJOR_VERSION > 3))
+    // From OpenCV 3.3.1 onwards, the default implementation of DataType is dropped.
+    // This applies to OpenCV 3.3.1+ through 5.0+
+    // Original note in traits.hpp of OpenCV: Default values were dropped to stop confusing developers about using of unsupported types (see #7599)
+    
+    #if CV_MAJOR_VERSION < 5
+    // OpenCV 5.x have a built-in datatype for uint32.
     template<> class DataType<ito::uint32>
     {
     public:
@@ -234,7 +237,7 @@ namespace cv
         enum { generic_type = 1, depth = -1, channels = 1, fmt=0,
             type = CV_MAKETYPE(depth, channels) };
     };
-#endif
+    #endif
 
     template<> class DataType<ito::Rgba32>
     {
@@ -354,6 +357,7 @@ namespace cv
             type = CV_MAKETYPE(depth, channels)
         };
     };
+#endif
 
 
 } // namespace cv

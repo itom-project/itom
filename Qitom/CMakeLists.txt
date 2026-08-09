@@ -81,7 +81,13 @@ if (${Python_VERSION} VERSION_LESS "3.5.0")
     message(FATAL_ERROR "The minimum required Python version is 3.5.0")
 endif()
 
-find_package(OpenCV COMPONENTS core REQUIRED)
+# Require OpenCV 3.0 or higher (supports 3.x, 4.x, and 5.0+)
+find_package(OpenCV REQUIRED COMPONENTS core)
+
+# Verify OpenCV version is 3.0 or higher
+if(OpenCV_VERSION VERSION_LESS "3.0")
+	message(FATAL_ERROR "OpenCV version ${OpenCV_VERSION} found, but version 3.0 or higher is required (supports 3.x, 4.x, and 5.0+)")
+endif()
 
 if(BUILD_WITH_PCL)
     include(Setup_PCL_Itom)

@@ -46,7 +46,13 @@ endif()
 # Define helper functions and macros used by Google Test.
 include("../../gtest-1.12.1/googletest/cmake/internal_utils.cmake")
 
+# Require OpenCV 3.0 or higher (supports 3.x, 4.x, and 5.0+)
 find_package(OpenCV REQUIRED COMPONENTS core)
+
+# Verify OpenCV version is 3.0 or higher
+if(OpenCV_VERSION VERSION_LESS "3.0")
+	message(FATAL_ERROR "OpenCV version ${OpenCV_VERSION} found, but version 3.0 or higher is required (supports 3.x, 4.x, and 5.0+)")
+endif()
 
 #config_compiler_and_linker()  # Defined in internal_utils.cmake.
 fix_default_compiler_settings_()
