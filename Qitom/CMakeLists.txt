@@ -315,6 +315,9 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonItomMetaObject.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonJedi.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonJediRunner.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/python/languageServerBackend.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/python/lspClient.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/python/zubanLspBackend.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonLogger.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonMatlab.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonNone.h
@@ -576,6 +579,8 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonFont.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonItom.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonJediRunner.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/python/lspClient.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/python/zubanLspBackend.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonLogger.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonMatlab.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonPCL.cpp
