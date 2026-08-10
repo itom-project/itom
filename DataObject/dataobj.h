@@ -47,41 +47,11 @@
 #include "opencv2/core.hpp"
 #include "opencv2/core/types.hpp"
 
-// Compatibility: some codebase locations still use legacy error codes like CV_StsAssert
-// which were provided by old C headers. Define them to the equivalent C++ enum values.
+// OpenCV 5.0 removed the CV_StsAssert macro (kept only cv::Error::StsAssert enum)
+// OpenCV 3.x/4.x provide CV_StsAssert as a macro
+// Define it for OpenCV 5.0+ to maintain compatibility with existing code
 #ifndef CV_StsAssert
 #define CV_StsAssert cv::Error::StsAssert
-#endif
-
-// Define a minimal set of legacy CV error macros if they are missing (OpenCV 5 removed C API)
-#ifndef CV_StsError
-#define CV_StsError 1
-#endif
-#ifndef CV_BadDepth
-#define CV_BadDepth 1
-#endif
-#ifndef CV_BadDataPtr
-#define CV_BadDataPtr 1
-#endif
-#ifndef CV_BadImageSize
-#define CV_BadImageSize 1
-#endif
-#ifndef CV_StsUnsupportedFormat
-#define CV_StsUnsupportedFormat 1
-#endif
-#ifndef CV_StsOutOfRange
-#define CV_StsOutOfRange 1
-#endif
-#ifndef CV_StsUnmatchedSizes
-#define CV_StsUnmatchedSizes 1
-#endif
-#ifndef CV_StsUnmatchedFormats
-#define CV_StsUnmatchedFormats 1
-#endif
-
-// Provide a simple replacement for cvErrorStr(code) used in older code; return empty string
-#ifndef cvErrorStr
-static inline const char* cvErrorStr(int) { return ""; }
 #endif
 
 // OpenCV 5.0 changed cv::Exception API
