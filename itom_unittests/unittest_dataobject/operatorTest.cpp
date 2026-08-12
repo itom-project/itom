@@ -777,9 +777,9 @@ TYPED_TEST(operatorTest, ShiftL_test) // Note: Test fails for datatypes "float32
 
     if (std::numeric_limits<TypeParam>::is_exact)
     {
-        this->mat3_1d = this->mat1_1d << 1;
-        this->mat3_2d = this->mat1_2d << 1;
-        this->mat3_3d = this->mat1_3d << 2;
+        this->mat3_1d = this->mat1_1d.operator<<(1);
+        this->mat3_2d = this->mat1_2d.operator<<(1);
+        this->mat3_3d = this->mat1_3d.operator<<(2);
 
         EXPECT_EQ(this->mat3_1d.template at<TypeParam>(0, 0), cv::saturate_cast<TypeParam>(34));
         EXPECT_EQ(this->mat3_2d.template at<TypeParam>(0, 0), cv::saturate_cast<TypeParam>(4));
@@ -787,7 +787,7 @@ TYPED_TEST(operatorTest, ShiftL_test) // Note: Test fails for datatypes "float32
     }
     else
     {
-        EXPECT_THROW(this->mat3_1d = this->mat1_1d << 1, cv::Exception);
+        EXPECT_THROW(this->mat3_1d = this->mat1_1d.operator<<(1), cv::Exception);
     }
 }
 
@@ -1092,7 +1092,8 @@ TYPED_TEST(operatorTest, Combination_Arith_Test)
         this->mat4_1d = (this->mat1_1d & this->mat2_1d).mul(this->mat2_1d >> 2);
         EXPECT_EQ(this->mat4_1d.template at<TypeParam>(0, 0), cv::saturate_cast<TypeParam>(3));
 
-        this->mat4_1d = (this->mat1_1d | this->mat2_1d).div((this->mat1_1d << 1) + this->mat1_1d);
+        this->mat4_1d =
+            (this->mat1_1d | this->mat2_1d).div(this->mat1_1d.operator<<(1) + this->mat1_1d);
         EXPECT_EQ(this->mat4_1d.template at<TypeParam>(0, 0), cv::saturate_cast<TypeParam>(5));
     }
 }
