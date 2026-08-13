@@ -47,11 +47,17 @@
 #include "opencv2/core.hpp"
 #include "opencv2/core/types.hpp"
 
-// OpenCV 5.0 removed the CV_StsAssert macro (kept only cv::Error::StsAssert enum)
-// OpenCV 3.x/4.x provide CV_StsAssert as a macro
-// Define it for OpenCV 5.0+ to maintain compatibility with existing code
-#ifndef CV_StsAssert
-#define CV_StsAssert cv::Error::StsAssert
+// OpenCV 5.0 removed the CV_Sts* aliases (only the cv::Error::Code enum remains).
+// OpenCV 3.x/4.x provide CV_StsAssert as an *enumerator* in opencv2/core/types_c.h.
+// An enumerator is invisible to the preprocessor, so '#ifndef CV_StsAssert' must not
+// be used to detect it: it would always be true and the resulting macro would corrupt
+// the enum in types_c.h as soon as that header is parsed later in the same
+// translation unit.
+#if CV_VERSION_MAJOR >= 5
+    #define CV_StsAssert cv::Error::StsAssert
+#else
+    // ensure the CV_Sts* enumerators are declared, independent of the include order
+    #include "opencv2/core/types_c.h"
 #endif
 
 // OpenCV 5.0 changed cv::Exception API
