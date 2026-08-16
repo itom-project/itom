@@ -9815,7 +9815,7 @@ PyArrayObject* nparrayFromDateTimeDataObject(
 }
 
 //-------------------------------------------------------------------------------------
-PyDoc_STRVAR(dataObject_Array__doc, "__array__(dtype = None) -> np.ndarray \n\
+PyDoc_STRVAR(dataObject_Array__doc, "__array__(dtype = None, copy = None) -> np.ndarray \n\
 \n\
 Returns a numpy.ndarray from this dataObject. If possible a shallow copy is returned. \n\
 \n\
@@ -9832,12 +9832,16 @@ Parameters \n\
 dtype : numpy.dtype, optional \n\
     A :class:`numpy.dtype` object that describes the data type, data alignment etc. \n\
     for the returned :class:`numpy.ndarray`. \n\
+copy : bool, optional \n\
+    If ``None`` (default), a copy is only created if it is unavoidable. \n\
+    If ``True``, a deep copy is always returned. If ``False``, a :obj:`ValueError` \n\
+    is raised if a copy cannot be avoided (this argument is required by numpy >= 2.0). \n\
 \n\
 Returns \n\
 ------- \n\
 arr : numpy.ndarray \n\
     The converted :class:`numpy.ndarray`");
-PyObject* PythonDataObject::PyDataObj_Array_(PyDataObject* self, PyObject* args)
+PyObject* PythonDataObject::PyDataObj_Array_(PyDataObject* self, PyObject* args, PyObject* kwds)
 {
     if (self->dataObject == nullptr)
     {
@@ -9847,15 +9851,54 @@ PyObject* PythonDataObject::PyDataObj_Array_(PyDataObject* self, PyObject* args)
 
     PyArray_Descr* newtype = nullptr;
     PyArrayObject* newArray = nullptr;
+    PyObject* copyObj = Py_None;
 
-    if (!PyArg_ParseTuple(args, "|O&", PyArray_DescrConverter, &newtype))
+    // since numpy 2.0, __array__ must accept the keyword arguments 'dtype' and 'copy'.
+    // PyArray_DescrConverter2 also accepts None for 'dtype' (in this case newtype stays nullptr).
+    const char* kwlist[] = {"dtype", "copy", nullptr};
+
+    if (!PyArg_ParseTupleAndKeywords(
+            args, kwds, "|O&O", const_cast<char**>(kwlist),
+            PyArray_DescrConverter2, &newtype, &copyObj))
     {
         Py_XDECREF(newtype);
         return nullptr;
     }
 
-    PyObject* item = nullptr;
+    // copy == None: copy only if unavoidable, copy == True: always copy,
+    // copy == False: never copy, raise a ValueError if a copy would be necessary.
+    int copyMode = -1; // -1: if-needed, 0: never, 1: always
+
+    if (copyObj != Py_None)
+    {
+        copyMode = PyObject_IsTrue(copyObj);
+
+        if (copyMode < 0)
+        {
+            Py_XDECREF(newtype);
+            return nullptr;
+        }
+    }
+
     ito::DataObject* selfDO = self->dataObject;
+
+    // a shallow copy is only possible for continuous dataObjects, whose type is neither
+    // dateTime nor timeDelta and whose dtype is not changed.
+    const bool copyRequired =
+        (selfDO->getType() == ito::tDateTime) || (selfDO->getType() == ito::tTimeDelta) ||
+        (!selfDO->getContinuous());
+
+    if (copyMode == 0 && copyRequired)
+    {
+        Py_XDECREF(newtype);
+        PyErr_SetString(
+            PyExc_ValueError,
+            "a copy of this dataObject is unavoidable (non-continuous dataObject or dataObject of "
+            "type dateTime or timeDelta), however 'copy=False' has been requested.");
+        return nullptr;
+    }
+
+    PyObject* item = nullptr;
 
     if (selfDO->getType() == ito::tDateTime)
     {
@@ -9878,7 +9921,7 @@ PyObject* PythonDataObject::PyDataObj_Array_(PyDataObject* self, PyObject* args)
 
         if (newtype && PyDataType_ISDATETIME(newtype))
         {
-#if (NPY_2_0_API_VERSION)
+#ifdef NPY_2_0_API_VERSION
             meta = &(((PyArray_DatetimeDTypeMetaData*)newtype)->meta);
 #else
             meta = &(((PyArray_DatetimeDTypeMetaData*)newtype->c_metadata)->meta);
@@ -9924,10 +9967,32 @@ PyObject* PythonDataObject::PyDataObj_Array_(PyDataObject* self, PyObject* args)
 
     if ((newtype == nullptr) || PyArray_EquivTypes(PyArray_DESCR(newArray) /*->descr*/, newtype))
     {
+        Py_XDECREF(newtype);
+
+        if (copyMode == 1 && !copyRequired)
+        {
+            // no copy has been done so far, however 'copy=True' has been requested.
+            PyObject* ret = PyArray_NewCopy(newArray, NPY_KEEPORDER);
+            Py_DECREF(newArray);
+            return ret;
+        }
+
         return (PyObject*)newArray;
     }
     else
     {
+        if (copyMode == 0)
+        {
+            Py_DECREF(newArray);
+            Py_DECREF(newtype);
+            PyErr_SetString(
+                PyExc_ValueError,
+                "the requested 'dtype' requires a casted copy of this dataObject, however "
+                "'copy=False' has been requested.");
+            return nullptr;
+        }
+
+        // PyArray_CastToType steals a reference of newtype
         PyObject* ret = PyArray_CastToType(newArray, newtype, 0);
         Py_DECREF(newArray);
         return ret;
@@ -12066,7 +12131,7 @@ PyMethodDef PythonDataObject::PyDataObject_methods[] = {
      "__setstate__ method for handle unpickling commands"},
     {"__array__",
      (PyCFunction)PythonDataObject::PyDataObj_Array_,
-     METH_VARARGS,
+     METH_KEYWORDS | METH_VARARGS,
      dataObject_Array__doc},
     {"createMask",
      (PyCFunction)PythonDataObject::PyDataObject_createMask,
