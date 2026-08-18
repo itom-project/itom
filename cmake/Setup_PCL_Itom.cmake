@@ -1,4 +1,4 @@
-###############################################################################
+# ##############################################################################
 # SETUP Configuration to define CMAKE Variables
 # to be used for the PCL Detection in ITOM
 
@@ -7,6 +7,28 @@ if(NOT EXISTS "${EIGEN_ROOT}")
         set(EIGEN_ROOT $ENV{EIGEN_ROOT} CACHE PATH "Path to the Eigen3 Directory")
     else()
         set(EIGEN_ROOT "EIGEN_ROOT-NOTFOUND" CACHE PATH "Path to the Eigen3 Directory" FORCE)
+    endif()
+endif()
+
+# PCL >= 1.14 requires the Eigen3 CMake package in config mode (Eigen3Config.cmake),
+# so derive Eigen3_DIR from EIGEN_ROOT if the user did not set it explicitly.
+if(EXISTS "${EIGEN_ROOT}" AND NOT EXISTS "${Eigen3_DIR}")
+    find_path(Eigen3_DIR
+        NAMES Eigen3Config.cmake eigen3-config.cmake
+        HINTS "${EIGEN_ROOT}" "${EIGEN_ROOT}/.."
+        PATH_SUFFIXES
+        share/eigen3/cmake
+        share/cmake/eigen3
+        lib/cmake/eigen3
+        cmake
+        DOC "The directory containing a CMake configuration file for Eigen3."
+        NO_DEFAULT_PATH)
+
+    if(NOT EXISTS "${Eigen3_DIR}")
+        message(WARNING "No Eigen3Config.cmake found below EIGEN_ROOT='${EIGEN_ROOT}'. \
+PCL >= 1.14 requires an installed Eigen3 CMake package. Configure and install the Eigen \
+sources (cmake -S <eigen-src> -B <build> -DCMAKE_INSTALL_PREFIX=${EIGEN_ROOT} && cmake --install <build>) \
+or set Eigen3_DIR to the folder that contains Eigen3Config.cmake.")
     endif()
 endif()
 
@@ -31,6 +53,7 @@ endif()
 
 if(WIN32)
     get_filename_component(PCL_CMAKE_FOLDER "${PCL_DIR}" NAME)
+
     if("${PCL_CMAKE_FOLDER}" STREQUAL "cmake")
         set(PCL_CMAKE_DIR "${PCL_DIR}")
     else()
