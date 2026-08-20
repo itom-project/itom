@@ -46,6 +46,14 @@
 
 #define PROTOCOL_STR_LENGTH 128
 
+// The accessor PyDataType_C_METADATA has been introduced with numpy 2.0, where the
+// member c_metadata has been moved from PyArray_Descr to _PyArray_LegacyDescr.
+// For numpy 1.x the member can still be accessed directly. Do not use #ifndef here,
+// since numpy 2.0 provides the accessor as static inline function and not as macro.
+#if NPY_ABI_VERSION < 0x02000000
+#define PyDataType_C_METADATA(descr) ((descr)->c_metadata)
+#endif
+
 
 namespace ito {
 template<class T>
@@ -1173,12 +1181,7 @@ bool PythonDataObject::PyDataObj_CopyFromDatetimeNpNdArray(
 
     // in case of datetime or timedelta: The values are int64, based on 1.1.1970
     // the timebase is given by:
-    // Assuming NumPy 1.7+ has the new behavior for descr metadata
-#ifdef NPY_2_0_API_VERSION
-    const auto md = (PyArray_DatetimeDTypeMetaData*)(descr);
-#else
-    const auto md = (PyArray_DatetimeDTypeMetaData*)(descr->c_metadata);
-#endif
+    const auto md = (PyArray_DatetimeDTypeMetaData*)PyDataType_C_METADATA(descr);
 
     // timezone is ignored in numpy. If dataObject contains a timezone, ignore it and raise a
     // warning.
@@ -1309,11 +1312,7 @@ bool PythonDataObject::PyDataObj_CopyFromTimedeltaNpNdArray(
 
     // in case of datetime or timedelta: The values are int64, based on 1.1.1970
     // the timebase is given by:
-#ifdef NPY_2_0_API_VERSION
-    const auto md = (PyArray_DatetimeDTypeMetaData*)(descr);
-#else
-    const auto md = (PyArray_DatetimeDTypeMetaData*)(descr->c_metadata);
-#endif
+    const auto md = (PyArray_DatetimeDTypeMetaData*)PyDataType_C_METADATA(descr);
 
     if (md == nullptr)
     {
@@ -8989,12 +8988,7 @@ ito::RetVal PythonDataObject::copyNpArrayValuesToDataObject(
             const npy_datetime* td = reinterpret_cast<npy_datetime*>(data);
             ito::DateTime* rowPtr;
             PyArray_Descr* dtype = PyArray_DESCR(npNdArray);
-
-#ifdef NPY_2_0_API_VERSION
-            const auto md = (PyArray_DatetimeDTypeMetaData*)(dtype);
-#else
-            const auto md = (PyArray_DatetimeDTypeMetaData*)(dtype->c_metadata);
-#endif
+            const auto md = (PyArray_DatetimeDTypeMetaData*)PyDataType_C_METADATA(dtype);
             // timezone is ignored in numpy. If dataObject contains a timezone, ignore it and raise a
             // warning.
 
@@ -9023,12 +9017,7 @@ ito::RetVal PythonDataObject::copyNpArrayValuesToDataObject(
             const npy_timedelta* td = reinterpret_cast<npy_timedelta*>(data);
             ito::TimeDelta* rowPtr;
             PyArray_Descr* dtype = PyArray_DESCR(npNdArray);
-
-#ifdef NPY_2_0_API_VERSION
-            const auto md = (PyArray_DatetimeDTypeMetaData*)(dtype);
-#else
-            const auto md = (PyArray_DatetimeDTypeMetaData*)(dtype->c_metadata);
-#endif
+            const auto md = (PyArray_DatetimeDTypeMetaData*)PyDataType_C_METADATA(dtype);
             // timezone is ignored in numpy. If dataObject contains a timezone, ignore it and raise a
             // warning.
 
@@ -9570,11 +9559,7 @@ PyArrayObject* nparrayFromTimeDeltaDataObject(
 {
     // step 1: create numpy array
     PyArray_Descr* descr = PyArray_DescrNewFromType(NPY_TIMEDELTA);
-#ifdef NPY_2_0_API_VERSION
-    auto metaData = (PyArray_DatetimeDTypeMetaData*)(descr);
-#else
-    auto metaData = (PyArray_DatetimeDTypeMetaData*)(descr->c_metadata);
-#endif
+    auto metaData = (PyArray_DatetimeDTypeMetaData*)PyDataType_C_METADATA(descr);
 
     if (meta != nullptr)
     {
@@ -9695,11 +9680,7 @@ PyArrayObject* nparrayFromDateTimeDataObject(
 {
     // step 1: create numpy array
     PyArray_Descr* descr = PyArray_DescrNewFromType(NPY_DATETIME);
-#ifdef NPY_2_0_API_VERSION
-    auto metaData = (PyArray_DatetimeDTypeMetaData*)(descr);
-#else
-    auto metaData = (PyArray_DatetimeDTypeMetaData*)(descr->c_metadata);
-#endif
+    auto metaData = (PyArray_DatetimeDTypeMetaData*)PyDataType_C_METADATA(descr);
 
     if (meta != nullptr)
     {
@@ -9906,14 +9887,10 @@ PyObject* PythonDataObject::PyDataObj_Array_(PyDataObject* self, PyObject* args,
 
         if (newtype && PyDataType_ISDATETIME(newtype))
         {
-#ifdef NPY_2_0_API_VERSION
-            meta = &(((PyArray_DatetimeDTypeMetaData*)newtype)->meta);
-#else
-            meta = &(((PyArray_DatetimeDTypeMetaData*)newtype->c_metadata)->meta);
-#endif
-        }
+    meta = &(((PyArray_DatetimeDTypeMetaData*)PyDataType_C_METADATA(newtype))->meta);
+}
 
-        newArray = nparrayFromDateTimeDataObject(selfDO, meta);
+newArray = nparrayFromDateTimeDataObject(selfDO, meta);
     }
     else if (selfDO->getType() == ito::tTimeDelta)
     {
@@ -9921,14 +9898,10 @@ PyObject* PythonDataObject::PyDataObj_Array_(PyDataObject* self, PyObject* args,
 
         if (newtype && PyDataType_ISDATETIME(newtype))
         {
-#ifdef NPY_2_0_API_VERSION
-            meta = &(((PyArray_DatetimeDTypeMetaData*)newtype)->meta);
-#else
-            meta = &(((PyArray_DatetimeDTypeMetaData*)newtype->c_metadata)->meta);
-#endif
-        }
+    meta = &(((PyArray_DatetimeDTypeMetaData*)PyDataType_C_METADATA(newtype))->meta);
+}
 
-        newArray = nparrayFromTimeDeltaDataObject(selfDO, meta);
+newArray = nparrayFromTimeDeltaDataObject(selfDO, meta);
     }
     else if (selfDO->getContinuous())
     {
