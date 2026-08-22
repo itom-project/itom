@@ -40,7 +40,13 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURC
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 # add 3rd party packages
-find_package(OpenCV COMPONENTS core REQUIRED)
+# Require OpenCV 3.0 or higher (supports 3.x, 4.x, and 5.0+)
+find_package(OpenCV REQUIRED COMPONENTS core)
+
+# Verify OpenCV version is 3.0 or higher
+if(OpenCV_VERSION VERSION_LESS "3.0")
+	message(FATAL_ERROR "OpenCV version ${OpenCV_VERSION} found, but version 3.0 or higher is required (supports 3.x, 4.x, and 5.0+)")
+endif()
 include(Setup_PCL_Itom)
 if(WIN32)
     find_package(PCL 1.5.1 QUIET REQUIRED COMPONENTS common PATHS ${PCL_CMAKE_DIR} NO_DEFAULT_PATH)

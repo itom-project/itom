@@ -571,7 +571,7 @@ TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_shift_Test)
         this->validAxisTags(this->mat1_2d, dTempTest1);
 
         dTempTest1 = ito::DataObject();
-        dTempTest1 = this->mat1_2d << 1;
+        dTempTest1 = this->mat1_2d.operator<<(1);
         this->validTagSpace(this->mat1_2d, dTempTest1);
         this->validAxisTags(this->mat1_2d, dTempTest1);
     }
@@ -580,7 +580,7 @@ TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_shift_Test)
         EXPECT_ANY_THROW(dTempTest1 <<= 1;);
         EXPECT_ANY_THROW(dTempTest1 >>= 1;);
         EXPECT_ANY_THROW(dTempTest1 = this->mat1_2d >> 1;);
-        EXPECT_ANY_THROW(dTempTest1 = this->mat1_2d << 1;);
+        EXPECT_ANY_THROW(dTempTest1 = this->mat1_2d.operator<<(1););
     }
 };
 

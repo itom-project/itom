@@ -56,7 +56,7 @@
 
 #include <QtCore/qpluginloader.h>
 
-#include "opencv2/core/core_c.h"
+#include "opencv2/core.hpp"
 
 QHash<size_t, QString> ito::PythonItom::m_gcTrackerList;
 

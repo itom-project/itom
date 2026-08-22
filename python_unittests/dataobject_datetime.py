@@ -520,8 +520,13 @@ class DataObjectDatetime(unittest.TestCase):
             self.assertTrue(_t == np.timedelta64(_d))
 
     def test_dataObject2nparray(self):
+
+        with self.assertRaises(ValueError):
+            # must be a copy, -> error
+            dateNp = np.array(self.tdObj, copy=False)
+        
         # timedelta
-        dateNp = np.array(self.tdObj, copy=False)
+        dateNp = np.array(self.tdObj, copy=True)
 
         # must be a copy
         self.assertTrue(dateNp.base is None)
@@ -551,7 +556,11 @@ class DataObjectDatetime(unittest.TestCase):
                 for k in range(dateObjNoTz.shape[2]):
                     dateObjNoTz[i, j, k] = dateObjNoTz[i, j, k].replace(tzinfo=None)
 
-        dateNp = np.array(dateObjNoTz, copy=False)
+        with self.assertRaises(ValueError):
+            # must be a copy
+            dateNp = np.array(dateObjNoTz, copy=False)
+        
+        dateNp = np.array(dateObjNoTz, copy=True)
 
         # must be a copy
         self.assertTrue(dateNp.base is None)
@@ -646,7 +655,8 @@ class DataObjectDatetime(unittest.TestCase):
         for x in range(0, numdays):
             dateList.append(timedelta(days=x))
 
-        dateScale = dataObject([1, len(dateList)], "timedelta", data=dateList)
+        npDateList = np.array(dateList, dtype=np.dtype('timedelta64'))
+        dateScale = dataObject([1, len(dateList)], "timedelta", data=npDateList)
 
         for item1, item2 in zip(dateList, dateScale):
             self.assertEqual(item1, item2)
