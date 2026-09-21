@@ -2696,7 +2696,7 @@ void ScriptDockWidget::mnuReplaceTextExpr()
     int lineTo = -1;
     int indexFrom = -1;
     int indexTo = -1;
-//    bool textSelected = false;
+    bool textSelected = false;
     bool multiLineSelection = false;
     QString defaultText = "";
 
@@ -2706,7 +2706,7 @@ void ScriptDockWidget::mnuReplaceTextExpr()
     if (lineFrom >= 0)
     {
         //text has been marked
-//        textSelected = true;
+        textSelected = true;
         multiLineSelection = lineTo > lineFrom;
 
         if (multiLineSelection == false)
@@ -2721,7 +2721,7 @@ void ScriptDockWidget::mnuReplaceTextExpr()
         defaultText = sew->getWordAtPosition(lineFrom, indexFrom);
     }
 
-    if (m_pDialogReplace == NULL)
+    if (m_pDialogReplace == nullptr)
     {
         m_pDialogReplace = new DialogReplace(getCanvas());
         m_pDialogReplace->setModal(false);
@@ -2730,8 +2730,7 @@ void ScriptDockWidget::mnuReplaceTextExpr()
         connect(m_pDialogReplace, SIGNAL(replaceAll(QString, QString, bool, bool, bool, bool)), this, SLOT(replaceAllExpr(QString, QString, bool, bool, bool, bool)));
     }
 
-    m_pDialogReplace->setData(defaultText, (lineTo == -1) || (lineTo == lineFrom));
-//    m_pDialogReplace->setData(defaultText, lineFrom, indexFrom, lineTo, indexTo);
+    m_pDialogReplace->setData(defaultText, textSelected, (lineTo == -1) || (lineTo == lineFrom));
     m_pDialogReplace->show();
 }
 

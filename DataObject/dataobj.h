@@ -40,49 +40,24 @@
     #pragma warning(disable:4996)
 #endif
 
-// see: http://social.msdn.microsoft.com/Forums/sv/vclanguage/thread/d986a370-d856-4f9e-9f14-53f3b18ab63e,
-// this is only an issue with OpenCV 2.4.3, not 2.3.x
+// see: http://social.msdn.microsoft.com/Forums/sv/vclanguage/thread/d986a370-d856-4f9e-9f14-53f3b18ab63e
 #define NOMINMAX
 
 #include "opencv2/opencv.hpp"
 #include "opencv2/core.hpp"
 #include "opencv2/core/types.hpp"
 
-// Compatibility: some codebase locations still use legacy error codes like CV_StsAssert
-// which were provided by old C headers. Define them to the equivalent C++ enum values.
-#ifndef CV_StsAssert
-#define CV_StsAssert cv::Error::StsAssert
-#endif
-
-// Define a minimal set of legacy CV error macros if they are missing (OpenCV 5 removed C API)
-#ifndef CV_StsError
-#define CV_StsError 1
-#endif
-#ifndef CV_BadDepth
-#define CV_BadDepth 1
-#endif
-#ifndef CV_BadDataPtr
-#define CV_BadDataPtr 1
-#endif
-#ifndef CV_BadImageSize
-#define CV_BadImageSize 1
-#endif
-#ifndef CV_StsUnsupportedFormat
-#define CV_StsUnsupportedFormat 1
-#endif
-#ifndef CV_StsOutOfRange
-#define CV_StsOutOfRange 1
-#endif
-#ifndef CV_StsUnmatchedSizes
-#define CV_StsUnmatchedSizes 1
-#endif
-#ifndef CV_StsUnmatchedFormats
-#define CV_StsUnmatchedFormats 1
-#endif
-
-// Provide a simple replacement for cvErrorStr(code) used in older code; return empty string
-#ifndef cvErrorStr
-static inline const char* cvErrorStr(int) { return ""; }
+// OpenCV 5.0 removed the CV_Sts* aliases (only the cv::Error::Code enum remains).
+// OpenCV 3.x/4.x provide CV_StsAssert as an *enumerator* in opencv2/core/types_c.h.
+// An enumerator is invisible to the preprocessor, so '#ifndef CV_StsAssert' must not
+// be used to detect it: it would always be true and the resulting macro would corrupt
+// the enum in types_c.h as soon as that header is parsed later in the same
+// translation unit.
+#if CV_VERSION_MAJOR >= 5
+    #define CV_StsAssert cv::Error::StsAssert
+#else
+    // ensure the CV_Sts* enumerators are declared, independent of the include order
+    #include "opencv2/core/types_c.h"
 #endif
 
 // OpenCV 5.0 changed cv::Exception API
@@ -221,9 +196,13 @@ namespace cv
     template<> inline ito::float32 saturate_cast(ito::Rgba32 v){return v.gray();};
     template<> inline ito::float64 saturate_cast(ito::Rgba32 v){return (ito::float64)v.gray();};
 
-#if defined(CV_MAJOR_VERSION) && (CV_MAJOR_VERSION < 5) && ((CV_MAJOR_VERSION > 3) || (CV_MAJOR_VERSION == 3 && CV_MINOR_VERSION >= 3))
-    //from CV 3.3.1 on, the default implementation of DataType is dropped:
-    //Original note in traits.hpp of OpenCV: Default values were dropped to stop confusing developers about using of unsupported types (see #7599)
+#if defined(CV_MAJOR_VERSION) && ((CV_MAJOR_VERSION == 3 && CV_MINOR_VERSION >= 3) || (CV_MAJOR_VERSION > 3))
+    // From OpenCV 3.3.1 onwards, the default implementation of DataType is dropped.
+    // This applies to OpenCV 3.3.1+ through 5.0+
+    // Original note in traits.hpp of OpenCV: Default values were dropped to stop confusing developers about using of unsupported types (see #7599)
+    
+    #if CV_MAJOR_VERSION < 5
+    // OpenCV 5.x have a built-in datatype for uint32.
     template<> class DataType<ito::uint32>
     {
     public:
@@ -234,7 +213,7 @@ namespace cv
         enum { generic_type = 1, depth = -1, channels = 1, fmt=0,
             type = CV_MAKETYPE(depth, channels) };
     };
-#endif
+    #endif
 
     template<> class DataType<ito::Rgba32>
     {
@@ -354,6 +333,7 @@ namespace cv
             type = CV_MAKETYPE(depth, channels)
         };
     };
+#endif
 
 
 } // namespace cv

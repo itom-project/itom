@@ -620,7 +620,7 @@ DObjIterator DObjIterator::operator++(int)
     In order to handle huge matrices, the data object can divide one matrix into subparts in memory.
    Each subpart (called matrix-plane) is two-dimensional and covers data of the last two dimensions.
    Each of these matrix-planes is of type cv::Mat_<type> and can be used with every operator given
-   by the openCV-framework (version 2.3.1 or higher).
+   by the OpenCV framework (version 3.0 or higher).
 
     We assume to have a n-dimensional matrix A, where each dimension has its size s_i, hence A=[s_1,
    s_2, ..., s_(n-2), s_(n-1), s_n]
@@ -9913,11 +9913,8 @@ dimensions is allowed to have a size greter than one. \param *mats sequence of i
             for (int cnt = 0; cnt < objLayers[i]; ++cnt)
             {
                 tempPlane = mats[i].get_mdata()[mats[i].seekMat(cnt)];
-#if (CV_MAJOR_VERSION >= 3)
+                // OpenCV 3.0+ uses 'u' member for reference counting
                 if (tempPlane->u)
-#else
-                if (tempPlane->refcount)
-#endif
                 {
                     // the opencv matrix has its own reference counter and manages its memory ->
                     // simple shallow copies are sufficient

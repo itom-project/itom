@@ -31,7 +31,15 @@
 #include "../DataObject/dataobj.h"
 #include "../DataObject/dataObjectFuncs.h"
 
-#include <pcl/io/io.h>
+#include <pcl/pcl_macros.h> //provides PCL_VERSION_COMPARE
+
+#if PCL_VERSION_COMPARE(>=,1,15,0)
+    //the forwarding header pcl/io/io.h has been removed in PCL 1.15.
+    //pcl::getFieldIndex, pcl::concatenateFields... are defined in pcl/common/io.h
+    #include <pcl/common/io.h>
+#else
+    #include <pcl/io/io.h>
+#endif
 
 #if PCL_VERSION_COMPARE(>=,1,7,0)
     #include <pcl/conversions.h>

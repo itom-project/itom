@@ -161,8 +161,7 @@ void DialogReplace::on_checkBoxReplaceWith_clicked()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//void DialogReplace::setData(const QString &defaultText, const int &lineFrom, const int &indexFrom, const int &lineTo, const int &indexTo)
-void DialogReplace::setData(const QString &defaultText, const bool &rowSelected)
+void DialogReplace::setData(const QString &defaultText, bool hasSelection, const bool &rowSelected)
 {
     int index = comboBoxGetIndex(defaultText, ui.comboBoxFindText);
 
@@ -181,6 +180,8 @@ void DialogReplace::setData(const QString &defaultText, const bool &rowSelected)
             ui.comboBoxFindText->setCurrentIndex(0);
         }
     }
+
+    ui.checkBoxReplaceInSelection->setChecked(hasSelection);
 
     this->activateWindow();
     ui.comboBoxFindText->setFocus();
