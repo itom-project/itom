@@ -43,8 +43,8 @@
 #include "../ui/widgetInfoBox.h"
 #include "scriptDockWidget.h"
 
-#include "../helper/versionHelper.h"
 #include "../helper/guiHelper.h"
+#include "../helper/versionHelper.h"
 
 #include <qapplication.h>
 #include <qdir.h>
@@ -55,22 +55,21 @@
 #include "../organizer/scriptEditorOrganizer.h"
 
 
-
 #ifdef ITOM_USEHELPVIEWER
 #include "../helpViewer/helpViewer.h"
 #endif
 
 namespace ito {
 
-const QScreen* guiApplicationScreenAt(const QPoint &point)
+const QScreen* guiApplicationScreenAt(const QPoint& point)
 {
-#if (QT_VERSION >= QT_VERSION_CHECK(5,10,0))
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
     return QGuiApplication::screenAt(point);
 #else
     // this is a copy of the future implementation of the screenAt method.
     QVarLengthArray<const QScreen*, 8> visitedScreens;
 
-    for (const QScreen *scr : QGuiApplication::screens())
+    for (const QScreen* scr : QGuiApplication::screens())
     {
         if (visitedScreens.contains(scr))
         {
@@ -78,7 +77,7 @@ const QScreen* guiApplicationScreenAt(const QPoint &point)
         }
 
         // The virtual siblings include the screen itself, so iterate directly
-        for (QScreen *sibling : scr->virtualSiblings())
+        for (QScreen* sibling : scr->virtualSiblings())
         {
             if (sibling->geometry().contains(point))
             {
@@ -104,9 +103,9 @@ MainWindow::MainWindow() :
     m_globalWorkspaceDock(nullptr), m_localWorkspaceDock(nullptr), m_callStackDock(nullptr),
     m_fileSystemDock(nullptr), m_pAIManagerWidget(nullptr), m_appFileNew(nullptr),
     m_appFileOpen(nullptr), m_aboutQt(nullptr), m_aboutQitom(nullptr), m_copyLog(nullptr),
-    m_pMenuFigure(nullptr), m_pMenuHelp(nullptr), m_pMenuFile(nullptr),
-    m_pMenuPython(nullptr), m_pMenuReloadModule(nullptr), m_pMenuView(nullptr),
-    m_pHelpSystem(nullptr), m_pStatusLblCurrentDir(nullptr), m_pStatusLblScriptInfo(nullptr),
+    m_pMenuFigure(nullptr), m_pMenuHelp(nullptr), m_pMenuFile(nullptr), m_pMenuPython(nullptr),
+    m_pMenuReloadModule(nullptr), m_pMenuView(nullptr), m_pHelpSystem(nullptr),
+    m_pStatusLblCurrentDir(nullptr), m_pStatusLblScriptInfo(nullptr),
     m_pStatusLblPythonBusy(nullptr), m_pythonBusy(false), m_pythonDebugMode(false),
     m_pythonInWaitingMode(false), m_isFullscreen(false), m_userDefinedActionCounter(0),
     m_plastFilesMenu(nullptr)
@@ -116,7 +115,7 @@ MainWindow::MainWindow() :
     // Setting high res icon for OS X
     QApplication::setWindowIcon(QIcon(":/application/icons/itomicon/itomIcon1024"));
 #else
-    QApplication::setWindowIcon(QIcon(":/application/icons/itomicon/itomLogo3_64.png"));
+    QApplication::setWindowIcon(QIcon(":/application/icons/itomicon/itomLogo4.svg"));
 #endif
 
     qDebug("build main window");
@@ -391,8 +390,16 @@ MainWindow::MainWindow() :
 
         if (m_console)
         {
-            connect(pyEngine, &PythonEngine::clearCommandLine, m_console, &ConsoleWidget::clearCommandLine);
-            connect(pyEngine, &PythonEngine::interruptCommandInput, m_console, &ConsoleWidget::interruptCommandInput);
+            connect(
+                pyEngine,
+                &PythonEngine::clearCommandLine,
+                m_console,
+                &ConsoleWidget::clearCommandLine);
+            connect(
+                pyEngine,
+                &PythonEngine::interruptCommandInput,
+                m_console,
+                &ConsoleWidget::interruptCommandInput);
             connect(
                 pyEngine,
                 SIGNAL(startInputCommandLine(QSharedPointer<QByteArray>, ItomSharedSemaphore*)),
@@ -402,9 +409,10 @@ MainWindow::MainWindow() :
     }
     else
     {
-        showInfoMessageLine(tr("Python could not be started. itom cannot be used in the desired "
-                               "way. \nStart itom again with the argument 'log' and look-up the "
-                               "error message in the file itomlog.txt."));
+        showInfoMessageLine(
+            tr("Python could not be started. itom cannot be used in the desired "
+               "way. \nStart itom again with the argument 'log' and look-up the "
+               "error message in the file itomlog.txt."));
         if (m_console)
         {
             m_console->setReadOnly(true);
@@ -475,8 +483,8 @@ MainWindow::MainWindow() :
     if (geometry != mainScreen) // check if valid
     {
         // check whether top/left and bottom/right lie in any available desktop
-        const QScreen *screen1 = guiApplicationScreenAt(geometry.topLeft());
-        const QScreen *screen2 = guiApplicationScreenAt(geometry.bottomRight());
+        const QScreen* screen1 = guiApplicationScreenAt(geometry.topLeft());
+        const QScreen* screen2 = guiApplicationScreenAt(geometry.bottomRight());
         QRect r1;
         QRect r2;
 
@@ -747,25 +755,20 @@ void MainWindow::addAbstractDock(
 
         if (sdw)
         {
-            connect(sdw, &ScriptDockWidget::dockStateChanged, [=](bool docked)
+            connect(sdw, &ScriptDockWidget::dockStateChanged, [=](bool docked) {
+                if (docked)
                 {
-                    if (docked)
-                    {
-                        connect(
-                            sdw,
-                            &ScriptDockWidget::statusBarInformationChanged,
-                            this,
-                            &MainWindow::scriptStatusBarInformationChanged
-                        );
-                    }
-                    else
-                    {
-                        disconnect(sdw, &ScriptDockWidget::statusBarInformationChanged, this, 0);
-                    }
+                    connect(
+                        sdw,
+                        &ScriptDockWidget::statusBarInformationChanged,
+                        this,
+                        &MainWindow::scriptStatusBarInformationChanged);
                 }
-            );
-
-
+                else
+                {
+                    disconnect(sdw, &ScriptDockWidget::statusBarInformationChanged, this, 0);
+                }
+            });
         }
 
         if (area == Qt::NoDockWidgetArea)
@@ -783,13 +786,13 @@ void MainWindow::addAbstractDock(
 
             if (sdw)
             {
-                // make the connection right here, since dockStateChanged is only called after the next change
+                // make the connection right here, since dockStateChanged is only called after the
+                // next change
                 connect(
                     sdw,
                     &ScriptDockWidget::statusBarInformationChanged,
                     this,
-                    &MainWindow::scriptStatusBarInformationChanged
-                );
+                    &MainWindow::scriptStatusBarInformationChanged);
             }
         }
     }
@@ -830,7 +833,7 @@ void MainWindow::scriptStatusBarInformationChanged(
     if (m_pStatusLblScriptInfo)
     {
         QObject* widget = QApplication::focusWidget();
-        ScriptDockWidget *focussedDockWidget = nullptr;
+        ScriptDockWidget* focussedDockWidget = nullptr;
 
         while (widget)
         {
@@ -853,7 +856,8 @@ void MainWindow::scriptStatusBarInformationChanged(
 
         if (line >= 0 && column >= 0)
         {
-            m_pStatusLblScriptInfo->setText(tr("Ln %1, Col %2, %3 ").arg(line).arg(column).arg(encoding));
+            m_pStatusLblScriptInfo->setText(
+                tr("Ln %1, Col %2, %3 ").arg(line).arg(column).arg(encoding));
         }
         else
         {
@@ -939,8 +943,8 @@ void MainWindow::createActions()
     connect(m_aboutQt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
     // m_aboutQt->setShortcut(QKeySequence("F3"));
 
-    m_aboutQitom = new QAction(
-        QIcon(":/application/icons/itomicon/itomLogo3_64.png"), tr("About itom..."), this);
+    m_aboutQitom =
+        new QAction(QIcon(":/application/icons/itomicon/itomLogo4.svg"), tr("About itom..."), this);
     connect(m_aboutQitom, SIGNAL(triggered()), this, SLOT(mnuAboutQitom()));
 
     if (AppManagement::getLogger())
@@ -1222,7 +1226,8 @@ void MainWindow::createMenus()
     menuBar()->setNativeMenuBar(false);
 #else // __APPLE__
     // OS X: without the native menu bar option, the menu bar is displayed within the window which
-    // might be irritating. The menu bar is not embedded in the system menu bar for unclear reasons, therefore the option is set to off.
+    // might be irritating. The menu bar is not embedded in the system menu bar for unclear reasons,
+    // therefore the option is set to off.
     menuBar()->setNativeMenuBar(false);
 #endif // __APPLE__
 }
@@ -1590,8 +1595,9 @@ void MainWindow::mnuOpenFile()
     QString fileName;
     RetVal retValue(retOk);
 
-    QString filter = IOHelper::getFileFilters(IOHelper::IOFilters(
-        IOHelper::IOInput | IOHelper::IOPlugin | IOHelper::IOAllFiles | IOHelper::IOMimeAll));
+    QString filter = IOHelper::getFileFilters(
+        IOHelper::IOFilters(
+            IOHelper::IOInput | IOHelper::IOPlugin | IOHelper::IOAllFiles | IOHelper::IOMimeAll));
     static QString
         selectedFilter; // since this variable is static, it will remember the last set filter.
     fileName = QFileDialog::getOpenFileName(

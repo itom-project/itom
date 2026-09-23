@@ -22,33 +22,33 @@
 #define ITOM_IMPORT_API
 #include "../common/apiFunctionsInc.h"
 #undef ITOM_IMPORT_API
-#include "mainApplication.h"
-#include "global.h"
-#include "version.h"
 #include "AppManagement.h"
+#include "global.h"
+#include "mainApplication.h"
+#include "version.h"
 
-#include "widgets/abstractDockWidget.h"
 #include "../AddInManager/addInManager.h"
 #include "./models/UserModel.h"
-#include "organizer/userOrganizer.h"
-#include "widgets/scriptDockWidget.h"
 #include "./ui/dialogSelectUser.h"
-#include "ui/dialogPipManager.h"
-#include "ui/dialogCloseItom.h"
 #include "DataObject/dataobj.h"
+#include "organizer/userOrganizer.h"
 #include "python/pythonStatePublisher.h"
+#include "ui/dialogCloseItom.h"
+#include "ui/dialogPipManager.h"
+#include "widgets/abstractDockWidget.h"
+#include "widgets/scriptDockWidget.h"
 
-#include <qsettings.h>
-#include <qstringlist.h>
 #include <qdir.h>
-#include <qsplashscreen.h>
-#include <qstylefactory.h>
+#include <qfileinfo.h>
+#include <qlibraryinfo.h>
 #include <qmessagebox.h>
 #include <qpainter.h>
-#include <qlibraryinfo.h>
 #include <qresource.h>
-#include <qfileinfo.h>
 #include <qscreen.h>
+#include <qsettings.h>
+#include <qsplashscreen.h>
+#include <qstringlist.h>
+#include <qstylefactory.h>
 
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include <qtextcodec.h>
@@ -60,30 +60,43 @@
 #include <Windows.h>
 #endif
 
-namespace ito
-{
+namespace ito {
 
 #ifdef WIN32
-    class CPUID {
-      ito::uint32 regs[4];
+class CPUID
+{
+    ito::uint32 regs[4];
 
-    public:
-      void load(unsigned i) {
-    #ifndef _MSC_VER
-        asm volatile
-          ("cpuid" : "=a" (regs[0]), "=b" (regs[1]), "=c" (regs[2]), "=d" (regs[3])
-           : "a" (i), "c" (0));
+public:
+    void load(unsigned i)
+    {
+#ifndef _MSC_VER
+        asm volatile("cpuid"
+                     : "=a"(regs[0]), "=b"(regs[1]), "=c"(regs[2]), "=d"(regs[3])
+                     : "a"(i), "c"(0));
         // ECX is set to zero for CPUID function 4
-    #else
-        __cpuid((ito::int32 *)regs, (ito::int32)i); //Microsoft specific for x86 and x64
-    #endif
-      }
+#else
+        __cpuid((ito::int32*)regs, (ito::int32)i); // Microsoft specific for x86 and x64
+#endif
+    }
 
-      const ito::uint32 &EAX() const {return regs[0];}
-      const ito::uint32 &EBX() const {return regs[1];}
-      const ito::uint32 &ECX() const {return regs[2];}
-      const ito::uint32 &EDX() const {return regs[3];}
-    };
+    const ito::uint32& EAX() const
+    {
+        return regs[0];
+    }
+    const ito::uint32& EBX() const
+    {
+        return regs[1];
+    }
+    const ito::uint32& ECX() const
+    {
+        return regs[2];
+    }
+    const ito::uint32& EDX() const
+    {
+        return regs[3];
+    }
+};
 #endif
 
 /*!
@@ -112,40 +125,32 @@ MainApplication* MainApplication::instance()
     \sa tGuiType
 */
 MainApplication::MainApplication(tGuiType guiType) :
-    m_pyThread(nullptr),
-    m_pyEngine(nullptr),
-    m_pyStatePublisher(nullptr),
-    m_scriptEditorOrganizer(nullptr),
-    m_mainWin(nullptr),
-    m_paletteOrganizer(nullptr),
-    m_uiOrganizer(nullptr),
-    m_designerWidgetOrganizer(nullptr),
-    m_processOrganizer(nullptr),
-    m_pSplashScreen(nullptr),
-    m_splashScreenTextColor(Qt::white),
-    m_pQout(nullptr),
-    m_pQerr(nullptr)
+    m_pyThread(nullptr), m_pyEngine(nullptr), m_pyStatePublisher(nullptr),
+    m_scriptEditorOrganizer(nullptr), m_mainWin(nullptr), m_paletteOrganizer(nullptr),
+    m_uiOrganizer(nullptr), m_designerWidgetOrganizer(nullptr), m_processOrganizer(nullptr),
+    m_pSplashScreen(nullptr), m_splashScreenTextColor(Qt::white), m_pQout(nullptr), m_pQerr(nullptr)
 {
     m_guiType = guiType;
     MainApplication::mainApplicationInstance = this;
 
-    //qDebug() << QLibraryInfo::location(QLibraryInfo::BinariesPath);
+    // qDebug() << QLibraryInfo::location(QLibraryInfo::BinariesPath);
 
     AppManagement::setMainApplication(qobject_cast<QObject*>(this));
 
-    //global settings: the settings file will be stored in itomSettings/{organization}/{applicationName}.ini
+    // global settings: the settings file will be stored in
+    // itomSettings/{organization}/{applicationName}.ini
     QCoreApplication::setOrganizationName("ito");
     QCoreApplication::setApplicationName("itom");
     QCoreApplication::setApplicationVersion(ITOM_VERSION_STR);
 
-    if(QByteArray(ITOM_ADDITIONAL_EDITION_NAME) == "")
+    if (QByteArray(ITOM_ADDITIONAL_EDITION_NAME) == "")
     {
-        if(QByteArray(ITOM_VERSION_STR) == "0.0.0" || QByteArray(ITOM_VERSION_IDENTIFIERS) == "dev" )
+        if (QByteArray(ITOM_VERSION_STR) == "0.0.0" ||
+            QByteArray(ITOM_VERSION_IDENTIFIERS) == "dev")
         {
             m_devFlag = true;
         }
     }
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -167,13 +172,14 @@ void MainApplication::registerMetaObjects()
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     // must not be called any more in Qt6, since this is automatically done then.
     qRegisterMetaTypeStreamOperators<ito::ScriptEditorStorage>("ito::ScriptEditorStorage");
-    qRegisterMetaTypeStreamOperators<QList<ito::ScriptEditorStorage> >("QList<ito::ScriptEditorStorage>");
+    qRegisterMetaTypeStreamOperators<QList<ito::ScriptEditorStorage>>(
+        "QList<ito::ScriptEditorStorage>");
 
     qRegisterMetaTypeStreamOperators<ito::BreakPointItem>("BreakPointItem");
     qRegisterMetaTypeStreamOperators<ito::BookmarkItem>("BookmarkItem");
 #else
     qRegisterMetaType<ito::ScriptEditorStorage>("ito::ScriptEditorStorage");
-    qRegisterMetaType<QList<ito::ScriptEditorStorage> >("QList<ito::ScriptEditorStorage>");
+    qRegisterMetaType<QList<ito::ScriptEditorStorage>>("QList<ito::ScriptEditorStorage>");
 
     qRegisterMetaType<ito::BreakPointItem>("BreakPointItem");
     qRegisterMetaType<ito::BookmarkItem>("BookmarkItem");
@@ -183,11 +189,12 @@ void MainApplication::registerMetaObjects()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void MainApplication::setSplashScreenMessage(const QString &text)
+void MainApplication::setSplashScreenMessage(const QString& text)
 {
     if (m_pSplashScreen)
     {
-        m_pSplashScreen->showMessage(text, Qt::AlignRight | Qt::AlignBottom, m_splashScreenTextColor);
+        m_pSplashScreen->showMessage(
+            text, Qt::AlignRight | Qt::AlignBottom, m_splashScreenTextColor);
     }
 }
 
@@ -236,40 +243,41 @@ QString MainApplication::getSplashScreenFileName() const
     }
     /*easter date calculation*/
 
-	qint64 daysDiffToEaster = currentDate.toJulianDay() - QDate(currentYear, easterMonth, easterDay).toJulianDay();
+    qint64 daysDiffToEaster =
+        currentDate.toJulianDay() - QDate(currentYear, easterMonth, easterDay).toJulianDay();
 
-    if( !m_devFlag )
+    if (!m_devFlag)
     {
         if (currentMonth == 12)
         {
-            //Christmas splashScreen whole december of each year
-            fileName = ":/application/icons/itomicon/splashScreen4Christmas.png";
+            // Christmas splashScreen whole december of each year
+            fileName = ":/application/icons/itomicon/splashScreen5Christmas.png";
         }
         else if (qAbs(daysDiffToEaster) <= 7)
         {
-            //Easter splashScreen one week before and after easter day
-            fileName = ":/application/icons/itomicon/splashScreen4Easter.png";
+            // Easter splashScreen one week before and after easter day
+            fileName = ":/application/icons/itomicon/splashScreen5Easter.png";
         }
-        else //default splashScreen
+        else // default splashScreen
         {
-            fileName = ":/application/icons/itomicon/splashScreen4.png";
+            fileName = ":/application/icons/itomicon/splashScreen5.png";
         }
     }
     else
     {
         if (currentMonth == 12)
         {
-            //Christmas splashScreen whole december of each year
-            fileName = ":/application/icons/itomicon/splashScreen4devChristmas.png";
+            // Christmas splashScreen whole december of each year
+            fileName = ":/application/icons/itomicon/splashScreen5devChristmas.png";
         }
         else if (qAbs(daysDiffToEaster) <= 7)
         {
-            //Easter splashScreen one week before and after easter day
-            fileName = ":/application/icons/itomicon/splashScreen4devEaster.png";
+            // Easter splashScreen one week before and after easter day
+            fileName = ":/application/icons/itomicon/splashScreen5devEaster.png";
         }
-        else //default splashScreen
+        else // default splashScreen
         {
-            fileName = ":/application/icons/itomicon/splashScreen4dev.png";
+            fileName = ":/application/icons/itomicon/splashScreen5dev.png";
         }
     }
 
@@ -280,9 +288,12 @@ QString MainApplication::getSplashScreenFileName() const
 QPixmap MainApplication::getSplashScreenPixmap() const
 {
 #ifdef USEGIMMICKS
-    QString splashScreenFileName = getSplashScreenFileName(); // get the fileName of splashScreen. Different at easter and christmas time
+    QString splashScreenFileName =
+        getSplashScreenFileName(); // get the fileName of splashScreen. Different at easter and
+                                   // christmas time
 #else
-    QString splashScreenFileName = ":/application/icons/itomicon/splashScreen4.png"; //only default splashScreen
+    QString splashScreenFileName =
+        ":/application/icons/itomicon/splashScreen5.png"; // only default splashScreen
 #endif // USEUSEGIMMICKS
 
     QPixmap pixmap(splashScreenFileName);
@@ -312,7 +323,7 @@ QPixmap MainApplication::getSplashScreenPixmap() const
 
     versionText = QString(tr("Version %1")).arg(ITOM_VERSION_STR);
 
-    if (sizeof(void*) > 4) //was before a check using QT_POINTER_SIZE
+    if (sizeof(void*) > 4) // was before a check using QT_POINTER_SIZE
     {
         bitTextShort = tr("64 bit");
         bitTextLong = bitTextShort + QString(" (x64)");
@@ -373,10 +384,7 @@ QPixmap MainApplication::getSplashScreenPixmap() const
     p.drawText(rectVersion, Qt::AlignLeft, versionText);
 
     QRectF rectBuild(
-        textLeftPos,
-        rectVersion.top() * 1.08,
-        pixmap.width() - textLeftPos,
-        pixmap.height() * 0.2);
+        textLeftPos, rectVersion.top() * 1.08, pixmap.width() - textLeftPos, pixmap.height() * 0.2);
     QFont fontBuild;
     fontBuild.setPixelSize(pixmap.width() * 0.02);
     p.setFont(fontBuild);
@@ -390,12 +398,14 @@ QPixmap MainApplication::getSplashScreenPixmap() const
 //----------------------------------------------------------------------------------------------------------------------------------
 //! setup of application
 /*!
-    starts PythonEngine, MainWindow (dependent on gui-type) and all necessary managers and organizers.
-    Builds import connections between MainWindow and PythonEngine as well as ScriptEditorOrganizer.
+    starts PythonEngine, MainWindow (dependent on gui-type) and all necessary managers and
+   organizers. Builds import connections between MainWindow and PythonEngine as well as
+   ScriptEditorOrganizer.
 
     \sa PythonEngine, MainWindow, ScriptEditorOrganizer
 */
-void MainApplication::setupApplication(const QStringList &scriptsToOpen, const QStringList &scriptsToExecute)
+void MainApplication::setupApplication(
+    const QStringList& scriptsToOpen, const QStringList& scriptsToExecute)
 {
     RetVal retValue = retOk;
     RetVal pyRetValue;
@@ -408,8 +418,7 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
 
     QPixmap pixmap = getSplashScreenPixmap();
 
-    m_pSplashScreen =
-        new QSplashScreen(pixmap);
+    m_pSplashScreen = new QSplashScreen(pixmap);
 
     QFont messageFont = m_pSplashScreen->font();
     messageFont.setPixelSize(pixmap.width() * 0.02);
@@ -418,20 +427,22 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
     m_pSplashScreen->show();
     QCoreApplication::processEvents();
 
-    //load std::cout and std::cerr stream redirections
+    // load std::cout and std::cerr stream redirections
     m_pQout = new QDebugStream(std::cout, ito::msgStreamOut);
     m_pQerr = new QDebugStream(std::cerr, ito::msgStreamErr);
     AppManagement::setStdCoutCerrStreamRedirections(m_pQout, m_pQerr);
     m_pythonLogger.init();
 
-    QSettings *settings = new QSettings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+    QSettings* settings = new QSettings(AppManagement::getSettingsFile(), QSettings::IniFormat);
 
-    //add further folders to path-variable
+    // add further folders to path-variable
 
-    //you can add further paths to the application-internal PATH variable by adding the following lines to the ini-file:
+    // you can add further paths to the application-internal PATH variable by adding the following
+    // lines to the ini-file:
     /*[Application]
     searchPathes\size=1 ->add here the number of paths
-    searchPathes\1\path=PathToAdd -> for each path add one line like this where you auto-increment the number from \1\ up to your total number*/
+    searchPathes\1\path=PathToAdd -> for each path add one line like this where you auto-increment
+    the number from \1\ up to your total number*/
     settings->beginGroup("Application");
 
     int s = settings->beginReadArray("searchPathes");
@@ -457,37 +468,44 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
     if (appendPathes.size() > 0 || prependPathes.size() > 0)
     {
         QByteArray oldpath = qgetenv("path");
-        QByteArray prepend = prependPathes.size() > 0 ? prependPathes.join(";").toLatin1() + QByteArray(";") : QByteArray("");
-        QByteArray append = appendPathes.size() > 0 ? QByteArray(";") + appendPathes.join("; ").toLatin1() : QByteArray("");
-        QByteArray newpath = "path=" + prepend + oldpath + append; //set libDir at the beginning of the path-variable
+        QByteArray prepend = prependPathes.size() > 0
+            ? prependPathes.join(";").toLatin1() + QByteArray(";")
+            : QByteArray("");
+        QByteArray append = appendPathes.size() > 0
+            ? QByteArray(";") + appendPathes.join("; ").toLatin1()
+            : QByteArray("");
+        QByteArray newpath = "path=" + prepend + oldpath +
+            append; // set libDir at the beginning of the path-variable
         _putenv(newpath.data());
     }
 #else // (defined linux) && (defined _APPLE_)
     if (appendPathes.size() > 0 || prependPathes.size() > 0)
     {
         QByteArray oldpath = getenv("path");
-        QByteArray prepend = prependPathes.size() > 0 ? prependPathes.join(";").toLatin1() + ";" : "";
+        QByteArray prepend =
+            prependPathes.size() > 0 ? prependPathes.join(";").toLatin1() + ";" : "";
         QByteArray append = appendPathes.size() > 0 ? ";" + appendPathes.join("; ").toLatin1() : "";
-        QByteArray newpath = "path=" + prepend + oldpath + append; //set libDir at the beginning of the path-variable
+        QByteArray newpath = "path=" + prepend + oldpath +
+            append; // set libDir at the beginning of the path-variable
         setenv("PATH", newpath.data(), 1);
     }
 #endif
 
 #ifdef WIN32
-    //This check is done since the KMP_AFFINITY feature of OpenMP
-    //is only available on Intel CPUs and lead to a severe warning
-    //on other CPUs.
+    // This check is done since the KMP_AFFINITY feature of OpenMP
+    // is only available on Intel CPUs and lead to a severe warning
+    // on other CPUs.
     CPUID cpuID;
     cpuID.load(0); // Get CPU vendor
 
     QByteArray vendor("");
-    vendor.append((const char *)&cpuID.EBX(), 4);
-    vendor.append((const char *)&cpuID.EDX(), 4);
-    vendor.append((const char *)&cpuID.ECX(), 4);
+    vendor.append((const char*)&cpuID.EBX(), 4);
+    vendor.append((const char*)&cpuID.EDX(), 4);
+    vendor.append((const char*)&cpuID.ECX(), 4);
 
     if (strcmp(vendor.data(), "GenuineIntel") != 0)
     {
-        _putenv_s("KMP_AFFINITY","none");
+        _putenv_s("KMP_AFFINITY", "none");
     }
 #else
     // \todo check for Intel/AMD and set KMP_AFFINITY if not Intel
@@ -496,11 +514,13 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
 
     settings->beginGroup("Language");
     QString language = settings->value("language", "en").toString();
-    QByteArray codec =  settings->value("codec", "UTF-8").toByteArray(); //utf-8 is default
+    QByteArray codec = settings->value("codec", "UTF-8").toByteArray(); // utf-8 is default
     bool setCodecForLocal = settings->value("setCodecForLocale", false).toBool();
 
-    // allowed are en_EN, de_DE, de, en, "c" for the locale C standard or "operatingSystem" for the QLocale::system()
-    QString numberStringConversionStandard = settings->value("numberStringConversionStandard", "operatingsystem").toString();
+    // allowed are en_EN, de_DE, de, en, "c" for the locale C standard or "operatingSystem" for the
+    // QLocale::system()
+    QString numberStringConversionStandard =
+        settings->value("numberStringConversionStandard", "operatingsystem").toString();
     bool omitGroupSeparators = settings->value("numberFormatOmitGroupSeparator", false).toBool();
 
     QLocale defaultLocale;
@@ -529,11 +549,12 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
     settings->endGroup();
     settings->sync();
 
-    //load timeouts
+    // load timeouts
     settings->beginGroup("Application");
     AppManagement::timeouts.pluginInitClose = settings->value("timeoutInitClose", 10000).toInt();
     AppManagement::timeouts.pluginGeneral = settings->value("timeoutGeneral", PLUGINWAIT).toInt();
-    AppManagement::timeouts.pluginFileSaveLoad = settings->value("timeoutFileSaveLoad", 60000).toInt();
+    AppManagement::timeouts.pluginFileSaveLoad =
+        settings->value("timeoutFileSaveLoad", 60000).toInt();
     settings->endGroup();
 
     QLocale localLanguage;
@@ -553,11 +574,12 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
 
     QString itomTranslationFolder = QCoreApplication::applicationDirPath() + "/translation";
 
-    //load translation files
-    m_pSplashScreen->showMessage(tr("load translations..."), Qt::AlignRight | Qt::AlignBottom, m_splashScreenTextColor);
+    // load translation files
+    m_pSplashScreen->showMessage(
+        tr("load translations..."), Qt::AlignRight | Qt::AlignBottom, m_splashScreenTextColor);
     QCoreApplication::processEvents();
 
-    //1. try to load qt-translations from qt-folder
+    // 1. try to load qt-translations from qt-folder
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     m_qtTranslator.load(
         "qt_" + localLanguage.name(), QLibraryInfo::path(QLibraryInfo::TranslationsPath));
@@ -568,12 +590,12 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
 
     if (m_qtTranslator.isEmpty())
     {
-        //qt-folder is not available, then try itom translation folder
+        // qt-folder is not available, then try itom translation folder
         m_qtTranslator.load("qt_" + localLanguage.name(), itomTranslationFolder);
     }
     QCoreApplication::instance()->installTranslator(&m_qtTranslator);
 
-    //2. load itom-specific translation file
+    // 2. load itom-specific translation file
     m_translator.load("qitom_" + localLanguage.name(), itomTranslationFolder);
     QCoreApplication::instance()->installTranslator(&m_translator);
 
@@ -589,12 +611,12 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
     m_addinmanagerTranslator.load("addinmanager_" + localLanguage.name(), itomTranslationFolder);
     QCoreApplication::instance()->installTranslator(&m_addinmanagerTranslator);
 
-    //3. set default encoding codec
+    // 3. set default encoding codec
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-    QTextCodec *textCodec = QTextCodec::codecForName(codec);
+    QTextCodec* textCodec = QTextCodec::codecForName(codec);
     if (textCodec == nullptr)
     {
-        textCodec = QTextCodec::codecForName("UTF-8"); //latin1 is default
+        textCodec = QTextCodec::codecForName("UTF-8"); // latin1 is default
     }
     if (!textCodec)
     {
@@ -619,7 +641,7 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
 
     textCodec = QStringConverter::Utf8;
 
-    //AppManagement::setScriptTextCodec(textCodec.value());
+    // AppManagement::setScriptTextCodec(textCodec.value());
 
     // None of these two is available in Qt5 and according to
     // Qt docu it should not have been used anyway. So
@@ -633,10 +655,13 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
 
     if (m_guiType == standard || m_guiType == console)
     {
-        m_pSplashScreen->showMessage(tr("load themes and styles..."), Qt::AlignRight | Qt::AlignBottom, m_splashScreenTextColor);
+        m_pSplashScreen->showMessage(
+            tr("load themes and styles..."),
+            Qt::AlignRight | Qt::AlignBottom,
+            m_splashScreenTextColor);
         QCoreApplication::processEvents();
 
-        //set styles (if available)
+        // set styles (if available)
         settings->beginGroup("ApplicationStyle");
         QString styleName = settings->value("style", "").toString();
         QString cssFile = settings->value("cssFile", "").toString();
@@ -656,7 +681,8 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
             }
             else
             {
-                qDebug() << "style " << styleName << "is not available. Available styles are " << styles;
+                qDebug() << "style " << styleName << "is not available. Available styles are "
+                         << styles;
             }
         }
 
@@ -684,7 +710,6 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
             {
                 qDebug() << "resource-file " << rccFile << " does not exist";
             }
-
         }
 
         if (cssFile != "")
@@ -744,21 +769,23 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
 
         if (!QResource::registerResource(iconThemeDir.absoluteFilePath(iconThemeFile)))
         {
-            qDebug() << "error loading the icon theme file " << iconThemeDir.absoluteFilePath(iconThemeFile);
+            qDebug() << "error loading the icon theme file "
+                     << iconThemeDir.absoluteFilePath(iconThemeFile);
         }
     }
 
     DELETE_AND_SET_NULL(settings);
 
-	/*set new seed for random generator of OpenCV.
-	This is required to have real random values for any randn or randu command.
-	The seed must be set in every thread. This is for the main thread.
-	*/
-	cv::theRNG().state = (uint64)cv::getCPUTickCount();
-	/*seed is set*/
+    /*set new seed for random generator of OpenCV.
+    This is required to have real random values for any randn or randu command.
+    The seed must be set in every thread. This is for the main thread.
+    */
+    cv::theRNG().state = (uint64)cv::getCPUTickCount();
+    /*seed is set*/
 
-    //starting ProcessOrganizer for external processes like QtDesigner, QtAssistant, ...
-    m_pSplashScreen->showMessage(tr("load process organizer..."), Qt::AlignRight | Qt::AlignBottom, m_splashScreenTextColor);
+    // starting ProcessOrganizer for external processes like QtDesigner, QtAssistant, ...
+    m_pSplashScreen->showMessage(
+        tr("load process organizer..."), Qt::AlignRight | Qt::AlignBottom, m_splashScreenTextColor);
     QCoreApplication::processEvents();
 
     m_processOrganizer = new ProcessOrganizer();
@@ -767,21 +794,28 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
     qDebug("MainApplication::setupApplication");
 
     // starting AddInManager
-    m_pSplashScreen->showMessage(tr("scan and load plugins..."), Qt::AlignRight | Qt::AlignBottom, m_splashScreenTextColor);
+    m_pSplashScreen->showMessage(
+        tr("scan and load plugins..."), Qt::AlignRight | Qt::AlignBottom, m_splashScreenTextColor);
     QCoreApplication::processEvents();
 
-    //AddInManager *AIM = NULL;
-    AddInManager *AIM = AddInManager::createInstance(AppManagement::getSettingsFile(), ito::ITOM_API_FUNCS_GRAPH, AppManagement::getMainWindow(), AppManagement::getMainApplication());
+    // AddInManager *AIM = NULL;
+    AddInManager* AIM = AddInManager::createInstance(
+        AppManagement::getSettingsFile(),
+        ito::ITOM_API_FUNCS_GRAPH,
+        AppManagement::getMainWindow(),
+        AppManagement::getMainApplication());
     ito::ITOM_API_FUNCS = AIM->getItomApiFuncsPtr();
     AppManagement::setAddInManager(AIM);
-    AIM->setTimeOuts(AppManagement::timeouts.pluginInitClose, AppManagement::timeouts.pluginGeneral);
+    AIM->setTimeOuts(
+        AppManagement::timeouts.pluginInitClose, AppManagement::timeouts.pluginGeneral);
 
     connect(AIM, &AddInManager::splashLoadMessage, this, &MainApplication::setSplashScreenMessage);
     retValue += AIM->scanAddInDir("");
 
     qDebug("..plugins loaded");
 
-    m_pSplashScreen->showMessage(tr("start python..."), Qt::AlignRight | Qt::AlignBottom, m_splashScreenTextColor);
+    m_pSplashScreen->showMessage(
+        tr("start python..."), Qt::AlignRight | Qt::AlignBottom, m_splashScreenTextColor);
     QCoreApplication::processEvents();
 
     m_pyEngine = new PythonEngine();
@@ -798,7 +832,12 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
     qDebug() << "..python engine thread stack size" << m_pyThread->stackSize();
     m_pyEngine->moveToThread(m_pyThread);
     m_pyThread->start();
-    QMetaObject::invokeMethod(m_pyEngine, "pythonSetup", Qt::BlockingQueuedConnection, Q_ARG(ito::RetVal*, &pyRetValue), Q_ARG(QSharedPointer<QVariantMap>, infoMessages));
+    QMetaObject::invokeMethod(
+        m_pyEngine,
+        "pythonSetup",
+        Qt::BlockingQueuedConnection,
+        Q_ARG(ito::RetVal*, &pyRetValue),
+        Q_ARG(QSharedPointer<QVariantMap>, infoMessages));
 
     qDebug("..python engine moved to new thread");
 
@@ -807,11 +846,14 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
     {
         if (pyRetValue.hasErrorMessage())
         {
-            qDebug() << "..python engine destroyed since python could not be properly initialized. Reason:" << pyRetValue.errorMessage();
+            qDebug() << "..python engine destroyed since python could not be properly initialized. "
+                        "Reason:"
+                     << pyRetValue.errorMessage();
         }
         else
         {
-            qDebug() << "..python engine destroyed since python could not be properly initialized. Unknown reason";
+            qDebug() << "..python engine destroyed since python could not be properly initialized. "
+                        "Unknown reason";
         }
         DELETE_AND_SET_NULL(m_pyEngine);
         AppManagement::setPythonEngine(NULL);
@@ -819,7 +861,8 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
 
     if (m_guiType == standard || m_guiType == console)
     {
-        m_pSplashScreen->showMessage(tr("load main window..."), Qt::AlignRight | Qt::AlignBottom, m_splashScreenTextColor);
+        m_pSplashScreen->showMessage(
+            tr("load main window..."), Qt::AlignRight | Qt::AlignBottom, m_splashScreenTextColor);
         QCoreApplication::processEvents();
 
         m_mainWin = new MainWindow();
@@ -835,21 +878,32 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
             }
         }
 
-        m_pSplashScreen->showMessage(tr("scan and load designer widgets..."), Qt::AlignRight | Qt::AlignBottom, m_splashScreenTextColor);
+        m_pSplashScreen->showMessage(
+            tr("scan and load designer widgets..."),
+            Qt::AlignRight | Qt::AlignBottom,
+            m_splashScreenTextColor);
         QCoreApplication::processEvents();
 
         m_designerWidgetOrganizer = new DesignerWidgetOrganizer(retValue);
-        AppManagement::setDesignerWidgetOrganizer(qobject_cast<QObject*>(m_designerWidgetOrganizer));
+        AppManagement::setDesignerWidgetOrganizer(
+            qobject_cast<QObject*>(m_designerWidgetOrganizer));
 
-        QStringList incompatibleDesignerPlugins = m_designerWidgetOrganizer->getListOfIncompatibleDesignerPlugins();
+        QStringList incompatibleDesignerPlugins =
+            m_designerWidgetOrganizer->getListOfIncompatibleDesignerPlugins();
 
         if (incompatibleDesignerPlugins.size() > 0)
         {
-            QMessageBox::critical(m_pSplashScreen, tr("Incompatible designer plugins"), \
-                tr("The 'designer' folder contains incompatible designer plugins. The load of itom or subsequent ui's might fail if these files are not removed or updated: \n\n%1").arg(incompatibleDesignerPlugins.join("\n\n")));
+            QMessageBox::critical(
+                m_pSplashScreen,
+                tr("Incompatible designer plugins"),
+                tr("The 'designer' folder contains incompatible designer plugins. The load of itom "
+                   "or subsequent ui's might fail if these files are not removed or updated: "
+                   "\n\n%1")
+                    .arg(incompatibleDesignerPlugins.join("\n\n")));
         }
 
-        m_pSplashScreen->showMessage(tr("load ui organizer..."), Qt::AlignRight | Qt::AlignBottom, m_splashScreenTextColor);
+        m_pSplashScreen->showMessage(
+            tr("load ui organizer..."), Qt::AlignRight | Qt::AlignBottom, m_splashScreenTextColor);
         QCoreApplication::processEvents();
 
         m_uiOrganizer = new UiOrganizer(retValue);
@@ -872,25 +926,41 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
 
     qDebug("..palette organizer started");
 
-    m_pSplashScreen->showMessage(tr("load script editor organizer..."), Qt::AlignRight | Qt::AlignBottom, m_splashScreenTextColor);
+    m_pSplashScreen->showMessage(
+        tr("load script editor organizer..."),
+        Qt::AlignRight | Qt::AlignBottom,
+        m_splashScreenTextColor);
     QCoreApplication::processEvents();
 
     m_scriptEditorOrganizer = new ScriptEditorOrganizer(m_mainWin != nullptr);
-    AppManagement::setScriptEditorOrganizer(m_scriptEditorOrganizer); //qobject_cast<QObject*>(scriptEditorOrganizer);
+    AppManagement::setScriptEditorOrganizer(
+        m_scriptEditorOrganizer); // qobject_cast<QObject*>(scriptEditorOrganizer);
 
     qDebug("..script editor started");
 
     if (m_mainWin != nullptr)
     {
-        connect(m_scriptEditorOrganizer, SIGNAL(addScriptDockWidgetToMainWindow(AbstractDockWidget*,Qt::DockWidgetArea)), m_mainWin, SLOT(addAbstractDock(AbstractDockWidget*, Qt::DockWidgetArea)));
-        connect(m_scriptEditorOrganizer, SIGNAL(removeScriptDockWidgetFromMainWindow(AbstractDockWidget*)), m_mainWin, SLOT(removeAbstractDock(AbstractDockWidget*)));
-        connect(m_mainWin, &MainWindow::mainWindowCloseRequest, this, &MainApplication::mainWindowCloseRequest);
+        connect(
+            m_scriptEditorOrganizer,
+            SIGNAL(addScriptDockWidgetToMainWindow(AbstractDockWidget*, Qt::DockWidgetArea)),
+            m_mainWin,
+            SLOT(addAbstractDock(AbstractDockWidget*, Qt::DockWidgetArea)));
+        connect(
+            m_scriptEditorOrganizer,
+            SIGNAL(removeScriptDockWidgetFromMainWindow(AbstractDockWidget*)),
+            m_mainWin,
+            SLOT(removeAbstractDock(AbstractDockWidget*)));
+        connect(
+            m_mainWin,
+            &MainWindow::mainWindowCloseRequest,
+            this,
+            &MainApplication::mainWindowCloseRequest);
 
         if (m_scriptEditorOrganizer)
         {
             m_scriptEditorOrganizer->restoreScriptState();
 
-            foreach(const QString &script, scriptsToOpen)
+            foreach (const QString& script, scriptsToOpen)
             {
                 QFileInfo info(script);
                 if (info.exists())
@@ -907,58 +977,73 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
     }
 
     qDebug("..starting load settings");
-    settings = new QSettings(AppManagement::getSettingsFile(), QSettings::IniFormat); //reload settings, since all organizers can load their own instances, that might lead to an unwanted read/write mixture.
+    settings = new QSettings(
+        AppManagement::getSettingsFile(),
+        QSettings::IniFormat); // reload settings, since all organizers can load their own
+                               // instances, that might lead to an unwanted read/write mixture.
 
-    //the current directory is set after having loaded all plugins and designerPlugins
-    //Reason: There is a crazy bug, if starting itom in Visual Studio, Debug-Mode. If the current directory
-    //is a network drive, no plugins can be loaded any more using Window's loadLibrary command!
+    // the current directory is set after having loaded all plugins and designerPlugins
+    // Reason: There is a crazy bug, if starting itom in Visual Studio, Debug-Mode. If the current
+    // directory is a network drive, no plugins can be loaded any more using Window's loadLibrary
+    // command!
     settings->beginGroup("CurrentStatus");
-    QDir dir(settings->value("currentDir",QDir::currentPath()).toString());
+    QDir dir(settings->value("currentDir", QDir::currentPath()).toString());
     if (dir.exists())
     {
-        QDir::setCurrent(settings->value("currentDir",QDir::currentPath()).toString());
+        QDir::setCurrent(settings->value("currentDir", QDir::currentPath()).toString());
     }
     settings->endGroup();
     settings->sync();
 
-//This block is currently not perfectly working since it has too much negative side-influences...
-//#ifdef WIN32
-//    //For Windows: add the append and prepend paths to the search directories for subsequent LoadLibrary commands. This is done after
-//    //having loaded all the plugins, since the 'SetDefaultDllDirectories' command will let some plugins not being loaded.
-//    if (appendPathes.length() > 0 || prependPathes.length() > 0)
-//    {
-//#ifdef WINVER
-//#if WINVER >= 0x0602
-//        //this is optional and only valid for Windows 8 or higher (at least the Windows SDK must be compatible to this).
-//        //the 'lib' directory is already added to the default search paths for LoadLibrary commands in main.cpp.
-//        //However, further paths have to be added with AddDllDirectory, which is only available for Windows SDKs >= Win8!
-//        //
-//        if (QSysInfo::windowsVersion() >= QSysInfo::WV_WINDOWS7) //sometimes the win8 SDK has also be propagated to Windows 7. Therefore, let Win7 be accepted, too.
-//        {
-//            SetDefaultDllDirectories(LOAD_LIBRARY_SEARCH_DEFAULT_DIRS);
-//#if UNICODE
-//            //sometimes LoadLibrary commands in plugins with files that are located in the lib folder cannot be loaded
-//            //even if the lib folder is add to the path variable in this function, too. The SetDllDirectory
-//            //is another approach to reach this (only available since Win XP).
-//            foreach(const QString &path, prependPathes + appendPathes)
-//            {
-//                wchar_t *lib_path = new wchar_t[path.size() + 5];
-//                memset(lib_path, 0, (path.size() + 5) * sizeof(wchar_t));
-//                path.toWCharArray(lib_path);
-//                AddDllDirectory(lib_path);
-//                delete lib_path;
-//#else
-//            AddDllDirectory(path.toLatin1().data());
-//#endif
-//            }
-//        }
-//#endif
-//#endif
-//    }
-//#endif
+    // This block is currently not perfectly working since it has too much negative
+    // side-influences... #ifdef WIN32
+    //     //For Windows: add the append and prepend paths to the search directories for subsequent
+    //     LoadLibrary commands. This is done after
+    //     //having loaded all the plugins, since the 'SetDefaultDllDirectories' command will let
+    //     some plugins not being loaded. if (appendPathes.length() > 0 || prependPathes.length() >
+    //     0)
+    //     {
+    // #ifdef WINVER
+    // #if WINVER >= 0x0602
+    //         //this is optional and only valid for Windows 8 or higher (at least the Windows SDK
+    //         must be compatible to this).
+    //         //the 'lib' directory is already added to the default search paths for LoadLibrary
+    //         commands in main.cpp.
+    //         //However, further paths have to be added with AddDllDirectory, which is only
+    //         available for Windows SDKs >= Win8!
+    //         //
+    //         if (QSysInfo::windowsVersion() >= QSysInfo::WV_WINDOWS7) //sometimes the win8 SDK has
+    //         also be propagated to Windows 7. Therefore, let Win7 be accepted, too.
+    //         {
+    //             SetDefaultDllDirectories(LOAD_LIBRARY_SEARCH_DEFAULT_DIRS);
+    // #if UNICODE
+    //             //sometimes LoadLibrary commands in plugins with files that are located in the
+    //             lib folder cannot be loaded
+    //             //even if the lib folder is add to the path variable in this function, too. The
+    //             SetDllDirectory
+    //             //is another approach to reach this (only available since Win XP).
+    //             foreach(const QString &path, prependPathes + appendPathes)
+    //             {
+    //                 wchar_t *lib_path = new wchar_t[path.size() + 5];
+    //                 memset(lib_path, 0, (path.size() + 5) * sizeof(wchar_t));
+    //                 path.toWCharArray(lib_path);
+    //                 AddDllDirectory(lib_path);
+    //                 delete lib_path;
+    // #else
+    //             AddDllDirectory(path.toLatin1().data());
+    // #endif
+    //             }
+    //         }
+    // #endif
+    // #endif
+    //     }
+    // #endif
 
-    //try to execute startup-python scripts
-    m_pSplashScreen->showMessage(tr("execute startup scripts..."), Qt::AlignRight | Qt::AlignBottom, m_splashScreenTextColor);
+    // try to execute startup-python scripts
+    m_pSplashScreen->showMessage(
+        tr("execute startup scripts..."),
+        Qt::AlignRight | Qt::AlignBottom,
+        m_splashScreenTextColor);
     QCoreApplication::processEvents();
 
     settings->beginGroup("Python");
@@ -970,7 +1055,10 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
     for (int i = 0; i < size; ++i)
     {
         settings->setArrayIndex(i);
-        startupScript = QFileInfo(baseDir, settings->value("file", QString()).toString()); //if "file" is absolute, baseDir is disregarded
+        startupScript = QFileInfo(
+            baseDir,
+            settings->value("file", QString())
+                .toString()); // if "file" is absolute, baseDir is disregarded
         if (startupScript.isFile())
         {
             startupScripts.append(startupScript.absoluteFilePath());
@@ -981,19 +1069,20 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
     settings->endGroup();
     settings->sync();
 
-	//append additional startup scripts from command line
-	foreach(const QString &s, scriptsToExecute)
-	{
-		startupScript = QFileInfo(baseDir, s); //if "file" is absolute, baseDir is disregarded
-		if (startupScript.isFile())
-		{
-			startupScripts.append(startupScript.absoluteFilePath());
-		}
-	}
+    // append additional startup scripts from command line
+    foreach (const QString& s, scriptsToExecute)
+    {
+        startupScript = QFileInfo(baseDir, s); // if "file" is absolute, baseDir is disregarded
+        if (startupScript.isFile())
+        {
+            startupScripts.append(startupScript.absoluteFilePath());
+        }
+    }
 
     if (startupScripts.count() > 0)
     {
-        QMetaObject::invokeMethod(m_pyEngine, "pythonRunFile", Q_ARG(QString, startupScripts.join(";")));
+        QMetaObject::invokeMethod(
+            m_pyEngine, "pythonRunFile", Q_ARG(QString, startupScripts.join(";")));
     }
     QMetaObject::invokeMethod(m_pyEngine, "pythonGetClearAllValues");
 
@@ -1002,45 +1091,56 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
     settings->endGroup();
     DELETE_AND_SET_NULL(settings);
 
-    m_pSplashScreen->showMessage(tr("scan and run scripts in autostart folder..."), Qt::AlignRight | Qt::AlignBottom, m_splashScreenTextColor);
+    m_pSplashScreen->showMessage(
+        tr("scan and run scripts in autostart folder..."),
+        Qt::AlignRight | Qt::AlignBottom,
+        m_splashScreenTextColor);
     QCoreApplication::processEvents();
 
-    //force python to scan and run files in autostart folder in itom-packages folder
+    // force python to scan and run files in autostart folder in itom-packages folder
     QMetaObject::invokeMethod(m_pyEngine, "scanAndRunAutostartFolder", Q_ARG(QString, currentDir));
 
-    ////since autostart-files could have changed current directory, re-change it to the value of the settings-file
-    //settings.beginGroup("CurrentStatus");
-    //QDir::setCurrent(settings.value("currentDir",QDir::currentPath()).toString());
-    //settings.endGroup();
+    ////since autostart-files could have changed current directory, re-change it to the value of the
+    ///settings-file
+    // settings.beginGroup("CurrentStatus");
+    // QDir::setCurrent(settings.value("currentDir",QDir::currentPath()).toString());
+    // settings.endGroup();
 
     if (retValue.containsError())
     {
         if (retValue.hasErrorMessage())
         {
-            std::cerr << "Error when starting the application: \n" << retValue.errorMessage() << "\n" << std::endl;
+            std::cerr << "Error when starting the application: \n"
+                      << retValue.errorMessage() << "\n"
+                      << std::endl;
         }
         else
         {
-            std::cerr << "An unspecified error occurred when starting the application.\n" << std::endl;
+            std::cerr << "An unspecified error occurred when starting the application.\n"
+                      << std::endl;
         }
     }
     else if (retValue.containsWarning())
     {
         if (retValue.hasErrorMessage())
         {
-            std::cout << "Warning when starting the application: \n" << retValue.errorMessage() << "\n" << std::endl;
+            std::cout << "Warning when starting the application: \n"
+                      << retValue.errorMessage() << "\n"
+                      << std::endl;
         }
         else
         {
-            std::cout << "An unspecified warning occurred when starting the application.\n" << std::endl;
+            std::cout << "An unspecified warning occurred when starting the application.\n"
+                      << std::endl;
         }
     }
 
     qDebug("..load settings done");
     qDebug("MainApplication::setupApplication .. done");
 
-    //std::cout << "\n    Welcome to itom program!\n\n";
-    //std::cout << "    Please report bugs under:\n        https://github.com/itom-project/itom/issues\n    Cheers your itom team\n" << std::endl;
+    // std::cout << "\n    Welcome to itom program!\n\n";
+    // std::cout << "    Please report bugs under:\n https://github.com/itom-project/itom/issues\n
+    // Cheers your itom team\n" << std::endl;
 
     if (m_mainWin)
     {
@@ -1055,8 +1155,9 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
 //----------------------------------------------------------------------------------------------------------------------------------
 //! setup of application
 /*!
-    stops PythonEngine, MainWindow (dependent on gui-type) and all necessary managers and organizers.
-    Closes import connections between MainWindow and PythonEngine as well as ScriptEditorOrganizer.
+    stops PythonEngine, MainWindow (dependent on gui-type) and all necessary managers and
+   organizers. Closes import connections between MainWindow and PythonEngine as well as
+   ScriptEditorOrganizer.
 
     \sa PythonEngine, MainWindow, ScriptEditorOrganizer
 */
@@ -1081,14 +1182,17 @@ void MainApplication::finalizeApplication()
 
     if (m_pyEngine)
     {
-        ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
-        QMetaObject::invokeMethod(m_pyEngine, "pythonShutdown", Q_ARG(ItomSharedSemaphore*, waitCond));
+        ItomSharedSemaphore* waitCond = new ItomSharedSemaphore();
+        QMetaObject::invokeMethod(
+            m_pyEngine, "pythonShutdown", Q_ARG(ItomSharedSemaphore*, waitCond));
         waitCond->waitAndProcessEvents(-1);
 
-        //call further objects, which have been marked by "deleteLater" during this finalize method (partI)
-        // QCoreApplication::sendPostedEvents();
-        // QCoreApplication::sendPostedEvents(nullptr, QEvent::DeferredDelete); //these events are not sent by the line above, since the event-loop already has been stopped.
-        // QCoreApplication::processEvents();
+        // call further objects, which have been marked by "deleteLater" during this finalize method
+        // (partI)
+        //  QCoreApplication::sendPostedEvents();
+        //  QCoreApplication::sendPostedEvents(nullptr, QEvent::DeferredDelete); //these events are
+        //  not sent by the line above, since the event-loop already has been stopped.
+        //  QCoreApplication::processEvents();
 
         waitCond->deleteSemaphore();
         waitCond = nullptr;
@@ -1112,18 +1216,20 @@ void MainApplication::finalizeApplication()
     DELETE_AND_SET_NULL(m_processOrganizer);
     AppManagement::setProcessOrganizer(NULL);
 
-    //call further objects, which have been marked by "deleteLater" during this finalize method (partII)
-    // QCoreApplication::sendPostedEvents();
-    // QCoreApplication::sendPostedEvents(NULL,QEvent::DeferredDelete); //these events are not sent by the line above, since the event-loop already has been stopped.
-    // QCoreApplication::processEvents();
+    // call further objects, which have been marked by "deleteLater" during this finalize method
+    // (partII)
+    //  QCoreApplication::sendPostedEvents();
+    //  QCoreApplication::sendPostedEvents(NULL,QEvent::DeferredDelete); //these events are not sent
+    //  by the line above, since the event-loop already has been stopped.
+    //  QCoreApplication::processEvents();
 
     QString settingsName(AppManagement::getSettingsFile());
-    QSettings *settings = new QSettings(settingsName, QSettings::IniFormat);
+    QSettings* settings = new QSettings(settingsName, QSettings::IniFormat);
     settings->beginGroup("CurrentStatus");
-    settings->setValue("currentDir",QDir::currentPath());
+    settings->setValue("currentDir", QDir::currentPath());
     settings->endGroup();
 
-    //save timeouts
+    // save timeouts
     settings->beginGroup("Application");
     settings->setValue("timeoutInitClose", AppManagement::timeouts.pluginInitClose);
     settings->setValue("timeoutGeneral", AppManagement::timeouts.pluginGeneral);
@@ -1132,7 +1238,7 @@ void MainApplication::finalizeApplication()
     delete settings;
 
 
-    //close std::cout and std::cerr stream redirection
+    // close std::cout and std::cerr stream redirection
     DELETE_AND_SET_NULL(m_pQout);
     DELETE_AND_SET_NULL(m_pQerr);
 }
@@ -1146,7 +1252,7 @@ void MainApplication::mainWindowCloseRequest(bool considerPythonBusy)
 {
     RetVal retValue(retOk);
 
-    QSettings *settings = new QSettings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+    QSettings* settings = new QSettings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings->beginGroup("MainWindow");
 
     bool pythonStopped = false;
@@ -1155,7 +1261,7 @@ void MainApplication::mainWindowCloseRequest(bool considerPythonBusy)
 
     if (considerPythonBusy && m_pyEngine != nullptr && m_pyEngine->isPythonBusy())
     {
-        DialogCloseItom *dialog = new DialogCloseItom(nullptr);
+        DialogCloseItom* dialog = new DialogCloseItom(nullptr);
 
         int dialogRequest = dialog->exec();
 
@@ -1178,27 +1284,27 @@ void MainApplication::mainWindowCloseRequest(bool considerPythonBusy)
         msgBox.setDefaultButton(QMessageBox::Ok);
         msgBox.setIcon(QMessageBox::Question);
 
-		const ito::UserOrganizer *userOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
-		ito::UserFeatures features = userOrg->getCurrentUserFeatures();
+        const ito::UserOrganizer* userOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
+        ito::UserFeatures features = userOrg->getCurrentUserFeatures();
 
-		if (features & ito::UserFeature::featProperties)
-		{
-			QCheckBox *cb = new QCheckBox();
-			cb->setText(tr("Don't ask again."));
-			cb->setToolTip(tr("This behaviour can be changed again in the property dialog."));
-			cb->setChecked(false);
-			msgBox.setCheckBox(cb);
-		}
+        if (features & ito::UserFeature::featProperties)
+        {
+            QCheckBox* cb = new QCheckBox();
+            cb->setText(tr("Don't ask again."));
+            cb->setToolTip(tr("This behaviour can be changed again in the property dialog."));
+            cb->setChecked(false);
+            msgBox.setCheckBox(cb);
+        }
 
         int ret = msgBox.exec();
 
-		if (features & ito::UserFeature::featProperties)
-		{
-			if (msgBox.checkBox()->isChecked())
-			{
-				settings->setValue("askBeforeClose", false);
-			}
-		}
+        if (features & ito::UserFeature::featProperties)
+        {
+            if (msgBox.checkBox()->isChecked())
+            {
+                settings->setValue("askBeforeClose", false);
+            }
+        }
 
         if (ret == QMessageBox::Cancel)
         {
@@ -1213,9 +1319,10 @@ void MainApplication::mainWindowCloseRequest(bool considerPythonBusy)
         settings->endGroup();
         delete settings;
 
-        if (retValue.containsError()) return;
+        if (retValue.containsError())
+            return;
 
-        //saves the state of all opened scripts to the settings file
+        // saves the state of all opened scripts to the settings file
         if (m_scriptEditorOrganizer)
         {
             m_scriptEditorOrganizer->saveScriptState();
@@ -1249,7 +1356,6 @@ void MainApplication::mainWindowCloseRequest(bool considerPythonBusy)
 */
 int MainApplication::exec()
 {
-
     if (m_guiType == standard)
     {
         m_mainWin->show();
@@ -1273,4 +1379,4 @@ int MainApplication::execPipManagerOnly()
     return manager.exec();
 }
 
-} //end namespace ito
+} // end namespace ito

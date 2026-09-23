@@ -23,44 +23,42 @@
 #include "dialogProperties.h"
 
 #include "../global.h"
-#include <qmetaobject.h>
 #include <qdialogbuttonbox.h>
+#include <qmetaobject.h>
 #include <qscrollarea.h>
 
-#include "widgetPropEditorCalltips.h"
-#include "widgetPropEditorStyles.h"
-#include "widgetPropEditorAutoCompletion.h"
-#include "widgetPropEditorAutoCodeFormat.h"
-#include "widgetPropEditorGotoAssignment.h"
-#include "widgetPropEditorDocstringGenerator.h"
-#include "widgetPropEditorCodeCheckers.h"
-#include "widgetPropEditorGeneral.h"
-#include "widgetPropEditorScripts.h"
-#include "widgetPropGeneralLanguage.h"
-#include "widgetPropPythonStartup.h"
-#include "widgetPropPythonGeneral.h"
 #include "widgetPropConsoleGeneral.h"
-#include "widgetPropConsoleWrap.h"
 #include "widgetPropConsoleLastCommand.h"
+#include "widgetPropConsoleWrap.h"
+#include "widgetPropEditorAutoCodeFormat.h"
+#include "widgetPropEditorAutoCompletion.h"
+#include "widgetPropEditorCalltips.h"
+#include "widgetPropEditorCodeCheckers.h"
+#include "widgetPropEditorDocstringGenerator.h"
+#include "widgetPropEditorGeneral.h"
+#include "widgetPropEditorGotoAssignment.h"
+#include "widgetPropEditorScripts.h"
+#include "widgetPropEditorStyles.h"
 #include "widgetPropFigurePlugins.h"
 #include "widgetPropGeneralApplication.h"
-#include "widgetPropHelpDock.h"
-#include "widgetPropGeneralStyles.h"
-#include "widgetPropPluginsAlgorithms.h"
-#include "widgetPropPluginsActuators.h"
-#include "widgetPropWorkspaceUnpack.h"
+#include "widgetPropGeneralLanguage.h"
 #include "widgetPropGeneralPlotSettings.h"
+#include "widgetPropGeneralStyles.h"
+#include "widgetPropHelpDock.h"
 #include "widgetPropPalettes.h"
+#include "widgetPropPluginsActuators.h"
+#include "widgetPropPluginsAlgorithms.h"
+#include "widgetPropPythonGeneral.h"
+#include "widgetPropPythonStartup.h"
+#include "widgetPropWorkspaceUnpack.h"
 
-#include "AppManagement.h"
 #include "../helper/guiHelper.h"
+#include "AppManagement.h"
 
-namespace ito
-{
+namespace ito {
 
 //----------------------------------------------------------------------------------------------------------------------------------
-DialogProperties::DialogProperties(QWidget* parent, Qt::WindowFlags f) :
-    QDialog(parent, f)
+DialogProperties::DialogProperties(QWidget* parent, Qt::WindowFlags f) : QDialog(parent, f)
 {
     setWindowTitle(tr("Properties"));
 
@@ -73,15 +71,18 @@ DialogProperties::DialogProperties(QWidget* parent, Qt::WindowFlags f) :
     m_pCategories->setHeaderHidden(true);
     m_pCategories->setSortingEnabled(false);
 
-	float screenFactorDpi = GuiHelper::screenDpiFactor();
+    float screenFactorDpi = GuiHelper::screenDpiFactor();
 
     m_pCategories->setMinimumWidth(200 * screenFactorDpi);
 
     connect(
-        m_pCategories, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)),
-        this, SLOT(categoryChanged(QTreeWidgetItem*, QTreeWidgetItem*)));
+        m_pCategories,
+        SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)),
+        this,
+        SLOT(categoryChanged(QTreeWidgetItem*, QTreeWidgetItem*)));
 
-    m_pButtonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel | QDialogButtonBox::Apply , Qt::Horizontal);
+    m_pButtonBox = new QDialogButtonBox(
+        QDialogButtonBox::Ok | QDialogButtonBox::Cancel | QDialogButtonBox::Apply, Qt::Horizontal);
     connect(m_pButtonBox, &QDialogButtonBox::accepted, this, &DialogProperties::accepted);
     connect(m_pButtonBox, &QDialogButtonBox::rejected, this, &DialogProperties::rejected);
     connect(m_pButtonBox->button(QDialogButtonBox::Apply), SIGNAL(clicked()), this, SLOT(apply()));
@@ -92,9 +93,9 @@ DialogProperties::DialogProperties(QWidget* parent, Qt::WindowFlags f) :
 
     m_pPageTitle = new QLabel("page title");
 
-    QVBoxLayout *m_pVerticalLayoutRight;
-    QVBoxLayout *m_pVerticalLayout;
-    QWidget *m_pSplitterRightWidget = new QWidget();
+    QVBoxLayout* m_pVerticalLayoutRight;
+    QVBoxLayout* m_pVerticalLayout;
+    QWidget* m_pSplitterRightWidget = new QWidget();
 
     m_pVerticalLayoutRight = new QVBoxLayout();
 
@@ -110,7 +111,7 @@ DialogProperties::DialogProperties(QWidget* parent, Qt::WindowFlags f) :
     m_pSplitter->addWidget(m_pCategories);
     m_pSplitter->addWidget(m_pSplitterRightWidget);
     m_pSplitter->setStretchFactor(1, 10);
-	m_pSplitter->setChildrenCollapsible(false);
+    m_pSplitter->setChildrenCollapsible(false);
 
     m_pVerticalLayout = new QVBoxLayout(this);
     m_pVerticalLayout->addWidget(m_pSplitter);
@@ -120,7 +121,7 @@ DialogProperties::DialogProperties(QWidget* parent, Qt::WindowFlags f) :
 
     initPages();
 
-	//resize(950 * screenFactorDpi, 450 * screenFactorDpi);
+    // resize(950 * screenFactorDpi, 450 * screenFactorDpi);
 
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("DialogProperties");
@@ -139,7 +140,7 @@ DialogProperties::~DialogProperties()
     settings.endGroup();
 
     PropertyPage page;
-    foreach(page, m_pages)
+    foreach (page, m_pages)
     {
         if (page.m_widget)
         {
@@ -178,47 +179,203 @@ void DialogProperties::initPages()
     // Step 2: if necessary, add parent page to the m_pages-map below
     // Step 3: add property page to the m_pages -map
     //
-    // Important: The key of the m_pages-map and the third entry in the PropertyPage-struct must have the same value.
-    // This value gives the tree-structure of the property-widgets. Every / (slash) indicates a new child of the parent tree
+    // Important: The key of the m_pages-map and the third entry in the PropertyPage-struct must
+    // have the same value. This value gives the tree-structure of the property-widgets. Every /
+    // (slash) indicates a new child of the parent tree
     //-----------------------------------------------------------------------------------------------------
 
 
-    m_pages["04_editor"] = PropertyPage(tr("Editor"), tr("Editor - Please Choose Subpage"), "04_editor", NULL, QIcon(":/application/icons/preferences-general.png"));
-    m_pages["04_editor/01general"] = PropertyPage(tr("General"), tr("Editor - General"), "04_editor/01general", new WidgetPropEditorGeneral(), QIcon(":/application/icons/preferences-general.png"));
-    m_pages["04_editor/02scripts"] = PropertyPage(tr("Script Editors"), tr("Editor - Scripts"), "04_editor/02scripts", new WidgetPropEditorScripts(), QIcon(":/application/icons/preferences-general.png"));
-	m_pages["04_editor/03syntax"] = PropertyPage(tr("Syntax and Style Checks"), tr("Editor - Syntax and Style Checks"), "04_editor/03syntax", new WidgetPropEditorCodeCheckers(), QIcon(":/application/icons/preferences-general.png"));
-    m_pages["04_editor/04calltips"] = PropertyPage(tr("Calltips and Help Tooltips"), tr("Editor - Calltips and Help Tooltips"), "04_editor/04calltips", new WidgetPropEditorCalltips(), QIcon(":/application/icons/preferences-general.png"));
-    m_pages["04_editor/05autocompletion"] = PropertyPage(tr("Auto Completion"), tr("Editor - Auto Completion"), "04_editor/05autocompletion", new WidgetPropEditorAutoCompletion(), QIcon(":/application/icons/preferences-general.png"));
-    m_pages["04_editor/06gotoassignment"] = PropertyPage(tr("Goto Assignment"), tr("Editor - Goto Assignment"), "04_editor/06gotoassignment", new WidgetPropEditorGotoAssignment(), QIcon(":/application/icons/preferences-general.png"));
-    m_pages["04_editor/07autocodeformat"] = PropertyPage(tr("Auto Code Format"), tr("Editor - Auto Code Format"), "04_editor/07autocodeformat", new WidgetPropEditorAutoCodeFormat(), QIcon(":/application/icons/preferences-general.png"));
-    m_pages["04_editor/08styles"] = PropertyPage(tr("Styles"), tr("Editor - Styles"), "04_editor/08styles", new WidgetPropEditorStyles(), QIcon(":/application/icons/preferences-general.png"));
-    m_pages["04_editor/09docstringGenerator"] = PropertyPage(tr("Docstring Generator"), tr("Editor - Docstring Generator"), "04_editor/09docstringGenerator", new WidgetPropEditorDocstringGenerator(), QIcon(":/application/icons/preferences-general.png"));
-    m_pages["01_console"] = PropertyPage(tr("Console"), tr("Console - Please Choose Subpage"), "01_console", NULL, QIcon(":/application/icons/editSmartIndent.png"));
-    m_pages["01_console/01general"] = PropertyPage(tr("General"), tr("Console - General"), "01_console/01general", new WidgetPropConsoleGeneral(), QIcon(":/application/icons/editSmartIndent.png"));
-    m_pages["01_console/02lineWrap"] = PropertyPage(tr("Line Wrap"), tr("Console - Line Wrap"), "01_console/02lineWrap", new WidgetPropConsoleWrap(), QIcon(":/application/icons/editSmartIndent.png"));
-    m_pages["01_console/03commandHistory"] = PropertyPage(tr("Command History"), tr("Console - Command History"), "01_console/03commandHistory", new WidgetPropConsoleLastCommand(), QIcon(":/application/icons/editSmartIndent.png"));
-    m_pages["03_python"] = PropertyPage(tr("Python"), tr("Python - Please Choose Subpage"), "03_python", NULL, QIcon(":/application/icons/preferences-python.png"));
-    m_pages["03_python/01general"] = PropertyPage(tr("General"), tr("Python - General"), "03_python/01general", new WidgetPropPythonGeneral(), QIcon(":/application/icons/preferences-python.png"));
-    m_pages["03_python/02startup"] = PropertyPage(tr("Startup"), tr("Python - Startups"), "03_python/02startup", new WidgetPropPythonStartup(), QIcon(":/application/icons/preferences-python.png"));
-    m_pages["00_general"] = PropertyPage(tr("General"), tr("General - Please Choose Subpage"), "00_general", NULL, QIcon(":/application/icons/itomicon/itomLogo3_64.png"));
-    m_pages["00_general/01application"] = PropertyPage(tr("Application"), tr("General - Application"), "00_general/01application", new WidgetPropGeneralApplication(), QIcon(":/application/icons/itomicon/itomLogo3_64.png"));
-    m_pages["00_general/02language"] = PropertyPage(tr("Language"), tr("General - Language"), "00_general/02language", new WidgetPropGeneralLanguage(), QIcon(":/classNavigator/icons/global.png"));
-    m_pages["00_general/03helpViewer"]  = PropertyPage(tr("Plugin Help Viewer"), tr("General - Plugin Help Viewer"), "00_general/03helpViewer" , new WidgetPropHelpDock(), QIcon(":/plugins/icons/plugin.png"));
-    m_pages["00_general/04styles"] = PropertyPage(tr("Styles and Themes"), tr("General - Styles and Themes"), "00_general/04styles", new WidgetPropGeneralStyles(), QIcon(":/application/icons/color-icon.png"));
-    m_pages["05_workspace"] = PropertyPage(tr("Workspace"), tr("Workspace - Please Choose Subpage"), "05_workspace", NULL, QIcon(":/workspace/icons/import-prop-icon.png"));
-    m_pages["05_workspace/01unpack"] = PropertyPage(tr("Import To Workspace"), tr("Workspace - Import"), "05_workspace/01unpack", new WidgetPropWorkspaceUnpack(), QIcon(":/workspace/icons/import-prop-icon.png"));
-    m_pages["06_plugins"] = PropertyPage(tr("Plugins"), tr("Plugins - Please Choose Subpage"), "06_plugins", NULL, QIcon(":/plugins/icons/plugin.png"));
-    m_pages["06_plugins/02algorithms"] = PropertyPage(tr("Algorithms and Filters"), tr("Plugins - Algorithms And Filters"), "06_plugins/02algorithms", new WidgetPropPluginsAlgorithms(), QIcon(":/plugins/icons/pluginAlgo.png"));
-    m_pages["06_plugins/03actuators"] = PropertyPage(tr("Actuators"), tr("Plugins - Actuators"), "06_plugins/03actuators", new WidgetPropPluginsActuators(), QIcon(":/plugins/icons/pluginActuator.png"));
-    m_pages["07_plots"] = PropertyPage(tr("Plots And Figures"), tr("Plots and Figures - Please Choose Subpage"), "07_plots", NULL, QIcon(":/plots/icons/itom_icons/3d.png"));
-    m_pages["07_plots/01defaults"] = PropertyPage(tr("Default Plots"), tr("Plots and Figures - Defaults"), "07_plots/01defaults", new WidgetPropFigurePlugins(), QIcon(":/plots/icons/itom_icons/2d.png"));
-    m_pages["07_plots/02defaultSettings"] = PropertyPage(tr("Default Style Settings"), tr("Plots And Figures - Default Style Settings"), "07_plots/02defaultSettings", new WidgetPropGeneralPlotSettings(), QIcon(":/plots/icons/itom_icons/2d.png"));
-    m_pages["07_plots/03palettes"] = PropertyPage(tr("Palettes Settings"), tr("Plots and Figures - Palettes Settings"), "07_plots/03palettes", new WidgetPropPalettes(), QIcon(":/plots/icons/itom_icons/color.png"));
+    m_pages["04_editor"] = PropertyPage(
+        tr("Editor"),
+        tr("Editor - Please Choose Subpage"),
+        "04_editor",
+        NULL,
+        QIcon(":/application/icons/preferences-general.png"));
+    m_pages["04_editor/01general"] = PropertyPage(
+        tr("General"),
+        tr("Editor - General"),
+        "04_editor/01general",
+        new WidgetPropEditorGeneral(),
+        QIcon(":/application/icons/preferences-general.png"));
+    m_pages["04_editor/02scripts"] = PropertyPage(
+        tr("Script Editors"),
+        tr("Editor - Scripts"),
+        "04_editor/02scripts",
+        new WidgetPropEditorScripts(),
+        QIcon(":/application/icons/preferences-general.png"));
+    m_pages["04_editor/03syntax"] = PropertyPage(
+        tr("Syntax and Style Checks"),
+        tr("Editor - Syntax and Style Checks"),
+        "04_editor/03syntax",
+        new WidgetPropEditorCodeCheckers(),
+        QIcon(":/application/icons/preferences-general.png"));
+    m_pages["04_editor/04calltips"] = PropertyPage(
+        tr("Calltips and Help Tooltips"),
+        tr("Editor - Calltips and Help Tooltips"),
+        "04_editor/04calltips",
+        new WidgetPropEditorCalltips(),
+        QIcon(":/application/icons/preferences-general.png"));
+    m_pages["04_editor/05autocompletion"] = PropertyPage(
+        tr("Auto Completion"),
+        tr("Editor - Auto Completion"),
+        "04_editor/05autocompletion",
+        new WidgetPropEditorAutoCompletion(),
+        QIcon(":/application/icons/preferences-general.png"));
+    m_pages["04_editor/06gotoassignment"] = PropertyPage(
+        tr("Goto Assignment"),
+        tr("Editor - Goto Assignment"),
+        "04_editor/06gotoassignment",
+        new WidgetPropEditorGotoAssignment(),
+        QIcon(":/application/icons/preferences-general.png"));
+    m_pages["04_editor/07autocodeformat"] = PropertyPage(
+        tr("Auto Code Format"),
+        tr("Editor - Auto Code Format"),
+        "04_editor/07autocodeformat",
+        new WidgetPropEditorAutoCodeFormat(),
+        QIcon(":/application/icons/preferences-general.png"));
+    m_pages["04_editor/08styles"] = PropertyPage(
+        tr("Styles"),
+        tr("Editor - Styles"),
+        "04_editor/08styles",
+        new WidgetPropEditorStyles(),
+        QIcon(":/application/icons/preferences-general.png"));
+    m_pages["04_editor/09docstringGenerator"] = PropertyPage(
+        tr("Docstring Generator"),
+        tr("Editor - Docstring Generator"),
+        "04_editor/09docstringGenerator",
+        new WidgetPropEditorDocstringGenerator(),
+        QIcon(":/application/icons/preferences-general.png"));
+    m_pages["01_console"] = PropertyPage(
+        tr("Console"),
+        tr("Console - Please Choose Subpage"),
+        "01_console",
+        NULL,
+        QIcon(":/application/icons/editSmartIndent.png"));
+    m_pages["01_console/01general"] = PropertyPage(
+        tr("General"),
+        tr("Console - General"),
+        "01_console/01general",
+        new WidgetPropConsoleGeneral(),
+        QIcon(":/application/icons/editSmartIndent.png"));
+    m_pages["01_console/02lineWrap"] = PropertyPage(
+        tr("Line Wrap"),
+        tr("Console - Line Wrap"),
+        "01_console/02lineWrap",
+        new WidgetPropConsoleWrap(),
+        QIcon(":/application/icons/editSmartIndent.png"));
+    m_pages["01_console/03commandHistory"] = PropertyPage(
+        tr("Command History"),
+        tr("Console - Command History"),
+        "01_console/03commandHistory",
+        new WidgetPropConsoleLastCommand(),
+        QIcon(":/application/icons/editSmartIndent.png"));
+    m_pages["03_python"] = PropertyPage(
+        tr("Python"),
+        tr("Python - Please Choose Subpage"),
+        "03_python",
+        NULL,
+        QIcon(":/application/icons/preferences-python.png"));
+    m_pages["03_python/01general"] = PropertyPage(
+        tr("General"),
+        tr("Python - General"),
+        "03_python/01general",
+        new WidgetPropPythonGeneral(),
+        QIcon(":/application/icons/preferences-python.png"));
+    m_pages["03_python/02startup"] = PropertyPage(
+        tr("Startup"),
+        tr("Python - Startups"),
+        "03_python/02startup",
+        new WidgetPropPythonStartup(),
+        QIcon(":/application/icons/preferences-python.png"));
+    m_pages["00_general"] = PropertyPage(
+        tr("General"),
+        tr("General - Please Choose Subpage"),
+        "00_general",
+        NULL,
+        QIcon(":/application/icons/itomicon/itomLogo4.svg"));
+    m_pages["00_general/01application"] = PropertyPage(
+        tr("Application"),
+        tr("General - Application"),
+        "00_general/01application",
+        new WidgetPropGeneralApplication(),
+        QIcon(":/application/icons/itomicon/itomLogo4.svg"));
+    m_pages["00_general/02language"] = PropertyPage(
+        tr("Language"),
+        tr("General - Language"),
+        "00_general/02language",
+        new WidgetPropGeneralLanguage(),
+        QIcon(":/classNavigator/icons/global.png"));
+    m_pages["00_general/03helpViewer"] = PropertyPage(
+        tr("Plugin Help Viewer"),
+        tr("General - Plugin Help Viewer"),
+        "00_general/03helpViewer",
+        new WidgetPropHelpDock(),
+        QIcon(":/plugins/icons/plugin.png"));
+    m_pages["00_general/04styles"] = PropertyPage(
+        tr("Styles and Themes"),
+        tr("General - Styles and Themes"),
+        "00_general/04styles",
+        new WidgetPropGeneralStyles(),
+        QIcon(":/application/icons/color-icon.png"));
+    m_pages["05_workspace"] = PropertyPage(
+        tr("Workspace"),
+        tr("Workspace - Please Choose Subpage"),
+        "05_workspace",
+        NULL,
+        QIcon(":/workspace/icons/import-prop-icon.png"));
+    m_pages["05_workspace/01unpack"] = PropertyPage(
+        tr("Import To Workspace"),
+        tr("Workspace - Import"),
+        "05_workspace/01unpack",
+        new WidgetPropWorkspaceUnpack(),
+        QIcon(":/workspace/icons/import-prop-icon.png"));
+    m_pages["06_plugins"] = PropertyPage(
+        tr("Plugins"),
+        tr("Plugins - Please Choose Subpage"),
+        "06_plugins",
+        NULL,
+        QIcon(":/plugins/icons/plugin.png"));
+    m_pages["06_plugins/02algorithms"] = PropertyPage(
+        tr("Algorithms and Filters"),
+        tr("Plugins - Algorithms And Filters"),
+        "06_plugins/02algorithms",
+        new WidgetPropPluginsAlgorithms(),
+        QIcon(":/plugins/icons/pluginAlgo.png"));
+    m_pages["06_plugins/03actuators"] = PropertyPage(
+        tr("Actuators"),
+        tr("Plugins - Actuators"),
+        "06_plugins/03actuators",
+        new WidgetPropPluginsActuators(),
+        QIcon(":/plugins/icons/pluginActuator.png"));
+    m_pages["07_plots"] = PropertyPage(
+        tr("Plots And Figures"),
+        tr("Plots and Figures - Please Choose Subpage"),
+        "07_plots",
+        NULL,
+        QIcon(":/plots/icons/itom_icons/3d.png"));
+    m_pages["07_plots/01defaults"] = PropertyPage(
+        tr("Default Plots"),
+        tr("Plots and Figures - Defaults"),
+        "07_plots/01defaults",
+        new WidgetPropFigurePlugins(),
+        QIcon(":/plots/icons/itom_icons/2d.png"));
+    m_pages["07_plots/02defaultSettings"] = PropertyPage(
+        tr("Default Style Settings"),
+        tr("Plots And Figures - Default Style Settings"),
+        "07_plots/02defaultSettings",
+        new WidgetPropGeneralPlotSettings(),
+        QIcon(":/plots/icons/itom_icons/2d.png"));
+    m_pages["07_plots/03palettes"] = PropertyPage(
+        tr("Palettes Settings"),
+        tr("Plots and Figures - Palettes Settings"),
+        "07_plots/03palettes",
+        new WidgetPropPalettes(),
+        QIcon(":/plots/icons/itom_icons/color.png"));
 
     PropertyPage page;
     QStringList paths;
 
-    foreach(page, m_pages)
+    foreach (page, m_pages)
     {
         paths = page.m_fullname.split("/");
         addPage(page, m_pCategories->invisibleRootItem(), paths);
@@ -233,9 +390,10 @@ void DialogProperties::initPages()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DialogProperties::addPage(PropertyPage page, QTreeWidgetItem *parent, QStringList remainingPathes)
+void DialogProperties::addPage(
+    PropertyPage page, QTreeWidgetItem* parent, QStringList remainingPathes)
 {
-    QTreeWidgetItem *newItem;
+    QTreeWidgetItem* newItem;
     bool found = false;
 
     if (remainingPathes.length() == 1)
@@ -273,7 +431,9 @@ void DialogProperties::addPage(PropertyPage page, QTreeWidgetItem *parent, QStri
 
         if (!found)
         {
-            qDebug() << "it was not possible to find a parent property page with name " << remainingPathes[0] << ". This should be a child of " << parent->data(0, Qt::DisplayRole).toString();
+            qDebug() << "it was not possible to find a parent property page with name "
+                     << remainingPathes[0] << ". This should be a child of "
+                     << parent->data(0, Qt::DisplayRole).toString();
         }
     }
     else
@@ -283,7 +443,7 @@ void DialogProperties::addPage(PropertyPage page, QTreeWidgetItem *parent, QStri
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-bool DialogProperties::selectTabByKey(QString &key, QTreeWidgetItem *parent /*= NULL*/)
+bool DialogProperties::selectTabByKey(QString& key, QTreeWidgetItem* parent /*= NULL*/)
 {
     bool found = false;
 
@@ -302,9 +462,9 @@ bool DialogProperties::selectTabByKey(QString &key, QTreeWidgetItem *parent /*= 
         }
     }
 
-    if (!found) //search all child's...
+    if (!found) // search all child's...
     {
-        for(int i = 0; i < parent->childCount(); ++i)
+        for (int i = 0; i < parent->childCount(); ++i)
         {
             found = selectTabByKey(key, parent->child(i));
             if (found)
@@ -318,7 +478,7 @@ bool DialogProperties::selectTabByKey(QString &key, QTreeWidgetItem *parent /*= 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DialogProperties::categoryChanged(QTreeWidgetItem *current, QTreeWidgetItem * /*previous*/)
+void DialogProperties::categoryChanged(QTreeWidgetItem* current, QTreeWidgetItem* /*previous*/)
 {
     bool found = false;
 
@@ -370,7 +530,7 @@ void DialogProperties::apply()
 {
     PropertyPage page;
 
-    foreach(page, m_pages)
+    foreach (page, m_pages)
     {
         if (page.m_widget && page.m_visited)
         {
@@ -378,11 +538,11 @@ void DialogProperties::apply()
         }
     }
 
-    QObject *mainApplication = AppManagement::getMainApplication();
+    QObject* mainApplication = AppManagement::getMainApplication();
 
     QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
     QMetaObject::invokeMethod(mainApplication, "_propertiesChanged");
     QApplication::restoreOverrideCursor();
 }
 
-} //end namespace ito
+} // end namespace ito
