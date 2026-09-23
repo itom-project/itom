@@ -25,16 +25,15 @@
 #include "../global.h"
 
 #include <QClipboard>
+#include <qicon.h>
 #include <qmessagebox.h>
 
-namespace ito
-{
+namespace ito {
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-DialogAboutQItom::DialogAboutQItom(const QMap<QString, QString> &versionMap, QWidget *parent /*= NULL*/) :
-    QDialog(parent),
-    m_textColor(Qt::black),
-    m_linkColor(Qt::blue)
+DialogAboutQItom::DialogAboutQItom(
+    const QMap<QString, QString>& versionMap, QWidget* parent /*= NULL*/) :
+    QDialog(parent), m_textColor(Qt::black), m_linkColor(Qt::blue)
 {
     setWindowFlags(windowFlags() | Qt::WindowMaximizeButtonHint);
 
@@ -42,7 +41,8 @@ DialogAboutQItom::DialogAboutQItom(const QMap<QString, QString> &versionMap, QWi
     QFile file(":/license/about.html"); //:/license/about.html");
     if (!file.open(QIODevice::ReadOnly))
     {
-        m_aboutText = tr("Could not load file %1. Reason: %2.").arg("about.html").arg(file.errorString());
+        m_aboutText =
+            tr("Could not load file %1. Reason: %2.").arg("about.html").arg(file.errorString());
     }
 
     QTextStream in(&file);
@@ -55,7 +55,8 @@ DialogAboutQItom::DialogAboutQItom(const QMap<QString, QString> &versionMap, QWi
     bool hasAdditionalEdition = false;
 
     ui.setupUi(this);
-    ui.itomLogo->setPixmap(QPixmap(QString::fromUtf8(":/application/icons/itomicon/itomLogo3_64.png")));
+    ui.itomLogo->setPixmap(
+        QIcon(QString::fromUtf8(":/application/icons/itomicon/itomLogo4.svg")).pixmap(64, 64));
     ui.ITOLogo->setPixmap(QPixmap(QString::fromUtf8(":/application/icons/itomicon/itologo64.png")));
 
     QMapIterator<QString, QString> i(versionMap);
@@ -120,11 +121,13 @@ DialogAboutQItom::DialogAboutQItom(const QMap<QString, QString> &versionMap, QWi
     ui.txtBasic->setHtml(m_aboutText);
 
 
-    //contributors
+    // contributors
     file.setFileName(":/license/contributors.html");
     if (!file.open(QIODevice::ReadOnly))
     {
-        m_contributorsText = tr("Could not load file %1. Reason: %2.").arg("contributors.html").arg(file.errorString());
+        m_contributorsText = tr("Could not load file %1. Reason: %2.")
+                                 .arg("contributors.html")
+                                 .arg(file.errorString());
     }
     else
     {
@@ -135,11 +138,12 @@ DialogAboutQItom::DialogAboutQItom(const QMap<QString, QString> &versionMap, QWi
     ui.txtContributors->setHtml(m_contributorsText);
 
     QString licenseText;
-    //license
+    // license
     file.setFileName(":/license/COPYING.txt");
     if (!file.open(QIODevice::ReadOnly))
     {
-        licenseText = tr("Could not load file %1. Reason: %2.").arg("COPYING.txt").arg(file.errorString());
+        licenseText =
+            tr("Could not load file %1. Reason: %2.").arg("COPYING.txt").arg(file.errorString());
     }
     else
     {
@@ -149,11 +153,12 @@ DialogAboutQItom::DialogAboutQItom(const QMap<QString, QString> &versionMap, QWi
 
     ui.txtLicense->setText(licenseText);
 
-    //address
+    // address
     file.setFileName(":/license/address.html");
     if (!file.open(QIODevice::ReadOnly))
     {
-        m_addressText = tr("Could not load file %1. Reason: %2.").arg("address.html").arg(file.errorString());
+        m_addressText =
+            tr("Could not load file %1. Reason: %2.").arg("address.html").arg(file.errorString());
     }
     else
     {
@@ -167,7 +172,8 @@ DialogAboutQItom::DialogAboutQItom(const QMap<QString, QString> &versionMap, QWi
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 void DialogAboutQItom::styleTexts()
 {
-    QString cssCode = QString("p, li, b { color: %1 }; \n a { color: %2; }\n").arg(m_textColor.name(), m_linkColor.name());
+    QString cssCode = QString("p, li, b { color: %1 }; \n a { color: %2; }\n")
+                          .arg(m_textColor.name(), m_linkColor.name());
 
     QString temp;
     temp = m_aboutText;
@@ -189,14 +195,14 @@ void DialogAboutQItom::styleTexts()
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-void DialogAboutQItom::setLinkColor(const QColor &color)
+void DialogAboutQItom::setLinkColor(const QColor& color)
 {
     m_linkColor = color;
     styleTexts();
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-void DialogAboutQItom::setTextColor(const QColor &color)
+void DialogAboutQItom::setTextColor(const QColor& color)
 {
     m_textColor = color;
     styleTexts();
@@ -205,9 +211,10 @@ void DialogAboutQItom::setTextColor(const QColor &color)
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 void DialogAboutQItom::on_pushButtonCopy_clicked()
 {
-    QClipboard *clipboard = QApplication::clipboard();
+    QClipboard* clipboard = QApplication::clipboard();
     clipboard->setText(m_VersionString, QClipboard::Clipboard);
-    QMessageBox::information(this, tr("copy"), tr("The version string has been copied to the clipboard"));
+    QMessageBox::information(
+        this, tr("copy"), tr("The version string has been copied to the clipboard"));
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
@@ -216,4 +223,4 @@ void DialogAboutQItom::on_pushButton_close_clicked()
     close();
 }
 
-} //end namespace ito
+} // end namespace ito
