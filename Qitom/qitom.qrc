@@ -51,6 +51,7 @@
     </qresource>
     <qresource prefix="/application">
         <file>icons/itomicon/itomLogo4.svg</file>
+        <file>icons/itomicon/itomLogo4_128.png</file>
         <file>icons/helpAboutQt.png</file>
         <file>icons/help.png</file>
         <file>icons/scriptReference.png</file>
