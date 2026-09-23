@@ -106,7 +106,7 @@ An real-world example:
       endif()
     endfunction()
 
-    cmake_minimum_required(VERSION 3.0)
+    cmake_minimum_required(VERSION 3.12...3.29)
     set_platform(${CMAKE_SYSTEM_NAME})
 
 

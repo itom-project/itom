@@ -530,6 +530,59 @@ page of the itom property dialog.
 
 .. _gui-editor-docstring-generator:
 
+.. _gui-editor-format-on-save:
+
+Format on Save
+===============
+
+In addition to the manual code formatting feature described in the previous section,
+|itom| also provides an automatic code formatting option that is triggered whenever
+a script file is saved. When enabled, the auto code formatter is automatically invoked
+during the save operation, ensuring that your code is always formatted according to
+the configured style guidelines.
+
+**Benefits of Format on Save:**
+
+* Consistent code style without requiring manual intervention
+* Automatic formatting happens transparently during the save workflow
+* The formatted code becomes part of the saved file immediately
+* Undo functionality is available if you want to revert the formatting changes
+
+**Behavior and Workflow:**
+
+When you save a script file (using **File >> Save**, **Ctrl+S**, or the save button in the toolbar),
+the following sequence occurs if **Format on Save** is enabled:
+
+1. The current script content is passed to the configured auto code formatter
+2. If the formatter returns a modified version of the code, the script is updated with the formatted content
+3. The formatted script is then written to disk
+4. If formatting is unsuccessful, an error message is displayed and the file is saved in its current state
+
+.. note::
+
+    The file watcher that monitors external file changes is temporarily suppressed during
+    the formatting and save process to prevent spurious file change notifications.
+
+**Configuration:**
+
+The **Format on Save** feature can be enabled or disabled in the
+:ref:`auto code formatting <gui-prop-auto-code-format>` page of the itom property dialog.
+When enabled, every save operation will attempt to format the script using the configured
+formatter (e.g., **black**, **yapf**, or **autopep8**) and formatter command settings
+that you have configured.
+
+**Important Notes:**
+
+* **Format on Save** only applies when manually saving a file. It does not apply to
+  scripts that are automatically saved or reloaded from disk.
+* If the auto code formatter is not properly configured or the required Python packages
+  are not installed, the **Format on Save** feature will be disabled with a warning message.
+* The formatted code will be marked as modified (if it differs from the original), allowing
+  you to undo the formatting if desired using the **Undo** function (**Ctrl+Z**).
+* **Format on Save** and manual formatting (via **Ctrl+Alt+I** or the toolbar button)
+  use the same underlying formatter and configuration, ensuring consistent formatting
+  behavior across both workflows.
+
 Automatic Docstring Generator
 ==============================
 

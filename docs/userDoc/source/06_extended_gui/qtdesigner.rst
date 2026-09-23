@@ -2095,4 +2095,5 @@ classes :py:class:`itom.ui` and :py:class:`itom.uiItem`, both problems are prope
 :py:class:`itom.ui` and :py:class:`itom.uiItem` have thread-safe implementations and communicate with an organization
 structure, that runs in the main thread of |itom|, in order to interact with all dialogs.
 
-.. _Qt::ItemFlags: https://doc.qt.io/qt-5/qt.html#CheckFlag-enum/
+.. _Qt::ItemFlags: https://doc.qt.io/qt-6/qt.html#ItemFlag-enum
+.. _Qt::SortOrder: https://doc.qt.io/qt-6/qt.html#SortOrder-enum

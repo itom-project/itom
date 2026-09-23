@@ -50,7 +50,7 @@ pd.pivot_table(dataFrame, values="D", index=["A", "B"], columns=["C"])
 
 ###############################################################################
 # **Time series**
-indexData = pd.date_range("1/5/2022", periods=100, freq="S")
+indexData = pd.date_range("1/5/2022", periods=100, freq="s")
 timestamps = pd.Series(np.random.randint(0, 500, len(indexData)), index=indexData)
 timestamps.resample("5Min").sum()
 
@@ -69,4 +69,4 @@ ps.to_timestamp()
 ###############################################################################
 prng = pd.period_range("1990Q1", "2000Q4", freq="Q-NOV")
 ts = pd.Series(np.random.randn(len(prng)), prng)
-ts.index = (prng.asfreq("M", "e") + 1).asfreq("H", "s") + 9
+ts.index = (prng.asfreq("M", "e") + 1).asfreq("h", "s") + 9

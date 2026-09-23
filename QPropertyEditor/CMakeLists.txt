@@ -41,7 +41,13 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 # add 3rd party packages
 itom_find_package_qt(ON Core PrintSupport Widgets Designer Xml Svg UiTools)
-find_package(OpenCV COMPONENTS core REQUIRED)
+# Require OpenCV 3.0 or higher (supports 3.x, 4.x, and 5.0+)
+find_package(OpenCV REQUIRED COMPONENTS core)
+
+# Verify OpenCV version is 3.0 or higher
+if(OpenCV_VERSION VERSION_LESS "3.0")
+	message(FATAL_ERROR "OpenCV version ${OpenCV_VERSION} found, but version 3.0 or higher is required (supports 3.x, 4.x, and 5.0+)")
+endif()
 
 # set some preprocessor directives
 add_definitions(-DQPROPERTYEDITOR_DLL -D_QPROPERTYEDITOR_DLL)

@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut für Technische Optik (ITO),
+    Copyright (C) 2026, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of itom.
@@ -20,8 +20,7 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef DIALOGREPLACE_H
-#define DIALOGREPLACE_H
+#pragma once
 
 #include <QtGui>
 #include <qdialog.h>
@@ -42,8 +41,7 @@ public:
     DialogReplace(QWidget *parent = 0);
     ~DialogReplace() {}
 
-//    void setData(const QString &defaultText, const int &lineFrom, const int &indexFrom, const int &lineTo, const int &indexTo);
-    void setData(const QString &defaultText, const bool &rowSelected);
+    void setData(const QString& defaultText, bool hasSelection, const bool& rowSelected);
 
 protected:
     virtual void closeEvent(QCloseEvent *event);
@@ -75,4 +73,3 @@ signals:
 
 } //end namespace ito
 
-#endif

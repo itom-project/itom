@@ -1,7 +1,7 @@
 # ***********************************************************************
 #    itom software
 #    URL: http://www.uni-stuttgart.de/ito
-#    Copyright (C) 2016, Institut für Technische Optik (ITO),
+#    Copyright (C) 2026, Institut für Technische Optik (ITO),
 #    Universität Stuttgart, Germany#
 #
 #    This file is part of itom.
@@ -24,6 +24,7 @@ import sys
 import inspect
 import gc
 import __main__
+import os
 from types import (
     ModuleType,
     FunctionType,
@@ -34,6 +35,21 @@ from types import (
 
 
 def getModules():
+    """Returns a sorted list of all loaded modules.
+
+    Every item in the returned list corresponds to one loaded
+    module. It is sorted by the module name in ascending order.
+
+    Every item in the list is a list with three values:
+
+    [module name, path of the module or '<built-in>', type]
+
+    The type enum is
+
+    0: module outside of python path
+    1: built-in module, that is not located in a python file
+    2: module, whose python file is located in the python path.
+    """
     mods = sys.modules
     result = [[key] + getModuleFile(value) for key, value in mods.items()]
     result = sorted(result, key=lambda item: item[0])
@@ -41,25 +57,29 @@ def getModules():
 
 
 def getModuleFile(mod):
+    # canonical paths of the python path
+    python_pathes = (
+        os.path.abspath(sys.prefix),
+        os.path.abspath(sys.exec_prefix)
+    )
+
     try:
-        # print(mod)
-        p = inspect.getfile(mod)
-        # print(p)
-        if p.startswith((sys.prefix, sys.exec_prefix)):
+        p = os.path.abspath(inspect.getfile(mod))
+
+        if p.startswith(python_pathes):
             return [p, 2]
         else:
             return [p, 0]
-    except Exception as e:
-        # print("Error:", e)
+    except Exception:
         return ["<built-in>", 1]
 
 
 def reloadModules(modNames):
-    import imp
+    import importlib as imp
 
     res = []
     for i in modNames:
-        if sys.modules[i] != None:
+        if sys.modules[i] is not None:
             try:
                 imp.reload(sys.modules[i])
             except SyntaxError as err:

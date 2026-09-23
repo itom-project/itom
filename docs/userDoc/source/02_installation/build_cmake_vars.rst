@@ -12,6 +12,7 @@ Environment Variables are set in the system environment and can be set in
 via the command terminal.
 
 **Linux/MaxOS**:
+
 .. code-block:: bash
 
    export <VARIABLE_NAME>=<Value>
@@ -173,7 +174,7 @@ Cmake Variables:
    On Linux Systems you need to separately install vtk-dev(even if it does not
    fit the version you want to use) for one or two headers that are missing otherwise...
 
-.. |cmakelist_eigen_root| replace::
+.. |cmakelist_eigen_root2| replace::
 
    Path to folder containing subfolders "build",
    "Eigen", "unsupported"
@@ -243,7 +244,7 @@ Cmake Variables:
 +----------------------------+--------------------------------------------+
 | **VTK_DIR**                | |cmakelist_vtk_dir|                        |
 +----------------------------+--------------------------------------------+
-| **Eigen_ROOT**              | |cmakelist_eigen_root|                      |
+| **Eigen_ROOT**             | |cmakelist_eigen_root2|                    |
 +----------------------------+--------------------------------------------+
 | **PCL_DIR**                | |cmakelist_pcl_dir|                        |
 +----------------------------+--------------------------------------------+

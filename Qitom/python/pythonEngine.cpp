@@ -85,7 +85,7 @@
 #include <langinfo.h>
 #endif
 
-#include "opencv2/core/core_c.h"
+#include "opencv2/core.hpp"
 
 namespace ito
 {
@@ -1264,7 +1264,7 @@ PyObject* PythonEngine::setPyErrFromException(const std::exception &exc)
 
     if ((p_cvexc = dynamic_cast<const cv::Exception*>(p_exc)) != NULL)
     {
-        const char* errorStr = cvErrorStr(p_cvexc->code);
+        const char* errorStr = p_cvexc->err.c_str();
         return PyErr_Format(PyExc_RuntimeError, "OpenCV Error: %s (%s) in %s, file %s, line %d",
             errorStr, p_cvexc->err.c_str(), p_cvexc->func.size() > 0 ?
             p_cvexc->func.c_str() : "unknown function", p_cvexc->file.c_str(), p_cvexc->line);
@@ -4787,7 +4787,9 @@ PyObject* PythonEngine::PyDbgCommandLoop(PyObject * /*pSelf*/, PyObject *pArgs)
     if (!PyArg_ParseTuple(pArgs, "OO", &self, &frame))
     {
         Py_CLEAR(pArgs);
-        return Py_None;
+        // PyArg_ParseTuple already raised an exception. Returning Py_None without
+        // incrementing its reference count would corrupt the reference count of None.
+        return nullptr;
     }
 
     temp = PyObject_GetAttrString(frame, "f_lineno");
@@ -6245,7 +6247,18 @@ ito::RetVal PythonEngine::pythonGetClearAllValues()
     {
         PyGILState_STATE gstate;
         gstate = PyGILState_Ensure();
-        PyObject_CallMethod(m_itomFunctions, "getClearAllValues", "");
+        PyObject *result = PyObject_CallMethod(m_itomFunctions, "getClearAllValues", ""); //new reference
+
+        if (result == NULL)
+        {
+            PyErr_PrintEx(0);
+            PyErr_Clear();
+        }
+        else
+        {
+            Py_DECREF(result);
+        }
+
         PyGILState_Release(gstate);
     }
     return retVal;
@@ -6270,7 +6283,18 @@ ito::RetVal PythonEngine::pythonClearAll()
     else
     {
         PyGILState_STATE gstate = PyGILState_Ensure();
-        PyObject_CallMethod(m_itomFunctions, "clearAll", "");
+        PyObject *result = PyObject_CallMethod(m_itomFunctions, "clearAll", ""); //new reference
+
+        if (result == NULL)
+        {
+            PyErr_PrintEx(0);
+            PyErr_Clear();
+        }
+        else
+        {
+            Py_DECREF(result);
+        }
+
         updatePythonWorkspaces(DictUpdate, DictNoAction, false);
         PyGILState_Release(gstate);
     }

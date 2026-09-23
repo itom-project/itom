@@ -60,4 +60,5 @@ Create Setup for Windows
   - got to "[itomProject]\build\itom\setup\win64\PythonRequirements"
   - run: "python -m pip download --prefer-binary -r requirementsMandatory.txt"
   - run: "python -m pip download --prefer-binary -r requirementsOptional.txt"
+
 5. To create a Windows Setup install open the file build\itom\setup\win64\itom_setup_win64.iss in the InnoSetupCompiler and run it accordingly.

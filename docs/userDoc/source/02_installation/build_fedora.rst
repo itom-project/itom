@@ -22,7 +22,7 @@ for |itom| (comments after the hash-tag should not be copied to the command line
     sudo dnf install qt5 qt5-devel  # only Fedora < 35
     sudo dnf install qt5-qtbase-devel qt5-qtbase-static qt5-qttools-devel qt5-qttools-static qt5-qtwebengine-devel qt5-qtsvg-devel  # Fedora >= 35
     sudo dnf install opencv opencv-devel
-
+    
     sudo dnf install libv4l libv4l-devel #this is optional to get the video for linux drivers
     sudo dnf install libusb-devel systemd-devel #this is optional to get the libusb drivers
     sudo dnf install xerces-c xerces-c-devel xsd #this is optional to being able to compile the x3p plugin
@@ -50,6 +50,7 @@ to adjust some paths below. Currently, Qt5 is still built without webkit-support
 Therefore, the built-in helpviewer of itom has to be disabled. For building itom **without** point cloud support use:
 
 .. code-block:: bash
+
     git clone --recursive --remote git@github.com:itom-project/itomProject.git
     cd itomproject
     git submodule foreach --recursive git checkout master
@@ -63,11 +64,13 @@ Therefore, the built-in helpviewer of itom has to be disabled. For building itom
 For these versions, CMake is able to detect Qt5 and Python automatically. Additionally, the qt5 webengine is available:
 
 .. code-block:: bash
+
     cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=OFF ../
 
 **With** point cloud support use:
 
 .. code-block:: bash
+
     cmake -G "Unix Makefiles" -DBUILD_WITH_PCL=ON -DPYTHON_LIBRARY=/usr/lib64/libpython3.5m.so -DPYTHON_INCLUDE_DIR=/usr/include/python3.5m -DQt_Prefix_DIR=/usr/lib64 -DBUILD_WITH_HELPVIEWER=OFF -DPCL_DIR=/usr/lib64/cmake/pcl -DBOOST_INCLUDEDIR=/usr/include -DBOOST_LIBRARYDIR=/usr/lib64 -DITOM_SDK_DIR=../itom/SDK ../
 
 Hints

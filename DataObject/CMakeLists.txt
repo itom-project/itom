@@ -40,7 +40,13 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURC
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 # add 3rd party packages
-find_package(OpenCV COMPONENTS core REQUIRED)
+find_package(OpenCV REQUIRED COMPONENTS core)
+
+# Verify OpenCV version is 3.0 or higher
+if(OpenCV_VERSION VERSION_LESS "3.0")
+    message(FATAL_ERROR "OpenCV version ${OpenCV_VERSION} found, but version 3.0 or higher is required (supports 3.x, 4.x, and 5.0+)")
+endif()
+message(STATUS "Found OpenCV version: ${OpenCV_VERSION}")
 
 # set some preprocessor directives
 add_definitions(-DDATAOBJECT_DLL -D_DATAOBJECT_DLL)
@@ -49,7 +55,6 @@ include_directories(
 )
 
 link_directories(
-
 )
 
 set(libSrcs
