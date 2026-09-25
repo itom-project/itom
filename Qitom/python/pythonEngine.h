@@ -167,6 +167,9 @@ public:
     //!< thread-safe method (can be called from any thread) to enqueue a jedi rename request
     void enqueueJediRenameRequest(const ito::JediRenameRequest& request);
 
+    //!< returns the jedi runner, used by the (legacy) jedi language server backend.
+    QSharedPointer<PythonJediRunner> getJediRunner() const { return m_jediRunner; }
+
     static bool isInterruptQueued();
     static const PythonEngine *getInstance();
 

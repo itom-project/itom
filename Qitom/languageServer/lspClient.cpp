@@ -28,6 +28,8 @@
 #include <QRegularExpression>
 #include <QUrl>
 
+#include <algorithm>
+
 namespace ito {
 
 //--------------------------------------------------------------------------------------
@@ -64,6 +66,7 @@ bool LspClient::start(const QString& rootUri, const QStringList& serverArgs)
     m_process->setProcessChannelMode(QProcess::SeparateChannels);
 
     connect(m_process, &QProcess::readyReadStandardOutput, this, &LspClient::onProcessReadyRead);
+    connect(m_process, &QProcess::readyReadStandardError, this, &LspClient::onProcessReadyReadStandardError);
 
     // Qt 5.6 compatible: use old-style signal for QProcess::finished
     connect(m_process, static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
@@ -185,6 +188,18 @@ void LspClient::didClose(const QString& uri)
 }
 
 //--------------------------------------------------------------------------------------
+QJsonObject LspClient::createPosition(int line, int character)
+{
+    // 'line' and 'character' of a LSP Position are of type uinteger. A negative value
+    // would be rejected by the language server with a deserialization error, therefore
+    // clamp both values here.
+    QJsonObject position;
+    position["line"] = std::max(0, line);
+    position["character"] = std::max(0, character);
+    return position;
+}
+
+//--------------------------------------------------------------------------------------
 int LspClient::requestCompletion(const QString& uri, int line, int character)
 {
     if (m_state != Running) {
@@ -198,10 +213,7 @@ int LspClient::requestCompletion(const QString& uri, int line, int character)
     textDocument["uri"] = uri;
     params["textDocument"] = textDocument;
 
-    QJsonObject position;
-    position["line"] = line;
-    position["character"] = character;
-    params["position"] = position;
+    params["position"] = createPosition(line, character);
 
     sendRequest("textDocument/completion", params, reqId);
     return reqId;
@@ -221,10 +233,7 @@ int LspClient::requestSignatureHelp(const QString& uri, int line, int character)
     textDocument["uri"] = uri;
     params["textDocument"] = textDocument;
 
-    QJsonObject position;
-    position["line"] = line;
-    position["character"] = character;
-    params["position"] = position;
+    params["position"] = createPosition(line, character);
 
     sendRequest("textDocument/signatureHelp", params, reqId);
     return reqId;
@@ -244,10 +253,7 @@ int LspClient::requestDefinition(const QString& uri, int line, int character)
     textDocument["uri"] = uri;
     params["textDocument"] = textDocument;
 
-    QJsonObject position;
-    position["line"] = line;
-    position["character"] = character;
-    params["position"] = position;
+    params["position"] = createPosition(line, character);
 
     sendRequest("textDocument/definition", params, reqId);
     return reqId;
@@ -267,10 +273,7 @@ int LspClient::requestHover(const QString& uri, int line, int character)
     textDocument["uri"] = uri;
     params["textDocument"] = textDocument;
 
-    QJsonObject position;
-    position["line"] = line;
-    position["character"] = character;
-    params["position"] = position;
+    params["position"] = createPosition(line, character);
 
     sendRequest("textDocument/hover", params, reqId);
     return reqId;
@@ -290,10 +293,7 @@ int LspClient::requestRename(const QString& uri, int line, int character, const 
     textDocument["uri"] = uri;
     params["textDocument"] = textDocument;
 
-    QJsonObject position;
-    position["line"] = line;
-    position["character"] = character;
-    params["position"] = position;
+    params["position"] = createPosition(line, character);
 
     params["newName"] = newName;
 
@@ -370,6 +370,29 @@ void LspClient::onProcessReadyRead()
 {
     m_messageBuffer.append(m_process->readAllStandardOutput());
     processMessages();
+}
+
+//--------------------------------------------------------------------------------------
+void LspClient::onProcessReadyReadStandardError()
+{
+    // The server reports startup problems (e.g. a missing or invalid command line
+    // argument) via stderr only. Log it line by line, else such errors stay invisible.
+    m_stdErrBuffer.append(m_process->readAllStandardError());
+
+    int idx;
+
+    while ((idx = m_stdErrBuffer.indexOf('\n')) >= 0)
+    {
+        const QString line =
+            QString::fromUtf8(m_stdErrBuffer.left(idx)).trimmed();
+        m_stdErrBuffer.remove(0, idx + 1);
+
+        if (!line.isEmpty())
+        {
+            qWarning() << "LspClient <<< stderr:" << line;
+            emit standardErrorReceived(line);
+        }
+    }
 }
 
 //--------------------------------------------------------------------------------------
@@ -576,8 +599,13 @@ QJsonObject LspClient::createInitializeParams(const QString& rootUri)
     QJsonObject signatureHelp;
     QJsonObject signatureInformation;
     QJsonObject parameterInformation;
+    // the label of a parameter is requested as plain string and not as a pair of
+    // offsets into the label of the signature.
     parameterInformation["labelOffsetSupport"] = false;
     signatureInformation["parameterInformation"] = parameterInformation;
+    // announce, that a single SignatureInformation may override the active parameter
+    // of the SignatureHelp object (since LSP 3.16).
+    signatureInformation["activeParameterSupport"] = true;
     signatureHelp["signatureInformation"] = signatureInformation;
     textDocument["signatureHelp"] = signatureHelp;
 
@@ -590,6 +618,21 @@ QJsonObject LspClient::createInitializeParams(const QString& rootUri)
 //--------------------------------------------------------------------------------------
 void LspClient::onProcessFinished(int exitCode, QProcess::ExitStatus exitStatus)
 {
+    // report a possibly incomplete last line of the standard error output
+    onProcessReadyReadStandardError();
+
+    if (!m_stdErrBuffer.isEmpty())
+    {
+        const QString line = QString::fromUtf8(m_stdErrBuffer).trimmed();
+        m_stdErrBuffer.clear();
+
+        if (!line.isEmpty())
+        {
+            qWarning() << "LspClient <<< stderr:" << line;
+            emit standardErrorReceived(line);
+        }
+    }
+
     qDebug() << "LspClient: Server process finished. Exit code:" << exitCode;
 
     if (m_state != ShuttingDown && m_state != Stopped) {

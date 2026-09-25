@@ -62,11 +62,11 @@ public:
     virtual BackendType backendType() const override { return ZubanLS; }
     virtual bool isAvailable() const override;
     virtual bool initialize(const QString& includeItomImportString) override;
-    virtual void requestCompletion(const JediCompletionRequest& request) override;
-    virtual void requestCalltip(const JediCalltipRequest& request) override;
-    virtual void requestGoToAssignment(const JediAssignmentRequest& request) override;
-    virtual void requestGetHelp(const JediGetHelpRequest& request) override;
-    virtual void requestRename(const JediRenameRequest& request) override;
+    virtual int requestCompletion(const JediCompletionRequest& request) override;
+    virtual int requestCalltip(const JediCalltipRequest& request) override;
+    virtual int requestGoToAssignment(const JediAssignmentRequest& request) override;
+    virtual int requestGetHelp(const JediGetHelpRequest& request) override;
+    virtual int requestRename(const JediRenameRequest& request) override;
 
     /**
      * @brief Set the path to the ZubanLS executable
@@ -99,14 +99,18 @@ private:
      * @brief Find ZubanLS executable path
      * 
      * Search order:
-     * 1. Check settings: CodeEditor/zubanLsPath
-     * 2. If settings path exists and is valid, use it
+     * 1. Check settings: CodeEditor/zubanLsPath. If this path exists and is valid, use it.
+     * 2. Check the scripts subdirectory ('Scripts' on Windows, 'bin' else) of the
+     *    Python root directory, that is used by itom, for the executable 'zuban'.
      * 3. Otherwise, search in system PATH using 'where'/'which'
      * 4. Return empty string if not found
      * 
      * @return Path to zuban executable, or empty string if not found
      */
     QString findZubanExecutable() const;
+
+    //!< returns true if the given path points to an existing, executable file.
+    static bool isExecutableFile(const QString& path);
 
     void ensureDocumentOpen(const QString& uri, const QString& source);
     int trackRequest(int lspRequestId, const QPointer<QObject>& sender, const QByteArray& callbackName = QByteArray());

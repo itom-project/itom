@@ -40,6 +40,7 @@
 
 
 #include "../../python/pythonJedi.h"
+#include "../../languageServer/languageServerBackend.h"
 
 #include "../utils/utils.h"
 #include "../toolTip.h"
@@ -76,6 +77,13 @@ private slots:
     void onKeyReleased(QKeyEvent *e);
     void onJediCalltipResultAvailable(QVector<ito::JediCalltip> calltips);
 
+    //!< called, if the active language server backend provides the requested calltips.
+    void onCalltipReady(int requestId, QVector<ito::JediCalltip> calltips);
+
+    //!< called, once the language server manager finished the (asynchronous)
+    //!< initialization of its backend. A deferred calltip request is re-issued then.
+    void onBackendChanged();
+
 signals:
     //void jediCalltipRequested(const QString &source, int line, int col, const QString &path, const QString &encoding, QByteArray callbackFctName);
 
@@ -83,10 +91,35 @@ protected:
     void requestCalltip(const QString &source, int line, int col, const QString &encoding);
     bool isLastChardEndOfWord() const;
 
+    //!< connects to the calltipReady signal of the given backend, if not yet done.
+    void connectToBackend(ILanguageServerBackend* backend);
+
+    //!< stores the given request until the language server backend is initialized.
+    void deferCalltipRequest(const QString &source, int line, int col, const QString &encoding);
+
 private:
     QObject *m_pPythonEngine;
     QList<int> m_disablingKeys;
     int m_requestCount;
+
+    //!< the backend, whose calltipReady signal is currently connected (no ownership).
+    QPointer<ILanguageServerBackend> m_pConnectedBackend;
+
+    //!< id of the pending calltip request, or -1 if no request is pending.
+    int m_pendingCalltipId;
+
+    //!< true, if a calltip was requested before the backend was available. The
+    //!< request is then re-issued, once backendChanged() is emitted.
+    bool m_hasDeferredRequest;
+
+    //!< parameters of the deferred calltip request (only valid if m_hasDeferredRequest).
+    QString m_deferredSource;
+    QString m_deferredEncoding;
+    int m_deferredLine;
+    int m_deferredCol;
+
+    //!< connection to LanguageServerManager::backendChanged, established on demand.
+    QMetaObject::Connection m_backendChangedConnection;
 };
 
 } //end namespace ito

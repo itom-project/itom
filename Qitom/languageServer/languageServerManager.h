@@ -26,6 +26,7 @@
 #include <qobject.h>
 #include <qsharedpointer.h>
 #include <qstring.h>
+#include <qtimer.h>
 
 #include "languageServerBackend.h"
 
@@ -51,10 +52,14 @@ public:
     void shutdown();
 
     /**
-     * @brief Get the currently active language server backend
+     * @brief Get the currently active language server backend.
+     *
+     * The backend is created lazily at the first call, based on the setting
+     * CodeEditor/useZubanLanguageServer.
+     *
      * @return The active backend, or nullptr if none is available
      */
-    ILanguageServerBackend* activeBackend() const;
+    ILanguageServerBackend* activeBackend();
 
     /**
      * @brief Check if a language server backend is available
@@ -69,14 +74,46 @@ public:
 signals:
     void backendChanged();
 
+private slots:
+    //!< the pending backend reported, that it is ready to accept requests.
+    void onPendingBackendInitialized();
+
+    //!< the pending backend reported an error during its initialization.
+    void onPendingBackendError(const QString& errorMessage);
+
+    //!< the pending backend did not report its successful initialization in time.
+    void onPendingBackendTimeout();
+
 private:
     explicit LanguageServerManager(QObject* parent = nullptr);
     ~LanguageServerManager();
 
-    void createBackendFromSettings(PythonEngine* pythonEngine);
+    //!< creates the backend, according to the setting CodeEditor/useZubanLanguageServer.
+    //!< The python engine is only required and obtained for the legacy jedi backend.
+    void createBackendFromSettings();
+
+    //!< creates the legacy jedi backend, that is used if the zuban language server
+    //!< is either disabled or could not be initialized.
+    void createJediFallbackBackend();
+
+    //!< disconnects the pending backend and stops the timeout timer.
+    void resetPendingBackend();
 
     static LanguageServerManager* m_instance;
     QSharedPointer<ILanguageServerBackend> m_backend;
+
+    //!< backend, whose asynchronous initialization is currently awaited.
+    //!< It only becomes the active backend after its initialized() signal.
+    QSharedPointer<ILanguageServerBackend> m_pendingBackend;
+
+    //!< guards the lazy creation, such that the backend is not created again
+    //!< while the initialization of the pending backend is still in progress.
+    bool m_backendCreationStarted;
+
+    //!< limits the time, the asynchronous initialization of a backend may take.
+    QTimer m_pendingBackendTimer;
+
+    //!< only required for the legacy jedi language server (nullptr, if not yet needed).
     PythonEngine* m_pythonEngine;
 };
 

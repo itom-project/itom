@@ -244,8 +244,19 @@ signals:
      */
     void diagnosticsReceived(const QString& uri, const QJsonArray& diagnostics);
 
+    /**
+     * @brief Emitted for every line, the server printed to its standard error channel.
+     *
+     * The language server usually reports startup problems (e.g. an invalid command
+     * line) via stderr only. Therefore this output is forwarded for logging purposes.
+     *
+     * @param message one line of the standard error output of the server process
+     */
+    void standardErrorReceived(const QString& message);
+
 private slots:
     void onProcessReadyRead();
+    void onProcessReadyReadStandardError();
     void onProcessFinished(int exitCode, QProcess::ExitStatus exitStatus);
     void onProcessError(QProcess::ProcessError error);
 
@@ -267,6 +278,9 @@ private:
     int nextRequestId();
     QJsonObject createInitializeParams(const QString& rootUri);
 
+    //!< creates a LSP Position object from a 0-based line and character value.
+    static QJsonObject createPosition(int line, int character);
+
     // State
     State m_state;
     QString m_serverExecutable;
@@ -282,6 +296,9 @@ private:
 
     // Message buffer for streaming JSON-RPC
     QByteArray m_messageBuffer;
+
+    // Buffer for the standard error output of the server, that is reported line by line
+    QByteArray m_stdErrBuffer;
 
     // Server capabilities (from initialize response)
     QJsonObject m_serverCapabilities;

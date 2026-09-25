@@ -3,6 +3,10 @@
 #include <qdir.h>
 #include <qstandardpaths.h>
 
+#ifdef Q_OS_WIN
+#include <qt_windows.h>
+#endif
+
 
 namespace ito {
 
@@ -100,14 +104,95 @@ RetVal Logger::copyLog(QString directory, ItomSharedSemaphore* waitCond)
  *
  * qInstallMessageHandler can only register a static method so this is used to call handleMessage on
  * every Logger instance.
+ *
+ * Under Windows, the message is additionally sent to the debugger (e.g. the output window
+ * of Visual Studio), if a debugger is currently attached. This is necessary, since this
+ * message handler replaces the default handler of Qt, that would do this on its own.
  */
 void Logger::s_messageHandler(QtMsgType type, const QMessageLogContext& context, const QString& msg)
 {
+    s_outputToDebugger(type, context, msg);
+
     QVectorIterator<Logger*> i(s_instances);
     while (i.hasNext())
     {
         i.next()->handleMessage(type, context, msg);
     }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/**
+ * @brief sends the given message to an attached debugger (Windows only).
+ *
+ * The message is formatted as 'file(line): [type] message', such that a double click
+ * on the entry in the output window of Visual Studio jumps to the corresponding
+ * position in the source code. An user defined QT_MESSAGE_PATTERN is respected.
+ *
+ * This method does nothing on other operating systems or if no debugger is attached.
+ */
+void Logger::s_outputToDebugger(
+    QtMsgType type, const QMessageLogContext& context, const QString& msg)
+{
+#ifdef Q_OS_WIN
+    if (!IsDebuggerPresent())
+    {
+        // avoid any overhead if itom is not started from a debugger
+        return;
+    }
+
+    QString text;
+
+    if (qEnvironmentVariableIsSet("QT_MESSAGE_PATTERN"))
+    {
+        // the user defined an own pattern, that should be respected.
+        text = qFormatLogMessage(type, context, msg);
+    }
+    else
+    {
+        QString typeName;
+
+        switch (type)
+        {
+        case QtDebugMsg:
+            typeName = "qDebug";
+            break;
+        case QtWarningMsg:
+            typeName = "qWarning";
+            break;
+        case QtCriticalMsg:
+            typeName = "qCritical";
+            break;
+        case QtFatalMsg:
+            typeName = "qFatal";
+            break;
+        default:
+            typeName = "qInfo";
+            break;
+        }
+
+        if (context.file)
+        {
+            // this format allows Visual Studio to jump to the source code position
+            // if the line in the output window is double-clicked.
+            text = QString("%1(%2): [%3] %4")
+                       .arg(context.file)
+                       .arg(context.line)
+                       .arg(typeName, msg);
+        }
+        else
+        {
+            text = QString("[%1] %2").arg(typeName, msg);
+        }
+    }
+
+    text += "\n";
+
+    OutputDebugStringW(reinterpret_cast<const wchar_t*>(text.utf16()));
+#else
+    Q_UNUSED(type)
+    Q_UNUSED(context)
+    Q_UNUSED(msg)
+#endif
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

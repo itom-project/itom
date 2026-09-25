@@ -44,6 +44,7 @@
 #include "../../widgets/scriptEditorWidget.h"
 
 #include "python/pythonEngine.h"
+#include "languageServer/languageServerManager.h"
 
 #include <qdir.h>
 #include <qtooltip.h>
@@ -54,7 +55,12 @@ PyCalltipsMode::PyCalltipsMode(const QString &name, const QString &description /
     Mode(name, description),
     QObject(parent),
     m_pPythonEngine(NULL),
-    m_requestCount(0)
+    m_requestCount(0),
+    m_pConnectedBackend(NULL),
+    m_pendingCalltipId(-1),
+    m_hasDeferredRequest(false),
+    m_deferredLine(-1),
+    m_deferredCol(-1)
 {
     m_pPythonEngine = AppManagement::getPythonEngine();
 
@@ -153,41 +159,136 @@ void PyCalltipsMode::onKeyReleased(QKeyEvent *e)
 //--------------------------------------------------------------------------------
 void PyCalltipsMode::requestCalltip(const QString &source, int line, int col, const QString &encoding)
 {
-    PythonEngine *pyEng = (PythonEngine*)m_pPythonEngine;
-
-    if (pyEng && (m_requestCount == 0))
+    if (m_requestCount != 0)
     {
-        ScriptEditorWidget *sew = qobject_cast<ScriptEditorWidget*>(editor());
-        QString filename;
-        if (sew)
-        {
-            filename = sew->getFilename();
-        }
-
-        if (filename == "")
-        {
-            filename = QDir::cleanPath(QDir::current().absoluteFilePath("__temporaryfile__.py"));
-        }
-
-        if (pyEng->tryToLoadJediIfNotYetDone())
-        {
-            m_requestCount += 1;
-
-            ito::JediCalltipRequest request;
-            request.m_callbackFctName = "onJediCalltipResultAvailable";
-            request.m_col = col;
-            request.m_line = line;
-            request.m_path = filename;
-            request.m_sender = this;
-            request.m_source = source;
-
-            pyEng->enqueueJediCalltipRequest(request);
-        }
-        else
-        {
-            onStateChanged(false);
-        }
+        return;
     }
+
+    ILanguageServerBackend* backend = LanguageServerManager::getInstance()->activeBackend();
+
+    if (!backend)
+    {
+        // The backend is created lazily and it might be initialized asynchronously
+        // (the zuban language server for instance is an external process). In this
+        // case activeBackend() returns nullptr for the moment and the manager emits
+        // backendChanged() as soon as the backend is ready. Therefore remember this
+        // request and re-issue it at that time instead of disabling the calltips.
+        deferCalltipRequest(source, line, col, encoding);
+        return;
+    }
+
+    ScriptEditorWidget *sew = qobject_cast<ScriptEditorWidget*>(editor());
+    QString filename;
+
+    if (sew)
+    {
+        filename = sew->getFilename();
+    }
+
+    if (filename == "")
+    {
+        filename = QDir::cleanPath(QDir::current().absoluteFilePath("__temporaryfile__.py"));
+    }
+
+    connectToBackend(backend);
+
+    ito::JediCalltipRequest request;
+    request.m_col = col;
+    request.m_line = line;
+    request.m_path = filename;
+    request.m_source = source;
+
+    int requestId = backend->requestCalltip(request);
+
+    if (requestId >= 0)
+    {
+        m_pendingCalltipId = requestId;
+        m_requestCount += 1;
+    }
+}
+
+//--------------------------------------------------------------------------------
+void PyCalltipsMode::deferCalltipRequest(const QString &source, int line, int col, const QString &encoding)
+{
+    // only the most recent request is kept, since an outdated calltip must not be shown.
+    m_deferredSource = source;
+    m_deferredEncoding = encoding;
+    m_deferredLine = line;
+    m_deferredCol = col;
+    m_hasDeferredRequest = true;
+
+    if (!m_backendChangedConnection)
+    {
+        m_backendChangedConnection = connect(
+            LanguageServerManager::getInstance(), &LanguageServerManager::backendChanged,
+            this, &PyCalltipsMode::onBackendChanged);
+    }
+}
+
+//--------------------------------------------------------------------------------
+void PyCalltipsMode::onBackendChanged()
+{
+    if (!m_hasDeferredRequest)
+    {
+        return;
+    }
+
+    const QString source = m_deferredSource;
+    const QString encoding = m_deferredEncoding;
+    const int line = m_deferredLine;
+    const int col = m_deferredCol;
+
+    m_hasDeferredRequest = false;
+    m_deferredSource.clear();
+    m_deferredEncoding.clear();
+    m_deferredLine = -1;
+    m_deferredCol = -1;
+
+    // the initialization of the backend may have taken a while, hence only show a
+    // calltip, if the user is still typing in this editor.
+    if (!editor() || !editor()->hasFocus())
+    {
+        return;
+    }
+
+    requestCalltip(source, line, col, encoding);
+}
+
+//--------------------------------------------------------------------------------
+void PyCalltipsMode::connectToBackend(ILanguageServerBackend* backend)
+{
+    if (backend == m_pConnectedBackend)
+    {
+        return;
+    }
+
+    if (m_pConnectedBackend)
+    {
+        disconnect(
+            m_pConnectedBackend, &ILanguageServerBackend::calltipReady,
+            this, &PyCalltipsMode::onCalltipReady);
+    }
+
+    connect(
+        backend, &ILanguageServerBackend::calltipReady,
+        this, &PyCalltipsMode::onCalltipReady);
+
+    m_pConnectedBackend = backend;
+}
+
+//--------------------------------------------------------------------------------
+void PyCalltipsMode::onCalltipReady(int requestId, QVector<ito::JediCalltip> calltips)
+{
+    // every mode is connected to the same backend, therefore only handle
+    // the result, that belongs to the request of this instance.
+    if (requestId < 0 || requestId != m_pendingCalltipId)
+    {
+        return;
+    }
+
+    m_pendingCalltipId = -1;
+
+    onJediCalltipResultAvailable(calltips);
 }
 
 //--------------------------------------------------------------------------------
