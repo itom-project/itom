@@ -93,12 +93,10 @@ protected:
 
 } // namespace
 
-// KNOWN BUG (disabled until fixed, since it crashes the test runner):
-// SliderWidgetPrivate::synchronizeSiblingWidth() and synchronizeSiblingDecimals() call
-// q->parent()->findChildren() without checking parent() for nullptr. A SliderWidget without
-// parent therefore crashes as soon as its range or decimals change. Suggested fix: return
-// early if q->parent() is nullptr. Remove the DISABLED_ prefix together with the fix.
-TEST(SliderWidgetWithoutParent, DISABLED_SetRangeDoesNotCrash)
+// Regression test: SliderWidgetPrivate::synchronizeSiblingWidth() and
+// synchronizeSiblingDecimals() formerly dereferenced q->parent() without a nullptr check,
+// such that a SliderWidget without parent crashed when its range or decimals changed.
+TEST(SliderWidgetWithoutParent, SetRangeDoesNotCrash)
 {
     SliderWidget widget;
     widget.setRange(0.0, 10.0);

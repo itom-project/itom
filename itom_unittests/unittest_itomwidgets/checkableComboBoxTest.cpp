@@ -183,13 +183,10 @@ TEST_F(CheckableComboBoxTest, PopupStaysOpenForMultipleSelection)
     EXPECT_FALSE(combo.view()->isVisible());
 }
 
-// KNOWN BUG (disabled until fixed): CheckableComboBox::eventFilter toggles
-// view()->currentIndex() on mouse release instead of the item under the mouse cursor.
-// A click on a disabled item does not change the current index, such that the previously
-// current item (here: row 0) is toggled instead. Suggested fix: use
-// view()->indexAt(mouseEvent->pos()) and check its flags. Remove the DISABLED_ prefix
-// together with the fix.
-TEST_F(CheckableComboBoxTest, DISABLED_DisabledItemCannotBeToggledByMouse)
+// Regression test: CheckableComboBox::eventFilter formerly toggled view()->currentIndex()
+// instead of the clicked item. A click on a disabled item then toggled the previously
+// current item (row 0).
+TEST_F(CheckableComboBoxTest, DisabledItemCannotBeToggledByMouse)
 {
     QStandardItemModel* model = qobject_cast<QStandardItemModel*>(combo.model());
     ASSERT_NE(model, nullptr);
