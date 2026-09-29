@@ -116,6 +116,15 @@ public:
      */
     virtual int requestRename(const JediRenameRequest& request) = 0;
 
+    /**
+     * @brief Inform the backend, that a document is not used any more.
+     *
+     * This is called if a script is closed or stored under another filename.
+     * The default implementation does nothing (e.g. for stateless backends).
+     * @param filePath path of the document, that was used for the previous requests.
+     */
+    virtual void closeDocument(const QString& filePath) { Q_UNUSED(filePath); }
+
 signals:
     /**
      * @brief Emitted when completion results are ready

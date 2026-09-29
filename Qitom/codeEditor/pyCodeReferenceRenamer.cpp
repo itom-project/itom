@@ -151,17 +151,8 @@ ito::RetVal PyCodeReferenceRenamer::rename(
 
             if (filepath.isNull())
             {
-                // unnamed file --> create a non-existing dummy filename
-                QDir currDir = QDir::currentPath();
-                int idx = 1;
-                QString filenamePattern = "__untitled%1__.py";
-
-                while (currDir.exists(filenamePattern.arg(idx)))
-                {
-                    idx++;
-                }
-
-                m_request.m_filepath = currDir.filePath(filenamePattern.arg(idx));
+                // unnamed file --> use the unique, non-existing dummy filename of the editor
+                m_request.m_filepath = sew->getLanguageServerFilename();
                 m_request.m_fileModified = true;
                 m_request.m_untitledFile = true;
                 m_request.m_untitledName = sew->getUntitledName();

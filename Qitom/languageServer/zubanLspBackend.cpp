@@ -23,7 +23,6 @@
 #include "zubanLspBackend.h"
 
 #include <QDir>
-#include <QFile>
 #include <QFileInfo>
 #include <QProcess>
 #include <QDebug>
@@ -97,8 +96,7 @@ bool ZubanLspBackend::initialize(const QString& includeItomImportString)
     connect(m_lspClient, &LspClient::hoverReceived, this, &ZubanLspBackend::onLspHoverReceived);
     connect(m_lspClient, &LspClient::renameReceived, this, &ZubanLspBackend::onLspRenameReceived);
 
-    // Determine root URI (workspace root)
-    // For now, use current working directory
+    // Determine root URI (workspace root).
     m_rootUri = pathToUri(QDir::currentPath());
 
     // Start the LSP client.
@@ -108,7 +106,7 @@ bool ZubanLspBackend::initialize(const QString& includeItomImportString)
     QStringList args;
     args << "server";
 
-    bool started = m_lspClient->start(m_rootUri, args);
+    bool started = m_lspClient->start(m_rootUri, args, createServerEnvironment());
 
     if (!started) {
         emit errorOccurred("Failed to start ZubanLS server");
@@ -117,6 +115,37 @@ bool ZubanLspBackend::initialize(const QString& includeItomImportString)
 
     // Note: m_initialized will be set to true in onLspInitialized()
     return true;
+}
+
+//--------------------------------------------------------------------------------------
+QProcessEnvironment ZubanLspBackend::createServerEnvironment() const
+{
+    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+
+    // the folder, that contains the itom-stubs package
+    const QString stubBaseFolder =
+        QDir(QCoreApplication::applicationDirPath()).absoluteFilePath("itom-packages");
+
+    if (!QDir(stubBaseFolder).exists("itom-stubs")) {
+        qWarning() << "ZubanLspBackend: stub package not found in" << stubBaseFolder;
+        return env;
+    }
+
+#ifdef Q_OS_WIN
+    const QChar listSeparator = ';';
+#else
+    const QChar listSeparator = ':';
+#endif
+
+    QString mypyPath = QDir::toNativeSeparators(stubBaseFolder);
+    const QString existingMypyPath = env.value("MYPYPATH");
+
+    if (!existingMypyPath.isEmpty()) {
+        mypyPath += listSeparator + existingMypyPath;
+    }
+
+    env.insert("MYPYPATH", mypyPath);
+    return env;
 }
 
 //--------------------------------------------------------------------------------------
@@ -443,6 +472,20 @@ QString ZubanLspBackend::findZubanExecutable() const
     }
 
     return QString();
+}
+
+//--------------------------------------------------------------------------------------
+void ZubanLspBackend::closeDocument(const QString& filePath)
+{
+    if (filePath.isEmpty()) {
+        return;
+    }
+
+    const QString uri = pathToUri(filePath);
+
+    if (m_openDocuments.remove(uri) > 0 && m_lspClient) {
+        m_lspClient->didClose(uri);
+    }
 }
 
 //--------------------------------------------------------------------------------------

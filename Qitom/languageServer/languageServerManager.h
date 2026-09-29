@@ -62,6 +62,14 @@ public:
     ILanguageServerBackend* activeBackend();
 
     /**
+     * @brief Inform the active backend, that a document is closed or renamed.
+     *
+     * Neither the manager nor the backend are created by this method, if they do
+     * not exist yet. Therefore it can also be called during the shutdown of itom.
+     */
+    static void notifyDocumentClosed(const QString& filePath);
+
+    /**
      * @brief Check if a language server backend is available
      */
     bool isAvailable() const;

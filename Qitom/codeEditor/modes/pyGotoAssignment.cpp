@@ -306,17 +306,12 @@ void PyGotoAssignmentMode::checkWordCursorWithMode(const QTextCursor &cursor, in
 
     if (pyEng)
     {
-        ScriptEditorWidget *sew = qobject_cast<ScriptEditorWidget*>(editor());
+        AbstractCodeEditorWidget *acew = qobject_cast<AbstractCodeEditorWidget*>(editor());
         QString filename;
 
-        if (sew)
+        if (acew)
         {
-            filename = sew->getFilename();
-        }
-
-        if (filename == "")
-        {
-            filename = QDir::cleanPath(QDir::current().absoluteFilePath("__temporaryfile__.py"));
+            filename = acew->getLanguageServerFilename();
         }
 
         if (pyEng->tryToLoadJediIfNotYetDone())

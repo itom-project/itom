@@ -67,6 +67,7 @@ public:
     virtual int requestGoToAssignment(const JediAssignmentRequest& request) override;
     virtual int requestGetHelp(const JediGetHelpRequest& request) override;
     virtual int requestRename(const JediRenameRequest& request) override;
+    virtual void closeDocument(const QString& filePath) override;
 
     /**
      * @brief Set the path to the ZubanLS executable
@@ -108,6 +109,17 @@ private:
      * @return Path to zuban executable, or empty string if not found
      */
     QString findZubanExecutable() const;
+
+    /**
+     * @brief Create the process environment of the zuban server.
+     *
+     * The environment of itom is inherited and the itom-packages folder, that contains
+     * the itom-stubs package, is prepended to MYPYPATH. Therefore, mypy.ini or
+     * pyproject.toml files of Python projects are still considered by zuban.
+     *
+     * @return the process environment
+     */
+    QProcessEnvironment createServerEnvironment() const;
 
     //!< returns true if the given path points to an existing, executable file.
     static bool isExecutableFile(const QString& path);

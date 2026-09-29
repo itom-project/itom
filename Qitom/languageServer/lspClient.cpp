@@ -52,7 +52,7 @@ LspClient::~LspClient()
 }
 
 //--------------------------------------------------------------------------------------
-bool LspClient::start(const QString& rootUri, const QStringList& serverArgs)
+bool LspClient::start(const QString& rootUri, const QStringList& serverArgs, const QProcessEnvironment& environment)
 {
     if (m_state != NotStarted && m_state != Stopped) {
         qWarning() << "LspClient: Cannot start, already running or starting";
@@ -80,6 +80,10 @@ bool LspClient::start(const QString& rootUri, const QStringList& serverArgs)
     connect(m_process, SIGNAL(error(QProcess::ProcessError)),
             this, SLOT(onProcessError(QProcess::ProcessError)));
 #endif
+
+    if (!environment.isEmpty()) {
+        m_process->setProcessEnvironment(environment);
+    }
 
     // Start server process
     m_process->start(m_serverExecutable, serverArgs);

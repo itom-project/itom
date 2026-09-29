@@ -50,6 +50,15 @@ LanguageServerManager* LanguageServerManager::getInstance()
 }
 
 //-------------------------------------------------------------------------------------
+/*static*/ void LanguageServerManager::notifyDocumentClosed(const QString& filePath)
+{
+    if (m_instance && m_instance->m_backend)
+    {
+        m_instance->m_backend->closeDocument(filePath);
+    }
+}
+
+//-------------------------------------------------------------------------------------
 LanguageServerManager::LanguageServerManager(QObject* parent)
     : QObject(parent),
       m_backendCreationStarted(false),

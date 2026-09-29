@@ -33,6 +33,7 @@
 #include <qurl.h>
 #include <qsettings.h>
 #include <qfileinfo.h>
+#include <qdir.h>
 
 #include <qevent.h>
 #include <qdebug.h>
@@ -1284,6 +1285,19 @@ RetVal ConsoleWidget::execCommand(int beginLine, int endLine)
     executeCmdQueue();
 
     return RetVal(retOk);
+}
+
+//-------------------------------------------------------------------------------------
+/*virtual*/ QString ConsoleWidget::getLanguageServerFilename() const
+{
+    if (m_languageServerFilename.isEmpty())
+    {
+        // the path is kept stable, even if the current directory is changed afterwards.
+        m_languageServerFilename =
+            QDir::cleanPath(QDir::current().absoluteFilePath("__console_temp__.py"));
+    }
+
+    return m_languageServerFilename;
 }
 
 //-------------------------------------------------------------------------------------

@@ -114,6 +114,10 @@ public:
     bool getCanCopy() const;
     inline QString getUntitledName() const { return tr("Untitled%1").arg(m_uid); }
 
+    //!< returns the filename, that is passed to the language server. For scripts without
+    //!< filename, a unique, non-existing and stable filename is returned.
+    QString getLanguageServerFilename() const override;
+
     RetVal setCursorPosAndEnsureVisible(const int line, bool errorMessageClick = false, bool showSelectedCallstackLine = false);
     RetVal showLineAndHighlightWord(
         const int line,
@@ -215,6 +219,7 @@ private:
     std::map<QString,QAction*> m_editorMenuActions;
 
     QString m_filename; //!< canonical filename of the script or empty if no script name has been given yet
+    mutable QString m_untitledLanguageServerFilename; //!< virtual filename for the language server, if m_filename is empty
     int m_uid;
 
     //go back navigation features

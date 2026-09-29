@@ -78,9 +78,11 @@ public:
      * @brief Start the LSP server and initialize
      * @param rootUri Root URI for the workspace (file:///path/to/project)
      * @param serverArgs Additional command-line arguments for the server
+     * @param environment Environment of the server process (optional). If empty, the
+     *        environment of the calling process is inherited.
      * @return true if server started successfully, false otherwise
      */
-    bool start(const QString& rootUri, const QStringList& serverArgs = QStringList());
+    bool start(const QString& rootUri, const QStringList& serverArgs = QStringList(), const QProcessEnvironment& environment = QProcessEnvironment());
 
     /**
      * @brief Shutdown the LSP server cleanly
