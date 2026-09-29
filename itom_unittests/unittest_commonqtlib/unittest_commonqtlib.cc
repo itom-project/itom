@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
 
     ::testing::InitGoogleTest(&argc, argv); // Initializing the google test.
 
-    RUN_ALL_TESTS(); // To start Test check
+    const int result = RUN_ALL_TESTS(); // To start Test check
 
     bool executedByGoogleTestAdapter = false;
 
@@ -40,5 +40,5 @@ int main(int argc, char *argv[])
         std::system("pause");
     }
 
-    return 0;
+    return result; // non-zero if any test failed (required for CI / ctest)
 }
