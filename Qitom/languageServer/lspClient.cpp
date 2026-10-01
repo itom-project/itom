@@ -52,7 +52,7 @@ LspClient::~LspClient()
 }
 
 //--------------------------------------------------------------------------------------
-bool LspClient::start(const QString& rootUri, const QStringList& serverArgs, const QProcessEnvironment& environment)
+bool LspClient::start(const QString& rootUri, const QStringList& additionalWorkspaceFolderUris, const QStringList& serverArgs, const QProcessEnvironment& environment)
 {
     if (m_state != NotStarted && m_state != Stopped) {
         qWarning() << "LspClient: Cannot start, already running or starting";
@@ -98,7 +98,7 @@ bool LspClient::start(const QString& rootUri, const QStringList& serverArgs, con
 
     // Send initialize request
     m_state = Initializing;
-    QJsonObject params = createInitializeParams(rootUri);
+    QJsonObject params = createInitializeParams(rootUri, additionalWorkspaceFolderUris);
     sendRequest("initialize", params, nextRequestId());
 
     return true;
@@ -303,6 +303,43 @@ int LspClient::requestRename(const QString& uri, int line, int character, const 
 
     sendRequest("textDocument/rename", params, reqId);
     return reqId;
+}
+
+//--------------------------------------------------------------------------------------
+void LspClient::didChangeWorkspaceFolders(const QStringList& addedUris, const QStringList& removedUris)
+{
+    if (m_state != Running || (addedUris.isEmpty() && removedUris.isEmpty())) {
+        return;
+    }
+
+    QJsonArray added;
+    QJsonArray removed;
+
+    for (const QString& uri : addedUris) {
+        added.append(createWorkspaceFolder(uri));
+    }
+
+    for (const QString& uri : removedUris) {
+        removed.append(createWorkspaceFolder(uri));
+    }
+
+    QJsonObject event;
+    event["added"] = added;
+    event["removed"] = removed;
+
+    QJsonObject params;
+    params["event"] = event;
+
+    sendNotification("workspace/didChangeWorkspaceFolders", params);
+}
+
+//--------------------------------------------------------------------------------------
+QJsonObject LspClient::createWorkspaceFolder(const QString& uri)
+{
+    QJsonObject folder;
+    folder["uri"] = uri;
+    folder["name"] = QUrl(uri).fileName();
+    return folder;
 }
 
 //--------------------------------------------------------------------------------------
@@ -582,15 +619,31 @@ int LspClient::nextRequestId()
 }
 
 //--------------------------------------------------------------------------------------
-QJsonObject LspClient::createInitializeParams(const QString& rootUri)
+QJsonObject LspClient::createInitializeParams(const QString& rootUri, const QStringList& additionalWorkspaceFolderUris)
 {
     QJsonObject params;
     params["processId"] = QCoreApplication::applicationPid();
     params["rootUri"] = rootUri;
 
+    QJsonArray workspaceFolders;
+    workspaceFolders.append(createWorkspaceFolder(rootUri));
+
+    for (const QString& uri : additionalWorkspaceFolderUris) {
+        if (uri != rootUri) {
+            workspaceFolders.append(createWorkspaceFolder(uri));
+        }
+    }
+
+    params["workspaceFolders"] = workspaceFolders;
+
     // Client capabilities
     QJsonObject capabilities;
     QJsonObject textDocument;
+
+    // the client supports multiple workspace folders and their change at runtime
+    QJsonObject workspace;
+    workspace["workspaceFolders"] = true;
+    capabilities["workspace"] = workspace;
 
     // Completion capability
     QJsonObject completion;

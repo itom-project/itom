@@ -12,6 +12,21 @@ import math
 import warnings
 
 
+def normalize_type_name(type_str: str) -> str:
+    """
+    Normalize type names by removing 'itom.' prefix.
+
+    Since the stubs file imports types directly (from itom import ...),
+    using fully-qualified names like 'itom.dataObject' is redundant and can
+    confuse type checkers and LSPs like Zuban.
+
+    This function converts any reference like 'itom.SomeName' to 'SomeName'.
+    """
+    # Remove itom. prefix from all type references
+    type_str = re.sub(r'\bitom\.', '', type_str)
+    return type_str
+
+
 def generateAlgorithmHash():
     """Generates a md5 checksum over all algorithm plugin names and their versions."""
     h = hashlib.md5()
@@ -38,9 +53,9 @@ def parseAlgorithmString(algoItem):
     if "Output Parameters" in algoItem:
         params = algoItem["Output Parameters"]
         if len(params) == 1:
-            rettype = params[0]["type"]
+            rettype = normalize_type_name(params[0]["type"])
         elif len(params) > 1:
-            rettype = "Tuple[" + ",".join([p["type"] for p in params]) + "]"
+            rettype = "Tuple[" + ",".join([normalize_type_name(p["type"]) for p in params]) + "]"
         else:
             rettype = "None"
     else:
@@ -50,7 +65,7 @@ def parseAlgorithmString(algoItem):
 
     if "Mandatory Parameters" in algoItem:
         params = algoItem["Mandatory Parameters"]
-        args += [p["name"] + ": " + p["type"] for p in params]
+        args += [p["name"] + ": " + normalize_type_name(p["type"]) for p in params]
 
     if "Optional Parameters" in algoItem:
         params = algoItem["Optional Parameters"]
@@ -58,6 +73,8 @@ def parseAlgorithmString(algoItem):
             idx = p["type"].find(" ")
             if idx > 0:
                 p["type"] = p["type"][0:idx]
+            # Normalize the type name
+            p["type"] = normalize_type_name(p["type"])
             # fix to create a valid parameter name
             p["name"] = p["name"].replace(" ", "_")
             if not "value" in p:

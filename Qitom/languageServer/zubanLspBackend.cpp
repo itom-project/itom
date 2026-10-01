@@ -37,13 +37,15 @@ namespace ito {
 
 //--------------------------------------------------------------------------------------
 ZubanLspBackend::ZubanLspBackend(const QString& zubanExecutablePath, QObject* parent)
-    : ILanguageServerBackend(parent),
-      m_lspClient(nullptr),
-      m_executablePath(zubanExecutablePath),
-      m_initialized(false),
-      m_nextJediRequestId(1)
-{
-}
+         : ILanguageServerBackend(parent),
+          m_lspClient(nullptr),
+          m_executablePath(zubanExecutablePath),
+          m_initialized(false),
+          m_nextJediRequestId(1),
+          m_restartPending(false),
+          m_currentFileDirectory(QString())
+    {
+    }
 
 //--------------------------------------------------------------------------------------
 ZubanLspBackend::~ZubanLspBackend()
@@ -96,8 +98,23 @@ bool ZubanLspBackend::initialize(const QString& includeItomImportString)
     connect(m_lspClient, &LspClient::hoverReceived, this, &ZubanLspBackend::onLspHoverReceived);
     connect(m_lspClient, &LspClient::renameReceived, this, &ZubanLspBackend::onLspRenameReceived);
 
-    // Determine root URI (workspace root).
+    // Determine root URI (workspace root): the current directory of itom is
+    // considered as root folder of the Python project.
     m_rootUri = pathToUri(QDir::currentPath());
+
+    // Build additional workspace folders: include itom-packages (for itom-stubs)
+    // and current sys.path entries (gathered on first access to the backend).
+    QStringList additionalWorkspaceFolders;
+
+    // The folder itom-packages contains the itom-stubs package.
+    const QString stubBaseFolder =
+        QDir(QCoreApplication::applicationDirPath()).absoluteFilePath("itom-packages");
+    if (QDir(stubBaseFolder).exists("itom-stubs")) {
+        m_stubsFolderUri = pathToUri(stubBaseFolder);
+        additionalWorkspaceFolders << m_stubsFolderUri;
+    } else {
+        qWarning() << "ZubanLspBackend: stub package not found in" << stubBaseFolder;
+    }
 
     // Start the LSP client.
     // The zuban executable requires the subcommand 'server' to start the language
@@ -106,7 +123,7 @@ bool ZubanLspBackend::initialize(const QString& includeItomImportString)
     QStringList args;
     args << "server";
 
-    bool started = m_lspClient->start(m_rootUri, args, createServerEnvironment());
+    bool started = m_lspClient->start(m_rootUri, additionalWorkspaceFolders, args);
 
     if (!started) {
         emit errorOccurred("Failed to start ZubanLS server");
@@ -115,37 +132,6 @@ bool ZubanLspBackend::initialize(const QString& includeItomImportString)
 
     // Note: m_initialized will be set to true in onLspInitialized()
     return true;
-}
-
-//--------------------------------------------------------------------------------------
-QProcessEnvironment ZubanLspBackend::createServerEnvironment() const
-{
-    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-
-    // the folder, that contains the itom-stubs package
-    const QString stubBaseFolder =
-        QDir(QCoreApplication::applicationDirPath()).absoluteFilePath("itom-packages");
-
-    if (!QDir(stubBaseFolder).exists("itom-stubs")) {
-        qWarning() << "ZubanLspBackend: stub package not found in" << stubBaseFolder;
-        return env;
-    }
-
-#ifdef Q_OS_WIN
-    const QChar listSeparator = ';';
-#else
-    const QChar listSeparator = ':';
-#endif
-
-    QString mypyPath = QDir::toNativeSeparators(stubBaseFolder);
-    const QString existingMypyPath = env.value("MYPYPATH");
-
-    if (!existingMypyPath.isEmpty()) {
-        mypyPath += listSeparator + existingMypyPath;
-    }
-
-    env.insert("MYPYPATH", mypyPath);
-    return env;
 }
 
 //--------------------------------------------------------------------------------------
@@ -160,6 +146,10 @@ int ZubanLspBackend::requestCompletion(const JediCompletionRequest& request)
     if (!m_lspClient || !m_initialized) {
         return -1;
     }
+
+    // Update the current file directory from the request
+    QFileInfo fileInfo(request.m_path);
+    setProjectDirectory(fileInfo.absolutePath());
 
     QString uri = pathToUri(request.m_path);
     ensureDocumentOpen(uri, request.m_source);
@@ -183,6 +173,10 @@ int ZubanLspBackend::requestCalltip(const JediCalltipRequest& request)
         return -1;
     }
 
+    // Update the current file directory from the request
+    QFileInfo fileInfo(request.m_path);
+    setProjectDirectory(fileInfo.absolutePath());
+
     QString uri = pathToUri(request.m_path);
     ensureDocumentOpen(uri, request.m_source);
 
@@ -203,6 +197,10 @@ int ZubanLspBackend::requestGoToAssignment(const JediAssignmentRequest& request)
     if (!m_lspClient || !m_initialized) {
         return -1;
     }
+
+    // Update the current file directory from the request
+    QFileInfo fileInfo(request.m_path);
+    setProjectDirectory(fileInfo.absolutePath());
 
     QString uri = pathToUri(request.m_path);
     ensureDocumentOpen(uri, request.m_source);
@@ -225,6 +223,10 @@ int ZubanLspBackend::requestGetHelp(const JediGetHelpRequest& request)
         return -1;
     }
 
+    // Update the current file directory from the request
+    QFileInfo fileInfo(request.m_path);
+    setProjectDirectory(fileInfo.absolutePath());
+
     QString uri = pathToUri(request.m_path);
     ensureDocumentOpen(uri, request.m_source);
 
@@ -245,6 +247,10 @@ int ZubanLspBackend::requestRename(const JediRenameRequest& request)
     if (!m_lspClient || !m_initialized) {
         return -1;
     }
+
+    // Update the current file directory from the request
+    QFileInfo fileInfo(request.m_filepath);
+    setProjectDirectory(fileInfo.absolutePath());
 
     QString uri = pathToUri(request.m_filepath);
     ensureDocumentOpen(uri, request.m_code);
@@ -828,6 +834,104 @@ QList<JediRename> ZubanLspBackend::convertWorkspaceEdit(const QJsonObject& works
     }
 
     return renames;
+}
+
+//--------------------------------------------------------------------------------------
+void ZubanLspBackend::setProjectDirectory(const QString& directory)
+{
+    // If the directory changed, we need to add it to Zuban's workspace folders
+    // so that Zuban can resolve modules in the same directory as the current file.
+    if (directory == m_currentFileDirectory || directory.isEmpty())
+    {
+        return; // No change or invalid directory
+    }
+
+    m_currentFileDirectory = directory;
+
+    if (!m_initialized || !m_lspClient)
+    {
+        return; // Backend not yet initialized
+    }
+
+    // Add the current file directory as workspace folder using didChangeWorkspaceFolders
+    // This allows Zuban to resolve modules in the same directory without a full restart
+    QString directoryUri = pathToUri(directory);
+
+    // Check if this folder is already in the workspace folders
+    // We don't add it if it's already there or if it's the root or stubs folder
+    if (directoryUri == m_rootUri || directoryUri == m_stubsFolderUri)
+    {
+        return; // Already in workspace folders
+    }
+
+    // Send the workspace folder change notification to Zuban
+    m_lspClient->didChangeWorkspaceFolders(QStringList() << directoryUri, QStringList());
+}
+
+//--------------------------------------------------------------------------------------
+bool ZubanLspBackend::restart(const QStringList& additionalWorkspaceFolders)
+{
+    if (!m_lspClient || !m_initialized)
+    {
+        return false;
+    }
+
+    // Mark pending to ignore any signals during shutdown
+    m_restartPending = true;
+    m_pendingAdditionalWorkspaceFolders = additionalWorkspaceFolders;
+
+    // Disconnect signals to avoid handling them during shutdown
+    disconnect(m_lspClient, nullptr, this, nullptr);
+
+    // Connect to shutdown completion signal
+    connect(m_lspClient, &LspClient::shutdownComplete,
+        this, &ZubanLspBackend::onLspShutdownForRestart, Qt::QueuedConnection);
+
+    // Shutdown the server
+    m_lspClient->shutdown();
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------
+void ZubanLspBackend::onLspShutdownForRestart()
+{
+    // Shutdown is complete, now reinitialize with new workspace folders
+    if (!m_restartPending || !m_lspClient)
+    {
+        return;
+    }
+
+    // Delete the old client
+    delete m_lspClient;
+    m_lspClient = nullptr;
+    m_initialized = false;
+    m_pendingRequests.clear();
+    m_openDocuments.clear();
+
+    // Create and connect new LSP client
+    m_lspClient = new LspClient(m_executablePath, this);
+
+    connect(m_lspClient, &LspClient::initialized, this, &ZubanLspBackend::onLspInitialized);
+    connect(m_lspClient, &LspClient::errorOccurred, this, &ZubanLspBackend::onLspError);
+    connect(m_lspClient, &LspClient::completionReceived, this, &ZubanLspBackend::onLspCompletionReceived);
+    connect(m_lspClient, &LspClient::signatureHelpReceived, this, &ZubanLspBackend::onLspSignatureHelpReceived);
+    connect(m_lspClient, &LspClient::definitionReceived, this, &ZubanLspBackend::onLspDefinitionReceived);
+    connect(m_lspClient, &LspClient::hoverReceived, this, &ZubanLspBackend::onLspHoverReceived);
+    connect(m_lspClient, &LspClient::renameReceived, this, &ZubanLspBackend::onLspRenameReceived);
+
+    // Start the LSP client with updated workspace folders
+    QStringList args;
+    args << "server";
+
+    bool started = m_lspClient->start(m_rootUri, m_pendingAdditionalWorkspaceFolders, args);
+
+    if (!started)
+    {
+        emit errorOccurred("Failed to restart ZubanLS server");
+    }
+
+    m_restartPending = false;
 }
 
 } // namespace ito

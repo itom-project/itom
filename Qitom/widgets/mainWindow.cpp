@@ -53,6 +53,7 @@
 #include <qstatusbar.h>
 
 #include "../organizer/scriptEditorOrganizer.h"
+#include "../languageServer/languageServerManager.h"
 
 
 
@@ -2610,6 +2611,8 @@ void MainWindow::currentDirectoryChanged()
     {
         m_fileSystemDock->changeBaseDirectory(cd, true);
     }
+
+    LanguageServerManager::notifyCurrentDirectoryChanged(cd);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

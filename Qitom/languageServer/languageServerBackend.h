@@ -125,6 +125,15 @@ public:
      */
     virtual void closeDocument(const QString& filePath) { Q_UNUSED(filePath); }
 
+    /**
+     * @brief Inform the backend, that the current working directory of itom changed.
+     *
+     * The current directory is considered as root folder of the Python project.
+     * The default implementation does nothing (e.g. for stateless backends).
+     * @param directory absolute path of the new current directory.
+     */
+    virtual void setProjectDirectory(const QString& directory) { Q_UNUSED(directory); }
+
 signals:
     /**
      * @brief Emitted when completion results are ready

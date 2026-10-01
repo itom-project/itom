@@ -27,6 +27,9 @@
 
 #include <qsettings.h>
 #include <qdebug.h>
+#include <qdir.h>
+#include <qurl.h>
+#include <qcoreapplication.h>
 #include "../AppManagement.h"
 
 namespace ito {
@@ -55,6 +58,23 @@ LanguageServerManager* LanguageServerManager::getInstance()
     if (m_instance && m_instance->m_backend)
     {
         m_instance->m_backend->closeDocument(filePath);
+    }
+}
+
+//-------------------------------------------------------------------------------------
+/*static*/ void LanguageServerManager::notifyCurrentDirectoryChanged(const QString& directory)
+{
+    if (m_instance)
+    {
+        if (m_instance->m_backend)
+        {
+            m_instance->m_backend->setProjectDirectory(directory);
+        }
+
+        if (m_instance->m_pendingBackend)
+        {
+            m_instance->m_pendingBackend->setProjectDirectory(directory);
+        }
     }
 }
 
@@ -262,6 +282,59 @@ void LanguageServerManager::reloadSettings()
     resetPendingBackend();
     m_backend.clear();
     createBackendFromSettings();
+}
+
+//-------------------------------------------------------------------------------------
+void LanguageServerManager::onPythonIdleStateEntered()
+{
+    // Check if this is a Zuban backend and if sys.path has changed
+    if (!m_backend || m_backend->backendType() != ILanguageServerBackend::ZubanLS)
+    {
+        return;
+    }
+
+    if (!m_pythonEngine)
+    {
+        return;
+    }
+
+    // Get current sys.path
+    QStringList currentSysPath = m_pythonEngine->getSysPath();
+
+    // Check if sys.path has changed
+    if (currentSysPath != m_lastSysPath)
+    {
+        m_lastSysPath = currentSysPath;
+
+        // Build list of workspace folders from sys.path and stubs folder
+        QStringList workspaceFolders;
+
+        // Always include itom-packages (contains itom-stubs)
+        const QString stubBaseFolder =
+            QDir(QCoreApplication::applicationDirPath()).absoluteFilePath("itom-packages");
+        if (QDir(stubBaseFolder).exists("itom-stubs"))
+        {
+            QUrl stubUri = QUrl::fromLocalFile(stubBaseFolder);
+            workspaceFolders.append(stubUri.toString());
+        }
+
+        for (const QString& path : currentSysPath)
+        {
+            if (QDir(path).exists())
+            {
+                // Convert to URI format
+                QUrl uri = QUrl::fromLocalFile(path);
+                workspaceFolders.append(uri.toString());
+            }
+        }
+
+        // Restart the Zuban backend with updated workspace folders
+        ZubanLspBackend* zubanBackend = qobject_cast<ZubanLspBackend*>(m_backend.data());
+        if (zubanBackend)
+        {
+            zubanBackend->restart(workspaceFolders);
+        }
+    }
 }
 
 } // namespace ito

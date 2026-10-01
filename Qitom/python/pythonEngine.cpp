@@ -3627,22 +3627,24 @@ ito::RetVal PythonEngine::pythonStateTransition(tPythonTransitions transition, b
         }
         break;
     case pyStateRunning:
-        if (transition & pyTransEndRun)
-        {
-            m_pythonState = pyStateIdle;
-            emit(pythonStateChanged(transition, immediate));
-        }
+       if (transition & pyTransEndRun)
+       {
+           m_pythonState = pyStateIdle;
+           emit(pythonStateChanged(transition, immediate));
+           emit(pythonIdleStateEntered());
+       }
         else
         {
             retValue += RetVal(retError);
         }
         break;
     case pyStateDebugging:
-        if (transition & pyTransEndDebug)
-        {
-            m_pythonState = pyStateIdle;
-            emit(pythonStateChanged(transition, immediate));
-        }
+       if (transition & pyTransEndDebug)
+       {
+           m_pythonState = pyStateIdle;
+           emit(pythonStateChanged(transition, immediate));
+           emit(pythonIdleStateEntered());
+       }
         else if (transition & pyTransDebugWaiting)
         {
             m_pythonState = pyStateDebuggingWaiting;
@@ -3654,11 +3656,12 @@ ito::RetVal PythonEngine::pythonStateTransition(tPythonTransitions transition, b
         }
         break;
     case pyStateDebuggingWaiting:
-        if (transition & pyTransEndDebug)
-        {
-            m_pythonState = pyStateIdle;
-            emit(pythonStateChanged(transition, immediate));
-        }
+       if (transition & pyTransEndDebug)
+       {
+           m_pythonState = pyStateIdle;
+           emit(pythonStateChanged(transition, immediate));
+           emit(pythonIdleStateEntered());
+       }
         else if (transition & pyTransDebugContinue)
         {
             m_pythonState = pyStateDebugging;
@@ -3675,11 +3678,12 @@ ito::RetVal PythonEngine::pythonStateTransition(tPythonTransitions transition, b
         }
         break;
     case pyStateDebuggingWaitingButBusy:
-        if (transition & pyTransEndDebug)
-        {
-            m_pythonState = pyStateIdle;
-            emit(pythonStateChanged(transition, immediate));
-        }
+       if (transition & pyTransEndDebug)
+       {
+           m_pythonState = pyStateIdle;
+           emit(pythonStateChanged(transition, immediate));
+           emit(pythonIdleStateEntered());
+       }
         else if (transition & pyTransDebugExecCmdEnd)
         {
             m_pythonState = pyStateDebuggingWaiting;
@@ -7292,6 +7296,44 @@ PyModuleDef PythonEngine::PyModuleItomDbg = {
 PyObject* PythonEngine::PyInitItomDbg(void)
 {
     return PyModule_Create(&PyModuleItomDbg);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+QStringList PythonEngine::getSysPath() const
+{
+    QStringList result;
+
+    if (!m_started)
+    {
+        return result;
+    }
+
+    PyGILState_STATE gstate = PyGILState_Ensure();
+
+    PyObject *syspath = PySys_GetObject("path"); //borrowed reference
+    if (syspath && PyList_Check(syspath))
+    {
+        Py_ssize_t len = PyList_GET_SIZE(syspath);
+        result.reserve(len);
+
+        for (Py_ssize_t i = 0; i < len; ++i)
+        {
+            PyObject *item = PyList_GET_ITEM(syspath, i); //borrowed reference
+            bool ok;
+            QString path = PythonQtConversion::PyObjGetString(item, true, ok);
+
+            if (ok && !path.isEmpty())
+            {
+                // convert to absolute path using the current directory
+                QDir dir(path);
+                result.append(QDir::cleanPath(dir.absolutePath()));
+            }
+        }
+    }
+
+    PyGILState_Release(gstate);
+
+    return result;
 }
 
 } //end namespace ito

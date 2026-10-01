@@ -170,6 +170,17 @@ public:
     //!< returns the jedi runner, used by the (legacy) jedi language server backend.
     QSharedPointer<PythonJediRunner> getJediRunner() const { return m_jediRunner; }
 
+    /**
+     * @brief Get the current sys.path as a list of absolute directory paths.
+     *
+     * This method acquires the Python GIL and reads the current sys.path.
+     * It can be called from any thread. Relative paths are converted to absolute paths
+     * using the current working directory of itom.
+     *
+     * @return List of absolute paths that are on Python's sys.path. Empty if Python is not running.
+     */
+    QStringList getSysPath() const;
+
     static bool isInterruptQueued();
     static const PythonEngine *getInstance();
 
@@ -386,6 +397,14 @@ signals:
     void pythonModifyLocalDict(PyObject* localDict, ItomSharedSemaphore* semaphore);
     void pythonModifyGlobalDict(PyObject* globalDict, ItomSharedSemaphore* semaphore);
     void pythonCurrentDirChanged();
+    /**
+     * @brief Emitted when Python transitions to idle state.
+     *
+     * This signal is emitted after a script finishes running or after debugging ends,
+     * when Python returns to its idle state. It can be used to update caches that
+     * depend on Python's state, such as sys.path-based workspace folders in a language server.
+     */
+    void pythonIdleStateEntered();
     void updateCallStack(QStringList filenames, IntList lines, QStringList methods);
     void deleteCallStack();
 

@@ -68,6 +68,7 @@ public:
     virtual int requestGetHelp(const JediGetHelpRequest& request) override;
     virtual int requestRename(const JediRenameRequest& request) override;
     virtual void closeDocument(const QString& filePath) override;
+    virtual void setProjectDirectory(const QString& directory) override;
 
     /**
      * @brief Set the path to the ZubanLS executable
@@ -81,6 +82,18 @@ public:
      */
     QString executablePath() const { return m_executablePath; }
 
+    /**
+     * @brief Restart the Zuban server with updated workspace folders.
+     *
+     * The server is shut down and restarted. Pending requests are cancelled.
+     * Use this when sys.path changes and new module search paths need to be
+     * announced to the server.
+     *
+     * @param additionalWorkspaceFolders URIs of additional workspace folders (e.g., sys.path entries)
+     * @return true if restart initiated successfully, false otherwise
+     */
+    bool restart(const QStringList& additionalWorkspaceFolders);
+
 private slots:
     // LSP Client signal handlers
     void onLspInitialized();
@@ -90,6 +103,9 @@ private slots:
     void onLspDefinitionReceived(int requestId, const QJsonArray& locations);
     void onLspHoverReceived(int requestId, const QJsonObject& hover);
     void onLspRenameReceived(int requestId, const QJsonObject& workspaceEdit);
+
+    //!< handles the shutdown of the LSP client during a restart
+    void onLspShutdownForRestart();
 
 private:
     // Helper methods
@@ -110,17 +126,6 @@ private:
      */
     QString findZubanExecutable() const;
 
-    /**
-     * @brief Create the process environment of the zuban server.
-     *
-     * The environment of itom is inherited and the itom-packages folder, that contains
-     * the itom-stubs package, is prepended to MYPYPATH. Therefore, mypy.ini or
-     * pyproject.toml files of Python projects are still considered by zuban.
-     *
-     * @return the process environment
-     */
-    QProcessEnvironment createServerEnvironment() const;
-
     //!< returns true if the given path points to an existing, executable file.
     static bool isExecutableFile(const QString& path);
 
@@ -138,7 +143,23 @@ private:
     LspClient* m_lspClient;
     QString m_executablePath;
     bool m_initialized;
+
+    //!< uri of the project folder (current directory of itom), announced as workspace folder.
     QString m_rootUri;
+
+    //!< uri of the itom-packages folder, that contains the itom-stubs package
+    //!< (empty, if it does not exist). It is announced as additional workspace folder.
+    QString m_stubsFolderUri;
+
+    //!< current working directory of the edited Python file
+    //!< (used to allow Zuban to resolve modules in the same directory)
+    QString m_currentFileDirectory;
+
+    //!< workspace folders to be used for the next restart (while shutdown is in progress)
+    QStringList m_pendingAdditionalWorkspaceFolders;
+
+    //!< true if a restart is in progress (waiting for shutdown to complete)
+    bool m_restartPending;
 
     // Request tracking (LSP request ID -> itom context)
     struct RequestContext {

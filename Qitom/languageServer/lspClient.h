@@ -77,12 +77,21 @@ public:
     /**
      * @brief Start the LSP server and initialize
      * @param rootUri Root URI for the workspace (file:///path/to/project)
+     * @param additionalWorkspaceFolderUris URIs of further workspace folders, that are
+     *        announced besides the rootUri (e.g. folders, that contain stub packages).
      * @param serverArgs Additional command-line arguments for the server
      * @param environment Environment of the server process (optional). If empty, the
      *        environment of the calling process is inherited.
      * @return true if server started successfully, false otherwise
      */
-    bool start(const QString& rootUri, const QStringList& serverArgs = QStringList(), const QProcessEnvironment& environment = QProcessEnvironment());
+    bool start(const QString& rootUri, const QStringList& additionalWorkspaceFolderUris = QStringList(), const QStringList& serverArgs = QStringList(), const QProcessEnvironment& environment = QProcessEnvironment());
+
+    /**
+     * @brief Notify the server, that workspace folders were added or removed.
+     * @param addedUris URIs of the added workspace folders
+     * @param removedUris URIs of the removed workspace folders
+     */
+    void didChangeWorkspaceFolders(const QStringList& addedUris, const QStringList& removedUris);
 
     /**
      * @brief Shutdown the LSP server cleanly
@@ -278,7 +287,10 @@ private:
 
     // Helper methods
     int nextRequestId();
-    QJsonObject createInitializeParams(const QString& rootUri);
+    QJsonObject createInitializeParams(const QString& rootUri, const QStringList& additionalWorkspaceFolderUris);
+
+    //!< creates a LSP WorkspaceFolder object from the given uri.
+    static QJsonObject createWorkspaceFolder(const QString& uri);
 
     //!< creates a LSP Position object from a 0-based line and character value.
     static QJsonObject createPosition(int line, int character);

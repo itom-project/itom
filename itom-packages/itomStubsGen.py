@@ -23,6 +23,23 @@ except ImportError:
 __version__ = "1.0.0"
 
 
+def normalize_type_name(type_str: str) -> str:
+    """
+    Normalize type names by removing 'itom.' prefix.
+
+    Since the stubs file imports types directly (from itom import ...),
+    using fully-qualified names like 'itom.dataObject' is redundant and can
+    confuse type checkers and LSPs like Zuban.
+
+    This function converts any reference like 'itom.SomeName' to 'SomeName'.
+    """
+    if type_str is None:
+        return type_str
+    # Remove itom. prefix from all type references
+    type_str = re.sub(r'\bitom\.', '', type_str)
+    return type_str
+
+
 class Arg:
     """Argument object for one parsed argument of a signature or docstring.
 
@@ -36,7 +53,7 @@ class Arg:
         default: Optional[str] = None,
     ):
         self.name: str = name
-        self.dtype: str = dtype
+        self.dtype: str = normalize_type_name(dtype)
         self.default: str = default
         if default is None:
             self.optional: bool = False
@@ -67,7 +84,7 @@ class Signature:
     def __init__(self, name: str, args: List[Arg], rettype: Optional[str] = None):
         self.name = name
         self.args = args
-        self.rettype = rettype
+        self.rettype = normalize_type_name(rettype)
 
     def tostring(self) -> str:
         """Returns the full signature as it would be written in a script using the

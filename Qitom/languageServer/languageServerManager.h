@@ -70,6 +70,14 @@ public:
     static void notifyDocumentClosed(const QString& filePath);
 
     /**
+     * @brief Inform the active backend, that the current directory of itom changed.
+     *
+     * Neither the manager nor the backend are created by this method, if they do
+     * not exist yet. A backend, that is created later, uses the current directory.
+     */
+    static void notifyCurrentDirectoryChanged(const QString& directory);
+
+    /**
      * @brief Check if a language server backend is available
      */
     bool isAvailable() const;
@@ -91,6 +99,9 @@ private slots:
 
     //!< the pending backend did not report its successful initialization in time.
     void onPendingBackendTimeout();
+
+    //!< Python returned to idle state; check if sys.path changed and restart backend if needed
+    void onPythonIdleStateEntered();
 
 private:
     explicit LanguageServerManager(QObject* parent = nullptr);
@@ -123,6 +134,9 @@ private:
 
     //!< only required for the legacy jedi language server (nullptr, if not yet needed).
     PythonEngine* m_pythonEngine;
+
+    //!< cached sys.path to detect changes
+    QStringList m_lastSysPath;
 };
 
 } // namespace ito
