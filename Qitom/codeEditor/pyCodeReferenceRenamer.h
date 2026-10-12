@@ -24,6 +24,8 @@
 #pragma once
 
 #include "../python/pythonJedi.h"
+#include "../languageServer/languageServerBackend.h"
+#include <qpointer.h>
 #include <qabstractbutton.h>
 #include <qdialog.h>
 #include <qdialogbuttonbox.h>
@@ -56,6 +58,12 @@ public:
 
 private:
     QObject* m_pPythonEngine;
+    QPointer<ILanguageServerBackend> m_pConnectedBackend;
+    bool m_waitingForBackend = false;
+
+    RetVal startRename(
+        ILanguageServerBackend* backend, const int& line, const int& column, const QString& filepath);
+    int m_pendingRequestId;
     QDialog* m_renameDialog;
     QLineEdit* m_newNameUserInput;
     QTreeWidget* m_treeWidgetReferences;
@@ -76,6 +84,12 @@ private:
     QStringList readFirstNLinesFromFile(const QString& filepath, int n) const;
 
 private slots:
+    void onRenameReady(
+        int requestId,
+        QVector<ito::JediRename> filesToChange,
+        QString oldValue,
+        bool success,
+        QString errorText);
     void onJediRenameResultAvailable(
         const QVector<ito::JediRename>& filesToChange,
         const QString& oldValue,

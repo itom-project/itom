@@ -47,6 +47,9 @@
 #include "common/sharedStructures.h"
 #include "../../AppManagement.h"
 #include "../../python/pythonEngine.h"
+#include "../../languageServer/languageServerManager.h"
+
+#include <qtextdocument.h>
 #include "../../widgets/scriptEditorWidget.h"
 #include "../../widgets/scriptDockWidget.h"
 
@@ -64,7 +67,8 @@ WordHoverTooltipMode::WordHoverTooltipMode(const QString &name /*="WordHoverTool
     Mode(name, description),
     m_pTimer(nullptr),
     m_pPythonEngine(AppManagement::getPythonEngine()),
-    m_requestCount(0),
+    m_pConnectedBackend(nullptr),
+    m_pendingHelpId(-1),
     m_tooltipsMaxLength(300),
     m_tooltipVisible(false)
 {
@@ -230,36 +234,111 @@ void WordHoverTooltipMode::emitWordHover(QTextCursor cursor)
     ToolTip::showText(position, loadingText, editor(), QRect());
     m_tooltipVisible = true;
 
-    PythonEngine *pyEng = (PythonEngine*)m_pPythonEngine;
-
-    if (pyEng && (m_requestCount == 0))
+    if (m_pendingHelpId >= 0)
     {
-        AbstractCodeEditorWidget *acew = qobject_cast<AbstractCodeEditorWidget*>(editor());
-        QString filename;
-        if (acew)
-        {
-            filename = acew->getLanguageServerFilename();
-        }
-
-        if (pyEng->tryToLoadJediIfNotYetDone())
-        {
-            m_requestCount += 1;
-
-            ito::JediGetHelpRequest request;
-            request.m_callbackFctName = "onJediGetHelpResultAvailable";
-            request.m_col = cursor.positionInBlock();
-            request.m_line = cursor.block().blockNumber();
-            request.m_path = filename;
-            request.m_sender = this;
-            request.m_source = editor()->toPlainText();
-
-            pyEng->enqueueJediGetHelpRequest(request);
-        }
-        else
-        {
-            onStateChanged(false);
-        }
+        return;
     }
+
+    ILanguageServerBackend *backend = LanguageServerManager::getInstance()->activeBackend();
+
+    if (!backend)
+    {
+        // the backend is initialized asynchronously: retry once it is ready, but
+        // only if the mouse is still at the same word.
+        if (!m_waitingForBackend)
+        {
+            m_waitingForBackend = true;
+            LanguageServerManager::getInstance()->runWhenBackendReady(
+                this,
+                [this, cursor](ILanguageServerBackend *readyBackend)
+            {
+                m_waitingForBackend = false;
+
+                if (readyBackend && editor() && !m_cursor.isNull() &&
+                    m_cursor.position() == cursor.position())
+                {
+                    emitWordHover(cursor);
+                }
+                else
+                {
+                    ToolTip::hideText();
+                    m_tooltipVisible = false;
+                }
+            });
+        }
+
+        return;
+    }
+
+    AbstractCodeEditorWidget *acew = qobject_cast<AbstractCodeEditorWidget*>(editor());
+    QString filename;
+
+    if (acew)
+    {
+        filename = acew->getLanguageServerFilename();
+    }
+
+    connectToBackend(backend);
+
+    ito::JediGetHelpRequest request;
+    request.m_col = cursor.positionInBlock();
+    request.m_line = cursor.block().blockNumber();
+    request.m_path = filename;
+    request.m_source = editor()->toPlainText();
+
+    int requestId = backend->requestGetHelp(request);
+
+    if (requestId >= 0)
+    {
+        m_pendingHelpId = requestId;
+    }
+    else
+    {
+        ToolTip::hideText();
+        m_tooltipVisible = false;
+    }
+}
+
+//-------------------------------------------------------------------------------------
+void WordHoverTooltipMode::connectToBackend(ILanguageServerBackend *backend)
+{
+    if (backend == m_pConnectedBackend)
+    {
+        return;
+    }
+
+    if (m_pConnectedBackend)
+    {
+        disconnect(
+            m_pConnectedBackend, &ILanguageServerBackend::getHelpReady,
+            this, &WordHoverTooltipMode::onGetHelpReady);
+    }
+
+    connect(
+        backend, &ILanguageServerBackend::getHelpReady,
+        this, &WordHoverTooltipMode::onGetHelpReady);
+
+    m_pConnectedBackend = backend;
+}
+
+//-------------------------------------------------------------------------------------
+void WordHoverTooltipMode::onGetHelpReady(int requestId, ito::JediGetHelp help)
+{
+    if (requestId < 0 || requestId != m_pendingHelpId)
+    {
+        return;
+    }
+
+    m_pendingHelpId = -1;
+
+    QVector<ito::JediGetHelp> helps;
+
+    if (!help.m_description.isEmpty() || !help.m_tooltips.isEmpty())
+    {
+        helps << help;
+    }
+
+    onGetHelpResultAvailable(helps);
 }
 
 //--------------------------------------------------------------------
@@ -302,10 +381,8 @@ QPair<QStringList, QString>  WordHoverTooltipMode::parseTooltipDocstring(const Q
 }
 
 //-------------------------------------------------------------------------------------
-void WordHoverTooltipMode::onJediGetHelpResultAvailable(QVector<ito::JediGetHelp> helps)
+void WordHoverTooltipMode::onGetHelpResultAvailable(QVector<ito::JediGetHelp> helps)
 {
-    m_requestCount--;
-
     if (helps.size() < 1)
     {
         m_tooltipVisible = false;
@@ -314,6 +391,56 @@ void WordHoverTooltipMode::onJediGetHelpResultAvailable(QVector<ito::JediGetHelp
     }
 
     const ito::JediGetHelp &help = helps[0];
+
+    if (help.m_markdown && !help.m_description.trimmed().isEmpty())
+    {
+        QTextDocument mdDoc;
+        // keep the leading code block (signature) completely, but shorten the
+        // following docstring like it is done for the jedi tooltips.
+        QString md = help.m_description.trimmed();
+        int headEnd = 0;
+        const int fenceStart = md.indexOf("```");
+
+        if (fenceStart >= 0)
+        {
+            const int fenceEnd = md.indexOf("```", fenceStart + 3);
+            headEnd = (fenceEnd >= 0) ? fenceEnd + 3 : md.size();
+        }
+
+        QString head = md.left(headEnd);
+        QString rest = md.mid(headEnd);
+
+        if (rest.size() > m_tooltipsMaxLength)
+        {
+            int idx = rest.lastIndexOf(' ', m_tooltipsMaxLength);
+            rest = rest.left(idx > 0 ? idx : m_tooltipsMaxLength);
+
+            // close a code fence, that was cut
+            if (rest.count("```") % 2 == 1)
+            {
+                rest += "\n```";
+            }
+
+            rest += "\n\n" + tr("...");
+        }
+
+        mdDoc.setMarkdown(head + rest);
+        QString html = mdDoc.toHtml();
+
+        if (!m_cursor.isNull())
+        {
+            QRect cursorRect = editor()->cursorRect(m_cursor);
+            QPoint position(
+                cursorRect.x() + editor()->panels()->marginSize(ito::Panel::Left),
+                cursorRect.y() + editor()->panels()->marginSize(ito::Panel::Top));
+            position = editor()->mapToGlobal(position);
+
+            m_tooltipVisible = true;
+            ToolTip::showText(position, html, editor(), QRect());
+        }
+
+        return;
+    }
     QList<QPair<QStringList, QString>> tooltips;
     QPair<QStringList, QString> tooltip;
 

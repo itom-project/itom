@@ -147,6 +147,7 @@ struct JediGetHelp
 
     QString m_description;
     QStringList m_tooltips; //!< can be multiple tooltips for overloaded methods
+    bool m_markdown = false; //!< true, if m_description contains markdown syntax (e.g. from a language server)
 };
 
 //--------------------------------------------------------------------------------------

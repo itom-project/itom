@@ -72,6 +72,18 @@ private slots:
     //!< called by the CalltipRunnable of the jedi runner, once the calltips are available.
     void onCalltipResultAvailable(QVector<ito::JediCalltip> calltips);
 
+    //!< called by the jedi runner, once the completions are available.
+    void onCompletionResultAvailable(int line, int col, int requestId, QVector<ito::JediCompletion> completions);
+
+    //!< called by the jedi runner, once the rename information is available.
+    void onRenameResultAvailable(QVector<ito::JediRename> renames, QString oldValue, bool success, QString errorText);
+
+    //!< called by the jedi runner, once the help (hover) information is available.
+    void onGetHelpResultAvailable(QVector<ito::JediGetHelp> helps);
+
+    //!< called by the jedi runner, once the assignments are available.
+    void onGoToAssignmentResultAvailable(QVector<ito::JediAssignment> assignments);
+
 private:
     QSharedPointer<PythonJediRunner> m_jediRunner;
     bool m_initialized;
@@ -82,6 +94,15 @@ private:
     //!< ids of all pending calltip requests (FIFO, since the jedi runner processes
     //!< the calltip requests in the order of their arrival).
     QVector<int> m_pendingCalltipIds;
+
+    //!< ids of all pending rename requests (FIFO).
+    QVector<int> m_pendingRenameIds;
+
+    //!< ids of all pending get help requests (FIFO).
+    QVector<int> m_pendingGetHelpIds;
+
+    //!< ids of all pending go to assignment requests (FIFO).
+    QVector<int> m_pendingAssignmentIds;
 };
 
 } // end namespace ito

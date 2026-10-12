@@ -29,6 +29,7 @@
 #include <QUrl>
 #include <QCoreApplication>
 #include <QSettings>
+#include <QCryptographicHash>
 
 #include "../AppManagement.h"
 #include "../python/pythonEngine.h"
@@ -156,7 +157,11 @@ int ZubanLspBackend::requestCompletion(const JediCompletionRequest& request)
 
     // Both LSP and the JediXYZRequest structs use 0-based line and character values
     // (the 1-based line number, required by jedi, is only created within the jedi runner).
-    int lspRequestId = m_lspClient->requestCompletion(uri, request.m_line, request.m_col);
+    // The code completion mode passes the position of the start of the already typed
+    // prefix (as required by jedi). A language server expects the real cursor position,
+    // such that it can filter and rank its results by the typed prefix.
+    int lspRequestId = m_lspClient->requestCompletion(
+        uri, request.m_line, request.m_col + request.m_prefix.size());
     int requestId = -1;
 
     if (lspRequestId >= 0) {
@@ -255,16 +260,17 @@ int ZubanLspBackend::requestRename(const JediRenameRequest& request)
     QString uri = pathToUri(request.m_filepath);
     ensureDocumentOpen(uri, request.m_code);
 
-    // LSP uses 0-based line/character, whereas JediRenameRequest::m_line is 1-based
-    // Note: For rename, we need to extract the new name from somewhere
-    // The request doesn't contain a new name directly, so this is a placeholder
-    QString newName = "newName"; // TODO: Get actual new name from request context
+    // LSP uses 0-based line/character, whereas JediRenameRequest::m_line is 1-based.
+    // Only the ranges of the returned edits are used. The real new name is entered
+    // by the user afterwards, therefore a placeholder is used here.
+    const QString newName = "__itom_rename__";
 
     int lspRequestId = m_lspClient->requestRename(uri, request.m_line - 1, request.m_col, newName);
     int requestId = -1;
 
     if (lspRequestId >= 0) {
         requestId = trackRequest(lspRequestId, request.m_sender, request.m_callbackFctName);
+        m_pendingRenameRequests[requestId] = request;
     }
 
     return requestId;
@@ -289,7 +295,7 @@ void ZubanLspBackend::onLspError(const QString& message)
 //--------------------------------------------------------------------------------------
 void ZubanLspBackend::onLspCompletionReceived(int requestId, const QJsonArray& items)
 {
-    if (!m_pendingRequests.contains(requestId)) {
+if (!m_pendingRequests.contains(requestId)) {
         return;
     }
 
@@ -329,11 +335,14 @@ void ZubanLspBackend::onLspDefinitionReceived(int requestId, const QJsonArray& l
 
     RequestContext context = m_pendingRequests.take(requestId);
 
-    // Take the first location (Jedi returns single assignment)
-    if (!locations.isEmpty()) {
-        JediAssignment assignment = convertLocation(locations[0].toObject());
-        emit goToAssignmentReady(context.jediRequestId, assignment);
+    QVector<JediAssignment> assignments;
+
+    for (const QJsonValue& location : locations) {
+        assignments.append(convertLocation(location.toObject()));
     }
+
+    // always emit the signal, such that the caller knows about empty results
+    emit goToAssignmentReady(context.jediRequestId, assignments);
 }
 
 //--------------------------------------------------------------------------------------
@@ -358,8 +367,52 @@ void ZubanLspBackend::onLspRenameReceived(int requestId, const QJsonObject& work
 
     RequestContext context = m_pendingRequests.take(requestId);
     QList<JediRename> renames = convertWorkspaceEdit(workspaceEdit);
+    const JediRenameRequest request = m_pendingRenameRequests.take(context.jediRequestId);
 
-    emit renameReady(context.jediRequestId, renames);
+    // determine the old value from the word under the requested position
+    QString oldValue;
+    const QStringList lines = request.m_code.split('\n');
+    const int lineIdx = request.m_line - 1;
+
+    if (lineIdx >= 0 && lineIdx < lines.size())
+    {
+        const QString& text = lines[lineIdx];
+        int start = qBound(0, request.m_col, (int)text.size());
+        int end = start;
+
+        while (start > 0 && (text[start - 1].isLetterOrNumber() || text[start - 1] == '_'))
+        {
+            --start;
+        }
+
+        while (end < text.size() && (text[end].isLetterOrNumber() || text[end] == '_'))
+        {
+            ++end;
+        }
+
+        oldValue = text.mid(start, end - start);
+    }
+
+    QDir requestDir = QFileInfo(request.m_filepath).absoluteDir();
+    const QString requestPath = QFileInfo(request.m_filepath).absoluteFilePath();
+    QVector<JediRename> result;
+
+    for (JediRename rename : renames)
+    {
+        const bool isRequestFile = QFileInfo(rename.m_filePath).absoluteFilePath() == requestPath;
+        rename.m_mainFile = isRequestFile;
+        rename.m_fileInProject = true;
+
+        if (isRequestFile && request.m_untitledFile)
+        {
+            rename.m_untitledFile = true;
+            rename.m_untitledFilename = request.m_untitledName;
+        }
+
+        result.append(rename);
+    }
+
+    emit renameReady(context.jediRequestId, result, oldValue, !result.isEmpty(), QString());
 }
 
 //--------------------------------------------------------------------------------------
@@ -497,15 +550,27 @@ void ZubanLspBackend::closeDocument(const QString& filePath)
 //--------------------------------------------------------------------------------------
 void ZubanLspBackend::ensureDocumentOpen(const QString& uri, const QString& source)
 {
-    if (!m_openDocuments.contains(uri)) {
+    // The hash is only used to detect changes of the text. MD5 is sufficient here (no
+    // security relevance) and makes an undetected change practically impossible.
+    const QByteArray hash = QCryptographicHash::hash(source.toUtf8(), QCryptographicHash::Md5);
+
+    QMap<QString, OpenDocument>::iterator it = m_openDocuments.find(uri);
+
+    if (it == m_openDocuments.end()) {
         // Open the document
         m_lspClient->didOpen(uri, "python", source, 1);
-        m_openDocuments[uri] = 1;
-    } else {
-        // Update the document
-        int version = ++m_openDocuments[uri];
-        m_lspClient->didChange(uri, source, version);
+
+        OpenDocument doc;
+        doc.version = 1;
+        doc.hash = hash;
+        m_openDocuments.insert(uri, doc);
+    } else if (it->hash != hash) {
+        // Update the document, since its content changed
+        it->version++;
+        it->hash = hash;
+        m_lspClient->didChange(uri, source, it->version);
     }
+    // else: the server already knows the current content, nothing to send.
 }
 
 //--------------------------------------------------------------------------------------
@@ -675,6 +740,22 @@ static bool hasArgumentDetails(const QStringList& params)
 }
 
 //--------------------------------------------------------------------------------------
+/* ZubanLS reports optional arguments as 'name: type =' without the default value.
+   Remove this dangling '=' to avoid an incomplete looking calltip. */
+static QString stripEmptyDefaultValue(const QString& param)
+{
+    QString p = param.trimmed();
+
+    if (p.endsWith(QLatin1Char('=')))
+    {
+        p.chop(1);
+        p = p.trimmed();
+    }
+
+    return p;
+}
+
+//--------------------------------------------------------------------------------------
 JediCalltip ZubanLspBackend::convertSignatureHelp(const QJsonObject& signatureHelp) const
 {
     // Convert LSP SignatureHelp to JediCalltip. The result must have the same format
@@ -741,6 +822,11 @@ JediCalltip ZubanLspBackend::convertSignatureHelp(const QJsonObject& signatureHe
         params = parsedParams;
     }
 
+    for (int idx = 0; idx < params.size(); ++idx)
+    {
+        params[idx] = stripEmptyDefaultValue(params[idx]);
+    }
+
     // the calltip is displayed as rich text, hence escape the parameters and mark
     // the currently edited one as bold.
     for (int idx = 0; idx < params.size(); ++idx)
@@ -771,11 +857,29 @@ JediCalltip ZubanLspBackend::convertSignatureHelp(const QJsonObject& signatureHe
 //--------------------------------------------------------------------------------------
 JediAssignment ZubanLspBackend::convertLocation(const QJsonObject& location) const
 {
-    // Convert LSP Location to JediAssignment
-    QString uri = location["uri"].toString();
-    QString path = uriToPath(uri);
+    // Convert LSP Location or LocationLink to JediAssignment.
+    // Location: {uri, range}
+    // LocationLink: {originSelectionRange, targetUri, targetRange, targetSelectionRange}
+    QString uri;
+    QJsonObject range;
 
-    QJsonObject range = location["range"].toObject();
+    if (location.contains("targetUri"))
+    {
+        uri = location["targetUri"].toString();
+
+        // the selection range points to the name of the symbol, the target range
+        // to the entire definition (e.g. including decorators or docstrings).
+        range = location.contains("targetSelectionRange") ?
+            location["targetSelectionRange"].toObject() :
+            location["targetRange"].toObject();
+    }
+    else
+    {
+        uri = location["uri"].toString();
+        range = location["range"].toObject();
+    }
+
+    QString path = uriToPath(uri);
     QJsonObject start = range["start"].toObject();
 
     // JediAssignment::m_line is 0-based, like the LSP position
@@ -792,13 +896,46 @@ JediGetHelp ZubanLspBackend::convertHover(const QJsonObject& hover) const
     QJsonValue contents = hover["contents"];
 
     QString description;
+    bool markdown = false;
+
+    auto markedString = [&](const QJsonValue& v) -> QString {
+        if (v.isString()) {
+            return v.toString();
+        }
+
+        // deprecated MarkedString {language, value}
+        const QJsonObject o = v.toObject();
+        const QString language = o["language"].toString();
+        const QString value = o["value"].toString();
+        return language.isEmpty() ? value : "```" + language + "\n" + value + "\n```";
+    };
+
     if (contents.isString()) {
         description = contents.toString();
+        markdown = true; // MarkedString plain strings are interpreted as markdown
+    } else if (contents.isArray()) {
+        QStringList parts;
+        for (const QJsonValue& v : contents.toArray()) {
+            parts << markedString(v);
+        }
+        description = parts.join("\n\n");
+        markdown = true;
     } else if (contents.isObject()) {
-        description = contents.toObject()["value"].toString();
+        const QJsonObject obj = contents.toObject();
+
+        if (obj.contains("kind")) {
+            // MarkupContent
+            description = obj["value"].toString();
+            markdown = (obj["kind"].toString() == "markdown");
+        } else {
+            description = markedString(obj);
+            markdown = true;
+        }
     }
 
-    return JediGetHelp(description, QStringList());
+    JediGetHelp help(description, QStringList());
+    help.m_markdown = markdown;
+    return help;
 }
 
 //--------------------------------------------------------------------------------------
@@ -808,6 +945,18 @@ QList<JediRename> ZubanLspBackend::convertWorkspaceEdit(const QJsonObject& works
     QList<JediRename> renames;
 
     QJsonObject changes = workspaceEdit["changes"].toObject();
+
+    // newer servers may return documentChanges instead of changes
+    const QJsonArray documentChanges = workspaceEdit["documentChanges"].toArray();
+
+    for (const QJsonValue& docChange : documentChanges) {
+        QJsonObject dc = docChange.toObject();
+        QString uri = dc["textDocument"].toObject()["uri"].toString();
+
+        if (!uri.isEmpty()) {
+            changes[uri] = dc["edits"].toArray();
+        }
+    }
 
     for (const QString& uri : changes.keys()) {
         JediRename rename;
@@ -821,11 +970,12 @@ QList<JediRename> ZubanLspBackend::convertWorkspaceEdit(const QJsonObject& works
             QJsonObject edit = editValue.toObject();
             QJsonObject range = edit["range"].toObject();
             QJsonObject start = range["start"].toObject();
+            QJsonObject end = range["end"].toObject();
 
             FileRenameItem item;
             item.lineNumber = start["line"].toInt() + 1; // Convert to 1-based
             item.startColumnIndex = start["character"].toInt();
-            item.oldWordSize = edit["newText"].toString().length();
+            item.oldWordSize = end["character"].toInt() - item.startColumnIndex;
 
             rename.m_items.append(item);
         }

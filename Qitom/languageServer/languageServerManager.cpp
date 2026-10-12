@@ -271,6 +271,35 @@ ILanguageServerBackend* LanguageServerManager::activeBackend()
 }
 
 //-------------------------------------------------------------------------------------
+void LanguageServerManager::runWhenBackendReady(
+    QObject* context, const std::function<void(ILanguageServerBackend*)>& callback)
+{
+    ILanguageServerBackend* backend = activeBackend();
+
+    if (backend)
+    {
+        callback(backend);
+        return;
+    }
+
+    if (m_pendingBackend.isNull())
+    {
+        // no backend is being initialized, hence none will become available.
+        callback(nullptr);
+        return;
+    }
+
+    QSharedPointer<QMetaObject::Connection> connection(new QMetaObject::Connection());
+
+    *connection = connect(this, &LanguageServerManager::backendChanged, context,
+        [this, connection, callback]()
+    {
+        disconnect(*connection);
+        callback(m_backend.data());
+    });
+}
+
+//-------------------------------------------------------------------------------------
 bool LanguageServerManager::isAvailable() const
 {
     return !m_backend.isNull() && m_backend->isAvailable();

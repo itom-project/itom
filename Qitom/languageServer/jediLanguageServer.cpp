@@ -106,62 +106,131 @@ void JediLanguageServer::onCalltipResultAvailable(QVector<ito::JediCalltip> call
 //-------------------------------------------------------------------------------------
 int JediLanguageServer::requestCompletion(const JediCompletionRequest& request)
 {
-    // not yet routed via this language server: the code completion mode still uses
-    // the legacy methods of the python engine.
-    int requestId = -1;
-
-    if (m_initialized && !m_jediRunner.isNull())
+    if (!m_initialized || m_jediRunner.isNull())
     {
-        requestId = m_nextRequestId++;
-        m_jediRunner->addCompletionRequest(request);
+        return -1;
     }
 
+    int requestId = m_nextRequestId++;
+
+    JediCompletionRequest internalRequest = request;
+    internalRequest.m_requestId = requestId;
+    internalRequest.m_sender = this;
+    internalRequest.m_callbackFctName = "onCompletionResultAvailable";
+
+    m_jediRunner->addCompletionRequest(internalRequest);
+
     return requestId;
+}
+
+//-------------------------------------------------------------------------------------
+void JediLanguageServer::onCompletionResultAvailable(
+    int line, int col, int requestId, QVector<ito::JediCompletion> completions)
+{
+    Q_UNUSED(line);
+    Q_UNUSED(col);
+    emit completionReady(requestId, completions);
 }
 
 //-------------------------------------------------------------------------------------
 int JediLanguageServer::requestGoToAssignment(const JediAssignmentRequest& request)
 {
-    // not yet routed via this language server, see requestCompletion.
-    int requestId = -1;
-
-    if (m_initialized && !m_jediRunner.isNull())
+    if (!m_initialized || m_jediRunner.isNull())
     {
-        requestId = m_nextRequestId++;
-        m_jediRunner->addGoToAssignmentRequest(request);
+        return -1;
     }
 
+    int requestId = m_nextRequestId++;
+    m_pendingAssignmentIds.append(requestId);
+
+    JediAssignmentRequest internalRequest = request;
+    internalRequest.m_sender = this;
+    internalRequest.m_callbackFctName = "onGoToAssignmentResultAvailable";
+
+    m_jediRunner->addGoToAssignmentRequest(internalRequest);
+
     return requestId;
+}
+
+//-------------------------------------------------------------------------------------
+void JediLanguageServer::onGoToAssignmentResultAvailable(QVector<ito::JediAssignment> assignments)
+{
+    int requestId = -1;
+
+    if (!m_pendingAssignmentIds.isEmpty())
+    {
+        requestId = m_pendingAssignmentIds.takeFirst();
+    }
+
+    emit goToAssignmentReady(requestId, assignments);
 }
 
 //-------------------------------------------------------------------------------------
 int JediLanguageServer::requestGetHelp(const JediGetHelpRequest& request)
 {
-    // not yet routed via this language server, see requestCompletion.
-    int requestId = -1;
-
-    if (m_initialized && !m_jediRunner.isNull())
+    if (!m_initialized || m_jediRunner.isNull())
     {
-        requestId = m_nextRequestId++;
-        m_jediRunner->addGetHelpRequest(request);
+        return -1;
     }
+
+    int requestId = m_nextRequestId++;
+    m_pendingGetHelpIds.append(requestId);
+
+    JediGetHelpRequest internalRequest = request;
+    internalRequest.m_sender = this;
+    internalRequest.m_callbackFctName = "onGetHelpResultAvailable";
+
+    m_jediRunner->addGetHelpRequest(internalRequest);
 
     return requestId;
 }
 
 //-------------------------------------------------------------------------------------
-int JediLanguageServer::requestRename(const JediRenameRequest& request)
+void JediLanguageServer::onGetHelpResultAvailable(QVector<ito::JediGetHelp> helps)
 {
-    // not yet routed via this language server, see requestCompletion.
     int requestId = -1;
 
-    if (m_initialized && !m_jediRunner.isNull())
+    if (!m_pendingGetHelpIds.isEmpty())
     {
-        requestId = m_nextRequestId++;
-        m_jediRunner->addRenameRequest(request);
+        requestId = m_pendingGetHelpIds.takeFirst();
     }
 
+    // the backend interface provides one help object per request
+    emit getHelpReady(requestId, helps.isEmpty() ? JediGetHelp() : helps.first());
+}
+
+//-------------------------------------------------------------------------------------
+int JediLanguageServer::requestRename(const JediRenameRequest& request)
+{
+    if (!m_initialized || m_jediRunner.isNull())
+    {
+        return -1;
+    }
+
+    int requestId = m_nextRequestId++;
+    m_pendingRenameIds.append(requestId);
+
+    JediRenameRequest internalRequest = request;
+    internalRequest.m_sender = this;
+    internalRequest.m_callbackFctName = "onRenameResultAvailable";
+
+    m_jediRunner->addRenameRequest(internalRequest);
+
     return requestId;
+}
+
+//-------------------------------------------------------------------------------------
+void JediLanguageServer::onRenameResultAvailable(
+    QVector<ito::JediRename> renames, QString oldValue, bool success, QString errorText)
+{
+    int requestId = -1;
+
+    if (!m_pendingRenameIds.isEmpty())
+    {
+        requestId = m_pendingRenameIds.takeFirst();
+    }
+
+    emit renameReady(requestId, renames, oldValue, success, errorText);
 }
 
 } // end namespace ito

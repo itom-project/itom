@@ -45,6 +45,8 @@ Contains the go to assignments mode.
 #include "wordclick.h"
 
 #include "../../python/pythonJedi.h"
+#include "../../languageServer/languageServerBackend.h"
+#include <qpointer.h>
 
 namespace ito {
 
@@ -123,6 +125,10 @@ private:
     QObject *m_pPythonEngine;
     bool m_gotoRequested;
     int m_gotoRequestedTimerId;
+    int m_pendingRequestId;
+    QPointer<ILanguageServerBackend> m_pConnectedBackend;
+    bool m_waitingForBackend = false;
+    void connectToBackend(ILanguageServerBackend *backend);
     static const int gotoRequestedTimeoutMs = 3000;
 
     QList<PyAssignment> m_assignments;
@@ -137,6 +143,7 @@ private slots:
     void requestGotoAssignment();
     void requestGotoAssignmentEx();
     void onJediAssignmentResultsAvailable(QVector<ito::JediAssignment> assignments);
+    void onGoToAssignmentReady(int requestId, QVector<ito::JediAssignment> assignments);
     void onWordClicked(const QTextCursor &cursor) { performGoto(m_assignments); }
     void onKeyReleasedGoto(QKeyEvent *e);
 

@@ -28,6 +28,7 @@
 
 #include <QObject>
 #include <QString>
+#include <QByteArray>
 #include <QMap>
 #include <QPointer>
 #include <QFileInfo>
@@ -168,10 +169,16 @@ private:
         QByteArray callbackName;
     };
     QMap<int, RequestContext> m_pendingRequests;
+    QMap<int, JediRenameRequest> m_pendingRenameRequests; //!< jedi request id -> rename request
     int m_nextJediRequestId;
 
-    // Document tracking (to avoid reopening same document)
-    QMap<QString, int> m_openDocuments; // uri -> version
+    // Document tracking (to avoid reopening / resending unchanged documents)
+    struct OpenDocument {
+        OpenDocument() : version(0) {}
+        int version;        //!< version, as sent to the server (didOpen: 1, then incremented)
+        QByteArray hash;    //!< hash of the text, that has been sent to the server most recently
+    };
+    QMap<QString, OpenDocument> m_openDocuments; // uri -> state of the document on the server side
 };
 
 } // namespace ito

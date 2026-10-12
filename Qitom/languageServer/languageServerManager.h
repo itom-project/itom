@@ -27,6 +27,7 @@
 #include <qsharedpointer.h>
 #include <qstring.h>
 #include <qtimer.h>
+#include <functional>
 
 #include "languageServerBackend.h"
 
@@ -60,6 +61,21 @@ public:
      * @return The active backend, or nullptr if none is available
      */
     ILanguageServerBackend* activeBackend();
+
+    /**
+     * @brief Execute a callback as soon as a backend is ready.
+     *
+     * If a backend is already active, the callback is executed immediately.
+     * If the backend is still initializing, the callback is executed once (and only once)
+     * after backendChanged() is emitted. If no backend can be provided at all, the
+     * callback is called with nullptr. The callback is dropped, if context is destroyed
+     * before the backend is ready.
+     *
+     * @param context object, that defines the lifetime of the pending callback
+     * @param callback called with the ready backend or nullptr, if none is available
+     */
+    void runWhenBackendReady(
+        QObject* context, const std::function<void(ILanguageServerBackend*)>& callback);
 
     /**
      * @brief Inform the active backend, that a document is closed or renamed.

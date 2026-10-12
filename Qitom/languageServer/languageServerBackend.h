@@ -154,7 +154,7 @@ signals:
      * @param requestId id, returned by requestGoToAssignment
      * @param assignment Assignment location information
      */
-    void goToAssignmentReady(int requestId, ito::JediAssignment assignment);
+    void goToAssignmentReady(int requestId, QVector<ito::JediAssignment> assignments);
 
     /**
      * @brief Emitted when help/documentation is ready
@@ -167,8 +167,11 @@ signals:
      * @brief Emitted when rename results are ready
      * @param requestId id, returned by requestRename
      * @param renames List of rename operations per file
+     * @param oldValue current name of the symbol, that is renamed
+     * @param success true, if the request could be processed
+     * @param errorText error description, if success is false
      */
-    void renameReady(int requestId, QList<ito::JediRename> renames);
+    void renameReady(int requestId, QVector<ito::JediRename> renames, QString oldValue, bool success, QString errorText);
 
     /**
      * @brief Emitted when an error occurs in the backend
