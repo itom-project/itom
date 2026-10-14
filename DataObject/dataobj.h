@@ -688,11 +688,6 @@ namespace ito {
                     return false;
 
                 return (memcmp(m_p, rroi.m_p, d * sizeof(int)) == 0); //returns true if the size vector (having the same length) is equal
-
-                if (m_p[-1] != rroi.m_p[-1])
-                {
-                    return false;
-                }
             }
 
             int *m_p;
