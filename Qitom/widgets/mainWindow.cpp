@@ -141,6 +141,12 @@ MainWindow::MainWindow() :
     setCorner(Qt::TopRightCorner, Qt::RightDockWidgetArea);
     setCorner(Qt::BottomRightCorner, Qt::RightDockWidgetArea);
 
+    // allow to split docking areas (nested docks) and to tabify dock widgets.
+    // GroupedDragging is not enabled, since floating tab groups are not compatible with the
+    // window mode of AbstractDockWidget (floatingWindow).
+    setDockOptions(QMainWindow::AnimatedDocks | QMainWindow::AllowNestedDocks |
+                   QMainWindow::AllowTabbedDocks);
+
     // content
     m_contentLayout = new QVBoxLayout();
     m_contentSplitter = new QSplitter(this);
@@ -500,7 +506,13 @@ MainWindow::MainWindow() :
         }
     }
 
-    restoreState(settings.value("state", "").toByteArray());
+    // the layout after the creation of all built-in docks is the default layout (see mnuResetLayout)
+    m_defaultLayoutState = saveState(LayoutStateVersion);
+
+    if (!restoreState(settings.value("state", "").toByteArray(), LayoutStateVersion))
+    {
+        qDebug(".. no saved layout with the current layout version found. The default layout is used.");
+    }
 
     settings.endGroup();
 
@@ -576,7 +588,9 @@ MainWindow::~MainWindow()
     settings->setValue("maximized", isMaximized());
     settings->setValue("geometry", m_geometryNormalState);
 
-    QByteArray state = saveState();
+    // the layout, kept while the script editors were still open, also contains their positions
+    QByteArray state =
+        m_keptLayoutState.isEmpty() ? saveState(LayoutStateVersion) : m_keptLayoutState;
     settings->setValue("state", state);
     settings->endGroup();
 
@@ -775,11 +789,23 @@ void MainWindow::addAbstractDock(
         }
         else
         {
-            addDockWidget(area, dockWidget);
+            // Script editors are put to their position of the last session, if the saved layout
+            // contains a dock widget with the same object name. restoreDockWidget has to be called
+            // before addDockWidget, else the dock widget stays in the given area.
+            bool restored = sdw && restoreDockWidget(dockWidget);
+
+            if (!restored)
+            {
+                addDockWidget(area, dockWidget);
+            }
+
             dockWidget->setFloating(false);
-            // qDebug() << "restoreDockWidget:" << restoreDockWidget(dockWidget); //does not work
-            // until now, since the state of docked script windows is not saved. they are deleted
-            // before destructing the main window.
+
+            if (restored)
+            {
+                // restoreDockWidget hides the dock widget
+                dockWidget->show();
+            }
 
             if (sdw)
             {
@@ -817,6 +843,70 @@ void MainWindow::removeAbstractDock(AbstractDockWidget* dockWidget)
 
         dockWidget->setParent(nullptr);
         removeDockWidget(dockWidget);
+    }
+}
+
+//-------------------------------------------------------------------------------------
+void MainWindow::keepLayoutStateForNextSession()
+{
+    m_keptLayoutState = saveState(LayoutStateVersion);
+}
+
+//-------------------------------------------------------------------------------------
+void MainWindow::discardKeptLayoutState()
+{
+    m_keptLayoutState.clear();
+}
+
+//-------------------------------------------------------------------------------------
+//! resets the position and visibility of all toolboxes and toolbars to the default layout
+/*!
+    Undocked built-in toolboxes are docked again. Script editors, that are docked, are
+    moved to the top docking area and tabified. Undocked script editors and figures
+    are not changed.
+*/
+void MainWindow::mnuResetLayout()
+{
+    const QList<AbstractDockWidget*> builtInDocks = {
+        m_fileSystemDock, m_breakPointDock, m_bookmarkDock, m_lastCommandDock,
+        m_helpDock, m_globalWorkspaceDock, m_localWorkspaceDock, m_callStackDock,
+        m_pAIManagerWidget};
+
+    foreach (AbstractDockWidget* dock, builtInDocks)
+    {
+        if (dock && !dock->docked())
+        {
+            dock->dockWidget();
+        }
+    }
+
+    if (!restoreState(m_defaultLayoutState, LayoutStateVersion))
+    {
+        qDebug() << "the default layout could not be restored";
+        return;
+    }
+
+    // script editors are not part of the default layout
+    ScriptDockWidget* firstScriptDock = nullptr;
+
+    foreach (ScriptDockWidget* sdw, findChildren<ScriptDockWidget*>())
+    {
+        if (sdw->docked())
+        {
+            removeDockWidget(sdw);
+            addDockWidget(Qt::TopDockWidgetArea, sdw);
+
+            if (firstScriptDock)
+            {
+                tabifyDockWidget(firstScriptDock, sdw);
+            }
+            else
+            {
+                firstScriptDock = sdw;
+            }
+
+            sdw->show();
+        }
     }
 }
 
@@ -966,6 +1056,11 @@ void MainWindow::createActions()
     a = m_actions["show_all_plots"] = new QAction(
         QIcon(":/application/icons/showAllPlots.png"), tr("Show All Floatable Figures"), this);
     connect(m_actions["show_all_plots"], SIGNAL(triggered(bool)), this, SLOT(mnuShowAllPlots()));
+
+    m_actions["reset_layout"] = new QAction(tr("Reset Layout"), this);
+    m_actions["reset_layout"]->setStatusTip(
+        tr("Restores the default position and visibility of all toolboxes and toolbars."));
+    connect(m_actions["reset_layout"], &QAction::triggered, this, &MainWindow::mnuResetLayout);
 
     a = m_actions["minimize_all_plots"] = new QAction(
         QIcon(":/application/icons/hideAllPlots"), tr("Minimize All Floatable Figures"), this);
@@ -1347,6 +1442,15 @@ void MainWindow::mnuViewAboutToShow()
                 QIcon(":/application/icons/preferences-general.png"));
             dockWidgets->menuAction()->setText(tr("Toolboxes"));
             m_pMenuView->addMenu(dockWidgets);
+        }
+
+        if (m_actions.contains("reset_layout"))
+        {
+            m_pMenuView->addAction(m_actions["reset_layout"]);
+        }
+
+        if (dockWidgets || m_actions.contains("reset_layout"))
+        {
             m_pMenuView->addSeparator();
         }
 
