@@ -30,6 +30,7 @@
 SearchBoxFactory::SearchBoxFactory(QObject *_parent)
   : QObject(_parent)
 {
+    initialized = false;
 }
 
 // --------------------------------------------------------------------------

@@ -30,6 +30,7 @@
 SliderWidgetFactory::SliderWidgetFactory(QObject *_parent)
   : QObject(_parent)
 {
+    initialized = false;
 }
 
 // --------------------------------------------------------------------------
