@@ -30,6 +30,7 @@
 MotorAxisControllerFactory::MotorAxisControllerFactory(QObject *_parent)
   : QObject(_parent)
 {
+    initialized = false;
 }
 
 // --------------------------------------------------------------------------
