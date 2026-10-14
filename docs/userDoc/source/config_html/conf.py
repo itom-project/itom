@@ -24,7 +24,7 @@ try:
 except ModuleNotFoundError:
     print("plotly is not installed. Plots will not be added to the sphinx_gallery")
 
-logo = "../../../../Qitom/icons/itomicon/itomLogo3_128.png"
+logo = "../../../../Qitom/icons/itomicon/itomLogo4_128.png"
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
