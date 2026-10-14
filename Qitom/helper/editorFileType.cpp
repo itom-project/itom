@@ -263,12 +263,13 @@ bool EditorFileType::m_cacheValid = false;
         textPatterns << "*." + s;
     }
 
+    // the first filter is selected by default in the file dialog
     QStringList filters;
+    filters << QCoreApplication::translate("EditorFileType", "All supported files (%1)")
+                   .arg((QStringList("*.py") + textPatterns).join(" "));
     filters << QCoreApplication::translate("EditorFileType", "Python (*.py)");
     filters << QCoreApplication::translate("EditorFileType", "Text files (%1)")
                    .arg(textPatterns.join(" "));
-    filters << QCoreApplication::translate("EditorFileType", "All supported files (%1)")
-                   .arg((QStringList("*.py") + textPatterns).join(" "));
     filters << QCoreApplication::translate("EditorFileType", "All files (*)");
     return filters.join(";;");
 }
