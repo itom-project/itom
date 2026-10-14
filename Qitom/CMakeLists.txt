@@ -287,6 +287,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/compatHelper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/guiHelper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/IOHelper.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/helper/editorFileType.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/versionHelper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helpViewer/helpViewer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helpViewer/qtHelpUrlSchemeHandler.h
@@ -414,6 +415,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/menuOnlyForEnter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/outlineSelectorWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptDockWidget.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/dockDragDrop.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptEditorWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptEditorPrinter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/shortcutAction.h
@@ -467,6 +469,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panels/lineNumber.h
 	${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panels/globalCheckerPanel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/syntaxHighlighter/pythonSyntaxHighlighter.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/syntaxHighlighter/genericSyntaxHighlighter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/syntaxHighlighter/syntaxHighlighterBase.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/syntaxHighlighter/codeEditorStyle.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/utils/utils.h
@@ -551,6 +554,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/compatHelper.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/guiHelper.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/IOHelper.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/helper/editorFileType.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/versionHelper.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/qpropertyHelper.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/helpViewer/helpViewer.cpp
@@ -669,6 +673,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/mainWindow.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/outlineSelectorWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptDockWidget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/dockDragDrop.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptEditorWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptEditorPrinter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/shortcutAction.cpp
@@ -717,6 +722,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panels/lineNumber.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panels/globalCheckerPanel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/syntaxHighlighter/pythonSyntaxHighlighter.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/syntaxHighlighter/genericSyntaxHighlighter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/syntaxHighlighter/syntaxHighlighterBase.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/syntaxHighlighter/codeEditorStyle.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/utils/utils.cpp

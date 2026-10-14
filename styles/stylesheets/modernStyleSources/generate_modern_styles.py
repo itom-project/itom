@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Generator for the itom application styles 'modernLight' and 'modernDark'.
 
 Both styles are created from the same template (modernStyle.qss.in) and differ only
@@ -137,11 +136,11 @@ IMAGES["radio_checked"] = _SVG.format(
     body='<circle cx="8" cy="8" r="7" fill="{fg}"/><circle cx="8" cy="8" r="2.8" fill="{bg}"/>'
 )
 IMAGES["close"] = _SVG.format(
-    body='<path d="M5 5 L11 11 M11 5 L5 11" stroke="{fg}" stroke-width="1.5" stroke-linecap="round"/>'
+    body='<path d="M3 3 L13 13 M13 3 L3 13" stroke="{fg}" stroke-width="1.8" stroke-linecap="round"/>'
 )
 IMAGES["undock"] = _SVG.format(
-    body='<rect x="3.5" y="5.5" width="7" height="7" rx="1.5" fill="none" stroke="{fg}" stroke-width="1.3"/>'
-    '<path d="M6.5 3.5 L12.5 3.5 L12.5 9.5" fill="none" stroke="{fg}" stroke-width="1.3" '
+    body='<rect x="2" y="5" width="9" height="9" rx="1.5" fill="none" stroke="{fg}" stroke-width="1.6"/>'
+    '<path d="M5.5 2 L14 2 L14 10.5" fill="none" stroke="{fg}" stroke-width="1.6" '
     'stroke-linecap="round" stroke-linejoin="round"/>'
 )
 
@@ -226,7 +225,7 @@ def generate(style_name, palette, template, rcc):
         files = []
         for name, svg in sorted(image_variants(palette).items()):
             for scale, suffix in ((1, ""), (2, "@2x")):
-                rel = "rc/%s%s.png" % (name, suffix)
+                rel = f"rc/{name}{suffix}.png"
                 render_png(svg, 16 * scale, os.path.join(tmp, rel))
                 files.append(rel)
         qrc = os.path.join(tmp, style_name + ".qrc")
@@ -334,7 +333,7 @@ def generate_editor_theme(theme_name, theme, font_family="Consolas", point_size=
             "",
         ]
     lines.append("[CodeEditor]")
-    lines += ["%s=%s" % (k, v) for k, v in theme["editor"].items()]
+    lines += [f"{k}={v}" for k, v in theme["editor"].items()]
     lines.append("caretBackgroundShow=true")
     path = os.path.join(EDITOR_THEMES_DIR, theme_name + ".ini")
     with open(path, "w", encoding="utf-8", newline="\n") as f:

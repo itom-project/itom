@@ -1958,7 +1958,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
     </message>
     <message>
         <location line="+40"/>
-        <source>%s with message: 
+        <source>%s with message:
 %s</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1969,7 +1969,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
     </message>
     <message>
         <location line="+3"/>
-        <source>Could not load plugin %s with error message: 
+        <source>Could not load plugin %s with error message:
 %s</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1980,7 +1980,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
     </message>
     <message>
         <location line="+3"/>
-        <source>Error executing function %s with error message: 
+        <source>Error executing function %s with error message:
 %s</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1991,7 +1991,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
     </message>
     <message>
         <location line="+3"/>
-        <source>Error invoking function %s with error message: 
+        <source>Error invoking function %s with error message:
 %s</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2002,7 +2002,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
     </message>
     <message>
         <location line="+3"/>
-        <source>Error while getting property info %s with error message: 
+        <source>Error while getting property info %s with error message:
 %s</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2013,7 +2013,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
     </message>
     <message>
         <location line="+3"/>
-        <source>Error invoking exec-function %s with error message: 
+        <source>Error invoking exec-function %s with error message:
 %s</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2024,7 +2024,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
     </message>
     <message>
         <location line="+20"/>
-        <source>Warning while %s: 
+        <source>Warning while %s:
 %s</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2035,7 +2035,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
     </message>
     <message>
         <location line="+3"/>
-        <source>Warning while loading plugin %s: 
+        <source>Warning while loading plugin %s:
 %s</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2046,7 +2046,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
     </message>
     <message>
         <location line="+3"/>
-        <source>Warning while executing function %s: 
+        <source>Warning while executing function %s:
 %s</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2057,7 +2057,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
     </message>
     <message>
         <location line="+3"/>
-        <source>Warning while invoking function %s: 
+        <source>Warning while invoking function %s:
 %s</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2068,7 +2068,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
     </message>
     <message>
         <location line="+3"/>
-        <source>Warning while getting property info %s: 
+        <source>Warning while getting property info %s:
 %s</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2079,7 +2079,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
     </message>
     <message>
         <location line="+3"/>
-        <source>Warning while invoking exec-function %s: 
+        <source>Warning while invoking exec-function %s:
 %s</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4738,7 +4738,7 @@ transparent anzeigen</translation>
     </message>
     <message>
         <location line="+103"/>
-        <source>Error while creating new instance. 
+        <source>Error while creating new instance.
 Message: %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5527,15 +5527,15 @@ Message: %1</source>
     </message>
     <message>
         <location line="+1"/>
-        <source>If you try to install / upgrade Numpy if itom is already running, a file access error might occur, since itom already uses parts of Numpy. 
+        <source>If you try to install / upgrade Numpy if itom is already running, a file access error might occur, since itom already uses parts of Numpy.
 
-You have now three possibilities: 
-1. Try to continue the installation in spite of possible problems by clicking &apos;Ignore&apos; 
-2. Click &apos;OK&apos;, close and restart itom. Then this package manager is opened as standalone application and you can install or upgrade Numpy and other packages. After another restart, itom is restarted as usual. 
-3. Click &apos;Cancel&apos; to cancel the installation process without any changes. 
+You have now three possibilities:
+1. Try to continue the installation in spite of possible problems by clicking &apos;Ignore&apos;
+2. Click &apos;OK&apos;, close and restart itom. Then this package manager is opened as standalone application and you can install or upgrade Numpy and other packages. After another restart, itom is restarted as usual.
+3. Click &apos;Cancel&apos; to cancel the installation process without any changes.
 
-Information: 
-If the case of the restart (&apos;OK&apos;), an empty file &apos;restart_itom_with_pip_manager.txt&apos; is created in the directory &apos;%1&apos;. If itom locates this file at startup, the pip manager is directly started. 
+Information:
+If the case of the restart (&apos;OK&apos;), an empty file &apos;restart_itom_with_pip_manager.txt&apos; is created in the directory &apos;%1&apos;. If itom locates this file at startup, the pip manager is directly started.
 
 It is also possible to directly start the package manager by calling the itom application with the argument &apos;pipManager&apos;.</source>
         <translation type="unfinished"></translation>
@@ -5685,7 +5685,7 @@ It is also possible to directly start the package manager by calling the itom ap
     </message>
     <message>
         <location line="-35"/>
-        <source>Error while creating new instance. 
+        <source>Error while creating new instance.
 Message: %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -7147,7 +7147,7 @@ Sind Sie sicher?</translation>
     </message>
     <message>
         <location line="+0"/>
-        <source>Please indicate a variable name for the dictionary in file &apos;%1&apos; 
+        <source>Please indicate a variable name for the dictionary in file &apos;%1&apos;
 (name must start with a letter followed by numbers or letters).</source>
         <translation type="unfinished"></translation>
     </message>
@@ -7377,7 +7377,7 @@ Sind Sie sicher?</translation>
     </message>
     <message>
         <location line="+527"/>
-        <source>The &apos;designer&apos; folder contains incompatible designer plugins. The load of itom or subsequent ui&apos;s might fail if these files are not removed or updated: 
+        <source>The &apos;designer&apos; folder contains incompatible designer plugins. The load of itom or subsequent ui&apos;s might fail if these files are not removed or updated:
 
 %1</source>
         <translation type="unfinished"></translation>
@@ -7773,7 +7773,7 @@ Sind Sie sicher?</translation>
     </message>
     <message>
         <location line="+160"/>
-        <source>Python could not be started. itom cannot be used in the desired way. 
+        <source>Python could not be started. itom cannot be used in the desired way.
 Start itom again with the argument &apos;log&apos; and look-up the error message in the file itomlog.txt.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -8220,14 +8220,14 @@ Bitte das Python Hauptverzeichnis im itom Eigenschaftendialog überprüfen und i
     <message>
         <location line="+34"/>
         <source>The home directory of Python is currently set to the non-existing directory &apos;%s&apos;
-Python cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python 
+Python cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python
 or correct the base directory in the property dialog of itom.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+22"/>
         <source>The built-in library path of Python could not be found. The current home directory is &apos;%s&apos;
-Python cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python 
+Python cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python
 or correct the base directory in the preferences dialog of itom.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -8863,14 +8863,14 @@ Verify the Python base directory in the itom property dialog and restart itom.</
     <message>
         <location line="+38"/>
         <source>The home directory of Python is currently set to the non-existing directory &apos;%s&apos;
-Python cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python 
+Python cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python
 or correct the base directory in the property dialog of itom.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+22"/>
         <source>The built-in library path of Python could not be found. The current home directory is &apos;%s&apos;
-Python cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python 
+Python cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python
 or correct the base directory in the preferences dialog of itom.</source>
         <translation type="unfinished"></translation>
     </message>

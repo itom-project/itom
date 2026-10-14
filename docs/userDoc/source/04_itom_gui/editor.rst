@@ -53,6 +53,41 @@ the **edit** menu. These are:
   A star icon indicates a bookmarked line. Modify the bookmarks or jump
   to the next by clicking the corresponding menu entries.
 
+.. _gui-editor-dock-drag-drop:
+
+Docking script windows by drag and drop
+========================================
+
+Script editor windows can be docked, undocked and rearranged by drag and drop.
+
+**Dragging a tab:** press the left mouse button on a tab and move the mouse
+out of the tab bar. A drag operation starts and a frame shows where the tab will be
+placed, if the mouse button is released:
+
+* Above the tab bar of a script window: the tab is inserted at this position.
+* Above the center of a script window: the tab is appended to the tabs of this window.
+* Above the left, right, top or bottom edge of a docked script window: a new docked
+  script window is created next to it (split).
+* Above the edges of the main window: a new docked script window is created in the
+  corresponding docking area. The center of the main window selects the top docking area.
+* Outside of all windows of |itom|: the tab is opened in a new, undocked script window at
+  the position of the mouse cursor.
+
+A script window that does not contain any tab after the move is closed automatically.
+
+**Dragging a window:** a docked script window can be dragged out of the main window
+by its title bar. It then becomes an undocked script window with its own
+menu and toolbars (the same as the *undock* button of the window). The window is
+placed at the position where the mouse button is released.
+
+An undocked script window can be docked by moving it by its title bar and releasing it
+
+* above one of the edges of the main window (a frame shows the docking area), or
+* above the tab bar of a docked script window (the window is then tabified with it).
+
+Releasing the window at any other position of the main window only moves the window.
+The docking buttons and the tab context menu are still available as alternative.
+
 .. _gui-editor-run-debug-script:
 
 Run or debug the script
@@ -230,6 +265,42 @@ warned if you switch between both. All these features are configurable in the
 If you press the return key after the begin of a new indented block (usually
 indicated by a colon character), the next
 line is automatically indented.
+
+.. _gui-editor-text-files:
+
+Other text files
+===================================================
+
+Besides python scripts, the script editor can also open and edit any other
+text-like file, like *txt*, *json*, *yaml*, *xml*, *ini*, *md*, *cmake* or *bat*
+files. Such files are opened like python scripts, e.g. via the file menu of
+the script editor, the *Open File...* dialog of the main window, drag and drop,
+a double click in the :ref:`file system widget <gui-filesystem>` or from the command line.
+Each file type gets its own syntax highlighting, that uses the same colors as the
+python highlighting (see the :ref:`property dialog <gui-prop-py-styles>`).
+The type of a file is derived from its suffix. If a file has an unknown suffix,
+but contains plain text, it is opened as text file without syntax highlighting.
+
+If a file is opened that is not a python script, the python specific features
+are disabled or hidden. This affects:
+
+* running, debugging or stopping the script, and breakpoints,
+* auto completion, calltips, goto definition, help tooltips, docstring generator
+  and reference renaming,
+* the code checker, the code outline and code cells,
+* the auto code formatting.
+
+Commenting or uncommenting lines (Ctrl+R, Ctrl+Shift+R) uses the comment character
+of the file type (e.g. *#* for yaml, *;* for ini files). It is not available for file
+types without line comments (e.g. json). If a file is saved with a different suffix
+(*Save as...*), the file type and syntax highlighting are updated.
+
+Text files that can also be loaded by a data import plugin (e.g. *csv* files) are
+opened by a double click in the file system widget with the plugin. Use the context
+menu entry *Open in Script Editor* to edit them in the script editor.
+
+The list of file suffixes that are opened in the script editor can be modified
+in the tab *scripts* of the property dialog (group *Other Text Files*).
 
 
 

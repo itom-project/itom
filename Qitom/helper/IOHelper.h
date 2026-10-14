@@ -56,7 +56,8 @@ public:
         IOMimeDataObject = 0x020, /*!< consider algorithms that allow saving or loading data objects */
         IOMimePointCloud = 0x040, /*!< consider algorithms that allow saving or loading point clouds */
         IOMimePolygonMesh = 0x080, /*!< consider algorithms that allow saving or loading polygonal meshes */
-        IOMimeAll = IOMimeDataObject | IOMimePointCloud | IOMimePolygonMesh /*!< or-combination of IOMimeDataObject, IOMimePointCloud and IOMimePolygonMesh */
+        IOMimeAll = IOMimeDataObject | IOMimePointCloud | IOMimePolygonMesh, /*!< or-combination of IOMimeDataObject, IOMimePointCloud and IOMimePolygonMesh */
+        IOTextFiles = 0x100 /*!< add a filter for text-like files, that are opened in the script editor (input only) */
     };
     Q_DECLARE_FLAGS(IOFilters, IOFilter)
 

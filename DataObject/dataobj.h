@@ -200,7 +200,7 @@ namespace cv
     // From OpenCV 3.3.1 onwards, the default implementation of DataType is dropped.
     // This applies to OpenCV 3.3.1+ through 5.0+
     // Original note in traits.hpp of OpenCV: Default values were dropped to stop confusing developers about using of unsupported types (see #7599)
-    
+
     #if CV_MAJOR_VERSION < 5
     // OpenCV 5.x have a built-in datatype for uint32.
     template<> class DataType<ito::uint32>
