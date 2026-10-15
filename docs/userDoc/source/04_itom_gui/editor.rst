@@ -231,6 +231,42 @@ If you press the return key after the begin of a new indented block (usually
 indicated by a colon character), the next
 line is automatically indented.
 
+.. _gui-editor-text-files:
+
+Other text files
+===================================================
+
+Besides python scripts, the script editor can also open and edit any other
+text-like file, like *txt*, *json*, *yaml*, *xml*, *ini*, *md*, *cmake* or *bat*
+files. Such files are opened like python scripts, e.g. via the file menu of
+the script editor, the *Open File...* dialog of the main window, drag and drop,
+a double click in the :ref:`file system widget <gui-filesystem>` or from the command line.
+Each file type gets its own syntax highlighting, that uses the same colors as the
+python highlighting (see the :ref:`property dialog <gui-prop-py-styles>`).
+The type of a file is derived from its suffix. If a file has an unknown suffix,
+but contains plain text, it is opened as text file without syntax highlighting.
+
+If a file is opened that is not a python script, the python specific features
+are disabled or hidden. This affects:
+
+* running, debugging or stopping the script, and breakpoints,
+* auto completion, calltips, goto definition, help tooltips, docstring generator
+  and reference renaming,
+* the code checker, the code outline and code cells,
+* the auto code formatting.
+
+Commenting or uncommenting lines (Ctrl+R, Ctrl+Shift+R) uses the comment character
+of the file type (e.g. *#* for yaml, *;* for ini files). It is not available for file
+types without line comments (e.g. json). If a file is saved with a different suffix
+(*Save as...*), the file type and syntax highlighting are updated.
+
+Text files that can also be loaded by a data import plugin (e.g. *csv* files) are
+opened by a double click in the file system widget with the plugin. Use the context
+menu entry *Open in Script Editor* to edit them in the script editor.
+
+The list of file suffixes that are opened in the script editor can be modified
+in the tab *scripts* of the property dialog (group *Other Text Files*).
+
 
 
 Auto completion and calltips

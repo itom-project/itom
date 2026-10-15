@@ -50,6 +50,7 @@
 #include <qinputdialog.h>
 #include <qmessagebox.h>
 #include <qsettings.h>
+#include "editorFileType.h"
 #include <qregularexpression.h>
 
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
@@ -183,6 +184,13 @@ QList<IOHelper::CharsetEncodingItem> IOHelper::supportedScriptEncodings;
                     goto end;
                 }
             }
+        }
+
+        // text-like files (json, yaml, txt, ...) that cannot be loaded by a plugin are opened in the script editor
+        if (EditorFileType::isEditable(generalFileName))
+        {
+            retval += openPythonScript(generalFileName);
+            goto end;
         }
 
         if (openUnknownsWithExternalApp)
@@ -1192,6 +1200,22 @@ end:
     if (IOfilters.testFlag(ito::IOHelper::IOWorkspace) == false)
     {
         filter << tr("Python Scripts (*.py)") << tr("itom Data Collection (*.idc)") << tr("Matlab Matrix (*.mat)") << tr("User Interfaces (*.ui)");
+
+        if (IOfilters.testFlag(ito::IOHelper::IOTextFiles))
+        {
+            // text files that can be opened in the script editor
+            QStringList textPatterns;
+
+            foreach(const QString &s, EditorFileType::textSuffixes())
+            {
+                textPatterns << "*." + s;
+            }
+
+            if (textPatterns.size() > 0)
+            {
+                filter << tr("Text Files (%1)").arg(textPatterns.join(" "));
+            }
+        }
     }
     else
     {

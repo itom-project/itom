@@ -21,6 +21,7 @@
 *********************************************************************** */
 
 #include "scriptEditorWidget.h"
+#include "../helper/editorFileType.h"
 #include "../python/pythonEngineInc.h"
 #include "../python/pythonStatePublisher.h"
 #include "../widgets/mainWindow.h"
@@ -594,6 +595,71 @@ void ScriptEditorWidget::loadSettings()
 
 
     AbstractCodeEditorWidget::loadSettings();
+
+    // disable all python related features if this is not a python file
+    applyFileType();
+}
+
+//-------------------------------------------------------------------------------------
+//! derives the file type from the given filename. If it differs from the current one,
+//! the syntax highlighter and all type dependent features are adapted.
+void ScriptEditorWidget::updateFileType(const QString& filename)
+{
+    EditorFileType::Type type = EditorFileType::fromFilename(filename);
+
+    if (type == EditorFileType::Unknown || type == m_fileType)
+    {
+        // an unknown type (e.g. a filename without suffix) keeps the current type
+        return;
+    }
+
+    bool wasPython = isPythonFile();
+    m_fileType = type;
+    setSyntaxHighlighter(m_fileType);
+
+    if (wasPython != isPythonFile())
+    {
+        // the python features must be switched on or off. This is done in loadSettings.
+        loadSettings();
+
+        if (!isPythonFile())
+        {
+            codeCheckerResultsChanged(QList<ito::CodeCheckerItem>());
+        }
+        else
+        {
+            triggerCodeChecker();
+        }
+    }
+
+    outlineTimerElapsed();
+    emit updateActions();
+}
+
+//-------------------------------------------------------------------------------------
+//! enables or disables all modes and panels, that only make sense for python files
+void ScriptEditorWidget::applyFileType()
+{
+    if (isPythonFile())
+    {
+        // the enabled state of the python modes has been set by loadSettings
+        m_breakpointPanel->setVisible(true);
+        return;
+    }
+
+    m_codeCompletionMode->setEnabled(false);
+    m_calltipsMode->setEnabled(false);
+    m_pyGotoAssignmentMode->setEnabled(false);
+    m_pyDocstringGeneratorMode->setEnabled(false);
+    m_wordHoverTooltipMode->setEnabled(false);
+    m_codeCellHighlighterMode->setEnabled(false);
+    m_breakpointPanel->setVisible(false);
+    clearAllBreakpoints();
+
+    if (m_codeCheckerCallTimer)
+    {
+        m_codeCheckerCallTimer->stop();
+    }
 }
 
 //-------------------------------------------------------------------------------------
@@ -853,6 +919,32 @@ void ScriptEditorWidget::contextMenuAboutToShow(int contextMenuLine)
     m_editorMenuActions["generateDocstring"]->setEnabled(
         !m_pythonBusy && currentLineCanHaveDocstring());
 
+    // python only actions are not shown for other file types
+    const bool pyFile = isPythonFile();
+    const bool canComment = !EditorFileType::commentToken(m_fileType).isEmpty();
+    const char* pythonActions[] = {
+        "runScript",
+        "runSelection",
+        "runCodeCell",
+        "runCodeCellAndAdvance",
+        "debugScript",
+        "stopScript",
+        "generateDocstring",
+        "referenceRenameing"};
+
+    for (const char* key : pythonActions)
+    {
+        m_editorMenuActions[key]->setVisible(pyFile);
+    }
+
+    if (!pyFile)
+    {
+        m_editorMenuActions["formatFile"]->setVisible(false);
+    }
+
+    m_editorMenuActions["comment"]->setEnabled(canComment);
+    m_editorMenuActions["uncomment"]->setEnabled(canComment);
+
     AbstractCodeEditorWidget::contextMenuAboutToShow(contextMenuLine);
 }
 
@@ -883,9 +975,8 @@ bool ScriptEditorWidget::canInsertFromMimeData(const QMimeData* source) const
 
             for (int i = 0; i < list.length(); ++i)
             {
-                QString fext = QFileInfo(source->urls().at(0).toString()).suffix().toLower();
-
-                if (fext != "py")
+                if (!list.at(i).isLocalFile() ||
+                    !EditorFileType::isEditable(list.at(i).toLocalFile()))
                 {
                     return false;
                 }
@@ -1225,6 +1316,20 @@ void ScriptEditorWidget::menuUnindent()
 //----------------------------------------------------------------------------------------------------------------------------------
 void ScriptEditorWidget::menuComment()
 {
+    QString commentPrefix = EditorFileType::commentToken(m_fileType);
+
+    if (commentPrefix.isEmpty())
+    {
+        return; // this file type has no line comments
+    }
+
+    if (!commentPrefix.endsWith(' '))
+    {
+        commentPrefix += ' ';
+    }
+
+    const int prefixLen = commentPrefix.size();
+
     if (isReadOnly() == false)
     {
         int lineFrom, lineTo, indexFrom, indexTo;
@@ -1249,15 +1354,15 @@ void ScriptEditorWidget::menuComment()
             if (searchIndex >= 0 && !lineTextTrimmed.isEmpty())
             {
                 QTextCursor cursor = setCursorPosition(i, searchIndex, false);
-                cursor.insertText("# ");
+                cursor.insertText(commentPrefix);
 
                 if (i == lineFrom)
                 {
-                    indexFrom += 2; // 2 is the length of the inserted text
+                    indexFrom += prefixLen; // length of the inserted text
                 }
                 if (i == lineTo)
                 {
-                    indexTo += 2; // 2 is the length of the inserted text
+                    indexTo += prefixLen; // length of the inserted text
                 }
             }
         }
@@ -1278,6 +1383,17 @@ void ScriptEditorWidget::menuComment()
 //----------------------------------------------------------------------------------------------------------------------------------
 void ScriptEditorWidget::menuUncomment()
 {
+    QString commentToken = EditorFileType::commentToken(m_fileType);
+
+    if (commentToken.isEmpty())
+    {
+        return; // this file type has no line comments
+    }
+
+    // token without trailing whitespace (e.g. "#") and with one whitespace (e.g. "# ")
+    const QString tokenTrimmed = commentToken.trimmed();
+    const QString tokenWithSpace = tokenTrimmed + " ";
+
     if (isReadOnly() == false)
     {
         int lineFrom, lineTo, indexFrom, indexTo;
@@ -1299,40 +1415,30 @@ void ScriptEditorWidget::menuUncomment()
             lineTextTrimmed = ito::Utils::lstrip(
                 lineTextFull); // remove whitespaces at the beginning (not at the end of the string)
 
-            if (lineTextTrimmed.left(2) == "# ") // delete # with space characters
-            {
-                searchIndex = lineTextFull.indexOf("# ");
-                if (searchIndex >= 0)
-                {
-                    setSelection(i, searchIndex, i, searchIndex + 2);
-                    textCursor().removeSelectedText();
+            int removeLen = 0;
 
-                    if (i == lineFrom && indexFrom >= 2)
-                    {
-                        indexFrom -= 2; // 2 is the length of the removed text
-                    }
-                    if (i == lineTo && indexTo >= 2)
-                    {
-                        indexTo -= 2; // 2 is the length of the removed text
-                    }
-                }
+            if (lineTextTrimmed.startsWith(tokenWithSpace)) // delete token with space character
+            {
+                removeLen = tokenWithSpace.size();
             }
-            else if (lineTextTrimmed.left(1) == "#")
+            else if (lineTextTrimmed.startsWith(tokenTrimmed))
             {
-                searchIndex = lineTextFull.indexOf("#");
-                if (searchIndex >= 0)
-                {
-                    setSelection(i, searchIndex, i, searchIndex + 1);
-                    textCursor().removeSelectedText();
+                removeLen = tokenTrimmed.size();
+            }
 
-                    if (i == lineFrom && indexFrom >= 1)
-                    {
-                        indexFrom -= 1; // 1 is the length of the removed text
-                    }
-                    if (i == lineTo && indexTo >= 1)
-                    {
-                        indexTo -= 1; // 1 is the length of the removed text
-                    }
+            if (removeLen > 0)
+            {
+                searchIndex = lineTextFull.size() - lineTextTrimmed.size();
+                setSelection(i, searchIndex, i, searchIndex + removeLen);
+                textCursor().removeSelectedText();
+
+                if (i == lineFrom && indexFrom >= removeLen)
+                {
+                    indexFrom -= removeLen; // length of the removed text
+                }
+                if (i == lineTo && indexTo >= removeLen)
+                {
+                    indexTo -= removeLen; // length of the removed text
                 }
             }
         }
@@ -1351,6 +1457,11 @@ void ScriptEditorWidget::menuUncomment()
 //----------------------------------------------------------------------------------------------------------------------------------
 void ScriptEditorWidget::menuRunScript()
 {
+    if (!isPythonFile())
+    {
+        return;
+    }
+
     RetVal retValue(retOk);
 
     if (hasNoFilename())
@@ -1375,6 +1486,11 @@ void ScriptEditorWidget::menuRunScript()
 //----------------------------------------------------------------------------------------------------------------------------------
 void ScriptEditorWidget::menuDebugScript()
 {
+    if (!isPythonFile())
+    {
+        return;
+    }
+
     RetVal retValue(retOk);
 
     if (hasNoFilename())
@@ -1399,6 +1515,11 @@ void ScriptEditorWidget::menuDebugScript()
 //----------------------------------------------------------------------------------------------------------------------------------
 void ScriptEditorWidget::menuRunSelection()
 {
+    if (!isPythonFile())
+    {
+        return;
+    }
+
     int lineFrom = -1;
     int lineTo = -1;
     int indexFrom = -1;
@@ -1448,6 +1569,11 @@ void ScriptEditorWidget::menuRunSelection()
 //----------------------------------------------------------------------------------------------------------------------------------
 bool ScriptEditorWidget::menuRunCodeCell()
 {
+    if (!isPythonFile())
+    {
+        return false;
+    }
+
     QTextCursor cursor = textCursor();
 
     if (cursor.hasSelection())
@@ -1731,6 +1857,11 @@ void ScriptEditorWidget::pyCodeFormatterDone(bool success, QString codeOrErrorSt
 //-------------------------------------------------------------------------------------
 ito::RetVal ScriptEditorWidget::formatPythonCode(int progressDialogShowDelayMs /*= 0*/)
 {
+    if (!isPythonFile())
+    {
+        return RetVal(retOk);
+    }
+
     if (m_autoCodeFormatCmd == "")
     {
         QMessageBox::critical(
@@ -1850,6 +1981,11 @@ void ScriptEditorWidget::menuPyCodeFormatting()
 //-------------------------------------------------------------------------------------
 bool ScriptEditorWidget::menuPyCodeReferenceRenaming()
 {
+    if (!isPythonFile())
+    {
+        return true; // not available, but also no error of the python reference renamer
+    }
+
     m_pyCodeReferenceRenamer =
         QSharedPointer<PyCodeReferenceRenamer>(new PyCodeReferenceRenamer(this), doDeleteLater);
     QTextCursor cursor = textCursor();
@@ -1885,6 +2021,11 @@ bool ScriptEditorWidget::menuPyCodeReferenceRenaming()
 //-------------------------------------------------------------------------------------
 void ScriptEditorWidget::menuGenerateDocstring()
 {
+    if (!isPythonFile())
+    {
+        return;
+    }
+
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("CodeEditor");
     QString quotes = settings.value("docstringGeneratorQuotes", "doubleQuotes").toString();
@@ -2281,6 +2422,9 @@ RetVal ScriptEditorWidget::openFile(
 
         clearAllBreakpoints();
 
+        // set the file type (and syntax highlighter) before the text is loaded
+        updateFileType(fileName);
+
         // block signals avoid that nrOfLinesChanges is emitted, that
         // might cause a crash uue to the outline parser and codeOrErrorString cells
         blockSignals(true);
@@ -2352,7 +2496,7 @@ RetVal ScriptEditorWidget::saveFile(bool askFirst)
         return saveAsFile(askFirst);
     }
 
-    if (m_autoCodeFormatOnSave)
+    if (m_autoCodeFormatOnSave && isPythonFile())
     {
         ito::RetVal retValue = formatPythonCode(500);
 
@@ -2487,7 +2631,7 @@ RetVal ScriptEditorWidget::writeFileContent(const QString &filename)
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal ScriptEditorWidget::saveAsFile(bool askFirst)
 {
-    if (m_autoCodeFormatOnSave)
+    if (m_autoCodeFormatOnSave && isPythonFile())
     {
         ito::RetVal retValue = formatPythonCode(500);
 
@@ -2522,7 +2666,8 @@ RetVal ScriptEditorWidget::saveAsFile(bool askFirst)
     // appear during the save-as dialog if the signal is not blocked)
     m_pFileSysWatcher->blockSignals(true);
     QString tempFileName =
-        QFileDialog::getSaveFileName(this, tr("Save As..."), defaultPath, "Python (*.py)");
+        QFileDialog::getSaveFileName(
+            this, tr("Save As..."), defaultPath, EditorFileType::saveFileFilter(m_fileType));
     m_pFileSysWatcher->blockSignals(false);
     if (!tempFileName.isEmpty())
     {
@@ -2592,6 +2737,11 @@ void ScriptEditorWidget::codeCheckerResultsChanged(
 */
 void ScriptEditorWidget::triggerCodeChecker()
 {
+    if (!isPythonFile())
+    {
+        return; // the code checker is only available for python files
+    }
+
     PythonEngine* pyEng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
     if (pyEng && pyEng->pySyntaxCheckAvailable())
     {
@@ -2837,7 +2987,7 @@ bool ScriptEditorWidget::lineAcceptsBPs(int line)
 //-------------------------------------------------------------------------------------
 RetVal ScriptEditorWidget::toggleBreakpoint(int line)
 {
-    if (getFilename() == "")
+    if (getFilename() == "" || !isPythonFile())
         return RetVal(retError);
 
     //!< markerLine(handle) returns -1, if marker doesn't exist any more (because lines have been
@@ -3317,6 +3467,9 @@ RetVal ScriptEditorWidget::changeFilename(const QString& newFilename)
         m_pBookmarkModel->changeBookmark(item, newFilename, item.lineIdx);
     }
 
+    // the suffix of the new filename might change the type of this document
+    updateFileType(m_filename);
+
     return RetVal(retOk);
 }
 
@@ -3463,7 +3616,7 @@ void ScriptEditorWidget::pythonStateChanged(tPythonTransitions pyTransition)
     {
     case pyTransBeginRun:
     case pyTransBeginDebug:
-        if (!hasNoFilename())
+        if (!hasNoFilename() && isPythonFile())
         {
             setReadOnly(true);
         }
@@ -3819,6 +3972,11 @@ QSharedPointer<OutlineItem> ScriptEditorWidget::parseOutline(bool forceParsing /
     m_outlineTimer->stop();
 
     QSharedPointer<OutlineItem> root(new OutlineItem(OutlineItem::typeRoot));
+
+    if (!isPythonFile())
+    {
+        return root; // no outline for files besides python files
+    }
 
     QList<QSharedPointer<OutlineItem>> codeCells;
     QString blockText, codeCellName;
