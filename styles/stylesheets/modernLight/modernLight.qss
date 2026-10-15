@@ -84,7 +84,7 @@ QDockWidget::close-button, QDockWidget::float-button {
     background-color: transparent;
     border: none;
     border-radius: 4px;
-    padding: 1px;
+    padding: 0px;
 }
 
 QDockWidget::close-button:hover, QDockWidget::float-button:hover {
@@ -568,6 +568,13 @@ QTabBar::close-button {
     image: url(:/modern_icons/rc/close.png);
     subcontrol-position: right;
     border-radius: 4px;
+    /* size of the icon area. It must be given, since Qt computes the size of the button from
+       the box model of this rule (width / height plus margins) as soon as margins are set. */
+    width: 16px;
+    height: 16px;
+    /* distance to the text and to the end of the tab */
+    margin-left: 4px;
+    margin-right: 6px;
 }
 
 QTabBar::close-button:hover {
