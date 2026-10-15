@@ -1215,6 +1215,13 @@ void MainApplication::mainWindowCloseRequest(bool considerPythonBusy)
 
         if (retValue.containsError()) return;
 
+        // keep the layout of the main window while all script editors are still open,
+        // such that their positions are restored in the next session.
+        if (m_mainWin)
+        {
+            m_mainWin->keepLayoutStateForNextSession();
+        }
+
         //saves the state of all opened scripts to the settings file
         if (m_scriptEditorOrganizer)
         {
@@ -1226,6 +1233,11 @@ void MainApplication::mainWindowCloseRequest(bool considerPythonBusy)
             {
                 // The user was asked how to proceed with unsaved scripts.
                 // In this case, the user cancelled this request... do not close itom!
+                if (m_mainWin)
+                {
+                    m_mainWin->discardKeptLayoutState();
+                }
+
                 return;
             }
         }
