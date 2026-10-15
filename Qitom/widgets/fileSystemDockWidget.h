@@ -115,6 +115,7 @@ namespace ito
             ShortcutAction* m_pActCopyDir;
             ShortcutAction* m_pActPasteDir;
             ShortcutAction* m_pActOpenFile;
+            ShortcutAction* m_pActOpenInEditor;
             ShortcutAction* m_pActExecuteFile;
             ShortcutAction* m_pActLocateOnDisk;
             ShortcutAction* m_pActRenameItem;
@@ -140,6 +141,7 @@ namespace ito
             void mnuLocateOnDisk();
             void mnuExecuteFile();
             void mnuOpenFile();
+            void mnuOpenInEditor();
             void mnuRenameItem();
             void mnuDeleteItems();
             void mnuCutItems();

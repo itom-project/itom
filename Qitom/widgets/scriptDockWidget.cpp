@@ -45,6 +45,7 @@
 #include "../Qitom/AppManagement.h"
 #include "../organizer/scriptEditorOrganizer.h"
 #include "../helper/IOHelper.h"
+#include "../helper/editorFileType.h"
 
 namespace ito {
 
@@ -927,7 +928,8 @@ RetVal ScriptDockWidget::openScript()
 {
     QString fileName;
 
-    fileName = QFileDialog::getOpenFileName(getActiveInstance(), tr("File Open"), QDir::currentPath(), "Python (*.py)");
+    fileName = QFileDialog::getOpenFileName(
+        getActiveInstance(), tr("File Open"), QDir::currentPath(), EditorFileType::openFileFilter());
 
     if (!fileName.isEmpty())
     {
@@ -963,11 +965,11 @@ RetVal ScriptDockWidget::openScript(QString filename, bool silent)
     else
     {
 
-        if (fileInfo.suffix().toLower() != "py")
+        if (!EditorFileType::isEditable(filename))
         {
             if (!silent)
             {
-                QMessageBox msg(QMessageBox::Warning, tr("Open Script"), tr("The file '%1' is not a python script.").arg(filename));
+                QMessageBox msg(QMessageBox::Warning, tr("Open Script"), tr("The file '%1' is neither a python script nor a supported text file.").arg(filename));
                 msg.exec();
             }
             return RetVal(retError);
@@ -984,7 +986,7 @@ RetVal ScriptDockWidget::openScript(QString filename, bool silent)
     // Hint: this does not consider the paths so far.
     QDir path(fileInfo.absolutePath());
     QStringList nameFilters;
-    nameFilters << "*.py";
+    nameFilters = EditorFileType::nameFilters();
     QFileInfoList filesInfo = path.entryInfoList(nameFilters, QDir::Files);
 
     foreach(const QFileInfo &f, filesInfo)
@@ -1133,7 +1135,7 @@ RetVal ScriptDockWidget::appendEditor(ScriptEditorWidget* editorWidget)
         QFileInfo info(name);
         name = info.fileName();
     }
-    m_tab->addTab(editorWidget, QIcon(":/files/icons/filePython.png"), name);
+    m_tab->addTab(editorWidget, EditorFileType::icon(editorWidget->fileType()), name);
 
     // add the new index to the stackHistory.
     m_stackHistory.prepend(m_tab->count() - 1);
@@ -1267,6 +1269,7 @@ void ScriptDockWidget::tabFilenameOrModificationChanged(int index)
     {
         ScriptEditorWidget *editorWidget = static_cast<ScriptEditorWidget*>(m_tab->widget(index));
         setWindowModified(editorWidget->isModified());
+        m_tab->setTabIcon(index, EditorFileType::icon(editorWidget->fileType()));
 
         // ClassNavigator: set the right classes in comboboxes
         updateCodeNavigation(editorWidget, editorWidget->parseOutline());
@@ -1652,11 +1655,18 @@ void ScriptDockWidget::updatePythonActions()
     bool busy2 = busy1 && pythonDebugMode() && pythonInWaitingMode();
     int tabCount = m_tab->count();
 
-    m_scriptRunAction->setEnabled(!busy1);
-    m_scriptRunSelectionAction->setEnabled(sew && (!busy1 || pythonInWaitingMode()));
-    m_scriptRunCodeCellAction->setEnabled(sew && (!busy1 || pythonInWaitingMode()));
-    m_scriptRunCodeCellAndAdvanceAction->setEnabled(sew && (!busy1 || pythonInWaitingMode()));
-    m_scriptDebugAction->setEnabled(!busy1);
+    // run, debug and all other python features are only available for python files
+    bool pyFile = (sew == nullptr) || sew->isPythonFile();
+    bool canComment = sew != nullptr &&
+        !EditorFileType::commentToken(sew->fileType()).isEmpty();
+
+    m_scriptRunAction->setEnabled(!busy1 && pyFile);
+    m_scriptRunSelectionAction->setEnabled(sew && pyFile && (!busy1 || pythonInWaitingMode()));
+    m_scriptRunCodeCellAction->setEnabled(sew && pyFile && (!busy1 || pythonInWaitingMode()));
+    m_scriptRunCodeCellAndAdvanceAction->setEnabled(
+        sew && pyFile && (!busy1 || pythonInWaitingMode()));
+    m_scriptDebugAction->setEnabled(!busy1 && pyFile);
+    m_referenceRenameAction->setEnabled(pyFile);
     m_scriptStopAction->setEnabled(busy1);
     m_scriptContinueAction->setEnabled(busy2);
     m_scriptStepAction->setEnabled(busy2);
@@ -1677,20 +1687,22 @@ void ScriptDockWidget::updatePythonActions()
         !busy1);
     m_undoAction->setEnabled(!busy1 && sew != nullptr && sew->isUndoAvailable());
     m_redoAction->setEnabled(!busy1 && sew != nullptr && sew->isRedoAvailable());
-    m_commentAction->setEnabled(!busy1 && tabCount > 0 && sew != nullptr);
-    m_uncommentAction->setEnabled(!busy1 && tabCount > 0 && sew != nullptr);
+    m_commentAction->setEnabled(!busy1 && tabCount > 0 && canComment);
+    m_uncommentAction->setEnabled(!busy1 && tabCount > 0 && canComment);
     m_indentAction->setEnabled(!busy1 && tabCount > 0 && sew != nullptr);
     m_unindentAction->setEnabled(!busy1 && tabCount > 0 && sew != nullptr);
 
     m_autoCodeFormatAction->setEnabled(
         !busy1 &&
         m_autoCodeFormatCmd != "" &&
+        pyFile &&
         tabCount > 0);
 
     m_pyDocstringGeneratorAction->setEnabled(
         !busy1 &&
         tabCount > 0 &&
         sew != nullptr &&
+        sew->isPythonFile() &&
         sew->currentLineCanHaveDocstring());
 }
 

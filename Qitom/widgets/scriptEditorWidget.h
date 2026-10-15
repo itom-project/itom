@@ -53,6 +53,7 @@
 #include "../models/outlineItem.h"
 #include "../models/bookmarkModel.h"
 #include "../helper/IOHelper.h"
+#include "../helper/editorFileType.h"
 #include "../ui/dialogScriptCharsetEncoding.h"
 
 #include <QtPrintSupport/qprinter.h>
@@ -111,6 +112,10 @@ public:
     inline QString getFilename() const {return m_filename; }
     inline bool hasNoFilename() const { return m_filename.isNull(); }
     inline int getUID() const { return m_uid; }
+
+    //! type of the document (python or any other text-like file). Python files are the only ones that can be run, debugged or checked.
+    inline EditorFileType::Type fileType() const { return m_fileType; }
+    inline bool isPythonFile() const { return m_fileType == EditorFileType::Python; }
     bool getCanCopy() const;
     inline QString getUntitledName() const { return tr("Untitled%1").arg(m_uid); }
 
@@ -200,6 +205,9 @@ private:
 
     RetVal changeFilename(const QString &newFilename);
 
+    void updateFileType(const QString &filename);
+    void applyFileType();
+
     IOHelper::CharsetEncodingItem guessEncoding(const QByteArray &content) const;
 
     QFileSystemWatcher *m_pFileSysWatcher;
@@ -223,6 +231,8 @@ private:
 
     bool m_pythonBusy; //!< true: python is executing or debugging a script, a command...
     bool m_pythonExecutable;
+
+    EditorFileType::Type m_fileType = EditorFileType::Python; //!< new, unsaved scripts are python scripts
 
     //!< to accept drop events of other files dropped onto this file, the script
     //!< must not be readonly. Therefore a readonly script will be temporary set in a read/write mode

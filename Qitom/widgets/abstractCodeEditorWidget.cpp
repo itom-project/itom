@@ -28,6 +28,7 @@
 #include "../codeEditor/modes/occurrences.h"
 #include "../codeEditor/modes/pyAutoIndent.h"
 #include "../codeEditor/syntaxHighlighter/pythonSyntaxHighlighter.h"
+#include "../codeEditor/syntaxHighlighter/genericSyntaxHighlighter.h"
 #include "../global.h"
 #include "../helper/guiHelper.h"
 
@@ -69,11 +70,12 @@ void AbstractCodeEditorWidget::init()
 {
     m_editorStyle = QSharedPointer<CodeEditorStyle>(new CodeEditorStyle());
     // add python syntax highlighter
-    m_pythonSyntaxHighlighter = QSharedPointer<SyntaxHighlighterBase>(
+    m_syntaxHighlighter = QSharedPointer<SyntaxHighlighterBase>(
         new PythonSyntaxHighlighter(document(), "PythonSyntaxHighlighter", m_editorStyle));
-    m_pythonSyntaxHighlighter->setFoldDetector(
+    m_syntaxHighlighter->setFoldDetector(
         QSharedPointer<FoldDetector>(new IndentFoldDetector()));
-    modes()->append(m_pythonSyntaxHighlighter.dynamicCast<Mode>());
+    modes()->append(m_syntaxHighlighter.dynamicCast<Mode>());
+    m_syntaxHighlighterType = EditorFileType::Python;
 
     OccurrencesHighlighterMode* occHighlighterMode =
         new OccurrencesHighlighterMode("OccurrencesHighlighterMode");
@@ -104,6 +106,45 @@ void AbstractCodeEditorWidget::init()
 
     m_pyCodeReferenceRenamer =
         QSharedPointer<PyCodeReferenceRenamer>(new PyCodeReferenceRenamer(this));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void AbstractCodeEditorWidget::setSyntaxHighlighter(EditorFileType::Type type)
+{
+    // python is the only type with the python highlighter, all others share the generic one
+    if (type == EditorFileType::Unknown)
+    {
+        type = EditorFileType::PlainText;
+    }
+
+    if (m_syntaxHighlighter && type == m_syntaxHighlighterType)
+    {
+        return;
+    }
+
+    if (m_syntaxHighlighter)
+    {
+        // detach the old highlighter from the document, such that it cannot
+        // overwrite the formats of the new highlighter
+        m_syntaxHighlighter->setDocument(nullptr);
+        modes()->remove(m_syntaxHighlighter.dynamicCast<Mode>());
+    }
+
+    if (type == EditorFileType::Python)
+    {
+        m_syntaxHighlighter = QSharedPointer<SyntaxHighlighterBase>(
+            new PythonSyntaxHighlighter(document(), "PythonSyntaxHighlighter", m_editorStyle));
+        m_syntaxHighlighter->setFoldDetector(QSharedPointer<FoldDetector>(new IndentFoldDetector()));
+    }
+    else
+    {
+        m_syntaxHighlighter = QSharedPointer<SyntaxHighlighterBase>(
+            new GenericSyntaxHighlighter(type, document(), m_editorStyle));
+        m_syntaxHighlighter->setFoldDetector(GenericSyntaxHighlighter::createFoldDetector(type));
+    }
+
+    m_syntaxHighlighterType = type;
+    modes()->append(m_syntaxHighlighter.dynamicCast<Mode>());
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -172,19 +213,19 @@ void AbstractCodeEditorWidget::loadSettings()
 
     // --------------- styles ------------------------------------------------------------
 
-    if (m_pythonSyntaxHighlighter)
+    if (m_syntaxHighlighter)
     {
         setBackground(QColor(settings.value("paperBackgroundColor", QColor(Qt::white)).toString()));
-        m_pythonSyntaxHighlighter->editorStyle()->setBackground(
+        m_syntaxHighlighter->editorStyle()->setBackground(
             QColor(settings.value("paperBackgroundColor", QColor(Qt::white)).toString()));
 
         QTextCharFormat keyWhitespaceFormat =
-            m_pythonSyntaxHighlighter->editorStyle()->format(StyleItem::KeyWhitespace);
+            m_syntaxHighlighter->editorStyle()->format(StyleItem::KeyWhitespace);
 
         if (keyWhitespaceFormat.background() !=
             QColor(settings.value("whitespaceBackgroundColor", QColor(Qt::white)).toString()))
         {
-            m_pythonSyntaxHighlighter->editorStyle()
+            m_syntaxHighlighter->editorStyle()
                 ->rformat(StyleItem::KeyWhitespace)
                 .setBackground(QColor(
                     settings.value("whitespaceBackgroundColor", QColor(Qt::white)).toString()));
@@ -194,7 +235,7 @@ void AbstractCodeEditorWidget::loadSettings()
         if (keyWhitespaceFormat.foreground().color() !=
             QColor(settings.value("whitespaceForegroundColor", QColor(Qt::black)).toString()))
         {
-            m_pythonSyntaxHighlighter->editorStyle()
+            m_syntaxHighlighter->editorStyle()
                 ->rformat(StyleItem::KeyWhitespace)
                 .setForeground(QColor(
                     settings.value("whitespaceForegroundColor", QColor(Qt::black)).toString()));
@@ -369,9 +410,9 @@ void AbstractCodeEditorWidget::loadSettings()
         }
     }
 
-    if (updateSyntaxHighlighter && m_pythonSyntaxHighlighter)
+    if (updateSyntaxHighlighter && m_syntaxHighlighter)
     {
-        m_pythonSyntaxHighlighter->refreshEditor(m_editorStyle);
+        m_syntaxHighlighter->refreshEditor(m_editorStyle);
     }
 }
 
