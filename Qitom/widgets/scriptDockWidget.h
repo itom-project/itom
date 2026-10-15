@@ -110,6 +110,15 @@ public:
 
     ScriptEditorWidget* getCurrentEditor() const;
 
+    // access for the drag and drop of tabs and windows (see DockDragDropController)
+    ScriptEditorWidget* editorAtIndex(int index) const;
+    int indexOfEditor(const ScriptEditorWidget* editor) const;
+    void moveEditorTab(int from, int to);
+    QString tabTitle(int index) const;
+    QRect tabBarGlobalRect() const; //!< tab bar in global coordinates (empty if it is not visible)
+    QRect contentGlobalRect() const; //!< the entire widget (docked) or window (undocked) in global coordinates
+    int tabInsertIndexAt(const QPoint& globalPos) const; //!< index at which a dropped tab is inserted
+
     bool activateTabByFilename(const QString& filename, int currentDebugLine = -1, int UID = -1);
     bool activeTabEnsureLineVisible(
         const int lineNr, bool errorMessageClick = false, bool showSelectedCallstackLine = false);
@@ -144,6 +153,7 @@ protected:
     void closeEvent(QCloseEvent* event);
     virtual void mousePressEvent(QMouseEvent* e);
     virtual void windowStateChanged(bool windowNotToolbox);
+    virtual void undockedWindowDragged();
 
     RetVal closeTab(int index, bool saveFirst = true, bool closeScriptWidgetIfLastTabClosed = true);
     RetVal saveTab(int index, bool forceSaveAs = false, bool askFirst = true);
