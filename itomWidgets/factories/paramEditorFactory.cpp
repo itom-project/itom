@@ -30,6 +30,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 ParamEditorFactory::ParamEditorFactory(QObject *_parent)
     : QObject(_parent)
 {
+    initialized = false;
 }
 
 // --------------------------------------------------------------------------

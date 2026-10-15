@@ -29,6 +29,7 @@
 PopupWidgetFactory::PopupWidgetFactory(QObject *_parent)
   : QObject(_parent)
 {
+    initialized = false;
 }
 
 // --------------------------------------------------------------------------

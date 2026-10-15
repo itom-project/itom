@@ -30,6 +30,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 PenCreatorButtonFactory::PenCreatorButtonFactory(QObject *_parent)
     : QObject(_parent)
 {
+    initialized = false;
 }
 
 // --------------------------------------------------------------------------
