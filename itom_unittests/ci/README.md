@@ -16,6 +16,9 @@ argument `-googletestadapter` is given. The exit code therefore does not show fa
 | test is listed as known failure and passes now | notice, the entry should be removed |
 | test is skipped | shown in the summary |
 
+The runner has its own tests with fake executables (no build required):
+`python3 -m unittest discover -s itom_unittests/ci -p "test_*.py"`. The workflow runs them first.
+
 ## Run it locally
 
 ```

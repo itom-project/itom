@@ -71,6 +71,8 @@ def run_executable(exe, workdir, timeout, extra_args):
             returncode = proc.returncode
         except subprocess.TimeoutExpired:
             return "timeout", None
+        except OSError as e:
+            return "cannot start (%s)" % e, None
 
         if not os.path.isfile(json_path):
             return returncode, None
@@ -107,10 +109,14 @@ def main():
     parser.add_argument("gtest_args", nargs="*", help="further arguments for the executables (after --)")
     args = parser.parse_args()
 
+    # The executables are started with the build directory as working directory. A relative path would then
+    # be resolved a second time relative to it ('build/build/unittest_x').
+    build_dir = os.path.abspath(args.build_dir)
+
     known = read_known(args.known) if not args.update_known else {}
-    executables = find_executables(args.build_dir, args.exe)
+    executables = find_executables(build_dir, args.exe)
     if not executables:
-        print("No unittest executables found in %s" % args.build_dir)
+        print("No unittest executables found in %s" % build_dir)
         return 1
 
     ok = True
@@ -126,7 +132,7 @@ def main():
             rows.append((name, "-", "-", "-", "-", "not built"))
             continue
 
-        returncode, result = run_executable(exe, args.build_dir, args.timeout, args.gtest_args)
+        returncode, result = run_executable(exe, build_dir, args.timeout, args.gtest_args)
 
         if result is None:
             print("::error::%s crashed or timed out (return code %s), no test result available" % (name, returncode))

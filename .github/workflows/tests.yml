@@ -36,6 +36,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # fast check of the test runner itself, before the long build
+      - name: Test the test runner
+        run: python3 -m unittest discover -s itom_unittests/ci -p "test_*.py" -v
+
       - name: Install dependencies
         run: |
           sudo apt-get update
