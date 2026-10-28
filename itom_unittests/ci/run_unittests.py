@@ -153,7 +153,10 @@ def main():
         total = result.get("tests", 0)
 
         if total == 0:
-            print("::error::%s ran no tests" % name)
+            print(
+                "::error::%s ran no tests. Are tests compiled out by a missing CMake option "
+                "(e.g. BUILD_UNITTEST_INTERNAL_ENABLE=ON)?" % name
+            )
             ok = False
 
         for t in new:
@@ -166,7 +169,8 @@ def main():
         skipped = count_skipped(result)
         if skipped:
             print("::notice::%s: %d test(s) skipped (see the output above)" % (name, skipped))
-        rows.append((name, total, skipped, len(failing) - len(new), len(new), "FAILED" if new else "ok"))
+        status = "NO TESTS" if total == 0 else ("FAILED" if new else "ok")
+        rows.append((name, total, skipped, len(failing) - len(new), len(new), status))
 
     if args.update_known:
         with open(args.known, "w", encoding="utf-8") as f:

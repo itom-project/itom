@@ -111,6 +111,14 @@ class RunnerTest(unittest.TestCase):
         self.assertEqual(result.returncode, 1)
         self.assertNotIn("Traceback", result.stderr)
 
+    def test_executable_without_tests_fails_the_run(self):
+        # e.g. all tests are compiled out, because a CMake option is missing
+        self.add_exe("unittest_a", [])
+        result = self.run_runner("--build-dir", self.build, "--known", self.known())
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("ran no tests", result.stdout)
+        self.assertIn("| unittest_a | 0 | 0 | 0 | 0 | NO TESTS |", result.stdout)
+
     def test_no_executables_fails_the_run(self):
         result = self.run_runner("--build-dir", self.build, "--known", self.known())
         self.assertEqual(result.returncode, 1)

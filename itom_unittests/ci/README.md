@@ -13,6 +13,7 @@ argument `-googletestadapter` is given. The exit code therefore does not show fa
 |---|---|
 | test fails and is not listed in the known failures | run fails |
 | executable crashes, times out or was not built | run fails |
+| executable ran no tests (e.g. tests compiled out by a missing CMake option) | run fails |
 | test is listed as known failure and passes now | notice, the entry should be removed |
 | test is skipped | shown in the summary |
 
@@ -23,11 +24,15 @@ The runner has its own tests with fake executables (no build required):
 
 ```
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_WITH_PCL=OFF -DBUILD_WITH_HELPVIEWER=OFF \
-      -DBUILD_UNITTEST=ON -DBUILD_QTVERSION=Qt6
+      -DBUILD_UNITTEST=ON -DBUILD_UNITTEST_INTERNAL_ENABLE=ON -DBUILD_QTVERSION=Qt6
 cmake --build build --target unittest_dataobject unittest_commonlib unittest_commonqtlib \
       unittest_addinmanager unittest_qpropertyeditor
 python3 itom_unittests/ci/run_unittests.py --build-dir build --known itom_unittests/ci/known_failures_linux.txt
 ```
+
+`BUILD_UNITTEST_INTERNAL_ENABLE=ON` is required. Without it, tests that need internal symbols are compiled
+out (all tests of `unittest_qpropertyeditor`), and the executable runs with 0 tests. The runner reports an
+executable without tests as error.
 
 ## Known failures
 

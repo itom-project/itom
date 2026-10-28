@@ -4,6 +4,9 @@ name: Build and unit tests
 # The test executables always return exit code 0, therefore itom_unittests/ci/run_unittests.py
 # evaluates their JSON output and compares the failing tests with itom_unittests/ci/known_failures_linux.txt.
 # A test that is not listed there fails this workflow.
+#
+# BUILD_UNITTEST_INTERNAL_ENABLE=ON is required: some tests (e.g. all tests of unittest_qpropertyeditor)
+# are compiled out without it, such that the executable would contain no test at all.
 
 on:
   push:
@@ -60,6 +63,7 @@ jobs:
             -DBUILD_WITH_PCL=OFF \
             -DBUILD_WITH_HELPVIEWER=OFF \
             -DBUILD_UNITTEST=ON \
+            -DBUILD_UNITTEST_INTERNAL_ENABLE=ON \
             -DBUILD_QTVERSION=Qt6 \
             -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
 
@@ -117,6 +121,7 @@ jobs:
             -DBUILD_WITH_PCL=OFF \
             -DBUILD_WITH_HELPVIEWER=OFF \
             -DBUILD_UNITTEST=ON \
+            -DBUILD_UNITTEST_INTERNAL_ENABLE=ON \
             -DBUILD_QTVERSION=Qt6 \
             -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
 
