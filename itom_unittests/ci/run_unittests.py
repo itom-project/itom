@@ -94,7 +94,7 @@ def failing_tests(result):
     for suite in result.get("testsuites", []):
         for test in suite.get("testsuite", []):
             if test.get("failures"):
-                failing.add("%s.%s" % (suite["name"], test["name"]))
+                failing.add("{}.{}".format(suite["name"], test["name"]))
     return failing
 
 
@@ -135,7 +135,7 @@ def main():
         returncode, result = run_executable(exe, build_dir, args.timeout, args.gtest_args)
 
         if result is None:
-            print("::error::%s crashed or timed out (return code %s), no test result available" % (name, returncode))
+            print(f"::error::{name} crashed or timed out (return code {returncode}), no test result available")
             ok = False
             rows.append((name, "-", "-", "-", "-", "CRASH (%s)" % returncode))
             continue
@@ -160,9 +160,9 @@ def main():
             ok = False
 
         for t in new:
-            print("::error::%s: %s failed (not a known failure)" % (name, t))
+            print(f"::error::{name}: {t} failed (not a known failure)")
         for t in fixed:
-            print("::notice::%s: %s is listed as known failure, but passes now. Remove it from the list." % (name, t))
+            print(f"::notice::{name}: {t} is listed as known failure, but passes now. Remove it from the list.")
 
         if new:
             ok = False
@@ -177,7 +177,7 @@ def main():
             f.write("# Known failing tests, see run_unittests.py. Fix the tests and remove them from this list.\n")
             for exe in sorted(current):
                 for t in sorted(current[exe]):
-                    f.write("%s: %s\n" % (exe, t))
+                    f.write(f"{exe}: {t}\n")
         print("\nWrote %s" % args.known)
 
     summary = [
