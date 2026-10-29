@@ -45,7 +45,7 @@
 #include "../Qitom/AppManagement.h"
 #include "../organizer/scriptEditorOrganizer.h"
 #include "../helper/IOHelper.h"
-#include "../helper/editorFileType.h"
+#include "dockDragDrop.h"
 
 namespace ito {
 
@@ -98,6 +98,13 @@ ScriptDockWidget::ScriptDockWidget(const QString &title, const QString &objName,
 
     m_tab = new QTabWidgetItom(this);
 
+    // tabs can be dragged to other script windows or to the main window
+    ScriptTabBar* tabBar = new ScriptTabBar(m_tab);
+    m_tab->setCustomTabBar(tabBar);
+    connect(tabBar, &ScriptTabBar::tabDragOutRequested, this, [this](int index) {
+        DockDragDropController::instance()->startTabDrag(this, index);
+    });
+
     //!< tab-settings
     m_tab->setElideMode(Qt::ElideNone);
     m_tab->setTabShape(QTabWidget::Rounded);
@@ -113,6 +120,15 @@ ScriptDockWidget::ScriptDockWidget(const QString &title, const QString &objName,
     connect(this, &ScriptDockWidget::pythonRunSelection, mainWin, &MainWindow::pythonRunSelection);
 
     AbstractDockWidget::init();
+
+    // this widget (docked) and its window (undocked) accept dropped script tabs. The drag events
+    // are handled by DockDragDropController.
+    setAcceptDrops(true);
+    getCanvas()->setAcceptDrops(true);
+
+    // the dock widget can be dragged out of the main window to become a window. A window can be
+    // docked by releasing it above the main window.
+    setDragDockingEnabled(true);
 
     //this is an example shortcut. This shortcut is the same than the shortcut directly set to the corresponding action.
     //The action is not triggered by shortcut in docked-mode. Therefore we have the following QShortcut-instance.
@@ -1182,6 +1198,81 @@ RetVal ScriptDockWidget::appendEditor(ScriptEditorWidget* editorWidget)
     \param index tab index of editor, which should be removed
     \return instance to recently removed ScriptEditorWidget, NULL if index exceeds limits
 */
+ScriptEditorWidget* ScriptDockWidget::editorAtIndex(int index) const
+{
+    return getEditorByIndex(index);
+}
+
+//-------------------------------------------------------------------------------------
+int ScriptDockWidget::indexOfEditor(const ScriptEditorWidget* editor) const
+{
+    return getIndexByEditor(editor);
+}
+
+//-------------------------------------------------------------------------------------
+void ScriptDockWidget::moveEditorTab(int from, int to)
+{
+    if (isTabIndexValid(from) && isTabIndexValid(to) && from != to)
+    {
+        m_tab->getTabBar()->moveTab(from, to);
+    }
+}
+
+//-------------------------------------------------------------------------------------
+QString ScriptDockWidget::tabTitle(int index) const
+{
+    return isTabIndexValid(index) ? m_tab->tabText(index).remove('&') : QString();
+}
+
+//-------------------------------------------------------------------------------------
+QRect ScriptDockWidget::tabBarGlobalRect() const
+{
+    QTabBar* tb = m_tab->getTabBar();
+
+    if (!tb || !tb->isVisible())
+    {
+        return QRect();
+    }
+
+    return QRect(tb->mapToGlobal(QPoint(0, 0)), tb->size());
+}
+
+//-------------------------------------------------------------------------------------
+QRect ScriptDockWidget::contentGlobalRect() const
+{
+    QWidget* w = m_tab->isVisible() ? static_cast<QWidget*>(m_tab) : nullptr;
+
+    if (!w)
+    {
+        return QRect();
+    }
+
+    return QRect(w->mapToGlobal(QPoint(0, 0)), w->size());
+}
+
+//-------------------------------------------------------------------------------------
+int ScriptDockWidget::tabInsertIndexAt(const QPoint& globalPos) const
+{
+    QTabBar* tb = m_tab->getTabBar();
+    const QPoint p = tb->mapFromGlobal(globalPos);
+    const int i = tb->tabAt(p);
+
+    if (i < 0)
+    {
+        return m_tab->count();
+    }
+
+    return (p.x() > tb->tabRect(i).center().x()) ? i + 1 : i;
+}
+
+//-------------------------------------------------------------------------------------
+//! the title bar of the undocked window is dragged. A release above the main window docks the window.
+void ScriptDockWidget::undockedWindowDragged()
+{
+    DockDragDropController::instance()->beginWindowDrag(this);
+}
+
+//-------------------------------------------------------------------------------------
 ScriptEditorWidget* ScriptDockWidget::removeEditor(int index)
 {
     if (index < 0 || index >= m_tab->count())

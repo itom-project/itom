@@ -2053,7 +2053,7 @@ int PythonShape::PyShape_setColor(PyShape *self, PyObject *value, void * /*closu
     }
 
 	QColor color;
-	bool ok;
+	bool ok = false;
 
 	if (value == Py_None)
 	{

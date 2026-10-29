@@ -53,6 +53,41 @@ the **edit** menu. These are:
   A star icon indicates a bookmarked line. Modify the bookmarks or jump
   to the next by clicking the corresponding menu entries.
 
+.. _gui-editor-dock-drag-drop:
+
+Docking script windows by drag and drop
+========================================
+
+Script editor windows can be docked, undocked and rearranged by drag and drop.
+
+**Dragging a tab:** press the left mouse button on a tab and move the mouse
+out of the tab bar. A drag operation starts and a frame shows where the tab will be
+placed, if the mouse button is released:
+
+* Above the tab bar of a script window: the tab is inserted at this position.
+* Above the center of a script window: the tab is appended to the tabs of this window.
+* Above the left, right, top or bottom edge of a docked script window: a new docked
+  script window is created next to it (split).
+* Above the edges of the main window: a new docked script window is created in the
+  corresponding docking area. The center of the main window selects the top docking area.
+* Outside of all windows of |itom|: the tab is opened in a new, undocked script window at
+  the position of the mouse cursor.
+
+A script window that does not contain any tab after the move is closed automatically.
+
+**Dragging a window:** a docked script window can be dragged out of the main window
+by its title bar. It then becomes an undocked script window with its own
+menu and toolbars (the same as the *undock* button of the window). The window is
+placed at the position where the mouse button is released.
+
+An undocked script window can be docked by moving it by its title bar and releasing it
+
+* above one of the edges of the main window (a frame shows the docking area), or
+* above the tab bar of a docked script window (the window is then tabified with it).
+
+Releasing the window at any other position of the main window only moves the window.
+The docking buttons and the tab context menu are still available as alternative.
+
 .. _gui-editor-run-debug-script:
 
 Run or debug the script

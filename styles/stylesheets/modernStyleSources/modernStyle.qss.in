@@ -1,0 +1,735 @@
+/* ---------------------------------------------------------------------------------------
+   Template of the itom application styles modernLight and modernDark.
+   Placeholders (palette keys in double curly braces) are replaced by generate_modern_styles.py.
+   Design: flat surfaces, thin borders, small radii, one accent color.
+   --------------------------------------------------------------------------------------- */
+
+/* ---- base -------------------------------------------------------------------------- */
+
+QWidget {
+    background-color: {{bg}};
+    color: {{text}};
+    selection-background-color: {{accentBg}};
+    selection-color: {{accentBgText}};
+    outline: 0;
+}
+
+QWidget:disabled {
+    color: {{textDisabled}};
+}
+
+QLabel, QCheckBox, QRadioButton {
+    background-color: transparent;
+}
+
+QToolTip {
+    background-color: {{tooltipBg}};
+    color: {{tooltipText}};
+    border: none;
+    border-radius: 4px;
+    padding: 4px 8px;
+}
+
+/* ---- main window, docks, splitters -------------------------------------------------- */
+
+QMainWindow::separator {
+    background-color: {{bg}};
+    width: 6px;
+    height: 6px;
+}
+
+QMainWindow::separator:hover {
+    background-color: {{line}};
+}
+
+QSplitter::handle {
+    background-color: {{bg}};
+}
+
+QSplitter::handle:hover {
+    background-color: {{line}};
+}
+
+QSplitter::handle:horizontal {
+    width: 6px;
+}
+
+QSplitter::handle:vertical {
+    height: 6px;
+}
+
+QDockWidget {
+    color: {{textSecondary}};
+    titlebar-close-icon: url({{icons}}/close.png);
+    titlebar-normal-icon: url({{icons}}/undock.png);
+}
+
+QDockWidget::title {
+    background-color: {{panel}};
+    border: 1px solid {{line}};
+    border-bottom: none;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    padding: 6px 10px;
+    text-align: left;
+}
+
+QDockWidget > QWidget {
+    background-color: {{panel}};
+    border: 1px solid {{line}};
+    border-top: none;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
+QDockWidget::close-button, QDockWidget::float-button {
+    background-color: transparent;
+    border: none;
+    border-radius: 4px;
+    padding: 0px;
+}
+
+QDockWidget::close-button:hover, QDockWidget::float-button:hover {
+    background-color: {{hover}};
+}
+
+/* ---- menus ------------------------------------------------------------------------- */
+
+QMenuBar {
+    background-color: {{panel}};
+    border-bottom: 1px solid {{line}};
+    padding: 2px 4px;
+}
+
+QMenuBar::item {
+    background-color: transparent;
+    color: {{textSecondary}};
+    padding: 4px 10px;
+    border-radius: 6px;
+}
+
+QMenuBar::item:selected {
+    background-color: {{hover}};
+    color: {{text}};
+}
+
+QMenuBar::item:pressed {
+    background-color: {{pressed}};
+    color: {{text}};
+}
+
+QMenu {
+    background-color: {{panel}};
+    border: 1px solid {{line}};
+    border-radius: 8px;
+    padding: 4px;
+}
+
+QMenu::item {
+    background-color: transparent;
+    padding: 5px 24px 5px 12px;
+    border-radius: 6px;
+}
+
+QMenu::item:selected {
+    background-color: {{accentBg}};
+    color: {{accentBgText}};
+}
+
+QMenu::item:disabled {
+    color: {{textDisabled}};
+}
+
+QMenu::separator {
+    height: 1px;
+    background-color: {{line}};
+    margin: 4px 8px;
+}
+
+QMenu::icon {
+    padding-left: 6px;
+}
+
+/* ---- tool bars and tool buttons ---------------------------------------------------- */
+
+QToolBar {
+    background-color: {{panel}};
+    border: none;
+    border-bottom: 1px solid {{line}};
+    spacing: 2px;
+    padding: 3px 6px;
+}
+
+QToolBar::separator {
+    background-color: {{line}};
+    width: 1px;
+    height: 1px;
+    margin: 4px 6px;
+}
+
+QToolButton {
+    background-color: transparent;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    padding: 3px;
+}
+
+QToolButton:hover {
+    background-color: {{hover}};
+}
+
+QToolButton:pressed, QToolButton:checked {
+    background-color: {{accentBg}};
+    color: {{accentBgText}};
+}
+
+QToolButton[popupMode="1"] {
+    padding-right: 14px;
+}
+
+QToolButton::menu-button {
+    border: none;
+    width: 12px;
+}
+
+QToolButton::menu-indicator, QToolButton::menu-arrow {
+    image: url({{icons}}/arrow_down.png);
+    width: 10px;
+    height: 10px;
+    subcontrol-position: right center;
+}
+
+/* ---- buttons ----------------------------------------------------------------------- */
+
+QPushButton {
+    background-color: {{panel}};
+    border: 1px solid {{lineStrong}};
+    border-radius: 6px;
+    padding: 5px 14px;
+    min-height: 16px;
+}
+
+QPushButton:hover {
+    background-color: {{hover}};
+}
+
+QPushButton:pressed {
+    background-color: {{pressed}};
+}
+
+QPushButton:checked {
+    background-color: {{accentBg}};
+    border-color: {{accent}};
+    color: {{accentBgText}};
+}
+
+QPushButton:default {
+    background-color: {{accent}};
+    border-color: {{accent}};
+    color: {{accentText}};
+}
+
+QPushButton:default:hover {
+    background-color: {{accentHover}};
+    border-color: {{accentHover}};
+}
+
+QPushButton:disabled {
+    background-color: {{bg}};
+    border-color: {{line}};
+    color: {{textDisabled}};
+}
+
+QPushButton:focus {
+    border-color: {{accent}};
+}
+
+/* ---- inputs ------------------------------------------------------------------------ */
+
+QLineEdit, QAbstractSpinBox, QComboBox {
+    background-color: {{panel}};
+    border: 1px solid {{lineStrong}};
+    border-radius: 6px;
+    padding: 4px 6px;
+    min-height: 16px;
+}
+
+QLineEdit:hover, QAbstractSpinBox:hover, QComboBox:hover {
+    border-color: {{textSecondary}};
+}
+
+QLineEdit:focus, QAbstractSpinBox:focus, QComboBox:focus {
+    border-color: {{accent}};
+}
+
+QLineEdit:disabled, QAbstractSpinBox:disabled, QComboBox:disabled {
+    background-color: {{bg}};
+    border-color: {{line}};
+}
+
+QComboBox {
+    padding-right: 22px;
+}
+
+QComboBox::drop-down {
+    subcontrol-origin: padding;
+    subcontrol-position: center right;
+    width: 20px;
+    border: none;
+}
+
+QComboBox::down-arrow {
+    image: url({{icons}}/arrow_down.png);
+    width: 12px;
+    height: 12px;
+}
+
+QComboBox::down-arrow:disabled {
+    image: url({{icons}}/arrow_down_disabled.png);
+}
+
+QComboBox QAbstractItemView {
+    background-color: {{panel}};
+    border: 1px solid {{line}};
+    border-radius: 6px;
+    padding: 2px;
+    selection-background-color: {{accentBg}};
+    selection-color: {{accentBgText}};
+}
+
+QAbstractSpinBox {
+    padding-right: 18px;
+}
+
+QAbstractSpinBox::up-button, QAbstractSpinBox::down-button {
+    subcontrol-origin: border;
+    width: 16px;
+    border: none;
+    background-color: transparent;
+}
+
+QAbstractSpinBox::up-button {
+    subcontrol-position: top right;
+    border-top-right-radius: 6px;
+}
+
+QAbstractSpinBox::down-button {
+    subcontrol-position: bottom right;
+    border-bottom-right-radius: 6px;
+}
+
+QAbstractSpinBox::up-button:hover, QAbstractSpinBox::down-button:hover {
+    background-color: {{hover}};
+}
+
+QAbstractSpinBox::up-arrow {
+    image: url({{icons}}/arrow_up.png);
+    width: 10px;
+    height: 10px;
+}
+
+QAbstractSpinBox::down-arrow {
+    image: url({{icons}}/arrow_down.png);
+    width: 10px;
+    height: 10px;
+}
+
+QAbstractSpinBox::up-arrow:disabled, QAbstractSpinBox::up-arrow:off {
+    image: url({{icons}}/arrow_up_disabled.png);
+}
+
+QAbstractSpinBox::down-arrow:disabled, QAbstractSpinBox::down-arrow:off {
+    image: url({{icons}}/arrow_down_disabled.png);
+}
+
+QTextEdit, QPlainTextEdit {
+    background-color: {{panel}};
+    border: 1px solid {{line}};
+    border-radius: 8px;
+}
+
+/* ---- check boxes and radio buttons ------------------------------------------------- */
+
+QCheckBox, QRadioButton {
+    spacing: 8px;
+}
+
+QCheckBox::indicator, QRadioButton::indicator,
+QGroupBox::indicator, QAbstractItemView::indicator {
+    width: 16px;
+    height: 16px;
+}
+
+QCheckBox::indicator:unchecked, QGroupBox::indicator:unchecked, QAbstractItemView::indicator:unchecked {
+    image: url({{icons}}/checkbox_unchecked.png);
+}
+
+QCheckBox::indicator:unchecked:hover, QGroupBox::indicator:unchecked:hover {
+    image: url({{icons}}/checkbox_unchecked_hover.png);
+}
+
+QCheckBox::indicator:checked, QGroupBox::indicator:checked, QAbstractItemView::indicator:checked {
+    image: url({{icons}}/checkbox_checked.png);
+}
+
+QCheckBox::indicator:checked:hover, QGroupBox::indicator:checked:hover {
+    image: url({{icons}}/checkbox_checked_hover.png);
+}
+
+QCheckBox::indicator:indeterminate, QAbstractItemView::indicator:indeterminate {
+    image: url({{icons}}/checkbox_indeterminate.png);
+}
+
+QCheckBox::indicator:unchecked:disabled, QGroupBox::indicator:unchecked:disabled {
+    image: url({{icons}}/checkbox_unchecked_disabled.png);
+}
+
+QCheckBox::indicator:checked:disabled, QGroupBox::indicator:checked:disabled {
+    image: url({{icons}}/checkbox_checked_disabled.png);
+}
+
+QCheckBox::indicator:indeterminate:disabled {
+    image: url({{icons}}/checkbox_indeterminate_disabled.png);
+}
+
+QRadioButton::indicator:unchecked {
+    image: url({{icons}}/radio_unchecked.png);
+}
+
+QRadioButton::indicator:unchecked:hover {
+    image: url({{icons}}/radio_unchecked_hover.png);
+}
+
+QRadioButton::indicator:checked {
+    image: url({{icons}}/radio_checked.png);
+}
+
+QRadioButton::indicator:checked:hover {
+    image: url({{icons}}/radio_checked_hover.png);
+}
+
+QRadioButton::indicator:unchecked:disabled {
+    image: url({{icons}}/radio_unchecked_disabled.png);
+}
+
+QRadioButton::indicator:checked:disabled {
+    image: url({{icons}}/radio_checked_disabled.png);
+}
+
+/* ---- group boxes ------------------------------------------------------------------- */
+
+QGroupBox {
+    background-color: transparent;
+    border: 1px solid {{line}};
+    border-radius: 8px;
+    margin-top: 14px;
+    padding: 10px 8px 8px 8px;
+}
+
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    left: 10px;
+    padding: 0 4px;
+    color: {{textSecondary}};
+}
+
+/* ---- item views -------------------------------------------------------------------- */
+
+QAbstractItemView {
+    background-color: {{panel}};
+    alternate-background-color: {{panelAlt}};
+    border: none;
+    selection-background-color: {{accentBg}};
+    selection-color: {{accentBgText}};
+}
+
+QAbstractItemView::item {
+    padding: 3px 4px;
+    border: none;
+}
+
+QAbstractItemView::item:hover {
+    background-color: {{hover}};
+}
+
+QAbstractItemView::item:selected {
+    background-color: {{accentBg}};
+    color: {{accentBgText}};
+}
+
+QTreeView::branch {
+    background-color: transparent;
+}
+
+QTreeView::branch:hover {
+    background-color: {{hover}};
+}
+
+QTreeView::branch:selected {
+    background-color: {{accentBg}};
+}
+
+QTreeView::branch:has-children:!has-siblings:closed,
+QTreeView::branch:closed:has-children:has-siblings {
+    border-image: none;
+    image: url({{icons}}/branch_closed.png);
+}
+
+QTreeView::branch:open:has-children:!has-siblings,
+QTreeView::branch:open:has-children:has-siblings {
+    border-image: none;
+    image: url({{icons}}/branch_open.png);
+}
+
+QHeaderView {
+    background-color: {{panel}};
+    border: none;
+}
+
+QHeaderView::section {
+    background-color: {{panel}};
+    color: {{textSecondary}};
+    border: none;
+    border-bottom: 1px solid {{line}};
+    border-right: 1px solid {{line}};
+    padding: 4px 8px;
+}
+
+QHeaderView::section:last {
+    border-right: none;
+}
+
+QHeaderView::section:hover {
+    background-color: {{hover}};
+}
+
+QHeaderView::down-arrow {
+    image: url({{icons}}/arrow_down.png);
+    width: 10px;
+    height: 10px;
+}
+
+QHeaderView::up-arrow {
+    image: url({{icons}}/arrow_up.png);
+    width: 10px;
+    height: 10px;
+}
+
+QTableView {
+    gridline-color: {{line}};
+}
+
+QTableCornerButton::section {
+    background-color: {{panel}};
+    border: none;
+    border-bottom: 1px solid {{line}};
+    border-right: 1px solid {{line}};
+}
+
+/* ---- tabs -------------------------------------------------------------------------- */
+
+QTabWidget::pane {
+    background-color: {{panel}};
+    border: 1px solid {{line}};
+    border-radius: 8px;
+    top: -1px;
+}
+
+QTabBar {
+    background-color: transparent;
+    qproperty-drawBase: 0;
+}
+
+QTabBar::tab {
+    background-color: transparent;
+    color: {{textSecondary}};
+    border: none;
+    border-bottom: 2px solid transparent;
+    padding: 6px 14px;
+    margin-right: 2px;
+}
+
+QTabBar::tab:hover {
+    color: {{text}};
+    background-color: {{hover}};
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+}
+
+QTabBar::tab:selected {
+    color: {{text}};
+    border-bottom: 2px solid {{accent}};
+}
+
+QTabBar::tab:disabled {
+    color: {{textDisabled}};
+}
+
+QTabBar::close-button {
+    image: url({{icons}}/close.png);
+    subcontrol-position: right;
+    border-radius: 4px;
+    /* size of the icon area. It must be given, since Qt computes the size of the button from
+       the box model of this rule (width / height plus margins) as soon as margins are set. */
+    width: 16px;
+    height: 16px;
+    /* distance to the text and to the end of the tab */
+    margin-left: 4px;
+    margin-right: 6px;
+}
+
+QTabBar::close-button:hover {
+    image: url({{icons}}/close_hover.png);
+    background-color: {{pressed}};
+}
+
+QTabBar::scroller {
+    width: 22px;
+}
+
+QTabBar QToolButton {
+    background-color: {{bg}};
+    border: none;
+}
+
+QTabBar QToolButton::left-arrow {
+    image: url({{icons}}/arrow_left.png);
+}
+
+QTabBar QToolButton::right-arrow {
+    image: url({{icons}}/arrow_right.png);
+}
+
+/* ---- scroll bars (slim, without arrow buttons) ------------------------------------- */
+
+QScrollBar:vertical {
+    background-color: transparent;
+    width: 10px;
+    margin: 0;
+}
+
+QScrollBar:horizontal {
+    background-color: transparent;
+    height: 10px;
+    margin: 0;
+}
+
+QScrollBar::handle:vertical {
+    background-color: {{scrollHandle}};
+    border-radius: 3px;
+    min-height: 24px;
+    margin: 2px;
+}
+
+QScrollBar::handle:horizontal {
+    background-color: {{scrollHandle}};
+    border-radius: 3px;
+    min-width: 24px;
+    margin: 2px;
+}
+
+QScrollBar::handle:hover {
+    background-color: {{scrollHandleHover}};
+}
+
+QScrollBar::add-line, QScrollBar::sub-line {
+    width: 0;
+    height: 0;
+    border: none;
+    background: none;
+}
+
+QScrollBar::add-page, QScrollBar::sub-page {
+    background: none;
+}
+
+QAbstractScrollArea::corner {
+    background-color: transparent;
+}
+
+/* ---- sliders and progress bars ----------------------------------------------------- */
+
+QSlider::groove:horizontal {
+    background-color: {{line}};
+    height: 4px;
+    border-radius: 2px;
+}
+
+QSlider::groove:vertical {
+    background-color: {{line}};
+    width: 4px;
+    border-radius: 2px;
+}
+
+QSlider::sub-page:horizontal {
+    background-color: {{accent}};
+    border-radius: 2px;
+}
+
+QSlider::add-page:vertical {
+    background-color: {{accent}};
+    border-radius: 2px;
+}
+
+QSlider::handle:horizontal {
+    background-color: {{panel}};
+    border: 2px solid {{accent}};
+    width: 12px;
+    height: 12px;
+    margin: -6px 0;
+    border-radius: 8px;
+}
+
+QSlider::handle:vertical {
+    background-color: {{panel}};
+    border: 2px solid {{accent}};
+    width: 12px;
+    height: 12px;
+    margin: 0 -6px;
+    border-radius: 8px;
+}
+
+QSlider::handle:hover {
+    background-color: {{accentBg}};
+}
+
+QSlider::handle:disabled, QSlider::sub-page:disabled, QSlider::add-page:vertical:disabled {
+    background-color: {{line}};
+    border-color: {{lineStrong}};
+}
+
+QProgressBar {
+    background-color: {{line}};
+    border: none;
+    border-radius: 4px;
+    text-align: center;
+    color: {{text}};
+    max-height: 14px;
+}
+
+QProgressBar::chunk {
+    background-color: {{progressChunk}};
+    border-radius: 4px;
+}
+
+/* ---- status bar -------------------------------------------------------------------- */
+
+QStatusBar {
+    background-color: {{panel}};
+    border-top: 1px solid {{line}};
+    color: {{textSecondary}};
+}
+
+QStatusBar::item {
+    border: none;
+}
+
+QStatusBar QSizeGrip {
+    background-color: transparent;
+}
+
+QStatusBar QLabel {
+    color: {{textSecondary}};
+    padding: 0 6px;
+}

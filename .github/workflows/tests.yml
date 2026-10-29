@@ -1,0 +1,151 @@
+name: Build and unit tests
+
+# Builds the libraries and the unittest executables on Linux (Qt6) and runs them.
+# The test executables always return exit code 0, therefore itom_unittests/ci/run_unittests.py
+# evaluates their JSON output and compares the failing tests with itom_unittests/ci/known_failures_linux.txt.
+# A test that is not listed there fails this workflow.
+#
+# BUILD_UNITTEST_INTERNAL_ENABLE=ON is required: some tests (e.g. all tests of unittest_qpropertyeditor)
+# are compiled out without it, such that the executable would contain no test at all.
+
+on:
+  push:
+    branches:
+      - master
+      - main
+  pull_request:
+    branches:
+      - master
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tests-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  UNITTEST_TARGETS: unittest_dataobject unittest_commonlib unittest_commonqtlib unittest_addinmanager unittest_qpropertyeditor
+
+jobs:
+  linux-qt6:
+    name: Linux, Qt6, Release
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # fast check of the test runner itself, before the long build
+      - name: Test the test runner
+        run: python3 -m unittest discover -s itom_unittests/ci -p "test_*.py" -v
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            build-essential cmake ccache python3-dev python3-numpy libopencv-dev \
+            qt6-base-dev qt6-tools-dev qt6-tools-dev-tools qt6-l10n-tools \
+            libqt6svg6-dev libqt6opengl6-dev qt6-5compat-dev libgl-dev
+
+      - name: Cache the compiler results
+        uses: hendrikmuhs/ccache-action@v1.2
+        with:
+          key: linux-qt6-release
+
+      - name: Configure
+        run: |
+          cmake -S . -B build \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DBUILD_WITH_PCL=OFF \
+            -DBUILD_WITH_HELPVIEWER=OFF \
+            -DBUILD_UNITTEST=ON \
+            -DBUILD_UNITTEST_INTERNAL_ENABLE=ON \
+            -DBUILD_QTVERSION=Qt6 \
+            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+
+      - name: Build the unittests
+        run: cmake --build build --parallel $(nproc) --target $UNITTEST_TARGETS
+
+      - name: Run the unittests
+        run: >
+          python3 itom_unittests/ci/run_unittests.py
+          --build-dir build
+          --known itom_unittests/ci/known_failures_linux.txt
+          --json-dir test-results
+
+      - name: Upload the test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-linux-qt6
+          path: test-results/
+          if-no-files-found: ignore
+
+  coverage:
+    name: Linux, Qt6, line coverage (gcov)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 150
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            build-essential cmake ccache python3-dev python3-numpy python3-pip libopencv-dev \
+            qt6-base-dev qt6-tools-dev qt6-tools-dev-tools qt6-l10n-tools \
+            libqt6svg6-dev libqt6opengl6-dev qt6-5compat-dev libgl-dev
+          python3 -m pip install --break-system-packages gcovr
+
+      - name: Cache the compiler results
+        uses: hendrikmuhs/ccache-action@v1.2
+        with:
+          key: linux-qt6-coverage
+
+      # The build type stays 'Release', such that the names of the executables and libraries are the
+      # same as in the other job (a 'Debug' build appends a 'd'). Optimizations are switched off to get
+      # exact line coverage.
+      - name: Configure
+        run: |
+          cmake -S . -B build \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_CXX_FLAGS_RELEASE="-O0 --coverage" \
+            -DCMAKE_SHARED_LINKER_FLAGS="--coverage" \
+            -DCMAKE_EXE_LINKER_FLAGS="--coverage" \
+            -DBUILD_WITH_PCL=OFF \
+            -DBUILD_WITH_HELPVIEWER=OFF \
+            -DBUILD_UNITTEST=ON \
+            -DBUILD_UNITTEST_INTERNAL_ENABLE=ON \
+            -DBUILD_QTVERSION=Qt6 \
+            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+
+      - name: Build the unittests
+        run: cmake --build build --parallel $(nproc) --target $UNITTEST_TARGETS
+
+      - name: Run the unittests
+        run: >
+          python3 itom_unittests/ci/run_unittests.py
+          --build-dir build
+          --known itom_unittests/ci/known_failures_linux.txt
+
+      - name: Create the coverage report
+        run: |
+          mkdir -p coverage
+          gcovr -r . --object-directory build \
+            --filter 'DataObject/' --filter 'common/' --filter 'commonQt/' --filter 'AddInManager/' \
+            --exclude '.*/gtest-.*' \
+            --html-details coverage/index.html --xml coverage/coverage.xml \
+            --print-summary | tee coverage/summary.txt
+          { echo '### Line coverage (DataObject, common, commonQt, AddInManager)'; echo; echo '```'; cat coverage/summary.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload the coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/
