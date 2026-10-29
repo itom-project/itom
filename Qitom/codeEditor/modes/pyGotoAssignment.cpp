@@ -182,7 +182,7 @@ void PyGotoAssignmentMode::requestGotoAssignmentEx()
 //--------------------------------------------------------------
 /*
 */
-void PyGotoAssignmentMode::onJediAssignmentResultsAvailable(QVector<ito::AssignmentItem> assignments)
+void PyGotoAssignmentMode::onAssignmentResultsAvailable(QVector<ito::AssignmentItem> assignments)
 {
     if (m_gotoRequestedTimerId > 0)
     {
@@ -408,7 +408,7 @@ void PyGotoAssignmentMode::onGoToAssignmentReady(int requestId, QVector<ito::Ass
     }
 
     m_pendingRequestId = -1;
-    onJediAssignmentResultsAvailable(assignments);
+    onAssignmentResultsAvailable(assignments);
 }
 
 //--------------------------------------------------------------

@@ -142,7 +142,7 @@ private slots:
     void requestGotoDefinition();
     void requestGotoAssignment();
     void requestGotoAssignmentEx();
-    void onJediAssignmentResultsAvailable(QVector<ito::AssignmentItem> assignments);
+    void onAssignmentResultsAvailable(QVector<ito::AssignmentItem> assignments);
     void onGoToAssignmentReady(int requestId, QVector<ito::AssignmentItem> assignments);
     void onWordClicked(const QTextCursor &cursor) { performGoto(m_assignments); }
     void onKeyReleasedGoto(QKeyEvent *e);

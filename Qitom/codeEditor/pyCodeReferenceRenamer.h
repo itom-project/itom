@@ -90,7 +90,7 @@ private slots:
         QString oldValue,
         bool success,
         QString errorText);
-    void onJediRenameResultAvailable(
+    void onRenameResultAvailable(
         const QVector<ito::RenameFileChanges>& filesToChange,
         const QString& oldValue,
         bool success,

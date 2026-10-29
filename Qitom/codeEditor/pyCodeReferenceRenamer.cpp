@@ -270,11 +270,11 @@ void PyCodeReferenceRenamer::onRenameReady(
     }
 
     m_pendingRequestId = -1;
-    onJediRenameResultAvailable(filesToChange, oldValue, success, errorText);
+    onRenameResultAvailable(filesToChange, oldValue, success, errorText);
 }
 
 //-------------------------------------------------------------------
-void PyCodeReferenceRenamer::onJediRenameResultAvailable(
+void PyCodeReferenceRenamer::onRenameResultAvailable(
     const QVector<ito::RenameFileChanges>& filesToChange,
     const QString& oldValue,
     bool success,

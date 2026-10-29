@@ -75,7 +75,7 @@ public:
 
 private slots:
     void onKeyReleased(QKeyEvent *e);
-    void onJediCalltipResultAvailable(QVector<ito::CalltipItem> calltips);
+    void onCalltipResultAvailable(QVector<ito::CalltipItem> calltips);
 
     //!< called, if the active language server backend provides the requested calltips.
     void onCalltipReady(int requestId, QVector<ito::CalltipItem> calltips);

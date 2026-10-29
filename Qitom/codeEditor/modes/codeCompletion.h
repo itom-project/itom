@@ -168,7 +168,7 @@ public:
     void hidePopup();
 
 private slots:
-    void onJediCompletionResultAvailable(int line, int col, int requestId, QVector<ito::CompletionItem> completions);
+    void onCompletionResultAvailable(int line, int col, int requestId, QVector<ito::CompletionItem> completions);
     void onCompletionReady(int requestId, QList<ito::CompletionItem> completions);
 
     virtual void onKeyPressed(QKeyEvent *e);

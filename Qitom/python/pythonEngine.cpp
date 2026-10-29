@@ -2511,51 +2511,6 @@ ito::RetVal PythonEngine::handlePythonSysExit()
 
 //-------------------------------------------------------------------------------------
 
-//-------------------------------------------------------------------------------------
-void PythonEngine::enqueueJediCalltipRequest(const ito::CalltipRequest &request)
-{
-    if (!m_jediRunner.isNull())
-    {
-        m_jediRunner->addCalltipRequest(request);
-    }
-}
-
-//-------------------------------------------------------------------------------------
-void PythonEngine::enqueueJediGetHelpRequest(const ito::GetHelpRequest &request)
-{
-    if (!m_jediRunner.isNull())
-    {
-        m_jediRunner->addGetHelpRequest(request);
-    }
-}
-
-//-------------------------------------------------------------------------------------
-void PythonEngine::enqueueJediCompletionRequest(const ito::CompletionRequest &request)
-{
-    if (!m_jediRunner.isNull())
-    {
-        m_jediRunner->addCompletionRequest(request);
-    }
-}
-
-//-------------------------------------------------------------------------------------
-void PythonEngine::enqueueJediRenameRequest(const ito::RenameRequest& request)
-{
-    if (!m_jediRunner.isNull())
-    {
-        m_jediRunner->addRenameRequest(request);
-    }
-}
-
-//-------------------------------------------------------------------------------------
-void PythonEngine::enqueueGoToAssignmentRequest(const ito::AssignmentRequest &request)
-{
-    if (!m_jediRunner.isNull())
-    {
-        m_jediRunner->addGoToAssignmentRequest(request);
-    }
-}
-
 //----------------------------------------------------------------------------------------------------------------------------------
 //! public slot invoked by the scriptEditorWidget
 /*!

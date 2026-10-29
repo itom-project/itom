@@ -637,7 +637,7 @@ void CodeCompletionMode::insertCompletion(const QString &completion)
 }
 
 //-------------------------------------------------------------------
-void CodeCompletionMode::onJediCompletionResultAvailable(int line, int col, int requestId, QVector<ito::CompletionItem> completions)
+void CodeCompletionMode::onCompletionResultAvailable(int line, int col, int requestId, QVector<ito::CompletionItem> completions)
 {
     m_lastRequestId = requestId;
 

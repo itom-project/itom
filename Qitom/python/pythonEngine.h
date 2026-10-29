@@ -151,21 +151,6 @@ public:
     QString getPythonExecutable() const { return m_pythonExecutable; }
     Qt::HANDLE getPythonThreadId() const { return m_pythonThreadId; }
 
-    //!< thread-safe method (can be called from any thread) to enqueue a jedi completion request
-    void enqueueJediCompletionRequest(const ito::CompletionRequest &request);
-
-    //!< thread-safe method (can be called from any thread) to enqueue a jedi calltip request
-    void enqueueJediCalltipRequest(const ito::CalltipRequest &request);
-
-    //!< thread-safe method (can be called from any thread) to enqueue a jedi calltip request
-    void enqueueGoToAssignmentRequest(const ito::AssignmentRequest &request);
-
-    //!< thread-safe method (can be called from any thread) to enqueue a jedi get-help request
-    void enqueueJediGetHelpRequest(const ito::GetHelpRequest &request);
-
-    //!< thread-safe method (can be called from any thread) to enqueue a jedi rename request
-    void enqueueJediRenameRequest(const ito::RenameRequest& request);
-
     //!< returns the jedi runner, used by the (legacy) jedi language server backend.
     QSharedPointer<PythonJediRunner> getJediRunner() const { return m_jediRunner; }
 

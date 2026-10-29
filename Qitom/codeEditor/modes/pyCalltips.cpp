@@ -283,7 +283,7 @@ void PyCalltipsMode::onCalltipReady(int requestId, QVector<ito::CalltipItem> cal
 
     m_pendingCalltipId = -1;
 
-    onJediCalltipResultAvailable(calltips);
+    onCalltipResultAvailable(calltips);
 }
 
 //--------------------------------------------------------------------------------
@@ -385,7 +385,7 @@ QString parseCalltip(const ito::CalltipItem &tip, bool compactLayout)
 }
 
 //--------------------------------------------------------------------------------
-void PyCalltipsMode::onJediCalltipResultAvailable(QVector<ito::CalltipItem> calltips)
+void PyCalltipsMode::onCalltipResultAvailable(QVector<ito::CalltipItem> calltips)
 {
      m_requestCount--;
 
