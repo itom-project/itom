@@ -46,7 +46,7 @@ This module contains the WordHoverTooltipMode
 #include "../mode.h"
 #include "../textDecoration.h"
 #include "../delayJobRunner.h"
-#include "../../python/pythonJedi.h"
+#include "../../languageServer/languageServerTypes.h"
 #include "../../languageServer/languageServerBackend.h"
 #include <qpointer.h>
 #include <qobject.h>
@@ -97,8 +97,8 @@ private:
 
 private slots:
     void onMouseMoved(QMouseEvent *e);
-    void onGetHelpResultAvailable(QVector<ito::JediGetHelp> helps);
-    void onGetHelpReady(int requestId, ito::JediGetHelp help);
+    void onGetHelpResultAvailable(QVector<ito::HelpItem> helps);
+    void onGetHelpReady(int requestId, ito::HelpItem help);
 
 };
 

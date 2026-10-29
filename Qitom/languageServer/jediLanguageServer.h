@@ -62,27 +62,27 @@ public:
     virtual bool isAvailable() const override;
     virtual bool initialize(const QString& includeItomImportString) override;
 
-    virtual int requestCompletion(const JediCompletionRequest& request) override;
-    virtual int requestCalltip(const JediCalltipRequest& request) override;
-    virtual int requestGoToAssignment(const JediAssignmentRequest& request) override;
-    virtual int requestGetHelp(const JediGetHelpRequest& request) override;
-    virtual int requestRename(const JediRenameRequest& request) override;
+    virtual int requestCompletion(const CompletionRequest& request) override;
+    virtual int requestCalltip(const CalltipRequest& request) override;
+    virtual int requestGoToAssignment(const AssignmentRequest& request) override;
+    virtual int requestGetHelp(const GetHelpRequest& request) override;
+    virtual int requestRename(const RenameRequest& request) override;
 
 private slots:
     //!< called by the CalltipRunnable of the jedi runner, once the calltips are available.
-    void onCalltipResultAvailable(QVector<ito::JediCalltip> calltips);
+    void onCalltipResultAvailable(QVector<ito::CalltipItem> calltips);
 
     //!< called by the jedi runner, once the completions are available.
-    void onCompletionResultAvailable(int line, int col, int requestId, QVector<ito::JediCompletion> completions);
+    void onCompletionResultAvailable(int line, int col, int requestId, QVector<ito::CompletionItem> completions);
 
     //!< called by the jedi runner, once the rename information is available.
-    void onRenameResultAvailable(QVector<ito::JediRename> renames, QString oldValue, bool success, QString errorText);
+    void onRenameResultAvailable(QVector<ito::RenameFileChanges> renames, QString oldValue, bool success, QString errorText);
 
     //!< called by the jedi runner, once the help (hover) information is available.
-    void onGetHelpResultAvailable(QVector<ito::JediGetHelp> helps);
+    void onGetHelpResultAvailable(QVector<ito::HelpItem> helps);
 
     //!< called by the jedi runner, once the assignments are available.
-    void onGoToAssignmentResultAvailable(QVector<ito::JediAssignment> assignments);
+    void onGoToAssignmentResultAvailable(QVector<ito::AssignmentItem> assignments);
 
 private:
     QSharedPointer<PythonJediRunner> m_jediRunner;

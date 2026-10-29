@@ -44,7 +44,7 @@ Contains the go to assignments mode.
 
 #include "wordclick.h"
 
-#include "../../python/pythonJedi.h"
+#include "../../languageServer/languageServerTypes.h"
 #include "../../languageServer/languageServerBackend.h"
 #include <qpointer.h>
 
@@ -142,8 +142,8 @@ private slots:
     void requestGotoDefinition();
     void requestGotoAssignment();
     void requestGotoAssignmentEx();
-    void onJediAssignmentResultsAvailable(QVector<ito::JediAssignment> assignments);
-    void onGoToAssignmentReady(int requestId, QVector<ito::JediAssignment> assignments);
+    void onJediAssignmentResultsAvailable(QVector<ito::AssignmentItem> assignments);
+    void onGoToAssignmentReady(int requestId, QVector<ito::AssignmentItem> assignments);
     void onWordClicked(const QTextCursor &cursor) { performGoto(m_assignments); }
     void onKeyReleasedGoto(QKeyEvent *e);
 

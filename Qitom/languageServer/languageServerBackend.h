@@ -29,7 +29,7 @@
 #include <QVector>
 #include <QPointer>
 
-#include "../python/pythonJedi.h"
+#include "languageServerTypes.h"
 
 namespace ito {
 
@@ -85,7 +85,7 @@ public:
      * @return unique id of this request, or -1 if the request could not be started.
      *    The id is repeated by the corresponding completionReady signal.
      */
-    virtual int requestCompletion(const JediCompletionRequest& request) = 0;
+    virtual int requestCompletion(const CompletionRequest& request) = 0;
 
     /**
      * @brief Request calltip (function signature help)
@@ -93,28 +93,28 @@ public:
      * @return unique id of this request, or -1 if the request could not be started.
      *    The id is repeated by the corresponding calltipReady signal.
      */
-    virtual int requestCalltip(const JediCalltipRequest& request) = 0;
+    virtual int requestCalltip(const CalltipRequest& request) = 0;
 
     /**
      * @brief Request go-to-definition/assignment
      * @param request Assignment request with source code, position, etc.
      * @return unique id of this request, or -1 if the request could not be started.
      */
-    virtual int requestGoToAssignment(const JediAssignmentRequest& request) = 0;
+    virtual int requestGoToAssignment(const AssignmentRequest& request) = 0;
 
     /**
      * @brief Request help/documentation
      * @param request Help request with source code, position, etc.
      * @return unique id of this request, or -1 if the request could not be started.
      */
-    virtual int requestGetHelp(const JediGetHelpRequest& request) = 0;
+    virtual int requestGetHelp(const GetHelpRequest& request) = 0;
 
     /**
      * @brief Request rename/refactoring
      * @param request Rename request with source code, position, new name, etc.
      * @return unique id of this request, or -1 if the request could not be started.
      */
-    virtual int requestRename(const JediRenameRequest& request) = 0;
+    virtual int requestRename(const RenameRequest& request) = 0;
 
     /**
      * @brief Inform the backend, that a document is not used any more.
@@ -140,28 +140,28 @@ signals:
      * @param requestId id, returned by requestCompletion
      * @param completions List of completion items
      */
-    void completionReady(int requestId, QList<ito::JediCompletion> completions);
+    void completionReady(int requestId, QList<ito::CompletionItem> completions);
 
     /**
      * @brief Emitted when calltip results are ready
      * @param requestId id, returned by requestCalltip
      * @param calltips List of calltip information (may be empty)
      */
-    void calltipReady(int requestId, QVector<ito::JediCalltip> calltips);
+    void calltipReady(int requestId, QVector<ito::CalltipItem> calltips);
 
     /**
      * @brief Emitted when go-to-assignment results are ready
      * @param requestId id, returned by requestGoToAssignment
      * @param assignment Assignment location information
      */
-    void goToAssignmentReady(int requestId, QVector<ito::JediAssignment> assignments);
+    void goToAssignmentReady(int requestId, QVector<ito::AssignmentItem> assignments);
 
     /**
      * @brief Emitted when help/documentation is ready
      * @param requestId id, returned by requestGetHelp
      * @param help Help information
      */
-    void getHelpReady(int requestId, ito::JediGetHelp help);
+    void getHelpReady(int requestId, ito::HelpItem help);
 
     /**
      * @brief Emitted when rename results are ready
@@ -171,7 +171,7 @@ signals:
      * @param success true, if the request could be processed
      * @param errorText error description, if success is false
      */
-    void renameReady(int requestId, QVector<ito::JediRename> renames, QString oldValue, bool success, QString errorText);
+    void renameReady(int requestId, QVector<ito::RenameFileChanges> renames, QString oldValue, bool success, QString errorText);
 
     /**
      * @brief Emitted when an error occurs in the backend

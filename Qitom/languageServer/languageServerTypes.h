@@ -20,8 +20,8 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef PYTHONJEDI_H
-#define PYTHONJEDI_H
+#ifndef LANGUAGESERVERTYPES_H
+#define LANGUAGESERVERTYPES_H
 
 #include <QMetaType>
 #include <qobject.h>
@@ -32,7 +32,7 @@
 
 namespace ito {
 //--------------------------------------------------------------------------------------
-struct JediCalltipRequest
+struct CalltipRequest
 {
     QString m_source;
     int m_line;
@@ -43,10 +43,10 @@ struct JediCalltipRequest
 };
 
 //--------------------------------------------------------------------------------------
-struct JediCalltip
+struct CalltipItem
 {
-    JediCalltip() : m_column(-1), m_bracketStartCol(-1), m_bracketStartLine(-1){};
-    JediCalltip(
+    CalltipItem() : m_column(-1), m_bracketStartCol(-1), m_bracketStartLine(-1){};
+    CalltipItem(
         const QString& methodName,
         const QStringList& params,
         int column,
@@ -66,7 +66,7 @@ struct JediCalltip
 };
 
 //--------------------------------------------------------------------------------------
-struct JediCompletionRequest
+struct CompletionRequest
 {
     QString m_source;
     int m_line;
@@ -79,10 +79,10 @@ struct JediCompletionRequest
 };
 
 //--------------------------------------------------------------------------------------
-struct JediCompletion
+struct CompletionItem
 {
-    JediCompletion(){};
-    JediCompletion(
+    CompletionItem(){};
+    CompletionItem(
         const QString& name,
         const QStringList& tooltips,
         const QString& icon = QString(),
@@ -99,7 +99,7 @@ struct JediCompletion
 };
 
 //--------------------------------------------------------------------------------------
-struct JediAssignmentRequest
+struct AssignmentRequest
 {
     QString m_source;
     int m_line;
@@ -111,10 +111,10 @@ struct JediAssignmentRequest
 };
 
 //--------------------------------------------------------------------------------------
-struct JediAssignment
+struct AssignmentItem
 {
-    JediAssignment(){};
-    JediAssignment(const QString& path, int line, int column, const QString& fullName) :
+    AssignmentItem(){};
+    AssignmentItem(const QString& path, int line, int column, const QString& fullName) :
         m_path(path), m_line(line), m_column(column), m_fullName(fullName)
     {
     }
@@ -126,7 +126,7 @@ struct JediAssignment
 };
 
 //--------------------------------------------------------------------------------------
-struct JediGetHelpRequest
+struct GetHelpRequest
 {
     QString m_source;
     int m_line;
@@ -137,10 +137,10 @@ struct JediGetHelpRequest
 };
 
 //--------------------------------------------------------------------------------------
-struct JediGetHelp
+struct HelpItem
 {
-    JediGetHelp(){};
-    JediGetHelp(const QString& description, const QStringList& tooltips) :
+    HelpItem(){};
+    HelpItem(const QString& description, const QStringList& tooltips) :
         m_description(description), m_tooltips(tooltips)
     {
     }
@@ -151,7 +151,7 @@ struct JediGetHelp
 };
 
 //--------------------------------------------------------------------------------------
-struct JediRenameRequest
+struct RenameRequest
 {
     QString m_code;
     int m_line;
@@ -165,7 +165,7 @@ struct JediRenameRequest
 };
 
 //-------------------------------------------------------------------------------------
-struct FileRenameItem
+struct RenameTextItem
 {
     int lineNumber;
     int startColumnIndex;
@@ -173,9 +173,9 @@ struct FileRenameItem
 };
 
 //--------------------------------------------------------------------------------------
-struct JediRename
+struct RenameFileChanges
 {
-    JediRename(){};
+    RenameFileChanges(){};
 
     QString m_filePath; //!< either a true filepath or a non-existing dummy file in the current dir, if the file is untitled.
     bool m_untitledFile;
@@ -187,16 +187,16 @@ struct JediRename
     */
     bool m_fileInProject;
 
-    QVector<FileRenameItem> m_items;
+    QVector<RenameTextItem> m_items;
 };
 
 } // end namespace ito
 
-Q_DECLARE_METATYPE(ito::JediCalltip)
-Q_DECLARE_METATYPE(ito::JediCompletion)
-Q_DECLARE_METATYPE(ito::JediAssignment)
-Q_DECLARE_METATYPE(ito::JediGetHelp)
-Q_DECLARE_METATYPE(ito::JediRename)
-Q_DECLARE_METATYPE(ito::FileRenameItem)
+Q_DECLARE_METATYPE(ito::CalltipItem)
+Q_DECLARE_METATYPE(ito::CompletionItem)
+Q_DECLARE_METATYPE(ito::AssignmentItem)
+Q_DECLARE_METATYPE(ito::HelpItem)
+Q_DECLARE_METATYPE(ito::RenameFileChanges)
+Q_DECLARE_METATYPE(ito::RenameTextItem)
 
 #endif

@@ -23,7 +23,7 @@
 
 #include "pyCodeReferenceRenamer.h"
 #include "../python/pythonEngine.h"
-#include "../python/pythonJedi.h"
+#include "../languageServer/languageServerTypes.h"
 #include "../languageServer/languageServerManager.h"
 #include "AppManagement.h"
 #include "codeEditor.h"
@@ -259,7 +259,7 @@ ito::RetVal PyCodeReferenceRenamer::startRename(
 //-------------------------------------------------------------------
 void PyCodeReferenceRenamer::onRenameReady(
     int requestId,
-    QVector<ito::JediRename> filesToChange,
+    QVector<ito::RenameFileChanges> filesToChange,
     QString oldValue,
     bool success,
     QString errorText)
@@ -275,7 +275,7 @@ void PyCodeReferenceRenamer::onRenameReady(
 
 //-------------------------------------------------------------------
 void PyCodeReferenceRenamer::onJediRenameResultAvailable(
-    const QVector<ito::JediRename>& filesToChange,
+    const QVector<ito::RenameFileChanges>& filesToChange,
     const QString& oldValue,
     bool success,
     QString errorText)
@@ -419,7 +419,7 @@ void PyCodeReferenceRenamer::onJediRenameResultAvailable(
 
         for (int idx = 0; idx < file.m_items.size(); ++idx)
         {
-            const ito::FileRenameItem& renameItem = file.m_items[idx];
+            const ito::RenameTextItem& renameItem = file.m_items[idx];
             QTreeWidgetItem* lineItem = new QTreeWidgetItem(fileItem);
             lineItem->setData(0, Qt::UserRole, canonicalFilePath);
 
@@ -525,7 +525,7 @@ void PyCodeReferenceRenamer::onApply()
     struct RenameFile
     {
         QString canonicalFileName; // is the file path or the name of the untitled script (fileUntitled = true)
-        QVector<FileRenameItem> items;
+        QVector<RenameTextItem> items;
         bool fileOpened;
         bool mainFile;
         bool fileModified;
@@ -556,7 +556,7 @@ void PyCodeReferenceRenamer::onApply()
                 if (changeItem->checkState(0) == Qt::Checked)
                 {
                     renameFile.items
-                        << changeItem->data(0, RoleFileRenameItem).value<FileRenameItem>();
+                        << changeItem->data(0, RoleFileRenameItem).value<RenameTextItem>();
                 }
             }
 
@@ -724,12 +724,12 @@ void PyCodeReferenceRenamer::onItemDoubleClick(QTreeWidget* treeWidget, QTreeWid
 ito::RetVal PyCodeReferenceRenamer::replaceOccurencesInFile(
     const QString& filePath,
     const QString& newValue,
-    const QVector<ito::FileRenameItem>& renameItems)
+    const QVector<ito::RenameTextItem>& renameItems)
 {
     // sort items by starting with the last one first
-    QVector<ito::FileRenameItem> items = renameItems;
+    QVector<ito::RenameTextItem> items = renameItems;
     std::sort(
-        items.begin(), items.end(), [](const ito::FileRenameItem& a, const ito::FileRenameItem& b) {
+        items.begin(), items.end(), [](const ito::RenameTextItem& a, const ito::RenameTextItem& b) {
             if (a.lineNumber != b.lineNumber)
             {
                 return a.lineNumber >= b.lineNumber;
@@ -761,7 +761,7 @@ ito::RetVal PyCodeReferenceRenamer::replaceOccurencesInFile(
     }
 
     // modify content
-    foreach (const ito::FileRenameItem& item, items)
+    foreach (const ito::RenameTextItem& item, items)
     {
         line = content[item.lineNumber - 1];
         line = line.left(item.startColumnIndex) + newValue +

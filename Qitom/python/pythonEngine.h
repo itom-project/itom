@@ -31,7 +31,7 @@
 //    #define NO_IMPORT_ARRAY
 //#endif
 
-#include "pythonJedi.h"
+#include "../languageServer/languageServerTypes.h"
 
 #ifndef Q_MOC_RUN
     #include "pythonWrapper.h"
@@ -139,7 +139,6 @@ public:
     void pythonRunFunction(PyObject *callable, PyObject *argTuple, bool gilExternal = false);
     inline PyObject *getGlobalDictionary()  const { return m_pGlobalDictionary;  }  /*!< returns reference to main dictionary (main workspace) */
     inline bool pySyntaxCheckAvailable() const { return (m_pyModCodeChecker != NULL); }
-    bool tryToLoadJediIfNotYetDone(); //returns true, if Jedi is already loaded or could be loaded; else false
 
     //!< parses a (multiline) python string and returns the line numbers of the start of every major block.
     /* From Python 3.7 on, the AST is parsed to check for the major blocks. Then the encoding is always empty.
@@ -153,19 +152,19 @@ public:
     Qt::HANDLE getPythonThreadId() const { return m_pythonThreadId; }
 
     //!< thread-safe method (can be called from any thread) to enqueue a jedi completion request
-    void enqueueJediCompletionRequest(const ito::JediCompletionRequest &request);
+    void enqueueJediCompletionRequest(const ito::CompletionRequest &request);
 
     //!< thread-safe method (can be called from any thread) to enqueue a jedi calltip request
-    void enqueueJediCalltipRequest(const ito::JediCalltipRequest &request);
+    void enqueueJediCalltipRequest(const ito::CalltipRequest &request);
 
     //!< thread-safe method (can be called from any thread) to enqueue a jedi calltip request
-    void enqueueGoToAssignmentRequest(const ito::JediAssignmentRequest &request);
+    void enqueueGoToAssignmentRequest(const ito::AssignmentRequest &request);
 
     //!< thread-safe method (can be called from any thread) to enqueue a jedi get-help request
-    void enqueueJediGetHelpRequest(const ito::JediGetHelpRequest &request);
+    void enqueueJediGetHelpRequest(const ito::GetHelpRequest &request);
 
     //!< thread-safe method (can be called from any thread) to enqueue a jedi rename request
-    void enqueueJediRenameRequest(const ito::JediRenameRequest& request);
+    void enqueueJediRenameRequest(const ito::RenameRequest& request);
 
     //!< returns the jedi runner, used by the (legacy) jedi language server backend.
     QSharedPointer<PythonJediRunner> getJediRunner() const { return m_jediRunner; }

@@ -187,7 +187,7 @@ void PyCalltipsMode::requestCalltip(const QString &source, int line, int col, co
 
     connectToBackend(backend);
 
-    ito::JediCalltipRequest request;
+    ito::CalltipRequest request;
     request.m_col = col;
     request.m_line = line;
     request.m_path = filename;
@@ -272,7 +272,7 @@ void PyCalltipsMode::connectToBackend(ILanguageServerBackend* backend)
 }
 
 //--------------------------------------------------------------------------------
-void PyCalltipsMode::onCalltipReady(int requestId, QVector<ito::JediCalltip> calltips)
+void PyCalltipsMode::onCalltipReady(int requestId, QVector<ito::CalltipItem> calltips)
 {
     // every mode is connected to the same backend, therefore only handle
     // the result, that belongs to the request of this instance.
@@ -308,7 +308,7 @@ bool PyCalltipsMode::isLastChardEndOfWord() const
 }
 
 //--------------------------------------------------------------------------------
-QString parseCalltip(const ito::JediCalltip &tip, bool compactLayout)
+QString parseCalltip(const ito::CalltipItem &tip, bool compactLayout)
 {
     if (tip.m_calltipParams.size() == 0)
     {
@@ -385,7 +385,7 @@ QString parseCalltip(const ito::JediCalltip &tip, bool compactLayout)
 }
 
 //--------------------------------------------------------------------------------
-void PyCalltipsMode::onJediCalltipResultAvailable(QVector<ito::JediCalltip> calltips)
+void PyCalltipsMode::onJediCalltipResultAvailable(QVector<ito::CalltipItem> calltips)
 {
      m_requestCount--;
 
@@ -394,7 +394,7 @@ void PyCalltipsMode::onJediCalltipResultAvailable(QVector<ito::JediCalltip> call
         return;
     }
 
-    JediCalltip first_calltip = calltips[0];
+    CalltipItem first_calltip = calltips[0];
 
     QString text;
 
@@ -404,12 +404,12 @@ void PyCalltipsMode::onJediCalltipResultAvailable(QVector<ito::JediCalltip> call
         // in a new line
         int noLines = calltips.size();
 
-        foreach (const JediCalltip& tip, calltips)
+        foreach (const CalltipItem& tip, calltips)
         {
             noLines += tip.m_calltipParams.size();
         }
 
-        foreach(const JediCalltip &tip, calltips)
+        foreach(const CalltipItem &tip, calltips)
         {
             // newline not necessary, since each calltip is in a <p>...</p> block
             text.append(parseCalltip(tip, noLines > 20));

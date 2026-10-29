@@ -39,7 +39,7 @@
 #define CODECOMPLETION_H
 
 
-#include "../../python/pythonJedi.h"
+#include "../../languageServer/languageServerTypes.h"
 #include "../../languageServer/languageServerBackend.h"
 #include <qpointer.h>
 
@@ -168,8 +168,8 @@ public:
     void hidePopup();
 
 private slots:
-    void onJediCompletionResultAvailable(int line, int col, int requestId, QVector<ito::JediCompletion> completions);
-    void onCompletionReady(int requestId, QList<ito::JediCompletion> completions);
+    void onJediCompletionResultAvailable(int line, int col, int requestId, QVector<ito::CompletionItem> completions);
+    void onCompletionReady(int requestId, QList<ito::CompletionItem> completions);
 
     virtual void onKeyPressed(QKeyEvent *e);
     virtual void onKeyReleased(QKeyEvent *e);
@@ -191,8 +191,8 @@ protected:
     bool isShortcut(QKeyEvent *e) const;
     QRect getPopupRect() const;
     void showPopup(int index = 0);
-    void showCompletions(const QVector<JediCompletion> &completions);
-    QStandardItemModel* updateModel(const QVector<JediCompletion> &completions);
+    void showCompletions(const QVector<CompletionItem> &completions);
+    QStandardItemModel* updateModel(const QVector<CompletionItem> &completions);
 
     /*
     \returns (stringlist os signatures, docstring)

@@ -68,7 +68,7 @@ bool JediLanguageServer::initialize(const QString& includeItomImportString)
 }
 
 //-------------------------------------------------------------------------------------
-int JediLanguageServer::requestCalltip(const JediCalltipRequest& request)
+int JediLanguageServer::requestCalltip(const CalltipRequest& request)
 {
     if (!m_initialized || m_jediRunner.isNull())
     {
@@ -81,7 +81,7 @@ int JediLanguageServer::requestCalltip(const JediCalltipRequest& request)
     int requestId = m_nextRequestId++;
     m_pendingCalltipIds.append(requestId);
 
-    JediCalltipRequest internalRequest = request;
+    CalltipRequest internalRequest = request;
     internalRequest.m_sender = this;
     internalRequest.m_callbackFctName = "onCalltipResultAvailable";
 
@@ -91,7 +91,7 @@ int JediLanguageServer::requestCalltip(const JediCalltipRequest& request)
 }
 
 //-------------------------------------------------------------------------------------
-void JediLanguageServer::onCalltipResultAvailable(QVector<ito::JediCalltip> calltips)
+void JediLanguageServer::onCalltipResultAvailable(QVector<ito::CalltipItem> calltips)
 {
     int requestId = -1;
 
@@ -104,7 +104,7 @@ void JediLanguageServer::onCalltipResultAvailable(QVector<ito::JediCalltip> call
 }
 
 //-------------------------------------------------------------------------------------
-int JediLanguageServer::requestCompletion(const JediCompletionRequest& request)
+int JediLanguageServer::requestCompletion(const CompletionRequest& request)
 {
     if (!m_initialized || m_jediRunner.isNull())
     {
@@ -113,7 +113,7 @@ int JediLanguageServer::requestCompletion(const JediCompletionRequest& request)
 
     int requestId = m_nextRequestId++;
 
-    JediCompletionRequest internalRequest = request;
+    CompletionRequest internalRequest = request;
     internalRequest.m_requestId = requestId;
     internalRequest.m_sender = this;
     internalRequest.m_callbackFctName = "onCompletionResultAvailable";
@@ -125,7 +125,7 @@ int JediLanguageServer::requestCompletion(const JediCompletionRequest& request)
 
 //-------------------------------------------------------------------------------------
 void JediLanguageServer::onCompletionResultAvailable(
-    int line, int col, int requestId, QVector<ito::JediCompletion> completions)
+    int line, int col, int requestId, QVector<ito::CompletionItem> completions)
 {
     Q_UNUSED(line);
     Q_UNUSED(col);
@@ -133,7 +133,7 @@ void JediLanguageServer::onCompletionResultAvailable(
 }
 
 //-------------------------------------------------------------------------------------
-int JediLanguageServer::requestGoToAssignment(const JediAssignmentRequest& request)
+int JediLanguageServer::requestGoToAssignment(const AssignmentRequest& request)
 {
     if (!m_initialized || m_jediRunner.isNull())
     {
@@ -143,7 +143,7 @@ int JediLanguageServer::requestGoToAssignment(const JediAssignmentRequest& reque
     int requestId = m_nextRequestId++;
     m_pendingAssignmentIds.append(requestId);
 
-    JediAssignmentRequest internalRequest = request;
+    AssignmentRequest internalRequest = request;
     internalRequest.m_sender = this;
     internalRequest.m_callbackFctName = "onGoToAssignmentResultAvailable";
 
@@ -153,7 +153,7 @@ int JediLanguageServer::requestGoToAssignment(const JediAssignmentRequest& reque
 }
 
 //-------------------------------------------------------------------------------------
-void JediLanguageServer::onGoToAssignmentResultAvailable(QVector<ito::JediAssignment> assignments)
+void JediLanguageServer::onGoToAssignmentResultAvailable(QVector<ito::AssignmentItem> assignments)
 {
     int requestId = -1;
 
@@ -166,7 +166,7 @@ void JediLanguageServer::onGoToAssignmentResultAvailable(QVector<ito::JediAssign
 }
 
 //-------------------------------------------------------------------------------------
-int JediLanguageServer::requestGetHelp(const JediGetHelpRequest& request)
+int JediLanguageServer::requestGetHelp(const GetHelpRequest& request)
 {
     if (!m_initialized || m_jediRunner.isNull())
     {
@@ -176,7 +176,7 @@ int JediLanguageServer::requestGetHelp(const JediGetHelpRequest& request)
     int requestId = m_nextRequestId++;
     m_pendingGetHelpIds.append(requestId);
 
-    JediGetHelpRequest internalRequest = request;
+    GetHelpRequest internalRequest = request;
     internalRequest.m_sender = this;
     internalRequest.m_callbackFctName = "onGetHelpResultAvailable";
 
@@ -186,7 +186,7 @@ int JediLanguageServer::requestGetHelp(const JediGetHelpRequest& request)
 }
 
 //-------------------------------------------------------------------------------------
-void JediLanguageServer::onGetHelpResultAvailable(QVector<ito::JediGetHelp> helps)
+void JediLanguageServer::onGetHelpResultAvailable(QVector<ito::HelpItem> helps)
 {
     int requestId = -1;
 
@@ -196,11 +196,11 @@ void JediLanguageServer::onGetHelpResultAvailable(QVector<ito::JediGetHelp> help
     }
 
     // the backend interface provides one help object per request
-    emit getHelpReady(requestId, helps.isEmpty() ? JediGetHelp() : helps.first());
+    emit getHelpReady(requestId, helps.isEmpty() ? HelpItem() : helps.first());
 }
 
 //-------------------------------------------------------------------------------------
-int JediLanguageServer::requestRename(const JediRenameRequest& request)
+int JediLanguageServer::requestRename(const RenameRequest& request)
 {
     if (!m_initialized || m_jediRunner.isNull())
     {
@@ -210,7 +210,7 @@ int JediLanguageServer::requestRename(const JediRenameRequest& request)
     int requestId = m_nextRequestId++;
     m_pendingRenameIds.append(requestId);
 
-    JediRenameRequest internalRequest = request;
+    RenameRequest internalRequest = request;
     internalRequest.m_sender = this;
     internalRequest.m_callbackFctName = "onRenameResultAvailable";
 
@@ -221,7 +221,7 @@ int JediLanguageServer::requestRename(const JediRenameRequest& request)
 
 //-------------------------------------------------------------------------------------
 void JediLanguageServer::onRenameResultAvailable(
-    QVector<ito::JediRename> renames, QString oldValue, bool success, QString errorText)
+    QVector<ito::RenameFileChanges> renames, QString oldValue, bool success, QString errorText)
 {
     int requestId = -1;
 

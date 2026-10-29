@@ -182,7 +182,7 @@ void PyGotoAssignmentMode::requestGotoAssignmentEx()
 //--------------------------------------------------------------
 /*
 */
-void PyGotoAssignmentMode::onJediAssignmentResultsAvailable(QVector<ito::JediAssignment> assignments)
+void PyGotoAssignmentMode::onJediAssignmentResultsAvailable(QVector<ito::AssignmentItem> assignments)
 {
     if (m_gotoRequestedTimerId > 0)
     {
@@ -191,7 +191,7 @@ void PyGotoAssignmentMode::onJediAssignmentResultsAvailable(QVector<ito::JediAss
         m_gotoRequestedTimerId = 0;
     }
 
-    foreach (const ito::JediAssignment &d, assignments)
+    foreach (const ito::AssignmentItem &d, assignments)
     {
         m_assignments.append(PyAssignment(d.m_path, d.m_line, d.m_column, d.m_fullName));
     }
@@ -345,7 +345,7 @@ void PyGotoAssignmentMode::checkWordCursorWithMode(const QTextCursor &cursor, in
 
         connectToBackend(backend);
 
-        JediAssignmentRequest request;
+        AssignmentRequest request;
         request.m_col = tc.columnNumber();
         request.m_line = tc.blockNumber();
         request.m_mode = mode;
@@ -400,7 +400,7 @@ void PyGotoAssignmentMode::connectToBackend(ILanguageServerBackend *backend)
 }
 
 //--------------------------------------------------------------
-void PyGotoAssignmentMode::onGoToAssignmentReady(int requestId, QVector<ito::JediAssignment> assignments)
+void PyGotoAssignmentMode::onGoToAssignmentReady(int requestId, QVector<ito::AssignmentItem> assignments)
 {
     if (requestId < 0 || requestId != m_pendingRequestId)
     {

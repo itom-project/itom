@@ -23,7 +23,7 @@
 
 #pragma once
 
-#include "../python/pythonJedi.h"
+#include "../languageServer/languageServerTypes.h"
 #include "../languageServer/languageServerBackend.h"
 #include <qpointer.h>
 #include <qabstractbutton.h>
@@ -68,7 +68,7 @@ private:
     QLineEdit* m_newNameUserInput;
     QTreeWidget* m_treeWidgetReferences;
     QDialogButtonBox* m_dialogButtonBox;
-    ito::JediRenameRequest m_request;
+    ito::RenameRequest m_request;
     QWidget* m_pParent;
 
     enum RenamerRole
@@ -86,12 +86,12 @@ private:
 private slots:
     void onRenameReady(
         int requestId,
-        QVector<ito::JediRename> filesToChange,
+        QVector<ito::RenameFileChanges> filesToChange,
         QString oldValue,
         bool success,
         QString errorText);
     void onJediRenameResultAvailable(
-        const QVector<ito::JediRename>& filesToChange,
+        const QVector<ito::RenameFileChanges>& filesToChange,
         const QString& oldValue,
         bool success,
         QString errorText);
@@ -106,7 +106,7 @@ private slots:
     ito::RetVal replaceOccurencesInFile(
         const QString& filePath,
         const QString& newValue,
-        const QVector<ito::FileRenameItem>& renameItems);
+        const QVector<ito::RenameTextItem>& renameItems);
 
 signals:
 };

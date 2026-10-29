@@ -152,7 +152,7 @@ public:
     }
 
     //!< the replacement will be handled as one undo-action. The script will be marked as modified afterwards.
-    void replaceOccurencesInCurrentScript(const QString &newValue, const QVector<ito::FileRenameItem> &renameItems);
+    void replaceOccurencesInCurrentScript(const QString &newValue, const QVector<ito::RenameTextItem> &renameItems);
 
     static QString filenameFromUID(int UID, bool &found);
 

@@ -39,7 +39,7 @@
 #define PYCALLTIPS_H
 
 
-#include "../../python/pythonJedi.h"
+#include "../../languageServer/languageServerTypes.h"
 #include "../../languageServer/languageServerBackend.h"
 
 #include "../utils/utils.h"
@@ -75,10 +75,10 @@ public:
 
 private slots:
     void onKeyReleased(QKeyEvent *e);
-    void onJediCalltipResultAvailable(QVector<ito::JediCalltip> calltips);
+    void onJediCalltipResultAvailable(QVector<ito::CalltipItem> calltips);
 
     //!< called, if the active language server backend provides the requested calltips.
-    void onCalltipReady(int requestId, QVector<ito::JediCalltip> calltips);
+    void onCalltipReady(int requestId, QVector<ito::CalltipItem> calltips);
 
     //!< called, once the language server manager finished the (asynchronous)
     //!< initialization of its backend. A deferred calltip request is re-issued then.

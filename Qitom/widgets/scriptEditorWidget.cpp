@@ -4105,16 +4105,16 @@ void ScriptEditorWidget::onTextChanged()
 
 //-------------------------------------------------------------------------------------
 void ScriptEditorWidget::replaceOccurencesInCurrentScript(
-    const QString& newValue, const QVector<ito::FileRenameItem>& renameItems)
+    const QString& newValue, const QVector<ito::RenameTextItem>& renameItems)
 {
     if (renameItems.size() > 0)
     {
         // sort items by starting with the last one first
-        QVector<ito::FileRenameItem> items = renameItems;
+        QVector<ito::RenameTextItem> items = renameItems;
         std::sort(
             items.begin(),
             items.end(),
-            [](const ito::FileRenameItem& a, const ito::FileRenameItem& b) {
+            [](const ito::RenameTextItem& a, const ito::RenameTextItem& b) {
                 if (a.lineNumber != b.lineNumber)
                 {
                     return a.lineNumber >= b.lineNumber;
@@ -4130,7 +4130,7 @@ void ScriptEditorWidget::replaceOccurencesInCurrentScript(
 
         cursor.beginEditBlock();
 
-        foreach (const ito::FileRenameItem& item, items)
+        foreach (const ito::RenameTextItem& item, items)
         {
             cursor.movePosition(QTextCursor::Start);
 

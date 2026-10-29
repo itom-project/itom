@@ -47,7 +47,7 @@
 #include "pythonFont.h"
 #include "pythonShape.h"
 #include "pythonAutoInterval.h"
-#include "pythonJedi.h"
+#include "../languageServer/languageServerTypes.h"
 #include "pythonProgressObserver.h"
 #include "pythonBuildDir.h"
 
@@ -258,12 +258,12 @@ PythonEngine::PythonEngine() :
     qRegisterMetaType<ito::PythonNone>("ito::PythonNone");
     qRegisterMetaType<Qt::CheckState>("Qt::CheckState");
     qRegisterMetaType<Qt::ItemFlags>("Qt::ItemFlags");
-    qRegisterMetaType<ito::JediCalltip>("ito::JediCalltip");
-    qRegisterMetaType<QVector<ito::JediCalltip> >("QVector<ito::JediCalltip>");
-    qRegisterMetaType<ito::JediCompletion>("ito::JediCompletion");
-    qRegisterMetaType<QVector<ito::JediCompletion> >("QVector<ito::JediCompletion>");
-    qRegisterMetaType<ito::JediAssignment>("ito::JediAssignment");
-    qRegisterMetaType<QVector<ito::JediAssignment> >("QVector<ito::JediAssignment>");
+    qRegisterMetaType<ito::CalltipItem>("ito::CalltipItem");
+    qRegisterMetaType<QVector<ito::CalltipItem> >("QVector<ito::CalltipItem>");
+    qRegisterMetaType<ito::CompletionItem>("ito::CompletionItem");
+    qRegisterMetaType<QVector<ito::CompletionItem> >("QVector<ito::CompletionItem>");
+    qRegisterMetaType<ito::AssignmentItem>("ito::AssignmentItem");
+    qRegisterMetaType<QVector<ito::AssignmentItem> >("QVector<ito::AssignmentItem>");
     qRegisterMetaType<QSharedPointer<ito::FunctionCancellationAndObserver> >("QSharedPointer<ito::FunctionCancellationAndObserver>");
 
     m_autoReload.modAutoReload = nullptr;
@@ -2510,18 +2510,9 @@ ito::RetVal PythonEngine::handlePythonSysExit()
 }
 
 //-------------------------------------------------------------------------------------
-bool PythonEngine::tryToLoadJediIfNotYetDone()
-{
-    if (!m_jediRunner.isNull())
-    {
-        return m_jediRunner->tryToLoadJediIfNotYetDone();
-    }
-
-    return false;
-}
 
 //-------------------------------------------------------------------------------------
-void PythonEngine::enqueueJediCalltipRequest(const ito::JediCalltipRequest &request)
+void PythonEngine::enqueueJediCalltipRequest(const ito::CalltipRequest &request)
 {
     if (!m_jediRunner.isNull())
     {
@@ -2530,7 +2521,7 @@ void PythonEngine::enqueueJediCalltipRequest(const ito::JediCalltipRequest &requ
 }
 
 //-------------------------------------------------------------------------------------
-void PythonEngine::enqueueJediGetHelpRequest(const ito::JediGetHelpRequest &request)
+void PythonEngine::enqueueJediGetHelpRequest(const ito::GetHelpRequest &request)
 {
     if (!m_jediRunner.isNull())
     {
@@ -2539,7 +2530,7 @@ void PythonEngine::enqueueJediGetHelpRequest(const ito::JediGetHelpRequest &requ
 }
 
 //-------------------------------------------------------------------------------------
-void PythonEngine::enqueueJediCompletionRequest(const ito::JediCompletionRequest &request)
+void PythonEngine::enqueueJediCompletionRequest(const ito::CompletionRequest &request)
 {
     if (!m_jediRunner.isNull())
     {
@@ -2548,7 +2539,7 @@ void PythonEngine::enqueueJediCompletionRequest(const ito::JediCompletionRequest
 }
 
 //-------------------------------------------------------------------------------------
-void PythonEngine::enqueueJediRenameRequest(const ito::JediRenameRequest& request)
+void PythonEngine::enqueueJediRenameRequest(const ito::RenameRequest& request)
 {
     if (!m_jediRunner.isNull())
     {
@@ -2557,7 +2548,7 @@ void PythonEngine::enqueueJediRenameRequest(const ito::JediRenameRequest& reques
 }
 
 //-------------------------------------------------------------------------------------
-void PythonEngine::enqueueGoToAssignmentRequest(const ito::JediAssignmentRequest &request)
+void PythonEngine::enqueueGoToAssignmentRequest(const ito::AssignmentRequest &request)
 {
     if (!m_jediRunner.isNull())
     {

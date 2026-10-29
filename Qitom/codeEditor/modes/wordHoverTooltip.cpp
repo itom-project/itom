@@ -280,7 +280,7 @@ void WordHoverTooltipMode::emitWordHover(QTextCursor cursor)
 
     connectToBackend(backend);
 
-    ito::JediGetHelpRequest request;
+    ito::GetHelpRequest request;
     request.m_col = cursor.positionInBlock();
     request.m_line = cursor.block().blockNumber();
     request.m_path = filename;
@@ -322,7 +322,7 @@ void WordHoverTooltipMode::connectToBackend(ILanguageServerBackend *backend)
 }
 
 //-------------------------------------------------------------------------------------
-void WordHoverTooltipMode::onGetHelpReady(int requestId, ito::JediGetHelp help)
+void WordHoverTooltipMode::onGetHelpReady(int requestId, ito::HelpItem help)
 {
     if (requestId < 0 || requestId != m_pendingHelpId)
     {
@@ -331,7 +331,7 @@ void WordHoverTooltipMode::onGetHelpReady(int requestId, ito::JediGetHelp help)
 
     m_pendingHelpId = -1;
 
-    QVector<ito::JediGetHelp> helps;
+    QVector<ito::HelpItem> helps;
 
     if (!help.m_description.isEmpty() || !help.m_tooltips.isEmpty())
     {
@@ -381,7 +381,7 @@ QPair<QStringList, QString>  WordHoverTooltipMode::parseTooltipDocstring(const Q
 }
 
 //-------------------------------------------------------------------------------------
-void WordHoverTooltipMode::onGetHelpResultAvailable(QVector<ito::JediGetHelp> helps)
+void WordHoverTooltipMode::onGetHelpResultAvailable(QVector<ito::HelpItem> helps)
 {
     if (helps.size() < 1)
     {
@@ -390,7 +390,7 @@ void WordHoverTooltipMode::onGetHelpResultAvailable(QVector<ito::JediGetHelp> he
         return;
     }
 
-    const ito::JediGetHelp &help = helps[0];
+    const ito::HelpItem &help = helps[0];
 
     if (help.m_markdown && !help.m_description.trimmed().isEmpty())
     {

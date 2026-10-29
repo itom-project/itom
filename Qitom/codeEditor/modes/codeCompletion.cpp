@@ -637,7 +637,7 @@ void CodeCompletionMode::insertCompletion(const QString &completion)
 }
 
 //-------------------------------------------------------------------
-void CodeCompletionMode::onJediCompletionResultAvailable(int line, int col, int requestId, QVector<ito::JediCompletion> completions)
+void CodeCompletionMode::onJediCompletionResultAvailable(int line, int col, int requestId, QVector<ito::CompletionItem> completions)
 {
     m_lastRequestId = requestId;
 
@@ -738,7 +738,7 @@ bool CodeCompletionMode::requestCompletion()
             // line and col might be changed if code is a virtual code (e.g. for command line, containing all its history)
             QString code = editor()->codeText(line, col);
 
-            ito::JediCompletionRequest request;
+            ito::CompletionRequest request;
             request.m_source = code;
             request.m_line = line;
             request.m_col = col;
@@ -783,7 +783,7 @@ void CodeCompletionMode::connectToBackend(ILanguageServerBackend *backend)
 }
 
 //-------------------------------------------------------------------
-void CodeCompletionMode::onCompletionReady(int requestId, QList<ito::JediCompletion> completions)
+void CodeCompletionMode::onCompletionReady(int requestId, QList<ito::CompletionItem> completions)
 {
     // only the result of the latest request is considered
     if (requestId < 0 || requestId != m_requestId - 1)
@@ -795,7 +795,7 @@ void CodeCompletionMode::onCompletionReady(int requestId, QList<ito::JediComplet
 
     if (editor())
     {
-        showCompletions(QVector<ito::JediCompletion>(completions.begin(), completions.end()));
+        showCompletions(QVector<ito::CompletionItem>(completions.begin(), completions.end()));
     }
 }
 
@@ -926,7 +926,7 @@ void CodeCompletionMode::showPopup(int index /*= 0*/)
 //--------------------------------------------------------------------
 /*
 */
-void CodeCompletionMode::showCompletions(const QVector<JediCompletion> &completions)
+void CodeCompletionMode::showCompletions(const QVector<CompletionItem> &completions)
 {
     updateModel(completions);
     showPopup();
@@ -978,7 +978,7 @@ models for the QCompleter
 
 :param completionPrefix:
 */
-QStandardItemModel* CodeCompletionMode::updateModel(const QVector<JediCompletion> &completions)
+QStandardItemModel* CodeCompletionMode::updateModel(const QVector<CompletionItem> &completions)
 {
     // build the completion model
     QStandardItemModel* cc_model = new QStandardItemModel(this);
@@ -987,7 +987,7 @@ QStandardItemModel* CodeCompletionMode::updateModel(const QVector<JediCompletion
     QStandardItem *item;
     QIcon icon;
 
-    foreach (const JediCompletion &completion, completions)
+    foreach (const CompletionItem &completion, completions)
     {
         name = completion.m_name;
         item = new QStandardItem();

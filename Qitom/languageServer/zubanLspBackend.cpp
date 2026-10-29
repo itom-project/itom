@@ -142,7 +142,7 @@ void ZubanLspBackend::setExecutablePath(const QString& path)
 }
 
 //--------------------------------------------------------------------------------------
-int ZubanLspBackend::requestCompletion(const JediCompletionRequest& request)
+int ZubanLspBackend::requestCompletion(const CompletionRequest& request)
 {
     if (!m_lspClient || !m_initialized) {
         return -1;
@@ -172,7 +172,7 @@ int ZubanLspBackend::requestCompletion(const JediCompletionRequest& request)
 }
 
 //--------------------------------------------------------------------------------------
-int ZubanLspBackend::requestCalltip(const JediCalltipRequest& request)
+int ZubanLspBackend::requestCalltip(const CalltipRequest& request)
 {
     if (!m_lspClient || !m_initialized) {
         return -1;
@@ -185,7 +185,7 @@ int ZubanLspBackend::requestCalltip(const JediCalltipRequest& request)
     QString uri = pathToUri(request.m_path);
     ensureDocumentOpen(uri, request.m_source);
 
-    // LSP uses 0-based line/character, as the JediCalltipRequest does
+    // LSP uses 0-based line/character, as the CalltipRequest does
     int lspRequestId = m_lspClient->requestSignatureHelp(uri, request.m_line, request.m_col);
     int requestId = -1;
 
@@ -197,7 +197,7 @@ int ZubanLspBackend::requestCalltip(const JediCalltipRequest& request)
 }
 
 //--------------------------------------------------------------------------------------
-int ZubanLspBackend::requestGoToAssignment(const JediAssignmentRequest& request)
+int ZubanLspBackend::requestGoToAssignment(const AssignmentRequest& request)
 {
     if (!m_lspClient || !m_initialized) {
         return -1;
@@ -222,7 +222,7 @@ int ZubanLspBackend::requestGoToAssignment(const JediAssignmentRequest& request)
 }
 
 //--------------------------------------------------------------------------------------
-int ZubanLspBackend::requestGetHelp(const JediGetHelpRequest& request)
+int ZubanLspBackend::requestGetHelp(const GetHelpRequest& request)
 {
     if (!m_lspClient || !m_initialized) {
         return -1;
@@ -247,7 +247,7 @@ int ZubanLspBackend::requestGetHelp(const JediGetHelpRequest& request)
 }
 
 //--------------------------------------------------------------------------------------
-int ZubanLspBackend::requestRename(const JediRenameRequest& request)
+int ZubanLspBackend::requestRename(const RenameRequest& request)
 {
     if (!m_lspClient || !m_initialized) {
         return -1;
@@ -260,7 +260,7 @@ int ZubanLspBackend::requestRename(const JediRenameRequest& request)
     QString uri = pathToUri(request.m_filepath);
     ensureDocumentOpen(uri, request.m_code);
 
-    // LSP uses 0-based line/character, whereas JediRenameRequest::m_line is 1-based.
+    // LSP uses 0-based line/character, whereas RenameRequest::m_line is 1-based.
     // Only the ranges of the returned edits are used. The real new name is entered
     // by the user afterwards, therefore a placeholder is used here.
     const QString newName = "__itom_rename__";
@@ -302,7 +302,7 @@ if (!m_pendingRequests.contains(requestId)) {
     RequestContext context = m_pendingRequests.take(requestId);
 
     // Convert LSP completion items to Jedi completions
-    QList<JediCompletion> completions;
+    QList<CompletionItem> completions;
     for (const QJsonValue& itemValue : items) {
         completions.append(convertCompletionItem(itemValue.toObject()));
     }
@@ -318,9 +318,9 @@ void ZubanLspBackend::onLspSignatureHelpReceived(int requestId, const QJsonObjec
     }
 
     RequestContext context = m_pendingRequests.take(requestId);
-    JediCalltip calltip = convertSignatureHelp(signatureHelp);
+    CalltipItem calltip = convertSignatureHelp(signatureHelp);
 
-    QVector<ito::JediCalltip> calltips;
+    QVector<ito::CalltipItem> calltips;
     calltips << calltip;
 
     emit calltipReady(context.jediRequestId, calltips);
@@ -335,7 +335,7 @@ void ZubanLspBackend::onLspDefinitionReceived(int requestId, const QJsonArray& l
 
     RequestContext context = m_pendingRequests.take(requestId);
 
-    QVector<JediAssignment> assignments;
+    QVector<AssignmentItem> assignments;
 
     for (const QJsonValue& location : locations) {
         assignments.append(convertLocation(location.toObject()));
@@ -353,7 +353,7 @@ void ZubanLspBackend::onLspHoverReceived(int requestId, const QJsonObject& hover
     }
 
     RequestContext context = m_pendingRequests.take(requestId);
-    JediGetHelp help = convertHover(hover);
+    HelpItem help = convertHover(hover);
 
     emit getHelpReady(context.jediRequestId, help);
 }
@@ -366,8 +366,8 @@ void ZubanLspBackend::onLspRenameReceived(int requestId, const QJsonObject& work
     }
 
     RequestContext context = m_pendingRequests.take(requestId);
-    QList<JediRename> renames = convertWorkspaceEdit(workspaceEdit);
-    const JediRenameRequest request = m_pendingRenameRequests.take(context.jediRequestId);
+    QList<RenameFileChanges> renames = convertWorkspaceEdit(workspaceEdit);
+    const RenameRequest request = m_pendingRenameRequests.take(context.jediRequestId);
 
     // determine the old value from the word under the requested position
     QString oldValue;
@@ -395,9 +395,9 @@ void ZubanLspBackend::onLspRenameReceived(int requestId, const QJsonObject& work
 
     QDir requestDir = QFileInfo(request.m_filepath).absoluteDir();
     const QString requestPath = QFileInfo(request.m_filepath).absoluteFilePath();
-    QVector<JediRename> result;
+    QVector<RenameFileChanges> result;
 
-    for (JediRename rename : renames)
+    for (RenameFileChanges rename : renames)
     {
         const bool isRequestFile = QFileInfo(rename.m_filePath).absoluteFilePath() == requestPath;
         rename.m_mainFile = isRequestFile;
@@ -587,9 +587,9 @@ int ZubanLspBackend::trackRequest(int lspRequestId, const QPointer<QObject>& sen
 }
 
 //--------------------------------------------------------------------------------------
-JediCompletion ZubanLspBackend::convertCompletionItem(const QJsonObject& item) const
+CompletionItem ZubanLspBackend::convertCompletionItem(const QJsonObject& item) const
 {
-    // Convert LSP CompletionItem to JediCompletion
+    // Convert LSP CompletionItem to CompletionItem
     QString label = item["label"].toString();
     QString detail = item["detail"].toString();
     QString documentation = item["documentation"].toString();
@@ -611,7 +611,7 @@ JediCompletion ZubanLspBackend::convertCompletionItem(const QJsonObject& item) c
         tooltips.append(detail);
     }
 
-    return JediCompletion(label, tooltips, icon, documentation);
+    return CompletionItem(label, tooltips, icon, documentation);
 }
 
 //--------------------------------------------------------------------------------------
@@ -756,15 +756,15 @@ static QString stripEmptyDefaultValue(const QString& param)
 }
 
 //--------------------------------------------------------------------------------------
-JediCalltip ZubanLspBackend::convertSignatureHelp(const QJsonObject& signatureHelp) const
+CalltipItem ZubanLspBackend::convertSignatureHelp(const QJsonObject& signatureHelp) const
 {
-    // Convert LSP SignatureHelp to JediCalltip. The result must have the same format
+    // Convert LSP SignatureHelp to CalltipItem. The result must have the same format
     // as the one created by the jedi backend in itomJediLib.calltips: the parameters
     // contain their type annotations and the currently edited parameter is marked bold.
     const QJsonArray signatures = signatureHelp["signatures"].toArray();
 
     if (signatures.isEmpty()) {
-        return JediCalltip();
+        return CalltipItem();
     }
 
     int activeSignature = signatureHelp["activeSignature"].toInt(0);
@@ -851,13 +851,13 @@ JediCalltip ZubanLspBackend::convertSignatureHelp(const QJsonObject& signatureHe
     // m_column and m_bracketStartCol are only used to shift the tooltip to the opening
     // bracket of the call. The LSP response does not provide this position, therefore
     // use equal values to place the tooltip at the current cursor position.
-    return JediCalltip(methodName.toHtmlEscaped(), params, 0, -1, 0);
+    return CalltipItem(methodName.toHtmlEscaped(), params, 0, -1, 0);
 }
 
 //--------------------------------------------------------------------------------------
-JediAssignment ZubanLspBackend::convertLocation(const QJsonObject& location) const
+AssignmentItem ZubanLspBackend::convertLocation(const QJsonObject& location) const
 {
-    // Convert LSP Location or LocationLink to JediAssignment.
+    // Convert LSP Location or LocationLink to AssignmentItem.
     // Location: {uri, range}
     // LocationLink: {originSelectionRange, targetUri, targetRange, targetSelectionRange}
     QString uri;
@@ -882,17 +882,17 @@ JediAssignment ZubanLspBackend::convertLocation(const QJsonObject& location) con
     QString path = uriToPath(uri);
     QJsonObject start = range["start"].toObject();
 
-    // JediAssignment::m_line is 0-based, like the LSP position
+    // AssignmentItem::m_line is 0-based, like the LSP position
     int line = start["line"].toInt();
     int column = start["character"].toInt();
 
-    return JediAssignment(path, line, column, QString());
+    return AssignmentItem(path, line, column, QString());
 }
 
 //--------------------------------------------------------------------------------------
-JediGetHelp ZubanLspBackend::convertHover(const QJsonObject& hover) const
+HelpItem ZubanLspBackend::convertHover(const QJsonObject& hover) const
 {
-    // Convert LSP Hover to JediGetHelp
+    // Convert LSP Hover to HelpItem
     QJsonValue contents = hover["contents"];
 
     QString description;
@@ -933,16 +933,16 @@ JediGetHelp ZubanLspBackend::convertHover(const QJsonObject& hover) const
         }
     }
 
-    JediGetHelp help(description, QStringList());
+    HelpItem help(description, QStringList());
     help.m_markdown = markdown;
     return help;
 }
 
 //--------------------------------------------------------------------------------------
-QList<JediRename> ZubanLspBackend::convertWorkspaceEdit(const QJsonObject& workspaceEdit) const
+QList<RenameFileChanges> ZubanLspBackend::convertWorkspaceEdit(const QJsonObject& workspaceEdit) const
 {
-    // Convert LSP WorkspaceEdit to list of JediRename
-    QList<JediRename> renames;
+    // Convert LSP WorkspaceEdit to list of RenameFileChanges
+    QList<RenameFileChanges> renames;
 
     QJsonObject changes = workspaceEdit["changes"].toObject();
 
@@ -959,7 +959,7 @@ QList<JediRename> ZubanLspBackend::convertWorkspaceEdit(const QJsonObject& works
     }
 
     for (const QString& uri : changes.keys()) {
-        JediRename rename;
+        RenameFileChanges rename;
         rename.m_filePath = uriToPath(uri);
         rename.m_untitledFile = false;
         rename.m_mainFile = true;
@@ -972,7 +972,7 @@ QList<JediRename> ZubanLspBackend::convertWorkspaceEdit(const QJsonObject& works
             QJsonObject start = range["start"].toObject();
             QJsonObject end = range["end"].toObject();
 
-            FileRenameItem item;
+            RenameTextItem item;
             item.lineNumber = start["line"].toInt() + 1; // Convert to 1-based
             item.startColumnIndex = start["character"].toInt();
             item.oldWordSize = end["character"].toInt() - item.startColumnIndex;

@@ -63,11 +63,11 @@ public:
     virtual BackendType backendType() const override { return ZubanLS; }
     virtual bool isAvailable() const override;
     virtual bool initialize(const QString& includeItomImportString) override;
-    virtual int requestCompletion(const JediCompletionRequest& request) override;
-    virtual int requestCalltip(const JediCalltipRequest& request) override;
-    virtual int requestGoToAssignment(const JediAssignmentRequest& request) override;
-    virtual int requestGetHelp(const JediGetHelpRequest& request) override;
-    virtual int requestRename(const JediRenameRequest& request) override;
+    virtual int requestCompletion(const CompletionRequest& request) override;
+    virtual int requestCalltip(const CalltipRequest& request) override;
+    virtual int requestGoToAssignment(const AssignmentRequest& request) override;
+    virtual int requestGetHelp(const GetHelpRequest& request) override;
+    virtual int requestRename(const RenameRequest& request) override;
     virtual void closeDocument(const QString& filePath) override;
     virtual void setProjectDirectory(const QString& directory) override;
 
@@ -134,11 +134,11 @@ private:
     int trackRequest(int lspRequestId, const QPointer<QObject>& sender, const QByteArray& callbackName = QByteArray());
 
     // Conversion methods: LSP -> Jedi
-    JediCompletion convertCompletionItem(const QJsonObject& item) const;
-    JediCalltip convertSignatureHelp(const QJsonObject& signatureHelp) const;
-    JediAssignment convertLocation(const QJsonObject& location) const;
-    JediGetHelp convertHover(const QJsonObject& hover) const;
-    QList<JediRename> convertWorkspaceEdit(const QJsonObject& workspaceEdit) const;
+    CompletionItem convertCompletionItem(const QJsonObject& item) const;
+    CalltipItem convertSignatureHelp(const QJsonObject& signatureHelp) const;
+    AssignmentItem convertLocation(const QJsonObject& location) const;
+    HelpItem convertHover(const QJsonObject& hover) const;
+    QList<RenameFileChanges> convertWorkspaceEdit(const QJsonObject& workspaceEdit) const;
 
     // LSP Client
     LspClient* m_lspClient;
@@ -169,7 +169,7 @@ private:
         QByteArray callbackName;
     };
     QMap<int, RequestContext> m_pendingRequests;
-    QMap<int, JediRenameRequest> m_pendingRenameRequests; //!< jedi request id -> rename request
+    QMap<int, RenameRequest> m_pendingRenameRequests; //!< jedi request id -> rename request
     int m_nextJediRequestId;
 
     // Document tracking (to avoid reopening / resending unchanged documents)
