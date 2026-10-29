@@ -2,11 +2,14 @@ name: Pre-Commit Hooks
 
 on:
   # Triggers the workflow on pushes and pull requests to specified branches
+  # The default branch of the repository is 'master'. 'main' is kept for forks that use that name.
   push:
     branches:
+      - master
       - main
   pull_request:
     branches:
+      - master
       - main
 
 jobs:
@@ -15,10 +18,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.9' # Use the Python version required by your project
 

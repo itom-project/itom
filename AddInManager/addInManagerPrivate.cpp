@@ -807,7 +807,11 @@ const ito::RetVal AddInManagerPrivate::initAddInAlgo(
     ito::tAutoLoadPolicy policy = ito::autoLoadNever;
     ito::AddInInterfaceBase *aib = NULL;
 
-    if (QString::compare((m_addInListAlgo[pluginNum])->objectName(), name, Qt::CaseInsensitive) != 0)
+    if (pluginNum < 0 || pluginNum >= m_addInListAlgo.size())
+    {
+        retval += ito::RetVal(ito::retError, 0, tr("Invalid plugin index").toLatin1().data());
+    }
+    else if (QString::compare((m_addInListAlgo[pluginNum])->objectName(), name, Qt::CaseInsensitive) != 0)
     {
         retval += ito::RetVal(ito::retError, 0, tr("Wrong plugin name").toLatin1().data());
     }
@@ -906,6 +910,10 @@ template<typename _Tp> const ito::RetVal AddInManagerPrivate::initAddInActuatorO
     if (addIn == NULL)
     {
         retval += ito::RetVal(ito::retError, 0, "Empty plugin pointer");
+    }
+    else if (pluginNum < 0 || pluginNum >= addInList->size())
+    {
+        retval += ito::RetVal(ito::retError, 0, tr("Invalid plugin index").toLatin1().data());
     }
     else if (QString::compare(((*addInList)[pluginNum])->objectName(), name, Qt::CaseInsensitive) != 0)
     {
