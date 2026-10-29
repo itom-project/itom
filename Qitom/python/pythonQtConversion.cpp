@@ -3850,6 +3850,11 @@ MethodDescription::MethodDescription(const MethodDescription &copy) :
 
 MethodDescription & MethodDescription::operator = (const MethodDescription &other)
 {
+    if (this == &other)
+    {
+        return *this;
+    }
+
     DELETE_AND_SET_NULL_ARRAY(m_argTypes);
     m_type = other.m_type;
     m_access = other.m_access;
