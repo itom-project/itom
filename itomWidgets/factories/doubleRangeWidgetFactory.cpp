@@ -30,7 +30,6 @@
 DoubleRangeWidgetFactory::DoubleRangeWidgetFactory(QObject *_parent)
   : QObject(_parent)
 {
-    initialized = false;
 }
 
 // --------------------------------------------------------------------------

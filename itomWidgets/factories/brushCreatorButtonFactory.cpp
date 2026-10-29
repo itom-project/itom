@@ -30,7 +30,6 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 brushCreatorButtonFactory::brushCreatorButtonFactory(QObject *_parent)
     : QObject(_parent)
 {
-    initialized = false;
 }
 
 // --------------------------------------------------------------------------

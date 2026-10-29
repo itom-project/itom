@@ -30,7 +30,6 @@
 PlotInfoDObjectFactory::PlotInfoDObjectFactory(QObject *_parent)
   : QObject(_parent)
 {
-    initialized = false;
 }
 
 // --------------------------------------------------------------------------
