@@ -111,6 +111,9 @@ MainWindow::MainWindow() :
     m_pythonInWaitingMode(false), m_isFullscreen(false), m_userDefinedActionCounter(0),
     m_plastFilesMenu(nullptr)
 {
+    // script tabs can be dropped to the main window (see DockDragDropController)
+    setAcceptDrops(true);
+
     // qDebug() << "mainWindow. Thread: " << QThread::currentThreadId ();
 #ifdef __APPLE__
     // Setting high res icon for OS X
@@ -509,7 +512,12 @@ MainWindow::MainWindow() :
     // the layout after the creation of all built-in docks is the default layout (see mnuResetLayout)
     m_defaultLayoutState = saveState(LayoutStateVersion);
 
-    if (!restoreState(settings.value("state", "").toByteArray(), LayoutStateVersion))
+    AbstractDockWidget::setLayoutRestoring(true);
+    const bool layoutRestored =
+        restoreState(settings.value("state", "").toByteArray(), LayoutStateVersion);
+    AbstractDockWidget::setLayoutRestoring(false);
+
+    if (!layoutRestored)
     {
         qDebug(".. no saved layout with the current layout version found. The default layout is used.");
     }
@@ -792,7 +800,9 @@ void MainWindow::addAbstractDock(
             // Script editors are put to their position of the last session, if the saved layout
             // contains a dock widget with the same object name. restoreDockWidget has to be called
             // before addDockWidget, else the dock widget stays in the given area.
+            AbstractDockWidget::setLayoutRestoring(true);
             bool restored = sdw && restoreDockWidget(dockWidget);
+            AbstractDockWidget::setLayoutRestoring(false);
 
             if (!restored)
             {
@@ -880,7 +890,11 @@ void MainWindow::mnuResetLayout()
         }
     }
 
-    if (!restoreState(m_defaultLayoutState, LayoutStateVersion))
+    AbstractDockWidget::setLayoutRestoring(true);
+    const bool defaultLayoutRestored = restoreState(m_defaultLayoutState, LayoutStateVersion);
+    AbstractDockWidget::setLayoutRestoring(false);
+
+    if (!defaultLayoutRestored)
     {
         qDebug() << "the default layout could not be restored";
         return;

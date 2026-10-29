@@ -20,3 +20,8 @@ External
  This is referred as ExternalProject and aims to overcome in particular the binary
  dependencies on Windows Platforms and should enable homogeneous versions and code dependencies
  across all platforms.
+
+itom
+----
+
+* Script editor windows can be docked and undocked by drag and drop. Tabs can be dragged to other script windows, to the edges of the main window or outside of itom. Undocked script windows can be docked by releasing them above the edges of the main window. See :ref:`gui-editor-dock-drag-drop`.
