@@ -92,7 +92,9 @@ ScriptDockWidget::ScriptDockWidget(const QString &title, const QString &objName,
     m_pStatusBarWidget(nullptr),
     m_classBox(nullptr),
     m_methodBox(nullptr),
-    m_classMenuBar(nullptr)
+    m_classMenuBar(nullptr),
+    m_pythonActionsVisible(true),
+    m_scriptToolBarHiddenByUser(false)
 {
     qRegisterMetaType<QSharedPointer<OutlineItem> >("QSharedPointer<OutlineItem>");
 
@@ -744,7 +746,7 @@ void ScriptDockWidget::showOutlineNavigationBar(bool show)
         }
     }
 
-    m_classMenuBar->setVisible(show);
+    m_classMenuBar->setVisible(show && m_pythonActionsVisible);
 }
 
 //-------------------------------------------------------------------------------------
@@ -1743,6 +1745,63 @@ void ScriptDockWidget::updateEditorActions()
 }
 
 //-------------------------------------------------------------------------------------
+//! shows or hides all actions, toolbars and the outline navigation bar, that only
+//! make sense for python scripts (e.g. hidden if a text file is the current tab).
+void ScriptDockWidget::setPythonActionsVisible(bool visible)
+{
+    if (visible == m_pythonActionsVisible)
+    {
+        return;
+    }
+
+    m_pythonActionsVisible = visible;
+
+    // hiding the actions also hides them in the menus
+    ShortcutAction* pyActions[] = {
+        m_scriptRunAction,
+        m_scriptRunSelectionAction,
+        m_scriptRunCodeCellAction,
+        m_scriptRunCodeCellAndAdvanceAction,
+        m_scriptDebugAction,
+        m_scriptStopAction,
+        m_scriptContinueAction,
+        m_scriptStepAction,
+        m_scriptStepOverAction,
+        m_scriptStepOutAction,
+        m_autoCodeFormatAction,
+        m_referenceRenameAction,
+        m_pyDocstringGeneratorAction};
+
+    for (ShortcutAction* a : pyActions)
+    {
+        if (a && a->action())
+        {
+            a->action()->setVisible(visible);
+        }
+    }
+
+    if (m_scriptToolBar)
+    {
+        if (!visible)
+        {
+            // remember if the user has hidden the toolbar by himself
+            m_scriptToolBarHiddenByUser = m_scriptToolBar->isHidden();
+            m_scriptToolBar->hide();
+        }
+        else if (!m_scriptToolBarHiddenByUser)
+        {
+            m_scriptToolBar->show();
+        }
+    }
+
+    // text files have no outline, hide the class / method navigation
+    if (m_classMenuBar)
+    {
+        m_classMenuBar->setVisible(visible && m_outlineShowNavigation);
+    }
+}
+
+//-------------------------------------------------------------------------------------
 //! updates actions which deal with python commands or which are dependent on the python state
 //! Read-only is also python-dependent.
 void ScriptDockWidget::updatePythonActions()
@@ -1756,6 +1815,8 @@ void ScriptDockWidget::updatePythonActions()
     bool pyFile = (sew == nullptr) || sew->isPythonFile();
     bool canComment = sew != nullptr &&
         !EditorFileType::commentToken(sew->fileType()).isEmpty();
+
+    setPythonActionsVisible(pyFile);
 
     m_scriptRunAction->setEnabled(!busy1 && pyFile);
     m_scriptRunSelectionAction->setEnabled(sew && pyFile && (!busy1 || pythonInWaitingMode()));

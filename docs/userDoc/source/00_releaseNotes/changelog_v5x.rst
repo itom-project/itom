@@ -29,6 +29,8 @@ itom
   The list of supported suffixes is configurable in the property dialog (tab scripts). See :ref:`gui-editor-text-files`.
 * ``itom.openScript`` can also open the supported text files in the script editor.
 * The script editor detects UTF-16 and UTF-32 files with a byte order mark (e.g. data listings exported by Windows tools) and loads them correctly. The BOM of UTF-8/16/32 files is written again when the file is saved (before, it was dropped).
+* Fix: files were read and written in text mode, which removed or added ``\r`` bytes before the decoding. UTF-16/32 files were corrupted (garbage characters, missing lines) and the garbage made the editor very slow. Files are now read and written in binary mode, the line endings are handled after the decoding.
+* The python specific actions (run, debug, step, auto format, rename, docstring), the script toolbar and the outline navigation bar are hidden, if the current tab is a text file.
 * New unittest ``unittest_codeeditor`` (GoogleTest) for the file type registry and the syntax highlighting of the text-like files.
 * Fix: itom crashed at startup if the clipboard has no mime data (e.g. with the Qt platform plugin ``offscreen``).
 * Script editor windows can be docked and undocked by drag and drop. Tabs can be dragged to other script windows, to the edges of the main window or outside of itom. Undocked script windows can be docked by releasing them above the edges of the main window. See :ref:`gui-editor-dock-drag-drop`.
