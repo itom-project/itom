@@ -322,7 +322,18 @@ void FileSystemDockWidget::setLinkColor(const QColor &color)
 
     to influence the link color
     */
-    m_linkColor = color;
+    if (m_linkColor != color)
+    {
+        m_linkColor = color;
+
+        // The stylesheet applies this property when the widget is polished (first
+        // shown). At this time, the path has already been rendered with the default
+        // color in the constructor, therefore render it again with the new color.
+        if (m_pPathEdit && !m_baseDirectory.isEmpty())
+        {
+            m_pPathEdit->setHtml(getHtmlTag(m_baseDirectory));
+        }
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
