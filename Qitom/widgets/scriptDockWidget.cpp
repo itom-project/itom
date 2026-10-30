@@ -971,24 +971,30 @@ RetVal ScriptDockWidget::openScript(QString filename, bool silent)
 
     if (!fileInfo.exists())
     {
+        QString text = tr("The file '%1' could not be found.").arg(filename);
+
         if (!silent)
         {
-            QMessageBox msg(QMessageBox::Warning, tr("Open Script"), tr("The file '%1' could not be found.").arg(filename));
+            QMessageBox msg(QMessageBox::Warning, tr("Open Script"), text);
             msg.exec();
         }
-        return RetVal(retError);
+        return RetVal(retError, 0, text.toUtf8().data());
     }
     else
     {
 
         if (!EditorFileType::isEditable(filename))
         {
+            QString text =
+                tr("The file '%1' is neither a python script nor a supported text file.")
+                    .arg(filename);
+
             if (!silent)
             {
-                QMessageBox msg(QMessageBox::Warning, tr("Open Script"), tr("The file '%1' is neither a python script nor a supported text file.").arg(filename));
+                QMessageBox msg(QMessageBox::Warning, tr("Open Script"), text);
                 msg.exec();
             }
-            return RetVal(retError);
+            return RetVal(retError, 0, text.toUtf8().data());
         }
     }
 
