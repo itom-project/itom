@@ -90,6 +90,7 @@ set(unittest_dataobject_SOURCES
     #${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/miscellaneous.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/numberConversion_test.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/operatorRoiCharacterization_Test.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/operatorTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/saturate_cast_test.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/saturateTest_real.cpp

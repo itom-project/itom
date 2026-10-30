@@ -741,10 +741,22 @@ void MainApplication::setupApplication(
             }
         }
 
-        // test the base color of a widget
-        QString iconThemeFile = "iconThemeBright.rcc";
+        // The icon theme is one of: auto, bright, dark (classic icons) or modernAuto, modernBright,
+        // modernDark (refined classic icons, see Qitom/iconThemeModern). 'auto' selects the bright
+        // or dark variant depending on the base color of the stylesheet.
+        if (iconTheme.compare("auto", Qt::CaseInsensitive) == 0 &&
+            QFileInfo(cssFile).completeBaseName().startsWith("modern", Qt::CaseInsensitive))
+        {
+            // The modern application styles (modernLight, modernDark) are designed for the refined
+            // icons. With the default icon theme 'auto', both are selected together.
+            iconTheme = "modernAuto";
+        }
 
-        if (iconTheme.compare("auto", Qt::CaseInsensitive) == 0)
+        const bool modernIcons = iconTheme.startsWith("modern", Qt::CaseInsensitive);
+        bool darkIcons = false;
+
+        if (iconTheme.compare("auto", Qt::CaseInsensitive) == 0 ||
+            iconTheme.compare("modernAuto", Qt::CaseInsensitive) == 0)
         {
             // test the base color of the color palette of a widget (here: the splashscreen)
             // and set the dark theme, if the lightness of this color is < 0.5.
@@ -757,14 +769,25 @@ void MainApplication::setupApplication(
             // icon sets.
             QGuiApplication::setPalette(m_pSplashScreen->palette());
 
-            if (bgColor.toHsv().lightnessF() < 0.5)
-            {
-                iconThemeFile = "iconThemeDark.rcc";
-            }
+            darkIcons = (bgColor.toHsv().lightnessF() < 0.5);
         }
-        else if (iconTheme.compare("dark", Qt::CaseInsensitive) == 0)
+        else if (
+            iconTheme.compare("dark", Qt::CaseInsensitive) == 0 ||
+            iconTheme.compare("modernDark", Qt::CaseInsensitive) == 0)
         {
-            iconThemeFile = "iconThemeDark.rcc";
+            darkIcons = true;
+        }
+
+        QString iconThemeFile =
+            QString("iconTheme%1%2.rcc")
+                .arg(modernIcons ? "Modern" : "", darkIcons ? "Dark" : "Bright");
+
+        if (modernIcons && !iconThemeDir.exists(iconThemeFile))
+        {
+            // e.g. an installation without the modern icon theme: use the classic icons
+            qDebug() << "The icon theme file " << iconThemeFile
+                     << " was not found. Using the classic icons.";
+            iconThemeFile = darkIcons ? "iconThemeDark.rcc" : "iconThemeBright.rcc";
         }
 
         if (!QResource::registerResource(iconThemeDir.absoluteFilePath(iconThemeFile)))
@@ -1101,7 +1124,7 @@ void MainApplication::setupApplication(
     QMetaObject::invokeMethod(m_pyEngine, "scanAndRunAutostartFolder", Q_ARG(QString, currentDir));
 
     ////since autostart-files could have changed current directory, re-change it to the value of the
-    ///settings-file
+    /// settings-file
     // settings.beginGroup("CurrentStatus");
     // QDir::setCurrent(settings.value("currentDir",QDir::currentPath()).toString());
     // settings.endGroup();
@@ -1323,6 +1346,14 @@ void MainApplication::mainWindowCloseRequest(bool considerPythonBusy)
             return;
 
         // saves the state of all opened scripts to the settings file
+        // keep the layout of the main window while all script editors are still open,
+        // such that their positions are restored in the next session.
+        if (m_mainWin)
+        {
+            m_mainWin->keepLayoutStateForNextSession();
+        }
+
+        // saves the state of all opened scripts to the settings file
         if (m_scriptEditorOrganizer)
         {
             m_scriptEditorOrganizer->saveScriptState();
@@ -1333,6 +1364,11 @@ void MainApplication::mainWindowCloseRequest(bool considerPythonBusy)
             {
                 // The user was asked how to proceed with unsaved scripts.
                 // In this case, the user cancelled this request... do not close itom!
+                if (m_mainWin)
+                {
+                    m_mainWin->discardKeptLayoutState();
+                }
+
                 return;
             }
         }

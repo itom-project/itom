@@ -29,6 +29,7 @@
 #include <qglobal.h>
 #include <qdir.h>
 #include <qdebug.h>
+#include <qfont.h>
 
 #ifdef _WIN32
 #include <io.h>
@@ -203,5 +204,24 @@ namespace ito
         int dpi = getScreenLogicalDpi(pos);
         return qBound(1.0, (float)dpi / 96.0, 1.e10);
     }
+
+//-------------------------------------------------------------------------------------
+/*static*/ int GuiHelper::normalizeFontWeight(int weight)
+{
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    if (weight >= 0 && weight < 100)
+    {
+        // Qt5 scale [0, 99] -> Qt6 scale [1, 1000]: 50 -> 400, 75 -> 700, 87 -> 800
+        return qBound(1, weight * 8 + (weight > 50 ? 100 : 0), 1000);
+    }
+#else
+    if (weight >= 100)
+    {
+        // Qt6 scale [1, 1000] -> Qt5 scale [0, 99]: 400 -> 50, 700 -> 75
+        return qBound(0, (weight > 500 ? weight - 100 : weight) / 8, 99);
+    }
+#endif
+    return weight;
+}
 
 };

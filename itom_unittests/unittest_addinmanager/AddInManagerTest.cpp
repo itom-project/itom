@@ -8,6 +8,7 @@
 //#include <Setupapi.h>
 #endif
 #include "gtest/gtest.h"
+#include <memory>
 #include <qcoreapplication.h>
 #include <qfileinfo.h>
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 9, 0))
@@ -140,14 +141,15 @@ TEST(AddInManagerTest, General)
         "DummyMotor", ito::typeActuator, &pluginNum, paramsMand, paramsOpt);
     if (retval.containsWarningOrError())
     {
-        QString errMsg =
-            QString("Error loading Dummy-Motor: ") + QString::fromLatin1(retval.errorMessage());
-        retval = ito::RetVal(ito::retError, 0, errMsg.toLatin1().data());
-        //        goto EXIT;
+        // The plugin DummyMotor is part of the separate repository 'plugins'. A build of the core
+        // repository alone does not contain it. Without the plugin, this test cannot be executed.
+        addInMgrInst->closeInstance();
+        GTEST_SKIP() << "The plugin DummyMotor was not found in " << addInPath.toStdString()
+                     << "/plugins: " << retval.errorMessage();
     }
 
     int enableAutoLoadParams = 1;
-    ito::AddInActuator* dummyMot;
+    ito::AddInActuator* dummyMot = nullptr;
     convertQVP2QVPB(paramsMand, paramsMandCpy);
     convertQVP2QVPB(paramsOpt, paramsOptCpy);
     // this could be an alternative call, in case we run single threaded
@@ -172,3 +174,79 @@ TEST(AddInManagerTest, General)
 
     addInMgrInst->closeInstance();
 };
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// The following tests do not require any plugin.
+
+namespace
+{
+//! creates the AddInManager without scanning for plugins and closes it at the end of the test.
+class AddInManagerWithoutPlugins : public ::testing::Test
+{
+protected:
+    void SetUp() override
+    {
+        m_app.reset(new QCoreApplication(m_argc, nullptr));
+        m_manager = ito::AddInManager::createInstance("", nullptr, nullptr, nullptr);
+        ASSERT_NE(m_manager, nullptr);
+        ito::ITOM_API_FUNCS = m_manager->getItomApiFuncsPtr();
+    }
+
+    void TearDown() override
+    {
+        ito::AddInManager::closeInstance();
+        m_app.reset();
+    }
+
+    int m_argc = 0;
+    std::unique_ptr<QCoreApplication> m_app;
+    ito::AddInManager* m_manager = nullptr;
+};
+} // namespace
+
+// Regression test: an invalid plugin index crashed the manager (out-of-range access in a list),
+// instead of returning an error.
+TEST_F(AddInManagerWithoutPlugins, InitActuatorWithInvalidPluginIndexReturnsError)
+{
+    QVector<ito::ParamBase> mandatory, optional;
+
+    for (int index : {-1, 0, 1000})
+    {
+        ito::AddInActuator* actuator = nullptr;
+        ito::RetVal retval = m_manager->initAddIn(
+            index, "NotExistingPlugin", &actuator, &mandatory, &optional, false, nullptr);
+
+        EXPECT_TRUE(retval.containsError()) << "plugin index " << index;
+        EXPECT_EQ(actuator, nullptr) << "plugin index " << index;
+    }
+}
+
+TEST_F(AddInManagerWithoutPlugins, InitDataIOWithInvalidPluginIndexReturnsError)
+{
+    QVector<ito::ParamBase> mandatory, optional;
+
+    for (int index : {-1, 0, 1000})
+    {
+        ito::AddInDataIO* dataIO = nullptr;
+        ito::RetVal retval = m_manager->initAddIn(
+            index, "NotExistingPlugin", &dataIO, &mandatory, &optional, false, nullptr);
+
+        EXPECT_TRUE(retval.containsError()) << "plugin index " << index;
+        EXPECT_EQ(dataIO, nullptr) << "plugin index " << index;
+    }
+}
+
+TEST_F(AddInManagerWithoutPlugins, InitAlgoWithInvalidPluginIndexReturnsError)
+{
+    QVector<ito::ParamBase> mandatory, optional;
+
+    for (int index : {-1, 0, 1000})
+    {
+        ito::AddInAlgo* algo = nullptr;
+        ito::RetVal retval = m_manager->initAddIn(
+            index, "NotExistingPlugin", &algo, &mandatory, &optional, false, nullptr);
+
+        EXPECT_TRUE(retval.containsError()) << "plugin index " << index;
+        EXPECT_EQ(algo, nullptr) << "plugin index " << index;
+    }
+}

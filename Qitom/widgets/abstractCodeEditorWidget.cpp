@@ -309,7 +309,8 @@ void AbstractCodeEditorWidget::loadSettings()
                 }
             }
 
-            int fontWeight = settings.value("weight", defaultFormat.fontWeight()).toInt();
+            int fontWeight = GuiHelper::normalizeFontWeight(
+                settings.value("weight", defaultFormat.fontWeight()).toInt());
             if (currentFormat.fontWeight() != fontWeight)
             {
                 item.rformat().setFontWeight(fontWeight);
