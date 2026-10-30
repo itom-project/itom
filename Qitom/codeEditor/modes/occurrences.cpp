@@ -275,7 +275,8 @@ void OccurrencesHighlighterMode::sendRequest()
                             editor()->toPlainText(),
                             m_sub,
                             m_wholeWord,
-                            m_caseSensitive));
+                            m_caseSensitive,
+                            MaxResults + 1));
 #else
                     m_asyncFindAllWatcher.setFuture(
                         QtConcurrent::run(
@@ -284,7 +285,8 @@ void OccurrencesHighlighterMode::sendRequest()
                             editor()->toPlainText(),
                             m_sub,
                             m_wholeWord,
-                            m_caseSensitive));
+                            m_caseSensitive,
+                            MaxResults + 1));
 #endif
                 }
                 else
@@ -296,7 +298,7 @@ void OccurrencesHighlighterMode::sendRequest()
             else
             {
                 //or: direct
-                QList<QPair<int,int> > matches = findAll(editor()->toPlainText(), m_sub, m_wholeWord, m_caseSensitive);
+                QList<QPair<int,int> > matches = findAll(editor()->toPlainText(), m_sub, m_wholeWord, m_caseSensitive, MaxResults + 1);
                 onResultsAvailable(matches);
             }
         }
@@ -312,13 +314,13 @@ void OccurrencesHighlighterMode::asyncFindAllWatcherFinished()
 //----------------------------------------------------------
 void OccurrencesHighlighterMode::onResultsAvailable(QList<QPair<int,int> > results)
 {
-    if (results.size() > 500)
+    if (results.size() > MaxResults)
     {
         /*limit number of results (on very big file where a lots of
         # occurrences can be found, this would totally freeze the editor
         # during a few seconds, with a limit of 500 we can make sure
         # the editor will always remain responsive).*/
-        results = results.mid(0, 500);
+        results = results.mid(0, MaxResults);
     }
 
     m_sub == ""; //todo: is it good to delete the recently detected word?
@@ -356,9 +358,11 @@ void OccurrencesHighlighterMode::onResultsAvailable(QList<QPair<int,int> > resul
                 }
             }
 
-            editor()->decorations()->append(deco);
             m_decorations.append(deco);
         }
+
+        // append all decorations at once (one update of the extra selections)
+        editor()->decorations()->append(m_decorations);
     }
 
 
@@ -371,10 +375,8 @@ Clear line decoration
 //-------------------------------------------------------------
 void OccurrencesHighlighterMode::clearDecorations()
 {
-    foreach(TextDecoration::Ptr deco, m_decorations)
-    {
-        editor()->decorations()->remove(deco);
-    }
+    // remove all decorations at once (one update of the extra selections)
+    editor()->decorations()->remove(m_decorations);
     m_decorations.clear();
 }
 
@@ -390,11 +392,11 @@ Generator that finds all occurrences of ``sub`` in  ``string``
 :return:
 */
 //-------------------------------------------------------------
-QList<QPair<int,int> > OccurrencesHighlighterMode::findAll(const QString &text, const QString &sub, bool wholeWord, bool caseSensitive)
+QList<QPair<int,int> > OccurrencesHighlighterMode::findAll(const QString &text, const QString &sub, bool wholeWord, bool caseSensitive, int maxResults /*= -1*/)
 {
     QList<QPair<int, int> > results;
 
-    if (sub != "")
+    if (sub != "" && maxResults != 0)
     {
         QRegularExpression rx;
 
@@ -403,26 +405,30 @@ QList<QPair<int,int> > OccurrencesHighlighterMode::findAll(const QString &text, 
             rx.setPatternOptions(QRegularExpression::CaseInsensitiveOption);
         }
 
+        // the word is searched literally, not as regular expression
+        QString pattern = QRegularExpression::escape(sub);
+
         if (wholeWord)
         {
-            rx.setPattern(QString("\\b%1\\b").arg(sub));
-            //offset = -1;
-        }
-        else
-        {
-            rx.setPattern(sub);
+            pattern = QString("\\b%1\\b").arg(pattern);
         }
 
-        int pos = 0;
-        int length = sub.size();
-        QRegularExpressionMatch match;
+        rx.setPattern(pattern);
 
-        while ((match = rx.match(text, pos)).hasMatch())
+        // globalMatch iterates over the text once. Calling rx.match(text, pos) for every
+        // match restarts the scan on the whole string and took seconds for a frequent
+        // word in a big text file (e.g. 23000 occurrences in 500 kB).
+        QRegularExpressionMatchIterator it = rx.globalMatch(text);
+
+        while (it.hasNext())
         {
-            pos = match.capturedStart();
-            results.append(QPair<int,int>(pos, pos + length));
-            //qDebug() << rx.pattern() << rx.matchedLength();
-            pos = match.capturedEnd();
+            const QRegularExpressionMatch match = it.next();
+            results.append(QPair<int,int>((int)match.capturedStart(), (int)match.capturedEnd()));
+
+            if (maxResults >= 0 && results.size() >= maxResults)
+            {
+                break;
+            }
         }
     }
 

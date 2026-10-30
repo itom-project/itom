@@ -94,7 +94,11 @@ private slots:
 protected:
     typedef QList<QPair<int, int> > MatchesList;
     void clearDecorations();
-    MatchesList findAll(const QString &text, const QString &sub, bool wholeWord, bool caseSensitive);
+    //! finds all occurrences of sub in text (at most maxResults, if >= 0)
+    MatchesList findAll(const QString &text, const QString &sub, bool wholeWord, bool caseSensitive, int maxResults = -1);
+
+    //! maximum number of highlighted occurrences (the editor stays responsive for big files)
+    static const int MaxResults = 500;
 
     QColor m_background;
     QColor m_foreground;

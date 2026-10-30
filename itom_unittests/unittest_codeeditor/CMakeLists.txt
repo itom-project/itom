@@ -59,6 +59,7 @@ set(codeeditor_HEADERS
     ${CODEEDITOR_DIR}/managers/panelsManager.h
     ${CODEEDITOR_DIR}/managers/textDecorationsManager.h
     ${CODEEDITOR_DIR}/modes/caretLineHighlight.h
+    ${CODEEDITOR_DIR}/modes/occurrences.h
     ${CODEEDITOR_DIR}/panels/foldingPanel.h
     ${CODEEDITOR_DIR}/syntaxHighlighter/codeEditorStyle.h
     ${CODEEDITOR_DIR}/syntaxHighlighter/genericSyntaxHighlighter.h
@@ -85,6 +86,7 @@ set(codeeditor_SOURCES
     ${CODEEDITOR_DIR}/managers/panelsManager.cpp
     ${CODEEDITOR_DIR}/managers/textDecorationsManager.cpp
     ${CODEEDITOR_DIR}/modes/caretLineHighlight.cpp
+    ${CODEEDITOR_DIR}/modes/occurrences.cpp
     ${CODEEDITOR_DIR}/panels/foldingPanel.cpp
     ${CODEEDITOR_DIR}/syntaxHighlighter/codeEditorStyle.cpp
     ${CODEEDITOR_DIR}/syntaxHighlighter/genericSyntaxHighlighter.cpp
@@ -100,6 +102,8 @@ set(unittest_HEADERS
 set(unittest_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/appManagementStub.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditorTestHelper.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/longLinePaintTest.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/occurrencesTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/charsetEncodingTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/editorFileTypeTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/genericSyntaxHighlighterTest.cpp
