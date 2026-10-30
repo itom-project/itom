@@ -28,4 +28,6 @@ itom
   These files get a suffix specific syntax highlighting. Python specific features (run, debug, code checker, auto completion, ...) are disabled for them.
   The list of supported suffixes is configurable in the property dialog (tab scripts). See :ref:`gui-editor-text-files`.
 * ``itom.openScript`` can also open the supported text files in the script editor.
+* New unittest ``unittest_codeeditor`` (GoogleTest) for the file type registry and the syntax highlighting of the text-like files.
+* Fix: itom crashed at startup if the clipboard has no mime data (e.g. with the Qt platform plugin ``offscreen``).
 * Script editor windows can be docked and undocked by drag and drop. Tabs can be dragged to other script windows, to the edges of the main window or outside of itom. Undocked script windows can be docked by releasing them above the edges of the main window. See :ref:`gui-editor-dock-drag-drop`.
