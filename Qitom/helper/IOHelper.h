@@ -24,6 +24,7 @@
 #define IOHELPER_H
 
 #include "../global.h"
+#include "charsetEncoding.h"
 #include "../common/sharedStructures.h"
 #include "../common/sharedStructuresQt.h"
 #include "../../common/addInInterface.h"
@@ -78,31 +79,8 @@ public:
 
     /** This struct defines all necessary information for a possible charset encoding.
     */
-    struct CharsetEncodingItem
-    {
-        CharsetEncodingItem() :
-            encodingName(""), displayName(""), displayNameShort(""), bom(""), userDefined(false)
-        {}
-
-        //!< the name that is accepted by QTextCodec or QStringConverter.
-        //!< This is also used as value in the itom settings.
-        QString encodingName;
-
-        //!< the name used as display name in a config dialog
-        QString displayName;
-
-        //!< the short version, e.g. for a status bar
-        QString displayNameShort;
-
-        //!< all possible aliases, e.g. in Python scripts (coding=...)
-        QStringList aliases;
-
-        //!< the Byte-Order-Mark used to automatically detect this encoding (or empty, if not used)
-        QByteArray bom;
-
-        //!< false if part of the officially supported list of encodings, else true
-        bool userDefined;
-    };
+    //!< kept for compatibility, the implementation moved to CharsetEncoding
+    typedef CharsetEncoding::Item CharsetEncodingItem;
 
 
     static RetVal openGeneralFile(const QString &generalFileName, bool openUnknownsWithExternalApp = true, bool showMessages = false, QWidget* parent = NULL, const char* errorSlotMemberOfParent = NULL, bool globalNotLocalWorkspace = true);
@@ -140,7 +118,6 @@ private:
     IOHelper(const IOHelper &) : QObject() {};
 
     static QString allItomFilesName;
-    static QList<CharsetEncodingItem> supportedScriptEncodings;
 
 };
 

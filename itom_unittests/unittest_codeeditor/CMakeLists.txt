@@ -41,6 +41,7 @@ include_directories(
 )
 
 set(codeeditor_HEADERS
+    ${QITOM_DIR}/helper/charsetEncoding.h
     ${QITOM_DIR}/helper/editorFileType.h
     ${CODEEDITOR_DIR}/codeCheckerItem.h
     ${CODEEDITOR_DIR}/codeEditor.h
@@ -66,6 +67,7 @@ set(codeeditor_HEADERS
 )
 
 set(codeeditor_SOURCES
+    ${QITOM_DIR}/helper/charsetEncoding.cpp
     ${QITOM_DIR}/helper/editorFileType.cpp
     ${CODEEDITOR_DIR}/codeCheckerItem.cpp
     ${CODEEDITOR_DIR}/codeEditor.cpp
@@ -98,6 +100,7 @@ set(unittest_HEADERS
 set(unittest_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/appManagementStub.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditorTestHelper.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/charsetEncodingTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/editorFileTypeTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/genericSyntaxHighlighterTest.cpp
 )

@@ -21,6 +21,7 @@
 *********************************************************************** */
 
 #include "scriptEditorWidget.h"
+#include "../helper/charsetEncoding.h"
 #include "../helper/editorFileType.h"
 #include "../python/pythonEngineInc.h"
 #include "../python/pythonStatePublisher.h"
@@ -47,12 +48,6 @@
 #include <qtooltip.h>
 #include <qpainter.h>
 #include <qeventloop.h>
-
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-#include <qtextcodec.h>
-#else
-#include <QStringDecoder>
-#endif
 
 #include "../codeEditor/managers/modesManager.h"
 #include "../codeEditor/managers/panelsManager.h"
@@ -2290,19 +2285,13 @@ void ScriptEditorWidget::replaceSelectionAndKeepBookmarksAndBreakpoints(
 //-------------------------------------------------------------------------------------
 IOHelper::CharsetEncodingItem ScriptEditorWidget::guessEncoding(const QByteArray& content) const
 {
-    auto encodings = IOHelper::getSupportedScriptEncodings();
+    // check for BOMs first (e.g. UTF-8, UTF-16 or UTF-32 files).
+    bool bomFound = false;
+    auto bomEncoding = CharsetEncoding::fromBom(content, &bomFound);
 
-    // check for BOMs first.
-    auto it = encodings.constBegin();
-
-    while (it != encodings.constEnd())
+    if (bomFound)
     {
-        if (it->bom != "" && content.startsWith(it->bom))
-        {
-            return *it;
-        }
-
-        ++it;
+        return bomEncoding;
     }
 
     QList<QByteArray> firstLines;
@@ -2395,28 +2384,13 @@ RetVal ScriptEditorWidget::openFile(
             m_charsetEncoding = guessEncoding(content);
         }
 
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-        QTextCodec* tc = QTextCodec::codecForName(m_charsetEncoding.encodingName.toLatin1());
+        bool encodingOk = true;
+        text = CharsetEncoding::decode(content, m_charsetEncoding, &encodingOk);
 
-        if (!tc)
+        if (!encodingOk)
         {
             qDebug() << "unknown encoding " << m_charsetEncoding.encodingName << ". Assume UTF_8";
-            tc = QTextCodec::codecForName(
-                IOHelper::getDefaultScriptEncoding().encodingName.toLatin1());
         }
-
-        text = tc->toUnicode(content);
-#else
-        QStringDecoder decoder(m_charsetEncoding.encodingName.toLatin1());
-
-        if (!decoder.isValid())
-        {
-            qDebug() << "unknown encoding " << m_charsetEncoding.encodingName << ". Assume UTF_8";
-            decoder = QStringDecoder(IOHelper::getDefaultScriptEncoding().encodingName.toLatin1());
-        }
-
-        text = decoder(content);
-#endif
 
         file.close();
 
@@ -2570,39 +2544,20 @@ RetVal ScriptEditorWidget::writeFileContent(const QString &filename)
         }
     }
 
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-    QTextCodec* tc = QTextCodec::codecForName(m_charsetEncoding.encodingName.toLatin1());
+    bool encodingOk = true;
+    text = CharsetEncoding::encode(t, m_charsetEncoding, &encodingOk);
 
-    if (!tc)
+    if (!encodingOk)
     {
         QMessageBox::warning(
             this,
             tr("Unsupported encoding"),
-            tr("The encoding %s is unsupported on this computer. Switch to the default encoding "
+            tr("The encoding %1 is unsupported on this computer. Switch to the default encoding "
                "UTF-8")
                 .arg(m_charsetEncoding.encodingName));
-        m_charsetEncoding = IOHelper::getEncodingFromAlias("UTF-8");
-        tc = QTextCodec::codecForName(m_charsetEncoding.encodingName.toUtf8());
+        m_charsetEncoding = IOHelper::getDefaultScriptEncoding();
+        text = CharsetEncoding::encode(t, m_charsetEncoding);
     }
-
-    text = tc->fromUnicode(t);
-#else
-    QStringEncoder encoder(m_charsetEncoding.encodingName.toLatin1());
-
-    if (!encoder.isValid())
-    {
-        QMessageBox::warning(
-            this,
-            tr("Unsupported encoding"),
-            tr("The encoding %s is unsupported on this computer. Switch to the default encoding "
-               "UTF-8")
-                .arg(m_charsetEncoding.encodingName));
-        m_charsetEncoding = IOHelper::getEncodingFromAlias("UTF-8");
-        encoder = QStringEncoder(m_charsetEncoding.encodingName.toUtf8());
-    }
-
-    text = encoder(t);
-#endif
 
     file.write(text);
     file.close();
@@ -3722,27 +3677,8 @@ void ScriptEditorWidget::fileSysWatcherFileChangedStep2(const QString& path)
 
             QByteArray currentByteArray;
 
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-            QTextCodec* tc = QTextCodec::codecForName(m_charsetEncoding.encodingName.toLatin1());
-
-            if (!tc)
-            {
-                // fallback to utf8
-                tc = QTextCodec::codecForName("UTF-8");
-            }
-
-            currentByteArray = tc->fromUnicode(toPlainText());
-#else
-            QStringEncoder encoder(m_charsetEncoding.encodingName.toLatin1());
-
-            if (!encoder.isValid())
-            {
-                // fallback to utf8
-                encoder = QStringEncoder("UTF-8");
-            }
-
-            currentByteArray = encoder(toPlainText());
-#endif
+            // falls back to utf8 if the encoding is unsupported
+            currentByteArray = CharsetEncoding::encode(toPlainText(), m_charsetEncoding);
 
             QCryptographicHash fileHash2(QCryptographicHash::Sha1);
             fileHash2.addData(currentByteArray);

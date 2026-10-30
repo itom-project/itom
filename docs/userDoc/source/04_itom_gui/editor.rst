@@ -704,9 +704,13 @@ Officially supported encodings are:
 * UTF-8
 * latin1
 * UTF-8 with BOM (byte order mark)
+* UTF-16 (little or big endian) with BOM
+* UTF-32 (little or big endian) with BOM
 
 Byte order mark means, that the file starts with some magic characters, that indicates
-the encoding of this file.
+the encoding of this file. UTF-16 and UTF-32 files are only detected by their BOM. They are
+common for text files written by Windows tools (e.g. exported data listings), but not
+recommended for Python scripts. If such a file is saved, the BOM is written again.
 
 When a script is loaded, the default encoding, that can be selected in the **Editor >> General**
 tab of the itom property editor, is usually assumed and the script is loaded with this
