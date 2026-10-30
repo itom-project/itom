@@ -162,6 +162,12 @@ public:
     //! changes the line ending, that is used when the file is saved (marks the document as modified)
     void setLineEnding(LineEnding::Type lineEnding);
 
+    //! true if the file is bigger than the large file threshold and the costly features are disabled
+    bool largeFileMode() const
+    {
+        return m_largeFileMode;
+    }
+
     //!< the replacement will be handled as one undo-action. The script will be marked as modified afterwards.
     void replaceOccurencesInCurrentScript(const QString &newValue, const QVector<ito::FileRenameItem> &renameItems);
 
@@ -217,6 +223,7 @@ private:
 
     void updateFileType(const QString &filename);
     void applyFileType();
+    void applyLargeFileMode();
 
     IOHelper::CharsetEncodingItem guessEncoding(const QByteArray &content) const;
 
@@ -247,6 +254,10 @@ private:
     //!< to accept drop events of other files dropped onto this file, the script
     //!< must not be readonly. Therefore a readonly script will be temporary set in a read/write mode
     bool m_wasReadonly;
+
+    //! large file mode: features with O(file size) costs are disabled (see applyLargeFileMode)
+    bool m_largeFileMode;
+    qint64 m_largeFileThresholdBytes;
     bool m_canCopy;
     bool m_keepIndentationOnPaste;
     int m_textBlockLineIdxAboutToBeDeleted; //!< if != -1, a TextBlockUserData in the line index is about to be removed.

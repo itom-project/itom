@@ -1474,19 +1474,20 @@ void ScriptDockWidget::currentScriptCursorPositionChanged()
         int line = currentEditor->currentLineNumber() + 1;
         int col = currentEditor->currentColumnNumber() + 1;
 
-        emit statusBarInformationChanged(
-            this,
-            charsetEncoding.displayNameShort,
-            line,
-            col
-        );
+        // encoding, line ending and large file hint (shown by the main window or by
+        // this dock widget if it is undocked)
+        QString info = QString("%1, %2")
+                           .arg(charsetEncoding.displayNameShort)
+                           .arg(LineEnding::shortName(currentEditor->lineEnding()));
 
-        m_pStatusBarWidget->setText(
-            tr("Ln %1, Col %2, %3, %4 ")
-                .arg(line)
-                .arg(col)
-                .arg(charsetEncoding.displayNameShort)
-                .arg(LineEnding::shortName(currentEditor->lineEnding())));
+        if (currentEditor->largeFileMode())
+        {
+            info += tr(", large file (reduced features)");
+        }
+
+        emit statusBarInformationChanged(this, info, line, col);
+
+        m_pStatusBarWidget->setText(tr("Ln %1, Col %2, %3 ").arg(line).arg(col).arg(info));
     }
     else
     {

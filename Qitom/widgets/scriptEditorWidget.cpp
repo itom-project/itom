@@ -77,6 +77,8 @@ ScriptEditorWidget::ScriptEditorWidget(
     m_pBookmarkModel(bookmarkModel), m_currentLineIndex(-1), m_textBlockLineIdxAboutToBeDeleted(-1),
     m_outlineDirty(true), m_wasReadonly(false), m_charsetEncodingAutoGuess(true),
     m_lineEnding(LineEnding::platformDefault()),
+    m_largeFileMode(false),
+    m_largeFileThresholdBytes(5 * 1024 * 1024),
     m_charsetDefined(false), m_autoCodeFormatOnSave(false)
 {
     m_rootOutlineItem = QSharedPointer<OutlineItem>(new OutlineItem(OutlineItem::typeRoot));
@@ -405,6 +407,9 @@ void ScriptEditorWidget::loadSettings()
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("CodeEditor");
 
+    // files bigger than this size (kB) are opened in the large file mode
+    m_largeFileThresholdBytes = settings.value("largeFileSizeKB", 5120).toLongLong() * 1024;
+
     if (settings.value("showWhitespace", true).toBool())
     {
         setShowWhitespaces(true);
@@ -593,6 +598,9 @@ void ScriptEditorWidget::loadSettings()
 
     // disable all python related features if this is not a python file
     applyFileType();
+
+    // disable the costly features for big files
+    applyLargeFileMode();
 }
 
 //-------------------------------------------------------------------------------------
@@ -650,6 +658,45 @@ void ScriptEditorWidget::applyFileType()
     m_codeCellHighlighterMode->setEnabled(false);
     m_breakpointPanel->setVisible(false);
     clearAllBreakpoints();
+
+    if (m_codeCheckerCallTimer)
+    {
+        m_codeCheckerCallTimer->stop();
+    }
+}
+
+//-------------------------------------------------------------------------------------
+/*
+Every feature, that does work proportional to the file size per keystroke or cursor
+move (occurrence highlighting searches the whole text, the symbol matcher scans for
+brackets, the caret line decoration and the folding panel create decorations), is
+disabled for files bigger than the large file threshold. The editor stays usable
+for big data listings. The mode is shown in the status bar.
+*/
+void ScriptEditorWidget::applyLargeFileMode()
+{
+    if (!m_largeFileMode)
+    {
+        return; // the enabled states have been set by loadSettings
+    }
+
+    const char* modeNames[] = {
+        "OccurrencesHighlighterMode", "SymbolMatcherMode", "CaretLineHighlighterMode"};
+
+    for (const char* name : modeNames)
+    {
+        Mode::Ptr mode = modes()->get(name);
+
+        if (mode)
+        {
+            mode->setEnabled(false);
+        }
+    }
+
+    if (m_foldingPanel)
+    {
+        m_foldingPanel->setVisible(false);
+    }
 
     if (m_codeCheckerCallTimer)
     {
@@ -2445,8 +2492,17 @@ RetVal ScriptEditorWidget::openFile(
 
         clearAllBreakpoints();
 
+        bool wasLargeFile = m_largeFileMode;
+        m_largeFileMode = content.size() > m_largeFileThresholdBytes;
+
         // set the file type (and syntax highlighter) before the text is loaded
         updateFileType(fileName);
+
+        if (m_largeFileMode != wasLargeFile)
+        {
+            // reloads the enabled states of all modes and applies the large file mode
+            loadSettings();
+        }
 
         // block signals avoid that nrOfLinesChanges is emitted, that
         // might cause a crash uue to the outline parser and codeOrErrorString cells

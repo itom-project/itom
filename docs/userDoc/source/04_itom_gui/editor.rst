@@ -679,6 +679,17 @@ To add such a docstring, there are three different possibilities:
    by pressing Return or Enter. If you press any other key, the popup automatically
    disappears.
 
+.. _gui-editor-large-files:
+
+Large Files
+------------
+
+Files bigger than 5 MB are opened in a reduced mode: the highlighting of the occurrences
+of the current word, the bracket matching, the highlighting of the current line and the
+folding are disabled, since they would make every keystroke slow. The status bar shows
+``large file (reduced features)``. The threshold can be changed in the settings file
+(``itom.ini``, group ``CodeEditor``, key ``largeFileSizeKB``, default ``5120``).
+
 .. _gui-editor-line-endings:
 
 Line Endings
