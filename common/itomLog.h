@@ -69,6 +69,11 @@ private:
     static void s_messageHandler(
         QtMsgType type, const QMessageLogContext& context, const QString& msg);
 
+    //!< sends the message to an attached debugger (e.g. the output window of
+    //!< Visual Studio). Windows only, does nothing if no debugger is present.
+    static void s_outputToDebugger(
+        QtMsgType type, const QMessageLogContext& context, const QString& msg);
+
     void initFiles(int fileSize, int backupCount);
     QFileInfoList listBackups();
     void deleteOldBackups(int backupCount);

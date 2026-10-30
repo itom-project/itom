@@ -46,6 +46,7 @@
 #include "../../helper/guiHelper.h"
 
 #include "python/pythonEngine.h"
+#include "languageServer/languageServerManager.h"
 
 #include <qinputdialog.h>
 #include <qmessagebox.h>
@@ -65,7 +66,9 @@ PyGotoAssignmentMode::PyGotoAssignmentMode(const QString &description /*= ""*/, 
     m_pActionGotoAssignmentExtended(NULL),
     m_defaultMode(0),
     m_mouseClickEnabled(true),
-    m_gotoRequestedTimerId(0)
+    m_gotoRequestedTimerId(0),
+    m_pendingRequestId(-1),
+    m_pConnectedBackend(nullptr)
 {
     qRegisterMetaType<PyAssignment>("PyAssignment");
 
@@ -179,7 +182,7 @@ void PyGotoAssignmentMode::requestGotoAssignmentEx()
 //--------------------------------------------------------------
 /*
 */
-void PyGotoAssignmentMode::onJediAssignmentResultsAvailable(QVector<ito::JediAssignment> assignments)
+void PyGotoAssignmentMode::onAssignmentResultsAvailable(QVector<ito::AssignmentItem> assignments)
 {
     if (m_gotoRequestedTimerId > 0)
     {
@@ -188,7 +191,7 @@ void PyGotoAssignmentMode::onJediAssignmentResultsAvailable(QVector<ito::JediAss
         m_gotoRequestedTimerId = 0;
     }
 
-    foreach (const ito::JediAssignment &d, assignments)
+    foreach (const ito::AssignmentItem &d, assignments)
     {
         m_assignments.append(PyAssignment(d.m_path, d.m_line, d.m_column, d.m_fullName));
     }
@@ -230,6 +233,11 @@ void PyGotoAssignmentMode::doGoto(const PyAssignment &assignment)
     if (sew)
     {
         filename = sew->getFilename();
+
+        if (filename == "")
+        {
+            filename = sew->getLanguageServerFilename();
+        }
     }
 
     if (!filename.isNull())
@@ -302,24 +310,51 @@ void PyGotoAssignmentMode::checkWordCursorWithMode(const QTextCursor &cursor, in
         tc = editor()->wordUnderCursor(false);
     }
 
-    PythonEngine *pyEng = qobject_cast<PythonEngine*>(m_pPythonEngine);
+    ILanguageServerBackend *backend = LanguageServerManager::getInstance()->activeBackend();
 
-    if (pyEng)
+    if (!backend)
     {
-        ScriptEditorWidget *sew = qobject_cast<ScriptEditorWidget*>(editor());
+        if (!m_waitingForBackend)
+        {
+            m_waitingForBackend = true;
+            LanguageServerManager::getInstance()->runWhenBackendReady(
+                this,
+                [this, tc, mode](ILanguageServerBackend *readyBackend)
+            {
+                m_waitingForBackend = false;
+
+                if (readyBackend)
+                {
+                    checkWordCursorWithMode(tc, mode);
+                }
+            });
+        }
+
+        return;
+    }
+
+    if (backend)
+    {
+        AbstractCodeEditorWidget *acew = qobject_cast<AbstractCodeEditorWidget*>(editor());
         QString filename;
 
-        if (sew)
+        if (acew)
         {
-            filename = sew->getFilename();
+            filename = acew->getLanguageServerFilename();
         }
 
-        if (filename == "")
-        {
-            filename = QDir::cleanPath(QDir::current().absoluteFilePath("__temporaryfile__.py"));
-        }
+        connectToBackend(backend);
 
-        if (pyEng->tryToLoadJediIfNotYetDone())
+        AssignmentRequest request;
+        request.m_col = tc.columnNumber();
+        request.m_line = tc.blockNumber();
+        request.m_mode = mode;
+        request.m_path = filename;
+        request.m_source = editor()->toPlainText();
+
+        int requestId = backend->requestGoToAssignment(request);
+
+        if (requestId >= 0)
         {
             if (m_gotoRequestedTimerId > 0)
             {
@@ -330,26 +365,50 @@ void PyGotoAssignmentMode::checkWordCursorWithMode(const QTextCursor &cursor, in
             QApplication::setOverrideCursor(Qt::WaitCursor);
 
             m_gotoRequestedTimerId = startTimer(gotoRequestedTimeoutMs);
+            m_pendingRequestId = requestId;
 
             //store current position as go back navigation point before jumping to another position
             editor()->reportPositionAsGoBackNavigationItem(tc, "goto");
-
-            JediAssignmentRequest request;
-            request.m_sender = this;
-            request.m_callbackFctName = "onJediAssignmentResultsAvailable";
-            request.m_col = tc.columnNumber();
-            request.m_line = tc.blockNumber();
-            request.m_mode = mode;
-            request.m_path = filename;
-            request.m_source = editor()->toPlainText();
-
-            pyEng->enqueueGoToAssignmentRequest(request);
         }
         else
         {
-            onStateChanged(false);
+            m_gotoRequested = false;
         }
     }
+}
+
+//--------------------------------------------------------------
+void PyGotoAssignmentMode::connectToBackend(ILanguageServerBackend *backend)
+{
+    if (backend == m_pConnectedBackend)
+    {
+        return;
+    }
+
+    if (m_pConnectedBackend)
+    {
+        disconnect(
+            m_pConnectedBackend, &ILanguageServerBackend::goToAssignmentReady,
+            this, &PyGotoAssignmentMode::onGoToAssignmentReady);
+    }
+
+    connect(
+        backend, &ILanguageServerBackend::goToAssignmentReady,
+        this, &PyGotoAssignmentMode::onGoToAssignmentReady);
+
+    m_pConnectedBackend = backend;
+}
+
+//--------------------------------------------------------------
+void PyGotoAssignmentMode::onGoToAssignmentReady(int requestId, QVector<ito::AssignmentItem> assignments)
+{
+    if (requestId < 0 || requestId != m_pendingRequestId)
+    {
+        return;
+    }
+
+    m_pendingRequestId = -1;
+    onAssignmentResultsAvailable(assignments);
 }
 
 //--------------------------------------------------------------
@@ -421,8 +480,9 @@ void PyGotoAssignmentMode::performGoto(const QList<PyAssignment> &assignments)
 
     foreach(const PyAssignment& a, assignments)
     {
+        // m_fullName is only provided by the jedi backend (and already filtered there).
+        // A LSP location does not contain any name, hence it must not be required here.
         if (a.m_line >= 0 && \
-            a.m_fullName != "" && \
             !a.m_modulePath.endsWith(".pyi", Qt::CaseInsensitive))
         {
             assignmentsValid.append(a);

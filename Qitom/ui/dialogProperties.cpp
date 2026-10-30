@@ -1,8 +1,8 @@
-/* ********************************************************************
+﻿/* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2020, Institut fÃ¼r Technische Optik (ITO),
+    UniversitÃ¤t Stuttgart, Germany
 
     This file is part of itom.
 
@@ -53,6 +53,7 @@
 #include "widgetPropPalettes.h"
 
 #include "AppManagement.h"
+#include "../languageServer/languageServerManager.h"
 #include "../helper/guiHelper.h"
 
 namespace ito
@@ -380,9 +381,14 @@ void DialogProperties::apply()
 
     QObject *mainApplication = AppManagement::getMainApplication();
 
+    LanguageServerManager::getInstance()->reloadSettings();
+
     QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
     QMetaObject::invokeMethod(mainApplication, "_propertiesChanged");
     QApplication::restoreOverrideCursor();
 }
 
 } //end namespace ito
+
+
+

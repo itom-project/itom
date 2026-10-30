@@ -66,6 +66,9 @@ public:
 
     virtual QString codeText(int &line, int &column) const;
 
+    //!< returns the virtual filename of the command line for the language server.
+    QString getLanguageServerFilename() const override;
+
 protected:
     virtual void loadSettings();
     virtual void contextMenuAboutToShow(int contextMenuLine);
@@ -200,6 +203,8 @@ private:
     ito::TextBlockUserData::AnsiTextCharFormat m_recentAnsiTextCharFormat;
     QRegularExpression m_ansiEscapeSeqRegExp;
     bool m_considerAnsiEscapeSequences;
+
+    mutable QString m_languageServerFilename; //!< cached virtual filename for the language server
 
     static const QString longLineWrapPrefix;
 

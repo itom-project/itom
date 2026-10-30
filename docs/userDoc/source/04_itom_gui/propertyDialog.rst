@@ -1,4 +1,4 @@
-.. include:: ../include/global.inc
+﻿.. include:: ../include/global.inc
 
 .. _gui-propertydialog:
 
@@ -216,8 +216,10 @@ The editor section covers all properties, that are related to the
 General
 ----------------------
 
-In this tab, you can mainly set all settings that are related to indentation:
+In this tab, you can set general script editor options including the language assistance backend and indentation behavior:
 
+* **Language assistance backend** selects whether |itom| should prefer **ZubanLS** (recommended) or **Jedi** (legacy fallback).
+* **ZubanLS executable path** optionally defines the absolute path to the ZubanLS executable. If empty, |itom| searches the executable in the system path.
 * **Auto indentation** automatically indents the next block after a colon at the
   end of a line, like after a "if (...):" statement, a method definition or a
   for loop (among others).
@@ -449,8 +451,9 @@ with the information string, if it could be fetched.
 
 .. note::
 
-    These features can only be checked, if both the Python packages **jedi**
-    (version >= 0.12) and **parso** are installed.
+    These features are provided by the active language assistance backend (configured in
+    **Editor -> General**). If **Jedi** is selected, the Python packages **jedi**
+    (version >= 0.12) and **parso** must be installed.
 
 .. _gui-prop-auto-completion:
 
@@ -502,8 +505,9 @@ a dot.:
 
 .. note::
 
-    Auto completion hints can only be checked and displayed, if both the Python
-    packages **jedi** (version >= 0.12) and **parso** are installed.
+    Auto completion hints are provided by the active language assistance backend
+    (configured in **Editor -> General**). If **Jedi** is selected, the Python
+    packages **jedi** (version >= 0.12) and **parso** must be installed.
 
 .. _gui-prop-auto-code-format:
 
@@ -758,3 +762,5 @@ Using Python, it is also possible to get a list of all available color palette
 names, using the method :py:meth:`itom.getPaletteList`. In order to obtain a
 dictionary with all relevant data of one specific color palette, use the method
 :py:meth:`itom.getPalette` and pass the name of the requested color palette.
+
+

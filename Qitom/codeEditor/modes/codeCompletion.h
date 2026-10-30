@@ -39,7 +39,9 @@
 #define CODECOMPLETION_H
 
 
-#include "../../python/pythonJedi.h"
+#include "../../languageServer/languageServerTypes.h"
+#include "../../languageServer/languageServerBackend.h"
+#include <qpointer.h>
 
 #include "../utils/utils.h"
 #include "../toolTip.h"
@@ -166,7 +168,8 @@ public:
     void hidePopup();
 
 private slots:
-    void onJediCompletionResultAvailable(int line, int col, int requestId, QVector<ito::JediCompletion> completions);
+    void onCompletionResultAvailable(int line, int col, int requestId, QVector<ito::CompletionItem> completions);
+    void onCompletionReady(int requestId, QList<ito::CompletionItem> completions);
 
     virtual void onKeyPressed(QKeyEvent *e);
     virtual void onKeyReleased(QKeyEvent *e);
@@ -188,8 +191,8 @@ protected:
     bool isShortcut(QKeyEvent *e) const;
     QRect getPopupRect() const;
     void showPopup(int index = 0);
-    void showCompletions(const QVector<JediCompletion> &completions);
-    QStandardItemModel* updateModel(const QVector<JediCompletion> &completions);
+    void showCompletions(const QVector<CompletionItem> &completions);
+    QStandardItemModel* updateModel(const QVector<CompletionItem> &completions);
 
     /*
     \returns (stringlist os signatures, docstring)
@@ -200,6 +203,10 @@ protected:
 
 private:
     QObject *m_pPythonEngine;
+    QPointer<ILanguageServerBackend> m_pConnectedBackend;
+    bool m_waitingForBackend = false;
+    void connectToBackend(ILanguageServerBackend *backend);
+    void setCompleterModel(QAbstractItemModel *model);
 
     /* maps the completion name to a a list of (string list of signatures and a docstring) */
     QMap<QString, QList<QPair<QStringList, QString>>> m_tooltips;

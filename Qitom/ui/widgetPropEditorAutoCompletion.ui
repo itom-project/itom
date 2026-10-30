@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <ui version="4.0">
  <class>WidgetPropEditorAutoCompletion</class>
  <widget class="QWidget" name="WidgetPropEditorAutoCompletion">
@@ -17,7 +17,7 @@
    <item>
     <widget class="QGroupBox" name="groupAutoCompletion">
      <property name="title">
-      <string>Auto-completion enabled (requires Python packages jedi and parso)</string>
+      <string>Auto-completion enabled</string>
      </property>
      <property name="checkable">
       <bool>true</bool>
@@ -120,7 +120,7 @@
      </layout>
     </widget>
    </item>
-   <item>
+   <item><widget class="QLabel" name="labelBackendInfo"><property name="text"><string>Completions are provided by the active language assistance backend (configured in Editor - General).</string></property><property name="wordWrap"><bool>true</bool></property></widget></item><item>
     <spacer name="verticalSpacer">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
@@ -135,6 +135,6 @@
    </item>
   </layout>
  </widget>
- <resources/>
- <connections/>
+ <resources />
+ <connections />
 </ui>

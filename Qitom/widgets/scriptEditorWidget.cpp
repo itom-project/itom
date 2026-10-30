@@ -32,6 +32,8 @@
 #include "../mainApplication.h"
 
 #include "../ui/dialogEditBreakpoint.h"
+#include "../languageServer/languageServerManager.h"
+#include <qdir.h>
 #include <qfileinfo.h>
 
 #include <QtPrintSupport/qprintpreviewdialog.h>
@@ -287,6 +289,8 @@ ScriptEditorWidget::ScriptEditorWidget(
 //----------------------------------------------------------------------------------------------------------------------------------
 ScriptEditorWidget::~ScriptEditorWidget()
 {
+    LanguageServerManager::notifyDocumentClosed(getLanguageServerFilename());
+
     DELETE_AND_SET_NULL(m_pFileSysWatcher);
 
     setContextMenuPolicy(Qt::DefaultContextMenu); // contextMenuEvent is called
@@ -3252,6 +3256,7 @@ void ScriptEditorWidget::printPreviewRequested(QPrinter* printer)
 RetVal ScriptEditorWidget::changeFilename(const QString& newFilename)
 {
     QString oldFilename = getFilename();
+    const QString oldLanguageServerFilename = getLanguageServerFilename();
 
     if (oldFilename.isNull())
     {
@@ -3317,7 +3322,31 @@ RetVal ScriptEditorWidget::changeFilename(const QString& newFilename)
         m_pBookmarkModel->changeBookmark(item, newFilename, item.lineIdx);
     }
 
+    if (oldLanguageServerFilename != getLanguageServerFilename())
+    {
+        LanguageServerManager::notifyDocumentClosed(oldLanguageServerFilename);
+    }
+
     return RetVal(retOk);
+}
+
+//-------------------------------------------------------------------------------------
+QString ScriptEditorWidget::getLanguageServerFilename() const
+{
+    if (!m_filename.isEmpty())
+    {
+        return m_filename;
+    }
+
+    if (m_untitledLanguageServerFilename.isEmpty())
+    {
+        // the uid is unique for every editor, the path is kept stable, even
+        // if the current directory is changed afterwards.
+        m_untitledLanguageServerFilename = QDir::cleanPath(
+            QDir::current().absoluteFilePath(QString("__untitled%1__.py").arg(m_uid)));
+    }
+
+    return m_untitledLanguageServerFilename;
 }
 
 //-------------------------------------------------------------------------------------
@@ -4076,16 +4105,16 @@ void ScriptEditorWidget::onTextChanged()
 
 //-------------------------------------------------------------------------------------
 void ScriptEditorWidget::replaceOccurencesInCurrentScript(
-    const QString& newValue, const QVector<ito::FileRenameItem>& renameItems)
+    const QString& newValue, const QVector<ito::RenameTextItem>& renameItems)
 {
     if (renameItems.size() > 0)
     {
         // sort items by starting with the last one first
-        QVector<ito::FileRenameItem> items = renameItems;
+        QVector<ito::RenameTextItem> items = renameItems;
         std::sort(
             items.begin(),
             items.end(),
-            [](const ito::FileRenameItem& a, const ito::FileRenameItem& b) {
+            [](const ito::RenameTextItem& a, const ito::RenameTextItem& b) {
                 if (a.lineNumber != b.lineNumber)
                 {
                     return a.lineNumber >= b.lineNumber;
@@ -4101,7 +4130,7 @@ void ScriptEditorWidget::replaceOccurencesInCurrentScript(
 
         cursor.beginEditBlock();
 
-        foreach (const ito::FileRenameItem& item, items)
+        foreach (const ito::RenameTextItem& item, items)
         {
             cursor.movePosition(QTextCursor::Start);
 

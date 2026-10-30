@@ -291,6 +291,11 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/helpViewer/helpViewer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helpViewer/qtHelpUrlSchemeHandler.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/qpropertyHelper.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/languageServer/languageServerBackend.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/languageServer/jediLanguageServer.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/languageServer/languageServerManager.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/languageServer/lspClient.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/languageServer/zubanLspBackend.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/breakPointModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/bookmarkModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/outlineItem.h
@@ -319,7 +324,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonFont.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonItom.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonItomMetaObject.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonJedi.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/languageServer/languageServerTypes.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonJediRunner.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonLogger.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonMatlab.h
@@ -556,6 +561,10 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/qpropertyHelper.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/helpViewer/helpViewer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/helpViewer/qtHelpUrlSchemeHandler.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/languageServer/languageServerManager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/languageServer/jediLanguageServer.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/languageServer/lspClient.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/languageServer/zubanLspBackend.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/breakPointModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/bookmarkModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/outlineItem.cpp
@@ -739,6 +748,7 @@ endif()
 itom_add_source_group(api)
 itom_add_source_group(delegates)
 itom_add_source_group(helper)
+itom_add_source_group(languageServer)
 itom_add_source_group(models)
 itom_add_source_group(organizer)
 itom_add_source_group(python)

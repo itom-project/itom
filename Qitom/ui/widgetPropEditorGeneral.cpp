@@ -1,8 +1,8 @@
-/* ********************************************************************
+﻿/* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2023, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2023, Institut fÃ¼r Technische Optik (ITO),
+    UniversitÃ¤t Stuttgart, Germany
 
     This file is part of itom.
 
@@ -41,6 +41,8 @@ WidgetPropEditorGeneral::WidgetPropEditorGeneral(QWidget *parent) :
 
     ui.groupEolMode->setVisible(false);
 
+    connect(ui.radioBackendZuban, SIGNAL(toggled(bool)), ui.txtZubanPath, SLOT(setEnabled(bool)));
+
     // file available text codecs
     auto codecs = IOHelper::getSupportedScriptEncodings();
 
@@ -62,6 +64,12 @@ void WidgetPropEditorGeneral::readSettings()
     settings.beginGroup("CodeEditor");
 
     ui.spinZoom->setValue(settings.value("zoomFactor", 100).toInt());
+
+    bool useZuban = settings.value("useZubanLanguageServer", true).toBool();
+    ui.radioBackendZuban->setChecked(useZuban);
+    ui.radioBackendJedi->setChecked(!useZuban);
+    ui.txtZubanPath->setText(settings.value("zubanLsPath", "").toString());
+    ui.txtZubanPath->setEnabled(useZuban);
 
     // EOL-Mode
     QString eolMode = settings.value("eolMode", "EolUnix").toString();
@@ -119,6 +127,9 @@ void WidgetPropEditorGeneral::writeSettings()
 
     settings.setValue("zoomFactor", ui.spinZoom->value());
 
+    settings.setValue("useZubanLanguageServer", ui.radioBackendZuban->isChecked());
+    settings.setValue("zubanLsPath", ui.txtZubanPath->text().trimmed());
+
     // EOL-Mode
     if (ui.radioEOL1->isChecked())
     {
@@ -157,3 +168,8 @@ void WidgetPropEditorGeneral::writeSettings()
 }
 
 } //end namespace ito
+
+
+
+
+

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>486</width>
-    <height>610</height>
+    <width>499</width>
+    <height>720</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -61,6 +61,63 @@
       </widget>
      </item>
      <item>
+      <widget class="QGroupBox" name="groupLanguageServer">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="title">
+        <string>Language Assistance Backend</string>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_4">
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_6">
+          <item>
+           <widget class="QRadioButton" name="radioBackendZuban">
+            <property name="text">
+             <string>ZubanLS (recommended)</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="radioBackendJedi">
+            <property name="text">
+             <string>Jedi (legacy fallback)</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="0,1">
+          <item>
+           <widget class="QLabel" name="labelZubanPath">
+            <property name="text">
+             <string>ZubanLS executable path (optional)</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="txtZubanPath"/>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QLabel" name="labelLanguageServerInfo">
+          <property name="text">
+           <string>ZubanLS runs as external language server process. If unavailable, itom automatically falls back to Jedi. Jedi requires the Python packages jedi and parso.</string>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
       <widget class="QGroupBox" name="groupIndentation">
        <property name="minimumSize">
         <size>
@@ -73,39 +130,43 @@
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
-         <widget class="QCheckBox" name="checkAutoIndent">
-          <property name="text">
-           <string>Auto Indentation</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QCheckBox" name="checkIndentShowGuides">
-          <property name="text">
-           <string>Show Indentation Guides</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QCheckBox" name="checkShowWhitespace">
-          <property name="text">
-           <string>Show Whitespace</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QCheckBox" name="checkStripSpacesAfterReturn">
-          <property name="text">
-           <string>Automatically strip trailing spaces in the current line after pressed return or enter</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QCheckBox" name="checkIndentUseTabs">
-          <property name="text">
-           <string>Use Tabs for Indentation</string>
-          </property>
-         </widget>
+         <layout class="QGridLayout" name="gridLayout">
+          <item row="0" column="0">
+           <widget class="QCheckBox" name="checkAutoIndent">
+            <property name="text">
+             <string>Auto Indentation</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QCheckBox" name="checkShowWhitespace">
+            <property name="text">
+             <string>Show Whitespace</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QCheckBox" name="checkIndentShowGuides">
+            <property name="text">
+             <string>Show Indentation Guides</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QCheckBox" name="checkIndentUseTabs">
+            <property name="text">
+             <string>Use Tabs for Indentation</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0" colspan="2">
+           <widget class="QCheckBox" name="checkStripSpacesAfterReturn">
+            <property name="text">
+             <string>Automatically strip trailing spaces in the current line after pressed return or enter</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -126,7 +187,7 @@
           <item>
            <spacer name="horizontalSpacer">
             <property name="orientation">
-             <enum>Qt::Horizontal</enum>
+             <enum>Qt::Orientation::Horizontal</enum>
             </property>
             <property name="sizeHint" stdset="0">
              <size>
@@ -256,7 +317,7 @@ It can be overwritten individually if auto guess is enabled (see above).</string
    <item>
     <spacer name="verticalSpacer">
      <property name="orientation">
-      <enum>Qt::Vertical</enum>
+      <enum>Qt::Orientation::Vertical</enum>
      </property>
      <property name="sizeHint" stdset="0">
       <size>

@@ -37,7 +37,7 @@
 #include <QRunnable>
 #include <qmutex.h>
 
-#include "pythonJedi.h"
+#include "../languageServer/languageServerTypes.h"
 
 
 namespace ito
@@ -114,7 +114,7 @@ public:
     CompletionRunnable(
         const QString &additionalImportString,
         PyObject *pPyModJedi,
-        const JediCompletionRequest &request
+        const CompletionRequest &request
     ) :
         JediRunnable(JediRunnable::RunnableCompletion, pPyModJedi, additionalImportString),
         m_request(request)
@@ -145,7 +145,7 @@ public:
     }
 
 private:
-    JediCompletionRequest m_request;
+    CompletionRequest m_request;
 
     static unsigned char mostRecentId;
 };
@@ -158,7 +158,7 @@ public:
     GoToAssignmentRunnable(
         const QString &additionalImportString,
         PyObject *pPyModJedi,
-        const JediAssignmentRequest &request
+        const AssignmentRequest &request
     ) :
         JediRunnable(JediRunnable::RunnableGoToAssignment, pPyModJedi, additionalImportString),
         m_request(request)
@@ -188,7 +188,7 @@ public:
     }
 
 private:
-    JediAssignmentRequest m_request;
+    AssignmentRequest m_request;
 
     static unsigned char mostRecentId;
 };
@@ -201,7 +201,7 @@ public:
     CalltipRunnable(
         const QString &additionalImportString,
         PyObject *pPyModJedi,
-        const JediCalltipRequest &request
+        const CalltipRequest &request
     ) :
         JediRunnable(JediRunnable::RunnableCalltip, pPyModJedi, additionalImportString) ,
         m_request(request)
@@ -231,7 +231,7 @@ public:
     }
 
 private:
-    JediCalltipRequest m_request;
+    CalltipRequest m_request;
 
     static unsigned char mostRecentId;
 };
@@ -244,7 +244,7 @@ public:
     GetHelpRunnable(
         const QString &additionalImportString,
         PyObject *pPyModJedi,
-        const JediGetHelpRequest &request
+        const GetHelpRequest &request
     ) :
         JediRunnable(JediRunnable::RunnableGetHelp, pPyModJedi, additionalImportString),
         m_request(request)
@@ -274,7 +274,7 @@ public:
     }
 
 private:
-    JediGetHelpRequest m_request;
+    GetHelpRequest m_request;
 
     static unsigned char mostRecentId;
 };
@@ -287,7 +287,7 @@ public:
     RenameRunnable(
         const QString& additionalImportString,
         PyObject* pPyModJedi,
-        const JediRenameRequest& request) :
+        const RenameRequest& request) :
         JediRunnable(JediRunnable::RunnableRename, pPyModJedi, additionalImportString),
         m_request(request)
     {
@@ -317,7 +317,7 @@ public:
     }
 
 private:
-    JediRenameRequest m_request;
+    RenameRequest m_request;
 
     static unsigned char mostRecentId;
 };
@@ -361,19 +361,19 @@ public:
     }
 
     //!< Adds a new calltip request. Thread-safe.
-    void addCalltipRequest(const JediCalltipRequest &request);
+    void addCalltipRequest(const CalltipRequest &request);
 
     //!< Adds a new completion request. Thread-safe.
-    void addCompletionRequest(const JediCompletionRequest &request);
+    void addCompletionRequest(const CompletionRequest &request);
 
     //!< Adds a new goto assignment / definition request. Thread-safe.
-    void addGoToAssignmentRequest(const JediAssignmentRequest &request);
+    void addGoToAssignmentRequest(const AssignmentRequest &request);
 
     //!< Adds a new get-help request. Thread-safe.
-    void addGetHelpRequest(const JediGetHelpRequest &request);
+    void addGetHelpRequest(const GetHelpRequest &request);
 
     //!< Adds a new rename request. Thread-safe.
-    void addRenameRequest(const JediRenameRequest& request);
+    void addRenameRequest(const RenameRequest& request);
 
 private:
     QString additionalImportString() const {

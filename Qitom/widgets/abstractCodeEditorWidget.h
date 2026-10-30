@@ -53,6 +53,10 @@ public:
 
     QString getWordAtPosition(const int &line, const int &index) const;
 
+    //!< returns the unique filename, that is passed to the language server for this editor.
+    //!< The file does not have to exist (e.g. for unnamed scripts or the command line).
+    virtual QString getLanguageServerFilename() const = 0;
+
 protected:
 
     enum tUserSelectionState { selNo, selRange };
