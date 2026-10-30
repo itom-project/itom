@@ -167,6 +167,14 @@
         <file>icons/clipboard.png</file>
         <file>icons/tableExport.svg</file>
         <file>icons/tableExportSelection.svg</file>
+        <file alias="icons/fileTxt.svg">icons/filetypes/bright/file_txt.svg</file>
+        <file alias="icons/fileXml.svg">icons/filetypes/bright/file_xml.svg</file>
+        <file alias="icons/fileYaml.svg">icons/filetypes/bright/file_yaml.svg</file>
+        <file alias="icons/fileMd.svg">icons/filetypes/bright/file_md.svg</file>
+        <file alias="icons/fileCsv.svg">icons/filetypes/bright/file_csv.svg</file>
+        <file alias="icons/fileJson.svg">icons/filetypes/bright/file_json.svg</file>
+        <file alias="icons/fileIni.svg">icons/filetypes/bright/file_ini.svg</file>
+        <file alias="icons/fileGeneric.svg">icons/filetypes/bright/file_generic.svg</file>
     </qresource>
     <qresource prefix="/breakpoints">
         <file>icons/itomBreak.png</file>

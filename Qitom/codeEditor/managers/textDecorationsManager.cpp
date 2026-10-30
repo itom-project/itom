@@ -104,6 +104,36 @@ bool TextDecorationsManager::append(TextDecoration::Ptr decoration)
 
 //---------------------------------------------------------------------
 /*
+Adds many text decorations at once. This is much faster than appending
+them one by one, since the list is sorted and the extra selections of the
+editor are updated only once (e.g. 500 occurrences of a word).
+
+:return: number of added decorations
+*/
+int TextDecorationsManager::append(const QList<TextDecoration::Ptr>& decorations)
+{
+    int added = 0;
+
+    foreach (const TextDecoration::Ptr& deco, decorations)
+    {
+        if (!m_decorations.contains(deco))
+        {
+            m_decorations.append(deco);
+            added++;
+        }
+    }
+
+    if (added > 0)
+    {
+        std::sort(m_decorations.begin(), m_decorations.end(), sortDecorationsByDrawOrder);
+        editor()->setExtraSelections(getExtraSelections());
+    }
+
+    return added;
+}
+
+//---------------------------------------------------------------------
+/*
 Removes a text decoration from the editor.
 
 :param decoration: Text decoration to remove
@@ -118,6 +148,33 @@ bool TextDecorationsManager::remove(TextDecoration::Ptr decoration)
        return true;
    }
    return false;
+}
+
+//---------------------------------------------------------------------
+/*
+Removes many text decorations at once (the extra selections of the editor
+are updated only once).
+
+:return: number of removed decorations
+*/
+int TextDecorationsManager::remove(const QList<TextDecoration::Ptr>& decorations)
+{
+    int removed = 0;
+
+    foreach (const TextDecoration::Ptr& deco, decorations)
+    {
+        if (m_decorations.removeOne(deco))
+        {
+            removed++;
+        }
+    }
+
+    if (removed > 0)
+    {
+        editor()->setExtraSelections(getExtraSelections());
+    }
+
+    return removed;
 }
 
 //---------------------------------------------------------------------

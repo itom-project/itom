@@ -42,6 +42,7 @@
 #include <qevent.h>
 #include <qpair.h>
 #include <qplaintextedit.h>
+#include <qtextlayout.h>
 #include <qpoint.h>
 #include <qset.h>
 #include <qtextobject.h>
@@ -422,6 +423,19 @@ protected:
     };
 
     void paintEventWithoutVisibleBlockUpdate(QPaintEvent* e);
+
+    //! replacement of QPlainTextEdit::paintEvent, that draws only the visible part of very long lines
+    void paintTextBlocks(QPaintEvent* e);
+    void drawLongLineClipped(
+        QPainter& painter,
+        const QTextBlock& block,
+        const QPointF& offset,
+        const QList<QTextLayout::FormatRange>& selections,
+        const QRect& clip,
+        int cursorPosInBlock);
+
+    //! lines with more characters are drawn clipped (see paintTextBlocks)
+    static const int LongLineThreshold = 400;
 
 private:
     struct FindOptions
