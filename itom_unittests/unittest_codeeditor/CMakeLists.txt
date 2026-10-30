@@ -77,6 +77,7 @@ set(codeeditor_SOURCES
     ${QITOM_DIR}/helper/editorFileType.cpp
     ${CODEEDITOR_DIR}/codeCheckerItem.cpp
     ${CODEEDITOR_DIR}/codeEditor.cpp
+    ${CODEEDITOR_DIR}/codeEditor_paint.cpp
     ${CODEEDITOR_DIR}/delayJobRunner.cpp
     ${CODEEDITOR_DIR}/mode.cpp
     ${CODEEDITOR_DIR}/panel.cpp

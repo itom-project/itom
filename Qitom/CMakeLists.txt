@@ -689,6 +689,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/workspaceDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/workspaceWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/codeEditor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/codeEditor_paint.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/delayJobRunner.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/mode.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panel.cpp
