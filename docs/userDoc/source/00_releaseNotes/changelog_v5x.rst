@@ -33,6 +33,8 @@ itom
 * The python specific actions (run, debug, step, auto format, rename, docstring), the script toolbar and the outline navigation bar are hidden, if the current tab is a text file.
 * Script editor: very long lines (e.g. data listings with thousands of characters per line) are drawn clipped to the visible part. Before, Qt drew the complete lines at every repaint, such that every keystroke took hundreds of milliseconds in such files.
 * Script editor: the highlighting of the occurrences of the word under the cursor was very slow (seconds) for frequent words in big files. The search is now linear and stops at the maximum number of highlighted occurrences.
+* Script editor: the line ending of a file (LF or CRLF) is kept when it is saved (before, the line ending of the platform was always used). The line ending is shown in the status bar and can be changed via the context menu of the editor. See :ref:`gui-editor-line-endings`.
+* Script editor: UTF-16 files without BOM are detected, if their first bytes look like latin text.
 * New unittest ``unittest_codeeditor`` (GoogleTest) for the file type registry and the syntax highlighting of the text-like files.
 * Fix: itom crashed at startup if the clipboard has no mime data (e.g. with the Qt platform plugin ``offscreen``).
 * Script editor windows can be docked and undocked by drag and drop. Tabs can be dragged to other script windows, to the edges of the main window or outside of itom. Undocked script windows can be docked by releasing them above the edges of the main window. See :ref:`gui-editor-dock-drag-drop`.

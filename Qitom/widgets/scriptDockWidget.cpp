@@ -1481,7 +1481,12 @@ void ScriptDockWidget::currentScriptCursorPositionChanged()
             col
         );
 
-        m_pStatusBarWidget->setText(tr("Ln %1, Col %2, %3 ").arg(line).arg(col).arg(charsetEncoding.displayNameShort));
+        m_pStatusBarWidget->setText(
+            tr("Ln %1, Col %2, %3, %4 ")
+                .arg(line)
+                .arg(col)
+                .arg(charsetEncoding.displayNameShort)
+                .arg(LineEnding::shortName(currentEditor->lineEnding())));
     }
     else
     {

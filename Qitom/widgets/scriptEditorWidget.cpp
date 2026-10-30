@@ -76,6 +76,7 @@ ScriptEditorWidget::ScriptEditorWidget(
     m_outlineTimer(nullptr), m_keepIndentationOnPaste(true), m_cursorJumpLastAction(false),
     m_pBookmarkModel(bookmarkModel), m_currentLineIndex(-1), m_textBlockLineIdxAboutToBeDeleted(-1),
     m_outlineDirty(true), m_wasReadonly(false), m_charsetEncodingAutoGuess(true),
+    m_lineEnding(LineEnding::platformDefault()),
     m_charsetDefined(false), m_autoCodeFormatOnSave(false)
 {
     m_rootOutlineItem = QSharedPointer<OutlineItem>(new OutlineItem(OutlineItem::typeRoot));
@@ -812,6 +813,14 @@ void ScriptEditorWidget::initMenus()
     m_editorMenuActions["charsetEncoding"] =
         editorMenu->addAction(tr("&Charset Encoding..."), this, SLOT(menuScriptCharsetEncoding()));
 
+    QMenu* lineEndingMenu = editorMenu->addMenu(tr("&Line Endings"));
+    m_editorMenuActions["lineEndingLF"] =
+        lineEndingMenu->addAction(tr("Unix (LF)"), this, SLOT(menuScriptLineEndingLF()));
+    m_editorMenuActions["lineEndingLF"]->setCheckable(true);
+    m_editorMenuActions["lineEndingCRLF"] =
+        lineEndingMenu->addAction(tr("Windows (CRLF)"), this, SLOT(menuScriptLineEndingCRLF()));
+    m_editorMenuActions["lineEndingCRLF"]->setCheckable(true);
+
     /*m_editorMenuActions["dumpFolding"] =
         editorMenu->addAction(tr("Dump Folding..."), this, SLOT(dumpFoldsToConsole()));*/
 
@@ -909,6 +918,10 @@ void ScriptEditorWidget::contextMenuAboutToShow(int contextMenuLine)
     m_editorMenuActions["debugScript"]->setEnabled(!m_pythonBusy);
     m_editorMenuActions["stopScript"]->setEnabled(m_pythonBusy);
     m_editorMenuActions["charsetEncoding"]->setEnabled(!m_pythonBusy);
+    m_editorMenuActions["lineEndingLF"]->setEnabled(!m_pythonBusy);
+    m_editorMenuActions["lineEndingLF"]->setChecked(m_lineEnding == LineEnding::LF);
+    m_editorMenuActions["lineEndingCRLF"]->setEnabled(!m_pythonBusy);
+    m_editorMenuActions["lineEndingCRLF"]->setChecked(m_lineEnding == LineEnding::CRLF);
     m_editorMenuActions["formatFile"]->setEnabled(!m_pythonBusy);
     m_editorMenuActions["generateDocstring"]->setEnabled(
         !m_pythonBusy && currentLineCanHaveDocstring());
@@ -2336,24 +2349,26 @@ IOHelper::CharsetEncodingItem ScriptEditorWidget::guessEncoding(const QByteArray
 }
 
 //-------------------------------------------------------------------------------------
-//! converts "\r\n" line endings to "\n" (the same as QIODevice::Text did before on the
-//! byte level, but encoding independent)
-/*static*/ void ScriptEditorWidget::normalizeLineEndings(QString& text)
+void ScriptEditorWidget::setLineEnding(LineEnding::Type lineEnding)
 {
-    text.replace("\r\n", "\n");
+    if (lineEnding != m_lineEnding)
+    {
+        m_lineEnding = lineEnding;
+        document()->setModified(true);
+        emit cursorPositionChanged(); // updates the status bar
+    }
 }
 
 //-------------------------------------------------------------------------------------
-//! returns the text with the line endings of the platform ("\r\n" on Windows, "\n" else)
-/*static*/ QString ScriptEditorWidget::platformLineEndings(const QString& text)
+void ScriptEditorWidget::menuScriptLineEndingLF()
 {
-#ifdef Q_OS_WIN
-    QString t = text;
-    t.replace("\n", "\r\n");
-    return t;
-#else
-    return text;
-#endif
+    setLineEnding(LineEnding::LF);
+}
+
+//-------------------------------------------------------------------------------------
+void ScriptEditorWidget::menuScriptLineEndingCRLF()
+{
+    setLineEnding(LineEnding::CRLF);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2394,7 +2409,7 @@ RetVal ScriptEditorWidget::openFile(
 
     // The file is read in binary mode. QIODevice::Text would remove '\r' bytes before
     // the decoding, which destroys the alignment of UTF-16 / UTF-32 files. The line
-    // endings are normalized after the decoding (see normalizeLineEndings).
+    // endings are normalized after the decoding (see LineEnding::normalize).
     if (!file.open(QIODevice::ReadOnly))
     {
         QMessageBox::warning(
@@ -2418,7 +2433,8 @@ RetVal ScriptEditorWidget::openFile(
 
         bool encodingOk = true;
         text = CharsetEncoding::decode(content, m_charsetEncoding, &encodingOk);
-        normalizeLineEndings(text);
+        m_lineEnding = LineEnding::detect(text);
+        LineEnding::normalize(text);
 
         if (!encodingOk)
         {
@@ -2542,7 +2558,7 @@ RetVal ScriptEditorWidget::writeFileContent(const QString &filename)
 
     // The file is written in binary mode. QIODevice::Text would convert '\n' to "\r\n"
     // on the byte level (Windows), which destroys UTF-16 / UTF-32 files. The platform
-    // specific line endings are applied to the text instead (see platformLineEndings).
+    // line ending of the file is applied to the text instead (see LineEnding::apply).
     if (!file.open(QIODevice::WriteOnly))
     {
         QMessageBox::warning(
@@ -2554,7 +2570,7 @@ RetVal ScriptEditorWidget::writeFileContent(const QString &filename)
 
     m_pFileSysWatcher->removePath(filename);
 
-    QString t = platformLineEndings(toPlainText());
+    QString t = LineEnding::apply(toPlainText(), m_lineEnding);
     QByteArray text;
 
     if (m_charsetEncodingAutoGuess)
@@ -3713,7 +3729,7 @@ void ScriptEditorWidget::fileSysWatcherFileChangedStep2(const QString& path)
             if (file.open(QIODevice::ReadOnly))
             {
                 fileText = CharsetEncoding::decode(file.readAll(), m_charsetEncoding);
-                normalizeLineEndings(fileText);
+                LineEnding::normalize(fileText);
                 file.close();
             }
 

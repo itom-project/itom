@@ -54,6 +54,7 @@
 #include "../models/bookmarkModel.h"
 #include "../helper/IOHelper.h"
 #include "../helper/editorFileType.h"
+#include "../helper/lineEnding.h"
 #include "../ui/dialogScriptCharsetEncoding.h"
 
 #include <QtPrintSupport/qprinter.h>
@@ -152,6 +153,15 @@ public:
         return m_charsetEncoding;
     }
 
+    //! line ending of the file ("\n" or "\r\n"), see ito::LineEnding
+    LineEnding::Type lineEnding() const
+    {
+        return m_lineEnding;
+    }
+
+    //! changes the line ending, that is used when the file is saved (marks the document as modified)
+    void setLineEnding(LineEnding::Type lineEnding);
+
     //!< the replacement will be handled as one undo-action. The script will be marked as modified afterwards.
     void replaceOccurencesInCurrentScript(const QString &newValue, const QVector<ito::FileRenameItem> &renameItems);
 
@@ -209,8 +219,6 @@ private:
     void applyFileType();
 
     IOHelper::CharsetEncodingItem guessEncoding(const QByteArray &content) const;
-    static void normalizeLineEndings(QString& text);
-    static QString platformLineEndings(const QString& text);
 
     QFileSystemWatcher *m_pFileSysWatcher;
 
@@ -261,6 +269,7 @@ private:
     //!< the encoding that was used to load this script from
     //!< a file and will also be used to store it in a file.
     IOHelper::CharsetEncodingItem m_charsetEncoding;
+    LineEnding::Type m_lineEnding;
     bool m_charsetDefined;
     bool m_charsetEncodingAutoGuess;
 
@@ -336,6 +345,8 @@ public slots:
     bool menuPyCodeReferenceRenaming();
     void menuGenerateDocstring();
     void menuScriptCharsetEncoding();
+    void menuScriptLineEndingLF();
+    void menuScriptLineEndingCRLF();
 
     void pythonStateChanged(tPythonTransitions pyTransition);
     void pythonDebugPositionChanged(QString filename, int lineno);

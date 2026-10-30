@@ -679,6 +679,17 @@ To add such a docstring, there are three different possibilities:
    by pressing Return or Enter. If you press any other key, the popup automatically
    disappears.
 
+.. _gui-editor-line-endings:
+
+Line Endings
+-------------
+
+The script editor keeps the line endings of a file: a file with Windows line endings
+(``CRLF``) is saved with ``CRLF``, a file with Unix line endings (``LF``) with ``LF``.
+New files get the line ending of the operating system. The current line ending is
+shown in the status bar next to the encoding and can be changed via the context menu
+of the editor (**Line Endings**). The change is applied when the file is saved.
+
 .. _gui-editor-charset-encoding:
 
 Charset Encoding
