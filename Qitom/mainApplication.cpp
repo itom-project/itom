@@ -716,10 +716,22 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
             }
         }
 
-        // test the base color of a widget
-        QString iconThemeFile = "iconThemeBright.rcc";
+        // The icon theme is one of: auto, bright, dark (classic icons) or modernAuto, modernBright,
+        // modernDark (refined classic icons, see Qitom/iconThemeModern). 'auto' selects the bright or
+        // dark variant depending on the base color of the stylesheet.
+        if (iconTheme.compare("auto", Qt::CaseInsensitive) == 0 &&
+            QFileInfo(cssFile).completeBaseName().startsWith("modern", Qt::CaseInsensitive))
+        {
+            // The modern application styles (modernLight, modernDark) are designed for the refined
+            // icons. With the default icon theme 'auto', both are selected together.
+            iconTheme = "modernAuto";
+        }
 
-        if (iconTheme.compare("auto", Qt::CaseInsensitive) == 0)
+        const bool modernIcons = iconTheme.startsWith("modern", Qt::CaseInsensitive);
+        bool darkIcons = false;
+
+        if (iconTheme.compare("auto", Qt::CaseInsensitive) == 0 ||
+            iconTheme.compare("modernAuto", Qt::CaseInsensitive) == 0)
         {
             // test the base color of the color palette of a widget (here: the splashscreen)
             // and set the dark theme, if the lightness of this color is < 0.5.
@@ -732,14 +744,22 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
             // icon sets.
             QGuiApplication::setPalette(m_pSplashScreen->palette());
 
-            if (bgColor.toHsv().lightnessF() < 0.5)
-            {
-                iconThemeFile = "iconThemeDark.rcc";
-            }
+            darkIcons = (bgColor.toHsv().lightnessF() < 0.5);
         }
-        else if (iconTheme.compare("dark", Qt::CaseInsensitive) == 0)
+        else if (iconTheme.compare("dark", Qt::CaseInsensitive) == 0 ||
+                 iconTheme.compare("modernDark", Qt::CaseInsensitive) == 0)
         {
-            iconThemeFile = "iconThemeDark.rcc";
+            darkIcons = true;
+        }
+
+        QString iconThemeFile =
+            QString("iconTheme%1%2.rcc").arg(modernIcons ? "Modern" : "", darkIcons ? "Dark" : "Bright");
+
+        if (modernIcons && !iconThemeDir.exists(iconThemeFile))
+        {
+            // e.g. an installation without the modern icon theme: use the classic icons
+            qDebug() << "The icon theme file " << iconThemeFile << " was not found. Using the classic icons.";
+            iconThemeFile = darkIcons ? "iconThemeDark.rcc" : "iconThemeBright.rcc";
         }
 
         if (!QResource::registerResource(iconThemeDir.absoluteFilePath(iconThemeFile)))

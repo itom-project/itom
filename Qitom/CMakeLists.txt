@@ -840,7 +840,7 @@ else()
 endif()
 # END HANDLE VERSION
 
-add_dependencies(${target_name} itomWidgets iconThemeBright iconThemeDark)
+add_dependencies(${target_name} itomWidgets iconThemeBright iconThemeDark iconThemeModernBright iconThemeModernDark)
 
 set( WINICONRES "" )
 

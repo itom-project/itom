@@ -113,6 +113,8 @@ Source: "{#SourceDirItomBuild}\itoFunctions.py"; DestDir: "{app}"; Flags: ignore
 ; Icon-Sets
 Source: "{#SourceDirItomBuild}\iconThemeBright.rcc"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\iconThemeDark.rcc"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\iconThemeModernBright.rcc"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\iconThemeModernDark.rcc"; DestDir: "{app}"; Flags: ignoreversion
 
 ; QT Files
 Source: "{#SourceDirItomBuild}\setup\qt_deployment\*.*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs

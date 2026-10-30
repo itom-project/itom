@@ -124,6 +124,18 @@ void WidgetPropGeneralStyles::readSettings()
     {
         ui.comboIconTheme->setCurrentIndex(1);
     }
+    else if (iconTheme.compare("modernAuto", Qt::CaseInsensitive) == 0)
+    {
+        ui.comboIconTheme->setCurrentIndex(3);
+    }
+    else if (iconTheme.compare("modernBright", Qt::CaseInsensitive) == 0)
+    {
+        ui.comboIconTheme->setCurrentIndex(4);
+    }
+    else if (iconTheme.compare("modernDark", Qt::CaseInsensitive) == 0)
+    {
+        ui.comboIconTheme->setCurrentIndex(5);
+    }
     else
     {
         ui.comboIconTheme->setCurrentIndex(2);
@@ -202,6 +214,15 @@ void WidgetPropGeneralStyles::writeSettings()
         break;
     case 2:
         settings.setValue("iconTheme", "dark");
+        break;
+    case 3:
+        settings.setValue("iconTheme", "modernAuto");
+        break;
+    case 4:
+        settings.setValue("iconTheme", "modernBright");
+        break;
+    case 5:
+        settings.setValue("iconTheme", "modernDark");
         break;
     }
 
