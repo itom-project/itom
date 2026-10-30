@@ -209,6 +209,8 @@ private:
     void applyFileType();
 
     IOHelper::CharsetEncodingItem guessEncoding(const QByteArray &content) const;
+    static void normalizeLineEndings(QString& text);
+    static QString platformLineEndings(const QString& text);
 
     QFileSystemWatcher *m_pFileSysWatcher;
 

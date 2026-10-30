@@ -21,7 +21,9 @@
 *********************************************************************** */
 
 #include "helper/charsetEncoding.h"
+#include <qfile.h>
 #include <qset.h>
+#include <qtemporarydir.h>
 #include "gtest/gtest.h"
 
 using namespace ito;
@@ -257,4 +259,45 @@ TEST(CharsetEncodingTest, unsupportedEncodingFallsBackToUtf8)
     ok = true;
     EXPECT_EQ(CharsetEncoding::decode(text.toUtf8(), bogus, &ok), text);
     EXPECT_FALSE(ok);
+}
+
+//-------------------------------------------------------------------------------------
+TEST(CharsetEncodingTest, utf16FileWithCrlfMustBeReadInBinaryMode)
+{
+    // Files from Windows tools have "\r\n" line endings. In UTF-16 this is the byte
+    // sequence 0D 00 0A 00. QIODevice::Text removes '\r' bytes before the decoding and
+    // destroys the alignment of all following characters. Therefore the script editor
+    // reads files in binary mode and normalizes the line endings after the decoding.
+    const QString text = "Listing of Data\r\n\r\nTitle: \r\nDate : 10/30/2026\r\n 1.0E-01\t 2.0E-01\r\n";
+    auto enc = CharsetEncoding::fromAlias("utf-16le");
+
+    QTemporaryDir dir;
+    QString path = dir.path() + "/crlf.txt";
+
+    {
+        QFile f(path);
+        ASSERT_TRUE(f.open(QIODevice::WriteOnly));
+        f.write(CharsetEncoding::encode(text, enc));
+    }
+
+    // binary mode: correct
+    QFile binary(path);
+    ASSERT_TRUE(binary.open(QIODevice::ReadOnly));
+    QByteArray raw = binary.readAll();
+    bool found = false;
+    EXPECT_EQ(CharsetEncoding::fromBom(raw, &found).encodingName, "UTF-16LE");
+    QString decoded = CharsetEncoding::decode(raw, enc);
+    EXPECT_EQ(decoded, text);
+    decoded.replace("\r\n", "\n");
+    EXPECT_EQ(decoded.split("\n").size(), 6);
+    EXPECT_EQ(decoded.split("\n")[3], "Date : 10/30/2026");
+
+    // text mode: one byte per line is lost, the rest is garbage (this documents the pitfall)
+    QFile textMode(path);
+    ASSERT_TRUE(textMode.open(QIODevice::ReadOnly | QIODevice::Text));
+    QByteArray rawText = textMode.readAll();
+    EXPECT_LT(rawText.size(), raw.size());
+    QString garbage = CharsetEncoding::decode(rawText, enc);
+    EXPECT_NE(garbage, text);
+    EXPECT_FALSE(garbage.contains("Date : 10/30/2026"));
 }

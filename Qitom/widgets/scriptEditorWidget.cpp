@@ -37,7 +37,6 @@
 #include <qfileinfo.h>
 
 #include <QtPrintSupport/qprintpreviewdialog.h>
-#include <qcryptographichash.h>
 #include <qdatetime.h>
 #include <qinputdialog.h>
 #include <qmessagebox.h>
@@ -2327,6 +2326,27 @@ IOHelper::CharsetEncodingItem ScriptEditorWidget::guessEncoding(const QByteArray
     return m_charsetEncoding;
 }
 
+//-------------------------------------------------------------------------------------
+//! converts "\r\n" line endings to "\n" (the same as QIODevice::Text did before on the
+//! byte level, but encoding independent)
+/*static*/ void ScriptEditorWidget::normalizeLineEndings(QString& text)
+{
+    text.replace("\r\n", "\n");
+}
+
+//-------------------------------------------------------------------------------------
+//! returns the text with the line endings of the platform ("\r\n" on Windows, "\n" else)
+/*static*/ QString ScriptEditorWidget::platformLineEndings(const QString& text)
+{
+#ifdef Q_OS_WIN
+    QString t = text;
+    t.replace("\n", "\r\n");
+    return t;
+#else
+    return text;
+#endif
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal ScriptEditorWidget::openFile(
     const QString& fileName, bool ignorePresentDocument, QWidget* parent /*= nullptr*/)
@@ -2363,7 +2383,10 @@ RetVal ScriptEditorWidget::openFile(
 
     QFile file(fileName);
 
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    // The file is read in binary mode. QIODevice::Text would remove '\r' bytes before
+    // the decoding, which destroys the alignment of UTF-16 / UTF-32 files. The line
+    // endings are normalized after the decoding (see normalizeLineEndings).
+    if (!file.open(QIODevice::ReadOnly))
     {
         QMessageBox::warning(
             parent,
@@ -2386,6 +2409,7 @@ RetVal ScriptEditorWidget::openFile(
 
         bool encodingOk = true;
         text = CharsetEncoding::decode(content, m_charsetEncoding, &encodingOk);
+        normalizeLineEndings(text);
 
         if (!encodingOk)
         {
@@ -2507,7 +2531,10 @@ RetVal ScriptEditorWidget::writeFileContent(const QString &filename)
 {
     QFile file(filename);
 
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+    // The file is written in binary mode. QIODevice::Text would convert '\n' to "\r\n"
+    // on the byte level (Windows), which destroys UTF-16 / UTF-32 files. The platform
+    // specific line endings are applied to the text instead (see platformLineEndings).
+    if (!file.open(QIODevice::WriteOnly))
     {
         QMessageBox::warning(
             this,
@@ -2518,7 +2545,7 @@ RetVal ScriptEditorWidget::writeFileContent(const QString &filename)
 
     m_pFileSysWatcher->removePath(filename);
 
-    QString t = toPlainText();
+    QString t = platformLineEndings(toPlainText());
     QByteArray text;
 
     if (m_charsetEncodingAutoGuess)
@@ -3670,21 +3697,18 @@ void ScriptEditorWidget::fileSysWatcherFileChangedStep2(const QString& path)
         }
         else // file changed
         {
-            // compare the content of the file with the content of this script...
-            QCryptographicHash fileHash(QCryptographicHash::Sha1);
-            file.open(QIODevice::ReadOnly | QIODevice::Text);
-            fileHash.addData(file.readAll());
+            // compare the content of the file with the content of this script
+            // (decoded and with normalized line endings, independent of the encoding)
+            QString fileText;
 
-            QByteArray currentByteArray;
+            if (file.open(QIODevice::ReadOnly))
+            {
+                fileText = CharsetEncoding::decode(file.readAll(), m_charsetEncoding);
+                normalizeLineEndings(fileText);
+                file.close();
+            }
 
-            // falls back to utf8 if the encoding is unsupported
-            currentByteArray = CharsetEncoding::encode(toPlainText(), m_charsetEncoding);
-
-            QCryptographicHash fileHash2(QCryptographicHash::Sha1);
-            fileHash2.addData(currentByteArray);
-
-            if (!(fileHash.result() ==
-                  fileHash2.result())) // does not ask user in the case of same texts
+            if (fileText != toPlainText()) // does not ask user in the case of same texts
             {
                 QMessageBox* msgBox = new QMessageBox(this);
                 msgBox->setStandardButtons(QMessageBox::Yes | QMessageBox::No);
