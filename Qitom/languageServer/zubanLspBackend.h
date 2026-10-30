@@ -131,7 +131,12 @@ private:
     static bool isExecutableFile(const QString& path);
 
     void ensureDocumentOpen(const QString& uri, const QString& source);
-    int trackRequest(int lspRequestId, const QPointer<QObject>& sender, const QByteArray& callbackName = QByteArray());
+    int trackRequest(
+        int lspRequestId,
+        const QPointer<QObject>& sender,
+        const QByteArray& callbackName = QByteArray(),
+        int lineOffset = 0,
+        const QString& sourcePath = QString());
 
     // Conversion methods: LSP -> Jedi
     CompletionItem convertCompletionItem(const QJsonObject& item) const;
@@ -156,6 +161,10 @@ private:
     //!< (used to allow Zuban to resolve modules in the same directory)
     QString m_currentFileDirectory;
 
+    //!< optional import line that can be prepended for console requests
+    //!< in order to mirror implicit command-line symbols (e.g. from itom import *).
+    QString m_includeItomImportString;
+
     //!< workspace folders to be used for the next restart (while shutdown is in progress)
     QStringList m_pendingAdditionalWorkspaceFolders;
 
@@ -167,6 +176,8 @@ private:
         int jediRequestId;
         QPointer<QObject> sender;
         QByteArray callbackName;
+        int lineOffset;
+        QString sourcePath;
     };
     QMap<int, RequestContext> m_pendingRequests;
     QMap<int, RenameRequest> m_pendingRenameRequests; //!< jedi request id -> rename request

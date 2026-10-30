@@ -55,6 +55,10 @@ const QString ConsoleWidget::lineBreak = QString("\n");
 const QString ConsoleWidget::longLineWrapPrefix = QString("... ");
 const QString ConsoleWidget::newCommandPrefix = QString(">>");
 
+//!< Maximum number of relevant command-line code lines that are forwarded
+//!< to language-assistance backends as completion context.
+constexpr int commandLineCompletionContextLineLimit = 150;
+
 //-------------------------------------------------------------------------------------
 ConsoleWidget::ConsoleWidget(QWidget* parent) :
     AbstractCodeEditorWidget(parent),
@@ -1303,36 +1307,58 @@ RetVal ConsoleWidget::execCommand(int beginLine, int endLine)
 //-------------------------------------------------------------------------------------
 /*virtual*/ QString ConsoleWidget::codeText(int &line, int &column) const
 {
-    QStringList textLines;
-    const ito::TextBlockUserData *userData = NULL;
-    QString temp;
+	QStringList textLines;
+	const ito::TextBlockUserData *userData = NULL;
+	QString temp;
 
-    for (int lineIdx = 0; lineIdx < lineCount(); ++lineIdx)
-    {
-        userData = getConstTextBlockUserData(lineIdx);
-        if (userData == NULL || userData->m_syntaxStyle == ito::TextBlockUserData::StylePython)
-        {
-            temp = lineText(lineIdx);
+	int mappedLine = -1;
 
-            if (temp.startsWith(ConsoleWidget::newCommandPrefix))
-            {
-                temp = temp.mid(ConsoleWidget::newCommandPrefix.size());
-                if (line == lineIdx)
-                {
-                    column -= ConsoleWidget::newCommandPrefix.size();
-                    line = textLines.size();
-                }
-            }
-            else if (line == lineIdx)
-            {
-                line = textLines.size();
-            }
+	for (int lineIdx = 0; lineIdx < lineCount(); ++lineIdx)
+	{
+		userData = getConstTextBlockUserData(lineIdx);
+		if (userData == NULL || userData->m_syntaxStyle == ito::TextBlockUserData::StylePython)
+		{
+			temp = lineText(lineIdx);
 
-            textLines.append(temp);
-        }
-    }
+			if (temp.startsWith(ConsoleWidget::newCommandPrefix))
+			{
+				temp = temp.mid(ConsoleWidget::newCommandPrefix.size());
+				if (line == lineIdx)
+				{
+					column -= ConsoleWidget::newCommandPrefix.size();
+				}
+			}
 
-    return textLines.join(ConsoleWidget::lineBreak);
+			if (line == lineIdx)
+			{
+				mappedLine = textLines.size();
+			}
+
+			textLines.append(temp);
+		}
+	}
+
+	if (mappedLine < 0)
+	{
+		mappedLine = textLines.size() - 1;
+	}
+
+	if (mappedLine >= 0 && textLines.size() > commandLineCompletionContextLineLimit)
+	{
+		const int firstContextLine = std::max(
+			0,
+			mappedLine - commandLineCompletionContextLineLimit + 1);
+
+		if (firstContextLine > 0)
+		{
+			textLines = textLines.mid(firstContextLine);
+			mappedLine -= firstContextLine;
+		}
+	}
+
+	line = std::max(0, mappedLine);
+
+	return textLines.join(ConsoleWidget::lineBreak);
 }
 
 //-------------------------------------------------------------------------------------

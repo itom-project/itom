@@ -145,7 +145,7 @@ void LanguageServerManager::createBackendFromSettings()
             connect(zubanBackend.data(), &ILanguageServerBackend::errorOccurred,
                 this, &LanguageServerManager::onPendingBackendError);
 
-            if (zubanBackend->initialize(""))
+            if (zubanBackend->initialize("from itom import *"))
             {
                 m_pendingBackendTimer.start(timeoutInitializationMs);
                 return;

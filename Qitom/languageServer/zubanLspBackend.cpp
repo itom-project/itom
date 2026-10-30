@@ -73,6 +73,8 @@ bool ZubanLspBackend::isAvailable() const
 //--------------------------------------------------------------------------------------
 bool ZubanLspBackend::initialize(const QString& includeItomImportString)
 {
+    m_includeItomImportString = includeItomImportString;
+
     if (m_initialized) {
         return true;
     }
@@ -152,8 +154,16 @@ int ZubanLspBackend::requestCompletion(const CompletionRequest& request)
     QFileInfo fileInfo(request.m_path);
     setProjectDirectory(fileInfo.absolutePath());
 
+    const bool injectItomImport =
+        !m_includeItomImportString.isEmpty() &&
+        request.m_path.endsWith("__console_temp__.py", Qt::CaseInsensitive);
+    const int lineOffset = injectItomImport ? 1 : 0;
+    const QString source = injectItomImport ?
+        (m_includeItomImportString + "\n" + request.m_source) :
+        request.m_source;
+
     QString uri = pathToUri(request.m_path);
-    ensureDocumentOpen(uri, request.m_source);
+    ensureDocumentOpen(uri, source);
 
     // Both LSP and the JediXYZRequest structs use 0-based line and character values
     // (the 1-based line number, required by jedi, is only created within the jedi runner).
@@ -161,11 +171,16 @@ int ZubanLspBackend::requestCompletion(const CompletionRequest& request)
     // prefix (as required by jedi). A language server expects the real cursor position,
     // such that it can filter and rank its results by the typed prefix.
     int lspRequestId = m_lspClient->requestCompletion(
-        uri, request.m_line, request.m_col + request.m_prefix.size());
+        uri, request.m_line + lineOffset, request.m_col + request.m_prefix.size());
     int requestId = -1;
 
     if (lspRequestId >= 0) {
-        requestId = trackRequest(lspRequestId, request.m_sender, request.m_callbackFctName);
+        requestId = trackRequest(
+            lspRequestId,
+            request.m_sender,
+            request.m_callbackFctName,
+            lineOffset,
+            request.m_path);
     }
 
     return requestId;
@@ -182,15 +197,28 @@ int ZubanLspBackend::requestCalltip(const CalltipRequest& request)
     QFileInfo fileInfo(request.m_path);
     setProjectDirectory(fileInfo.absolutePath());
 
+    const bool injectItomImport =
+        !m_includeItomImportString.isEmpty() &&
+        request.m_path.endsWith("__console_temp__.py", Qt::CaseInsensitive);
+    const int lineOffset = injectItomImport ? 1 : 0;
+    const QString source = injectItomImport ?
+        (m_includeItomImportString + "\n" + request.m_source) :
+        request.m_source;
+
     QString uri = pathToUri(request.m_path);
-    ensureDocumentOpen(uri, request.m_source);
+    ensureDocumentOpen(uri, source);
 
     // LSP uses 0-based line/character, as the CalltipRequest does
-    int lspRequestId = m_lspClient->requestSignatureHelp(uri, request.m_line, request.m_col);
+    int lspRequestId = m_lspClient->requestSignatureHelp(uri, request.m_line + lineOffset, request.m_col);
     int requestId = -1;
 
     if (lspRequestId >= 0) {
-        requestId = trackRequest(lspRequestId, request.m_sender, request.m_callbackFctName);
+        requestId = trackRequest(
+            lspRequestId,
+            request.m_sender,
+            request.m_callbackFctName,
+            lineOffset,
+            request.m_path);
     }
 
     return requestId;
@@ -207,15 +235,28 @@ int ZubanLspBackend::requestGoToAssignment(const AssignmentRequest& request)
     QFileInfo fileInfo(request.m_path);
     setProjectDirectory(fileInfo.absolutePath());
 
+    const bool injectItomImport =
+        !m_includeItomImportString.isEmpty() &&
+        request.m_path.endsWith("__console_temp__.py", Qt::CaseInsensitive);
+    const int lineOffset = injectItomImport ? 1 : 0;
+    const QString source = injectItomImport ?
+        (m_includeItomImportString + "\n" + request.m_source) :
+        request.m_source;
+
     QString uri = pathToUri(request.m_path);
-    ensureDocumentOpen(uri, request.m_source);
+    ensureDocumentOpen(uri, source);
 
     // LSP uses 0-based line/character
-    int lspRequestId = m_lspClient->requestDefinition(uri, request.m_line, request.m_col);
+    int lspRequestId = m_lspClient->requestDefinition(uri, request.m_line + lineOffset, request.m_col);
     int requestId = -1;
 
     if (lspRequestId >= 0) {
-        requestId = trackRequest(lspRequestId, request.m_sender, request.m_callbackFctName);
+        requestId = trackRequest(
+            lspRequestId,
+            request.m_sender,
+            request.m_callbackFctName,
+            lineOffset,
+            request.m_path);
     }
 
     return requestId;
@@ -232,15 +273,28 @@ int ZubanLspBackend::requestGetHelp(const GetHelpRequest& request)
     QFileInfo fileInfo(request.m_path);
     setProjectDirectory(fileInfo.absolutePath());
 
+    const bool injectItomImport =
+        !m_includeItomImportString.isEmpty() &&
+        request.m_path.endsWith("__console_temp__.py", Qt::CaseInsensitive);
+    const int lineOffset = injectItomImport ? 1 : 0;
+    const QString source = injectItomImport ?
+        (m_includeItomImportString + "\n" + request.m_source) :
+        request.m_source;
+
     QString uri = pathToUri(request.m_path);
-    ensureDocumentOpen(uri, request.m_source);
+    ensureDocumentOpen(uri, source);
 
     // LSP uses 0-based line/character
-    int lspRequestId = m_lspClient->requestHover(uri, request.m_line, request.m_col);
+    int lspRequestId = m_lspClient->requestHover(uri, request.m_line + lineOffset, request.m_col);
     int requestId = -1;
 
     if (lspRequestId >= 0) {
-        requestId = trackRequest(lspRequestId, request.m_sender, request.m_callbackFctName);
+        requestId = trackRequest(
+            lspRequestId,
+            request.m_sender,
+            request.m_callbackFctName,
+            lineOffset,
+            request.m_path);
     }
 
     return requestId;
@@ -337,8 +391,18 @@ void ZubanLspBackend::onLspDefinitionReceived(int requestId, const QJsonArray& l
 
     QVector<AssignmentItem> assignments;
 
+    const QString sourcePath = QDir::cleanPath(context.sourcePath);
+
     for (const QJsonValue& location : locations) {
-        assignments.append(convertLocation(location.toObject()));
+        AssignmentItem item = convertLocation(location.toObject());
+
+        if (context.lineOffset > 0 && !sourcePath.isEmpty() &&
+            QDir::cleanPath(item.m_path) == sourcePath)
+        {
+            item.m_line = qMax(0, item.m_line - context.lineOffset);
+        }
+
+        assignments.append(item);
     }
 
     // always emit the signal, such that the caller knows about empty results
@@ -574,12 +638,19 @@ void ZubanLspBackend::ensureDocumentOpen(const QString& uri, const QString& sour
 }
 
 //--------------------------------------------------------------------------------------
-int ZubanLspBackend::trackRequest(int lspRequestId, const QPointer<QObject>& sender, const QByteArray& callbackName)
+int ZubanLspBackend::trackRequest(
+    int lspRequestId,
+    const QPointer<QObject>& sender,
+    const QByteArray& callbackName,
+    int lineOffset,
+    const QString& sourcePath)
 {
     RequestContext context;
     context.jediRequestId = m_nextJediRequestId++;
     context.sender = sender;
     context.callbackName = callbackName;
+    context.lineOffset = lineOffset;
+    context.sourcePath = sourcePath;
 
     m_pendingRequests[lspRequestId] = context;
 
