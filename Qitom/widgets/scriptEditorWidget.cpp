@@ -2293,6 +2293,15 @@ IOHelper::CharsetEncodingItem ScriptEditorWidget::guessEncoding(const QByteArray
         return bomEncoding;
     }
 
+    // UTF-16 files without BOM (e.g. from some Windows tools)
+    bool utf16Found = false;
+    auto utf16Encoding = CharsetEncoding::guessUtf16WithoutBom(content, &utf16Found);
+
+    if (utf16Found)
+    {
+        return utf16Encoding;
+    }
+
     QList<QByteArray> firstLines;
 
     int from = 0;

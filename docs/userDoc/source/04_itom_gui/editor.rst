@@ -708,7 +708,8 @@ Officially supported encodings are:
 * UTF-32 (little or big endian) with BOM
 
 Byte order mark means, that the file starts with some magic characters, that indicates
-the encoding of this file. UTF-16 and UTF-32 files are only detected by their BOM. They are
+the encoding of this file. UTF-32 files are only detected by their BOM, UTF-16 files
+also without BOM if the first bytes look like latin text (every second byte is zero). They are
 common for text files written by Windows tools (e.g. exported data listings), but not
 recommended for Python scripts. If such a file is saved, the BOM is written again.
 

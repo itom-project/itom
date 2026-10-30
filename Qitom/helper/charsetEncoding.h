@@ -78,6 +78,15 @@ public:
     //! is found, 'found' is set to false and an empty item is returned.
     static Item fromBom(const QByteArray& content, bool* found = nullptr);
 
+    //! guesses UTF-16 (LE or BE) files without BOM by their pattern of null bytes.
+    /*!
+        Windows tools sometimes write UTF-16 files without BOM. In the first bytes of such
+        a file every second byte is zero (for latin text). If this pattern is found,
+        the UTF-16LE or UTF-16BE item (with BOM, since the file is saved with BOM then)
+        is returned. 'found' is set to false and an empty item is returned else.
+    */
+    static Item guessUtf16WithoutBom(const QByteArray& content, bool* found = nullptr);
+
     //! decodes the raw content of a file. A leading BOM of the encoding is removed.
     /*!
         \param ok is set to false, if the encoding is not supported by Qt. Then, the

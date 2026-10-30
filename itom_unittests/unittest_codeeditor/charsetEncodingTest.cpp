@@ -301,3 +301,52 @@ TEST(CharsetEncodingTest, utf16FileWithCrlfMustBeReadInBinaryMode)
     EXPECT_NE(garbage, text);
     EXPECT_FALSE(garbage.contains("Date : 10/30/2026"));
 }
+
+//-------------------------------------------------------------------------------------
+TEST(CharsetEncodingTest, guessUtf16WithoutBom)
+{
+    const QString text = sampleText() + "Listing of Universal Plot 2D Data\r\n 1.0E-01\t 2.0E-01\r\n";
+    bool found = false;
+
+    // UTF-16LE without BOM
+    QByteArray le = rawUtf(text, 2, true);
+    auto enc = CharsetEncoding::guessUtf16WithoutBom(le, &found);
+    EXPECT_TRUE(found);
+    EXPECT_EQ(enc.encodingName, "UTF-16LE");
+    EXPECT_EQ(CharsetEncoding::decode(le, enc), text);
+
+    // UTF-16BE without BOM
+    QByteArray be = rawUtf(text, 2, false);
+    enc = CharsetEncoding::guessUtf16WithoutBom(be, &found);
+    EXPECT_TRUE(found);
+    EXPECT_EQ(enc.encodingName, "UTF-16BE");
+    EXPECT_EQ(CharsetEncoding::decode(be, enc), text);
+
+    // 8 bit texts are never detected as UTF-16
+    found = true;
+    EXPECT_TRUE(CharsetEncoding::guessUtf16WithoutBom(text.toUtf8(), &found).encodingName.isEmpty());
+    EXPECT_FALSE(found);
+    found = true;
+    EXPECT_TRUE(CharsetEncoding::guessUtf16WithoutBom(text.toLatin1(), &found).encodingName.isEmpty());
+    EXPECT_FALSE(found);
+
+    // too short, empty, binary data with some zeros
+    found = true;
+    EXPECT_TRUE(CharsetEncoding::guessUtf16WithoutBom(rawUtf("abc", 2, true), &found).encodingName.isEmpty());
+    EXPECT_FALSE(found);
+    EXPECT_TRUE(CharsetEncoding::guessUtf16WithoutBom(QByteArray(), &found).encodingName.isEmpty());
+    EXPECT_FALSE(found);
+
+    QByteArray binary;
+
+    for (int i = 0; i < 512; ++i)
+    {
+        binary.append((char)((i * 7) % 13 == 0 ? 0 : i));
+    }
+
+    EXPECT_TRUE(CharsetEncoding::guessUtf16WithoutBom(binary, &found).encodingName.isEmpty());
+    EXPECT_FALSE(found);
+
+    // UTF-16 text with non latin characters (high byte not zero) in the first bytes: not
+    // detected, which is acceptable (the heuristic is for latin text listings)
+}

@@ -212,6 +212,73 @@ QList<CharsetEncoding::Item> CharsetEncoding::m_supportedScriptEncodings;
 }
 
 //-------------------------------------------------------------------------------------
+/*static*/ CharsetEncoding::Item CharsetEncoding::guessUtf16WithoutBom(
+    const QByteArray& content, bool* found /*= nullptr*/)
+{
+    // inspect at most the first 1024 bytes (an even number of bytes)
+    const int n = qMin(content.size(), 1024) & ~1;
+    int zeroEven = 0; // zero bytes at even positions (high bytes of UTF-16BE)
+    int zeroOdd = 0; // zero bytes at odd positions (high bytes of UTF-16LE)
+    int nonZeroEven = 0;
+    int nonZeroOdd = 0;
+
+    for (int i = 0; i < n; i += 2)
+    {
+        if (content[i] == '\0')
+        {
+            zeroEven++;
+        }
+        else
+        {
+            nonZeroEven++;
+        }
+
+        if (content[i + 1] == '\0')
+        {
+            zeroOdd++;
+        }
+        else
+        {
+            nonZeroOdd++;
+        }
+    }
+
+    QString name;
+
+    // at least 8 characters, nearly all high bytes zero, no zero low bytes
+    // (a text with only null bytes in one half is also no valid 8 bit text)
+    if (n >= 16)
+    {
+        if (zeroOdd >= n / 2 * 0.9 && zeroEven == 0)
+        {
+            name = "UTF-16LE";
+        }
+        else if (zeroEven >= n / 2 * 0.9 && zeroOdd == 0)
+        {
+            name = "UTF-16BE";
+        }
+    }
+
+    if (found)
+    {
+        *found = !name.isEmpty();
+    }
+
+    if (!name.isEmpty())
+    {
+        foreach (const Item& item, supportedScriptEncodings())
+        {
+            if (item.encodingName == name)
+            {
+                return item;
+            }
+        }
+    }
+
+    return Item();
+}
+
+//-------------------------------------------------------------------------------------
 /*static*/ QString CharsetEncoding::decode(
     const QByteArray& content, const Item& encoding, bool* ok /*= nullptr*/)
 {
