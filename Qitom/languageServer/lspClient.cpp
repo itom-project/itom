@@ -264,6 +264,33 @@ int LspClient::requestDefinition(const QString& uri, int line, int character)
 }
 
 //--------------------------------------------------------------------------------------
+int LspClient::requestDeclaration(const QString& uri, int line, int character)
+{
+    if (m_state != Running) {
+        return -1;
+    }
+
+    int reqId = nextRequestId();
+
+    QJsonObject params;
+    QJsonObject textDocument;
+    textDocument["uri"] = uri;
+    params["textDocument"] = textDocument;
+
+    params["position"] = createPosition(line, character);
+
+    sendRequest("textDocument/declaration", params, reqId);
+    return reqId;
+}
+
+//--------------------------------------------------------------------------------------
+bool LspClient::supportsDeclaration() const
+{
+    const QJsonValue provider = m_serverCapabilities.value("declarationProvider");
+    return provider.isBool() ? provider.toBool() : provider.isObject();
+}
+
+//--------------------------------------------------------------------------------------
 int LspClient::requestHover(const QString& uri, int line, int character)
 {
     if (m_state != Running) {
@@ -549,7 +576,7 @@ void LspClient::handleResponse(const QJsonObject& response)
         QJsonObject result = response["result"].toObject();
         emit signatureHelpReceived(id, result);
     }
-    else if (method == "textDocument/definition") {
+    else if (method == "textDocument/definition" || method == "textDocument/declaration") {
         QJsonValue result = response["result"];
         QJsonArray locationsArray;
 

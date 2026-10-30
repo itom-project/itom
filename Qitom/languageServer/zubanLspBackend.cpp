@@ -247,7 +247,18 @@ int ZubanLspBackend::requestGoToAssignment(const AssignmentRequest& request)
     ensureDocumentOpen(uri, source);
 
     // LSP uses 0-based line/character
-    int lspRequestId = m_lspClient->requestDefinition(uri, request.m_line + lineOffset, request.m_col);
+    // mode mapping (Jedi-compatible intent):
+    // 0: goto definition -> definition
+    // 1: goto assignment (no follow imports) -> declaration (fallback: definition)
+    // 2: goto assignment (follow imports) -> definition
+    int lspRequestId = -1;
+
+    if (request.m_mode == 1 && m_lspClient->supportsDeclaration()) {
+        lspRequestId = m_lspClient->requestDeclaration(uri, request.m_line + lineOffset, request.m_col);
+    } else {
+        lspRequestId = m_lspClient->requestDefinition(uri, request.m_line + lineOffset, request.m_col);
+    }
+
     int requestId = -1;
 
     if (lspRequestId >= 0) {

@@ -22,8 +22,10 @@ def normalize_type_name(type_str: str) -> str:
 
     This function converts any reference like 'itom.SomeName' to 'SomeName'.
     """
+    if type_str is None:
+        return type_str
     # Remove itom. prefix from all type references
-    type_str = re.sub(r'\bitom\.', '', type_str)
+    type_str = re.sub(r"\bitom\.", "", type_str)
     return type_str
 
 
@@ -55,7 +57,7 @@ def parseAlgorithmString(algoItem):
         if len(params) == 1:
             rettype = normalize_type_name(params[0]["type"])
         elif len(params) > 1:
-            rettype = "Tuple[" + ",".join([normalize_type_name(p["type"]) for p in params]) + "]"
+            rettype = "Tuple[" + ", ".join([normalize_type_name(p["type"]) for p in params]) + "]"
         else:
             rettype = "None"
     else:

@@ -93,8 +93,10 @@ class Signature:
             self.name,
             ", ".join([a.tostring() for a in self.args]),
         )
-        if self.rettype:
-            sig += " -> " + self.rettype
+        rettype = self.rettype
+        if rettype is None or rettype.strip() == "":
+            rettype = "None"
+        sig += " -> " + rettype
         return sig
 
 
@@ -562,7 +564,7 @@ def _parse_signature_from_first_line(obj, first_line: str) -> Signature:
     # find arrow
     comps = first_line.split("->")
 
-    sig = Signature(obj.__name__, args=[], rettype="")
+    sig = Signature(obj.__name__, args=[], rettype=None)
 
     if _ismethod(obj) or inspect.isclass(obj):  # bound method
         sig.args += [
@@ -584,7 +586,7 @@ def _parse_signature_from_first_line(obj, first_line: str) -> Signature:
             comps = [comps[0], "->".join(comps[1:])]
 
     if len(comps) == 2:  # arrow with rettype
-        sig.rettype = comps[1].strip()
+        sig.rettype = normalize_type_name(comps[1].strip().rstrip(":"))
 
     if len(comps) >= 1:  # parse args
         regexp = re.compile(r"(\w+)\((.*)\)")
@@ -618,9 +620,9 @@ def _parse_signature_from_first_line(obj, first_line: str) -> Signature:
 
         # check if all arguments and the rettype have typehints already. If not,
         # try to get them from a numpy docstyle:
-        if sig.rettype is None:
+        if sig.rettype is None or sig.rettype.strip() == "":
             # check for Returns sections
-            sig.rettype = _get_rettype_from_npdocstring(doc_str)
+            sig.rettype = normalize_type_name(_get_rettype_from_npdocstring(doc_str))
 
         missing_argtypes = [a for a in sig.args if a.dtype is None]
         if len(missing_argtypes) > 0:
@@ -628,11 +630,11 @@ def _parse_signature_from_first_line(obj, first_line: str) -> Signature:
             np_args = _get_parameters_from_npdocstring(doc_str)
 
             if np_args is not None:
-                arg_names: List[Arg] = [a.name for a in np_args]
+                arg_names: List[str] = [a.name for a in np_args]
 
                 for a in sig.args:
                     if a.dtype is None and a.name in arg_names:
-                        a.dtype = np_args[arg_names.index(a.name)].dtype
+                        a.dtype = normalize_type_name(np_args[arg_names.index(a.name)].dtype)
                         a.optional = np_args[arg_names.index(a.name)].optional
 
     return sig

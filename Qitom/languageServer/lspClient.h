@@ -172,6 +172,20 @@ public:
     int requestDefinition(const QString& uri, int line, int character);
 
     /**
+     * @brief Request go-to-declaration at a position
+     * @param uri Document URI
+     * @param line Line number (0-based)
+     * @param character Character position (0-based)
+     * @return Request ID, or -1 if not ready
+     */
+    int requestDeclaration(const QString& uri, int line, int character);
+
+    /**
+     * @brief True if the server announced declaration support.
+     */
+    bool supportsDeclaration() const;
+
+    /**
      * @brief Request hover information at a position
      * @param uri Document URI
      * @param line Line number (0-based)
