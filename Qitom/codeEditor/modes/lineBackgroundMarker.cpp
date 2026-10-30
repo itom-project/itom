@@ -125,10 +125,9 @@ void LineBackgroundMarkerMode::addMarker(int fromLine, int toLine)
 */
 void LineBackgroundMarkerMode::clearAllMarkers()
 {
-    foreach (TextDecoration::Ptr deco, m_decorations)
+    if (editor() && !m_decorations.isEmpty())
     {
-        //qDebug() << "remove marker " << deco->format.background().color();
-        editor()->decorations()->remove(deco);
+        editor()->decorations()->remove(m_decorations);
     }
 
     m_decorations.clear();
