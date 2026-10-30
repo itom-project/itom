@@ -63,6 +63,7 @@ set(codeeditor_HEADERS
     ${CODEEDITOR_DIR}/modes/occurrences.h
     ${CODEEDITOR_DIR}/modes/symbolMatcherMode.h
     ${CODEEDITOR_DIR}/panels/foldingPanel.h
+    ${CODEEDITOR_DIR}/panels/lineNumber.h
     ${CODEEDITOR_DIR}/syntaxHighlighter/codeEditorStyle.h
     ${CODEEDITOR_DIR}/syntaxHighlighter/genericSyntaxHighlighter.h
     ${CODEEDITOR_DIR}/syntaxHighlighter/syntaxHighlighterBase.h
@@ -92,6 +93,7 @@ set(codeeditor_SOURCES
     ${CODEEDITOR_DIR}/modes/occurrences.cpp
     ${CODEEDITOR_DIR}/modes/symbolMatcherMode.cpp
     ${CODEEDITOR_DIR}/panels/foldingPanel.cpp
+    ${CODEEDITOR_DIR}/panels/lineNumber.cpp
     ${CODEEDITOR_DIR}/syntaxHighlighter/codeEditorStyle.cpp
     ${CODEEDITOR_DIR}/syntaxHighlighter/genericSyntaxHighlighter.cpp
     ${CODEEDITOR_DIR}/syntaxHighlighter/syntaxHighlighterBase.cpp
@@ -111,6 +113,7 @@ set(unittest_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/occurrencesTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/charsetEncodingTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/editorFileTypeTest.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/editorPerformanceTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/genericSyntaxHighlighterTest.cpp
 )
 

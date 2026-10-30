@@ -44,6 +44,9 @@ only shrink: fix a test, then remove it from the list. A new failing test must b
 
 * Windows (MSVC) and Qt5 builds. The expected failures can differ per platform, use one list per platform.
 * `python_unittests`, which require a running itom (`itom run=<script>`).
+* `unittest_codeeditor` contains a performance guard (`editorPerformanceTest.cpp`): repaint, typing and
+  occurrence highlighting in a 500 kB data listing with 5400 characters per line must stay below fixed
+  limits. A failure means that a feature does O(file size) or O(line length) work per keystroke again.
 * `unittest_codeeditor` compiles the core of the script editor (`Qitom/codeEditor`, no python modes) directly
   into the test and needs the Qt platform plugin `offscreen` (set by the runner).
 * `AddInManagerTest.General` needs the plugin `DummyMotor` from the separate `plugins` repository and is
