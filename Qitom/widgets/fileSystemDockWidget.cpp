@@ -548,7 +548,9 @@ void FileSystemDockWidget::updateActions()
     if (m_pActPasteItems)
     {
         QClipboard* clipboard = QApplication::clipboard();
-        m_pActPasteItems->setEnabled(clipboard->mimeData()->hasUrls(), true);
+        // the mime data can be nullptr, e.g. for the "offscreen" platform plugin
+        const QMimeData* mimeData = clipboard ? clipboard->mimeData() : nullptr;
+        m_pActPasteItems->setEnabled(mimeData && mimeData->hasUrls(), true);
     }
 
     if (m_pActNewDir)
