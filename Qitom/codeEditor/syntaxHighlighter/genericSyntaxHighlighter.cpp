@@ -195,7 +195,9 @@ void GenericSyntaxHighlighter::setupRules()
         m_rules.last().regExp.setPatternOptions(QRegularExpression::CaseInsensitiveOption);
         addRule("^\\s*:[\\w.-]+", StyleItem::KeyClass); // labels
         addRule(dqString, StyleItem::KeyString);
-        addRule("%[\\w~:*.]+%|%%?~?[\\w*]|![\\w:~]+!", StyleItem::KeyConstant);
+        // %VAR%, !VAR!, %1, %%i and argument expansions with modifiers like %~dp0 or %~nx1
+        addRule(
+            "%[\\w~:*.]+%|%%?(?:~[a-zA-Z$]*)?[\\w*]|![\\w:~]+!", StyleItem::KeyConstant);
         addKeywords(
             QStringList() << "if"
                           << "else"
