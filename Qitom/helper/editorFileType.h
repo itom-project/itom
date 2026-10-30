@@ -43,9 +43,11 @@ public:
         Xml,
         Ini,
         Markdown,
+        Csv,
         CMake,
         Batch,
-        PlainText, //!< any other text-like file
+        PlainText, //!< .txt text files
+        Generic, //!< any other text-like file
         Unknown //!< not supported by the editor
     };
 

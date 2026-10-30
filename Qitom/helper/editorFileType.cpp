@@ -129,6 +129,14 @@ bool EditorFileType::m_cacheValid = false;
     {
         return Markdown;
     }
+    else if (suffix == "csv")
+    {
+        return Csv;
+    }
+    else if (suffix == "txt")
+    {
+        return PlainText;
+    }
     else if (suffix == "cmake")
     {
         return CMake;
@@ -160,7 +168,7 @@ bool EditorFileType::m_cacheValid = false;
 
     if (textSuffixes().contains(suffix))
     {
-        return (t == Unknown) ? PlainText : t;
+        return (t == Unknown) ? Generic : t;
     }
 
     // not registered by suffix: check the mime type. Every text file is accepted.
@@ -171,7 +179,7 @@ bool EditorFileType::m_cacheValid = false;
 
         if (mime.isValid() && mime.inherits("text/plain"))
         {
-            return (t == Unknown) ? PlainText : t;
+            return (t == Unknown) ? Generic : t;
         }
     }
 
@@ -219,6 +227,8 @@ bool EditorFileType::m_cacheValid = false;
         return QCoreApplication::translate("EditorFileType", "INI / Config");
     case Markdown:
         return QCoreApplication::translate("EditorFileType", "Markdown / reStructuredText");
+    case Csv:
+        return QCoreApplication::translate("EditorFileType", "CSV");
     case CMake:
         return QCoreApplication::translate("EditorFileType", "CMake");
     case Batch:
@@ -231,12 +241,57 @@ bool EditorFileType::m_cacheValid = false;
 //-------------------------------------------------------------------------------------
 /*static*/ QIcon EditorFileType::icon(Type type)
 {
-    if (type == Python)
+    QString path = ":/files/icons/fileGeneric.svg";
+
+    switch (type)
     {
-        return QIcon(":/files/icons/filePython.png");
+    case Python:
+        path = ":/files/icons/filePython.png";
+        break;
+    case Json:
+        path = ":/files/icons/fileJson.svg";
+        break;
+    case Yaml:
+        path = ":/files/icons/fileYaml.svg";
+        break;
+    case Xml:
+        path = ":/files/icons/fileXml.svg";
+        break;
+    case Ini:
+        path = ":/files/icons/fileIni.svg";
+        break;
+    case Markdown:
+        path = ":/files/icons/fileMd.svg";
+        break;
+    case Csv:
+        path = ":/files/icons/fileCsv.svg";
+        break;
+    case PlainText:
+        path = ":/files/icons/fileTxt.svg";
+        break;
+    case Generic:
+    case CMake:
+    case Batch:
+    case Unknown:
+    default:
+        break;
     }
 
-    return QIcon(":/files/icons/fileText.png");
+    QIcon icon(path);
+
+    if (!icon.isNull())
+    {
+        return icon;
+    }
+
+    icon = QIcon(":/files/icons/fileGeneric.svg");
+
+    if (!icon.isNull())
+    {
+        return icon;
+    }
+
+    return QIcon(":/files/icons/filePython.png");
 }
 
 //-------------------------------------------------------------------------------------
