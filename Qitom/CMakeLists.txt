@@ -679,6 +679,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/dockDragDrop.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptEditorWidget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptEditorWidget_file.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptEditorPrinter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/shortcutAction.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/tabSwitcherWidget.cpp
