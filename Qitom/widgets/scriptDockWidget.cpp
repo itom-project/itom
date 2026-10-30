@@ -2923,6 +2923,7 @@ void ScriptDockWidget::mnuGoto()
     sew->getCursorPosition(&curLine,&curIndex);
 
     DialogGoto *d = new DialogGoto(sew->lineCount(), curLine + 1, sew->length(), sew->positionFromLineIndex(curLine, curIndex), getCanvas());
+    d->setColumn(sew->lineLength(curLine) + 1, curIndex + 1);
 
     if (d->exec())
     {
@@ -2932,6 +2933,11 @@ void ScriptDockWidget::mnuGoto()
         {
             curLine = curValue - 1;
             sew->setCursorPosAndEnsureVisible(curLine);
+
+            // optional column (clipped to the length of the line)
+            int column = qMin(d->getColumn() - 1, sew->lineLength(curLine));
+            sew->setCursorPosition(curLine, qMax(0, column));
+            sew->ensureCursorVisible(); // horizontal scrolling to the column
         }
         else
         {
