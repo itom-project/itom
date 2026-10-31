@@ -87,7 +87,7 @@ At first, the constructor consists of a section where you define basic informati
 
 **Part 1 (Basic information):**
 
-.. c:member:: int m_type
+.. describe:: int m_type
 
     Type of this plugin. Possible types are an OR-combination of the enumeration **ito::tPluginType**:
 
@@ -97,7 +97,7 @@ At first, the constructor consists of a section where you define basic informati
     * typeDataIO | typeRawIO for any other input-output-devices, like serial ports, display windows...
     * typeAlgo for a plugin providing algorithms, filters or any other methods as well as graphical user interfaces, dialogs, ... which enhance the functionality of |itom|
 
-.. c:member:: void setObjectName(const QString &name)
+.. cpp:function:: void setObjectName(const QString &name)
 
     use this method to set the name of your plugin. This name should be simple and should not contain special characters, since it not only appears in the list of plugins but is also the string used for initializing a plugin by the python scripting language.
 
@@ -121,7 +121,7 @@ At first, the constructor consists of a section where you define basic informati
 
     Use this variable to denote the maximum version number of |itom|. Versions higher than this value do not allow to run this plugin. If you don't care about any maximum version, use the macro **MAXVERSION**, defined in *sharedStructures.h* (folder *common*).
 
-.. c:member:: ito::tAutoLoadPolicy m_autoLoadPolicy
+.. cpp:member:: ito::tAutoLoadPolicy m_autoLoadPolicy
 
     Depending on the value of this variable, the internal parameters of the plugin can be loaded from a *xml*-file and set after the plugin's *init*-method has been called. The possible values for that variable are given by the enumeration **ito::tAutoLoadPolicy** and are
 
@@ -135,7 +135,7 @@ At first, the constructor consists of a section where you define basic informati
 
     For more information about the loading and/or saving of plugin's parameters, see :ref:`plugin-autoloadsave-policy`.
 
-.. c:member:: ito::tAutoSavePolicy m_autoSavePolicy
+.. cpp:member:: ito::tAutoSavePolicy m_autoSavePolicy
 
     Depending on the value of this variable, the internal parameters of the plugin can be saved to a *xml*-file at shutdown of a plugin instance. The possible values for that variable are given by the enumeration **ito::tAutoSavePolicy** and are
 

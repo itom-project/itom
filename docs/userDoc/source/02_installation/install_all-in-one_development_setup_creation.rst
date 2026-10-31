@@ -66,7 +66,7 @@ E:\\itom_all-in-one_development\\itom_all-in-one_development\\vs2017_qt5.12.1_x6
 Than create the following paths relative to the **${MAINDIR}**. 3rdPartyPCL is not
 necessary to create a working |itom|.
 
-.. figure:: images/all-in-one-create/folder_structure.png
+.. figure:: images/all-in-one-create/folder_structure.PNG
     :scale: 100%
     :align: center
 
@@ -76,7 +76,7 @@ _install_ folder
 The _install_ folder is used to execute the installation procedure of the all-in-one
 development. Copy the following files into **${MAINDIR}**/_install_ folder
 
-.. figure:: images/all-in-one-create/folder_install.png
+.. figure:: images/all-in-one-create/folder_install.PNG
    :scale: 100%
    :align: center
 
@@ -87,7 +87,7 @@ This folder is for optional software, which is not necessary to build and compil
 a working |itom|. This software is required further for development purposes.
 Copy the following files into **${MAINDIR}**/_install_/optional folder
 
-.. figure:: images/all-in-one-create/folder_optional.png
+.. figure:: images/all-in-one-create/folder_optional.PNG
    :scale: 100%
    :align: center
 
@@ -99,7 +99,7 @@ version of Qt version. Copy following files into **${MAINDIR}**/_install_/qpatch
 folder. Change the **root** Qt path and the target path in the **create_files_to_patch.py**
 file. Execute the script and check if the filenames in the **files-to-patch-windows** has been found.
 
-.. figure:: images/all-in-one-create/folder_qpatch.png
+.. figure:: images/all-in-one-create/folder_qpatch.PNG
    :scale: 100%
    :align: center
 
