@@ -23,6 +23,7 @@
 #include "gtest/gtest.h"
 
 #include "organizer/projectOrganizer.h"
+#include "organizer/projectSession.h"
 
 #include <qdir.h>
 #include <qfile.h>
@@ -109,6 +110,7 @@ TEST(ProjectOrganizer, openSaveCloseEmitSignalsAndChangeCwd)
     EXPECT_FALSE(ret.containsError());
     EXPECT_FALSE(org.hasProject());
     EXPECT_EQ(closed.count(), 1);
+    EXPECT_EQ(closed.last().at(0).toString(), root + "/Demo.itomproject");
     EXPECT_FALSE(org.closeProject().containsError()); // closing twice is fine
     EXPECT_EQ(closed.count(), 1);
 
@@ -191,6 +193,39 @@ TEST(ProjectOrganizer, errorsAndRecentList)
 }
 
 //-------------------------------------------------------------------------------------
+TEST(ProjectOrganizer, settingsGroupIsStableAndPathNormalized)
+{
+    const QString g1 = ProjectOrganizer::settingsGroup("/a/b/x.itomproject");
+    const QString g2 = ProjectOrganizer::settingsGroup("/a/c/../b/x.itomproject");
+    const QString g3 = ProjectOrganizer::settingsGroup("/a/b/y.itomproject");
+    EXPECT_TRUE(g1.startsWith("Projects/"));
+    EXPECT_EQ(g1, g2);
+    EXPECT_NE(g1, g3);
+    EXPECT_FALSE(g1.contains(' '));
+}
+
+//-------------------------------------------------------------------------------------
+TEST(ProjectOrganizer, reloadSettingsReadsOptions)
+{
+    clearProjectSettings();
+    ProjectOrganizer org;
+    EXPECT_TRUE(org.restoreScripts());
+    EXPECT_TRUE(org.setWorkingDirectoryOnOpen());
+
+    {
+        QSettings settings(ito::test::settingsFilePath(), QSettings::IniFormat);
+        settings.beginGroup("Projects");
+        settings.setValue("restoreScripts", false);
+        settings.setValue("setWorkingDirectoryOnOpen", false);
+        settings.endGroup();
+    }
+
+    org.reloadSettings();
+    EXPECT_FALSE(org.restoreScripts());
+    EXPECT_FALSE(org.setWorkingDirectoryOnOpen());
+}
+
+//-------------------------------------------------------------------------------------
 TEST(ProjectOrganizer, semaphoreReceivesReturnValue)
 {
     CwdRestore cwd;
@@ -208,4 +243,23 @@ TEST(ProjectOrganizer, semaphoreReceivesReturnValue)
     EXPECT_TRUE(locker2.getSemaphore()->wait(1000));
     EXPECT_FALSE(locker2.getSemaphore()->returnValue.containsError());
     EXPECT_TRUE(org.hasProject());
+}
+
+//-------------------------------------------------------------------------------------
+TEST(ProjectSession, sysPathStatements)
+{
+    EXPECT_TRUE(ProjectSession::addToSysPathStatement(QStringList()).isEmpty());
+    EXPECT_TRUE(ProjectSession::removeFromSysPathStatement(QStringList()).isEmpty());
+
+    QStringList paths;
+    paths << "/a/lib" << "/b/it's";
+    const QString add = ProjectSession::addToSysPathStatement(paths);
+    // reversed order, so that /a/lib ends up first in sys.path
+    EXPECT_TRUE(add.contains("insert(0, _itom_p)"));
+    EXPECT_LT(add.indexOf("it\\'s"), add.indexOf("/a/lib"));
+    EXPECT_TRUE(add.contains("not in _itom_sys.path"));
+
+    const QString remove = ProjectSession::removeFromSysPathStatement(paths);
+    EXPECT_TRUE(remove.contains("_itom_sys.path.remove(_itom_p)"));
+    EXPECT_LT(remove.indexOf("/a/lib"), remove.indexOf("it\\'s"));
 }

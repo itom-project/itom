@@ -46,6 +46,7 @@ set(qitom_HEADERS
     ${QITOM_DIR}/models/projectTreeModel.h
     ${QITOM_DIR}/organizer/projectFile.h
     ${QITOM_DIR}/organizer/projectOrganizer.h
+    ${QITOM_DIR}/organizer/projectSession.h
 )
 
 set(qitom_SOURCES
@@ -53,6 +54,7 @@ set(qitom_SOURCES
     ${QITOM_DIR}/models/projectTreeModel.cpp
     ${QITOM_DIR}/organizer/projectFile.cpp
     ${QITOM_DIR}/organizer/projectOrganizer.cpp
+    ${QITOM_DIR}/organizer/projectSession.cpp
 )
 
 set(unittest_HEADERS

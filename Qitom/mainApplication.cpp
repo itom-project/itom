@@ -120,7 +120,7 @@ MainApplication::MainApplication(tGuiType guiType) :
     m_paletteOrganizer(nullptr),
     m_uiOrganizer(nullptr),
     m_designerWidgetOrganizer(nullptr),
-    m_processOrganizer(nullptr), m_projectOrganizer(nullptr),
+    m_processOrganizer(nullptr), m_projectOrganizer(nullptr), m_projectSession(nullptr),
     m_pSplashScreen(nullptr),
     m_splashScreenTextColor(Qt::white),
     m_pQout(nullptr),
@@ -786,6 +786,7 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
 
     m_projectOrganizer = new ProjectOrganizer();
     AppManagement::setProjectOrganizer(qobject_cast<QObject*>(m_projectOrganizer));
+    connect(this, &MainApplication::propertiesChanged, m_projectOrganizer, &ProjectOrganizer::reloadSettings);
 
     qDebug("MainApplication::setupApplication");
 
@@ -900,6 +901,10 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
 
     m_scriptEditorOrganizer = new ScriptEditorOrganizer(m_mainWin != nullptr);
     AppManagement::setScriptEditorOrganizer(m_scriptEditorOrganizer); //qobject_cast<QObject*>(scriptEditorOrganizer);
+
+    // the session must be created after the script editor organizer, since it saves and
+    // restores the open scripts per project
+    m_projectSession = new ProjectSession(m_projectOrganizer);
 
     qDebug("..script editor started");
 
@@ -1132,6 +1137,7 @@ void MainApplication::finalizeApplication()
 
     AddInManager::closeInstance();
 
+    DELETE_AND_SET_NULL(m_projectSession);
     DELETE_AND_SET_NULL(m_projectOrganizer);
     AppManagement::setProjectOrganizer(NULL);
 
@@ -1251,7 +1257,18 @@ void MainApplication::mainWindowCloseRequest(bool considerPythonBusy)
         //saves the state of all opened scripts to the settings file
         if (m_scriptEditorOrganizer)
         {
-            m_scriptEditorOrganizer->saveScriptState();
+            if (m_projectOrganizer && m_projectOrganizer->hasProject() &&
+                m_projectOrganizer->restoreScripts())
+            {
+                // the open scripts belong to the project; the global session was
+                // saved when the project was opened
+                m_scriptEditorOrganizer->saveScriptState(
+                    ProjectOrganizer::settingsGroup(m_projectOrganizer->project().filePath()));
+            }
+            else
+            {
+                m_scriptEditorOrganizer->saveScriptState();
+            }
 
             retValue += m_scriptEditorOrganizer->closeAllScripts(true);
 

@@ -310,6 +310,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/processOrganizer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/projectFile.h
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/projectOrganizer.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/organizer/projectSession.h
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/scriptEditorOrganizer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/uiOrganizer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/userInteractionWatcher.h
@@ -584,6 +585,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/processOrganizer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/projectFile.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/projectOrganizer.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/organizer/projectSession.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/scriptEditorOrganizer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/uiOrganizer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/userInteractionWatcher.cpp

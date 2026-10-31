@@ -81,9 +81,12 @@ signals:
 
 public slots:
     void projectOpened();
-    void projectClosed();
+    void projectClosed(const QString& filePath);
     void projectChanged();
     void updateActions();
+
+    //! stores the expanded folders of the current project in the settings
+    void saveExpandedState();
 
 private slots:
     void itemActivated(const QModelIndex& index);
@@ -111,6 +114,8 @@ private:
     ProjectOrganizer* organizer() const;
     void updateHeader();
     void showError(const QString& title, const QString& message);
+    void restoreExpandedState();
+    void collectExpanded(const QModelIndex& parent, QStringList& expanded) const;
 
     ProjectTreeModel* m_pModel;
     QTreeView* m_pTreeView;

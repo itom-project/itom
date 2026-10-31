@@ -37,6 +37,7 @@
 #include <qinputdialog.h>
 #include <qmessagebox.h>
 #include <qset.h>
+#include <qsettings.h>
 
 namespace ito {
 
@@ -127,18 +128,19 @@ ProjectBrowserWidget::ProjectBrowserWidget(QWidget* parent) :
         }
         else
         {
-            projectClosed();
+            projectClosed(QString());
         }
     }
     else
     {
-        projectClosed();
+        projectClosed(QString());
     }
 }
 
 //-------------------------------------------------------------------------------------
 ProjectBrowserWidget::~ProjectBrowserWidget()
 {
+    saveExpandedState();
 }
 
 //-------------------------------------------------------------------------------------
@@ -299,6 +301,8 @@ void ProjectBrowserWidget::projectOpened()
         m_pModel->setProject(org->project());
         m_pStack->setCurrentWidget(m_pProjectPage);
 
+        restoreExpandedState();
+
         // expand the first root
         if (m_pModel->rowCount() > 0)
         {
@@ -311,8 +315,18 @@ void ProjectBrowserWidget::projectOpened()
 }
 
 //-------------------------------------------------------------------------------------
-void ProjectBrowserWidget::projectClosed()
+void ProjectBrowserWidget::projectClosed(const QString& filePath)
 {
+    if (!filePath.isEmpty() && m_pModel->rowCount() > 0)
+    {
+        QStringList expanded;
+        collectExpanded(QModelIndex(), expanded);
+        QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+        settings.beginGroup(ProjectOrganizer::settingsGroup(filePath));
+        settings.setValue("expandedFolders", expanded);
+        settings.endGroup();
+    }
+
     m_pModel->clear();
     m_pStack->setCurrentWidget(m_pNoProjectPage);
     updateHeader();
@@ -351,6 +365,64 @@ void ProjectBrowserWidget::projectChanged()
 
     updateHeader();
     updateActions();
+}
+
+//-------------------------------------------------------------------------------------
+void ProjectBrowserWidget::collectExpanded(const QModelIndex& parent, QStringList& expanded) const
+{
+    for (int r = 0; r < m_pModel->rowCount(parent); ++r)
+    {
+        const QModelIndex idx = m_pModel->index(r, 0, parent);
+
+        if (m_pModel->isDir(idx) && m_pTreeView->isExpanded(idx))
+        {
+            expanded << m_pModel->filePath(idx);
+            collectExpanded(idx, expanded);
+        }
+    }
+}
+
+//-------------------------------------------------------------------------------------
+void ProjectBrowserWidget::saveExpandedState()
+{
+    ProjectOrganizer* org = organizer();
+
+    if (org && org->hasProject())
+    {
+        QStringList expanded;
+        collectExpanded(QModelIndex(), expanded);
+        QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+        settings.beginGroup(ProjectOrganizer::settingsGroup(org->project().filePath()));
+        settings.setValue("expandedFolders", expanded);
+        settings.endGroup();
+    }
+}
+
+//-------------------------------------------------------------------------------------
+void ProjectBrowserWidget::restoreExpandedState()
+{
+    ProjectOrganizer* org = organizer();
+
+    if (!org || !org->hasProject())
+    {
+        return;
+    }
+
+    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+    settings.beginGroup(ProjectOrganizer::settingsGroup(org->project().filePath()));
+    const QStringList expanded = settings.value("expandedFolders").toStringList();
+    settings.endGroup();
+
+    // parents come before their children in the stored list
+    foreach (const QString& path, expanded)
+    {
+        const QModelIndex idx = m_pModel->indexForPath(path, true);
+
+        if (idx.isValid())
+        {
+            m_pTreeView->expand(idx);
+        }
+    }
 }
 
 //-------------------------------------------------------------------------------------

@@ -43,6 +43,8 @@ itom
   an optional main script, a working directory, additional python path entries and exclude patterns. Projects are created, opened, saved and closed via the
   ``File`` menu (``New Project From Folder...``, ``Open Project...``, ``Recent Projects``, ``Save Project``, ``Close Project``) or via the new python functions
   ``itom.openProject``, ``itom.newProject``, ``itom.saveProject``, ``itom.closeProject`` and ``itom.getProjectInfo``.
+  The open scripts and the expanded folders are remembered per project (option in the property dialog, tab ``General > Application``), and the
+  ``pythonPath`` entries of a project are added to ``sys.path`` while the project is open.
 * New unittests ``unittest_fileoperations`` and ``unittest_project`` (GoogleTest) for the shared file helpers, the project file, the project tree model and the project organizer.
 * Fix: itom crashed at startup if the clipboard has no mime data (e.g. with the Qt platform plugin ``offscreen``).
 * Script editor windows can be docked and undocked by drag and drop. Tabs can be dragged to other script windows, to the edges of the main window or outside of itom. Undocked script windows can be docked by releasing them above the edges of the main window. See :ref:`gui-editor-dock-drag-drop`.

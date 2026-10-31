@@ -26,13 +26,14 @@
 
 #include <qdir.h>
 #include <qfileinfo.h>
+#include <qcryptographichash.h>
 #include <qsettings.h>
 
 namespace ito {
 
 //-------------------------------------------------------------------------------------
 ProjectOrganizer::ProjectOrganizer(QObject* parent) :
-    QObject(parent), m_setWorkingDirectoryOnOpen(true)
+    QObject(parent), m_setWorkingDirectoryOnOpen(true), m_restoreScripts(true)
 {
     loadSettings();
 }
@@ -47,6 +48,24 @@ ProjectOrganizer::~ProjectOrganizer()
 /*static*/ QString ProjectOrganizer::projectFileFilter()
 {
     return tr("itom project files (*.%1)").arg(ProjectFile::fileExtension());
+}
+
+//-------------------------------------------------------------------------------------
+/*static*/ QString ProjectOrganizer::settingsGroup(const QString& projectFilePath)
+{
+    const QByteArray hash = QCryptographicHash::hash(
+        ProjectFile::normalize(projectFilePath).toUtf8(), QCryptographicHash::Sha1);
+    return "Projects/" + QString::fromLatin1(hash.toHex().left(16));
+}
+
+//-------------------------------------------------------------------------------------
+void ProjectOrganizer::reloadSettings()
+{
+    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+    settings.beginGroup("Projects");
+    m_setWorkingDirectoryOnOpen = settings.value("setWorkingDirectoryOnOpen", true).toBool();
+    m_restoreScripts = settings.value("restoreScripts", true).toBool();
+    settings.endGroup();
 }
 
 //-------------------------------------------------------------------------------------
@@ -72,6 +91,7 @@ void ProjectOrganizer::loadSettings()
     }
 
     m_setWorkingDirectoryOnOpen = settings.value("setWorkingDirectoryOnOpen", true).toBool();
+    m_restoreScripts = settings.value("restoreScripts", true).toBool();
     settings.endGroup();
 }
 
@@ -82,6 +102,7 @@ void ProjectOrganizer::saveSettings() const
     settings.beginGroup("Projects");
     settings.setValue("recent", m_recentProjects);
     settings.setValue("setWorkingDirectoryOnOpen", m_setWorkingDirectoryOnOpen);
+    settings.setValue("restoreScripts", m_restoreScripts);
     settings.endGroup();
 }
 
@@ -260,8 +281,9 @@ ito::RetVal ProjectOrganizer::closeProject(ItomSharedSemaphore* waitCond)
 
     if (m_project.isValid())
     {
+        const QString filePath = m_project.filePath();
         m_project = ProjectFile();
-        emit projectClosed();
+        emit projectClosed(filePath);
     }
 
     if (waitCond)

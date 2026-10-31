@@ -40,7 +40,9 @@ namespace ito {
     with an ItomSharedSemaphore and read the result from the semaphore's returnValue.
 
     Settings (group "Projects"): "recent" (QStringList of project files, newest first),
-    "setWorkingDirectoryOnOpen" (bool, default true).
+    "setWorkingDirectoryOnOpen" (bool, default true), "restoreScripts" (bool, default true).
+    Per-project state (scripts, expanded folders) is stored in the group returned by
+    settingsGroup(projectFilePath).
 */
 class ProjectOrganizer : public QObject
 {
@@ -82,8 +84,17 @@ public:
         return m_setWorkingDirectoryOnOpen;
     }
 
+    //! if true, the open scripts are saved and restored per project
+    bool restoreScripts() const
+    {
+        return m_restoreScripts;
+    }
+
     //! file filter for open/save dialogs
     static QString projectFileFilter();
+
+    //! settings group of the per-user state of a project ("Projects/<hash of the file path>")
+    static QString settingsGroup(const QString& projectFilePath);
 
 public slots:
     //! opens the project file. A warning (e.g. missing folders) does not prevent opening.
@@ -106,9 +117,14 @@ public slots:
     void clearRecentProjects();
     void setSetWorkingDirectoryOnOpen(bool enabled);
 
+    //! re-reads the options from the settings (e.g. after the property dialog was closed)
+    void reloadSettings();
+
 signals:
     void projectOpened(const QString& filePath);
-    void projectClosed();
+
+    //! emitted after the project was closed; filePath is the file of the closed project
+    void projectClosed(const QString& filePath);
     void projectChanged(); //!< folders, main script etc. of the open project changed
     void recentProjectsChanged();
     void workingDirectoryChanged(); //!< the cwd was changed by the organizer
@@ -122,6 +138,7 @@ private:
     ProjectFile m_project;
     QStringList m_recentProjects;
     bool m_setWorkingDirectoryOnOpen;
+    bool m_restoreScripts;
 };
 
 } // namespace ito

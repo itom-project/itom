@@ -50,8 +50,16 @@ public:
         bool askFirst = true, bool ignoreNewScripts = false, int* saveScriptState = NULL);
     RetVal closeAllScripts(bool saveFirst);
 
-    void saveScriptState();
-    RetVal restoreScriptState();
+    //! saves the open scripts to the settings. settingsGroup is the group for the open
+    //! scripts (default "ScriptEditorOrganizer"); e.g. a project group for project sessions.
+    void saveScriptState(const QString& settingsGroup = QString());
+    //! restores the open scripts from the settings group (default "ScriptEditorOrganizer")
+    RetVal restoreScriptState(const QString& settingsGroup = QString());
+
+    //! saves the open scripts to saveGroup, closes them (asks for unsaved changes) and
+    //! restores the scripts of restoreGroup. Returns false if the user cancelled.
+    //! Empty group names mean the default group (see saveScriptState).
+    Q_INVOKABLE bool switchScriptSession(const QString& saveGroup, const QString& restoreGroup);
 
     const QStringList& getRecentlyUsedFiles() const
     {

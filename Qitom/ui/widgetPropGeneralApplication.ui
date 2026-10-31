@@ -31,6 +31,35 @@
     </widget>
    </item>
    <item>
+    <widget class="QGroupBox" name="groupBoxProjects">
+     <property name="title">
+      <string>Projects</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayoutProjects">
+      <item>
+       <widget class="QCheckBox" name="checkProjectSetWorkingDir">
+        <property name="toolTip">
+         <string>If checked, the current working directory is changed to the working directory of a project when it is opened.</string>
+        </property>
+        <property name="text">
+         <string>Set the current working directory when a project is opened</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="checkProjectRestoreScripts">
+        <property name="toolTip">
+         <string>If checked, the open scripts are remembered per project: opening a project closes the current scripts and restores the scripts of the project, closing it restores the previous scripts.</string>
+        </property>
+        <property name="text">
+         <string>Remember and restore the open scripts per project</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
     <widget class="QGroupBox" name="groupBox_3">
      <property name="minimumSize">
       <size>

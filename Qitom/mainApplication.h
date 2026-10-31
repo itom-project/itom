@@ -30,6 +30,7 @@
 #include "organizer/uiOrganizer.h"
 #include "organizer/processOrganizer.h"
 #include "organizer/projectOrganizer.h"
+#include "organizer/projectSession.h"
 #include "organizer/designerWidgetOrganizer.h"
 //
 #include "widgets/mainWindow.h"
@@ -86,6 +87,7 @@ class MainApplication : public QObject
 
         ito::ProcessOrganizer* m_processOrganizer;            /*!< pointer to processOrganizer */
         ito::ProjectOrganizer* m_projectOrganizer;            /*!< pointer to projectOrganizer */
+        ito::ProjectSession* m_projectSession;                /*!< applies scripts and python path per project */
 
         QTranslator m_translator;                             /*!< pointer to a language-translation, different than the standard language (en) */
         QTranslator m_qtTranslator;

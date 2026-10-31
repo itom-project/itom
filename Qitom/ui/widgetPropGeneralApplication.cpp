@@ -56,6 +56,11 @@ void WidgetPropGeneralApplication::readSettings()
 
     settings.endGroup();
 
+    settings.beginGroup("Projects");
+    ui.checkProjectSetWorkingDir->setChecked(settings.value("setWorkingDirectoryOnOpen", true).toBool());
+    ui.checkProjectRestoreScripts->setChecked(settings.value("restoreScripts", true).toBool());
+    settings.endGroup();
+
     settings.beginGroup("Application");
     ui.spinBoxTimeoutGeneral->setValue(settings.value("timeoutGeneral", PLUGINWAIT).toInt());
     ui.spinBoxTimeoutInitClose->setValue(settings.value("timeoutInitClose", 10000).toInt());
@@ -103,6 +108,11 @@ void WidgetPropGeneralApplication::writeSettings()
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("MainWindow");
     settings.setValue("askBeforeClose", ui.checkAskBeforeExit->isChecked());
+    settings.endGroup();
+
+    settings.beginGroup("Projects");
+    settings.setValue("setWorkingDirectoryOnOpen", ui.checkProjectSetWorkingDir->isChecked());
+    settings.setValue("restoreScripts", ui.checkProjectRestoreScripts->isChecked());
     settings.endGroup();
 
     QStringList files;
