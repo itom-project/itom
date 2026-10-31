@@ -244,6 +244,8 @@ int main(int argc, char *argv[])
     //      run=pathToPythonFile : runs the given script (if it exists) after possible autostart scripts added to the selected user role, put
     //                             'pathToPythonFile' in "..." if it contains spaces or other special characters. You can stack multiple run= items to execute multiple scripts.
     //      pipManager : only opens the Python Pip Manager to update packages like Numpy. Numpy cannot be updated if itom is running since Numpy is used and files are blocked.
+    //      project=pathToProjectFile : opens the given itom project (*.itomproject) at start. A *.itomproject file given
+    //                             without 'project=' is opened as project, too.
 
     QStringList args;
     for (int i = 0; i < argc; ++i)
@@ -455,11 +457,20 @@ int main(int argc, char *argv[])
         //check if args contains entries with .py at the end, these files should be opened as scripts at startup
         QStringList scriptsToOpen;
         QStringList scriptsToExecute;
+        QString projectToOpen;
         for (int argIdx = 0; argIdx < args.size(); ++argIdx)
         {
             const QString a = args.at(argIdx);
 
-            if (a.endsWith(".py", Qt::CaseInsensitive))
+            if (a.startsWith("project="))
+            {
+                projectToOpen = a.mid(QString("project=").size());
+            }
+            else if (a.endsWith(".itomproject", Qt::CaseInsensitive))
+            {
+                projectToOpen = a;
+            }
+            else if (a.endsWith(".py", Qt::CaseInsensitive))
             {
                 if (a.startsWith("run="))
                 {
@@ -478,7 +489,7 @@ int main(int argc, char *argv[])
             }
         }
 
-        mainApp.setupApplication(scriptsToOpen, scriptsToExecute);
+        mainApp.setupApplication(scriptsToOpen, scriptsToExecute, projectToOpen);
 
         qDebug("starting main event loop");
 

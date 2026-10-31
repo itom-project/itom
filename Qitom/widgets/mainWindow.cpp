@@ -221,6 +221,7 @@ MainWindow::MainWindow() :
             m_fileSystemDock, SIGNAL(currentDirChanged()), this, SLOT(currentDirectoryChanged()));
         connect(m_fileSystemDock, &FileSystemDockWidget::openProjectRequested, this, &MainWindow::mnuOpenProject);
         connect(m_fileSystemDock, &FileSystemDockWidget::newProjectRequested, this, &MainWindow::mnuNewProject);
+        connect(m_fileSystemDock, &FileSystemDockWidget::openFolderAsProjectRequested, this, &MainWindow::newProjectFromFolder);
         addDockWidget(Qt::LeftDockWidgetArea, m_fileSystemDock);
     }
 
@@ -1479,6 +1480,19 @@ void MainWindow::mnuNewProject()
         this, tr("Select the root folder of the new project"), QDir::currentPath());
 
     if (folder.isEmpty())
+    {
+        return;
+    }
+
+    newProjectFromFolder(folder);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void MainWindow::newProjectFromFolder(const QString& folder)
+{
+    ProjectOrganizer* projOrg = qobject_cast<ProjectOrganizer*>(AppManagement::getProjectOrganizer());
+
+    if (!projOrg || folder.isEmpty())
     {
         return;
     }

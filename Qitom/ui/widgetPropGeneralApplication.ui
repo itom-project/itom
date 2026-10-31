@@ -56,6 +56,16 @@
         </property>
        </widget>
       </item>
+      <item>
+       <widget class="QCheckBox" name="checkProjectReopenLast">
+        <property name="toolTip">
+         <string>If checked, the project that was open when itom was closed is opened again at the next start.</string>
+        </property>
+        <property name="text">
+         <string>Reopen the last project at start</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>

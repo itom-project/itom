@@ -33,7 +33,8 @@ namespace ito {
 
 //-------------------------------------------------------------------------------------
 ProjectOrganizer::ProjectOrganizer(QObject* parent) :
-    QObject(parent), m_setWorkingDirectoryOnOpen(true), m_restoreScripts(true)
+    QObject(parent), m_setWorkingDirectoryOnOpen(true), m_restoreScripts(true),
+    m_reopenLastProject(false)
 {
     loadSettings();
 }
@@ -65,6 +66,7 @@ void ProjectOrganizer::reloadSettings()
     settings.beginGroup("Projects");
     m_setWorkingDirectoryOnOpen = settings.value("setWorkingDirectoryOnOpen", true).toBool();
     m_restoreScripts = settings.value("restoreScripts", true).toBool();
+    m_reopenLastProject = settings.value("reopenLastProject", false).toBool();
     settings.endGroup();
 }
 
@@ -92,6 +94,8 @@ void ProjectOrganizer::loadSettings()
 
     m_setWorkingDirectoryOnOpen = settings.value("setWorkingDirectoryOnOpen", true).toBool();
     m_restoreScripts = settings.value("restoreScripts", true).toBool();
+    m_reopenLastProject = settings.value("reopenLastProject", false).toBool();
+    m_lastProject = ProjectFile::normalize(settings.value("lastProject").toString());
     settings.endGroup();
 }
 
@@ -103,6 +107,8 @@ void ProjectOrganizer::saveSettings() const
     settings.setValue("recent", m_recentProjects);
     settings.setValue("setWorkingDirectoryOnOpen", m_setWorkingDirectoryOnOpen);
     settings.setValue("restoreScripts", m_restoreScripts);
+    settings.setValue("reopenLastProject", m_reopenLastProject);
+    settings.setValue("lastProject", m_lastProject);
     settings.endGroup();
 }
 
@@ -189,6 +195,7 @@ ito::RetVal ProjectOrganizer::openProject(const QString& filePath, ItomSharedSem
         }
 
         m_project = project;
+        m_lastProject = m_project.filePath();
         addRecentProject(m_project.filePath());
         emit projectOpened(m_project.filePath());
         applyWorkingDirectory();
@@ -259,6 +266,7 @@ ito::RetVal ProjectOrganizer::saveProject(const QString& filePath, ItomSharedSem
 
         if (!retval.containsError())
         {
+            m_lastProject = m_project.filePath();
             addRecentProject(m_project.filePath());
             emit projectChanged();
         }
@@ -283,6 +291,8 @@ ito::RetVal ProjectOrganizer::closeProject(ItomSharedSemaphore* waitCond)
     {
         const QString filePath = m_project.filePath();
         m_project = ProjectFile();
+        m_lastProject.clear();
+        saveSettings();
         emit projectClosed(filePath);
     }
 

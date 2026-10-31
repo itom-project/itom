@@ -147,6 +147,7 @@ namespace ito
             ShortcutAction* m_pActPasteItems;
             ShortcutAction* m_pActNewDir;
             ShortcutAction* m_pActNewPyFile;
+            ShortcutAction* m_pActOpenAsProject;
             ShortcutAction* m_pViewList;
             ShortcutAction* m_pViewDetails;
 
@@ -157,6 +158,7 @@ namespace ito
             void modeChanged(int mode); //!< emitted with the new BrowserMode
             void openProjectRequested(); //!< forwarded from the project view (placeholder buttons)
             void newProjectRequested();
+            void openFolderAsProjectRequested(const QString &folder); //!< from the context menu of the file system view
 
         private slots:
             void mnuMoveCDUp();
@@ -174,6 +176,7 @@ namespace ito
             void mnuPasteItems();
             void mnuNewDir();
             void mnuNewPyFile();
+            void mnuOpenAsProject();
             void showList();
             void showDetails();
             void mnuToggleView();

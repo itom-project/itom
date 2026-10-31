@@ -59,6 +59,7 @@ void WidgetPropGeneralApplication::readSettings()
     settings.beginGroup("Projects");
     ui.checkProjectSetWorkingDir->setChecked(settings.value("setWorkingDirectoryOnOpen", true).toBool());
     ui.checkProjectRestoreScripts->setChecked(settings.value("restoreScripts", true).toBool());
+    ui.checkProjectReopenLast->setChecked(settings.value("reopenLastProject", false).toBool());
     settings.endGroup();
 
     settings.beginGroup("Application");
@@ -113,6 +114,7 @@ void WidgetPropGeneralApplication::writeSettings()
     settings.beginGroup("Projects");
     settings.setValue("setWorkingDirectoryOnOpen", ui.checkProjectSetWorkingDir->isChecked());
     settings.setValue("restoreScripts", ui.checkProjectRestoreScripts->isChecked());
+    settings.setValue("reopenLastProject", ui.checkProjectReopenLast->isChecked());
     settings.endGroup();
 
     QStringList files;

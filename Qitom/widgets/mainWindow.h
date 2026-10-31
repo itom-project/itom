@@ -246,6 +246,7 @@ private slots:
     void lastFileOpen(const QString &path);
 
     void mnuNewProject();
+    void newProjectFromFolder(const QString &folder);
     void mnuOpenProject();
     void mnuSaveProject();
     void mnuCloseProject();

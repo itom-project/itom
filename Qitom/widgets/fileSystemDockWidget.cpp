@@ -69,7 +69,7 @@ FileSystemDockWidget::FileSystemDockWidget(
     m_pActOpenInEditor(nullptr), m_pActExecuteFile(nullptr), m_pActLocateOnDisk(nullptr),
     m_pActRenameItem(nullptr), m_pActDeleteItems(nullptr), m_pActCutItems(nullptr),
     m_pActCopyItems(nullptr), m_pActPasteItems(nullptr), m_pActNewDir(nullptr),
-    m_pActNewPyFile(nullptr), m_pViewList(nullptr), m_pViewDetails(nullptr),
+    m_pActNewPyFile(nullptr), m_pActOpenAsProject(nullptr), m_pViewList(nullptr), m_pViewDetails(nullptr),
     m_lastMovedShowDirAction(nullptr), m_linkColor(Qt::blue), m_historyStack(), m_forwardStack()
 {
     QAction* act = nullptr;
@@ -361,6 +361,7 @@ FileSystemDockWidget::~FileSystemDockWidget()
     DELETE_AND_SET_NULL(m_pActPasteItems);
     DELETE_AND_SET_NULL(m_pActNewDir);
     DELETE_AND_SET_NULL(m_pActNewPyFile);
+    DELETE_AND_SET_NULL(m_pActOpenAsProject);
     DELETE_AND_SET_NULL(m_pViewList);
     DELETE_AND_SET_NULL(m_pViewDetails);
 }
@@ -483,6 +484,9 @@ void FileSystemDockWidget::createActions()
     m_pActNewPyFile =
         new ShortcutAction(QIcon(":/files/icons/new.png"), tr("Create New Python File"), this);
     m_pActNewPyFile->connectTrigger(this, SLOT(mnuNewPyFile()));
+    m_pActOpenAsProject = new ShortcutAction(
+        QIcon(":/files/icons/multiFilePython.png"), tr("Open Folder as Project"), this);
+    m_pActOpenAsProject->connectTrigger(this, SLOT(mnuOpenAsProject()));
 
     m_pViewList = new ShortcutAction(QIcon(":/application/icons/kdb_form.png"), tr("List"), this);
     m_pViewList->connectTrigger(this, SLOT(showList()));
@@ -521,6 +525,8 @@ void FileSystemDockWidget::createMenus()
     m_pContextMenu->addAction(m_pActMoveCDUp->action());
     m_pContextMenu->addAction(m_pActNewDir->action());
     m_pContextMenu->addAction(m_pActNewPyFile->action());
+    m_pContextMenu->addSeparator();
+    m_pContextMenu->addAction(m_pActOpenAsProject->action());
 
     m_pFileSystemSettingMenu = new QMenu(tr("Settings"), this);
     m_pFileSystemSettingMenu->setIcon(QIcon(":/application/icons/adBlockAction.png"));
@@ -747,6 +753,42 @@ void FileSystemDockWidget::updateActions()
     if (m_pActNewPyFile)
     {
         m_pActNewPyFile->setVisible(selectedOnlyOne || !selected, true);
+    }
+
+    if (m_pActOpenAsProject)
+    {
+        // the selected folder, or the base directory if nothing is selected
+        const bool isDir = selectedOnlyOne && m_pFileSystemModel->fileInfo(indexList.first()).isDir();
+        m_pActOpenAsProject->setVisible(isDir || !selected, true);
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! opens the selected folder (or the base directory) as a new project
+void FileSystemDockWidget::mnuOpenAsProject()
+{
+    QModelIndexList indexList = FileOperations::uniqueRowIndexes(m_pTreeView->selectedIndexes());
+    QString folder = m_baseDirectory;
+
+    if (indexList.size() == 1)
+    {
+        const QFileInfo fi = m_pFileSystemModel->fileInfo(indexList.first());
+
+        if (!fi.isDir())
+        {
+            return;
+        }
+
+        folder = fi.absoluteFilePath();
+    }
+    else if (indexList.size() > 1)
+    {
+        return;
+    }
+
+    if (QDir(folder).exists())
+    {
+        emit openFolderAsProjectRequested(QDir::cleanPath(folder));
     }
 }
 

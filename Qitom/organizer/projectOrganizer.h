@@ -40,7 +40,8 @@ namespace ito {
     with an ItomSharedSemaphore and read the result from the semaphore's returnValue.
 
     Settings (group "Projects"): "recent" (QStringList of project files, newest first),
-    "setWorkingDirectoryOnOpen" (bool, default true), "restoreScripts" (bool, default true).
+    "setWorkingDirectoryOnOpen" (bool, default true), "restoreScripts" (bool, default true),
+    "reopenLastProject" (bool, default false), "lastProject" (str, written by the organizer).
     Per-project state (scripts, expanded folders) is stored in the group returned by
     settingsGroup(projectFilePath).
 */
@@ -88,6 +89,18 @@ public:
     bool restoreScripts() const
     {
         return m_restoreScripts;
+    }
+
+    //! if true, the project that was open at the last shutdown is opened again at start
+    bool reopenLastProject() const
+    {
+        return m_reopenLastProject;
+    }
+
+    //! file of the project that was open at the last shutdown (empty if none)
+    QString lastProject() const
+    {
+        return m_lastProject;
     }
 
     //! file filter for open/save dialogs
@@ -139,6 +152,8 @@ private:
     QStringList m_recentProjects;
     bool m_setWorkingDirectoryOnOpen;
     bool m_restoreScripts;
+    bool m_reopenLastProject;
+    QString m_lastProject;
 };
 
 } // namespace ito

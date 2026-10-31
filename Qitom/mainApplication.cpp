@@ -395,7 +395,7 @@ QPixmap MainApplication::getSplashScreenPixmap() const
 
     \sa PythonEngine, MainWindow, ScriptEditorOrganizer
 */
-void MainApplication::setupApplication(const QStringList &scriptsToOpen, const QStringList &scriptsToExecute)
+void MainApplication::setupApplication(const QStringList &scriptsToOpen, const QStringList &scriptsToExecute, const QString &projectToOpen /*= QString()*/)
 {
     RetVal retValue = retOk;
     RetVal pyRetValue;
@@ -1028,6 +1028,34 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
     settings->beginGroup("CurrentStatus");
     QString currentDir = (settings->value("currentDir", QDir::currentPath()).toString());
     settings->endGroup();
+
+    // project to open at start: command line, or the last project (if enabled)
+    QString startProject = projectToOpen;
+
+    if (startProject.isEmpty() && m_projectOrganizer && m_projectOrganizer->reopenLastProject())
+    {
+        startProject = m_projectOrganizer->lastProject();
+    }
+
+    if (!startProject.isEmpty())
+    {
+        if (!QFileInfo(startProject).isFile())
+        {
+            std::cerr << "The project file '" << startProject.toLatin1().data() << "' does not exist.\n" << std::endl;
+            startProject.clear();
+        }
+        else if (m_projectOrganizer && m_projectOrganizer->setWorkingDirectoryOnOpen())
+        {
+            // the autostart scan below sets the current directory in the python thread
+            // afterwards; use the working directory of the project there, too.
+            ProjectFile project;
+
+            if (!project.load(startProject).containsError() && QFileInfo(project.workingDirectory()).isDir())
+            {
+                currentDir = project.workingDirectory();
+            }
+        }
+    }
     DELETE_AND_SET_NULL(settings);
 
     m_pSplashScreen->showMessage(tr("scan and run scripts in autostart folder..."), Qt::AlignRight | Qt::AlignBottom, m_splashScreenTextColor);
@@ -1035,6 +1063,17 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
 
     //force python to scan and run files in autostart folder in itom-packages folder
     QMetaObject::invokeMethod(m_pyEngine, "scanAndRunAutostartFolder", Q_ARG(QString, currentDir));
+
+    if (!startProject.isEmpty() && m_projectOrganizer)
+    {
+        RetVal projectRet = m_projectOrganizer->openProject(startProject);
+
+        if (projectRet.containsError())
+        {
+            std::cerr << "The project '" << startProject.toLatin1().data() << "' could not be opened: "
+                      << projectRet.errorMessage() << "\n" << std::endl;
+        }
+    }
 
     ////since autostart-files could have changed current directory, re-change it to the value of the settings-file
     //settings.beginGroup("CurrentStatus");

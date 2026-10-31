@@ -226,6 +226,39 @@ TEST(ProjectOrganizer, reloadSettingsReadsOptions)
 }
 
 //-------------------------------------------------------------------------------------
+TEST(ProjectOrganizer, lastProjectIsRemembered)
+{
+    CwdRestore cwd;
+    clearProjectSettings();
+    QTemporaryDir dir;
+    const QString root = ProjectFile::normalize(dir.path());
+    const QString file = root + "/last.itomproject";
+
+    {
+        ProjectOrganizer org;
+        EXPECT_FALSE(org.reopenLastProject());
+        EXPECT_TRUE(org.lastProject().isEmpty());
+
+        ASSERT_FALSE(org.newProjectFromFolder(root, "last").containsError());
+        EXPECT_TRUE(org.lastProject().isEmpty()); // not saved yet
+        ASSERT_FALSE(org.saveProject().containsError());
+        EXPECT_EQ(org.lastProject(), file);
+        // destructor saves the settings while the project is open
+    }
+
+    {
+        ProjectOrganizer org;
+        EXPECT_EQ(org.lastProject(), file);
+        ASSERT_FALSE(org.openProject(file).containsError());
+        org.closeProject();
+        EXPECT_TRUE(org.lastProject().isEmpty());
+    }
+
+    ProjectOrganizer org;
+    EXPECT_TRUE(org.lastProject().isEmpty());
+}
+
+//-------------------------------------------------------------------------------------
 TEST(ProjectOrganizer, semaphoreReceivesReturnValue)
 {
     CwdRestore cwd;
