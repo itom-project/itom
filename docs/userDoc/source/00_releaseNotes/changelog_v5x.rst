@@ -39,5 +39,10 @@ itom
 * Script editor: files bigger than 5 MB (setting ``CodeEditor/largeFileSizeKB``) are opened in a reduced mode without occurrence highlighting, bracket matching, caret line and folding, such that the editor stays responsive. See :ref:`gui-editor-large-files`.
 * Script editor: the "Go To" dialog (Ctrl+G) accepts a column in addition to the line number.
 * New unittest ``unittest_codeeditor`` (GoogleTest) for the file type registry and the syntax highlighting of the text-like files.
+* File system toolbox: new project mode next to the file system mode (switch in the toolbar). A project (``*.itomproject``, JSON) consists of one or more root folders,
+  an optional main script, a working directory, additional python path entries and exclude patterns. Projects are created, opened, saved and closed via the
+  ``File`` menu (``New Project From Folder...``, ``Open Project...``, ``Recent Projects``, ``Save Project``, ``Close Project``) or via the new python functions
+  ``itom.openProject``, ``itom.newProject``, ``itom.saveProject``, ``itom.closeProject`` and ``itom.getProjectInfo``.
+* New unittests ``unittest_fileoperations`` and ``unittest_project`` (GoogleTest) for the shared file helpers, the project file, the project tree model and the project organizer.
 * Fix: itom crashed at startup if the clipboard has no mime data (e.g. with the Qt platform plugin ``offscreen``).
 * Script editor windows can be docked and undocked by drag and drop. Tabs can be dragged to other script windows, to the edges of the main window or outside of itom. Undocked script windows can be docked by releasing them above the edges of the main window. See :ref:`gui-editor-dock-drag-drop`.
