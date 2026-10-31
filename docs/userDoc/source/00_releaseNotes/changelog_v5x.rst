@@ -25,4 +25,29 @@ External
 itom
 ----
 
+* The script editor can now open and edit other text-like files (e.g. txt, json, yaml, xml, ini, md, cmake, bat) besides python scripts.
+  These files get a suffix specific syntax highlighting. Python specific features (run, debug, code checker, auto completion, ...) are disabled for them.
+  The list of supported suffixes is configurable in the property dialog (tab scripts). See :ref:`gui-editor-text-files`.
+* ``itom.openScript`` can also open the supported text files in the script editor.
+* The script editor detects UTF-16 and UTF-32 files with a byte order mark (e.g. data listings exported by Windows tools) and loads them correctly. The BOM of UTF-8/16/32 files is written again when the file is saved (before, it was dropped).
+* Fix: files were read and written in text mode, which removed or added ``\r`` bytes before the decoding. UTF-16/32 files were corrupted (garbage characters, missing lines) and the garbage made the editor very slow. Files are now read and written in binary mode, the line endings are handled after the decoding.
+* The python specific actions (run, debug, step, auto format, rename, docstring), the script toolbar and the outline navigation bar are hidden, if the current tab is a text file.
+* Script editor: very long lines (e.g. data listings with thousands of characters per line) are drawn clipped to the visible part. Before, Qt drew the complete lines at every repaint, such that every keystroke took hundreds of milliseconds in such files.
+* Script editor: the highlighting of the occurrences of the word under the cursor was very slow (seconds) for frequent words in big files. The search is now linear and stops at the maximum number of highlighted occurrences.
+* Script editor: the line ending of a file (LF or CRLF) is kept when it is saved (before, the line ending of the platform was always used). The line ending is shown in the status bar and can be changed via the context menu of the editor. See :ref:`gui-editor-line-endings`.
+* Script editor: UTF-16 files without BOM are detected, if their first bytes look like latin text.
+* Script editor: files bigger than 5 MB (setting ``CodeEditor/largeFileSizeKB``) are opened in a reduced mode without occurrence highlighting, bracket matching, caret line and folding, such that the editor stays responsive. See :ref:`gui-editor-large-files`.
+* Script editor: the "Go To" dialog (Ctrl+G) accepts a column in addition to the line number.
+* New unittest ``unittest_codeeditor`` (GoogleTest) for the file type registry and the syntax highlighting of the text-like files.
+* File system toolbox: new project mode next to the file system mode (switch in the toolbar). A project (``*.itomproject``, JSON) consists of one or more root folders,
+  an optional main script, a working directory, additional python path entries and exclude patterns. Projects are created, opened, saved and closed via the
+  ``File`` menu (``New Project From Folder...``, ``Open Project...``, ``Recent Projects``, ``Save Project``, ``Close Project``) or via the new python functions
+  ``itom.openProject``, ``itom.newProject``, ``itom.saveProject``, ``itom.closeProject`` and ``itom.getProjectInfo``.
+  The open scripts and the expanded folders are remembered per project (option in the property dialog, tab ``General > Application``), and the
+  ``pythonPath`` entries of a project are added to ``sys.path`` while the project is open.
+  A project can be given on the command line (``itom project=<file>`` or ``itom <file>.itomproject``), the last project can be reopened at start
+  (option in the property dialog) and a folder of the file system view can be opened as project via its context menu.
+  The project view supports cut, copy, paste and drag and drop of files and folders (also from and to the file system view and other applications).
+* New unittests ``unittest_fileoperations`` and ``unittest_project`` (GoogleTest) for the shared file helpers, the project file, the project tree model and the project organizer.
+* Fix: itom crashed at startup if the clipboard has no mime data (e.g. with the Qt platform plugin ``offscreen``).
 * Script editor windows can be docked and undocked by drag and drop. Tabs can be dragged to other script windows, to the edges of the main window or outside of itom. Undocked script windows can be docked by releasing them above the edges of the main window. See :ref:`gui-editor-dock-drag-drop`.

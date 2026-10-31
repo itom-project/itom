@@ -20,49 +20,63 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#include "python/pythonEngineInc.h"
 #include "fileSystemDockWidget.h"
-#include "../global.h"
 #include "../AppManagement.h"
+#include "../global.h"
 #include "../helper/IOHelper.h"
+#include "../helper/editorFileType.h"
+#include "../helper/fileOperations.h"
 #include "../organizer/userOrganizer.h"
+#include "python/pythonEngineInc.h"
 
-#include <qheaderview.h>
+#include <qapplication.h>
 #include <qclipboard.h>
-#include <qsettings.h>
+#include <qcombobox.h>
+#include <qdesktopservices.h>
 #include <qfiledialog.h>
+#include <qfileiconprovider.h>
+#include <qheaderview.h>
 #include <qlayout.h>
 #include <qmessagebox.h>
-#include <qsizepolicy.h>
-#include <qdesktopservices.h>
-#include <qurl.h>
-#include <qprocess.h>
-#include <qcombobox.h>
-#include <qapplication.h>
-#include <qshortcut.h>
 #include <qmimedata.h>
-#include <qfileiconprovider.h>
+#include <qprocess.h>
+#include <qset.h>
+#include <qsettings.h>
+#include <qshortcut.h>
+#include <qsizepolicy.h>
+#include <qurl.h>
 
 namespace ito {
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &objName, QWidget *parent, bool docked, bool isDockAvailable, tFloatingStyle floatingStyle, tMovingStyle movingStyle, const QString &baseDirectory) :
+FileSystemDockWidget::FileSystemDockWidget(
+    const QString& title,
+    const QString& objName,
+    QWidget* parent,
+    bool docked,
+    bool isDockAvailable,
+    tFloatingStyle floatingStyle,
+    tMovingStyle movingStyle,
+    const QString& baseDirectory) :
     AbstractDockWidget(docked, isDockAvailable, floatingStyle, movingStyle, title, objName, parent),
+    m_pStackedWidget(nullptr), m_pProjectBrowser(nullptr), m_pModeActionGroup(nullptr),
+    m_pActModeFileSystem(nullptr), m_pActModeProject(nullptr), m_mode(FileSystemMode),
     m_pShowDirListMenu(nullptr), m_pFileSystemSettingMenu(nullptr), m_pContextMenu(nullptr),
     m_pPathEdit(nullptr), m_pMainToolbar(nullptr), m_pTreeView(nullptr), m_pLblFilter(nullptr),
     m_pCmbFilter(nullptr), m_pFileSystemModel(nullptr), m_baseDirectory(QString()),
-    m_pActMoveCDUp(nullptr), m_pActSelectCD(nullptr),
-    m_pActOpenFile(nullptr), m_pActExecuteFile(nullptr), m_pActLocateOnDisk(nullptr),
+    m_pActMoveCDUp(nullptr), m_pActSelectCD(nullptr), m_pActOpenFile(nullptr),
+    m_pActOpenInEditor(nullptr), m_pActExecuteFile(nullptr), m_pActLocateOnDisk(nullptr),
     m_pActRenameItem(nullptr), m_pActDeleteItems(nullptr), m_pActCutItems(nullptr),
     m_pActCopyItems(nullptr), m_pActPasteItems(nullptr), m_pActNewDir(nullptr),
-    m_pActNewPyFile(nullptr), m_pViewList(nullptr), m_pViewDetails(nullptr), m_lastMovedShowDirAction(nullptr),
-    m_linkColor(Qt::blue), m_historyStack(), m_forwardStack()
+    m_pActNewPyFile(nullptr), m_pActOpenAsProject(nullptr), m_pViewList(nullptr), m_pViewDetails(nullptr),
+    m_lastMovedShowDirAction(nullptr), m_linkColor(Qt::blue), m_historyStack(), m_forwardStack()
 {
     QAction* act = nullptr;
     QString actCheckedStr = "";
     QString actDir = "";
-    QIcon actIcon;  // we cannot assign NULL to a qicon for gcc, so rely on default constructor ... hope this works
+    QIcon actIcon; // we cannot assign NULL to a qicon for gcc, so rely on default constructor ...
+                   // hope this works
 
     m_pShowDirListMenu = new QMenu(tr("Last used directories"), this);
     m_pShowDirListMenu->setIcon(QIcon(":/files/icons/browser.png"));
@@ -81,13 +95,13 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
 
         if (dir.mid(0, 1) == "@")
         {
-            actIcon= QIcon(":/application/icons/pinChecked.png");
+            actIcon = QIcon(":/application/icons/pinChecked.png");
             actCheckedStr = "@";
             actDir = dir.mid(1);
         }
         else
         {
-            actIcon= QIcon(":/application/icons/empty.png");
+            actIcon = QIcon(":/application/icons/empty.png");
             actCheckedStr = "";
             actDir = dir;
         }
@@ -99,33 +113,36 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
             act->setData(actDir);
             act->setCheckable(false);
             act->setWhatsThis(actCheckedStr);
-            connect(act, &QAction::triggered, [=]() {
-                newDirSelected(actDir);
-            });
+            connect(act, &QAction::triggered, [=]() { newDirSelected(actDir); });
             count++;
         }
     }
 
     settings.endArray();
 
-    m_pPathEdit = new QTextBrowser(this); //QTextEdit(this);
+    m_pPathEdit = new QTextBrowser(this); // QTextEdit(this);
     m_pPathEdit->setReadOnly(true);
     m_pPathEdit->setMaximumHeight(25);
     m_pPathEdit->setLineWrapMode(QTextEdit::NoWrap);
     m_pPathEdit->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     m_pPathEdit->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     m_pPathEdit->setOpenLinks(false);
-    connect(m_pPathEdit, &QTextBrowser::anchorClicked, this, &FileSystemDockWidget::pathAnchorClicked);
+    connect(
+        m_pPathEdit, &QTextBrowser::anchorClicked, this, &FileSystemDockWidget::pathAnchorClicked);
 
     m_pLblFilter = new QLabel(tr("Filter:"), this);
-    m_pLblFilter->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
+    m_pLblFilter->setAlignment(Qt::AlignRight | Qt::AlignTrailing | Qt::AlignVCenter);
     m_pLblFilter->setMaximumSize(m_pLblFilter->minimumSizeHint());
 
     m_pCmbFilter = new QComboBox(this);
     m_pCmbFilter->setEditable(true);
     m_pCmbFilter->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Fixed);
     m_pCmbFilter->setToolTip(tr("file name filters (semicolon or space separated list)"));
-    connect(m_pCmbFilter, &QComboBox::editTextChanged, this, &FileSystemDockWidget::cmbFilterEditTextChanged);
+    connect(
+        m_pCmbFilter,
+        &QComboBox::editTextChanged,
+        this,
+        &FileSystemDockWidget::cmbFilterEditTextChanged);
 
     m_pFileSystemModel = new ItomFileSystemModel(m_pTreeView);
     m_pFileSystemModel->setRootPath("");
@@ -133,7 +150,11 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
 
     m_pTreeView = new ito::QTreeViewItom(this);
     connect(m_pTreeView, &QTreeViewItom::activated, this, &FileSystemDockWidget::openFile);
-    connect(m_pTreeView, &QTreeViewItom::customContextMenuRequested, this, &FileSystemDockWidget::treeViewContextMenuRequested);
+    connect(
+        m_pTreeView,
+        &QTreeViewItom::customContextMenuRequested,
+        this,
+        &FileSystemDockWidget::treeViewContextMenuRequested);
     m_pTreeView->setModel(m_pFileSystemModel);
 
     // Demonstrating look and feel features
@@ -142,7 +163,7 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
     m_pTreeView->setSortingEnabled(true);
     m_pTreeView->setDefaultDropAction(Qt::MoveAction);
 
-    //TODO save to ini-file
+    // TODO save to ini-file
 
     int column = settings.value("sortColumn", 0).toInt();
 
@@ -160,11 +181,12 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
     m_pTreeView->setDragEnabled(true);
     m_pTreeView->setAcceptDrops(true);
     m_pTreeView->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    connect(m_pTreeView, &QTreeViewItom::doubleClicked, this, &FileSystemDockWidget::itemDoubleClicked);
+    connect(
+        m_pTreeView, &QTreeViewItom::doubleClicked, this, &FileSystemDockWidget::itemDoubleClicked);
 
     m_showColumnDetails = settings.value("showColumnDetails", false).toBool();
 
-#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     m_detailColumnsWidth.resize(m_pFileSystemModel->columnCount(), 120);
 #else
     m_detailColumnsWidth.reserve(m_pFileSystemModel->columnCount());
@@ -186,6 +208,8 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
 
     settings.endArray();
     treeViewHideOrShowColumns(!m_showColumnDetails);
+
+    int savedMode = settings.value("mode", (int)FileSystemMode).toInt();
     settings.endGroup();
 
     AbstractDockWidget::init();
@@ -202,21 +226,48 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
 
     m_pFileSystemModel->setNameFilterDisables(false);
 
-    QHBoxLayout *filterLayout = new QHBoxLayout;
+    QHBoxLayout* filterLayout = new QHBoxLayout;
     filterLayout->addWidget(m_pLblFilter);
     filterLayout->addWidget(m_pCmbFilter);
 
-    QVBoxLayout *mainLayout = new QVBoxLayout;
+    QVBoxLayout* mainLayout = new QVBoxLayout;
     mainLayout->setContentsMargins(0, 0, 0, 2);
     mainLayout->setSpacing(1);
     mainLayout->addWidget(m_pPathEdit);
     mainLayout->addWidget(m_pTreeView);
     mainLayout->addLayout(filterLayout);
 
-    QWidget *centerWidget = new QWidget(this);
+    QWidget* centerWidget = new QWidget(this);
     centerWidget->setLayout(mainLayout);
 
-    setContentWidget(centerWidget);
+    // project mode page
+    m_pProjectBrowser = new ProjectBrowserWidget(this);
+    connect(
+        m_pProjectBrowser,
+        &ProjectBrowserWidget::openProjectRequested,
+        this,
+        &FileSystemDockWidget::openProjectRequested);
+    connect(
+        m_pProjectBrowser,
+        &ProjectBrowserWidget::newProjectRequested,
+        this,
+        &FileSystemDockWidget::newProjectRequested);
+    connect(
+        m_pProjectBrowser,
+        &ProjectBrowserWidget::showInFileSystemRequested,
+        this,
+        &FileSystemDockWidget::showFolderInFileSystem);
+    connect(
+        m_pProjectBrowser,
+        &ProjectBrowserWidget::workingDirectoryChanged,
+        this,
+        &FileSystemDockWidget::currentDirChanged);
+
+    m_pStackedWidget = new QStackedWidget(this);
+    m_pStackedWidget->addWidget(centerWidget); // index FileSystemMode
+    m_pStackedWidget->addWidget(m_pProjectBrowser); // index ProjectMode
+
+    setContentWidget(m_pStackedWidget);
 
     fillFilterList();
 
@@ -227,10 +278,9 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
         &FileSystemDockWidget::onMouseReleased);
 
 
+    //    QObject::dumpObjectTree();
 
-//    QObject::dumpObjectTree();
-
-#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     // since (at least) Qt 6.7, QFileSystemModel
     // creates a default QAbstractFileIconProvider,
     // that shows very basic folder icons. However, we
@@ -244,6 +294,9 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
 
     m_historyStack.clear();
     m_forwardStack.clear();
+
+    // the mode actions are created in createActions(), called by init() above
+    setMode(savedMode == (int)ProjectMode ? ProjectMode : FileSystemMode);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -257,7 +310,10 @@ FileSystemDockWidget::~FileSystemDockWidget()
     for (int i = 0; i < m_pShowDirListMenu->actions().count(); i++)
     {
         settings.setArrayIndex(i);
-        settings.setValue("dir", m_pShowDirListMenu->actions()[i]->whatsThis() + m_pShowDirListMenu->actions()[i]->data().toString());
+        settings.setValue(
+            "dir",
+            m_pShowDirListMenu->actions()[i]->whatsThis() +
+                m_pShowDirListMenu->actions()[i]->data().toString());
     }
 
     settings.endArray();
@@ -279,6 +335,7 @@ FileSystemDockWidget::~FileSystemDockWidget()
 
     settings.setValue("sortColumn", m_pTreeView->header()->sortIndicatorSection());
     settings.setValue("sortOrder", m_pTreeView->header()->sortIndicatorOrder());
+    settings.setValue("mode", (int)m_mode);
 
     settings.endGroup();
 
@@ -294,6 +351,7 @@ FileSystemDockWidget::~FileSystemDockWidget()
     DELETE_AND_SET_NULL(m_pActMoveCDUp);
     DELETE_AND_SET_NULL(m_pActSelectCD);
     DELETE_AND_SET_NULL(m_pActOpenFile);
+    DELETE_AND_SET_NULL(m_pActOpenInEditor);
     DELETE_AND_SET_NULL(m_pActExecuteFile);
     DELETE_AND_SET_NULL(m_pActLocateOnDisk);
     DELETE_AND_SET_NULL(m_pActRenameItem);
@@ -303,14 +361,15 @@ FileSystemDockWidget::~FileSystemDockWidget()
     DELETE_AND_SET_NULL(m_pActPasteItems);
     DELETE_AND_SET_NULL(m_pActNewDir);
     DELETE_AND_SET_NULL(m_pActNewPyFile);
+    DELETE_AND_SET_NULL(m_pActOpenAsProject);
     DELETE_AND_SET_NULL(m_pViewList);
     DELETE_AND_SET_NULL(m_pViewDetails);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void FileSystemDockWidget::setLinkColor(const QColor &color)
+void FileSystemDockWidget::setLinkColor(const QColor& color)
 {
-    //write in a qss file:
+    // write in a qss file:
     /*
     ito--FileSystemDockWidget
     {
@@ -336,41 +395,98 @@ void FileSystemDockWidget::setLinkColor(const QColor &color)
 //----------------------------------------------------------------------------------------------------------------------------------
 void FileSystemDockWidget::createActions()
 {
-    ito::UserOrganizer *uOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
+    ito::UserOrganizer* uOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
 
-    m_pActSelectCD = new ShortcutAction(QIcon(":/files/icons/dirOpen.png"), tr("Open New Folder"), this);
+    m_pModeActionGroup = new QActionGroup(this);
+    m_pModeActionGroup->setExclusive(true);
+    m_pActModeFileSystem =
+        new QAction(QIcon(":/files/icons/browser.png"), tr("File System"), m_pModeActionGroup);
+    m_pActModeFileSystem->setCheckable(true);
+    m_pActModeFileSystem->setToolTip(tr("Show the files of the current working directory"));
+    m_pActModeFileSystem->setData((int)FileSystemMode);
+    m_pActModeProject =
+        new QAction(QIcon(":/files/icons/multiFilePython.png"), tr("Project"), m_pModeActionGroup);
+    m_pActModeProject->setCheckable(true);
+    m_pActModeProject->setToolTip(tr("Show the folders of the opened project"));
+    m_pActModeProject->setData((int)ProjectMode);
+    connect(
+        m_pModeActionGroup,
+        &QActionGroup::triggered,
+        this,
+        &FileSystemDockWidget::modeActionTriggered);
+
+    m_pActSelectCD =
+        new ShortcutAction(QIcon(":/files/icons/dirOpen.png"), tr("Open New Folder"), this);
     m_pActSelectCD->connectTrigger(this, SLOT(mnuSelectCD()));
-    m_pActMoveCDUp = new ShortcutAction(QIcon(":/files/icons/dir-parent-folder.png"), tr("Change To Parent Folder"), this);
+    m_pActMoveCDUp = new ShortcutAction(
+        QIcon(":/files/icons/dir-parent-folder.png"), tr("Change To Parent Folder"), this);
     m_pActMoveCDUp->connectTrigger(this, SLOT(mnuMoveCDUp()));
-    m_pActCopyDir = new ShortcutAction(QIcon(":/files/icons/dirCopy.png"), tr("Copy Path To Clipboard"), this);
+    m_pActCopyDir =
+        new ShortcutAction(QIcon(":/files/icons/dirCopy.png"), tr("Copy Path To Clipboard"), this);
     m_pActCopyDir->connectTrigger(this, SLOT(mnuCopyDir()));
-    m_pActPasteDir = new ShortcutAction(QIcon(":/files/icons/dirPaste.png"), tr("Get Path From Clipboard"), this);
+    m_pActPasteDir = new ShortcutAction(
+        QIcon(":/files/icons/dirPaste.png"), tr("Get Path From Clipboard"), this);
     m_pActPasteDir->connectTrigger(this, SLOT(mnuPasteDir()));
 
     if (uOrg->currentUserHasFeature(featDeveloper))
     {
         m_pActOpenFile = new ShortcutAction(QIcon(":/files/icons/open.png"), tr("Open File"), this);
         m_pActOpenFile->connectTrigger(this, SLOT(mnuOpenFile()));
-        m_pActExecuteFile = new ShortcutAction(QIcon(":/script/icons/runScript.png"), tr("Execute File"), this);
+        m_pActOpenInEditor = new ShortcutAction(
+            QIcon(":/files/icons/fileText.png"), tr("Open in Script Editor"), this);
+        m_pActOpenInEditor->connectTrigger(this, SLOT(mnuOpenInEditor()));
+        m_pActExecuteFile =
+            new ShortcutAction(QIcon(":/script/icons/runScript.png"), tr("Execute File"), this);
         m_pActExecuteFile->connectTrigger(this, SLOT(mnuExecuteFile()));
     }
 
-    m_pActLocateOnDisk = new ShortcutAction(QIcon(":/files/icons/browser.png"), tr("Locate On Disk"), this);
+    m_pActLocateOnDisk =
+        new ShortcutAction(QIcon(":/files/icons/browser.png"), tr("Locate On Disk"), this);
     m_pActLocateOnDisk->connectTrigger(this, SLOT(mnuLocateOnDisk()));
-    m_pActRenameItem = new ShortcutAction(QIcon(":/workspace/icons/edit-rename.png"), tr("Rename"), this, QKeySequence(tr("F2")), Qt::WidgetWithChildrenShortcut);
+    m_pActRenameItem = new ShortcutAction(
+        QIcon(":/workspace/icons/edit-rename.png"),
+        tr("Rename"),
+        this,
+        QKeySequence(tr("F2")),
+        Qt::WidgetWithChildrenShortcut);
     m_pActRenameItem->connectTrigger(this, SLOT(mnuRenameItem()));
-    m_pActDeleteItems = new ShortcutAction(QIcon(":/editor/icons/editDelete.png"), tr("Delete"), this, QKeySequence::Delete, Qt::WidgetWithChildrenShortcut);
+    m_pActDeleteItems = new ShortcutAction(
+        QIcon(":/editor/icons/editDelete.png"),
+        tr("Delete"),
+        this,
+        QKeySequence::Delete,
+        Qt::WidgetWithChildrenShortcut);
     m_pActDeleteItems->connectTrigger(this, SLOT(mnuDeleteItems()));
-    m_pActCutItems = new ShortcutAction(QIcon(":/editor/icons/editCut.png"), tr("Cut"), this, QKeySequence::Cut, Qt::WidgetWithChildrenShortcut);
+    m_pActCutItems = new ShortcutAction(
+        QIcon(":/editor/icons/editCut.png"),
+        tr("Cut"),
+        this,
+        QKeySequence::Cut,
+        Qt::WidgetWithChildrenShortcut);
     m_pActCutItems->connectTrigger(this, SLOT(mnuCutItems()));
-    m_pActCopyItems = new ShortcutAction(QIcon(":/editor/icons/editCopy.png"), tr("Copy"), this, QKeySequence::Copy, Qt::WidgetWithChildrenShortcut);
+    m_pActCopyItems = new ShortcutAction(
+        QIcon(":/editor/icons/editCopy.png"),
+        tr("Copy"),
+        this,
+        QKeySequence::Copy,
+        Qt::WidgetWithChildrenShortcut);
     m_pActCopyItems->connectTrigger(this, SLOT(mnuCopyItems()));
-    m_pActPasteItems = new ShortcutAction(QIcon(":/editor/icons/editPaste.png"), tr("Paste"), this, QKeySequence::Paste, Qt::WidgetWithChildrenShortcut);
+    m_pActPasteItems = new ShortcutAction(
+        QIcon(":/editor/icons/editPaste.png"),
+        tr("Paste"),
+        this,
+        QKeySequence::Paste,
+        Qt::WidgetWithChildrenShortcut);
     m_pActPasteItems->connectTrigger(this, SLOT(mnuPasteItems()));
-    m_pActNewDir = new ShortcutAction(QIcon(":/files/icons/newDir.png"), tr("Create New Folder"), this);
+    m_pActNewDir =
+        new ShortcutAction(QIcon(":/files/icons/newDir.png"), tr("Create New Folder"), this);
     m_pActNewDir->connectTrigger(this, SLOT(mnuNewDir()));
-    m_pActNewPyFile = new ShortcutAction(QIcon(":/files/icons/new.png"), tr("Create New Python File"), this);
+    m_pActNewPyFile =
+        new ShortcutAction(QIcon(":/files/icons/new.png"), tr("Create New Python File"), this);
     m_pActNewPyFile->connectTrigger(this, SLOT(mnuNewPyFile()));
+    m_pActOpenAsProject = new ShortcutAction(
+        QIcon(":/files/icons/multiFilePython.png"), tr("Open Folder as Project"), this);
+    m_pActOpenAsProject->connectTrigger(this, SLOT(mnuOpenAsProject()));
 
     m_pViewList = new ShortcutAction(QIcon(":/application/icons/kdb_form.png"), tr("List"), this);
     m_pViewList->connectTrigger(this, SLOT(showList()));
@@ -385,6 +501,11 @@ void FileSystemDockWidget::createMenus()
     if (m_pActOpenFile)
     {
         m_pContextMenu->addAction(m_pActOpenFile->action());
+    }
+
+    if (m_pActOpenInEditor)
+    {
+        m_pContextMenu->addAction(m_pActOpenInEditor->action());
     }
 
     if (m_pActExecuteFile)
@@ -404,6 +525,8 @@ void FileSystemDockWidget::createMenus()
     m_pContextMenu->addAction(m_pActMoveCDUp->action());
     m_pContextMenu->addAction(m_pActNewDir->action());
     m_pContextMenu->addAction(m_pActNewPyFile->action());
+    m_pContextMenu->addSeparator();
+    m_pContextMenu->addAction(m_pActOpenAsProject->action());
 
     m_pFileSystemSettingMenu = new QMenu(tr("Settings"), this);
     m_pFileSystemSettingMenu->setIcon(QIcon(":/application/icons/adBlockAction.png"));
@@ -414,8 +537,8 @@ void FileSystemDockWidget::createMenus()
 //----------------------------------------------------------------------------------------------------------------------------------
 void FileSystemDockWidget::createToolBars()
 {
-    QWidget *spacerWidget = new QWidget();
-    QHBoxLayout *spacerLayout = new QHBoxLayout();
+    QWidget* spacerWidget = new QWidget();
+    QHBoxLayout* spacerLayout = new QHBoxLayout();
     spacerLayout->addItem(new QSpacerItem(5, 5, QSizePolicy::Expanding, QSizePolicy::Minimum));
     spacerLayout->setStretch(0, 2);
     spacerWidget->setLayout(spacerLayout);
@@ -426,6 +549,9 @@ void FileSystemDockWidget::createToolBars()
     m_pMainToolbar->setFloatable(false);
     addToolBar(m_pMainToolbar, "mainToolBar");
 
+    m_pMainToolbar->addAction(m_pActModeFileSystem);
+    m_pMainToolbar->addAction(m_pActModeProject);
+    m_pMainToolbar->addSeparator();
     m_pMainToolbar->addAction(m_pShowDirListMenu->menuAction());
     m_pMainToolbar->addAction(m_pActSelectCD->action());
     m_pMainToolbar->addAction(m_pActMoveCDUp->action());
@@ -433,39 +559,102 @@ void FileSystemDockWidget::createToolBars()
     m_pMainToolbar->addAction(m_pActPasteDir->action());
     m_pMainToolbar->addWidget(spacerWidget);
     m_pMainToolbar->addAction(m_pFileSystemSettingMenu->menuAction());
-    connect(m_pFileSystemSettingMenu->menuAction(),SIGNAL(triggered()), this, SLOT(mnuToggleView()));
+    connect(
+        m_pFileSystemSettingMenu->menuAction(), SIGNAL(triggered()), this, SLOT(mnuToggleView()));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! switches between the file system view and the project view
+/*!
+    The file system view keeps following the current working directory in the background,
+    such that it is up to date when the user switches back. The toolbar actions that only
+    make sense for the file system view are hidden in the project mode.
+*/
+void FileSystemDockWidget::setMode(BrowserMode mode)
+{
+    const bool fileSystem = (mode == FileSystemMode);
+    m_mode = mode;
+
+    if (m_pStackedWidget)
+    {
+        m_pStackedWidget->setCurrentIndex(fileSystem ? 0 : 1);
+    }
+
+    if (m_pActModeFileSystem && m_pActModeProject)
+    {
+        m_pActModeFileSystem->setChecked(fileSystem);
+        m_pActModeProject->setChecked(!fileSystem);
+    }
+
+    if (m_pShowDirListMenu)
+    {
+        m_pShowDirListMenu->menuAction()->setVisible(fileSystem);
+    }
+
+    if (m_pFileSystemSettingMenu)
+    {
+        m_pFileSystemSettingMenu->menuAction()->setVisible(fileSystem);
+    }
+
+    ShortcutAction* fileSystemActions[] = {
+        m_pActSelectCD, m_pActMoveCDUp, m_pActCopyDir, m_pActPasteDir};
+
+    for (ShortcutAction* act : fileSystemActions)
+    {
+        if (act)
+        {
+            act->setVisible(fileSystem, fileSystem);
+        }
+    }
+
+    emit modeChanged((int)m_mode);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void FileSystemDockWidget::updatePythonActions()
+{
+    updateActions();
+
+    if (m_pProjectBrowser)
+    {
+        m_pProjectBrowser->updateActions();
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! shows the folder in the file system view (requested from the project view)
+void FileSystemDockWidget::showFolderInFileSystem(const QString& folder)
+{
+    if (QDir(folder).exists())
+    {
+        changeBaseDirectory(QDir::cleanPath(folder));
+    }
+
+    setMode(FileSystemMode);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void FileSystemDockWidget::modeActionTriggered(QAction* action)
+{
+    if (action)
+    {
+        setMode(action->data().toInt() == (int)ProjectMode ? ProjectMode : FileSystemMode);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void FileSystemDockWidget::updateActions()
 {
-    QModelIndexList indexList;
-
-    //filter indexList such that only one index per row and parent is available
-    bool found;
-    foreach(const QModelIndex &idx, m_pTreeView->selectedIndexes())
-    {
-        found = false;
-        foreach(const QModelIndex &idx2, indexList)
-        {
-            if (idx.row() == idx2.row() && idx.parent() == idx2.parent())
-            {
-                found = true;
-                break;
-            }
-        }
-
-        if (!found)
-        {
-            indexList.append(idx);
-        }
-    }
+    // filter indexList such that only one index per row and parent is available
+    QModelIndexList indexList = FileOperations::uniqueRowIndexes(m_pTreeView->selectedIndexes());
 
     bool selected = indexList.count();
 
     bool isFile = false;
     bool areFiles = false;
     bool isPyFile = false;
+    bool isOtherEditableFile =
+        false; // text-like file (not python) that can be opened in the script editor
     bool pyNotRun = false;
     bool selectedOnlyOne = (indexList.count() == 1);
 
@@ -474,6 +663,8 @@ void FileSystemDockWidget::updateActions()
         QFileInfo fileinfo = m_pFileSystemModel->fileInfo(indexList.first());
         isFile = fileinfo.isFile();
         isPyFile = isFile && (fileinfo.suffix().toLower() == "py");
+        isOtherEditableFile =
+            isFile && !isPyFile && EditorFileType::isEditable(fileinfo.filePath());
         if (isPyFile)
         {
             PythonEngine* eng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
@@ -484,7 +675,7 @@ void FileSystemDockWidget::updateActions()
     {
         areFiles = indexList.size() == 0 ? false : true;
 
-        foreach (const QModelIndex &idx, indexList)
+        foreach (const QModelIndex& idx, indexList)
         {
             QFileInfo fileinfo = m_pFileSystemModel->fileInfo(idx);
             areFiles = fileinfo.isFile();
@@ -496,7 +687,8 @@ void FileSystemDockWidget::updateActions()
         }
     }
 
-    //shortcuts are always enabled, since the selection-changed signal of the tree-view does not call updateActions.
+    // shortcuts are always enabled, since the selection-changed signal of the tree-view does not
+    // call updateActions.
     if (m_pActMoveCDUp)
     {
         QDir baseDir(m_baseDirectory);
@@ -506,6 +698,11 @@ void FileSystemDockWidget::updateActions()
     if (m_pActOpenFile)
     {
         m_pActOpenFile->setVisible(isFile || areFiles, true);
+    }
+
+    if (m_pActOpenInEditor)
+    {
+        m_pActOpenInEditor->setVisible(isOtherEditableFile, true);
     }
 
     if (m_pActExecuteFile)
@@ -557,6 +754,42 @@ void FileSystemDockWidget::updateActions()
     {
         m_pActNewPyFile->setVisible(selectedOnlyOne || !selected, true);
     }
+
+    if (m_pActOpenAsProject)
+    {
+        // the selected folder, or the base directory if nothing is selected
+        const bool isDir = selectedOnlyOne && m_pFileSystemModel->fileInfo(indexList.first()).isDir();
+        m_pActOpenAsProject->setVisible(isDir || !selected, true);
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! opens the selected folder (or the base directory) as a new project
+void FileSystemDockWidget::mnuOpenAsProject()
+{
+    QModelIndexList indexList = FileOperations::uniqueRowIndexes(m_pTreeView->selectedIndexes());
+    QString folder = m_baseDirectory;
+
+    if (indexList.size() == 1)
+    {
+        const QFileInfo fi = m_pFileSystemModel->fileInfo(indexList.first());
+
+        if (!fi.isDir())
+        {
+            return;
+        }
+
+        folder = fi.absoluteFilePath();
+    }
+    else if (indexList.size() > 1)
+    {
+        return;
+    }
+
+    if (QDir(folder).exists())
+    {
+        emit openFolderAsProjectRequested(QDir::cleanPath(folder));
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -565,9 +798,11 @@ void FileSystemDockWidget::fillFilterList()
     const QString settingsFile = AppManagement::getSettingsFile();
     const QString itomFiles = IOHelper::getAllItomFilesName();
     const QStringList filterList =
-        IOHelper::getFileFilters(IOHelper::IOFilters(
-        IOHelper::IOInput | IOHelper::IOOutput | IOHelper::IOPlugin |
-        IOHelper::IOAllFiles | IOHelper::IOMimeAll)).split(";;");
+        IOHelper::getFileFilters(
+            IOHelper::IOFilters(
+                IOHelper::IOInput | IOHelper::IOOutput | IOHelper::IOPlugin | IOHelper::IOAllFiles |
+                IOHelper::IOMimeAll))
+            .split(";;");
     const QRegularExpression filterPatternRegex("^[a-zA-Z0-9-_ ]+ \\((\\*\\..*)\\)$");
 
     QSettings settings(settingsFile, QSettings::IniFormat);
@@ -610,7 +845,7 @@ void FileSystemDockWidget::fillFilterList()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void FileSystemDockWidget::cmbFilterEditTextChanged(const QString &text)
+void FileSystemDockWidget::cmbFilterEditTextChanged(const QString& text)
 {
     if (m_defaultFilterPatterns.contains(text))
     {
@@ -618,11 +853,12 @@ void FileSystemDockWidget::cmbFilterEditTextChanged(const QString &text)
     }
     else
     {
-        //text can contain a semicolon and/or space separated list of filters, e.g. "*.png *.jpg" or "*.png;*.jpg" or "*.png; *.jpg"
+        // text can contain a semicolon and/or space separated list of filters, e.g. "*.png *.jpg"
+        // or "*.png;*.jpg" or "*.png; *.jpg"
         QString text_ = text.trimmed();
         QStringList filters = text.split(";");
         QStringList filters2;
-        foreach (const QString &f, filters)
+        foreach (const QString& f, filters)
         {
             filters2.append(f.trimmed().split(" "));
         }
@@ -636,7 +872,8 @@ void FileSystemDockWidget::cmbFilterEditTextChanged(const QString &text)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal FileSystemDockWidget::changeBaseDirectory(QString dir, bool clearHistory /*=false*/, bool addToHistory /*=true*/)
+RetVal FileSystemDockWidget::changeBaseDirectory(
+    QString dir, bool clearHistory /*=false*/, bool addToHistory /*=true*/)
 {
     QAction* act = nullptr;
 
@@ -678,14 +915,16 @@ RetVal FileSystemDockWidget::changeBaseDirectory(QString dir, bool clearHistory 
     }
     else
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("Directory '%1' does not exist!").arg(dir).toLatin1().data());
+        retValue += ito::RetVal(
+            ito::retError, 0, tr("Directory '%1' does not exist!").arg(dir).toLatin1().data());
     }
 
     // not existing
     if (retValue.containsError())
     {
         int i = 0;
-        while ((i < m_pShowDirListMenu->actions().count()) && (m_pShowDirListMenu->actions()[i]->data().toString() != dir))
+        while ((i < m_pShowDirListMenu->actions().count()) &&
+               (m_pShowDirListMenu->actions()[i]->data().toString() != dir))
         {
             i++;
         }
@@ -698,7 +937,7 @@ RetVal FileSystemDockWidget::changeBaseDirectory(QString dir, bool clearHistory 
     }
     else
     {
-        m_pTreeView->setRootIndex(m_pFileSystemModel->index(m_baseDirectory)); //setCurrentIndex
+        m_pTreeView->setRootIndex(m_pFileSystemModel->index(m_baseDirectory)); // setCurrentIndex
 
         bool isInList = false;
         foreach (act, m_pShowDirListMenu->actions())
@@ -727,9 +966,7 @@ RetVal FileSystemDockWidget::changeBaseDirectory(QString dir, bool clearHistory 
             // variable.
             QString baseDirectoryCopy = QString(m_baseDirectory);
 
-            connect(act, &QAction::triggered, [=]() {
-                newDirSelected(baseDirectoryCopy);
-            });
+            connect(act, &QAction::triggered, [=]() { newDirSelected(baseDirectoryCopy); });
         }
 
         if (m_pShowDirListMenu->actions().count() > 0)
@@ -755,17 +992,18 @@ RetVal FileSystemDockWidget::changeBaseDirectory(QString dir, bool clearHistory 
     // renew numbering
     for (int x = 0; x < m_pShowDirListMenu->actions().count(); x++)
     {
-        m_pShowDirListMenu->actions()[x]->setText(QString::number(x+1) + " " + m_pShowDirListMenu->actions()[x]->data().toString());
+        m_pShowDirListMenu->actions()[x]->setText(
+            QString::number(x + 1) + " " + m_pShowDirListMenu->actions()[x]->data().toString());
     }
 
     m_pPathEdit->setToolTip(m_baseDirectory);
     m_pPathEdit->setHtml(getHtmlTag(m_baseDirectory));
-    //m_pPathEdit->scrollContentsBy(500,0);
+    // m_pPathEdit->scrollContentsBy(500,0);
 
-    //m_pPathEdit->scrollToAnchor("last");
-//    m_pPathEdit->setText(m_baseDirectory);
-    //m_pPathEdit->textCursor().setPosition(40); //movePosition(QTextCursor::End);
-    //m_pPathEdit->ensureCursorVisible();
+    // m_pPathEdit->scrollToAnchor("last");
+    //    m_pPathEdit->setText(m_baseDirectory);
+    // m_pPathEdit->textCursor().setPosition(40); //movePosition(QTextCursor::End);
+    // m_pPathEdit->ensureCursorVisible();
 
     updateActions();
 
@@ -806,14 +1044,14 @@ void FileSystemDockWidget::mnuMoveCDUp()
 //----------------------------------------------------------------------------------------------------------------------------------
 void FileSystemDockWidget::mnuCopyDir()
 {
-    QClipboard *clipboard = QApplication::clipboard();
+    QClipboard* clipboard = QApplication::clipboard();
     clipboard->setText(QDir::toNativeSeparators(m_baseDirectory));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void FileSystemDockWidget::mnuPasteDir()
 {
-    QClipboard *clipboard = QApplication::clipboard();
+    QClipboard* clipboard = QApplication::clipboard();
     QString text = clipboard->text();
     QFileInfo file(text);
     if (file.exists())
@@ -837,7 +1075,7 @@ void FileSystemDockWidget::mnuLocateOnDisk()
     QSet<QString> dirSet;
     QDir dir;
 
-    foreach(index, indexList)
+    foreach (index, indexList)
     {
         if (index.isValid())
         {
@@ -849,16 +1087,14 @@ void FileSystemDockWidget::mnuLocateOnDisk()
             else
             {
                 dirSet.insert(fileInfo.canonicalFilePath());
-                //dirSet.insert(fileInfo.absoluteDir().canonicalPath());
+                // dirSet.insert(fileInfo.absoluteDir().canonicalPath());
             }
         }
     }
 
-    //QString dirString;
-    foreach(const QString &dirString, dirSet)
+    foreach (const QString& dirString, dirSet)
     {
-        //QDesktopServices::openUrl(QUrl("file:///" + dirString, QUrl::StrictMode));
-        showInGraphicalShell(dirString);
+        FileOperations::showInGraphicalShell(dirString);
     }
 }
 
@@ -867,40 +1103,52 @@ void FileSystemDockWidget::mnuExecuteFile()
 {
     if (m_pTreeView->selectedIndexes().count() > 0)
     {
-        PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
+        PythonEngine* pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
         if (pyEngine)
         {
-            QMetaObject::invokeMethod(pyEngine, "pythonRunFile", Q_ARG(QString, m_pFileSystemModel->fileInfo(m_pTreeView->selectedIndexes().first()).filePath()));
+            QMetaObject::invokeMethod(
+                pyEngine,
+                "pythonRunFile",
+                Q_ARG(
+                    QString,
+                    m_pFileSystemModel->fileInfo(m_pTreeView->selectedIndexes().first())
+                        .filePath()));
         }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! opens the selected text-like files always in the script editor (even if a plugin could load them
+//! as data)
+void FileSystemDockWidget::mnuOpenInEditor()
+{
+    ito::UserOrganizer* uOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
+
+    if (!uOrg->currentUserHasFeature(featDeveloper))
+    {
+        return;
+    }
+
+    QFileInfoList fileInfos;
+
+    foreach (const QModelIndex& idx, m_pTreeView->selectedIndexes())
+    {
+        fileInfos.append(m_pFileSystemModel->fileInfo(idx));
+    }
+
+    foreach (const QString& filePath, FileOperations::editableFilePaths(fileInfos))
+    {
+        IOHelper::openPythonScript(filePath);
     }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void FileSystemDockWidget::mnuOpenFile()
 {
-    QModelIndexList indexList;
+    // filter indexList such that only one index per row and parent is available
+    QModelIndexList indexList = FileOperations::uniqueRowIndexes(m_pTreeView->selectedIndexes());
 
-    //filter indexList such that only one index per row and parent is available
-    bool found;
-    foreach(const QModelIndex &idx, m_pTreeView->selectedIndexes())
-    {
-        found = false;
-        foreach(const QModelIndex &idx2, indexList)
-        {
-            if (idx.row() == idx2.row() && idx.parent() == idx2.parent())
-            {
-                found = true;
-                break;
-            }
-        }
-
-        if (!found)
-        {
-            indexList.append(idx);
-        }
-    }
-
-    foreach (const QModelIndex &idx, indexList)
+    foreach (const QModelIndex& idx, indexList)
     {
         openFile(idx);
     }
@@ -933,10 +1181,15 @@ void FileSystemDockWidget::openFile(const QModelIndex& index)
     {
         if (!this->m_pFileSystemModel->fileInfo(index).isDir())
         {
-            ito::UserOrganizer *uOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
+            ito::UserOrganizer* uOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
             if (uOrg->currentUserHasFeature(featDeveloper))
             {
-                IOHelper::openGeneralFile(m_pFileSystemModel->filePath(index), true, true, this, SLOT(processError(QProcess::ProcessError)));
+                IOHelper::openGeneralFile(
+                    m_pFileSystemModel->filePath(index),
+                    true,
+                    true,
+                    this,
+                    SLOT(processError(QProcess::ProcessError)));
             }
         }
         else
@@ -947,7 +1200,7 @@ void FileSystemDockWidget::openFile(const QModelIndex& index)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void FileSystemDockWidget::treeViewContextMenuRequested(const QPoint &pos)
+void FileSystemDockWidget::treeViewContextMenuRequested(const QPoint& pos)
 {
     updateActions();
     m_pContextMenu->exec(pos + m_pTreeView->mapToGlobal(m_pTreeView->pos()));
@@ -956,26 +1209,8 @@ void FileSystemDockWidget::treeViewContextMenuRequested(const QPoint &pos)
 //----------------------------------------------------------------------------------------------------------------------------------
 void FileSystemDockWidget::mnuRenameItem()
 {
-    //filter indexList such that only one index per row and parent is available
-    bool found;
-    QModelIndexList indexList;
-    foreach(const QModelIndex &idx, m_pTreeView->selectedIndexes())
-    {
-        found = false;
-        foreach(const QModelIndex &idx2, indexList)
-        {
-            if (idx.row() == idx2.row() && idx.parent() == idx2.parent())
-            {
-                found = true;
-                break;
-            }
-        }
-
-        if (!found)
-        {
-            indexList.append(idx);
-        }
-    }
+    // filter indexList such that only one index per row and parent is available
+    QModelIndexList indexList = FileOperations::uniqueRowIndexes(m_pTreeView->selectedIndexes());
 
     if (indexList.count() == 1)
     {
@@ -989,26 +1224,8 @@ void FileSystemDockWidget::mnuDeleteItems()
     QString itemName;
     QStringList fileList;
 
-    //filter indexList such that only one index per row and parent is available
-    bool found;
-    QModelIndexList indexList;
-    foreach(const QModelIndex &idx, m_pTreeView->selectedIndexes())
-    {
-        found = false;
-        foreach(const QModelIndex &idx2, indexList)
-        {
-            if (idx.row() == idx2.row() && idx.parent() == idx2.parent())
-            {
-                found = true;
-                break;
-            }
-        }
-
-        if (!found)
-        {
-            indexList.append(idx);
-        }
-    }
+    // filter indexList such that only one index per row and parent is available
+    QModelIndexList indexList = FileOperations::uniqueRowIndexes(m_pTreeView->selectedIndexes());
 
     if (indexList.count() == 1)
     {
@@ -1019,10 +1236,16 @@ void FileSystemDockWidget::mnuDeleteItems()
         itemName = tr("the selected items");
     }
 
-    if (QMessageBox::question(this, tr("Delete"), tr("Do you really want to delete %1?").arg(itemName), QMessageBox::Yes, QMessageBox::No, QMessageBox::NoButton) == QMessageBox::Yes)
+    if (QMessageBox::question(
+            this,
+            tr("Delete"),
+            tr("Do you really want to delete %1?").arg(itemName),
+            QMessageBox::Yes,
+            QMessageBox::No,
+            QMessageBox::NoButton) == QMessageBox::Yes)
     {
         // first we have to create a list with all selected files
-        foreach(const QModelIndex &idx, indexList)
+        foreach (const QModelIndex& idx, indexList)
         {
             fileList.append(m_pFileSystemModel->fileInfo(idx).filePath());
         }
@@ -1032,7 +1255,8 @@ void FileSystemDockWidget::mnuDeleteItems()
         {
             if (!m_pFileSystemModel->remove(m_pFileSystemModel->index(fileList[i])))
             {
-                QMessageBox::warning(this, tr("Delete"), tr("Error while deleting '%1'!").arg(fileList[i]));
+                QMessageBox::warning(
+                    this, tr("Delete"), tr("Error while deleting '%1'!").arg(fileList[i]));
                 break;
             }
         }
@@ -1043,9 +1267,9 @@ void FileSystemDockWidget::mnuDeleteItems()
 void FileSystemDockWidget::mnuCutItems()
 {
     QModelIndexList filesToCut;
-    QClipboard *clipboard = QApplication::clipboard();
+    QClipboard* clipboard = QApplication::clipboard();
 
-    foreach (const QModelIndex &idx, m_pTreeView->selectedIndexes())
+    foreach (const QModelIndex& idx, m_pTreeView->selectedIndexes())
     {
         if (idx.column() == 0)
         {
@@ -1055,7 +1279,7 @@ void FileSystemDockWidget::mnuCutItems()
 
     if (filesToCut.count() > 0)
     {
-        QMimeData *mimeData = m_pFileSystemModel->mimeData(filesToCut);
+        QMimeData* mimeData = m_pFileSystemModel->mimeData(filesToCut);
         m_clipboardCutData = mimeData->urls();
         clipboard->setMimeData(mimeData, QClipboard::Clipboard);
     }
@@ -1065,11 +1289,11 @@ void FileSystemDockWidget::mnuCutItems()
 void FileSystemDockWidget::mnuCopyItems()
 {
     QModelIndexList filesToCopy;
-    QClipboard *clipboard = QApplication::clipboard();
+    QClipboard* clipboard = QApplication::clipboard();
 
     m_clipboardCutData.clear();
 
-    foreach (const QModelIndex &idx, m_pTreeView->selectedIndexes())
+    foreach (const QModelIndex& idx, m_pTreeView->selectedIndexes())
     {
         if (idx.column() == 0)
         {
@@ -1079,7 +1303,7 @@ void FileSystemDockWidget::mnuCopyItems()
 
     if (filesToCopy.count() > 0)
     {
-        QMimeData *mimeData = m_pFileSystemModel->mimeData(filesToCopy);
+        QMimeData* mimeData = m_pFileSystemModel->mimeData(filesToCopy);
         clipboard->setMimeData(mimeData, QClipboard::Clipboard);
     }
 }
@@ -1088,8 +1312,8 @@ void FileSystemDockWidget::mnuCopyItems()
 void FileSystemDockWidget::mnuPasteItems()
 {
     QModelIndex index;
-    QClipboard *clipboard = QApplication::clipboard();
-    const QMimeData *mimeData = clipboard ? clipboard->mimeData(QClipboard::Clipboard) : nullptr;
+    QClipboard* clipboard = QApplication::clipboard();
+    const QMimeData* mimeData = clipboard ? clipboard->mimeData(QClipboard::Clipboard) : nullptr;
     bool result = false;
 
     if (mimeData && mimeData->hasUrls())
@@ -1110,20 +1334,26 @@ void FileSystemDockWidget::mnuPasteItems()
             }
         }
 
-        if (mimeData->urls() == m_clipboardCutData) //this mime data is result of a cut-action
+        if (mimeData->urls() == m_clipboardCutData) // this mime data is result of a cut-action
         {
-            result = m_pFileSystemModel->dropMimeData(mimeData, Qt::MoveAction, 0 /*unused in Qt*/, 0 /*unused in Qt*/, index);
+            result = m_pFileSystemModel->dropMimeData(
+                mimeData, Qt::MoveAction, 0 /*unused in Qt*/, 0 /*unused in Qt*/, index);
             m_clipboardCutData.clear();
             clipboard->clear();
         }
         else
         {
-            result = m_pFileSystemModel->dropMimeData(mimeData, Qt::CopyAction, 0 /*unused in Qt*/, 0 /*unused in Qt*/, index);
+            result = m_pFileSystemModel->dropMimeData(
+                mimeData, Qt::CopyAction, 0 /*unused in Qt*/, 0 /*unused in Qt*/, index);
         }
 
         if (!result)
         {
-            QMessageBox::warning(this, tr("Error pasting or copying files"), tr("At least one of the selected items could not be moved or copied. Maybe an existing file should have been overwritten, but could not be deleted first."));
+            QMessageBox::warning(
+                this,
+                tr("Error pasting or copying files"),
+                tr("At least one of the selected items could not be moved or copied. Maybe an "
+                   "existing file should have been overwritten, but could not be deleted first."));
         }
     }
 }
@@ -1148,21 +1378,8 @@ void FileSystemDockWidget::mnuNewDir()
         }
     }
 
-    QString folderName = tr("New Folder");
-    QString filePath = m_pFileSystemModel->fileInfo(index).absoluteFilePath() + "/" + folderName;
-    QDir dir(filePath);
-    if (dir.exists())
-    {
-        int i = 0;
-        bool done = false;
-        while (!done)
-        {
-            i++;
-            dir.setPath(filePath + " (" + QString::number(i) + ")");
-            done = !dir.exists();
-        }
-        folderName = folderName + " (" + QString::number(i) + ")";
-    }
+    QString folderName = FileOperations::uniqueChildName(
+        m_pFileSystemModel->fileInfo(index).absoluteFilePath(), tr("New Folder"), "");
 
     index = m_pFileSystemModel->mkdir(index, folderName);
     if (index.isValid())
@@ -1196,26 +1413,13 @@ void FileSystemDockWidget::mnuNewPyFile()
         }
     }
 
-    QString fileName = tr("New Script");
-    QString filePath = m_pFileSystemModel->fileInfo(index).absoluteFilePath() + "/" + fileName;
-    QFile file(filePath + ".py");
-    if (file.exists())
-    {
-        int i = 0;
-        bool done = false;
-        while (!done)
-        {
-            i++;
-            file.setFileName(filePath + " (" + QString::number(i) + ").py");
-            done = !file.exists();
-        }
-    }
+    const QString parentDir = m_pFileSystemModel->fileInfo(index).absoluteFilePath();
+    const QString fileName = FileOperations::uniqueChildName(parentDir, tr("New Script"), ".py");
+    const QString filePath = parentDir + "/" + fileName;
 
-    if (file.open(QIODevice::WriteOnly))
+    if (!FileOperations::createEmptyFile(filePath).containsError())
     {
-        file.close();
-
-        index = m_pFileSystemModel->index(file.fileName());
+        index = m_pFileSystemModel->index(filePath);
         if (index.isValid())
         {
             m_pTreeView->setCurrentIndex(index);
@@ -1229,7 +1433,7 @@ void FileSystemDockWidget::mnuNewPyFile()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void FileSystemDockWidget::itemDoubleClicked(const QModelIndex &index)
+void FileSystemDockWidget::itemDoubleClicked(const QModelIndex& index)
 {
     if (index.isValid() && m_pFileSystemModel->fileInfo(index).isDir())
     {
@@ -1243,71 +1447,7 @@ void FileSystemDockWidget::itemDoubleClicked(const QModelIndex &index)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void FileSystemDockWidget::showInGraphicalShell(const QString & filePath)
-{
-#ifdef __APPLE__
-    QStringList args;
-    args << "-e";
-    args << "tell application \"Finder\"";
-    args << "-e";
-    args << "activate";
-    args << "-e";
-    args << "select POSIX file \""+filePath+"\"";
-    args << "-e";
-    args << "end tell";
-    QProcess::startDetached("osascript", args);
-#endif
-
-#ifdef WIN32
-    QStringList args;
-    args << "/select," << QDir::toNativeSeparators(filePath);
-    QProcess::startDetached("explorer", args);
-#endif
-//
-//    // Mac, Windows support folder or file.
-//#if defined(WIN32)
-//    const QString explorer = QProcess::systemEnvironment().searchInPath(QLatin1String("explorer.exe"));
-//    if (explorer.isEmpty()) {
-//        QMessageBox::warning(parent,
-//                             tr("Launching Windows Explorer failed"),
-//                             tr("Could not find explorer.exe in path to launch Windows Explorer."));
-//        return;
-//    }
-//    QString param;
-//    if (!QFileInfo(filePath).isDir())
-//        param = QLatin1String("/select,");
-//    param += QDir::toNativeSeparators(filePath);
-//    QProcess::startDetached(explorer, QStringList(param));
-//#elif defined(Q_OS_MAC)
-//    Q_UNUSED(parent)
-//    QStringList scriptArgs;
-//    scriptArgs << QLatin1String("-e")
-//               << QString::fromLatin1("tell application \"Finder\" to reveal POSIX file \"%1\"")
-//                                     .arg(filePath);
-//    QProcess::execute(QLatin1String("/usr/bin/osascript"), scriptArgs);
-//    scriptArgs.clear();
-//    scriptArgs << QLatin1String("-e")
-//               << QLatin1String("tell application \"Finder\" to activate");
-//    QProcess::execute("/usr/bin/osascript", scriptArgs);
-//#else
-//    // we cannot select a file here, because no file browser really supports it...
-//    const QFileInfo fileInfo(filePath);
-//    const QString folder = fileInfo.absoluteFilePath();
-//    const QString app = Utils::UnixUtils::fileBrowser(Core::ICore::instance()->settings());
-//    QProcess browserProc;
-//    const QString browserArgs = Utils::UnixUtils::substituteFileBrowserParameters(app, folder);
-//    if (debug)
-//        qDebug() <<  browserArgs;
-//    bool success = browserProc.startDetached(browserArgs);
-//    const QString error = QString::fromLocal8Bit(browserProc.readAllStandardError());
-//    success = success && error.isEmpty();
-//    if (!success)
-//        showGraphicalShellError(parent, app, error);
-//#endif
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-void FileSystemDockWidget::treeViewHideOrShowColumns(const bool &hide)
+void FileSystemDockWidget::treeViewHideOrShowColumns(const bool& hide)
 {
     for (int i = 1; i < m_pFileSystemModel->columnCount(); ++i)
     {
@@ -1360,9 +1500,9 @@ void FileSystemDockWidget::mnuToggleView()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void FileSystemDockWidget::removeActionFromDirList(const int &pos)
+void FileSystemDockWidget::removeActionFromDirList(const int& pos)
 {
-    QAction *act = m_pShowDirListMenu->actions()[pos];
+    QAction* act = m_pShowDirListMenu->actions()[pos];
     m_pShowDirListMenu->removeAction(act);
     DELETE_AND_SET_NULL(act);
 }
@@ -1377,7 +1517,7 @@ void FileSystemDockWidget::processError(QProcess::ProcessError error)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void FileSystemDockWidget::pathAnchorClicked(const QUrl &link)
+void FileSystemDockWidget::pathAnchorClicked(const QUrl& link)
 {
     if (link.isLocalFile())
     {
@@ -1431,7 +1571,7 @@ void FileSystemDockWidget::navigateForward()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-QString FileSystemDockWidget::getHtmlTag(const QString &tag)
+QString FileSystemDockWidget::getHtmlTag(const QString& tag)
 {
 #ifndef WIN32
     QChar separator = '/';
@@ -1442,12 +1582,15 @@ QString FileSystemDockWidget::getHtmlTag(const QString &tag)
     QString link = "";
     QStringList tagList = tag.split("/");
 
-    QString text = QString("<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.0//EN' 'http://www.w3.org/TR/REC-html40/strict.dtd'>\n\
+    QString text =
+        QString(
+            "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.0//EN' 'http://www.w3.org/TR/REC-html40/strict.dtd'>\n\
 <html><head><meta name='qrichtext' content='1' /><style type='text/css'>\n\
 p, li { white-space: pre-wrap; }\n\
 a { color: %1; }\n\
 </style></head><body style=' font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;'>\n\
-<p style=' margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;'><span style=' font-size:8pt;'>").arg(m_linkColor.name());
+<p style=' margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;'><span style=' font-size:8pt;'>")
+            .arg(m_linkColor.name());
     for (int x = 0; x < tagList.size(); x++)
     {
         if (x > 0)
@@ -1457,30 +1600,30 @@ a { color: %1; }\n\
         }
         link += tagList[x];
 
-		if (tagList[x].size() > 0)
-		{
-			if (link.startsWith("//"))
-			{
-				text += "<a href='file://" + link + "'>" + tagList[x] + "</a>";
-			}
-			else
-			{
-				text += "<a href='file:///" + link + "'>" + tagList[x] + "</a>";
-			}
-		}
+        if (tagList[x].size() > 0)
+        {
+            if (link.startsWith("//"))
+            {
+                text += "<a href='file://" + link + "'>" + tagList[x] + "</a>";
+            }
+            else
+            {
+                text += "<a href='file:///" + link + "'>" + tagList[x] + "</a>";
+            }
+        }
     }
     text += "<a name=\"last\"></a></span></p></body></html>";
-    //qDebug() << txt;
+    // qDebug() << txt;
     return text;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-bool FileSystemDockWidget::eventFilter(QObject *obj, QEvent *event)
+bool FileSystemDockWidget::eventFilter(QObject* obj, QEvent* event)
 {
     if (event->type() == QEvent::MouseMove)
     {
-        QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
-        QAction *actionUnderMouse = m_pShowDirListMenu->actionAt(mouseEvent->pos());
+        QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
+        QAction* actionUnderMouse = m_pShowDirListMenu->actionAt(mouseEvent->pos());
         if (m_lastMovedShowDirAction != actionUnderMouse)
         {
             if (m_lastMovedShowDirAction && m_lastMovedShowDirAction->whatsThis() == "")
@@ -1504,8 +1647,8 @@ bool FileSystemDockWidget::eventFilter(QObject *obj, QEvent *event)
     }
     else if (event->type() == QEvent::MouseButtonPress)
     {
-        QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
-        QAction *actionUnderMouse = m_pShowDirListMenu->actionAt(mouseEvent->pos());
+        QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
+        QAction* actionUnderMouse = m_pShowDirListMenu->actionAt(mouseEvent->pos());
         if (actionUnderMouse && (mouseEvent->pos().x() < 24 && mouseEvent->pos().x() > 1))
         {
             if (actionUnderMouse->whatsThis() == "")
@@ -1524,4 +1667,4 @@ bool FileSystemDockWidget::eventFilter(QObject *obj, QEvent *event)
     return QObject::eventFilter(obj, event);
 }
 
-} //end namespace ito
+} // end namespace ito

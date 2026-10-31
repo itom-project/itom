@@ -27,7 +27,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  UNITTEST_TARGETS: unittest_dataobject unittest_commonlib unittest_commonqtlib unittest_addinmanager unittest_qpropertyeditor
+  UNITTEST_TARGETS: unittest_dataobject unittest_commonlib unittest_commonqtlib unittest_addinmanager unittest_qpropertyeditor unittest_codeeditor unittest_fileoperations unittest_project
 
 jobs:
   linux-qt6:

@@ -31,6 +31,7 @@
 
 #include "../../AddInManager/addInManager.h"
 #include "../organizer/processOrganizer.h"
+#include "../organizer/projectOrganizer.h"
 #include "../organizer/uiOrganizer.h"
 #include "../organizer/userOrganizer.h"
 
@@ -109,7 +110,7 @@ MainWindow::MainWindow() :
     m_pHelpSystem(nullptr), m_pStatusLblCurrentDir(nullptr), m_pStatusLblScriptInfo(nullptr),
     m_pStatusLblPythonBusy(nullptr), m_pythonBusy(false), m_pythonDebugMode(false),
     m_pythonInWaitingMode(false), m_isFullscreen(false), m_userDefinedActionCounter(0),
-    m_plastFilesMenu(nullptr)
+    m_plastFilesMenu(nullptr), m_pMenuRecentProjects(nullptr)
 {
     // script tabs can be dropped to the main window (see DockDragDropController)
     setAcceptDrops(true);
@@ -218,6 +219,9 @@ MainWindow::MainWindow() :
             Qt::TopDockWidgetArea);
         connect(
             m_fileSystemDock, SIGNAL(currentDirChanged()), this, SLOT(currentDirectoryChanged()));
+        connect(m_fileSystemDock, &FileSystemDockWidget::openProjectRequested, this, &MainWindow::mnuOpenProject);
+        connect(m_fileSystemDock, &FileSystemDockWidget::newProjectRequested, this, &MainWindow::mnuNewProject);
+        connect(m_fileSystemDock, &FileSystemDockWidget::openFolderAsProjectRequested, this, &MainWindow::newProjectFromFolder);
         addDockWidget(Qt::LeftDockWidgetArea, m_fileSystemDock);
     }
 
@@ -418,6 +422,15 @@ MainWindow::MainWindow() :
         {
             m_console->setReadOnly(true);
         }
+    }
+
+    ProjectOrganizer* projOrg = qobject_cast<ProjectOrganizer*>(AppManagement::getProjectOrganizer());
+
+    if (projOrg)
+    {
+        connect(projOrg, &ProjectOrganizer::workingDirectoryChanged, this, &MainWindow::currentDirectoryChanged);
+        connect(projOrg, &ProjectOrganizer::projectOpened, this, &MainWindow::projectOpenedOrClosed);
+        connect(projOrg, &ProjectOrganizer::projectClosed, this, &MainWindow::projectOpenedOrClosed);
     }
 
     // signal mapper for user defined actions
@@ -1019,6 +1032,23 @@ void MainWindow::createActions()
         m_appFileOpen = new QAction(QIcon(":/files/icons/open.png"), tr("Open File..."), this);
         connect(m_appFileOpen, SIGNAL(triggered()), this, SLOT(mnuOpenFile()));
         m_appFileOpen->setShortcut(QKeySequence::Open);
+
+        // projects
+        a = m_actions["project_new"] = new QAction(QIcon(":/files/icons/newDir.png"), tr("New Project From Folder..."), this);
+        a->setStatusTip(tr("Creates a project for a folder and opens it"));
+        connect(a, &QAction::triggered, this, &MainWindow::mnuNewProject);
+
+        a = m_actions["project_open"] = new QAction(QIcon(":/files/icons/dirOpen.png"), tr("Open Project..."), this);
+        a->setStatusTip(tr("Opens an itom project file"));
+        connect(a, &QAction::triggered, this, &MainWindow::mnuOpenProject);
+
+        a = m_actions["project_save"] = new QAction(QIcon(":/files/icons/fileSave.png"), tr("Save Project"), this);
+        a->setEnabled(false);
+        connect(a, &QAction::triggered, this, &MainWindow::mnuSaveProject);
+
+        a = m_actions["project_close"] = new QAction(tr("Close Project"), this);
+        a->setEnabled(false);
+        connect(a, &QAction::triggered, this, &MainWindow::mnuCloseProject);
     }
 
     m_actions["exit"] = new QAction(tr("Exit"), this);
@@ -1240,6 +1270,15 @@ void MainWindow::createMenus()
         connect(
             this->m_plastFilesMenu, SIGNAL(aboutToShow()), this, SLOT(menuLastFilesAboutToShow()));
         // Add these menus dynamically
+
+        m_pMenuFile->addSeparator();
+        m_pMenuFile->addAction(m_actions["project_new"]);
+        m_pMenuFile->addAction(m_actions["project_open"]);
+        m_pMenuRecentProjects = m_pMenuFile->addMenu(QIcon(":/files/icons/dirOpen.png"), tr("Recent Projects"));
+        connect(m_pMenuRecentProjects, &QMenu::aboutToShow, this, &MainWindow::menuRecentProjectsAboutToShow);
+        m_pMenuFile->addAction(m_actions["project_save"]);
+        m_pMenuFile->addAction(m_actions["project_close"]);
+        m_pMenuFile->addSeparator();
     }
 
     if (uOrg->currentUserHasFeature(featProperties))
@@ -1382,6 +1421,191 @@ void MainWindow::menuLastFilesAboutToShow()
         }
     }
 }
+//----------------------------------------------------------------------------------------------------------------------------------
+void MainWindow::menuRecentProjectsAboutToShow()
+{
+    if (!m_pMenuRecentProjects)
+    {
+        return;
+    }
+
+    for (int i = 0; i < m_pMenuRecentProjects->actions().length(); ++i)
+    {
+        m_pMenuRecentProjects->actions().at(i)->deleteLater();
+    }
+    m_pMenuRecentProjects->clear();
+
+    ProjectOrganizer* projOrg = qobject_cast<ProjectOrganizer*>(AppManagement::getProjectOrganizer());
+    const QStringList recent = projOrg ? projOrg->recentProjects() : QStringList();
+
+    if (recent.isEmpty())
+    {
+        QAction* a = m_pMenuRecentProjects->addAction(tr("No Entries"));
+        a->setEnabled(false);
+        return;
+    }
+
+    foreach (const QString& path, recent)
+    {
+        QString displayedPath = path;
+        IOHelper::elideFilepathMiddle(displayedPath, 200);
+        QAction* a = new QAction(displayedPath, this);
+        a->setToolTip(QDir::toNativeSeparators(path));
+        m_pMenuRecentProjects->addAction(a);
+        connect(a, &QAction::triggered, [=]() { openProject(path); });
+    }
+
+    m_pMenuRecentProjects->addSeparator();
+    QAction* clear = m_pMenuRecentProjects->addAction(tr("Clear List"));
+    connect(clear, &QAction::triggered, [=]() {
+        ProjectOrganizer* org = qobject_cast<ProjectOrganizer*>(AppManagement::getProjectOrganizer());
+        if (org)
+        {
+            org->clearRecentProjects();
+        }
+    });
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void MainWindow::mnuNewProject()
+{
+    ProjectOrganizer* projOrg = qobject_cast<ProjectOrganizer*>(AppManagement::getProjectOrganizer());
+
+    if (!projOrg)
+    {
+        return;
+    }
+
+    const QString folder = QFileDialog::getExistingDirectory(
+        this, tr("Select the root folder of the new project"), QDir::currentPath());
+
+    if (folder.isEmpty())
+    {
+        return;
+    }
+
+    newProjectFromFolder(folder);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void MainWindow::newProjectFromFolder(const QString& folder)
+{
+    ProjectOrganizer* projOrg = qobject_cast<ProjectOrganizer*>(AppManagement::getProjectOrganizer());
+
+    if (!projOrg || folder.isEmpty())
+    {
+        return;
+    }
+
+    RetVal retval = projOrg->newProjectFromFolder(folder);
+
+    if (retval.containsError())
+    {
+        QMessageBox::critical(this, tr("New Project"), QLatin1String(retval.errorMessage()));
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void MainWindow::mnuOpenProject()
+{
+    const QString fileName = QFileDialog::getOpenFileName(
+        this, tr("Open Project"), QDir::currentPath(), ProjectOrganizer::projectFileFilter());
+
+    if (!fileName.isEmpty())
+    {
+        openProject(fileName);
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void MainWindow::openProject(const QString& filePath)
+{
+    ProjectOrganizer* projOrg = qobject_cast<ProjectOrganizer*>(AppManagement::getProjectOrganizer());
+
+    if (!projOrg)
+    {
+        return;
+    }
+
+    RetVal retval = projOrg->openProject(filePath);
+
+    if (retval.containsError())
+    {
+        QMessageBox::critical(this, tr("Open Project"), QLatin1String(retval.errorMessage()));
+    }
+    else if (retval.containsWarning())
+    {
+        QMessageBox::warning(this, tr("Open Project"), QLatin1String(retval.errorMessage()));
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void MainWindow::mnuSaveProject()
+{
+    ProjectOrganizer* projOrg = qobject_cast<ProjectOrganizer*>(AppManagement::getProjectOrganizer());
+
+    if (!projOrg || !projOrg->hasProject())
+    {
+        return;
+    }
+
+    QString filePath;
+
+    if (!QFileInfo(projOrg->project().filePath()).exists())
+    {
+        // a new project is saved to a file for the first time
+        filePath = QFileDialog::getSaveFileName(
+            this, tr("Save Project"), projOrg->project().filePath(), ProjectOrganizer::projectFileFilter());
+
+        if (filePath.isEmpty())
+        {
+            return;
+        }
+    }
+
+    RetVal retval = projOrg->saveProject(filePath);
+
+    if (retval.containsError())
+    {
+        QMessageBox::critical(this, tr("Save Project"), QLatin1String(retval.errorMessage()));
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void MainWindow::mnuCloseProject()
+{
+    ProjectOrganizer* projOrg = qobject_cast<ProjectOrganizer*>(AppManagement::getProjectOrganizer());
+
+    if (projOrg)
+    {
+        projOrg->closeProject();
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! enables the project actions and shows the project view of the file system dock widget
+void MainWindow::projectOpenedOrClosed()
+{
+    ProjectOrganizer* projOrg = qobject_cast<ProjectOrganizer*>(AppManagement::getProjectOrganizer());
+    const bool hasProject = projOrg && projOrg->hasProject();
+
+    if (m_actions.contains("project_save") && m_actions["project_save"])
+    {
+        m_actions["project_save"]->setEnabled(hasProject);
+    }
+
+    if (m_actions.contains("project_close") && m_actions["project_close"])
+    {
+        m_actions["project_close"]->setEnabled(hasProject);
+    }
+
+    if (m_fileSystemDock)
+    {
+        m_fileSystemDock->setMode(
+            hasProject ? FileSystemDockWidget::ProjectMode : FileSystemDockWidget::FileSystemMode);
+    }
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------
 void MainWindow::mnuFigureAboutToShow()
 {
@@ -1709,7 +1933,8 @@ void MainWindow::mnuOpenFile()
     RetVal retValue(retOk);
 
     QString filter = IOHelper::getFileFilters(IOHelper::IOFilters(
-        IOHelper::IOInput | IOHelper::IOPlugin | IOHelper::IOAllFiles | IOHelper::IOMimeAll));
+        IOHelper::IOInput | IOHelper::IOPlugin | IOHelper::IOAllFiles | IOHelper::IOMimeAll |
+        IOHelper::IOTextFiles));
     static QString
         selectedFilter; // since this variable is static, it will remember the last set filter.
     fileName = QFileDialog::getOpenFileName(

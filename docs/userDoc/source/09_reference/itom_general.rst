@@ -118,6 +118,16 @@ Some further commands.
 
 .. autofunction:: itom.getCurrentPath
 
+.. autofunction:: itom.openProject
+
+.. autofunction:: itom.newProject
+
+.. autofunction:: itom.saveProject
+
+.. autofunction:: itom.closeProject
+
+.. autofunction:: itom.getProjectInfo
+
 .. autofunction:: itom.getScreenInfo
 
 .. autofunction:: itom.checkSignals

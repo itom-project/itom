@@ -19,6 +19,7 @@
     You should have received a copy of the GNU Library General Public License
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
+#include <qfileinfo.h>
 #include "mainApplication.h"
 #include "main.h"
 #include "AppManagement.h"
@@ -236,13 +237,15 @@ int main(int argc, char *argv[])
 
     //  possible arguments are:
 
-    //      *.py : opens the given python file in the script editor
+    //      *.py : opens the given python file in the script editor (other existing text files like *.json, *.yaml, *.txt are opened in the script editor, too)
     //      log : writes all messages sent via qDebug, qWarning... to the logfile itomlog.txt
     //              in the itom application directory.
     //      name=anyUsername : tries to start itom with the given username (different setting file)
     //      run=pathToPythonFile : runs the given script (if it exists) after possible autostart scripts added to the selected user role, put
     //                             'pathToPythonFile' in "..." if it contains spaces or other special characters. You can stack multiple run= items to execute multiple scripts.
     //      pipManager : only opens the Python Pip Manager to update packages like Numpy. Numpy cannot be updated if itom is running since Numpy is used and files are blocked.
+    //      project=pathToProjectFile : opens the given itom project (*.itomproject) at start. A *.itomproject file given
+    //                             without 'project=' is opened as project, too.
 
     QStringList args;
     for (int i = 0; i < argc; ++i)
@@ -454,9 +457,20 @@ int main(int argc, char *argv[])
         //check if args contains entries with .py at the end, these files should be opened as scripts at startup
         QStringList scriptsToOpen;
         QStringList scriptsToExecute;
-        foreach(const QString &a, args)
+        QString projectToOpen;
+        for (int argIdx = 0; argIdx < args.size(); ++argIdx)
         {
-            if (a.endsWith(".py", Qt::CaseInsensitive))
+            const QString a = args.at(argIdx);
+
+            if (a.startsWith("project="))
+            {
+                projectToOpen = a.mid(QString("project=").size());
+            }
+            else if (a.endsWith(".itomproject", Qt::CaseInsensitive))
+            {
+                projectToOpen = a;
+            }
+            else if (a.endsWith(".py", Qt::CaseInsensitive))
             {
                 if (a.startsWith("run="))
                 {
@@ -467,9 +481,15 @@ int main(int argc, char *argv[])
                     scriptsToOpen << a;
                 }
             }
+            else if (argIdx > 0 && !a.startsWith("run=") && QFileInfo(a).isFile())
+            {
+                // (argument 0 is the executable itself) other existing files (json, yaml, txt, ...) are also opened in the script editor
+                // if they are supported (this is checked, when the script is opened).
+                scriptsToOpen << a;
+            }
         }
 
-        mainApp.setupApplication(scriptsToOpen, scriptsToExecute);
+        mainApp.setupApplication(scriptsToOpen, scriptsToExecute, projectToOpen);
 
         qDebug("starting main event loop");
 

@@ -45,6 +45,10 @@
 #include <qfileiconprovider.h>
 #include <qstack.h>
 #include <qsignalmapper.h>
+#include <qstackedwidget.h>
+#include "projectBrowserWidget.h"
+#include <qactiongroup.h>
+#include <qaction.h>
 
 
 namespace ito
@@ -56,11 +60,23 @@ namespace ito
             Q_PROPERTY(QColor linkColor READ linkColor WRITE setLinkColor DESIGNABLE true);
 
         public:
+            //! the two views of the dock widget (see setMode)
+            enum BrowserMode
+            {
+                FileSystemMode = 0, //!< tree of the current working directory (follows the cwd)
+                ProjectMode = 1 //!< tree of the folders of the opened project
+            };
+            Q_ENUM(BrowserMode)
+
             FileSystemDockWidget(const QString &title, const QString &objName, QWidget *parent = NULL, bool docked = true, bool isDockAvailable = true, tFloatingStyle floatingStyle = floatingNone, tMovingStyle movingStyle = movingEnabled, const QString &baseDirectory = QDir::currentPath());
             ~FileSystemDockWidget();
 
             QColor linkColor() { return m_linkColor; }
             void setLinkColor(const QColor &color);
+
+            BrowserMode mode() const { return m_mode; }
+            void setMode(BrowserMode mode);
+            ProjectBrowserWidget* projectBrowser() const { return m_pProjectBrowser; }
 
         protected:
             void createActions();
@@ -68,7 +84,7 @@ namespace ito
             void createToolBars();
             void createStatusBar(){}
             void updateActions();
-            void updatePythonActions(){ updateActions(); }
+            void updatePythonActions();
 
             QString getHtmlTag(const QString &tag);
 
@@ -76,8 +92,14 @@ namespace ito
 
         private:
             void fillFilterList();
-            void showInGraphicalShell(const QString &filePath);
             void treeViewHideOrShowColumns(const bool& hide);
+
+            QStackedWidget* m_pStackedWidget; //!< page 0: file system view, page 1: project view
+            ProjectBrowserWidget* m_pProjectBrowser;
+            QActionGroup* m_pModeActionGroup;
+            QAction* m_pActModeFileSystem;
+            QAction* m_pActModeProject;
+            BrowserMode m_mode;
 
             QMenu* m_pShowDirListMenu;
             QMenu* m_pFileSystemSettingMenu;
@@ -115,6 +137,7 @@ namespace ito
             ShortcutAction* m_pActCopyDir;
             ShortcutAction* m_pActPasteDir;
             ShortcutAction* m_pActOpenFile;
+            ShortcutAction* m_pActOpenInEditor;
             ShortcutAction* m_pActExecuteFile;
             ShortcutAction* m_pActLocateOnDisk;
             ShortcutAction* m_pActRenameItem;
@@ -124,6 +147,7 @@ namespace ito
             ShortcutAction* m_pActPasteItems;
             ShortcutAction* m_pActNewDir;
             ShortcutAction* m_pActNewPyFile;
+            ShortcutAction* m_pActOpenAsProject;
             ShortcutAction* m_pViewList;
             ShortcutAction* m_pViewDetails;
 
@@ -131,6 +155,10 @@ namespace ito
 
         signals:
             void currentDirChanged();
+            void modeChanged(int mode); //!< emitted with the new BrowserMode
+            void openProjectRequested(); //!< forwarded from the project view (placeholder buttons)
+            void newProjectRequested();
+            void openFolderAsProjectRequested(const QString &folder); //!< from the context menu of the file system view
 
         private slots:
             void mnuMoveCDUp();
@@ -140,6 +168,7 @@ namespace ito
             void mnuLocateOnDisk();
             void mnuExecuteFile();
             void mnuOpenFile();
+            void mnuOpenInEditor();
             void mnuRenameItem();
             void mnuDeleteItems();
             void mnuCutItems();
@@ -147,6 +176,7 @@ namespace ito
             void mnuPasteItems();
             void mnuNewDir();
             void mnuNewPyFile();
+            void mnuOpenAsProject();
             void showList();
             void showDetails();
             void mnuToggleView();
@@ -161,6 +191,8 @@ namespace ito
 
             void navigateBackward();
             void navigateForward();
+            void modeActionTriggered(QAction *action);
+            void showFolderInFileSystem(const QString &folder);
 
         public slots:
             RetVal changeBaseDirectory(QString dir, bool clearHistory=false, bool addToHistory=true);

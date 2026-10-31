@@ -118,6 +118,12 @@ public:
     static PyObject* getCurrentPath(PyObject* pSelf);
     static PyObject* setCurrentPath(PyObject* pSelf, PyObject* pArgs);
 
+    static PyObject* PyOpenProject(PyObject* pSelf, PyObject* pArgs);
+    static PyObject* PyNewProject(PyObject* pSelf, PyObject* pArgs, PyObject* pKwds);
+    static PyObject* PySaveProject(PyObject* pSelf, PyObject* pArgs);
+    static PyObject* PyCloseProject(PyObject* pSelf);
+    static PyObject* PyGetProjectInfo(PyObject* pSelf);
+
     static PyObject* PyGetPalette(PyObject* pSelf, PyObject* pArgs);
     static PyObject* PySetPalette(PyObject* pSelf, PyObject* pArgs, PyObject *pKwds);
     static PyObject* PyGetPaletteList(PyObject* pSelf, PyObject* pArgs);
