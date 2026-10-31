@@ -45,6 +45,9 @@
 #include <qfileiconprovider.h>
 #include <qstack.h>
 #include <qsignalmapper.h>
+#include <qstackedwidget.h>
+#include <qactiongroup.h>
+#include <qaction.h>
 
 
 namespace ito
@@ -56,11 +59,22 @@ namespace ito
             Q_PROPERTY(QColor linkColor READ linkColor WRITE setLinkColor DESIGNABLE true);
 
         public:
+            //! the two views of the dock widget (see setMode)
+            enum BrowserMode
+            {
+                FileSystemMode = 0, //!< tree of the current working directory (follows the cwd)
+                ProjectMode = 1 //!< tree of the folders of the opened project
+            };
+            Q_ENUM(BrowserMode)
+
             FileSystemDockWidget(const QString &title, const QString &objName, QWidget *parent = NULL, bool docked = true, bool isDockAvailable = true, tFloatingStyle floatingStyle = floatingNone, tMovingStyle movingStyle = movingEnabled, const QString &baseDirectory = QDir::currentPath());
             ~FileSystemDockWidget();
 
             QColor linkColor() { return m_linkColor; }
             void setLinkColor(const QColor &color);
+
+            BrowserMode mode() const { return m_mode; }
+            void setMode(BrowserMode mode);
 
         protected:
             void createActions();
@@ -77,6 +91,13 @@ namespace ito
         private:
             void fillFilterList();
             void treeViewHideOrShowColumns(const bool& hide);
+
+            QStackedWidget* m_pStackedWidget; //!< page 0: file system view, page 1: project view
+            QWidget* m_pProjectPage;
+            QActionGroup* m_pModeActionGroup;
+            QAction* m_pActModeFileSystem;
+            QAction* m_pActModeProject;
+            BrowserMode m_mode;
 
             QMenu* m_pShowDirListMenu;
             QMenu* m_pFileSystemSettingMenu;
@@ -131,6 +152,7 @@ namespace ito
 
         signals:
             void currentDirChanged();
+            void modeChanged(int mode); //!< emitted with the new BrowserMode
 
         private slots:
             void mnuMoveCDUp();
@@ -162,6 +184,7 @@ namespace ito
 
             void navigateBackward();
             void navigateForward();
+            void modeActionTriggered(QAction *action);
 
         public slots:
             RetVal changeBaseDirectory(QString dir, bool clearHistory=false, bool addToHistory=true);

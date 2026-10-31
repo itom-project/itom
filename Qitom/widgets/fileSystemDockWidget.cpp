@@ -52,6 +52,8 @@ namespace ito {
 //----------------------------------------------------------------------------------------------------------------------------------
 FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &objName, QWidget *parent, bool docked, bool isDockAvailable, tFloatingStyle floatingStyle, tMovingStyle movingStyle, const QString &baseDirectory) :
     AbstractDockWidget(docked, isDockAvailable, floatingStyle, movingStyle, title, objName, parent),
+    m_pStackedWidget(nullptr), m_pProjectPage(nullptr), m_pModeActionGroup(nullptr),
+    m_pActModeFileSystem(nullptr), m_pActModeProject(nullptr), m_mode(FileSystemMode),
     m_pShowDirListMenu(nullptr), m_pFileSystemSettingMenu(nullptr), m_pContextMenu(nullptr),
     m_pPathEdit(nullptr), m_pMainToolbar(nullptr), m_pTreeView(nullptr), m_pLblFilter(nullptr),
     m_pCmbFilter(nullptr), m_pFileSystemModel(nullptr), m_baseDirectory(QString()),
@@ -189,6 +191,8 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
 
     settings.endArray();
     treeViewHideOrShowColumns(!m_showColumnDetails);
+
+    int savedMode = settings.value("mode", (int)FileSystemMode).toInt();
     settings.endGroup();
 
     AbstractDockWidget::init();
@@ -219,7 +223,20 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
     QWidget *centerWidget = new QWidget(this);
     centerWidget->setLayout(mainLayout);
 
-    setContentWidget(centerWidget);
+    // placeholder page for the project mode (replaced by the project browser later)
+    m_pProjectPage = new QWidget(this);
+    QLabel *lblNoProject = new QLabel(tr("No project opened."), m_pProjectPage);
+    lblNoProject->setAlignment(Qt::AlignCenter);
+    lblNoProject->setWordWrap(true);
+    QVBoxLayout *projectLayout = new QVBoxLayout;
+    projectLayout->addWidget(lblNoProject);
+    m_pProjectPage->setLayout(projectLayout);
+
+    m_pStackedWidget = new QStackedWidget(this);
+    m_pStackedWidget->addWidget(centerWidget); // index FileSystemMode
+    m_pStackedWidget->addWidget(m_pProjectPage); // index ProjectMode
+
+    setContentWidget(m_pStackedWidget);
 
     fillFilterList();
 
@@ -247,6 +264,9 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
 
     m_historyStack.clear();
     m_forwardStack.clear();
+
+    // the mode actions are created in createActions(), called by init() above
+    setMode(savedMode == (int)ProjectMode ? ProjectMode : FileSystemMode);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -282,6 +302,7 @@ FileSystemDockWidget::~FileSystemDockWidget()
 
     settings.setValue("sortColumn", m_pTreeView->header()->sortIndicatorSection());
     settings.setValue("sortOrder", m_pTreeView->header()->sortIndicatorOrder());
+    settings.setValue("mode", (int)m_mode);
 
     settings.endGroup();
 
@@ -341,6 +362,18 @@ void FileSystemDockWidget::setLinkColor(const QColor &color)
 void FileSystemDockWidget::createActions()
 {
     ito::UserOrganizer *uOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
+
+    m_pModeActionGroup = new QActionGroup(this);
+    m_pModeActionGroup->setExclusive(true);
+    m_pActModeFileSystem = new QAction(QIcon(":/files/icons/browser.png"), tr("File System"), m_pModeActionGroup);
+    m_pActModeFileSystem->setCheckable(true);
+    m_pActModeFileSystem->setToolTip(tr("Show the files of the current working directory"));
+    m_pActModeFileSystem->setData((int)FileSystemMode);
+    m_pActModeProject = new QAction(QIcon(":/files/icons/multiFilePython.png"), tr("Project"), m_pModeActionGroup);
+    m_pActModeProject->setCheckable(true);
+    m_pActModeProject->setToolTip(tr("Show the folders of the opened project"));
+    m_pActModeProject->setData((int)ProjectMode);
+    connect(m_pModeActionGroup, &QActionGroup::triggered, this, &FileSystemDockWidget::modeActionTriggered);
 
     m_pActSelectCD = new ShortcutAction(QIcon(":/files/icons/dirOpen.png"), tr("Open New Folder"), this);
     m_pActSelectCD->connectTrigger(this, SLOT(mnuSelectCD()));
@@ -437,6 +470,9 @@ void FileSystemDockWidget::createToolBars()
     m_pMainToolbar->setFloatable(false);
     addToolBar(m_pMainToolbar, "mainToolBar");
 
+    m_pMainToolbar->addAction(m_pActModeFileSystem);
+    m_pMainToolbar->addAction(m_pActModeProject);
+    m_pMainToolbar->addSeparator();
     m_pMainToolbar->addAction(m_pShowDirListMenu->menuAction());
     m_pMainToolbar->addAction(m_pActSelectCD->action());
     m_pMainToolbar->addAction(m_pActMoveCDUp->action());
@@ -445,6 +481,61 @@ void FileSystemDockWidget::createToolBars()
     m_pMainToolbar->addWidget(spacerWidget);
     m_pMainToolbar->addAction(m_pFileSystemSettingMenu->menuAction());
     connect(m_pFileSystemSettingMenu->menuAction(),SIGNAL(triggered()), this, SLOT(mnuToggleView()));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! switches between the file system view and the project view
+/*!
+    The file system view keeps following the current working directory in the background,
+    such that it is up to date when the user switches back. The toolbar actions that only
+    make sense for the file system view are hidden in the project mode.
+*/
+void FileSystemDockWidget::setMode(BrowserMode mode)
+{
+    const bool fileSystem = (mode == FileSystemMode);
+    m_mode = mode;
+
+    if (m_pStackedWidget)
+    {
+        m_pStackedWidget->setCurrentIndex(fileSystem ? 0 : 1);
+    }
+
+    if (m_pActModeFileSystem && m_pActModeProject)
+    {
+        m_pActModeFileSystem->setChecked(fileSystem);
+        m_pActModeProject->setChecked(!fileSystem);
+    }
+
+    if (m_pShowDirListMenu)
+    {
+        m_pShowDirListMenu->menuAction()->setVisible(fileSystem);
+    }
+
+    if (m_pFileSystemSettingMenu)
+    {
+        m_pFileSystemSettingMenu->menuAction()->setVisible(fileSystem);
+    }
+
+    ShortcutAction* fileSystemActions[] = {m_pActSelectCD, m_pActMoveCDUp, m_pActCopyDir, m_pActPasteDir};
+
+    for (ShortcutAction* act : fileSystemActions)
+    {
+        if (act)
+        {
+            act->setVisible(fileSystem, fileSystem);
+        }
+    }
+
+    emit modeChanged((int)m_mode);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void FileSystemDockWidget::modeActionTriggered(QAction *action)
+{
+    if (action)
+    {
+        setMode(action->data().toInt() == (int)ProjectMode ? ProjectMode : FileSystemMode);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
