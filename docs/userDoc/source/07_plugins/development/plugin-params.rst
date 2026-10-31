@@ -204,13 +204,13 @@ corresponding getter- or setter-methods:
 
     The type part of this member is obtained by **getType()**, the flags can be obtained by **getFlags()**.
 
-.. c:member:: ito::ByteArray m_name
+.. cpp:member:: ito::ByteArray m_name
 
      This member contains the name of the parameter. This name is for example used for accessing the parameter in the python's *setParam* or *getParam* method and usually you can also use this name as keyword in a python argument list of appropriate method calls.
 
      Access the name of a parameter by using **getName()**. This returns the zero-terminated name string as char-pointer.
 
-.. c:member:: values
+.. describe:: values
 
     There are three further member variables which are used in order to store the variable content of the parameter container.
     Reading and writing these values is only done by the constructor or the methods **getVal<_Tp>** and **setVal<_Tp>**.

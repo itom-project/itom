@@ -7,7 +7,7 @@ Main Window
 
 During the startup of |itom| a splash screen shows the current state of the load process. After having finished, the |itom| main window appears like in the following screenshot:
 
-.. figure:: images/iTOM.png
+.. figure:: images/iTOM.PNG
     :scale: 100%
     :align: center
 
@@ -122,11 +122,11 @@ This is an overview about the menu structure of itom
 | **Tools**  | UI Designer        | |mainqtdesigner|     | Opens the Qt Designer (see :ref:`qtdesigner`)                                              |
 +------------+--------------------+----------------------+--------------------------------------------------------------------------------------------+
 
-.. |mainsymbols| image:: images/mainsymbols.png
-.. |mainnew| image:: images/mainnew.png
-.. |mainopen| image:: images/mainopen.png
-.. |mainqtdesigner| image:: images/mainqtdesigner.png
-.. |mainhelp| image:: images/mainhelp.png
+.. |mainsymbols| image:: images/mainsymbols.PNG
+.. |mainnew| image:: images/mainnew.PNG
+.. |mainopen| image:: images/mainopen.PNG
+.. |mainqtdesigner| image:: images/mainqtdesigner.PNG
+.. |mainhelp| image:: images/mainhelp.PNG
 .. |debugOn| image:: images/pythonDebug.png
 
 All the actions mentioned in the table above are accessible by either the menu of |itom| or some of them are also available in some main toolbars that come with |itom|.
@@ -157,7 +157,7 @@ All available toolboxes are listed in the menu **View >> Toolboxes**, where hidd
 Additionally, a right click to any place in the toolbar opens the following context menu where the first items also access
 the loaded toolboxes. The items after the separator correspond to the toolbars, such that they can be hidden or shown:
 
-.. figure:: images/toolboxmenu.png
+.. figure:: images/toolboxmenu.PNG
     :scale: 100%
     :align: center
 

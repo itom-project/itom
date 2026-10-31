@@ -37,5 +37,10 @@ itom algorithm plugins can contain two different types of code:
 
 For more information, see also :ref:`getStartFilter` or in the demo file **demoGaussianSpotCentroidDetection.py**.
 
-.. automodule:: itom
-    :members: filter, filterHelp, widgetHelp
+.. autofunction:: itom.filter
+
+.. autofunction:: itom.filterHelp
+    :no-index:
+
+.. autofunction:: itom.widgetHelp
+    :no-index:

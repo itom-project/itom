@@ -54,7 +54,7 @@ In figure :ref:`plugin-sharedSemaphore-scheme`, a common communication between a
 
     This method returns true if the calling method (*here*: the method in main thread) is still waiting that the called method has released the semaphore, else the method returns false.
 
-.. c:member:: ito::RetVal returnValue
+.. cpp:member:: ito::RetVal returnValue
 
     The called method in the plugin-thread can set that globally accessible return value and the calling method can read its value. That return value is the single way to return the success or error message to the calling method, since no return value of the called method (slot) can directly be returned.
 

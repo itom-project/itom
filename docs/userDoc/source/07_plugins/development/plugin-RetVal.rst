@@ -26,19 +26,19 @@ Any return value consists of the following main components:
 
 You can create a variable of type **RetVal** using different constructors or the static method **RetVal::format**.
 
-.. cpp:function:: ito::RetVal::RetVal(tRetValue retValue = retOk)
+.. describe:: ito::RetVal::RetVal(tRetValue retValue = retOk)
 
     creates a return value with the default state *retOk*, if not otherwise stated. (constructor)
 
-.. cpp:function:: ito::RetVal::RetVal(int retValue)
+.. describe:: ito::RetVal::RetVal(int retValue)
 
     creates a return value with the given state. (constructor)
 
-.. cpp:function:: ito::RetVal::RetVal(ito::tRetValue retValue, int retCode, const char *pRetMessage)
+.. describe:: ito::RetVal::RetVal(ito::tRetValue retValue, int retCode, const char *pRetMessage)
 
     creates a return value with a given state, error number and error message. If you don't want to indicate an error message, set that value to NULL. (constructor)
 
-.. cpp:function:: static ito::RetVal ito::RetVal::format(ito::tRetValue retValue, int retCode, const char *pRetMessage, ...)
+.. describe:: static ito::RetVal ito::RetVal::format(ito::tRetValue retValue, int retCode, const char *pRetMessage, ...)
 
     Use this static method to create a new return value where the message string can contain placeholders, known by the ordinary methods **sprintf**, ... The values filled into these placeholders are then appended as additional parameters to this method.
 

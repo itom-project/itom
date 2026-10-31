@@ -47,7 +47,7 @@ setting the property **xData** to an existing plot. To plot an N x M
 dataObject, the x-vector has to be a 1 x M dataObject.
 For the y axis and x axis label the valueDescription and valueUnit definitions are taken accordingly.
 
-.. figure:: images/spiral.png
+.. figure:: images/spiral.PNG
     :scale: 100%
     :align: center
 
@@ -210,7 +210,7 @@ For accessing the properties via the user interface the line properties widget
 can be used. Additional to the properties listed above the legend name, the
 legend visibility and the symbol color can be set.
 
-.. figure:: images/curveProperties.png
+.. figure:: images/curveProperties.PNG
     :scale: 100%
     :align: center
 

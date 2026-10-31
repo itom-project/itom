@@ -37,7 +37,7 @@ See section :ref:`primitives` for a short introduction.
 +-----------------------------------------------------+---------------------------------------------------+---------------------------------------------------+
 | .. figure:: images/plot2d_colorMap_gray.png         | .. figure:: images/plot2d_colorMap_grayMarked.png | .. figure:: images/plot2d_colorMap_falseColor.png |
 +-----------------------------------------------------+---------------------------------------------------+---------------------------------------------------+
-| .. figure:: images/plot2d_colorMap_falseColorIR.png | .. figure:: images/plot2d_colorMap_HotIron.png    | .. figure:: images/plot2d_colorMap_red.png        |
+| .. figure:: images/plot2d_colorMap_falseColorIR.png | .. figure:: images/plot2d_colorMap_hotIron.png    | .. figure:: images/plot2d_colorMap_red.png        |
 +-----------------------------------------------------+---------------------------------------------------+---------------------------------------------------+
 | .. figure:: images/plot2d_colorMap_blue.png         | .. figure:: images/plot2d_colorMap_green.png      | .. figure:: images/plot2d_colorMap_viridis.png    |
 +-----------------------------------------------------+---------------------------------------------------+---------------------------------------------------+
