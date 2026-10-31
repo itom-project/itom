@@ -46,6 +46,7 @@
 #include <qstack.h>
 #include <qsignalmapper.h>
 #include <qstackedwidget.h>
+#include "projectBrowserWidget.h"
 #include <qactiongroup.h>
 #include <qaction.h>
 
@@ -75,6 +76,7 @@ namespace ito
 
             BrowserMode mode() const { return m_mode; }
             void setMode(BrowserMode mode);
+            ProjectBrowserWidget* projectBrowser() const { return m_pProjectBrowser; }
 
         protected:
             void createActions();
@@ -82,7 +84,7 @@ namespace ito
             void createToolBars();
             void createStatusBar(){}
             void updateActions();
-            void updatePythonActions(){ updateActions(); }
+            void updatePythonActions();
 
             QString getHtmlTag(const QString &tag);
 
@@ -93,7 +95,7 @@ namespace ito
             void treeViewHideOrShowColumns(const bool& hide);
 
             QStackedWidget* m_pStackedWidget; //!< page 0: file system view, page 1: project view
-            QWidget* m_pProjectPage;
+            ProjectBrowserWidget* m_pProjectBrowser;
             QActionGroup* m_pModeActionGroup;
             QAction* m_pActModeFileSystem;
             QAction* m_pActModeProject;
@@ -153,6 +155,8 @@ namespace ito
         signals:
             void currentDirChanged();
             void modeChanged(int mode); //!< emitted with the new BrowserMode
+            void openProjectRequested(); //!< forwarded from the project view (placeholder buttons)
+            void newProjectRequested();
 
         private slots:
             void mnuMoveCDUp();
@@ -185,6 +189,7 @@ namespace ito
             void navigateBackward();
             void navigateForward();
             void modeActionTriggered(QAction *action);
+            void showFolderInFileSystem(const QString &folder);
 
         public slots:
             RetVal changeBaseDirectory(QString dir, bool clearHistory=false, bool addToHistory=true);

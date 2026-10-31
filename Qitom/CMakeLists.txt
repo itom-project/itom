@@ -414,6 +414,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/extendedDataObjectTable.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/figureWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/fileSystemDockWidget.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/projectBrowserWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/helpDockWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/itomQWidgets.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/lastCommandDockWidget.h
@@ -679,6 +680,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/extendedDataObjectTable.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/figureWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/fileSystemDockWidget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/projectBrowserWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/helpDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/itomQWidgets.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/lastCommandDockWidget.cpp

@@ -60,7 +60,7 @@ FileSystemDockWidget::FileSystemDockWidget(
     tMovingStyle movingStyle,
     const QString& baseDirectory) :
     AbstractDockWidget(docked, isDockAvailable, floatingStyle, movingStyle, title, objName, parent),
-    m_pStackedWidget(nullptr), m_pProjectPage(nullptr), m_pModeActionGroup(nullptr),
+    m_pStackedWidget(nullptr), m_pProjectBrowser(nullptr), m_pModeActionGroup(nullptr),
     m_pActModeFileSystem(nullptr), m_pActModeProject(nullptr), m_mode(FileSystemMode),
     m_pShowDirListMenu(nullptr), m_pFileSystemSettingMenu(nullptr), m_pContextMenu(nullptr),
     m_pPathEdit(nullptr), m_pMainToolbar(nullptr), m_pTreeView(nullptr), m_pLblFilter(nullptr),
@@ -240,18 +240,32 @@ FileSystemDockWidget::FileSystemDockWidget(
     QWidget* centerWidget = new QWidget(this);
     centerWidget->setLayout(mainLayout);
 
-    // placeholder page for the project mode (replaced by the project browser later)
-    m_pProjectPage = new QWidget(this);
-    QLabel* lblNoProject = new QLabel(tr("No project opened."), m_pProjectPage);
-    lblNoProject->setAlignment(Qt::AlignCenter);
-    lblNoProject->setWordWrap(true);
-    QVBoxLayout* projectLayout = new QVBoxLayout;
-    projectLayout->addWidget(lblNoProject);
-    m_pProjectPage->setLayout(projectLayout);
+    // project mode page
+    m_pProjectBrowser = new ProjectBrowserWidget(this);
+    connect(
+        m_pProjectBrowser,
+        &ProjectBrowserWidget::openProjectRequested,
+        this,
+        &FileSystemDockWidget::openProjectRequested);
+    connect(
+        m_pProjectBrowser,
+        &ProjectBrowserWidget::newProjectRequested,
+        this,
+        &FileSystemDockWidget::newProjectRequested);
+    connect(
+        m_pProjectBrowser,
+        &ProjectBrowserWidget::showInFileSystemRequested,
+        this,
+        &FileSystemDockWidget::showFolderInFileSystem);
+    connect(
+        m_pProjectBrowser,
+        &ProjectBrowserWidget::workingDirectoryChanged,
+        this,
+        &FileSystemDockWidget::currentDirChanged);
 
     m_pStackedWidget = new QStackedWidget(this);
     m_pStackedWidget->addWidget(centerWidget); // index FileSystemMode
-    m_pStackedWidget->addWidget(m_pProjectPage); // index ProjectMode
+    m_pStackedWidget->addWidget(m_pProjectBrowser); // index ProjectMode
 
     setContentWidget(m_pStackedWidget);
 
@@ -588,6 +602,29 @@ void FileSystemDockWidget::setMode(BrowserMode mode)
     }
 
     emit modeChanged((int)m_mode);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void FileSystemDockWidget::updatePythonActions()
+{
+    updateActions();
+
+    if (m_pProjectBrowser)
+    {
+        m_pProjectBrowser->updateActions();
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! shows the folder in the file system view (requested from the project view)
+void FileSystemDockWidget::showFolderInFileSystem(const QString& folder)
+{
+    if (QDir(folder).exists())
+    {
+        changeBaseDirectory(QDir::cleanPath(folder));
+    }
+
+    setMode(FileSystemMode);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

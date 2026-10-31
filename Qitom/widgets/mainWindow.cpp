@@ -219,6 +219,8 @@ MainWindow::MainWindow() :
             Qt::TopDockWidgetArea);
         connect(
             m_fileSystemDock, SIGNAL(currentDirChanged()), this, SLOT(currentDirectoryChanged()));
+        connect(m_fileSystemDock, &FileSystemDockWidget::openProjectRequested, this, &MainWindow::mnuOpenProject);
+        connect(m_fileSystemDock, &FileSystemDockWidget::newProjectRequested, this, &MainWindow::mnuNewProject);
         addDockWidget(Qt::LeftDockWidgetArea, m_fileSystemDock);
     }
 
