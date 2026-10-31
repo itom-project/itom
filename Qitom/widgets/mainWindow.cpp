@@ -1709,7 +1709,8 @@ void MainWindow::mnuOpenFile()
     RetVal retValue(retOk);
 
     QString filter = IOHelper::getFileFilters(IOHelper::IOFilters(
-        IOHelper::IOInput | IOHelper::IOPlugin | IOHelper::IOAllFiles | IOHelper::IOMimeAll));
+        IOHelper::IOInput | IOHelper::IOPlugin | IOHelper::IOAllFiles | IOHelper::IOMimeAll |
+        IOHelper::IOTextFiles));
     static QString
         selectedFilter; // since this variable is static, it will remember the last set filter.
     fileName = QFileDialog::getOpenFileName(

@@ -53,6 +53,8 @@
 #include "../models/outlineItem.h"
 #include "../models/bookmarkModel.h"
 #include "../helper/IOHelper.h"
+#include "../helper/editorFileType.h"
+#include "../helper/lineEnding.h"
 #include "../ui/dialogScriptCharsetEncoding.h"
 
 #include <QtPrintSupport/qprinter.h>
@@ -111,6 +113,10 @@ public:
     inline QString getFilename() const {return m_filename; }
     inline bool hasNoFilename() const { return m_filename.isNull(); }
     inline int getUID() const { return m_uid; }
+
+    //! type of the document (python or any other text-like file). Python files are the only ones that can be run, debugged or checked.
+    inline EditorFileType::Type fileType() const { return m_fileType; }
+    inline bool isPythonFile() const { return m_fileType == EditorFileType::Python; }
     bool getCanCopy() const;
     inline QString getUntitledName() const { return tr("Untitled%1").arg(m_uid); }
 
@@ -145,6 +151,21 @@ public:
     IOHelper::CharsetEncodingItem charsetEncoding() const
     {
         return m_charsetEncoding;
+    }
+
+    //! line ending of the file ("\n" or "\r\n"), see ito::LineEnding
+    LineEnding::Type lineEnding() const
+    {
+        return m_lineEnding;
+    }
+
+    //! changes the line ending, that is used when the file is saved (marks the document as modified)
+    void setLineEnding(LineEnding::Type lineEnding);
+
+    //! true if the file is bigger than the large file threshold and the costly features are disabled
+    bool largeFileMode() const
+    {
+        return m_largeFileMode;
     }
 
     //!< the replacement will be handled as one undo-action. The script will be marked as modified afterwards.
@@ -200,6 +221,10 @@ private:
 
     RetVal changeFilename(const QString &newFilename);
 
+    void updateFileType(const QString &filename);
+    void applyFileType();
+    void applyLargeFileMode();
+
     IOHelper::CharsetEncodingItem guessEncoding(const QByteArray &content) const;
 
     QFileSystemWatcher *m_pFileSysWatcher;
@@ -224,9 +249,15 @@ private:
     bool m_pythonBusy; //!< true: python is executing or debugging a script, a command...
     bool m_pythonExecutable;
 
+    EditorFileType::Type m_fileType = EditorFileType::Python; //!< new, unsaved scripts are python scripts
+
     //!< to accept drop events of other files dropped onto this file, the script
     //!< must not be readonly. Therefore a readonly script will be temporary set in a read/write mode
     bool m_wasReadonly;
+
+    //! large file mode: features with O(file size) costs are disabled (see applyLargeFileMode)
+    bool m_largeFileMode;
+    qint64 m_largeFileThresholdBytes;
     bool m_canCopy;
     bool m_keepIndentationOnPaste;
     int m_textBlockLineIdxAboutToBeDeleted; //!< if != -1, a TextBlockUserData in the line index is about to be removed.
@@ -249,6 +280,7 @@ private:
     //!< the encoding that was used to load this script from
     //!< a file and will also be used to store it in a file.
     IOHelper::CharsetEncodingItem m_charsetEncoding;
+    LineEnding::Type m_lineEnding;
     bool m_charsetDefined;
     bool m_charsetEncodingAutoGuess;
 
@@ -324,6 +356,8 @@ public slots:
     bool menuPyCodeReferenceRenaming();
     void menuGenerateDocstring();
     void menuScriptCharsetEncoding();
+    void menuScriptLineEndingLF();
+    void menuScriptLineEndingCRLF();
 
     void pythonStateChanged(tPythonTransitions pyTransition);
     void pythonDebugPositionChanged(QString filename, int lineno);

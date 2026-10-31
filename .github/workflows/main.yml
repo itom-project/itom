@@ -23,7 +23,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.9' # Use the Python version required by your project
+          python-version: '3.12' # 3.9 is no longer available on ubuntu-latest (26.04)
 
       - name: Install dependencies
         run: |
