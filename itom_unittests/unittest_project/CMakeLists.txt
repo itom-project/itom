@@ -43,6 +43,7 @@ include_directories(
 
 set(qitom_HEADERS
     ${QITOM_DIR}/helper/editorFileType.h
+    ${QITOM_DIR}/helper/fileOperations.h
     ${QITOM_DIR}/models/projectTreeModel.h
     ${QITOM_DIR}/organizer/projectFile.h
     ${QITOM_DIR}/organizer/projectOrganizer.h
@@ -51,6 +52,7 @@ set(qitom_HEADERS
 
 set(qitom_SOURCES
     ${QITOM_DIR}/helper/editorFileType.cpp
+    ${QITOM_DIR}/helper/fileOperations.cpp
     ${QITOM_DIR}/models/projectTreeModel.cpp
     ${QITOM_DIR}/organizer/projectFile.cpp
     ${QITOM_DIR}/organizer/projectOrganizer.cpp
@@ -66,6 +68,7 @@ set(unittest_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/projectFileTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/projectOrganizerTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/projectTreeModelTest.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/projectTreeViewTest.cpp
 )
 
 cxx_executable(${target_name} ${CMAKE_CURRENT_SOURCE_DIR} gtest
