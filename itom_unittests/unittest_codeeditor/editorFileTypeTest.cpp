@@ -109,10 +109,10 @@ TEST_F(EditorFileTypeTest, typeFromSuffixOfNonExistingFiles)
 
     // registered suffixes without a specific highlighter
     EXPECT_EQ(EditorFileType::fromFilename("a.txt"), EditorFileType::PlainText);
-    EXPECT_EQ(EditorFileType::fromFilename("a.csv"), EditorFileType::PlainText);
-    EXPECT_EQ(EditorFileType::fromFilename("a.log"), EditorFileType::PlainText);
-    EXPECT_EQ(EditorFileType::fromFilename("a.sh"), EditorFileType::PlainText);
-    EXPECT_EQ(EditorFileType::fromFilename("a.css"), EditorFileType::PlainText);
+    EXPECT_EQ(EditorFileType::fromFilename("a.csv"), EditorFileType::Csv);
+    EXPECT_EQ(EditorFileType::fromFilename("a.log"), EditorFileType::Generic);
+    EXPECT_EQ(EditorFileType::fromFilename("a.sh"), EditorFileType::Generic);
+    EXPECT_EQ(EditorFileType::fromFilename("a.css"), EditorFileType::Generic);
 
     // the suffix is compared case insensitive
     EXPECT_EQ(EditorFileType::fromFilename("A.JSON"), EditorFileType::Json);
@@ -136,14 +136,14 @@ TEST_F(EditorFileTypeTest, cmakeListsIsCMake)
 //-------------------------------------------------------------------------------------
 TEST_F(EditorFileTypeTest, existingFilesWithUnregisteredSuffixUseMimeType)
 {
-    // a text file with an unknown suffix is editable as plain text
+    // a text file with an unknown suffix is editable as generic text file
     QString textFile = createFile("data.foo", "hello world\nsecond line\n");
-    EXPECT_EQ(EditorFileType::fromFilename(textFile), EditorFileType::PlainText);
+    EXPECT_EQ(EditorFileType::fromFilename(textFile), EditorFileType::Generic);
     EXPECT_TRUE(EditorFileType::isEditable(textFile));
 
     // a text file without suffix
     QString noSuffix = createFile("README", "readme text\n");
-    EXPECT_EQ(EditorFileType::fromFilename(noSuffix), EditorFileType::PlainText);
+    EXPECT_EQ(EditorFileType::fromFilename(noSuffix), EditorFileType::Generic);
 
     // ui and qrc are not registered by default, but if they exist and are text,
     // the xml highlighter is used
@@ -175,8 +175,8 @@ TEST_F(EditorFileTypeTest, suffixesFromSettings)
 
     EXPECT_EQ(EditorFileType::textSuffixes(), QStringList() << "abc" << "def" << "ghi");
 
-    EXPECT_EQ(EditorFileType::fromFilename("a.abc"), EditorFileType::PlainText);
-    EXPECT_EQ(EditorFileType::fromFilename("a.def"), EditorFileType::PlainText);
+    EXPECT_EQ(EditorFileType::fromFilename("a.abc"), EditorFileType::Generic);
+    EXPECT_EQ(EditorFileType::fromFilename("a.def"), EditorFileType::Generic);
     EXPECT_EQ(EditorFileType::fromFilename("a.py"), EditorFileType::Python);
 
     // txt is no longer registered: non existing txt file is unknown now...
@@ -225,7 +225,9 @@ TEST_F(EditorFileTypeTest, commentTokens)
     EXPECT_TRUE(EditorFileType::commentToken(EditorFileType::Json).isEmpty());
     EXPECT_TRUE(EditorFileType::commentToken(EditorFileType::Xml).isEmpty());
     EXPECT_TRUE(EditorFileType::commentToken(EditorFileType::Markdown).isEmpty());
+    EXPECT_TRUE(EditorFileType::commentToken(EditorFileType::Csv).isEmpty());
     EXPECT_TRUE(EditorFileType::commentToken(EditorFileType::PlainText).isEmpty());
+    EXPECT_TRUE(EditorFileType::commentToken(EditorFileType::Generic).isEmpty());
     EXPECT_TRUE(EditorFileType::commentToken(EditorFileType::Unknown).isEmpty());
 }
 
@@ -239,9 +241,11 @@ TEST_F(EditorFileTypeTest, displayNames)
         EditorFileType::Xml,
         EditorFileType::Ini,
         EditorFileType::Markdown,
+        EditorFileType::Csv,
         EditorFileType::CMake,
         EditorFileType::Batch,
         EditorFileType::PlainText,
+        EditorFileType::Generic,
         EditorFileType::Unknown};
 
     QSet<QString> names;
@@ -252,10 +256,13 @@ TEST_F(EditorFileTypeTest, displayNames)
         names.insert(EditorFileType::displayName(t));
     }
 
-    // all types besides PlainText and Unknown have an own name
-    EXPECT_EQ(names.size(), 9);
+    // all types besides PlainText, Generic and Unknown have an own name
+    EXPECT_EQ(names.size(), 10);
     EXPECT_EQ(
         EditorFileType::displayName(EditorFileType::PlainText),
+        EditorFileType::displayName(EditorFileType::Unknown));
+    EXPECT_EQ(
+        EditorFileType::displayName(EditorFileType::Generic),
         EditorFileType::displayName(EditorFileType::Unknown));
 }
 
