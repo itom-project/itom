@@ -14,9 +14,10 @@ set(CMAKE_MODULE_PATH
 
 include("../../cmake/ItomBuildMacros.cmake")
 
-# Qitom/organizer/projectFile is part of the qitom executable (no library). Therefore
-# it is compiled directly into this test. It only depends on QtCore and itomCommonLib.
-itom_find_package_qt(ON Core)
+# Qitom/organizer/projectFile and Qitom/models/projectTreeModel are part of the qitom
+# executable (no library). Therefore they are compiled directly into this test
+# (the model needs editorFileType for the icons). QtTest provides QAbstractItemModelTester.
+itom_find_package_qt(ON Core Gui Widgets Test)
 
 find_package(OpenCV REQUIRED COMPONENTS core)
 
@@ -40,10 +41,14 @@ include_directories(
 )
 
 set(qitom_HEADERS
+    ${QITOM_DIR}/helper/editorFileType.h
+    ${QITOM_DIR}/models/projectTreeModel.h
     ${QITOM_DIR}/organizer/projectFile.h
 )
 
 set(qitom_SOURCES
+    ${QITOM_DIR}/helper/editorFileType.cpp
+    ${QITOM_DIR}/models/projectTreeModel.cpp
     ${QITOM_DIR}/organizer/projectFile.cpp
 )
 
@@ -52,7 +57,9 @@ set(unittest_HEADERS
 )
 
 set(unittest_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/appManagementStub.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/projectFileTest.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/projectTreeModelTest.cpp
 )
 
 cxx_executable(${target_name} ${CMAKE_CURRENT_SOURCE_DIR} gtest

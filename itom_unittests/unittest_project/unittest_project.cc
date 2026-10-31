@@ -22,11 +22,27 @@
 
 #include "gtest/gtest.h"
 
-#include <qcoreapplication.h>
+#include <qdir.h>
+#include <qapplication.h>
+#include <qstring.h>
+#include <qtemporarydir.h>
+
+namespace ito {
+namespace test {
+void setSettingsFilePath(const QString& path);
+}
+} // namespace ito
 
 int main(int argc, char** argv)
 {
-    QCoreApplication app(argc, argv);
+    // the model returns file icons (QFileIconProvider), therefore a QApplication is required
+    qputenv("QT_QPA_PLATFORM", "offscreen");
+    QApplication app(argc, argv);
+
+    // every test gets a fresh settings file in a temporary directory
+    QTemporaryDir tempDir;
+    ito::test::setSettingsFilePath(tempDir.path() + QDir::separator() + "itom.ini");
+
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
 }

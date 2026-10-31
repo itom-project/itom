@@ -299,6 +299,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/models/bookmarkModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/outlineItem.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/itomFileSystemModel.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/models/projectTreeModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/leafFilterProxyModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/pipManager.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/timerModel.h
@@ -570,6 +571,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/models/bookmarkModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/outlineItem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/itomFileSystemModel.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/models/projectTreeModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/leafFilterProxyModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/pipManager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/timerModel.cpp
