@@ -76,7 +76,6 @@ namespace ito
 
         private:
             void fillFilterList();
-            void showInGraphicalShell(const QString &filePath);
             void treeViewHideOrShowColumns(const bool& hide);
 
             QMenu* m_pShowDirListMenu;

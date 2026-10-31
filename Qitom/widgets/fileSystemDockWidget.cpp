@@ -26,6 +26,7 @@
 #include "../AppManagement.h"
 #include "../helper/IOHelper.h"
 #include "../helper/editorFileType.h"
+#include "../helper/fileOperations.h"
 #include "../organizer/userOrganizer.h"
 
 #include <qheaderview.h>
@@ -449,27 +450,8 @@ void FileSystemDockWidget::createToolBars()
 //----------------------------------------------------------------------------------------------------------------------------------
 void FileSystemDockWidget::updateActions()
 {
-    QModelIndexList indexList;
-
-    //filter indexList such that only one index per row and parent is available
-    bool found;
-    foreach(const QModelIndex &idx, m_pTreeView->selectedIndexes())
-    {
-        found = false;
-        foreach(const QModelIndex &idx2, indexList)
-        {
-            if (idx.row() == idx2.row() && idx.parent() == idx2.parent())
-            {
-                found = true;
-                break;
-            }
-        }
-
-        if (!found)
-        {
-            indexList.append(idx);
-        }
-    }
+    // filter indexList such that only one index per row and parent is available
+    QModelIndexList indexList = FileOperations::uniqueRowIndexes(m_pTreeView->selectedIndexes());
 
     bool selected = indexList.count();
 
@@ -870,11 +852,9 @@ void FileSystemDockWidget::mnuLocateOnDisk()
         }
     }
 
-    //QString dirString;
     foreach(const QString &dirString, dirSet)
     {
-        //QDesktopServices::openUrl(QUrl("file:///" + dirString, QUrl::StrictMode));
-        showInGraphicalShell(dirString);
+        FileOperations::showInGraphicalShell(dirString);
     }
 }
 
@@ -902,44 +882,24 @@ void FileSystemDockWidget::mnuOpenInEditor()
         return;
     }
 
-    QSet<QString> files;
+    QFileInfoList fileInfos;
 
     foreach(const QModelIndex &idx, m_pTreeView->selectedIndexes())
     {
-        QFileInfo fi = m_pFileSystemModel->fileInfo(idx);
+        fileInfos.append(m_pFileSystemModel->fileInfo(idx));
+    }
 
-        if (fi.isFile() && EditorFileType::isEditable(fi.filePath()) && !files.contains(fi.filePath()))
-        {
-            files.insert(fi.filePath());
-            IOHelper::openPythonScript(fi.filePath());
-        }
+    foreach(const QString &filePath, FileOperations::editableFilePaths(fileInfos))
+    {
+        IOHelper::openPythonScript(filePath);
     }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void FileSystemDockWidget::mnuOpenFile()
 {
-    QModelIndexList indexList;
-
-    //filter indexList such that only one index per row and parent is available
-    bool found;
-    foreach(const QModelIndex &idx, m_pTreeView->selectedIndexes())
-    {
-        found = false;
-        foreach(const QModelIndex &idx2, indexList)
-        {
-            if (idx.row() == idx2.row() && idx.parent() == idx2.parent())
-            {
-                found = true;
-                break;
-            }
-        }
-
-        if (!found)
-        {
-            indexList.append(idx);
-        }
-    }
+    // filter indexList such that only one index per row and parent is available
+    QModelIndexList indexList = FileOperations::uniqueRowIndexes(m_pTreeView->selectedIndexes());
 
     foreach (const QModelIndex &idx, indexList)
     {
@@ -997,26 +957,8 @@ void FileSystemDockWidget::treeViewContextMenuRequested(const QPoint &pos)
 //----------------------------------------------------------------------------------------------------------------------------------
 void FileSystemDockWidget::mnuRenameItem()
 {
-    //filter indexList such that only one index per row and parent is available
-    bool found;
-    QModelIndexList indexList;
-    foreach(const QModelIndex &idx, m_pTreeView->selectedIndexes())
-    {
-        found = false;
-        foreach(const QModelIndex &idx2, indexList)
-        {
-            if (idx.row() == idx2.row() && idx.parent() == idx2.parent())
-            {
-                found = true;
-                break;
-            }
-        }
-
-        if (!found)
-        {
-            indexList.append(idx);
-        }
-    }
+    // filter indexList such that only one index per row and parent is available
+    QModelIndexList indexList = FileOperations::uniqueRowIndexes(m_pTreeView->selectedIndexes());
 
     if (indexList.count() == 1)
     {
@@ -1030,26 +972,8 @@ void FileSystemDockWidget::mnuDeleteItems()
     QString itemName;
     QStringList fileList;
 
-    //filter indexList such that only one index per row and parent is available
-    bool found;
-    QModelIndexList indexList;
-    foreach(const QModelIndex &idx, m_pTreeView->selectedIndexes())
-    {
-        found = false;
-        foreach(const QModelIndex &idx2, indexList)
-        {
-            if (idx.row() == idx2.row() && idx.parent() == idx2.parent())
-            {
-                found = true;
-                break;
-            }
-        }
-
-        if (!found)
-        {
-            indexList.append(idx);
-        }
-    }
+    // filter indexList such that only one index per row and parent is available
+    QModelIndexList indexList = FileOperations::uniqueRowIndexes(m_pTreeView->selectedIndexes());
 
     if (indexList.count() == 1)
     {
@@ -1189,21 +1113,8 @@ void FileSystemDockWidget::mnuNewDir()
         }
     }
 
-    QString folderName = tr("New Folder");
-    QString filePath = m_pFileSystemModel->fileInfo(index).absoluteFilePath() + "/" + folderName;
-    QDir dir(filePath);
-    if (dir.exists())
-    {
-        int i = 0;
-        bool done = false;
-        while (!done)
-        {
-            i++;
-            dir.setPath(filePath + " (" + QString::number(i) + ")");
-            done = !dir.exists();
-        }
-        folderName = folderName + " (" + QString::number(i) + ")";
-    }
+    QString folderName = FileOperations::uniqueChildName(
+        m_pFileSystemModel->fileInfo(index).absoluteFilePath(), tr("New Folder"), "");
 
     index = m_pFileSystemModel->mkdir(index, folderName);
     if (index.isValid())
@@ -1237,26 +1148,13 @@ void FileSystemDockWidget::mnuNewPyFile()
         }
     }
 
-    QString fileName = tr("New Script");
-    QString filePath = m_pFileSystemModel->fileInfo(index).absoluteFilePath() + "/" + fileName;
-    QFile file(filePath + ".py");
-    if (file.exists())
-    {
-        int i = 0;
-        bool done = false;
-        while (!done)
-        {
-            i++;
-            file.setFileName(filePath + " (" + QString::number(i) + ").py");
-            done = !file.exists();
-        }
-    }
+    const QString parentDir = m_pFileSystemModel->fileInfo(index).absoluteFilePath();
+    const QString fileName = FileOperations::uniqueChildName(parentDir, tr("New Script"), ".py");
+    const QString filePath = parentDir + "/" + fileName;
 
-    if (file.open(QIODevice::WriteOnly))
+    if (!FileOperations::createEmptyFile(filePath).containsError())
     {
-        file.close();
-
-        index = m_pFileSystemModel->index(file.fileName());
+        index = m_pFileSystemModel->index(filePath);
         if (index.isValid())
         {
             m_pTreeView->setCurrentIndex(index);
@@ -1281,70 +1179,6 @@ void FileSystemDockWidget::itemDoubleClicked(const QModelIndex &index)
             changeBaseDirectory(currentDir.absoluteFilePath(selectedDir));
         }
     }
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-void FileSystemDockWidget::showInGraphicalShell(const QString & filePath)
-{
-#ifdef __APPLE__
-    QStringList args;
-    args << "-e";
-    args << "tell application \"Finder\"";
-    args << "-e";
-    args << "activate";
-    args << "-e";
-    args << "select POSIX file \""+filePath+"\"";
-    args << "-e";
-    args << "end tell";
-    QProcess::startDetached("osascript", args);
-#endif
-
-#ifdef WIN32
-    QStringList args;
-    args << "/select," << QDir::toNativeSeparators(filePath);
-    QProcess::startDetached("explorer", args);
-#endif
-//
-//    // Mac, Windows support folder or file.
-//#if defined(WIN32)
-//    const QString explorer = QProcess::systemEnvironment().searchInPath(QLatin1String("explorer.exe"));
-//    if (explorer.isEmpty()) {
-//        QMessageBox::warning(parent,
-//                             tr("Launching Windows Explorer failed"),
-//                             tr("Could not find explorer.exe in path to launch Windows Explorer."));
-//        return;
-//    }
-//    QString param;
-//    if (!QFileInfo(filePath).isDir())
-//        param = QLatin1String("/select,");
-//    param += QDir::toNativeSeparators(filePath);
-//    QProcess::startDetached(explorer, QStringList(param));
-//#elif defined(Q_OS_MAC)
-//    Q_UNUSED(parent)
-//    QStringList scriptArgs;
-//    scriptArgs << QLatin1String("-e")
-//               << QString::fromLatin1("tell application \"Finder\" to reveal POSIX file \"%1\"")
-//                                     .arg(filePath);
-//    QProcess::execute(QLatin1String("/usr/bin/osascript"), scriptArgs);
-//    scriptArgs.clear();
-//    scriptArgs << QLatin1String("-e")
-//               << QLatin1String("tell application \"Finder\" to activate");
-//    QProcess::execute("/usr/bin/osascript", scriptArgs);
-//#else
-//    // we cannot select a file here, because no file browser really supports it...
-//    const QFileInfo fileInfo(filePath);
-//    const QString folder = fileInfo.absoluteFilePath();
-//    const QString app = Utils::UnixUtils::fileBrowser(Core::ICore::instance()->settings());
-//    QProcess browserProc;
-//    const QString browserArgs = Utils::UnixUtils::substituteFileBrowserParameters(app, folder);
-//    if (debug)
-//        qDebug() <<  browserArgs;
-//    bool success = browserProc.startDetached(browserArgs);
-//    const QString error = QString::fromLocal8Bit(browserProc.readAllStandardError());
-//    success = success && error.isEmpty();
-//    if (!success)
-//        showGraphicalShellError(parent, app, error);
-//#endif
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

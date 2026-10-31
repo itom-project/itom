@@ -290,6 +290,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/charsetEncoding.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/lineEnding.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/editorFileType.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/helper/fileOperations.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/versionHelper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helpViewer/helpViewer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helpViewer/qtHelpUrlSchemeHandler.h
@@ -559,6 +560,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/charsetEncoding.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/lineEnding.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/editorFileType.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/helper/fileOperations.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/versionHelper.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/qpropertyHelper.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/helpViewer/helpViewer.cpp
