@@ -1,3 +1,5 @@
+.. include:: ../include/global.inc
+
 .. _git_pre_commit_hooks:
 
 Git Pre-Commit Hooks

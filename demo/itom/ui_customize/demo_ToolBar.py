@@ -86,6 +86,7 @@ addButton("demobar", "call code string", "print('code string')")
 
 ###############################################################################
 # Add a button that triggers a member method of the object ``myTest``.
+#
 # .. hint:: If a button triggers such a member method, the button does not
 #     explicitly keep a reference to the object, such that this object must
 #     be kept by any other variable. Else, a RuntimeError is raised when the

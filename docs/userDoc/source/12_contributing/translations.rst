@@ -65,7 +65,7 @@ There is one common CMake error message, that might occur when setting new langu
 
 Error (ITOM_LANGUAGES = it):
 
-.. code-block:: cmake
+.. code-block:: text
 
     CMake Error at cmake/ItomBuildMacros.cmake:664 (MESSAGE):
       Source translation file
@@ -120,7 +120,7 @@ Please commit all changed **ts** files to the Git repository of the correspondin
 If **ITOM_UPDATE_TRANSLATIONS** is **ON** and a **ts** file has a wrong format, the following CMake
 error might occur:
 
-.. code-block:: cmake
+.. code-block:: text
 
     CMake Warning at cmake/ItomBuildMacros.cmake:745 (message):
       - The existing ts-file

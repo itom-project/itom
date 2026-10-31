@@ -8,7 +8,7 @@ Script Editor
 The script editor is one of the main windows of |itom| and allows creating,
 modifying and executing one or several python scripts.
 
-.. figure:: images/scripteditor.png
+.. figure:: images/scripteditor.PNG
     :width: 881px
     :align: center
 
@@ -511,7 +511,7 @@ or loaded plugins. The icon browser is opened via the menu
 **edit >> icon browser...** of any script editor window or the keyboard
 shortcut **Ctrl + B**.
 
-.. figure:: images/editorIconBrowser.png
+.. figure:: images/editorIconBrowser.PNG
     :scale: 100%
     :align: center
 
