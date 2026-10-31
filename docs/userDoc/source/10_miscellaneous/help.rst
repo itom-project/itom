@@ -14,5 +14,5 @@ If you already have a plugIn of type :py:class:`~itom.actuator` or :py:class:`~i
 
 Rebuild the Help
 ==================
-If you think your help is not up to date and you are using the itom development environment you can rebuilt your help.
-Therefore you need the up-to-date-version of sphinx for python.
+If you think your help is not up to date and you are using the itom development environment, you can rebuild your help.
+Therefore you need the up-to-date version of Sphinx for Python.

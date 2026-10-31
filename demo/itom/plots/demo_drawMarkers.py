@@ -24,8 +24,8 @@ The slot ``plotMarkers`` is defined as follows:
 where:
 
 * points is a 2xN ``dataObject`` with N points. The first row is the x-coordinate, the 2nd row the y-coordinate.
-* style is defined as follows: ``r*20`` or ``r*20;2``, where ``r`` is the color, ``*`` \
- the shape and ``20`` the size of the shape in pixel. Optionally 2 is the line width.
+* style is defined as follows: ``r*20`` or ``r*20;2``, where ``r`` is the color, ``*``
+  the shape and ``20`` the size of the shape in pixel. Optionally 2 is the line width.
 
 Possible colors are:
 

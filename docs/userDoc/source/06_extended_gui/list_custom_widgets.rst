@@ -23,7 +23,7 @@ DataObjectTable
 -------------------------------------
 
 The designer plugin **DataObjectTable** is used to display a :py:class:`~itom.dataObject` in
-an user interface as a table. The displayed content of a dataObject is thereby a shallow copy.
+a user interface as a table. The displayed content of a dataObject is thereby a shallow copy.
 If the read-only property of the table is not set, the user can modify the content which leads
 to a direct modification of the values in the origin object. It is not possible to change the
 size or type of the displayed dataObject.

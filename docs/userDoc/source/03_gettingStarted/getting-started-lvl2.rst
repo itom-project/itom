@@ -38,7 +38,7 @@ The main components are highlighted with different colors and numbers. These com
 8. All available hardware and software plugins are listed in the :ref:`plugin toolbox <gui-plugins>`.
    Use this toolbox to connect to your cameras or actuators or get informed about available software
    filters or algorithms. If you miss a plugin whose library file exists, check the menu **file >> loaded plugins...**
-   so see if the library has been found and / or why this library could not been loaded.
+   to see if the library has been found and / or why this library could not be loaded.
 
 Connected hardware components can be operated either by script commands or directly by the GUI.
 The following sections show you examples for both approaches.
@@ -519,8 +519,8 @@ even further. To retain an overview, python provides a built-in online help. You
 
     help(dataIO)
 
-gives a complete help for the class **itom.dataIO**, which is the python-represention for
-various data communication plugIns (e.g. the dummyGrabber).
+gives a complete help for the class **itom.dataIO**, which is the python representation for
+various data communication plugins (e.g. the dummyGrabber).
 
 By typing
 
@@ -549,8 +549,8 @@ from the last example use the member function **.getParamListInfo()**
     camera = dataIO("DummyGrabber")
     camera.getParamListInfo()
 
-To get a list of available (installed and loaded but not necessary instantiated) itom plug-ins
-of the type filter, use the methond **filterHelp()**
+To get a list of available (installed and loaded but not necessarily instantiated) itom plug-ins
+of the type filter, use the method **filterHelp()**
 
 .. code-block:: python
     :linenos:

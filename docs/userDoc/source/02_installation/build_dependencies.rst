@@ -59,7 +59,7 @@ It is also possible to use the free express edition of Visual Studio.
 **CMake** (mandatory)
 ''''''''''''''''''''''''''''''''
 
-Download **CMake** from http://www.cmake.org/cmake/resources/software.html and install it.
+Download **CMake** from https://cmake.org/download/ and install it.
 Or just download it and use that. no need to install.
 If possible use any version higher than 3.12. CMake reads the platform-independent
 project files of |itom| (CMakeList.txt) and generates the corresponding project
@@ -69,10 +69,10 @@ files for your compiler, IDE and platform.
 ''''''''''''''''''''''''''''''''
 
 Download the **Qt5-framework or Qt6-framework** (>= 5.5 required, >= 5.6 recommended)
-from http://qt-project.org/downloads. If you find a setup version for your IDE and compiler,
+from https://www.qt.io/download. If you find a setup version for your IDE and compiler,
 you can directly install it. Otherwise, you need to configure and build **Qt**
 on your computer - see box below. Either download the ready-to-use binaries from
-qt-project.org, compile it from sources and follow the instruction in the box
+qt.io, compile it from sources and follow the instruction in the box
 below or consider to use the :ref:`all-in-one-development setup <install-all-in-one-dev-setup>`).
 If you use the ready-to-use binaries, make sure to use a version with OpenGL.
 
@@ -94,7 +94,7 @@ from your computer in order to activate changes to environment variables):
     This side-note explains how to configure and build Qt5 for a 64bit build using Visual Studio 2010.
     The general approach for other configurations is similar.
 
-    - Download the Qt5 sources a zip or tar.gz archive from qt-project.org and unpack them (e.g. to C:\Qt5.6.0)
+    - Download the Qt5 sources as a zip or tar.gz archive from qt.io and unpack them (e.g. to C:\Qt5.6.0)
     - Make sure that Python 3.x is installed and verify that the path, containing
         the application **python.exe** is contained in the Windows environment variable.
     - Open **Visual Studio Commandline x64 Win64 (2010)** (64bit) or
@@ -118,7 +118,7 @@ from your computer in order to activate changes to environment variables):
         nmake install
 
     - Finally, you can build the documentation (build into the qtbase/doc folder)
-        by typing (see http://qt-project.org/wiki/Building_Qt_Documentation)::
+        by typing (see https://wiki.qt.io/Building_Qt_Documentation)::
 
             nmake docs
 
@@ -141,7 +141,7 @@ from your computer in order to activate changes to environment variables):
 If you want to have a better integration of **Qt** into **Visual Studio**
 (e.g. better debugging information for Qt-types like lists or vectors),
 you should download the **Qt-Visual Studio-AddIn** (1.2.x for Qt 5.x,) from
-http://qt-project.org/downloads#qt-other or via visual studio gallery and install it.
+https://www.qt.io/download or via visual studio gallery and install it.
 Since we are using **CMake** it is not mandatory to use this **AddIn** like
 it is usually the case when developing any Qt-project with Visual Studio.
 Therefore it is also possible to use the Express edition of
@@ -153,7 +153,7 @@ requires that you have the **.NET framework 2.0 SP 1** installed on your PC.
     Sometimes, there are problems when starting Visual Studio with an installed
     Qt-AddIn. In case that any component cannot be registered, as warned by a message-box when
     starting Visual Studio, you should check the bug and its fix described at
-    https://bugreports.qt-project.org/browse/QTVSADDINBUG-77. In most cases it was sufficient to register
+    https://bugreports.qt.io/browse/QTVSADDINBUG-77. In most cases it was sufficient to register
     the library **stdole.dll** using the tool **gacutil.exe** from the *
     *Microsoft SDKs/Windows/v7.0A/bin** subfolder of your standard program folder.
     Start a windows commandline and move to the directory on your computer

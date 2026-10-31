@@ -15,11 +15,12 @@ Itom-Project
 
 External
 --------
- * This submodule comprises a CMake project to build a relevant external dependencies
- such as Qt, OpenCV Boost, VTK and PCL for all platforms from within the itom-project.
- This is referred as ExternalProject and aims to overcome in particular the binary
- dependencies on Windows Platforms and should enable homogeneous versions and code dependencies
- across all platforms.
+
+* This submodule comprises a CMake project to build a relevant external dependencies
+  such as Qt, OpenCV Boost, VTK and PCL for all platforms from within the itom-project.
+  This is referred as ExternalProject and aims to overcome in particular the binary
+  dependencies on Windows Platforms and should enable homogeneous versions and code dependencies
+  across all platforms.
 
 itom
 ----

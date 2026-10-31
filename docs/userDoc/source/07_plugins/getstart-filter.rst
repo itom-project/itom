@@ -9,12 +9,12 @@ Introduction
 ===============
 
 Algorithm plugins can contain both specialised algorithms, that work faster if implemented in C++ (including further
-3rd party libraries or technologies) rathen than in Python, and / or methods, that provide complex, C++ programmed,
+3rd party libraries or technologies) rather than in Python, and / or methods, that provide complex, C++ programmed,
 GUIs. The algorithms as well as the GUIs can then be accessed via Python and integrated into ordinary Python scripts.
 However, it is also possible to call such algorithms from other plugins of itom.
 
 While single algorithms, implemented in an algorithm plugin, are called **filters** in |itom| (due to historical reasons),
-the method to create and return / open an user interface are called **widgets**.
+the methods to create and return / open a user interface are called **widgets**.
 
 
 Obtaining help for filters and widgets

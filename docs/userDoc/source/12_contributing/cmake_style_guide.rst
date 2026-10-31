@@ -6,7 +6,7 @@ CMake Style Guide
 General
 ============
 
-To put in in one sentence: be as careful when writing the CMake files as when you are writing C++ code.
+To put it in one sentence: be as careful when writing the CMake files as when you are writing C++ code.
 
 
 Indentation
@@ -92,7 +92,7 @@ and not this:
 Examples
 ================
 
-An real-world example:
+A real-world example:
 
 .. code-block:: cmake
 
@@ -115,5 +115,5 @@ References
 
 This style guide is mainly taken from
 
-* NuPic (http://nupic.docs.numenta.org/1.0.2/contributing/cmake-style-guide.html)
 * KDE (https://community.kde.org/Policies/CMake_Coding_Style)
+* CMake language manual (https://cmake.org/cmake/help/latest/manual/cmake-language.7.html)

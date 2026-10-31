@@ -47,7 +47,7 @@ installed on your computer. The main applications are:
     **requirementsDocuBuild.txt** file containing all further necessary python packages
     and Sphinx extensions. Install them by using **pip**:
 
-    .. code-block: bat
+    .. code-block:: bat
 
         python.exe -m pip install -r requirementsDocuBuild.txt
 
@@ -70,8 +70,8 @@ installed on your computer. The main applications are:
 
     * `sphinx_gallery <https://pypi.org/project/sphinx-gallery/>`__
 
-    is needed. See in chapter :ref:`add-demo-label`, how a demo must be formatted
-    to build the it into the documentation.
+    is needed. See chapter :ref:`add-demo-label` for how a demo must be formatted
+    to build it into the documentation.
 
     For the html builder the following packages are installed, too.
 
@@ -147,7 +147,7 @@ directory:
 After having copied the files, a collection-file is generated (containing all qch-files)
 and displayed in the assistant. If you have a setup version of |itom|, the help-folder
 already contains a compiled documentation file, that is displayed in this case.
-Please note that the file check is only execute once per |itom| session.
+Please note that the file check is only executed once per |itom| session.
 Restart it in order to redo the check.
 
 .. _add-demo-label:
@@ -155,10 +155,10 @@ Restart it in order to redo the check.
 Add a demo script to the documentation
 --------------------------------------
 
-The demo documentation chapter is build using the Sphinx extension `sphinx_gallery <https://sphinx-gallery.github.io/stable/index.html>`__,
-which auto-generates the documentation necessary files from the python script. This adds the demo to the :ref:`itom demo gallery <gallery-demos-label>` ,
+The demo documentation chapter is built using the Sphinx extension `sphinx_gallery <https://sphinx-gallery.github.io/stable/index.html>`__,
+which auto-generates the documentation files from the python script. This adds the demo to the :ref:`itom demo gallery <gallery-demos-label>` ,
 which is divided into **itom** , **python** and **python-packages**. The demo page is divided accordingly
-into code blocks and documentation markdowns, similar to a Juypter notebook. For this, each script must contain a header,
+into code blocks and documentation markdowns, similar to a Jupyter notebook. For this, each script must contain a header,
 as described in the `Sphinx Gallery documentation <https://sphinx-gallery.github.io/stable/getting_started.html#creating-a-basic-gallery>`__.
 
 `sphinx_gallery <https://sphinx-gallery.github.io/stable/index.html>`__ can also integrate **print outputs** and **plots** into the documentation.
@@ -177,6 +177,6 @@ Create Documentation in ITOM
 1. run doxygen with \build\itom\docs\doxygen\itom_doxygen.dox
 2. start itom \build\itom\qitom.exe
 3. run the python file "create_doc.py" in the \build\itom\docs\userDoc folder.
-Open the Itom Help module by pressing F1.
+   Open the Itom Help module by pressing F1.
 4. run in python the file "create_all_plugin_docs.py" in the \build\itom\docs\pluginDoc.
-Choose the build folder of the available Plugin. Open the Itom Help module by pressing F1.
+   Choose the build folder of the available Plugin. Open the Itom Help module by pressing F1.

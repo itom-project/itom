@@ -23,7 +23,7 @@ of this chapter and are as follows:
 
 1. The content and layout of the user interface has to be designed. This is mainly done by the help of the
    software **Qt Designer** and shown in the following :ref:`section <qtdesigner-qtdesigner>`.
-2. It is usually desired to provide an user interface that can be displayed on various screen sizes and resolutions.
+2. It is usually desired to provide a user interface that can be displayed on various screen sizes and resolutions.
    Therefore it is always recommended to use the principle of layouts and size policies of the control elements,
    denoted as widgets (in Qt language) or general **uiItems** in |itom|. Both are also set in the **Qt Designer**,
    however it is also possible to add or remove widgets from layouts at runtime
@@ -136,11 +136,11 @@ of the properties that are visible in the property toolbox can afterwards be rea
 The alignment of control elements on the surface is mainly controlled by so-called layout elements. These layouts together
 with size policies that can be assigned to every widget control the appearance of the entire user interface and provide
 the feature that the dialog can be changed in size whereas all widgets are dynamically repositioned. For more information
-about layouting your user interface, see http://qt-project.org/doc/qt-5/designer-layouts.html.
+about layouting your user interface, see https://doc.qt.io/qt-5/qtdesigner-layouts.html.
 
 .. note::
 
-    In order to provide an user interface, that can be properly displayed on screens with different sizes and rescaled by the
+    In order to provide a user interface, that can be properly displayed on screens with different sizes and rescaled by the
     user, try to **always** set layouts. Make sure, that there is no unassigned layout symbol (|qtdesigner-nolayout|)
     somewhere in the **object inspector panel**. If so, make a right click on such an item and select an appropriate layout.
     Additionally, avoid to set any minimum or maximum size of any widget. Instead try to solve this by layouts and the
@@ -269,7 +269,7 @@ Main window or dialog (TYPEWINDOW)
 ----------------------------------
 
 If you are not interested in the exact return value of the dialog but you want to have full control and all available
-functionalities of any dialog or main window, create an user interface based on a **dialog** or **main window** in **Qt
+functionalities of any dialog or main window, create a user interface based on a **dialog** or **main window** in **Qt
 Designer**.
 
 .. figure:: images_userGUI/testWindow.png
@@ -2002,7 +2002,7 @@ This template is stored in an **ui** file with the filename **item.ui**. It cons
 (``objectName``: *label*), a checkbox, a spinbox, a spacer element and on the right side a status LED widget. The checkbox
 is checked per default. An automatic signal-slot connection between the *triggered(bool)* signal of the checkbox and the
 *setEnabled(bool)* slot of the spinbox was added in the **Qt Designer** (see also
-:ref:`qtdesigner-internalsignalslots`). The objective is, that the spinbox is enabled only if the checkbox is clicked.
+:ref:`qtdesigner-internalsignalslots`). The objective is that the spinbox is enabled only if the checkbox is clicked.
 The *margin* properties of the *horizontalLayout* are set to *3* in order to make the layout a little bit more tight.
 
 Now, we create another ui file **mainForm.ui** (based on a main window) with a label and an **empty** vertical

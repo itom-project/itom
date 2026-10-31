@@ -5,7 +5,7 @@
 itom methods
 *************
 
-This section shows the spezial itom methods.
+This section shows the special itom methods.
 
 .. currentmodule:: itom
 
@@ -13,50 +13,139 @@ Plotting and camera
 ======================
 Camera plugins have the special method *liveImage*.
 
-.. automodule:: itom
-    :members: liveImage, plot, plot1, plot2, plot25 ,close
+.. autofunction:: itom.liveImage
+
+.. autofunction:: itom.plot
+
+.. autofunction:: itom.plot1
+
+.. autofunction:: itom.plot2
+
+.. autofunction:: itom.plot25
+
+.. autofunction:: itom.close
 
 Methods for getting help and information about filters, plugins, ui-elements, ...
 =================================================================================
 You can get the help string in the itom command line for plugins, widgets, filters, ...
 
-.. automodule:: itom
-    :members: pluginHelp, widgetHelp, filterHelp, pluginLoaded, version
+.. autofunction:: itom.pluginHelp
+
+.. autofunction:: itom.widgetHelp
+
+.. autofunction:: itom.filterHelp
+
+.. autofunction:: itom.pluginLoaded
+
+.. autofunction:: itom.version
 
 Adding elements to the GUI
 ==========================
 You can add buttons and menus to the itom GUI.
 
-.. automodule:: itom
-    :members: MENU, BUTTON, SEPARATOR, addButton, removeButton, addMenu, removeMenu, dumpButtonsAndMenus
+.. autodata:: itom.MENU
+
+.. autodata:: itom.BUTTON
+
+.. autodata:: itom.SEPARATOR
+
+.. autofunction:: itom.addButton
+
+.. autofunction:: itom.removeButton
+
+.. autofunction:: itom.addMenu
+
+.. autofunction:: itom.removeMenu
+
+.. autofunction:: itom.dumpButtonsAndMenus
 
 For more information about using these methods, see :ref:`toolbar-start`.
 
 Save and load dataObjects to or from file
 =========================================
-Dataobject can be save as IDC files.
+DataObject can be saved as IDC files.
 
-.. automodule:: itom
-    :members: loadDataObject, saveDataObject, loadMatlabMat, saveMatlabMat, loadIDC, saveIDC
+.. autofunction:: itom.loadDataObject
+
+.. autofunction:: itom.saveDataObject
+
+.. autofunction:: itom.loadMatlabMat
+
+.. autofunction:: itom.saveMatlabMat
+
+.. autofunction:: itom.loadIDC
+
+.. autofunction:: itom.saveIDC
 
 Debug-Tools
 ===========
 These are some debug tools.
 
-.. automodule:: itom
-    :members: gcEndTracking, gcStartTracking, getDebugger
+.. autofunction:: itom.gcEndTracking
+
+.. autofunction:: itom.gcStartTracking
+
+.. autofunction:: itom.getDebugger
 
 Request user rights
 ===================
 These are some methods to get user information.
 
-.. automodule:: itom
-    :members: userIsAdmin, userIsDeveloper, userIsUser, userGetInfo
+.. autofunction:: itom.userIsAdmin
+
+.. autofunction:: itom.userIsDeveloper
+
+.. autofunction:: itom.userIsUser
+
+.. autofunction:: itom.userGetInfo
 
 
 Further commands
 ================
 Some further commands.
 
-.. automodule:: itom
-    :members: copyStringToClipboard, scriptEditor, openScript, newScript, setCurrentPath, getAppPath, getCurrentPath, getScreenInfo, checkSignals, getDefaultScaleableUnits, processEvents, scaleValueAndUnit, setApplicationCursor, clc, autoReloader, getPalette, setPalette, getPaletteList, showHelpViewer, getQtToolPath, registerResource, unregisterResource, clearAll
+.. autofunction:: itom.copyStringToClipboard
+
+.. autofunction:: itom.scriptEditor
+
+.. autofunction:: itom.openScript
+
+.. autofunction:: itom.newScript
+
+.. autofunction:: itom.setCurrentPath
+
+.. autofunction:: itom.getAppPath
+
+.. autofunction:: itom.getCurrentPath
+
+.. autofunction:: itom.getScreenInfo
+
+.. autofunction:: itom.checkSignals
+
+.. autofunction:: itom.getDefaultScaleableUnits
+
+.. autofunction:: itom.processEvents
+
+.. autofunction:: itom.scaleValueAndUnit
+
+.. autofunction:: itom.setApplicationCursor
+
+.. autofunction:: itom.clc
+
+.. autofunction:: itom.autoReloader
+
+.. autofunction:: itom.getPalette
+
+.. autofunction:: itom.setPalette
+
+.. autofunction:: itom.getPaletteList
+
+.. autofunction:: itom.showHelpViewer
+
+.. autofunction:: itom.getQtToolPath
+
+.. autofunction:: itom.registerResource
+
+.. autofunction:: itom.unregisterResource
+
+.. autofunction:: itom.clearAll
