@@ -69,5 +69,30 @@ QStringList editableFilePaths(const QFileInfoList& fileInfos);
 //! (Explorer, Finder). Does nothing on other platforms.
 void showInGraphicalShell(const QString& filePath);
 
+//! copies a file or a directory (recursively) into the directory targetDir.
+/*!
+    The copy gets the name of the source. If an entry with this name already exists in
+    targetDir, " - Copy", " - Copy (2)", ... is appended to the base name (like a file
+    manager does). Copying a directory into itself or one of its sub directories fails.
+
+    \param newPath receives the path of the copy (optional)
+*/
+ito::RetVal copyToDirectory(
+    const QString& sourcePath, const QString& targetDir, QString* newPath = nullptr);
+
+//! moves a file or a directory into the directory targetDir (keeps the name).
+/*!
+    Fails if an entry with the same name exists in targetDir, if the source is a parent
+    of targetDir, or if it is already in targetDir (nothing to do, returns an error).
+    Moving across file systems is done by copy and delete.
+
+    \param newPath receives the new path (optional)
+*/
+ito::RetVal moveToDirectory(
+    const QString& sourcePath, const QString& targetDir, QString* newPath = nullptr);
+
+//! true if path is dir itself or inside dir
+bool isInsideDirectory(const QString& path, const QString& dir);
+
 } // namespace FileOperations
 } // namespace ito

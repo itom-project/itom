@@ -31,7 +31,9 @@
 #include <qlist.h>
 #include <qregularexpression.h>
 #include <qstring.h>
+#include <qmimedata.h>
 #include <qstringlist.h>
+#include <qurl.h>
 
 namespace ito {
 
@@ -129,9 +131,35 @@ public:
     bool canFetchMore(const QModelIndex& parent) const override;
     void fetchMore(const QModelIndex& parent) override;
 
+    // drag and drop of files and folders (text/uri-list), drop target must be a folder
+    Qt::DropActions supportedDropActions() const override;
+    Qt::DropActions supportedDragActions() const override;
+    QStringList mimeTypes() const override;
+    QMimeData* mimeData(const QModelIndexList& indexes) const override;
+    bool canDropMimeData(
+        const QMimeData* data,
+        Qt::DropAction action,
+        int row,
+        int column,
+        const QModelIndex& parent) const override;
+    bool dropMimeData(
+        const QMimeData* data,
+        Qt::DropAction action,
+        int row,
+        int column,
+        const QModelIndex& parent) override;
+
+    //! copies (or moves) the local files of the urls into the folder targetDir and
+    //! refreshes the affected folders. Root folders of the project are never moved.
+    //! Returns false if at least one operation failed (operationFailed is emitted per error).
+    bool copyOrMoveUrls(const QList<QUrl>& urls, const QString& targetDir, bool move);
+
 signals:
     //! emitted after a folder has been read (initially or by a refresh)
     void folderLoaded(const QString& path);
+
+    //! a file operation (copy or move by drag and drop or paste) failed
+    void operationFailed(const QString& message);
 
 private slots:
     void directoryChanged(const QString& path);

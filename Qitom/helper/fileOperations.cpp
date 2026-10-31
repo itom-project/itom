@@ -132,6 +132,229 @@ QStringList editableFilePaths(const QFileInfoList& fileInfos)
 }
 
 //-------------------------------------------------------------------------------------
+namespace {
+
+QString cleanAbs(const QString& path)
+{
+    return QDir::cleanPath(QFileInfo(QDir::fromNativeSeparators(path)).absoluteFilePath());
+}
+
+ito::RetVal copyDirRecursively(const QString& source, const QString& target)
+{
+    QDir sourceDir(source);
+
+    if (!QDir().mkpath(target))
+    {
+        return ito::RetVal(
+            ito::retError,
+            0,
+            QObject::tr("The directory '%1' could not be created.").arg(target).toLatin1().data());
+    }
+
+    const QFileInfoList entries =
+        sourceDir.entryInfoList(QDir::AllEntries | QDir::NoDotAndDotDot | QDir::Hidden | QDir::System);
+
+    foreach (const QFileInfo& fi, entries)
+    {
+        const QString targetPath = target + "/" + fi.fileName();
+
+        if (fi.isDir() && !fi.isSymLink())
+        {
+            ito::RetVal ret = copyDirRecursively(fi.absoluteFilePath(), targetPath);
+
+            if (ret.containsError())
+            {
+                return ret;
+            }
+        }
+        else if (!QFile::copy(fi.absoluteFilePath(), targetPath))
+        {
+            return ito::RetVal(
+                ito::retError,
+                0,
+                QObject::tr("The file '%1' could not be copied to '%2'.")
+                    .arg(fi.absoluteFilePath(), targetPath)
+                    .toLatin1()
+                    .data());
+        }
+    }
+
+    return ito::retOk;
+}
+
+} // namespace
+
+//-------------------------------------------------------------------------------------
+bool isInsideDirectory(const QString& path, const QString& dir)
+{
+    const QString p = cleanAbs(path);
+    const QString d = cleanAbs(dir);
+    return p == d || p.startsWith(d.endsWith('/') ? d : d + "/");
+}
+
+//-------------------------------------------------------------------------------------
+ito::RetVal copyToDirectory(const QString& sourcePath, const QString& targetDir, QString* newPath)
+{
+    const QString source = cleanAbs(sourcePath);
+    const QString target = cleanAbs(targetDir);
+    const QFileInfo sourceInfo(source);
+
+    if (!sourceInfo.exists())
+    {
+        return ito::RetVal(
+            ito::retError,
+            0,
+            QObject::tr("'%1' does not exist.").arg(source).toLatin1().data());
+    }
+
+    if (!QFileInfo(target).isDir())
+    {
+        return ito::RetVal(
+            ito::retError,
+            0,
+            QObject::tr("The target '%1' is no directory.").arg(target).toLatin1().data());
+    }
+
+    if (sourceInfo.isDir() && isInsideDirectory(target, source))
+    {
+        return ito::RetVal(
+            ito::retError,
+            0,
+            QObject::tr("A directory cannot be copied into itself.").toLatin1().data());
+    }
+
+    // free name: "name", "name - Copy", "name - Copy (2)", ... (suffix is kept)
+    const QString suffix = sourceInfo.isDir() || sourceInfo.suffix().isEmpty()
+        ? QString()
+        : "." + sourceInfo.suffix();
+    const QString base = sourceInfo.isDir() || sourceInfo.suffix().isEmpty()
+        ? sourceInfo.fileName()
+        : sourceInfo.completeBaseName();
+    QString name = base + suffix;
+
+    if (QDir(target).exists(name))
+    {
+        const QString copyBase = base + " - " + QObject::tr("Copy");
+        name = copyBase + suffix;
+        int i = 1;
+
+        while (QDir(target).exists(name))
+        {
+            ++i;
+            name = copyBase + " (" + QString::number(i) + ")" + suffix;
+        }
+    }
+
+    const QString destination = target + "/" + name;
+    ito::RetVal retval;
+
+    if (sourceInfo.isDir())
+    {
+        retval += copyDirRecursively(source, destination);
+    }
+    else if (!QFile::copy(source, destination))
+    {
+        retval += ito::RetVal(
+            ito::retError,
+            0,
+            QObject::tr("The file '%1' could not be copied to '%2'.")
+                .arg(source, destination)
+                .toLatin1()
+                .data());
+    }
+
+    if (!retval.containsError() && newPath)
+    {
+        *newPath = destination;
+    }
+
+    return retval;
+}
+
+//-------------------------------------------------------------------------------------
+ito::RetVal moveToDirectory(const QString& sourcePath, const QString& targetDir, QString* newPath)
+{
+    const QString source = cleanAbs(sourcePath);
+    const QString target = cleanAbs(targetDir);
+    const QFileInfo sourceInfo(source);
+
+    if (!sourceInfo.exists())
+    {
+        return ito::RetVal(
+            ito::retError,
+            0,
+            QObject::tr("'%1' does not exist.").arg(source).toLatin1().data());
+    }
+
+    if (!QFileInfo(target).isDir())
+    {
+        return ito::RetVal(
+            ito::retError,
+            0,
+            QObject::tr("The target '%1' is no directory.").arg(target).toLatin1().data());
+    }
+
+    if (sourceInfo.absolutePath() == target)
+    {
+        return ito::RetVal(
+            ito::retError,
+            0,
+            QObject::tr("'%1' is already in '%2'.").arg(source, target).toLatin1().data());
+    }
+
+    if (sourceInfo.isDir() && isInsideDirectory(target, source))
+    {
+        return ito::RetVal(
+            ito::retError,
+            0,
+            QObject::tr("A directory cannot be moved into itself.").toLatin1().data());
+    }
+
+    const QString destination = target + "/" + sourceInfo.fileName();
+
+    if (QFileInfo(destination).exists())
+    {
+        return ito::RetVal(
+            ito::retError,
+            0,
+            QObject::tr("'%1' already exists.").arg(destination).toLatin1().data());
+    }
+
+    bool ok = QDir().rename(source, destination);
+
+    if (!ok)
+    {
+        // e.g. across file systems: copy, then remove the source
+        ito::RetVal ret;
+
+        if (sourceInfo.isDir())
+        {
+            ret += copyDirRecursively(source, destination);
+            ok = !ret.containsError() && QDir(source).removeRecursively();
+        }
+        else
+        {
+            ok = QFile::copy(source, destination) && QFile::remove(source);
+        }
+    }
+
+    if (!ok)
+    {
+        return ito::RetVal(
+            ito::retError,
+            0,
+            QObject::tr("'%1' could not be moved to '%2'.").arg(source, target).toLatin1().data());
+    }
+
+    if (newPath)
+    {
+        *newPath = destination;
+    }
+
+    return ito::retOk;
+}
+
+//-------------------------------------------------------------------------------------
 void showInGraphicalShell(const QString& filePath)
 {
 #ifdef __APPLE__

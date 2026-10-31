@@ -159,3 +159,109 @@ TEST(FileOperations, editableFilePathsFiltersAndDeduplicates)
     EXPECT_EQ(files[0], d.filePath("script.py"));
     EXPECT_EQ(files[1], d.filePath("notes.txt"));
 }
+
+//-------------------------------------------------------------------------------------
+namespace {
+
+QByteArray content(const QString& path)
+{
+    QFile f(path);
+    return f.open(QIODevice::ReadOnly) ? f.readAll() : QByteArray();
+}
+
+void write(const QString& path, const QByteArray& data)
+{
+    QFile f(path);
+    ASSERT_TRUE(f.open(QIODevice::WriteOnly)) << path.toStdString();
+    f.write(data);
+}
+
+} // namespace
+
+//-------------------------------------------------------------------------------------
+TEST(FileOperations, isInsideDirectory)
+{
+    EXPECT_TRUE(FileOperations::isInsideDirectory("/a/b", "/a/b"));
+    EXPECT_TRUE(FileOperations::isInsideDirectory("/a/b/c.txt", "/a/b"));
+    EXPECT_TRUE(FileOperations::isInsideDirectory("/a/b/c", "/a/b/"));
+    EXPECT_FALSE(FileOperations::isInsideDirectory("/a/bc", "/a/b"));
+    EXPECT_FALSE(FileOperations::isInsideDirectory("/a", "/a/b"));
+}
+
+//-------------------------------------------------------------------------------------
+TEST(FileOperations, copyToDirectoryFilesAndFolders)
+{
+    QTemporaryDir dir;
+    ASSERT_TRUE(dir.isValid());
+    QDir d(dir.path());
+    ASSERT_TRUE(d.mkpath("src/sub"));
+    ASSERT_TRUE(d.mkdir("dst"));
+    write(d.filePath("src/a.py"), "A");
+    write(d.filePath("src/sub/b.txt"), "B");
+
+    // file
+    QString copy;
+    RetVal ret = FileOperations::copyToDirectory(d.filePath("src/a.py"), d.filePath("dst"), &copy);
+    EXPECT_FALSE(ret.containsError()) << ret.errorMessage();
+    EXPECT_EQ(copy, QDir::cleanPath(d.filePath("dst/a.py")));
+    EXPECT_EQ(content(copy), "A");
+
+    // same name exists: "a - Copy.py", then "a - Copy (2).py"
+    ret = FileOperations::copyToDirectory(d.filePath("src/a.py"), d.filePath("dst"), &copy);
+    EXPECT_FALSE(ret.containsError());
+    EXPECT_EQ(QFileInfo(copy).fileName(), "a - Copy.py");
+    ret = FileOperations::copyToDirectory(d.filePath("src/a.py"), d.filePath("dst"), &copy);
+    EXPECT_FALSE(ret.containsError());
+    EXPECT_EQ(QFileInfo(copy).fileName(), "a - Copy (2).py");
+
+    // directory (recursive)
+    ret = FileOperations::copyToDirectory(d.filePath("src"), d.filePath("dst"), &copy);
+    EXPECT_FALSE(ret.containsError()) << ret.errorMessage();
+    EXPECT_EQ(QFileInfo(copy).fileName(), "src");
+    EXPECT_EQ(content(copy + "/a.py"), "A");
+    EXPECT_EQ(content(copy + "/sub/b.txt"), "B");
+    ret = FileOperations::copyToDirectory(d.filePath("src"), d.filePath("dst"), &copy);
+    EXPECT_FALSE(ret.containsError());
+    EXPECT_EQ(QFileInfo(copy).fileName(), "src - Copy");
+
+    // errors: into itself, missing source, target is a file
+    EXPECT_TRUE(FileOperations::copyToDirectory(d.filePath("src"), d.filePath("src/sub")).containsError());
+    EXPECT_TRUE(FileOperations::copyToDirectory(d.filePath("src"), d.filePath("src")).containsError());
+    EXPECT_TRUE(FileOperations::copyToDirectory(d.filePath("nope"), d.filePath("dst")).containsError());
+    EXPECT_TRUE(FileOperations::copyToDirectory(d.filePath("src/a.py"), d.filePath("src/a.py")).containsError());
+    EXPECT_EQ(content(d.filePath("src/a.py")), "A"); // source untouched
+}
+
+//-------------------------------------------------------------------------------------
+TEST(FileOperations, moveToDirectory)
+{
+    QTemporaryDir dir;
+    ASSERT_TRUE(dir.isValid());
+    QDir d(dir.path());
+    ASSERT_TRUE(d.mkpath("src/sub"));
+    ASSERT_TRUE(d.mkdir("dst"));
+    write(d.filePath("src/a.py"), "A");
+    write(d.filePath("src/sub/b.txt"), "B");
+
+    QString moved;
+    RetVal ret = FileOperations::moveToDirectory(d.filePath("src/a.py"), d.filePath("dst"), &moved);
+    EXPECT_FALSE(ret.containsError()) << ret.errorMessage();
+    EXPECT_EQ(moved, QDir::cleanPath(d.filePath("dst/a.py")));
+    EXPECT_FALSE(QFile::exists(d.filePath("src/a.py")));
+    EXPECT_EQ(content(moved), "A");
+
+    // already in the target directory, or name exists in the target
+    EXPECT_TRUE(FileOperations::moveToDirectory(d.filePath("dst/a.py"), d.filePath("dst")).containsError());
+    write(d.filePath("src/a.py"), "A2");
+    EXPECT_TRUE(FileOperations::moveToDirectory(d.filePath("src/a.py"), d.filePath("dst")).containsError());
+    EXPECT_EQ(content(d.filePath("dst/a.py")), "A"); // not overwritten
+    EXPECT_TRUE(QFile::exists(d.filePath("src/a.py")));
+
+    // directory, and into itself
+    EXPECT_TRUE(FileOperations::moveToDirectory(d.filePath("src"), d.filePath("src/sub")).containsError());
+    ret = FileOperations::moveToDirectory(d.filePath("src/sub"), d.filePath("dst"), &moved);
+    EXPECT_FALSE(ret.containsError()) << ret.errorMessage();
+    EXPECT_FALSE(QFileInfo(d.filePath("src/sub")).exists());
+    EXPECT_EQ(content(d.filePath("dst/sub/b.txt")), "B");
+    EXPECT_TRUE(FileOperations::moveToDirectory(d.filePath("nope"), d.filePath("dst")).containsError());
+}

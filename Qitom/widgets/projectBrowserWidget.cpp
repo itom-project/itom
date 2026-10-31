@@ -30,7 +30,9 @@
 #include "../organizer/userOrganizer.h"
 #include "../python/pythonEngine.h"
 
+#include <qapplication.h>
 #include <qboxlayout.h>
+#include <qclipboard.h>
 #include <qdir.h>
 #include <qfiledialog.h>
 #include <qheaderview.h>
@@ -48,7 +50,8 @@ ProjectBrowserWidget::ProjectBrowserWidget(QWidget* parent) :
     m_pLblMainScript(nullptr), m_pContextMenu(nullptr), m_pActOpenFile(nullptr),
     m_pActOpenInEditor(nullptr), m_pActExecuteFile(nullptr), m_pActLocateOnDisk(nullptr),
     m_pActRenameItem(nullptr), m_pActDeleteItems(nullptr), m_pActNewDir(nullptr),
-    m_pActNewPyFile(nullptr), m_pActRefresh(nullptr), m_pActAddFolder(nullptr),
+    m_pActNewPyFile(nullptr), m_pActCutItems(nullptr), m_pActCopyItems(nullptr),
+    m_pActPasteItems(nullptr), m_pActRefresh(nullptr), m_pActAddFolder(nullptr),
     m_pActRemoveFolder(nullptr), m_pActSetWorkingDir(nullptr), m_pActSetMainScript(nullptr),
     m_pActRunMainScript(nullptr), m_pActShowInFileSystem(nullptr)
 {
@@ -89,6 +92,14 @@ ProjectBrowserWidget::ProjectBrowserWidget(QWidget* parent) :
     m_pTreeView->setSelectionMode(QAbstractItemView::ExtendedSelection);
     m_pTreeView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     m_pTreeView->setObjectName("projectTreeView");
+    m_pTreeView->setDragEnabled(true);
+    m_pTreeView->setAcceptDrops(true);
+    m_pTreeView->setDropIndicatorShown(true);
+    m_pTreeView->setDragDropMode(QAbstractItemView::DragDrop);
+    m_pTreeView->setDefaultDropAction(Qt::MoveAction);
+    connect(m_pModel, &ProjectTreeModel::operationFailed, this, [this](const QString& msg) {
+        showError(tr("File Operation"), msg);
+    });
     connect(m_pTreeView, &QTreeView::activated, this, &ProjectBrowserWidget::itemActivated);
     connect(
         m_pTreeView,
@@ -189,6 +200,18 @@ void ProjectBrowserWidget::createActions()
     connect(m_pActNewDir, &QAction::triggered, this, &ProjectBrowserWidget::mnuNewDir);
     m_pActNewPyFile = new QAction(QIcon(":/files/icons/new.png"), tr("Create New Python File"), this);
     connect(m_pActNewPyFile, &QAction::triggered, this, &ProjectBrowserWidget::mnuNewPyFile);
+    m_pActCutItems = new QAction(QIcon(":/editor/icons/editCut.png"), tr("Cut"), this);
+    m_pActCutItems->setShortcut(QKeySequence::Cut);
+    m_pActCutItems->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    connect(m_pActCutItems, &QAction::triggered, this, &ProjectBrowserWidget::mnuCutItems);
+    m_pActCopyItems = new QAction(QIcon(":/editor/icons/editCopy.png"), tr("Copy"), this);
+    m_pActCopyItems->setShortcut(QKeySequence::Copy);
+    m_pActCopyItems->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    connect(m_pActCopyItems, &QAction::triggered, this, &ProjectBrowserWidget::mnuCopyItems);
+    m_pActPasteItems = new QAction(QIcon(":/editor/icons/editPaste.png"), tr("Paste"), this);
+    m_pActPasteItems->setShortcut(QKeySequence::Paste);
+    m_pActPasteItems->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    connect(m_pActPasteItems, &QAction::triggered, this, &ProjectBrowserWidget::mnuPasteItems);
     m_pActRefresh = new QAction(tr("Refresh"), this);
     m_pActRefresh->setShortcut(QKeySequence::Refresh);
     m_pActRefresh->setShortcutContext(Qt::WidgetWithChildrenShortcut);
@@ -208,6 +231,9 @@ void ProjectBrowserWidget::createActions()
     // the shortcuts must be known to the widget
     addAction(m_pActRenameItem);
     addAction(m_pActDeleteItems);
+    addAction(m_pActCutItems);
+    addAction(m_pActCopyItems);
+    addAction(m_pActPasteItems);
     addAction(m_pActRefresh);
 }
 
@@ -236,6 +262,10 @@ void ProjectBrowserWidget::createMenus()
     m_pContextMenu->addSeparator();
     m_pContextMenu->addAction(m_pActRenameItem);
     m_pContextMenu->addAction(m_pActDeleteItems);
+    m_pContextMenu->addSeparator();
+    m_pContextMenu->addAction(m_pActCutItems);
+    m_pContextMenu->addAction(m_pActCopyItems);
+    m_pContextMenu->addAction(m_pActPasteItems);
     m_pContextMenu->addSeparator();
     m_pContextMenu->addAction(m_pActNewDir);
     m_pContextMenu->addAction(m_pActNewPyFile);
@@ -546,6 +576,83 @@ void ProjectBrowserWidget::updateActions()
     }
 
     m_pActDeleteItems->setEnabled(selected && !rootSelected);
+    m_pActCutItems->setVisible(selected);
+    m_pActCutItems->setEnabled(selected && !rootSelected);
+    m_pActCopyItems->setVisible(selected);
+
+    if (m_pActPasteItems)
+    {
+        QClipboard* clipboard = QApplication::clipboard();
+        // the mime data can be nullptr, e.g. for the "offscreen" platform plugin
+        const QMimeData* mimeData = clipboard ? clipboard->mimeData() : nullptr;
+        m_pActPasteItems->setVisible(hasProject && (one || !selected));
+        m_pActPasteItems->setEnabled(mimeData && mimeData->hasUrls());
+    }
+}
+
+//-------------------------------------------------------------------------------------
+void ProjectBrowserWidget::mnuCutItems()
+{
+    QList<QUrl> urls;
+
+    foreach (const QString& path, selectedPaths())
+    {
+        // root folders of the project cannot be moved
+        if (m_pModel->nodeType(m_pModel->indexForPath(path)) != ProjectTreeModel::RootFolderNode)
+        {
+            urls << QUrl::fromLocalFile(path);
+        }
+    }
+
+    if (!urls.isEmpty())
+    {
+        QMimeData* mimeData = new QMimeData();
+        mimeData->setUrls(urls);
+        m_clipboardCutData = urls;
+        QApplication::clipboard()->setMimeData(mimeData, QClipboard::Clipboard);
+    }
+}
+
+//-------------------------------------------------------------------------------------
+void ProjectBrowserWidget::mnuCopyItems()
+{
+    QList<QUrl> urls;
+
+    foreach (const QString& path, selectedPaths())
+    {
+        urls << QUrl::fromLocalFile(path);
+    }
+
+    m_clipboardCutData.clear();
+
+    if (!urls.isEmpty())
+    {
+        QMimeData* mimeData = new QMimeData();
+        mimeData->setUrls(urls);
+        QApplication::clipboard()->setMimeData(mimeData, QClipboard::Clipboard);
+    }
+}
+
+//-------------------------------------------------------------------------------------
+void ProjectBrowserWidget::mnuPasteItems()
+{
+    QClipboard* clipboard = QApplication::clipboard();
+    const QMimeData* mimeData = clipboard ? clipboard->mimeData(QClipboard::Clipboard) : nullptr;
+    const QString targetDir = currentFolder();
+
+    if (!mimeData || !mimeData->hasUrls() || targetDir.isEmpty())
+    {
+        return;
+    }
+
+    // the mime data is the result of our own cut action: move instead of copy
+    const bool move = (mimeData->urls() == m_clipboardCutData);
+
+    if (m_pModel->copyOrMoveUrls(mimeData->urls(), targetDir, move) && move)
+    {
+        m_clipboardCutData.clear();
+        clipboard->clear();
+    }
 }
 
 //-------------------------------------------------------------------------------------

@@ -345,3 +345,60 @@ TEST(ProjectTreeModel, missingRootFolderHasNoChildren)
     EXPECT_FALSE(model.hasChildren(root));
     EXPECT_FALSE(model.canFetchMore(root));
 }
+
+//-------------------------------------------------------------------------------------
+TEST(ProjectTreeModel, dragAndDropCopiesAndMoves)
+{
+    TempTree tt;
+    ProjectTreeModel model;
+    QAbstractItemModelTester tester(&model, QAbstractItemModelTester::FailureReportingMode::Fatal);
+    model.setProject(ProjectFile::fromFolder(tt.root));
+    QModelIndex root = loadedRoot(model);
+    QModelIndex aFolder = model.indexForPath(tt.path("A_folder"), true);
+    model.fetchMore(aFolder);
+    QModelIndex mainPy = model.indexForPath(tt.path("main.py"));
+    ASSERT_TRUE(aFolder.isValid() && mainPy.isValid());
+
+    EXPECT_TRUE(model.supportedDropActions() & Qt::MoveAction);
+    EXPECT_TRUE(model.flags(mainPy) & Qt::ItemIsDragEnabled);
+    EXPECT_FALSE(model.flags(mainPy) & Qt::ItemIsDropEnabled);
+    EXPECT_TRUE(model.flags(aFolder) & Qt::ItemIsDropEnabled);
+    EXPECT_FALSE(model.flags(root) & Qt::ItemIsDragEnabled); // roots are not draggable
+
+    QMimeData* data = model.mimeData(QModelIndexList() << mainPy);
+    ASSERT_TRUE(data != nullptr);
+    ASSERT_EQ(data->urls().size(), 1);
+    EXPECT_EQ(data->urls().first().toLocalFile(), tt.path("main.py"));
+
+    // drop on a file is refused
+    EXPECT_FALSE(model.canDropMimeData(data, Qt::CopyAction, -1, -1, mainPy));
+    EXPECT_FALSE(model.dropMimeData(data, Qt::CopyAction, -1, -1, QModelIndex()));
+
+    // copy into A_folder
+    EXPECT_TRUE(model.dropMimeData(data, Qt::CopyAction, -1, -1, aFolder));
+    EXPECT_TRUE(QFile::exists(tt.path("A_folder/main.py")));
+    EXPECT_TRUE(QFile::exists(tt.path("main.py")));
+    EXPECT_EQ(childNames(model, aFolder), QStringList() << "main.py");
+
+    // move: source disappears from the root, name conflict in the target fails
+    QSignalSpy failed(&model, &ProjectTreeModel::operationFailed);
+    EXPECT_FALSE(model.dropMimeData(data, Qt::MoveAction, -1, -1, aFolder));
+    EXPECT_EQ(failed.count(), 1);
+    EXPECT_TRUE(QFile::exists(tt.path("main.py")));
+
+    QModelIndex bFolder = model.indexForPath(tt.path("b_folder"), true);
+    model.fetchMore(bFolder);
+    EXPECT_TRUE(model.dropMimeData(data, Qt::MoveAction, -1, -1, bFolder));
+    delete data;
+    EXPECT_FALSE(QFile::exists(tt.path("main.py")));
+    EXPECT_TRUE(QFile::exists(tt.path("b_folder/main.py")));
+    EXPECT_FALSE(model.indexForPath(tt.path("main.py")).isValid());
+    EXPECT_EQ(childNames(model, bFolder), QStringList() << "main.py" << "sub.py");
+
+    // a root folder is never moved
+    QList<QUrl> rootUrl;
+    rootUrl << QUrl::fromLocalFile(tt.root);
+    EXPECT_FALSE(model.copyOrMoveUrls(rootUrl, tt.path("b_folder"), true));
+    EXPECT_EQ(failed.count(), 2);
+    EXPECT_TRUE(QFileInfo(tt.root).isDir());
+}

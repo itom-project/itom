@@ -23,10 +23,12 @@
 #include "projectTreeModel.h"
 
 #include "../helper/editorFileType.h"
+#include "../helper/fileOperations.h"
 
 #include <qdir.h>
 #include <qicon.h>
 #include <qobject.h>
+#include <qset.h>
 
 #include <algorithm>
 
@@ -423,7 +425,168 @@ Qt::ItemFlags ProjectTreeModel::flags(const QModelIndex& index) const
         return Qt::NoItemFlags;
     }
 
-    return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
+    const Node* n = nodeFromIndex(index);
+    Qt::ItemFlags f = Qt::ItemIsEnabled | Qt::ItemIsSelectable;
+
+    if (n && !n->isRoot)
+    {
+        f |= Qt::ItemIsDragEnabled;
+    }
+
+    if (n && n->isDir)
+    {
+        f |= Qt::ItemIsDropEnabled;
+    }
+
+    return f;
+}
+
+//-------------------------------------------------------------------------------------
+Qt::DropActions ProjectTreeModel::supportedDropActions() const
+{
+    return Qt::CopyAction | Qt::MoveAction;
+}
+
+//-------------------------------------------------------------------------------------
+Qt::DropActions ProjectTreeModel::supportedDragActions() const
+{
+    return Qt::CopyAction | Qt::MoveAction;
+}
+
+//-------------------------------------------------------------------------------------
+QStringList ProjectTreeModel::mimeTypes() const
+{
+    return QStringList() << "text/uri-list";
+}
+
+//-------------------------------------------------------------------------------------
+QMimeData* ProjectTreeModel::mimeData(const QModelIndexList& indexes) const
+{
+    QList<QUrl> urls;
+
+    foreach (const QModelIndex& idx, indexes)
+    {
+        const Node* n = nodeFromIndex(idx);
+
+        if (n && idx.column() == 0)
+        {
+            const QUrl url = QUrl::fromLocalFile(n->path);
+
+            if (!urls.contains(url))
+            {
+                urls << url;
+            }
+        }
+    }
+
+    if (urls.isEmpty())
+    {
+        return nullptr;
+    }
+
+    QMimeData* data = new QMimeData();
+    data->setUrls(urls);
+    return data;
+}
+
+//-------------------------------------------------------------------------------------
+bool ProjectTreeModel::canDropMimeData(
+    const QMimeData* data,
+    Qt::DropAction action,
+    int /*row*/,
+    int /*column*/,
+    const QModelIndex& parent) const
+{
+    if (!data || !data->hasUrls() || (action != Qt::CopyAction && action != Qt::MoveAction))
+    {
+        return false;
+    }
+
+    const Node* n = nodeFromIndex(parent);
+    return n && n->isDir;
+}
+
+//-------------------------------------------------------------------------------------
+bool ProjectTreeModel::dropMimeData(
+    const QMimeData* data, Qt::DropAction action, int row, int column, const QModelIndex& parent)
+{
+    if (!canDropMimeData(data, action, row, column, parent))
+    {
+        return false;
+    }
+
+    return copyOrMoveUrls(data->urls(), filePath(parent), action == Qt::MoveAction);
+}
+
+//-------------------------------------------------------------------------------------
+bool ProjectTreeModel::copyOrMoveUrls(const QList<QUrl>& urls, const QString& targetDir, bool move)
+{
+    bool success = true;
+    QSet<QString> foldersToRefresh;
+    foldersToRefresh.insert(ProjectFile::normalize(targetDir));
+
+    foreach (const QUrl& url, urls)
+    {
+        if (!url.isLocalFile())
+        {
+            continue;
+        }
+
+        const QString source = ProjectFile::normalize(url.toLocalFile());
+        ito::RetVal ret;
+
+        if (move)
+        {
+            bool isRoot = false;
+
+            foreach (const Node* r, m_roots)
+            {
+                if (r->path == source)
+                {
+                    isRoot = true;
+                    break;
+                }
+            }
+
+            if (isRoot)
+            {
+                ret += ito::RetVal(
+                    ito::retError,
+                    0,
+                    tr("The root folder '%1' of the project cannot be moved.")
+                        .arg(source)
+                        .toLatin1()
+                        .data());
+            }
+            else
+            {
+                ret += FileOperations::moveToDirectory(source, targetDir);
+                foldersToRefresh.insert(QFileInfo(source).absolutePath());
+            }
+        }
+        else
+        {
+            ret += FileOperations::copyToDirectory(source, targetDir);
+        }
+
+        if (ret.containsError())
+        {
+            success = false;
+            emit operationFailed(QLatin1String(ret.errorMessage()));
+        }
+    }
+
+    foreach (const QString& folder, foldersToRefresh)
+    {
+        const QModelIndex idx = indexForPath(folder);
+
+        if (idx.isValid())
+        {
+            refresh(idx);
+        }
+    }
+
+    return success;
 }
 
 //-------------------------------------------------------------------------------------

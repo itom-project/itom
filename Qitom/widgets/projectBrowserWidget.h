@@ -31,6 +31,7 @@
 #include <qpushbutton.h>
 #include <qstackedwidget.h>
 #include <qtreeview.h>
+#include <qurl.h>
 #include <qwidget.h>
 
 namespace ito {
@@ -99,6 +100,9 @@ private slots:
     void mnuDeleteItems();
     void mnuNewDir();
     void mnuNewPyFile();
+    void mnuCutItems();
+    void mnuCopyItems();
+    void mnuPasteItems();
     void mnuRefresh();
     void mnuAddFolder();
     void mnuRemoveFolder();
@@ -134,6 +138,9 @@ private:
     QAction* m_pActDeleteItems;
     QAction* m_pActNewDir;
     QAction* m_pActNewPyFile;
+    QAction* m_pActCutItems;
+    QAction* m_pActCopyItems;
+    QAction* m_pActPasteItems;
     QAction* m_pActRefresh;
     QAction* m_pActAddFolder;
     QAction* m_pActRemoveFolder;
@@ -141,6 +148,8 @@ private:
     QAction* m_pActSetMainScript;
     QAction* m_pActRunMainScript;
     QAction* m_pActShowInFileSystem;
+
+    QList<QUrl> m_clipboardCutData; //!< urls of the last cut action (see mnuPasteItems)
 };
 
 } // namespace ito
