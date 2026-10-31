@@ -31,9 +31,9 @@ itom algorithm plugins can contain two different types of code:
      available methods in the ``itom.algorithms`` submodule depends on the loaded algorithm
      plugins of your itom application.
 
-2. Algorithm plugins can also contain custom user interfaces. The create and show such
-   an user interface, call the method :py:meth:`~itom.ui.createNewPluginWidget` or
-   :py:meth:`~itom.ui.createNewPluginWidget2`. To get an online help, use :py:meth:`~itom.widgetHelp`.
+2. Algorithm plugins can also contain custom user interfaces. To create and show such
+   a user interface, call the method :py:meth:`~itom.ui.createNewPluginWidget` or
+   :py:meth:`~itom.ui.createNewPluginWidget2`. To get online help, use :py:meth:`~itom.widgetHelp`.
 
 For more information, see also :ref:`getStartFilter` or in the demo file **demoGaussianSpotCentroidDetection.py**.
 

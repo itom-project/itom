@@ -373,7 +373,7 @@ from **ParamBase**). The method returns an error if the parameters are not compa
     retValue += p3.copyValueFrom(&p1);
     //retValue.containsError() returns true
 
-For a full reference to all member function of class **ParamBase**, see :ref:`plugin-paramBase-Ref`.
+For a full reference to all member function of class **ParamBase**, see :ref:`plugin-ParamBase-Ref`.
 
 .. _classParam:
 
@@ -433,7 +433,7 @@ member variables:
 
             p.setInfo("new information")
 
-The full reference of class :cpp:class:`ito::Param` is available in :ref:`plugin-param-Ref`.
+The full reference of class :cpp:class:`ito::Param` is available in :ref:`plugin-Param-Ref`.
 
 In the following, examples about how to create parameters and meta information of different types are shown:
 

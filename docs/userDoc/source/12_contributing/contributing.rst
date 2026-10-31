@@ -13,6 +13,7 @@ to provide a common code representation, as well as an introduction to translati
 .. toctree::
     :maxdepth: 2
 
+    documentation_english_style_guide.rst
     cmake_style_guide.rst
     git_pre_commit_hooks
     translations.rst

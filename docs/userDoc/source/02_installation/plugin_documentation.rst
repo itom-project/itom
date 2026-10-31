@@ -15,7 +15,7 @@ Create the plugin documentation of any plugin
 In order to generate the plugin documentation of any plugin, the following requirements need to be fulfilled:
 
 1. In the sources of the plugin there must be a folder **docs** that contains at least on \*.rst with the plugin documentation. This documentation needs to
-    be written in the so called reStructured-Text format rst (see http://sphinx-doc.org/rest.html)
+    be written in the so called reStructured-Text format rst (see https://www.sphinx-doc.org/en/master/usage/restructuredtext/index.html)
 
 2. The file **CMakeLists.txt** of the specific plugin must contain the following line in order to register the rst-file as plugin documentation file::
 
@@ -52,7 +52,7 @@ plugin documentation source files
 ----------------------------------
 
 The source files of each plugin documentation are written in the reStructuredText-format (*.rst). You can use all possibilities given by this format including the additions
-provided by **sphinx** (see http://sphinx-doc.org/rest.html). Additionally, when the documentation is build using |itom|, specific directives, roles and a pyitom-domain is added in
+provided by **sphinx** (see https://www.sphinx-doc.org/en/master/usage/restructuredtext/index.html). Additionally, when the documentation is build using |itom|, specific directives, roles and a pyitom-domain is added in
 order to automatically create parts of the documentation depending on information that can for instance be obtained using the command :py:meth:`itom.pluginHelp`.
 
 Use the following roles as placeholders in the text. The placeholders will be replaced with information obtained by the plugin with the given name. This is only possible if

@@ -248,12 +248,11 @@ Here's an example that fails due to this restriction::
    TypeError: function() got multiple values for keyword argument 'a'
 
 When a final formal parameter of the form ``**name`` is present, it receives a
-dictionary (see :ref:`typesmapping`) containing all keyword arguments except for
-those corresponding to a formal parameter.  This may be combined with a formal
-parameter of the form ``*name`` (described in the next subsection) which
-receives a tuple containing the positional arguments beyond the formal parameter
-list.  (``*name`` must occur before ``**name``.) For example, if we define a
-function like this::
+dictionary containing all keyword arguments except for those corresponding to a
+formal parameter. This may be combined with a formal parameter of the form
+``*name`` (described in the next subsection) which receives a tuple containing
+the positional arguments beyond the formal parameter list. (``*name`` must
+occur before ``**name``.) For example, if we define a function like this::
 
    def cheeseshop(kind, *arguments, **keywords):
        print("-- Do you have any", kind, "?")
@@ -297,9 +296,9 @@ Arbitrary Argument Lists
    single: * (asterisk); in function calls
 
 Finally, the least frequently used option is to specify that a function can be
-called with an arbitrary number of arguments.  These arguments will be wrapped
-up in a tuple (see :ref:`tut-tuples`).  Before the variable number of arguments,
-zero or more normal arguments may occur. ::
+called with an arbitrary number of arguments. These arguments will be wrapped
+up in a tuple. Before the variable number of arguments, zero or more normal
+arguments may occur.::
 
    def write_multiple_items(file, separator, *args):
        file.write(separator.join(args))

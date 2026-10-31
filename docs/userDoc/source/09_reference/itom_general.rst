@@ -5,7 +5,7 @@
 itom methods
 *************
 
-This section shows the spezial itom methods.
+This section shows the special itom methods.
 
 .. currentmodule:: itom
 
@@ -34,7 +34,7 @@ For more information about using these methods, see :ref:`toolbar-start`.
 
 Save and load dataObjects to or from file
 =========================================
-Dataobject can be save as IDC files.
+DataObject can be saved as IDC files.
 
 .. automodule:: itom
     :members: loadDataObject, saveDataObject, loadMatlabMat, saveMatlabMat, loadIDC, saveIDC

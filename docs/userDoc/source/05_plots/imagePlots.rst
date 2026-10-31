@@ -171,7 +171,7 @@ Properties
 .. py:attribute:: valueScale : ItomQwtPlotEnums::ScaleEngine
     :noindex:
 
-    linear or logarithmic scale (various bases) can be chosen for the value axis (color bar). Please consider, that a logarithmic scale can only display values > 1e-100 while the lower limit for the double-logarithmic scale is 1+1e-100.
+    linear or logarithmic scale (various bases) can be chosen for the value axis (color bar). Please note that a logarithmic scale can only display values > 1e-100 while the lower limit for the double-logarithmic scale is 1+1e-100.
 
     The type 'ItomQwtPlotEnums::ScaleEngine' is an enumeration that can have one of the following values (str or int):
 

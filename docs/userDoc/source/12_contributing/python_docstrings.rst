@@ -107,13 +107,13 @@ After the signature line, write a short description of the method after a separa
 new line. Then, insert another new line and continue with a multiline long
 description of the method. This long description can also consist of further
 sections, following the rules of Numpydoc. If the method has at least one
-argument, it is recommend to describe it in a ``Parameters`` section. If the
+argument, it is recommended to describe it in a ``Parameters`` section. If the
 method has a return value, use the ``Returns`` section. If you want to add a
 reference to other methods, use the ``See Also`` section.
 
 .. note::
 
-    Please consider, that the underline of the sections must be at least as long as
+    Please note that the underline of the sections must be at least as long as
     the name of the section. Hence, a ``Parameters`` section must be followed by
     the underline line with at least 10 ``-`` characters.
 

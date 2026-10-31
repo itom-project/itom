@@ -420,7 +420,7 @@ that depends on `pyflakes`_,
 `pycodestyle <https://pypi.org/project/pycodestyle/>`_
 and `mccabe <https://github.com/pycqa/mccabe>`_.
 
-.. _pyflakes: https://pypi.python.org/pypi/pyflakes
+.. _pyflakes: https://pypi.org/project/pyflakes/
 
 You need to have these packages installed in order to benefit from the desired service.
 If the necessary packages could not be found, the service is deactivated and a warning

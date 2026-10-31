@@ -88,7 +88,7 @@ Here is a list of common error messages in this dialog:
 6. **AddIn '...' does not fit to the general interface AddInInterfaceBase**: This library seems to be a Qt library,
    but does not implement the required interface of |itom| plugins (*ito.AddIn.InterfaceBase/major-version-number*).
 
-Please consider, that the loaded plugins dialog also displays the load status of additional designer plugins
+Please note that the loaded plugins dialog also displays the load status of additional designer plugins
 (located in the subfolder *designer* of |itom|). These designer plugins contain plots or additional widgets, that
 can be included in user defined GUIs of |itom|. They follow another interface system. For more information see
 :ref:`PlotsAndFigures` or :ref:`listCustomDesignerWidgets`.
