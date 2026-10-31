@@ -41,6 +41,7 @@ QObject* AppManagement::m_mainWin = nullptr;
 QObject* AppManagement::m_addInManager = nullptr;
 QObject* AppManagement::m_uiOrganizer = nullptr;
 QObject* AppManagement::m_processOrganizer = nullptr;
+QObject* AppManagement::m_projectOrganizer = nullptr;
 QObject* AppManagement::m_userOrganizer = nullptr;
 QObject* AppManagement::m_cerrStream = nullptr;
 QObject* AppManagement::m_coutStream = nullptr;
@@ -54,6 +55,11 @@ static QString g_settingsFilePath;
 void setSettingsFilePath(const QString& path)
 {
     g_settingsFilePath = path;
+}
+
+QString settingsFilePath()
+{
+    return g_settingsFilePath;
 }
 } // namespace test
 

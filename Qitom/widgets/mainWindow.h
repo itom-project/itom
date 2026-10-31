@@ -129,6 +129,7 @@ private:
     QMenu *m_pMenuHelp;
     QMenu *m_pMenuFile;
     QMenu *m_plastFilesMenu;
+    QMenu *m_pMenuRecentProjects;
     QMenu *m_pMenuPython;
     QMenu *m_pMenuReloadModule;
     QMenu *m_pMenuView;
@@ -243,6 +244,14 @@ private slots:
 
     void menuLastFilesAboutToShow();
     void lastFileOpen(const QString &path);
+
+    void mnuNewProject();
+    void mnuOpenProject();
+    void mnuSaveProject();
+    void mnuCloseProject();
+    void menuRecentProjectsAboutToShow();
+    void openProject(const QString &filePath);
+    void projectOpenedOrClosed();
     void openScript(const QString &filename);
 
     void mnuViewAboutToShow();

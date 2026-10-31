@@ -37,6 +37,7 @@ set(QITOM_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../Qitom)
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/../../gtest-1.12.1/googletest/include
     ${CMAKE_CURRENT_SOURCE_DIR}/../../common
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../commonQt
     ${QITOM_DIR}
 )
 
@@ -44,12 +45,14 @@ set(qitom_HEADERS
     ${QITOM_DIR}/helper/editorFileType.h
     ${QITOM_DIR}/models/projectTreeModel.h
     ${QITOM_DIR}/organizer/projectFile.h
+    ${QITOM_DIR}/organizer/projectOrganizer.h
 )
 
 set(qitom_SOURCES
     ${QITOM_DIR}/helper/editorFileType.cpp
     ${QITOM_DIR}/models/projectTreeModel.cpp
     ${QITOM_DIR}/organizer/projectFile.cpp
+    ${QITOM_DIR}/organizer/projectOrganizer.cpp
 )
 
 set(unittest_HEADERS
@@ -59,12 +62,13 @@ set(unittest_HEADERS
 set(unittest_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/appManagementStub.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/projectFileTest.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/projectOrganizerTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/projectTreeModelTest.cpp
 )
 
 cxx_executable(${target_name} ${CMAKE_CURRENT_SOURCE_DIR} gtest
     ${unittest_SOURCES} ${unittest_HEADERS} ${qitom_SOURCES} ${qitom_HEADERS})
-target_link_libraries(${target_name} itomCommonLib ${QT5_LIBRARIES} ${OpenCV_LIBS})
+target_link_libraries(${target_name} itomCommonLib itomCommonQtLib ${QT5_LIBRARIES} ${OpenCV_LIBS})
 
 set_target_properties( ${target_name}
     PROPERTIES

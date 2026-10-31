@@ -120,7 +120,7 @@ MainApplication::MainApplication(tGuiType guiType) :
     m_paletteOrganizer(nullptr),
     m_uiOrganizer(nullptr),
     m_designerWidgetOrganizer(nullptr),
-    m_processOrganizer(nullptr),
+    m_processOrganizer(nullptr), m_projectOrganizer(nullptr),
     m_pSplashScreen(nullptr),
     m_splashScreenTextColor(Qt::white),
     m_pQout(nullptr),
@@ -784,6 +784,9 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
     m_processOrganizer = new ProcessOrganizer();
     AppManagement::setProcessOrganizer(qobject_cast<QObject*>(m_processOrganizer));
 
+    m_projectOrganizer = new ProjectOrganizer();
+    AppManagement::setProjectOrganizer(qobject_cast<QObject*>(m_projectOrganizer));
+
     qDebug("MainApplication::setupApplication");
 
     // starting AddInManager
@@ -1128,6 +1131,9 @@ void MainApplication::finalizeApplication()
     DELETE_AND_SET_NULL(m_pyThread);
 
     AddInManager::closeInstance();
+
+    DELETE_AND_SET_NULL(m_projectOrganizer);
+    AppManagement::setProjectOrganizer(NULL);
 
     DELETE_AND_SET_NULL(m_processOrganizer);
     AppManagement::setProcessOrganizer(NULL);

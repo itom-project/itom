@@ -62,7 +62,10 @@ struct ProjectFolder
 class ProjectFile
 {
 public:
-    static const int currentVersion = 1;
+    enum
+    {
+        currentVersion = 1
+    };
 
     //! file extension without dot
     static QString fileExtension();
