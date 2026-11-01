@@ -1,0 +1,243 @@
+/* ********************************************************************
+    itom software
+    URL: http://www.uni-stuttgart.de/ito
+    Copyright (C) 2026, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
+
+    This file is part of itom.
+
+    itom is free software; you can redistribute it and/or modify it
+    under the terms of the GNU Library General Public Licence as published by
+    the Free Software Foundation; either version 2 of the Licence, or (at
+    your option) any later version.
+
+    itom is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library
+    General Public Licence for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with itom. If not, see <http://www.gnu.org/licenses/>.
+*********************************************************************** */
+
+#include "ollamaProvider.h"
+
+#include <QEventLoop>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
+#include <QNetworkRequest>
+#include <QTimer>
+#include <QUrl>
+
+namespace ito
+{
+namespace llm
+{
+
+namespace
+{
+QString mapNetworkError(QNetworkReply::NetworkError error)
+{
+    switch (error)
+    {
+    case QNetworkReply::TimeoutError:
+        return QString("Ollama request timed out.");
+    case QNetworkReply::HostNotFoundError:
+    case QNetworkReply::ConnectionRefusedError:
+    case QNetworkReply::RemoteHostClosedError:
+        return QString("Could not connect to Ollama endpoint.");
+    default:
+        return QString("Ollama request failed.");
+    }
+}
+
+LlmErrorCategory mapErrorCategory(QNetworkReply::NetworkError error)
+{
+    switch (error)
+    {
+    case QNetworkReply::TimeoutError:
+        return LlmErrorCategory::Timeout;
+    case QNetworkReply::HostNotFoundError:
+    case QNetworkReply::ConnectionRefusedError:
+    case QNetworkReply::RemoteHostClosedError:
+        return LlmErrorCategory::Network;
+    default:
+        return LlmErrorCategory::ProviderError;
+    }
+}
+}
+
+OllamaProvider::OllamaProvider() :
+    m_nextStreamHandle(1)
+{
+}
+
+ProviderCapabilities OllamaProvider::capabilities() const
+{
+    ProviderCapabilities caps;
+    caps.supportsStreaming = true;
+    caps.supportsCancellation = true;
+    return caps;
+}
+
+LlmResponse OllamaProvider::chat(const LlmRequest &request, LlmError *errorOut)
+{
+    LlmResponse response;
+
+    if (request.endpoint.trimmed().isEmpty() || request.model.trimmed().isEmpty())
+    {
+        if (errorOut)
+        {
+            errorOut->category = LlmErrorCategory::Configuration;
+            errorOut->userMessage = QString("Ollama configuration is incomplete.");
+            errorOut->technicalMessage =
+                QString("endpoint/model must be configured for Ollama provider.");
+        }
+        return response;
+    }
+
+    QNetworkAccessManager manager;
+    QNetworkRequest netRequest(QUrl(request.endpoint));
+    netRequest.setHeader(QNetworkRequest::ContentTypeHeader, QString("application/json"));
+
+    QString prompt;
+    for (int i = 0; i < request.messages.size(); ++i)
+    {
+        const LlmMessage &msg = request.messages[i];
+        if (!prompt.isEmpty())
+        {
+            prompt += QString("\n\n");
+        }
+        prompt += QString("%1: %2").arg(msg.role, msg.content);
+    }
+
+    QJsonObject root;
+    root.insert("model", request.model);
+    root.insert("prompt", prompt);
+    root.insert("stream", false);
+
+    const QByteArray payload = QJsonDocument(root).toJson(QJsonDocument::Compact);
+    QNetworkReply *reply = manager.post(netRequest, payload);
+
+    QEventLoop loop;
+    QTimer timer;
+    timer.setSingleShot(true);
+    QObject::connect(&timer, SIGNAL(timeout()), &loop, SLOT(quit()));
+    QObject::connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
+
+    timer.start(qMax(1000, request.timeoutMs));
+    loop.exec();
+
+    if (reply->isRunning())
+    {
+        reply->abort();
+    }
+
+    if (reply->error() != QNetworkReply::NoError)
+    {
+        if (errorOut)
+        {
+            errorOut->category = mapErrorCategory(reply->error());
+            errorOut->userMessage = mapNetworkError(reply->error());
+            errorOut->technicalMessage = reply->errorString();
+        }
+        reply->deleteLater();
+        return response;
+    }
+
+    const QByteArray body = reply->readAll();
+    reply->deleteLater();
+
+    QJsonParseError parseError;
+    const QJsonDocument doc = QJsonDocument::fromJson(body, &parseError);
+    if (parseError.error != QJsonParseError::NoError || !doc.isObject())
+    {
+        if (errorOut)
+        {
+            errorOut->category = LlmErrorCategory::ProviderError;
+            errorOut->userMessage = QString("Ollama returned invalid JSON.");
+            errorOut->technicalMessage = parseError.errorString();
+        }
+        return response;
+    }
+
+    const QJsonObject rootObj = doc.object();
+    response.content = rootObj.value("response").toString();
+    response.finishReason = rootObj.value("done").toBool() ? QString("stop") : QString();
+
+    return response;
+}
+
+StreamHandle OllamaProvider::streamChat(
+    const LlmRequest &request,
+    IStreamObserver *observer,
+    LlmError *errorOut)
+{
+    StreamHandle handle;
+    handle.value = m_nextStreamHandle++;
+
+    if (!observer)
+    {
+        if (errorOut)
+        {
+            errorOut->category = LlmErrorCategory::ProviderError;
+            errorOut->userMessage = QString("No stream observer provided.");
+            errorOut->technicalMessage = QString("OllamaProvider::streamChat observer is null.");
+        }
+        handle.value = 0;
+        return handle;
+    }
+
+    LlmError localError;
+    LlmResponse response = chat(request, &localError);
+
+    if (!localError.userMessage.isEmpty())
+    {
+        observer->onError(localError);
+        if (errorOut)
+        {
+            *errorOut = localError;
+        }
+        handle.value = 0;
+        return handle;
+    }
+
+    if (m_cancelledHandles.contains(handle.value))
+    {
+        m_cancelledHandles.remove(handle.value);
+        handle.value = 0;
+        return handle;
+    }
+
+    LlmChunk chunk;
+    chunk.sequenceNo = 0;
+    chunk.textDelta = response.content;
+    chunk.isFinal = true;
+    chunk.finishReason = response.finishReason;
+    observer->onChunk(chunk);
+    observer->onCompleted(response);
+
+    return handle;
+}
+
+void OllamaProvider::cancel(const StreamHandle &handle)
+{
+    if (handle.isValid())
+    {
+        m_cancelledHandles.insert(handle.value);
+    }
+}
+
+ProviderHealth OllamaProvider::checkHealth()
+{
+    ProviderHealth health;
+    health.available = true;
+    health.statusMessage = QString("Provider available.");
+    return health;
+}
+
+} // namespace llm
+} // namespace ito

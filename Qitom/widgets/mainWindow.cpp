@@ -42,6 +42,9 @@
 #include "../ui/dialogTimerManager.h"
 #include "../ui/widgetInfoBox.h"
 #include "scriptDockWidget.h"
+#include "../llm/llmCredentialService.h"
+#include "../llm/llmProviderFactory.h"
+#include "../llm/llmSettingsManager.h"
 
 #include "../helper/versionHelper.h"
 #include "../helper/guiHelper.h"
@@ -101,7 +104,7 @@ const QScreen* guiApplicationScreenAt(const QPoint &point)
 MainWindow::MainWindow() :
     m_console(nullptr), m_contentLayout(nullptr), m_breakPointDock(nullptr),
     m_bookmarkDock(nullptr), m_lastCommandDock(nullptr), m_helpDock(nullptr),
-    m_globalWorkspaceDock(nullptr), m_localWorkspaceDock(nullptr), m_callStackDock(nullptr),
+    m_llmChatDock(nullptr), m_globalWorkspaceDock(nullptr), m_localWorkspaceDock(nullptr), m_callStackDock(nullptr),
     m_fileSystemDock(nullptr), m_pAIManagerWidget(nullptr), m_appFileNew(nullptr),
     m_appFileOpen(nullptr), m_aboutQt(nullptr), m_aboutQitom(nullptr), m_copyLog(nullptr),
     m_pMenuFigure(nullptr), m_pMenuHelp(nullptr), m_pMenuFile(nullptr),
@@ -262,6 +265,41 @@ MainWindow::MainWindow() :
             Qt::TopDockWidgetArea);
         addDockWidget(Qt::RightDockWidgetArea, m_helpDock);
 
+        // LLM chat dock
+        m_llmChatDock = new LlmChatDockWidget(
+            tr("LLM Chat"),
+            "itomLlmChatDockWidget",
+            this,
+            true,
+            true,
+            AbstractDockWidget::floatingStandard);
+        m_llmChatDock->setAllowedAreas(Qt::AllDockWidgetAreas);
+
+        llm::LlmSettings llmSettings;
+        llm::LlmSettingsManager::load(llmSettings);
+
+        llm::LlmCredentialService llmCredentialService;
+        QString apiKey;
+        if (!llmCredentialService.loadApiKey(llmSettings, apiKey).containsError())
+        {
+            llmSettings.apiKey = apiKey;
+        }
+
+        QSharedPointer<llm::ILlmProvider> llmProvider;
+        llm::LlmError llmError;
+        RetVal llmProviderRet = llm::LlmProviderFactory::createProvider(llmSettings, llmProvider, &llmError);
+        if (llmProviderRet.containsError())
+        {
+            if (!llmError.userMessage.isEmpty())
+            {
+                setStatusText(llmError.userMessage, 5000);
+            }
+        }
+
+        m_llmChatDock->setLlmProvider(llmProvider);
+        m_llmChatDock->setLlmSettings(llmSettings);
+        addDockWidget(Qt::RightDockWidgetArea, m_llmChatDock);
+
         // CallStack-Dock
         m_callStackDock = new CallStackDockWidget(
             tr("Call Stack"),
@@ -332,6 +370,10 @@ MainWindow::MainWindow() :
 
         // tabify global and local workspace
         tabifyDockWidget(m_globalWorkspaceDock, m_localWorkspaceDock);
+        if (m_llmChatDock)
+        {
+            tabifyDockWidget(m_globalWorkspaceDock, m_llmChatDock);
+        }
         // splitDockWidget(m_globalWorkspaceDock, m_localWorkspaceDock, Qt::Horizontal);
         m_globalWorkspaceDock->raise();
     }

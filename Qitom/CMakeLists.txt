@@ -72,7 +72,7 @@ if(${BUILD_WITH_HELPVIEWER})
     endif()
 else()
     #uses the old QtAssistant as help viewer.
-    itom_find_package_qt(ON Core Widgets UiTools PrintSupport Network Sql Xml OpenGL Svg Designer LinguistTools)
+    itom_find_package_qt(ON Core Widgets UiTools PrintSupport Network Sql Xml OpenGL Svg Network Designer LinguistTools)
 endif()
 
 find_package(Python 3.7 REQUIRED COMPONENTS Interpreter Development NumPy)
@@ -340,10 +340,32 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythontParamConversion.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonUi.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonUiTimer.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonWorkspace.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/python/qDebugStream.h
+	${CMAKE_CURRENT_SOURCE_DIR}/python/pythonWorkspace.h
+	${CMAKE_CURRENT_SOURCE_DIR}/python/qDebugStream.h
 	${CMAKE_CURRENT_SOURCE_DIR}/python/pythonWrapper.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/ui/abstractFilterDialog.h
+	${CMAKE_CURRENT_SOURCE_DIR}/llm/llmTypes.h
+	${CMAKE_CURRENT_SOURCE_DIR}/llm/iLlmProvider.h
+	${CMAKE_CURRENT_SOURCE_DIR}/llm/llmProviderFactory.h
+	${CMAKE_CURRENT_SOURCE_DIR}/llm/llmSettings.h
+	${CMAKE_CURRENT_SOURCE_DIR}/llm/llmSettingsManager.h
+	${CMAKE_CURRENT_SOURCE_DIR}/llm/llmSecurityPolicy.h
+	${CMAKE_CURRENT_SOURCE_DIR}/llm/llmLogRedaction.h
+	${CMAKE_CURRENT_SOURCE_DIR}/llm/llmMetricsCollector.h
+	${CMAKE_CURRENT_SOURCE_DIR}/llm/iOsKeyStore.h
+	${CMAKE_CURRENT_SOURCE_DIR}/llm/llmApplyService.h
+	${CMAKE_CURRENT_SOURCE_DIR}/llm/workspaceChangeSet.h
+	${CMAKE_CURRENT_SOURCE_DIR}/llm/workspaceApplyService.h
+	${CMAKE_CURRENT_SOURCE_DIR}/llm/llmDiffReviewService.h
+	${CMAKE_CURRENT_SOURCE_DIR}/llm/llmCredentialService.h
+	${CMAKE_CURRENT_SOURCE_DIR}/llm/osKeyStoreWin.h
+	${CMAKE_CURRENT_SOURCE_DIR}/llm/gitHubModelsProvider.h
+	${CMAKE_CURRENT_SOURCE_DIR}/llm/ollamaProvider.h
+	${CMAKE_CURRENT_SOURCE_DIR}/llm/contextAssemblyService.h
+	${CMAKE_CURRENT_SOURCE_DIR}/llm/projectDiscoveryService.h
+	${CMAKE_CURRENT_SOURCE_DIR}/llm/knowledgeContextService.h
+	${CMAKE_CURRENT_SOURCE_DIR}/llm/promptPipeline.h
+	${CMAKE_CURRENT_SOURCE_DIR}/llm/llmAssistantController.h
+	${CMAKE_CURRENT_SOURCE_DIR}/ui/abstractFilterDialog.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/abstractPropertyPageWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogAbout.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogCloseItom.h
@@ -391,6 +413,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropGeneralPlotSettings.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropGeneralStyles.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropHelpDock.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropLlm.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropPalettes.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropPluginsAlgorithms.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropPluginsActuators.h
@@ -410,6 +433,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/helpDockWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/itomQWidgets.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/lastCommandDockWidget.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/LlmChatDockWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/mainWindow.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/menuOnlyForEnter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/outlineSelectorWidget.h
@@ -526,6 +550,7 @@ set(qitom_UI
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropGeneralPlotSettings.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropGeneralStyles.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropHelpDock.ui
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropLlm.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropPalettes.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropPluginsAlgorithms.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropPluginsActuators.ui
@@ -603,6 +628,24 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonUiTimer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonWorkspace.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/qDebugStream.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/llm/llmProviderFactory.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/llm/llmSettingsManager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/llm/llmSecurityPolicy.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/llm/llmLogRedaction.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/llm/llmMetricsCollector.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/llm/llmApplyService.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/llm/workspaceChangeSet.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/llm/workspaceApplyService.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/llm/llmDiffReviewService.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/llm/llmCredentialService.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/llm/osKeyStoreWin.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/llm/gitHubModelsProvider.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/llm/ollamaProvider.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/llm/contextAssemblyService.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/llm/projectDiscoveryService.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/llm/knowledgeContextService.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/llm/promptPipeline.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/llm/llmAssistantController.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/abstractFilterDialog.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogAbout.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogCloseItom.cpp
@@ -648,6 +691,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropGeneralPlotSettings.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropGeneralStyles.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropHelpDock.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropLlm.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropPalettes.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropPluginsAlgorithms.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropPluginsActuators.cpp
@@ -667,6 +711,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/helpDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/itomQWidgets.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/lastCommandDockWidget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/LlmChatDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/mainWindow.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/outlineSelectorWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptDockWidget.cpp
@@ -753,6 +798,7 @@ itom_add_source_group(codeEditor/panels)
 itom_add_source_group(codeEditor/syntaxHighlighter)
 itom_add_source_group(codeEditor/utils)
 itom_add_source_group(textdiff)
+itom_add_source_group(llm)
 #end add filters to visual studio
 
 

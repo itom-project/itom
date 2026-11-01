@@ -32,6 +32,7 @@
 #include "bookmarkDockWidget.h"
 #include "helpDockWidget.h"
 #include "lastCommandDockWidget.h"
+#include "LlmChatDockWidget.h"
 //#include "pythonMessageDockWidget.h"
 #include "userManagement.h"
 
@@ -105,6 +106,7 @@ private:
     BookmarkDockWidget    *m_bookmarkDock;
     LastCommandDockWidget *m_lastCommandDock;
     HelpDockWidget        *m_helpDock;
+    LlmChatDockWidget     *m_llmChatDock;
     WorkspaceDockWidget   *m_globalWorkspaceDock;
     WorkspaceDockWidget   *m_localWorkspaceDock;
     CallStackDockWidget   *m_callStackDock;

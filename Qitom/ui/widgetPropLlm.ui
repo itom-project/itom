@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>WidgetPropLlm</class>
+ <widget class="QWidget" name="WidgetPropLlm">
+  <property name="geometry">
+   <rect>
+	<x>0</x>
+	<y>0</y>
+	<width>520</width>
+	<height>420</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+	<widget class="QGroupBox" name="groupBoxGeneral">
+	 <property name="title">
+	  <string>LLM General</string>
+	 </property>
+	 <layout class="QGridLayout" name="gridLayoutGeneral">
+	  <item row="0" column="0" colspan="2">
+	   <widget class="QCheckBox" name="checkEnabled">
+		<property name="text">
+		 <string>Enable LLM integration</string>
+		</property>
+	   </widget>
+	  </item>
+	  <item row="1" column="0">
+	   <widget class="QLabel" name="labelMode">
+		<property name="text">
+		 <string>Mode</string>
+		</property>
+	   </widget>
+	  </item>
+	  <item row="1" column="1">
+	   <widget class="QComboBox" name="comboMode">
+		<item>
+		 <property name="text">
+		  <string>Disabled</string>
+		 </property>
+		</item>
+		<item>
+		 <property name="text">
+		  <string>Cloud</string>
+		 </property>
+		</item>
+		<item>
+		 <property name="text">
+		  <string>Offline</string>
+		 </property>
+		</item>
+	   </widget>
+	  </item>
+	  <item row="2" column="0">
+	   <widget class="QLabel" name="labelProvider">
+		<property name="text">
+		 <string>Provider</string>
+		</property>
+	   </widget>
+	  </item>
+	  <item row="2" column="1">
+	   <widget class="QComboBox" name="comboProvider">
+		<item>
+		 <property name="text">
+		  <string>github-models</string>
+		 </property>
+		</item>
+		<item>
+		 <property name="text">
+		  <string>ollama</string>
+		 </property>
+		</item>
+	   </widget>
+	  </item>
+	  <item row="3" column="0">
+	   <widget class="QLabel" name="labelModel">
+		<property name="text">
+		 <string>Model</string>
+		</property>
+	   </widget>
+	  </item>
+	  <item row="3" column="1">
+	   <widget class="QLineEdit" name="editModel"/>
+	  </item>
+	  <item row="4" column="0">
+	   <widget class="QLabel" name="labelEndpoint">
+		<property name="text">
+		 <string>Endpoint</string>
+		</property>
+	   </widget>
+	  </item>
+	  <item row="4" column="1">
+	   <widget class="QLineEdit" name="editEndpoint"/>
+	  </item>
+	  <item row="5" column="0">
+	   <widget class="QLabel" name="labelTimeout">
+		<property name="text">
+		 <string>Timeout</string>
+		</property>
+	   </widget>
+	  </item>
+	  <item row="5" column="1">
+	   <widget class="QSpinBox" name="spinTimeoutMs">
+		<property name="suffix">
+		 <string> ms</string>
+		</property>
+		<property name="minimum">
+		 <number>1000</number>
+		</property>
+		<property name="maximum">
+		 <number>600000</number>
+		</property>
+		<property name="singleStep">
+		 <number>1000</number>
+		</property>
+		<property name="value">
+		 <number>30000</number>
+		</property>
+	   </widget>
+	  </item>
+	 </layout>
+	</widget>
+   </item>
+   <item>
+	<widget class="QGroupBox" name="groupBoxCredentials">
+	 <property name="title">
+	  <string>Credentials</string>
+	 </property>
+	 <layout class="QGridLayout" name="gridLayoutCredentials">
+	  <item row="0" column="0">
+	   <widget class="QLabel" name="labelApiKey">
+		<property name="text">
+		 <string>API Key / Token</string>
+		</property>
+	   </widget>
+	  </item>
+	  <item row="0" column="1">
+	   <widget class="QLineEdit" name="editApiKey">
+		<property name="echoMode">
+		 <enum>QLineEdit::Password</enum>
+		</property>
+		<property name="placeholderText">
+		 <string>Stored in OS key store (not in settings file)</string>
+		</property>
+	   </widget>
+	  </item>
+	 </layout>
+	</widget>
+   </item>
+   <item>
+	<widget class="QGroupBox" name="groupBoxKnowledge">
+	 <property name="title">
+	  <string>Knowledge Context</string>
+	 </property>
+	 <layout class="QGridLayout" name="gridLayoutKnowledge">
+	  <item row="0" column="0">
+	   <widget class="QCheckBox" name="checkStubsContextEnabled">
+		<property name="text">
+		 <string>Enable itom stubs context</string>
+		</property>
+	   </widget>
+	  </item>
+	  <item row="0" column="1">
+	   <widget class="QLineEdit" name="editStubsPath">
+		<property name="placeholderText">
+		 <string>Path to itom stub files</string>
+		</property>
+	   </widget>
+	  </item>
+	  <item row="1" column="0">
+	   <widget class="QCheckBox" name="checkDocsContextEnabled">
+		<property name="text">
+		 <string>Enable user documentation context</string>
+		</property>
+	   </widget>
+	  </item>
+	  <item row="1" column="1">
+	   <widget class="QLineEdit" name="editDocsPath">
+		<property name="placeholderText">
+		 <string>Path to itom user documentation</string>
+		</property>
+	   </widget>
+	  </item>
+	 </layout>
+	</widget>
+   </item>
+   <item>
+	<widget class="QGroupBox" name="groupBoxOptions">
+	 <property name="title">
+	  <string>Options</string>
+	 </property>
+	 <layout class="QVBoxLayout" name="verticalLayoutOptions">
+	  <item>
+	   <widget class="QCheckBox" name="checkStreamingEnabled">
+		<property name="text">
+		 <string>Enable streaming</string>
+		</property>
+	   </widget>
+	  </item>
+	  <item>
+	   <widget class="QCheckBox" name="checkTelemetryEnabled">
+		<property name="text">
+		 <string>Enable telemetry</string>
+		</property>
+	   </widget>
+	  </item>
+	  <item>
+	   <widget class="QCheckBox" name="checkSessionOnlyHistory">
+		<property name="text">
+		 <string>Use session-only history</string>
+		</property>
+	   </widget>
+	  </item>
+	  <item>
+	   <widget class="QCheckBox" name="checkRestrictKnownModels">
+		<property name="text">
+		 <string>Restrict to known models</string>
+		</property>
+	   </widget>
+	  </item>
+	 </layout>
+	</widget>
+   </item>
+   <item>
+	<spacer name="verticalSpacer">
+	 <property name="orientation">
+	  <enum>Qt::Vertical</enum>
+	 </property>
+	 <property name="sizeHint" stdset="0">
+	  <size>
+	   <width>20</width>
+	   <height>40</height>
+	  </size>
+	 </property>
+	</spacer>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

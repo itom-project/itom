@@ -1,0 +1,69 @@
+cmake_minimum_required(VERSION 3.12...3.29)
+set(target_name unittest_qitom)
+
+project(${target_name})
+
+option(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON)
+
+set(CMAKE_MODULE_PATH
+	${CMAKE_MODULE_PATH}
+	${PROJECT_SOURCE_DIR}
+	${PROJECT_SOURCE_DIR}/../..
+	${PROJECT_SOURCE_DIR}/../../gtest-1.12.1/googletest/
+)
+
+include("../../cmake/ItomBuildMacros.cmake")
+
+# Require OpenCV 3.0 or higher (supports 3.x, 4.x, and 5.0+)
+find_package(OpenCV REQUIRED COMPONENTS core)
+
+# Verify OpenCV version is 3.0 or higher
+if(OpenCV_VERSION VERSION_LESS "3.0")
+	message(FATAL_ERROR "OpenCV version ${OpenCV_VERSION} found, but version 3.0 or higher is required (supports 3.x, 4.x, and 5.0+)")
+endif()
+
+if(WIN32 AND ((NOT DEFINED ${gtest_force_shared_crt}) OR (NOT ${gtest_force_shared_crt})))
+	set(gtest_force_shared_crt ON CACHE BOOL "Use shared (DLL) run-time lib even when Google Test is built as static lib." FORCE)
+	message(WARNING "For properly running the unittests, the CMAKE variable gtest_force_shared_crt has been forced to ON.")
+endif()
+
+# Define helper functions and macros used by Google Test.
+include("../../gtest-1.12.1/googletest/cmake/internal_utils.cmake")
+
+#config_compiler_and_linker()  # Defined in internal_utils.cmake.
+fix_default_compiler_settings_()
+
+include_directories(
+	${CMAKE_CURRENT_SOURCE_DIR}/../../gtest-1.12.1/googletest/include
+	${CMAKE_CURRENT_SOURCE_DIR}/../../common
+	${CMAKE_CURRENT_SOURCE_DIR}/../../Qitom
+	${CMAKE_CURRENT_SOURCE_DIR}/../../Qitom/llm
+)
+
+link_directories(
+)
+
+set(unittest_HEADERS
+	${CMAKE_CURRENT_SOURCE_DIR}/unittest_qitom.cc
+)
+
+set(unittest_SOURCES
+	${CMAKE_CURRENT_SOURCE_DIR}/llmCoreTest.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/../../Qitom/llm/contextAssemblyService.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/../../Qitom/llm/promptPipeline.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/../../Qitom/llm/llmSecurityPolicy.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/../../Qitom/llm/llmLogRedaction.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/../../Qitom/llm/workspaceChangeSet.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/../../Qitom/llm/workspaceApplyService.cpp
+)
+
+cxx_executable(${target_name} ${CMAKE_CURRENT_SOURCE_DIR} gtest ${unittest_SOURCES} ${unittest_HEADERS})
+target_link_libraries(${target_name} itomCommonQtLib ${OpenCV_LIBS})
+
+set_target_properties( ${target_name}
+	PROPERTIES
+	RUNTIME_OUTPUT_DIRECTORY_DEBUG "${CMAKE_BINARY_DIR}/"
+	RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_BINARY_DIR}/"
+)
+
+set_target_properties(${target_name} PROPERTIES DEBUG_POSTFIX "d")

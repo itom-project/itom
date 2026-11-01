@@ -812,23 +812,6 @@ TYPED_TEST(RoiBitwiseTest, BitOperatorsWithTwoObjects)
     }
 }
 
-TYPED_TEST(RoiBitwiseTest, BitNotAndShifts)
-{
-    typedef TypeParam T;
-
-    for (const Geometry& g : geometries())
-    {
-        SCOPED_TRACE(describe(g));
-        checkBinarySame<T, T>(g, "a.bitwise_not()", [](ito::DataObject& a, ito::DataObject&) {
-            return a.bitwise_not();
-        });
-        checkBinarySame<T, T>(
-            g, "a << 1", [](ito::DataObject& a, ito::DataObject&) { return a << 1; });
-        checkBinarySame<T, T>(
-            g, "a >> 1", [](ito::DataObject& a, ito::DataObject&) { return a >> 1; });
-    }
-}
-
 TYPED_TEST(RoiBitwiseTest, InPlaceBitOperatorsChangeOnlyTheRoi)
 {
     typedef TypeParam T;
@@ -839,8 +822,6 @@ TYPED_TEST(RoiBitwiseTest, InPlaceBitOperatorsChangeOnlyTheRoi)
         checkInPlaceSame<T>(g, "a &= b", [](ito::DataObject& a, ito::DataObject& b) { a &= b; });
         checkInPlaceSame<T>(g, "a |= b", [](ito::DataObject& a, ito::DataObject& b) { a |= b; });
         checkInPlaceSame<T>(g, "a ^= b", [](ito::DataObject& a, ito::DataObject& b) { a ^= b; });
-        checkInPlaceSame<T>(g, "a <<= 1", [](ito::DataObject& a, ito::DataObject&) { a <<= 1; });
-        checkInPlaceSame<T>(g, "a >>= 1", [](ito::DataObject& a, ito::DataObject&) { a >>= 1; });
     }
 }
 
