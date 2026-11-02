@@ -244,8 +244,6 @@ CodeCompletionMode::CodeCompletionMode(const QString &name, const QString &descr
     m_filterMode(FilterFuzzy),
     m_lastCursorLine(-1),
     m_lastCursorColumn(-1),
-    m_requestCursorLine(-1),
-    m_requestCursorColumn(-1),
     m_showTooltips(false),
     m_pConnectedBackend(nullptr),
     m_requestId(0),
@@ -754,8 +752,6 @@ bool CodeCompletionMode::requestCompletion()
             {
                 m_lastCursorColumn = col;
                 m_lastCursorLine = line;
-                m_requestCursorLine = editor()->currentLineNumber();
-                m_requestCursorColumn = editor()->currentColumnNumber() - m_completionPrefix.size();
                 m_requestId = id + 1;
             }
         }
@@ -797,32 +793,10 @@ void CodeCompletionMode::onCompletionReady(int requestId, QList<ito::CompletionI
 
     m_lastRequestId = requestId;
 
-    if (!editor())
+    if (editor())
     {
-        return;
+        showCompletions(QVector<ito::CompletionItem>(completions.begin(), completions.end()));
     }
-
-    // The request might be outdated in the meantime, e.g. if a word separator
-    // like '(' was typed and resetSyncDataAndHidePopup() was called before the
-    // result arrived. An outdated popup must not be shown: besides the wrong
-    // content, a visible completion popup swallows the key release event of the
-    // typed character, such that the calltips mode never sees the '('.
-    if (m_lastCursorLine < 0 || m_lastCursorColumn < 0)
-    {
-        return;
-    }
-
-    const QString prefix = editor()->wordUnderCursor(false).selectedText();
-    const int line = editor()->currentLineNumber();
-    const int col = editor()->currentColumnNumber() - prefix.size();
-
-    if (line != m_requestCursorLine || col != m_requestCursorColumn)
-    {
-        // the cursor left the word, the request was made for
-        return;
-    }
-
-    showCompletions(QVector<ito::CompletionItem>(completions.begin(), completions.end()));
 }
 
 //--------------------------------------------------------------------
