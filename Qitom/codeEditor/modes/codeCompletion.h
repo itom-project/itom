@@ -216,6 +216,9 @@ private:
     bool m_caseSensitive;
     int m_lastCursorColumn;
     int m_lastCursorLine;
+    //!< editor line / column (start of the word) of the pending completion request
+    int m_requestCursorLine;
+    int m_requestCursorColumn;
     Qt::Key m_triggerKey;
     int m_requestId; //!< auto-incremented number for the last enqueued completion request.
     int m_lastRequestId;
