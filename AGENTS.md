@@ -85,4 +85,3 @@ It is allowed to use compiler pre-processors to exclude features if a specific, 
 3rd party library does not support this feature.
 
 For Qt5, the minimum C++ compiler is C++11. For Qt6, the minimum C++ compiler is C++17.
-

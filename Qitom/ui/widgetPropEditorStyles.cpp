@@ -23,6 +23,7 @@
 #include "widgetPropEditorStyles.h"
 #include "../global.h"
 #include "../AppManagement.h"
+#include "../helper/guiHelper.h"
 
 
 #include <qcolordialog.h>
@@ -181,7 +182,8 @@ void WidgetPropEditorStyles::readSettingsInternal(const QString &filename)
         m_styles[i].m_font = QFont(
             settings.value("fontFamily", m_styles[i].m_font.family()).toString(),
             settings.value("pointSize", m_styles[i].m_font.pointSize()).toInt(),
-            settings.value("weight", m_styles[i].m_font.weight()).toInt(),
+            GuiHelper::normalizeFontWeight(
+                settings.value("weight", m_styles[i].m_font.weight()).toInt()),
             settings.value("italic", m_styles[i].m_font.italic()).toBool()
         );
         settings.endGroup();

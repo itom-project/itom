@@ -43,6 +43,7 @@ mainWin.txtMessage["text"] = "hello world"
 #     see Qt help -> goto to class corresponding to your element and check the available signals
 #     of that class and all inherited classes (QPushButton >> QAbstractPushButton >> QWidget...)
 #     Note the name of the signal you want to connect and the argument list (clicked(bool checked = false))
+#
 # In our case, we want to connect to the ``clicked`` signal, its argument can be a boolean argument (optional)
 #
 # Finally, we connect the clicked-signal without argument (not interesting for us) with a method ``showMessage``

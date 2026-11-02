@@ -524,7 +524,7 @@ class DataObjectDatetime(unittest.TestCase):
         with self.assertRaises(ValueError):
             # must be a copy, -> error
             dateNp = np.array(self.tdObj, copy=False)
-        
+
         # timedelta
         dateNp = np.array(self.tdObj, copy=True)
 
@@ -559,7 +559,7 @@ class DataObjectDatetime(unittest.TestCase):
         with self.assertRaises(ValueError):
             # must be a copy
             dateNp = np.array(dateObjNoTz, copy=False)
-        
+
         dateNp = np.array(dateObjNoTz, copy=True)
 
         # must be a copy

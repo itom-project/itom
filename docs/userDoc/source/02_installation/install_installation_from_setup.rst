@@ -36,27 +36,27 @@ In the course of installation, a large number of third-party components will be 
 
 In the following we will guide you through the installation setup with a couple of screenshots:
 
-.. figure:: images/itom_install/setup01.png
+.. figure:: images/itom_install/setup01.PNG
     :alt: Language selection
     :scale: 80%
     :align: center
 
     Please select your desired language for the setup.
 
-.. figure:: images/itom_install/setup02.png
+.. figure:: images/itom_install/setup02.PNG
     :scale: 80%
     :align: center
 
     Read the license text and agree to it.
 
-.. figure:: images/itom_install/setup03.png
+.. figure:: images/itom_install/setup03.PNG
     :alt: Path selection
     :scale: 80%
     :align: center
 
     Select the path where you want to install |itom|. If you press next, the installer checks if the chosen directory already exists and warns if so. Please agree if you want to install |itom| in the existing directory.
 
-.. figure:: images/itom_install/setup04.png
+.. figure:: images/itom_install/setup04.PNG
     :alt: Feature selection
     :scale: 80%
     :align: center
@@ -72,14 +72,14 @@ In the following we will guide you through the installation setup with a couple 
 
     Select a start menu folder in which you want to create a program shortcut.
 
-.. figure:: images/itom_install/setup06.png
+.. figure:: images/itom_install/setup06.PNG
     :alt: Additional tasks
     :scale: 80%
     :align: center
 
     Choose whether you want a desktop icon or not.
 
-.. figure:: images/itom_install/setup07.png
+.. figure:: images/itom_install/setup07.PNG
     :alt: overview
     :scale: 80%
     :align: center
@@ -108,13 +108,13 @@ In the following we will guide you through the installation setup with a couple 
 
     If not already available and if selected, the Microsoft Visual C++ Redistributable is installed now.
 
-.. figure:: images/itom_install/setup09.png
+.. figure:: images/itom_install/setup09.PNG
     :scale: 80%
     :align: center
 
     Finally, the entire setup is finished. You can select if you want to start |itom| afterwards.
 
-.. figure:: images/itom_install/itomGui.png
+.. figure:: images/itom_install/itomGui.PNG
     :width: 100%
     :align: center
 

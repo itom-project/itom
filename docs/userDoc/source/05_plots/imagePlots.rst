@@ -37,7 +37,7 @@ See section :ref:`primitives` for a short introduction.
 +-----------------------------------------------------+---------------------------------------------------+---------------------------------------------------+
 | .. figure:: images/plot2d_colorMap_gray.png         | .. figure:: images/plot2d_colorMap_grayMarked.png | .. figure:: images/plot2d_colorMap_falseColor.png |
 +-----------------------------------------------------+---------------------------------------------------+---------------------------------------------------+
-| .. figure:: images/plot2d_colorMap_falseColorIR.png | .. figure:: images/plot2d_colorMap_HotIron.png    | .. figure:: images/plot2d_colorMap_red.png        |
+| .. figure:: images/plot2d_colorMap_falseColorIR.png | .. figure:: images/plot2d_colorMap_hotIron.png    | .. figure:: images/plot2d_colorMap_red.png        |
 +-----------------------------------------------------+---------------------------------------------------+---------------------------------------------------+
 | .. figure:: images/plot2d_colorMap_blue.png         | .. figure:: images/plot2d_colorMap_green.png      | .. figure:: images/plot2d_colorMap_viridis.png    |
 +-----------------------------------------------------+---------------------------------------------------+---------------------------------------------------+
@@ -171,7 +171,7 @@ Properties
 .. py:attribute:: valueScale : ItomQwtPlotEnums::ScaleEngine
     :noindex:
 
-    linear or logarithmic scale (various bases) can be chosen for the value axis (color bar). Please consider, that a logarithmic scale can only display values > 1e-100 while the lower limit for the double-logarithmic scale is 1+1e-100.
+    linear or logarithmic scale (various bases) can be chosen for the value axis (color bar). Please note that a logarithmic scale can only display values > 1e-100 while the lower limit for the double-logarithmic scale is 1+1e-100.
 
     The type 'ItomQwtPlotEnums::ScaleEngine' is an enumeration that can have one of the following values (str or int):
 

@@ -38,6 +38,7 @@
 #include <QScreen>
 
 #include <qapplication.h>
+#include <qcursor.h>
 
 #include <iostream>
 #include <sstream>
@@ -787,6 +788,136 @@ void AbstractDockWidget::pythonStateChanged(tPythonTransitions pyTransition)
     }
 
     updatePythonActions();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+int AbstractDockWidget::s_layoutRestoring = 0;
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ void AbstractDockWidget::setLayoutRestoring(bool restoring)
+{
+    s_layoutRestoring = qMax(0, s_layoutRestoring + (restoring ? 1 : -1));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void AbstractDockWidget::setDragDockingEnabled(bool enabled)
+{
+    enabled = enabled && m_dockAvailable && m_floatingStyle == floatingWindow;
+
+    if (enabled == m_dragDockingEnabled)
+    {
+        return;
+    }
+
+    m_dragDockingEnabled = enabled;
+
+    // the floatable feature allows dragging the dock widget out of the main window.
+    // The floating dock widget is then converted into an undocked window (see onTopLevelChanged).
+    if (enabled)
+    {
+        setFeatures(features() | QDockWidget::DockWidgetFloatable);
+
+        if (!m_undockDragTimer)
+        {
+            m_undockDragTimer = new QTimer(this);
+            m_undockDragTimer->setInterval(40);
+            connect(m_undockDragTimer, &QTimer::timeout, this, &AbstractDockWidget::pollUndockDrag);
+        }
+
+        connect(
+            this, &QDockWidget::topLevelChanged, this, &AbstractDockWidget::onTopLevelChanged,
+            Qt::UniqueConnection);
+    }
+    else
+    {
+        setFeatures(features() & ~QDockWidget::DockWidgetFloatable);
+        disconnect(this, &QDockWidget::topLevelChanged, this, &AbstractDockWidget::onTopLevelChanged);
+
+        if (m_undockDragTimer)
+        {
+            m_undockDragTimer->stop();
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! slot, invoked if Qt detaches this dock widget from the main window (drag out or float button)
+void AbstractDockWidget::onTopLevelChanged(bool floating)
+{
+    if (!floating || !m_docked || !m_dragDockingEnabled || s_layoutRestoring > 0)
+    {
+        return;
+    }
+
+    if (QApplication::mouseButtons() & Qt::LeftButton)
+    {
+        // the dock widget is dragged. Qt can still dock it again at another position of the main
+        // window, as long as the mouse button is pressed. Convert it to a window after the release.
+        m_undockDragTimer->start();
+    }
+    else
+    {
+        // float button of the title bar
+        QTimer::singleShot(0, this, [this]() {
+            if (m_docked && isFloating())
+            {
+                undockToFloatingGeometry();
+            }
+        });
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void AbstractDockWidget::pollUndockDrag()
+{
+    if (!m_docked || !isFloating())
+    {
+        // it has been docked again or converted already
+        m_undockDragTimer->stop();
+        return;
+    }
+
+    if (QApplication::mouseButtons() & Qt::LeftButton)
+    {
+        return;
+    }
+
+    m_undockDragTimer->stop();
+    undockToFloatingGeometry();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! converts the floating dock widget to an undocked window at the position of the floating dock widget
+void AbstractDockWidget::undockToFloatingGeometry()
+{
+    const QRect floatingGeometry = QDockWidget::geometry();
+
+    if (!floatingGeometry.isEmpty())
+    {
+        m_lastUndockedSize = floatingGeometry;
+    }
+
+    undockWidget(true);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! called for every move event of the undocked window
+void AbstractDockWidget::windowMoved()
+{
+    if (!(QApplication::mouseButtons() & Qt::LeftButton))
+    {
+        return;
+    }
+
+    // only if the title bar is dragged (not if the window is moved programmatically)
+    const QRect fg = m_pWindow->frameGeometry();
+    const QRect g = m_pWindow->geometry();
+    const QRect titleRect(fg.left(), fg.top(), fg.width(), qMax(1, g.top() - fg.top()));
+
+    if (titleRect.contains(QCursor::pos()))
+    {
+        undockedWindowDragged();
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

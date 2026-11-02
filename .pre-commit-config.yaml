@@ -8,8 +8,19 @@ repos:
     rev: v4.6.0
     hooks:
     -   id: check-yaml
+    # The whitespace hooks must not change
+    #   - Sphinx inventory files (*-inv.txt): a text header followed by zlib compressed data,
+    #     a changed byte makes the file unreadable for Sphinx,
+    #   - Qt translation files (*.ts): trailing spaces belong to the source strings
+    #     (e.g. tr("%s with message: \n%s")). If they are removed, the strings are not found any more.
+    #   - Sphinx autosummary stubs (docs/.../generated/*.rst): they are rewritten by Sphinx on every
+    #     documentation build (autosummary_generate = True) without a final newline, so the hook
+    #     would "fix" and fail them again after each build.
+    # codespell skips the same files (see below).
     -   id: end-of-file-fixer
+        exclude: ^(.*(-inv\.txt|\.ts)|docs/.*/generated/.*\.rst)$
     -   id: trailing-whitespace
+        exclude: ^(.*(-inv\.txt|\.ts)|docs/.*/generated/.*\.rst)$
     -   id: fix-byte-order-marker
 
 -   repo: https://github.com/codespell-project/codespell

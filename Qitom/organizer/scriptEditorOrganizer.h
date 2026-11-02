@@ -146,6 +146,13 @@ public slots:
         bool undockToNewScriptWindow = false,
         bool closeDockIfEmpty = false);
 
+    // drag and drop of script tabs (see DockDragDropController)
+    void moveScriptEditor(ScriptEditorWidget* editor, ScriptDockWidget* target, int insertIndex);
+    ScriptDockWidget* moveScriptEditorToNewDock(
+        ScriptEditorWidget* editor, Qt::DockWidgetArea area, ScriptDockWidget* splitTarget);
+    ScriptDockWidget* moveScriptEditorToNewWindow(
+        ScriptEditorWidget* editor, const QPoint& globalPos);
+
     RetVal openNewScriptWindow(bool docked, ItomSharedSemaphore* semaphore = NULL);
     RetVal newScript(ItomSharedSemaphore* semaphore = NULL);
     RetVal openScript(

@@ -31,7 +31,7 @@ The following list describe packages that are required or recommended for buildi
 
 Required:
 
-* **Qt5** or **Qt6**(libqtcore*, libqt*-dev, libqt*-...)
+* **Qt5** or **Qt6** (libqtcore*, libqt*-dev, libqt*-...)
 * **OpenCV** (libopencv-core* libopencv-core-dev, libopencv-imgproc, libopencv-highgui...)
 * **Python3** (python3, python3-dev, python3-dbg)
 * **Numpy** (python3-numpy, python3-numpy-dbg)

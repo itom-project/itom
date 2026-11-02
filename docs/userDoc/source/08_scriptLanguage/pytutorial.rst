@@ -31,9 +31,9 @@ get good introductions to Python 3 (always be careful to only read tutorials abo
 
 * `Python-Kurs (v3) <http://www.python-kurs.eu/python3_kurs.php>`_ (German)
 * `Python Course (v3) <http://www.python-course.eu/python3_course.php>`_ (English)
-* `Official Python 3 documentation <http://docs.python.org/3/>`_
-* `Dive into Python (v3) <http://www.diveinto.org/python3/>`_
-* `Numpy for Matlab users <http://wiki.scipy.org/NumPy_for_Matlab_Users>`_
+* `Official Python 3 documentation <https://docs.python.org/3/>`_
+* `Dive into Python (v3) <https://diveintopython3.net/>`_
+* `Numpy for Matlab users <https://scipy.github.io/old-wiki/pages/NumPy_for_Matlab_Users.html>`_
 * `Python Tutorial on javas2s.com (v2) <http://www.java2s.com/Tutorial/Python/CatalogPython.htm>`_
 * `Python examples (example source code) on javas2s.com (v2) <http://www.java2s.com/Code/Python/CatalogPython.htm>`_
 * `Python Tutorial on tutorialspoint.com (v2) <http://www.tutorialspoint.com/python/python_tutorial.pdf>`_

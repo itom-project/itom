@@ -49,6 +49,19 @@
     <widget class="ito::ItomSpinBox" name="spinValue"/>
    </item>
    <item>
+    <widget class="QLabel" name="lblColumn">
+     <property name="text">
+      <string>Column (1 - 1, current: 1):</string>
+     </property>
+     <property name="buddy">
+      <cstring>spinColumn</cstring>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="ito::ItomSpinBox" name="spinColumn"/>
+   </item>
+   <item>
     <widget class="QDialogButtonBox" name="btnBox">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>

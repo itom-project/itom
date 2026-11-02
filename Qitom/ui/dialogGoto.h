@@ -42,6 +42,12 @@ public:
 
     void getData(bool &lineNotChar, int &curValue);
 
+    //! column (1-based) if the line mode is selected, 1 else
+    int getColumn() const;
+
+    //! sets the column (1-based) and its maximum for the current line
+    void setColumn(const int maxColumn, const int curColumn);
+
 private:
     Ui::DialogGoto ui;
 
@@ -49,6 +55,7 @@ private:
     QString m_captionChar;
     int m_maxLine;
     int m_maxChar;
+    int m_maxColumn;
 
 private slots:
     void on_radioLine_clicked();

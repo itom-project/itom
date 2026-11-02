@@ -100,10 +100,10 @@ is opened and you can give a new variable name. Then, the entire dictionary of t
 file is set as value of one single variable with the given name.
 
 
-.. |varexport| image:: images/varexport.png
-.. |varimport| image:: images/varimport.png
-.. |vardelete| image:: images/vardelete.png
-.. |varrename| image:: images/varrename.png
+.. |varexport| image:: images/varexport.PNG
+.. |varimport| image:: images/varimport.PNG
+.. |vardelete| image:: images/vardelete.PNG
+.. |varrename| image:: images/varrename.PNG
 .. |varunpack| image:: images/varunpack.png
 .. |vardetails| image:: images/vardetails.png
 
@@ -124,7 +124,7 @@ The name can be copied to the clipboard by clicking the copy button on the top r
 For variables of type :py:class:`~itom.dataObject` and :py:class:`numpy.ndarray` a special
 extended dialog is available:
 
-.. figure:: images/dialogDetailsDataObjectTable.png
+.. figure:: images/dialogDetailsDataObjectTable.PNG
     :scale: 100%
     :align: center
 
@@ -169,7 +169,7 @@ of the table as well via its context menu. The following features are available 
 or units, axis scales or offsets, a tag dictionary etc. All this meta information is displayed
 in the tab ``meta information``:
 
-.. figure:: images/dialogDetailsDataObjectMetaTable.png
+.. figure:: images/dialogDetailsDataObjectMetaTable.PNG
     :scale: 100%
     :align: center
 

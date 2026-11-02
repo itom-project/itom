@@ -30,7 +30,7 @@ see https://docs.oracle.com/cd/E13214_01/wli/docs92/xref/xqisocodes.html.
 Usually the source strings (in English) of the **ts** files are automatically created or updated by Qt's tool **lupdate**. This tool
 parses all corresponding source files (h, cpp, ui), detects all translatable strings and updates the ts files.
 
-The translations itself are then comfortabily done in the tool QtLinguist of Qt.
+The translations themselves are then comfortably done in the tool QtLinguist of Qt.
 
 The **ts** files are then compiled using Qt's **lrelease** tool into their binary representation **qm**. Each
 **qm** file has the same base filename than its original **ts** file and is put in several **translation** subfolders
@@ -65,7 +65,7 @@ There is one common CMake error message, that might occur when setting new langu
 
 Error (ITOM_LANGUAGES = it):
 
-.. code-block:: cmake
+.. code-block:: text
 
     CMake Error at cmake/ItomBuildMacros.cmake:664 (MESSAGE):
       Source translation file
@@ -120,7 +120,7 @@ Please commit all changed **ts** files to the Git repository of the correspondin
 If **ITOM_UPDATE_TRANSLATIONS** is **ON** and a **ts** file has a wrong format, the following CMake
 error might occur:
 
-.. code-block:: cmake
+.. code-block:: text
 
     CMake Warning at cmake/ItomBuildMacros.cmake:745 (message):
       - The existing ts-file

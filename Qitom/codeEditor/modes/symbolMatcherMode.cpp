@@ -128,10 +128,11 @@ void SymbolMatcherMode::setUnmatchForeground(const QColor &value)
 //-------------------------------------------------------------
 void SymbolMatcherMode::clearDecorations()
 {
-    foreach(TextDecoration::Ptr deco, m_decorations)
+    if (editor() && !m_decorations.isEmpty())
     {
-        editor()->decorations()->remove(deco);
+        editor()->decorations()->remove(m_decorations);
     }
+
     m_decorations.clear();
 }
 
@@ -347,9 +348,16 @@ void SymbolMatcherMode::onStateChanged(bool state)
 //-------------------------------------------------------------
 void SymbolMatcherMode::refreshDecorations()
 {
+    // this is also called from the constructor (no editor yet)
+    if (!editor() || m_decorations.isEmpty())
+    {
+        return;
+    }
+
+    editor()->decorations()->remove(m_decorations);
+
     foreach(TextDecoration::Ptr deco, m_decorations)
     {
-        editor()->decorations()->remove(deco);
         if (deco->properties()["match"].toBool())
         {
             deco->setForeground(m_matchForeground);
@@ -360,8 +368,9 @@ void SymbolMatcherMode::refreshDecorations()
             deco->setForeground(m_unmatchForeground);
             deco->setBackground(m_unmatchBackground);
         }
-        editor()->decorations()->append(deco);
     }
+
+    editor()->decorations()->append(m_decorations);
 }
 
 //-------------------------------------------------------------

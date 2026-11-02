@@ -1,4 +1,4 @@
-﻿/* ********************************************************************
+/* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
     Copyright (C) 2020, Institut fÃ¼r Technische Optik (ITO),
@@ -8691,10 +8691,14 @@ DataObject DataObject::at(ito::Range* ranges) const
         end = ranges[n].end;
         if (start > end)
             std::swap(start, end);
-        lims[(n * 2)] = -ranges[n].start;
         if (ranges[n].start == INT_MIN) // range all
         {
+            // checked first, since -INT_MIN overflows (undefined behavior)
             lims[(n * 2)] = 0;
+        }
+        else
+        {
+            lims[(n * 2)] = -ranges[n].start;
         }
         size = m_size.m_p[n];
         if (ranges[n].end == INT_MAX) // range all
@@ -13875,11 +13879,3 @@ std::ostream& operator<<(std::ostream& out, const DataObject& dObj)
 
 
 } // namespace ito
-
-
-
-
-
-
-
-

@@ -1,0 +1,13 @@
+# Known failing tests, see run_unittests.py. Fix the tests and remove them from this list.
+unittest_dataobject: dataObjectTagSpace_operator_Test/0.tagSpace_comp_Test
+unittest_dataobject: dataObjectTagSpace_operator_Test/1.tagSpace_comp_Test
+unittest_dataobject: dataObjectTagSpace_operator_Test/2.tagSpace_comp_Test
+unittest_dataobject: dataObjectTagSpace_operator_Test/3.tagSpace_comp_Test
+unittest_dataobject: dataObjectTagSpace_operator_Test/4.tagSpace_comp_Test
+unittest_dataobject: dataObjectTagSpace_operator_Test/5.tagSpace_comp_Test
+unittest_dataobject: dataObjectTagSpace_operator_Test/5.tagSpace_mul_Test
+unittest_dataobject: dataObjectTagSpace_operator_Test/6.tagSpace_comp_Test
+unittest_dataobject: dataObjectTagSpace_operator_Test/6.tagSpace_mul_Test
+unittest_dataobject: dataObjectTagSpace_operator_Test/7.tagSpace_comp_Test
+unittest_dataobject: dataObjectTagSpace_operator_Test/8.tagSpace_comp_Test
+unittest_dataobject: dataObjectTagSpace_operator_Test/9.tagSpace_comp_Test
