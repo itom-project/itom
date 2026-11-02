@@ -37,7 +37,7 @@ namespace ito {
 
 /**
  * @brief ZubanLS language server backend - uses LSP protocol
- * 
+ *
  * This backend communicates with ZubanLS (or any LSP-compatible Python server)
  * via the Language Server Protocol. It converts between LSP data structures
  * and itom's Jedi-compatible data structures.
@@ -115,14 +115,14 @@ private:
 
     /**
      * @brief Find ZubanLS executable path
-     * 
+     *
      * Search order:
      * 1. Check settings: CodeEditor/zubanLsPath. If this path exists and is valid, use it.
      * 2. Check the scripts subdirectory ('Scripts' on Windows, 'bin' else) of the
      *    Python root directory, that is used by itom, for the executable 'zuban'.
      * 3. Otherwise, search in system PATH using 'where'/'which'
      * 4. Return empty string if not found
-     * 
+     *
      * @return Path to zuban executable, or empty string if not found
      */
     QString findZubanExecutable() const;

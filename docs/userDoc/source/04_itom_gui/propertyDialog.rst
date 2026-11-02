@@ -1,4 +1,4 @@
-﻿.. include:: ../include/global.inc
+.. include:: ../include/global.inc
 
 .. _gui-propertydialog:
 
@@ -762,5 +762,3 @@ Using Python, it is also possible to get a list of all available color palette
 names, using the method :py:meth:`itom.getPaletteList`. In order to obtain a
 dictionary with all relevant data of one specific color palette, use the method
 :py:meth:`itom.getPalette` and pass the name of the requested color palette.
-
-

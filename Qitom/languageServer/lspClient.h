@@ -37,10 +37,10 @@ namespace ito {
 
 /**
  * @brief Language Server Protocol (LSP) Client for itom
- * 
+ *
  * Implements JSON-RPC 2.0 communication with LSP-compatible language servers
  * (e.g., ZubanLS, pylsp, pyright). Compatible with Qt 5.6+ and LSP spec 3.17.
- * 
+ *
  * The client manages the lifecycle of an LSP server process, handles message
  * serialization/deserialization, and provides a Qt-friendly API for LSP requests.
  */

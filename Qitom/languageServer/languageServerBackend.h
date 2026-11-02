@@ -35,11 +35,11 @@ namespace ito {
 
 /**
  * @brief Abstract base class for language server backends (Jedi, ZubanLS, etc.)
- * 
+ *
  * This interface defines the common API for different language server implementations.
  * All backends must implement these methods to provide code completion, calltips,
  * go-to-definition, and other language intelligence features.
- * 
+ *
  * Compatible with Qt 5.6+ and Python 3.6+
  */
 class ILanguageServerBackend : public QObject

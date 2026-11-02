@@ -37,7 +37,7 @@ class PythonEngine;
 
 /**
  * @brief Manager for language server backends
- * 
+ *
  * This singleton manages the currently active language server backend
  * (Jedi or ZubanLS) based on user settings. Code editor modes query
  * this manager to get the active backend for completion, calltips, etc.

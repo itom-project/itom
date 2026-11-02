@@ -1,4 +1,4 @@
-﻿/* ********************************************************************
+/* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
     Copyright (C) 2020, Institut fÃ¼r Technische Optik (ITO),
@@ -389,6 +389,3 @@ void DialogProperties::apply()
 }
 
 } //end namespace ito
-
-
-
