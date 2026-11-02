@@ -52,8 +52,8 @@ DialogPipManager::DialogPipManager(QWidget *parent /*= NULL*/, bool standalone /
     m_lastLogEntry(-1),
     m_outputSilent(false),
     m_standalone(standalone),
-    m_colorMessage(Qt::black),
-    m_colorError(Qt::red),
+    m_colorMessage(), // invalid: derived from the palette unless set by a stylesheet
+    m_colorError(),   // invalid: derived from the palette unless set by a stylesheet
     m_currentTask(PipManager::taskNo),
     m_pFilterProxyModel(nullptr)
 {
@@ -198,6 +198,50 @@ void DialogPipManager::setColorError(const QColor &color)
 }
 
 //--------------------------------------------------------------------------------
+//! message color: the explicit color (from a stylesheet), else the text color of the log widget
+QColor DialogPipManager::effectiveColorMessage() const
+{
+    if (m_colorMessage.isValid())
+    {
+        return m_colorMessage;
+    }
+
+    return ui.txtLog->palette().color(QPalette::Active, QPalette::Text);
+}
+
+//--------------------------------------------------------------------------------
+//! error color: the explicit color (from a stylesheet), else a red that is readable
+//! on the current background of the log widget (dark or light theme)
+QColor DialogPipManager::effectiveColorError() const
+{
+    if (m_colorError.isValid())
+    {
+        return m_colorError;
+    }
+
+    const QColor base = ui.txtLog->palette().color(QPalette::Active, QPalette::Base);
+
+    if (base.lightness() < 128)
+    {
+        return QColor(242, 139, 130); // light red for dark backgrounds
+    }
+
+    return QColor(198, 40, 40); // dark red for light backgrounds
+}
+
+//--------------------------------------------------------------------------------
+void DialogPipManager::changeEvent(QEvent *e)
+{
+    QDialog::changeEvent(e);
+
+    if (e->type() == QEvent::PaletteChange || e->type() == QEvent::StyleChange)
+    {
+        // the theme (e.g. system dark mode) changed: re-render the log with the new colors
+        outputReceived("", true);
+    }
+}
+
+//--------------------------------------------------------------------------------
 void DialogPipManager::packageNameFilterChanged(const QString& text)
 {
     m_pFilterProxyModel->setFilterWildcard(QString("*%1*").arg(text));
@@ -295,7 +339,7 @@ void DialogPipManager::outputReceived(const QString &text, bool success)
     p.message{ color:%2; } \
     p.error{ color:%3; }</style> \
     <body>%1</p></body></html>"). \
-        arg(m_logHtml).arg(m_colorMessage.name()).arg(m_colorError.name()).arg(8 * factor);
+        arg(m_logHtml).arg(effectiveColorMessage().name()).arg(effectiveColorError().name()).arg(8 * factor);
     ui.txtLog->setHtml(output);
     QScrollBar *sb = ui.txtLog->verticalScrollBar();
     sb->setValue(sb->maximum());
