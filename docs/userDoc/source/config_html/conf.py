@@ -18,7 +18,7 @@ _baseConf = os.path.normpath(os.path.join(_thisDir, "..", "conf.py"))
 _g = globals()
 _oldFile = _g.get("__file__")
 _g["__file__"] = _baseConf
-with open(_baseConf, "r", encoding="utf-8") as _f:
+with open(_baseConf, encoding="utf-8") as _f:
     exec(compile(_f.read(), _baseConf, "exec"), _g)
 _g["__file__"] = _oldFile
 

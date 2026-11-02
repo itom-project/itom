@@ -253,6 +253,8 @@ private:
     QComboBox* m_classBox;
     QComboBox* m_methodBox;
     bool m_outlineShowNavigation;
+    bool m_pythonActionsVisible; /*!< false if the current tab is a text file (python actions hidden) */
+    bool m_scriptToolBarHiddenByUser; /*!< visibility of the script toolbar before it was hidden for a text file */
 
     void fillNavigationClassComboBox(
         const QSharedPointer<OutlineItem>& parent, const QString& prefix);
@@ -336,6 +338,7 @@ private slots:
 
     void updateEditorActions();
     void updatePythonActions();
+    void setPythonActionsVisible(bool visible);
     void updateTabContextActions();
 
     void mnuOpenIconBrowser();

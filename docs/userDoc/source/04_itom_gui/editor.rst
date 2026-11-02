@@ -266,6 +266,42 @@ If you press the return key after the begin of a new indented block (usually
 indicated by a colon character), the next
 line is automatically indented.
 
+.. _gui-editor-text-files:
+
+Other text files
+===================================================
+
+Besides python scripts, the script editor can also open and edit any other
+text-like file, like *txt*, *json*, *yaml*, *xml*, *ini*, *md*, *cmake* or *bat*
+files. Such files are opened like python scripts, e.g. via the file menu of
+the script editor, the *Open File...* dialog of the main window, drag and drop,
+a double click in the :ref:`file system widget <gui-filesystem>` or from the command line.
+Each file type gets its own syntax highlighting, that uses the same colors as the
+python highlighting (see the :ref:`property dialog <gui-prop-py-styles>`).
+The type of a file is derived from its suffix. If a file has an unknown suffix,
+but contains plain text, it is opened as text file without syntax highlighting.
+
+If a file is opened that is not a python script, the python specific features
+are disabled or hidden. This affects:
+
+* running, debugging or stopping the script, and breakpoints,
+* auto completion, calltips, goto definition, help tooltips, docstring generator
+  and reference renaming,
+* the code checker, the code outline and code cells,
+* the auto code formatting.
+
+Commenting or uncommenting lines (Ctrl+R, Ctrl+Shift+R) uses the comment character
+of the file type (e.g. *#* for yaml, *;* for ini files). It is not available for file
+types without line comments (e.g. json). If a file is saved with a different suffix
+(*Save as...*), the file type and syntax highlighting are updated.
+
+Text files that can also be loaded by a data import plugin (e.g. *csv* files) are
+opened by a double click in the file system widget with the plugin. Use the context
+menu entry *Open in Script Editor* to edit them in the script editor.
+
+The list of file suffixes that are opened in the script editor can be modified
+in the tab *scripts* of the property dialog (group *Other Text Files*).
+
 
 
 Auto completion and calltips
@@ -643,6 +679,28 @@ To add such a docstring, there are three different possibilities:
    by pressing Return or Enter. If you press any other key, the popup automatically
    disappears.
 
+.. _gui-editor-large-files:
+
+Large Files
+------------
+
+Files bigger than 5 MB are opened in a reduced mode: the highlighting of the occurrences
+of the current word, the bracket matching, the highlighting of the current line and the
+folding are disabled, since they would make every keystroke slow. The status bar shows
+``large file (reduced features)``. The threshold can be changed in the settings file
+(``itom.ini``, group ``CodeEditor``, key ``largeFileSizeKB``, default ``5120``).
+
+.. _gui-editor-line-endings:
+
+Line Endings
+-------------
+
+The script editor keeps the line endings of a file: a file with Windows line endings
+(``CRLF``) is saved with ``CRLF``, a file with Unix line endings (``LF``) with ``LF``.
+New files get the line ending of the operating system. The current line ending is
+shown in the status bar next to the encoding and can be changed via the context menu
+of the editor (**Line Endings**). The change is applied when the file is saved.
+
 .. _gui-editor-charset-encoding:
 
 Charset Encoding
@@ -668,9 +726,14 @@ Officially supported encodings are:
 * UTF-8
 * latin1
 * UTF-8 with BOM (byte order mark)
+* UTF-16 (little or big endian) with BOM
+* UTF-32 (little or big endian) with BOM
 
 Byte order mark means, that the file starts with some magic characters, that indicates
-the encoding of this file.
+the encoding of this file. UTF-32 files are only detected by their BOM, UTF-16 files
+also without BOM if the first bytes look like latin text (every second byte is zero). They are
+common for text files written by Windows tools (e.g. exported data listings), but not
+recommended for Python scripts. If such a file is saved, the BOM is written again.
 
 When a script is loaded, the default encoding, that can be selected in the **Editor >> General**
 tab of the itom property editor, is usually assumed and the script is loaded with this
