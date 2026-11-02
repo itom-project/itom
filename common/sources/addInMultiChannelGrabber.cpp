@@ -25,7 +25,7 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#include "AddInMultiChannelGrabber.h"
+#include "addInMultiChannelGrabber.h"
 
 #include <qmetatype.h>
 #include <qcoreapplication.h>
