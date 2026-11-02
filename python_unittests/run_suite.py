@@ -20,6 +20,7 @@ import idc_test
 import plot_test
 import shape_test
 import script_editor_textfiles_test
+import multichannel_test
 
 if pyversion >= (3, 6):
     import itom_stubs_generator
@@ -94,6 +95,11 @@ def suite():
         )
     )
     suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(idc_test.IdcTest))
+    suite.addTest(
+        unittest.defaultTestLoader.loadTestsFromTestCase(
+            multichannel_test.MultiChannelDummyGrabberTest
+        )
+    )
 
     if pyversion >= (3, 6):
         suite.addTest(

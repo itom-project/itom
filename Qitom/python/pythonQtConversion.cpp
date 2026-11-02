@@ -3200,6 +3200,32 @@ PyObject* PythonQtConversion::QVariantListToPyObject(const QVariantList& l)
 
     return result;
 }
+//-------------------------------------------------------------------------------------
+//! conversion from given QMap<QString,ito::DataObject> to python-dictionary.
+/*!
+    returns new reference to python-dict type. Each pair of a QString and a ito::DataObject is one pair in the dictionary.
+    The values are converted using \a DataObjectToPyObject and \a QStringToPyObject.
+
+    \param m is reference to QMap<QString, ito::DataObject>
+    \return is the resulting PyObject*
+    \see DataObjectToPyObject, QStringToPyObject
+*/
+PyObject* ito::PythonQtConversion::QMapToPyObject(const QMap<QString, ito::DataObject>& m)
+{
+    PyObject* result = PyDict_New();
+    QMap<QString, ito::DataObject>::const_iterator it = m.constBegin();
+    PyObject* key;
+    PyObject* val;
+    for (; it != m.constEnd(); it++)
+    {
+        key = PythonQtConversion::QStringToPyObject(it.key());
+        val = PythonQtConversion::DataObjectToPyObject(it.value());
+        PyDict_SetItem(result, key, val);
+        Py_DECREF(key);
+        Py_DECREF(val);
+    }
+    return result;
+}
 
 //-------------------------------------------------------------------------------------
 //! method internally used for conversion from given type-id (QMetaType) and corresponding char*-pointer to PyObject*
@@ -3434,6 +3460,20 @@ PyObject* PythonQtConversion::ConvertQtValueToPythonInternal(int type, const voi
                 //return PyErr_SetString(PyExc_TypeError, "Internal dataObject of QSharedPointer is NULL");
             }
             return DataObjectToPyObject(*(sharedPtr->data()));
+        }
+        else if (strcmp(name, "QSharedPointer<QMap<QString,ito::DataObject> >") == 0)
+        {
+            QSharedPointer<QMap<QString, ito::DataObject> >* sharedPtr = (QSharedPointer<QMap<QString, ito::DataObject> >*) data;
+            if (sharedPtr == NULL)
+            {
+                PyErr_SetString(PyExc_TypeError, "The given QSharedPointer is NULL");
+                return NULL;
+            }
+            else
+            {
+                return QMapToPyObject(**sharedPtr);
+            }
+
         }
         else if (strcmp(name, "QPointer<ito::AddInDataIO>") == 0 || \
             strcmp(name, "QPointer<ito::AddInActuator>") == 0 || \

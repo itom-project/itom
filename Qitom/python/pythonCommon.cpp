@@ -886,19 +886,19 @@ PyObject* printOutParams(const QVector<ito::Param> *params, bool asErr, bool add
                             values["values"].append("empty");
                             break;
                         case 1:
-                            temp = QString("[%1]").arg(ptr[0].data());
+                            temp = QString("[\"%1\"]").arg(ptr[0].data());
                             values["values"].append(temp);
                             break;
                         case 2:
-                            temp = QString("[%1,%2]").arg(ptr[0].data()).arg(ptr[1].data());
+                            temp = QString("[\"%1\",\"%2\"]").arg(ptr[0].data()).arg(ptr[1].data());
                             values["values"].append(temp);
                             break;
                         case 3:
-                            temp = QString("[%1,%2,%3]").arg(ptr[0].data()).arg(ptr[1].data()).arg(ptr[2].data());
+                            temp = QString("[\"%1\",\"%2\",\"%3\"]").arg(ptr[0].data()).arg(ptr[1].data()).arg(ptr[2].data());
                             values["values"].append(temp);
                             break;
                         case 4:
-                            temp = QString("[%1,%2,%3,%4]").arg(ptr[0].data()).arg(ptr[1].data()).arg(ptr[2].data()).arg(ptr[3].data());
+                            temp = QString("[\"%1\",\"%2\",\"%3\",\"%4\"]").arg(ptr[0].data()).arg(ptr[1].data()).arg(ptr[2].data()).arg(ptr[3].data());
                             values["values"].append(temp);
                             break;
                         default:
