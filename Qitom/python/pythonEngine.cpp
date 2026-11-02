@@ -47,7 +47,7 @@
 #include "pythonFont.h"
 #include "pythonShape.h"
 #include "pythonAutoInterval.h"
-#include "pythonJedi.h"
+#include "../languageServer/languageServerTypes.h"
 #include "pythonProgressObserver.h"
 #include "pythonBuildDir.h"
 
@@ -258,12 +258,12 @@ PythonEngine::PythonEngine() :
     qRegisterMetaType<ito::PythonNone>("ito::PythonNone");
     qRegisterMetaType<Qt::CheckState>("Qt::CheckState");
     qRegisterMetaType<Qt::ItemFlags>("Qt::ItemFlags");
-    qRegisterMetaType<ito::JediCalltip>("ito::JediCalltip");
-    qRegisterMetaType<QVector<ito::JediCalltip> >("QVector<ito::JediCalltip>");
-    qRegisterMetaType<ito::JediCompletion>("ito::JediCompletion");
-    qRegisterMetaType<QVector<ito::JediCompletion> >("QVector<ito::JediCompletion>");
-    qRegisterMetaType<ito::JediAssignment>("ito::JediAssignment");
-    qRegisterMetaType<QVector<ito::JediAssignment> >("QVector<ito::JediAssignment>");
+    qRegisterMetaType<ito::CalltipItem>("ito::CalltipItem");
+    qRegisterMetaType<QVector<ito::CalltipItem> >("QVector<ito::CalltipItem>");
+    qRegisterMetaType<ito::CompletionItem>("ito::CompletionItem");
+    qRegisterMetaType<QVector<ito::CompletionItem> >("QVector<ito::CompletionItem>");
+    qRegisterMetaType<ito::AssignmentItem>("ito::AssignmentItem");
+    qRegisterMetaType<QVector<ito::AssignmentItem> >("QVector<ito::AssignmentItem>");
     qRegisterMetaType<QSharedPointer<ito::FunctionCancellationAndObserver> >("QSharedPointer<ito::FunctionCancellationAndObserver>");
 
     m_autoReload.modAutoReload = nullptr;
@@ -2510,60 +2510,6 @@ ito::RetVal PythonEngine::handlePythonSysExit()
 }
 
 //-------------------------------------------------------------------------------------
-bool PythonEngine::tryToLoadJediIfNotYetDone()
-{
-    if (!m_jediRunner.isNull())
-    {
-        return m_jediRunner->tryToLoadJediIfNotYetDone();
-    }
-
-    return false;
-}
-
-//-------------------------------------------------------------------------------------
-void PythonEngine::enqueueJediCalltipRequest(const ito::JediCalltipRequest &request)
-{
-    if (!m_jediRunner.isNull())
-    {
-        m_jediRunner->addCalltipRequest(request);
-    }
-}
-
-//-------------------------------------------------------------------------------------
-void PythonEngine::enqueueJediGetHelpRequest(const ito::JediGetHelpRequest &request)
-{
-    if (!m_jediRunner.isNull())
-    {
-        m_jediRunner->addGetHelpRequest(request);
-    }
-}
-
-//-------------------------------------------------------------------------------------
-void PythonEngine::enqueueJediCompletionRequest(const ito::JediCompletionRequest &request)
-{
-    if (!m_jediRunner.isNull())
-    {
-        m_jediRunner->addCompletionRequest(request);
-    }
-}
-
-//-------------------------------------------------------------------------------------
-void PythonEngine::enqueueJediRenameRequest(const ito::JediRenameRequest& request)
-{
-    if (!m_jediRunner.isNull())
-    {
-        m_jediRunner->addRenameRequest(request);
-    }
-}
-
-//-------------------------------------------------------------------------------------
-void PythonEngine::enqueueGoToAssignmentRequest(const ito::JediAssignmentRequest &request)
-{
-    if (!m_jediRunner.isNull())
-    {
-        m_jediRunner->addGoToAssignmentRequest(request);
-    }
-}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! public slot invoked by the scriptEditorWidget
@@ -3627,22 +3573,24 @@ ito::RetVal PythonEngine::pythonStateTransition(tPythonTransitions transition, b
         }
         break;
     case pyStateRunning:
-        if (transition & pyTransEndRun)
-        {
-            m_pythonState = pyStateIdle;
-            emit(pythonStateChanged(transition, immediate));
-        }
+       if (transition & pyTransEndRun)
+       {
+           m_pythonState = pyStateIdle;
+           emit(pythonStateChanged(transition, immediate));
+           emit(pythonIdleStateEntered());
+       }
         else
         {
             retValue += RetVal(retError);
         }
         break;
     case pyStateDebugging:
-        if (transition & pyTransEndDebug)
-        {
-            m_pythonState = pyStateIdle;
-            emit(pythonStateChanged(transition, immediate));
-        }
+       if (transition & pyTransEndDebug)
+       {
+           m_pythonState = pyStateIdle;
+           emit(pythonStateChanged(transition, immediate));
+           emit(pythonIdleStateEntered());
+       }
         else if (transition & pyTransDebugWaiting)
         {
             m_pythonState = pyStateDebuggingWaiting;
@@ -3654,11 +3602,12 @@ ito::RetVal PythonEngine::pythonStateTransition(tPythonTransitions transition, b
         }
         break;
     case pyStateDebuggingWaiting:
-        if (transition & pyTransEndDebug)
-        {
-            m_pythonState = pyStateIdle;
-            emit(pythonStateChanged(transition, immediate));
-        }
+       if (transition & pyTransEndDebug)
+       {
+           m_pythonState = pyStateIdle;
+           emit(pythonStateChanged(transition, immediate));
+           emit(pythonIdleStateEntered());
+       }
         else if (transition & pyTransDebugContinue)
         {
             m_pythonState = pyStateDebugging;
@@ -3675,11 +3624,12 @@ ito::RetVal PythonEngine::pythonStateTransition(tPythonTransitions transition, b
         }
         break;
     case pyStateDebuggingWaitingButBusy:
-        if (transition & pyTransEndDebug)
-        {
-            m_pythonState = pyStateIdle;
-            emit(pythonStateChanged(transition, immediate));
-        }
+       if (transition & pyTransEndDebug)
+       {
+           m_pythonState = pyStateIdle;
+           emit(pythonStateChanged(transition, immediate));
+           emit(pythonIdleStateEntered());
+       }
         else if (transition & pyTransDebugExecCmdEnd)
         {
             m_pythonState = pyStateDebuggingWaiting;
@@ -7292,6 +7242,44 @@ PyModuleDef PythonEngine::PyModuleItomDbg = {
 PyObject* PythonEngine::PyInitItomDbg(void)
 {
     return PyModule_Create(&PyModuleItomDbg);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+QStringList PythonEngine::getSysPath() const
+{
+    QStringList result;
+
+    if (!m_started)
+    {
+        return result;
+    }
+
+    PyGILState_STATE gstate = PyGILState_Ensure();
+
+    PyObject *syspath = PySys_GetObject("path"); //borrowed reference
+    if (syspath && PyList_Check(syspath))
+    {
+        Py_ssize_t len = PyList_GET_SIZE(syspath);
+        result.reserve(len);
+
+        for (Py_ssize_t i = 0; i < len; ++i)
+        {
+            PyObject *item = PyList_GET_ITEM(syspath, i); //borrowed reference
+            bool ok;
+            QString path = PythonQtConversion::PyObjGetString(item, true, ok);
+
+            if (ok && !path.isEmpty())
+            {
+                // convert to absolute path using the current directory
+                QDir dir(path);
+                result.append(QDir::cleanPath(dir.absolutePath()));
+            }
+        }
+    }
+
+    PyGILState_Release(gstate);
+
+    return result;
 }
 
 } //end namespace ito
