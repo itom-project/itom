@@ -36,4 +36,4 @@ For an alphabetic index see:
 * :ref:`genindex`
 
 If you need help about other important |python| modules, like **Numpy**, **Scipy**, **Matplotlib**, see the corresponding
-references in the internet.
+references on the internet.

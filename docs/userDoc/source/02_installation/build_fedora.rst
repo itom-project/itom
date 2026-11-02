@@ -6,7 +6,7 @@ Build on Fedora
 ======================
 
 This section describes how |itom| and its plugins are built on Fedora (tested with Fedora 25).
-For general information about building |itom| under linux, see the :ref:`build instructions for linux <build-Debian>`.
+For general information about building |itom| under linux, see the :ref:`build instructions for linux <build-debian>`.
 
 In the following, all required steps are indicated to get the dependencies, get the sources and compile itom by the command line.
 The folder structure is chosen to be equal than the one from the linux instructions, however itom will only be build in a release version.

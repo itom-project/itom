@@ -4,7 +4,7 @@ Introduction
 #########################################
 
 |itom| is a lab automation and measurement software developed, maintained and
-provided by the ITO (Institut for Technical Optics, Universität Stuttgart, Germany).
+provided by the ITO (Institut für Technische Optik, Universität Stuttgart, Germany).
 While this software has been designed with an emphasis on developing and
 running optical systems, it is not limited to this field of application.
 |itom| represents a versatile tool for building the control software for any
@@ -17,7 +17,7 @@ external hardware components. Beyond the control of the physical setup, |itom|
 provides a wide variety of features for the analysis and processing of the
 acquired data. |itom| is best considered as an open source lab automation
 software whose functionalities lie somewhere between commercial software
-packages like Matlab or Labview.
+packages like Matlab or LabVIEW.
 
 The following table shows in which way base requirements to such a software
 system have influenced the choice of components during the designing process:
@@ -31,7 +31,7 @@ system have influenced the choice of components during the designing process:
 +---------------------------------------------------------------+---------------------------+
 | easy integration of different hardware (camera, actuator,...) | Plugin system             |
 +---------------------------------------------------------------+---------------------------+
-| fast, robust and easy-to-learn scriptingnguage                | Python                    |
+| fast, robust and easy-to-learn scripting language             | Python                    |
 +---------------------------------------------------------------+---------------------------+
 
 In the figure below you can see the three columns on which |itom| is based:
@@ -47,7 +47,7 @@ In the figure below you can see the three columns on which |itom| is based:
 Based on these three columns you can control measurement applications, basic
 setups or scripted image processing.
 
-To learn more about how to control |itom| via script language or the GUI proceed
+To learn more about how to control |itom| via script language or the GUI, proceed
 to :ref:`gettingStarted`.
 
 
@@ -77,7 +77,7 @@ The core components and the main application of |itom| are covered by the
 the SDK of |itom| (e.g. *dataObject*, *pointCloud*, *addInInterface*,...) are
 additionally covered by an **itom exception**. The main idea of this exception is
 to allow other libraries (e.g. plugins) to include and link against components
-of |itom| SDK independent on the specific license model of the respective "other" library.
+of |itom| SDK independent of the specific license model of the respective "other" library.
 All files belonging to the |itom| SDK are included in the folder **SDK** that
 is shipped with any setup or included in the build directory (when build from sources).
 
@@ -92,7 +92,7 @@ itom Exception
 =================
 
 All components (source files) which are part of |itom| SDK are not only covered
-by the LPGL license but also by the *itom Exception*, that provides further
+by the LGPL license but also by the *itom Exception*, that provides further
 grants and rights for using these components::
 
     ITO LGPL Exception version 1.0
@@ -123,7 +123,7 @@ grants and rights for using these components::
     3) The right to subclass from classes of the licensed software: Classes that are
     subclassed from classes of the licensed software are not considered to be
     constituting derivative work and therefore the author of such classes does
-    not need to provide source code for this classes.
+    not need to provide source code for these classes.
 
 Package Licences
 =================

@@ -558,8 +558,9 @@ void FileSystemDockWidget::updateActions()
 
     if (m_pActPasteItems)
     {
-        QClipboard* clipboard = QApplication::clipboard();
-        // the mime data can be nullptr, e.g. for the "offscreen" platform plugin
+        // mimeData() can be nullptr, e.g. on the offscreen platform or if the
+        // clipboard is not accessible
+        const QClipboard* clipboard = QApplication::clipboard();
         const QMimeData* mimeData = clipboard ? clipboard->mimeData() : nullptr;
         m_pActPasteItems->setEnabled(mimeData && mimeData->hasUrls(), true);
     }
@@ -1130,10 +1131,10 @@ void FileSystemDockWidget::mnuPasteItems()
 {
     QModelIndex index;
     QClipboard *clipboard = QApplication::clipboard();
-    const QMimeData *mimeData = clipboard->mimeData(QClipboard::Clipboard);
+    const QMimeData *mimeData = clipboard ? clipboard->mimeData(QClipboard::Clipboard) : nullptr;
     bool result = false;
 
-    if (mimeData->hasUrls())
+    if (mimeData && mimeData->hasUrls())
     {
         if (m_pTreeView->selectedIndexes().count() == 0)
         {

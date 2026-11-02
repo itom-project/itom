@@ -177,9 +177,8 @@ All other values depends on the element type and may change between each type.
 .. toctree::
    :hidden:
 
-.. doxygenclass:: ito::Shape::ShapeType
+.. doxygenenum:: ito::Shape::ShapeType
     :project: itom
-    :members:
 
 
 Evaluation of Geometric Elements

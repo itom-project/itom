@@ -3,7 +3,7 @@
 Plots and Figures
 #################################################
 
-itom contains functionalities to plot the mainly supported data structures like data objects, compatible numpy arrays,
+itom contains functionalities to plot the main supported data structures like data objects, compatible numpy arrays,
 point clouds or polygon meshes. Plots can be opened as an individual main window, they can be nested as subplots into one
 common figure or it is also possible to integrate plots into user-defined widgets and windows (see :ref:`qtdesigner`).
 
@@ -18,7 +18,7 @@ Usually itom comes with a set of default plots, that can be used for the followi
 * Live plot of a line camera device (line plot).
 * Live viewer for a camera providing two dimensional data objects (image plot).
 * Three-dimensional plotting of 2D data objects where the data is interpreted as 2.5D, such that each value is considered to be a height value (isometric plot).
-* There exist further plot plugins for visualizing an arbitrary number of point clouds, polygonal meshes or other geometrical features like spheres, cylinders or boxes.
+* There are further plot plugins for visualizing an arbitrary number of point clouds, polygonal meshes or other geometrical features like spheres, cylinders or boxes.
 
 See the following files in order to learn more about plots and figures in itom:
 
@@ -41,4 +41,4 @@ Content:
    designerPlugins
 
 
-There are further custom widgets for the QtDesigner which realized itom specific non-plotting functions. See section :ref:`listCustomDesignerWidgets` for the widget description.
+There are further custom widgets for Qt Designer which implement itom-specific non-plotting functions. See section :ref:`listCustomDesignerWidgets` for the widget description.

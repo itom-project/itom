@@ -429,10 +429,10 @@ is a C++ class with the same name that can be used in all plugins. Further point
 
 * Numpy arrays are always stored in one continuous block in memory. This is a compact and fast structure, however huge matrices can easily run into memory errors, since the computer may have free memory, however probably not in one single block in memory. Therefore, a dataObject usually stores every plane (this is every 2d array of the last two dimensions (x-y-plane)) in one block, whereas all planes lie at arbitrary positions in memory. This is only the case, if the dataObject is created as non-continuous object (see constructor of :py:class:`~itom.dataObject`). 2D dataObjects are always continuous.
 * DataObjects are also created with respect to measurement data. Therefore, dataObjects have further meta information, like stated in the sections above.
-* Internally, every plane in a DataObject is based on OpenCV matrices (in the C++ code). Therefore, it is directly possible to apply OpenCV methods to DataObjects. Furthermore, a direct
+* Internally, every plane in a DataObject is based on OpenCV matrices (in the C++ code). Therefore, it is possible to directly apply OpenCV methods to DataObjects. Furthermore, a direct
   use of dataObjects, created in Python, in algorithms or hardware plugins is possible.
 
-Despite the stated differences, the good is, that the classes ``dataObject`` and ``numpy.array`` are compatible to each other. This is especially the case for continuous dataObjects.
+Despite the stated differences, the good thing is that the classes ``dataObject`` and ``numpy.array`` are compatible with each other. This is especially the case for continuous dataObjects.
 They can directly be converted to and from ``numpy.arrays`` even as shallow copy, such that both objects share the same matrix memory. If a 3- or higher dimensional dataObject is converted to a numpy-array, it is implicitly converted to a continuous form (such that all planes lie in adjacent blocks in the memory).
 
 Examples for these conversions are:
@@ -598,7 +598,7 @@ If you want to create a linearly distributed datetime x-axis, the numpy method `
 Main operations on numpy.arrays and itom.dataObjects
 ----------------------------------------------------------
 
-The following list in an extract of the itom cheatsheet (https://itom.bitbucket.io/documents/itom_cheatsheet.pdf) and shows major operations on numpy.arrays and itom.dataObjects:
+The following list is an extract of the itom cheatsheet (https://itom.bitbucket.io/documents/itom_cheatsheet.pdf) and shows major operations on numpy.arrays and itom.dataObjects:
 
 ======================================= ============================================= ===========================================================================================
 np.array (import numpy as np)           itom.dataObject (import itom)
@@ -639,4 +639,4 @@ arr2 = arr1.reshape([3,2])              dObj2 = dObj1.reshape([3,2])            
 ======================================= ============================================= ===========================================================================================
 
 
-For a detailed methods-summery of the *dataObject* see :ref:`ITOM-Script-Reference`.
+For a detailed methods-summery of the *dataObject* see :ref:`itom-Script-Reference`.

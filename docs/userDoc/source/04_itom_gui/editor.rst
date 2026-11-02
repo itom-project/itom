@@ -8,7 +8,7 @@ Script Editor
 The script editor is one of the main windows of |itom| and allows creating,
 modifying and executing one or several python scripts.
 
-.. figure:: images/scripteditor.png
+.. figure:: images/scripteditor.PNG
     :width: 881px
     :align: center
 
@@ -456,7 +456,7 @@ that depends on `pyflakes`_,
 `pycodestyle <https://pypi.org/project/pycodestyle/>`_
 and `mccabe <https://github.com/pycqa/mccabe>`_.
 
-.. _pyflakes: https://pypi.python.org/pypi/pyflakes
+.. _pyflakes: https://pypi.org/project/pyflakes/
 
 You need to have these packages installed in order to benefit from the desired service.
 If the necessary packages could not be found, the service is deactivated and a warning
@@ -547,7 +547,7 @@ or loaded plugins. The icon browser is opened via the menu
 **edit >> icon browser...** of any script editor window or the keyboard
 shortcut **Ctrl + B**.
 
-.. figure:: images/editorIconBrowser.png
+.. figure:: images/editorIconBrowser.PNG
     :scale: 100%
     :align: center
 

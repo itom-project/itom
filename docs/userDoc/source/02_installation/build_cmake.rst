@@ -7,7 +7,7 @@ Build with CMake
 
 In this chapter, you will learn how to create the project files from the sources,
 contained in the specific Git-repositories (:ref:`install-git-clone`),
-using the open source generator **CMake** (http://www.cmake.org).
+using the open source generator **CMake** (https://cmake.org).
 The main concept of CMake will be introduced in the following section,
 followed by a short explanation of process of building the core of |itom|.
 

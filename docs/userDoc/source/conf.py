@@ -11,10 +11,8 @@
 
 import sys
 import os
-import sphinx
 import itom as itomFuncs
 import __main__
-import inspect
 from sphinx_gallery.sorting import FileNameSortKey
 
 try:
@@ -28,15 +26,17 @@ except ModuleNotFoundError:
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 # sys.path.insert(0, os.path.abspath('.'))
-sys.path.append(os.path.abspath("sphinxext"))
-sys.path.append(os.path.abspath("ext"))
-
-thisDir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+# this file is also executed by config_html/conf.py, therefore all paths
+# must be relative to the location of this file and not to the working directory.
+thisDir = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.join(thisDir, "sphinxext"))
+sys.path.append(os.path.join(thisDir, "ext"))
 
 # -- General configuration -----------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
-needs_sphinx = "1.4.3"
+# :no-index: options and toc_object_entries require Sphinx >= 7.2
+needs_sphinx = "7.2"
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
@@ -50,21 +50,9 @@ extensions = [
     "itomext.designerplugindoc",
     "sphinx_gallery.gen_gallery",
     "sphinxcontrib.moderncmakedomain",
+    "sphinx.ext.autosummary",
+    "sphinx.ext.mathjax",
 ]
-
-if sphinx.__version__ >= "0.7":
-    extensions.append("sphinx.ext.autosummary")
-else:
-    extensions.append("autosummary")
-    extensions.append("only_directives")
-
-if sphinx.__version__ <= "1.4.3":
-    extensions.append("sphinx.ext.pngmath")
-else:
-    extensions.append("sphinx.ext.imgmath")
-
-if sphinx.__version__ >= "1.4":
-    extensions.append("sphinx.ext.mathjax")
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
@@ -220,13 +208,6 @@ sphinx_gallery_conf = {
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
 # using the given strftime format.
 html_last_updated_fmt = "%b %d, %Y"
-
-if sphinx.__version__ < "1.6":
-    # this option is deprecated from sphinx 1.6 on and can now be set by
-    # docutils.conf file (not done in our case)
-    # If true, SmartyPants will be used to convert quotes and dashes to
-    # typographically correct entities.
-    html_use_smartypants = True
 
 # Custom sidebar templates, maps document names to template names.
 # html_sidebars = {}

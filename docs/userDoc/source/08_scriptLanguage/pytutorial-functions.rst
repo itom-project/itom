@@ -57,7 +57,7 @@ may be referenced.
 The actual parameters (arguments) to a function call are introduced in the local
 symbol table of the called function when it is called; thus, arguments are
 passed using *call by value* (where the *value* is always an object *reference*,
-not the value of the object). [#]_ When a function calls another function, a new
+not the value of the object). When a function calls another function, a new
 local symbol table is created for that call.
 
 A function definition introduces the function name in the current symbol table.
@@ -248,7 +248,7 @@ Here's an example that fails due to this restriction::
    TypeError: function() got multiple values for keyword argument 'a'
 
 When a final formal parameter of the form ``**name`` is present, it receives a
-dictionary (see :ref:`typesmapping`) containing all keyword arguments except for
+dictionary (see :ref:`python:typesmapping`) containing all keyword arguments except for
 those corresponding to a formal parameter.  This may be combined with a formal
 parameter of the form ``*name`` (described in the next subsection) which
 receives a tuple containing the positional arguments beyond the formal parameter
@@ -298,7 +298,7 @@ Arbitrary Argument Lists
 
 Finally, the least frequently used option is to specify that a function can be
 called with an arbitrary number of arguments.  These arguments will be wrapped
-up in a tuple (see :ref:`tut-tuples`).  Before the variable number of arguments,
+up in a tuple (see :ref:`python:tut-tuples`).  Before the variable number of arguments,
 zero or more normal arguments may occur. ::
 
    def write_multiple_items(file, separator, *args):
