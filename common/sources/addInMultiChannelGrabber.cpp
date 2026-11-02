@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2023, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2023, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
 
@@ -11,7 +11,7 @@
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
 
-    In addition, as a special exception, the Institut fuer Technische
+    In addition, as a special exception, the Institut für Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
     which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -55,7 +55,7 @@ public:
 
     //!< this map contains all parameter names in m_param, that belong to a
     //! channel parameter. The value string list contains all channel names,
-    //! where this parameter is explicitely contained. Global parameters,
+    //! where this parameter is explicitly contained. Global parameters,
     //! that are independent on channels, are not listed here.
     QMap<QString, QStringList> m_paramChannelAvailabilityMap;
 };
@@ -327,7 +327,7 @@ axis unit to the dataObject.
 
 \param [in] waitMS indicates the time (in ms) that should be waiting until every
             registered live image source node received m_image. 0: no wait, -1:
-            infinit waiting time, else time in milliseconds
+            infinite waiting time, else time in milliseconds
 \return retOk if everything was ok, retWarning if live image could not be invoked
 */
 ito::RetVal AddInMultiChannelGrabber::sendDataToListeners(int waitMS)
@@ -748,9 +748,9 @@ ito::RetVal AddInMultiChannelGrabber::changeChannelForListener(QObject* listener
     key of the parameter is "defaultChannel" the function "switchDefaultChannel" gets called.
     Both happens also if the "ok" value of setParameter is true.
     "applyParamsToChannelParams" is called to synchronize the parameters of the
-    channel container follwed by a call of checkData.
+    channel container followed by a call of checkData.
 
-\param [in] val is a QSharedPOinter of type ParamBase containing the paremeter to be set.
+\param [in] val is a QSharedPOinter of type ParamBase containing the parameter to be set.
 \param [in] waitCond
 \return retOk if everything was ok, else retError
 */
@@ -910,7 +910,7 @@ ito::RetVal AddInMultiChannelGrabber::switchChannelSelector()
 //-------------------------------------------------------------------------------
 //! copies value m_params to the channel params of the current default channel
 /*!
-This method copies params of m_params to the params of the channel container if the param is contained in the channel container . This function is usally called after setParam to apply the changed entries of m_params to the corresponding channel container.
+This method copies params of m_params to the params of the channel container if the param is contained in the channel container . This function is usually called after setParam to apply the changed entries of m_params to the corresponding channel container.
 If a parameter is not found in the channel container nothing happens.
 
 \param [in] keyList indicates which params are copied. If the List is empty all Parameters of the current channel are updated.

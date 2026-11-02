@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2023, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2023, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
 
@@ -154,7 +154,7 @@ namespace ito
             virtual ito::RetVal observeInvocation(ItomSharedSemaphore *waitCond, MessageLevel msgLevel) const;
 
             /*! use this map to save the current values of all parameters.
-            For instance it is conventient to copy the map given in parametersChanged to this map */
+            For instance it is convenient to copy the map given in parametersChanged to this map */
             QMap<QString, ito::Param> m_currentParameters;
 
         private:

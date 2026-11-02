@@ -37,7 +37,7 @@ A typical sequence in python is
 
 .. code-block:: python
     :linenos:
-    
+
     dObj = dataObject()
     device.startDevice()
     device.acquire()

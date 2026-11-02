@@ -60,7 +60,7 @@ namespace ito {
 //-------------------------------------------------------------------------------------
 /** constructor
 *
-*   contructor, creating column headers for the tree view
+*   constructor, creating column headers for the tree view
 */
 PlugInModel::PlugInModel(ito::AddInManager* addInManager, QObject* parent /*= nullptr*/) :
     QAbstractItemModel(parent), d_ptr(new PlugInModelPrivate())
@@ -840,7 +840,7 @@ QVariant PlugInModel::getPluginNodeInfo(const QModelIndex &index, const int &rol
                 filename = QFileInfo(aib->getFilename());
                 return filename.fileName();
             }
-            case 4: //autor
+            case 4: //author
             {
                 return aib->getAuthor();
             }

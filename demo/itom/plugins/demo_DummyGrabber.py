@@ -29,7 +29,7 @@ camera = dataIO("DummyGrabber")
 camera.setParam("roi", [100, 40, 400, 300])
 
 ###############################################################################
-# or by explicite roi values.
+# or by explicit roi values.
 camera.setParam("roi[0]", 100)
 camera.setParam("roi[2]", 400)
 

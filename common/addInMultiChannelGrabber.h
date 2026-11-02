@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2023, Institut fuer Technische Optik (ITO),
-    Universitaet Stuttgart, Germany
+    Copyright (C) 2023, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
 
@@ -11,7 +11,7 @@
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
 
-    In addition, as a special exception, the Institut fuer Technische
+    In addition, as a special exception, the Institut für Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
     which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -118,7 +118,7 @@ namespace ito
         virtual ito::RetVal checkDataFromAllChannels();
 
         virtual ito::RetVal sendDataToListeners(int waitMS); /*!< sends m_data to all registered listeners. */
-        ito::RetVal adaptDefaultChannelParams(); /*!< adaptes the params after changing the defaultChannel param*/
+        ito::RetVal adaptDefaultChannelParams(); /*!< adapts the params after changing the defaultChannel param*/
 
         void addChannel(QString name);
 
@@ -160,7 +160,7 @@ namespace ito
         size and dtype than the latest image of the default channel. If given, the latest
         image is copied into the given externalDataObject.
 
-        Usually, this method has not to be overloaded, since it is implemented in a useable
+        Usually, this method has not to be overloaded, since it is implemented in a usable
         way. Nevertheless, it can be overloaded.
         */
         virtual ito::RetVal retrieveData(ito::DataObject* externalDataObject = nullptr);
@@ -244,7 +244,7 @@ namespace ito
             object, whose name is the only thing that has to be given when calling this method. If this
             method succeeds, this value is filled with the full parameter information including its current
             value.
-        \params waitCond is the wait condition, that is used to observe the call state of an asychronous call.
+        \params waitCond is the wait condition, that is used to observe the call state of an asynchronous call.
         \returns a RetVal object, that indicates the success of this call. The same return value is also
             contained in the argument ``waitCond`` if given.
         */
