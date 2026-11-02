@@ -74,7 +74,7 @@ public:
     virtual void onStateChanged(bool state);
 
 private slots:
-    void onKeyReleased(QKeyEvent *e);
+    void onPostKeyPressed(QKeyEvent *e);
     void onCalltipResultAvailable(QVector<ito::CalltipItem> calltips);
 
     //!< called, if the active language server backend provides the requested calltips.
@@ -100,7 +100,6 @@ protected:
 private:
     QObject *m_pPythonEngine;
     QList<int> m_disablingKeys;
-    int m_requestCount;
 
     //!< the backend, whose calltipReady signal is currently connected (no ownership).
     QPointer<ILanguageServerBackend> m_pConnectedBackend;

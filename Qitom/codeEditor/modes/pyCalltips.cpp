@@ -55,7 +55,6 @@ PyCalltipsMode::PyCalltipsMode(const QString &name, const QString &description /
     Mode(name, description),
     QObject(parent),
     m_pPythonEngine(NULL),
-    m_requestCount(0),
     m_pConnectedBackend(NULL),
     m_pendingCalltipId(-1),
     m_hasDeferredRequest(false),
@@ -93,26 +92,41 @@ void PyCalltipsMode::onStateChanged(bool state)
 {
     if (m_pPythonEngine)
     {
+        // The calltip is triggered by the key press event (after the character has
+        // been inserted into the document) and not by the key release event:
+        // 1. If the code completion popup is visible, the key press is forwarded
+        //    to the editor by the QCompleter, but the key release is swallowed by
+        //    the popup and never reaches the editor.
+        // 2. The release event of '(' is reported as Qt::Key_ParenLeft only if the
+        //    shift key is still pressed. If shift is released first (common when
+        //    typing fast), the release event carries the unshifted key (e.g.
+        //    Qt::Key_8 or Qt::Key_9 depending on the keyboard layout).
         if (state)
         {
-            connect(editor(), SIGNAL(keyReleased(QKeyEvent*)), this, SLOT(onKeyReleased(QKeyEvent*)));
+            connect(editor(), SIGNAL(postKeyPressed(QKeyEvent*)), this, SLOT(onPostKeyPressed(QKeyEvent*)));
         }
         else
         {
-            disconnect(editor(), SIGNAL(keyReleased(QKeyEvent*)), this, SLOT(onKeyReleased(QKeyEvent*)));
+            disconnect(editor(), SIGNAL(postKeyPressed(QKeyEvent*)), this, SLOT(onPostKeyPressed(QKeyEvent*)));
         }
     }
 }
 
 //----------------------------------------------------------
 /*
-Auto indent if the released key is the return key.
+Requests a calltip, if the typed character is an opening bracket or a comma.
+The character is already inserted into the document, when this slot is called.
 :param event: the key event
 */
-void PyCalltipsMode::onKeyReleased(QKeyEvent *e)
+void PyCalltipsMode::onPostKeyPressed(QKeyEvent *e)
 {
+    // compare the text, too, since the key depends on the keyboard layout and
+    // on the modifier state.
+    const QString text = e->text();
+
     if (e->key() == Qt::Key_ParenLeft || \
-            e->key() == Qt::Key_Comma)
+            e->key() == Qt::Key_Comma || \
+            text == "(" || text == ",")
     {
         QTextCursor tc = editor()->textCursor();
         int line = tc.blockNumber();
@@ -159,11 +173,10 @@ void PyCalltipsMode::onKeyReleased(QKeyEvent *e)
 //--------------------------------------------------------------------------------
 void PyCalltipsMode::requestCalltip(const QString &source, int line, int col, const QString &encoding)
 {
-    if (m_requestCount != 0)
-    {
-        return;
-    }
-
+    // Pending requests are not awaited: a new request always replaces the previous
+    // one (its result is dropped in onCalltipReady, since m_pendingCalltipId is
+    // updated). Otherwise a lost response (e.g. a restarted language server) would
+    // block all further calltips.
     ILanguageServerBackend* backend = LanguageServerManager::getInstance()->activeBackend();
 
     if (!backend)
@@ -198,7 +211,6 @@ void PyCalltipsMode::requestCalltip(const QString &source, int line, int col, co
     if (requestId >= 0)
     {
         m_pendingCalltipId = requestId;
-        m_requestCount += 1;
     }
 }
 
@@ -387,9 +399,17 @@ QString parseCalltip(const ito::CalltipItem &tip, bool compactLayout)
 //--------------------------------------------------------------------------------
 void PyCalltipsMode::onCalltipResultAvailable(QVector<ito::CalltipItem> calltips)
 {
-     m_requestCount--;
+    // drop calltips without any content (e.g. the language server returned no
+    // signature). An empty tooltip "()" must not be shown.
+    for (int idx = calltips.size() - 1; idx >= 0; --idx)
+    {
+        if (calltips[idx].m_calltipMethodName.isEmpty() && calltips[idx].m_calltipParams.isEmpty())
+        {
+            calltips.remove(idx);
+        }
+    }
 
-    if (isLastChardEndOfWord() || calltips.size() == 0)
+    if (!editor() || isLastChardEndOfWord() || calltips.size() == 0)
     {
         return;
     }
